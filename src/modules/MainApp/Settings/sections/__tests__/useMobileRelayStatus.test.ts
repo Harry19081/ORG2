@@ -43,14 +43,21 @@ beforeEach(() => {
   });
   mocks.read.mockReset().mockResolvedValue({ phase: "disabled" });
 });
-afterEach(() => {
+afterEach(async () => {
   act(() => root.unmount());
+  await flushDeferredCleanup();
   delete (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean })
     .IS_REACT_ACT_ENVIRONMENT;
 });
 async function render(scope = "desktop", enabled = true) {
   await act(async () => {
     root.render(createElement(Probe, { scope, enabled }));
+  });
+}
+/** `safeUnlisten` defers the Tauri dispose to the next macrotask. */
+async function flushDeferredCleanup() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
   });
 }
 
@@ -96,6 +103,7 @@ it("cleans up late registration and ignores old scope responses", async () => {
   await render("first");
   await render("second");
   await act(async () => subscription.resolve(dispose));
+  await flushDeferredCleanup();
   expect(dispose).toHaveBeenCalledTimes(1);
   const old = deferred<{ phase: string }>();
   mocks.read.mockReturnValueOnce(old.promise);

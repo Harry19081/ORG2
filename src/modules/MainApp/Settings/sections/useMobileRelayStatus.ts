@@ -2,6 +2,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { type RelayStatus, mobileRemoteApi } from "@src/api/tauri/mobileRemote";
+import { safeUnlisten } from "@src/util/platform/tauri/safeUnlisten";
 
 /** Subscribe before reading; serialize invalidations and discard stale reads. */
 export function useMobileRelayStatus(key: string, enabled: boolean) {
@@ -59,7 +60,7 @@ export function useMobileRelayStatus(key: string, enabled: boolean) {
     })
       .then((dispose) => {
         if (cancelled) {
-          dispose();
+          safeUnlisten(dispose);
           return;
         }
         unlisten = dispose;
@@ -72,7 +73,7 @@ export function useMobileRelayStatus(key: string, enabled: boolean) {
     return () => {
       cancelled = true;
       requestRef.current = null;
-      unlisten?.();
+      safeUnlisten(unlisten);
     };
   }, [key, enabled]);
 
