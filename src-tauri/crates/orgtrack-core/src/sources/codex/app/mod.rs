@@ -35,6 +35,7 @@ pub use index::{
 pub use meta::{resolve_codex_transcript_for_thread_id_near_path, CodexTranscriptLocator};
 pub(crate) use normalize::normalize_codex_tool_calls;
 pub use transcript::{
+    load_codex_image_from_path,
     load_codex_app_from_path, load_codex_app_initial_window_from_path,
     load_codex_app_mobile_tail_window_from_path, load_codex_app_turn_from_path,
     load_codex_app_window_turn_from_path, visit_codex_app_from_path, CodexAppInitialWindow,

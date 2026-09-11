@@ -2049,3 +2049,63 @@ fn claude_question_error_receipt_does_not_become_answered() {
     assert_ne!(question.result["status"], "answered");
     assert!(question.result.get("answers").is_none());
 }
+
+
+#[test]
+fn user_url_image_blocks_survive_replay_without_embedding_bytes() {
+    let dir = std::env::temp_dir().join(format!("orgii-claude-url-image-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("history.jsonl");
+    std::fs::write(&path, r#"{"type":"user","timestamp":"2026-04-01T07:00:00Z","message":{"role":"user","content":[{"type":"image","source":{"type":"url","url":"https://example.com/screenshot.png"}}]}}
+"#).unwrap();
+    let chunks = load_claude_code_history_from_path("claudecodeapp-url-image", &path).unwrap();
+    let user = chunks
+        .iter()
+        .find(|chunk| chunk.function == "user_message")
+        .unwrap();
+    assert_eq!(
+        user.result["images"],
+        serde_json::json!(["https://example.com/screenshot.png"])
+    );
+    std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn claude_image_only_windows_remain_reachable_without_retaining_old_base64() {
+    let dir =
+        std::env::temp_dir().join(format!("orgii-claude-image-windows-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("history.jsonl");
+    let content = r#"{"type":"user","timestamp":"2026-04-01T07:00:00Z","message":{"role":"user","content":[{"type":"image","source":{"type":"url","url":"https://example.com/screenshot.png"}}]}}
+{"type":"user","timestamp":"2026-04-01T07:01:00Z","message":{"role":"user","content":[{"type":"image","source":{"type":"base64","media_type":"image/png","data":"QUJD"}}]}}
+{"type":"user","timestamp":"2026-04-01T07:02:00Z","message":{"role":"user","content":"continue"}}
+"#;
+    std::fs::write(&path, content).unwrap();
+    let window =
+        load_claude_code_initial_window_from_path("claudecodeapp-image-windows", &path, 1).unwrap();
+    let users = window
+        .chunks
+        .iter()
+        .filter(|c| c.function == "user_message")
+        .collect::<Vec<_>>();
+    assert_eq!(users.len(), 3);
+    assert_eq!(
+        users[0].result["images"][0],
+        "https://example.com/screenshot.png"
+    );
+    assert_eq!(users[1].result["message"]["content"], "(image)");
+    assert!(users[1].result.get("images").is_none());
+    let expanded = load_claude_code_turn_windows_from_path(
+        "claudecodeapp-image-windows",
+        &path,
+        &[users[1].chunk_id.clone()],
+    )
+    .unwrap();
+    let user = expanded[0]
+        .chunks
+        .iter()
+        .find(|c| c.function == "user_message")
+        .unwrap();
+    assert_eq!(user.result["images"][0], "data:image/png;base64,QUJD");
+    std::fs::remove_dir_all(dir).unwrap();
+}
