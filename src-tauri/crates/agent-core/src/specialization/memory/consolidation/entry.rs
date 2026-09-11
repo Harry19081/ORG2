@@ -91,11 +91,6 @@ pub async fn consolidate(
     for (account_id, batch) in groups {
         let started_at = Utc::now().to_rfc3339();
         let pending_input = batch.len() as u32;
-        // A batch billed to an account that left the key vault can never
-        // resolve a consolidation model; it would fail on every trigger
-        // and keep the scope pending forever. Drain it instead. Only a
-        // confirmed absence is terminal: a credential store that cannot be
-        // read right now keeps the rows pending for the next trigger.
         if let Some(acct) = account_id.as_deref() {
             let outcome = reconcile_orphaned_account(&conn, scope, acct, |id| {
                 key_vault::key_store::KEY_SERVICE
@@ -134,6 +129,7 @@ pub async fn consolidate(
                         ..Default::default()
                     },
                 );
+                totals.abandoned += abandoned as u32;
                 continue;
             }
         }
@@ -298,15 +294,12 @@ mod tests {
         insert_learning(&conn, &pending_learning("acct-1", "one")).unwrap();
         insert_learning(&conn, &pending_learning("acct-1", "two")).unwrap();
 
-        // The store cannot be read: nothing may be abandoned.
         let outcome = reconcile_orphaned_account(&conn, "agent:builtin:sde", "acct-1", |_| {
             Err("credentials file unreadable".to_string())
         });
         assert!(outcome.is_err());
         assert_eq!(pending_count(&conn), 2);
 
-        // The store is readable again and the account is present: the
-        // batch takes the normal path with every row still queued.
         let outcome =
             reconcile_orphaned_account(&conn, "agent:builtin:sde", "acct-1", |_| Ok(true));
         assert_eq!(outcome.unwrap(), None);
