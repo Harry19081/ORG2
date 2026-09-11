@@ -3081,12 +3081,12 @@ fn native_function_calls_with_response_ids_still_normalize() {
         spawn.args["__orgiiSourceEventId"],
         "fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f5"
     );
-    assert!(
-        chunks
-            .iter()
-            .any(|chunk| chunk.function == imported_history::FUNCTION_RUN_COMMAND_LINE),
-        "native shell with a response id must normalize to run_command_line"
-    );
+    let shell = chunks
+        .iter()
+        .find(|chunk| chunk.function == imported_history::FUNCTION_RUN_COMMAND_LINE)
+        .expect("native shell with a response id must normalize to run_command_line");
+    assert_eq!(shell.args["command"], "ls", "argv-form command must survive normalization");
+    assert_eq!(shell.args["cwd"], "/tmp");
     assert!(chunks.iter().all(|chunk| chunk.function != "spawn_agent" && chunk.function != "shell"));
     std::fs::remove_dir_all(&temp_dir).unwrap();
 }
