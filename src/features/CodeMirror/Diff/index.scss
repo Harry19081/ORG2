@@ -493,6 +493,25 @@
   &--down::before {
     transform: translateY(-2px) rotate(135deg);
   }
+
+  &--all {
+    flex-direction: column;
+    gap: 3px;
+
+    &::before,
+    &::after {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-top: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      transform: translateY(1px) rotate(-45deg);
+    }
+
+    &::after {
+      transform: translateY(-1px) rotate(135deg);
+    }
+  }
 }
 
 .codemirror-diff .cm-editor .cm-collapsedLines {
