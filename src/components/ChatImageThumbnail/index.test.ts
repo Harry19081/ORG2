@@ -12,10 +12,11 @@ import {
   vi,
 } from "vitest";
 
-import { ChatImageThumbnail } from ".";
+import { ChatImageThumbnail, ChatImageThumbnailRow } from ".";
 
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn(),
+  preview: vi.fn(),
   readTranscriptImage: vi.fn(),
 }));
 
@@ -28,7 +29,10 @@ vi.mock("@tauri-apps/plugin-fs", () => ({
 }));
 
 vi.mock("@src/components/ImagePreviewOverlay", () => ({
-  default: () => null,
+  default: (props: unknown) => {
+    mocks.preview(props);
+    return null;
+  },
 }));
 
 const reactActEnvironment = globalThis as typeof globalThis & {
@@ -215,5 +219,24 @@ describe("ChatImageThumbnail", () => {
     });
 
     expect(objectUrls.revokeObjectURL).toHaveBeenCalledWith(src);
+  });
+  it("opens the selected attachment with its message gallery using keyboard activation", () => {
+    const images = ["data:image/png;base64,AA", "data:image/png;base64,BB"];
+    act(() => root.render(createElement(ChatImageThumbnailRow, { images })));
+    const second = container.querySelectorAll('[role="button"]')[1];
+    act(() =>
+      second.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+      )
+    );
+    expect(mocks.preview).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        dataUrl: images[1],
+        initialIndex: 1,
+        images: images.map((src) => ({ src, fileName: undefined })),
+        resolveImage: expect.any(Function),
+      })
+    );
+    expect(mocks.readFile).not.toHaveBeenCalled();
   });
 });

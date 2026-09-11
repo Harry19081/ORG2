@@ -55,10 +55,12 @@ interface ChatImageThumbnailProps {
   alt: string;
   /** Thumbnail size class (default `h-10 w-10`). */
   sizeClassName?: string;
+  gallery?: { src: string; fileName?: string }[];
+  galleryIndex?: number;
 }
 
 export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
-  ({ imageRef, alt, sizeClassName = "h-10 w-10" }) => {
+  ({ imageRef, alt, sizeClassName = "h-10 w-10", gallery, galleryIndex }) => {
     const [showOverlay, setShowOverlay] = useState(false);
     // Browser URLs are loaded lazily by the image element, without JS byte copies.
     // For asset/path refs we load the bytes asynchronously into `asyncSrc`.
@@ -116,6 +118,16 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
         <div
           className={`group relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-2 bg-fill-1 text-text-3 ${resolvedSrc ? "cursor-pointer" : "cursor-default"} ${sizeClassName}`}
           onClick={handleClick}
+          role="button"
+          tabIndex={resolvedSrc ? 0 : -1}
+          aria-label={alt}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              event.stopPropagation();
+              if (resolvedSrc) setShowOverlay(true);
+            }
+          }}
           data-image-state={
             resolvedSrc ? "ready" : loadFailed ? "unavailable" : "loading"
           }
@@ -149,7 +161,13 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
           )}
         </div>
         {showOverlay && resolvedSrc && (
-          <ImagePreviewOverlay dataUrl={resolvedSrc} onClose={handleClose} />
+          <ImagePreviewOverlay
+            dataUrl={resolvedSrc}
+            onClose={handleClose}
+            images={gallery}
+            initialIndex={galleryIndex}
+            resolveImage={resolveImageSrc}
+          />
         )}
       </>
     );
@@ -172,6 +190,19 @@ interface ChatImageThumbnailRowProps {
  */
 export const ChatImageThumbnailRow: React.FC<ChatImageThumbnailRowProps> = memo(
   ({ images, altPrefix = "Attached image", sizeClassName }) => {
+    const gallery = React.useMemo(
+      () =>
+        (images ?? []).map((src) => {
+          const path = imageRefToRustPath(src);
+          return {
+            src,
+            fileName: /^(data:|blob:)/.test(path)
+              ? undefined
+              : path.split(/[\\/]/).pop(),
+          };
+        }),
+      [images]
+    );
     if (!images || images.length === 0) return null;
     return (
       <div className="flex flex-wrap gap-1.5">
@@ -181,6 +212,8 @@ export const ChatImageThumbnailRow: React.FC<ChatImageThumbnailRowProps> = memo(
             imageRef={ref}
             alt={`${altPrefix} ${idx + 1}`}
             sizeClassName={sizeClassName}
+            gallery={gallery}
+            galleryIndex={idx}
           />
         ))}
       </div>
