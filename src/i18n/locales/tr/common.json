@@ -1,4 +1,18 @@
 {
+  "gitLabels": {
+    "contains": "İçerdiği dosyalar: {{status}}",
+    "staged": "{{status}} (hazırlandı)",
+    "additions": "Eklenen satırlar",
+    "deletions": "Silinen satırlar",
+    "M": "Değiştirildi",
+    "U": "İzlenmiyor",
+    "A": "Eklendi",
+    "D": "Silindi",
+    "R": "Yeniden adlandırıldı",
+    "C": "Çakışma",
+    "I": "Yok sayıldı",
+    "?": "Bilinmeyen durum"
+  },
   "findScope": {
     "session": "Oturumda ara",
     "file": "Dosyada ara",

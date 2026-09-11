@@ -1,4 +1,18 @@
 {
+  "gitLabels": {
+    "contains": "包含文件：{{status}}",
+    "staged": "{{status}}（已暂存）",
+    "additions": "新增行",
+    "deletions": "删除行",
+    "M": "已修改",
+    "U": "未跟踪",
+    "A": "已新增",
+    "D": "已删除",
+    "R": "已重命名",
+    "C": "冲突",
+    "I": "已忽略",
+    "?": "未知状态"
+  },
   "findScope": {
     "session": "在会话中搜索",
     "file": "在文件中搜索",

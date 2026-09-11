@@ -1,4 +1,18 @@
 {
+  "gitLabels": {
+    "contains": "Enthält Dateien: {{status}}",
+    "staged": "{{status}} (vorgemerkt)",
+    "additions": "Hinzugefügte Zeilen",
+    "deletions": "Gelöschte Zeilen",
+    "M": "Geändert",
+    "U": "Nicht versioniert",
+    "A": "Hinzugefügt",
+    "D": "Gelöscht",
+    "R": "Umbenannt",
+    "C": "Konflikt",
+    "I": "Ignoriert",
+    "?": "Unbekannter Status"
+  },
   "findScope": {
     "session": "In Sitzung suchen",
     "file": "In Datei suchen",
