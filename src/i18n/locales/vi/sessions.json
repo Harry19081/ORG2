@@ -1938,8 +1938,7 @@
       "commands": "Lệnh",
       "mode": "Chế độ",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Lệnh"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Hành động GIT",
@@ -2316,7 +2315,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Dừng tiến trình Agent",
       "openInMyStation": "Mở trong My Station"
     }
   },

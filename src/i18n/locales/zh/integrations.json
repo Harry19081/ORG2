@@ -349,7 +349,6 @@
     "connecting": "连接中",
     "reconnecting": "重新连接中",
     "connectionError": "连接错误",
-    "reconnect": "重新连接",
     "accountNameDuplicate": "已存在同名账户",
     "probeSuccess": "连接成功",
     "probeFailed": "连接失败",

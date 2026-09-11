@@ -1935,11 +1935,10 @@
       "session": "세션"
     },
     "slashMenu": {
-      "commands": "명령",
+      "commands": "명령어",
       "mode": "모드",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "명령어"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "GIT 작업",
@@ -2316,7 +2315,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Agent 프로세스 중지",
       "openInMyStation": "My Station 에서 열기"
     }
   },

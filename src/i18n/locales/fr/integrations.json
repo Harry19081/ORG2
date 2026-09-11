@@ -349,7 +349,6 @@
     "connecting": "Connexion…",
     "reconnecting": "Reconnexion en cours",
     "connectionError": "Erreur de connexion",
-    "reconnect": "Reconnecter",
     "accountNameDuplicate": "Un compte avec ce nom existe déjà",
     "probeSuccess": "Connexion réussie",
     "probeFailed": "Connexion échouée",

@@ -349,7 +349,6 @@
     "connecting": "Connecting",
     "reconnecting": "Reconnecting",
     "connectionError": "Connection Error",
-    "reconnect": "Reconnect",
     "accountNameDuplicate": "An account with this name already exists",
     "probeSuccess": "Connection successful",
     "probeFailed": "Connection failed",
