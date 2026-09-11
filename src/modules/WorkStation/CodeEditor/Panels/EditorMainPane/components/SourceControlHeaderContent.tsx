@@ -16,8 +16,8 @@ import Button from "@src/components/Button";
 import TabPill from "@src/components/TabPill";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import {
-  ArrowLeft02Icon,
-  ArrowRight02Icon,
+  ArrowDown01Icon,
+  ArrowUp01Icon,
   CircleDotIcon,
   HugeiconsIcon,
   LinkSquare02Icon,
@@ -199,8 +199,8 @@ export const SourceControlHeaderContent: React.FC<
               className="shrink-0"
               icon={
                 <HugeiconsIcon
-                  icon={ArrowLeft02Icon}
-                  data-icon="arrow-left"
+                  icon={ArrowUp01Icon}
+                  data-icon="chevron-up"
                   size={HEADER_ICON_SIZE.sm}
                   strokeWidth={1.75}
                 />
@@ -217,8 +217,8 @@ export const SourceControlHeaderContent: React.FC<
               className="shrink-0"
               icon={
                 <HugeiconsIcon
-                  icon={ArrowRight02Icon}
-                  data-icon="arrow-right"
+                  icon={ArrowDown01Icon}
+                  data-icon="chevron-down"
                   size={HEADER_ICON_SIZE.sm}
                   strokeWidth={1.75}
                 />
