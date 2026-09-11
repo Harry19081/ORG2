@@ -4,10 +4,10 @@
 //!
 //! Organized into submodules by responsibility:
 //! - `server`: LSP server lifecycle (start/stop/status/notifications)
-//! - `discovery`: Detect installed LSP servers and lint tools
-//! - `cache`: Persistent cache for LSP/Lint scan results
+//! - `discovery`: Detect installed LSP servers
+//! - `cache`: Persistent cache for LSP server scan results
 //! - `package_manager`: Package manager detection and command generation
-//! - `install`: Install/uninstall commands for LSP servers and lint tools
+//! - `install`: Install/uninstall commands for LSP servers
 
 mod cache;
 mod install;
