@@ -397,6 +397,22 @@ fn resend_generation_keeps_subagent_links_and_resolves_newest_rollout() {
         resend,
         "thread resolution near a child must pick the current generation"
     );
+
+    // Codex archived the resend generation while the child, re-parsed against
+    // it, stays bound to the pruned row. The surviving generation must still
+    // link the child through the thread id in the child's own parent key.
+    conn.execute(
+        "UPDATE imported_history_session_cache SET parent_session_id = ?1 WHERE source_session_id = ?2",
+        [&resend_id, &child],
+    )
+    .unwrap();
+    std::fs::remove_file(fixture.0.join("sessions").join(format!("{resend}.jsonl"))).unwrap();
+    fixture.sync(&mut conn);
+    assert_eq!(
+        linked_subagent_session_id(&conn, &original_id).as_deref(),
+        Some(child_id.as_str()),
+        "a child bound to a pruned generation still links through its thread id"
+    );
 }
 
 #[test]

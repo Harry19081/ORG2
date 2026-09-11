@@ -174,6 +174,8 @@ fn codex_child_session_links(
     // Children bind to the physical parent rollout they were parsed against.
     // A resend rotates the parent rollout, so match every generation of the
     // parent's native thread; the historical parent keeps resolving exactly.
+    // The filename fallback reads the thread id off the child's own parent
+    // key, so a child bound to a generation whose row was pruned still links.
     let parent_thread_id = codex_parent_thread_id(conn, parent_session_id)?.unwrap_or_default();
     let mut statement = conn
         .prepare(
@@ -191,8 +193,8 @@ fn codex_child_session_links(
                                   THEN json_extract(parent.source_metadata_json,
                                                     '$.continuationGroupKey')
                              END = ?3
-                             OR parent.source_session_id LIKE '%-' || ?3
-                             OR parent.source_session_id LIKE '%-' || ?3 || '\\_%' ESCAPE '\\')))
+                             OR child.parent_session_id LIKE '%-' || ?3
+                             OR child.parent_session_id LIKE '%-' || ?3 || '\\_%' ESCAPE '\\')))
              ORDER BY child.created_at_ms ASC, child.source_session_id ASC",
         )
         .map_err(|err| format!("Failed to prepare Codex child-session query: {err}"))?;
