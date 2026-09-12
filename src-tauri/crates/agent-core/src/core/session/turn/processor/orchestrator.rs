@@ -812,13 +812,10 @@ impl UnifiedMessageProcessor {
         // 9–10. Post-turn dispatch (broadcast, Stop hook, CU lock,
         // session-memory / extract-memories / auto-dream / digest spawns).
         // The SM gate inputs are computed here because the dispatcher no
-        // longer sees the in-memory transcript: provider-reported prompt
-        // tokens when available, a local count only as fallback.
-        let sm_current_tokens = if result.prompt_tokens > 0 {
-            result.prompt_tokens as usize
-        } else {
-            crate::model_context::tokenizer::count_messages_tokens(&messages)
-        };
+        // longer sees the in-memory transcript: provider-reported
+        // context size when available, a local count only as fallback.
+        let sm_current_tokens =
+            post_turn_dispatch::session_memory_context_tokens(&result, &messages);
         let sm_last_turn_has_tool_calls =
             crate::model_context::session_memory::last_turn_has_tool_calls(&messages);
         let intervention_suspended_formal_turn = persisted_turn_context.as_ref().is_some_and(
