@@ -2,6 +2,8 @@
 
 Tested code: `1fb1ad977e3c64e0596adaaed58bf872f1c6fffc`, PR #1631 / issue #1579. Date: 2026-09-12 UTC (September 11 locally).
 
+> Revision note: the measurements below predate the cheap-only policy. They are historical evidence, not validation of its candidate selection. The earlier CI peak-sample failure was subsequently fixed by merged PR #1640. Later Anthropic acceptance is recorded in the follow-up PR reports; its original blocked cell below describes the earlier run.
+
 ## Environment and method
 
 - Apple M3 Pro, 18 GiB RAM, macOS 26.2, battery power. Other user applications and the existing primary/Instance 2 remained running. Memory compression/swap pressure was already present. This is an observational run, not a controlled before/after performance comparison.
@@ -82,3 +84,16 @@ The debug `/agent/test/memory-metrics` response adds `skipped`; existing fields 
 | Rendering/hot path | keep    | Only diagnostic JSON gains a field                         | No component, timer, subscription, or polling added              | Rust compilation and scoped checks                                                                            |
 
 Targeted verification: `cargo test -p agent_core post_turn --lib` passed 16 tests; `cargo test -p agent_core specialization::memory::background --lib` passed 9 tests. The production cooldown test exercises the actual job builder, factory, coordinator accounting/cleanup and SQLite, rather than simulating the terminal enum alone. The loopback persistence test also asserts the explicit successful completion. No new CPU or cross-provider improvement is claimed; broader device limitations remain above and in the history follow-up report.
+
+## Cheap-only policy revision
+
+The new policy has at most three candidate strings and a rejection bitmask per session route. A model rejection tries the next cheap candidate within the existing 60-second job deadline. It never adds a timer, polling loop, background worker, or global rejection cache. Exhaustion is silent and counts as `Skipped`; later provider instances retain the rejection set. Account/endpoint/catalog changes reset the route. Session teardown drops the state.
+
+| Area               | Verdict | Evidence                                        | Change or reason kept                                                           | Verification                                                                      |
+| ------------------ | ------- | ----------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Background work    | fix     | Parent fallback could spend flagship quota      | Up to three cheap candidates; exhausted and empty lists skip                    | Loopback Luna rejection → Terra → fresh-provider Terra; SQLite unchanged on skips |
+| Memory             | keep    | One bounded route and rejection mask            | Existing session lifetime owns cleanup                                          | Route reset, all-three rejection and post-cooldown tests                          |
+| Scope/isolation    | fix     | Catalog presence is not entitlement             | Enabled/available intersection on the same account; no automatic model enabling | Account, alias, transport, namespace and disabled-candidate tests                 |
+| Rendering/hot path | keep    | No UI component or streaming-delta code changes | Unavailable-model skips do not emit a failure warning                           | Explicit skipped completion and silent exhaustion tests                           |
+
+Real provider pricing/availability can change; this table does not claim every provider has passed a real-account request. No new CPU/RSS improvement is claimed from selection changes alone. Previous idle CPU and broader lifecycle acceptance gaps remain separate.

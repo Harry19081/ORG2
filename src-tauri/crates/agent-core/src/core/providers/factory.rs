@@ -1100,12 +1100,16 @@ mod tests {
     #[test]
     fn auxiliary_policy_uses_the_same_resolved_transport_as_the_client() {
         crate::test_support::install_crypto_provider_for_tests();
-        let parent = "gpt-5.6-luna-medium";
+        let parent = "gpt-6-astra-high";
         let spec = registry::find_by_name(provider_id::OPENAI).unwrap();
         let mut key = ModelKey::new(ModelType::Codex);
         key.auth_method = AuthMethod::Oauth;
         key.session_token = Some("fixture-token".into());
-        key.available_models = vec!["gpt-5.4-mini".into()];
+        key.available_models = vec![
+            "gpt-5.4-mini".into(),
+            "gpt-5.6-luna".into(),
+            "gpt-5.6-terra".into(),
+        ];
         key.enabled_models = key.available_models.clone();
         for oauth in [true, false] {
             if !oauth {
@@ -1118,8 +1122,12 @@ mod tests {
             let provider = ReliableProvider::single("fixture".into(), client, 0, 50)
                 .with_auxiliary_policy(resolved.auxiliary_policy.clone());
             assert_eq!(
-                provider.auxiliary_model(parent).model,
-                if oauth { parent } else { "gpt-5.4-mini" }
+                provider.auxiliary_model(parent).models,
+                if oauth {
+                    vec!["gpt-5.6-luna", "gpt-5.6-terra"]
+                } else {
+                    vec!["gpt-5.4-mini", "gpt-5.6-luna", "gpt-5.6-terra"]
+                }
             );
             if !oauth {
                 let codex = CodexNativeClient::new(
@@ -1140,7 +1148,7 @@ mod tests {
                     50,
                 )
                 .with_auxiliary_policy(resolved.auxiliary_policy);
-                assert_eq!(chain.auxiliary_model(parent).model, parent);
+                assert!(chain.auxiliary_model(parent).models.is_empty());
             }
         }
     }
