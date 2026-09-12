@@ -34,6 +34,7 @@ import {
   isWorkManagementListSection,
 } from "../chatPanelTabsModel";
 import { chatPanelTabsAtom } from "../chatPanelTabsState";
+import { openOrFocusChatPanelTab } from "./openOrFocus";
 
 interface OpenWorkManagementTabOptions {
   section?: WorkManagementSection;
@@ -119,29 +120,14 @@ export const openWorkspaceOverviewInChatPanelTabAtom = atom(
       set(chatPanelWorkspaceOverviewTabAtom, overviewTab);
     }
 
-    const existingTab = get(chatPanelTabsAtom).tabs.find(
-      (candidate) =>
-        candidate.type === "workspace" &&
-        candidate.workspace?.kind === workspace.kind &&
-        candidate.workspace?.id === workspace.id
-    );
-    if (existingTab) {
-      // Refresh the stored payload (name/path can drift) before focusing.
-      set(chatPanelTabsAtom, (prev) => ({
-        ...prev,
-        tabs: prev.tabs.map((candidate) =>
-          candidate.id === existingTab.id
-            ? { ...candidate, title: workspace.name, workspace }
-            : candidate
-        ),
-      }));
-      set(activateChatPanelTabAtom, existingTab.id);
-      return existingTab.id;
-    }
-
-    const tab = createWorkspaceTab({ workspace });
-    set(appendAndActivateChatPanelTabAtom, { tab });
-    return tab.id;
+    return openOrFocusChatPanelTab(get, set, {
+      isMatch: (tab) =>
+        tab.type === "workspace" &&
+        tab.workspace?.kind === workspace.kind &&
+        tab.workspace?.id === workspace.id,
+      refresh: (tab) => ({ ...tab, title: workspace.name, workspace }),
+      create: () => createWorkspaceTab({ workspace }),
+    });
   }
 );
 openWorkspaceOverviewInChatPanelTabAtom.debugLabel =
@@ -161,22 +147,11 @@ export const openOrganizationInChatPanelTabAtom = atom(
   null,
   (get, set, options: OpenOrganizationManagementTabOptions) => {
     const { organization, title = "Manage ORG" } = options;
-    const state = get(chatPanelTabsAtom);
-    const existingTab = state.tabs.find((tab) => tab.type === "organization");
-    if (existingTab) {
-      set(chatPanelTabsAtom, {
-        ...state,
-        tabs: state.tabs.map((tab) =>
-          tab.id === existingTab.id ? { ...tab, title, organization } : tab
-        ),
-      });
-      set(activateChatPanelTabAtom, existingTab.id);
-      return existingTab.id;
-    }
-
-    const tab = createOrganizationTab({ organization, title });
-    set(appendAndActivateChatPanelTabAtom, { tab });
-    return tab.id;
+    return openOrFocusChatPanelTab(get, set, {
+      isMatch: (tab) => tab.type === "organization",
+      refresh: (tab) => ({ ...tab, title, organization }),
+      create: () => createOrganizationTab({ organization, title }),
+    });
   }
 );
 openOrganizationInChatPanelTabAtom.debugLabel =
@@ -194,27 +169,18 @@ export const openWorkItemInChatPanelTabAtom = atom(
   null,
   (get, set, workItem: ChatPanelSelectedWorkItem) => {
     const workItemKey = getChatPanelWorkItemTabKey(workItem);
-    const existingTab = get(chatPanelTabsAtom).tabs.find(
-      (tab) =>
+    return openOrFocusChatPanelTab(get, set, {
+      isMatch: (tab) =>
         tab.type === "work-item" &&
         tab.workItem !== undefined &&
-        getChatPanelWorkItemTabKey(tab.workItem) === workItemKey
-    );
-    if (existingTab) {
-      set(chatPanelTabsAtom, (prev) => ({
-        ...prev,
-        tabs: prev.tabs.map((tab) =>
-          tab.id === existingTab.id
-            ? { ...tab, title: workItem.workItem.name || tab.title, workItem }
-            : tab
-        ),
-      }));
-      set(activateChatPanelTabAtom, existingTab.id);
-      return existingTab.id;
-    }
-    const tab = createWorkItemTab({ workItem });
-    set(appendAndActivateChatPanelTabAtom, { tab });
-    return tab.id;
+        getChatPanelWorkItemTabKey(tab.workItem) === workItemKey,
+      refresh: (tab) => ({
+        ...tab,
+        title: workItem.workItem.name || tab.title,
+        workItem,
+      }),
+      create: () => createWorkItemTab({ workItem }),
+    });
   }
 );
 openWorkItemInChatPanelTabAtom.debugLabel = "openWorkItemInChatPanelTab";
@@ -222,27 +188,17 @@ openWorkItemInChatPanelTabAtom.debugLabel = "openWorkItemInChatPanelTab";
 /** Open or focus a dedicated tab for a project (deduped by slug). */
 export const openProjectInChatPanelTabAtom = atom(
   null,
-  (get, set, project: ChatPanelSelectedProject) => {
-    const existingTab = get(chatPanelTabsAtom).tabs.find(
-      (tab) =>
+  (get, set, project: ChatPanelSelectedProject) =>
+    openOrFocusChatPanelTab(get, set, {
+      isMatch: (tab) =>
         tab.type === "project" &&
-        tab.project?.projectSlug === project.projectSlug
-    );
-    if (existingTab) {
-      set(chatPanelTabsAtom, (prev) => ({
-        ...prev,
-        tabs: prev.tabs.map((tab) =>
-          tab.id === existingTab.id
-            ? { ...tab, title: project.project.name || tab.title, project }
-            : tab
-        ),
-      }));
-      set(activateChatPanelTabAtom, existingTab.id);
-      return existingTab.id;
-    }
-    const tab = createProjectTab({ project });
-    set(appendAndActivateChatPanelTabAtom, { tab });
-    return tab.id;
-  }
+        tab.project?.projectSlug === project.projectSlug,
+      refresh: (tab) => ({
+        ...tab,
+        title: project.project.name || tab.title,
+        project,
+      }),
+      create: () => createProjectTab({ project }),
+    })
 );
 openProjectInChatPanelTabAtom.debugLabel = "openProjectInChatPanelTab";
