@@ -19,7 +19,10 @@ import {
   syncActiveChatPanelTabStateAtom,
   toggleActiveChatPanelMaximizedAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { isChatPanelTabStationAvailable } from "@src/store/chatPanel/chatPanelTabsModel";
+import {
+  isChatPanelTabStationAvailable,
+  isStandaloneChatPanelToolTab,
+} from "@src/store/chatPanel/chatPanelTabsModel";
 import { chatPanelTabCountAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   type SessionContinuation,
@@ -170,8 +173,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       showSessionSurface,
     });
     const tabCount = useAtomValue(chatPanelTabCountAtom);
-    const isStandaloneToolTabActive =
-      activeTab?.type === "work-management" || activeTab?.type === "runtime";
+    const isStandaloneToolTabActive = isStandaloneChatPanelToolTab(activeTab);
     const stationAvailable = isChatPanelTabStationAvailable(activeTab);
     const isChatFocus = useAtomValue(effectiveChatPanelMaximizedAtom);
     const [focusedWorkstationMenuHost, setFocusedWorkstationMenuHost] =
