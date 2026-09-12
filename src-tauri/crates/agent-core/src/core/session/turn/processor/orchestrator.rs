@@ -73,6 +73,7 @@ impl UnifiedMessageProcessor {
                         );
                         sm_state.content = persisted.content;
                         sm_state.last_summarized_seq = persisted.last_seq;
+                        sm_state.tokens_at_last_extraction = persisted.tokens_at_last_extraction;
                         sm_state.initialized = true;
                     }
                 }

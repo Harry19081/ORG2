@@ -270,7 +270,7 @@ impl UnifiedMessageProcessor {
                 };
             }
             let mut sm_state = self.sm_state.lock().await;
-            sm_state.last_summarized_seq = None;
+            sm_state.reset_after_compaction();
         } else {
             // No fork-form here (unlike pre-turn): reactive compaction runs
             // right after the provider REJECTED this exact prefix as too
@@ -284,7 +284,7 @@ impl UnifiedMessageProcessor {
             *messages = append_compacted_tail(&prefix, cleaned);
             outcome = llm_outcome;
             let mut sm_state = self.sm_state.lock().await;
-            sm_state.last_summarized_seq = None;
+            sm_state.reset_after_compaction();
         }
 
         crate::model_context::file_reinjection::reinject_files_after_compaction(
@@ -467,7 +467,7 @@ impl UnifiedMessageProcessor {
                 need_llm_compact = false;
 
                 let mut sm_state = self.sm_state.lock().await;
-                sm_state.last_summarized_seq = None;
+                sm_state.reset_after_compaction();
             }
         }
 
@@ -532,7 +532,7 @@ impl UnifiedMessageProcessor {
             *messages = append_compacted_tail(&prefix, cleaned_tail);
 
             let mut sm_state = self.sm_state.lock().await;
-            sm_state.last_summarized_seq = None;
+            sm_state.reset_after_compaction();
         }
 
         // Post-compact file re-injection
@@ -656,7 +656,7 @@ impl UnifiedMessageProcessor {
                 // compact summary, so the old anchor describes rows the
                 // visible window no longer contains.
                 let mut sm_state = self.sm_state.lock().await;
-                sm_state.last_summarized_seq = None;
+                sm_state.reset_after_compaction();
                 let persist_outcome = match sm_state.content.as_deref() {
                     Some(content) if !content.trim().is_empty() => {
                         unified_persistence::save_session_memory_state(session_id, content, None)

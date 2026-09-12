@@ -158,7 +158,7 @@ pub struct SessionMemoryState {
     /// (in-turn tail) each resolve it to an index in their own array.
     pub last_summarized_seq: Option<i64>,
     /// Total context tokens at the time of the last extraction.
-    pub tokens_at_last_extraction: usize,
+    pub tokens_at_last_extraction: Option<usize>,
     /// Tool calls seen since the last extraction.
     pub tool_calls_since_extraction: usize,
     /// Whether the initialization threshold has been met at least once.
@@ -172,6 +172,15 @@ pub struct SessionMemoryState {
 }
 
 impl SessionMemoryState {
+    /// A compacted frame needs a fresh observed-context baseline. Invalidate
+    /// any extraction prepared against the previous frame at the same time.
+    pub fn reset_after_compaction(&mut self) {
+        self.last_summarized_seq = None;
+        self.tokens_at_last_extraction = None;
+        self.extraction_generation += 1;
+        self.extraction_in_progress = false;
+    }
+
     /// Record that tool calls happened (increment counter).
     pub fn record_tool_calls(&mut self, count: usize) {
         self.tool_calls_since_extraction += count;

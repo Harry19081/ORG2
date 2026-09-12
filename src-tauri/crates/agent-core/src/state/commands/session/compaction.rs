@@ -519,6 +519,7 @@ async fn run_manual_compact_exclusive(
         }
     };
 
+    session.sm_state.lock().await.reset_after_compaction();
     session.last_context_tokens.store(0, Ordering::SeqCst);
 
     // Instant ring/panel refresh, ahead of the frontend's full reload.
