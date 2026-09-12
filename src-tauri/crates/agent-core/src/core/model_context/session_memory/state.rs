@@ -107,7 +107,7 @@ impl AuxiliaryRetryState {
         }
     }
 
-    pub(super) fn succeeded(&mut self) {
+    pub(crate) fn succeeded(&mut self) {
         self.failure = None;
         self.retry_after = None;
         self.last_warning = None;
@@ -165,6 +165,8 @@ pub struct SessionMemoryState {
     pub initialized: bool,
     /// Guards against concurrent extractions.
     pub extraction_in_progress: bool,
+    /// Identifies the extraction allowed to publish into this runtime.
+    pub(crate) extraction_generation: u64,
     /// Transient model rejection/cooldown state; never persisted as memory.
     pub auxiliary_retry: AuxiliaryRetryState,
 }

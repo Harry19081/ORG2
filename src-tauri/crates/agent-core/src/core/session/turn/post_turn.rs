@@ -32,6 +32,9 @@ use crate::session::workspace::SessionWorkspace;
 use crate::tools::registry::ToolRegistry;
 use core_types::providers::NativeHarnessType;
 
+#[path = "session_memory_commit.rs"]
+mod session_memory_commit;
+
 const SESSION_MEMORY_TIMEOUT: Duration = Duration::from_secs(60);
 const WORKSPACE_EXTRACTION_TIMEOUT: Duration = Duration::from_secs(180);
 const AUTO_DREAM_TIMEOUT: Duration = Duration::from_secs(300);
@@ -74,7 +77,6 @@ async fn acquire_session_memory_provider(
             .auxiliary_retry
             .begin_attempt(scope, std::time::Instant::now())
         {
-            state.extraction_in_progress = false;
             return Ok(None);
         }
     }
@@ -85,7 +87,6 @@ async fn acquire_session_memory_provider(
             state
                 .auxiliary_retry
                 .provider_failed(&error, std::time::Instant::now());
-            state.extraction_in_progress = false;
             Err(error)
         }
     }
@@ -262,9 +263,6 @@ fn session_memory_job(input: SessionMemoryExtractionInput<'_>) -> MemoryJob {
                 }
             }
         }
-        if outcome != MemoryJobOutcome::Completed {
-            cleanup_state.lock().await.extraction_in_progress = false;
-        }
     })
 }
 
@@ -286,34 +284,47 @@ async fn extract_and_persist_session_memory(
     ) {
         return Ok(MemoryJobCompletion::Skipped);
     }
-    let (messages, start_seqs) = load_durable_history_blocking(session_id.to_owned()).await?;
-    info!(
-        session_id,
-        current_tokens, "[memory_background] starting session-memory extraction"
-    );
-    let Some(content) = session_memory::extract_session_memory(
-        &messages,
-        &start_seqs,
-        Arc::clone(&sm_state),
-        config,
-        provider,
-        model,
-        current_tokens,
-        cancel_flag,
-    )
-    .await?
-    else {
-        return Ok(MemoryJobCompletion::Skipped);
-    };
-    let last_seq = sm_state.lock().await.last_summarized_seq;
-    let persist_sid = session_id.to_owned();
-    tokio::task::spawn_blocking(move || {
-        unified_persistence::save_session_memory_state(&persist_sid, &content, last_seq)
-    })
-    .await
-    .map_err(|err| format!("SM persist worker failed: {err}"))?
-    .map_err(|err| format!("Failed to persist session memory state: {err}"))?;
-    Ok(MemoryJobCompletion::Completed)
+    let lease = session_memory_commit::ExtractionLease::begin(Arc::clone(&sm_state)).await;
+    let result = async {
+        let snapshot_sid = session_id.to_owned();
+        let snapshot = tokio::task::spawn_blocking(move || {
+            unified_persistence::session_memory_commit_snapshot(&snapshot_sid)
+        })
+        .await
+        .map_err(|err| format!("SM snapshot worker failed: {err}"))?
+        .map_err(|err| format!("SM snapshot load failed: {err}"))?;
+        let (messages, start_seqs) = load_durable_history_blocking(session_id.to_owned()).await?;
+        info!(
+            session_id,
+            current_tokens, "[memory_background] starting session-memory extraction"
+        );
+        let Some(draft) = session_memory::extract_session_memory(
+            &messages,
+            &start_seqs,
+            Arc::clone(&sm_state),
+            config,
+            provider,
+            model,
+            current_tokens,
+            lease.generation,
+            cancel_flag,
+        )
+        .await?
+        else {
+            return Ok(MemoryJobCompletion::Skipped);
+        };
+        if lease
+            .commit(session_id.to_owned(), draft, snapshot, cancel_flag.cloned())
+            .await?
+        {
+            Ok(MemoryJobCompletion::Completed)
+        } else {
+            Ok(MemoryJobCompletion::Skipped)
+        }
+    }
+    .await;
+    lease.finish().await;
+    result
 }
 
 #[cfg(test)]
