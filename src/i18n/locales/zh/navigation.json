@@ -480,7 +480,6 @@
       "showHidden": "显示已隐藏的会话（{{count}}）",
       "viewerTooltip": "{{name}} 正在看这个会话",
       "viewerOverflow": "还有 {{count}} 人正在看",
-      "memberViewing": "正在看：{{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "正在加载会话…",

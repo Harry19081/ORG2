@@ -481,7 +481,6 @@
       "showHidden": "Gizlenen oturumları göster ({{count}})",
       "viewerTooltip": "{{name}} bu oturumu görüntülüyor",
       "viewerOverflow": "ve {{count}} kişi daha izliyor",
-      "memberViewing": "görüntülüyor: {{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "Oturum yükleniyor…",
