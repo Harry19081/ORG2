@@ -10,8 +10,6 @@ import { useCallback } from "react";
 import Message from "@src/components/Message";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import { loadMoreCategory } from "@src/store/session";
-import { type ChatPanelNavigateCommand } from "@src/store/ui/chatPanel/surfaceAtoms";
-import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 import {
   getChatPanelTabIdFromTuiSessionId,
   isChatPanelTuiSessionId,
@@ -58,7 +56,7 @@ interface UseWorkstationSidebarSessionInteractionHandlersParams {
   openOrReplaceSessionInChatPanelTab: SidebarHandlersParams["onOpenSessionChatPanelTab"];
   closeAndDestroyChatPanelTab: SidebarHandlersParams["onCloseChatPanelTab"];
   activateMyStationRouteForProjectTabContent: () => void;
-  navigateChatPanel: (command: ChatPanelNavigateCommand) => void;
+  resetChatPanelSessionSurface: () => void;
   openSessionInNewChatTab: (options: {
     sessionId: string;
     sessionName?: string;
@@ -101,7 +99,7 @@ export function useWorkstationSidebarSessionInteractionHandlers({
   openOrReplaceSessionInChatPanelTab,
   closeAndDestroyChatPanelTab,
   activateMyStationRouteForProjectTabContent,
-  navigateChatPanel,
+  resetChatPanelSessionSurface,
   openSessionInNewChatTab,
   openSessionInWorkstation,
   openSessionInNewWindow,
@@ -164,7 +162,7 @@ export function useWorkstationSidebarSessionInteractionHandlers({
   const handleOpenInNewTab = useCallback(
     (sessionId: string) => {
       activateMyStationRouteForProjectTabContent();
-      navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+      resetChatPanelSessionSurface();
       if (isChatPanelTuiSessionId(sessionId)) {
         const tabId = getChatPanelTabIdFromTuiSessionId(sessionId);
         if (tabId) activateChatPanelTab(tabId);
@@ -180,7 +178,7 @@ export function useWorkstationSidebarSessionInteractionHandlers({
     [
       activateChatPanelTab,
       activateMyStationRouteForProjectTabContent,
-      navigateChatPanel,
+      resetChatPanelSessionSurface,
       openSessionInNewChatTab,
       sessionMap,
     ]

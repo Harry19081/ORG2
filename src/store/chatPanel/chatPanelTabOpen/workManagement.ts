@@ -105,9 +105,8 @@ interface OpenWorkspaceOverviewTabOptions {
  * Open — or focus, if already open — a dedicated chat-panel tab for a
  * workspace's overview / detail page. Each workspace gets its own pill titled
  * with the workspace name (not "Launchpad"); re-opening the same workspace
- * focuses the existing tab instead of stacking duplicates. Activation replays
- * the payload through `chatPanelNavigateAtom` for the legacy surface mirror;
- * the overview surface itself renders from the tab payload.
+ * focuses the existing tab instead of stacking duplicates. The overview
+ * surface renders from the tab payload.
  */
 export const openWorkspaceOverviewInChatPanelTabAtom = atom(
   null,
@@ -185,10 +184,8 @@ openOrganizationInChatPanelTabAtom.debugLabel =
 /**
  * Open — or focus, if already open — a dedicated tab for a work item. Each
  * work item gets its own pill (deduped by organization, project, and short
- * ID); activating it replays
- * the payload into the legacy surface atoms via `chatPanelNavigateAtom` so the
- * work-item panel renders. Re-opening refreshes the stored payload (name /
- * status can drift) before focusing.
+ * ID); the work-item panel renders from the tab payload. Re-opening refreshes
+ * the stored payload (name / status can drift) before focusing.
  */
 export const openWorkItemInChatPanelTabAtom = atom(
   null,

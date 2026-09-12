@@ -9,14 +9,14 @@ import {
 } from "@src/store/session/viewAtom";
 import {
   DEFAULT_CHAT_PANEL_CREATE_TARGET,
+  WORKSPACE_OVERVIEW_TAB,
+  chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
+  chatPanelCreatorWorkItemContextAtom,
   chatPanelStartPageOpenAtom,
+  chatPanelWorkspaceOverviewTabAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
-import {
-  chatPanelNavigateAtom,
-  toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanel/surfaceAtoms";
-import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
+import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 
 import { recordChatPanelTabTransitionAtom } from "./chatPanelRecentTabsState";
 import {
@@ -39,89 +39,31 @@ export const toggleActiveChatPanelMaximizedAtom = atom(null, (get, set) => {
 toggleActiveChatPanelMaximizedAtom.debugLabel =
   "toggleActiveChatPanelMaximized";
 
-/** Make the active tab's legacy surface atoms match its canonical identity. */
+/**
+ * Make the Launchpad / creator axes match the tab that just became active.
+ * Which surface is showing is derived from the tab itself
+ * (`activeChatPanelSurfaceAtom`); only the explicit creator state and the
+ * session pipeline need resetting here.
+ */
 const syncChatPanelTabNavigationAtom = atom(
   null,
   (_get, set, tab: ChatPanelTab | null | undefined) => {
     if (!tab) return;
-
-    if (tab.type === "start-page") {
-      set(chatPanelNavigateAtom, { kind: CHAT_PANEL_SURFACE_KIND.SESSION });
-      set(chatPanelStartPageOpenAtom, true);
-      set(jumpToSessionAtom, null);
-      return;
+    set(chatPanelCreateProjectContextAtom, null);
+    set(chatPanelCreateTargetAtom, DEFAULT_CHAT_PANEL_CREATE_TARGET);
+    set(chatPanelCreatorWorkItemContextAtom, null);
+    // A workspace tab keeps whichever overview sub-tab it was showing; every
+    // other surface starts the next workspace visit on Overview.
+    if (tab.type !== "workspace") {
+      set(chatPanelWorkspaceOverviewTabAtom, WORKSPACE_OVERVIEW_TAB.OVERVIEW);
     }
-
-    if (tab.type === "workspace" && tab.workspace) {
-      // A workspace tab owns the workspace-overview surface. Re-navigating on
-      // activation repopulates the selected-workspace atom the surface reads,
-      // so switching back to this pill restores its detail page. Passing no
-      // `tab` preserves whichever overview sub-tab is currently showing.
-      set(chatPanelNavigateAtom, {
-        kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW,
-        workspace: tab.workspace,
-      });
-      set(jumpToSessionAtom, null);
-      return;
-    }
-
-    if (tab.type === "organization" && tab.organization) {
-      if (tab.organization.kind === "cloud") {
-        set(chatPanelNavigateAtom, {
-          kind: CHAT_PANEL_SURFACE_KIND.CLOUD_ORG,
-          cloudOrg: tab.organization.cloudOrg,
-        });
-      } else {
-        set(chatPanelNavigateAtom, {
-          kind: CHAT_PANEL_SURFACE_KIND.PROJECT_ORG,
-          projectOrg: tab.organization.projectOrg,
-        });
-      }
-      set(jumpToSessionAtom, null);
-      return;
-    }
-
-    // Surfaces promoted to first-class tabs: replay the tab's stored payload
-    // into the legacy surface atoms so the existing panels render. Each of
-    // these navigate commands resets sibling surfaces and clears the start
-    // page, exactly as direct navigation used to.
-    if (tab.type === "work-item" && tab.workItem) {
-      set(chatPanelNavigateAtom, {
-        kind: CHAT_PANEL_SURFACE_KIND.WORK_ITEM,
-        workItem: tab.workItem,
-      });
-      set(jumpToSessionAtom, null);
-      return;
-    }
-
-    if (tab.type === "project" && tab.project) {
-      set(chatPanelNavigateAtom, {
-        kind: CHAT_PANEL_SURFACE_KIND.PROJECT,
-        project: tab.project,
-      });
-      set(jumpToSessionAtom, null);
-      return;
-    }
-
-    if (tab.type === "explore") {
-      set(chatPanelNavigateAtom, {
-        kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE,
-      });
-      set(jumpToSessionAtom, null);
-      return;
-    }
-
-    set(chatPanelStartPageOpenAtom, false);
-
-    // Session is the neutral legacy surface underneath tabs whose content is
-    // owned by ChatPanelShell (Runtime, management, and terminal tabs).
-    set(chatPanelNavigateAtom, { kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+    set(chatPanelStartPageOpenAtom, tab.type === "start-page");
     if (tab.type !== "session") set(jumpToSessionAtom, null);
   }
 );
 
 /**
- * Reconcile legacy surface state after hydration or layout changes.
+ * Reconcile creator / Launchpad state after hydration or layout changes.
  * Maximize behavior is derived at the layout boundary from the active tab, so
  * reconciliation never mutates the user's persisted preference.
  */
