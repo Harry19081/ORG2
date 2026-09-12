@@ -333,11 +333,15 @@ pub(super) async fn execute_parallel_group(
         // Hook/policy appends happen after budget accounting, so cap them —
         // an uncapped hook would bypass both the per-tool and aggregate
         // budgets. Mirrors the sequential path in `single.rs`.
-        if let Some(extra) = handler
-            .post_tool_hook(&call.name, &exec_result.effective_args, &truncated)
-            .await
-        {
-            truncated.push_str(&truncate_output(&extra, Some(super::HOOK_APPEND_MAX_CHARS)));
+        // Completed results must still be persisted after cancellation, but
+        // optional enrichment and user-hook dispatch must not start new work.
+        if !is_cancelled(cancel_flag) {
+            if let Some(extra) = handler
+                .post_tool_hook(&call.name, &exec_result.effective_args, &truncated)
+                .await
+            {
+                truncated.push_str(&truncate_output(&extra, Some(super::HOOK_APPEND_MAX_CHARS)));
+            }
         }
 
         if FILE_READ_TOOLS.contains(&call.name.as_str()) && !is_error {
@@ -354,17 +358,20 @@ pub(super) async fn execute_parallel_group(
         } else {
             None
         };
-        handler
-            .after_tool_execute(
-                session_id,
-                &call.id,
-                &call.name,
-                &exec_result.effective_args,
-                &truncated,
-                error_str,
-                exec_result.duration_ms,
-            )
-            .await;
+        // A cancellation may arrive while the preceding hook is running.
+        if !is_cancelled(cancel_flag) {
+            handler
+                .after_tool_execute(
+                    session_id,
+                    &call.id,
+                    &call.name,
+                    &exec_result.effective_args,
+                    &truncated,
+                    error_str,
+                    exec_result.duration_ms,
+                )
+                .await;
+        }
 
         let ui_metadata = tools
             .get(&call.name)
