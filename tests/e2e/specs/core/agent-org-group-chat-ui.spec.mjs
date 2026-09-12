@@ -99,6 +99,123 @@ async function postJson(pathname, body = {}, timeoutMs = 15_000) {
   }
 }
 
+async function assertRenderedGroupChatMessageCopyable(marker, label) {
+  let dragPoints = null;
+  await browser.waitUntil(
+    async () => {
+      dragPoints = await execJS(`
+        const marker = ${JSON.stringify(marker)};
+        const item = Array.from(
+          document.querySelectorAll('[data-testid="agent-org-group-projection-item"]')
+        ).find((candidate) => (candidate.textContent || '').includes(marker));
+        const body = item?.querySelector('.allow-select-deep') ?? null;
+        if (!body) return { ok: false, reason: 'missing-selectable-body' };
+        body.scrollIntoView({ block: 'center', inline: 'nearest' });
+        window.getSelection()?.removeAllRanges();
+        const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+        let textNode = null;
+        let markerIndex = -1;
+        while (walker.nextNode()) {
+          const candidate = walker.currentNode;
+          const index = (candidate.nodeValue || '').indexOf(marker);
+          if (index >= 0) {
+            textNode = candidate;
+            markerIndex = index;
+            break;
+          }
+        }
+        if (!textNode || markerIndex < 0) {
+          return { ok: false, reason: 'missing-marker-text-node' };
+        }
+        const startRange = document.createRange();
+        startRange.setStart(textNode, markerIndex);
+        startRange.setEnd(textNode, markerIndex + 1);
+        const endRange = document.createRange();
+        endRange.setStart(textNode, markerIndex + marker.length - 1);
+        endRange.setEnd(textNode, markerIndex + marker.length);
+        const startRect = startRange.getBoundingClientRect();
+        const endRect = endRange.getBoundingClientRect();
+        const style = window.getComputedStyle(textNode.parentElement);
+        return {
+          ok: startRect.width > 0 && endRect.width > 0,
+          start: {
+            x: Math.round(startRect.left + 1),
+            y: Math.round(startRect.top + startRect.height / 2),
+          },
+          end: {
+            x: Math.round(endRect.right - 1),
+            y: Math.round(endRect.top + endRect.height / 2),
+          },
+          userSelect: style.userSelect,
+        };
+      `);
+      return dragPoints?.ok === true;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      interval: 100,
+      timeoutMsg: `${label} did not expose selectable marker geometry: ${JSON.stringify(dragPoints)}`,
+    }
+  );
+
+  await browser
+    .action("pointer")
+    .move({ x: dragPoints.start.x, y: dragPoints.start.y })
+    .down()
+    .move({
+      x: dragPoints.end.x,
+      y: dragPoints.end.y,
+      duration: 350,
+    })
+    .up()
+    .perform();
+
+  const selectedText = await execJS(
+    `return window.getSelection()?.toString() || '';`
+  );
+  const expectedSelection = marker.slice(1, -1);
+  if (!selectedText.includes(expectedSelection)) {
+    throw new Error(
+      `${label} pointer drag did not select Group Chat text: ${JSON.stringify({ selectedText, dragPoints })}`
+    );
+  }
+
+  await execJS(`
+    window.__e2eGroupChatCopyCapture = null;
+    document.addEventListener('copy', (event) => {
+      window.__e2eGroupChatCopyCapture = {
+        text: window.getSelection()?.toString() || '',
+        defaultPrevented: event.defaultPrevented,
+      };
+    }, { capture: true, once: true });
+    return true;
+  `);
+  const modifier = process.platform === "darwin" ? "\uE03D" : "\uE009";
+  await browser.keys([modifier, "c", "\uE000"]);
+  let copyCapture = null;
+  await browser.waitUntil(
+    async () => {
+      copyCapture = await execJS(
+        `return window.__e2eGroupChatCopyCapture || null;`
+      );
+      return copyCapture !== null;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      interval: 100,
+      timeoutMsg: `${label} did not emit a copy event`,
+    }
+  );
+  if (
+    copyCapture.defaultPrevented === true ||
+    !copyCapture.text.includes(expectedSelection)
+  ) {
+    throw new Error(
+      `${label} did not preserve selected Group Chat text through Cmd/Ctrl+C: ${JSON.stringify(copyCapture)}`
+    );
+  }
+}
+
 async function pauseDefaultAgentOrgRuns(label) {
   const listResult = unwrap(
     await invokeE2E("agentOrgRunList", 50),
@@ -1045,6 +1162,11 @@ describe("Agent Org group chat and plan rendered UI", () => {
       text: longEndMarker,
       label: "long GroupRoot message before reload",
     });
+    await assertRenderedGroupChatMessageCopyable(
+      marker,
+      "long GroupRoot message before reload"
+    );
+
     const newestPage = unwrap(
       await invokeE2E("agentOrgGroupProjectionPage", sessionId, null, 100),
       "agentOrgGroupProjectionPage(durable GroupRoot)"
