@@ -155,11 +155,14 @@ pub fn create_provider_with_native_harness(
     }
 
     // Wrap in ReliableProvider (even with a single provider, for retry behavior)
-    Ok(Box::new(ReliableProvider::with_fallbacks(
-        providers,
-        reliability.max_retries,
-        reliability.base_backoff_ms,
-    )))
+    Ok(Box::new(
+        ReliableProvider::with_fallbacks(
+            providers,
+            reliability.max_retries,
+            reliability.base_backoff_ms,
+        )
+        .with_auxiliary_policy(resolved.auxiliary_policy),
+    ))
 }
 
 fn create_native_harness_provider(
@@ -377,6 +380,7 @@ fn spec_for_credential(cred: &ModelKey) -> Option<&'static ProviderSpec> {
 /// this struct is the post-resolution view (Codex OAuth flag set, headers
 /// merged, Azure-proxy detection done).
 struct ResolvedProviderKey {
+    auxiliary_policy: super::auxiliary_model::AuxiliaryModelPolicy,
     account_id: String,
     token: String,
     protocol: ProviderProtocol,
@@ -624,16 +628,26 @@ fn resolve_credentials(
         }
     };
 
+    resolve_provider_key(spec, &cred)
+}
+
+/// Resolve the transport and auxiliary policy from the same credential snapshot.
+fn resolve_provider_key(
+    spec: &'static ProviderSpec,
+    cred: &ModelKey,
+) -> Result<ResolvedProviderKey, ProviderError> {
+    use key_vault::key_store::KEY_SERVICE;
+
     let acct_id = &cred.id;
     let agent_type = cred.model_type.as_str();
     let provider_name = spec.name;
 
     if cred.auth_method == AuthMethod::Oauth
         && cred.model_type == ModelType::ClaudeCode
-        && KEY_SERVICE.is_key_temporarily_unavailable(&cred)
+        && KEY_SERVICE.is_key_temporarily_unavailable(cred)
     {
         let message = KEY_SERVICE
-            .temporary_unavailable_message(&cred)
+            .temporary_unavailable_message(cred)
             .unwrap_or_else(|| {
                 format!(
                     "Claude Code OAuth account '{}' is temporarily unavailable",
@@ -649,8 +663,8 @@ fn resolve_credentials(
         });
     }
 
-    let is_codex_oauth = is_codex_oauth_key(&cred);
-    let is_claude_oauth = is_claude_oauth_key(&cred);
+    let is_codex_oauth = is_codex_oauth_key(cred);
+    let is_claude_oauth = is_claude_oauth_key(cred);
 
     // auth_method is authoritative. Rust-native HTTP sessions support OAuth
     // only for providers with an explicit native auth mode. Do not substitute
@@ -707,7 +721,7 @@ fn resolve_credentials(
     let mut extra_headers = std::collections::HashMap::new();
 
     if is_codex_oauth {
-        if let Some(account_id_value) = extract_codex_account_id(&cred) {
+        if let Some(account_id_value) = extract_codex_account_id(cred) {
             tracing::info!(
                 "[provider] Codex OAuth: extracted account id={}",
                 &account_id_value[..account_id_value.len().min(8)]
@@ -730,7 +744,7 @@ fn resolve_credentials(
     } else {
         AnthropicAuthMode::ApiKey
     };
-    let (custom_base_url, protocol) = resolve_credential_routing(spec, &cred);
+    let (custom_base_url, protocol) = resolve_credential_routing(spec, cred);
     let api_base = resolve_provider_endpoint(spec, custom_base_url.as_ref(), protocol)?;
 
     tracing::info!(
@@ -746,7 +760,15 @@ fn resolve_credentials(
         &api_base,
     );
 
+    let auxiliary_policy = super::auxiliary_model::AuxiliaryModelPolicy::from_account(
+        spec,
+        cred,
+        api_base.as_deref(),
+        is_codex_oauth,
+        is_azure_proxy,
+    );
     Ok(ResolvedProviderKey {
+        auxiliary_policy,
         account_id: acct_id.to_string(),
         token,
         protocol,
@@ -977,6 +999,54 @@ fn find_credential_by_available_model(
 mod tests {
     use super::*;
     use crate::providers::registry::{provider_id, PROVIDERS};
+
+    #[test]
+    fn auxiliary_policy_uses_the_same_resolved_transport_as_the_client() {
+        crate::test_support::install_crypto_provider_for_tests();
+        let parent = "gpt-5.6-luna-medium";
+        let spec = registry::find_by_name(provider_id::OPENAI).unwrap();
+        let mut key = ModelKey::new(ModelType::Codex);
+        key.auth_method = AuthMethod::Oauth;
+        key.session_token = Some("fixture-token".into());
+        key.available_models = vec!["gpt-5.4-mini".into()];
+        key.enabled_models = key.available_models.clone();
+        for oauth in [true, false] {
+            if !oauth {
+                key.auth_method = AuthMethod::ApiKey;
+                key.api_key = Some("fixture-key".into());
+            }
+            let resolved = resolve_provider_key(spec, &key).unwrap();
+            let client = build_provider_from_resolved(&resolved, spec, parent);
+            assert_eq!(client.provider_name() == "codex_native", oauth);
+            let provider = ReliableProvider::single("fixture".into(), client, 0, 50)
+                .with_auxiliary_policy(resolved.auxiliary_policy.clone());
+            assert_eq!(
+                provider.auxiliary_model(parent).model,
+                if oauth { parent } else { "gpt-5.4-mini" }
+            );
+            if !oauth {
+                let codex = CodexNativeClient::new(
+                    ProviderConfig {
+                        api_key: "fixture-token".into(),
+                        api_base: None,
+                        extra_headers: Default::default(),
+                        is_azure: false,
+                    },
+                    parent.into(),
+                );
+                let chain = ReliableProvider::with_fallbacks(
+                    vec![
+                        ("api".into(), Box::new(provider)),
+                        ("codex".into(), Box::new(codex)),
+                    ],
+                    0,
+                    50,
+                )
+                .with_auxiliary_policy(resolved.auxiliary_policy);
+                assert_eq!(chain.auxiliary_model(parent).model, parent);
+            }
+        }
+    }
 
     const ALL_PROVIDER_IDS: &[&str] = &[
         provider_id::OPENROUTER,

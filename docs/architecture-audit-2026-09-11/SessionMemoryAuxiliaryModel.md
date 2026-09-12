@@ -1,0 +1,67 @@
+# Session memory auxiliary model selection
+
+Scope: [issue #1579](https://github.com/org2AI/ORG2/issues/1579). This change repairs auxiliary model selection and recovery for session memory and explicit `agent(model: "fast")` dispatch.
+
+## Source and invariant
+
+The authoritative memory is `agent_sessions.sm_content` and `sm_last_seq`, written together by `save_session_memory_state`. The producing path is post-turn dispatch → memory coordinator → fresh provider → extraction → persistence. Previously, extraction and explicit fast subagents used a model-name substring to choose an unconditional sibling while retaining the parent's provider connection.
+
+The factory now derives the auxiliary policy from the same credential snapshot that constructs the transport. Codex ChatGPT OAuth retains the exact parent model: KeyVault completes its available catalog with static entries, including mini, so catalog presence does not prove account access. Other supported direct provider families require the preferred candidate in both the available and enabled lists. Custom IDs, Azure deployments, unknown capabilities, and multiple-provider reliability chains retain the parent. This can increase auxiliary cost and latency compared with an unsupported or unconfirmed cheap candidate.
+
+An explicit model-unavailable error permits one model fallback to the parent. Other request failures do not trigger a model change. Existing transient-provider and incomplete-output retries retain their existing budgets; the encompassing memory job still has its 60-second deadline. Failed/deferred extraction never writes memory content or the summarized boundary. Existing empty memory rows need no migration or destructive cleanup: the next eligible successful extraction builds memory from retained history.
+
+## Architecture review
+
+| Layer                      | Verdict          | Evidence / decision                                                                                                                                                             |
+| -------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Compilation             | pass             | Agent-core targeted suites passed; `cargo clippy -p agent_core --all-targets -- -D warnings` passed                                                                             |
+| 2. Ownership / duplication | fix              | Removed the name-only hint and its five naming-only tests; memory and fast subagents consume the same provider policy                                                           |
+| 3. Naming                  | keep with reason | Auxiliary policy describes a preference constrained by a route, not universal model support                                                                                     |
+| 4. Semantic boundaries     | fix              | Model family, provider wrapper, auth method, endpoint, catalog presence, and enabled status remain distinct                                                                     |
+| 5. Defaults                | fix              | Unknown capabilities inherit the exact parent; no guessed API-model fallback                                                                                                    |
+| 6. Domain boundaries       | fix              | Factory owns credential/transport resolution; extraction receives a credential-free selection                                                                                   |
+| 7. Readability             | keep with reason | Selection, typed model rejection, recovery, and persistence have explicit owners                                                                                                |
+| 8. Wire                    | verify           | Loopback test uses real Codex serialization, HTTP error classification, and ReliableProvider; asserts model, reasoning effort, endpoint, and omitted unsupported request fields |
+| 9. Entry-point parity      | fix              | Both post-turn extraction and subagent model resolution use LLMProvider::auxiliary_model; factory test distinguishes API-key and OAuth clients behind ReliableProvider          |
+| 10. Resolver symmetry      | fix              | Client and policy share one credential snapshot; retry scope incorporates account, endpoint, provider/auth/protocol, catalog, and parent/candidate                              |
+
+No TypeScript/IPC payload, database schema, persistence format, dependency, or lockfile changes. The Rust provider trait adds a default implementation so unknown adapters remain conservative. No frontend component audit applies.
+
+## Resource ownership and lifecycle
+
+The memory coordinator retains one active and one latest pending job per session/kind. New turns, session teardown, and deadlines keep their existing cancellation/cleanup paths. New rejection state is owned by SessionMemoryState and holds only the latest route, a rejection boolean, a cooldown timestamp, and one warning record. It has no global registry, worker, timer, or polling loop. Rebuilding a provider on the next turn does not lose a rejection. Changing account/endpoint/catalog/parent/candidate resets the route; dropping the session state releases it.
+
+Model-unavailable and authentication failures cool down for five minutes. A fresh provider is still acquired to observe current routing, but the cooldown check occurs before transcript loading and the LLM call. Identical warnings are suppressed for five minutes, while a different error category can surface immediately. Success clears failure/cooldown/warning state and retains the rejected candidate for the same route. Warning text uses fixed categories rather than upstream response bodies.
+
+| Area               | Verdict | Evidence                                                                        | Change or reason kept                                                                         | Verification                                                                                                |
+| ------------------ | ------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Background work    | fix     | Repeated invalid requests previously followed every eligible turn               | At most one parent-model fallback; no transcript load/LLM call during the same-route cooldown | Loopback request sequence; failure/cancellation tests; existing coordinator deadline and cancellation tests |
+| Memory             | fix     | A provider-local rejection would disappear when the next job creates a provider | Constant number of fields per session; only the most recent route is retained                 | Rejection survives success and fresh provider instances; route reset tests                                  |
+| Scope/isolation    | fix     | String-only family matching omitted account/auth/endpoint                       | Route fingerprint plus parent/candidate; literal custom IDs stay unchanged                    | Account, endpoint, auth, catalog and model switch tests                                                     |
+| Rendering/hot path | keep    | No component, stream-delta, or render path changed                              | Warnings still use the existing event channel                                                 | Warning category/dedup tests; packaged UI not exercised                                                     |
+
+Lifecycle coverage: selection/recovery during active work and route changes is automated; cooldown is tested with explicit Instant values without waiting or adding timers; session cancellation, pending-job coalescing, teardown sealing, and timeout cleanup use the existing coordinator tests. No new background activity is introduced for idle/hidden views. Packaged visible/hidden CPU/RSS and real-account behavior remain unmeasured.
+
+## Evidence limits and rollout
+
+The loopback rejection reproduces the exact Codex HTTP 400 from the issue and drives the production extract-and-persist boundary against SQLite. A stale-candidate test override is used deliberately to exercise recovery; production Codex OAuth policy selects the parent immediately. Generic errors, auth/rate limits, cancellation, already-selected parent, unchanged persisted memory on failure, and cooldown warning deduplication are also covered. The seed helper now supplies the schema-required session name and uses a strict INSERT, so persistence tests cannot pass after silently ignoring a missing session row.
+
+Real-provider ordinary SDE and Agent Org coordinator/member runs with the reported account were not executed. No live account history was read or modified. These fixtures establish protocol, state, and persistence behavior, not packaged end-user E2E or real-account entitlement. There are no layout changes for which a screenshot would provide useful evidence; repeated-toast behavior still needs real-app verification.
+
+Rollback: revert the code change. Durable schema and memory format are unchanged; transient retry state disappears with session/runtime teardown. Existing summaries remain readable.
+
+Performance verdict: blocked — automated request-bound, cooldown, and lifecycle evidence is available, but packaged visible/hidden CPU/RSS and real-provider SDE/Agent Org verification have not run. No runtime performance improvement is claimed.
+
+## Executed checks
+
+Commands below ran from `src-tauri/`:
+
+- `cargo check -p agent_core --all-targets` — passed
+- `cargo test -p agent_core core::providers --lib` — 488 passed
+- `cargo test -p agent_core session_memory --lib` — 52 passed
+- `cargo test -p agent_core resolve_subagent_model_tests --lib` — 10 passed
+- `cargo test -p agent_core specialization::memory::background --lib` — 9 passed
+- `cargo test -p agent_core core::session::turn::post_turn::tests --lib` — 4 passed
+- `cargo clippy -p agent_core --all-targets -- -D warnings` — passed
+
+`git diff --check` passed. Suite counts overlap; they are not a count of distinct tests. The initial new persistence tests failed because the reused seed helper omitted the required `name`; after correcting that fixture, the complete suites above passed.

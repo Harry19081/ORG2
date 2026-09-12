@@ -176,48 +176,33 @@ pub(super) fn spawn_session_memory_extraction(input: SessionMemoryExtractionInpu
         MemoryJobKind::SessionMemory,
         SESSION_MEMORY_TIMEOUT,
         move |cancel| async move {
-            let (messages, start_seqs) = load_durable_history_blocking(job_sid.clone()).await?;
-
-            info!(
-                session_id = %job_sid,
-                current_tokens,
-                "[memory_background] starting session-memory extraction"
-            );
+            sm_state.lock().await.auxiliary_retry.begin_attempt();
             let provider = fresh_fork_provider(&fork_provider).await?;
             let cancel_bridge = bridge_cancel_flag(cancel);
-            let result = session_memory::extract_session_memory(
-                &messages,
-                &start_seqs,
-                Arc::clone(&sm_state),
+            extract_and_persist_session_memory(
+                &job_sid,
+                sm_state,
                 &sm_config,
                 provider.as_ref(),
                 &fork_provider.model,
                 current_tokens,
                 Some(cancel_bridge.flag()),
             )
-            .await;
-
-            let content = result?;
-            let last_seq = sm_state.lock().await.last_summarized_seq;
-            let persist_sid = job_sid.clone();
-            tokio::task::spawn_blocking(move || {
-                unified_persistence::save_session_memory_state(&persist_sid, &content, last_seq)
-            })
             .await
-            .map_err(|err| format!("SM persist worker failed: {err}"))?
-            .map_err(|err| format!("Failed to persist session memory state: {err}"))?;
-            Ok(())
         },
     )
     .with_cleanup(move |outcome| async move {
         match outcome {
             MemoryJobOutcome::Completed | MemoryJobOutcome::Cancelled => {}
             MemoryJobOutcome::Failed | MemoryJobOutcome::TimedOut => {
-                broadcast_agent_warning(
-                    &cleanup_sid,
-                    "Session memory extraction did not complete; it will retry on a later turn",
-                    "session_memory",
-                );
+                let warning = cleanup_state
+                    .lock()
+                    .await
+                    .auxiliary_retry
+                    .take_warning(std::time::Instant::now());
+                if let Some(warning) = warning {
+                    broadcast_agent_warning(&cleanup_sid, warning, "session_memory");
+                }
             }
         }
         if outcome != MemoryJobOutcome::Completed {
@@ -226,6 +211,58 @@ pub(super) fn spawn_session_memory_extraction(input: SessionMemoryExtractionInpu
     });
     submit_memory_job(job);
 }
+
+/// Shared production boundary: load authoritative history, extract, then
+/// persist content and sequence together. A deferred/failed query never writes.
+async fn extract_and_persist_session_memory(
+    session_id: &str,
+    sm_state: Arc<Mutex<SessionMemoryState>>,
+    config: &SessionMemoryConfig,
+    provider: &dyn LLMProvider,
+    model: &str,
+    current_tokens: usize,
+    cancel_flag: Option<&Arc<std::sync::atomic::AtomicBool>>,
+) -> Result<(), String> {
+    if sm_state.lock().await.auxiliary_retry.is_cooling_down(
+        &provider.auxiliary_model(model),
+        model,
+        std::time::Instant::now(),
+    ) {
+        return Ok(());
+    }
+    let (messages, start_seqs) = load_durable_history_blocking(session_id.to_owned()).await?;
+    info!(
+        session_id,
+        current_tokens, "[memory_background] starting session-memory extraction"
+    );
+    let Some(content) = session_memory::extract_session_memory(
+        &messages,
+        &start_seqs,
+        Arc::clone(&sm_state),
+        config,
+        provider,
+        model,
+        current_tokens,
+        cancel_flag,
+    )
+    .await?
+    else {
+        return Ok(());
+    };
+    let last_seq = sm_state.lock().await.last_summarized_seq;
+    let persist_sid = session_id.to_owned();
+    tokio::task::spawn_blocking(move || {
+        unified_persistence::save_session_memory_state(&persist_sid, &content, last_seq)
+    })
+    .await
+    .map_err(|err| format!("SM persist worker failed: {err}"))?
+    .map_err(|err| format!("Failed to persist session memory state: {err}"))?;
+    Ok(())
+}
+
+#[cfg(test)]
+#[path = "post_turn_memory_tests.rs"]
+mod memory_tests;
 
 // ── Workspace-memory extraction (step 9c) ──────────────────────────
 
@@ -379,7 +416,7 @@ mod tests {
     use super::*;
     use test_helpers::test_env;
 
-    fn seed_agent_session(session_id: &str) {
+    pub(super) fn seed_agent_session(session_id: &str) {
         let conn = database::db::get_connection().expect("get_connection");
         crate::persistence::test_schema::ensure_agent_sessions_schema(&conn);
         conn.execute_batch(
@@ -403,9 +440,9 @@ mod tests {
         )
         .expect("create agent_messages table");
         conn.execute(
-            "INSERT OR IGNORE INTO agent_sessions
-             (session_id, session_type, status, created_at, updated_at)
-             VALUES (?1, 'agent', 'running', datetime('now'), datetime('now'))",
+            "INSERT INTO agent_sessions
+             (session_id, name, session_type, status, created_at, updated_at)
+             VALUES (?1, 'Memory test session', 'agent', 'running', datetime('now'), datetime('now'))",
             [session_id],
         )
         .expect("seed session row");
