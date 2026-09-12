@@ -108,8 +108,8 @@ pub fn should_extract(
 ///
 /// Makes a single LLM side-call with the SM system prompt, current SM
 /// content, and recent messages. Returns updated markdown, or `None` while
-/// this account/model route is cooling down. An unsupported auxiliary model
-/// falls back once to the parent without advancing memory on failure.
+/// this account/model route is cooling down or has no usable low-cost model.
+/// Only other low-cost candidates are retried; the parent is never a fallback.
 #[allow(clippy::too_many_arguments)]
 pub async fn extract_session_memory(
     messages: &[Value],
@@ -123,6 +123,8 @@ pub async fn extract_session_memory(
 ) -> Result<Option<String>, String> {
     use crate::core::model_context::summarization;
 
+    let selection = provider.auxiliary_model(model);
+
     // ── Prepare: brief lock to snapshot the read-side state + flag the
     // extraction as in-progress. The mutex is NOT held across the LLM call
     // below — otherwise the next turn's brief `sm_state` reads (pre-turn
@@ -132,7 +134,7 @@ pub async fn extract_session_memory(
         let Some(selected_model) =
             state
                 .auxiliary_retry
-                .select(provider.auxiliary_model(model), model, Instant::now())
+                .select(selection.clone(), model, Instant::now())
         else {
             return Ok(None);
         };
@@ -248,38 +250,44 @@ pub async fn extract_session_memory(
         "content": user_content,
     })];
 
-    let mut result = side_query::side_query_typed_with_options(
-        provider,
-        &user_messages,
-        &sq_config,
-        model,
-        cancel_flag,
-    )
-    .await;
-
-    if selected_model != model
-        && matches!(
+    let mut active_model = selected_model;
+    let result = loop {
+        sq_config.model = Some(active_model.clone());
+        let result = side_query::side_query_typed_with_options(
+            provider,
+            &user_messages,
+            &sq_config,
+            model,
+            cancel_flag,
+        )
+        .await;
+        if !matches!(
             &result,
             Err(SideQueryError::Provider(ProviderError::ModelNotFound(_)))
-        )
-    {
-        // Provider instances are recreated for each job. Keep the rejection
-        // on this session so later turns do not probe the same invalid model.
-        sm_state.lock().await.auxiliary_retry.reject_candidate();
-        if !cancel_flag.is_some_and(|flag| flag.load(Ordering::SeqCst)) {
-            sq_config.model = Some(model.to_owned());
-            result = side_query::side_query_typed_with_options(
-                provider,
-                &user_messages,
-                &sq_config,
-                model,
-                cancel_flag,
-            )
-            .await;
-        } else {
-            result = Err(SideQueryError::Provider(ProviderError::Cancelled));
+        ) {
+            break result;
         }
-    }
+        if cancel_flag.is_some_and(|flag| flag.load(Ordering::SeqCst)) {
+            break Err(SideQueryError::Provider(ProviderError::Cancelled));
+        }
+        let mut state = sm_state.lock().await;
+        state.auxiliary_retry.reject_candidate(&active_model);
+        if let Some(next) = state
+            .auxiliary_retry
+            .select(selection.clone(), model, Instant::now())
+        {
+            active_model = next;
+        } else {
+            // All bounded low-cost candidates were rejected. Keep the old
+            // memory and skip quietly; never send the parent as a fallback.
+            state.extraction_in_progress = false;
+            state
+                .auxiliary_retry
+                .failed(ExtractionFailure::UnsupportedModel, Instant::now());
+            info!("[session_memory] Low-cost models unavailable; extraction skipped");
+            return Ok(None);
+        }
+    };
 
     // ── Finalize: brief lock to merge the result back. Concurrent
     // `record_tool_calls` increments that arrived while the LLM was running

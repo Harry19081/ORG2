@@ -47,7 +47,6 @@ import {
   Layers01Icon,
   Refresh04Icon,
   Search01Icon,
-  Settings01Icon,
   Undo03Icon,
 } from "@src/icons";
 import { getFileManagerRevealLabelKey } from "@src/util/platform/fileManagerLabels";
@@ -511,13 +510,6 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                     role="menuitem"
                     fullWidth
                     tabIndex={0}
-                    icon={
-                      <HugeiconsIcon
-                        icon={Settings01Icon}
-                        data-icon="settings"
-                        size={HEADER_ICON_SIZE.sm}
-                      />
-                    }
                     disabled={!showMoreSettingsAction}
                     onClick={onMoreSettingsClick}
                     suffix={

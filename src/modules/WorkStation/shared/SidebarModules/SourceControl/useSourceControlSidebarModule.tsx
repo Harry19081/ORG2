@@ -169,9 +169,6 @@ export function useSourceControlSidebarModule({
   const handleToggleViewMode = useCallback(() => {
     setViewMode((prev) => (prev === "list-tree" ? "list" : "list-tree"));
   }, []);
-  const handleRefresh = useCallback(() => {
-    sourceControlRef.current?.refresh();
-  }, []);
   const handleHistoryRefreshReady = useCallback((refresh: () => void) => {
     historyRefreshRef.current = refresh;
   }, []);
@@ -184,7 +181,6 @@ export function useSourceControlSidebarModule({
     viewMode,
     onToggleFilter: handleToggleFilter,
     onToggleViewMode: handleToggleViewMode,
-    onRefresh: handleRefresh,
   });
 
   const {

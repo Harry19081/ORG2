@@ -44,12 +44,20 @@ fn auxiliary_model_respects_account_access_and_enabled_models() {
             AuxiliaryModelPolicy::from_account(spec, key, spec.default_api_base, false, false)
                 .resolve(parent)
         };
-        assert_eq!(resolve(&key).model, fast, "{family}");
+        assert_eq!(resolve(&key).models, vec![fast], "{family}");
         key.enabled_models.clear();
-        assert_eq!(resolve(&key).model, parent, "disabled {family}");
+        assert_eq!(
+            resolve(&key).models,
+            Vec::<String>::new(),
+            "disabled {family}"
+        );
         key.enabled_models.push(fast.into());
         key.available_models.clear();
-        assert_eq!(resolve(&key).model, parent, "unknown access {family}");
+        assert_eq!(
+            resolve(&key).models,
+            Vec::<String>::new(),
+            "unknown access {family}"
+        );
     }
 }
 
@@ -70,18 +78,11 @@ fn auxiliary_model_anthropic_aliases_keep_the_enabled_catalog_id() {
             key.enabled_models = vec![enabled.into()];
             let policy = AuxiliaryModelPolicy::from_account(spec, &key, None, false, false);
             assert_eq!(
-                policy.resolve(parent).model,
-                enabled,
+                policy.resolve(parent).models,
+                vec![enabled],
                 "{available} / {enabled}"
             );
-            // A fast parent, including its selected reasoning variant, is preserved.
-            for fast_parent in aliases {
-                assert_eq!(policy.resolve(fast_parent).model, fast_parent);
-            }
-            assert_eq!(
-                policy.resolve("claude-haiku-4-5-high").model,
-                "claude-haiku-4-5-high"
-            );
+            assert_eq!(policy.resolve("claude-opus-4-8-high").models, vec![enabled]);
         }
     }
     for unknown in [
@@ -94,8 +95,8 @@ fn auxiliary_model_anthropic_aliases_keep_the_enabled_catalog_id() {
             key.enabled_models = vec![enabled.into()];
             let policy = AuxiliaryModelPolicy::from_account(spec, &key, None, false, false);
             assert_eq!(
-                policy.resolve(parent).model,
-                parent,
+                policy.resolve(parent).models,
+                Vec::<String>::new(),
                 "{available} / {enabled}"
             );
         }
@@ -115,6 +116,17 @@ fn auxiliary_model_codex_oauth_does_not_trust_completed_catalog() {
         .available_models
         .iter()
         .any(|model| model == "gpt-5.4-mini"));
+    let mini_only = AuxiliaryModelPolicy::from_account(
+        find_by_name(provider_id::OPENAI).unwrap(),
+        &key,
+        None,
+        true,
+        false,
+    );
+    assert!(mini_only.resolve("gpt-6-astra-high").models.is_empty());
+    // Static catalog completion must not turn disabled cheap models on.
+    key.enabled_models
+        .extend(["gpt-5.6-terra".into(), "gpt-5.6-luna".into()]);
     let policy = AuxiliaryModelPolicy::from_account(
         find_by_name(provider_id::OPENAI).unwrap(),
         &key,
@@ -123,8 +135,8 @@ fn auxiliary_model_codex_oauth_does_not_trust_completed_catalog() {
         false,
     );
     assert_eq!(
-        policy.resolve("gpt-5.6-luna-medium").model,
-        "gpt-5.6-luna-medium"
+        policy.resolve("gpt-6-astra-high").models,
+        vec!["gpt-5.6-luna", "gpt-5.6-terra"]
     );
     // Both auth modes use an OpenAI family name; only API access can select mini.
     key.auth_method = AuthMethod::ApiKey;
@@ -135,7 +147,10 @@ fn auxiliary_model_codex_oauth_does_not_trust_completed_catalog() {
         false,
         false,
     );
-    assert_eq!(api.resolve("gpt-5.6-luna-medium").model, "gpt-5.4-mini");
+    assert_eq!(
+        api.resolve("gpt-6-astra-high").models,
+        vec!["gpt-5.4-mini", "gpt-5.6-luna", "gpt-5.6-terra"]
+    );
     assert_ne!(
         api.resolve("gpt-5.5").scope,
         policy.resolve("gpt-5.5").scope
@@ -158,31 +173,98 @@ fn auxiliary_model_preserves_literal_custom_and_azure_ids() {
             azure,
         );
         assert_eq!(
-            policy.resolve("gpt-deployment-high").model,
-            "gpt-deployment-high"
+            policy.resolve("gpt-deployment-high").models,
+            vec!["gpt-5.4-mini"]
         );
     }
 }
 
 #[test]
-fn auxiliary_model_keeps_parent_variant_and_does_not_cross_families() {
-    let key = account(ModelType::OpenaiApi, "openai/gpt-5.4-mini");
-    let policy = AuxiliaryModelPolicy::from_account(
-        find_by_name(provider_id::OPENAI).unwrap(),
-        &key,
-        None,
-        false,
-        false,
-    );
-    assert_eq!(
-        policy.resolve("openai/gpt-5.4-mini-medium").model,
-        "openai/gpt-5.4-mini-medium"
-    );
-    assert_eq!(
-        policy.resolve("claude-sonnet-4.5").model,
-        "claude-sonnet-4.5"
-    );
-    assert_eq!(policy.resolve("custom-model").model, "custom-model");
+fn auxiliary_model_never_guesses_unknown_deployment_ids() {
+    for family in [
+        provider_id::CUSTOM,
+        provider_id::AZURE_OPENAI,
+        provider_id::VLLM,
+    ] {
+        let key = account(ModelType::CustomApi, "cheap-deployment");
+        let policy = AuxiliaryModelPolicy::from_account(
+            find_by_name(family).unwrap(),
+            &key,
+            None,
+            false,
+            false,
+        );
+        assert!(policy.resolve("expensive-deployment").models.is_empty());
+    }
+}
+
+#[test]
+fn auxiliary_model_aggregators_keep_namespaces_and_bound_candidates() {
+    for family in [
+        provider_id::OPENROUTER,
+        provider_id::ZENMUX,
+        provider_id::CUSTOM,
+    ] {
+        let mut key = account(ModelType::CustomApi, "anthropic/claude-haiku-4-5-20251001");
+        key.available_models.extend(
+            [
+                "openai/gpt-5.6-terra",
+                "openai/gpt-5.6-luna",
+                "google/gemini-2.5-flash-lite",
+                "openai/gpt-5.4-mini",
+            ]
+            .map(str::to_owned),
+        );
+        key.enabled_models = key.available_models.clone();
+        let policy = AuxiliaryModelPolicy::from_account(
+            find_by_name(family).unwrap(),
+            &key,
+            None,
+            false,
+            false,
+        );
+        assert_eq!(
+            policy.resolve("claude-opus-4-8").models,
+            vec![
+                "google/gemini-2.5-flash-lite",
+                "openai/gpt-5.6-luna",
+                "openai/gpt-5.4-mini"
+            ]
+        );
+    }
+}
+
+#[test]
+fn auxiliary_model_supports_provider_specific_cheap_tiers() {
+    for (family, model) in [
+        (provider_id::GROQ, "openai/gpt-oss-20b"),
+        (provider_id::ZHIPU, "glm-4.7-flash"),
+        (provider_id::DASHSCOPE, "qwen-flash"),
+        (provider_id::MINIMAX, "MiniMax-M2.5"),
+        (provider_id::LONGCAT, "LongCat-Flash-Chat"),
+        (provider_id::MOONSHOT, "kimi-k2.5"),
+        (
+            provider_id::BEDROCK,
+            "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+        ),
+    ] {
+        let mut key = account(ModelType::CustomApi, model);
+        let spec = find_by_name(family).unwrap();
+        assert_eq!(
+            AuxiliaryModelPolicy::from_account(spec, &key, None, false, false)
+                .resolve("expensive-parent")
+                .models,
+            vec![model],
+            "{family}"
+        );
+        key.enabled = false;
+        assert!(
+            AuxiliaryModelPolicy::from_account(spec, &key, None, false, false)
+                .resolve("expensive-parent")
+                .models
+                .is_empty()
+        );
+    }
 }
 
 #[test]
@@ -200,4 +282,17 @@ fn auxiliary_model_scope_changes_with_account_endpoint_and_catalog() {
     let other = resolve(&key, "https://one.invalid");
     key.enabled_models.clear();
     assert_ne!(other.scope, resolve(&key, "https://one.invalid").scope);
+}
+
+#[test]
+fn auxiliary_model_never_uses_retired_xai_fast_redirects() {
+    let key = account(ModelType::CustomApi, "grok-4-1-fast-non-reasoning");
+    let policy = AuxiliaryModelPolicy::from_account(
+        find_by_name(provider_id::XAI).unwrap(),
+        &key,
+        None,
+        false,
+        false,
+    );
+    assert!(policy.resolve("grok-4.6").models.is_empty());
 }

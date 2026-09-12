@@ -10,8 +10,9 @@ use crate::providers::codex_native::CodexNativeClient;
 use crate::providers::reliable::ReliableProvider;
 use crate::providers::traits::{LLMResponse, ProviderConfig, ProviderError};
 
-const PARENT: &str = "gpt-5.6-luna-medium";
-const FAST: &str = "gpt-5.4-mini";
+const PARENT: &str = "gpt-6-astra-high";
+const BACKUP: &str = "gpt-5.6-terra-medium";
+const FAST: &str = "gpt-5.6-luna";
 
 struct MemoryProvider {
     selection: AuxiliaryModel,
@@ -61,7 +62,7 @@ impl LLMProvider for MemoryProvider {
 fn provider(results: Vec<Result<LLMResponse, ProviderError>>) -> MemoryProvider {
     MemoryProvider {
         selection: AuxiliaryModel {
-            model: FAST.into(),
+            models: vec![FAST.into(), BACKUP.into()],
             scope: 42,
         },
         calls: Arc::new(StdMutex::new(Vec::new())),
@@ -150,9 +151,9 @@ async fn session_memory_http_rejection_falls_back_and_persists_across_fresh_prov
             let model = body["model"].as_str().unwrap().to_owned();
             models.push(model.clone());
             let (status, content_type, response) = if model == FAST {
-                ("400 Bad Request", "application/json", json!({"detail": "The 'gpt-5.4-mini' model is not supported when using Codex with a ChatGPT account."}).to_string())
+                ("400 Bad Request", "application/json", json!({"detail": "The 'gpt-5.6-luna' model is not supported when using Codex with a ChatGPT account."}).to_string())
             } else {
-                assert_eq!(model, "gpt-5.6-luna");
+                assert_eq!(model, "gpt-5.6-terra");
                 assert_eq!(body["reasoning"]["effort"], "medium");
                 assert!(body.get("max_output_tokens").is_none());
                 assert!(body.get("temperature").is_none());
@@ -209,7 +210,7 @@ async fn session_memory_http_rejection_falls_back_and_persists_across_fresh_prov
         }
         assert_eq!(
             server.await.unwrap(),
-            vec![FAST, "gpt-5.6-luna", "gpt-5.6-luna"]
+            vec![FAST, "gpt-5.6-terra", "gpt-5.6-terra"]
         );
     })
     .await
@@ -217,9 +218,9 @@ async fn session_memory_http_rejection_falls_back_and_persists_across_fresh_prov
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn session_memory_failed_parent_keeps_durable_state_and_cools_down() {
+async fn session_memory_exhausted_cheap_models_skip_silently_and_keep_durable_state() {
     let _sandbox = test_helpers::test_env::sandbox();
-    let sid = "memory-failed-parent";
+    let sid = "memory-exhausted-cheap";
     seed(sid);
     unified_persistence::save_session_memory_state(sid, "previous memory", Some(0)).unwrap();
     let state = Arc::new(Mutex::new(SessionMemoryState {
@@ -229,21 +230,19 @@ async fn session_memory_failed_parent_keeps_durable_state_and_cools_down() {
     }));
     let fixture = provider(vec![
         Err(ProviderError::ModelNotFound("fast".into())),
-        Err(ProviderError::ModelNotFound("parent".into())),
+        Err(ProviderError::ModelNotFound("cheap backup".into())),
     ]);
-    assert!(run(sid, state.clone(), &fixture, None).await.is_err());
-    assert_eq!(fixture.calls.lock().unwrap().as_slice(), [FAST, PARENT]);
+    assert_eq!(
+        run(sid, state.clone(), &fixture, None).await.unwrap(),
+        MemoryJobCompletion::Skipped
+    );
+    assert_eq!(fixture.calls.lock().unwrap().as_slice(), [FAST, BACKUP]);
     assert_eq!(persisted(sid), (Some("previous memory".into()), Some(0)));
     let mut guard = state.lock().await;
     assert_eq!(guard.content.as_deref(), Some("previous memory"));
     assert_eq!(guard.last_summarized_seq, Some(0));
     assert!(!guard.extraction_in_progress);
     let now = std::time::Instant::now();
-    assert!(guard
-        .auxiliary_retry
-        .take_warning(now)
-        .unwrap()
-        .contains("unavailable"));
     assert!(guard.auxiliary_retry.take_warning(now).is_none());
     drop(guard);
     // A fresh connection on the next eligible turn must issue no requests.
@@ -298,16 +297,21 @@ async fn session_memory_does_not_fallback_for_other_errors_or_cancellation() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn session_memory_parent_selection_has_no_redundant_model_retry() {
+async fn session_memory_single_cheap_selection_never_retries_parent() {
     let _sandbox = test_helpers::test_env::sandbox();
-    let sid = "memory-parent-only";
+    let sid = "memory-single-cheap";
     seed(sid);
     let before = persisted(sid);
     let state = Arc::new(Mutex::new(SessionMemoryState::default()));
-    let mut fixture = provider(vec![Err(ProviderError::ModelNotFound("parent".into()))]);
-    fixture.selection.model = PARENT.into();
-    assert!(run(sid, state.clone(), &fixture, None).await.is_err());
-    assert_eq!(fixture.calls.lock().unwrap().as_slice(), [PARENT]);
+    let mut fixture = provider(vec![Err(ProviderError::ModelNotFound(
+        "cheap backup".into(),
+    ))]);
+    fixture.selection.models = vec![FAST.into()];
+    assert_eq!(
+        run(sid, state.clone(), &fixture, None).await.unwrap(),
+        MemoryJobCompletion::Skipped
+    );
+    assert_eq!(fixture.calls.lock().unwrap().as_slice(), [FAST]);
     assert_eq!(persisted(sid), before);
     assert!(!state.lock().await.extraction_in_progress);
 }
@@ -461,5 +465,33 @@ async fn session_memory_cooldown_jobs_are_skipped_not_completed() {
             !guard.extraction_in_progress,
             "cleanup must run for skipped jobs"
         );
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn session_memory_no_cheap_candidate_skips_without_request_or_write() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-no-cheap-candidate";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "previous memory", Some(0)).unwrap();
+    let before = persisted(sid);
+    let state = Arc::new(Mutex::new(SessionMemoryState {
+        content: before.0.clone(),
+        last_summarized_seq: before.1,
+        ..Default::default()
+    }));
+    for _ in 0..3 {
+        let mut fixture = provider(vec![]);
+        fixture.selection.models.clear();
+        assert_eq!(
+            run(sid, state.clone(), &fixture, None).await.unwrap(),
+            MemoryJobCompletion::Skipped
+        );
+        assert!(fixture.calls.lock().unwrap().is_empty());
+        assert_eq!(persisted(sid), before);
+        let guard = state.lock().await;
+        assert_eq!(guard.content, before.0);
+        assert_eq!(guard.last_summarized_seq, before.1);
+        assert!(!guard.extraction_in_progress);
     }
 }

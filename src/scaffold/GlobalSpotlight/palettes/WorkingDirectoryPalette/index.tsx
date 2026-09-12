@@ -612,8 +612,6 @@ export const WorkingDirectoryPalette: React.FC<
       <AddWorkingDirectoryModalShell
         isOpen={isOpen}
         onClose={onClose}
-        inputRef={kernel.inputRef}
-        handleKeyDown={kernel.handleKeyDown}
         modalStage={modalStage}
         workingDirectoryFlow={workingDirectoryFlow}
         currentRepoId={currentRepoId}

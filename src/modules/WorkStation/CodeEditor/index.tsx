@@ -292,7 +292,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
           onFileSelectWithLine={handleFileSelectWithLine}
           onDirectoryToggle={handleDirectoryToggle}
           onSearchClick={handleSearchClick}
-          onRefresh={codeEditorState.refresh}
           onCollapseAll={codeEditorState.collapseAll}
           onFilterSearch={handleFilterSearch}
           onClearSearch={handleClearFilterSearch}
@@ -319,7 +318,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
         handleFileSelectWithLine,
         handleDirectoryToggle,
         handleSearchClick,
-        codeEditorState.refresh,
         codeEditorState.collapseAll,
         handleFilterSearch,
         handleClearFilterSearch,
@@ -423,6 +421,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
             repoPath={repoPath}
             repoId={selectedRepoId ?? repoPath}
             repoDisplayName={repoDisplayName}
+            onExplorerRefresh={codeEditorState.refresh}
+            explorerLoading={codeEditorState.loading}
             gitDiffTabs={gitDiffTabs}
             gitFilesByPath={gitFilesByPath}
             gitDiffLoading={gitDiffLoading}
@@ -457,6 +457,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
         repoPath,
         selectedRepoId,
         repoDisplayName,
+        codeEditorState.refresh,
+        codeEditorState.loading,
         gitDiffTabs,
         gitFilesByPath,
         gitDiffLoading,

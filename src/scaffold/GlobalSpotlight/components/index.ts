@@ -6,8 +6,6 @@
 
 export { SpotlightSearchBar } from "./SpotlightSearchBar";
 
-export { SpotlightPillBar } from "./SpotlightPillBar";
-
 export { SpotlightItemList } from "./SpotlightItemList";
 
 export {
