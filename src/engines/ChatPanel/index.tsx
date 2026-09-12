@@ -28,7 +28,6 @@ import {
 import { tuiModeAtom } from "@src/store/session/tuiModeAtom";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import {
-  chatPanelContentModeAtom,
   chatPanelSelectedCloudOrgAtom,
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
@@ -110,7 +109,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       humanSession: humanSessionActive,
     });
 
-    const contentMode = useAtomValue(chatPanelContentModeAtom);
     const startPageOpen = useAtomValue(chatPanelStartPageOpenAtom);
     const selectedCloudOrg = useAtomValue(chatPanelSelectedCloudOrgAtom);
     const surface = useAtomValue(activeChatPanelSurfaceAtom);
@@ -255,7 +253,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
 
     const contentState = resolveChatPanelContentState({
       active,
-      contentMode,
       currentSessionId: currentSessionId ?? null,
       surface,
     });

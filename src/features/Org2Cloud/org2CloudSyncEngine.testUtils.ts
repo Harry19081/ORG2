@@ -13,10 +13,11 @@ import type {
   SessionEvent,
 } from "@src/engines/SessionCore/core/types";
 import { processChunksRust } from "@src/engines/SessionCore/ingestion/rustBridge";
+import { buildInitialChatPanelTabsState } from "@src/store/chatPanel/chatPanelTabFactories";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import type { Session } from "@src/store/session/sessionAtom/types";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import {
@@ -349,7 +350,9 @@ export function createEngineFixture() {
   store.set(org2CloudOrgsAtom, [
     { orgId: "corg-1", name: "Cloud Team", role: "member" },
   ]);
-  store.set(chatPanelSelectedCloudOrgAtom, null);
+  // The shared store keeps the previous test's tab strip; an open organization
+  // tab would otherwise still count as the visible management org.
+  store.set(chatPanelTabsAtom, buildInitialChatPanelTabsState());
   store.set(sidebarActiveCloudOrgIdAtom, "corg-1");
   store.set(org2CloudRepoScopesAtom, { "corg-1": [SCOPE_KEY] });
   store.set(org2CloudSyncEnabledAtom, {});
@@ -422,7 +425,6 @@ export const engineTestDeps = {
   COLLAB_LISTING_SHARE_WINDOW_MS,
   DATA_CHANGED_DEBOUNCE_MS,
   EXTERNAL_HISTORY_ACTIVITY_DEBOUNCE_MS,
-  chatPanelSelectedCloudOrgAtom,
   ensureProjectOrgForCloudOrg,
   getImportedHistorySourceBySessionId,
   INACTIVE_ORG_BACKOFF_COOLDOWN_MS,

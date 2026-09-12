@@ -34,9 +34,8 @@ export type ChatPanelTabType =
  * Payload for a "channel" tab, discriminated by scope. Local channels live in
  * `localChannelsAtom` (this machine, single user); cloud channels are org
  * rows from the `0014_org_channels.sql` control plane. Unlike the other tab
- * payloads this type lives here rather than in `chatPanelAtom.ts` — a channel
- * tab needs no `chatPanelSelected*Atom` replay, so it never joins the
- * navigate-command surface.
+ * payloads this type lives here rather than in `selectionTypes.ts` — a channel
+ * tab has no selection projection, so it never joins the surface state.
  */
 export type ChatPanelSelectedChannel =
   | { scope: "local"; channelId: string; name: string }
@@ -76,8 +75,7 @@ export interface ChatPanelTab {
   cliCommand?: string;
   /**
    * For "workspace" tabs: the workspace whose overview / detail page this pill
-   * owns. Activating the tab replays this through `chatPanelNavigateAtom` so
-   * the overview surface re-renders.
+   * owns. The overview surface renders straight from this payload.
    */
   workspace?: ChatPanelSelectedWorkspace;
   /**
