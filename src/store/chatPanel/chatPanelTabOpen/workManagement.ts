@@ -56,9 +56,7 @@ export const openWorkManagementChatPanelTabAtom = atom(
       activeTab.managementSection &&
       isWorkManagementListSection(activeTab.managementSection)
         ? activeTab
-        : activeTab?.type === "team-inbox"
-          ? activeTab
-          : undefined;
+        : undefined;
     const existingTab =
       (requestedListSection ? activeWorkListTab : undefined) ??
       state.tabs.find(
@@ -73,7 +71,6 @@ export const openWorkManagementChatPanelTabAtom = atom(
       );
     if (existingTab) {
       if (
-        existingTab.type !== "work-management" ||
         existingTab.title !== title ||
         existingTab.managementSection !== section
       ) {
@@ -81,12 +78,7 @@ export const openWorkManagementChatPanelTabAtom = atom(
           ...state,
           tabs: state.tabs.map((tab) =>
             tab.id === existingTab.id
-              ? {
-                  ...tab,
-                  type: "work-management" as const,
-                  title,
-                  managementSection: section,
-                }
+              ? { ...tab, title, managementSection: section }
               : tab
           ),
         });
@@ -113,9 +105,9 @@ interface OpenWorkspaceOverviewTabOptions {
  * Open — or focus, if already open — a dedicated chat-panel tab for a
  * workspace's overview / detail page. Each workspace gets its own pill titled
  * with the workspace name (not "Launchpad"); re-opening the same workspace
- * focuses the existing tab instead of stacking duplicates. The active tab
- * drives `chatPanelSelectedWorkspaceAtom` through `chatPanelNavigateAtom`,
- * which is what the overview surface actually renders from.
+ * focuses the existing tab instead of stacking duplicates. Activation replays
+ * the payload through `chatPanelNavigateAtom` for the legacy surface mirror;
+ * the overview surface itself renders from the tab payload.
  */
 export const openWorkspaceOverviewInChatPanelTabAtom = atom(
   null,

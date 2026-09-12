@@ -2,9 +2,9 @@
  * Public Chat Panel tab API.
  *
  * Command consumers use this boundary for opening, closing and navigating tabs.
- * Model, factory and state readers should import their owning modules directly.
- * Existing exports remain available for API compatibility; atom identity comes
- * from the single definition in each owner, not from this forwarding module.
+ * Model, factory and state readers should import their owning modules directly;
+ * atom identity comes from the single definition in each owner, not from this
+ * forwarding module.
  */
 export {
   clearChatPanelTabCliCommandAtom,
@@ -23,7 +23,6 @@ export {
   reorderChatPanelTabsAtom,
   setActiveWorkManagementSectionAtom,
   setChatPanelTabTitleAtom,
-  toggleChatPanelTabTuiModeAtom,
   type ReconcileDiscussionChannelTabsInput,
 } from "./chatPanelTabLifecycleAtoms";
 export {
@@ -41,7 +40,6 @@ export {
   openSessionInNewChatTabAtom,
 } from "./chatPanelTabOpen/session";
 export {
-  addChatPanelLaunchpadTabAtom,
   openCreateTargetInChatPanelStartPageAtom,
   openExploreInChatPanelTabAtom,
   openOrFocusChatPanelStartPageTabAtom,
@@ -53,28 +51,7 @@ export {
   openWorkItemInChatPanelTabAtom,
   openWorkspaceOverviewInChatPanelTabAtom,
 } from "./chatPanelTabOpen/workManagement";
-export {
-  buildChannelTabKey,
-  buildDefaultLaunchpadTab,
-  buildInitialChatPanelTabsState,
-  createChannelTab,
-  createGitHubIssueTab,
-  createGitHubPrTab,
-  createOrganizationTab,
-  createLaunchpadTab,
-  createRuntimeTab,
-  createSessionTab,
-  createTeamInboxTab,
-  createTerminalTab,
-  createWorkManagementTab,
-  createWorkspaceTab,
-} from "./chatPanelTabFactories";
-export {
-  defineChatPanelTabFactory,
-  type ChatPanelTabFactoryConfig,
-  type ChatPanelTabIdStrategy,
-  type ChatPanelTabPayload,
-} from "./chatPanelTabFactory";
+export { createTerminalTab } from "./chatPanelTabFactories";
 export {
   activateChatPanelTabAtom,
   syncActiveChatPanelTabStateAtom,
@@ -83,20 +60,13 @@ export {
 export {
   activeChatPanelTabCanGoBackAtom,
   activeChatPanelTabCanGoForwardAtom,
-  activeChatPanelTabHistoryAtom,
-  chatPanelTabHistoriesAtom,
   goBackChatPanelTabAtom,
   goForwardChatPanelTabAtom,
-  navigateChatPanelTabToSessionAtom,
-  type ChatPanelTabHistory,
 } from "./chatPanelTabNavigationAtoms";
 export {
   isChatPanelTabStationAvailable,
-  normalizePersistedChatPanelTabsState,
-  resolveChatPanelMaximizedForLayout,
   type ChatPanelSelectedChannel,
   type ChatPanelTab,
-  type ChatPanelTabsState,
   type ChatPanelTabType,
 } from "./chatPanelTabsModel";
 export {

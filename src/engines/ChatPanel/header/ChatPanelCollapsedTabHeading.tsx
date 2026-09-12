@@ -14,7 +14,6 @@ const CollapsedTabHeadingLabel: React.FC<{ tab: ChatPanelTab }> = ({ tab }) => {
   const showIcon = [
     "start-page",
     "runtime",
-    "team-inbox",
     "work-management",
     "organization",
   ].includes(tab.type);

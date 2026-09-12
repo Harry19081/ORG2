@@ -19,7 +19,6 @@ describe("Chat Panel tab Station access", () => {
 
   it.each<ChatPanelTabType>([
     "runtime",
-    "team-inbox",
     "work-management",
     "workspace",
     "organization",

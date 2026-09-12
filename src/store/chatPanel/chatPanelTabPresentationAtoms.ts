@@ -185,30 +185,15 @@ export const activateChatPanelTabAtom = atom(
     // tab remains instant and deterministic.
     if (tab.type !== "session") set(releasePipelineSessionAtom);
 
-    if (tab.type === "start-page") return;
+    // Surface state for every non-session tab is fully driven by
+    // `syncChatPanelTabNavigationAtom` above; only a linked session tab has a
+    // session to jump to.
+    if (tab.type !== "session" || !tab.sessionId) return;
 
+    const sessionId = tab.sessionId;
     if (
-      tab.type === "terminal" ||
-      tab.type === "runtime" ||
-      tab.type === "work-management" ||
-      tab.type === "workspace" ||
-      tab.type === "organization" ||
-      tab.type === "work-item" ||
-      tab.type === "github-issue" ||
-      tab.type === "github-pr" ||
-      tab.type === "project" ||
-      tab.type === "explore"
-    ) {
-      // Surface state for these tabs is fully driven by
-      // `syncChatPanelTabNavigationAtom` above; there is no session to jump to.
-      return;
-    }
-
-    const sessionId = tab.type === "session" ? tab.sessionId : null;
-    if (
-      sessionId &&
-      (get(workstationActiveSessionIdAtom) !== sessionId ||
-        get(activeSessionIdAtom) !== sessionId)
+      get(workstationActiveSessionIdAtom) !== sessionId ||
+      get(activeSessionIdAtom) !== sessionId
     ) {
       const session = get(sessionByIdAtom(sessionId));
       set(jumpToSessionAtom, {

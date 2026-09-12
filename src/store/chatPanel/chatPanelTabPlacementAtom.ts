@@ -33,7 +33,6 @@ const WORKSTATION_TRANSFER_KIND: Record<
   terminal: null,
   "start-page": null,
   runtime: null,
-  "team-inbox": null,
   "work-management": null,
   workspace: null,
   organization: null,

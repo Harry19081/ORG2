@@ -18,17 +18,6 @@ import {
 } from "../chatPanelTabPresentationAtoms";
 import { chatPanelTabsAtom } from "../chatPanelTabsState";
 
-/** Add a standalone Launchpad tab and show its Work page. */
-export const addChatPanelLaunchpadTabAtom = atom(
-  null,
-  (_get, set, title: string = "Launchpad") => {
-    const tab = createLaunchpadTab({ title });
-    set(appendAndActivateChatPanelTabAtom, { tab });
-    return tab.id;
-  }
-);
-addChatPanelLaunchpadTabAtom.debugLabel = "addChatPanelLaunchpadTab";
-
 interface OpenOrFocusStartPageTabOptions {
   title?: string;
 }
@@ -50,7 +39,9 @@ export const openOrFocusChatPanelStartPageTabAtom = atom(
       set(activateChatPanelTabAtom, existingTab.id);
       return existingTab.id;
     }
-    return set(addChatPanelLaunchpadTabAtom, title);
+    const tab = createLaunchpadTab({ title });
+    set(appendAndActivateChatPanelTabAtom, { tab });
+    return tab.id;
   }
 );
 openOrFocusChatPanelStartPageTabAtom.debugLabel =

@@ -23,12 +23,10 @@ import {
   type WorkspaceOverviewTab,
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
-  chatPanelExploreOpenAtom,
   chatPanelSelectedCloudOrgAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedProjectOrgAtom,
   chatPanelSelectedWorkItemAtom,
-  chatPanelSelectedWorkspaceAtom,
   chatPanelSelectionStateAtom,
   chatPanelStartPageOpenAtom,
   chatPanelWorkspaceOverviewTabAtom,
@@ -142,10 +140,13 @@ export const chatPanelNavigateAtom = atom(
         set(chatPanelSelectedWorkItemAtom, command.workItem);
         return;
       case CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE:
-        set(chatPanelExploreOpenAtom, true);
+        set(chatPanelSelectionStateAtom, { kind: "explore" });
         return;
       case CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW:
-        set(chatPanelSelectedWorkspaceAtom, command.workspace);
+        set(chatPanelSelectionStateAtom, {
+          kind: "workspace",
+          value: command.workspace,
+        });
         set(
           chatPanelWorkspaceOverviewTabAtom,
           command.tab ?? currentWorkspaceOverviewTab

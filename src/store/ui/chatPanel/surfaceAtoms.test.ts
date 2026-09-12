@@ -12,12 +12,10 @@ import {
   chatPanelContentModeAtom,
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
-  chatPanelExploreOpenAtom,
   chatPanelSelectedCloudOrgAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedProjectOrgAtom,
   chatPanelSelectedWorkItemAtom,
-  chatPanelSelectedWorkspaceAtom,
   chatPanelWorkspaceOverviewTabAtom,
 } from "./selectionAtoms";
 import {
@@ -72,9 +70,9 @@ describe("canonical chat-panel surface", () => {
           store.get(chatPanelSelectedProjectAtom),
           store.get(chatPanelSelectedProjectOrgAtom),
           store.get(chatPanelSelectedWorkItemAtom),
-          store.get(chatPanelSelectedWorkspaceAtom),
+          surface.kind === KIND.WORKSPACE_OVERVIEW ? surface.workspace : null,
           store.get(chatPanelSelectedCloudOrgAtom),
-          store.get(chatPanelExploreOpenAtom),
+          surface.kind === KIND.WORKSPACE_EXPLORE,
         ].filter(Boolean);
         expect(selections.length).toBe(
           [KIND.SESSION, KIND.NEW_PROJECT, KIND.NEW_WORK_ITEM].some(
@@ -90,36 +88,35 @@ describe("canonical chat-panel surface", () => {
           surface,
         });
         expect(view.showSessionContent).toBe(destination.kind === KIND.SESSION);
-        expect(view.showCloudOrgContent).toBe(
-          destination.kind === KIND.CLOUD_ORG
+        expect(view.showPanelContent).toBe(true);
+        expect(view.showHeader).toBe(true);
+        // Inactive pane: only a non-session destination keeps the panel and
+        // its header showing.
+        const inactive = resolveChatPanelContentState({
+          active: false,
+          currentSessionId: "still-loaded-session",
+          contentMode: store.get(chatPanelContentModeAtom),
+          surface,
+        });
+        expect(inactive.showSessionContent).toBe(false);
+        expect(inactive.showPanelContent).toBe(
+          destination.kind !== KIND.SESSION
         );
-        expect(view.showWorkspaceOverviewContent).toBe(
-          destination.kind === KIND.WORKSPACE_OVERVIEW
-        );
-        expect(view.showWorkItemContent).toBe(
-          destination.kind === KIND.WORK_ITEM
-        );
-        expect(view.showProjectContent).toBe(destination.kind === KIND.PROJECT);
-        expect(view.showProjectOrgContent).toBe(
-          destination.kind === KIND.PROJECT_ORG
-        );
-        expect(view.showExploreContent).toBe(
-          destination.kind === KIND.WORKSPACE_EXPLORE
-        );
+        expect(inactive.showHeader).toBe(destination.kind !== KIND.SESSION);
       }
     }
   );
 
   it("direct selection writes replace siblings and unrelated clears do not erase the surface", () => {
     const store = createStore();
-    store.set(chatPanelSelectedWorkspaceAtom, {
-      kind: "workspace",
-      id: "w",
-      name: "Workspace",
+    store.set(chatPanelSelectedProjectOrgAtom, {
+      orgId: "org",
+      orgName: "Org",
+      orgScope: "project_org",
     });
     store.set(chatPanelSelectedCloudOrgAtom, { orgId: "cloud" });
     store.set(chatPanelSelectedProjectAtom, null);
-    expect(store.get(chatPanelSelectedWorkspaceAtom)).toBeNull();
+    expect(store.get(chatPanelSelectedProjectOrgAtom)).toBeNull();
     expect(store.get(activeChatPanelSurfaceAtom)).toEqual({
       kind: KIND.CLOUD_ORG,
       cloudOrg: { orgId: "cloud" },

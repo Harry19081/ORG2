@@ -18,7 +18,7 @@ import {
 } from "./chatPanelRecentTabsState";
 import {
   DEFAULT_LAUNCHPAD_TAB_ID,
-  buildDefaultLaunchpadTab,
+  createDefaultLaunchpadTab,
   getChatPanelWorkItemTabKey,
 } from "./chatPanelTabFactories";
 import { dropChatPanelTabHistoryAtom } from "./chatPanelTabNavigationAtoms";
@@ -57,22 +57,12 @@ export const setActiveWorkManagementSectionAtom = atom(
   ) => {
     const state = get(chatPanelTabsAtom);
     const activeTab = state.tabs.find((tab) => tab.id === state.activeTabId);
-    if (
-      activeTab?.type !== "work-management" &&
-      activeTab?.type !== "team-inbox"
-    ) {
-      return;
-    }
+    if (activeTab?.type !== "work-management") return;
     set(chatPanelTabsAtom, {
       ...state,
       tabs: state.tabs.map((tab) =>
         tab.id === activeTab.id
-          ? {
-              ...tab,
-              type: "work-management" as const,
-              managementSection: section,
-              title,
-            }
+          ? { ...tab, managementSection: section, title }
           : tab
       ),
     });
@@ -104,18 +94,15 @@ export const closeChatPanelTabAtom = atom(null, (get, set, tabId: string) => {
     set(workstationActiveSessionIdAtom, null);
   }
   if (
-    (tab.type === "work-management" || tab.type === "team-inbox") &&
-    !nextTabs.some(
-      (candidate) =>
-        candidate.type === "work-management" || candidate.type === "team-inbox"
-    )
+    tab.type === "work-management" &&
+    !nextTabs.some((candidate) => candidate.type === "work-management")
   ) {
     set(disposeWorkManagementStateAtom);
   }
   let nextActiveId = state.activeTabId;
 
   if (nextTabs.length === 0) {
-    const launchpad = buildDefaultLaunchpadTab();
+    const launchpad = createDefaultLaunchpadTab();
     if (state.activeTabId === tabId) {
       set(recordChatPanelTabTransitionAtom, {
         previousTab: tab,
@@ -196,7 +183,7 @@ export const closeSessionChatPanelTabsAtom = atom(
         .reverse()
         .find((tab) => !tabsToClose.has(tab.id)) ??
       remainingTabs.find((tab) => tab.id === DEFAULT_LAUNCHPAD_TAB_ID);
-    const nextTab = fallbackTab ?? buildDefaultLaunchpadTab();
+    const nextTab = fallbackTab ?? createDefaultLaunchpadTab();
     const nextTabs = fallbackTab ? remainingTabs : [nextTab, ...remainingTabs];
     set(chatPanelTabsAtom, {
       tabs: nextTabs,
@@ -451,19 +438,6 @@ export const setChatPanelTabTitleAtom = atom(
         ),
       };
     });
-  }
-);
-
-/** Toggle TUI mode on the given tab */
-export const toggleChatPanelTabTuiModeAtom = atom(
-  null,
-  (_get, set, tabId: string) => {
-    set(chatPanelTabsAtom, (prev) => ({
-      ...prev,
-      tabs: prev.tabs.map((tab) =>
-        tab.id === tabId ? { ...tab, tuiMode: !tab.tuiMode } : tab
-      ),
-    }));
   }
 );
 

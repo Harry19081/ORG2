@@ -94,7 +94,6 @@ describe("ChatPanelTabBar", () => {
   it.each([
     "start-page",
     "runtime",
-    "team-inbox",
     "work-management",
     "organization",
   ] as const)(
