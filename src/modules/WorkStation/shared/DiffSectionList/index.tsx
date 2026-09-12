@@ -19,6 +19,11 @@ import type { DiffViewMode } from "@src/types/git/types";
 import DiffFileSection from "../DiffFileSection";
 import type { DiffFileSectionData } from "../DiffFileSection";
 import { getDefaultDiffSectionExpanded } from "./expansion";
+import type {
+  ReviewSearchFile,
+  ReviewSearchMatch,
+} from "./search/reviewSearchTypes";
+import { useReviewSearch } from "./search/useReviewSearch";
 import {
   type DiffSectionListViewState,
   type RememberedExpansion,
@@ -37,6 +42,9 @@ export interface DiffSectionListItem<TFile extends DiffFileSectionData> {
 
 interface DiffSectionListProps<TFile extends DiffFileSectionData> {
   sections: Array<DiffSectionListItem<TFile>>;
+  enableReviewSearch?: boolean;
+  reviewSearchFiles?: readonly ReviewSearchFile[];
+  loadReviewFile?: (path: string) => Promise<ReviewSearchFile | null>;
   viewMode: DiffViewMode;
   loading?: boolean;
   emptyTitle: string;
@@ -85,6 +93,9 @@ const DIFF_LIST_COMPONENTS = { Footer: DiffListFooter };
 
 function DiffSectionListInner<TFile extends DiffFileSectionData>({
   sections,
+  enableReviewSearch = false,
+  reviewSearchFiles,
+  loadReviewFile,
   viewMode,
   loading = false,
   emptyTitle,
@@ -109,6 +120,39 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   onViewStateChange,
 }: DiffSectionListProps<TFile>) {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const searchRootRef = useRef<HTMLDivElement>(null);
+  const reviewFiles = useMemo(
+    () =>
+      sections.map(({ file }) => ({
+        path: file.path,
+        oldContent: file.oldContent,
+        newContent: file.newContent,
+        isBinary: file.isBinary,
+        isUnavailable: file.isUnavailable,
+      })),
+    [sections]
+  );
+  const navigateSearch = useCallback(
+    (match: ReviewSearchMatch) => {
+      const index = sections.findIndex(({ file }) => file.path === match.path);
+      if (index >= 0)
+        virtuosoRef.current?.scrollToIndex({
+          index,
+          align: "start",
+          behavior: "auto",
+        });
+    },
+    [sections]
+  );
+  const reviewSearch = useReviewSearch({
+    enabled: enableReviewSearch,
+    files: reviewSearchFiles ?? reviewFiles,
+    loadFile: loadReviewFile,
+    containerRef: searchRootRef,
+    focusedPath,
+    onNavigate: navigateSearch,
+  });
+
   const rememberedExpansionsRef = useRef(
     new Map<string, RememberedExpansion>()
   );
@@ -324,7 +368,21 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+    <div
+      ref={searchRootRef}
+      className="relative flex h-full min-h-0 flex-col overflow-hidden"
+      onPointerDownCapture={
+        enableReviewSearch
+          ? (event) => {
+              const path = (event.target as HTMLElement).closest<HTMLElement>(
+                "[data-diff-section-path]"
+              )?.dataset.diffSectionPath;
+              if (path) reviewSearch.selectPath(path);
+            }
+          : undefined
+      }
+    >
+      {reviewSearch.card}
       <div className="min-h-0 flex-1 overflow-hidden">
         <Virtuoso
           ref={virtuosoRef}
@@ -355,9 +413,22 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
             return (
               <DiffFileSection
                 file={section.file}
+                reviewSearch={
+                  enableReviewSearch
+                    ? {
+                        query: reviewSearch.appliedQuery,
+                        match:
+                          reviewSearch.match?.path === section.file.path
+                            ? reviewSearch.match
+                            : null,
+                      }
+                    : undefined
+                }
                 viewMode={viewMode}
                 defaultExpanded={
-                  expandedOverride ??
+                  (reviewSearch.match?.path === section.file.path
+                    ? true
+                    : expandedOverride) ??
                   getDefaultDiffSectionExpanded({
                     flat,
                     isFocused,

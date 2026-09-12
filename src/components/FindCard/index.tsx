@@ -53,6 +53,8 @@ export interface FindCardProps {
   search: FindCardSearch;
   scope: FindScope;
   targetName?: string;
+  scopeControls?: ReactNode;
+  statusText?: string;
   children?: ReactNode;
   extraControls?: ReactNode;
   onReplaceShortcut?: () => void;
@@ -62,6 +64,8 @@ export function FindCard({
   search,
   scope,
   targetName,
+  scopeControls,
+  statusText,
   children,
   extraControls,
   onReplaceShortcut,
@@ -229,30 +233,31 @@ export function FindCard({
       />
       {children}
       <div className="flex flex-wrap items-center gap-px border-t border-border-2 px-2 py-1">
-        {availableScopes.session && availableScopes.file && (
-          <SegmentedTextPill
-            ariaLabel={t("common:actions.find")}
-            className="gap-px"
-            size="small"
-            tooltipPosition="bottom"
-            value={scope}
-            onChange={selectFindScope}
-            options={[
-              {
-                value: "session",
-                label: <HugeiconsIcon icon={BubbleChatIcon} size={14} />,
-                ariaLabel: scopeLabels.session,
-                tooltip: scopeLabels.session,
-              },
-              {
-                value: "file",
-                label: <HugeiconsIcon icon={File01Icon} size={14} />,
-                ariaLabel: scopeLabels.file,
-                tooltip: scopeLabels.file,
-              },
-            ]}
-          />
-        )}
+        {scopeControls ??
+          (availableScopes.session && availableScopes.file && (
+            <SegmentedTextPill
+              ariaLabel={t("common:actions.find")}
+              className="gap-px"
+              size="small"
+              tooltipPosition="bottom"
+              value={scope}
+              onChange={selectFindScope}
+              options={[
+                {
+                  value: "session",
+                  label: <HugeiconsIcon icon={BubbleChatIcon} size={14} />,
+                  ariaLabel: scopeLabels.session,
+                  tooltip: scopeLabels.session,
+                },
+                {
+                  value: "file",
+                  label: <HugeiconsIcon icon={File01Icon} size={14} />,
+                  ariaLabel: scopeLabels.file,
+                  tooltip: scopeLabels.file,
+                },
+              ]}
+            />
+          ))}
         {controls.slice(2).map(renderControl)}
         {extraControls && (
           <>
@@ -264,13 +269,14 @@ export function FindCard({
           </>
         )}
         <span className="mr-0.5 ml-auto text-xs text-text-3" role="status">
-          {!query
-            ? ""
-            : isSearching
-              ? "..."
-              : resultCount > 0
-                ? `${currentResultIndex + 1} / ${resultCount}`
-                : t("chat.noResults")}
+          {statusText ??
+            (!query
+              ? ""
+              : isSearching
+                ? "..."
+                : resultCount > 0
+                  ? `${currentResultIndex + 1} / ${resultCount}`
+                  : t("chat.noResults"))}
         </span>
         {controls.slice(0, 2).map(renderControl)}
       </div>

@@ -17,6 +17,7 @@
 import { history } from "@codemirror/commands";
 import { bracketMatching, indentUnit } from "@codemirror/language";
 import { MergeView, unifiedMergeView } from "@codemirror/merge";
+import { SearchQuery, search } from "@codemirror/search";
 import { EditorState, Extension, StateEffect } from "@codemirror/state";
 import {
   highlightActiveLine,
@@ -50,6 +51,10 @@ import { getLanguageExtension } from "../shared/languageExtensions";
 import { collapsedGutterBackground } from "./collapsedGutter";
 import { diffLineNumbers } from "./diffLineNumbers";
 import "./index.scss";
+import {
+  type ReviewDiffSearch,
+  applyReviewSearch,
+} from "./reviewSearchNavigation";
 
 const log = createLogger("CodeMirrorDiff");
 
@@ -58,6 +63,7 @@ const log = createLogger("CodeMirrorDiff");
 // ============================================
 
 interface CodeMirrorDiffProps {
+  reviewSearch?: ReviewDiffSearch;
   /** Original content */
   oldValue: string;
   /** Modified content */
@@ -188,6 +194,7 @@ const AUTO_HEIGHT_THEME = EditorView.theme({
 export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   oldValue,
   newValue,
+  reviewSearch,
   filePath,
   language,
   height = "100%",
@@ -334,7 +341,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
 
     if (filePath) exts.push(createCopyFileRefExtension(filePath));
 
-    exts.push(findReplaceExtension(filePath));
+    exts.push(reviewSearch ? search() : findReplaceExtension(filePath));
     if (selectionExtension) {
       exts.push(selectionExtension);
     }
@@ -566,6 +573,21 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   }, [newValue, oldValue, viewMode]);
 
   // ── Render ────────────────────────────────────────────────────────────────
+
+  const reviewQuery = reviewSearch?.query;
+  const reviewMatch = reviewSearch?.match;
+  useEffect(() => {
+    if (reviewQuery === undefined) return;
+    return applyReviewSearch(
+      unifiedViewRef.current,
+      splitMergeViewRef.current,
+      {
+        match: reviewMatch ?? null,
+        query: reviewQuery ?? new SearchQuery({ search: "" }),
+      },
+      isFullDeletion
+    );
+  }, [reviewQuery, reviewMatch, viewMode, isFullDeletion, oldValue, newValue]);
 
   const isUnifiedFullDeletion = isFullDeletion;
   const wrapperStyle: React.CSSProperties = autoHeight
