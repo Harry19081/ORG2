@@ -296,3 +296,28 @@ fn auxiliary_model_never_uses_retired_xai_fast_redirects() {
     );
     assert!(policy.resolve("grok-4.6").models.is_empty());
 }
+
+#[test]
+fn auxiliary_model_aggregator_native_vendor_ids_keep_the_original_wire_name() {
+    for (family, model) in [
+        (provider_id::SILICONFLOW, "deepseek-ai/DeepSeek-V3.2"),
+        (provider_id::SILICONFLOW, "Pro/deepseek-ai/DeepSeek-V3.2"),
+        (provider_id::SILICONFLOW, "MiniMaxAI/MiniMax-M2.5"),
+        (provider_id::MODELSCOPE, "deepseek-ai/DeepSeek-V3.2"),
+        (provider_id::ATLASCLOUD, "zai-org/GLM-4.7-Flash"),
+    ] {
+        let key = account(ModelType::CustomApi, model);
+        let policy = AuxiliaryModelPolicy::from_account(
+            find_by_name(family).unwrap(),
+            &key,
+            None,
+            false,
+            false,
+        );
+        assert_eq!(
+            policy.resolve("expensive-parent").models,
+            vec![model],
+            "{family}"
+        );
+    }
+}
