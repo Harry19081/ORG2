@@ -129,6 +129,13 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
 
     return [
       {
+        category: "projects",
+        label: `${t("categories.git")} & ${t("categories.projects")}`,
+        options: projectOptions,
+        selectOptions: toSelectOptions(projectOptions),
+        selectable: true,
+      },
+      {
         category: "channels",
         label: t("categories.channels"),
         options: channelOptions,
@@ -141,13 +148,6 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
         options: comingSoonChannelOptions,
         selectOptions: [],
         selectable: false,
-      },
-      {
-        category: "projects",
-        label: `${t("categories.git")} & ${t("categories.projects")}`,
-        options: projectOptions,
-        selectOptions: toSelectOptions(projectOptions),
-        selectable: true,
       },
     ];
   }, [t]);
