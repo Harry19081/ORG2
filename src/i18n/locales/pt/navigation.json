@@ -481,7 +481,6 @@
       "showHidden": "Mostrar sessões ocultas ({{count}})",
       "viewerTooltip": "{{name}} está vendo esta sessão",
       "viewerOverflow": "e mais {{count}} visualizando",
-      "memberViewing": "vendo: {{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "Carregando sessão…",

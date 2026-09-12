@@ -11,6 +11,7 @@ import {
   closeProjectOrgChatPanelTabsAtom,
   closeSessionChatPanelTabsAtom,
   closeWorkItemChatPanelTabAtom,
+  openExploreInChatPanelTabAtom,
   openGitHubIssueInChatPanelTabAtom,
   openGitHubPrInChatPanelTabAtom,
   openOrFocusChatPanelStartPageTabAtom,
@@ -49,13 +50,13 @@ import {
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
   chatPanelSelectedWorkItemAtom,
-  chatPanelSelectionStateAtom,
   chatPanelStartPageOpenAtom,
+  updateChatPanelWorkItemTabAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
 import {
   activeChatPanelSurfaceAtom,
   chatPanelMaximizedAtom,
-  chatPanelNavigateAtom,
+  resetChatPanelSessionSurfaceAtom,
 } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   kanbanDetailPanelVisibleAtom,
@@ -110,7 +111,7 @@ async function loadChatPanelTabAtoms() {
     chatPanelTabsAtom,
     isChatPanelTabStationAvailable,
     chatPanelMaximizedAtom,
-    chatPanelNavigateAtom,
+    resetChatPanelSessionSurfaceAtom,
     chatPanelCreateProjectContextAtom,
     chatPanelCreateTargetAtom,
     chatPanelStartPageOpenAtom,
@@ -125,6 +126,7 @@ async function loadChatPanelTabAtoms() {
     kanbanSelectedTaskIdAtom,
     openOrganizationInChatPanelTabAtom,
     openCreateTargetInChatPanelStartPageAtom,
+    openExploreInChatPanelTabAtom,
     openGitHubIssueInChatPanelTabAtom,
     openGitHubPrInChatPanelTabAtom,
     openWorkManagementChatPanelTabAtom,
@@ -152,6 +154,7 @@ async function loadChatPanelTabAtoms() {
     sessionsAtom,
     store,
     chatPanelSelectedWorkItemAtom,
+    updateChatPanelWorkItemTabAtom,
     workstationTabHeaderAtomByHost,
   };
 }
@@ -497,9 +500,8 @@ describe("closeWorkItemChatPanelTabAtom", () => {
       openWorkItemInChatPanelTabAtom,
       chatPanelSelectedWorkItemAtom,
       chatPanelTabsAtom,
+      updateChatPanelWorkItemTabAtom,
     } = await loadChatPanelTabAtoms();
-    // Mount storage before seeding; its first subscription intentionally resets
-    // persisted tabs to Launchpad, matching application startup.
     const onTabsChange = vi.fn();
     const unsubscribe = store.sub(chatPanelTabsAtom, onTabsChange);
     const workItem = {
@@ -513,7 +515,7 @@ describe("closeWorkItemChatPanelTabAtom", () => {
     store.set(openWorkItemInChatPanelTabAtom, workItem);
     const tabId = store.get(activeChatPanelTabAtom)!.id;
     store.set(
-      chatPanelSelectedWorkItemAtom,
+      updateChatPanelWorkItemTabAtom,
       (current) =>
         current && {
           ...current,
@@ -524,15 +526,11 @@ describe("closeWorkItemChatPanelTabAtom", () => {
     expect(
       store.get(chatPanelTabsAtom).tabs.find((tab) => tab.id === tabId)
     ).toMatchObject({ title: "After", workItem: edited });
-    expect(store.get(chatPanelSelectionStateAtom)).toEqual({
-      kind: "workItem",
-      target: { tabId },
-    });
     onTabsChange.mockClear();
-    store.set(chatPanelSelectedWorkItemAtom, (current) => current);
+    store.set(updateChatPanelWorkItemTabAtom, (current) => current);
     expect(onTabsChange).not.toHaveBeenCalled();
     unsubscribe();
-    store.set(chatPanelNavigateAtom, { kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+    store.set(resetChatPanelSessionSurfaceAtom);
     store.set(activateChatPanelTabAtom, tabId);
     expect(store.get(chatPanelSelectedWorkItemAtom)).toBe(edited);
     const refreshed = {
@@ -554,6 +552,7 @@ describe("closeWorkItemChatPanelTabAtom", () => {
       openWorkItemInChatPanelTabAtom,
       chatPanelSelectedWorkItemAtom,
       chatPanelTabsAtom,
+      updateChatPanelWorkItemTabAtom,
     } = await loadChatPanelTabAtoms();
     const first = {
       shortId: "W-1",
@@ -574,7 +573,7 @@ describe("closeWorkItemChatPanelTabAtom", () => {
     store.set(openWorkItemInChatPanelTabAtom, first);
     store.set(openWorkItemInChatPanelTabAtom, second);
     const before = store.get(chatPanelTabsAtom);
-    store.set(chatPanelSelectedWorkItemAtom, (current) =>
+    store.set(updateChatPanelWorkItemTabAtom, (current) =>
       current?.orgId === "org-a"
         ? { ...current, workItem: { ...current.workItem, name: "Late A" } }
         : current
@@ -582,7 +581,7 @@ describe("closeWorkItemChatPanelTabAtom", () => {
     expect(store.get(chatPanelTabsAtom)).toBe(before);
     expect(store.get(chatPanelSelectedWorkItemAtom)).toBe(second);
     store.set(
-      chatPanelSelectedWorkItemAtom,
+      updateChatPanelWorkItemTabAtom,
       (current) =>
         current && {
           ...current,
@@ -1042,8 +1041,8 @@ describe("openWorkManagementChatPanelTabAtom", () => {
     const {
       activeChatPanelSurfaceAtom,
       CHAT_PANEL_SURFACE_KIND,
-      chatPanelNavigateAtom,
       chatPanelStartPageOpenAtom,
+      openExploreInChatPanelTabAtom,
       openWorkManagementChatPanelTabAtom,
       openOrFocusChatPanelStartPageTabAtom,
       store,
@@ -1055,9 +1054,7 @@ describe("openWorkManagementChatPanelTabAtom", () => {
       section: WORK_MANAGEMENT_SECTION.PROJECTS,
     });
     store.set(openOrFocusChatPanelStartPageTabAtom, {});
-    store.set(chatPanelNavigateAtom, {
-      kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE,
-    });
+    store.set(openExploreInChatPanelTabAtom);
 
     // Mirrors ChatPanel's layout reconciliation after the active tab changes.
     store.set(syncActiveChatPanelTabStateAtom);

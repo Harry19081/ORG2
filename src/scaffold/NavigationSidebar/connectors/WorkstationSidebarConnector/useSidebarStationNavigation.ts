@@ -14,7 +14,7 @@ interface SidebarStationNavigationParams {
   setStationMode: ChatActions["setStationMode"];
   setStationChatVisible: ChatActions["setStationChatVisible"];
   openStartPageTab: ChatActions["openStartPageTab"];
-  navigateChatPanel: ChatActions["navigateChatPanel"];
+  resetChatPanelSessionSurface: ChatActions["resetChatPanelSessionSurface"];
   setChatPanelCreateTarget: ChatActions["setChatPanelCreateTarget"];
   goToNewSession: ReturnType<typeof useAppNavigation>["goToNewSession"];
   location: Location;
@@ -25,7 +25,7 @@ export function useSidebarStationNavigation({
   setStationMode,
   setStationChatVisible,
   openStartPageTab,
-  navigateChatPanel,
+  resetChatPanelSessionSurface,
   setChatPanelCreateTarget,
   goToNewSession,
   location,
@@ -53,7 +53,7 @@ export function useSidebarStationNavigation({
 
   const { handleGoToNewSession } = useSessionEntryActions({
     goToNewSession,
-    navigateChatPanel,
+    resetChatPanelSessionSurface,
     openNewChatTab,
     setChatPanelCreateTarget,
   });

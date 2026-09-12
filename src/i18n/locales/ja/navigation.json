@@ -481,7 +481,6 @@
       "showHidden": "非表示のセッションを表示（{{count}}）",
       "viewerTooltip": "{{name}} がこのセッションを見ています",
       "viewerOverflow": "他 {{count}} 人が見ています",
-      "memberViewing": "閲覧中: {{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "セッションを読み込み中…",

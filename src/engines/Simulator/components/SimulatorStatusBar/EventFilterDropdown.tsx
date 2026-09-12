@@ -12,7 +12,7 @@ import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import {
   SIMULATOR_EVENT_FILTER_VALUES,
   type SimulatorEventFilterValue,
-} from "@src/engines/SessionCore/derived/simulatorEventFilters";
+} from "@src/engines/SessionCore/core/simulatorEventFilters";
 import { getDropdownPanelStyle } from "@src/hooks/dropdown/dropdownPanelStyle";
 import { useDropdownEngine } from "@src/hooks/dropdown/useDropdownEngine";
 import { HugeiconsIcon, ListFilterIcon } from "@src/icons";

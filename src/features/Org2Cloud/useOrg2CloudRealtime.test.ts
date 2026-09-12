@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import { activeSessionIdAtom } from "@src/store/session/viewAtom";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 import { type SmokeRoot, createSmokeRoot } from "@src/test/reactSmokeHarness";
 
 import { conversationPlaneSignalAtom } from "./SessionConversation/conversationPlaneAtom";
@@ -207,7 +206,6 @@ describe("useOrg2CloudRealtime lifecycle", () => {
     store.set(org2CloudAuthAtom, AUTH);
     store.set(org2CloudOrgsAtom, [cloudOrg("org-a"), cloudOrg("org-b")]);
     store.set(sidebarActiveCloudOrgIdAtom, "org-a");
-    store.set(chatPanelSelectedCloudOrgAtom, null);
     store.set(activeSessionIdAtom, null);
     store.set(sessionsAtom, []);
     root = createSmokeRoot();

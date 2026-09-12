@@ -39,6 +39,7 @@ import {
   useSharedRepoList,
 } from "../../hooks";
 import { usePathSegment } from "../../hooks/usePathSegment";
+import { usePinnedSpotlightItems } from "../../pinning/usePinnedSpotlightItems";
 import { PaletteBody, ShellFooterAction, SpotlightShell } from "../../shell";
 import type { RepoItem, SpotlightItem } from "../../types";
 import { AddWorkingDirectoryModalShell } from "../AddWorkingDirectoryModalShell";
@@ -446,7 +447,7 @@ export const WorkingDirectoryPalette: React.FC<
     [handleRemoveRepo, t]
   );
 
-  const mainItems = useMemo((): SpotlightItem[] => {
+  const unpinnedMainItems = useMemo((): SpotlightItem[] => {
     return buildSectionedWorkingDirectoryItems({
       addMenuActive: !!addMenuKind,
       sectionedAddItems,
@@ -503,6 +504,12 @@ export const WorkingDirectoryPalette: React.FC<
     toggleSelection,
     workspaceItems,
   ]);
+
+  const mainItems = usePinnedSpotlightItems(
+    unpinnedMainItems,
+    "directories",
+    !addMenuKind && !isManageMode
+  );
 
   const pinnedActionStartIndex = mainItems.length;
   const items = useMemo(

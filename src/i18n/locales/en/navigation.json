@@ -535,7 +535,6 @@
       "showHidden": "Show hidden sessions ({{count}})",
       "viewerTooltip": "{{name}} is viewing this session",
       "viewerOverflow": "and {{count}} more viewers",
-      "memberViewing": "viewing: {{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "Loading session…",
