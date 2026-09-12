@@ -24,7 +24,10 @@ pub fn get_cached_source_path_from_conn(
 /// `-`-bounded suffix of the cached key. Codex imports key on the rollout
 /// file stem (`rollout-<timestamp>-<thread-uuid>`) while runner bindings
 /// carry the bare thread uuid; newest wins when several rollouts share a
-/// thread (resume forks).
+/// thread (resend rotations), ordered exactly like the sidebar continuation
+/// election so both surfaces resolve the same generation on an activity tie.
+/// Rotated Codex records also match their parsed native thread identity,
+/// since the final filename UUID belongs to the rollout.
 pub fn get_cached_source_path_by_suffix_from_conn(
     conn: &Connection,
     source: &str,
@@ -33,8 +36,10 @@ pub fn get_cached_source_path_by_suffix_from_conn(
     conn.query_row(
         "SELECT source_path FROM imported_history_session_cache \
          WHERE source = ?1 \
-           AND (source_session_id = ?2 OR source_session_id LIKE '%-' || ?2) \
-         ORDER BY updated_at_ms DESC LIMIT 1",
+           AND (source_session_id = ?2 OR source_session_id LIKE '%-' || ?2 \
+                OR (source = 'codex_app' AND CASE WHEN json_valid(source_metadata_json) \
+                    THEN json_extract(source_metadata_json, '$.continuationGroupKey') END = ?2)) \
+         ORDER BY updated_at_ms DESC, source_session_id DESC LIMIT 1",
         params![source, source_session_id],
         |row| row.get::<_, String>(0),
     )
