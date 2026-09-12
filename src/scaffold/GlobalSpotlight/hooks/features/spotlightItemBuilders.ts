@@ -206,7 +206,11 @@ export function buildThemeItems(
       value: APPEARANCE_MODE.SYSTEM,
       label: getFollowSystemThemeLabel(
         systemColorScheme,
-        translate("settings:general.followSystem")
+        translate("settings:general.followSystem"),
+        {
+          light: translate("settings:general.light"),
+          dark: translate("settings:general.dark"),
+        }
       ),
       icon: ComputerSettingsIcon,
     },
