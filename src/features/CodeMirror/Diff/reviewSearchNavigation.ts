@@ -3,11 +3,13 @@ import {
   getChunks,
   uncollapseUnchanged,
 } from "@codemirror/merge";
-import { type SearchQuery, setSearchQuery } from "@codemirror/search";
+import { SearchQuery, setSearchQuery } from "@codemirror/search";
 import { EditorView } from "@codemirror/view";
 
+import type { ReviewSearchQuery } from "@src/modules/WorkStation/shared/DiffSectionList/search/reviewSearchTypes";
+
 export interface ReviewDiffSearch {
-  query: SearchQuery | null;
+  query: ReviewSearchQuery | null;
   match: { side: "old" | "new"; from: number; to: number } | null;
 }
 
@@ -21,7 +23,9 @@ export function applyReviewSearch(
   const views = split ? [split.a, split.b] : unified ? [unified] : [];
   if (search.query)
     for (const view of views)
-      view.dispatch({ effects: setSearchQuery.of(search.query) });
+      view.dispatch({
+        effects: setSearchQuery.of(new SearchQuery(search.query)),
+      });
   const match = search.match;
   if (!match) return () => {};
   const view = split ? (match.side === "old" ? split.a : split.b) : unified;

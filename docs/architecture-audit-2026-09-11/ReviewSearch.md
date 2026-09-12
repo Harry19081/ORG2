@@ -14,3 +14,7 @@
 | 10. Resolver symmetry      | File selection and review navigation resolve the same file path. Lazy git loading retains repo, status, staged and rename metadata through the existing resource.                                             |
 
 74 targeted tests across 12 suites passed in the isolated PR worktree. Source inspection covers the two production entry points; native review rendering and worker bundling were not exercised. No Rust, server, authentication, provider adapter or persistence layer changed, so those runtime checks are outside this feature's scope.
+
+## CI follow-up
+
+The original shared hook imported CodeMirror runtime code through both the matching module and SearchQuery. Shared state now carries a dependency-free query configuration and result types; only the worker and lazy editor construct CodeMirror objects. The existing heavy-feature boundary suite now passes. The scan promise also has an explicit rejection handler, with a worker-dispatch failure regression test. Updated targeted verification: 84 tests across 13 suites and full TypeScript checking pass.

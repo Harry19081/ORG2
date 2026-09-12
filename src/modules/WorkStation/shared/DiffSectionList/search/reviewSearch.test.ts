@@ -1,7 +1,8 @@
 import { SearchQuery } from "@codemirror/search";
 import { describe, expect, it } from "vitest";
 
-import { REVIEW_SEARCH_LIMIT, searchReview } from "./reviewSearch";
+import { searchReview } from "./reviewSearch";
+import { REVIEW_SEARCH_LIMIT } from "./reviewSearchTypes";
 
 describe("review payload search", () => {
   const files = [

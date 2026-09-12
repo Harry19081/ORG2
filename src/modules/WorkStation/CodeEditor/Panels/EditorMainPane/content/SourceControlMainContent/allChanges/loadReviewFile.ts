@@ -1,6 +1,6 @@
 import { readTextFile } from "@tauri-apps/plugin-fs";
 
-import type { ReviewSearchFile } from "@src/modules/WorkStation/shared/DiffSectionList/search/reviewSearch";
+import type { ReviewSearchFile } from "@src/modules/WorkStation/shared/DiffSectionList/search/reviewSearchTypes";
 import { loadWorkingTreeDiff } from "@src/services/git/workingTreeDiffResource";
 import type { GitFile } from "@src/types/git/types";
 

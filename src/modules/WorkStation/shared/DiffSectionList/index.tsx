@@ -22,7 +22,7 @@ import { getDefaultDiffSectionExpanded } from "./expansion";
 import type {
   ReviewSearchFile,
   ReviewSearchMatch,
-} from "./search/reviewSearch";
+} from "./search/reviewSearchTypes";
 import { useReviewSearch } from "./search/useReviewSearch";
 import {
   type DiffSectionListViewState,

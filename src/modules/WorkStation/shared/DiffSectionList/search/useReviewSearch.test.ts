@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CURRENT_SHORTCUT_PLATFORM } from "@src/config/keyboard/shortcutBindings";
 
-import type { ReviewSearchFile } from "./reviewSearch";
+import type { ReviewSearchFile } from "./reviewSearchTypes";
 import { useReviewSearch } from "./useReviewSearch";
 
 const mocks = vi.hoisted(() => ({ card: vi.fn(), navigate: vi.fn() }));
@@ -103,6 +103,24 @@ afterEach(() => {
   env.IS_REACT_ACT_ENVIRONMENT = previous;
 });
 describe("review search lifecycle", () => {
+  it("reports rejected worker dispatch and releases the scan", async () => {
+    let resolveRead!: (file: ReviewSearchFile) => void;
+    loadFile = () =>
+      new Promise<ReviewSearchFile>((resolve) => {
+        resolveRead = resolve;
+      });
+    act(() => root.render(createElement(Harness)));
+    act(() => card().search.setQuery("old"));
+    await advance(500);
+    workers[0].postMessage.mockImplementation(() => {
+      throw new Error("worker dispatch failed");
+    });
+    await act(async () => resolveRead(files[0]));
+    expect(card().statusText).toBe("status.error");
+    expect(card().search.isSearching).toBe(false);
+    expect(workers[0].terminate).toHaveBeenCalledOnce();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
   it("rejects a prior file read after visibility restarts the worker", async () => {
     const reads: ((file: ReviewSearchFile) => void)[] = [];
     loadFile = vi.fn(

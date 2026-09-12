@@ -1,6 +1,7 @@
 import { SearchQuery } from "@codemirror/search";
 
-import { type ReviewSearchFile, searchReview } from "./reviewSearch";
+import { searchReview } from "./reviewSearch";
+import type { ReviewSearchFile } from "./reviewSearchTypes";
 
 let files: ReviewSearchFile[] = [];
 self.onmessage = (event: MessageEvent) => {

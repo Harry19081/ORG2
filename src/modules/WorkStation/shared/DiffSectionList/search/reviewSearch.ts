@@ -2,20 +2,12 @@ import { Chunk } from "@codemirror/merge";
 import { SearchQuery } from "@codemirror/search";
 import { Text } from "@codemirror/state";
 
-export interface ReviewSearchFile {
-  path: string;
-  oldContent?: string;
-  newContent?: string;
-  isBinary?: boolean;
-  isUnavailable?: boolean;
-}
-export interface ReviewSearchMatch {
-  path: string;
-  side: "old" | "new";
-  from: number;
-  to: number;
-}
-export const REVIEW_SEARCH_LIMIT = 1000;
+import {
+  REVIEW_SEARCH_LIMIT,
+  type ReviewSearchFile,
+  type ReviewSearchMatch,
+} from "./reviewSearchTypes";
+
 /** Search the complete payload, independent of virtualized/collapsed rows. */
 export function searchReview(
   files: readonly ReviewSearchFile[],

@@ -1,4 +1,3 @@
-import { SearchQuery } from "@codemirror/search";
 import {
   type RefObject,
   useEffect,
@@ -23,7 +22,8 @@ import {
   REVIEW_SEARCH_LIMIT,
   type ReviewSearchFile,
   type ReviewSearchMatch,
-} from "./reviewSearch";
+  type ReviewSearchQuery,
+} from "./reviewSearchTypes";
 
 export function useReviewSearch({
   enabled,
@@ -52,7 +52,7 @@ export function useReviewSearch({
   });
   const [result, setResult] = useState<{
     matches: ReviewSearchMatch[];
-    query: SearchQuery | null;
+    query: ReviewSearchQuery | null;
     error: boolean;
   }>({ matches: [], query: null, error: false });
   const [index, setIndex] = useState(0);
@@ -138,7 +138,7 @@ export function useReviewSearch({
         const matches = event.data.matches as ReviewSearchMatch[];
         setResult({
           matches,
-          query: new SearchQuery(config),
+          query: config,
           error: Boolean(event.data.error),
         });
         setPending(false);
@@ -202,13 +202,18 @@ export function useReviewSearch({
             if (matches.length >= REVIEW_SEARCH_LIMIT) break;
           }
           if (!live || id !== generation.current || !worker) return;
-          setResult({ matches, query: new SearchQuery(config), error });
+          setResult({ matches, query: config, error });
           setPending(false);
           setIndex(0);
           stop();
           if (matches[0]) navigateRef.current(matches[0]);
         };
-        void scan();
+        scan().catch(() => {
+          if (!live || id !== generation.current) return;
+          setResult({ matches: [], query: null, error: true });
+          setPending(false);
+          stop();
+        });
       }
     };
     const visibility = () => {
