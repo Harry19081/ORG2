@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { projectApi } from "@src/api/http/project";
@@ -26,10 +26,10 @@ import type {
   SpotlightCollabOrgSource,
 } from "@src/store/ui/uiAtom";
 
-import { SpotlightSearchBar } from "../../components";
 import { ICONS } from "../../config";
 import type { PathSegment } from "../../types";
 import { SpotlightFormBody, SpotlightFormShell } from "../shared";
+import { SpotlightFormLayout } from "../shared/SpotlightFormLayout";
 
 const LOCAL_SOURCE: SpotlightCollabOrgSource = "local";
 const CLOUD_SOURCE: SpotlightCollabOrgSource = "cloud";
@@ -50,7 +50,6 @@ const CollabOrgForm: React.FC<CollabOrgFormProps> = ({
   onCompleted,
 }) => {
   const { t } = useTranslation(["navigation", "common"]);
-  const hiddenInputRef = useRef<HTMLInputElement>(null);
   const cloudAuth = useAtomValue(org2CloudAuthAtom);
   const bumpProjectListRefresh = useSetAtom(projectListRefreshAtom);
   const openOrganizationTab = useSetAtom(openOrganizationInChatPanelTabAtom);
@@ -239,17 +238,10 @@ const CollabOrgForm: React.FC<CollabOrgFormProps> = ({
   const showInvite = source === CLOUD_SOURCE && mode === JOIN_MODE;
 
   return (
-    <div data-testid="collab-org-spotlight">
-      <SpotlightSearchBar
-        inputRef={hiddenInputRef}
-        searchQuery=""
-        onSearchQueryChange={() => undefined}
-        onKeyDown={() => undefined}
-        placeholder=""
-        path={path}
-        onRemoveSegment={handleCancel}
-        hideInput
-      />
+    <SpotlightFormLayout
+      header={{ path, onRemoveSegment: handleCancel }}
+      data-testid="collab-org-spotlight"
+    >
       <form
         data-testid="collab-org-form"
         onSubmit={(event) => {
@@ -391,7 +383,7 @@ const CollabOrgForm: React.FC<CollabOrgFormProps> = ({
           />
         </SpotlightFormShell>
       </form>
-    </div>
+    </SpotlightFormLayout>
   );
 };
 
