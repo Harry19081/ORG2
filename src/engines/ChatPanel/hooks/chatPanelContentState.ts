@@ -13,16 +13,9 @@ interface ChatPanelContentStateOptions {
 }
 
 export interface ChatPanelContentState {
-  showCloudOrgContent: boolean;
-  showExploreContent: boolean;
-  showExplicitNonSessionContent: boolean;
   showHeader: boolean;
   showPanelContent: boolean;
-  showProjectContent: boolean;
-  showProjectOrgContent: boolean;
   showSessionContent: boolean;
-  showWorkItemContent: boolean;
-  showWorkspaceOverviewContent: boolean;
 }
 
 export function resolveChatPanelContentState({
@@ -31,53 +24,21 @@ export function resolveChatPanelContentState({
   currentSessionId,
   surface,
 }: ChatPanelContentStateOptions): ChatPanelContentState {
+  const sessionSurface = surface.kind === CHAT_PANEL_SURFACE_KIND.SESSION;
   const showSessionContent =
     active &&
-    surface.kind === CHAT_PANEL_SURFACE_KIND.SESSION &&
+    sessionSurface &&
     contentMode === CHAT_PANEL_CONTENT_MODE.SESSION &&
     Boolean(currentSessionId);
-  const showWorkItemContent =
-    surface.kind === CHAT_PANEL_SURFACE_KIND.WORK_ITEM;
-  const showProjectContent = surface.kind === CHAT_PANEL_SURFACE_KIND.PROJECT;
-  const showProjectOrgContent =
-    surface.kind === CHAT_PANEL_SURFACE_KIND.PROJECT_ORG;
-  const showExploreContent =
-    surface.kind === CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE;
-  const showCloudOrgContent =
-    surface.kind === CHAT_PANEL_SURFACE_KIND.CLOUD_ORG;
-  const showWorkspaceOverviewContent =
-    surface.kind === CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW;
-  const showExplicitNonSessionContent =
-    contentMode === CHAT_PANEL_CONTENT_MODE.NON_SESSION;
-  const showPanelContent =
-    active ||
-    showWorkItemContent ||
-    showProjectContent ||
-    showProjectOrgContent ||
-    showExploreContent ||
-    showCloudOrgContent ||
-    showWorkspaceOverviewContent ||
-    showExplicitNonSessionContent;
-  const showHeader =
-    showWorkItemContent ||
-    showProjectContent ||
-    showProjectOrgContent ||
-    showExploreContent ||
-    showCloudOrgContent ||
-    showWorkspaceOverviewContent ||
-    showExplicitNonSessionContent ||
-    active;
+  // A non-session surface, or an explicit non-session content mode, keeps the
+  // panel and its header visible even while the pane is otherwise inactive.
+  const showNonSessionContent =
+    !sessionSurface || contentMode === CHAT_PANEL_CONTENT_MODE.NON_SESSION;
+  const showPanelContent = active || showNonSessionContent;
 
   return {
-    showCloudOrgContent,
-    showExploreContent,
-    showExplicitNonSessionContent,
-    showHeader,
+    showHeader: showPanelContent,
     showPanelContent,
-    showProjectContent,
-    showProjectOrgContent,
     showSessionContent,
-    showWorkItemContent,
-    showWorkspaceOverviewContent,
   };
 }

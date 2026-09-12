@@ -90,17 +90,12 @@ export const chatPanelSelectedProjectOrgAtom = selectionAtom(
   (state) => (state.kind === "projectOrg" ? state.value : null),
   (value) => ({ kind: "projectOrg", value })
 );
-export const chatPanelSelectedWorkspaceAtom = selectionAtom(
-  (state) => (state.kind === "workspace" ? state.value : null),
-  (value) => ({ kind: "workspace", value })
-);
 export const chatPanelSelectedCloudOrgAtom = selectionAtom(
   (state) => (state.kind === "cloudOrg" ? state.value : null),
   (value) => ({ kind: "cloudOrg", value })
 );
 chatPanelSelectedProjectAtom.debugLabel = "chatPanelSelectedProjectAtom";
 chatPanelSelectedProjectOrgAtom.debugLabel = "chatPanelSelectedProjectOrgAtom";
-chatPanelSelectedWorkspaceAtom.debugLabel = "chatPanelSelectedWorkspaceAtom";
 chatPanelSelectedCloudOrgAtom.debugLabel = "chatPanelSelectedCloudOrgAtom";
 
 /** Work-item tabs own their payload; selection retains only the tab ID.
@@ -183,14 +178,3 @@ export const chatPanelContentModeAtom = atom(
   }
 );
 chatPanelContentModeAtom.debugLabel = "chatPanelContentModeAtom";
-
-export const chatPanelExploreOpenAtom = atom(
-  (get) => get(chatPanelSelectionStateAtom).kind === "explore",
-  (get, set, update: Update<boolean>) => {
-    const previous = get(chatPanelExploreOpenAtom);
-    const open = typeof update === "function" ? update(previous) : update;
-    if (open === previous) return;
-    set(chatPanelSelectionStateAtom, { kind: open ? "explore" : "creation" });
-  }
-);
-chatPanelExploreOpenAtom.debugLabel = "chatPanelExploreOpenAtom";
