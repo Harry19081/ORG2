@@ -62,6 +62,7 @@ interface DiffSectionListProps<TFile extends DiffFileSectionData> {
   onExpansionChange?: (file: TFile, expanded: boolean) => void;
   sectionKeySuffix?: (section: DiffSectionListItem<TFile>) => string | number;
   showBottomBorder?: boolean;
+  hideLastBottomBorder?: boolean;
   /** Show the original path after renamed files in each section header. */
   showRenamePath?: boolean;
   /** When true, each section renders a flat FileHeader instead of the collapsible chevron button. */
@@ -112,6 +113,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   onExpansionChange,
   sectionKeySuffix,
   showBottomBorder,
+  hideLastBottomBorder = false,
   showRenamePath = false,
   flat = false,
   compactHeaderGutter = false,
@@ -394,7 +396,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
           isScrolling={handleIsScrolling}
           scrollerRef={handleScrollerRef}
           {...(hideBottomPadding ? {} : { components: DIFF_LIST_COMPONENTS })}
-          itemContent={(_index, { section, renderKey }) => {
+          itemContent={(index, { section, renderKey }) => {
             const isFocused = focusedPath === section.file.path;
             const expansionSignal =
               collapseSignal + (isFocused ? focusedNonce : 0);
@@ -456,7 +458,11 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
                     expanded
                   )
                 }
-                showBottomBorder={showBottomBorder}
+                showBottomBorder={
+                  hideLastBottomBorder && index === sections.length - 1
+                    ? false
+                    : showBottomBorder
+                }
                 showRenamePath={showRenamePath}
                 flat={flat}
                 compactHeaderGutter={compactHeaderGutter}

@@ -214,6 +214,7 @@ const AllChangesView: React.FC<AllChangesViewProps> = ({
       showRenamePath
       compactHeaderGutter
       hideBottomPadding
+      hideLastBottomBorder
     />
   );
 };
