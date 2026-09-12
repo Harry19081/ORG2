@@ -93,7 +93,7 @@ async fn run(
     state: Arc<Mutex<SessionMemoryState>>,
     provider: &dyn LLMProvider,
     cancel: Option<&Arc<AtomicBool>>,
-) -> Result<(), String> {
+) -> Result<MemoryJobCompletion, String> {
     extract_and_persist_session_memory(
         session_id,
         state,
@@ -190,7 +190,10 @@ async fn session_memory_http_rejection_falls_back_and_persists_across_fresh_prov
                 unified_persistence::save_assistant_msg(sid, "More completed work", PARENT)
                     .unwrap();
             }
-            run(sid, state.clone(), &wrapped, None).await.unwrap();
+            assert_eq!(
+                run(sid, state.clone(), &wrapped, None).await.unwrap(),
+                MemoryJobCompletion::Completed
+            );
             let row = persisted(sid);
             assert_eq!(row.0.as_deref(), Some("### Current State\nWork completed"));
             assert!(row.1 > original.1);
@@ -245,7 +248,10 @@ async fn session_memory_failed_parent_keeps_durable_state_and_cools_down() {
     drop(guard);
     // A fresh connection on the next eligible turn must issue no requests.
     let next = provider(vec![]);
-    run(sid, state, &next, None).await.unwrap();
+    assert_eq!(
+        run(sid, state, &next, None).await.unwrap(),
+        MemoryJobCompletion::Skipped
+    );
     assert!(next.calls.lock().unwrap().is_empty());
     assert_eq!(persisted(sid), (Some("previous memory".into()), Some(0)));
 }
@@ -403,4 +409,57 @@ async fn session_memory_chat_auth_cooldown_also_skips_fresh_provider_acquisition
     .unwrap();
     assert!(next.is_none());
     assert_eq!(persisted(sid), before);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn session_memory_cooldown_jobs_are_skipped_not_completed() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-cooldown-accounting";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "previous memory", Some(0)).unwrap();
+    let before = persisted(sid);
+    let state = Arc::new(Mutex::new(SessionMemoryState {
+        content: before.0.clone(),
+        last_summarized_seq: before.1,
+        ..Default::default()
+    }));
+
+    for turn in 0..3 {
+        state.lock().await.extraction_in_progress = true;
+        // No account is a local factory AuthError, never a remote request.
+        // Later turns must skip this same production acquisition path.
+        let job = session_memory_job(SessionMemoryExtractionInput {
+            session_id: sid,
+            agent_id: None,
+            current_tokens: 20_000,
+            sm_state: Arc::clone(&state),
+            sm_config: SessionMemoryConfig::default(),
+            fork_provider: ForkProviderSpec {
+                model: PARENT.into(),
+                account_id: None,
+                reliability: ReliabilityConfig::default(),
+                native_harness_type: None,
+                workspace: SessionWorkspace::new(std::env::temp_dir()),
+            },
+        });
+        let metrics = tokio::time::timeout(
+            Duration::from_secs(5),
+            crate::memory::background::run_memory_job_for_test(job),
+        )
+        .await
+        .expect("local auth failure and cooldown jobs must finish promptly");
+        assert_eq!(metrics.started, 1);
+        assert_eq!(metrics.completed, 0);
+        assert_eq!(metrics.failed, u64::from(turn == 0));
+        assert_eq!(metrics.skipped, u64::from(turn > 0));
+        assert_eq!(metrics.cancelled + metrics.timed_out, 0);
+        assert_eq!(persisted(sid), before);
+        let guard = state.lock().await;
+        assert_eq!(guard.content, before.0);
+        assert_eq!(guard.last_summarized_seq, before.1);
+        assert!(
+            !guard.extraction_in_progress,
+            "cleanup must run for skipped jobs"
+        );
+    }
 }

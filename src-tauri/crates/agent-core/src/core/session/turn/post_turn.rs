@@ -20,8 +20,8 @@ use super::super::persistence as unified_persistence;
 use super::streaming::broadcast_agent_warning;
 use crate::config::ReliabilityConfig;
 use crate::memory::background::{
-    bridge_cancel_flag, memory_job_is_enabled, submit_memory_job, MemoryJob, MemoryJobKind,
-    MemoryJobOutcome,
+    bridge_cancel_flag, memory_job_is_enabled, submit_memory_job, MemoryJob, MemoryJobCompletion,
+    MemoryJobKind, MemoryJobOutcome,
 };
 use crate::memory::workspace_memory::auto_dream::{self as auto_dream, AutoDreamState};
 use crate::memory::workspace_memory::extract::{self as extract_memories, ExtractMemoriesState};
@@ -190,6 +190,10 @@ pub(super) struct SessionMemoryExtractionInput<'a> {
 /// (`post_turn_dispatch` 9b), so the job body only loads, extracts, and
 /// persists. SM is context-pipeline state — no learnings policy check here.
 pub(super) fn spawn_session_memory_extraction(input: SessionMemoryExtractionInput<'_>) {
+    submit_memory_job(session_memory_job(input));
+}
+
+fn session_memory_job(input: SessionMemoryExtractionInput<'_>) -> MemoryJob {
     let SessionMemoryExtractionInput {
         session_id,
         agent_id,
@@ -203,7 +207,7 @@ pub(super) fn spawn_session_memory_extraction(input: SessionMemoryExtractionInpu
     let cleanup_sid = sid.clone();
     let cleanup_state = Arc::clone(&sm_state);
 
-    let job = MemoryJob::new(
+    MemoryJob::new_with_completion(
         sid,
         agent_id,
         MemoryJobKind::SessionMemory,
@@ -227,7 +231,7 @@ pub(super) fn spawn_session_memory_extraction(input: SessionMemoryExtractionInpu
             .await
             .map_err(|err| format!("Failed to create fork provider: {err}"))?
             else {
-                return Ok(());
+                return Ok(MemoryJobCompletion::Skipped);
             };
             let cancel_bridge = bridge_cancel_flag(cancel);
             extract_and_persist_session_memory(
@@ -244,7 +248,9 @@ pub(super) fn spawn_session_memory_extraction(input: SessionMemoryExtractionInpu
     )
     .with_cleanup(move |outcome| async move {
         match outcome {
-            MemoryJobOutcome::Completed | MemoryJobOutcome::Cancelled => {}
+            MemoryJobOutcome::Completed
+            | MemoryJobOutcome::Skipped
+            | MemoryJobOutcome::Cancelled => {}
             MemoryJobOutcome::Failed | MemoryJobOutcome::TimedOut => {
                 let warning = cleanup_state
                     .lock()
@@ -259,8 +265,7 @@ pub(super) fn spawn_session_memory_extraction(input: SessionMemoryExtractionInpu
         if outcome != MemoryJobOutcome::Completed {
             cleanup_state.lock().await.extraction_in_progress = false;
         }
-    });
-    submit_memory_job(job);
+    })
 }
 
 /// Shared production boundary: load authoritative history, extract, then
@@ -273,13 +278,13 @@ async fn extract_and_persist_session_memory(
     model: &str,
     current_tokens: usize,
     cancel_flag: Option<&Arc<std::sync::atomic::AtomicBool>>,
-) -> Result<(), String> {
+) -> Result<MemoryJobCompletion, String> {
     if sm_state.lock().await.auxiliary_retry.is_cooling_down(
         &provider.auxiliary_model(model),
         model,
         std::time::Instant::now(),
     ) {
-        return Ok(());
+        return Ok(MemoryJobCompletion::Skipped);
     }
     let (messages, start_seqs) = load_durable_history_blocking(session_id.to_owned()).await?;
     info!(
@@ -298,7 +303,7 @@ async fn extract_and_persist_session_memory(
     )
     .await?
     else {
-        return Ok(());
+        return Ok(MemoryJobCompletion::Skipped);
     };
     let last_seq = sm_state.lock().await.last_summarized_seq;
     let persist_sid = session_id.to_owned();
@@ -308,7 +313,7 @@ async fn extract_and_persist_session_memory(
     .await
     .map_err(|err| format!("SM persist worker failed: {err}"))?
     .map_err(|err| format!("Failed to persist session memory state: {err}"))?;
-    Ok(())
+    Ok(MemoryJobCompletion::Completed)
 }
 
 #[cfg(test)]
