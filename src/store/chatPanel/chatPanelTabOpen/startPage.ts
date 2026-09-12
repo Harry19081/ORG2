@@ -12,11 +12,7 @@ import {
 } from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { createExploreTab, createLaunchpadTab } from "../chatPanelTabFactories";
-import {
-  activateChatPanelTabAtom,
-  appendAndActivateChatPanelTabAtom,
-} from "../chatPanelTabPresentationAtoms";
-import { chatPanelTabsAtom } from "../chatPanelTabsState";
+import { openOrFocusChatPanelTab } from "./openOrFocus";
 
 interface OpenOrFocusStartPageTabOptions {
   title?: string;
@@ -32,16 +28,10 @@ export const openOrFocusChatPanelStartPageTabAtom = atom(
   null,
   (get, set, options: OpenOrFocusStartPageTabOptions = {}) => {
     const { title = "Launchpad" } = options;
-    const existingTab = get(chatPanelTabsAtom).tabs.find(
-      (tab) => tab.type === "start-page"
-    );
-    if (existingTab) {
-      set(activateChatPanelTabAtom, existingTab.id);
-      return existingTab.id;
-    }
-    const tab = createLaunchpadTab({ title });
-    set(appendAndActivateChatPanelTabAtom, { tab });
-    return tab.id;
+    return openOrFocusChatPanelTab(get, set, {
+      isMatch: (tab) => tab.type === "start-page",
+      create: () => createLaunchpadTab({ title }),
+    });
   }
 );
 openOrFocusChatPanelStartPageTabAtom.debugLabel =
@@ -73,16 +63,10 @@ openCreateTargetInChatPanelStartPageAtom.debugLabel =
   "openCreateTargetInChatPanelStartPage";
 
 /** Open or focus the singleton Explore tab. */
-export const openExploreInChatPanelTabAtom = atom(null, (get, set) => {
-  const existingTab = get(chatPanelTabsAtom).tabs.find(
-    (tab) => tab.type === "explore"
-  );
-  if (existingTab) {
-    set(activateChatPanelTabAtom, existingTab.id);
-    return existingTab.id;
-  }
-  const tab = createExploreTab();
-  set(appendAndActivateChatPanelTabAtom, { tab });
-  return tab.id;
-});
+export const openExploreInChatPanelTabAtom = atom(null, (get, set) =>
+  openOrFocusChatPanelTab(get, set, {
+    isMatch: (tab) => tab.type === "explore",
+    create: () => createExploreTab(),
+  })
+);
 openExploreInChatPanelTabAtom.debugLabel = "openExploreInChatPanelTab";

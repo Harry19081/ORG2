@@ -34,9 +34,8 @@ export type ChatPanelTabType =
  * Payload for a "channel" tab, discriminated by scope. Local channels live in
  * `localChannelsAtom` (this machine, single user); cloud channels are org
  * rows from the `0014_org_channels.sql` control plane. Unlike the other tab
- * payloads this type lives here rather than in `chatPanelAtom.ts` — a channel
- * tab needs no `chatPanelSelected*Atom` replay, so it never joins the
- * navigate-command surface.
+ * payloads this type lives here rather than in `selectionTypes.ts` — a channel
+ * tab has no selection projection, so it never joins the surface state.
  */
 export type ChatPanelSelectedChannel =
   | { scope: "local"; channelId: string; name: string }
@@ -76,8 +75,7 @@ export interface ChatPanelTab {
   cliCommand?: string;
   /**
    * For "workspace" tabs: the workspace whose overview / detail page this pill
-   * owns. Activating the tab replays this through `chatPanelNavigateAtom` so
-   * the overview surface re-renders.
+   * owns. The overview surface renders straight from this payload.
    */
   workspace?: ChatPanelSelectedWorkspace;
   /**
@@ -121,42 +119,169 @@ export interface ChatPanelTabsState {
 export const ORGANIZATION_TAB_ID = "chat-organization-management";
 
 type ChatPanelTabStationAccess = "always" | "never";
+export type ChatPanelWorkstationTransferKind =
+  | "session"
+  | "github-issue"
+  | "github-pr";
+
+/** Layout and transfer policy every chat-pane tab type must declare. */
+export interface ChatPanelTabTypePolicy {
+  /**
+   * When the tab can share the workbench with a Station surface.
+   * Conversation-oriented tabs can always remain docked beside the Station;
+   * standalone management and detail surfaces always own the full workbench.
+   */
+  stationAccess: ChatPanelTabStationAccess;
+  /** Lossless Chat Panel -> My Station mapping, or null when the tab cannot move. */
+  workstationTransfer: ChatPanelWorkstationTransferKind | null;
+  /**
+   * Standalone tool surfaces (Work lists / Kanban, Runtime) keep the pane
+   * header visible without any session controls or Launchpad search.
+   */
+  standaloneTool: boolean;
+  /**
+   * Whether the collapsed header shows the type icon beside the title.
+   * Surfaces that publish their own entity header omit it rather than
+   * adding a second identity icon.
+   */
+  collapsedHeadingIcon: boolean;
+  /**
+   * Whether the floating side-chat launcher earns its corner. The Launchpad
+   * already is a composer and a session tab already shows its transcript
+   * and composer, so both hide it; every other surface carries no chat of
+   * its own.
+   */
+  sideChatLauncher: boolean;
+}
 
 /**
- * When a Chat Panel tab can share the workbench with a Station surface.
- *
- * This record is intentionally exhaustive: a new tab type must make an
- * explicit layout decision instead of silently inheriting an unsafe default.
- * Conversation-oriented tabs can always remain docked beside the Station;
- * standalone management and detail surfaces always own the full workbench.
+ * Intentionally exhaustive: a new tab type must make every layout decision
+ * explicitly instead of silently inheriting an unsafe default.
  */
-const CHAT_PANEL_TAB_STATION_ACCESS: Record<
+export const CHAT_PANEL_TAB_TYPE_POLICY: Record<
   ChatPanelTabType,
-  ChatPanelTabStationAccess
+  ChatPanelTabTypePolicy
 > = {
-  session: "always",
-  terminal: "always",
-  "start-page": "always",
-  channel: "always",
-  "run-group": "always",
-  runtime: "never",
-  "work-management": "never",
-  workspace: "never",
-  organization: "never",
-  "work-item": "never",
-  "github-issue": "never",
-  "github-pr": "never",
-  project: "never",
-  explore: "never",
+  session: {
+    stationAccess: "always",
+    workstationTransfer: "session",
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: false,
+  },
+  terminal: {
+    stationAccess: "always",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  "start-page": {
+    stationAccess: "always",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: true,
+    sideChatLauncher: false,
+  },
+  channel: {
+    stationAccess: "always",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  "run-group": {
+    stationAccess: "always",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  runtime: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: true,
+    collapsedHeadingIcon: true,
+    sideChatLauncher: true,
+  },
+  "work-management": {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: true,
+    collapsedHeadingIcon: true,
+    sideChatLauncher: true,
+  },
+  workspace: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  organization: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: true,
+    sideChatLauncher: true,
+  },
+  "work-item": {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  "github-issue": {
+    stationAccess: "never",
+    workstationTransfer: "github-issue",
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  "github-pr": {
+    stationAccess: "never",
+    workstationTransfer: "github-pr",
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  project: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  explore: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
 };
+
+function resolveChatPanelTabType(
+  tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined
+): ChatPanelTabType | null {
+  return typeof tabOrType === "string" ? tabOrType : (tabOrType?.type ?? null);
+}
 
 export function isChatPanelTabStationAvailable(
   tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined
 ): boolean {
-  const type =
-    typeof tabOrType === "string" ? tabOrType : (tabOrType?.type ?? null);
+  const type = resolveChatPanelTabType(tabOrType);
   if (type === null) return true;
-  return CHAT_PANEL_TAB_STATION_ACCESS[type] === "always";
+  return CHAT_PANEL_TAB_TYPE_POLICY[type].stationAccess === "always";
+}
+
+/** Whether the active tab is a standalone tool surface (Work lists, Runtime). */
+export function isStandaloneChatPanelToolTab(
+  tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined
+): boolean {
+  const type = resolveChatPanelTabType(tabOrType);
+  return type !== null && CHAT_PANEL_TAB_TYPE_POLICY[type].standaloneTool;
 }
 
 /** Resolve the layout without mutating the user's persisted maximize choice. */

@@ -481,7 +481,6 @@
       "showHidden": "Ausgeblendete Sitzungen anzeigen ({{count}})",
       "viewerTooltip": "{{name}} sieht sich diese Sitzung an",
       "viewerOverflow": "und {{count}} weitere Betrachter",
-      "memberViewing": "sieht an: {{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "Sitzung wird geladen…",

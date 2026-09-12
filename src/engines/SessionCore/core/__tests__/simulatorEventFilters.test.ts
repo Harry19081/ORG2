@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import type { SessionEvent, SimulatorEventPreview } from "../../core/types";
 import {
   getFallbackSimulatorEventFilterCategory,
   isSimulatorEventVisibleForFilters,
 } from "../simulatorEventFilters";
+import type { SessionEvent, SimulatorEventPreview } from "../types";
 
 function preview(
   overrides: Partial<SimulatorEventPreview>

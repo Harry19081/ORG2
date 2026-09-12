@@ -9,6 +9,7 @@ import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
@@ -20,6 +21,8 @@ import {
   HugeiconsIcon,
   InformationCircleIcon,
   LockIcon,
+  PinIcon,
+  PinOffIcon,
   Tick01Icon,
 } from "@src/icons";
 import { copyText } from "@src/util/data/clipboard";
@@ -486,6 +489,42 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
               >
                 <HighlightText text={item.label} query={searchQuery} />
               </span>
+            )}
+            {data.pinState && !isDisabled && (
+              <Button
+                variant="tertiary"
+                appearance="ghost"
+                size="sidebar"
+                iconOnly
+                aria-label={t(
+                  data.pinState.pinned
+                    ? "sessions:chat.unpinSession"
+                    : "sessions:chat.pinSession"
+                )}
+                aria-pressed={data.pinState.pinned}
+                disabled={data.pinState.disabled}
+                title={t(
+                  data.pinState.pinned
+                    ? "sessions:chat.unpinSession"
+                    : "sessions:chat.pinSession"
+                )}
+                className="shrink-0 opacity-0 group-hover:opacity-100 focus-visible:bg-fill-3 focus-visible:opacity-100 enabled:hover:bg-fill-3 enabled:active:bg-fill-4"
+                icon={
+                  <HugeiconsIcon
+                    icon={data.pinState.pinned ? PinOffIcon : PinIcon}
+                    size={14}
+                  />
+                }
+                onMouseDown={(event) => event.preventDefault()}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ")
+                    event.stopPropagation();
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  data.pinState?.onToggle();
+                }}
+              />
             )}
             {data.inlineTag && (
               <span className="shrink-0 text-[10px] text-text-3">

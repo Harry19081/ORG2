@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ImportedHistorySource } from "@src/api/tauri/externalHistory";
 import { rpc } from "@src/api/tauri/rpc";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { openOrganizationInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import type { Session } from "@src/store/session/sessionAtom/types";
 
 import {
@@ -32,7 +33,6 @@ const {
   SESSION_SEGMENT_UPLOAD_BATCH_SIZE,
   Org2CloudSyncEngine,
   Org2CloudSyncError,
-  chatPanelSelectedCloudOrgAtom,
   cloudOrgToken,
   getImportedHistorySourceBySessionId,
   org2CloudAccessSettingsAtom,
@@ -583,7 +583,9 @@ describe("Org2CloudSyncEngine session publishing", () => {
 
   it("treats the visible management org as active for retry and toast policy", async () => {
     store.set(sidebarActiveCloudOrgIdAtom, null);
-    store.set(chatPanelSelectedCloudOrgAtom, { orgId: "corg-1" });
+    store.set(openOrganizationInChatPanelTabAtom, {
+      organization: { kind: "cloud", cloudOrg: { orgId: "corg-1" } },
+    });
     client.upsertSessionMetadata.mockRejectedValue(
       new Org2CloudSyncError("ORG2_QUOTA_EXCEEDED", 403)
     );

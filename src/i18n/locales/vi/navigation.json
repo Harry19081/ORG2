@@ -481,7 +481,6 @@
       "showHidden": "Hiện các phiên đã ẩn ({{count}})",
       "viewerTooltip": "{{name}} đang xem phiên này",
       "viewerOverflow": "và {{count}} người khác đang xem",
-      "memberViewing": "đang xem: {{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "Đang tải phiên…",

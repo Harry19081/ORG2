@@ -481,7 +481,6 @@
       "showHidden": "숨긴 세션 표시 ({{count}})",
       "viewerTooltip": "{{name}} 님이 이 세션을 보고 있습니다",
       "viewerOverflow": "외 {{count}}명이 보고 있습니다",
-      "memberViewing": "보는 중: {{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "세션 불러오는 중…",

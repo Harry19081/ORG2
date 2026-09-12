@@ -481,7 +481,6 @@
       "showHidden": "Afficher les sessions masquées ({{count}})",
       "viewerTooltip": "{{name}} consulte cette session",
       "viewerOverflow": "et {{count}} autres spectateurs",
-      "memberViewing": "regarde : {{title}}",
       "viewerOverflow_one": "and 1 more viewer",
       "viewerOverflow_other": "and {{count}} more viewers",
       "loadingSession": "Chargement de la session…",

@@ -19,7 +19,10 @@ import {
   syncActiveChatPanelTabStateAtom,
   toggleActiveChatPanelMaximizedAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { isChatPanelTabStationAvailable } from "@src/store/chatPanel/chatPanelTabsModel";
+import {
+  isChatPanelTabStationAvailable,
+  isStandaloneChatPanelToolTab,
+} from "@src/store/chatPanel/chatPanelTabsModel";
 import { chatPanelTabCountAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   type SessionContinuation,
@@ -28,7 +31,6 @@ import {
 import { tuiModeAtom } from "@src/store/session/tuiModeAtom";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import {
-  chatPanelContentModeAtom,
   chatPanelSelectedCloudOrgAtom,
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
@@ -110,7 +112,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       humanSession: humanSessionActive,
     });
 
-    const contentMode = useAtomValue(chatPanelContentModeAtom);
     const startPageOpen = useAtomValue(chatPanelStartPageOpenAtom);
     const selectedCloudOrg = useAtomValue(chatPanelSelectedCloudOrgAtom);
     const surface = useAtomValue(activeChatPanelSurfaceAtom);
@@ -172,8 +173,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       showSessionSurface,
     });
     const tabCount = useAtomValue(chatPanelTabCountAtom);
-    const isStandaloneToolTabActive =
-      activeTab?.type === "work-management" || activeTab?.type === "runtime";
+    const isStandaloneToolTabActive = isStandaloneChatPanelToolTab(activeTab);
     const stationAvailable = isChatPanelTabStationAvailable(activeTab);
     const isChatFocus = useAtomValue(effectiveChatPanelMaximizedAtom);
     const [focusedWorkstationMenuHost, setFocusedWorkstationMenuHost] =
@@ -255,7 +255,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
 
     const contentState = resolveChatPanelContentState({
       active,
-      contentMode,
       currentSessionId: currentSessionId ?? null,
       surface,
     });

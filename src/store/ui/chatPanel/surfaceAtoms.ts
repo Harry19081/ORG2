@@ -1,18 +1,20 @@
 /**
- * Chat-panel surface projection: the discriminated surface state, the
- * navigate command that resets and repoints the selection atoms, and the
- * persisted "maximized" preference.
+ * Chat-panel surface projection: the surface the active tab presents, the
+ * content mode derived from it, the reset that clears creator state before a
+ * session takes the slot, and the persisted "maximized" preference.
  */
-import { type WritableAtom, atom } from "jotai";
+import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { z } from "zod/v4";
 
+import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 import { createZodJsonStorage } from "@src/util/core/storage/zodStorage";
 
 import {
+  CHAT_PANEL_CONTENT_MODE,
   CHAT_PANEL_CREATE_TARGET,
-  type ChatPanelCreateProjectContext,
+  type ChatPanelContentMode,
   type ChatPanelSelectedCloudOrg,
   type ChatPanelSelectedProject,
   type ChatPanelSelectedProjectOrg,
@@ -23,11 +25,7 @@ import {
   type WorkspaceOverviewTab,
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
-  chatPanelSelectedCloudOrgAtom,
-  chatPanelSelectedProjectAtom,
-  chatPanelSelectedProjectOrgAtom,
-  chatPanelSelectedWorkItemAtom,
-  chatPanelSelectionStateAtom,
+  chatPanelCreatorWorkItemContextAtom,
   chatPanelStartPageOpenAtom,
   chatPanelWorkspaceOverviewTabAtom,
 } from "./selectionAtoms";
@@ -59,152 +57,87 @@ export type ChatPanelSurfaceState =
       cloudOrg: ChatPanelSelectedCloudOrg;
     };
 
-export type ChatPanelNavigateCommand =
-  | { kind: typeof CHAT_PANEL_SURFACE_KIND.SESSION }
-  | {
-      kind: typeof CHAT_PANEL_SURFACE_KIND.NEW_PROJECT;
-      createProjectContext?: ChatPanelCreateProjectContext | null;
-    }
-  | {
-      kind: typeof CHAT_PANEL_SURFACE_KIND.NEW_WORK_ITEM;
-      createProjectContext?: ChatPanelCreateProjectContext | null;
-    }
-  | {
-      kind: typeof CHAT_PANEL_SURFACE_KIND.PROJECT;
-      project: ChatPanelSelectedProject;
-    }
-  | {
-      kind: typeof CHAT_PANEL_SURFACE_KIND.PROJECT_ORG;
-      projectOrg: ChatPanelSelectedProjectOrg;
-    }
-  | {
-      kind: typeof CHAT_PANEL_SURFACE_KIND.WORK_ITEM;
-      workItem: ChatPanelSelectedWorkItem;
-    }
-  | { kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE }
-  | {
-      kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW;
-      workspace: ChatPanelSelectedWorkspace;
-      tab?: WorkspaceOverviewTab;
-    }
-  | {
-      kind: typeof CHAT_PANEL_SURFACE_KIND.CLOUD_ORG;
-      cloudOrg: ChatPanelSelectedCloudOrg;
-    };
+const SESSION_SURFACE: ChatPanelSurfaceState = {
+  kind: CHAT_PANEL_SURFACE_KIND.SESSION,
+};
 
-type SetAtom = <Value, Args extends unknown[], Result>(
-  atomToSet: WritableAtom<Value, Args, Result>,
-  ...args: Args
-) => Result;
-
-function resetChatPanelNavigationOptions(set: SetAtom): void {
-  set(chatPanelCreateProjectContextAtom, null);
-  set(chatPanelCreateTargetAtom, DEFAULT_CHAT_PANEL_CREATE_TARGET);
-  set(chatPanelWorkspaceOverviewTabAtom, WORKSPACE_OVERVIEW_TAB.OVERVIEW);
-}
-
-export const chatPanelNavigateAtom = atom(
-  null,
-  (get, set, command: ChatPanelNavigateCommand) => {
-    const currentWorkspaceOverviewTab = get(chatPanelWorkspaceOverviewTabAtom);
-    resetChatPanelNavigationOptions(set);
-    set(chatPanelStartPageOpenAtom, false);
-
-    switch (command.kind) {
-      case CHAT_PANEL_SURFACE_KIND.SESSION:
-        set(chatPanelSelectionStateAtom, { kind: "session" });
-        return;
-      case CHAT_PANEL_SURFACE_KIND.NEW_PROJECT:
-        set(chatPanelSelectionStateAtom, { kind: "creation" });
-        set(chatPanelCreateTargetAtom, CHAT_PANEL_CREATE_TARGET.PROJECT);
-        set(
-          chatPanelCreateProjectContextAtom,
-          command.createProjectContext ?? null
-        );
-        return;
-      case CHAT_PANEL_SURFACE_KIND.NEW_WORK_ITEM:
-        set(chatPanelSelectionStateAtom, { kind: "creation" });
-        set(chatPanelCreateTargetAtom, CHAT_PANEL_CREATE_TARGET.WORK_ITEM);
-        set(
-          chatPanelCreateProjectContextAtom,
-          command.createProjectContext ?? null
-        );
-        return;
-      case CHAT_PANEL_SURFACE_KIND.PROJECT:
-        set(chatPanelSelectedProjectAtom, command.project);
-        return;
-      case CHAT_PANEL_SURFACE_KIND.PROJECT_ORG:
-        set(chatPanelSelectedProjectOrgAtom, command.projectOrg);
-        return;
-      case CHAT_PANEL_SURFACE_KIND.WORK_ITEM:
-        set(chatPanelSelectedWorkItemAtom, command.workItem);
-        return;
-      case CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE:
-        set(chatPanelSelectionStateAtom, { kind: "explore" });
-        return;
-      case CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW:
-        set(chatPanelSelectionStateAtom, {
-          kind: "workspace",
-          value: command.workspace,
-        });
-        set(
-          chatPanelWorkspaceOverviewTabAtom,
-          command.tab ?? currentWorkspaceOverviewTab
-        );
-        return;
-      case CHAT_PANEL_SURFACE_KIND.CLOUD_ORG:
-        set(chatPanelSelectedCloudOrgAtom, command.cloudOrg);
-        return;
-    }
-  }
-);
-chatPanelNavigateAtom.debugLabel = "chatPanelNavigateAtom";
-
+/**
+ * The surface the active tab presents. A Launchpad tab reports the creator it
+ * is showing; a payload-less tab of any other type degrades to the session
+ * surface rather than inventing a selection.
+ */
 export const activeChatPanelSurfaceAtom = atom<ChatPanelSurfaceState>((get) => {
-  const selection = get(chatPanelSelectionStateAtom);
-  switch (selection.kind) {
+  const tab = get(activeChatPanelTabAtom);
+  switch (tab?.type) {
+    case "start-page": {
+      const target = get(chatPanelCreateTargetAtom);
+      if (target === CHAT_PANEL_CREATE_TARGET.PROJECT) {
+        return { kind: CHAT_PANEL_SURFACE_KIND.NEW_PROJECT };
+      }
+      if (target === CHAT_PANEL_CREATE_TARGET.WORK_ITEM) {
+        return { kind: CHAT_PANEL_SURFACE_KIND.NEW_WORK_ITEM };
+      }
+      return SESSION_SURFACE;
+    }
     case "project":
-      return {
-        kind: CHAT_PANEL_SURFACE_KIND.PROJECT,
-        project: selection.value,
-      };
-    case "projectOrg":
-      return {
-        kind: CHAT_PANEL_SURFACE_KIND.PROJECT_ORG,
-        projectOrg: selection.value,
-      };
+      return tab.project
+        ? { kind: CHAT_PANEL_SURFACE_KIND.PROJECT, project: tab.project }
+        : SESSION_SURFACE;
+    case "organization":
+      if (!tab.organization) return SESSION_SURFACE;
+      return tab.organization.kind === "cloud"
+        ? {
+            kind: CHAT_PANEL_SURFACE_KIND.CLOUD_ORG,
+            cloudOrg: tab.organization.cloudOrg,
+          }
+        : {
+            kind: CHAT_PANEL_SURFACE_KIND.PROJECT_ORG,
+            projectOrg: tab.organization.projectOrg,
+          };
+    case "work-item":
+      return tab.workItem
+        ? { kind: CHAT_PANEL_SURFACE_KIND.WORK_ITEM, workItem: tab.workItem }
+        : SESSION_SURFACE;
     case "workspace":
-      return {
-        kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW,
-        workspace: selection.value,
-        tab: get(chatPanelWorkspaceOverviewTabAtom),
-      };
-    case "cloudOrg":
-      return {
-        kind: CHAT_PANEL_SURFACE_KIND.CLOUD_ORG,
-        cloudOrg: selection.value,
-      };
+      return tab.workspace
+        ? {
+            kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW,
+            workspace: tab.workspace,
+            tab: get(chatPanelWorkspaceOverviewTabAtom),
+          }
+        : SESSION_SURFACE;
     case "explore":
       return { kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE };
-    case "workItem": {
-      const workItem = get(chatPanelSelectedWorkItemAtom);
-      return workItem
-        ? { kind: CHAT_PANEL_SURFACE_KIND.WORK_ITEM, workItem }
-        : { kind: CHAT_PANEL_SURFACE_KIND.SESSION };
-    }
-    case "creation": {
-      const target = get(chatPanelCreateTargetAtom);
-      if (target === CHAT_PANEL_CREATE_TARGET.PROJECT)
-        return { kind: CHAT_PANEL_SURFACE_KIND.NEW_PROJECT };
-      if (target === CHAT_PANEL_CREATE_TARGET.WORK_ITEM)
-        return { kind: CHAT_PANEL_SURFACE_KIND.NEW_WORK_ITEM };
-      return { kind: CHAT_PANEL_SURFACE_KIND.SESSION };
-    }
-    case "session":
-      return { kind: CHAT_PANEL_SURFACE_KIND.SESSION };
+    default:
+      return SESSION_SURFACE;
   }
 });
 activeChatPanelSurfaceAtom.debugLabel = "activeChatPanelSurfaceAtom";
+
+/** Session vs. any other surface, for consumers that only branch on that. */
+export const chatPanelContentModeAtom = atom(
+  (get): ChatPanelContentMode =>
+    get(activeChatPanelSurfaceAtom).kind === CHAT_PANEL_SURFACE_KIND.SESSION
+      ? CHAT_PANEL_CONTENT_MODE.SESSION
+      : CHAT_PANEL_CONTENT_MODE.NON_SESSION
+);
+chatPanelContentModeAtom.debugLabel = "chatPanelContentModeAtom";
+
+/**
+ * Clear every creator / Launchpad axis so a session can take the slot: the
+ * creator target and its org context, the retained created work item, the
+ * workspace overview sub-tab, and the Launchpad flag. Callers run this before
+ * opening or clearing a session; tab activation applies the same reset.
+ */
+export const resetChatPanelSessionSurfaceAtom = atom(null, (_get, set) => {
+  set(chatPanelCreateProjectContextAtom, null);
+  set(chatPanelCreateTargetAtom, DEFAULT_CHAT_PANEL_CREATE_TARGET);
+  set(chatPanelCreatorWorkItemContextAtom, null);
+  set(chatPanelWorkspaceOverviewTabAtom, WORKSPACE_OVERVIEW_TAB.OVERVIEW);
+  set(chatPanelStartPageOpenAtom, false);
+});
+resetChatPanelSessionSurfaceAtom.debugLabel =
+  "resetChatPanelSessionSurfaceAtom";
 
 /**
  * The user's persisted preference for whether the chat-panel slot covers the

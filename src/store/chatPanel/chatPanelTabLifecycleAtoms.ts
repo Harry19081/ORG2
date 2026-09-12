@@ -4,10 +4,7 @@ import { destroyChatPanelTerminalAtom } from "@src/store/chatPanel/chatPanelTerm
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import {
   type ChatPanelSelectedWorkItem,
-  chatPanelSelectedCloudOrgAtom,
-  chatPanelSelectedProjectAtom,
-  chatPanelSelectedProjectOrgAtom,
-  chatPanelSelectedWorkItemAtom,
+  chatPanelCreatorWorkItemContextAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkManagementSection } from "@src/store/workstation";
 
@@ -195,25 +192,19 @@ export const closeSessionChatPanelTabsAtom = atom(
 );
 closeSessionChatPanelTabsAtom.debugLabel = "closeSessionChatPanelTabs";
 
-/** Close the singleton organization tab, or clear its legacy surface mirrors. */
+/** Close the singleton organization tab if one is open. */
 export const closeOrganizationChatPanelTabAtom = atom(null, (get, set) => {
   const tab = get(chatPanelTabsAtom).tabs.find(
     (candidate) => candidate.type === "organization"
   );
-  if (tab) {
-    set(closeChatPanelTabAtom, tab.id);
-    return;
-  }
-  set(chatPanelSelectedCloudOrgAtom, null);
-  set(chatPanelSelectedProjectOrgAtom, null);
+  if (tab) set(closeChatPanelTabAtom, tab.id);
 });
 closeOrganizationChatPanelTabAtom.debugLabel = "closeOrganizationChatPanelTab";
 
 /**
  * Close the tab that owns a deleted Work Item. Remote item tombstones and
- * project cascades must remove the durable tab payload as well as the legacy
- * selected-work-item mirror; clearing only the mirror leaves an editable ghost
- * because `WorkItemSurfaceRenderer` is keyed by the tab.
+ * project cascades must remove the durable tab payload; a just-created item
+ * the Launchpad creator still retains is dropped the same way.
  */
 export const closeWorkItemChatPanelTabAtom = atom(
   null,
@@ -229,9 +220,9 @@ export const closeWorkItemChatPanelTabAtom = atom(
       set(closeChatPanelTabAtom, tab.id);
       return;
     }
-    const selected = get(chatPanelSelectedWorkItemAtom);
-    if (selected && getChatPanelWorkItemTabKey(selected) === workItemKey) {
-      set(chatPanelSelectedWorkItemAtom, null);
+    const retained = get(chatPanelCreatorWorkItemContextAtom);
+    if (retained && getChatPanelWorkItemTabKey(retained) === workItemKey) {
+      set(chatPanelCreatorWorkItemContextAtom, null);
     }
   }
 );
@@ -267,17 +258,9 @@ export const closeProjectOrgChatPanelTabsAtom = atom(
 
     for (const tabId of tabIds) set(closeChatPanelTabAtom, tabId);
 
-    const selectedWorkItem = get(chatPanelSelectedWorkItemAtom);
-    if (selectedWorkItem?.orgId && revoked.has(selectedWorkItem.orgId)) {
-      set(chatPanelSelectedWorkItemAtom, null);
-    }
-    const selectedProject = get(chatPanelSelectedProjectAtom);
-    if (selectedProject?.orgId && revoked.has(selectedProject.orgId)) {
-      set(chatPanelSelectedProjectAtom, null);
-    }
-    const selectedProjectOrg = get(chatPanelSelectedProjectOrgAtom);
-    if (revoked.has(selectedProjectOrg?.orgId ?? "")) {
-      set(chatPanelSelectedProjectOrgAtom, null);
+    const retained = get(chatPanelCreatorWorkItemContextAtom);
+    if (retained?.orgId && revoked.has(retained.orgId)) {
+      set(chatPanelCreatorWorkItemContextAtom, null);
     }
   }
 );
