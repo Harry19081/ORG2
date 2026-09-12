@@ -72,6 +72,7 @@ function namespaceSectionItems(
   return items.map((item) => ({
     ...item,
     id: `${sectionId}-${item.id}`,
+    data: { ...item.data, pinId: item.data?.pinId ?? item.id },
   }));
 }
 
