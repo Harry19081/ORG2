@@ -16,11 +16,6 @@ vi.mock("@src/features/SessionCreator/variants", () => ({
     }),
 }));
 
-vi.mock("../../components", () => ({
-  SpotlightPillBar: ({ path }: { path: { label: string }[] }) =>
-    createElement("div", null, path[0].label),
-}));
-
 vi.mock("../../shell", () => ({
   SpotlightShell: ({ children }: { children: ReactNode }) =>
     createElement("section", { "data-testid": "spotlight-shell" }, children),

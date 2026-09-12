@@ -8,7 +8,7 @@
  *
  * Repo-agnostic: all state is owned by the caller (`useSourceControlSidebarModule`).
  */
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -105,8 +105,18 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
         [t]
       );
 
+      const hideStageFilters = counts?.staged === 0;
+      const stageModeHidden =
+        hideStageFilters && (mode === "staged" || mode === "unstaged");
+      useEffect(() => {
+        if (stageModeHidden) onChangeMode("uncommitted");
+      }, [stageModeHidden, onChangeMode]);
+
       const options = useMemo<DropdownOption[]>(() => {
-        const fileOptions = FILE_FILTER_ROWS.map((row) => {
+        const fileOptions = FILE_FILTER_ROWS.filter(
+          (row) =>
+            !hideStageFilters || (row.id !== "staged" && row.id !== "unstaged")
+        ).map((row) => {
           const label = t(row.labelKey);
           const count = getModeCount(row.id);
           const triggerLabel =
@@ -148,7 +158,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
             triggerLabel: t("common:labels.issues", "Issues"),
           },
         ];
-      }, [getCountLabel, getModeCount, t]);
+      }, [getCountLabel, getModeCount, hideStageFilters, t]);
 
       const [moreMenuVisible, setMoreMenuVisible] = useState(false);
 
@@ -170,7 +180,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
       return (
         <div className="flex flex-none items-center gap-1 overflow-visible">
           <Select
-            value={mode}
+            value={stageModeHidden ? "uncommitted" : mode}
             onChange={handleSelect}
             options={options}
             size="small"

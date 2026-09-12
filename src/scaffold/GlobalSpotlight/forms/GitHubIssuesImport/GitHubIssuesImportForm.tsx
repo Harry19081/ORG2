@@ -1,12 +1,6 @@
 import { emit } from "@tauri-apps/api/event";
 import { useSetAtom } from "jotai";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -26,10 +20,10 @@ import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import { projectListRefreshAtom } from "@src/store/project/projectAtom";
 import { STORY_PERSONAL_ORG_FILTER_ID } from "@src/store/workstation/tabs";
 
-import { SpotlightSearchBar } from "../../components";
 import { ICONS } from "../../config";
 import type { PathSegment } from "../../types";
 import { SpotlightFormBody, SpotlightFormShell } from "../shared";
+import { SpotlightFormLayout } from "../shared/SpotlightFormLayout";
 import {
   createProjectSlug,
   createWorkItemPrefix,
@@ -58,7 +52,6 @@ const GitHubIssuesImportForm: React.FC<GitHubIssuesImportFormProps> = ({
 }) => {
   const { t } = useTranslation(["projects", "common"]);
   const bumpProjectListRefresh = useSetAtom(projectListRefreshAtom);
-  const hiddenInputRef = useRef<HTMLInputElement>(null);
   const [projectName, setProjectName] = useState(() =>
     repoName ? `${repoName} issues` : ""
   );
@@ -202,17 +195,10 @@ const GitHubIssuesImportForm: React.FC<GitHubIssuesImportFormProps> = ({
   ]);
 
   return (
-    <div data-testid="github-issues-import-spotlight">
-      <SpotlightSearchBar
-        inputRef={hiddenInputRef}
-        searchQuery=""
-        onSearchQueryChange={() => undefined}
-        onKeyDown={() => undefined}
-        placeholder=""
-        path={path}
-        onRemoveSegment={onCancel}
-        hideInput
-      />
+    <SpotlightFormLayout
+      header={{ path, onRemoveSegment: onCancel }}
+      data-testid="github-issues-import-spotlight"
+    >
       <form
         data-testid="github-issues-import-form"
         onSubmit={(event) => {
@@ -342,7 +328,7 @@ const GitHubIssuesImportForm: React.FC<GitHubIssuesImportFormProps> = ({
           />
         </SpotlightFormShell>
       </form>
-    </div>
+    </SpotlightFormLayout>
   );
 };
 

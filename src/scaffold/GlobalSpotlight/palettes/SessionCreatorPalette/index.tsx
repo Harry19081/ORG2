@@ -13,7 +13,7 @@ import { SessionCreatorChatPanel } from "@src/features/SessionCreator/variants";
 import { Add01Icon } from "@src/icons";
 import type { BasePaletteProps } from "@src/scaffold/GlobalSpotlight/shared";
 
-import { SpotlightPillBar } from "../../components";
+import { SpotlightFormLayout } from "../../forms/shared/SpotlightFormLayout";
 import { SpotlightFormBody } from "../../forms/shared/SpotlightFormShell";
 import { SpotlightShell } from "../../shell";
 import type { PathSegment } from "../../types";
@@ -52,8 +52,10 @@ export function SessionCreatorPalette({
   );
 
   const body = (
-    <div className="flex min-h-0 flex-col">
-      <SpotlightPillBar path={path} onRemoveSegment={handleBack} />
+    <SpotlightFormLayout
+      header={{ path, onRemoveSegment: handleBack }}
+      className="flex min-h-0 flex-col"
+    >
       <SpotlightFormBody>
         <SessionCreatorChatPanel
           spotlight
@@ -63,7 +65,7 @@ export function SessionCreatorPalette({
           innerClassName="p-0!"
         />
       </SpotlightFormBody>
-    </div>
+    </SpotlightFormLayout>
   );
 
   if (asBody) return body;

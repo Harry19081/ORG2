@@ -627,9 +627,9 @@ impl LLMProvider for ReliableProvider {
         );
         // A candidate allowed by the primary account is not necessarily
         // accepted by a different fallback account/transport. Until the chain
-        // has a common capability contract, retain the working parent model.
+        // has a common capability contract, skip rather than use an expensive parent.
         if self.providers.len() > 1 {
-            selection.model = parent_model.to_owned();
+            selection.models.clear();
         }
         selection
     }
