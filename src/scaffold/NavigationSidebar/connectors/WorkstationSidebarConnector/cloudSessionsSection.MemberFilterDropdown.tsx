@@ -1,9 +1,9 @@
 /**
  * Team Sessions "who posted this" member-filter dropdown
  * (`cloudSessionsSection.tsx`): the portal-rendered option list (everyone /
- * directly shared with me / each roster member, with online dot + "viewing"
- * subtitle) plus the "show hidden" reveal row, and the state/handlers that
- * back it (filter selection and hidden-row count). Search, keyboard navigation,
+ * directly shared with me / each roster member, with online dot) plus the
+ * "show hidden" reveal row, and the state/handlers that back it (filter
+ * selection and hidden-row count). Search, keyboard navigation,
  * dismissal and scrolling use the shared Dropdown options API.
  */
 import type { TFunction } from "i18next";
@@ -129,37 +129,20 @@ export function useCloudMemberFilterDropdown({
     const presenceEntry = option.userId
       ? (orgId ? presenceMap[orgId] : undefined)?.[option.userId]
       : undefined;
-    const viewingRow = presenceEntry?.viewingSessionId
-      ? rows.find(
-          (row) => row.sourceSessionId === presenceEntry.viewingSessionId
-        )
-      : undefined;
-    const viewingTitle = viewingRow
-      ? viewingRow.title.replace(/^(?:⑂\s*)+/u, "")
-      : undefined;
 
     return {
       value: option.key,
       triggerLabel: option.displayName,
       dataTestId: `sidebar-cloud-filter-${option.key}`,
       label: (
-        <span className="flex min-w-0 flex-col">
-          <span className="flex min-w-0 items-center gap-1.5">
-            {presenceEntry && (
-              <span
-                data-testid="member-online-dot"
-                className="h-1.5 w-1.5 shrink-0 rounded-full bg-success-6"
-              />
-            )}
-            <span className="min-w-0 truncate">{option.displayName}</span>
-          </span>
-          {viewingTitle && (
-            <span className="min-w-0 truncate pl-3 text-[10px] text-text-3">
-              {t("cloud.sidebar.memberViewing", {
-                title: viewingTitle,
-              })}
-            </span>
+        <span className="flex min-w-0 items-center gap-1.5">
+          {presenceEntry && (
+            <span
+              data-testid="member-online-dot"
+              className="h-1.5 w-1.5 shrink-0 rounded-full bg-success-6"
+            />
           )}
+          <span className="min-w-0 truncate">{option.displayName}</span>
         </span>
       ),
     };
