@@ -257,8 +257,24 @@ export function createRustAgentAdapter(
     return created;
   };
 
+  // Native replay must read model-authored arguments, not the display view's
+  // subagent links, usage annotations, or transformed user copy.
+  const loadAuthoritativeHistory = async (
+    sessionId: string,
+    signal: AbortSignal
+  ): Promise<SessionEvent[]> => {
+    const messages = await loadMessages(sessionId);
+    if (signal.aborted || !messages?.length) return [];
+    return mergeToolResults(
+      messages.map((message) =>
+        persistedMessageToSessionEvent(message, sessionId)
+      )
+    );
+  };
+
   return {
     category,
+    loadAuthoritativeHistory,
 
     async loadHistory(
       sessionId: string,
