@@ -33,7 +33,7 @@ import {
 } from "@src/util/platform/tauri/nativeMenuPopup";
 
 import { ICONS } from "../config";
-import { SPOTLIGHT_TOKENS } from "../constants";
+import { SPOTLIGHT_CLASSES, SPOTLIGHT_TOKENS } from "../constants";
 import type { SpotlightItem, SpotlightItemData } from "../types";
 import { SpotlightDetailPane } from "./SpotlightDetailPane";
 import { HighlightText } from "./highlightUtils";
@@ -268,7 +268,9 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
     const ArrowRightIcon = ICONS.arrowRight;
     const DisclosureIcon =
       data.disclosureIcon === "arrowRight" ? ArrowRightIcon : ArrowRight01Icon;
-    const itemTextClassName = isDanger ? "text-danger-6" : "text-text-1";
+    const itemTextClassName = isDanger
+      ? "text-danger-6"
+      : SPOTLIGHT_CLASSES.itemLabelTone;
     const iconTone =
       typeof data.iconTone === "string" ? data.iconTone : undefined;
     const itemIconClassName = isDanger
@@ -277,9 +279,11 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         ? "text-primary-6"
         : iconTone === "text1"
           ? "text-text-1"
-          : "text-text-2";
+          : SPOTLIGHT_CLASSES.itemIconTone;
     // Only the currently-checked option uses medium weight; regular rows are normal.
-    const labelWeightClass = isCurrentSelection ? "font-medium" : "font-normal";
+    const labelWeightClass = isCurrentSelection
+      ? "font-medium"
+      : SPOTLIGHT_CLASSES.itemLabelWeight;
     const modelSection =
       typeof data.modelSection === "string" ? data.modelSection : undefined;
     const modelId = typeof data.modelId === "string" ? data.modelId : undefined;
@@ -382,7 +386,7 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         data-source-account-id={sourceAccountId}
         data-source-model-type={sourceModelType}
         data-source-type={sourceType}
-        className={`spotlight-item group relative mx-2 flex items-center gap-2.5 rounded-lg px-2 ${
+        className={`spotlight-item group relative mx-2 ${SPOTLIGHT_CLASSES.itemRow} ${
           isDisabled
             ? "cursor-not-allowed opacity-50"
             : `cursor-pointer ${isCurrentSelection ? "is-current-selection" : ""} ${isSelected ? "selected" : ""}`
@@ -423,7 +427,7 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         )}
 
         {item.icon && (
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center">
+          <div className={SPOTLIGHT_CLASSES.itemIcon}>
             {isCurrentSelection ? (
               <HugeiconsIcon
                 icon={Tick01Icon}

@@ -41,6 +41,12 @@ export const SPOTLIGHT_TOKENS = {
 } as const;
 
 export const SPOTLIGHT_CLASSES = {
+  /** Shared option-row geometry and default typography, also used by launchpad. */
+  itemRow: "flex items-center gap-2.5 rounded-lg px-2",
+  itemIcon: "flex h-6 w-6 shrink-0 items-center justify-center",
+  itemIconTone: "text-text-2",
+  itemLabelWeight: "font-normal",
+  itemLabelTone: "text-text-1",
   panel: "overflow-hidden rounded-2xl border border-border-2 bg-bg-2 shadow-xl",
   /** Primary contextual pill used by palette navigation and active state badges. */
   primaryPill:
