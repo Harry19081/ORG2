@@ -118,6 +118,10 @@ pub(crate) struct CodexAppSessionMeta {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct CodexAppSourceMetadata {
+    /// The native thread survives resend/rewind rollout rotation. A fork has
+    /// its own id even when it carries the same messages and forked_from_id.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    continuation_group_key: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     first_prompt: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -129,3 +133,7 @@ struct CodexAppSourceMetadata {
 #[cfg(test)]
 #[path = "../app_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "../app_resend_tests.rs"]
+mod resend_tests;

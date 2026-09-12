@@ -15,6 +15,7 @@ import { ArrowLeft01Icon, BlushBrush01Icon, HugeiconsIcon } from "@src/icons";
 import { ICONS } from "../config";
 import { SPOTLIGHT_CLASSES, SPOTLIGHT_TOKENS } from "../constants";
 import type { PathSegment } from "../types";
+import { handleSpotlightHorizontalArrow } from "./spotlightSearchKeyboard";
 
 // ============ PROPS ============
 
@@ -179,7 +180,9 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
             type="text"
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
-            onKeyDown={onKeyDown}
+            onKeyDown={(event) => {
+              if (!handleSpotlightHorizontalArrow(event)) onKeyDown(event);
+            }}
             placeholder={placeholder}
             aria-label={ariaLabel}
             className={`min-w-0 flex-1 bg-transparent text-ellipsis ${inputFontSize} text-text-1 placeholder:text-text-1 focus:outline-none`}

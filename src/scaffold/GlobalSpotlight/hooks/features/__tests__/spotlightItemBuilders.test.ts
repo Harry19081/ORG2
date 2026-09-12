@@ -118,6 +118,30 @@ describe("Spotlight settings item builders", () => {
     ]);
   });
 
+  it.each([
+    [APPEARANCE_MODE.LIGHT, "浅色"],
+    [APPEARANCE_MODE.DARK, "深色"],
+  ])(
+    "localizes the system theme suffix and matches it in search for %s",
+    (scheme, label) => {
+      const labels: Record<string, string> = {
+        "settings:general.followSystem": "跟随系统",
+        "settings:general.light": "浅色",
+        "settings:general.dark": "深色",
+      };
+      const items = buildThemeItems(
+        APPEARANCE_MODE.SYSTEM,
+        scheme,
+        label,
+        vi.fn(),
+        (key) => labels[key] ?? key
+      );
+      expect(items.find((item) => item.id === "theme-system")?.label).toBe(
+        `跟随系统 (${label})`
+      );
+    }
+  );
+
   it("offers the same system, light, and dark modes as Settings", () => {
     const onSelectTheme = vi.fn<(theme: GlobalThemePreference) => void>();
     const items = buildThemeItems(

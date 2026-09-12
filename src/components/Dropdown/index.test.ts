@@ -16,6 +16,7 @@ import {
 import { activeOverlayCountAtom } from "@src/store/ui/overlayLayerAtom";
 
 import Dropdown from ".";
+import DropdownSearch from "./DropdownSearch";
 
 describe("Dropdown", () => {
   let container: HTMLDivElement;
@@ -42,6 +43,38 @@ describe("Dropdown", () => {
   afterAll(() => {
     Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
+
+  it.each(["options", "custom"])(
+    "focuses search on click and reopen in %s dropdowns",
+    async (mode) => {
+      const props: React.ComponentProps<typeof Dropdown> = {
+        ...(mode === "options"
+          ? { options: [{ value: "one", label: "One" }], showSearch: true }
+          : {
+              droplist: React.createElement(DropdownSearch, {
+                value: "",
+                onChange: () => {},
+              }),
+            }),
+        children: React.createElement("button", null, "Open"),
+      };
+      await act(async () => {
+        root.render(React.createElement(Dropdown, props));
+      });
+      const trigger = container.querySelector("button")!;
+      for (let cycle = 0; cycle < 2; cycle += 1) {
+        act(() => trigger.click());
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 30));
+        });
+        const input = container.querySelector("input");
+        expect(input).not.toBeNull();
+        expect(document.activeElement).toBe(input);
+        act(() => trigger.click());
+        expect(container.querySelector("input")).toBeNull();
+      }
+    }
+  );
 
   it.each([
     { label: "options", options: [{ value: "one", label: "One" }] },

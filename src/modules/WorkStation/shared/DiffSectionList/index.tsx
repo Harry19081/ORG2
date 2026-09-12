@@ -19,6 +19,11 @@ import type { DiffViewMode } from "@src/types/git/types";
 import DiffFileSection from "../DiffFileSection";
 import type { DiffFileSectionData } from "../DiffFileSection";
 import { getDefaultDiffSectionExpanded } from "./expansion";
+import type {
+  ReviewSearchFile,
+  ReviewSearchMatch,
+} from "./search/reviewSearchTypes";
+import { useReviewSearch } from "./search/useReviewSearch";
 import {
   type DiffSectionListViewState,
   type RememberedExpansion,
@@ -37,6 +42,9 @@ export interface DiffSectionListItem<TFile extends DiffFileSectionData> {
 
 interface DiffSectionListProps<TFile extends DiffFileSectionData> {
   sections: Array<DiffSectionListItem<TFile>>;
+  enableReviewSearch?: boolean;
+  reviewSearchFiles?: readonly ReviewSearchFile[];
+  loadReviewFile?: (path: string) => Promise<ReviewSearchFile | null>;
   viewMode: DiffViewMode;
   loading?: boolean;
   emptyTitle: string;
@@ -54,6 +62,7 @@ interface DiffSectionListProps<TFile extends DiffFileSectionData> {
   onExpansionChange?: (file: TFile, expanded: boolean) => void;
   sectionKeySuffix?: (section: DiffSectionListItem<TFile>) => string | number;
   showBottomBorder?: boolean;
+  hideLastBottomBorder?: boolean;
   /** Show the original path after renamed files in each section header. */
   showRenamePath?: boolean;
   /** When true, each section renders a flat FileHeader instead of the collapsible chevron button. */
@@ -85,6 +94,9 @@ const DIFF_LIST_COMPONENTS = { Footer: DiffListFooter };
 
 function DiffSectionListInner<TFile extends DiffFileSectionData>({
   sections,
+  enableReviewSearch = false,
+  reviewSearchFiles,
+  loadReviewFile,
   viewMode,
   loading = false,
   emptyTitle,
@@ -101,6 +113,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   onExpansionChange,
   sectionKeySuffix,
   showBottomBorder,
+  hideLastBottomBorder = false,
   showRenamePath = false,
   flat = false,
   compactHeaderGutter = false,
@@ -109,6 +122,39 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   onViewStateChange,
 }: DiffSectionListProps<TFile>) {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const searchRootRef = useRef<HTMLDivElement>(null);
+  const reviewFiles = useMemo(
+    () =>
+      sections.map(({ file }) => ({
+        path: file.path,
+        oldContent: file.oldContent,
+        newContent: file.newContent,
+        isBinary: file.isBinary,
+        isUnavailable: file.isUnavailable,
+      })),
+    [sections]
+  );
+  const navigateSearch = useCallback(
+    (match: ReviewSearchMatch) => {
+      const index = sections.findIndex(({ file }) => file.path === match.path);
+      if (index >= 0)
+        virtuosoRef.current?.scrollToIndex({
+          index,
+          align: "start",
+          behavior: "auto",
+        });
+    },
+    [sections]
+  );
+  const reviewSearch = useReviewSearch({
+    enabled: enableReviewSearch,
+    files: reviewSearchFiles ?? reviewFiles,
+    loadFile: loadReviewFile,
+    containerRef: searchRootRef,
+    focusedPath,
+    onNavigate: navigateSearch,
+  });
+
   const rememberedExpansionsRef = useRef(
     new Map<string, RememberedExpansion>()
   );
@@ -324,7 +370,21 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+    <div
+      ref={searchRootRef}
+      className="relative flex h-full min-h-0 flex-col overflow-hidden"
+      onPointerDownCapture={
+        enableReviewSearch
+          ? (event) => {
+              const path = (event.target as HTMLElement).closest<HTMLElement>(
+                "[data-diff-section-path]"
+              )?.dataset.diffSectionPath;
+              if (path) reviewSearch.selectPath(path);
+            }
+          : undefined
+      }
+    >
+      {reviewSearch.card}
       <div className="min-h-0 flex-1 overflow-hidden">
         <Virtuoso
           ref={virtuosoRef}
@@ -336,7 +396,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
           isScrolling={handleIsScrolling}
           scrollerRef={handleScrollerRef}
           {...(hideBottomPadding ? {} : { components: DIFF_LIST_COMPONENTS })}
-          itemContent={(_index, { section, renderKey }) => {
+          itemContent={(index, { section, renderKey }) => {
             const isFocused = focusedPath === section.file.path;
             const expansionSignal =
               collapseSignal + (isFocused ? focusedNonce : 0);
@@ -355,9 +415,22 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
             return (
               <DiffFileSection
                 file={section.file}
+                reviewSearch={
+                  enableReviewSearch
+                    ? {
+                        query: reviewSearch.appliedQuery,
+                        match:
+                          reviewSearch.match?.path === section.file.path
+                            ? reviewSearch.match
+                            : null,
+                      }
+                    : undefined
+                }
                 viewMode={viewMode}
                 defaultExpanded={
-                  expandedOverride ??
+                  (reviewSearch.match?.path === section.file.path
+                    ? true
+                    : expandedOverride) ??
                   getDefaultDiffSectionExpanded({
                     flat,
                     isFocused,
@@ -385,7 +458,11 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
                     expanded
                   )
                 }
-                showBottomBorder={showBottomBorder}
+                showBottomBorder={
+                  hideLastBottomBorder && index === sections.length - 1
+                    ? false
+                    : showBottomBorder
+                }
                 showRenamePath={showRenamePath}
                 flat={flat}
                 compactHeaderGutter={compactHeaderGutter}

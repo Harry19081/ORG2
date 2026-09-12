@@ -277,7 +277,7 @@ describe("PinnedWorkbenchChrome", () => {
     expect(query("pinned-workbench-chrome")?.childElementCount).toBe(1);
   });
 
-  it.each(["organization", "team-inbox", "work-management"] as const)(
+  it.each(["organization", "work-management"] as const)(
     "reserves one disabled sidebar control for full-width %s tabs with a saved split layout",
     (type) => {
       render();

@@ -14,15 +14,16 @@ import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
-import {
-  KEYBOARD_SHORTCUT_VARIANT,
-  KeyboardShortcut,
-} from "@src/components/KeyboardShortcut";
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
 import { useActiveRepoRef } from "@src/hooks/git/useActiveRepoRef";
 import { useWorkingTreeDiffTotals } from "@src/hooks/git/useWorkingTreeDiffTotals";
 import { Infinity01Icon, type IconSvgElement } from "@src/icons";
+import {
+  SPOTLIGHT_CLASSES,
+  SPOTLIGHT_TOKENS,
+} from "@src/scaffold/GlobalSpotlight/constants";
 import { hasActiveSessionAtom } from "@src/store/session/viewAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 
@@ -51,16 +52,21 @@ const StartActionRow = memo<StartActionRowProps>(
       <button
         type="button"
         onClick={onClick}
-        className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${SURFACE_TOKENS.hover} active:bg-fill-3`}
+        className={`${SPOTLIGHT_CLASSES.itemRow} w-full text-left transition-colors ${SURFACE_TOKENS.hover} active:bg-fill-3`}
+        style={{ height: SPOTLIGHT_TOKENS.itemHeight }}
       >
-        <span className="flex min-w-0 items-center gap-2.5">
+        <span className={SPOTLIGHT_CLASSES.itemIcon}>
           <AnyIcon
             icon={icon}
-            size={16}
-            strokeWidth={1.75}
-            className="shrink-0 text-text-3"
+            size={SPOTLIGHT_TOKENS.iconSize}
+            strokeWidth={2}
+            className={SPOTLIGHT_CLASSES.itemIconTone}
           />
-          <span className="truncate text-[14px] font-medium text-text-2">
+        </span>
+        <span className="flex min-w-0 flex-1 items-center gap-2">
+          <span
+            className={`truncate leading-none ${SPOTLIGHT_TOKENS.labelFontSize} ${SPOTLIGHT_CLASSES.itemLabelWeight} ${SPOTLIGHT_CLASSES.itemLabelTone}`}
+          >
             {label}
           </span>
           {showDiff ? (
@@ -75,10 +81,7 @@ const StartActionRow = memo<StartActionRowProps>(
           ) : null}
         </span>
         {shortcutId ? (
-          <KeyboardShortcut
-            shortcutId={shortcutId}
-            variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
-          />
+          <KeyboardShortcut shortcutId={shortcutId} rendering="original" />
         ) : null}
       </button>
     );
@@ -104,7 +107,10 @@ export const WorkStationStartPage: React.FC = memo(() => {
       className={`flex h-full w-full items-center justify-center overflow-auto p-8 ${EDITOR_TAB_CANVAS_BG_CLASS}`}
     >
       <div className="w-full max-w-[420px]">
-        <div className="flex flex-col gap-0.5">
+        <div
+          className="flex flex-col"
+          style={{ gap: SPOTLIGHT_TOKENS.itemGap }}
+        >
           {hasActiveSession ? (
             <>
               <StartActionRow
