@@ -424,30 +424,41 @@ pub fn background_launch_message(agent_name: &str, session_id: &str) -> String {
 /// prompt-cache reuse. Delegate workers pass `false` and keep the
 /// suffix-stripping default.
 ///
-/// `parent_model` is always returned as a last resort so the caller can
-/// still construct *some* turn config when the definition is incomplete.
+/// An explicit `fast` request fails when the account has no cheap candidate.
+/// Only workers without a model override inherit the parent as a last resort.
 pub fn resolve_subagent_model(
     agent: &AgentDefinition,
     explicit_param_model: Option<&str>,
     parent_model: &str,
     inherit_parent_verbatim: bool,
     parent_provider: &dyn crate::providers::traits::LLMProvider,
-) -> (String, Option<ReliabilityConfig>) {
+) -> Result<(String, Option<ReliabilityConfig>), crate::tools::traits::ToolError> {
     if let Some(explicit) = explicit_param_model
         .map(str::trim)
         .filter(|value| !value.is_empty())
     {
         if explicit == "fast" {
-            return (parent_provider.auxiliary_model(parent_model).model, None);
+            return parent_provider
+                .auxiliary_model(parent_model)
+                .models
+                .first()
+                .cloned()
+                .map(|model| (model, None))
+                .ok_or_else(|| {
+                    crate::tools::traits::ToolError::InvalidParams(
+                        "No enabled low-cost model is available on this account for model=fast"
+                            .into(),
+                    )
+                });
         }
-        return (explicit.to_string(), None);
+        return Ok((explicit.to_string(), None));
     }
 
     let primary = match agent.selected_model_id.as_deref() {
         Some(p) if !p.is_empty() => p,
         _ => {
             if inherit_parent_verbatim {
-                return (parent_model.to_string(), None);
+                return Ok((parent_model.to_string(), None));
             }
             // Workers inheriting the parent model drop its reasoning/thinking
             // suffix (e.g. `-high`): parallel workers should default to the
@@ -456,9 +467,9 @@ pub fn resolve_subagent_model(
             // models above stay untouched.
             let parsed = crate::providers::thinking_mode::parse_model_variant(parent_model);
             if parsed.level.is_some() || parsed.thinking {
-                return (parsed.base_model, None);
+                return Ok((parsed.base_model, None));
             }
-            return (parent_model.to_string(), None);
+            return Ok((parent_model.to_string(), None));
         }
     };
 
@@ -466,7 +477,7 @@ pub fn resolve_subagent_model(
     reliability
         .fallback_models
         .retain(|model| !model.is_empty() && model.as_str() != primary);
-    (primary.to_string(), Some(reliability))
+    Ok((primary.to_string(), Some(reliability)))
 }
 
 /// Repo root + base branch a worker task needs to decide worktree disposal
@@ -633,9 +644,15 @@ mod resolve_subagent_model_tests {
         }
         fn auxiliary_model(
             &self,
-            parent: &str,
+            _parent: &str,
         ) -> crate::providers::auxiliary_model::AuxiliaryModel {
-            crate::providers::auxiliary_model::AuxiliaryModel::inherit(self.0.unwrap_or(parent))
+            crate::providers::auxiliary_model::AuxiliaryModel {
+                models: self
+                    .0
+                    .map(|model| vec![model.to_owned()])
+                    .unwrap_or_default(),
+                scope: 0,
+            }
         }
     }
     use crate::core::config::ReliabilityConfig;
@@ -665,7 +682,8 @@ mod resolve_subagent_model_tests {
             "claude-haiku-4",
             false,
             &ParentProvider(None),
-        );
+        )
+        .unwrap();
 
         assert_eq!(model, "gpt-5");
         assert!(
@@ -675,24 +693,24 @@ mod resolve_subagent_model_tests {
     }
 
     #[test]
-    fn explicit_fast_inherits_parent_when_provider_has_no_candidate() {
+    fn explicit_fast_rejects_missing_cheap_candidate() {
         let agent = make_agent_with_model(Some("claude-opus-4"), None);
-        let (model, reliability) = resolve_subagent_model(
+        assert!(resolve_subagent_model(
             &agent,
             Some("fast"),
             "claude-opus-4-20250514",
             false,
-            &ParentProvider(None),
-        );
-        assert_eq!(model, "claude-opus-4-20250514");
-        assert!(reliability.is_none(), "fast override must drop reliability");
+            &ParentProvider(None)
+        )
+        .is_err());
         let (model, reliability) = resolve_subagent_model(
             &agent,
             Some("fast"),
             "claude-opus-4-20250514",
             false,
             &ParentProvider(Some("claude-haiku-4.5")),
-        );
+        )
+        .unwrap();
         assert_eq!(model, "claude-haiku-4.5");
         assert!(reliability.is_none());
     }
@@ -701,7 +719,8 @@ mod resolve_subagent_model_tests {
     fn blank_explicit_param_model_is_ignored() {
         let agent = make_agent_with_model(None, None);
         let (model, reliability) =
-            resolve_subagent_model(&agent, Some(""), "gpt-5.5", false, &ParentProvider(None));
+            resolve_subagent_model(&agent, Some(""), "gpt-5.5", false, &ParentProvider(None))
+                .unwrap();
 
         assert_eq!(model, "gpt-5.5");
         assert!(reliability.is_none());
@@ -716,7 +735,8 @@ mod resolve_subagent_model_tests {
             "gpt-5.5",
             false,
             &ParentProvider(None),
-        );
+        )
+        .unwrap();
 
         assert_eq!(model, "gpt-5.5");
         assert!(reliability.is_none());
@@ -729,7 +749,8 @@ mod resolve_subagent_model_tests {
             Some(vec!["claude-sonnet-4", "gpt-5"]),
         );
         let (model, reliability) =
-            resolve_subagent_model(&agent, None, "parent-model", false, &ParentProvider(None));
+            resolve_subagent_model(&agent, None, "parent-model", false, &ParentProvider(None))
+                .unwrap();
 
         assert_eq!(model, "claude-opus-4");
         let rel = reliability.expect("definition path must produce reliability");
@@ -743,7 +764,8 @@ mod resolve_subagent_model_tests {
             Some(vec!["claude-opus-4", "claude-sonnet-4"]),
         );
         let (_model, reliability) =
-            resolve_subagent_model(&agent, None, "parent-model", false, &ParentProvider(None));
+            resolve_subagent_model(&agent, None, "parent-model", false, &ParentProvider(None))
+                .unwrap();
         let rel = reliability.expect("definition path must produce reliability");
         assert_eq!(
             rel.fallback_models,
@@ -756,7 +778,8 @@ mod resolve_subagent_model_tests {
     fn no_definition_model_falls_back_to_parent_no_reliability() {
         let agent = make_agent_with_model(None, Some(vec!["gpt-5"]));
         let (model, reliability) =
-            resolve_subagent_model(&agent, None, "claude-opus-4", false, &ParentProvider(None));
+            resolve_subagent_model(&agent, None, "claude-opus-4", false, &ParentProvider(None))
+                .unwrap();
 
         assert_eq!(
             model, "claude-opus-4",
@@ -772,7 +795,8 @@ mod resolve_subagent_model_tests {
     fn empty_definition_primary_falls_back_to_parent() {
         let agent = make_agent_with_model(Some(""), Some(vec!["gpt-5"]));
         let (model, reliability) =
-            resolve_subagent_model(&agent, None, "claude-opus-4", false, &ParentProvider(None));
+            resolve_subagent_model(&agent, None, "claude-opus-4", false, &ParentProvider(None))
+                .unwrap();
 
         assert_eq!(model, "claude-opus-4");
         assert!(reliability.is_none());
@@ -786,7 +810,8 @@ mod resolve_subagent_model_tests {
         explore.id = crate::definitions::builtin::EXPLORE_AGENT_ID.to_string();
 
         let (model, _) =
-            resolve_subagent_model(&explore, None, "gpt-5.4-high", false, &ParentProvider(None));
+            resolve_subagent_model(&explore, None, "gpt-5.4-high", false, &ParentProvider(None))
+                .unwrap();
         assert_eq!(model, "gpt-5.4", "explore must strip the reasoning suffix");
 
         let general = make_agent_with_model(None, None);
@@ -796,7 +821,8 @@ mod resolve_subagent_model_tests {
             "claude-opus-4-8-high",
             false,
             &ParentProvider(None),
-        );
+        )
+        .unwrap();
         assert_eq!(
             model, "claude-opus-4-8",
             "general workers inherit the base model"
@@ -809,7 +835,8 @@ mod resolve_subagent_model_tests {
             "claude-fable-5",
             false,
             &ParentProvider(None),
-        );
+        )
+        .unwrap();
         assert_eq!(model, "claude-fable-5");
 
         // Explicit param model is respected.
@@ -819,7 +846,8 @@ mod resolve_subagent_model_tests {
             "claude-fable-5",
             false,
             &ParentProvider(None),
-        );
+        )
+        .unwrap();
         assert_eq!(model, "gpt-5.4-high");
 
         // Definition-pinned models are respected.
@@ -830,7 +858,8 @@ mod resolve_subagent_model_tests {
             "claude-fable-5",
             false,
             &ParentProvider(None),
-        );
+        )
+        .unwrap();
         assert_eq!(model, "claude-opus-4-8-high");
     }
 
@@ -842,7 +871,8 @@ mod resolve_subagent_model_tests {
         let general = make_agent_with_model(None, None);
 
         let (model, reliability) =
-            resolve_subagent_model(&general, None, "gpt-5.4-high", true, &ParentProvider(None));
+            resolve_subagent_model(&general, None, "gpt-5.4-high", true, &ParentProvider(None))
+                .unwrap();
         assert_eq!(model, "gpt-5.4-high", "fork must keep the reasoning suffix");
         assert!(reliability.is_none());
 
@@ -852,7 +882,8 @@ mod resolve_subagent_model_tests {
             "claude-opus-4-8-high",
             true,
             &ParentProvider(None),
-        );
+        )
+        .unwrap();
         assert_eq!(model, "claude-opus-4-8-high");
 
         // Explicit param model still wins over verbatim inherit.
@@ -862,13 +893,15 @@ mod resolve_subagent_model_tests {
             "gpt-5.4-high",
             true,
             &ParentProvider(None),
-        );
+        )
+        .unwrap();
         assert_eq!(model, "gpt-5");
 
         // A definition-pinned model still wins over verbatim inherit.
         let pinned = make_agent_with_model(Some("claude-opus-4"), None);
         let (model, _) =
-            resolve_subagent_model(&pinned, None, "gpt-5.4-high", true, &ParentProvider(None));
+            resolve_subagent_model(&pinned, None, "gpt-5.4-high", true, &ParentProvider(None))
+                .unwrap();
         assert_eq!(model, "claude-opus-4");
     }
 }

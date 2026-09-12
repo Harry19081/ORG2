@@ -59,6 +59,8 @@ export interface UseListNavigationOptions<T extends ListItem> {
     (event: ReactKeyboardEvent) => boolean | void
   >;
   enableGlobalListener?: boolean;
+  /** Allow Right Arrow to activate disclosure rows outside text-only search. */
+  enableDisclosureArrowNavigation?: boolean;
   inputRef?: RefObject<HTMLInputElement | null>;
   hasModalState?: boolean;
   onGoBack?: () => void;
@@ -151,6 +153,7 @@ export function useListNavigation<T extends ListItem>(
     scrollContainerRef: externalScrollRef,
     additionalKeyHandlers = {},
     enableGlobalListener = false,
+    enableDisclosureArrowNavigation = true,
     inputRef,
     hasModalState = false,
     onGoBack,
@@ -316,7 +319,10 @@ export function useListNavigation<T extends ListItem>(
         return;
       }
 
-      if (keyboardEvent.key === "ArrowRight") {
+      if (
+        enableDisclosureArrowNavigation &&
+        keyboardEvent.key === "ArrowRight"
+      ) {
         if (isFormInput && !isOurInput) return;
 
         const selectedItem = state.items[state.selectedIndex];
@@ -385,7 +391,12 @@ export function useListNavigation<T extends ListItem>(
 
     document.addEventListener("keydown", handler, true);
     return () => document.removeEventListener("keydown", handler, true);
-  }, [enableGlobalListener, inputRef, findNextSelectableIndexFromRef]);
+  }, [
+    enableGlobalListener,
+    enableDisclosureArrowNavigation,
+    inputRef,
+    findNextSelectableIndexFromRef,
+  ]);
 
   // ============================================
   // Main keyboard handler (for focused input)
@@ -433,6 +444,7 @@ export function useListNavigation<T extends ListItem>(
         case "Enter":
         case "ArrowRight": {
           if (event.key === "ArrowRight") {
+            if (!enableDisclosureArrowNavigation) break;
             const itemData = items[selectedIndex]?.data as
               | Record<string, unknown>
               | undefined;
@@ -505,6 +517,7 @@ export function useListNavigation<T extends ListItem>(
       isItemSelectable,
       searchQuery,
       additionalKeyHandlers,
+      enableDisclosureArrowNavigation,
       findNextSelectableIndexInItems,
       onEscape,
       hasModalState,
