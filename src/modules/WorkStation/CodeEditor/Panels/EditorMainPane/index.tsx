@@ -95,6 +95,8 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     repoPath,
     repoId,
     repoDisplayName,
+    onExplorerRefresh,
+    explorerLoading,
     gitFilesByPath,
     gitDiffLoading,
     onFileSelect,
@@ -433,6 +435,9 @@ const EditorContent: React.FC<EditorContentProps> = memo(
             enabled={isExplorerHome}
             repoDisplayName={repoDisplayName}
             activeFilePath={activeFilePath}
+            repoPath={repoPath}
+            onRefresh={onExplorerRefresh}
+            loading={explorerLoading}
           />
           <div className="relative min-h-0 flex-1 overflow-hidden">
             {shouldMountTerminalContent && (
