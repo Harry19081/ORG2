@@ -17,12 +17,13 @@ import Textarea from "@src/components/Textarea";
 import {
   ArrowDown02Icon,
   ArrowUp02Icon,
+  Cancel01Icon,
   CloudUploadIcon,
   HugeiconsIcon,
   Refresh04Icon,
   Tick01Icon,
 } from "@src/icons";
-import Modal from "@src/scaffold/ModalSystem";
+import { SpotlightShell } from "@src/scaffold/GlobalSpotlight/shell";
 
 import { SHORTCUTS } from "../../../hooks/useSourceControlShortcuts";
 import { GIT_LABELS, formatCommitCount } from "../config";
@@ -242,7 +243,7 @@ const CommitControls: React.FC<CommitControlsProps> = memo(
     const sparkleButton = null;
 
     const commitMessagePlaceholder = t("placeholders.commitMessage");
-    const wrapperClass = "shrink-0 px-3 pb-2 pt-1";
+    const wrapperClass = showMessage ? "shrink-0" : "shrink-0 px-3 pb-2 pt-1";
     const innerGap = "relative mb-2";
     const textareaClassName = "textarea-pane-surface text-[13px]";
 
@@ -256,6 +257,8 @@ const CommitControls: React.FC<CommitControlsProps> = memo(
                 placeholder={commitMessagePlaceholder}
                 value={commitMessage}
                 onChange={onCommitMessageChange}
+                autoFocus
+                aria-label={commitMessagePlaceholder}
                 rows={2}
                 className={textareaClassName}
               />
@@ -313,6 +316,8 @@ const CommitControls: React.FC<CommitControlsProps> = memo(
                 placeholder={commitMessagePlaceholder}
                 value={commitMessage}
                 onChange={onCommitMessageChange}
+                autoFocus
+                aria-label={commitMessagePlaceholder}
                 rows={2}
                 className={textareaClassName}
               />
@@ -356,6 +361,8 @@ const CommitControls: React.FC<CommitControlsProps> = memo(
                 placeholder={commitMessagePlaceholder}
                 value={commitMessage}
                 onChange={onCommitMessageChange}
+                autoFocus
+                aria-label={commitMessagePlaceholder}
                 rows={2}
                 className={textareaClassName}
               />
@@ -492,6 +499,8 @@ const CommitControls: React.FC<CommitControlsProps> = memo(
               }
               value={commitMessage}
               onChange={onCommitMessageChange}
+              autoFocus
+              aria-label={commitMessagePlaceholder}
               rows={2}
               className={textareaClassName}
             />
@@ -624,7 +633,11 @@ const CommitControls: React.FC<CommitControlsProps> = memo(
 CommitControls.displayName = "CommitControls";
 
 export const CommitSection: React.FC<CommitSectionProps> = memo((props) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const title = props.branchName
+    ? `${GIT_LABELS.commit} · ${props.branchName}`
+    : GIT_LABELS.commit;
   const openModal = () => setOpen(true);
   return (
     <>
@@ -639,20 +652,30 @@ export const CommitSection: React.FC<CommitSectionProps> = memo((props) => {
         onCommitAndSync={props.onCommitAndSync ? openModal : undefined}
         onAmend={props.onAmend ? openModal : undefined}
       />
-      <Modal
-        visible={open}
-        title={
-          props.branchName
-            ? `${GIT_LABELS.commit} · ${props.branchName}`
-            : GIT_LABELS.commit
-        }
-        onCancel={() => setOpen(false)}
-        footer={null}
-        size="medium"
-        width={600}
-      >
-        <CommitControls {...props} showCommitAndPublishButton={false} />
-      </Modal>
+      {open && (
+        <SpotlightShell isOpen onClose={() => setOpen(false)} hideFooter>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+            className="flex flex-col gap-3 p-3"
+          >
+            <div className="flex min-w-0 items-center justify-between gap-3">
+              <span className="truncate text-sm font-medium text-text-1">
+                {title}
+              </span>
+              <Button
+                variant="tertiary"
+                size="small"
+                aria-label={t("actions.close")}
+                onClick={() => setOpen(false)}
+                icon={<HugeiconsIcon icon={Cancel01Icon} size={16} />}
+              />
+            </div>
+            <CommitControls {...props} showCommitAndPublishButton={false} />
+          </div>
+        </SpotlightShell>
+      )}
     </>
   );
 });
