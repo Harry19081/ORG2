@@ -17,12 +17,13 @@ import Textarea from "@src/components/Textarea";
 import {
   ArrowDown02Icon,
   ArrowUp02Icon,
-  Cancel01Icon,
   CloudUploadIcon,
   HugeiconsIcon,
   Refresh04Icon,
   Tick01Icon,
 } from "@src/icons";
+import { SpotlightFormLayout } from "@src/scaffold/GlobalSpotlight/forms/shared/SpotlightFormLayout";
+import { SpotlightFormBody } from "@src/scaffold/GlobalSpotlight/forms/shared/SpotlightFormShell";
 import { SpotlightShell } from "@src/scaffold/GlobalSpotlight/shell";
 
 import { SHORTCUTS } from "../../../hooks/useSourceControlShortcuts";
@@ -529,6 +530,51 @@ const CommitControls: React.FC<CommitControlsProps> = memo(
           >
             {commitButtonText}
           </Button>
+        ) : showMessage ? (
+          <div className="flex flex-wrap gap-2">
+            {[
+              {
+                label: commitButtonText,
+                action: onCommit,
+                id: "git.commit",
+                primary: true,
+              },
+              {
+                label: GIT_LABELS.commitAmend,
+                action: onAmend,
+                id: "git.commit.amend",
+              },
+              {
+                label: GIT_LABELS.commitAndPush,
+                action: onCommitAndPush,
+                id: "git.commit.push",
+              },
+              {
+                label: GIT_LABELS.commitAndPublish,
+                action: onCommitAndPublish,
+                id: "git.commit.publish",
+              },
+              {
+                label: GIT_LABELS.commitAndSync,
+                action: onCommitAndSync,
+                id: "git.commit.sync",
+              },
+            ]
+              .filter(({ action }) => action)
+              .map(({ label, action, id, primary }) => (
+                <Button
+                  key={id}
+                  variant={primary ? "primary" : "secondary"}
+                  size="small"
+                  onClick={action}
+                  disabled={!canCommit || commitLoading || publishLoading}
+                  loading={primary && commitLoading}
+                  data-action={id}
+                >
+                  {label}
+                </Button>
+              ))}
+          </div>
         ) : hasAdvancedActions ? (
           /* Commit button with dropdown */
           <SplitButton
@@ -633,7 +679,6 @@ const CommitControls: React.FC<CommitControlsProps> = memo(
 CommitControls.displayName = "CommitControls";
 
 export const CommitSection: React.FC<CommitSectionProps> = memo((props) => {
-  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const title = props.branchName
     ? `${GIT_LABELS.commit} · ${props.branchName}`
@@ -654,26 +699,27 @@ export const CommitSection: React.FC<CommitSectionProps> = memo((props) => {
       />
       {open && (
         <SpotlightShell isOpen onClose={() => setOpen(false)} hideFooter>
-          <div
+          <SpotlightFormLayout
             role="dialog"
             aria-modal="true"
             aria-label={title}
-            className="flex flex-col gap-3 p-3"
+            header={{
+              path: [
+                {
+                  type: "action",
+                  id: "commit",
+                  color: "primary",
+                  label: title,
+                  icon: Tick01Icon,
+                },
+              ],
+              onRemoveSegment: () => setOpen(false),
+            }}
           >
-            <div className="flex min-w-0 items-center justify-between gap-3">
-              <span className="truncate text-sm font-medium text-text-1">
-                {title}
-              </span>
-              <Button
-                variant="tertiary"
-                size="small"
-                aria-label={t("actions.close")}
-                onClick={() => setOpen(false)}
-                icon={<HugeiconsIcon icon={Cancel01Icon} size={16} />}
-              />
-            </div>
-            <CommitControls {...props} showCommitAndPublishButton={false} />
-          </div>
+            <SpotlightFormBody>
+              <CommitControls {...props} showCommitAndPublishButton={false} />
+            </SpotlightFormBody>
+          </SpotlightFormLayout>
         </SpotlightShell>
       )}
     </>

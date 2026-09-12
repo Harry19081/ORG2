@@ -37,6 +37,9 @@ it("keeps the original sidebar button and opens the message input in a modal", (
     ahead: 0,
     behind: 0,
   };
+  const onCommitAndPublish = vi.fn();
+  const onAmend = vi.fn();
+  const onCommitAndSync = vi.fn();
   try {
     act(() => root.render(renderSection(props)));
     expect(container.querySelector("textarea")).toBeNull();
@@ -54,6 +57,15 @@ it("keeps the original sidebar button and opens the message input in a modal", (
         .disabled
     ).toBe(true);
     expect(props.onCommit).not.toHaveBeenCalled();
+    const disabledActions = [
+      ...modal.querySelectorAll<HTMLButtonElement>("button[data-action]"),
+    ];
+    expect(disabledActions).toHaveLength(2);
+    disabledActions.forEach((button) => {
+      expect(button.disabled).toBe(true);
+      act(() => button.click());
+    });
+    expect(props.onCommitAndPush).not.toHaveBeenCalled();
     act(() =>
       root.render(
         renderSection({
@@ -61,29 +73,35 @@ it("keeps the original sidebar button and opens the message input in a modal", (
           commitMessage: "Update files",
           canCommit: true,
           showCommitAndPublishButton: true,
-          onCommitAndPublish: vi.fn(),
-          onAmend: vi.fn(),
-          onCommitAndSync: vi.fn(),
+          onCommitAndPublish,
+          onAmend,
+          onCommitAndSync,
         })
       )
     );
-    const menuButton = modal.querySelector<HTMLButtonElement>(
-      'button[aria-haspopup="menu"]'
-    )!;
-    expect(menuButton).not.toBeNull();
-    act(() => menuButton.click());
-    expect(
-      [...document.querySelectorAll('[role="menuitem"]')].map(
-        (item) => item.textContent
-      )
-    ).toEqual([
-      "Commit",
+    expect(modal.querySelector('button[aria-haspopup="menu"]')).toBeNull();
+    expect(modal.querySelector(".spotlight-search-bar")).not.toBeNull();
+    const buttons = [
+      ...modal.querySelectorAll<HTMLButtonElement>("button[data-action]"),
+    ];
+    expect(buttons.map((button) => button.textContent)).toEqual([
+      "Commit all 2 files",
       "Commit (Amend)",
       "Commit & Push",
       "Commit & Publish",
       "Commit & Sync",
     ]);
-    act(() => menuButton.click());
+    const handlers = [
+      props.onCommit,
+      onAmend,
+      props.onCommitAndPush,
+      onCommitAndPublish,
+      onCommitAndSync,
+    ];
+    buttons.forEach((button, index) => {
+      act(() => button.click());
+      expect(handlers[index]).toHaveBeenCalledTimes(1);
+    });
     act(() =>
       document.dispatchEvent(
         new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
@@ -98,7 +116,9 @@ it("keeps the original sidebar button and opens the message input in a modal", (
     expect(document.querySelector("textarea")!.value).toBe("Update files");
     act(() =>
       document
-        .querySelector<HTMLButtonElement>('button[aria-label="actions.close"]')!
+        .querySelector<HTMLButtonElement>(
+          '.spotlight-search-bar [title="Commit"]'
+        )!
         .click()
     );
     expect(document.querySelector("[data-spotlight-container]")).toBeNull();

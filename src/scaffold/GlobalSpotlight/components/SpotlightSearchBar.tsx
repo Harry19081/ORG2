@@ -152,8 +152,10 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
                 !!onRemoveSegment &&
                 (segment.type !== "action" || !hideActionClose);
               const label = getSegmentLabel(segment);
+              const Pill = canRemove ? "button" : "div";
               return (
-                <div
+                <Pill
+                  type={canRemove ? "button" : undefined}
                   key={`${segment.type}-${segment.id}`}
                   className={`${SPOTLIGHT_CLASSES.primaryPill} ${canRemove ? SPOTLIGHT_CLASSES.interactivePill : ""}`}
                   onClick={
@@ -168,7 +170,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
                   <span className={`max-w-[220px] truncate ${inputFontSize}`}>
                     {label}
                   </span>
-                </div>
+                </Pill>
               );
             })}
           </div>
@@ -195,7 +197,9 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
         )}
 
         {(trailingSlot || (!hideInput && searchQuery && !isCountingDown)) && (
-          <div className="flex shrink-0 items-center gap-px">
+          <div
+            className={`flex shrink-0 items-center gap-px ${hideInput ? "ml-auto" : ""}`}
+          >
             {!hideInput && searchQuery && !isCountingDown && (
               <ToolbarTooltip
                 label={t("common:actions.clear")}
