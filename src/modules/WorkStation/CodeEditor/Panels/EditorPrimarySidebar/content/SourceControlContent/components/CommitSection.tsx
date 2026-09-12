@@ -22,6 +22,9 @@ import {
   Refresh04Icon,
   Tick01Icon,
 } from "@src/icons";
+import { SpotlightFormLayout } from "@src/scaffold/GlobalSpotlight/forms/shared/SpotlightFormLayout";
+import { SpotlightFormBody } from "@src/scaffold/GlobalSpotlight/forms/shared/SpotlightFormShell";
+import { SpotlightShell } from "@src/scaffold/GlobalSpotlight/shell";
 
 import { SHORTCUTS } from "../../../hooks/useSourceControlShortcuts";
 import { GIT_LABELS, formatCommitCount } from "../config";
@@ -77,8 +80,11 @@ export interface CommitSectionProps {
   behind: number;
 }
 
-export const CommitSection: React.FC<CommitSectionProps> = memo(
+type CommitControlsProps = CommitSectionProps & { showMessage?: boolean };
+
+const CommitControls: React.FC<CommitControlsProps> = memo(
   ({
+    showMessage = true,
     commitMessage,
     onCommitMessageChange,
     branchName,
@@ -238,7 +244,7 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     const sparkleButton = null;
 
     const commitMessagePlaceholder = t("placeholders.commitMessage");
-    const wrapperClass = "shrink-0 px-3 pb-2 pt-1";
+    const wrapperClass = showMessage ? "shrink-0" : "shrink-0 px-3 pb-2 pt-1";
     const innerGap = "relative mb-2";
     const textareaClassName = "textarea-pane-surface text-[13px]";
 
@@ -246,16 +252,20 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     if (showPublishButton) {
       return (
         <div className={wrapperClass}>
-          <div className={innerGap}>
-            <Textarea
-              placeholder={commitMessagePlaceholder}
-              value={commitMessage}
-              onChange={onCommitMessageChange}
-              rows={2}
-              className={textareaClassName}
-            />
-            {sparkleButton}
-          </div>
+          {showMessage && (
+            <div className={innerGap}>
+              <Textarea
+                placeholder={commitMessagePlaceholder}
+                value={commitMessage}
+                onChange={onCommitMessageChange}
+                autoFocus
+                aria-label={commitMessagePlaceholder}
+                rows={2}
+                className={textareaClassName}
+              />
+              {sparkleButton}
+            </div>
+          )}
           <Button
             variant="primary"
             size="small"
@@ -301,16 +311,20 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     if (showCommitAndPublishButton) {
       return (
         <div className={wrapperClass}>
-          <div className={innerGap}>
-            <Textarea
-              placeholder={commitMessagePlaceholder}
-              value={commitMessage}
-              onChange={onCommitMessageChange}
-              rows={2}
-              className={textareaClassName}
-            />
-            {sparkleButton}
-          </div>
+          {showMessage && (
+            <div className={innerGap}>
+              <Textarea
+                placeholder={commitMessagePlaceholder}
+                value={commitMessage}
+                onChange={onCommitMessageChange}
+                autoFocus
+                aria-label={commitMessagePlaceholder}
+                rows={2}
+                className={textareaClassName}
+              />
+              {sparkleButton}
+            </div>
+          )}
           <Button
             variant="primary"
             size="small"
@@ -342,16 +356,20 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     if (showSyncButton) {
       return (
         <div className={wrapperClass}>
-          <div className={innerGap}>
-            <Textarea
-              placeholder={commitMessagePlaceholder}
-              value={commitMessage}
-              onChange={onCommitMessageChange}
-              rows={2}
-              className={textareaClassName}
-            />
-            {sparkleButton}
-          </div>
+          {showMessage && (
+            <div className={innerGap}>
+              <Textarea
+                placeholder={commitMessagePlaceholder}
+                value={commitMessage}
+                onChange={onCommitMessageChange}
+                autoFocus
+                aria-label={commitMessagePlaceholder}
+                rows={2}
+                className={textareaClassName}
+              />
+              {sparkleButton}
+            </div>
+          )}
           {hasSyncActions ? (
             <SplitButton
               variant="primary"
@@ -472,20 +490,24 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     // Commit section (default)
     return (
       <div className={wrapperClass}>
-        <div className={innerGap}>
-          <Textarea
-            placeholder={
-              isMerging && mergingBranch
-                ? `Merge branch '${mergingBranch}' into ${branchName || "current"}`
-                : commitMessagePlaceholder
-            }
-            value={commitMessage}
-            onChange={onCommitMessageChange}
-            rows={2}
-            className={textareaClassName}
-          />
-          {sparkleButton}
-        </div>
+        {showMessage && (
+          <div className={innerGap}>
+            <Textarea
+              placeholder={
+                isMerging && mergingBranch
+                  ? `Merge branch '${mergingBranch}' into ${branchName || "current"}`
+                  : commitMessagePlaceholder
+              }
+              value={commitMessage}
+              onChange={onCommitMessageChange}
+              autoFocus
+              aria-label={commitMessagePlaceholder}
+              rows={2}
+              className={textareaClassName}
+            />
+            {sparkleButton}
+          </div>
+        )}
 
         {/* Merge Continue Button */}
         {isMerging ? (
@@ -508,6 +530,51 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
           >
             {commitButtonText}
           </Button>
+        ) : showMessage ? (
+          <div className="flex flex-wrap gap-2">
+            {[
+              {
+                label: commitButtonText,
+                action: onCommit,
+                id: "git.commit",
+                primary: true,
+              },
+              {
+                label: GIT_LABELS.commitAmend,
+                action: onAmend,
+                id: "git.commit.amend",
+              },
+              {
+                label: GIT_LABELS.commitAndPush,
+                action: onCommitAndPush,
+                id: "git.commit.push",
+              },
+              {
+                label: GIT_LABELS.commitAndPublish,
+                action: onCommitAndPublish,
+                id: "git.commit.publish",
+              },
+              {
+                label: GIT_LABELS.commitAndSync,
+                action: onCommitAndSync,
+                id: "git.commit.sync",
+              },
+            ]
+              .filter(({ action }) => action)
+              .map(({ label, action, id, primary }) => (
+                <Button
+                  key={id}
+                  variant={primary ? "primary" : "secondary"}
+                  size="small"
+                  onClick={action}
+                  disabled={!canCommit || commitLoading || publishLoading}
+                  loading={primary && commitLoading}
+                  data-action={id}
+                >
+                  {label}
+                </Button>
+              ))}
+          </div>
         ) : hasAdvancedActions ? (
           /* Commit button with dropdown */
           <SplitButton
@@ -608,6 +675,56 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     );
   }
 );
+
+CommitControls.displayName = "CommitControls";
+
+export const CommitSection: React.FC<CommitSectionProps> = memo((props) => {
+  const [open, setOpen] = useState(false);
+  const title = props.branchName
+    ? `${GIT_LABELS.commit} · ${props.branchName}`
+    : GIT_LABELS.commit;
+  const openModal = () => setOpen(true);
+  return (
+    <>
+      <CommitControls
+        {...props}
+        showMessage={false}
+        canCommit={!props.commitLoading}
+        onCommit={openModal}
+        onContinueMerge={props.onContinueMerge ? openModal : undefined}
+        onCommitAndPush={props.onCommitAndPush ? openModal : undefined}
+        onCommitAndPublish={props.onCommitAndPublish ? openModal : undefined}
+        onCommitAndSync={props.onCommitAndSync ? openModal : undefined}
+        onAmend={props.onAmend ? openModal : undefined}
+      />
+      {open && (
+        <SpotlightShell isOpen onClose={() => setOpen(false)} hideFooter>
+          <SpotlightFormLayout
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+            header={{
+              path: [
+                {
+                  type: "action",
+                  id: "commit",
+                  color: "primary",
+                  label: title,
+                  icon: Tick01Icon,
+                },
+              ],
+              onRemoveSegment: () => setOpen(false),
+            }}
+          >
+            <SpotlightFormBody>
+              <CommitControls {...props} showCommitAndPublishButton={false} />
+            </SpotlightFormBody>
+          </SpotlightFormLayout>
+        </SpotlightShell>
+      )}
+    </>
+  );
+});
 
 CommitSection.displayName = "CommitSection";
 
