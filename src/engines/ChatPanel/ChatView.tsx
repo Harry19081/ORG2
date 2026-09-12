@@ -283,6 +283,9 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
 
     const { scrollNav, handleScrollNavChange, externalScrollToBottomButton } =
       useChatViewScrollToBottom();
+    const handleBeforeMessageDispatch = useCallback(() => {
+      scrollNav?.onScrollToBottom();
+    }, [scrollNav]);
 
     const {
       agentOrgRunView,
@@ -323,6 +326,7 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
       sessionId,
       showCurrentPlanSurface,
       conversationRoot: conversationTargetBinding?.root ?? null,
+      onBeforeMessageDispatch: handleBeforeMessageDispatch,
     });
     // The visible ChatView's session is the authoritative composer target.
     // Agent-org member views may override it with queueSessionId, but ordinary
@@ -355,6 +359,13 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
       selectedTarget: conversationTargetBinding?.target ?? null,
       onSurfaceSubmit: handleMainComposerSubmitOverride,
     });
+    const handleConversationSubmitWithTailFollow = useCallback(
+      (input: Parameters<typeof handleConversationSubmit>[0]) => {
+        handleBeforeMessageDispatch();
+        return handleConversationSubmit(input);
+      },
+      [handleBeforeMessageDispatch, handleConversationSubmit]
+    );
 
     // Primary card active-data state (reported up by each card)
     const [hasQuestion, setHasQuestion] = useState(false);
@@ -467,7 +478,7 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
         agentOrgIntervention: agentOrgInterventionSlot,
         streamRetry,
         groupChatPausedBottomContent,
-        onSubmitOverride: handleConversationSubmit,
+        onSubmitOverride: handleConversationSubmitWithTailFollow,
         customMentionOptions: groupChatMentionOptions,
         queueEditProps,
         disableStopWhenEmpty: groupChatViewActive,
@@ -518,7 +529,7 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
         agentOrgInterventionSlot,
         streamRetry,
         groupChatPausedBottomContent,
-        handleConversationSubmit,
+        handleConversationSubmitWithTailFollow,
         groupChatMentionOptions,
         queueEditProps,
         followUpSuggestions,

@@ -82,6 +82,8 @@ export interface ChatHistoryProps {
    * keep their surfaced turn expanded.
    */
   disableTailCollapse?: boolean;
+  /** Compact monitor surfaces may opt into unconditional tail following. */
+  tailFollowMode?: "reader-controlled" | "always";
   /** Trailing content for turn pagination controls; ignored when pagination is disabled. */
   paginationTrailingSlot?: ReactNode;
   /** Omit each turn's leading user-message card while retaining its turn boundary. */

@@ -35,6 +35,7 @@ export function useChatViewScrollToBottom() {
         />
       }
       iconOnly
+      data-testid="chat-scroll-to-bottom"
       aria-label={t("common:inbox.scrollToBottom")}
       title={t("common:inbox.scrollToBottom")}
       onClick={scrollNav.onScrollToBottom}

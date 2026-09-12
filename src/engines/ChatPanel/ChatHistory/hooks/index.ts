@@ -24,8 +24,6 @@ export { useChatPagination } from "./useChatPagination";
 
 export { useChatTurnPagination } from "./useChatTurnPagination";
 
-export { useChatScroll } from "./useChatScroll";
-
 export { useChatFooterSpacer } from "./useChatFooterSpacer";
 
 export { useEditUserMessage } from "./useEditUserMessage";
@@ -33,8 +31,6 @@ export { useEditUserMessage } from "./useEditUserMessage";
 export { useRestoreCheckpoint } from "./useRestoreCheckpoint";
 
 export { useChatEmptyState } from "./useChatEmptyState";
-
-export { useChatScrollPin } from "./useChatScrollPin";
 
 export { useGroupHeaderRenderer } from "./useGroupHeaderRenderer";
 

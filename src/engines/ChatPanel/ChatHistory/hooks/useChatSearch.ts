@@ -67,6 +67,7 @@ export interface UseChatSearchOptions {
   setTurnPageSelection: Dispatch<SetStateAction<TurnPageSelection>>;
   virtualListRef: RefObject<ChatHistoryListHandle | null>;
   chatContainerRef: RefObject<HTMLDivElement | null>;
+  onExplicitNavigation: () => void;
   debounceMs?: number;
   maxResults?: number;
 }
@@ -154,6 +155,7 @@ export function useChatSearch(
     setTurnPageSelection,
     virtualListRef,
     chatContainerRef,
+    onExplicitNavigation,
     debounceMs = 150,
     maxResults = 100,
   } = options;
@@ -251,6 +253,7 @@ export function useChatSearch(
 
   const scrollToSearchResult = useCallback(
     (result: SearchResult) => {
+      onExplicitNavigation();
       const eventId = result.item.id || result.item.chunk_id || "";
       const projection = eventId
         ? projectionIndexRef.current.get(eventId)
@@ -298,6 +301,7 @@ export function useChatSearch(
     [
       finishPendingScroll,
       navigateToEvent,
+      onExplicitNavigation,
       sessionId,
       setCollapseState,
       setTurnCollapseOverride,

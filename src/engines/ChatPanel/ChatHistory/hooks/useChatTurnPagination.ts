@@ -44,7 +44,6 @@ export interface UseChatTurnPaginationReturn {
   displayFlatItems: OptimizedChatItem[];
   displayTotalFlatItems: number;
   displaySourceGroupIndices: number[];
-  displayLastGroupFirstFlatIndex: number | null;
 }
 
 export function projectChatTurnPagination({
@@ -77,10 +76,6 @@ export function projectChatTurnPagination({
       displayFlatItems: flatItems,
       displayTotalFlatItems: flatItems.length,
       displaySourceGroupIndices: groupCounts.map((_, groupIndex) => groupIndex),
-      displayLastGroupFirstFlatIndex: computeLastGroupFirstFlatIndex(
-        groupCounts,
-        flatItems.length
-      ),
     };
   }
 
@@ -96,7 +91,6 @@ export function projectChatTurnPagination({
       displayFlatItems: [],
       displayTotalFlatItems: 0,
       displaySourceGroupIndices: [],
-      displayLastGroupFirstFlatIndex: null,
     };
   }
 
@@ -126,10 +120,6 @@ export function projectChatTurnPagination({
     displayTotalFlatItems: displayFlatItems.length,
     displaySourceGroupIndices: displayGroupCounts.map(
       (_, offset) => page.startGroupIndex + offset
-    ),
-    displayLastGroupFirstFlatIndex: computeLastGroupFirstFlatIndex(
-      displayGroupCounts,
-      displayFlatItems.length
     ),
   };
 }
@@ -283,14 +273,4 @@ function computeGroupFlatStartIndices(groupCounts: number[]): number[] {
 function clampPageIndex(pageIndex: number, pageCount: number): number {
   if (pageCount <= 0) return 0;
   return Math.min(Math.max(pageIndex, 0), pageCount - 1);
-}
-
-function computeLastGroupFirstFlatIndex(
-  groupCounts: number[],
-  flatItemCount: number
-): number | null {
-  if (groupCounts.length === 0) return null;
-  const tailCount = groupCounts[groupCounts.length - 1] ?? 0;
-  if (tailCount <= 0) return null;
-  return flatItemCount - tailCount;
 }

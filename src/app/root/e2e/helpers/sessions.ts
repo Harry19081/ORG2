@@ -840,6 +840,7 @@ export function createSessionHelpers(store: E2EStore) {
     seedSessionContextUsage,
     seedPersistedCachedSession,
     seedChatEvents: seeders.seedChatEvents,
+    streamChatEventText: seeders.streamChatEventText,
     seedSidebarSession: seeders.seedSidebarSession,
     openWorkManagementTab: seeders.openWorkManagementTab,
     seedModeSwitchSession: seeders.seedModeSwitchSession,

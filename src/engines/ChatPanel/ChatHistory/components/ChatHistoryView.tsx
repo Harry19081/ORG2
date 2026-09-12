@@ -143,7 +143,6 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     groupCounts,
     groupHeaders,
     groupMeta,
-    handleLastTurnPage,
     handleNextTurnPage,
     handlePreviousTurnPage,
     pageCount,
@@ -178,14 +177,17 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
   } = navigation;
   const {
     conversationMinimapScrolling,
+    detachForNavigation,
     footerSpacerHeight,
     handleChatListScrollStateChange,
     handleRangeChanged,
     handleTurnPageEndReached,
     isLoadingMore,
+    preserveForLayoutMutation,
     scrollAreaRef,
+    scrollToBottom,
+    setScrollRoot,
     staticScrollerRef,
-    turnCollapseInteractionAtRef,
     virtuosoScrollerRef,
   } = viewport;
   const {
@@ -226,7 +228,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     tailTurnPhase,
     hideUserMessage: hideGroupUserMessage,
     defaultTurnCollapsed,
-    turnCollapseInteractionAtRef,
+    onBeforeTurnCollapseToggle: preserveForLayoutMutation,
     onEditSubmit: mutationActionsDisabled ? undefined : handleEditUserMessage,
     onFailedUserIntentEdit: handleEditUserMessage,
     onRestoreCheckpoint: mutationActionsDisabled
@@ -271,6 +273,21 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     chromeTopInset,
     turnPaginationEnabled || groupChatViewActive
   );
+  const handlePreviousTurnPageNavigation = useCallback(() => {
+    detachForNavigation();
+    handlePreviousTurnPage();
+  }, [detachForNavigation, handlePreviousTurnPage]);
+  const handleNextTurnPageNavigation = useCallback(() => {
+    detachForNavigation();
+    handleNextTurnPage();
+  }, [detachForNavigation, handleNextTurnPage]);
+  const handleTurnPageSelect = useCallback(
+    (pageIndex: number) => {
+      detachForNavigation();
+      selectTurnPage(pageIndex);
+    },
+    [detachForNavigation, selectTurnPage]
+  );
   const pinnedHeaderLayer = (
     <ChatPinnedHeaderLayer
       showTurnContextRow={showTurnContextRow}
@@ -292,9 +309,9 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       currentTurnPageTimeLabel={currentTurnPageTimeLabel}
       currentPageIndex={currentPageIndex}
       pageCount={pageCount}
-      onPreviousTurnPage={handlePreviousTurnPage}
-      onNextTurnPage={handleNextTurnPage}
-      onLastTurnPage={handleLastTurnPage}
+      onPreviousTurnPage={handlePreviousTurnPageNavigation}
+      onNextTurnPage={handleNextTurnPageNavigation}
+      onLastTurnPage={scrollToBottom}
       trailingActions={paginationTrailingSlot}
       groupChatViewAvailable={groupChatViewAvailable}
       groupChatViewActive={groupChatViewActive}
@@ -308,7 +325,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       tailTurnPhase={tailTurnPhase}
       hideUserMessage={hideGroupUserMessage}
       defaultTurnCollapsed={defaultTurnCollapsed}
-      turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
+      onBeforeTurnCollapseToggle={preserveForLayoutMutation}
       onEditSubmit={
         mutationActionsDisabled &&
         !isRetryableFailedUserIntentHeader(activePinnedHeader)
@@ -431,7 +448,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                   turnPageSortAscending={turnPageSortAscending}
                   onSelectTurnPage={
                     turnPaginationEnabled
-                      ? selectTurnPage
+                      ? handleTurnPageSelect
                       : handleConversationHistorySelect
                   }
                   onToggleSort={
@@ -520,6 +537,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                       }
                       virtualScrollerRef={virtuosoScrollerRef}
                       staticScrollerRef={staticScrollerRef}
+                      onScrollRootChange={setScrollRoot}
                       newEventDividerLabel={newEventDividerLabel}
                     />
                   </>

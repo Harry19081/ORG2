@@ -121,6 +121,8 @@ export function ChatViewHistorySurface({
           />
         }
         bottomInset={historyBottomInset}
+        viewportSessionKey={`agent-org-group:${agentOrgRunView.context.runId}`}
+        onScrollNavChange={handleScrollNavChange}
         onExitGroup={() => handleGroupChatViewToggle(false)}
         onMemberSelect={handleAgentOrgMemberSessionJump}
         onLoadOlder={loadOlderGroupProjection}

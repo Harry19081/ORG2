@@ -265,20 +265,40 @@ class ResizeObserverStub {
 describe("AgentOrgGroupProjectionView", () => {
   let container: HTMLDivElement;
   let root: Root;
+  let nextFrameId = 1;
+  let frames = new Map<number, FrameRequestCallback>();
   const onStop = vi.fn(async () => undefined);
   const onRetry = vi.fn(async () => undefined);
   const onExitGroup = vi.fn();
   const onMemberSelect = vi.fn();
+  const onScrollNavChange = vi.fn();
+
+  const flushFrames = () => {
+    while (frames.size > 0) {
+      const pending = Array.from(frames.entries());
+      frames.clear();
+      for (const [id, callback] of pending) callback(id);
+    }
+  };
 
   beforeAll(() => {
     actEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
     vi.stubGlobal("ResizeObserver", ResizeObserverStub);
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+      const id = nextFrameId++;
+      frames.set(id, callback);
+      return id;
+    });
+    vi.stubGlobal("cancelAnimationFrame", (id: number) => {
+      frames.delete(id);
+    });
   });
 
   beforeEach(() => {
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
+    frames = new Map();
   });
 
   afterEach(() => {
@@ -311,6 +331,8 @@ describe("AgentOrgGroupProjectionView", () => {
           actionPendingTurns: new Set<string>(),
           overviewPanel: React.createElement("div", null, "overview"),
           bottomInset: 0,
+          viewportSessionKey: "run:test",
+          onScrollNavChange,
           onExitGroup,
           onMemberSelect,
           onLoadOlder: vi.fn(async () => undefined),
@@ -430,6 +452,67 @@ describe("AgentOrgGroupProjectionView", () => {
     expect(onExitGroup.mock.invocationCallOrder[0]).toBeLessThan(
       onMemberSelect.mock.invocationCallOrder[0]
     );
+  });
+
+  it("preserves the visible item when older Group history is prepended", async () => {
+    await renderView();
+    const scroller = container.querySelector<HTMLDivElement>(
+      '[data-testid="agent-org-group-projection-scroll-container"]'
+    );
+    expect(scroller).not.toBeNull();
+    if (!scroller) return;
+
+    let scrollHeight = 1_000;
+    Object.defineProperties(scroller, {
+      clientHeight: { value: 200 },
+      scrollHeight: { get: () => scrollHeight },
+      offsetWidth: { value: 500 },
+      clientWidth: { value: 488 },
+    });
+    scroller.getBoundingClientRect = () => ({ top: 0, right: 500 }) as DOMRect;
+    const scrollTo = vi.fn(({ top }: ScrollToOptions) => {
+      scroller.scrollTop = Number(top ?? 0);
+    });
+    scroller.scrollTo = scrollTo as unknown as typeof scroller.scrollTo;
+    const assignAnchorRects = () => {
+      Array.from(
+        scroller.querySelectorAll<HTMLElement>("[data-transcript-anchor-id]")
+      ).forEach((element, index) => {
+        element.getBoundingClientRect = () =>
+          ({
+            top: index * 120 - scroller.scrollTop,
+            bottom: index * 120 + 100 - scroller.scrollTop,
+          }) as DOMRect;
+      });
+    };
+    assignAnchorRects();
+    act(flushFrames);
+    scrollTo.mockClear();
+
+    scroller.scrollTop = 200;
+    act(() => {
+      scroller.dispatchEvent(new WheelEvent("wheel", { deltaY: -120 }));
+      scroller.dispatchEvent(new Event("scroll", { bubbles: true }));
+    });
+    expect(onScrollNavChange.mock.lastCall?.[0].showScrollToBottom).toBe(true);
+
+    const older = {
+      ...(items[0] as AgentOrgGroupConversationItem),
+      id: "group:older:0",
+      turnIntentId: "turn-older",
+      createdAt: "2025-12-31T23:59:59Z",
+    };
+    scrollHeight = 1_120;
+    await renderView({ projectedItems: [older, ...items] });
+    assignAnchorRects();
+    act(flushFrames);
+
+    expect(scroller.scrollTop).toBe(320);
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+
+    act(() => onScrollNavChange.mock.lastCall?.[0].onScrollToBottom());
+    act(flushFrames);
+    expect(scroller.scrollTop).toBe(920);
   });
 
   it("shows bounded loading, error, empty, and archived states", async () => {

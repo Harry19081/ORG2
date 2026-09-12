@@ -44,10 +44,12 @@ export function useChatViewMessageQueue({
   pipelineSessionId,
   queueSessionId,
   conversationRoot,
+  onBeforeMessageDispatch,
 }: {
   pipelineSessionId: string | null;
   queueSessionId: string | null;
   conversationRoot: ConversationRootLocator | null;
+  onBeforeMessageDispatch?: () => void;
 }) {
   const store = useStore();
   const messageQueue = useAtomValue(messageQueueAtom);
@@ -92,9 +94,10 @@ export function useChatViewMessageQueue({
     (messageId: string) => {
       const message = messageQueue.find((item) => item.id === messageId);
       if (!message) return;
+      onBeforeMessageDispatch?.();
       forceSendQueuedMessage(messageId);
     },
-    [messageQueue, forceSendQueuedMessage]
+    [forceSendQueuedMessage, messageQueue, onBeforeMessageDispatch]
   );
 
   const handleCommitQueueEdit = useCallback(

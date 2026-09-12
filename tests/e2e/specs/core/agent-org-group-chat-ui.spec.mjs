@@ -72,6 +72,10 @@ import {
   waitForSessionAggregateRow,
   waitForSessionOrgRuntimeSnapshot,
 } from "../../support/core/agentOrgUiDriver.mjs";
+import {
+  focusTranscriptWithNativeTab,
+  pressNativePageUp,
+} from "../../support/core/nativeKeyboard.mjs";
 
 const E2E_BASE_URL = `http://127.0.0.1:${process.env.E2E_IDE_SERVER_PORT ?? "13847"}`;
 
@@ -1041,7 +1045,6 @@ describe("Agent Org group chat and plan rendered UI", () => {
       text: longEndMarker,
       label: "long GroupRoot message before reload",
     });
-
     const newestPage = unwrap(
       await invokeE2E("agentOrgGroupProjectionPage", sessionId, null, 100),
       "agentOrgGroupProjectionPage(durable GroupRoot)"
@@ -1082,6 +1085,91 @@ describe("Agent Org group chat and plan rendered UI", () => {
       text: longEndMarker,
       label: "full long GroupRoot message after reload",
     });
+
+    await browser.waitUntil(
+      async () =>
+        execJS(`
+          const scroller = Array.from(
+            document.querySelectorAll('[data-testid="agent-org-group-projection-scroll-container"]')
+          ).find((element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0;
+          });
+          return Boolean(scroller && scroller.scrollHeight > scroller.clientHeight);
+        `),
+      {
+        timeout: RENDER_TIMEOUT_MS,
+        interval: 100,
+        timeoutMsg: "durable Group projection never became scrollable",
+      }
+    );
+    const visibleGroupProjectionIndex = await execJS(`
+      return Array.from(
+        document.querySelectorAll('[data-testid="agent-org-group-projection-scroll-container"]')
+      ).findIndex((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      });
+    `);
+    const groupProjectionScrollers = await browser.$$(
+      '[data-testid="agent-org-group-projection-scroll-container"]'
+    );
+    const groupProjectionScroller =
+      groupProjectionScrollers[visibleGroupProjectionIndex];
+    if (!groupProjectionScroller) {
+      throw new Error("visible Group projection scroller was not found");
+    }
+    await focusTranscriptWithNativeTab({
+      browser,
+      execJS,
+      testId: "agent-org-group-projection-scroll-container",
+    });
+    pressNativePageUp(2);
+    await browser.waitUntil(
+      async () =>
+        execJS(`
+          const scroller = Array.from(
+            document.querySelectorAll('[data-testid="agent-org-group-projection-scroll-container"]')
+          ).find((element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0;
+          });
+          const button = document.querySelector(
+            'button:has([data-icon="arrow-down"])'
+          );
+          return Boolean(
+            scroller &&
+            button &&
+            scroller.scrollTop < scroller.scrollHeight - scroller.clientHeight - 4
+          );
+        `),
+      {
+        timeout: RENDER_TIMEOUT_MS,
+        interval: 100,
+        timeoutMsg: "detached-reading setup did not move the Group Chat reader",
+      }
+    );
+    await (await browser.$('button:has([data-icon="arrow-down"])')).click();
+    await browser.waitUntil(
+      async () =>
+        execJS(`
+          const scroller = Array.from(
+            document.querySelectorAll('[data-testid="agent-org-group-projection-scroll-container"]')
+          ).find((element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0;
+          });
+          return Boolean(
+            scroller &&
+            scroller.scrollTop >= scroller.scrollHeight - scroller.clientHeight - 4
+          );
+        `),
+      {
+        timeout: RENDER_TIMEOUT_MS,
+        interval: 100,
+        timeoutMsg: "Group Chat scroll-to-bottom did not restore tail follow",
+      }
+    );
   });
 
   it("a Plan task starts Planner in Plan mode and approval unlocks dependent work", async () => {
