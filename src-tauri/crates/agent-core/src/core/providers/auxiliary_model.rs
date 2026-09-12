@@ -152,17 +152,24 @@ fn auxiliary_model_id(spec: &ProviderSpec, model: &str) -> String {
         .and_then(|prefix| wire.strip_prefix(prefix))
         .unwrap_or(&wire);
     let mut id = wire.to_ascii_lowercase();
+    // SiliconFlow also namespaces dedicated versions with Pro/.
+    if spec.name == provider_id::SILICONFLOW {
+        id = id.strip_prefix("pro/").unwrap_or(&id).to_owned();
+    }
     // Aggregator vendor namespaces are part of the wire ID, not its tier.
     for prefix in [
         "openai/",
         "anthropic/",
         "google/",
         "deepseek/",
+        "deepseek-ai/",
         "qwen/",
         "meta-llama/",
         "minimax/",
+        "minimaxai/",
         "moonshotai/",
         "z-ai/",
+        "zai-org/",
         "x-ai/",
     ] {
         if let Some(base) = id.strip_prefix(prefix) {
