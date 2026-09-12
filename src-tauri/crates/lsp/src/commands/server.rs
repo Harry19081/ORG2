@@ -11,7 +11,6 @@ use tauri::State;
 
 use super::LspManagerState;
 use crate::config::{self, CustomServerDef, LspConfig, ServerOverride};
-use crate::workspace_scan::types::WorkspaceDiagnostic;
 
 /// Start an LSP server for a specific language
 #[tauri::command]
@@ -72,76 +71,6 @@ pub async fn lsp_did_close(
 ) -> Result<(), String> {
     let manager = lsp_manager.lock().await;
     manager.did_close(&language, &uri).await
-}
-
-/// Get cached diagnostics from a running LSP server.
-/// Returns WorkspaceDiagnostic-compatible entries parsed from
-/// the server's publishDiagnostics cache.
-#[tauri::command]
-pub async fn lsp_get_cached_diagnostics(
-    language: String,
-    lsp_manager: State<'_, LspManagerState>,
-) -> Result<Vec<WorkspaceDiagnostic>, String> {
-    let manager = lsp_manager.lock().await;
-    let cache = manager.get_cached_diagnostics(&language).await?;
-
-    let mut diagnostics = Vec::new();
-
-    for (uri_str, params) in cache.iter() {
-        let file_path = uri_to_path(uri_str);
-
-        for diag in &params.diagnostics {
-            diagnostics.push(WorkspaceDiagnostic {
-                file_path: file_path.clone(),
-                // LSP is 0-indexed, the workspace-scan layer is 1-indexed.
-                line: diag.range.start.line + 1,
-                column: diag.range.start.character + 1,
-                end_line: Some(diag.range.end.line + 1),
-                end_column: Some(diag.range.end.character + 1),
-                severity: severity_label(diag.severity),
-                message: diag.message.clone(),
-                source: diag.source.clone().unwrap_or_else(|| "lsp".to_string()),
-                code: diag.code.as_ref().map(|c| match c {
-                    lsp_types::NumberOrString::Number(n) => n.to_string(),
-                    lsp_types::NumberOrString::String(s) => s.clone(),
-                }),
-            });
-        }
-    }
-
-    log::info!(
-        "[LSP] Returning {} cached diagnostics for {}",
-        diagnostics.len(),
-        language
-    );
-    Ok(diagnostics)
-}
-
-/// Decode a `file://` URI back into a filesystem path. Non-`file://`
-/// schemes (rare in LSP traffic but possible for `untitled:` buffers)
-/// are returned verbatim so the frontend can still display them.
-fn uri_to_path(uri: &str) -> String {
-    if let Some(path) = uri.strip_prefix("file://") {
-        urlencoding::decode(path)
-            .unwrap_or_else(|_| path.into())
-            .into_owned()
-    } else {
-        uri.to_string()
-    }
-}
-
-/// Map an LSP severity to the wire string the frontend expects.
-/// `None` (server didn't classify) and unknown variants both fall
-/// through to `info` to match the prior raw-JSON behaviour.
-fn severity_label(severity: Option<lsp_types::DiagnosticSeverity>) -> String {
-    match severity {
-        Some(lsp_types::DiagnosticSeverity::ERROR) => "error",
-        Some(lsp_types::DiagnosticSeverity::WARNING) => "warning",
-        Some(lsp_types::DiagnosticSeverity::INFORMATION) => "info",
-        Some(lsp_types::DiagnosticSeverity::HINT) => "info",
-        _ => "info",
-    }
-    .to_string()
 }
 
 /// Shutdown all LSP servers
