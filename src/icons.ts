@@ -108,6 +108,7 @@ export { default as CaptionsIcon } from "@hugeicons/core-free-icons/CaptionsIcon
 export { default as Cardiogram01Icon } from "@hugeicons/core-free-icons/Cardiogram01Icon";
 export { default as CaseSensitiveIcon } from "@hugeicons/core-free-icons/CaseSensitiveIcon";
 export { default as CenterFocusIcon } from "@hugeicons/core-free-icons/CenterFocusIcon";
+export { default as ChangeScreenModeIcon } from "@hugeicons/core-free-icons/ChangeScreenModeIcon";
 export { default as ChartColumnIcon } from "@hugeicons/core-free-icons/ChartColumnIcon";
 export { default as ChartGanttIcon } from "@hugeicons/core-free-icons/ChartGanttIcon";
 export { default as ChartNoAxesGanttIcon } from "@hugeicons/core-free-icons/ChartNoAxesGanttIcon";
