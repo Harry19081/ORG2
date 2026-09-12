@@ -5,8 +5,9 @@
 //! - [`find_last_safe_boundary`] — picks the highest message index safe to mark
 //!   as the SM boundary (avoids splitting a tool_use → tool_result pair)
 
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::time::Instant;
 
 use serde_json::Value;
 use tokio::sync::Mutex;
@@ -14,9 +15,9 @@ use tracing::{info, warn};
 
 use super::config::SessionMemoryConfig;
 use super::sections::{analyze_section_sizes, generate_section_reminders};
-use super::state::SessionMemoryState;
-use crate::core::side_query::{self, SideQueryConfig, StructuredOutput};
-use crate::providers::traits::LLMProvider;
+use super::state::{ExtractionFailure, SessionMemoryState};
+use crate::core::side_query::{self, SideQueryConfig, SideQueryError, StructuredOutput};
+use crate::providers::traits::{LLMProvider, ProviderError};
 
 /// Resolve a sequence anchor to "index of the last summarized message" in the
 /// frame described by `start_seqs`. `None` when nothing in the frame is at or
@@ -106,7 +107,9 @@ pub fn should_extract(
 /// Extract or update session memory from the conversation.
 ///
 /// Makes a single LLM side-call with the SM system prompt, current SM
-/// content, and recent messages. Returns the updated SM markdown.
+/// content, and recent messages. Returns updated markdown, or `None` while
+/// this account/model route is cooling down or has no usable low-cost model.
+/// Only other low-cost candidates are retried; the parent is never a fallback.
 #[allow(clippy::too_many_arguments)]
 pub async fn extract_session_memory(
     messages: &[Value],
@@ -117,15 +120,24 @@ pub async fn extract_session_memory(
     model: &str,
     current_tokens: usize,
     cancel_flag: Option<&Arc<AtomicBool>>,
-) -> Result<String, String> {
+) -> Result<Option<String>, String> {
     use crate::core::model_context::summarization;
+
+    let selection = provider.auxiliary_model(model);
 
     // ── Prepare: brief lock to snapshot the read-side state + flag the
     // extraction as in-progress. The mutex is NOT held across the LLM call
     // below — otherwise the next turn's brief `sm_state` reads (pre-turn
     // compaction, the gate pre-check) would block for the whole extraction.
-    let (start_idx, existing_content, consumed_tool_calls) = {
+    let (start_idx, existing_content, consumed_tool_calls, selected_model) = {
         let mut state = sm_state.lock().await;
+        let Some(selected_model) =
+            state
+                .auxiliary_retry
+                .select(selection.clone(), model, Instant::now())
+        else {
+            return Ok(None);
+        };
         state.extraction_in_progress = true;
         let start_idx = state
             .last_summarized_seq
@@ -135,6 +147,7 @@ pub async fn extract_session_memory(
             start_idx,
             state.content.clone(),
             state.tool_calls_since_extraction,
+            selected_model,
         )
     };
 
@@ -211,13 +224,8 @@ pub async fn extract_session_memory(
         user_content.push_str(&section_reminders);
     }
 
-    let sq_config = SideQueryConfig {
-        // Session-memory extraction only reads the truncated <new_messages>
-        // digest (not the full conversation prefix), so it gains nothing
-        // from the parent prompt cache. Route it to the fast sibling of the
-        // session model (same provider family/protocol) instead of burning
-        // the primary channel model on a summarization side query.
-        model: Some(crate::providers::model_hints::fast_model_hint(model)),
+    let mut sq_config = SideQueryConfig {
+        model: Some(selected_model.clone()),
         max_tokens: config.extraction_max_tokens,
         temperature: 0.0,
         system_prompt: Some(SM_EXTRACTION_SYSTEM_PROMPT.to_string()),
@@ -242,14 +250,44 @@ pub async fn extract_session_memory(
         "content": user_content,
     })];
 
-    let result = side_query::side_query_with_options(
-        provider,
-        &user_messages,
-        &sq_config,
-        model,
-        cancel_flag,
-    )
-    .await;
+    let mut active_model = selected_model;
+    let result = loop {
+        sq_config.model = Some(active_model.clone());
+        let result = side_query::side_query_typed_with_options(
+            provider,
+            &user_messages,
+            &sq_config,
+            model,
+            cancel_flag,
+        )
+        .await;
+        if !matches!(
+            &result,
+            Err(SideQueryError::Provider(ProviderError::ModelNotFound(_)))
+        ) {
+            break result;
+        }
+        if cancel_flag.is_some_and(|flag| flag.load(Ordering::SeqCst)) {
+            break Err(SideQueryError::Provider(ProviderError::Cancelled));
+        }
+        let mut state = sm_state.lock().await;
+        state.auxiliary_retry.reject_candidate(&active_model);
+        if let Some(next) = state
+            .auxiliary_retry
+            .select(selection.clone(), model, Instant::now())
+        {
+            active_model = next;
+        } else {
+            // All bounded low-cost candidates were rejected. Keep the old
+            // memory and skip quietly; never send the parent as a fallback.
+            state.extraction_in_progress = false;
+            state
+                .auxiliary_retry
+                .failed(ExtractionFailure::UnsupportedModel, Instant::now());
+            info!("[session_memory] Low-cost models unavailable; extraction skipped");
+            return Ok(None);
+        }
+    };
 
     // ── Finalize: brief lock to merge the result back. Concurrent
     // `record_tool_calls` increments that arrived while the LLM was running
@@ -290,11 +328,17 @@ pub async fn extract_session_memory(
                 state.last_summarized_seq.unwrap_or(-1),
             );
 
-            Ok(sm_content)
+            state.auxiliary_retry.succeeded();
+            Ok(Some(sm_content))
         }
         Err(err) => {
             warn!("[session_memory] Extraction failed: {}", err);
-            Err(err)
+            let failure = match &err {
+                SideQueryError::Provider(error) => ExtractionFailure::from(error),
+                _ => ExtractionFailure::Other,
+            };
+            state.auxiliary_retry.failed(failure, Instant::now());
+            Err(err.to_string())
         }
     }
 }
