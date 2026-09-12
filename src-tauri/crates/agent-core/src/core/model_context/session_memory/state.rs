@@ -3,6 +3,7 @@
 use std::time::{Duration, Instant};
 
 use crate::providers::auxiliary_model::AuxiliaryModel;
+use crate::providers::traits::ProviderError;
 
 const FAILURE_COOLDOWN: Duration = Duration::from_secs(5 * 60);
 
@@ -27,6 +28,7 @@ impl ExtractionFailure {
 /// share it; a different account/endpoint/model/catalog starts a new scope.
 #[derive(Debug, Clone, Default)]
 pub struct AuxiliaryRetryState {
+    acquisition_scope: Option<u64>,
     route: Option<(u64, String, String)>,
     rejected_candidate: bool,
     retry_after: Option<Instant>,
@@ -35,10 +37,24 @@ pub struct AuxiliaryRetryState {
 }
 
 impl AuxiliaryRetryState {
-    /// Provider acquisition can fail before extraction gets to select a model.
-    /// Do not attribute that failure to a previous job's model rejection.
-    pub fn begin_attempt(&mut self) {
+    /// Gate the whole attempt, including provider construction and OAuth
+    /// preflight. The scope comes from current routing metadata, not a client.
+    pub fn begin_attempt(&mut self, scope: u64, now: Instant) -> bool {
+        if self.acquisition_scope != Some(scope) {
+            *self = Self {
+                acquisition_scope: Some(scope),
+                ..Self::default()
+            };
+        }
+        if self.retry_after.is_some_and(|until| now < until) {
+            return false;
+        }
         self.failure = None;
+        true
+    }
+
+    pub fn provider_failed(&mut self, error: &ProviderError, now: Instant) {
+        self.failed(ExtractionFailure::from(error), now);
     }
 
     pub fn is_cooling_down(&self, selection: &AuxiliaryModel, parent: &str, now: Instant) -> bool {
@@ -62,6 +78,7 @@ impl AuxiliaryRetryState {
         if self.route.as_ref() != Some(&route) {
             *self = Self {
                 route: Some(route),
+                acquisition_scope: self.acquisition_scope,
                 ..Self::default()
             };
         }
@@ -105,6 +122,16 @@ impl AuxiliaryRetryState {
         }
         self.last_warning = Some((failure, now));
         Some(failure.warning())
+    }
+}
+
+impl From<&ProviderError> for ExtractionFailure {
+    fn from(error: &ProviderError) -> Self {
+        match error {
+            ProviderError::ModelNotFound(_) => Self::UnsupportedModel,
+            ProviderError::AuthError(_) => Self::Authentication,
+            _ => Self::Other,
+        }
     }
 }
 
@@ -205,5 +232,27 @@ mod tests {
         retry.succeeded();
         retry.failed(ExtractionFailure::Authentication, now + FAILURE_COOLDOWN);
         assert!(retry.take_warning(now + FAILURE_COOLDOWN).is_some());
+    }
+
+    #[test]
+    fn auxiliary_acquisition_auth_cooldown_expires_and_route_switch_resets_it() {
+        let now = Instant::now();
+        let mut retry = AuxiliaryRetryState::default();
+        let error = ProviderError::AuthError("fixture".into());
+        assert!(retry.begin_attempt(1, now));
+        retry.provider_failed(&error, now);
+        assert!(!retry.begin_attempt(1, now + FAILURE_COOLDOWN - Duration::from_secs(1)));
+        assert!(retry.take_warning(now).unwrap().contains("authenticate"));
+        assert!(retry.begin_attempt(1, now + FAILURE_COOLDOWN));
+        retry.provider_failed(&error, now + FAILURE_COOLDOWN);
+        assert!(retry.begin_attempt(2, now + FAILURE_COOLDOWN));
+        retry.select(selection(2), "parent", now + FAILURE_COOLDOWN);
+        retry.provider_failed(&error, now + FAILURE_COOLDOWN);
+        assert!(
+            !retry.begin_attempt(2, now + FAILURE_COOLDOWN),
+            "selection must retain acquisition scope"
+        );
+        retry.succeeded();
+        assert!(retry.begin_attempt(2, now + FAILURE_COOLDOWN));
     }
 }

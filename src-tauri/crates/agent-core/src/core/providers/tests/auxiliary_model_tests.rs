@@ -23,7 +23,7 @@ fn auxiliary_model_respects_account_access_and_enabled_models() {
             provider_id::ANTHROPIC,
             ModelType::AnthropicApi,
             "claude-sonnet-4.5",
-            "claude-haiku-4.5",
+            "claude-haiku-4-5-20251001",
         ),
         (
             provider_id::GEMINI,
@@ -50,6 +50,55 @@ fn auxiliary_model_respects_account_access_and_enabled_models() {
         key.enabled_models.push(fast.into());
         key.available_models.clear();
         assert_eq!(resolve(&key).model, parent, "unknown access {family}");
+    }
+}
+
+#[test]
+fn auxiliary_model_anthropic_aliases_keep_the_enabled_catalog_id() {
+    let spec = find_by_name(provider_id::ANTHROPIC).unwrap();
+    let parent = "claude-sonnet-4-5-20250929";
+    let aliases = [
+        "claude-haiku-4.5",
+        "claude-haiku-4-5",
+        "claude-haiku-4-5-20251001",
+        "anthropic/claude-haiku-4-5-20251001",
+        "haiku-4-5",
+    ];
+    for available in aliases {
+        for enabled in aliases {
+            let mut key = account(ModelType::AnthropicApi, available);
+            key.enabled_models = vec![enabled.into()];
+            let policy = AuxiliaryModelPolicy::from_account(spec, &key, None, false, false);
+            assert_eq!(
+                policy.resolve(parent).model,
+                enabled,
+                "{available} / {enabled}"
+            );
+            // A fast parent, including its selected reasoning variant, is preserved.
+            for fast_parent in aliases {
+                assert_eq!(policy.resolve(fast_parent).model, fast_parent);
+            }
+            assert_eq!(
+                policy.resolve("claude-haiku-4-5-high").model,
+                "claude-haiku-4-5-high"
+            );
+        }
+    }
+    for unknown in [
+        "claude-haiku-4-5-20990101",
+        "claude-haiku-4-50",
+        "claude-haiku-4-5-custom",
+    ] {
+        for (available, enabled) in [(unknown, aliases[0]), (aliases[0], unknown)] {
+            let mut key = account(ModelType::AnthropicApi, available);
+            key.enabled_models = vec![enabled.into()];
+            let policy = AuxiliaryModelPolicy::from_account(spec, &key, None, false, false);
+            assert_eq!(
+                policy.resolve(parent).model,
+                parent,
+                "{available} / {enabled}"
+            );
+        }
     }
 }
 

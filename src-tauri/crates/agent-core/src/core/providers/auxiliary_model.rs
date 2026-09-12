@@ -64,14 +64,14 @@ impl AuxiliaryModelPolicy {
         } else {
             match spec.name {
                 provider_id::OPENAI => Some("gpt-5.4-mini"),
-                provider_id::ANTHROPIC => Some("claude-haiku-4.5"),
+                provider_id::ANTHROPIC => Some("claude-haiku-4-5"),
                 provider_id::GEMINI => Some("gemini-3.1-flash"),
                 provider_id::DEEPSEEK => Some("deepseek-chat"),
                 _ => None,
             }
         };
         let candidate = preferred.and_then(|preferred| {
-            let matches = |model: &String| wire_model_name(spec, model) == preferred;
+            let matches = |model: &String| auxiliary_model_id(spec, model) == preferred;
             account
                 .available_models
                 .iter()
@@ -96,9 +96,14 @@ impl AuxiliaryModelPolicy {
         let same_family =
             guess_provider_by_model(parent_model).is_some_and(|spec| spec.name == self.spec.name);
         let already_fast = self.candidate.as_ref().is_some_and(|candidate| {
-            super::thinking_mode::parse_model_variant(&wire_model_name(self.spec, parent_model))
-                .base_model
-                == wire_model_name(self.spec, candidate)
+            auxiliary_model_id(
+                self.spec,
+                &super::thinking_mode::parse_model_variant(&wire_model_name(
+                    self.spec,
+                    parent_model,
+                ))
+                .base_model,
+            ) == auxiliary_model_id(self.spec, candidate)
         });
         AuxiliaryModel {
             model: if same_family && !already_fast {
@@ -110,5 +115,22 @@ impl AuxiliaryModelPolicy {
             .to_owned(),
             scope: self.scope,
         }
+    }
+}
+
+/// Compare only known aliases; never manufacture a request ID or treat an
+/// arbitrary dated/custom deployment as an entitled model. The selected value
+/// remains the original ID in the account's enabled catalog.
+fn auxiliary_model_id(spec: &ProviderSpec, model: &str) -> String {
+    let wire = wire_model_name(spec, model);
+    if spec.name == provider_id::ANTHROPIC
+        && matches!(
+            wire.as_str(),
+            "claude-haiku-4.5" | "claude-haiku-4-5" | "claude-haiku-4-5-20251001"
+        )
+    {
+        "claude-haiku-4-5".to_owned()
+    } else {
+        wire
     }
 }

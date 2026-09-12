@@ -26,6 +26,7 @@ use crate::memory::background::{
 use crate::memory::workspace_memory::auto_dream::{self as auto_dream, AutoDreamState};
 use crate::memory::workspace_memory::extract::{self as extract_memories, ExtractMemoriesState};
 use crate::model_context::session_memory::{self, SessionMemoryConfig, SessionMemoryState};
+use crate::providers::traits::ProviderError;
 use crate::providers::LLMProvider;
 use crate::session::workspace::SessionWorkspace;
 use crate::tools::registry::ToolRegistry;
@@ -45,7 +46,9 @@ pub(super) struct ForkProviderSpec {
     pub workspace: SessionWorkspace,
 }
 
-async fn fresh_fork_provider(spec: &ForkProviderSpec) -> Result<Arc<dyn LLMProvider>, String> {
+async fn fresh_fork_provider(
+    spec: &ForkProviderSpec,
+) -> Result<Arc<dyn LLMProvider>, ProviderError> {
     crate::providers::factory::create_provider_with_native_harness_preflight(
         &spec.model,
         spec.account_id.as_deref(),
@@ -55,7 +58,37 @@ async fn fresh_fork_provider(spec: &ForkProviderSpec) -> Result<Arc<dyn LLMProvi
     )
     .await
     .map(Arc::from)
-    .map_err(|err| format!("Failed to create fork provider: {err}"))
+}
+
+/// The future is not polled during cooldown, so neither OAuth preflight nor
+/// provider construction runs. Type information survives until retry state has
+/// recorded the failure; only the outer memory-job boundary renders a string.
+async fn acquire_session_memory_provider(
+    state: &Mutex<SessionMemoryState>,
+    scope: u64,
+    acquire: impl std::future::Future<Output = Result<Arc<dyn LLMProvider>, ProviderError>>,
+) -> Result<Option<Arc<dyn LLMProvider>>, ProviderError> {
+    {
+        let mut state = state.lock().await;
+        if !state
+            .auxiliary_retry
+            .begin_attempt(scope, std::time::Instant::now())
+        {
+            state.extraction_in_progress = false;
+            return Ok(None);
+        }
+    }
+    match acquire.await {
+        Ok(provider) => Ok(Some(provider)),
+        Err(error) => {
+            let mut state = state.lock().await;
+            state
+                .auxiliary_retry
+                .provider_failed(&error, std::time::Instant::now());
+            state.extraction_in_progress = false;
+            Err(error)
+        }
+    }
 }
 
 /// The bounded loader stops reading once the tail is guaranteed to exceed
@@ -176,8 +209,26 @@ pub(super) fn spawn_session_memory_extraction(input: SessionMemoryExtractionInpu
         MemoryJobKind::SessionMemory,
         SESSION_MEMORY_TIMEOUT,
         move |cancel| async move {
-            sm_state.lock().await.auxiliary_retry.begin_attempt();
-            let provider = fresh_fork_provider(&fork_provider).await?;
+            let scope_spec = fork_provider.clone();
+            let scope = tokio::task::spawn_blocking(move || {
+                crate::providers::factory::provider_acquisition_scope(
+                    &scope_spec.model,
+                    scope_spec.account_id.as_deref(),
+                    scope_spec.native_harness_type,
+                )
+            })
+            .await
+            .map_err(|err| format!("Provider route worker failed: {err}"))?;
+            let Some(provider) = acquire_session_memory_provider(
+                &sm_state,
+                scope,
+                fresh_fork_provider(&fork_provider),
+            )
+            .await
+            .map_err(|err| format!("Failed to create fork provider: {err}"))?
+            else {
+                return Ok(());
+            };
             let cancel_bridge = bridge_cancel_flag(cancel);
             extract_and_persist_session_memory(
                 &job_sid,
@@ -326,7 +377,9 @@ pub(super) fn spawn_extract_memories(input: ExtractMemoriesInput<'_>) {
                 return Ok(());
             }
 
-            let provider = fresh_fork_provider(&fork_provider).await?;
+            let provider = fresh_fork_provider(&fork_provider)
+                .await
+                .map_err(|err| format!("Failed to create fork provider: {err}"))?;
             let cancel_bridge = bridge_cancel_flag(cancel);
             let params = crate::memory::MemoryAgentParams {
                 messages: &messages,
@@ -393,7 +446,9 @@ pub(super) fn spawn_auto_dream(input: AutoDreamInput<'_>) {
             }
 
             let (messages, _start_seqs) = load_durable_history_blocking(job_sid.clone()).await?;
-            let provider = fresh_fork_provider(&fork_provider).await?;
+            let provider = fresh_fork_provider(&fork_provider)
+                .await
+                .map_err(|err| format!("Failed to create fork provider: {err}"))?;
             let cancel_bridge = bridge_cancel_flag(cancel);
             let params = crate::memory::MemoryAgentParams {
                 messages: &messages,

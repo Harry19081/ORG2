@@ -326,12 +326,7 @@ pub async fn extract_session_memory(
         Err(err) => {
             warn!("[session_memory] Extraction failed: {}", err);
             let failure = match &err {
-                SideQueryError::Provider(ProviderError::ModelNotFound(_)) => {
-                    ExtractionFailure::UnsupportedModel
-                }
-                SideQueryError::Provider(ProviderError::AuthError(_)) => {
-                    ExtractionFailure::Authentication
-                }
+                SideQueryError::Provider(error) => ExtractionFailure::from(error),
                 _ => ExtractionFailure::Other,
             };
             state.auxiliary_retry.failed(failure, Instant::now());

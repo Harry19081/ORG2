@@ -305,3 +305,102 @@ async fn session_memory_parent_selection_has_no_redundant_model_retry() {
     assert_eq!(persisted(sid), before);
     assert!(!state.lock().await.extraction_in_progress);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn session_memory_preflight_auth_failure_cools_down_before_acquisition() {
+    use crate::providers::factory::ensure_account_key_fresh_with_service;
+    use key_vault::key_store::{KeyService, ModelKey, ModelType};
+    use std::sync::atomic::AtomicUsize;
+
+    let _sandbox = test_helpers::test_env::sandbox();
+    let dir = tempfile::tempdir().unwrap();
+    let service = KeyService::new(Some(dir.path().into()));
+    let mut key = ModelKey::new(ModelType::ClaudeCode);
+    key.auth_method = key_vault::AuthMethod::Oauth;
+    // Missing access/refresh tokens make the real factory preflight fail
+    // locally, before client construction or any HTTP request.
+    let key = service.save_key(key).unwrap();
+    let sid = "memory-preflight-auth-failure";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "previous memory", Some(0)).unwrap();
+    let before = persisted(sid);
+    let state = Arc::new(Mutex::new(SessionMemoryState {
+        content: before.0.clone(),
+        last_summarized_seq: before.1,
+        extraction_in_progress: true,
+        ..Default::default()
+    }));
+    let acquisitions = AtomicUsize::new(0);
+    for turn in 0..3 {
+        let result = acquire_session_memory_provider(&state, 42, async {
+            acquisitions.fetch_add(1, Ordering::SeqCst);
+            ensure_account_key_fresh_with_service(&service, Some(&key.id)).await?;
+            panic!("invalid OAuth fixture must not construct a provider");
+        })
+        .await;
+        if turn == 0 {
+            assert!(matches!(result, Err(ProviderError::AuthError(_))));
+        } else {
+            assert!(matches!(result, Ok(None)));
+        }
+        assert_eq!(acquisitions.load(Ordering::SeqCst), 1);
+        assert_eq!(persisted(sid), before);
+        let mut state = state.lock().await;
+        assert_eq!(state.content, before.0);
+        assert_eq!(state.last_summarized_seq, before.1);
+        assert!(!state.extraction_in_progress);
+        let warning = state
+            .auxiliary_retry
+            .take_warning(std::time::Instant::now());
+        if turn == 0 {
+            assert!(warning.unwrap().contains("authenticate"));
+        } else {
+            assert!(warning.is_none());
+        }
+    }
+    // A changed account/endpoint route bypasses the failed route's cooldown.
+    let next = acquire_session_memory_provider(&state, 43, async {
+        acquisitions.fetch_add(1, Ordering::SeqCst);
+        let response =
+            serde_json::from_value(json!({"content": "### Current State\nRecovered memory"}))
+                .unwrap();
+        Ok(Arc::new(provider(vec![Ok(response)])) as Arc<dyn LLMProvider>)
+    })
+    .await
+    .unwrap();
+    run(sid, state.clone(), next.unwrap().as_ref(), None)
+        .await
+        .unwrap();
+    assert_eq!(
+        persisted(sid).0.as_deref(),
+        Some("### Current State\nRecovered memory")
+    );
+    assert!(persisted(sid).1 > before.1);
+    assert!(!state.lock().await.extraction_in_progress);
+    assert_eq!(acquisitions.load(Ordering::SeqCst), 2);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn session_memory_chat_auth_cooldown_also_skips_fresh_provider_acquisition() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-chat-auth-acquisition";
+    seed(sid);
+    let before = persisted(sid);
+    let state = Arc::new(Mutex::new(SessionMemoryState::default()));
+    let first = acquire_session_memory_provider(&state, 42, async {
+        Ok(Arc::new(provider(vec![Err(ProviderError::AuthError(
+            "fixture".into(),
+        ))])) as Arc<dyn LLMProvider>)
+    })
+    .await
+    .unwrap()
+    .unwrap();
+    assert!(run(sid, state.clone(), first.as_ref(), None).await.is_err());
+    let next = acquire_session_memory_provider(&state, 42, async {
+        panic!("chat auth cooldown must also suppress provider preflight");
+    })
+    .await
+    .unwrap();
+    assert!(next.is_none());
+    assert_eq!(persisted(sid), before);
+}

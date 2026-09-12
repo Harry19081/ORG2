@@ -63,12 +63,59 @@ pub async fn create_provider_with_native_harness_preflight(
     )
 }
 
+/// Read routing metadata before any OAuth refresh. Call from a blocking worker:
+/// KeyService reads the credential file synchronously. Never retain credentials
+/// in session retry state, or invalidate cooldown on refresh-failure bookkeeping.
+pub(crate) fn provider_acquisition_scope(
+    model: &str,
+    account_id: Option<&str>,
+    native_harness_type: Option<NativeHarnessType>,
+) -> u64 {
+    let key = account_id.and_then(|id| key_vault::key_store::KEY_SERVICE.get_key_by_id(id));
+    account_acquisition_scope(model, account_id, native_harness_type, key.as_ref())
+}
+
+fn account_acquisition_scope(
+    model: &str,
+    account_id: Option<&str>,
+    native_harness_type: Option<NativeHarnessType>,
+    key: Option<&ModelKey>,
+) -> u64 {
+    use std::hash::{Hash, Hasher};
+    let mut scope = std::collections::hash_map::DefaultHasher::new();
+    (model, account_id, format!("{native_harness_type:?}")).hash(&mut scope);
+    key.map(|key| {
+        (
+            &key.id,
+            format!(
+                "{:?}/{:?}/{:?}",
+                key.model_type, key.auth_method, key.protocol
+            ),
+            &key.base_url,
+            &key.available_models,
+            &key.enabled_models,
+        )
+    })
+    .hash(&mut scope);
+    // Health, enabled (also changed by refresh failures), updated_at, and token
+    // rotation do not change this scope. Same-route reauthentication may wait
+    // for the existing five-minute deadline; account/endpoint changes do not.
+    scope.finish()
+}
+
 async fn ensure_account_key_fresh(account_id: Option<&str>) -> Result<(), ProviderError> {
+    ensure_account_key_fresh_with_service(&key_vault::key_store::KEY_SERVICE, account_id).await
+}
+
+pub(crate) async fn ensure_account_key_fresh_with_service(
+    service: &key_vault::key_store::KeyService,
+    account_id: Option<&str>,
+) -> Result<(), ProviderError> {
     let Some(account_id) = account_id else {
         return Ok(());
     };
 
-    let Some(key) = key_vault::key_store::KEY_SERVICE.get_key_by_id(account_id) else {
+    let Some(key) = service.get_key_by_id(account_id) else {
         tracing::debug!(
             "[factory] ensure_account_key_fresh: account {} not in key vault — \
              deferring to resolve_credentials for the loud error",
@@ -90,7 +137,7 @@ async fn ensure_account_key_fresh(account_id: Option<&str>) -> Result<(), Provid
                 key.oauth_refresh_failure_count,
                 key.enabled
             );
-            key_vault::key_store::KEY_SERVICE
+            service
                 .ensure_claude_code_oauth_key_fresh(account_id)
                 .await
                 .map_err(ProviderError::AuthError)?;
@@ -100,7 +147,7 @@ async fn ensure_account_key_fresh(account_id: Option<&str>) -> Result<(), Provid
             );
         }
         ModelType::Codex => {
-            key_vault::key_store::KEY_SERVICE
+            service
                 .ensure_codex_oauth_key_fresh(account_id)
                 .await
                 .map_err(ProviderError::AuthError)?;
@@ -999,6 +1046,56 @@ fn find_credential_by_available_model(
 mod tests {
     use super::*;
     use crate::providers::registry::{provider_id, PROVIDERS};
+
+    #[test]
+    fn auxiliary_acquisition_scope_tracks_routing_not_auth_failure_bookkeeping() {
+        let mut key = ModelKey::new(ModelType::ClaudeCode);
+        key.auth_method = AuthMethod::Oauth;
+        let scope = |key: &ModelKey| {
+            account_acquisition_scope("claude-sonnet-4-5", Some(&key.id), None, Some(key))
+        };
+        let initial = scope(&key);
+        key.updated_at += chrono::Duration::seconds(1);
+        key.oauth_refresh_failure_count += 1;
+        key.health_status = key_vault::key_store::HealthStatus::Invalid;
+        key.enabled = false;
+        assert_eq!(
+            initial,
+            scope(&key),
+            "failure bookkeeping must not restart preflight"
+        );
+        key.base_url = Some("https://relay.invalid/v1".into());
+        assert_ne!(initial, scope(&key));
+        let endpoint = scope(&key);
+        key.id.push_str("-other");
+        assert_ne!(endpoint, scope(&key));
+        let account = scope(&key);
+        key.auth_method = AuthMethod::ApiKey;
+        assert_ne!(account, scope(&key));
+        let auth = scope(&key);
+        key.protocol = Some(ProviderProtocol::OpenAi);
+        assert_ne!(auth, scope(&key));
+        let protocol = scope(&key);
+        key.enabled_models.push("claude-haiku-4-5".into());
+        assert_ne!(protocol, scope(&key));
+        assert_ne!(
+            scope(&key),
+            account_acquisition_scope("claude-opus-4-5", Some(&key.id), None, Some(&key))
+        );
+        assert_ne!(
+            scope(&key),
+            account_acquisition_scope(
+                "claude-sonnet-4-5",
+                Some(&key.id),
+                Some(NativeHarnessType::CursorNative),
+                Some(&key)
+            )
+        );
+        assert_ne!(
+            scope(&key),
+            account_acquisition_scope("claude-sonnet-4-5", Some(&key.id), None, None)
+        );
+    }
 
     #[test]
     fn auxiliary_policy_uses_the_same_resolved_transport_as_the_client() {
