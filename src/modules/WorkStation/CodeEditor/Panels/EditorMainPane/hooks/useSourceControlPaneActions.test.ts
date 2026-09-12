@@ -38,7 +38,7 @@ vi.mock("react-i18next", () => ({
 }));
 vi.mock("../config", () => ({ createSourceControlQuickActions: () => [] }));
 
-it("routes the header to the mounted scope, avoids duplicate refresh, and falls back after unmount", () => {
+it("routes the header to the mounted scope, avoids duplicate refresh, and falls back after unmount", async () => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   const container = document.createElement("div");
   const root = createRoot(container);
@@ -94,6 +94,19 @@ it("routes the header to the mounted scope, avoids duplicate refresh, and falls 
     act(() => refresh());
     expect(worktree).toHaveBeenCalledOnce();
     expect(mainRepo).toHaveBeenCalledOnce();
+    const failure = new Error("Refresh failed");
+    const logError = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      mocks.pane.current = { refresh: vi.fn(() => Promise.reject(failure)) };
+      await act(async () => refresh());
+      expect(logError).toHaveBeenCalledWith(
+        "[SourceControl] Failed to refresh Git status",
+        failure
+      );
+      expect(fallback).not.toHaveBeenCalled();
+    } finally {
+      logError.mockRestore();
+    }
     mocks.pane.current = null;
     act(() => refresh());
     expect(fallback).toHaveBeenCalledOnce();

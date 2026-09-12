@@ -80,7 +80,9 @@ export function useSourceControlPaneActions({
   const refreshSourceControl = useCallback(() => {
     // A scoped sidebar refresh already updates shared status. Do not also scan
     // the primary repository when a worktree or multi-root pane handled it.
-    void (refreshSidebar?.() ?? forceRefresh());
+    (refreshSidebar?.() ?? forceRefresh()).catch((error: unknown) => {
+      console.error("[SourceControl] Failed to refresh Git status", error);
+    });
   }, [forceRefresh, refreshSidebar]);
   const {
     spinClass: sourceControlRefreshSpinClass,
