@@ -197,7 +197,6 @@ const Dropdown: React.FC<DropdownProps> = ({
   });
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const positionFrameRef = useRef<number | null>(null);
 
   const isControlled = controlledVisible !== undefined;
@@ -427,13 +426,6 @@ const Dropdown: React.FC<DropdownProps> = ({
     return () => cancelAnimationFrame(id);
   }, [visible, position]);
 
-  useEffect(() => {
-    if (visible && isOptionsMode && showSearch) {
-      const timer = setTimeout(() => searchInputRef.current?.focus(), 10);
-      return () => clearTimeout(timer);
-    }
-  }, [visible, isOptionsMode, showSearch]);
-
   const handleTriggerClick = useCallback(() => {
     if (trigger === "click" && !disabled) {
       setVisible(!visible);
@@ -455,7 +447,6 @@ const Dropdown: React.FC<DropdownProps> = ({
       searchPlaceholder={searchPlaceholder}
       searchValue={searchValue}
       onSearchChange={handleSearchChange}
-      searchInputRef={searchInputRef}
       filteredOptions={filteredOptions}
       value={value}
       mode={mode}
