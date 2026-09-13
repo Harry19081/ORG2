@@ -104,6 +104,7 @@ beforeEach(() => {
     setTurnPageSelection: vi.fn(),
     virtualListRef: { current: null },
     chatContainerRef: { current: host },
+    onExplicitNavigation: vi.fn(),
   };
   root = createRoot(host);
   act(() =>
