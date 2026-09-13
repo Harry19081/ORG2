@@ -193,7 +193,7 @@ describe("DiffFileSection open-file action", () => {
 
 describe("DiffFileSection badge hover hit target", () => {
   it.each(["modified", "deleted"] as const)(
-    "lets %s badges receive hover above the header overlay",
+    "shows only the %s status letter tooltip above the header overlay",
     (status) => {
       vi.useFakeTimers();
       const container = document.createElement("div");
@@ -222,8 +222,8 @@ describe("DiffFileSection badge hover hit target", () => {
         expect(button.disabled).toBe(false);
         expect(button.closest(".pointer-events-none")).not.toBeNull();
         for (const [text, label] of [
-          ["+2", "common:gitLabels.additions"],
-          ["-1", "common:gitLabels.deletions"],
+          ["+2", null],
+          ["-1", null],
           [
             status === "modified" ? "M" : "D",
             `common:gitLabels.${status === "modified" ? "M" : "D"}`,
@@ -241,7 +241,11 @@ describe("DiffFileSection badge hover hit target", () => {
           act(() => vi.advanceTimersByTime(1));
           act(() => vi.advanceTimersByTime(32));
           const tooltip = document.querySelector(".native-tooltip-visible");
-          expect(tooltip?.textContent).toBe(label);
+          if (label === null) {
+            expect(tooltip).toBeNull();
+          } else {
+            expect(tooltip?.textContent).toBe(label);
+          }
           act(() =>
             target.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }))
           );

@@ -394,7 +394,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           aria-label={`${t(expanded ? "actions.collapse" : "actions.expand")} ${displayPath}`}
           aria-expanded={isDeleted ? undefined : expanded}
         />
-        <div className="pointer-events-none relative z-10 flex h-full min-w-0 items-center gap-2">
+        <div className="pointer-events-none relative z-10 flex h-full min-w-0 items-center gap-2 pr-2">
           {isDeleted ? (
             <span className="inline-block w-[14px] shrink-0" aria-hidden />
           ) : expanded ? (
