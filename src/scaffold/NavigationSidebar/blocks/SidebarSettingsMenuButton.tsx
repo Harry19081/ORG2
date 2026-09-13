@@ -68,7 +68,7 @@ import {
 const WikiModal = React.lazy(() => import("@src/features/Wiki/WikiModal"));
 
 const MENU_ICON_CLASS_NAME = "shrink-0 text-text-2";
-const MENU_ARROW_CLASS_NAME = "text-text-3";
+const MENU_ARROW_CLASS_NAME = "shrink-0 text-text-3";
 type SettingsUtilityPanel = "ram";
 
 interface SidebarSettingsMenuTriggerProps {
@@ -406,7 +406,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
               )}
               <button
                 type="button"
-                className={`${DROPDOWN_CLASSES.menuActionItem} ${activeSubmenu === "presence" ? DROPDOWN_CLASSES.itemActive : ""} justify-between`}
+                className={`${DROPDOWN_CLASSES.menuActionItem} ${activeSubmenu === "presence" ? DROPDOWN_CLASSES.itemActive : ""}`}
                 onMouseEnter={(event) =>
                   openSubmenu("presence", event.currentTarget)
                 }
@@ -414,7 +414,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
                   openSubmenu("presence", event.currentTarget)
                 }
               >
-                <span className="flex min-w-0 items-center gap-2">
+                <span className="flex min-w-0 flex-1 items-center gap-2">
                   <HugeiconsIcon
                     icon={CircleIcon}
                     data-icon="circle"
@@ -434,7 +434,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
               </button>
               <button
                 type="button"
-                className={`${DROPDOWN_CLASSES.menuActionItem} ${activeSubmenu === "appearance" ? DROPDOWN_CLASSES.itemActive : ""} justify-between`}
+                className={`${DROPDOWN_CLASSES.menuActionItem} ${activeSubmenu === "appearance" ? DROPDOWN_CLASSES.itemActive : ""}`}
                 onMouseEnter={(event) =>
                   openSubmenu("appearance", event.currentTarget)
                 }
@@ -442,7 +442,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
                   openSubmenu("appearance", event.currentTarget)
                 }
               >
-                <span className="flex min-w-0 items-center gap-2">
+                <span className="flex min-w-0 flex-1 items-center gap-2">
                   <HugeiconsIcon
                     icon={ContrastIcon}
                     data-icon="contrast"
@@ -462,14 +462,14 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
               </button>
               <button
                 type="button"
-                className={`${DROPDOWN_CLASSES.menuActionItem} ${activeSubmenu === "layout" ? DROPDOWN_CLASSES.itemActive : ""} justify-between`}
+                className={`${DROPDOWN_CLASSES.menuActionItem} ${activeSubmenu === "layout" ? DROPDOWN_CLASSES.itemActive : ""}`}
                 onMouseEnter={(event) =>
                   openSubmenu("layout", event.currentTarget)
                 }
                 onFocus={(event) => openSubmenu("layout", event.currentTarget)}
                 data-testid="sidebar-settings-layout"
               >
-                <span className="flex min-w-0 items-center gap-2">
+                <span className="flex min-w-0 flex-1 items-center gap-2">
                   <HugeiconsIcon
                     icon={Layout01Icon}
                     data-icon="layout"
