@@ -73,6 +73,31 @@ const VARIANT_INTERACTION_CLASSES: Record<ComposerShellVariant, string> = {
   historyEdit: INPUT_AREA.shellEditInteractionClasses,
 };
 
+function focusComposerFromBackground(event: React.MouseEvent<HTMLDivElement>) {
+  const shell = event.currentTarget;
+  const target = event.target;
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    !(target instanceof Element) ||
+    !shell.contains(target)
+  ) {
+    return;
+  }
+  const control = target.closest(
+    "button, a, input, textarea, select, label, summary, [role], [tabindex], [contenteditable]"
+  );
+  if (control && shell.contains(control)) return;
+
+  // Only fill the gaps around ComposerInput; clicks inside the editor retain
+  // native caret placement, and portaled controls must not steal focus back.
+  shell
+    .querySelector<HTMLElement>(
+      '.composer-input-content[contenteditable="true"]'
+    )
+    ?.focus({ preventScroll: true });
+}
+
 const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
   (
     {
@@ -94,6 +119,7 @@ const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
         ref={ref}
         className={`relative flex w-full ${variant === "comment" ? "flex-row items-end" : "flex-col"} transition-[padding] duration-200 ease-out ${VARIANT_INTERACTION_CLASSES[variant]} ${VARIANT_CLASSES[variant]} ${VARIANT_BG_CLASS[variant]} ${className}`}
         style={style}
+        onClick={focusComposerFromBackground}
         onKeyDown={onKeyDown}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
