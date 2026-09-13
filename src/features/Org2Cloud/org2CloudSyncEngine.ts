@@ -145,6 +145,7 @@ import {
   type ContinuationStatusResolver,
   type LocalSessionIdResolver,
   type SupersededPushedSession,
+  continuationLiveSessionIds,
   findSupersededPushedSessions,
   findSupersededSelfOwnedRemoteSessions,
   findVanishedPushedSessionIds,
@@ -1087,10 +1088,13 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
     // tradeoff: the demoted row is the only cloud replay of the pre-compact
     // detail; the winner carries the compacted continuation. The source
     // transcript stays on the owner's disk and can always be re-shared.
+    // A demoted sibling can still sit in the roster (union merge, persisted
+    // rehydrate); judge it by lineage rather than by mere presence.
+    const continuationLiveIds = continuationLiveSessionIds(liveSessions);
     const superseded = await findSupersededPushedSessions({
       orgId,
       markedSessionIds,
-      liveSessionIds,
+      liveSessionIds: continuationLiveIds,
       resolveStatuses: this.resolveContinuationStatuses,
     });
     if (this.generation !== generation) return;
@@ -1124,7 +1128,7 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
         remoteSelfSessionIds: [...remoteSelfIds].filter(
           (sessionId) => !markedSessionIds.has(sessionId)
         ),
-        liveSessionIds,
+        liveSessionIds: continuationLiveIds,
         resolveStatuses: this.resolveContinuationStatuses,
       });
       if (this.generation !== generation) return;

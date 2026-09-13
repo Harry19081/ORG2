@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "포함된 파일: {{status}}",
+    "staged": "{{status}} (스테이징됨)",
+    "additions": "추가된 줄",
+    "deletions": "삭제된 줄",
+    "M": "수정됨",
+    "U": "추적되지 않음",
+    "A": "추가됨",
+    "D": "삭제됨",
+    "R": "이름 변경됨",
+    "C": "충돌",
+    "I": "무시됨",
+    "?": "알 수 없는 상태"
+  },
+  "findScope": {
+    "session": "세션에서 검색",
+    "file": "파일에서 검색",
+    "named": "{{name}}에서 검색"
+  },
   "teamInbox": {
     "title": "팀 수신함",
     "listLabel": "팀 수신함 목록",
@@ -188,7 +207,7 @@
       "aria": "{{label}} 메뉴"
     },
     "items": {
-      "quitOrg2": "ORG-2 종료",
+      "quitOrg2": "ORG2 종료",
       "newSession": "새 세션",
       "openFolder": "폴더 열기...",
       "addFolderToWorkspace": "작업 영역에 폴더 추가...",
@@ -223,12 +242,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "답장을 입력하세요",
-    "sessionNotFound": "세션을 찾을 수 없습니다",
-    "answerSubmitted": "답변을 제출했습니다",
-    "answerFailed": "답변 제출에 실패했습니다. 다시 시도하세요.",
-    "replyError": "답장을 보내는 중 오류가 발생했습니다",
-    "questionIgnored": "질문을 무시했습니다",
     "addedAsContext": "{{name}}을(를) 컨텍스트로 추가했습니다",
     "addedFilesAsContext": "{{count}}개의 파일을 컨텍스트로 추가했습니다",
     "chooseExecutionAgentAi": "AI로 생성하기 전에 담당 에이전트를 선택하세요.",
@@ -295,8 +308,8 @@
     "save": "저장",
     "cancel": "취소",
     "delete": "삭제",
-    "removeFromOrgii": "ORGII에서 제거",
-    "removeFromOrgiiCount": "ORGII에서 제거 ({{count}})",
+    "removeFromOrgii": "ORG2에서 제거",
+    "removeFromOrgiiCount": "ORG2에서 제거 ({{count}})",
     "edit": "편집",
     "write": "쓰기",
     "close": "닫기",
@@ -477,6 +490,7 @@
   },
   "optional": "선택",
   "common": {
+    "display": "표시",
     "on": "켜기",
     "off": "끄기",
     "default": "기본값",
@@ -513,6 +527,9 @@
     "source": "소스"
   },
   "labels": {
+    "stashesCount": "스태시 {{count}}개",
+    "stashesCount_one": "스태시 {{count}}개",
+    "stashesCount_other": "스태시 {{count}}개",
     "accounts": "계정",
     "enabled": "활성화",
     "disabled": "비활성화",
@@ -558,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "작업 로그",
     "gitDashboard": "대시보드",
-    "changedFiles": "변경된 파일",
+    "changedFilesCount": "변경된 파일 {{fileCount}}개",
+    "changedFilesCount_one": "변경된 파일 {{fileCount}}개",
+    "changedFilesCount_other": "변경된 파일 {{fileCount}}개",
     "colorTokens": "색상 Token",
     "terminalInfo": "터미널 정보",
     "fileCount_one": "{{count}}개 파일",
@@ -688,42 +707,9 @@
     "technicalDetails": "기술 세부 정보",
     "failedToCopy": "복사에 실패했습니다",
     "api": {
-      "titles": {
-        "githubConnections": "GitHub 연결을 불러올 수 없습니다",
-        "githubConnect": "GitHub에 연결할 수 없습니다",
-        "workflows": "워크플로를 불러올 수 없습니다",
-        "config": "설정을 불러올 수 없습니다",
-        "agent": "Agent에 연결할 수 없습니다",
-        "repository": "저장소를 불러올 수 없습니다",
-        "file": "파일을 불러올 수 없습니다",
-        "mcp": "MCP 서버 오류",
-        "extension": "코드 편집기 확장 오류",
-        "workspace": "작업 공간을 불러올 수 없습니다",
-        "slackConnections": "Slack 연결을 불러올 수 없습니다",
-        "wallet": "지갑을 불러올 수 없습니다",
-        "billing": "결제 작업을 완료할 수 없습니다",
-        "default": "데이터를 불러올 수 없습니다",
-        "timeout": "요청 시간이 초과되었습니다",
-        "external": "외부 데이터를 불러올 수 없습니다"
-      },
       "messages": {
-        "network": "연결을 확인한 후 다시 시도하세요.",
-        "timeout": "요청 시간이 초과되었습니다. 다시 시도하세요.",
-        "server": "서버 오류가 발생했습니다. 잠시 후 다시 시도하세요.",
-        "notFound": "이 항목을 찾을 수 없습니다.",
-        "signIn": "다시 로그인하세요.",
-        "forbidden": "이 작업에 대한 권한이 없습니다.",
-        "tooManyRequests": "요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
-        "validation": "잘못된 데이터입니다. 입력을 확인하세요.",
-        "conflict": "충돌이 감지되었습니다. 리소스가 수정되었을 수 있습니다.",
-        "badGateway": "서버에 연결할 수 없습니다. 나중에 다시 시도하세요.",
-        "serviceUnavailable": "서비스가 일시적으로 사용할 수 없습니다. 나중에 다시 시도하세요.",
-        "gatewayTimeout": "서버가 응답하지 않습니다. 나중에 다시 시도하세요.",
-        "invalidRequest": "잘못된 요청입니다. 다시 시도하세요.",
-        "default": "다시 시도하세요.",
-        "externalHint": "URL과 설정을 확인한 후 다시 시도하세요."
-      },
-      "workflow": "워크플로 서비스를 일시적으로 사용할 수 없습니다. 나중에 다시 시도하세요."
+        "signIn": "다시 로그인하세요."
+      }
     },
     "failedToLoad": "로드 실패",
     "unknownError": "알 수 없는 오류가 발생했습니다",
@@ -733,12 +719,12 @@
   },
   "confirmation": {
     "delete": "정말 삭제하시겠습니까?",
-    "removeTitle": "\"{{name}}\"을(를) ORGII에서 제거하시겠습니까?",
-    "removeMessage": "ORGII와의 연결만 제거됩니다. 디스크에서는 아무것도 제거되지 않습니다.",
+    "removeTitle": "\"{{name}}\"을(를) ORG2에서 제거하시겠습니까?",
+    "removeMessage": "ORG2와의 연결만 제거됩니다. 디스크에서는 아무것도 제거되지 않습니다.",
     "deleteWorkspaceTitle": "Workspace \"{{name}}\"을(를) 삭제하시겠습니까?",
     "deleteWorkspaceMessage": "Workspace 프리셋만 삭제됩니다. 포함된 Repo 및 폴더에는 영향이 없습니다.",
-    "deleteSelectedTitle": "선택한 {{count}}개 항목을 ORGII에서 제거하시겠습니까?",
-    "deleteSelectedMessage": "ORGII와의 연결만 제거됩니다. 디스크에서는 아무것도 제거되지 않습니다.",
+    "deleteSelectedTitle": "선택한 {{count}}개 항목을 ORG2에서 제거하시겠습니까?",
+    "deleteSelectedMessage": "ORG2와의 연결만 제거됩니다. 디스크에서는 아무것도 제거되지 않습니다.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}}가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -780,7 +766,9 @@
     "previous": "이전",
     "next": "다음",
     "previousMatch": "이전 일치 (Shift+Enter)",
+    "previousMatchLabel": "이전 일치",
     "nextMatch": "다음 일치 (Enter)",
+    "nextMatchLabel": "다음 일치",
     "clearSearch": "검색 지우기",
     "openInEditorTab": "편집기 탭에서 열기",
     "openFile": "파일 열기",
@@ -807,11 +795,16 @@
     "goForward": "앞으로",
     "goToToday": "오늘로 이동",
     "matchCase": "대소문자 구분 (Alt+C)",
+    "matchCaseLabel": "대소문자 구분",
     "matchWholeWord": "전체 단어 일치 (Alt+W)",
+    "matchWholeWordLabel": "전체 단어 일치",
     "useRegex": "정규식 사용 (Alt+R)",
+    "useRegexLabel": "정규식 사용",
     "searchInOpenEditors": "열린 편집기에서만 검색",
     "replace": "바꾸기 (Ctrl+Shift+1)",
+    "replaceLabel": "바꾸기",
     "replaceAll": "모두 바꾸기 (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "모두 바꾸기",
     "moreActions": "추가 작업...",
     "formatSql": "SQL 포맷",
     "queryHistory": "쿼리 기록",
@@ -1026,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "그래프 보기로 전환",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1866,11 +1860,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "ORG2 연결이 해제되었습니다",
+        "repoRemoveFailed": "ORG2 연결을 해제하지 못했습니다",
+        "workspaceRemoved": "ORG2 연결이 해제되었습니다",
+        "workspaceRemoveFailed": "ORG2 연결을 해제하지 못했습니다",
+        "bulkDeleted": "ORG2 연결 {{count}}개가 해제되었습니다",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -1947,6 +1941,20 @@
     "title": "세션"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "변경 사항 보기",
+      "openFileInNewTab": "새 탭에서 파일 열기",
+      "stageChanges": "변경 사항 스테이징",
+      "unstageChanges": "변경 사항 스테이징 취소",
+      "discardChanges": "변경 사항 버리기",
+      "markResolved": "해결됨으로 표시 (스테이징)",
+      "acceptCurrent": "현재 변경 사항 수락 (ours)",
+      "acceptIncoming": "들어오는 변경 사항 수락 (theirs)",
+      "stageChangesCount": "변경 사항 스테이징 ({{count}}개)",
+      "unstageChangesCount": "변경 사항 스테이징 취소 ({{count}}개)",
+      "discardChangesCount": "변경 사항 버리기 ({{count}}개)",
+      "markResolvedCount": "해결됨으로 표시 ({{count}}개)"
+    },
     "notGitInitialized": "Git 초기화 안 됨",
     "notGitInitializedSubtitle": "Git을 초기화하면 이 작업 디렉터리에서 변경 사항 추적, 커밋 생성, 브랜치 도구를 사용할 수 있습니다.",
     "initializeGit": "Git 초기화",
@@ -2076,22 +2084,7 @@
     "database": "데이터베이스",
     "user": "사용자",
     "password": "비밀번호",
-    "ssl": "SSL 필수",
-    "spotlight": {
-      "scanFolder": "Scan folder",
-      "scanFolderDesc": "Find all .sqlite, .db files in a folder",
-      "openFile": "Open file",
-      "openFileDesc": "Select a specific database file",
-      "enterPath": "Enter path",
-      "enterPathDesc": "Type a file or folder path directly",
-      "placeholderSelect": "Add database by...",
-      "placeholderPath": "~/data or /path/to/database.db",
-      "pickerFolderTitle": "Select folder to scan",
-      "pickerFileTitle": "Select database file",
-      "pickerSqliteName": "SQLite Database",
-      "pickerAllFiles": "All Files",
-      "pickerError": "Failed to open picker"
-    }
+    "ssl": "SSL 필수"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
@@ -2149,15 +2142,14 @@
     "sidebar": {
       "newTab": "새 탭",
       "newPrivateTab": "새 시크릿 탭",
-      "newTerminal": "새 터미널",
-      "untitled": "제목 없음"
+      "newTerminal": "새 터미널"
     },
     "statusBar": {}
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "ORG-2를 종료하시겠습니까?",
-    "subtitle": "실행 중인 세션은 현재 상태를 유지합니다. 나중에 ORG-2를 다시 열 수 있습니다.",
+    "title": "ORG2를 종료하시겠습니까?",
+    "subtitle": "실행 중인 세션은 현재 상태를 유지합니다. 나중에 ORG2를 다시 열 수 있습니다.",
     "cancel": "취소",
     "confirm": "종료"
   },
@@ -2187,7 +2179,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari는 macOS가 보호하는 폴더에 쿠키를 저장합니다. 시스템 설정의 전체 디스크 접근 권한에서 ORG2를 허용한 다음 다시 확인하세요.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2235,7 +2227,8 @@
     "taskCompletedBody": "“{{name}}” 완료 — 검토할 준비가 되었습니다",
     "openSessionAction": "세션 열기",
     "taskFailedTitle": "작업 실패",
-    "taskFailedBody": "“{{name}}” 실패{{detail}}"
+    "taskFailedBody": "“{{name}}” 실패{{detail}}",
+    "taskFailedPrivateBody": "작업이 실패했습니다. ORG2를 열어 자세한 내용을 확인하세요."
   },
   "documentOpen": {
     "openInDefault": "{{name}}에서 열기",
@@ -2275,5 +2268,12 @@
     "goToSection": "{{label}}(으)로 이동, 섹션 {{current}}/{{total}}",
     "section": "섹션 {{current}}",
     "sectionPosition": "섹션 {{current}}/{{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "ORG2에서 보낸 테스트 알림입니다",
+    "workspaceFile": "ORG2 작업 공간",
+    "sessionJsonFile": "ORG2 세션 JSON",
+    "skillsSource": "ORG2 스킬",
+    "gitServiceUnavailable": "로컬 Git 서비스에 연결할 수 없습니다. 앱 시작이 완료되면 다시 시도하세요. 문제가 계속되면 ORG2를 다시 시작하세요."
   }
 }

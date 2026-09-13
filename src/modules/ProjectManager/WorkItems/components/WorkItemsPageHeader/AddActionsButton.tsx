@@ -119,8 +119,10 @@ export function AddActionsButton({
             }}
             role="menu"
           >
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleAddWorkItem}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -136,9 +138,11 @@ export function AddActionsButton({
               <span className="min-w-0 flex-1 truncate">
                 {addWorkItemLabel}
               </span>
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleAddProject}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -152,7 +156,7 @@ export function AddActionsButton({
                 className="text-text-2"
               />
               <span className="min-w-0 flex-1 truncate">{addProjectLabel}</span>
-            </button>
+            </Button>
           </div>,
           document.body
         )}

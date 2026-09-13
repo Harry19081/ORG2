@@ -196,8 +196,10 @@ function PrCommitCard({
 
   return (
     <article className="group flex min-w-0 items-center overflow-hidden rounded-xl border border-border-1 bg-primary-container transition-colors hover:border-border-2">
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className="min-w-0 flex-1 px-3 py-3 text-left"
         onClick={() => onSelect(commit)}
         title={commit.message || commit.summary}
@@ -253,7 +255,7 @@ function PrCommitCard({
             </>
           ) : null}
         </span>
-      </button>
+      </Button>
 
       <div className="flex shrink-0 items-center gap-0.5 pr-2">
         <code className="hidden px-1 text-[11px] text-text-3 sm:inline">
@@ -423,7 +425,12 @@ export const PrCommitsTab: React.FC<PrCommitsTabProps> = ({
 
   if (loading && rows.length === 0) {
     return (
-      <Placeholder variant="loading" placement="sidebar" fillParentHeight />
+      <Placeholder
+        loadingIconOnly
+        variant="loading"
+        placement="sidebar"
+        fillParentHeight
+      />
     );
   }
 

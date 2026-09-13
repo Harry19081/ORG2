@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import Markdown from "@src/components/MarkDown";
 import TabPill from "@src/components/TabPill";
 
-import "./index.scss";
+import "./index.css";
 import { useMarkdownEditorTabs } from "./useMarkdownEditorTabs";
 
 // Lazy: MarkdownEditor is mounted by the Settings/Integrations wizards and

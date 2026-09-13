@@ -34,6 +34,7 @@ import React, { memo, useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import { useChatCollapseState } from "@src/engines/ChatPanel/ChatCollapseScope";
 import { getTurnTimingLabels } from "@src/engines/ChatPanel/ChatHistory/utils/turnTimingFormatting";
 import EventNavigateIcon from "@src/engines/ChatPanel/blocks/primitives/EventNavigateIcon";
@@ -175,8 +176,10 @@ const TurnCollapsePinBar: React.FC<TurnCollapsePinBarProps> = memo(
     return (
       <div className="mt-1 pb-2">
         <div className="peer/turn-collapse group/turn-collapse group/chat-block-header chat-block-header relative flex h-8 w-full items-center rounded-lg transition-colors hover:bg-fill-2">
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             data-testid="turn-collapse-toggle"
             aria-expanded={expanded}
             className={`flex h-full min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg border-0 bg-transparent px-2 text-left select-none focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${showReplayNavigate ? "pr-9" : ""}`}
@@ -211,7 +214,7 @@ const TurnCollapsePinBar: React.FC<TurnCollapsePinBarProps> = memo(
                 />
               )}
             </span>
-          </button>
+          </Button>
           {showReplayNavigate ? (
             <div className="absolute right-2 flex h-5 w-5 items-center justify-center opacity-0 transition-opacity group-focus-within/turn-collapse:opacity-100 group-hover/turn-collapse:opacity-100">
               <EventNavigateIcon

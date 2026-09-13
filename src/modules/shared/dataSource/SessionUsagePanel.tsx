@@ -19,6 +19,7 @@ import {
   type UsageTrendPoint,
   usageDashboardOverview,
 } from "@src/api/tauri/usageDashboard";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
 import { StartPageQuotaGrid } from "@src/engines/ChatPanel/StartPageQuotaGrid";
@@ -434,8 +435,10 @@ export default function SessionUsagePanel() {
       </div>
 
       {session && (
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={() => {
             setSession(null);
             setRoundModelFilter(undefined);
@@ -446,7 +449,7 @@ export default function SessionUsagePanel() {
           <span className="text-text-3">{t("usage.roundsTable.session")}:</span>
           <span className="max-w-[260px] truncate">{session.name}</span>
           <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />
-        </button>
+        </Button>
       )}
 
       {headlineError ? (

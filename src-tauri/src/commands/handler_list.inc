@@ -25,6 +25,8 @@ app_window::commands::open_session_window,
 // Optional sidecar commands - lazy install after first paint
 crate::setup::sidecar_setup::sidecar_list_status,
 crate::setup::sidecar_setup::sidecar_install,
+// Native context menu (release resource lock before tracking input)
+crate::native_menu::popup_native_menu,
 // App updater commands - channel-aware (stable/beta) update check
 crate::app_update::check_app_update,
 crate::app_update::get_app_build_provenance,
@@ -950,6 +952,7 @@ orgtrack::history_commands::imported_history_cloud_turn_windows,
 orgtrack::history_commands::imported_history_continuation_statuses,
 orgtrack::history_commands::codex_app_chunks,
 orgtrack::history_commands::codex_app_initial_window,
+orgtrack::history_commands::session_history_image,
 orgtrack::history_commands::codex_app_context_usage,
 orgtrack::history_commands::claude_code_context_usage,
 orgtrack::history_commands::codex_app_turn_window,

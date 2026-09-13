@@ -6,6 +6,7 @@
  */
 import React, { useCallback, useMemo } from "react";
 
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { HugeiconsIcon, Layout01Icon } from "@src/icons";
@@ -50,8 +51,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           : "text-text-2 hover:bg-fill-2 hover:text-text-1",
       ].join(" ")}
     >
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onClick={onSelect}
         className="flex min-w-0 flex-1 items-start gap-1.5 text-left"
       >
@@ -70,10 +73,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
             <span className="block text-[10px] text-text-4">{timestamp}</span>
           )}
         </div>
-      </button>
+      </Button>
       {/* Compare checkbox — visible on hover or when active */}
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onClick={onCompareToggle}
         title={t("canvasApp.compareToggle", "Compare")}
         className={[
@@ -84,7 +89,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         ].join(" ")}
       >
         {t("canvasApp.compareMark", "vs")}
-      </button>
+      </Button>
     </div>
   );
 };

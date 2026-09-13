@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import { ArrowUp02Icon, HugeiconsIcon } from "@src/icons";
 
@@ -37,8 +38,10 @@ const ComposerSubmitButton: React.FC<ComposerSubmitButtonProps> = memo(
         : INPUT_AREA_BUTTONS.iconButtonInactive;
 
     return (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         aria-label={ariaLabel}
         aria-busy={busy || undefined}
         disabled={disabled}
@@ -55,7 +58,7 @@ const ComposerSubmitButton: React.FC<ComposerSubmitButtonProps> = memo(
           strokeWidth={2}
           className="block text-white"
         />
-      </button>
+      </Button>
     );
   }
 );

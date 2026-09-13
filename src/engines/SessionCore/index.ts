@@ -127,7 +127,7 @@ export {
   SIMULATOR_EVENT_FILTER_VALUES,
   isSimulatorEventVisibleForFilters,
   type SimulatorEventFilterValue,
-} from "./derived/simulatorEventFilters";
+} from "./core/simulatorEventFilters";
 export { chatEventsAtom } from "./derived/chatEvents";
 export {
   createdAtByIdAtom,

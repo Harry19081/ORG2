@@ -13,6 +13,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubReviewComment, PrFile } from "@src/api/tauri/github";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import type { GitFileStatus } from "@src/config/gitStatus";
 import { CodeMirrorDiff } from "@src/features/CodeMirror";
@@ -196,7 +197,12 @@ export const PrChangesTab: React.FC<PrChangesTabProps> = ({
 
   if (loading && files.length === 0) {
     return (
-      <Placeholder variant="loading" placement="sidebar" fillParentHeight />
+      <Placeholder
+        loadingIconOnly
+        variant="loading"
+        placement="sidebar"
+        fillParentHeight
+      />
     );
   }
 
@@ -233,7 +239,9 @@ export const PrChangesTab: React.FC<PrChangesTabProps> = ({
           </>
         )}
         {fileListCollapsed && (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             className="flex w-6 shrink-0 items-center justify-center border-r border-border-2 hover:bg-fill-1"
             onClick={() => setFileListCollapsed(false)}
             title={t("tooltips.showFileList")}
@@ -244,7 +252,7 @@ export const PrChangesTab: React.FC<PrChangesTabProps> = ({
               size={14}
               className="text-text-3"
             />
-          </button>
+          </Button>
         )}
 
         {/* Right: diff viewer */}
@@ -271,6 +279,7 @@ export const PrChangesTab: React.FC<PrChangesTabProps> = ({
               <div className="relative min-h-0 flex-1">
                 {loadState === "loading" ? (
                   <Placeholder
+                    loadingIconOnly
                     variant="loading"
                     placement="sidebar"
                     fillParentHeight

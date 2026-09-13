@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { openUrlInBrowserApp } from "@src/components/MarkDown/markdownUtils";
+import {
+  BUTTON_SIZE,
+  BUTTON_VARIANT,
+  ICON_BUTTON_BASE,
+} from "@src/config/workstation/tokens";
 import {
   InternetIcon as Chromium,
   InternetIcon as Globe,
@@ -85,21 +91,26 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ card }) => {
         </div>
       </div>
 
-      <button
-        type="button"
+      <Button
+        variant="tertiary"
+        appearance="soft-no-drop"
+        size="sidebar"
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={Chromium}
+            data-icon="chrome"
+            size={14}
+            strokeWidth={1.75}
+            aria-hidden
+          />
+        }
+        htmlType="button"
         onClick={handleOpen}
-        className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-text-3 opacity-0 transition-colors group-hover/website-card:opacity-100 hover:bg-fill-2 hover:text-text-1"
+        className={`flex ${ICON_BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.noDrop} cursor-pointer border-none bg-transparent opacity-0 group-focus-within/website-card:opacity-100 group-hover/website-card:opacity-100 focus-visible:opacity-100`}
         title={t("cards.openLink")}
         aria-label={t("cards.openLink")}
-      >
-        <HugeiconsIcon
-          icon={Chromium}
-          data-icon="chrome"
-          size={14}
-          strokeWidth={1.75}
-          aria-hidden
-        />
-      </button>
+      />
     </div>
   );
 };

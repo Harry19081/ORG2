@@ -54,7 +54,6 @@ export {
 export type { WizardId } from "./mainAppPaths/wizards";
 
 export {
-  SEGMENT_REGISTRY,
   buildBreadcrumbLabels,
   deriveBreadcrumbKeys,
   getPathIcon,

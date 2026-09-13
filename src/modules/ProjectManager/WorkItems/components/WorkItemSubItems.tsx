@@ -474,8 +474,10 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
       }
     >
       {parent ? (
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className={`group flex min-h-8 w-full cursor-pointer items-start gap-2 rounded-lg text-left transition-colors hover:bg-fill-1 disabled:cursor-default ${WORK_ITEM_THREAD_TOKENS.alignedRowPadding}`}
           onClick={() => onOpenWorkItem?.(parent)}
           disabled={!onOpenWorkItem}
@@ -501,7 +503,7 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
               />
             </span>
           ) : null}
-        </button>
+        </Button>
       ) : null}
 
       {children.length > 0 || adding ? (
@@ -523,8 +525,10 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
               {group.items.map((child) => {
                 const state = getSubItemVisualState(child.frontmatter.status);
                 return (
-                  <button
-                    type="button"
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    htmlType="button"
                     key={child.frontmatter.short_id}
                     className={`group flex min-h-8 w-full cursor-pointer items-start gap-2 rounded-lg text-left transition-colors hover:bg-fill-1 disabled:cursor-default ${WORK_ITEM_THREAD_TOKENS.alignedRowPadding}`}
                     onClick={() => onOpenWorkItem?.(child)}
@@ -555,7 +559,7 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
                         />
                       </span>
                     ) : null}
-                  </button>
+                  </Button>
                 );
               })}
             </div>

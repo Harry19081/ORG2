@@ -120,6 +120,18 @@ fn build_user_preview_chunk(
             "role": "user",
         },
     });
+    let image_refs = super::images::bounded_image_refs(
+        source
+            .result
+            .get("images")
+            .and_then(Value::as_array)
+            .into_iter()
+            .flatten()
+            .filter_map(Value::as_str),
+    );
+    if !image_refs.is_empty() {
+        chunk.result["images"] = json!(image_refs);
+    }
     chunk
 }
 

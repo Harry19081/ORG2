@@ -55,7 +55,7 @@ export const AgentSessionRow: React.FC<AgentSessionRowProps> = memo(
           size="sm"
           className="hidden group-focus-within/item:flex group-hover/item:flex"
           onClick={onClose}
-          label={t("controlTower.sidebar.stopAgentProcess")}
+          label={t("common:workstation.ports.stopProcess")}
         />
       </TreeRowBase>
     );

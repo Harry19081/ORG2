@@ -198,7 +198,7 @@ pub(super) fn apply_connection_unlocked(
                         .and_then(|snapshot| snapshot.hash.as_ref());
                     if current_hash != Some(last_hash) {
                         return Err(
-                            "Current CLI config was modified outside ORGII. Restore or force apply before overwriting it."
+                            "Current CLI config was modified outside ORG2. Restore or force apply before overwriting it."
                                 .to_string(),
                         );
                     }
@@ -312,7 +312,7 @@ pub(super) fn restore_agent_default_unlocked(
                     .and_then(|snapshot| snapshot.hash.as_ref());
                 if current_hash != Some(last_hash) {
                     return Err(
-                        "Current CLI config was modified outside ORGII. Force restore to overwrite it."
+                        "Current CLI config was modified outside ORG2. Force restore to overwrite it."
                             .to_string(),
                     );
                 }

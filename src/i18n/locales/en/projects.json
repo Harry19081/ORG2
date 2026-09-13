@@ -54,7 +54,7 @@
       "connection": "GitHub connection"
     },
     "placeholders": {
-      "projectName": "ORGII GitHub Issues",
+      "projectName": "ORG2 GitHub Issues",
       "repo": "owner/repo or https://github.com/owner/repo",
       "connection": "Select a GitHub connection"
     },
@@ -92,7 +92,7 @@
       "notConfigured": "Not configured",
       "syncNowDescription": "Import remote file changes and export local database changes",
       "syncSummary": "{{projects}} projects, {{workItems}} work items, {{conflicts}} conflicts",
-      "syncHowItWorks": "Git folder sync connects this workspace to an existing Git repository. ORGII stores the workspace’s exported projects and work items under `.orgii/projects/...` inside that repo, imports file changes from there, exports local database changes back to files, and pauses on conflicts so you can review them before anything is overwritten",
+      "syncHowItWorks": "Git folder sync connects this workspace to an existing Git repository. ORG2 stores the workspace’s exported projects and work items under `.orgii/projects/...` inside that repo, imports file changes from there, exports local database changes back to files, and pauses on conflicts so you can review them before anything is overwritten",
       "noProjectsForCatalog": "This workspace has no projects yet.",
       "noProjectsForCatalogHint": "Create a project in this workspace before managing shared labels",
       "dangerZone": "Danger Zone",
@@ -581,7 +581,7 @@
         "detach": "Detach",
         "detachProjectMenuLabel": "Unlink GitHub",
         "detachProjectTitle": "Unlink GitHub from {{project}}?",
-        "detachProjectDescription": "GitHub Issues sync will stop. The local project and imported work items will stay in ORGII.",
+        "detachProjectDescription": "GitHub Issues sync will stop. The local project and imported work items will stay in ORG2.",
         "detachProjectAction": "Unlink GitHub from {{project}}",
         "detachProjectSuccess": "GitHub unlinked from {{project}}",
         "changeWarning": "Detach the current adapter before attaching a new one."
@@ -834,7 +834,7 @@
       "updateWorkflowState": "Failed to update Linear workflow state",
       "archiveWorkflowState": "Failed to archive Linear workflow state",
       "statusStateMissing": "No matching Linear workflow state exists for this status",
-      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORGII yet"
+      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORG2 yet"
     },
     "loadingConnections": "Loading Linear connections..."
   },

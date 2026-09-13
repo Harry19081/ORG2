@@ -9,6 +9,7 @@ import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
@@ -20,6 +21,8 @@ import {
   HugeiconsIcon,
   InformationCircleIcon,
   LockIcon,
+  PinIcon,
+  PinOffIcon,
   Tick01Icon,
 } from "@src/icons";
 import { copyText } from "@src/util/data/clipboard";
@@ -30,7 +33,7 @@ import {
 } from "@src/util/platform/tauri/nativeMenuPopup";
 
 import { ICONS } from "../config";
-import { SPOTLIGHT_TOKENS } from "../constants";
+import { SPOTLIGHT_CLASSES, SPOTLIGHT_TOKENS } from "../constants";
 import type { SpotlightItem, SpotlightItemData } from "../types";
 import { SpotlightDetailPane } from "./SpotlightDetailPane";
 import { HighlightText } from "./highlightUtils";
@@ -265,7 +268,9 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
     const ArrowRightIcon = ICONS.arrowRight;
     const DisclosureIcon =
       data.disclosureIcon === "arrowRight" ? ArrowRightIcon : ArrowRight01Icon;
-    const itemTextClassName = isDanger ? "text-danger-6" : "text-text-1";
+    const itemTextClassName = isDanger
+      ? "text-danger-6"
+      : SPOTLIGHT_CLASSES.itemLabelTone;
     const iconTone =
       typeof data.iconTone === "string" ? data.iconTone : undefined;
     const itemIconClassName = isDanger
@@ -274,9 +279,11 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         ? "text-primary-6"
         : iconTone === "text1"
           ? "text-text-1"
-          : "text-text-2";
+          : SPOTLIGHT_CLASSES.itemIconTone;
     // Only the currently-checked option uses medium weight; regular rows are normal.
-    const labelWeightClass = isCurrentSelection ? "font-medium" : "font-normal";
+    const labelWeightClass = isCurrentSelection
+      ? "font-medium"
+      : SPOTLIGHT_CLASSES.itemLabelWeight;
     const modelSection =
       typeof data.modelSection === "string" ? data.modelSection : undefined;
     const modelId = typeof data.modelId === "string" ? data.modelId : undefined;
@@ -379,7 +386,7 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         data-source-account-id={sourceAccountId}
         data-source-model-type={sourceModelType}
         data-source-type={sourceType}
-        className={`spotlight-item group relative mx-2 flex items-center gap-2.5 rounded-lg px-2 ${
+        className={`spotlight-item group relative mx-2 ${SPOTLIGHT_CLASSES.itemRow} ${
           isDisabled
             ? "cursor-not-allowed opacity-50"
             : `cursor-pointer ${isCurrentSelection ? "is-current-selection" : ""} ${isSelected ? "selected" : ""}`
@@ -420,7 +427,7 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         )}
 
         {item.icon && (
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center">
+          <div className={SPOTLIGHT_CLASSES.itemIcon}>
             {isCurrentSelection ? (
               <HugeiconsIcon
                 icon={Tick01Icon}
@@ -486,6 +493,42 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
               >
                 <HighlightText text={item.label} query={searchQuery} />
               </span>
+            )}
+            {data.pinState && !isDisabled && (
+              <Button
+                variant="tertiary"
+                appearance="ghost"
+                size="sidebar"
+                iconOnly
+                aria-label={t(
+                  data.pinState.pinned
+                    ? "sessions:chat.unpinSession"
+                    : "sessions:chat.pinSession"
+                )}
+                aria-pressed={data.pinState.pinned}
+                disabled={data.pinState.disabled}
+                title={t(
+                  data.pinState.pinned
+                    ? "sessions:chat.unpinSession"
+                    : "sessions:chat.pinSession"
+                )}
+                className="shrink-0 opacity-0 group-hover:opacity-100 focus-visible:bg-fill-3 focus-visible:opacity-100 enabled:hover:bg-fill-3 enabled:active:bg-fill-4"
+                icon={
+                  <HugeiconsIcon
+                    icon={data.pinState.pinned ? PinOffIcon : PinIcon}
+                    size={14}
+                  />
+                }
+                onMouseDown={(event) => event.preventDefault()}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ")
+                    event.stopPropagation();
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  data.pinState?.onToggle();
+                }}
+              />
             )}
             {data.inlineTag && (
               <span className="shrink-0 text-[10px] text-text-3">

@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "İçerdiği dosyalar: {{status}}",
+    "staged": "{{status}} (hazırlandı)",
+    "additions": "Eklenen satırlar",
+    "deletions": "Silinen satırlar",
+    "M": "Değiştirildi",
+    "U": "İzlenmiyor",
+    "A": "Eklendi",
+    "D": "Silindi",
+    "R": "Yeniden adlandırıldı",
+    "C": "Çakışma",
+    "I": "Yok sayıldı",
+    "?": "Bilinmeyen durum"
+  },
+  "findScope": {
+    "session": "Oturumda ara",
+    "file": "Dosyada ara",
+    "named": "{{name}} içinde ara"
+  },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
     "listLabel": "Ekip Gelen Kutusu listesi",
@@ -188,7 +207,7 @@
       "aria": "{{label}} menüsü"
     },
     "items": {
-      "quitOrg2": "ORG-2'den Çık",
+      "quitOrg2": "ORG2'den Çık",
       "newSession": "Yeni Oturum",
       "openFolder": "Klasör Aç...",
       "addFolderToWorkspace": "Çalışma Alanına Klasör Ekle...",
@@ -223,12 +242,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "Yanıt boş olamaz",
-    "sessionNotFound": "Oturum bulunamadı",
-    "answerSubmitted": "Yanıt başarıyla gönderildi",
-    "answerFailed": "Yanıt gönderilemedi. Lütfen tekrar deneyin.",
-    "replyError": "Yanıt gönderilirken bir hata oluştu",
-    "questionIgnored": "Soru yoksayıldı",
     "addedAsContext": "{{name}} bağlam olarak eklendi",
     "addedFilesAsContext": "{{count}} dosya bağlam olarak eklendi",
     "chooseExecutionAgentAi": "Yapay zeka ile oluşturmadan önce sorumlu bir aracı seçin.",
@@ -295,8 +308,8 @@
     "save": "Kaydet",
     "cancel": "İptal",
     "delete": "Sil",
-    "removeFromOrgii": "ORGII’den kaldır",
-    "removeFromOrgiiCount": "ORGII’den kaldır ({{count}})",
+    "removeFromOrgii": "ORG2’den kaldır",
+    "removeFromOrgiiCount": "ORG2’den kaldır ({{count}})",
     "edit": "Düzenle",
     "write": "Yazma",
     "close": "Kapat",
@@ -477,6 +490,7 @@
   },
   "optional": "isteğe bağlı",
   "common": {
+    "display": "Görünüm",
     "on": "Açık",
     "off": "Kapalı",
     "default": "Varsayılan",
@@ -513,6 +527,9 @@
     "source": "Kaynak"
   },
   "labels": {
+    "stashesCount": "{{count}} stash",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stash",
     "accounts": "Hesaplar",
     "enabled": "Etkin",
     "disabled": "Devre dışı",
@@ -558,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "İşlem Günlüğü",
     "gitDashboard": "Gösterge Paneli",
-    "changedFiles": "Değiştirilen Dosyalar",
+    "changedFilesCount": "{{fileCount}} değişen dosya",
+    "changedFilesCount_one": "{{fileCount}} değişen dosya",
+    "changedFilesCount_other": "{{fileCount}} değişen dosya",
     "colorTokens": "Renk Token'ları",
     "terminalInfo": "Terminal Bilgisi",
     "fileCount_one": "{{count}} dosya",
@@ -688,42 +707,9 @@
     "technicalDetails": "Teknik ayrıntılar",
     "failedToCopy": "Kopyalanamadı",
     "api": {
-      "titles": {
-        "githubConnections": "GitHub bağlantıları yüklenemedi",
-        "githubConnect": "GitHub'a bağlanılamadı",
-        "workflows": "İş akışları yüklenemedi",
-        "config": "Ayarlar yüklenemedi",
-        "agent": "Agent'a ulaşılamadı",
-        "repository": "Depo yüklenemedi",
-        "file": "Dosya yüklenemedi",
-        "mcp": "MCP sunucu hatası",
-        "extension": "Kod düzenleyici uzantı hatası",
-        "workspace": "Çalışma alanı yüklenemedi",
-        "slackConnections": "Slack bağlantıları yüklenemedi",
-        "wallet": "Cüzdan yüklenemedi",
-        "billing": "Faturalandırma işlemi tamamlanamadı",
-        "default": "Veri yüklenemedi",
-        "timeout": "İstek zaman aşımına uğradı",
-        "external": "Harici veri yüklenemedi"
-      },
       "messages": {
-        "network": "Bağlantınızı kontrol edip tekrar deneyin.",
-        "timeout": "İstek zaman aşımına uğradı. Tekrar deneyin.",
-        "server": "Bir hata oluştu. Birkaç dakika sonra tekrar deneyin.",
-        "notFound": "Bu öğe bulunamadı.",
-        "signIn": "Lütfen tekrar giriş yapın.",
-        "forbidden": "Bu işlem için yetkiniz yok.",
-        "tooManyRequests": "Çok fazla istek. Biraz bekleyip tekrar deneyin.",
-        "validation": "Geçersiz veri. Girişinizi kontrol edin.",
-        "conflict": "Çakışma tespit edildi. Kaynak değiştirilmiş olabilir.",
-        "badGateway": "Sunucuya ulaşılamıyor. Daha sonra tekrar deneyin.",
-        "serviceUnavailable": "Hizmet geçici olarak kullanılamıyor. Daha sonra tekrar deneyin.",
-        "gatewayTimeout": "Sunucu yanıt vermiyor. Daha sonra tekrar deneyin.",
-        "invalidRequest": "Geçersiz istek. Tekrar deneyin.",
-        "default": "Lütfen tekrar deneyin.",
-        "externalHint": "URL ve ayarları kontrol edip tekrar deneyin."
-      },
-      "workflow": "İş akışı hizmeti geçici olarak kullanılamıyor. Daha sonra tekrar deneyin."
+        "signIn": "Lütfen tekrar giriş yapın."
+      }
     },
     "failedToLoad": "Yükleme başarısız",
     "unknownError": "Bilinmeyen bir hata oluştu",
@@ -733,12 +719,12 @@
   },
   "confirmation": {
     "delete": "Bunu silmek istediğinizden emin misiniz?",
-    "removeTitle": "\"{{name}}\" ORGII'den kaldırılsın mı?",
-    "removeMessage": "Bu yalnızca ORGII ile bağlantısını kaldırır. Diskten hiçbir şey kaldırılmaz.",
+    "removeTitle": "\"{{name}}\" ORG2'den kaldırılsın mı?",
+    "removeMessage": "Bu yalnızca ORG2 ile bağlantısını kaldırır. Diskten hiçbir şey kaldırılmaz.",
     "deleteWorkspaceTitle": "\"{{name}}\" Workspace'i silinsin mi?",
     "deleteWorkspaceMessage": "Yalnızca Workspace ön ayarı silinir. İçindeki Repo ve klasörler etkilenmez.",
-    "deleteSelectedTitle": "Seçili {{count}} öğe ORGII'den kaldırılsın mı?",
-    "deleteSelectedMessage": "Bu yalnızca ORGII ile bağlantılarını kaldırır. Diskten hiçbir şey kaldırılmaz.",
+    "deleteSelectedTitle": "Seçili {{count}} öğe ORG2'den kaldırılsın mı?",
+    "deleteSelectedMessage": "Bu yalnızca ORG2 ile bağlantılarını kaldırır. Diskten hiçbir şey kaldırılmaz.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}} kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -780,7 +766,9 @@
     "previous": "Önceki",
     "next": "Sonraki",
     "previousMatch": "Önceki eşleşme (Shift+Enter)",
+    "previousMatchLabel": "Önceki eşleşme",
     "nextMatch": "Sonraki eşleşme (Enter)",
+    "nextMatchLabel": "Sonraki eşleşme",
     "clearSearch": "Aramayı temizle",
     "openInEditorTab": "Düzenleyici sekmesinde aç",
     "openFile": "Dosyayı aç",
@@ -807,11 +795,16 @@
     "goForward": "İleri",
     "goToToday": "Bugüne git",
     "matchCase": "Büyük/küçük harf eşleştir (Alt+C)",
+    "matchCaseLabel": "Büyük/küçük harf eşleştir",
     "matchWholeWord": "Tam kelime eşleştir (Alt+W)",
+    "matchWholeWordLabel": "Tam kelime eşleştir",
     "useRegex": "Düzenli ifade kullan (Alt+R)",
+    "useRegexLabel": "Düzenli ifade kullan",
     "searchInOpenEditors": "Sadece açık düzenleyicilerde ara",
     "replace": "Değiştir (Ctrl+Shift+1)",
+    "replaceLabel": "Değiştir",
     "replaceAll": "Tümünü değiştir (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Tümünü değiştir",
     "moreActions": "Daha fazla işlem...",
     "formatSql": "SQL'i formatla",
     "queryHistory": "Sorgu geçmişi",
@@ -1026,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Grafik görünümüne geç",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1866,11 +1860,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "ORG2 bağlantısı kaldırıldı",
+        "repoRemoveFailed": "ORG2 bağlantısı kaldırılamadı",
+        "workspaceRemoved": "ORG2 bağlantısı kaldırıldı",
+        "workspaceRemoveFailed": "ORG2 bağlantısı kaldırılamadı",
+        "bulkDeleted": "ORG2 ile {{count}} bağlantı kaldırıldı",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -1947,6 +1941,20 @@
     "title": "Oturumlar"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "Değişiklikleri görüntüle",
+      "openFileInNewTab": "Dosyayı yeni sekmede aç",
+      "stageChanges": "Değişiklikleri hazırla",
+      "unstageChanges": "Değişiklikleri hazırlamadan çıkar",
+      "discardChanges": "Değişiklikleri at",
+      "markResolved": "Çözüldü olarak işaretle (hazırla)",
+      "acceptCurrent": "Geçerli değişiklikleri kabul et (bizimki)",
+      "acceptIncoming": "Gelen değişiklikleri kabul et (onlarınki)",
+      "stageChangesCount": "Değişiklikleri hazırla ({{count}})",
+      "unstageChangesCount": "Değişiklikleri hazırlamadan çıkar ({{count}})",
+      "discardChangesCount": "Değişiklikleri at ({{count}})",
+      "markResolvedCount": "Çözüldü olarak işaretle ({{count}})"
+    },
     "notGitInitialized": "Git başlatılmadı",
     "notGitInitializedSubtitle": "Bu çalışma dizininde değişiklikleri izlemek, commit oluşturmak ve branch araçlarını kullanmak için Git'i başlatın.",
     "initializeGit": "Git'i başlat",
@@ -2076,22 +2084,7 @@
     "database": "Veritabanı",
     "user": "Kullanıcı",
     "password": "Şifre",
-    "ssl": "SSL Gerekli",
-    "spotlight": {
-      "scanFolder": "Klasörü tara",
-      "scanFolderDesc": "Bir klasördeki tüm .sqlite, .db dosyalarını bul",
-      "openFile": "Dosya aç",
-      "openFileDesc": "Belirli bir veritabanı dosyası seç",
-      "enterPath": "Yol gir",
-      "enterPathDesc": "Bir dosya veya klasör yolunu doğrudan yaz",
-      "placeholderSelect": "Veritabanı ekleme yöntemi…",
-      "placeholderPath": "~/data veya /yol/veritabani.db",
-      "pickerFolderTitle": "Taranacak klasörü seç",
-      "pickerFileTitle": "Veritabanı dosyasını seç",
-      "pickerSqliteName": "SQLite Veritabanı",
-      "pickerAllFiles": "Tüm Dosyalar",
-      "pickerError": "Seçici açılamadı"
-    }
+    "ssl": "SSL Gerekli"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
@@ -2149,15 +2142,14 @@
     "sidebar": {
       "newTab": "Yeni sekme",
       "newPrivateTab": "Yeni gizli sekme",
-      "newTerminal": "Yeni terminal",
-      "untitled": "Başlıksız"
+      "newTerminal": "Yeni terminal"
     },
     "statusBar": {}
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "ORG-2'den çıkılsın mı?",
-    "subtitle": "Çalışan oturumlar mevcut durumunu korur. ORG-2'yi daha sonra yeniden açabilirsiniz.",
+    "title": "ORG2'den çıkılsın mı?",
+    "subtitle": "Çalışan oturumlar mevcut durumunu korur. ORG2'yi daha sonra yeniden açabilirsiniz.",
     "cancel": "İptal",
     "confirm": "Çık"
   },
@@ -2187,7 +2179,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari, çerezleri macOS tarafından korunan bir klasörde tutar. Sistem Ayarları’ndaki Tam Disk Erişimi bölümünde ORG2’ye izin verin, ardından yeniden kontrol edin.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2235,7 +2227,8 @@
     "taskCompletedBody": "“{{name}}” tamamlandı — incelemeye hazır",
     "openSessionAction": "Oturumu aç",
     "taskFailedTitle": "Görev başarısız",
-    "taskFailedBody": "“{{name}}” başarısız oldu{{detail}}"
+    "taskFailedBody": "“{{name}}” başarısız oldu{{detail}}",
+    "taskFailedPrivateBody": "Bir görev başarısız oldu. Ayrıntılar için ORG2’yi açın."
   },
   "documentOpen": {
     "openInDefault": "{{name}} ile aç",
@@ -2275,5 +2268,12 @@
     "goToSection": "{{label}} bölümüne git, bölüm {{current}} / {{total}}",
     "section": "Bölüm {{current}}",
     "sectionPosition": "Bölüm {{current}} / {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Bu, ORG2’den gelen bir test bildirimidir",
+    "workspaceFile": "ORG2 çalışma alanı",
+    "sessionJsonFile": "ORG2 oturumu JSON",
+    "skillsSource": "ORG2 becerileri",
+    "gitServiceUnavailable": "Yerel Git hizmetine ulaşılamıyor. Uygulama başlatıldıktan sonra tekrar deneyin veya sorun sürerse ORG2’yi yeniden başlatın."
   }
 }

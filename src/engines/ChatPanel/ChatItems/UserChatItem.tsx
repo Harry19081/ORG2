@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { CHAT_BUBBLE_TOOLBAR_BUTTON_CLASS } from "@src/components/ChatBubble";
 import ClampedContent from "@src/components/ClampedContent";
 import type { ComposerSnapshot } from "@src/components/ComposerInput";
@@ -122,12 +123,14 @@ const CachedFileChip: FC<{
           className="absolute bottom-full left-1/2 z-50 mb-2 flex -translate-x-1/2 flex-col items-center rounded-xl bg-[#232325] p-3"
           style={{ minWidth: 180, maxWidth: 320 }}
         >
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             className="absolute top-2 right-2 text-lg text-white/70 hover:text-white"
             onClick={onClosePreview}
           >
             ×
-          </button>
+          </Button>
           {isImg ? (
             <img
               src={file}
@@ -616,8 +619,21 @@ const UserChatItem = ({
                 />
               )}
               {isEditableDisplay && onRestoreCheckpoint && (
-                <button
-                  type="button"
+                <Button
+                  variant="danger"
+                  appearance="soft"
+                  size="mini"
+                  aria-label={t("chat.restoreCheckpoint", "Restore checkpoint")}
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={Undo02Icon}
+                      data-icon="undo-2"
+                      size={15}
+                      strokeWidth={1.75}
+                    />
+                  }
+                  htmlType="button"
                   data-testid="chat-message-restore-checkpoint"
                   title={t("chat.restoreCheckpoint", "Restore checkpoint")}
                   className={`${CHAT_BUBBLE_TOOLBAR_BUTTON_CLASS} text-text-3 hover:text-danger-6`}
@@ -625,32 +641,30 @@ const UserChatItem = ({
                     e.stopPropagation();
                     onRestoreCheckpoint();
                   }}
-                >
-                  <HugeiconsIcon
-                    icon={Undo02Icon}
-                    data-icon="undo-2"
-                    size={15}
-                    strokeWidth={1.75}
-                  />
-                </button>
+                />
               )}
               {isEditableDisplay && (
-                <button
-                  type="button"
+                <Button
+                  variant="tertiary"
+                  appearance="soft"
+                  size="mini"
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={PencilEdit01Icon}
+                      data-icon="pencil-line"
+                      size={14}
+                      strokeWidth={1.75}
+                    />
+                  }
+                  htmlType="button"
                   data-testid="chat-message-user-edit-button"
                   className={`${CHAT_BUBBLE_TOOLBAR_BUTTON_CLASS} text-text-3 hover:text-text-1`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEditClick();
                   }}
-                >
-                  <HugeiconsIcon
-                    icon={PencilEdit01Icon}
-                    data-icon="pencil-line"
-                    size={14}
-                    strokeWidth={1.75}
-                  />
-                </button>
+                />
               )}
               {toolbarActions}
             </div>

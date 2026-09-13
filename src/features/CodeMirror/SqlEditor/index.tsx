@@ -15,6 +15,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
@@ -165,7 +166,9 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
         <div className="sql-query-editor__toolbar">
           <div className="sql-query-editor__toolbar-left">
             {/* Format button */}
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               onClick={handleFormat}
               title={t("tooltips.formatSql")}
               className="sql-query-editor__btn"
@@ -177,12 +180,14 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
                 strokeWidth={1.75}
               />
               <span>{t("sqlEditor.format")}</span>
-            </button>
+            </Button>
 
             {/* History dropdown */}
             {history.length > 0 && (
               <div className="sql-query-editor__history-container">
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   onClick={() => setShowHistory(!showHistory)}
                   title={t("tooltips.queryHistory")}
                   className="sql-query-editor__btn"
@@ -194,7 +199,7 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
                     strokeWidth={1.75}
                   />
                   <span>{t("labels.history")}</span>
-                </button>
+                </Button>
 
                 {showHistory && (
                   <div
@@ -202,7 +207,9 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
                     className="sql-query-editor__history-dropdown"
                   >
                     {history.slice(0, 10).map((item, index) => (
-                      <button
+                      <Button
+                        layout="custom"
+                        appearance="custom"
                         key={index}
                         onClick={() => handleHistoryClick(item.sql)}
                         className="sql-query-editor__history-item"
@@ -214,7 +221,7 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
                         <span className="sql-query-editor__history-time">
                           {new Date(item.timestamp).toLocaleTimeString()}
                         </span>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -224,7 +231,9 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
 
           <div className="sql-query-editor__toolbar-right">
             {/* Execute button */}
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               onClick={handleExecute}
               disabled={loading || !value.trim()}
               title={t("tooltips.executeQuery", { shortcut: executeShortcut })}
@@ -237,7 +246,7 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
                 strokeWidth={1.75}
               />
               <span>{loading ? t("status.running") : t("actions.run")}</span>
-            </button>
+            </Button>
           </div>
         </div>
 

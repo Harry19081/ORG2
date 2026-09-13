@@ -98,8 +98,10 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
           {leading}
           <div className="relative min-w-0">
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               data-testid="turn-pagination-current-round"
               className={`${SELECT_TRIGGER_BASE} cursor-pointer ${SURFACE_TOKENS.hover} disabled:cursor-not-allowed disabled:opacity-50 ${
                 listOpen ? SURFACE_TOKENS.selected : ""
@@ -128,7 +130,7 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                   }`}
                 />
               )}
-            </button>
+            </Button>
           </div>
           {trailingAfterSelector ? (
             <>

@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
 import {
   PILL_CONTROL_ACTIVE_ACCENT_CLASS,
   PILL_CONTROL_IDLE_SURFACE_CLASS,
@@ -35,8 +36,10 @@ const PromptPolishButton: React.FC<PromptPolishButtonProps> = memo(
         : `cursor-pointer text-text-2 hover:text-text-1 ${PILL_CONTROL_IDLE_SURFACE_CLASS}`;
 
     const button = (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         aria-label={tooltip}
         aria-pressed={control.isPolished}
         disabled={isDisabled}
@@ -66,7 +69,7 @@ const PromptPolishButton: React.FC<PromptPolishButtonProps> = memo(
             className="block"
           />
         )}
-      </button>
+      </Button>
     );
 
     return (

@@ -116,6 +116,7 @@ export const CODEMIRROR_BASE_LAYOUT_THEME = EditorView.theme({
   },
   ".cm-content": {
     fontFamily: CODE_FONT_FAMILY,
+    paddingTop: "0",
   },
   ".cm-gutters": {
     fontFamily: CODE_FONT_FAMILY,

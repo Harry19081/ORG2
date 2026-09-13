@@ -137,7 +137,7 @@ describe("IssueDetailExternalLinkButton", () => {
       createElement(IssueDetailExternalLinkButton, { issue })
     );
 
-    expect(markup).toContain('<button type="button"');
+    expect(markup).toMatch(/<button\b[^>]*type="button"/);
     expect(markup).toContain('aria-label="Open in external browser"');
     expect(markup).toContain('data-icon="chrome"');
     expect(markup).toContain("enabled:hover:bg-surface-hover");

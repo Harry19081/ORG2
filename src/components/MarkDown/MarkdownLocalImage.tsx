@@ -13,6 +13,7 @@ import { homeDir, join } from "@tauri-apps/api/path";
 import { readFile, stat } from "@tauri-apps/plugin-fs";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
 import {
@@ -208,10 +209,11 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
     if (!localIsImage || failed) {
       const label = imageLabel(alt, source.path);
       return (
-        <span
+        <Button
+          layout="custom"
+          appearance="custom"
           className="inline-flex max-w-full cursor-pointer items-center gap-1.5 rounded-md border border-border-2 bg-fill-1 px-2 py-1 align-middle text-xs text-text-2"
           title={source.path}
-          role="button"
           tabIndex={0}
           data-image-state={failed ? "unavailable" : "file"}
           onClick={failed ? containClick : handleFileChipClick}
@@ -228,7 +230,7 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
             <FileTypeIcon fileName={label} size="small" />
           )}
           <span className="truncate">{label}</span>
-        </span>
+        </Button>
       );
     }
 

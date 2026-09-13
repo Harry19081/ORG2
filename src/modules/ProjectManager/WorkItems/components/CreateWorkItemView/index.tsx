@@ -293,7 +293,10 @@ const CreateWorkItemView: React.FC<CreateWorkItemViewProps> = ({
     </CreateComposerHeader>
   );
   const workItemPropertyPills = (
-    <CreateComposerPinnedActions dataTestId="create-work-item-pinned-actions">
+    <CreateComposerPinnedActions
+      direction={layout === "spotlight" ? "down" : "up"}
+      dataTestId="create-work-item-pinned-actions"
+    >
       {creatorModeControl}
       {inlineFields.workItemProjectPill}
       {inlineFields.inlinePropertyPills}

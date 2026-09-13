@@ -21,7 +21,12 @@ import { Virtuoso } from "react-virtuoso";
 import { useActionSystem } from "@src/ActionSystem";
 import { getGitCommits } from "@src/api/http/git/commits";
 import type { GitCommitInfo } from "@src/api/http/git/types";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
+import {
+  TREE_ROW_INSET_CLASS,
+  TREE_ROW_ROUNDED_CLASS,
+} from "@src/components/TreeRow/config";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { PRIMARY_SIDEBAR_HOVER } from "@src/config/workstation/tokens";
@@ -42,7 +47,7 @@ import {
   type SourceControlHistorySelection,
   createGitCommitDetailTab,
 } from "@src/store/workstation/tabs";
-import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
+import { formatCompactAge } from "@src/util/time/formatRelativeTime";
 
 import GitHistoryContextMenu from "./GitHistoryContextMenu";
 import {
@@ -170,8 +175,10 @@ const CommitRow: React.FC<CommitRowProps> = memo(
     const authorDate = commit.author?.date ?? "";
 
     return (
-      <button
-        className={`group flex w-full items-center gap-1 pr-3 pl-2 text-left transition-colors ${
+      <Button
+        layout="custom"
+        appearance="custom"
+        className={`group flex w-full items-center gap-1 px-2 text-left transition-colors ${TREE_ROW_ROUNDED_CLASS} ${
           cursorReset || isSelected ? "cursor-default" : "cursor-pointer"
         } ${isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row}`}
         style={{ height: `${ROW_HEIGHT}px` }}
@@ -199,13 +206,11 @@ const CommitRow: React.FC<CommitRowProps> = memo(
           <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-text-3">
             <span className="truncate">{authorName}</span>
             {authorDate && (
-              <span className="shrink-0">
-                {formatRelativeTime(authorDate, "nano")}
-              </span>
+              <span className="shrink-0">{formatCompactAge(authorDate)}</span>
             )}
           </div>
         </div>
-      </button>
+      </Button>
     );
   }
 );
@@ -483,7 +488,12 @@ const GitHistoryContentInner: React.FC<GitHistoryContentInnerProps> = ({
   // Loading state
   if (loading && commits.length === 0) {
     return (
-      <Placeholder variant="loading" placement="sidebar" fillParentHeight />
+      <Placeholder
+        loadingIconOnly
+        variant="loading"
+        placement="sidebar"
+        fillParentHeight
+      />
     );
   }
 
@@ -530,34 +540,34 @@ const GitHistoryContentInner: React.FC<GitHistoryContentInnerProps> = ({
             void handleLoadMore();
           }}
           itemContent={(index, commit) => (
-            <CommitRow
-              commit={commit}
-              isSelected={commit.sha === activeCommitSha}
-              graphNode={
-                isGraphMode && !filterQuery
-                  ? graphData.nodeMap.get(commit.sha)
-                  : undefined
-              }
-              svgWidth={graphSvgWidth}
-              isFirst={index === 0}
-              onSelect={handleCommitSelect}
-              onContextMenu={handleCommitContextMenu}
-            />
+            <div className={TREE_ROW_INSET_CLASS}>
+              <CommitRow
+                commit={commit}
+                isSelected={commit.sha === activeCommitSha}
+                graphNode={
+                  isGraphMode && !filterQuery
+                    ? graphData.nodeMap.get(commit.sha)
+                    : undefined
+                }
+                svgWidth={graphSvgWidth}
+                isFirst={index === 0}
+                onSelect={handleCommitSelect}
+                onContextMenu={handleCommitContextMenu}
+              />
+            </div>
           )}
         />
       )}
 
       {/* Loading indicator remains outside the virtual window. */}
-      {hasMore && (
+      {loadingMore && (
         <div className="flex h-8 shrink-0 items-center justify-center">
-          {loadingMore && (
-            <HugeiconsIcon
-              icon={Loading03Icon}
-              data-icon="loader-2"
-              size={SPINNER_TOKENS.default}
-              className="animate-spin text-text-3"
-            />
-          )}
+          <HugeiconsIcon
+            icon={Loading03Icon}
+            data-icon="loader-2"
+            size={SPINNER_TOKENS.default}
+            className="animate-spin text-text-3"
+          />
         </div>
       )}
 

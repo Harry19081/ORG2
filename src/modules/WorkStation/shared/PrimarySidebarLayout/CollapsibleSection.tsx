@@ -9,10 +9,12 @@
  */
 import React, { memo, useCallback } from "react";
 
+import Button from "@src/components/Button";
 import {
   type SectionHeaderAction,
   isSectionHeaderCustomAction,
 } from "@src/components/TreePanelSidebar/types";
+import { TreeRowActionGroup } from "@src/components/TreeRow/TreeRowActionGroup";
 import {
   BUTTON_SIZE,
   SECTION_ACTION_BUTTON,
@@ -177,12 +179,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
 
           {/* Action buttons - show on hover, or always when forceVisible */}
           {actions.length > 0 && (
-            <div
-              className={`items-center gap-0.5 ${
-                actions.some((action) => action.forceVisible)
-                  ? "flex"
-                  : "hidden group-focus-within/section:flex group-hover/section:flex"
-              }`}
+            <TreeRowActionGroup
+              hoverGroup="section"
+              alwaysVisible={actions.some((action) => action.forceVisible)}
             >
               {actions.map((action) => {
                 // Support custom rendering for complex actions (dropdowns, etc.)
@@ -192,12 +191,15 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
 
                 const hasLabel = !!action.label;
                 const button = (
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    disabled={action.disabled}
                     onClick={(event) => {
                       event.stopPropagation();
                       action.onClick();
                     }}
-                    className={`${SECTION_ACTION_BUTTON.base} ${
+                    className={`${SECTION_ACTION_BUTTON.base} disabled:opacity-50 ${
                       hasLabel
                         ? SECTION_ACTION_BUTTON.withLabel
                         : SECTION_ACTION_BUTTON.iconOnly
@@ -208,12 +210,12 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
                   >
                     {action.icon}
                     {action.label && <span>{action.label}</span>}
-                  </button>
+                  </Button>
                 );
 
                 return <div key={action.key}>{button}</div>;
               })}
-            </div>
+            </TreeRowActionGroup>
           )}
         </div>
 

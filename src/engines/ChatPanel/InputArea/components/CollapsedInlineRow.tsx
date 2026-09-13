@@ -91,17 +91,17 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
     return (
       <div className="flex items-center gap-1 px-0.5">
         {showAddToConversation && (
-          <Tooltip
-            content={
-              <KeyboardShortcutTooltipContent
-                label={scrollNav!.addToConversationTooltipLabel}
-              />
-            }
-            position="top"
-            mouseEnterDelay={250}
-            framedPanel
-          >
-            <span className="inline-flex items-center gap-1">
+          <span className="inline-flex items-center gap-1">
+            <Tooltip
+              content={
+                <KeyboardShortcutTooltipContent
+                  label={scrollNav!.addToConversationTooltipLabel}
+                />
+              }
+              position="top"
+              mouseEnterDelay={250}
+              framedPanel
+            >
               <Button
                 variant="secondary"
                 appearance="outline"
@@ -122,29 +122,29 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
               >
                 {scrollNav!.addToConversationLabel}
               </Button>
-              <Button
-                variant="secondary"
-                appearance="outline"
-                size="small"
-                shape="round"
-                icon={
-                  <HugeiconsIcon
-                    icon={BrushCleaningIcon}
-                    data-icon="brush-cleaning"
-                    size={13}
-                    strokeWidth={2}
-                  />
-                }
-                iconOnly
-                onClick={scrollNav!.onCancelAddToConversation}
-                aria-label={scrollNav!.cancelAddToConversationLabel}
-                title={scrollNav!.cancelAddToConversationLabel}
-                data-testid="browser-cancel-add-to-conversation-pill"
-                className={`text-primary-6! ${PILL_CONTROL_IDLE_SURFACE_CLASS}`}
-              />
-              <span className="mx-0.5 h-4 w-px bg-border-2" />
-            </span>
-          </Tooltip>
+            </Tooltip>
+            <Button
+              variant="secondary"
+              appearance="outline"
+              size="small"
+              shape="round"
+              icon={
+                <HugeiconsIcon
+                  icon={BrushCleaningIcon}
+                  data-icon="brush-cleaning"
+                  size={13}
+                  strokeWidth={2}
+                />
+              }
+              iconOnly
+              onClick={scrollNav!.onCancelAddToConversation}
+              aria-label={scrollNav!.cancelAddToConversationLabel}
+              title={scrollNav!.cancelAddToConversationLabel}
+              data-testid="browser-cancel-add-to-conversation-pill"
+              className={`text-primary-6! ${PILL_CONTROL_IDLE_SURFACE_CLASS}`}
+            />
+            <span className="mx-0.5 h-4 w-px bg-border-2" />
+          </span>
         )}
 
         {sections.map((section) => {

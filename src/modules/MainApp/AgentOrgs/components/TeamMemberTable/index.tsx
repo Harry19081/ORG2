@@ -74,8 +74,10 @@ const AgentSelect: React.FC<AgentSelectProps> = ({
         {menu}
         {onAddAgent ? (
           <DropdownFooter>
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full justify-start`}
               onMouseDown={(event) => {
                 event.preventDefault();
@@ -90,7 +92,7 @@ const AgentSelect: React.FC<AgentSelectProps> = ({
                 strokeWidth={1.75}
               />
               <span>{t("common:actions.add")} Agent</span>
-            </button>
+            </Button>
           </DropdownFooter>
         ) : null}
       </div>

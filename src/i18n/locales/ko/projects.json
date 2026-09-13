@@ -54,7 +54,7 @@
       "connection": "GitHub 연결"
     },
     "placeholders": {
-      "projectName": "ORGII GitHub Issues",
+      "projectName": "ORG2 GitHub 이슈",
       "repo": "owner/repo 또는 https://github.com/owner/repo",
       "connection": "GitHub 연결 선택"
     },
@@ -92,7 +92,7 @@
       "notConfigured": "구성되지 않음",
       "syncNowDescription": "원격 파일 변경 사항을 가져오고 로컬 데이터베이스 변경 사항을 내보냅니다",
       "syncSummary": "프로젝트 {{projects}}개, work items {{workItems}}개, 충돌 {{conflicts}}개",
-      "syncHowItWorks": "Git 폴더 동기화는 이 워크스페이스를 기존 Git 저장소에 연결합니다. ORGII는 워크스페이스에서 내보낸 프로젝트와 work items를 해당 저장소 안의 `.orgii/projects/...` 아래에 저장하고, 그 위치에서 파일 변경 사항을 가져오며, 로컬 데이터베이스 변경 사항을 파일로 다시 내보냅니다. 충돌이 있으면 덮어쓰기 전에 검토할 수 있도록 일시 중지합니다",
+      "syncHowItWorks": "Git 폴더 동기화는 이 워크스페이스를 기존 Git 저장소에 연결합니다. ORG2는 워크스페이스에서 내보낸 프로젝트와 work items를 해당 저장소 안의 `.orgii/projects/...` 아래에 저장하고, 그 위치에서 파일 변경 사항을 가져오며, 로컬 데이터베이스 변경 사항을 파일로 다시 내보냅니다. 충돌이 있으면 덮어쓰기 전에 검토할 수 있도록 일시 중지합니다",
       "noProjectsForCatalog": "이 워크스페이스에는 아직 프로젝트가 없습니다.",
       "noProjectsForCatalogHint": "공유 라벨을 관리하기 전에 이 워크스페이스에서 프로젝트를 만드세요",
       "dangerZone": "위험 구역",
@@ -582,7 +582,7 @@
         "changeWarning": "새 어댑터를 연결하기 전에 현재 어댑터를 해제하세요.",
         "detachProjectMenuLabel": "GitHub 연결 해제",
         "detachProjectTitle": "{{project}}에서 GitHub 연결을 해제할까요?",
-        "detachProjectDescription": "GitHub Issues 동기화가 중지됩니다. 로컬 프로젝트와 가져온 작업 항목은 ORGII에 남습니다.",
+        "detachProjectDescription": "GitHub Issues 동기화가 중지됩니다. 로컬 프로젝트와 가져온 작업 항목은 ORG2에 남습니다.",
         "detachProjectAction": "{{project}}에서 GitHub 연결 해제",
         "detachProjectSuccess": "{{project}}에서 GitHub 연결을 해제했습니다"
       },
@@ -834,7 +834,7 @@
       "updateWorkflowState": "Failed to update Linear workflow state",
       "archiveWorkflowState": "Failed to archive Linear workflow state",
       "statusStateMissing": "No matching Linear workflow state exists for this status",
-      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORGII yet"
+      "unsupportedIssueUpdate": "이 Linear 이슈 필드는 아직 ORG2에서 편집할 수 없습니다"
     },
     "loadingConnections": "Linear 연결 로드 중..."
   },

@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import {
   Add01Icon,
   Cancel01Icon,
@@ -117,13 +118,22 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
                 <span className="flex-1 truncate text-[12px] text-text-1">
                   {model}
                 </span>
-                <button
-                  type="button"
+                <Button
+                  variant="danger"
+                  appearance="soft"
+                  size="sidebar"
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      data-icon="x"
+                      size={HEADER_ICON_SIZE.sm}
+                    />
+                  }
+                  htmlType="button"
                   onClick={() => handleRemove(index)}
-                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-danger-6"
-                >
-                  <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />
-                </button>
+                  aria-label={`${t("common:actions.delete")} ${model}`}
+                />
               </div>
             ))}
           </div>

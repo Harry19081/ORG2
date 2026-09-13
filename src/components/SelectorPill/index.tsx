@@ -14,6 +14,7 @@
  */
 import React, { forwardRef, useCallback, useState } from "react";
 
+import Button from "@src/components/Button";
 import {
   PILL_CONTROL_ACTIVE_SURFACE_CLASS,
   PILL_CONTROL_HOVER_CLASS,
@@ -340,9 +341,11 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
       : "h-[28px] w-[28px] justify-center px-0";
 
     const button = (
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         ref={ref}
-        type="button"
+        htmlType="button"
         onClick={onClick}
         onMouseDown={onMouseDown}
         onMouseEnter={onMouseEnter}
@@ -373,7 +376,7 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
           iconSize={iconSize}
           labelStyle={labelStyle}
         />
-      </button>
+      </Button>
     );
 
     if (tooltip) {

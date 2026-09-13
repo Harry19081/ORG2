@@ -13,6 +13,7 @@
  */
 import React from "react";
 
+import Button from "@src/components/Button";
 import ModelPropertiesDropdown from "@src/components/ModelPropertiesDropdown";
 import { BrainIcon, HugeiconsIcon, Pen01Icon } from "@src/icons";
 import {
@@ -43,12 +44,14 @@ export const VariantPill: React.FC<VariantPillProps> = ({
   groupModelIds,
   onApply,
 }) => {
-  const variant = parseModelVariant(modelId);
-
   const variantOptions = React.useMemo(
     () => buildVariantEditOptions(groupModelIds ?? [modelId]),
     [groupModelIds, modelId]
   );
+  const effectiveModelId =
+    variantOptions.resolveVariantId(variantOptions.parseSelection(modelId)) ??
+    modelId;
+  const variant = parseModelVariant(effectiveModelId);
 
   const pillClasses =
     "relative z-10 inline-flex h-[24px] shrink-0 items-center gap-0.5 rounded-full border border-transparent bg-transparent px-2 text-[11px] font-semibold text-text-2 transition-colors group-hover/model-row:border-border-3 group-hover/model-row:bg-bg-1 group-focus-within/model-row:border-border-3 group-focus-within/model-row:bg-bg-1";
@@ -154,23 +157,20 @@ export const VariantPill: React.FC<VariantPillProps> = ({
       renderTrigger={({ ref, onClick, ariaExpanded }) => {
         const isActive = ariaExpanded;
         return (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             ref={ref}
-            type="button"
+            htmlType="button"
             onClick={onClick}
             aria-expanded={ariaExpanded}
             aria-label="Edit variant"
-            // `group` enables `group-hover:` text/icon lifts on the
-            // nested label · separator · pencil. When the dropdown is
-            // open (`isActive`), we pin the lifted colours via JSX so
-            // the pill stays in its "active" appearance without
-            // depending on the cursor staying inside.
             className={`${pillClasses} group/variant-pill cursor-pointer hover:border-border-3 hover:bg-fill-4 ${
               isActive ? "border-border-3 bg-fill-4" : ""
             }`}
           >
             {renderBody(isActive)}
-          </button>
+          </Button>
         );
       }}
     />

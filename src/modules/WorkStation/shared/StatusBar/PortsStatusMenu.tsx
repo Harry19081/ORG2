@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import type { WorkspacePort } from "@src/api/tauri/workspacePorts";
+import Button from "@src/components/Button";
 import DropdownCollapsibleSectionHeader from "@src/components/Dropdown/DropdownCollapsibleSectionHeader";
 import DropdownSearch from "@src/components/Dropdown/DropdownSearch";
 import {
@@ -16,9 +17,9 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import { ProcessStopButton } from "@src/components/ProcessStopButton";
-import { REFRESH_ICON_TOKENS } from "@src/components/RefreshIcon/tokens";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { createLogger } from "@src/hooks/logger";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Copy01Icon,
   HugeiconsIcon,
@@ -129,41 +130,49 @@ const PortRow: React.FC<PortRowProps> = memo(
           jitter on hover in Chromium.
         */}
         <div className="flex shrink-0 items-center gap-0.5">
-          <button
-            type="button"
-            className="inline-flex h-6 w-6 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+          <Button
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="mini"
+            iconOnly
             title={t("workstation.ports.openInBrowser")}
             aria-label={t("workstation.ports.openInBrowser")}
             onClick={(event) => {
               event.stopPropagation();
               onOpen(port);
             }}
-          >
-            <HugeiconsIcon
-              icon={InternetIcon}
-              data-icon="chrome"
-              size={MENU_ICON_SIZE}
-              aria-hidden
-            />
-          </button>
-          <button
-            type="button"
-            className="inline-flex h-6 w-6 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+            icon={
+              <HugeiconsIcon
+                icon={InternetIcon}
+                data-icon="chrome"
+                size={MENU_ICON_SIZE}
+                aria-hidden
+              />
+            }
+          />
+          <Button
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="mini"
+            iconOnly
             title={t("workstation.ports.copyAddress")}
             aria-label={t("workstation.ports.copyAddress")}
             onClick={(event) => {
               event.stopPropagation();
               onCopy(port);
             }}
-          >
-            <HugeiconsIcon
-              icon={Copy01Icon}
-              data-icon="copy"
-              size={MENU_ICON_SIZE}
-            />
-          </button>
+            icon={
+              <HugeiconsIcon
+                icon={Copy01Icon}
+                data-icon="copy"
+                size={MENU_ICON_SIZE}
+                aria-hidden
+              />
+            }
+          />
           {canStop && (
             <ProcessStopButton
+              className="focus-visible:bg-button-hover-no-drop! enabled:hover:bg-button-hover-no-drop!"
               label={t("workstation.ports.stopProcess")}
               loading={stopping}
               onClick={() => onStop(port)}
@@ -240,6 +249,11 @@ export const PortsStatusMenu: React.FC = memo(() => {
       // failed scan never surfaces as an unhandled rejection.
     });
   }, [folders]);
+
+  const { spinClass, handleClick: handleRescan } = useRefreshSpin(
+    runScan,
+    refreshing
+  );
 
   const toggleWorkspaceSection = useCallback(() => {
     setWorkspaceExpanded((value) => !value);
@@ -435,13 +449,15 @@ export const PortsStatusMenu: React.FC = memo(() => {
             </div>
 
             <div className={DROPDOWN_CLASSES.footerContainer}>
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 className={classNames(
                   DROPDOWN_CLASSES.menuActionItem,
                   "min-w-0 flex-1 disabled:cursor-default disabled:text-text-3"
                 )}
-                onClick={runScan}
+                onClick={handleRescan}
                 disabled={refreshing}
                 title={t("workstation.ports.rescanTooltip")}
                 data-testid="ports-menu-rescan"
@@ -450,7 +466,7 @@ export const PortsStatusMenu: React.FC = memo(() => {
                   icon={Refresh04Icon}
                   data-icon="refresh-cw"
                   size={MENU_ICON_SIZE}
-                  className={refreshing ? REFRESH_ICON_TOKENS.spin : undefined}
+                  className={spinClass}
                   aria-hidden
                 />
                 <span className="truncate">
@@ -471,7 +487,7 @@ export const PortsStatusMenu: React.FC = memo(() => {
                     {lastScanLabel}
                   </span>
                 )}
-              </button>
+              </Button>
             </div>
           </div>,
           document.body

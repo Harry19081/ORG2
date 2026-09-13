@@ -14,7 +14,15 @@
  *   - `FileHeaderMoreMenu`    → the trailing ellipsis dropdown menu.
  *   - `FileHeaderShell`       → inline vs teleport-to-workstation wrapper.
  */
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -25,7 +33,12 @@ import TabPill from "@src/components/TabPill";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
-import { Cancel01Icon, FileSymlinkIcon, HugeiconsIcon } from "@src/icons";
+import {
+  Cancel01Icon,
+  FileSymlinkIcon,
+  HugeiconsIcon,
+  LinkSquare02Icon,
+} from "@src/icons";
 import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 import type { DiffViewMode } from "@src/types/git/types";
 import { copyText } from "@src/util/data/clipboard";
@@ -34,6 +47,7 @@ import { DiffViewModeToggle } from "../DiffViewModeToggle";
 import BreadcrumbFileHeader from "./BreadcrumbFileHeader";
 import { FileHeaderMoreMenu } from "./FileHeaderMoreMenu";
 import { FileHeaderShell } from "./FileHeaderShell";
+import { FileHeaderToolbarContext } from "./FileHeaderToolbarContext";
 
 const RELOAD_MENU_COOLDOWN_MS = 1200;
 
@@ -75,6 +89,8 @@ export interface FileHeaderProps {
   renderFileActions?: (close: () => void) => React.ReactNode;
   /** Extra actions to render on the right */
   extraActions?: React.ReactNode;
+  /** Read-only labels shown before the trailing action group. */
+  metadata?: React.ReactNode;
   /** Optional control rendered immediately before the trailing more menu. */
   beforeMoreMenuSlot?: React.ReactNode;
   /** For git diffs: current view mode */
@@ -93,6 +109,8 @@ export interface FileHeaderProps {
   showOpenFileAction?: boolean;
   /** Optional adjacent close action for dismissible file previews. */
   onClose?: () => void;
+  /** Open this detail in its own tab, immediately before Close. */
+  onOpenInNewTab?: () => void;
   /** Callback when reload is requested */
   onReload?: () => void;
   /** Callback when editor search is requested from the more menu. */
@@ -182,6 +200,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     additions,
     deletions,
     extraActions,
+    metadata,
     renderFileActions,
     beforeMoreMenuSlot,
     viewMode,
@@ -192,6 +211,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     onFileSelect,
     showOpenFileAction = false,
     onClose,
+    onOpenInNewTab,
     onReload,
     onSearchRequest,
     onGoToLineRequest,
@@ -232,6 +252,9 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         loading ?? false,
         reloadSpinPersistenceKey
       );
+    const toolbar = useContext(FileHeaderToolbarContext);
+    const hostOwnsControls = toolbar !== null;
+    const toolbarTarget = toolbar === "host" ? null : toolbar;
     const [moreMenuVisible, setMoreMenuVisible] = useState(false);
     const [reloadMenuCoolingDown, setReloadMenuCoolingDown] = useState(false);
     const reloadMenuCooldownTimerRef = useRef<ReturnType<
@@ -342,7 +365,8 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     }, [onMoreSettings]);
 
     const hasStats = additions !== undefined || deletions !== undefined;
-    const showViewModeToggle = viewMode && onViewModeChange;
+    const showViewModeToggle =
+      !hostOwnsControls && viewMode && onViewModeChange;
     const showCustomToggle = toggleOptions && toggleValue && onToggleChange;
     const showReloadButton = !!onReload;
     const showSearchAction = !!onSearchRequest;
@@ -374,9 +398,15 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     const showPreviewButton = isMarkdownFile && onTogglePreview && !hasStats;
     const showAnyTabSwitch =
       showViewModeToggle || showCustomToggle || showPreviewButton;
+    const showInlineMoreMenu = showMoreMenu && !hostOwnsControls;
+    const showInlineOpenFileAction =
+      showOpenFileAction && !!onFileSelect && !hostOwnsControls;
     const showCloseAction = !!onClose;
     const showHeaderActionButtons =
-      showMoreMenu || showOpenFileAction || showCloseAction;
+      showInlineMoreMenu ||
+      showInlineOpenFileAction ||
+      !!onOpenInNewTab ||
+      showCloseAction;
     const breadcrumbLastSegmentIcon = headerIcon ? (
       headerIcon
     ) : useFileTypeIcon && filePath ? (
@@ -392,13 +422,66 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
       showCustomToggle ||
       showPreviewButton ||
       !!beforeMoreMenuSlot ||
-      showMoreMenu ||
-      showOpenFileAction ||
+      showInlineMoreMenu ||
+      showInlineOpenFileAction ||
       showCloseAction ||
+      !!onOpenInNewTab ||
+      !!metadata ||
       !!extraActions;
+
+    const viewModeToggle = showViewModeToggle ? (
+      <DiffViewModeToggle
+        viewMode={viewMode}
+        onChange={onViewModeChange}
+        t={t}
+      />
+    ) : null;
+    const moreMenu = showMoreMenu ? (
+      <FileHeaderMoreMenu
+        renderFileActions={renderFileActions}
+        showReloadButton={showReloadButton}
+        showSearchAction={showSearchAction}
+        showGoToLineAction={showGoToLineAction}
+        showSaveAction={showSaveAction}
+        showDiscardAction={showDiscardAction}
+        showCopyRelativePathAction={showCopyRelativePathAction}
+        showRevealInFileManagerAction={showRevealInFileManagerAction}
+        showLineNumbersToggle={showLineNumbersToggle}
+        showWordWrapToggle={showWordWrapToggle}
+        showMinimapToggle={showMinimapToggle}
+        showHighlightActiveLineToggle={showHighlightActiveLineToggle}
+        showGitBlameToggle={showGitBlameToggle}
+        showMoreSettingsAction={showMoreSettingsAction}
+        lineNumbersEnabled={lineNumbersEnabled}
+        wordWrapEnabled={wordWrapEnabled}
+        minimapEnabled={minimapEnabled}
+        highlightActiveLineEnabled={highlightActiveLineEnabled}
+        gitBlameEnabled={gitBlameEnabled}
+        loading={!!loading}
+        hasUnsavedChanges={hasUnsavedChanges}
+        reloadSpinClass={reloadSpinClass}
+        reloadMenuCoolingDown={reloadMenuCoolingDown}
+        menuVisible={moreMenuVisible}
+        setMenuVisible={setMoreMenuVisible}
+        onSaveClick={handleSaveMenuClick}
+        onDiscardClick={handleDiscardMenuClick}
+        onSearchClick={handleSearchMenuClick}
+        onGoToLineClick={handleGoToLineMenuClick}
+        onCopyRelativePathClick={handleCopyRelativePathMenuClick}
+        onRevealInFileManagerClick={handleRevealInFileManagerMenuClick}
+        onReloadClick={handleReloadMenuClick}
+        onLineNumbersChange={handleLineNumbersChange}
+        onWordWrapChange={handleWordWrapChange}
+        onMinimapChange={handleMinimapChange}
+        onHighlightActiveLineChange={handleHighlightActiveLineChange}
+        onGitBlameChange={handleGitBlameChange}
+        onMoreSettingsClick={handleMoreSettingsMenuClick}
+      />
+    ) : null;
 
     const headerInner = (
       <>
+        {toolbarTarget && createPortal(moreMenu, toolbarTarget)}
         {/* Optional leading content (rendered before the breadcrumb) */}
         {leadingSlot && (
           <div className="flex shrink-0 items-center">{leadingSlot}</div>
@@ -444,13 +527,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
                 />
               )}
             {/* View Mode Toggle (for diffs) */}
-            {showViewModeToggle && (
-              <DiffViewModeToggle
-                viewMode={viewMode}
-                onChange={onViewModeChange}
-                t={t}
-              />
-            )}
+            {viewModeToggle}
 
             {/* Custom Toggle — TabPill pill (matches source control / preview) */}
             {showCustomToggle && (
@@ -515,63 +592,15 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
               />
             )}
 
+            {metadata}
             {(showHeaderActionButtons || beforeMoreMenuSlot) && (
               <span className="flex items-center gap-px">
                 {beforeMoreMenuSlot}
 
                 {/* More actions */}
-                {showMoreMenu && (
-                  <FileHeaderMoreMenu
-                    renderFileActions={renderFileActions}
-                    showReloadButton={showReloadButton}
-                    showSearchAction={showSearchAction}
-                    showGoToLineAction={showGoToLineAction}
-                    showSaveAction={showSaveAction}
-                    showDiscardAction={showDiscardAction}
-                    showCopyRelativePathAction={showCopyRelativePathAction}
-                    showRevealInFileManagerAction={
-                      showRevealInFileManagerAction
-                    }
-                    showLineNumbersToggle={showLineNumbersToggle}
-                    showWordWrapToggle={showWordWrapToggle}
-                    showMinimapToggle={showMinimapToggle}
-                    showHighlightActiveLineToggle={
-                      showHighlightActiveLineToggle
-                    }
-                    showGitBlameToggle={showGitBlameToggle}
-                    showMoreSettingsAction={showMoreSettingsAction}
-                    lineNumbersEnabled={lineNumbersEnabled}
-                    wordWrapEnabled={wordWrapEnabled}
-                    minimapEnabled={minimapEnabled}
-                    highlightActiveLineEnabled={highlightActiveLineEnabled}
-                    gitBlameEnabled={gitBlameEnabled}
-                    loading={!!loading}
-                    hasUnsavedChanges={hasUnsavedChanges}
-                    reloadSpinClass={reloadSpinClass}
-                    reloadMenuCoolingDown={reloadMenuCoolingDown}
-                    menuVisible={moreMenuVisible}
-                    setMenuVisible={setMoreMenuVisible}
-                    onSaveClick={handleSaveMenuClick}
-                    onDiscardClick={handleDiscardMenuClick}
-                    onSearchClick={handleSearchMenuClick}
-                    onGoToLineClick={handleGoToLineMenuClick}
-                    onCopyRelativePathClick={handleCopyRelativePathMenuClick}
-                    onRevealInFileManagerClick={
-                      handleRevealInFileManagerMenuClick
-                    }
-                    onReloadClick={handleReloadMenuClick}
-                    onLineNumbersChange={handleLineNumbersChange}
-                    onWordWrapChange={handleWordWrapChange}
-                    onMinimapChange={handleMinimapChange}
-                    onHighlightActiveLineChange={
-                      handleHighlightActiveLineChange
-                    }
-                    onGitBlameChange={handleGitBlameChange}
-                    onMoreSettingsClick={handleMoreSettingsMenuClick}
-                  />
-                )}
+                {showInlineMoreMenu && moreMenu}
 
-                {showOpenFileAction && onFileSelect && (
+                {showInlineOpenFileAction && (
                   <Button
                     htmlType="button"
                     variant="tertiary"
@@ -591,6 +620,24 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
                   />
                 )}
 
+                {onOpenInNewTab && (
+                  <Button
+                    htmlType="button"
+                    variant="tertiary"
+                    size="small"
+                    iconOnly
+                    onClick={onOpenInNewTab}
+                    title={t("common:actions.openInNewTab")}
+                    aria-label={t("common:actions.openInNewTab")}
+                    className="shrink-0"
+                    icon={
+                      <HugeiconsIcon
+                        icon={LinkSquare02Icon}
+                        size={HEADER_ICON_SIZE.sm}
+                      />
+                    }
+                  />
+                )}
                 {showCloseAction && (
                   <Button
                     htmlType="button"

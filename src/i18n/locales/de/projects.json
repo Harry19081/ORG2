@@ -54,7 +54,7 @@
       "connection": "GitHub-Verbindung"
     },
     "placeholders": {
-      "projectName": "ORGII GitHub Issues",
+      "projectName": "ORG2-GitHub-Issues",
       "repo": "owner/repo oder https://github.com/owner/repo",
       "connection": "GitHub-Verbindung auswählen"
     },
@@ -92,7 +92,7 @@
       "notConfigured": "Nicht konfiguriert",
       "syncNowDescription": "Remote-Dateiänderungen importieren und lokale Datenbankänderungen exportieren",
       "syncSummary": "{{projects}} Projekte, {{workItems}} Work Items, {{conflicts}} Konflikte",
-      "syncHowItWorks": "Die Git-Ordnersynchronisierung verbindet diesen Arbeitsbereich mit einem bestehenden Git-Repository. ORGII speichert die exportierten Projekte und Work Items des Arbeitsbereichs unter `.orgii/projects/...` in diesem Repository, importiert Dateiänderungen von dort, exportiert lokale Datenbankänderungen zurück in Dateien und hält bei Konflikten an, damit du sie prüfen kannst, bevor etwas überschrieben wird",
+      "syncHowItWorks": "Die Git-Ordnersynchronisierung verbindet diesen Arbeitsbereich mit einem bestehenden Git-Repository. ORG2 speichert die exportierten Projekte und Work Items des Arbeitsbereichs unter `.orgii/projects/...` in diesem Repository, importiert Dateiänderungen von dort, exportiert lokale Datenbankänderungen zurück in Dateien und hält bei Konflikten an, damit du sie prüfen kannst, bevor etwas überschrieben wird",
       "noProjectsForCatalog": "Dieser Arbeitsbereich hat noch keine Projekte.",
       "noProjectsForCatalogHint": "Erstelle ein Projekt in diesem Arbeitsbereich, bevor du gemeinsame Labels verwaltest",
       "dangerZone": "Gefahrenbereich",
@@ -582,7 +582,7 @@
         "changeWarning": "Trennen Sie den aktuellen Adapter, bevor Sie einen neuen verbinden.",
         "detachProjectMenuLabel": "GitHub-Verknüpfung aufheben",
         "detachProjectTitle": "GitHub-Verknüpfung mit {{project}} aufheben?",
-        "detachProjectDescription": "Die Synchronisierung mit GitHub Issues wird beendet. Das lokale Projekt und die importierten Arbeitselemente bleiben in ORGII erhalten.",
+        "detachProjectDescription": "Die Synchronisierung mit GitHub Issues wird beendet. Das lokale Projekt und die importierten Arbeitselemente bleiben in ORG2 erhalten.",
         "detachProjectAction": "GitHub-Verknüpfung mit {{project}} aufheben",
         "detachProjectSuccess": "GitHub-Verknüpfung mit {{project}} aufgehoben"
       },
@@ -834,7 +834,7 @@
       "updateWorkflowState": "Failed to update Linear workflow state",
       "archiveWorkflowState": "Failed to archive Linear workflow state",
       "statusStateMissing": "No matching Linear workflow state exists for this status",
-      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORGII yet"
+      "unsupportedIssueUpdate": "Dieses Linear-Issue-Feld kann in ORG2 noch nicht bearbeitet werden"
     },
     "loadingConnections": "Linear-Verbindungen werden geladen …"
   },

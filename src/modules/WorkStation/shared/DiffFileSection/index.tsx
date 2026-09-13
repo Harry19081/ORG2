@@ -9,15 +9,18 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { Placeholder } from "@src/components/Placeholder";
+import Tooltip from "@src/components/Tooltip";
 import {
   type GitFileStatus,
   getStatusColor,
   getStatusLetterForFile,
 } from "@src/config/gitStatus";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
+import type { ReviewDiffSearch } from "@src/features/CodeMirror/Diff/reviewSearchNavigation";
 import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import { FileHeader } from "@src/modules/shared/components/FileHeader";
 import type { DiffViewMode } from "@src/types/git/types";
@@ -77,6 +80,7 @@ export interface DiffFileSectionData {
 
 interface DiffFileSectionProps {
   file: DiffFileSectionData;
+  reviewSearch?: ReviewDiffSearch;
   viewMode: DiffViewMode;
   defaultExpanded?: boolean;
   expansionSignal?: number;
@@ -124,6 +128,7 @@ function getFileNameAndDir(path: string): {
 
 const DiffFileSection: React.FC<DiffFileSectionProps> = ({
   file,
+  reviewSearch,
   viewMode,
   defaultExpanded = true,
   expansionSignal = 0,
@@ -145,8 +150,9 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
     signal: number;
     value: boolean;
   } | null>(null);
-  const expanded =
-    manualExpanded?.signal === expansionSignal
+  const expanded = reviewSearch?.match
+    ? true
+    : manualExpanded?.signal === expansionSignal
       ? manualExpanded.value
       : defaultExpanded;
   const previousExpandedRef = useRef(expanded);
@@ -291,6 +297,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           <Suspense
             fallback={
               <Placeholder
+                loadingIconOnly
                 variant="loading"
                 placement="detail-panel"
                 fillParentHeight
@@ -310,6 +317,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
         <Suspense
           fallback={
             <Placeholder
+              loadingIconOnly
               variant="loading"
               placement="detail-panel"
               title={t("placeholders.loadingChanges")}
@@ -317,6 +325,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           }
         >
           <LazyCodeMirrorDiff
+            reviewSearch={reviewSearch}
             oldValue={resolvedDiff.oldContent || ""}
             newValue={resolvedDiff.newContent || ""}
             filePath={file.path}
@@ -340,6 +349,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
         />
       ) : (
         <Placeholder
+          loadingIconOnly
           variant="loading"
           placement="detail-panel"
           title={t("placeholders.loadingChanges")}
@@ -376,8 +386,10 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
       <div
         className={`group/diff-header sticky top-0 z-10 h-9 w-full min-w-0 ${isDeleted ? "" : "hover:bg-fill-2"} ${compactHeaderGutter ? "px-2" : "px-3"} ${EDITOR_TAB_CANVAS_BG_CLASS}`}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className="absolute inset-0 w-full cursor-pointer focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset disabled:cursor-default"
           onClick={toggleExpanded}
           disabled={isDeleted}
@@ -385,7 +397,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           aria-label={`${t(expanded ? "actions.collapse" : "actions.expand")} ${displayPath}`}
           aria-expanded={isDeleted ? undefined : expanded}
         />
-        <div className="pointer-events-none relative z-10 flex h-full min-w-0 items-center gap-2">
+        <div className="pointer-events-none relative z-10 flex h-full min-w-0 items-center gap-2 pr-2">
           {isDeleted ? (
             <span className="inline-block w-[14px] shrink-0" aria-hidden />
           ) : expanded ? (
@@ -410,15 +422,17 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           />
           <div className="flex min-w-0 flex-1 items-baseline gap-1.5 overflow-hidden">
             {canOpenFile ? (
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 className="pointer-events-auto shrink-0 text-left text-[13px] leading-normal font-medium text-text-1 underline-offset-2 hover:underline focus-visible:underline focus-visible:outline-none"
                 onClick={handleOpenFile}
                 title={t("tooltips.openInEditorTab")}
                 aria-label={`${t("tooltips.openInEditorTab")}: ${displayPath}`}
               >
                 {fileName}
-              </button>
+              </Button>
             ) : (
               <span className="shrink-0 text-[13px] font-medium text-text-1">
                 {fileName}
@@ -443,14 +457,32 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
               </>
             ) : null}
           </div>
-          <DiffStatsBadge
-            additions={additions}
-            deletions={deletions}
-            variant="compact"
-          />
-          <span className={`shrink-0 text-[11px] font-medium ${statusColor}`}>
-            {statusLetter}
-          </span>
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
+            className="pointer-events-auto flex shrink-0 cursor-pointer items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none aria-disabled:cursor-default"
+            onClick={isDeleted ? undefined : toggleExpanded}
+            aria-disabled={isDeleted || undefined}
+            aria-label={`${t(expanded ? "actions.collapse" : "actions.expand")} ${displayPath}`}
+            aria-expanded={isDeleted ? undefined : expanded}
+          >
+            <DiffStatsBadge
+              additions={additions}
+              deletions={deletions}
+              variant="compact"
+            />
+            <Tooltip
+              content={t(`common:gitLabels.${statusLetter}`)}
+              mouseEnterDelay={500}
+            >
+              <span
+                className={`shrink-0 text-[11px] font-medium ${statusColor}`}
+              >
+                {statusLetter}
+              </span>
+            </Tooltip>
+          </Button>
         </div>
       </div>
 

@@ -2,7 +2,6 @@
 import type { TFunction } from "i18next";
 
 import {
-  TASK_FAILURE_NOTIFICATION_BODY,
   notifyError,
   notifyTaskCompletion,
 } from "@src/api/services/notification";
@@ -93,18 +92,21 @@ export function deliverSessionTerminalNotification(
       name: event.sessionName,
       detail,
     });
-    void notifyError(TASK_FAILURE_NOTIFICATION_BODY, settings, {
+    notifyError(t("notifications.taskFailedPrivateBody"), settings, {
       title: t("notifications.taskFailedTitle"),
       context,
-    }).then((result) => {
-      if (result.disposition !== "delivered" || !event.attentionRequired)
-        return;
-      Message.error({
-        content: toastBody,
-        duration: 8000,
-        closable: true,
-      });
-    });
+    })
+      .then((result) => {
+        if (result.disposition !== "delivered" || !event.attentionRequired)
+          return;
+        Message.error({
+          content: toastBody,
+          duration: 8000,
+          closable: true,
+        });
+      })
+      // Match completion delivery: native notifications are best effort.
+      .catch(() => undefined);
     return;
   }
 

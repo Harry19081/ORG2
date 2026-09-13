@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 
 export const MAX_SCROLL_TRAIL_MARKERS = 20;
@@ -327,8 +328,10 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
             key={`${marker.targetIndex}-${marker.label}`}
             className="relative flex h-3 w-9 shrink-0 items-center justify-center"
           >
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               aria-current={isActive ? "step" : undefined}
               aria-describedby={
                 previewMarkerIndex === markerIndex ? tooltipId : undefined
@@ -352,7 +355,7 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
                     : "bg-text-3/40 group-hover:bg-primary-6 group-focus-visible:bg-primary-6"
                 }`}
               />
-            </button>
+            </Button>
 
             {previewMarkerIndex === markerIndex ? (
               <div

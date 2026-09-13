@@ -979,7 +979,7 @@ impl CodexAppServerRpcClient {
                 serde_json::json!({
                     "clientInfo": {
                         "name": "orgii",
-                        "title": "ORGII",
+                        "title": "ORG2",
                         "version": env!("CARGO_PKG_VERSION")
                     },
                     "capabilities": {"experimentalApi": true}
@@ -1085,7 +1085,7 @@ async fn dispatch_server_message(
                 rpc_respond_error(
                     stdin,
                     req_id,
-                    "ORGII app-server transport does not support this request",
+                    "ORG2 app-server transport does not support this request",
                 )
                 .await;
             }
@@ -1330,7 +1330,7 @@ pub async fn run_app_server_turn(
         serde_json::json!({
             "clientInfo": {
                 "name": "orgii",
-                "title": "ORGII",
+                "title": "ORG2",
                 "version": env!("CARGO_PKG_VERSION"),
             },
             "capabilities": {"experimentalApi": true},

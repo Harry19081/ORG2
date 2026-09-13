@@ -50,6 +50,7 @@ export const AllSessionsSearchPalette: React.FC<
   const sessionMap = useAtomValue(sessionMapAtom);
 
   const [query, setQuery] = useState("");
+  const hasSearchQuery = query.trim().length > 0;
   const [hits, setHits] = useState<CrossSessionSearchHit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const prevIsOpenRef = useRef(isOpen);
@@ -155,13 +156,15 @@ export const AllSessionsSearchPalette: React.FC<
 
   const items = useMemo<SpotlightItem[]>(
     () =>
-      buildAllSessionsSearchItems({
-        hits,
-        sessionMap,
-        fallbackSessionLabel: t("chat.session", "Session"),
-        onNavigate: handleNavigate,
-      }),
-    [handleNavigate, hits, sessionMap, t]
+      hasSearchQuery
+        ? buildAllSessionsSearchItems({
+            hits,
+            sessionMap,
+            fallbackSessionLabel: t("chat.session", "Session"),
+            onNavigate: handleNavigate,
+          })
+        : [],
+    [hasSearchQuery, handleNavigate, hits, sessionMap, t]
   );
 
   const handleExternalKeyDown = useCallback(
@@ -221,7 +224,8 @@ export const AllSessionsSearchPalette: React.FC<
       )}
       path={path}
       onRemoveSegment={handleGoBack}
-      isLoading={isLoading}
+      isLoading={hasSearchQuery && isLoading}
+      contentOverride={hasSearchQuery ? undefined : null}
       containerHeight={400}
     />
   );

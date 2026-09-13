@@ -7,6 +7,7 @@ import {
 } from "@src/api/tauri/lineage";
 import { rpc } from "@src/api/tauri/rpc";
 import type { SessionProvenanceRecentSignal } from "@src/api/tauri/rpc/schemas/agentOrgs";
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import type { IconProvider } from "@src/components/ModelIcon";
 import SettingsTable, {
@@ -409,8 +410,10 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
           ? "text-text-2"
           : "font-mono text-[12px] text-text-3";
         return (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             onClick={() =>
               openSession(row.sessionId, title || undefined, row.workspacePath)
             }
@@ -423,7 +426,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
             className={`flex max-w-full min-w-0 items-center text-left hover:text-text-1 hover:underline focus-visible:underline ${tone}`}
           >
             <span className="truncate">{label}</span>
-          </button>
+          </Button>
         );
       },
     },
@@ -504,6 +507,8 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
             searchInputSize: "default",
             rightContent: (
               <RuntimeRefreshButton
+                iconOnly
+                variant="secondary"
                 label={t("agentOrgs.sessionProvenance.signals.refresh", {
                   defaultValue: "Refresh",
                 })}

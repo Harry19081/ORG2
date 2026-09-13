@@ -135,11 +135,6 @@ pub fn lsp_cache() -> PathBuf {
     orgii_root().join("lsp_cache.json")
 }
 
-/// Lint tool discovery cache: `~/.orgii/lint_cache.json`.
-pub fn lint_cache() -> PathBuf {
-    orgii_root().join("lint_cache.json")
-}
-
 /// Provider protocol capability cache: `~/.orgii/provider-capabilities.json`.
 pub fn provider_capabilities_cache() -> PathBuf {
     orgii_root().join("provider-capabilities.json")

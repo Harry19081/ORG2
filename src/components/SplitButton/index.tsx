@@ -1,5 +1,6 @@
 import React, { forwardRef } from "react";
 
+import Button from "@src/components/Button";
 import type { ButtonProps } from "@src/components/Button";
 import { useButtonPresentation } from "@src/components/Button/presentation";
 import { ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
@@ -194,9 +195,11 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
             minWidth: 0,
           }}
         >
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             ref={ref}
-            type={htmlType}
+            htmlType={htmlType}
             disabled={isDisabled}
             className={`${buttonClassName} ${wrapperHoverClass}`.trim()}
             style={{
@@ -232,10 +235,12 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
                 {buttonContent}
               </div>
             )}
-          </button>
+          </Button>
 
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             disabled={isDisabled}
             aria-label={menuButtonLabel}
             aria-haspopup="menu"
@@ -268,7 +273,7 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
               size={12}
               aria-hidden
             />
-          </button>
+          </Button>
         </div>
 
         {menuOpen && menu}

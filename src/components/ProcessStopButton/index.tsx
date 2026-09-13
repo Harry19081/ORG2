@@ -1,7 +1,8 @@
 import type { ButtonHTMLAttributes } from "react";
 
+import Button from "@src/components/Button";
 import { BUTTON_SIZE } from "@src/config/workstation/tokens";
-import { HugeiconsIcon, Loading03Icon, StopIcon } from "@src/icons";
+import { HugeiconsIcon, StopIcon } from "@src/icons";
 
 interface ProcessStopButtonProps extends Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -23,25 +24,25 @@ export function ProcessStopButton({
   ...props
 }: ProcessStopButtonProps) {
   return (
-    <button
+    <Button
+      variant="danger"
+      appearance="soft-no-drop"
+      size={size === "sm" ? "sidebar" : size === "lg" ? "small" : "mini"}
+      iconOnly
+      icon={
+        <HugeiconsIcon icon={StopIcon} data-icon="stop" size={14} aria-hidden />
+      }
       {...props}
-      type="button"
+      htmlType="button"
       aria-label={label}
       title={label}
-      disabled={disabled || loading}
-      className={`hover:text-danger-7 inline-flex shrink-0 items-center justify-center rounded-lg text-danger-6 transition-colors hover:bg-danger-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-6 disabled:cursor-not-allowed disabled:opacity-40 ${BUTTON_SIZE[size]} ${className}`}
+      disabled={disabled}
+      loading={loading}
+      className={`shrink-0 ${className}`}
       onClick={(event) => {
         event.stopPropagation();
         onClick?.(event);
       }}
-    >
-      <HugeiconsIcon
-        icon={loading ? Loading03Icon : StopIcon}
-        data-icon={loading ? "loader-2" : "stop"}
-        size={14}
-        aria-hidden
-        className={loading ? "animate-spin" : undefined}
-      />
-    </button>
+    />
   );
 }

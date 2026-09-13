@@ -14,12 +14,11 @@ import {
   CHAT_PANEL_CREATE_TARGET,
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
-import { chatPanelNavigateAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
-import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
+import { resetChatPanelSessionSurfaceAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 
 export function useChatPanelNavigationActions() {
   const setStartPageOpen = useSetAtom(chatPanelStartPageOpenAtom);
-  const navigateChatPanel = useSetAtom(chatPanelNavigateAtom);
+  const resetSessionSurface = useSetAtom(resetChatPanelSessionSurfaceAtom);
   const openExploreTab = useSetAtom(openExploreInChatPanelTabAtom);
   const openCreateTarget = useSetAtom(openChatPanelCreateTargetAtom);
   const dispatchClearSession = useSetAtom(clearSessionAtom);
@@ -35,9 +34,8 @@ export function useChatPanelNavigationActions() {
   }, [dispatchClearSession, setActiveSessionId, setWorkstationActiveSessionId]);
 
   const showSessionSurface = useCallback(() => {
-    setStartPageOpen(false);
-    navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
-  }, [navigateChatPanel, setStartPageOpen]);
+    resetSessionSurface();
+  }, [resetSessionSurface]);
 
   const resetToSessionSurface = useCallback(() => {
     showSessionSurface();

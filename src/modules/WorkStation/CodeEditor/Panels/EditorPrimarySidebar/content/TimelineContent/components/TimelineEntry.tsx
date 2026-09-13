@@ -1,11 +1,9 @@
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
-import {
-  HEADER_BUTTON,
-  PRIMARY_SIDEBAR_HOVER,
-} from "@src/config/workstation/tokens";
+import { PRIMARY_SIDEBAR_HOVER } from "@src/config/workstation/tokens";
 import { HugeiconsIcon } from "@src/icons";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
@@ -61,16 +59,20 @@ export const TimelineEntry: React.FC<TimelineEntryProps> = memo(
           </div>
         </div>
 
-        <button
-          className={`${HEADER_BUTTON.actionTreeRow} hidden shrink-0 group-hover/timeline-item:flex`}
+        <Button
+          variant="tertiary"
+          appearance="soft"
+          size="sidebar"
+          aria-label={t("tooltips.openDiff")}
+          iconOnly
+          icon={<HugeiconsIcon icon={OpenIcon} size={14} />}
+          className={`shrink-0 opacity-0 group-focus-within/timeline-item:opacity-100 group-hover/timeline-item:opacity-100`}
           onClick={(event) => {
             event.stopPropagation();
             onClick();
           }}
           title={t("tooltips.openDiff")}
-        >
-          <HugeiconsIcon icon={OpenIcon} size={14} />
-        </button>
+        />
       </div>
     );
   }

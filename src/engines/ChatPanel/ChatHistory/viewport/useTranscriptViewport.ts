@@ -62,11 +62,12 @@ export interface UseTranscriptViewportReturn {
   mode: TranscriptFollowMode;
 }
 
-function isEditableKeyboardTarget(target: EventTarget | null): boolean {
+// Descendant controls own activation and navigation keys before transcript scrolling.
+function isInteractiveKeyboardTarget(target: EventTarget | null): boolean {
   return (
     target instanceof Element &&
     target.closest(
-      "input, textarea, select, [contenteditable='true'], [role='textbox']"
+      "input, textarea, select, button, a[href], summary, [contenteditable='true'], [role='textbox'], [role='button'], [role='slider'], [role='tab'], [role='menuitem']"
     ) !== null
   );
 }
@@ -437,7 +438,7 @@ export function useTranscriptViewport({
         event.metaKey ||
         event.ctrlKey ||
         event.altKey ||
-        isEditableKeyboardTarget(event.target)
+        isInteractiveKeyboardTarget(event.target)
       ) {
         return;
       }

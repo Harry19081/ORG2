@@ -20,7 +20,6 @@ import {
   ArrowUp01Icon,
   CircleDotIcon,
   HugeiconsIcon,
-  LinkSquare02Icon,
   ListChevronsDownUpIcon,
   Refresh04Icon,
 } from "@src/icons";
@@ -33,6 +32,8 @@ import type {
 } from "@src/store/workstation/tabs";
 import type { DiffViewMode } from "@src/types/git/types";
 
+import { SourceControlDiffSettingsMenu } from "./SourceControlDiffSettingsMenu";
+
 export interface SourceControlHeaderContentProps {
   /** The active `source-control` tab (host guarantees the type). */
   activeTab: WorkStationTab;
@@ -44,11 +45,11 @@ export interface SourceControlHeaderContentProps {
   sourceControlHeaderLeadingSlot?: ReactNode;
   sourceControlHeaderTrailingSlot?: ReactNode;
   sourceControlRefreshSpinClass: string | undefined;
+  focusToolbarRef?: React.Ref<HTMLSpanElement>;
   diffViewMode: DiffViewMode;
   t: TFunction;
   onDiffViewModeChange: (mode: DiffViewMode) => void;
   onModeChange: (mode: "focus" | "all-changes") => void;
-  onOpenHistoryInNewTab: (selection: SourceControlHistorySelection) => void;
   onReviewPrevFile: () => void;
   onReviewNextFile: () => void;
   onCollapseAll: () => void;
@@ -66,11 +67,11 @@ export const SourceControlHeaderContent: React.FC<
   sourceControlHeaderLeadingSlot,
   sourceControlHeaderTrailingSlot,
   sourceControlRefreshSpinClass,
+  focusToolbarRef,
   diffViewMode,
   t,
   onDiffViewModeChange,
   onModeChange,
-  onOpenHistoryInNewTab,
   onReviewPrevFile,
   onReviewNextFile,
   onCollapseAll,
@@ -83,6 +84,8 @@ export const SourceControlHeaderContent: React.FC<
     | null
     | undefined;
   const isIssuesMode = sourceControlFilterMode === "issues";
+  const showHistoryDiff =
+    historySelection?.type === "commit" || historySelection?.type === "stash";
   const showModePill =
     showSourceControlModePill && !isIssuesMode && !historySelection;
   const sourceControlModeTabs = [
@@ -94,12 +97,11 @@ export const SourceControlHeaderContent: React.FC<
   ];
   const showCollapseAll =
     showModePill && mode === "all-changes" && !historySelection;
-  const showReviewNavigation =
-    showModePill &&
-    mode === "focus" &&
-    !historySelection &&
-    hasFocusPath &&
-    gitReviewNavigationTotal > 0;
+  const showReviewNavigation = showModePill && mode === "focus";
+  const showDetailToolbar =
+    showHistoryDiff || (showModePill && mode === "focus" && hasFocusPath);
+  const reviewNavigationDisabled =
+    !hasFocusPath || gitReviewNavigationTotal === 0;
   const showIssueHeader = isIssuesMode && selectedIssue;
   return (
     <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -164,28 +166,6 @@ export const SourceControlHeaderContent: React.FC<
             onClick={(e) => e.stopPropagation()}
           />
         )}
-        {historySelection &&
-          (historySelection.type === "commit" ||
-            historySelection.type === "stash") && (
-            <Button
-              htmlType="button"
-              variant="tertiary"
-              size="small"
-              iconOnly
-              className="shrink-0"
-              onClick={() => onOpenHistoryInNewTab(historySelection)}
-              title={t("common:actions.openInNewTab")}
-              aria-label={t("common:actions.openInNewTab")}
-              icon={
-                <HugeiconsIcon
-                  icon={LinkSquare02Icon}
-                  data-icon="link-square-02"
-                  size={HEADER_ICON_SIZE.sm}
-                />
-              }
-            />
-          )}
-
         {showReviewNavigation && (
           <>
             <Button
@@ -193,6 +173,7 @@ export const SourceControlHeaderContent: React.FC<
               variant="tertiary"
               size="small"
               iconOnly
+              disabled={reviewNavigationDisabled}
               onClick={onReviewPrevFile}
               title={t("common:actions.reviewPreviousFile")}
               aria-label={t("common:actions.reviewPreviousFile")}
@@ -211,6 +192,7 @@ export const SourceControlHeaderContent: React.FC<
               variant="tertiary"
               size="small"
               iconOnly
+              disabled={reviewNavigationDisabled}
               onClick={onReviewNextFile}
               title={t("common:actions.reviewNextFile")}
               aria-label={t("common:actions.reviewNextFile")}
@@ -229,16 +211,6 @@ export const SourceControlHeaderContent: React.FC<
 
         {showCollapseAll && (
           <>
-            <DiffViewModeToggle
-              viewMode={diffViewMode}
-              onChange={onDiffViewModeChange}
-              t={t}
-            />
-            <span
-              className="mx-1.5 h-4 w-px shrink-0 bg-border-2"
-              role="separator"
-              aria-hidden
-            />
             <Button
               htmlType="button"
               variant="tertiary"
@@ -256,6 +228,26 @@ export const SourceControlHeaderContent: React.FC<
               }
             />
           </>
+        )}
+        {(showReviewNavigation || showCollapseAll) && (
+          <span
+            className="mx-1.5 h-4 w-px shrink-0 bg-border-2"
+            role="separator"
+            aria-hidden
+          />
+        )}
+        <DiffViewModeToggle
+          viewMode={diffViewMode}
+          onChange={onDiffViewModeChange}
+          t={t}
+        />
+        {showDetailToolbar ? (
+          <span
+            ref={focusToolbarRef}
+            className="flex shrink-0 items-center gap-px"
+          />
+        ) : (
+          <SourceControlDiffSettingsMenu />
         )}
         <Button
           htmlType="button"

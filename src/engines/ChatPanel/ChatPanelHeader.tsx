@@ -27,6 +27,7 @@ import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPref
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { isWindows } from "@src/util/platform/tauri";
 
+import { LaunchpadSearchTrigger } from "./LaunchpadSearchTrigger";
 import { SessionHeaderActionsMenu } from "./components/SessionHeaderActionsMenu";
 import {
   CHAT_PANEL_HEADER_DRAG_STYLE,
@@ -104,6 +105,8 @@ interface ChatPanelHeaderProps {
   sessionHeaderExtras?: React.ReactNode;
   /** Canonical session-name breadcrumb rendered in the published 36px row. */
   sessionHeaderContent?: React.ReactNode;
+  /** Show the centered Spotlight entry on the fullscreen Launchpad. */
+  showLaunchpadSearch?: boolean;
   /** Let the GUI transcript scroll beneath the published session header. */
   overlayPublishedHeader?: boolean;
 }
@@ -156,6 +159,7 @@ export function ChatPanelHeader({
   sessionHeaderExtras,
   sessionHeaderContent,
   overlayPublishedHeader = false,
+  showLaunchpadSearch = false,
 }: ChatPanelHeaderProps): React.ReactNode {
   const publishedHeaderSlots = useAtomValue(chatPanelHeaderSlotsAtom);
   const windowsHost = isWindows();
@@ -346,6 +350,7 @@ export function ChatPanelHeader({
       style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}
       data-testid={collapsed ? "chat-panel-collapsed-tab-controls" : undefined}
     >
+      {showLaunchpadSearch && <LaunchpadSearchTrigger placement="trailing" />}
       {tabStripPlus}
       {chatFocusToggleButton}
     </div>
@@ -353,6 +358,9 @@ export function ChatPanelHeader({
 
   const publishedContent =
     publishedHeaderSlots?.content ?? sessionHeaderContent;
+  const launchpadSearch = showLaunchpadSearch ? (
+    <LaunchpadSearchTrigger />
+  ) : null;
   // While collapsed this row is the pane's only chrome, so it renders even for
   // a surface that publishes nothing — otherwise folding the tab row would
   // strip the new-tab, close, and restore controls with it.
@@ -369,7 +377,17 @@ export function ChatPanelHeader({
           leading: publishedHeaderSlots?.leading,
           content:
             publishedContent ??
-            (tabRowCollapsed ? <ChatPanelCollapsedTabHeading /> : undefined),
+            (tabRowCollapsed ? (
+              <div
+                className={
+                  showLaunchpadSearch
+                    ? "min-w-0 @[48rem]/launchpad-header:max-w-[30%]"
+                    : "min-w-0"
+                }
+              >
+                <ChatPanelCollapsedTabHeading />
+              </div>
+            ) : undefined),
           // Collapsed, this row stands in for the borderless tab row and is
           // the maximized pane's only chrome — a rule under it would be a
           // line the pane never had. Uncollapsed, the publisher decides.
@@ -422,7 +440,7 @@ export function ChatPanelHeader({
 
   const publishedHeaderRow = tabRowCollapsed ? (
     <div
-      className="workspace-header header-tab-group relative z-40 flex shrink-0 flex-col"
+      className="workspace-header header-tab-group @container/launchpad-header relative z-40 flex shrink-0 flex-col"
       data-testid="chat-panel-collapsed-header"
       data-tauri-drag-region={windowsHost ? undefined : true}
       onMouseDown={handleCollapsedHeaderMouseDown}
@@ -436,6 +454,7 @@ export function ChatPanelHeader({
       }
     >
       {collapsedSidebarChrome}
+      {launchpadSearch}
       <ChatPanelPublishedHeader
         slots={effectivePublishedHeaderSlots}
         windowsHost={windowsHost}
@@ -475,7 +494,7 @@ export function ChatPanelHeader({
           (HEADER_CONTENT_LEFT_PADDING_CLASS 15px + breadcrumb px-1 4px). */}
       {tabRowCollapsed ? null : (
         <div
-          className={`workspace-header header-tab-group z-40 flex h-11 min-h-11 items-center gap-1.5 pt-2 pl-1 ${CHAT_PANEL_HEADER_RIGHT_PADDING_CLASS} ${CHROME_INSET_TRANSITION_CLASSES} ${
+          className={`workspace-header header-tab-group @container/launchpad-header z-40 flex h-11 min-h-11 items-center gap-1.5 pt-2 pl-1 ${CHAT_PANEL_HEADER_RIGHT_PADDING_CLASS} ${CHROME_INSET_TRANSITION_CLASSES} ${
             overlayPublishedHeader
               ? "absolute top-0 right-0 left-0"
               : "relative shrink-0"
@@ -495,8 +514,15 @@ export function ChatPanelHeader({
           }
         >
           {collapsedSidebarChrome}
-          {tabStrip}
-          {renderTabControls(false)}
+          {showLaunchpadSearch ? (
+            <div className="flex min-w-0 flex-1 @[48rem]/launchpad-header:max-w-[30%]">
+              {tabStrip}
+            </div>
+          ) : (
+            tabStrip
+          )}
+          <div className="ml-auto shrink-0">{renderTabControls(false)}</div>
+          {launchpadSearch}
         </div>
       )}
       {overlayPublishedHeader && effectivePublishedHeaderSlots ? (

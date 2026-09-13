@@ -8,7 +8,7 @@
  *
  * Repo-agnostic: all state is owned by the caller (`useSourceControlSidebarModule`).
  */
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -19,7 +19,18 @@ import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip"
 import Select from "@src/components/Select";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
-import { EllipsisIcon, HugeiconsIcon, Refresh04Icon } from "@src/icons";
+import {
+  Archive03Icon,
+  CircleDotIcon,
+  EllipsisIcon,
+  FileDiffIcon,
+  GitCommitIcon,
+  GitPullRequestIcon,
+  HugeiconsIcon,
+  MinusSignIcon,
+  Refresh04Icon,
+  Tick01Icon,
+} from "@src/icons";
 import type { SourceControlFilterMode } from "@src/store/workstation/codeEditor/sourceControlTypes";
 
 export type { SourceControlFilterMode } from "@src/store/workstation/codeEditor/sourceControlTypes";
@@ -29,6 +40,20 @@ export interface SourceControlFilterCounts {
   unstaged: number;
   staged: number;
   stashed: number;
+}
+
+const FILTER_ICONS = {
+  uncommitted: FileDiffIcon,
+  unstaged: MinusSignIcon,
+  staged: Tick01Icon,
+  stashed: Archive03Icon,
+  history: GitCommitIcon,
+  pr: GitPullRequestIcon,
+  issues: CircleDotIcon,
+} as const;
+
+function filterIcon(mode: SourceControlFilterMode) {
+  return <HugeiconsIcon icon={FILTER_ICONS[mode]} size={HEADER_ICON_SIZE.sm} />;
 }
 
 interface FilterRowEntry {
@@ -105,14 +130,25 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
         [t]
       );
 
+      const hideStageFilters = counts?.staged === 0;
+      const stageModeHidden =
+        hideStageFilters && (mode === "staged" || mode === "unstaged");
+      useEffect(() => {
+        if (stageModeHidden) onChangeMode("uncommitted");
+      }, [stageModeHidden, onChangeMode]);
+
       const options = useMemo<DropdownOption[]>(() => {
-        const fileOptions = FILE_FILTER_ROWS.map((row) => {
+        const fileOptions = FILE_FILTER_ROWS.filter(
+          (row) =>
+            !hideStageFilters || (row.id !== "staged" && row.id !== "unstaged")
+        ).map((row) => {
           const label = t(row.labelKey);
           const count = getModeCount(row.id);
           const triggerLabel =
             typeof count === "number" ? getCountLabel(count, label) : label;
           return {
             value: row.id,
+            icon: filterIcon(row.id),
             label: <span className="whitespace-nowrap">{triggerLabel}</span>,
             triggerLabel,
           };
@@ -122,6 +158,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
           ...fileOptions,
           {
             value: "history",
+            icon: filterIcon("history"),
             label: (
               <span className="whitespace-nowrap">
                 {t("common:labels.gitHistory")}
@@ -131,6 +168,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
           },
           {
             value: "pr",
+            icon: filterIcon("pr"),
             label: (
               <span className="whitespace-nowrap">
                 {t("common:labels.pullRequest", "Pull request")}
@@ -140,6 +178,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
           },
           {
             value: "issues",
+            icon: filterIcon("issues"),
             label: (
               <span className="whitespace-nowrap">
                 {t("common:labels.issues", "Issues")}
@@ -148,7 +187,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
             triggerLabel: t("common:labels.issues", "Issues"),
           },
         ];
-      }, [getCountLabel, getModeCount, t]);
+      }, [getCountLabel, getModeCount, hideStageFilters, t]);
 
       const [moreMenuVisible, setMoreMenuVisible] = useState(false);
 
@@ -170,9 +209,10 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
       return (
         <div className="flex flex-none items-center gap-1 overflow-visible">
           <Select
-            value={mode}
+            value={stageModeHidden ? "uncommitted" : mode}
             onChange={handleSelect}
             options={options}
+            showTriggerIcon={false}
             size="small"
             appearance="ghost"
             radius="lg"
@@ -184,8 +224,10 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
             <Dropdown
               droplist={
                 <div className={DROPDOWN_CLASSES.menuPanel}>
-                  <button
-                    type="button"
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    htmlType="button"
                     onClick={handleRefreshMenuClick}
                     className={DROPDOWN_CLASSES.menuActionItem}
                   >
@@ -198,7 +240,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                     <span>
                       {t("controlTower.diff.refresh", "Refresh Git status")}
                     </span>
-                  </button>
+                  </Button>
                 </div>
               }
               position="bottom-end"

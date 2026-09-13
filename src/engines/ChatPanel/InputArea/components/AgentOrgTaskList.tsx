@@ -221,8 +221,10 @@ function AgentOrgTaskSubject({
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className={`chat-block-title flex min-w-0 flex-1 items-start gap-1 text-left text-sm leading-5 text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${done ? "text-text-3! line-through" : ""}`}
       title={task.description || task.subject}
       aria-expanded={expanded}
@@ -254,7 +256,7 @@ function AgentOrgTaskSubject({
           className="mt-0.5 shrink-0 text-text-3"
         />
       )}
-    </button>
+    </Button>
   );
 }
 
@@ -617,29 +619,34 @@ export const AgentOrgTaskList: React.FC<AgentOrgTaskListProps> = memo(
                 </div>
               )}
               {terminal && currentSessionId && (
-                <button
-                  type="button"
-                  className="mt-2 inline-flex items-center gap-1 text-[10px] text-text-2 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
+                <Button
+                  variant="tertiary"
+                  appearance="ghost"
+                  size="inline"
+                  htmlType="button"
+                  className="mt-2 gap-1 text-[10px] hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
                   aria-expanded={expandedTaskId === task.id}
                   onClick={() => void toggleDetail(task)}
                   data-testid="agent-org-task-detail-toggle"
+                  icon={
+                    <HugeiconsIcon
+                      icon={
+                        expandedTaskId === task.id
+                          ? ArrowDown01Icon
+                          : ArrowRight01Icon
+                      }
+                      data-icon={
+                        expandedTaskId === task.id
+                          ? "chevron-down"
+                          : "chevron-right"
+                      }
+                      size={11}
+                      strokeWidth={2}
+                    />
+                  }
                 >
-                  <HugeiconsIcon
-                    icon={
-                      expandedTaskId === task.id
-                        ? ArrowDown01Icon
-                        : ArrowRight01Icon
-                    }
-                    data-icon={
-                      expandedTaskId === task.id
-                        ? "chevron-down"
-                        : "chevron-right"
-                    }
-                    size={11}
-                    strokeWidth={2}
-                  />
                   {t("planner.agentOrgTasks.details")}
-                </button>
+                </Button>
               )}
               {expandedTaskId === task.id && terminal && (
                 <div
@@ -704,15 +711,18 @@ export const AgentOrgTaskList: React.FC<AgentOrgTaskListProps> = memo(
                         )
                       )}
                       {annotationPages[task.id].hasMore && (
-                        <button
-                          type="button"
-                          className="text-primary-6 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none disabled:opacity-40"
+                        <Button
+                          variant="primary"
+                          appearance="ghost"
+                          size="inline"
+                          htmlType="button"
+                          className="focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none disabled:opacity-40"
                           disabled={annotationLoadingTaskId === task.id}
                           onClick={() => void loadMoreAnnotations(task.id)}
                           data-testid="agent-org-task-annotations-load-more"
                         >
                           {t("planner.agentOrgTasks.loadMoreAnnotations")}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   )}

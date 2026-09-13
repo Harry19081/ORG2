@@ -252,9 +252,6 @@ export function normalizeMarkdownReferencePills(text: string): string {
   );
 }
 
-/** Backward-compatible name for the first URL-only normalization pass. */
-export const normalizeMarkdownUrlPills = normalizeMarkdownReferencePills;
-
 /**
  * Extract the first fenced code block from text.
  * Returns the content between ``` markers, or undefined if none found.
@@ -380,17 +377,4 @@ export function parseUserMessage(text: string): Segment[] {
   return parseNormalizedUserMessage(
     normalizeMarkdownReferencePills(normalizeUserMessageText(text))
   );
-}
-
-/**
- * Extract the bare session id from a serialized session pill path.
- * Current serialization stores the bare id (`[session:sdeagent-…]`);
- * legacy messages may carry `session://<id>/<ts>` (optionally with an
- * inline `::base64` suffix).
- */
-export function sessionIdFromPillPath(path: string): string {
-  const withoutScheme = path.startsWith("session://")
-    ? path.slice("session://".length)
-    : path;
-  return withoutScheme.split("::")[0].split("/")[0];
 }

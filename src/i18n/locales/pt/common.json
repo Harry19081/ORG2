@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "Contém arquivos: {{status}}",
+    "staged": "{{status}} (preparado)",
+    "additions": "Linhas adicionadas",
+    "deletions": "Linhas removidas",
+    "M": "Modificado",
+    "U": "Não rastreado",
+    "A": "Adicionado",
+    "D": "Removido",
+    "R": "Renomeado",
+    "C": "Conflito",
+    "I": "Ignorado",
+    "?": "Estado desconhecido"
+  },
+  "findScope": {
+    "session": "Pesquisar na sessão",
+    "file": "Pesquisar no arquivo",
+    "named": "Pesquisar em {{name}}"
+  },
   "teamInbox": {
     "title": "Caixa de entrada da equipe",
     "listLabel": "Lista da caixa de entrada da equipe",
@@ -188,7 +207,7 @@
       "aria": "Menu {{label}}"
     },
     "items": {
-      "quitOrg2": "Sair do ORG-2",
+      "quitOrg2": "Sair do ORG2",
       "newSession": "Nova sessão",
       "openFolder": "Abrir pasta...",
       "addFolderToWorkspace": "Adicionar pasta ao espaço de trabalho...",
@@ -223,12 +242,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "A resposta não pode estar vazia",
-    "sessionNotFound": "Sessão não encontrada",
-    "answerSubmitted": "Resposta enviada com sucesso",
-    "answerFailed": "Falha ao enviar a resposta. Tente novamente.",
-    "replyError": "Ocorreu um erro ao enviar a resposta",
-    "questionIgnored": "Pergunta ignorada",
     "addedAsContext": "{{name}} adicionado como contexto",
     "addedFilesAsContext": "{{count}} arquivo(s) adicionado(s) como contexto",
     "chooseExecutionAgentAi": "Escolha um agente responsável antes de criar com IA.",
@@ -296,8 +309,8 @@
     "save": "Salvar",
     "cancel": "Cancelar",
     "delete": "Excluir",
-    "removeFromOrgii": "Remover da ORGII",
-    "removeFromOrgiiCount": "Remover da ORGII ({{count}})",
+    "removeFromOrgii": "Remover da ORG2",
+    "removeFromOrgiiCount": "Remover da ORG2 ({{count}})",
     "edit": "Editar",
     "write": "Escrever",
     "close": "Fechar",
@@ -477,6 +490,7 @@
   },
   "optional": "opcional",
   "common": {
+    "display": "Exibição",
     "on": "Ligado",
     "off": "Desligado",
     "default": "Padrão",
@@ -513,6 +527,9 @@
     "source": "Origem"
   },
   "labels": {
+    "stashesCount": "{{count}} stashes",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stashes",
     "accounts": "Contas",
     "enabled": "Ativado",
     "disabled": "Desativado",
@@ -558,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Log de operações",
     "gitDashboard": "Painel",
-    "changedFiles": "Arquivos alterados",
+    "changedFilesCount": "{{fileCount}} arquivos alterados",
+    "changedFilesCount_one": "{{fileCount}} arquivo alterado",
+    "changedFilesCount_other": "{{fileCount}} arquivos alterados",
     "colorTokens": "Tokens de cor",
     "terminalInfo": "Informações do terminal",
     "fileCount_one": "{{count}} arquivo",
@@ -689,42 +708,9 @@
     "technicalDetails": "Detalhes técnicos",
     "failedToCopy": "Falha ao copiar",
     "api": {
-      "titles": {
-        "githubConnections": "Não foi possível carregar conexões do GitHub",
-        "githubConnect": "Não foi possível conectar ao GitHub",
-        "workflows": "Não foi possível carregar workflows",
-        "config": "Não foi possível carregar as configurações",
-        "agent": "Não foi possível contatar o Agent",
-        "repository": "Não foi possível carregar o Repo",
-        "file": "Não foi possível carregar o arquivo",
-        "mcp": "Erro do servidor MCP",
-        "extension": "Erro da extensão do editor de código",
-        "workspace": "Não foi possível carregar o Workspace",
-        "slackConnections": "Não foi possível carregar conexões do Slack",
-        "wallet": "Não foi possível carregar a carteira",
-        "billing": "Não foi possível concluir a operação de cobrança",
-        "default": "Não foi possível carregar os dados",
-        "timeout": "A requisição demorou demais",
-        "external": "Não foi possível carregar dados externos"
-      },
       "messages": {
-        "network": "Verifique sua conexão e tente novamente.",
-        "timeout": "A requisição demorou demais. Tente novamente.",
-        "server": "Algo deu errado do nosso lado. Tente novamente em alguns minutos.",
-        "notFound": "Este item não foi encontrado.",
-        "signIn": "Faça login novamente.",
-        "forbidden": "Você não tem permissão para esta ação.",
-        "tooManyRequests": "Muitas requisições. Aguarde um momento e tente novamente.",
-        "validation": "Dados inválidos. Verifique sua entrada.",
-        "conflict": "Conflito detectado. O recurso pode ter sido modificado.",
-        "badGateway": "O servidor está inacessível. Tente novamente mais tarde.",
-        "serviceUnavailable": "Serviço temporariamente indisponível. Tente novamente mais tarde.",
-        "gatewayTimeout": "O servidor não está respondendo. Tente novamente mais tarde.",
-        "invalidRequest": "Requisição inválida. Tente novamente.",
-        "default": "Tente novamente.",
-        "externalHint": "Verifique a URL e as configurações e tente novamente."
-      },
-      "workflow": "O serviço de workflow está temporariamente indisponível. Tente novamente mais tarde."
+        "signIn": "Faça login novamente."
+      }
     },
     "unknownError": "Ocorreu um erro desconhecido",
     "componentLoadingFailed": "Falha ao carregar o componente",
@@ -733,12 +719,12 @@
   },
   "confirmation": {
     "delete": "Tem certeza de que deseja excluir isto?",
-    "removeTitle": "Remover \"{{name}}\" do ORGII?",
-    "removeMessage": "Isto apenas remove o vínculo com o ORGII. Nada será removido do disco.",
+    "removeTitle": "Remover \"{{name}}\" do ORG2?",
+    "removeMessage": "Isto apenas remove o vínculo com o ORG2. Nada será removido do disco.",
     "deleteWorkspaceTitle": "Excluir Workspace \"{{name}}\"?",
     "deleteWorkspaceMessage": "Isto exclui apenas o preset do Workspace. Os Repos e pastas membros não são afetados.",
-    "deleteSelectedTitle": "Remover {{count}} itens selecionados do ORGII?",
-    "deleteSelectedMessage": "Isto apenas remove o vínculo deles com o ORGII. Nada será removido do disco.",
+    "deleteSelectedTitle": "Remover {{count}} itens selecionados do ORG2?",
+    "deleteSelectedMessage": "Isto apenas remove o vínculo deles com o ORG2. Nada será removido do disco.",
     "dropStashTitle": "Descartar stash?",
     "dropStashMessage": "Isto excluirá permanentemente {{stashRef}}. Esta ação não pode ser desfeita.",
     "popAllStashesTitle": "Aplicar e remover todos os stashes?",
@@ -780,7 +766,9 @@
     "previous": "Anterior",
     "next": "Próximo",
     "previousMatch": "Correspondência anterior (Shift+Enter)",
+    "previousMatchLabel": "Correspondência anterior",
     "nextMatch": "Próxima correspondência (Enter)",
+    "nextMatchLabel": "Próxima correspondência",
     "clearSearch": "Limpar pesquisa",
     "openInEditorTab": "Abrir em aba do editor",
     "openFile": "Abrir arquivo",
@@ -807,11 +795,16 @@
     "goForward": "Avançar",
     "goToToday": "Ir para hoje",
     "matchCase": "Diferenciar maiúsculas/minúsculas (Alt+C)",
+    "matchCaseLabel": "Diferenciar maiúsculas/minúsculas",
     "matchWholeWord": "Palavra inteira (Alt+W)",
+    "matchWholeWordLabel": "Palavra inteira",
     "useRegex": "Usar expressão regular (Alt+R)",
+    "useRegexLabel": "Usar expressão regular",
     "searchInOpenEditors": "Pesquisar somente nos editores abertos",
     "replace": "Substituir (Ctrl+Shift+1)",
+    "replaceLabel": "Substituir",
     "replaceAll": "Substituir tudo (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Substituir tudo",
     "moreActions": "Mais ações...",
     "formatSql": "Formatar SQL (prettify)",
     "queryHistory": "Histórico de consultas",
@@ -1026,6 +1019,7 @@
     "nLines": "{{count}} linhas",
     "switchToTreeView": "Alternar para visualização em árvore",
     "switchToListView": "Alternar para visualização em lista",
+    "switchToGraphView": "Mudar para visualização de grafo",
     "discardChanges": "Descartar alterações",
     "toOrigin": "para origin",
     "discardChangesConfirm": "Descartar alterações em {{files}}? Esta ação não pode ser desfeita.",
@@ -1866,11 +1860,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Vínculo com o ORG2 removido",
+        "repoRemoveFailed": "Não foi possível remover o vínculo com o ORG2",
+        "workspaceRemoved": "Vínculo com o ORG2 removido",
+        "workspaceRemoveFailed": "Não foi possível remover o vínculo com o ORG2",
+        "bulkDeleted": "Vínculos com o ORG2 removidos: {{count}}",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -1947,6 +1941,20 @@
     "title": "Sessões"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "Ver alterações",
+      "openFileInNewTab": "Abrir arquivo em nova aba",
+      "stageChanges": "Preparar alterações",
+      "unstageChanges": "Retirar alterações da preparação",
+      "discardChanges": "Descartar alterações",
+      "markResolved": "Marcar como resolvido (preparar)",
+      "acceptCurrent": "Aceitar alterações atuais (nossas)",
+      "acceptIncoming": "Aceitar alterações recebidas (deles)",
+      "stageChangesCount": "Preparar alterações ({{count}})",
+      "unstageChangesCount": "Retirar alterações da preparação ({{count}})",
+      "discardChangesCount": "Descartar alterações ({{count}})",
+      "markResolvedCount": "Marcar como resolvido ({{count}})"
+    },
     "notGitInitialized": "Git não inicializado",
     "notGitInitializedSubtitle": "Inicialize o Git para acompanhar alterações, criar commits e usar ferramentas de branch neste diretório de trabalho.",
     "initializeGit": "Inicializar Git",
@@ -2076,22 +2084,7 @@
     "database": "Banco de dados",
     "user": "Usuário",
     "password": "Senha",
-    "ssl": "Exigir SSL",
-    "spotlight": {
-      "scanFolder": "Varrer pasta",
-      "scanFolderDesc": "Encontrar todos os arquivos .sqlite e .db em uma pasta",
-      "openFile": "Abrir arquivo",
-      "openFileDesc": "Selecionar um arquivo de banco de dados específico",
-      "enterPath": "Inserir caminho",
-      "enterPathDesc": "Digite um caminho de arquivo ou pasta diretamente",
-      "placeholderSelect": "Adicionar banco de dados por...",
-      "placeholderPath": "~/data ou /caminho/para/banco.db",
-      "pickerFolderTitle": "Selecione a pasta para varrer",
-      "pickerFileTitle": "Selecione o arquivo de banco de dados",
-      "pickerSqliteName": "Banco de dados SQLite",
-      "pickerAllFiles": "Todos os arquivos",
-      "pickerError": "Falha ao abrir o seletor"
-    }
+    "ssl": "Exigir SSL"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Não foi possível extrair o caminho do arquivo do item solto"
@@ -2149,15 +2142,14 @@
     "sidebar": {
       "newTab": "Nova aba",
       "newPrivateTab": "Nova aba privada",
-      "newTerminal": "Novo terminal",
-      "untitled": "Sem título"
+      "newTerminal": "Novo terminal"
     },
     "statusBar": {}
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "Sair do ORG-2?",
-    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORG-2 mais tarde.",
+    "title": "Sair do ORG2?",
+    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORG2 mais tarde.",
     "cancel": "Cancelar",
     "confirm": "Sair"
   },
@@ -2187,7 +2179,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "O Safari guarda os cookies em uma pasta protegida pelo macOS. Permita o ORG2 em Acesso Total ao Disco nos Ajustes do Sistema e verifique novamente.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2235,7 +2227,8 @@
     "taskCompletedBody": "“{{name}}” concluída — pronta para revisão",
     "openSessionAction": "Abrir sessão",
     "taskFailedTitle": "Tarefa falhou",
-    "taskFailedBody": "“{{name}}” falhou{{detail}}"
+    "taskFailedBody": "“{{name}}” falhou{{detail}}",
+    "taskFailedPrivateBody": "Uma tarefa falhou. Abra o ORG2 para ver os detalhes."
   },
   "documentOpen": {
     "openInDefault": "Abrir em {{name}}",
@@ -2275,5 +2268,12 @@
     "goToSection": "Ir para {{label}}, seção {{current}} de {{total}}",
     "section": "Seção {{current}}",
     "sectionPosition": "Seção {{current}} de {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Esta é uma notificação de teste do ORG2",
+    "workspaceFile": "Espaço de trabalho do ORG2",
+    "sessionJsonFile": "Sessão do ORG2 em JSON",
+    "skillsSource": "Habilidades do ORG2",
+    "gitServiceUnavailable": "Não foi possível acessar o serviço Git local. Tente novamente após a inicialização do aplicativo ou reinicie o ORG2 se o problema persistir."
   }
 }

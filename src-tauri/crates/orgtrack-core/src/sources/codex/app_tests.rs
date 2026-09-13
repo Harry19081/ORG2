@@ -3045,3 +3045,179 @@ fn codex_question_receipts_replay_with_ordered_answers() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[cfg(unix)]
+#[test]
+fn discovery_survives_dangling_profile_symlinks_and_dedupes_live_ones() {
+    let temp = std::env::temp_dir().join(format!(
+        "orgii-codex-discovery-symlinks-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let native = temp.join("native").join("sessions").join("2026").join("08").join("28");
+    let profile = temp.join("profile").join("sessions").join("2026").join("08").join("28");
+    std::fs::create_dir_all(&native).unwrap();
+    std::fs::create_dir_all(&profile).unwrap();
+    let stem = "rollout-2026-08-28T17-12-59-0236a8cf-8dbb-4c52-9555-f5f54438ceb1";
+    let real = native.join(format!("{stem}.jsonl"));
+    std::fs::write(
+        &real,
+        concat!(
+            r#"{"timestamp":"2026-08-28T17:12:59Z","type":"session_meta","payload":{"id":"0236a8cf-8dbb-4c52-9555-f5f54438ceb1","originator":"Codex Desktop","cwd":"/tmp/project"}}"#,
+            "\n",
+            r#"{"timestamp":"2026-08-28T17:13:00Z","type":"event_msg","payload":{"type":"user_message","message":"hello"}}"#,
+            "\n"
+        ),
+    )
+    .unwrap();
+    std::os::unix::fs::symlink(&real, profile.join(format!("{stem}.jsonl"))).unwrap();
+    std::os::unix::fs::symlink(
+        temp.join("gone").join("rollout-2026-08-28T17-17-01-5787846d-f20d-4c89-b2cd-a755414c2500.jsonl"),
+        profile.join("rollout-2026-08-28T17-17-01-5787846d-f20d-4c89-b2cd-a755414c2500.jsonl"),
+    )
+    .unwrap();
+
+    let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_tables(&conn).unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_source_cache_tables(&conn).unwrap();
+    let dirs = [
+        temp.join("native").join("sessions"),
+        temp.join("profile").join("sessions"),
+    ];
+    for _ in 0..2 {
+        index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
+        let rows: Vec<(String, String)> = conn
+            .prepare(
+                "SELECT source_session_id, source_path FROM imported_history_session_cache
+                 WHERE source = 'codex_app' ORDER BY source_session_id",
+            )
+            .unwrap()
+            .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))
+            .unwrap()
+            .collect::<Result<_, _>>()
+            .unwrap();
+        assert_eq!(
+            rows,
+            vec![(stem.to_string(), real.to_string_lossy().to_string())],
+            "one row for the real rollout; the dangling link is skipped"
+        );
+    }
+    let before = conn.total_changes();
+    index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
+    assert_eq!(
+        conn.total_changes(),
+        before,
+        "a rescan over the same symlinked rollout must not rewrite the row"
+    );
+    std::fs::remove_dir_all(&temp).unwrap();
+}
+
+#[test]
+fn discovery_keeps_the_first_file_when_two_roots_hold_the_same_stem() {
+    let temp = std::env::temp_dir().join(format!(
+        "orgii-codex-discovery-dup-stem-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let native = temp.join("native").join("sessions").join("2026").join("08").join("27");
+    let profile = temp.join("profile").join("sessions").join("2026").join("08").join("27");
+    std::fs::create_dir_all(&native).unwrap();
+    std::fs::create_dir_all(&profile).unwrap();
+    let stem = "rollout-2026-08-27T11-15-00-7a1d349c-0b12-49ce-844d-d03d204e15a0";
+    // The same session materialized into two roots as two diverged copies.
+    let header = r#"{"timestamp":"2026-08-27T11:15:00Z","type":"session_meta","payload":{"id":"7a1d349c-0b12-49ce-844d-d03d204e15a0","originator":"codex_cli_rs","cwd":"/tmp/project"}}"#;
+    let user = |text: &str| {
+        serde_json::json!({"timestamp":"2026-08-27T11:15:01Z","type":"event_msg","payload":{"type":"user_message","message":text}})
+    };
+    std::fs::write(
+        native.join(format!("{stem}.jsonl")),
+        format!("{header}\n{}\n", user("native copy")),
+    )
+    .unwrap();
+    std::fs::write(
+        profile.join(format!("{stem}.jsonl")),
+        format!("{header}\n{}\n", user("profile copy, longer")),
+    )
+    .unwrap();
+    let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_tables(&conn).unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_source_cache_tables(&conn).unwrap();
+    let dirs = [
+        temp.join("native").join("sessions"),
+        temp.join("profile").join("sessions"),
+    ];
+    index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
+    let path: String = conn
+        .query_row(
+            "SELECT source_path FROM imported_history_session_cache WHERE source='codex_app' AND source_session_id = ?1",
+            [stem],
+            |row| row.get(0),
+        )
+        .unwrap();
+    assert_eq!(
+        std::path::PathBuf::from(&path),
+        native.join(format!("{stem}.jsonl")),
+        "the first enumerated root must win"
+    );
+    for _ in 0..3 {
+        let before = conn.total_changes();
+        index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
+        assert_eq!(
+            conn.total_changes(),
+            before,
+            "a rescan must not let the second copy take the row over"
+        );
+    }
+    std::fs::remove_dir_all(&temp).unwrap();
+}
+
+#[test]
+fn native_function_calls_with_response_ids_still_normalize() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-native-ids-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(&temp_dir).unwrap();
+    let path = temp_dir.join("rollout-2026-09-10T22-20-46-01a08ee9-424a-7261-b262-5bb2b0cbbb35.jsonl");
+    // Shapes copied from a Codex Desktop 0.153.4 rollout: every native
+    // function call carries an `fc_…` response-item id.
+    let spawn_args = json!({"task_name":"resend_probe","fork_turns":"none","message":"Reply DONE"}).to_string();
+    let shell_args = json!({"command":["bash","-lc","ls"],"workdir":"/tmp"}).to_string();
+    let content = format!(
+        "{}\n{}\n{}\n{}\n{}\n",
+        json!({"timestamp":"2026-09-11T05:20:46Z","type":"session_meta","payload":{"id":"01a08ee9-424a-7261-b262-5bb2b0cbbb35","originator":"Codex Desktop","cwd":"/tmp/project"}}),
+        json!({"timestamp":"2026-09-11T05:20:47Z","type":"event_msg","payload":{"type":"user_message","message":"probe"}}),
+        json!({"timestamp":"2026-09-11T05:20:48Z","type":"response_item","payload":{"type":"function_call","id":"fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f5","name":"spawn_agent","namespace":"collaboration","arguments":spawn_args,"call_id":"call_spawn"}}),
+        json!({"timestamp":"2026-09-11T05:20:49Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call_spawn","output":"{\"task_name\":\"/root/resend_probe\"}"}}),
+        json!({"timestamp":"2026-09-11T05:20:50Z","type":"response_item","payload":{"type":"function_call","id":"fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f6","name":"shell","arguments":shell_args,"call_id":"call_shell"}}),
+    );
+    std::fs::write(&path, content).unwrap();
+    let chunks = load_codex_app_from_path("codexapp-native-ids", &path).unwrap();
+    let spawn = chunks
+        .iter()
+        .find(|chunk| chunk.function == "subagent")
+        .expect("native spawn_agent with a response id must normalize to subagent");
+    assert_eq!(spawn.args["task_name"], "resend_probe");
+    assert_eq!(
+        spawn.args["__orgiiSourceEventId"],
+        "fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f5"
+    );
+    let shell = chunks
+        .iter()
+        .find(|chunk| chunk.function == imported_history::FUNCTION_RUN_COMMAND_LINE)
+        .expect("native shell with a response id must normalize to run_command_line");
+    assert_eq!(shell.args["command"], "ls", "argv-form command must survive normalization");
+    assert_eq!(shell.args["cwd"], "/tmp");
+    assert!(chunks.iter().all(|chunk| chunk.function != "spawn_agent" && chunk.function != "shell"));
+    std::fs::remove_dir_all(&temp_dir).unwrap();
+}

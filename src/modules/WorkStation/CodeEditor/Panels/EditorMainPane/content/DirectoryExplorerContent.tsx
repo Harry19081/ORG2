@@ -9,6 +9,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
 
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { Placeholder } from "@src/components/Placeholder";
 import { ComposerStackListRow } from "@src/engines/ChatPanel/blocks/primitives";
@@ -211,8 +212,10 @@ const DirectoryExplorerContent: React.FC<DirectoryExplorerContentProps> = memo(
           : undefined;
 
         return (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             className="block w-full text-left"
             onClick={() => handleOpenItem(item)}
           >
@@ -240,7 +243,7 @@ const DirectoryExplorerContent: React.FC<DirectoryExplorerContentProps> = memo(
               layout="columns"
               columnsClassName="grid-cols-[minmax(180px,1fr)_minmax(280px,2fr)_120px]"
             />
-          </button>
+          </Button>
         );
       },
       [handleOpenItem]

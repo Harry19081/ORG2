@@ -61,7 +61,7 @@ function defineThemeAction(
 const themeSetSystem = defineThemeAction(
   ACTION_ID.THEME_SET_SYSTEM,
   THEME_PREFERENCE.SYSTEM,
-  "Switch ORGII to follow the system theme",
+  "Switch ORG2 to follow the system theme",
   "System theme enabled",
   ["follow system theme", "use system theme", "sync theme with system"]
 );
@@ -69,7 +69,7 @@ const themeSetSystem = defineThemeAction(
 const themeSetLight = defineThemeAction(
   ACTION_ID.THEME_SET_LIGHT,
   "light",
-  "Switch ORGII to the light theme",
+  "Switch ORG2 to the light theme",
   "Light theme enabled",
   ["use light theme", "switch to light mode", "turn off dark mode"]
 );
@@ -77,7 +77,7 @@ const themeSetLight = defineThemeAction(
 const themeSetDark = defineThemeAction(
   ACTION_ID.THEME_SET_DARK,
   "dark",
-  "Switch ORGII to the dark theme",
+  "Switch ORG2 to the dark theme",
   "Dark theme enabled",
   ["use dark theme", "switch to dark mode", "turn on dark mode"]
 );

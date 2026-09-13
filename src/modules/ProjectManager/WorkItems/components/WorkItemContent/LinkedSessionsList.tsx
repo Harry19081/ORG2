@@ -8,6 +8,7 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { WorkItemOriginSession } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import { HugeiconsIcon, RotateLeft01Icon } from "@src/icons";
 import {
   formatTokensShort,
@@ -116,9 +117,12 @@ export const LinkedSessionsList: React.FC<LinkedSessionsListProps> = ({
         testId: `work-item-linked-session-${session.session_id}`,
         rowAction:
           session.status === "failed" && shortId ? (
-            <button
-              type="button"
-              className="flex cursor-pointer items-center gap-1 rounded-md px-1.5 py-1 text-[11px] text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+            <Button
+              variant="tertiary"
+              appearance="ghost"
+              size="mini"
+              htmlType="button"
+              className="gap-1 text-[11px] hover:bg-fill-2 hover:text-text-1"
               onClick={() => {
                 retryFailedLinkedSession({
                   projectSlug,
@@ -130,14 +134,16 @@ export const LinkedSessionsList: React.FC<LinkedSessionsListProps> = ({
               }}
               aria-label={t("common:actions.retry")}
               data-testid={`work-item-session-retry-${session.session_id}`}
+              icon={
+                <HugeiconsIcon
+                  icon={RotateLeft01Icon}
+                  data-icon="rotate-ccw"
+                  size={12}
+                />
+              }
             >
-              <HugeiconsIcon
-                icon={RotateLeft01Icon}
-                data-icon="rotate-ccw"
-                size={12}
-              />
               {t("common:actions.retry")}
-            </button>
+            </Button>
           ) : undefined,
       };
     });

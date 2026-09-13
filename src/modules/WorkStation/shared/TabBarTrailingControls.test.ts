@@ -13,7 +13,19 @@ import { perAppStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/st
 import { TabBarBottomPanelToggle } from "./TabBarTrailingControls";
 
 vi.mock("@src/components/Tooltip", () => ({
-  default: ({ children }: { children: React.ReactNode }) => children,
+  default: ({
+    children,
+    content,
+  }: {
+    children: React.ReactNode;
+    content: React.ReactNode;
+  }) =>
+    createElement(
+      "div",
+      null,
+      children,
+      createElement("span", { "data-testid": "tooltip-content" }, content)
+    ),
 }));
 
 describe("TabBarBottomPanelToggle", () => {
@@ -52,7 +64,12 @@ describe("TabBarBottomPanelToggle", () => {
       )
     );
 
-    expect(markup).toContain('title="Show bottom panel"');
+    expect(markup).not.toContain('title="Show bottom panel"');
+    const host = document.createElement("div");
+    host.innerHTML = markup;
+    expect(
+      host.querySelector('[data-testid="tooltip-content"]')?.textContent
+    ).toBe("Show bottom panel");
     expect(markup).toContain('aria-label="Show bottom panel"');
     expect(markup).not.toContain("titleBar.showBottomPanel");
   });

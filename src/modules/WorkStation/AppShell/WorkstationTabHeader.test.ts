@@ -119,7 +119,8 @@ describe("WorkstationTabHeader", () => {
     );
 
     expect(markup).toContain("Work Items");
-    expect(markup).toContain("pl-0");
+    expect(markup).not.toContain("pl-1.5");
+    expect(markup).not.toContain("pl-0");
     expect(markup).not.toContain('data-icon="list"');
   });
 
@@ -139,7 +140,7 @@ describe("WorkstationTabHeader", () => {
     );
 
     expect(markup).toContain("develop");
-    expect(markup).toContain("pl-0");
+    expect(markup).not.toContain("pl-0");
     expect(markup).not.toContain("pl-2");
     expect(markup).not.toContain("pl-[15px]");
   });
