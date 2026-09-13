@@ -168,7 +168,6 @@ const LinkHoverCardContent: React.FC<LinkHoverCardContentProps> = ({
               icon={Copy01Icon}
               data-icon="copy"
               size={HOVER_CARD.iconSize}
-              strokeWidth={HOVER_CARD.iconStrokeWidth}
             />
           }
           iconOnly
