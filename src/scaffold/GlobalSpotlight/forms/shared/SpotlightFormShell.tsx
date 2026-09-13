@@ -45,4 +45,6 @@ interface SpotlightFormBodyProps {
  */
 export const SpotlightFormBody: React.FC<SpotlightFormBodyProps> = ({
   children,
-}) => <div className="p-3">{children}</div>;
+}) => (
+  <div className={SPOTLIGHT_MODAL_FORM_TOKENS.bodyClassName}>{children}</div>
+);

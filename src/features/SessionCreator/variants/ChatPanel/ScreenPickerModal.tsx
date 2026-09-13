@@ -32,7 +32,7 @@ const ScreenPickerModal: React.FC<ScreenPickerModalProps> = memo(
         width={460}
         footer={null}
       >
-        <div className="p-4">
+        <div>
           <div className="grid grid-cols-2 gap-[12px]">
             {monitors.map((m) => {
               // Approximate aspect ratio of the real screen so the tile

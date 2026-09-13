@@ -106,7 +106,7 @@ const RevertConfirmDialog: React.FC = () => {
         </div>
       }
     >
-      <div className="text-token-secondary px-4 pb-3 text-sm">
+      <div className="text-token-secondary text-sm">
         {t(
           "revertConfirm.body",
           "The agent made file changes since this message. What would you like to do with those changes?"

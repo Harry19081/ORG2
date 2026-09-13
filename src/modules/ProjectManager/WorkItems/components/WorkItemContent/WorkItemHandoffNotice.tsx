@@ -167,7 +167,7 @@ const WorkItemHandoffNotice: React.FC<WorkItemHandoffNoticeProps> = ({
         maskClosable={responding !== "return"}
         escToExit={responding !== "return"}
       >
-        <div className="flex flex-col gap-2 p-4">
+        <div className="flex flex-col gap-2">
           <p className="text-xs leading-5 text-text-3">
             {t("teamInbox.handoff.returnHint", {
               name: handoff.senderName,
