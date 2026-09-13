@@ -93,7 +93,11 @@ pub fn should_extract(
         return false;
     }
 
-    let token_growth = current_tokens.saturating_sub(state.tokens_at_last_extraction);
+    // Restored/compacted summaries establish a durable baseline before gating.
+    if state.initialized && state.tokens_at_last_extraction.is_none() {
+        return false;
+    }
+    let token_growth = current_tokens.saturating_sub(state.tokens_at_last_extraction.unwrap_or(0));
     if token_growth < config.min_tokens_between_update {
         return false;
     }

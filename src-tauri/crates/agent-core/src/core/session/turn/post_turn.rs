@@ -266,6 +266,36 @@ fn session_memory_job(input: SessionMemoryExtractionInput<'_>) -> MemoryJob {
     })
 }
 
+/// Complete the persisted baseline before evaluating extraction growth.
+/// Normally this is only an in-memory check; a write is needed after restore
+/// without a baseline, explicit compaction, or a lower observed context size.
+pub(super) async fn prepare_session_memory_baseline(
+    session_id: &str,
+    state: Arc<Mutex<SessionMemoryState>>,
+    current_tokens: usize,
+) -> bool {
+    {
+        let current = state.lock().await;
+        if !current.initialized
+            || current
+                .tokens_at_last_extraction
+                .is_some_and(|tokens| current_tokens >= tokens)
+        {
+            return true;
+        }
+    }
+    let lease = session_memory_commit::ExtractionLease::begin(state).await;
+    let result = lease.rebase(session_id.to_owned(), current_tokens).await;
+    lease.finish().await;
+    match result {
+        Ok(applied) => applied,
+        Err(error) => {
+            tracing::warn!(session_id, %error, "Session-memory baseline deferred");
+            false
+        }
+    }
+}
+
 /// Shared production boundary: load authoritative history, extract, then
 /// persist content and sequence together. A deferred/failed query never writes.
 pub(super) async fn extract_and_persist_session_memory(

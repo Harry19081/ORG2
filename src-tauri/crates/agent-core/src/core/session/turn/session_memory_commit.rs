@@ -60,8 +60,11 @@ impl ExtractionLease {
             // The SQL CAS below validates snapshot.last_seq independently.
             let committed = persistence::commit_session_memory_state(
                 &session_id,
-                &draft.content,
-                draft.last_seq,
+                persistence::SessionMemoryUpdate {
+                    content: Some(&draft.content),
+                    last_seq: draft.last_seq,
+                    tokens_at_last_extraction: Some(draft.current_tokens),
+                },
                 &snapshot,
                 || {
                     !alive.load(Ordering::SeqCst)
@@ -72,7 +75,7 @@ impl ExtractionLease {
                 || {
                     current.content = Some(draft.content.clone());
                     current.last_summarized_seq = draft.last_seq;
-                    current.tokens_at_last_extraction = draft.current_tokens;
+                    current.tokens_at_last_extraction = Some(draft.current_tokens);
                     current.tool_calls_since_extraction = current
                         .tool_calls_since_extraction
                         .saturating_sub(draft.consumed_tool_calls);
@@ -85,6 +88,50 @@ impl ExtractionLease {
         })
         .await
         .map_err(|err| format!("SM persist worker failed: {err}"))?
+    }
+
+    /// Establish a missing baseline or rebase after context shrink without an
+    /// LLM call. Restore the authoritative summary pair if local bookkeeping
+    /// had fallen behind, but leave retry state and tool counters untouched.
+    pub async fn rebase(&self, session_id: String, current_tokens: usize) -> Result<bool, String> {
+        let state = self.state.clone();
+        let generation = self.generation;
+        let alive = self.alive.clone();
+        tokio::task::spawn_blocking(move || {
+            let mut current = state.blocking_lock();
+            if current.extraction_generation != generation {
+                return Ok(false);
+            }
+            if !current.initialized
+                || current
+                    .tokens_at_last_extraction
+                    .is_some_and(|tokens| current_tokens >= tokens)
+            {
+                return Ok(true);
+            }
+            let snapshot = persistence::session_memory_commit_snapshot(&session_id)
+                .map_err(|err| format!("SM baseline snapshot failed: {err}"))?;
+            let baseline = snapshot.content.as_ref().map(|_| current_tokens);
+            persistence::commit_session_memory_state(
+                &session_id,
+                persistence::SessionMemoryUpdate {
+                    content: snapshot.content.as_deref(),
+                    last_seq: snapshot.last_seq,
+                    tokens_at_last_extraction: baseline,
+                },
+                &snapshot,
+                || !alive.load(Ordering::SeqCst),
+                || {
+                    current.content = snapshot.content.clone();
+                    current.last_summarized_seq = snapshot.last_seq;
+                    current.tokens_at_last_extraction = baseline;
+                    current.initialized = snapshot.content.is_some();
+                },
+            )
+            .map_err(|err| format!("SM baseline commit failed: {err}"))
+        })
+        .await
+        .map_err(|err| format!("SM baseline worker failed: {err}"))?
     }
 
     pub async fn finish(mut self) {

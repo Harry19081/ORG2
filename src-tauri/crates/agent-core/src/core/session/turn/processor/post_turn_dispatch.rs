@@ -145,15 +145,22 @@ impl UnifiedMessageProcessor {
         // queued can no longer lose them, and only due extractions are ever
         // submitted.
         if should_run_post_turn_work(self.sm_config.enabled, final_turn_state) {
+            let baseline_ready = post_turn_jobs::prepare_session_memory_baseline(
+                session_id,
+                self.sm_state.clone(),
+                sm_current_tokens,
+            )
+            .await;
             let should_extract_now = {
                 let mut sm_state = self.sm_state.lock().await;
                 sm_state.record_tool_calls(tool_calls_count as usize);
-                crate::model_context::session_memory::should_extract(
-                    &sm_state,
-                    &self.sm_config,
-                    sm_current_tokens,
-                    sm_last_turn_has_tool_calls,
-                )
+                baseline_ready
+                    && crate::model_context::session_memory::should_extract(
+                        &sm_state,
+                        &self.sm_config,
+                        sm_current_tokens,
+                        sm_last_turn_has_tool_calls,
+                    )
             };
             if should_extract_now {
                 post_turn_jobs::spawn_session_memory_extraction(

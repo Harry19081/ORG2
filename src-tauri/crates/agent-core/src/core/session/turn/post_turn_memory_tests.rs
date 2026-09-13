@@ -504,7 +504,7 @@ async fn session_memory_database_failure_preserves_runtime_and_durable_state() {
         content: Some("old memory".into()),
         last_summarized_seq: Some(0),
         tool_calls_since_extraction: 8,
-        tokens_at_last_extraction: 12_000,
+        tokens_at_last_extraction: Some(12_000),
         initialized: true,
         ..Default::default()
     }));
@@ -520,10 +520,21 @@ async fn session_memory_database_failure_preserves_runtime_and_durable_state() {
     let current = state.lock().await;
     assert_eq!(current.content.as_deref(), Some("old memory"));
     assert_eq!(current.last_summarized_seq, Some(0));
-    assert_eq!(current.tokens_at_last_extraction, 12_000);
+    assert_eq!(current.tokens_at_last_extraction, Some(12_000));
     assert_eq!(current.tool_calls_since_extraction, 8);
     assert!(current.initialized);
     assert!(!current.extraction_in_progress);
+}
+
+fn commit_update(
+    content: &str,
+    last_seq: Option<i64>,
+) -> unified_persistence::SessionMemoryUpdate<'_> {
+    unified_persistence::SessionMemoryUpdate {
+        content: Some(content),
+        last_seq,
+        tokens_at_last_extraction: Some(20_000),
+    }
 }
 
 fn commit_draft() -> session_memory::extract::SessionMemoryExtraction {
@@ -630,7 +641,7 @@ async fn session_memory_old_generation_cannot_commit_or_clear_new_owner() {
     let current = state.lock().await;
     assert_eq!(current.content.as_deref(), Some("new memory"));
     assert_eq!(current.last_summarized_seq, Some(1));
-    assert_eq!(current.tokens_at_last_extraction, 20_000);
+    assert_eq!(current.tokens_at_last_extraction, Some(20_000));
     assert_eq!(current.tool_calls_since_extraction, 3);
     assert!(!current.extraction_in_progress);
     assert_eq!(persisted(sid), (Some("new memory".into()), Some(1)));
@@ -645,8 +656,7 @@ fn session_memory_commit_rejects_stale_snapshot_and_missing_session() {
     unified_persistence::save_session_memory_state(sid, "newer memory", Some(10)).unwrap();
     assert!(!unified_persistence::commit_session_memory_state(
         sid,
-        "stale memory",
-        Some(1),
+        commit_update("stale memory", Some(1)),
         &snapshot,
         || false,
         || {},
@@ -658,8 +668,7 @@ fn session_memory_commit_rejects_stale_snapshot_and_missing_session() {
     );
     assert!(unified_persistence::commit_session_memory_state(
         "missing-session",
-        "lost",
-        Some(1),
+        commit_update("lost", Some(1)),
         &snapshot,
         || false,
         || {},
@@ -691,8 +700,7 @@ fn session_memory_commit_rejects_changed_history_without_publishing() {
         let before = persisted(&sid);
         assert!(!unified_persistence::commit_session_memory_state(
             &sid,
-            "stale summary",
-            Some(1),
+            commit_update("stale summary", Some(1)),
             &snapshot,
             || false,
             || panic!("stale history must not publish runtime state"),
@@ -718,8 +726,7 @@ fn session_memory_writer_admission_is_bounded_without_publishing() {
     held_rx.recv_timeout(Duration::from_secs(2)).unwrap();
     let result = unified_persistence::commit_session_memory_state(
         sid,
-        "new memory",
-        Some(1),
+        commit_update("new memory", Some(1)),
         &snapshot,
         || false,
         || panic!("a busy writer must not publish"),
@@ -731,4 +738,152 @@ fn session_memory_writer_admission_is_bounded_without_publishing() {
         Some(rusqlite::ErrorCode::DatabaseBusy)
     );
     assert_eq!(persisted(sid), (None, None));
+}
+
+fn restored_memory_state(sid: &str) -> SessionMemoryState {
+    let saved = unified_persistence::load_session_memory_state(sid).unwrap();
+    SessionMemoryState {
+        initialized: saved.content.is_some(),
+        content: saved.content,
+        last_summarized_seq: saved.last_seq,
+        tokens_at_last_extraction: saved.tokens_at_last_extraction,
+        ..Default::default()
+    }
+}
+
+#[tokio::test]
+async fn session_memory_restart_retains_committed_growth_baseline() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-baseline-restart";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "old memory", Some(0)).unwrap();
+    let state = Arc::new(Mutex::new(restored_memory_state(sid)));
+    let lease = session_memory_commit::ExtractionLease::begin(state).await;
+    assert!(lease
+        .commit(
+            sid.into(),
+            commit_draft(),
+            unified_persistence::session_memory_commit_snapshot(sid).unwrap(),
+            None
+        )
+        .await
+        .unwrap());
+    lease.finish().await;
+    let restored = restored_memory_state(sid);
+    assert_eq!(restored.tokens_at_last_extraction, Some(20_000));
+    assert_eq!(restored.content.as_deref(), Some("new memory"));
+    assert_eq!(restored.last_summarized_seq, Some(1));
+    let config = SessionMemoryConfig::default();
+    assert!(
+        !crate::model_context::session_memory::extract::should_extract(
+            &restored, &config, 20_500, false
+        )
+    );
+    assert!(
+        crate::model_context::session_memory::extract::should_extract(
+            &restored, &config, 25_000, false
+        )
+    );
+}
+
+#[tokio::test]
+async fn session_memory_legacy_baseline_and_compaction_rebase_without_summary_write() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-baseline-legacy";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "old memory", Some(0)).unwrap();
+    let state = Arc::new(Mutex::new(restored_memory_state(sid)));
+    state.lock().await.tool_calls_since_extraction = 7;
+    assert!(prepare_session_memory_baseline(sid, state.clone(), 40_000).await);
+    assert_eq!(persisted(sid), (Some("old memory".into()), Some(0)));
+    assert_eq!(
+        restored_memory_state(sid).tokens_at_last_extraction,
+        Some(40_000)
+    );
+    assert_eq!(state.lock().await.tool_calls_since_extraction, 7);
+    // A normal turn must not issue another metadata write.
+    database::db::get_connection().unwrap().execute_batch(
+        "CREATE TRIGGER reject_baseline BEFORE UPDATE ON agent_sessions BEGIN SELECT RAISE(FAIL, 'unexpected write'); END;"
+    ).unwrap();
+    assert!(prepare_session_memory_baseline(sid, state.clone(), 40_500).await);
+    database::db::get_connection()
+        .unwrap()
+        .execute_batch("DROP TRIGGER reject_baseline")
+        .unwrap();
+    unified_persistence::save_session_memory_state(sid, "old memory", None).unwrap();
+    state.lock().await.reset_after_compaction();
+    assert!(prepare_session_memory_baseline(sid, state.clone(), 8_000).await);
+    let restored = restored_memory_state(sid);
+    assert_eq!(restored.tokens_at_last_extraction, Some(8_000));
+    assert_eq!(restored.last_summarized_seq, None);
+    let config = SessionMemoryConfig::default();
+    assert!(
+        !crate::model_context::session_memory::extract::should_extract(
+            &restored, &config, 8_500, false
+        )
+    );
+    assert!(
+        crate::model_context::session_memory::extract::should_extract(
+            &restored, &config, 13_000, false
+        )
+    );
+}
+
+#[tokio::test]
+async fn session_memory_context_shrink_rebases_and_failed_write_preserves_baseline() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-baseline-shrink";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "old memory", Some(0)).unwrap();
+    let state = Arc::new(Mutex::new(restored_memory_state(sid)));
+    assert!(prepare_session_memory_baseline(sid, state.clone(), 40_000).await);
+    database::db::get_connection().unwrap().execute_batch(
+        "CREATE TRIGGER reject_baseline BEFORE UPDATE ON agent_sessions BEGIN SELECT RAISE(FAIL, 'injected failure'); END;"
+    ).unwrap();
+    assert!(!prepare_session_memory_baseline(sid, state.clone(), 8_000).await);
+    assert_eq!(state.lock().await.tokens_at_last_extraction, Some(40_000));
+    assert_eq!(
+        restored_memory_state(sid).tokens_at_last_extraction,
+        Some(40_000)
+    );
+    database::db::get_connection()
+        .unwrap()
+        .execute_batch("DROP TRIGGER reject_baseline")
+        .unwrap();
+    assert!(prepare_session_memory_baseline(sid, state.clone(), 8_000).await);
+    assert_eq!(
+        restored_memory_state(sid).tokens_at_last_extraction,
+        Some(8_000)
+    );
+    assert_eq!(persisted(sid), (Some("old memory".into()), Some(0)));
+}
+
+#[test]
+fn session_memory_baseline_change_invalidates_old_commit_snapshot() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-baseline-cas";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "old memory", Some(0)).unwrap();
+    let snapshot = unified_persistence::session_memory_commit_snapshot(sid).unwrap();
+    assert!(unified_persistence::commit_session_memory_state(
+        sid,
+        commit_update("old memory", Some(0)),
+        &snapshot,
+        || false,
+        || {},
+    )
+    .unwrap());
+    assert!(!unified_persistence::commit_session_memory_state(
+        sid,
+        commit_update("stale memory", Some(1)),
+        &snapshot,
+        || false,
+        || panic!("baseline changed while extraction was running"),
+    )
+    .unwrap());
+    assert_eq!(persisted(sid), (Some("old memory".into()), Some(0)));
+    assert_eq!(
+        restored_memory_state(sid).tokens_at_last_extraction,
+        Some(20_000)
+    );
 }

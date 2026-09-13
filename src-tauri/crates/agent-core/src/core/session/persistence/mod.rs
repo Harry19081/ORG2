@@ -58,7 +58,7 @@ pub use messages::{
     session_memory_commit_snapshot, take_turn_cancelled, truncate_messages_from_sequence,
     update_compact_boundary_token_delta, AgentOrgInboxTranscriptMaterialization,
     MaterializedHistoryContent, MaterializedHistoryReceipt, MaterializedHistoryRole,
-    MaterializedHistorySeed, MessageAnchor, SessionMemoryCommitSnapshot,
+    MaterializedHistorySeed, MessageAnchor, SessionMemoryCommitSnapshot, SessionMemoryUpdate,
 };
 
 use rusqlite::{Connection, Result as SqliteResult};
