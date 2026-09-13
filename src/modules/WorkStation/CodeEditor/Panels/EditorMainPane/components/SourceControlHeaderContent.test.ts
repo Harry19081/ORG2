@@ -3,7 +3,11 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import type { WorkStationTab } from "@src/store/workstation/tabs";
+import type { SourceControlFilterMode } from "@src/modules/WorkStation/shared/SidebarModules";
+import type {
+  SourceControlHistorySelection,
+  WorkStationTab,
+} from "@src/store/workstation/tabs";
 
 import { SourceControlHeaderContent } from "./SourceControlHeaderContent";
 
@@ -63,15 +67,19 @@ vi.mock("./SourceControlDiffSettingsMenu", () => ({
 function renderHeader(
   mode: "focus" | "all-changes",
   focusPath: string | null = null,
-  navigationTotal = focusPath ? 1 : 0
+  navigationTotal = focusPath ? 1 : 0,
+  historySelection: SourceControlHistorySelection | null = null,
+  showSourceControlModePill = true,
+  sourceControlFilterMode: SourceControlFilterMode = "uncommitted"
 ): string {
   const tab = sourceControlTab(mode);
   tab.data.focusPath = focusPath;
+  tab.data.historySelection = historySelection;
   return renderToStaticMarkup(
     createElement(SourceControlHeaderContent, {
       activeTab: tab,
-      sourceControlFilterMode: "uncommitted",
-      showSourceControlModePill: true,
+      sourceControlFilterMode,
+      showSourceControlModePill,
       gitReviewNavigationTotal: navigationTotal,
       selectedIssue: null,
       sourceControlRefreshSpinClass: undefined,
@@ -79,7 +87,6 @@ function renderHeader(
       t,
       onDiffViewModeChange: vi.fn(),
       onModeChange: vi.fn(),
-      onOpenHistoryInNewTab: vi.fn(),
       onReviewPrevFile: vi.fn(),
       onReviewNextFile: vi.fn(),
       onCollapseAll: vi.fn(),
@@ -89,6 +96,50 @@ function renderHeader(
 }
 
 describe("SourceControlHeaderContent diff view controls", () => {
+  it.each(["stashed", "history", "pr", "issues"] as const)(
+    "keeps Split, More, and Refresh in order in %s mode before selection",
+    (filter) => {
+      const markup = renderHeader("focus", null, 0, null, false, filter);
+      const split = markup.indexOf(
+        'aria-label="workstation.switchToUnifiedDiff"'
+      );
+      const menu = markup.indexOf('data-menu="diff-settings"');
+      const refresh = markup.indexOf('aria-label="common:actions.refresh"');
+      expect(split).toBeGreaterThan(-1);
+      expect(menu).toBeGreaterThan(split);
+      expect(refresh).toBeGreaterThan(menu);
+      expect(markup.match(/data-menu="diff-settings"/g)).toHaveLength(1);
+    }
+  );
+  it("shows the split toggle even without mode tabs or a selection", () => {
+    const markup = renderHeader("focus", null, 0, null, false);
+    expect(markup).toContain('aria-label="workstation.switchToUnifiedDiff"');
+    expect(markup).not.toContain('data-tabs="focus,all-changes"');
+  });
+  it.each(["commit", "stash"] as const)(
+    "shows history diff controls for %s without file review navigation",
+    (type) => {
+      const selection = {
+        type,
+        commitSha: "abc1234",
+        shortSha: "abc1234",
+        commitMessage: "Saved changes",
+        ...(type === "stash"
+          ? {
+              stashIndex: 0,
+              stashRef: "stash@{0}",
+              stashIdentity: "abc1234",
+              stashCommitSha: "abc1234",
+            }
+          : {}),
+      } as SourceControlHistorySelection;
+      const markup = renderHeader("all-changes", null, 0, selection);
+      expect(markup).toContain('aria-label="workstation.switchToUnifiedDiff"');
+      expect(markup).not.toContain('data-tabs="focus,all-changes"');
+      expect(markup).not.toContain("common:actions.reviewNextFile");
+      expect(markup).not.toContain('data-menu="diff-settings"');
+    }
+  );
   it("shows the shared unified/split control in All Changes", () => {
     const markup = renderHeader("all-changes");
 
@@ -148,10 +199,14 @@ describe("SourceControlHeaderContent diff view controls", () => {
     expect(markup).not.toContain('data-menu="diff-settings"');
   });
 
-  it("keeps the aggregate diff control out of empty Focus mode", () => {
+  it("keeps the full toolbar visible before a file is selected", () => {
     const markup = renderHeader("focus");
 
-    expect(markup).not.toContain("workstation.switchToUnifiedDiff");
+    expect(markup).toContain("workstation.switchToUnifiedDiff");
+    expect(markup).toContain("common:actions.reviewPreviousFile");
+    expect(markup).toContain("common:actions.reviewNextFile");
+    expect(markup).toContain('data-menu="diff-settings"');
+    expect(markup).toContain("common:actions.refresh");
     expect(markup).toContain('data-tabs="focus,all-changes"');
   });
 });

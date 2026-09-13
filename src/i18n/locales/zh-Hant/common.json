@@ -490,6 +490,7 @@
   },
   "optional": "可選",
   "common": {
+    "display": "顯示",
     "on": "開",
     "off": "關",
     "default": "默認",
@@ -526,6 +527,9 @@
     "source": "來源"
   },
   "labels": {
+    "stashesCount": "{{count}}個STASHES",
+    "stashesCount_one": "{{count}}個STASHES",
+    "stashesCount_other": "{{count}}個STASHES",
     "accounts": "賬戶",
     "enabled": "已啓用",
     "disabled": "已禁用",
@@ -582,7 +586,9 @@
     },
     "operationLog": "操作日誌",
     "gitDashboard": "儀表盤",
-    "changedFiles": "已更改的文件",
+    "changedFilesCount": "{{fileCount}}個變動",
+    "changedFilesCount_one": "{{fileCount}}個變動",
+    "changedFilesCount_other": "{{fileCount}}個變動",
     "colorTokens": "顏色 Token",
     "terminalInfo": "終端信息",
     "fileCount_one": "{{count}} 個文件",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} 行",
     "switchToTreeView": "切換到樹形視圖",
     "switchToListView": "切換到列表視圖",
+    "switchToGraphView": "切換到圖形檢視",
     "discardChanges": "丟棄更改",
     "toOrigin": "到 origin",
     "discardChangesConfirm": "丟棄對 {{files}} 的更改？此操作不可撤銷。",

@@ -490,6 +490,7 @@
   },
   "optional": "optional",
   "common": {
+    "display": "Anzeige",
     "on": "Ein",
     "off": "Aus",
     "default": "Standard",
@@ -526,6 +527,9 @@
     "source": "Quelle"
   },
   "labels": {
+    "stashesCount": "{{count}} Stashes",
+    "stashesCount_one": "{{count}} Stash",
+    "stashesCount_other": "{{count}} Stashes",
     "accounts": "Konten",
     "enabled": "Aktiviert",
     "disabled": "Deaktiviert",
@@ -571,7 +575,9 @@
     "pullRequest": "Pull Request",
     "operationLog": "Operationsprotokoll",
     "gitDashboard": "Dashboard",
-    "changedFiles": "Geänderte Dateien",
+    "changedFilesCount": "{{fileCount}} geänderte Dateien",
+    "changedFilesCount_one": "{{fileCount}} geänderte Datei",
+    "changedFilesCount_other": "{{fileCount}} geänderte Dateien",
     "colorTokens": "Farb-Token",
     "terminalInfo": "Terminal-Info",
     "fileCount_one": "{{count}} Datei",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Zur Graphansicht wechseln",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",

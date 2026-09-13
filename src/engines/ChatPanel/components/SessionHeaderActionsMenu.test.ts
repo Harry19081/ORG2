@@ -412,7 +412,7 @@ describe("SessionHeaderActionsMenu", () => {
     render();
     expect(document.querySelector('[role="switch"]')).toBeNull();
     expect(element("session-ui-settings-submenu").textContent).toBe(
-      "chat.pageSettings"
+      "common:common.display"
     );
     click("session-ui-settings-submenu");
     const panel = element("session-ui-settings-submenu-panel");
@@ -478,7 +478,7 @@ describe("SessionHeaderActionsMenu", () => {
     expect(props.toggleHeaderActionsMenu).not.toHaveBeenCalled();
 
     render({ showTranscriptActions: false });
-    expect(document.body.textContent).not.toContain("chat.pageSettings");
+    expect(document.body.textContent).not.toContain("common:common.display");
     expect(document.querySelector('[role="switch"]')).toBeNull();
   });
 

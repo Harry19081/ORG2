@@ -1,4 +1,6 @@
 import { createContext } from "react";
 
-/** Optional file-menu destination; the host toolbar owns the diff toggle. */
-export const FileHeaderToolbarContext = createContext<HTMLElement | null>(null);
+/** A host may supply its own menu or a destination for the active file's menu. */
+export const FileHeaderToolbarContext = createContext<
+  HTMLElement | "host" | null
+>(null);

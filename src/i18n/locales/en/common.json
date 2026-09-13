@@ -321,6 +321,7 @@
   },
   "optional": "optional",
   "common": {
+    "display": "Display",
     "on": "On",
     "off": "Off",
     "default": "Default",
@@ -357,6 +358,9 @@
     "source": "Source"
   },
   "labels": {
+    "stashesCount": "{{count}} stashes",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stashes",
     "accounts": "Accounts",
     "enabled": "Enabled",
     "disabled": "Disabled",
@@ -412,7 +416,9 @@
     },
     "operationLog": "Operation Log",
     "gitDashboard": "Dashboard",
-    "changedFiles": "Changed Files",
+    "changedFilesCount": "{{fileCount}} changed files",
+    "changedFilesCount_one": "{{fileCount}} changed file",
+    "changedFilesCount_other": "{{fileCount}} changed files",
     "colorTokens": "Color Tokens",
     "terminalInfo": "Terminal Info",
     "fileCount_one": "{{count}} file",
@@ -858,6 +864,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Switch to graph view",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",

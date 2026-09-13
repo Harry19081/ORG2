@@ -1,10 +1,7 @@
 /**
  * Renderer wrapper for `git-stash-detail` tabs.
  *
- * Same shape as `git-commit-detail` with a stash-flavoured header
- * (`headerVariant="stash"`, `headerRootLabel={stashRef}`) — a 1:1 mirror of
- * `TabContentRenderer`'s `case "git-stash-detail"`. Pulls repoPath / repoId /
- * file-select from the hoisted Code Editor host context.
+ * Uses the shared commit detail header and diff controls.
  */
 import React, { Suspense, memo } from "react";
 
@@ -29,7 +26,6 @@ const GitStashDetailTabRenderer: React.FC<UnifiedTabContentProps> = memo(
     const commitSha = String(tab.data.commitSha || "");
     const commitShortSha = String(tab.data.shortSha || "");
     const commitMsg = String(tab.data.commitMessage || "");
-    const stashRef = String(tab.data.stashRef || commitShortSha);
     const resolvedRepoId = repoId ?? repoPath;
     const repoReady = Boolean(repoPath && resolvedRepoId);
 
@@ -43,8 +39,6 @@ const GitStashDetailTabRenderer: React.FC<UnifiedTabContentProps> = memo(
           repoId={resolvedRepoId}
           isRepoReady={repoReady}
           onFileSelect={onFileSelect}
-          headerVariant="stash"
-          headerRootLabel={stashRef}
         />
       </Suspense>
     );

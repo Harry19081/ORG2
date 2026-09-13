@@ -165,7 +165,7 @@ export function useSourceControlTabConfig({
       );
     }
 
-    if (isMultiRoot && workspaceFolders.length > 1) {
+    if (isMultiRoot && workspaceFolders.length > 1 && !showOnlyStashes) {
       return (
         <MultiRootSourceControlContent
           ref={

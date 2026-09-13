@@ -490,6 +490,7 @@
   },
   "optional": "необязательно",
   "common": {
+    "display": "Отображение",
     "on": "Вкл",
     "off": "Выкл",
     "default": "По умолчанию",
@@ -526,6 +527,9 @@
     "source": "Источник"
   },
   "labels": {
+    "stashesCount": "Стеши: {{count}}",
+    "stashesCount_one": "Стеши: {{count}}",
+    "stashesCount_other": "Стеши: {{count}}",
     "accounts": "Аккаунты",
     "enabled": "Включено",
     "disabled": "Отключено",
@@ -571,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Журнал операций",
     "gitDashboard": "Панель",
-    "changedFiles": "Изменённые файлы",
+    "changedFilesCount": "Изменено файлов: {{fileCount}}",
+    "changedFilesCount_one": "{{fileCount}} изменённый файл",
+    "changedFilesCount_other": "Изменено файлов: {{fileCount}}",
     "colorTokens": "Цветовые Token",
     "terminalInfo": "Информация о терминале",
     "fileCount_one": "{{count}} файл",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Переключить на граф",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",

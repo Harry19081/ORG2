@@ -717,7 +717,6 @@
     "performActions_one": "Perform {{count}} action",
     "performActions_other": "Perform {{count}} actions",
     "showInlineDiffs": "Inline diffs",
-    "pageSettings": "Page display",
     "inputSettings": "Input settings",
     "replay": {
       "follow": "Follow"

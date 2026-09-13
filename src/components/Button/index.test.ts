@@ -116,7 +116,7 @@ describe("compact shared actions", () => {
   afterAll(() => {
     Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
   });
-  it("renders the sidebar icon at 20px with the standard 8px radius", () => {
+  it("renders the sidebar icon at 20px with the shared small radius", () => {
     const markup = renderToStaticMarkup(
       React.createElement(Button, {
         size: "sidebar",
@@ -129,7 +129,7 @@ describe("compact shared actions", () => {
     );
     expect(markup).toContain("height:20px");
     expect(markup).toContain("width:20px");
-    expect(markup).toContain("border-radius:8px");
+    expect(markup).toContain("border-radius:var(--radius-sm)");
     expect(markup).toContain("action-icon");
     expect(markup).toContain("enabled:hover:bg-button-hover");
     expect(markup).not.toContain("bg-button-hover-no-drop");
@@ -191,7 +191,15 @@ describe("compact shared actions", () => {
       await act(async () => root.render(React.createElement(Button, props)));
       const button = container.querySelector("button")!;
       expect(button.getAttribute("aria-label")).toBe("Discard file");
+      expect(button.className).toContain("enabled:hover:bg-danger-2");
+      expect(button.className).toContain("focus-visible:bg-danger-2");
+      await act(async () =>
+        root.render(
+          React.createElement(Button, { ...props, appearance: "soft-no-drop" })
+        )
+      );
       expect(button.className).toContain("enabled:hover:bg-danger-1");
+      expect(button.className).not.toContain("enabled:hover:bg-danger-2");
       expect(button.className).not.toContain("bg-danger-3");
       await act(async () => button.click());
       expect(clicks).toBe(1);

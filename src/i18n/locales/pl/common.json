@@ -490,6 +490,7 @@
   },
   "optional": "opcjonalne",
   "common": {
+    "display": "Wyświetlanie",
     "on": "Wł.",
     "off": "Wył.",
     "default": "Domyślnie",
@@ -526,6 +527,9 @@
     "source": "Źródło"
   },
   "labels": {
+    "stashesCount": "Stashe: {{count}}",
+    "stashesCount_one": "Stashe: {{count}}",
+    "stashesCount_other": "Stashe: {{count}}",
     "accounts": "Konta",
     "enabled": "Włączone",
     "disabled": "Wyłączone",
@@ -571,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Dziennik operacji",
     "gitDashboard": "Panel",
-    "changedFiles": "Zmienione pliki",
+    "changedFilesCount": "Zmienione pliki: {{fileCount}}",
+    "changedFilesCount_one": "{{fileCount}} zmieniony plik",
+    "changedFilesCount_other": "Zmienione pliki: {{fileCount}}",
     "colorTokens": "Tokeny kolorów",
     "terminalInfo": "Informacje o Shellu",
     "fileCount_one": "{{count}} plik",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} linii",
     "switchToTreeView": "Przełącz na widok drzewa",
     "switchToListView": "Przełącz na widok listy",
+    "switchToGraphView": "Przełącz na widok grafu",
     "discardChanges": "Odrzuć zmiany",
     "toOrigin": "do origin",
     "discardChangesConfirm": "Odrzucić zmiany w {{files}}? Tej operacji nie można cofnąć.",

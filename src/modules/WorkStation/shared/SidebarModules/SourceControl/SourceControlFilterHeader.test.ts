@@ -14,17 +14,23 @@ vi.mock("@src/components/Select", () => ({
   default: ({
     options,
     value,
+    showTriggerIcon,
   }: {
-    options: { value: string }[];
+    options: { value: string; icon?: unknown }[];
+    showTriggerIcon?: boolean;
     value: string;
   }) =>
     createElement(
       "select",
-      { value, readOnly: true },
+      { value, readOnly: true, "data-trigger-icon": String(showTriggerIcon) },
       options.map((option) =>
         createElement(
           "option",
-          { key: option.value, value: option.value },
+          {
+            key: option.value,
+            value: option.value,
+            "data-has-icon": String(Boolean(option.icon)),
+          },
           option.value
         )
       )
@@ -51,6 +57,14 @@ it.each(["staged", "unstaged"] as const)(
       [...container.querySelectorAll("option")].map((option) => option.value);
     try {
       render();
+      expect(container.querySelector("select")!.dataset.triggerIcon).toBe(
+        "false"
+      );
+      expect(
+        [...container.querySelectorAll("option")].every(
+          (option) => option.dataset.hasIcon === "true"
+        )
+      ).toBe(true);
       expect(values()).toEqual([
         "uncommitted",
         "unstaged",

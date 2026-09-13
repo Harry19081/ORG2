@@ -716,7 +716,6 @@
     "performActions_one": "Effectuer {{count}} action",
     "performActions_other": "Effectuer {{count}} actions",
     "showInlineDiffs": "Différences en ligne",
-    "pageSettings": "Affichage de la page",
     "inputSettings": "Paramètres de saisie",
     "replay": {
       "follow": "Suivre"

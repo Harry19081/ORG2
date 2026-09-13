@@ -162,7 +162,7 @@ describe("docked terminal controls", () => {
       } else {
         expect(button.style.height).toBe("20px");
         expect(button.style.width).toBe("20px");
-        expect(button.style.borderRadius).toBe("8px");
+        expect(button.style.borderRadius).toBe("var(--radius-sm)");
       }
     }
     expect(

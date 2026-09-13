@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 const REVEAL_CLASSES = {
+  sidebar: "hidden group-focus-within/sidebar:flex group-hover/sidebar:flex",
   item: "hidden group-focus-within/item:flex group-hover/item:flex",
   header: "hidden group-focus-within/header:flex group-hover/header:flex",
   section: "hidden group-focus-within/section:flex group-hover/section:flex",

@@ -25,8 +25,9 @@ it("moves the live file menu into its host toolbar and releases it on unmount", 
   document.body.append(container, toolbar);
   const root = createRoot(container);
   const onSearch = vi.fn();
+  const onClose = vi.fn();
   const store = createStore();
-  const render = (target: HTMLElement | null) =>
+  const render = (target: HTMLElement | "host" | null) =>
     act(() =>
       root.render(
         createElement(
@@ -41,6 +42,9 @@ it("moves the live file menu into its host toolbar and releases it on unmount", 
               viewMode: "split",
               onViewModeChange: vi.fn(),
               onSearchRequest: onSearch,
+              showOpenFileAction: true,
+              onFileSelect: vi.fn(),
+              onClose,
             })
           )
         )
@@ -55,9 +59,28 @@ it("moves the live file menu into its host toolbar and releases it on unmount", 
     ).toBeNull();
     act(() => toolbar.querySelector("button")!.click());
     expect(onSearch).toHaveBeenCalledOnce();
+    render("host");
+    expect(toolbar.childElementCount).toBe(0);
+    expect(container.textContent).not.toContain("file menu");
+    expect(container.querySelector('[data-icon="file-symlink"]')).toBeNull();
+    expect(
+      container.querySelector('[aria-label="workstation.switchToUnifiedDiff"]')
+    ).toBeNull();
+    expect(container.querySelectorAll("button")).toHaveLength(1);
+    act(() =>
+      container
+        .querySelector<HTMLButtonElement>(
+          '[aria-label="common:actions.close"]'
+        )!
+        .click()
+    );
+    expect(onClose).toHaveBeenCalledOnce();
     render(null);
     expect(toolbar.childElementCount).toBe(0);
     expect(container.textContent).toContain("file menu");
+    expect(
+      container.querySelector('[data-icon="file-symlink"]')
+    ).not.toBeNull();
     expect(
       container.querySelector('[aria-label="workstation.switchToUnifiedDiff"]')
     ).not.toBeNull();

@@ -15,6 +15,7 @@ import {
 import GitHubDetailSkeleton from "@src/modules/shared/components/GitHubDetailSkeleton";
 import { useGitHubIssueDetailState } from "@src/modules/shared/hooks/useGitHubIssueDetailState";
 import { workstationRepoScopeKey } from "@src/store/workstation/codeEditor/workstationPrAtom";
+import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
 
 import {
@@ -50,6 +51,7 @@ export interface SourceControlMainPaneProps {
   onForceReload?: () => void;
   onFileSelect?: (path: string) => void;
   onCloseFocus?: () => void;
+  onOpenHistoryInNewTab?: (selection: SourceControlHistorySelection) => void;
   onGitDiffUnsavedChange?: (hasUnsaved: boolean) => void;
   /**
    * Owning tab id; per-tab view state is saved under it so this active-only
@@ -72,6 +74,7 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
   onForceReload,
   onFileSelect,
   onCloseFocus,
+  onOpenHistoryInNewTab,
   onGitDiffUnsavedChange,
   viewStateKey,
 }) => {
@@ -156,6 +159,7 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
           onForceReload={onForceReload}
           onFileSelect={onFileSelect}
           onCloseFocus={onCloseFocus}
+          onOpenHistoryInNewTab={onOpenHistoryInNewTab}
           onGitDiffUnsavedChange={onGitDiffUnsavedChange}
           historySelection={historySelection}
           files={allFiles}

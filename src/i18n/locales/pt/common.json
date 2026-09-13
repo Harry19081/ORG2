@@ -490,6 +490,7 @@
   },
   "optional": "opcional",
   "common": {
+    "display": "Exibição",
     "on": "Ligado",
     "off": "Desligado",
     "default": "Padrão",
@@ -526,6 +527,9 @@
     "source": "Origem"
   },
   "labels": {
+    "stashesCount": "{{count}} stashes",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stashes",
     "accounts": "Contas",
     "enabled": "Ativado",
     "disabled": "Desativado",
@@ -571,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Log de operações",
     "gitDashboard": "Painel",
-    "changedFiles": "Arquivos alterados",
+    "changedFilesCount": "{{fileCount}} arquivos alterados",
+    "changedFilesCount_one": "{{fileCount}} arquivo alterado",
+    "changedFilesCount_other": "{{fileCount}} arquivos alterados",
     "colorTokens": "Tokens de cor",
     "terminalInfo": "Informações do terminal",
     "fileCount_one": "{{count}} arquivo",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} linhas",
     "switchToTreeView": "Alternar para visualização em árvore",
     "switchToListView": "Alternar para visualização em lista",
+    "switchToGraphView": "Mudar para visualização de grafo",
     "discardChanges": "Descartar alterações",
     "toOrigin": "para origin",
     "discardChangesConfirm": "Descartar alterações em {{files}}? Esta ação não pode ser desfeita.",

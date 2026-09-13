@@ -3,11 +3,10 @@
  *
  * Owns every Source-Control-flavoured interaction the editor host exposes:
  * refresh (with spin state), Focus/All-Changes mode switching, collapse-all
- * signalling, focus dismissal, review prev/next navigation, opening a history
+ * signalling, file/history dismissal, review prev/next navigation, opening a history
  * entry (commit or stash) in its own tab, and the empty-state quick actions
  * that navigate the sidebar between Source Control destinations.
  *
- * Extracted verbatim from `EditorMainPane` — no behavior change.
  */
 import type { TFunction } from "i18next";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -58,6 +57,7 @@ export interface UseSourceControlPaneActionsReturn {
   sourceControlCollapseAllSignal: number;
   handleSourceControlModeChange: (mode: SourceControlMainMode) => void;
   handleSourceControlCollapseAll: () => void;
+  /** Dismiss the focused file or history detail, retaining the Source Control tab. */
   handleSourceControlCloseFocus: () => void;
   /** Current review-sequence snapshot (`{ current, total }`) */
   gitReviewNavigation: GitReviewNavigationSnapshot;
@@ -121,7 +121,8 @@ export function useSourceControlPaneActions({
       if (tabIndex === -1) return state;
 
       const existing = state.tabs[tabIndex];
-      if (!existing.data.focusPath) return state;
+      if (!existing.data.focusPath && !existing.data.historySelection)
+        return state;
 
       const nextTabs = [...state.tabs];
       nextTabs[tabIndex] = {
@@ -129,6 +130,7 @@ export function useSourceControlPaneActions({
         data: {
           ...existing.data,
           focusPath: null,
+          historySelection: null,
         },
       };
       return { ...state, tabs: nextTabs };

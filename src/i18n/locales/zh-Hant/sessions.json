@@ -716,7 +716,6 @@
     "performActions_one": "執行 {{count}} 項操作",
     "performActions_other": "執行 {{count}} 項操作",
     "showInlineDiffs": "行內差異",
-    "pageSettings": "頁面顯示",
     "inputSettings": "輸入設定",
     "replay": {
       "follow": "跟隨"
