@@ -92,18 +92,21 @@ export function deliverSessionTerminalNotification(
       name: event.sessionName,
       detail,
     });
-    void notifyError(t("notifications.taskFailedPrivateBody"), settings, {
+    notifyError(t("notifications.taskFailedPrivateBody"), settings, {
       title: t("notifications.taskFailedTitle"),
       context,
-    }).then((result) => {
-      if (result.disposition !== "delivered" || !event.attentionRequired)
-        return;
-      Message.error({
-        content: toastBody,
-        duration: 8000,
-        closable: true,
-      });
-    });
+    })
+      .then((result) => {
+        if (result.disposition !== "delivered" || !event.attentionRequired)
+          return;
+        Message.error({
+          content: toastBody,
+          duration: 8000,
+          closable: true,
+        });
+      })
+      // Match completion delivery: native notifications are best effort.
+      .catch(() => undefined);
     return;
   }
 
