@@ -246,13 +246,14 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
     onFileSelect?.(absoluteFilePath);
   }, [absoluteFilePath, onFileSelect]);
 
-  const handleCopyPath = useCallback(async () => {
-    try {
-      await copyText(absoluteFilePath);
-      Message.success(t("common:status.copiedFilePath"));
-    } catch {
-      Message.error(t("common:errors.failedToCopyFilePath"));
-    }
+  const handleCopyPath = useCallback(() => {
+    copyText(absoluteFilePath)
+      .then(() => {
+        Message.success(t("common:status.copiedFilePath"));
+      })
+      .catch(() => {
+        Message.error(t("common:errors.failedToCopyFilePath"));
+      });
   }, [absoluteFilePath, t]);
 
   function renderPreviewContent(): React.ReactNode {
@@ -469,9 +470,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
               size="small"
               iconOnly
               className="pointer-events-auto shrink-0"
-              onClick={() => {
-                void handleCopyPath();
-              }}
+              onClick={handleCopyPath}
               title={t("actions.copyPath")}
               aria-label={`${t("actions.copyPath")}: ${displayPath}`}
               icon={
