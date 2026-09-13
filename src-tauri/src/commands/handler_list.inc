@@ -25,6 +25,8 @@ app_window::commands::open_session_window,
 // Optional sidecar commands - lazy install after first paint
 crate::setup::sidecar_setup::sidecar_list_status,
 crate::setup::sidecar_setup::sidecar_install,
+// Native context menu (release resource lock before tracking input)
+crate::native_menu::popup_native_menu,
 // App updater commands - channel-aware (stable/beta) update check
 crate::app_update::check_app_update,
 crate::app_update::get_app_build_provenance,
