@@ -39,3 +39,11 @@ Performance verdict: blocked for whole-app acceptance pending packaged visible/h
 ## Remaining scope
 
 No schema migration is required; rollback is a code revert. Runtime growth-baseline persistence and compaction rebasing are a separate follow-up. Generic compaction bookkeeping writers retain their existing behavior; this change prevents extraction results based on an older transcript from overwriting them. It does not claim every historical database-failure path is now transactional.
+
+## Reactive compaction review follow-up
+
+Reactive compaction changes only the live request frame. It clears the runtime sequence anchor while leaving the durable sequence intact, because mid-turn history can contain open tool exchanges. A new extraction may therefore begin with two legitimate, different anchor values. Validate the runtime against its own candidate snapshot and the database against its own durable snapshot; do not require equality between the two anchor views. The SQL comparison still rejects a durable change occurring after the snapshot.
+
+The regression invokes the real reactive compaction pipeline, verifies the deliberate runtime/durable anchor difference, then runs the production extraction-and-commit boundary twice. This complements the existing concurrent append/compact/truncate and stale-generation rejection tests.
+
+The one-second budget applies only to admission to the process-local writer lock. Waiting for the runtime state lock, connection acquisition, SQLite locking and I/O are outside that budget; there is no one-second end-to-end latency guarantee.

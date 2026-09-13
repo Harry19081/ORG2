@@ -268,7 +268,7 @@ fn session_memory_job(input: SessionMemoryExtractionInput<'_>) -> MemoryJob {
 
 /// Shared production boundary: load authoritative history, extract, then
 /// persist content and sequence together. A deferred/failed query never writes.
-async fn extract_and_persist_session_memory(
+pub(super) async fn extract_and_persist_session_memory(
     session_id: &str,
     sm_state: Arc<Mutex<SessionMemoryState>>,
     config: &SessionMemoryConfig,

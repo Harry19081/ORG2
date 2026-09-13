@@ -766,3 +766,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "reactive_memory_tests.rs"]
+mod reactive_memory_tests;
