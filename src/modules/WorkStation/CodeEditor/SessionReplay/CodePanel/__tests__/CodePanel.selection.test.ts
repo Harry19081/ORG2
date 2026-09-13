@@ -6,14 +6,23 @@ import { describe, expect, it, vi } from "vitest";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
 import { CodePanel } from "..";
-import { FILE_OPERATION_TYPE, type FileOperationEntry } from "../../types";
+import { convertToShellOperation } from "../../converters/shellConverter";
+import {
+  CODE_PANEL_MODE,
+  FILE_OPERATION_TYPE,
+  type FileOperationEntry,
+} from "../../types";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, options?: { code?: number }) =>
+      options?.code !== undefined ? `${key}: ${options.code}` : key,
+  }),
 }));
 
 vi.mock("@src/engines/SessionCore/rendering/registry/initToolRegistry", () => ({
   getToolDisplayBehavior: () => "wait_for_result",
+  getAppSubtool: () => "shell",
 }));
 
 vi.mock("@src/features/CodeViewer/VirtualizedModernDiff", () => ({
@@ -124,5 +133,51 @@ describe("CodePanel selected-text ownership", () => {
     expect(markup).toContain('data-selected-text-owner="example.ts"');
     expect(markup).toContain('data-selection-scope="event-1"');
     expect(markup).toContain('data-testid="combined-diff"');
+  });
+});
+
+describe("CodePanel failed command output", () => {
+  it.each([
+    { output: "GraphQL: merge is already in progress", exitCode: 1 },
+    { output: "", exitCode: 1 },
+    { output: "command not found", exitCode: 127 },
+    { output: "merge completed", exitCode: 0 },
+  ])("renders output and exit $exitCode", ({ output, exitCode }) => {
+    const shellOperation = convertToShellOperation(
+      {
+        ...EVENT,
+        functionName: "run_shell",
+        uiCanonical: "run_shell",
+        displayStatus: exitCode === 0 ? "completed" : "failed",
+        args: { command: "gh pr merge 123" },
+        extracted: {
+          kind: "shell",
+          command: "gh pr merge 123",
+          output,
+          exitCode,
+          isFailure: exitCode !== 0,
+          gitArtifacts: [],
+        },
+      },
+      true
+    );
+    expect(shellOperation).toMatchObject({ output, exitCode });
+    const markup = renderToStaticMarkup(
+      React.createElement(
+        Provider,
+        null,
+        React.createElement(CodePanel, {
+          operation: null,
+          mode: CODE_PANEL_MODE.TERMINAL,
+          shellOperation,
+        })
+      )
+    );
+    expect(markup.replace(/<[^>]*>/g, "")).toContain("gh pr merge 123");
+    if (output) expect(markup).toContain(output);
+    expect(markup).toContain(
+      `simulator.replay.ide.shell.exitCode: ${exitCode}`
+    );
+    expect(markup).not.toContain("tools.failedPlaceholder");
   });
 });
