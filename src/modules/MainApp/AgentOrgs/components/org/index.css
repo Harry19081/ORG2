@@ -4,8 +4,8 @@
  * Draws vertical + horizontal lines between parent and children nodes
  * using ::before / ::after pseudo-elements on .org-child-branch.
  */
-
 .org-chart {
+  min-width: -moz-fit-content;
   min-width: fit-content;
 }
 

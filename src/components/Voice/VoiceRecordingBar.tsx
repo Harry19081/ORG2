@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import { Add01Icon, Cancel01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 
-import "./VoiceRecordingBar.scss";
+import "./VoiceRecordingBar.css";
 
 interface VoiceRecordingBarProps {
   elapsedSeconds: number;

@@ -26,10 +26,9 @@
   background: transparent;
   cursor: var(--interactive-cursor, default);
   font: inherit;
-
-  &:hover {
-    color: var(--color-primary-6);
-  }
+}
+.task-impact-line__action:hover {
+  color: var(--color-primary-6);
 }
 
 .task-impact-line__loading svg {
@@ -41,9 +40,8 @@
     transform: rotate(360deg);
   }
 }
-
 .task-impact-line__diff {
-  // Font size is supplied by DiffStatsBadge `size="xs"` (11px).
+  /* Font size is supplied by DiffStatsBadge `size="xs"` (11px). */
   font-weight: 400;
 }
 

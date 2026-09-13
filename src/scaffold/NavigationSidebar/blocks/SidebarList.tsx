@@ -11,7 +11,7 @@ import { SCROLL_FADE_TOKENS } from "@src/modules/shared/layouts/tokens/scrollFad
 
 import { SIDEBAR_PADDING } from "../config";
 import type { SidebarListProps } from "../types";
-import "./SidebarList.scss";
+import "./SidebarList.css";
 
 // Static style — stable reference, never re-created
 const SECTION_GAP_STYLE = { gap: `${SIDEBAR_PADDING.sectionGap}px` } as const;

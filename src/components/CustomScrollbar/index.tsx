@@ -20,7 +20,7 @@ import {
   revealTransientScrollbar,
 } from "@src/util/ui/transientScrollbars";
 
-import "./index.scss";
+import "./index.css";
 
 // ============================================
 // Types

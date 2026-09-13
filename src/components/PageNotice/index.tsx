@@ -27,7 +27,7 @@ import {
   UnfoldMoreIcon,
 } from "@src/icons";
 
-import "./index.scss";
+import "./index.css";
 
 /**
  * Shared neutral surface — flat outline, no tone accent, and a half-strength
