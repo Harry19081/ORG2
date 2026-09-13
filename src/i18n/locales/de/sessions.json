@@ -346,7 +346,6 @@
       },
       "ide": {
         "shell": {
-          "emptyNoCommands": "Keine Befehle",
           "noCommand": "(kein Befehl)",
           "outputInProgress": "… Ausgabe läuft",
           "exitCode": "[Exit-Code: {{code}}]"

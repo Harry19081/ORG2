@@ -10,14 +10,9 @@ import type {
   FlattenedTreeNode,
   StickyScrollNode,
 } from "@src/components/VirtualizedStickyTree";
-import {
-  CHEVRON_SIZE,
-  STICKY_ROW,
-  VirtualizedStickyTree,
-  stickyRowPadding,
-} from "@src/components/VirtualizedStickyTree";
+import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
+import { StickyTreeRow } from "@src/components/VirtualizedStickyTree/StickyTreeRow";
 import { AGENT_DOT_TOKENS } from "@src/engines/Simulator/config";
-import { ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 
 import {
   type FileTreeInput,
@@ -137,21 +132,12 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
 
   const renderStickyItem = useCallback(
     (stickyNode: StickyScrollNode<SimulatorTreeNode>, onClick: () => void) => (
-      <div
-        className={STICKY_ROW.row}
-        style={stickyRowPadding(stickyNode.depth)}
+      <StickyTreeRow
+        depth={stickyNode.depth}
+        expanded
+        name={stickyNode.node.name}
         onClick={onClick}
-      >
-        <div className={STICKY_ROW.chevronBox}>
-          <HugeiconsIcon
-            icon={ArrowDown01Icon}
-            data-icon="chevron-down"
-            size={CHEVRON_SIZE}
-            className={STICKY_ROW.chevronIcon}
-          />
-        </div>
-        <span className={STICKY_ROW.name}>{stickyNode.node.name}</span>
-      </div>
+      />
     ),
     []
   );

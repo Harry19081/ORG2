@@ -10,13 +10,9 @@ import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 
 import { useActionSystemOptional } from "@src/ActionSystem";
 import Button from "@src/components/Button";
+import { SidebarSectionHeader } from "@src/components/SidebarSectionHeader";
 import {
   GitStatusBadge,
-  TREE_INDENT_PX,
-  TREE_PADDING_X,
-  TREE_ROW_INSET_CLASS,
-  TREE_ROW_INSET_X,
-  TREE_ROW_ROUNDED_CLASS,
   TreeRowAction,
   TreeRowActionGroup,
   TreeRowBase,
@@ -25,7 +21,6 @@ import type { GitStatusInfo, TreeRowNode } from "@src/components/TreeRow";
 import {
   COUNT_BADGE,
   HEADER_ICON_SIZE,
-  PRIMARY_SIDEBAR_HOVER,
   getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
 import {
@@ -35,8 +30,6 @@ import {
 import {
   Add01Icon,
   Archive03Icon,
-  ArrowDown01Icon,
-  ArrowRight01Icon,
   FileDiffIcon,
   HugeiconsIcon,
   MinusSignIcon,
@@ -131,8 +124,6 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
       : sectionCount === 0
         ? COUNT_BADGE.muted
         : COUNT_BADGE.primary;
-    const paddingLeft =
-      depth * TREE_INDENT_PX + TREE_PADDING_X - TREE_ROW_INSET_X;
 
     const handleToggle = useCallback(() => {
       if (onSectionToggle && node.section) {
@@ -157,7 +148,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             title={GIT_LABELS.discardAllChanges}
             size="sidebar"
             variant="danger"
-            appearance="soft"
+            appearance="soft-no-drop"
             iconOnly
             icon={
               <HugeiconsIcon
@@ -179,7 +170,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
               title={GIT_LABELS.stashAllChanges}
               size="sidebar"
               variant="tertiary"
-              appearance="soft"
+              appearance="soft-no-drop"
               iconOnly
               icon={
                 <HugeiconsIcon
@@ -200,7 +191,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             title={GIT_LABELS.stageChanges}
             size="sidebar"
             variant="tertiary"
-            appearance="soft"
+            appearance="soft-no-drop"
             iconOnly
             icon={
               <HugeiconsIcon
@@ -225,7 +216,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             title={`Unstage All Changes\n\nShortcut: ${SHORTCUTS.unstageAll}`}
             size="sidebar"
             variant="tertiary"
-            appearance="soft"
+            appearance="soft-no-drop"
             iconOnly
             icon={
               <HugeiconsIcon
@@ -245,7 +236,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             title={GIT_LABELS.openStagedChanges}
             size="sidebar"
             variant="tertiary"
-            appearance="soft"
+            appearance="soft-no-drop"
             iconOnly
             icon={
               <HugeiconsIcon
@@ -261,56 +252,21 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
     }
 
     return (
-      <div
-        className={`group/header ${TREE_ROW_INSET_CLASS} flex h-[28px] cursor-pointer items-center gap-1.5 ${TREE_ROW_ROUNDED_CLASS} ${PRIMARY_SIDEBAR_HOVER.row}`}
-        style={{
-          paddingLeft: `${paddingLeft}px`,
-          paddingRight: `${12 - TREE_ROW_INSET_X}px`,
-        }}
-        onClick={handleToggle}
-      >
-        {/* Chevron */}
-        {node.expanded ? (
-          <HugeiconsIcon
-            icon={ArrowDown01Icon}
-            data-icon="chevron-down"
-            size={14}
-            className="text-text-3"
-          />
-        ) : (
-          <HugeiconsIcon
-            icon={ArrowRight01Icon}
-            data-icon="chevron-right"
-            size={14}
-            className="text-text-3"
-          />
-        )}
-
-        {/* Title */}
-        <span className="relative min-w-0 truncate text-[11px] font-medium text-text-2 uppercase">
-          {node.name}
-          {/* Loading indicator */}
-          {node.loading && (
-            <span className="absolute -bottom-0.5 left-0 h-[2px] w-full overflow-hidden rounded-full bg-fill-3">
-              <span className="absolute h-full w-1/3 animate-progress-slide rounded-full bg-primary-6" />
-            </span>
-          )}
-        </span>
-
-        <div className="flex-1" />
-
-        {/* Action buttons */}
-        {actions && (
-          <TreeRowActionGroup hoverGroup="header">{actions}</TreeRowActionGroup>
-        )}
-
-        {/* Count badge */}
-        <span
-          className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(sectionCount)} ${countBadgeVariant}`}
-        >
-          {sectionCount}
-        </span>
-      </div>
+      <SidebarSectionHeader
+        title={node.name}
+        depth={depth}
+        expanded={Boolean(node.expanded)}
+        onToggle={handleToggle}
+        loading={node.loading}
+        actions={actions}
+        badge={
+          <span
+            className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(sectionCount)} ${countBadgeVariant}`}
+          >
+            {sectionCount}
+          </span>
+        }
+      />
     );
   }
 );

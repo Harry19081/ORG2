@@ -823,7 +823,6 @@
     "clearNetworkLogs": "Ağ günlüklerini temizle",
     "clearConsole": "Konsolu temizle",
     "copyToClipboard": "Panoya kopyala",
-    "openDiff": "Diff aç",
     "popAllStashes": "Pop All Stashes (uygula ve kaldır)",
     "applyStash": "Apply Stash (uygula ve stash'i sakla)",
     "popStash": "Pop Stash (uygula ve kaldır)",
@@ -949,7 +948,6 @@
     "selectRepositoryFromWorkspace": "Çalışma alanından bir depo seçin",
     "noData": "Veri yok",
     "noResults": "Sonuç yok",
-    "noSessionHistoryForFile": "{{file}} için oturum etkinliği bulunamadı",
     "noSessionHistory": "Oturum geçmişi yok"
   },
   "inbox": {

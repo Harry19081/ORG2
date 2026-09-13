@@ -346,7 +346,6 @@
       },
       "ide": {
         "shell": {
-          "emptyNoCommands": "Không có lệnh",
           "noCommand": "(không có lệnh)",
           "outputInProgress": "… đang xuất ra",
           "exitCode": "[mã thoát: {{code}}]"

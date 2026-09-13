@@ -823,7 +823,6 @@
     "clearNetworkLogs": "Effacer les journaux réseau",
     "clearConsole": "Effacer la console",
     "copyToClipboard": "Copier dans le presse-papiers",
-    "openDiff": "Ouvrir le Diff",
     "popAllStashes": "Pop All Stashes (appliquer et supprimer)",
     "applyStash": "Apply Stash (appliquer et garder le stash)",
     "popStash": "Pop Stash (appliquer et supprimer)",
@@ -949,7 +948,6 @@
     "selectRepositoryFromWorkspace": "Choisissez un dépôt dans l’espace de travail",
     "noData": "Aucune donnée",
     "noResults": "Aucun résultat",
-    "noSessionHistoryForFile": "Aucune activité de session trouvée pour {{file}}",
     "noSessionHistory": "Aucun historique de session"
   },
   "inbox": {

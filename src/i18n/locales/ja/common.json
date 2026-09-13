@@ -823,7 +823,6 @@
     "clearNetworkLogs": "ネットワークログをクリア",
     "clearConsole": "コンソールをクリア",
     "copyToClipboard": "クリップボードにコピー",
-    "openDiff": "Diff を開く",
     "popAllStashes": "Pop All Stashes（適用して削除）",
     "applyStash": "Apply Stash（適用して stash を保持）",
     "popStash": "Pop Stash（適用して削除）",
@@ -949,7 +948,6 @@
     "selectRepositoryFromWorkspace": "ワークスペースのリポジトリを選択",
     "noData": "データなし",
     "noResults": "結果なし",
-    "noSessionHistoryForFile": "{{file}} のセッションアクティビティは見つかりません",
     "noSessionHistory": "セッション履歴はありません"
   },
   "inbox": {

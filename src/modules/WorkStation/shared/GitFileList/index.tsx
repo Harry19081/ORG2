@@ -28,16 +28,10 @@ import type {
   FlattenedTreeNode,
   StickyScrollNode,
 } from "@src/components/VirtualizedStickyTree";
-import {
-  CHEVRON_SIZE,
-  STICKY_ROW,
-  VirtualizedStickyTree,
-  stickyRowPadding,
-} from "@src/components/VirtualizedStickyTree";
+import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
+import { StickyTreeRow } from "@src/components/VirtualizedStickyTree/StickyTreeRow";
 import { getStatusColorForFile } from "@src/config/gitStatus";
 import {
-  ArrowDown01Icon,
-  ArrowRight01Icon,
   HierarchyFilesIcon,
   HugeiconsIcon,
   ListIcon,
@@ -384,7 +378,6 @@ const GitFileList: React.FC<GitFileListProps> = ({
   const renderStickyItem = useCallback(
     (stickyNode: StickyScrollNode<GitFileListNode>, onClick: () => void) => {
       const { node, depth } = stickyNode;
-      const isExpanded = node.expanded;
 
       const gitStatus: GitStatusInfo | null = node.treeNode?.aggregateStatus
         ? { status: node.treeNode.aggregateStatus, staged: false }
@@ -394,44 +387,25 @@ const GitFileList: React.FC<GitFileListProps> = ({
         : "text-text-2";
 
       return (
-        <div
-          className={STICKY_ROW.row}
-          style={stickyRowPadding(depth)}
+        <StickyTreeRow
+          depth={depth}
+          expanded={Boolean(node.expanded)}
+          name={node.name}
           onClick={onClick}
           title={`Scroll to ${node.name}`}
+          icon={
+            !node.isFolder && (
+              <FileTypeIcon
+                fileName={node.name}
+                size="small"
+                className="shrink-0 text-text-2"
+              />
+            )
+          }
+          nameClassName={`min-w-0 flex-1 truncate text-[13px] ${textColorClass}`}
         >
-          <div className={STICKY_ROW.chevronBox}>
-            {isExpanded ? (
-              <HugeiconsIcon
-                icon={ArrowDown01Icon}
-                data-icon="chevron-down"
-                size={CHEVRON_SIZE}
-                className={STICKY_ROW.chevronIcon}
-              />
-            ) : (
-              <HugeiconsIcon
-                icon={ArrowRight01Icon}
-                data-icon="chevron-right"
-                size={CHEVRON_SIZE}
-                className={STICKY_ROW.chevronIcon}
-              />
-            )}
-          </div>
-
-          {!node.isFolder && (
-            <FileTypeIcon
-              fileName={node.name}
-              size="small"
-              className="shrink-0 text-text-2"
-            />
-          )}
-
-          <span className={`${STICKY_ROW.nameBase} ${textColorClass}`}>
-            {node.name}
-          </span>
-
           <GitStatusBadge status={gitStatus} isDirectory={node.isFolder} />
-        </div>
+        </StickyTreeRow>
       );
     },
     []

@@ -823,7 +823,6 @@
     "clearNetworkLogs": "Очистить сетевые журналы",
     "clearConsole": "Очистить консоль",
     "copyToClipboard": "Копировать в буфер обмена",
-    "openDiff": "Открыть Diff",
     "popAllStashes": "Pop All Stashes (применить и удалить)",
     "applyStash": "Apply Stash (применить и сохранить stash)",
     "popStash": "Pop Stash (применить и удалить)",
@@ -949,7 +948,6 @@
     "selectRepositoryFromWorkspace": "Выберите репозиторий из рабочего пространства",
     "noData": "Нет данных",
     "noResults": "Нет результатов",
-    "noSessionHistoryForFile": "Активность сессий для {{file}} не найдена",
     "noSessionHistory": "Нет истории сессий"
   },
   "inbox": {

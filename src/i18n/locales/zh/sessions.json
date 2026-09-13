@@ -359,7 +359,6 @@
       },
       "ide": {
         "shell": {
-          "emptyNoCommands": "暂无命令",
           "noCommand": "（无命令）",
           "outputInProgress": "… 输出进行中",
           "exitCode": "[退出码: {{code}}]"

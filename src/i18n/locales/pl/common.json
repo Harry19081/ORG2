@@ -823,7 +823,6 @@
     "clearNetworkLogs": "Wyczyść logi sieciowe",
     "clearConsole": "Wyczyść konsolę",
     "copyToClipboard": "Kopiuj do schowka",
-    "openDiff": "Otwórz diff",
     "popAllStashes": "Pop wszystkich staszy (zastosuj i usuń)",
     "applyStash": "Zastosuj stash (zastosuj i zachowaj)",
     "popStash": "Pop stasza (zastosuj i usuń)",
@@ -949,7 +948,6 @@
     "selectRepositoryFromWorkspace": "Wybierz repozytorium z obszaru roboczego",
     "noData": "Brak danych",
     "noResults": "Brak wyników",
-    "noSessionHistoryForFile": "Nie znaleziono aktywności sesji dla {{file}}",
     "noSessionHistory": "Brak historii sesji"
   },
   "inbox": {
