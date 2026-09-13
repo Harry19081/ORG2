@@ -101,7 +101,7 @@ export function resolveFocusedChatWorkstationRailTrackClass(
 ): string {
   return collapsed
     ? `w-0 @[850px]/focusedchat:w-9 ${WORKSTATION_TRAIL_WIDTH.collapsedResponsiveClass} ${FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS}`
-    : `w-0 @[850px]/focusedchat:w-9 ${WORKSTATION_TRAIL_WIDTH.resizableResponsiveClass} ${FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS}`;
+    : `w-0 @[850px]/focusedchat:w-9 ${WORKSTATION_TRAIL_WIDTH.resizableResponsiveClass} ${FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS} @[1100px]/focusedchat:mr-2`;
 }
 
 /** Keep the rail below overlaid chat chrome while the transcript scrolls behind it. */

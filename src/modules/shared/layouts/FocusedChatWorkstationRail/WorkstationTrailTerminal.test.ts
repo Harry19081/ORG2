@@ -155,10 +155,6 @@ describe("docked terminal controls", () => {
     for (const button of header.querySelectorAll("button")) {
       if (button.getAttribute("role") === "tab") {
         expect(button.classList.contains("h-5")).toBe(true);
-      } else if (button.querySelector('[data-icon="stop"]')) {
-        // ProcessStopButton still owns its compact geometry through tokens.
-        expect(button.classList.contains("h-5")).toBe(true);
-        expect(button.classList.contains("w-5")).toBe(true);
       } else {
         expect(button.style.height).toBe("20px");
         expect(button.style.width).toBe("20px");

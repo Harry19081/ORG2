@@ -41,9 +41,8 @@ export type FocusedChatRailItem = {
   additions?: number;
   deletions?: number;
   /**
-   * Resolve live working-tree totals while this row is mounted. Collapsed
-   * workspace groups do not mount their rows, so secondary repositories stay
-   * demand-driven instead of opening background subscriptions eagerly.
+   * Resolve live working-tree totals in the expanded row or folded heading.
+   * Both presentations share the per-repository numstat store.
    */
   workingTreeRepo?: {
     repoId: string;

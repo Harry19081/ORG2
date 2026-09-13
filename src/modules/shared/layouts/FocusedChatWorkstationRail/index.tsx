@@ -90,6 +90,7 @@ import {
   WorkstationTrailIconButton,
   WorkstationTrailSurface,
 } from "../blocks";
+import { WorkstationCollapsedDiffStats } from "./WorkstationCollapsedDiffStats";
 import { WorkstationSections } from "./WorkstationSections";
 import {
   WorkstationSubagentsSubmenu,
@@ -461,7 +462,7 @@ export function FocusedChatWorkstationRail({
     () => [
       {
         key: "changes",
-        label: t("common:actions.review"),
+        label: t("common:git.pr.tabs.changes"),
         icon: FileDiffIcon,
         shortcutId: "open_source_control_tab",
         ...(repoId && activeRepoPath
@@ -658,7 +659,7 @@ export function FocusedChatWorkstationRail({
   const isMultiWorkspace = workspaceFolders.length > 1;
   const primaryWorkspaceTitle = isMultiWorkspace
     ? (workspaceFolders[0]?.name ?? localEnvironmentLabel)
-    : localEnvironmentLabel;
+    : activeRepoName || workspaceFolders[0]?.name || localEnvironmentLabel;
 
   const workspaceSections = useMemo<FocusedChatRailSection[]>(() => {
     const branchAction: FocusedChatSessionContext["branchAction"] = {
@@ -675,7 +676,6 @@ export function FocusedChatWorkstationRail({
         {
           ...FOCUSED_CHAT_RAIL_SECTIONS.workspace,
           environment: {
-            repoName: activeRepoName,
             branchName: activeBranchName,
             branchAction,
           },
@@ -725,7 +725,6 @@ export function FocusedChatWorkstationRail({
     });
   }, [
     activeBranchName,
-    activeRepoName,
     activeWorkspaceRoot,
     branchSwitcherOpen,
     isMultiWorkspace,
@@ -879,6 +878,7 @@ export function FocusedChatWorkstationRail({
             <Button
               htmlType="button"
               variant="tertiary"
+              appearance="soft-no-drop"
               size="small"
               iconOnly
               className={menuOpen ? "bg-fill-1! text-primary-6!" : ""}
@@ -940,6 +940,14 @@ export function FocusedChatWorkstationRail({
           >
             <WorkstationTrailHeader
               title={wideHeaderTitle}
+              titleSuffix={
+                wideHeaderSectionKey === "workspace" &&
+                collapsedGroupKeys.has("workspace") ? (
+                  <WorkstationCollapsedDiffStats
+                    item={workspaceSections[0].items[0]}
+                  />
+                ) : undefined
+              }
               collapsed={collapsed}
               // With its own group folded, the next visible line is another
               // section title, so the gap below must match the section rhythm
@@ -1029,7 +1037,7 @@ export function FocusedChatWorkstationRail({
                         htmlType="button"
                         size="small"
                         variant="tertiary"
-                        appearance="soft"
+                        appearance="soft-no-drop"
                         iconOnly
                         className="relative"
                         onClick={item.onClick}

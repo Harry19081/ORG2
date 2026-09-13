@@ -213,7 +213,7 @@ describe.each(["wide rail", "compact menu"])(
         );
 
         for (const [label, key] of [
-          ["Review", "E"],
+          ["Changes", "E"],
           ["Terminal", "J"],
           ["Files", "G"],
           ["Browser", null],
@@ -252,7 +252,7 @@ describe.each(["wide rail", "compact menu"])(
         }
 
         // Expanding before the delay expires must not leave a stale popup.
-        const review = container.querySelector('button[aria-label="Review"]')!;
+        const review = container.querySelector('button[aria-label="Changes"]')!;
         act(() =>
           review.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }))
         );
@@ -267,27 +267,55 @@ describe.each(["wide rail", "compact menu"])(
       });
 
       it("folds the workspace group from the panel title and widens the gap to section rhythm", async () => {
+        store.set(activeWorkspaceIdAtom, "workspace:single");
+        store.set(workspaceFoldersAtom, [
+          {
+            id: "primary",
+            name: "Rail Repo",
+            path: "/workspace/primary",
+            uri: "file:///workspace/primary",
+            isPrimary: true,
+            kind: "git",
+          },
+        ]);
         await mount();
         const titleButton = () =>
           [...container.querySelectorAll("button")].find((candidate) =>
-            candidate.textContent?.includes("Local env")
+            candidate.textContent?.includes("Rail Repo")
           )!;
         const headerRow = () => titleButton().parentElement!;
 
+        expect(container.textContent?.match(/Rail Repo/g)).toHaveLength(1);
+        const changesRow = [...container.querySelectorAll("button")].find(
+          (button) => button.textContent === "Changes"
+        )!;
+        expect(changesRow.querySelector("svg")).not.toBeNull();
+        const changesLabel = [...changesRow.querySelectorAll("span")].find(
+          (span) =>
+            span.textContent === "Changes" && span.classList.contains("flex-1")
+        );
+        expect(changesLabel?.classList.contains("text-left")).toBe(true);
+        expect(changesRow.className).toContain(
+          "enabled:hover:bg-button-hover-no-drop"
+        );
+        expect(titleButton().className).toContain(
+          "enabled:hover:bg-button-hover-no-drop"
+        );
+        expect(changesRow.closest("section")!.textContent).toMatch(/^Changes/);
         expect(headerRow().className).toContain("mb-1");
-        expect(container.textContent).toContain("Review");
+        expect(container.textContent).toContain("Changes");
 
         act(() => titleButton().click());
-        expect(container.textContent).not.toContain("Review");
+        expect(container.textContent).not.toContain("Changes");
         expect(headerRow().className).toContain("mb-3");
 
         act(() => titleButton().click());
-        expect(container.textContent).toContain("Review");
+        expect(container.textContent).toContain("Changes");
         expect(headerRow().className).toContain("mb-1");
       });
     }
 
-    it("expands only the first multi-workspace root and loads secondary Git totals on demand", async () => {
+    it("shows folded repository totals while keeping secondary details collapsed", async () => {
       store.set(activeWorkspaceIdAtom, "workspace:multi");
       store.set(workspaceFoldersAtom, [
         {
@@ -334,16 +362,25 @@ describe.each(["wide rail", "compact menu"])(
       const secondaryToggle = host.querySelector<HTMLButtonElement>(
         '[data-workstation-group-toggle="workspace:secondary"]'
       )!;
-      expect(host.textContent).toContain("Primary Repo");
+      expect(host.textContent?.match(/Primary Repo/g)).toHaveLength(1);
       expect(host.textContent).toContain("primary-branch");
-      expect(host.textContent).toContain("Secondary Repo");
+      expect(host.textContent!.indexOf("primary-branch")).toBeLessThan(
+        host.textContent!.indexOf("Changes")
+      );
+      expect(host.textContent?.match(/Secondary Repo/g)).toHaveLength(1);
       expect(host.textContent).not.toContain("secondary-branch");
       expect(secondaryToggle.getAttribute("aria-expanded")).toBe("false");
 
       const requestedPaths = () =>
         gitMocks.useWorkingTreeDiffTotals.mock.calls.map((call) => call[1]);
       expect(requestedPaths()).toContain("/workspace/primary");
-      expect(requestedPaths()).not.toContain("/workspace/secondary");
+      expect(requestedPaths()).toContain("/workspace/secondary");
+      expect(secondaryToggle.textContent).toContain("+8");
+      expect(secondaryToggle.textContent).toContain("-2");
+      expect(
+        secondaryToggle.querySelector('[data-icon="chevron-right"]')
+          ?.nextElementSibling?.textContent
+      ).toBe("+8-2");
 
       act(() => secondaryToggle.click());
 
