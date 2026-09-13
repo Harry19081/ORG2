@@ -1,7 +1,10 @@
 /** Cloud session owner row, using the shared people-avatar treatment. */
 import PersonAvatar from "@src/components/PersonAvatar";
-import { WORKSTATION_TRAIL_CONTENT } from "@src/config/workstation/tokens";
 
+import {
+  WORKSTATION_TRAIL_ROW,
+  WORKSTATION_TRAIL_ROW_HOVER_CLASS,
+} from "../blocks/workstationTrailTokens";
 import type { FocusedChatSessionContext } from "./types";
 
 export function OwnerIdentityRow({
@@ -17,29 +20,24 @@ export function OwnerIdentityRow({
     displayName && displayName !== owner.identityId
       ? `${identityLabel} · ${owner.identityId}`
       : identityLabel;
-  const className = compact
-    ? "flex h-8 min-w-0 items-center gap-2 overflow-hidden rounded-md px-2 text-text-1"
-    : `${WORKSTATION_TRAIL_CONTENT.row} ${WORKSTATION_TRAIL_CONTENT.rowHorizontalPadding} gap-1.5 overflow-hidden text-text-1`;
+  const rowClass = `${WORKSTATION_TRAIL_ROW.shell} ${compact ? WORKSTATION_TRAIL_ROW.compact : WORKSTATION_TRAIL_ROW.wide} ${WORKSTATION_TRAIL_ROW_HOVER_CLASS}`;
+  const contentClass = `${WORKSTATION_TRAIL_ROW.content} ${compact ? WORKSTATION_TRAIL_ROW.compactContent : WORKSTATION_TRAIL_ROW.wideContent}`;
 
   return (
     <div
-      className={className}
+      className={`${rowClass} ${contentClass}`}
       title={title}
       data-owner-id={owner.identityId}
       data-testid="session-environment-owner"
     >
-      <PersonAvatar
-        name={displayName || owner.identityId}
-        src={owner.avatarUrl}
-        size={14}
-      />
-      <span
-        className={`min-w-0 flex-1 truncate ${
-          compact ? "text-[13px]" : "text-[12px]"
-        }`}
-      >
-        {identityLabel}
+      <span className={WORKSTATION_TRAIL_ROW.icon}>
+        <PersonAvatar
+          name={displayName || owner.identityId}
+          src={owner.avatarUrl}
+          size={WORKSTATION_TRAIL_ROW.iconSize}
+        />
       </span>
+      <span className={WORKSTATION_TRAIL_ROW.label}>{identityLabel}</span>
     </div>
   );
 }

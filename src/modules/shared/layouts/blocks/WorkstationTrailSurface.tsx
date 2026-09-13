@@ -13,7 +13,11 @@ import {
 } from "@src/config/workstation/tokens";
 import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
-import { WORKSTATION_TRAIL_SURFACE_CLASS } from "./workstationTrailTokens";
+import {
+  WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS,
+  WORKSTATION_TRAIL_SURFACE_CLASS,
+  WORKSTATION_TRAIL_TITLE_BUTTON_CLASS,
+} from "./workstationTrailTokens";
 
 export {
   WORKSTATION_TRAIL_SURFACE_CLASS,
@@ -41,6 +45,8 @@ export interface WorkstationTrailHeaderProps {
   standalone?: boolean;
   title: ReactNode;
   titleActions?: ReactNode;
+  /** Noninteractive summary immediately after the title fold chevron. */
+  titleSuffix?: ReactNode;
   /**
    * Makes the whole title area (everything left of `actions`) a fold toggle
    * for the header's own group, with an always-visible chevron after the
@@ -66,6 +72,7 @@ export const WorkstationTrailHeader: FC<WorkstationTrailHeaderProps> = ({
   standalone = false,
   title,
   titleActions,
+  titleSuffix,
   onTitleToggle,
   titleToggleCollapsed = false,
   titleToggleLabels,
@@ -81,9 +88,12 @@ export const WorkstationTrailHeader: FC<WorkstationTrailHeaderProps> = ({
     {!collapsed ? (
       onTitleToggle ? (
         <>
-          <button
-            type="button"
-            className="group/trail-title flex h-full min-w-0 flex-1 items-center gap-px text-left"
+          <Button
+            htmlType="button"
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="sidebar"
+            className={`${WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS} ${WORKSTATION_TRAIL_TITLE_BUTTON_CLASS} group/trail-title h-full! min-w-0 flex-1 bg-transparent p-0! text-left`}
             onClick={onTitleToggle}
             aria-expanded={!titleToggleCollapsed}
             aria-label={
@@ -109,7 +119,8 @@ export const WorkstationTrailHeader: FC<WorkstationTrailHeaderProps> = ({
               size={14}
               strokeWidth={1.75}
             />
-          </button>
+            {titleSuffix}
+          </Button>
           {titleActions}
           {children}
         </>
@@ -147,10 +158,10 @@ export const WorkstationTrailIconButton: FC<
     htmlType={type}
     size={size}
     variant="tertiary"
-    appearance="soft"
+    appearance="soft-no-drop"
     iconOnly
     icon={children}
-    className={className}
+    className={`text-text-1! ${className}`}
   />
 );
 
@@ -199,7 +210,7 @@ export const WorkstationTrailSection: FC<WorkstationTrailSectionProps> = ({
 /** Muted empty-state line inside a trail section. */
 export const WorkstationTrailEmptyText: FC<{ children?: ReactNode }> = ({
   children,
-}) => <div className="px-2 text-[12px] text-text-3">{children}</div>;
+}) => <div className="px-2 text-[12px] text-text-1">{children}</div>;
 
 /** Shared scroll container directly below a Workstation trail header. */
 export const WorkstationTrailBody: FC<HTMLAttributes<HTMLDivElement>> = ({
