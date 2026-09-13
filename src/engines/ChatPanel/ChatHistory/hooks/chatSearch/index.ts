@@ -1,10 +1,4 @@
 export {
-  SEARCH_TEXT_HIGHLIGHT_CLASS,
-  SEARCH_TEXT_HIGHLIGHT_ACTIVE_CLASS,
-  applySearchTextHighlight,
-  clearSearchTextHighlights,
-} from "./chatSearchHighlightDom";
-export {
   CHAT_EVENT_IDS_ATTR,
   CHAT_FLAT_INDEX_ATTR,
   CHAT_ITEM_ID_ATTR,
@@ -21,5 +15,3 @@ export {
   writeChatSearchSyncState,
 } from "./chatSearchSyncWrite";
 export { useChatSearchPanePresentation } from "./useChatSearchPanePresentation";
-
-export { useChatSearchSyncState } from "./useChatSearchSyncState";
