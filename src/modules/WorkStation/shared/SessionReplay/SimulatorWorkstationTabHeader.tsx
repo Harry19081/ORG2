@@ -65,7 +65,7 @@ const SimulatorWorkstationTabHeaderComponent: React.FC<
         ) : null}
       </NoDragRegion>
       <HeaderSectionSeparator />
-      <PublishedHeaderSlotsView slots={headerSlots} />
+      <PublishedHeaderSlotsView slots={headerSlots} paddingLeftClassName="" />
     </div>
   );
 };
