@@ -10,10 +10,9 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import SplitButton from "@src/components/SplitButton";
-import { SPLIT_BUTTON } from "@src/config/workstation/tokens";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { useAvailableShells } from "@src/hooks/terminal";
-import { Add01Icon, ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
+import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import type { ShellProfile } from "@src/types/terminal";
 
 const SIDEBAR_ICON_STROKE_WIDTH = 2.25;
@@ -136,96 +135,26 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
     t,
   ]);
 
-  if (density === "sidebar") {
-    if (!hasProfilePicker) {
-      return (
-        <Button
-          htmlType="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onNewTerminal();
-          }}
-          title={terminalTitle}
-          size="sidebar"
-          variant="tertiary"
-          appearance="soft"
-          iconOnly
-          icon={
-            <HugeiconsIcon
-              icon={Add01Icon}
-              data-icon="plus"
-              size={DROPDOWN_ITEM.iconSize}
-              strokeWidth={SIDEBAR_ICON_STROKE_WIDTH}
-            />
-          }
-        />
-      );
-    }
-
-    return (
-      <div
-        className={`${SPLIT_BUTTON.container} ${isShellPickerOpen ? "bg-fill-2" : ""}`}
-      >
-        <Button
-          layout="custom"
-          appearance="custom"
-          htmlType="button"
-          className={`${SPLIT_BUTTON.left} ${isShellPickerOpen ? "text-text-1" : ""}`}
-          onClick={(event) => {
-            event.stopPropagation();
-            onNewTerminal();
-          }}
-          title={terminalTitle}
-        >
-          <HugeiconsIcon
-            icon={Add01Icon}
-            data-icon="plus"
-            size={DROPDOWN_ITEM.iconSize}
-            strokeWidth={SIDEBAR_ICON_STROKE_WIDTH}
-          />
-        </Button>
-        <Button
-          layout="custom"
-          appearance="custom"
-          ref={shellPickerTriggerRef}
-          htmlType="button"
-          className={`${SPLIT_BUTTON.right} ${isShellPickerOpen ? "bg-fill-3 text-text-1" : ""}`}
-          onClick={(event) => {
-            event.stopPropagation();
-            toggleShellPicker();
-          }}
-          title={terminalTitle}
-        >
-          <HugeiconsIcon
-            icon={ArrowDown01Icon}
-            data-icon="chevron-down"
-            size={DROPDOWN_ITEM.iconSize}
-            strokeWidth={SIDEBAR_ICON_STROKE_WIDTH}
-          />
-        </Button>
-        {shellPickerMenu}
-      </div>
-    );
-  }
-
   if (!hasProfilePicker) {
     return (
       <Button
         htmlType="button"
         variant="tertiary"
-        size="small"
+        size={density === "sidebar" ? "sidebar" : "small"}
+        appearance="soft-no-drop"
         iconOnly
+        aria-label={terminalTitle}
         onClick={(event) => {
           event.stopPropagation();
           onNewTerminal();
         }}
-        title={terminalTitle}
+        title={density === "sidebar" ? terminalTitle : undefined}
         icon={
           <HugeiconsIcon
             icon={Add01Icon}
             data-icon="plus"
             size={DROPDOWN_ITEM.iconSize}
-            strokeWidth={2}
+            strokeWidth={density === "sidebar" ? SIDEBAR_ICON_STROKE_WIDTH : 2}
           />
         }
       />
@@ -237,21 +166,21 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
       ref={shellPickerTriggerRef}
       htmlType="button"
       variant="tertiary"
-      size="small"
+      size={density === "sidebar" ? "sidebar" : "small"}
+      appearance="soft-no-drop"
       iconOnly
-      className={isShellPickerOpen ? "bg-fill-2! text-primary-6!" : ""}
       onClick={(event) => {
         event.stopPropagation();
         onNewTerminal();
       }}
       aria-label={terminalTitle}
-      title={terminalTitle}
+      title={density === "sidebar" ? terminalTitle : undefined}
       icon={
         <HugeiconsIcon
           icon={Add01Icon}
           data-icon="plus"
           size={DROPDOWN_ITEM.iconSize}
-          strokeWidth={2}
+          strokeWidth={density === "sidebar" ? SIDEBAR_ICON_STROKE_WIDTH : 2}
         />
       }
       menu={shellPickerMenu ?? <div />}
@@ -262,6 +191,9 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
       menuOpen={isShellPickerOpen}
       menuButtonLabel={terminalTitle}
       mainSegmentWidth={splitMainWidth}
+      menuSegmentWidth={
+        density === "sidebar" ? DROPDOWN_ITEM.iconSize + 4 : undefined
+      }
     />
   );
 };

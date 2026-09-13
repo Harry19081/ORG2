@@ -171,7 +171,7 @@ describe("compact shared actions", () => {
     expect(markup).toContain("border-radius:8px");
   });
 
-  it("keeps danger actions light and respects native disabled behavior", async () => {
+  it("shows danger color at rest with light hover fills and native disabled behavior", async () => {
     let clicks = 0;
     const props = {
       size: "sidebar" as const,
@@ -191,6 +191,8 @@ describe("compact shared actions", () => {
       await act(async () => root.render(React.createElement(Button, props)));
       const button = container.querySelector("button")!;
       expect(button.getAttribute("aria-label")).toBe("Discard file");
+      expect(button.classList.contains("text-danger-6")).toBe(true);
+      expect(button.classList.contains("text-text-2")).toBe(false);
       expect(button.className).toContain("enabled:hover:bg-danger-2");
       expect(button.className).toContain("focus-visible:bg-danger-2");
       await act(async () =>
@@ -198,6 +200,8 @@ describe("compact shared actions", () => {
           React.createElement(Button, { ...props, appearance: "soft-no-drop" })
         )
       );
+      expect(button.classList.contains("text-danger-6")).toBe(true);
+      expect(button.classList.contains("text-text-2")).toBe(false);
       expect(button.className).toContain("enabled:hover:bg-danger-1");
       expect(button.className).not.toContain("enabled:hover:bg-danger-2");
       expect(button.className).not.toContain("bg-danger-3");

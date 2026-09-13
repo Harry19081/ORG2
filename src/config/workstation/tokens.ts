@@ -90,9 +90,9 @@ export const BUTTON_VARIANT = {
     "text-text-2 enabled:hover:bg-button-hover-no-drop enabled:hover:text-text-1 focus-visible:bg-button-hover-no-drop focus-visible:text-text-1",
   defaultTreeRow: DEFAULT_BUTTON_VARIANT,
   danger:
-    "text-text-2 enabled:hover:bg-danger-2 enabled:hover:text-danger-6 focus-visible:bg-danger-2 focus-visible:text-danger-6",
+    "text-danger-6 enabled:hover:bg-danger-2 enabled:hover:text-danger-6 focus-visible:bg-danger-2 focus-visible:text-danger-6",
   dangerNoDrop:
-    "text-text-2 enabled:hover:bg-danger-1 enabled:hover:text-danger-6 focus-visible:bg-danger-1 focus-visible:text-danger-6",
+    "text-danger-6 enabled:hover:bg-danger-1 enabled:hover:text-danger-6 focus-visible:bg-danger-1 focus-visible:text-danger-6",
   primary:
     "text-text-2 enabled:hover:bg-primary-3 enabled:hover:text-primary-6 focus-visible:bg-primary-3 focus-visible:text-primary-6",
   success:

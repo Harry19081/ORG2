@@ -16,7 +16,7 @@ import {
   ArrowUpRight01Icon,
   Cancel01Icon,
   HugeiconsIcon,
-  StopIcon,
+  StopCircleIcon,
 } from "@src/icons";
 
 import {
@@ -144,10 +144,12 @@ export function WorkstationItemRow({
       )}
       {item.onStop ? (
         <Button
-          variant="tertiary"
-          appearance="soft-no-drop"
+          variant="danger"
+          appearance="soft"
           iconOnly
-          icon={<HugeiconsIcon icon={StopIcon} data-icon="stop" size={14} />}
+          icon={
+            <HugeiconsIcon icon={StopCircleIcon} data-icon="stop" size={14} />
+          }
           size="sidebar"
           aria-label={item.stopLabel ?? item.label}
           title={item.stopLabel ?? item.label}

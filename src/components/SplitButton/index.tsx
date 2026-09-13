@@ -95,12 +95,25 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
       style,
     });
 
-    const wrapperHoverClass =
-      !isDisabled && variant === "tertiary" && resolvedAppearance === "solid"
-        ? "group-hover/button-split:bg-surface-hover group-hover/button-split:text-text-1"
-        : "";
+    const highlightOpenMenu =
+      menuOpen &&
+      !isDisabled &&
+      resolvedAppearance === "soft-no-drop" &&
+      (variant === "tertiary" || variant === "secondary");
+    const mainOpenClass = highlightOpenMenu
+      ? "bg-button-hover-no-drop! text-primary-6!"
+      : "";
+
+    const wrapperHoverClass = isDisabled
+      ? ""
+      : resolvedAppearance === "soft-no-drop"
+        ? "group-hover/button-split:bg-button-hover-no-drop group-hover/button-split:text-text-1"
+        : variant === "tertiary" && resolvedAppearance === "solid"
+          ? "group-hover/button-split:bg-surface-hover group-hover/button-split:text-text-1"
+          : "";
 
     const menuColorClass = (() => {
+      if (highlightOpenMenu) return "text-primary-6";
       if (resolvedAppearance === "solid") {
         switch (variant) {
           case "primary":
@@ -136,6 +149,11 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
 
     const menuStateClass = (() => {
       if (isDisabled) return "";
+      if (resolvedAppearance === "soft-no-drop") {
+        return highlightOpenMenu
+          ? "bg-button-hover enabled:hover:bg-button-hover focus-visible:bg-button-hover"
+          : "enabled:hover:bg-button-hover focus-visible:bg-button-hover";
+      }
       if (resolvedAppearance === "solid") {
         switch (variant) {
           case "primary":
@@ -201,7 +219,7 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
             ref={ref}
             htmlType={htmlType}
             disabled={isDisabled}
-            className={`${buttonClassName} ${wrapperHoverClass}`.trim()}
+            className={`${buttonClassName} ${wrapperHoverClass} ${mainOpenClass}`.trim()}
             style={{
               ...buttonStyles,
               width: shouldHug ? "auto" : (splitButtonWidth ?? "100%"),
