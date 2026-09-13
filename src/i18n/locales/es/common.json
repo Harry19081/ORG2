@@ -772,7 +772,6 @@
     "nextMatch": "Siguiente coincidencia (Enter)",
     "nextMatchLabel": "Siguiente coincidencia",
     "clearSearch": "Limpiar búsqueda",
-    "openInEditorTab": "Abrir en pestaña del editor",
     "openFile": "Abrir archivo",
     "openNativeDevTools": "Abrir DevTools nativas del navegador",
     "captureScreenshot": "Captura de pantalla",

@@ -772,7 +772,6 @@
     "nextMatch": "次の一致 (Enter)",
     "nextMatchLabel": "次の一致",
     "clearSearch": "検索をクリア",
-    "openInEditorTab": "エディタタブで開く",
     "openFile": "ファイルを開く",
     "openNativeDevTools": "ネイティブブラウザの開発者ツールを開く",
     "captureScreenshot": "スクリーンショット",

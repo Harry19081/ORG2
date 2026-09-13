@@ -772,7 +772,6 @@
     "nextMatch": "다음 일치 (Enter)",
     "nextMatchLabel": "다음 일치",
     "clearSearch": "검색 지우기",
-    "openInEditorTab": "편집기 탭에서 열기",
     "openFile": "파일 열기",
     "openNativeDevTools": "네이티브 브라우저 개발자 도구 열기",
     "captureScreenshot": "스크린샷",

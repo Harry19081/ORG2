@@ -772,7 +772,6 @@
     "nextMatch": "Следующее совпадение (Enter)",
     "nextMatchLabel": "Следующее совпадение",
     "clearSearch": "Очистить поиск",
-    "openInEditorTab": "Открыть во вкладке редактора",
     "openFile": "Открыть файл",
     "openNativeDevTools": "Открыть нативные DevTools браузера",
     "captureScreenshot": "Скриншот",

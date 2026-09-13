@@ -469,7 +469,9 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
               size="small"
               iconOnly
               className="pointer-events-auto shrink-0"
-              onClick={handleCopyPath}
+              onClick={() => {
+                void handleCopyPath();
+              }}
               title={t("actions.copyPath")}
               aria-label={`${t("actions.copyPath")}: ${displayPath}`}
               icon={

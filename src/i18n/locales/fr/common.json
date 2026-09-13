@@ -772,7 +772,6 @@
     "nextMatch": "Correspondance suivante (Enter)",
     "nextMatchLabel": "Correspondance suivante",
     "clearSearch": "Effacer la recherche",
-    "openInEditorTab": "Ouvrir dans un onglet de l'éditeur",
     "openFile": "Ouvrir le fichier",
     "openNativeDevTools": "Ouvrir les DevTools natives du navigateur",
     "captureScreenshot": "Capture d’écran",
