@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import Button from "@src/components/Button";
+import quitImage from "@src/assets/illustrations/quit.png";
 import Modal from "@src/scaffold/ModalSystem";
 import { quitConfirmationModalOpenAtom } from "@src/store/ui/overlayAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
@@ -58,30 +58,17 @@ const QuitConfirmationModal = () => {
   return (
     <Modal
       visible={isOpen}
+      size="medium"
+      image={{ src: quitImage, alt: "" }}
       title={t("quitConfirmation.title")}
-      width={360}
       closable={false}
       maskClosable={false}
       onCancel={handleCancel}
-      bodyClassName="px-5 py-3"
-      footer={
-        <div className="flex h-12 items-center justify-end gap-2 px-3">
-          <Button variant="tertiary" onClick={handleCancel}>
-            {t("quitConfirmation.cancel")}
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={handleQuit}
-            data-modal-primary-action
-          >
-            {t("quitConfirmation.confirm")}
-          </Button>
-        </div>
-      }
+      onOk={handleQuit}
+      okText={t("quitConfirmation.confirm")}
+      cancelText={t("quitConfirmation.cancel")}
     >
-      <div className="text-[13px] leading-5 text-text-3">
-        {t("quitConfirmation.subtitle")}
-      </div>
+      <p className="text-sm text-text-2">{t("quitConfirmation.subtitle")}</p>
     </Modal>
   );
 };
