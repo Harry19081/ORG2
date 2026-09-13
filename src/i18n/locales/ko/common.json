@@ -1915,6 +1915,8 @@
     "moveWorkstationSidebarRight": "Workstation 사이드바를 오른쪽으로 이동",
     "openMyStation": "My Station으로 이동",
     "openAgentStation": "Agent Station으로 이동",
+    "openMyStationInNewWindow": "My Station을 새 창에서 열기",
+    "openAgentStationInNewWindow": "Agent Station을 새 창에서 열기",
     "openKanban": "Kanban로 이동",
     "changeLanguage": "언어 변경",
     "changeTheme": "테마 변경",

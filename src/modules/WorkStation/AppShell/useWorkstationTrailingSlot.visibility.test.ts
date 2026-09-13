@@ -28,12 +28,19 @@ import {
 
 import { useWorkstationTrailingSlot } from "./useWorkstationTrailingSlot";
 
-const { pinnedChromeVisibleMock } = vi.hoisted(() => ({
+const { pinnedChromeVisibleMock, stationWindowMock } = vi.hoisted(() => ({
   pinnedChromeVisibleMock: vi.fn(),
+  stationWindowMock: vi.fn(() => false),
 }));
 
 vi.mock("@src/hooks/ui/workbench/usePinnedWorkbenchChrome", () => ({
   usePinnedWorkbenchChromeVisible: pinnedChromeVisibleMock,
+}));
+vi.mock("@src/util/platform/tauri/windowIdentity", async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import("@src/util/platform/tauri/windowIdentity")
+  >()),
+  isStationWindow: stationWindowMock,
 }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -80,6 +87,7 @@ describe("useWorkstationTrailingSlot pane controls", () => {
 
   beforeEach(() => {
     pinnedChromeVisibleMock.mockReturnValue(false);
+    stationWindowMock.mockReturnValue(false);
     resetInstrumentedStore();
     localStorage.clear();
     store = createInstrumentedStore();
@@ -145,6 +153,37 @@ describe("useWorkstationTrailingSlot pane controls", () => {
     ).toBeNull();
     expect(
       container.querySelector('button[title="chat.hideWorkstation"]')
+    ).toBeNull();
+  });
+
+  it("offers to open My Station in a new window beside the pane controls", () => {
+    renderHost("code");
+
+    expect(
+      container.querySelector(
+        '[data-testid="my-station-open-in-new-window"], button[title="common:spotlightActions.openMyStationInNewWindow"]'
+      )
+    ).not.toBeNull();
+  });
+
+  it("drops the pane controls and the detach button inside a station window", () => {
+    stationWindowMock.mockReturnValue(true);
+    renderHost("code");
+
+    expect(container.querySelector('[title="new-tab"]')).not.toBeNull();
+    expect(
+      container.querySelector(
+        'button[title="common:spotlightActions.openMyStationInNewWindow"]'
+      )
+    ).toBeNull();
+    expect(
+      container.querySelector('button[title="chat.maximizeWorkStation"]')
+    ).toBeNull();
+    expect(
+      container.querySelector('button[title="chat.hideWorkstation"]')
+    ).toBeNull();
+    expect(
+      container.querySelector('button[title="chat.restoreChatPanel"]')
     ).toBeNull();
   });
 

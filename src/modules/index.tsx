@@ -60,6 +60,7 @@ import { FloatingSidebar } from "./shared/layouts/sidebar/FloatingSidebar";
 import { SidebarSelector } from "./shared/layouts/sidebar/SidebarSelector";
 import { useNarrowChatFocus } from "./useNarrowChatFocus";
 import { useOpenUrlInBrowser } from "./useOpenUrlInBrowser";
+import { useStationWindowBridge } from "./useStationWindowBridge";
 import { useWorkStationPipelineBridge } from "./useWorkStationPipelineBridge";
 
 const WorkStationPage = React.lazy(
@@ -332,6 +333,9 @@ const AppShell = () => {
 
   useNarrowChatFocus({ enabled: true });
   useWorkStationPipelineBridge(shouldBridgeWorkStationPipeline);
+  // Detached station windows mirror this window's remembered session and
+  // hand the surface back when they close.
+  useStationWindowBridge();
 
   const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
   // Settings always sits on the left; position atoms describe ChatPanel placement only.

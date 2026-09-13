@@ -1915,6 +1915,8 @@
     "moveWorkstationSidebarRight": "Workstation kenar çubuğunu sağa taşı",
     "openMyStation": "My Station'a git",
     "openAgentStation": "Agent Station'a git",
+    "openMyStationInNewWindow": "My Station'ı yeni pencerede aç",
+    "openAgentStationInNewWindow": "Agent Station'ı yeni pencerede aç",
     "openKanban": "Kanban'e git",
     "changeLanguage": "Dili değiştir",
     "changeTheme": "Temayı değiştir",

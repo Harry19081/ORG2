@@ -1915,6 +1915,8 @@
     "moveWorkstationSidebarRight": "將工作站側邊欄移到右側",
     "openMyStation": "前往我的工作站",
     "openAgentStation": "前往 Agent 工作站",
+    "openMyStationInNewWindow": "在新視窗中開啟我的工作站",
+    "openAgentStationInNewWindow": "在新視窗中開啟 Agent 工作站",
     "openKanban": "前往 Kanban",
     "changeLanguage": "變更語言",
     "changeTheme": "變更主題",

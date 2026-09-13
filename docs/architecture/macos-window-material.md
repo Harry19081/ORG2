@@ -47,8 +47,8 @@ boundary. The window's content view retains its material subview, identified by
 - Destroying the content view releases the material with the rest of its native
   subviews.
 
-Initial main-window setup, main-window recovery, and detached session windows
-continue to call the same apply helper. The startup opaque cover remains until
+Initial main-window setup, main-window recovery, and detached session and
+station windows continue to call the same apply helper. The startup opaque cover remains until
 the frontend is ready.
 
 ## Dependency choice
@@ -74,7 +74,7 @@ remain necessary on representative older and current macOS releases:
 - Light and dark themes, bright/dark desktop backgrounds, and Reduce
   Transparency enabled/disabled.
 - Cold startup and frontend-ready transition, main-window recovery, and
-  detached session creation/close.
+  detached session / station window creation/close.
 - Repeated enable/disable, proving the content view has zero or one owned
   material view and unrelated subviews remain intact.
 - Focus changes, minimize/restore, resize/fullscreen, and Retina/external-display

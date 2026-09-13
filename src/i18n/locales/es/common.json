@@ -1915,6 +1915,8 @@
     "moveWorkstationSidebarRight": "Mover la barra lateral de Workstation a la derecha",
     "openMyStation": "Ir a My Station",
     "openAgentStation": "Ir a Agent Station",
+    "openMyStationInNewWindow": "Abrir My Station en una ventana nueva",
+    "openAgentStationInNewWindow": "Abrir Agent Station en una ventana nueva",
     "openKanban": "Ir a Kanban",
     "changeLanguage": "Cambiar idioma",
     "changeTheme": "Cambiar tema",

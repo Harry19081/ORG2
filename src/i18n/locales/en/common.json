@@ -1746,6 +1746,8 @@
     "moveWorkstationSidebarRight": "Move Workstation sidebar to the right",
     "openMyStation": "Go to My Station",
     "openAgentStation": "Go to Agent Station",
+    "openMyStationInNewWindow": "Open My Station in New Window",
+    "openAgentStationInNewWindow": "Open Agent Station in New Window",
     "openKanban": "Go to Kanban",
     "changeLanguage": "Change language",
     "changeTheme": "Change theme",

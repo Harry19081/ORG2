@@ -23,10 +23,12 @@ import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { workstationProjectTabBarAtom } from "@src/store/workstation";
 import type { WorkstationTabHost } from "@src/store/workstation/tabHost";
+import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
 import {
   StationChatVisibilityButton,
   StationMaximizeChatButton,
+  StationOpenInNewWindowButton,
   useStationPaneActions,
 } from "../shared/StationPaneControls";
 import type { UseWorkstationTabListReturn } from "./useWorkstationTabList";
@@ -59,7 +61,10 @@ export function useWorkstationTrailingSlot({
   // maximize/restore button, so the workstation-side toggle is redundant
   // and visually conflicting (two buttons driving the same atom).
   const isSettingsRoute = location.pathname.startsWith("/orgii/app/settings");
-  const showPaneControls = !isSettingsRoute && !pinnedChrome;
+  // A detached station window has no chat pane to toggle and already is its
+  // own window, so it carries neither the pane controls nor the detach button.
+  const stationWindow = isStationWindow();
+  const showPaneControls = !isSettingsRoute && !pinnedChrome && !stationWindow;
 
   const { handleToggleChatPanel, handleToggleChatPanelMaximized } =
     useStationPaneActions();
@@ -69,6 +74,14 @@ export function useWorkstationTrailingSlot({
     // per-app surfaces left to gate it on — from anywhere you can open any
     // tab type.
     const plusMenuControl = <TabBarPlusMenu />;
+
+    const openInNewWindowControl =
+      stationWindow || isSettingsRoute ? null : (
+        <StationOpenInNewWindowButton
+          stationMode="my-station"
+          testId="my-station-open-in-new-window"
+        />
+      );
 
     const chatPanelControl = showPaneControls ? (
       <StationChatVisibilityButton
@@ -132,6 +145,7 @@ export function useWorkstationTrailingSlot({
       <>
         {plusMenuControl}
         {projectTrailingControl}
+        {openInNewWindowControl}
         {shrinkWorkstationControl}
         {chatPanelControl}
         {maximizeChatControl}
@@ -145,6 +159,7 @@ export function useWorkstationTrailingSlot({
     isChatPanelVisible,
     isSettingsRoute,
     showPaneControls,
+    stationWindow,
     projectTabBar,
     t,
     visible,

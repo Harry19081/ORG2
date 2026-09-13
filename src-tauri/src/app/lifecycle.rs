@@ -60,6 +60,7 @@ pub(crate) fn handle_window_close_and_destroy(
     // still attributed to a dead window.
     if let tauri::WindowEvent::Destroyed = _event {
         system_services::power::release_sleep_inhibitor_for_window_label(_window.label());
+        notify_main_of_station_window_closed(_window);
     }
     if let tauri::WindowEvent::CloseRequested { api: _api, .. } = _event {
         // Only hide the "main" window — let auxiliary windows close normally
@@ -70,6 +71,28 @@ pub(crate) fn handle_window_close_and_destroy(
                 let _ = _window.hide();
             }
         }
+    }
+}
+
+/// A detached station window (`app-window-station-<mode>`) going away is a
+/// layout event for the main window: it hid its own copy of that station
+/// when the window opened and must show it again. The frontend cannot
+/// observe another window's destruction reliably (a crash or programmatic
+/// close never runs that window's JS cleanup), so the signal is raised here
+/// and delivered only to `main`.
+fn notify_main_of_station_window_closed(window: &tauri::Window) {
+    use tauri::Emitter;
+
+    let label = window.label();
+    if !app_window::is_station_window_label(label) {
+        return;
+    }
+    if let Err(error) = window.app_handle().emit_to(
+        "main",
+        app_window::STATION_WINDOW_CLOSED_EVENT,
+        label,
+    ) {
+        tracing::warn!(label, error = %error, "[Window] failed to notify main of station window close");
     }
 }
 

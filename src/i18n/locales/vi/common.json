@@ -1915,6 +1915,8 @@
     "moveWorkstationSidebarRight": "Chuyển thanh bên Workstation sang phải",
     "openMyStation": "Đi tới My Station",
     "openAgentStation": "Đi tới Agent Station",
+    "openMyStationInNewWindow": "Mở My Station trong cửa sổ mới",
+    "openAgentStationInNewWindow": "Mở Agent Station trong cửa sổ mới",
     "openKanban": "Đi tới Kanban",
     "changeLanguage": "Thay đổi ngôn ngữ",
     "changeTheme": "Thay đổi giao diện",

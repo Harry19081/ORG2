@@ -19,6 +19,7 @@ import { ROUTES } from "@src/config/routes";
 import { useBrowserContext } from "@src/contexts/workstation";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 import {
   comparableBrowserUrl,
   normalizeBrowserInput,
@@ -93,6 +94,12 @@ export function useOpenUrlInBrowser(): void {
       const alreadyOnBrowser =
         stationModeRef.current === "my-station" &&
         pathnameRef.current === ROUTES.workStation.browser.path;
+
+      // A detached station window has no chat pane or route to reveal, and
+      // the layout atoms below are persisted — a write here would resync into
+      // the MAIN window's layout. The tab has been added; the toast's
+      // "Go to Browser" is the main window's affordance.
+      if (isStationWindow()) return;
 
       if (shouldNavigate) {
         setChatPanelMaximizedRef.current(false);

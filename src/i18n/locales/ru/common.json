@@ -1915,6 +1915,8 @@
     "moveWorkstationSidebarRight": "Переместить боковую панель Workstation вправо",
     "openMyStation": "Перейти в My Station",
     "openAgentStation": "Перейти в Agent Station",
+    "openMyStationInNewWindow": "Открыть My Station в новом окне",
+    "openAgentStationInNewWindow": "Открыть Agent Station в новом окне",
     "openKanban": "Перейти в Kanban",
     "changeLanguage": "Изменить язык",
     "changeTheme": "Изменить тему",

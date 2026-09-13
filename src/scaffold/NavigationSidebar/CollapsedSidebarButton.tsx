@@ -14,6 +14,7 @@ import {
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { HugeiconsIcon, LayoutAlignLeftIcon, PanelLeftIcon } from "@src/icons";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
+import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
 import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "./config";
 
@@ -33,8 +34,10 @@ const CollapsedSidebarButtonComponent: React.FC = () => {
   }, [setSidebarCollapsed]);
 
   // On macOS the group is drawn once, pinned in window space by
-  // `PinnedSidebarChrome`; hosts only reserve the space under it.
-  if (!collapsed || hasMacWindowChrome()) return null;
+  // `PinnedSidebarChrome`; hosts only reserve the space under it. A detached
+  // station window has no sidebar to expand: its top-bar offset exists only
+  // to clear the traffic lights (`useShouldOffsetWorkStationTopBar`).
+  if (!collapsed || hasMacWindowChrome() || isStationWindow()) return null;
 
   // Back / Forward ride along so they hold the spot they had in the sidebar
   // header; `getCollapsedSidebarChromeOffset` reserves room for both.

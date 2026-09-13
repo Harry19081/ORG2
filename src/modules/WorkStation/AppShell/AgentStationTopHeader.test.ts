@@ -28,9 +28,18 @@ import {
 
 import AgentStationTopHeader from "./AgentStationTopHeader";
 
-const { logError } = vi.hoisted(() => ({ logError: vi.fn() }));
+const { logError, stationWindowMock } = vi.hoisted(() => ({
+  logError: vi.fn(),
+  stationWindowMock: vi.fn(() => false),
+}));
 vi.mock("@src/hooks/logger", () => ({
   createLogger: () => ({ error: logError }),
+}));
+vi.mock("@src/util/platform/tauri/windowIdentity", async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import("@src/util/platform/tauri/windowIdentity")
+  >()),
+  isStationWindow: stationWindowMock,
 }));
 
 vi.mock("@src/util/platform/tauri", async (importOriginal) => ({
@@ -84,6 +93,7 @@ describe("AgentStationTopHeader", () => {
   });
 
   beforeEach(() => {
+    stationWindowMock.mockReturnValue(false);
     resetInstrumentedStore();
     store = createInstrumentedStore();
     container = document.createElement("div");
@@ -176,6 +186,50 @@ describe("AgentStationTopHeader", () => {
       "Failed to toggle station chat visibility:",
       error
     );
+  });
+
+  it("offers to open Agent Station in a new window", () => {
+    renderHeader();
+    act(() => {
+      store.set(stationModeAtom, "agent-station");
+      store.set(workstationActiveSessionIdAtom, "session-a");
+    });
+
+    expect(
+      container.querySelector(
+        'button[title="common:spotlightActions.openAgentStationInNewWindow"]'
+      )
+    ).not.toBeNull();
+  });
+
+  it("drops the pane controls and the detach button inside a station window", () => {
+    stationWindowMock.mockReturnValue(true);
+    renderHeader();
+    act(() => {
+      store.set(stationModeAtom, "agent-station");
+      store.set(workstationActiveSessionIdAtom, "session-a");
+      store.set(activeStationChatVisibleAtom, "agent-station", true);
+      store.set(chatWidthAtom, 360);
+      store.set(chatPanelMaximizedAtom, false);
+    });
+
+    expect(
+      container.querySelector(
+        'button[title="common:spotlightActions.openAgentStationInNewWindow"]'
+      )
+    ).toBeNull();
+    expect(
+      container.querySelector('button[title="chat.maximizeWorkStation"]')
+    ).toBeNull();
+    expect(
+      container.querySelector('button[title="chat.hideWorkstation"]')
+    ).toBeNull();
+    // The caption toggle is the station's own control and stays.
+    expect(
+      container.querySelector(
+        'button[title="simulator.captionBarToggleTooltip"]'
+      )
+    ).not.toBeNull();
   });
 
   it("leaves the controls to pinned chrome while Agent Station is empty", () => {
