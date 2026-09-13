@@ -22,6 +22,7 @@ app_window::commands::set_window_root_tint,
 app_window::commands::main_window_chrome_is_acrylic,
 app_window::commands::set_dock_icon,
 app_window::commands::open_session_window,
+app_window::commands::open_station_window,
 // Optional sidecar commands - lazy install after first paint
 crate::setup::sidecar_setup::sidecar_list_status,
 crate::setup::sidecar_setup::sidecar_install,

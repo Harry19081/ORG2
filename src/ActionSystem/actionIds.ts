@@ -47,6 +47,8 @@ export const ACTION_ID = {
   WORKSTATION_SET_SIDEBAR_RIGHT: "workstation.setSidebarRight",
   WORKSTATION_OPEN_MY_STATION: "workstation.openMyStation",
   WORKSTATION_OPEN_AGENT_STATION: "workstation.openAgentStation",
+  WORKSTATION_OPEN_MY_STATION_WINDOW: "workstation.openMyStationWindow",
+  WORKSTATION_OPEN_AGENT_STATION_WINDOW: "workstation.openAgentStationWindow",
   WORKSTATION_OPEN_KANBAN: "workstation.openKanban",
   WORKSTATION_TOGGLE_SIDEBAR: "workstation.toggleSidebar",
   WORKSTATION_OPEN_CODE_EDITOR_TAB: "workstation.openCodeEditorTab",

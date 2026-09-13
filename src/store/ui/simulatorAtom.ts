@@ -12,6 +12,7 @@ import type { SubagentSession } from "@src/engines/Simulator/hooks/useSubagentSe
 import type { AppType } from "@src/engines/Simulator/types/appTypes";
 import { STATION_MODES, type StationMode } from "@src/types/ui/workstation";
 import { createZodJsonStorage } from "@src/util/core/storage/zodStorage";
+import { getCurrentStationWindowMode } from "@src/util/platform/tauri/windowIdentity";
 
 export { STATION_MODE, type StationMode } from "@src/types/ui/workstation";
 
@@ -249,11 +250,45 @@ simulatorAutoScrollAtom.debugLabel = "simulatorAutoScrollAtom";
 
 const StationModeSchema = z.enum(STATION_MODES);
 
-export const stationModeAtom = atomWithStorage<StationMode>(
+/**
+ * The user's station preference for the MAIN window. Persisted, and — like
+ * every `createZodJsonStorage` atom — resynced across windows through the
+ * `storage` event, which is exactly why a detached station window must never
+ * read or write it directly (see `stationModeAtom`).
+ */
+const persistedStationModeAtom = atomWithStorage<StationMode>(
   "stationMode",
   "my-station",
   createZodJsonStorage(StationModeSchema),
   { getOnInit: true }
+);
+persistedStationModeAtom.debugLabel = "persistedStationModeAtom";
+
+/**
+ * The station this window shows.
+ *
+ * In the main window this is the persisted preference. In a detached station
+ * window (`app-window-station-<mode>`) the mode is pinned by the window
+ * label: reads return the pinned mode and writes are dropped, so a
+ * programmatic "switch to My Station" inside the Agent Station window can
+ * neither repaint that window nor leak through storage into the main
+ * window's preference. `StationModePill` turns such a switch into opening
+ * the other station's window instead.
+ */
+export const stationModeAtom = atom(
+  (get) => getCurrentStationWindowMode() ?? get(persistedStationModeAtom),
+  (
+    get,
+    set,
+    update: StationMode | ((previous: StationMode) => StationMode)
+  ) => {
+    if (getCurrentStationWindowMode() !== null) return;
+    const next =
+      typeof update === "function"
+        ? update(get(persistedStationModeAtom))
+        : update;
+    set(persistedStationModeAtom, next);
+  }
 );
 stationModeAtom.debugLabel = "stationModeAtom";
 

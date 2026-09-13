@@ -40,12 +40,14 @@ import {
   simulatorEffectiveDockAppAtom,
 } from "@src/store/ui/simulatorAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
+import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import { SimulatorAgentChip, StationModeChip } from "../shared";
 import {
   StationChatVisibilityButton,
   StationMaximizeChatButton,
+  StationOpenInNewWindowButton,
   useStationPaneActions,
 } from "../shared/StationPaneControls";
 
@@ -73,7 +75,10 @@ const AgentStationTopHeaderComponent = ({
   // maximize/restore button, so the workstation-side toggle is redundant
   // and visually conflicting (two buttons driving the same atom).
   const isSettingsRoute = location.pathname.startsWith("/orgii/app/settings");
-  const showPaneControls = !isSettingsRoute && !pinnedChrome;
+  // A detached station window has no chat pane to toggle and already is its
+  // own window, so it carries neither the pane controls nor the detach button.
+  const stationWindow = isStationWindow();
+  const showPaneControls = !isSettingsRoute && !pinnedChrome && !stationWindow;
   const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
   const [captionEnabled, setCaptionEnabled] = useAtom(
     simulatorCaptionBarEnabledAtom
@@ -176,6 +181,12 @@ const AgentStationTopHeaderComponent = ({
               strokeWidth={2}
             />
           </TabBarTrailingIconButton>
+          {!stationWindow && !isSettingsRoute && (
+            <StationOpenInNewWindowButton
+              stationMode="agent-station"
+              testId="agent-station-open-in-new-window"
+            />
+          )}
           {showPaneControls && !isChatPanelVisible && (
             <StationChatVisibilityButton
               visible={false}

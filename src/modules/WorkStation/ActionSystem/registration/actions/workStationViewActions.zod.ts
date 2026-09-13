@@ -114,6 +114,52 @@ export const workstationOpenAgentStation = defineOpenStationAction(
   ["open agent station", "switch to agent station", "show agent station"]
 );
 
+function defineOpenStationWindowAction(
+  id: ActionId,
+  mode: "my-station" | "agent-station",
+  description: string,
+  message: string,
+  examples: string[]
+) {
+  return defineZodAction(
+    {
+      id,
+      category: "navigation",
+      description,
+      params: z.object({}),
+      tags: ["workstation", "station", mode, "window", "navigation"],
+      examples,
+    },
+    async () => {
+      const workStationViewService = await getWorkStationViewService();
+      const success = await workStationViewService.openStationWindow(mode);
+      return success
+        ? { success: true, message }
+        : { success: false, message: "Could not open the station window" };
+    }
+  );
+}
+
+export const workstationOpenMyStationWindow = defineOpenStationWindowAction(
+  ACTION_ID.WORKSTATION_OPEN_MY_STATION_WINDOW,
+  "my-station",
+  "Open My Station in a new window",
+  "Opened My Station in a new window",
+  ["open my station in a new window", "detach my station", "pop out my station"]
+);
+
+export const workstationOpenAgentStationWindow = defineOpenStationWindowAction(
+  ACTION_ID.WORKSTATION_OPEN_AGENT_STATION_WINDOW,
+  "agent-station",
+  "Open Agent Station in a new window",
+  "Opened Agent Station in a new window",
+  [
+    "open agent station in a new window",
+    "detach agent station",
+    "pop out agent station",
+  ]
+);
+
 export const workstationOpenKanban = defineZodAction(
   {
     id: ACTION_ID.WORKSTATION_OPEN_KANBAN,
@@ -338,6 +384,8 @@ export const workStationViewZodActions = [
   workstationToggleChatPanelVisibility,
   workstationOpenMyStation,
   workstationOpenAgentStation,
+  workstationOpenMyStationWindow,
+  workstationOpenAgentStationWindow,
   workstationOpenKanban,
   workstationToggleSidebar,
   workstationOpenCodeEditorTab,

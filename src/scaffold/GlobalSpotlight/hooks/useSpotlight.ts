@@ -257,6 +257,17 @@ export function useSpotlight(
         "open-agent-station": () => {
           void WorkStationViewService.openStationMode("agent-station");
         },
+        "open-my-station-window": () => {
+          // Resolves false (never rejects) when the window cannot open.
+          WorkStationViewService.openStationWindow("my-station").catch(
+            () => undefined
+          );
+        },
+        "open-agent-station-window": () => {
+          WorkStationViewService.openStationWindow("agent-station").catch(
+            () => undefined
+          );
+        },
         "open-kanban": () => {
           void WorkStationViewService.openKanbanTab();
         },

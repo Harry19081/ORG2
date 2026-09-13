@@ -14,8 +14,24 @@ import {
 } from "vitest";
 
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { getCurrentStationWindowMode } from "@src/util/platform/tauri/windowIdentity";
 
 import StationModePill from ".";
+
+const { openStationInNewWindowMock } = vi.hoisted(() => ({
+  openStationInNewWindowMock: vi.fn(),
+}));
+
+vi.mock("@src/util/platform/tauri/windowIdentity", async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import("@src/util/platform/tauri/windowIdentity")
+  >()),
+  getCurrentStationWindowMode: vi.fn(() => null),
+}));
+
+vi.mock("../StationPaneControls", () => ({
+  useOpenStationInNewWindow: () => openStationInNewWindowMock,
+}));
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -46,6 +62,8 @@ describe("StationModePill", () => {
   });
 
   beforeEach(() => {
+    vi.mocked(getCurrentStationWindowMode).mockReturnValue(null);
+    openStationInNewWindowMock.mockClear();
     store = createStore();
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -105,5 +123,26 @@ describe("StationModePill", () => {
     expect(store.get(stationModeAtom)).toBe("agent-station");
     expect(agentStation?.getAttribute("aria-pressed")).toBe("true");
     expect(agentStation?.classList.contains("bg-primary-6")).toBe(true);
+  });
+
+  it("opens the other station's window instead of switching inside a station window", () => {
+    vi.mocked(getCurrentStationWindowMode).mockReturnValue("agent-station");
+    renderPill();
+
+    const agentStation = container.querySelector<HTMLButtonElement>(
+      '[data-testid="station-mode-agent-station"]'
+    );
+    const myStation = container.querySelector<HTMLButtonElement>(
+      '[data-testid="station-mode-my-station"]'
+    );
+    expect(agentStation?.getAttribute("aria-pressed")).toBe("true");
+
+    act(() => agentStation?.click());
+    expect(openStationInNewWindowMock).not.toHaveBeenCalled();
+
+    act(() => myStation?.click());
+    expect(openStationInNewWindowMock).toHaveBeenCalledWith("my-station");
+    // The pinned window keeps its own station.
+    expect(store.get(stationModeAtom)).toBe("agent-station");
   });
 });

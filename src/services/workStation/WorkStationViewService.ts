@@ -8,6 +8,7 @@ import type {
   WorkStationTabType,
 } from "@src/store/workstation/tabs/types";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
+import { getCurrentStationWindowMode } from "@src/util/platform/tauri/windowIdentity";
 
 const getStore = () => getInstrumentedStore();
 
@@ -175,6 +176,14 @@ export const WorkStationViewService = {
   },
 
   async openStationMode(mode: StationMode): Promise<boolean> {
+    // A detached station window is pinned to its station: "switch to the
+    // other station" there means bringing up that station's own window,
+    // exactly what the station-mode pill does in that window.
+    const pinnedStationMode = getCurrentStationWindowMode();
+    if (pinnedStationMode !== null) {
+      return pinnedStationMode === mode ? true : this.openStationWindow(mode);
+    }
+
     const [
       { activeChatPanelTabAtom, isChatPanelTabStationAvailable },
       { activeStationChatVisibleAtom },
@@ -201,6 +210,34 @@ export const WorkStationViewService = {
       dispatchNavigate(ROUTES.workStation.base.path);
     }
     return true;
+  },
+
+  /**
+   * Detach a station into its own OS window (or focus the one already
+   * open). Works from any route and any window: the atom seeds the window
+   * with the remembered session and, in the main window, hands the surface
+   * over to the chat panel when that station was the one on screen.
+   */
+  async openStationWindow(mode: StationMode): Promise<boolean> {
+    const [{ openStationInNewWindowAtom }, { default: i18n }] =
+      await Promise.all([
+        import("@src/store/workstation/stationWindowAtoms"),
+        import("@src/i18n"),
+      ]);
+    const title = i18n.t(
+      mode === "agent-station"
+        ? "common:terminology.agentStation"
+        : "common:terminology.myStation"
+    );
+    try {
+      await getStore().set(openStationInNewWindowAtom, {
+        stationMode: mode,
+        title,
+      });
+      return true;
+    } catch {
+      return false;
+    }
   },
 
   async toggleStationMode(): Promise<boolean> {

@@ -17,7 +17,13 @@
  */
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
+import { STATION_MODES, type StationMode } from "@src/types/ui/workstation";
+
 export const MAIN_WINDOW_LABEL = "main";
+
+/** Label prefix of detached station windows (`app-window-station-<mode>`).
+ *  Must match `STATION_WINDOW_LABEL_PREFIX` in the Rust `app-window` crate. */
+export const STATION_WINDOW_LABEL_PREFIX = "app-window-station-";
 
 /**
  * Deliberately NOT imported from `./index`: that barrel runs
@@ -61,6 +67,35 @@ export function getCurrentWindowLabel(): string | null {
 export function isMainAppWindow(): boolean {
   const label = getCurrentWindowLabel();
   return label === null || label === MAIN_WINDOW_LABEL;
+}
+
+/**
+ * The station mode a detached station window is pinned to, from its label;
+ * null for every other label (main, session windows, non-Tauri).
+ */
+export function getStationWindowModeFromLabel(
+  label: string | null
+): StationMode | null {
+  if (!label || !label.startsWith(STATION_WINDOW_LABEL_PREFIX)) return null;
+  const mode = label.slice(STATION_WINDOW_LABEL_PREFIX.length);
+  return (STATION_MODES as readonly string[]).includes(mode)
+    ? (mode as StationMode)
+    : null;
+}
+
+/**
+ * The station mode this document is pinned to when it is a detached station
+ * window (`app-window-station-<mode>`), else null. The pin is what lets the
+ * station window ignore the persisted (cross-window synced) station-mode
+ * preference and the main-window-only chat/sidebar chrome.
+ */
+export function getCurrentStationWindowMode(): StationMode | null {
+  return getStationWindowModeFromLabel(getCurrentWindowLabel());
+}
+
+/** Whether this document is a detached station window. */
+export function isStationWindow(): boolean {
+  return getCurrentStationWindowMode() !== null;
 }
 
 /** Test hook: clear the cached label so a test can vary the environment. */

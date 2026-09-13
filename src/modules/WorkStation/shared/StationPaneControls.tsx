@@ -2,11 +2,13 @@ import { useSetAtom } from "jotai";
 import { type ReactNode, startTransition, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Message from "@src/components/Message";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { createLogger } from "@src/hooks/logger";
 import {
+  AppWindowIcon,
   ArrowExpand01Icon,
   ArrowShrink01Icon,
   BubbleChatIcon,
@@ -18,8 +20,75 @@ import {
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
+import { openStationInNewWindowAtom } from "@src/store/workstation/stationWindowAtoms";
+import type { StationMode } from "@src/types/ui/workstation";
 
 const logger = createLogger("StationPaneControls");
+
+/** i18n keys naming the detach action per station (shared with Spotlight). */
+export const OPEN_STATION_IN_NEW_WINDOW_LABEL_KEY: Record<StationMode, string> =
+  {
+    "my-station": "common:spotlightActions.openMyStationInNewWindow",
+    "agent-station": "common:spotlightActions.openAgentStationInNewWindow",
+  };
+
+/** i18n keys of the station display names, used as the window title. */
+export const STATION_TITLE_KEY: Record<StationMode, string> = {
+  "my-station": "common:terminology.myStation",
+  "agent-station": "common:terminology.agentStation",
+};
+
+/**
+ * Detach the given station into its own OS window. Shared by the station
+ * header buttons and the station-mode pill inside a detached window; the
+ * atom owns the seed session and the main-window layout follow-up.
+ */
+export function useOpenStationInNewWindow(): (mode: StationMode) => void {
+  const { t } = useTranslation(["common"]);
+  const openStationInNewWindow = useSetAtom(openStationInNewWindowAtom);
+  return useCallback(
+    (mode: StationMode) => {
+      openStationInNewWindow({
+        stationMode: mode,
+        title: t(STATION_TITLE_KEY[mode]),
+      }).catch((error: unknown) => {
+        logger.error("Failed to open station window:", error);
+        Message.error(error instanceof Error ? error.message : String(error));
+      });
+    },
+    [openStationInNewWindow, t]
+  );
+}
+
+/** Tab-bar trailing control: open this station in a new window. */
+export function StationOpenInNewWindowButton({
+  stationMode,
+  testId,
+}: {
+  stationMode: StationMode;
+  testId?: string;
+}) {
+  const { t } = useTranslation(["common"]);
+  const openStationInNewWindow = useOpenStationInNewWindow();
+  const handleClick = useCallback(() => {
+    openStationInNewWindow(stationMode);
+  }, [openStationInNewWindow, stationMode]);
+  return (
+    <TabBarTrailingIconButton
+      title={t(OPEN_STATION_IN_NEW_WINDOW_LABEL_KEY[stationMode])}
+      tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
+      onClick={handleClick}
+      data-testid={testId}
+    >
+      <HugeiconsIcon
+        icon={AppWindowIcon}
+        data-icon="app-window"
+        size={14}
+        strokeWidth={2}
+      />
+    </TabBarTrailingIconButton>
+  );
+}
 
 export function useStationPaneActions() {
   const toggleMaximized = useSetAtom(toggleChatPanelMaximizedAtom);

@@ -13,6 +13,7 @@ import {
   type ChatPanelPosition,
   chatPanelPositionAtom,
 } from "@src/store/ui/workStationLayout/chatPositionAtoms";
+import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
 const COLLAPSED_SIDEBAR_BUTTON_LEFT_INSET = 8;
 const COLLAPSED_SIDEBAR_BUTTON_RESERVED_WIDTH = 30;
@@ -20,6 +21,13 @@ const COLLAPSED_SIDEBAR_BUTTON_RESERVED_WIDTH = 30;
 const COLLAPSED_SIDEBAR_HISTORY_NAV_RESERVED_WIDTH =
   SESSION_HISTORY_NAV_WIDTH + SESSION_HISTORY_NAV_GAP;
 const MACOS_TRAFFIC_LIGHTS_RESERVED_WIDTH = 80;
+/**
+ * A detached station window has no sidebar and no collapsed-sidebar group:
+ * its top bar only clears the overlay traffic lights (x=20 + three buttons),
+ * matching `MACOS_TRAFFIC_LIGHTS_INSET_PX` in the detached session window.
+ */
+const STATION_WINDOW_MACOS_LEADING_INSET = 84;
+const STATION_WINDOW_MACOS_FULLSCREEN_LEADING_INSET = 12;
 /**
  * Native full screen hides the traffic lights, but the group reads better a
  * touch further in from the bare screen edge than the 8px inset alone gives.
@@ -69,9 +77,30 @@ export function getCollapsedSidebarButtonLeft(
   );
 }
 
-/** `getCollapsedSidebarChromeOffset` tracking the live full-screen state. */
+/**
+ * Leading inset a detached station window's top bar keeps clear of the
+ * macOS traffic lights; 0 where there is nothing to clear (Windows / Linux
+ * keep a native title bar, and the main window is not a station window).
+ */
+export function getStationWindowLeadingInset(
+  options?: CollapsedSidebarChromeOptions
+): number {
+  if (!isStationWindow() || !hasMacWindowChrome()) return 0;
+  return options?.fullscreen
+    ? STATION_WINDOW_MACOS_FULLSCREEN_LEADING_INSET
+    : STATION_WINDOW_MACOS_LEADING_INSET;
+}
+
+/**
+ * `getCollapsedSidebarChromeOffset` tracking the live full-screen state.
+ * In a detached station window this is the traffic-light inset instead:
+ * the workstation top bars apply whichever offset
+ * `useShouldOffsetWorkStationTopBar` asks for, and there the ask comes from
+ * the window chrome, not from a collapsed sidebar.
+ */
 export function useCollapsedSidebarChromeOffset(): number {
   const fullscreen = useAtomValue(windowFullscreenAtom);
+  if (isStationWindow()) return getStationWindowLeadingInset({ fullscreen });
   return getCollapsedSidebarChromeOffset({ fullscreen });
 }
 
@@ -81,11 +110,22 @@ export function useCollapsedSidebarButtonLeft(): number {
   return getCollapsedSidebarButtonLeft({ fullscreen });
 }
 
+/**
+ * Whether a workstation top bar must pad its leading edge. In the main
+ * window: the sidebar is collapsed and the workstation touches the window's
+ * left edge. In a detached station window: whenever the macOS traffic lights
+ * overlay the bar (the sidebar / chat atoms describe the main window's
+ * layout and are meaningless there). `CollapsedSidebarButton` renders
+ * nothing in a station window, so the offset only ever clears chrome.
+ */
 export function useShouldOffsetWorkStationTopBar(): boolean {
   const sidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
   const chatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
   const chatWidth = useAtomValue(chatWidthAtom);
   const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
+  const fullscreen = useAtomValue(windowFullscreenAtom);
+  if (isStationWindow())
+    return getStationWindowLeadingInset({ fullscreen }) > 0;
   const chatOccupiesLeftEdge = chatWidth > 0 && chatPanelPosition === "left";
 
   return sidebarCollapsed && !chatPanelMaximized && !chatOccupiesLeftEdge;

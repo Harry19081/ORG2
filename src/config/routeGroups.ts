@@ -62,6 +62,18 @@ export const APP_AGENT_ORGS_ROUTE = route(
 // AUTH ROUTES
 // ============================================================================
 
+/**
+ * Detached station window: `/orgii/app/station/<mode>` renders My Station
+ * or Agent Station alone (no sidebar, no chat panel) inside the
+ * `app-window-station-<mode>` OS window opened by `open_station_window`.
+ */
+export const APP_STATION_WINDOW_ROUTE = route(
+  "/orgii/app/station",
+  "Station",
+  "wrench",
+  "Detached station window"
+);
+
 export const MOBILE_REMOTE_ROUTE = route(
   "/orgii/mobile",
   "Mobile Remote",

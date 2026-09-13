@@ -21,6 +21,7 @@ import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPosit
 import { mainPaneHasRealTabsAtom } from "@src/store/workstation/tabHost";
 import type { StationMode } from "@src/types/ui/workstation";
 import { isMacOS } from "@src/util/platform/tauri";
+import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
 /** One 28px icon button. */
 export const PINNED_WORKBENCH_CHROME_BUTTON_WIDTH = 28;
@@ -96,7 +97,13 @@ export function shouldShowPinnedWorkbenchChrome({
  */
 export function usePinnedWorkbenchChromeAvailable(): boolean {
   const location = useLocation();
-  return isMacOS() && isPinnedWorkbenchChromePath(location.pathname);
+  // A detached station window has no chat pane, so there are no side-pane
+  // toggles to pin — nothing to draw, nothing to reserve room for.
+  return (
+    isMacOS() &&
+    !isStationWindow() &&
+    isPinnedWorkbenchChromePath(location.pathname)
+  );
 }
 
 /** True where the empty-station `PinnedWorkbenchChrome` may draw. */
