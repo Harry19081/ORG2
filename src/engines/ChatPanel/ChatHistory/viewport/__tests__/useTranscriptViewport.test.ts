@@ -22,10 +22,12 @@ describe("useTranscriptViewport", () => {
   let firstAnchorTop: number;
   let nextFrameId: number;
   let frames: Map<number, FrameRequestCallback>;
-  let scrollTo: ReturnType<typeof vi.fn>;
-  let onExplicitFollow: ReturnType<typeof vi.fn>;
+  let scrollTo: ReturnType<
+    typeof vi.fn<(options?: ScrollToOptions | number, y?: number) => void>
+  >;
+  let onExplicitFollow: ReturnType<typeof vi.fn<() => void>>;
   let triggerResize: () => void;
-  let resizeDisconnect: ReturnType<typeof vi.fn>;
+  let resizeDisconnect: ReturnType<typeof vi.fn<() => void>>;
   let visibilityState: DocumentVisibilityState;
 
   function Harness({
@@ -115,9 +117,14 @@ describe("useTranscriptViewport", () => {
     });
     scrollRoot.getBoundingClientRect = () =>
       ({ top: 0, right: 500 }) as DOMRect;
-    scrollTo = vi.fn(({ top }: ScrollToOptions) => {
-      scrollRoot.scrollTop = Number(top ?? 0);
-    });
+    scrollTo = vi.fn<(options?: ScrollToOptions | number, y?: number) => void>(
+      (options?: ScrollToOptions | number, y?: number) => {
+        scrollRoot.scrollTop =
+          typeof options === "number"
+            ? Number(y ?? 0)
+            : Number(options?.top ?? 0);
+      }
+    );
     scrollRoot.scrollTo = scrollTo;
 
     const firstAnchor = document.createElement("div");
