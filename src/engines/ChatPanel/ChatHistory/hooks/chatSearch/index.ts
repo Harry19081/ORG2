@@ -1,5 +1,3 @@
-import { scrollSearchTargetIntoView } from "./chatSearchTargetDom";
-
 export {
   SEARCH_TEXT_HIGHLIGHT_CLASS,
   SEARCH_TEXT_HIGHLIGHT_ACTIVE_CLASS,
@@ -25,6 +23,3 @@ export {
 export { useChatSearchPanePresentation } from "./useChatSearchPanePresentation";
 
 export { useChatSearchSyncState } from "./useChatSearchSyncState";
-
-/** @deprecated Alias for scrollSearchTargetIntoView */
-export const scrollElementIntoView = scrollSearchTargetIntoView;

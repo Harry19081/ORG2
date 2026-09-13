@@ -25,8 +25,6 @@ import { useDropdownEngine } from "@src/hooks/dropdown";
 import { AiNetworkIcon, ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 import { isAgentOrgMemberEmpty } from "@src/util/agentOrg/memberActivity";
 
-export { shouldShowTurnPaginationSpinner } from "@src/components/TurnNavigationToolbar/shouldShowTurnPaginationSpinner";
-
 interface TurnPaginationControlsProps {
   agentName?: string | null;
   /** memberId of the row currently being viewed, used for active state. */
