@@ -6,6 +6,9 @@ import {
 } from "@codemirror/view";
 import type { BlockInfo, WidgetType } from "@codemirror/view";
 
+import { ArrowDown01Icon, ArrowUp01Icon, UnfoldMoreIcon } from "@src/icons";
+
+import { createGutterIcon } from "../shared/createGutterIcon";
 import {
   COLLAPSE_EXPAND_STEP,
   expandCollapsedRange,
@@ -144,6 +147,15 @@ class CollapseControl extends GutterMarker {
             : ["down", "up"];
     for (const direction of directions) {
       const button = control.appendChild(document.createElement("button"));
+      button.appendChild(
+        createGutterIcon(
+          direction === "all"
+            ? UnfoldMoreIcon
+            : direction === "down"
+              ? ArrowDown01Icon
+              : ArrowUp01Icon
+        )
+      );
       button.type = "button";
       button.className = `cm-collapseArrow cm-collapseArrow--${direction}`;
       button.setAttribute(

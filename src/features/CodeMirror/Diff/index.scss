@@ -381,7 +381,18 @@
 // Keep the change rail at the outside edge of each editor. Its row backdrop
 // paints behind the other gutters and is clipped to their combined width.
 .codemirror-diff .cm-editor .cm-gutters {
+  --cm-diff-fold-gutter-width: calc(var(--cm-icon-size, 14px) + 2px);
   overflow: hidden;
+
+  .cm-lineNumbers {
+    // Expansion buttons span the rounded gutter surface, including fold space.
+    overflow: visible;
+  }
+
+  .cm-foldGutter {
+    width: var(--cm-diff-fold-gutter-width);
+    min-width: var(--cm-diff-fold-gutter-width);
+  }
 
   .cm-gutter.cm-changeGutter {
     // CodeMirror clips each gutter column by default. Let the row backdrop
@@ -444,13 +455,22 @@
 
 .codemirror-diff .cm-editor .cm-collapseControl {
   position: absolute;
-  inset: 2px 0;
+  // Match the rounded backdrop across the number and fold columns.
+  // The marker's containing block is only the line-number cell.
+  inset-block: 2px;
+  left: calc(
+    8px - var(--diff-gutter-width, 7px) - var(
+        --cm-line-number-padding-left,
+        8px
+      )
+  );
+  right: calc(-1 * var(--cm-diff-fold-gutter-width));
   z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 2px;
   align-items: stretch;
-  width: 100%;
+  width: auto;
   padding: 0;
   border: 0;
   background: transparent;
@@ -477,38 +497,6 @@
   &:focus-visible {
     outline: 2px solid var(--color-primary-6);
     outline-offset: -2px;
-  }
-
-  &::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    border-top: 2px solid currentColor;
-    border-right: 2px solid currentColor;
-    transform: translateY(2px) rotate(-45deg);
-  }
-
-  &--down::before {
-    transform: translateY(-2px) rotate(135deg);
-  }
-
-  &--all {
-    flex-direction: column;
-    gap: 3px;
-
-    &::before,
-    &::after {
-      content: "";
-      width: 5px;
-      height: 5px;
-      border-top: 2px solid currentColor;
-      border-right: 2px solid currentColor;
-      transform: translateY(1px) rotate(-45deg);
-    }
-
-    &::after {
-      transform: translateY(-1px) rotate(135deg);
-    }
   }
 }
 
