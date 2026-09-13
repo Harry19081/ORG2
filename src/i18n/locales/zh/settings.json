@@ -223,7 +223,7 @@
     "spotlightPlacement": "Spotlight 位置",
     "spotlightPlacementOptions": {
       "top": "顶部",
-      "center": "页面居中"
+      "center": "居中"
     },
     "left": "左侧",
     "right": "右侧",

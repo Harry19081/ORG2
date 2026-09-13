@@ -145,7 +145,7 @@
     "spotlightPlacement": "Spotlight-Position",
     "spotlightPlacementOptions": {
       "top": "Oben",
-      "center": "Seitenmitte"
+      "center": "Mitte"
     },
     "left": "Links",
     "right": "Rechts",

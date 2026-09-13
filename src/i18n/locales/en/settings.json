@@ -223,7 +223,7 @@
     "spotlightPlacement": "Spotlight position",
     "spotlightPlacementOptions": {
       "top": "Top",
-      "center": "Page center"
+      "center": "Middle"
     },
     "left": "Left",
     "right": "Right",
