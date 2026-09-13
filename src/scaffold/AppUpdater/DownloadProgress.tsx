@@ -3,7 +3,7 @@ import type { CSSProperties, FC } from "react";
 import ProgressBar from "@src/components/ProgressBar";
 import { Download01Icon, HugeiconsIcon } from "@src/icons";
 
-import "./DownloadProgress.scss";
+import "./DownloadProgress.css";
 import type { AppUpdateDownloadProgress } from "./state";
 
 function formatBytes(bytes: number): string {

@@ -3,7 +3,6 @@
  *
  * IDE-style custom scrollbar with optional markers
  */
-
 .custom-scrollbar-track {
   position: absolute;
   top: 0;
@@ -15,14 +14,12 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease;
-
-  &[data-scrollbar-scrolling] {
-    opacity: 1;
-
-    .custom-scrollbar-thumb {
-      opacity: 1;
-    }
-  }
+}
+.custom-scrollbar-track[data-scrollbar-scrolling] {
+  opacity: 1;
+}
+.custom-scrollbar-track[data-scrollbar-scrolling] .custom-scrollbar-thumb {
+  opacity: 1;
 }
 
 .custom-scrollbar-thumb {
@@ -38,10 +35,9 @@
   opacity: 0;
   will-change: transform, opacity;
   transition: opacity 0.2s ease;
-
-  &:active {
-    cursor: grabbing;
-  }
+}
+.custom-scrollbar-thumb:active {
+  cursor: grabbing;
 }
 
 .custom-scrollbar-marker {
@@ -54,8 +50,7 @@
   pointer-events: auto;
   z-index: 11;
   transition: background-color 0.15s ease;
-
-  &:hover {
-    filter: brightness(1.1);
-  }
+}
+.custom-scrollbar-marker:hover {
+  filter: brightness(1.1);
 }
