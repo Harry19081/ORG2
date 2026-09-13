@@ -337,7 +337,6 @@ async fn session_memory_preflight_auth_failure_cools_down_before_acquisition() {
     let state = Arc::new(Mutex::new(SessionMemoryState {
         content: before.0.clone(),
         last_summarized_seq: before.1,
-        extraction_in_progress: true,
         ..Default::default()
     }));
     let acquisitions = AtomicUsize::new(0);
@@ -429,7 +428,6 @@ async fn session_memory_cooldown_jobs_are_skipped_not_completed() {
     }));
 
     for turn in 0..3 {
-        state.lock().await.extraction_in_progress = true;
         // No account is a local factory AuthError, never a remote request.
         // Later turns must skip this same production acquisition path.
         let job = session_memory_job(SessionMemoryExtractionInput {
@@ -494,4 +492,243 @@ async fn session_memory_no_cheap_candidate_skips_without_request_or_write() {
         assert_eq!(guard.last_summarized_seq, before.1);
         assert!(!guard.extraction_in_progress);
     }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn session_memory_database_failure_preserves_runtime_and_durable_state() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-commit-db-failure";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "old memory", Some(0)).unwrap();
+    let state = Arc::new(Mutex::new(SessionMemoryState {
+        content: Some("old memory".into()),
+        last_summarized_seq: Some(0),
+        tool_calls_since_extraction: 8,
+        tokens_at_last_extraction: 12_000,
+        initialized: true,
+        ..Default::default()
+    }));
+    database::db::get_connection().unwrap().execute_batch(
+        "CREATE TRIGGER reject_memory BEFORE UPDATE OF sm_content ON agent_sessions BEGIN SELECT RAISE(FAIL, 'injected memory write failure'); END;"
+    ).unwrap();
+    let fixture = provider(vec![Ok(LLMResponse::text("### Current State\nnew memory"))]);
+    assert!(run(sid, state.clone(), &fixture, None)
+        .await
+        .unwrap_err()
+        .contains("injected memory write failure"));
+    assert_eq!(persisted(sid), (Some("old memory".into()), Some(0)));
+    let current = state.lock().await;
+    assert_eq!(current.content.as_deref(), Some("old memory"));
+    assert_eq!(current.last_summarized_seq, Some(0));
+    assert_eq!(current.tokens_at_last_extraction, 12_000);
+    assert_eq!(current.tool_calls_since_extraction, 8);
+    assert!(current.initialized);
+    assert!(!current.extraction_in_progress);
+}
+
+fn commit_draft() -> session_memory::extract::SessionMemoryExtraction {
+    session_memory::extract::SessionMemoryExtraction {
+        content: "new memory".into(),
+        last_seq: Some(1),
+        expected_content: Some("old memory".into()),
+        expected_seq: Some(0),
+        current_tokens: 20_000,
+        consumed_tool_calls: 8,
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn session_memory_dropped_owner_cancels_already_started_blocking_writer() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-commit-dropped-owner";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "old memory", Some(0)).unwrap();
+    let state = Arc::new(Mutex::new(SessionMemoryState {
+        content: Some("old memory".into()),
+        last_summarized_seq: Some(0),
+        tool_calls_since_extraction: 8,
+        ..Default::default()
+    }));
+    let (held_tx, held_rx) = tokio::sync::oneshot::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let holder = std::thread::spawn(move || {
+        let _writer = database::db::sessions_writer_guard();
+        held_tx.send(()).unwrap();
+        release_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+    });
+    held_rx.await.unwrap();
+    let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+    let worker_state = state.clone();
+    let task = tokio::spawn(async move {
+        let lease = session_memory_commit::ExtractionLease::begin(worker_state).await;
+        started_tx.send(()).unwrap();
+        lease
+            .commit(
+                sid.into(),
+                commit_draft(),
+                unified_persistence::session_memory_commit_snapshot(sid).unwrap(),
+                None,
+            )
+            .await
+    });
+    started_rx.await.unwrap();
+    // The blocking worker owns the state mutex before waiting for the DB writer.
+    tokio::time::timeout(Duration::from_secs(3), async {
+        while state.try_lock().is_ok() {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    task.abort();
+    assert!(task.await.unwrap_err().is_cancelled());
+    release_tx.send(()).unwrap();
+    holder.join().unwrap();
+    let current = tokio::time::timeout(Duration::from_secs(3), state.lock())
+        .await
+        .unwrap();
+    assert_eq!(current.content.as_deref(), Some("old memory"));
+    assert_eq!(current.tool_calls_since_extraction, 8);
+    assert_eq!(persisted(sid), (Some("old memory".into()), Some(0)));
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn session_memory_old_generation_cannot_commit_or_clear_new_owner() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-commit-generation";
+    seed(sid);
+    unified_persistence::save_session_memory_state(sid, "old memory", Some(0)).unwrap();
+    let state = Arc::new(Mutex::new(SessionMemoryState {
+        content: Some("old memory".into()),
+        last_summarized_seq: Some(0),
+        tool_calls_since_extraction: 11,
+        ..Default::default()
+    }));
+    let old = session_memory_commit::ExtractionLease::begin(state.clone()).await;
+    let new = session_memory_commit::ExtractionLease::begin(state.clone()).await;
+    assert!(!old
+        .commit(
+            sid.into(),
+            commit_draft(),
+            unified_persistence::session_memory_commit_snapshot(sid).unwrap(),
+            None
+        )
+        .await
+        .unwrap());
+    old.finish().await;
+    assert!(state.lock().await.extraction_in_progress);
+    assert!(new
+        .commit(
+            sid.into(),
+            commit_draft(),
+            unified_persistence::session_memory_commit_snapshot(sid).unwrap(),
+            None
+        )
+        .await
+        .unwrap());
+    new.finish().await;
+    let current = state.lock().await;
+    assert_eq!(current.content.as_deref(), Some("new memory"));
+    assert_eq!(current.last_summarized_seq, Some(1));
+    assert_eq!(current.tokens_at_last_extraction, 20_000);
+    assert_eq!(current.tool_calls_since_extraction, 3);
+    assert!(!current.extraction_in_progress);
+    assert_eq!(persisted(sid), (Some("new memory".into()), Some(1)));
+}
+
+#[test]
+fn session_memory_commit_rejects_stale_snapshot_and_missing_session() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-commit-durable-cas";
+    seed(sid);
+    let snapshot = unified_persistence::session_memory_commit_snapshot(sid).unwrap();
+    unified_persistence::save_session_memory_state(sid, "newer memory", Some(10)).unwrap();
+    assert!(!unified_persistence::commit_session_memory_state(
+        sid,
+        "stale memory",
+        Some(1),
+        &snapshot,
+        || false,
+        || {},
+    )
+    .unwrap());
+    assert_eq!(persisted(sid), (Some("newer memory".into()), Some(10)));
+    assert!(
+        unified_persistence::save_session_memory_state("missing-session", "lost", Some(1)).is_err()
+    );
+    assert!(unified_persistence::commit_session_memory_state(
+        "missing-session",
+        "lost",
+        Some(1),
+        &snapshot,
+        || false,
+        || {},
+    )
+    .is_err());
+}
+
+#[test]
+fn session_memory_commit_rejects_changed_history_without_publishing() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    for transition in ["append", "compact", "truncate"] {
+        let sid = format!("memory-history-{transition}");
+        seed(&sid);
+        unified_persistence::save_session_memory_state(&sid, "old memory", Some(0)).unwrap();
+        let snapshot = unified_persistence::session_memory_commit_snapshot(&sid).unwrap();
+        match transition {
+            "append" => {
+                unified_persistence::save_user_msg(&sid, "new turn", None).unwrap();
+            }
+            "compact" => {
+                unified_persistence::append_compact_boundary(&sid, "compacted", 1, None, None)
+                    .unwrap();
+            }
+            "truncate" => {
+                unified_persistence::truncate_messages_from_sequence(&sid, 1).unwrap();
+            }
+            _ => unreachable!(),
+        }
+        let before = persisted(&sid);
+        assert!(!unified_persistence::commit_session_memory_state(
+            &sid,
+            "stale summary",
+            Some(1),
+            &snapshot,
+            || false,
+            || panic!("stale history must not publish runtime state"),
+        )
+        .unwrap());
+        assert_eq!(persisted(&sid), before);
+    }
+}
+
+#[test]
+fn session_memory_writer_admission_is_bounded_without_publishing() {
+    let _sandbox = test_helpers::test_env::sandbox();
+    let sid = "memory-writer-budget";
+    seed(sid);
+    let snapshot = unified_persistence::session_memory_commit_snapshot(sid).unwrap();
+    let (held_tx, held_rx) = std::sync::mpsc::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let holder = std::thread::spawn(move || {
+        let _writer = database::db::sessions_writer_guard();
+        held_tx.send(()).unwrap();
+        release_rx.recv_timeout(Duration::from_secs(4)).unwrap();
+    });
+    held_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+    let result = unified_persistence::commit_session_memory_state(
+        sid,
+        "new memory",
+        Some(1),
+        &snapshot,
+        || false,
+        || panic!("a busy writer must not publish"),
+    );
+    release_tx.send(()).unwrap();
+    holder.join().unwrap();
+    assert_eq!(
+        result.unwrap_err().sqlite_error_code(),
+        Some(rusqlite::ErrorCode::DatabaseBusy)
+    );
+    assert_eq!(persisted(sid), (None, None));
 }

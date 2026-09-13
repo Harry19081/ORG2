@@ -1435,12 +1435,78 @@ pub fn save_session_memory_state(
 ) -> SqliteResult<()> {
     with_sessions_writer(|| -> SqliteResult<()> {
         let conn = get_connection()?;
-        conn.execute(
+        let changed = conn.execute(
             "UPDATE agent_sessions SET sm_content = ?2, sm_last_seq = ?3 WHERE session_id = ?1",
             rusqlite::params![session_id, content, last_seq],
         )?;
+        if changed == 0 {
+            return Err(rusqlite::Error::QueryReturnedNoRows);
+        }
         Ok(())
     })
+}
+
+/// Durable source snapshot for one extraction, captured before reading history.
+/// Message identity also invalidates results across append, truncate or compact.
+pub struct SessionMemoryCommitSnapshot {
+    pub(crate) content: Option<String>,
+    pub(crate) last_seq: Option<i64>,
+    created_at: String,
+    last_message_id: Option<String>,
+}
+
+pub fn session_memory_commit_snapshot(
+    session_id: &str,
+) -> SqliteResult<SessionMemoryCommitSnapshot> {
+    let conn = get_connection()?;
+    conn.query_row(
+        "SELECT sm_content, sm_last_seq, created_at,
+            (SELECT id FROM agent_messages WHERE session_id = ?1 ORDER BY sequence DESC LIMIT 1)
+         FROM agent_sessions WHERE session_id = ?1",
+        [session_id],
+        |row| {
+            Ok(SessionMemoryCommitSnapshot {
+                content: row.get(0)?,
+                last_seq: row.get(1)?,
+                created_at: row.get(2)?,
+                last_message_id: row.get(3)?,
+            })
+        },
+    )
+}
+
+/// Commit only if the durable summary and history still match the snapshot.
+/// Cancellation is checked after acquiring the writer. Writer admission is
+/// bounded so a cancelled background worker cannot wait indefinitely while
+/// retaining the runtime state lock.
+pub fn commit_session_memory_state(
+    session_id: &str,
+    content: &str,
+    last_seq: Option<i64>,
+    expected: &SessionMemoryCommitSnapshot,
+    is_cancelled: impl FnOnce() -> bool,
+    on_committed: impl FnOnce(),
+) -> SqliteResult<bool> {
+    database::db::try_with_sessions_writer(std::time::Duration::from_secs(1), || {
+        if is_cancelled() { return Ok(false); }
+        let conn = get_connection()?;
+        let changed = conn.execute(
+            "UPDATE agent_sessions SET sm_content = ?2, sm_last_seq = ?3
+             WHERE session_id = ?1 AND sm_content IS ?4 AND sm_last_seq IS ?5
+               AND created_at = ?6
+               AND (SELECT id FROM agent_messages WHERE session_id = ?1 ORDER BY sequence DESC LIMIT 1) IS ?7",
+            rusqlite::params![session_id, content, last_seq, expected.content, expected.last_seq,
+                expected.created_at, expected.last_message_id],
+        )?;
+        if changed == 0 {
+            conn.query_row("SELECT 1 FROM agent_sessions WHERE session_id = ?1", [session_id], |_| Ok(()))?;
+        }
+        if changed == 1 { on_committed(); }
+        Ok(changed == 1)
+    }).unwrap_or_else(|| Err(rusqlite::Error::SqliteFailure(
+        rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_BUSY),
+        Some("session memory writer admission timed out".into()),
+    )))
 }
 
 /// Clear persisted session memory state after the durable transcript has been compacted.
@@ -1592,8 +1658,8 @@ mod tests {
         .expect("create session/message tables");
         conn.execute(
             "INSERT OR IGNORE INTO agent_sessions
-             (session_id, session_type, status, created_at, updated_at, sm_content, sm_last_seq)
-             VALUES (?1, 'agent', 'running', datetime('now'), datetime('now'), NULL, NULL)",
+             (session_id, name, session_type, status, created_at, updated_at, sm_content, sm_last_seq)
+             VALUES (?1, 'Message fixture', 'agent', 'running', datetime('now'), datetime('now'), NULL, NULL)",
             [session_id],
         )
         .expect("seed session row");
