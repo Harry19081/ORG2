@@ -107,6 +107,9 @@ repository-wide source of truth shared by Codex, Claude, Cursor, and human
 contributors. If this section and `.github/PR_RULES.md` ever differ, follow
 `.github/PR_RULES.md` and fix the stale adapter in the same pull request.
 
+Dependabot-generated descriptions have the narrow exception documented in
+`.github/PR_RULES.md`; title and build/security checks still apply.
+
 Hard gates: one responsibility; a scoped Conventional Commit title; the
 required `Problem`, `Solution`, `Potential risks`, and `Verification` sections;
 and a final GitHub read-back of the published pull request.
