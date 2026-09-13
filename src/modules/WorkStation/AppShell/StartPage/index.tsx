@@ -59,14 +59,12 @@ const StartActionRow = memo<StartActionRowProps>(
           <AnyIcon
             icon={icon}
             size={SPOTLIGHT_TOKENS.iconSize}
-            strokeWidth={2}
-            className={SPOTLIGHT_CLASSES.itemIconTone}
+            strokeWidth={1.75}
+            className="shrink-0 text-text-3"
           />
         </span>
         <span className="flex min-w-0 flex-1 items-center gap-2">
-          <span
-            className={`truncate leading-none ${SPOTLIGHT_TOKENS.labelFontSize} ${SPOTLIGHT_CLASSES.itemLabelWeight} ${SPOTLIGHT_CLASSES.itemLabelTone}`}
-          >
+          <span className="truncate text-[14px] font-medium text-text-2">
             {label}
           </span>
           {showDiff ? (
