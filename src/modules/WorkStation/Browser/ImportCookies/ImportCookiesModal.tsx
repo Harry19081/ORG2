@@ -180,11 +180,9 @@ const SiteRow = memo<{
         checked={checked}
         onCheckedChange={() => onToggle(site.domain)}
       />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm text-text-1">
-          {site.domain}
-        </span>
-        <span className="block truncate text-xs text-text-3">
+      <span className="flex min-w-0 flex-1 items-center gap-2">
+        <span className="truncate text-sm text-text-1">{site.domain}</span>
+        <span className="shrink-0 text-xs whitespace-nowrap text-text-3">
           {t("browserCookieImport.cookieCount", { count: site.cookieCount })}
         </span>
       </span>
@@ -334,7 +332,7 @@ function PreviewStage({
         className="w-full"
       />
 
-      <div className="max-h-[320px] overflow-y-auto pr-1">
+      <div className="max-h-[320px] overflow-y-auto">
         {filteredSites.length > 0 ? (
           filteredSites.map((site) => (
             <SiteRow
@@ -408,11 +406,11 @@ function PreviewFooter({
           disabled={importing}
           onCheckedChange={(checked) => controller.setAllDomains(checked)}
         >
-          <span className="text-xs text-text-2">
+          <span className="block text-xs leading-4 whitespace-nowrap text-text-2">
             {t("browserCookieImport.selectAll")}
           </span>
         </Checkbox>
-        <span className="truncate text-xs text-text-3">
+        <span className="truncate text-xs leading-4 text-text-3">
           {t("browserCookieImport.selectedSummary", {
             sites: selectedDomains.size,
             cookies: selectedCookieCount(sites, selectedDomains),
@@ -423,6 +421,7 @@ function PreviewFooter({
 
   return (
     <PanelFooter
+      className="pl-5"
       left={selection}
       secondaryActions={[
         {
