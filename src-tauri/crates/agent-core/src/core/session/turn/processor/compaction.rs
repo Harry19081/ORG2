@@ -269,8 +269,6 @@ impl UnifiedMessageProcessor {
                     messages_kept: kept,
                 };
             }
-            let mut sm_state = self.sm_state.lock().await;
-            sm_state.reset_after_compaction();
         } else {
             // No fork-form here (unlike pre-turn): reactive compaction runs
             // right after the provider REJECTED this exact prefix as too
@@ -283,9 +281,16 @@ impl UnifiedMessageProcessor {
             let cleaned = crate::model_context::cleanup::post_compact_cleanup(compacted);
             *messages = append_compacted_tail(&prefix, cleaned);
             outcome = llm_outcome;
-            let mut sm_state = self.sm_state.lock().await;
-            sm_state.reset_after_compaction();
         }
+
+        // Only a successful rewrite invalidates the extraction frame. A failed
+        // LLM fallback may have received an intermediate SM-compacted tail;
+        // restore the original frame along with its still-valid growth state.
+        if !matches!(outcome, CompactionOutcome::Compacted { .. }) {
+            *messages = pre_compact_messages;
+            return outcome;
+        }
+        self.sm_state.lock().await.reset_after_compaction();
 
         crate::model_context::file_reinjection::reinject_files_after_compaction(
             &pre_compact_messages,
@@ -512,7 +517,7 @@ impl UnifiedMessageProcessor {
             // and the turn proceeds with the original messages — no silent
             // truncation, no boundary persist for a no-op. The failure was
             // already counted toward the circuit breaker inside `compact`.
-            if let CompactionOutcome::Failed { reason } = outcome {
+            if let CompactionOutcome::Failed { ref reason } = outcome {
                 warn!(
                     "[unified_processor] Pre-turn compaction failed for session {} — continuing uncompacted: {}",
                     session_id, reason
@@ -525,6 +530,9 @@ impl UnifiedMessageProcessor {
                     ),
                     "compaction",
                 );
+            }
+            if !matches!(outcome, CompactionOutcome::Compacted { .. }) {
+                *messages = pre_compact_messages;
                 return CompactionPhaseOutcome::Continue;
             }
 
