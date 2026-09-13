@@ -31,7 +31,10 @@ describe("SourceControlTreeRow section actions", () => {
         hasChangesToStash: true,
       })
     );
-    const actions = root.querySelectorAll("button");
+    expect(root.querySelector("button[aria-expanded]")).not.toBeNull();
+    const actions = root.querySelectorAll<HTMLButtonElement>(
+      "button:not([aria-expanded])"
+    );
     expect(actions).toHaveLength(3);
     const group = actions[0].parentElement!;
     expect(group.classList.contains("gap-px")).toBe(true);

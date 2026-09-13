@@ -31,9 +31,9 @@ import {
   gateByActiveKind,
 } from "../../shared/SessionReplay";
 import { PANEL_CONSTANTS } from "../Panels/EditorPrimarySidebar/config";
-import { getShellStatusBadge } from "./ShellSidebar";
 import SimulatorTreePanel from "./components/SimulatorTreePanel";
 import type { FileTreeInput } from "./fileTreeUtils";
+import { getShellStatusBadge } from "./shellStatusBadge";
 import type {
   ExploreOperationEntry,
   FileOperationEntry,

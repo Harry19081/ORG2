@@ -8,7 +8,7 @@
  */
 import React, { memo } from "react";
 
-import { HEADER_CLASSES } from "@src/config/workstation/tokens";
+import { SidebarSectionHeader } from "@src/components/SidebarSectionHeader";
 
 // ============================================
 // Types
@@ -39,34 +39,14 @@ export const PanelSectionHeader: React.FC<PanelSectionHeaderProps> = memo(
     loading = false,
   }) => {
     return (
-      <div
-        className={`group/panel-header ${HEADER_CLASSES.sectionHeader} ${
-          showBorder ? "border-b border-border-1" : ""
-        }`}
-      >
-        {/* Title */}
-        <span className="relative min-w-0 flex-1 truncate text-[12px] font-medium text-text-2 uppercase">
-          {title}
-          {/* Loading progress indicator */}
-          {loading && (
-            <span className="absolute -bottom-0.5 left-0 h-[2px] w-full overflow-hidden rounded-full bg-fill-3">
-              <span className="absolute h-full w-1/3 animate-progress-slide rounded-full bg-primary-6" />
-            </span>
-          )}
-        </span>
-
-        {actions && (
-          <div
-            className={`items-center gap-0.5 ${
-              actionsAlwaysVisible
-                ? "flex"
-                : "hidden group-focus-within/panel-header:flex group-hover/panel-header:flex"
-            }`}
-          >
-            {actions}
-          </div>
-        )}
-      </div>
+      <SidebarSectionHeader
+        surface="panel"
+        title={title}
+        loading={loading}
+        actions={actions}
+        actionsAlwaysVisible={actionsAlwaysVisible}
+        className={showBorder ? "border-b border-border-1" : ""}
+      />
     );
   }
 );

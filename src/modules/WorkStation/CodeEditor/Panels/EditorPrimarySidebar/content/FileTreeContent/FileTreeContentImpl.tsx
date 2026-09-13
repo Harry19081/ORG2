@@ -44,12 +44,8 @@ import type {
   StickyScrollNode,
   VirtualizedStickyTreeHandle,
 } from "@src/components/VirtualizedStickyTree";
-import {
-  CHEVRON_SIZE,
-  STICKY_ROW,
-  VirtualizedStickyTree,
-  stickyRowPadding,
-} from "@src/components/VirtualizedStickyTree";
+import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
+import { StickyTreeRow } from "@src/components/VirtualizedStickyTree/StickyTreeRow";
 import { getStatusBgColor } from "@src/config/gitStatus";
 import {
   estimateRuntimeValueBytes,
@@ -57,12 +53,7 @@ import {
   updateFileTreeMemoryEntry,
 } from "@src/hooks/perf/runtimeMemoryStats";
 import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
-import {
-  ArrowDown01Icon,
-  ArrowRight01Icon,
-  HugeiconsIcon,
-  Search01Icon,
-} from "@src/icons";
+import { HugeiconsIcon, Search01Icon } from "@src/icons";
 import { FolderHeaderRow } from "@src/modules/WorkStation/shared/FolderHeaderRow";
 import { fileTreeSelectedPathAtom } from "@src/store/ui/fileTreeSelectionAtom";
 
@@ -312,35 +303,16 @@ export const FileTreeContent = memo(
           const gitInfo = aggregateStatus
             ? { status: aggregateStatus, staged: false }
             : null;
-          const isExpanded = node.expanded ?? false;
 
           return (
-            <div
-              className={`${STICKY_ROW.rowBase} ${stickyBgClass}`}
-              style={stickyRowPadding(depth)}
+            <StickyTreeRow
+              depth={depth}
+              expanded={Boolean(node.expanded)}
+              name={node.name}
               onClick={onClick}
+              stickyBgClass={stickyBgClass}
               title={t("tooltips.scrollToItem", { name: node.name })}
             >
-              <div className={STICKY_ROW.chevronBox}>
-                {isExpanded ? (
-                  <HugeiconsIcon
-                    icon={ArrowDown01Icon}
-                    data-icon="chevron-down"
-                    size={CHEVRON_SIZE}
-                    className={STICKY_ROW.chevronIcon}
-                  />
-                ) : (
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    data-icon="chevron-right"
-                    size={CHEVRON_SIZE}
-                    className={STICKY_ROW.chevronIcon}
-                  />
-                )}
-              </div>
-
-              <span className={STICKY_ROW.name}>{node.name}</span>
-
               <div className="flex h-3.5 w-5 shrink-0 items-center justify-center">
                 {gitInfo && (
                   <div
@@ -351,7 +323,7 @@ export const FileTreeContent = memo(
                   />
                 )}
               </div>
-            </div>
+            </StickyTreeRow>
           );
         },
         [repoPath, isMultiRoot, gitFolderStatusMap, stickyBgClass, t]

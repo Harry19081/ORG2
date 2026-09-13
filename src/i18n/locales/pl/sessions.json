@@ -349,7 +349,6 @@
       },
       "ide": {
         "shell": {
-          "emptyNoCommands": "Brak poleceń",
           "noCommand": "(brak polecenia)",
           "outputInProgress": "… wyjście w toku",
           "exitCode": "[kod wyjścia: {{code}}]"
