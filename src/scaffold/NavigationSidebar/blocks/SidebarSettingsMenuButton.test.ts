@@ -13,6 +13,8 @@ import {
   vi,
 } from "vitest";
 
+import * as rpcInvoke from "@src/api/tauri/rpc/invoke";
+import { settings as settingsProcedures } from "@src/api/tauri/rpc/procedures/settings";
 import { DROPDOWN_PANEL } from "@src/components/Dropdown/tokens";
 import {
   ORG2_CLOUD_AUTH_STORAGE_KEY,
@@ -21,6 +23,7 @@ import {
 import * as entitlementCoordinator from "@src/features/Org2Cloud/org2CloudEntitlementCoordinator";
 import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
+import { settingsAtom } from "@src/store/settings";
 
 import SidebarSettingsMenuButton from "./SidebarSettingsMenuButton";
 
@@ -421,7 +424,7 @@ describe("SidebarSettingsMenuButton", () => {
     const segmentedControls = Array.from(
       document.body.querySelectorAll<HTMLElement>('[role="group"]')
     );
-    expect(segmentedControls).toHaveLength(3);
+    expect(segmentedControls).toHaveLength(4);
     expect(
       segmentedControls.every((control) => control.classList.contains("h-6"))
     ).toBe(true);
@@ -431,10 +434,38 @@ describe("SidebarSettingsMenuButton", () => {
       "layoutSettings.chatPanelLocation",
       "layoutSettings.sidebarPosition",
       "layoutSettings.modelPickerStyle",
+      "general.spotlightPlacement",
     ]);
     expect(
       document.body.querySelector('[role="switch"]')?.getAttribute("aria-label")
     ).toBe("layoutSettings.paginateChatHistory");
+  });
+
+  it("updates the shared Spotlight placement setting from Layout", async () => {
+    const rpcCall = vi.spyOn(rpcInvoke, "rpcCall").mockResolvedValue(undefined);
+    await act(async () => {
+      document
+        .querySelector('[data-testid="sidebar-settings-layout"]')
+        ?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+    });
+    const control = document.querySelector(
+      '[role="group"][aria-label="general.spotlightPlacement"]'
+    );
+    for (const placement of ["center", "top"] as const) {
+      const button = Array.from(control?.querySelectorAll("button") ?? []).find(
+        (item) =>
+          item.textContent === `general.spotlightPlacementOptions.${placement}`
+      );
+      expect(button).toBeDefined();
+      await act(async () => button?.click());
+      expect(store.get(settingsAtom)["general.spotlightPlacement"]).toBe(
+        placement
+      );
+      expect(button?.getAttribute("aria-pressed")).toBe("true");
+      expect(rpcCall).toHaveBeenCalledWith(settingsProcedures.writePartial, {
+        partial: { "general.spotlightPlacement": placement },
+      });
+    }
   });
 
   it("shows only the icon-only theme control in the appearance submenu", async () => {

@@ -145,7 +145,7 @@
     "spotlightPlacement": "Posição do Spotlight",
     "spotlightPlacementOptions": {
       "top": "Topo",
-      "center": "Centro da página"
+      "center": "Centro"
     },
     "left": "Esquerda",
     "right": "Direita",

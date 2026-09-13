@@ -145,7 +145,7 @@
     "spotlightPlacement": "Spotlight 위치",
     "spotlightPlacementOptions": {
       "top": "상단",
-      "center": "페이지 중앙"
+      "center": "중앙"
     },
     "left": "왼쪽",
     "right": "오른쪽",

@@ -145,7 +145,7 @@
     "spotlightPlacement": "Положение Spotlight",
     "spotlightPlacementOptions": {
       "top": "Сверху",
-      "center": "По центру страницы"
+      "center": "По центру"
     },
     "left": "Слева",
     "right": "Справа",
