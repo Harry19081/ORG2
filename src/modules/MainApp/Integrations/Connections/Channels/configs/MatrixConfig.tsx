@@ -102,7 +102,7 @@ const MatrixConfig: React.FC<ChannelConfigProps> = ({
           value={deviceName}
           onChange={(val: string) => update(`${pathPrefix}.deviceName`, val)}
           style={SECTION_CONTROL_STYLE}
-          placeholder="ORGII Bot"
+          placeholder={t("channels.matrixDeviceNamePlaceholder")}
         />
       </SectionRow>
       <SectionRow

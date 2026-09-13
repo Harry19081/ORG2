@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Data Sources",
-      "description": "External coding tools ORGII detects. Importable apps show their session count and can be rescanned; the rest show install status and where their history lives.",
+      "description": "External coding tools ORG2 detects. Importable apps show their session count and can be rescanned; the rest show install status and where their history lives.",
       "rescanAll": "Rescan all",
       "rescan": "Rescan",
       "rescanUpdate": "Update",
@@ -194,7 +194,7 @@
           "perTurn": "LLM calls",
           "perTool": "Tool calls",
           "close": "Close",
-          "noData": "This session has session-level totals only — per-call attribution is recorded for ORGII's own agent runs.",
+          "noData": "This session has session-level totals only — per-call attribution is recorded for ORG2's own agent runs.",
           "turnHeader": "Turn {{turn}}",
           "promptTokens": "Prompt",
           "completionTokens": "Completion"
@@ -1926,7 +1926,7 @@
     "start": "Start",
     "missingGit": {
       "title": "Git is missing",
-      "body": "Git is not installed or could not be found. Ask ADE Manager or SDE Agent to install Git for this machine, then restart ORGII."
+      "body": "Git is not installed or could not be found. Ask ADE Manager or SDE Agent to install Git for this machine, then restart ORG2."
     },
     "cliVersionOutdated": {
       "title": "{{cli}} needs an upgrade ({{installed}} > {{latest}})",
@@ -2029,7 +2029,8 @@
         "notEnoughRunners": "Set up at least two runnable runners"
       }
     },
-    "mode": "Editor mode"
+    "mode": "Editor mode",
+    "cursorIdeDescription": "Browse and continue Cursor IDE chat sessions inside ORG2"
   },
   "planner": {
     "modes": {
@@ -2267,7 +2268,7 @@
     "noSessionIdFound": "No session ID found",
     "failedToResume": "Failed to resume session",
     "failedToCheckChanges": "Could not check file changes. Proceeding with revert.",
-    "insufficientBalance": "Insufficient balance for the hosted ORGII service. Top up at orgii.ai/wallet.",
+    "insufficientBalance": "Insufficient balance for the hosted ORG2 service. Top up at orgii.ai/wallet.",
     "runQueuedBehindCheckout": "Queued: another run is using this checkout. It will start as soon as that run finishes."
   },
   "revertConfirm": {

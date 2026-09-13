@@ -272,9 +272,9 @@
       "switchToRepo": "열기",
       "startSession": "세션 시작",
       "openDetails": "세부 정보 표시",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "ORG2에서 제거",
+      "removeSuccess": "ORG2 연결이 해제되었습니다",
+      "removeFailed": "ORG2 연결을 해제하지 못했습니다"
     },
     "addWorkspace": "Workspace 추가"
   },
@@ -662,7 +662,7 @@
       "selectAll": "전원 ({{count}})",
       "incomingEndpointMismatch": "이 공유는 다른 사용자 지정 클라우드에 속합니다. 가져오기 전에 해당 엔드포인트를 구성하세요.",
       "incomingConnectionError": "클라우드 서비스에 연결할 수 없습니다. 네트워크를 확인하고 다시 시도하세요.",
-      "incomingIncompatibleError": "클라우드가 호환되지 않는 공유 응답을 반환했습니다. ORGII를 업데이트하거나 배포를 확인하세요.",
+      "incomingIncompatibleError": "클라우드가 호환되지 않는 공유 응답을 반환했습니다. ORG2를 업데이트하거나 배포를 확인하세요.",
       "incomingServerError": "클라우드 서비스가 이 공유를 확인하지 못했습니다. 다시 시도하세요.",
       "incomingAlreadyOnDevice": "이 세션은 이미 이 기기에 있습니다. 중복으로 가져오지 말고 원본을 여세요.",
       "incomingOpenExisting": "세션 열기",

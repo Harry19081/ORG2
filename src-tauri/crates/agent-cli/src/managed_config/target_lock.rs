@@ -56,7 +56,7 @@ fn lock_paths(mut paths: Vec<PathBuf>) -> Result<Vec<File>, String> {
             options.mode(0o600);
         }
         let file = options.open(&lock_path).map_err(|_| "Cannot open CLI configuration lock")?;
-        file.try_lock_exclusive().map_err(|_| "Another ORGII process is changing this harness configuration. Try again when it finishes.")?;
+        file.try_lock_exclusive().map_err(|_| "Another ORG2 process is changing this harness configuration. Try again when it finishes.")?;
         Ok(file)
     }).collect()
 }

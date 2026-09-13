@@ -272,9 +272,9 @@
       "switchToRepo": "Abrir",
       "startSession": "Iniciar sesión",
       "openDetails": "Mostrar detalles",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "Quitar de ORG2",
+      "removeSuccess": "Vínculo con ORG2 eliminado",
+      "removeFailed": "No se pudo eliminar el vínculo con ORG2"
     },
     "addWorkspace": "Añadir espacio de trabajo"
   },
@@ -662,7 +662,7 @@
       "selectAll": "Todos ({{count}})",
       "incomingEndpointMismatch": "Este recurso pertenece a otra nube personalizada. Configura ese endpoint antes de importarlo.",
       "incomingConnectionError": "No se pudo conectar al servicio en la nube. Comprueba la red e inténtalo de nuevo.",
-      "incomingIncompatibleError": "La nube devolvió una respuesta incompatible. Actualiza ORGII o comprueba el despliegue.",
+      "incomingIncompatibleError": "La nube devolvió una respuesta incompatible. Actualiza ORG2 o comprueba el despliegue.",
       "incomingServerError": "El servicio en la nube no pudo resolver este recurso. Inténtalo de nuevo.",
       "incomingAlreadyOnDevice": "Esta sesión ya está en este dispositivo. Abre la original en lugar de importar un duplicado.",
       "incomingOpenExisting": "Abrir sesión",

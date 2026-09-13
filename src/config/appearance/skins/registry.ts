@@ -77,7 +77,7 @@ const ORGII_DARK_SEED: SkinSeed = {
 const ORGII_SKINS: readonly SkinDefinition[] = [
   {
     id: ORGII_SKIN_ID,
-    label: "ORGII",
+    label: "ORG2",
     source: "orgii",
     isBaseline: true,
     variants: {

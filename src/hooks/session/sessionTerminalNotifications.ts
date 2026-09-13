@@ -2,7 +2,6 @@
 import type { TFunction } from "i18next";
 
 import {
-  TASK_FAILURE_NOTIFICATION_BODY,
   notifyError,
   notifyTaskCompletion,
 } from "@src/api/services/notification";
@@ -93,7 +92,7 @@ export function deliverSessionTerminalNotification(
       name: event.sessionName,
       detail,
     });
-    void notifyError(TASK_FAILURE_NOTIFICATION_BODY, settings, {
+    void notifyError(t("notifications.taskFailedPrivateBody"), settings, {
       title: t("notifications.taskFailedTitle"),
       context,
     }).then((result) => {

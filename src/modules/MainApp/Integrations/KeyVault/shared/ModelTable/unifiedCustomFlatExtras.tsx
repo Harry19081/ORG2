@@ -51,7 +51,7 @@ const ICON_PROVIDER_DISPLAY_LABELS: Partial<Record<IconProvider, string>> = {
   openai: "OpenAI",
   opencode: "OpenCode",
   openrouter: "OpenRouter",
-  orgii: "ORGII",
+  orgii: "ORG2",
   perplexity: "Perplexity",
   qwen: "Qwen",
   vllm: "vLLM",

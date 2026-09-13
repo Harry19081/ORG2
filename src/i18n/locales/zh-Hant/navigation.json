@@ -272,9 +272,9 @@
       "switchToRepo": "切換",
       "startSession": "開始會話",
       "openDetails": "開啟詳情",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "從 ORG2 移除",
+      "removeSuccess": "已解除與 ORG2 的連結",
+      "removeFailed": "無法解除與 ORG2 的連結"
     },
     "addWorkspace": "新增工作區"
   },
@@ -661,7 +661,7 @@
       "selectAll": "所有人（{{count}}）",
       "incomingEndpointMismatch": "此分享來自另一套自訂雲端。請先設定對應的雲端點再匯入。",
       "incomingConnectionError": "無法連線雲端服務。請檢查網路後重試。",
-      "incomingIncompatibleError": "雲端服務回傳了不相容的分享資料。請更新 ORGII 或檢查雲端部署。",
+      "incomingIncompatibleError": "雲端服務回傳了不相容的分享資料。請更新 ORG2 或檢查雲端部署。",
       "incomingServerError": "雲端服務暫時無法解析此分享，請重試。",
       "incomingAlreadyOnDevice": "此 session 已在本機，無需建立重複副本。",
       "incomingOpenExisting": "開啟 session",

@@ -272,9 +272,9 @@
       "switchToRepo": "Abrir",
       "startSession": "Iniciar sessão",
       "openDetails": "Mostrar detalhes",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "Remover da ORG2",
+      "removeSuccess": "Vínculo com o ORG2 removido",
+      "removeFailed": "Não foi possível remover o vínculo com o ORG2"
     },
     "addWorkspace": "Adicionar workspace"
   },
@@ -373,7 +373,7 @@
     "signOutConfirmTitle": "Sair da conta?",
     "signOutConfirmBody": "Você precisará entrar novamente para acessar sua conta",
     "signedInAs": "Sessão iniciada como {{name}}",
-    "signedInToast": "Signed in to ORG2 Cloud",
+    "signedInToast": "Conectado ao ORG2 Cloud",
     "sessionExpired": "Sua sessão do ORG2 Cloud expirou. Entre novamente para continuar.",
     "customEndpoint": {
       "title": "Backend do ORG2 Cloud personalizado",
@@ -497,15 +497,15 @@
       "opening": "Abrindo a sessão da equipe…"
     },
     "sync": {
-      "quotaExceededToast": "ORG2 Cloud sync paused: this workspace's plan quota is exceeded",
-      "syncDisabledToast": "ORG2 Cloud sync paused: session sync is disabled for this workspace's plan",
+      "quotaExceededToast": "Sincronização do ORG2 Cloud pausada: a cota do plano deste espaço de trabalho foi excedida",
+      "syncDisabledToast": "Sincronização do ORG2 Cloud pausada: a sincronização de sessões está desativada no plano deste espaço de trabalho",
       "schemaMismatchToast": "Sincronização do ORG2 Cloud pausada: versão de esquema do backend {{backend}}, o aplicativo espera {{expected}}"
     },
     "moveToOrg": {
       "menuItem": "Workspace tags…",
       "title": "Etiquetas",
       "hint": "Marque um ou mais espaços de trabalho para compartilhar esta sessão — ela pode estar em Personal e em vários espaços de trabalho ao mesmo tempo. Continua sendo uma sessão local normal; isso apenas a torna visível nesses lugares. Só é possível selecionar espaços de trabalho cujo escopo de repositórios cobre o repositório desta sessão.",
-      "noOrgs": "No cloud workspaces yet — sign in to ORG2 Cloud to create or join one.",
+      "noOrgs": "Ainda não há espaços de trabalho na nuvem — entre no ORG2 Cloud para criar um ou participar de um existente.",
       "cloudBadge": "Cloud",
       "added": "Added to {{org}}",
       "removed": "Removed from {{org}}",
@@ -662,7 +662,7 @@
       "selectAll": "Todos ({{count}})",
       "incomingEndpointMismatch": "Este compartilhamento pertence a outra nuvem personalizada. Configure esse endpoint antes de importar.",
       "incomingConnectionError": "Não foi possível conectar ao serviço de nuvem. Verifique a rede e tente novamente.",
-      "incomingIncompatibleError": "A nuvem retornou uma resposta incompatível. Atualize o ORGII ou verifique a implantação.",
+      "incomingIncompatibleError": "A nuvem retornou uma resposta incompatível. Atualize o ORG2 ou verifique a implantação.",
       "incomingServerError": "O serviço de nuvem não conseguiu resolver este compartilhamento. Tente novamente.",
       "incomingAlreadyOnDevice": "Esta sessão já está neste dispositivo. Abra a original em vez de importar uma duplicata.",
       "incomingOpenExisting": "Abrir sessão",

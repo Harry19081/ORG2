@@ -66,7 +66,7 @@ export const MOBILE_REMOTE_ROUTE = route(
   "/orgii/mobile",
   "Mobile Remote",
   "smart-phone",
-  "ORGII Mobile Remote PWA"
+  "ORG2 Mobile Remote PWA"
 );
 
 export const AUTH_ROUTES = {

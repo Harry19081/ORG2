@@ -272,9 +272,9 @@
       "switchToRepo": "Mở",
       "startSession": "Bắt đầu phiên",
       "openDetails": "Hiển thị chi tiết",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "Xóa khỏi ORG2",
+      "removeSuccess": "Đã xóa liên kết với ORG2",
+      "removeFailed": "Không thể xóa liên kết với ORG2"
     },
     "addWorkspace": "Thêm Workspace"
   },
@@ -662,7 +662,7 @@
       "selectAll": "Tất cả ({{count}})",
       "incomingEndpointMismatch": "Nội dung chia sẻ thuộc một đám mây tùy chỉnh khác. Hãy cấu hình endpoint đó trước khi nhập.",
       "incomingConnectionError": "Không thể kết nối dịch vụ đám mây. Hãy kiểm tra mạng và thử lại.",
-      "incomingIncompatibleError": "Đám mây trả về phản hồi chia sẻ không tương thích. Hãy cập nhật ORGII hoặc kiểm tra bản triển khai.",
+      "incomingIncompatibleError": "Đám mây trả về phản hồi chia sẻ không tương thích. Hãy cập nhật ORG2 hoặc kiểm tra bản triển khai.",
       "incomingServerError": "Dịch vụ đám mây không thể xử lý nội dung chia sẻ này. Hãy thử lại.",
       "incomingAlreadyOnDevice": "Phiên này đã có trên thiết bị. Hãy mở bản gốc thay vì nhập một bản trùng lặp.",
       "incomingOpenExisting": "Mở phiên",

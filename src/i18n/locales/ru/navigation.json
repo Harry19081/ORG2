@@ -272,9 +272,9 @@
       "switchToRepo": "Открыть",
       "startSession": "Запустить сессию",
       "openDetails": "Показать детали",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "Убрать из ORG2",
+      "removeSuccess": "Связь с ORG2 удалена",
+      "removeFailed": "Не удалось удалить связь с ORG2"
     },
     "addWorkspace": "Добавить workspace"
   },
@@ -662,7 +662,7 @@
       "selectAll": "Все ({{count}})",
       "incomingEndpointMismatch": "Этот ресурс относится к другому пользовательскому облаку. Настройте его адрес перед импортом.",
       "incomingConnectionError": "Не удалось подключиться к облачному сервису. Проверьте сеть и повторите попытку.",
-      "incomingIncompatibleError": "Облако вернуло несовместимый ответ. Обновите ORGII или проверьте развёртывание.",
+      "incomingIncompatibleError": "Облако вернуло несовместимый ответ. Обновите ORG2 или проверьте развёртывание.",
       "incomingServerError": "Облачный сервис не смог обработать этот ресурс. Повторите попытку.",
       "incomingAlreadyOnDevice": "Эта сессия уже есть на устройстве. Откройте оригинал вместо импорта копии.",
       "incomingOpenExisting": "Открыть сессию",

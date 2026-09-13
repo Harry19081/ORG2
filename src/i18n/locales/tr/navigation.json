@@ -272,9 +272,9 @@
       "switchToRepo": "Aç",
       "startSession": "Oturum başlat",
       "openDetails": "Detayları göster",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "ORG2’den kaldır",
+      "removeSuccess": "ORG2 bağlantısı kaldırıldı",
+      "removeFailed": "ORG2 bağlantısı kaldırılamadı"
     },
     "addWorkspace": "Workspace ekle"
   },
@@ -373,7 +373,7 @@
     "signOutConfirmTitle": "Çıkış yapılsın mı?",
     "signOutConfirmBody": "Hesabınıza erişmek için yeniden giriş yapmanız gerekecek",
     "signedInAs": "{{name}} olarak giriş yapıldı",
-    "signedInToast": "Signed in to ORG2 Cloud",
+    "signedInToast": "ORG2 Cloud’a giriş yapıldı",
     "sessionExpired": "ORG2 Cloud oturumunuzun süresi doldu. Devam etmek için yeniden giriş yapın.",
     "customEndpoint": {
       "title": "Özel ORG2 Cloud arka ucu",
@@ -497,15 +497,15 @@
       "opening": "Takım oturumu açılıyor…"
     },
     "sync": {
-      "quotaExceededToast": "ORG2 Cloud sync paused: this workspace's plan quota is exceeded",
-      "syncDisabledToast": "ORG2 Cloud sync paused: session sync is disabled for this workspace's plan",
+      "quotaExceededToast": "ORG2 Cloud eşitlemesi duraklatıldı: bu çalışma alanının plan kotası aşıldı",
+      "syncDisabledToast": "ORG2 Cloud eşitlemesi duraklatıldı: bu çalışma alanının planında oturum eşitlemesi devre dışı",
       "schemaMismatchToast": "ORG2 Cloud eşitlemesi duraklatıldı: arka uç şema sürümü {{backend}}, uygulama {{expected}} bekliyor"
     },
     "moveToOrg": {
       "menuItem": "Workspace tags…",
       "title": "Etiketler",
       "hint": "Bu oturumu paylaşmak için bir veya daha fazla çalışma alanını işaretleyin — aynı anda hem Personal'da hem de birden çok çalışma alanında olabilir. Normal bir yerel oturum olarak kalır; bu yalnızca oralarda görünür olmasını sağlar. Yalnızca repo kapsamı bu oturumun deposunu kapsayan çalışma alanılar seçilebilir.",
-      "noOrgs": "No cloud workspaces yet — sign in to ORG2 Cloud to create or join one.",
+      "noOrgs": "Henüz bulut çalışma alanı yok — bir alan oluşturmak veya bir alana katılmak için ORG2 Cloud’a giriş yapın.",
       "cloudBadge": "Cloud",
       "added": "Added to {{org}}",
       "removed": "Removed from {{org}}",
@@ -662,7 +662,7 @@
       "selectAll": "Herkes ({{count}})",
       "incomingEndpointMismatch": "Bu paylaşım farklı bir özel buluta ait. İçe aktarmadan önce o bulut uç noktasını yapılandırın.",
       "incomingConnectionError": "Bulut hizmetine bağlanılamadı. Ağınızı kontrol edip yeniden deneyin.",
-      "incomingIncompatibleError": "Bulut uyumsuz bir paylaşım yanıtı döndürdü. ORGII'yi güncelleyin veya dağıtımı kontrol edin.",
+      "incomingIncompatibleError": "Bulut uyumsuz bir paylaşım yanıtı döndürdü. ORG2'yi güncelleyin veya dağıtımı kontrol edin.",
       "incomingServerError": "Bulut hizmeti bu paylaşımı çözemedi. Yeniden deneyin.",
       "incomingAlreadyOnDevice": "Bu oturum zaten bu cihazda. Yinelenen kopya yerine özgün oturumu açın.",
       "incomingOpenExisting": "Oturumu aç",

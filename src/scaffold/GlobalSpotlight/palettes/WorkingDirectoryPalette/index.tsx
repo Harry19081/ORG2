@@ -349,7 +349,7 @@ export const WorkingDirectoryPalette: React.FC<
       const confirmed = await confirmDestructiveAction({
         title: t("confirmation.removeTitle", { name: repo.name }),
         message: t("confirmation.removeMessage"),
-        okLabel: t("actions.removeFromOrgii", "Remove from ORGII"),
+        okLabel: t("actions.removeFromOrgii", "Remove from ORG2"),
         cancelLabel: t("actions.cancel"),
       });
       if (!confirmed) return;
@@ -364,7 +364,7 @@ export const WorkingDirectoryPalette: React.FC<
           return next;
         });
         Message.success(
-          t("selectors.spotlight.toast.repoRemoved", "Linkage to ORGII removed")
+          t("selectors.spotlight.toast.repoRemoved", "Linkage to ORG2 removed")
         );
       } catch (error) {
         Message.error(
@@ -372,7 +372,7 @@ export const WorkingDirectoryPalette: React.FC<
             ? error.message
             : t(
                 "selectors.spotlight.toast.repoRemoveFailed",
-                "Failed to remove linkage to ORGII"
+                "Failed to remove linkage to ORG2"
               )
         );
       }
@@ -439,7 +439,7 @@ export const WorkingDirectoryPalette: React.FC<
           void handleRemoveRepo(repo);
         }}
         className="flex items-center justify-center rounded-md p-1 text-danger-6 transition-colors hover:bg-danger-6/10"
-        title={t("actions.removeFromOrgii", "Remove from ORGII")}
+        title={t("actions.removeFromOrgii", "Remove from ORG2")}
       >
         <HugeiconsIcon icon={ICONS.removeRepo} size={14} />
       </button>

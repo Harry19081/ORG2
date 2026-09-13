@@ -288,7 +288,7 @@ async fn proxy_agent_handler(
     if !proxy_token_matches(&context.proxy_token, &supplied_token) {
         return json_error(
             StatusCode::UNAUTHORIZED,
-            "Invalid ORGII proxy token".to_string(),
+            "Invalid ORG2 proxy token".to_string(),
         );
     }
     let query = forwarded_query(&context.protocol, request.uri().query());
@@ -347,7 +347,7 @@ fn authenticated_empty_ok_response(agent_name: &str, supplied_token: &str) -> Re
     if !proxy_token_matches(&context.proxy_token, supplied_token) {
         return json_error(
             StatusCode::UNAUTHORIZED,
-            "Invalid ORGII proxy token".to_string(),
+            "Invalid ORG2 proxy token".to_string(),
         );
     }
     empty_ok_response()
@@ -750,7 +750,7 @@ fn resolve_proxy_context_for_selection(
 fn resolve_proxy_context(agent_name: &str) -> Result<ProxyContext, String> {
     let agent_display = protocol_for_agent(agent_name)?.display_name;
     let selection = agent_cli::managed_config::managed_selection_for_agent(agent_name)?
-        .ok_or_else(|| format!("{agent_display} is not in ORGII Managed config mode"))?;
+        .ok_or_else(|| format!("{agent_display} is not in ORG2 Managed config mode"))?;
     let proxy_token = selection
         .proxy_token
         .clone()

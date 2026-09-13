@@ -54,7 +54,7 @@
       "connection": "Kết nối GitHub"
     },
     "placeholders": {
-      "projectName": "ORGII GitHub Issues",
+      "projectName": "Vấn đề GitHub của ORG2",
       "repo": "owner/repo hoặc https://github.com/owner/repo",
       "connection": "Chọn kết nối GitHub"
     },
@@ -92,7 +92,7 @@
       "notConfigured": "Chưa cấu hình",
       "syncNowDescription": "Nhập thay đổi tệp từ xa và xuất thay đổi cơ sở dữ liệu cục bộ",
       "syncSummary": "{{projects}} dự án, {{workItems}} work items, {{conflicts}} xung đột",
-      "syncHowItWorks": "Đồng bộ thư mục Git kết nối không gian làm việc này với một kho Git hiện có. ORGII lưu các dự án và work items được xuất của không gian làm việc dưới `.orgii/projects/...` bên trong kho đó, nhập thay đổi tệp từ đó, xuất thay đổi cơ sở dữ liệu cục bộ trở lại thành tệp và tạm dừng khi có xung đột để bạn xem lại trước khi ghi đè bất kỳ nội dung nào",
+      "syncHowItWorks": "Đồng bộ thư mục Git kết nối không gian làm việc này với một kho Git hiện có. ORG2 lưu các dự án và work items được xuất của không gian làm việc dưới `.orgii/projects/...` bên trong kho đó, nhập thay đổi tệp từ đó, xuất thay đổi cơ sở dữ liệu cục bộ trở lại thành tệp và tạm dừng khi có xung đột để bạn xem lại trước khi ghi đè bất kỳ nội dung nào",
       "noProjectsForCatalog": "Không gian làm việc này chưa có dự án nào.",
       "noProjectsForCatalogHint": "Tạo một dự án trong không gian làm việc này trước khi quản lý nhãn dùng chung",
       "dangerZone": "Vùng nguy hiểm",
@@ -582,7 +582,7 @@
         "changeWarning": "Hãy ngắt kết nối bộ chuyển đổi hiện tại trước khi kết nối bộ chuyển đổi mới.",
         "detachProjectMenuLabel": "Hủy liên kết GitHub",
         "detachProjectTitle": "Hủy liên kết GitHub khỏi {{project}}?",
-        "detachProjectDescription": "Đồng bộ GitHub Issues sẽ dừng. Dự án cục bộ và các mục công việc đã nhập vẫn ở lại trong ORGII.",
+        "detachProjectDescription": "Đồng bộ GitHub Issues sẽ dừng. Dự án cục bộ và các mục công việc đã nhập vẫn ở lại trong ORG2.",
         "detachProjectAction": "Hủy liên kết GitHub khỏi {{project}}",
         "detachProjectSuccess": "Đã hủy liên kết GitHub khỏi {{project}}"
       },
@@ -834,7 +834,7 @@
       "updateWorkflowState": "Failed to update Linear workflow state",
       "archiveWorkflowState": "Failed to archive Linear workflow state",
       "statusStateMissing": "No matching Linear workflow state exists for this status",
-      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORGII yet"
+      "unsupportedIssueUpdate": "Chưa thể chỉnh sửa trường vấn đề Linear này trong ORG2"
     },
     "loadingConnections": "Đang tải kết nối Linear..."
   },

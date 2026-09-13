@@ -28,7 +28,7 @@
       "aria": "{{label}} menu"
     },
     "items": {
-      "quitOrg2": "Quit ORG-2",
+      "quitOrg2": "Quit ORG2",
       "newSession": "New Session",
       "openFolder": "Open Folder...",
       "addFolderToWorkspace": "Add Folder to Workspace...",
@@ -130,8 +130,8 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
-    "removeFromOrgii": "Remove from ORGII",
-    "removeFromOrgiiCount": "Remove from ORGII ({{count}})",
+    "removeFromOrgii": "Remove from ORG2",
+    "removeFromOrgiiCount": "Remove from ORG2 ({{count}})",
     "edit": "Edit",
     "write": "Write",
     "close": "Close",
@@ -544,12 +544,12 @@
   },
   "confirmation": {
     "delete": "Are you sure you want to delete this?",
-    "removeTitle": "Remove \"{{name}}\" from ORGII?",
-    "removeMessage": "This only removes its linkage to ORGII. Nothing will be removed from disk.",
+    "removeTitle": "Remove \"{{name}}\" from ORG2?",
+    "removeMessage": "This only removes its linkage to ORG2. Nothing will be removed from disk.",
     "deleteWorkspaceTitle": "Delete workspace \"{{name}}\"?",
     "deleteWorkspaceMessage": "This deletes the workspace preset only. Member repos and folders are not affected.",
-    "deleteSelectedTitle": "Remove {{count}} selected items from ORGII?",
-    "deleteSelectedMessage": "This only removes their linkage to ORGII. Nothing will be removed from disk.",
+    "deleteSelectedTitle": "Remove {{count}} selected items from ORG2?",
+    "deleteSelectedMessage": "This only removes their linkage to ORG2. Nothing will be removed from disk.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "This will permanently delete {{stashRef}}. This action cannot be undone.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -1684,11 +1684,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Linkage to ORG2 removed",
+        "repoRemoveFailed": "Failed to remove linkage to ORG2",
+        "workspaceRemoved": "Linkage to ORG2 removed",
+        "workspaceRemoveFailed": "Failed to remove linkage to ORG2",
+        "bulkDeleted": "{{count}} linkages to ORG2 removed",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2001,7 +2001,8 @@
     "openSessionAction": "Open Session",
     "taskFailedTitle": "Task failed",
     "taskFailedBody": "“{{name}}” failed{{detail}}",
-    "taskCancelledToast": "“{{name}}” was cancelled"
+    "taskCancelledToast": "“{{name}}” was cancelled",
+    "taskFailedPrivateBody": "A task failed. Open ORG2 for details."
   },
   "teamInbox": {
     "title": "Team Inbox",
@@ -2192,8 +2193,8 @@
     "previewAlt": "Preview"
   },
   "quitConfirmation": {
-    "title": "Quit ORG-2?",
-    "subtitle": "Any running sessions will keep their current state. You can reopen ORG-2 later.",
+    "title": "Quit ORG2?",
+    "subtitle": "Any running sessions will keep their current state. You can reopen ORG2 later.",
     "cancel": "Cancel",
     "confirm": "Quit"
   },
@@ -2261,5 +2262,12 @@
     "goToSection": "Go to {{label}}, section {{current}} of {{total}}",
     "section": "Section {{current}}",
     "sectionPosition": "Section {{current}} of {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "This is a test notification from ORG2",
+    "workspaceFile": "ORG2 Workspace",
+    "sessionJsonFile": "ORG2 Session JSON",
+    "skillsSource": "ORG2 Skills",
+    "gitServiceUnavailable": "Unable to reach the local Git service. Please try again after the app finishes starting, or restart ORG2 if this keeps happening."
   }
 }

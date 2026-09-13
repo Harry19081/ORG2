@@ -14,7 +14,6 @@ vi.mock("@src/components/Message", () => ({
 }));
 
 vi.mock("@src/api/services/notification", () => ({
-  TASK_FAILURE_NOTIFICATION_BODY: "Task failed",
   notifyError: vi.fn(),
   notifyTaskCompletion: vi.fn().mockResolvedValue({ disposition: "delivered" }),
 }));

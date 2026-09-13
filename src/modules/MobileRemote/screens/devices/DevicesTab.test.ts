@@ -47,7 +47,7 @@ vi.mock("../../app", () => ({
 const translations: Record<string, string> = {
   "devices.title": "Devices",
   "devices.thisDevice": "This device",
-  "devices.thisDeviceLabel": "ORGII Mobile",
+  "devices.thisDeviceLabel": "ORG2 Mobile",
   "devices.thisDeviceSubtitle": "Full remote · Active now",
   "devices.pairedDesktops": "Paired desktops",
   "devices.primary": "Primary",

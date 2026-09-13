@@ -54,7 +54,7 @@
       "connection": "Подключение GitHub"
     },
     "placeholders": {
-      "projectName": "ORGII GitHub Issues",
+      "projectName": "Задачи GitHub для ORG2",
       "repo": "owner/repo или https://github.com/owner/repo",
       "connection": "Выберите подключение GitHub"
     },
@@ -92,7 +92,7 @@
       "notConfigured": "Не настроено",
       "syncNowDescription": "Импортировать удалённые изменения файлов и экспортировать локальные изменения базы данных",
       "syncSummary": "{{projects}} проектов, {{workItems}} work items, {{conflicts}} конфликтов",
-      "syncHowItWorks": "Синхронизация папки Git подключает это рабочее пространство к существующему Git-репозиторию. ORGII хранит экспортированные проекты и work items рабочего пространства внутри этого репозитория по пути `.orgii/projects/...`, импортирует оттуда изменения файлов, экспортирует локальные изменения базы данных обратно в файлы и останавливается при конфликтах, чтобы вы могли проверить их перед перезаписью",
+      "syncHowItWorks": "Синхронизация папки Git подключает это рабочее пространство к существующему Git-репозиторию. ORG2 хранит экспортированные проекты и work items рабочего пространства внутри этого репозитория по пути `.orgii/projects/...`, импортирует оттуда изменения файлов, экспортирует локальные изменения базы данных обратно в файлы и останавливается при конфликтах, чтобы вы могли проверить их перед перезаписью",
       "noProjectsForCatalog": "В этом рабочем пространстве пока нет проектов.",
       "noProjectsForCatalogHint": "Создайте проект в этом рабочем пространстве перед управлением общими метками",
       "dangerZone": "Опасная зона",
@@ -582,7 +582,7 @@
         "changeWarning": "Отключите текущий адаптер перед подключением нового.",
         "detachProjectMenuLabel": "Отвязать GitHub",
         "detachProjectTitle": "Отвязать GitHub от {{project}}?",
-        "detachProjectDescription": "Синхронизация GitHub Issues остановится. Локальный Project и импортированные рабочие элементы останутся в ORGII.",
+        "detachProjectDescription": "Синхронизация GitHub Issues остановится. Локальный Project и импортированные рабочие элементы останутся в ORG2.",
         "detachProjectAction": "Отвязать GitHub от {{project}}",
         "detachProjectSuccess": "GitHub отвязан от {{project}}"
       },
@@ -834,7 +834,7 @@
       "updateWorkflowState": "Failed to update Linear workflow state",
       "archiveWorkflowState": "Failed to archive Linear workflow state",
       "statusStateMissing": "No matching Linear workflow state exists for this status",
-      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORGII yet"
+      "unsupportedIssueUpdate": "Это поле задачи Linear пока нельзя редактировать в ORG2"
     },
     "loadingConnections": "Загрузка подключений Linear..."
   },

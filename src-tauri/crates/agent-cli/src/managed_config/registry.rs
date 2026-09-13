@@ -386,7 +386,7 @@ const MANAGED_CONFIG_UNAVAILABLE: &[(&str, &str)] = &[
     ),
     (
         "deepseek_harness",
-        "DeepSeek Harness owns provider and model selection inside its profile settings; ORGII does not rewrite those profiles",
+        "DeepSeek Harness owns provider and model selection inside its profile settings; ORG2 does not rewrite those profiles",
     ),
 ];
 
@@ -450,5 +450,5 @@ pub(super) fn supported_agent(agent_name: &str) -> bool {
 pub(super) fn unavailable_agent_message(agent_name: &str) -> String {
     managed_config_unavailable_reason_for_agent(agent_name)
         .map(str::to_string)
-        .unwrap_or_else(|| format!("ORGII managed config is not registered for {agent_name}"))
+        .unwrap_or_else(|| format!("ORG2 managed config is not registered for {agent_name}"))
 }

@@ -65,7 +65,7 @@ pub async fn session_external_history_sidebar_list(
 ) -> Result<ExternalHistorySidebarBatchResponse, String> {
     tokio::task::spawn_blocking(move || {
         let conn =
-            get_connection().map_err(|err| format!("Failed to open ORGII session cache: {err}"))?;
+            get_connection().map_err(|err| format!("Failed to open ORG2 session cache: {err}"))?;
         // One read for the whole batch: pins are a small ORGII-owned set, and
         // a per-row lookup would turn a page render into N queries.
         let pinned_ids = imported_cache::pinned_imported_session_ids_from_conn(&conn)?;

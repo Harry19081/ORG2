@@ -272,9 +272,9 @@
       "switchToRepo": "開く",
       "startSession": "セッションを開始",
       "openDetails": "詳細を表示",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "ORG2 から削除",
+      "removeSuccess": "ORG2 との関連付けを解除しました",
+      "removeFailed": "ORG2 との関連付けを解除できませんでした"
     },
     "addWorkspace": "Workspace を追加"
   },
@@ -662,7 +662,7 @@
       "selectAll": "全員（{{count}}）",
       "incomingEndpointMismatch": "この共有は別のカスタムクラウドに属しています。インポート前にそのエンドポイントを設定してください。",
       "incomingConnectionError": "クラウドサービスに接続できません。ネットワークを確認して再試行してください。",
-      "incomingIncompatibleError": "クラウドから互換性のない共有応答が返されました。ORGII を更新するか、クラウド構成を確認してください。",
+      "incomingIncompatibleError": "クラウドから互換性のない共有応答が返されました。ORG2 を更新するか、クラウド構成を確認してください。",
       "incomingServerError": "クラウドサービスがこの共有を解決できませんでした。再試行してください。",
       "incomingAlreadyOnDevice": "このセッションはすでにこのデバイスにあります。重複してインポートせず、元のセッションを開いてください。",
       "incomingOpenExisting": "セッションを開く",

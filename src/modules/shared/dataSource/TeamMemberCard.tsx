@@ -193,7 +193,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
 
       {machine ? (
         <div className="truncate text-[11px] text-text-3">
-          {machine.machineLabel} · {machine.chipType} · ORGII{" "}
+          {machine.machineLabel} · {machine.chipType} · ORG2{" "}
           {machine.appVersion}
         </div>
       ) : null}

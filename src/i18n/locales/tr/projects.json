@@ -54,7 +54,7 @@
       "connection": "GitHub bağlantısı"
     },
     "placeholders": {
-      "projectName": "ORGII GitHub Issues",
+      "projectName": "ORG2 GitHub sorunları",
       "repo": "owner/repo veya https://github.com/owner/repo",
       "connection": "GitHub bağlantısı seç"
     },
@@ -92,7 +92,7 @@
       "notConfigured": "Yapılandırılmadı",
       "syncNowDescription": "Uzak dosya değişikliklerini içe aktar ve yerel veritabanı değişikliklerini dışa aktar",
       "syncSummary": "{{projects}} proje, {{workItems}} work items, {{conflicts}} çakışma",
-      "syncHowItWorks": "Git klasör senkronizasyonu bu çalışma alanını mevcut bir Git deposuna bağlar. ORGII, çalışma alanından dışa aktarılan projeleri ve work items kayıtlarını bu deponun içindeki `.orgii/projects/...` altında saklar, dosya değişikliklerini oradan içe aktarır, yerel veritabanı değişikliklerini tekrar dosyalara dışa aktarır ve çakışmalarda durarak üzerine yazmadan önce inceleme yapmanı sağlar",
+      "syncHowItWorks": "Git klasör senkronizasyonu bu çalışma alanını mevcut bir Git deposuna bağlar. ORG2, çalışma alanından dışa aktarılan projeleri ve work items kayıtlarını bu deponun içindeki `.orgii/projects/...` altında saklar, dosya değişikliklerini oradan içe aktarır, yerel veritabanı değişikliklerini tekrar dosyalara dışa aktarır ve çakışmalarda durarak üzerine yazmadan önce inceleme yapmanı sağlar",
       "noProjectsForCatalog": "Bu çalışma alanında henüz proje yok.",
       "noProjectsForCatalogHint": "Paylaşılan etiketleri yönetmeden önce bu çalışma alanında bir proje oluşturun",
       "dangerZone": "Tehlikeli Bölge",
@@ -582,7 +582,7 @@
         "changeWarning": "Yeni bir adaptör bağlamadan önce mevcut adaptörü ayırın.",
         "detachProjectMenuLabel": "GitHub bağlantısını kaldır",
         "detachProjectTitle": "{{project}} için GitHub bağlantısı kaldırılsın mı?",
-        "detachProjectDescription": "GitHub Issues senkronizasyonu duracak. Yerel proje ve içe aktarılan iş öğeleri ORGII'de kalacak.",
+        "detachProjectDescription": "GitHub Issues senkronizasyonu duracak. Yerel proje ve içe aktarılan iş öğeleri ORG2'de kalacak.",
         "detachProjectAction": "{{project}} için GitHub bağlantısını kaldır",
         "detachProjectSuccess": "{{project}} için GitHub bağlantısı kaldırıldı"
       },
@@ -834,7 +834,7 @@
       "updateWorkflowState": "Failed to update Linear workflow state",
       "archiveWorkflowState": "Failed to archive Linear workflow state",
       "statusStateMissing": "No matching Linear workflow state exists for this status",
-      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORGII yet"
+      "unsupportedIssueUpdate": "Bu Linear sorun alanı henüz ORG2 içinde düzenlenemiyor"
     },
     "loadingConnections": "Linear bağlantıları yükleniyor..."
   },

@@ -272,9 +272,9 @@
       "switchToRepo": "Ouvrir",
       "startSession": "Démarrer la session",
       "openDetails": "Afficher les détails",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "Retirer d’ORG2",
+      "removeSuccess": "Lien avec ORG2 supprimé",
+      "removeFailed": "Impossible de supprimer le lien avec ORG2"
     },
     "addWorkspace": "Ajouter un espace de travail"
   },
@@ -662,7 +662,7 @@
       "selectAll": "Tout le monde ({{count}})",
       "incomingEndpointMismatch": "Ce partage appartient à un autre cloud personnalisé. Configurez ce point de terminaison avant l'import.",
       "incomingConnectionError": "Connexion au service cloud impossible. Vérifiez le réseau et réessayez.",
-      "incomingIncompatibleError": "Ce cloud a renvoyé une réponse de partage incompatible. Mettez ORGII à jour ou vérifiez le déploiement.",
+      "incomingIncompatibleError": "Ce cloud a renvoyé une réponse de partage incompatible. Mettez ORG2 à jour ou vérifiez le déploiement.",
       "incomingServerError": "Le service cloud n'a pas pu résoudre ce partage. Réessayez.",
       "incomingAlreadyOnDevice": "Cette session est déjà sur cet appareil. Ouvrez l'original au lieu d'importer un doublon.",
       "incomingOpenExisting": "Ouvrir la session",

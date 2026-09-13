@@ -28,7 +28,7 @@
       "aria": "{{label}}菜单"
     },
     "items": {
-      "quitOrg2": "退出 ORG-2",
+      "quitOrg2": "退出 ORG2",
       "newSession": "新建会话",
       "openFolder": "打开文件夹...",
       "addFolderToWorkspace": "将文件夹添加到工作区...",
@@ -129,8 +129,8 @@
     "save": "保存",
     "cancel": "取消",
     "delete": "删除",
-    "removeFromOrgii": "从 ORGII 移除",
-    "removeFromOrgiiCount": "从 ORGII 移除 ({{count}})",
+    "removeFromOrgii": "从 ORG2 移除",
+    "removeFromOrgiiCount": "从 ORG2 移除 ({{count}})",
     "edit": "编辑",
     "write": "写入",
     "close": "关闭",
@@ -544,12 +544,12 @@
   },
   "confirmation": {
     "delete": "确定要删除吗？",
-    "removeTitle": "从 ORGII 中移除「{{name}}」？",
-    "removeMessage": "这只会移除它与 ORGII 的关联，不会从磁盘中移除任何内容。",
+    "removeTitle": "从 ORG2 中移除「{{name}}」？",
+    "removeMessage": "这只会移除它与 ORG2 的关联，不会从磁盘中移除任何内容。",
     "deleteWorkspaceTitle": "删除工作区「{{name}}」？",
     "deleteWorkspaceMessage": "仅删除工作区预设。其中包含的 Repo 和文件夹不会受到影响。",
-    "deleteSelectedTitle": "从 ORGII 中移除选中的 {{count}} 项？",
-    "deleteSelectedMessage": "这只会移除它们与 ORGII 的关联，不会从磁盘中移除任何内容。",
+    "deleteSelectedTitle": "从 ORG2 中移除选中的 {{count}} 项？",
+    "deleteSelectedMessage": "这只会移除它们与 ORG2 的关联，不会从磁盘中移除任何内容。",
     "dropStashTitle": "Drop stash？",
     "dropStashMessage": "这将永久删除 {{stashRef}}。此操作无法撤销。",
     "popAllStashesTitle": "Pop all stashes？",
@@ -1684,11 +1684,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "已解除与 ORG2 的关联",
+        "repoRemoveFailed": "无法解除与 ORG2 的关联",
+        "workspaceRemoved": "已解除与 ORG2 的关联",
+        "workspaceRemoveFailed": "无法解除与 ORG2 的关联",
+        "bulkDeleted": "已解除 {{count}} 项与 ORG2 的关联",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -1978,7 +1978,8 @@
     "openSessionAction": "打开会话",
     "taskFailedTitle": "任务失败",
     "taskFailedBody": "“{{name}}”失败{{detail}}",
-    "taskCancelledToast": "“{{name}}”已取消"
+    "taskCancelledToast": "“{{name}}”已取消",
+    "taskFailedPrivateBody": "任务失败。请打开 ORG2 查看详情。"
   },
   "teamInbox": {
     "title": "团队收件箱",
@@ -2169,8 +2170,8 @@
     "previewAlt": "预览"
   },
   "quitConfirmation": {
-    "title": "退出 ORG-2？",
-    "subtitle": "正在运行的会话会保留当前状态。你可以稍后重新打开 ORG-2。",
+    "title": "退出 ORG2？",
+    "subtitle": "正在运行的会话会保留当前状态。你可以稍后重新打开 ORG2。",
     "cancel": "取消",
     "confirm": "退出"
   },
@@ -2182,7 +2183,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "需要“完全磁盘访问”权限",
-      "explain": "Safari 的 Cookie 保存在 macOS 保护的文件夹中。请在系统设置的“完全磁盘访问权限”中允许 ORG2，然后重新检查。",
+      "explain": "Safari 将 Cookie 存储在受 macOS 保护的文件夹中。请在系统设置的“完全磁盘访问权限”中允许 ORG2，然后重新检查。",
       "openSettings": "打开系统设置",
       "checkAgain": "重新检查"
     },
@@ -2260,5 +2261,12 @@
     "goToSection": "前往 {{label}}，第 {{current}} 节，共 {{total}} 节",
     "section": "第 {{current}} 节",
     "sectionPosition": "第 {{current}} 节，共 {{total}} 节"
+  },
+  "appMessages": {
+    "testNotificationBody": "这是一条来自 ORG2 的测试通知",
+    "workspaceFile": "ORG2 工作区",
+    "sessionJsonFile": "ORG2 会话 JSON",
+    "skillsSource": "ORG2 技能",
+    "gitServiceUnavailable": "无法连接本地 Git 服务。请等待应用启动完成后重试；如果问题持续出现，请重启 ORG2。"
   }
 }

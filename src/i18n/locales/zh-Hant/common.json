@@ -207,7 +207,7 @@
       "aria": "{{label}}選單"
     },
     "items": {
-      "quitOrg2": "結束 ORG-2",
+      "quitOrg2": "結束 ORG2",
       "newSession": "新增工作階段",
       "openFolder": "開啟資料夾...",
       "addFolderToWorkspace": "將資料夾新增至工作區...",
@@ -308,8 +308,8 @@
     "save": "保存",
     "cancel": "取消",
     "delete": "刪除",
-    "removeFromOrgii": "從 ORGII 移除",
-    "removeFromOrgiiCount": "從 ORGII 移除 ({{count}})",
+    "removeFromOrgii": "從 ORG2 移除",
+    "removeFromOrgiiCount": "從 ORG2 移除 ({{count}})",
     "edit": "編輯",
     "write": "寫入",
     "close": "關閉",
@@ -713,12 +713,12 @@
   },
   "confirmation": {
     "delete": "確定要刪除嗎？",
-    "removeTitle": "從 ORGII 中移除「{{name}}」？",
-    "removeMessage": "這只會移除它與 ORGII 的關聯，不會從磁盤中移除任何內容。",
+    "removeTitle": "從 ORG2 中移除「{{name}}」？",
+    "removeMessage": "這只會移除它與 ORG2 的關聯，不會從磁盤中移除任何內容。",
     "deleteWorkspaceTitle": "刪除工作區「{{name}}」？",
     "deleteWorkspaceMessage": "僅刪除工作區預設。其中包含的 Repo 和文件夾不會受到影響。",
-    "deleteSelectedTitle": "從 ORGII 中移除選中的 {{count}} 項？",
-    "deleteSelectedMessage": "這只會移除它們與 ORGII 的關聯，不會從磁盤中移除任何內容。",
+    "deleteSelectedTitle": "從 ORG2 中移除選中的 {{count}} 項？",
+    "deleteSelectedMessage": "這只會移除它們與 ORG2 的關聯，不會從磁盤中移除任何內容。",
     "dropStashTitle": "Drop stash？",
     "dropStashMessage": "這將永久刪除 {{stashRef}}。此操作無法撤銷。",
     "popAllStashesTitle": "Pop all stashes？",
@@ -1853,11 +1853,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "已解除與 ORG2 的連結",
+        "repoRemoveFailed": "無法解除與 ORG2 的連結",
+        "workspaceRemoved": "已解除與 ORG2 的連結",
+        "workspaceRemoveFailed": "無法解除與 ORG2 的連結",
+        "bulkDeleted": "已解除 {{count}} 項與 ORG2 的連結",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2141,8 +2141,8 @@
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "結束 ORG-2？",
-    "subtitle": "正在執行的工作階段會保留目前狀態。你可以稍後重新開啟 ORG-2。",
+    "title": "結束 ORG2？",
+    "subtitle": "正在執行的工作階段會保留目前狀態。你可以稍後重新開啟 ORG2。",
     "cancel": "取消",
     "confirm": "結束"
   },
@@ -2172,7 +2172,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "需要「完整磁碟取用權限」",
-      "explain": "Safari 的 Cookie 儲存在 macOS 保護的資料夾中。請在系統設定的「完整磁碟取用權限」中允許 ORG2，然後重新檢查。",
+      "explain": "Safari 將 Cookie 儲存在受 macOS 保護的資料夾中。請在系統設定的「完整磁碟存取權限」中允許 ORG2，然後重新檢查。",
       "openSettings": "打開系統設定",
       "checkAgain": "重新檢查"
     },
@@ -2220,7 +2220,8 @@
     "taskCompletedBody": "「{{name}}」已完成，可以檢視結果",
     "openSessionAction": "開啟工作階段",
     "taskFailedTitle": "任務失敗",
-    "taskFailedBody": "「{{name}}」失敗{{detail}}"
+    "taskFailedBody": "「{{name}}」失敗{{detail}}",
+    "taskFailedPrivateBody": "工作失敗。請開啟 ORG2 查看詳細資訊。"
   },
   "documentOpen": {
     "openInDefault": "在 {{name}} 中開啟",
@@ -2260,5 +2261,12 @@
     "goToSection": "前往 {{label}}，第 {{current}} 節，共 {{total}} 節",
     "section": "第 {{current}} 節",
     "sectionPosition": "第 {{current}} 節，共 {{total}} 節"
+  },
+  "appMessages": {
+    "testNotificationBody": "這是一則來自 ORG2 的測試通知",
+    "workspaceFile": "ORG2 工作區",
+    "sessionJsonFile": "ORG2 工作階段 JSON",
+    "skillsSource": "ORG2 技能",
+    "gitServiceUnavailable": "無法連線至本機 Git 服務。請等待應用程式啟動完成後重試；如果問題持續發生，請重新啟動 ORG2。"
   }
 }

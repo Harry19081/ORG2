@@ -225,7 +225,7 @@ export function useWorkingDirectoryPaletteWorkspaces({
       }),
       message: t(
         "confirmation.deleteSelectedMessage",
-        "This only removes their linkage to ORGII. Nothing will be removed from disk."
+        "This only removes their linkage to ORG2. Nothing will be removed from disk."
       ),
       okLabel: t("actions.removeFromOrgii"),
       cancelLabel: t("actions.cancel"),

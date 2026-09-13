@@ -263,7 +263,7 @@ describe("MobileRemoteProviders send lifecycle", () => {
       protocolVersion: 1,
       clientInfo: { name: "orgii-mobile-pwa", version: "0.1.0" },
       capabilities: { interactions: ["permission"], streaming: true },
-      deviceLabel: "ORGII Mobile",
+      deviceLabel: "ORG2 Mobile",
     });
   });
 
