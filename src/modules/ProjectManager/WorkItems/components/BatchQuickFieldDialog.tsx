@@ -134,7 +134,7 @@ export const BatchQuickFieldDialog: React.FC<BatchQuickFieldDialogProps> = ({
       cancelText={t("common:actions.cancel", { defaultValue: "Cancel" })}
       okButtonProps={{ disabled: !value || !projectSlug, loading: applying }}
     >
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3">
         <p className="text-xs text-text-3">
           {t("workItems.batchField.hint", {
             defaultValue: `Applies to ${shortIds.length} selected items.`,

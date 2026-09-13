@@ -81,7 +81,7 @@ export const ShareSkillDialog: React.FC<ShareSkillDialogProps> = ({
       cancelText={t("common:actions.cancel", { defaultValue: "Cancel" })}
       okButtonProps={{ disabled: !orgId, loading: sharing }}
     >
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3">
         <p className="text-xs text-text-3">
           {t("skills.shareToOrgHint", {
             defaultValue:

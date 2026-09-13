@@ -284,7 +284,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
         onCancel={() => setManageOpen(false)}
         footer={null}
       >
-        <div className="flex flex-col gap-3 p-4">
+        <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-2 rounded-lg border border-border-1 p-3">
             <Input
               value={draftName}
