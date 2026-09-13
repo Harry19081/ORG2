@@ -12,3 +12,5 @@
 Verdict totals: **0 fix**, **6 keep with reason**, **0 abstract**.
 
 Source review: new action controls use shared Button; custom geometry is documented in reusable primitives. Native UI screenshots were not captured because computer control was not requested. Verification commands and outcomes are recorded in the PR.
+
+Follow-up hover correction: Source Control section actions, Git-list controls, check rows and port rows use shared soft/button-hover treatment so they remain visible over the hovered row surface. Removed weaker local hover overrides; port-stop keeps its existing neutral color semantics with the stronger token. Shared Button dimensions, icons, event propagation and visibility behavior remain unchanged.

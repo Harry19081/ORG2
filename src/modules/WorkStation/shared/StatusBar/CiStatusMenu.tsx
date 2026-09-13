@@ -177,7 +177,7 @@ const CheckRow: React.FC<CheckRowProps> = memo(({ item, onOpenDetails }) => {
         {item.detailsUrl && (
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
+            appearance="soft"
             size="mini"
             iconOnly
             icon={
@@ -188,7 +188,6 @@ const CheckRow: React.FC<CheckRowProps> = memo(({ item, onOpenDetails }) => {
               />
             }
             htmlType="button"
-            className="hover:bg-button-hover-no-drop hover:text-text-1"
             title={t("workstation.ci.viewDetails")}
             aria-label={t("workstation.ci.viewDetails")}
             onClick={(event) => {

@@ -426,7 +426,7 @@ const GitFileList: React.FC<GitFileListProps> = ({
           <Button
             size="sidebar"
             variant="tertiary"
-            appearance="soft-no-drop"
+            appearance="soft"
             iconOnly
             onClick={handleFilterToggle}
             title={t("actions.search")}
@@ -446,7 +446,7 @@ const GitFileList: React.FC<GitFileListProps> = ({
         <Button
           size="sidebar"
           variant="tertiary"
-          appearance="soft-no-drop"
+          appearance="soft"
           iconOnly
           onClick={handleViewModeToggle}
           title={
