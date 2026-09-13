@@ -55,6 +55,10 @@
   height: 100%;
   overflow: hidden;
 
+  .cm-editor .cm-content {
+    padding-top: 0;
+  }
+
   // Remove code underlines without resetting the collapsed widget surface.
   .cm-content *:not(.cm-collapsedLines),
   .cm-gutters * {

@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Diagnosequellen werden gestartet...",
     "diagnosticSourceIssues": "Probleme mit Diagnosequellen",
     "copied": "Kopiert",
+    "copiedFilePath": "Dateipfad kopiert",
     "copyFailed": "Kopieren fehlgeschlagen",
     "searching": "Suche...",
     "noResults": "Keine Ergebnisse",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Erneut verbinden",
     "technicalDetails": "Technische Details",
     "failedToCopy": "Kopieren fehlgeschlagen",
+    "failedToCopyFilePath": "Dateipfad konnte nicht kopiert werden",
     "api": {
       "messages": {
         "signIn": "Bitte melden Sie sich erneut an."
@@ -770,7 +772,6 @@
     "nextMatch": "Nächster Treffer (Enter)",
     "nextMatchLabel": "Nächster Treffer",
     "clearSearch": "Suche löschen",
-    "openInEditorTab": "In Editor-Tab öffnen",
     "openFile": "Datei öffnen",
     "openNativeDevTools": "Native Browser-DevTools öffnen",
     "captureScreenshot": "Screenshot",
@@ -886,7 +887,7 @@
     "noSessionsFound": "Keine Session gefunden",
     "typeToSearchFiles": "Zum Suchen von Dateien eingeben...",
     "selectFileToViewChanges": "Wählen Sie eine Datei, um Änderungen anzuzeigen",
-    "selectSidebarFileToViewChanges": "Datei in der Seitenleiste auswählen",
+    "selectSidebarFileToViewChanges": "Eine Datei auswählen",
     "failedToLoadHistory": "Verlauf konnte nicht geladen werden",
     "noGitHistory": "Kein Git-Verlauf verfügbar",
     "noCommitHistory": "Keine Commits gefunden",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "Repository im Workspace auswählen",
     "noData": "Keine Daten",
     "noResults": "Keine Ergebnisse",
-    "noSessionHistory": "Kein Sitzungsverlauf"
+    "noSessionHistory": "Kein Sitzungsverlauf",
+    "selectSidebarStash": "Einen stash auswählen",
+    "selectSidebarCommit": "Einen commit auswählen",
+    "selectSidebarPullRequest": "Einen pull request auswählen",
+    "selectSidebarIssue": "Ein issue auswählen"
   },
   "inbox": {
     "scrollToBottom": "Nach unten scrollen",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Pull Requests anzeigen"
     },
     "pill": {
-      "focus": "Fokus",
-      "allChanges": "Alle Änderungen"
+      "focus": "Einzeln",
+      "allChanges": "Alle"
     },
     "scope": {
       "main": "Haupt-Checkout",

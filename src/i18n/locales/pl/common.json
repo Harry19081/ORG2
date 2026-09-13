@@ -437,6 +437,7 @@
     "connectionIssue": "Problem z połączeniem",
     "syncing": "Synchronizacja...",
     "copied": "Skopiowano",
+    "copiedFilePath": "Skopiowano ścieżkę pliku",
     "copyFailed": "Kopiowanie nie powiodło się",
     "searching": "Wyszukiwanie...",
     "running": "Działa",
@@ -707,6 +708,7 @@
     "reconnectCodex": "Połącz ponownie",
     "technicalDetails": "Szczegóły techniczne",
     "failedToCopy": "Nie udało się skopiować",
+    "failedToCopyFilePath": "Nie udało się skopiować ścieżki pliku",
     "api": {
       "messages": {
         "signIn": "Zaloguj się ponownie."
@@ -770,7 +772,6 @@
     "nextMatch": "Następne dopasowanie (Enter)",
     "nextMatchLabel": "Następne dopasowanie",
     "clearSearch": "Wyczyść wyszukiwanie",
-    "openInEditorTab": "Otwórz w karcie edytora",
     "openFile": "Otwórz plik",
     "openNativeDevTools": "Otwórz natywne DevTools przeglądarki",
     "captureScreenshot": "Zrzut ekranu",
@@ -886,7 +887,7 @@
     "noSessionsFound": "Nie znaleziono sesji",
     "typeToSearchFiles": "Wpisz, aby wyszukać pliki...",
     "selectFileToViewChanges": "Wybierz plik, aby zobaczyć zmiany",
-    "selectSidebarFileToViewChanges": "Wybierz plik na pasku bocznym",
+    "selectSidebarFileToViewChanges": "Wybierz jeden plik",
     "failedToLoadHistory": "Nie udało się załadować historii",
     "noGitHistory": "Brak dostępnej historii Git",
     "noCommitHistory": "Nie znaleziono commitów",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "Wybierz repozytorium z obszaru roboczego",
     "noData": "Brak danych",
     "noResults": "Brak wyników",
-    "noSessionHistory": "Brak historii sesji"
+    "noSessionHistory": "Brak historii sesji",
+    "selectSidebarStash": "Wybierz jeden stash",
+    "selectSidebarCommit": "Wybierz jeden commit",
+    "selectSidebarPullRequest": "Wybierz jeden pull request",
+    "selectSidebarIssue": "Wybierz jedno issue"
   },
   "inbox": {
     "scrollToBottom": "Przewiń na dół",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Wyświetl Pull Requests"
     },
     "pill": {
-      "focus": "Skupienie",
-      "allChanges": "Wszystkie zmiany"
+      "focus": "Pojedynczy",
+      "allChanges": "Wszystkie"
     },
     "scope": {
       "main": "Główny checkout",

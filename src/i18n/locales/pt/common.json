@@ -437,6 +437,7 @@
     "connectionIssue": "Problema de conexão",
     "syncing": "Sincronizando...",
     "copied": "Copiado",
+    "copiedFilePath": "Caminho do arquivo copiado",
     "copyFailed": "Falha ao copiar",
     "searching": "Pesquisando...",
     "running": "Em execução",
@@ -707,6 +708,7 @@
     "reconnectCodex": "Reconectar",
     "technicalDetails": "Detalhes técnicos",
     "failedToCopy": "Falha ao copiar",
+    "failedToCopyFilePath": "Falha ao copiar o caminho do arquivo",
     "api": {
       "messages": {
         "signIn": "Faça login novamente."
@@ -770,7 +772,6 @@
     "nextMatch": "Próxima correspondência (Enter)",
     "nextMatchLabel": "Próxima correspondência",
     "clearSearch": "Limpar pesquisa",
-    "openInEditorTab": "Abrir em aba do editor",
     "openFile": "Abrir arquivo",
     "openNativeDevTools": "Abrir DevTools nativo do navegador",
     "captureScreenshot": "Captura de tela",
@@ -886,7 +887,7 @@
     "noSessionsFound": "Nenhuma sessão encontrada",
     "typeToSearchFiles": "Digite para pesquisar arquivos...",
     "selectFileToViewChanges": "Selecione um arquivo para ver as alterações",
-    "selectSidebarFileToViewChanges": "Selecione um arquivo na barra lateral",
+    "selectSidebarFileToViewChanges": "Selecione um arquivo",
     "failedToLoadHistory": "Falha ao carregar histórico",
     "noGitHistory": "Nenhum histórico do Git disponível",
     "noCommitHistory": "Nenhum commit encontrado",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "Escolha um repositório do espaço de trabalho",
     "noData": "Sem dados",
     "noResults": "Nenhum resultado",
-    "noSessionHistory": "Nenhum histórico de sessão"
+    "noSessionHistory": "Nenhum histórico de sessão",
+    "selectSidebarStash": "Selecione um stash",
+    "selectSidebarCommit": "Selecione um commit",
+    "selectSidebarPullRequest": "Selecione um pull request",
+    "selectSidebarIssue": "Selecione um issue"
   },
   "inbox": {
     "scrollToBottom": "Rolar até o fim",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Ver Pull Requests"
     },
     "pill": {
-      "focus": "Foco",
-      "allChanges": "Todas as alterações"
+      "focus": "Individual",
+      "allChanges": "Todos"
     },
     "scope": {
       "main": "Checkout principal",

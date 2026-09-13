@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Iniciando fuentes de diagnóstico...",
     "diagnosticSourceIssues": "Problemas con fuentes de diagnóstico",
     "copied": "Copiado",
+    "copiedFilePath": "Ruta del archivo copiada",
     "copyFailed": "Error al copiar",
     "searching": "Buscando...",
     "noResults": "Sin resultados",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Volver a conectar",
     "technicalDetails": "Detalles técnicos",
     "failedToCopy": "No se pudo copiar",
+    "failedToCopyFilePath": "No se pudo copiar la ruta del archivo",
     "api": {
       "messages": {
         "signIn": "Inicia sesión de nuevo."
@@ -770,7 +772,6 @@
     "nextMatch": "Siguiente coincidencia (Enter)",
     "nextMatchLabel": "Siguiente coincidencia",
     "clearSearch": "Limpiar búsqueda",
-    "openInEditorTab": "Abrir en pestaña del editor",
     "openFile": "Abrir archivo",
     "openNativeDevTools": "Abrir DevTools nativas del navegador",
     "captureScreenshot": "Captura de pantalla",
@@ -886,7 +887,7 @@
     "noSessionsFound": "No se encontraron Session",
     "typeToSearchFiles": "Escribe para buscar archivos...",
     "selectFileToViewChanges": "Selecciona un archivo para ver los cambios",
-    "selectSidebarFileToViewChanges": "Selecciona un archivo en la barra lateral",
+    "selectSidebarFileToViewChanges": "Selecciona un archivo",
     "failedToLoadHistory": "Error al cargar el historial",
     "noGitHistory": "No hay historial de Git disponible",
     "noCommitHistory": "No se encontraron commits",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "Elige un repositorio del espacio de trabajo",
     "noData": "Sin datos",
     "noResults": "Sin resultados",
-    "noSessionHistory": "Sin historial de sesiones"
+    "noSessionHistory": "Sin historial de sesiones",
+    "selectSidebarStash": "Selecciona un stash",
+    "selectSidebarCommit": "Selecciona un commit",
+    "selectSidebarPullRequest": "Selecciona un pull request",
+    "selectSidebarIssue": "Selecciona un issue"
   },
   "inbox": {
     "scrollToBottom": "Ir al final",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Ver Pull Requests"
     },
     "pill": {
-      "focus": "Foco",
-      "allChanges": "Todos los cambios"
+      "focus": "Individual",
+      "allChanges": "Todos"
     },
     "scope": {
       "main": "Checkout principal",

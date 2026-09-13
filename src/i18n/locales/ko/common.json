@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "진단 소스 시작 중...",
     "diagnosticSourceIssues": "진단 소스 문제",
     "copied": "복사됨",
+    "copiedFilePath": "파일 경로를 복사했습니다",
     "copyFailed": "복사 실패",
     "searching": "검색 중...",
     "noResults": "결과 없음",
@@ -706,6 +707,7 @@
     "reconnectCodex": "다시 연결",
     "technicalDetails": "기술 세부 정보",
     "failedToCopy": "복사에 실패했습니다",
+    "failedToCopyFilePath": "파일 경로를 복사하지 못했습니다",
     "api": {
       "messages": {
         "signIn": "다시 로그인하세요."
@@ -770,7 +772,6 @@
     "nextMatch": "다음 일치 (Enter)",
     "nextMatchLabel": "다음 일치",
     "clearSearch": "검색 지우기",
-    "openInEditorTab": "편집기 탭에서 열기",
     "openFile": "파일 열기",
     "openNativeDevTools": "네이티브 브라우저 개발자 도구 열기",
     "captureScreenshot": "스크린샷",
@@ -886,7 +887,7 @@
     "noSessionsFound": "Session을 찾을 수 없습니다",
     "typeToSearchFiles": "파일을 검색하려면 입력...",
     "selectFileToViewChanges": "변경사항을 보려면 파일을 선택하세요",
-    "selectSidebarFileToViewChanges": "사이드바에서 파일 선택",
+    "selectSidebarFileToViewChanges": "파일 하나 선택",
     "failedToLoadHistory": "기록 로드 실패",
     "noGitHistory": "Git 기록이 없습니다",
     "noCommitHistory": "커밋을 찾을 수 없습니다",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "워크스페이스 리포지토리 선택",
     "noData": "데이터 없음",
     "noResults": "결과 없음",
-    "noSessionHistory": "세션 기록 없음"
+    "noSessionHistory": "세션 기록 없음",
+    "selectSidebarStash": "stash 하나 선택",
+    "selectSidebarCommit": "commit 하나 선택",
+    "selectSidebarPullRequest": "pull request 하나 선택",
+    "selectSidebarIssue": "issue 하나 선택"
   },
   "inbox": {
     "scrollToBottom": "맨 아래로",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Pull Requests 보기"
     },
     "pill": {
-      "focus": "포커스",
-      "allChanges": "모든 변경 사항"
+      "focus": "단일",
+      "allChanges": "전체"
     },
     "scope": {
       "main": "메인 체크아웃",

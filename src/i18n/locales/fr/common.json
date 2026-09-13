@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Démarrage des sources de diagnostic...",
     "diagnosticSourceIssues": "Problèmes de sources de diagnostic",
     "copied": "Copié",
+    "copiedFilePath": "Chemin du fichier copié",
     "copyFailed": "Échec de la copie",
     "searching": "Recherche...",
     "noResults": "Aucun résultat",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Reconnecter",
     "technicalDetails": "Détails techniques",
     "failedToCopy": "Échec de la copie",
+    "failedToCopyFilePath": "Échec de la copie du chemin du fichier",
     "api": {
       "messages": {
         "signIn": "Veuillez vous reconnecter."
@@ -770,7 +772,6 @@
     "nextMatch": "Correspondance suivante (Enter)",
     "nextMatchLabel": "Correspondance suivante",
     "clearSearch": "Effacer la recherche",
-    "openInEditorTab": "Ouvrir dans un onglet de l'éditeur",
     "openFile": "Ouvrir le fichier",
     "openNativeDevTools": "Ouvrir les DevTools natives du navigateur",
     "captureScreenshot": "Capture d’écran",
@@ -886,7 +887,7 @@
     "noSessionsFound": "Aucune Session trouvée",
     "typeToSearchFiles": "Tapez pour rechercher des fichiers...",
     "selectFileToViewChanges": "Sélectionnez un fichier pour voir les modifications",
-    "selectSidebarFileToViewChanges": "Sélectionnez un fichier dans la barre latérale",
+    "selectSidebarFileToViewChanges": "Sélectionnez un fichier",
     "failedToLoadHistory": "Échec du chargement de l'historique",
     "noGitHistory": "Aucun historique Git disponible",
     "noCommitHistory": "Aucun commit trouvé",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "Choisissez un dépôt dans l’espace de travail",
     "noData": "Aucune donnée",
     "noResults": "Aucun résultat",
-    "noSessionHistory": "Aucun historique de session"
+    "noSessionHistory": "Aucun historique de session",
+    "selectSidebarStash": "Sélectionnez un stash",
+    "selectSidebarCommit": "Sélectionnez un commit",
+    "selectSidebarPullRequest": "Sélectionnez un pull request",
+    "selectSidebarIssue": "Sélectionnez un issue"
   },
   "inbox": {
     "scrollToBottom": "Aller en bas",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Afficher les Pull Requests"
     },
     "pill": {
-      "focus": "Focus",
-      "allChanges": "Toutes les modifications"
+      "focus": "Unique",
+      "allChanges": "Tous"
     },
     "scope": {
       "main": "Checkout principal",

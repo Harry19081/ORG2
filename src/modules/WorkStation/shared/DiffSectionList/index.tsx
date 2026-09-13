@@ -14,6 +14,7 @@ import {
 } from "react-virtuoso";
 
 import { Placeholder } from "@src/components/Placeholder";
+import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
 import type { DiffViewMode } from "@src/types/git/types";
 
 import DiffFileSection from "../DiffFileSection";
@@ -371,13 +372,13 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   return (
     <div
       ref={searchRootRef}
-      className="relative flex h-full min-h-0 flex-col overflow-hidden"
+      className={`relative flex h-full min-h-0 flex-col overflow-hidden ${EDITOR_TAB_CANVAS_BG_CLASS}`}
     >
       {reviewSearch.card}
       <div className="min-h-0 flex-1 overflow-hidden">
         <Virtuoso
           ref={virtuosoRef}
-          className="scrollbar-hide h-full"
+          className={`scrollbar-hide h-full ${EDITOR_TAB_CANVAS_BG_CLASS}`}
           data={keyedSections}
           computeItemKey={(_index, item) => item.renderKey}
           overscan={600}

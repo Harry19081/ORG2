@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Tanılama kaynakları başlatılıyor...",
     "diagnosticSourceIssues": "Tanılama kaynağı sorunları",
     "copied": "Kopyalandı",
+    "copiedFilePath": "Dosya yolu kopyalandı",
     "copyFailed": "Kopyalama başarısız",
     "searching": "Aranıyor...",
     "noResults": "Sonuç yok",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Yeniden bağlan",
     "technicalDetails": "Teknik ayrıntılar",
     "failedToCopy": "Kopyalanamadı",
+    "failedToCopyFilePath": "Dosya yolu kopyalanamadı",
     "api": {
       "messages": {
         "signIn": "Lütfen tekrar giriş yapın."
@@ -770,7 +772,6 @@
     "nextMatch": "Sonraki eşleşme (Enter)",
     "nextMatchLabel": "Sonraki eşleşme",
     "clearSearch": "Aramayı temizle",
-    "openInEditorTab": "Düzenleyici sekmesinde aç",
     "openFile": "Dosyayı aç",
     "openNativeDevTools": "Yerel tarayıcı DevTools'u aç",
     "captureScreenshot": "Ekran görüntüsü",
@@ -886,7 +887,7 @@
     "noSessionsFound": "Session bulunamadı",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",
-    "selectSidebarFileToViewChanges": "Kenar çubuğundan dosya seçin",
+    "selectSidebarFileToViewChanges": "Bir dosya seçin",
     "failedToLoadHistory": "Geçmiş yüklenemedi",
     "noGitHistory": "Git geçmişi mevcut değil",
     "noCommitHistory": "Commit bulunamadı",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "Çalışma alanından bir depo seçin",
     "noData": "Veri yok",
     "noResults": "Sonuç yok",
-    "noSessionHistory": "Oturum geçmişi yok"
+    "noSessionHistory": "Oturum geçmişi yok",
+    "selectSidebarStash": "Bir stash seçin",
+    "selectSidebarCommit": "Bir commit seçin",
+    "selectSidebarPullRequest": "Bir pull request seçin",
+    "selectSidebarIssue": "Bir issue seçin"
   },
   "inbox": {
     "scrollToBottom": "Alta kaydır",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Pull Requests'leri görüntüle"
     },
     "pill": {
-      "focus": "Odak",
-      "allChanges": "Tüm Değişiklikler"
+      "focus": "Tek",
+      "allChanges": "Tümü"
     },
     "scope": {
       "main": "Ana checkout",

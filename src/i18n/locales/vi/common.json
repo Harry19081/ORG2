@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Đang khởi động nguồn chẩn đoán...",
     "diagnosticSourceIssues": "Vấn đề với nguồn chẩn đoán",
     "copied": "Đã sao chép",
+    "copiedFilePath": "Đã sao chép đường dẫn tệp",
     "copyFailed": "Sao chép thất bại",
     "searching": "Đang tìm kiếm...",
     "noResults": "Không có kết quả",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Kết nối lại",
     "technicalDetails": "Chi tiết kỹ thuật",
     "failedToCopy": "Sao chép thất bại",
+    "failedToCopyFilePath": "Không thể sao chép đường dẫn tệp",
     "api": {
       "messages": {
         "signIn": "Vui lòng đăng nhập lại."
@@ -770,7 +772,6 @@
     "nextMatch": "Kết quả tiếp theo (Enter)",
     "nextMatchLabel": "Kết quả tiếp theo",
     "clearSearch": "Xóa tìm kiếm",
-    "openInEditorTab": "Mở trong tab trình soạn thảo",
     "openFile": "Mở tệp",
     "openNativeDevTools": "Mở DevTools gốc của trình duyệt",
     "captureScreenshot": "Ảnh chụp màn hình",
@@ -886,7 +887,7 @@
     "noSessionsFound": "Không tìm thấy Session nào",
     "typeToSearchFiles": "Nhập để tìm kiếm tệp...",
     "selectFileToViewChanges": "Chọn tệp để xem thay đổi",
-    "selectSidebarFileToViewChanges": "Chọn tệp trong thanh bên",
+    "selectSidebarFileToViewChanges": "Chọn một tệp",
     "failedToLoadHistory": "Không thể tải lịch sử",
     "noGitHistory": "Không có lịch sử Git",
     "noCommitHistory": "Không tìm thấy commit",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "Chọn kho lưu trữ trong không gian làm việc",
     "noData": "Không có dữ liệu",
     "noResults": "Không có kết quả",
-    "noSessionHistory": "Không có lịch sử phiên"
+    "noSessionHistory": "Không có lịch sử phiên",
+    "selectSidebarStash": "Chọn một stash",
+    "selectSidebarCommit": "Chọn một commit",
+    "selectSidebarPullRequest": "Chọn một pull request",
+    "selectSidebarIssue": "Chọn một issue"
   },
   "inbox": {
     "scrollToBottom": "Cuộn xuống cuối",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Xem Pull Requests"
     },
     "pill": {
-      "focus": "Tiêu điểm",
-      "allChanges": "Tất cả thay đổi"
+      "focus": "Đơn",
+      "allChanges": "Tất cả"
     },
     "scope": {
       "main": "Checkout chính",

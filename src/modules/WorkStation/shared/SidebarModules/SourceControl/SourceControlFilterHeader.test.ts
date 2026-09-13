@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, createElement } from "react";
+import { type ReactNode, act, createElement, isValidElement } from "react";
 import { createRoot } from "react-dom/client";
 import { expect, it, vi } from "vitest";
 
@@ -8,7 +8,10 @@ import SourceControlFilterHeader, {
 } from "./SourceControlFilterHeader";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, options?: { count: number; label: string }) =>
+      options ? `${options.count} ${options.label}` : key,
+  }),
 }));
 vi.mock("@src/components/Select", () => ({
   default: ({
@@ -16,7 +19,12 @@ vi.mock("@src/components/Select", () => ({
     value,
     showTriggerIcon,
   }: {
-    options: { value: string; icon?: unknown }[];
+    options: {
+      value: string;
+      icon?: unknown;
+      label?: ReactNode;
+      triggerLabel?: string;
+    }[];
     showTriggerIcon?: boolean;
     value: string;
   }) =>
@@ -30,8 +38,11 @@ vi.mock("@src/components/Select", () => ({
             key: option.value,
             value: option.value,
             "data-has-icon": String(Boolean(option.icon)),
+            "data-trigger-label": option.triggerLabel,
           },
-          option.value
+          isValidElement<{ children: ReactNode }>(option.label)
+            ? option.label.props.children
+            : option.label
         )
       )
     ),
@@ -74,6 +85,15 @@ it.each(["staged", "unstaged"] as const)(
         "pr",
         "issues",
       ]);
+      const uncommitted = container.querySelector(
+        'option[value="uncommitted"]'
+      )!;
+      expect(uncommitted.getAttribute("data-trigger-label")).toBe(
+        "controlTower.git.filterUncommitted"
+      );
+      expect(uncommitted.textContent).toBe(
+        "3 controltower.git.filteruncommitted"
+      );
       expect(onChangeMode).not.toHaveBeenCalled();
       props = {
         ...props,

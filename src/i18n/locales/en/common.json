@@ -258,6 +258,7 @@
     "connectionIssue": "Connection Issue",
     "syncing": "Syncing...",
     "copied": "Copied",
+    "copiedFilePath": "Copied file path",
     "copyFailed": "Copy failed",
     "searching": "Searching...",
     "running": "Running",
@@ -538,6 +539,7 @@
     "reconnectCodex": "Reconnect",
     "technicalDetails": "Technical details",
     "failedToCopy": "Failed to copy",
+    "failedToCopyFilePath": "Failed to copy file path",
     "api": {
       "messages": {
         "signIn": "Please sign in again."
@@ -601,7 +603,6 @@
     "nextMatch": "Next Match (Enter)",
     "nextMatchLabel": "Next Match",
     "clearSearch": "Clear search",
-    "openInEditorTab": "Open in editor tab",
     "openFile": "Open File",
     "openNativeDevTools": "Open native browser DevTools",
     "captureScreenshot": "Screenshot",
@@ -718,7 +719,7 @@
     "noSessionsFound": "No sessions found",
     "typeToSearchFiles": "Type to search files...",
     "selectFileToViewChanges": "Select a file to view changes",
-    "selectSidebarFileToViewChanges": "Select a file in the sidebar",
+    "selectSidebarFileToViewChanges": "Select a file",
     "failedToLoadHistory": "Failed to load history",
     "noGitHistory": "No Git history available",
     "noCommitHistory": "No commits found",
@@ -779,7 +780,11 @@
     "previewUnavailable": "Preview unavailable",
     "selectRepositoryFromWorkspace": "Choose a workspace repository",
     "noData": "No data",
-    "noSessionHistory": "No session history"
+    "noSessionHistory": "No session history",
+    "selectSidebarStash": "Select a stash",
+    "selectSidebarCommit": "Select a commit",
+    "selectSidebarPullRequest": "Select a pull request",
+    "selectSidebarIssue": "Select an issue"
   },
   "inbox": {
     "scrollToBottom": "Scroll to bottom",
@@ -1805,8 +1810,8 @@
       "viewPullRequests": "View PRs"
     },
     "pill": {
-      "focus": "Focus",
-      "allChanges": "All Changes"
+      "focus": "Single",
+      "allChanges": "All"
     },
     "scope": {
       "main": "Main checkout",

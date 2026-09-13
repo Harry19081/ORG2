@@ -285,6 +285,7 @@
     "diagnosticsInitializing": "正在启动诊断源...",
     "diagnosticSourceIssues": "诊断源问题",
     "copied": "已复制",
+    "copiedFilePath": "已复制文件路径",
     "copyFailed": "复制失败",
     "searching": "搜索中...",
     "noResults": "无结果",
@@ -538,6 +539,7 @@
     "reconnectCodex": "重新连接",
     "technicalDetails": "技术详情",
     "failedToCopy": "复制失败",
+    "failedToCopyFilePath": "复制文件路径失败",
     "api": {
       "messages": {
         "signIn": "请重新登录。"
@@ -601,7 +603,6 @@
     "nextMatch": "下一个匹配 (Enter)",
     "nextMatchLabel": "下一个匹配",
     "clearSearch": "清除搜索",
-    "openInEditorTab": "在编辑器标签中打开",
     "openFile": "打开文件",
     "openNativeDevTools": "打开原生浏览器开发者工具",
     "captureScreenshot": "截图",
@@ -718,7 +719,7 @@
     "noSessionsFound": "未找到 Session",
     "typeToSearchFiles": "输入以搜索文件...",
     "selectFileToViewChanges": "选择文件以查看变更",
-    "selectSidebarFileToViewChanges": "在侧边栏选择文件",
+    "selectSidebarFileToViewChanges": "选择一个文件",
     "failedToLoadHistory": "加载历史记录失败",
     "noGitHistory": "暂无 Git 历史记录",
     "noCommitHistory": "未找到提交记录",
@@ -779,7 +780,11 @@
     "previewUnavailable": "预览不可用",
     "selectRepositoryFromWorkspace": "选择工作区仓库",
     "noData": "无数据",
-    "noSessionHistory": "暂无会话历史"
+    "noSessionHistory": "暂无会话历史",
+    "selectSidebarStash": "选择一个 stash",
+    "selectSidebarCommit": "选择一个 commit",
+    "selectSidebarPullRequest": "选择一个 pull request",
+    "selectSidebarIssue": "选择一个 issue"
   },
   "inbox": {
     "scrollToBottom": "滚动到底部",
@@ -1805,8 +1810,8 @@
       "viewPullRequests": "查看 Pull Requests"
     },
     "pill": {
-      "focus": "聚焦",
-      "allChanges": "全部更改"
+      "focus": "单个",
+      "allChanges": "全部"
     },
     "scope": {
       "main": "主工作区",

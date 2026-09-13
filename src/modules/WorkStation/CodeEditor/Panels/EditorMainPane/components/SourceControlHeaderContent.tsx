@@ -105,14 +105,12 @@ export const SourceControlHeaderContent: React.FC<
   const showIssueHeader = isIssuesMode && selectedIssue;
   return (
     <div className="flex min-w-0 flex-1 items-center gap-1.5">
-      {sourceControlHeaderLeadingSlot}
-      {sourceControlHeaderLeadingSlot && sourceControlHeaderTrailingSlot ? (
-        <span
-          className="pointer-events-none mx-0.5 h-4 w-px shrink-0 bg-border-2"
-          aria-hidden
-        />
-      ) : null}
-      {sourceControlHeaderTrailingSlot}
+      {(sourceControlHeaderLeadingSlot || sourceControlHeaderTrailingSlot) && (
+        <div className="flex min-w-0 shrink-0 items-center gap-px">
+          {sourceControlHeaderLeadingSlot}
+          {sourceControlHeaderTrailingSlot}
+        </div>
+      )}
       {showIssueHeader && (
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <span
@@ -137,21 +135,15 @@ export const SourceControlHeaderContent: React.FC<
         </div>
       )}
       {showModePill && (
-        <>
-          <span
-            className="pointer-events-none mx-1.5 h-4 w-px shrink-0 bg-border-2"
-            aria-hidden
-          />
-          <TabPill
-            activeTab={mode}
-            tabs={sourceControlModeTabs}
-            onChange={(key) => onModeChange(key as "focus" | "all-changes")}
-            variant="pill"
-            color="fill"
-            fillWidth={false}
-            size="small"
-          />
-        </>
+        <TabPill
+          activeTab={mode}
+          tabs={sourceControlModeTabs}
+          onChange={(key) => onModeChange(key as "focus" | "all-changes")}
+          variant="pill"
+          color="fill"
+          fillWidth={false}
+          size="small"
+        />
       )}
 
       <span className="ml-auto flex h-7 shrink-0 items-center gap-px">

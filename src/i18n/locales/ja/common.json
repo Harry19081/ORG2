@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "診断ソースを起動中...",
     "diagnosticSourceIssues": "診断ソースの問題",
     "copied": "コピー済み",
+    "copiedFilePath": "ファイルパスをコピーしました",
     "copyFailed": "コピーに失敗しました",
     "searching": "検索中...",
     "noResults": "結果なし",
@@ -706,6 +707,7 @@
     "reconnectCodex": "再接続",
     "technicalDetails": "技術的な詳細",
     "failedToCopy": "コピーに失敗しました",
+    "failedToCopyFilePath": "ファイルパスのコピーに失敗しました",
     "api": {
       "messages": {
         "signIn": "再度ログインしてください。"
@@ -770,7 +772,6 @@
     "nextMatch": "次の一致 (Enter)",
     "nextMatchLabel": "次の一致",
     "clearSearch": "検索をクリア",
-    "openInEditorTab": "エディタタブで開く",
     "openFile": "ファイルを開く",
     "openNativeDevTools": "ネイティブブラウザの開発者ツールを開く",
     "captureScreenshot": "スクリーンショット",
@@ -886,7 +887,7 @@
     "noSessionsFound": "Sessionが見つかりません",
     "typeToSearchFiles": "ファイルを検索するには入力...",
     "selectFileToViewChanges": "ファイルを選択して変更を表示",
-    "selectSidebarFileToViewChanges": "サイドバーでファイルを選択",
+    "selectSidebarFileToViewChanges": "ファイルを1つ選択",
     "failedToLoadHistory": "履歴の読み込みに失敗しました",
     "noGitHistory": "Git 履歴がありません",
     "noCommitHistory": "コミットが見つかりません",
@@ -948,7 +949,11 @@
     "selectRepositoryFromWorkspace": "ワークスペースのリポジトリを選択",
     "noData": "データなし",
     "noResults": "結果なし",
-    "noSessionHistory": "セッション履歴はありません"
+    "noSessionHistory": "セッション履歴はありません",
+    "selectSidebarStash": "stash を1つ選択",
+    "selectSidebarCommit": "commit を1つ選択",
+    "selectSidebarPullRequest": "pull request を1つ選択",
+    "selectSidebarIssue": "issue を1つ選択"
   },
   "inbox": {
     "scrollToBottom": "一番下へ",
@@ -1974,8 +1979,8 @@
       "viewPullRequests": "Pull Requests を表示"
     },
     "pill": {
-      "focus": "フォーカス",
-      "allChanges": "すべての変更"
+      "focus": "単一",
+      "allChanges": "すべて"
     },
     "scope": {
       "main": "メインチェックアウト",
