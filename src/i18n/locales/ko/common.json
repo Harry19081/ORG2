@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "진단 소스 시작 중...",
     "diagnosticSourceIssues": "진단 소스 문제",
     "copied": "복사됨",
+    "copiedFilePath": "파일 경로를 복사했습니다",
     "copyFailed": "복사 실패",
     "searching": "검색 중...",
     "noResults": "결과 없음",
@@ -706,6 +707,7 @@
     "reconnectCodex": "다시 연결",
     "technicalDetails": "기술 세부 정보",
     "failedToCopy": "복사에 실패했습니다",
+    "failedToCopyFilePath": "파일 경로를 복사하지 못했습니다",
     "api": {
       "messages": {
         "signIn": "다시 로그인하세요."

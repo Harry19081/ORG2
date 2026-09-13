@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "診断ソースを起動中...",
     "diagnosticSourceIssues": "診断ソースの問題",
     "copied": "コピー済み",
+    "copiedFilePath": "ファイルパスをコピーしました",
     "copyFailed": "コピーに失敗しました",
     "searching": "検索中...",
     "noResults": "結果なし",
@@ -706,6 +707,7 @@
     "reconnectCodex": "再接続",
     "technicalDetails": "技術的な詳細",
     "failedToCopy": "コピーに失敗しました",
+    "failedToCopyFilePath": "ファイルパスのコピーに失敗しました",
     "api": {
       "messages": {
         "signIn": "再度ログインしてください。"

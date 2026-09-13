@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Запуск источников диагностики...",
     "diagnosticSourceIssues": "Проблемы источников диагностики",
     "copied": "Скопировано",
+    "copiedFilePath": "Путь к файлу скопирован",
     "copyFailed": "Не удалось скопировать",
     "searching": "Поиск...",
     "noResults": "Нет результатов",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Повторно подключить",
     "technicalDetails": "Технические сведения",
     "failedToCopy": "Не удалось скопировать",
+    "failedToCopyFilePath": "Не удалось скопировать путь к файлу",
     "api": {
       "messages": {
         "signIn": "Войдите снова."

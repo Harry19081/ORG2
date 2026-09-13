@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Đang khởi động nguồn chẩn đoán...",
     "diagnosticSourceIssues": "Vấn đề với nguồn chẩn đoán",
     "copied": "Đã sao chép",
+    "copiedFilePath": "Đã sao chép đường dẫn tệp",
     "copyFailed": "Sao chép thất bại",
     "searching": "Đang tìm kiếm...",
     "noResults": "Không có kết quả",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Kết nối lại",
     "technicalDetails": "Chi tiết kỹ thuật",
     "failedToCopy": "Sao chép thất bại",
+    "failedToCopyFilePath": "Không thể sao chép đường dẫn tệp",
     "api": {
       "messages": {
         "signIn": "Vui lòng đăng nhập lại."

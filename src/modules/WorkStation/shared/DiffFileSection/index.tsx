@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import FileTypeIcon from "@src/components/FileTypeIcon";
+import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import Tooltip from "@src/components/Tooltip";
 import {
@@ -19,11 +20,21 @@ import {
   getStatusColor,
   getStatusLetterForFile,
 } from "@src/config/gitStatus";
-import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
+import {
+  EDITOR_TAB_CANVAS_BG_CLASS,
+  HEADER_ICON_SIZE,
+} from "@src/config/workstation/tokens";
 import type { ReviewDiffSearch } from "@src/features/CodeMirror/Diff/reviewSearchNavigation";
-import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
+import {
+  ArrowDown01Icon,
+  ArrowRight01Icon,
+  Copy01Icon,
+  HugeiconsIcon,
+  LinkSquare02Icon,
+} from "@src/icons";
 import { FileHeader } from "@src/modules/shared/components/FileHeader";
 import type { DiffViewMode } from "@src/types/git/types";
+import { copyText } from "@src/util/data/clipboard";
 import { isBinaryByExtension } from "@src/util/file/binaryDetection";
 import {
   getPreviewType,
@@ -235,6 +246,15 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
     onFileSelect?.(absoluteFilePath);
   }, [absoluteFilePath, onFileSelect]);
 
+  const handleCopyPath = useCallback(async () => {
+    try {
+      await copyText(absoluteFilePath);
+      Message.success(t("common:status.copiedFilePath"));
+    } catch {
+      Message.error(t("common:errors.failedToCopyFilePath"));
+    }
+  }, [absoluteFilePath, t]);
+
   function renderPreviewContent(): React.ReactNode {
     if (!isPreviewable || file.status === "deleted") return null;
 
@@ -393,7 +413,6 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           className="absolute inset-0 w-full cursor-pointer focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset disabled:cursor-default"
           onClick={toggleExpanded}
           disabled={isDeleted}
-          title={t(expanded ? "actions.collapse" : "actions.expand")}
           aria-label={`${t(expanded ? "actions.collapse" : "actions.expand")} ${displayPath}`}
           aria-expanded={isDeleted ? undefined : expanded}
         />
@@ -421,23 +440,9 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
             className="shrink-0 text-text-2"
           />
           <div className="flex min-w-0 flex-1 items-baseline gap-1.5 overflow-hidden">
-            {canOpenFile ? (
-              <Button
-                layout="custom"
-                appearance="custom"
-                htmlType="button"
-                className="pointer-events-auto shrink-0 text-left text-[13px] leading-normal font-medium text-text-1 underline-offset-2 hover:underline focus-visible:underline focus-visible:outline-none"
-                onClick={handleOpenFile}
-                title={t("tooltips.openInEditorTab")}
-                aria-label={`${t("tooltips.openInEditorTab")}: ${displayPath}`}
-              >
-                {fileName}
-              </Button>
-            ) : (
-              <span className="shrink-0 text-[13px] font-medium text-text-1">
-                {fileName}
-              </span>
-            )}
+            <span className="shrink-0 text-[13px] font-medium text-text-1">
+              {fileName}
+            </span>
             {!hideDirectory && dirPath ? (
               <span className="min-w-0 truncate text-[11px] text-text-2">
                 {dirPath}
@@ -457,11 +462,45 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
               </>
             ) : null}
           </div>
+          <span className="-ml-2 flex w-0 shrink-0 items-center gap-px overflow-hidden opacity-0 group-focus-within/diff-header:ml-0 group-focus-within/diff-header:w-auto group-focus-within/diff-header:opacity-100 group-hover/diff-header:ml-0 group-hover/diff-header:w-auto group-hover/diff-header:opacity-100">
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="small"
+              iconOnly
+              className="pointer-events-auto shrink-0"
+              onClick={handleCopyPath}
+              title={t("actions.copyPath")}
+              aria-label={`${t("actions.copyPath")}: ${displayPath}`}
+              icon={
+                <HugeiconsIcon icon={Copy01Icon} size={HEADER_ICON_SIZE.sm} />
+              }
+            />
+            {canOpenFile && (
+              <Button
+                variant="tertiary"
+                appearance="soft"
+                size="small"
+                iconOnly
+                className="pointer-events-auto shrink-0"
+                onClick={handleOpenFile}
+                title={t("common:actions.openInNewTab")}
+                aria-label={`${t("common:actions.openInNewTab")}: ${displayPath}`}
+                icon={
+                  <HugeiconsIcon
+                    icon={LinkSquare02Icon}
+                    data-icon="open-file-arrow"
+                    size={HEADER_ICON_SIZE.sm}
+                  />
+                }
+              />
+            )}
+          </span>
           <Button
             layout="custom"
             appearance="custom"
             htmlType="button"
-            className="pointer-events-auto flex shrink-0 cursor-pointer items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none aria-disabled:cursor-default"
+            className="pointer-events-auto flex shrink-0 cursor-pointer items-center gap-2 pr-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none aria-disabled:cursor-default"
             onClick={isDeleted ? undefined : toggleExpanded}
             aria-disabled={isDeleted || undefined}
             aria-label={`${t(expanded ? "actions.collapse" : "actions.expand")} ${displayPath}`}
@@ -471,6 +510,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
               additions={additions}
               deletions={deletions}
               variant="compact"
+              reserveValueWidth={false}
             />
             <Tooltip
               content={t(`common:gitLabels.${statusLetter}`)}

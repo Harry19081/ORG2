@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "正在啓動診斷源...",
     "diagnosticSourceIssues": "診斷源問題",
     "copied": "已複製",
+    "copiedFilePath": "已複製檔案路徑",
     "copyFailed": "複製失敗",
     "searching": "搜索中...",
     "noResults": "無結果",
@@ -707,6 +708,7 @@
     "reconnectCodex": "重新連接",
     "technicalDetails": "技術詳細資訊",
     "failedToCopy": "複製失敗",
+    "failedToCopyFilePath": "複製檔案路徑失敗",
     "api": {
       "messages": {
         "signIn": "請重新登錄。"

@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Tanılama kaynakları başlatılıyor...",
     "diagnosticSourceIssues": "Tanılama kaynağı sorunları",
     "copied": "Kopyalandı",
+    "copiedFilePath": "Dosya yolu kopyalandı",
     "copyFailed": "Kopyalama başarısız",
     "searching": "Aranıyor...",
     "noResults": "Sonuç yok",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Yeniden bağlan",
     "technicalDetails": "Teknik ayrıntılar",
     "failedToCopy": "Kopyalanamadı",
+    "failedToCopyFilePath": "Dosya yolu kopyalanamadı",
     "api": {
       "messages": {
         "signIn": "Lütfen tekrar giriş yapın."

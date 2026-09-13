@@ -437,6 +437,7 @@
     "connectionIssue": "Problem z połączeniem",
     "syncing": "Synchronizacja...",
     "copied": "Skopiowano",
+    "copiedFilePath": "Skopiowano ścieżkę pliku",
     "copyFailed": "Kopiowanie nie powiodło się",
     "searching": "Wyszukiwanie...",
     "running": "Działa",
@@ -707,6 +708,7 @@
     "reconnectCodex": "Połącz ponownie",
     "technicalDetails": "Szczegóły techniczne",
     "failedToCopy": "Nie udało się skopiować",
+    "failedToCopyFilePath": "Nie udało się skopiować ścieżki pliku",
     "api": {
       "messages": {
         "signIn": "Zaloguj się ponownie."

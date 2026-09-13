@@ -258,6 +258,7 @@
     "connectionIssue": "Connection Issue",
     "syncing": "Syncing...",
     "copied": "Copied",
+    "copiedFilePath": "Copied file path",
     "copyFailed": "Copy failed",
     "searching": "Searching...",
     "running": "Running",
@@ -538,6 +539,7 @@
     "reconnectCodex": "Reconnect",
     "technicalDetails": "Technical details",
     "failedToCopy": "Failed to copy",
+    "failedToCopyFilePath": "Failed to copy file path",
     "api": {
       "messages": {
         "signIn": "Please sign in again."

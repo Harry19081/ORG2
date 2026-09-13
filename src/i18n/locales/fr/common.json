@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Démarrage des sources de diagnostic...",
     "diagnosticSourceIssues": "Problèmes de sources de diagnostic",
     "copied": "Copié",
+    "copiedFilePath": "Chemin du fichier copié",
     "copyFailed": "Échec de la copie",
     "searching": "Recherche...",
     "noResults": "Aucun résultat",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Reconnecter",
     "technicalDetails": "Détails techniques",
     "failedToCopy": "Échec de la copie",
+    "failedToCopyFilePath": "Échec de la copie du chemin du fichier",
     "api": {
       "messages": {
         "signIn": "Veuillez vous reconnecter."

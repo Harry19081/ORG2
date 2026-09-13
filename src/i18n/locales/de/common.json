@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Diagnosequellen werden gestartet...",
     "diagnosticSourceIssues": "Probleme mit Diagnosequellen",
     "copied": "Kopiert",
+    "copiedFilePath": "Dateipfad kopiert",
     "copyFailed": "Kopieren fehlgeschlagen",
     "searching": "Suche...",
     "noResults": "Keine Ergebnisse",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Erneut verbinden",
     "technicalDetails": "Technische Details",
     "failedToCopy": "Kopieren fehlgeschlagen",
+    "failedToCopyFilePath": "Dateipfad konnte nicht kopiert werden",
     "api": {
       "messages": {
         "signIn": "Bitte melden Sie sich erneut an."

@@ -464,6 +464,7 @@
     "diagnosticsInitializing": "Iniciando fuentes de diagnóstico...",
     "diagnosticSourceIssues": "Problemas con fuentes de diagnóstico",
     "copied": "Copiado",
+    "copiedFilePath": "Ruta del archivo copiada",
     "copyFailed": "Error al copiar",
     "searching": "Buscando...",
     "noResults": "Sin resultados",
@@ -706,6 +707,7 @@
     "reconnectCodex": "Volver a conectar",
     "technicalDetails": "Detalles técnicos",
     "failedToCopy": "No se pudo copiar",
+    "failedToCopyFilePath": "No se pudo copiar la ruta del archivo",
     "api": {
       "messages": {
         "signIn": "Inicia sesión de nuevo."

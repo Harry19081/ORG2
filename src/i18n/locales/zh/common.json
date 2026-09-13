@@ -285,6 +285,7 @@
     "diagnosticsInitializing": "正在启动诊断源...",
     "diagnosticSourceIssues": "诊断源问题",
     "copied": "已复制",
+    "copiedFilePath": "已复制文件路径",
     "copyFailed": "复制失败",
     "searching": "搜索中...",
     "noResults": "无结果",
@@ -538,6 +539,7 @@
     "reconnectCodex": "重新连接",
     "technicalDetails": "技术详情",
     "failedToCopy": "复制失败",
+    "failedToCopyFilePath": "复制文件路径失败",
     "api": {
       "messages": {
         "signIn": "请重新登录。"
