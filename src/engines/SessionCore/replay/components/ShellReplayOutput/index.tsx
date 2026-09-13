@@ -391,7 +391,7 @@ const ShellReplayOutputComponent: React.FC<ShellReplayOutputProps> = ({
       aria-label={displayCommand}
     >
       {!hideCommandLine ? (
-        <div className="mb-1 max-w-full min-w-0">
+        <div className="mb-5 max-w-full min-w-0">
           <TerminalCommand
             command={displayCommand}
             prefix="$"
