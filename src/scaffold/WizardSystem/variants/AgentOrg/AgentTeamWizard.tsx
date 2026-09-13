@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import type { TeamMember } from "@src/modules/MainApp/AgentOrgs/components/TeamMemberTable";
 import { buildAgentOptions } from "@src/modules/MainApp/AgentOrgs/components/org/config";
-import "@src/modules/MainApp/AgentOrgs/components/org/index.scss";
+import "@src/modules/MainApp/AgentOrgs/components/org/index.css";
 import { builtInAgentsAtom } from "@src/modules/MainApp/AgentOrgs/store/builtInAgentsAtom";
 import {
   type AgentDefinition,

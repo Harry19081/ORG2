@@ -7,12 +7,10 @@
   0% {
     transform: translateX(-110%);
   }
-
   100% {
     transform: translateX(280%);
   }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .progress-bar--indeterminate > div {
     animation: none;

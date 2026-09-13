@@ -14,7 +14,7 @@ import {
   getPrStatusLabelKey,
 } from "@src/shared/pr/prStatus";
 
-import "./BranchPullRequestIcon.scss";
+import "./BranchPullRequestIcon.css";
 
 const GLYPHS = {
   "pull-request": GitPullRequestIcon,

@@ -24,7 +24,7 @@ import { DueDateCell } from "./DueDateCell";
 import { LeadingCells } from "./LeadingCells";
 import { MetadataCells } from "./MetadataCells";
 import { TitleCell } from "./TitleCell";
-import "./index.scss";
+import "./index.css";
 import type { WorkItemRowProps } from "./types";
 import { useWorkItemDueDate } from "./useWorkItemDueDate";
 import { deriveDisplayId, getDueDateColorClass } from "./utils";

@@ -24,7 +24,7 @@ import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import { SubmenuPanel } from "./SubmenuPanel";
 import { getShortcutLabel, matchesContextShortcut } from "./contextMenuUtils";
-import "./index.scss";
+import "./index.css";
 
 interface WorkItemContextMenuProps {
   items: ContextMenuItem[];

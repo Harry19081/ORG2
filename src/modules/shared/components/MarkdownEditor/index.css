@@ -11,7 +11,6 @@
  * we override `.cm-*` backgrounds under `.markdown-editor-content` so there is no darker
  * “code panel” inside this component.
  */
-
 .markdown-editor-root {
   min-width: 0;
   max-width: 100%;
@@ -27,16 +26,14 @@
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
-
-  &:hover {
-    border-color: var(--color-border-3);
-  }
-
-  &:focus-within {
-    border-color: var(--color-primary-6);
-    box-shadow: 0 0 0 2px
-      color-mix(in srgb, var(--color-primary-6) 15%, transparent);
-  }
+}
+.markdown-editor-wrapper:hover {
+  border-color: var(--color-border-3);
+}
+.markdown-editor-wrapper:focus-within {
+  border-color: var(--color-primary-6);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--color-primary-6) 15%, transparent);
 }
 
 .markdown-editor-content {
@@ -45,14 +42,11 @@
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
-
-  .codemirror-editor-wrapper {
-    .cm-editor,
-    .cm-scroller,
-    .cm-gutters {
-      background-color: var(--color-bg-2) !important;
-    }
-  }
+}
+.markdown-editor-content .codemirror-editor-wrapper .cm-editor,
+.markdown-editor-content .codemirror-editor-wrapper .cm-scroller,
+.markdown-editor-content .codemirror-editor-wrapper .cm-gutters {
+  background-color: var(--color-bg-2) !important;
 }
 
 .markdown-editor-placeholder {
@@ -73,5 +67,7 @@
   padding: 12px 16px;
   font-size: 14px;
   color: var(--color-text-2);
+  -webkit-user-select: text;
+  -moz-user-select: text;
   user-select: text;
 }

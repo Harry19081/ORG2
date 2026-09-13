@@ -47,7 +47,7 @@ import {
 } from "@src/store/ui/simulatorAtom";
 import { getFileName } from "@src/util/file/pathUtils";
 
-import "./index.scss";
+import "./index.css";
 import { mapTurnModifiedFilesToFileChanges } from "./turnFilesMapping";
 
 const DEFAULT_VISIBLE_FILES = 4;

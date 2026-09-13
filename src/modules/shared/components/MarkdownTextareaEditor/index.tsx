@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import type { PillIconType } from "@src/components/ComposerInput/types";
 import { serializePillNode } from "@src/components/ComposerInput/utils";
-import "@src/components/MarkdownFormattingToolbar/index.scss";
+import "@src/components/MarkdownFormattingToolbar/index.css";
 import Textarea from "@src/components/Textarea";
 import {
   CodeXmlIcon,
