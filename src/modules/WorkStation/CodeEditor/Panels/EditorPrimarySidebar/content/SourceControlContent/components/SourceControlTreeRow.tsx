@@ -24,6 +24,7 @@ import {
 import type { GitStatusInfo, TreeRowNode } from "@src/components/TreeRow";
 import {
   COUNT_BADGE,
+  HEADER_ICON_SIZE,
   PRIMARY_SIDEBAR_HOVER,
   getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
@@ -162,7 +163,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
               <HugeiconsIcon
                 icon={Undo03Icon}
                 data-icon="undo-3"
-                size={14}
+                size={HEADER_ICON_SIZE.discard}
                 strokeWidth={1.75}
               />
             }
@@ -527,6 +528,7 @@ const FileDirectoryRow: React.FC<FileDirectoryRowProps> = memo(
                   <TreeRowAction
                     showOnRowHover={false}
                     icon={Undo03Icon}
+                    iconSize={HEADER_ICON_SIZE.discard}
                     variant="danger"
                     onClick={handleDiscard}
                     title={GIT_LABELS.discardChanges}

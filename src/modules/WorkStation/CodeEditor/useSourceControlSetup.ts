@@ -38,7 +38,10 @@ import {
 import { useGitFiles } from "./hooks/sourceControl/useGitFiles";
 import type { UseGitDiffStateReturn } from "./hooks/useGitDiffState";
 import { resolveGitDiffSelection } from "./sourceControlSelection";
-import { rememberSourceControlFocusPath } from "./sourceControlStateTransitions";
+import {
+  rememberSourceControlFocusPath,
+  switchSourceControlCategory,
+} from "./sourceControlStateTransitions";
 import { useStashCount } from "./useStashCount";
 
 interface UseSourceControlSetupParams {
@@ -196,40 +199,18 @@ export function useSourceControlSetup({
 
   const handleSourceControlFilterModeChange = useCallback(
     (mode: SourceControlFilterMode) => {
+      if (mode === sourceControlFilterMode) return;
       setSourceControlFilterMode(mode);
-      if (mode === "history" || mode === "pr" || mode === "issues") return;
-      setPrimaryPanel((prev: PanelState) => {
-        const tabIndex = prev.tabs.findIndex(
-          (item) => item.type === "source-control"
-        );
-        if (tabIndex === -1) return prev;
-        const existing = prev.tabs[tabIndex];
-        const nextStaged = mode === "staged";
-        const nextFileCount = sourceControlFilterCounts[mode];
-        const shouldUpdateStaged = existing.data.staged !== nextStaged;
-        const shouldUpdateFileCount = existing.data.fileCount !== nextFileCount;
-        const shouldClearHistory = Boolean(existing.data.historySelection);
-        if (
-          !shouldUpdateStaged &&
-          !shouldUpdateFileCount &&
-          !shouldClearHistory
-        ) {
-          return prev;
-        }
-        const nextTabs = [...prev.tabs];
-        nextTabs[tabIndex] = {
-          ...existing,
-          data: {
-            ...existing.data,
-            staged: nextStaged,
-            fileCount: nextFileCount,
-            historySelection: null,
-          },
-        };
-        return { ...prev, tabs: nextTabs };
-      });
+      setPrimaryPanel((prev) =>
+        switchSourceControlCategory(prev, mode, sourceControlFilterCounts)
+      );
     },
-    [setPrimaryPanel, setSourceControlFilterMode, sourceControlFilterCounts]
+    [
+      setPrimaryPanel,
+      setSourceControlFilterMode,
+      sourceControlFilterMode,
+      sourceControlFilterCounts,
+    ]
   );
 
   const setSourceControlFilterModeHandler = useSetAtom(

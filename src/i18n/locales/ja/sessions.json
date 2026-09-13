@@ -716,7 +716,6 @@
     "performActions_one": "{{count}} 件の操作を実行",
     "performActions_other": "{{count}} 件の操作を実行",
     "showInlineDiffs": "インライン差分",
-    "pageSettings": "ページ表示",
     "inputSettings": "入力設定",
     "replay": {
       "follow": "フォロー"

@@ -329,7 +329,6 @@ const EditorContent: React.FC<EditorContentProps> = memo(
           t={t}
           onDiffViewModeChange={setDiffViewMode}
           onModeChange={handleSourceControlModeChange}
-          onOpenHistoryInNewTab={handleOpenSourceControlHistoryInNewTab}
           onReviewPrevFile={handleReviewPrevFile}
           onReviewNextFile={handleReviewNextFile}
           onCollapseAll={handleSourceControlCollapseAll}
@@ -340,7 +339,6 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       activeTab,
       diffViewMode,
       gitReviewNavigation.total,
-      handleOpenSourceControlHistoryInNewTab,
       handleReviewNextFile,
       handleReviewPrevFile,
       handleSourceControlCollapseAll,
@@ -538,13 +536,9 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                 <Suspense fallback={<LazyFallback />}>
                   <FileHeaderToolbarContext.Provider
                     value={
-                      sourceControlPaneVisible &&
-                      sourceControlTab.data.mode !== "all-changes" &&
-                      !sourceControlTab.data.historySelection &&
-                      sourceControlFilterMode !== "issues" &&
-                      sourceControlFilterMode !== "pr"
-                        ? focusToolbarTarget
-                        : null
+                      sourceControlPaneVisible
+                        ? (focusToolbarTarget ?? "host")
+                        : "host"
                     }
                   >
                     <SourceControlMainPane
@@ -565,6 +559,9 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                       onForceReload={forceRefresh}
                       onFileSelect={onFileSelect}
                       onCloseFocus={handleSourceControlCloseFocus}
+                      onOpenHistoryInNewTab={
+                        handleOpenSourceControlHistoryInNewTab
+                      }
                       onGitDiffUnsavedChange={handleGitDiffUnsavedChange}
                       viewStateKey={sourceControlTab.id}
                     />

@@ -321,6 +321,7 @@
   },
   "optional": "可选",
   "common": {
+    "display": "显示",
     "on": "开",
     "off": "关",
     "default": "默认",
@@ -357,6 +358,9 @@
     "source": "来源"
   },
   "labels": {
+    "stashesCount": "{{count}}个STASHES",
+    "stashesCount_one": "{{count}}个STASHES",
+    "stashesCount_other": "{{count}}个STASHES",
     "accounts": "账户",
     "enabled": "已启用",
     "disabled": "已禁用",
@@ -413,7 +417,9 @@
     },
     "operationLog": "操作日志",
     "gitDashboard": "仪表盘",
-    "changedFiles": "已更改的文件",
+    "changedFilesCount": "{{fileCount}}个变动",
+    "changedFilesCount_one": "{{fileCount}}个变动",
+    "changedFilesCount_other": "{{fileCount}}个变动",
     "colorTokens": "颜色 Token",
     "terminalInfo": "终端信息",
     "fileCount_one": "{{count}} 个文件",
@@ -858,6 +864,7 @@
     "nLines": "{{count}} 行",
     "switchToTreeView": "切换到树形视图",
     "switchToListView": "切换到列表视图",
+    "switchToGraphView": "切换到图形视图",
     "discardChanges": "丢弃更改",
     "toOrigin": "到 origin",
     "discardChangesConfirm": "丢弃对 {{files}} 的更改？此操作不可撤销。",

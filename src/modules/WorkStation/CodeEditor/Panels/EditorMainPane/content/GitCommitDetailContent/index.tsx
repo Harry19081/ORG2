@@ -31,12 +31,6 @@ import {
   gitFileListWidthAtom,
 } from "@src/modules/WorkStation/shared";
 import { VerticalResizeHandle, useColumnResize } from "@src/scaffold/Resize";
-import {
-  editorHighlightActiveLineAtom,
-  editorLineNumbersAtom,
-  editorWordWrapAtom,
-} from "@src/store/ui/editorSettingsAtom";
-import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 import type { GitFile } from "@src/types/git/types";
 import { decodeOctalPath } from "@src/util/file/pathUtils";
@@ -54,8 +48,8 @@ interface GitCommitDetailContentProps {
   repoId: string;
   isRepoReady?: boolean;
   onFileSelect?: (filePath: string) => void;
-  headerVariant?: "commit" | "stash";
-  headerRootLabel?: string;
+  onClose?: () => void;
+  onOpenInNewTab?: () => void;
   publishHeaderToWorkstation?: boolean;
   prNumber?: number;
 }
@@ -68,21 +62,15 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
   repoId,
   isRepoReady = true,
   onFileSelect,
-  headerVariant = "commit",
-  headerRootLabel,
+  onClose,
+  onOpenInNewTab,
   publishHeaderToWorkstation = true,
   prNumber,
 }) => {
   const { t } = useTranslation();
 
   const [fileListCollapsed, setFileListCollapsed] = useState(false);
-  const [viewMode, setViewMode] = useAtom(diffViewModeAtom);
-  const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
-  const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
-  const [highlightActiveLine, setHighlightActiveLine] = useAtom(
-    editorHighlightActiveLineAtom
-  );
-  const { onOpenSettings } = useAtomValue(activeStatusBarCallbacksAtom);
+  const viewMode = useAtomValue(diffViewModeAtom);
   const [fileListWidth, setFileListWidth] = useAtom(gitFileListWidthAtom);
   const [fetchingPrCommit, setFetchingPrCommit] = useState(false);
   const [fetchPrError, setFetchPrError] = useState<{
@@ -175,13 +163,6 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
     setFileListCollapsed((prev) => !prev);
   }, []);
 
-  const handleLineNumbersChange = useCallback(
-    (enabled: boolean) => {
-      setLineNumbers(enabled ? "on" : "off");
-    },
-    [setLineNumbers]
-  );
-
   const handleFetchPrCommit = useCallback(() => {
     if (!prNumber || !repoId || !repoPath || fetchingPrCommit) return;
 
@@ -253,25 +234,22 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
   const currentFetchPrError =
     fetchPrError?.key === prCommitFetchKey ? fetchPrError.message : null;
 
-  const stashHeaderPath = `${headerRootLabel ?? shortSha}/${commitMessage}`;
-
   const hasInlineHeaderAbove = !publishHeaderToWorkstation;
-
-  const stashHeaderPublisher =
-    headerVariant === "stash" ? (
-      <FileHeader
-        filePath={stashHeaderPath}
-        repoPath={undefined}
-        useFileTypeIcon={false}
-        disableNavigation
-        publishToHost={publishHeaderToWorkstation ? "code" : undefined}
-      />
-    ) : null;
+  const header = (
+    <CommitTabHeader
+      shortSha={shortSha}
+      commitMessage={commitMessage}
+      commitDiff={commitDiff}
+      publishToWorkstationHeader={publishHeaderToWorkstation}
+      onClose={onClose}
+      onOpenInNewTab={onOpenInNewTab}
+    />
+  );
 
   if (!isRepoReady) {
     return (
       <>
-        {stashHeaderPublisher}
+        {header}
         <Placeholder
           variant="empty"
           placement="detail-panel"
@@ -287,15 +265,7 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <CommitTabHeader
-        shortSha={shortSha}
-        commitMessage={commitMessage}
-        commitDiff={commitDiff}
-        publishToWorkstationHeader={
-          publishHeaderToWorkstation && headerVariant === "commit"
-        }
-      />
-      {stashHeaderPublisher}
+      {header}
       {commitLoadState === "loading" ? (
         <Placeholder
           variant="loading"
@@ -405,15 +375,6 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
                     repoPath={repoPath}
                     additions={selectedFile.insertions}
                     deletions={selectedFile.deletions}
-                    viewMode={viewMode}
-                    onViewModeChange={setViewMode}
-                    lineNumbersEnabled={lineNumbers !== "off"}
-                    onLineNumbersChange={handleLineNumbersChange}
-                    wordWrapEnabled={wordWrap}
-                    onWordWrapChange={setWordWrap}
-                    highlightActiveLineEnabled={highlightActiveLine}
-                    onHighlightActiveLineChange={setHighlightActiveLine}
-                    onMoreSettings={onOpenSettings}
                     loading={fileLoadState === "loading"}
                     onFileSelect={onFileSelect}
                   />

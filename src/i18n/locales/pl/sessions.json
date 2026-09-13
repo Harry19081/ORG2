@@ -716,7 +716,6 @@
     "performActions_one": "Wykonaj {{count}} działanie",
     "performActions_other": "Wykonaj {{count}} działań",
     "showInlineDiffs": "Różnice w treści",
-    "pageSettings": "Wyświetlanie strony",
     "inputSettings": "Ustawienia wprowadzania",
     "replay": {
       "follow": "Śledź"

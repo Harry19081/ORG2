@@ -490,6 +490,7 @@
   },
   "optional": "isteğe bağlı",
   "common": {
+    "display": "Görünüm",
     "on": "Açık",
     "off": "Kapalı",
     "default": "Varsayılan",
@@ -526,6 +527,9 @@
     "source": "Kaynak"
   },
   "labels": {
+    "stashesCount": "{{count}} stash",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stash",
     "accounts": "Hesaplar",
     "enabled": "Etkin",
     "disabled": "Devre dışı",
@@ -571,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "İşlem Günlüğü",
     "gitDashboard": "Gösterge Paneli",
-    "changedFiles": "Değiştirilen Dosyalar",
+    "changedFilesCount": "{{fileCount}} değişen dosya",
+    "changedFilesCount_one": "{{fileCount}} değişen dosya",
+    "changedFilesCount_other": "{{fileCount}} değişen dosya",
     "colorTokens": "Renk Token'ları",
     "terminalInfo": "Terminal Bilgisi",
     "fileCount_one": "{{count}} dosya",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Grafik görünümüne geç",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",

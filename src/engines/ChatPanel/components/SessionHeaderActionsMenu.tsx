@@ -495,7 +495,7 @@ export const SessionHeaderActionsMenu: React.FC<
               <>
                 <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
                 <ActionSubmenu
-                  label={t("chat.pageSettings")}
+                  label={t("common:common.display")}
                   icon={
                     <HugeiconsIcon
                       icon={Layers01Icon}

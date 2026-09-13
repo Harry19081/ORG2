@@ -191,11 +191,12 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
                 const hasLabel = !!action.label;
                 const button = (
                   <button
+                    disabled={action.disabled}
                     onClick={(event) => {
                       event.stopPropagation();
                       action.onClick();
                     }}
-                    className={`${SECTION_ACTION_BUTTON.base} ${
+                    className={`${SECTION_ACTION_BUTTON.base} disabled:opacity-50 ${
                       hasLabel
                         ? SECTION_ACTION_BUTTON.withLabel
                         : SECTION_ACTION_BUTTON.iconOnly

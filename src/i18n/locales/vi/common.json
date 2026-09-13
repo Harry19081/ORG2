@@ -490,6 +490,7 @@
   },
   "optional": "tùy chọn",
   "common": {
+    "display": "Hiển thị",
     "on": "Bật",
     "off": "Tắt",
     "default": "Mặc định",
@@ -526,6 +527,9 @@
     "source": "Nguồn"
   },
   "labels": {
+    "stashesCount": "{{count}} stash",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stash",
     "accounts": "Tài khoản",
     "enabled": "Đã bật",
     "disabled": "Đã tắt",
@@ -571,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Nhật ký thao tác",
     "gitDashboard": "Bảng điều khiển",
-    "changedFiles": "Tệp đã thay đổi",
+    "changedFilesCount": "{{fileCount}} tệp đã thay đổi",
+    "changedFilesCount_one": "{{fileCount}} tệp đã thay đổi",
+    "changedFilesCount_other": "{{fileCount}} tệp đã thay đổi",
     "colorTokens": "Token màu",
     "terminalInfo": "Thông tin Terminal",
     "fileCount_one": "{{count}} tệp",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Chuyển sang chế độ xem đồ thị",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",

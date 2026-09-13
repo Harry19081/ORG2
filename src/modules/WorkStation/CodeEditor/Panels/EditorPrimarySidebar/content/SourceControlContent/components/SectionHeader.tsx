@@ -18,7 +18,8 @@ import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
 export interface SectionHeaderProps {
   title: string;
-  count: number;
+  /** Omit when the count is already part of the title. */
+  count?: number;
   /** Optional display text when the numeric count is a lower bound. */
   countLabel?: string;
   isCollapsed: boolean;
@@ -58,7 +59,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = memo(
 
     return (
       <div
-        className={`group/header ${TREE_ROW_INSET_CLASS} flex ${heightClassName} min-w-0 items-center gap-1.5 px-2 ${TREE_ROW_ROUNDED_CLASS} ${
+        className={`group/header ${TREE_ROW_INSET_CLASS} flex ${heightClassName} min-w-0 items-center gap-1.5 pr-1 pl-2 ${TREE_ROW_ROUNDED_CLASS} ${
           useWarningText ? "hover:bg-warning-1" : ""
         }`}
       >
@@ -99,11 +100,13 @@ export const SectionHeader: React.FC<SectionHeaderProps> = memo(
             </div>
           )}
           {/* Count badge */}
-          <span
-            className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(count)} ${countBadgeVariant}`}
-          >
-            {countLabel ?? count}
-          </span>
+          {count !== undefined && (
+            <span
+              className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(count)} ${countBadgeVariant}`}
+            >
+              {countLabel ?? count}
+            </span>
+          )}
         </div>
       </div>
     );

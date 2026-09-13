@@ -76,7 +76,7 @@ const FloatingBarUnsaved: React.FC<UnsavedChangesBarProps> = memo(
               <HugeiconsIcon
                 icon={Undo03Icon}
                 data-icon="undo-3"
-                size={HEADER_ICON_SIZE.sm}
+                size={HEADER_ICON_SIZE.discard}
                 strokeWidth={1.75}
               />
             }

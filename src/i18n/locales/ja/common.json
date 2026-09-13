@@ -490,6 +490,7 @@
   },
   "optional": "任意",
   "common": {
+    "display": "表示",
     "on": "オン",
     "off": "オフ",
     "default": "デフォルト",
@@ -526,6 +527,9 @@
     "source": "ソース"
   },
   "labels": {
+    "stashesCount": "{{count}}件のスタッシュ",
+    "stashesCount_one": "{{count}}件のスタッシュ",
+    "stashesCount_other": "{{count}}件のスタッシュ",
     "accounts": "アカウント",
     "enabled": "有効",
     "disabled": "無効",
@@ -571,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "操作ログ",
     "gitDashboard": "ダッシュボード",
-    "changedFiles": "変更されたファイル",
+    "changedFilesCount": "{{fileCount}}件の変更",
+    "changedFilesCount_one": "{{fileCount}}件の変更",
+    "changedFilesCount_other": "{{fileCount}}件の変更",
     "colorTokens": "カラー Token",
     "terminalInfo": "ターミナル情報",
     "fileCount_one": "{{count}} 個のファイル",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "グラフ表示に切り替え",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",

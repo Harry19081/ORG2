@@ -14,11 +14,13 @@
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import Input from "@src/components/Input";
 import {
   GitStatusBadge,
   TREE_ROW_HEIGHT,
+  TreeRowActionGroup,
   TreeRowBase,
 } from "@src/components/TreeRow";
 import type { GitStatusInfo, TreeRowNode } from "@src/components/TreeRow";
@@ -33,7 +35,6 @@ import {
   stickyRowPadding,
 } from "@src/components/VirtualizedStickyTree";
 import { getStatusColorForFile } from "@src/config/gitStatus";
-import { HEADER_BUTTON } from "@src/config/workstation/tokens";
 import {
   ArrowDown01Icon,
   ArrowRight01Icon,
@@ -446,52 +447,54 @@ const GitFileList: React.FC<GitFileListProps> = ({
   // Section header actions
   const sectionActions = useMemo(
     () => (
-      <div className="flex items-center gap-0.5 opacity-0 group-focus-within/header:opacity-100 group-hover/header:opacity-100">
+      <TreeRowActionGroup hoverGroup="sidebar">
         {showFilterToggle && (
-          <button
-            className={`${HEADER_BUTTON.actionTreeRow} ${showFilter ? "text-primary-6" : ""}`}
+          <Button
+            size="sidebar"
+            variant="tertiary"
+            appearance="soft-no-drop"
+            iconOnly
             onClick={handleFilterToggle}
             title={t("actions.search")}
             aria-label={t("actions.search")}
             aria-expanded={showFilter}
-          >
-            <HugeiconsIcon
-              icon={Search01Icon}
-              data-icon="search-icon"
-              size={14}
-              strokeWidth={1.75}
-              className={showFilter ? "text-primary-6" : "text-text-3"}
-            />
-          </button>
+            aria-pressed={showFilter}
+            icon={
+              <HugeiconsIcon
+                icon={Search01Icon}
+                data-icon="search-icon"
+                size={14}
+                strokeWidth={1.75}
+              />
+            }
+          />
         )}
-        <button
-          className={HEADER_BUTTON.actionTreeRow}
+        <Button
+          size="sidebar"
+          variant="tertiary"
+          appearance="soft-no-drop"
+          iconOnly
           onClick={handleViewModeToggle}
           title={
             viewMode === "list"
               ? t("workstation.switchToTreeView")
               : t("workstation.switchToListView")
           }
-        >
-          {viewMode === "list" ? (
+          aria-label={
+            viewMode === "list"
+              ? t("workstation.switchToTreeView")
+              : t("workstation.switchToListView")
+          }
+          icon={
             <HugeiconsIcon
-              icon={HierarchyFilesIcon}
-              data-icon="list-tree"
+              icon={viewMode === "list" ? HierarchyFilesIcon : ListIcon}
+              data-icon={viewMode === "list" ? "list-tree" : "list"}
               size={14}
               strokeWidth={1.75}
-              className="text-text-3"
             />
-          ) : (
-            <HugeiconsIcon
-              icon={ListIcon}
-              data-icon="list"
-              size={14}
-              strokeWidth={1.75}
-              className="text-text-3"
-            />
-          )}
-        </button>
-      </div>
+          }
+        />
+      </TreeRowActionGroup>
     ),
     [
       viewMode,
@@ -503,16 +506,19 @@ const GitFileList: React.FC<GitFileListProps> = ({
     ]
   );
 
-  const displayTitle = title ?? t("labels.changedFiles");
   const displayCountLabel = filterQuery ? undefined : unfilteredCountLabel;
+  const displayTitle =
+    title ??
+    t("labels.changedFilesCount", {
+      count: filteredFiles.length,
+      fileCount: displayCountLabel ?? filteredFiles.length,
+    });
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
+    <div className="group/sidebar flex h-full flex-col overflow-hidden">
       {/* Section header */}
       <SectionHeader
         title={displayTitle}
-        count={filteredFiles.length}
-        countLabel={displayCountLabel}
         isCollapsed={isCollapsed}
         onToggle={() => setIsCollapsed((prev) => !prev)}
         actions={sectionActions}

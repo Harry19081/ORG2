@@ -1,15 +1,15 @@
 /**
  * StashContent Component
  *
- * Displays git stashes in a collapsible section with:
+ * Displays git stashes with a shared sidebar header:
  * - List of stashes with index and message
  * - Actions: Apply, Pop, Drop per stash
  * - Pop All button in header
  *
- * Only renders when there are stashes.
- * Follows the same layout pattern as SourceControlChanges.
+ * In the Stashes destination, the header includes back navigation and remains
+ * available for an empty list. Embedded lists retain their collapse behavior.
  */
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { StashEntry } from "@src/api/http/git/types";
@@ -18,37 +18,30 @@ import HoverCard from "@src/components/HoverCard";
 import { HoverCardPanel } from "@src/components/HoverCard/HoverCardBase";
 import { HoverCardMetadataRow } from "@src/components/HoverCard/HoverCardMetadataRow";
 import {
-  TREE_ROW_INSET_CLASS,
-  TREE_ROW_ROUNDED_CLASS,
   TreeRowActionGroup,
   TreeRowBase,
   type TreeRowNode,
 } from "@src/components/TreeRow";
-import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
-import {
-  COUNT_BADGE,
-  HEADER_BUTTON,
-  HEADER_ICON_SIZE,
-  PRIMARY_SIDEBAR_HOVER,
-  getCountBadgeSizeClass,
-} from "@src/config/workstation/tokens";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useWorkStationTabs } from "@src/hooks/tabHost/useWorkStationTabs";
 import {
   ArchiveArrowUpIcon,
-  ArrowDown01Icon,
   ArrowDownToLineIcon,
-  ArrowRight01Icon,
+  ArrowLeft02Icon,
   Delete02Icon,
   HugeiconsIcon,
   Loading03Icon,
   PackageIcon,
   WorkflowCircle05Icon,
 } from "@src/icons";
+import CollapsibleSection from "@src/modules/WorkStation/shared/PrimarySidebarLayout/CollapsibleSection";
 import {
   type SourceControlHistorySelection,
   createStashDetailTab,
 } from "@src/store/workstation/tabs";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
+
+import { StashHeaderContext } from "./StashHeaderContext";
 
 // ============================================
 // Types
@@ -325,6 +318,7 @@ export const StashContent: React.FC<StashContentProps> = memo(
   }) => {
     const { t } = useTranslation();
     const { openTab, activeTab } = useWorkStationTabs();
+    const header = useContext(StashHeaderContext);
     const [collapsed, setCollapsed] = useState(initialCollapsed);
     const [isPoppingAll, setIsPoppingAll] = useState(false);
 
@@ -389,94 +383,70 @@ export const StashContent: React.FC<StashContentProps> = memo(
     }, [hasStashes, stashCount, onStashPop, t]);
 
     // Don't render section if no stashes
-    if (!hasStashes) {
+    if (!hasStashes && !header) {
       return null;
     }
 
+    const title = t("common:labels.stashesCount", { count: stashCount });
+    const popAllAction = {
+      key: "pop-all-stashes",
+      icon: (
+        <HugeiconsIcon
+          icon={isPoppingAll ? Loading03Icon : ArchiveArrowUpIcon}
+          size={HEADER_ICON_SIZE.sm}
+          className={isPoppingAll ? "animate-spin" : undefined}
+        />
+      ),
+      tooltip: t("tooltips.popAllStashes"),
+      onClick: handlePopAll,
+      disabled: !hasStashes || operationLoading || isPoppingAll,
+      forceVisible: true,
+    };
     return (
-      <div className="mb-1">
-        {/* Section header */}
-        <div
-          className={`group/header ${TREE_ROW_INSET_CLASS} flex h-[28px] items-center gap-1.5 px-2 ${TREE_ROW_ROUNDED_CLASS} ${PRIMARY_SIDEBAR_HOVER.row}`}
-        >
-          <button
-            className="flex items-center gap-1.5"
-            onClick={() => setCollapsed(!collapsed)}
-          >
-            {collapsed ? (
-              <HugeiconsIcon
-                icon={ArrowRight01Icon}
-                data-icon="chevron-right"
-                size={14}
-                className="text-text-3"
-              />
-            ) : (
-              <HugeiconsIcon
-                icon={ArrowDown01Icon}
-                data-icon="chevron-down"
-                size={14}
-                className="text-text-3"
-              />
-            )}
-            <span className="text-[11px] font-medium text-text-2 uppercase">
-              Stashes
-            </span>
-          </button>
-          <div className="flex-1" />
-
-          {/* Action buttons - show on hover */}
-          <button
-            className={`${HEADER_BUTTON.actionTreeRow} hidden shrink-0 group-focus-within/header:flex group-hover/header:flex disabled:opacity-50`}
-            onClick={handlePopAll}
-            disabled={operationLoading || isPoppingAll}
-            title={t("tooltips.popAllStashes")}
-          >
-            {isPoppingAll ? (
-              <HugeiconsIcon
-                icon={Loading03Icon}
-                data-icon="loader-2"
-                size={SPINNER_TOKENS.default}
-                className="animate-spin text-text-3"
-              />
-            ) : (
-              <HugeiconsIcon
-                icon={ArchiveArrowUpIcon}
-                data-icon="archive-restore"
-                size={HEADER_ICON_SIZE.sm}
-                strokeWidth={1.75}
-              />
-            )}
-          </button>
-
-          {/* Count badge */}
-          <span
-            className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(stashCount)} ${COUNT_BADGE.primary}`}
-          >
-            {stashCount}
-          </span>
-        </div>
-
-        {/* Content */}
-        {!collapsed && (
-          <div>
-            {/* Stash list */}
-            <div className="flex flex-col">
-              {stashes.map((stash) => (
-                <StashItem
-                  key={getStashIdentity(stash)}
-                  stash={stash}
-                  operationLoading={operationLoading}
-                  isSelected={activeStashIdentity === getStashIdentity(stash)}
-                  onApply={onStashApply}
-                  onPop={onStashPop}
-                  onDrop={onStashDrop}
-                  onOpenDetail={handleOpenStashDetail}
+      <CollapsibleSection
+        title={
+          header ? (
+            <button
+              type="button"
+              className="flex min-w-0 items-center gap-1.5 normal-case"
+              onClick={header.onBack}
+              aria-label={t("tabs.sourceControl")}
+              title={t("tabs.sourceControl")}
+            >
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+                <HugeiconsIcon
+                  icon={ArrowLeft02Icon}
+                  size={14}
+                  className="text-text-3"
                 />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+              </span>
+              <span className="truncate">{title}</span>
+            </button>
+          ) : (
+            title
+          )
+        }
+        collapsible={!header}
+        collapsed={collapsed}
+        onCollapseChange={setCollapsed}
+        actions={[popAllAction, ...(header?.actions ?? [])]}
+        isLast
+      >
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+          {stashes.map((stash) => (
+            <StashItem
+              key={getStashIdentity(stash)}
+              stash={stash}
+              operationLoading={operationLoading}
+              isSelected={activeStashIdentity === getStashIdentity(stash)}
+              onApply={onStashApply}
+              onPop={onStashPop}
+              onDrop={onStashDrop}
+              onOpenDetail={handleOpenStashDetail}
+            />
+          ))}
+        </div>
+      </CollapsibleSection>
     );
   }
 );

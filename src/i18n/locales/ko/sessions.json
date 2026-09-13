@@ -716,7 +716,6 @@
     "performActions_one": "작업 {{count}}개 수행",
     "performActions_other": "작업 {{count}}개 수행",
     "showInlineDiffs": "인라인 변경 사항",
-    "pageSettings": "페이지 표시",
     "inputSettings": "입력 설정",
     "replay": {
       "follow": "팔로우"

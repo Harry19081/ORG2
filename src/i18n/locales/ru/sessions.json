@@ -716,7 +716,6 @@
     "performActions_one": "Выполнить {{count}} действие",
     "performActions_other": "Выполнить {{count}} действий",
     "showInlineDiffs": "Встроенные различия",
-    "pageSettings": "Отображение страницы",
     "inputSettings": "Настройки ввода",
     "replay": {
       "follow": "Следовать"

@@ -198,7 +198,7 @@
     .cm-deletedChunk .cm-deletedLine {
       display: block;
       padding: 0 !important;
-      white-space: pre;
+      white-space: inherit;
     }
 
     .cm-deletedChunk .cm-deletedLine > del {
@@ -360,7 +360,9 @@
   margin: 0 !important;
   padding: 0 !important;
   text-indent: 0 !important;
-  white-space: pre;
+  // Follow .cm-content's shared word-wrap setting, including break-spaces
+  // for long tokens and preserved indentation, just like regular lines.
+  white-space: inherit;
 }
 
 .codemirror-diff

@@ -490,6 +490,7 @@
   },
   "optional": "선택",
   "common": {
+    "display": "표시",
     "on": "켜기",
     "off": "끄기",
     "default": "기본값",
@@ -526,6 +527,9 @@
     "source": "소스"
   },
   "labels": {
+    "stashesCount": "스태시 {{count}}개",
+    "stashesCount_one": "스태시 {{count}}개",
+    "stashesCount_other": "스태시 {{count}}개",
     "accounts": "계정",
     "enabled": "활성화",
     "disabled": "비활성화",
@@ -571,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "작업 로그",
     "gitDashboard": "대시보드",
-    "changedFiles": "변경된 파일",
+    "changedFilesCount": "변경된 파일 {{fileCount}}개",
+    "changedFilesCount_one": "변경된 파일 {{fileCount}}개",
+    "changedFilesCount_other": "변경된 파일 {{fileCount}}개",
     "colorTokens": "색상 Token",
     "terminalInfo": "터미널 정보",
     "fileCount_one": "{{count}}개 파일",
@@ -1013,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "그래프 보기로 전환",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",

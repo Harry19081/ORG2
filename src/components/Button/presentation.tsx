@@ -60,11 +60,13 @@ function getButtonStyleClasses(
         ? appearance === "soft-no-drop"
           ? BUTTON_VARIANT.noDrop
           : BUTTON_VARIANT.default
-        : variant === "warning"
-          ? "text-warning-6 enabled:hover:bg-warning-3 focus-visible:bg-warning-3"
-          : variant === "merged"
-            ? "text-purple-6 enabled:hover:bg-purple-3 focus-visible:bg-purple-3"
-            : BUTTON_VARIANT[variant];
+        : variant === "danger" && appearance === "soft-no-drop"
+          ? BUTTON_VARIANT.dangerNoDrop
+          : variant === "warning"
+            ? "text-warning-6 enabled:hover:bg-warning-3 focus-visible:bg-warning-3"
+            : variant === "merged"
+              ? "text-purple-6 enabled:hover:bg-purple-3 focus-visible:bg-purple-3"
+              : BUTTON_VARIANT[variant];
     return `border-0 bg-transparent ${colors} aria-pressed:bg-surface-selected aria-pressed:text-primary-6`;
   }
   const base = (() => {
@@ -210,8 +212,8 @@ export function useButtonPresentation({
   const borderRadius = useMemo(() => {
     if (shape === "circle") return "50%";
     if (shape === "round") return "100px";
-    return "8px";
-  }, [shape]);
+    return size === "sidebar" ? "var(--radius-sm)" : "8px";
+  }, [shape, size]);
 
   const buttonStyles = useMemo<React.CSSProperties>(() => {
     const iconOnlySize =

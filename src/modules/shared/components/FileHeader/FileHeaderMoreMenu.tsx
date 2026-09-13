@@ -320,7 +320,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                   <HugeiconsIcon
                     icon={Undo03Icon}
                     data-icon="undo-3"
-                    size={HEADER_ICON_SIZE.sm}
+                    size={HEADER_ICON_SIZE.discard}
                   />
                 }
                 disabled={discardDisabled}
@@ -456,7 +456,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
               )}
             {hasDisplaySettings && (
               <ActionSubmenu
-                label={t("sessions:chat.pageSettings")}
+                label={t("common:common.display")}
                 icon={
                   <HugeiconsIcon
                     icon={Layers01Icon}

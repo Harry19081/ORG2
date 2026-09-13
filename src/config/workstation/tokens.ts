@@ -53,6 +53,8 @@ export const HEADER_HEIGHT = 40;
 
 /** Icon sizes used inside header buttons */
 export const HEADER_ICON_SIZE = {
+  /** Compact discard glyph; button hit area stays unchanged. */
+  discard: 12,
   /** Standard icon size (14px) — section headers, file headers, action bars */
   sm: 14,
   /** Larger icon size (16px) — bottom panel, URL bar, tab bar */
@@ -65,17 +67,17 @@ export const HEADER_ICON_SIZE = {
 
 /** Shared icon-button geometry; callers own display/hover-reveal behavior. */
 export const ICON_BUTTON_BASE =
-  "shrink-0 items-center justify-center rounded-lg transition-colors";
+  "shrink-0 items-center justify-center transition-colors";
 const BUTTON_BASE = `flex ${ICON_BUTTON_BASE}`;
 
-/** Size classes for icon-only buttons */
+/** Size and radius classes for icon-only buttons */
 export const BUTTON_SIZE = {
   /** 20×20 — standard header / row action button (single source of truth) */
-  sm: "h-5 w-5",
+  sm: "h-5 w-5 rounded-sm",
   /** 24×24 — larger header action button */
-  md: "h-6 w-6",
+  md: "h-6 w-6 rounded-lg",
   /** 28×28 — collapse toggles, modal headers */
-  lg: "h-7 w-7",
+  lg: "h-7 w-7 rounded-lg",
 } as const;
 
 /** One palette for compact row, terminal, and header actions. */
@@ -88,6 +90,8 @@ export const BUTTON_VARIANT = {
     "text-text-2 enabled:hover:bg-button-hover-no-drop enabled:hover:text-text-1 focus-visible:bg-button-hover-no-drop focus-visible:text-text-1",
   defaultTreeRow: DEFAULT_BUTTON_VARIANT,
   danger:
+    "text-text-2 enabled:hover:bg-danger-2 enabled:hover:text-danger-6 focus-visible:bg-danger-2 focus-visible:text-danger-6",
+  dangerNoDrop:
     "text-text-2 enabled:hover:bg-danger-1 enabled:hover:text-danger-6 focus-visible:bg-danger-1 focus-visible:text-danger-6",
   primary:
     "text-text-2 enabled:hover:bg-primary-3 enabled:hover:text-primary-6 focus-visible:bg-primary-3 focus-visible:text-primary-6",
@@ -373,7 +377,7 @@ export const SECTION_ACTION_BUTTON = {
   /** Icon-only (20×20) */
   iconOnly: BUTTON_SIZE.sm,
   /** With label (compact inline) */
-  withLabel: "gap-1 px-1.5 py-0.5 text-[11px]",
+  withLabel: "gap-1 rounded-lg px-1.5 py-0.5 text-[11px]",
 } as const;
 
 // ============================================

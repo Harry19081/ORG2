@@ -9,6 +9,10 @@ import { useSourceControlActions } from "@src/modules/WorkStation/CodeEditor/Pan
 import SourceControlTabSidebarContent from "@src/modules/WorkStation/shared/SidebarModules/SourceControl/SourceControlTabSidebarContent";
 import type { TabSidebarProps } from "@src/modules/WorkStation/shared/SidebarModules/registry";
 import { sourceControlRefreshHandlerAtom } from "@src/store/workstation/codeEditor/sourceControlRefreshAtom";
+import {
+  type PanelState,
+  createSourceControlTab,
+} from "@src/store/workstation/tabs";
 
 import { useSourceControlPaneActions } from "./useSourceControlPaneActions";
 
@@ -37,6 +41,72 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 vi.mock("../config", () => ({ createSourceControlQuickActions: () => [] }));
+
+it.each(["file", "commit", "stash"] as const)(
+  "closes the selected %s without closing Source Control and is idempotent",
+  (kind) => {
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+    const root = createRoot(document.createElement("div"));
+    const tab = createSourceControlTab(1);
+    if (kind === "file") {
+      tab.data.focusPath = "src/index.ts";
+    } else {
+      tab.data.historySelection = {
+        type: kind,
+        commitSha: "abc1234",
+        shortSha: "abc1234",
+        commitMessage: "Saved changes",
+        ...(kind === "stash"
+          ? {
+              stashIndex: 0,
+              stashRef: "stash@{0}",
+              stashIdentity: "abc1234",
+              stashCommitSha: "abc1234",
+            }
+          : {}),
+      };
+    }
+    let state: PanelState = { tabs: [tab], activeTabId: tab.id };
+    let close!: () => void;
+    const Harness = () => {
+      const closeSelection = useSourceControlPaneActions({
+        t: ((key: string) => key) as TFunction,
+        updatePaneState: (update) => {
+          state = update(state);
+        },
+        forceRefresh: vi.fn(async () => {}),
+        gitDiffLoading: false,
+        sourceControlFilterMode: "uncommitted",
+      }).handleSourceControlCloseFocus;
+      useEffect(() => {
+        close = closeSelection;
+      }, [closeSelection]);
+      return null;
+    };
+    try {
+      act(() =>
+        root.render(
+          createElement(
+            Provider,
+            { store: createStore() },
+            createElement(Harness)
+          )
+        )
+      );
+      act(() => close());
+      expect(state.tabs).toHaveLength(1);
+      expect(state.activeTabId).toBe(tab.id);
+      expect(state.tabs[0].data.focusPath).toBeNull();
+      expect(state.tabs[0].data.historySelection).toBeNull();
+      const closed = state;
+      act(() => close());
+      expect(state).toBe(closed);
+    } finally {
+      act(() => root.unmount());
+      vi.unstubAllGlobals();
+    }
+  }
+);
 
 it("routes the header to the mounted scope, avoids duplicate refresh, and falls back after unmount", async () => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
