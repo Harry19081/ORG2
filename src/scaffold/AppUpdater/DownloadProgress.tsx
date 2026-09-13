@@ -1,5 +1,6 @@
 import type { CSSProperties, FC } from "react";
 
+import Button from "@src/components/Button";
 import ProgressBar from "@src/components/ProgressBar";
 import { Download01Icon, HugeiconsIcon } from "@src/icons";
 
@@ -79,8 +80,10 @@ export const DownloadProgressOrb: FC<DownloadProgressOrbProps> = ({
   };
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className={`app-update-download-orb ${
         progress.percent === null
           ? "app-update-download-orb--indeterminate"
@@ -102,6 +105,6 @@ export const DownloadProgressOrb: FC<DownloadProgressOrbProps> = ({
           strokeWidth={2.2}
         />
       </span>
-    </button>
+    </Button>
   );
 };

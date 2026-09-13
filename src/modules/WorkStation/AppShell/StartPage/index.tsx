@@ -13,6 +13,7 @@ import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
@@ -49,8 +50,10 @@ const StartActionRow = memo<StartActionRowProps>(
       deletions !== undefined &&
       (additions > 0 || deletions > 0);
     return (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onClick={onClick}
         className={`${SPOTLIGHT_CLASSES.itemRow} w-full text-left transition-colors ${SURFACE_TOKENS.hover} active:bg-fill-3`}
         style={{ height: SPOTLIGHT_TOKENS.itemHeight }}
@@ -81,7 +84,7 @@ const StartActionRow = memo<StartActionRowProps>(
         {shortcutId ? (
           <KeyboardShortcut shortcutId={shortcutId} rendering="original" />
         ) : null}
-      </button>
+      </Button>
     );
   }
 );

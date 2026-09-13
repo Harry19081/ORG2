@@ -14,6 +14,7 @@
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import { Add01Icon, Cancel01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 
@@ -77,8 +78,10 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
         role="region"
         aria-label={t("common:tooltips.startVoiceInput")}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onAddContent}
           disabled={!onAddContent}
           className={[
@@ -98,7 +101,7 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
             size={INPUT_AREA_BUTTONS.iconSize}
             strokeWidth={1.75}
           />
-        </button>
+        </Button>
 
         <div className="composer-voice-waveform">
           <div className="composer-voice-waveform__baseline" aria-hidden />
@@ -114,8 +117,10 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
           {formatElapsed(elapsedSeconds)}
         </span>
 
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onCancel}
           className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer leading-none`}
           style={{ lineHeight: 0 }}
@@ -128,10 +133,12 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
             size={INPUT_AREA_BUTTONS.iconSize}
             strokeWidth={1.75}
           />
-        </button>
+        </Button>
 
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onAccept}
           className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer bg-fill-3 leading-none`}
           style={{ lineHeight: 0 }}
@@ -144,7 +151,7 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
             size={INPUT_AREA_BUTTONS.iconSize}
             strokeWidth={1.75}
           />
-        </button>
+        </Button>
       </div>
     );
   }

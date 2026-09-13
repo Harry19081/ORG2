@@ -19,6 +19,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import { gitFetchStream } from "@src/api/http/git/streaming";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import type { GitFileStatus } from "@src/config/gitStatus";
 import { CodeMirrorDiff } from "@src/features/CodeMirror";
@@ -344,7 +345,9 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
             )}
 
             {fileListCollapsed && (
-              <button
+              <Button
+                layout="custom"
+                appearance="custom"
                 className="flex w-6 shrink-0 items-center justify-center border-r border-border-2 hover:bg-fill-1"
                 onClick={toggleFileList}
                 title={t("tooltips.showFileList")}
@@ -355,7 +358,7 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
                   size={14}
                   className="text-text-3"
                 />
-              </button>
+              </Button>
             )}
 
             {/* Right: Diff viewer */}

@@ -9,6 +9,7 @@
  */
 import React, { memo, useCallback } from "react";
 
+import Button from "@src/components/Button";
 import {
   type SectionHeaderAction,
   isSectionHeaderCustomAction,
@@ -190,7 +191,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
 
                 const hasLabel = !!action.label;
                 const button = (
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
                     disabled={action.disabled}
                     onClick={(event) => {
                       event.stopPropagation();
@@ -207,7 +210,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
                   >
                     {action.icon}
                     {action.label && <span>{action.label}</span>}
-                  </button>
+                  </Button>
                 );
 
                 return <div key={action.key}>{button}</div>;

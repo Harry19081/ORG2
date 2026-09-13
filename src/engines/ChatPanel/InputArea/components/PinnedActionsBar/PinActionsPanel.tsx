@@ -10,6 +10,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import DropdownSearch from "@src/components/Dropdown/DropdownSearch";
 import {
   DROPDOWN_CLASSES,
@@ -196,9 +197,11 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
       const isPinned = pinnedKeys.has(key);
       const renderKey = `${key}|${item.skillPath ?? item.source}`;
       return (
-        <button
+        <Button
+          layout="custom"
+          appearance="custom"
           key={renderKey}
-          type="button"
+          htmlType="button"
           className={`${DROPDOWN_CLASSES.menuControlItem} min-w-0`}
           {...keyboard.getItemProps(filteredItems.indexOf(item))}
         >
@@ -247,7 +250,7 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
               )}
             </span>
           </span>
-        </button>
+        </Button>
       );
     };
 
@@ -327,8 +330,10 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
         {/* Footer */}
         {pinnedActions.length > 0 && (
           <div className={DROPDOWN_CLASSES.footerContainer}>
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={onUnpinAll}
               className={`${DROPDOWN_CLASSES.menuActionItem} min-w-0`}
               data-dropdown-keyboard-skip="true"
@@ -336,7 +341,7 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
               <span className="truncate text-[12px] font-medium">
                 {t("input.pinnedActions.unpinAll")}
               </span>
-            </button>
+            </Button>
           </div>
         )}
       </div>,

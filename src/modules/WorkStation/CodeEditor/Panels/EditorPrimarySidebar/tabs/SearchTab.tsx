@@ -17,6 +17,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
 import { ArrowLeft02Icon, HugeiconsIcon } from "@src/icons";
 import { useOpenEditorFiles } from "@src/modules/WorkStation/CodeEditor/hooks/useOpenEditorFiles";
@@ -151,8 +152,10 @@ export function useSearchTabConfig({
       {
         key: "search-results",
         title: (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             className="flex min-w-0 items-center gap-1.5 normal-case"
             onClick={onBack}
             aria-label={t("labels.files")}
@@ -165,7 +168,7 @@ export function useSearchTabConfig({
               className="shrink-0 text-text-3"
             />
             <span className="truncate uppercase">{t("tabs.search")}</span>
-          </button>
+          </Button>
         ),
         content: searchContent,
         defaultFlexGrow: 2,

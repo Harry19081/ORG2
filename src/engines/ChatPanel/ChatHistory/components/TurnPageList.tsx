@@ -8,6 +8,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { memo, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
@@ -178,8 +179,10 @@ const TurnPageList: React.FC<TurnPageListProps> = memo(
                         transform: `translateY(${virtualItem.start}px)`,
                       }}
                     >
-                      <button
-                        type="button"
+                      <Button
+                        layout="custom"
+                        appearance="custom"
+                        htmlType="button"
                         data-testid="turn-page-list-item"
                         data-page-index={pageIndex}
                         className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left ${
@@ -198,7 +201,7 @@ const TurnPageList: React.FC<TurnPageListProps> = memo(
                             {time}
                           </span>
                         )}
-                      </button>
+                      </Button>
                     </div>
                   );
                 })}

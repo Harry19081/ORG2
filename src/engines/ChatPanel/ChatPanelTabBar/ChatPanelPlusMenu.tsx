@@ -6,6 +6,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
 import {
   DROPDOWN_CLASSES,
@@ -159,9 +160,11 @@ export function PlusMenuContent({
     >
       <div className={DROPDOWN_CLASSES.itemsColumn}>
         {items.map((item) => (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={item.id}
-            type="button"
+            htmlType="button"
             role="menuitem"
             className={`${DROPDOWN_CLASSES.menuActionItem} justify-between`}
             onClick={() => {
@@ -181,7 +184,7 @@ export function PlusMenuContent({
                 className="ml-4"
               />
             ) : null}
-          </button>
+          </Button>
         ))}
         <RecentTabsMenuSection
           tabs={recentTabs.filter(shouldShowInRecentTabsMenu).map((tab) => ({

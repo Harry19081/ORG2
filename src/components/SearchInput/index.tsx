@@ -14,10 +14,8 @@
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  HEADER_BUTTON,
-  HEADER_ICON_SIZE,
-} from "@src/config/workstation/tokens";
+import Button from "@src/components/Button";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import {
   ArrowDown01Icon,
@@ -216,7 +214,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
       ? "flex items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-1"
       : "flex items-center justify-center rounded p-1 text-text-3 transition-colors hover:bg-fill-1";
 
-    const actionButtonClass = HEADER_BUTTON.action;
     const iconSize = HEADER_ICON_SIZE.sm;
 
     // In multiline mode the wrapper is top-aligned (see searchWrapperMultiline) so
@@ -299,96 +296,114 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
             />
           )}
           {showClearButton && value && (
-            <button
-              type="button"
+            <Button
+              variant="tertiary"
+              appearance="ghost"
+              size="sidebar"
+              aria-label={t("tooltips.clearSearch")}
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={Cancel01Icon}
+                  data-icon="x"
+                  size={iconSize}
+                />
+              }
+              htmlType="button"
               onClick={handleClear}
-              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 text-text-3 transition-colors hover:text-text-2`}
+              className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
               title={t("tooltips.clearSearch")}
-            >
-              <HugeiconsIcon
-                icon={Cancel01Icon}
-                data-icon="x"
-                size={iconSize}
-              />
-            </button>
+            />
           )}
 
           {onCaseSensitiveToggle && (
-            <button
-              type="button"
+            <Button
+              variant={caseSensitive ? "primary" : "tertiary"}
+              appearance="ghost"
+              size="sidebar"
+              aria-pressed={caseSensitive}
+              aria-label={t("tooltips.matchCase")}
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={CaseSensitiveIcon}
+                  data-icon="case-sensitive"
+                  size={iconSize}
+                />
+              }
+              htmlType="button"
               onClick={onCaseSensitiveToggle}
-              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 transition-colors ${
-                caseSensitive
-                  ? "text-primary-6 hover:text-primary-5"
-                  : "text-text-2 hover:text-text-1"
-              }`}
+              className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
               title={t("tooltips.matchCase")}
-            >
-              <HugeiconsIcon
-                icon={CaseSensitiveIcon}
-                data-icon="case-sensitive"
-                size={iconSize}
-              />
-            </button>
+            />
           )}
           {onWholeWordToggle && (
-            <button
-              type="button"
+            <Button
+              variant={wholeWord ? "primary" : "tertiary"}
+              appearance="ghost"
+              size="sidebar"
+              aria-pressed={wholeWord}
+              aria-label={t("tooltips.matchWholeWord")}
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={WholeWordIcon}
+                  data-icon="whole-word"
+                  size={iconSize}
+                />
+              }
+              htmlType="button"
               onClick={onWholeWordToggle}
-              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 transition-colors ${
-                wholeWord
-                  ? "text-primary-6 hover:text-primary-5"
-                  : "text-text-2 hover:text-text-1"
-              }`}
+              className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
               title={t("tooltips.matchWholeWord")}
-            >
-              <HugeiconsIcon
-                icon={WholeWordIcon}
-                data-icon="whole-word"
-                size={iconSize}
-              />
-            </button>
+            />
           )}
           {onRegexToggle && (
-            <button
-              type="button"
+            <Button
+              variant={useRegex ? "primary" : "tertiary"}
+              appearance="ghost"
+              size="sidebar"
+              aria-pressed={useRegex}
+              aria-label={t("tooltips.useRegex")}
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={RegexIcon}
+                  data-icon="regex"
+                  size={iconSize}
+                />
+              }
+              htmlType="button"
               onClick={onRegexToggle}
-              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 transition-colors ${
-                useRegex
-                  ? "text-primary-6 hover:text-primary-5"
-                  : "text-text-2 hover:text-text-1"
-              }`}
+              className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
               title={t("tooltips.useRegex")}
-            >
-              <HugeiconsIcon
-                icon={RegexIcon}
-                data-icon="regex"
-                size={iconSize}
-              />
-            </button>
+            />
           )}
           {onOnlyOpenFilesToggle && (
-            <button
-              type="button"
+            <Button
+              variant={onlyOpenFiles ? "primary" : "tertiary"}
+              appearance="ghost"
+              size="sidebar"
+              aria-pressed={onlyOpenFiles}
+              aria-label={t("tooltips.searchInOpenEditors")}
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={BookOpen01Icon}
+                  data-icon="book-open"
+                  size={iconSize}
+                />
+              }
+              htmlType="button"
               onClick={onOnlyOpenFilesToggle}
-              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 transition-colors ${
-                onlyOpenFiles
-                  ? "text-primary-6 hover:text-primary-5"
-                  : "text-text-2 hover:text-text-1"
-              }`}
+              className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
               title={t("tooltips.searchInOpenEditors")}
-            >
-              <HugeiconsIcon
-                icon={BookOpen01Icon}
-                data-icon="book-open"
-                size={iconSize}
-              />
-            </button>
+            />
           )}
         </div>
 
@@ -396,44 +411,63 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
         {(onPrevious || onNext) && (
           <div className="flex items-center gap-1.5">
             {onPrevious && (
-              <button
-                type="button"
+              <Button
+                variant="tertiary"
+                appearance="soft"
+                size="sidebar"
+                aria-label={t("tooltips.previousMatch")}
+                iconOnly
+                icon={
+                  <HugeiconsIcon
+                    icon={ArrowUp02Icon}
+                    data-icon="arrow-up"
+                    size={iconSize}
+                  />
+                }
+                htmlType="button"
                 onClick={onPrevious}
-                className={actionButtonClass}
                 title={t("tooltips.previousMatch")}
-              >
-                <HugeiconsIcon
-                  icon={ArrowUp02Icon}
-                  data-icon="arrow-up"
-                  size={iconSize}
-                />
-              </button>
+              />
             )}
             {onNext && (
-              <button
-                type="button"
+              <Button
+                variant="tertiary"
+                appearance="soft"
+                size="sidebar"
+                aria-label={t("tooltips.nextMatch")}
+                iconOnly
+                icon={
+                  <HugeiconsIcon
+                    icon={ArrowDown02Icon}
+                    data-icon="arrow-down"
+                    size={iconSize}
+                  />
+                }
+                htmlType="button"
                 onClick={onNext}
-                className={actionButtonClass}
                 title={t("tooltips.nextMatch")}
-              >
-                <HugeiconsIcon
-                  icon={ArrowDown02Icon}
-                  data-icon="arrow-down"
-                  size={iconSize}
-                />
-              </button>
+              />
             )}
           </div>
         )}
         {onClose && (
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="sidebar"
+            aria-label={t("tooltips.closeEsc")}
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                data-icon="x"
+                size={iconSize}
+              />
+            }
+            htmlType="button"
             onClick={onClose}
-            className={actionButtonClass}
             title={t("tooltips.closeEsc")}
-          >
-            <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={iconSize} />
-          </button>
+          />
         )}
       </div>
     );

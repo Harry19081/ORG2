@@ -13,6 +13,7 @@ import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
 import {
   CODEX_REAUTH_RETURN_TO_STATE_KEY,
@@ -64,8 +65,10 @@ const AgentErrorChatItem: React.FC<AgentErrorChatItemProps> = memo(
           {needsCodexReauthentication ? (
             <>
               <div>{t("errors.codexLoginExpiredDescription")}</div>
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 onClick={() => setDetailsExpanded((expanded) => !expanded)}
                 aria-expanded={detailsExpanded}
                 className="mt-2 flex items-center gap-1 text-text-3 transition-colors select-none hover:text-text-1"
@@ -86,7 +89,7 @@ const AgentErrorChatItem: React.FC<AgentErrorChatItemProps> = memo(
                   />
                 )}
                 <span>{t("errors.technicalDetails")}</span>
-              </button>
+              </Button>
               {detailsExpanded && (
                 <div className="mt-1 wrap-break-word whitespace-pre-wrap text-text-2">
                   {cleanMessage}

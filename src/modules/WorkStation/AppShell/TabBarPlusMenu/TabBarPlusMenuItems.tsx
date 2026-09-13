@@ -1,6 +1,7 @@
 import React from "react";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import {
@@ -28,9 +29,11 @@ export function TabBarPlusMenuItems({
     <>
       {actions.map((action) => {
         return (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={action.id}
-            type="button"
+            htmlType="button"
             onClick={() => {
               action.onClick();
               onActionComplete();
@@ -59,7 +62,7 @@ export function TabBarPlusMenuItems({
                 size="sm"
               />
             ) : null}
-          </button>
+          </Button>
         );
       })}
     </>

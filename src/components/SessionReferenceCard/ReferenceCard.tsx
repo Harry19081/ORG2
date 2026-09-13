@@ -1,5 +1,6 @@
 import React from "react";
 
+import Button from "@src/components/Button";
 import { ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
 const CARD_BASE = "mt-1.5 flex w-full max-w-[600px] rounded-lg p-3";
@@ -20,8 +21,10 @@ export const ReferenceCard: React.FC<ReferenceCardProps> = ({
   onOpen,
   children,
 }) => (
-  <button
-    type="button"
+  <Button
+    layout="custom"
+    appearance="custom"
+    htmlType="button"
     className={`${CARD_BASE} items-center gap-2 border border-border-2 text-left transition-colors hover:bg-fill-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none`}
     data-testid={testId}
     aria-label={ariaLabel}
@@ -36,7 +39,7 @@ export const ReferenceCard: React.FC<ReferenceCardProps> = ({
       className="shrink-0 text-text-3"
       aria-hidden
     />
-  </button>
+  </Button>
 );
 
 export const ReferenceCardTitle: React.FC<{

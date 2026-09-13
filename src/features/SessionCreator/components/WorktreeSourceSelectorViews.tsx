@@ -271,8 +271,10 @@ function WorktreeSourceDropdownRow({
 }) {
   const Icon = item.icon;
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       data-testid={`worktree-source-row-${item.id}`}
       {...keyboardProps}
       disabled={disabled}
@@ -311,7 +313,7 @@ function WorktreeSourceDropdownRow({
           className="shrink-0 text-primary-6"
         />
       )}
-    </button>
+    </Button>
   );
 }
 

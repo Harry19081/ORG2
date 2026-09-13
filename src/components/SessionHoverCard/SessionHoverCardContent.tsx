@@ -11,6 +11,7 @@ import {
 } from "@src/api/tauri/lineage";
 import { isHostedKey } from "@src/api/tauri/session";
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import {
   HoverCardPanel,
   HoverCardRow,
@@ -513,8 +514,10 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
             >
               {repoName &&
                 (repoPath ? (
-                  <button
-                    type="button"
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    htmlType="button"
                     className={`${INLINE_LINK_CLASS_NAME} min-w-0 truncate text-left ${
                       branchLabel ? "max-w-[calc(50%-6px)]" : "flex-1"
                     }`}
@@ -524,7 +527,7 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
                     onClick={() => handleRevealPath(repoPath)}
                   >
                     {repoName}
-                  </button>
+                  </Button>
                 ) : (
                   <span
                     className={
@@ -590,8 +593,10 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
           >
             <div className="flex min-w-0 items-center gap-1">
               {underlyingSessionId ? (
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className={`${PATH_ROW_CLASS_NAME} min-w-0 flex-1`}
                   title={underlyingSessionId}
                   aria-label={`${t("common:actions.copy")} ${t(
@@ -612,17 +617,19 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
                       aria-hidden="true"
                     />
                   )}
-                </button>
+                </Button>
               ) : storageRowPath ? (
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className={`${PATH_ROW_CLASS_NAME} min-w-0 flex-1`}
                   title={`${revealLabel} · ${storageRowPath}`}
                   aria-label={`${revealLabel} ${storageRowPath}`}
                   onClick={() => handleRevealPath(storageRowPath)}
                 >
                   {formatCompactPath(storageRowPath)}
-                </button>
+                </Button>
               ) : (
                 <span className="min-w-0 flex-1 truncate text-text-2">
                   {t("history.detail.cliNativeStore")}
@@ -630,20 +637,25 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
               )}
               {/* Transcript file for a row already spoken for by the id. */}
               {underlyingSessionId && storageRowPath && (
-                <button
-                  type="button"
+                <Button
+                  variant="tertiary"
+                  appearance="ghost"
+                  size="mini"
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={FloppyDiskIcon}
+                      data-icon="save"
+                      size={HOVER_CARD.compactIconSize}
+                      strokeWidth={HOVER_CARD.iconStrokeWidth}
+                    />
+                  }
+                  htmlType="button"
                   className={REVEAL_ICON_BUTTON_CLASS_NAME}
                   title={`${revealLabel} · ${storageRowPath}`}
                   aria-label={`${revealLabel} ${storageRowPath}`}
                   onClick={() => handleRevealPath(storageRowPath)}
-                >
-                  <HugeiconsIcon
-                    icon={FloppyDiskIcon}
-                    data-icon="save"
-                    size={HOVER_CARD.compactIconSize}
-                    strokeWidth={HOVER_CARD.iconStrokeWidth}
-                  />
-                </button>
+                />
               )}
             </div>
           </HoverCardRow>

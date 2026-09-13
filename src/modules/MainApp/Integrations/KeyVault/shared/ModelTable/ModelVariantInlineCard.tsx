@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
 import ModelPropertiesDropdown from "@src/components/ModelPropertiesDropdown";
 import Tooltip from "@src/components/Tooltip";
@@ -341,14 +342,16 @@ export default function ModelVariantInlineCard({
         }${selectable ? " cursor-pointer hover:bg-fill-2" : ""}`;
 
         const pill = selectable ? (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             onClick={() => onPick?.(variant.model)}
             className={pillClass}
             aria-pressed={isSelected}
           >
             {pillContent}
-          </button>
+          </Button>
         ) : (
           <span className={pillClass}>{pillContent}</span>
         );
@@ -493,9 +496,11 @@ export default function ModelVariantInlineCard({
             onChangeDefaultVariant?.(canonicalBaseModel, modelId)
           }
           renderTrigger={({ ref, onClick, ariaExpanded }) => (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               ref={ref}
-              type="button"
+              htmlType="button"
               onClick={onClick}
               aria-expanded={ariaExpanded}
               aria-label="Edit default variant"
@@ -508,7 +513,7 @@ export default function ModelVariantInlineCard({
                 size={12}
                 className="text-text-3"
               />
-            </button>
+            </Button>
           )}
         />
       </div>

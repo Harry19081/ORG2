@@ -11,6 +11,7 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubChecksSummary } from "@src/api/tauri/github";
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -62,22 +63,27 @@ function PrCheckRow({ item, onOpenDetails }: PrCheckRowProps): React.ReactNode {
         ) : null}
       </div>
       {item.detailsUrl ? (
-        <button
-          type="button"
-          className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded text-text-3 transition-colors hover:bg-button-hover-no-drop hover:text-text-1"
+        <Button
+          variant="tertiary"
+          appearance="soft-no-drop"
+          size="mini"
+          iconOnly
+          icon={
+            <HugeiconsIcon
+              icon={ArrowUpRight01Icon}
+              data-icon="arrow-up-right"
+              size={DROPDOWN_ITEM.iconSize}
+            />
+          }
+          htmlType="button"
+          className="shrink-0 hover:bg-button-hover-no-drop hover:text-text-1"
           title={t("workstation.ci.viewDetails", "View check details")}
           aria-label={t("workstation.ci.viewDetails", "View check details")}
           onClick={(event) => {
             event.stopPropagation();
             onOpenDetails(item.detailsUrl as string);
           }}
-        >
-          <HugeiconsIcon
-            icon={ArrowUpRight01Icon}
-            data-icon="arrow-up-right"
-            size={DROPDOWN_ITEM.iconSize}
-          />
-        </button>
+        />
       ) : null}
     </div>
   );

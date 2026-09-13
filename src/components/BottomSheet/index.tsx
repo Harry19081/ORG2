@@ -7,6 +7,7 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@src/components/Button";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
 
@@ -106,8 +107,10 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       style={{ zIndex }}
       role="presentation"
     >
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className="orgii-bottom-sheet-scrim"
         aria-label={closeLabel}
         tabIndex={-1}
@@ -128,14 +131,16 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
               {title}
             </div>
             {showCloseButton && dismissible ? (
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 className="orgii-bottom-sheet-close"
                 aria-label={closeLabel}
                 onClick={onClose}
               >
                 <HugeiconsIcon icon={Cancel01Icon} size={18} />
-              </button>
+              </Button>
             ) : null}
           </div>
         ) : null}

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@src/components/Button";
 import DropdownSearch from "@src/components/Dropdown/DropdownSearch";
 import {
   DROPDOWN_CLASSES,
@@ -171,9 +172,11 @@ export function MobileModelListDropdown({
             const showSelected = selected || selectedByFamily;
             const label = formatModelLabel(option.id);
             return (
-              <button
+              <Button
+                layout="custom"
+                appearance="custom"
                 key={`${option.accountId}:${option.id}`}
-                type="button"
+                htmlType="button"
                 role="option"
                 disabled={patching}
                 {...keyboard.getItemProps(index)}
@@ -198,7 +201,7 @@ export function MobileModelListDropdown({
                 <span className="relative z-10 ml-1 shrink-0 truncate text-[12px] text-text-3">
                   {option.accountLabel}
                 </span>
-              </button>
+              </Button>
             );
           })
         )}

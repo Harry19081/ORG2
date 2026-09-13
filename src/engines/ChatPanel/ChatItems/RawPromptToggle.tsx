@@ -20,6 +20,7 @@ import React, { memo, useCallback, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import {
   CHAT_BUBBLE_TOOLBAR_BUTTON_CLASS,
   ChatBubbleCopyButton,
@@ -160,9 +161,22 @@ const RawPromptToggleComponent: React.FC<RawPromptToggleProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="mini"
+        aria-pressed={isOpen}
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={FirstBracketIcon}
+            data-icon="braces"
+            size={14}
+            strokeWidth={1.75}
+          />
+        }
         ref={buttonRef}
-        type="button"
+        htmlType="button"
         data-testid="chat-message-raw-prompt-toggle"
         title={label}
         aria-label={label}
@@ -172,14 +186,7 @@ const RawPromptToggleComponent: React.FC<RawPromptToggleProps> = ({
           isOpen ? "bg-fill-2 text-text-1" : "text-text-3 hover:text-text-1"
         }`}
         onClick={handleClick}
-      >
-        <HugeiconsIcon
-          icon={FirstBracketIcon}
-          data-icon="braces"
-          size={14}
-          strokeWidth={1.75}
-        />
-      </button>
+      />
 
       {isOpen &&
         isPositioned &&

@@ -5,6 +5,7 @@ import type {
   UsageRoundRow,
   UsageSessionSort,
 } from "@src/api/tauri/usageDashboard";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import SettingsTable, {
   type SettingsTableColumn,
@@ -99,15 +100,17 @@ export default function UsageRoundsTable({
         key: "session",
         label: t("usage.roundsTable.session"),
         renderCell: (record) => (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             onClick={() => onSelectSession(record.sessionId)}
             title={t("usage.roundsTable.filterBySession")}
             className="flex items-center gap-1.5 truncate text-left text-text-1 hover:text-primary-6"
           >
             <BucketIcon bucket={record.bucket} size={14} />
             <span className="max-w-[220px] truncate">{record.sessionName}</span>
-          </button>
+          </Button>
         ),
       },
       {

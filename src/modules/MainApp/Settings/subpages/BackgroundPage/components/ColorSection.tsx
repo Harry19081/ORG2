@@ -7,6 +7,7 @@ import { SectionRow } from "@/src/modules/shared/layouts/SectionLayout";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import SharedButton from "@src/components/Button";
 import { BACKGROUND_COLOR_PRESETS } from "@src/config/appearance/backgroundColors";
 import { normalizeHexColor } from "@src/config/appearance/backgroundConfig";
 import { Add01Icon, Cancel01Icon, HugeiconsIcon } from "@src/icons";
@@ -64,9 +65,11 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
           const isSelected = config.backgroundColorId === preset.id;
 
           return (
-            <button
+            <SharedButton
+              layout="custom"
+              appearance="custom"
               key={preset.id}
-              type="button"
+              htmlType="button"
               title={preset.description}
               className={`${SWATCH_BASE} ${isSelected ? SWATCH_SELECTED : SWATCH_IDLE}`}
               style={{ backgroundColor: `var(${preset.cssVar})` }}
@@ -81,8 +84,10 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
 
           return (
             <div key={hex} className="group relative shrink-0">
-              <button
-                type="button"
+              <SharedButton
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 title={hex}
                 className={`${SWATCH_BASE} ${isSelected ? SWATCH_SELECTED : SWATCH_IDLE}`}
                 style={{ backgroundColor: hex }}

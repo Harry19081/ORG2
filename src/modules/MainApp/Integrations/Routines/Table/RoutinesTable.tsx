@@ -7,6 +7,7 @@ import type {
   RoutineFire,
 } from "@src/api/http/project";
 import { projectApi } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -122,9 +123,12 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
             {new Date(fire.firedAt).toLocaleString()}
           </span>
           {fire.sessionId && (
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 text-primary-6 hover:underline"
+            <Button
+              variant="primary"
+              appearance="ghost"
+              size="inline"
+              htmlType="button"
+              className="gap-1 hover:underline"
               onClick={(event) => {
                 event.stopPropagation();
                 void openResult({ sessionId: fire.sessionId }).catch(() =>
@@ -135,19 +139,25 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
                   )
                 );
               }}
+              icon={
+                <HugeiconsIcon
+                  icon={SquareArrowUpRight02Icon}
+                  data-icon="external-link"
+                  size={11}
+                />
+              }
+              iconPosition="right"
             >
               {t("routineFields.openSession")}
-              <HugeiconsIcon
-                icon={SquareArrowUpRight02Icon}
-                data-icon="external-link"
-                size={11}
-              />
-            </button>
+            </Button>
           )}
           {fire.workItemId && (
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 text-primary-6 hover:underline"
+            <Button
+              variant="primary"
+              appearance="ghost"
+              size="inline"
+              htmlType="button"
+              className="gap-1 hover:underline"
               onClick={(event) => {
                 event.stopPropagation();
                 void openResult({
@@ -161,14 +171,17 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
                   )
                 );
               }}
+              icon={
+                <HugeiconsIcon
+                  icon={SquareArrowUpRight02Icon}
+                  data-icon="external-link"
+                  size={11}
+                />
+              }
+              iconPosition="right"
             >
               {t("routineFields.openWorkItem")}
-              <HugeiconsIcon
-                icon={SquareArrowUpRight02Icon}
-                data-icon="external-link"
-                size={11}
-              />
-            </button>
+            </Button>
           )}
           {fire.error && (
             <span className="w-full pl-4 wrap-break-word text-danger-6">

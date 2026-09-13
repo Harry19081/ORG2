@@ -292,12 +292,15 @@ const CursorSessionSetup: React.FC<CursorSessionSetupProps> = ({
                   {t("keyVault.failedToLoadBrowser")}
                 </div>
                 <div className="mb-4 text-[12px] text-text-3">{error}</div>
-                <button
+                <Button
+                  variant="primary"
+                  appearance="solid"
+                  size="default"
                   onClick={startCapture}
-                  className="rounded-lg bg-primary-6 px-4 py-2 text-sm font-medium text-text-white transition-colors hover:bg-primary-7"
+                  className="text-sm font-medium text-text-white hover:bg-primary-7"
                 >
                   {t("common:actions.retry")}
-                </button>
+                </Button>
               </div>
             )}
           </div>

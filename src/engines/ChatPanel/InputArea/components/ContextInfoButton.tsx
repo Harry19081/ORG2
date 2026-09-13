@@ -327,7 +327,9 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
     return (
       <>
         {variant === "corner" ? (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             ref={triggerRef}
             data-testid="context-info-button"
             className={`flex h-[28px] shrink-0 items-center gap-1.5 rounded-full text-text-3 transition-colors duration-200 ${triggerSurfaceClass} ${compact ? "w-[28px] justify-center px-0" : "px-2"}`}
@@ -343,9 +345,11 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
                 {percentage.toFixed(0)}%
               </span>
             )}
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             ref={triggerRef}
             data-testid="context-info-button"
             className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-text-3 transition-colors duration-150 hover:text-text-2 ${triggerSurfaceClass}`}
@@ -354,7 +358,7 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
             aria-expanded={panelPos !== null}
           >
             <ProgressRing percentage={displayPct} tone={ringTone} />
-          </button>
+          </Button>
         )}
 
         {panelPos &&
@@ -472,14 +476,16 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
               {manualCompactSupported && (
                 <div className="border-t border-border-2 bg-fill-1/30 px-3.5 py-2">
                   <div className="flex items-center justify-between px-1 py-1">
-                    <button
-                      type="button"
+                    <Button
+                      layout="custom"
+                      appearance="custom"
+                      htmlType="button"
                       onClick={() => setManualCompactOpen((open) => !open)}
                       aria-expanded={manualCompactOpen}
                       className="flex-1 self-stretch text-left text-[13px] font-semibold text-text-1"
                     >
                       {t("contextInfo.manualCompactSectionTitle")}
-                    </button>
+                    </Button>
                     <Button
                       variant="tertiary"
                       size="small"

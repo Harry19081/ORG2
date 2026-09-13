@@ -35,8 +35,10 @@ export default function WikiBrowser() {
             />
           </div>
           {results.map((entry) => (
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               key={entry.id}
               aria-current={article?.id === entry.id ? "page" : undefined}
               onClick={() => setSelectedId(entry.id)}
@@ -48,7 +50,7 @@ export default function WikiBrowser() {
               <span className={SESSION_ROW_PRESENTATION.title}>
                 {entry.title}
               </span>
-            </button>
+            </Button>
           ))}
         </nav>
         <div

@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from "react";
 
 import type { GitCommitInfo, GitCommitPerson } from "@src/api/http/git/types";
+import Button from "@src/components/Button";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { PRIMARY_SIDEBAR_HOVER } from "@src/config/workstation/tokens";
 import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
@@ -111,8 +112,10 @@ function GitCommitRowComponent<TCommit extends GitCommitRowBaseCommit>({
   const graphWidth = svgWidth ?? LANE_WIDTH;
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className={`group flex w-full items-center gap-1 pr-3 pl-2 text-left transition-colors ${
         cursorReset || isSelected ? "cursor-default" : "cursor-pointer"
       } ${isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row}`}
@@ -141,7 +144,7 @@ function GitCommitRowComponent<TCommit extends GitCommitRowBaseCommit>({
           )}
         </div>
       </div>
-    </button>
+    </Button>
   );
 }
 

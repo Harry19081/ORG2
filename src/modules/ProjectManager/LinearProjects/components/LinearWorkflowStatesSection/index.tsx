@@ -166,23 +166,29 @@ const LinearWorkflowStatesSection: React.FC<
         </select>
       </div>
       <div className="flex justify-end gap-1">
-        <button
-          type="button"
+        <Button
+          variant="tertiary"
+          appearance="ghost"
+          size="small"
+          htmlType="button"
           onClick={resetDraft}
-          className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-text-2 hover:bg-fill-2"
+          className="gap-1 text-xs hover:bg-fill-2"
+          icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={13} />}
         >
-          <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={13} />
           {t("common:actions.cancel")}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="primary"
+          appearance="solid"
+          size="small"
+          htmlType="button"
           onClick={mode === "create" ? handleSaveCreate : handleSaveEdit}
           disabled={!canSaveDraft || savingStateId !== null}
-          className="inline-flex h-7 items-center gap-1 rounded-md bg-primary-6 px-2 text-xs text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="gap-1 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+          icon={<HugeiconsIcon icon={Tick01Icon} data-icon="check" size={13} />}
         >
-          <HugeiconsIcon icon={Tick01Icon} data-icon="check" size={13} />
           {t("common:actions.save")}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -210,15 +216,19 @@ const LinearWorkflowStatesSection: React.FC<
               />
             }
           />
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="mini"
+            aria-label={t("linearProjects.statusPanel.addStatus")}
+            iconOnly
+            icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
+            htmlType="button"
             onClick={startCreate}
             disabled={!team}
-            className="inline-flex h-6 w-6 items-center justify-center rounded-md text-text-3 hover:bg-fill-2 hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-50"
+            className="hover:bg-fill-2 hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-50"
             title={t("linearProjects.statusPanel.addStatus")}
-          >
-            <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />
-          </button>
+          />
         </div>
       </div>
 
@@ -258,31 +268,43 @@ const LinearWorkflowStatesSection: React.FC<
                         : t("linearProjects.unknownState")}
                     </div>
                   </div>
-                  <button
-                    type="button"
+                  <Button
+                    variant="tertiary"
+                    appearance="soft-no-drop"
+                    size="mini"
+                    aria-label={t("common:actions.edit")}
+                    iconOnly
+                    icon={
+                      <HugeiconsIcon
+                        icon={Pen01Icon}
+                        data-icon="pencil"
+                        size={12}
+                      />
+                    }
+                    htmlType="button"
                     onClick={() => startEdit(state)}
-                    className="hidden h-6 w-6 items-center justify-center rounded-md text-text-3 group-hover:inline-flex hover:bg-fill-2 hover:text-text-1"
+                    className="hidden group-hover:inline-flex hover:bg-fill-2 hover:text-text-1"
                     title={t("common:actions.edit")}
-                  >
-                    <HugeiconsIcon
-                      icon={Pen01Icon}
-                      data-icon="pencil"
-                      size={12}
-                    />
-                  </button>
-                  <button
-                    type="button"
+                  />
+                  <Button
+                    variant="danger"
+                    appearance="soft-no-drop"
+                    size="mini"
+                    aria-label={t("linearProjects.statusPanel.archiveStatus")}
+                    iconOnly
+                    icon={
+                      <HugeiconsIcon
+                        icon={Delete02Icon}
+                        data-icon="trash-2"
+                        size={12}
+                      />
+                    }
+                    htmlType="button"
                     onClick={() => void onArchiveState(state.id)}
                     disabled={isSaving}
-                    className="hover:text-danger-7 hidden h-6 w-6 items-center justify-center rounded-md text-text-3 group-hover:inline-flex hover:bg-danger-1 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="hover:text-danger-7 hidden group-hover:inline-flex hover:bg-danger-1 disabled:cursor-not-allowed disabled:opacity-50"
                     title={t("linearProjects.statusPanel.archiveStatus")}
-                  >
-                    <HugeiconsIcon
-                      icon={Delete02Icon}
-                      data-icon="trash-2"
-                      size={12}
-                    />
-                  </button>
+                  />
                 </div>
                 {isEditing && renderDraftEditor("edit")}
               </div>

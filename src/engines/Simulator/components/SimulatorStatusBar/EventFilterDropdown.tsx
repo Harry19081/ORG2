@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import {
   DROPDOWN_CLASSES,
@@ -111,9 +112,11 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         ref={triggerRef as React.Ref<HTMLButtonElement>}
-        type="button"
+        htmlType="button"
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -139,7 +142,7 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
             {triggerLabel}
           </span>
         )}
-      </button>
+      </Button>
       {isOpen &&
         isPositioned &&
         createPortal(

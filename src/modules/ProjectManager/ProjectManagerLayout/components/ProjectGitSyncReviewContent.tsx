@@ -183,9 +183,11 @@ export const ProjectGitSyncReviewContent: React.FC<
             {conflicts.map((conflict) => {
               const active = selectedConflict?.id === conflict.id;
               return (
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   key={conflict.id}
-                  type="button"
+                  htmlType="button"
                   className={`flex w-full flex-col rounded-md px-2 py-2 text-left transition-colors ${
                     active
                       ? "bg-fill-3 text-text-1"
@@ -199,7 +201,7 @@ export const ProjectGitSyncReviewContent: React.FC<
                   <span className="mt-0.5 truncate text-xs text-text-4">
                     {conflict.relative_path}
                   </span>
-                </button>
+                </Button>
               );
             })}
           </div>

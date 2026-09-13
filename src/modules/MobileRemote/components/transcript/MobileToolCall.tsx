@@ -481,8 +481,10 @@ export function MobileToolCall({
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className="block w-full min-w-0 border-0 bg-transparent p-0 text-left focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
       aria-haspopup="dialog"
       aria-expanded={detailsOpen}
@@ -494,7 +496,7 @@ export function MobileToolCall({
       data-tool-call-action="open-details"
     >
       {header}
-    </button>
+    </Button>
   );
 }
 
@@ -649,8 +651,10 @@ export function MobileToolDetailSheet({
                     }`}
                     data-mobile-file-target={target.filePath}
                   >
-                    <button
-                      type="button"
+                    <Button
+                      layout="custom"
+                      appearance="custom"
+                      htmlType="button"
                       className="flex min-w-0 flex-1 items-center gap-2 border-0 bg-transparent p-0 text-left focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
                       onClick={() => setSelectedTargetIndex(target.targetIndex)}
                       aria-pressed={selected}
@@ -668,7 +672,7 @@ export function MobileToolDetailSheet({
                           {target.line ? `:${target.line}` : ""}
                         </span>
                       </span>
-                    </button>
+                    </Button>
                     <Button
                       size="small"
                       variant="primary"

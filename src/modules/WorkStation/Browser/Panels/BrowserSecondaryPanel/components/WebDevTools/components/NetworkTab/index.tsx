@@ -6,14 +6,12 @@
 import React, { memo, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
-import {
-  HEADER_BUTTON,
-  HEADER_ICON_SIZE,
-} from "@src/config/workstation/tokens";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { BrushCleaningIcon, HugeiconsIcon } from "@src/icons";
 
 import type {
@@ -158,18 +156,22 @@ export const NetworkTab: React.FC<NetworkTabProps> = memo(
 
           {/* Clear button */}
           <ToolbarTooltip label={t("tooltips.clearNetworkLogs")}>
-            <button
-              type="button"
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="sidebar"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={BrushCleaningIcon}
+                  data-icon="brush-cleaning"
+                  size={HEADER_ICON_SIZE.sm}
+                />
+              }
+              htmlType="button"
               onClick={onClear}
-              className={HEADER_BUTTON.actionTreeRow}
               aria-label={t("tooltips.clearNetworkLogs")}
-            >
-              <HugeiconsIcon
-                icon={BrushCleaningIcon}
-                data-icon="brush-cleaning"
-                size={HEADER_ICON_SIZE.sm}
-              />
-            </button>
+            />
           </ToolbarTooltip>
         </div>
 

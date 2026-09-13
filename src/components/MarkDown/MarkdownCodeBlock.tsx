@@ -13,6 +13,7 @@
 import React, { Suspense, lazy, memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
 import {
   Copy01Icon,
@@ -92,44 +93,54 @@ const CodeBlock = memo<CodeBlockProps>(
       <div className="code-block-wrapper" style={CODE_WRAPPER_STYLE}>
         <div className="code-block-toolbar">
           {openFilePath && (
-            <button
-              type="button"
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="mini"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={SquareArrowUpRight02Icon}
+                  data-icon="square-arrow-out-up-right"
+                  size={14}
+                  strokeWidth={1.75}
+                />
+              }
+              htmlType="button"
               title={openLabel}
               aria-label={openLabel}
-              className="code-block-open-button inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-fill-2 p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
+              className="code-block-open-button hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
               onClick={handleOpenFile}
-            >
-              <HugeiconsIcon
-                icon={SquareArrowUpRight02Icon}
-                data-icon="square-arrow-out-up-right"
-                size={14}
-                strokeWidth={1.75}
-              />
-            </button>
+            />
           )}
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="mini"
+            iconOnly
+            icon={
+              copied ? (
+                <HugeiconsIcon
+                  icon={Tick01Icon}
+                  data-icon="check"
+                  size={14}
+                  strokeWidth={1.75}
+                />
+              ) : (
+                <HugeiconsIcon
+                  icon={Copy01Icon}
+                  data-icon="copy"
+                  size={14}
+                  strokeWidth={1.75}
+                />
+              )
+            }
+            htmlType="button"
             title={copyLabel}
             aria-label={copyLabel}
-            className="code-block-copy-button inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-fill-2 p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
+            className="code-block-copy-button hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
             onClick={handleCopy}
-          >
-            {copied ? (
-              <HugeiconsIcon
-                icon={Tick01Icon}
-                data-icon="check"
-                size={14}
-                strokeWidth={1.75}
-              />
-            ) : (
-              <HugeiconsIcon
-                icon={Copy01Icon}
-                data-icon="copy"
-                size={14}
-                strokeWidth={1.75}
-              />
-            )}
-          </button>
+          />
         </div>
         <MarkdownFallbackBoundary
           label="Markdown code highlighter"

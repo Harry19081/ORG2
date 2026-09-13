@@ -9,6 +9,7 @@
  */
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
 import { PILL_CONTROL_HOVER_CLASS } from "@src/components/CompoundPill/config";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import ContextInfoButton from "@src/engines/ChatPanel/InputArea/components/ContextInfoButton";
@@ -68,8 +69,10 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
 
     const addButton =
       hideAddButton || !onAddContent ? null : (
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onAddContent}
           onMouseDown={(e) => e.preventDefault()}
           className={[
@@ -86,7 +89,7 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
             strokeWidth={1.75}
             className="text-text-1"
           />
-        </button>
+        </Button>
       );
 
     const toolbarRow = (

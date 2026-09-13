@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 
 import FolderIcon from "@src/assets/fileTypeIcons/folder-base.svg";
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { Placeholder } from "@src/components/Placeholder";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
@@ -218,13 +219,23 @@ export const BaseFileSearchPanel: React.FC<BaseFileSearchPanelProps> = memo(
                 </div>
               )}
               {showCloseButton && (
-                <button
+                <Button
+                  variant="tertiary"
+                  appearance="soft"
+                  size="mini"
+                  aria-label={t("tooltips.closeEsc")}
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      data-icon="x"
+                      size={14}
+                    />
+                  }
                   onClick={onClose}
-                  className="flex items-center justify-center rounded p-1 text-text-3 transition-colors hover:bg-fill-3"
+                  className="hover:bg-fill-3"
                   title={t("tooltips.closeEsc")}
-                >
-                  <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
-                </button>
+                />
               )}
             </div>
           ) : (

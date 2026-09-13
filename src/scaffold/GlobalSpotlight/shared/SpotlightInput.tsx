@@ -6,6 +6,7 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import {
   Cancel01Icon,
@@ -106,14 +107,18 @@ export const SpotlightInput: React.FC<SpotlightInputProps> = ({
         ) : null}
 
         {value ? (
-          <button
-            type="button"
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+          <Button
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="small"
+            shape="round"
+            iconOnly
+            icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />}
+            htmlType="button"
+            className="shrink-0 hover:bg-fill-2 hover:text-text-1"
             aria-label={t("common:tooltips.clearSearch")}
             onClick={handleResetSearch}
-          >
-            <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
-          </button>
+          />
         ) : null}
       </div>
     </div>

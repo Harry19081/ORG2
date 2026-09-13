@@ -14,6 +14,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { repoApi } from "@src/api/tauri/repo";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import { HugeiconsIcon } from "@src/icons";
 import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
@@ -432,17 +433,21 @@ export const WorkingDirectoryPalette: React.FC<
 
   const renderRepoTrashAction = useCallback(
     (repo: RepoItem): React.ReactNode => (
-      <button
-        type="button"
+      <Button
+        variant="danger"
+        appearance="soft"
+        size="mini"
+        aria-label={t("actions.removeFromOrgii", "Remove from ORG2")}
+        iconOnly
+        icon={<HugeiconsIcon icon={ICONS.removeRepo} size={14} />}
+        htmlType="button"
         onClick={(e) => {
           e.stopPropagation();
           void handleRemoveRepo(repo);
         }}
-        className="flex items-center justify-center rounded-md p-1 text-danger-6 transition-colors hover:bg-danger-6/10"
+        className="hover:bg-danger-6/10"
         title={t("actions.removeFromOrgii", "Remove from ORG2")}
-      >
-        <HugeiconsIcon icon={ICONS.removeRepo} size={14} />
-      </button>
+      />
     ),
     [handleRemoveRepo, t]
   );

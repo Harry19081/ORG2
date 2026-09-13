@@ -48,7 +48,7 @@ export function IssuePersonalFilterDropdown({
       value={selectedFilters}
       mode="multiple"
       position="bottom-end"
-      className={`${DROPDOWN_CLASSES.panelAnimated} ${DROPDOWN_WIDTHS.menuClass}`}
+      className={`${DROPDOWN_CLASSES.panelAnimated} ${DROPDOWN_WIDTHS.fileTreeClass}`}
       onSelect={(value) => onSelect(Array.isArray(value) ? value : [value])}
     >
       <Button
@@ -189,8 +189,10 @@ export function ManagedIssueActionsCell({
   const closeMenu = useCallback(() => setMenuVisible(false), []);
   const droplist = (
     <div className={`${DROPDOWN_CLASSES.menuPanelBase} min-w-[180px]`}>
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className={DROPDOWN_CLASSES.menuActionItem}
         onClick={() => {
           onOpenIssueInBrowser(issue);
@@ -198,7 +200,7 @@ export function ManagedIssueActionsCell({
         }}
       >
         <span className="min-w-0 flex-1 truncate">{openInBrowserLabel}</span>
-      </button>
+      </Button>
     </div>
   );
 

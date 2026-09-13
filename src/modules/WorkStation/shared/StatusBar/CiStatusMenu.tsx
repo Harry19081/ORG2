@@ -14,6 +14,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -174,22 +175,27 @@ const CheckRow: React.FC<CheckRowProps> = memo(({ item, onOpenDetails }) => {
       */}
       <div className="flex shrink-0 items-center gap-0.5">
         {item.detailsUrl && (
-          <button
-            type="button"
-            className="inline-flex h-6 w-6 items-center justify-center rounded text-text-3 transition-colors hover:bg-button-hover-no-drop hover:text-text-1"
+          <Button
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="mini"
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={ArrowUpRight01Icon}
+                data-icon="arrow-up-right"
+                size={MENU_ICON_SIZE}
+              />
+            }
+            htmlType="button"
+            className="hover:bg-button-hover-no-drop hover:text-text-1"
             title={t("workstation.ci.viewDetails")}
             aria-label={t("workstation.ci.viewDetails")}
             onClick={(event) => {
               event.stopPropagation();
               onOpenDetails(item.detailsUrl as string);
             }}
-          >
-            <HugeiconsIcon
-              icon={ArrowUpRight01Icon}
-              data-icon="arrow-up-right"
-              size={MENU_ICON_SIZE}
-            />
-          </button>
+          />
         )}
       </div>
     </div>
@@ -358,14 +364,16 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
                   size={MENU_ICON_SIZE}
                   className="shrink-0 text-text-3"
                 />
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className="min-w-0 flex-1 truncate text-left text-text-1 hover:underline"
                   title={t("workstation.ci.openPullRequest")}
                   onClick={handleOpenPullRequest}
                 >
                   {t("git.pr.linkedBranch", { number: pr.number })}
-                </button>
+                </Button>
                 <span className="shrink-0 text-text-3">{statusLabel}</span>
               </div>
 
@@ -397,8 +405,10 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
               </div>
 
               <div className={STATUS_BAR_TOKENS.menuFooterClass}>
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className={classNames(
                     DROPDOWN_CLASSES.menuActionItem,
                     "min-w-0 flex-1 disabled:cursor-default disabled:text-text-3"
@@ -422,7 +432,7 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
                       ? t("workstation.ci.refreshing")
                       : t("workstation.ci.refresh")}
                   </span>
-                </button>
+                </Button>
                 {lastFetchLabel && (
                   <span
                     className={STATUS_BAR_TOKENS.menuTimestampClass}

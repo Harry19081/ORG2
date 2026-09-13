@@ -7,6 +7,7 @@
  */
 import React, { forwardRef } from "react";
 
+import Button from "@src/components/Button";
 import { ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 import { classNames } from "@src/util/ui/classNames";
 
@@ -48,9 +49,11 @@ export const BreadcrumbPillNavTrigger = forwardRef<
         ? "font-medium text-text-1 hover:text-text-2"
         : "text-text-2";
     return (
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         ref={ref}
-        type="button"
+        htmlType="button"
         disabled={disabled}
         className={classNames(
           BREADCRUMB_PILL_NAV_TOKENS.triggerBase,
@@ -71,7 +74,7 @@ export const BreadcrumbPillNavTrigger = forwardRef<
             isOpen ? "rotate-180 text-primary-6" : "text-text-2"
           )}
         />
-      </button>
+      </Button>
     );
   }
 );

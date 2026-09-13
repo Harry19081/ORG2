@@ -7,11 +7,11 @@
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import {
   SEARCH_WRAPPER_SIDEBAR,
   searchControlSingleLineInputStyle,
 } from "@src/components/SearchInput/searchControlInputStyles";
-import { HEADER_BUTTON } from "@src/config/workstation/tokens";
 import { BookOpen01Icon, HugeiconsIcon } from "@src/icons";
 
 // ============================================
@@ -93,18 +93,25 @@ export const SearchFilters: React.FC<SearchFiltersProps> = memo(
               spellCheck={false}
             />
             {onOnlyOpenFilesToggle && (
-              <button
-                type="button"
+              <Button
+                variant="tertiary"
+                appearance="soft"
+                size="sidebar"
+                aria-pressed={onlyOpenFiles}
+                aria-label={t("tooltips.searchInOpenEditors")}
+                iconOnly
+                icon={
+                  <HugeiconsIcon
+                    icon={BookOpen01Icon}
+                    data-icon="book-open"
+                    size={14}
+                  />
+                }
+                htmlType="button"
                 onClick={onOnlyOpenFilesToggle}
-                className={`${HEADER_BUTTON.action} shrink-0 self-center ${onlyOpenFiles ? "text-primary-6" : ""}`}
+                className={`shrink-0 self-center ${onlyOpenFiles ? "text-primary-6" : ""}`}
                 title={t("tooltips.searchInOpenEditors")}
-              >
-                <HugeiconsIcon
-                  icon={BookOpen01Icon}
-                  data-icon="book-open"
-                  size={14}
-                />
-              </button>
+              />
             )}
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { Cell, Row, flexRender } from "@tanstack/react-table";
 import React, { useState } from "react";
 
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import {
   ArrowDown01Icon,
@@ -257,9 +258,22 @@ export function TableBody<T>({
                 <td className="table-td table-expand-cell">
                   <div className="flex h-full items-center justify-end">
                     {canExpand ? (
-                      <button
-                        type="button"
-                        className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded text-text-3 transition-colors hover:text-text-1"
+                      <Button
+                        variant="tertiary"
+                        appearance="ghost"
+                        size="sidebar"
+                        iconOnly
+                        icon={
+                          <HugeiconsIcon
+                            icon={expandIcon}
+                            data-icon={expandIconName}
+                            size={14}
+                            className="shrink-0"
+                          />
+                        }
+                        style={{ width: 14, height: 14 }}
+                        htmlType="button"
+                        className="shrink-0 hover:text-text-1"
                         onClick={(event) => {
                           event.stopPropagation();
                           event.currentTarget.blur();
@@ -268,14 +282,7 @@ export function TableBody<T>({
                         }}
                         aria-label={isExpanded ? "Collapse row" : "Expand row"}
                         aria-expanded={isExpanded}
-                      >
-                        <HugeiconsIcon
-                          icon={expandIcon}
-                          data-icon={expandIconName}
-                          size={14}
-                          className="shrink-0"
-                        />
-                      </button>
+                      />
                     ) : (
                       <span
                         className="inline-flex h-3.5 w-3.5 shrink-0"

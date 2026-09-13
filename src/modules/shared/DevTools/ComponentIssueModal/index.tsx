@@ -2,6 +2,7 @@ import { useSetAtom } from "jotai";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 
+import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
@@ -222,9 +223,14 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
         <div className="component-issue-modal-header">
           <div className="component-issue-modal-header-top">
             <div className="component-issue-modal-title">Component Issue</div>
-            <button className="component-issue-close-btn" onClick={onClose}>
+            <Button
+              layout="custom"
+              appearance="custom"
+              className="component-issue-close-btn"
+              onClick={onClose}
+            >
               <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={16} />
-            </button>
+            </Button>
           </div>
           <div className="component-issue-search-wrapper">
             <Input
@@ -244,22 +250,26 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
                     ? `${currentMatchIndex + 1}/${matchCount}`
                     : "0"}
                 </span>
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   className="component-issue-nav-btn"
                   onClick={() => navigateMatch("prev")}
                   disabled={matchCount === 0}
                   title="Previous (Shift+Tab)"
                 >
                   ↑
-                </button>
-                <button
+                </Button>
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   className="component-issue-nav-btn"
                   onClick={() => navigateMatch("next")}
                   disabled={matchCount === 0}
                   title="Next (Tab)"
                 >
                   ↓
-                </button>
+                </Button>
               </div>
             )}
           </div>

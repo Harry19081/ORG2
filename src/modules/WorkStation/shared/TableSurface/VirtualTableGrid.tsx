@@ -8,6 +8,8 @@ import {
 } from "react";
 import type React from "react";
 
+import Button from "@src/components/Button";
+
 import { TableSurfaceFooter } from "./TableSurfaceFooter";
 import { useTableClipboard } from "./hooks/useTableClipboard";
 import { useTableEditing } from "./hooks/useTableEditing";
@@ -391,9 +393,11 @@ export function VirtualTableGrid({
           const column = columns[columnIndex];
           const sorted = sortState?.columnId === column.id;
           return (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={`header-${column.id}`}
-              type="button"
+              htmlType="button"
               className={[
                 "table-surface__column-header",
                 onSortColumn ? "table-surface__column-header--sortable" : null,
@@ -422,7 +426,7 @@ export function VirtualTableGrid({
                   {sortState.direction === "asc" ? "↑" : "↓"}
                 </span>
               )}
-            </button>
+            </Button>
           );
         })}
 

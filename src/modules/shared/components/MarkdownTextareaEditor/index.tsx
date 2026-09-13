@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import type { PillIconType } from "@src/components/ComposerInput/types";
 import { serializePillNode } from "@src/components/ComposerInput/utils";
 import "@src/components/MarkdownFormattingToolbar/index.css";
@@ -575,9 +576,11 @@ const MarkdownTextareaEditor = forwardRef<
             onMouseDown={(event) => event.preventDefault()}
           >
             {actions.map(({ format, label, icon }) => (
-              <button
+              <Button
+                layout="custom"
+                appearance="custom"
                 key={format}
-                type="button"
+                htmlType="button"
                 className="toolbar-btn"
                 title={label}
                 aria-label={label}
@@ -586,7 +589,7 @@ const MarkdownTextareaEditor = forwardRef<
                 onClick={() => applyFormat(format)}
               >
                 {icon}
-              </button>
+              </Button>
             ))}
           </div>
           <Textarea

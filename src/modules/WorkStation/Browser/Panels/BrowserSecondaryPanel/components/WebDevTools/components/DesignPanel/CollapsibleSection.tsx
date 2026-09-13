@@ -6,6 +6,7 @@
  */
 import React, { memo, useEffect } from "react";
 
+import Button from "@src/components/Button";
 import { useCollapsible } from "@src/hooks/ui/useCollapsible";
 import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
@@ -96,7 +97,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
       <div className="mb-2 last:mb-0">
         {/* Header */}
         <div className="flex items-center gap-1.5 py-1.5">
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             onClick={handleToggle}
             className="flex flex-1 items-center gap-1.5 text-left"
           >
@@ -121,7 +124,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
             {rightContent && (
               <span className="text-[11px] text-text-3">{rightContent}</span>
             )}
-          </button>
+          </Button>
           {headerActions && (
             <div className="flex items-center">{headerActions}</div>
           )}

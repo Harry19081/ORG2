@@ -6,6 +6,7 @@
  */
 import React from "react";
 
+import Button from "@src/components/Button";
 import SessionHoverCard from "@src/components/SessionHoverCard";
 import {
   STATUS_COLORS,
@@ -76,7 +77,9 @@ const SpanningEventCard: React.FC<SpanningEventCardProps> = ({
 
   return (
     <SessionHoverCard sessionId={event.id} position="right-start">
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         onClick={handleClick}
         className={`flex h-full w-full items-center overflow-hidden px-2 text-left text-xs font-medium transition-all hover:brightness-110 ${
           isSelected ? "ring-2 ring-primary-6 ring-offset-1" : ""
@@ -88,7 +91,7 @@ const SpanningEventCard: React.FC<SpanningEventCardProps> = ({
         }}
       >
         <span className="truncate">{event.title}</span>
-      </button>
+      </Button>
     </SessionHoverCard>
   );
 };

@@ -284,10 +284,13 @@ const ConflictRowComponent: React.FC<ConflictRowProps> = ({
           </div>
         )}
       </div>
-      <button
-        type="button"
+      <Button
+        variant="tertiary"
+        appearance="ghost"
+        size="inline"
+        htmlType="button"
         onClick={() => setShowDiff((prev) => !prev)}
-        className="flex items-center gap-1 self-start text-[12px] text-text-3 hover:text-text-2"
+        className="gap-1 self-start text-[12px] hover:text-text-2"
       >
         {showDiff ? (
           <HugeiconsIcon
@@ -307,7 +310,7 @@ const ConflictRowComponent: React.FC<ConflictRowProps> = ({
             ? t("settings.sync.conflicts.actions.hideDiff")
             : t("settings.sync.conflicts.actions.showDiff")}
         </span>
-      </button>
+      </Button>
       {showDiff && (
         <div className="flex flex-col gap-2">
           {fieldEntries.map(([fieldName, delta]) => (

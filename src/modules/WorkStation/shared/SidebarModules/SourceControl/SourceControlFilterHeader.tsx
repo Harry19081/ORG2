@@ -224,8 +224,10 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
             <Dropdown
               droplist={
                 <div className={DROPDOWN_CLASSES.menuPanel}>
-                  <button
-                    type="button"
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    htmlType="button"
                     onClick={handleRefreshMenuClick}
                     className={DROPDOWN_CLASSES.menuActionItem}
                   >
@@ -238,7 +240,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                     <span>
                       {t("controlTower.diff.refresh", "Refresh Git status")}
                     </span>
-                  </button>
+                  </Button>
                 </div>
               }
               position="bottom-end"

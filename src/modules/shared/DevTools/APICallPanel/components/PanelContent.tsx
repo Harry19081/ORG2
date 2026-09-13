@@ -4,6 +4,7 @@
 import React, { useMemo, useState } from "react";
 import { Virtuoso } from "react-virtuoso";
 
+import Button from "@src/components/Button";
 import {
   ArrowDown01Icon,
   ArrowRight01Icon,
@@ -408,8 +409,10 @@ const ApiCallRow: React.FC<ApiCallRowProps> = ({
       className="grid min-h-8 items-center hover:bg-fill-1"
       style={{ gridTemplateColumns: API_CALL_GRID_TEMPLATE }}
     >
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className="flex h-full items-center justify-center text-text-3"
         aria-label={expanded ? "Collapse API call" : "Expand API call"}
         aria-expanded={expanded}
@@ -428,12 +431,14 @@ const ApiCallRow: React.FC<ApiCallRowProps> = ({
             size={13}
           />
         )}
-      </button>
+      </Button>
       <span className="truncate px-2 text-[11px] text-text-2">
         {call.method}
       </span>
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className="block overflow-hidden px-2 text-left text-[11px] text-ellipsis whitespace-nowrap text-primary-6"
         onClick={onToggle}
         title={call.fullUrl}
@@ -441,7 +446,7 @@ const ApiCallRow: React.FC<ApiCallRowProps> = ({
         {call.transport === "tauri"
           ? getApiCallTarget(call)
           : formatApiUrl(call.fullUrl)}
-      </button>
+      </Button>
       <span className="truncate px-2 text-[11px] text-text-2">
         {formatTime(call.timestamp)}
       </span>
@@ -481,8 +486,10 @@ const SortHeader: React.FC<SortHeaderProps> = ({
   sort,
   onSort,
 }) => (
-  <button
-    type="button"
+  <Button
+    layout="custom"
+    appearance="custom"
+    htmlType="button"
     className="flex h-full min-w-0 items-center gap-1 px-2 text-left text-[10px] font-semibold tracking-wide text-text-3 uppercase hover:text-text-1"
     onClick={() => onSort(column)}
   >
@@ -494,7 +501,7 @@ const SortHeader: React.FC<SortHeaderProps> = ({
       className={sort?.key === column ? "text-primary-6" : "opacity-50"}
       aria-hidden
     />
-  </button>
+  </Button>
 );
 
 const PanelContent: React.FC<PanelContentProps> = ({

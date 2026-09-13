@@ -13,6 +13,7 @@
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import type {
   SearchInputSurface,
   SearchInputVariant,
@@ -190,34 +191,46 @@ export const ReplaceInput: React.FC<ReplaceInputProps> = memo(
         </div>
 
         {onReplace && (
-          <button
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="sidebar"
+            aria-label={t("tooltips.replace")}
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={ReplaceIcon}
+                data-icon="replace"
+                size={iconSize}
+              />
+            }
             onClick={onReplace}
             disabled={disabled}
             className={actionButtonClass}
             style={actionButtonStyle}
             title={t("tooltips.replace")}
-          >
-            <HugeiconsIcon
-              icon={ReplaceIcon}
-              data-icon="replace"
-              size={iconSize}
-            />
-          </button>
+          />
         )}
         {onReplaceAll && (
-          <button
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="sidebar"
+            aria-label={t("tooltips.replaceAll")}
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={ReplaceAllIcon}
+                data-icon="replace-all"
+                size={iconSize}
+              />
+            }
             onClick={onReplaceAll}
             disabled={disabled}
             className={actionButtonClass}
             style={actionButtonStyle}
             title={t("tooltips.replaceAll")}
-          >
-            <HugeiconsIcon
-              icon={ReplaceAllIcon}
-              data-icon="replace-all"
-              size={iconSize}
-            />
-          </button>
+          />
         )}
       </div>
     );

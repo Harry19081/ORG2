@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Tooltip from "@src/components/Tooltip";
 import {
   HEADER_BUTTON,
@@ -139,21 +140,26 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
 
         {onAddItem && (
           <Tooltip content={addTitle} position="top" mouseEnterDelay={300}>
-            <button
-              type="button"
-              className={`${HEADER_BUTTON.actionTreeRow} mr-2 shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100`}
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="sidebar"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={Add01Icon}
+                  data-icon="plus"
+                  size={HEADER_ICON_SIZE.sm}
+                />
+              }
+              htmlType="button"
+              className={`mr-2 shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100`}
               aria-label={addTitle}
               onClick={(event) => {
                 event.stopPropagation();
                 onAddItem();
               }}
-            >
-              <HugeiconsIcon
-                icon={Add01Icon}
-                data-icon="plus"
-                size={HEADER_ICON_SIZE.sm}
-              />
-            </button>
+            />
           </Tooltip>
         )}
       </div>

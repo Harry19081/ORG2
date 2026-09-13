@@ -330,9 +330,11 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
               >
                 {activeTab === "edits" &&
                   commits.map((artifact) => (
-                    <button
+                    <Button
+                      layout="custom"
+                      appearance="custom"
                       key={`commit-${artifact.sha ?? artifact.url}`}
-                      type="button"
+                      htmlType="button"
                       onClick={() => openCommit(artifact)}
                       disabled={!artifact.sha && !artifact.shortSha}
                       title={artifact.sha ?? artifact.url}
@@ -352,13 +354,15 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                           {artifact.shortSha}
                         </span>
                       )}
-                    </button>
+                    </Button>
                   ))}
                 {activeTab === "edits" &&
                   pullRequests.map((artifact) => (
-                    <button
+                    <Button
+                      layout="custom"
+                      appearance="custom"
                       key={`pr-${artifact.url ?? artifact.prNumber}`}
-                      type="button"
+                      htmlType="button"
                       onClick={() => openPullRequest(artifact)}
                       disabled={!artifact.url}
                       title={artifact.url}
@@ -381,7 +385,7 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                         className="shrink-0 text-text-3"
                         aria-hidden
                       />
-                    </button>
+                    </Button>
                   ))}
                 {activeTab === "edits" &&
                   visibleFiles.map((file) => (
@@ -432,8 +436,10 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                   className="shrink-0"
                   data-testid="turn-metadata-pinned-controls"
                 >
-                  <button
-                    type="button"
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    htmlType="button"
                     onClick={() => setExpanded((previous) => !previous)}
                     className={`${STACK_ROW_BUTTON_CLASSES} text-text-3`}
                     data-testid="turn-metadata-expansion-toggle"
@@ -452,7 +458,7 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                             count: hiddenCount,
                           })}
                     </span>
-                  </button>
+                  </Button>
                 </div>
               ) : null}
             </div>

@@ -20,6 +20,7 @@ import React, {
 import { createPortal } from "react-dom";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import DropdownSearch from "@src/components/Dropdown/DropdownSearch";
 import HoverSafeSubmenuBridge from "@src/components/Dropdown/HoverSafeSubmenuBridge";
 import {
@@ -117,8 +118,10 @@ const DropdownRow: React.FC<DropdownRowProps> = ({
   };
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       data-dropdown-model-row-anchor
       data-testid={testId}
       {...keyboardProps}
@@ -152,7 +155,7 @@ const DropdownRow: React.FC<DropdownRowProps> = ({
           className="shrink-0 text-text-3"
         />
       )}
-    </button>
+    </Button>
   );
 };
 

@@ -6,7 +6,7 @@ This file orients Codex / orgii agents working in this repo. It tells you **whic
 > suite actually runs — live in `.github/CONTRIBUTING.md` under **Where tests live**.
 > This file does not restate them; it is about skill routing.
 
-This is **advisory**, not a hard contract. Use judgment based on PR size and risk.
+Skill routing is **advisory**; use judgment based on PR size and risk. Explicit implementation conventions and delivery contracts below still apply, including when an audit is skipped.
 
 ---
 
@@ -57,6 +57,19 @@ Review gate: any UI predicate introduced to hide malformed data must cite an exp
 ### UI copy conventions
 
 - Settings-row descriptions must not end in sentence-ending punctuation (`.` or `。`) in any locale. Internal punctuation between sentences is allowed.
+
+### Shared Button convention
+
+- Production React action buttons MUST use `Button` from `@src/components/Button`, or an existing reusable control built on it. Do not introduce raw `<button>` elements or `createElement("button", ...)` outside the shared Button implementation. Do not bypass this rule with clickable `div`/`span` elements, `role="button"`, or `<input type="button">`.
+- Read the current `ButtonProps` and presentation definitions in `src/components/Button/` before adding or changing button presentation. Match the surrounding toolbar, row, panel, or form through shared props instead of copying per-site button styling.
+- Choose `variant` for semantic importance and `appearance` for the surface: for example, `soft` for compact hover-fill actions, `soft-no-drop` for a transparent button layer, and `ghost` for text-color-only hover. Use the appropriate primary, secondary, tertiary, or destructive treatment for the action and its neighbors.
+- Match the surrounding dimensions with `size`: `sidebar` (20px), `mini` (24px), `small` (28px), `default` (32px), or `large` (40px). Use `inline` for text actions that inherit surrounding typography without a fixed height. Preserve intentional caller-owned geometry, including widths that collapse until hover; shared inline dimensions must not override that behavior.
+- For icon actions, use `iconOnly` with the glyph passed through `icon={...}`; default-layout `iconOnly` does not render children. Provide an accessible name such as `aria-label` and preserve useful tooltips.
+- Use `disabled`, `loading`, and `htmlType` rather than recreating their behavior. `htmlType` defaults to `"button"`; specify `"submit"` or `"reset"` when intended. Preserve refs, event propagation, keyboard behavior, and state semantics (`aria-pressed` for toggles, `aria-expanded` for disclosures).
+- Reserve `layout="custom"` and `appearance="custom"` for compound controls whose direct children, geometry, or token-based surface cannot be expressed through standard Button props, such as menu rows, switch tracks, tabs, or selectable cards. Document the concrete reason in the reusable component or audit report. Custom props are not a shortcut for ordinary actions; reuse or extend an existing control family instead of duplicating its styling at each call site.
+- Native buttons are allowed at genuine non-React boundaries, such as CodeMirror `GutterMarker.toDOM` and bootstrap fallback HTML, where rendering the React component is unavailable. Document why the boundary requires native DOM. These exceptions do not authorize raw buttons in React components. Test fixtures and displayed code examples are not production button sites.
+
+Before completing any change that adds or modifies action controls, inspect the changed production files and diff for raw button JSX, native button creation, and substitute clickable elements. Resolve new bypasses or document the concrete non-React exception. Use source/AST inspection to distinguish rendered controls from comments, fixtures, and example strings; a regex count alone is insufficient. This check applies even when `frontend-ui-audit` is skipped and is an author/review obligation, not an automatic lint or CI gate.
 
 ### Touching `*.tsx` files (UI work)
 

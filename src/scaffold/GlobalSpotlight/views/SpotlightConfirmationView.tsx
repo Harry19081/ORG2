@@ -8,6 +8,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import type { IconSvgElement } from "@src/icons";
 
 import type { UseConfirmationPageReturn } from "../hooks/core/types";
@@ -69,18 +70,24 @@ export const SpotlightConfirmationView: React.FC<
 
       {/* Actions */}
       <div className="flex items-center justify-between gap-3">
-        <button
+        <Button
+          variant="secondary"
+          appearance="outline"
+          size="mini"
           onClick={confirmationPage.back}
-          className="flex items-center gap-2 rounded-lg border border-border-2 px-4 py-2 text-[14px] text-text-1 hover:bg-fill-1"
+          className="gap-2 text-[14px] hover:bg-fill-1"
         >
           ← {t("actions.back")}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="primary"
+          appearance="solid"
+          size="default"
           onClick={confirmationPage.confirm}
-          className="flex items-center gap-2 rounded-lg bg-primary-6 px-4 py-2 text-[14px] text-text-white transition-colors hover:bg-primary-5"
+          className="gap-2 text-[14px] text-text-white hover:bg-primary-5"
         >
           {actionLabel} →
-        </button>
+        </Button>
       </div>
     </div>
   );

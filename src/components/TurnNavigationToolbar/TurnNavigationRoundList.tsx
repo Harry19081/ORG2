@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 
 export interface TurnNavigationRoundListItem {
@@ -26,9 +27,11 @@ const TurnNavigationRoundList: React.FC<TurnNavigationRoundListProps> = memo(
         {items.map((item) => {
           const isCurrent = item.pageIndex === currentPageIndex;
           return (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={item.id}
-              type="button"
+              htmlType="button"
               data-testid="turn-page-list-item"
               data-page-index={item.pageIndex}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left ${
@@ -45,7 +48,7 @@ const TurnNavigationRoundList: React.FC<TurnNavigationRoundListProps> = memo(
                   {item.timeLabel}
                 </span>
               ) : null}
-            </button>
+            </Button>
           );
         })}
       </div>
