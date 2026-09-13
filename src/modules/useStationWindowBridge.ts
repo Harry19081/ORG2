@@ -23,9 +23,14 @@ import { useEffect } from "react";
 
 import {
   STATION_WINDOW_CLOSED_EVENT,
+  STATION_WINDOW_MAIN_NAVIGATE_EVENT,
+  STATION_WINDOW_READY_EVENT,
+  type StationWindowMainNavigation,
   emitStationWindowSession,
 } from "@src/api/tauri/stationWindow";
 import { useTauriListen } from "@src/hooks/platform/useTauriListen";
+import { navigateApp } from "@src/router/navigateApp";
+import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import { restoreStationAfterWindowClosedAtom } from "@src/store/workstation/stationWindowAtoms";
 import { STATION_MODES } from "@src/types/ui/workstation";
@@ -57,10 +62,35 @@ export function useStationWindowBridge(): void {
   }, [enabled, store]);
 
   useTauriListen<string>(
+    STATION_WINDOW_READY_EVENT,
+    (label) => {
+      const mode = getStationWindowModeFromLabel(label);
+      if (mode)
+        void emitStationWindowSession(
+          mode,
+          store.get(workstationActiveSessionIdAtom)
+        ).catch(() => undefined);
+    },
+    { enabled }
+  );
+
+  useTauriListen<string>(
     STATION_WINDOW_CLOSED_EVENT,
     (label) => {
       const mode = getStationWindowModeFromLabel(label);
       if (mode) restoreStation(mode);
+    },
+    { enabled }
+  );
+
+  useTauriListen<StationWindowMainNavigation>(
+    STATION_WINDOW_MAIN_NAVIGATE_EVENT,
+    ({ path, replace, action }) => {
+      if (action === "open-kanban") {
+        void WorkStationViewService.openKanbanTab();
+      } else if (path.startsWith("/orgii/")) {
+        navigateApp(path, replace);
+      }
     },
     { enabled }
   );
