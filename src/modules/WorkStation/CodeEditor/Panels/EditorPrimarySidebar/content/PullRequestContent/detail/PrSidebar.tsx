@@ -393,6 +393,9 @@ export const PrSidebar: React.FC<PrSidebarProps> = ({
       }}
     >
       <WorkstationTrailIconButton
+        aria-expanded={openPicker === config.picker}
+        aria-haspopup="listbox"
+        className={DROPDOWN_CLASSES.triggerOpen}
         disabled={pending}
         aria-label={config.triggerLabel}
         title={config.triggerLabel}

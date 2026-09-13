@@ -37,6 +37,7 @@ import React, {
   useState,
 } from "react";
 
+import Button from "@src/components/Button";
 import { useDropdownAutoKeyboard } from "@src/hooks/dropdown";
 import { useMenuHoverGrace } from "@src/hooks/dropdown/useMenuHoverGrace";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
@@ -462,6 +463,29 @@ const Dropdown: React.FC<DropdownProps> = ({
     droplist
   );
 
+  // Button triggers share the menu's authoritative visibility rather than
+  // requiring every caller to maintain a second selected/open state.
+  const isButtonTrigger =
+    children.type === Button || children.type === "button";
+  const triggerElement = isButtonTrigger
+    ? React.cloneElement(
+        children as React.ReactElement<
+          React.ButtonHTMLAttributes<HTMLButtonElement>
+        >,
+        {
+          "aria-expanded": visible,
+          "aria-haspopup": isOptionsMode ? "listbox" : "menu",
+          className: [
+            (children.props as React.ButtonHTMLAttributes<HTMLButtonElement>)
+              .className,
+            DROPDOWN_CLASSES.triggerOpen,
+          ]
+            .filter(Boolean)
+            .join(" "),
+        }
+      )
+    : children;
+
   return (
     <DropdownTriggerWrapper
       triggerRef={triggerRef}
@@ -472,7 +496,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       onMouseEnter={trigger === "hover" ? handleMouseEnter : undefined}
       onMouseLeave={trigger === "hover" ? handleMouseLeave : undefined}
     >
-      {children}
+      {triggerElement}
       <DropdownMenuSurface
         visible={visible}
         getPopupContainer={getPopupContainer}

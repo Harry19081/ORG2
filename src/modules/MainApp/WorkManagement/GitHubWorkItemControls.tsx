@@ -48,7 +48,7 @@ export function IssuePersonalFilterDropdown({
       value={selectedFilters}
       mode="multiple"
       position="bottom-end"
-      className={`${DROPDOWN_CLASSES.panelAnimated} ${DROPDOWN_WIDTHS.menuClass}`}
+      className={`${DROPDOWN_CLASSES.panelAnimated} ${DROPDOWN_WIDTHS.fileTreeClass}`}
       onSelect={(value) => onSelect(Array.isArray(value) ? value : [value])}
     >
       <Button
