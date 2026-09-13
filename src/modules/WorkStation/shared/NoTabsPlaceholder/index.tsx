@@ -10,10 +10,7 @@
 import React, { memo } from "react";
 
 import AnyIcon from "@src/components/AnyIcon";
-import {
-  KEYBOARD_SHORTCUT_VARIANT,
-  KeyboardShortcut,
-} from "@src/components/KeyboardShortcut";
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
 import {
@@ -29,6 +26,10 @@ import {
   SmartPhone01Icon,
   WorkflowCircle05Icon,
 } from "@src/icons";
+import {
+  SPOTLIGHT_CLASSES,
+  SPOTLIGHT_TOKENS,
+} from "@src/scaffold/GlobalSpotlight/constants";
 
 import type { QuickAction } from "../QuickActionsPanel/types";
 
@@ -97,26 +98,25 @@ const ActionItem = memo<ActionItemProps>(({ action, onClick }) => {
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       disabled={action.disabled}
-      className={`flex w-full items-center justify-between rounded-lg px-4 py-2.5 transition-colors ${
+      className={`${SPOTLIGHT_CLASSES.itemRow} w-full text-left transition-colors ${
         action.disabled
           ? "cursor-not-allowed opacity-50"
           : `${SURFACE_TOKENS.hover} active:bg-fill-3`
       }`}
+      style={{ height: SPOTLIGHT_TOKENS.itemHeight }}
     >
       <span
-        className={`text-[14px] font-medium ${
+        className={`min-w-0 flex-1 truncate text-[14px] font-medium ${
           action.disabled ? "text-text-4" : "text-text-3"
         }`}
       >
         {action.label}
       </span>
       {action.shortcut && (
-        <KeyboardShortcut
-          shortcut={action.shortcut}
-          variant={KEYBOARD_SHORTCUT_VARIANT.workStation}
-        />
+        <KeyboardShortcut shortcut={action.shortcut} rendering="original" />
       )}
     </button>
   );
@@ -171,7 +171,10 @@ export const NoTabsPlaceholder: React.FC<NoTabsPlaceholderProps> = memo(
 
           {/* Actions list */}
           {actions && actions.length > 0 && (
-            <div className="flex flex-col">
+            <div
+              className="flex flex-col"
+              style={{ gap: SPOTLIGHT_TOKENS.itemGap }}
+            >
               {actions.map((action) => (
                 <ActionItem
                   key={action.id}
