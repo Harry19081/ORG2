@@ -90,7 +90,7 @@ export interface SourceControlFilterHeaderProps {
   spinScope?: string;
   /** Whether to show the refresh action next to the filter select. */
   showRefresh?: boolean;
-  /** Counts shown in the trigger label. */
+  /** Counts shown only in dropdown options. */
   counts?: SourceControlFilterCounts;
 }
 
@@ -144,13 +144,13 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
         ).map((row) => {
           const label = t(row.labelKey);
           const count = getModeCount(row.id);
-          const triggerLabel =
+          const optionLabel =
             typeof count === "number" ? getCountLabel(count, label) : label;
           return {
             value: row.id,
             icon: filterIcon(row.id),
-            label: <span className="whitespace-nowrap">{triggerLabel}</span>,
-            triggerLabel,
+            label: <span className="whitespace-nowrap">{optionLabel}</span>,
+            triggerLabel: label,
           };
         });
 

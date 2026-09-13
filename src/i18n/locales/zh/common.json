@@ -783,7 +783,11 @@
     "selectRepositoryFromWorkspace": "选择工作区仓库",
     "noData": "无数据",
     "noSessionHistoryForFile": "未找到 {{file}} 的会话活动",
-    "noSessionHistory": "暂无会话历史"
+    "noSessionHistory": "暂无会话历史",
+    "selectSidebarStash": "在侧边栏选择贮藏记录",
+    "selectSidebarCommit": "在侧边栏选择提交",
+    "selectSidebarPullRequest": "在侧边栏选择拉取请求",
+    "selectSidebarIssue": "在侧边栏选择议题"
   },
   "inbox": {
     "scrollToBottom": "滚动到底部",
@@ -1809,8 +1813,8 @@
       "viewPullRequests": "查看 Pull Requests"
     },
     "pill": {
-      "focus": "聚焦",
-      "allChanges": "全部更改"
+      "focus": "单个",
+      "allChanges": "全部"
     },
     "scope": {
       "main": "主工作区",

@@ -952,7 +952,11 @@
     "noData": "無資料",
     "noResults": "沒有結果",
     "noSessionHistoryForFile": "找不到 {{file}} 的工作階段活動",
-    "noSessionHistory": "尚無工作階段歷史"
+    "noSessionHistory": "尚無工作階段歷史",
+    "selectSidebarStash": "在側邊欄選擇暫存記錄",
+    "selectSidebarCommit": "在側邊欄選擇提交",
+    "selectSidebarPullRequest": "在側邊欄選擇提取要求",
+    "selectSidebarIssue": "在側邊欄選擇議題"
   },
   "inbox": {
     "scrollToBottom": "滾動到底部",
@@ -1978,8 +1982,8 @@
       "viewPullRequests": "檢視 Pull Requests"
     },
     "pill": {
-      "focus": "聚焦",
-      "allChanges": "全部更改"
+      "focus": "單個",
+      "allChanges": "全部"
     },
     "scope": {
       "main": "主要檢出",

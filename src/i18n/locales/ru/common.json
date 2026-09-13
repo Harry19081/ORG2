@@ -952,7 +952,11 @@
     "noData": "Нет данных",
     "noResults": "Нет результатов",
     "noSessionHistoryForFile": "Активность сессий для {{file}} не найдена",
-    "noSessionHistory": "Нет истории сессий"
+    "noSessionHistory": "Нет истории сессий",
+    "selectSidebarStash": "Выберите stash на боковой панели",
+    "selectSidebarCommit": "Выберите коммит на боковой панели",
+    "selectSidebarPullRequest": "Выберите пул-реквест на боковой панели",
+    "selectSidebarIssue": "Выберите задачу на боковой панели"
   },
   "inbox": {
     "scrollToBottom": "Вниз",
@@ -1978,8 +1982,8 @@
       "viewPullRequests": "Просмотреть Pull Requests"
     },
     "pill": {
-      "focus": "Фокус",
-      "allChanges": "Все изменения"
+      "focus": "Один",
+      "allChanges": "Все"
     },
     "scope": {
       "main": "Основной checkout",

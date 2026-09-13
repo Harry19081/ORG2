@@ -952,7 +952,11 @@
     "noData": "データなし",
     "noResults": "結果なし",
     "noSessionHistoryForFile": "{{file}} のセッションアクティビティは見つかりません",
-    "noSessionHistory": "セッション履歴はありません"
+    "noSessionHistory": "セッション履歴はありません",
+    "selectSidebarStash": "サイドバーでスタッシュを選択",
+    "selectSidebarCommit": "サイドバーでコミットを選択",
+    "selectSidebarPullRequest": "サイドバーでプルリクエストを選択",
+    "selectSidebarIssue": "サイドバーで Issue を選択"
   },
   "inbox": {
     "scrollToBottom": "一番下へ",
@@ -1978,8 +1982,8 @@
       "viewPullRequests": "Pull Requests を表示"
     },
     "pill": {
-      "focus": "フォーカス",
-      "allChanges": "すべての変更"
+      "focus": "単一",
+      "allChanges": "すべて"
     },
     "scope": {
       "main": "メインチェックアウト",

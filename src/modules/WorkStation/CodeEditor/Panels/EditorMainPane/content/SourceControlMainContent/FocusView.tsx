@@ -4,11 +4,11 @@
  * Single-file working-tree diff for the unified Source Control tab.
  */
 import React, { Suspense, memo } from "react";
-import { useTranslation } from "react-i18next";
 
 import { Placeholder } from "@src/components/Placeholder";
-import { NoTabsPlaceholder } from "@src/modules/WorkStation/shared";
 import type { GitFile } from "@src/types/git/types";
+
+import { SourceControlSelectionPlaceholder } from "../SourceControlSelectionPlaceholder";
 
 const GitDiffContent = React.lazy(() => import("../GitDiffContent"));
 
@@ -48,13 +48,7 @@ const FocusView: React.FC<FocusViewProps> = ({
   onUnsavedChange,
   inlineFileHeader = true,
 }) => {
-  const { t } = useTranslation();
-  const emptyPlaceholder = (
-    <NoTabsPlaceholder
-      icon="source-control"
-      caption={t("placeholders.selectSidebarFileToViewChanges")}
-    />
-  );
+  const emptyPlaceholder = <SourceControlSelectionPlaceholder />;
 
   if (!hasFocus) {
     return emptyPlaceholder;

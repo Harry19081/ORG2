@@ -952,7 +952,11 @@
     "noData": "Keine Daten",
     "noResults": "Keine Ergebnisse",
     "noSessionHistoryForFile": "Keine Sitzungsaktivität für {{file}} gefunden",
-    "noSessionHistory": "Kein Sitzungsverlauf"
+    "noSessionHistory": "Kein Sitzungsverlauf",
+    "selectSidebarStash": "Wähle einen Stash in der Seitenleiste",
+    "selectSidebarCommit": "Wähle einen Commit in der Seitenleiste",
+    "selectSidebarPullRequest": "Wähle einen Pull Request in der Seitenleiste",
+    "selectSidebarIssue": "Wähle ein Issue in der Seitenleiste"
   },
   "inbox": {
     "scrollToBottom": "Nach unten scrollen",
@@ -1978,8 +1982,8 @@
       "viewPullRequests": "Pull Requests anzeigen"
     },
     "pill": {
-      "focus": "Fokus",
-      "allChanges": "Alle Änderungen"
+      "focus": "Einzeln",
+      "allChanges": "Alle"
     },
     "scope": {
       "main": "Haupt-Checkout",

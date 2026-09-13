@@ -48,7 +48,7 @@ export type { SourceControlScope } from "./sourceControlScopePickerHelpers";
 
 const BREADCRUMB_TONE_CLASS = {
   muted: "text-text-3",
-  primary: "font-medium text-text-1",
+  primary: "font-normal text-text-1",
   secondary: "text-text-2",
 } as const;
 

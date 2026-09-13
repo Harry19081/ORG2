@@ -783,7 +783,11 @@
     "selectRepositoryFromWorkspace": "Choose a workspace repository",
     "noData": "No data",
     "noSessionHistoryForFile": "No session activity found for {{file}}",
-    "noSessionHistory": "No session history"
+    "noSessionHistory": "No session history",
+    "selectSidebarStash": "Select a stash in the sidebar",
+    "selectSidebarCommit": "Select a commit in the sidebar",
+    "selectSidebarPullRequest": "Select a pull request in the sidebar",
+    "selectSidebarIssue": "Select an issue in the sidebar"
   },
   "inbox": {
     "scrollToBottom": "Scroll to bottom",
@@ -1809,8 +1813,8 @@
       "viewPullRequests": "View PRs"
     },
     "pill": {
-      "focus": "Focus",
-      "allChanges": "All Changes"
+      "focus": "Single",
+      "allChanges": "All"
     },
     "scope": {
       "main": "Main checkout",

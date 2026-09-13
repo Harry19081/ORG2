@@ -952,7 +952,11 @@
     "noData": "Không có dữ liệu",
     "noResults": "Không có kết quả",
     "noSessionHistoryForFile": "Không tìm thấy hoạt động phiên nào cho {{file}}",
-    "noSessionHistory": "Không có lịch sử phiên"
+    "noSessionHistory": "Không có lịch sử phiên",
+    "selectSidebarStash": "Chọn một stash trong thanh bên",
+    "selectSidebarCommit": "Chọn một commit trong thanh bên",
+    "selectSidebarPullRequest": "Chọn một yêu cầu kéo trong thanh bên",
+    "selectSidebarIssue": "Chọn một vấn đề trong thanh bên"
   },
   "inbox": {
     "scrollToBottom": "Cuộn xuống cuối",
@@ -1978,8 +1982,8 @@
       "viewPullRequests": "Xem Pull Requests"
     },
     "pill": {
-      "focus": "Tiêu điểm",
-      "allChanges": "Tất cả thay đổi"
+      "focus": "Đơn",
+      "allChanges": "Tất cả"
     },
     "scope": {
       "main": "Checkout chính",

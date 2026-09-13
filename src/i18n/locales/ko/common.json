@@ -952,7 +952,11 @@
     "noData": "데이터 없음",
     "noResults": "결과 없음",
     "noSessionHistoryForFile": "{{file}}에 대한 세션 활동이 없습니다",
-    "noSessionHistory": "세션 기록 없음"
+    "noSessionHistory": "세션 기록 없음",
+    "selectSidebarStash": "사이드바에서 스태시 선택",
+    "selectSidebarCommit": "사이드바에서 커밋 선택",
+    "selectSidebarPullRequest": "사이드바에서 풀 리퀘스트 선택",
+    "selectSidebarIssue": "사이드바에서 이슈 선택"
   },
   "inbox": {
     "scrollToBottom": "맨 아래로",
@@ -1978,8 +1982,8 @@
       "viewPullRequests": "Pull Requests 보기"
     },
     "pill": {
-      "focus": "포커스",
-      "allChanges": "모든 변경 사항"
+      "focus": "단일",
+      "allChanges": "전체"
     },
     "scope": {
       "main": "메인 체크아웃",

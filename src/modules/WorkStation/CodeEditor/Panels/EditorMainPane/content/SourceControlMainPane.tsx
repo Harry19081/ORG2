@@ -8,16 +8,14 @@
 import React, { Suspense, memo } from "react";
 
 import { Placeholder } from "@src/components/Placeholder";
-import {
-  NoTabsPlaceholder,
-  type QuickAction,
-} from "@src/modules/WorkStation/shared";
+import type { QuickAction } from "@src/modules/WorkStation/shared";
 import GitHubDetailSkeleton from "@src/modules/shared/components/GitHubDetailSkeleton";
 import { useGitHubIssueDetailState } from "@src/modules/shared/hooks/useGitHubIssueDetailState";
 import { workstationRepoScopeKey } from "@src/store/workstation/codeEditor/workstationPrAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
 
+import { SourceControlSelectionPlaceholder } from "./SourceControlSelectionPlaceholder";
 import {
   type SourceControlMainTabData,
   deriveSourceControlMainProps,
@@ -105,12 +103,7 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
 
   if (sourceControlFilterMode === "issues") {
     if (!selectedIssueState.issue) {
-      return (
-        <NoTabsPlaceholder
-          icon="source-control"
-          actions={sourceControlQuickActions}
-        />
-      );
+      return <SourceControlSelectionPlaceholder mode="issues" />;
     }
 
     return (
@@ -141,12 +134,15 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
     sourceControlFilterMode === "pr" &&
     (!historySelection || historySelection.type !== "pr")
   ) {
-    return (
-      <NoTabsPlaceholder
-        icon="source-control"
-        actions={sourceControlQuickActions}
-      />
-    );
+    return <SourceControlSelectionPlaceholder mode="pr" />;
+  }
+
+  if (
+    (sourceControlFilterMode === "stashed" ||
+      sourceControlFilterMode === "history") &&
+    !historySelection
+  ) {
+    return <SourceControlSelectionPlaceholder mode={sourceControlFilterMode} />;
   }
 
   return (

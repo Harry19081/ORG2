@@ -952,7 +952,11 @@
     "noData": "Veri yok",
     "noResults": "Sonuç yok",
     "noSessionHistoryForFile": "{{file}} için oturum etkinliği bulunamadı",
-    "noSessionHistory": "Oturum geçmişi yok"
+    "noSessionHistory": "Oturum geçmişi yok",
+    "selectSidebarStash": "Kenar çubuğundan bir stash seçin",
+    "selectSidebarCommit": "Kenar çubuğundan bir commit seçin",
+    "selectSidebarPullRequest": "Kenar çubuğundan bir çekme isteği seçin",
+    "selectSidebarIssue": "Kenar çubuğundan bir sorun seçin"
   },
   "inbox": {
     "scrollToBottom": "Alta kaydır",
@@ -1978,8 +1982,8 @@
       "viewPullRequests": "Pull Requests'leri görüntüle"
     },
     "pill": {
-      "focus": "Odak",
-      "allChanges": "Tüm Değişiklikler"
+      "focus": "Tek",
+      "allChanges": "Tümü"
     },
     "scope": {
       "main": "Ana checkout",
