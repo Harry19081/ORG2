@@ -91,8 +91,7 @@ function sameGroupHeaderProps(
     previous.compactUserMessage === next.compactUserMessage &&
     previous.defaultTurnCollapsed === next.defaultTurnCollapsed &&
     previous.renderPart === next.renderPart &&
-    previous.turnCollapseInteractionAtRef ===
-      next.turnCollapseInteractionAtRef &&
+    previous.onBeforeTurnCollapseToggle === next.onBeforeTurnCollapseToggle &&
     previous.onEditSubmit === next.onEditSubmit &&
     previous.onRestoreCheckpoint === next.onRestoreCheckpoint &&
     sameHeader(previousHeader, nextHeader) &&
@@ -133,7 +132,7 @@ export interface GroupHeaderRendererProps {
   /** Default collapse state for eligible turns when no explicit override exists. */
   defaultTurnCollapsed?: boolean;
   renderPart?: GroupHeaderRenderPart;
-  turnCollapseInteractionAtRef: React.MutableRefObject<number>;
+  onBeforeTurnCollapseToggle?: () => void;
   onEditSubmit?: (
     header: OptimizedChatItem,
     newText: string,
@@ -165,7 +164,7 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
     compactUserMessage = true,
     defaultTurnCollapsed = false,
     renderPart = "all",
-    turnCollapseInteractionAtRef,
+    onBeforeTurnCollapseToggle,
     onEditSubmit,
     onRestoreCheckpoint,
   }) => {
@@ -275,7 +274,7 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
             showTimeRange={!hideCollapseTimeRange}
             labelVariant={collapseLabelVariant}
             defaultCollapsed={turnDefaultCollapsed}
-            turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
+            onBeforeToggle={onBeforeTurnCollapseToggle}
             onExpand={
               canExpandUnloadedTurn ? handleExpandUnloadedTurn : undefined
             }

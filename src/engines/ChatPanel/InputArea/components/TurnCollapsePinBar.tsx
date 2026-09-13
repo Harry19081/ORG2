@@ -65,7 +65,8 @@ export interface TurnCollapsePinBarProps {
   labelVariant?: "agent" | "agents";
   /** Default collapse state for this turn (true for completed turns). */
   defaultCollapsed: boolean;
-  turnCollapseInteractionAtRef: React.MutableRefObject<number>;
+  /** Captures the current reading anchor before this control changes layout. */
+  onBeforeToggle?: () => void;
   /** Called before expanding a lazy-loaded turn. */
   onExpand?: () => Promise<void> | void;
 }
@@ -81,7 +82,7 @@ const TurnCollapsePinBar: React.FC<TurnCollapsePinBarProps> = memo(
     showTimeRange = true,
     labelVariant = "agent",
     defaultCollapsed,
-    turnCollapseInteractionAtRef,
+    onBeforeToggle,
     onExpand,
   }) => {
     const {
@@ -108,7 +109,7 @@ const TurnCollapsePinBar: React.FC<TurnCollapsePinBarProps> = memo(
 
     const handleToggle = useCallback(async () => {
       if (isLoading) return;
-      turnCollapseInteractionAtRef.current = performance.now();
+      onBeforeToggle?.();
       const nextCollapsed = !collapsed;
       if (!nextCollapsed && onExpand) {
         setIsLoading(true);
@@ -141,9 +142,9 @@ const TurnCollapsePinBar: React.FC<TurnCollapsePinBarProps> = memo(
       defaultCollapsed,
       forcedCollapsed,
       isLoading,
+      onBeforeToggle,
       onExpand,
       setOverride,
-      turnCollapseInteractionAtRef,
       turnId,
     ]);
 
@@ -179,6 +180,7 @@ const TurnCollapsePinBar: React.FC<TurnCollapsePinBarProps> = memo(
             layout="custom"
             appearance="custom"
             htmlType="button"
+            data-testid="turn-collapse-toggle"
             aria-expanded={expanded}
             className={`flex h-full min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg border-0 bg-transparent px-2 text-left select-none focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${showReplayNavigate ? "pr-9" : ""}`}
             onClick={(event) => {

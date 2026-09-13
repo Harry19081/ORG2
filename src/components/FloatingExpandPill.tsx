@@ -48,6 +48,8 @@ const FloatingExpandPill: React.FC<FloatingExpandPillProps> = ({
       icon={<AnyIcon icon={Icon} size={16} strokeWidth={2.25} />}
       className="pointer-events-auto shadow-xs backdrop-blur-xs"
       onClick={onClick}
+      data-testid="expand-overlay-toggle"
+      aria-expanded={expanded}
       aria-label={text}
       title={text}
     >

@@ -23,7 +23,6 @@ const message = makeChatItem(
   })
 );
 const headers = [message];
-const interactionRef = { current: 0 };
 
 function Header({
   paginated,
@@ -44,7 +43,6 @@ function Header({
     tailTurnPhase: "running",
     hideUserMessage: false,
     defaultTurnCollapsed: false,
-    turnCollapseInteractionAtRef: interactionRef,
     onEditSubmit: undefined,
     onFailedUserIntentEdit,
     onRestoreCheckpoint: undefined,

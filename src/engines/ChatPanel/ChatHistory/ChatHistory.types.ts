@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
-import type { QueuedConversationDispatch } from "@src/engines/SessionCore/conversations/queuedConversationContract";
+import type { QueuedConversationDispatchResolution } from "@src/engines/SessionCore/conversations/queuedConversationContract";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 export interface FollowAgentNavState {
@@ -82,6 +82,8 @@ export interface ChatHistoryProps {
    * keep their surfaced turn expanded.
    */
   disableTailCollapse?: boolean;
+  /** Compact monitor surfaces may opt into unconditional tail following. */
+  tailFollowMode?: "reader-controlled" | "always";
   /** Trailing content for turn pagination controls; ignored when pagination is disabled. */
   paginationTrailingSlot?: ReactNode;
   /** Omit each turn's leading user-message card while retaining its turn boundary. */
@@ -103,7 +105,7 @@ export interface ChatHistoryProps {
    * The canonical dispatch a retry of a held Agent row should carry: the
    * current root and the runtime the picker shows now.
    */
-  resolveFailedUserIntentDispatch?: () => QueuedConversationDispatch | null;
+  resolveFailedUserIntentDispatch?: () => QueuedConversationDispatchResolution;
   /**
    * Session-scoped source for the planning footer. Session-scoped surfaces
    * should set `isLive` to false while showing a replay slice.

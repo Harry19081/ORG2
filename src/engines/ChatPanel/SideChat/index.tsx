@@ -39,6 +39,7 @@ import FloatingWindow from "@src/components/FloatingWindow";
 import { SESSION_CONFIG } from "@src/config/sessionCreatorConfig";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
+import { resolveAgentOrgComposerExecutionOwnership } from "@src/engines/ChatPanel/agentOrgComposerOwnership";
 import { isUserIntentSendError } from "@src/engines/SessionCore/services/userIntentDispatch";
 import { createLogger } from "@src/hooks/logger";
 import {
@@ -296,13 +297,18 @@ interface SideChatSessionBodyProps {
   isLive: boolean;
 }
 
-const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
+export const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
   sessionId,
   session,
   isLive,
 }) => {
   const turnPaginationEnabled = useAtomValue(chatTurnPaginationEnabledAtom);
   const conversationTargetBinding = useConversationTargetBinding(sessionId);
+  const { isDirectAgentOrgMember, executionBinding: composerExecutionBinding } =
+    resolveAgentOrgComposerExecutionOwnership(
+      session,
+      conversationTargetBinding
+    );
   const getSessionId = useCallback(() => sessionId, [sessionId]);
   const submitUserIntent = useUserIntentSubmit({ getSessionId });
 
@@ -312,7 +318,7 @@ const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
       agentContent,
       imageDataUrls,
     }: SubmitOverrideInput): Promise<boolean> => {
-      if (conversationTargetBinding?.root) return false;
+      if (composerExecutionBinding?.root) return false;
       const content = agentContent ?? displayText;
       if (!content.trim()) return false;
       try {
@@ -333,7 +339,7 @@ const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
         return false;
       }
     },
-    [conversationTargetBinding?.root, sessionId, submitUserIntent]
+    [composerExecutionBinding?.root, sessionId, submitUserIntent]
   );
   const {
     submit: handleSubmit,
@@ -341,6 +347,7 @@ const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
     resolveDispatch: resolveCanonicalRetryDispatch,
   } = useConversationSubmitRouter({
     sessionId,
+    isDirectAgentOrgMember,
     currentSession: session,
     root: conversationTargetBinding?.root ?? null,
     selectedTarget: conversationTargetBinding?.target ?? null,
@@ -357,12 +364,12 @@ const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
               turnPaginationEnabled={turnPaginationEnabled}
               planningIndicatorScope={{ sessionId, isLive }}
               onFailedUserIntentRetry={
-                conversationTargetBinding
+                conversationTargetBinding || isDirectAgentOrgMember
                   ? handleCanonicalConversationRetry
                   : undefined
               }
               resolveFailedUserIntentDispatch={
-                conversationTargetBinding
+                conversationTargetBinding || isDirectAgentOrgMember
                   ? resolveCanonicalRetryDispatch
                   : undefined
               }
@@ -370,7 +377,7 @@ const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
           </div>
           <div className="shrink-0 px-1.5 pt-0.5 pb-1.5">
             <ConversationExecutionBindingContext.Provider
-              value={conversationTargetBinding}
+              value={composerExecutionBinding}
             >
               <InputArea
                 key={sessionId}
@@ -380,7 +387,9 @@ const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
                 sessionScope="none"
                 onSubmitOverride={handleSubmit}
                 disableStopWhenEmpty
-                showAgentControls={Boolean(conversationTargetBinding)}
+                showAgentControls={
+                  Boolean(composerExecutionBinding) || isDirectAgentOrgMember
+                }
                 allowFileAttachments={false}
                 enableAgentInterceptors={false}
               />

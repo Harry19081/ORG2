@@ -63,6 +63,7 @@ interface UseChatNavigationControllerOptions {
   turnPageListOpen: boolean;
   turnPaginationEnabled: boolean;
   virtualListRef: UseChatHistoryStateReturn["virtualListRef"];
+  onExplicitNavigation: () => void;
 }
 
 /** Owns user navigation state for overview, minimap and pinned turn chrome. */
@@ -81,6 +82,7 @@ export function useChatNavigationController({
   turnPageListOpen,
   turnPaginationEnabled,
   virtualListRef,
+  onExplicitNavigation,
 }: UseChatNavigationControllerOptions) {
   const [agentOrgOverviewOpenSessionId, setAgentOrgOverviewOpenSessionId] =
     useState<string | null>(null);
@@ -136,12 +138,13 @@ export function useChatNavigationController({
   );
   const handleConversationMinimapNavigate = useCallback(
     (groupIndex: number) => {
+      onExplicitNavigation();
       virtualListRef.current?.scrollToGroup({
         groupIndex,
         behavior: "smooth",
       });
     },
-    [virtualListRef]
+    [onExplicitNavigation, virtualListRef]
   );
   const conversationHistoryPageIndex = resolveConversationHistoryPageIndex({
     activeGroupIndex,

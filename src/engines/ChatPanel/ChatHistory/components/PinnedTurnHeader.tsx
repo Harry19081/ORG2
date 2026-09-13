@@ -17,7 +17,7 @@ interface PinnedTurnHeaderProps {
   tailTurnPhase: GroupHeaderRendererProps["tailTurnPhase"];
   hideUserMessage: boolean;
   defaultTurnCollapsed: boolean;
-  turnCollapseInteractionAtRef: React.MutableRefObject<number>;
+  onBeforeTurnCollapseToggle?: () => void;
   onEditSubmit: GroupHeaderRendererProps["onEditSubmit"];
   onRestoreCheckpoint: GroupHeaderRendererProps["onRestoreCheckpoint"];
 }
@@ -67,8 +67,7 @@ function samePinnedTurnHeaderProps(
     previous.tailTurnPhase === next.tailTurnPhase &&
     previous.hideUserMessage === next.hideUserMessage &&
     previous.defaultTurnCollapsed === next.defaultTurnCollapsed &&
-    previous.turnCollapseInteractionAtRef ===
-      next.turnCollapseInteractionAtRef &&
+    previous.onBeforeTurnCollapseToggle === next.onBeforeTurnCollapseToggle &&
     previous.onEditSubmit === next.onEditSubmit &&
     previous.onRestoreCheckpoint === next.onRestoreCheckpoint &&
     samePinnedHeader(previous.header, next.header) &&
@@ -86,7 +85,7 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
   tailTurnPhase,
   hideUserMessage,
   defaultTurnCollapsed,
-  turnCollapseInteractionAtRef,
+  onBeforeTurnCollapseToggle,
   onEditSubmit,
   onRestoreCheckpoint,
 }) => {
@@ -106,7 +105,7 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
         hideUserMessage={hideUserMessage}
         defaultTurnCollapsed={defaultTurnCollapsed}
         suppressRoundGap
-        turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
+        onBeforeTurnCollapseToggle={onBeforeTurnCollapseToggle}
         onEditSubmit={onEditSubmit}
         onRestoreCheckpoint={onRestoreCheckpoint}
       />

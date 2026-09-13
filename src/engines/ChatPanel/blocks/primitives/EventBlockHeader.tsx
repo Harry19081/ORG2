@@ -3,6 +3,8 @@
  */
 import React, { useContext } from "react";
 
+import { useBeforeViewportLayoutMutation } from "@src/components/ViewportLayoutMutationContext";
+
 import EventNavigateIcon from "./EventNavigateIcon";
 import { getEventBlockHeaderClasses } from "./config";
 import { InSimulatorReplayContext } from "./inSimulatorReplayContext";
@@ -30,6 +32,7 @@ export const EventBlockHeader: React.FC<EventBlockHeaderProps> = ({
   className = "",
 }) => {
   const inSimulatorReplay = useContext(InSimulatorReplayContext);
+  const beforeViewportLayoutMutation = useBeforeViewportLayoutMutation();
   const showNavigate = !!onNavigate && !inSimulatorReplay;
   const rowAction =
     onToggleCollapse ?? (inSimulatorReplay ? undefined : onNavigate);
@@ -37,6 +40,7 @@ export const EventBlockHeader: React.FC<EventBlockHeaderProps> = ({
   const handleClick = () => {
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed) return;
+    if (onToggleCollapse) beforeViewportLayoutMutation?.();
     rowAction?.();
   };
   return (
@@ -51,6 +55,7 @@ export const EventBlockHeader: React.FC<EventBlockHeaderProps> = ({
               if (event.target !== event.currentTarget) return;
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
+                if (onToggleCollapse) beforeViewportLayoutMutation?.();
                 rowAction();
               }
             }
