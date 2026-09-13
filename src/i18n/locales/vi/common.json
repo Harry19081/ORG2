@@ -888,7 +888,7 @@
     "noSessionsFound": "Không tìm thấy Session nào",
     "typeToSearchFiles": "Nhập để tìm kiếm tệp...",
     "selectFileToViewChanges": "Chọn tệp để xem thay đổi",
-    "selectSidebarFileToViewChanges": "Chọn tệp trong thanh bên",
+    "selectSidebarFileToViewChanges": "Chọn một tệp",
     "failedToLoadHistory": "Không thể tải lịch sử",
     "noGitHistory": "Không có lịch sử Git",
     "noCommitHistory": "Không tìm thấy commit",
@@ -952,10 +952,10 @@
     "noResults": "Không có kết quả",
     "noSessionHistoryForFile": "Không tìm thấy hoạt động phiên nào cho {{file}}",
     "noSessionHistory": "Không có lịch sử phiên",
-    "selectSidebarStash": "Chọn một stash trong thanh bên",
-    "selectSidebarCommit": "Chọn một commit trong thanh bên",
-    "selectSidebarPullRequest": "Chọn một yêu cầu kéo trong thanh bên",
-    "selectSidebarIssue": "Chọn một vấn đề trong thanh bên"
+    "selectSidebarStash": "Chọn một stash",
+    "selectSidebarCommit": "Chọn một commit",
+    "selectSidebarPullRequest": "Chọn một pull request",
+    "selectSidebarIssue": "Chọn một issue"
   },
   "inbox": {
     "scrollToBottom": "Cuộn xuống cuối",

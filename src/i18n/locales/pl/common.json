@@ -888,7 +888,7 @@
     "noSessionsFound": "Nie znaleziono sesji",
     "typeToSearchFiles": "Wpisz, aby wyszukać pliki...",
     "selectFileToViewChanges": "Wybierz plik, aby zobaczyć zmiany",
-    "selectSidebarFileToViewChanges": "Wybierz plik na pasku bocznym",
+    "selectSidebarFileToViewChanges": "Wybierz jeden plik",
     "failedToLoadHistory": "Nie udało się załadować historii",
     "noGitHistory": "Brak dostępnej historii Git",
     "noCommitHistory": "Nie znaleziono commitów",
@@ -952,10 +952,10 @@
     "noResults": "Brak wyników",
     "noSessionHistoryForFile": "Nie znaleziono aktywności sesji dla {{file}}",
     "noSessionHistory": "Brak historii sesji",
-    "selectSidebarStash": "Wybierz stash na pasku bocznym",
-    "selectSidebarCommit": "Wybierz commit na pasku bocznym",
-    "selectSidebarPullRequest": "Wybierz pull request na pasku bocznym",
-    "selectSidebarIssue": "Wybierz zgłoszenie na pasku bocznym"
+    "selectSidebarStash": "Wybierz jeden stash",
+    "selectSidebarCommit": "Wybierz jeden commit",
+    "selectSidebarPullRequest": "Wybierz jeden pull request",
+    "selectSidebarIssue": "Wybierz jedno issue"
   },
   "inbox": {
     "scrollToBottom": "Przewiń na dół",

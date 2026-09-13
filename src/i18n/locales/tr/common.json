@@ -888,7 +888,7 @@
     "noSessionsFound": "Session bulunamadı",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",
-    "selectSidebarFileToViewChanges": "Kenar çubuğundan dosya seçin",
+    "selectSidebarFileToViewChanges": "Bir dosya seçin",
     "failedToLoadHistory": "Geçmiş yüklenemedi",
     "noGitHistory": "Git geçmişi mevcut değil",
     "noCommitHistory": "Commit bulunamadı",
@@ -952,10 +952,10 @@
     "noResults": "Sonuç yok",
     "noSessionHistoryForFile": "{{file}} için oturum etkinliği bulunamadı",
     "noSessionHistory": "Oturum geçmişi yok",
-    "selectSidebarStash": "Kenar çubuğundan bir stash seçin",
-    "selectSidebarCommit": "Kenar çubuğundan bir commit seçin",
-    "selectSidebarPullRequest": "Kenar çubuğundan bir çekme isteği seçin",
-    "selectSidebarIssue": "Kenar çubuğundan bir sorun seçin"
+    "selectSidebarStash": "Bir stash seçin",
+    "selectSidebarCommit": "Bir commit seçin",
+    "selectSidebarPullRequest": "Bir pull request seçin",
+    "selectSidebarIssue": "Bir issue seçin"
   },
   "inbox": {
     "scrollToBottom": "Alta kaydır",

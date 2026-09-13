@@ -888,7 +888,7 @@
     "noSessionsFound": "Session을 찾을 수 없습니다",
     "typeToSearchFiles": "파일을 검색하려면 입력...",
     "selectFileToViewChanges": "변경사항을 보려면 파일을 선택하세요",
-    "selectSidebarFileToViewChanges": "사이드바에서 파일 선택",
+    "selectSidebarFileToViewChanges": "파일 하나 선택",
     "failedToLoadHistory": "기록 로드 실패",
     "noGitHistory": "Git 기록이 없습니다",
     "noCommitHistory": "커밋을 찾을 수 없습니다",
@@ -952,10 +952,10 @@
     "noResults": "결과 없음",
     "noSessionHistoryForFile": "{{file}}에 대한 세션 활동이 없습니다",
     "noSessionHistory": "세션 기록 없음",
-    "selectSidebarStash": "사이드바에서 스태시 선택",
-    "selectSidebarCommit": "사이드바에서 커밋 선택",
-    "selectSidebarPullRequest": "사이드바에서 풀 리퀘스트 선택",
-    "selectSidebarIssue": "사이드바에서 이슈 선택"
+    "selectSidebarStash": "stash 하나 선택",
+    "selectSidebarCommit": "commit 하나 선택",
+    "selectSidebarPullRequest": "pull request 하나 선택",
+    "selectSidebarIssue": "issue 하나 선택"
   },
   "inbox": {
     "scrollToBottom": "맨 아래로",

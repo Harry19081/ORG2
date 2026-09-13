@@ -888,7 +888,7 @@
     "noSessionsFound": "Keine Session gefunden",
     "typeToSearchFiles": "Zum Suchen von Dateien eingeben...",
     "selectFileToViewChanges": "Wählen Sie eine Datei, um Änderungen anzuzeigen",
-    "selectSidebarFileToViewChanges": "Datei in der Seitenleiste auswählen",
+    "selectSidebarFileToViewChanges": "Eine Datei auswählen",
     "failedToLoadHistory": "Verlauf konnte nicht geladen werden",
     "noGitHistory": "Kein Git-Verlauf verfügbar",
     "noCommitHistory": "Keine Commits gefunden",
@@ -952,10 +952,10 @@
     "noResults": "Keine Ergebnisse",
     "noSessionHistoryForFile": "Keine Sitzungsaktivität für {{file}} gefunden",
     "noSessionHistory": "Kein Sitzungsverlauf",
-    "selectSidebarStash": "Wähle einen Stash in der Seitenleiste",
-    "selectSidebarCommit": "Wähle einen Commit in der Seitenleiste",
-    "selectSidebarPullRequest": "Wähle einen Pull Request in der Seitenleiste",
-    "selectSidebarIssue": "Wähle ein Issue in der Seitenleiste"
+    "selectSidebarStash": "Einen stash auswählen",
+    "selectSidebarCommit": "Einen commit auswählen",
+    "selectSidebarPullRequest": "Einen pull request auswählen",
+    "selectSidebarIssue": "Ein issue auswählen"
   },
   "inbox": {
     "scrollToBottom": "Nach unten scrollen",

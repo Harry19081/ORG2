@@ -888,7 +888,7 @@
     "noSessionsFound": "Session не найдены",
     "typeToSearchFiles": "Введите для поиска файлов...",
     "selectFileToViewChanges": "Выберите файл для просмотра изменений",
-    "selectSidebarFileToViewChanges": "Выберите файл на боковой панели",
+    "selectSidebarFileToViewChanges": "Выберите один файл",
     "failedToLoadHistory": "Не удалось загрузить историю",
     "noGitHistory": "История Git недоступна",
     "noCommitHistory": "Коммиты не найдены",
@@ -952,10 +952,10 @@
     "noResults": "Нет результатов",
     "noSessionHistoryForFile": "Активность сессий для {{file}} не найдена",
     "noSessionHistory": "Нет истории сессий",
-    "selectSidebarStash": "Выберите stash на боковой панели",
-    "selectSidebarCommit": "Выберите коммит на боковой панели",
-    "selectSidebarPullRequest": "Выберите пул-реквест на боковой панели",
-    "selectSidebarIssue": "Выберите задачу на боковой панели"
+    "selectSidebarStash": "Выберите один stash",
+    "selectSidebarCommit": "Выберите один commit",
+    "selectSidebarPullRequest": "Выберите один pull request",
+    "selectSidebarIssue": "Выберите один issue"
   },
   "inbox": {
     "scrollToBottom": "Вниз",

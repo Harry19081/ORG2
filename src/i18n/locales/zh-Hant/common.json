@@ -888,7 +888,7 @@
     "noSessionsFound": "未找到 Session",
     "typeToSearchFiles": "輸入以搜索文件...",
     "selectFileToViewChanges": "選擇文件以查看變更",
-    "selectSidebarFileToViewChanges": "在側邊欄選擇檔案",
+    "selectSidebarFileToViewChanges": "選擇一個檔案",
     "failedToLoadHistory": "加載歷史記錄失敗",
     "noGitHistory": "暫無 Git 歷史記錄",
     "noCommitHistory": "未找到提交記錄",
@@ -952,10 +952,10 @@
     "noResults": "沒有結果",
     "noSessionHistoryForFile": "找不到 {{file}} 的工作階段活動",
     "noSessionHistory": "尚無工作階段歷史",
-    "selectSidebarStash": "在側邊欄選擇暫存記錄",
-    "selectSidebarCommit": "在側邊欄選擇提交",
-    "selectSidebarPullRequest": "在側邊欄選擇提取要求",
-    "selectSidebarIssue": "在側邊欄選擇議題"
+    "selectSidebarStash": "選擇一個 stash",
+    "selectSidebarCommit": "選擇一個 commit",
+    "selectSidebarPullRequest": "選擇一個 pull request",
+    "selectSidebarIssue": "選擇一個 issue"
   },
   "inbox": {
     "scrollToBottom": "滾動到底部",
