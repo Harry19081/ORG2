@@ -62,7 +62,7 @@ export const TimelineEntry: React.FC<TimelineEntryProps> = memo(
         </div>
 
         <button
-          className={`${HEADER_BUTTON.actionTreeRow} hidden shrink-0 group-hover/timeline-item:flex`}
+          className={`${HEADER_BUTTON.actionTreeRow} shrink-0 opacity-0 group-focus-within/timeline-item:opacity-100 group-hover/timeline-item:opacity-100`}
           onClick={(event) => {
             event.stopPropagation();
             onClick();

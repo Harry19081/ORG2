@@ -84,6 +84,8 @@ const DEFAULT_BUTTON_VARIANT =
 
 export const BUTTON_VARIANT = {
   default: DEFAULT_BUTTON_VARIANT,
+  noDrop:
+    "text-text-2 enabled:hover:bg-button-hover-no-drop enabled:hover:text-text-1 focus-visible:bg-button-hover-no-drop focus-visible:text-text-1",
   defaultTreeRow: DEFAULT_BUTTON_VARIANT,
   danger:
     "text-text-2 enabled:hover:bg-danger-1 enabled:hover:text-danger-6 focus-visible:bg-danger-1 focus-visible:text-danger-6",
@@ -366,10 +368,10 @@ export const DIFF_STATS = {
 } as const;
 
 export const SECTION_ACTION_BUTTON = {
-  /** Base + primary sidebar hover variant. */
-  base: `flex items-center justify-center rounded transition-colors ${BUTTON_VARIANT.defaultTreeRow}`,
+  /** Header actions without a backdrop use the fill-2 hover/focus palette. */
+  base: `flex ${ICON_BUTTON_BASE} ${BUTTON_VARIANT.noDrop}`,
   /** Icon-only (20×20) */
-  iconOnly: "h-5 w-5",
+  iconOnly: BUTTON_SIZE.sm,
   /** With label (compact inline) */
   withLabel: "gap-1 px-1.5 py-0.5 text-[11px]",
 } as const;

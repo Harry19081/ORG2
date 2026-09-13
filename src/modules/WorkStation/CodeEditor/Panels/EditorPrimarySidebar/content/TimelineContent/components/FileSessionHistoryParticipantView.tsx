@@ -90,7 +90,7 @@ export const FileSessionHistoryParticipantView: React.FC<FileSessionHistoryParti
         </span>
         {hasTranscript && (
           <span
-            className={`${HEADER_BUTTON.actionTreeRow} hidden shrink-0 group-hover/session-history:flex`}
+            className={`${HEADER_BUTTON.actionTreeRow} hidden shrink-0 group-focus-within/session-history:flex group-hover/session-history:flex`}
           >
             <HugeiconsIcon icon={OpenIcon} size={14} />
           </span>

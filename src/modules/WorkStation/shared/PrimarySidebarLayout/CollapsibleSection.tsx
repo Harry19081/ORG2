@@ -13,6 +13,7 @@ import {
   type SectionHeaderAction,
   isSectionHeaderCustomAction,
 } from "@src/components/TreePanelSidebar/types";
+import { TreeRowActionGroup } from "@src/components/TreeRow/TreeRowActionGroup";
 import {
   BUTTON_SIZE,
   SECTION_ACTION_BUTTON,
@@ -177,12 +178,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
 
           {/* Action buttons - show on hover, or always when forceVisible */}
           {actions.length > 0 && (
-            <div
-              className={`items-center gap-0.5 ${
-                actions.some((action) => action.forceVisible)
-                  ? "flex"
-                  : "hidden group-focus-within/section:flex group-hover/section:flex"
-              }`}
+            <TreeRowActionGroup
+              hoverGroup="section"
+              alwaysVisible={actions.some((action) => action.forceVisible)}
             >
               {actions.map((action) => {
                 // Support custom rendering for complex actions (dropdowns, etc.)
@@ -213,7 +211,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
 
                 return <div key={action.key}>{button}</div>;
               })}
-            </div>
+            </TreeRowActionGroup>
           )}
         </div>
 

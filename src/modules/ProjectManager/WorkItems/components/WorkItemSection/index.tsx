@@ -141,7 +141,8 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
           <Tooltip content={addTitle} position="top" mouseEnterDelay={300}>
             <button
               type="button"
-              className={`${HEADER_BUTTON.actionTreeRow} mr-2 shrink-0 opacity-0 transition-opacity group-hover:opacity-100`}
+              className={`${HEADER_BUTTON.actionTreeRow} mr-2 shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100`}
+              aria-label={addTitle}
               onClick={(event) => {
                 event.stopPropagation();
                 onAddItem();
