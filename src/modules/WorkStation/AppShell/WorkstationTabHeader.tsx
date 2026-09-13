@@ -50,9 +50,7 @@ const WorkstationTabHeader: React.FC = memo(() => {
   // WebUrlBar), so it starts flush with the shell edge rather than behind a
   // redundant leading gutter.
   const joinsSidebarGroup = isSourceControlTab || isBrowserTab;
-  const publishedHeaderPaddingLeftClassName = joinsSidebarGroup
-    ? "pl-0"
-    : "pl-2";
+  const publishedHeaderPaddingLeftClassName = joinsSidebarGroup ? "" : "pl-2";
 
   if (headerSlots?.hidden) return null;
 
@@ -64,7 +62,7 @@ const WorkstationTabHeader: React.FC = memo(() => {
     <div
       className={`flex h-9 shrink-0 items-center ${
         isBrowserTab ? "gap-px" : "gap-2"
-      } pr-2 ${shellLeadingChromeHidden ? "pl-0" : "pl-1.5"} ${
+      } pr-2 ${shellLeadingChromeHidden ? "" : "pl-1.5"} ${
         headerSlots?.joinWithFollowingRow ? "" : "border-b border-border-2"
       }`}
       data-tauri-drag-region={windowsHost ? undefined : true}
