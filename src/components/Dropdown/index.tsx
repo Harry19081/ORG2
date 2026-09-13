@@ -37,6 +37,7 @@ import React, {
   useState,
 } from "react";
 
+import Button from "@src/components/Button";
 import { useDropdownAutoKeyboard } from "@src/hooks/dropdown";
 import { useMenuHoverGrace } from "@src/hooks/dropdown/useMenuHoverGrace";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
@@ -197,7 +198,6 @@ const Dropdown: React.FC<DropdownProps> = ({
   });
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const positionFrameRef = useRef<number | null>(null);
 
   const isControlled = controlledVisible !== undefined;
@@ -427,13 +427,6 @@ const Dropdown: React.FC<DropdownProps> = ({
     return () => cancelAnimationFrame(id);
   }, [visible, position]);
 
-  useEffect(() => {
-    if (visible && isOptionsMode && showSearch) {
-      const timer = setTimeout(() => searchInputRef.current?.focus(), 10);
-      return () => clearTimeout(timer);
-    }
-  }, [visible, isOptionsMode, showSearch]);
-
   const handleTriggerClick = useCallback(() => {
     if (trigger === "click" && !disabled) {
       setVisible(!visible);
@@ -455,7 +448,6 @@ const Dropdown: React.FC<DropdownProps> = ({
       searchPlaceholder={searchPlaceholder}
       searchValue={searchValue}
       onSearchChange={handleSearchChange}
-      searchInputRef={searchInputRef}
       filteredOptions={filteredOptions}
       value={value}
       mode={mode}
@@ -471,6 +463,29 @@ const Dropdown: React.FC<DropdownProps> = ({
     droplist
   );
 
+  // Button triggers share the menu's authoritative visibility rather than
+  // requiring every caller to maintain a second selected/open state.
+  const isButtonTrigger =
+    children.type === Button || children.type === "button";
+  const triggerElement = isButtonTrigger
+    ? React.cloneElement(
+        children as React.ReactElement<
+          React.ButtonHTMLAttributes<HTMLButtonElement>
+        >,
+        {
+          "aria-expanded": visible,
+          "aria-haspopup": isOptionsMode ? "listbox" : "menu",
+          className: [
+            (children.props as React.ButtonHTMLAttributes<HTMLButtonElement>)
+              .className,
+            DROPDOWN_CLASSES.triggerOpen,
+          ]
+            .filter(Boolean)
+            .join(" "),
+        }
+      )
+    : children;
+
   return (
     <DropdownTriggerWrapper
       triggerRef={triggerRef}
@@ -481,7 +496,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       onMouseEnter={trigger === "hover" ? handleMouseEnter : undefined}
       onMouseLeave={trigger === "hover" ? handleMouseLeave : undefined}
     >
-      {children}
+      {triggerElement}
       <DropdownMenuSurface
         visible={visible}
         getPopupContainer={getPopupContainer}

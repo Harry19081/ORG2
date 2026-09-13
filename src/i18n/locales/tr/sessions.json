@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Veri kaynakları",
-      "description": "ORGII'nin algıladığı harici kodlama araçları. İçe aktarılabilir uygulamalar oturum sayısını gösterir ve yeniden taranabilir; diğerleri kurulum durumunu ve geçmişlerinin nerede olduğunu gösterir.",
+      "description": "ORG2'nin algıladığı harici kodlama araçları. İçe aktarılabilir uygulamalar oturum sayısını gösterir ve yeniden taranabilir; diğerleri kurulum durumunu ve geçmişlerinin nerede olduğunu gösterir.",
       "rescanAll": "Tümünü yeniden tara",
       "rescan": "Yeniden tara",
       "rescanning": "Yeniden taranıyor…",
@@ -190,7 +190,7 @@
           "perTurn": "LLM çağrıları",
           "perTool": "Araç çağrıları",
           "close": "Kapat",
-          "noData": "Bu oturumda yalnızca oturum düzeyi toplamlar var; çağrı başına ilişkilendirme ORGII'nin kendi agent çalıştırmaları için kaydedilir.",
+          "noData": "Bu oturumda yalnızca oturum düzeyi toplamlar var; çağrı başına ilişkilendirme ORG2'nin kendi agent çalıştırmaları için kaydedilir.",
           "turnHeader": "Tur {{turn}}",
           "promptTokens": "Prompt",
           "completionTokens": "Tamamlama"
@@ -555,22 +555,6 @@
     "creatingWithContext": "Bağlamla yeni Session oluşturuluyor",
     "creationCooldown": "Başka bir terminal oluşturmadan önce lütfen bir süre bekleyin."
   },
-  "scope": {
-    "applicableScope": "Uygulanabilir kapsam",
-    "for": "için",
-    "selectCategory": "Kategori seçin",
-    "selectScope": "Kapsam seçin",
-    "allRepos": "Tüm depolar",
-    "allSessions": "Tüm Session'lar",
-    "allProjects": "Tüm Projects",
-    "allWorkItems": "Tüm iş öğeleri",
-    "categories": {
-      "repo": "Depo",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "İş öğeleri"
-    }
-  },
   "editor": {
     "loading": "Editör yükleniyor..."
   },
@@ -732,7 +716,6 @@
     "performActions_one": "{{count}} işlem gerçekleştir",
     "performActions_other": "{{count}} işlem gerçekleştir",
     "showInlineDiffs": "Satır içi farklar",
-    "pageSettings": "Sayfa görünümü",
     "inputSettings": "Giriş ayarları",
     "replay": {
       "follow": "Takip et"
@@ -1923,7 +1906,7 @@
     "start": "Başlat",
     "missingGit": {
       "title": "Git eksik",
-      "body": "Git yüklü değil veya bulunamadı. ADE Manager ya da SDE Agent’tan bu makineye Git kurmasını isteyin, ardından ORGII’yi yeniden başlatın."
+      "body": "Git yüklü değil veya bulunamadı. ADE Manager ya da SDE Agent’tan bu makineye Git kurmasını isteyin, ardından ORG2’yi yeniden başlatın."
     },
     "model": "Model",
     "contextMenu": {
@@ -1938,8 +1921,7 @@
       "commands": "Komutlar",
       "mode": "Mod",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Komutlar"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "GIT eylemleri",
@@ -2027,7 +2009,8 @@
       "refresh": "{{cli}} CLI sürümünü yeniden denetle",
       "unknownVersion": "bilinmiyor"
     },
-    "mode": "Düzenleyici modu"
+    "mode": "Düzenleyici modu",
+    "cursorIdeDescription": "Cursor IDE sohbet oturumlarını ORG2 içinde inceleyin ve sürdürün"
   },
   "planner": {
     "modes": {
@@ -2266,7 +2249,7 @@
     "noSessionIdFound": "Session ID bulunamadı",
     "failedToResume": "Session sürdürülemedi",
     "failedToCheckChanges": "Dosya değişiklikleri kontrol edilemedi. Geri alma işlemi gerçekleştirilecek.",
-    "insufficientBalance": "Barındırılan ORGII hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin.",
+    "insufficientBalance": "Barındırılan ORG2 hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin.",
     "runQueuedBehindCheckout": "Kuyrukta: başka bir çalıştırma bu checkout'u kullanıyor. O bitince başlayacak."
   },
   "planning": {
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Agent sürecini durdur",
       "openInMyStation": "My Station'da aç"
     }
   },

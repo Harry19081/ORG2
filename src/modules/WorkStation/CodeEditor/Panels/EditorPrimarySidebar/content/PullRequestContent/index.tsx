@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 
 import type { OpenPRItem } from "@src/api/tauri/github";
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import PrHoverCard from "@src/components/PrHoverCard";
 import { TreeRowBase, type TreeRowNode } from "@src/components/TreeRow";
@@ -436,6 +437,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
           onToggle={() => setOpenCollapsed((prev) => !prev)}
         />
         <Placeholder
+          loadingIconOnly
           variant={openStatus?.kind === "loading" ? "loading" : "empty"}
           placement="sidebar"
           title={
@@ -506,14 +508,17 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
               <span>{t("labels.creatingPullRequest", "Creating…")}</span>
             </div>
           ) : (
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              appearance="solid"
+              size="small"
+              htmlType="button"
               onClick={handleCreate}
               disabled={!onCreatePr}
-              className="flex h-7 items-center justify-center rounded-md bg-primary-6 px-2.5 text-[12px] font-medium text-white transition-colors hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-50"
+              className="text-[12px] font-medium hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t("actions.createPullRequest", "Create pull request")}
-            </button>
+            </Button>
           )}
           {localCreateError && (
             <div className="flex items-start gap-1.5 rounded-md bg-fill-2 px-2 py-1.5">

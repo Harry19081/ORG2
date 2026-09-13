@@ -26,6 +26,10 @@ import {
   eventIndexAtom,
   streamingDeltaContentAtom,
 } from "../core/atoms/events";
+import {
+  getFallbackSimulatorEventFilterCategory,
+  isSimulatorEventVisibleForFilters,
+} from "../core/simulatorEventFilters";
 import type { DerivedSnapshot } from "../core/store/EventStoreProxy";
 import type {
   ReplayMode,
@@ -34,10 +38,6 @@ import type {
 } from "../core/types";
 import { isSubagentSpawningTool } from "../sync/adapters/shared/subagentTracking";
 import { appendLiveAssistantEvent } from "./chatEvents";
-import {
-  getFallbackSimulatorEventFilterCategory,
-  isSimulatorEventVisibleForFilters,
-} from "./simulatorEventFilters";
 
 function buildSimulatorEventPreview(
   event: SessionEvent

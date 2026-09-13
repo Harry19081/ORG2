@@ -75,6 +75,8 @@ import WorktreeSourceSelector from "./WorktreeSourceSelector";
 // ============================================
 
 export interface SessionInfoLineProps {
+  /** Use the original stronger hover/open surface unless explicitly disabled. */
+  strongSurface?: boolean;
   /** Current repository ID */
   repoId?: string;
   /** Current repository name */
@@ -260,6 +262,7 @@ function useSelectorShortcutBridge({
 // ============================================
 
 const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
+  strongSurface = true,
   repoId,
   repoName,
   repoPath,
@@ -614,7 +617,9 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
     return segment;
   });
 
-  const sessionInfoPills = <SessionInfoPillGroup segments={segments} />;
+  const sessionInfoPills = (
+    <SessionInfoPillGroup segments={segments} strongSurface={strongSurface} />
+  );
 
   return (
     <>

@@ -78,10 +78,13 @@ vi.mock("@src/components/AppMark", async () => {
 
 vi.mock("@src/components/Button", async () => {
   const React = await import("react");
+  const { default: Button } = await vi.importActual<
+    typeof import("@src/components/Button")
+  >("@src/components/Button");
   return {
     default: (props: CapturedButtonProps) => {
       mocks.buttons.push(props);
-      return React.createElement("button", null, props.children);
+      return React.createElement(Button, props);
     },
   };
 });

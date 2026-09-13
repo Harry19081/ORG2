@@ -16,8 +16,10 @@ import { useTranslation } from "react-i18next";
 
 import type { GitWorktreeEntry } from "@src/api/http/git/types";
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { sessionIdAtom } from "@src/engines/SessionCore";
 import { useFileReviewBatchActions } from "@src/hooks/fileReview";
@@ -38,6 +40,7 @@ import {
   ICON_CONFIG,
   PANEL_CONSTANTS,
 } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/config";
+import { StashHeaderContext } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/StashContent/StashHeaderContext";
 import { useSourceControlActions } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks";
 import { useSectionFilter } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/useSectionFilter";
 import {
@@ -135,6 +138,9 @@ export function useSourceControlSidebarModule({
   useMountedCleanup(mountedRef);
 
   const [showFilter, setShowFilter] = useState(false);
+  const [historyViewMode, setHistoryViewMode] = useState<"graph" | "list">(
+    "graph"
+  );
   const [viewMode, setViewMode] = useState<"list-tree" | "list">("list-tree");
   const {
     isOpen: showPrFilter,
@@ -169,9 +175,6 @@ export function useSourceControlSidebarModule({
   const handleToggleViewMode = useCallback(() => {
     setViewMode((prev) => (prev === "list-tree" ? "list" : "list-tree"));
   }, []);
-  const handleRefresh = useCallback(() => {
-    sourceControlRef.current?.refresh();
-  }, []);
   const handleHistoryRefreshReady = useCallback((refresh: () => void) => {
     historyRefreshRef.current = refresh;
   }, []);
@@ -184,7 +187,6 @@ export function useSourceControlSidebarModule({
     viewMode,
     onToggleFilter: handleToggleFilter,
     onToggleViewMode: handleToggleViewMode,
-    onRefresh: handleRefresh,
   });
 
   const {
@@ -201,6 +203,28 @@ export function useSourceControlSidebarModule({
         onToggle: handleToggleHistoryFilter,
         tooltip: t("common:actions.search"),
       }),
+      {
+        key: "history-view-mode",
+        icon: (
+          <AnyIcon
+            icon={
+              historyViewMode === "graph"
+                ? ICON_CONFIG.list
+                : ICON_CONFIG.listTree
+            }
+            size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
+            strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
+          />
+        ),
+        tooltip: t(
+          historyViewMode === "graph"
+            ? "common:workstation.switchToListView"
+            : "common:workstation.switchToGraphView"
+        ),
+        onClick: () =>
+          setHistoryViewMode((mode) => (mode === "graph" ? "list" : "graph")),
+        forceVisible: true,
+      },
       {
         key: "refresh-git-history",
         icon: (
@@ -221,6 +245,7 @@ export function useSourceControlSidebarModule({
       handleToggleHistoryFilter,
       handleHistoryRefreshClick,
       historyRefreshSpinClass,
+      historyViewMode,
       t,
     ]
   );
@@ -257,7 +282,7 @@ export function useSourceControlSidebarModule({
         <HugeiconsIcon
           icon={RotateLeft01Icon}
           data-icon="rotate-ccw"
-          size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
+          size={HEADER_ICON_SIZE.discard}
           strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
         />
       ),
@@ -401,8 +426,10 @@ export function useSourceControlSidebarModule({
         : t("tabs.sourceControl");
   const isAlternateMode = isPrMode || isHistoryMode || isIssuesMode;
   const sectionTitle = isAlternateMode ? (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className="flex min-w-0 items-center gap-1.5 normal-case"
       onClick={() => onFilterModeChange?.("uncommitted")}
       aria-label={t("tabs.sourceControl")}
@@ -417,7 +444,7 @@ export function useSourceControlSidebarModule({
         />
       </span>
       <span className="truncate uppercase">{sectionLabel}</span>
-    </button>
+    </Button>
   ) : (
     sectionLabel
   );
@@ -436,7 +463,7 @@ export function useSourceControlSidebarModule({
           <GitHistoryContent
             repoPath={repoPath}
             repoId={repoId}
-            viewMode="graph"
+            viewMode={historyViewMode}
             onRefreshReady={handleHistoryRefreshReady}
             onHistorySelectionChange={onGitHistorySelectionChange}
             filterQuery={historyFilterQuery}
@@ -446,6 +473,7 @@ export function useSourceControlSidebarModule({
     ),
     [
       showHistoryFilter,
+      historyViewMode,
       historyFilterQuery,
       setHistoryFilterQuery,
       clearHistoryFilter,
@@ -546,5 +574,30 @@ export function useSourceControlSidebarModule({
           : undefined,
   });
 
-  return useMemo(() => ({ tab, ref: sourceControlRef }), [tab]);
+  const stashHeader = useMemo(
+    () => ({
+      onBack: () => onFilterModeChange?.("uncommitted"),
+      actions: actions.map((action) => ({ ...action, forceVisible: true })),
+    }),
+    [actions, onFilterModeChange]
+  );
+
+  return useMemo(
+    () => ({
+      tab:
+        filterMode === "stashed"
+          ? {
+              ...tab,
+              sections: undefined,
+              rawContent: (
+                <StashHeaderContext.Provider value={stashHeader}>
+                  {tab.sections?.[0]?.content}
+                </StashHeaderContext.Provider>
+              ),
+            }
+          : tab,
+      ref: sourceControlRef,
+    }),
+    [tab, filterMode, stashHeader]
+  );
 }

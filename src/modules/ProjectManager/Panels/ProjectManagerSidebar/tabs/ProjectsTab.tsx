@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import type { ProjectOrg } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -27,7 +28,6 @@ import {
   Settings01Icon,
 } from "@src/icons";
 import {
-  HEADER_BUTTON,
   HEADER_ICON_SIZE,
   type PrimarySidebarTab,
 } from "@src/modules/WorkStation/shared";
@@ -96,9 +96,22 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        aria-pressed={isOpen}
+        aria-label={addOrgLabel}
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={HEADER_ICON_SIZE.md}
+          />
+        }
         ref={triggerRef}
-        className={`${HEADER_BUTTON.actionTreeRow} ${isOpen ? "bg-surface-selected! text-primary-6!" : ""}`}
+        className={`${isOpen ? "bg-surface-selected! text-primary-6!" : ""}`}
         data-dropdown-open={isOpen}
         onMouseDown={(event) => {
           event.stopPropagation();
@@ -108,14 +121,8 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
           toggle();
         }}
         title={addOrgLabel}
-        type="button"
-      >
-        <HugeiconsIcon
-          icon={Add01Icon}
-          data-icon="plus"
-          size={HEADER_ICON_SIZE.md}
-        />
-      </button>
+        htmlType="button"
+      />
       {isOpen &&
         isPositioned &&
         createPortal(
@@ -136,8 +143,10 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
               event.stopPropagation();
             }}
           >
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleAddOrg}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -150,9 +159,11 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
                 className="text-text-2"
               />
               <span className="min-w-0 flex-1 truncate">{addOrgLabel}</span>
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleImportOrgs}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -165,7 +176,7 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
                 className="text-text-2"
               />
               <span className="min-w-0 flex-1 truncate">{importOrgsLabel}</span>
-            </button>
+            </Button>
           </div>,
           document.body
         )}
@@ -216,9 +227,22 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        aria-pressed={isOpen}
+        aria-label={createLabel}
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={HEADER_ICON_SIZE.md}
+          />
+        }
         ref={triggerRef}
-        className={`${HEADER_BUTTON.actionTreeRow} ${isOpen ? "bg-surface-selected! text-primary-6!" : ""}`}
+        className={`${isOpen ? "bg-surface-selected! text-primary-6!" : ""}`}
         data-dropdown-open={isOpen}
         onMouseDown={(event) => {
           event.stopPropagation();
@@ -228,14 +252,8 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
           toggle();
         }}
         title={createLabel}
-        type="button"
-      >
-        <HugeiconsIcon
-          icon={Add01Icon}
-          data-icon="plus"
-          size={HEADER_ICON_SIZE.md}
-        />
-      </button>
+        htmlType="button"
+      />
       {isOpen &&
         isPositioned &&
         createPortal(
@@ -256,8 +274,10 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
               event.stopPropagation();
             }}
           >
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleCreateWorkItem}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -272,9 +292,11 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
               <span className="min-w-0 flex-1 truncate">
                 {createWorkItemLabel}
               </span>
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleCreateProject}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -289,9 +311,11 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
               <span className="min-w-0 flex-1 truncate">
                 {createProjectLabel}
               </span>
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleImportGithubIssuesProject}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -306,7 +330,7 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
               <span className="min-w-0 flex-1 truncate">
                 {importGithubIssuesProjectLabel}
               </span>
-            </button>
+            </Button>
           </div>,
           document.body
         )}

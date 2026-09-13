@@ -65,7 +65,6 @@ export const EditorPrimarySidebar: React.FC<EditorPrimarySidebarProps> = memo(
     onFileSelect,
     onFileSelectWithLine,
     onDirectoryToggle,
-    onRefresh,
     onCollapseAll,
     onFilterSearch,
     onClearSearch,
@@ -195,8 +194,6 @@ export const EditorPrimarySidebar: React.FC<EditorPrimarySidebarProps> = memo(
     const { filesActions, searchActions } = useExplorerActions({
       showFilterFiles: filterState.showFilterFiles,
       onToggleFilterFiles: filterState.handleToggleFilterFiles,
-      onRefresh,
-      filesRefreshLoading: loading,
       onCollapseAll: hasVisibleFileTreeItems ? onCollapseAll : undefined,
       onAddFile: handleAddFile,
       onAddFolder: handleAddFolder,

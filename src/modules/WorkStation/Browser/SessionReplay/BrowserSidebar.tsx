@@ -8,6 +8,7 @@
 import React, { memo, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { FaviconIcon } from "@src/components/FaviconIcon";
 import { Placeholder } from "@src/components/Placeholder";
 import { TreeRowBase, type TreeRowNode } from "@src/components/TreeRow";
@@ -32,9 +33,9 @@ import {
 import { PANEL_CONSTANTS } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/config";
 import { PrimarySidebarLayoutWithSections } from "@src/modules/WorkStation/shared";
 import type { PrimarySidebarTab } from "@src/modules/WorkStation/shared/PrimarySidebarLayout/PrimarySidebarLayoutWithSections";
-import { getSiteNameFromUrl } from "@src/store/ui/navigationSidebarTabsAtom";
 import { isPlaceholderBrowserSessionTitle } from "@src/store/workstation/browser/tabs";
 import { deriveToolAction } from "@src/util/ui/rendering/toolAction";
+import { getSiteNameFromUrl } from "@src/util/url/browserDisplay";
 
 import {
   type EntryCategory,
@@ -337,15 +338,18 @@ const EntryList: React.FC<EntryListProps> = ({
         );
       })}
       {hiddenCount > 0 ? (
-        <button
-          type="button"
-          className="mx-2 my-2 rounded-md border border-border-2 px-2 py-1 text-xs text-text-3 hover:bg-bg-2 hover:text-text-1"
+        <Button
+          variant="secondary"
+          appearance="outline"
+          size="mini"
+          htmlType="button"
+          className="mx-2 my-2 text-xs hover:bg-bg-2 hover:text-text-1"
           onClick={() =>
             setVisibleCount((count) => count + VISIBLE_ROW_INCREMENT)
           }
         >
           +{Math.min(hiddenCount, VISIBLE_ROW_INCREMENT)}
-        </button>
+        </Button>
       ) : null}
     </div>
   );
@@ -422,15 +426,18 @@ const NativeEntryList: React.FC<NativeEntryListProps> = ({
         );
       })}
       {hiddenCount > 0 ? (
-        <button
-          type="button"
-          className="mx-2 my-2 rounded-md border border-border-2 px-2 py-1 text-xs text-text-3 hover:bg-bg-2 hover:text-text-1"
+        <Button
+          variant="secondary"
+          appearance="outline"
+          size="mini"
+          htmlType="button"
+          className="mx-2 my-2 text-xs hover:bg-bg-2 hover:text-text-1"
           onClick={() =>
             setVisibleCount((count) => count + VISIBLE_ROW_INCREMENT)
           }
         >
           +{Math.min(hiddenCount, VISIBLE_ROW_INCREMENT)}
-        </button>
+        </Button>
       ) : null}
     </div>
   );

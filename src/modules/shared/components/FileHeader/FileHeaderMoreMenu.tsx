@@ -47,7 +47,6 @@ import {
   Layers01Icon,
   Refresh04Icon,
   Search01Icon,
-  Settings01Icon,
   Undo03Icon,
 } from "@src/icons";
 import { getFileManagerRevealLabelKey } from "@src/util/platform/fileManagerLabels";
@@ -254,6 +253,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
             aria-haspopup="menu"
             aria-expanded={menuVisible}
             nativeTitle={false}
+            tooltipDisabled
             className="shrink-0"
           >
             <HugeiconsIcon
@@ -320,7 +320,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                   <HugeiconsIcon
                     icon={Undo03Icon}
                     data-icon="undo-3"
-                    size={HEADER_ICON_SIZE.sm}
+                    size={HEADER_ICON_SIZE.discard}
                   />
                 }
                 disabled={discardDisabled}
@@ -456,7 +456,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
               )}
             {hasDisplaySettings && (
               <ActionSubmenu
-                label={t("sessions:chat.pageSettings")}
+                label={t("common:common.display")}
                 icon={
                   <HugeiconsIcon
                     icon={Layers01Icon}
@@ -510,13 +510,6 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                     role="menuitem"
                     fullWidth
                     tabIndex={0}
-                    icon={
-                      <HugeiconsIcon
-                        icon={Settings01Icon}
-                        data-icon="settings"
-                        size={HEADER_ICON_SIZE.sm}
-                      />
-                    }
                     disabled={!showMoreSettingsAction}
                     onClick={onMoreSettingsClick}
                     suffix={

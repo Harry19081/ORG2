@@ -13,15 +13,19 @@ export type ButtonVariant =
   | "merged";
 
 export type ButtonAppearance =
-  | "solid"
-  | "outline"
-  | "dashed"
-  | "ghost"
-  | "soft";
-export type ButtonSize = "sidebar" | "mini" | "small" | "default" | "large";
+  /** A compound primitive already owns its token-backed surface. */
+  "custom" | "solid" | "outline" | "dashed" | "ghost" | "soft" | "soft-no-drop";
+export type ButtonSize =
+  | "inline"
+  | "sidebar"
+  | "mini"
+  | "small"
+  | "default"
+  | "large";
 export type ButtonShape = "square" | "round" | "circle";
 
 const BUTTON_SIZE_CONFIG = {
+  inline: { height: 20, padding: "0", fontSize: 12, iconSize: 12 },
   sidebar: { height: 20, padding: "0 4px", fontSize: 12, iconSize: 14 },
   mini: { height: 24, padding: "0 8px", fontSize: 12, iconSize: 12 },
   small: { height: 28, padding: "0 12px", fontSize: 13, iconSize: 14 },
@@ -53,15 +57,20 @@ function getButtonStyleClasses(
   variant: ButtonVariant,
   appearance: ButtonAppearance
 ) {
-  if (appearance === "soft") {
+  if (appearance === "custom") return "";
+  if (appearance === "soft" || appearance === "soft-no-drop") {
     const colors =
       variant === "tertiary" || variant === "secondary"
-        ? BUTTON_VARIANT.default
-        : variant === "warning"
-          ? "text-warning-6 enabled:hover:bg-warning-3 focus-visible:bg-warning-3"
-          : variant === "merged"
-            ? "text-purple-6 enabled:hover:bg-purple-3 focus-visible:bg-purple-3"
-            : BUTTON_VARIANT[variant];
+        ? appearance === "soft-no-drop"
+          ? BUTTON_VARIANT.noDrop
+          : BUTTON_VARIANT.default
+        : variant === "danger" && appearance === "soft-no-drop"
+          ? BUTTON_VARIANT.dangerNoDrop
+          : variant === "warning"
+            ? "text-warning-6 enabled:hover:bg-warning-3 focus-visible:bg-warning-3"
+            : variant === "merged"
+              ? "text-purple-6 enabled:hover:bg-purple-3 focus-visible:bg-purple-3"
+              : BUTTON_VARIANT[variant];
     return `border-0 bg-transparent ${colors} aria-pressed:bg-surface-selected aria-pressed:text-primary-6`;
   }
   const base = (() => {
@@ -166,6 +175,7 @@ function getButtonStyleClasses(
 }
 
 interface ButtonPresentationOptions {
+  layout?: "default" | "custom";
   variant: ButtonVariant;
   appearance?: ButtonAppearance;
   size: ButtonSize;
@@ -184,6 +194,7 @@ interface ButtonPresentationOptions {
 }
 
 export function useButtonPresentation({
+  layout = "default",
   variant,
   appearance,
   size,
@@ -207,22 +218,23 @@ export function useButtonPresentation({
   const borderRadius = useMemo(() => {
     if (shape === "circle") return "50%";
     if (shape === "round") return "100px";
-    return "8px";
-  }, [shape]);
+    return size === "sidebar" ? "var(--radius-sm)" : "8px";
+  }, [shape, size]);
 
   const buttonStyles = useMemo<React.CSSProperties>(() => {
+    if (layout === "custom") return style ?? {};
     const iconOnlySize =
       iconOnly || shape === "circle" ? sizeConfig.height : undefined;
     return {
-      height: sizeConfig.height,
+      height: size === "inline" && !iconOnly ? "auto" : sizeConfig.height,
       padding: iconOnly || shape === "circle" ? "0" : sizeConfig.padding,
       width: long ? "100%" : iconOnlySize,
       minWidth: long ? 0 : undefined,
-      fontSize: sizeConfig.fontSize,
+      fontSize: size === "inline" ? undefined : sizeConfig.fontSize,
       borderRadius,
       ...style,
     };
-  }, [sizeConfig, iconOnly, shape, long, borderRadius, style]);
+  }, [layout, size, sizeConfig, iconOnly, shape, long, borderRadius, style]);
 
   // Icon↔label spacing lives on the icon itself (margin), NOT on a flex
   // `gap` of the <button>: WebKit's button-internal (anonymous-box) layout
@@ -284,7 +296,13 @@ export function useButtonPresentation({
   // button's horizontal center. Centering icon + label as one group leaves the
   // label reading off-center, which is visible on full-width action buttons.
   const buttonContent =
-    centerLabel && label && iconNode ? (
+    layout === "custom" ? (
+      <>
+        {iconPosition === "left" && iconNode}
+        {children}
+        {iconPosition === "right" && iconNode}
+      </>
+    ) : centerLabel && label && iconNode ? (
       <span className="relative inline-flex min-w-0 items-center justify-center">
         <span
           className={`absolute inset-y-0 inline-flex items-center ${
@@ -304,14 +322,16 @@ export function useButtonPresentation({
     );
 
   const baseClasses =
-    "inline-flex items-center justify-center font-medium whitespace-nowrap select-none no-underline outline-none transition-[border-color,box-shadow,background-color,color,opacity] duration-150";
+    layout === "custom"
+      ? ""
+      : "inline-flex items-center justify-center font-medium whitespace-nowrap select-none no-underline outline-none transition-[border-color,box-shadow,background-color,color,opacity] duration-150";
   const disabledClasses = isDisabled
     ? "cursor-not-allowed opacity-50"
     : "cursor-pointer";
   const buttonClassName = [
-    "button",
+    layout === "custom" ? "" : "button",
     baseClasses,
-    disabledClasses,
+    layout === "custom" && appearance === "custom" ? "" : disabledClasses,
     getButtonStyleClasses(variant, resolvedAppearance),
     className,
   ]

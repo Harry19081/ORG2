@@ -11,6 +11,10 @@ import AnyIcon from "@src/components/AnyIcon";
 import Avatar from "@src/components/Avatar";
 import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
+import {
+  DROPDOWN_PANEL,
+  MULTI_SELECT_PANEL_WIDTH,
+} from "@src/components/Dropdown/tokens";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import {
   LIST_PANEL_SECTIONS,
@@ -246,6 +250,11 @@ export const TeamInboxListControls: React.FC<TeamInboxListControlsProps> = ({
             <Dropdown
               options={muteOptions}
               mode="multiple"
+              showSearch
+              style={{
+                width: MULTI_SELECT_PANEL_WIDTH,
+                maxWidth: `calc(100vw - ${DROPDOWN_PANEL.viewportPadding * 2}px)`,
+              }}
               value={[...mutedKinds]}
               loading={mutePreferencesLoading}
               popupVisible={muteMenuOpen}

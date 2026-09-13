@@ -14,6 +14,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { repoApi } from "@src/api/tauri/repo";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import { HugeiconsIcon } from "@src/icons";
 import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
@@ -39,6 +40,7 @@ import {
   useSharedRepoList,
 } from "../../hooks";
 import { usePathSegment } from "../../hooks/usePathSegment";
+import { usePinnedSpotlightItems } from "../../pinning/usePinnedSpotlightItems";
 import { PaletteBody, ShellFooterAction, SpotlightShell } from "../../shell";
 import type { RepoItem, SpotlightItem } from "../../types";
 import { AddWorkingDirectoryModalShell } from "../AddWorkingDirectoryModalShell";
@@ -348,7 +350,7 @@ export const WorkingDirectoryPalette: React.FC<
       const confirmed = await confirmDestructiveAction({
         title: t("confirmation.removeTitle", { name: repo.name }),
         message: t("confirmation.removeMessage"),
-        okLabel: t("actions.removeFromOrgii", "Remove from ORGII"),
+        okLabel: t("actions.removeFromOrgii", "Remove from ORG2"),
         cancelLabel: t("actions.cancel"),
       });
       if (!confirmed) return;
@@ -363,7 +365,7 @@ export const WorkingDirectoryPalette: React.FC<
           return next;
         });
         Message.success(
-          t("selectors.spotlight.toast.repoRemoved", "Linkage to ORGII removed")
+          t("selectors.spotlight.toast.repoRemoved", "Linkage to ORG2 removed")
         );
       } catch (error) {
         Message.error(
@@ -371,7 +373,7 @@ export const WorkingDirectoryPalette: React.FC<
             ? error.message
             : t(
                 "selectors.spotlight.toast.repoRemoveFailed",
-                "Failed to remove linkage to ORGII"
+                "Failed to remove linkage to ORG2"
               )
         );
       }
@@ -431,22 +433,26 @@ export const WorkingDirectoryPalette: React.FC<
 
   const renderRepoTrashAction = useCallback(
     (repo: RepoItem): React.ReactNode => (
-      <button
-        type="button"
+      <Button
+        variant="danger"
+        appearance="soft"
+        size="mini"
+        aria-label={t("actions.removeFromOrgii", "Remove from ORG2")}
+        iconOnly
+        icon={<HugeiconsIcon icon={ICONS.removeRepo} size={14} />}
+        htmlType="button"
         onClick={(e) => {
           e.stopPropagation();
           void handleRemoveRepo(repo);
         }}
-        className="flex items-center justify-center rounded-md p-1 text-danger-6 transition-colors hover:bg-danger-6/10"
-        title={t("actions.removeFromOrgii", "Remove from ORGII")}
-      >
-        <HugeiconsIcon icon={ICONS.removeRepo} size={14} />
-      </button>
+        className="hover:bg-danger-6/10"
+        title={t("actions.removeFromOrgii", "Remove from ORG2")}
+      />
     ),
     [handleRemoveRepo, t]
   );
 
-  const mainItems = useMemo((): SpotlightItem[] => {
+  const unpinnedMainItems = useMemo((): SpotlightItem[] => {
     return buildSectionedWorkingDirectoryItems({
       addMenuActive: !!addMenuKind,
       sectionedAddItems,
@@ -503,6 +509,12 @@ export const WorkingDirectoryPalette: React.FC<
     toggleSelection,
     workspaceItems,
   ]);
+
+  const mainItems = usePinnedSpotlightItems(
+    unpinnedMainItems,
+    "directories",
+    !addMenuKind && !isManageMode
+  );
 
   const pinnedActionStartIndex = mainItems.length;
   const items = useMemo(
@@ -605,8 +617,6 @@ export const WorkingDirectoryPalette: React.FC<
       <AddWorkingDirectoryModalShell
         isOpen={isOpen}
         onClose={onClose}
-        inputRef={kernel.inputRef}
-        handleKeyDown={kernel.handleKeyDown}
         modalStage={modalStage}
         workingDirectoryFlow={workingDirectoryFlow}
         currentRepoId={currentRepoId}

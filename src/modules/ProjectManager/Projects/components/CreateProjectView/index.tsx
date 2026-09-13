@@ -456,7 +456,7 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
       options={orgOptions}
       onChange={handleOrgChange}
       placeholder={selectedOrgLabel}
-      placement="top"
+      placement={layout === "spotlight" ? "bottom" : "top"}
       dataTestId="create-project-org-select"
     />
   );
@@ -491,7 +491,10 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
   );
 
   const projectPinnedActions = (
-    <CreateComposerPinnedActions dataTestId="create-project-pinned-actions">
+    <CreateComposerPinnedActions
+      direction={layout === "spotlight" ? "down" : "up"}
+      dataTestId="create-project-pinned-actions"
+    >
       {creatorModeControl}
       {orgTrailSelect}
       {propertyPills}

@@ -47,7 +47,7 @@ export function createBrowserMobileRemotePlatform(): MobileRemotePlatform {
     clientInfo: {
       name: "orgii-mobile-pwa",
       version: "0.1.0",
-      defaultDeviceLabel: "ORGII Mobile",
+      defaultDeviceLabel: "ORG2 Mobile",
     },
     runtime,
     auth: {

@@ -86,8 +86,10 @@ const GitHubIssueCloseButton: React.FC<GitHubIssueCloseButtonProps> = ({
       data-testid="github-issue-duplicate-picker"
       onClick={(event) => event.stopPropagation()}
     >
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className={`${DROPDOWN_CLASSES.menuActionItem} rounded-none border-b border-border-2`}
         onClick={() => {
           setMenuLevel("actions");
@@ -104,7 +106,7 @@ const GitHubIssueCloseButton: React.FC<GitHubIssueCloseButtonProps> = ({
         <span className="min-w-0 flex-1 truncate text-left">
           {t("git.issues.composer.closeAsDuplicate")}
         </span>
-      </button>
+      </Button>
       <DropdownSearch
         value={searchQuery}
         onChange={setSearchQuery}

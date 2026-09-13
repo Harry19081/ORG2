@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import {
   DROPDOWN_CLASSES,
@@ -12,7 +13,7 @@ import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import {
   SIMULATOR_EVENT_FILTER_VALUES,
   type SimulatorEventFilterValue,
-} from "@src/engines/SessionCore/derived/simulatorEventFilters";
+} from "@src/engines/SessionCore/core/simulatorEventFilters";
 import { getDropdownPanelStyle } from "@src/hooks/dropdown/dropdownPanelStyle";
 import { useDropdownEngine } from "@src/hooks/dropdown/useDropdownEngine";
 import { HugeiconsIcon, ListFilterIcon } from "@src/icons";
@@ -111,9 +112,11 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         ref={triggerRef as React.Ref<HTMLButtonElement>}
-        type="button"
+        htmlType="button"
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -139,7 +142,7 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
             {triggerLabel}
           </span>
         )}
-      </button>
+      </Button>
       {isOpen &&
         isPositioned &&
         createPortal(

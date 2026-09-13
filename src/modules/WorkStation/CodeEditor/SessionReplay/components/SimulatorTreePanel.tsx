@@ -1,6 +1,9 @@
 import React, { useCallback, useMemo, useState } from "react";
 
-import FilePathBreadcrumb from "@src/components/FilePathBreadcrumb";
+import {
+  FILE_TREE_HOVER_DELAY_MS,
+  FileTreePreview,
+} from "@src/components/FileTreePreview/exports";
 import Tooltip from "@src/components/Tooltip";
 import { TREE_ROW_HEIGHT, TreeRowBase } from "@src/components/TreeRow";
 import type {
@@ -23,9 +26,6 @@ import {
   flattenFileTree,
 } from "../fileTreeUtils";
 
-/** Long enough that scanning down the list doesn't flash a card per row. */
-const PATH_HOVER_DELAY_MS = 400;
-
 interface SimulatorTreePanelProps {
   items: FileTreeInput[];
   selectedId: string | null;
@@ -34,6 +34,8 @@ interface SimulatorTreePanelProps {
   onSelectItem: (eventId: string) => void;
   emptyMessage: string;
   viewMode: "list-tree" | "list";
+  /** Disable for terminal entries whose tree paths are synthetic event IDs. */
+  showFilePathPreview?: boolean;
 }
 
 const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
@@ -43,6 +45,7 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
   onSelectItem,
   emptyMessage,
   viewMode,
+  showFilePathPreview = true,
 }) => {
   const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set());
 
@@ -114,24 +117,22 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
 
       // The row itself only shows the file name — the full path lives in a
       // hover card so long paths never squeeze the name out of the sidebar.
-      if (!isFile) return row;
+      if (!isFile || !showFilePathPreview) return row;
 
       return (
         <Tooltip
-          content={
-            <FilePathBreadcrumb path={item.node.path} maxSegments={null} />
-          }
+          content={<FileTreePreview path={item.node.path} />}
           position="right"
           smartPlacement
-          framedPanel
-          framedPanelWide
-          mouseEnterDelay={PATH_HOVER_DELAY_MS}
+          showArrow={false}
+          mouseEnterDelay={FILE_TREE_HOVER_DELAY_MS}
+          style={{ padding: 0, background: "transparent", boxShadow: "none" }}
         >
           {row}
         </Tooltip>
       );
     },
-    [selectedId, handleNodeClick, agentSelectedIds]
+    [selectedId, handleNodeClick, agentSelectedIds, showFilePathPreview]
   );
 
   const renderStickyItem = useCallback(

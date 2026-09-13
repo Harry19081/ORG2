@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 
 import type { OpenPRItem } from "@src/api/tauri/github";
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import DropdownSearch from "@src/components/Dropdown/DropdownSearch";
 import {
   DROPDOWN_CLASSES,
@@ -425,8 +426,10 @@ export function BranchPullRequestPicker({
           renderItem={(pr, index) => {
             const StatusIcon = getBranchPullRequestIcon(pr);
             return (
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 key={pr.number}
                 {...keyboard.getItemProps(index)}
                 disabled={selecting}
@@ -442,16 +445,18 @@ export function BranchPullRequestPicker({
                   </span>
                 </span>
                 <BranchPullRequestChecks status={pr.ci_status} />
-              </button>
+              </Button>
             );
           }}
         />
       )}
       <div className={DROPDOWN_CLASSES.footerContainer}>
         {pinnedActionItems.map((action, index) => (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={action.id}
-            type="button"
+            htmlType="button"
             {...keyboard.getItemProps(items.length + index)}
             disabled={action.data?.disabled}
             className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full justify-start`}
@@ -464,7 +469,7 @@ export function BranchPullRequestPicker({
               />
             </span>
             <span>{action.label}</span>
-          </button>
+          </Button>
         ))}
       </div>
       <div className="flex justify-end px-3 py-2">{branchInfoToggle}</div>

@@ -15,6 +15,10 @@ import {
 } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import {
+  type SpotlightPlacement,
+  spotlightPlacementAtom,
+} from "@src/store/ui/uiAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import {
   workStationLayoutModeAtom,
@@ -84,6 +88,10 @@ function SwitchControlRow({
 export const SidebarLayoutSettingsSubmenu: React.FC<SidebarLayoutSettingsSubmenuProps> =
   React.memo(({ panelRef, position, onPointerDown, onMouseDown }) => {
     const { t } = useTranslation("common");
+    const { t: tSettings } = useTranslation("settings");
+    const [spotlightPlacement, setSpotlightPlacement] = useAtom(
+      spotlightPlacementAtom
+    );
     const stationMode = useAtomValue(stationModeAtom);
     const setStationChatVisible = useSetAtom(activeStationChatVisibleAtom);
     const layoutMode = useAtomValue(workStationLayoutModeAtom);
@@ -99,6 +107,16 @@ export const SidebarLayoutSettingsSubmenu: React.FC<SidebarLayoutSettingsSubmenu
     const chatPositionOptions = [
       { value: "left", label: t("layoutSettings.left") },
       { value: "right", label: t("layoutSettings.right") },
+    ] as const;
+    const spotlightPlacementOptions = [
+      {
+        value: "top",
+        label: tSettings("general.spotlightPlacementOptions.top"),
+      },
+      {
+        value: "center",
+        label: tSettings("general.spotlightPlacementOptions.center"),
+      },
     ] as const;
     const modelPickerStyleOptions = [
       { value: "spotlight", label: t("layoutSettings.modelPickerSpotlight") },
@@ -141,6 +159,12 @@ export const SidebarLayoutSettingsSubmenu: React.FC<SidebarLayoutSettingsSubmenu
             value={modelPickerStyle}
             options={modelPickerStyleOptions}
             onChange={setModelPickerStyle}
+          />
+          <SegmentedControlRow<SpotlightPlacement>
+            label={tSettings("general.spotlightPlacement")}
+            value={spotlightPlacement}
+            options={spotlightPlacementOptions}
+            onChange={setSpotlightPlacement}
           />
           <div
             className={DROPDOWN_CLASSES.menuGroupSeparator}

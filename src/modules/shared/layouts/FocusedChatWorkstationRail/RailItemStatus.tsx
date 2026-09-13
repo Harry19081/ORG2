@@ -56,7 +56,7 @@ export function RailItemStatus({
         ? "text-danger-6"
         : status.state === "checking" || status.state === "pending"
           ? "text-warning-6"
-          : "text-text-3";
+          : "text-text-1";
 
   return (
     <span
@@ -65,7 +65,9 @@ export function RailItemStatus({
       aria-label={status.title}
     >
       {icon}
-      {status.iconOnly ? null : <span>{status.label}</span>}
+      {status.iconOnly ? null : (
+        <span className="text-text-1">{status.label}</span>
+      )}
     </span>
   );
 }

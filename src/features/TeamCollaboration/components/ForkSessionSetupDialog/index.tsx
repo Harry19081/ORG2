@@ -267,9 +267,11 @@ const ForkSessionSetupForm: React.FC<ForkSessionSetupFormProps> = ({
               matchingRepos.map((repo) => {
                 const selected = workspaceRepoPath === repo.fs_uri;
                 return (
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
                     key={repo.id}
-                    type="button"
+                    htmlType="button"
                     onClick={() => setWorkspaceRepoPath(repo.fs_uri ?? null)}
                     className={`flex flex-col px-3 py-2 text-left focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset ${
                       selected ? "bg-fill-2" : "hover:bg-fill-2"
@@ -282,7 +284,7 @@ const ForkSessionSetupForm: React.FC<ForkSessionSetupFormProps> = ({
                     <span className="truncate text-xs text-text-3">
                       {repo.fs_uri}
                     </span>
-                  </button>
+                  </Button>
                 );
               })
             )}

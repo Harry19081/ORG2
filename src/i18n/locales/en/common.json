@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "Contains files: {{status}}",
+    "staged": "{{status}} (staged)",
+    "additions": "Added lines",
+    "deletions": "Deleted lines",
+    "M": "Modified",
+    "U": "Untracked",
+    "A": "Added",
+    "D": "Deleted",
+    "R": "Renamed",
+    "C": "Conflict",
+    "I": "Ignored",
+    "?": "Unknown status"
+  },
+  "findScope": {
+    "session": "Search in session",
+    "file": "Search in file",
+    "named": "Search in {{name}}"
+  },
   "windowChrome": {
     "menus": {
       "file": "File",
@@ -9,7 +28,7 @@
       "aria": "{{label}} menu"
     },
     "items": {
-      "quitOrg2": "Quit ORG-2",
+      "quitOrg2": "Quit ORG2",
       "newSession": "New Session",
       "openFolder": "Open Folder...",
       "addFolderToWorkspace": "Add Folder to Workspace...",
@@ -44,12 +63,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "Reply cannot be empty",
-    "sessionNotFound": "Session not found",
-    "answerSubmitted": "Answer submitted successfully",
-    "answerFailed": "Failed to submit answer. Please try again.",
-    "replyError": "An error occurred while sending the reply",
-    "questionIgnored": "Question ignored",
     "addedAsContext": "Added {{name}} as context",
     "addedFilesAsContext": "Added {{count}} file(s) as context",
     "chooseExecutionAgentAi": "Choose an execution agent before creating with AI.",
@@ -117,8 +130,8 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
-    "removeFromOrgii": "Remove from ORGII",
-    "removeFromOrgiiCount": "Remove from ORGII ({{count}})",
+    "removeFromOrgii": "Remove from ORG2",
+    "removeFromOrgiiCount": "Remove from ORG2 ({{count}})",
     "edit": "Edit",
     "write": "Write",
     "close": "Close",
@@ -308,6 +321,7 @@
   },
   "optional": "optional",
   "common": {
+    "display": "Display",
     "on": "On",
     "off": "Off",
     "default": "Default",
@@ -344,6 +358,9 @@
     "source": "Source"
   },
   "labels": {
+    "stashesCount": "{{count}} stashes",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stashes",
     "accounts": "Accounts",
     "enabled": "Enabled",
     "disabled": "Disabled",
@@ -399,7 +416,9 @@
     },
     "operationLog": "Operation Log",
     "gitDashboard": "Dashboard",
-    "changedFiles": "Changed Files",
+    "changedFilesCount": "{{fileCount}} changed files",
+    "changedFilesCount_one": "{{fileCount}} changed file",
+    "changedFilesCount_other": "{{fileCount}} changed files",
     "colorTokens": "Color Tokens",
     "terminalInfo": "Terminal Info",
     "fileCount_one": "{{count}} file",
@@ -520,42 +539,9 @@
     "technicalDetails": "Technical details",
     "failedToCopy": "Failed to copy",
     "api": {
-      "titles": {
-        "githubConnections": "Couldn't load GitHub connections",
-        "githubConnect": "Couldn't connect to GitHub",
-        "workflows": "Couldn't load workflows",
-        "config": "Couldn't load settings",
-        "agent": "Couldn't reach Agent",
-        "repository": "Couldn't load repo",
-        "file": "Couldn't load file",
-        "mcp": "MCP server error",
-        "extension": "Code editor extension error",
-        "workspace": "Couldn't load workspace",
-        "slackConnections": "Couldn't load Slack connections",
-        "wallet": "Couldn't load wallet",
-        "billing": "Couldn't complete billing operation",
-        "default": "Couldn't load data",
-        "timeout": "Request took too long",
-        "external": "Couldn't load external data"
-      },
       "messages": {
-        "network": "Check your connection and try again.",
-        "timeout": "Request took too long. Try again.",
-        "server": "Something went wrong on our end. Try again in a few minutes.",
-        "notFound": "This item wasn't found.",
-        "signIn": "Please sign in again.",
-        "forbidden": "You don't have permission for this action.",
-        "tooManyRequests": "Too many requests. Wait a moment and try again.",
-        "validation": "Invalid data. Please check your input.",
-        "conflict": "Conflict detected. The resource may have been modified.",
-        "badGateway": "Server is unreachable. Try again later.",
-        "serviceUnavailable": "Service temporarily unavailable. Try again later.",
-        "gatewayTimeout": "Server is not responding. Try again later.",
-        "invalidRequest": "Invalid request. Please try again.",
-        "default": "Please try again.",
-        "externalHint": "Check the URL and settings, then try again."
-      },
-      "workflow": "Workflow service is temporarily unavailable. Try again later."
+        "signIn": "Please sign in again."
+      }
     },
     "unknownError": "Unknown error occurred",
     "componentLoadingFailed": "Component failed to load",
@@ -564,12 +550,12 @@
   },
   "confirmation": {
     "delete": "Are you sure you want to delete this?",
-    "removeTitle": "Remove \"{{name}}\" from ORGII?",
-    "removeMessage": "This only removes its linkage to ORGII. Nothing will be removed from disk.",
+    "removeTitle": "Remove \"{{name}}\" from ORG2?",
+    "removeMessage": "This only removes its linkage to ORG2. Nothing will be removed from disk.",
     "deleteWorkspaceTitle": "Delete workspace \"{{name}}\"?",
     "deleteWorkspaceMessage": "This deletes the workspace preset only. Member repos and folders are not affected.",
-    "deleteSelectedTitle": "Remove {{count}} selected items from ORGII?",
-    "deleteSelectedMessage": "This only removes their linkage to ORGII. Nothing will be removed from disk.",
+    "deleteSelectedTitle": "Remove {{count}} selected items from ORG2?",
+    "deleteSelectedMessage": "This only removes their linkage to ORG2. Nothing will be removed from disk.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "This will permanently delete {{stashRef}}. This action cannot be undone.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -611,7 +597,9 @@
     "previous": "Previous",
     "next": "Next",
     "previousMatch": "Previous Match (Shift+Enter)",
+    "previousMatchLabel": "Previous Match",
     "nextMatch": "Next Match (Enter)",
+    "nextMatchLabel": "Next Match",
     "clearSearch": "Clear search",
     "openInEditorTab": "Open in editor tab",
     "openFile": "Open File",
@@ -638,11 +626,16 @@
     "goForward": "Go forward",
     "goToToday": "Go to today",
     "matchCase": "Match Case (Alt+C)",
+    "matchCaseLabel": "Match Case",
     "matchWholeWord": "Match Whole Word (Alt+W)",
+    "matchWholeWordLabel": "Match Whole Word",
     "useRegex": "Use Regular Expression (Alt+R)",
+    "useRegexLabel": "Use Regular Expression",
     "searchInOpenEditors": "Search Only in Open Editors",
     "replace": "Replace (Ctrl+Shift+1)",
+    "replaceLabel": "Replace",
     "replaceAll": "Replace All (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Replace All",
     "moreActions": "More Actions...",
     "formatSql": "Format SQL (prettify)",
     "queryHistory": "Query history",
@@ -871,6 +864,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Switch to graph view",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1697,11 +1691,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Linkage to ORG2 removed",
+        "repoRemoveFailed": "Failed to remove linkage to ORG2",
+        "workspaceRemoved": "Linkage to ORG2 removed",
+        "workspaceRemoveFailed": "Failed to remove linkage to ORG2",
+        "bulkDeleted": "{{count}} linkages to ORG2 removed",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -1778,6 +1772,20 @@
     "title": "Sessions"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "View Changes",
+      "openFileInNewTab": "Open File in New Tab",
+      "stageChanges": "Stage Changes",
+      "unstageChanges": "Unstage Changes",
+      "discardChanges": "Discard Changes",
+      "markResolved": "Mark as Resolved (Stage)",
+      "acceptCurrent": "Accept Current Changes (Ours)",
+      "acceptIncoming": "Accept Incoming Changes (Theirs)",
+      "stageChangesCount": "Stage Changes ({{count}})",
+      "unstageChangesCount": "Unstage Changes ({{count}})",
+      "discardChangesCount": "Discard Changes ({{count}})",
+      "markResolvedCount": "Mark as Resolved ({{count}})"
+    },
     "notGitInitialized": "Not git initialized",
     "notGitInitializedSubtitle": "Initialize Git to track changes, create commits, and use branch tools in this working directory.",
     "initializeGit": "Initialize Git",
@@ -1907,22 +1915,7 @@
     "database": "Database",
     "user": "User",
     "password": "Password",
-    "ssl": "Require SSL",
-    "spotlight": {
-      "scanFolder": "Scan folder",
-      "scanFolderDesc": "Find all .sqlite, .db files in a folder",
-      "openFile": "Open file",
-      "openFileDesc": "Select a specific database file",
-      "enterPath": "Enter path",
-      "enterPathDesc": "Type a file or folder path directly",
-      "placeholderSelect": "Add database by...",
-      "placeholderPath": "~/data or /path/to/database.db",
-      "pickerFolderTitle": "Select folder to scan",
-      "pickerFileTitle": "Select database file",
-      "pickerSqliteName": "SQLite Database",
-      "pickerAllFiles": "All Files",
-      "pickerError": "Failed to open picker"
-    }
+    "ssl": "Require SSL"
   },
   "sqlEditor": {
     "placeholder": "Enter SQL query...",
@@ -2003,7 +1996,6 @@
     "sidebar": {
       "newTab": "New Tab",
       "newTerminal": "New Terminal",
-      "untitled": "Untitled",
       "newPrivateTab": "New Private Tab"
     },
     "statusBar": {}
@@ -2016,7 +2008,8 @@
     "openSessionAction": "Open Session",
     "taskFailedTitle": "Task failed",
     "taskFailedBody": "“{{name}}” failed{{detail}}",
-    "taskCancelledToast": "“{{name}}” was cancelled"
+    "taskCancelledToast": "“{{name}}” was cancelled",
+    "taskFailedPrivateBody": "A task failed. Open ORG2 for details."
   },
   "teamInbox": {
     "title": "Team Inbox",
@@ -2207,8 +2200,8 @@
     "previewAlt": "Preview"
   },
   "quitConfirmation": {
-    "title": "Quit ORG-2?",
-    "subtitle": "Any running sessions will keep their current state. You can reopen ORG-2 later.",
+    "title": "Quit ORG2?",
+    "subtitle": "Any running sessions will keep their current state. You can reopen ORG2 later.",
     "cancel": "Cancel",
     "confirm": "Quit"
   },
@@ -2276,5 +2269,12 @@
     "goToSection": "Go to {{label}}, section {{current}} of {{total}}",
     "section": "Section {{current}}",
     "sectionPosition": "Section {{current}} of {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "This is a test notification from ORG2",
+    "workspaceFile": "ORG2 Workspace",
+    "sessionJsonFile": "ORG2 Session JSON",
+    "skillsSource": "ORG2 Skills",
+    "gitServiceUnavailable": "Unable to reach the local Git service. Please try again after the app finishes starting, or restart ORG2 if this keeps happening."
   }
 }

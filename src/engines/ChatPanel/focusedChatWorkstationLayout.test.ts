@@ -46,13 +46,13 @@ describe("shouldMountFocusedChatWorkstationControls", () => {
 describe("resolveFocusedChatWorkstationRailTrackClass", () => {
   it("drives the expanded column from the resizable track-width variable", () => {
     expect(resolveFocusedChatWorkstationRailTrackClass(false)).toBe(
-      "w-0 @[850px]/focusedchat:w-9 @[1100px]/focusedchat:w-(--workstation-trail-track-width) @[1100px]/focusedchat:px-1 @[1100px]/focusedchat:pb-1 @[1100px]/focusedchat:pt-2"
+      "w-0 @[850px]/focusedchat:w-9 @[1100px]/focusedchat:w-(--workstation-trail-track-width) @[1100px]/focusedchat:px-1 @[1100px]/focusedchat:pb-1 @[1100px]/focusedchat:mr-2"
     );
   });
 
   it("keeps the collapsed track at the fixed button-controlled width", () => {
     expect(resolveFocusedChatWorkstationRailTrackClass(true)).toBe(
-      "w-0 @[850px]/focusedchat:w-9 @[1100px]/focusedchat:w-11 @[1100px]/focusedchat:px-1 @[1100px]/focusedchat:pb-1 @[1100px]/focusedchat:pt-2"
+      "w-0 @[850px]/focusedchat:w-9 @[1100px]/focusedchat:w-11 @[1100px]/focusedchat:px-1 @[1100px]/focusedchat:pb-1"
     );
   });
 

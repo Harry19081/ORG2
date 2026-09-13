@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import type { GitHubIssue } from "@src/api/tauri/github";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import { buildIntegrationsPath } from "@src/config/mainAppPaths/integrations";
 import { SectionFilterInput } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/components/SectionFilterInput";
@@ -409,16 +410,19 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
               : closedLoadingMore;
             return (
               <div className="flex justify-center py-1.5">
-                <button
-                  type="button"
-                  className="rounded-md px-2 py-1 text-[11px] font-medium text-text-2 transition-colors hover:bg-fill-1 disabled:cursor-default disabled:opacity-60"
+                <Button
+                  variant="tertiary"
+                  appearance="ghost"
+                  size="mini"
+                  htmlType="button"
+                  className="text-[11px] font-medium hover:bg-fill-1 disabled:cursor-default disabled:opacity-60"
                   disabled={isLoading}
                   onClick={isOpenSection ? loadMoreOpen : loadMoreClosed}
                 >
                   {isLoading
                     ? t("actions.loading", "Loading…")
                     : t("actions.loadMore", "Load more")}
-                </button>
+                </Button>
               </div>
             );
           }

@@ -6,4 +6,6 @@
 | `src/components/ExpandOverlay.tsx:55`                                                 | Computed expand-overlay offset                | keep with reason | The inline transform is calculated from the component's pixel-valued compatibility prop, so a fixed design token cannot represent it.                                                             | None.            |
 | `src/modules/WorkStation/Chat/Communication/MessageViewer.tsx:175`                    | Workstation transcript viewport integration   | keep with reason | The change replaces scroll behavior without adding markup, colors, sizing, or controls, so the existing design-system surface remains unchanged.                                                  | None.            |
 
-Verdict totals: **0 fix**, **3 keep with reason**, **0 abstract**.
+| `src/engines/ChatPanel/InputArea/components/TurnCollapsePinBar.tsx:178` | Compound collapse header | keep with reason | Retains the shared Button from develop; custom layout preserves direct chevron, label, range and loading children, with caller-owned full-row geometry and sibling replay control. The viewport test ID and layout-mutation callback remain intact. | None. |
+
+Verdict totals: **0 fix**, **4 keep with reason**, **0 abstract**.

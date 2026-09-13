@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Sources de données",
-      "description": "Outils de codage externes détectés par ORGII. Les applications importables affichent leur nombre de sessions et peuvent être réanalysées ; les autres affichent l'état d'installation et l'emplacement de leur historique.",
+      "description": "Outils de codage externes détectés par ORG2. Les applications importables affichent leur nombre de sessions et peuvent être réanalysées ; les autres affichent l'état d'installation et l'emplacement de leur historique.",
       "rescanAll": "Tout réanalyser",
       "rescan": "Réanalyser",
       "rescanning": "Réanalyse…",
@@ -190,7 +190,7 @@
           "perTurn": "Appels LLM",
           "perTool": "Appels d'outils",
           "close": "Fermer",
-          "noData": "Cette session ne contient que des totaux globaux ; l'attribution par appel est enregistrée pour les exécutions des agents propres à ORGII.",
+          "noData": "Cette session ne contient que des totaux globaux ; l'attribution par appel est enregistrée pour les exécutions des agents propres à ORG2.",
           "turnHeader": "Tour {{turn}}",
           "promptTokens": "Prompt",
           "completionTokens": "Complétion"
@@ -555,22 +555,6 @@
     "creatingWithContext": "Création d'une nouvelle Session avec contexte",
     "creationCooldown": "Veuillez patienter un instant avant de créer un autre terminal."
   },
-  "scope": {
-    "applicableScope": "Portée applicable",
-    "for": "pour",
-    "selectCategory": "Sélectionner la catégorie",
-    "selectScope": "Sélectionner la portée",
-    "allRepos": "Tous les dépôts",
-    "allSessions": "Toutes les Sessions",
-    "allProjects": "Tous les Projects",
-    "allWorkItems": "Tous les éléments de travail",
-    "categories": {
-      "repo": "Dépôt",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "Éléments de travail"
-    }
-  },
   "editor": {
     "loading": "Chargement de l'éditeur..."
   },
@@ -732,7 +716,6 @@
     "performActions_one": "Effectuer {{count}} action",
     "performActions_other": "Effectuer {{count}} actions",
     "showInlineDiffs": "Différences en ligne",
-    "pageSettings": "Affichage de la page",
     "inputSettings": "Paramètres de saisie",
     "replay": {
       "follow": "Suivre"
@@ -1923,7 +1906,7 @@
     "start": "Démarrer",
     "missingGit": {
       "title": "Git est manquant",
-      "body": "Git n’est pas installé ou est introuvable. Demandez à ADE Manager ou à SDE Agent d’installer Git sur cette machine, puis redémarrez ORGII."
+      "body": "Git n’est pas installé ou est introuvable. Demandez à ADE Manager ou à SDE Agent d’installer Git sur cette machine, puis redémarrez ORG2."
     },
     "model": "Modèle",
     "contextMenu": {
@@ -1938,8 +1921,7 @@
       "commands": "Commandes",
       "mode": "Mode",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Commandes"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Actions GIT",
@@ -2027,7 +2009,8 @@
       "refresh": "Revérifier la version du CLI {{cli}}",
       "unknownVersion": "inconnue"
     },
-    "mode": "Mode d’édition"
+    "mode": "Mode d’édition",
+    "cursorIdeDescription": "Parcourez et poursuivez les conversations Cursor IDE dans ORG2"
   },
   "planner": {
     "modes": {
@@ -2266,7 +2249,7 @@
     "noSessionIdFound": "Aucun ID de Session trouvé",
     "failedToResume": "Échec de la reprise de la Session",
     "failedToCheckChanges": "Impossible de vérifier les modifications de fichiers. La restauration sera effectuée.",
-    "insufficientBalance": "Solde insuffisant pour le service ORGII hébergé. Rechargez sur orgii.ai/wallet.",
+    "insufficientBalance": "Solde insuffisant pour le service ORG2 hébergé. Rechargez sur orgii.ai/wallet.",
     "runQueuedBehindCheckout": "En file d'attente : une autre exécution utilise ce checkout. Elle démarrera dès que celle-ci sera terminée."
   },
   "planning": {
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Arrêter le processus Agent",
       "openInMyStation": "Ouvrir dans My Station"
     }
   },

@@ -9,6 +9,7 @@
  */
 import React, { memo, useRef } from "react";
 
+import Button from "@src/components/Button";
 import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
@@ -136,8 +137,10 @@ export const LaunchpadTile: React.FC<LaunchpadTileProps> = memo(
 
     if (onClick) {
       return (
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onClick}
           className={LAUNCHPAD_TILE_CLASS}
           title={title ?? label}
@@ -145,7 +148,7 @@ export const LaunchpadTile: React.FC<LaunchpadTileProps> = memo(
           data-testid={dataTestId}
         >
           {content}
-        </button>
+        </Button>
       );
     }
 
@@ -165,8 +168,10 @@ interface LaunchpadAddTileProps {
 
 export const LaunchpadAddTile: React.FC<LaunchpadAddTileProps> = memo(
   ({ onCreate, label }) => (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       onClick={onCreate}
       className={LAUNCHPAD_TILE_CLASS}
       title={label}
@@ -184,7 +189,7 @@ export const LaunchpadAddTile: React.FC<LaunchpadAddTileProps> = memo(
         </span>
       </div>
       <span className={LAUNCHPAD_TILE_LABEL_CLASS}>{label}</span>
-    </button>
+    </Button>
   )
 );
 LaunchpadAddTile.displayName = "LaunchpadAddTile";
@@ -202,8 +207,10 @@ export const LaunchpadWorkspaceCard: React.FC<LaunchpadWorkspaceCardProps> =
     const handleClick = () => onSelect(repo);
 
     return (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onClick={handleClick}
         className={LAUNCHPAD_TILE_CLASS}
         title={repo.path ?? label}
@@ -232,7 +239,7 @@ export const LaunchpadWorkspaceCard: React.FC<LaunchpadWorkspaceCardProps> =
         >
           {label}
         </span>
-      </button>
+      </Button>
     );
   });
 LaunchpadWorkspaceCard.displayName = "LaunchpadWorkspaceCard";

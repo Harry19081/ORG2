@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
+import Button from "@src/components/Button";
 import SegmentedTextPill, {
   type SegmentedTextPillProps,
 } from "@src/components/SegmentedTextPill";
@@ -118,9 +119,11 @@ export function SpotlightTabs<T extends string>({
           {options.map((option) => {
             const active = option.value === value;
             const tab = (
-              <button
+              <Button
+                layout="custom"
+                appearance="custom"
                 key={option.value}
-                type="button"
+                htmlType="button"
                 role="tab"
                 aria-selected={active}
                 aria-label={option.ariaLabel}
@@ -134,7 +137,7 @@ export function SpotlightTabs<T extends string>({
                 } ${option.disabled ? "cursor-not-allowed opacity-50" : ""}`}
               >
                 {option.label}
-              </button>
+              </Button>
             );
             return option.tooltip ? (
               <Tooltip

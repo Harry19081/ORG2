@@ -3,11 +3,15 @@
  * repo, branch, worktree, or the linked work item.
  */
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
-import { WORKSTATION_TRAIL_CONTENT } from "@src/config/workstation/tokens";
 import { ArrowDown01Icon, ArrowUp01Icon, HugeiconsIcon } from "@src/icons";
 
+import {
+  WORKSTATION_TRAIL_ROW,
+  WORKSTATION_TRAIL_ROW_HOVER_CLASS,
+} from "../blocks/workstationTrailTokens";
 import type { FocusedChatRailIcon } from "./types";
 
 export function WorkspaceContextRow({
@@ -35,25 +39,24 @@ export function WorkspaceContextRow({
   testId?: string;
   title?: string;
 }) {
-  const className = compact
-    ? "flex h-8 min-w-0 items-center gap-2 overflow-hidden rounded-md px-2 text-text-1"
-    : `${WORKSTATION_TRAIL_CONTENT.row} ${WORKSTATION_TRAIL_CONTENT.rowHorizontalPadding} gap-1.5 overflow-hidden text-text-1`;
+  const rowClass = `${WORKSTATION_TRAIL_ROW.shell} ${compact ? WORKSTATION_TRAIL_ROW.compact : WORKSTATION_TRAIL_ROW.wide} ${WORKSTATION_TRAIL_ROW_HOVER_CLASS}`;
+  const contentClass = `${WORKSTATION_TRAIL_ROW.content} ${compact ? WORKSTATION_TRAIL_ROW.compactContent : WORKSTATION_TRAIL_ROW.wideContent}`;
   const content = (
     <>
-      <AnyIcon icon={icon} className="shrink-0" size={14} strokeWidth={1.75} />
-      <span
-        className={`min-w-0 flex-1 truncate ${
-          compact ? "text-[13px]" : "text-[12px]"
-        }`}
-      >
-        {label}
+      <span className={WORKSTATION_TRAIL_ROW.icon}>
+        <AnyIcon
+          icon={icon}
+          size={WORKSTATION_TRAIL_ROW.iconSize}
+          strokeWidth={1.75}
+        />
       </span>
+      <span className={WORKSTATION_TRAIL_ROW.label}>{label}</span>
       {chevron && (
         <HugeiconsIcon
           icon={active ? ArrowUp01Icon : ArrowDown01Icon}
           data-icon={active ? "chevron-up" : "chevron-down"}
           aria-hidden
-          className="shrink-0 text-text-2"
+          className="shrink-0 text-text-1"
           size={14}
           strokeWidth={1.75}
         />
@@ -66,9 +69,12 @@ export function WorkspaceContextRow({
     // tooltip; other clickable rows keep the native title.
     const styledTooltip = chevron && title ? title : undefined;
     const button = (
-      <button
-        type="button"
-        className={`${className} w-full text-left transition-colors hover:bg-fill-2 ${
+      <Button
+        htmlType="button"
+        variant="tertiary"
+        appearance="soft-no-drop"
+        size="sidebar"
+        className={`${rowClass} ${WORKSTATION_TRAIL_ROW.button} ${compact ? "h-8!" : "h-7!"} w-full text-left ${
           active ? "bg-fill-2" : ""
         }`}
         title={styledTooltip ? undefined : (title ?? label)}
@@ -81,8 +87,8 @@ export function WorkspaceContextRow({
           onClick();
         }}
       >
-        {content}
-      </button>
+        <span className={contentClass}>{content}</span>
+      </Button>
     );
 
     if (styledTooltip) {
@@ -102,7 +108,11 @@ export function WorkspaceContextRow({
   }
 
   return (
-    <div className={className} title={title ?? label} data-testid={testId}>
+    <div
+      className={`${rowClass} ${contentClass}`}
+      title={title ?? label}
+      data-testid={testId}
+    >
       {content}
     </div>
   );

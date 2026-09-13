@@ -92,6 +92,7 @@ interface SessionCreatorChatPanelViewProps {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   footerSlot?: React.ReactNode;
   headerLayout: SessionCreatorChatPanelHeaderLayout;
+  spotlight?: boolean;
   heroFooterSlot?: React.ReactNode;
   heroContent: SessionCreatorAgentHeroContent;
   heroIcon: React.ReactNode;
@@ -155,6 +156,7 @@ const SessionCreatorChatPanelView: React.FC<
   fileInputRef,
   footerSlot,
   headerLayout,
+  spotlight = false,
   heroFooterSlot,
   heroContent,
   heroIcon,
@@ -201,6 +203,7 @@ const SessionCreatorChatPanelView: React.FC<
   const sessionInfoLine = (
     <SessionInfoLine
       {...sessionInfoProps}
+      strongSurface={!spotlight}
       leadingContent={cliLaunchModeSwitch}
       dropdownDirection={
         isLaunchpadLayout ? "up" : sessionInfoProps.dropdownDirection
@@ -241,12 +244,12 @@ const SessionCreatorChatPanelView: React.FC<
         label={heroContent.name}
         active={isCategorySelectorOpen}
         danger={heroContent.danger}
-        size="md"
+        size={spotlight ? "sm" : "md"}
+        appearance={spotlight ? "default" : "bare"}
         tooltip={t("creator.switchAgent")}
         tooltipPosition="top"
         onClick={onCategoryPickerOpen}
         ariaLabel={heroContent.name}
-        appearance="bare"
       />
       <div className="ml-auto flex min-w-0 flex-1 flex-wrap items-center justify-end gap-0.5">
         {sessionInfoLine}
@@ -267,7 +270,15 @@ const SessionCreatorChatPanelView: React.FC<
       ) : null,
     [browserElementScrollNav]
   );
-  const sessionSetupActions = !hideSessionSetupControls ? (
+  const showSessionSetupActions =
+    !hideSessionSetupControls &&
+    (!spotlight ||
+      showPinnedActionPills ||
+      browserElementRowContent ||
+      leadingActionSlot ||
+      orgMembersPanelProps ||
+      pinnedActionsContent);
+  const sessionSetupActions = showSessionSetupActions ? (
     <div
       className={`mx-auto flex w-full items-center ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
       onContextMenu={handlePinnedActionsContextMenu}
@@ -491,14 +502,18 @@ const SessionCreatorChatPanelView: React.FC<
   }`;
   const composerBody = isCliTuiMode ? (
     <div className="rounded-xl bg-chat-container p-3">
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        appearance="solid"
+        size="default"
+        shape="round"
+        htmlType="button"
         onClick={onLaunch}
         disabled={!canLaunch || isLoading}
-        className="flex w-full items-center justify-center rounded-full bg-primary-6 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full text-[13px] font-semibold hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {t("creator.start")}
-      </button>
+      </Button>
     </div>
   ) : (
     <EditorArea
@@ -512,7 +527,7 @@ const SessionCreatorChatPanelView: React.FC<
 
   return (
     <div
-      className={`session-creator-chat-panel-wrapper ${
+      className={`session-creator-chat-panel-wrapper ${spotlight ? "spotlight-session-creator" : ""} ${
         isLaunchpadLayout ? "h-full" : ""
       } ${
         isCenteredComposer ? "session-creator-chat-panel-centered-composer" : ""
@@ -547,21 +562,27 @@ const SessionCreatorChatPanelView: React.FC<
           {!isLaunchpadLayout && agentHero}
           <div className={composerDockClassName}>
             {!isCliTuiMode && isWingmanMode && (
-              <button
-                type="button"
-                className="flex items-center gap-1.5 rounded-full border border-dashed border-border-2 px-3 py-1.5 text-[12px] text-text-3 transition-colors hover:border-primary-4 hover:text-primary-6"
+              <Button
+                variant="tertiary"
+                appearance="dashed"
+                size="mini"
+                shape="round"
+                htmlType="button"
+                className="gap-1.5 border-dashed text-[12px] hover:border-primary-4 hover:text-primary-6"
                 onClick={() => {
                   void onShareScreen();
                 }}
+                icon={
+                  <HugeiconsIcon
+                    icon={ScreenRotationIcon}
+                    data-icon="airplay"
+                    size={13}
+                    strokeWidth={1.75}
+                  />
+                }
               >
-                <HugeiconsIcon
-                  icon={ScreenRotationIcon}
-                  data-icon="airplay"
-                  size={13}
-                  strokeWidth={1.75}
-                />
                 {t("chat.shareScreen")}
-              </button>
+              </Button>
             )}
             {/* Skills/actions stay above the input in every creator layout. */}
             {sessionSetupActions}

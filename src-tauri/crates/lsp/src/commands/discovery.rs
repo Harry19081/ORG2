@@ -1,11 +1,9 @@
-//! LSP/Lint Discovery Commands
+//! LSP Discovery Commands
 //!
-//! Tauri commands for detecting installed language servers and lint tools.
-
-use std::process::Command;
+//! Tauri commands for detecting installed language servers.
 
 use super::cache;
-use crate::lint_tools::LintToolInfo;
+use crate::command_detection::command_exists;
 use crate::server_defs::{servers, servers_for_language_id};
 
 use super::package_manager::detect_install_type;
@@ -55,32 +53,6 @@ pub const LANGUAGE_DISPLAY_NAMES: &[(&str, &str)] = &[
     ("zig", "Zig"),
 ];
 
-/// Check if a command exists in PATH
-pub fn command_exists(cmd: &str) -> bool {
-    // Explicitly forward PATH so the login-shell-augmented PATH is visible.
-    let current_path = std::env::var("PATH").unwrap_or_default();
-    #[cfg(unix)]
-    {
-        Command::new("which")
-            .arg(cmd)
-            .env("PATH", &current_path)
-            .output()
-            .map(|output| output.status.success())
-            .unwrap_or(false)
-    }
-    #[cfg(windows)]
-    {
-        let mut command = Command::new("where");
-        command.arg(cmd).env("PATH", &current_path);
-        // Suppress console window on Windows.
-        app_platform::hide_console(&mut command);
-        command
-            .output()
-            .map(|output| output.status.success())
-            .unwrap_or(false)
-    }
-}
-
 /// Check if uninstall is supported based on install hint
 fn is_uninstall_supported(install_hint: &str) -> bool {
     let install_type = detect_install_type(install_hint);
@@ -123,28 +95,10 @@ pub async fn lsp_check_installed() -> Vec<LanguageServerInfo> {
     .unwrap_or_default()
 }
 
-/// Check which lint tools are installed on the system
-#[tauri::command]
-pub async fn lint_check_installed() -> Vec<LintToolInfo> {
-    tokio::task::spawn_blocking(|| {
-        let result = crate::lint_tools::check_lint_tools();
-        cache::save_lint(&result);
-        result
-    })
-    .await
-    .unwrap_or_default()
-}
-
 /// Return cached LSP servers if fresh, otherwise empty (caller should fetch fresh).
 #[tauri::command]
 pub fn lsp_get_cached() -> Vec<LanguageServerInfo> {
     cache::load_lsp().unwrap_or_default()
-}
-
-/// Return cached lint tools if fresh, otherwise empty (caller should fetch fresh).
-#[tauri::command]
-pub fn lint_get_cached() -> Vec<LintToolInfo> {
-    cache::load_lint().unwrap_or_default()
 }
 
 /// Get list of supported languages with install hints.

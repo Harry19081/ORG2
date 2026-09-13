@@ -180,10 +180,13 @@ export default function ModelsTableSection({
   const expandControl =
     olderCount > 0 && !isSearching ? (
       <div className="flex justify-center border-t border-border-2 py-2.5">
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          appearance="ghost"
+          size="inline"
+          htmlType="button"
           onClick={() => setHideOlder((prev) => !prev)}
-          className="flex items-center gap-1.5 text-[13px] text-primary-6 hover:text-primary-5"
+          className="gap-1.5 text-[13px] hover:text-primary-5"
         >
           {hideOlder ? (
             <HugeiconsIcon
@@ -201,7 +204,7 @@ export default function ModelsTableSection({
           {hideOlder
             ? t("modelsTable.showMoreOlder")
             : t("modelsTable.showLessOlder")}
-        </button>
+        </Button>
       </div>
     ) : null;
 

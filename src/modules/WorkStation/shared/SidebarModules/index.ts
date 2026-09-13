@@ -18,6 +18,7 @@ export {
   type SourceControlFilterMode,
 } from "./SourceControl";
 
+// Importing terminal installs its tab-specific sidebar in the registry.
 export { TerminalTabSidebar } from "./Terminal";
 
 export {

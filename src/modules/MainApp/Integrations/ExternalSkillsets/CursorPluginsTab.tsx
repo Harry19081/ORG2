@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import { rpc } from "@src/api/tauri/rpc";
 import type { CursorPluginInfo } from "@src/api/tauri/rpc/procedures/agentOrgs";
+import Button from "@src/components/Button";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
@@ -98,9 +99,12 @@ const CopyAllButton: React.FC<{ plugins: CursorPluginInfo[] }> = ({
   if (!hasMcp) return null;
   return (
     <div className="flex items-center px-4 py-2">
-      <button
+      <Button
+        variant="tertiary"
+        appearance="ghost"
+        size="mini"
         onClick={handleCopy}
-        className="inline-flex items-center gap-1.5 rounded px-2 py-1.5 text-[12px] text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+        className="gap-1.5 text-[12px] hover:bg-fill-2 hover:text-text-1"
       >
         {copied ? (
           <HugeiconsIcon icon={Tick01Icon} data-icon="check" size={12} />
@@ -108,7 +112,7 @@ const CopyAllButton: React.FC<{ plugins: CursorPluginInfo[] }> = ({
           <HugeiconsIcon icon={ClipboardIcon} data-icon="clipboard" size={12} />
         )}
         {copied ? t("common:status.copied") : t("cursorPlugins.copyAllMcp")}
-      </button>
+      </Button>
     </div>
   );
 };

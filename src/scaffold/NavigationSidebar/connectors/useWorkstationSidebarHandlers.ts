@@ -43,14 +43,13 @@ import {
   syncSidebarSessionRoster,
   upsertSession,
 } from "@src/store/session";
-import { chatPanelNavigateAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { resetChatPanelSessionSurfaceAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   clearPendingFileOpensForSession,
   disposeEditorCacheForSessionAtom,
   disposeWorkstationWorkspaceAtom,
 } from "@src/store/workstation/tabs";
 import { clearPendingCodeEditorTabForSession } from "@src/store/workstation/tabs/pendingCodeEditorTab";
-import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 import { invokeTauri } from "@src/util/platform/tauri/init";
 import {
   isCliSession,
@@ -142,7 +141,9 @@ export function useWorkstationSidebarHandlers({
   onCloseChatPanelTab,
   onCloudSidebarItemClick,
 }: UseWorkstationSidebarHandlersParams): UseWorkstationSidebarHandlersResult {
-  const navigateChatPanel = useSetAtom(chatPanelNavigateAtom);
+  const resetChatPanelSessionSurface = useSetAtom(
+    resetChatPanelSessionSurfaceAtom
+  );
   const disposeWorkstationTabsWorkspace = useSetAtom(
     disposeWorkstationWorkspaceAtom
   );
@@ -375,7 +376,7 @@ export function useWorkstationSidebarHandlers({
       if (isChatPanelTuiSessionId(item.id)) {
         const tabId = getChatPanelTabIdFromTuiSessionId(item.id);
         if (tabId) {
-          navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+          resetChatPanelSessionSurface();
           onOpenChatPanelTab(tabId);
         }
         return;
@@ -393,7 +394,7 @@ export function useWorkstationSidebarHandlers({
         sessionRouteLabel
       );
 
-      navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+      resetChatPanelSessionSurface();
       promoteActiveSessionCreatorDraft();
       onOpenSessionChatPanelTab({
         sessionId: item.id,
@@ -411,7 +412,7 @@ export function useWorkstationSidebarHandlers({
       sessionMap,
       openSession,
       goToNewSession,
-      navigateChatPanel,
+      resetChatPanelSessionSurface,
       navigateTo,
       onCloudSidebarItemClick,
       onOpenChatPanelTab,

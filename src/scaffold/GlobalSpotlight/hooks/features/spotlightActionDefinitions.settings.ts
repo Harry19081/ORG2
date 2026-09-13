@@ -11,11 +11,12 @@
  */
 import { ACTION_ID } from "@src/ActionSystem";
 import {
+  ArrowBigLeftDashIcon,
+  ArrowBigRightDashIcon,
   ArrowLeftBigIcon,
   ArrowRightBigIcon,
-  LayoutTopIcon,
+  ChangeScreenModeIcon,
   Menu01Icon,
-  PanelLeftIcon,
   SparklesIcon,
 } from "@src/icons";
 
@@ -65,7 +66,7 @@ export function buildChatPanelSettingsActions({
     labelKey: chatTurnPaginationEnabled
       ? "common:spotlightActions.disableChatPagination"
       : "common:spotlightActions.enableChatPagination",
-    icon: LayoutTopIcon,
+    icon: ChangeScreenModeIcon,
     keywords: ["chat pagination", "turn pagination", "chat rounds"],
     actionId: chatTurnPaginationEnabled
       ? ACTION_ID.CHAT_PANEL_DISABLE_PAGINATION
@@ -102,7 +103,10 @@ export function buildChatPanelSettingsActions({
       workstationSidebarPosition === "left"
         ? "common:spotlightActions.moveWorkstationSidebarRight"
         : "common:spotlightActions.moveWorkstationSidebarLeft",
-    icon: PanelLeftIcon,
+    icon:
+      workstationSidebarPosition === "left"
+        ? ArrowBigRightDashIcon
+        : ArrowBigLeftDashIcon,
     keywords: [
       "workstation sidebar",
       "sidebar position",

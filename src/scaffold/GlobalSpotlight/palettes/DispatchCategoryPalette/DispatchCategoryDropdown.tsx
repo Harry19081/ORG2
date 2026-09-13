@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 
 import { formatModelAgentType } from "@src/assets/providers";
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import DropdownSearch from "@src/components/Dropdown/DropdownSearch";
 import {
   DROPDOWN_CLASSES,
@@ -129,8 +130,10 @@ const DropdownRow: React.FC<DropdownRowProps> = ({ item, keyboardProps }) => {
   }, [item.icon, isCurrent]);
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       data-testid={testId}
       {...keyboardProps}
       disabled={isDisabled}
@@ -161,7 +164,7 @@ const DropdownRow: React.FC<DropdownRowProps> = ({ item, keyboardProps }) => {
       ) : (
         rightContent && <div className="shrink-0">{rightContent}</div>
       )}
-    </button>
+    </Button>
   );
 };
 

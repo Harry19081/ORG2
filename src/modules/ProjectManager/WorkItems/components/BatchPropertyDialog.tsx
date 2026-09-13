@@ -180,7 +180,7 @@ export const BatchPropertyDialog: React.FC<BatchPropertyDialogProps> = ({
       cancelText={t("common:actions.cancel", { defaultValue: "Cancel" })}
       okButtonProps={{ disabled: !selected, loading: applying }}
     >
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3">
         <p className="text-xs text-text-3">
           {t("workItems.batchProperty.hint", {
             defaultValue: `Applies one property value to ${shortIds.length} selected items. Leave the value empty to clear it.`,

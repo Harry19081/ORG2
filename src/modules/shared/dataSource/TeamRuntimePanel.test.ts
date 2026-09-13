@@ -100,25 +100,6 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-vi.mock("@src/components/Button", () => ({
-  default: ({
-    children,
-    onClick,
-    disabled,
-    "data-testid": dataTestId,
-  }: {
-    children?: unknown;
-    onClick?: () => void;
-    disabled?: boolean;
-    "data-testid"?: string;
-  }) =>
-    createElement(
-      "button",
-      { onClick, disabled, "data-testid": dataTestId },
-      children as never
-    ),
-}));
-
 vi.mock("@src/components/Select", () => ({
   default: ({
     value,

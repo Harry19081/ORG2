@@ -30,7 +30,7 @@ import {
 } from "@src/store/workstation";
 
 import { WorkManagementDatasetSwitch } from "./WorkManagementDatasetSwitch";
-import "./index.scss";
+import "./index.css";
 import {
   WORK_MANAGEMENT_DATASET,
   type WorkManagementDataset,

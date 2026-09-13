@@ -49,7 +49,8 @@ pub(crate) const AGENT_SESSIONS_TEST_DDL: &str = r#"
         reply_target_event_id TEXT,
         pinned INTEGER NOT NULL DEFAULT 0,
         sm_content TEXT,
-        sm_last_seq INTEGER
+        sm_last_seq INTEGER,
+        sm_tokens_at_last_extraction INTEGER
     );
     CREATE TABLE IF NOT EXISTS session_token_usage (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -152,6 +153,10 @@ pub(crate) fn ensure_agent_sessions_schema(conn: &rusqlite::Connection) {
         ("key_source", "key_source TEXT NOT NULL DEFAULT 'own_key'"),
         ("sm_content", "sm_content TEXT"),
         ("sm_last_seq", "sm_last_seq INTEGER"),
+        (
+            "sm_tokens_at_last_extraction",
+            "sm_tokens_at_last_extraction INTEGER",
+        ),
     ] {
         if !existing.contains(column) {
             let _ = conn.execute(&format!("ALTER TABLE agent_sessions ADD COLUMN {decl}"), []);

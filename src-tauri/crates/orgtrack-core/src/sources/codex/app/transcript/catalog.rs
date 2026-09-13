@@ -210,8 +210,15 @@ fn observe_codex_catalog_line(
                 .unwrap_or_else(|| chrono::Utc::now().to_rfc3339());
             entries.push(CodexTurnCatalogEntry {
                 byte_offset,
+                image_refs: imported_history::images::bounded_image_refs(
+                    message.image_refs.iter().map(String::as_str),
+                ),
                 started_at,
-                user_preview: bounded_codex_turn_preview(&message.text),
+                user_preview: if message.text.trim().is_empty() && !message.image_refs.is_empty() {
+                    "(image)".to_string()
+                } else {
+                    bounded_codex_turn_preview(&message.text)
+                },
                 last_agent_preview: last_agent_preview.take(),
                 following_line_count: *lines_since_boundary,
             });

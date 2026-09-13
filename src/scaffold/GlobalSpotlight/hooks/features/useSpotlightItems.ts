@@ -62,6 +62,7 @@ import {
   buildRepoSpotlightItems,
   sortRepoItemsSelectedFirst,
 } from "../../palettes/adapters";
+import { usePinnedSpotlightItems } from "../../pinning/usePinnedSpotlightItems";
 import type {
   ActionDefinition,
   BranchItem,
@@ -507,8 +508,14 @@ export function useSpotlightItems(
     translate,
   ]);
 
-  return {
+  const pinnedItems = usePinnedSpotlightItems(
     items,
+    "commands",
+    !hasAction && !hasRepo
+  );
+
+  return {
+    items: pinnedItems,
     isLoading: false,
   };
 }

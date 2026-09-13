@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { getFullKey } from "@src/api/services/keyValidation";
 import { CLI_AGENT } from "@src/api/tauri/rpc/schemas/validation";
 import { isApiKeyProvider } from "@src/assets/providers";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import {
   getQuotaBgColorClass,
@@ -345,25 +346,30 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
                   <span className="min-w-0 flex-1 truncate text-[12px] text-text-1">
                     {account.apiKeyPreview ?? t("keyVault.info.configured")}
                   </span>
-                  <button
-                    type="button"
+                  <Button
+                    variant="tertiary"
+                    appearance="ghost"
+                    size="mini"
+                    iconOnly
+                    icon={
+                      apiKeyCopied ? (
+                        <HugeiconsIcon
+                          icon={Tick01Icon}
+                          data-icon="check"
+                          size={13}
+                        />
+                      ) : (
+                        <HugeiconsIcon
+                          icon={Copy01Icon}
+                          data-icon="copy"
+                          size={13}
+                        />
+                      )
+                    }
+                    htmlType="button"
                     onClick={handleCopyApiKey}
                     className={`transition-colors ${apiKeyCopied ? "text-success-6" : "text-text-2 hover:text-text-1"}`}
-                  >
-                    {apiKeyCopied ? (
-                      <HugeiconsIcon
-                        icon={Tick01Icon}
-                        data-icon="check"
-                        size={13}
-                      />
-                    ) : (
-                      <HugeiconsIcon
-                        icon={Copy01Icon}
-                        data-icon="copy"
-                        size={13}
-                      />
-                    )}
-                  </button>
+                  />
                 </div>
               </InfoRow>
             ) : null}

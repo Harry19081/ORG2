@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "数据源",
-      "description": "ORGII 检测到的外部编程工具。可导入的应用会显示会话数并可重新扫描；其余仅显示安装状态和历史记录所在位置。",
+      "description": "ORG2 检测到的外部编程工具。可导入的应用会显示会话数并可重新扫描；其余仅显示安装状态和历史记录所在位置。",
       "rescanAll": "全部重新扫描",
       "rescan": "重新扫描",
       "rescanning": "正在重新扫描…",
@@ -192,7 +192,7 @@
           "perTurn": "LLM 调用",
           "perTool": "工具调用",
           "close": "关闭",
-          "noData": "此会话仅包含会话级总计；单次调用归因仅针对 ORGII 自有智能体的运行进行记录。",
+          "noData": "此会话仅包含会话级总计；单次调用归因仅针对 ORG2 自有智能体的运行进行记录。",
           "turnHeader": "轮次 {{turn}}",
           "promptTokens": "提示词",
           "completionTokens": "补全"
@@ -555,22 +555,6 @@
     "creatingWithContext": "正在使用上下文创建新 Session",
     "creationCooldown": "请稍后再创建新终端。"
   },
-  "scope": {
-    "applicableScope": "适用范围",
-    "for": "的",
-    "selectCategory": "选择类别",
-    "selectScope": "选择范围",
-    "allRepos": "所有仓库",
-    "allSessions": "所有 Session",
-    "allProjects": "所有项目",
-    "allWorkItems": "所有工作项",
-    "categories": {
-      "repo": "仓库",
-      "session": "Session",
-      "projects": "项目",
-      "workItems": "工作项"
-    }
-  },
   "editor": {
     "loading": "正在加载编辑器..."
   },
@@ -733,7 +717,6 @@
     "performActions_one": "执行 {{count}} 项操作",
     "performActions_other": "执行 {{count}} 项操作",
     "showInlineDiffs": "行内差异",
-    "pageSettings": "页面显示",
     "inputSettings": "输入设置",
     "replay": {
       "follow": "跟随"
@@ -1923,7 +1906,7 @@
     "start": "开始",
     "missingGit": {
       "title": "缺少 Git",
-      "body": "未安装 Git 或无法找到 Git。请让 ADE Manager 或 SDE Agent 为这台机器安装 Git，然后重启 ORGII。"
+      "body": "未安装 Git 或无法找到 Git。请让 ADE Manager 或 SDE Agent 为这台机器安装 Git，然后重启 ORG2。"
     },
     "cliVersionOutdated": {
       "title": "{{cli}} 需要升级（{{installed}} > {{latest}}）",
@@ -1941,7 +1924,6 @@
       "showMore": "再显示 {{remaining}} 项"
     },
     "slashMenu": {
-      "commands": "指令",
       "commands": "命令",
       "mode": "模式",
       "workspaceSkills": "工作区技能",
@@ -2027,7 +2009,8 @@
         "notEnoughRunners": "请至少配置两个可运行的执行器"
       }
     },
-    "mode": "编辑器模式"
+    "mode": "编辑器模式",
+    "cursorIdeDescription": "在 ORG2 中浏览并继续 Cursor IDE 聊天会话"
   },
   "planner": {
     "modes": {
@@ -2265,7 +2248,7 @@
     "noSessionIdFound": "未找到 Session ID",
     "failedToResume": "恢复 Session 失败",
     "failedToCheckChanges": "无法检查文件变更，将自动还原。",
-    "insufficientBalance": "ORGII 托管服务余额不足，请前往 orgii.ai/wallet 充值。",
+    "insufficientBalance": "ORG2 托管服务余额不足，请前往 orgii.ai/wallet 充值。",
     "runQueuedBehindCheckout": "已排队：另一个运行正在使用此检出目录，待其结束后将自动开始。"
   },
   "planning": {
@@ -2315,7 +2298,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "停止 Agent 进程",
       "openInMyStation": "在 My Station 打开"
     }
   },

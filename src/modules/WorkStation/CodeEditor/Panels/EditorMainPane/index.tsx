@@ -28,6 +28,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -39,6 +40,7 @@ import { useWorkStationTabShortcutBridge } from "@src/hooks/tabHost/useWorkStati
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import UnifiedTabContent from "@src/modules/WorkStation/TabContent/UnifiedTabContent";
 import { NoTabsPlaceholder } from "@src/modules/WorkStation/shared";
+import { FileHeaderToolbarContext } from "@src/modules/shared/components/FileHeader/FileHeaderToolbarContext";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 import { workstationSelectedIssueAtomFamily } from "@src/store/workstation/codeEditor/workstationIssueAtom";
@@ -95,6 +97,8 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     repoPath,
     repoId,
     repoDisplayName,
+    onExplorerRefresh,
+    explorerLoading,
     gitFilesByPath,
     gitDiffLoading,
     onFileSelect,
@@ -302,6 +306,9 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       sourceControlFilterMode,
     });
 
+    const [focusToolbarTarget, setFocusToolbarTarget] =
+      useState<HTMLSpanElement | null>(null);
+
     // Memoized so `usePublishWorkstationTabHeader` sees a stable `content`
     // identity — a fresh element every render would re-publish the global
     // header slot on each pass.
@@ -310,6 +317,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       return (
         <SourceControlHeaderContent
           activeTab={activeTab}
+          focusToolbarRef={setFocusToolbarTarget}
           sourceControlFilterMode={sourceControlFilterMode}
           showSourceControlModePill={showSourceControlModePill}
           gitReviewNavigationTotal={gitReviewNavigation.total}
@@ -321,7 +329,6 @@ const EditorContent: React.FC<EditorContentProps> = memo(
           t={t}
           onDiffViewModeChange={setDiffViewMode}
           onModeChange={handleSourceControlModeChange}
-          onOpenHistoryInNewTab={handleOpenSourceControlHistoryInNewTab}
           onReviewPrevFile={handleReviewPrevFile}
           onReviewNextFile={handleReviewNextFile}
           onCollapseAll={handleSourceControlCollapseAll}
@@ -332,7 +339,6 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       activeTab,
       diffViewMode,
       gitReviewNavigation.total,
-      handleOpenSourceControlHistoryInNewTab,
       handleReviewNextFile,
       handleReviewPrevFile,
       handleSourceControlCollapseAll,
@@ -433,6 +439,9 @@ const EditorContent: React.FC<EditorContentProps> = memo(
             enabled={isExplorerHome}
             repoDisplayName={repoDisplayName}
             activeFilePath={activeFilePath}
+            repoPath={repoPath}
+            onRefresh={onExplorerRefresh}
+            loading={explorerLoading}
           />
           <div className="relative min-h-0 flex-1 overflow-hidden">
             {shouldMountTerminalContent && (
@@ -525,25 +534,38 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                 aria-hidden={!sourceControlPaneVisible}
               >
                 <Suspense fallback={<LazyFallback />}>
-                  <SourceControlMainPane
-                    tabData={sourceControlTab.data as SourceControlMainTabData}
-                    repoPath={repoPath}
-                    repoId={repoId ?? null}
-                    gitFilesByPath={gitFilesByPath}
-                    sourceControlFiles={sourceControlBaseFiles}
-                    sourceControlFilterMode={sourceControlFilterMode}
-                    activeRepoRoot={sourceControlActiveRepoRoot}
-                    gitDiffLoading={gitDiffLoading}
-                    sourceControlCollapseAllSignal={
-                      sourceControlCollapseAllSignal
+                  <FileHeaderToolbarContext.Provider
+                    value={
+                      sourceControlPaneVisible
+                        ? (focusToolbarTarget ?? "host")
+                        : "host"
                     }
-                    sourceControlQuickActions={sourceControlQuickActions}
-                    onForceReload={forceRefresh}
-                    onFileSelect={onFileSelect}
-                    onCloseFocus={handleSourceControlCloseFocus}
-                    onGitDiffUnsavedChange={handleGitDiffUnsavedChange}
-                    viewStateKey={sourceControlTab.id}
-                  />
+                  >
+                    <SourceControlMainPane
+                      tabData={
+                        sourceControlTab.data as SourceControlMainTabData
+                      }
+                      repoPath={repoPath}
+                      repoId={repoId ?? null}
+                      gitFilesByPath={gitFilesByPath}
+                      sourceControlFiles={sourceControlBaseFiles}
+                      sourceControlFilterMode={sourceControlFilterMode}
+                      activeRepoRoot={sourceControlActiveRepoRoot}
+                      gitDiffLoading={gitDiffLoading}
+                      sourceControlCollapseAllSignal={
+                        sourceControlCollapseAllSignal
+                      }
+                      sourceControlQuickActions={sourceControlQuickActions}
+                      onForceReload={forceRefresh}
+                      onFileSelect={onFileSelect}
+                      onCloseFocus={handleSourceControlCloseFocus}
+                      onOpenHistoryInNewTab={
+                        handleOpenSourceControlHistoryInNewTab
+                      }
+                      onGitDiffUnsavedChange={handleGitDiffUnsavedChange}
+                      viewStateKey={sourceControlTab.id}
+                    />
+                  </FileHeaderToolbarContext.Provider>
                 </Suspense>
               </div>
             )}

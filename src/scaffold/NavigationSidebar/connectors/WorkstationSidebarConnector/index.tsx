@@ -26,7 +26,6 @@ import {
   sessionSidebarRevealRequestAtom,
   sidebarCollapsedAtom,
 } from "@src/store/ui/sidebarAtom";
-import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 
 import { SidebarBottomBar } from "../../blocks";
 import SidebarSettingsMenuButton from "../../blocks/SidebarSettingsMenuButton";
@@ -104,7 +103,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     chatPanelSelectedWorkItem,
     chatPanelSelectedProject,
     setChatPanelCreateTarget,
-    navigateChatPanel,
+    resetChatPanelSessionSurface,
     setStationChatVisible,
     setStationMode,
     activeWorkManagementSection,
@@ -208,13 +207,13 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const openNewSessionFromSidebar = useCallback(() => {
     openNewChatFromSidebar({
       goToNewSession,
-      navigateChatPanel,
+      resetChatPanelSessionSurface,
       openNewChatTab: () => openStartPageTab({ title: t("routes.launchpad") }),
       setChatPanelCreateTarget,
     });
   }, [
     goToNewSession,
-    navigateChatPanel,
+    resetChatPanelSessionSurface,
     openStartPageTab,
     setChatPanelCreateTarget,
     t,
@@ -253,7 +252,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
       }
 
       if (destination === "new-tab") {
-        navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+        resetChatPanelSessionSurface();
         openSessionInNewChatTab({
           sessionId: options.sessionId,
           sessionName: options.title,
@@ -262,7 +261,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
       }
 
       if (destination === "default" || destination === "replace-all") {
-        navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+        resetChatPanelSessionSurface();
         openOrReplaceSessionInChatPanelTab({
           sessionId: options.sessionId,
           sessionName: options.title,
@@ -281,7 +280,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     [
       location.pathname,
       navigate,
-      navigateChatPanel,
+      resetChatPanelSessionSurface,
       openSessionInNewChatTab,
       openSessionInNewWindow,
       openSessionInWorkstation,
@@ -376,21 +375,18 @@ export const WorkstationSidebarConnector: React.FC = () => {
     tSessions,
   });
 
-  const {
-    resetWorkManagementStateForProjectsContent,
-    activateMyStationRouteForProjectTabContent,
-    handleGoToNewSession,
-  } = useSidebarStationNavigation({
-    setStationMode,
-    setStationChatVisible,
-    openStartPageTab,
-    navigateChatPanel,
-    setChatPanelCreateTarget,
-    goToNewSession,
-    location,
-    navigate,
-    t,
-  });
+  const { activateMyStationRouteForProjectTabContent, handleGoToNewSession } =
+    useSidebarStationNavigation({
+      setStationMode,
+      setStationChatVisible,
+      openStartPageTab,
+      resetChatPanelSessionSurface,
+      setChatPanelCreateTarget,
+      goToNewSession,
+      location,
+      navigate,
+      t,
+    });
 
   const {
     handleDeleteSession,
@@ -426,7 +422,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     openOrReplaceSessionInChatPanelTab,
     closeAndDestroyChatPanelTab,
     activateMyStationRouteForProjectTabContent,
-    navigateChatPanel,
+    resetChatPanelSessionSurface,
     openSessionInNewChatTab,
     openSessionInWorkstation,
     openSessionInNewWindow,
@@ -476,7 +472,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     enabled: workItemsContentVisible,
     activeProjectOrgId,
     activateMyStationRouteForProjectTabContent,
-    resetWorkManagementStateForProjectsContent,
     handleOpenLinkedWorkItemSession,
   });
   const { selectedMenuItemId, handleSessionCollapsedSectionIdsChange } =

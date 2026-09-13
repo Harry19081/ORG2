@@ -195,21 +195,6 @@ vi.mock("@src/components/Message", () => ({
   default: { error: vi.fn() },
 }));
 
-vi.mock("@src/components/Button", () => ({
-  default: (props: Record<string, unknown>) =>
-    createElement(
-      "button",
-      {
-        type: "button",
-        disabled: props.disabled as boolean | undefined,
-        onClick: props.onClick as (() => void) | undefined,
-        "aria-label": props["aria-label"] as string | undefined,
-        "data-testid": props["data-testid"] as string | undefined,
-      },
-      props.children as React.ReactNode
-    ),
-}));
-
 vi.mock("./ComposerStackHeader", () => ({
   default: ({
     label,

@@ -1,5 +1,6 @@
 import React, { useId } from "react";
 
+import Button from "@src/components/Button";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { HugeiconsIcon, WorkHistoryIcon } from "@src/icons";
@@ -33,9 +34,11 @@ export function RecentTabsMenuSection({
           {label}
         </div>
         {tabs.map((tab) => (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={tab.id}
-            type="button"
+            htmlType="button"
             role="menuitem"
             className={DROPDOWN_CLASSES.menuActionItem}
             data-recent-tab-id={tab.id}
@@ -54,7 +57,7 @@ export function RecentTabsMenuSection({
                 {tab.title}
               </span>
             </span>
-          </button>
+          </Button>
         ))}
       </div>
     </>

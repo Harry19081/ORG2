@@ -67,7 +67,7 @@ import {
 } from "@src/store/chatPanel/chatPanelTabsAtom";
 import {
   type ChatPanelSelectedWorkItem,
-  chatPanelSelectedWorkItemAtom,
+  updateChatPanelWorkItemTabAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { WORK_ITEM_STATUS, type WorkItem } from "@src/types/core/workItem";
@@ -90,7 +90,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
 }) => {
   const { t } = useTranslation(["projects", "common"]);
   const closeWorkItemTab = useSetAtom(closeWorkItemChatPanelTabAtom);
-  const setSelectedWorkItem = useSetAtom(chatPanelSelectedWorkItemAtom);
+  const updateWorkItemTab = useSetAtom(updateChatPanelWorkItemTabAtom);
   const openSessionTab = useSetAtom(openSessionInNewChatTabAtom);
   const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
   const [projectSyncAdapter, setProjectSyncAdapter] = useState<{
@@ -154,14 +154,14 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
 
   const acceptRevisionRecord = useCallback(
     (record: WorkItem) => {
-      setSelectedWorkItem((current) =>
+      updateWorkItemTab((current) =>
         current?.shortId === selectedWorkItem.shortId &&
         current.orgId === selectedWorkItem.orgId
           ? { ...current, workItem: record }
           : current
       );
     },
-    [selectedWorkItem.orgId, selectedWorkItem.shortId, setSelectedWorkItem]
+    [selectedWorkItem.orgId, selectedWorkItem.shortId, updateWorkItemTab]
   );
   const retryRevisionUpdate = useCallback(
     async (updates: Partial<WorkItem>, expectedRevision: number) => {
@@ -272,7 +272,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
               selectedWorkItem.workItem.revision
             )
           );
-          setSelectedWorkItem({
+          updateWorkItemTab({
             ...selectedWorkItem,
             workItem: updatedWorkItem,
           });
@@ -293,7 +293,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
               )
             )
           );
-          setSelectedWorkItem({
+          updateWorkItemTab({
             ...selectedWorkItem,
             workItem: updatedWorkItem,
           });
@@ -313,7 +313,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
       handleRevisionConflict,
       onUpdateWorkItem,
       selectedWorkItem,
-      setSelectedWorkItem,
+      updateWorkItemTab,
     ]
   );
 
@@ -337,7 +337,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
           return;
         }
         const refreshedProjectItem = enrichedWorkItemToUI(fresh);
-        setSelectedWorkItem((current) =>
+        updateWorkItemTab((current) =>
           current?.projectSlug === selectedWorkItem.projectSlug &&
           current.shortId === selectedWorkItem.shortId &&
           current.orgId === selectedWorkItem.orgId
@@ -354,7 +354,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
       const refreshedStandaloneItem = enrichedWorkItemToUI(
         standaloneWorkItemDataToEnriched(data)
       );
-      setSelectedWorkItem((current) =>
+      updateWorkItemTab((current) =>
         current?.shortId === selectedWorkItem.shortId &&
         current.orgId === selectedWorkItem.orgId
           ? { ...current, workItem: refreshedStandaloneItem }
@@ -370,7 +370,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
       }
       logger.warn("Failed to refresh chat panel work item", error);
     }
-  }, [closeWorkItemTab, selectedWorkItem, setSelectedWorkItem]);
+  }, [closeWorkItemTab, selectedWorkItem, updateWorkItemTab]);
 
   const refreshOnceRef = useRef(refreshSelectedWorkItemOnce);
   const refreshInFlightRef = useRef<Promise<void> | null>(null);
@@ -447,7 +447,6 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
         shortId: item.frontmatter.short_id,
         orgId: selectedWorkItem.orgId,
       };
-      setSelectedWorkItem(selection);
       openWorkItemTab(selection);
     },
     [
@@ -456,7 +455,6 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
       selectedWorkItem.projectId,
       selectedWorkItem.projectName,
       selectedWorkItem.projectSlug,
-      setSelectedWorkItem,
     ]
   );
 

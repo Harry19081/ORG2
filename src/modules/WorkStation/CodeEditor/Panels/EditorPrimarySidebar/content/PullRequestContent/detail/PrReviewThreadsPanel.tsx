@@ -200,8 +200,10 @@ export const PrReviewThreadsPanel: React.FC<PrReviewThreadsPanelProps> = ({
 
   return (
     <div className="shrink-0 border-t border-border-1">
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onClick={() => setExpanded((prev) => !prev)}
         className="flex w-full items-center gap-1.5 px-4 py-2 text-[12px] text-text-2 hover:bg-fill-1"
       >
@@ -233,7 +235,7 @@ export const PrReviewThreadsPanel: React.FC<PrReviewThreadsPanelProps> = ({
         <span className="rounded-full bg-fill-2 px-1.5 text-[10px] text-text-3 tabular-nums">
           {threads.length}
         </span>
-      </button>
+      </Button>
       {expanded ? (
         <div className="scrollbar-hide max-h-[40vh] overflow-y-auto px-4 pb-3">
           <div

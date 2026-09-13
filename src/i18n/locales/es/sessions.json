@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Fuentes de datos",
-      "description": "Herramientas de programación externas que ORGII detecta. Las apps importables muestran su número de sesiones y pueden reescanearse; el resto muestra el estado de instalación y dónde está su historial.",
+      "description": "Herramientas de programación externas que ORG2 detecta. Las apps importables muestran su número de sesiones y pueden reescanearse; el resto muestra el estado de instalación y dónde está su historial.",
       "rescanAll": "Reescanear todo",
       "rescan": "Reescanear",
       "rescanning": "Reescaneando…",
@@ -190,7 +190,7 @@
           "perTurn": "Llamadas al LLM",
           "perTool": "Llamadas a herramientas",
           "close": "Cerrar",
-          "noData": "Esta sesión solo tiene totales por sesión; la atribución por llamada se registra para las ejecuciones de agentes propios de ORGII.",
+          "noData": "Esta sesión solo tiene totales por sesión; la atribución por llamada se registra para las ejecuciones de agentes propios de ORG2.",
           "turnHeader": "Turno {{turn}}",
           "promptTokens": "Prompt",
           "completionTokens": "Finalización"
@@ -555,22 +555,6 @@
     "creatingWithContext": "Creando nueva Session con contexto",
     "creationCooldown": "Espera un momento antes de crear otro terminal."
   },
-  "scope": {
-    "applicableScope": "Ámbito aplicable",
-    "for": "para",
-    "selectCategory": "Seleccionar categoría",
-    "selectScope": "Seleccionar ámbito",
-    "allRepos": "Todos los repos",
-    "allSessions": "Todas las Sessions",
-    "allProjects": "Todos los Projects",
-    "allWorkItems": "Todos los elementos de trabajo",
-    "categories": {
-      "repo": "Repo",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "Elementos de trabajo"
-    }
-  },
   "editor": {
     "loading": "Cargando editor..."
   },
@@ -732,7 +716,6 @@
     "performActions_one": "Realizar {{count}} acción",
     "performActions_other": "Realizar {{count}} acciones",
     "showInlineDiffs": "Diferencias en línea",
-    "pageSettings": "Visualización de página",
     "inputSettings": "Configuración de entrada",
     "replay": {
       "follow": "Seguir"
@@ -1923,7 +1906,7 @@
     "start": "Iniciar",
     "missingGit": {
       "title": "Falta Git",
-      "body": "Git no está instalado o no se pudo encontrar. Pide a ADE Manager o a SDE Agent que instale Git en esta máquina y luego reinicia ORGII."
+      "body": "Git no está instalado o no se pudo encontrar. Pide a ADE Manager o a SDE Agent que instale Git en esta máquina y luego reinicia ORG2."
     },
     "model": "Modelo",
     "contextMenu": {
@@ -1938,8 +1921,7 @@
       "commands": "Comandos",
       "mode": "Modo",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Comandos"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Acciones GIT",
@@ -2027,7 +2009,8 @@
       "refresh": "Volver a comprobar la versión de la CLI de {{cli}}",
       "unknownVersion": "desconocida"
     },
-    "mode": "Modo del editor"
+    "mode": "Modo del editor",
+    "cursorIdeDescription": "Explora y continúa las conversaciones de Cursor IDE en ORG2"
   },
   "planner": {
     "modes": {
@@ -2266,7 +2249,7 @@
     "noSessionIdFound": "No se encontró ID de Session",
     "failedToResume": "Error al reanudar la Session",
     "failedToCheckChanges": "No se pudieron verificar los cambios de archivo. Se procederá con la reversión.",
-    "insufficientBalance": "Saldo insuficiente para el servicio alojado de ORGII. Recarga en orgii.ai/wallet.",
+    "insufficientBalance": "Saldo insuficiente para el servicio alojado de ORG2. Recarga en orgii.ai/wallet.",
     "runQueuedBehindCheckout": "En cola: otra ejecución está usando este checkout. Comenzará en cuanto termine."
   },
   "planning": {
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Detener proceso del Agent",
       "openInMyStation": "Abrir en My Station"
     }
   },

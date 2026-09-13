@@ -1,5 +1,6 @@
 import React from "react";
 
+import Button from "@src/components/Button";
 import {
   SESSION_ROW_PRESENTATION,
   SessionRowLeadingIcon,
@@ -22,8 +23,10 @@ export function SessionListItem({
   const statusTone = status === "running" ? "working" : "default";
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       data-testid="mobile-remote-session-row"
       className={`${SESSION_ROW_PRESENTATION.row} w-full cursor-pointer border-0 bg-transparent px-2 text-left text-text-1 outline-none select-none hover:bg-sidebar-selected focus-visible:bg-sidebar-selected focus-visible:ring-2 focus-visible:ring-primary-6/30 active:bg-sidebar-selected`}
       onClick={onSelect}
@@ -43,7 +46,7 @@ export function SessionListItem({
           </span>
         </span>
       </span>
-    </button>
+    </Button>
   );
 }
 

@@ -212,6 +212,28 @@ describe("useTranscriptViewport", () => {
     expect(viewport.mode).toBe("detached_reading");
   });
 
+  it.each(["button", "summary", "a"])(
+    "leaves keyboard interaction on a focused %s to the control",
+    (tag) => {
+      const control = document.createElement(tag);
+      if (tag === "a") control.setAttribute("href", "#message");
+      const child = document.createElement("span");
+      control.append(child);
+      scrollRoot.append(control);
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: " ",
+      });
+
+      act(() => child.dispatchEvent(event));
+
+      expect(event.defaultPrevented).toBe(false);
+      expect(scrollTo).not.toHaveBeenCalled();
+      expect(viewport.mode).toBe("following_tail");
+    }
+  );
+
   it("coalesces row, footer, typing, and collapse resize signals around the same anchor", () => {
     scrollRoot.scrollTop = 200;
     act(() => {

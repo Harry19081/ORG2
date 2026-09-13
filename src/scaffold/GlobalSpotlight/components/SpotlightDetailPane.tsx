@@ -3,7 +3,8 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
-import HoverCardBase from "@src/components/SessionHoverCard/HoverCardBase";
+import Button from "@src/components/Button";
+import HoverCardBase from "@src/components/HoverCard/HoverCardBase";
 import { createLogger } from "@src/hooks/logger";
 import { FolderClosedIcon, FolderOpenIcon } from "@src/icons";
 
@@ -32,8 +33,10 @@ function DetailLine({
     <div className="mt-2 flex items-center gap-2 text-text-2">
       {icon && <AnyIcon icon={icon} size={14} className="shrink-0" />}
       {canOpen ? (
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className="group/path flex min-w-0 cursor-pointer items-center gap-1.5 text-left underline-offset-2 hover:underline focus-visible:underline focus-visible:ring-1 focus-visible:ring-primary-6 focus-visible:outline-none"
           onClick={(event) => {
             event.stopPropagation();
@@ -48,7 +51,7 @@ function DetailLine({
             size={14}
             className="shrink-0 opacity-0 group-hover/path:opacity-100 group-focus-visible/path:opacity-100"
           />
-        </button>
+        </Button>
       ) : (
         <span className="min-w-0 truncate">{text}</span>
       )}

@@ -102,6 +102,7 @@ export function NotGitInitializedContent({
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Placeholder
+        loadingIconOnly
         variant={initializing ? "loading" : "empty"}
         placement="sidebar"
         title={
@@ -399,6 +400,7 @@ export const SourceControlWithWorktrees = forwardRef<
       return (
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <Placeholder
+            loadingIconOnly
             variant="loading"
             placement="sidebar"
             title={t("placeholders.loadingChanges")}
@@ -413,6 +415,7 @@ export const SourceControlWithWorktrees = forwardRef<
         {showScopePaneLoading ? (
           <div className="bg-surface-1 absolute inset-0 z-10 flex min-h-0 flex-col">
             <Placeholder
+              loadingIconOnly
               variant="loading"
               placement="sidebar"
               title={t("placeholders.loadingChanges")}

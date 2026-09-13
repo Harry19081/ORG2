@@ -135,14 +135,17 @@ const CalendarToolbar: React.FC<CalendarToolbarProps> = ({
         />
 
         {/* Today */}
-        <button
-          type="button"
-          className="ml-1 cursor-pointer rounded-md border-none bg-fill-1 px-3 py-1 text-xs text-text-2 transition-all duration-150 hover:bg-fill-2 hover:text-text-1"
+        <Button
+          variant="tertiary"
+          appearance="ghost"
+          size="mini"
+          htmlType="button"
+          className="ml-1 text-xs transition-all hover:bg-fill-2 hover:text-text-1"
           onClick={onGoToToday}
           title="Go to today"
         >
           Today
-        </button>
+        </Button>
       </div>
     </div>
   );

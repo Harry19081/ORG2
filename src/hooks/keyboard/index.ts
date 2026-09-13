@@ -28,9 +28,5 @@ export { shortcutRegistry } from "@src/config/keyboard/ShortcutRegistry";
 
 export {
   getShortcutKeys,
-  getShortcutEntry,
   getShortcutAccelerator,
-  labelWithShortcut,
-  isModifierPressed,
-  matchesKey,
 } from "@src/config/keyboard/shortcutDisplay";

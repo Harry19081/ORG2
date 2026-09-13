@@ -8,6 +8,7 @@
  */
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
 import { FOLDER_HEADER } from "@src/config/workstation/tokens";
 import {
   ArrowDown01Icon,
@@ -50,7 +51,13 @@ export const FolderHeaderRow: React.FC<FolderHeaderRowProps> = memo(
       className={`${FOLDER_HEADER.row}${className ? ` ${className}` : ""}`}
       onContextMenu={onContextMenu}
     >
-      <button type="button" className={FOLDER_HEADER.button} onClick={onToggle}>
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
+        className={FOLDER_HEADER.button}
+        onClick={onToggle}
+      >
         {expanded ? (
           <HugeiconsIcon
             icon={ArrowDown01Icon}
@@ -83,7 +90,7 @@ export const FolderHeaderRow: React.FC<FolderHeaderRowProps> = memo(
             {badgeCount}
           </span>
         )}
-      </button>
+      </Button>
       {actions && <div className={FOLDER_HEADER.actions}>{actions}</div>}
     </div>
   )

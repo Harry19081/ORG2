@@ -36,6 +36,7 @@ import { useTranslation } from "react-i18next";
 
 import { rpc } from "@src/api/tauri/rpc";
 import Button from "@src/components/Button";
+import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import {
   AGENT_SIDE_CHANNEL_EVENTS,
@@ -318,12 +319,15 @@ export const SecretCaptureModal: FC = () => {
             <span className="text-text-3">·</span>
             <span>{t(`secretCapture.kind.${kind}`)}</span>
           </span>
-          <input
+          <Input
+            size="large"
+            visibilityToggle={false}
+            className="w-full"
             ref={inputRef}
             id={inputId}
             type="password"
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(_value, e) => setValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !submitDisabled) {
                 e.preventDefault();
@@ -337,7 +341,6 @@ export const SecretCaptureModal: FC = () => {
             data-1p-ignore
             data-lpignore="true"
             placeholder={t("secretCapture.inputPlaceholder")}
-            className="rounded-md border border-border-2 bg-bg-2 px-3 py-2 text-sm text-text-1 outline-none focus:border-border-3"
           />
           <span className="text-[11px] text-text-3">
             {t("secretCapture.lengthHint", { count: value.length })}

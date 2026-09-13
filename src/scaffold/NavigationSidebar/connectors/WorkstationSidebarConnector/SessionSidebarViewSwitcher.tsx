@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import Tooltip from "@src/components/Tooltip";
 import {
   BubbleChatIcon,
@@ -89,8 +90,10 @@ export const SessionSidebarViewSwitcher: React.FC<SessionSidebarViewSwitcherProp
                 mouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
                 showArrow={false}
               >
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className={`relative z-1 flex h-7 w-full items-center justify-center rounded-full transition-[background-color,color] duration-150 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${
                     selected
                       ? "cursor-default text-primary-6"
@@ -107,7 +110,7 @@ export const SessionSidebarViewSwitcher: React.FC<SessionSidebarViewSwitcherProp
                     strokeWidth={selected ? 2 : 1.8}
                     aria-hidden
                   />
-                </button>
+                </Button>
               </Tooltip>
             );
           })}

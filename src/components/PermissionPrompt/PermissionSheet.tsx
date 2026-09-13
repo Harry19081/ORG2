@@ -5,6 +5,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import BottomSheet from "@src/components/BottomSheet";
+import Button from "@src/components/Button";
 import { HugeiconsIcon, NotificationBubbleIcon } from "@src/icons";
 
 import { PermissionPromptActions } from "./PermissionPromptActions";
@@ -117,13 +118,16 @@ export function PermissionSheet({
         footerNote={footerNote || undefined}
       />
       {onDismiss ? (
-        <button
-          type="button"
-          className="mt-3 w-full text-center text-xs text-text-3"
+        <Button
+          variant="tertiary"
+          appearance="ghost"
+          size="mini"
+          htmlType="button"
+          className="mt-3 w-full text-center text-xs"
           onClick={onDismiss}
         >
           {t("chat.permissionDismiss", "Dismiss on this device")}
-        </button>
+        </Button>
       ) : null}
     </BottomSheet>
   );

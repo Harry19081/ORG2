@@ -56,6 +56,7 @@ export const AgentSessionSearchPalette: React.FC<
   const cloudAuth = useAtomValue(org2CloudAuthAtom);
   const cloudRemoteSessions = useAtomValue(org2CloudRemoteSessionsAtom);
   const [query, setQuery] = useState("");
+  const hasSearchQuery = query.trim().length > 0;
   const resolvedSearchInput = useMemo(
     () => resolveAgentSessionSearchInput(query),
     [query]
@@ -116,6 +117,7 @@ export const AgentSessionSearchPalette: React.FC<
   );
 
   const items = useMemo<SpotlightItem[]>(() => {
+    if (!hasSearchQuery) return [];
     if (resolvedSearchInput.reference) {
       const reference = resolvedSearchInput.reference;
       return [
@@ -144,6 +146,7 @@ export const AgentSessionSearchPalette: React.FC<
       onSelect: handleOpenSession,
     });
   }, [
+    hasSearchQuery,
     fallbackSessionLabel,
     filteredItems,
     cloudAuth,
@@ -219,7 +222,8 @@ export const AgentSessionSearchPalette: React.FC<
       )}
       path={path}
       onRemoveSegment={handleGoBack}
-      isLoading={sessionsLoading && sessions.length === 0}
+      isLoading={hasSearchQuery && sessionsLoading && sessions.length === 0}
+      contentOverride={hasSearchQuery ? undefined : null}
       containerHeight={400}
     />
   );

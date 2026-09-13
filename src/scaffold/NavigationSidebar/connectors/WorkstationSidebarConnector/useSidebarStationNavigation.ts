@@ -14,7 +14,7 @@ interface SidebarStationNavigationParams {
   setStationMode: ChatActions["setStationMode"];
   setStationChatVisible: ChatActions["setStationChatVisible"];
   openStartPageTab: ChatActions["openStartPageTab"];
-  navigateChatPanel: ChatActions["navigateChatPanel"];
+  resetChatPanelSessionSurface: ChatActions["resetChatPanelSessionSurface"];
   setChatPanelCreateTarget: ChatActions["setChatPanelCreateTarget"];
   goToNewSession: ReturnType<typeof useAppNavigation>["goToNewSession"];
   location: Location;
@@ -25,20 +25,13 @@ export function useSidebarStationNavigation({
   setStationMode,
   setStationChatVisible,
   openStartPageTab,
-  navigateChatPanel,
+  resetChatPanelSessionSurface,
   setChatPanelCreateTarget,
   goToNewSession,
   location,
   navigate,
   t,
 }: SidebarStationNavigationParams) {
-  const resetWorkManagementStateForProjectsContent = useCallback(() => {
-    const stationMode: StationMode = "my-station";
-    setStationMode(stationMode);
-    setStationChatVisible(stationMode, true);
-    openStartPageTab({ title: t("routes.launchpad") });
-  }, [openStartPageTab, setStationChatVisible, setStationMode, t]);
-
   const activateMyStationRouteForProjectTabContent = useCallback(() => {
     const stationMode: StationMode = "my-station";
     const targetRoute = ROUTES.workStation.code.path;
@@ -53,13 +46,12 @@ export function useSidebarStationNavigation({
 
   const { handleGoToNewSession } = useSessionEntryActions({
     goToNewSession,
-    navigateChatPanel,
+    resetChatPanelSessionSurface,
     openNewChatTab,
     setChatPanelCreateTarget,
   });
 
   return {
-    resetWorkManagementStateForProjectsContent,
     activateMyStationRouteForProjectTabContent,
     handleGoToNewSession,
   };

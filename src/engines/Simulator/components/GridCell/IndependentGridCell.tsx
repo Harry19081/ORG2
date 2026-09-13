@@ -256,8 +256,32 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 : "pointer-events-none h-0 opacity-0"
             }`}
           >
-            <button
-              type="button"
+            <Button
+              variant="tertiary"
+              appearance="ghost"
+              size="sidebar"
+              iconOnly
+              icon={
+                state.isPlaying ? (
+                  <HugeiconsIcon
+                    icon={PauseIcon}
+                    data-icon="pause"
+                    size={11}
+                    fill="currentColor"
+                    strokeWidth={0}
+                  />
+                ) : (
+                  <HugeiconsIcon
+                    icon={PlayIcon}
+                    data-icon="play"
+                    size={11}
+                    fill="currentColor"
+                    strokeWidth={0}
+                  />
+                )
+              }
+              style={{ width: 16, height: 16 }}
+              htmlType="button"
               onClick={controls.togglePlay}
               aria-label={
                 state.isPlaying
@@ -265,60 +289,54 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                   : t("simulator.replay.play", { defaultValue: "Play" })
               }
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1`}
-            >
-              {state.isPlaying ? (
-                <HugeiconsIcon
-                  icon={PauseIcon}
-                  data-icon="pause"
-                  size={11}
-                  fill="currentColor"
-                  strokeWidth={0}
-                />
-              ) : (
-                <HugeiconsIcon
-                  icon={PlayIcon}
-                  data-icon="play"
-                  size={11}
-                  fill="currentColor"
-                  strokeWidth={0}
-                />
-              )}
-            </button>
+            />
             {/* Prev / next event — moves the cell's replay cursor by one
                 event in the merged stream. Disabled at the edges so the
                 user gets explicit feedback that they're at the boundary. */}
-            <button
-              type="button"
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="sidebar"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={ArrowLeft01Icon}
+                  data-icon="chevron-left"
+                  size={12}
+                  strokeWidth={2}
+                />
+              }
+              style={{ width: 16, height: 16 }}
+              htmlType="button"
               onClick={controls.prev}
               disabled={replaySliderDisabled || currentIndex <= 0}
               aria-label={t("simulator.replay.previous", {
                 defaultValue: "Previous event",
               })}
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
-            >
-              <HugeiconsIcon
-                icon={ArrowLeft01Icon}
-                data-icon="chevron-left"
-                size={12}
-                strokeWidth={2}
-              />
-            </button>
-            <button
-              type="button"
+            />
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="sidebar"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  data-icon="chevron-right"
+                  size={12}
+                  strokeWidth={2}
+                />
+              }
+              style={{ width: 16, height: 16 }}
+              htmlType="button"
               onClick={controls.next}
               disabled={replaySliderDisabled || currentIndex >= eventCount - 1}
               aria-label={t("simulator.replay.next", {
                 defaultValue: "Next event",
               })}
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
-            >
-              <HugeiconsIcon
-                icon={ArrowRight01Icon}
-                data-icon="chevron-right"
-                size={12}
-                strokeWidth={2}
-              />
-            </button>
+            />
             <div className="min-w-0 flex-1 px-1">
               <ReplayProgressBar
                 value={sliderValue}

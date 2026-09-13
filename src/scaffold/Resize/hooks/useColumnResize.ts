@@ -4,7 +4,7 @@
  * Pure DOM horizontal column resize — zero React renders during drag,
  * commits to state on mouseup only. Mirrors `useBottomPanelResize` but on
  * the x-axis for inline file-list / sidebar columns that are NOT wrapped in
- * `ResizeProvider` (so the heavier `useResizeController` is not an option).
+ * a resize context.
  *
  * Pairs with `VerticalResizeHandle` for the visual drag strip.
  *

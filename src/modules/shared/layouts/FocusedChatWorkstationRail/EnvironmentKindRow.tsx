@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
 import DropdownSelectedCheck from "@src/components/Dropdown/DropdownSelectedCheck";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@src/components/Dropdown/tokens";
 import { CloudIcon, LaptopIcon } from "@src/icons";
 
+import { WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS } from "../blocks/workstationTrailTokens";
 import { WorkspaceContextRow } from "./WorkspaceContextRow";
 
 export type EnvironmentKind = "local" | "cloud";
@@ -75,16 +77,19 @@ export function EnvironmentKindRow({
             {ENVIRONMENT_KIND_OPTIONS.map((option) => {
               const isSelected = option.id === kind;
               return (
-                <button
+                <Button
                   key={option.id}
-                  type="button"
+                  htmlType="button"
+                  variant="tertiary"
+                  appearance="soft-no-drop"
+                  size="small"
                   disabled={option.disabled}
-                  className={`${DROPDOWN_CLASSES.item} ${
+                  className={`${WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS} h-8! [&>span]:justify-between ${DROPDOWN_CLASSES.item} ${
                     option.disabled
                       ? "cursor-not-allowed opacity-40"
                       : isSelected
                         ? DROPDOWN_CLASSES.itemSelected
-                        : DROPDOWN_CLASSES.itemHover
+                        : ""
                   } w-full justify-between`}
                   onClick={() => setOpen(false)}
                 >
@@ -97,7 +102,7 @@ export function EnvironmentKindRow({
                     <span>{t(option.labelKey)}</span>
                   </div>
                   {isSelected && <DropdownSelectedCheck />}
-                </button>
+                </Button>
               );
             })}
           </div>

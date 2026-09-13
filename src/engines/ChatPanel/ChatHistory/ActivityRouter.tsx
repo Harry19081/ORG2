@@ -31,9 +31,9 @@ import {
 
 import AgentChatItemDefault from "../ChatItems/AgentChatItemDefault";
 import AgentErrorChatItem from "../ChatItems/AgentErrorChatItem";
-import "./ActivityRouter.scss";
 import { getAgentErrorMessage } from "./chatItemPipeline/classifiers";
 import UserMessageContent from "./components/UserMessageContent";
+import "./styles/activity-thinking.css";
 
 const log = createLogger("ActivityRouter");
 

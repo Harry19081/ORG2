@@ -202,6 +202,10 @@ const PANEL_HEADER_ROW = `${PANEL_ROW} border-b border-solid border-border-2`;
  * Usage: <div className={DROPDOWN_CLASSES.panel}>...</div>
  */
 export const DROPDOWN_CLASSES = {
+  /** Keep button triggers visibly selected for the lifetime of their popup. */
+  triggerOpen:
+    "aria-expanded:bg-surface-selected! aria-expanded:text-primary-6!",
+
   /** Panel container classes */
   panel: [
     DROPDOWN_PANEL.bgClass,

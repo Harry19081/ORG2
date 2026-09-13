@@ -351,9 +351,12 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
               </>
             )}
             <SectionRow label="" indent>
-              <button
-                type="button"
-                className="text-[11px] text-primary-6 hover:underline"
+              <Button
+                variant="primary"
+                appearance="ghost"
+                size="inline"
+                htmlType="button"
+                className="text-[11px] hover:underline"
                 onClick={() => {
                   // Entering builder mode discards an unparseable custom cron
                   // because the builder always emits valid expressions.
@@ -370,7 +373,7 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
                 {draft.customCron
                   ? t("common:schedule.hideCustomCron")
                   : t("common:schedule.customCron")}
-              </button>
+              </Button>
             </SectionRow>
           </>
         )}

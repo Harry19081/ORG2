@@ -28,9 +28,11 @@ describe("DetailTabStrip", () => {
     expect(markup).toMatch(/role="tablist"[^>]*border-b/);
     expect(markup).toMatch(/role="tablist"[^>]*\bh-9\b/);
     expect(markup).toMatch(
-      /aria-selected="true"[^>]*after:-bottom-px[^>]*after:bg-bg-2/
+      /<button(?=[^>]*aria-selected="true")(?=[^>]*after:-bottom-px)(?=[^>]*after:bg-bg-2)/
     );
-    expect(markup).toMatch(/aria-selected="true"[^>]*border-b-bg-2/);
+    expect(markup).toMatch(
+      /<button(?=[^>]*aria-selected="true")(?=[^>]*border-b-bg-2)/
+    );
     expect(markup).not.toContain("overflow-y-hidden");
   });
 
@@ -83,8 +85,10 @@ describe("DetailTabStrip", () => {
     expect(markup).not.toContain("overflow-x-auto");
     expect(markup).not.toMatch(/role="tablist"[^>]*border-b/);
     expect(markup).toMatch(
-      /aria-selected="true"[^>]*after:-bottom-px[^>]*after:bg-bg-2/
+      /<button(?=[^>]*aria-selected="true")(?=[^>]*after:-bottom-px)(?=[^>]*after:bg-bg-2)/
     );
-    expect(markup).toMatch(/aria-selected="true"[^>]*border-b-bg-2/);
+    expect(markup).toMatch(
+      /<button(?=[^>]*aria-selected="true")(?=[^>]*border-b-bg-2)/
+    );
   });
 });

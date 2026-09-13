@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import Button from "@src/components/Button";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 
 export interface DetailTabStripItem<Key extends string = string> {
@@ -54,9 +55,11 @@ export default function DetailTabStrip<Key extends string>({
       {tabs.map((tab) => {
         const selected = activeTab === tab.key;
         return (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={tab.key}
-            type="button"
+            htmlType="button"
             role="tab"
             id={`${idPrefix}-tab-${tab.key}`}
             aria-controls={`${idPrefix}-tabpanel-${tab.key}`}
@@ -88,7 +91,7 @@ export default function DetailTabStrip<Key extends string>({
                 {tab.countLoading ? null : tab.count}
               </span>
             ) : null}
-          </button>
+          </Button>
         );
       })}
       {trailing ? (

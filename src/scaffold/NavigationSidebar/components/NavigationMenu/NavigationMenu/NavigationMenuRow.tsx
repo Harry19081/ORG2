@@ -147,6 +147,9 @@ export const NavigationMenuParentRow = React.forwardRef<
           }
         }}
         onKeyDown={(event) => {
+          // Secondary actions own their keyboard events.
+          if (event.target !== event.currentTarget) return;
+
           if (item.disabled || (event.key !== "Enter" && event.key !== " ")) {
             return;
           }
@@ -389,6 +392,9 @@ export const NavigationMenuLeafRow = React.forwardRef<
           onMenuItemClick(item.key, item, event);
         }}
         onKeyDown={(event) => {
+          // Secondary actions own their keyboard events.
+          if (event.target !== event.currentTarget) return;
+
           if (item.disabled || (event.key !== "Enter" && event.key !== " ")) {
             return;
           }

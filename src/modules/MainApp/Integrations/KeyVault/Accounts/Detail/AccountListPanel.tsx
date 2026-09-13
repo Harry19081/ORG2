@@ -12,6 +12,7 @@ import Button from "@/src/components/Button";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import SharedButton from "@src/components/Button";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
@@ -60,17 +61,22 @@ const AccountListPanel: React.FC<AccountListPanelProps> = ({
     <div className="flex h-full flex-col">
       {onBack && (
         <div className="flex h-10 shrink-0 items-center gap-2 px-3">
-          <button
-            type="button"
+          <SharedButton
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="mini"
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={ArrowLeft02Icon}
+                data-icon="arrow-left"
+                size={16}
+              />
+            }
+            htmlType="button"
             onClick={onBack}
-            className="flex items-center justify-center rounded-md p-1 text-text-2 transition-colors hover:bg-fill-2 hover:text-text-1"
-          >
-            <HugeiconsIcon
-              icon={ArrowLeft02Icon}
-              data-icon="arrow-left"
-              size={16}
-            />
-          </button>
+            className="hover:bg-fill-2 hover:text-text-1"
+          />
           <span className="text-[13px] font-medium text-text-1">
             {title ?? t("modelsTabs.myAccounts")}
           </span>
