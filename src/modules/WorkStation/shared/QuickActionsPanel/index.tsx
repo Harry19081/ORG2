@@ -23,6 +23,7 @@ import React, { memo, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import {
   KEYBOARD_SHORTCUT_VARIANT,
   KeyboardShortcut,
@@ -76,7 +77,9 @@ const ActionItem = memo<ActionItemProps>(({ action, onAction }) => {
   }, [action, onAction]);
 
   return (
-    <button
+    <Button
+      layout="custom"
+      appearance="custom"
       onClick={handleClick}
       disabled={action.disabled}
       className={`flex w-full items-center justify-between px-4 py-2.5 transition-colors ${
@@ -108,7 +111,7 @@ const ActionItem = memo<ActionItemProps>(({ action, onAction }) => {
           variant={KEYBOARD_SHORTCUT_VARIANT.workStation}
         />
       )}
-    </button>
+    </Button>
   );
 });
 

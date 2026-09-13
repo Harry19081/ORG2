@@ -1362,6 +1362,7 @@ pub fn save_subagent_transcript(
 pub struct PersistedSessionMemoryState {
     pub content: Option<String>,
     pub last_seq: Option<i64>,
+    pub tokens_at_last_extraction: Option<usize>,
 }
 
 // ============================================
@@ -1435,12 +1436,86 @@ pub fn save_session_memory_state(
 ) -> SqliteResult<()> {
     with_sessions_writer(|| -> SqliteResult<()> {
         let conn = get_connection()?;
-        conn.execute(
-            "UPDATE agent_sessions SET sm_content = ?2, sm_last_seq = ?3 WHERE session_id = ?1",
+        let changed = conn.execute(
+            "UPDATE agent_sessions SET sm_content = ?2, sm_last_seq = ?3, sm_tokens_at_last_extraction = NULL WHERE session_id = ?1",
             rusqlite::params![session_id, content, last_seq],
         )?;
+        if changed == 0 {
+            return Err(rusqlite::Error::QueryReturnedNoRows);
+        }
         Ok(())
     })
+}
+
+/// Durable source snapshot for one extraction, captured before reading history.
+/// Message identity also invalidates results across append, truncate or compact.
+pub struct SessionMemoryCommitSnapshot {
+    pub(crate) content: Option<String>,
+    pub(crate) last_seq: Option<i64>,
+    tokens_at_last_extraction: Option<usize>,
+    created_at: String,
+    last_message_id: Option<String>,
+}
+
+pub fn session_memory_commit_snapshot(
+    session_id: &str,
+) -> SqliteResult<SessionMemoryCommitSnapshot> {
+    let conn = get_connection()?;
+    conn.query_row(
+        "SELECT sm_content, sm_last_seq, sm_tokens_at_last_extraction, created_at,
+            (SELECT id FROM agent_messages WHERE session_id = ?1 ORDER BY sequence DESC LIMIT 1)
+         FROM agent_sessions WHERE session_id = ?1",
+        [session_id],
+        |row| {
+            Ok(SessionMemoryCommitSnapshot {
+                content: row.get(0)?,
+                last_seq: row.get(1)?,
+                tokens_at_last_extraction: row.get(2)?,
+                created_at: row.get(3)?,
+                last_message_id: row.get(4)?,
+            })
+        },
+    )
+}
+
+/// Summary and growth baseline published in one durable update.
+pub struct SessionMemoryUpdate<'a> {
+    pub content: Option<&'a str>,
+    pub last_seq: Option<i64>,
+    pub tokens_at_last_extraction: Option<usize>,
+}
+
+/// Commit only if the durable summary and history still match the snapshot.
+/// Cancellation is checked after acquiring the writer. Writer admission is
+/// bounded so a cancelled background worker cannot wait indefinitely while
+/// retaining the runtime state lock.
+pub fn commit_session_memory_state(
+    session_id: &str,
+    update: SessionMemoryUpdate<'_>,
+    expected: &SessionMemoryCommitSnapshot,
+    is_cancelled: impl FnOnce() -> bool,
+    on_committed: impl FnOnce(),
+) -> SqliteResult<bool> {
+    database::db::try_with_sessions_writer(std::time::Duration::from_secs(1), || {
+        if is_cancelled() { return Ok(false); }
+        let conn = get_connection()?;
+        let changed = conn.execute(
+            "UPDATE agent_sessions SET sm_content = ?2, sm_last_seq = ?3, sm_tokens_at_last_extraction = ?8
+             WHERE session_id = ?1 AND sm_content IS ?4 AND sm_last_seq IS ?5
+               AND created_at = ?6
+               AND (SELECT id FROM agent_messages WHERE session_id = ?1 ORDER BY sequence DESC LIMIT 1) IS ?7 AND sm_tokens_at_last_extraction IS ?9",
+            rusqlite::params![session_id, update.content, update.last_seq, expected.content, expected.last_seq,
+                expected.created_at, expected.last_message_id, update.tokens_at_last_extraction, expected.tokens_at_last_extraction],
+        )?;
+        if changed == 0 {
+            conn.query_row("SELECT 1 FROM agent_sessions WHERE session_id = ?1", [session_id], |_| Ok(()))?;
+        }
+        if changed == 1 { on_committed(); }
+        Ok(changed == 1)
+    }).unwrap_or_else(|| Err(rusqlite::Error::SqliteFailure(
+        rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_BUSY),
+        Some("session memory writer admission timed out".into()),
+    )))
 }
 
 /// Clear persisted session memory state after the durable transcript has been compacted.
@@ -1448,7 +1523,7 @@ pub fn clear_session_memory_state(session_id: &str) -> SqliteResult<()> {
     with_sessions_writer(|| -> SqliteResult<()> {
         let conn = get_connection()?;
         conn.execute(
-            "UPDATE agent_sessions SET sm_content = NULL, sm_last_seq = NULL WHERE session_id = ?1",
+            "UPDATE agent_sessions SET sm_content = NULL, sm_last_seq = NULL, sm_tokens_at_last_extraction = NULL WHERE session_id = ?1",
             [session_id],
         )?;
         Ok(())
@@ -1459,12 +1534,12 @@ pub fn clear_session_memory_state(session_id: &str) -> SqliteResult<()> {
 pub fn load_session_memory_state(session_id: &str) -> SqliteResult<PersistedSessionMemoryState> {
     let conn = get_connection()?;
     let result = conn.query_row(
-        "SELECT sm_content, sm_last_seq FROM agent_sessions WHERE session_id = ?1",
+        "SELECT sm_content, sm_last_seq, sm_tokens_at_last_extraction FROM agent_sessions WHERE session_id = ?1",
         [session_id],
         |row| {
             let content: Option<String> = row.get(0)?;
             let last_seq: Option<i64> = row.get(1)?;
-            Ok(PersistedSessionMemoryState { content, last_seq })
+            Ok(PersistedSessionMemoryState { content, last_seq, tokens_at_last_extraction: row.get(2)? })
         },
     );
     match result {
@@ -1472,6 +1547,7 @@ pub fn load_session_memory_state(session_id: &str) -> SqliteResult<PersistedSess
         Err(rusqlite::Error::QueryReturnedNoRows) => Ok(PersistedSessionMemoryState {
             content: None,
             last_seq: None,
+            tokens_at_last_extraction: None,
         }),
         Err(err) => Err(err),
     }
@@ -1592,8 +1668,8 @@ mod tests {
         .expect("create session/message tables");
         conn.execute(
             "INSERT OR IGNORE INTO agent_sessions
-             (session_id, session_type, status, created_at, updated_at, sm_content, sm_last_seq)
-             VALUES (?1, 'agent', 'running', datetime('now'), datetime('now'), NULL, NULL)",
+             (session_id, name, session_type, status, created_at, updated_at, sm_content, sm_last_seq)
+             VALUES (?1, 'Message fixture', 'agent', 'running', datetime('now'), datetime('now'), NULL, NULL)",
             [session_id],
         )
         .expect("seed session row");

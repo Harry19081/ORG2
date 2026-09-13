@@ -374,13 +374,32 @@ fn codex_catalog_turn_header(
     ended_at: Option<String>,
 ) -> (ActivityChunk, ProjectedTurnMetadata) {
     let sequence = codex_lazy_turn_sequence(entry.byte_offset);
-    let user_chunk = imported_history::user_message_chunk(
+    let mut user_chunk = imported_history::user_message_chunk(
         session_id,
         CODEX_PROVIDER_SLUG,
         sequence,
         &entry.started_at,
         &entry.user_preview,
     );
+    if !entry.image_refs.is_empty() {
+        let refs: Vec<String> = entry
+            .image_refs
+            .iter()
+            .map(|original| {
+                if original.starts_with("http://") || original.starts_with("https://") {
+                    return original.clone();
+                }
+                format!(
+                    "orgii-transcript-image:{}",
+                    serde_json::json!([session_id, user_chunk.chunk_id, original])
+                )
+            })
+            .collect();
+        let refs = imported_history::images::bounded_image_refs(refs.iter().map(String::as_str));
+        if !refs.is_empty() {
+            user_chunk.result["images"] = serde_json::json!(refs);
+        }
+    }
     let body_event_count = i64::try_from(entry.following_line_count.max(1)).unwrap_or(i64::MAX);
     let summary = ProjectedTurnMetadata {
         turn_id: user_chunk.chunk_id.clone(),

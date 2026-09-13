@@ -116,7 +116,7 @@ describe("compact shared actions", () => {
   afterAll(() => {
     Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
   });
-  it("renders the sidebar icon at 20px with the standard 8px radius", () => {
+  it("renders the sidebar icon at 20px with the shared small radius", () => {
     const markup = renderToStaticMarkup(
       React.createElement(Button, {
         size: "sidebar",
@@ -129,10 +129,34 @@ describe("compact shared actions", () => {
     );
     expect(markup).toContain("height:20px");
     expect(markup).toContain("width:20px");
-    expect(markup).toContain("border-radius:8px");
+    expect(markup).toContain("border-radius:var(--radius-sm)");
     expect(markup).toContain("action-icon");
     expect(markup).toContain("enabled:hover:bg-button-hover");
+    expect(markup).not.toContain("bg-button-hover-no-drop");
     expect(markup).not.toContain("enabled:hover:bg-primary-3");
+  });
+
+  it("opts transparent controls into fill-2 without changing sidebar hover", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(Button, {
+        variant: "tertiary",
+        appearance: "soft-no-drop",
+        size: "mini",
+        iconOnly: true,
+        icon: React.createElement("svg"),
+      })
+    );
+    expect(markup).toContain("enabled:hover:bg-button-hover-no-drop");
+    expect(markup).toContain("focus-visible:bg-button-hover-no-drop");
+    const theme = readFileSync(resolve("src/tailwind.css"), "utf8");
+    expect(theme).toContain(
+      "--color-button-hover-no-drop: var(--color-fill-2)"
+    );
+    for (const skin of ["orgii_main.css", "orgii_dark.css"]) {
+      expect(readFileSync(resolve("public", skin), "utf8")).toContain(
+        "--color-button-hover: var(--color-fill-3)"
+      );
+    }
   });
 
   it("keeps compact non-sidebar actions at 24px", () => {
@@ -167,7 +191,15 @@ describe("compact shared actions", () => {
       await act(async () => root.render(React.createElement(Button, props)));
       const button = container.querySelector("button")!;
       expect(button.getAttribute("aria-label")).toBe("Discard file");
+      expect(button.className).toContain("enabled:hover:bg-danger-2");
+      expect(button.className).toContain("focus-visible:bg-danger-2");
+      await act(async () =>
+        root.render(
+          React.createElement(Button, { ...props, appearance: "soft-no-drop" })
+        )
+      );
       expect(button.className).toContain("enabled:hover:bg-danger-1");
+      expect(button.className).not.toContain("enabled:hover:bg-danger-2");
       expect(button.className).not.toContain("bg-danger-3");
       await act(async () => button.click());
       expect(clicks).toBe(1);
@@ -179,6 +211,90 @@ describe("compact shared actions", () => {
     } finally {
       await act(async () => root.unmount());
       container.remove();
+    }
+  });
+});
+
+describe("compound button surfaces", () => {
+  it("preserves direct-child layout and caller-owned geometry", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(
+        Button,
+        {
+          layout: "custom",
+          appearance: "custom",
+          className: "menu-row",
+          style: { height: 48, padding: "4px 12px" },
+          role: "menuitem",
+          "aria-expanded": true,
+        },
+        React.createElement("div", { className: "label" }, "Two-line label"),
+        React.createElement("span", { className: "suffix" }, "Shortcut")
+      )
+    );
+    const host = document.createElement("div");
+    host.innerHTML = markup;
+    const button = host.querySelector("button")!;
+    expect(button.className).toBe("menu-row");
+    expect(button.style.height).toBe("48px");
+    expect(button.style.padding).toBe("4px 12px");
+    expect(button.style.width).toBe("");
+    expect(button.style.borderRadius).toBe("");
+    expect(button.querySelector(":scope > .label")?.textContent).toBe(
+      "Two-line label"
+    );
+    expect(button.querySelector(":scope > .suffix")?.textContent).toBe(
+      "Shortcut"
+    );
+    expect(button.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("retains native refs, switch semantics, disabled behavior and form type", async () => {
+    Reflect.set(globalThis, "IS_REACT_ACT_ENVIRONMENT", true);
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const root = createRoot(host);
+    const ref = React.createRef<HTMLButtonElement>();
+    let clicks = 0;
+    const props = {
+      layout: "custom" as const,
+      appearance: "custom" as const,
+      ref,
+      role: "switch",
+      "aria-checked": true,
+      type: "submit" as const,
+      htmlType: "button" as const,
+      onClick: () => {
+        clicks += 1;
+      },
+    };
+    try {
+      await act(async () =>
+        root.render(React.createElement(Button, props, "Track"))
+      );
+      expect(ref.current).toBe(host.querySelector("button"));
+      expect(ref.current?.getAttribute("role")).toBe("switch");
+      expect(ref.current?.getAttribute("aria-checked")).toBe("true");
+      expect(ref.current?.type).toBe("button");
+      await act(async () => ref.current!.click());
+      expect(clicks).toBe(1);
+      await act(async () =>
+        root.render(
+          React.createElement(Button, { ...props, disabled: true }, "Track")
+        )
+      );
+      await act(async () => ref.current!.click());
+      expect(clicks).toBe(1);
+      await act(async () =>
+        root.render(
+          React.createElement(Button, { ...props, htmlType: "submit" }, "Track")
+        )
+      );
+      expect(ref.current?.type).toBe("submit");
+    } finally {
+      await act(async () => root.unmount());
+      host.remove();
+      Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
     }
   });
 });

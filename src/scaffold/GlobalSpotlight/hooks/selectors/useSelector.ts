@@ -294,6 +294,7 @@ export function useSelector(options: UseSelectorOptions): UseSelectorReturn {
       ((item, _index) => isItemSelectable(item as unknown as SpotlightItem)),
     searchQuery: effectiveSearchQuery,
     enableGlobalListener: isOpen,
+    enableDisclosureArrowNavigation: false,
     inputRef,
     hasModalState,
   });

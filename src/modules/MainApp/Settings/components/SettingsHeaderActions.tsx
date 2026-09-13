@@ -1,6 +1,7 @@
 /** Region/integration actions and the Agent Teams add menu for SettingsSlot. */
 import React, { useState } from "react";
 
+import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
 import {
   DROPDOWN_CLASSES,
@@ -42,6 +43,7 @@ const HeaderIconButton: React.FC<HeaderIconButtonProps> = ({ item }) => {
     <TabBarTrailingIconButton
       title={title}
       nativeTitle={!item.tooltipContent}
+      tooltipDisabled={Boolean(item.tooltipContent)}
       onClick={item.onClick}
       disabled={item.disabled}
       aria-label={title}
@@ -84,9 +86,11 @@ const CompactPlusDropdown: React.FC<CompactPlusDropdownProps> = ({
       {items.map((item) => {
         const icon = item.icon;
         return (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={item.id}
-            type="button"
+            htmlType="button"
             data-testid={`settings-plus-dropdown-item-${item.id}`}
             onClick={() => {
               setOpen(false);
@@ -103,7 +107,7 @@ const CompactPlusDropdown: React.FC<CompactPlusDropdownProps> = ({
               />
               <span className="truncate">{item.label}</span>
             </span>
-          </button>
+          </Button>
         );
       })}
     </div>

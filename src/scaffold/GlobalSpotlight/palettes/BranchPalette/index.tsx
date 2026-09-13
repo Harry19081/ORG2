@@ -13,6 +13,7 @@ import { useAtom } from "jotai";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import WorktreeSourceModal from "@src/features/SessionCreator/components/WorktreeSourceModal";
 import { useFilteredItems } from "@src/hooks/search";
 import {
@@ -120,22 +121,25 @@ export const WorktreePalette: React.FC<WorktreePaletteProps> = ({
   // trash button on the row instead of a "Remove Worktree" text label.
   const renderWorktreeTrashAction = React.useCallback(
     (worktreePath: string, isRemoving: boolean): React.ReactNode => (
-      <button
-        type="button"
+      <Button
+        variant="danger"
+        appearance="soft"
+        size="mini"
+        iconOnly
+        icon={<HugeiconsIcon icon={ICONS.removeRepo} size={14} />}
+        htmlType="button"
         disabled={isRemoving}
         onClick={(event) => {
           event.stopPropagation();
           void handleRemoveWorktree(worktreePath);
         }}
-        className="flex items-center justify-center rounded-md p-1 text-danger-6 transition-colors hover:bg-danger-6/10 disabled:cursor-not-allowed disabled:opacity-50"
+        className="hover:bg-danger-6/10 disabled:cursor-not-allowed disabled:opacity-50"
         title={t("selectors.branch.actions.removeWorktree", "Remove Worktree")}
         aria-label={t(
           "selectors.branch.actions.removeWorktree",
           "Remove Worktree"
         )}
-      >
-        <HugeiconsIcon icon={ICONS.removeRepo} size={14} />
-      </button>
+      />
     ),
     [handleRemoveWorktree, t]
   );

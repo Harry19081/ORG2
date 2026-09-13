@@ -51,7 +51,7 @@ export interface CodeMirrorEditorProps {
   onTextSelection?: (selection: TextSelectionInfo | null) => void;
   /** Custom class name */
   className?: string;
-  /** Enable minimap (default: false) */
+  /** Opt out with false; true/undefined follow the global minimap setting. */
   enableMinimap?: boolean;
   /** Enable indent guides (default: true) */
   enableIndentGuides?: boolean;

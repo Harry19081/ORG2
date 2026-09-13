@@ -57,6 +57,8 @@ type SectionHeaderButtonAction = {
   tooltip: string;
   /** Click callback */
   onClick: () => void;
+  /** Keep the action visible while it cannot be used. */
+  disabled?: boolean;
   /** When true, forces the actions bar to remain visible (e.g. dropdown is open) */
   forceVisible?: boolean;
 };

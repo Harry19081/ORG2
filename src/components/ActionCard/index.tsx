@@ -308,8 +308,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className={cn(
         "w-full focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:ring-offset-2 focus-visible:outline-none",
         containerClass
@@ -321,7 +323,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
       data-testid={dataTestId}
     >
       {content}
-    </button>
+    </Button>
   );
 };
 

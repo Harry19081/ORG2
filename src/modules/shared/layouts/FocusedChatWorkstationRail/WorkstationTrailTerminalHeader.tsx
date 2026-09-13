@@ -1,17 +1,19 @@
 import { useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-import { ProcessStopButton } from "@src/components/ProcessStopButton";
+import Button from "@src/components/Button";
 import {
   Add01Icon,
   ArrowDown01Icon,
   ArrowRight01Icon,
   Cancel01Icon,
   HugeiconsIcon,
+  StopIcon,
 } from "@src/icons";
 import { MINI_TERMINAL_SESSION_LIMIT } from "@src/store/ui/miniTerminalAtom";
 
 import { WorkstationTrailHeader, WorkstationTrailIconButton } from "../blocks";
+import { WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS } from "../blocks/workstationTrailTokens";
 
 export interface TrailTerminalTab {
   key: string;
@@ -97,10 +99,20 @@ export function WorkstationTrailTerminalHeader({
       actions={
         <>
           {!collapsed && activeTab ? (
-            <ProcessStopButton
-              size="sm"
-              label={t("common:tooltips.killTerminal")}
-              onClick={() => onStop(activeTab.key)}
+            <Button
+              variant="tertiary"
+              appearance="soft-no-drop"
+              iconOnly
+              icon={
+                <HugeiconsIcon icon={StopIcon} data-icon="stop" size={14} />
+              }
+              size="sidebar"
+              aria-label={t("common:tooltips.killTerminal")}
+              title={t("common:tooltips.killTerminal")}
+              onClick={(event) => {
+                event.stopPropagation();
+                onStop(activeTab.key);
+              }}
             />
           ) : null}
           {tabs.length < MINI_TERMINAL_SESSION_LIMIT ? (
@@ -165,9 +177,12 @@ export function WorkstationTrailTerminalHeader({
           }}
         >
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.key}
-              type="button"
+              htmlType="button"
+              variant="tertiary"
+              appearance="soft-no-drop"
+              size="sidebar"
               role="tab"
               id={`${panelId}-tab-${tab.key}`}
               aria-controls={panelId}
@@ -175,10 +190,10 @@ export function WorkstationTrailTerminalHeader({
               tabIndex={tab.key === activeId ? 0 : -1}
               title={tab.label}
               onClick={() => onSelect(tab.key)}
-              className={`h-5 max-w-28 shrink-0 truncate rounded-lg px-2 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-6 ${tab.key === activeId ? "bg-fill-2 font-medium text-text-1" : "text-text-3 hover:bg-fill-2 hover:text-text-1"}`}
+              className={`${WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS} h-5 max-w-28 shrink-0 truncate rounded-lg px-2 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-6 ${tab.key === activeId ? "bg-fill-2 text-text-1 [&>span]:font-medium" : "text-text-1"}`}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
       ) : null}

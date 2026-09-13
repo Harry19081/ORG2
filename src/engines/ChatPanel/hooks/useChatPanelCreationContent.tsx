@@ -17,8 +17,7 @@ import {
   CHAT_PANEL_CREATE_TARGET,
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
-  chatPanelSelectedProjectAtom,
-  chatPanelSelectedWorkItemAtom,
+  chatPanelCreatorWorkItemContextAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkItemDraft } from "@src/store/workstation/projectManager";
 
@@ -107,8 +106,9 @@ export function useChatPanelCreationContent({
       setWorkItemCreateDraft,
       t,
     });
-  const setSelectedProject = useSetAtom(chatPanelSelectedProjectAtom);
-  const setSelectedWorkItem = useSetAtom(chatPanelSelectedWorkItemAtom);
+  const setCreatorWorkItemContext = useSetAtom(
+    chatPanelCreatorWorkItemContextAtom
+  );
   const {
     handleCancelWorkItemCreate,
     handleChatPanelProjectCreated,
@@ -123,8 +123,7 @@ export function useChatPanelCreationContent({
     sessionCreatorAvailable: Boolean(SessionCreatorSlot),
     setActiveSessionId,
     setCreateTarget,
-    setSelectedProject,
-    setSelectedWorkItem,
+    setCreatorWorkItemContext,
     setShowProjectAgentCreator,
     setShowWorkItemAgentCreator,
     setWorkItemCreateDraft,
@@ -139,7 +138,6 @@ export function useChatPanelCreationContent({
     createProjectContext,
     creatorState,
     setActiveSessionId,
-    setSelectedProject,
     setWorkItemCreateDraft,
     setWorkstationActiveSessionId,
     workItemCreateDraft,

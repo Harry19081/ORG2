@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 
 import { repoApi } from "@src/api/tauri/repo";
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import DropdownSearch from "@src/components/Dropdown/DropdownSearch";
 import {
   DROPDOWN_CLASSES,
@@ -126,8 +127,10 @@ const RepoRow: React.FC<RepoRowProps> = ({
         data: { ...repo, isCurrentSelection: isCurrent },
       }}
     >
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         role="menuitem"
         data-testid={`repo-dropdown-row-${repo.id}`}
         {...keyboardProps}
@@ -148,7 +151,7 @@ const RepoRow: React.FC<RepoRowProps> = ({
           )}
         </span>
         <span className="min-w-0 flex-1 truncate text-left">{repo.name}</span>
-      </button>
+      </Button>
     </SpotlightDetailPane>
   );
 };
@@ -160,8 +163,10 @@ const WorkspaceRow: React.FC<WorkspaceRowProps> = ({
   const { workspace, isActive } = entry;
 
   const row = (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       role="menuitem"
       data-testid={`repo-dropdown-workspace-row-${workspace.workspaceId}`}
       {...keyboardProps}
@@ -184,7 +189,7 @@ const WorkspaceRow: React.FC<WorkspaceRowProps> = ({
       <span className="min-w-0 flex-1 truncate text-left">
         {workspace.name}
       </span>
-    </button>
+    </Button>
   );
   return (
     <SpotlightDetailPane
@@ -212,8 +217,10 @@ const OpenPathRow: React.FC<OpenPathRowProps> = ({ item, keyboardProps }) => {
 
   return (
     <SpotlightDetailPane item={item}>
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         role="menuitem"
         data-testid="repo-dropdown-open-path-row"
         {...keyboardProps}
@@ -223,7 +230,7 @@ const OpenPathRow: React.FC<OpenPathRowProps> = ({ item, keyboardProps }) => {
           {Icon && <AnyIcon icon={Icon} size={DROPDOWN_ITEM.iconSize} />}
         </span>
         <span className="min-w-0 flex-1 truncate text-left">{item.label}</span>
-      </button>
+      </Button>
     </SpotlightDetailPane>
   );
 };

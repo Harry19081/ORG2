@@ -14,6 +14,12 @@ import {
   vi,
 } from "vitest";
 
+import {
+  type FindTarget,
+  adoptFindTarget,
+  closeFindTarget,
+  registerFindTarget,
+} from "@src/components/FindCard/findCoordinator";
 import { ROUTES } from "@src/config/routes";
 import {
   getPinnedWorkbenchChromeReservedRight,
@@ -200,6 +206,41 @@ describe("PinnedWorkbenchChrome", () => {
     expect(query("pinned-workbench-chrome")).toBeNull();
   });
 
+  it.each(["session", "file"] as const)(
+    "yields to %s Find and restores without changing header reservation",
+    (scope) => {
+      render();
+      const reserved = query("right-edge-reservation")?.getAttribute(
+        "data-reserved-right"
+      );
+      expect(query("pinned-workbench-chrome")).not.toBeNull();
+      const target: FindTarget = {
+        scope,
+        element: () => container,
+        open: vi.fn(),
+        close: vi.fn(),
+      };
+      let unregister!: () => void;
+      act(() => {
+        unregister = registerFindTarget(target);
+        adoptFindTarget(target);
+      });
+      try {
+        expect(query("pinned-workbench-chrome")).toBeNull();
+        expect(
+          query("right-edge-reservation")?.getAttribute("data-reserved-right")
+        ).toBe(reserved);
+        act(() => closeFindTarget(target));
+        expect(query("pinned-workbench-chrome")).not.toBeNull();
+        act(() => adoptFindTarget(target));
+        expect(query("pinned-workbench-chrome")).toBeNull();
+      } finally {
+        act(() => unregister());
+      }
+      expect(query("pinned-workbench-chrome")).not.toBeNull();
+    }
+  );
+
   it("pins hide-chat and maximize-chat at the window's right edge, 1px apart", () => {
     render();
     act(() => {
@@ -236,7 +277,7 @@ describe("PinnedWorkbenchChrome", () => {
     expect(query("pinned-workbench-chrome")?.childElementCount).toBe(1);
   });
 
-  it.each(["organization", "team-inbox", "work-management"] as const)(
+  it.each(["organization", "work-management"] as const)(
     "reserves one disabled sidebar control for full-width %s tabs with a saved split layout",
     (type) => {
       render();

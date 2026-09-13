@@ -10,6 +10,7 @@
 import { type ReactNode, Suspense, lazy, memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import PersonAvatar from "@src/components/PersonAvatar";
 import Select from "@src/components/Select";
 import Tag from "@src/components/Tag";
@@ -283,9 +284,11 @@ function TeamRuntimeToday({
               const displayName = member.displayName ?? member.userId;
               const selected = selectedMemberId === member.userId;
               return (
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   key={member.userId}
-                  type="button"
+                  htmlType="button"
                   aria-pressed={selected}
                   onClick={() =>
                     onSelectMember(selected ? null : member.userId)
@@ -326,7 +329,7 @@ function TeamRuntimeToday({
                       "—"
                     )}
                   </span>
-                </button>
+                </Button>
               );
             })
           )}
@@ -375,9 +378,11 @@ function TeamRuntimeToday({
           <SectionContainer>
             {latestSessions.length > 0 ? (
               latestSessions.map((session) => (
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   key={session.id}
-                  type="button"
+                  htmlType="button"
                   onClick={() => onOpenSession(session)}
                   className="flex w-full items-center gap-3 border-b border-border-1 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-fill-1"
                   data-testid={`team-runtime-recent-session-${session.id}`}
@@ -410,7 +415,7 @@ function TeamRuntimeToday({
                       ? formatRelativeTime(session.lastActivityAt, "nano")
                       : "—"}
                   </div>
-                </button>
+                </Button>
               ))
             ) : (
               <div className="px-4 py-8 text-center text-sm text-text-3">

@@ -335,6 +335,9 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
                 className={`relative z-0 h-full min-h-0 min-w-0 overflow-hidden ${paneTransitionClassName}`}
                 style={workbenchStyle}
                 aria-hidden={chatPanelMaximized}
+                data-find-scope-switching={
+                  isSlotVisible && isChatOnLeft && !chatPanelMaximized
+                }
                 data-workbench-surface
                 onTransitionEnd={handlePaneTransitionEnd}
               >

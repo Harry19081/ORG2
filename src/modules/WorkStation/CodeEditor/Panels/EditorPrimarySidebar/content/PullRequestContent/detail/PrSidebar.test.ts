@@ -147,7 +147,7 @@ describe("PrSidebar", () => {
     );
     expect(reviewerTrigger?.style.height).toBe("20px");
     expect(reviewerTrigger?.style.width).toBe("20px");
-    expect(reviewerTrigger?.style.borderRadius).toBe("8px");
+    expect(reviewerTrigger?.style.borderRadius).toBe("var(--radius-sm)");
     const reviewers = container.querySelector(
       "[data-testid='pr-sidebar-reviewers']"
     );

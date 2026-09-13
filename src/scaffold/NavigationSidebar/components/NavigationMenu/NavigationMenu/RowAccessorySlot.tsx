@@ -38,11 +38,11 @@ export function NavigationMenuRowAccessorySlot({
   const persistentHoverClasses = !hasHoverReplacement
     ? ""
     : parentHoverGroup
-      ? "group-hover/parent:pointer-events-none group-hover/parent:opacity-0"
-      : "group-hover:pointer-events-none group-hover:opacity-0";
+      ? "group-hover/parent:pointer-events-none group-focus-within/parent:pointer-events-none group-hover/parent:opacity-0 group-focus-within/parent:opacity-0"
+      : "group-hover:pointer-events-none group-focus-within:pointer-events-none group-hover:opacity-0 group-focus-within:opacity-0";
   const revealedHoverClasses = parentHoverGroup
-    ? "group-hover/parent:pointer-events-auto group-hover/parent:max-w-44 group-hover/parent:opacity-100"
-    : "group-hover:pointer-events-auto group-hover:max-w-44 group-hover:opacity-100";
+    ? "group-hover/parent:pointer-events-auto group-focus-within/parent:pointer-events-auto group-hover/parent:max-w-44 group-focus-within/parent:max-w-44 group-hover/parent:opacity-100 group-focus-within/parent:opacity-100"
+    : "group-hover:pointer-events-auto group-focus-within:pointer-events-auto group-hover:max-w-44 group-focus-within:max-w-44 group-hover:opacity-100 group-focus-within:opacity-100";
   // The action group is nudged 2px past the slot's right edge so its glyphs sit
   // as close to the row edge as the at-rest status dot (a 20px hit target pads
   // its 14px icon by 3px). That nudge has to live on the CLIPPING layer, not on

@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from "react";
 
+import Button from "@src/components/Button";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
 import type { MobileComposerImage } from "./useMobileComposerImages";
@@ -40,8 +41,10 @@ export const MobileComposerImagePreview = memo(
               loading="lazy"
               decoding="async"
             />
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleRemove(image.id)}
               className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-bg-3 text-text-2 shadow-xs hover:bg-fill-2 hover:text-text-1"
               aria-label={image.fileName}
@@ -53,7 +56,7 @@ export const MobileComposerImagePreview = memo(
                 size={10}
                 strokeWidth={2.5}
               />
-            </button>
+            </Button>
           </div>
         ))}
       </div>

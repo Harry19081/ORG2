@@ -290,10 +290,13 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
           {row.last_error}
         </div>
       )}
-      <button
-        type="button"
+      <Button
+        variant="tertiary"
+        appearance="ghost"
+        size="inline"
+        htmlType="button"
         onClick={() => setShowPayload((prev) => !prev)}
-        className="flex items-center gap-1 self-start text-[12px] text-text-3 hover:text-text-2"
+        className="gap-1 self-start text-[12px] hover:text-text-2"
       >
         {showPayload ? (
           <HugeiconsIcon
@@ -313,7 +316,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
             ? t("settings.sync.problems.hidePayload")
             : t("settings.sync.problems.showPayload")}
         </span>
-      </button>
+      </Button>
       {showPayload && (
         <pre className="max-h-[280px] overflow-auto rounded-lg bg-fill-2 px-3 py-2 text-[11px] wrap-break-word whitespace-pre-wrap text-text-3">
           {payloadPreview}

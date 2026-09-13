@@ -82,6 +82,39 @@ describe("SpotlightItemRow selectionState prop", () => {
     }
   );
 
+  it("pins from the right of the label without selecting the row or bubbling keys", () => {
+    const onToggle = vi.fn();
+    render({
+      item: { ...props.item, data: { pinState: { pinned: false, onToggle } } },
+    });
+    const button = container.querySelector<HTMLButtonElement>(
+      'button[aria-pressed="false"]'
+    )!;
+    expect(button).not.toBeNull();
+    expect(button.previousElementSibling?.textContent).toBe("Item");
+    expect(button.className).toContain("group-hover:opacity-100");
+    const keyListener = vi.fn();
+    document.addEventListener("keydown", keyListener);
+    act(() => {
+      button.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+      );
+      button.click();
+    });
+    document.removeEventListener("keydown", keyListener);
+    expect(keyListener).not.toHaveBeenCalled();
+    expect(onToggle).toHaveBeenCalledOnce();
+    expect(props.onSelect).not.toHaveBeenCalled();
+    render({
+      item: { ...props.item, data: { pinState: { pinned: true, onToggle } } },
+    });
+    expect(
+      container
+        .querySelector('button[aria-pressed="true"]')
+        ?.getAttribute("aria-label")
+    ).toBe("sessions:chat.unpinSession");
+  });
+
   it("does not make disabled rows selectable through the checkbox", () => {
     const onToggle = vi.fn();
     render({

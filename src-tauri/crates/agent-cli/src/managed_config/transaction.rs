@@ -144,7 +144,7 @@ pub(super) fn begin_transaction(
         if file_hash(&snapshot.target_path)? != snapshot.hash {
             cleanup_transaction_dir(agent_name)?;
             return Err(format!(
-                "CLI config changed while ORGII was preparing the switch: {}",
+                "CLI config changed while ORG2 was preparing the switch: {}",
                 snapshot.target_path.display()
             ));
         }

@@ -1,10 +1,11 @@
 import React, { memo, useCallback } from "react";
 
 import type { GitCommitInfo, GitCommitPerson } from "@src/api/http/git/types";
+import Button from "@src/components/Button";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { PRIMARY_SIDEBAR_HOVER } from "@src/config/workstation/tokens";
 import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
-import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
+import { formatCompactAge } from "@src/util/time/formatRelativeTime";
 
 import type { CommitGraphNode } from "./graphLayout";
 import { DOT_RADIUS, LANE_WIDTH } from "./graphLayout";
@@ -111,8 +112,10 @@ function GitCommitRowComponent<TCommit extends GitCommitRowBaseCommit>({
   const graphWidth = svgWidth ?? LANE_WIDTH;
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className={`group flex w-full items-center gap-1 pr-3 pl-2 text-left transition-colors ${
         cursorReset || isSelected ? "cursor-default" : "cursor-pointer"
       } ${isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row}`}
@@ -137,13 +140,11 @@ function GitCommitRowComponent<TCommit extends GitCommitRowBaseCommit>({
         <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-text-3">
           <span className="truncate">{authorName}</span>
           {authorDate && (
-            <span className="shrink-0">
-              {formatRelativeTime(authorDate, "nano")}
-            </span>
+            <span className="shrink-0">{formatCompactAge(authorDate)}</span>
           )}
         </div>
       </div>
-    </button>
+    </Button>
   );
 }
 

@@ -21,7 +21,7 @@ const settingsSetLanguageAction = defineZodAction(
   {
     id: ACTION_ID.SETTINGS_SET_LANGUAGE,
     category: "settings",
-    description: "Set the ORGII app language/locale",
+    description: "Set the ORG2 app language/locale",
     params: z.object({
       language: LanguagePreferenceSchema.describe(
         "Language preference: system, or a supported language code such as fr"

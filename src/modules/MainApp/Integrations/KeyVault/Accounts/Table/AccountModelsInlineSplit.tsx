@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
 import Switch from "@src/components/Switch";
 import Tooltip from "@src/components/Tooltip";
@@ -190,9 +191,14 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
         trailing={
           <>
             <Tooltip content={sortLabel} position="top">
-              <button
-                type="button"
-                className="table-sorter shrink-0 cursor-pointer border-0 bg-transparent p-0 text-text-3 hover:text-text-2"
+              <Button
+                variant="tertiary"
+                appearance="ghost"
+                size="mini"
+                iconOnly
+                icon={<AnyIcon icon={SortModeIcon} size={14} strokeWidth={2} />}
+                htmlType="button"
+                className="table-sorter shrink-0 hover:text-text-2"
                 aria-label={sortLabel}
                 onClick={() =>
                   setSortMode((current) =>
@@ -201,9 +207,7 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
                       : MODEL_GROUP_SORT_MODE.ENABLED_FIRST
                   )
                 }
-              >
-                <AnyIcon icon={SortModeIcon} size={14} strokeWidth={2} />
-              </button>
+              />
             </Tooltip>
             <Switch
               size="small"

@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "Содержит файлы: {{status}}",
+    "staged": "{{status}} (в индексе)",
+    "additions": "Добавленные строки",
+    "deletions": "Удалённые строки",
+    "M": "Изменён",
+    "U": "Не отслеживается",
+    "A": "Добавлен",
+    "D": "Удалён",
+    "R": "Переименован",
+    "C": "Конфликт",
+    "I": "Игнорируется",
+    "?": "Неизвестный статус"
+  },
+  "findScope": {
+    "session": "Поиск в сеансе",
+    "file": "Поиск в файле",
+    "named": "Поиск в {{name}}"
+  },
   "teamInbox": {
     "title": "Общий почтовый ящик команды",
     "listLabel": "Список общего почтового ящика команды",
@@ -188,7 +207,7 @@
       "aria": "Меню «{{label}}»"
     },
     "items": {
-      "quitOrg2": "Выйти из ORG-2",
+      "quitOrg2": "Выйти из ORG2",
       "newSession": "Новый сеанс",
       "openFolder": "Открыть папку...",
       "addFolderToWorkspace": "Добавить папку в рабочую область...",
@@ -223,12 +242,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "Ответ не может быть пустым",
-    "sessionNotFound": "Сессия не найдена",
-    "answerSubmitted": "Ответ успешно отправлен",
-    "answerFailed": "Не удалось отправить ответ. Повторите попытку.",
-    "replyError": "Произошла ошибка при отправке ответа",
-    "questionIgnored": "Вопрос пропущен",
     "addedAsContext": "{{name}} добавлен в контекст",
     "addedFilesAsContext": "Добавлено файлов в контекст: {{count}}",
     "chooseExecutionAgentAi": "Выберите ответственного агента перед созданием с помощью ИИ.",
@@ -295,8 +308,8 @@
     "save": "Сохранить",
     "cancel": "Отмена",
     "delete": "Удалить",
-    "removeFromOrgii": "Убрать из ORGII",
-    "removeFromOrgiiCount": "Убрать из ORGII ({{count}})",
+    "removeFromOrgii": "Убрать из ORG2",
+    "removeFromOrgiiCount": "Убрать из ORG2 ({{count}})",
     "edit": "Редактировать",
     "write": "Запись",
     "close": "Закрыть",
@@ -477,6 +490,7 @@
   },
   "optional": "необязательно",
   "common": {
+    "display": "Отображение",
     "on": "Вкл",
     "off": "Выкл",
     "default": "По умолчанию",
@@ -513,6 +527,9 @@
     "source": "Источник"
   },
   "labels": {
+    "stashesCount": "Стеши: {{count}}",
+    "stashesCount_one": "Стеши: {{count}}",
+    "stashesCount_other": "Стеши: {{count}}",
     "accounts": "Аккаунты",
     "enabled": "Включено",
     "disabled": "Отключено",
@@ -558,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Журнал операций",
     "gitDashboard": "Панель",
-    "changedFiles": "Изменённые файлы",
+    "changedFilesCount": "Изменено файлов: {{fileCount}}",
+    "changedFilesCount_one": "{{fileCount}} изменённый файл",
+    "changedFilesCount_other": "Изменено файлов: {{fileCount}}",
     "colorTokens": "Цветовые Token",
     "terminalInfo": "Информация о терминале",
     "fileCount_one": "{{count}} файл",
@@ -688,42 +707,9 @@
     "technicalDetails": "Технические сведения",
     "failedToCopy": "Не удалось скопировать",
     "api": {
-      "titles": {
-        "githubConnections": "Не удалось загрузить подключения GitHub",
-        "githubConnect": "Не удалось подключиться к GitHub",
-        "workflows": "Не удалось загрузить рабочие процессы",
-        "config": "Не удалось загрузить настройки",
-        "agent": "Не удалось подключиться к Agent",
-        "repository": "Не удалось загрузить репо",
-        "file": "Не удалось загрузить файл",
-        "mcp": "Ошибка сервера MCP",
-        "extension": "Ошибка расширения редактора",
-        "workspace": "Не удалось загрузить рабочее пространство",
-        "slackConnections": "Не удалось загрузить подключения Slack",
-        "wallet": "Не удалось загрузить кошелёк",
-        "billing": "Не удалось завершить платёжную операцию",
-        "default": "Не удалось загрузить данные",
-        "timeout": "Превышено время ожидания",
-        "external": "Не удалось загрузить внешние данные"
-      },
       "messages": {
-        "network": "Проверьте подключение и попробуйте снова.",
-        "timeout": "Превышено время ожидания. Попробуйте снова.",
-        "server": "Произошла ошибка. Попробуйте через несколько минут.",
-        "notFound": "Элемент не найден.",
-        "signIn": "Войдите снова.",
-        "forbidden": "У вас нет прав для этого действия.",
-        "tooManyRequests": "Слишком много запросов. Подождите и попробуйте снова.",
-        "validation": "Неверные данные. Проверьте ввод.",
-        "conflict": "Обнаружен конфликт. Ресурс мог быть изменён.",
-        "badGateway": "Сервер недоступен. Попробуйте позже.",
-        "serviceUnavailable": "Сервис временно недоступен. Попробуйте позже.",
-        "gatewayTimeout": "Сервер не отвечает. Попробуйте позже.",
-        "invalidRequest": "Неверный запрос. Попробуйте снова.",
-        "default": "Попробуйте снова.",
-        "externalHint": "Проверьте URL и настройки, затем попробуйте снова."
-      },
-      "workflow": "Сервис рабочих процессов временно недоступен. Попробуйте позже."
+        "signIn": "Войдите снова."
+      }
     },
     "failedToLoad": "Не удалось загрузить",
     "unknownError": "Произошла неизвестная ошибка",
@@ -733,12 +719,12 @@
   },
   "confirmation": {
     "delete": "Вы уверены, что хотите удалить это?",
-    "removeTitle": "Удалить \"{{name}}\" из ORGII?",
-    "removeMessage": "Это только удалит связь с ORGII. Ничего не будет удалено с диска.",
+    "removeTitle": "Удалить \"{{name}}\" из ORG2?",
+    "removeMessage": "Это только удалит связь с ORG2. Ничего не будет удалено с диска.",
     "deleteWorkspaceTitle": "Удалить Workspace \"{{name}}\"?",
     "deleteWorkspaceMessage": "Удаляется только пресет Workspace. На входящие в него Repo и папки это не влияет.",
-    "deleteSelectedTitle": "Удалить {{count}} выбранных элементов из ORGII?",
-    "deleteSelectedMessage": "Это только удалит их связь с ORGII. Ничего не будет удалено с диска.",
+    "deleteSelectedTitle": "Удалить {{count}} выбранных элементов из ORG2?",
+    "deleteSelectedMessage": "Это только удалит их связь с ORG2. Ничего не будет удалено с диска.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}} будет удалён навсегда. Это действие нельзя отменить.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -780,7 +766,9 @@
     "previous": "Предыдущий",
     "next": "Следующий",
     "previousMatch": "Предыдущее совпадение (Shift+Enter)",
+    "previousMatchLabel": "Предыдущее совпадение",
     "nextMatch": "Следующее совпадение (Enter)",
+    "nextMatchLabel": "Следующее совпадение",
     "clearSearch": "Очистить поиск",
     "openInEditorTab": "Открыть во вкладке редактора",
     "openFile": "Открыть файл",
@@ -807,11 +795,16 @@
     "goForward": "Вперёд",
     "goToToday": "Перейти к сегодня",
     "matchCase": "Учитывать регистр (Alt+C)",
+    "matchCaseLabel": "Учитывать регистр",
     "matchWholeWord": "Слово целиком (Alt+W)",
+    "matchWholeWordLabel": "Слово целиком",
     "useRegex": "Использовать регулярное выражение (Alt+R)",
+    "useRegexLabel": "Использовать регулярное выражение",
     "searchInOpenEditors": "Искать только в открытых редакторах",
     "replace": "Заменить (Ctrl+Shift+1)",
+    "replaceLabel": "Заменить",
     "replaceAll": "Заменить всё (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Заменить всё",
     "moreActions": "Дополнительные действия...",
     "formatSql": "Форматировать SQL",
     "queryHistory": "История запросов",
@@ -1026,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Переключить на граф",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1866,11 +1860,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Связь с ORG2 удалена",
+        "repoRemoveFailed": "Не удалось удалить связь с ORG2",
+        "workspaceRemoved": "Связь с ORG2 удалена",
+        "workspaceRemoveFailed": "Не удалось удалить связь с ORG2",
+        "bulkDeleted": "Удалено связей с ORG2: {{count}}",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -1947,6 +1941,20 @@
     "title": "Сессии"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "Показать изменения",
+      "openFileInNewTab": "Открыть файл в новой вкладке",
+      "stageChanges": "Индексировать изменения",
+      "unstageChanges": "Убрать изменения из индекса",
+      "discardChanges": "Отменить изменения",
+      "markResolved": "Отметить как решённое (индексировать)",
+      "acceptCurrent": "Принять текущие изменения (наши)",
+      "acceptIncoming": "Принять входящие изменения (их)",
+      "stageChangesCount": "Индексировать изменения ({{count}})",
+      "unstageChangesCount": "Убрать изменения из индекса ({{count}})",
+      "discardChangesCount": "Отменить изменения ({{count}})",
+      "markResolvedCount": "Отметить как решённое ({{count}})"
+    },
     "notGitInitialized": "Git не инициализирован",
     "notGitInitializedSubtitle": "Инициализируйте Git, чтобы отслеживать изменения, создавать коммиты и использовать инструменты веток в этом рабочем каталоге.",
     "initializeGit": "Инициализировать Git",
@@ -2076,22 +2084,7 @@
     "database": "База данных",
     "user": "Пользователь",
     "password": "Пароль",
-    "ssl": "Требовать SSL",
-    "spotlight": {
-      "scanFolder": "Сканировать папку",
-      "scanFolderDesc": "Найти все файлы .sqlite, .db в папке",
-      "openFile": "Открыть файл",
-      "openFileDesc": "Выберите конкретный файл базы данных",
-      "enterPath": "Ввести путь",
-      "enterPathDesc": "Введите путь к файлу или папке напрямую",
-      "placeholderSelect": "Добавить базу данных через…",
-      "placeholderPath": "~/data или /path/to/database.db",
-      "pickerFolderTitle": "Выберите папку для сканирования",
-      "pickerFileTitle": "Выберите файл базы данных",
-      "pickerSqliteName": "База данных SQLite",
-      "pickerAllFiles": "Все файлы",
-      "pickerError": "Не удалось открыть диалог выбора"
-    }
+    "ssl": "Требовать SSL"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
@@ -2149,15 +2142,14 @@
     "sidebar": {
       "newTab": "Новая вкладка",
       "newPrivateTab": "Новая приватная вкладка",
-      "newTerminal": "Новый терминал",
-      "untitled": "Без названия"
+      "newTerminal": "Новый терминал"
     },
     "statusBar": {}
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "Выйти из ORG-2?",
-    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORG-2 позже.",
+    "title": "Выйти из ORG2?",
+    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORG2 позже.",
     "cancel": "Отмена",
     "confirm": "Выйти"
   },
@@ -2187,7 +2179,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari хранит файлы cookie в папке, защищённой macOS. Разрешите ORG2 полный доступ к диску в системных настройках и повторите проверку.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2235,7 +2227,8 @@
     "taskCompletedBody": "«{{name}}» завершена — готово к проверке",
     "openSessionAction": "Открыть сессию",
     "taskFailedTitle": "Задача не выполнена",
-    "taskFailedBody": "«{{name}}» не выполнена{{detail}}"
+    "taskFailedBody": "«{{name}}» не выполнена{{detail}}",
+    "taskFailedPrivateBody": "Задача завершилась с ошибкой. Откройте ORG2 для подробностей."
   },
   "documentOpen": {
     "openInDefault": "Открыть в {{name}}",
@@ -2275,5 +2268,12 @@
     "goToSection": "Перейти к {{label}}, раздел {{current}} из {{total}}",
     "section": "Раздел {{current}}",
     "sectionPosition": "Раздел {{current}} из {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Это тестовое уведомление от ORG2",
+    "workspaceFile": "Рабочая область ORG2",
+    "sessionJsonFile": "Сессия ORG2 в формате JSON",
+    "skillsSource": "Навыки ORG2",
+    "gitServiceUnavailable": "Не удалось подключиться к локальному сервису Git. Повторите попытку после запуска приложения или перезапустите ORG2, если проблема сохраняется."
   }
 }

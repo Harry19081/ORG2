@@ -19,8 +19,8 @@ import { isImportedHistorySession } from "@src/util/session/sessionDispatch";
 import { isPrimarySessionListSession } from "@src/util/session/sessionVisibility";
 
 import {
-  continuationLineagesForRevealedSessions,
-  isRosterSiblingOfRevealedContinuation,
+  continuationWinnerIds,
+  isHiddenContinuationSibling,
 } from "./continuationVisibility";
 import { type DateGroupKey } from "./dateGroupingHelpers";
 import { buildSessionMenuItem, separator } from "./menuItemBuilders";
@@ -190,26 +190,11 @@ export function useSessionMenuItems({
     () => createSidebarRosterMatcher(pagination),
     [pagination]
   );
-  const revealedContinuationLineages = useMemo(
-    () =>
-      continuationLineagesForRevealedSessions(
-        sortedSessions,
-        revealedSessionIds
-      ),
-    [revealedSessionIds, sortedSessions]
-  );
-
-  const visibleSessions = useMemo(
+  const eligibleSessions = useMemo(
     () =>
       sortedSessions.filter((session) => {
         const explicitlyRevealed = revealedSessionIds.has(session.session_id);
-        const hiddenRosterSibling = isRosterSiblingOfRevealedContinuation(
-          session,
-          revealedSessionIds,
-          revealedContinuationLineages
-        );
         return (
-          !hiddenRosterSibling &&
           isPrimarySessionListSession(session) &&
           (explicitlyRevealed ||
             (isInSidebarRoster(session) &&
@@ -224,10 +209,20 @@ export function useSessionMenuItems({
       includeExternal,
       isInSidebarRoster,
       revealedSessionIds,
-      revealedContinuationLineages,
       selectedOrgIds,
       sortedSessions,
     ]
+  );
+  const continuationWinners = useMemo(
+    () => continuationWinnerIds(eligibleSessions, revealedSessionIds),
+    [eligibleSessions, revealedSessionIds]
+  );
+  const visibleSessions = useMemo(
+    () =>
+      eligibleSessions.filter(
+        (session) => !isHiddenContinuationSibling(session, continuationWinners)
+      ),
+    [continuationWinners, eligibleSessions]
   );
 
   useEffect(() => {

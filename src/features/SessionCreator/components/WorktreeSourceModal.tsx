@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { resolvePrWorktreeBase } from "@src/api/tauri/github";
 import type { GitHubIssue, OpenPRItem } from "@src/api/tauri/github";
 import GitHubIcon from "@src/assets/channelIcons/github.svg";
+import Button from "@src/components/Button";
 import {
   CircleDotIcon,
   GitPullRequestIcon,
@@ -409,9 +410,11 @@ const WorktreeSourceModal: React.FC<WorktreeSourceModalProps> = ({
           className="flex shrink-0 flex-wrap items-end gap-px border-b border-border-2 px-4 pt-1"
         >
           {tabs.map((tab) => (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={tab.id}
-              type="button"
+              htmlType="button"
               role="tab"
               id={`worktree-source-tab-${tab.id}`}
               aria-selected={activeTab === tab.id}
@@ -429,7 +432,7 @@ const WorktreeSourceModal: React.FC<WorktreeSourceModalProps> = ({
             >
               {tab.icon}
               <span>{tab.label}</span>
-            </button>
+            </Button>
           ))}
         </div>
 

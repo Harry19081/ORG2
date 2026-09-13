@@ -8,8 +8,6 @@
 // Import shared diff mixins (CSS variables are loaded globally in src/index.scss)
 @import "../styles/diff-mixins";
 
-@import "../../../components/CustomScrollbar/index.scss";
-
 .codemirror-diff-wrapper {
   position: relative;
   width: 100%;
@@ -200,7 +198,7 @@
     .cm-deletedChunk .cm-deletedLine {
       display: block;
       padding: 0 !important;
-      white-space: pre;
+      white-space: inherit;
     }
 
     .cm-deletedChunk .cm-deletedLine > del {
@@ -362,7 +360,9 @@
   margin: 0 !important;
   padding: 0 !important;
   text-indent: 0 !important;
-  white-space: pre;
+  // Follow .cm-content's shared word-wrap setting, including break-spaces
+  // for long tokens and preserved indentation, just like regular lines.
+  white-space: inherit;
 }
 
 .codemirror-diff
@@ -383,7 +383,18 @@
 // Keep the change rail at the outside edge of each editor. Its row backdrop
 // paints behind the other gutters and is clipped to their combined width.
 .codemirror-diff .cm-editor .cm-gutters {
+  --cm-diff-fold-gutter-width: calc(var(--cm-icon-size, 14px) + 2px);
   overflow: hidden;
+
+  .cm-lineNumbers {
+    // Expansion buttons span the rounded gutter surface, including fold space.
+    overflow: visible;
+  }
+
+  .cm-foldGutter {
+    width: var(--cm-diff-fold-gutter-width);
+    min-width: var(--cm-diff-fold-gutter-width);
+  }
 
   .cm-gutter.cm-changeGutter {
     // CodeMirror clips each gutter column by default. Let the row backdrop
@@ -446,13 +457,22 @@
 
 .codemirror-diff .cm-editor .cm-collapseControl {
   position: absolute;
-  inset: 2px 0;
+  // Match the rounded backdrop across the number and fold columns.
+  // The marker's containing block is only the line-number cell.
+  inset-block: 2px;
+  left: calc(
+    8px - var(--diff-gutter-width, 7px) - var(
+        --cm-line-number-padding-left,
+        8px
+      )
+  );
+  right: calc(-1 * var(--cm-diff-fold-gutter-width));
   z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 2px;
   align-items: stretch;
-  width: 100%;
+  width: auto;
   padding: 0;
   border: 0;
   background: transparent;
@@ -479,19 +499,6 @@
   &:focus-visible {
     outline: 2px solid var(--color-primary-6);
     outline-offset: -2px;
-  }
-
-  &::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    border-top: 2px solid currentColor;
-    border-right: 2px solid currentColor;
-    transform: translateY(2px) rotate(-45deg);
-  }
-
-  &--down::before {
-    transform: translateY(-2px) rotate(135deg);
   }
 }
 
@@ -572,4 +579,14 @@
     var(--diff-row-color) 0 1px,
     transparent 1px 3px
   );
+}
+
+.cm-review-search-match {
+  outline: 2px solid var(--color-primary-6);
+  outline-offset: -2px;
+}
+
+::highlight(orgii-review-search) {
+  background-color: var(--color-warning-3);
+  color: var(--color-text-1);
 }

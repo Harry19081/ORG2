@@ -1,5 +1,6 @@
 import React, { forwardRef, memo } from "react";
 
+import Button from "@src/components/Button";
 import SelectorPill from "@src/components/SelectorPill";
 import { ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 
@@ -92,9 +93,11 @@ const SessionCreatorAgentHero = memo(
       }
 
       return (
-        <button
+        <Button
+          layout="custom"
+          appearance="custom"
           ref={ref}
-          type="button"
+          htmlType="button"
           onClick={onClick}
           aria-expanded={active}
           data-testid="session-creator-agent-selector"
@@ -129,7 +132,7 @@ const SessionCreatorAgentHero = memo(
               {description}
             </p>
           </div>
-        </button>
+        </Button>
       );
     }
   )

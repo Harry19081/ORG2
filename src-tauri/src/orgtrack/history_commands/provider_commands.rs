@@ -320,3 +320,43 @@ pub async fn claude_code_context_usage(
     .await
     .map_err(|err| format!("Task join error: {err}"))?
 }
+
+/// Local, demand-driven attachment read. Never accepts an arbitrary source path.
+#[tauri::command]
+pub async fn session_history_image(
+    session_id: String,
+    turn_id: String,
+    original_ref: String,
+) -> Result<Option<String>, String> {
+    if session_id.len() > 512 || turn_id.len() > 128 || original_ref.len() > 2048 {
+        return Err("Invalid history image reference".into());
+    }
+    static IMAGE_READS: OnceLock<std::sync::Arc<tokio::sync::Semaphore>> = OnceLock::new();
+    let permit = IMAGE_READS
+        .get_or_init(|| std::sync::Arc::new(tokio::sync::Semaphore::new(2)))
+        .clone()
+        .acquire_owned()
+        .await
+        .map_err(|err| format!("Image reader closed: {err}"))?;
+    tokio::task::spawn_blocking(move || {
+        // Keep the permit with the actual blocking read even if its caller exits.
+        let _permit = permit;
+        let path = if let Some((provider, path)) =
+            crate::agent_sessions::cli::commands::native_history_path(&session_id)?
+        {
+            if provider != "codex" {
+                return Err("Unsupported history image provider".into());
+            }
+            path
+        } else {
+            let native_id = session_id
+                .strip_prefix(orgtrack_core::sources::codex::SESSION_PREFIX)
+                .ok_or_else(|| "Unsupported history image session".to_string())?;
+            let conn = open_cache_conn()?;
+            codex_app::resolve_codex_session_path(&conn, native_id)?
+        };
+        codex_app::load_codex_image_from_path(&path, &turn_id, &original_ref)
+    })
+    .await
+    .map_err(|err| format!("Read history image: {err}"))?
+}

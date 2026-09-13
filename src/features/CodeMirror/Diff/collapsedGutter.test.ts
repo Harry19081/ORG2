@@ -9,7 +9,7 @@ import { diffLineNumbers } from "./diffLineNumbers";
 const original = Array.from({ length: 100 }, (_, i) => `line ${i}`).join("\n");
 const modified = original
   .replace("line 30\n", "changed 30\n")
-  .replace("line 70\n", "changed 70\n");
+  .replace("line 80\n", "changed 80\n");
 const extensions = [
   collapsedGutterBackground,
   diffLineNumbers({ formatNumber: String }),
@@ -22,6 +22,52 @@ afterEach(() => {
 });
 
 describe("collapsed gutter controls", () => {
+  it.each([10, 20, 21, 40, 41])(
+    "uses a single expand-all control for a short middle gap (%i lines)",
+    (lines) => {
+      const doc = original
+        .replace("line 30\n", "changed 30\n")
+        .replace(`line ${37 + lines}\n`, `changed ${37 + lines}\n`);
+      const merge = new MergeView({
+        parent: document.body,
+        a: { doc: original, extensions },
+        b: { doc, extensions },
+        collapseUnchanged: { margin: 3, minSize: 10 },
+      });
+      mounted.push(merge);
+      for (const view of [merge.a, merge.b]) {
+        const control = view.dom.querySelectorAll(".cm-collapseControl")[1];
+        expect(control.children).toHaveLength(lines <= 40 ? 1 : 2);
+        expect(
+          control.parentElement?.classList.contains("cm-collapsedGutter--split")
+        ).toBe(lines > 40);
+        expect(
+          view.dom.querySelectorAll(".cm-collapsedLines")[1].textContent
+        ).toBe(`${lines} unchanged lines`);
+      }
+      if (lines > 40) return;
+      const button = merge.a.dom.querySelector<HTMLButtonElement>(
+        ".cm-collapseArrow--all"
+      )!;
+      expect(button.getAttribute("aria-label")).toBe(
+        `${lines} unchanged lines`
+      );
+      button.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+      expect(
+        merge.a.dom
+          .querySelectorAll(".cm-collapsedLines")[1]
+          .classList.contains("cm-collapsedRowHovered")
+      ).toBe(true);
+      button.click();
+      for (const view of [merge.a, merge.b]) {
+        expect(view.dom.querySelectorAll(".cm-collapsedLines")).toHaveLength(2);
+        expect(
+          view.dom.querySelectorAll(".cm-collapseArrow--all")
+        ).toHaveLength(0);
+      }
+    }
+  );
+
   it("highlights only the matching whole row from either half and removes listeners on close", () => {
     const view = new EditorView({
       parent: document.body,

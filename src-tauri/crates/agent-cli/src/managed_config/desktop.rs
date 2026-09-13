@@ -59,7 +59,7 @@ pub fn ensure_unmanaged() -> Result<(), String> {
                 .try_exists()
                 .map_err(|_| "Cannot inspect managed Claude Desktop preferences")?
             {
-                return Err("Claude Desktop has managed preferences. Use your administrator's configuration; ORGII will not override it.".into());
+                return Err("Claude Desktop has managed preferences. Use your administrator's configuration; ORG2 will not override it.".into());
             }
         }
     }
@@ -75,7 +75,7 @@ pub fn ensure_unmanaged() -> Result<(), String> {
             {
                 Ok(_) => {
                     return Err(
-                        "Claude Desktop has managed policy. ORGII will not override it.".into(),
+                        "Claude Desktop has managed policy. ORG2 will not override it.".into(),
                     )
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
@@ -137,7 +137,7 @@ pub(super) fn generate(
             .get("profile")
             .is_some_and(|raw| !raw.trim().is_empty())
     {
-        return Err("An existing Claude Desktop profile uses ORGII's profile ID. Resolve that conflict before switching.".into());
+        return Err("An existing Claude Desktop profile uses ORG2's profile ID. Resolve that conflict before switching.".into());
     }
     let options = connection
         .desktop_auth_scheme
@@ -164,7 +164,7 @@ pub(super) fn generate(
         None => Vec::new(),
     };
     if !owned && entries.iter().any(|entry| entry["id"] == PROFILE_ID) {
-        return Err("An existing Claude Desktop catalog entry uses ORGII's profile ID".into());
+        return Err("An existing Claude Desktop catalog entry uses ORG2's profile ID".into());
     }
     entries.retain(|entry| entry["id"] != PROFILE_ID);
     entries.push(json!({"id": PROFILE_ID, "name": "ORGII"}));

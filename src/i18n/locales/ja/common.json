@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "含まれるファイル：{{status}}",
+    "staged": "{{status}}（ステージ済み）",
+    "additions": "追加された行",
+    "deletions": "削除された行",
+    "M": "変更済み",
+    "U": "未追跡",
+    "A": "追加済み",
+    "D": "削除済み",
+    "R": "名前変更済み",
+    "C": "競合",
+    "I": "無視",
+    "?": "不明な状態"
+  },
+  "findScope": {
+    "session": "セッション内を検索",
+    "file": "ファイル内を検索",
+    "named": "{{name}} 内を検索"
+  },
   "teamInbox": {
     "title": "チームの受信トレイ",
     "listLabel": "チーム受信トレイの一覧",
@@ -188,7 +207,7 @@
       "aria": "{{label}}メニュー"
     },
     "items": {
-      "quitOrg2": "ORG-2を終了",
+      "quitOrg2": "ORG2を終了",
       "newSession": "新しいセッション",
       "openFolder": "フォルダーを開く...",
       "addFolderToWorkspace": "ワークスペースにフォルダーを追加...",
@@ -223,12 +242,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "返信を入力してください",
-    "sessionNotFound": "セッションが見つかりません",
-    "answerSubmitted": "回答を送信しました",
-    "answerFailed": "回答の送信に失敗しました。もう一度お試しください。",
-    "replyError": "返信の送信中にエラーが発生しました",
-    "questionIgnored": "質問を無視しました",
     "addedAsContext": "{{name}} をコンテキストに追加しました",
     "addedFilesAsContext": "{{count}} 個のファイルをコンテキストに追加しました",
     "chooseExecutionAgentAi": "AI で作成する前に担当エージェントを選択してください。",
@@ -295,8 +308,8 @@
     "save": "保存",
     "cancel": "キャンセル",
     "delete": "削除",
-    "removeFromOrgii": "ORGII から削除",
-    "removeFromOrgiiCount": "ORGII から削除 ({{count}})",
+    "removeFromOrgii": "ORG2 から削除",
+    "removeFromOrgiiCount": "ORG2 から削除 ({{count}})",
     "edit": "編集",
     "write": "書き込み",
     "close": "閉じる",
@@ -477,6 +490,7 @@
   },
   "optional": "任意",
   "common": {
+    "display": "表示",
     "on": "オン",
     "off": "オフ",
     "default": "デフォルト",
@@ -513,6 +527,9 @@
     "source": "ソース"
   },
   "labels": {
+    "stashesCount": "{{count}}件のスタッシュ",
+    "stashesCount_one": "{{count}}件のスタッシュ",
+    "stashesCount_other": "{{count}}件のスタッシュ",
     "accounts": "アカウント",
     "enabled": "有効",
     "disabled": "無効",
@@ -558,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "操作ログ",
     "gitDashboard": "ダッシュボード",
-    "changedFiles": "変更されたファイル",
+    "changedFilesCount": "{{fileCount}}件の変更",
+    "changedFilesCount_one": "{{fileCount}}件の変更",
+    "changedFilesCount_other": "{{fileCount}}件の変更",
     "colorTokens": "カラー Token",
     "terminalInfo": "ターミナル情報",
     "fileCount_one": "{{count}} 個のファイル",
@@ -688,42 +707,9 @@
     "technicalDetails": "技術的な詳細",
     "failedToCopy": "コピーに失敗しました",
     "api": {
-      "titles": {
-        "githubConnections": "GitHub 接続を読み込めませんでした",
-        "githubConnect": "GitHub に接続できませんでした",
-        "workflows": "ワークフローを読み込めませんでした",
-        "config": "設定を読み込めませんでした",
-        "agent": "Agent に接続できませんでした",
-        "repository": "リポジトリを読み込めませんでした",
-        "file": "ファイルを読み込めませんでした",
-        "mcp": "MCP サーバーエラー",
-        "extension": "コードエディター拡張エラー",
-        "workspace": "ワークスペースを読み込めませんでした",
-        "slackConnections": "Slack 接続を読み込めませんでした",
-        "wallet": "ウォレットを読み込めませんでした",
-        "billing": "請求操作を完了できませんでした",
-        "default": "データを読み込めませんでした",
-        "timeout": "リクエストがタイムアウトしました",
-        "external": "外部データを読み込めませんでした"
-      },
       "messages": {
-        "network": "接続を確認してから再試行してください。",
-        "timeout": "リクエストがタイムアウトしました。再試行してください。",
-        "server": "サーバーで問題が発生しました。しばらくしてから再試行してください。",
-        "notFound": "この項目が見つかりませんでした。",
-        "signIn": "再度ログインしてください。",
-        "forbidden": "この操作の権限がありません。",
-        "tooManyRequests": "リクエストが多すぎます。しばらくしてから再試行してください。",
-        "validation": "無効なデータです。入力を確認してください。",
-        "conflict": "競合が検出されました。リソースが変更されている可能性があります。",
-        "badGateway": "サーバーに到達できません。後で再試行してください。",
-        "serviceUnavailable": "サービスは一時的に利用できません。後で再試行してください。",
-        "gatewayTimeout": "サーバーが応答しません。後で再試行してください。",
-        "invalidRequest": "無効なリクエストです。再試行してください。",
-        "default": "再試行してください。",
-        "externalHint": "URL と設定を確認してから再試行してください。"
-      },
-      "workflow": "ワークフローサービスは一時的に利用できません。後で再試行してください。"
+        "signIn": "再度ログインしてください。"
+      }
     },
     "failedToLoad": "読み込みに失敗しました",
     "unknownError": "不明なエラーが発生しました",
@@ -733,12 +719,12 @@
   },
   "confirmation": {
     "delete": "本当に削除しますか？",
-    "removeTitle": "「{{name}}」を ORGII から削除しますか？",
-    "removeMessage": "ORGII との関連付けのみを削除します。ディスクからは何も削除されません。",
+    "removeTitle": "「{{name}}」を ORG2 から削除しますか？",
+    "removeMessage": "ORG2 との関連付けのみを削除します。ディスクからは何も削除されません。",
     "deleteWorkspaceTitle": "Workspace「{{name}}」を削除しますか？",
     "deleteWorkspaceMessage": "Workspace プリセットのみが削除されます。メンバーの Repo やフォルダには影響しません。",
-    "deleteSelectedTitle": "選択した {{count}} 件を ORGII から削除しますか？",
-    "deleteSelectedMessage": "ORGII との関連付けのみを削除します。ディスクからは何も削除されません。",
+    "deleteSelectedTitle": "選択した {{count}} 件を ORG2 から削除しますか？",
+    "deleteSelectedMessage": "ORG2 との関連付けのみを削除します。ディスクからは何も削除されません。",
     "dropStashTitle": "Drop stash？",
     "dropStashMessage": "{{stashRef}} が完全に削除されます。この操作は元に戻せません。",
     "popAllStashesTitle": "Pop all stashes？",
@@ -780,7 +766,9 @@
     "previous": "前へ",
     "next": "次へ",
     "previousMatch": "前の一致 (Shift+Enter)",
+    "previousMatchLabel": "前の一致",
     "nextMatch": "次の一致 (Enter)",
+    "nextMatchLabel": "次の一致",
     "clearSearch": "検索をクリア",
     "openInEditorTab": "エディタタブで開く",
     "openFile": "ファイルを開く",
@@ -807,11 +795,16 @@
     "goForward": "進む",
     "goToToday": "今日に移動",
     "matchCase": "大文字と小文字を区別 (Alt+C)",
+    "matchCaseLabel": "大文字と小文字を区別",
     "matchWholeWord": "単語単位で検索 (Alt+W)",
+    "matchWholeWordLabel": "単語単位で検索",
     "useRegex": "正規表現を使用 (Alt+R)",
+    "useRegexLabel": "正規表現を使用",
     "searchInOpenEditors": "開いているエディタのみで検索",
     "replace": "置換 (Ctrl+Shift+1)",
+    "replaceLabel": "置換",
     "replaceAll": "すべて置換 (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "すべて置換",
     "moreActions": "その他の操作...",
     "formatSql": "SQL をフォーマット",
     "queryHistory": "クエリ履歴",
@@ -1026,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "グラフ表示に切り替え",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1866,11 +1860,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "ORG2 との関連付けを解除しました",
+        "repoRemoveFailed": "ORG2 との関連付けを解除できませんでした",
+        "workspaceRemoved": "ORG2 との関連付けを解除しました",
+        "workspaceRemoveFailed": "ORG2 との関連付けを解除できませんでした",
+        "bulkDeleted": "ORG2 との関連付けを {{count}} 件解除しました",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -1947,6 +1941,20 @@
     "title": "セッション"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "変更を表示",
+      "openFileInNewTab": "新しいタブでファイルを開く",
+      "stageChanges": "変更をステージ",
+      "unstageChanges": "変更のステージを解除",
+      "discardChanges": "変更を破棄",
+      "markResolved": "解決済みとしてマーク（ステージ）",
+      "acceptCurrent": "現在の変更を採用（ours）",
+      "acceptIncoming": "取り込む変更を採用（theirs）",
+      "stageChangesCount": "変更をステージ（{{count}} 件）",
+      "unstageChangesCount": "変更のステージを解除（{{count}} 件）",
+      "discardChangesCount": "変更を破棄（{{count}} 件）",
+      "markResolvedCount": "解決済みとしてマーク（{{count}} 件）"
+    },
     "notGitInitialized": "Git 未初期化",
     "notGitInitializedSubtitle": "Git を初期化すると、この作業ディレクトリで変更の追跡、コミット作成、ブランチツールを使用できます。",
     "initializeGit": "Git を初期化",
@@ -2076,22 +2084,7 @@
     "database": "データベース",
     "user": "ユーザー",
     "password": "パスワード",
-    "ssl": "SSL を要求",
-    "spotlight": {
-      "scanFolder": "フォルダをスキャン",
-      "scanFolderDesc": "フォルダ内のすべての .sqlite、.db ファイルを検索",
-      "openFile": "ファイルを開く",
-      "openFileDesc": "特定のデータベースファイルを選択",
-      "enterPath": "パスを入力",
-      "enterPathDesc": "ファイルまたはフォルダのパスを直接入力",
-      "placeholderSelect": "データベースの追加方法…",
-      "placeholderPath": "~/data または /path/to/database.db",
-      "pickerFolderTitle": "スキャンするフォルダを選択",
-      "pickerFileTitle": "データベースファイルを選択",
-      "pickerSqliteName": "SQLite データベース",
-      "pickerAllFiles": "すべてのファイル",
-      "pickerError": "ピッカーを開けませんでした"
-    }
+    "ssl": "SSL を要求"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
@@ -2149,15 +2142,14 @@
     "sidebar": {
       "newTab": "新しいタブ",
       "newPrivateTab": "新しいプライベートタブ",
-      "newTerminal": "新規 Terminal",
-      "untitled": "タイトルなし"
+      "newTerminal": "新規 Terminal"
     },
     "statusBar": {}
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "ORG-2 を終了しますか？",
-    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORG-2 を再度開くことができます。",
+    "title": "ORG2 を終了しますか？",
+    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORG2 を再度開くことができます。",
     "cancel": "キャンセル",
     "confirm": "終了"
   },
@@ -2187,7 +2179,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari は macOS で保護されたフォルダに Cookie を保存します。システム設定の「フルディスクアクセス」で ORG2 を許可してから、もう一度確認してください。",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2235,7 +2227,8 @@
     "taskCompletedBody": "「{{name}}」が完了しました — レビューできます",
     "openSessionAction": "セッションを開く",
     "taskFailedTitle": "タスクが失敗しました",
-    "taskFailedBody": "「{{name}}」が失敗しました{{detail}}"
+    "taskFailedBody": "「{{name}}」が失敗しました{{detail}}",
+    "taskFailedPrivateBody": "タスクが失敗しました。詳細は ORG2 で確認してください。"
   },
   "documentOpen": {
     "openInDefault": "{{name}} で開く",
@@ -2275,5 +2268,12 @@
     "goToSection": "{{label}} へ移動、セクション {{current}} / {{total}}",
     "section": "セクション {{current}}",
     "sectionPosition": "セクション {{current}} / {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "これは ORG2 からのテスト通知です",
+    "workspaceFile": "ORG2 ワークスペース",
+    "sessionJsonFile": "ORG2 セッション JSON",
+    "skillsSource": "ORG2 スキル",
+    "gitServiceUnavailable": "ローカル Git サービスに接続できません。アプリの起動完了後に再試行してください。問題が続く場合は ORG2 を再起動してください。"
   }
 }

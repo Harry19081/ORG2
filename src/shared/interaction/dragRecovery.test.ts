@@ -1,21 +1,14 @@
 // @vitest-environment jsdom
 import { act, createElement, useEffect } from "react";
 import { type Root, createRoot } from "react-dom/client";
-import { jsx } from "react/jsx-runtime";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 import { CustomScrollbar } from "@src/components/CustomScrollbar";
 import { useWindowDrag } from "@src/components/FloatingWindow/useWindowDrag";
 import { useWindowResize } from "@src/components/FloatingWindow/useWindowResize";
 import { useGanttDrag } from "@src/features/GanttChart/hooks/useGanttDrag";
-import {
-  ResizeProvider,
-  useResizeManager,
-} from "@src/scaffold/Resize/ResizeManager";
 import ResizableSplitPanel from "@src/scaffold/Resize/components/ResizableSplitPanel";
-import SplitGroup from "@src/scaffold/Resize/components/SplitGroup";
 import { useColumnResize } from "@src/scaffold/Resize/hooks/useColumnResize";
-import { useResizeController } from "@src/scaffold/Resize/hooks/useResizeController";
 
 vi.mock("@src/hooks/ui/useResizeContextMenu", () => ({
   useResizeContextMenu: () => undefined,
@@ -155,21 +148,7 @@ function ColumnHarness() {
     onMouseDown: handleMouseDown,
   });
 }
-function ControllerHarness() {
-  const api = useResizeController({
-    axis: "x",
-    min: 100,
-    max: 500,
-    onCommit: commit,
-  });
-  const manager = useResizeManager();
-  return createElement("div", {
-    "data-handle": "",
-    "data-resizing": manager.isResizing,
-    onMouseDown: (e) => api.start(e, 200),
-  });
-}
-for (const kind of ["column", "controller", "split", "group"] as const) {
+for (const kind of ["column", "split"] as const) {
   it.each([
     "blur",
     "hidden",
@@ -181,22 +160,13 @@ for (const kind of ["column", "controller", "split", "group"] as const) {
     const child =
       kind === "column"
         ? createElement(ColumnHarness)
-        : kind === "controller"
-          ? createElement(ControllerHarness)
-          : kind === "split"
-            ? createElement(ResizableSplitPanel, {
-                defaultLeftWidth: 200,
-                leftPanel: "left",
-                rightPanel: "right",
-                onSplitChange: commit,
-              })
-            : jsx(SplitGroup, {
-                axis: "x",
-                sizes: [200, 200],
-                onSizesChange: commit,
-                children: ["left", "right"],
-              });
-    act(() => root.render(createElement(ResizeProvider, null, child)));
+        : createElement(ResizableSplitPanel, {
+            defaultLeftWidth: 200,
+            leftPanel: "left",
+            rightPanel: "right",
+            onSplitChange: commit,
+          });
+    act(() => root.render(child));
     const handle = host.querySelector("[data-handle], [role=separator]")!;
     expect(handle).not.toBeNull();
     send(handle, "mousedown");
@@ -209,9 +179,7 @@ for (const kind of ["column", "controller", "split", "group"] as const) {
     act(() => vi.advanceTimersByTime(30));
     expect(commit).toHaveBeenCalledTimes(count);
     if (reason !== "unmount") {
-      expect(commit).toHaveBeenLastCalledWith(
-        kind === "group" ? [230, 170] : 230
-      );
+      expect(commit).toHaveBeenLastCalledWith(230);
       send(handle, "mousedown");
       send(window, "mouseup", 0, 0);
       expect(document.body.classList.contains("resize-active")).toBe(false);

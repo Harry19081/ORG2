@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import BottomSheet from "@src/components/BottomSheet";
+import Button from "@src/components/Button";
 import ComposerBarLayout from "@src/components/ComposerBar/ComposerBarLayout";
 import ComposerSubmitButton from "@src/components/ComposerBar/ComposerSubmitButton";
 import ComposerShell from "@src/components/ComposerShell";
@@ -257,16 +258,19 @@ export function MobileComposer({
         showCloseButton
         closeLabel={tCommon("actions.close", "Close")}
         footer={
-          <button
-            type="button"
-            className="w-full rounded-lg bg-primary-6 px-4 py-2.5 text-sm font-medium text-white"
+          <Button
+            variant="primary"
+            appearance="solid"
+            size="default"
+            htmlType="button"
+            className="w-full text-sm font-medium"
             onClick={() => {
               setVoicePermissionSheetOpen(false);
               handleVoiceStart();
             }}
           >
             {tVoice("voicePermissionSheetRetry", "Try again")}
-          </button>
+          </Button>
         }
       >
         <p className="text-sm leading-relaxed text-text-2">{voiceError}</p>

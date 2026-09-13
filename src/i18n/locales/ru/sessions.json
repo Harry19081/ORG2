@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Источники данных",
-      "description": "Внешние инструменты для кодинга, которые обнаруживает ORGII. Импортируемые приложения показывают число сессий и могут быть пересканированы; остальные показывают статус установки и расположение истории.",
+      "description": "Внешние инструменты для кодинга, которые обнаруживает ORG2. Импортируемые приложения показывают число сессий и могут быть пересканированы; остальные показывают статус установки и расположение истории.",
       "rescanAll": "Пересканировать все",
       "rescan": "Пересканировать",
       "rescanning": "Пересканирование…",
@@ -190,7 +190,7 @@
           "perTurn": "Вызовы LLM",
           "perTool": "Вызовы инструментов",
           "close": "Закрыть",
-          "noData": "Для этого сеанса доступны только общие итоги; разбивка по вызовам записывается для запусков собственных агентов ORGII.",
+          "noData": "Для этого сеанса доступны только общие итоги; разбивка по вызовам записывается для запусков собственных агентов ORG2.",
           "turnHeader": "Ход {{turn}}",
           "promptTokens": "Промпт",
           "completionTokens": "Завершение"
@@ -555,22 +555,6 @@
     "creatingWithContext": "Создание новой Session с контекстом",
     "creationCooldown": "Подождите немного перед созданием следующего терминала."
   },
-  "scope": {
-    "applicableScope": "Область применения",
-    "for": "для",
-    "selectCategory": "Выберите категорию",
-    "selectScope": "Выберите область",
-    "allRepos": "Все репо",
-    "allSessions": "Все Session",
-    "allProjects": "Все Projects",
-    "allWorkItems": "Все рабочие элементы",
-    "categories": {
-      "repo": "Репо",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "Рабочие элементы"
-    }
-  },
   "editor": {
     "loading": "Загрузка редактора..."
   },
@@ -732,7 +716,6 @@
     "performActions_one": "Выполнить {{count}} действие",
     "performActions_other": "Выполнить {{count}} действий",
     "showInlineDiffs": "Встроенные различия",
-    "pageSettings": "Отображение страницы",
     "inputSettings": "Настройки ввода",
     "replay": {
       "follow": "Следовать"
@@ -1923,7 +1906,7 @@
     "start": "Начать",
     "missingGit": {
       "title": "Git отсутствует",
-      "body": "Git не установлен или не найден. Попросите ADE Manager или SDE Agent установить Git на этот компьютер, затем перезапустите ORGII."
+      "body": "Git не установлен или не найден. Попросите ADE Manager или SDE Agent установить Git на этот компьютер, затем перезапустите ORG2."
     },
     "model": "Модель",
     "contextMenu": {
@@ -1938,8 +1921,7 @@
       "commands": "Команды",
       "mode": "Режим",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Команды"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Действия GIT",
@@ -2027,7 +2009,8 @@
       "refresh": "Перепроверить версию {{cli}} CLI",
       "unknownVersion": "неизвестно"
     },
-    "mode": "Режим редактора"
+    "mode": "Режим редактора",
+    "cursorIdeDescription": "Просматривайте и продолжайте чаты Cursor IDE в ORG2"
   },
   "planner": {
     "modes": {
@@ -2266,7 +2249,7 @@
     "noSessionIdFound": "ID Session не найден",
     "failedToResume": "Не удалось возобновить Session",
     "failedToCheckChanges": "Не удалось проверить изменения файлов. Будет выполнен откат.",
-    "insufficientBalance": "Недостаточно средств для использования хостингового сервиса ORGII. Пополните счёт на orgii.ai/wallet.",
+    "insufficientBalance": "Недостаточно средств для использования хостингового сервиса ORG2. Пополните счёт на orgii.ai/wallet.",
     "runQueuedBehindCheckout": "В очереди: этот checkout занят другим запуском. Запуск начнётся, как только он завершится."
   },
   "planning": {
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Остановить процесс Agent",
       "openInMyStation": "Открыть в My Station"
     }
   },

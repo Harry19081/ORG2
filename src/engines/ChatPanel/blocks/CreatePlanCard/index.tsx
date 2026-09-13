@@ -18,6 +18,7 @@ import {
 import Button from "@src/components/Button";
 import Markdown from "@src/components/MarkDown";
 import Message from "@src/components/Message";
+import Textarea from "@src/components/Textarea";
 import { getToolIcon } from "@src/config/toolIcons";
 import {
   beginOptimisticTurn,
@@ -527,11 +528,16 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
         {!isCollapsed &&
           (isEditing ? (
             <div className="px-3 py-2">
-              <textarea
+              <Textarea
+                size="small"
+                resize="vertical"
+                className="w-full"
+                textareaStyle={{ height: 280 }}
                 ref={textareaRef}
-                className="scrollbar-overlay h-[280px] w-full resize-y rounded-md border border-border-2 bg-bg-1 px-3 py-2 text-[13px] leading-relaxed text-text-1 outline-none focus:border-primary-6"
                 value={editedContent}
-                onChange={(event) => setEditedContent(event.target.value)}
+                onChange={(_value, event) =>
+                  setEditedContent(event.target.value)
+                }
                 spellCheck={false}
               />
             </div>

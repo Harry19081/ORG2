@@ -56,7 +56,7 @@ describe("mobileI18n", () => {
     );
     expect(
       mobileI18n.t("input.voiceErrorPermissionIosPwa", { ns: "sessions" })
-    ).toContain("ORGII Mobile");
+    ).toContain("ORG2 Mobile");
   });
 
   it("resolves voice permission copy in Chinese", async () => {
@@ -64,7 +64,7 @@ describe("mobileI18n", () => {
     await mobileI18n.changeLanguage("zh");
     expect(
       mobileI18n.t("input.voiceErrorPermissionIosPwa", { ns: "sessions" })
-    ).toContain("ORGII Mobile");
+    ).toContain("ORG2 Mobile");
     expect(
       mobileI18n.t("input.voicePermissionSheetTitle", { ns: "sessions" })
     ).toBe("需要麦克风权限");

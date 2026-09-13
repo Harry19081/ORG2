@@ -17,6 +17,7 @@
  *                 "outline" = bordered, transparent fill
  *                 "dashed"  = dashed border (typically for add/upload)
  *                 "soft"    = neutral or semantic hover fill for compact actions
+ *                 "soft-no-drop" = neutral hover for a transparent button layer
  *                 "ghost"   = no border, no background — hover changes
  *                            only the text color
  *
@@ -49,6 +50,12 @@ export interface ButtonProps extends Omit<
   "type"
 > {
   /**
+   * Preserve direct children and CSS-owned geometry for compound controls such
+   * as menu rows, switch tracks, tabs and selectable cards. Ordinary actions
+   * use the default layout with size, icon and iconOnly props.
+   */
+  layout?: "default" | "custom";
+  /**
    * Importance / semantic role.
    * @default "secondary"
    */
@@ -62,7 +69,8 @@ export interface ButtonProps extends Omit<
   appearance?: ButtonAppearance;
 
   /**
-   * Button size; sidebar is 20px, reserved for compact sidebar/rail rows and headers
+   * Button size; inline inherits surrounding typography without a fixed height;
+   * sidebar is 20px, reserved for compact sidebar/rail rows and headers
    * @default "default"
    */
   size?: ButtonSize;
@@ -128,6 +136,7 @@ export interface ButtonProps extends Omit<
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
+      layout = "default",
       variant = "secondary",
       appearance,
       size = "default",
@@ -154,6 +163,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const { isDisabled, buttonStyles, buttonContent, buttonClassName } =
       useButtonPresentation({
+        layout,
         variant,
         appearance,
         size,
@@ -191,13 +201,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
+        {...rest}
         ref={ref}
         type={htmlType}
         disabled={isDisabled}
         className={buttonClassName}
         style={buttonStyles}
         onClick={onClick}
-        {...rest}
       >
         {buttonContent}
       </button>

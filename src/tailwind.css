@@ -29,6 +29,8 @@
   --color-chat-container: var(--color-chat-container);
 
   --color-button-hover: var(--color-button-hover);
+  /* Transparent button layer: neutral hover fill follows the active skin. */
+  --color-button-hover-no-drop: var(--color-fill-2);
 
   --color-surface-hover: var(--color-surface-hover);
   --color-surface-selected: var(--color-surface-selected);
@@ -197,14 +199,14 @@
     }
   }
 
+  /* Placement owns transform (including right-aligned portal offsets).
+   * Fade only so entrance motion cannot override alignment on first paint. */
   @keyframes dropdown-in {
     0% {
       opacity: 0;
-      transform: translateY(-8px);
     }
     100% {
       opacity: 1;
-      transform: translateY(0);
     }
   }
 

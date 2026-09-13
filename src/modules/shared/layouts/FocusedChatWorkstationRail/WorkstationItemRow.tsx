@@ -7,20 +7,22 @@ import type React from "react";
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
-import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
-import { ProcessStopButton } from "@src/components/ProcessStopButton";
 import Tooltip from "@src/components/Tooltip";
-import { WORKSTATION_TRAIL_CONTENT } from "@src/config/workstation/tokens";
 import { useWorkingTreeDiffTotals } from "@src/hooks/git/useWorkingTreeDiffTotals";
 import {
   ArrowRight01Icon,
   ArrowUpRight01Icon,
   Cancel01Icon,
   HugeiconsIcon,
+  StopIcon,
 } from "@src/icons";
 
+import {
+  WORKSTATION_TRAIL_ROW,
+  WORKSTATION_TRAIL_ROW_HOVER_CLASS,
+} from "../blocks/workstationTrailTokens";
 import { RailItemStatus } from "./RailItemStatus";
 import type { FocusedChatRailItem } from "./types";
 
@@ -52,76 +54,75 @@ export function WorkstationItemRow({
   };
 
   const action = (
-    <button
-      type="button"
-      className={
-        compact
-          ? `${DROPDOWN_CLASSES.item} min-w-0 flex-1 px-2! text-left ${
-              item.onClick
-                ? DROPDOWN_CLASSES.itemHover
-                : `${DROPDOWN_CLASSES.itemDisabled} text-text-3`
-            }`
-          : `${WORKSTATION_TRAIL_CONTENT.rowContent} ${
-              item.onClick ? "text-text-1" : "cursor-default text-text-3"
-            }`
-      }
+    <Button
+      htmlType="button"
+      variant="tertiary"
+      appearance="soft-no-drop"
+      size={compact ? "small" : "sidebar"}
+      className={`${WORKSTATION_TRAIL_ROW.button} h-full! ${compact ? WORKSTATION_TRAIL_ROW.compact : WORKSTATION_TRAIL_ROW.wide} ${item.onClick ? "" : "cursor-default"}`}
       onClick={runAction}
       disabled={!item.onClick}
       role={compact ? "menuitem" : undefined}
       aria-haspopup={item.submenu ? "menu" : undefined}
     >
-      <span className="flex shrink-0 items-center text-text-1">
-        {item.fileName ? (
-          <FileTypeIcon fileName={item.fileName} size="small" />
-        ) : (
-          <AnyIcon icon={item.icon} size={14} strokeWidth={1.75} />
-        )}
+      <span
+        className={`${WORKSTATION_TRAIL_ROW.content} ${compact ? WORKSTATION_TRAIL_ROW.compactContent : WORKSTATION_TRAIL_ROW.wideContent}`}
+      >
+        <span className={WORKSTATION_TRAIL_ROW.icon}>
+          {item.fileName ? (
+            <FileTypeIcon
+              fileName={item.fileName}
+              size="small"
+              className="size-3.5"
+            />
+          ) : (
+            <AnyIcon
+              icon={item.icon}
+              size={WORKSTATION_TRAIL_ROW.iconSize}
+              strokeWidth={1.75}
+            />
+          )}
+        </span>
+        <span className={WORKSTATION_TRAIL_ROW.label}>{item.label}</span>
+        {(additions ?? 0) > 0 || (deletions ?? 0) > 0 ? (
+          <DiffStatsBadge
+            additions={additions}
+            deletions={deletions}
+            variant="plain"
+            size="sm"
+            reserveValueWidth={false}
+            valueClassName="font-normal"
+            className="shrink-0"
+          />
+        ) : null}
+        {item.status ? <RailItemStatus status={item.status} /> : null}
+        {item.external ? (
+          <HugeiconsIcon
+            icon={ArrowUpRight01Icon}
+            data-icon="arrow-up-right"
+            aria-hidden
+            className="shrink-0 text-text-1"
+            size={14}
+            strokeWidth={1.75}
+          />
+        ) : null}
+        {item.submenu ? (
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            data-icon="chevron-right"
+            aria-hidden
+            className="shrink-0 text-text-1"
+            size={14}
+            strokeWidth={1.75}
+          />
+        ) : null}
       </span>
-      <span className="min-w-0 flex-1 truncate">{item.label}</span>
-      {(additions ?? 0) > 0 || (deletions ?? 0) > 0 ? (
-        <DiffStatsBadge
-          additions={additions}
-          deletions={deletions}
-          variant="plain"
-          size="sm"
-          reserveValueWidth={false}
-          valueClassName="font-normal"
-          className="shrink-0"
-        />
-      ) : null}
-      {item.status ? <RailItemStatus status={item.status} /> : null}
-      {item.external ? (
-        <HugeiconsIcon
-          icon={ArrowUpRight01Icon}
-          data-icon="arrow-up-right"
-          aria-hidden
-          className="shrink-0 text-text-2"
-          size={14}
-          strokeWidth={1.75}
-        />
-      ) : null}
-      {item.submenu ? (
-        <HugeiconsIcon
-          icon={ArrowRight01Icon}
-          data-icon="chevron-right"
-          aria-hidden
-          className="shrink-0 text-text-2"
-          size={14}
-          strokeWidth={1.75}
-        />
-      ) : null}
-    </button>
+    </Button>
   );
 
   return (
     <div
-      className={
-        compact
-          ? "group flex min-w-0 items-center"
-          : `group ${WORKSTATION_TRAIL_CONTENT.row} transition-colors duration-150 ${
-              item.onClick ? "focus-within:bg-fill-2 hover:bg-fill-2" : ""
-            }`
-      }
+      className={`group ${WORKSTATION_TRAIL_ROW.shell} ${compact ? WORKSTATION_TRAIL_ROW.compact : WORKSTATION_TRAIL_ROW.wide} ${WORKSTATION_TRAIL_ROW_HOVER_CLASS}`}
     >
       {item.shortcut ? (
         <Tooltip
@@ -142,11 +143,19 @@ export function WorkstationItemRow({
         action
       )}
       {item.onStop ? (
-        <ProcessStopButton
-          size="sm"
-          label={item.stopLabel ?? item.label}
+        <Button
+          variant="tertiary"
+          appearance="soft-no-drop"
+          iconOnly
+          icon={<HugeiconsIcon icon={StopIcon} data-icon="stop" size={14} />}
+          size="sidebar"
+          aria-label={item.stopLabel ?? item.label}
+          title={item.stopLabel ?? item.label}
           className={`opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 ${compact ? "ml-0.5" : "mr-1"}`}
-          onClick={item.onStop}
+          onClick={(event) => {
+            event.stopPropagation();
+            item.onStop?.();
+          }}
           role={compact ? "menuitem" : undefined}
         />
       ) : item.onClose ? (
@@ -162,7 +171,7 @@ export function WorkstationItemRow({
           }}
           aria-label={item.closeLabel}
           role={compact ? "menuitem" : undefined}
-          appearance="soft"
+          appearance="soft-no-drop"
           iconOnly
           icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />}
         />

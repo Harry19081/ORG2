@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { useOpenSessionSharedFile } from "@src/features/Org2Cloud/SharedSessionFilesContext";
 import { FileSymlinkIcon, HugeiconsIcon } from "@src/icons";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
@@ -28,8 +29,19 @@ const ToolResultActions: React.FC<ToolResultActionsProps> = ({ source }) => {
   if (!source) return null;
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="tertiary"
+      appearance="soft"
+      size="mini"
+      iconOnly
+      icon={
+        <HugeiconsIcon
+          icon={FileSymlinkIcon}
+          data-icon="file-symlink"
+          size={13}
+        />
+      }
+      htmlType="button"
       className={ICON_BUTTON_CLASSES}
       onClick={(event) => {
         event.stopPropagation();
@@ -37,13 +49,7 @@ const ToolResultActions: React.FC<ToolResultActionsProps> = ({ source }) => {
       }}
       title={t("tools.openSource")}
       aria-label={t("tools.openSource")}
-    >
-      <HugeiconsIcon
-        icon={FileSymlinkIcon}
-        data-icon="file-symlink"
-        size={13}
-      />
-    </button>
+    />
   );
 };
 

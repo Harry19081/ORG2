@@ -220,6 +220,10 @@ pub fn ensure_tables_with(conn: &Connection) -> SqliteResult<()> {
         conn,
         "ALTER TABLE agent_sessions ADD COLUMN sm_last_seq INTEGER",
     );
+    try_migrate(
+        conn,
+        "ALTER TABLE agent_sessions ADD COLUMN sm_tokens_at_last_extraction INTEGER",
+    );
     try_drop_column(conn, "agent_sessions", "sm_last_msg_idx");
 
     // L3 rebuild: the per-session learning toggle was replaced by a per-agent

@@ -7,10 +7,7 @@ import { RulesMemoryEvolutionTable } from "./RulesMemoryEvolutionTable";
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
-vi.mock("@src/components/Button", () => ({
-  default: ({ children }: { children: React.ReactNode }) =>
-    createElement("button", null, children),
-}));
+
 vi.mock("@src/components/SettingsTable", () => ({
   default: () => createElement("div", { "data-testid": "rules-table" }),
   SETTINGS_TABLE_CELL: { primary: "", muted: "" },

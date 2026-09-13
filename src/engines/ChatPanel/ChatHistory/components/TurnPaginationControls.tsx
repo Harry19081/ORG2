@@ -25,8 +25,6 @@ import { useDropdownEngine } from "@src/hooks/dropdown";
 import { AiNetworkIcon, ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 import { isAgentOrgMemberEmpty } from "@src/util/agentOrg/memberActivity";
 
-export { shouldShowTurnPaginationSpinner } from "@src/components/TurnNavigationToolbar/shouldShowTurnPaginationSpinner";
-
 interface TurnPaginationControlsProps {
   agentName?: string | null;
   /** memberId of the row currently being viewed, used for active state. */
@@ -211,9 +209,11 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
         )}
         {currentAgentNameLabel && (
           <>
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               ref={memberSwitcherTriggerRef}
-              type="button"
+              htmlType="button"
               data-testid="agent-org-member-switcher-trigger"
               className={`${SELECT_TRIGGER_BASE} disabled:cursor-default ${
                 canSwitchAgentOrgMember
@@ -242,7 +242,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                   }`}
                 />
               )}
-            </button>
+            </Button>
             {isMemberSwitcherOpen &&
               isMemberSwitcherPositioned &&
               createPortal(
@@ -260,8 +260,10 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                   <div className={DROPDOWN_CLASSES.optionsContainer}>
                     {hasGroupChatToggle && (
                       <>
-                        <button
-                          type="button"
+                        <Button
+                          layout="custom"
+                          appearance="custom"
+                          htmlType="button"
                           role="menuitem"
                           data-testid="agent-org-group-chat-toggle"
                           className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} ${
@@ -277,7 +279,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                           <span className="min-w-0 flex-1 truncate text-left">
                             {groupChatLabel}
                           </span>
-                        </button>
+                        </Button>
                         <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
                       </>
                     )}
@@ -310,9 +312,11 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                               : formatFallbackStatusLabel(runtimeStatus)
                             : "";
                       return (
-                        <button
+                        <Button
+                          layout="custom"
+                          appearance="custom"
                           key={member.memberId}
-                          type="button"
+                          htmlType="button"
                           role="menuitem"
                           data-testid={`agent-org-member-switcher-option-${member.memberId}`}
                           className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} ${
@@ -341,7 +345,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                               {runtimeStatusLabel}
                             </span>
                           )}
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>

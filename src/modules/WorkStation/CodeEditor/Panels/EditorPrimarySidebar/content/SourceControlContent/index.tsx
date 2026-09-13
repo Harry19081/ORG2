@@ -424,6 +424,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
             <React.Suspense
               fallback={
                 <Placeholder
+                  loadingIconOnly
                   variant="loading"
                   placement="sidebar"
                   fillParentHeight
@@ -521,6 +522,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
           {/* Loading State - only show on initial load when no files exist */}
           {loading && files.length === 0 && !suppressLoadingPlaceholder && (
             <Placeholder
+              loadingIconOnly
               variant="loading"
               placement="sidebar"
               title={t("placeholders.loadingChanges")}

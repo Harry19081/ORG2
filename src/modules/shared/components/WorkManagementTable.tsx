@@ -1,6 +1,7 @@
 import { type ReactNode, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import {
   PropertyDropdownField,
   type PropertyDropdownOption,
@@ -101,8 +102,10 @@ function SortableColumnLabel({
   const sorted = active ? (sort.order === "descend" ? "desc" : "asc") : false;
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className="-my-2 inline-flex items-center gap-2 py-2 text-left"
       aria-label={label}
       aria-pressed={active}
@@ -118,7 +121,7 @@ function SortableColumnLabel({
       <span className="table-sorter">
         <SortIcon size={14} sorted={sorted} />
       </span>
-    </button>
+    </Button>
   );
 }
 
@@ -193,8 +196,10 @@ export function WorkManagementTable({
             style={{ maxWidth: WORK_MANAGEMENT_TITLE_COLUMN_MAX_WIDTH }}
           >
             {row.onClick ? (
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 className={`block w-full truncate text-left font-semibold text-text-1 ${
                   row.titleLinkOnRowHover
                     ? "transition-colors group-hover/title:text-primary-6 group-hover/title:underline group-hover/title:underline-offset-2"
@@ -204,7 +209,7 @@ export function WorkManagementTable({
                 onClick={row.onClick}
               >
                 {row.title}
-              </button>
+              </Button>
             ) : (
               <div
                 className={`truncate font-semibold text-text-1 ${

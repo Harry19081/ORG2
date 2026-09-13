@@ -19,6 +19,7 @@ import type {
   GitHubChecksSummary,
   GitHubPrReview,
 } from "@src/api/tauri/github";
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_PANEL,
@@ -211,8 +212,10 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
           // A stable key across verdict changes, so the anchor element the open
           // panel is positioned against survives a check flipping red.
           <div key="checks" ref={triggerRef} className="w-full">
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               className={`${ROW_CLASS} transition-colors hover:bg-fill-1 hover:text-text-1`}
               aria-expanded={isOpen}
               aria-haspopup="dialog"
@@ -230,7 +233,7 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
                 className="shrink-0 text-text-3"
                 aria-hidden
               />
-            </button>
+            </Button>
           </div>
         );
       })}

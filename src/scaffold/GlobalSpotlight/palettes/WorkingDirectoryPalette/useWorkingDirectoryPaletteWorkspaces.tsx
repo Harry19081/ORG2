@@ -18,6 +18,7 @@ import {
   deleteWorkspace,
   listWorkspaces,
 } from "@src/api/tauri/workspace";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import { workspaceMatchesRepoFilter } from "@src/features/TeamCollaboration/orgScopeRepoFilter";
 import { createLogger } from "@src/hooks/logger";
@@ -225,7 +226,7 @@ export function useWorkingDirectoryPaletteWorkspaces({
       }),
       message: t(
         "confirmation.deleteSelectedMessage",
-        "This only removes their linkage to ORGII. Nothing will be removed from disk."
+        "This only removes their linkage to ORG2. Nothing will be removed from disk."
       ),
       okLabel: t("actions.removeFromOrgii"),
       cancelLabel: t("actions.cancel"),
@@ -366,28 +367,36 @@ export function useWorkingDirectoryPaletteWorkspaces({
       );
       const manageActions = (
         <div className="flex items-center gap-1">
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="mini"
+            aria-label={t("actions.edit", "Edit")}
+            iconOnly
+            icon={<HugeiconsIcon icon={ICONS.editRepo} size={14} />}
+            htmlType="button"
             onClick={(e) => {
               e.stopPropagation();
               handleEditWorkspace(ws);
             }}
-            className="flex items-center justify-center rounded-md p-1 text-text-2 transition-colors hover:bg-fill-3 hover:text-text-1"
+            className="hover:bg-fill-3 hover:text-text-1"
             title={t("actions.edit", "Edit")}
-          >
-            <HugeiconsIcon icon={ICONS.editRepo} size={14} />
-          </button>
-          <button
-            type="button"
+          />
+          <Button
+            variant="danger"
+            appearance="soft"
+            size="mini"
+            aria-label={t("actions.delete", "Delete")}
+            iconOnly
+            icon={<HugeiconsIcon icon={ICONS.removeRepo} size={14} />}
+            htmlType="button"
             onClick={(e) => {
               e.stopPropagation();
               void handleDeleteWorkspace(ws);
             }}
-            className="hover:text-error-6 flex items-center justify-center rounded-md p-1 text-text-2 transition-colors hover:bg-fill-3"
+            className="hover:text-error-6 hover:bg-fill-3"
             title={t("actions.delete", "Delete")}
-          >
-            <HugeiconsIcon icon={ICONS.removeRepo} size={14} />
-          </button>
+          />
         </div>
       );
       return {

@@ -329,7 +329,7 @@ pub(super) fn generate_managed_configs(
     proxy_token: &str,
 ) -> Result<BTreeMap<String, String>, String> {
     let adapter = managed_config_adapter(agent_name)
-        .ok_or_else(|| format!("ORGII managed config is not available for {agent_name}"))?;
+        .ok_or_else(|| format!("ORG2 managed config is not available for {agent_name}"))?;
     let content = |file_id: &str| {
         existing_contents
             .get(file_id)

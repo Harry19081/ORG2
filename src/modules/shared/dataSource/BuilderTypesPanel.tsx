@@ -42,8 +42,10 @@ function BuilderTypeCard({
   );
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className="group flex min-h-56 flex-col items-start rounded-lg border border-border-2 bg-bg-2 p-3 text-left transition-colors outline-none hover:bg-surface-hover focus-visible:ring-2 focus-visible:ring-primary-6"
       onClick={onOpen}
       aria-label={`${type.code} ${type.name}`}
@@ -69,7 +71,7 @@ function BuilderTypeCard({
           </div>
         </div>
       </div>
-    </button>
+    </Button>
   );
 }
 

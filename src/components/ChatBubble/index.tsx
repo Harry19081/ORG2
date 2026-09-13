@@ -12,6 +12,7 @@
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 import { Copy01Icon, HugeiconsIcon } from "@src/icons";
@@ -173,20 +174,25 @@ const ChatBubbleCopyButtonComponent: React.FC<ChatBubbleCopyButtonProps> = ({
 
   if (placement === "toolbar") {
     return (
-      <button
-        type="button"
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="mini"
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={Copy01Icon}
+            data-icon="copy"
+            size={14}
+            strokeWidth={1.75}
+          />
+        }
+        htmlType="button"
         title={t("actions.copy")}
         aria-label={t("actions.copy")}
         className={`${CHAT_BUBBLE_TOOLBAR_BUTTON_CLASS} text-text-3 hover:text-text-1`}
         onClick={handleCopy}
-      >
-        <HugeiconsIcon
-          icon={Copy01Icon}
-          data-icon="copy"
-          size={14}
-          strokeWidth={1.75}
-        />
-      </button>
+      />
     );
   }
 
@@ -196,20 +202,25 @@ const ChatBubbleCopyButtonComponent: React.FC<ChatBubbleCopyButtonProps> = ({
       : "absolute right-2 top-2 z-10";
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="tertiary"
+      appearance="soft-no-drop"
+      size="mini"
+      iconOnly
+      icon={
+        <HugeiconsIcon
+          icon={Copy01Icon}
+          data-icon="copy"
+          size={14}
+          strokeWidth={1.75}
+        />
+      }
+      htmlType="button"
       title={t("actions.copy")}
       aria-label={t("actions.copy")}
       className={`${cornerClass} inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 text-text-3 opacity-0 transition-[opacity,background-color,color] hover:bg-fill-2 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${hoverGroupClass}`}
       onClick={handleCopy}
-    >
-      <HugeiconsIcon
-        icon={Copy01Icon}
-        data-icon="copy"
-        size={14}
-        strokeWidth={1.75}
-      />
-    </button>
+    />
   );
 };
 

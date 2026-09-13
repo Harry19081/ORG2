@@ -5,6 +5,7 @@ import type {
   ReactNode,
 } from "react";
 
+import Button from "@src/components/Button";
 import { classNames } from "@src/util/ui/classNames";
 
 const CARD_FRAME_BASE =
@@ -80,8 +81,10 @@ export function ToolResultCardFrameButton({
   ...props
 }: ToolResultCardFrameButtonProps) {
   return (
-    <button
-      type={type}
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType={type}
       className={classNames(
         CARD_FRAME_BASE,
         "block w-[calc(100%-1.5rem)] text-left focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:outline-none",
@@ -92,6 +95,6 @@ export function ToolResultCardFrameButton({
       {...props}
     >
       {children}
-    </button>
+    </Button>
   );
 }

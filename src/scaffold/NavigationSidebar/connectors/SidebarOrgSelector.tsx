@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import Select, { type SelectOption } from "@src/components/Select";
@@ -79,8 +80,10 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
           <div
             className={`${DROPDOWN_CLASSES.itemsColumn} shrink-0 border-0 border-t border-solid border-border-2 p-1`}
           >
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full border-none bg-transparent text-text-1`}
               onClick={handleManageOrg}
               data-testid="sidebar-org-manage"
@@ -93,9 +96,11 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
                 className="shrink-0"
               />
               <span className="min-w-0 truncate">{manageLabel}</span>
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full border-none bg-transparent text-text-1`}
               onClick={handleAddOrg}
               data-testid="sidebar-add-org"
@@ -108,10 +113,12 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
                 className="shrink-0"
               />
               <span className="min-w-0 truncate">{addOrgLabel}</span>
-            </button>
+            </Button>
             {!cloudSignedIn && (
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full border-none bg-transparent text-text-1`}
                 onClick={handleCloudSignIn}
                 data-testid="sidebar-cloud-sign-in"
@@ -124,7 +131,7 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
                   className="shrink-0"
                 />
                 <span className="min-w-0 truncate">{t("cloud.signIn")}</span>
-              </button>
+              </Button>
             )}
           </div>
         </>

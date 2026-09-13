@@ -45,7 +45,7 @@ const TerminalSidebarContent: React.FC<TerminalSidebarContentProps> = memo(
     const shellProcessMap = useAtomValue(shellProcessMapAtom);
     const allTerminalSessions = useAtomValue(terminalSessionsAtom);
     const activeAgentSessions = useActiveAgentSessions();
-    const untitledLabel = t("controlTower.sidebar.untitled", "Untitled");
+    const untitledLabel = t("placeholders.untitled");
 
     const ptySessions = useMemo(
       () => allTerminalSessions.filter((session) => !session.readOnly),

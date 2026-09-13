@@ -35,6 +35,7 @@ pub use index::{
 pub use meta::{resolve_codex_transcript_for_thread_id_near_path, CodexTranscriptLocator};
 pub(crate) use normalize::normalize_codex_tool_calls;
 pub use transcript::{
+    load_codex_image_from_path,
     load_codex_app_from_path, load_codex_app_initial_window_from_path,
     load_codex_app_mobile_tail_window_from_path, load_codex_app_turn_from_path,
     load_codex_app_window_turn_from_path, visit_codex_app_from_path, CodexAppInitialWindow,
@@ -117,6 +118,10 @@ pub(crate) struct CodexAppSessionMeta {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct CodexAppSourceMetadata {
+    /// The native thread survives resend/rewind rollout rotation. A fork has
+    /// its own id even when it carries the same messages and forked_from_id.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    continuation_group_key: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     first_prompt: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -128,3 +133,7 @@ struct CodexAppSourceMetadata {
 #[cfg(test)]
 #[path = "../app_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "../app_resend_tests.rs"]
+mod resend_tests;

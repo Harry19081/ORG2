@@ -333,14 +333,20 @@ const GeneralLayoutTour: React.FC<GeneralLayoutTourProps> = ({
                 total: TOUR_STEPS.length,
               })}
             </span>
-            <button
-              type="button"
-              className="flex size-6 items-center justify-center rounded-full text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:outline-none"
+            <Button
+              variant="tertiary"
+              appearance="soft-no-drop"
+              size="mini"
+              shape="round"
+              iconOnly
+              icon={
+                <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
+              }
+              htmlType="button"
+              className="hover:bg-fill-2 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:outline-none"
               aria-label={t("tutorials.chrome.close")}
               onClick={onClose}
-            >
-              <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
-            </button>
+            />
           </div>
 
           <h3 className="mb-1.5 text-[14px] leading-tight font-semibold text-text-1">

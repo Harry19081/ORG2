@@ -28,6 +28,9 @@ export type StatusType = "ongoing" | "completed" | "failed";
 
 /** Data object attached to SpotlightItem */
 export interface SpotlightItemData {
+  /** Stable identity across main and recent command sections. */
+  pinId?: string;
+  pinState?: { pinned: boolean; disabled?: boolean; onToggle: () => void };
   /** Structured members for multi-folder hover previews. */
   detailFolders?: { name: string; path: string }[];
   /** Whether this is an open tab */

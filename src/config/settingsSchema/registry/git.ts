@@ -45,13 +45,13 @@ export const GIT_SETTINGS_REGISTRY = {
     schema: z.boolean(),
     default: true,
     description:
-      "Add an ORGII coauthor trailer to Git commits created from ORGII",
+      "Add an ORG2 coauthor trailer to Git commits created from ORG2",
     category: "git",
   },
   "git.attribution.prEnabled": {
     schema: z.boolean(),
     default: true,
-    description: "Add ORGII attribution to pull requests created from ORGII",
+    description: "Add ORG2 attribution to pull requests created from ORG2",
     category: "git",
   },
   "git.autoCreatePr": {

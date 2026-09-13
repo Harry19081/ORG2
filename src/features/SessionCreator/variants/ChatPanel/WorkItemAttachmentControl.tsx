@@ -230,8 +230,10 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
           >
             <div className={DROPDOWN_CLASSES.itemsColumnPadded}>
               {currentWorkItemContext ? (
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className={DROPDOWN_CLASSES.menuActionItem}
                   role="menuitem"
                   onClick={handleRemoveWorkItem}
@@ -247,10 +249,12 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
                   <span className="ml-auto text-[11px] text-text-3">
                     {currentWorkItemContext.workItemId}
                   </span>
-                </button>
+                </Button>
               ) : null}
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 className={DROPDOWN_CLASSES.menuActionItem}
                 role="menuitem"
                 onClick={handleOpenPicker}
@@ -263,7 +267,7 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
                   className="text-text-2"
                 />
                 <span>{t("common:actions.link")}</span>
-              </button>
+              </Button>
             </div>
           </DropdownPanel>,
           document.body

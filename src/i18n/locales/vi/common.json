@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "Chứa tệp: {{status}}",
+    "staged": "{{status}} (đã đưa vào vùng chờ)",
+    "additions": "Dòng đã thêm",
+    "deletions": "Dòng đã xóa",
+    "M": "Đã sửa đổi",
+    "U": "Chưa được theo dõi",
+    "A": "Đã thêm",
+    "D": "Đã xóa",
+    "R": "Đã đổi tên",
+    "C": "Xung đột",
+    "I": "Đã bỏ qua",
+    "?": "Trạng thái không xác định"
+  },
+  "findScope": {
+    "session": "Tìm trong phiên",
+    "file": "Tìm trong tệp",
+    "named": "Tìm trong {{name}}"
+  },
   "teamInbox": {
     "title": "Hộp thư nhóm",
     "listLabel": "Danh sách hộp thư nhóm",
@@ -188,7 +207,7 @@
       "aria": "Trình đơn {{label}}"
     },
     "items": {
-      "quitOrg2": "Thoát ORG-2",
+      "quitOrg2": "Thoát ORG2",
       "newSession": "Phiên mới",
       "openFolder": "Mở thư mục...",
       "addFolderToWorkspace": "Thêm thư mục vào không gian làm việc...",
@@ -223,12 +242,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "Câu trả lời không được để trống",
-    "sessionNotFound": "Không tìm thấy phiên",
-    "answerSubmitted": "Đã gửi câu trả lời thành công",
-    "answerFailed": "Không thể gửi câu trả lời. Vui lòng thử lại.",
-    "replyError": "Đã xảy ra lỗi khi gửi câu trả lời",
-    "questionIgnored": "Đã bỏ qua câu hỏi",
     "addedAsContext": "Đã thêm {{name}} làm ngữ cảnh",
     "addedFilesAsContext": "Đã thêm {{count}} tệp làm ngữ cảnh",
     "chooseExecutionAgentAi": "Hãy chọn một agent phụ trách trước khi tạo bằng AI.",
@@ -295,8 +308,8 @@
     "save": "Lưu",
     "cancel": "Hủy",
     "delete": "Xóa",
-    "removeFromOrgii": "Xóa khỏi ORGII",
-    "removeFromOrgiiCount": "Xóa khỏi ORGII ({{count}})",
+    "removeFromOrgii": "Xóa khỏi ORG2",
+    "removeFromOrgiiCount": "Xóa khỏi ORG2 ({{count}})",
     "edit": "Chỉnh sửa",
     "write": "Ghi",
     "close": "Đóng",
@@ -477,6 +490,7 @@
   },
   "optional": "tùy chọn",
   "common": {
+    "display": "Hiển thị",
     "on": "Bật",
     "off": "Tắt",
     "default": "Mặc định",
@@ -513,6 +527,9 @@
     "source": "Nguồn"
   },
   "labels": {
+    "stashesCount": "{{count}} stash",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stash",
     "accounts": "Tài khoản",
     "enabled": "Đã bật",
     "disabled": "Đã tắt",
@@ -558,7 +575,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Nhật ký thao tác",
     "gitDashboard": "Bảng điều khiển",
-    "changedFiles": "Tệp đã thay đổi",
+    "changedFilesCount": "{{fileCount}} tệp đã thay đổi",
+    "changedFilesCount_one": "{{fileCount}} tệp đã thay đổi",
+    "changedFilesCount_other": "{{fileCount}} tệp đã thay đổi",
     "colorTokens": "Token màu",
     "terminalInfo": "Thông tin Terminal",
     "fileCount_one": "{{count}} tệp",
@@ -688,42 +707,9 @@
     "technicalDetails": "Chi tiết kỹ thuật",
     "failedToCopy": "Sao chép thất bại",
     "api": {
-      "titles": {
-        "githubConnections": "Không thể tải kết nối GitHub",
-        "githubConnect": "Không thể kết nối GitHub",
-        "workflows": "Không thể tải quy trình làm việc",
-        "config": "Không thể tải cài đặt",
-        "agent": "Không thể kết nối Agent",
-        "repository": "Không thể tải kho lưu trữ",
-        "file": "Không thể tải tệp",
-        "mcp": "Lỗi máy chủ MCP",
-        "extension": "Lỗi tiện ích mở rộng trình chỉnh sửa",
-        "workspace": "Không thể tải không gian làm việc",
-        "slackConnections": "Không thể tải kết nối Slack",
-        "wallet": "Không thể tải ví",
-        "billing": "Không thể hoàn thành thao tác thanh toán",
-        "default": "Không thể tải dữ liệu",
-        "timeout": "Yêu cầu quá thời gian",
-        "external": "Không thể tải dữ liệu bên ngoài"
-      },
       "messages": {
-        "network": "Kiểm tra kết nối và thử lại.",
-        "timeout": "Yêu cầu quá thời gian. Thử lại.",
-        "server": "Đã xảy ra lỗi. Thử lại sau vài phút.",
-        "notFound": "Không tìm thấy mục này.",
-        "signIn": "Vui lòng đăng nhập lại.",
-        "forbidden": "Bạn không có quyền thực hiện hành động này.",
-        "tooManyRequests": "Quá nhiều yêu cầu. Đợi một chút rồi thử lại.",
-        "validation": "Dữ liệu không hợp lệ. Kiểm tra đầu vào.",
-        "conflict": "Phát hiện xung đột. Tài nguyên có thể đã bị sửa đổi.",
-        "badGateway": "Không thể kết nối máy chủ. Thử lại sau.",
-        "serviceUnavailable": "Dịch vụ tạm thời không khả dụng. Thử lại sau.",
-        "gatewayTimeout": "Máy chủ không phản hồi. Thử lại sau.",
-        "invalidRequest": "Yêu cầu không hợp lệ. Thử lại.",
-        "default": "Vui lòng thử lại.",
-        "externalHint": "Kiểm tra URL và cài đặt, sau đó thử lại."
-      },
-      "workflow": "Dịch vụ quy trình làm việc tạm thời không khả dụng. Thử lại sau."
+        "signIn": "Vui lòng đăng nhập lại."
+      }
     },
     "failedToLoad": "Tải thất bại",
     "unknownError": "Đã xảy ra lỗi không xác định",
@@ -733,12 +719,12 @@
   },
   "confirmation": {
     "delete": "Bạn có chắc muốn xóa không?",
-    "removeTitle": "Xóa \"{{name}}\" khỏi ORGII?",
-    "removeMessage": "Thao tác này chỉ xóa liên kết của mục này với ORGII. Không có nội dung nào bị xóa khỏi đĩa.",
+    "removeTitle": "Xóa \"{{name}}\" khỏi ORG2?",
+    "removeMessage": "Thao tác này chỉ xóa liên kết của mục này với ORG2. Không có nội dung nào bị xóa khỏi đĩa.",
     "deleteWorkspaceTitle": "Xóa Workspace \"{{name}}\"?",
     "deleteWorkspaceMessage": "Chỉ xóa cấu hình Workspace. Các Repo và thư mục thành viên không bị ảnh hưởng.",
-    "deleteSelectedTitle": "Xóa {{count}} mục đã chọn khỏi ORGII?",
-    "deleteSelectedMessage": "Thao tác này chỉ xóa liên kết của các mục này với ORGII. Không có nội dung nào bị xóa khỏi đĩa.",
+    "deleteSelectedTitle": "Xóa {{count}} mục đã chọn khỏi ORG2?",
+    "deleteSelectedMessage": "Thao tác này chỉ xóa liên kết của các mục này với ORG2. Không có nội dung nào bị xóa khỏi đĩa.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}} sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -780,7 +766,9 @@
     "previous": "Trước",
     "next": "Tiếp theo",
     "previousMatch": "Kết quả trước (Shift+Enter)",
+    "previousMatchLabel": "Kết quả trước",
     "nextMatch": "Kết quả tiếp theo (Enter)",
+    "nextMatchLabel": "Kết quả tiếp theo",
     "clearSearch": "Xóa tìm kiếm",
     "openInEditorTab": "Mở trong tab trình soạn thảo",
     "openFile": "Mở tệp",
@@ -807,11 +795,16 @@
     "goForward": "Tiến tới",
     "goToToday": "Đi đến hôm nay",
     "matchCase": "Phân biệt chữ hoa/thường (Alt+C)",
+    "matchCaseLabel": "Phân biệt chữ hoa/thường",
     "matchWholeWord": "Khớp toàn bộ từ (Alt+W)",
+    "matchWholeWordLabel": "Khớp toàn bộ từ",
     "useRegex": "Sử dụng biểu thức chính quy (Alt+R)",
+    "useRegexLabel": "Sử dụng biểu thức chính quy",
     "searchInOpenEditors": "Chỉ tìm trong trình soạn thảo đang mở",
     "replace": "Thay thế (Ctrl+Shift+1)",
+    "replaceLabel": "Thay thế",
     "replaceAll": "Thay thế tất cả (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Thay thế tất cả",
     "moreActions": "Thao tác khác...",
     "formatSql": "Định dạng SQL",
     "queryHistory": "Lịch sử truy vấn",
@@ -1026,6 +1019,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Chuyển sang chế độ xem đồ thị",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1866,11 +1860,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Đã xóa liên kết với ORG2",
+        "repoRemoveFailed": "Không thể xóa liên kết với ORG2",
+        "workspaceRemoved": "Đã xóa liên kết với ORG2",
+        "workspaceRemoveFailed": "Không thể xóa liên kết với ORG2",
+        "bulkDeleted": "Đã xóa {{count}} liên kết với ORG2",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -1947,6 +1941,20 @@
     "title": "Phiên"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "Xem thay đổi",
+      "openFileInNewTab": "Mở tệp trong thẻ mới",
+      "stageChanges": "Đưa thay đổi vào vùng chờ",
+      "unstageChanges": "Bỏ thay đổi khỏi vùng chờ",
+      "discardChanges": "Loại bỏ thay đổi",
+      "markResolved": "Đánh dấu đã giải quyết (đưa vào vùng chờ)",
+      "acceptCurrent": "Chấp nhận thay đổi hiện tại (của chúng ta)",
+      "acceptIncoming": "Chấp nhận thay đổi đến (của họ)",
+      "stageChangesCount": "Đưa thay đổi vào vùng chờ ({{count}})",
+      "unstageChangesCount": "Bỏ thay đổi khỏi vùng chờ ({{count}})",
+      "discardChangesCount": "Loại bỏ thay đổi ({{count}})",
+      "markResolvedCount": "Đánh dấu đã giải quyết ({{count}})"
+    },
     "notGitInitialized": "Git chưa được khởi tạo",
     "notGitInitializedSubtitle": "Khởi tạo Git để theo dõi thay đổi, tạo commit và dùng công cụ branch trong thư mục làm việc này.",
     "initializeGit": "Khởi tạo Git",
@@ -2076,22 +2084,7 @@
     "database": "Cơ sở dữ liệu",
     "user": "Người dùng",
     "password": "Mật khẩu",
-    "ssl": "Yêu cầu SSL",
-    "spotlight": {
-      "scanFolder": "Quét thư mục",
-      "scanFolderDesc": "Tìm tất cả tệp .sqlite, .db trong một thư mục",
-      "openFile": "Mở tệp",
-      "openFileDesc": "Chọn một tệp cơ sở dữ liệu cụ thể",
-      "enterPath": "Nhập đường dẫn",
-      "enterPathDesc": "Nhập trực tiếp đường dẫn tệp hoặc thư mục",
-      "placeholderSelect": "Thêm cơ sở dữ liệu bằng…",
-      "placeholderPath": "~/data hoặc /duong/dan/database.db",
-      "pickerFolderTitle": "Chọn thư mục cần quét",
-      "pickerFileTitle": "Chọn tệp cơ sở dữ liệu",
-      "pickerSqliteName": "Cơ sở dữ liệu SQLite",
-      "pickerAllFiles": "Tất cả tệp",
-      "pickerError": "Không mở được trình chọn"
-    }
+    "ssl": "Yêu cầu SSL"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
@@ -2149,15 +2142,14 @@
     "sidebar": {
       "newTab": "Tab mới",
       "newPrivateTab": "Tab riêng tư mới",
-      "newTerminal": "Terminal mới",
-      "untitled": "Chưa đặt tên"
+      "newTerminal": "Terminal mới"
     },
     "statusBar": {}
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "Thoát ORG-2?",
-    "subtitle": "Các phiên đang chạy sẽ giữ nguyên trạng thái hiện tại. Bạn có thể mở lại ORG-2 sau.",
+    "title": "Thoát ORG2?",
+    "subtitle": "Các phiên đang chạy sẽ giữ nguyên trạng thái hiện tại. Bạn có thể mở lại ORG2 sau.",
     "cancel": "Hủy",
     "confirm": "Thoát"
   },
@@ -2187,7 +2179,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari lưu cookie trong thư mục được macOS bảo vệ. Cho phép ORG2 trong mục Truy cập toàn bộ ổ đĩa của Cài đặt hệ thống, rồi kiểm tra lại.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2235,7 +2227,8 @@
     "taskCompletedBody": "“{{name}}” đã hoàn tất — sẵn sàng để xem lại",
     "openSessionAction": "Mở phiên",
     "taskFailedTitle": "Tác vụ thất bại",
-    "taskFailedBody": "“{{name}}” thất bại{{detail}}"
+    "taskFailedBody": "“{{name}}” thất bại{{detail}}",
+    "taskFailedPrivateBody": "Một tác vụ đã thất bại. Mở ORG2 để xem chi tiết."
   },
   "documentOpen": {
     "openInDefault": "Mở bằng {{name}}",
@@ -2275,5 +2268,12 @@
     "goToSection": "Đi tới {{label}}, phần {{current}} trên {{total}}",
     "section": "Phần {{current}}",
     "sectionPosition": "Phần {{current}} trên {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Đây là thông báo thử nghiệm từ ORG2",
+    "workspaceFile": "Không gian làm việc ORG2",
+    "sessionJsonFile": "Phiên ORG2 dạng JSON",
+    "skillsSource": "Kỹ năng ORG2",
+    "gitServiceUnavailable": "Không thể kết nối với dịch vụ Git cục bộ. Hãy thử lại sau khi ứng dụng khởi động xong hoặc khởi động lại ORG2 nếu sự cố vẫn tiếp diễn."
   }
 }

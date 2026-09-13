@@ -35,7 +35,7 @@ import {
   type PlanApprovalPolicy,
 } from "../types";
 import { buildAgentOptions } from "./org/config";
-import "./org/index.scss";
+import "./org/index.css";
 
 interface OrgDetailViewProps {
   selectedOrg: OrgDefinition;

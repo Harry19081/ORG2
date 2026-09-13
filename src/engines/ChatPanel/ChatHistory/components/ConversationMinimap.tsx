@@ -2,6 +2,7 @@ import React, { memo, useContext, useId, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { normalizeUserMessageText } from "@src/engines/ChatPanel/ChatItems/normalizeUserMessageText";
 import { stripExpandedPillContent } from "@src/engines/ChatPanel/InputArea/utils/pillContentParser";
@@ -396,8 +397,10 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
           );
           return (
             <div key={groupIndex} className={placementClasses.marker}>
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 aria-current={isActive ? "step" : undefined}
                 aria-describedby={
                   previewGroupIndex === groupIndex ? tooltipId : undefined
@@ -426,7 +429,7 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
                       : "bg-text-3/40 group-hover:bg-text-2 group-focus-visible:bg-text-2"
                   }`}
                 />
-              </button>
+              </Button>
 
               {previewGroupIndex === groupIndex && (
                 <div

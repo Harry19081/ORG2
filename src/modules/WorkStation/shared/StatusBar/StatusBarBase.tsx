@@ -17,6 +17,7 @@
  */
 import React, { forwardRef, memo } from "react";
 
+import Button from "@src/components/Button";
 import type { ButtonVariant } from "@src/components/Button";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { classNames } from "@src/util/ui/classNames";
@@ -124,9 +125,11 @@ export const StatusBarButton = memo(
           : STATUS_BAR_TOKENS.buttonGhost;
 
       return (
-        <button
+        <Button
+          layout="custom"
+          appearance="custom"
           ref={ref}
-          type="button"
+          htmlType="button"
           className={classNames(
             STATUS_BAR_TOKENS.button,
             variantClass,
@@ -145,7 +148,7 @@ export const StatusBarButton = memo(
           data-testid={dataTestId}
         >
           {children}
-        </button>
+        </Button>
       );
     }
   )

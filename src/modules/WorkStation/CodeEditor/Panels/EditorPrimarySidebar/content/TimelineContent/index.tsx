@@ -9,6 +9,7 @@ import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import { HEADER_BUTTON } from "@src/config/workstation/tokens";
 import { buildCloudRemoteItemId } from "@src/features/Org2Cloud/cloudRemoteItemId";
@@ -246,22 +247,26 @@ export const TimelineContent: React.FC<TimelineContentProps> = memo(
             data-total-sessions={fileSessionHistory?.page.totalSessions ?? 0}
           >
             <div className="flex items-center justify-end px-2 pb-1">
-              <button
-                type="button"
-                className={HEADER_BUTTON.actionDisabled}
+              <Button
+                variant="tertiary"
+                appearance="soft"
+                size="sidebar"
+                iconOnly
+                icon={
+                  <AnyIcon
+                    icon={SessionRefreshIcon}
+                    size={13}
+                    strokeWidth={1.75}
+                    className={sessionRefreshSpinClass}
+                  />
+                }
+                htmlType="button"
                 disabled={sessionHistoryLoading}
                 onClick={handleSessionRefresh}
                 title={t("actions.refresh")}
                 aria-label={t("actions.refresh")}
                 data-testid="session-blame-refresh"
-              >
-                <AnyIcon
-                  icon={SessionRefreshIcon}
-                  size={13}
-                  strokeWidth={1.75}
-                  className={sessionRefreshSpinClass}
-                />
-              </button>
+              />
             </div>
             {sessionBackfill &&
               (isSessionBackfillActive ||
@@ -294,15 +299,17 @@ export const TimelineContent: React.FC<TimelineContentProps> = memo(
             ))}
             {hasMoreFileSessions && (
               <div className="px-4 py-1">
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className={`${HEADER_BUTTON} w-full justify-center text-xs text-text-2`}
                   disabled={fileSessionsLoadingMore}
                   data-testid="session-blame-load-more"
                   onClick={() => void loadMoreFileSessions()}
                 >
                   {t("actions.loadMore")}
-                </button>
+                </Button>
               </div>
             )}
           </div>

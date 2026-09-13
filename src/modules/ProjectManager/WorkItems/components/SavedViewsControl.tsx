@@ -271,7 +271,7 @@ export const SavedViewsControl: React.FC<SavedViewsControlProps> = ({
         cancelText={t("common:actions.cancel", { defaultValue: "Cancel" })}
         okButtonProps={{ disabled: !draftName.trim(), loading: saving }}
       >
-        <div className="flex flex-col gap-2 p-4">
+        <div className="flex flex-col gap-2">
           <Input
             value={draftName}
             onChange={(value) => setDraftName(value)}

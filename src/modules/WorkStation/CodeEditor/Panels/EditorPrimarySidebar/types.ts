@@ -57,7 +57,6 @@ export interface EditorPrimarySidebarProps {
   /** Callback when search button is clicked */
   onSearchClick: () => void;
   /** Callback when refresh is clicked */
-  onRefresh?: () => void;
   /** Callback when collapse all is clicked */
   onCollapseAll?: () => void;
   /** Callback for filter search */

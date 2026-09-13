@@ -102,6 +102,12 @@ fn materialize_prompt_test_run(context: &AgentOrgRunContext) -> String {
 
 #[test]
 fn agent_org_prompt_uses_only_runtime_member_id_for_identity() {
+    // `build_agent_org_context_section` loads the Task board through
+    // `AgentOrgTaskStore::list_operational` -> `database::db::get_connection()`,
+    // which resolves `ORGII_HOME` at call time. Hold the sandbox so this test
+    // never opens a sibling test's fresh sandbox database (a race SQLite
+    // reports as an immediate "database is locked") or the real `~/.orgii`.
+    let _sandbox = prompt_task_sandbox();
     let mut context = prompt_test_agent_org_context();
     context.coordinator_agent_id = "builtin:sde".to_string();
     context.members[0].agent_id = "builtin:sde".to_string();
@@ -124,6 +130,12 @@ fn agent_org_prompt_uses_only_runtime_member_id_for_identity() {
 
 #[test]
 fn agent_org_prompt_uses_task_board_for_roster_delegation() {
+    // `build_agent_org_context_section` loads the Task board through
+    // `AgentOrgTaskStore::list_operational` -> `database::db::get_connection()`,
+    // which resolves `ORGII_HOME` at call time. Hold the sandbox so this test
+    // never opens a sibling test's fresh sandbox database (a race SQLite
+    // reports as an immediate "database is locked") or the real `~/.orgii`.
+    let _sandbox = prompt_task_sandbox();
     let section = build_agent_org_context_section(
         &prompt_test_agent_org_context(),
         "agent-coord",
@@ -218,6 +230,12 @@ fn agent_org_prompt_uses_task_board_for_roster_delegation() {
 
 #[test]
 fn agent_org_prompt_worker_cannot_confuse_peer_chat_with_delegation() {
+    // `build_agent_org_context_section` loads the Task board through
+    // `AgentOrgTaskStore::list_operational` -> `database::db::get_connection()`,
+    // which resolves `ORGII_HOME` at call time. Hold the sandbox so this test
+    // never opens a sibling test's fresh sandbox database (a race SQLite
+    // reports as an immediate "database is locked") or the real `~/.orgii`.
+    let _sandbox = prompt_task_sandbox();
     let context = prompt_test_agent_org_context();
     let section = build_agent_org_context_section(&context, "agent-worker", Some("member-worker"));
     assert!(
@@ -385,6 +403,12 @@ fn coordinator_without_active_episode_is_told_idle_team_accepts_new_missions() {
 
 #[test]
 fn agent_org_prompt_lists_llm_callable_message_kinds() {
+    // `build_agent_org_context_section` loads the Task board through
+    // `AgentOrgTaskStore::list_operational` -> `database::db::get_connection()`,
+    // which resolves `ORGII_HOME` at call time. Hold the sandbox so this test
+    // never opens a sibling test's fresh sandbox database (a race SQLite
+    // reports as an immediate "database is locked") or the real `~/.orgii`.
+    let _sandbox = prompt_task_sandbox();
     let section =
         build_agent_org_context_section(&prompt_test_agent_org_context(), "agent-coord", None);
 
@@ -405,6 +429,12 @@ fn agent_org_prompt_lists_llm_callable_message_kinds() {
 
 #[test]
 fn agent_org_prompt_explains_member_plan_protocol() {
+    // `build_agent_org_context_section` loads the Task board through
+    // `AgentOrgTaskStore::list_operational` -> `database::db::get_connection()`,
+    // which resolves `ORGII_HOME` at call time. Hold the sandbox so this test
+    // never opens a sibling test's fresh sandbox database (a race SQLite
+    // reports as an immediate "database is locked") or the real `~/.orgii`.
+    let _sandbox = prompt_task_sandbox();
     let section =
         build_agent_org_context_section(&prompt_test_agent_org_context(), "agent-coord", None);
 
