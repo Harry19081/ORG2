@@ -145,7 +145,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
       actions = (
         <>
           <Button
-            className={`group/discard opacity-0 group-hover/header:opacity-100`}
+            className={`group/discard opacity-0 group-focus-within/header:opacity-100 group-hover/header:opacity-100`}
             onClick={(event) => {
               event.stopPropagation();
               onDiscardAll?.();
@@ -166,7 +166,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
           />
           {onStashPush && hasChangesToStash && (
             <Button
-              className={`hidden! shrink-0 group-hover/header:flex! disabled:opacity-50`}
+              className={`hidden! shrink-0 group-focus-within/header:flex! group-hover/header:flex! disabled:opacity-50`}
               onClick={(event) => {
                 event.stopPropagation();
                 onStashPush();
@@ -188,7 +188,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             />
           )}
           <Button
-            className={`hidden! shrink-0 group-hover/header:flex!`}
+            className={`hidden! shrink-0 group-focus-within/header:flex! group-hover/header:flex!`}
             onClick={(event) => {
               event.stopPropagation();
               onStageAll?.();
@@ -213,7 +213,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
       actions = (
         <>
           <Button
-            className={`opacity-0 group-hover/header:opacity-100`}
+            className={`opacity-0 group-focus-within/header:opacity-100 group-hover/header:opacity-100`}
             onClick={(event) => {
               event.stopPropagation();
               onUnstageAll?.();
@@ -233,7 +233,7 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             }
           />
           <Button
-            className={`opacity-0 group-hover/header:opacity-100`}
+            className={`opacity-0 group-focus-within/header:opacity-100 group-hover/header:opacity-100`}
             onClick={(event) => {
               event.stopPropagation();
               onOpenStagedChanges?.();

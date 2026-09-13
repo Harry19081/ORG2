@@ -13,6 +13,7 @@ import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { StashEntry } from "@src/api/http/git/types";
+import Button from "@src/components/Button";
 import HoverCard from "@src/components/HoverCard";
 import { HoverCardPanel } from "@src/components/HoverCard/HoverCardBase";
 import { HoverCardMetadataRow } from "@src/components/HoverCard/HoverCardMetadataRow";
@@ -26,6 +27,7 @@ import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import {
   COUNT_BADGE,
   HEADER_BUTTON,
+  HEADER_ICON_SIZE,
   PRIMARY_SIDEBAR_HOVER,
   getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
@@ -234,82 +236,68 @@ const StashItem: React.FC<StashItemProps> = memo(
               {stash.index}
             </span>
 
-            {/* Action buttons - show on hover, no space when hidden */}
-            <div className="hidden items-center gap-0.5 group-hover/item:flex">
-              {/* Apply (keep stash) */}
-              <button
-                className={`${HEADER_BUTTON.actionTreeRow} disabled:opacity-50`}
+            {/* Action buttons - visible on hover and keyboard focus */}
+            <div className="hidden items-center gap-0.5 group-focus-within/item:flex group-hover/item:flex">
+              <Button
+                htmlType="button"
+                size="sidebar"
+                variant="tertiary"
+                appearance="soft"
+                iconOnly
                 onClick={handleApply}
                 disabled={isLoading}
+                loading={actionLoading === "apply"}
                 title={t("tooltips.applyStash")}
-              >
-                {actionLoading === "apply" ? (
-                  <HugeiconsIcon
-                    icon={Loading03Icon}
-                    data-icon="loader-2"
-                    size={SPINNER_TOKENS.small}
-                    className="animate-spin text-text-3"
-                  />
-                ) : (
+                aria-label={t("tooltips.applyStash")}
+                icon={
                   <HugeiconsIcon
                     icon={ArrowDownToLineIcon}
                     data-icon="arrow-down-to-line"
-                    size={12}
+                    size={HEADER_ICON_SIZE.sm}
                     strokeWidth={1.75}
-                    className="text-text-2"
                   />
-                )}
-              </button>
-
-              {/* Pop (apply and remove) */}
-              <button
-                className={`${HEADER_BUTTON.actionTreeRow} disabled:opacity-50`}
+                }
+              />
+              <Button
+                htmlType="button"
+                size="sidebar"
+                variant="tertiary"
+                appearance="soft"
+                iconOnly
                 onClick={handlePop}
                 disabled={isLoading}
+                loading={actionLoading === "pop"}
                 title={t("tooltips.popStash")}
-              >
-                {actionLoading === "pop" ? (
-                  <HugeiconsIcon
-                    icon={Loading03Icon}
-                    data-icon="loader-2"
-                    size={SPINNER_TOKENS.small}
-                    className="animate-spin text-text-3"
-                  />
-                ) : (
+                aria-label={t("tooltips.popStash")}
+                icon={
                   <HugeiconsIcon
                     icon={ArchiveArrowUpIcon}
                     data-icon="archive-restore"
-                    size={12}
+                    size={HEADER_ICON_SIZE.sm}
                     strokeWidth={1.75}
-                    className="text-success-6"
                   />
-                )}
-              </button>
-
-              {/* Drop (delete) */}
-              <button
-                className={`${HEADER_BUTTON.danger} disabled:opacity-50`}
+                }
+              />
+              <Button
+                htmlType="button"
+                size="sidebar"
+                variant="danger"
+                appearance="soft"
+                iconOnly
                 onClick={handleDrop}
                 disabled={isLoading}
+                loading={actionLoading === "drop"}
                 title={t("tooltips.dropStash")}
-              >
-                {actionLoading === "drop" ? (
-                  <HugeiconsIcon
-                    icon={Loading03Icon}
-                    data-icon="loader-2"
-                    size={SPINNER_TOKENS.small}
-                    className="animate-spin text-text-3"
-                  />
-                ) : (
+                aria-label={t("tooltips.dropStash")}
+                icon={
                   <HugeiconsIcon
                     icon={Delete02Icon}
                     data-icon="trash-2"
-                    size={12}
+                    size={HEADER_ICON_SIZE.sm}
                     strokeWidth={1.75}
-                    className="text-danger-6"
                   />
-                )}
-              </button>
+                }
+              />
             </div>
           </TreeRowBase>
         </div>
@@ -437,7 +425,7 @@ export const StashContent: React.FC<StashContentProps> = memo(
 
           {/* Action buttons - show on hover */}
           <button
-            className={`${HEADER_BUTTON.actionTreeRow} hidden shrink-0 group-hover/header:flex disabled:opacity-50`}
+            className={`${HEADER_BUTTON.actionTreeRow} hidden shrink-0 group-focus-within/header:flex group-hover/header:flex disabled:opacity-50`}
             onClick={handlePopAll}
             disabled={operationLoading || isPoppingAll}
             title={t("tooltips.popAllStashes")}
@@ -453,9 +441,8 @@ export const StashContent: React.FC<StashContentProps> = memo(
               <HugeiconsIcon
                 icon={ArchiveArrowUpIcon}
                 data-icon="archive-restore"
-                size={14}
+                size={HEADER_ICON_SIZE.sm}
                 strokeWidth={1.75}
-                className="text-text-2"
               />
             )}
           </button>

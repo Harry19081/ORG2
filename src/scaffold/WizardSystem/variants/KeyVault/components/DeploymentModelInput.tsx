@@ -15,6 +15,10 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
 import {
+  HEADER_BUTTON,
+  HEADER_ICON_SIZE,
+} from "@src/config/workstation/tokens";
+import {
   Add01Icon,
   Cancel01Icon,
   HugeiconsIcon,
@@ -120,9 +124,14 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
                 <button
                   type="button"
                   onClick={() => handleRemove(index)}
-                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-danger-6"
+                  className={HEADER_BUTTON.danger}
+                  aria-label={`${t("common:actions.delete")} ${model}`}
                 >
-                  <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />
+                  <HugeiconsIcon
+                    icon={Cancel01Icon}
+                    data-icon="x"
+                    size={HEADER_ICON_SIZE.sm}
+                  />
                 </button>
               </div>
             ))}

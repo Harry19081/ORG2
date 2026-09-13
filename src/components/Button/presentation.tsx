@@ -58,7 +58,7 @@ function getButtonStyleClasses(
     const colors =
       variant === "tertiary" || variant === "secondary"
         ? appearance === "soft-no-drop"
-          ? "text-text-2 enabled:hover:bg-button-hover-no-drop enabled:hover:text-text-1 focus-visible:bg-button-hover-no-drop focus-visible:text-text-1"
+          ? BUTTON_VARIANT.noDrop
           : BUTTON_VARIANT.default
         : variant === "warning"
           ? "text-warning-6 enabled:hover:bg-warning-3 focus-visible:bg-warning-3"
