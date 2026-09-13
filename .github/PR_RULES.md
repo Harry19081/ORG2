@@ -58,6 +58,15 @@ actually ran, their outcomes, and any relevant checks that did not run.
 Additional sections such as `Audit`, screenshots, rollout notes, or rollback
 details may follow the required sections.
 
+### Dependabot-generated descriptions
+
+PRs authored by GitHub's `dependabot[bot]` account (type `Bot`), from a
+`dependabot/` branch in the same repository as the base, may retain their
+non-empty generated descriptions instead of the section template above.
+The scoped title requirement and all build, test, and security checks still
+apply. Human-authored PRs and other bots retain the full description contract.
+This exception does not authorize merging incompatible dependency updates.
+
 ## Base and diff integrity
 
 - Start from the intended target branch and fetch its latest state before
