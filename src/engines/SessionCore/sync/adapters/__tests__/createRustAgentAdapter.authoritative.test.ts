@@ -149,4 +149,101 @@ describe("Rust Agent authoritative history", () => {
       )
     ).toMatchObject({ arguments: JSON.stringify(args) });
   });
+
+  it("projects the persisted compact summary and retained tail in effective-context order", async () => {
+    const summary =
+      "[Session Memory] Compacted 3 messages\n\nPersisted summary with continuation instructions";
+    const rows = [
+      row("old", "user", { sequence: 0, content: "superseded" }),
+      row("older-boundary", "system", {
+        sequence: 1,
+        content: "old summary",
+        compactFromSequence: 0,
+      }),
+      row("kept-user", "user", { sequence: 2, content: "retained user" }),
+      row("kept-call", "tool_call", {
+        sequence: 3,
+        toolName: "read_file",
+        toolCallId: "retained-call",
+        toolInput: '{"path":"fixture.txt"}',
+      }),
+      row("kept-result", "tool_result", {
+        sequence: 4,
+        toolName: "read_file",
+        toolCallId: "retained-call",
+        toolOutput: "retained result",
+      }),
+      row("boundary", "system", {
+        sequence: 5,
+        content: summary,
+        compactFromSequence: 2,
+      }),
+      row("after", "assistant", { sequence: 6, content: "after boundary" }),
+    ];
+    const before = structuredClone(rows);
+    const adapter = createRustAgentAdapter({
+      category: "agent",
+      features: {},
+      loadMessages: async () => rows,
+      cancel: async () => {},
+    });
+    const signal = new AbortController().signal;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const events = await adapter.loadAuthoritativeHistory!(
+        "sdeagent-parent",
+        signal
+      );
+      expect(projectNativeConversationItems(events)).toMatchObject([
+        { kind: "message", role: "user", text: summary },
+        { kind: "message", role: "user", text: "retained user" },
+        {
+          kind: "tool_call",
+          callId: "retained-call",
+          arguments: '{"path":"fixture.txt"}',
+        },
+        {
+          kind: "tool_result",
+          callId: "retained-call",
+          output: "retained result",
+        },
+        { kind: "message", role: "assistant", text: "after boundary" },
+      ]);
+    }
+    const display = await adapter.loadHistory("sdeagent-parent", signal);
+    expect(display.some((event) => event.id === "old")).toBe(true);
+    expect(display.find((event) => event.id === "boundary")?.functionName).toBe(
+      "context_compacted"
+    );
+    expect(rows).toEqual(before);
+  });
+
+  it("honors a zero cutoff and a summary-only boundary without mutating history", async () => {
+    for (const cutoff of [0, 3]) {
+      const rows = [
+        row("u", "user", { sequence: 0, content: "retained" }),
+        row("b", "system", {
+          sequence: 2,
+          content: "summary",
+          compactFromSequence: cutoff,
+        }),
+      ];
+      const adapter = createRustAgentAdapter({
+        category: "agent",
+        features: {},
+        loadMessages: async () => rows,
+        cancel: async () => {},
+      });
+      const items = projectNativeConversationItems(
+        await adapter.loadAuthoritativeHistory!(
+          "sdeagent-parent",
+          new AbortController().signal
+        )
+      );
+      expect(
+        items.map((item) => (item.kind === "message" ? item.text : item.kind))
+      ).toEqual(cutoff === 0 ? ["summary", "retained"] : ["summary"]);
+      expect(rows[1].role).toBe("system");
+      expect(rows[1].compactFromSequence).toBe(cutoff);
+    }
+  });
 });
