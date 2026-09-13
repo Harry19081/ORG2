@@ -356,6 +356,54 @@ describe("useTranscriptViewport", () => {
     expect(onExplicitFollow).toHaveBeenCalledTimes(2);
   });
 
+  it.each([
+    { top: 200, overflow: "auto", containment: "auto", mode: "following_tail" },
+    { top: 0, overflow: "auto", containment: "auto", mode: "detached_reading" },
+    {
+      top: 0,
+      overflow: "scroll",
+      containment: "contain",
+      mode: "following_tail",
+    },
+    {
+      top: 200,
+      overflow: "hidden",
+      containment: "auto",
+      mode: "detached_reading",
+    },
+  ])(
+    "routes nested wheel intent with $top/$overflow/$containment",
+    ({ top, overflow, containment, mode }) => {
+      const codeScroller = document.createElement("div");
+      codeScroller.style.overflowY = overflow;
+      codeScroller.style.overscrollBehaviorY = containment;
+      Object.defineProperties(codeScroller, {
+        clientHeight: { value: 100 },
+        scrollHeight: { value: 500 },
+      });
+      codeScroller.scrollTop = top;
+      const codeLine = document.createElement("span");
+      codeScroller.append(codeLine);
+      scrollRoot.append(codeScroller);
+      act(() =>
+        codeLine.dispatchEvent(
+          new WheelEvent("wheel", {
+            bubbles: true,
+            deltaY: -40,
+          })
+        )
+      );
+      expect(viewport.mode).toBe(mode);
+    }
+  );
+
+  it("leaves prevented wheel events with their existing owner", () => {
+    const event = new WheelEvent("wheel", { deltaY: -40, cancelable: true });
+    event.preventDefault();
+    act(() => scrollRoot.dispatchEvent(event));
+    expect(viewport.mode).toBe("following_tail");
+  });
+
   it("does no frame work while hidden and reconciles once on visibility return", () => {
     visibilityState = "hidden";
     act(() => document.dispatchEvent(new Event("visibilitychange")));
