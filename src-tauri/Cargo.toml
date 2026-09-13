@@ -59,11 +59,8 @@ members = [
 # member adds locally.
 # ---------------------------------------------------------------------------
 [workspace.dependencies]
-# Pinned to =2.10.3: tauri-macros 2.6 (in tauri 2.11) introduced a new
-# `__tauri_command_name_*` companion to the existing `__cmd__*` symbol
-# that `generate_handler!` resolves alongside, breaking 13 handler
-# entries in `handler_list.inc` that re-export only `__cmd__*`. Bump
-# to 2.11+ once those re-exports are extended (tracked separately).
+# Keep Tauri command re-exports paired: generate_handler! needs both
+# __cmd__* and __tauri_command_name_* on each public command path.
 tauri = { version = "=2.11.1", features = [
     "protocol-asset",
     "macos-private-api",
