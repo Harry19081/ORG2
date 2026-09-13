@@ -207,7 +207,7 @@
       "aria": "Trình đơn {{label}}"
     },
     "items": {
-      "quitOrg2": "Thoát ORG-2",
+      "quitOrg2": "Thoát ORG2",
       "newSession": "Phiên mới",
       "openFolder": "Mở thư mục...",
       "addFolderToWorkspace": "Thêm thư mục vào không gian làm việc...",
@@ -308,8 +308,8 @@
     "save": "Lưu",
     "cancel": "Hủy",
     "delete": "Xóa",
-    "removeFromOrgii": "Xóa khỏi ORGII",
-    "removeFromOrgiiCount": "Xóa khỏi ORGII ({{count}})",
+    "removeFromOrgii": "Xóa khỏi ORG2",
+    "removeFromOrgiiCount": "Xóa khỏi ORG2 ({{count}})",
     "edit": "Chỉnh sửa",
     "write": "Ghi",
     "close": "Đóng",
@@ -713,12 +713,12 @@
   },
   "confirmation": {
     "delete": "Bạn có chắc muốn xóa không?",
-    "removeTitle": "Xóa \"{{name}}\" khỏi ORGII?",
-    "removeMessage": "Thao tác này chỉ xóa liên kết của mục này với ORGII. Không có nội dung nào bị xóa khỏi đĩa.",
+    "removeTitle": "Xóa \"{{name}}\" khỏi ORG2?",
+    "removeMessage": "Thao tác này chỉ xóa liên kết của mục này với ORG2. Không có nội dung nào bị xóa khỏi đĩa.",
     "deleteWorkspaceTitle": "Xóa Workspace \"{{name}}\"?",
     "deleteWorkspaceMessage": "Chỉ xóa cấu hình Workspace. Các Repo và thư mục thành viên không bị ảnh hưởng.",
-    "deleteSelectedTitle": "Xóa {{count}} mục đã chọn khỏi ORGII?",
-    "deleteSelectedMessage": "Thao tác này chỉ xóa liên kết của các mục này với ORGII. Không có nội dung nào bị xóa khỏi đĩa.",
+    "deleteSelectedTitle": "Xóa {{count}} mục đã chọn khỏi ORG2?",
+    "deleteSelectedMessage": "Thao tác này chỉ xóa liên kết của các mục này với ORG2. Không có nội dung nào bị xóa khỏi đĩa.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}} sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -1853,11 +1853,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Đã xóa liên kết với ORG2",
+        "repoRemoveFailed": "Không thể xóa liên kết với ORG2",
+        "workspaceRemoved": "Đã xóa liên kết với ORG2",
+        "workspaceRemoveFailed": "Không thể xóa liên kết với ORG2",
+        "bulkDeleted": "Đã xóa {{count}} liên kết với ORG2",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2141,8 +2141,8 @@
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "Thoát ORG-2?",
-    "subtitle": "Các phiên đang chạy sẽ giữ nguyên trạng thái hiện tại. Bạn có thể mở lại ORG-2 sau.",
+    "title": "Thoát ORG2?",
+    "subtitle": "Các phiên đang chạy sẽ giữ nguyên trạng thái hiện tại. Bạn có thể mở lại ORG2 sau.",
     "cancel": "Hủy",
     "confirm": "Thoát"
   },
@@ -2172,7 +2172,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari lưu cookie trong thư mục được macOS bảo vệ. Cho phép ORG2 trong mục Truy cập toàn bộ ổ đĩa của Cài đặt hệ thống, rồi kiểm tra lại.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2220,7 +2220,8 @@
     "taskCompletedBody": "“{{name}}” đã hoàn tất — sẵn sàng để xem lại",
     "openSessionAction": "Mở phiên",
     "taskFailedTitle": "Tác vụ thất bại",
-    "taskFailedBody": "“{{name}}” thất bại{{detail}}"
+    "taskFailedBody": "“{{name}}” thất bại{{detail}}",
+    "taskFailedPrivateBody": "Một tác vụ đã thất bại. Mở ORG2 để xem chi tiết."
   },
   "documentOpen": {
     "openInDefault": "Mở bằng {{name}}",
@@ -2260,5 +2261,12 @@
     "goToSection": "Đi tới {{label}}, phần {{current}} trên {{total}}",
     "section": "Phần {{current}}",
     "sectionPosition": "Phần {{current}} trên {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Đây là thông báo thử nghiệm từ ORG2",
+    "workspaceFile": "Không gian làm việc ORG2",
+    "sessionJsonFile": "Phiên ORG2 dạng JSON",
+    "skillsSource": "Kỹ năng ORG2",
+    "gitServiceUnavailable": "Không thể kết nối với dịch vụ Git cục bộ. Hãy thử lại sau khi ứng dụng khởi động xong hoặc khởi động lại ORG2 nếu sự cố vẫn tiếp diễn."
   }
 }

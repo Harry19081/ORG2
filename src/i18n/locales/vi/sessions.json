@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Nguồn dữ liệu",
-      "description": "Các công cụ lập trình bên ngoài mà ORGII phát hiện. Các ứng dụng có thể nhập hiển thị số phiên và có thể quét lại; số còn lại hiển thị trạng thái cài đặt và nơi lưu lịch sử.",
+      "description": "Các công cụ lập trình bên ngoài mà ORG2 phát hiện. Các ứng dụng có thể nhập hiển thị số phiên và có thể quét lại; số còn lại hiển thị trạng thái cài đặt và nơi lưu lịch sử.",
       "rescanAll": "Quét lại tất cả",
       "rescan": "Quét lại",
       "rescanning": "Đang quét lại…",
@@ -190,7 +190,7 @@
           "perTurn": "Lệnh gọi LLM",
           "perTool": "Lệnh gọi công cụ",
           "close": "Đóng",
-          "noData": "Phiên này chỉ có tổng số liệu ở cấp phiên; dữ liệu theo từng lệnh gọi được ghi nhận cho các lượt chạy agent riêng của ORGII.",
+          "noData": "Phiên này chỉ có tổng số liệu ở cấp phiên; dữ liệu theo từng lệnh gọi được ghi nhận cho các lượt chạy agent riêng của ORG2.",
           "turnHeader": "Lượt {{turn}}",
           "promptTokens": "Prompt",
           "completionTokens": "Hoàn thành"
@@ -1907,7 +1907,7 @@
     "start": "Bắt đầu",
     "missingGit": {
       "title": "Thiếu Git",
-      "body": "Git chưa được cài đặt hoặc không tìm thấy. Hãy yêu cầu ADE Manager hoặc SDE Agent cài đặt Git cho máy này, rồi khởi động lại ORGII."
+      "body": "Git chưa được cài đặt hoặc không tìm thấy. Hãy yêu cầu ADE Manager hoặc SDE Agent cài đặt Git cho máy này, rồi khởi động lại ORG2."
     },
     "model": "Mô hình",
     "contextMenu": {
@@ -2010,7 +2010,8 @@
       "refresh": "Kiểm tra lại phiên bản {{cli}} CLI",
       "unknownVersion": "không xác định"
     },
-    "mode": "Chế độ soạn thảo"
+    "mode": "Chế độ soạn thảo",
+    "cursorIdeDescription": "Duyệt và tiếp tục các phiên trò chuyện Cursor IDE trong ORG2"
   },
   "planner": {
     "modes": {
@@ -2249,7 +2250,7 @@
     "noSessionIdFound": "Không tìm thấy ID Session",
     "failedToResume": "Tiếp tục lại Session thất bại",
     "failedToCheckChanges": "Không thể kiểm tra thay đổi tệp. Sẽ tiến hành hoàn tác.",
-    "insufficientBalance": "Số dư không đủ cho dịch vụ ORGII được lưu trữ. Nạp tiền tại orgii.ai/wallet.",
+    "insufficientBalance": "Số dư không đủ cho dịch vụ ORG2 được lưu trữ. Nạp tiền tại orgii.ai/wallet.",
     "runQueuedBehindCheckout": "Đang xếp hàng: một lần chạy khác đang dùng checkout này. Sẽ bắt đầu ngay khi lần chạy đó kết thúc."
   },
   "planning": {

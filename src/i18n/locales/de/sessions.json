@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Datenquellen",
-      "description": "Externe Coding-Tools, die ORGII erkennt. Importierbare Apps zeigen ihre Sitzungsanzahl und können neu gescannt werden; die übrigen zeigen den Installationsstatus und wo ihr Verlauf liegt.",
+      "description": "Externe Coding-Tools, die ORG2 erkennt. Importierbare Apps zeigen ihre Sitzungsanzahl und können neu gescannt werden; die übrigen zeigen den Installationsstatus und wo ihr Verlauf liegt.",
       "rescanAll": "Alle neu scannen",
       "rescan": "Neu scannen",
       "rescanning": "Wird neu gescannt…",
@@ -190,7 +190,7 @@
           "perTurn": "LLM-Aufrufe",
           "perTool": "Tool-Aufrufe",
           "close": "Schließen",
-          "noData": "Für diese Sitzung sind nur Gesamtsummen verfügbar. Die Zuordnung pro Aufruf wird für ORGII-eigene Agentenläufe aufgezeichnet.",
+          "noData": "Für diese Sitzung sind nur Gesamtsummen verfügbar. Die Zuordnung pro Aufruf wird für ORG2-eigene Agentenläufe aufgezeichnet.",
           "turnHeader": "Runde {{turn}}",
           "promptTokens": "Prompt",
           "completionTokens": "Vervollständigung"
@@ -1907,7 +1907,7 @@
     "start": "Starten",
     "missingGit": {
       "title": "Git fehlt",
-      "body": "Git ist nicht installiert oder konnte nicht gefunden werden. Bitte ADE Manager oder SDE Agent bitten, Git auf diesem Gerät zu installieren, und ORGII anschließend neu starten."
+      "body": "Git ist nicht installiert oder konnte nicht gefunden werden. Bitte ADE Manager oder SDE Agent bitten, Git auf diesem Gerät zu installieren, und ORG2 anschließend neu starten."
     },
     "model": "Modell",
     "contextMenu": {
@@ -2010,7 +2010,8 @@
       "refresh": "{{cli}}-CLI-Version erneut prüfen",
       "unknownVersion": "unbekannt"
     },
-    "mode": "Editor-Modus"
+    "mode": "Editor-Modus",
+    "cursorIdeDescription": "Cursor-IDE-Chats in ORG2 durchsuchen und fortsetzen"
   },
   "planner": {
     "modes": {
@@ -2249,7 +2250,7 @@
     "noSessionIdFound": "Keine Session-ID gefunden",
     "failedToResume": "Session konnte nicht fortgesetzt werden",
     "failedToCheckChanges": "Dateiänderungen konnten nicht geprüft werden. Änderungen werden rückgängig gemacht.",
-    "insufficientBalance": "Unzureichendes Guthaben für den gehosteten ORGII-Dienst. Aufladen unter orgii.ai/wallet.",
+    "insufficientBalance": "Unzureichendes Guthaben für den gehosteten ORG2-Dienst. Aufladen unter orgii.ai/wallet.",
     "runQueuedBehindCheckout": "In Warteschlange: ein anderer Lauf verwendet dieses Checkout. Er startet, sobald dieser Lauf beendet ist."
   },
   "planning": {

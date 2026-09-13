@@ -272,9 +272,9 @@
       "switchToRepo": "Öffnen",
       "startSession": "Sitzung starten",
       "openDetails": "Details anzeigen",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "Aus ORG2 entfernen",
+      "removeSuccess": "Verknüpfung mit ORG2 entfernt",
+      "removeFailed": "Verknüpfung mit ORG2 konnte nicht entfernt werden"
     },
     "addWorkspace": "Workspace hinzufügen"
   },
@@ -662,7 +662,7 @@
       "selectAll": "Alle ({{count}})",
       "incomingEndpointMismatch": "Diese Freigabe gehört zu einer anderen benutzerdefinierten Cloud. Konfiguriere diesen Cloud-Endpunkt vor dem Import.",
       "incomingConnectionError": "Verbindung zum Cloud-Dienst fehlgeschlagen. Prüfe das Netzwerk und versuche es erneut.",
-      "incomingIncompatibleError": "Diese Cloud hat eine inkompatible Freigabeantwort geliefert. Aktualisiere ORGII oder prüfe die Cloud-Bereitstellung.",
+      "incomingIncompatibleError": "Diese Cloud hat eine inkompatible Freigabeantwort geliefert. Aktualisiere ORG2 oder prüfe die Cloud-Bereitstellung.",
       "incomingServerError": "Der Cloud-Dienst konnte diese Freigabe nicht auflösen. Versuche es erneut.",
       "incomingAlreadyOnDevice": "Diese Session befindet sich bereits auf diesem Gerät. Öffne das Original, statt ein Duplikat zu importieren.",
       "incomingOpenExisting": "Session öffnen",

@@ -207,7 +207,7 @@
       "aria": "Menu {{label}}"
     },
     "items": {
-      "quitOrg2": "Sair do ORG-2",
+      "quitOrg2": "Sair do ORG2",
       "newSession": "Nova sessão",
       "openFolder": "Abrir pasta...",
       "addFolderToWorkspace": "Adicionar pasta ao espaço de trabalho...",
@@ -309,8 +309,8 @@
     "save": "Salvar",
     "cancel": "Cancelar",
     "delete": "Excluir",
-    "removeFromOrgii": "Remover da ORGII",
-    "removeFromOrgiiCount": "Remover da ORGII ({{count}})",
+    "removeFromOrgii": "Remover da ORG2",
+    "removeFromOrgiiCount": "Remover da ORG2 ({{count}})",
     "edit": "Editar",
     "write": "Escrever",
     "close": "Fechar",
@@ -713,12 +713,12 @@
   },
   "confirmation": {
     "delete": "Tem certeza de que deseja excluir isto?",
-    "removeTitle": "Remover \"{{name}}\" do ORGII?",
-    "removeMessage": "Isto apenas remove o vínculo com o ORGII. Nada será removido do disco.",
+    "removeTitle": "Remover \"{{name}}\" do ORG2?",
+    "removeMessage": "Isto apenas remove o vínculo com o ORG2. Nada será removido do disco.",
     "deleteWorkspaceTitle": "Excluir Workspace \"{{name}}\"?",
     "deleteWorkspaceMessage": "Isto exclui apenas o preset do Workspace. Os Repos e pastas membros não são afetados.",
-    "deleteSelectedTitle": "Remover {{count}} itens selecionados do ORGII?",
-    "deleteSelectedMessage": "Isto apenas remove o vínculo deles com o ORGII. Nada será removido do disco.",
+    "deleteSelectedTitle": "Remover {{count}} itens selecionados do ORG2?",
+    "deleteSelectedMessage": "Isto apenas remove o vínculo deles com o ORG2. Nada será removido do disco.",
     "dropStashTitle": "Descartar stash?",
     "dropStashMessage": "Isto excluirá permanentemente {{stashRef}}. Esta ação não pode ser desfeita.",
     "popAllStashesTitle": "Aplicar e remover todos os stashes?",
@@ -1853,11 +1853,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Vínculo com o ORG2 removido",
+        "repoRemoveFailed": "Não foi possível remover o vínculo com o ORG2",
+        "workspaceRemoved": "Vínculo com o ORG2 removido",
+        "workspaceRemoveFailed": "Não foi possível remover o vínculo com o ORG2",
+        "bulkDeleted": "Vínculos com o ORG2 removidos: {{count}}",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2141,8 +2141,8 @@
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "Sair do ORG-2?",
-    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORG-2 mais tarde.",
+    "title": "Sair do ORG2?",
+    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORG2 mais tarde.",
     "cancel": "Cancelar",
     "confirm": "Sair"
   },
@@ -2172,7 +2172,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "O Safari guarda os cookies em uma pasta protegida pelo macOS. Permita o ORG2 em Acesso Total ao Disco nos Ajustes do Sistema e verifique novamente.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2220,7 +2220,8 @@
     "taskCompletedBody": "“{{name}}” concluída — pronta para revisão",
     "openSessionAction": "Abrir sessão",
     "taskFailedTitle": "Tarefa falhou",
-    "taskFailedBody": "“{{name}}” falhou{{detail}}"
+    "taskFailedBody": "“{{name}}” falhou{{detail}}",
+    "taskFailedPrivateBody": "Uma tarefa falhou. Abra o ORG2 para ver os detalhes."
   },
   "documentOpen": {
     "openInDefault": "Abrir em {{name}}",
@@ -2260,5 +2261,12 @@
     "goToSection": "Ir para {{label}}, seção {{current}} de {{total}}",
     "section": "Seção {{current}}",
     "sectionPosition": "Seção {{current}} de {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Esta é uma notificação de teste do ORG2",
+    "workspaceFile": "Espaço de trabalho do ORG2",
+    "sessionJsonFile": "Sessão do ORG2 em JSON",
+    "skillsSource": "Habilidades do ORG2",
+    "gitServiceUnavailable": "Não foi possível acessar o serviço Git local. Tente novamente após a inicialização do aplicativo ou reinicie o ORG2 se o problema persistir."
   }
 }

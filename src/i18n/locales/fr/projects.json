@@ -54,7 +54,7 @@
       "connection": "Connexion GitHub"
     },
     "placeholders": {
-      "projectName": "ORGII GitHub Issues",
+      "projectName": "Tickets GitHub ORG2",
       "repo": "owner/repo ou https://github.com/owner/repo",
       "connection": "Sélectionner une connexion GitHub"
     },
@@ -92,7 +92,7 @@
       "notConfigured": "Non configuré",
       "syncNowDescription": "Importer les changements de fichiers distants et exporter les changements de la base locale",
       "syncSummary": "{{projects}} projets, {{workItems}} éléments de travail, {{conflicts}} conflits",
-      "syncHowItWorks": "La synchronisation du dossier Git connecte cet espace de travail à un dépôt Git existant. ORGII stocke les projets et éléments de travail exportés de l’espace de travail sous `.orgii/projects/...` dans ce dépôt, importe les changements de fichiers depuis cet emplacement, réexporte les changements de la base locale vers les fichiers et s’arrête en cas de conflit pour que vous puissiez les examiner avant toute écriture",
+      "syncHowItWorks": "La synchronisation du dossier Git connecte cet espace de travail à un dépôt Git existant. ORG2 stocke les projets et éléments de travail exportés de l’espace de travail sous `.orgii/projects/...` dans ce dépôt, importe les changements de fichiers depuis cet emplacement, réexporte les changements de la base locale vers les fichiers et s’arrête en cas de conflit pour que vous puissiez les examiner avant toute écriture",
       "noProjectsForCatalog": "Cet espace de travail n'a pas encore de projets.",
       "noProjectsForCatalogHint": "Créez un projet dans cet espace de travail avant de gérer les labels partagés",
       "dangerZone": "Zone de danger",
@@ -582,7 +582,7 @@
         "changeWarning": "Détachez l'adaptateur actuel avant d'en attacher un nouveau.",
         "detachProjectMenuLabel": "Dissocier GitHub",
         "detachProjectTitle": "Dissocier GitHub de {{project}} ?",
-        "detachProjectDescription": "La synchronisation des GitHub Issues s’arrêtera. Le project local et les éléments de travail importés resteront dans ORGII.",
+        "detachProjectDescription": "La synchronisation des GitHub Issues s’arrêtera. Le project local et les éléments de travail importés resteront dans ORG2.",
         "detachProjectAction": "Dissocier GitHub de {{project}}",
         "detachProjectSuccess": "GitHub dissocié de {{project}}"
       },
@@ -834,7 +834,7 @@
       "updateWorkflowState": "Failed to update Linear workflow state",
       "archiveWorkflowState": "Failed to archive Linear workflow state",
       "statusStateMissing": "No matching Linear workflow state exists for this status",
-      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORGII yet"
+      "unsupportedIssueUpdate": "Ce champ du ticket Linear ne peut pas encore être modifié dans ORG2"
     },
     "loadingConnections": "Chargement des connexions Linear..."
   },

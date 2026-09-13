@@ -207,7 +207,7 @@
       "aria": "{{label}} menüsü"
     },
     "items": {
-      "quitOrg2": "ORG-2'den Çık",
+      "quitOrg2": "ORG2'den Çık",
       "newSession": "Yeni Oturum",
       "openFolder": "Klasör Aç...",
       "addFolderToWorkspace": "Çalışma Alanına Klasör Ekle...",
@@ -308,8 +308,8 @@
     "save": "Kaydet",
     "cancel": "İptal",
     "delete": "Sil",
-    "removeFromOrgii": "ORGII’den kaldır",
-    "removeFromOrgiiCount": "ORGII’den kaldır ({{count}})",
+    "removeFromOrgii": "ORG2’den kaldır",
+    "removeFromOrgiiCount": "ORG2’den kaldır ({{count}})",
     "edit": "Düzenle",
     "write": "Yazma",
     "close": "Kapat",
@@ -713,12 +713,12 @@
   },
   "confirmation": {
     "delete": "Bunu silmek istediğinizden emin misiniz?",
-    "removeTitle": "\"{{name}}\" ORGII'den kaldırılsın mı?",
-    "removeMessage": "Bu yalnızca ORGII ile bağlantısını kaldırır. Diskten hiçbir şey kaldırılmaz.",
+    "removeTitle": "\"{{name}}\" ORG2'den kaldırılsın mı?",
+    "removeMessage": "Bu yalnızca ORG2 ile bağlantısını kaldırır. Diskten hiçbir şey kaldırılmaz.",
     "deleteWorkspaceTitle": "\"{{name}}\" Workspace'i silinsin mi?",
     "deleteWorkspaceMessage": "Yalnızca Workspace ön ayarı silinir. İçindeki Repo ve klasörler etkilenmez.",
-    "deleteSelectedTitle": "Seçili {{count}} öğe ORGII'den kaldırılsın mı?",
-    "deleteSelectedMessage": "Bu yalnızca ORGII ile bağlantılarını kaldırır. Diskten hiçbir şey kaldırılmaz.",
+    "deleteSelectedTitle": "Seçili {{count}} öğe ORG2'den kaldırılsın mı?",
+    "deleteSelectedMessage": "Bu yalnızca ORG2 ile bağlantılarını kaldırır. Diskten hiçbir şey kaldırılmaz.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}} kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -1853,11 +1853,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "ORG2 bağlantısı kaldırıldı",
+        "repoRemoveFailed": "ORG2 bağlantısı kaldırılamadı",
+        "workspaceRemoved": "ORG2 bağlantısı kaldırıldı",
+        "workspaceRemoveFailed": "ORG2 bağlantısı kaldırılamadı",
+        "bulkDeleted": "ORG2 ile {{count}} bağlantı kaldırıldı",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2141,8 +2141,8 @@
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "ORG-2'den çıkılsın mı?",
-    "subtitle": "Çalışan oturumlar mevcut durumunu korur. ORG-2'yi daha sonra yeniden açabilirsiniz.",
+    "title": "ORG2'den çıkılsın mı?",
+    "subtitle": "Çalışan oturumlar mevcut durumunu korur. ORG2'yi daha sonra yeniden açabilirsiniz.",
     "cancel": "İptal",
     "confirm": "Çık"
   },
@@ -2172,7 +2172,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari, çerezleri macOS tarafından korunan bir klasörde tutar. Sistem Ayarları’ndaki Tam Disk Erişimi bölümünde ORG2’ye izin verin, ardından yeniden kontrol edin.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2220,7 +2220,8 @@
     "taskCompletedBody": "“{{name}}” tamamlandı — incelemeye hazır",
     "openSessionAction": "Oturumu aç",
     "taskFailedTitle": "Görev başarısız",
-    "taskFailedBody": "“{{name}}” başarısız oldu{{detail}}"
+    "taskFailedBody": "“{{name}}” başarısız oldu{{detail}}",
+    "taskFailedPrivateBody": "Bir görev başarısız oldu. Ayrıntılar için ORG2’yi açın."
   },
   "documentOpen": {
     "openInDefault": "{{name}} ile aç",
@@ -2260,5 +2261,12 @@
     "goToSection": "{{label}} bölümüne git, bölüm {{current}} / {{total}}",
     "section": "Bölüm {{current}}",
     "sectionPosition": "Bölüm {{current}} / {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Bu, ORG2’den gelen bir test bildirimidir",
+    "workspaceFile": "ORG2 çalışma alanı",
+    "sessionJsonFile": "ORG2 oturumu JSON",
+    "skillsSource": "ORG2 becerileri",
+    "gitServiceUnavailable": "Yerel Git hizmetine ulaşılamıyor. Uygulama başlatıldıktan sonra tekrar deneyin veya sorun sürerse ORG2’yi yeniden başlatın."
   }
 }

@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Źródła danych",
-      "description": "Zewnętrzne narzędzia do kodowania wykrywane przez ORGII. Aplikacje importowalne pokazują liczbę sesji i można je przeskanować ponownie; pozostałe pokazują status instalacji i lokalizację historii.",
+      "description": "Zewnętrzne narzędzia do kodowania wykrywane przez ORG2. Aplikacje importowalne pokazują liczbę sesji i można je przeskanować ponownie; pozostałe pokazują status instalacji i lokalizację historii.",
       "rescanAll": "Przeskanuj wszystko",
       "rescan": "Przeskanuj",
       "rescanning": "Skanowanie…",
@@ -190,7 +190,7 @@
           "perTurn": "Wywołania LLM",
           "perTool": "Wywołania narzędzi",
           "close": "Zamknij",
-          "noData": "Ta sesja ma tylko sumy na poziomie sesji; przypisanie do poszczególnych wywołań jest rejestrowane dla własnych agentów ORGII.",
+          "noData": "Ta sesja ma tylko sumy na poziomie sesji; przypisanie do poszczególnych wywołań jest rejestrowane dla własnych agentów ORG2.",
           "turnHeader": "Tura {{turn}}",
           "promptTokens": "Prompt",
           "completionTokens": "Uzupełnienie"
@@ -1926,7 +1926,7 @@
     "start": "Start",
     "missingGit": {
       "title": "Brakuje Git",
-      "body": "Git nie jest zainstalowany albo nie można go znaleźć. Poproś ADE Manager lub SDE Agent o zainstalowanie Git na tym komputerze, a następnie uruchom ponownie ORGII."
+      "body": "Git nie jest zainstalowany albo nie można go znaleźć. Poproś ADE Manager lub SDE Agent o zainstalowanie Git na tym komputerze, a następnie uruchom ponownie ORG2."
     },
     "model": "Model",
     "contextMenu": {
@@ -2029,7 +2029,8 @@
       "refresh": "Sprawdź ponownie wersję {{cli}} CLI",
       "unknownVersion": "nieznana"
     },
-    "mode": "Tryb edytora"
+    "mode": "Tryb edytora",
+    "cursorIdeDescription": "Przeglądaj i kontynuuj rozmowy Cursor IDE w ORG2"
   },
   "planner": {
     "modes": {
@@ -2268,7 +2269,7 @@
     "noSessionIdFound": "Nie znaleziono identyfikatora sesji",
     "failedToResume": "Nie udało się wznowić sesji",
     "failedToCheckChanges": "Nie można sprawdzić zmian w plikach. Kontynuowanie cofania.",
-    "insufficientBalance": "Niewystarczające środki dla hostowanej usługi ORGII. Doładuj na orgii.ai/wallet.",
+    "insufficientBalance": "Niewystarczające środki dla hostowanej usługi ORG2. Doładuj na orgii.ai/wallet.",
     "runQueuedBehindCheckout": "W kolejce: inne uruchomienie korzysta z tego checkoutu. Rozpocznie się, gdy tamto się zakończy."
   },
   "revertConfirm": {

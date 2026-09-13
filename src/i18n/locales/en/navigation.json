@@ -389,9 +389,9 @@
       "switchToRepo": "Open",
       "startSession": "Start session",
       "openDetails": "Show details",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "Remove from ORG2",
+      "removeSuccess": "Linkage to ORG2 removed",
+      "removeFailed": "Failed to remove linkage to ORG2"
     },
     "addWorkspace": "Add workspace"
   },
@@ -716,7 +716,7 @@
       "selectAll": "Everyone ({{count}})",
       "incomingEndpointMismatch": "This share belongs to a different custom cloud. Configure that cloud endpoint before importing.",
       "incomingConnectionError": "Couldn't connect to the cloud service. Check your network and try again.",
-      "incomingIncompatibleError": "This cloud returned an incompatible share response. Update ORGII or verify the cloud deployment.",
+      "incomingIncompatibleError": "This cloud returned an incompatible share response. Update ORG2 or verify the cloud deployment.",
       "incomingServerError": "The cloud service couldn't resolve this share. Try again.",
       "incomingAlreadyOnDevice": "This session is already on this device. Open the original instead of importing a duplicate.",
       "incomingOpenExisting": "Open session",

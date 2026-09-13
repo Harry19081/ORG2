@@ -88,7 +88,7 @@ pub(super) fn validate_version(version: &str) -> Result<(), String> {
     }
     if numbers[0] != 1 {
         return Err(format!(
-            "Claude Desktop {} uses an unverified configuration format; ORGII supports 1.46388.1 and newer 1.x releases",
+            "Claude Desktop {} uses an unverified configuration format; ORG2 supports 1.46388.1 and newer 1.x releases",
             version.trim()
         ));
     }

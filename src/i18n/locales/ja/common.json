@@ -207,7 +207,7 @@
       "aria": "{{label}}メニュー"
     },
     "items": {
-      "quitOrg2": "ORG-2を終了",
+      "quitOrg2": "ORG2を終了",
       "newSession": "新しいセッション",
       "openFolder": "フォルダーを開く...",
       "addFolderToWorkspace": "ワークスペースにフォルダーを追加...",
@@ -308,8 +308,8 @@
     "save": "保存",
     "cancel": "キャンセル",
     "delete": "削除",
-    "removeFromOrgii": "ORGII から削除",
-    "removeFromOrgiiCount": "ORGII から削除 ({{count}})",
+    "removeFromOrgii": "ORG2 から削除",
+    "removeFromOrgiiCount": "ORG2 から削除 ({{count}})",
     "edit": "編集",
     "write": "書き込み",
     "close": "閉じる",
@@ -713,12 +713,12 @@
   },
   "confirmation": {
     "delete": "本当に削除しますか？",
-    "removeTitle": "「{{name}}」を ORGII から削除しますか？",
-    "removeMessage": "ORGII との関連付けのみを削除します。ディスクからは何も削除されません。",
+    "removeTitle": "「{{name}}」を ORG2 から削除しますか？",
+    "removeMessage": "ORG2 との関連付けのみを削除します。ディスクからは何も削除されません。",
     "deleteWorkspaceTitle": "Workspace「{{name}}」を削除しますか？",
     "deleteWorkspaceMessage": "Workspace プリセットのみが削除されます。メンバーの Repo やフォルダには影響しません。",
-    "deleteSelectedTitle": "選択した {{count}} 件を ORGII から削除しますか？",
-    "deleteSelectedMessage": "ORGII との関連付けのみを削除します。ディスクからは何も削除されません。",
+    "deleteSelectedTitle": "選択した {{count}} 件を ORG2 から削除しますか？",
+    "deleteSelectedMessage": "ORG2 との関連付けのみを削除します。ディスクからは何も削除されません。",
     "dropStashTitle": "Drop stash？",
     "dropStashMessage": "{{stashRef}} が完全に削除されます。この操作は元に戻せません。",
     "popAllStashesTitle": "Pop all stashes？",
@@ -1853,11 +1853,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "ORG2 との関連付けを解除しました",
+        "repoRemoveFailed": "ORG2 との関連付けを解除できませんでした",
+        "workspaceRemoved": "ORG2 との関連付けを解除しました",
+        "workspaceRemoveFailed": "ORG2 との関連付けを解除できませんでした",
+        "bulkDeleted": "ORG2 との関連付けを {{count}} 件解除しました",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2141,8 +2141,8 @@
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "ORG-2 を終了しますか？",
-    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORG-2 を再度開くことができます。",
+    "title": "ORG2 を終了しますか？",
+    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORG2 を再度開くことができます。",
     "cancel": "キャンセル",
     "confirm": "終了"
   },
@@ -2172,7 +2172,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari は macOS で保護されたフォルダに Cookie を保存します。システム設定の「フルディスクアクセス」で ORG2 を許可してから、もう一度確認してください。",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2220,7 +2220,8 @@
     "taskCompletedBody": "「{{name}}」が完了しました — レビューできます",
     "openSessionAction": "セッションを開く",
     "taskFailedTitle": "タスクが失敗しました",
-    "taskFailedBody": "「{{name}}」が失敗しました{{detail}}"
+    "taskFailedBody": "「{{name}}」が失敗しました{{detail}}",
+    "taskFailedPrivateBody": "タスクが失敗しました。詳細は ORG2 で確認してください。"
   },
   "documentOpen": {
     "openInDefault": "{{name}} で開く",
@@ -2260,5 +2261,12 @@
     "goToSection": "{{label}} へ移動、セクション {{current}} / {{total}}",
     "section": "セクション {{current}}",
     "sectionPosition": "セクション {{current}} / {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "これは ORG2 からのテスト通知です",
+    "workspaceFile": "ORG2 ワークスペース",
+    "sessionJsonFile": "ORG2 セッション JSON",
+    "skillsSource": "ORG2 スキル",
+    "gitServiceUnavailable": "ローカル Git サービスに接続できません。アプリの起動完了後に再試行してください。問題が続く場合は ORG2 を再起動してください。"
   }
 }

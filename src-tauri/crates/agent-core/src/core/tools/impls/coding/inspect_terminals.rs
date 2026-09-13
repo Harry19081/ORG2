@@ -116,7 +116,7 @@ impl Tool for InspectTerminalsTool {
     }
 
     fn description(&self) -> &str {
-        "Inspect and control live ORGII-managed terminal sessions: list sessions, read recent output, write input, or close a session."
+        "Inspect and control live ORG2-managed terminal sessions: list sessions, read recent output, write input, or close a session."
     }
 
     fn category(&self) -> &str {

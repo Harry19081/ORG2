@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "Fontes de dados",
-      "description": "Ferramentas de programação externas que o ORGII detecta. Apps importáveis mostram sua contagem de sessões e podem ser reescaneados; o restante mostra o status de instalação e onde fica seu histórico.",
+      "description": "Ferramentas de programação externas que o ORG2 detecta. Apps importáveis mostram sua contagem de sessões e podem ser reescaneados; o restante mostra o status de instalação e onde fica seu histórico.",
       "rescanAll": "Reescanear tudo",
       "rescan": "Reescanear",
       "rescanning": "Reescaneando…",
@@ -190,7 +190,7 @@
           "perTurn": "Chamadas ao LLM",
           "perTool": "Chamadas de ferramentas",
           "close": "Fechar",
-          "noData": "Esta sessão possui apenas totais por sessão; a atribuição por chamada é registrada para execuções dos agentes próprios do ORGII.",
+          "noData": "Esta sessão possui apenas totais por sessão; a atribuição por chamada é registrada para execuções dos agentes próprios do ORG2.",
           "turnHeader": "Turno {{turn}}",
           "promptTokens": "Prompt",
           "completionTokens": "Conclusão"
@@ -1926,7 +1926,7 @@
     "start": "Iniciar",
     "missingGit": {
       "title": "Git ausente",
-      "body": "O Git não está instalado ou não foi encontrado. Peça ao ADE Manager ou ao SDE Agent para instalar o Git nesta máquina e depois reinicie o ORGII."
+      "body": "O Git não está instalado ou não foi encontrado. Peça ao ADE Manager ou ao SDE Agent para instalar o Git nesta máquina e depois reinicie o ORG2."
     },
     "model": "Modelo",
     "contextMenu": {
@@ -2029,7 +2029,8 @@
       "refresh": "Verificar novamente a versão da CLI {{cli}}",
       "unknownVersion": "desconhecida"
     },
-    "mode": "Modo do editor"
+    "mode": "Modo do editor",
+    "cursorIdeDescription": "Explore e continue conversas do Cursor IDE no ORG2"
   },
   "planner": {
     "modes": {
@@ -2268,7 +2269,7 @@
     "noSessionIdFound": "Nenhum ID de sessão encontrado",
     "failedToResume": "Falha ao retomar a sessão",
     "failedToCheckChanges": "Não foi possível verificar as alterações de arquivo. Prosseguindo com a reversão.",
-    "insufficientBalance": "Saldo insuficiente para o serviço hospedado ORGII. Recarregue em orgii.ai/wallet.",
+    "insufficientBalance": "Saldo insuficiente para o serviço hospedado ORG2. Recarregue em orgii.ai/wallet.",
     "runQueuedBehindCheckout": "Na fila: outra execução está usando este checkout. Começará assim que ela terminar."
   },
   "revertConfirm": {

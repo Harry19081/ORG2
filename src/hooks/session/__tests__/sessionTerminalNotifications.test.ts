@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next";
 import { describe, expect, it, vi } from "vitest";
 
+import { notifyError } from "@src/api/services/notification";
 import Message from "@src/components/Message";
 import type { NotificationSettings } from "@src/types/ui/notification";
 
@@ -10,11 +11,10 @@ import {
 } from "../sessionTerminalNotifications";
 
 vi.mock("@src/components/Message", () => ({
-  default: { warning: vi.fn(), success: vi.fn() },
+  default: { warning: vi.fn(), success: vi.fn(), error: vi.fn() },
 }));
 
 vi.mock("@src/api/services/notification", () => ({
-  TASK_FAILURE_NOTIFICATION_BODY: "Task failed",
   notifyError: vi.fn(),
   notifyTaskCompletion: vi.fn().mockResolvedValue({ disposition: "delivered" }),
 }));
@@ -86,6 +86,35 @@ describe("deliverSessionTerminalNotification", () => {
       });
     }
   );
+
+  it("contains native delivery rejection without showing a delivered failure toast", async () => {
+    vi.mocked(notifyError).mockRejectedValueOnce(
+      new Error("Native channel unavailable")
+    );
+    const translate = ((key: string) =>
+      key === "notifications.taskFailedPrivateBody"
+        ? "任务失败。请打开 ORG2 查看详情。"
+        : key) as TFunction;
+    deliverSessionTerminalNotification(
+      {
+        sessionId: "session-a",
+        sessionName: "Session A",
+        status: "failed",
+        attentionRequired: true,
+        errorMessage: "Private task details",
+      },
+      settings,
+      translate
+    );
+    // Let a rejected delivery settle; Vitest also fails on any unhandled rejection.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(notifyError).toHaveBeenCalledWith(
+      "任务失败。请打开 ORG2 查看详情。",
+      settings,
+      expect.objectContaining({ title: "notifications.taskFailedTitle" })
+    );
+    expect(Message.error).not.toHaveBeenCalled();
+  });
 
   it("ignores removed mute preferences for cancellation while honoring the master toggle", () => {
     const obsoleteSettings = { ...settings, mutedSessionIds: ["session-a"] };

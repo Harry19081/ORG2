@@ -378,7 +378,7 @@ export const guiContextAction = defineZodAction(
     id: ACTION_ID.GUI_CONTEXT,
     category: "app",
     description:
-      "Inspect the current ORGII UI context: route, station, active tab, active session, browser URL, chat surface, overlays, and visible guide targets",
+      "Inspect the current ORG2 UI context: route, station, active tab, active session, browser URL, chat surface, overlays, and visible guide targets",
     params: GuiContextParamsSchema,
     layer: "gui",
     tags: ["gui", "context", "route", "station", "tab", "session", "url"],

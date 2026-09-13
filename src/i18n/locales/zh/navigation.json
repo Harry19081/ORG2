@@ -272,9 +272,9 @@
       "switchToRepo": "切换",
       "startSession": "开始会话",
       "openDetails": "打开详情",
-      "remove": "Remove from ORGII",
-      "removeSuccess": "Linkage to ORGII removed",
-      "removeFailed": "Failed to remove linkage to ORGII"
+      "remove": "从 ORG2 移除",
+      "removeSuccess": "已解除与 ORG2 的关联",
+      "removeFailed": "无法解除与 ORG2 的关联"
     },
     "addWorkspace": "添加工作区"
   },
@@ -661,7 +661,7 @@
       "selectAll": "所有人（{{count}}）",
       "incomingEndpointMismatch": "此分享来自另一套自定义云。请先配置对应的云端点再导入。",
       "incomingConnectionError": "无法连接云服务。请检查网络后重试。",
-      "incomingIncompatibleError": "云服务返回了不兼容的分享数据。请更新 ORGII 或检查云部署。",
+      "incomingIncompatibleError": "云服务返回了不兼容的分享数据。请更新 ORG2 或检查云部署。",
       "incomingServerError": "云服务暂时无法解析此分享，请重试。",
       "incomingAlreadyOnDevice": "此 session 已在本机，无需创建重复副本。",
       "incomingOpenExisting": "打开 session",

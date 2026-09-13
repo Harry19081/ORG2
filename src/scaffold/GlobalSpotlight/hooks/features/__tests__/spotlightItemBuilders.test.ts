@@ -21,7 +21,7 @@ const translations: Record<string, string> = {
   "settings:general.languageNames.fr": "法语",
   "settings:general.light": "Light",
   "settings:general.dark": "Dark",
-  "settings:general.skinGroups.orgii": "ORGII",
+  "settings:general.skinGroups.orgii": "ORG2",
   "settings:general.skinGroups.codex": "Codex",
   "common:spotlightActions.changeTheme": "Change theme",
   "common:spotlightActions.changeSkin": "Change skin",

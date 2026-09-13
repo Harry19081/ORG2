@@ -54,7 +54,7 @@
       "connection": "GitHub 接続"
     },
     "placeholders": {
-      "projectName": "ORGII GitHub Issues",
+      "projectName": "ORG2 の GitHub 課題",
       "repo": "owner/repo または https://github.com/owner/repo",
       "connection": "GitHub 接続を選択"
     },
@@ -92,7 +92,7 @@
       "notConfigured": "未設定",
       "syncNowDescription": "リモートのファイル変更をインポートし、ローカル DB の変更をエクスポートします",
       "syncSummary": "{{projects}} 件のプロジェクト、{{workItems}} 件の work items、{{conflicts}} 件の競合",
-      "syncHowItWorks": "Git フォルダー同期は、このワークスペースを既存の Git リポジトリに接続します。ORGII は、このワークスペースからエクスポートされたプロジェクトと work items を、そのリポジトリ内の `.orgii/projects/...` に保存し、そこからファイル変更をインポートし、ローカル DB の変更をファイルへエクスポートし直します。競合がある場合は停止し、上書き前に確認できます",
+      "syncHowItWorks": "Git フォルダー同期は、このワークスペースを既存の Git リポジトリに接続します。ORG2 は、このワークスペースからエクスポートされたプロジェクトと work items を、そのリポジトリ内の `.orgii/projects/...` に保存し、そこからファイル変更をインポートし、ローカル DB の変更をファイルへエクスポートし直します。競合がある場合は停止し、上書き前に確認できます",
       "noProjectsForCatalog": "このワークスペースにはまだプロジェクトがありません。",
       "noProjectsForCatalogHint": "共有ラベルを管理する前に、このワークスペースでプロジェクトを作成してください",
       "dangerZone": "危険な操作",
@@ -582,7 +582,7 @@
         "changeWarning": "新しいアダプターを接続する前に、現在のアダプターを切断してください。",
         "detachProjectMenuLabel": "GitHub のリンクを解除",
         "detachProjectTitle": "{{project}} から GitHub のリンクを解除しますか？",
-        "detachProjectDescription": "GitHub Issues の同期が停止します。ローカルの Project とインポート済みの作業項目は ORGII に残ります。",
+        "detachProjectDescription": "GitHub Issues の同期が停止します。ローカルの Project とインポート済みの作業項目は ORG2 に残ります。",
         "detachProjectAction": "{{project}} から GitHub のリンクを解除",
         "detachProjectSuccess": "{{project}} から GitHub のリンクを解除しました"
       },
@@ -834,7 +834,7 @@
       "updateWorkflowState": "Failed to update Linear workflow state",
       "archiveWorkflowState": "Failed to archive Linear workflow state",
       "statusStateMissing": "No matching Linear workflow state exists for this status",
-      "unsupportedIssueUpdate": "This Linear Issue field cannot be edited in ORGII yet"
+      "unsupportedIssueUpdate": "この Linear 課題のフィールドは、まだ ORG2 では編集できません"
     },
     "loadingConnections": "Linear接続を読み込み中..."
   },

@@ -109,13 +109,13 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
     try {
       const response = await repoApi.deleteRepo(repo.id);
       if (response?.status !== 0) {
-        throw new Error("Failed to remove linkage to ORGII");
+        throw new Error("Failed to remove linkage to ORG2");
       }
       onClear?.();
       await forceRefreshRepos();
       Message.success(
         t("navigation:launchpad.actions.removeSuccess", {
-          defaultValue: "Linkage to ORGII removed",
+          defaultValue: "Linkage to ORG2 removed",
         })
       );
     } catch (error) {
@@ -124,7 +124,7 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
         error instanceof Error
           ? error.message
           : t("navigation:launchpad.actions.removeFailed", {
-              defaultValue: "Failed to remove linkage to ORGII",
+              defaultValue: "Failed to remove linkage to ORG2",
             })
       );
     }
@@ -239,7 +239,7 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
           }
           onClick={handleRemove}
           title={t("navigation:launchpad.actions.remove", {
-            defaultValue: "Remove from ORGII",
+            defaultValue: "Remove from ORG2",
           })}
         />
       ) : null}

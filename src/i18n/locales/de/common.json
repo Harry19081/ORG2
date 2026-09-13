@@ -207,7 +207,7 @@
       "aria": "Menü {{label}}"
     },
     "items": {
-      "quitOrg2": "ORG-2 beenden",
+      "quitOrg2": "ORG2 beenden",
       "newSession": "Neue Sitzung",
       "openFolder": "Ordner öffnen...",
       "addFolderToWorkspace": "Ordner zum Arbeitsbereich hinzufügen...",
@@ -308,8 +308,8 @@
     "save": "Speichern",
     "cancel": "Abbrechen",
     "delete": "Löschen",
-    "removeFromOrgii": "Aus ORGII entfernen",
-    "removeFromOrgiiCount": "Aus ORGII entfernen ({{count}})",
+    "removeFromOrgii": "Aus ORG2 entfernen",
+    "removeFromOrgiiCount": "Aus ORG2 entfernen ({{count}})",
     "edit": "Bearbeiten",
     "write": "Schreiben",
     "close": "Schließen",
@@ -713,12 +713,12 @@
   },
   "confirmation": {
     "delete": "Sind Sie sicher, dass Sie dies löschen möchten?",
-    "removeTitle": "\"{{name}}\" aus ORGII entfernen?",
-    "removeMessage": "Dies entfernt nur die Verknüpfung mit ORGII. Auf der Festplatte wird nichts entfernt.",
+    "removeTitle": "\"{{name}}\" aus ORG2 entfernen?",
+    "removeMessage": "Dies entfernt nur die Verknüpfung mit ORG2. Auf der Festplatte wird nichts entfernt.",
     "deleteWorkspaceTitle": "Workspace \"{{name}}\" löschen?",
     "deleteWorkspaceMessage": "Es wird nur das Workspace-Preset gelöscht. Die enthaltenen Repos und Ordner sind nicht betroffen.",
-    "deleteSelectedTitle": "{{count}} ausgewählte Elemente aus ORGII entfernen?",
-    "deleteSelectedMessage": "Dies entfernt nur ihre Verknüpfung mit ORGII. Auf der Festplatte wird nichts entfernt.",
+    "deleteSelectedTitle": "{{count}} ausgewählte Elemente aus ORG2 entfernen?",
+    "deleteSelectedMessage": "Dies entfernt nur ihre Verknüpfung mit ORG2. Auf der Festplatte wird nichts entfernt.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}} wird dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -1853,11 +1853,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Verknüpfung mit ORG2 entfernt",
+        "repoRemoveFailed": "Verknüpfung mit ORG2 konnte nicht entfernt werden",
+        "workspaceRemoved": "Verknüpfung mit ORG2 entfernt",
+        "workspaceRemoveFailed": "Verknüpfung mit ORG2 konnte nicht entfernt werden",
+        "bulkDeleted": "Entfernte Verknüpfungen mit ORG2: {{count}}",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2141,8 +2141,8 @@
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "ORG-2 beenden?",
-    "subtitle": "Laufende Sitzungen behalten ihren aktuellen Zustand. Sie können ORG-2 später erneut öffnen.",
+    "title": "ORG2 beenden?",
+    "subtitle": "Laufende Sitzungen behalten ihren aktuellen Zustand. Sie können ORG2 später erneut öffnen.",
     "cancel": "Abbrechen",
     "confirm": "Beenden"
   },
@@ -2172,7 +2172,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari speichert Cookies in einem von macOS geschützten Ordner. Erlaube ORG2 unter Festplattenvollzugriff in den Systemeinstellungen und prüfe dann erneut.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2220,7 +2220,8 @@
     "taskCompletedBody": "„{{name}}“ abgeschlossen — bereit zur Überprüfung",
     "openSessionAction": "Sitzung öffnen",
     "taskFailedTitle": "Aufgabe fehlgeschlagen",
-    "taskFailedBody": "„{{name}}“ fehlgeschlagen{{detail}}"
+    "taskFailedBody": "„{{name}}“ fehlgeschlagen{{detail}}",
+    "taskFailedPrivateBody": "Eine Aufgabe ist fehlgeschlagen. Öffne ORG2 für Details."
   },
   "documentOpen": {
     "openInDefault": "In {{name}} öffnen",
@@ -2260,5 +2261,12 @@
     "goToSection": "Zu {{label}} gehen, Abschnitt {{current}} von {{total}}",
     "section": "Abschnitt {{current}}",
     "sectionPosition": "Abschnitt {{current}} von {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Dies ist eine Testbenachrichtigung von ORG2",
+    "workspaceFile": "ORG2-Arbeitsbereich",
+    "sessionJsonFile": "ORG2-Sitzung als JSON",
+    "skillsSource": "ORG2-Skills",
+    "gitServiceUnavailable": "Der lokale Git-Dienst ist nicht erreichbar. Versuche es nach dem Start der App erneut, oder starte ORG2 neu, wenn das Problem weiterhin besteht."
   }
 }

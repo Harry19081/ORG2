@@ -207,7 +207,7 @@
       "aria": "{{label}} 메뉴"
     },
     "items": {
-      "quitOrg2": "ORG-2 종료",
+      "quitOrg2": "ORG2 종료",
       "newSession": "새 세션",
       "openFolder": "폴더 열기...",
       "addFolderToWorkspace": "작업 영역에 폴더 추가...",
@@ -308,8 +308,8 @@
     "save": "저장",
     "cancel": "취소",
     "delete": "삭제",
-    "removeFromOrgii": "ORGII에서 제거",
-    "removeFromOrgiiCount": "ORGII에서 제거 ({{count}})",
+    "removeFromOrgii": "ORG2에서 제거",
+    "removeFromOrgiiCount": "ORG2에서 제거 ({{count}})",
     "edit": "편집",
     "write": "쓰기",
     "close": "닫기",
@@ -713,12 +713,12 @@
   },
   "confirmation": {
     "delete": "정말 삭제하시겠습니까?",
-    "removeTitle": "\"{{name}}\"을(를) ORGII에서 제거하시겠습니까?",
-    "removeMessage": "ORGII와의 연결만 제거됩니다. 디스크에서는 아무것도 제거되지 않습니다.",
+    "removeTitle": "\"{{name}}\"을(를) ORG2에서 제거하시겠습니까?",
+    "removeMessage": "ORG2와의 연결만 제거됩니다. 디스크에서는 아무것도 제거되지 않습니다.",
     "deleteWorkspaceTitle": "Workspace \"{{name}}\"을(를) 삭제하시겠습니까?",
     "deleteWorkspaceMessage": "Workspace 프리셋만 삭제됩니다. 포함된 Repo 및 폴더에는 영향이 없습니다.",
-    "deleteSelectedTitle": "선택한 {{count}}개 항목을 ORGII에서 제거하시겠습니까?",
-    "deleteSelectedMessage": "ORGII와의 연결만 제거됩니다. 디스크에서는 아무것도 제거되지 않습니다.",
+    "deleteSelectedTitle": "선택한 {{count}}개 항목을 ORG2에서 제거하시겠습니까?",
+    "deleteSelectedMessage": "ORG2와의 연결만 제거됩니다. 디스크에서는 아무것도 제거되지 않습니다.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}}가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -1853,11 +1853,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "ORG2 연결이 해제되었습니다",
+        "repoRemoveFailed": "ORG2 연결을 해제하지 못했습니다",
+        "workspaceRemoved": "ORG2 연결이 해제되었습니다",
+        "workspaceRemoveFailed": "ORG2 연결을 해제하지 못했습니다",
+        "bulkDeleted": "ORG2 연결 {{count}}개가 해제되었습니다",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2141,8 +2141,8 @@
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "ORG-2를 종료하시겠습니까?",
-    "subtitle": "실행 중인 세션은 현재 상태를 유지합니다. 나중에 ORG-2를 다시 열 수 있습니다.",
+    "title": "ORG2를 종료하시겠습니까?",
+    "subtitle": "실행 중인 세션은 현재 상태를 유지합니다. 나중에 ORG2를 다시 열 수 있습니다.",
     "cancel": "취소",
     "confirm": "종료"
   },
@@ -2172,7 +2172,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari는 macOS가 보호하는 폴더에 쿠키를 저장합니다. 시스템 설정의 전체 디스크 접근 권한에서 ORG2를 허용한 다음 다시 확인하세요.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2220,7 +2220,8 @@
     "taskCompletedBody": "“{{name}}” 완료 — 검토할 준비가 되었습니다",
     "openSessionAction": "세션 열기",
     "taskFailedTitle": "작업 실패",
-    "taskFailedBody": "“{{name}}” 실패{{detail}}"
+    "taskFailedBody": "“{{name}}” 실패{{detail}}",
+    "taskFailedPrivateBody": "작업이 실패했습니다. ORG2를 열어 자세한 내용을 확인하세요."
   },
   "documentOpen": {
     "openInDefault": "{{name}}에서 열기",
@@ -2260,5 +2261,12 @@
     "goToSection": "{{label}}(으)로 이동, 섹션 {{current}}/{{total}}",
     "section": "섹션 {{current}}",
     "sectionPosition": "섹션 {{current}}/{{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "ORG2에서 보낸 테스트 알림입니다",
+    "workspaceFile": "ORG2 작업 공간",
+    "sessionJsonFile": "ORG2 세션 JSON",
+    "skillsSource": "ORG2 스킬",
+    "gitServiceUnavailable": "로컬 Git 서비스에 연결할 수 없습니다. 앱 시작이 완료되면 다시 시도하세요. 문제가 계속되면 ORG2를 다시 시작하세요."
   }
 }

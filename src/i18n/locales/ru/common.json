@@ -207,7 +207,7 @@
       "aria": "Меню «{{label}}»"
     },
     "items": {
-      "quitOrg2": "Выйти из ORG-2",
+      "quitOrg2": "Выйти из ORG2",
       "newSession": "Новый сеанс",
       "openFolder": "Открыть папку...",
       "addFolderToWorkspace": "Добавить папку в рабочую область...",
@@ -308,8 +308,8 @@
     "save": "Сохранить",
     "cancel": "Отмена",
     "delete": "Удалить",
-    "removeFromOrgii": "Убрать из ORGII",
-    "removeFromOrgiiCount": "Убрать из ORGII ({{count}})",
+    "removeFromOrgii": "Убрать из ORG2",
+    "removeFromOrgiiCount": "Убрать из ORG2 ({{count}})",
     "edit": "Редактировать",
     "write": "Запись",
     "close": "Закрыть",
@@ -713,12 +713,12 @@
   },
   "confirmation": {
     "delete": "Вы уверены, что хотите удалить это?",
-    "removeTitle": "Удалить \"{{name}}\" из ORGII?",
-    "removeMessage": "Это только удалит связь с ORGII. Ничего не будет удалено с диска.",
+    "removeTitle": "Удалить \"{{name}}\" из ORG2?",
+    "removeMessage": "Это только удалит связь с ORG2. Ничего не будет удалено с диска.",
     "deleteWorkspaceTitle": "Удалить Workspace \"{{name}}\"?",
     "deleteWorkspaceMessage": "Удаляется только пресет Workspace. На входящие в него Repo и папки это не влияет.",
-    "deleteSelectedTitle": "Удалить {{count}} выбранных элементов из ORGII?",
-    "deleteSelectedMessage": "Это только удалит их связь с ORGII. Ничего не будет удалено с диска.",
+    "deleteSelectedTitle": "Удалить {{count}} выбранных элементов из ORG2?",
+    "deleteSelectedMessage": "Это только удалит их связь с ORG2. Ничего не будет удалено с диска.",
     "dropStashTitle": "Drop stash?",
     "dropStashMessage": "{{stashRef}} будет удалён навсегда. Это действие нельзя отменить.",
     "popAllStashesTitle": "Pop all stashes?",
@@ -1853,11 +1853,11 @@
         }
       },
       "toast": {
-        "repoRemoved": "Linkage to ORGII removed",
-        "repoRemoveFailed": "Failed to remove linkage to ORGII",
-        "workspaceRemoved": "Linkage to ORGII removed",
-        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
-        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "repoRemoved": "Связь с ORG2 удалена",
+        "repoRemoveFailed": "Не удалось удалить связь с ORG2",
+        "workspaceRemoved": "Связь с ORG2 удалена",
+        "workspaceRemoveFailed": "Не удалось удалить связь с ORG2",
+        "bulkDeleted": "Удалено связей с ORG2: {{count}}",
         "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
@@ -2141,8 +2141,8 @@
   },
   "globalToolbar": {},
   "quitConfirmation": {
-    "title": "Выйти из ORG-2?",
-    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORG-2 позже.",
+    "title": "Выйти из ORG2?",
+    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORG2 позже.",
     "cancel": "Отмена",
     "confirm": "Выйти"
   },
@@ -2172,7 +2172,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari хранит файлы cookie в папке, защищённой macOS. Разрешите ORG2 полный доступ к диску в системных настройках и повторите проверку.",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2220,7 +2220,8 @@
     "taskCompletedBody": "«{{name}}» завершена — готово к проверке",
     "openSessionAction": "Открыть сессию",
     "taskFailedTitle": "Задача не выполнена",
-    "taskFailedBody": "«{{name}}» не выполнена{{detail}}"
+    "taskFailedBody": "«{{name}}» не выполнена{{detail}}",
+    "taskFailedPrivateBody": "Задача завершилась с ошибкой. Откройте ORG2 для подробностей."
   },
   "documentOpen": {
     "openInDefault": "Открыть в {{name}}",
@@ -2260,5 +2261,12 @@
     "goToSection": "Перейти к {{label}}, раздел {{current}} из {{total}}",
     "section": "Раздел {{current}}",
     "sectionPosition": "Раздел {{current}} из {{total}}"
+  },
+  "appMessages": {
+    "testNotificationBody": "Это тестовое уведомление от ORG2",
+    "workspaceFile": "Рабочая область ORG2",
+    "sessionJsonFile": "Сессия ORG2 в формате JSON",
+    "skillsSource": "Навыки ORG2",
+    "gitServiceUnavailable": "Не удалось подключиться к локальному сервису Git. Повторите попытку после запуска приложения или перезапустите ORG2, если проблема сохраняется."
   }
 }

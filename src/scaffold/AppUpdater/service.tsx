@@ -3,6 +3,7 @@ import type { DownloadEvent, Update } from "@tauri-apps/plugin-updater";
 
 import Message from "@src/components/Message";
 import { createLogger } from "@src/hooks/logger";
+import i18n from "@src/i18n";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import {
@@ -263,8 +264,8 @@ function notifyCheckSuccess(
   Message.success({
     id: CHECK_TOAST_ID,
     content: currentVersion
-      ? `ORGII is up to date (v${currentVersion}).`
-      : "ORGII is up to date.",
+      ? i18n.t("settings:update.upToDateVersion", { version: currentVersion })
+      : i18n.t("settings:update.upToDate"),
     duration: UPDATE_TOAST_DURATION_MS,
   });
 }
@@ -307,7 +308,9 @@ export async function checkForAppUpdates(
       if (notify) {
         Message.success({
           id: CHECK_TOAST_ID,
-          content: `Official ORGII v${result.update.version} is already installed in /Applications.`,
+          content: i18n.t("settings:update.officialAlreadyInstalled", {
+            version: result.update.version,
+          }),
           duration: UPDATE_TOAST_DURATION_MS,
         });
       }
@@ -477,7 +480,7 @@ function showDownloadFailure(
     id: INSTALL_TOAST_ID,
     title: "Update download failed",
     content: options.automatic
-      ? `${errorContent} ORGII will retry in the background with increasing delays.`
+      ? i18n.t("settings:update.automaticRetry", { error: errorContent })
       : errorContent,
     duration: 0,
     cancel: {
@@ -540,7 +543,7 @@ export async function installAvailableAppUpdate(
     Message.success({
       id: INSTALL_TOAST_ID,
       title: "Update installed",
-      content: "Restarting ORGII to finish the update.",
+      content: i18n.t("settings:update.restarting"),
       duration: 2500,
     });
     await relaunchApp();

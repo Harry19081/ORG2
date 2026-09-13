@@ -50,7 +50,7 @@
     },
     "dataSource": {
       "title": "데이터 소스",
-      "description": "ORGII가 감지하는 외부 코딩 도구입니다. 가져올 수 있는 앱은 세션 수를 표시하고 다시 스캔할 수 있으며, 나머지는 설치 상태와 기록 위치를 표시합니다.",
+      "description": "ORG2가 감지하는 외부 코딩 도구입니다. 가져올 수 있는 앱은 세션 수를 표시하고 다시 스캔할 수 있으며, 나머지는 설치 상태와 기록 위치를 표시합니다.",
       "rescanAll": "모두 다시 스캔",
       "rescan": "다시 스캔",
       "rescanning": "다시 스캔 중…",
@@ -190,7 +190,7 @@
           "perTurn": "LLM 호출",
           "perTool": "도구 호출",
           "close": "닫기",
-          "noData": "이 세션에는 세션 단위 합계만 있습니다. 호출별 사용량은 ORGII 자체 에이전트 실행에 대해 기록됩니다.",
+          "noData": "이 세션에는 세션 단위 합계만 있습니다. 호출별 사용량은 ORG2 자체 에이전트 실행에 대해 기록됩니다.",
           "turnHeader": "턴 {{turn}}",
           "promptTokens": "프롬프트",
           "completionTokens": "완료"
@@ -1907,7 +1907,7 @@
     "start": "시작",
     "missingGit": {
       "title": "Git 없음",
-      "body": "Git이 설치되어 있지 않거나 찾을 수 없습니다. ADE Manager 또는 SDE Agent에게 이 컴퓨터에 Git을 설치하도록 요청한 뒤 ORGII를 다시 시작하세요."
+      "body": "Git이 설치되어 있지 않거나 찾을 수 없습니다. ADE Manager 또는 SDE Agent에게 이 컴퓨터에 Git을 설치하도록 요청한 뒤 ORG2를 다시 시작하세요."
     },
     "model": "모델",
     "contextMenu": {
@@ -2010,7 +2010,8 @@
       "refresh": "{{cli}} CLI 버전 다시 확인",
       "unknownVersion": "알 수 없음"
     },
-    "mode": "편집기 모드"
+    "mode": "편집기 모드",
+    "cursorIdeDescription": "ORG2에서 Cursor IDE 채팅 세션을 탐색하고 이어가기"
   },
   "planner": {
     "modes": {
@@ -2249,7 +2250,7 @@
     "noSessionIdFound": "Session ID를 찾을 수 없습니다",
     "failedToResume": "Session 재개에 실패했습니다",
     "failedToCheckChanges": "파일 변경사항을 확인할 수 없습니다. 변경사항을 되돌립니다.",
-    "insufficientBalance": "ORGII 호스팅 서비스의 잔액이 부족합니다. orgii.ai/wallet에서 충전하세요.",
+    "insufficientBalance": "ORG2 호스팅 서비스의 잔액이 부족합니다. orgii.ai/wallet에서 충전하세요.",
     "runQueuedBehindCheckout": "대기 중: 다른 실행이 이 체크아웃을 사용 중입니다. 해당 실행이 끝나면 시작됩니다."
   },
   "planning": {
