@@ -51,10 +51,13 @@ impl ExtractionLease {
                 || current.content != draft.expected_content
                 || current.last_summarized_seq != draft.expected_seq
                 || snapshot.content != draft.expected_content
-                || snapshot.last_seq != draft.expected_seq
             {
                 return Ok(false);
             }
+            // Reactive compaction resets the runtime frame's anchor without
+            // writing a durable boundary. Each view must still match its own
+            // snapshot; equality between the two views is not an invariant.
+            // The SQL CAS below validates snapshot.last_seq independently.
             let committed = persistence::commit_session_memory_state(
                 &session_id,
                 persistence::SessionMemoryUpdate {
