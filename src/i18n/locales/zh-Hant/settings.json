@@ -513,6 +513,7 @@
     "wordWrap": "自動換行",
     "autoSave": "自動儲存",
     "minimap": "小地圖",
+    "hideMinimap": "隱藏縮圖",
     "indentGuides": "縮進參考線",
     "treeIndentGuides": "樹視圖縮進參考線",
     "highlightActiveLine": "目前行高亮",

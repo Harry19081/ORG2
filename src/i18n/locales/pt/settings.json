@@ -513,6 +513,7 @@
     "wordWrap": "Quebra de linha",
     "autoSave": "Salvamento automático",
     "minimap": "Minimapa",
+    "hideMinimap": "Ocultar minimapa",
     "indentGuides": "Guias de indentação",
     "treeIndentGuides": "Guias de indentação em árvore",
     "highlightActiveLine": "Realce da linha atual",

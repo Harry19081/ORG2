@@ -513,6 +513,7 @@
     "wordWrap": "Xuống dòng tự động",
     "autoSave": "Tự động lưu",
     "minimap": "Bản đồ thu nhỏ",
+    "hideMinimap": "Ẩn bản đồ thu nhỏ",
     "indentGuides": "Đường dẫn thụt lề",
     "treeIndentGuides": "Đường dẫn thụt lề cây",
     "highlightActiveLine": "Đánh dấu dòng hiện tại",
