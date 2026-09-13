@@ -19,7 +19,18 @@ import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip"
 import Select from "@src/components/Select";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
-import { EllipsisIcon, HugeiconsIcon, Refresh04Icon } from "@src/icons";
+import {
+  Archive03Icon,
+  CircleDotIcon,
+  EllipsisIcon,
+  FileDiffIcon,
+  GitCommitIcon,
+  GitPullRequestIcon,
+  HugeiconsIcon,
+  MinusSignIcon,
+  Refresh04Icon,
+  Tick01Icon,
+} from "@src/icons";
 import type { SourceControlFilterMode } from "@src/store/workstation/codeEditor/sourceControlTypes";
 
 export type { SourceControlFilterMode } from "@src/store/workstation/codeEditor/sourceControlTypes";
@@ -29,6 +40,20 @@ export interface SourceControlFilterCounts {
   unstaged: number;
   staged: number;
   stashed: number;
+}
+
+const FILTER_ICONS = {
+  uncommitted: FileDiffIcon,
+  unstaged: MinusSignIcon,
+  staged: Tick01Icon,
+  stashed: Archive03Icon,
+  history: GitCommitIcon,
+  pr: GitPullRequestIcon,
+  issues: CircleDotIcon,
+} as const;
+
+function filterIcon(mode: SourceControlFilterMode) {
+  return <HugeiconsIcon icon={FILTER_ICONS[mode]} size={HEADER_ICON_SIZE.sm} />;
 }
 
 interface FilterRowEntry {
@@ -123,6 +148,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
             typeof count === "number" ? getCountLabel(count, label) : label;
           return {
             value: row.id,
+            icon: filterIcon(row.id),
             label: <span className="whitespace-nowrap">{triggerLabel}</span>,
             triggerLabel,
           };
@@ -132,6 +158,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
           ...fileOptions,
           {
             value: "history",
+            icon: filterIcon("history"),
             label: (
               <span className="whitespace-nowrap">
                 {t("common:labels.gitHistory")}
@@ -141,6 +168,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
           },
           {
             value: "pr",
+            icon: filterIcon("pr"),
             label: (
               <span className="whitespace-nowrap">
                 {t("common:labels.pullRequest", "Pull request")}
@@ -150,6 +178,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
           },
           {
             value: "issues",
+            icon: filterIcon("issues"),
             label: (
               <span className="whitespace-nowrap">
                 {t("common:labels.issues", "Issues")}
@@ -183,6 +212,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
             value={stageModeHidden ? "uncommitted" : mode}
             onChange={handleSelect}
             options={options}
+            showTriggerIcon={false}
             size="small"
             appearance="ghost"
             radius="lg"

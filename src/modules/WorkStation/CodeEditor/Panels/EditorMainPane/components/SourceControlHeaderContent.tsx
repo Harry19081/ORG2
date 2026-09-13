@@ -104,9 +104,7 @@ export const SourceControlHeaderContent: React.FC<
     !hasFocusPath || gitReviewNavigationTotal === 0;
   const showIssueHeader = isIssuesMode && selectedIssue;
   return (
-    <div
-      className={`flex min-w-0 flex-1 items-center gap-1.5 ${mode === "all-changes" ? "pr-2" : ""}`}
-    >
+    <div className="flex min-w-0 flex-1 items-center gap-1.5">
       {sourceControlHeaderLeadingSlot}
       {sourceControlHeaderLeadingSlot && sourceControlHeaderTrailingSlot ? (
         <span
