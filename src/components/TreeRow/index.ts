@@ -8,6 +8,7 @@
  */
 
 export { TreeRowBase } from "./TreeRowBase";
+export { TreeRowActionGroup } from "./TreeRowActionGroup";
 export { TreeRowAction } from "./TreeRowAction";
 export { GitStatusBadge } from "./GitStatusBadge";
 export { VirtualizedListBase } from "./VirtualizedListBase";

@@ -20,6 +20,7 @@ import { HoverCardMetadataRow } from "@src/components/HoverCard/HoverCardMetadat
 import {
   TREE_ROW_INSET_CLASS,
   TREE_ROW_ROUNDED_CLASS,
+  TreeRowActionGroup,
   TreeRowBase,
   type TreeRowNode,
 } from "@src/components/TreeRow";
@@ -237,7 +238,7 @@ const StashItem: React.FC<StashItemProps> = memo(
             </span>
 
             {/* Action buttons - visible on hover and keyboard focus */}
-            <div className="hidden items-center gap-0.5 group-focus-within/item:flex group-hover/item:flex">
+            <TreeRowActionGroup>
               <Button
                 htmlType="button"
                 size="sidebar"
@@ -298,7 +299,7 @@ const StashItem: React.FC<StashItemProps> = memo(
                   />
                 }
               />
-            </div>
+            </TreeRowActionGroup>
           </TreeRowBase>
         </div>
       </HoverCard>
