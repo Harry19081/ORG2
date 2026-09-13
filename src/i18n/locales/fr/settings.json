@@ -513,6 +513,7 @@
     "wordWrap": "Retour à la ligne",
     "autoSave": "Enregistrement automatique",
     "minimap": "Minimap",
+    "hideMinimap": "Masquer la minicarte",
     "indentGuides": "Guides d'indentation",
     "treeIndentGuides": "Guides d'indentation de l'arborescence",
     "highlightActiveLine": "Surlignage de la ligne courante",

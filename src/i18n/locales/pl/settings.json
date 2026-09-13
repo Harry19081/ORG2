@@ -513,6 +513,7 @@
     "wordWrap": "Zawijanie wierszy",
     "autoSave": "Automatyczne zapisywanie",
     "minimap": "Minimapa",
+    "hideMinimap": "Ukryj minimapę",
     "indentGuides": "Linie wcięć",
     "treeIndentGuides": "Linie wcięć drzewa",
     "highlightActiveLine": "Podświetlanie bieżącego wiersza",

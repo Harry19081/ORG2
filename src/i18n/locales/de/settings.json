@@ -513,6 +513,7 @@
     "wordWrap": "Zeilenumbruch",
     "autoSave": "Automatisch speichern",
     "minimap": "Minimap",
+    "hideMinimap": "Minimap ausblenden",
     "indentGuides": "Einrückungslinien",
     "treeIndentGuides": "Baum-Einrückungslinien",
     "highlightActiveLine": "Aktuelle Zeile hervorheben",

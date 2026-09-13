@@ -513,6 +513,7 @@
     "wordWrap": "자동 줄바꿈",
     "autoSave": "자동 저장",
     "minimap": "미니맵",
+    "hideMinimap": "미니맵 숨기기",
     "indentGuides": "들여쓰기 가이드",
     "treeIndentGuides": "트리 들여쓰기 가이드",
     "highlightActiveLine": "현재 줄 강조",

@@ -591,6 +591,7 @@
     "wordWrap": "Word wrap",
     "autoSave": "Auto save",
     "minimap": "Minimap",
+    "hideMinimap": "Hide Minimap",
     "indentGuides": "Indent guides",
     "treeIndentGuides": "Tree indent guides",
     "highlightActiveLine": "Current line highlight",

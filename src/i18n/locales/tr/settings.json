@@ -513,6 +513,7 @@
     "wordWrap": "Sözcük kaydırma",
     "autoSave": "Otomatik kaydet",
     "minimap": "Mini harita",
+    "hideMinimap": "Mini haritayı gizle",
     "indentGuides": "Girinti kılavuzları",
     "treeIndentGuides": "Ağaç girinti kılavuzları",
     "highlightActiveLine": "Geçerli satırı vurgula",

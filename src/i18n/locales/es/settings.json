@@ -513,6 +513,7 @@
     "wordWrap": "Ajuste de línea",
     "autoSave": "Guardado automático",
     "minimap": "Minimapa",
+    "hideMinimap": "Ocultar minimapa",
     "indentGuides": "Guías de sangría",
     "treeIndentGuides": "Guías de sangría del árbol",
     "highlightActiveLine": "Resaltado de la línea actual",

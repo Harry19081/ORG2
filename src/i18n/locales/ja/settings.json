@@ -513,6 +513,7 @@
     "wordWrap": "折り返し",
     "autoSave": "自動保存",
     "minimap": "ミニマップ",
+    "hideMinimap": "ミニマップを非表示",
     "indentGuides": "インデントガイド",
     "treeIndentGuides": "ツリー インデントガイド",
     "highlightActiveLine": "現在行のハイライト",

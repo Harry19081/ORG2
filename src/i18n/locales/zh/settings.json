@@ -591,6 +591,7 @@
     "wordWrap": "自动换行",
     "autoSave": "自动保存",
     "minimap": "小地图",
+    "hideMinimap": "隐藏缩略图",
     "indentGuides": "缩进参考线",
     "treeIndentGuides": "树视图缩进参考线",
     "highlightActiveLine": "当前行高亮",

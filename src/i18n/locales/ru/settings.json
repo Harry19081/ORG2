@@ -513,6 +513,7 @@
     "wordWrap": "Перенос строк",
     "autoSave": "Автосохранение",
     "minimap": "Миникарта",
+    "hideMinimap": "Скрыть мини-карту",
     "indentGuides": "Направляющие отступов",
     "treeIndentGuides": "Направляющие отступов дерева",
     "highlightActiveLine": "Подсветка текущей строки",
