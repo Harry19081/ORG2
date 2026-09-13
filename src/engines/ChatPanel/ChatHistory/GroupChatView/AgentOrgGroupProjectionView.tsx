@@ -246,7 +246,7 @@ const AgentOrgGroupProjectionView: React.FC<
                 data-testid="agent-org-group-projection-load-older"
                 onClick={() => {
                   preserveForLayoutMutation();
-                  void onLoadOlder();
+                  onLoadOlder().catch(() => undefined);
                 }}
               >
                 {t("groupChat.projection.loadOlder")}
