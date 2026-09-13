@@ -92,6 +92,9 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
         }`}
         onClick={toggleExpanded}
         onKeyDown={(event) => {
+          // Secondary actions own their keyboard events.
+          if (event.target !== event.currentTarget) return;
+
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             toggleExpanded();

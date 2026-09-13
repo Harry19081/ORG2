@@ -12,6 +12,7 @@ import Button from "@src/components/Button";
 import { Message } from "@src/components/Message";
 import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
+import Textarea from "@src/components/Textarea";
 import { CodeMirrorConflictEditor } from "@src/features/CodeMirror";
 import {
   Alert01Icon,
@@ -243,10 +244,15 @@ export const ProjectGitSyncReviewContent: React.FC<
                     <PageNotice type="warning" role="status">
                       {selectedConflict.message}
                     </PageNotice>
-                    <textarea
-                      className="focus:border-accent-9 min-h-0 flex-1 resize-none rounded-md border border-border-2 bg-bg-2 p-3 text-sm text-text-1 outline-none"
+                    <Textarea
+                      resize="none"
+                      className="min-h-0 flex-1 [&>.textarea-inner]:flex-1"
+                      textareaClassName="flex-1"
+                      textareaStyle={{ minHeight: 0, maxHeight: "none" }}
                       value={editedContent}
-                      onChange={(event) => setEditedContent(event.target.value)}
+                      onChange={(_value, event) =>
+                        setEditedContent(event.target.value)
+                      }
                     />
                   </div>
                 )}

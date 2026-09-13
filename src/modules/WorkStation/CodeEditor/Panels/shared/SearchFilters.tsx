@@ -8,6 +8,7 @@ import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import Input from "@src/components/Input";
 import {
   SEARCH_WRAPPER_SIDEBAR,
   searchControlSingleLineInputStyle,
@@ -79,14 +80,18 @@ export const SearchFilters: React.FC<SearchFiltersProps> = memo(
             {t("labels.filesToInclude")}
           </label>
           <div className={filterWrapperClass}>
-            <input
+            <Input
+              autoHeight
+              appearance="bare"
+              size="small"
               id="files-to-include"
               type="text"
               value={filesToInclude}
-              onChange={(event) => onFilesToIncludeChange(event.target.value)}
+              onChange={(value) => onFilesToIncludeChange(value)}
               placeholder={t("placeholders.includeExample")}
-              style={searchControlSingleLineInputStyle(13)}
-              className="min-w-0 flex-1 text-text-1 placeholder:text-text-3"
+              inputStyle={searchControlSingleLineInputStyle(13)}
+              className="min-w-0 flex-1 [&>.input-inner]:border-0!"
+              inputClassName="text-text-1 placeholder:text-text-3"
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
@@ -125,14 +130,18 @@ export const SearchFilters: React.FC<SearchFiltersProps> = memo(
             {t("labels.filesToExclude")}
           </label>
           <div className={filterWrapperClass}>
-            <input
+            <Input
+              autoHeight
+              appearance="bare"
+              size="small"
               id="files-to-exclude"
               type="text"
               value={filesToExclude}
-              onChange={(event) => onFilesToExcludeChange(event.target.value)}
+              onChange={(value) => onFilesToExcludeChange(value)}
               placeholder={t("placeholders.excludeExample")}
-              style={searchControlSingleLineInputStyle(13)}
-              className="min-w-0 flex-1 text-text-1 placeholder:text-text-3"
+              inputStyle={searchControlSingleLineInputStyle(13)}
+              className="min-w-0 flex-1 [&>.input-inner]:border-0!"
+              inputClassName="text-text-1 placeholder:text-text-3"
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"

@@ -4,6 +4,7 @@ import type { WorkItemSchedule } from "@src/api/http/project";
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
 import { DROPDOWN_ITEM } from "@src/components/Dropdown/tokens";
+import Input from "@src/components/Input";
 import Select, { type SelectOption } from "@src/components/Select";
 import TimePicker from "@src/components/TimePicker";
 import { WORKSTATION_TRAIL_CONTENT } from "@src/config/workstation/tokens";
@@ -479,11 +480,12 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             </Button>
             {showCustomCron && (
               <div className="mt-1">
-                <input
+                <Input
+                  size="mini"
+                  className="w-full"
                   value={schedule?.cron ?? ""}
-                  onChange={handleCustomCronChange}
+                  onChange={(_value, event) => handleCustomCronChange(event)}
                   placeholder="0 9 * * 1"
-                  className="w-full rounded border border-border-2 bg-bg-2 px-2 py-1 text-[11px] text-text-1 outline-none focus:border-primary-6"
                 />
                 <div className="mt-0.5 text-[10px] text-text-4">
                   {t("common:schedule.cronHelp")}

@@ -58,3 +58,116 @@ it("keeps all eight search actions named, compact and independently wired", asyn
     Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
   }
 });
+
+it("preserves shared field refs, value callbacks, Enter behavior and multiline resize", async () => {
+  const { default: ReplaceInput } =
+    await import("@src/modules/WorkStation/CodeEditor/Panels/shared/ReplaceInput");
+  const { default: SearchFilters } =
+    await import("@src/modules/WorkStation/CodeEditor/Panels/shared/SearchFilters");
+  Reflect.set(globalThis, "IS_REACT_ACT_ENVIRONMENT", true);
+  const host = document.createElement("div");
+  document.body.appendChild(host);
+  const root = createRoot(host);
+  try {
+    for (const Component of [SearchInput, ReplaceInput]) {
+      for (const multiline of [false, true]) {
+        const ref = React.createRef<HTMLInputElement | HTMLTextAreaElement>();
+        const onChange = vi.fn();
+        const onSubmit = vi.fn();
+        await act(async () =>
+          root.render(
+            React.createElement(Component, {
+              value: "needle",
+              onChange,
+              onSubmit,
+              multiline,
+              inputRef: ref as React.RefObject<
+                HTMLInputElement | HTMLTextAreaElement
+              >,
+            })
+          )
+        );
+        const field = host.querySelector<
+          HTMLInputElement | HTMLTextAreaElement
+        >(multiline ? "textarea" : "input")!;
+        expect(ref.current).toBe(field);
+        expect(
+          field.closest(
+            multiline ? ".textarea-field-bare" : ".input-field-bare"
+          )
+        ).not.toBeNull();
+        expect(field.value).toBe("needle");
+        const enter = new KeyboardEvent("keydown", {
+          key: "Enter",
+          bubbles: true,
+          cancelable: true,
+        });
+        await act(async () => field.dispatchEvent(enter));
+        expect(enter.defaultPrevented).toBe(true);
+        expect(onSubmit).toHaveBeenCalledTimes(1);
+        const shiftEnter = new KeyboardEvent("keydown", {
+          key: "Enter",
+          shiftKey: true,
+          bubbles: true,
+          cancelable: true,
+        });
+        await act(async () => field.dispatchEvent(shiftEnter));
+        expect(shiftEnter.defaultPrevented).toBe(false);
+        expect(onSubmit).toHaveBeenCalledTimes(1);
+        if (multiline) {
+          expect(parseFloat(field.style.minHeight)).toBe(0);
+          Object.defineProperty(field, "scrollHeight", {
+            configurable: true,
+            value: 180,
+          });
+        }
+        const prototype = multiline
+          ? HTMLTextAreaElement.prototype
+          : HTMLInputElement.prototype;
+        await act(async () => {
+          Object.getOwnPropertyDescriptor(prototype, "value")!.set!.call(
+            field,
+            "updated"
+          );
+          field.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+        expect(onChange).toHaveBeenCalledWith("updated");
+        if (multiline) expect(field.style.height).toBe("120px");
+        else expect(field.style.height).toBe("28px");
+      }
+    }
+    const include = vi.fn(),
+      exclude = vi.fn();
+    await act(async () =>
+      root.render(
+        React.createElement(SearchFilters, {
+          filesToInclude: "src/**",
+          filesToExclude: "dist/**",
+          onFilesToIncludeChange: include,
+          onFilesToExcludeChange: exclude,
+        })
+      )
+    );
+    for (const [id, callback] of [
+      ["files-to-include", include],
+      ["files-to-exclude", exclude],
+    ] as const) {
+      const field = host.querySelector<HTMLInputElement>(`#${id}`)!;
+      expect(field.closest(".input-field-bare")).not.toBeNull();
+      expect(host.querySelector(`label[for="${id}"]`)).not.toBeNull();
+      expect(field.style.fontSize).toBe("13px");
+      await act(async () => {
+        Object.getOwnPropertyDescriptor(
+          HTMLInputElement.prototype,
+          "value"
+        )!.set!.call(field, "*.ts");
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      expect(callback.mock.calls[0][0]).toBe("*.ts");
+    }
+  } finally {
+    await act(async () => root.unmount());
+    host.remove();
+    Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
+  }
+});

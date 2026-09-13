@@ -71,6 +71,10 @@ Review gate: any UI predicate introduced to hide malformed data must cite an exp
 
 Before completing any change that adds or modifies action controls, inspect the changed production files and diff for raw button JSX, native button creation, and substitute clickable elements. Resolve new bypasses or document the concrete non-React exception. Use source/AST inspection to distinguish rendered controls from comments, fixtures, and example strings; a regex count alone is insufficient. This check applies even when `frontend-ui-audit` is skipped and is an author/review obligation, not an automatic lint or CI gate.
 
+### Shared input convention
+
+Production form and search fields must use shared `Input`, `Textarea`, `Checkbox`, `Radio`, or `Select` as appropriate. For an existing search, URL, grid, or editor shell, prefer bare appearance and element-level style/class props so the shell keeps its geometry. Adapt the shared component's value/event callback contract explicitly and preserve native refs, selection, labels, keyboard handling, and resize limits. Keep native elements only within reusable primitive implementations or documented browser-specific boundaries such as hidden file inputs and native color/range controls. Include `.ts` React `createElement` calls as well as JSX in source checks.
+
 ### Touching `*.tsx` files (UI work)
 
 Before declaring a UI-touching task complete, ask:

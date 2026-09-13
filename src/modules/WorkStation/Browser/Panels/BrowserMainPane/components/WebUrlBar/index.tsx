@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
+import Input from "@src/components/Input";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import {
   FILE_BAR_ROW_CLASSES,
@@ -403,7 +404,17 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
           }}
         >
           {/* Input - keep real text selectable in both focused and unfocused states. */}
-          <input
+          <Input
+            appearance="bare"
+            size="small"
+            autoHeight
+            className="min-w-0 flex-1 [&>.input-inner]:border-0!"
+            inputStyle={{
+              ...NO_DRAG_STYLE,
+              height: 28,
+              fontSize: 14,
+              padding: "0 12px",
+            }}
             ref={inputRef}
             type="text"
             value={inputValue}
@@ -412,7 +423,7 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
             data-testid="browser-url-bar-input"
             data-tauri-drag-region="false"
             draggable={false}
-            onChange={(event) => setInputValue(event.target.value)}
+            onChange={(_value, event) => setInputValue(event.target.value)}
             onFocus={handleFocus}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
@@ -420,8 +431,7 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
             onMouseMove={handleInputMouseMove}
             onMouseUp={handleInputMouseUp}
             placeholder={t("placeholders.enterUrlOrSearch")}
-            className="relative z-10 h-7 min-w-0 flex-1 border-none bg-transparent px-3 text-[14px] text-text-1 outline-none select-text placeholder:text-text-3"
-            style={NO_DRAG_STYLE}
+            inputClassName="relative z-10 h-7 min-w-0 flex-1 border-none bg-transparent px-3 text-[14px] text-text-1 outline-none select-text placeholder:text-text-3"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"

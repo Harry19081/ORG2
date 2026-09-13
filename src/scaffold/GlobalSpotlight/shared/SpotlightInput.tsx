@@ -7,6 +7,7 @@ import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import Input from "@src/components/Input";
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import {
   Cancel01Icon,
@@ -86,15 +87,20 @@ export const SpotlightInput: React.FC<SpotlightInputProps> = ({
           )}
         </div>
 
-        <input
+        <Input
+          appearance="bare"
+          size="small"
+          autoHeight
+          className={`min-w-0 flex-1 [&>.input-inner]:border-0! ${SPOTLIGHT_TOKENS.inputFontSize}`}
+          inputStyle={{ fontSize: "inherit", lineHeight: "inherit" }}
           ref={inputRef}
           type="text"
           value={value}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(_value, event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label={ariaLabel}
-          className={`min-w-0 flex-1 bg-transparent ${SPOTLIGHT_TOKENS.inputFontSize} text-text-1 outline-none placeholder:text-text-2`}
+          inputClassName={`min-w-0 flex-1 bg-transparent ${SPOTLIGHT_TOKENS.inputFontSize} text-text-1 outline-none placeholder:text-text-2`}
           autoFocus={autoFocus}
           autoComplete="off"
           spellCheck="false"

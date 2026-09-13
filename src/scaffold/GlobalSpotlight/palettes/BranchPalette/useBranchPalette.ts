@@ -13,6 +13,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { createLogger } from "@src/hooks/logger";
 import { useFilteredItems } from "@src/hooks/search";
 import {
@@ -199,20 +200,20 @@ export function useBranchPalette(options: UseBranchPaletteOptions) {
 
   const renderBranchDeleteAction = useCallback(
     (branch: { name: string }) =>
-      createElement(
-        "button",
-        {
-          type: "button",
-          onClick: (event: MouseEvent<HTMLButtonElement>) => {
-            event.stopPropagation();
-            void handleDeleteBranch(branch.name);
-          },
-          className:
-            "flex items-center justify-center rounded-md p-1 text-text-2 transition-colors hover:bg-fill-3 hover:text-text-1",
-          title: t("actions.delete", "Delete"),
+      createElement(Button, {
+        htmlType: "button",
+        variant: "tertiary",
+        appearance: "soft",
+        size: "sidebar",
+        iconOnly: true,
+        icon: createElement(HugeiconsIcon, { icon: Delete02Icon, size: 14 }),
+        "aria-label": t("actions.delete", "Delete"),
+        onClick: (event: MouseEvent<HTMLButtonElement>) => {
+          event.stopPropagation();
+          void handleDeleteBranch(branch.name);
         },
-        createElement(HugeiconsIcon, { icon: Delete02Icon, size: 14 })
-      ),
+        title: t("actions.delete", "Delete"),
+      }),
     [handleDeleteBranch, t]
   );
 

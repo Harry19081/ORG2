@@ -9,6 +9,8 @@ import type {
 } from "@src/api/http/integrations";
 import type { LinearTeamSummary } from "@src/api/http/integrations/linearProjects";
 import Button from "@src/components/Button";
+import Input from "@src/components/Input";
+import Select from "@src/components/Select";
 import {
   Add01Icon,
   Cancel01Icon,
@@ -130,13 +132,14 @@ const LinearWorkflowStatesSection: React.FC<
 
   const renderDraftEditor = (mode: "create" | "edit") => (
     <div className="mx-2 mb-2 rounded-lg border border-border-2 bg-fill-1 p-2">
-      <input
+      <Input
+        size="small"
+        className="mb-2 w-full"
         value={draft.name}
-        onChange={(event) =>
+        onChange={(_value, event) =>
           setDraft((current) => ({ ...current, name: event.target.value }))
         }
         placeholder={t("linearProjects.statusPanel.statusNamePlaceholder")}
-        className="mb-2 h-7 w-full rounded-md border border-border-2 bg-bg-1 px-2 text-xs text-text-1 outline-none focus:border-primary-6"
       />
       <div className="mb-2 flex items-center gap-2">
         <input
@@ -148,22 +151,21 @@ const LinearWorkflowStatesSection: React.FC<
           className="h-7 w-8 rounded border border-border-2 bg-bg-1"
           aria-label={t("linearProjects.statusPanel.color")}
         />
-        <select
+        <Select
+          size="small"
           value={draft.stateType}
-          onChange={(event) =>
+          onChange={(value) =>
             setDraft((current) => ({
               ...current,
-              stateType: event.target.value as LinearWorkflowStateType,
+              stateType: value as LinearWorkflowStateType,
             }))
           }
-          className="h-7 min-w-0 flex-1 rounded-md border border-border-2 bg-bg-1 px-2 text-xs text-text-1 outline-none focus:border-primary-6"
-        >
-          {WORKFLOW_STATE_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {t(`linearProjects.statusPanel.types.${type}`)}
-            </option>
-          ))}
-        </select>
+          className="min-w-0 flex-1"
+          options={WORKFLOW_STATE_TYPES.map((type) => ({
+            value: type,
+            label: t(`linearProjects.statusPanel.types.${type}`),
+          }))}
+        />
       </div>
       <div className="flex justify-end gap-1">
         <Button

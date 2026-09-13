@@ -220,15 +220,15 @@ describe("ChatImageThumbnail", () => {
 
     expect(objectUrls.revokeObjectURL).toHaveBeenCalledWith(src);
   });
-  it("opens the selected attachment with its message gallery using keyboard activation", () => {
+  it("opens the selected attachment through a focusable native button", () => {
     const images = ["data:image/png;base64,AA", "data:image/png;base64,BB"];
     act(() => root.render(createElement(ChatImageThumbnailRow, { images })));
-    const second = container.querySelectorAll('[role="button"]')[1];
-    act(() =>
-      second.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
-      )
-    );
+    const second = container.querySelectorAll<HTMLButtonElement>("button")[1];
+    expect(second.type).toBe("button");
+    expect(second.tabIndex).toBe(0);
+    second.focus();
+    expect(document.activeElement).toBe(second);
+    act(() => second.click());
     expect(mocks.preview).toHaveBeenLastCalledWith(
       expect.objectContaining({
         dataUrl: images[1],

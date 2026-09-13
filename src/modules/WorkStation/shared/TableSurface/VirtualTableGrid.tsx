@@ -9,6 +9,7 @@ import {
 import type React from "react";
 
 import Button from "@src/components/Button";
+import Input from "@src/components/Input";
 
 import { TableSurfaceFooter } from "./TableSurfaceFooter";
 import { useTableClipboard } from "./hooks/useTableClipboard";
@@ -480,12 +481,25 @@ export function VirtualTableGrid({
                 onDoubleClick={() => editing.startEditing(cell)}
               >
                 {isEditing ? (
-                  <input
+                  <Input
+                    appearance="bare"
+                    size="small"
+                    autoHeight
+                    className="w-full min-w-0 [&>.input-inner]:border-0!"
+                    style={{ height: "100%" }}
+                    inputStyle={{
+                      height: "100%",
+                      fontSize: 13,
+                      padding: "0 9px",
+                      background:
+                        "var(--cm-editor-background, var(--color-bg-1))",
+                      color: "var(--cm-editor-foreground, var(--color-text-1))",
+                    }}
                     ref={inputRef}
-                    className="table-surface__cell-input"
+                    inputClassName="table-surface__cell-input"
                     value={editing.draftValue}
                     readOnly={!editable}
-                    onChange={(event) =>
+                    onChange={(_value, event) =>
                       editing.setDraftValue(event.target.value)
                     }
                     onKeyDown={handleInputKeyDown}
