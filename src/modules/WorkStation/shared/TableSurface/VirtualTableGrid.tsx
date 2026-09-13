@@ -8,6 +8,9 @@ import {
 } from "react";
 import type React from "react";
 
+import Button from "@src/components/Button";
+import Input from "@src/components/Input";
+
 import { TableSurfaceFooter } from "./TableSurfaceFooter";
 import { useTableClipboard } from "./hooks/useTableClipboard";
 import { useTableEditing } from "./hooks/useTableEditing";
@@ -391,9 +394,11 @@ export function VirtualTableGrid({
           const column = columns[columnIndex];
           const sorted = sortState?.columnId === column.id;
           return (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={`header-${column.id}`}
-              type="button"
+              htmlType="button"
               className={[
                 "table-surface__column-header",
                 onSortColumn ? "table-surface__column-header--sortable" : null,
@@ -422,7 +427,7 @@ export function VirtualTableGrid({
                   {sortState.direction === "asc" ? "↑" : "↓"}
                 </span>
               )}
-            </button>
+            </Button>
           );
         })}
 
@@ -476,12 +481,25 @@ export function VirtualTableGrid({
                 onDoubleClick={() => editing.startEditing(cell)}
               >
                 {isEditing ? (
-                  <input
+                  <Input
+                    appearance="bare"
+                    size="small"
+                    autoHeight
+                    className="w-full min-w-0 [&>.input-inner]:border-0!"
+                    style={{ height: "100%" }}
+                    inputStyle={{
+                      height: "100%",
+                      fontSize: 13,
+                      padding: "0 9px",
+                      background:
+                        "var(--cm-editor-background, var(--color-bg-1))",
+                      color: "var(--cm-editor-foreground, var(--color-text-1))",
+                    }}
                     ref={inputRef}
-                    className="table-surface__cell-input"
+                    inputClassName="table-surface__cell-input"
                     value={editing.draftValue}
                     readOnly={!editable}
-                    onChange={(event) =>
+                    onChange={(_value, event) =>
                       editing.setDraftValue(event.target.value)
                     }
                     onKeyDown={handleInputKeyDown}

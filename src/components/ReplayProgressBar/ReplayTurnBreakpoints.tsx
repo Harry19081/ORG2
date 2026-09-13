@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Tooltip from "@src/components/Tooltip";
 
 import type { ReplayProgressSegment } from "./types";
@@ -38,8 +39,10 @@ const ReplayTurnBreakpoints: React.FC<ReplayTurnBreakpointsProps> = memo(
             mouseEnterDelay={80}
             smartPlacement
           >
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               data-testid="replay-turn-breakpoint"
               data-active={segment.isActive ? "true" : undefined}
               aria-current={segment.isActive ? "step" : undefined}
@@ -52,7 +55,7 @@ const ReplayTurnBreakpoints: React.FC<ReplayTurnBreakpointsProps> = memo(
                 className="replay-turn-breakpoints__dot"
                 aria-hidden="true"
               />
-            </button>
+            </Button>
           </Tooltip>
         ))}
       </div>

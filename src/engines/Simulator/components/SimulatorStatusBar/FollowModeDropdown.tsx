@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import DropdownSelectedCheck from "@src/components/Dropdown/DropdownSelectedCheck";
 import {
   DROPDOWN_CLASSES,
@@ -96,9 +97,16 @@ export const FollowModeDropdown: React.FC = () => {
         position="top"
         mouseEnterDelay={200}
       >
-        <button
+        <Button
+          variant="tertiary"
+          appearance="ghost"
+          size="sidebar"
+          shape="round"
+          aria-pressed={isOpen}
+          iconOnly
+          icon={triggerIcon ? <AnyIcon icon={triggerIcon} size={14} /> : null}
           ref={triggerRef as React.Ref<HTMLButtonElement>}
-          type="button"
+          htmlType="button"
           onClick={toggle}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
@@ -107,9 +115,7 @@ export const FollowModeDropdown: React.FC = () => {
               ? "bg-fill-3 text-primary-6"
               : `text-text-2 ${SURFACE_TOKENS.hover} hover:text-primary-6`
           }`}
-        >
-          {triggerIcon ? <AnyIcon icon={triggerIcon} size={14} /> : null}
-        </button>
+        />
       </Tooltip>
       {isOpen &&
         isPositioned &&
@@ -123,8 +129,10 @@ export const FollowModeDropdown: React.FC = () => {
               className={`flex flex-col ${DROPDOWN_PANEL.itemsGapClass}`}
               role="listbox"
             >
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 role="option"
                 aria-selected={isAllApps}
                 onClick={handleSelectAgent}
@@ -144,9 +152,11 @@ export const FollowModeDropdown: React.FC = () => {
                   {t("simulator.replay.trajectoryAgent")}
                 </span>
                 {isAllApps && <DropdownSelectedCheck />}
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 role="option"
                 aria-selected={!isAllApps}
                 disabled={thisAppDisabled}
@@ -166,7 +176,7 @@ export const FollowModeDropdown: React.FC = () => {
                   {t("simulator.replay.trajectoryThisApp")}
                 </span>
                 {!isAllApps && <DropdownSelectedCheck />}
-              </button>
+              </Button>
             </div>
           </div>,
           document.body

@@ -125,8 +125,10 @@ const OverviewSectionToggle: React.FC<OverviewSectionToggleProps> = memo(
     blockedCount = 0,
     blockedLabel,
   }) => (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className="flex w-full items-center gap-1 px-1 text-left text-[11px] font-medium text-text-2 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
       aria-expanded={expanded}
       onClick={onToggle}
@@ -154,7 +156,7 @@ const OverviewSectionToggle: React.FC<OverviewSectionToggleProps> = memo(
         </span>
       )}
       <span className="shrink-0 text-[10px] text-text-3">{count}</span>
-    </button>
+    </Button>
   )
 );
 
@@ -1394,9 +1396,11 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
                         AGENT_ORG_TASK_STATUS.CANCELLED,
                       ] as const
                     ).map((status) => (
-                      <button
+                      <Button
+                        layout="custom"
+                        appearance="custom"
                         key={status}
-                        type="button"
+                        htmlType="button"
                         className={`rounded-full px-2 py-0.5 text-[10px] focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${historyStatus === status ? "bg-primary-6/10 text-primary-6" : "bg-bg-1 text-text-3"}`}
                         aria-pressed={historyStatus === status}
                         onClick={() => handleHistoryStatus(status)}
@@ -1409,7 +1413,7 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
                               ? "planner.agentOrgTasks.statusFailed"
                               : "planner.agentOrgTasks.statusCancelled"
                         )}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                   {historyLoading && (
@@ -1440,9 +1444,12 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
                   {historyPage &&
                     (historyPage.previousCursor || historyPage.nextCursor) && (
                       <div className="flex items-center justify-end gap-1 px-1">
-                        <button
-                          type="button"
-                          className="rounded px-2 py-1 text-[10px] text-text-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none disabled:opacity-40"
+                        <Button
+                          variant="tertiary"
+                          appearance="ghost"
+                          size="mini"
+                          htmlType="button"
+                          className="text-[10px] focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none disabled:opacity-40"
                           data-testid="agent-org-task-history-previous-page"
                           disabled={
                             !historyPage.previousCursor || historyLoading
@@ -1456,10 +1463,13 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
                           }}
                         >
                           {t("planner.agentOrgTasks.previousPage")}
-                        </button>
-                        <button
-                          type="button"
-                          className="rounded px-2 py-1 text-[10px] text-text-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none disabled:opacity-40"
+                        </Button>
+                        <Button
+                          variant="tertiary"
+                          appearance="ghost"
+                          size="mini"
+                          htmlType="button"
+                          className="text-[10px] focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none disabled:opacity-40"
                           data-testid="agent-org-task-history-next-page"
                           disabled={!historyPage.nextCursor || historyLoading}
                           onClick={() => {
@@ -1471,7 +1481,7 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
                           }}
                         >
                           {t("planner.agentOrgTasks.nextPage")}
-                        </button>
+                        </Button>
                       </div>
                     )}
                 </div>

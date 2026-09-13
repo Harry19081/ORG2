@@ -6,6 +6,7 @@
 import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import ModelIcon, { type IconProvider } from "@src/components/ModelIcon";
 import PersonAvatar from "@src/components/PersonAvatar";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
@@ -122,8 +123,10 @@ const TeamMemberCard = memo(function TeamMemberCard({
   const machine = entry.machine;
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       onClick={() => onOpen(entry.userId)}
       data-testid={`team-member-card-${entry.userId}`}
       data-stale={stale ? "true" : "false"}
@@ -245,7 +248,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
             })
           : t("card.neverReported")}
       </div>
-    </button>
+    </Button>
   );
 });
 

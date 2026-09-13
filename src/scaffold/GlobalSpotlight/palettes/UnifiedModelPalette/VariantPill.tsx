@@ -13,6 +13,7 @@
  */
 import React from "react";
 
+import Button from "@src/components/Button";
 import ModelPropertiesDropdown from "@src/components/ModelPropertiesDropdown";
 import { BrainIcon, HugeiconsIcon, Pen01Icon } from "@src/icons";
 import {
@@ -156,23 +157,20 @@ export const VariantPill: React.FC<VariantPillProps> = ({
       renderTrigger={({ ref, onClick, ariaExpanded }) => {
         const isActive = ariaExpanded;
         return (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             ref={ref}
-            type="button"
+            htmlType="button"
             onClick={onClick}
             aria-expanded={ariaExpanded}
             aria-label="Edit variant"
-            // `group` enables `group-hover:` text/icon lifts on the
-            // nested label · separator · pencil. When the dropdown is
-            // open (`isActive`), we pin the lifted colours via JSX so
-            // the pill stays in its "active" appearance without
-            // depending on the cursor staying inside.
             className={`${pillClasses} group/variant-pill cursor-pointer hover:border-border-3 hover:bg-fill-4 ${
               isActive ? "border-border-3 bg-fill-4" : ""
             }`}
           >
             {renderBody(isActive)}
-          </button>
+          </Button>
         );
       }}
     />

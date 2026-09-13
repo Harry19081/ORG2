@@ -2,6 +2,7 @@ import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import HoverCard, {
   type HoverCardTriggerProps,
 } from "@src/components/HoverCard";
@@ -248,8 +249,10 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
           </HoverCardMetadataRow>
         )}
         <HoverCardMetadataRow icon={FingerPrintIcon} dataIcon="fingerprint">
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             className={SESSION_ID_BUTTON_CLASS_NAME}
             title={row.sourceSessionId}
             aria-label={`${t("common:actions.copy")} ${t(
@@ -272,7 +275,7 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
                 aria-hidden="true"
               />
             )}
-          </button>
+          </Button>
         </HoverCardMetadataRow>
         {unresolvedComments > 0 && (
           <HoverCardMetadataRow icon={Message01Icon} dataIcon="message-square">

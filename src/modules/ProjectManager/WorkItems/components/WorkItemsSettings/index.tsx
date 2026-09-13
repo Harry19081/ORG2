@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { MemberEntry } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import {
   getListIconClasses,
   getListItemClasses,
@@ -201,7 +202,9 @@ const SettingsSidebar: React.FC<{
         {SECTIONS.map((section) => {
           const isActive = activeSection === section.id;
           return (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={section.id}
               className={`w-full text-left ${getListItemClasses(isActive, "wideGap")}`}
               onClick={() => onSectionClick(section.id)}
@@ -213,7 +216,7 @@ const SettingsSidebar: React.FC<{
                 className={getListIconClasses(isActive)}
               />
               <span>{t(section.labelKey)}</span>
-            </button>
+            </Button>
           );
         })}
       </div>

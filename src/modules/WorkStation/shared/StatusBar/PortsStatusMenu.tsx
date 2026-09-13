@@ -449,8 +449,10 @@ export const PortsStatusMenu: React.FC = memo(() => {
             </div>
 
             <div className={DROPDOWN_CLASSES.footerContainer}>
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 className={classNames(
                   DROPDOWN_CLASSES.menuActionItem,
                   "min-w-0 flex-1 disabled:cursor-default disabled:text-text-3"
@@ -485,7 +487,7 @@ export const PortsStatusMenu: React.FC = memo(() => {
                     {lastScanLabel}
                   </span>
                 )}
-              </button>
+              </Button>
             </div>
           </div>,
           document.body

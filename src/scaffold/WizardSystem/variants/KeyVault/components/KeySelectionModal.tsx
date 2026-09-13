@@ -8,6 +8,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { DetectedKey, ModelType } from "@src/api/types/keys";
+import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
 import {
   AlertCircleIcon,
@@ -78,7 +79,9 @@ const KeySelectionModal: React.FC<KeySelectionModalProps> = ({
 
         <div className="space-y-3">
           {keys.map((cred, index) => (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={cred.id}
               onClick={() => cred.validated && onSelectIndex(index)}
               disabled={!cred.validated}
@@ -219,7 +222,7 @@ const KeySelectionModal: React.FC<KeySelectionModalProps> = ({
                     )}
                 </div>
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       </div>

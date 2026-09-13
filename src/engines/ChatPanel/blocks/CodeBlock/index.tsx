@@ -14,6 +14,7 @@
 import React, { Suspense, lazy, memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import ExpandOverlay from "@src/components/ExpandOverlay";
 import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
@@ -359,25 +360,51 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                 )}
 
                 {shouldShowOpenButton && (
-                  <button
-                    type="button"
+                  <Button
+                    variant="tertiary"
+                    appearance="soft"
+                    size="mini"
+                    iconOnly
+                    icon={
+                      <HugeiconsIcon
+                        icon={SquareArrowUpRight02Icon}
+                        data-icon="square-arrow-out-up-right"
+                        size={14}
+                        strokeWidth={1.75}
+                      />
+                    }
+                    htmlType="button"
                     title={t("common:actions.open")}
                     aria-label={t("common:actions.open")}
-                    className="ml-auto inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
+                    className="ml-auto shrink-0 bg-event-block hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
                     onClick={handleOpenFile}
-                  >
-                    <HugeiconsIcon
-                      icon={SquareArrowUpRight02Icon}
-                      data-icon="square-arrow-out-up-right"
-                      size={14}
-                      strokeWidth={1.75}
-                    />
-                  </button>
+                  />
                 )}
 
                 {shouldShowCopyButton && (
-                  <button
-                    type="button"
+                  <Button
+                    variant="tertiary"
+                    appearance="soft"
+                    size="mini"
+                    iconOnly
+                    icon={
+                      copied ? (
+                        <HugeiconsIcon
+                          icon={Tick01Icon}
+                          data-icon="check"
+                          size={14}
+                          strokeWidth={1.75}
+                        />
+                      ) : (
+                        <HugeiconsIcon
+                          icon={Copy01Icon}
+                          data-icon="copy"
+                          size={14}
+                          strokeWidth={1.75}
+                        />
+                      )
+                    }
+                    htmlType="button"
                     title={
                       copied
                         ? t("common:status.copied")
@@ -392,28 +419,14 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                       shouldShowOpenButton ? "" : "ml-auto"
                     }`}
                     onClick={handleCopyContent}
-                  >
-                    {copied ? (
-                      <HugeiconsIcon
-                        icon={Tick01Icon}
-                        data-icon="check"
-                        size={14}
-                        strokeWidth={1.75}
-                      />
-                    ) : (
-                      <HugeiconsIcon
-                        icon={Copy01Icon}
-                        data-icon="copy"
-                        size={14}
-                        strokeWidth={1.75}
-                      />
-                    )}
-                  </button>
+                  />
                 )}
 
                 {isPreviewable && (
-                  <button
-                    type="button"
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    htmlType="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleTogglePreview();
@@ -447,7 +460,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                       />
                     )}
                     {t("codePreview.preview")}
-                  </button>
+                  </Button>
                 )}
               </>
             )}
@@ -458,24 +471,50 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
           <div className="absolute top-[16px] right-1.5 z-10 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
             <div className="flex items-center gap-1">
               {shouldShowOpenButton && (
-                <button
-                  type="button"
+                <Button
+                  variant="tertiary"
+                  appearance="soft"
+                  size="mini"
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={SquareArrowUpRight02Icon}
+                      data-icon="square-arrow-out-up-right"
+                      size={14}
+                      strokeWidth={1.75}
+                    />
+                  }
+                  htmlType="button"
                   title={t("common:actions.open")}
                   aria-label={t("common:actions.open")}
-                  className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
+                  className="bg-event-block hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
                   onClick={handleOpenFile}
-                >
-                  <HugeiconsIcon
-                    icon={SquareArrowUpRight02Icon}
-                    data-icon="square-arrow-out-up-right"
-                    size={14}
-                    strokeWidth={1.75}
-                  />
-                </button>
+                />
               )}
               {shouldShowCopyButton && (
-                <button
-                  type="button"
+                <Button
+                  variant="tertiary"
+                  appearance="soft"
+                  size="mini"
+                  iconOnly
+                  icon={
+                    copied ? (
+                      <HugeiconsIcon
+                        icon={Tick01Icon}
+                        data-icon="check"
+                        size={14}
+                        strokeWidth={1.75}
+                      />
+                    ) : (
+                      <HugeiconsIcon
+                        icon={Copy01Icon}
+                        data-icon="copy"
+                        size={14}
+                        strokeWidth={1.75}
+                      />
+                    )
+                  }
+                  htmlType="button"
                   title={
                     copied
                       ? t("common:status.copied")
@@ -486,25 +525,9 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                       ? t("common:status.copied")
                       : t("common:actions.copy")
                   }
-                  className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
+                  className="bg-event-block hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
                   onClick={handleCopyContent}
-                >
-                  {copied ? (
-                    <HugeiconsIcon
-                      icon={Tick01Icon}
-                      data-icon="check"
-                      size={14}
-                      strokeWidth={1.75}
-                    />
-                  ) : (
-                    <HugeiconsIcon
-                      icon={Copy01Icon}
-                      data-icon="copy"
-                      size={14}
-                      strokeWidth={1.75}
-                    />
-                  )}
-                </button>
+                />
               )}
             </div>
           </div>

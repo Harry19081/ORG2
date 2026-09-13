@@ -21,6 +21,7 @@ import {
   type RoutineRunSummary,
   projectApi,
 } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
 import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
@@ -240,8 +241,10 @@ const RoutineRunDetailPane: React.FC<RoutineRunDetailPaneProps> = ({
               <ul className="flex flex-col gap-1">
                 {detail.workItems.map((item) => (
                   <li key={item.shortId}>
-                    <button
-                      type="button"
+                    <Button
+                      layout="custom"
+                      appearance="custom"
+                      htmlType="button"
                       className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12px] hover:bg-fill-1"
                       onClick={() => openWorkItem(item.shortId)}
                       data-testid={`routine-run-work-item-${item.shortId}`}
@@ -255,7 +258,7 @@ const RoutineRunDetailPane: React.FC<RoutineRunDetailPaneProps> = ({
                       <span className="shrink-0 text-text-3">
                         {item.portableState ?? item.status}
                       </span>
-                    </button>
+                    </Button>
                   </li>
                 ))}
               </ul>

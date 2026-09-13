@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
+import Input from "@src/components/Input";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import { ArrowLeft01Icon, BlushBrush01Icon, HugeiconsIcon } from "@src/icons";
 
@@ -177,17 +178,24 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
         )}
 
         {!hideInput && (
-          <input
+          <Input
+            appearance="bare"
+            size="small"
+            autoHeight
+            className={`min-w-0 flex-1 [&>.input-inner]:border-0! ${inputFontSize}`}
+            inputStyle={{ fontSize: "inherit", lineHeight: "inherit" }}
             ref={inputRef}
             type="text"
             value={searchQuery}
-            onChange={(event) => onSearchQueryChange(event.target.value)}
+            onChange={(_value, event) =>
+              onSearchQueryChange(event.target.value)
+            }
             onKeyDown={(event) => {
               if (!handleSpotlightHorizontalArrow(event)) onKeyDown(event);
             }}
             placeholder={placeholder}
             aria-label={ariaLabel}
-            className={`min-w-0 flex-1 bg-transparent text-ellipsis ${inputFontSize} text-text-1 placeholder:text-text-1 focus:outline-none`}
+            inputClassName={`min-w-0 flex-1 bg-transparent text-ellipsis ${inputFontSize} text-text-1 placeholder:text-text-1 focus:outline-none`}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"

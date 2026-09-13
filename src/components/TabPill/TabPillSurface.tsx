@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 
+import Button from "@src/components/Button";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 
@@ -79,9 +80,11 @@ export const TabPillSurface = React.forwardRef<
 
     if (as === "button") {
       return (
-        <button
+        <Button
+          layout="custom"
+          appearance="custom"
           ref={ref as React.Ref<HTMLButtonElement>}
-          type="button"
+          htmlType="button"
           className={surfaceClassName}
           onClick={handleClick as React.MouseEventHandler<HTMLButtonElement>}
           onMouseLeave={
@@ -90,7 +93,7 @@ export const TabPillSurface = React.forwardRef<
           {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
           {children}
-        </button>
+        </Button>
       );
     }
 

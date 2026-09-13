@@ -214,3 +214,87 @@ describe("compact shared actions", () => {
     }
   });
 });
+
+describe("compound button surfaces", () => {
+  it("preserves direct-child layout and caller-owned geometry", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(
+        Button,
+        {
+          layout: "custom",
+          appearance: "custom",
+          className: "menu-row",
+          style: { height: 48, padding: "4px 12px" },
+          role: "menuitem",
+          "aria-expanded": true,
+        },
+        React.createElement("div", { className: "label" }, "Two-line label"),
+        React.createElement("span", { className: "suffix" }, "Shortcut")
+      )
+    );
+    const host = document.createElement("div");
+    host.innerHTML = markup;
+    const button = host.querySelector("button")!;
+    expect(button.className).toBe("menu-row");
+    expect(button.style.height).toBe("48px");
+    expect(button.style.padding).toBe("4px 12px");
+    expect(button.style.width).toBe("");
+    expect(button.style.borderRadius).toBe("");
+    expect(button.querySelector(":scope > .label")?.textContent).toBe(
+      "Two-line label"
+    );
+    expect(button.querySelector(":scope > .suffix")?.textContent).toBe(
+      "Shortcut"
+    );
+    expect(button.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("retains native refs, switch semantics, disabled behavior and form type", async () => {
+    Reflect.set(globalThis, "IS_REACT_ACT_ENVIRONMENT", true);
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const root = createRoot(host);
+    const ref = React.createRef<HTMLButtonElement>();
+    let clicks = 0;
+    const props = {
+      layout: "custom" as const,
+      appearance: "custom" as const,
+      ref,
+      role: "switch",
+      "aria-checked": true,
+      type: "submit" as const,
+      htmlType: "button" as const,
+      onClick: () => {
+        clicks += 1;
+      },
+    };
+    try {
+      await act(async () =>
+        root.render(React.createElement(Button, props, "Track"))
+      );
+      expect(ref.current).toBe(host.querySelector("button"));
+      expect(ref.current?.getAttribute("role")).toBe("switch");
+      expect(ref.current?.getAttribute("aria-checked")).toBe("true");
+      expect(ref.current?.type).toBe("button");
+      await act(async () => ref.current!.click());
+      expect(clicks).toBe(1);
+      await act(async () =>
+        root.render(
+          React.createElement(Button, { ...props, disabled: true }, "Track")
+        )
+      );
+      await act(async () => ref.current!.click());
+      expect(clicks).toBe(1);
+      await act(async () =>
+        root.render(
+          React.createElement(Button, { ...props, htmlType: "submit" }, "Track")
+        )
+      );
+      expect(ref.current?.type).toBe("submit");
+    } finally {
+      await act(async () => root.unmount());
+      host.remove();
+      Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
+    }
+  });
+});

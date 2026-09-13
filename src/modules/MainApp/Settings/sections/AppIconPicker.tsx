@@ -11,6 +11,7 @@ import React, { useCallback } from "react";
 import darkIcon from "@src/assets/appIcons/dark.png";
 import lightIcon from "@src/assets/appIcons/light.png";
 import rainbowIcon from "@src/assets/appIcons/rainbow.png";
+import Button from "@src/components/Button";
 import type { DockIconVariant } from "@src/hooks/settings";
 
 const APP_ICON_PREVIEWS: Record<DockIconVariant, string> = {
@@ -72,9 +73,11 @@ export const AppIconPicker: React.FC<AppIconPickerProps> = ({
       {options.map((option) => {
         const selected = option.value === value;
         return (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={option.value}
-            type="button"
+            htmlType="button"
             role="radio"
             aria-checked={selected}
             aria-label={option.label}
@@ -93,7 +96,7 @@ export const AppIconPicker: React.FC<AppIconPickerProps> = ({
               draggable={false}
               className="h-7 w-7 select-none"
             />
-          </button>
+          </Button>
         );
       })}
     </div>

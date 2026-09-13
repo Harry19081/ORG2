@@ -435,16 +435,21 @@ export const McpTable: React.FC<McpTableProps> = ({
                     </Menu>
                   }
                 >
-                  <button
-                    className="rounded p-1 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1"
+                  <Button
+                    variant="tertiary"
+                    appearance="soft"
+                    size="mini"
+                    iconOnly
+                    icon={
+                      <HugeiconsIcon
+                        icon={MoreHorizontalIcon}
+                        data-icon="ellipsis"
+                        size={14}
+                      />
+                    }
+                    className="hover:bg-fill-3 hover:text-text-1"
                     aria-label={t("common:actions.more")}
-                  >
-                    <HugeiconsIcon
-                      icon={MoreHorizontalIcon}
-                      data-icon="ellipsis"
-                      size={14}
-                    />
-                  </button>
+                  />
                 </Dropdown>
               ) : null}
             </div>

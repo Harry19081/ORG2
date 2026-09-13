@@ -1,5 +1,6 @@
 import React from "react";
 
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -77,9 +78,11 @@ export function RowPropertyDropdown<T extends string>({
                     )
                   : options;
               return filtered.map((option) => (
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   key={option.value}
-                  type="button"
+                  htmlType="button"
                   className={`w-full justify-between text-left ${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} ${
                     option.value === value ? DROPDOWN_CLASSES.itemSelected : ""
                   }`}
@@ -96,7 +99,7 @@ export function RowPropertyDropdown<T extends string>({
                   <span className="min-w-0 flex-1 truncate">
                     {option.label}
                   </span>
-                </button>
+                </Button>
               ));
             }
           : undefined

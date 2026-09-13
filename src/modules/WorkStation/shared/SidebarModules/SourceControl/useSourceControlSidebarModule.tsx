@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 
 import type { GitWorktreeEntry } from "@src/api/http/git/types";
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
@@ -425,8 +426,10 @@ export function useSourceControlSidebarModule({
         : t("tabs.sourceControl");
   const isAlternateMode = isPrMode || isHistoryMode || isIssuesMode;
   const sectionTitle = isAlternateMode ? (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className="flex min-w-0 items-center gap-1.5 normal-case"
       onClick={() => onFilterModeChange?.("uncommitted")}
       aria-label={t("tabs.sourceControl")}
@@ -441,7 +444,7 @@ export function useSourceControlSidebarModule({
         />
       </span>
       <span className="truncate uppercase">{sectionLabel}</span>
-    </button>
+    </Button>
   ) : (
     sectionLabel
   );

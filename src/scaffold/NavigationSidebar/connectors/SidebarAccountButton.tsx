@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import PersonAvatar from "@src/components/PersonAvatar";
 import { HugeiconsIcon, Login02Icon } from "@src/icons";
 
@@ -19,8 +20,10 @@ const SidebarAccountButton: React.FC<SidebarAccountButtonProps> = React.memo(
     const label = signedIn ? identity : t("cloud.signIn");
 
     return (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className={`flex h-7 min-w-0 flex-1 items-center rounded-lg border-none px-2 text-left focus-visible:ring-2 focus-visible:ring-primary-6/40 focus-visible:outline-none ${
           menuOpen
             ? "bg-sidebar-selected"
@@ -56,7 +59,7 @@ const SidebarAccountButton: React.FC<SidebarAccountButtonProps> = React.memo(
             {label}
           </span>
         </span>
-      </button>
+      </Button>
     );
   }
 );

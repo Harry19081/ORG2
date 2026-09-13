@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import SessionHoverCard from "@src/components/SessionHoverCard";
 import {
   HEADER_BUTTON,
@@ -50,8 +51,10 @@ export const FileSessionHistoryParticipantView: React.FC<FileSessionHistoryParti
     const hasTranscript = Boolean(participant.transcriptSessionId);
 
     const row = (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         data-testid="session-blame-entry"
         data-session-id={participant.sessionId}
         data-transcript-session-id={
@@ -95,7 +98,7 @@ export const FileSessionHistoryParticipantView: React.FC<FileSessionHistoryParti
             <HugeiconsIcon icon={OpenIcon} size={14} />
           </span>
         )}
-      </button>
+      </Button>
     );
 
     return hasTranscript ? (

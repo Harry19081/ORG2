@@ -6,6 +6,7 @@ import Checkbox from "@src/components/Checkbox";
 import Radio from "@src/components/Radio";
 import type { RadioValue } from "@src/components/Radio";
 import TabPill from "@src/components/TabPill";
+import Textarea from "@src/components/Textarea";
 import type { ChatRetryKind } from "@src/engines/ChatPanel/components/ChatStatusBanners";
 import {
   ColorPickerIcon,
@@ -461,10 +462,13 @@ export function PlaygroundPreviewMainArea({
         }
       >
         {jsonVisible && (
-          <textarea
-            className="box-border min-h-[200px] w-full min-w-0 flex-1 resize-none rounded-md border border-border-2 bg-fill-2 p-2.5 text-[12px] leading-normal text-text-1 placeholder:text-text-4 focus:border-primary-6 focus:outline-none"
+          <Textarea
+            size="mini"
+            resize="none"
+            className="min-h-[200px] min-w-0 flex-1 [&>.textarea-inner]:flex-1"
+            textareaClassName="flex-1"
             value={jsonInput}
-            onChange={onJsonChange}
+            onChange={(_value, event) => onJsonChange(event)}
             placeholder={jsonPlaceholder}
             spellCheck={false}
           />

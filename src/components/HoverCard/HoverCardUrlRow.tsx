@@ -1,5 +1,6 @@
 import React from "react";
 
+import Button from "@src/components/Button";
 import { HOVER_CARD } from "@src/components/HoverCard/tokens";
 import { createLogger } from "@src/hooks/logger";
 import { HugeiconsIcon, InternetIcon } from "@src/icons";
@@ -53,14 +54,16 @@ export const HoverCardUrlRow: React.FC<HoverCardUrlRowProps> = ({ url }) => {
         />
       }
     >
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className={HOVER_CARD_LINK_ROW_CLASS_NAME}
         title={url}
         onClick={() => handleOpenUrl(url)}
       >
         {label}
-      </button>
+      </Button>
     </HoverCardRow>
   );
 };

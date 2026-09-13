@@ -1,6 +1,7 @@
 import cn from "classnames";
 import React from "react";
 
+import Button from "@src/components/Button";
 import Switch from "@src/components/Switch";
 import Tooltip from "@src/components/Tooltip";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
@@ -80,6 +81,9 @@ export function InlineSplitSelectableRow({
       )}
       onClick={onSelect}
       onKeyDown={(event) => {
+        // Secondary actions own their keyboard events.
+        if (event.target !== event.currentTarget) return;
+
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           onSelect();
@@ -118,8 +122,10 @@ export function InlineSplitAddKeyRow({
   onClick,
 }: InlineSplitAddKeyRowProps) {
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       onClick={onClick}
       className="flex h-9 min-h-9 w-full cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs text-text-2 hover:bg-fill-1"
     >
@@ -127,7 +133,7 @@ export function InlineSplitAddKeyRow({
         <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />
       </span>
       <span className="truncate">{label}</span>
-    </button>
+    </Button>
   );
 }
 

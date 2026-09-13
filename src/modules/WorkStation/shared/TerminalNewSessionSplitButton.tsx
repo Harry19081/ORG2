@@ -87,9 +87,11 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
           {shellProfiles
             .filter((profile) => profile.category === "shell")
             .map((profile) => (
-              <button
+              <Button
+                layout="custom"
+                appearance="custom"
                 key={profile.id}
-                type="button"
+                htmlType="button"
                 className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
                 onClick={() => handlePickProfile(profile)}
               >
@@ -99,7 +101,7 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
                     {t("common:common.default", "Default")}
                   </span>
                 )}
-              </button>
+              </Button>
             ))}
           {shellProfiles.some((profile) => profile.category === "repl") && (
             <>
@@ -107,14 +109,16 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
               {shellProfiles
                 .filter((profile) => profile.category === "repl")
                 .map((profile) => (
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
                     key={profile.id}
-                    type="button"
+                    htmlType="button"
                     className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
                     onClick={() => handlePickProfile(profile)}
                   >
                     <span className="flex-1 truncate">{profile.name}</span>
-                  </button>
+                  </Button>
                 ))}
             </>
           )}
@@ -162,8 +166,10 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
       <div
         className={`${SPLIT_BUTTON.container} ${isShellPickerOpen ? "bg-fill-2" : ""}`}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className={`${SPLIT_BUTTON.left} ${isShellPickerOpen ? "text-text-1" : ""}`}
           onClick={(event) => {
             event.stopPropagation();
@@ -177,10 +183,12 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
             size={DROPDOWN_ITEM.iconSize}
             strokeWidth={SIDEBAR_ICON_STROKE_WIDTH}
           />
-        </button>
-        <button
+        </Button>
+        <Button
+          layout="custom"
+          appearance="custom"
           ref={shellPickerTriggerRef}
-          type="button"
+          htmlType="button"
           className={`${SPLIT_BUTTON.right} ${isShellPickerOpen ? "bg-fill-3 text-text-1" : ""}`}
           onClick={(event) => {
             event.stopPropagation();
@@ -194,7 +202,7 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
             size={DROPDOWN_ITEM.iconSize}
             strokeWidth={SIDEBAR_ICON_STROKE_WIDTH}
           />
-        </button>
+        </Button>
         {shellPickerMenu}
       </div>
     );

@@ -3,6 +3,7 @@
  */
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
 import { ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import { classNames } from "@src/util/ui/classNames";
 
@@ -17,8 +18,10 @@ export interface DropdownCollapsibleSectionHeaderProps {
 
 const DropdownCollapsibleSectionHeader: React.FC<DropdownCollapsibleSectionHeaderProps> =
   memo(({ children, className, expanded, onToggle }) => (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className={classNames(
         DROPDOWN_CLASSES.sectionLabel,
         "flex w-full cursor-pointer items-center gap-1 text-left hover:text-text-2",
@@ -39,7 +42,7 @@ const DropdownCollapsibleSectionHeader: React.FC<DropdownCollapsibleSectionHeade
         )}
         aria-hidden
       />
-    </button>
+    </Button>
   ));
 
 DropdownCollapsibleSectionHeader.displayName =

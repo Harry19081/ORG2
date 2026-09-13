@@ -17,6 +17,7 @@ import { readFile } from "@tauri-apps/plugin-fs";
 import React, { memo, useCallback, useEffect, useState } from "react";
 
 import { readTranscriptImage } from "@src/api/tauri/externalHistory/sources/codexApp/images";
+import Button from "@src/components/Button";
 import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
 import { createLogger } from "@src/hooks/logger";
 import { HugeiconsIcon, Image01Icon, ImageNotFound01Icon } from "@src/icons";
@@ -115,19 +116,14 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
 
     return (
       <>
-        <div
+        <Button
+          layout="custom"
+          appearance="custom"
+          disabled={!resolvedSrc}
           className={`group relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-2 bg-fill-1 text-text-3 ${resolvedSrc ? "cursor-pointer" : "cursor-default"} ${sizeClassName}`}
           onClick={handleClick}
-          role="button"
           tabIndex={resolvedSrc ? 0 : -1}
           aria-label={alt}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              event.stopPropagation();
-              if (resolvedSrc) setShowOverlay(true);
-            }
-          }}
           data-image-state={
             resolvedSrc ? "ready" : loadFailed ? "unavailable" : "loading"
           }
@@ -159,7 +155,7 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
               aria-label={alt}
             />
           )}
-        </div>
+        </Button>
         {showOverlay && resolvedSrc && (
           <ImagePreviewOverlay
             dataUrl={resolvedSrc}

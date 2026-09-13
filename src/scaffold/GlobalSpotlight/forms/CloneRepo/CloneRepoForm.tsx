@@ -117,7 +117,9 @@ const CloneRepoForm: React.FC<CloneRepoFormProps> = ({
       <SpotlightFormShell>
         {/* Tabs */}
         <div className="mb-3 flex items-center justify-center border-b border-solid border-border-1">
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             className={`px-4 py-2 text-[14px] font-medium ${
               subTab === "myGitHub"
                 ? "border-b-2 border-primary-6 text-primary-6"
@@ -129,8 +131,10 @@ const CloneRepoForm: React.FC<CloneRepoFormProps> = ({
             }}
           >
             {t("cloneForm.tabMyGitHub")}
-          </button>
-          <button
+          </Button>
+          <Button
+            layout="custom"
+            appearance="custom"
             className={`px-4 py-2 text-[14px] font-medium ${
               subTab === "githubUrl"
                 ? "border-b-2 border-primary-6 text-primary-6"
@@ -139,7 +143,7 @@ const CloneRepoForm: React.FC<CloneRepoFormProps> = ({
             onClick={() => onSubTabChange("githubUrl")}
           >
             {t("cloneForm.tabGitHubUrl")}
-          </button>
+          </Button>
         </div>
 
         <SpotlightFormBody>

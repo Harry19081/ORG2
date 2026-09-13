@@ -22,6 +22,7 @@ import React, {
   useState,
 } from "react";
 
+import Button from "@src/components/Button";
 import { useFilteredItems } from "@src/hooks/search";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
@@ -391,22 +392,28 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
     }, refreshingAllModels);
 
   const refreshModelsButton = (
-    <button
-      type="button"
+    <Button
+      variant="tertiary"
+      appearance="soft-no-drop"
+      size="small"
+      shape="round"
+      iconOnly
+      icon={
+        <HugeiconsIcon
+          icon={Refresh04Icon}
+          data-icon="refresh-cw"
+          size={14}
+          className={refreshSpinClass}
+        />
+      }
+      htmlType="button"
       onClick={handleRefreshModelsClick}
       disabled={refreshingAllModels}
       aria-label={tCommonHook("actions.refresh")}
       title={tCommonHook("actions.refresh")}
-      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1 disabled:opacity-60"
+      className="shrink-0 hover:bg-fill-2 hover:text-text-1 disabled:opacity-60"
       data-testid="model-spotlight-refresh-button"
-    >
-      <HugeiconsIcon
-        icon={Refresh04Icon}
-        data-icon="refresh-cw"
-        size={14}
-        className={refreshSpinClass}
-      />
-    </button>
+    />
   );
 
   const content = (

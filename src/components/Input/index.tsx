@@ -24,6 +24,7 @@
  */
 import React, { forwardRef, useCallback, useState } from "react";
 
+import Button from "@src/components/Button";
 import type { FieldAppearance } from "@src/components/controlAppearance";
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import { Cancel01Icon, HugeiconsIcon, ViewIcon, ViewOffIcon } from "@src/icons";
@@ -331,19 +332,23 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
 
           {showClearButton && (
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               className="input-clear"
               onClick={handleClear}
               tabIndex={-1}
             >
               <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={16} />
-            </button>
+            </Button>
           )}
 
           {showPasswordToggle && (
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               className="input-password-toggle"
               onClick={togglePasswordVisibility}
               tabIndex={-1}
@@ -357,7 +362,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               ) : (
                 <HugeiconsIcon icon={ViewIcon} data-icon="eye" size={16} />
               )}
-            </button>
+            </Button>
           )}
 
           {suffix && <span className="input-suffix">{suffix}</span>}

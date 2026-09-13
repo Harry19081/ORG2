@@ -6,6 +6,7 @@
  */
 import React from "react";
 
+import Button from "@src/components/Button";
 import { COLLAPSIBLE_SECTION_TOKENS } from "@src/config/detailPanelTokens";
 import { useCollapsible } from "@src/hooks/ui/useCollapsible";
 import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
@@ -102,8 +103,10 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
       <div
         className={`${COLLAPSIBLE_SECTION_TOKENS.headerRow} ${headerRowClassName}`.trim()}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={toggleOpen}
           aria-expanded={isOpen}
           data-testid={titleButtonTestId}
@@ -111,7 +114,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         >
           {chevronNode}
           <span className={titleClassName || undefined}>{title}</span>
-        </button>
+        </Button>
         {actions && <div className="flex items-center gap-2">{actions}</div>}
       </div>
       {isOpen && children}

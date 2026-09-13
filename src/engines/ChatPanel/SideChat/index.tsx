@@ -37,10 +37,7 @@ import Button from "@src/components/Button";
 import DetailPanelHeader from "@src/components/DetailPanelHeader";
 import FloatingWindow from "@src/components/FloatingWindow";
 import { SESSION_CONFIG } from "@src/config/sessionCreatorConfig";
-import {
-  HEADER_BUTTON,
-  HEADER_ICON_SIZE,
-} from "@src/config/workstation/tokens";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { isUserIntentSendError } from "@src/engines/SessionCore/services/userIntentDispatch";
 import { createLogger } from "@src/hooks/logger";
@@ -227,29 +224,38 @@ const SideChatWindow: React.FC<ChatPanelSideChatProps> = ({
         actions={
           sessionId ? (
             <div className="flex items-center gap-1.5">
-              <button
-                className={HEADER_BUTTON.action}
+              <Button
+                variant="tertiary"
+                appearance="soft"
+                size="sidebar"
+                iconOnly
+                icon={
+                  <HugeiconsIcon
+                    icon={LinkSquare02Icon}
+                    data-icon="link-square-02"
+                    size={HEADER_ICON_SIZE.sm}
+                  />
+                }
                 onClick={handleOpenInTab}
                 title={tCommon("actions.openInNewTab")}
                 aria-label={tCommon("actions.openInNewTab")}
-              >
-                <HugeiconsIcon
-                  icon={LinkSquare02Icon}
-                  data-icon="link-square-02"
-                  size={HEADER_ICON_SIZE.sm}
-                />
-              </button>
-              <button
-                className={HEADER_BUTTON.action}
+              />
+              <Button
+                variant="tertiary"
+                appearance="soft"
+                size="sidebar"
+                aria-label={t("chat.newSession")}
+                iconOnly
+                icon={
+                  <HugeiconsIcon
+                    icon={PencilEdit02Icon}
+                    data-icon="square-pen"
+                    size={HEADER_ICON_SIZE.sm}
+                  />
+                }
                 onClick={handleNewSession}
                 title={t("chat.newSession")}
-              >
-                <HugeiconsIcon
-                  icon={PencilEdit02Icon}
-                  data-icon="square-pen"
-                  size={HEADER_ICON_SIZE.sm}
-                />
-              </button>
+              />
             </div>
           ) : undefined
         }

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -256,9 +257,11 @@ export const GitSyncStatusMenu: React.FC<GitSyncStatusMenuProps> = memo(
                       const disabled =
                         isSyncBusy || !canSyncDisplayedRepo || action.disabled;
                       return (
-                        <button
+                        <Button
+                          layout="custom"
+                          appearance="custom"
                           key={action.key}
-                          type="button"
+                          htmlType="button"
                           className={classNames(
                             DROPDOWN_CLASSES.menuActionItem,
                             disabled && DROPDOWN_CLASSES.itemDisabled
@@ -273,15 +276,17 @@ export const GitSyncStatusMenu: React.FC<GitSyncStatusMenuProps> = memo(
                             className="shrink-0"
                           />
                           <span>{action.label}</span>
-                        </button>
+                        </Button>
                       );
                     })}
                   </>
                 ) : (
                   <>
                     {suggestedAction && (
-                      <button
-                        type="button"
+                      <Button
+                        layout="custom"
+                        appearance="custom"
+                        htmlType="button"
                         className={classNames(
                           DROPDOWN_CLASSES.menuActionItem,
                           (isSyncBusy ||
@@ -303,11 +308,13 @@ export const GitSyncStatusMenu: React.FC<GitSyncStatusMenuProps> = memo(
                           className="shrink-0"
                         />
                         <span>{suggestedAction.label}</span>
-                      </button>
+                      </Button>
                     )}
                     <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
-                    <button
-                      type="button"
+                    <Button
+                      layout="custom"
+                      appearance="custom"
+                      htmlType="button"
                       className={DROPDOWN_CLASSES.menuActionItem}
                       onClick={() => setShowAllActions(true)}
                       role="menuitem"
@@ -319,7 +326,7 @@ export const GitSyncStatusMenu: React.FC<GitSyncStatusMenuProps> = memo(
                         className="text-text-1"
                       />
                       <span>{t("common.more")}</span>
-                    </button>
+                    </Button>
                   </>
                 )}
               </div>

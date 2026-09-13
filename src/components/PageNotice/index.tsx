@@ -271,14 +271,16 @@ const PageNotice: React.FC<PageNoticeProps> = ({
     >
       <div className={`flex items-center ${isPill ? "gap-1" : "gap-3"}`}>
         {isPill ? (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             onClick={() => setExpanded((currentExpanded) => !currentExpanded)}
             aria-expanded={expanded}
             className="flex min-w-0 flex-1 items-center text-left"
           >
             {titleNode}
-          </button>
+          </Button>
         ) : (
           titleNode
         )}

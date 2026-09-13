@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import SessionHoverCard from "@src/components/SessionHoverCard";
 import { PRIMARY_SIDEBAR_HOVER } from "@src/config/workstation/tokens";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
@@ -50,8 +51,10 @@ export const FileSessionHistorySessionView: React.FC<FileSessionHistorySessionPr
     const hasRootTranscript = Boolean(session.transcriptSessionId);
 
     const row = (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         data-testid="session-blame-session-header"
         data-session-id={session.sessionId}
         data-transcript-session-id={session.transcriptSessionId ?? undefined}
@@ -88,7 +91,7 @@ export const FileSessionHistorySessionView: React.FC<FileSessionHistorySessionPr
             {meta.join(" · ")}
           </span>
         </span>
-      </button>
+      </Button>
     );
 
     return (

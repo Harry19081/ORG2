@@ -319,8 +319,10 @@ const WorkspaceExplorePanelView: React.FC = () => {
 
   const canSubmit = query.trim().length > 0 && !loading;
   const searchButton = (
-    <button
-      type="submit"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="submit"
       disabled={!canSubmit}
       aria-label={t("explore.search", { defaultValue: "Search" })}
       data-state={canSubmit ? "search" : "idle"}
@@ -338,7 +340,7 @@ const WorkspaceExplorePanelView: React.FC = () => {
         strokeWidth={2}
         className="block text-[#fff]"
       />
-    </button>
+    </Button>
   );
 
   const heroSection = (

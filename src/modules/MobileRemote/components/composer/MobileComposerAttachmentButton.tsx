@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { PILL_CONTROL_HOVER_CLASS } from "@src/components/CompoundPill/config";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
@@ -45,8 +46,10 @@ export function MobileComposerAttachmentButton({
         data-testid="mobile-composer-file-input"
         onChange={handleChange}
       />
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onClick={handleClick}
         disabled={disabled || busy}
         className={[
@@ -65,7 +68,7 @@ export function MobileComposerAttachmentButton({
           strokeWidth={1.75}
           className="text-text-1"
         />
-      </button>
+      </Button>
     </>
   );
 }

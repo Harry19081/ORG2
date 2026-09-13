@@ -7,6 +7,7 @@
 import { useAtom } from "jotai";
 import React, { memo, useCallback, useState } from "react";
 
+import Button from "@src/components/Button";
 import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import {
@@ -60,8 +61,10 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = memo(
             decoding="async"
             data-testid="chat-image-attachment-img"
           />
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             onClick={handleRemove}
             className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-bg-3 text-text-2 opacity-0 shadow-xs transition-opacity group-hover:opacity-100 hover:bg-fill-2 hover:text-text-1"
             aria-label={`Remove ${image.fileName}`}
@@ -73,7 +76,7 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = memo(
               size={10}
               strokeWidth={2.5}
             />
-          </button>
+          </Button>
         </div>
         {showOverlay && (
           <ImagePreviewOverlay

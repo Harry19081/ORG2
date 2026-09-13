@@ -27,7 +27,6 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
-import { HEADER_BUTTON } from "@src/config/workstation/tokens";
 import { createLogger } from "@src/hooks/logger";
 import {
   ArrowDown01Icon,
@@ -306,29 +305,39 @@ export const SearchContent = forwardRef<
         {/* Search/Replace section with chevron layout */}
         <div className="flex gap-1.5 px-3">
           {/* Left column - Chevron toggle (centered vertically) */}
-          <button
+          <Button
+            variant="tertiary"
+            appearance="ghost"
+            size="mini"
+            aria-label={
+              showReplace
+                ? t(HUMANTOOLS_TEXT_KEYS.search.collapseReplace)
+                : t(HUMANTOOLS_TEXT_KEYS.search.expandReplace)
+            }
+            iconOnly
+            icon={
+              showReplace ? (
+                <HugeiconsIcon
+                  icon={ArrowDown01Icon}
+                  data-icon="chevron-down"
+                  size={14}
+                />
+              ) : (
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  data-icon="chevron-right"
+                  size={14}
+                />
+              )
+            }
             onClick={handleExpandToggle}
-            className="flex items-center justify-center self-center text-text-3"
+            className="self-center"
             title={
               showReplace
                 ? t(HUMANTOOLS_TEXT_KEYS.search.collapseReplace)
                 : t(HUMANTOOLS_TEXT_KEYS.search.expandReplace)
             }
-          >
-            {showReplace ? (
-              <HugeiconsIcon
-                icon={ArrowDown01Icon}
-                data-icon="chevron-down"
-                size={14}
-              />
-            ) : (
-              <HugeiconsIcon
-                icon={ArrowRight01Icon}
-                data-icon="chevron-right"
-                size={14}
-              />
-            )}
-          </button>
+          />
 
           {/* Center column - Input fields (stacked, left-aligned) */}
           <div className="flex min-w-0 flex-1 flex-col gap-1.5 py-1.5">
@@ -387,19 +396,23 @@ export const SearchContent = forwardRef<
             <div className="flex items-center justify-between gap-2">
               <p className="text-[12px] text-text-3">{resultText}</p>
               {results.length > 0 && !loading && !loadingMore && (
-                <button
+                <Button
+                  variant="tertiary"
+                  appearance="soft"
+                  size="sidebar"
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={LinkSquare02Icon}
+                      data-icon="link-square-02"
+                      size={14}
+                      strokeWidth={1.75}
+                    />
+                  }
                   onClick={handleOpenInTab}
-                  className={HEADER_BUTTON.actionTreeRow}
                   title={t("common:actions.openInNewTab")}
                   aria-label={t("common:actions.openInNewTab")}
-                >
-                  <HugeiconsIcon
-                    icon={LinkSquare02Icon}
-                    data-icon="link-square-02"
-                    size={14}
-                    strokeWidth={1.75}
-                  />
-                </button>
+                />
               )}
             </div>
             {showRefineHint && !loading && !loadingMore && (

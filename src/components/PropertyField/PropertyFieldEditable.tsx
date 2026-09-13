@@ -133,8 +133,10 @@ export const FieldRow: React.FC<FieldRowProps> = ({
         data-field-row
         className={`group/field flex min-w-0 flex-1 items-center ${isWorkstationTrail ? "h-full rounded-lg" : "rounded-md"} transition-colors hover:bg-surface-hover ${isActive ? "bg-surface-hover" : "bg-transparent"}`}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className={
             isWorkstationTrail
               ? `${WORKSTATION_TRAIL_CONTENT.rowContent} cursor-pointer border-none bg-transparent outline-none`
@@ -150,17 +152,23 @@ export const FieldRow: React.FC<FieldRowProps> = ({
             {value}
           </span>
           {suffix}
-        </button>
+        </Button>
         {showChevron && (
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            appearance="ghost"
+            size="mini"
+            style={{ width: 20 }}
+            iconOnly
+            icon={
+              <HugeiconsIcon icon={EditIcon} size={DROPDOWN_ITEM.iconSize} />
+            }
+            htmlType="button"
             aria-label="Open"
             onClick={onClick}
             disabled={disabled}
             className={`mr-1 flex h-6 w-5 shrink-0 items-center justify-center rounded-md border-none bg-transparent text-text-3 ${isActive ? "flex" : "hidden group-hover/field:flex"}`}
-          >
-            <HugeiconsIcon icon={EditIcon} size={DROPDOWN_ITEM.iconSize} />
-          </button>
+          />
         )}
       </div>
     </div>
@@ -369,8 +377,10 @@ export const Option: React.FC<OptionProps> = ({
   children,
   dataTestId,
 }) => (
-  <button
-    type="button"
+  <Button
+    layout="custom"
+    appearance="custom"
+    htmlType="button"
     data-testid={dataTestId}
     className={[
       DROPDOWN_CLASSES.item,
@@ -404,5 +414,5 @@ export const Option: React.FC<OptionProps> = ({
         {isSelected && <DropdownSelectedCheck />}
       </>
     )}
-  </button>
+  </Button>
 );

@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import FileTypeIcon from "@src/components/FileTypeIcon";
+import Input from "@src/components/Input";
 import {
   CHEVRON_SIZE,
   TREE_INDENT_PX,
@@ -145,16 +146,27 @@ export function NewItemInput({
       )}
 
       <div className="min-w-0 flex-1">
-        <input
+        <Input
+          appearance="bare"
+          size="small"
+          autoHeight
+          className="min-w-0 flex-1 [&>.input-inner]:border-0!"
+          inputStyle={{
+            height: 22,
+            fontSize: 13,
+            padding: "0 4px",
+            border: "1px solid var(--color-primary-6)",
+            background: "var(--color-pane-input)",
+          }}
           ref={inputRef}
           type="text"
           value={value}
-          onChange={handleChange}
+          onChange={(_value, event) => handleChange(event)}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
           placeholder={inputLabel}
           aria-label={inputLabel}
-          className="h-[22px] w-full min-w-0 rounded border border-primary-6 bg-pane-input px-1 text-[13px] text-text-1 ring-1 ring-primary-6/30 outline-none placeholder:text-text-4"
+          inputClassName="h-[22px] w-full min-w-0 rounded border border-primary-6 bg-pane-input px-1 text-[13px] text-text-1 ring-1 ring-primary-6/30 outline-none placeholder:text-text-4"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"

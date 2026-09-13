@@ -6,6 +6,7 @@
  */
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
 import {
   TREE_ROW_INSET_CLASS,
   TREE_ROW_ROUNDED_CLASS,
@@ -63,7 +64,9 @@ export const SectionHeader: React.FC<SectionHeaderProps> = memo(
           useWarningText ? "hover:bg-warning-1" : ""
         }`}
       >
-        <button
+        <Button
+          layout="custom"
+          appearance="custom"
           className="flex min-w-0 items-center gap-1.5"
           onClick={onToggle}
         >
@@ -90,7 +93,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = memo(
           >
             {title}
           </span>
-        </button>
+        </Button>
         <div className="flex-1" />
         <div className="relative flex shrink-0 items-center">
           {/* Action buttons - show on hover without affecting layout */}

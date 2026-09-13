@@ -21,6 +21,7 @@ import { Virtuoso } from "react-virtuoso";
 import { useActionSystem } from "@src/ActionSystem";
 import { getGitCommits } from "@src/api/http/git/commits";
 import type { GitCommitInfo } from "@src/api/http/git/types";
+import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import {
   TREE_ROW_INSET_CLASS,
@@ -174,7 +175,9 @@ const CommitRow: React.FC<CommitRowProps> = memo(
     const authorDate = commit.author?.date ?? "";
 
     return (
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         className={`group flex w-full items-center gap-1 px-2 text-left transition-colors ${TREE_ROW_ROUNDED_CLASS} ${
           cursorReset || isSelected ? "cursor-default" : "cursor-pointer"
         } ${isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row}`}
@@ -207,7 +210,7 @@ const CommitRow: React.FC<CommitRowProps> = memo(
             )}
           </div>
         </div>
-      </button>
+      </Button>
     );
   }
 );

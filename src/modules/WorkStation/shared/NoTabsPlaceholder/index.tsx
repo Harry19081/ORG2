@@ -10,6 +10,7 @@
 import React, { memo } from "react";
 
 import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
@@ -97,8 +98,10 @@ const ActionItem = memo<ActionItemProps>(({ action, onClick }) => {
   };
 
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       onClick={handleClick}
       disabled={action.disabled}
       className={`${SPOTLIGHT_CLASSES.itemRow} w-full text-left transition-colors ${
@@ -118,7 +121,7 @@ const ActionItem = memo<ActionItemProps>(({ action, onClick }) => {
       {action.shortcut && (
         <KeyboardShortcut shortcut={action.shortcut} rendering="original" />
       )}
-    </button>
+    </Button>
   );
 });
 

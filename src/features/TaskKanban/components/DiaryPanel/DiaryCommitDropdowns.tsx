@@ -5,6 +5,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
 import { DropdownPanel } from "@src/components/Dropdown/exports";
 import {
@@ -160,8 +161,10 @@ export const DiaryCommitBucketDropdown: React.FC<
                   key={commitMarker.id}
                   marker={commitMarker}
                 >
-                  <button
-                    type="button"
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    htmlType="button"
                     className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full min-w-0 justify-start text-left`}
                   >
                     <HugeiconsIcon
@@ -180,7 +183,7 @@ export const DiaryCommitBucketDropdown: React.FC<
                     <span className="shrink-0 text-[11px] text-text-2">
                       {formatTime(commitMarker.timestamp)}
                     </span>
-                  </button>
+                  </Button>
                 </DiaryCommitDetailsDropdown>
               );
             })}

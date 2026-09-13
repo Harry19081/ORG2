@@ -3,6 +3,7 @@ import { open } from "@tauri-apps/plugin-shell";
 import type { TFunction } from "i18next";
 import React, { memo, useCallback, useMemo, useSyncExternalStore } from "react";
 
+import Button from "@src/components/Button";
 import { getShortcutAccelerator } from "@src/config/keyboard/shortcutDisplay";
 import i18n from "@src/i18n";
 import {
@@ -315,15 +316,17 @@ const WindowsTopBarComponent: React.FC = () => {
         {MENU_KEYS.map((menuKey) => {
           const label = t(`windowChrome.menus.${menuKey}`);
           return (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={menuKey}
-              type="button"
+              htmlType="button"
               className={MENU_BUTTON_CLASS}
               onClick={(event) => handleOpenMenu(menuKey, event)}
               aria-label={t("windowChrome.menus.aria", { label })}
             >
               {label}
-            </button>
+            </Button>
           );
         })}
       </NoDragRegion>
@@ -334,8 +337,10 @@ const WindowsTopBarComponent: React.FC = () => {
         className="flex h-full shrink-0 items-center"
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className={WINDOW_CONTROL_BUTTON_CLASS}
           onClick={handleMinimize}
           aria-label={t("windowChrome.controls.minimizeWindow")}
@@ -347,9 +352,11 @@ const WindowsTopBarComponent: React.FC = () => {
             size={ICON_SIZE}
             strokeWidth={2}
           />
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className={WINDOW_CONTROL_BUTTON_CLASS}
           onClick={handleMaximize}
           aria-label={t("windowChrome.controls.maximizeRestoreWindow")}
@@ -361,9 +368,11 @@ const WindowsTopBarComponent: React.FC = () => {
             size={12}
             strokeWidth={2}
           />
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className={CLOSE_BUTTON_CLASS}
           onClick={handleClose}
           aria-label={t("windowChrome.controls.closeWindow")}
@@ -375,7 +384,7 @@ const WindowsTopBarComponent: React.FC = () => {
             size={ICON_SIZE}
             strokeWidth={2}
           />
-        </button>
+        </Button>
       </div>
     </div>
   );

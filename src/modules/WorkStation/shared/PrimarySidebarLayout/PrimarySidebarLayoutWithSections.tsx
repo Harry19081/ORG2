@@ -28,6 +28,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@src/components/Button";
 import DropdownSelectedCheck from "@src/components/Dropdown/DropdownSelectedCheck";
 import {
   DROPDOWN_CLASSES,
@@ -383,9 +384,11 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
               >
                 <div className={DROPDOWN_CLASSES.itemsColumn}>
                   {tabs.map((tab) => (
-                    <button
+                    <Button
+                      layout="custom"
+                      appearance="custom"
                       key={tab.key}
-                      type="button"
+                      htmlType="button"
                       className={`${DROPDOWN_CLASSES.item} ${
                         tab.key === activeTab
                           ? DROPDOWN_CLASSES.itemSelected
@@ -402,7 +405,7 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
                         {tab.label}
                       </span>
                       {tab.key === activeTab && <DropdownSelectedCheck />}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>,

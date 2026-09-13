@@ -8,12 +8,12 @@ import type { BrowserSession } from "@/src/engines/BrowserCore/types";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { FaviconIcon } from "@src/components/FaviconIcon";
 import Input from "@src/components/Input";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import { Placeholder } from "@src/components/Placeholder";
 import { TreeRowBase, type TreeRowNode } from "@src/components/TreeRow";
-import { HEADER_BUTTON } from "@src/config/workstation/tokens";
 import {
   Cancel01Icon,
   FilterIcon,
@@ -119,19 +119,24 @@ const SessionItem: React.FC<SessionItemProps> = memo(
 
         {/* Close button (on hover) */}
         <ToolbarTooltip label={t("tooltips.closeSession")}>
-          <button
-            type="button"
-            className={`group/close ${HEADER_BUTTON.danger} hidden shrink-0 group-focus-within/item:flex group-hover/item:flex`}
+          <Button
+            variant="danger"
+            appearance="soft"
+            size="sidebar"
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                data-icon="x"
+                size={14}
+                strokeWidth={1.75}
+              />
+            }
+            htmlType="button"
+            className={`group/close hidden shrink-0 group-focus-within/item:flex group-hover/item:flex`}
             onClick={onClose}
             aria-label={t("tooltips.closeSession")}
-          >
-            <HugeiconsIcon
-              icon={Cancel01Icon}
-              data-icon="x"
-              size={14}
-              strokeWidth={1.75}
-            />
-          </button>
+          />
         </ToolbarTooltip>
       </TreeRowBase>
     );

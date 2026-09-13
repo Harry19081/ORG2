@@ -502,14 +502,18 @@ const SessionCreatorChatPanelView: React.FC<
   }`;
   const composerBody = isCliTuiMode ? (
     <div className="rounded-xl bg-chat-container p-3">
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        appearance="solid"
+        size="default"
+        shape="round"
+        htmlType="button"
         onClick={onLaunch}
         disabled={!canLaunch || isLoading}
-        className="flex w-full items-center justify-center rounded-full bg-primary-6 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full text-[13px] font-semibold hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {t("creator.start")}
-      </button>
+      </Button>
     </div>
   ) : (
     <EditorArea
@@ -558,21 +562,27 @@ const SessionCreatorChatPanelView: React.FC<
           {!isLaunchpadLayout && agentHero}
           <div className={composerDockClassName}>
             {!isCliTuiMode && isWingmanMode && (
-              <button
-                type="button"
-                className="flex items-center gap-1.5 rounded-full border border-dashed border-border-2 px-3 py-1.5 text-[12px] text-text-3 transition-colors hover:border-primary-4 hover:text-primary-6"
+              <Button
+                variant="tertiary"
+                appearance="dashed"
+                size="mini"
+                shape="round"
+                htmlType="button"
+                className="gap-1.5 border-dashed text-[12px] hover:border-primary-4 hover:text-primary-6"
                 onClick={() => {
                   void onShareScreen();
                 }}
+                icon={
+                  <HugeiconsIcon
+                    icon={ScreenRotationIcon}
+                    data-icon="airplay"
+                    size={13}
+                    strokeWidth={1.75}
+                  />
+                }
               >
-                <HugeiconsIcon
-                  icon={ScreenRotationIcon}
-                  data-icon="airplay"
-                  size={13}
-                  strokeWidth={1.75}
-                />
                 {t("chat.shareScreen")}
-              </button>
+              </Button>
             )}
             {/* Skills/actions stay above the input in every creator layout. */}
             {sessionSetupActions}

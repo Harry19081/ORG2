@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { Placeholder } from "@src/components/Placeholder";
@@ -385,8 +386,10 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
       <div
         className={`group/diff-header sticky top-0 z-10 h-9 w-full min-w-0 ${isDeleted ? "" : "hover:bg-fill-2"} ${compactHeaderGutter ? "px-2" : "px-3"} ${EDITOR_TAB_CANVAS_BG_CLASS}`}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className="absolute inset-0 w-full cursor-pointer focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset disabled:cursor-default"
           onClick={toggleExpanded}
           disabled={isDeleted}
@@ -419,15 +422,17 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           />
           <div className="flex min-w-0 flex-1 items-baseline gap-1.5 overflow-hidden">
             {canOpenFile ? (
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 className="pointer-events-auto shrink-0 text-left text-[13px] leading-normal font-medium text-text-1 underline-offset-2 hover:underline focus-visible:underline focus-visible:outline-none"
                 onClick={handleOpenFile}
                 title={t("tooltips.openInEditorTab")}
                 aria-label={`${t("tooltips.openInEditorTab")}: ${displayPath}`}
               >
                 {fileName}
-              </button>
+              </Button>
             ) : (
               <span className="shrink-0 text-[13px] font-medium text-text-1">
                 {fileName}
@@ -452,8 +457,10 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
               </>
             ) : null}
           </div>
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             className="pointer-events-auto flex shrink-0 cursor-pointer items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none aria-disabled:cursor-default"
             onClick={isDeleted ? undefined : toggleExpanded}
             aria-disabled={isDeleted || undefined}
@@ -475,7 +482,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
                 {statusLetter}
               </span>
             </Tooltip>
-          </button>
+          </Button>
         </div>
       </div>
 

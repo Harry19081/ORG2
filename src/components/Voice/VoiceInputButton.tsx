@@ -10,6 +10,7 @@
 import React, { memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { PILL_CONTROL_HOVER_CLASS } from "@src/components/CompoundPill/config";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
@@ -79,8 +80,10 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
     );
 
     const buttonNode = (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
@@ -122,7 +125,7 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
           strokeWidth={1.75}
           className="block"
         />
-      </button>
+      </Button>
     );
 
     return (

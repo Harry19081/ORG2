@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import Button from "@src/components/Button";
 import Tooltip, { type TooltipProps } from "@src/components/Tooltip";
 
 interface SegmentedTextPillOption<T extends string> {
@@ -56,9 +57,11 @@ export default function SegmentedTextPill<T extends string>({
         const selected = value != null && option.value === value;
 
         const button = (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={option.value}
-            type="button"
+            htmlType="button"
             className={`rounded-full py-0 transition-colors ${BUTTON_SIZE_CLASSES[size]} ${
               selected
                 ? "bg-bg-2 font-medium text-text-1 shadow-dropdown-soft"
@@ -70,7 +73,7 @@ export default function SegmentedTextPill<T extends string>({
             onClick={() => onChange(option.value)}
           >
             {option.label}
-          </button>
+          </Button>
         );
 
         return option.tooltip ? (

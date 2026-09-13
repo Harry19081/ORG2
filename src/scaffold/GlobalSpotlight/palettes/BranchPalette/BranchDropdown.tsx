@@ -19,6 +19,7 @@ import React, {
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import DropdownSearch from "@src/components/Dropdown/DropdownSearch";
 import {
   DROPDOWN_CLASSES,
@@ -78,8 +79,10 @@ const BranchRow: React.FC<BranchRowProps> = ({
         data: { ...branch, isCurrentSelection: isCurrent },
       }}
     >
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         data-testid={`branch-dropdown-row-${branch.name}`}
         {...keyboardProps}
         className={`${DROPDOWN_CLASSES.item} ${
@@ -111,7 +114,7 @@ const BranchRow: React.FC<BranchRowProps> = ({
           )}
         </span>
         <span className="truncate">{branch.name}</span>
-      </button>
+      </Button>
     </SpotlightDetailPane>
   );
 };

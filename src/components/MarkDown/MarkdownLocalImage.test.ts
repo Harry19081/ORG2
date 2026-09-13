@@ -169,6 +169,8 @@ describe("MarkdownLocalImage", () => {
     expect(mocks.readFile).not.toHaveBeenCalled();
     const chip = container.querySelector('[data-image-state="file"]');
     expect(chip).not.toBeNull();
+    expect(chip?.tagName).toBe("BUTTON");
+    expect(chip?.getAttribute("type")).toBe("button");
     expect(chip?.textContent).toContain("demo");
 
     await act(async () => {

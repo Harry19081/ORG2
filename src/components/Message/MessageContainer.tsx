@@ -8,6 +8,7 @@ import type { FC } from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
 import {
@@ -143,31 +144,40 @@ const MessageItem = ({
         {(download || cancel || action) && (
           <div className="mt-2 flex justify-end gap-3">
             {cancel && (
-              <button
-                type="button"
-                className="cursor-pointer border-none bg-transparent p-0 text-xs leading-[1.2] font-medium text-primary-6 hover:text-primary-5 hover:underline"
+              <Button
+                variant="primary"
+                appearance="ghost"
+                size="inline"
+                htmlType="button"
+                className="text-xs leading-[1.2] font-medium hover:text-primary-5 hover:underline"
                 onClick={handleCancelAction}
               >
                 {cancel.label ?? t("actions.cancel")}
-              </button>
+              </Button>
             )}
             {download && (
-              <button
-                type="button"
-                className="cursor-pointer border-none bg-transparent p-0 text-xs leading-[1.2] font-medium text-primary-6 hover:text-primary-5 hover:underline"
+              <Button
+                variant="primary"
+                appearance="ghost"
+                size="inline"
+                htmlType="button"
+                className="text-xs leading-[1.2] font-medium hover:text-primary-5 hover:underline"
                 onClick={handleDownload}
               >
                 {download.label ?? t("actions.download")}
-              </button>
+              </Button>
             )}
             {action && (
-              <button
-                type="button"
-                className="cursor-pointer border-none bg-transparent p-0 text-xs leading-[1.2] font-semibold text-primary-6 hover:text-primary-5 hover:underline"
+              <Button
+                variant="primary"
+                appearance="ghost"
+                size="inline"
+                htmlType="button"
+                className="text-xs leading-[1.2] font-semibold hover:text-primary-5 hover:underline"
                 onClick={handlePrimaryAction}
               >
                 {action.label}
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -175,13 +185,16 @@ const MessageItem = ({
 
       {/* Close button */}
       {closable && (
-        <button
-          className="ml-1 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-0 text-text-3 opacity-60 transition-all duration-150 ease-out hover:bg-white/10 hover:text-text-1 hover:opacity-100 active:scale-95"
+        <Button
+          variant="tertiary"
+          appearance="soft"
+          size="mini"
+          iconOnly
+          icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />}
+          className="ml-1 shrink-0 opacity-60 transition-all ease-out hover:bg-white/10 hover:text-text-1 hover:opacity-100 active:scale-95"
           onClick={handleClose}
           aria-label={t("actions.close")}
-        >
-          <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
-        </button>
+        />
       )}
     </motion.div>
   );
