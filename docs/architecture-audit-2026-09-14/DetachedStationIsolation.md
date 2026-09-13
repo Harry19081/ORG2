@@ -64,3 +64,11 @@ node_modules/.bin/vitest run --config config/vitest.config.ts src/modules/Statio
 - `cargo check -p org2` — passed after linking the existing local sidecar into this checkout; the first attempt stopped at that missing ignored build resource
 
 Full test suite, native UI/E2E, and cross-platform execution were not run. No screenshots were taken; the changes alter ownership and interaction rather than visual styling, and no Computer Use was invoked.
+
+## CI follow-up
+
+CI exposed one new type-aware lint finding and one shortcut-test failure. The main-window Kanban event handler now catches and logs navigation failures instead of discarding a rejecting promise. The native shortcut VM fixture supplies `window.open` and asserts delivery through `orgii-shortcut://`, with no Tauri broadcast even when that API is available. A bridge regression verifies rejection handling and a subsequent retry.
+
+`node_modules/.bin/vitest run --config config/vitest.config.ts src/config/keyboard/nativeShortcutSync.test.ts src/modules/__tests__/useStationWindowBridge.test.ts src/modules/StationWindow src/store/workstation/stationWindowAtoms.test.ts` — 19 passed across 5 files.
+
+The original CI frontend run completed 13,975 passing tests, one skipped test, and only the shortcut fixture failure. The full suite was not rerun locally for this correction; the next GitHub run remains authoritative for the full suite. Typecheck, changed-file ESLint/oxlint, and diff checks were rerun. `NODE_OPTIONS=--max-old-space-size=6144 node scripts/quality/typed-lint/check.mjs` passed: 1,133 existing findings, zero new or increased findings. `node --test scripts/quality/typed-lint/*.test.mjs` passed all 6 tests. The baseline was not changed.

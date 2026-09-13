@@ -28,6 +28,7 @@ import {
   type StationWindowMainNavigation,
   emitStationWindowSession,
 } from "@src/api/tauri/stationWindow";
+import { createLogger } from "@src/hooks/logger";
 import { useTauriListen } from "@src/hooks/platform/useTauriListen";
 import { navigateApp } from "@src/router/navigateApp";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
@@ -39,6 +40,8 @@ import {
   getStationWindowModeFromLabel,
   isMainAppWindow,
 } from "@src/util/platform/tauri/windowIdentity";
+
+const log = createLogger("StationWindowBridge");
 
 export function useStationWindowBridge(): void {
   const store = useStore();
@@ -87,7 +90,9 @@ export function useStationWindowBridge(): void {
     STATION_WINDOW_MAIN_NAVIGATE_EVENT,
     ({ path, replace, action }) => {
       if (action === "open-kanban") {
-        void WorkStationViewService.openKanbanTab();
+        WorkStationViewService.openKanbanTab().catch((error: unknown) => {
+          log.warn("Failed to open Kanban from a station window", error);
+        });
       } else if (path.startsWith("/orgii/")) {
         navigateApp(path, replace);
       }
