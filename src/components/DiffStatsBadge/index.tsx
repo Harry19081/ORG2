@@ -1,7 +1,5 @@
 import { type ReactNode, memo } from "react";
-import { useTranslation } from "react-i18next";
 
-import Tooltip from "@src/components/Tooltip";
 import { DIFF_STATS } from "@src/config/workstation/tokens";
 
 import {
@@ -33,7 +31,7 @@ interface DiffStatsBadgeProps {
    * container gap and lose to Tailwind source-order.
    */
   gapClassName?: string;
-  /** Reserve a 3ch column for each value so additions/deletions align. */
+  /** Opt in to aligned 3ch columns; defaults to a compact inline label. */
   reserveValueWidth?: boolean;
   className?: string;
   valueClassName?: string;
@@ -64,14 +62,13 @@ const DiffStatsBadge = memo(function DiffStatsBadge({
   size = "inherit",
   weight = "medium",
   gapClassName = "gap-1",
-  reserveValueWidth = true,
+  reserveValueWidth = false,
   className,
   valueClassName,
   formatValue = String,
   showAdditions = true,
   showDeletions = true,
 }: DiffStatsBadgeProps) {
-  const { t } = useTranslation();
   const hasAdditions = showAdditions && additions > 0;
   const hasDeletions = showDeletions && deletions > 0;
 
@@ -90,38 +87,28 @@ const DiffStatsBadge = memo(function DiffStatsBadge({
       )}
     >
       {hasAdditions && (
-        <Tooltip
-          content={t("common:gitLabels.additions")}
-          mouseEnterDelay={500}
+        <span
+          className={joinClasses(
+            VALUE_BASE_CLASSES,
+            reserveValueWidth ? VALUE_ALIGNED_CLASSES : undefined,
+            DIFF_STATS.additions,
+            valueClassName
+          )}
         >
-          <span
-            className={joinClasses(
-              VALUE_BASE_CLASSES,
-              reserveValueWidth ? VALUE_ALIGNED_CLASSES : undefined,
-              DIFF_STATS.additions,
-              valueClassName
-            )}
-          >
-            +{formatValue(additions)}
-          </span>
-        </Tooltip>
+          +{formatValue(additions)}
+        </span>
       )}
       {hasDeletions && (
-        <Tooltip
-          content={t("common:gitLabels.deletions")}
-          mouseEnterDelay={500}
+        <span
+          className={joinClasses(
+            VALUE_BASE_CLASSES,
+            reserveValueWidth ? VALUE_ALIGNED_CLASSES : undefined,
+            DIFF_STATS.deletions,
+            valueClassName
+          )}
         >
-          <span
-            className={joinClasses(
-              VALUE_BASE_CLASSES,
-              reserveValueWidth ? VALUE_ALIGNED_CLASSES : undefined,
-              DIFF_STATS.deletions,
-              valueClassName
-            )}
-          >
-            -{formatValue(deletions)}
-          </span>
-        </Tooltip>
+          -{formatValue(deletions)}
+        </span>
       )}
     </span>
   );
