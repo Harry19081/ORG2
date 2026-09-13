@@ -349,7 +349,6 @@
       },
       "ide": {
         "shell": {
-          "emptyNoCommands": "Sem comandos",
           "noCommand": "(sem comando)",
           "outputInProgress": "… saída em andamento",
           "exitCode": "[código de saída: {{code}}]"

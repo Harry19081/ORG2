@@ -654,7 +654,6 @@
     "clearNetworkLogs": "Clear network logs",
     "clearConsole": "Clear console",
     "copyToClipboard": "Copy to clipboard",
-    "openDiff": "Open diff",
     "popAllStashes": "Pop All Stashes (apply and remove)",
     "applyStash": "Apply Stash (apply and keep stash)",
     "popStash": "Pop Stash (apply and remove)",
@@ -780,7 +779,6 @@
     "previewUnavailable": "Preview unavailable",
     "selectRepositoryFromWorkspace": "Choose a workspace repository",
     "noData": "No data",
-    "noSessionHistoryForFile": "No session activity found for {{file}}",
     "noSessionHistory": "No session history"
   },
   "inbox": {

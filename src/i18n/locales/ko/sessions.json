@@ -346,7 +346,6 @@
       },
       "ide": {
         "shell": {
-          "emptyNoCommands": "명령 없음",
           "noCommand": "(명령 없음)",
           "outputInProgress": "… 출력 진행 중",
           "exitCode": "[종료 코드: {{code}}]"

@@ -160,7 +160,8 @@ export const SourceControlTabContent = forwardRef<
       autoLoadStashes: showOnlyStashes,
     });
 
-    useEffect(() => {
+    // Resolve the parent overlay before paint when scoped data is ready.
+    useLayoutEffect(() => {
       onLoadingChange?.(sourceControlState.loading);
     }, [onLoadingChange, sourceControlState.loading]);
 

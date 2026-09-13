@@ -32,7 +32,6 @@ import { useSourceControlScope } from "../hooks/useSourceControlScope";
 import type { SourceControlContentHandle } from "./SourceControlTabPanels";
 import {
   NotGitInitializedContent,
-  SourceControlTabContent,
   SourceControlWithWorktrees,
 } from "./SourceControlTabPanels";
 
@@ -186,31 +185,17 @@ export function useSourceControlTabConfig({
         />
       );
     }
-    if (hasWorktrees) {
-      return (
-        <SourceControlWithWorktrees
-          ref={sourceControlRef}
-          repoPath={repoPath}
-          repoId={repoId}
-          worktrees={worktrees}
-          worktreesLoading={worktreesLoading}
-          scope={effectiveScope}
-          onGitFileSelect={onGitFileSelect}
-          onGitFilesChange={onGitFilesChange}
-          onGitHistorySelectionChange={onGitHistorySelectionChange}
-          showFilter={showFilter}
-          viewMode={viewMode}
-          showOnlyStashes={showOnlyStashes}
-          navigateWithoutSelecting={navigateWithoutSelecting}
-          sectionFilter={sectionFilter}
-        />
-      );
-    }
+    // Keep the connected pane mounted while worktree discovery settles.
+    // Switching between standalone and scoped component types here remounts
+    // the file list and briefly reintroduces the scope loading overlay.
     return (
-      <SourceControlTabContent
+      <SourceControlWithWorktrees
         ref={sourceControlRef}
         repoPath={repoPath}
         repoId={repoId}
+        worktrees={worktrees}
+        worktreesLoading={worktreesLoading}
+        scope={effectiveScope}
         onGitFileSelect={onGitFileSelect}
         onGitFilesChange={onGitFilesChange}
         onGitHistorySelectionChange={onGitHistorySelectionChange}
@@ -239,7 +224,6 @@ export function useSourceControlTabConfig({
     sectionFilter,
     sourceControlRef,
     worktrees,
-    hasWorktrees,
     worktreesLoading,
     refreshWorktrees,
     t,

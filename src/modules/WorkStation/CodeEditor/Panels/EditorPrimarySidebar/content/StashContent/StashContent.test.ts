@@ -71,7 +71,10 @@ it.each(["en", "zh"])(
           )
         );
         const headers = Array.from(container.querySelectorAll("div")).filter(
-          (node) => node.className === HEADER_CLASSES.sectionHeader
+          (node) =>
+            HEADER_CLASSES.sectionHeader
+              .split(" ")
+              .every((token) => node.classList.contains(token))
         );
         expect(headers).toHaveLength(1);
         const header = headers[0];
@@ -87,7 +90,14 @@ it.each(["en", "zh"])(
         const filter =
           header.querySelector<HTMLButtonElement>('[title="filter"]');
         expect(filter).not.toBeNull();
-        expect(pop!.className).toBe(filter!.className);
+        // Disabled actions keep shared dimensions and hover treatment, but
+        // intentionally have a different cursor and opacity.
+        expect(pop!.style.height).toBe(filter!.style.height);
+        expect(pop!.style.width).toBe(filter!.style.width);
+        const hoverClasses = (button: HTMLButtonElement) =>
+          [...button.classList].filter((token) => token.includes("hover:"));
+        expect(hoverClasses(pop!)).toEqual(hoverClasses(filter!));
+        expect(filter!.disabled).toBe(false);
         expect(pop!.parentElement!.parentElement).toBe(
           filter!.parentElement!.parentElement
         );

@@ -7,21 +7,18 @@
  *
  * Shared by: CodeEditor, DatabaseManager, Browser
  */
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useState } from "react";
 
 import Button from "@src/components/Button";
+import { SidebarSectionHeader } from "@src/components/SidebarSectionHeader";
 import {
   type SectionHeaderAction,
   isSectionHeaderCustomAction,
 } from "@src/components/TreePanelSidebar/types";
 import { TreeRowActionGroup } from "@src/components/TreeRow/TreeRowActionGroup";
-import {
-  BUTTON_SIZE,
-  SECTION_ACTION_BUTTON,
-} from "@src/config/workstation/tokens";
-import { HEADER_CLASSES } from "@src/config/workstation/tokens";
-import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import { HorizontalResizeHandle } from "@src/scaffold/Resize";
+
+import { SectionHeaderActionsContext } from "./SectionHeaderActions";
 
 // ============================================
 // Types
@@ -78,6 +75,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
     hideSeparator = false,
     headerTestId,
   }) => {
+    const [actionsHost, setActionsHost] = useState<HTMLDivElement | null>(null);
     const effectiveCollapsed = collapsible ? collapsed : false;
 
     // Handle collapse toggle
@@ -135,94 +133,69 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
           />
         )}
         {/* Header */}
-        <div className={HEADER_CLASSES.sectionHeader}>
-          <div
-            data-testid={headerTestId}
-            data-collapsed={effectiveCollapsed ? "true" : "false"}
-            className={`flex min-w-0 flex-1 items-center gap-1.5 ${collapsible ? "cursor-pointer" : ""}`}
-            onClick={handleToggle}
-          >
-            {/* Chevron */}
-            {collapsible && (
-              <span
-                className={`${BUTTON_SIZE.sm} flex shrink-0 items-center justify-center`}
-              >
-                {effectiveCollapsed ? (
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    data-icon="chevron-right"
-                    size={14}
-                    className="text-text-3"
-                  />
-                ) : (
-                  <HugeiconsIcon
-                    icon={ArrowDown01Icon}
-                    data-icon="chevron-down"
-                    size={14}
-                    className="text-text-3"
-                  />
-                )}
-              </span>
-            )}
-
-            {/* Title */}
-            {typeof title === "string" ? (
-              <span className="truncate text-[12px] font-medium text-text-2 uppercase">
-                {title}
-              </span>
-            ) : (
-              <div className="truncate text-[12px] font-medium text-text-2 uppercase">
-                {title}
-              </div>
-            )}
-          </div>
-
-          {/* Action buttons - show on hover, or always when forceVisible */}
-          {actions.length > 0 && (
-            <TreeRowActionGroup
-              hoverGroup="section"
-              alwaysVisible={actions.some((action) => action.forceVisible)}
-            >
-              {actions.map((action) => {
-                // Support custom rendering for complex actions (dropdowns, etc.)
-                if (isSectionHeaderCustomAction(action)) {
-                  return <div key={action.key}>{action.customRender}</div>;
-                }
-
-                const hasLabel = !!action.label;
-                const button = (
-                  <Button
-                    layout="custom"
-                    appearance="custom"
-                    disabled={action.disabled}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      action.onClick();
-                    }}
-                    className={`${SECTION_ACTION_BUTTON.base} disabled:opacity-50 ${
-                      hasLabel
-                        ? SECTION_ACTION_BUTTON.withLabel
-                        : SECTION_ACTION_BUTTON.iconOnly
-                    }`}
-                    title={
-                      action.key === "refresh-git" ? undefined : action.tooltip
+        <SidebarSectionHeader
+          surface="panel"
+          title={title}
+          expanded={!effectiveCollapsed}
+          onToggle={collapsible ? handleToggle : undefined}
+          toggleTestId={headerTestId}
+          actionsAlwaysVisible
+          actions={
+            <>
+              <div
+                ref={setActionsHost}
+                className="flex shrink-0 items-center gap-px"
+              />
+              {/* Action buttons - show on hover, or always when forceVisible */}
+              {actions.length > 0 && (
+                <TreeRowActionGroup
+                  hoverGroup="section"
+                  alwaysVisible={actions.some((action) => action.forceVisible)}
+                >
+                  {actions.map((action) => {
+                    // Support custom rendering for complex actions (dropdowns, etc.)
+                    if (isSectionHeaderCustomAction(action)) {
+                      return <div key={action.key}>{action.customRender}</div>;
                     }
-                  >
-                    {action.icon}
-                    {action.label && <span>{action.label}</span>}
-                  </Button>
-                );
 
-                return <div key={action.key}>{button}</div>;
-              })}
-            </TreeRowActionGroup>
-          )}
-        </div>
+                    const hasLabel = !!action.label;
+                    const button = (
+                      <Button
+                        variant="tertiary"
+                        appearance="soft-no-drop"
+                        size="sidebar"
+                        iconOnly={!hasLabel}
+                        icon={action.icon}
+                        aria-label={action.tooltip}
+                        disabled={action.disabled}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          action.onClick();
+                        }}
+                        title={
+                          action.key === "refresh-git"
+                            ? undefined
+                            : action.tooltip
+                        }
+                      >
+                        {action.label}
+                      </Button>
+                    );
+
+                    return <div key={action.key}>{button}</div>;
+                  })}
+                </TreeRowActionGroup>
+              )}
+            </>
+          }
+        />
 
         {/* Content - only render when not collapsed */}
         {!effectiveCollapsed && (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            {children}
+            <SectionHeaderActionsContext.Provider value={actionsHost}>
+              {children}
+            </SectionHeaderActionsContext.Provider>
           </div>
         )}
 

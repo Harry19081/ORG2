@@ -823,7 +823,6 @@
     "clearNetworkLogs": "清除網絡日誌",
     "clearConsole": "清除控制台",
     "copyToClipboard": "複製到剪貼板",
-    "openDiff": "打開 Diff",
     "popAllStashes": "Pop All Stashes（應用並移除）",
     "applyStash": "Apply Stash（應用並保留 stash）",
     "popStash": "Pop Stash（應用並移除）",
@@ -949,7 +948,6 @@
     "selectRepositoryFromWorkspace": "選擇工作區儲存庫",
     "noData": "無資料",
     "noResults": "沒有結果",
-    "noSessionHistoryForFile": "找不到 {{file}} 的工作階段活動",
     "noSessionHistory": "尚無工作階段歷史"
   },
   "inbox": {

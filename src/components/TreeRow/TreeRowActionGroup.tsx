@@ -21,7 +21,7 @@ export function TreeRowActionGroup({
 }: TreeRowActionGroupProps) {
   return (
     <div
-      className={`shrink-0 items-center gap-px ${alwaysVisible ? "flex" : REVEAL_CLASSES[hoverGroup]}`}
+      className={`shrink-0 items-center gap-px ${alwaysVisible ? "flex" : `${REVEAL_CLASSES[hoverGroup]} has-data-[state=open]:flex`}`}
     >
       {children}
     </div>

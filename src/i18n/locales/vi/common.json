@@ -823,7 +823,6 @@
     "clearNetworkLogs": "Xóa nhật ký mạng",
     "clearConsole": "Xóa bảng điều khiển",
     "copyToClipboard": "Sao chép vào bộ nhớ tạm",
-    "openDiff": "Mở Diff",
     "popAllStashes": "Pop All Stashes (áp dụng và xóa)",
     "applyStash": "Apply Stash (áp dụng và giữ stash)",
     "popStash": "Pop Stash (áp dụng và xóa)",
@@ -949,7 +948,6 @@
     "selectRepositoryFromWorkspace": "Chọn kho lưu trữ trong không gian làm việc",
     "noData": "Không có dữ liệu",
     "noResults": "Không có kết quả",
-    "noSessionHistoryForFile": "Không tìm thấy hoạt động phiên nào cho {{file}}",
     "noSessionHistory": "Không có lịch sử phiên"
   },
   "inbox": {

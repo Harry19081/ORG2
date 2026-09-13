@@ -346,7 +346,6 @@
       },
       "ide": {
         "shell": {
-          "emptyNoCommands": "Нет команд",
           "noCommand": "(нет команды)",
           "outputInProgress": "… вывод выполняется",
           "exitCode": "[код выхода: {{code}}]"

@@ -387,17 +387,6 @@ export const SECTION_ACTION_BUTTON = {
 export const FOLDER_HEADER = {
   /** Outer wrapper for a folder section */
   section: "flex flex-col",
-  /** Header row: named group for row-local hover-reveal actions */
-  row: `group/folder-header flex h-7 shrink-0 items-center transition-colors ${PRIMARY_SIDEBAR_HOVER.row}`,
-  /** Clickable button area inside header */
-  button: "flex min-w-0 flex-1 items-center gap-1.5 pl-4 pr-2 text-left",
-  /** Folder name text */
-  name: "min-w-0 truncate text-[12px] font-medium text-text-1",
   /** Branch name text */
   branch: "min-w-0 truncate text-[11px] text-text-3",
-  /** Standard folder/worktree row action button. Visibility is controlled by the row's action wrapper. */
-  action: HEADER_BUTTON.actionTreeRow,
-  /** Folder/worktree row action wrapper — hidden until the parent row is hovered/focused so it does not reserve space. */
-  actions:
-    "mr-1.5 hidden shrink-0 items-center gap-0.5 group-focus-within/folder-header:flex group-hover/folder-header:flex has-data-[state=open]:flex",
 } as const;

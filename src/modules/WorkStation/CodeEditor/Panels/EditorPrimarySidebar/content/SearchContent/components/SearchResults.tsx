@@ -20,29 +20,25 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
-import {
-  TREE_INDENT_PX,
-  TREE_PADDING_X,
-  TREE_ROW_HEIGHT,
-  TreeRowBase,
-} from "@src/components/TreeRow";
+import { TREE_ROW_HEIGHT, TreeRowBase } from "@src/components/TreeRow";
 import type { TreeRowNode } from "@src/components/TreeRow";
+import {
+  SIDEBAR_ROW_GAP_CLASS,
+  TREE_ROW_INSET_CLASS,
+  getSidebarRowSurface,
+  getTreeRowPadding,
+} from "@src/components/TreeRow/config";
 import type {
   FlattenedTreeNode,
   StickyScrollNode,
   TreeNodeBase,
 } from "@src/components/VirtualizedStickyTree";
-import {
-  CHEVRON_SIZE,
-  STICKY_ROW,
-  VirtualizedStickyTree,
-  stickyRowPadding,
-} from "@src/components/VirtualizedStickyTree";
-import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
+import { StickyTreeRow } from "@src/components/VirtualizedStickyTree/StickyTreeRow";
 import {
   COUNT_BADGE,
-  PRIMARY_SIDEBAR_HOVER,
   getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
 import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
@@ -212,26 +208,23 @@ const MatchLine: React.FC<MatchLineProps> = React.memo(({ node, onClick }) => {
     onClick(node.filePath, match.line, node.matchIndex!);
   }, [node.filePath, match.line, node.matchIndex, onClick]);
 
-  // Custom row for match lines - simpler than TreeRowBase
-  // Indent: depth 1 = 1 * TREE_INDENT_PX + TREE_PADDING_X
-  const paddingLeft = 1 * TREE_INDENT_PX + TREE_PADDING_X;
-
   return (
-    <div
-      className={`flex h-7 cursor-pointer items-center gap-1.5 transition-colors ${
-        isSelected
-          ? `${SURFACE_TOKENS.selected} ${PRIMARY_SIDEBAR_HOVER.selectedRow}`
-          : PRIMARY_SIDEBAR_HOVER.row
-      }`}
-      style={{ paddingLeft: `${paddingLeft}px`, paddingRight: "8px" }}
-      onClick={handleClick}
-    >
-      <span className="min-w-0 flex-1 truncate text-[12px] text-text-2">
-        {before}
-        <span className="bg-primary-6/20 text-primary-6">{matchText}</span>
-        {after}
-      </span>
-      <span className="shrink-0 text-[11px] text-text-4">{match.line}</span>
+    <div className={`${TREE_ROW_INSET_CLASS} ${SIDEBAR_ROW_GAP_CLASS}`}>
+      <Button
+        layout="custom"
+        appearance="custom"
+        aria-pressed={isSelected}
+        className={`flex h-7 w-full cursor-pointer items-center gap-1.5 text-left transition-colors ${getSidebarRowSurface({ selected: isSelected })}`}
+        style={getTreeRowPadding(1)}
+        onClick={handleClick}
+      >
+        <span className="min-w-0 flex-1 truncate text-[12px] text-text-2">
+          {before}
+          <span className="bg-primary-6/20 text-primary-6">{matchText}</span>
+          {after}
+        </span>
+        <span className="shrink-0 text-[11px] text-text-4">{match.line}</span>
+      </Button>
     </div>
   );
 });
@@ -414,52 +407,32 @@ const SearchResultsInner = forwardRef<SearchResultsHandle, SearchResultsProps>(
     const renderStickyItem = useCallback(
       (stickyNode: StickyScrollNode<SearchNode>, onClick: () => void) => {
         const { node, depth } = stickyNode;
-        const isExpanded = node.expanded ?? false;
         const matchCount = node.result?.matches.length ?? 0;
         const countBadgeVariant =
           matchCount === 0 ? COUNT_BADGE.muted : COUNT_BADGE.primary;
 
         return (
-          <div
-            className={`${STICKY_ROW.rowBase} ${stickyBgClass}`}
-            style={stickyRowPadding(depth)}
+          <StickyTreeRow
+            depth={depth}
+            expanded={Boolean(node.expanded)}
+            name={node.fileName || node.name}
             onClick={onClick}
+            stickyBgClass={stickyBgClass}
             title={t("tooltips.scrollToItem", { name: node.name })}
+            icon={
+              <FileTypeIcon
+                fileName={node.fileName || node.name}
+                size="small"
+                className="shrink-0"
+              />
+            }
           >
-            <div className={STICKY_ROW.chevronBox}>
-              {isExpanded ? (
-                <HugeiconsIcon
-                  icon={ArrowDown01Icon}
-                  data-icon="chevron-down"
-                  size={CHEVRON_SIZE}
-                  className={STICKY_ROW.chevronIcon}
-                />
-              ) : (
-                <HugeiconsIcon
-                  icon={ArrowRight01Icon}
-                  data-icon="chevron-right"
-                  size={CHEVRON_SIZE}
-                  className={STICKY_ROW.chevronIcon}
-                />
-              )}
-            </div>
-
-            <FileTypeIcon
-              fileName={node.fileName || node.name}
-              size="small"
-              className="shrink-0"
-            />
-
-            <span className={STICKY_ROW.name}>
-              {node.fileName || node.name}
-            </span>
-
             <div
               className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(matchCount)} ${countBadgeVariant}`}
             >
               {matchCount}
             </div>
-          </div>
+          </StickyTreeRow>
         );
       },
       [stickyBgClass, t]

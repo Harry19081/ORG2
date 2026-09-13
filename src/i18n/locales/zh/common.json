@@ -654,7 +654,6 @@
     "clearNetworkLogs": "清除网络日志",
     "clearConsole": "清除控制台",
     "copyToClipboard": "复制到剪贴板",
-    "openDiff": "打开 Diff",
     "popAllStashes": "Pop All Stashes（应用并移除）",
     "applyStash": "Apply Stash（应用并保留 stash）",
     "popStash": "Pop Stash（应用并移除）",
@@ -780,7 +779,6 @@
     "previewUnavailable": "预览不可用",
     "selectRepositoryFromWorkspace": "选择工作区仓库",
     "noData": "无数据",
-    "noSessionHistoryForFile": "未找到 {{file}} 的会话活动",
     "noSessionHistory": "暂无会话历史"
   },
   "inbox": {

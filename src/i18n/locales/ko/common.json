@@ -823,7 +823,6 @@
     "clearNetworkLogs": "네트워크 로그 지우기",
     "clearConsole": "콘솔 지우기",
     "copyToClipboard": "클립보드에 복사",
-    "openDiff": "Diff 열기",
     "popAllStashes": "Pop All Stashes (적용 및 제거)",
     "applyStash": "Apply Stash (적용 및 stash 유지)",
     "popStash": "Pop Stash (적용 및 제거)",
@@ -949,7 +948,6 @@
     "selectRepositoryFromWorkspace": "워크스페이스 리포지토리 선택",
     "noData": "데이터 없음",
     "noResults": "결과 없음",
-    "noSessionHistoryForFile": "{{file}}에 대한 세션 활동이 없습니다",
     "noSessionHistory": "세션 기록 없음"
   },
   "inbox": {
