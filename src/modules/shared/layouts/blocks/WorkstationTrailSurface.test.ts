@@ -72,7 +72,7 @@ describe("WorkstationTrailSurface", () => {
     expect(markup).toContain("height:20px");
     expect(markup).toContain("width:20px");
     expect(markup).toContain("items-center gap-px");
-    expect(markup).toContain("border-radius:8px");
+    expect(markup).toContain("border-radius:var(--radius-sm)");
   });
 
   it("shares the labelled trail section used by property and detail rails", () => {
