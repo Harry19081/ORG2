@@ -8,7 +8,7 @@ import {
   ArrowRight01Icon,
   Cancel01Icon,
   HugeiconsIcon,
-  StopIcon,
+  StopCircleIcon,
 } from "@src/icons";
 import { MINI_TERMINAL_SESSION_LIMIT } from "@src/store/ui/miniTerminalAtom";
 
@@ -100,11 +100,15 @@ export function WorkstationTrailTerminalHeader({
         <>
           {!collapsed && activeTab ? (
             <Button
-              variant="tertiary"
-              appearance="soft-no-drop"
+              variant="danger"
+              appearance="soft"
               iconOnly
               icon={
-                <HugeiconsIcon icon={StopIcon} data-icon="stop" size={14} />
+                <HugeiconsIcon
+                  icon={StopCircleIcon}
+                  data-icon="stop"
+                  size={14}
+                />
               }
               size="sidebar"
               aria-label={t("common:tooltips.killTerminal")}

@@ -68,6 +68,54 @@ describe("SplitButton", () => {
     );
   });
 
+  it("keeps the main segment light while the menu segment has a stronger hover fill", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(SplitButton, {
+        variant: "tertiary",
+        appearance: "soft-no-drop",
+        menu: React.createElement("div"),
+        menuOpen: false,
+        onMenuButtonClick: vi.fn(),
+        menuButtonLabel: "Choose shell",
+      })
+    );
+    const classes = [...markup.matchAll(/<button[^>]*class="([^"]*)"/g)];
+    expect(classes).toHaveLength(2);
+    expect(classes[0][1]).toContain(
+      "group-hover/button-split:bg-button-hover-no-drop"
+    );
+    expect(classes[0][1]).toContain("enabled:hover:bg-button-hover-no-drop");
+    expect(classes[1][1]).toContain("enabled:hover:bg-button-hover");
+    expect(classes[1][1]).toContain("focus-visible:bg-button-hover");
+    expect(classes[1][1]).not.toContain(
+      "enabled:hover:bg-button-hover-no-drop"
+    );
+  });
+
+  it.each([false, true])(
+    "retains open highlights only while enabled (disabled=%s)",
+    (disabled) => {
+      const markup = renderToStaticMarkup(
+        React.createElement(SplitButton, {
+          variant: "tertiary",
+          appearance: "soft-no-drop",
+          menu: React.createElement("div"),
+          menuOpen: true,
+          disabled,
+          onMenuButtonClick: vi.fn(),
+          menuButtonLabel: "Choose shell",
+        })
+      );
+      const classes = [...markup.matchAll(/<button[^>]*class="([^"]*)"/g)];
+      const mainClasses = classes[0][1].split(" ");
+      const menuClasses = classes[1][1].split(" ");
+      expect(mainClasses.includes("bg-button-hover-no-drop!")).toBe(!disabled);
+      expect(mainClasses.includes("text-primary-6!")).toBe(!disabled);
+      expect(menuClasses.includes("bg-button-hover")).toBe(!disabled);
+      expect(menuClasses.includes("text-primary-6")).toBe(!disabled);
+    }
+  );
+
   it("puts menu semantics and the accessible name on the menu trigger", () => {
     const markup = renderSplitButton("primary", true);
     const buttons = [...markup.matchAll(/<button([^>]*)>/g)];
