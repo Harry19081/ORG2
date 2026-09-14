@@ -199,9 +199,7 @@ describe("AgentStationTopHeader", () => {
       container.querySelector('[title="chat.maximizeWorkStation"]')
     ).toBeNull();
     expect(
-      container.querySelector(
-        '[title="common:spotlightActions.openAgentStationInNewWindow"]'
-      )
+      container.querySelector('[title="common:actions.openInNewWindow"]')
     ).toBeNull();
     act(() => store.set(chatPanelMaximizedAtom, false));
     act(() => control!.click());
@@ -216,9 +214,7 @@ describe("AgentStationTopHeader", () => {
     });
 
     expect(
-      container.querySelector(
-        'button[title="common:spotlightActions.openAgentStationInNewWindow"]'
-      )
+      container.querySelector('button[title="common:actions.openInNewWindow"]')
     ).not.toBeNull();
   });
 
@@ -234,9 +230,7 @@ describe("AgentStationTopHeader", () => {
     });
 
     expect(
-      container.querySelector(
-        'button[title="common:spotlightActions.openAgentStationInNewWindow"]'
-      )
+      container.querySelector('button[title="common:actions.openInNewWindow"]')
     ).toBeNull();
     expect(
       container.querySelector('button[title="chat.maximizeWorkStation"]')
