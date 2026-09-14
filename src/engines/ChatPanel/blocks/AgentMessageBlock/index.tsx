@@ -31,6 +31,7 @@ import { useTranslation } from "react-i18next";
 
 import ExpandOverlay from "@src/components/ExpandOverlay";
 import { useAgentTurnContext } from "@src/engines/ChatPanel/ChatHistory/AgentTurnContext";
+import { createLogger } from "@src/hooks/logger";
 
 import { EventNavigateIcon } from "../primitives";
 import { useBlockHeader } from "../useBlockLocate";
@@ -45,6 +46,7 @@ import {
 // color that other blocks use. Without this, the fade looks like a colored
 // bar floating over the message.
 const CHAT_PANE_FADE_FROM = "from-chat-pane";
+const log = createLogger("AgentMessageBlock");
 
 // Twenty lines at ~24px line-height, matching the earlier long-message
 // preview depth used by the chat pane.
@@ -191,7 +193,9 @@ const AgentMessageBlock: React.FC<AgentMessageBlockProps> = ({
             isExpanded={isExpanded}
             onToggle={(event) => {
               event.stopPropagation();
-              void toggle();
+              toggle().catch((error: unknown) => {
+                log.warn("Could not toggle message expansion", error);
+              });
             }}
             collapsedLabel={t("actions.expand")}
             expandedLabel={t("actions.collapse")}
