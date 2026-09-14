@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "Ожидание завершения терминала",
     "runShellFailed": "Ошибка выполнения команды",
     "runCommands": "Выполнить команды",
+    "waitBackgroundTasks": "Ожидать фоновые задачи",
     "terminalSummary": {
       "command_one": "{{count}} команда",
       "command_other": "{{count}} команды",
@@ -1134,6 +1135,10 @@
       "check_one": "{{count}} проверка",
       "check_other": "{{count}} проверки",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} раз",
+      "count_other": "{{count}} раз"
     },
     "inspectTerminalsRunning": "Проверка терминалов",
     "inspectTerminalsDone": "Терминалы проверены",

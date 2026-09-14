@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "En attente de la fin du terminal",
     "runShellFailed": "Échec de la commande",
     "runCommands": "Exécuter des commandes",
+    "waitBackgroundTasks": "Attendre les tâches en arrière-plan",
     "terminalSummary": {
       "command_one": "{{count}} commande",
       "command_other": "{{count}} commandes",
@@ -1134,6 +1135,10 @@
       "check_one": "{{count}} vérification",
       "check_other": "{{count}} vérifications",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} fois",
+      "count_other": "{{count}} fois"
     },
     "inspectTerminalsRunning": "Inspection des terminaux",
     "inspectTerminalsDone": "Terminaux inspectés",

@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "Terminal の完了を待機中",
     "runShellFailed": "コマンド実行に失敗しました",
     "runCommands": "コマンドを実行",
+    "waitBackgroundTasks": "バックグラウンドタスクを待機",
     "terminalSummary": {
       "command_one": "{{count}} 件のコマンド",
       "command_other": "{{count}} 件のコマンド",
@@ -1134,6 +1135,10 @@
       "check_one": "{{count}} 件の確認",
       "check_other": "{{count}} 件の確認",
       "separator": "、"
+    },
+    "waitSummary": {
+      "count_one": "{{count}} 回",
+      "count_other": "{{count}} 回"
     },
     "inspectTerminalsRunning": "Terminal を確認中",
     "inspectTerminalsDone": "Terminal を確認しました",

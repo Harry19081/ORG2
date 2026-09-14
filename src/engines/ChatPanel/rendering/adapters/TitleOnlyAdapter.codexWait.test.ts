@@ -59,6 +59,32 @@ describe("TitleOnlyAdapter Codex wait rendering", () => {
     expect(markup).not.toContain("Sleep completed.");
   });
 
+  it("renders a Codex write_stdin poll with its envelope wall time", () => {
+    const markup = renderToStaticMarkup(
+      createElement(RecipeRenderer, {
+        event_id: "event-codex-poll",
+        functionName: "await_output",
+        uiCanonical: "await_output",
+        action_type: "tool_call",
+        args: {
+          command: "wait_for",
+          handle: "10689",
+          handles: ["10689"],
+          session_id: "10689",
+          chars: "",
+          block_until_ms: 1000,
+        },
+        result: {
+          output:
+            "Script completed\nWall time 5.0 seconds\nOutput:\n\n RUN  v4.1.11\n",
+        },
+        status: "completed",
+      })
+    );
+    expect(markup).toContain('data-tool-call-name="await_output"');
+    expect(markup).toContain("tools.awaitOutputDone 5s");
+  });
+
   it("renders Codex wait payloads with the dedicated wait lifecycle", () => {
     const props: RecipeRendererProps = {
       event_id: "event-codex-wait",
