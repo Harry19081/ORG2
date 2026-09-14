@@ -9,6 +9,7 @@ import {
   searchCodeFast,
   searchCodeRegex,
 } from "@src/api/tauri/search";
+import { createLogger } from "@src/hooks/logger";
 import i18n from "@src/i18n";
 import type {
   SearchOptions,
@@ -20,6 +21,8 @@ import { SEARCH_CONSTANTS } from "../config";
 import type { SearchMode } from "../types";
 import { buildSearchFilters, parseFilePatterns } from "./transformers";
 import type { SearchResultActions } from "./types";
+
+const log = createLogger("FileSearch");
 
 interface Parameters {
   query: string;
@@ -261,7 +264,7 @@ export function useSearchExecution({
     if (!request[0]) return;
     debounce.current = setTimeout(() => {
       debounce.current = undefined;
-      void search();
+      void search().catch((error) => log.error("Search failed", error));
     }, SEARCH_CONSTANTS.DEBOUNCE_MS);
     return () => {
       release();
