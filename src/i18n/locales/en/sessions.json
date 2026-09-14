@@ -717,6 +717,7 @@
     "performActions_other": "Perform {{count}} actions",
     "showInlineDiffs": "Inline diffs",
     "inputSettings": "Input settings",
+    "compactInput": "Compact input",
     "replay": {
       "follow": "Follow"
     },
