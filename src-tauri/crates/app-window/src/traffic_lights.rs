@@ -264,6 +264,13 @@ mod native {
         let ns_window_addr = ns_window_ptr as usize;
         let window = window.clone();
         let install = move || {
+            // The caller-side check is only a fast path. Concurrent callers
+            // can both pass it before either installation reaches this queue.
+            // Recheck on the main thread, which serializes this check with
+            // observer installation and registry insertion below.
+            if lock_pinned().iter().any(|(pinned, _)| *pinned == label) {
+                return;
+            }
             // SAFETY: main thread, live window; the views are only used for
             // the duration of this closure and never stored.
             let Some(views) = (unsafe { title_bar_views(ns_window_addr as *mut AnyObject) }) else {
