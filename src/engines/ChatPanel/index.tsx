@@ -460,7 +460,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           chatWidth={chatWidth}
           chatWidthStyleValue={chatWidthStyleValue}
           embedded={embedded}
-          fullScreen={isChatFocus}
           focusedWorkstationRail={
             showFocusedWorkstationControls ? (
               <SessionWorkstationRail

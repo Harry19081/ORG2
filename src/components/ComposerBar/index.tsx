@@ -5,8 +5,7 @@
  * to ensure identical layout: [+ button | pills] ---- [context | submit]
  *
  * When an editor slot is present, the editor uses the full-width row above
- * the shared toolbar controls, or sits between them in one row when
- * `inlineLayout` is set.
+ * the shared toolbar controls.
  */
 import React, { memo } from "react";
 
@@ -37,12 +36,6 @@ interface ComposerBarProps {
   bottomPaddingClassName?: string;
   /** Optional editor field above the toolbar. */
   editorSlot?: React.ReactNode;
-  /**
-   * Render the editor between the left and right controls in one row. The
-   * editor slot keeps its DOM node when this flips, so focus, selection, and
-   * the uncontrolled editor document survive compact/stacked moves.
-   */
-  inlineLayout?: boolean;
   /** Hide the default add-content button while preserving the shared layout. */
   hideAddButton?: boolean;
   /** Places add/tools/pills beside submit, leaving only the prefix on the left. */
@@ -68,7 +61,6 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
     submitButton,
     bottomPaddingClassName = "",
     editorSlot,
-    inlineLayout = false,
     hideAddButton = false,
     secondaryControlsPosition = "left",
     showContextInfo = true,
@@ -100,13 +92,9 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
         </Button>
       );
 
-    // The row's spare height sits above the 28px controls and it has no side
-    // padding, so the controls rest on the shell inset exactly where the
-    // inline row puts them: + and send stay put across compact/stacked moves.
     const toolbarRow = (
       <div
-        key="toolbar"
-        className={`flex h-9 min-h-9 w-full items-center justify-between pt-2 text-text-2 ${bottomPaddingClassName}`.trim()}
+        className={`flex h-9 min-h-9 w-full items-center justify-between px-1 text-text-2 ${bottomPaddingClassName}`.trim()}
         style={{ transform: "translateZ(0)" }}
       >
         <div className={rowClass}>
@@ -133,50 +121,21 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
       </div>
     );
 
-    if (editorSlot == null) return toolbarRow;
-
-    // Both layouts render this node as a keyed direct child of the same root,
-    // so React never remounts or moves the editor when `inlineLayout` flips.
-    const editorSlotNode = (
-      <div
-        key="editor"
-        data-editor-slot="true"
-        className={`relative flex min-h-0 min-w-0 items-stretch self-stretch ${inlineLayout ? "flex-1" : ""}`.trim()}
-      >
-        {editorSlot}
-      </div>
-    );
-
-    if (inlineLayout) {
+    if (editorSlot != null) {
       return (
-        <div
-          className={`flex w-full min-w-0 items-center gap-1.5 text-text-2 ${bottomPaddingClassName}`.trim()}
-        >
-          <div key="left" className={`${rowClass} shrink-0`}>
-            {leftPrefix}
-            {addButton}
-            {leftTools}
+        <div className="flex w-full flex-col gap-2">
+          <div
+            data-editor-slot="true"
+            className="relative flex min-h-0 min-w-0 items-stretch self-stretch"
+          >
+            {editorSlot}
           </div>
-          {editorSlotNode}
-          <div key="pills" className={`${rowClass} shrink-0`}>
-            {pills}
-          </div>
-          <div key="right" className={`${rowClass} shrink-0`}>
-            {showContextInfo && (
-              <ContextInfoButton repoPath={repoPath} variant="corner" compact />
-            )}
-            {submitButton}
-          </div>
+          {toolbarRow}
         </div>
       );
     }
 
-    return (
-      <div className="flex w-full flex-col gap-2">
-        {editorSlotNode}
-        {toolbarRow}
-      </div>
-    );
+    return toolbarRow;
   }
 );
 

@@ -6,7 +6,6 @@ import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 
 import { UnifiedChatPanelTabContent } from "./TabContent/UnifiedChatPanelTabContent";
-import { ChatPanelFullScreenContext } from "./chatPanelFullScreenContext";
 
 type ChatPanelShellStyle = React.CSSProperties;
 
@@ -19,8 +18,6 @@ interface ChatPanelShellProps {
   chatWidthStyleValue: string | number;
   embedded: boolean;
   focusedWorkstationRail?: React.ReactNode;
-  /** The pane fills the app window; hosted tab content may use compact chrome. */
-  fullScreen: boolean;
   hasTabBar: boolean;
   headerSection: React.ReactNode;
   isDragging: boolean;
@@ -48,7 +45,6 @@ export function ChatPanelShell({
   chatWidthStyleValue,
   embedded,
   focusedWorkstationRail,
-  fullScreen,
   hasTabBar,
   headerSection,
   isDragging,
@@ -107,15 +103,13 @@ export function ChatPanelShell({
       {headerSection}
       <div className="flex min-h-0 min-w-0 flex-1">
         <div className="flex min-h-0 min-w-0 flex-1">
-          <ChatPanelFullScreenContext.Provider value={fullScreen}>
-            <UnifiedChatPanelTabContent
-              activeTab={activeTab}
-              chatColumn={chatColumn}
-              hasTabBar={hasTabBar}
-              isTerminalTabActive={isTerminalTabActive}
-              terminalTabs={terminalTabs}
-            />
-          </ChatPanelFullScreenContext.Provider>
+          <UnifiedChatPanelTabContent
+            activeTab={activeTab}
+            chatColumn={chatColumn}
+            hasTabBar={hasTabBar}
+            isTerminalTabActive={isTerminalTabActive}
+            terminalTabs={terminalTabs}
+          />
         </div>
         {focusedWorkstationRail}
       </div>

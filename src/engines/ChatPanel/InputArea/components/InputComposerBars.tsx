@@ -259,8 +259,6 @@ interface NormalComposerContentProps extends SharedComposerBarProps {
   showVoiceUi: boolean;
   voice: UseVoiceInputResult;
   currentRepoPath?: string;
-  /** Render the editor and controls in the compact single-row capsule. */
-  isCompactRow: boolean;
   contextualPanel?: boolean;
   inlineLeadingContent?: React.ReactNode;
   onContentChange: (text: string) => void;
@@ -321,7 +319,6 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
   showVoiceUi,
   voice,
   currentRepoPath,
-  isCompactRow,
   contextualPanel = false,
   inlineLeadingContent,
   placeholder,
@@ -359,7 +356,6 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
         <ComposerBar
           onAddContent={onAddContent}
           repoPath={currentRepoPath}
-          inlineLayout={isCompactRow}
           showContextInfo={
             showAgentControls && !isCursorIde && !contextualPanel
           }
@@ -385,7 +381,6 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
               placeholder={placeholder || t("input.defaultPlaceholder")}
               trailingHint={trailingHint}
               onImagePaste={onImagePaste}
-              compact={isCompactRow}
               autoFocus={autoFocus}
               leadingContent={
                 contextualPanel ? inlineLeadingContent : undefined

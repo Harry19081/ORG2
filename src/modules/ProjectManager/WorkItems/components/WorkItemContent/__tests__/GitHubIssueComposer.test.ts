@@ -155,7 +155,7 @@ describe("GitHubIssueComposer", () => {
     expect(
       input?.querySelector("[data-testid='github-issue-comment-submit']")
         ?.parentElement?.parentElement?.className
-    ).toContain("pt-2");
+    ).toContain("px-1");
     expect(
       input?.querySelector("[data-testid='github-issue-comment-submit']")
         ?.parentElement?.className
