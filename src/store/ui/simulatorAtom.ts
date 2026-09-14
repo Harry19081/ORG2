@@ -67,8 +67,8 @@ simulatorShowDockAtom.debugLabel = "simulatorShowDockAtom";
 
 /**
  * Cell replay state for multi-task grid
- * Persists currentIndex for each threadId so state survives view switches
- * Key: threadId, Value: { currentIndex, isPlaying, hasUserOverride }
+ * Retains currentIndex across view switches for a bounded set of recent cells.
+ * Keys encode the owning session and thread, including empty thread names.
  *
  * `hasUserOverride` flips to `true` when the user manually controls a cell
  * (play, pause, drag progress, step prev/next, etc.). When true, the cell
@@ -80,10 +80,56 @@ export interface CellReplayPersistState {
   isPlaying: boolean;
   hasUserOverride?: boolean;
 }
-export const cellReplayStatesAtom = atom<
+export const MAX_CELL_REPLAY_STATES = 256;
+
+export function cellReplayKey(sessionId: string, threadId = ""): string {
+  return JSON.stringify([sessionId, threadId]);
+}
+
+const cellReplayStatesStorageAtom = atom<
   Record<string, CellReplayPersistState>
 >({});
+type CellReplayStates = Record<string, CellReplayPersistState>;
+export const cellReplayStatesAtom = atom(
+  (get) => get(cellReplayStatesStorageAtom),
+  (
+    get,
+    set,
+    update:
+      | CellReplayStates
+      | ((previous: CellReplayStates) => CellReplayStates)
+  ) => {
+    const previous = get(cellReplayStatesStorageAtom);
+    const next = typeof update === "function" ? update(previous) : update;
+    if (next === previous) return;
+    const entries = Object.entries(next);
+    set(
+      cellReplayStatesStorageAtom,
+      entries.length > MAX_CELL_REPLAY_STATES
+        ? Object.fromEntries(entries.slice(-MAX_CELL_REPLAY_STATES))
+        : next
+    );
+  }
+);
 cellReplayStatesAtom.debugLabel = "cellReplayStatesAtom";
+
+/** Session removal must not leave replay overrides available for resurrection. */
+export const clearCellReplaySessionAtom = atom(
+  null,
+  (get, set, sessionId: string) => {
+    const states = get(cellReplayStatesAtom);
+    const entries = Object.entries(states).filter(([key]) => {
+      try {
+        return (JSON.parse(key) as unknown[])[0] !== sessionId;
+      } catch {
+        return key !== sessionId;
+      }
+    });
+    if (entries.length !== Object.keys(states).length) {
+      set(cellReplayStatesAtom, Object.fromEntries(entries));
+    }
+  }
+);
 
 /**
  * Global replay control for multi-task grid

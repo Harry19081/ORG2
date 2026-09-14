@@ -6,7 +6,7 @@
  * from other cells don't trigger re-renders here.
  */
 import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import {
   type CellReplayPersistState,
@@ -36,13 +36,28 @@ export function useCellPersistence(cellId: string): CellPersistenceReturn {
     )
   );
 
+  // A remounted cell counts as recent without retaining its component owner.
+  useEffect(() => {
+    setCellStates((states) => {
+      const saved = states[cellId];
+      if (!saved || Object.keys(states).at(-1) === cellId) return states;
+      const next = { ...states };
+      delete next[cellId];
+      next[cellId] = saved;
+      return next;
+    });
+  }, [cellId, setCellStates]);
+
   const hasUserOverride = persistedState?.hasUserOverride ?? false;
 
   const patchCellState = useCallback(
     (patch: Partial<CellReplayPersistState>) => {
       setCellStates((states) => {
         const prev = states[cellId];
-        const next = { ...prev, ...patch };
+        const next = {
+          ...(prev ?? { currentIndex: 0, isPlaying: false }),
+          ...patch,
+        };
         if (
           prev &&
           prev.currentIndex === next.currentIndex &&
@@ -51,7 +66,10 @@ export function useCellPersistence(cellId: string): CellPersistenceReturn {
         ) {
           return states;
         }
-        return { ...states, [cellId]: next };
+        const updated = { ...states };
+        delete updated[cellId];
+        updated[cellId] = next;
+        return updated;
       });
     },
     [cellId, setCellStates]

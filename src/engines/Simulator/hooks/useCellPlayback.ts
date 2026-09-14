@@ -49,8 +49,16 @@ export function useCellPlayback({
 
   // Auto-play timer — only in independent mode
   useEffect(() => {
-    if (isSyncMode) return;
-    if (isPlaying && events.length > 0) {
+    if (isSyncMode || !isPlaying || events.length === 0) return;
+    const stopTimer = () => {
+      if (timerRef.current !== null) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+    const updateVisibility = () => {
+      stopTimer();
+      if (document.visibilityState === "hidden") return;
       timerRef.current = setInterval(() => {
         setCurrentIndexLocal((prev) => {
           const nextIndex = prev + 1;
@@ -63,13 +71,12 @@ export function useCellPlayback({
           return nextIndex;
         });
       }, autoPlayInterval / playbackSpeed);
-    }
-
+    };
+    updateVisibility();
+    document.addEventListener("visibilitychange", updateVisibility);
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+      stopTimer();
+      document.removeEventListener("visibilitychange", updateVisibility);
     };
   }, [
     isPlaying,
@@ -97,9 +104,10 @@ export function useCellPlayback({
 
   useEffect(() => {
     if (globalReplayState.triggerTime > lastGlobalTriggerRef.current) {
-      lastGlobalTriggerRef.current = globalReplayState.triggerTime;
-
+      let cancelled = false;
       queueMicrotask(() => {
+        if (cancelled) return;
+        lastGlobalTriggerRef.current = globalReplayState.triggerTime;
         if (globalReplayState.isPlaying) {
           setCurrentIndexLocalCb(0);
           setIsPlayingLocalCb(true);
@@ -119,6 +127,9 @@ export function useCellPlayback({
           });
         }
       });
+      return () => {
+        cancelled = true;
+      };
     }
   }, [
     globalReplayState,
