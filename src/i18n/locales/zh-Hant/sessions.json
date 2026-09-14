@@ -327,18 +327,6 @@
           "agentBrowser": "Agent 瀏覽器",
           "searchFetch": "搜索與抓取"
         },
-        "sections": {
-          "browserTitle": "瀏覽器活動",
-          "interactionsTitle": "互動操作",
-          "webSearchesTitle": "網頁搜索",
-          "pagesFetchedTitle": "已抓取頁面"
-        },
-        "empty": {
-          "noBrowserActivity": "暫無瀏覽器活動",
-          "noBrowserInteractions": "暫無瀏覽器互動",
-          "noWebSearches": "暫無網頁搜索",
-          "noPagesFetched": "暫無已抓取頁面"
-        },
         "header": {
           "categoryBrowser": "瀏覽器",
           "categoryLiveBrowser": "實時瀏覽器",
@@ -716,6 +704,12 @@
     "performActions_other": "執行 {{count}} 項操作",
     "showInlineDiffs": "行內差異",
     "inputSettings": "輸入設定",
+    "navigation": {
+      "title": "導覽",
+      "openLinksIn": "連結開啟方式",
+      "internalBrowser": "內建瀏覽器",
+      "externalBrowser": "外部瀏覽器"
+    },
     "compactInput": "緊湊輸入框",
     "replay": {
       "follow": "跟隨"

@@ -17,12 +17,8 @@ import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelL
 import {
   openRuntimeInChatPanelTabAtom,
   syncActiveChatPanelTabStateAtom,
-  toggleActiveChatPanelMaximizedAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
-import {
-  isChatPanelTabStationAvailable,
-  isStandaloneChatPanelToolTab,
-} from "@src/store/chatPanel/chatPanelTabsModel";
+import { isStandaloneChatPanelToolTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import { chatPanelTabCountAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   type SessionContinuation,
@@ -34,7 +30,10 @@ import {
   chatPanelSelectedCloudOrgAtom,
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
-import { activeChatPanelSurfaceAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import {
+  activeChatPanelSurfaceAtom,
+  toggleChatPanelMaximizedAtom,
+} from "@src/store/ui/chatPanel/surfaceAtoms";
 import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { openSideChatAtom } from "@src/store/ui/sideChatAtom";
 import { isHumanSession } from "@src/util/session/sessionDispatch";
@@ -116,7 +115,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const selectedCloudOrg = useAtomValue(chatPanelSelectedCloudOrgAtom);
     const surface = useAtomValue(activeChatPanelSurfaceAtom);
     const syncActiveTabState = useSetAtom(syncActiveChatPanelTabStateAtom);
-    const toggleChatFocus = useSetAtom(toggleActiveChatPanelMaximizedAtom);
+    const toggleChatFocus = useSetAtom(toggleChatPanelMaximizedAtom);
     const rawChatWidth = useAtomValue(chatWidthAtom);
     const chatMaxWidth = getChatMaxWidth(viewportWidth);
     const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
@@ -174,7 +173,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     });
     const tabCount = useAtomValue(chatPanelTabCountAtom);
     const isStandaloneToolTabActive = isStandaloneChatPanelToolTab(activeTab);
-    const stationAvailable = isChatPanelTabStationAvailable(activeTab);
     const isChatFocus = useAtomValue(effectiveChatPanelMaximizedAtom);
     const [focusedWorkstationMenuHost, setFocusedWorkstationMenuHost] =
       useState<HTMLSpanElement | null>(null);
@@ -374,7 +372,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         shouldOffsetHeaderForCollapsedSidebar={
           shouldOffsetHeaderForCollapsedSidebar
         }
-        stationAvailable={stationAvailable}
         showHeader={contentState.showHeader || isStandaloneToolTabActive}
         showSessionContent={
           contentState.showSessionContent && !isStandaloneToolTabActive

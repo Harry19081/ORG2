@@ -337,18 +337,6 @@
           "agentBrowser": "Agent 浏览器",
           "searchFetch": "搜索与抓取"
         },
-        "sections": {
-          "browserTitle": "浏览器活动",
-          "interactionsTitle": "交互操作",
-          "webSearchesTitle": "网页搜索",
-          "pagesFetchedTitle": "已抓取页面"
-        },
-        "empty": {
-          "noBrowserActivity": "暂无浏览器活动",
-          "noBrowserInteractions": "暂无浏览器交互",
-          "noWebSearches": "暂无网页搜索",
-          "noPagesFetched": "暂无已抓取页面"
-        },
         "header": {
           "categoryBrowser": "浏览器",
           "categoryLiveBrowser": "实时浏览器",
@@ -717,6 +705,12 @@
     "performActions_other": "执行 {{count}} 项操作",
     "showInlineDiffs": "行内差异",
     "inputSettings": "输入设置",
+    "navigation": {
+      "title": "导航",
+      "openLinksIn": "链接打开方式",
+      "internalBrowser": "内置浏览器",
+      "externalBrowser": "外部浏览器"
+    },
     "compactInput": "紧凑输入框",
     "replay": {
       "follow": "跟随"

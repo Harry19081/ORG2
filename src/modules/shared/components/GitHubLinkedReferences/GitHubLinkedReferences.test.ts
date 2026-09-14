@@ -30,8 +30,8 @@ vi.mock("@src/api/tauri/github", async (importOriginal) => {
   return { ...actual, getIssueLocal: mocks.getIssueLocal };
 });
 
-vi.mock("@src/util/platform/ipcRenderer", () => ({
-  openExternalLink: vi.fn(),
+vi.mock("@src/util/ui/openLink", () => ({
+  openLink: vi.fn(),
 }));
 
 vi.mock("@src/modules/shared/githubIssueDetailCoordinator", () => ({

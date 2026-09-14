@@ -327,18 +327,6 @@
           "agentBrowser": "Navegador do Agent",
           "searchFetch": "Buscar e buscar página"
         },
-        "sections": {
-          "browserTitle": "Atividade do navegador",
-          "interactionsTitle": "Interações",
-          "webSearchesTitle": "Buscas na web",
-          "pagesFetchedTitle": "Páginas buscadas"
-        },
-        "empty": {
-          "noBrowserActivity": "Sem atividade no navegador",
-          "noBrowserInteractions": "Sem interações no navegador",
-          "noWebSearches": "Sem buscas na web",
-          "noPagesFetched": "Nenhuma página buscada"
-        },
         "header": {
           "categoryBrowser": "Navegador",
           "categoryLiveBrowser": "Navegador ao vivo",
@@ -716,6 +704,12 @@
     "performActions_other": "Realizar {{count}} ações",
     "showInlineDiffs": "Diferenças em linha",
     "inputSettings": "Configurações de entrada",
+    "navigation": {
+      "title": "Navegação",
+      "openLinksIn": "Abrir links em",
+      "internalBrowser": "Navegador interno",
+      "externalBrowser": "Navegador externo"
+    },
     "compactInput": "Entrada compacta",
     "replay": {
       "follow": "Acompanhar"

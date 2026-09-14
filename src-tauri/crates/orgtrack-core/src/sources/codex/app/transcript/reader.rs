@@ -243,7 +243,7 @@ fn load_codex_turn_at(
                     session_id,
                     &previous_summary,
                     Some(turn_id.to_string()),
-                    previous_entry.last_agent_preview.as_deref(),
+                    previous_entry.last_agent_preview.as_ref(),
                 ));
                 remembered_offsets.push(CodexTurnOffset {
                     turn_id: previous_summary.turn_id,
@@ -347,7 +347,7 @@ fn load_codex_app_initial_tail_window(
             session_id,
             &summary,
             next_turn_id,
-            entry.last_agent_preview.as_deref(),
+            entry.last_agent_preview.as_ref(),
         ));
         turns.push(summary);
     }

@@ -18,7 +18,7 @@ import DetailPaneLayout, {
 } from "@src/modules/shared/layouts/DetailPaneLayout";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import type { WorkItem } from "@src/types/core/workItem";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openInSystemBrowser } from "@src/util/ui/openLink";
 
 import {
   AssignedWorkItemDetail,
@@ -97,7 +97,7 @@ export const TeamInboxDetailPane: React.FC<TeamInboxDetailPaneProps> = ({
               aria-hidden
             />
           }
-          onClick={() => void openExternalLink(selectedPullRequestIdentity.url)}
+          onClick={() => openInSystemBrowser(selectedPullRequestIdentity.url)}
           testId="team-inbox-open-github-pr"
         />
         {onOpenPullRequestTab ? (

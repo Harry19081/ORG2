@@ -324,18 +324,6 @@
           "agentBrowser": "Navigateur de l'Agent",
           "searchFetch": "Recherche et récupération"
         },
-        "sections": {
-          "browserTitle": "Activité du navigateur",
-          "interactionsTitle": "Interactions",
-          "webSearchesTitle": "Recherches web",
-          "pagesFetchedTitle": "Pages récupérées"
-        },
-        "empty": {
-          "noBrowserActivity": "Aucune activité du navigateur",
-          "noBrowserInteractions": "Aucune interaction du navigateur",
-          "noWebSearches": "Aucune recherche web",
-          "noPagesFetched": "Aucune page récupérée"
-        },
         "header": {
           "categoryBrowser": "Navigateur",
           "categoryLiveBrowser": "Navigateur en direct",
@@ -716,6 +704,12 @@
     "performActions_other": "Effectuer {{count}} actions",
     "showInlineDiffs": "Différences en ligne",
     "inputSettings": "Paramètres de saisie",
+    "navigation": {
+      "title": "Navigation",
+      "openLinksIn": "Ouvrir les liens dans",
+      "internalBrowser": "Navigateur interne",
+      "externalBrowser": "Navigateur externe"
+    },
     "compactInput": "Saisie compacte",
     "replay": {
       "follow": "Suivre"

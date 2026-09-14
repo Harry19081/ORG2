@@ -327,18 +327,6 @@
           "agentBrowser": "Przeglądarka Agent",
           "searchFetch": "Wyszukiwanie i pobieranie"
         },
-        "sections": {
-          "browserTitle": "Aktywność przeglądarki",
-          "interactionsTitle": "Interakcje",
-          "webSearchesTitle": "Wyszukiwania w sieci",
-          "pagesFetchedTitle": "Pobrane strony"
-        },
-        "empty": {
-          "noBrowserActivity": "Brak aktywności przeglądarki",
-          "noBrowserInteractions": "Brak interakcji przeglądarki",
-          "noWebSearches": "Brak wyszukiwań w sieci",
-          "noPagesFetched": "Brak pobranych stron"
-        },
         "header": {
           "categoryBrowser": "Przeglądarka",
           "categoryLiveBrowser": "Przeglądarka na żywo",
@@ -716,6 +704,12 @@
     "performActions_other": "Wykonaj {{count}} działań",
     "showInlineDiffs": "Różnice w treści",
     "inputSettings": "Ustawienia wprowadzania",
+    "navigation": {
+      "title": "Nawigacja",
+      "openLinksIn": "Otwieraj linki w",
+      "internalBrowser": "Wbudowana przeglądarka",
+      "externalBrowser": "Zewnętrzna przeglądarka"
+    },
     "compactInput": "Kompaktowe pole wprowadzania",
     "replay": {
       "follow": "Śledź"

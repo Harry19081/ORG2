@@ -324,18 +324,6 @@
           "agentBrowser": "Agent Tarayıcısı",
           "searchFetch": "Ara ve Getir"
         },
-        "sections": {
-          "browserTitle": "Tarayıcı etkinliği",
-          "interactionsTitle": "Etkileşimler",
-          "webSearchesTitle": "Web aramaları",
-          "pagesFetchedTitle": "Getirilen sayfalar"
-        },
-        "empty": {
-          "noBrowserActivity": "Tarayıcı etkinliği yok",
-          "noBrowserInteractions": "Tarayıcı etkileşimi yok",
-          "noWebSearches": "Web araması yok",
-          "noPagesFetched": "Getirilen sayfa yok"
-        },
         "header": {
           "categoryBrowser": "Tarayıcı",
           "categoryLiveBrowser": "Canlı tarayıcı",
@@ -716,6 +704,12 @@
     "performActions_other": "{{count}} işlem gerçekleştir",
     "showInlineDiffs": "Satır içi farklar",
     "inputSettings": "Giriş ayarları",
+    "navigation": {
+      "title": "Gezinme",
+      "openLinksIn": "Bağlantıları şurada aç",
+      "internalBrowser": "Dahili tarayıcı",
+      "externalBrowser": "Harici tarayıcı"
+    },
     "compactInput": "Kompakt giriş alanı",
     "replay": {
       "follow": "Takip et"

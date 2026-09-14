@@ -123,11 +123,12 @@ export const WorkStationViewService = {
     if (isStationWindow()) return false;
     if (!isWorkbenchRoute()) return false;
 
-    const { toggleActiveChatPanelMaximizedAtom } =
-      await import("@src/store/chatPanel/chatPanelTabsAtom");
+    const { toggleChatPanelMaximizedAtom } =
+      await import("@src/store/ui/chatPanel/surfaceAtoms");
 
     const store = getStore();
-    return store.set(toggleActiveChatPanelMaximizedAtom);
+    store.set(toggleChatPanelMaximizedAtom);
+    return true;
   },
 
   async showWorkStation(): Promise<boolean> {
@@ -135,21 +136,16 @@ export const WorkStationViewService = {
     if (!isWorkbenchRoute()) return false;
 
     const [
-      { activeChatPanelTabAtom, isChatPanelTabStationAvailable },
       { stationModeAtom },
       { activeStationChatVisibleAtom, stationChatVisibilityAtom },
       { chatPanelMaximizedAtom },
     ] = await Promise.all([
-      import("@src/store/chatPanel/chatPanelTabsAtom"),
       import("@src/store/ui/simulatorAtom"),
       import("@src/store/ui/chatPanel/visibilityAtoms"),
       import("@src/store/ui/chatPanel/surfaceAtoms"),
     ]);
 
     const store = getStore();
-    if (!isChatPanelTabStationAvailable(store.get(activeChatPanelTabAtom))) {
-      return false;
-    }
     if (store.get(chatPanelMaximizedAtom)) {
       store.set(chatPanelMaximizedAtom, false);
     }
@@ -196,21 +192,10 @@ export const WorkStationViewService = {
       return true;
     }
 
-    const [
-      { activeChatPanelTabAtom, isChatPanelTabStationAvailable },
-      { activeStationChatVisibleAtom },
-    ] = await Promise.all([
-      import("@src/store/chatPanel/chatPanelTabsAtom"),
-      import("@src/store/ui/chatPanel/visibilityAtoms"),
-    ]);
+    const { activeStationChatVisibleAtom } =
+      await import("@src/store/ui/chatPanel/visibilityAtoms");
 
     const store = getStore();
-    if (
-      isWorkbenchRoute() &&
-      !isChatPanelTabStationAvailable(store.get(activeChatPanelTabAtom))
-    ) {
-      return false;
-    }
 
     store.set(stationModeAtom, mode);
 

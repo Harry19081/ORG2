@@ -324,18 +324,6 @@
           "agentBrowser": "Agent ブラウザ",
           "searchFetch": "検索と取得"
         },
-        "sections": {
-          "browserTitle": "ブラウザアクティビティ",
-          "interactionsTitle": "インタラクション",
-          "webSearchesTitle": "ウェブ検索",
-          "pagesFetchedTitle": "取得したページ"
-        },
-        "empty": {
-          "noBrowserActivity": "ブラウザのアクティビティはありません",
-          "noBrowserInteractions": "ブラウザのインタラクションはありません",
-          "noWebSearches": "ウェブ検索はありません",
-          "noPagesFetched": "取得したページはありません"
-        },
         "header": {
           "categoryBrowser": "ブラウザ",
           "categoryLiveBrowser": "ライブブラウザ",
@@ -716,6 +704,12 @@
     "performActions_other": "{{count}} 件の操作を実行",
     "showInlineDiffs": "インライン差分",
     "inputSettings": "入力設定",
+    "navigation": {
+      "title": "ナビゲーション",
+      "openLinksIn": "リンクを開く場所",
+      "internalBrowser": "内蔵ブラウザ",
+      "externalBrowser": "外部ブラウザ"
+    },
     "compactInput": "コンパクト入力欄",
     "replay": {
       "follow": "フォロー"

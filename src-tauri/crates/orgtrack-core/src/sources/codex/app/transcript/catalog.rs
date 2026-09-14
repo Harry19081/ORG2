@@ -9,8 +9,9 @@ use crate::sources::imported_history;
 
 use super::super::CodexJsonlLine;
 use super::cache::{
-    bounded_codex_turn_preview, codex_turn_catalog_cache, CodexTranscriptSignature,
-    CodexTurnCatalogEntry, CODEX_INITIAL_TURN_LIMIT, CODEX_REVERSE_SCAN_MAX_LINE_BYTES,
+    bounded_codex_turn_preview, codex_turn_catalog_cache, CodexAgentPreview,
+    CodexTranscriptSignature, CodexTurnCatalogEntry, CODEX_INITIAL_TURN_LIMIT,
+    CODEX_REVERSE_SCAN_MAX_LINE_BYTES,
 };
 use super::messages::{content_text_from_payload, user_message_from_line};
 
@@ -178,7 +179,7 @@ fn observe_codex_catalog_line(
     entries: &mut Vec<CodexTurnCatalogEntry>,
     limit: usize,
     lines_since_boundary: &mut usize,
-    last_agent_preview: &mut Option<String>,
+    last_agent_preview: &mut Option<CodexAgentPreview>,
 ) {
     const AGENT_MESSAGE_NEEDLE: &[u8] = b"\"agent_message\"";
     const ASSISTANT_ROLE_NEEDLE: &[u8] = b"\"assistant\"";
@@ -243,7 +244,7 @@ fn observe_codex_catalog_line(
         };
         *last_agent_preview = message
             .filter(|message| !message.trim().is_empty())
-            .map(|message| bounded_codex_turn_preview(&message));
+            .map(|message| CodexAgentPreview::new(&message));
     }
     *lines_since_boundary = lines_since_boundary.saturating_add(1);
 }

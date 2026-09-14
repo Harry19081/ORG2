@@ -22,6 +22,9 @@
 import { createContext, useContext } from "react";
 
 export interface AgentTurnContextValue {
+  /** Stable identity across replacement of a catalog preview by its full body. */
+  sessionId?: string;
+  turnId?: string | null;
   /** True when this turn is the most recent group in the chat — i.e. the
    *  user has not started a follow-up turn after it. Consumers that
    *  surface "resume this turn" affordances (AgentErrorChatItem's Resume

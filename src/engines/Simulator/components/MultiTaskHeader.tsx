@@ -12,7 +12,7 @@ import Button from "@src/components/Button";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { EVENT_LOADING_SHIMMER_TEXT_CLASSES } from "@src/engines/ChatPanel/blocks/primitives";
 import { replayModeAtom } from "@src/engines/SessionCore";
-import { ArrowShrink01Icon, Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import { ArrowShrink02Icon, Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
 interface MultiTaskHeaderProps {
   taskCount: number;
@@ -56,7 +56,7 @@ const MultiTaskHeader: React.FC<MultiTaskHeaderProps> = ({
             iconOnly
             icon={
               <HugeiconsIcon
-                icon={ArrowShrink01Icon}
+                icon={ArrowShrink02Icon}
                 data-icon="minimize-2"
                 size={14}
               />

@@ -410,6 +410,30 @@ describe("projectChatGroups collapse — terminal error survival", () => {
     expect(flatTexts(result.flatItems)).toContain("bounded final reply");
   });
 
+  it("replaces a partial table preview with the complete response while the turn stays collapsed", () => {
+    const firstTurn = userItem("first turn");
+    const partialTable = "| Column |\n|---|\n| par…";
+    const fullTable =
+      "| Column |\n|---|\n| partial becomes complete |\n| final row |";
+    const preview = unloadedTurnPreviewItem(
+      firstTurn.event!.id,
+      12,
+      partialTable
+    );
+    const result = projectChatGroups([
+      firstTurn,
+      preview,
+      toolItem(),
+      assistantItem(fullTable),
+      userItem("current turn"),
+      assistantItem("current reply"),
+    ]);
+
+    expect(result.groupMeta[0].unloadedTurn).toBeNull();
+    expect(result.groupCounts[0]).toBe(1);
+    expect(flatTexts(result.flatItems)).toEqual([fullTable, "current reply"]);
+  });
+
   it("keeps the error card when a collapsed turn has no completed assistant reply", () => {
     const history = [
       userItem("first turn"),

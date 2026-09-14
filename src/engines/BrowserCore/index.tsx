@@ -38,7 +38,7 @@ import {
 } from "@src/store/ui/overlayAtom";
 import { activeOverlayCountAtom } from "@src/store/ui/overlayLayerAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openInSystemBrowser } from "@src/util/ui/openLink";
 
 import BrowserSessionWebview from "./BrowserSessionWebview";
 import "./index.scss";
@@ -285,7 +285,7 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
 
   const handleOpenExternal = useCallback(() => {
     if (!currentUrl) return;
-    void openExternalLink(currentUrl);
+    openInSystemBrowser(currentUrl);
   }, [currentUrl]);
 
   return (

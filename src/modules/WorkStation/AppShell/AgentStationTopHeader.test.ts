@@ -111,7 +111,7 @@ describe("AgentStationTopHeader", () => {
     Reflect.deleteProperty(reactActEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  function renderHeader(): void {
+  function renderHeader(path: string = ROUTES.workStation.base.path): void {
     act(() => {
       root.render(
         createElement(
@@ -119,7 +119,7 @@ describe("AgentStationTopHeader", () => {
           { store },
           createElement(
             MemoryRouter,
-            { initialEntries: [ROUTES.workStation.base.path] },
+            { initialEntries: [path] },
             createElement(AgentStationTopHeader, {
               captionMessage: null,
               captionVisible: false,
@@ -148,7 +148,7 @@ describe("AgentStationTopHeader", () => {
     ).not.toBeNull();
   });
 
-  it("preserves both restore affordances and their single dispatch", () => {
+  it("renders one shrink control to restore chat and dispatches once", () => {
     renderHeader();
     act(() => {
       store.set(stationModeAtom, "agent-station");
@@ -158,12 +158,13 @@ describe("AgentStationTopHeader", () => {
     const buttons = container.querySelectorAll<HTMLButtonElement>(
       'button[title="chat.restoreChatPanel"]'
     );
-    expect(buttons).toHaveLength(2);
+    expect(buttons).toHaveLength(1);
+    expect(
+      buttons[0].querySelector('[data-icon="arrow-shrink-02"]')
+    ).not.toBeNull();
     vi.mocked(WorkStationViewService.showWorkStation).mockClear();
     act(() => buttons[0].click());
     expect(WorkStationViewService.showWorkStation).toHaveBeenCalledTimes(1);
-    act(() => buttons[1].click());
-    expect(WorkStationViewService.showWorkStation).toHaveBeenCalledTimes(2);
   });
 
   it("handles a rejected visibility action without an unhandled rejection", async () => {
@@ -186,6 +187,25 @@ describe("AgentStationTopHeader", () => {
       "Failed to toggle station chat visibility:",
       error
     );
+  });
+
+  it("uses the same Settings pane action as My Station", () => {
+    renderHeader(ROUTES.app.settings.path);
+    const control = container.querySelector<HTMLButtonElement>(
+      '[title="panel.maximizeSettings"]'
+    );
+    expect(control).not.toBeNull();
+    expect(
+      container.querySelector('[title="chat.maximizeWorkStation"]')
+    ).toBeNull();
+    expect(
+      container.querySelector(
+        '[title="common:spotlightActions.openAgentStationInNewWindow"]'
+      )
+    ).toBeNull();
+    act(() => store.set(chatPanelMaximizedAtom, false));
+    act(() => control!.click());
+    expect(store.get(chatPanelMaximizedAtom)).toBe(true);
   });
 
   it("offers to open Agent Station in a new window", () => {

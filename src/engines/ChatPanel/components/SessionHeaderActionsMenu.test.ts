@@ -17,6 +17,7 @@ import {
 } from "@src/icons";
 import { compactComposerInputAtom } from "@src/store/session/compactComposerInputAtom";
 import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import { linkOpenTargetAtom } from "@src/store/ui/linkOpenTargetAtom";
 
 import {
   SessionHeaderActionsMenu,
@@ -34,6 +35,8 @@ const mocks = vi.hoisted(() => ({
   pinnedActionsVisible: false,
   setPinnedActionsVisible: vi.fn(),
   setCollapseToolActivity: vi.fn(),
+  linkOpenTarget: "internal",
+  setLinkOpenTarget: vi.fn(),
   setCompactComposerInput: vi.fn(),
 }));
 
@@ -57,9 +60,11 @@ vi.mock("jotai", async (importOriginal) => ({
   useAtom: (atom: unknown) =>
     atom === collapseToolActivityAtom
       ? [false, mocks.setCollapseToolActivity]
-      : atom === compactComposerInputAtom
-        ? [false, mocks.setCompactComposerInput]
-        : [mocks.pinnedActionsVisible, mocks.setPinnedActionsVisible],
+      : atom === linkOpenTargetAtom
+        ? [mocks.linkOpenTarget, mocks.setLinkOpenTarget]
+        : atom === compactComposerInputAtom
+          ? [false, mocks.setCompactComposerInput]
+          : [mocks.pinnedActionsVisible, mocks.setPinnedActionsVisible],
   useAtomValue: () => mocks.session,
   useSetAtom: () => mocks.openWindow,
 }));
@@ -154,6 +159,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.eligible = true;
   mocks.pinnedActionsVisible = false;
+  mocks.linkOpenTarget = "internal";
   mocks.appOpenPlan.mockResolvedValue(null);
   mocks.openInApp.mockResolvedValue(undefined);
   container = document.createElement("div");
@@ -241,6 +247,7 @@ describe("SessionHeaderActionsMenu", () => {
       "session-project-links-submenu",
       "session-ui-settings-submenu",
       "session-input-settings-submenu",
+      "session-navigation-submenu",
     ]) {
       const suffix = element(testId).lastElementChild;
       const chevron = suffix?.querySelector("svg");
@@ -348,6 +355,7 @@ describe("SessionHeaderActionsMenu", () => {
       "session-project-links-submenu",
       "session-ui-settings-submenu",
       "session-input-settings-submenu",
+      "session-navigation-submenu",
     ]);
     expect(
       document.querySelector('[data-testid="session-track-as-project-button"]')
@@ -513,6 +521,75 @@ describe("SessionHeaderActionsMenu", () => {
     expect(toggle.getAttribute("aria-checked")).toBe("false");
     act(() => toggle.click());
     expect(props.handleCompactDisplayModeToggle).toHaveBeenCalledWith(false);
+  });
+
+  it("picks where links open from Navigation without closing the menu", () => {
+    render();
+    expect(element("session-navigation-submenu").textContent).toBe(
+      "chat.navigation.title"
+    );
+    click("session-navigation-submenu");
+    const panel = element("session-navigation-submenu-panel");
+    expect(panel.firstElementChild?.className).toBe(
+      DROPDOWN_CLASSES.sectionLabel
+    );
+    expect(panel.firstElementChild?.textContent).toBe(
+      "chat.navigation.openLinksIn"
+    );
+    const options = [
+      ...panel.querySelectorAll<HTMLElement>('[role="menuitemradio"]'),
+    ];
+    expect(
+      options.map((option) => [
+        option.getAttribute("data-testid"),
+        option.textContent,
+        option.getAttribute("aria-checked"),
+      ])
+    ).toEqual([
+      [
+        "session-menu-link-target-internal",
+        "chat.navigation.internalBrowser",
+        "true",
+      ],
+      [
+        "session-menu-link-target-external",
+        "chat.navigation.externalBrowser",
+        "false",
+      ],
+    ]);
+
+    key("ArrowDown");
+    expect(document.activeElement).toBe(options[0]);
+    key("ArrowDown");
+    expect(document.activeElement).toBe(options[1]);
+    key("Enter");
+    expect(mocks.setLinkOpenTarget).toHaveBeenCalledWith("external");
+    expect(props.toggleHeaderActionsMenu).not.toHaveBeenCalled();
+
+    mocks.linkOpenTarget = "external";
+    render();
+    expect(
+      element("session-menu-link-target-external").getAttribute("aria-checked")
+    ).toBe("true");
+    click("session-menu-link-target-internal");
+    expect(mocks.setLinkOpenTarget).toHaveBeenLastCalledWith("internal");
+    expect(props.toggleHeaderActionsMenu).not.toHaveBeenCalled();
+  });
+
+  it("keeps Navigation for human sessions, which hide the transcript settings", () => {
+    render({ showTranscriptActions: false });
+    expect(submenuIds()).toEqual([
+      "session-move-submenu",
+      "session-copy-submenu",
+      "session-project-links-submenu",
+      "session-navigation-submenu",
+    ]);
+    const navigationGroup = element(
+      "session-navigation-submenu"
+    ).parentElement!;
+    expect(navigationGroup.previousElementSibling?.className).toBe(
+      DROPDOWN_CLASSES.menuGroupSeparator
+    );
   });
 
   it("preserves copy eligibility and disabled states", () => {
@@ -747,6 +824,7 @@ describe("SessionHeaderActionsMenu native app action", () => {
         "session-project-links-submenu",
         "session-ui-settings-submenu",
         "session-input-settings-submenu",
+        "session-navigation-submenu",
       ]);
       expect(
         document.querySelector('[data-testid="session-open-in-app-submenu"]')
@@ -922,6 +1000,7 @@ describe("SessionHeaderActionsMenu native app action", () => {
     for (const testId of [
       "session-ui-settings-submenu",
       "session-input-settings-submenu",
+      "session-navigation-submenu",
       "session-project-links-submenu",
       "session-copy-submenu",
       "session-move-submenu",
