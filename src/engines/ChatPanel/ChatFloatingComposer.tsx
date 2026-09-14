@@ -9,13 +9,6 @@ import {
 import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 import type { PendingPlanApproval } from "@src/store/session/planApprovalAtom";
 
-import {
-  ComposerActivityTrackers,
-  ComposerInteractionCards,
-  ComposerScrollToBottomButton,
-  ComposerStatusBanners,
-  GroupChatPendingMessagePill,
-} from "./ChatFloatingComposerSections";
 import type { ScrollNavState } from "./ChatHistory";
 import InputArea from "./InputArea";
 import CollapsedInlineRow, {
@@ -36,6 +29,13 @@ import type {
   GroupChatPendingMessageView,
   StreamRetryInfo,
 } from "./chatFloatingComposerTypes";
+import {
+  ComposerActivityTrackers,
+  ComposerInteractionCards,
+  ComposerScrollToBottomButton,
+  ComposerStatusBanners,
+  GroupChatPendingMessagePill,
+} from "./components/ChatFloatingComposerSections";
 import type {
   CustomMentionOption,
   SubmitOverrideInput,

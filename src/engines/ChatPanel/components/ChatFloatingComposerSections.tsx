@@ -10,23 +10,23 @@ import {
 import { ArrowDown02Icon, HugeiconsIcon } from "@src/icons";
 import type { PendingPlanApproval } from "@src/store/session/planApprovalAtom";
 
-import type { ScrollNavState } from "./ChatHistory";
-import AskQuestionCard from "./InputArea/AskQuestionCard";
-import { ModeSwitchInputCard } from "./InputArea/ModeSwitchCard";
-import PermissionCard from "./InputArea/PermissionCard";
-import ActiveProcesses from "./InputArea/components/ActiveProcesses";
-import AgentOrgInterventionPinBar from "./InputArea/components/AgentOrgInterventionPinBar";
+import type { ScrollNavState } from "../ChatHistory";
+import AskQuestionCard from "../InputArea/AskQuestionCard";
+import { ModeSwitchInputCard } from "../InputArea/ModeSwitchCard";
+import PermissionCard from "../InputArea/PermissionCard";
+import ActiveProcesses from "../InputArea/components/ActiveProcesses";
+import AgentOrgInterventionPinBar from "../InputArea/components/AgentOrgInterventionPinBar";
 import CompactFileChanges, {
   type FileChangeVisibleStats,
   type FileChangesResult,
-} from "./InputArea/components/CompactFileChanges";
-import QueuedMessages from "./InputArea/components/QueuedMessages";
-import CreatePlanCard from "./blocks/CreatePlanCard";
+} from "../InputArea/components/CompactFileChanges";
+import QueuedMessages from "../InputArea/components/QueuedMessages";
+import CreatePlanCard from "../blocks/CreatePlanCard";
 import type {
   AgentOrgInterventionView,
   GroupChatPendingMessageView,
   StreamRetryInfo,
-} from "./chatFloatingComposerTypes";
+} from "../chatFloatingComposerTypes";
 
 interface ComposerScrollToBottomButtonProps {
   scrollNav: ScrollNavState;
