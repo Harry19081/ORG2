@@ -424,10 +424,30 @@ mod tests {
             .unwrap_err();
             assert!(error.contains("changed while reading"));
 
+            // Codex keeps 5 KiB excerpts of these 16 KiB replies; the old
+            // one-eighth ratio only fits Claude's smaller preview budget.
+            let size_divisor = if provider == "codex" { 2 } else { 8 };
             assert!(
-                preview_json.len() < full_json.len() / 8,
-                "{provider}: preview must not ship every body"
+                preview_json.len() < full_json.len() / size_divisor,
+                "{provider}: preview must not ship every body (preview={}, full={})",
+                preview_json.len(),
+                full_json.len()
             );
+            if provider == "codex" {
+                let unloaded: Vec<_> = preview
+                    .iter()
+                    .filter(|event| event.result.get("unloadedTurn").is_some())
+                    .collect();
+                assert!(!unloaded.is_empty(), "Codex must compact old turns");
+                for event in unloaded {
+                    let excerpt = event
+                        .display_text
+                        .strip_suffix('…')
+                        .expect("truncated Codex preview has an ellipsis");
+                    assert_eq!(excerpt.len(), 5_120);
+                    assert_eq!(event.result["unloadedTurn"]["previewTruncated"], true);
+                }
+            }
             assert!(preview_json.contains(&last_tail));
             assert!(!preview_json.contains("tail-0"));
             assert!(full_json.contains("tail-0"));
