@@ -43,8 +43,8 @@ import {
   WorkflowCircle05Icon,
 } from "@src/icons";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
 import { resolveSessionRowIcon } from "@src/util/session/sessionSidebarRow";
+import { openLink } from "@src/util/ui/openLink";
 
 import BasePill from "./BasePill";
 import CanvasCommandPillIcon, {
@@ -189,7 +189,7 @@ const ComposerPill: React.FC<ComposerPillProps> = ({
       if (isGitHubPillUrl(filePath) || iconType === "link") {
         event.preventDefault();
         event.stopPropagation();
-        void openExternalLink(filePath);
+        openLink(filePath);
         return;
       }
 

@@ -716,6 +716,12 @@
     "performActions_other": "Effectuer {{count}} actions",
     "showInlineDiffs": "Différences en ligne",
     "inputSettings": "Paramètres de saisie",
+    "navigation": {
+      "title": "Navigation",
+      "openLinksIn": "Ouvrir les liens dans",
+      "internalBrowser": "Navigateur interne",
+      "externalBrowser": "Navigateur externe"
+    },
     "replay": {
       "follow": "Suivre"
     },

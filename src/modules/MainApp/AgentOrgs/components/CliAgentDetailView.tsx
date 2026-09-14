@@ -37,7 +37,7 @@ import {
   DetailPanelContainer,
   PANEL_HEADER_TOKENS,
 } from "@src/modules/shared/layouts/blocks";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openLink } from "@src/util/ui/openLink";
 
 import type { AvailableCliAgent } from "../types";
 import AgentDetailHeader from "./AgentDetailHeader";
@@ -158,7 +158,7 @@ const CliAgentDetailView: React.FC<CliAgentDetailViewProps> = ({
   }, [agent.name, onRefresh, t]);
 
   const handleOpenDocs = useCallback(() => {
-    if (docsUrl) openExternalLink(docsUrl);
+    if (docsUrl) openLink(docsUrl, { navigate: true });
   }, [docsUrl]);
 
   const openCredentialInIntegrations = useCallback(() => {

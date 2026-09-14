@@ -716,6 +716,12 @@
     "performActions_other": "{{count}} 件の操作を実行",
     "showInlineDiffs": "インライン差分",
     "inputSettings": "入力設定",
+    "navigation": {
+      "title": "ナビゲーション",
+      "openLinksIn": "リンクを開く場所",
+      "internalBrowser": "内蔵ブラウザ",
+      "externalBrowser": "外部ブラウザ"
+    },
     "replay": {
       "follow": "フォロー"
     },

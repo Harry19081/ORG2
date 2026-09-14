@@ -716,6 +716,12 @@
     "performActions_other": "Thực hiện {{count}} thao tác",
     "showInlineDiffs": "Thay đổi ngay trong nội dung",
     "inputSettings": "Cài đặt nhập liệu",
+    "navigation": {
+      "title": "Điều hướng",
+      "openLinksIn": "Mở liên kết trong",
+      "internalBrowser": "Trình duyệt tích hợp",
+      "externalBrowser": "Trình duyệt bên ngoài"
+    },
     "replay": {
       "follow": "Theo dõi"
     },

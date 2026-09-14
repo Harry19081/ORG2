@@ -36,6 +36,7 @@ import {
   useSimulatorAwaitingAgentCaption,
   useSimulatorPlaceholderActions,
 } from "@src/modules/WorkStation/shared";
+import { openLink } from "@src/util/ui/openLink";
 
 // ============================================
 // Types
@@ -204,7 +205,7 @@ function CanvasApp(props: SimulatorAppProps) {
         <div className="flex items-center gap-1">
           {state.mode === "url" && state.url && (
             <Button
-              onClick={() => window.open(state.url!, "_blank")}
+              onClick={() => openLink(state.url!, { navigate: true })}
               title={t("simulator.replay.canvas.tooltipOpenInBrowser")}
               aria-label={t("simulator.replay.canvas.tooltipOpenInBrowser")}
               size="mini"

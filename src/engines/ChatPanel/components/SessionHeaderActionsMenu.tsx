@@ -23,6 +23,7 @@ import type { DropdownEnginePosition } from "@src/hooks/dropdown";
 import {
   AppWindowMacIcon,
   ArrowBigRightDashIcon,
+  CompassIcon,
   Copy01Icon,
   CursorInWindowIcon,
   DeliveryBox01Icon,
@@ -43,11 +44,21 @@ import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibl
 import { openSessionInNewWindowAtom } from "@src/store/session/sessionTabPlacementAtom";
 import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import {
+  LINK_OPEN_TARGETS,
+  type LinkOpenTarget,
+  linkOpenTargetAtom,
+} from "@src/store/ui/linkOpenTargetAtom";
 import { isAgentSession } from "@src/util/session/sessionDispatch";
 
 import { SessionOpenInAppMenuItem } from "./SessionOpenInAppMenuItem";
 
 const HEADER_ICON_SIZE = 14;
+
+const LINK_OPEN_TARGET_LABEL_KEYS = {
+  internal: "chat.navigation.internalBrowser",
+  external: "chat.navigation.externalBrowser",
+} as const satisfies Record<LinkOpenTarget, string>;
 
 export interface SessionHeaderActionsMenuProps {
   activeSessionExists: boolean;
@@ -134,6 +145,7 @@ export const SessionHeaderActionsMenu: React.FC<
   const [collapseToolActivity, setCollapseToolActivity] = useAtom(
     collapseToolActivityAtom
   );
+  const [linkOpenTarget, setLinkOpenTarget] = useAtom(linkOpenTargetAtom);
   const showSkillsLabel = t("chat.startPage.showSkills");
 
   // Track this / Convert to Project (orgtrack/v1 §7.2). Self-contained:
@@ -491,9 +503,9 @@ export const SessionHeaderActionsMenu: React.FC<
               appOpenSessionId={appOpenSessionId}
               onCloseMenu={toggleHeaderActionsMenu}
             />
+            <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
             {showTranscriptActions && (
               <>
-                <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
                 <ActionSubmenu
                   label={t("common:common.display")}
                   icon={
@@ -593,6 +605,38 @@ export const SessionHeaderActionsMenu: React.FC<
                 </ActionSubmenu>
               </>
             )}
+            <ActionSubmenu
+              label={t("chat.navigation.title")}
+              icon={
+                <HugeiconsIcon
+                  icon={CompassIcon}
+                  size={DROPDOWN_ITEM.iconSize}
+                  strokeWidth={1.75}
+                />
+              }
+              dataTestId="session-navigation-submenu"
+            >
+              <div className={DROPDOWN_CLASSES.sectionLabel}>
+                {t("chat.navigation.openLinksIn")}
+              </div>
+              {LINK_OPEN_TARGETS.map((target) => {
+                const selected = linkOpenTarget === target;
+                return (
+                  <DropdownItem
+                    key={target}
+                    role="menuitemradio"
+                    ariaChecked={selected}
+                    tabIndex={0}
+                    fullWidth
+                    selected={selected}
+                    onClick={() => setLinkOpenTarget(target)}
+                    dataTestId={`session-menu-link-target-${target}`}
+                  >
+                    {t(LINK_OPEN_TARGET_LABEL_KEYS[target])}
+                  </DropdownItem>
+                );
+              })}
+            </ActionSubmenu>
           </ActionMenuSurface>,
           document.body
         )}
