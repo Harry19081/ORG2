@@ -324,6 +324,14 @@ export const GENERAL_SETTINGS_REGISTRY = {
       "Prevent the system from sleeping while any agent session is actively working. Releases automatically when all sessions finish or the toggle is turned off",
     category: "general",
   },
+  "general.highRefreshRate": {
+    schema: z.boolean(),
+    default: true,
+    description:
+      "macOS only: render the interface at the display's full refresh rate (up to 120 Hz on ProMotion displays) instead of WebKit's default pace near 60 Hz. " +
+      "Scrolling, resizing and animations are smoother and use more energy while they run; an idle window costs the same either way",
+    category: "general",
+  },
   "general.updateChannel": {
     schema: z.enum(["auto", "stable", "beta"]),
     default: "auto",

@@ -109,6 +109,9 @@ pub(crate) fn register_settings_hooks() {
         }
         agent_core::session::housekeeper_compaction::update_from_settings(value);
         crate::api::mobile_bridge::relay::notify_settings_changed(value);
+        if let Some(app) = crate::api::get_app_handle() {
+            app_window::rendering_rate::apply_rendering_rate_from_settings(app, value);
+        }
     }));
 }
 

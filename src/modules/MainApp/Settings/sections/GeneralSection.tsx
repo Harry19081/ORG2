@@ -81,6 +81,10 @@ import { languageAtom } from "@src/store/ui/languageAtom";
 import { timezoneAtom } from "@src/store/ui/timezoneAtom";
 import { copyText } from "@src/util/data/clipboard";
 
+import {
+  HIGH_REFRESH_RATE_SUPPORTED,
+  HighRefreshRateRow,
+} from "./HighRefreshRateRow";
 import HttpVersionSettingsBlock from "./HttpVersionSettingsBlock";
 
 export const GENERAL_TAB_KEYS = {
@@ -425,6 +429,7 @@ const GeneralTabBody: React.FC = () => {
             onCheckedChange={setPreventSleepWhileRunning}
           />
         </SectionRow>
+        {HIGH_REFRESH_RATE_SUPPORTED && <HighRefreshRateRow />}
       </SectionContainer>
 
       <SectionContainer>

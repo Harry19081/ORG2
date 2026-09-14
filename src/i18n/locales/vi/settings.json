@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "Không thể mở Cài đặt hệ thống",
     "preventSleep": "Ngăn hệ thống ngủ khi đang chạy phiên",
     "preventSleepDesc": "Giữ cho Mac hoặc PC của bạn luôn thức khi có bất kỳ phiên Agent nào đang hoạt động. Tự động giải phóng khi tất cả phiên kết thúc",
+    "highRefreshRate": "Tần số quét cao",
+    "highRefreshRateDesc": "Hiển thị ở tần số quét tối đa của màn hình, lên đến 120 Hz trên màn hình ProMotion. Cuộn, thay đổi kích thước và hoạt ảnh mượt hơn nhưng tiêu tốn nhiều năng lượng hơn trong khi chạy",
     "devMode": "Chế độ nhà phát triển",
     "devModeDesc": "Bật menu ngữ cảnh Inspect Element gốc và DevTools trình duyệt. Chỉ dành cho phát triển và gỡ lỗi",
     "presenceGuidanceOnline": "Trực tuyến — hướng dẫn cho Agent",

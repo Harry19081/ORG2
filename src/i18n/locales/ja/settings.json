@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "システム設定を開けませんでした",
     "preventSleep": "セッション実行中のスリープを防止",
     "preventSleepDesc": "いずれかの Agent セッションが作動している間、Mac または PC をスリープさせません。すべてのセッションが終了すると自動的に解除されます",
+    "highRefreshRate": "高リフレッシュレート",
+    "highRefreshRateDesc": "ディスプレイの最大リフレッシュレート（ProMotion ディスプレイでは最大 120 Hz）で描画します。スクロール、サイズ変更、アニメーションが滑らかになりますが、動作中はより多くの電力を消費します",
     "devMode": "開発者モード",
     "devModeDesc": "ネイティブの Inspect Element コンテキストメニューとブラウザ DevTools を有効にします。開発とデバッグ専用",
     "presenceGuidanceOnline": "オンライン — Agent への指示",

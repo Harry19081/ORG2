@@ -257,6 +257,8 @@
     "voiceInputPermissionOpenFailed": "Could not open System Settings",
     "preventSleep": "Prevent system sleep during sessions",
     "preventSleepDesc": "Keep your Mac or PC awake while any Agent session is actively working. Releases automatically when all sessions finish",
+    "highRefreshRate": "High refresh rate",
+    "highRefreshRateDesc": "Render at your display's full refresh rate, up to 120 Hz on ProMotion displays. Scrolling, resizing and animations look smoother but use more energy while they run",
     "devMode": "Developer Mode",
     "devModeDesc": "Enables the native Inspect Element context menu and browser DevTools. Intended for development and debugging only",
     "presenceGuidanceOnline": "Online — guidance for agents",
