@@ -5,7 +5,7 @@ import Button from "@src/components/Button";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import {
   ArrowExpand01Icon,
-  ArrowShrink01Icon,
+  ArrowShrink02Icon,
   HugeiconsIcon,
 } from "@src/icons";
 
@@ -40,7 +40,7 @@ const SplitListFullscreenButton: React.FC<SplitListFullscreenButtonProps> = ({
         data-testid="split-list-fullscreen-toggle"
         icon={
           <HugeiconsIcon
-            icon={isFullscreen ? ArrowShrink01Icon : ArrowExpand01Icon}
+            icon={isFullscreen ? ArrowShrink02Icon : ArrowExpand01Icon}
             data-icon={isFullscreen ? "minimize-2" : "maximize-2"}
             size={14}
             strokeWidth={1.8}

@@ -24,7 +24,7 @@ import type { CanvasInlineMode } from "@src/engines/ChatPanel/blocks/CanvasInlin
 import type { SimulatorAppProps } from "@src/engines/Simulator/apps/core/types";
 import {
   ArrowExpand01Icon,
-  ArrowShrink01Icon,
+  ArrowShrink02Icon,
   Cancel01Icon,
   HugeiconsIcon,
   Layout01Icon,
@@ -239,7 +239,7 @@ function CanvasApp(props: SimulatorAppProps) {
             icon={
               isFullscreen ? (
                 <HugeiconsIcon
-                  icon={ArrowShrink01Icon}
+                  icon={ArrowShrink02Icon}
                   data-icon="minimize-2"
                   className="h-3.5 w-3.5"
                 />

@@ -2,11 +2,10 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
+import { HeaderActionGroup } from "@src/components/WindowChrome/HeaderActionGroup";
 import {
   HEADER_ICON_SIZE,
-  TAB_BAR_CONTROLS_ROW_BASE_CLASS,
-  TAB_BAR_CONTROLS_ROW_CLASS,
-  TAB_BAR_CONTROLS_ROW_PADDING_TRAILING_ONLY,
+  TAB_BAR_CONTROLS_ROW_PADDING_FULL,
 } from "@src/config/workstation/tokens";
 import { Add01Icon, HugeiconsIcon, MoreHorizontalIcon } from "@src/icons";
 
@@ -34,13 +33,8 @@ export const TabBarControls: React.FC<TabBarControlsProps> = ({
   const hasBuiltInControls = Boolean(onNewTab || (hasTabs && onMoreOptions));
 
   if (!hasTabs && !trailingSlot && !hasBuiltInControls) return null;
-  const useFullPadding = hasBuiltInControls || hasTabs;
-  const rowClassName = useFullPadding
-    ? TAB_BAR_CONTROLS_ROW_CLASS
-    : `${TAB_BAR_CONTROLS_ROW_BASE_CLASS} ${TAB_BAR_CONTROLS_ROW_PADDING_TRAILING_ONLY}`;
-
   return (
-    <div className={rowClassName}>
+    <HeaderActionGroup className={TAB_BAR_CONTROLS_ROW_PADDING_FULL}>
       {onNewTab && (
         <TabBarTrailingIconButton
           data-action="browser.newTab"
@@ -73,6 +67,6 @@ export const TabBarControls: React.FC<TabBarControlsProps> = ({
       )}
 
       {trailingSlot}
-    </div>
+    </HeaderActionGroup>
   );
 };

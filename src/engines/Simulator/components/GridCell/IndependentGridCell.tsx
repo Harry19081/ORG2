@@ -25,7 +25,7 @@ import {
   ArrowExpand01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
-  ArrowShrink01Icon,
+  ArrowShrink02Icon,
   HugeiconsIcon,
   PauseIcon,
   PlayIcon,
@@ -209,7 +209,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
               >
                 {isExpanded ? (
                   <HugeiconsIcon
-                    icon={ArrowShrink01Icon}
+                    icon={ArrowShrink02Icon}
                     data-icon="minimize-2"
                     size={12}
                     strokeWidth={2}
