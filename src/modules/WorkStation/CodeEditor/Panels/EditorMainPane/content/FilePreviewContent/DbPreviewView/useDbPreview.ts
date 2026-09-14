@@ -281,7 +281,7 @@ export function useDbPreview(filePath: string): UseDbPreviewReturn {
   }, []);
 
   const refresh = useCallback(() => {
-    void connect(filePathRef.current);
+    void connect(filePathRef.current).catch(() => undefined);
   }, [connect]);
 
   useEffect(() => {
