@@ -3221,3 +3221,73 @@ fn native_function_calls_with_response_ids_still_normalize() {
     assert!(chunks.iter().all(|chunk| chunk.function != "spawn_agent" && chunk.function != "shell"));
     std::fs::remove_dir_all(&temp_dir).unwrap();
 }
+
+#[test]
+fn codex_catalog_preview_keeps_5120_bytes_and_loads_full_markdown_on_demand() {
+    let temp = std::env::temp_dir().join(format!("codex-catalog-preview-{}", std::process::id()));
+    std::fs::create_dir_all(&temp).expect("temp dir");
+    for (index, body) in ["说明".repeat(600), "表".repeat(2000)]
+        .into_iter()
+        .enumerate()
+    {
+        let message = format!("| Column |\n|---|\n| {body} |\n| final row |\n");
+        let path = temp.join(format!("preview-{index}.jsonl"));
+        let lines = [
+            serde_json::json!({"timestamp":"2026-09-14T01:00:00Z","type":"event_msg","payload":{"type":"user_message","message":"first"}}),
+            serde_json::json!({"timestamp":"2026-09-14T01:00:01Z","type":"event_msg","payload":{"type":"agent_message","message":message}}),
+            serde_json::json!({"timestamp":"2026-09-14T01:01:00Z","type":"event_msg","payload":{"type":"user_message","message":"second"}}),
+            serde_json::json!({"timestamp":"2026-09-14T01:01:01Z","type":"event_msg","payload":{"type":"agent_message","message":"latest"}}),
+        ];
+        let source = lines
+            .iter()
+            .map(Value::to_string)
+            .collect::<Vec<_>>()
+            .join("\n")
+            + "\n";
+        std::fs::write(&path, &source).expect("write transcript");
+        let session_id = format!("codexapp-preview-{index}");
+        let window =
+            load_codex_app_initial_window_from_path(&session_id, &path, 1).expect("initial window");
+        let preview_chunk = window
+            .chunks
+            .iter()
+            .find(|chunk| chunk.args.get("turnPreviewOnly") == Some(&Value::Bool(true)))
+            .expect("catalog preview");
+        let preview = preview_chunk.result["observation"]
+            .as_str()
+            .expect("preview text");
+        assert_eq!(
+            preview_chunk.result["unloadedTurn"]["previewTruncated"],
+            Value::Bool(message.len() > 5_120),
+            "unloaded activities must not mark complete response text as truncated"
+        );
+        assert!(message.len() > 512);
+        if index == 0 {
+            assert!(message.len() < 5_120);
+            assert_eq!(
+                preview, message,
+                "responses within the tenfold budget stay complete"
+            );
+        } else {
+            let prefix = preview.strip_suffix('…').expect("bounded suffix");
+            assert!(prefix.len() <= 5_120);
+            assert!(prefix.len() >= 5_118, "only trim incomplete UTF-8 bytes");
+            assert!(message.starts_with(prefix));
+        }
+        let turn_id = preview_chunk.result["unloadedTurn"]["turnId"]
+            .as_str()
+            .expect("owning turn");
+        let full = load_codex_app_turn_from_path(&session_id, &path, turn_id).expect("load body");
+        assert!(
+            full.chunks
+                .iter()
+                .any(|chunk| chunk.result["observation"].as_str() == Some(message.as_str())),
+            "expanding recovers every row beyond the preview limit"
+        );
+        assert_eq!(
+            std::fs::read_to_string(&path).expect("source readback"),
+            source
+        );
+    }
+    std::fs::remove_dir_all(temp).expect("cleanup fixture");
+}
