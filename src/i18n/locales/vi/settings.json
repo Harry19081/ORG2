@@ -623,7 +623,6 @@
     "installOfficialConfirmDesc": "Cài riêng {{version}}. Bản dựng này vẫn mở",
     "installOfficial": "Cài bản chính thức",
     "localBuild": "Cục bộ",
-    "skipVersion": "Bỏ qua phiên bản này",
     "upToDate": "ORG2 đã được cập nhật.",
     "upToDateVersion": "ORG2 đã được cập nhật (v{{version}}).",
     "officialAlreadyInstalled": "Bản chính thức ORG2 v{{version}} đã được cài đặt trong /Applications.",

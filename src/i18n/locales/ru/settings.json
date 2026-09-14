@@ -623,7 +623,6 @@
     "installOfficialConfirmDesc": "Установить {{version}} отдельно. Эта сборка останется открытой",
     "installOfficial": "Установить официальную версию",
     "localBuild": "Локальная",
-    "skipVersion": "Пропустить эту версию",
     "upToDate": "Установлена последняя версия ORG2.",
     "upToDateVersion": "Установлена последняя версия ORG2 (v{{version}}).",
     "officialAlreadyInstalled": "Официальная версия ORG2 v{{version}} уже установлена в /Applications.",

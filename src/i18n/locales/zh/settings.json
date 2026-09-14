@@ -701,7 +701,6 @@
     "installOfficialConfirmDesc": "独立安装 {{version}}，当前构建保持运行",
     "installOfficial": "安装正式版",
     "localBuild": "本地构建",
-    "skipVersion": "跳过此版本",
     "upToDate": "ORG2 已是最新版本。",
     "upToDateVersion": "ORG2 已是最新版本（v{{version}}）。",
     "officialAlreadyInstalled": "官方 ORG2 v{{version}} 已安装在 /Applications 中。",

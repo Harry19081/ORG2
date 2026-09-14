@@ -72,7 +72,8 @@ export const AppUpdater: React.FC = () => {
         onClose={handleInstallLater}
         footer={
           <div className={PANEL_FOOTER_TOKENS.container}>
-            {/* Skip-version action temporarily disabled.
+            {/* Skip-version action temporarily disabled. Restore update.skipVersion
+                translations in every locale before re-enabling this button.
             <Button
               variant="tertiary"
               appearance="ghost"

@@ -623,7 +623,6 @@
     "installOfficialConfirmDesc": "Instale {{version}} separadamente. Este build permanece aberto",
     "installOfficial": "Instalar versão oficial",
     "localBuild": "Local",
-    "skipVersion": "Pular esta versão",
     "upToDate": "O ORG2 está atualizado.",
     "upToDateVersion": "O ORG2 está atualizado (v{{version}}).",
     "officialAlreadyInstalled": "A versão oficial ORG2 v{{version}} já está instalada em /Applications.",

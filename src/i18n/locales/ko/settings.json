@@ -623,7 +623,6 @@
     "installOfficialConfirmDesc": "{{version}}을(를) 별도로 설치합니다. 현재 빌드는 계속 실행됩니다",
     "installOfficial": "공식 버전 설치",
     "localBuild": "로컬",
-    "skipVersion": "이 버전 건너뛰기",
     "upToDate": "ORG2가 최신 버전입니다.",
     "upToDateVersion": "ORG2가 최신 버전입니다(v{{version}}).",
     "officialAlreadyInstalled": "공식 ORG2 v{{version}}이 이미 /Applications에 설치되어 있습니다.",

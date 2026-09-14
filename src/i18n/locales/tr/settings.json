@@ -623,7 +623,6 @@
     "installOfficialConfirmDesc": "{{version}} sürümünü ayrı yükleyin. Bu derleme açık kalır",
     "installOfficial": "Resmi sürümü yükle",
     "localBuild": "Yerel",
-    "skipVersion": "Bu sürümü atla",
     "upToDate": "ORG2 güncel.",
     "upToDateVersion": "ORG2 güncel (v{{version}}).",
     "officialAlreadyInstalled": "Resmî ORG2 v{{version}}, /Applications içinde zaten yüklü.",

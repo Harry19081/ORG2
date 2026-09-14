@@ -623,7 +623,6 @@
     "installOfficialConfirmDesc": "{{version}} を別途インストールします。このビルドは起動したままです",
     "installOfficial": "正式版をインストール",
     "localBuild": "ローカル",
-    "skipVersion": "このバージョンをスキップ",
     "upToDate": "ORG2 は最新です。",
     "upToDateVersion": "ORG2 は最新です（v{{version}}）。",
     "officialAlreadyInstalled": "公式版 ORG2 v{{version}} は /Applications にインストール済みです。",
