@@ -110,8 +110,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # fetch-depth 0 so the lint-scope step below can diff base..head. The
-      # `changes` job pays the same cost in ~10s.
+      # fetch-depth 0 so the file-length and lint-scope steps below can diff
+      # base..head. The `changes` job pays the same cost in ~10s.
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -128,6 +128,22 @@ jobs:
 
       - name: Test CI policy helpers
         run: node --test scripts/ci/*.test.cjs
+
+      # TypeScript files (.ts/.tsx under src/) a pull request touches must stay
+      # within 700 lines. Only the diff is judged: a long file nobody edits
+      # never fails a build, and it gets split the next time a pull request
+      # changes it. Markdown, JSON, styles, and Rust are out of scope. Needs
+      # only git and node, so it runs before the dependency install.
+      # `shell: bash` adds pipefail, so a failed diff fails the step instead of
+      # passing an empty file list.
+      - name: File length (changed files)
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git diff --name-only --diff-filter=ACMR -z "${BASE_SHA}...${HEAD_SHA}" |
+            node scripts/ci/check-changed-file-length.cjs
 
       # warm-frontend-cache.yml publishes this same key from develop after
       # lockfile-changing merges, so a PR's first run restores the base
