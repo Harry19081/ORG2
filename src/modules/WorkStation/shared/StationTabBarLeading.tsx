@@ -7,12 +7,14 @@ import { TabBarLeadingLayout } from "./TabBarLeadingLayout";
 
 interface StationTabBarLeadingProps {
   trailing?: React.ReactNode;
+  trailingPadding?: boolean;
 }
 
 export const StationTabBarLeading: React.FC<StationTabBarLeadingProps> = ({
   trailing,
+  trailingPadding,
 }) => (
-  <TabBarLeadingLayout>
+  <TabBarLeadingLayout trailingPadding={trailingPadding}>
     <NoDragRegion>
       <StationModeChip />
     </NoDragRegion>
