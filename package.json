@@ -1,6 +1,6 @@
 {
   "name": "orgii",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Self-evolving agentic development framework — ORG2 desktop app",
   "main": "src/index.tsx",
   "scripts": {
