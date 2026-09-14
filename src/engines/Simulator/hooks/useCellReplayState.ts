@@ -29,8 +29,8 @@
  * to `detached` mode. This replaces the old `IndependentGridCell` 16 ms
  * `setTimeout` debounce + duplicated `isDraggingSlider` state.
  *
- * User controls commit cursor and playback together; timer/global commands
- * likewise publish one complete replay transition to persistence.
+ * User controls commit cursor and playback together; timer ticks likewise
+ * publish one complete replay transition to persistence.
  */
 import { useAtomValue } from "jotai";
 import {
@@ -173,7 +173,7 @@ export function useCellReplayState(
     [patchCellState]
   );
 
-  // ── Playback timer + global sync ─────────────────────────────────────
+  // ── Playback timer ───────────────────────────────────────────────────
   useCellPlayback({
     enabled: !isRemoved,
     events,
@@ -184,7 +184,6 @@ export function useCellReplayState(
     setCurrentIndexLocal,
     setIsPlayingLocal,
     patchCellState,
-    setLocalPlaybackSpeed,
   });
 
   const autoScroll = useAtomValue(simulatorAutoScrollAtom);

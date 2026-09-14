@@ -99,6 +99,24 @@ const cellReplayOwnersAtom = atom<ReadonlySet<CellReplayOwner>>(
   new Set<CellReplayOwner>()
 );
 
+type CellReplayStates = Record<string, CellReplayPersistState>;
+
+/** Drops the oldest inactive entries past the cap; returns `states` itself when none are dropped. */
+function evictInactiveCellStates(
+  states: CellReplayStates,
+  owners: ReadonlySet<CellReplayOwner>
+): CellReplayStates {
+  const activeKeys = new Set(
+    [...owners].filter((owner) => owner.active).map((owner) => owner.cellId)
+  );
+  const entries = Object.entries(states);
+  const inactive = entries.filter(([key]) => !activeKeys.has(key));
+  const overflow = inactive.length - MAX_CELL_REPLAY_STATES;
+  if (overflow <= 0) return states;
+  const evicted = new Set(inactive.slice(0, overflow).map(([key]) => key));
+  return Object.fromEntries(entries.filter(([key]) => !evicted.has(key)));
+}
+
 export const registerCellReplayOwnerAtom = atom(
   null,
   (get, set, owner: CellReplayOwner) => {
@@ -108,13 +126,15 @@ export const registerCellReplayOwnerAtom = atom(
       const owners = new Set(get(cellReplayOwnersAtom));
       owners.delete(owner);
       set(cellReplayOwnersAtom, owners);
-      // Once the last owner closes, its state participates in inactive LRU.
-      set(cellReplayStatesAtom, (states) => ({ ...states }));
+      // Once the last owner closes, its state joins the inactive LRU. Publish
+      // only when that actually evicts something.
+      const states = get(cellReplayStatesStorageAtom);
+      const retained = evictInactiveCellStates(states, owners);
+      if (retained !== states) set(cellReplayStatesStorageAtom, retained);
     };
   }
 );
 
-type CellReplayStates = Record<string, CellReplayPersistState>;
 export const cellReplayStatesAtom = atom(
   (get) => get(cellReplayStatesStorageAtom),
   (
@@ -127,23 +147,9 @@ export const cellReplayStatesAtom = atom(
     const previous = get(cellReplayStatesStorageAtom);
     const next = typeof update === "function" ? update(previous) : update;
     if (next === previous) return;
-    const activeKeys = new Set(
-      [...get(cellReplayOwnersAtom)]
-        .filter((owner) => owner.active)
-        .map((owner) => owner.cellId)
-    );
-    const entries = Object.entries(next);
-    const inactive = entries.filter(([key]) => !activeKeys.has(key));
-    const evicted = new Set(
-      inactive
-        .slice(0, Math.max(0, inactive.length - MAX_CELL_REPLAY_STATES))
-        .map(([key]) => key)
-    );
     set(
       cellReplayStatesStorageAtom,
-      evicted.size > 0
-        ? Object.fromEntries(entries.filter(([key]) => !evicted.has(key)))
-        : next
+      evictInactiveCellStates(next, get(cellReplayOwnersAtom))
     );
   }
 );
@@ -177,25 +183,6 @@ export const clearCellReplaySessionAtom = atom(
     }
   }
 );
-
-/**
- * Global replay control for multi-task grid
- * When triggered, all cells start/stop playing simultaneously
- */
-export interface GlobalReplayState {
-  /** Whether global playback is active */
-  isPlaying: boolean;
-  /** Timestamp when play was triggered (used to sync cells) */
-  triggerTime: number;
-  /** Playback speed multiplier */
-  speed: number;
-}
-export const globalReplayStateAtom = atom<GlobalReplayState>({
-  isPlaying: false,
-  triggerTime: 0,
-  speed: 1,
-});
-globalReplayStateAtom.debugLabel = "globalReplayStateAtom";
 
 /**
  * Simulator data source. Only `"real"` is currently produced — the atom is

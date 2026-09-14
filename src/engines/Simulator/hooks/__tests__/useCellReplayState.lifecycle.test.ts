@@ -11,7 +11,6 @@ import {
   cellReplayKey,
   cellReplayStatesAtom,
   clearCellReplaySessionAtom,
-  globalReplayStateAtom,
 } from "@src/store/ui/simulatorAtom";
 import {
   createInstrumentedStore,
@@ -194,19 +193,12 @@ it("bounds visited-cell retention and drops only the deleted session", async () 
   ).toMatchObject({ currentIndex: 1 });
 });
 
-it("applies initial global playback once in StrictMode and stops cleanly at the end", async () => {
+it("stops user-started playback cleanly at the end in StrictMode", async () => {
   vi.useFakeTimers();
   vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
   const store = createStore();
-  store.set(globalReplayStateAtom, {
-    triggerTime: 1,
-    isPlaying: true,
-    speed: 1,
-  });
-  const instance = mount(store, "global");
-  await act(async () => {
-    await Promise.resolve();
-  });
+  const instance = mount(store, "ended");
+  await act(async () => instance.result.current!.controls.play());
   expect(instance.result.current!.state.currentIndex).toBe(0);
   expect(instance.result.current!.state.isPlaying).toBe(true);
   expect(vi.getTimerCount()).toBe(1);
@@ -216,19 +208,15 @@ it("applies initial global playback once in StrictMode and stops cleanly at the 
   expect(instance.result.current!.state.currentIndex).toBe(4);
   expect(instance.result.current!.state.isPlaying).toBe(false);
   expect(
-    store.get(cellReplayStatesAtom)[cellReplayKey("global", "review")]
+    store.get(cellReplayStatesAtom)[cellReplayKey("ended", "review")]
   ).toMatchObject({ currentIndex: 4, isPlaying: false });
   expect(vi.getTimerCount()).toBe(0);
 });
 
-it("does not publish a queued global command after unmount", async () => {
+it("does not publish a queued follow update after unmount", async () => {
   const store = createStore();
-  store.set(globalReplayStateAtom, {
-    triggerTime: 1,
-    isPlaying: true,
-    speed: 1,
-  });
   const instance = mount(store, "closed");
+  instance.rerender(events("closed", 6));
   instance.unmount();
   await act(async () => {
     await Promise.resolve();
@@ -309,7 +297,7 @@ it("deletion must not be undone by a still-mounted cell", async () => {
   ).toBeUndefined();
 });
 
-it("session removal revokes mounted playback and queued/global/user writes only in its store", async () => {
+it("session removal revokes mounted playback and later user writes only in its store", async () => {
   vi.useFakeTimers();
   vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
   resetInstrumentedStore();
@@ -327,11 +315,6 @@ it("session removal revokes mounted playback and queued/global/user writes only 
   expect(instance.result.current!.state.isPlaying).toBe(false);
   expect(vi.getTimerCount()).toBe(1);
   await act(async () => {
-    store.set(globalReplayStateAtom, {
-      triggerTime: 10,
-      isPlaying: true,
-      speed: 1,
-    });
     instance.result.current!.controls.play();
     vi.advanceTimersByTime(100);
   });
@@ -346,14 +329,10 @@ it("session removal revokes mounted playback and queued/global/user writes only 
   resetInstrumentedStore();
 });
 
-it("revokes a queued global command before its microtask runs", async () => {
+it("revokes a queued follow update before its microtask runs", async () => {
   const store = createStore();
-  store.set(globalReplayStateAtom, {
-    triggerTime: 1,
-    isPlaying: true,
-    speed: 1,
-  });
   const instance = mount(store, "queued-delete");
+  instance.rerender(events("queued-delete", 6));
   act(() => store.set(clearCellReplaySessionAtom, "queued-delete"));
   await act(async () => {
     await Promise.resolve();
@@ -361,5 +340,16 @@ it("revokes a queued global command before its microtask runs", async () => {
   expect(
     store.get(cellReplayStatesAtom)[cellReplayKey("queued-delete", "review")]
   ).toBeUndefined();
-  expect(instance.result.current!.state.isPlaying).toBe(false);
+});
+
+it("does not republish replay state when an owner unmounts under the retention cap", async () => {
+  const store = createStore();
+  const instance = mount(store, "quiet");
+  await act(async () => instance.result.current!.controls.goToIndex(1));
+  const retained = store.get(cellReplayStatesAtom);
+  instance.unmount();
+  expect(store.get(cellReplayStatesAtom)).toBe(retained);
+  expect(retained[cellReplayKey("quiet", "review")]).toMatchObject({
+    currentIndex: 1,
+  });
 });
