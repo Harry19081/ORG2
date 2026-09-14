@@ -171,6 +171,7 @@ const Modal: React.FC<ModalProps> = ({
   topDragZoneHeight = 0,
   style,
 }) => {
+  const hasHeaderMedia = Boolean(headerMedia ?? image);
   const titleId = useId();
   const handleClose = onClose || onCancel;
   const modalRef = useRef<HTMLDivElement>(null);
@@ -437,6 +438,7 @@ const Modal: React.FC<ModalProps> = ({
           {/* Header */}
           {title && (
             <PanelHeader
+              className={hasHeaderMedia ? "h-auto! min-h-10 py-3" : undefined}
               title={typeof title === "string" ? title : undefined}
               onBack={onBack}
               backLabel={backLabel}
@@ -466,7 +468,11 @@ const Modal: React.FC<ModalProps> = ({
                 ) : undefined
               }
             >
-              {typeof title === "string" ? undefined : (
+              {hasHeaderMedia ? (
+                <div id={titleId} className="text-lg font-semibold text-text-1">
+                  {title}
+                </div>
+              ) : typeof title === "string" ? undefined : (
                 <div id={titleId}>{title}</div>
               )}
             </PanelHeader>
