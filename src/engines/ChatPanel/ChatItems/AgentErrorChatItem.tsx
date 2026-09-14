@@ -52,7 +52,7 @@ const AgentErrorChatItem: React.FC<AgentErrorChatItemProps> = memo(
           label: t("errors.reconnectCodex"),
           onClick: () => {
             const returnTo = `${location.pathname}${location.search}${location.hash}`;
-            navigate(buildCodexReauthPath(session?.accountId), {
+            void navigate(buildCodexReauthPath(session?.accountId), {
               state: { [CODEX_REAUTH_RETURN_TO_STATE_KEY]: returnTo },
             });
           },
