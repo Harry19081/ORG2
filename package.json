@@ -1,7 +1,7 @@
 {
   "name": "orgii",
   "version": "2.0.0",
-  "description": "Self-evolving agentic development framework — ORGII desktop app",
+  "description": "Self-evolving agentic development framework — ORG2 desktop app",
   "main": "src/index.tsx",
   "scripts": {
     "prepare": "husky install",

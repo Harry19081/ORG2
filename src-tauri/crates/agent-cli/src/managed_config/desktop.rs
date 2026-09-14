@@ -167,7 +167,7 @@ pub(super) fn generate(
         return Err("An existing Claude Desktop catalog entry uses ORG2's profile ID".into());
     }
     entries.retain(|entry| entry["id"] != PROFILE_ID);
-    entries.push(json!({"id": PROFILE_ID, "name": "ORGII"}));
+    entries.push(json!({"id": PROFILE_ID, "name": "ORG2"}));
     catalog["entries"] = json!(entries);
     catalog["appliedId"] = json!(PROFILE_ID);
     generated.insert("catalog".into(), catalog);

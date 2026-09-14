@@ -314,8 +314,8 @@ pub(super) fn update_zcode_plugin(enabled: bool, executable: &Path) -> Result<()
         &json!({
             "name": ZCODE_PLUGIN_NAME,
             "version": ZCODE_PLUGIN_VERSION,
-            "description": "ORGII session provenance — records file-interaction metadata via a managed hook. Prompts, tool output, and file contents are not stored.",
-            "author": { "name": "ORGII" },
+            "description": "ORG2 session provenance — records file-interaction metadata via a managed hook. Prompts, tool output, and file contents are not stored.",
+            "author": { "name": "ORG2" },
             "license": "MIT"
         }),
     )?;
