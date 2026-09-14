@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import { afterEach, expect, it, vi } from "vitest";
 
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { removeSession } from "@src/store/session/sessionAtom/mutations";
 import {
   MAX_CELL_REPLAY_STATES,
   cellReplayKey,
@@ -12,6 +13,11 @@ import {
   clearCellReplaySessionAtom,
   globalReplayStateAtom,
 } from "@src/store/ui/simulatorAtom";
+import {
+  createInstrumentedStore,
+  getInstrumentedStore,
+  resetInstrumentedStore,
+} from "@src/util/core/state/instrumentedStore";
 
 import { useCellReplayState } from "../useCellReplayState";
 
@@ -264,4 +270,96 @@ it("preserves follow, detach and resync transitions while the event stream grows
     instance.rerender(events("stream", 7));
   });
   expect(instance.result.current!.state.currentIndex).toBe(6);
+});
+
+it("retention must not reset an actively mounted detached owner", async () => {
+  const store = createStore();
+  const instance = mount(store, "active");
+  await act(async () => instance.result.current!.controls.goToIndex(1));
+  await act(async () => {
+    for (let i = 0; i < MAX_CELL_REPLAY_STATES; i++) {
+      store.set(cellReplayStatesAtom, (previous) => ({
+        ...previous,
+        [cellReplayKey(`other-${i}`, "review")]: {
+          currentIndex: 1,
+          isPlaying: false,
+          hasUserOverride: true,
+        },
+      }));
+    }
+  });
+  expect(instance.result.current!.state.mode).toBe("detached");
+  expect(instance.result.current!.state.currentIndex).toBe(1);
+  expect(Object.keys(store.get(cellReplayStatesAtom))).toHaveLength(
+    MAX_CELL_REPLAY_STATES + 1
+  );
+  instance.unmount();
+  expect(Object.keys(store.get(cellReplayStatesAtom))).toHaveLength(
+    MAX_CELL_REPLAY_STATES
+  );
+});
+
+it("deletion must not be undone by a still-mounted cell", async () => {
+  const store = createStore();
+  const instance = mount(store, "deleted");
+  await act(async () => instance.result.current!.controls.goToIndex(1));
+  await act(async () => store.set(clearCellReplaySessionAtom, "deleted"));
+  expect(
+    store.get(cellReplayStatesAtom)[cellReplayKey("deleted", "review")]
+  ).toBeUndefined();
+});
+
+it("session removal revokes mounted playback and queued/global/user writes only in its store", async () => {
+  vi.useFakeTimers();
+  vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
+  resetInstrumentedStore();
+  createInstrumentedStore();
+  const store = getInstrumentedStore();
+  const instance = mount(store, "deleted-playing");
+  const otherStore = createStore();
+  const other = mount(otherStore, "deleted-playing");
+  await act(async () => {
+    instance.result.current!.controls.play();
+    other.result.current!.controls.play();
+  });
+  expect(vi.getTimerCount()).toBe(2);
+  await act(async () => removeSession("deleted-playing"));
+  expect(instance.result.current!.state.isPlaying).toBe(false);
+  expect(vi.getTimerCount()).toBe(1);
+  await act(async () => {
+    store.set(globalReplayStateAtom, {
+      triggerTime: 10,
+      isPlaying: true,
+      speed: 1,
+    });
+    instance.result.current!.controls.play();
+    vi.advanceTimersByTime(100);
+  });
+  expect(
+    store.get(cellReplayStatesAtom)[cellReplayKey("deleted-playing", "review")]
+  ).toBeUndefined();
+  expect(other.result.current!.state.currentIndex).toBe(1);
+  expect(instance.result.current!.state.isPlaying).toBe(false);
+  instance.unmount();
+  other.unmount();
+  expect(vi.getTimerCount()).toBe(0);
+  resetInstrumentedStore();
+});
+
+it("revokes a queued global command before its microtask runs", async () => {
+  const store = createStore();
+  store.set(globalReplayStateAtom, {
+    triggerTime: 1,
+    isPlaying: true,
+    speed: 1,
+  });
+  const instance = mount(store, "queued-delete");
+  act(() => store.set(clearCellReplaySessionAtom, "queued-delete"));
+  await act(async () => {
+    await Promise.resolve();
+  });
+  expect(
+    store.get(cellReplayStatesAtom)[cellReplayKey("queued-delete", "review")]
+  ).toBeUndefined();
+  expect(instance.result.current!.state.isPlaying).toBe(false);
 });

@@ -67,7 +67,7 @@ simulatorShowDockAtom.debugLabel = "simulatorShowDockAtom";
 
 /**
  * Cell replay state for multi-task grid
- * Retains currentIndex across view switches for a bounded set of recent cells.
+ * Retains currentIndex for mounted owners and up to 256 recent inactive cells.
  * Keys encode the owning session and thread, including empty thread names.
  *
  * `hasUserOverride` flips to `true` when the user manually controls a cell
@@ -89,6 +89,31 @@ export function cellReplayKey(sessionId: string, threadId = ""): string {
 const cellReplayStatesStorageAtom = atom<
   Record<string, CellReplayPersistState>
 >({});
+/** A mount owns one revocable writer; registrations are scoped to the Jotai store. */
+export interface CellReplayOwner {
+  cellId: string;
+  active: boolean;
+  onRemove: () => void;
+}
+const cellReplayOwnersAtom = atom<ReadonlySet<CellReplayOwner>>(
+  new Set<CellReplayOwner>()
+);
+
+export const registerCellReplayOwnerAtom = atom(
+  null,
+  (get, set, owner: CellReplayOwner) => {
+    set(cellReplayOwnersAtom, new Set([...get(cellReplayOwnersAtom), owner]));
+    return () => {
+      owner.active = false;
+      const owners = new Set(get(cellReplayOwnersAtom));
+      owners.delete(owner);
+      set(cellReplayOwnersAtom, owners);
+      // Once the last owner closes, its state participates in inactive LRU.
+      set(cellReplayStatesAtom, (states) => ({ ...states }));
+    };
+  }
+);
+
 type CellReplayStates = Record<string, CellReplayPersistState>;
 export const cellReplayStatesAtom = atom(
   (get) => get(cellReplayStatesStorageAtom),
@@ -102,11 +127,22 @@ export const cellReplayStatesAtom = atom(
     const previous = get(cellReplayStatesStorageAtom);
     const next = typeof update === "function" ? update(previous) : update;
     if (next === previous) return;
+    const activeKeys = new Set(
+      [...get(cellReplayOwnersAtom)]
+        .filter((owner) => owner.active)
+        .map((owner) => owner.cellId)
+    );
     const entries = Object.entries(next);
+    const inactive = entries.filter(([key]) => !activeKeys.has(key));
+    const evicted = new Set(
+      inactive
+        .slice(0, Math.max(0, inactive.length - MAX_CELL_REPLAY_STATES))
+        .map(([key]) => key)
+    );
     set(
       cellReplayStatesStorageAtom,
-      entries.length > MAX_CELL_REPLAY_STATES
-        ? Object.fromEntries(entries.slice(-MAX_CELL_REPLAY_STATES))
+      evicted.size > 0
+        ? Object.fromEntries(entries.filter(([key]) => !evicted.has(key)))
         : next
     );
   }
@@ -117,14 +153,25 @@ cellReplayStatesAtom.debugLabel = "cellReplayStatesAtom";
 export const clearCellReplaySessionAtom = atom(
   null,
   (get, set, sessionId: string) => {
-    const states = get(cellReplayStatesAtom);
-    const entries = Object.entries(states).filter(([key]) => {
+    const belongsToSession = (key: string) => {
       try {
-        return (JSON.parse(key) as unknown[])[0] !== sessionId;
+        return (JSON.parse(key) as unknown[])[0] === sessionId;
       } catch {
-        return key !== sessionId;
+        return key === sessionId;
       }
-    });
+    };
+    // Revoke before publishing deletion: subscribers and queued work cannot
+    // recreate the record, even if the child view has not unmounted yet.
+    for (const owner of get(cellReplayOwnersAtom)) {
+      if (owner.active && belongsToSession(owner.cellId)) {
+        owner.active = false;
+        owner.onRemove();
+      }
+    }
+    const states = get(cellReplayStatesAtom);
+    const entries = Object.entries(states).filter(
+      ([key]) => !belongsToSession(key)
+    );
     if (entries.length !== Object.keys(states).length) {
       set(cellReplayStatesAtom, Object.fromEntries(entries));
     }

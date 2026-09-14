@@ -81,7 +81,7 @@ export function useCellReplayState(
   } = options;
 
   // ── Persistence ──────────────────────────────────────────────────────
-  const { persistedState, hasUserOverride, patchCellState } =
+  const { persistedState, hasUserOverride, patchCellState, isRemoved } =
     useCellPersistence(cellId);
 
   // `hasUserOverride` is the persisted "user has detached this cell" flag.
@@ -175,6 +175,7 @@ export function useCellReplayState(
 
   // ── Playback timer + global sync ─────────────────────────────────────
   useCellPlayback({
+    enabled: !isRemoved,
     events,
     autoPlayInterval,
     isPlaying,
@@ -385,7 +386,7 @@ export function useCellReplayState(
   const state: CellReplayState = useMemo(
     () => ({
       currentIndex: safeIndex,
-      isPlaying,
+      isPlaying: !isRemoved && isPlaying,
       playbackSpeed,
       currentEvent,
       totalEvents: events.length,
@@ -397,6 +398,7 @@ export function useCellReplayState(
     [
       safeIndex,
       isPlaying,
+      isRemoved,
       playbackSpeed,
       currentEvent,
       events.length,

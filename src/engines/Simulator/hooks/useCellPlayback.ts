@@ -20,6 +20,7 @@ import {
 } from "@src/store/ui/simulatorAtom";
 
 export interface UseCellPlaybackOptions {
+  enabled: boolean;
   events: SessionEvent[];
   autoPlayInterval: number;
   isPlaying: boolean;
@@ -35,6 +36,7 @@ export interface UseCellPlaybackOptions {
  * Runs the auto-play timer and responds to global replay commands.
  */
 export function useCellPlayback({
+  enabled,
   events,
   autoPlayInterval,
   isPlaying,
@@ -49,7 +51,7 @@ export function useCellPlayback({
 
   // Auto-play timer — only in independent mode
   useEffect(() => {
-    if (isSyncMode || !isPlaying || events.length === 0) return;
+    if (!enabled || isSyncMode || !isPlaying || events.length === 0) return;
     const stopTimer = () => {
       if (timerRef.current !== null) {
         clearInterval(timerRef.current);
@@ -79,6 +81,7 @@ export function useCellPlayback({
       document.removeEventListener("visibilitychange", updateVisibility);
     };
   }, [
+    enabled,
     isPlaying,
     isSyncMode,
     events.length,
@@ -103,7 +106,10 @@ export function useCellPlayback({
   );
 
   useEffect(() => {
-    if (globalReplayState.triggerTime > lastGlobalTriggerRef.current) {
+    if (
+      enabled &&
+      globalReplayState.triggerTime > lastGlobalTriggerRef.current
+    ) {
       let cancelled = false;
       queueMicrotask(() => {
         if (cancelled) return;
@@ -132,6 +138,7 @@ export function useCellPlayback({
       };
     }
   }, [
+    enabled,
     globalReplayState,
     patchCellState,
     setCurrentIndexLocalCb,
