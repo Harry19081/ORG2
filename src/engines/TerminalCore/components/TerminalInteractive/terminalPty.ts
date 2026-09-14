@@ -22,6 +22,7 @@ import {
   flushBacklog,
   isPaneForeground,
   notifyUserInput,
+  ownsPane,
   registerPane,
   resumePane,
   scheduleWrite,
@@ -34,6 +35,11 @@ import type { TerminalViewProps } from "./types";
 import { writeBrowserModeMessage } from "./utils/browserModeMessage";
 
 const log = createLogger("TerminalView");
+let lastOwnerId = 0;
+function nextOwnerId(): number {
+  lastOwnerId = Math.max(lastOwnerId + 1, Date.now() * 1000);
+  return lastOwnerId;
+}
 
 /**
  * Estimate UTF-8 byte length of a string without a TextEncoder allocation.
@@ -210,6 +216,7 @@ async function fetchPtyInfo(
 }
 
 async function reconnectOrCreatePty({
+  ownerId,
   restorePendingUtf8,
   cols,
   rows,
@@ -227,6 +234,7 @@ async function reconnectOrCreatePty({
   writeToTerminal,
   onSessionInfoReady,
 }: {
+  ownerId: number;
   restorePendingUtf8: (b64: string) => void;
   cols: number;
   rows: number;
@@ -274,6 +282,7 @@ async function reconnectOrCreatePty({
     await invokeTauri("create_pty", {
       request: {
         session_id: sessionId,
+        owner_id: ownerId,
         rows: rows || 20,
         cols: cols || 80,
         cwd,
@@ -301,7 +310,7 @@ async function reconnectOrCreatePty({
   try {
     const attach = await invokeTauri<AttachPtyStreamResponse>(
       "attach_pty_stream",
-      { sessionId }
+      { sessionId, ownerId }
     );
 
     if (!isTerminalLive()) return attach.covers_seq;
@@ -369,6 +378,7 @@ async function reconnectOrCreatePty({
  */
 async function attachPtyOutputChannel(
   sessionId: string,
+  ownerId: number,
   isAborted: () => boolean,
   consumePtyBytes: (chunk: Uint8Array, byteCount: number, seq?: number) => void
 ): Promise<void> {
@@ -383,7 +393,11 @@ async function attachPtyOutputChannel(
       consumePtyBytes(frame.bytes, frame.bytes.length, frame.seq);
     });
 
-    await invokeTauri("attach_pty_output_channel", { sessionId, channel });
+    await invokeTauri("attach_pty_output_channel", {
+      sessionId,
+      ownerId,
+      channel,
+    });
   } catch (error) {
     log.warn(
       "[TerminalView] Binary output channel unavailable, using event transport:",
@@ -430,13 +444,17 @@ export async function initPtyConnection({
 
   const sessionId = `terminal-pty-${sessionKey}`;
   sessionIdRef.current = sessionId;
+  let releaseConnection: (() => void) | undefined;
+  let ownsConnection = () => !isAborted();
 
   try {
     const terminal = terminalRef.current;
     if (!terminal || isAborted()) return;
+    const ownerId = nextOwnerId();
     const isTerminalLive = () =>
-      !isAborted() && terminalRef.current === terminal;
+      !isAborted() && terminalRef.current === terminal && ownsPane(pane);
 
+    ownsConnection = isTerminalLive;
     const utf8Decoder = new TextDecoder("utf-8", { fatal: false });
 
     // Stable write callback — captured once per session so the hot IPC
@@ -450,12 +468,28 @@ export async function initPtyConnection({
     // arrive during connect queue up in order but nothing is written until
     // the restore base (snapshot or cached buffer) is in place — otherwise
     // live output interleaves with the restore and garbles the screen.
-    registerPane(sessionId, terminalWrite);
+    const pane = registerPane(sessionId, terminalWrite, ownerId);
+    let ownOutputUnlisten: (() => void) | undefined;
+    let ownExitUnlisten: (() => void) | undefined;
     const pendingChunks: {
       chunk: Uint8Array;
       byteCount: number;
       seq?: number;
     }[] = [];
+    const release = () => {
+      abortSignal?.removeEventListener("abort", release);
+      pendingChunks.length = 0;
+      ownOutputUnlisten?.();
+      ownOutputUnlisten = undefined;
+      ownExitUnlisten?.();
+      ownExitUnlisten = undefined;
+      unregisterPane(sessionId, pane);
+      void invokeTauri("detach_pty_stream", { sessionId, ownerId }).catch(
+        () => undefined
+      );
+    };
+    releaseConnection = release;
+    abortSignal?.addEventListener("abort", release, { once: true });
     let restoring = true;
     let restoredThrough: number | undefined;
     const restorePendingUtf8 = (b64: string) => {
@@ -506,33 +540,40 @@ export async function initPtyConnection({
       }
     };
 
-    const unlistenOutput = await listenTauri<PtyOutputPayload>(
-      `pty-output-${sessionId}`,
-      (event) => {
-        if (isAborted()) return;
+    const unlistenOutput = await listenTauri<
+      PtyOutputPayload & { owner_id?: number }
+    >(`pty-output-${sessionId}`, (event) => {
+      if (!isTerminalLive()) return;
 
-        const { byte_count: byteCount, seq, data } = event.payload;
-        const chunk = ptyPayloadBytes(event.payload);
+      if (
+        event.payload.owner_id !== undefined &&
+        event.payload.owner_id !== ownerId
+      )
+        return;
+      const { byte_count: byteCount, seq, data } = event.payload;
+      const chunk = ptyPayloadBytes(event.payload);
 
-        if (chunk && chunk.length > 0) {
-          consumePtyBytes(chunk, byteCount ?? chunk.length, seq);
-        } else if (data) {
-          // Backward-compat branch (no byte_count from backend): estimate byte
-          // length without a TextEncoder allocation. ASCII is 1 byte/char;
-          // non-ASCII (rare in terminal hot path) inflates slightly — the
-          // scheduler treats byte_count as a flow-control hint, not an exact
-          // invariant, so a cheap over-estimate is correct.
-          const bytes = new TextEncoder().encode(data);
-          consumePtyBytes(bytes, estimateByteLength(data), seq);
-        }
+      if (chunk && chunk.length > 0) {
+        consumePtyBytes(chunk, byteCount ?? chunk.length, seq);
+      } else if (data) {
+        // Backward-compat branch (no byte_count from backend): estimate byte
+        // length without a TextEncoder allocation. ASCII is 1 byte/char;
+        // non-ASCII (rare in terminal hot path) inflates slightly — the
+        // scheduler treats byte_count as a flow-control hint, not an exact
+        // invariant, so a cheap over-estimate is correct.
+        const bytes = new TextEncoder().encode(data);
+        consumePtyBytes(bytes, estimateByteLength(data), seq);
       }
-    );
-    if (isAborted()) {
-      unlistenOutput();
-      unregisterPane(sessionId);
+    });
+    ownOutputUnlisten = unlistenOutput;
+    if (!isTerminalLive()) {
+      release();
       return;
     }
-    unlistenOutputRef.current = unlistenOutput;
+    unlistenOutputRef.current = () => {
+      abortSignal?.removeEventListener("abort", release);
+      release();
+    };
 
     let exitPending = false;
     const finishExit = () => {
@@ -548,7 +589,7 @@ export async function initPtyConnection({
         terminalWrite(trailingOutput);
       }
       terminalWrite("\r\n\x1b[33m[Session ended]\x1b[0m\r\n");
-      unregisterPane(sessionId);
+      unregisterPane(sessionId, pane);
     };
     const unlistenExit = await listenTauri(`pty-exit-${sessionId}`, () => {
       if (restoring) {
@@ -557,19 +598,21 @@ export async function initPtyConnection({
       }
       finishExit();
     });
-    if (isAborted()) {
-      unlistenExit();
-      unlistenOutputRef.current?.();
-      unlistenOutputRef.current = null;
-      unregisterPane(sessionId);
+    ownExitUnlisten = unlistenExit;
+    if (!isTerminalLive()) {
+      release();
       return;
     }
-    unlistenExitRef.current = unlistenExit;
+    unlistenExitRef.current = () => {
+      ownExitUnlisten?.();
+      ownExitUnlisten = undefined;
+    };
 
     if (isAborted()) return;
     let coversSeq: number | undefined;
     try {
       coversSeq = await reconnectOrCreatePty({
+        ownerId,
         restorePendingUtf8,
         cols,
         rows,
@@ -592,7 +635,12 @@ export async function initPtyConnection({
       // the transport swap queue in arrival order instead of racing the
       // restore snapshot onto the screen.
       if (!isAborted()) {
-        await attachPtyOutputChannel(sessionId, isAborted, consumePtyBytes);
+        await attachPtyOutputChannel(
+          sessionId,
+          ownerId,
+          () => !isTerminalLive(),
+          consumePtyBytes
+        );
       }
     } finally {
       // Always lift the suspension — a pane left suspended never renders.
@@ -607,6 +655,7 @@ export async function initPtyConnection({
         if (exitPending) finishExit();
       } else {
         pendingChunks.length = 0;
+        release();
       }
     }
 
@@ -614,7 +663,9 @@ export async function initPtyConnection({
     setIsConnecting(false);
     terminal.focus();
   } catch (error) {
-    if (isAborted()) return;
+    const owned = ownsConnection();
+    releaseConnection?.();
+    if (!owned) return;
     log.error("Failed to create/connect PTY session:", error);
     setIsConnecting(false);
     const liveTerminal = terminalRef.current;

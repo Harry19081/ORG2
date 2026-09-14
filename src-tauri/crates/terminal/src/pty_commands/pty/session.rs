@@ -32,6 +32,7 @@ pub struct PtySession {
     pub reader: Arc<AsyncMutex<crate::pty_io::PtyReader>>,
     /// Process ID of the shell (derived from session ID for display purposes)
     pub pid: Option<u32>,
+    pub stream_owner: Arc<AtomicU64>,
     pub io_stop: Arc<crate::pty_io::IoStop>,
     pub snapshot: Arc<Mutex<crate::stream_snapshot::StreamSnapshot>>,
     /// Shell's `start_time` (seconds since boot, sysinfo convention). Captured
@@ -161,6 +162,21 @@ impl PtySession {
             .count()
     }
 
+    pub fn owns_stream(&self, owner: Option<u64>) -> bool {
+        self.stream_owner.load(std::sync::atomic::Ordering::Acquire) == owner.unwrap_or(0)
+    }
+    pub fn claim_stream(&self, owner: Option<u64>) -> Result<(), String> {
+        let owner = owner.unwrap_or(0);
+        let previous = self
+            .stream_owner
+            .fetch_max(owner, std::sync::atomic::Ordering::AcqRel);
+        if owner < previous {
+            Err("PTY attachment superseded".into())
+        } else {
+            Ok(())
+        }
+    }
+
     /// Terminate a PTY child and wait until it has been reaped.
     ///
     /// Callers must invoke this outside the session-map lock. It may briefly
@@ -193,6 +209,7 @@ mod tests {
             reader: Arc::new(AsyncMutex::new(reader)),
             pid: None,
             start_time: 0,
+            stream_owner: Arc::new(AtomicU64::new(0)),
             io_stop,
             snapshot: Arc::new(Mutex::new(crate::stream_snapshot::StreamSnapshot::default())),
             child: Arc::new(Mutex::new(None)),
@@ -211,6 +228,26 @@ mod tests {
             missed_while_detached: Arc::new(AtomicUsize::new(0)),
             output_channel: Arc::new(Mutex::new(None)),
         }
+    }
+    #[tokio::test]
+    async fn stale_attach_cannot_take_over_new_owner_or_authorize_old_cleanup() {
+        let session = session();
+        session.claim_stream(Some(10)).unwrap();
+        session.claim_stream(Some(20)).unwrap();
+        assert!(session.claim_stream(Some(10)).is_err());
+        assert!(session.owns_stream(Some(20)));
+        assert!(!session.owns_stream(Some(10)));
+        assert!(!session.owns_stream(None));
+        session.claim_stream(Some(20)).unwrap();
+    }
+    #[tokio::test]
+    async fn legacy_stream_operations_are_confined_to_unclaimed_sessions() {
+        let session = session();
+        session.claim_stream(None).unwrap();
+        assert!(session.owns_stream(None));
+        session.claim_stream(Some(1)).unwrap();
+        assert!(session.claim_stream(None).is_err());
+        assert!(!session.owns_stream(None));
     }
     #[tokio::test]
     async fn inspection_exposes_pending_state_without_returning_raw_replay() {

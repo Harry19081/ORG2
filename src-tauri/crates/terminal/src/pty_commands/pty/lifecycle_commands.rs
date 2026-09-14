@@ -41,6 +41,7 @@ pub async fn create_pty(
     };
 
     crate::agent_tool::create_session(crate::agent_tool::CreateSessionParams {
+        owner_id: req.owner_id,
         session_id: req.session_id,
         rows: req.rows,
         cols: req.cols,
@@ -134,6 +135,7 @@ pub async fn check_pty_exists(
 #[tauri::command]
 pub async fn attach_pty_stream(
     session_id: String,
+    owner_id: Option<u64>,
     state: State<'_, PtyState>,
 ) -> Result<AttachPtyStream, String> {
     let sessions = state.inner().sessions.lock().await;
@@ -142,6 +144,7 @@ pub async fn attach_pty_stream(
         .ok_or_else(|| format!("Session {} not found", session_id))?;
 
     let snapshot = session.snapshot.lock().expect("snapshot mutex poisoned");
+    session.claim_stream(owner_id)?;
     *session
         .output_channel
         .lock()
@@ -180,6 +183,7 @@ pub async fn attach_pty_stream(
 #[tauri::command]
 pub async fn attach_pty_output_channel(
     session_id: String,
+    owner_id: Option<u64>,
     channel: Channel<InvokeResponseBody>,
     state: State<'_, PtyState>,
 ) -> Result<(), String> {
@@ -188,6 +192,9 @@ pub async fn attach_pty_output_channel(
         .get(&session_id)
         .ok_or_else(|| format!("Session {} not found", session_id))?;
 
+    if !session.owns_stream(owner_id) {
+        return Err("PTY attachment superseded".into());
+    }
     *session
         .output_channel
         .lock()
@@ -206,11 +213,15 @@ pub async fn attach_pty_output_channel(
 #[tauri::command]
 pub async fn detach_pty_stream(
     session_id: String,
+    owner_id: Option<u64>,
     state: State<'_, PtyState>,
 ) -> Result<(), String> {
     let sessions = state.inner().sessions.lock().await;
     // A detach may race session exit — silently succeed if already gone.
     if let Some(session) = sessions.get(&session_id) {
+        if !session.owns_stream(owner_id) {
+            return Ok(());
+        }
         let _snapshot = session.snapshot.lock().expect("snapshot mutex poisoned");
         session.detached.store(true, Ordering::Relaxed);
         session.unacked_bytes.store(0, Ordering::Relaxed);
@@ -236,6 +247,7 @@ pub async fn detach_pty_stream(
 #[tauri::command]
 pub async fn ack_pty_data(
     session_id: String,
+    owner_id: Option<u64>,
     byte_count: usize,
     queue_depth: Option<usize>,
     render_ms: Option<u32>,
@@ -243,9 +255,16 @@ pub async fn ack_pty_data(
 ) -> Result<(), String> {
     let sessions = state.inner().sessions.lock().await;
     if let Some(session) = sessions.get(&session_id) {
-        let prev = session.unacked_bytes.load(Ordering::Relaxed);
+        if !session.owns_stream(owner_id) {
+            return Ok(());
+        }
+        let prev = session
+            .unacked_bytes
+            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+                Some(value.saturating_sub(byte_count))
+            })
+            .unwrap_or(0);
         let new_val = prev.saturating_sub(byte_count);
-        session.unacked_bytes.store(new_val, Ordering::Relaxed);
 
         // Update render telemetry so the reader can adapt emit rate.
         if let Some(rms) = render_ms {

@@ -17,6 +17,8 @@ use crate::pty_commands::shells::ShellKind;
 pub struct CreatePtyRequest {
     /// Unique identifier for this terminal session (e.g., "terminal-pty-1768913809817")
     pub session_id: String,
+    #[serde(default)]
+    pub owner_id: Option<u64>,
     /// Number of rows (height) for the terminal
     pub rows: u16,
     /// Number of columns (width) for the terminal

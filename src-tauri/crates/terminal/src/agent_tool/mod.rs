@@ -175,6 +175,7 @@ fn default_shell_path() -> String {
 
 /// Parameters for creating a new PTY session.
 pub struct CreateSessionParams {
+    pub owner_id: Option<u64>,
     pub session_id: String,
     pub rows: u16,
     pub cols: u16,
@@ -262,6 +263,7 @@ fn poll_pty_child(child: &ManagedPtyChild) -> PtyChildPoll {
 /// to the broadcast channel, allowing the caller to capture command output.
 pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
     let CreateSessionParams {
+        owner_id,
         session_id,
         rows,
         cols,
@@ -524,6 +526,7 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
     })?;
     let snapshot = Arc::new(Mutex::new(crate::stream_snapshot::StreamSnapshot::default()));
     let session = PtySession {
+        stream_owner: Arc::new(AtomicU64::new(owner_id.unwrap_or(0))),
         io_stop,
         snapshot: snapshot.clone(),
         pty_pair: Arc::new(AsyncMutex::new(pty_pair)),
@@ -552,10 +555,23 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
     // Clone the reader Arc before storing the session
     let reader_arc = session.reader.clone();
     let io_stop_reader = session.io_stop.clone();
+    let stream_owner_reader = session.stream_owner.clone();
 
     // Store session
     let replaced_session = {
         let mut session_map = sessions.lock().await;
+        if session_map.get(&session_id).is_some_and(|existing| {
+            existing.stream_owner.load(Ordering::Acquire) > owner_id.unwrap_or(0)
+        }) {
+            drop(session_map);
+            task::spawn_blocking(move || {
+                session.terminate_child_sync();
+                drop(session);
+            })
+            .await
+            .map_err(|error| error.to_string())?;
+            return Err("PTY creation superseded".into());
+        }
         session_map.insert(session_id.clone(), session)
     };
     // Drop an overwritten same-ID session only after releasing the map lock:
@@ -700,6 +716,9 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
                             // below, and the next attach reports it as missed.
                             missed_while_detached.fetch_add(data_len, Ordering::Relaxed);
                         } else {
+                            // Reserve debt before dispatch: a fast webview can
+                            // ACK on another runtime worker immediately.
+                            unacked_bytes.fetch_add(data_len, Ordering::Relaxed);
                             // Prefer the binary channel: it reaches the webview
                             // as an ArrayBuffer, skipping the base64 encode,
                             // the JSON serialization, and the JavaScript parse
@@ -737,6 +756,7 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
                                             "b64": BASE64_STANDARD.encode(emit_slice),
                                             "byte_count": data_len,
                                             "seq": seq_start,
+                                            "owner_id": stream_owner_reader.load(Ordering::Acquire),
                                         }),
                                     ) {
                                         Ok(()) => true,
@@ -754,8 +774,12 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
                             // Only delivered bytes count toward the
                             // flow-control window — an undelivered chunk is
                             // never ACKed and would shrink the window forever.
-                            if delivered {
-                                unacked_bytes.fetch_add(data_len, Ordering::Relaxed);
+                            if !delivered {
+                                let _ = unacked_bytes.fetch_update(
+                                    Ordering::Relaxed,
+                                    Ordering::Relaxed,
+                                    |value| Some(value.saturating_sub(data_len)),
+                                );
                             }
                         }
 
@@ -876,13 +900,22 @@ pub async fn close_session(
     session_id: &str,
     sessions: Arc<AsyncMutex<HashMap<String, PtySession>>>,
 ) -> Result<(), String> {
+    let reader = {
+        let map = sessions.lock().await;
+        map.get(session_id).map(|session| session.reader.clone())
+    };
     tokio::time::sleep(Duration::from_millis(CLOSE_FLUSH_MS)).await;
     let session = {
-        let mut session_map = sessions.lock().await;
-        // Removing drops the PtySession; its Drop impl kills + reaps the child
-        // (dropping the PTY master alone does NOT terminate the child on Windows
-        // ConPTY — ClosePseudoConsole only signals).
-        session_map.remove(session_id)
+        let mut map = sessions.lock().await;
+        if map
+            .get(session_id)
+            .zip(reader.as_ref())
+            .is_some_and(|(session, reader)| Arc::ptr_eq(&session.reader, reader))
+        {
+            map.remove(session_id)
+        } else {
+            None
+        }
     };
     if let Some(session) = session {
         session.io_stop.cancel();
@@ -1198,6 +1231,7 @@ pub async fn create_agent_session(
 ) -> Result<broadcast::Sender<Arc<[u8]>>, String> {
     let (output_tap, _) = broadcast::channel(AGENT_OUTPUT_TAP_CAPACITY);
     create_session(CreateSessionParams {
+        owner_id: None,
         session_id,
         rows: DEFAULT_AGENT_ROWS,
         cols: DEFAULT_AGENT_COLS,
