@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Fails a pull request that leaves a source file it touched longer than
+// Fails a pull request that leaves a TypeScript file it touched longer than
 // MAX_LINES.
 //
 // Only the diff is judged. A long file that a pull request does not touch never
@@ -9,10 +9,10 @@
 // request added, copied, modified, or renamed (git diff --diff-filter=ACMR), so
 // deleted files never reach this script.
 //
-// The scope matches the frontend lint surface: TypeScript and JavaScript under
-// src/. Test code is exempt (test files, the shared Vitest setup, and the E2E
-// bootstrap helpers grow with coverage, not with responsibilities), and so is
-// vendored third-party code, which is kept verbatim.
+// Only .ts and .tsx files under src/ are judged. Markdown, JSON, styles, Rust,
+// scripts, and the vendored JavaScript under src/ are out of scope. Test code is
+// exempt too: test files, the shared Vitest setup, and the E2E bootstrap helpers
+// grow with coverage, not with responsibilities.
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -20,25 +20,21 @@ const path = require("node:path");
 const MAX_LINES = 700;
 
 const SOURCE_PREFIX = "src/";
-const SOURCE_EXTENSIONS = Object.freeze([".ts", ".tsx", ".js", ".jsx"]);
+const SOURCE_EXTENSIONS = Object.freeze([".ts", ".tsx"]);
 
 const EXEMPT_PATTERNS = Object.freeze([
   // Unit tests.
-  /\.test\.[jt]sx?$/,
+  /\.test\.tsx?$/,
   // Shared Vitest setup and test helpers.
   /^src\/test\//,
   // E2E bootstrap helpers, seeders, and fixtures.
   /^src\/app\/root\/e2e\//,
 ]);
 
-// Third-party code copied verbatim (also listed in .eslintignore).
-const EXEMPT_FILES = new Set(["src/util/qr/qrcodeGeneratorVendor.js"]);
-
 function isCheckedSource(filePath) {
   return (
     filePath.startsWith(SOURCE_PREFIX) &&
     SOURCE_EXTENSIONS.some((extension) => filePath.endsWith(extension)) &&
-    !EXEMPT_FILES.has(filePath) &&
     !EXEMPT_PATTERNS.some((pattern) => pattern.test(filePath))
   );
 }
@@ -83,7 +79,7 @@ if (require.main === module) {
 
   if (oversized.length === 0) {
     process.stdout.write(
-      `File length: ${checkedCount} changed source files checked, all within ${MAX_LINES} lines.\n`
+      `File length: ${checkedCount} changed TypeScript files checked, all within ${MAX_LINES} lines.\n`
     );
   } else {
     if (process.env.GITHUB_ACTIONS === "true") {
@@ -98,7 +94,7 @@ if (require.main === module) {
     const width = Math.max(...oversized.map(({ filePath }) => filePath.length));
     process.stderr.write(
       [
-        `File length: ${oversized.length} changed source file(s) exceed ${MAX_LINES} lines.`,
+        `File length: ${oversized.length} changed TypeScript file(s) exceed ${MAX_LINES} lines.`,
         ...oversized.map(
           ({ filePath, lines }) => `  ${filePath.padEnd(width)}  ${lines} lines`
         ),

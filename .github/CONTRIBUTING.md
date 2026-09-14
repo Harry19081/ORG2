@@ -125,7 +125,7 @@ Add or update docs when behavior, architecture, setup, or user-visible behavior 
 Use the repository rules in `.cursor/rules/` as the source of truth. The most common expectations are:
 
 - Keep changes focused and remove dead code immediately.
-- Keep every source file you touch within 700 lines. CI's `File length (changed files)` step checks the TypeScript and JavaScript files under `src/` that a pull request adds, modifies, or renames. It never judges files the pull request leaves alone, so split an existing long file the next time you change it. Test files, `src/test/`, `src/app/root/e2e/`, and vendored code are exempt. To check a branch locally, run `git diff --name-only --diff-filter=ACMR -z origin/develop...HEAD | node scripts/ci/check-changed-file-length.cjs`.
+- Keep every TypeScript file you touch within 700 lines. CI's `File length (changed files)` step checks the `.ts` and `.tsx` files under `src/` that a pull request adds, modifies, or renames. It never judges files the pull request leaves alone, so split an existing long file the next time you change it. Markdown, JSON, styles, and other file types are not checked, and test files, `src/test/`, and `src/app/root/e2e/` are exempt. To check a branch locally, run `git diff --name-only --diff-filter=ACMR -z origin/develop...HEAD | node scripts/ci/check-changed-file-length.cjs`.
 - Use existing shared components, hooks, stores, and design tokens.
 - Prefer typed constants and enums over hardcoded domain strings.
 - Let errors propagate instead of silently returning empty fallback data.

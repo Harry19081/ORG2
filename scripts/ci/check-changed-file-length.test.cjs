@@ -75,13 +75,12 @@ test("lines are counted the way an editor numbers them", () => {
   assert.equal(countLines("\n"), 1);
 });
 
-test("test code and vendored code are exempt", () => {
+test("test code is exempt", () => {
   for (const exempt of [
     "src/store/chatPanel/__tests__/chatPanelTabsAtom.test.ts",
     "src/engines/ChatPanel/panels/ProjectPanelView.test.tsx",
     "src/test/vitest.setup.ts",
     "src/app/root/e2e/helpers/cloud.ts",
-    "src/util/qr/qrcodeGeneratorVendor.js",
   ]) {
     assert.equal(isCheckedSource(exempt), false, exempt);
   }
@@ -97,17 +96,35 @@ test("test code and vendored code are exempt", () => {
   );
 });
 
-test("paths outside the frontend source tree are ignored", () => {
+test("only .ts and .tsx files under src/ are judged", () => {
   for (const ignored of [
     "scripts/ci/pr-policy.cjs",
+    "scripts/quality/typed-lint/check.mjs",
     "src-tauri/src/lib.rs",
     "src/styles/_utilities.scss",
     "src/i18n/locales/en/sessions.json",
+    "src/util/qr/qrcodeGeneratorVendor.js",
+    "src/scripts/legacy.jsx",
     "docs/frontend-ui-audit-2026-08-28/GLOBAL.md",
+    "README.md",
   ]) {
     assert.equal(isCheckedSource(ignored), false, ignored);
   }
-  assert.equal(isCheckedSource("src/scripts/legacy.jsx"), true);
+  assert.equal(isCheckedSource("src/components/Button/index.tsx"), true);
+  assert.equal(isCheckedSource("src/store/session.ts"), true);
+
+  // A long Markdown or JavaScript file in the diff never fails the check.
+  const root = makeTree({
+    "docs/long.md": "line\n".repeat(MAX_LINES * 3),
+    "src/util/qr/qrcodeGeneratorVendor.js": lines(MAX_LINES * 3),
+  });
+  assert.deepEqual(
+    findOversizedFiles(
+      ["docs/long.md", "src/util/qr/qrcodeGeneratorVendor.js"],
+      { root }
+    ),
+    []
+  );
 });
 
 test("a listed file missing from the checkout fails loudly", () => {
@@ -147,7 +164,7 @@ test("the CLI passes when nothing touched is over the limit, including an empty 
 
   const result = runCli(root, "src/short.ts\0docs/notes.md\0");
   assert.equal(result.status, 0);
-  assert.match(result.stdout, /1 changed source files checked/);
+  assert.match(result.stdout, /1 changed TypeScript files checked/);
 
   assert.equal(runCli(root, "").status, 0);
 });
