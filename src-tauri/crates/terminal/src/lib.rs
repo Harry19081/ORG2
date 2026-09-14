@@ -18,3 +18,4 @@ pub mod pty_commands;
 pub mod redaction;
 
 pub mod pty_io;
+pub mod stream_snapshot;

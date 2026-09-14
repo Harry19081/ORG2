@@ -87,19 +87,16 @@ pub(super) fn pty_info_from_session(session_id: &str, session: &PtySession) -> P
             .expect("last_output_at mutex poisoned"),
         has_output_tap: session.output_tap.is_some(),
         unacked_bytes: session.unacked_bytes.load(Ordering::Relaxed),
-        redacted_output_chars: session
-            .redacted_output
-            .lock()
-            .expect("redacted_output mutex poisoned")
-            .chars()
-            .count(),
+        redacted_output_chars: session.inspection_chars(),
     }
 }
 
 /// Response for `attach_pty_stream`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AttachPtyStream {
-    /// Bounded, redacted snapshot of recent output (restore base).
+    /// Incomplete UTF-8 suffix to seed the new webview decoder.
+    pub pending_utf8_b64: String,
+    /// Bounded local display replay; agent inspection uses a separate redacted projection.
     pub output: String,
     /// Stream offset covered by `output`. Live `pty-output` chunks whose
     /// `seq` is below this are already contained in the snapshot and must

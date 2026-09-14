@@ -62,6 +62,7 @@ function estimateByteLength(s: string): number {
 }
 
 interface AttachPtyStreamResponse {
+  pending_utf8_b64?: string;
   output: string;
   covers_seq: number;
   missed_output: boolean;
@@ -209,6 +210,7 @@ async function fetchPtyInfo(
 }
 
 async function reconnectOrCreatePty({
+  restorePendingUtf8,
   cols,
   rows,
   sessionId,
@@ -225,6 +227,7 @@ async function reconnectOrCreatePty({
   writeToTerminal,
   onSessionInfoReady,
 }: {
+  restorePendingUtf8: (b64: string) => void;
   cols: number;
   rows: number;
   sessionId: string;
@@ -311,6 +314,7 @@ async function reconnectOrCreatePty({
     } else if (attach.output) {
       writeToTerminal(attach.output);
     }
+    if (attach.pending_utf8_b64) restorePendingUtf8(attach.pending_utf8_b64);
     return attach.covers_seq;
   } catch (error) {
     // Backend without attach_pty_stream (hot-reload version skew) — legacy
@@ -447,6 +451,19 @@ export async function initPtyConnection({
     // the restore base (snapshot or cached buffer) is in place — otherwise
     // live output interleaves with the restore and garbles the screen.
     registerPane(sessionId, terminalWrite);
+    const pendingChunks: {
+      chunk: Uint8Array;
+      byteCount: number;
+      seq?: number;
+    }[] = [];
+    let restoring = true;
+    let restoredThrough: number | undefined;
+    const restorePendingUtf8 = (b64: string) => {
+      utf8Decoder.decode(
+        Uint8Array.from(atob(b64), (char) => char.charCodeAt(0)),
+        { stream: true }
+      );
+    };
     suspendPane(sessionId);
     setPaneForeground(sessionId, isForeground);
 
@@ -458,6 +475,22 @@ export async function initPtyConnection({
       byteCount: number,
       seq?: number
     ) => {
+      if (!isTerminalLive()) return;
+      if (restoring) {
+        pendingChunks.push({ chunk, byteCount, seq });
+        return;
+      }
+      if (
+        seq !== undefined &&
+        restoredThrough !== undefined &&
+        seq < restoredThrough
+      ) {
+        const covered = Math.min(chunk.length, restoredThrough - seq);
+        chunk = chunk.subarray(covered);
+        byteCount = Math.max(0, byteCount - covered);
+        seq += covered;
+        if (chunk.length === 0) return;
+      }
       const decoded = utf8Decoder.decode(chunk, { stream: true });
       if (decoded) {
         // Observers (advertised-URL sniffing, status indicators) read the
@@ -489,9 +522,8 @@ export async function initPtyConnection({
           // non-ASCII (rare in terminal hot path) inflates slightly — the
           // scheduler treats byte_count as a flow-control hint, not an exact
           // invariant, so a cheap over-estimate is correct.
-          const encodedLen = estimateByteLength(data);
-          publishPtyOutput(sessionId, data);
-          scheduleWrite(sessionId, data, encodedLen, terminalWrite, seq);
+          const bytes = new TextEncoder().encode(data);
+          consumePtyBytes(bytes, estimateByteLength(data), seq);
         }
       }
     );
@@ -502,7 +534,8 @@ export async function initPtyConnection({
     }
     unlistenOutputRef.current = unlistenOutput;
 
-    const unlistenExit = await listenTauri(`pty-exit-${sessionId}`, () => {
+    let exitPending = false;
+    const finishExit = () => {
       if (!isTerminalLive()) return;
 
       // Drain any still-queued output before the banner so the final bytes
@@ -516,6 +549,13 @@ export async function initPtyConnection({
       }
       terminalWrite("\r\n\x1b[33m[Session ended]\x1b[0m\r\n");
       unregisterPane(sessionId);
+    };
+    const unlistenExit = await listenTauri(`pty-exit-${sessionId}`, () => {
+      if (restoring) {
+        exitPending = true;
+        return;
+      }
+      finishExit();
     });
     if (isAborted()) {
       unlistenExit();
@@ -530,6 +570,7 @@ export async function initPtyConnection({
     let coversSeq: number | undefined;
     try {
       coversSeq = await reconnectOrCreatePty({
+        restorePendingUtf8,
         cols,
         rows,
         sessionId,
@@ -556,7 +597,17 @@ export async function initPtyConnection({
     } finally {
       // Always lift the suspension — a pane left suspended never renders.
       // Queued chunks the snapshot already covers are dropped here.
-      resumePane(sessionId, coversSeq);
+      if (isTerminalLive()) {
+        restoredThrough = coversSeq;
+        restoring = false;
+        for (const pending of pendingChunks)
+          consumePtyBytes(pending.chunk, pending.byteCount, pending.seq);
+        pendingChunks.length = 0;
+        resumePane(sessionId);
+        if (exitPending) finishExit();
+      } else {
+        pendingChunks.length = 0;
+      }
     }
 
     if (!isTerminalLive()) return;

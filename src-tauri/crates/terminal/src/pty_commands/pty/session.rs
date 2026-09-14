@@ -33,6 +33,7 @@ pub struct PtySession {
     /// Process ID of the shell (derived from session ID for display purposes)
     pub pid: Option<u32>,
     pub io_stop: Arc<crate::pty_io::IoStop>,
+    pub snapshot: Arc<Mutex<crate::stream_snapshot::StreamSnapshot>>,
     /// Shell's `start_time` (seconds since boot, sysinfo convention). Captured
     /// once at spawn and used by the app-exit sweep to tell our shell apart
     /// from a later PID-reuse holder. Meaningful on Unix; 0 and unused on
@@ -71,14 +72,12 @@ pub struct PtySession {
     pub created_at: DateTime<Utc>,
     /// UTC timestamp of the latest PTY output chunk observed by the reader task.
     pub last_output_at: Arc<Mutex<Option<DateTime<Utc>>>>,
-    /// Bounded redacted text snapshot of recent PTY output for agent inspection.
-    pub redacted_output: Arc<Mutex<String>>,
     /// True while no webview listener is attached. The reader skips event
     /// emission and does not grow `unacked_bytes`; output still accrues in
-    /// `redacted_output` for the next attach.
+    /// `snapshot` for the next attach.
     pub detached: Arc<AtomicBool>,
-    /// Total PTY bytes represented in `redacted_output` (stream offset of its
-    /// end). Read/written only while holding the `redacted_output` lock so
+    /// Total PTY bytes represented in `snapshot` (stream offset of its
+    /// end). Read/written only while holding the `snapshot` lock so
     /// snapshot text and offset stay consistent.
     pub covers_seq: Arc<AtomicU64>,
     /// Bytes read while detached since the last attach; tells the frontend
@@ -139,6 +138,29 @@ impl PtySession {
         }
     }
 
+    pub fn inspection_output(&self) -> String {
+        self.snapshot
+            .lock()
+            .expect("snapshot mutex poisoned")
+            .inspection()
+            .to_string()
+    }
+    pub fn inspection_snapshot(&self) -> (String, bool) {
+        let snapshot = self.snapshot.lock().expect("snapshot mutex poisoned");
+        (
+            snapshot.inspection().to_string(),
+            snapshot.has_withheld_output(),
+        )
+    }
+    pub fn inspection_chars(&self) -> usize {
+        self.snapshot
+            .lock()
+            .expect("snapshot mutex poisoned")
+            .inspection()
+            .chars()
+            .count()
+    }
+
     /// Terminate a PTY child and wait until it has been reaped.
     ///
     /// Callers must invoke this outside the session-map lock. It may briefly
@@ -172,7 +194,7 @@ mod tests {
             pid: None,
             start_time: 0,
             io_stop,
-            redacted_output: Arc::new(Mutex::new(String::new())),
+            snapshot: Arc::new(Mutex::new(crate::stream_snapshot::StreamSnapshot::default())),
             child: Arc::new(Mutex::new(None)),
             shell: "test".into(),
             shell_kind: ShellKind::from_shell_path("/bin/sh"),
@@ -189,6 +211,27 @@ mod tests {
             missed_while_detached: Arc::new(AtomicUsize::new(0)),
             output_channel: Arc::new(Mutex::new(None)),
         }
+    }
+    #[tokio::test]
+    async fn inspection_exposes_pending_state_without_returning_raw_replay() {
+        let session = session();
+        session
+            .snapshot
+            .lock()
+            .unwrap()
+            .push(b"API_KEY=not-a-real-secret");
+        assert_eq!(session.inspection_snapshot(), (String::new(), true));
+        session.snapshot.lock().unwrap().push(b"\n");
+        assert_eq!(
+            session.inspection_snapshot(),
+            ("API_KEY=secret_*******\n".into(), false)
+        );
+        assert!(session
+            .snapshot
+            .lock()
+            .unwrap()
+            .replay()
+            .contains("not-a-real-secret"));
     }
     #[tokio::test]
     async fn dropping_session_cancels_its_io_owner() {

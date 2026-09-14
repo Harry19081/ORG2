@@ -1,6 +1,7 @@
 //! Tauri commands driving a PTY session's life: spawn, write, resize, close,
 //! and the attach/detach/ack handshake that governs output flow control.
 
+use base64::{engine::general_purpose::STANDARD, Engine as _};
 use portable_pty::PtySize;
 use std::sync::atomic::Ordering;
 use tauri::{
@@ -140,24 +141,21 @@ pub async fn attach_pty_stream(
         .get(&session_id)
         .ok_or_else(|| format!("Session {} not found", session_id))?;
 
-    // Resume emission before snapshotting: chunks emitted from here on are
-    // deduplicated by covers_seq, whereas chunks read after a
-    // snapshot-then-attach ordering would be in neither the snapshot nor the
-    // event stream (lost).
+    let snapshot = session.snapshot.lock().expect("snapshot mutex poisoned");
+    *session
+        .output_channel
+        .lock()
+        .expect("output channel mutex poisoned") = None;
     session.detached.store(false, Ordering::Relaxed);
     let missed_output = session.missed_while_detached.swap(0, Ordering::Relaxed) > 0;
     session.unacked_bytes.store(0, Ordering::Relaxed);
     session.ack_notify.notify_one();
-
-    let (output, covers_seq) = {
-        let snapshot = session
-            .redacted_output
-            .lock()
-            .expect("redacted_output mutex poisoned");
-        (snapshot.clone(), session.covers_seq.load(Ordering::Relaxed))
-    };
+    let output = snapshot.replay().to_string();
+    let covers_seq = snapshot.covers_seq();
+    let pending_utf8_b64 = STANDARD.encode(snapshot.pending_utf8());
 
     Ok(AttachPtyStream {
+        pending_utf8_b64,
         output,
         covers_seq,
         missed_output,
@@ -213,6 +211,7 @@ pub async fn detach_pty_stream(
     let sessions = state.inner().sessions.lock().await;
     // A detach may race session exit — silently succeed if already gone.
     if let Some(session) = sessions.get(&session_id) {
+        let _snapshot = session.snapshot.lock().expect("snapshot mutex poisoned");
         session.detached.store(true, Ordering::Relaxed);
         session.unacked_bytes.store(0, Ordering::Relaxed);
         // Drop the departing webview's channel: a stale one would keep

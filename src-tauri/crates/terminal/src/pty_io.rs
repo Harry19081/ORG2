@@ -338,4 +338,27 @@ mod tests {
         drop(pair);
         shell.reap();
     }
+    #[tokio::test(flavor = "current_thread")]
+    async fn native_chunked_output_reaches_safe_snapshot_and_preserves_utf8() {
+        let (pair, shell, reader, writer) = start("printf OPENAI_API_; sleep 0.05; printf 'KEY=not-a-real-secret-value\\n'; printf '\\342'; sleep 0.05; printf '\\224\\200\\n'");
+        let (mut reader, _writer, _stop) = wrap(pair.master.as_ref(), reader, writer).unwrap();
+        let mut snapshot = crate::stream_snapshot::StreamSnapshot::default();
+        tokio::time::timeout(Duration::from_secs(3), async {
+            while !snapshot.replay().contains('─') {
+                let bytes = reader.read(1024).await.unwrap();
+                assert!(!bytes.is_empty());
+                snapshot.push(&bytes);
+                assert!(!snapshot.inspection().contains("not-a-real-secret-value"));
+            }
+        })
+        .await
+        .unwrap();
+        assert!(snapshot.inspection().contains("secret_*******"));
+        assert!(!snapshot.replay().contains('\u{fffd}'));
+        assert_eq!(snapshot.covers_seq(), snapshot.replay().len() as u64);
+        drop(reader);
+        drop(_writer);
+        drop(pair);
+        shell.reap();
+    }
 }

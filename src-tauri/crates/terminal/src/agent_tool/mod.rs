@@ -36,7 +36,6 @@ use tracing::warn;
 use crate::pty_commands::pty::{encode_pty_output_frame, PtySession};
 use crate::pty_commands::shell_integration;
 use crate::pty_commands::shells::ShellKind;
-use crate::redaction::append_redacted_bounded;
 
 // ============================================
 // Constants
@@ -50,7 +49,6 @@ use crate::redaction::append_redacted_bounded;
 /// pathological output (e.g. a process spewing gigabytes) before it reaches
 /// that layer.
 const MAX_OUTPUT_CHARS: usize = 200_000;
-const MAX_REDACTED_SNAPSHOT_CHARS: usize = 80_000;
 
 /// Default PTY dimensions for agent sessions (no visible terminal yet).
 const DEFAULT_AGENT_ROWS: u16 = 40;
@@ -524,10 +522,10 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
         }
         format!("Failed to initialize PTY I/O: {error}")
     })?;
-    let redacted_output = Arc::new(Mutex::new(String::new()));
+    let snapshot = Arc::new(Mutex::new(crate::stream_snapshot::StreamSnapshot::default()));
     let session = PtySession {
         io_stop,
-        redacted_output: redacted_output.clone(),
+        snapshot: snapshot.clone(),
         pty_pair: Arc::new(AsyncMutex::new(pty_pair)),
         writer: Arc::new(AsyncMutex::new(writer)),
         reader: Arc::new(AsyncMutex::new(reader)),
@@ -687,6 +685,11 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
                         let data_len = emit_slice.len();
                         let seq_start = stream_seq;
 
+                        // Attachment and emit decisions share this lock:
+                        // bytes belong to the returned base or the new stream.
+                        let mut stream_snapshot = snapshot.lock().expect("snapshot mutex poisoned");
+                        stream_snapshot.push(emit_slice);
+                        covers_seq.store(stream_snapshot.covers_seq(), Ordering::Relaxed);
                         *last_output_at
                             .lock()
                             .expect("last_output_at mutex poisoned") = Some(Utc::now());
@@ -756,23 +759,6 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
                             }
                         }
 
-                        // from_utf8_lossy borrows for valid UTF-8 (no alloc) — used only
-                        // for the redacted snapshot and only when needed.
-                        let data_text = String::from_utf8_lossy(emit_slice);
-                        {
-                            let mut snapshot = redacted_output
-                                .lock()
-                                .expect("redacted_output mutex poisoned");
-                            append_redacted_bounded(
-                                &mut snapshot,
-                                &data_text,
-                                MAX_REDACTED_SNAPSHOT_CHARS,
-                            );
-                            // covers_seq is only touched under this lock so
-                            // snapshot text and covered offset stay consistent
-                            // for attach_pty_stream.
-                            covers_seq.store(seq_start + data_len as u64, Ordering::Relaxed);
-                        }
                         stream_seq += data_len as u64;
 
                         // Send raw bytes through the tap channel. Arc<[u8]> clone is O(1);
@@ -785,6 +771,7 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
                             }
                         }
 
+                        drop(stream_snapshot);
                         drop(reader_lock);
 
                         empty_reads = 0;
@@ -818,6 +805,10 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
             }
         }
 
+        {
+            let mut stream = snapshot.lock().expect("snapshot mutex poisoned");
+            stream.finish();
+        }
         // A PTY read EOF/error means this particular session has ended. Remove
         // only if the map still points at the same reader: a rapid recreate
         // may already have replaced this session ID with a new PTY.
