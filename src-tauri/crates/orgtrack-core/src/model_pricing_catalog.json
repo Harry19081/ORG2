@@ -1,5 +1,5 @@
 {
-  "_comment": "Bundled model-price catalog. Approximate reference rates in USD per 1,000,000 tokens (per Mtok), using standard short-context text pricing; DeepSeek uses peak rates. cache_write is the 5-minute cache-creation rate where separately billed, otherwise it mirrors input. cache_read is the cache-hit rate, or input when no discount exists. This is not a time-versioned invoice rate card: service tiers, long context, 1-hour cache writes, storage, regional uplifts and tool fees are not modeled. Sources and 2026-09-14 verification scope: docs/model-pricing-2026-09-14.md. Older entries not covered there retain their previous reference rates. Sonnet 5 pricing is now permanently 2/10; the announced September increase was cancelled. Cursor op-*/opus-*/composer/grok/default entries are imported model labels; default is Cursor Auto. Compiled into the binary via include_str!; no user data.",
+  "_comment": "Bundled model-price catalog. Approximate reference rates in USD per 1,000,000 tokens (per Mtok), using standard short-context text pricing unless an explicit Fast variant is listed; DeepSeek uses peak rates. cache_write is the 5-minute cache-creation rate where separately billed, otherwise it mirrors input. cache_read is the cache-hit rate, or input when no discount exists. This is not a time-versioned invoice rate card: service tiers, long context, 1-hour cache writes, storage, regional uplifts and tool fees are not modeled. Sources and 2026-09-14 verification scope: docs/model-pricing-2026-09-14.md. Older entries not covered there retain their previous reference rates. Sonnet 5 pricing is now permanently 2/10; the announced September increase was cancelled. Cursor op-*/opus-*/composer/grok/default entries are imported model labels; default is Cursor Auto. Compiled into the binary via include_str!; no user data.",
   "_updated": "2026-09-14",
   "default": {
     "input": 3.0,
@@ -763,6 +763,69 @@
       "output": 1.2,
       "cache_write": 0.3,
       "cache_read": 0.006
+    },
+    {
+      "id": "grok-4-6",
+      "input": 2.0,
+      "output": 6.0,
+      "cache_write": 2.0,
+      "cache_read": 0.5
+    },
+    {
+      "id": "cursor-grok-4-6",
+      "input": 2.0,
+      "output": 6.0,
+      "cache_write": 2.0,
+      "cache_read": 0.5
+    },
+    {
+      "id": "grok-4-6-fast",
+      "input": 4.0,
+      "output": 12.0,
+      "cache_write": 4.0,
+      "cache_read": 1.0
+    },
+    {
+      "id": "cursor-grok-4-6-fast",
+      "input": 4.0,
+      "output": 12.0,
+      "cache_write": 4.0,
+      "cache_read": 1.0
+    },
+    {
+      "id": "grok-4-5-fast",
+      "input": 4.0,
+      "output": 18.0,
+      "cache_write": 4.0,
+      "cache_read": 1.0
+    },
+    {
+      "id": "composer-2-5-fast",
+      "input": 3.0,
+      "output": 15.0,
+      "cache_write": 3.0,
+      "cache_read": 0.5
+    },
+    {
+      "id": "gemini-3-1-pro",
+      "input": 2.0,
+      "output": 12.0,
+      "cache_write": 2.0,
+      "cache_read": 0.2
+    },
+    {
+      "id": "gemini-3-8-flash",
+      "input": 0.75,
+      "output": 3.5,
+      "cache_write": 0.75,
+      "cache_read": 0.075
+    },
+    {
+      "id": "muse-spark-1-3",
+      "input": 1.25,
+      "output": 4.25,
+      "cache_write": 1.25,
+      "cache_read": 0.15
     }
   ]
 }

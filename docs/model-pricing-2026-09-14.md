@@ -1,6 +1,7 @@
 # Model pricing verification — 2026-09-14
 
-The bundled rate card supplies **reference estimates**, not invoice totals. This
+The bundled rate card supplies **reference estimates**, not invoice totals.
+Explicitly identified Cursor Fast variants use their own rates. This
 change corrects missing or stale prices at their source,
 `src-tauri/crates/orgtrack-core/src/model_pricing_catalog.json`. The lookup feeds
 session usage projections, request-log costs, and the dashboard's price tooltip.
@@ -52,13 +53,48 @@ Sources opened on the verification date:
 - [Z.AI pricing](https://docs.z.ai/guides/overview/pricing): existing listed
   GLM-5.2/5.1/5, GLM-4.7/4.6/4.5 variants and GLM-4-32B rates match.
 - [Cursor pricing](https://cursor.com/docs/models-and-pricing): standard Composer
-  2.5 and Grok 4.5 rates match. Fast mode is separately priced.
+  2.5 and Grok 4.5 rates match. Explicit Composer 2.5 and Grok 4.5/4.6 Fast IDs now resolve separate rates.
 
 This is a sweep of current published rates for existing catalog families, plus
 missing Astra/Mythos/alias entries. It is not a certification of every historical
 model, reseller alias, or newly released model. Older OpenAI and Gemini entries,
 retired Claude models, Cursor Auto, and unlisted GLM variants were not fully
 reverified against historical rate cards and remain unchanged.
+
+## Cursor and Devin follow-up
+
+Added Cursor's missing model entries and Fast rates. Values below are
+input/output/cache-read; cache writes mirror input when not separately priced:
+
+| Model                                  | Input | Output | Cache read |
+| -------------------------------------- | ----: | -----: | ---------: |
+| Grok 4.6 (including `cursor-grok-4.6`) |     2 |      6 |        0.5 |
+| Grok 4.6 Fast                          |     4 |     12 |          1 |
+| Grok 4.5 Fast                          |     4 |     18 |          1 |
+| Composer 2.5 Fast                      |     3 |     15 |        0.5 |
+| Gemini 3.1 Pro                         |     2 |     12 |        0.2 |
+| Gemini 3.8 Flash                       |  0.75 |    3.5 |      0.075 |
+| Muse Spark 1.3                         |  1.25 |   4.25 |       0.15 |
+
+Verified against the [Cursor rate card](https://cursor.com/docs/models-and-pricing)
+and model pages for [Grok 4.6](https://cursor.com/docs/models/grok-4-6),
+[Composer 2.5](https://cursor.com/docs/models/cursor-composer-2-5),
+[Muse Spark 1.3](https://cursor.com/docs/models/muse-spark-1-3),
+[Gemini 3.1 Pro](https://cursor.com/docs/models/gemini-3-1-pro), and
+[Gemini 3.8 Flash](https://cursor.com/docs/models/gemini-3-8-flash).
+An effort before `-fast` resolves the explicit Fast row before family fallback.
+This keeps `cursor-grok-4.6-high-fast` from using a default or standard rate.
+Standard IDs stay standard; no paid-plan or speed inference is made from a bare ID.
+Cursor Auto bills by the routed model, and some plans add a separate token fee;
+the historical `default` entry cannot reproduce that account-specific billing.
+
+There is no Devin model-price catalog in this repository. The existing Devin
+integration is a CLI registry/launcher. [Devin CLI models](https://docs.devin.ai/cli/models)
+are discovered in its own selector and include dynamic aliases, Adaptive and
+Fusion. [Devin billing](https://docs.devin.ai/admin/billing) uses quotas/credits
+or enterprise ACUs, not a published universal USD-per-million-token Devin price.
+No invented `devin`/`swe` token rate or fabricated model list is added. Updating a
+Devin selector or account-plan catalog requires identifying that separate surface.
 
 ## Calculation limits found during the sweep
 
@@ -70,7 +106,8 @@ to implement them:
 - [Astra](https://developers.openai.com/api/docs/models/gpt-6-astra) charges twice
   the input/cache rate and 1.5 times output above 272K input tokens. Fast doubles
   applicable rates; Batch/Flex halve them. The current lookup returns standard
-  rates even for effort/speed-suffixed model labels.
+  Astra rates even for effort/speed-suffixed model labels; only explicitly listed
+  Cursor Fast variants have separate rate entries.
 - Fable's one-hour cache creation costs 20 rather than the five-minute 12.5.
   The current stored token split has one undifferentiated cache-write count.
 - Gemini and MiniMax also have context/tier modifiers; DeepSeek has time-of-week

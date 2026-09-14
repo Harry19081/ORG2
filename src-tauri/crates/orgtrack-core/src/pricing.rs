@@ -13,7 +13,8 @@
 //! rate card as static build-time data: parsed once into an in-memory index. This
 //! keeps the read-only guarantee intact (no DB writes) and removes the dead table.
 //!
-//! These are standard short-context reference rates, not invoice reconciliation.
+//! These are short-context reference rates, not invoice reconciliation.
+//! Explicit Fast catalog entries override the standard rate when identified.
 //! The model-only lookup cannot account for service tier, request size, cache
 //! lifetime, or historical rate changes. See `docs/model-pricing-2026-09-14.md`.
 //!
@@ -23,6 +24,7 @@
 //! 2. Exact id match (case-insensitive).
 //! 3. Normalized id match (case-fold, `.`/`_` treated as `-`, date-pin and
 //!    effort/verbosity suffixes stripped).
+//!    An effort before `-fast` may also resolve an explicit Fast catalog entry.
 //! 4. Longest-prefix family fallback over the normalized ids.
 //! 5. Mid-range default.
 
@@ -158,6 +160,25 @@ pub fn resolve_pricing(model: Option<&str>) -> ModelPricing {
         .find(|(id, _)| *id == normalized)
     {
         return *pricing;
+    }
+
+    // Cursor places effort before speed (e.g. cursor-grok-4.6-high-fast).
+    // Only remove that effort when the resulting Fast row actually exists:
+    // `max` can also be part of a distinct model such as gpt-5.1-codex-max.
+    if let Some((base, effort)) = normalized
+        .strip_suffix("-fast")
+        .and_then(|base| base.rsplit_once('-'))
+    {
+        if matches!(
+            effort,
+            "low" | "medium" | "high" | "xhigh" | "max" | "ultra"
+        ) {
+            let fast_id = format!("{base}-fast");
+            if let Some((_, pricing)) = catalog.by_normalized.iter().find(|(id, _)| *id == fast_id)
+            {
+                return *pricing;
+            }
+        }
     }
 
     // 4. longest-prefix family fallback (list is length-descending)
@@ -401,6 +422,40 @@ mod tests {
                 assert_eq!(resolve_pricing(Some(&id)), expected, "{id}");
             }
         }
+    }
+
+    #[test]
+    fn cursor_catalog_keeps_fast_and_standard_rates_distinct() {
+        for (model, [input, output, write, read]) in [
+            ("composer-2.5", [0.5, 2.5, 0.5, 0.2]),
+            ("composer-2.5-fast", [3.0, 15.0, 3.0, 0.5]),
+            ("grok-4.5-fast", [4.0, 18.0, 4.0, 1.0]),
+            ("grok-4.6", [2.0, 6.0, 2.0, 0.5]),
+            ("grok-4.6-fast", [4.0, 12.0, 4.0, 1.0]),
+            ("cursor-grok-4.6-medium", [2.0, 6.0, 2.0, 0.5]),
+            ("cursor-grok-4.6-high-fast", [4.0, 12.0, 4.0, 1.0]),
+            ("cursor/cursor-grok-4.6-xhigh-fast", [4.0, 12.0, 4.0, 1.0]),
+            ("grok-4.5-high-fast", [4.0, 18.0, 4.0, 1.0]),
+            ("gemini-3.1-pro", [2.0, 12.0, 2.0, 0.2]),
+            ("gemini-3.8-flash", [0.75, 3.5, 0.75, 0.075]),
+            ("muse-spark-1.3-max", [1.25, 4.25, 1.25, 0.15]),
+        ] {
+            assert_eq!(
+                resolve_pricing(Some(model)),
+                ModelPricing {
+                    input_per_mtok: input,
+                    output_per_mtok: output,
+                    cache_creation_per_mtok: write,
+                    cache_read_per_mtok: read,
+                },
+                "{model}"
+            );
+        }
+        // Do not invent a Fast multiplier for families without a published row.
+        assert_eq!(
+            resolve_pricing(Some("gpt-5.1-codex-max-fast")),
+            resolve_pricing(Some("gpt-5.1-codex-max"))
+        );
     }
 
     #[test]

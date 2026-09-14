@@ -532,6 +532,8 @@ mod tests {
             ("sol", "gpt-5.6", 0.112),
             ("terra", "gpt-5.6-terra", 0.06),
             ("luna", "gpt-5.6-luna", 0.006),
+            ("cursor-grok", "cursor-grok-4.6-high-fast", 0.11),
+            ("composer-fast", "composer-2.5-fast", 0.087),
         ] {
             insert_code_session(&conn, session_id, "own_key");
             insert_turn(
