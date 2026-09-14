@@ -72,7 +72,9 @@ pub(crate) use transcript::{
 // v14: re-derive `repo_path` so the desktop app's own
 // `~/Documents/Codex/<date>/<slug>` (and ChatGPT app) scratch dirs are stored
 // as no workspace.
-const CODEX_APP_METADATA_PARSER_VERSION: i64 = 14;
+// v15: count completed `item_completed`/`FileChange` items. Codex Desktop
+// never persists `patch_apply_end`, so every `exec`-wrapped edit tallied zero.
+const CODEX_APP_METADATA_PARSER_VERSION: i64 = 15;
 
 pub type CodexAppSessionRow = ImportedHistorySessionRow;
 pub type CodexAppSessionPage = ImportedHistorySessionPage;
