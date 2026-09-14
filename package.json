@@ -179,7 +179,6 @@
     "remark-gfm": "^4.0.0",
     "sql-formatter": "^15.7.0",
     "sucrase": "^3.35.0",
-    "terser-webpack-plugin": "^5.3.10",
     "uuid": "^14.0.2",
     "zod": "^4.3.6"
   },
@@ -241,6 +240,7 @@
     "style-loader": "^3.3.3",
     "swc-loader": "^0.2.6",
     "tailwindcss": "^4.3.3",
+    "terser-webpack-plugin": "^5.3.10",
     "typescript": "^5.3.3",
     "vitest": "^4.1.11",
     "webpack": "^5.91.0",
@@ -491,6 +491,9 @@
   },
   "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0",
   "pnpm": {
+    "overrides": {
+      "sass-loader>node-sass": "-"
+    },
     "patchedDependencies": {
       "@hugeicons/core-free-icons@4.3.0": "patches/@hugeicons__core-free-icons@4.3.0.patch"
     }
