@@ -8,7 +8,7 @@ import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { createLogger } from "@src/hooks/logger";
 import {
-  AppWindowIcon,
+  AppWindowMacIcon,
   ArrowExpand01Icon,
   ArrowShrink02Icon,
   Cancel01Icon,
@@ -24,13 +24,6 @@ import { openStationInNewWindowAtom } from "@src/store/workstation/stationWindow
 import type { StationMode } from "@src/types/ui/workstation";
 
 const logger = createLogger("StationPaneControls");
-
-/** i18n keys naming the detach action per station (shared with Spotlight). */
-export const OPEN_STATION_IN_NEW_WINDOW_LABEL_KEY: Record<StationMode, string> =
-  {
-    "my-station": "common:spotlightActions.openMyStationInNewWindow",
-    "agent-station": "common:spotlightActions.openAgentStationInNewWindow",
-  };
 
 /** i18n keys of the station display names, used as the window title. */
 export const STATION_TITLE_KEY: Record<StationMode, string> = {
@@ -75,14 +68,14 @@ export function StationOpenInNewWindowButton({
   }, [openStationInNewWindow, stationMode]);
   return (
     <TabBarTrailingIconButton
-      title={t(OPEN_STATION_IN_NEW_WINDOW_LABEL_KEY[stationMode])}
+      title={t("common:actions.openInNewWindow")}
       tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
       onClick={handleClick}
       data-testid={testId}
     >
       <HugeiconsIcon
-        icon={AppWindowIcon}
-        data-icon="app-window"
+        icon={AppWindowMacIcon}
+        data-icon="app-window-mac"
         size={14}
         strokeWidth={2}
       />
