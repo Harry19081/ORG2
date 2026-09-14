@@ -165,7 +165,7 @@ describe("useWorkstationTrailingSlot pane controls", () => {
 
     expect(
       container.querySelector(
-        '[data-testid="my-station-open-in-new-window"], button[title="common:spotlightActions.openMyStationInNewWindow"]'
+        '[data-testid="my-station-open-in-new-window"], button[title="common:actions.openInNewWindow"]'
       )
     ).not.toBeNull();
   });
@@ -179,9 +179,7 @@ describe("useWorkstationTrailingSlot pane controls", () => {
       container.querySelector('[title="chat.maximizeWorkStation"]')
     ).toBeNull();
     expect(
-      container.querySelector(
-        '[title="common:spotlightActions.openMyStationInNewWindow"]'
-      )
+      container.querySelector('[title="common:actions.openInNewWindow"]')
     ).toBeNull();
   });
 
@@ -191,9 +189,7 @@ describe("useWorkstationTrailingSlot pane controls", () => {
 
     expect(container.querySelector('[title="new-tab"]')).not.toBeNull();
     expect(
-      container.querySelector(
-        'button[title="common:spotlightActions.openMyStationInNewWindow"]'
-      )
+      container.querySelector('button[title="common:actions.openInNewWindow"]')
     ).toBeNull();
     expect(
       container.querySelector('button[title="chat.maximizeWorkStation"]')
@@ -244,7 +240,7 @@ describe("useWorkstationTrailingSlot pane controls", () => {
     const stationControls = Array.from(container.querySelectorAll("button"));
     expect(stationControls.map((control) => control.title)).toEqual([
       "new-tab",
-      "common:spotlightActions.openMyStationInNewWindow",
+      "common:actions.openInNewWindow",
       "chat.maximizeWorkStation",
       "chat.hideWorkstation",
     ]);
