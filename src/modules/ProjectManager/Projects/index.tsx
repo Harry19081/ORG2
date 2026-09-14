@@ -15,7 +15,6 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 
 import { STORY_SYNC_ADAPTER } from "@src/api/http/integrations/syncConnections";
 import {
@@ -35,6 +34,7 @@ import type { TabPillItem } from "@src/components/TabPill";
 import { ROUTES } from "@src/config/routes";
 import { useProjectOrgCloudPermissions } from "@src/features/Org2Cloud/useProjectOrgCloudPermissions";
 import { createLogger } from "@src/hooks/logger";
+import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
 import { useProjectDataChanged } from "@src/hooks/project";
 import {
   CircleIcon,

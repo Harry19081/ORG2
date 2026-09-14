@@ -11,7 +11,7 @@
 import { useAtomValue } from "jotai";
 import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
@@ -20,6 +20,7 @@ import {
   buildCodexReauthPath,
 } from "@src/config/mainAppPaths";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
+import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
 import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import { sessionByIdAtom } from "@src/store/session";
 
