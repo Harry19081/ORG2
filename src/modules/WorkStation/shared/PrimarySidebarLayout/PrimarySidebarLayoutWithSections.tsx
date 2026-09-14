@@ -10,7 +10,6 @@
  * Used by Workstation primary sidebars:
  * - EditorPrimarySidebar (Code Editor)
  * - DatabasePrimarySidebar (Database Manager)
- * - BrowserPrimarySidebar (Browser)
  *
  * PERFORMANCE (Jan 2026):
  * Uses lazy mounting - tabs only mount when first visited, then stay mounted

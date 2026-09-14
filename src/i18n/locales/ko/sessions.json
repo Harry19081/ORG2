@@ -324,18 +324,6 @@
           "agentBrowser": "Agent 브라우저",
           "searchFetch": "검색 및 가져오기"
         },
-        "sections": {
-          "browserTitle": "브라우저 활동",
-          "interactionsTitle": "상호작용",
-          "webSearchesTitle": "웹 검색",
-          "pagesFetchedTitle": "가져온 페이지"
-        },
-        "empty": {
-          "noBrowserActivity": "브라우저 활동 없음",
-          "noBrowserInteractions": "브라우저 상호작용 없음",
-          "noWebSearches": "웹 검색 없음",
-          "noPagesFetched": "가져온 페이지 없음"
-        },
         "header": {
           "categoryBrowser": "브라우저",
           "categoryLiveBrowser": "라이브 브라우저",

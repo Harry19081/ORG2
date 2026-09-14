@@ -324,18 +324,6 @@
           "agentBrowser": "Agent ブラウザ",
           "searchFetch": "検索と取得"
         },
-        "sections": {
-          "browserTitle": "ブラウザアクティビティ",
-          "interactionsTitle": "インタラクション",
-          "webSearchesTitle": "ウェブ検索",
-          "pagesFetchedTitle": "取得したページ"
-        },
-        "empty": {
-          "noBrowserActivity": "ブラウザのアクティビティはありません",
-          "noBrowserInteractions": "ブラウザのインタラクションはありません",
-          "noWebSearches": "ウェブ検索はありません",
-          "noPagesFetched": "取得したページはありません"
-        },
         "header": {
           "categoryBrowser": "ブラウザ",
           "categoryLiveBrowser": "ライブブラウザ",

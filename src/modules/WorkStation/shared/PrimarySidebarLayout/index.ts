@@ -4,7 +4,6 @@
  * Provides consistent sidebar structure for Workstation apps:
  * - CodeEditor (EditorPrimarySidebar)
  * - DatabaseManager (DatabasePrimarySidebar)
- * - Browser (BrowserPrimarySidebar)
  */
 
 export { CollapsibleSection } from "./CollapsibleSection";

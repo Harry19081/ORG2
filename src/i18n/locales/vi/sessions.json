@@ -324,18 +324,6 @@
           "agentBrowser": "Trình duyệt Agent",
           "searchFetch": "Tìm kiếm & tải"
         },
-        "sections": {
-          "browserTitle": "Hoạt động trình duyệt",
-          "interactionsTitle": "Tương tác",
-          "webSearchesTitle": "Tìm kiếm web",
-          "pagesFetchedTitle": "Trang đã tải"
-        },
-        "empty": {
-          "noBrowserActivity": "Không có hoạt động trình duyệt",
-          "noBrowserInteractions": "Không có tương tác trình duyệt",
-          "noWebSearches": "Không có tìm kiếm web",
-          "noPagesFetched": "Không có trang đã tải"
-        },
         "header": {
           "categoryBrowser": "Trình duyệt",
           "categoryLiveBrowser": "Trình duyệt trực tiếp",

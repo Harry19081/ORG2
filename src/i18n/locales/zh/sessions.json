@@ -337,18 +337,6 @@
           "agentBrowser": "Agent 浏览器",
           "searchFetch": "搜索与抓取"
         },
-        "sections": {
-          "browserTitle": "浏览器活动",
-          "interactionsTitle": "交互操作",
-          "webSearchesTitle": "网页搜索",
-          "pagesFetchedTitle": "已抓取页面"
-        },
-        "empty": {
-          "noBrowserActivity": "暂无浏览器活动",
-          "noBrowserInteractions": "暂无浏览器交互",
-          "noWebSearches": "暂无网页搜索",
-          "noPagesFetched": "暂无已抓取页面"
-        },
         "header": {
           "categoryBrowser": "浏览器",
           "categoryLiveBrowser": "实时浏览器",

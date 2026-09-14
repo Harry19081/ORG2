@@ -324,18 +324,6 @@
           "agentBrowser": "Браузер Agent",
           "searchFetch": "Поиск и загрузка"
         },
-        "sections": {
-          "browserTitle": "Активность браузера",
-          "interactionsTitle": "Взаимодействия",
-          "webSearchesTitle": "Веб-поиск",
-          "pagesFetchedTitle": "Загруженные страницы"
-        },
-        "empty": {
-          "noBrowserActivity": "Нет активности браузера",
-          "noBrowserInteractions": "Нет взаимодействий браузера",
-          "noWebSearches": "Нет веб-поиска",
-          "noPagesFetched": "Нет загруженных страниц"
-        },
         "header": {
           "categoryBrowser": "Браузер",
           "categoryLiveBrowser": "Живой браузер",

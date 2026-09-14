@@ -327,18 +327,6 @@
           "agentBrowser": "Agent 瀏覽器",
           "searchFetch": "搜索與抓取"
         },
-        "sections": {
-          "browserTitle": "瀏覽器活動",
-          "interactionsTitle": "互動操作",
-          "webSearchesTitle": "網頁搜索",
-          "pagesFetchedTitle": "已抓取頁面"
-        },
-        "empty": {
-          "noBrowserActivity": "暫無瀏覽器活動",
-          "noBrowserInteractions": "暫無瀏覽器互動",
-          "noWebSearches": "暫無網頁搜索",
-          "noPagesFetched": "暫無已抓取頁面"
-        },
         "header": {
           "categoryBrowser": "瀏覽器",
           "categoryLiveBrowser": "實時瀏覽器",
