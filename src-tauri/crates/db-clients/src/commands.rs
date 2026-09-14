@@ -20,7 +20,7 @@ use crate::row_values::mysql_row_to_json;
 use crate::row_values::pg_row_to_json;
 use serde::{Deserialize, Serialize};
 #[cfg(any(feature = "postgres", feature = "mysql"))]
-use sqlx::{Column, Executor, Row};
+use sqlx::{Column, Executor, Row, Statement};
 
 static POOLS: LazyLock<Mutex<HashMap<String, Option<Arc<LeasePool>>>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
@@ -201,15 +201,24 @@ pub async fn db_sql_query(connection_id: String, sql: String) -> Result<QueryRes
     match &entry.pool {
         #[cfg(feature = "postgres")]
         PoolEntry::Postgres(pool) => {
-            let rows: Vec<sqlx::postgres::PgRow> = sqlx::query(&sql)
-                .fetch_all(pool)
+            // Preparation and execution must share session state (for example,
+            // temporary tables). Retain metadata even when execution returns no rows.
+            let mut connection = pool
+                .acquire()
+                .await
+                .map_err(|err| format!("Query failed: {err}"))?;
+            let statement = connection
+                .prepare(&sql)
+                .await
+                .map_err(|err| format!("Query failed: {err}"))?;
+            let rows: Vec<sqlx::postgres::PgRow> = statement
+                .query()
+                .fetch_all(&mut *connection)
                 .await
                 .map_err(|err| format!("Query failed: {err}"))?;
 
             let columns: Vec<String> = if rows.is_empty() {
-                pool.describe(sql.as_str())
-                    .await
-                    .map_err(|err| format!("Query metadata failed: {err}"))?
+                statement
                     .columns()
                     .iter()
                     .map(|column| column.name().to_string())
@@ -232,15 +241,24 @@ pub async fn db_sql_query(connection_id: String, sql: String) -> Result<QueryRes
         }
         #[cfg(feature = "mysql")]
         PoolEntry::Mysql(pool) => {
-            let rows: Vec<sqlx::mysql::MySqlRow> = sqlx::query(&sql)
-                .fetch_all(pool)
+            // Preparation and execution must share session state (for example,
+            // temporary tables). Retain metadata even when execution returns no rows.
+            let mut connection = pool
+                .acquire()
+                .await
+                .map_err(|err| format!("Query failed: {err}"))?;
+            let statement = connection
+                .prepare(&sql)
+                .await
+                .map_err(|err| format!("Query failed: {err}"))?;
+            let rows: Vec<sqlx::mysql::MySqlRow> = statement
+                .query()
+                .fetch_all(&mut *connection)
                 .await
                 .map_err(|err| format!("Query failed: {err}"))?;
 
             let columns: Vec<String> = if rows.is_empty() {
-                pool.describe(sql.as_str())
-                    .await
-                    .map_err(|err| format!("Query metadata failed: {err}"))?
+                statement
                     .columns()
                     .iter()
                     .map(|column| column.name().to_string())
@@ -734,5 +752,150 @@ mod row_boundary_tests {
             .err()
             .unwrap()
             .contains("Unsupported SQL type DATE"));
+    }
+}
+
+#[cfg(test)]
+mod session_metadata_tests {
+    use super::*;
+    use std::sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc,
+    };
+
+    // A one-connection pool makes before_acquire count every checkout. The old
+    // fetch_all(pool) + describe(pool) path checks out twice for an empty result.
+
+    #[cfg(feature = "postgres")]
+    #[tokio::test]
+    #[ignore = "requires ORGII_TEST_POSTGRES_URL pointing to a disposable local server"]
+    async fn postgres_query_keeps_session_metadata_and_releases_connection() {
+        let url = std::env::var("ORGII_TEST_POSTGRES_URL").expect("disposable database URL");
+        let checkouts = Arc::new(AtomicUsize::new(0));
+        let counter = checkouts.clone();
+        let pool = sqlx::postgres::PgPoolOptions::new()
+            .max_connections(1)
+            .before_acquire(move |_, _| {
+                counter.fetch_add(1, Ordering::SeqCst);
+                Box::pin(async { Ok(true) })
+            })
+            .connect(&url)
+            .await
+            .unwrap();
+        // citext is the real extension type, not a fabricated type-info name.
+        sqlx::query("CREATE EXTENSION IF NOT EXISTS citext")
+            .execute(&pool)
+            .await
+            .unwrap();
+        sqlx::query("CREATE TEMP TABLE row_contract AS SELECT 'Alice'::citext AS label, 7::int2 AS small_value").execute(&pool).await.unwrap();
+        let mut reservation = reserve().unwrap();
+        let id = reservation.id.clone();
+        POOLS.lock().unwrap_or_else(|e| e.into_inner()).insert(
+            id.clone(), Some(Arc::new(LeasePool { pool: PoolEntry::Postgres(pool) })),
+        );
+        reservation.committed = true;
+        let result = async {
+            let values = db_sql_query(id.clone(), "SELECT * FROM row_contract".into()).await?;
+            assert_eq!(
+                values.rows,
+                vec![vec![serde_json::json!("Alice"), serde_json::json!(7)]]
+            );
+            checkouts.store(0, Ordering::SeqCst);
+            let empty =
+                db_sql_query(id.clone(), "SELECT * FROM row_contract WHERE FALSE".into()).await?;
+            assert_eq!(empty.columns, vec!["label", "small_value"]);
+            assert!(empty.rows.is_empty());
+            assert_eq!(
+                checkouts.load(Ordering::SeqCst),
+                1,
+                "metadata must use the execution checkout"
+            );
+            assert!(
+                db_sql_query(id.clone(), "SELECT * FROM nonexistent_row_contract".into())
+                    .await
+                    .is_err()
+            );
+            assert!(
+                db_sql_query(id.clone(), "SELECT CURRENT_DATE AS unsupported".into())
+                    .await
+                    .is_err()
+            );
+            // Both prepare and decoding errors must release the only connection.
+            let recovered = tokio::time::timeout(
+                std::time::Duration::from_secs(5),
+                db_sql_query(id.clone(), "SELECT * FROM row_contract WHERE FALSE".into()),
+            )
+            .await
+            .map_err(|err| err.to_string())??;
+            assert_eq!(recovered.columns, vec!["label", "small_value"]);
+            Ok::<_, String>(())
+        }
+        .await;
+        db_sql_disconnect(id).await.unwrap();
+        result.unwrap();
+    }
+
+    #[cfg(feature = "mysql")]
+    #[tokio::test]
+    #[ignore = "requires ORGII_TEST_MYSQL_URL pointing to a disposable local server"]
+    async fn mysql_query_keeps_session_metadata_and_releases_connection() {
+        let url = std::env::var("ORGII_TEST_MYSQL_URL").expect("disposable database URL");
+        let checkouts = Arc::new(AtomicUsize::new(0));
+        let counter = checkouts.clone();
+        let pool = sqlx::mysql::MySqlPoolOptions::new()
+            .max_connections(1)
+            .before_acquire(move |_, _| {
+                counter.fetch_add(1, Ordering::SeqCst);
+                Box::pin(async { Ok(true) })
+            })
+            .connect(&url)
+            .await
+            .unwrap();
+        sqlx::query("CREATE TEMPORARY TABLE row_contract AS SELECT 'Alice' AS label, CAST(7 AS SIGNED) AS small_value").execute(&pool).await.unwrap();
+        let mut reservation = reserve().unwrap();
+        let id = reservation.id.clone();
+        POOLS.lock().unwrap_or_else(|e| e.into_inner()).insert(
+            id.clone(), Some(Arc::new(LeasePool { pool: PoolEntry::Mysql(pool) })),
+        );
+        reservation.committed = true;
+        let result = async {
+            let values = db_sql_query(id.clone(), "SELECT * FROM row_contract".into()).await?;
+            assert_eq!(
+                values.rows,
+                vec![vec![serde_json::json!("Alice"), serde_json::json!(7)]]
+            );
+            checkouts.store(0, Ordering::SeqCst);
+            let empty =
+                db_sql_query(id.clone(), "SELECT * FROM row_contract WHERE FALSE".into()).await?;
+            assert_eq!(empty.columns, vec!["label", "small_value"]);
+            assert!(empty.rows.is_empty());
+            assert_eq!(
+                checkouts.load(Ordering::SeqCst),
+                1,
+                "metadata must use the execution checkout"
+            );
+            assert!(
+                db_sql_query(id.clone(), "SELECT * FROM nonexistent_row_contract".into())
+                    .await
+                    .is_err()
+            );
+            assert!(
+                db_sql_query(id.clone(), "SELECT CURRENT_DATE AS unsupported".into())
+                    .await
+                    .is_err()
+            );
+            // Both prepare and decoding errors must release the only connection.
+            let recovered = tokio::time::timeout(
+                std::time::Duration::from_secs(5),
+                db_sql_query(id.clone(), "SELECT * FROM row_contract WHERE FALSE".into()),
+            )
+            .await
+            .map_err(|err| err.to_string())??;
+            assert_eq!(recovered.columns, vec!["label", "small_value"]);
+            Ok::<_, String>(())
+        }
+        .await;
+        db_sql_disconnect(id).await.unwrap();
+        result.unwrap();
     }
 }
