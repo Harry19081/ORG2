@@ -324,18 +324,6 @@
           "agentBrowser": "Agent Tarayıcısı",
           "searchFetch": "Ara ve Getir"
         },
-        "sections": {
-          "browserTitle": "Tarayıcı etkinliği",
-          "interactionsTitle": "Etkileşimler",
-          "webSearchesTitle": "Web aramaları",
-          "pagesFetchedTitle": "Getirilen sayfalar"
-        },
-        "empty": {
-          "noBrowserActivity": "Tarayıcı etkinliği yok",
-          "noBrowserInteractions": "Tarayıcı etkileşimi yok",
-          "noWebSearches": "Web araması yok",
-          "noPagesFetched": "Getirilen sayfa yok"
-        },
         "header": {
           "categoryBrowser": "Tarayıcı",
           "categoryLiveBrowser": "Canlı tarayıcı",

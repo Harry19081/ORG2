@@ -324,18 +324,6 @@
           "agentBrowser": "Navigateur de l'Agent",
           "searchFetch": "Recherche et récupération"
         },
-        "sections": {
-          "browserTitle": "Activité du navigateur",
-          "interactionsTitle": "Interactions",
-          "webSearchesTitle": "Recherches web",
-          "pagesFetchedTitle": "Pages récupérées"
-        },
-        "empty": {
-          "noBrowserActivity": "Aucune activité du navigateur",
-          "noBrowserInteractions": "Aucune interaction du navigateur",
-          "noWebSearches": "Aucune recherche web",
-          "noPagesFetched": "Aucune page récupérée"
-        },
         "header": {
           "categoryBrowser": "Navigateur",
           "categoryLiveBrowser": "Navigateur en direct",

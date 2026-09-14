@@ -337,18 +337,6 @@
           "agentBrowser": "Agent Browser",
           "searchFetch": "Search & Fetch"
         },
-        "sections": {
-          "browserTitle": "Browser Activity",
-          "interactionsTitle": "Interactions",
-          "webSearchesTitle": "Web Searches",
-          "pagesFetchedTitle": "Pages Fetched"
-        },
-        "empty": {
-          "noBrowserActivity": "No browser activity",
-          "noBrowserInteractions": "No browser interactions",
-          "noWebSearches": "No web searches",
-          "noPagesFetched": "No pages fetched"
-        },
         "header": {
           "categoryBrowser": "Browser",
           "categoryLiveBrowser": "Live Browser",

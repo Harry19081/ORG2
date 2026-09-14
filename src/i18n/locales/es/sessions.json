@@ -324,18 +324,6 @@
           "agentBrowser": "Navegador del Agent",
           "searchFetch": "Buscar y obtener"
         },
-        "sections": {
-          "browserTitle": "Actividad del navegador",
-          "interactionsTitle": "Interacciones",
-          "webSearchesTitle": "Búsquedas web",
-          "pagesFetchedTitle": "Páginas obtenidas"
-        },
-        "empty": {
-          "noBrowserActivity": "Sin actividad del navegador",
-          "noBrowserInteractions": "Sin interacciones del navegador",
-          "noWebSearches": "Sin búsquedas web",
-          "noPagesFetched": "Sin páginas obtenidas"
-        },
         "header": {
           "categoryBrowser": "Navegador",
           "categoryLiveBrowser": "Navegador en vivo",
