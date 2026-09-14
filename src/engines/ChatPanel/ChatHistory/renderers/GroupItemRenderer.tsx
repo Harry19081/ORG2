@@ -150,6 +150,8 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
     // actually change.
     const turnContext = useMemo<AgentTurnContextValue>(
       () => ({
+        sessionId: event?.sessionId,
+        turnId,
         isLastGroup,
         isLastItemInGroup,
         onRegenerate: onRegenerate
@@ -163,6 +165,7 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
             : null,
       }),
       [
+        turnId,
         isLastGroup,
         isLastItemInGroup,
         isWpGeneWorking,
