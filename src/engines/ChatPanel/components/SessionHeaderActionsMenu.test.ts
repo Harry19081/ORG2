@@ -62,9 +62,9 @@ vi.mock("jotai", async (importOriginal) => ({
       ? [false, mocks.setCollapseToolActivity]
       : atom === linkOpenTargetAtom
         ? [mocks.linkOpenTarget, mocks.setLinkOpenTarget]
-      : atom === compactComposerInputAtom
-        ? [false, mocks.setCompactComposerInput]
-        : [mocks.pinnedActionsVisible, mocks.setPinnedActionsVisible],
+        : atom === compactComposerInputAtom
+          ? [false, mocks.setCompactComposerInput]
+          : [mocks.pinnedActionsVisible, mocks.setPinnedActionsVisible],
   useAtomValue: () => mocks.session,
   useSetAtom: () => mocks.openWindow,
 }));
