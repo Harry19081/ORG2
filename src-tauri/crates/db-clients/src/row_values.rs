@@ -49,7 +49,7 @@ pub fn pg_row_to_json(row: &sqlx::postgres::PgRow) -> Result<Vec<Value>, String>
             "FLOAT4" => float_json(row.try_get::<f32, _>(index).map_err(error)?.into()),
             "FLOAT8" => float_json(row.try_get::<f64, _>(index).map_err(error)?),
             "JSON" | "JSONB" => row.try_get::<Value, _>(index).map_err(error),
-            "TEXT" | "VARCHAR" | "BPCHAR" | "NAME" | "UNKNOWN" => row.try_get::<String, _>(index).map(Value::String).map_err(error),
+            _ if <String as sqlx::Type<sqlx::Postgres>>::compatible(column.type_info()) => row.try_get::<String, _>(index).map(Value::String).map_err(error),
             _ => Err(format!("Unsupported SQL type {type_name} in column {}. Select an explicit text cast to view this value.", column.name())),
         })
     }).collect()
