@@ -24,11 +24,15 @@ afterEach(() => {
   localStorage.clear();
 });
 
-function mount(pinnedIds = ["a"]) {
+function mount(
+  pinnedIds = ["a"],
+  sectionMembership?: ReadonlyMap<string, string>
+) {
   const store = createStore();
   store.set(sidebarSessionOrderAtom, []);
   store.set(sidebarSessionSortAtom, "updated");
   const onTogglePin = vi.fn(async () => undefined);
+  const onMoveToSection = vi.fn(async () => true);
   const items: NavigationMenuItem[] = ["a", "b"].map((id) => ({
     id,
     key: id,
@@ -48,6 +52,8 @@ function mount(pinnedIds = ["a"]) {
       items,
       sessionMap,
       onTogglePin,
+      sectionMembership,
+      onMoveToSection: sectionMembership ? onMoveToSection : undefined,
     });
     return React.createElement(
       React.Fragment,
@@ -115,6 +121,7 @@ function mount(pinnedIds = ["a"]) {
   return {
     store,
     onTogglePin,
+    onMoveToSection,
     start,
     drop,
     unmount: () => {
@@ -125,6 +132,32 @@ function mount(pinnedIds = ["a"]) {
 }
 
 describe("session sidebar drag integration", () => {
+  it("moves between sections through the persisted membership command", async () => {
+    const view = mount([], new Map([["b", "research"]]));
+    try {
+      view.start("a");
+      await act(async () => {
+        view.drop("b");
+      });
+      expect(view.onMoveToSection).toHaveBeenCalledWith("a", "research");
+      expect(view.store.get(sidebarSessionSortAtom)).toBe("updated");
+      expect(view.onTogglePin).not.toHaveBeenCalled();
+    } finally {
+      view.unmount();
+    }
+  });
+  it("removes section membership when explicitly dragging to a regular row", async () => {
+    const view = mount([], new Map([["a", "research"]]));
+    try {
+      view.start("a");
+      await act(async () => {
+        view.drop("b");
+      });
+      expect(view.onMoveToSection).toHaveBeenCalledWith("a", null);
+    } finally {
+      view.unmount();
+    }
+  });
   it("unpins when moving to a regular row, displays a line and saves the position", () => {
     const view = mount();
     try {
@@ -169,8 +202,8 @@ describe("session sidebar drag integration", () => {
       }
     }
   );
-  it("supports the bottom unpin zone without a row target", () => {
-    const view = mount();
+  it("supports the bottom unpin zone without removing section membership", () => {
+    const view = mount(["a"], new Map([["a", "research"]]));
     try {
       for (const [source, zoneId] of [["a", "sidebar-unpin-drop-zone"]]) {
         view.start(source);
@@ -193,6 +226,7 @@ describe("session sidebar drag integration", () => {
           );
         });
         expect(view.onTogglePin).toHaveBeenCalledWith(source);
+        expect(view.onMoveToSection).not.toHaveBeenCalled();
       }
     } finally {
       view.unmount();

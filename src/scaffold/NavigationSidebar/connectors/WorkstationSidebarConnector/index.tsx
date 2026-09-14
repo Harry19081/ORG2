@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -32,6 +32,8 @@ import { SidebarBottomBar } from "../../blocks";
 import SidebarSettingsMenuButton from "../../blocks/SidebarSettingsMenuButton";
 import NavigationSidebar from "../../variants/NavigationSidebar";
 import SidebarAccountButton from "../SidebarAccountButton";
+import { sidebarCustomCollapsedAtom } from "../sections/collapsePreference";
+import { useSidebarSections } from "../sections/useSidebarSections";
 import { NEW_SESSION_MENU_ITEM_ID } from "../sidebarConnectorUtils";
 import type { SidebarTabDisposition } from "../sidebarTabNavigation";
 import { useSessionMenuItems } from "../useSessionMenuItems/index";
@@ -169,8 +171,16 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const [expandedSubagentParentIds, setExpandedSubagentParentIds] = useState<
     Set<string>
   >(() => new Set());
+  const [savedCustomCollapsed, setSavedCustomCollapsed] = useAtom(
+    sidebarCustomCollapsedAtom
+  );
   const [collapsedSectionIds, setCollapsedSectionIds] = useState<Set<string>>(
-    () => new Set(DEFAULT_COLLAPSED_SECTION_IDS)
+    () => new Set([...DEFAULT_COLLAPSED_SECTION_IDS, ...savedCustomCollapsed])
+  );
+
+  const customSections = useSidebarSections(
+    activeViewKey === "sessions" && !activeCloudOrgId,
+    collapsedSectionIds
   );
 
   const { activeSessionSidebarRevealRequest, revealedSessionIds } =
@@ -329,6 +339,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     isLoadMoreId,
     getLoadMoreGroupId,
   } = useSessionMenuItems({
+    customSections,
     sortedSessions,
     visitedSessions,
     repoPathToName,
@@ -437,6 +448,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     handleMenuItemContextMenu,
     menuItems: sessionMenuItems,
   } = useSessionSidebarRowActions({
+    sectionMenuItems: customSections.menuForSession,
     sessionMap,
     rename,
     handleDeleteSession,
@@ -523,7 +535,16 @@ export const WorkstationSidebarConnector: React.FC = () => {
     : collapsedSectionIds;
   const resolvedOnCollapsedSectionIdsChange = workItemsContentVisible
     ? workItems.onCollapsedSectionIdsChange
-    : handleSessionCollapsedSectionIdsChange;
+    : (ids: Set<string>) => {
+        setSavedCustomCollapsed(
+          [...ids].filter((id) =>
+            customSections.headers.some(
+              (header) => header.id === `separator-${id}`
+            )
+          )
+        );
+        handleSessionCollapsedSectionIdsChange(ids);
+      };
 
   useWorkstationSidebarRevealNavigationEffects({
     sessionSidebarRevealRequest,
@@ -609,6 +630,8 @@ export const WorkstationSidebarConnector: React.FC = () => {
     items: sidebarMenuItems,
     sessionMap,
     onTogglePin: handleTogglePin,
+    onMoveToSection: customSections.moveToSection,
+    sectionMembership: customSections.membership,
   });
   const wrapOrderedRow = ordering.wrap;
   const renderOrderedMenuItem = useCallback(
@@ -631,7 +654,10 @@ export const WorkstationSidebarConnector: React.FC = () => {
         menuItems={sidebarScrollLayout.menuItems}
         pinnedMenuItems={sidebarScrollLayout.pinnedMenuItems}
         selectedKey={resolvedSelectedMenuItemId}
-        onMenuItemClick={resolvedMenuItemClick}
+        onMenuItemClick={(key, item, ...args) => {
+          if (!customSections.handlePageClick(item.id))
+            resolvedMenuItemClick(key, item, ...args);
+        }}
         onMenuItemContextMenu={resolvedMenuItemContextMenu}
         renderMenuItemWrapper={renderOrderedMenuItem}
         topBarFollowingContent={
@@ -684,6 +710,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
             : undefined
         }
       />
+      {customSections.dialog}
       {ordering.insertionLine}
       <SidebarDialogs
         cloudChannelsDialogs={cloudChannelsDialogs}
