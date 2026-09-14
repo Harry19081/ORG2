@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -206,16 +207,29 @@ describe("MobileToolCall", () => {
       React.createElement(MobileToolCall, { item: longSummaryItem })
     );
 
-    expect(shortHtml).toContain('data-mobile-tool-status-trailing="true"');
-    expect(longHtml).toContain('data-mobile-tool-status-trailing="true"');
-    expect(shortHtml).toMatch(
-      /data-mobile-tool-status-trailing="true"[\s\S]*transcript\.tools\.status\.done/
-    );
-    const leftSection = shortHtml.match(
-      /<div class="flex min-w-0 flex-1 items-center gap-2 leading-tight">([\s\S]*?)<\/div><div class="flex shrink-0 items-center gap-1 select-none">/
-    )?.[1];
-    expect(leftSection).toContain("&quot;would_downgrade_terminal&quot;");
-    expect(leftSection).not.toContain("transcript.tools.status.done");
+    for (const [html, summary] of [
+      [shortHtml, '"would_downgrade_terminal"'],
+      [longHtml, "src/modules/MobileRemote/MobileRemoteApp.tsx"],
+    ]) {
+      const container = document.createElement("div");
+      container.innerHTML = html;
+      const status = container.querySelector(
+        '[data-mobile-tool-status-trailing="true"]'
+      );
+      expect(status?.textContent).toContain("transcript.tools.status.done");
+
+      // Assert the two layout columns, independent of wrappers used to size
+      // the icon/text hover target inside the flexible content column.
+      const trailingColumn = status?.parentElement;
+      const contentColumn = trailingColumn?.previousElementSibling;
+      expect(trailingColumn?.classList.contains("shrink-0")).toBe(true);
+      expect(contentColumn?.classList.contains("flex-1")).toBe(true);
+      expect(contentColumn?.textContent).toContain(summary);
+      expect(contentColumn?.textContent).not.toContain(
+        "transcript.tools.status.done"
+      );
+      expect(trailingColumn?.textContent).not.toContain(summary);
+    }
   });
 
   it("formats grep alternation queries as readable comma-separated subtitles", () => {
