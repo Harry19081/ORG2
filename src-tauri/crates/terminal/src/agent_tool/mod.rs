@@ -954,7 +954,6 @@ pub async fn close_agent_session_tree(
 
     #[cfg(windows)]
     if let Some(pid) = pid {
-        use app_platform::CommandCreationFlagsExt;
         let mut command = tokio::process::Command::new("taskkill");
         command.args(["/PID", &pid.to_string(), "/T", "/F"]);
         command.creation_flags(app_platform::CREATE_NO_WINDOW);
