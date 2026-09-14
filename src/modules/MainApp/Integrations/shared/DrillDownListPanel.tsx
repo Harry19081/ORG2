@@ -6,15 +6,19 @@
  * back button and optional add action.
  */
 import Button from "@/src/components/Button";
-import { ArrowLeft, Plus, Search } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import SharedButton from "@src/components/Button";
 import Input from "@src/components/Input";
+import { Placeholder } from "@src/components/Placeholder";
 import {
-  ListPanelScrollArea,
-  Placeholder,
-} from "@src/modules/shared/layouts/blocks";
+  Add01Icon,
+  ArrowLeft02Icon,
+  HugeiconsIcon,
+  Search01Icon,
+} from "@src/icons";
+import { ListPanelScrollArea } from "@src/modules/shared/layouts/blocks";
 
 export interface DrillDownItem {
   id: string;
@@ -56,20 +60,36 @@ const DrillDownListPanel: React.FC<DrillDownListPanelProps> = ({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-10 flex-shrink-0 items-center gap-2 px-3">
-        <button
-          type="button"
+      <div className="flex h-10 shrink-0 items-center gap-2 px-3">
+        <SharedButton
+          variant="tertiary"
+          appearance="soft-no-drop"
+          size="mini"
+          iconOnly
+          icon={
+            <HugeiconsIcon
+              icon={ArrowLeft02Icon}
+              data-icon="arrow-left"
+              size={16}
+            />
+          }
+          htmlType="button"
           onClick={onBack}
-          className="flex items-center justify-center rounded-md p-1 text-text-2 transition-colors hover:bg-fill-2 hover:text-text-1"
-        >
-          <ArrowLeft size={16} />
-        </button>
+          className="hover:bg-fill-2 hover:text-text-1"
+        />
         <span className="text-[13px] font-medium text-text-1">{title}</span>
       </div>
 
-      <div className="flex-shrink-0 px-3 pb-2">
+      <div className="shrink-0 px-3 pb-2">
         <Input
-          prefix={<Search size={14} strokeWidth={1.75} />}
+          prefix={
+            <HugeiconsIcon
+              icon={Search01Icon}
+              data-icon="search"
+              size={14}
+              strokeWidth={1.75}
+            />
+          }
           placeholder={t("common:actions.search")}
           value={searchQuery}
           onChange={setSearchQuery}
@@ -87,9 +107,11 @@ const DrillDownListPanel: React.FC<DrillDownListPanelProps> = ({
             {filteredItems.map((item) => {
               const isSelected = item.id === selectedId;
               return (
-                <button
+                <SharedButton
+                  layout="custom"
+                  appearance="custom"
                   key={item.id}
-                  type="button"
+                  htmlType="button"
                   onClick={() => onSelect(item.id)}
                   className={`flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[13px] transition-colors ${
                     isSelected
@@ -98,17 +120,17 @@ const DrillDownListPanel: React.FC<DrillDownListPanelProps> = ({
                   }`}
                 >
                   {item.icon && (
-                    <span className="flex flex-shrink-0 items-center text-text-3">
+                    <span className="flex shrink-0 items-center text-text-3">
                       {item.icon}
                     </span>
                   )}
                   <span className="min-w-0 flex-1 truncate">{item.name}</span>
                   {item.statusDot && (
                     <span
-                      className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${item.statusDot}`}
+                      className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.statusDot}`}
                     />
                   )}
-                </button>
+                </SharedButton>
               );
             })}
           </div>
@@ -116,11 +138,11 @@ const DrillDownListPanel: React.FC<DrillDownListPanelProps> = ({
       </ListPanelScrollArea>
 
       {onAdd && (
-        <div className="flex-shrink-0 p-3">
+        <div className="shrink-0 p-3">
           <Button
             variant="primary"
             size="large"
-            icon={<Plus size={16} />}
+            icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={16} />}
             long
             onClick={onAdd}
           >

@@ -44,6 +44,16 @@ export const INPUT_AREA = {
     "border border-solid border-border-2 transition-[border-color,box-shadow] duration-200 ease-in-out focus-within:border-primary-6 focus-within:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)] [&:not(:focus-within):hover]:border-border-3",
 
   /**
+   * Drag-over highlight — primary border, tinted background, soft 2px primary
+   * ring. Every composer shell with `data-chat-drop-target` must apply this
+   * while a drag is over it: the `!` marks let it beat the focus/hover
+   * interaction classes above and GlobalDragDrop's scss fallback shadow, so
+   * the shell shows one ring instead of a stacked double border.
+   */
+  shellDragOverClasses:
+    "border-primary-6! bg-[color-mix(in_srgb,var(--color-primary-6)_5%,var(--color-chat-input))]! shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_20%,transparent)]!",
+
+  /**
    * Sent user-message card in chat history — border only, no shadow, no focus
    * ring, no primary glow. Hover shows border-3. Click opens edit mode; while
    * editing the real input area (shellInteractionClasses) takes over.
@@ -93,6 +103,15 @@ export const INPUT_AREA_EDITOR_CLASS =
 export const INPUT_AREA_CONTROL_GROUP_CLASS =
   "flex min-w-0 items-center gap-px";
 
+/** Shared frame for the +, /, and @ menus rendered above a composer. */
+export const INPUT_AREA_MENU_FRAME = {
+  /** Match the full input shell width instead of insetting the menu. */
+  horizontalInset: 0,
+  /** Vertical distance between the input shell and its menu. */
+  gap: 8,
+  placement: "up",
+} as const;
+
 // ==============================================
 // Padding Tokens
 // ==============================================
@@ -105,16 +124,6 @@ export const INPUT_AREA_PADDING_COMPACT = {
   paddingBottom: 4,
   gap: 4,
   gapClass: "gap-1",
-} as const;
-
-/** Default variant (standalone session creator) */
-export const INPUT_AREA_PADDING_DEFAULT = {
-  paddingX: 16,
-  paddingXClass: "px-4",
-  paddingTop: 16,
-  paddingBottom: 16,
-  gap: 8,
-  gapClass: "gap-2",
 } as const;
 
 // ==============================================

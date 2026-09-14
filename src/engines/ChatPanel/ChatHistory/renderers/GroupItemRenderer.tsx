@@ -1,4 +1,3 @@
-import { MailOpen } from "lucide-react";
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -18,6 +17,7 @@ import {
   type SessionEvent,
   TOOL_USAGE_ARGS_KEY,
 } from "@src/engines/SessionCore/core/types";
+import { HugeiconsIcon, MailOpen01Icon } from "@src/icons";
 
 import {
   AgentTurnContext,
@@ -35,13 +35,24 @@ import type { OptimizedChatItem } from "../chatItemPipeline/types";
 import { NewEventDivider } from "../components/NewEventDivider";
 import TurnMetadataFooterSlot from "../components/TurnMetadataFooterSlot";
 import { CHAT_FOOTER_SPACER } from "../config/chatFooterSpacer";
+import {
+  CHAT_EVENT_IDS_ATTR,
+  CHAT_FLAT_INDEX_ATTR,
+  CHAT_ITEM_ID_ATTR,
+  formatChatEventIdsAttribute,
+} from "../hooks/chatSearch";
+import { collectChatItemEventIds } from "../hooks/chatSearchProjection";
 import { getUnloadedTurnMeta, isTurnPreviewItem } from "../hooks/useChatGroups";
 import { ChatItemRenderer } from "./ChatItemRenderer";
 import ChatItemWrap from "./ChatItemWrap";
 
 const GROUP_CHAT_CONTINUATION_WINDOW_MS = 60_000;
 const INBOX_TRANSCRIPT_ICON = (
-  <MailOpen size={SESSION_UI_TOKENS.ICON.SIZE_SM} />
+  <HugeiconsIcon
+    icon={MailOpen01Icon}
+    data-icon="mail-open"
+    size={SESSION_UI_TOKENS.ICON.SIZE_SM}
+  />
 );
 
 // ============================================
@@ -72,6 +83,13 @@ const RESULT_RENDER_KEYS = [
   "linesAdded",
   "linesRemoved",
   "status",
+  // Keep retry actions current even when the visible message body is unchanged.
+  "queueMessageId",
+  "deliveryOwnerRetired",
+  "deliveryStatus",
+  "deliveryError",
+  "turnIntentId",
+  "syntheticUserInput",
 ] as const;
 
 const ARG_RENDER_KEYS = [
@@ -155,6 +173,9 @@ function sameChatItem(
     left.consolidatedParts === right.consolidatedParts &&
     left.actionSummaryClosedByBoundary ===
       right.actionSummaryClosedByBoundary &&
+    left.activityStackGroup?.category === right.activityStackGroup?.category &&
+    left.activityStackGroup?.closedByBoundary ===
+      right.activityStackGroup?.closedByBoundary &&
     sameEventSummary(left.event, right.event) &&
     sameEventList(left.readFileEvents, right.readFileEvents) &&
     sameEventList(
@@ -181,15 +202,10 @@ function areGroupItemRendererPropsEqual(
     // comparison). Shallow-compare the event rather than the full item — the
     // continuation check only reads event.createdAt, source, and senderName.
     previous.previousChatItem?.event === next.previousChatItem?.event &&
-    previous.lastAssistantFlatIndex === next.lastAssistantFlatIndex &&
     previous.isLastItemInGroup === next.isLastItemInGroup &&
     previous.isLastGroup === next.isLastGroup &&
     previous.isWpGeneWorking === next.isWpGeneWorking &&
-    previous.isExploring === next.isExploring &&
-    previous.codeBlockContainerWidth === next.codeBlockContainerWidth &&
     previous.onRegenerate === next.onRegenerate &&
-    previous.onSubmit === next.onSubmit &&
-    previous.onSkip === next.onSkip &&
     previous.onEditUserMessage === next.onEditUserMessage &&
     previous.newEventDividerLabel === next.newEventDividerLabel
   );
@@ -232,7 +248,7 @@ const InboxTranscriptCard: React.FC<{
       <EventBlockHeader
         isCollapsed={isCollapsed}
         withHover={false}
-        onClick={hasContent ? handleHeaderClick : undefined}
+        onToggleCollapse={hasContent ? handleHeaderClick : undefined}
         onMouseEnter={handleHeaderMouseEnter}
         onMouseLeave={handleHeaderMouseLeave}
       >
@@ -292,18 +308,12 @@ export interface GroupItemRendererProps {
    * need to scan the full flat list on every render.
    */
   previousChatItem: OptimizedChatItem | undefined;
-  /** Flat index of the last assistant item in this row's group, if any. */
-  lastAssistantFlatIndex: number | null;
   /** Whether this row is the final body item in its group. */
   isLastItemInGroup: boolean;
   /** Whether this row belongs to the latest group. */
   isLastGroup: boolean;
   isWpGeneWorking: boolean;
-  isExploring: boolean;
-  codeBlockContainerWidth?: number;
   onRegenerate?: (groupIndex: number) => void;
-  onSubmit: (eventId: string, answers: Record<string, string>) => void;
-  onSkip: (eventId: string) => void;
   onEditUserMessage?: (
     item: OptimizedChatItem,
     newText: string,
@@ -343,15 +353,10 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
     turnId,
     chatItem,
     previousChatItem,
-    lastAssistantFlatIndex,
     isLastItemInGroup,
     isLastGroup,
     isWpGeneWorking,
-    isExploring,
-    codeBlockContainerWidth,
     onRegenerate,
-    onSubmit,
-    onSkip,
     onEditUserMessage,
     newEventDividerLabel = null,
   }) => {
@@ -427,7 +432,6 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
     // actually change.
     const turnContext = useMemo<AgentTurnContextValue>(
       () => ({
-        lastAssistantFlatIndex,
         isLastGroup,
         isLastItemInGroup,
         onRegenerate: onRegenerate
@@ -441,7 +445,6 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
             : null,
       }),
       [
-        lastAssistantFlatIndex,
         isLastGroup,
         isLastItemInGroup,
         isWpGeneWorking,
@@ -458,13 +461,13 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
       isStructuralUnloadedTurnItem && !isTurnPreviewItem(chatItem);
     const isStructuralOnlyItem = chatItem?.structuralOnly === true;
     const groupMessageWrapClass = showGroupBubbleSenderChrome
-      ? "!pt-2 !pb-0"
-      : "!pt-1 !pb-0";
+      ? "pt-2! pb-0!"
+      : "pt-1! pb-0!";
 
     const renderedItem =
       chatItem && !isHiddenUnloadedTurnItem && !isStructuralOnlyItem ? (
         inboxTranscriptLabel && event ? (
-          <ChatItemWrap variant="text" className="!py-1">
+          <ChatItemWrap variant="text" className="py-1!">
             <InboxTranscriptCard event={event} title={inboxTranscriptLabel} />
           </ChatItemWrap>
         ) : simpleMessage ? (
@@ -482,12 +485,7 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
           <ChatItemRenderer
             chatItem={chatItem}
             index={flatIndex}
-            isWpGeneWorking={isWpGeneWorking}
-            isExploring={isExploring}
-            onSubmit={onSubmit}
-            onSkip={onSkip}
             onEditUserMessage={onEditUserMessage}
-            codeBlockContainerWidth={codeBlockContainerWidth}
             treatAsAgentActivity={treatAsAgentActivity}
           />
         )
@@ -514,9 +512,28 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
       !isStructuralUnloadedTurnItem &&
       !isStructuralOnlyItem;
 
+    const chatSearchEventIds =
+      chatItem && !isHiddenUnloadedTurnItem && !isStructuralOnlyItem
+        ? collectChatItemEventIds(chatItem)
+        : [];
+
     return (
       <AgentTurnContext.Provider value={turnContext}>
-        <div style={{ minHeight: 1, ...turnGapStyle }}>
+        <div
+          style={{ minHeight: 1, ...turnGapStyle }}
+          {...(chatItem
+            ? {
+                [CHAT_ITEM_ID_ATTR]: chatItem.chunk_id,
+                [CHAT_FLAT_INDEX_ATTR]: flatIndex,
+                ...(chatSearchEventIds.length > 0
+                  ? {
+                      [CHAT_EVENT_IDS_ATTR]:
+                        formatChatEventIdsAttribute(chatSearchEventIds),
+                    }
+                  : {}),
+              }
+            : {})}
+        >
           {showNewEventDivider && (
             <NewEventDivider label={newEventDividerLabel as string} />
           )}

@@ -1,4 +1,3 @@
-import { AlertTriangle, RotateCcw, Save, ShieldCheck } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +14,13 @@ import StatusDot from "@src/components/StatusDot";
 import TabPill from "@src/components/TabPill";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import {
+  Alert01Icon,
+  FloppyDiskIcon,
+  HugeiconsIcon,
+  RotateLeft01Icon,
+  SecurityCheckIcon,
+} from "@src/icons";
+import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
   SECTION_PATH_TEXT_CLASSES,
@@ -30,7 +36,7 @@ import {
   modelIdsFor,
 } from "./cliManagedConfigUtils";
 
-type CliConfigMode = "default" | "orgii_managed";
+type CliConfigMode = "default" | "orgii_managed" | "direct";
 type PendingAction = "apply" | "forceApply" | "restore" | "forceRestore";
 
 const DEFAULT_PROXY_URL = "http://127.0.0.1:17888";
@@ -167,9 +173,10 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
   }, [loadStatus]);
 
   useEffect(() => {
-    if (proxyStatus?.running !== false) return;
+    if (proxyStatus?.running !== false || status?.mode !== "orgii_managed")
+      return;
     return startVisibilityAwarePoller(document, loadProxyStatus, 3000);
-  }, [loadProxyStatus, proxyStatus?.running]);
+  }, [loadProxyStatus, proxyStatus?.running, status?.mode]);
 
   useEffect(() => {
     const nextSelection = getManagedProxyDraftSelection(
@@ -203,7 +210,7 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
         Message.success({
           content: tr(
             "agentOrgs.cliManagedConfig.applySuccess",
-            "ORGII managed config applied"
+            "ORG2 managed config applied"
           ),
         });
       } catch (err) {
@@ -293,14 +300,11 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
   const targetFiles = status?.targetFiles ?? [];
   const managedActive = draftMode === "orgii_managed";
   const canApplyManaged =
-    managedActive &&
-    Boolean(selectedKeyId) &&
-    Boolean(selectedModel) &&
-    proxyStatus?.running === true;
+    managedActive && Boolean(selectedKeyId) && Boolean(selectedModel);
   const isBusy = pendingAction !== null;
   const modeLabel =
     status?.mode === "orgii_managed"
-      ? tr("agentOrgs.cliManagedConfig.modeOrgii", "ORGII Managed")
+      ? tr("agentOrgs.cliManagedConfig.modeOrgii", "ORG2 Managed")
       : tr("agentOrgs.cliManagedConfig.modeDefault", "Default");
   const statusLabel = status?.conflict
     ? tr("agentOrgs.cliManagedConfig.conflict", "External change")
@@ -328,7 +332,7 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
       ? proxyStatus.message
       : tr(
           "agentOrgs.cliManagedConfig.proxyLifecycleDesc",
-          "Keep ORGII running while using this mode. Closing the window keeps the proxy in the tray; quitting ORGII safely restores Default unless the config changed externally."
+          "Keep ORG2 running while using this mode. Closing the window keeps the proxy in the tray; quitting ORG2 safely restores Default unless the config changed externally."
         );
 
   return (
@@ -351,7 +355,7 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
         label={tr("agentOrgs.cliManagedConfig.modeLabel", "Mode")}
         description={tr(
           "agentOrgs.cliManagedConfig.modeDesc",
-          "Default restores the CLI's own config. ORGII Managed writes a backed-up proxy config."
+          "Default restores the CLI's own config. ORG2 Managed writes a backed-up proxy config."
         )}
       >
         <div style={SECTION_CONTROL_STYLE}>
@@ -365,7 +369,7 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
                 key: "orgii_managed",
                 label: tr(
                   "agentOrgs.cliManagedConfig.modeOrgii",
-                  "ORGII Managed"
+                  "ORG2 Managed"
                 ),
               },
             ]}
@@ -384,11 +388,16 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
           label={tr("agentOrgs.cliManagedConfig.conflictTitle", "Conflict")}
           description={tr(
             "agentOrgs.cliManagedConfig.conflictDesc",
-            "The active CLI config changed after ORGII wrote it."
+            "The active CLI config changed after ORG2 wrote it."
           )}
           align="start"
         >
-          <AlertTriangle size={16} className="shrink-0 text-warning-6" />
+          <HugeiconsIcon
+            icon={Alert01Icon}
+            data-icon="alert-triangle"
+            size={16}
+            className="shrink-0 text-warning-6"
+          />
         </SectionRow>
       )}
 
@@ -466,7 +475,13 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
             <Button
               variant="primary"
               size="small"
-              icon={<Save size={14} />}
+              icon={
+                <HugeiconsIcon
+                  icon={FloppyDiskIcon}
+                  data-icon="save"
+                  size={14}
+                />
+              }
               disabled={!canApplyManaged || isBusy}
               loading={pendingAction === "apply"}
               onClick={() => void applyManaged(false)}
@@ -476,7 +491,13 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
           )}
           <Button
             size="small"
-            icon={<RotateCcw size={14} />}
+            icon={
+              <HugeiconsIcon
+                icon={RotateLeft01Icon}
+                data-icon="rotate-ccw"
+                size={14}
+              />
+            }
             disabled={isBusy}
             loading={pendingAction === "restore"}
             onClick={() => void restoreDefault(false)}
@@ -487,7 +508,13 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
             <Button
               variant="warning"
               size="small"
-              icon={<ShieldCheck size={14} />}
+              icon={
+                <HugeiconsIcon
+                  icon={SecurityCheckIcon}
+                  data-icon="shield-check"
+                  size={14}
+                />
+              }
               disabled={!canApplyManaged || isBusy}
               loading={pendingAction === "forceApply"}
               onClick={() => void applyManaged(true)}
@@ -499,7 +526,13 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
             <Button
               variant="warning"
               size="small"
-              icon={<ShieldCheck size={14} />}
+              icon={
+                <HugeiconsIcon
+                  icon={SecurityCheckIcon}
+                  data-icon="shield-check"
+                  size={14}
+                />
+              }
               disabled={isBusy}
               loading={pendingAction === "forceRestore"}
               onClick={() => void restoreDefault(true)}

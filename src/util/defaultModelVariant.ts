@@ -1,9 +1,12 @@
-import type { ModelTableVariantInfo } from "@src/components/ModelTable/types";
+import type { ModelTableVariantInfo } from "@src/types/modelTable";
 import {
   MODEL_REASONING_LEVEL,
   type ModelReasoningLevel,
+  parseModelVariant,
   toModelReasoningLevel,
 } from "@src/util/modelVariants";
+
+import { selectableModelVariants } from "./selectableModelVariants";
 
 /**
  * Per-base-model default variant resolution.
@@ -38,6 +41,7 @@ const REASONING_RANK: ModelReasoningLevel[] = [
   MODEL_REASONING_LEVEL.HIGH,
   MODEL_REASONING_LEVEL.EXTRA_HIGH,
   MODEL_REASONING_LEVEL.MAX,
+  MODEL_REASONING_LEVEL.ULTRA,
   MODEL_REASONING_LEVEL.ULTRACODE,
 ];
 
@@ -117,11 +121,24 @@ export function resolveDefaultVariant(
   variants: ModelTableVariantInfo[],
   persistedModel: string | undefined
 ): string | undefined {
+  const selectable = selectableModelVariants(variants);
   if (
     persistedModel &&
-    variants.some((variant) => variant.model === persistedModel)
+    selectable.some((variant) => variant.model === persistedModel)
   ) {
     return persistedModel;
   }
-  return computeSeedDefaultVariant(baseModel, variants);
+  if (persistedModel && !parseModelVariant(persistedModel)?.reasoning) {
+    const previous = parseModelVariant(persistedModel);
+    const sameOptions = selectable.filter((variant) => {
+      const parsed = parseModelVariant(variant.model);
+      return (
+        (parsed?.thinking ?? false) === (previous?.thinking ?? false) &&
+        (parsed?.fast ?? false) === (previous?.fast ?? false)
+      );
+    });
+    if (sameOptions.length > 0)
+      return computeSeedDefaultVariant(baseModel, sameOptions);
+  }
+  return computeSeedDefaultVariant(baseModel, selectable);
 }

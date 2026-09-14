@@ -32,7 +32,6 @@
  * />
  * ```
  */
-import type { LucideIcon } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -43,6 +42,7 @@ import type {
 } from "@src/components/ActionCard/types";
 import Button from "@src/components/Button";
 import { TYPOGRAPHY } from "@src/config/workstation/tokens";
+import type { IconSvgElement } from "@src/icons";
 
 // ============================================
 // Types
@@ -53,8 +53,8 @@ export interface SelectionGridOption<T extends string = string> {
   key: T;
   /** Display label */
   label: string;
-  /** Lucide icon component */
-  icon?: LucideIcon;
+  /** Hugeicons glyph data */
+  icon?: IconSvgElement;
   /** Custom icon element (takes precedence over icon) */
   iconElement?: React.ReactNode;
   /** Keep icon color unchanged when selected (e.g. brand icons like GitHub) */
@@ -79,6 +79,8 @@ interface SharedGridProps<T extends string = string> {
   columnMinWidth?: number;
   /** Fixed number of columns — each option fills equal width. */
   columns?: number;
+  /** Stack full-width, content-height rows; overrides column sizing. */
+  vertical?: boolean;
   /** Compact mode — shows inline label + "Switch method" button instead of grid. */
   compact?: boolean;
   /** Label shown in compact mode (defaults to selected option label). */
@@ -89,9 +91,11 @@ interface SharedGridProps<T extends string = string> {
   cardLayout?: ActionCardLayout;
   /** Optional class name applied to every card. */
   cardClassName?: string;
-  /** When using showSelect on cards, show the trailing checkmark (default true). */
+  /** Show the trailing selection checkmark (default true). */
   showSelectionCheck?: boolean;
-  /** Render inline choice cards as compact 36px segmented controls. */
+  /** Use a leading radio for single-choice description rows. */
+  showRadio?: boolean;
+  /** Use 36px inline pills; defaults on for grids without descriptions. */
   compactCards?: boolean;
   /** Optional class name for the grid wrapper. */
   className?: string;
@@ -121,7 +125,7 @@ interface MultiSelectGridProps<
   onSelect?: never;
 }
 
-export type SelectionGridProps<T extends string = string> =
+type SelectionGridProps<T extends string = string> =
   | SingleSelectGridProps<T>
   | MultiSelectGridProps<T>;
 
@@ -138,13 +142,15 @@ function SelectionGrid<T extends string = string>(
     selected,
     columnMinWidth = 180,
     columns,
+    vertical = false,
     compact = false,
     compactLabel,
     cardVariant = "default",
     cardLayout = "inline",
     cardClassName = "",
     showSelectionCheck = true,
-    compactCards = false,
+    showRadio = false,
+    compactCards = !vertical && !options.some((option) => option.description),
     className = "",
   } = props;
 
@@ -175,8 +181,9 @@ function SelectionGrid<T extends string = string>(
     );
   }
 
-  const gridStyle =
-    columns != null
+  const gridStyle = vertical
+    ? { gridTemplateColumns: "minmax(0, 1fr)" }
+    : columns != null
       ? { gridTemplateColumns: `repeat(${columns}, 1fr)` }
       : {
           gridTemplateColumns: `repeat(auto-fill, minmax(${columnMinWidth}px, 1fr))`,
@@ -210,6 +217,7 @@ function SelectionGrid<T extends string = string>(
             iconPreserveColor={option.iconPreserveColor}
             showSelect
             showSelectionCheck={showSelectionCheck}
+            showRadio={!isMulti && showRadio}
             selected={isSelected}
             disabled={option.disabled}
             variant={cardVariant}

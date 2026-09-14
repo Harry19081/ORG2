@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@src/components/Button";
 import DropdownSelectedCheck from "@src/components/Dropdown/DropdownSelectedCheck";
 import {
   DROPDOWN_CLASSES,
@@ -48,10 +49,12 @@ export const PlaybackSpeedInline: React.FC<PlaybackSpeedInlineProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         data-testid="session-replay-speed-trigger"
         ref={triggerRef as React.Ref<HTMLButtonElement>}
-        type="button"
+        htmlType="button"
         disabled={disabled}
         onClick={toggle}
         aria-expanded={isOpen}
@@ -63,7 +66,7 @@ export const PlaybackSpeedInline: React.FC<PlaybackSpeedInlineProps> = ({
         }`}
       >
         {label}
-      </button>
+      </Button>
       {isOpen &&
         isPositioned &&
         createPortal(
@@ -79,10 +82,12 @@ export const PlaybackSpeedInline: React.FC<PlaybackSpeedInlineProps> = ({
               {REPLAY_SPEED_OPTIONS.map((speed) => {
                 const selected = speed === value;
                 return (
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
                     key={speed}
                     data-testid={`session-replay-speed-${speed}`}
-                    type="button"
+                    htmlType="button"
                     role="option"
                     aria-selected={selected}
                     className={`${DROPDOWN_CLASSES.item} ${
@@ -97,7 +102,7 @@ export const PlaybackSpeedInline: React.FC<PlaybackSpeedInlineProps> = ({
                   >
                     <span>{speed}x</span>
                     {selected && <DropdownSelectedCheck />}
-                  </button>
+                  </Button>
                 );
               })}
             </div>

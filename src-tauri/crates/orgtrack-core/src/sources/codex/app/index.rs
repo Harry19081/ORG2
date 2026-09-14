@@ -25,11 +25,12 @@ use super::meta::{
 };
 use super::transcript::{
     load_codex_app_cloud_turn_from_path, load_codex_app_from_path,
-    load_codex_app_initial_window_from_path, load_codex_app_turn_from_path,
-    load_codex_app_turn_ids_from_path, CodexAppInitialWindow, CodexAppTurnWindow,
+    load_codex_app_initial_window_from_path, load_codex_app_mobile_tail_window_from_path,
+    load_codex_app_turn_from_path, load_codex_app_turn_ids_from_path, user_message_text_from_line,
+    CodexAppInitialWindow, CodexAppTurnWindow,
 };
 use super::{
-    CodexAppRecentPath, CodexAppSessionPage, CodexAppSourceMetadata,
+    CodexAppRecentPath, CodexAppSessionPage, CodexAppSourceMetadata, CodexJsonlLine,
     CODEX_APP_METADATA_PARSER_VERSION,
 };
 
@@ -105,6 +106,17 @@ pub fn load_codex_app_initial_window_for_session(
     Ok(window)
 }
 
+pub fn load_codex_app_mobile_tail_window_for_session(
+    conn: &Connection,
+    session_id: &str,
+) -> Result<CodexAppInitialWindow, String> {
+    let file_stem = codex_file_stem_from_session_id(session_id)?;
+    let path = resolve_codex_session_path(conn, file_stem)?;
+    let mut window = load_codex_app_mobile_tail_window_from_path(session_id, &path)?;
+    link_codex_subagent_chunks(conn, session_id, &mut window.chunks)?;
+    Ok(window)
+}
+
 pub fn load_codex_app_turn_for_session(
     conn: &Connection,
     session_id: &str,
@@ -159,27 +171,52 @@ fn codex_child_session_links(
     conn: &Connection,
     parent_session_id: &str,
 ) -> Result<Vec<CodexChildSessionLink>, String> {
+    // Children bind to the physical parent rollout they were parsed against.
+    // A resend rotates the parent rollout, so match every generation of the
+    // parent's native thread; the historical parent keeps resolving exactly.
+    // The filename fallback reads the thread id off the child's own parent
+    // key, so a child bound to a generation whose row was pruned still links.
+    let parent_thread_id = codex_parent_thread_id(conn, parent_session_id)?.unwrap_or_default();
     let mut statement = conn
         .prepare(
-            "SELECT session_id, source_session_id, created_at_ms, source_metadata_json
-             FROM imported_history_session_cache
-             WHERE source = ?1
-               AND parent_session_id = ?2
-               AND parent_session_id != ''
-             ORDER BY created_at_ms ASC, source_session_id ASC",
+            "SELECT child.session_id, child.source_session_id, child.created_at_ms,
+                    child.source_metadata_json
+             FROM imported_history_session_cache child
+             LEFT JOIN imported_history_session_cache parent
+               ON parent.source = child.source
+              AND parent.session_id = child.parent_session_id
+             WHERE child.source = ?1
+               AND COALESCE(child.parent_session_id, '') != ''
+               AND (child.parent_session_id = ?2
+                    OR (?3 != ''
+                        AND (CASE WHEN json_valid(parent.source_metadata_json)
+                                  THEN json_extract(parent.source_metadata_json,
+                                                    '$.continuationGroupKey')
+                             END = ?3
+                             OR child.parent_session_id LIKE '%-' || ?3
+                             OR child.parent_session_id LIKE '%-' || ?3 || '\\_%' ESCAPE '\\')))
+             ORDER BY child.created_at_ms ASC, child.source_session_id ASC",
         )
         .map_err(|err| format!("Failed to prepare Codex child-session query: {err}"))?;
     let rows = statement
-        .query_map([SOURCE_CODEX_APP, parent_session_id], |row| {
-            let source_session_id: String = row.get(1)?;
-            let metadata_json: String = row.get(3)?;
-            Ok(CodexChildSessionLink {
-                session_id: row.get(0)?,
-                thread_id: codex_thread_id_from_file_stem(&source_session_id).map(str::to_string),
-                created_at_ms: row.get(2)?,
-                metadata: serde_json::from_str(&metadata_json).unwrap_or_default(),
-            })
-        })
+        .query_map(
+            [
+                SOURCE_CODEX_APP,
+                parent_session_id,
+                parent_thread_id.as_str(),
+            ],
+            |row| {
+                let source_session_id: String = row.get(1)?;
+                let metadata_json: String = row.get(3)?;
+                Ok(CodexChildSessionLink {
+                    session_id: row.get(0)?,
+                    thread_id: codex_thread_id_from_file_stem(&source_session_id)
+                        .map(str::to_string),
+                    created_at_ms: row.get(2)?,
+                    metadata: serde_json::from_str(&metadata_json).unwrap_or_default(),
+                })
+            },
+        )
         .map_err(|err| format!("Failed to query Codex child sessions: {err}"))?;
 
     let mut children = Vec::new();
@@ -187,6 +224,33 @@ fn codex_child_session_links(
         children.push(row.map_err(|err| format!("Failed to read Codex child-session row: {err}"))?);
     }
     Ok(children)
+}
+
+fn codex_parent_thread_id(
+    conn: &Connection,
+    parent_session_id: &str,
+) -> Result<Option<String>, String> {
+    use rusqlite::OptionalExtension;
+    let cached = conn
+        .query_row(
+            "SELECT CASE WHEN json_valid(source_metadata_json)
+                    THEN json_extract(source_metadata_json, '$.continuationGroupKey') END
+             FROM imported_history_session_cache
+             WHERE source = ?1 AND session_id = ?2",
+            [SOURCE_CODEX_APP, parent_session_id],
+            |row| row.get::<_, Option<String>>(0),
+        )
+        .optional()
+        .map_err(|err| format!("Failed to query Codex parent thread id: {err}"))?
+        .flatten()
+        .filter(|value| !value.trim().is_empty());
+    if cached.is_some() {
+        return Ok(cached);
+    }
+    Ok(codex_file_stem_from_session_id(parent_session_id)
+        .ok()
+        .and_then(codex_thread_id_from_file_stem)
+        .map(str::to_string))
 }
 
 fn link_codex_subagent_chunks_from_children(
@@ -259,12 +323,18 @@ fn best_codex_child_match(
     task_name: Option<&str>,
     chunk_created_at_ms: Option<i64>,
 ) -> Option<usize> {
+    // A spawn that names its child thread links only that thread. Children
+    // are pooled across every generation of the parent, so a ranking penalty
+    // would attach another generation's child when the named one is absent.
+    if let Some(thread_id) = agent_thread_id {
+        return children
+            .iter()
+            .position(|child| child.thread_id.as_deref() == Some(thread_id));
+    }
     children
         .iter()
         .enumerate()
         .min_by_key(|(_, child)| {
-            let thread_mismatch = agent_thread_id
-                .is_some_and(|thread_id| child.thread_id.as_deref() != Some(thread_id));
             let task_mismatch = task_name.is_some_and(|task_name| {
                 child
                     .metadata
@@ -276,15 +346,22 @@ fn best_codex_child_match(
             let time_distance = chunk_created_at_ms
                 .map(|created_at_ms| created_at_ms.abs_diff(child.created_at_ms))
                 .unwrap_or_default();
-            (thread_mismatch, task_mismatch, time_distance)
+            (task_mismatch, time_distance)
         })
         .map(|(index, _)| index)
 }
 
 fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
+    sync_codex_app_cache_from_dirs(conn, &codex_sessions_dirs()?)
+}
+
+pub(super) fn sync_codex_app_cache_from_dirs(
+    conn: &mut Connection,
+    session_dirs: &[PathBuf],
+) -> Result<(), String> {
     let previous_snapshots = scan_snapshot::read_dir_snapshots_from_conn(conn, SOURCE_CODEX_APP);
     let mut walker = scan_snapshot::SnapshotDirWalker::new(&previous_snapshots, "jsonl", "Codex");
-    let discovery = discover_codex_app_records(&codex_sessions_dirs()?, &mut walker)?;
+    let discovery = discover_codex_app_records(session_dirs, &mut walker)?;
     let next_snapshots = walker.into_snapshots();
     scan_snapshot::persist_dir_snapshots_if_changed(
         conn,
@@ -299,14 +376,21 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
     // Managed (GUI-launched) Codex sessions surface through their
     // code_sessions row (`cli_agent_type = 'codex'`); the imported twin goes
     // unlistable. Same pattern as the OpenCode/Claude readers.
-    let managed_ids =
+    let mut managed_ids =
         crate::sources::imported_history::managed_mirror::managed_source_session_ids_from_conn(
             conn,
             "codex",
             SOURCE_CODEX_APP,
         )?;
     for record in &mut discovered {
-        crate::sources::imported_history::managed_mirror::append_managed_fingerprint(
+        // A resend rollout ends in <thread UUID>_<rollout UUID>. The ledger
+        // owns the thread, not the final UUID. Expand only discovered keys.
+        if codex_thread_id_from_file_stem(&record.source_session_id)
+            .is_some_and(|id| managed_ids.contains(id))
+        {
+            managed_ids.insert(record.source_session_id.clone());
+        }
+        crate::sources::imported_history::managed_mirror::append_managed_origin_fingerprint(
             &mut record.source_fingerprint,
             // Suffix match: the imported key is the rollout stem while the
             // runner binds the bare thread uuid.
@@ -316,14 +400,17 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
             ),
         );
     }
+    repair_cached_generated_codex_names(conn, &discovered)?;
     let signatures = discovered
         .iter()
         .map(ImportedHistoryDiscoveredRecord::signature)
         .collect::<Vec<_>>();
-    let changed =
-        imported_cache::changed_records_from_conn(conn, SOURCE_CODEX_APP, &discovered, |record| {
-            record.signature()
-        })?;
+    let changed = imported_cache::changed_records_with_generated_name_repairs_from_conn(
+        conn,
+        SOURCE_CODEX_APP,
+        &discovered,
+        |record| record.signature(),
+    )?;
     let mut inputs = Vec::new();
     let mut rounds = Vec::new();
     let mut reparsed_ids = Vec::new();
@@ -353,15 +440,13 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
             &parse.watermark,
         )?;
         if let Some(mut meta) = parse.meta {
-            let is_managed_history_mirror =
-                crate::sources::imported_history::managed_mirror::is_managed_source_session_id(
-                    &managed_ids,
-                    &meta.source_session_id,
-                );
             reparsed_ids.push(meta.session_id.clone());
             rounds.append(&mut meta.rounds);
             let mut input = session_meta_to_cache_input(meta);
-            input.listable = input.listable && !is_managed_history_mirror;
+            crate::sources::imported_history::managed_mirror::apply_managed_history_mirror(
+                &mut input,
+                &managed_ids,
+            );
             inputs.push(input);
         }
     }
@@ -371,7 +456,109 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
         imported_cache::live_ids_from_signatures(&signatures),
         inputs,
     )?;
-    imported_cache::write_session_rounds_from_conn(conn, &reparsed_ids, &rounds)
+    crate::sources::imported_history::managed_mirror::demote_org2_origin_mirrors_from_conn(
+        conn,
+        SOURCE_CODEX_APP,
+    )?;
+    imported_cache::write_session_rounds_from_conn(conn, &reparsed_ids, &rounds)?;
+    repair_cached_codex_thread_identity(conn)?;
+    imported_cache::demote_superseded_continuations_from_conn(conn, SOURCE_CODEX_APP)?;
+    Ok(())
+}
+
+/// Older watermarks predate native thread identity. Repair their projection
+/// from Codex's filename contract without invalidating a multi-GB transcript's
+/// incremental watermark. Fresh parses use session_meta.id instead. This also
+/// covers large active files deliberately deferred by the metadata budget.
+fn repair_cached_codex_thread_identity(conn: &Connection) -> Result<(), String> {
+    let mut statement = conn
+        .prepare(
+            "SELECT source_session_id, source_metadata_json FROM imported_history_session_cache
+         WHERE source = ?1 AND COALESCE(parent_session_id, '') = ''
+           AND CASE WHEN json_valid(source_metadata_json)
+               THEN json_extract(source_metadata_json, '$.continuationGroupKey') IS NULL
+               ELSE 1 END",
+        )
+        .map_err(|err| format!("Failed to prepare Codex thread identity repair: {err}"))?;
+    let rows = statement
+        .query_map([SOURCE_CODEX_APP], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, Option<String>>(1)?))
+        })
+        .map_err(|err| format!("Failed to query Codex thread identity repair: {err}"))?;
+    for row in rows {
+        let (source_id, metadata) =
+            row.map_err(|err| format!("Failed to read Codex identity: {err}"))?;
+        let Some(thread_id) = codex_thread_id_from_file_stem(&source_id) else {
+            continue;
+        };
+        let mut value = metadata
+            .as_deref()
+            .and_then(|raw| serde_json::from_str::<Value>(raw).ok())
+            .filter(Value::is_object)
+            .unwrap_or_else(|| serde_json::json!({}));
+        value[imported_cache::CONTINUATION_GROUP_KEY_FIELD] = Value::String(thread_id.to_string());
+        conn.execute(
+            "UPDATE imported_history_session_cache SET source_metadata_json = ?3
+             WHERE source = ?1 AND source_session_id = ?2",
+            rusqlite::params![SOURCE_CODEX_APP, source_id, value.to_string()],
+        )
+        .map_err(|err| format!("Failed to repair Codex thread identity: {err}"))?;
+    }
+    Ok(())
+}
+
+pub(super) fn first_codex_user_prompt_from_path(path: &Path) -> Result<Option<String>, String> {
+    let file = fs::File::open(path)
+        .map_err(|err| format!("Failed to open Codex transcript {}: {err}", path.display()))?;
+    for line in BufReader::new(file).lines() {
+        let line = line
+            .map_err(|err| format!("Failed to read Codex transcript {}: {err}", path.display()))?;
+        let Ok(parsed) = serde_json::from_str::<CodexJsonlLine>(line.trim()) else {
+            continue;
+        };
+        if let Some(prompt) = user_message_text_from_line(&parsed) {
+            return Ok(Some(prompt));
+        }
+    }
+    Ok(None)
+}
+
+fn repair_cached_generated_codex_names(
+    conn: &Connection,
+    discovered: &[ImportedHistoryDiscoveredRecord],
+) -> Result<(), String> {
+    let repair_ids =
+        imported_cache::generated_name_repair_source_session_ids_from_conn(conn, SOURCE_CODEX_APP)?;
+    if repair_ids.is_empty() {
+        return Ok(());
+    }
+
+    for record in discovered
+        .iter()
+        .filter(|record| repair_ids.contains(&record.source_session_id))
+    {
+        let Some(prompt) = imported_history::skip_unparsable_record(
+            SOURCE_CODEX_APP,
+            &record.source_session_id,
+            first_codex_user_prompt_from_path(&record.source_path),
+        )
+        .flatten() else {
+            continue;
+        };
+        let name = imported_history::resolve_imported_session_name(
+            "",
+            &prompt,
+            &record.source_record_key,
+            200,
+        );
+        imported_cache::update_cached_session_name_from_conn(
+            conn,
+            SOURCE_CODEX_APP,
+            &record.source_session_id,
+            &name,
+        )?;
+    }
+    Ok(())
 }
 
 fn unix_epoch_now_ns() -> i64 {
@@ -415,6 +602,7 @@ fn discover_codex_app_records(
 ) -> Result<CodexAppDiscovery, String> {
     let mut records = Vec::new();
     let mut external_titles = HashMap::new();
+    let mut discovered_files: HashSet<String> = HashSet::new();
     for sessions_dir in sessions_dirs {
         if !sessions_dir.is_dir() {
             continue;
@@ -431,7 +619,36 @@ fn discover_codex_app_records(
                 continue;
             };
             let (source_mtime_ms, source_size_bytes) =
-                imported_paths::file_metadata_signature(&path, "Codex")?;
+                match imported_paths::file_metadata_signature(&path, "Codex") {
+                    Ok(signature) => signature,
+                    // Files can disappear between directory enumeration and
+                    // metadata lookup, and managed profiles keep rollout
+                    // symlinks whose target Codex has since archived. Neither
+                    // makes the other Codex rollouts unreadable.
+                    Err(_) if !path.exists() => continue,
+                    Err(error) => return Err(error),
+                };
+            // Managed profiles expose native rollouts through symlinks, so one
+            // rollout can be enumerated from CODEX_HOME and from a profile.
+            // Both share the file stem that keys the cache row; resolve the
+            // symlink and keep the first discovery so unchanged files do not
+            // alternate writers on every scan.
+            let canonical = match fs::canonicalize(&path) {
+                Ok(target) => target,
+                Err(_) if !path.exists() => continue,
+                Err(error) => return Err(format!("Failed to resolve Codex rollout: {error}")),
+            };
+            let is_symlink =
+                fs::symlink_metadata(&path).is_ok_and(|metadata| metadata.file_type().is_symlink());
+            let path = if is_symlink { canonical } else { path };
+            // The stem keys the cache row. A native rollout and a managed
+            // profile copy of the same session are two files with one stem;
+            // emitting both makes them alternate as the row's writer on
+            // every scan. Native roots enumerate first, so the first file
+            // per stem wins deterministically.
+            if !discovered_files.insert(file_stem.clone()) {
+                continue;
+            }
             if let Some(entry) = codex_title_entry_for_file_stem(&file_stem, &title_index) {
                 external_titles.insert(
                     file_stem.clone(),
@@ -586,28 +803,7 @@ fn codex_title_entry_for_file_stem<'a>(
 }
 
 pub fn codex_thread_id_from_file_stem(file_stem: &str) -> Option<&str> {
-    if is_uuid_like(file_stem) {
-        return Some(file_stem);
-    }
-    if file_stem.len() < 36 {
-        return None;
-    }
-    let candidate = &file_stem[file_stem.len() - 36..];
-    is_uuid_like(candidate).then_some(candidate)
-}
-
-fn is_uuid_like(value: &str) -> bool {
-    let bytes = value.as_bytes();
-    if bytes.len() != 36 {
-        return false;
-    }
-    bytes.iter().enumerate().all(|(index, byte)| {
-        if matches!(index, 8 | 13 | 18 | 23) {
-            *byte == b'-'
-        } else {
-            byte.is_ascii_hexdigit()
-        }
-    })
+    crate::sources::cli_resume::codex_thread_uuid_from_stem(file_stem)
 }
 
 fn codex_file_stem_from_session_id(session_id: &str) -> Result<&str, String> {
@@ -620,7 +816,7 @@ fn codex_file_stem_from_session_id(session_id: &str) -> Result<&str, String> {
     Ok(file_stem)
 }
 
-fn resolve_codex_session_path(conn: &Connection, file_stem: &str) -> Result<PathBuf, String> {
+pub fn resolve_codex_session_path(conn: &Connection, file_stem: &str) -> Result<PathBuf, String> {
     let transcript_session_id = canonical_session_id(file_stem);
     let store = SqliteRecordStore::new(conn);
     if let Some(path) = store
@@ -760,6 +956,34 @@ pub(crate) fn codex_sessions_dir_candidates(home: &Path) -> Vec<PathBuf> {
         .filter(|root| seen.insert(root.clone()))
         .map(|root| root.join("sessions"))
         .collect()
+}
+
+/// Context refresh only follows indexed source paths. Unlike transcript recovery,
+/// missing telemetry must not initiate a recursive history-directory scan.
+pub fn load_codex_context_usage_for_session(
+    conn: &Connection,
+    session_id: &str,
+) -> Result<Option<crate::sources::imported_history::context_usage::ImportedContextUsage>, String> {
+    let file_stem = codex_file_stem_from_session_id(session_id)?;
+    let store = SqliteRecordStore::new(conn);
+    let actor_path = store
+        .get_session_actor_by_transcript_session_id(
+            SOURCE_CODEX_APP,
+            &canonical_session_id(file_stem),
+        )?
+        .and_then(|actor| actor.transcript_path);
+    let path = match actor_path {
+        Some(path) => Some(path),
+        None => imported_cache::get_cached_source_path_by_suffix_from_conn(
+            conn,
+            SOURCE_CODEX_APP,
+            file_stem,
+        )?,
+    };
+    match path {
+        Some(path) => super::context_usage::read_context_usage(Path::new(&path)),
+        None => Ok(None),
+    }
 }
 
 #[cfg(test)]
@@ -929,6 +1153,7 @@ mod tests {
                     first_prompt: Some("wrong prompt".to_string()),
                     agent_path: Some("/root/other_task".to_string()),
                     agent_nickname: Some("Wrong".to_string()),
+                    ..Default::default()
                 },
             },
             CodexChildSessionLink {
@@ -939,6 +1164,7 @@ mod tests {
                     first_prompt: Some("audit today's commit history".to_string()),
                     agent_path: Some("/root/audit_todays_commits".to_string()),
                     agent_nickname: Some("Peirce".to_string()),
+                    ..Default::default()
                 },
             },
         ];

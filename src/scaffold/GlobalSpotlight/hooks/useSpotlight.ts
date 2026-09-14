@@ -18,6 +18,8 @@ import {
   type ActionId,
   useActionSystemOptional,
 } from "@src/ActionSystem";
+import type { GlobalThemePreference } from "@src/config/appearance/globalThemes";
+import type { SkinVariant } from "@src/config/appearance/skins/types";
 import type { CloudSessionReference } from "@src/features/Org2Cloud/cloudSessionReference";
 import { useOpenCloudSessionReference } from "@src/features/Org2Cloud/useOpenCloudSessionReference";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
@@ -25,19 +27,28 @@ import { showScaleMessage } from "@src/hooks/navigation/useGlobalShortcuts/types
 import { useFilteredItems } from "@src/hooks/search";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import type { LanguagePreference } from "@src/i18n";
-import { checkForUpdatesManually } from "@src/scaffold/AppUpdater";
+import type { IconSvgElement } from "@src/icons";
+import { checkForUpdatesManually } from "@src/scaffold/AppUpdater/actions";
 import {
   openAgentControlSpotlight,
+  openCollabOrgSpotlight,
   openSessionCreatorSpotlight,
+  openSessionImportSpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { AppViewService } from "@src/services/app";
 import { PanelService } from "@src/services/panel";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
+import { openChatPanelCreateTargetAtom } from "@src/store/chatPanel/openChatPanelCreateTargetAtom";
 import { selectedRepoAtom } from "@src/store/repo";
 import { REPO_KIND } from "@src/store/repo/types";
 import type { Session } from "@src/store/session";
 import { spotlightRecentActionsAtom } from "@src/store/ui/spotlightRecentActionsAtom";
-import { UI_SCALE_CONFIG, uiScaleAtom } from "@src/store/ui/uiAtom";
+import {
+  UI_SCALE_CONFIG,
+  darkSkinIdAtom,
+  lightSkinIdAtom,
+  uiScaleAtom,
+} from "@src/store/ui/uiAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 import { showInFinder } from "@src/util/platform/ipcRenderer";
 
@@ -68,14 +79,20 @@ function setUiScale(nextScale: number): void {
   showScaleMessage(store.get(uiScaleAtom));
 }
 
+const THEME_ACTION_ID_BY_PREFERENCE: Record<GlobalThemePreference, ActionId> = {
+  system: ACTION_ID.THEME_SET_SYSTEM,
+  light: ACTION_ID.THEME_SET_LIGHT,
+  dark: ACTION_ID.THEME_SET_DARK,
+};
+
 export function useSpotlight(
   props: GlobalSpotlightProps & {
     isOpen: boolean;
     closeModal?: () => void;
-    onOpenWorkspacePicker?: (
+    onOpenWorkingDirectoryPicker?: (
       mode: "switch" | "open" | "add" | "create"
     ) => void;
-    onOpenBranchPicker?: () => void;
+    onOpenBranchPicker?: (repoId?: string) => void;
     onOpenEditorPalette?: (prefix: string, mode?: EditorPaletteMode) => void;
     onOpenAgentSessionSearch?: () => void;
     onOpenAllSessionsSearch?: () => void;
@@ -87,7 +104,7 @@ export function useSpotlight(
   const {
     isOpen,
     closeModal,
-    onOpenWorkspacePicker,
+    onOpenWorkingDirectoryPicker,
     onOpenBranchPicker,
     onOpenEditorPalette,
     onOpenAgentSessionSearch,
@@ -106,19 +123,17 @@ export function useSpotlight(
   const actionSystem = useActionSystemOptional();
   const dispatch = useSpotlightDispatch();
   const setRecentActionIds = useSetAtom(spotlightRecentActionsAtom);
+  const setLightSkinId = useSetAtom(lightSkinIdAtom);
+  const setDarkSkinId = useSetAtom(darkSkinIdAtom);
 
   // Shared repo list is only needed for action flows that ask the user to
   // choose a repo. The default Spotlight view no longer renders the repo list;
-  // workspace switching is delegated to WorkspacePalette.
+  // workspace switching is delegated to WorkingDirectoryPalette.
   const shouldFetchRepos = isOpen && state.missingParam === "repo";
 
   const activeRepoId = currentRepoId ?? currentRepo?.id;
   const { repos, filteredRepos, loadRepos, refreshReposForce } =
-    useSharedRepoList({
-      enabled: shouldFetchRepos,
-      currentRepoId: activeRepoId,
-      searchQuery: state.searchQuery,
-    });
+    useSharedRepoList(state.searchQuery);
   const sortedFilteredRepos = useMemo(() => {
     return [...filteredRepos].sort((repoA, repoB) => {
       if (repoA.id === activeRepoId) return -1;
@@ -164,51 +179,42 @@ export function useSpotlight(
   );
 
   const runStaticActionFallback = useCallback(
-    (fallback: SpotlightStaticActionFallback) => {
+    (
+      fallback: SpotlightStaticActionFallback,
+      payload: Record<string, unknown>
+    ) => {
       const fallbackHandlers: Record<
         SpotlightStaticActionFallback,
         () => void
       > = {
         "open-session-creator": openSessionCreatorSpotlight,
+        "import-session": openSessionImportSpotlight,
         "create-project": () => {
-          void WorkStationViewService.openStationMode("my-station").then(
-            async () => {
-              const { openCreateTargetInChatPanelStartPageAtom } =
-                await import("@src/store/chatPanel/chatPanelTabsAtom");
-              const { CHAT_PANEL_CREATE_TARGET } =
-                await import("@src/store/ui/chatPanelAtom");
-              getInstrumentedStore().set(
-                openCreateTargetInChatPanelStartPageAtom,
-                {
-                  target: CHAT_PANEL_CREATE_TARGET.PROJECT,
-                }
-              );
-            }
-          );
+          getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
+            target: "project",
+          });
         },
         "create-work-item": () => {
-          void WorkStationViewService.openStationMode("my-station").then(
-            async () => {
-              const { openCreateTargetInChatPanelStartPageAtom } =
-                await import("@src/store/chatPanel/chatPanelTabsAtom");
-              const { CHAT_PANEL_CREATE_TARGET } =
-                await import("@src/store/ui/chatPanelAtom");
-              getInstrumentedStore().set(
-                openCreateTargetInChatPanelStartPageAtom,
-                {
-                  target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
-                }
-              );
-            }
-          );
+          getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
+            target: "workItem",
+          });
         },
         "search-agent-sessions": () => onOpenAgentSessionSearch?.(),
         "search-all-sessions": () => onOpenAllSessionsSearch?.(),
         "agent-control": openAgentControlSpotlight,
-        "workspace-switch": () => onOpenWorkspacePicker?.("switch"),
-        "workspace-add": () => onOpenWorkspacePicker?.("add"),
-        "workspace-create": () => onOpenWorkspacePicker?.("create"),
-        "branch-picker": () => onOpenBranchPicker?.(),
+        "workspace-switch": () => onOpenWorkingDirectoryPicker?.("switch"),
+        "workspace-add": () => onOpenWorkingDirectoryPicker?.("add"),
+        "workspace-create": () => onOpenWorkingDirectoryPicker?.("create"),
+        "organization-create": () => {
+          openCollabOrgSpotlight({ mode: "create" });
+        },
+        "organization-join": () => {
+          openCollabOrgSpotlight({ source: "cloud", mode: "join" });
+        },
+        "branch-picker": () =>
+          onOpenBranchPicker?.(
+            typeof payload.repoId === "string" ? payload.repoId : undefined
+          ),
         "toggle-sidebar": () => {
           void AppViewService.toggleSidebar();
         },
@@ -251,6 +257,17 @@ export function useSpotlight(
         "open-agent-station": () => {
           void WorkStationViewService.openStationMode("agent-station");
         },
+        "open-my-station-window": () => {
+          // Resolves false (never rejects) when the window cannot open.
+          WorkStationViewService.openStationWindow("my-station").catch(
+            () => undefined
+          );
+        },
+        "open-agent-station-window": () => {
+          WorkStationViewService.openStationWindow("agent-station").catch(
+            () => undefined
+          );
+        },
         "open-kanban": () => {
           void WorkStationViewService.openKanbanTab();
         },
@@ -274,7 +291,7 @@ export function useSpotlight(
       onOpenAgentSessionSearch,
       onOpenAllSessionsSearch,
       onOpenBranchPicker,
-      onOpenWorkspacePicker,
+      onOpenWorkingDirectoryPicker,
     ]
   );
 
@@ -286,7 +303,7 @@ export function useSpotlight(
         action.payload,
         fallback
           ? () => {
-              runStaticActionFallback(fallback);
+              runStaticActionFallback(fallback, action.payload);
             }
           : undefined
       );
@@ -387,6 +404,33 @@ export function useSpotlight(
     [closeModal, dispatch, dispatchActionOrFallback]
   );
 
+  const handleSelectTheme = useCallback(
+    (theme: GlobalThemePreference) => {
+      dispatchActionOrFallback(THEME_ACTION_ID_BY_PREFERENCE[theme], {});
+      closeModal?.();
+      dispatch({ type: "RESET_TO_IDLE" });
+    },
+    [closeModal, dispatch, dispatchActionOrFallback]
+  );
+
+  const handleSelectSkin = useCallback(
+    (skinId: string, variant: SkinVariant) => {
+      switch (variant) {
+        case "light":
+          setLightSkinId(skinId);
+          break;
+        case "dark":
+          setDarkSkinId(skinId);
+          break;
+        default:
+          variant satisfies never;
+      }
+      closeModal?.();
+      dispatch({ type: "RESET_TO_IDLE" });
+    },
+    [closeModal, dispatch, setDarkSkinId, setLightSkinId]
+  );
+
   const handleSelectSession = useCallback(
     (session: Session, sessionName: string) => {
       openSession(session.session_id, sessionName, session.repoPath);
@@ -409,7 +453,11 @@ export function useSpotlight(
     (
       path: string,
       label: string,
-      _icon: string | ComponentType<Record<string, unknown>> | undefined
+      _icon:
+        | string
+        | IconSvgElement
+        | ComponentType<Record<string, unknown>>
+        | undefined
     ) => {
       dispatchActionOrFallback(
         ACTION_ID.APP_NAVIGATE,
@@ -430,9 +478,12 @@ export function useSpotlight(
     onSelectRepo: handleSelectRepo,
     onSelectBranch: handleSelectBranch,
     onSelectLanguage: handleSelectLanguage,
+    onSelectTheme: handleSelectTheme,
+    onSelectSkin: handleSelectSkin,
     onSelectSession: handleSelectSession,
     onSelectCloudSessionReference: handleSelectCloudSessionReference,
     onSelectPath: handleSelectPath,
+    currentRepoId: activeRepoId,
     isEditorRoute,
     isWorkStationRoute,
   });

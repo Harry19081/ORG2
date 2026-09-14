@@ -1,4 +1,3 @@
-import { ChevronRight } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -8,6 +7,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -18,12 +18,14 @@ import {
   KEYBOARD_SHORTCUT_VARIANT,
   KeyboardShortcut,
 } from "@src/components/KeyboardShortcut";
+import { useMenuHoverGrace } from "@src/hooks/dropdown/useMenuHoverGrace";
+import { ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import type { ContextMenuItem } from "@src/types/core/shared";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import { SubmenuPanel } from "./SubmenuPanel";
 import { getShortcutLabel, matchesContextShortcut } from "./contextMenuUtils";
-import "./index.scss";
+import "./index.css";
 
 interface WorkItemContextMenuProps {
   items: ContextMenuItem[];
@@ -49,7 +51,9 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuState | null>(null);
   const [openNestedSubmenu, setOpenNestedSubmenu] =
     useState<SubmenuState | null>(null);
-  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { cancel: cancelHover, schedule: scheduleHover } = useMenuHoverGrace(
+    openSubmenu !== null
+  );
 
   useLayoutEffect(() => {
     if (!menuRef.current) return;
@@ -128,13 +132,14 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
         !clickedInsideSubmenu &&
         !clickedInsideNestedSubmenu
       ) {
+        cancelHover();
         onClose();
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
+  }, [cancelHover, onClose]);
 
   const activeSubmenuItem = openSubmenu
     ? items.find((item) => item.id === openSubmenu.itemId)
@@ -156,6 +161,7 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      cancelHover();
       if (event.key === "Escape") {
         event.preventDefault();
         onClose();
@@ -207,110 +213,105 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [activeSubmenuItem, executeMenuItem, items, onClose, openSubmenu]);
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-    };
-  }, []);
+  }, [
+    activeSubmenuItem,
+    cancelHover,
+    executeMenuItem,
+    items,
+    onClose,
+    openSubmenu,
+  ]);
 
   const handleItemClick = useCallback(
     (item: ContextMenuItem, event: React.MouseEvent) => {
       event.stopPropagation();
+      cancelHover();
       if (item.disabled || item.divider || item.submenu) return;
       item.action?.();
       onClose();
     },
-    [onClose]
+    [cancelHover, onClose]
   );
 
   const handleSubmenuItemClick = useCallback(
     (item: ContextMenuItem, event: React.MouseEvent) => {
       event.stopPropagation();
+      cancelHover();
       if (item.disabled || item.divider || item.submenu) return;
       item.action?.();
       onClose();
     },
-    [onClose]
+    [cancelHover, onClose]
   );
 
   const handleItemMouseEnter = useCallback(
     (item: ContextMenuItem, event: React.MouseEvent) => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-        hoverTimeoutRef.current = null;
-      }
+      cancelHover();
+      const target = event.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const menuRect = menuRef.current?.getBoundingClientRect();
 
-      if (item.submenu && item.submenu.length > 0) {
-        const target = event.currentTarget as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const menuRect = menuRef.current?.getBoundingClientRect();
-
+      const activate = () => {
         setOpenNestedSubmenu(null);
-        setOpenSubmenu({
-          itemId: item.id,
-          position: {
-            x: (menuRect?.right ?? rect.right) + DROPDOWN_PANEL.submenuGap,
-            y: rect.top,
-          },
-        });
+        setOpenSubmenu(
+          item.submenu?.length
+            ? {
+                itemId: item.id,
+                position: {
+                  x:
+                    (menuRect?.right ?? rect.right) + DROPDOWN_PANEL.submenuGap,
+                  y: rect.top,
+                },
+              }
+            : null
+        );
+      };
+      if (openSubmenu && openSubmenu.itemId !== item.id) {
+        scheduleHover(activate);
       } else {
-        setOpenNestedSubmenu(null);
-        setOpenSubmenu(null);
+        activate();
       }
     },
-    []
+    [cancelHover, openSubmenu, scheduleHover]
   );
 
   const handleNestedSubmenuMouseEnter = useCallback(
     (item: ContextMenuItem, event: React.MouseEvent) => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-        hoverTimeoutRef.current = null;
-      }
+      cancelHover();
+      const target = event.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const submenuRect = submenuRef.current?.getBoundingClientRect();
 
-      if (item.submenu && item.submenu.length > 0) {
-        const target = event.currentTarget as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const submenuRect = submenuRef.current?.getBoundingClientRect();
-
-        setOpenNestedSubmenu({
-          itemId: item.id,
-          position: {
-            x: (submenuRect?.right ?? rect.right) + DROPDOWN_PANEL.submenuGap,
-            y: rect.top,
-          },
-        });
+      const activate = () => {
+        setOpenNestedSubmenu(
+          item.submenu?.length
+            ? {
+                itemId: item.id,
+                position: {
+                  x:
+                    (submenuRect?.right ?? rect.right) +
+                    DROPDOWN_PANEL.submenuGap,
+                  y: rect.top,
+                },
+              }
+            : null
+        );
+      };
+      if (openNestedSubmenu && openNestedSubmenu.itemId !== item.id) {
+        scheduleHover(activate);
       } else {
-        setOpenNestedSubmenu(null);
+        activate();
       }
     },
-    []
+    [cancelHover, openNestedSubmenu, scheduleHover]
   );
 
-  const handleSubmenuMouseEnter = useCallback(() => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-  }, []);
-
-  const handleSubmenuMouseLeave = useCallback(() => {
-    hoverTimeoutRef.current = setTimeout(() => {
-      setOpenNestedSubmenu(null);
-      setOpenSubmenu(null);
-    }, 150);
-  }, []);
-
   const handleMenuMouseLeave = useCallback(() => {
-    hoverTimeoutRef.current = setTimeout(() => {
+    scheduleHover(() => {
       setOpenNestedSubmenu(null);
       setOpenSubmenu(null);
-    }, 150);
-  }, []);
+    });
+  }, [scheduleHover]);
 
   return createPortal(
     <>
@@ -324,13 +325,16 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
           opacity: 0,
           pointerEvents: "none",
         }}
-        onMouseEnter={handleSubmenuMouseEnter}
+        onMouseEnter={cancelHover}
         onMouseLeave={handleMenuMouseLeave}
       >
         {items.map((item) => {
           if (item.divider) {
             return (
-              <div key={item.id} className="work-item-context-menu__divider" />
+              <div
+                key={item.id}
+                className={DROPDOWN_CLASSES.menuGroupSeparator}
+              />
             );
           }
 
@@ -339,9 +343,11 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
           const shortcutLabel = getShortcutLabel(item);
 
           return (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={item.id}
-              type="button"
+              htmlType="button"
               data-context-menu-item-id={item.id}
               data-testid={`context-menu-item-${item.id}`}
               className={`work-item-context-menu__item ${DROPDOWN_CLASSES.item} w-full justify-between border-none bg-transparent text-left ${DROPDOWN_CLASSES.itemHover} ${
@@ -374,12 +380,14 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
                 />
               )}
               {hasSubmenu && (
-                <ChevronRight
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  data-icon="chevron-right"
                   size={DROPDOWN_ITEM.iconSize}
                   className="work-item-context-menu__arrow"
                 />
               )}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -393,8 +401,8 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
           activeNestedItemId={openNestedSubmenu?.itemId}
           onItemClick={handleSubmenuItemClick}
           onItemMouseEnter={handleNestedSubmenuMouseEnter}
-          onMouseEnter={handleSubmenuMouseEnter}
-          onMouseLeave={handleSubmenuMouseLeave}
+          onMouseEnter={cancelHover}
+          onMouseLeave={handleMenuMouseLeave}
           showNumericShortcuts
         />
       )}
@@ -407,8 +415,8 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
           position={openNestedSubmenu.position}
           onItemClick={handleSubmenuItemClick}
           onItemMouseEnter={() => {}}
-          onMouseEnter={handleSubmenuMouseEnter}
-          onMouseLeave={handleSubmenuMouseLeave}
+          onMouseEnter={cancelHover}
+          onMouseLeave={handleMenuMouseLeave}
           showNumericShortcuts
         />
       )}

@@ -9,10 +9,11 @@ import React, {
 import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
 
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
+import { Placeholder } from "@src/components/Placeholder";
 import { ComposerStackListRow } from "@src/engines/ChatPanel/blocks/primitives";
 import { FileHeader } from "@src/modules/WorkStation/shared";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import {
   type DirectoryEntryGitMeta,
   type DirectoryEntryRow,
@@ -211,8 +212,10 @@ const DirectoryExplorerContent: React.FC<DirectoryExplorerContentProps> = memo(
           : undefined;
 
         return (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             className="block w-full text-left"
             onClick={() => handleOpenItem(item)}
           >
@@ -240,7 +243,7 @@ const DirectoryExplorerContent: React.FC<DirectoryExplorerContentProps> = memo(
               layout="columns"
               columnsClassName="grid-cols-[minmax(180px,1fr)_minmax(280px,2fr)_120px]"
             />
-          </button>
+          </Button>
         );
       },
       [handleOpenItem]
@@ -314,7 +317,7 @@ const DirectoryExplorerContent: React.FC<DirectoryExplorerContentProps> = memo(
           />
         ) : (
           <Virtuoso
-            className="min-h-0 flex-1 pt-1 scrollbar-hide"
+            className="scrollbar-hide min-h-0 flex-1 pt-1"
             data={listItems}
             computeItemKey={(_index, item) => `${item.type}:${item.path}`}
             fixedItemHeight={DIRECTORY_ROW_HEIGHT}

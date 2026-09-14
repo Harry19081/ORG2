@@ -10,7 +10,7 @@ pub(super) static TOOLS: &[ToolEntry] = &[
         description: "Read the contents of a file.",
         description_detail: "Reads text from a workspace-relative or absolute file path. Honors repository boundaries and configured size limits where applicable. Use before editing, for code review, or to pull excerpts into the conversation.",
         category: tool_categories::CODING,
-        icon_id: "file-text",
+        icon_id: "book-open-02",
         simulator_app: AppCode,
         app_subtool: FileRead,
         chat_block: CbReadFile,
@@ -88,7 +88,7 @@ pub(super) static TOOLS: &[ToolEntry] = &[
     ToolEntry {
         name: tool_names::INSPECT_TERMINALS,
         description: "Inspect and control live terminal sessions.",
-        description_detail: "Every request must include an `action` field. Use `{\"action\":\"list\"}` to list ORGII-managed PTY sessions, then `{\"action\":\"read_output\",\"session_id\":\"...\"}` to read bounded redacted output, `{\"action\":\"write_input\",\"session_id\":\"...\",\"input\":\"...\"}` to write input, or `{\"action\":\"close\",\"session_id\":\"...\"}` to close a selected PTY. Output returned to agents is read from the redacted snapshot buffer, not the raw terminal byte stream.",
+        description_detail: "Every request must include an `action` field. Use `{\"action\":\"list\"}` to list ORG2-managed PTY sessions, then `{\"action\":\"read_output\",\"session_id\":\"...\"}` to read bounded redacted output, `{\"action\":\"write_input\",\"session_id\":\"...\",\"input\":\"...\"}` to write input, or `{\"action\":\"close\",\"session_id\":\"...\"}` to close a selected PTY. Output returned to agents is read from the redacted snapshot buffer, not the raw terminal byte stream.",
         category: tool_categories::CODING,
         icon_id: "terminal-square",
         simulator_app: AppCode,
@@ -105,7 +105,7 @@ pub(super) static TOOLS: &[ToolEntry] = &[
             ("close", "x"),
         ],
         actions: &[
-            action_sub!("list", "List live ORGII-managed terminal sessions", Shell, chat: CbFallback, labels: "tools.inspectTerminalsListRunning", "tools.inspectTerminalsListDone", "tools.inspectTerminalsListFailed"),
+            action_sub!("list", "List live ORG2-managed terminal sessions", Shell, chat: CbFallback, labels: "tools.inspectTerminalsListRunning", "tools.inspectTerminalsListDone", "tools.inspectTerminalsListFailed"),
             action_sub!("read_output", "Read a bounded redacted output snapshot from a terminal session", Shell, chat: CbFallback, labels: "tools.inspectTerminalsReadOutputRunning", "tools.inspectTerminalsReadOutputDone", "tools.inspectTerminalsReadOutputFailed"),
             action_sub!("write_input", "Write input text or control characters into a terminal session", Shell, chat: CbFallback, labels: "tools.inspectTerminalsWriteInputRunning", "tools.inspectTerminalsWriteInputDone", "tools.inspectTerminalsWriteInputFailed"),
             action_sub!("close", "Close a terminal session", Shell, chat: CbFallback, labels: "tools.inspectTerminalsCloseRunning", "tools.inspectTerminalsCloseDone", "tools.inspectTerminalsCloseFailed"),
@@ -477,6 +477,26 @@ pub(super) static TOOLS: &[ToolEntry] = &[
             action_sub!("url", "Present an HTTPS URL as an external-open action", OtherTool, chat: CbCanvasInline, labels: "tools.renderInlineCanvasUrlRunning", "tools.renderInlineCanvasUrlDone", "tools.renderInlineCanvasUrlFailed"),
             action_sub!("react", "Render a stateful JSX App component", OtherTool, chat: CbCanvasInline, labels: "tools.renderInlineCanvasHtmlRunning", "tools.renderInlineCanvasHtmlDone", "tools.renderInlineCanvasHtmlFailed"),
             action_sub!("a2ui", "Stream typed UI elements (heading, text, code, image, button, list)", OtherTool, chat: CbCanvasInline, labels: "tools.renderInlineCanvasA2uiRunning", "tools.renderInlineCanvasA2uiDone", "tools.renderInlineCanvasA2uiFailed"),
+        ],
+        ..DEFAULT_TOOL_ENTRY
+    },
+    ToolEntry {
+        name: tool_names::REVISE_INLINE_CANVAS,
+        description: "Revise an existing inline Canvas without creating a new one.",
+        description_detail: "Replaces the content of a previously rendered inline Canvas while preserving its logical identity and sidebar position. Requires the exact target Canvas event id and validates that the target belongs to the same session. Supports the same html, url, react, and a2ui payload modes as render_inline_canvas.",
+        category: tool_categories::CODING,
+        icon_id: "layout",
+        simulator_app: AppCanvas,
+        app_subtool: OtherTool,
+        chat_block: CbCanvasInline,
+        label_running: "tools.reviseInlineCanvasRunning",
+        label_done: "tools.reviseInlineCanvasDone",
+        label_failed: "tools.reviseInlineCanvasFailed",
+        actions: &[
+            action_sub!("html", "Revise with a self-contained HTML/SVG/CSS snippet", OtherTool, chat: CbCanvasInline, labels: "tools.reviseInlineCanvasHtmlRunning", "tools.reviseInlineCanvasHtmlDone", "tools.reviseInlineCanvasHtmlFailed"),
+            action_sub!("url", "Revise with an HTTPS URL external-open action", OtherTool, chat: CbCanvasInline, labels: "tools.reviseInlineCanvasUrlRunning", "tools.reviseInlineCanvasUrlDone", "tools.reviseInlineCanvasUrlFailed"),
+            action_sub!("react", "Revise with a stateful JSX App component", OtherTool, chat: CbCanvasInline, labels: "tools.reviseInlineCanvasHtmlRunning", "tools.reviseInlineCanvasHtmlDone", "tools.reviseInlineCanvasHtmlFailed"),
+            action_sub!("a2ui", "Revise with typed UI elements", OtherTool, chat: CbCanvasInline, labels: "tools.reviseInlineCanvasA2uiRunning", "tools.reviseInlineCanvasA2uiDone", "tools.reviseInlineCanvasA2uiFailed"),
         ],
         ..DEFAULT_TOOL_ENTRY
     },

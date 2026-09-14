@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 pub enum CliConfigMode {
     Default,
     OrgiiManaged,
+    Direct,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -26,6 +27,8 @@ pub struct CliConfigTargetFileManifest {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CliConfigProfileManifest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub provider_profile: Option<super::provider_profiles::ClaudeProviderProfile>,
     pub agent: String,
     pub mode: CliConfigMode,
     pub target_files: Vec<CliConfigTargetFileManifest>,

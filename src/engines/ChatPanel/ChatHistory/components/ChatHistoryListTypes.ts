@@ -9,7 +9,8 @@
  */
 import type React from "react";
 
-import type { PlanningFooterMode } from "@src/engines/ChatPanel/blocks/primitives";
+import type { PlanningIndicatorMode } from "@src/engines/ChatPanel/blocks/primitives";
+import type { AgentStatusTrailState } from "@src/engines/ChatPanel/hooks/agentStatusTrailMath";
 
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
 import type { GroupHeaderRenderPart } from "../renderers/GroupHeaderRenderer";
@@ -17,15 +18,18 @@ import type { GroupHeaderRenderPart } from "../renderers/GroupHeaderRenderer";
 export type EventSummary = NonNullable<OptimizedChatItem["event"]>;
 
 export interface ChatHistoryListHandle {
-  scrollToIndex: (options: {
-    index: number;
-    behavior?: ScrollBehavior;
-    align?: "start" | "center" | "end" | "auto";
-  }) => void;
   scrollToGroup: (options: {
     groupIndex: number;
     behavior?: ScrollBehavior;
   }) => void;
+  scrollToChatTarget: (options: {
+    eventId?: string;
+    itemId?: string;
+    flatIndex?: number;
+    behavior?: ScrollBehavior;
+  }) => void;
+  /** Mount an off-screen virtual group before restoring its exact pixel anchor. */
+  revealTranscriptAnchor: (anchorId: string) => boolean;
 }
 
 export interface ChatHistoryListProps {
@@ -33,13 +37,22 @@ export interface ChatHistoryListProps {
   groupCounts: number[];
   turnIds: (string | null)[];
   totalFlatItems: number;
-  lastAssistantFlatIndexPerItem: (number | null)[];
-  codeBlockContainerWidth: number;
   footerSpacerHeight: number;
   bottomInset: number;
+  /** Top padding keeping content clear of the floating chrome; see chatPanelHeaderLayout. */
+  topPaddingPx?: number;
+  /** 1 while the agent's current activity should be named on the trail. */
   planningIndicatorCount: number;
   planningVariantIndex: number;
-  planningFooterMode: PlanningFooterMode;
+  planningFooterMode: PlanningIndicatorMode;
+  /**
+   * Live end-of-conversation status trail. It shares the planning footer's
+   * injected row rather than Virtuoso's global Footer, so it stays attached
+   * to the running turn instead of drifting onto the previous one.
+   */
+  statusTrail: AgentStatusTrailState;
+  /** Session the status trail describes; drives its agent mark. */
+  statusTrailSessionId: string | null;
   virtualListRef: React.RefObject<ChatHistoryListHandle | null>;
   virtualListDataKey: string;
   /**
@@ -52,7 +65,6 @@ export interface ChatHistoryListProps {
    * Stable getter returning whether the agent is in "exploring" mode.
    * Same rationale as `getIsWpGeneWorking`.
    */
-  getIsExploring: () => boolean;
   renderGroupHeader: (
     groupIndex: number,
     renderPart?: GroupHeaderRenderPart
@@ -68,21 +80,16 @@ export interface ChatHistoryListProps {
   hideActiveGroupHeader?: boolean;
   onEndReached: () => void;
   onRegenerate?: (groupIndex: number) => void;
-  onSubmit: (eventId: string, answers: Record<string, string>) => void;
-  onSkip: (eventId: string) => void;
   onEditUserMessage?: (
     header: OptimizedChatItem,
     text: string,
     images?: string[]
   ) => void;
   virtualScrollerRef: React.MutableRefObject<HTMLDivElement | null>;
-  /**
-   * Ref that receives the static-path scroll container (used only when
-   * a page has no body items and Virtuoso is not mounted).
-   * Allows useChatScrollPin to fall back to scrolling this element on
-   * session switches instead of silently failing.
-   */
+  /** Ref that receives the static-path scroll container. */
   staticScrollerRef?: React.MutableRefObject<HTMLDivElement | null>;
+  /** Publishes the one active scroll root to the shared viewport owner. */
+  onScrollRootChange?: (node: HTMLDivElement | null) => void;
   /**
    * When set, `GroupItemRenderer` paints a `NewEventDivider` with this
    * label above each group's last item. Subagent panes opt in so the
@@ -108,7 +115,6 @@ export interface GroupViewportMetrics extends GroupPinMetrics {
 }
 
 export interface RowGroupMeta {
-  lastAssistantFlatIndex: number | null;
   isLastItemInGroup: boolean;
   isLastGroup: boolean;
 }

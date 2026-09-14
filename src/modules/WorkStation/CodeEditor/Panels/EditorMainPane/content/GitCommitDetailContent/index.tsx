@@ -8,7 +8,6 @@
  * Uses the existing getGitCommitDiff API to fetch commit details.
  */
 import { useAtom, useAtomValue } from "jotai";
-import { ChevronRight } from "lucide-react";
 import React, {
   memo,
   useCallback,
@@ -20,8 +19,11 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import { gitFetchStream } from "@src/api/http/git/streaming";
+import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
 import type { GitFileStatus } from "@src/config/gitStatus";
 import { CodeMirrorDiff } from "@src/features/CodeMirror";
+import { ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import {
   FileHeader,
   GIT_FILE_LIST_MAX_WIDTH,
@@ -29,14 +31,7 @@ import {
   GitFileList,
   gitFileListWidthAtom,
 } from "@src/modules/WorkStation/shared";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { VerticalResizeHandle, useColumnResize } from "@src/scaffold/Resize";
-import {
-  editorHighlightActiveLineAtom,
-  editorLineNumbersAtom,
-  editorWordWrapAtom,
-} from "@src/store/ui/editorSettingsAtom";
-import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 import type { GitFile } from "@src/types/git/types";
 import { decodeOctalPath } from "@src/util/file/pathUtils";
@@ -46,7 +41,7 @@ import { CommitTabHeader } from "./CommitTabHeader";
 import { useCommitDiffLoader } from "./useCommitDiffLoader";
 import { useCommitFileDiffLoader } from "./useCommitFileDiffLoader";
 
-export interface GitCommitDetailContentProps {
+interface GitCommitDetailContentProps {
   commitSha: string;
   shortSha: string;
   commitMessage: string;
@@ -54,8 +49,8 @@ export interface GitCommitDetailContentProps {
   repoId: string;
   isRepoReady?: boolean;
   onFileSelect?: (filePath: string) => void;
-  headerVariant?: "commit" | "stash";
-  headerRootLabel?: string;
+  onClose?: () => void;
+  onOpenInNewTab?: () => void;
   publishHeaderToWorkstation?: boolean;
   prNumber?: number;
 }
@@ -68,21 +63,15 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
   repoId,
   isRepoReady = true,
   onFileSelect,
-  headerVariant = "commit",
-  headerRootLabel,
+  onClose,
+  onOpenInNewTab,
   publishHeaderToWorkstation = true,
   prNumber,
 }) => {
   const { t } = useTranslation();
 
   const [fileListCollapsed, setFileListCollapsed] = useState(false);
-  const [viewMode, setViewMode] = useAtom(diffViewModeAtom);
-  const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
-  const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
-  const [highlightActiveLine, setHighlightActiveLine] = useAtom(
-    editorHighlightActiveLineAtom
-  );
-  const { onOpenSettings } = useAtomValue(activeStatusBarCallbacksAtom);
+  const viewMode = useAtomValue(diffViewModeAtom);
   const [fileListWidth, setFileListWidth] = useAtom(gitFileListWidthAtom);
   const [fetchingPrCommit, setFetchingPrCommit] = useState(false);
   const [fetchPrError, setFetchPrError] = useState<{
@@ -175,13 +164,6 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
     setFileListCollapsed((prev) => !prev);
   }, []);
 
-  const handleLineNumbersChange = useCallback(
-    (enabled: boolean) => {
-      setLineNumbers(enabled ? "on" : "off");
-    },
-    [setLineNumbers]
-  );
-
   const handleFetchPrCommit = useCallback(() => {
     if (!prNumber || !repoId || !repoPath || fetchingPrCommit) return;
 
@@ -253,25 +235,22 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
   const currentFetchPrError =
     fetchPrError?.key === prCommitFetchKey ? fetchPrError.message : null;
 
-  const stashHeaderPath = `${headerRootLabel ?? shortSha}/${commitMessage}`;
-
   const hasInlineHeaderAbove = !publishHeaderToWorkstation;
-
-  const stashHeaderPublisher =
-    headerVariant === "stash" ? (
-      <FileHeader
-        filePath={stashHeaderPath}
-        repoPath={undefined}
-        useFileTypeIcon={false}
-        disableNavigation
-        publishToHost={publishHeaderToWorkstation ? "code" : undefined}
-      />
-    ) : null;
+  const header = (
+    <CommitTabHeader
+      shortSha={shortSha}
+      commitMessage={commitMessage}
+      commitDiff={commitDiff}
+      publishToWorkstationHeader={publishHeaderToWorkstation}
+      onClose={onClose}
+      onOpenInNewTab={onOpenInNewTab}
+    />
+  );
 
   if (!isRepoReady) {
     return (
       <>
-        {stashHeaderPublisher}
+        {header}
         <Placeholder
           variant="empty"
           placement="detail-panel"
@@ -287,15 +266,7 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <CommitTabHeader
-        shortSha={shortSha}
-        commitMessage={commitMessage}
-        commitDiff={commitDiff}
-        publishToWorkstationHeader={
-          publishHeaderToWorkstation && headerVariant === "commit"
-        }
-      />
-      {stashHeaderPublisher}
+      {header}
       {commitLoadState === "loading" ? (
         <Placeholder
           variant="loading"
@@ -360,7 +331,7 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
               <>
                 <div
                   ref={setFileListElement}
-                  className="flex flex-shrink-0 flex-col overflow-hidden"
+                  className="flex shrink-0 flex-col overflow-hidden"
                   style={{ width: `${fileListWidth}px` }}
                 >
                   <GitFileList
@@ -374,13 +345,20 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
             )}
 
             {fileListCollapsed && (
-              <button
-                className="flex w-6 flex-shrink-0 items-center justify-center border-r border-border-2 hover:bg-fill-1"
+              <Button
+                layout="custom"
+                appearance="custom"
+                className="flex w-6 shrink-0 items-center justify-center border-r border-border-2 hover:bg-fill-1"
                 onClick={toggleFileList}
                 title={t("tooltips.showFileList")}
               >
-                <ChevronRight size={14} className="text-text-3" />
-              </button>
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  data-icon="chevron-right"
+                  size={14}
+                  className="text-text-3"
+                />
+              </Button>
             )}
 
             {/* Right: Diff viewer */}
@@ -400,15 +378,6 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
                     repoPath={repoPath}
                     additions={selectedFile.insertions}
                     deletions={selectedFile.deletions}
-                    viewMode={viewMode}
-                    onViewModeChange={setViewMode}
-                    lineNumbersEnabled={lineNumbers !== "off"}
-                    onLineNumbersChange={handleLineNumbersChange}
-                    wordWrapEnabled={wordWrap}
-                    onWordWrapChange={setWordWrap}
-                    highlightActiveLineEnabled={highlightActiveLine}
-                    onHighlightActiveLineChange={setHighlightActiveLine}
-                    onMoreSettings={onOpenSettings}
                     loading={fileLoadState === "loading"}
                     onFileSelect={onFileSelect}
                   />

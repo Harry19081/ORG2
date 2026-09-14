@@ -7,7 +7,6 @@
  * Contains SearchPanelContent component that encapsulates useOpenEditorFiles hook.
  * This hook only runs when the Search tab is first visited (lazy mounting).
  */
-import { ArrowLeft } from "lucide-react";
 import React, {
   forwardRef,
   useCallback,
@@ -18,8 +17,10 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
-import { useOpenEditorFiles } from "@src/hooks/workStation/editor/useOpenEditorFiles";
+import { ArrowLeft02Icon, HugeiconsIcon } from "@src/icons";
+import { useOpenEditorFiles } from "@src/modules/WorkStation/CodeEditor/hooks/useOpenEditorFiles";
 import type { PrimarySidebarTab } from "@src/modules/WorkStation/shared";
 
 import { ICON_CONFIG, PANEL_CONSTANTS } from "../config";
@@ -139,7 +140,9 @@ export function useSearchTabConfig({
 
   // PERFORMANCE: Memoize icon to prevent re-renders
   const searchIcon = useMemo(
-    () => <SearchIcon size={PANEL_CONSTANTS.TAB_ICON_SIZE} />,
+    () => (
+      <HugeiconsIcon icon={SearchIcon} size={PANEL_CONSTANTS.TAB_ICON_SIZE} />
+    ),
     [SearchIcon]
   );
 
@@ -149,16 +152,23 @@ export function useSearchTabConfig({
       {
         key: "search-results",
         title: (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             className="flex min-w-0 items-center gap-1.5 normal-case"
             onClick={onBack}
-            aria-label={t("tabs.files")}
-            title={t("tabs.files")}
+            aria-label={t("labels.files")}
+            title={t("labels.files")}
           >
-            <ArrowLeft size={14} className="shrink-0 text-text-3" />
+            <HugeiconsIcon
+              icon={ArrowLeft02Icon}
+              data-icon="arrow-left"
+              size={14}
+              className="shrink-0 text-text-3"
+            />
             <span className="truncate uppercase">{t("tabs.search")}</span>
-          </button>
+          </Button>
         ),
         content: searchContent,
         defaultFlexGrow: 2,

@@ -22,6 +22,7 @@
 import React from "react";
 
 import FloatingExpandPill from "./FloatingExpandPill";
+import { useBeforeViewportLayoutMutation } from "./ViewportLayoutMutationContext";
 
 interface ExpandOverlayProps {
   isExpanded: boolean;
@@ -49,25 +50,30 @@ const ExpandOverlay: React.FC<ExpandOverlayProps> = ({
   alwaysShowControl = false,
   fadeFrom = "from-fill-2",
 }) => {
+  const beforeViewportLayoutMutation = useBeforeViewportLayoutMutation();
   const isTopFade = collapsedFadeEdge === "top";
   const collapsedOffsetStyle = isTopFade
     ? { transform: `translateY(${collapsedOffsetPx}px)` }
     : undefined;
+  const handleToggle = (event: React.MouseEvent) => {
+    beforeViewportLayoutMutation?.();
+    onToggle(event);
+  };
 
   if (!isExpanded) {
     return (
       <>
         <div
-          className={`pointer-events-none absolute left-0 right-0 z-10 ${isTopFade ? "top-0 bg-gradient-to-b" : "bottom-0 bg-gradient-to-t"} ${collapsedFadeHeightClass} ${fadeFrom} to-transparent`}
+          className={`pointer-events-none absolute right-0 left-0 z-10 ${isTopFade ? "top-0 bg-linear-to-b" : "bottom-0 bg-linear-to-t"} ${collapsedFadeHeightClass} ${fadeFrom} to-transparent`}
           style={collapsedOffsetStyle}
         />
         <div
-          className={`absolute left-0 right-0 z-20 flex justify-center transition-opacity ${alwaysShowControl ? "opacity-100" : "opacity-0 group-focus-within/expand:opacity-100 group-hover/expand:opacity-100"} ${isTopFade ? "top-0 pt-1" : "bottom-0 pb-1"}`}
+          className={`absolute right-0 left-0 z-20 flex justify-center transition-opacity ${alwaysShowControl ? "opacity-100" : "opacity-0 group-focus-within/expand:opacity-100 group-hover/expand:opacity-100"} ${isTopFade ? "top-0 pt-1" : "bottom-0 pb-1"}`}
           style={collapsedOffsetStyle}
         >
           <FloatingExpandPill
             expanded={false}
-            onClick={onToggle}
+            onClick={handleToggle}
             label={collapsedLabel}
             showLabel={showLabel}
           />
@@ -78,11 +84,11 @@ const ExpandOverlay: React.FC<ExpandOverlayProps> = ({
 
   return (
     <div
-      className={`sticky -bottom-2 z-10 flex flex-col items-center bg-gradient-to-t ${fadeFrom} to-transparent pb-3 pt-3 opacity-75`}
+      className={`sticky -bottom-2 z-10 flex flex-col items-center bg-linear-to-t ${fadeFrom} to-transparent pt-3 pb-3 opacity-75`}
     >
       <FloatingExpandPill
         expanded
-        onClick={onToggle}
+        onClick={handleToggle}
         label={expandedLabel}
         showLabel={showLabel}
       />

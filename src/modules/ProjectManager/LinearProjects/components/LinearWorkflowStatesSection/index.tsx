@@ -1,12 +1,3 @@
-import {
-  Check,
-  Circle,
-  Pencil,
-  Plus,
-  RefreshCw,
-  Trash2,
-  X,
-} from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -18,6 +9,18 @@ import type {
 } from "@src/api/http/integrations";
 import type { LinearTeamSummary } from "@src/api/http/integrations/linearProjects";
 import Button from "@src/components/Button";
+import Input from "@src/components/Input";
+import Select from "@src/components/Select";
+import {
+  Add01Icon,
+  Cancel01Icon,
+  CircleIcon,
+  Delete02Icon,
+  HugeiconsIcon,
+  Pen01Icon,
+  Refresh04Icon,
+  Tick01Icon,
+} from "@src/icons";
 
 interface LinearWorkflowStatesSectionProps {
   team?: LinearTeamSummary;
@@ -129,13 +132,14 @@ const LinearWorkflowStatesSection: React.FC<
 
   const renderDraftEditor = (mode: "create" | "edit") => (
     <div className="mx-2 mb-2 rounded-lg border border-border-2 bg-fill-1 p-2">
-      <input
+      <Input
+        size="small"
+        className="mb-2 w-full"
         value={draft.name}
-        onChange={(event) =>
+        onChange={(_value, event) =>
           setDraft((current) => ({ ...current, name: event.target.value }))
         }
         placeholder={t("linearProjects.statusPanel.statusNamePlaceholder")}
-        className="mb-2 h-7 w-full rounded-md border border-border-2 bg-bg-1 px-2 text-xs text-text-1 outline-none focus:border-primary-6"
       />
       <div className="mb-2 flex items-center gap-2">
         <input
@@ -147,41 +151,46 @@ const LinearWorkflowStatesSection: React.FC<
           className="h-7 w-8 rounded border border-border-2 bg-bg-1"
           aria-label={t("linearProjects.statusPanel.color")}
         />
-        <select
+        <Select
+          size="small"
           value={draft.stateType}
-          onChange={(event) =>
+          onChange={(value) =>
             setDraft((current) => ({
               ...current,
-              stateType: event.target.value as LinearWorkflowStateType,
+              stateType: value as LinearWorkflowStateType,
             }))
           }
-          className="h-7 min-w-0 flex-1 rounded-md border border-border-2 bg-bg-1 px-2 text-xs text-text-1 outline-none focus:border-primary-6"
-        >
-          {WORKFLOW_STATE_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {t(`linearProjects.statusPanel.types.${type}`)}
-            </option>
-          ))}
-        </select>
+          className="min-w-0 flex-1"
+          options={WORKFLOW_STATE_TYPES.map((type) => ({
+            value: type,
+            label: t(`linearProjects.statusPanel.types.${type}`),
+          }))}
+        />
       </div>
       <div className="flex justify-end gap-1">
-        <button
-          type="button"
+        <Button
+          variant="tertiary"
+          appearance="ghost"
+          size="small"
+          htmlType="button"
           onClick={resetDraft}
-          className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-text-2 hover:bg-fill-2"
+          className="gap-1 text-xs hover:bg-fill-2"
+          icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={13} />}
         >
-          <X size={13} />
           {t("common:actions.cancel")}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="primary"
+          appearance="solid"
+          size="small"
+          htmlType="button"
           onClick={mode === "create" ? handleSaveCreate : handleSaveEdit}
           disabled={!canSaveDraft || savingStateId !== null}
-          className="inline-flex h-7 items-center gap-1 rounded-md bg-primary-6 px-2 text-xs text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="gap-1 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+          icon={<HugeiconsIcon icon={Tick01Icon} data-icon="check" size={13} />}
         >
-          <Check size={13} />
           {t("common:actions.save")}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -189,7 +198,7 @@ const LinearWorkflowStatesSection: React.FC<
   return (
     <section className="px-1 py-2">
       <div className="mb-1 flex items-center justify-between px-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-text-3">
+        <span className="text-[11px] font-semibold tracking-wide text-text-3 uppercase">
           {t("linearProjects.statusPanel.workflowStates")}
         </span>
         <div className="flex items-center gap-1">
@@ -201,21 +210,27 @@ const LinearWorkflowStatesSection: React.FC<
             onClick={onRefreshStates}
             title={t("common:actions.refresh")}
             icon={
-              <RefreshCw
+              <HugeiconsIcon
+                icon={Refresh04Icon}
+                data-icon="refresh-cw"
                 size={13}
                 className={loadingStates ? "animate-spin" : ""}
               />
             }
           />
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="mini"
+            aria-label={t("linearProjects.statusPanel.addStatus")}
+            iconOnly
+            icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
+            htmlType="button"
             onClick={startCreate}
             disabled={!team}
-            className="inline-flex h-6 w-6 items-center justify-center rounded-md text-text-3 hover:bg-fill-2 hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-50"
+            className="hover:bg-fill-2 hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-50"
             title={t("linearProjects.statusPanel.addStatus")}
-          >
-            <Plus size={14} />
-          </button>
+          />
         </div>
       </div>
 
@@ -237,7 +252,9 @@ const LinearWorkflowStatesSection: React.FC<
             return (
               <div key={state.id}>
                 <div className="group flex min-h-8 items-center gap-2 rounded-md px-2 py-1 hover:bg-fill-1">
-                  <Circle
+                  <HugeiconsIcon
+                    icon={CircleIcon}
+                    data-icon="circle"
                     size={12}
                     fill={state.color ?? DEFAULT_STATE_COLOR}
                     className="shrink-0"
@@ -253,23 +270,43 @@ const LinearWorkflowStatesSection: React.FC<
                         : t("linearProjects.unknownState")}
                     </div>
                   </div>
-                  <button
-                    type="button"
+                  <Button
+                    variant="tertiary"
+                    appearance="soft-no-drop"
+                    size="mini"
+                    aria-label={t("common:actions.edit")}
+                    iconOnly
+                    icon={
+                      <HugeiconsIcon
+                        icon={Pen01Icon}
+                        data-icon="pencil"
+                        size={12}
+                      />
+                    }
+                    htmlType="button"
                     onClick={() => startEdit(state)}
-                    className="hidden h-6 w-6 items-center justify-center rounded-md text-text-3 hover:bg-fill-2 hover:text-text-1 group-hover:inline-flex"
+                    className="hidden group-hover:inline-flex hover:bg-fill-2 hover:text-text-1"
                     title={t("common:actions.edit")}
-                  >
-                    <Pencil size={12} />
-                  </button>
-                  <button
-                    type="button"
+                  />
+                  <Button
+                    variant="danger"
+                    appearance="soft-no-drop"
+                    size="mini"
+                    aria-label={t("linearProjects.statusPanel.archiveStatus")}
+                    iconOnly
+                    icon={
+                      <HugeiconsIcon
+                        icon={Delete02Icon}
+                        data-icon="trash-2"
+                        size={12}
+                      />
+                    }
+                    htmlType="button"
                     onClick={() => void onArchiveState(state.id)}
                     disabled={isSaving}
-                    className="hover:text-danger-7 hidden h-6 w-6 items-center justify-center rounded-md text-text-3 hover:bg-danger-1 disabled:cursor-not-allowed disabled:opacity-50 group-hover:inline-flex"
+                    className="hover:text-danger-7 hidden group-hover:inline-flex hover:bg-danger-1 disabled:cursor-not-allowed disabled:opacity-50"
                     title={t("linearProjects.statusPanel.archiveStatus")}
-                  >
-                    <Trash2 size={12} />
-                  </button>
+                  />
                 </div>
                 {isEditing && renderDraftEditor("edit")}
               </div>

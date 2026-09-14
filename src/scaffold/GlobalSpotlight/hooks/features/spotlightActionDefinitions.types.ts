@@ -15,6 +15,7 @@ import type { SpotlightItem } from "../../types";
 // ============================================
 
 export type SpotlightStaticActionId =
+  | "import-session"
   | "open-session-creator"
   | "create-project"
   | "create-work-item"
@@ -23,17 +24,14 @@ export type SpotlightStaticActionId =
   | "open-agent-control"
   | "switch-workspace"
   | "switch-branch"
+  | `switch-branch:${string}`
   | "add-workspace"
   | "create-multi-repo-workspace"
+  | "create-organization"
+  | "join-organization"
   | "toggle-sidebar"
-  | "set-system-theme"
-  | "set-light-theme"
-  | "set-dark-theme"
-  | "set-high-contrast-theme"
-  | "set-my-station-chat-left"
-  | "set-my-station-chat-right"
-  | "set-agent-station-chat-left"
-  | "set-agent-station-chat-right"
+  | "set-chat-panel-left"
+  | "set-chat-panel-right"
   | "enable-chat-pagination"
   | "disable-chat-pagination"
   | "use-model-picker-spotlight"
@@ -44,6 +42,8 @@ export type SpotlightStaticActionId =
   | "disable-dock-auto-hide"
   | "open-my-station"
   | "open-agent-station"
+  | "open-my-station-window"
+  | "open-agent-station-window"
   | "open-kanban"
   | "zoom-in"
   | "zoom-out"
@@ -58,6 +58,7 @@ export type SpotlightStaticActionId =
   | "detect-update";
 
 export type SpotlightStaticActionFallback =
+  | "import-session"
   | "open-session-creator"
   | "create-project"
   | "create-work-item"
@@ -67,6 +68,8 @@ export type SpotlightStaticActionFallback =
   | "workspace-switch"
   | "workspace-add"
   | "workspace-create"
+  | "organization-create"
+  | "organization-join"
   | "branch-picker"
   | "toggle-sidebar"
   | "zoom-in"
@@ -78,6 +81,8 @@ export type SpotlightStaticActionFallback =
   | "toggle-chat-panel"
   | "open-my-station"
   | "open-agent-station"
+  | "open-my-station-window"
+  | "open-agent-station-window"
   | "open-kanban"
   | "open-search-sidebar"
   | "open-source-control-tab"
@@ -92,6 +97,7 @@ export type SpotlightEditorActionId =
 export interface SpotlightStaticActionDefinition {
   id: SpotlightStaticActionId;
   labelKey: string;
+  labelValues?: Record<string, string>;
   icon: SpotlightItem["icon"];
   keywords: string[];
   shortcut?: string;

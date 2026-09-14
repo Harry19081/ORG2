@@ -12,7 +12,6 @@ use crate::core::session::compaction::persist;
 use crate::core::session::scheduler::{ScheduledKind, ScheduledMessage};
 use crate::core::turn_executor::context_accounting::ContextUsageSnapshot;
 use crate::model_context::session_memory;
-use crate::model_context::session_memory::SessionMemoryState;
 use crate::session::persistence as unified_persistence;
 use crate::state::{AgentAppState, AgentSession};
 
@@ -83,6 +82,50 @@ impl ManualCompactCommandResult {
     }
 }
 
+/// Return the canonical in-memory session whose scheduler owns maintenance
+/// exclusion, initializing an old persisted session exactly like the normal
+/// send path when necessary. Callers must enqueue their mutation on the
+/// returned session's [`crate::session::DialogScheduler`]; merely obtaining
+/// the handle is not an exclusion boundary.
+pub async fn prepare_session_for_scheduler_maintenance(
+    state: &AgentAppState,
+    session_id: &str,
+) -> Result<Arc<AgentSession>, String> {
+    // CLI transcripts belong to their provider. They must never initialize
+    // an unrelated Agent runtime merely because the shared composer invoked
+    // this maintenance entry point with a CLI conversation root.
+    if session_id.starts_with(core_types::session::CLI_SESSION_PREFIX) {
+        return Err("Native CLI compaction is owned by the provider runtime".to_string());
+    }
+    let needs_init = match state.get_session(session_id).await {
+        Some(session) => session.get_runtime().await.is_none(),
+        None => true,
+    };
+    if needs_init {
+        let identity = super::identity::resolve_session_identity(
+            state,
+            session_id,
+            super::identity::IdentityOverrides::default(),
+        )
+        .await?;
+        let launch_spec = crate::init::launch_spec::AgentLaunchSpec::from_session_sources(
+            state,
+            session_id,
+            identity.workspace_root,
+            identity.account_id,
+            Some(identity.model),
+            identity.native_harness_type,
+        )
+        .await?;
+        crate::init::init_session(state, launch_spec).await?;
+    }
+
+    state
+        .get_session(session_id)
+        .await
+        .ok_or_else(|| format!("Session {session_id} missing after runtime initialization"))
+}
+
 /// Desktop-only manual compaction. Unlike gateway `/compact`, this rewrites the
 /// visible durable transcript in-place by appending a compact boundary and does
 /// not fork the session.
@@ -120,56 +163,14 @@ pub async fn agent_session_manual_compact(
     // resolved config. Initialize on demand exactly like `agent_send_message`
     // does (idempotent fast-path when already live) instead of bouncing the
     // user with "send a message first".
-    let needs_init = match state.get_session(&session_id).await {
-        Some(session) => session.get_runtime().await.is_none(),
-        None => true,
-    };
-    if needs_init {
-        let identity = match super::identity::resolve_session_identity(
-            state.inner(),
-            &session_id,
-            super::identity::IdentityOverrides::default(),
-        )
-        .await
-        {
-            Ok(identity) => identity,
-            Err(err) => {
-                return Ok(ManualCompactCommandResult::failed(format!(
-                    "session runtime init failed: {}",
-                    err
-                )));
-            }
-        };
-        let launch_spec = match crate::init::launch_spec::AgentLaunchSpec::from_session_sources(
-            state.inner(),
-            &session_id,
-            identity.workspace_root,
-            identity.account_id,
-            Some(identity.model),
-            identity.native_harness_type,
-        )
-        .await
-        {
-            Ok(spec) => spec,
-            Err(err) => {
-                return Ok(ManualCompactCommandResult::failed(format!(
-                    "session runtime init failed: {}",
-                    err
-                )));
-            }
-        };
-        if let Err(err) = crate::init::init_session(state.inner(), launch_spec).await {
+    let session = match prepare_session_for_scheduler_maintenance(state.inner(), &session_id).await
+    {
+        Ok(session) => session,
+        Err(err) => {
             return Ok(ManualCompactCommandResult::failed(format!(
-                "session runtime init failed: {}",
-                err
-            )));
+                "session runtime init failed: {err}"
+            )))
         }
-    }
-
-    let Some(session) = state.get_session(&session_id).await else {
-        return Ok(ManualCompactCommandResult::status(
-            ManualCompactStatus::NoRuntime,
-        ));
     };
 
     // Always enqueue maintenance, even while a turn is running. The scheduler
@@ -252,8 +253,7 @@ async fn run_manual_compact_exclusive(
     instructions: Option<String>,
 ) -> ManualCompactCommandResult {
     let runtime = {
-        let guard = session.runtime.read().await;
-        match guard.clone() {
+        match session.get_runtime().await {
             Some(runtime) => runtime,
             None => {
                 return ManualCompactCommandResult::status(ManualCompactStatus::NoRuntime);
@@ -267,11 +267,13 @@ async fn run_manual_compact_exclusive(
             unified_persistence::load_llm_history(&sid_for_load).map_err(|err| err.to_string())?;
         let sm_state = unified_persistence::load_session_memory_state(&sid_for_load)
             .map_err(|err| err.to_string())?;
-        Ok::<_, String>((history, sm_state))
+        let start_seqs = unified_persistence::load_llm_history_start_sequences(&sid_for_load)
+            .map_err(|err| err.to_string())?;
+        Ok::<_, String>((history, sm_state, start_seqs))
     })
     .await;
 
-    let (history, sm_persisted) = match loaded {
+    let (history, sm_persisted, sm_start_seqs) = match loaded {
         Ok(Ok(pair)) => pair,
         Ok(Err(err)) => {
             let reason = format!("load session state failed: {}", err);
@@ -325,24 +327,15 @@ async fn run_manual_compact_exclusive(
     // is pre-extracted and cannot honor them.
     let mut compacted: Option<Vec<Value>> = None;
     if custom_instructions.is_none() {
-        let sm_state = SessionMemoryState {
-            content: sm_persisted.content,
-            // `sm_last_msg_idx` was recorded against the turn frame
-            // (`[runtime system message] + durable history`, see
-            // processor/mod.rs frame assembly); `history` here is
-            // `load_llm_history` output with no such prefix, so shift by
-            // the frame's one-message runtime-system prefix — the same
-            // conversion `adjust_sm_state_for_compactable_tail` performs
-            // on the auto paths. Without it the kept tail starts past
-            // messages the SM summary never covered.
-            last_summarized_msg_idx: sm_persisted.last_msg_idx.and_then(|idx| idx.checked_sub(1)),
-            ..Default::default()
-        };
+        // `history` is `load_llm_history` output — the same visible durable
+        // frame `sm_start_seqs` describes, so the anchor resolves exactly.
+        let anchor_idx =
+            session_memory::resolve_summarized_boundary_idx(sm_persisted.last_seq, &sm_start_seqs);
         if let Some(sm_view) = session_memory::try_sm_compact(
             &history,
-            &sm_state,
+            sm_persisted.content.as_deref(),
+            anchor_idx,
             &session_memory::SessionMemoryCompactConfig::default(),
-            0, // context window is unused by try_sm_compact
         ) {
             let candidate = finalize_compacted_view(&history, sm_view);
             if ContextCompactor::estimate_messages_tokens(&candidate) < tokens_before {
@@ -526,6 +519,7 @@ async fn run_manual_compact_exclusive(
         }
     };
 
+    session.sm_state.lock().await.reset_after_compaction();
     session.last_context_tokens.store(0, Ordering::SeqCst);
 
     // Instant ring/panel refresh, ahead of the frontend's full reload.
@@ -589,5 +583,28 @@ fn already_compact_result(
         tokens_before: Some(tokens_before),
         tokens_after: Some(tokens_before),
         boundary: None,
+    }
+}
+
+#[cfg(test)]
+mod runtime_ownership_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn cli_compaction_cannot_initialize_an_agent_runtime() {
+        let _sandbox = test_helpers::test_env::sandbox();
+        let conn = database::db::get_connection().expect("sandbox database");
+        crate::persistence::test_schema::ensure_agent_sessions_schema(&conn);
+        unified_persistence::init(&conn).expect("session schema");
+        let state = AgentAppState::new();
+        let session_id = "cliagent-manual-compact-owner";
+        let result = prepare_session_for_scheduler_maintenance(&state, session_id).await;
+        assert!(
+            matches!(result, Err(ref error) if error.contains("owned by the provider runtime"))
+        );
+        assert!(state.get_session(session_id).await.is_none());
+        assert!(unified_persistence::get_session(session_id)
+            .unwrap()
+            .is_none());
     }
 }

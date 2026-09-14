@@ -6,13 +6,15 @@
 import { useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
+import { ViewportLayoutMutationProvider } from "@src/components/ViewportLayoutMutationContext";
 import { loadEventComponent } from "@src/engines/SessionCore/rendering/registry/events";
 import { isSessionActiveAtom } from "@src/store/session/cliSessionStatusAtom";
 import { cursorIdeTurnSummariesAtomFamily } from "@src/store/session/cursorIdeTurnSummariesAtom";
-import { type Session, sessionByIdAtom } from "@src/store/session/sessionAtom";
+import { sessionByIdAtom } from "@src/store/session/sessionAtom";
 import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
-import { SharedConversationSenderProvider } from "../ChatItems/SharedConversationSenderContext";
+import { ParentAgentSenderProvider } from "../ChatItems/ParentAgentSenderContext";
+import { resolveParentAgentSenderSessionId } from "../ChatItems/parentAgentSender";
 import { useChatSessionId } from "../ChatSessionContext";
 import {
   type ChatHistoryProps,
@@ -27,36 +29,15 @@ import {
   useChatHistoryProjectionModel,
   useChatHistoryState,
   useChatNavigationController,
-  useChatSearchIntegration,
+  useChatSearch,
   useChatViewportController,
   useReloadSession,
 } from "./hooks";
 import "./index.scss";
 
-export type {
-  BrowserAddToConversationNavState,
-  ChatHistoryProps,
-  FollowAgentNavState,
-  ScrollNavState,
-} from "./ChatHistory.types";
+export type { ScrollNavState } from "./ChatHistory.types";
 
 const EMPTY_ORG_MEMBERS: ChatHistoryProps["agentOrgMembers"] = [];
-
-function resolveSharedConversationSender(session: Session | undefined) {
-  if (session?.importedFrom) {
-    return {
-      displayName:
-        session.importedFrom.ownerDisplayName?.trim() || "Shared user",
-      avatarUrl: session.importedFrom.ownerAvatarUrl,
-    };
-  }
-  if (session?.forkedFrom) {
-    return {
-      displayName: session.forkedFrom.ownerDisplayName.trim() || "Shared user",
-    };
-  }
-  return null;
-}
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({
   surfaceBgClass = "bg-chat-pane",
@@ -70,13 +51,14 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   onScrollNavChange,
   followAgentNav = EMPTY_FOLLOW_AGENT_NAV,
   browserAddToConversationNav = EMPTY_BROWSER_ADD_TO_CONVERSATION_NAV,
-  onRegisterSearchOpen,
   displayMode = "full",
   turnPaginationEnabled = true,
   pinnedHeaderPortalHost = null,
+  chromeTopInset = 0,
   bottomInset = 0,
   forceCollapseAllTurns = false,
   disableTailCollapse = false,
+  tailFollowMode = "reader-controlled",
   paginationTrailingSlot,
   hideGroupUserMessage = false,
   newEventDividerLabel = null,
@@ -84,6 +66,8 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   groupChatViewActive = false,
   onGroupChatViewToggle,
   mutationActionsDisabled = false,
+  onFailedUserIntentRetry,
+  resolveFailedUserIntentDispatch,
   planningIndicatorScope = null,
 }) => {
   const activeId = useChatSessionId() ?? null;
@@ -97,11 +81,15 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const historyState = useChatHistoryState();
   const isAgentWorking = useAtomValue(isSessionActiveAtom);
   const groupChat = useGroupChatContext();
-  const sharedConversationSender = useMemo(
-    () => resolveSharedConversationSender(activeSession),
-    [activeSession]
+  const isAgentOrgMemberSession = useMemo(
+    () =>
+      agentOrgCurrentMemberId !== null &&
+      agentOrgMembers.some(
+        (member) =>
+          member.memberId === agentOrgCurrentMemberId && !member.isCoordinator
+      ),
+    [agentOrgCurrentMemberId, agentOrgMembers]
   );
-
   useEffect(() => {
     // Canvas payloads can reach the WorkStation as soon as the tool call is
     // stored. Warm the chat renderer while the user is still waiting for the
@@ -130,12 +118,37 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     forceCollapseAllTurns,
     groupChat,
     hideGroupUserMessage,
+    isAgentOrgMemberSession,
     isAgentWorking,
-    isCursorIde,
     planningIndicatorCount,
     sessionStatus: activeSession?.status,
     sessionLoadStatus: historyState.sessionLoadStatus,
     turnPaginationEnabled,
+  });
+  const viewport = useChatViewportController({
+    activeId,
+    bottomInset,
+    browserAddToConversationNav,
+    displayTotalFlatItems: projection.displayTotalFlatItems,
+    followAgentNav,
+    latestLocalSubmitId: (() => {
+      const event = projection.displayGroupHeaders.at(-1)?.event;
+      return event?.source === "user" && event.displayStatus === "pending"
+        ? event.id
+        : null;
+    })(),
+    onScrollNavChange,
+    onSelectLatestTurnPage: turnPaginationEnabled
+      ? projection.handleLastTurnPage
+      : undefined,
+    setAtBottom: historyState.setAtBottom,
+    setIsChatScrolledToBottom: historyState.setIsChatScrolledToBottom,
+    setVisibleRange: historyState.setVisibleRange,
+    tailFollowKey: projection.tailFollowKey,
+    tailFollowMode,
+    totalFlatItems: projection.totalFlatItems,
+    turnPaginationEnabled,
+    virtualListRef: historyState.virtualListRef,
   });
   const navigation = useChatNavigationController({
     activeId,
@@ -152,91 +165,106 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     turnPageListOpen: projection.turnPageListOpen,
     turnPaginationEnabled,
     virtualListRef: historyState.virtualListRef,
+    onExplicitNavigation: viewport.detachForNavigation,
   });
   const emptyState = useChatEmptyState({
     activeSessionId: activeId,
     sessionLoadStatus: historyState.sessionLoadStatus,
     optimizedLen: historyState.chatHistory.length,
   });
-  const search = useChatSearchIntegration({
+  const search = useChatSearch({
+    sessionId: activeId,
     chatHistory: historyState.chatHistory,
-    optimizedChatHistory: projection.activeProjectionHistory,
+    flatItems: projection.flatItems,
+    groupCounts: projection.groupCounts,
+    groupMeta: projection.groupMeta,
+    pages: projection.pages,
+    turnPaginationEnabled,
+    currentPageIndex: projection.currentPageIndex,
+    setTurnPageSelection: projection.setTurnPageSelection,
     virtualListRef: historyState.virtualListRef,
     chatContainerRef: historyState.chatContainerRef,
-    originalToFlatIndex: projection.originalToFlatIndex,
+    onExplicitNavigation: viewport.detachForNavigation,
   });
+  // Agent-started sessions carry no message the reader wrote: their user-role
+  // turns are the parent's dispatches. Resolve the parent once here so every
+  // row renders the same attribution without its own store subscription.
+  const parentAgentSessionId = useMemo(
+    () =>
+      activeId
+        ? resolveParentAgentSenderSessionId({
+            sessionId: activeId,
+            parentSessionId: activeSession?.parentSessionId,
+            orgMemberId: activeSession?.orgMemberId,
+            background: activeSession?.background,
+          })
+        : null,
+    [
+      activeId,
+      activeSession?.background,
+      activeSession?.orgMemberId,
+      activeSession?.parentSessionId,
+    ]
+  );
+  const parentSession = useAtomValue(
+    sessionByIdAtom(parentAgentSessionId ?? "")
+  );
+  const parentAgentSender = useMemo(
+    () =>
+      parentAgentSessionId
+        ? { parentSessionId: parentAgentSessionId, parentSession }
+        : null,
+    [parentAgentSessionId, parentSession]
+  );
 
-  useEffect(() => {
-    onRegisterSearchOpen?.(search.handleOpenSearch);
-    return () => onRegisterSearchOpen?.(null);
-  }, [onRegisterSearchOpen, search.handleOpenSearch]);
-
-  const viewport = useChatViewportController({
-    activeId,
-    activeProjectionHistoryLength: projection.activeProjectionHistory.length,
-    atBottom: historyState.atBottom,
-    bottomInset,
-    browserAddToConversationNav,
-    currentPageIndex: projection.currentPageIndex,
-    disableTailCollapse,
-    displayGroupCounts: projection.displayGroupCounts,
-    displayLastGroupFirstFlatIndex: projection.displayLastGroupFirstFlatIndex,
-    displayTotalFlatItems: projection.displayTotalFlatItems,
-    followAgentNav,
-    isPendingCancelRef: emptyState.isPendingCancelRef,
-    onScrollNavChange,
-    planningIndicatorCount,
-    sessionLoadStatus: historyState.sessionLoadStatus,
-    setAtBottom: historyState.setAtBottom,
-    setIsChatScrolledToBottom: historyState.setIsChatScrolledToBottom,
-    setVisibleRange: historyState.setVisibleRange,
-    tailFollowKey: projection.tailFollowKey,
-    totalFlatItems: projection.totalFlatItems,
-    turnPaginationEnabled,
-  });
   const actions = useChatHistoryItemActions({
     displaySourceGroupIndices: projection.displaySourceGroupIndices,
     groupHeaders: projection.groupHeaders,
-    handleIgnoreQuestionRef: historyState.handleIgnoreQuestionRef,
-    handleReplyQuestionRef: historyState.handleReplyQuestionRef,
+    onFailedUserIntentRetry,
+    resolveFailedUserIntentDispatch,
   });
 
   return (
-    <SharedConversationSenderProvider value={sharedConversationSender}>
-      <ChatHistoryView
-        actions={actions}
-        activeId={activeId}
-        agentOrgCurrentMemberId={agentOrgCurrentMemberId}
-        agentOrgCurrentMemberName={agentOrgCurrentMemberName}
-        agentOrgMembers={agentOrgMembers}
-        agentOrgOverviewPanel={agentOrgOverviewPanel}
-        bottomInset={bottomInset}
-        chatPanelPosition={chatPanelPosition}
-        displayMode={displayMode}
-        emptyState={emptyState}
-        groupChatEnabled={Boolean(groupChat?.enabled)}
-        groupChatViewActive={groupChatViewActive}
-        groupChatViewAvailable={groupChatViewAvailable}
-        handlePlanningIndicatorCount={handlePlanningIndicatorCount}
-        handleReloadSession={handleReloadSession}
-        hideGroupUserMessage={hideGroupUserMessage}
-        historyState={historyState}
-        mutationActionsDisabled={mutationActionsDisabled}
-        navigation={navigation}
-        newEventDividerLabel={newEventDividerLabel}
-        onAgentOrgMemberSelect={onAgentOrgMemberSelect}
-        onAgentOrgRunViewRefresh={onAgentOrgRunViewRefresh}
-        onGroupChatViewToggle={onGroupChatViewToggle}
-        paginationTrailingSlot={paginationTrailingSlot}
-        pinnedHeaderPortalHost={pinnedHeaderPortalHost}
-        planningIndicatorScope={planningIndicatorScope}
-        projection={projection}
-        search={search}
-        surfaceBgClass={surfaceBgClass}
-        turnPaginationEnabled={turnPaginationEnabled}
-        viewport={viewport}
-      />
-    </SharedConversationSenderProvider>
+    <ParentAgentSenderProvider value={parentAgentSender}>
+      <ViewportLayoutMutationProvider
+        value={viewport.preserveForLayoutMutation}
+      >
+        <ChatHistoryView
+          actions={actions}
+          activeId={activeId}
+          agentOrgCurrentMemberId={agentOrgCurrentMemberId}
+          agentOrgCurrentMemberName={agentOrgCurrentMemberName}
+          agentOrgMembers={agentOrgMembers}
+          agentOrgOverviewPanel={agentOrgOverviewPanel}
+          bottomInset={bottomInset}
+          chatPanelPosition={chatPanelPosition}
+          displayMode={displayMode}
+          emptyState={emptyState}
+          groupChatEnabled={Boolean(groupChat?.enabled)}
+          groupChatViewActive={groupChatViewActive}
+          groupChatViewAvailable={groupChatViewAvailable}
+          handlePlanningIndicatorCount={handlePlanningIndicatorCount}
+          handleReloadSession={handleReloadSession}
+          hideGroupUserMessage={hideGroupUserMessage}
+          historyState={historyState}
+          mutationActionsDisabled={mutationActionsDisabled}
+          navigation={navigation}
+          newEventDividerLabel={newEventDividerLabel}
+          onAgentOrgMemberSelect={onAgentOrgMemberSelect}
+          onAgentOrgRunViewRefresh={onAgentOrgRunViewRefresh}
+          onGroupChatViewToggle={onGroupChatViewToggle}
+          paginationTrailingSlot={paginationTrailingSlot}
+          pinnedHeaderPortalHost={pinnedHeaderPortalHost}
+          chromeTopInset={chromeTopInset}
+          planningIndicatorScope={planningIndicatorScope}
+          projection={projection}
+          search={search}
+          surfaceBgClass={surfaceBgClass}
+          turnPaginationEnabled={turnPaginationEnabled}
+          viewport={viewport}
+        />
+      </ViewportLayoutMutationProvider>
+    </ParentAgentSenderProvider>
   );
 };
 

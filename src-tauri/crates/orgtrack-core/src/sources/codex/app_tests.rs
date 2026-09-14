@@ -1,4 +1,5 @@
 use super::*;
+use crate::sources::imported_history::client_origin::ImportedClientOrigin;
 
 #[test]
 fn includes_codex_session_dir_candidates() {
@@ -161,7 +162,8 @@ fn parses_codex_jsonl_into_replay_chunks() {
         std::env::temp_dir().join(format!("orgii-codex-history-test-{}", std::process::id()));
     std::fs::create_dir_all(&temp_dir).expect("create temp dir");
     let path = temp_dir.join("rollout-test.jsonl");
-    let content = r#"{"timestamp":"2026-02-11T06:16:06.458Z","type":"event_msg","payload":{"type":"user_message","message":"hello codex","images":[],"local_images":[],"text_elements":[]}}
+    let content = r#"{"timestamp":"2026-02-11T06:16:06.000Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"model-only context"}]}}
+{"timestamp":"2026-02-11T06:16:06.458Z","type":"event_msg","payload":{"type":"user_message","message":"hello codex","images":[],"local_images":[],"text_elements":[]}}
 {"timestamp":"2026-02-11T06:16:07.000Z","type":"response_item","payload":{"type":"function_call","name":"shell","arguments":"{\"command\":\"pwd\"}","call_id":"call_1"}}
 {"timestamp":"2026-02-11T06:16:08.000Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call_1","output":"/tmp/project"}}
 {"timestamp":"2026-02-11T06:16:09.000Z","type":"event_msg","payload":{"type":"agent_message","message":"done"}}
@@ -194,6 +196,179 @@ fn parses_codex_jsonl_into_replay_chunks() {
         imported_history::ACTION_TYPE_ASSISTANT
     );
     assert_eq!(chunks[2].function, imported_history::FUNCTION_ASSISTANT);
+
+    std::fs::remove_file(&path).expect("remove fixture");
+    std::fs::remove_dir(&temp_dir).expect("remove temp dir");
+}
+
+#[test]
+fn deduplicates_native_assistant_context_and_visible_event_mirror() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-native-mirror-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+    let path = temp_dir.join("rollout-native-mirror.jsonl");
+    let content = r#"{"timestamp":"2026-08-26T06:00:00.000Z","type":"event_msg","payload":{"type":"user_message","message":"hello","images":[],"local_images":[],"text_elements":[]}}
+{"timestamp":"2026-08-26T06:00:01.000Z","type":"response_item","payload":{"type":"message","id":"a1","role":"assistant","content":[{"type":"output_text","text":"one answer"}]}}
+{"timestamp":"2026-08-26T06:00:01.001Z","type":"event_msg","payload":{"type":"agent_message","message":"one answer","phase":"final_answer","memory_citation":null}}
+{"timestamp":"2026-08-26T06:00:02.000Z","type":"event_msg","payload":{"type":"user_message","message":"continue","images":[],"local_images":[],"text_elements":[]}}
+{"timestamp":"2026-08-26T06:00:03.000Z","type":"event_msg","payload":{"type":"agent_message","message":"two answer","phase":"final_answer","memory_citation":null}}
+{"timestamp":"2026-08-26T06:00:03.001Z","type":"response_item","payload":{"type":"message","id":"a2","role":"assistant","content":[{"type":"output_text","text":"two answer"}]}}
+"#;
+    std::fs::write(&path, content).expect("write fixture");
+
+    let chunks = load_codex_app_from_path("codexapp-native-mirror", &path).expect("parse");
+    let assistant = chunks
+        .iter()
+        .filter(|chunk| chunk.function == imported_history::FUNCTION_ASSISTANT)
+        .collect::<Vec<_>>();
+    assert_eq!(assistant.len(), 2);
+    assert_eq!(
+        assistant[0]
+            .result
+            .get("observation")
+            .or_else(|| assistant[0].result.get("content"))
+            .and_then(Value::as_str),
+        Some("one answer")
+    );
+    assert_eq!(
+        assistant[1]
+            .result
+            .get("observation")
+            .or_else(|| assistant[1].result.get("content"))
+            .and_then(Value::as_str),
+        Some("two answer")
+    );
+
+    std::fs::remove_file(&path).expect("remove fixture");
+    std::fs::remove_dir(&temp_dir).expect("remove temp dir");
+}
+
+#[test]
+fn parses_paginated_codex_user_items_without_model_context_duplicates() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-paginated-history-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+    let path = temp_dir.join("rollout-paginated.jsonl");
+    let content = r##"{"timestamp":"2026-08-18T01:00:00.000Z","type":"session_meta","payload":{"cwd":"/tmp/project","id":"thread-1","history_mode":"paginated"},"ordinal":0}
+{"timestamp":"2026-08-18T01:00:01.000Z","type":"event_msg","payload":{"type":"task_started","turn_id":"turn-1"},"ordinal":1}
+{"timestamp":"2026-08-18T01:00:01.010Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"# AGENTS.md instructions"},{"type":"input_text","text":"<environment_context>internal</environment_context>"}],"internal_chat_message_metadata_passthrough":{"turn_id":"turn-1"}},"ordinal":2}
+{"timestamp":"2026-08-18T01:00:01.020Z","type":"turn_context","payload":{"turn_id":"turn-1","cwd":"/tmp/project","model":"gpt-5.3-codex"},"ordinal":3}
+{"timestamp":"2026-08-18T01:00:01.030Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"inspect the parser"}],"internal_chat_message_metadata_passthrough":{"turn_id":"turn-1"}},"ordinal":4}
+{"timestamp":"2026-08-18T01:00:01.040Z","type":"event_msg","payload":{"type":"item_completed","turn_id":"turn-1","item":{"type":"UserMessage","id":"user-1","content":[{"type":"text","text":"inspect the parser","text_elements":[]},{"type":"image","image_url":"https://example.com/input.png"},{"type":"local_image","path":"/tmp/input.png"}]}},"ordinal":5}
+{"timestamp":"2026-08-18T01:00:02.000Z","type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"first reply"}]},"ordinal":6}
+{"timestamp":"2026-08-18T01:00:03.000Z","type":"event_msg","payload":{"type":"task_complete","turn_id":"turn-1"},"ordinal":7}
+{"timestamp":"2026-08-18T01:01:00.000Z","type":"event_msg","payload":{"type":"task_started","turn_id":"turn-2"},"ordinal":8}
+{"timestamp":"2026-08-18T01:01:00.010Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"<environment_context>refreshed</environment_context>"}],"internal_chat_message_metadata_passthrough":{"turn_id":"turn-2"}},"ordinal":9}
+{"timestamp":"2026-08-18T01:01:00.020Z","type":"turn_context","payload":{"turn_id":"turn-2","cwd":"/tmp/project","model":"gpt-5.3-codex"},"ordinal":10}
+{"timestamp":"2026-08-18T01:01:00.030Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"report the result"}],"internal_chat_message_metadata_passthrough":{"turn_id":"turn-2"}},"ordinal":11}
+{"timestamp":"2026-08-18T01:01:00.040Z","type":"event_msg","payload":{"type":"item_completed","turn_id":"turn-2","item":{"type":"UserMessage","id":"user-2","content":[{"type":"text","text":"report the result","text_elements":[]}]}},"ordinal":12}
+{"timestamp":"2026-08-18T01:01:01.000Z","type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"second reply"}]},"ordinal":13}
+{"timestamp":"2026-08-18T01:01:02.000Z","type":"event_msg","payload":{"type":"task_complete","turn_id":"turn-2"},"ordinal":14}
+"##;
+    std::fs::write(&path, content).expect("write fixture");
+
+    let chunks = load_codex_app_from_path("codexapp-rollout-paginated", &path).expect("parse");
+    let user_chunks = chunks
+        .iter()
+        .filter(|chunk| chunk.function == imported_history::FUNCTION_USER_MESSAGE)
+        .collect::<Vec<_>>();
+    assert_eq!(
+        user_chunks
+            .iter()
+            .filter_map(|chunk| chunk.result.pointer("/message/content"))
+            .filter_map(Value::as_str)
+            .collect::<Vec<_>>(),
+        vec!["inspect the parser", "report the result"]
+    );
+    assert_eq!(
+        user_chunks[0].result["images"],
+        json!(["https://example.com/input.png", "/tmp/input.png"])
+    );
+
+    let window = load_codex_app_initial_window_from_path("codexapp-rollout-paginated", &path, 1)
+        .expect("window");
+    assert_eq!(window.turns.len(), 2);
+    assert_eq!(
+        window
+            .chunks
+            .iter()
+            .filter(|chunk| chunk.function == imported_history::FUNCTION_USER_MESSAGE)
+            .filter_map(|chunk| chunk.result.pointer("/message/content"))
+            .filter_map(Value::as_str)
+            .collect::<Vec<_>>(),
+        vec!["inspect the parser", "report the result"]
+    );
+
+    let (source_mtime_ms, source_size_bytes) =
+        imported_paths::file_metadata_signature(&path, "Codex").expect("metadata");
+    let record = ImportedHistoryDiscoveredRecord {
+        source_session_id: "rollout-paginated".to_string(),
+        source_path: path.clone(),
+        source_record_key: "rollout-paginated".to_string(),
+        source_mtime_ms,
+        source_size_bytes,
+        source_fingerprint: String::new(),
+        parser_version: CODEX_APP_METADATA_PARSER_VERSION,
+    };
+    let meta = parse_codex_session_meta(&record)
+        .expect("parse metadata")
+        .expect("session metadata");
+    assert_eq!(meta.name, "inspect the parser");
+
+    std::fs::remove_file(&path).expect("remove fixture");
+    std::fs::remove_dir(&temp_dir).expect("remove temp dir");
+}
+
+#[test]
+fn ignores_incomplete_paginated_model_input_until_user_item_is_committed() {
+    use std::io::Write;
+
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-paginated-append-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+    let path = temp_dir.join("rollout-paginated-append.jsonl");
+    let prefix = r#"{"timestamp":"2026-08-18T01:00:00.000Z","type":"session_meta","payload":{"cwd":"/tmp/project","id":"thread-1","history_mode":"paginated"},"ordinal":0}
+{"timestamp":"2026-08-18T01:00:01.000Z","type":"event_msg","payload":{"type":"task_started","turn_id":"turn-1"},"ordinal":1}
+{"timestamp":"2026-08-18T01:00:01.010Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"<environment_context>internal</environment_context>"}],"internal_chat_message_metadata_passthrough":{"turn_id":"turn-1"}},"ordinal":2}
+{"timestamp":"2026-08-18T01:00:01.020Z","type":"turn_context","payload":{"turn_id":"turn-1","cwd":"/tmp/project","model":"gpt-5.3-codex"},"ordinal":3}
+{"timestamp":"2026-08-18T01:00:01.030Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"real prompt"}],"internal_chat_message_metadata_passthrough":{"turn_id":"turn-1"}},"ordinal":4}
+"#;
+    std::fs::write(&path, prefix).expect("write fixture");
+
+    let incomplete = load_codex_app_initial_window_from_path("codexapp-paginated-append", &path, 1)
+        .expect("incomplete window");
+    assert!(incomplete.turns.is_empty());
+    assert!(incomplete
+        .chunks
+        .iter()
+        .all(|chunk| chunk.function != imported_history::FUNCTION_USER_MESSAGE));
+
+    let mut file = std::fs::OpenOptions::new()
+        .append(true)
+        .open(&path)
+        .expect("open fixture for append");
+    file.write_all(
+        b"{\"timestamp\":\"2026-08-18T01:00:01.040Z\",\"type\":\"event_msg\",\"payload\":{\"type\":\"item_completed\",\"turn_id\":\"turn-1\",\"item\":{\"type\":\"UserMessage\",\"id\":\"user-1\",\"content\":[{\"type\":\"text\",\"text\":\"real prompt\",\"text_elements\":[]}]}},\"ordinal\":5}\n",
+    )
+    .expect("append user item");
+    file.flush().expect("flush fixture");
+
+    let committed = load_codex_app_initial_window_from_path("codexapp-paginated-append", &path, 1)
+        .expect("committed window");
+    assert_eq!(committed.turns.len(), 1);
+    assert_eq!(
+        committed.chunks[0]
+            .result
+            .pointer("/message/content")
+            .and_then(Value::as_str),
+        Some("real prompt")
+    );
 
     std::fs::remove_file(&path).expect("remove fixture");
     std::fs::remove_dir(&temp_dir).expect("remove temp dir");
@@ -471,7 +646,7 @@ fn codex_initial_window_keeps_one_hundred_rounds_discoverable() {
 }
 
 #[test]
-fn codex_turn_catalog_incrementally_discovers_an_appended_round() {
+fn codex_turn_catalog_discovers_an_appended_round() {
     use std::io::Write;
 
     let temp_dir = std::env::temp_dir().join(format!(
@@ -1190,6 +1365,58 @@ fn codex_write_stdin_polls_merge_into_originating_exec_command() {
 }
 
 #[test]
+fn codex_background_command_partial_output_is_an_interrupted_result() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-background-partial-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+    let path = temp_dir.join("rollout-background-partial.jsonl");
+    let content = [
+        json!({
+            "timestamp": "2026-07-18T01:00:00Z",
+            "type": "response_item",
+            "payload": {
+                "type": "custom_tool_call",
+                "name": "exec",
+                "call_id": "call_shell",
+                "input": r#"const r = await tools.exec_command({cmd:"cargo test",workdir:"/tmp/project",yield_time_ms:10000,max_output_tokens:3000}); text(r)"#,
+            }
+        }),
+        json!({
+            "timestamp": "2026-07-18T01:00:10Z",
+            "type": "response_item",
+            "payload": {
+                "type": "custom_tool_call_output",
+                "call_id": "call_shell",
+                "output": [
+                    { "type": "input_text", "text": "Script running with session ID 82118\n" },
+                    { "type": "input_text", "text": r#"{"session_id":82118,"output":"Compiling\n"}"# },
+                ],
+            }
+        }),
+    ]
+    .into_iter()
+    .map(|line| line.to_string())
+    .collect::<Vec<_>>()
+    .join("\n");
+    std::fs::write(&path, content).expect("write fixture");
+
+    let chunks = load_codex_app_from_path("codexapp-background-partial", &path).expect("parse");
+    assert_eq!(chunks.len(), 1);
+    assert_eq!(
+        chunks[0].function,
+        imported_history::FUNCTION_RUN_COMMAND_LINE
+    );
+    assert_eq!(chunks[0].result["status"], "interrupted");
+    assert_eq!(chunks[0].result["interrupted"], true);
+    assert_eq!(chunks[0].result["output"], "Compiling\n");
+
+    std::fs::remove_file(&path).expect("remove fixture");
+    std::fs::remove_dir(&temp_dir).expect("remove temp dir");
+}
+
+#[test]
 fn codex_write_stdin_cell_wait_still_merges_into_originating_command() {
     let temp_dir = std::env::temp_dir().join(format!(
         "orgii-codex-write-stdin-cell-test-{}",
@@ -1284,6 +1511,109 @@ fn codex_write_stdin_cell_wait_still_merges_into_originating_command() {
 }
 
 #[test]
+fn codex_desktop_exec_keeps_heredoc_bodies_in_one_invocation() {
+    for command in [
+        "python3 - <<'PY'\nfrom pathlib import Path\nprint('done')\nPY",
+        "cat <<EOF\nhello\nEOF",
+        "cat <<-\"EOF\"\n\thello\n\tEOF\nprintf done",
+        "cat <<< 'hello'\nprintf done",
+    ] {
+        let payload = json!({
+            "name": "exec",
+            "call_id": "heredoc",
+            "input": format!("text(await tools.exec_command({{cmd:{}}}));", serde_json::to_string(command).unwrap()),
+        });
+        let (_, calls) =
+            pending_custom_tool_calls_from_payload(&payload, "2026-09-10T16:50:00Z").unwrap();
+        assert_eq!(calls.len(), 1, "{command}");
+        assert_eq!(
+            calls[0].canonical_name,
+            imported_history::FUNCTION_RUN_COMMAND_LINE
+        );
+        assert_eq!(calls[0].args["command"], command);
+    }
+}
+
+#[test]
+fn codex_desktop_background_heredoc_completion_pairs_with_batched_next_command() {
+    let temp_dir = std::env::temp_dir().join(format!("orgii-codex-heredoc-{}", std::process::id()));
+    std::fs::create_dir_all(&temp_dir).unwrap();
+    let path = temp_dir.join("rollout.jsonl");
+    let command = "python3 - <<'PY'\nfrom pathlib import Path\nprint('created')\nPY";
+    let next_command = "python3 - <<'PY'\nimport json\nprint('verified')\nPY";
+    let call = |id: &str, input: String| {
+        json!({
+            "timestamp": "2026-09-10T16:50:00Z", "type": "response_item",
+            "payload": {"type": "custom_tool_call", "name": "exec", "call_id": id, "input": input},
+        })
+    };
+    let output = |id: &str, results: Vec<Value>| {
+        json!({
+            "timestamp": "2026-09-10T16:50:01Z", "type": "response_item",
+            "payload": {"type": "custom_tool_call_output", "call_id": id, "output":
+                std::iter::once(json!({"type": "input_text", "text": "Script completed\nOutput:\n"}))
+                    .chain(results.into_iter().map(|result| json!({"type": "input_text", "text": result.to_string()})))
+                    .collect::<Vec<_>>()},
+        })
+    };
+    let start = [
+        call(
+            "start",
+            format!(
+                "text(await tools.exec_command({{cmd:{}}}));",
+                serde_json::to_string(command).unwrap()
+            ),
+        ),
+        output("start", vec![json!({"session_id": 65005, "output": ""})]),
+        call(
+            "poll",
+            "text(await tools.write_stdin({session_id:65005,chars:\"\"}));".to_string(),
+        ),
+        output(
+            "poll",
+            vec![json!({"session_id": 65005, "output": "created\n"})],
+        ),
+    ];
+    let completion = [
+        call("finish", format!("text(await tools.write_stdin({{session_id:65005,chars:\"\"}}));\ntext(await tools.exec_command({{cmd:{}}}));", serde_json::to_string(next_command).unwrap())),
+        output("finish", vec![json!({"exit_code": 0, "output": "finished\n"}), json!({"exit_code": 0, "output": "verified\n"})]),
+    ];
+    let encode = |rows: &[Value]| {
+        rows.iter()
+            .map(Value::to_string)
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+    std::fs::write(&path, encode(&start)).unwrap();
+    let pending = load_codex_app_from_path("codexapp-heredoc", &path).unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].args["command"], command);
+    std::fs::write(
+        &path,
+        format!("{}\n{}", encode(&start), encode(&completion)),
+    )
+    .unwrap();
+    for _ in 0..2 {
+        let chunks = load_codex_app_from_path("codexapp-heredoc", &path).unwrap();
+        assert_eq!(chunks.len(), 2);
+        for (expected_command, expected_output) in [
+            (command, "created\nfinished\n"),
+            (next_command, "verified\n"),
+        ] {
+            let chunk = chunks
+                .iter()
+                .find(|chunk| chunk.args["command"] == expected_command)
+                .unwrap();
+            assert_eq!(chunk.result["exit_code"], 0);
+            assert_ne!(chunk.result["success"], false);
+            assert_ne!(chunk.result["status"], "interrupted");
+            assert_eq!(chunk.result["output"], expected_output);
+        }
+    }
+    std::fs::remove_dir_all(temp_dir).unwrap();
+}
+
+#[test]
 fn codex_desktop_exec_preserves_multiline_shell_script() {
     let command = "sed -n '1,180p' src/scaffold/NavigationSidebar/connectors/useSessionMenuItems/menuItemBuilders.tsx\nsed -n '250,370p' src/scaffold/NavigationSidebar/connectors/useSessionMenuItems/index.tsx\nsed -n '1,180p' src/config/agentIcons.tsx\nrg -n \"interface.*MenuItem|type.*MenuItem|renderStatusDot|agentIconId\" src/scaffold/NavigationSidebar src/scaffold -g '*.tsx' -g '*.ts' | head -200";
     let script = format!(
@@ -1344,6 +1674,13 @@ fn codex_desktop_exec_preserves_multiline_shell_script() {
     assert_eq!(parts[1].lines().count(), 121);
     assert_eq!(parts[2].lines().count(), 180);
     assert_eq!(parts[3].lines().count(), 2);
+
+    for output in ["", "你好\r\n\nlast line", "first\n", "\n\n"] {
+        let parts = output_parts_for_tool_calls(&calls, output);
+        assert_eq!(parts.concat(), output);
+        assert_eq!(parts[0], output);
+        assert!(parts[1..].iter().all(String::is_empty));
+    }
 }
 
 #[test]
@@ -1471,6 +1808,58 @@ fn codex_desktop_exec_unwraps_web_search_query() {
     assert_eq!(calls.len(), 1);
     assert_eq!(calls[0].canonical_name, "web_search");
     assert_eq!(calls[0].args["query"], "Codex app event format");
+}
+
+#[test]
+fn codex_native_canonical_tool_args_are_not_normalized_twice() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-materialized-tool-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+    let path = temp_dir.join("rollout-materialized-tool.jsonl");
+    let canonical_args = json!({
+        "action": "search",
+        "query": "Codex app event format",
+        "queries": [],
+        "url": "",
+        "pattern": "",
+        "payload": {"search_query": [{"q": "Codex app event format"}]}
+    });
+    let payload = json!({
+        "type": "function_call",
+        "id": "tool-item-1",
+        "name": "web_search",
+        "arguments": canonical_args.to_string(),
+        "call_id": "call_materialized_web",
+    });
+    let output = json!({
+        "type": "function_call_output",
+        "call_id": "call_materialized_web",
+        "output": "search result",
+    });
+    std::fs::write(
+        &path,
+        format!(
+            "{}\n{}\n",
+            json!({"timestamp": "2026-08-26T00:00:01Z", "type": "response_item", "payload": payload}),
+            json!({"timestamp": "2026-08-26T00:00:02Z", "type": "response_item", "payload": output})
+        ),
+    )
+    .expect("write materialized canonical tool fixture");
+
+    let chunks = load_codex_app_from_path("codexapp-materialized-tool", &path)
+        .expect("parse materialized canonical tool call");
+    assert_eq!(chunks.len(), 1);
+    assert_eq!(chunks[0].function, "web_search");
+    assert_eq!(chunks[0].args["action"], canonical_args["action"]);
+    assert_eq!(chunks[0].args["query"], canonical_args["query"]);
+    assert_eq!(chunks[0].args["payload"], canonical_args["payload"]);
+    assert_eq!(chunks[0].args["__orgiiSourceEventId"], "tool-item-1");
+    assert_eq!(chunks[0].result["output"], "search result");
+
+    std::fs::remove_file(&path).expect("remove fixture");
+    std::fs::remove_dir(&temp_dir).expect("remove temp dir");
 }
 
 #[test]
@@ -2290,16 +2679,32 @@ fn strips_orgii_exec_mode_bridge_from_codex_user_text() {
         "type": "user_message",
         "message": bridge_only,
     });
-    assert_eq!(user_message_from_payload(&bridge_only_payload), None);
+    assert_eq!(
+        legacy_user_message_text_from_payload(&bridge_only_payload),
+        None
+    );
 
     let prefixed_payload = serde_json::json!({
         "type": "user_message",
         "message": with_bridge,
     });
     assert_eq!(
-        user_message_from_payload(&prefixed_payload).as_deref(),
+        legacy_user_message_text_from_payload(&prefixed_payload).as_deref(),
         Some("fix the login bug")
     );
+}
+
+#[test]
+fn strips_orgii_provider_context_from_codex_user_text() {
+    let wrapped = "<orgii_provider_context>\nworkspace instructions\n</orgii_provider_context>\n\n<orgii_cli_exec_mode_bridge>\nbuild mode\n</orgii_cli_exec_mode_bridge>\n\n<ide_context>\nopen file: src/app.ts\n</ide_context>\n\ncontinue the shared session";
+    assert_eq!(
+        strip_orgii_exec_mode_bridge(wrapped),
+        "continue the shared session"
+    );
+
+    let provider_only =
+        "<orgii_provider_context>\nworkspace instructions\n</orgii_provider_context>";
+    assert_eq!(strip_orgii_exec_mode_bridge(provider_only), "");
 }
 
 #[test]
@@ -2323,14 +2728,17 @@ fn strips_ide_context_from_codex_user_text() {
         "type": "user_message",
         "message": ide_only,
     });
-    assert_eq!(user_message_from_payload(&ide_only_payload), None);
+    assert_eq!(
+        legacy_user_message_text_from_payload(&ide_only_payload),
+        None
+    );
 
     let both_payload = serde_json::json!({
         "type": "user_message",
         "message": with_both,
     });
     assert_eq!(
-        user_message_from_payload(&both_payload).as_deref(),
+        legacy_user_message_text_from_payload(&both_payload).as_deref(),
         Some("fix the login bug")
     );
 }
@@ -2482,4 +2890,334 @@ fn unresolved_tool_calls_flush_in_file_order_across_reparses() {
     assert_eq!(first_ids, second_ids);
 
     std::fs::remove_dir_all(&temp_dir).expect("remove temp dir");
+}
+
+#[test]
+fn captures_rollout_originator_as_client_origin() {
+    // Real rollouts disagree between `originator` and `source`: the Codex
+    // desktop app writes `source: "vscode"` for its own sessions, so a
+    // provenance badge keyed on `source` would call the official app an IDE
+    // extension. Pin that `originator` wins and `source` is ignored.
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-client-origin-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+
+    for (originator, source, expected_origin) in [
+        ("Codex Desktop", "vscode", ImportedClientOrigin::OfficialApp),
+        ("codex_cli_rs", "cli", ImportedClientOrigin::Cli),
+        (
+            "multica-agent-sdk",
+            "vscode",
+            ImportedClientOrigin::ThirdParty,
+        ),
+        ("orgii-smoke", "cli", ImportedClientOrigin::Org2),
+    ] {
+        let stem = format!("rollout-{}", originator.replace([' ', '_'], "-"));
+        let path = temp_dir.join(format!("{stem}.jsonl"));
+        let content = format!(
+            r#"{{"timestamp":"2026-08-18T01:00:00.000Z","type":"session_meta","payload":{{"cwd":"/tmp/project","id":"thread-1","originator":"{originator}","source":"{source}"}},"ordinal":0}}
+{{"timestamp":"2026-08-18T01:00:01.000Z","type":"response_item","payload":{{"type":"message","role":"user","content":[{{"type":"input_text","text":"hello"}}]}},"ordinal":1}}
+"#
+        );
+        std::fs::write(&path, content).expect("write fixture");
+
+        let (source_mtime_ms, source_size_bytes) =
+            imported_paths::file_metadata_signature(&path, "Codex").expect("metadata");
+        let record = ImportedHistoryDiscoveredRecord {
+            source_session_id: stem.clone(),
+            source_path: path.clone(),
+            source_record_key: stem.clone(),
+            source_mtime_ms,
+            source_size_bytes,
+            source_fingerprint: String::new(),
+            parser_version: CODEX_APP_METADATA_PARSER_VERSION,
+        };
+        let meta = parse_codex_session_meta(&record)
+            .expect("parse metadata")
+            .expect("session metadata");
+        let cache_input = meta::session_meta_to_cache_input(meta);
+        assert_eq!(
+            cache_input.client_origin,
+            Some(expected_origin),
+            "{originator} should classify as {expected_origin:?}"
+        );
+        // The raw vendor string survives for tooltips and diagnostics.
+        assert_eq!(cache_input.client_origin_raw.as_deref(), Some(originator));
+    }
+
+    std::fs::remove_dir_all(&temp_dir).expect("remove temp dir");
+}
+
+#[test]
+fn rollout_without_originator_has_no_client_origin() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-client-origin-absent-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+    let path = temp_dir.join("rollout-no-originator.jsonl");
+    std::fs::write(
+        &path,
+        r#"{"timestamp":"2026-08-18T01:00:00.000Z","type":"session_meta","payload":{"cwd":"/tmp/project","id":"thread-1"},"ordinal":0}
+{"timestamp":"2026-08-18T01:00:01.000Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"hello"}]},"ordinal":1}
+"#,
+    )
+    .expect("write fixture");
+
+    let (source_mtime_ms, source_size_bytes) =
+        imported_paths::file_metadata_signature(&path, "Codex").expect("metadata");
+    let record = ImportedHistoryDiscoveredRecord {
+        source_session_id: "rollout-no-originator".to_string(),
+        source_path: path.clone(),
+        source_record_key: "rollout-no-originator".to_string(),
+        source_mtime_ms,
+        source_size_bytes,
+        source_fingerprint: String::new(),
+        parser_version: CODEX_APP_METADATA_PARSER_VERSION,
+    };
+    let meta = parse_codex_session_meta(&record)
+        .expect("parse metadata")
+        .expect("session metadata");
+    let cache_input = meta::session_meta_to_cache_input(meta);
+    // Absent provenance must stay absent rather than defaulting to a badge.
+    assert_eq!(cache_input.client_origin, None);
+    assert_eq!(cache_input.client_origin_raw, None);
+
+    std::fs::remove_dir_all(&temp_dir).expect("remove temp dir");
+}
+
+#[test]
+fn codex_window_discards_old_catalog_after_larger_atomic_replacement() {
+    let dir = std::env::temp_dir().join(format!("orgii-codex-rotation-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("rollout.jsonl");
+    let transcript = |label: &str| (0..3).map(|i| format!("{}\n{}\n",
+        serde_json::json!({"type":"event_msg","timestamp":"2026-09-09T00:00:00Z","payload":{"type":"user_message","message":format!("{label}-question-{i}")}}),
+        serde_json::json!({"type":"event_msg","timestamp":"2026-09-09T00:00:01Z","payload":{"type":"agent_message","message":format!("{label}-answer-{i}")}})
+    )).collect::<String>();
+    std::fs::write(&path, transcript("old")).unwrap();
+    load_codex_app_initial_window_from_path("codexapp-rotation", &path, 1).unwrap();
+    let replacement = dir.join("replacement.jsonl");
+    std::fs::write(&replacement, transcript("replacement-is-longer")).unwrap();
+    std::fs::rename(replacement, &path).unwrap();
+    let window = load_codex_app_initial_window_from_path("codexapp-rotation", &path, 1).unwrap();
+    let encoded = serde_json::to_string(&window.chunks).unwrap();
+    assert!(!encoded.contains("old-question"), "rotated source must not keep stale catalog rows");
+    assert!(encoded.contains("replacement-is-longer-question-0"));
+    std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn codex_question_receipts_replay_with_ordered_answers() {
+    let path = std::env::temp_dir().join(format!(
+        "codex-question-{}.jsonl",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let questions = serde_json::json!({"questions":[{"id":"choice","question":"Alpha or Beta?","options":[{"label":"Alpha"},{"label":"Beta"}]}]});
+    let call = serde_json::json!({"timestamp":"2026-09-10T00:00:00Z","type":"response_item","payload":{"type":"function_call","name":"request_user_input","call_id":"question-call","arguments":questions.to_string()}});
+    for (output, answered) in [
+        (
+            serde_json::json!({"answers":{"choice":{"answers":["Beta"]}}}).to_string(),
+            true,
+        ),
+        (
+            "request_user_input is unavailable in Default mode".to_string(),
+            false,
+        ),
+    ] {
+        let receipt = serde_json::json!({"timestamp":"2026-09-10T00:00:01Z","type":"response_item","payload":{"type":"function_call_output","call_id":"question-call","output":output}});
+        std::fs::write(&path, format!("{call}\n{receipt}\n")).unwrap();
+        let chunks = load_codex_app_from_path("codexapp-question", &path).unwrap();
+        let question = chunks
+            .iter()
+            .find(|chunk| chunk.function == "ask_user_questions")
+            .unwrap();
+        assert_eq!(question.result["call_id"], "question-call");
+        assert_eq!(question.result["status"] == "answered", answered);
+        if answered {
+            assert_eq!(question.result["answers"], serde_json::json!([["Beta"]]));
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[cfg(unix)]
+#[test]
+fn discovery_survives_dangling_profile_symlinks_and_dedupes_live_ones() {
+    let temp = std::env::temp_dir().join(format!(
+        "orgii-codex-discovery-symlinks-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let native = temp.join("native").join("sessions").join("2026").join("08").join("28");
+    let profile = temp.join("profile").join("sessions").join("2026").join("08").join("28");
+    std::fs::create_dir_all(&native).unwrap();
+    std::fs::create_dir_all(&profile).unwrap();
+    let stem = "rollout-2026-08-28T17-12-59-0236a8cf-8dbb-4c52-9555-f5f54438ceb1";
+    let real = native.join(format!("{stem}.jsonl"));
+    std::fs::write(
+        &real,
+        concat!(
+            r#"{"timestamp":"2026-08-28T17:12:59Z","type":"session_meta","payload":{"id":"0236a8cf-8dbb-4c52-9555-f5f54438ceb1","originator":"Codex Desktop","cwd":"/tmp/project"}}"#,
+            "\n",
+            r#"{"timestamp":"2026-08-28T17:13:00Z","type":"event_msg","payload":{"type":"user_message","message":"hello"}}"#,
+            "\n"
+        ),
+    )
+    .unwrap();
+    std::os::unix::fs::symlink(&real, profile.join(format!("{stem}.jsonl"))).unwrap();
+    std::os::unix::fs::symlink(
+        temp.join("gone").join("rollout-2026-08-28T17-17-01-5787846d-f20d-4c89-b2cd-a755414c2500.jsonl"),
+        profile.join("rollout-2026-08-28T17-17-01-5787846d-f20d-4c89-b2cd-a755414c2500.jsonl"),
+    )
+    .unwrap();
+
+    let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_tables(&conn).unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_source_cache_tables(&conn).unwrap();
+    let dirs = [
+        temp.join("native").join("sessions"),
+        temp.join("profile").join("sessions"),
+    ];
+    for _ in 0..2 {
+        index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
+        let rows: Vec<(String, String)> = conn
+            .prepare(
+                "SELECT source_session_id, source_path FROM imported_history_session_cache
+                 WHERE source = 'codex_app' ORDER BY source_session_id",
+            )
+            .unwrap()
+            .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))
+            .unwrap()
+            .collect::<Result<_, _>>()
+            .unwrap();
+        assert_eq!(
+            rows,
+            vec![(stem.to_string(), real.to_string_lossy().to_string())],
+            "one row for the real rollout; the dangling link is skipped"
+        );
+    }
+    let before = conn.total_changes();
+    index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
+    assert_eq!(
+        conn.total_changes(),
+        before,
+        "a rescan over the same symlinked rollout must not rewrite the row"
+    );
+    std::fs::remove_dir_all(&temp).unwrap();
+}
+
+#[test]
+fn discovery_keeps_the_first_file_when_two_roots_hold_the_same_stem() {
+    let temp = std::env::temp_dir().join(format!(
+        "orgii-codex-discovery-dup-stem-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let native = temp.join("native").join("sessions").join("2026").join("08").join("27");
+    let profile = temp.join("profile").join("sessions").join("2026").join("08").join("27");
+    std::fs::create_dir_all(&native).unwrap();
+    std::fs::create_dir_all(&profile).unwrap();
+    let stem = "rollout-2026-08-27T11-15-00-7a1d349c-0b12-49ce-844d-d03d204e15a0";
+    // The same session materialized into two roots as two diverged copies.
+    let header = r#"{"timestamp":"2026-08-27T11:15:00Z","type":"session_meta","payload":{"id":"7a1d349c-0b12-49ce-844d-d03d204e15a0","originator":"codex_cli_rs","cwd":"/tmp/project"}}"#;
+    let user = |text: &str| {
+        serde_json::json!({"timestamp":"2026-08-27T11:15:01Z","type":"event_msg","payload":{"type":"user_message","message":text}})
+    };
+    std::fs::write(
+        native.join(format!("{stem}.jsonl")),
+        format!("{header}\n{}\n", user("native copy")),
+    )
+    .unwrap();
+    std::fs::write(
+        profile.join(format!("{stem}.jsonl")),
+        format!("{header}\n{}\n", user("profile copy, longer")),
+    )
+    .unwrap();
+    let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_tables(&conn).unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_source_cache_tables(&conn).unwrap();
+    let dirs = [
+        temp.join("native").join("sessions"),
+        temp.join("profile").join("sessions"),
+    ];
+    index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
+    let path: String = conn
+        .query_row(
+            "SELECT source_path FROM imported_history_session_cache WHERE source='codex_app' AND source_session_id = ?1",
+            [stem],
+            |row| row.get(0),
+        )
+        .unwrap();
+    assert_eq!(
+        std::path::PathBuf::from(&path),
+        native.join(format!("{stem}.jsonl")),
+        "the first enumerated root must win"
+    );
+    for _ in 0..3 {
+        let before = conn.total_changes();
+        index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
+        assert_eq!(
+            conn.total_changes(),
+            before,
+            "a rescan must not let the second copy take the row over"
+        );
+    }
+    std::fs::remove_dir_all(&temp).unwrap();
+}
+
+#[test]
+fn native_function_calls_with_response_ids_still_normalize() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-native-ids-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(&temp_dir).unwrap();
+    let path = temp_dir.join("rollout-2026-09-10T22-20-46-01a08ee9-424a-7261-b262-5bb2b0cbbb35.jsonl");
+    // Shapes copied from a Codex Desktop 0.153.4 rollout: every native
+    // function call carries an `fc_…` response-item id.
+    let spawn_args = json!({"task_name":"resend_probe","fork_turns":"none","message":"Reply DONE"}).to_string();
+    let shell_args = json!({"command":["bash","-lc","ls"],"workdir":"/tmp"}).to_string();
+    let content = format!(
+        "{}\n{}\n{}\n{}\n{}\n",
+        json!({"timestamp":"2026-09-11T05:20:46Z","type":"session_meta","payload":{"id":"01a08ee9-424a-7261-b262-5bb2b0cbbb35","originator":"Codex Desktop","cwd":"/tmp/project"}}),
+        json!({"timestamp":"2026-09-11T05:20:47Z","type":"event_msg","payload":{"type":"user_message","message":"probe"}}),
+        json!({"timestamp":"2026-09-11T05:20:48Z","type":"response_item","payload":{"type":"function_call","id":"fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f5","name":"spawn_agent","namespace":"collaboration","arguments":spawn_args,"call_id":"call_spawn"}}),
+        json!({"timestamp":"2026-09-11T05:20:49Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call_spawn","output":"{\"task_name\":\"/root/resend_probe\"}"}}),
+        json!({"timestamp":"2026-09-11T05:20:50Z","type":"response_item","payload":{"type":"function_call","id":"fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f6","name":"shell","arguments":shell_args,"call_id":"call_shell"}}),
+    );
+    std::fs::write(&path, content).unwrap();
+    let chunks = load_codex_app_from_path("codexapp-native-ids", &path).unwrap();
+    let spawn = chunks
+        .iter()
+        .find(|chunk| chunk.function == "subagent")
+        .expect("native spawn_agent with a response id must normalize to subagent");
+    assert_eq!(spawn.args["task_name"], "resend_probe");
+    assert_eq!(
+        spawn.args["__orgiiSourceEventId"],
+        "fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f5"
+    );
+    let shell = chunks
+        .iter()
+        .find(|chunk| chunk.function == imported_history::FUNCTION_RUN_COMMAND_LINE)
+        .expect("native shell with a response id must normalize to run_command_line");
+    assert_eq!(shell.args["command"], "ls", "argv-form command must survive normalization");
+    assert_eq!(shell.args["cwd"], "/tmp");
+    assert!(chunks.iter().all(|chunk| chunk.function != "spawn_agent" && chunk.function != "shell"));
+    std::fs::remove_dir_all(&temp_dir).unwrap();
 }

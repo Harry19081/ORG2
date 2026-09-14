@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ImportedHistorySource } from "@src/api/tauri/externalHistory";
 import { rpc } from "@src/api/tauri/rpc";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { openOrganizationInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import type { Session } from "@src/store/session/sessionAtom/types";
 
 import {
@@ -32,7 +33,6 @@ const {
   SESSION_SEGMENT_UPLOAD_BATCH_SIZE,
   Org2CloudSyncEngine,
   Org2CloudSyncError,
-  chatPanelSelectedCloudOrgAtom,
   cloudOrgToken,
   getImportedHistorySourceBySessionId,
   org2CloudAccessSettingsAtom,
@@ -583,7 +583,9 @@ describe("Org2CloudSyncEngine session publishing", () => {
 
   it("treats the visible management org as active for retry and toast policy", async () => {
     store.set(sidebarActiveCloudOrgIdAtom, null);
-    store.set(chatPanelSelectedCloudOrgAtom, { orgId: "corg-1" });
+    store.set(openOrganizationInChatPanelTabAtom, {
+      organization: { kind: "cloud", cloudOrg: { orgId: "corg-1" } },
+    });
     client.upsertSessionMetadata.mockRejectedValue(
       new Org2CloudSyncError("ORG2_QUOTA_EXCEEDED", 403)
     );
@@ -1888,7 +1890,7 @@ describe("Org2CloudSyncEngine session publishing", () => {
     });
   });
 
-  it("publishes a multi-tagged session only to the active org", async () => {
+  it("publishes a multi-tagged session to every tagged org", async () => {
     store.set(org2CloudOrgsAtom, [
       { orgId: "corg-1", name: "Cloud Team", role: "member" },
       { orgId: "corg-2", name: "Other Team", role: "member" },
@@ -1917,9 +1919,13 @@ describe("Org2CloudSyncEngine session publishing", () => {
 
     await engine.runSyncPass();
 
-    expect(client.rewriteSessionEvents).toHaveBeenCalledTimes(1);
-    expect(client.rewriteSessionEvents.mock.calls[0][1].orgId).toBe("corg-1");
-    expect(eventStoreMock.getPersistedEvents).toHaveBeenCalledTimes(1);
+    // A tag is an explicit publish request: an inactive tagged org must not
+    // wait for the owner to activate it (Move to Org would otherwise report
+    // success while the target org was never visited).
+    expect(client.rewriteSessionEvents).toHaveBeenCalledTimes(2);
+    expect(
+      client.rewriteSessionEvents.mock.calls.map((call) => call[1].orgId).sort()
+    ).toEqual(["corg-1", "corg-2"]);
   });
 
   // --- deleteSession resurrection-hash fix ----------------------------------

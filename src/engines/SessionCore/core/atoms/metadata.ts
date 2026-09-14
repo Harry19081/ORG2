@@ -5,6 +5,8 @@
  */
 import { type Atom, atom } from "jotai";
 
+import { createStableWeakLruCache } from "@src/util/core/state/stableWeakLruCache";
+
 import type { SessionEvent, SessionLoadStatus, SessionSpec } from "../types";
 
 const MAX_SESSION_RELOAD_EPOCH_ENTRIES = 200;
@@ -71,30 +73,19 @@ export const sessionHydrationCountMapAtom = atom<
 >(new Map());
 sessionHydrationCountMapAtom.debugLabel = "session/hydrationCountMap";
 
-const SESSION_HYDRATION_BY_ID_CACHE_MAX = 100;
-const sessionHydrationByIdCache = new Map<
-  string,
-  Atom<SessionHydrationState | undefined>
->();
+const sessionHydrationByIdCache =
+  createStableWeakLruCache<Atom<SessionHydrationState | undefined>>(100);
 
 /** Narrow, LRU-bounded view used by the active Chat Pane and tab icons. */
 export function sessionHydrationByIdAtom(
   sessionId: string
 ): Atom<SessionHydrationState | undefined> {
   const cached = sessionHydrationByIdCache.get(sessionId);
-  if (cached) {
-    sessionHydrationByIdCache.delete(sessionId);
-    sessionHydrationByIdCache.set(sessionId, cached);
-    return cached;
-  }
+  if (cached) return cached;
   const scopedAtom = atom((get) =>
     get(sessionHydrationCountMapAtom).get(sessionId)
   );
   scopedAtom.debugLabel = `session/hydration:${sessionId}`;
-  if (sessionHydrationByIdCache.size >= SESSION_HYDRATION_BY_ID_CACHE_MAX) {
-    const oldest = sessionHydrationByIdCache.keys().next().value;
-    if (oldest !== undefined) sessionHydrationByIdCache.delete(oldest);
-  }
   sessionHydrationByIdCache.set(sessionId, scopedAtom);
   return scopedAtom;
 }
@@ -166,9 +157,10 @@ isLoadingMoreAtom.debugLabel = "session/isLoadingMore";
 // ============================================
 
 /**
- * Holds the synthetic user event injected by launchSession so it survives
- * clearSessionAtom. loadSessionAtom consumes and merges it when the real
- * data arrives, then clears the atom.
+ * Holds the visible session's newest synthetic user event so it survives a
+ * session switch or a delayed transcript replace. loadSessionAtom consumes
+ * and merges it until the provider's real echo arrives, then clears the atom.
+ * Background sessions must not overwrite this foreground slot.
  */
 export const pendingSyntheticEventAtom = atom<SessionEvent | null>(null);
 pendingSyntheticEventAtom.debugLabel = "session/pendingSyntheticEvent";

@@ -2,17 +2,30 @@ import { useAtomValue } from "jotai";
 import React, { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { Placeholder } from "@src/components/Placeholder";
+import { WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS } from "@src/config/workstation/tokens";
+import { useBrowserContextOptional } from "@src/contexts/workstation/BrowserContext";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
+import {
+  mainPaneHasBrowserHostTabsAtom,
+  mainPaneHasRealTabsAtom,
+} from "@src/store/workstation/tabHost";
 import {
   activeWorkStationTabAtom,
   mainPaneTabsAtom,
 } from "@src/store/workstation/tabs";
+import {
+  workstationNewBrowserSessionConsumedTickAtom,
+  workstationNewBrowserSessionRequestAtom,
+} from "@src/store/workstation/workstationTabBarAtoms";
 
 import CodeEditor from "../CodeEditor";
-import { LspInstallPrompt } from "../CodeEditor/LspInstallPrompt";
-import { WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS } from "../shared/tokens";
 import { WorkStationStartPage } from "./StartPage";
+import {
+  shouldMountAgentStationHost,
+  shouldMountBrowserHost,
+  shouldMountWorkstationHost,
+} from "./hostMountPolicy";
 
 const ProjectManagerCore = React.lazy(
   () =>
@@ -35,16 +48,12 @@ interface AppShellContentProps {
   isActive: boolean;
   chatPanelFocused: boolean;
   isAgentStation: boolean;
-  hasVisitedAgentStation: boolean;
   hasVisitedCode: boolean;
   hasVisitedBrowser: boolean;
   hasVisitedProject: boolean;
   isCodeMode: boolean;
   isBrowserMode: boolean;
   isProjectMode: boolean;
-  codeContentVisible: boolean;
-  browserContentVisible: boolean;
-  projectContentVisible: boolean;
   handleSelectRepo: () => void;
 }
 
@@ -67,16 +76,12 @@ export function AppShellContent({
   isActive,
   chatPanelFocused,
   isAgentStation,
-  hasVisitedAgentStation,
   hasVisitedCode,
   hasVisitedBrowser,
   hasVisitedProject,
   isCodeMode,
   isBrowserMode,
   isProjectMode,
-  codeContentVisible,
-  browserContentVisible,
-  projectContentVisible,
   handleSelectRepo,
 }: AppShellContentProps) {
   const { t } = useTranslation();
@@ -87,6 +92,50 @@ export function AppShellContent({
   // launcher paint over it.
   const showStartPage =
     !isBrowserMode && (activeTab?.type === "start" || noTabs);
+
+  // ── Host mount policy ────────────────────────────────────────────────
+  // Bounded keep-alive: hosts stay mounted (hidden) between real tabs so
+  // switches are instant, but the empty Launchpad releases every host — see
+  // `hostMountPolicy.ts`. The Browser host has extra mount triggers because
+  // it owns side effects the other hosts don't: the new-session request
+  // consumer (consumed-tick effect in BrowserLayout, which is remount-safe)
+  // and the engine-sessions ↔ tab-strip sync.
+  const hasRealTabs = useAtomValue(mainPaneHasRealTabsAtom);
+  const hasBrowserHostTabs = useAtomValue(mainPaneHasBrowserHostTabsAtom);
+  const newBrowserSessionRequest = useAtomValue(
+    workstationNewBrowserSessionRequestAtom
+  );
+  const newBrowserSessionConsumedTick = useAtomValue(
+    workstationNewBrowserSessionConsumedTickAtom
+  );
+  // Optional: AppShellContent always sits under BrowserProvider in the app,
+  // but isolated mounts (tests) shouldn't crash — no provider ⇒ no sessions.
+  const browserContextValue = useBrowserContextOptional();
+  // Mounted iff displayed — the render below uses the same condition, so the
+  // simulator's twelve-cell worst case cannot survive being hidden.
+  const mountAgentStationHost = shouldMountAgentStationHost({
+    isAgentStation,
+    isChatPanelMaximized: chatPanelFocused,
+  });
+  const mountCodeHost = shouldMountWorkstationHost({
+    hasRealTabs,
+    isActiveHost: isCodeMode,
+    hasVisited: hasVisitedCode,
+  });
+  const mountProjectHost = shouldMountWorkstationHost({
+    hasRealTabs,
+    isActiveHost: isProjectMode,
+    hasVisited: hasVisitedProject,
+  });
+  const mountBrowserHost = shouldMountBrowserHost({
+    hasRealTabs,
+    isActiveHost: isBrowserMode,
+    hasVisited: hasVisitedBrowser,
+    hasBrowserHostTabs,
+    hasBrowserSessions: (browserContextValue?.sessions.length ?? 0) > 0,
+    hasPendingNewSessionRequest:
+      newBrowserSessionRequest.tick > newBrowserSessionConsumedTick,
+  });
   const activeTabCanRenderWithoutRepo =
     activeTab?.type === "agent-config" ||
     activeTab?.type === "chat-session" ||
@@ -118,14 +167,14 @@ export function AppShellContent({
       <CodeEditor
         repoPath={repoPath}
         repoName={repoName}
-        isActive={codeContentVisible}
+        isActive={isCodeMode}
       />
     );
   };
 
   return (
     <>
-      {(isAgentStation || hasVisitedAgentStation) && (
+      {mountAgentStationHost && (
         <div
           className="h-full w-full"
           style={{
@@ -143,60 +192,52 @@ export function AppShellContent({
         style={{ display: isAgentStation ? "none" : "contents" }}
       >
         {/*
-          Empty-pool start page. The hosts below stay MOUNTED (hidden) even
-          when the launcher is showing so their side effects keep running —
-          in particular the Browser host owns the new-session effect that
-          turns a "New Browser Tab" request into a live session. We toggle
-          visibility against the start page rather than unmounting them.
+          Empty-pool start page. While it shows, no host is mounted at all
+          (see the mount policy above) — the empty pool has nothing to keep
+          warm, and cross-surface requests (e.g. "New Browser Tab") travel
+          through remount-safe atoms that mount their host on demand. While
+          real tabs exist, visited hosts stay mounted (hidden) so tab
+          switches are instant.
         */}
-        {!isAgentStation && (
-          <div
-            className="h-full w-full"
-            style={{ display: showStartPage ? "block" : "none" }}
-          >
+        {!isAgentStation && showStartPage && (
+          <div className="h-full w-full">
             <WorkStationStartPage />
           </div>
         )}
-        {(isCodeMode || hasVisitedCode) && (
+        {mountCodeHost && (
           <div
             className="relative h-full w-full"
             data-tour-target={CODE_EDITOR_TOUR_TARGETS.editorSurface}
             style={{
-              display: !showStartPage && codeContentVisible ? "block" : "none",
+              display: !showStartPage && isCodeMode ? "block" : "none",
             }}
           >
             {renderCodeEditor()}
-            {!showStartPage &&
-              codeContentVisible &&
-              isActive &&
-              !isAgentStation && <LspInstallPrompt />}
           </div>
         )}
 
-        {(isBrowserMode || hasVisitedBrowser) && (
+        {mountBrowserHost && (
           <div
             className="h-full w-full"
             style={{
-              display:
-                !showStartPage && browserContentVisible ? "block" : "none",
+              display: !showStartPage && isBrowserMode ? "block" : "none",
             }}
           >
             <Suspense fallback={<AppShellLoadingPlaceholder />}>
               <Browser
                 repoPath={repoPath}
                 repoName={repoName}
-                isActive={isActive && !showStartPage && browserContentVisible}
+                isActive={isActive && !showStartPage && isBrowserMode}
               />
             </Suspense>
           </div>
         )}
 
-        {(isProjectMode || hasVisitedProject) && (
+        {mountProjectHost && (
           <div
             className="h-full w-full"
             style={{
-              display:
-                !showStartPage && projectContentVisible ? "block" : "none",
+              display: !showStartPage && isProjectMode ? "block" : "none",
             }}
           >
             <Suspense fallback={<AppShellLoadingPlaceholder />}>

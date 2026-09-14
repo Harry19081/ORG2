@@ -13,8 +13,9 @@ import { useTranslation } from "react-i18next";
 
 import { DatabaseIcon } from "@src/assets/databaseIcons";
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
+import Checkbox from "@src/components/Checkbox";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import type {
   DatabaseConnectionConfig,
   DatabaseType,
@@ -34,7 +35,7 @@ import {
 
 import { useConnectionFormState } from "./useConnectionFormState";
 
-export interface AddConnectionWizardProps {
+interface AddConnectionWizardProps {
   onSave: (config: DatabaseConnectionConfig) => void;
   onCancel: () => void;
   existingConnectionNames?: string[];
@@ -354,11 +355,10 @@ const AddConnectionWizard: React.FC<AddConnectionWizardProps> = ({
                   description={t("databases.wizard.pgSslDesc")}
                 >
                   <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
+                    <Checkbox
+                      size="small"
                       checked={pgSsl}
-                      onChange={(event) => setPgSsl(event.target.checked)}
-                      className="h-4 w-4 rounded border-border-2"
+                      onCheckedChange={(checked) => setPgSsl(checked)}
                     />
                     <span className="text-[13px] text-text-2">SSL</span>
                   </label>
@@ -440,22 +440,22 @@ const AddConnectionWizard: React.FC<AddConnectionWizardProps> = ({
             </SectionRow>
             {testStatus === "error" && !testErrorDismissed && (
               <div className="px-4 pb-3">
-                <InlineAlert
+                <PageNotice
                   type="danger"
                   onClose={() => setTestErrorDismissed(true)}
                 >
                   {testError || t("databases.detail.probeFailed")}
-                </InlineAlert>
+                </PageNotice>
               </div>
             )}
           </SectionContainer>
 
           {saved && (
-            <InlineAlert type="success" title={t("databases.wizard.saved")}>
+            <PageNotice type="success" title={t("databases.wizard.saved")}>
               <span className="text-[12px]">
                 {t("databases.wizard.savedDesc")}
               </span>
-            </InlineAlert>
+            </PageNotice>
           )}
         </div>
       </WizardStepLayout>

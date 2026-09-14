@@ -94,7 +94,7 @@ const ORG_LOAD_STALL_MS = 20_000;
  * before we flag it stuck again.
  */
 const ORG_LOAD_STALL_ERROR =
-  "Couldn't load your cloud organizations. Try refreshing, or sign out and back in if this keeps happening.";
+  "Couldn't load your cloud workspaces. Try refreshing, or sign out and back in if this keeps happening.";
 
 export function useTeamRuntimeRoster(
   requestedOrgId?: string
@@ -119,7 +119,7 @@ export function useTeamRuntimeRoster(
   // memoization (it's a new object every render by construction).
   const telemetry = useMemo(
     () => rawTelemetry,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- enabled/intervalMinutes encode every telemetry field consumed downstream and preserve identity across equivalent parser objects
     [rawTelemetry?.enabled, rawTelemetry?.intervalMinutes]
   );
   const telemetryEnabled = telemetry?.enabled === true;

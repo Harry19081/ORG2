@@ -4,11 +4,11 @@
  * Displays web search results as a structured list with link icons.
  * Same pattern as GlobBlock: EventBlockExpandableStackList + ComposerStackListRow.
  */
-import { SquareArrowOutUpRight } from "lucide-react";
 import React from "react";
 
 import { getToolIcon } from "@src/config/toolIcons";
 import type { ToolUsageMetadata } from "@src/engines/SessionCore/core/types";
+import { HugeiconsIcon, SquareArrowUpRight02Icon } from "@src/icons";
 
 import ToolUsageBadge from "../ToolCallBlock/ToolUsageBadge";
 import {
@@ -29,7 +29,7 @@ export interface WebSearchResult {
   snippet: string;
 }
 
-export interface WebSearchBlockProps {
+interface WebSearchBlockProps {
   query: string;
   results: WebSearchResult[];
   isLoading?: boolean;
@@ -60,7 +60,12 @@ const WebSearchResultRow: React.FC<{ result: WebSearchResult }> = React.memo(
       <ComposerStackListRow
         title={result.snippet || result.url}
         leading={
-          <SquareArrowOutUpRight size={14} className="shrink-0 text-text-3" />
+          <HugeiconsIcon
+            icon={SquareArrowUpRight02Icon}
+            data-icon="square-arrow-out-up-right"
+            size={14}
+            className="shrink-0 text-text-3"
+          />
         }
         primary={displayTitle}
         secondary={domain}
@@ -113,11 +118,10 @@ const WebSearchBlock: React.FC<WebSearchBlockProps> = React.memo(
         <EventBlockHeader
           isCollapsed={!isExpanded}
           withHover={false}
-          onClick={handleLocate}
+          onToggleCollapse={hasResults ? handleHeaderClick : undefined}
           onNavigate={handleLocate}
           onMouseEnter={handleHeaderMouseEnter}
           onMouseLeave={handleHeaderMouseLeave}
-          className={eventId ? "cursor-pointer" : undefined}
           rightContent={
             toolUsage ? <ToolUsageBadge usage={toolUsage} /> : undefined
           }
@@ -126,9 +130,7 @@ const WebSearchBlock: React.FC<WebSearchBlockProps> = React.memo(
             icon={toolIcon}
             isCollapsed={!isExpanded}
             isHeaderHovered={isHeaderHovered}
-            onToggle={hasResults ? handleHeaderClick : undefined}
             hasContent={hasResults}
-            revealChevronOnIconHoverOnly={Boolean(eventId)}
             isLoading={isLoading}
           />
           <span

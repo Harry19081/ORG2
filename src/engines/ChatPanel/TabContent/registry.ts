@@ -7,8 +7,8 @@
  * adding a new tab type is a type error until it has an entry — the same
  * guarantee the WorkStation `REGISTRY` provides.
  *
- * Session and Launchpad share the "chat column" (transcript / creators /
- * benchmark run-list, still contentMode-driven inside that column). Kanban and
+ * Session and Launchpad share the "chat column" (transcript / creators,
+ * still contentMode-driven inside that column). Kanban and
  * terminals render in their own keep-alive layers. Every other surface renders
  * a dedicated, self-sufficient component that reads its tab payload directly.
  */
@@ -19,8 +19,8 @@ import {
   GitHubPrSurfaceRenderer,
   OrganizationSurfaceRenderer,
   ProjectSurfaceRenderer,
+  RunGroupSurfaceRenderer,
   RuntimeSurfaceRenderer,
-  TeamInboxSurfaceRenderer,
   WorkItemSurfaceRenderer,
   WorkspaceSurfaceRenderer,
 } from "./surfaceRenderers";
@@ -36,11 +36,6 @@ export const CHAT_PANEL_TAB_SURFACE_REGISTRY: ChatPanelTabSurfaceRegistry = {
     render: "component",
     Component: RuntimeSurfaceRenderer,
     debugLabel: "runtime",
-  },
-  "team-inbox": {
-    render: "component",
-    Component: TeamInboxSurfaceRenderer,
-    debugLabel: "team-inbox",
   },
   "work-management": {
     render: "work-management",
@@ -86,6 +81,11 @@ export const CHAT_PANEL_TAB_SURFACE_REGISTRY: ChatPanelTabSurfaceRegistry = {
     render: "component",
     Component: ChannelSurfaceRenderer,
     debugLabel: "channel",
+  },
+  "run-group": {
+    render: "component",
+    Component: RunGroupSurfaceRenderer,
+    debugLabel: "run-group",
   },
 };
 

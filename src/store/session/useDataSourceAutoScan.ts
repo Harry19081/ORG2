@@ -19,7 +19,13 @@
  * armed once and always sees the latest values without re-arming. Hidden windows
  * pause by default; an explicit app-wide background-upload demand keeps one
  * low-frequency timer alive and catches up immediately when it is enabled.
+ *
+ * Only the main window arms the scheduler (`isMainAppWindow`): secondary OS
+ * windows (detached session windows) mount the same AppBootstrap, and a second
+ * scan cadence per window would just duplicate rescans against the same
+ * backend cache.
  */
+import { atom } from "jotai";
 import { useEffect } from "react";
 
 import {
@@ -32,6 +38,7 @@ import {
   isWindowFocused,
   onWindowFocusRegained,
 } from "@src/util/core/windowFocus";
+import { isMainAppWindow } from "@src/util/platform/tauri/windowIdentity";
 
 import {
   type DataSourceConfigMap,
@@ -59,6 +66,10 @@ const UNFOCUSED_SCAN_INTERVAL_MS = 10 * 60_000;
 /** Cadence for refreshing the lightweight store-presence snapshot. */
 const SOURCE_PRESENCE_PROBE_INTERVAL_MS = 30 * 60_000;
 const FAILED_SCAN_RETRY_MS = 30_000;
+
+// Runtime-only, per-store retry deadlines. Never convert a failed probe into
+// a negative presence result or persist transient failures as user policy.
+export const dataSourceProbeRetryAtAtom = atom<Record<string, number>>({});
 
 let autoScanInFlight: Promise<void> | null = null;
 
@@ -97,7 +108,8 @@ export function nextDataSourceAutoScanDelay(
   enabled: boolean,
   cfgMap: DataSourceConfigMap,
   previousPresence: Record<string, DataSourcePresence>,
-  global: ScanFrequency
+  global: ScanFrequency,
+  probeRetryAt: Record<string, number> = {}
 ): number | null {
   if (!enabled) return null;
   let earliestDeadline: number | null = null;
@@ -108,10 +120,12 @@ export function nextDataSourceAutoScanDelay(
     if (interval == null) continue;
 
     const presence = previousPresence[sourceId];
-    const probeDeadline =
+    const probeDeadline = Math.max(
+      probeRetryAt[sourceId] ?? 0,
       presence == null
         ? now
-        : presence.checkedAt + SOURCE_PRESENCE_PROBE_INTERVAL_MS;
+        : presence.checkedAt + SOURCE_PRESENCE_PROBE_INTERVAL_MS
+    );
     const effectiveInterval = focused
       ? interval
       : Math.max(interval, UNFOCUSED_SCAN_INTERVAL_MS);
@@ -163,7 +177,9 @@ async function performDataSourceAutoScan(force: boolean): Promise<void> {
   // Presence is checked independently from the full-import cadence. Confirmed
   // absent stores are held to a 30-minute probe; present stores are re-probed
   // on that same cadence so an uninstall/removal eventually stops full scans.
+  const probeRetryAt = store.get(dataSourceProbeRetryAtAtom);
   const probeSourceIds = candidates.flatMap(({ sourceId }) => {
+    if (!force && now < (probeRetryAt[sourceId] ?? 0)) return [];
     const presence = previousPresence[sourceId];
     const probeDue =
       force ||
@@ -180,7 +196,18 @@ async function performDataSourceAutoScan(force: boolean): Promise<void> {
     })
   );
   const successfulProbes = new Map<string, boolean>();
-  for (const result of probeResults) {
+  const nextRetryAt: Record<string, number> = {};
+  // Retain only enabled, automatic sources; the registry is descriptor-bounded.
+  for (const { sourceId } of candidates) {
+    if (probeRetryAt[sourceId]) nextRetryAt[sourceId] = probeRetryAt[sourceId];
+  }
+  for (const [index, result] of probeResults.entries()) {
+    const sourceId = probeSourceIds[index]!;
+    if (result.status === "fulfilled" && result.value.probe) {
+      delete nextRetryAt[sourceId];
+    } else {
+      nextRetryAt[sourceId] = Date.now() + FAILED_SCAN_RETRY_MS;
+    }
     if (result.status === "fulfilled" && result.value.probe) {
       successfulProbes.set(
         result.value.sourceId,
@@ -188,6 +215,7 @@ async function performDataSourceAutoScan(force: boolean): Promise<void> {
       );
     }
   }
+  store.set(dataSourceProbeRetryAtAtom, nextRetryAt);
   if (successfulProbes.size > 0) {
     store.set(dataSourcePresenceAtom, (previous) => {
       const next = { ...previous };
@@ -368,6 +396,9 @@ export function startDataSourceAutoScanScheduler(
 
 export function useDataSourceAutoScan(): void {
   useEffect(() => {
+    // Secondary windows must not run a duplicate rescan cadence; the main
+    // window's scheduler already keeps the shared backend cache fresh.
+    if (!isMainAppWindow()) return;
     const store = getInstrumentedStore();
     const scheduler = startDataSourceAutoScanScheduler(
       document,
@@ -379,7 +410,8 @@ export function useDataSourceAutoScan(): void {
           store.get(externalSessionsEnabledAtom),
           store.get(dataSourceConfigAtom),
           store.get(dataSourcePresenceAtom),
-          store.get(dataSourceGlobalFrequencyAtom)
+          store.get(dataSourceGlobalFrequencyAtom),
+          store.get(dataSourceProbeRetryAtAtom)
         ),
       FAILED_SCAN_RETRY_MS,
       () => store.get(externalHistoryBackgroundScanEnabledAtom)
@@ -392,6 +424,7 @@ export function useDataSourceAutoScan(): void {
     const unsubscribers = [
       store.sub(dataSourceConfigAtom, scheduler.schedule),
       store.sub(dataSourcePresenceAtom, scheduler.schedule),
+      store.sub(dataSourceProbeRetryAtAtom, scheduler.schedule),
       store.sub(dataSourceGlobalFrequencyAtom, scheduler.schedule),
       store.sub(externalSessionsEnabledAtom, scheduler.schedule),
       store.sub(externalHistoryBackgroundScanEnabledAtom, scheduler.schedule),

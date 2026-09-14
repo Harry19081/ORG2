@@ -1,14 +1,17 @@
-import { ArrowDown10, ArrowDownAZ } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
-import ModelVariantInlineCard from "@src/components/ModelTable/ModelVariantInlineCard";
-import type { ModelTableVariantInfo } from "@src/components/ModelTable/types";
 import Switch from "@src/components/Switch";
 import Tooltip from "@src/components/Tooltip";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import { accountModelIds } from "@src/hooks/models/useModelAccountLookup";
+import {
+  ArrangeByLettersZAIcon,
+  ArrangeByNumbersOneNineIcon,
+} from "@src/icons";
 import {
   applyModelGroupToEnabledSet,
   getModelGroupEnableSummary,
@@ -19,6 +22,8 @@ import {
   InlineSplitHeaderRow,
   InlineSplitSelectableRow,
 } from "@src/modules/MainApp/Integrations/KeyVault/shared/InlineSplitRows";
+import ModelVariantInlineCard from "@src/modules/MainApp/Integrations/KeyVault/shared/ModelTable/ModelVariantInlineCard";
+import type { ModelTableVariantInfo } from "@src/types/modelTable";
 import { formatModelNameFull } from "@src/util/formatModelName";
 import {
   MODEL_GROUP_SORT_MODE,
@@ -169,8 +174,8 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
   const renderAllModelsRow = () => {
     const SortModeIcon =
       sortMode === MODEL_GROUP_SORT_MODE.ENABLED_FIRST
-        ? ArrowDown10
-        : ArrowDownAZ;
+        ? ArrangeByNumbersOneNineIcon
+        : ArrangeByLettersZAIcon;
     const sortLabel =
       sortMode === MODEL_GROUP_SORT_MODE.ENABLED_FIRST
         ? t("modelsTable.sortEnabledFirst")
@@ -186,9 +191,14 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
         trailing={
           <>
             <Tooltip content={sortLabel} position="top">
-              <button
-                type="button"
-                className="table-sorter shrink-0 cursor-pointer border-0 bg-transparent p-0 text-text-3 hover:text-text-2"
+              <Button
+                variant="tertiary"
+                appearance="ghost"
+                size="mini"
+                iconOnly
+                icon={<AnyIcon icon={SortModeIcon} size={14} strokeWidth={2} />}
+                htmlType="button"
+                className="table-sorter shrink-0 hover:text-text-2"
                 aria-label={sortLabel}
                 onClick={() =>
                   setSortMode((current) =>
@@ -197,16 +207,14 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
                       : MODEL_GROUP_SORT_MODE.ENABLED_FIRST
                   )
                 }
-              >
-                <SortModeIcon size={14} strokeWidth={2} />
-              </button>
+              />
             </Tooltip>
             <Switch
               size="small"
               checked={allModelsSummary.allEnabled}
               mixed={allModelsSummary.mixed}
               type={allModelsSummary.mixed ? "warning" : "primary"}
-              onChange={handleToggleAllGroups}
+              onCheckedChange={handleToggleAllGroups}
             />
           </>
         }
@@ -236,7 +244,7 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
                   className="shrink-0"
                 />
               ) : null}
-              <span className="min-w-0 truncate font-medium leading-none text-text-1">
+              <span className="min-w-0 truncate leading-none font-medium text-text-1">
                 {group.label}
               </span>
             </>

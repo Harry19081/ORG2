@@ -35,6 +35,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     expect(await getCloudCapabilities("jwt-1")).toEqual({
       broadcastSignals: true,
@@ -47,6 +50,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     expect(rawMock).toHaveBeenCalledTimes(1);
   });
@@ -67,6 +73,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
   });
 
@@ -80,9 +89,17 @@ describe("getCloudCapabilities", () => {
       orgChannels: true,
       orgChannelMessages: true,
       orgChannelMessagesIdempotency: true,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
     });
     const capabilities = await getCloudCapabilities("jwt-1");
     expect(capabilities.orgChannelMessagesIdempotency).toBe(true);
+  });
+
+  it("carries the 0028 turn-coordination flag through the wire rebuild", async () => {
+    rawMock.mockResolvedValueOnce({ conversationTurnCoordination: true });
+    const capabilities = await getCloudCapabilities("jwt-1");
+    expect(capabilities.conversationTurnCoordination).toBe(true);
   });
 
   it("parses the 0007 homeEndpoints flag", async () => {
@@ -102,6 +119,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
   });
 
@@ -123,6 +143,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
   });
 
@@ -138,6 +161,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     expect(await getCloudCapabilities("jwt-1")).toEqual({
       broadcastSignals: true,
@@ -150,6 +176,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
   });
 
@@ -166,6 +195,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     rawMock.mockResolvedValueOnce({ broadcastSignals: true });
     expect(await getCloudCapabilities("jwt-1")).toEqual({
@@ -179,6 +211,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     expect(rawMock).toHaveBeenCalledTimes(2);
   });
@@ -200,6 +235,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     expect(await getCloudCapabilities("jwt-1")).toEqual({
       broadcastSignals: false,
@@ -212,6 +250,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     expect(rawMock).toHaveBeenCalledTimes(1);
   });
@@ -237,6 +278,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     expect(await second).toEqual({
       broadcastSignals: true,
@@ -249,6 +293,9 @@ describe("getCloudCapabilities", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     expect(rawMock).toHaveBeenCalledTimes(1);
   });
@@ -270,6 +317,9 @@ describe("getCloudCapabilitiesConfirmed", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
   });
 
@@ -285,6 +335,8 @@ describe("getCloudCapabilitiesConfirmed", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
     });
     const result = await getCloudCapabilitiesConfirmed("jwt-1");
     expect(result.confirmed).toBe(true);
@@ -306,6 +358,9 @@ describe("getCloudCapabilitiesConfirmed", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
   });
 
@@ -339,6 +394,9 @@ describe("getCloudCapabilitiesConfirmed", () => {
       orgChannels: false,
       orgChannelMessages: false,
       orgChannelMessagesIdempotency: false,
+      conversationEvents: false,
+      conversationEventsIdempotency: false,
+      conversationTurnCoordination: false,
     });
     // A cached hit is, by definition, a confirmed read — no second RPC.
     const result = await getCloudCapabilitiesConfirmed("jwt-1");

@@ -9,7 +9,6 @@
  * - Stash management
  * - Multi-select support
  */
-import { Filter as FilterIcon } from "lucide-react";
 import React, {
   memo,
   useCallback,
@@ -20,14 +19,15 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import Input from "@src/components/Input";
+import { Placeholder } from "@src/components/Placeholder";
 import { TREE_ROW_HEIGHT } from "@src/components/TreeRow";
 import type {
   FlattenedTreeNode,
   StickyScrollNode,
 } from "@src/components/VirtualizedStickyTree";
 import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
+import { HugeiconsIcon, Search01Icon } from "@src/icons";
 import { usePrimarySidebarSurface } from "@src/modules/WorkStation/shared/hooks/usePrimarySidebarSurface";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 
 import { useFileSelection } from "../../hooks/useFileSelection";
 import { useSourceControlShortcuts } from "../../hooks/useSourceControlShortcuts";
@@ -170,6 +170,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
     // Multi-select support
     const {
       selectedFileIds,
+      lastSelectedId,
       handleFileClick,
       selectAll: _selectAll,
       clearSelection,
@@ -195,7 +196,6 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
       onDiscard,
       onFileSelect,
       handleFileClick,
-      navigateWithoutSelecting,
     });
 
     // Commit logic
@@ -335,6 +335,13 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
       ]
     );
 
+    // Combined-diff navigation has sidebar focus without a single-file diff ID.
+    const focusedFileId = navigateWithoutSelecting
+      ? lastSelectedId && selectedFileIds.has(lastSelectedId)
+        ? lastSelectedId
+        : null
+      : selectedFileId;
+
     // Render a single tree item
     const renderItem = useCallback(
       (item: FlattenedTreeNode<SourceControlNode>) => (
@@ -342,7 +349,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
           node={item.node}
           depth={item.depth}
           isSelected={
-            item.node.file ? item.node.file.id === selectedFileId : false
+            item.node.file ? item.node.file.id === focusedFileId : false
           }
           isMultiSelected={
             item.node.file ? isFileSelected(item.node.file.id) : false
@@ -367,7 +374,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
         />
       ),
       [
-        selectedFileId,
+        focusedFileId,
         isFileSelected,
         selectedFileIds,
         handleSectionToggle,
@@ -424,6 +431,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
             <React.Suspense
               fallback={
                 <Placeholder
+                  loadingIconOnly
                   variant="loading"
                   placement="sidebar"
                   fillParentHeight
@@ -488,10 +496,17 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
 
         {/* Filter input - conditionally rendered */}
         {showFilter && (
-          <div className={`flex-shrink-0 px-3 pb-2 ${surfaceBgClass}`}>
+          <div className={`shrink-0 px-3 pb-2 ${surfaceBgClass}`}>
             <Input
-              prefix={<FilterIcon size={14} strokeWidth={1.75} />}
-              placeholder={t("placeholders.filterChanges")}
+              prefix={
+                <HugeiconsIcon
+                  icon={Search01Icon}
+                  data-icon="search-icon"
+                  size={14}
+                  strokeWidth={1.75}
+                />
+              }
+              placeholder={t("common.searchPlaceholder")}
               value={searchQuery}
               onChange={onSearchChange}
               size="small"
@@ -514,6 +529,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
           {/* Loading State - only show on initial load when no files exist */}
           {loading && files.length === 0 && !suppressLoadingPlaceholder && (
             <Placeholder
+              loadingIconOnly
               variant="loading"
               placement="sidebar"
               title={t("placeholders.loadingChanges")}

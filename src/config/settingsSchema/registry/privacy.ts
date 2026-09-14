@@ -4,6 +4,8 @@ import type { SettingDefinition } from "@src/config/settingsSchema/types";
 
 export const PRIVACY_SETTINGS_REGISTRY = {
   "privacy.diagnosticsLevel": {
+    // Diagnostics bootstrap configuration; no settings-page control.
+    settingsSearch: false,
     schema: z.enum(["off", "performance-only", "default"]),
     default: "default" as const,
     description:
@@ -16,12 +18,16 @@ export const PRIVACY_SETTINGS_REGISTRY = {
     },
   },
   "privacy.diagnosticsUploadIntervalHours": {
+    // Diagnostics scheduler configuration; no settings-page control.
+    settingsSearch: false,
     schema: z.number().int().min(1).max(24),
     default: 12,
     description: "Diagnostics upload interval in hours",
     category: "privacy",
   },
   "privacy.offlineMode": {
+    // Outbound diagnostics configuration; no settings-page control.
+    settingsSearch: false,
     schema: z.boolean(),
     default: false,
     description:
@@ -29,10 +35,12 @@ export const PRIVACY_SETTINGS_REGISTRY = {
     category: "privacy",
   },
   "privacy.shareRuntimeWithOrg": {
+    // Runtime sharing configuration; no settings-page control.
+    settingsSearch: false,
     schema: z.boolean(),
     default: true,
     description:
-      "Share coarse runtime, usage, and builder-profile aggregates with cloud organizations that have team runtime telemetry enabled (never session contents, titles, or repo paths)",
+      "Share coarse runtime, usage, and builder-profile aggregates with cloud workspaces that have team runtime telemetry enabled (never session contents, titles, or repo paths)",
     category: "privacy",
   },
 } as const satisfies Record<string, SettingDefinition>;

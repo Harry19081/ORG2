@@ -1,20 +1,36 @@
-import {
-  Check,
-  Clock,
-  Eye,
-  Fingerprint,
-  GitBranch,
-  GitFork,
-  MessageSquare,
-  Pin,
-  Users,
-} from "lucide-react";
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
+import HoverCard, {
+  type HoverCardTriggerProps,
+} from "@src/components/HoverCard";
+import {
+  HoverCardPanel,
+  HoverCardRow,
+} from "@src/components/HoverCard/HoverCardBase";
+import {
+  HoverCardMetadataRow,
+  HoverCardMetadataValue,
+} from "@src/components/HoverCard/HoverCardMetadataRow";
+import { HOVER_CARD } from "@src/components/HoverCard/tokens";
 import ModelIcon from "@src/components/ModelIcon";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { createLogger } from "@src/hooks/logger";
+import { useKeyedCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import {
+  Clock01Icon,
+  FingerPrintIcon,
+  GitForkIcon,
+  HugeiconsIcon,
+  Message01Icon,
+  PinIcon,
+  Tick01Icon,
+  UserMultipleIcon,
+  ViewIcon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { copyText } from "@src/util/data/clipboard";
 import {
@@ -28,22 +44,11 @@ import {
   resolveSessionDisplayMetadata,
 } from "@src/util/session/sessionDisplayMetadata";
 
-import HoverCardBase, {
-  HoverCardPanel,
-  type HoverCardPosition,
-  HoverCardRow,
-} from "./HoverCardBase";
+import { COPIED_FLASH_MS, formatCompactSessionId } from "./sessionIdFormat";
 
 const logger = createLogger("CloudSessionHoverCard");
-const COPIED_FLASH_MS = 1500;
-const COMPACT_ID_EDGE_CHARS = 8;
 const SESSION_ID_BUTTON_CLASS_NAME =
   "block max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-left text-text-2 underline-offset-2 transition-colors hover:text-accent-9 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-8";
-
-function formatCompactSessionId(id: string): string {
-  if (id.length <= COMPACT_ID_EDGE_CHARS * 2 + 2) return id;
-  return `${id.slice(0, COMPACT_ID_EDGE_CHARS)}…${id.slice(-COMPACT_ID_EDGE_CHARS)}`;
-}
 
 /**
  * Hover metadata card for "Team sessions" rows (cloudremote-* sidebar ids).
@@ -57,15 +62,19 @@ interface CloudSessionHoverCardContentProps {
 }
 
 function renderAgentIcon(display: SessionDisplayMetadata) {
-  const AgentIcon = resolveAgentIcon(display.agentIconId);
-  return <AgentIcon size={13} strokeWidth={1.75} />;
+  const agentIcon = resolveAgentIcon(display.agentIconId);
+  return (
+    <AnyIcon
+      icon={agentIcon}
+      size={HOVER_CARD.iconSize}
+      strokeWidth={HOVER_CARD.iconStrokeWidth}
+    />
+  );
 }
 
 export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContentProps> =
   memo(({ row, viewers = [] }) => {
     const { t, i18n } = useTranslation(["navigation", "sessions", "common"]);
-    const [copiedSessionId, setCopiedSessionId] = useState<string | null>(null);
-    const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const display = resolveSessionDisplayMetadata({
       kind: "remote",
       session: row,
@@ -75,7 +84,9 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
       : row.repoPath
         ? basename(row.repoPath)
         : "";
-    const branchLabel = formatBranchLabel(row.branch);
+    const branchLabel =
+      formatBranchLabel(row.branch) || formatBranchLabel(row.baseBranch);
+    const worktreeBranchLabel = formatBranchLabel(row.worktreeBranch);
     const lastActivityLabel = row.lastActivityAt
       ? formatReplayDateLabel(row.lastActivityAt, {
           todayLabel: t("common:relativeDate.today"),
@@ -94,40 +105,24 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
       .filter(Boolean)
       .join(", ");
 
-    useEffect(
-      () => () => {
-        if (copiedTimerRef.current !== null) {
-          clearTimeout(copiedTimerRef.current);
-        }
-      },
-      []
-    );
-
-    const handleCopySessionId = useCallback(() => {
-      void copyText(row.sourceSessionId)
-        .then(() => {
-          setCopiedSessionId(row.sourceSessionId);
-          if (copiedTimerRef.current !== null) {
-            clearTimeout(copiedTimerRef.current);
-          }
-          copiedTimerRef.current = setTimeout(() => {
-            copiedTimerRef.current = null;
-            setCopiedSessionId(null);
-          }, COPIED_FLASH_MS);
-        })
-        .catch((error: unknown) => {
-          logger.warn("failed to copy shared session id", {
-            error,
-            sessionId: row.sourceSessionId,
-          });
-        });
-    }, [row.sourceSessionId]);
+    const copySessionId = useCallback(async (sessionId: string) => {
+      try {
+        await copyText(sessionId);
+      } catch (error) {
+        logger.warn("failed to copy shared session id", { error, sessionId });
+        throw error;
+      }
+    }, []);
+    // Keyed on the session id so a card re-rendered for another row never
+    // shows a stale check.
+    const { copiedKey: copiedSessionId, handleCopy: handleCopySessionId } =
+      useKeyedCopyCheck(copySessionId, { durationMs: COPIED_FLASH_MS });
 
     return (
       // Fork provenance renders as the lineage row below — drop the fork
       // glyph(s) baked into pushed titles rather than doubling them here.
       <HoverCardPanel title={row.title.replace(/^(?:⑂\s*)+/u, "")}>
-        <HoverCardRow icon={<Users size={13} strokeWidth={1.75} />}>
+        <HoverCardMetadataRow icon={UserMultipleIcon} dataIcon="users">
           <div
             className="truncate text-text-2"
             title={`${t("navigation:cloud.sidebar.teamSessions")} · @${row.ownerDisplayName}`}
@@ -138,8 +133,8 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
             <span className="mx-1 text-text-4">·</span>
             <span>@{row.ownerDisplayName}</span>
           </div>
-        </HoverCardRow>
-        <HoverCardRow icon={<Pin size={13} strokeWidth={1.75} />}>
+        </HoverCardMetadataRow>
+        <HoverCardMetadataRow icon={PinIcon} dataIcon="pin">
           <div className="truncate text-text-2">
             <span className="text-text-3">
               {isExternal
@@ -153,7 +148,7 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
               </>
             )}
           </div>
-        </HoverCardRow>
+        </HoverCardMetadataRow>
         {(display.agentType ||
           row.agentDisplayName ||
           display.modelName ||
@@ -168,7 +163,10 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
                 <>
                   <span className="mx-1 text-text-4">·</span>
                   <span className="mr-1 flex shrink-0 items-center">
-                    <ModelIcon modelName={display.modelName} size={13} />
+                    <ModelIcon
+                      modelName={display.modelName}
+                      size={HOVER_CARD.iconSize}
+                    />
                   </span>
                   <span className="truncate">{display.modelName}</span>
                 </>
@@ -177,17 +175,17 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
           </HoverCardRow>
         )}
         {row.forkedFrom?.ownerDisplayName && (
-          <HoverCardRow icon={<GitFork size={13} strokeWidth={1.75} />}>
+          <HoverCardMetadataRow icon={GitForkIcon} dataIcon="git-fork">
             <div className="truncate text-text-2">
               {t("navigation:cloud.sidebar.forkedFrom", {
                 name: row.forkedFrom.ownerDisplayName,
                 defaultValue: "forked from @{{name}}",
               })}
             </div>
-          </HoverCardRow>
+          </HoverCardMetadataRow>
         )}
         {viewerNames && (
-          <HoverCardRow icon={<Eye size={13} strokeWidth={1.75} />}>
+          <HoverCardMetadataRow icon={ViewIcon} dataIcon="eye">
             <div
               data-testid="cloud-session-watchers"
               className="truncate text-text-2"
@@ -195,63 +193,109 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
             >
               {viewerNames}
             </div>
-          </HoverCardRow>
+          </HoverCardMetadataRow>
         )}
         {(repoName || branchLabel) && (
-          <HoverCardRow icon={<GitBranch size={13} strokeWidth={1.75} />}>
-            <div className="truncate text-text-2">
-              {repoName && <span>{repoName}</span>}
-              {repoName && branchLabel && (
-                <span className="mx-1 text-text-4">·</span>
+          <HoverCardMetadataRow
+            icon={WorkflowCircle05Icon}
+            dataIcon="git-branch"
+          >
+            <div
+              className="flex min-w-0 items-center text-text-2"
+              data-testid="session-hover-repo-branch"
+              title={[repoName, branchLabel].filter(Boolean).join(" · ")}
+            >
+              {repoName && (
+                <span
+                  className={
+                    branchLabel
+                      ? "max-w-[calc(50%-6px)] min-w-0 truncate"
+                      : "min-w-0 flex-1 truncate"
+                  }
+                  data-testid="session-hover-workspace"
+                  title={row.repoScopeKey ?? row.repoPath}
+                >
+                  {repoName}
+                </span>
               )}
-              {branchLabel && <span>{branchLabel}</span>}
+              {repoName && branchLabel && (
+                <span className="mx-1 shrink-0 text-text-4">·</span>
+              )}
+              {branchLabel && (
+                <span
+                  className={
+                    repoName
+                      ? "max-w-[calc(50%-6px)] min-w-0 truncate"
+                      : "min-w-0 flex-1 truncate"
+                  }
+                  data-testid="session-hover-branch"
+                  title={branchLabel}
+                >
+                  {branchLabel}
+                </span>
+              )}
             </div>
-          </HoverCardRow>
+          </HoverCardMetadataRow>
         )}
-        <HoverCardRow icon={<Fingerprint size={13} strokeWidth={1.75} />}>
-          <button
-            type="button"
+        {worktreeBranchLabel && worktreeBranchLabel !== branchLabel && (
+          <HoverCardMetadataRow icon={GitForkIcon} dataIcon="git-fork">
+            <div
+              className="truncate text-text-2"
+              data-testid="session-hover-worktree-branch"
+              title={worktreeBranchLabel}
+            >
+              {worktreeBranchLabel}
+            </div>
+          </HoverCardMetadataRow>
+        )}
+        <HoverCardMetadataRow icon={FingerPrintIcon} dataIcon="fingerprint">
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             className={SESSION_ID_BUTTON_CLASS_NAME}
             title={row.sourceSessionId}
             aria-label={`${t("common:actions.copy")} ${t(
               "sessions:history.detail.sessionId"
             )}`}
-            onClick={handleCopySessionId}
+            onClick={() => handleCopySessionId(row.sourceSessionId)}
           >
-            <span className="text-text-3">
-              {t("sessions:history.detail.sessionId")}
-            </span>
-            <span className="mx-1 text-text-4">·</span>
-            <span>{formatCompactSessionId(row.sourceSessionId)}</span>
+            <HoverCardMetadataValue
+              label={t("sessions:history.detail.sessionId")}
+            >
+              {formatCompactSessionId(row.sourceSessionId)}
+            </HoverCardMetadataValue>
             {copiedSessionId === row.sourceSessionId && (
-              <Check
-                size={12}
-                strokeWidth={2}
+              <HugeiconsIcon
+                icon={Tick01Icon}
+                data-icon="check"
+                size={HOVER_CARD.compactIconSize}
+                strokeWidth={HOVER_CARD.feedbackStrokeWidth}
                 className="ml-1 inline-block align-[-1px] text-success-6"
                 aria-hidden="true"
               />
             )}
-          </button>
-        </HoverCardRow>
+          </Button>
+        </HoverCardMetadataRow>
         {unresolvedComments > 0 && (
-          <HoverCardRow icon={<MessageSquare size={13} strokeWidth={1.75} />}>
+          <HoverCardMetadataRow icon={Message01Icon} dataIcon="message-square">
             <div className="truncate text-text-2">
               {t("navigation:cloud.comments.unresolvedBadge", {
                 count: unresolvedComments,
               })}
             </div>
-          </HoverCardRow>
+          </HoverCardMetadataRow>
         )}
         {lastActivityLabel && (
-          <HoverCardRow icon={<Clock size={13} strokeWidth={1.75} />}>
+          <HoverCardMetadataRow icon={Clock01Icon} dataIcon="clock">
             <div className="truncate text-text-2" title={lastActivityLabel}>
-              <span className="text-text-3">
-                {t("sessions:history.detail.lastUpdated")}
-              </span>
-              <span className="mx-1 text-text-4">·</span>
-              <span>{lastActivityLabel}</span>
+              <HoverCardMetadataValue
+                label={t("sessions:history.detail.lastUpdated")}
+              >
+                {lastActivityLabel}
+              </HoverCardMetadataValue>
             </div>
-          </HoverCardRow>
+          </HoverCardMetadataRow>
         )}
       </HoverCardPanel>
     );
@@ -259,39 +303,28 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
 
 CloudSessionHoverCardContent.displayName = "CloudSessionHoverCardContent";
 
-interface CloudSessionHoverCardProps {
+interface CloudSessionHoverCardProps extends HoverCardTriggerProps {
   row?: RemoteTeammateSessionMetadata;
   viewers?: readonly { displayName: string }[];
-  children: React.ReactElement;
-  position?: HoverCardPosition;
-  mouseEnterDelay?: number;
-  mouseLeaveDelay?: number;
 }
 
 const CloudSessionHoverCard: React.FC<CloudSessionHoverCardProps> = ({
   row,
   viewers,
-  children,
   position,
-  mouseEnterDelay,
-  mouseLeaveDelay,
+  ...triggerProps
 }) => {
-  const renderContent = useCallback(
-    () =>
-      row ? <CloudSessionHoverCardContent row={row} viewers={viewers} /> : null,
-    [row, viewers]
-  );
-
   return (
-    <HoverCardBase
+    <HoverCard
+      {...triggerProps}
       cardId={row ? `cloud-${row.orgId}|${row.id}` : null}
       position={position}
-      mouseEnterDelay={mouseEnterDelay}
-      mouseLeaveDelay={mouseLeaveDelay}
-      renderContent={renderContent}
-    >
-      {children}
-    </HoverCardBase>
+      content={
+        row ? (
+          <CloudSessionHoverCardContent row={row} viewers={viewers} />
+        ) : null
+      }
+    />
   );
 };
 

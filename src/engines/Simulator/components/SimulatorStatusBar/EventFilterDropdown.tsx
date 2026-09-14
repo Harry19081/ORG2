@@ -1,9 +1,9 @@
 import { useAtom } from "jotai";
-import { ListFilter } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import {
   DROPDOWN_CLASSES,
@@ -13,9 +13,10 @@ import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import {
   SIMULATOR_EVENT_FILTER_VALUES,
   type SimulatorEventFilterValue,
-} from "@src/engines/SessionCore/derived/simulatorEventFilters";
+} from "@src/engines/SessionCore/core/simulatorEventFilters";
 import { getDropdownPanelStyle } from "@src/hooks/dropdown/dropdownPanelStyle";
 import { useDropdownEngine } from "@src/hooks/dropdown/useDropdownEngine";
+import { HugeiconsIcon, ListFilterIcon } from "@src/icons";
 import { simulatorEventFiltersAtom } from "@src/store/ui/simulatorAtom";
 
 const FILTER_LABEL_KEYS: Record<SimulatorEventFilterValue, string> = {
@@ -111,9 +112,11 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         ref={triggerRef as React.Ref<HTMLButtonElement>}
-        type="button"
+        htmlType="button"
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -127,13 +130,19 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
           iconOnly ? "w-5 px-0" : "max-w-[132px] gap-1 px-1.5"
         } ${triggerToneClass}`}
       >
-        <ListFilter size={12} strokeWidth={2} className="shrink-0" />
+        <HugeiconsIcon
+          icon={ListFilterIcon}
+          data-icon="list-filter"
+          size={12}
+          strokeWidth={2}
+          className="shrink-0"
+        />
         {!iconOnly && (
-          <span className="truncate text-[11px] font-medium leading-none">
+          <span className="truncate text-[11px] leading-none font-medium">
             {triggerLabel}
           </span>
         )}
-      </button>
+      </Button>
       {isOpen &&
         isPositioned &&
         createPortal(
@@ -159,7 +168,7 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
                   isAllEvents
                     ? DROPDOWN_CLASSES.itemSelected
                     : DROPDOWN_CLASSES.itemHover
-                } !justify-start !text-text-1 hover:!text-text-1`}
+                } justify-start! text-text-1! hover:text-text-1!`}
               >
                 <Checkbox
                   checked={isAllEvents}
@@ -171,7 +180,7 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
                 </span>
               </div>
               <div
-                className={DROPDOWN_CLASSES.menuSeparator}
+                className={DROPDOWN_CLASSES.menuGroupSeparator}
                 role="separator"
               />
               {SIMULATOR_EVENT_FILTER_VALUES.map((filter) => {
@@ -192,7 +201,7 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
                       selected
                         ? DROPDOWN_CLASSES.itemSelected
                         : DROPDOWN_CLASSES.itemHover
-                    } !justify-start !text-text-1 hover:!text-text-1`}
+                    } justify-start! text-text-1! hover:text-text-1!`}
                   >
                     <Checkbox
                       checked={selected}

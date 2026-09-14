@@ -9,17 +9,18 @@
  * - FileSearchPanel (sidebar variant)
  * - SingleFileSearchPanel (with spinner and close button)
  */
-import type { FileSearchResult } from "@/src/hooks/workStation/useCodeEditor";
-import { Loader2, X } from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 
 import FolderIcon from "@src/assets/fileTypeIcons/folder-base.svg";
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
+import { Placeholder } from "@src/components/Placeholder";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import { useListNavigation } from "@src/hooks/keyboard/useListNavigation";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { Cancel01Icon, HugeiconsIcon, Loading03Icon } from "@src/icons";
+import type { FileSearchResult } from "@src/modules/WorkStation/CodeEditor/hooks/useCodeEditor";
 
 import { SearchInput } from "../../../Panels/shared";
 
@@ -194,7 +195,7 @@ export const BaseFileSearchPanel: React.FC<BaseFileSearchPanelProps> = memo(
         <div className="fixed inset-0 z-40 bg-black/30" onClick={onClose} />
 
         {/* Search panel */}
-        <div className="fixed left-1/2 top-[15%] z-50 w-[600px] max-w-[90vw] -translate-x-1/2 rounded-lg border border-border-2 bg-bg-2 shadow-xl">
+        <div className="fixed top-[15%] left-1/2 z-50 w-[600px] max-w-[90vw] -translate-x-1/2 rounded-lg border border-border-2 bg-bg-2 shadow-xl">
           {/* Search input header */}
           {needsComplexHeader ? (
             <div className="flex items-center border-b border-border-2 pr-2">
@@ -203,26 +204,38 @@ export const BaseFileSearchPanel: React.FC<BaseFileSearchPanelProps> = memo(
                   variant={searchInputVariant}
                   value={searchQuery}
                   onChange={onSearchChange}
-                  placeholder={t("placeholders.searchFiles")}
+                  placeholder={t("common.searchPlaceholder")}
                   inputRef={inputRef}
                 />
               </div>
               {showLoadingSpinner && loading && (
                 <div className="px-2">
-                  <Loader2
+                  <HugeiconsIcon
+                    icon={Loading03Icon}
+                    data-icon="loader-2"
                     size={SPINNER_TOKENS.default}
                     className="animate-spin text-text-3"
                   />
                 </div>
               )}
               {showCloseButton && (
-                <button
+                <Button
+                  variant="tertiary"
+                  appearance="soft"
+                  size="mini"
+                  aria-label={t("tooltips.closeEsc")}
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      data-icon="x"
+                      size={14}
+                    />
+                  }
                   onClick={onClose}
-                  className="flex items-center justify-center rounded p-1 text-text-3 transition-colors hover:bg-fill-3"
+                  className="hover:bg-fill-3"
                   title={t("tooltips.closeEsc")}
-                >
-                  <X size={14} />
-                </button>
+                />
               )}
             </div>
           ) : (
@@ -231,7 +244,7 @@ export const BaseFileSearchPanel: React.FC<BaseFileSearchPanelProps> = memo(
                 variant={searchInputVariant}
                 value={searchQuery}
                 onChange={onSearchChange}
-                placeholder={t("placeholders.searchFiles")}
+                placeholder={t("common.searchPlaceholder")}
                 inputRef={inputRef}
                 onClose={onClose}
               />
@@ -273,13 +286,13 @@ export const BaseFileSearchPanel: React.FC<BaseFileSearchPanelProps> = memo(
                         <FolderIcon
                           width={16}
                           height={16}
-                          className="flex-shrink-0"
+                          className="shrink-0"
                         />
                       ) : (
                         <FileTypeIcon
                           fileName={result.filename}
                           size="medium"
-                          className="flex-shrink-0"
+                          className="shrink-0"
                         />
                       )}
 

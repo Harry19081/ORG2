@@ -30,7 +30,7 @@ impl Tool for SpotlightTool {
     }
 
     fn description(&self) -> &str {
-        "Open and control ORGII Spotlight directly. Use this for command palette, file search, workspace picker, branch picker, Agent session search, or opening/closing Spotlight."
+        "Open and control ORG2 Spotlight directly. Use this for command palette, file search, workspace picker, branch picker, Agent session search, or opening/closing Spotlight."
     }
 
     fn parameters(&self) -> Value {
@@ -64,8 +64,9 @@ impl Tool for SpotlightTool {
     async fn execute_text(
         &self,
         params: Value,
-        _ctx: &crate::tools::traits::CallContext,
+        ctx: &crate::tools::traits::CallContext,
     ) -> Result<String, ToolError> {
+        ctx.require_tool_authority(self.name())?;
         let operation = params
             .get("operation")
             .and_then(Value::as_str)

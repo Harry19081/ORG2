@@ -6,7 +6,6 @@
  * The panel is read-only: opting out of sharing lives in the privacy settings
  * (`privacy.shareRuntimeWithOrg`), not here.
  */
-import { RefreshCw } from "lucide-react";
 import {
   type ReactNode,
   useCallback,
@@ -17,7 +16,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { externalCliSourcesDetect } from "@src/api/tauri/externalHistory/detection";
-import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
 import type {
   MemberRuntimeListEntry,
   OrgRuntimeTelemetry,
@@ -25,20 +24,20 @@ import type {
 import { useCloudOrgRemoteSessions } from "@src/features/Org2Cloud/org2CloudRemoteSessionsAtom";
 import { useOpenCloudSessionReference } from "@src/features/Org2Cloud/useOpenCloudSessionReference";
 import { useOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
-import { useRefreshSpin } from "@src/hooks/ui";
 import {
   SECTION_GAP_CLASSES,
   SECTION_SUBHEADING_CLASSES,
 } from "@src/modules/shared/layouts/SectionLayout";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 
+import { RuntimeRefreshButton } from "./RuntimeSectionHeader";
 import TeamMemberCard, {
   type AgentCatalog,
   type AgentCatalogEntry,
 } from "./TeamMemberCard";
 import TeamMemberDetail from "./TeamMemberDetail";
 import TeamRuntimeToday from "./TeamRuntimeToday";
+import { useTeamRuntimeClock } from "./teamRuntimeClock";
 import { hasMemberActivityToday } from "./teamRuntimeData";
 import { useTeamRuntimeRoster } from "./useTeamRuntimeRoster";
 
@@ -77,33 +76,6 @@ function useAgentCatalog(enabled: boolean): AgentCatalog {
   return enabled ? catalog : EMPTY_AGENT_CATALOG;
 }
 
-function RuntimeRefreshButton({
-  onRefresh,
-  refreshing,
-}: {
-  onRefresh: () => void;
-  refreshing: boolean;
-}) {
-  const { t } = useTranslation("teamRuntime");
-  const { spinClass, handleClick } = useRefreshSpin(onRefresh, refreshing);
-  return (
-    <Button
-      htmlType="button"
-      variant="tertiary"
-      appearance="ghost"
-      size="small"
-      disabled={refreshing}
-      aria-label={t("refresh")}
-      title={t("refresh")}
-      onClick={handleClick}
-      icon={<RefreshCw size={14} className={spinClass} />}
-      data-testid="team-runtime-refresh"
-    >
-      {t("refresh")}
-    </Button>
-  );
-}
-
 interface TeamRuntimeTodayConnectedProps {
   orgId: string;
   members: readonly MemberRuntimeListEntry[];
@@ -131,6 +103,7 @@ function TeamRuntimeTodayConnected({
   refreshRoster,
   rosterRefreshing,
 }: TeamRuntimeTodayConnectedProps) {
+  const { t } = useTranslation("teamRuntime");
   const remoteSessions = useCloudOrgRemoteSessions(orgId);
   const openCloudSessionReference = useOpenCloudSessionReference();
   const refreshSessions = remoteSessions.refresh;
@@ -166,8 +139,10 @@ function TeamRuntimeTodayConnected({
       onOpenSession={handleOpenSession}
       headerAction={
         <RuntimeRefreshButton
+          label={t("refresh")}
           onRefresh={refreshAll}
           refreshing={rosterRefreshing}
+          dataTestId="team-runtime-refresh"
         />
       }
     />
@@ -198,19 +173,13 @@ export default function TeamRuntimePanel({
   const [openMemberId, setOpenMemberId] = useState<string | null>(null);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
-  // One clock per render pass so staleness and the today/7d fold agree across
-  // every card. Quantized to the whole minute (org intervals are >=15min, so
-  // ~1min staleness granularity is invisible) so an unrelated re-render (a
-  // click, a settings change) recomputes the SAME nowMs value instead of a
-  // strictly-increasing one — otherwise every card's `nowMs` prop would
-  // differ by construction and the `TeamMemberCard` React.memo comparison
-  // could never hold. The minute quantization is exactly what makes the read
-  // render-stable, so the purity rule's concern doesn't apply here.
-  // eslint-disable-next-line react-hooks/purity -- quantized clock, see above
-  const nowMs = Math.floor(Date.now() / 60_000) * 60_000;
+  // One minute-aligned, visibility-aware clock keeps every card on the same
+  // snapshot without making unrelated renders read wall-clock time.
+  const nowMs = useTeamRuntimeClock();
 
   // Leaving the org scope or losing the member closes the drilldown.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- these ids are owned by the committed org/user scope and must not survive a scope transition
     setOpenMemberId(null);
     setSelectedMemberId(null);
   }, [roster.selectedOrgId, roster.currentUserId]);
@@ -218,6 +187,7 @@ export default function TeamRuntimePanel({
   // A member drilldown belongs to the Members tab; don't retain a hidden
   // detail surface if the user returns to Today.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the controlled tab transition owns teardown of its hidden member drilldown
     if (view !== "members") setOpenMemberId(null);
   }, [view]);
 
@@ -331,8 +301,10 @@ export default function TeamRuntimePanel({
             onBack={() => setOpenMemberId(null)}
             headerAction={
               <RuntimeRefreshButton
+                label={t("refresh")}
                 onRefresh={roster.refresh}
                 refreshing={roster.refreshing}
+                dataTestId="team-runtime-refresh"
               />
             }
           />
@@ -354,23 +326,6 @@ export default function TeamRuntimePanel({
       } else {
         content = (
           <div className="flex flex-col gap-5">
-            <div
-              className="flex min-h-9 flex-wrap items-center justify-between gap-3"
-              data-testid="team-runtime-members-title-row"
-            >
-              <h3 className={SECTION_SUBHEADING_CLASSES}>
-                {t("overview.members")}
-              </h3>
-              <div
-                className="flex shrink-0 items-center"
-                data-testid="team-runtime-controls"
-              >
-                <RuntimeRefreshButton
-                  onRefresh={roster.refresh}
-                  refreshing={roster.refreshing}
-                />
-              </div>
-            </div>
             {roster.members.length > 0 ? (
               <div
                 className="flex flex-col gap-5"
@@ -388,9 +343,25 @@ export default function TeamRuntimePanel({
                       className="flex flex-col gap-3"
                       data-testid={`team-runtime-${activity}-today`}
                     >
-                      <h4 className={SECTION_SUBHEADING_CLASSES}>
-                        {t(`overview.${activity}Today`)}
-                      </h4>
+                      <div className="flex min-h-9 items-center justify-between gap-3">
+                        <h4 className={SECTION_SUBHEADING_CLASSES}>
+                          {t(`overview.${activity}Today`)}
+                        </h4>
+                        {activity === "active" ||
+                        membersByActivity.active.length === 0 ? (
+                          <div
+                            className="flex shrink-0 items-center"
+                            data-testid="team-runtime-controls"
+                          >
+                            <RuntimeRefreshButton
+                              label={t("refresh")}
+                              onRefresh={roster.refresh}
+                              refreshing={roster.refreshing}
+                              dataTestId="team-runtime-refresh"
+                            />
+                          </div>
+                        ) : null}
+                      </div>
                       <div className="grid grid-cols-1 gap-3 @[640px]:grid-cols-2">
                         {members.map((member) => (
                           <TeamMemberCard
@@ -439,8 +410,10 @@ export default function TeamRuntimePanel({
           data-testid="team-runtime-controls"
         >
           <RuntimeRefreshButton
+            label={t("refresh")}
             onRefresh={roster.refresh}
             refreshing={roster.refreshing}
+            dataTestId="team-runtime-refresh"
           />
         </div>
       ) : null}

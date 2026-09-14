@@ -17,11 +17,11 @@
 import { history } from "@codemirror/commands";
 import { bracketMatching, indentUnit } from "@codemirror/language";
 import { MergeView, unifiedMergeView } from "@codemirror/merge";
+import { SearchQuery, search } from "@codemirror/search";
 import { EditorState, Extension, StateEffect } from "@codemirror/state";
 import {
   highlightActiveLine,
   highlightActiveLineGutter,
-  lineNumbers,
 } from "@codemirror/view";
 import { EditorView } from "codemirror";
 import React, { useEffect, useRef, useState } from "react";
@@ -48,7 +48,13 @@ import {
 } from "../config";
 import { createCopyFileRefExtension } from "../shared/createCopyFileRefExtension";
 import { getLanguageExtension } from "../shared/languageExtensions";
+import { collapsedGutterBackground } from "./collapsedGutter";
+import { diffLineNumbers } from "./diffLineNumbers";
 import "./index.scss";
+import {
+  type ReviewDiffSearch,
+  applyReviewSearch,
+} from "./reviewSearchNavigation";
 
 const log = createLogger("CodeMirrorDiff");
 
@@ -56,7 +62,8 @@ const log = createLogger("CodeMirrorDiff");
 // Types
 // ============================================
 
-export interface CodeMirrorDiffProps {
+interface CodeMirrorDiffProps {
+  reviewSearch?: ReviewDiffSearch;
   /** Original content */
   oldValue: string;
   /** Modified content */
@@ -116,23 +123,27 @@ const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
     backgroundColor: "var(--diff-deleted-bg) !important",
   },
   ".cm-collapsedLines": {
+    position: "relative",
+    boxSizing: "border-box",
     display: "flex",
     alignItems: "center",
     gap: "var(--cm-gutter-padding, 4px)",
-    width: "100%",
-    background: "var(--color-fill-1)",
+    width: "calc(100% - 8px)",
+    background: "transparent",
     border: "none",
-    borderRadius: "0",
+    isolation: "isolate",
+    borderRadius: "0 10px 10px 0",
     outline: "none",
     boxShadow: "none",
     color: "var(--color-text-3)",
-    padding: "var(--cm-gutter-padding, 4px) var(--cm-line-padding-left, 12px)",
-    margin: "0",
+    padding:
+      "calc(var(--cm-gutter-padding, 4px) + 2px) var(--cm-line-padding-left, 12px)",
+    margin: "0 8px 0 0",
     cursor: "var(--interactive-cursor, default)",
     fontSize: "var(--cm-font-size-small, 12px)",
     "&::before": {
       content: '""',
-      display: "inline-block",
+      display: "none",
       width: "var(--cm-icon-size, 14px)",
       height: "var(--cm-icon-size, 14px)",
       marginInlineEnd: "0",
@@ -149,11 +160,20 @@ const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
     },
     "&::after": {
       content: '""',
-      display: "none",
+      display: "block",
+      position: "absolute",
+      inset: "2px 0",
+      borderRadius: "0 10px 10px 0",
+      background: "var(--cm-collapsed-fill, var(--color-fill-1))",
+      pointerEvents: "none",
+      zIndex: "-1",
     },
     "&:hover": {
-      background: "var(--color-fill-3)",
+      "--cm-collapsed-fill": "var(--color-fill-3)",
       color: "var(--color-text-2)",
+    },
+    "&:not(:first-child):not(:last-child)": {
+      minHeight: "calc(2lh + 2 * var(--cm-gutter-padding, 4px))",
     },
   },
 });
@@ -174,6 +194,7 @@ const AUTO_HEIGHT_THEME = EditorView.theme({
 export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   oldValue,
   newValue,
+  reviewSearch,
   filePath,
   language,
   height = "100%",
@@ -254,17 +275,20 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     const lineNumberOffset = Math.max(1, lineNumberStart) - 1;
     const formatAbsoluteLineNumber = (lineNo: number) =>
       String(lineNo + lineNumberOffset);
-    const exts: Extension[] = [codeMirrorCspNonceExtension];
+    const exts: Extension[] = [
+      codeMirrorCspNonceExtension,
+      collapsedGutterBackground,
+    ];
 
     exts.push(getCodeMirrorTheme());
     exts.push(CODEMIRROR_BASE_LAYOUT_THEME);
 
     if (showLineNumbers) {
       if (appearanceSettings.lineNumbers === "on") {
-        exts.push(lineNumbers({ formatNumber: formatAbsoluteLineNumber }));
+        exts.push(diffLineNumbers({ formatNumber: formatAbsoluteLineNumber }));
       } else if (appearanceSettings.lineNumbers === "relative") {
         exts.push(
-          lineNumbers({
+          diffLineNumbers({
             formatNumber: (lineNo: number, state: EditorState) => {
               const cursorLine = state.doc.lineAt(
                 state.selection.main.head
@@ -277,7 +301,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
         );
       } else if (appearanceSettings.lineNumbers === "interval") {
         exts.push(
-          lineNumbers({
+          diffLineNumbers({
             formatNumber: (lineNo: number) => {
               const absoluteLineNo = lineNo + lineNumberOffset;
               return absoluteLineNo === 1 || absoluteLineNo % 10 === 0
@@ -317,7 +341,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
 
     if (filePath) exts.push(createCopyFileRefExtension(filePath));
 
-    exts.push(findReplaceExtension());
+    exts.push(reviewSearch ? search() : findReplaceExtension(filePath));
     if (selectionExtension) {
       exts.push(selectionExtension);
     }
@@ -399,9 +423,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
       unifiedViewRef.current = null;
       unifiedContentRef.current = null;
     };
-    // `unifiedMergeView` binds the original side at construction. Modified
-    // content is updated by the effect below without destroying the editor.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- unified original/config inputs rebuild the editor; newValue is patched by the next effect, and every buildBaseExtensions input is listed explicitly
   }, [
     viewMode,
     oldValue,
@@ -510,7 +532,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
       splitMergeViewRef.current = null;
       splitContentRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- split configuration rebuilds the editor; old/new documents are patched by the next effect, and every buildBaseExtensions input is listed explicitly
   }, [
     viewMode,
     oldStartLine,
@@ -551,6 +573,21 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   }, [newValue, oldValue, viewMode]);
 
   // ── Render ────────────────────────────────────────────────────────────────
+
+  const reviewQuery = reviewSearch?.query;
+  const reviewMatch = reviewSearch?.match;
+  useEffect(() => {
+    if (reviewQuery === undefined) return;
+    return applyReviewSearch(
+      unifiedViewRef.current,
+      splitMergeViewRef.current,
+      {
+        match: reviewMatch ?? null,
+        query: reviewQuery ?? new SearchQuery({ search: "" }),
+      },
+      isFullDeletion
+    );
+  }, [reviewQuery, reviewMatch, viewMode, isFullDeletion, oldValue, newValue]);
 
   const isUnifiedFullDeletion = isFullDeletion;
   const wrapperStyle: React.CSSProperties = autoHeight

@@ -1,15 +1,16 @@
 import { useAtomValue } from "jotai";
-import { ArrowUp } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { ArrowUp02Icon, HugeiconsIcon } from "@src/icons";
 import { chatAppearanceAtom } from "@src/store/config/configAtom";
 
-export interface AgentControlSubmitButtonProps {
+interface AgentControlSubmitButtonProps {
   disabled: boolean;
   onSubmit: () => void;
 }
@@ -19,10 +20,15 @@ export const AgentControlSubmitButton: React.FC<
 > = ({ disabled, onSubmit }) => {
   const { t } = useTranslation("common");
   const { sendOnEnter } = useAtomValue(chatAppearanceAtom);
+  const sendShortcut = useShortcutKeys("chat_send", {
+    chatSendOnEnter: sendOnEnter,
+  });
 
   const button = (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       onClick={onSubmit}
       disabled={disabled}
       className={`flex ${INPUT_AREA_BUTTONS.iconButtonSizeClass} shrink-0 items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${
@@ -33,8 +39,13 @@ export const AgentControlSubmitButton: React.FC<
       style={{ lineHeight: 0 }}
       aria-label={t("adeManager.submit")}
     >
-      <ArrowUp size={INPUT_AREA_BUTTONS.iconSize} strokeWidth={2} />
-    </button>
+      <HugeiconsIcon
+        icon={ArrowUp02Icon}
+        data-icon="arrow-up"
+        size={INPUT_AREA_BUTTONS.iconSize}
+        strokeWidth={2}
+      />
+    </Button>
   );
 
   if (disabled) return button;
@@ -43,10 +54,9 @@ export const AgentControlSubmitButton: React.FC<
     <Tooltip
       content={
         <KeyboardShortcutTooltipContent
+          rendering="original"
           label={t("adeManager.submit")}
-          shortcut={getShortcutKeys("chat_send", {
-            chatSendOnEnter: sendOnEnter,
-          })}
+          shortcut={sendShortcut}
         />
       }
       position="top-end"

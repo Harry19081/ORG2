@@ -1,12 +1,4 @@
-/**
- * Editor Appearance Subpage
- *
- * Dedicated subpage for code editor appearance settings:
- *  - Typography (font family, font size, line height, tab size)
- *  - Editor Features (line numbers, word wrap, minimap, indent guides, highlight active line)
- *
- * Uses SubpageLayout with anchor navigation (one anchor per group).
- */
+/** Shared editor appearance sections rendered by the Appearance tab. */
 import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
@@ -21,14 +13,11 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 
 import Input from "@src/components/Input";
 import NumberInput from "@src/components/NumberInput";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
-import { buildSettingsPath } from "@src/config/mainAppPaths";
-import SubpageLayout from "@src/modules/shared/layouts/SubpageLayout";
 import {
   CODE_FONT_FAMILIES,
   type CodeFontFamily,
@@ -109,7 +98,10 @@ export const TypographySection: React.FC<{ showTitle?: boolean }> = ({
     <SectionContainer
       title={showTitle ? t("editor.themeTypography") : undefined}
     >
-      <SectionRow label={t("editor.fontFamily")}>
+      <SectionRow
+        settingsSearchKeys="editor.fontFamily"
+        label={t("editor.fontFamily")}
+      >
         <Select
           value={codeFontFamily}
           onChange={handleFontFamilyChange}
@@ -128,7 +120,11 @@ export const TypographySection: React.FC<{ showTitle?: boolean }> = ({
       </SectionRow>
 
       {codeFontFamily === "custom" && (
-        <SectionRow label={t("editor.customFontName")} indent>
+        <SectionRow
+          settingsSearchKeys="editor.customFontFamily"
+          label={t("editor.customFontName")}
+          indent
+        >
           <Input
             value={localCustomFont}
             onChange={setLocalCustomFont}
@@ -138,7 +134,10 @@ export const TypographySection: React.FC<{ showTitle?: boolean }> = ({
         </SectionRow>
       )}
 
-      <SectionRow label={t("editor.fontSize")}>
+      <SectionRow
+        settingsSearchKeys="editor.fontSize"
+        label={t("editor.fontSize")}
+      >
         <NumberInput
           value={fontSize}
           min={10}
@@ -146,12 +145,17 @@ export const TypographySection: React.FC<{ showTitle?: boolean }> = ({
           step={1}
           suffix={tCommon("common.px")}
           controlsPosition="sides"
-          onChange={(value) => setFontSize((value ?? 13) as EditorFontSize)}
+          onValueChange={(value) =>
+            setFontSize((value ?? 13) as EditorFontSize)
+          }
           style={SECTION_CONTROL_STYLE}
         />
       </SectionRow>
 
-      <SectionRow label={t("editor.lineHeight")}>
+      <SectionRow
+        settingsSearchKeys="editor.lineHeight"
+        label={t("editor.lineHeight")}
+      >
         <NumberInput
           value={lineHeight}
           min={1.2}
@@ -159,14 +163,17 @@ export const TypographySection: React.FC<{ showTitle?: boolean }> = ({
           step={0.1}
           suffix={tCommon("common.multiplier")}
           controlsPosition="sides"
-          onChange={(value) =>
+          onValueChange={(value) =>
             setLineHeight((value ?? 1.5) as EditorLineHeight)
           }
           style={SECTION_CONTROL_STYLE}
         />
       </SectionRow>
 
-      <SectionRow label={t("editor.tabSize")}>
+      <SectionRow
+        settingsSearchKeys="editor.tabSize"
+        label={t("editor.tabSize")}
+      >
         <NumberInput
           value={tabSize}
           min={2}
@@ -174,7 +181,7 @@ export const TypographySection: React.FC<{ showTitle?: boolean }> = ({
           step={2}
           suffix={tCommon("common.spaces")}
           controlsPosition="sides"
-          onChange={(value) => setTabSize((value ?? 2) as EditorTabSize)}
+          onValueChange={(value) => setTabSize((value ?? 2) as EditorTabSize)}
           style={SECTION_CONTROL_STYLE}
         />
       </SectionRow>
@@ -193,7 +200,10 @@ export const TerminalSection: React.FC = () => {
 
   return (
     <SectionContainer title={t("common:tabs.terminal")}>
-      <SectionRow label={t("editor.terminalFontSize")}>
+      <SectionRow
+        settingsSearchKeys="terminal.fontSize"
+        label={t("editor.terminalFontSize")}
+      >
         <NumberInput
           value={terminalFontSize}
           min={8}
@@ -201,7 +211,7 @@ export const TerminalSection: React.FC = () => {
           step={1}
           suffix={tCommon("common.px")}
           controlsPosition="sides"
-          onChange={(value) => setTerminalFontSize(value ?? 13)}
+          onValueChange={(value) => setTerminalFontSize(value ?? 13)}
           style={SECTION_CONTROL_STYLE}
         />
       </SectionRow>
@@ -247,14 +257,20 @@ export const FeaturesSection: React.FC = () => {
 
   return (
     <SectionContainer title={t("editor.tabEditor")}>
-      <SectionRow label={t("editor.treeIndentGuides")}>
+      <SectionRow
+        settingsSearchKeys="editor.showTreeIndentGuides"
+        label={t("editor.treeIndentGuides")}
+      >
         <Switch
           checked={showTreeIndentGuides}
-          onChange={setShowTreeIndentGuides}
+          onCheckedChange={setShowTreeIndentGuides}
         />
       </SectionRow>
 
-      <SectionRow label={t("editor.lineNumbers")}>
+      <SectionRow
+        settingsSearchKeys="editor.lineNumbers"
+        label={t("editor.lineNumbers")}
+      >
         <Select
           value={lineNumbers}
           onChange={handleLineNumbersChange}
@@ -263,53 +279,36 @@ export const FeaturesSection: React.FC = () => {
         />
       </SectionRow>
 
-      <SectionRow label={t("editor.wordWrap")}>
-        <Switch checked={wordWrap} onChange={setWordWrap} />
+      <SectionRow
+        settingsSearchKeys="editor.wordWrap"
+        label={t("editor.wordWrap")}
+      >
+        <Switch checked={wordWrap} onCheckedChange={setWordWrap} />
       </SectionRow>
 
-      <SectionRow label={t("editor.autoSave")}>
-        <Switch checked={autoSave} onChange={setAutoSave} />
+      <SectionRow
+        settingsSearchKeys="editor.autoSave"
+        label={t("editor.autoSave")}
+      >
+        <Switch checked={autoSave} onCheckedChange={setAutoSave} />
       </SectionRow>
 
-      <SectionRow label={t("editor.minimap")}>
-        <Switch checked={showMinimap} onChange={setShowMinimap} />
+      <SectionRow
+        settingsSearchKeys="editor.showMinimap"
+        label={t("editor.minimap")}
+      >
+        <Switch checked={showMinimap} onCheckedChange={setShowMinimap} />
       </SectionRow>
 
-      <SectionRow label={t("editor.highlightActiveLine")}>
+      <SectionRow
+        settingsSearchKeys="editor.highlightActiveLine"
+        label={t("editor.highlightActiveLine")}
+      >
         <Switch
           checked={highlightActiveLine}
-          onChange={setHighlightActiveLine}
+          onCheckedChange={setHighlightActiveLine}
         />
       </SectionRow>
     </SectionContainer>
   );
 };
-
-// ============================================
-// Page Component
-// ============================================
-
-const EditorAppearancePage: React.FC = () => {
-  const { t } = useTranslation("settings");
-  const navigate = useNavigate();
-
-  const handleBack = useCallback(() => {
-    navigate(buildSettingsPath({ section: "appearance" }));
-  }, [navigate]);
-
-  return (
-    <SubpageLayout
-      onBack={handleBack}
-      breadcrumb={{
-        parent: t("common:tabs.settings"),
-        current: t("editor.codeEditorAppearanceTitle"),
-      }}
-    >
-      <TypographySection />
-      <TerminalSection />
-      <FeaturesSection />
-    </SubpageLayout>
-  );
-};
-
-export default EditorAppearancePage;

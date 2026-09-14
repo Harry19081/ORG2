@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Avatar from "@src/components/Avatar";
 import Button from "@src/components/Button";
 import ComposerShell from "@src/components/ComposerShell";
 import ComposerSurface from "@src/components/ComposerSurface";
-import RichMarkdownEditor, {
-  RICH_MARKDOWN_COMPOSER_TOOLBAR_CLASS,
-} from "@src/modules/shared/components/RichMarkdownEditor";
+import PersonAvatar from "@src/components/PersonAvatar";
+import MarkdownTextareaEditor, {
+  type MarkdownEditorMode,
+} from "@src/modules/shared/components/MarkdownTextareaEditor";
+import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
 import { LoadingBar } from "@src/modules/shared/layouts/blocks";
 
 import GitHubIssueCloseButton from "./GitHubIssueCloseButton";
@@ -25,12 +26,13 @@ const GitHubIssueComposer: React.FC<GitHubIssueComposerProps> = ({
 }) => {
   const { t } = useTranslation("common");
   const [commentBody, setCommentBody] = useState("");
+  const [editorMode, setEditorMode] = useState<MarkdownEditorMode>("write");
   const hasComment = commentBody.trim().length > 0;
 
   if (interaction.loading) {
     return (
       <section data-testid="github-issue-inline-composer-loading">
-        <ComposerShell variant="default" className="!gap-0 !p-0">
+        <ComposerShell variant="default" className="gap-0! p-0!">
           <LoadingBar />
         </ComposerShell>
       </section>
@@ -45,6 +47,7 @@ const GitHubIssueComposer: React.FC<GitHubIssueComposerProps> = ({
     try {
       await interaction.onAddComment(body);
       setCommentBody("");
+      setEditorMode("write");
     } catch {
       // The interaction owns the localized error state; keep the draft intact.
     }
@@ -92,29 +95,41 @@ const GitHubIssueComposer: React.FC<GitHubIssueComposerProps> = ({
 
       <ComposerSurface
         variant="default"
-        className="overflow-visible !pt-1.5"
+        className="overflow-visible pt-1.5!"
         data-testid="github-issue-comment-input"
         leadingActions={
-          interaction.viewer ? (
-            <div
-              className="flex min-w-0 items-center gap-2"
-              data-testid="github-issue-comment-viewer"
-              aria-label={t("git.issues.composer.commentingAs", {
-                login: interaction.viewer.login,
-              })}
-            >
-              <Avatar size={22} src={interaction.viewer.avatar_url}>
-                {interaction.viewer.login.charAt(0).toUpperCase()}
-              </Avatar>
-              <span className="truncate text-xs text-text-2">
-                {interaction.viewer.login}
+          <div className="flex min-w-0 items-center gap-2">
+            <MarkdownEditorModeSwitch
+              mode={editorMode}
+              onModeChange={setEditorMode}
+              disabled={
+                !interaction.canComment || interaction.submittingComment
+              }
+              dataTestId="github-issue-comment-mode-switch"
+            />
+            {interaction.viewer ? (
+              <div
+                className="flex min-w-0 items-center gap-2"
+                data-testid="github-issue-comment-viewer"
+                aria-label={t("git.issues.composer.commentingAs", {
+                  login: interaction.viewer.login,
+                })}
+              >
+                <PersonAvatar
+                  size={22}
+                  name={interaction.viewer.login}
+                  src={interaction.viewer.avatar_url}
+                />
+                <span className="truncate text-xs text-text-2">
+                  {interaction.viewer.login}
+                </span>
+              </div>
+            ) : (
+              <span className="text-xs text-text-3">
+                {t("git.issues.composer.identityUnavailable")}
               </span>
-            </div>
-          ) : (
-            <span className="text-xs text-text-3">
-              {t("git.issues.composer.identityUnavailable")}
-            </span>
-          )
+            )}
+          </div>
         }
         trailingActions={
           <Button
@@ -131,19 +146,18 @@ const GitHubIssueComposer: React.FC<GitHubIssueComposerProps> = ({
           </Button>
         }
       >
-        <RichMarkdownEditor
+        <MarkdownTextareaEditor
           value={commentBody}
           onChange={(markdown) => setCommentBody(markdown)}
           onSubmit={() => void handleComment()}
           placeholder={t("git.issues.composer.commentPlaceholder")}
-          minHeight={100}
+          minHeight={64}
+          minRows={2}
           maxHeight={500}
           appearance="plain"
-          toolbarMode="inline"
-          toolbarSize="mini"
-          toolbarClassName={RICH_MARKDOWN_COMPOSER_TOOLBAR_CLASS}
-          toolbarDropdownPosition="top-start"
           editable={interaction.canComment && !interaction.submittingComment}
+          mode={editorMode}
+          onModeChange={setEditorMode}
           dataTestId="github-issue-comment-editor"
         />
 

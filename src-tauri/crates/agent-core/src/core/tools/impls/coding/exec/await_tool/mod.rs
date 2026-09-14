@@ -38,12 +38,14 @@
 //! - [`body`]     — read job output (shell log / subagent buffer) + tail / regex helpers
 //! - [`params`]   — param parsing (handles / wait_mode / tail_lines) + lookup
 //! - [`commands`] — `run_wait_for` / `run_monitor` / `run_list` (impl AwaitTool)
+//! - [`progress`] — per-handle progress fingerprints for the repeat guard
 //!
 //! `mod.rs` itself only owns the type and the `Tool` trait surface.
 
 mod body;
 mod commands;
 mod params;
+mod progress;
 mod response;
 mod snapshot;
 
@@ -107,9 +109,11 @@ impl Tool for AwaitTool {
         Single-handle calls still emit items: [one] so the response shape is uniform. \
         The body includes one `--- [<handle>] last N lines ---` block per handle.\n\n\
         For `list`, returns a table of handles with kind, status, age, and label.\n\n\
-        IMPORTANT: Do NOT call this tool repeatedly to poll a running subagent. \
-        The system injects a background-jobs reminder into every turn automatically. \
-        If a subagent is still running after wait_for returns, proceed with other tasks."
+        IMPORTANT: Do NOT call this tool repeatedly to poll a running job (shell or subagent). \
+        The system injects a background-jobs reminder into every turn automatically, and an idle \
+        session is resumed automatically when a background job finishes. If a job is still \
+        running after wait_for returns, proceed with other tasks — or end your turn if the \
+        job's result is all that remains."
     }
 
     fn parameters(&self) -> Value {
@@ -160,11 +164,16 @@ impl Tool for AwaitTool {
         *self.cancel_flag.lock().await = Some(cancel_flag);
     }
 
+    fn progress_fingerprint(&self, params: &Value) -> Option<String> {
+        progress::call_progress_fingerprint(params)
+    }
+
     async fn execute_text(
         &self,
         params: Value,
-        _ctx: &crate::tools::traits::CallContext,
+        ctx: &crate::tools::traits::CallContext,
     ) -> Result<String, ToolError> {
+        ctx.require_tool_authority(self.name())?;
         // `command` is optional — defaults to "monitor" (the safe, non-blocking
         // snapshot). But if the caller passed params that ONLY make sense on
         // `wait_for` (pattern / wait_mode — both strictly blocking-intent

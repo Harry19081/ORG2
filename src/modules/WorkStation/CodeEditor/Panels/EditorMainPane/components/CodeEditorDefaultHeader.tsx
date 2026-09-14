@@ -13,17 +13,27 @@ import {
   editorShowMinimapAtom,
   editorWordWrapAtom,
 } from "@src/store/ui/editorSettingsAtom";
-import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
+import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 
 interface CodeEditorDefaultHeaderProps {
   enabled: boolean;
   repoDisplayName: string;
   activeFilePath: string | null;
+  repoPath: string;
+  onRefresh?: () => void;
+  loading?: boolean;
 }
 
 export const CodeEditorDefaultHeader: React.FC<
   CodeEditorDefaultHeaderProps
-> = ({ enabled, repoDisplayName, activeFilePath }) => {
+> = ({
+  enabled,
+  repoDisplayName,
+  activeFilePath,
+  repoPath,
+  onRefresh,
+  loading,
+}) => {
   const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
   const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
   const [showMinimap, setShowMinimap] = useAtom(editorShowMinimapAtom);
@@ -53,6 +63,9 @@ export const CodeEditorDefaultHeader: React.FC<
       publishToHost="code"
       publishEnabled={enabled}
       filePath="code-editor-default-header"
+      repoPath={repoPath}
+      onReload={onRefresh}
+      loading={loading}
       useFileTypeIcon={false}
       disableNavigation
       plainTitle

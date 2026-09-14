@@ -9,7 +9,7 @@ import type {
   WorkItemReadBucket,
   WorkspaceWorkItemsData,
 } from "@src/api/http/project";
-import type { WorkstationTabHeaderHost } from "@src/hooks/workStation";
+import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import type { LinearProjectSelection } from "@src/modules/ProjectManager/Panels/ProjectManagerSidebar/content/WorkspaceTreeContent";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
 import type { WorkspaceWorkItem } from "@src/modules/ProjectManager/workspaceAggregate";
@@ -18,6 +18,8 @@ export interface ProjectWorkItemsTabContentProps {
   breadcrumbSegments?: readonly ProjectManagerBreadcrumbSegment[];
   workStationTabId?: string;
   workstationHeaderHost?: WorkstationTabHeaderHost;
+  /** Hide shell-owned leading chrome when this page has no sidebar. */
+  shellLeadingChromeHidden?: boolean;
   /** Navigate from the breadcrumb root back to the Projects index. */
   onOpenProjects?: () => void;
   onCreateProject?: () => void;
@@ -28,6 +30,8 @@ export interface ProjectWorkItemsTabContentProps {
   onOpenWorkItem: (selection: ProjectWorkItemSelection) => void;
   /** Org hub surface pills shown after the breadcrumb (Overview / Projects / …). */
   orgSurfaceControls?: React.ReactNode;
+  /** Parent-owned context control shown before split-list header content. */
+  splitHeaderLeading?: React.ReactNode;
 }
 
 export interface AggregatedWorkItemProject {

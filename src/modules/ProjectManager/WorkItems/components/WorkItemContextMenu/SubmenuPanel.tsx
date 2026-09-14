@@ -1,6 +1,6 @@
-import { ChevronRight } from "lucide-react";
 import React from "react";
 
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -10,6 +10,7 @@ import {
   KEYBOARD_SHORTCUT_VARIANT,
   KeyboardShortcut,
 } from "@src/components/KeyboardShortcut";
+import { ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import type { ContextMenuItem } from "@src/types/core/shared";
 
 interface SubmenuPanelProps {
@@ -46,7 +47,10 @@ export const SubmenuPanel: React.FC<SubmenuPanelProps> = ({
       {items.map((item, index) => {
         if (item.divider) {
           return (
-            <div key={item.id} className="work-item-context-menu__divider" />
+            <div
+              key={item.id}
+              className={DROPDOWN_CLASSES.menuGroupSeparator}
+            />
           );
         }
 
@@ -54,9 +58,11 @@ export const SubmenuPanel: React.FC<SubmenuPanelProps> = ({
         const isActive = activeNestedItemId === item.id;
 
         return (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={item.id}
-            type="button"
+            htmlType="button"
             className={`work-item-context-menu__item ${DROPDOWN_CLASSES.item} w-full justify-between border-none bg-transparent text-left ${DROPDOWN_CLASSES.itemHover} ${
               item.disabled ? DROPDOWN_CLASSES.itemDisabled : ""
             } ${isActive ? DROPDOWN_CLASSES.itemActive : ""}`}
@@ -79,7 +85,9 @@ export const SubmenuPanel: React.FC<SubmenuPanelProps> = ({
               </span>
             )}
             {hasNested ? (
-              <ChevronRight
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                data-icon="chevron-right"
                 size={DROPDOWN_ITEM.iconSize}
                 className="work-item-context-menu__arrow"
               />
@@ -90,7 +98,7 @@ export const SubmenuPanel: React.FC<SubmenuPanelProps> = ({
                 className="work-item-context-menu__shortcut"
               />
             ) : null}
-          </button>
+          </Button>
         );
       })}
     </div>

@@ -1,0 +1,207 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import i18n, { i18nReady } from "@src/i18n";
+
+import { formatCompactAge, formatRelativeTime } from "../formatRelativeTime";
+
+/**
+ * `formatRelativeTime`'s >7-day date fallback must honor the explicit
+ * timezone preference, like every other formatter in the app (which route
+ * through `resolveTimeZoneForIntl`). Only "auto" should follow the system
+ * zone.
+ *
+ * TZ is pinned to a negative offset so a preference of UTC is observably
+ * different from the system zone.
+ */
+process.env.TZ = "America/Los_Angeles";
+
+const { getCurrentTimezoneMock } = vi.hoisted(() => ({
+  getCurrentTimezoneMock: vi.fn<() => string>(() => "auto"),
+}));
+
+vi.mock("@src/config/timezone", () => ({
+  getCurrentTimezone: getCurrentTimezoneMock,
+  resolveTimeZoneForIntl: () => {
+    const timezone = getCurrentTimezoneMock();
+    if (timezone === "auto") return undefined;
+    return timezone === "utc" ? "UTC" : timezone;
+  },
+}));
+
+/** 2026-07-30T00:00:00Z is still 07/29 in Los Angeles. */
+const OLD_INSTANT = Date.parse("2026-07-30T00:00:00Z");
+/** Far enough past OLD_INSTANT to land in the ">7 days" date fallback. */
+const NOW = Date.parse("2026-08-20T00:00:00Z");
+
+afterEach(() => {
+  vi.useRealTimers();
+  getCurrentTimezoneMock.mockReturnValue("auto");
+});
+
+describe("formatRelativeTime date fallback", () => {
+  it("renders in the system zone when the preference is auto", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    getCurrentTimezoneMock.mockReturnValue("auto");
+
+    expect(formatRelativeTime(OLD_INSTANT, "short")).toBe(
+      new Date(OLD_INSTANT).toLocaleDateString(undefined, {
+        timeZone: "America/Los_Angeles",
+      })
+    );
+  });
+
+  it("honors an explicit timezone preference instead of the system zone", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    getCurrentTimezoneMock.mockReturnValue("utc");
+
+    const rendered = formatRelativeTime(OLD_INSTANT, "short");
+    expect(rendered).toBe(
+      new Date(OLD_INSTANT).toLocaleDateString(undefined, { timeZone: "UTC" })
+    );
+    // The bug: the system zone puts this instant on the previous day.
+    expect(rendered).not.toBe(
+      new Date(OLD_INSTANT).toLocaleDateString(undefined, {
+        timeZone: "America/Los_Angeles",
+      })
+    );
+  });
+
+  it("still returns relative phrasing inside the 7-day window", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(OLD_INSTANT + 2 * 24 * 60 * 60 * 1000);
+    getCurrentTimezoneMock.mockReturnValue("utc");
+
+    expect(formatRelativeTime(OLD_INSTANT, "short")).toBe("2 days ago");
+  });
+
+  it("capitalizes standalone relative labels across styles", () => {
+    expect(formatRelativeTime(NOW, "long", "en", NOW)).toBe("Now");
+    expect(
+      formatRelativeTime(NOW - 24 * 60 * 60 * 1000, "short", "en", NOW)
+    ).toBe("Yesterday");
+  });
+
+  it("capitalizes the app-translated immediate label", async () => {
+    await i18nReady;
+    const previousLanguage = i18n.language;
+    try {
+      await i18n.changeLanguage("en");
+      i18n.addResourceBundle(
+        "en",
+        "common",
+        { relativeDate: { justNow: "just now" } },
+        true,
+        true
+      );
+      expect(formatRelativeTime(NOW, "long", undefined, NOW)).toBe("Just now");
+    } finally {
+      await i18n.changeLanguage(previousLanguage);
+    }
+  });
+
+  it("uses Intl-relative phrasing when the caller provides a locale", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    const instant = NOW - 2 * 60 * 60 * 1000;
+
+    expect(formatRelativeTime(instant, "long", "zh-CN")).toBe(
+      new Intl.RelativeTimeFormat("zh-CN", {
+        numeric: "always",
+        style: "long",
+      }).format(-2, "hour")
+    );
+  });
+
+  it("localizes every relative-time density", () => {
+    const formatter = (style: Intl.RelativeTimeFormatStyle) =>
+      new Intl.RelativeTimeFormat("zh", {
+        numeric: "always",
+        style,
+      });
+
+    expect(formatRelativeTime(NOW - 3 * 60 * 1000, "short", "zh", NOW)).toBe(
+      formatter("short").format(-3, "minute")
+    );
+    expect(formatRelativeTime(NOW - 3 * 60 * 1000, "compact", "zh", NOW)).toBe(
+      formatter("short").format(-3, "minute")
+    );
+    expect(
+      formatRelativeTime(NOW - 3 * 60 * 60 * 1000, "long", "zh", NOW)
+    ).toBe(formatter("long").format(-3, "hour"));
+    expect(
+      formatRelativeTime(NOW - 3 * 24 * 60 * 60 * 1000, "nano", "zh", NOW)
+    ).toBe(formatter("narrow").format(-3, "day"));
+    expect(
+      formatRelativeTime(NOW - 3 * 24 * 60 * 60 * 1000, "issue", "zh", NOW)
+    ).toBe(formatter("narrow").format(-3, "day"));
+    expect(
+      formatRelativeTime(NOW - 3 * 60 * 60 * 1000, "elapsed", "zh", NOW)
+    ).toBe(formatter("narrow").format(-3, "hour"));
+  });
+
+  it("uses the selected app language when the caller omits a locale", async () => {
+    await i18nReady;
+    const previousLanguage = i18n.language;
+    const instant = NOW - 3 * 60 * 1000;
+
+    try {
+      await i18n.changeLanguage("zh");
+      i18n.addResourceBundle(
+        "zh",
+        "common",
+        { relativeDate: { justNow: "刚刚" } },
+        true,
+        true
+      );
+
+      expect(i18n.t("common:relativeDate.justNow")).toBe("刚刚");
+      expect(formatRelativeTime(NOW, "long", undefined, NOW)).toBe("刚刚");
+      expect(formatRelativeTime(instant, "long", undefined, NOW)).toBe(
+        new Intl.RelativeTimeFormat("zh", {
+          numeric: "always",
+          style: "long",
+        }).format(-3, "minute")
+      );
+    } finally {
+      await i18n.changeLanguage(previousLanguage);
+    }
+  });
+});
+
+describe("formatCompactAge", () => {
+  it("renders bare compact units with no 'ago' suffix", () => {
+    expect(formatCompactAge(NOW - 11 * 60 * 1000, NOW)).toBe("11m");
+    expect(formatCompactAge(NOW - 11 * 60 * 60 * 1000, NOW)).toBe("11h");
+    expect(formatCompactAge(NOW - 2 * 24 * 60 * 60 * 1000, NOW)).toBe("2d");
+    expect(formatCompactAge(NOW - 2 * 7 * 24 * 60 * 60 * 1000, NOW)).toBe("2w");
+    expect(formatCompactAge(NOW - 2 * 30 * 24 * 60 * 60 * 1000, NOW)).toBe(
+      "2mo"
+    );
+    expect(formatCompactAge(NOW - 2 * 365 * 24 * 60 * 60 * 1000, NOW)).toBe(
+      "2y"
+    );
+  });
+
+  it("collapses anything under a minute to 'now'", () => {
+    expect(formatCompactAge(NOW, NOW)).toBe("now");
+    expect(formatCompactAge(NOW - 30 * 1000, NOW)).toBe("now");
+  });
+
+  it("ignores the app language — always renders English abbreviations", async () => {
+    await i18nReady;
+    const previousLanguage = i18n.language;
+    try {
+      await i18n.changeLanguage("zh");
+      expect(formatCompactAge(NOW - 11 * 60 * 1000, NOW)).toBe("11m");
+    } finally {
+      await i18n.changeLanguage(previousLanguage);
+    }
+  });
+
+  it("returns an empty string for a missing timestamp", () => {
+    expect(formatCompactAge(null, NOW)).toBe("");
+    expect(formatCompactAge(undefined, NOW)).toBe("");
+  });
+});

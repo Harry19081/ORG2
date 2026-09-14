@@ -1,10 +1,20 @@
-import { createElement } from "react";
+import { type ReactNode, createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import type { ManagedPrItem } from "../../WorkManagement/githubManagedItemModel";
 import TeamInboxList from "../components/TeamInboxList";
-import type { AssignedWorkItem } from "../domain";
+import type { AssignedWorkItem, WorkItemUpdateItem } from "../domain";
+
+vi.mock("@src/components/KeyboardShortcut/ToolbarTooltip", () => ({
+  ToolbarTooltip: ({
+    children,
+    label,
+  }: {
+    children: ReactNode;
+    label: string;
+  }) => createElement("span", { "data-tooltip-label": label }, children),
+}));
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -21,12 +31,10 @@ function renderEmptyList(query: string, loading = false): string {
       filter: "all",
       items: [],
       selectedItemId: null,
-      totalUnread: 0,
       unreadCounts: { all: 0, mentions: 0, assigned: 0 },
       query,
       loading,
       onQueryChange: vi.fn(),
-      onFilterChange: vi.fn(),
       onSelectItem: vi.fn(),
       onRefresh: vi.fn(),
       hasMore: true,
@@ -97,30 +105,51 @@ const assignedItem: AssignedWorkItem = {
 };
 
 describe("TeamInboxList pagination", () => {
-  it("uses the My Station 40px-bar refresh button treatment", () => {
+  it("removes the title header and keeps refresh in the search row", () => {
     const markup = renderEmptyList("");
 
     expect(markup).toContain('data-testid="team-inbox-refresh"');
-    expect(markup).toContain("lucide-refresh-cw");
+    expect(markup).toContain('data-tooltip-label="common:actions.refresh"');
+    expect(markup).toContain('data-icon="refresh-cw"');
     expect(markup).toContain("height:28px");
     expect(markup).toContain("width:28px");
+    expect(markup).not.toContain("teamInbox.title");
+    expect(markup).not.toContain("teamInbox.allRead");
+    expect(markup.indexOf('placeholder="common:actions.search"')).toBeLessThan(
+      markup.indexOf('data-testid="team-inbox-refresh"')
+    );
   });
 
-  it("uses compact tertiary icon buttons for inbox filters", () => {
+  it("does not render inbox filter controls", () => {
     const markup = renderEmptyList("");
 
-    expect(markup).toContain("lucide-inbox");
-    expect(markup).toContain("lucide-message-square-more");
-    expect(markup).toContain("lucide-list-checks");
-    expect(markup).toContain('data-testid="team-inbox-filter-all"');
-    expect(markup).toContain('data-testid="team-inbox-filter-mentions"');
-    expect(markup).toContain('data-testid="team-inbox-filter-assigned"');
-    expect(markup).toContain('aria-pressed="true"');
-    expect(markup).toContain("!bg-fill-2 !text-text-1");
-    expect(markup).toContain("border-0 bg-transparent text-text-2");
+    expect(markup).not.toContain('data-icon="inbox"');
+    expect(markup).not.toContain('data-icon="message-square-more"');
+    expect(markup).not.toContain('data-icon="list-checks"');
+    expect(markup).not.toContain('data-testid="team-inbox-filter-');
     expect(markup).toContain('placeholder="common:actions.search"');
     expect(markup).toContain('aria-label="common:actions.search"');
     expect(markup).not.toContain("teamInbox.search.");
+  });
+
+  it("does not render unread count bubbles on inbox filters", () => {
+    const markup = renderToStaticMarkup(
+      createElement(TeamInboxList, {
+        filter: "all",
+        items: [],
+        selectedItemId: null,
+        unreadCounts: { all: 6, mentions: 2, assigned: 4 },
+        query: "",
+        loading: false,
+        onQueryChange: vi.fn(),
+        onSelectItem: vi.fn(),
+      })
+    );
+
+    expect(markup).not.toContain("rounded-full bg-primary-6");
+    expect(markup).not.toContain(">6</span>");
+    expect(markup).not.toContain(">2</span>");
+    expect(markup).not.toContain(">4</span>");
   });
 
   it("shows one reusable progress line below search while loading", () => {
@@ -133,19 +162,45 @@ describe("TeamInboxList pagination", () => {
     expect(markup).not.toContain("placeholders.nothingHereYet");
   });
 
+  it("fills a load with nothing to show yet with static skeleton rows", () => {
+    const markup = renderEmptyList("", true);
+
+    expect(markup).toContain('data-testid="list-panel-skeleton-rows"');
+    expect(markup).not.toContain("animate-pulse");
+    expect(markup).not.toContain('data-testid="team-inbox-row"');
+    expect(markup).not.toContain("teamInbox.empty.");
+  });
+
+  it("drops the skeleton rows as soon as real rows exist", () => {
+    const markup = renderToStaticMarkup(
+      createElement(TeamInboxList, {
+        filter: "all",
+        items: [assignedItem],
+        selectedItemId: null,
+        unreadCounts: { all: 0, mentions: 0, assigned: 0 },
+        query: "",
+        loading: true,
+        onQueryChange: vi.fn(),
+        onSelectItem: vi.fn(),
+      })
+    );
+
+    expect(markup).toContain("Existing assigned work");
+    expect(markup).toContain('role="progressbar"');
+    expect(markup).not.toContain('data-testid="list-panel-skeleton-rows"');
+  });
+
   it("temporarily hides pull-request refresh warnings", () => {
     const markup = renderToStaticMarkup(
       createElement(TeamInboxList, {
         filter: "all",
         items: [],
         selectedItemId: null,
-        totalUnread: 0,
         unreadCounts: { all: 0, mentions: 0, assigned: 0 },
         query: "",
         loading: false,
         pullRequestsError: "GitHub request timed out",
         onQueryChange: vi.fn(),
-        onFilterChange: vi.fn(),
         onSelectItem: vi.fn(),
       })
     );
@@ -167,6 +222,9 @@ describe("TeamInboxList pagination", () => {
   });
 
   it("places actionable pull requests and assigned work under matching sections", () => {
+    // Pin the clock so the inbox row's relative timestamp is deterministic.
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-28T05:00:00.000Z"));
     const markup = renderToStaticMarkup(
       createElement(TeamInboxList, {
         filter: "all",
@@ -187,12 +245,10 @@ describe("TeamInboxList pagination", () => {
           }),
         ],
         selectedItemId: assignedItem.id,
-        totalUnread: 0,
         unreadCounts: { all: 0, mentions: 0, assigned: 0 },
         query: "",
         loading: false,
         onQueryChange: vi.fn(),
-        onFilterChange: vi.fn(),
         onSelectItem: vi.fn(),
         onSelectPullRequest: vi.fn(),
       })
@@ -220,14 +276,15 @@ describe("TeamInboxList pagination", () => {
     expect(markup).toContain("https://example.com/author.png");
     expect(markup).toContain(">#42</span>");
     expect(markup).toMatch(/class="[^"]*font-semibold[^"]*"[^>]*>#42<\/span>/);
-    expect(markup).toContain("desktop-re · feat/team-inbox");
-    expect(markup).not.toContain("#42 · desktop-re");
+    expect(markup).toContain("desktop-repository · feat/team-inbox");
+    expect(markup).not.toContain("#42 · desktop-repository");
     expect(markup).not.toContain(">orgii/desktop-repository<");
     expect(markup).toContain("teamInbox.filters.assigned · ORG2 issue");
     expect(markup).not.toContain("orgii-issu");
     expect(markup).not.toContain("author · #42");
-    expect(markup).toContain(">5h<");
-    expect(markup).not.toContain("ago");
+    // Both PR rows and the assigned-work row use the same compact age.
+    expect(markup.match(/>5h</g)).toHaveLength(3);
+    expect(markup).not.toContain(">5h ago<");
     expect(markup).not.toContain("teamInbox.groups.");
     expect(markup).toMatch(/class="[^"]*text-text-3[^"]*"[^>]*>5h<\/span>/);
     expect(markup).toContain("text-text-2");
@@ -235,10 +292,52 @@ describe("TeamInboxList pagination", () => {
     expect(markup.match(/class="mb-2 last:mb-0"/g)).toHaveLength(3);
     expect(markup).toContain("mb-px h-7");
     expect(markup).toContain(
-      "text-xs font-medium uppercase tracking-wider text-text-2"
+      "text-left text-[11px] font-medium uppercase tracking-wide text-text-3"
     );
     expect(markup).toContain("rounded-lg");
     expect(markup).toContain("hover:bg-surface-hover");
     expect(markup).not.toContain("min-h-[72px]");
+    vi.useRealTimers();
+  });
+
+  it("keeps Work Item events in a semantic updates section", () => {
+    const event: WorkItemUpdateItem = {
+      id: "event-1",
+      kind: "child_completed",
+      source: "local",
+      occurredAt: "2026-08-08T10:00:00.000Z",
+      readAt: null,
+      actor: { id: "member-2", displayName: "Lin" },
+      target: {
+        kind: "work_item",
+        projectId: "demo",
+        workItemId: "AAA-0001",
+      },
+      payload: {
+        title: "Child task",
+        eventKind: "child_completed",
+        status: "in_progress",
+        priority: "medium",
+        recipientMemberId: "member-1",
+        updatedAt: "2026-08-08T10:00:00.000Z",
+      },
+    };
+
+    const markup = renderToStaticMarkup(
+      createElement(TeamInboxList, {
+        filter: "all",
+        items: [event],
+        selectedItemId: null,
+        unreadCounts: { all: 1, mentions: 0, assigned: 0 },
+        query: "",
+        loading: false,
+        onQueryChange: vi.fn(),
+        onSelectItem: vi.fn(),
+      })
+    );
+
+    expect(markup).toContain('data-testid="team-inbox-updates"');
+    expect(markup).toContain('data-item-kind="child_completed"');
+    expect(markup).not.toContain('data-testid="team-inbox-assigned"');
   });
 });

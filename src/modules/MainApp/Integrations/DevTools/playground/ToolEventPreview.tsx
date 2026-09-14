@@ -8,12 +8,12 @@
  */
 import { useState } from "react";
 
-import "@src/engines/ChatPanel/ChatHistory/ActivityRouter.scss";
 import "@src/engines/ChatPanel/ChatHistory/index.scss";
+import "@src/engines/ChatPanel/ChatHistory/styles/activity-thinking.css";
 
 import "./ToolEventPreview.scss";
 import { SessionLinkCardPreview, ToolDefinitionPreview } from "./previews";
-import { SingleEventPreview } from "./single-event";
+import { SingleEventPreview } from "./single-event/SingleEventPreview";
 import type { PreviewMode } from "./types";
 
 export function ToolEventPreview() {

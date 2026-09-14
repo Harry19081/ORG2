@@ -5,7 +5,6 @@
  * - `spotlight` (default): below the main panel — simple bg-bg-2 pill.
  * - `dropdown`: same hints with `DROPDOWN_CLASSES.panel` (e.g. @-mention menu).
  */
-import { ArrowDown, ArrowUp } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -20,7 +19,7 @@ import {
 /**
  * Which chip to show when {@link SpotlightFooterProps.hasActiveAction} is true.
  *
- * - `back` — Backspace + "Back" (drill-in palettes, e.g. WorkspacePalette).
+ * - `back` — Backspace + "Back" (drill-in palettes, e.g. WorkingDirectoryPalette).
  * - `switchColumn` — Tab + "Switch column" (two-column palettes like
  *   UnifiedModelPalette, where Backspace is intentionally inert and
  *   Tab/ArrowLeft hand focus back to the left column).
@@ -35,7 +34,7 @@ export const SPOTLIGHT_FOOTER_ACTIVE_CHIP = {
 export type SpotlightFooterActiveChip =
   (typeof SPOTLIGHT_FOOTER_ACTIVE_CHIP)[keyof typeof SPOTLIGHT_FOOTER_ACTIVE_CHIP];
 
-export interface SpotlightFooterProps {
+interface SpotlightFooterProps {
   /** Whether there's an active path (items selected) */
   hasActiveAction: boolean;
   /**
@@ -48,6 +47,12 @@ export interface SpotlightFooterProps {
    * (Backspace + Return) to match historical drill-in palettes.
    */
   activeActionChip?: SpotlightFooterActiveChip;
+  /**
+   * Palette-owned controls rendered inside the pill after the last hint
+   * (see `ShellFooterAction placement="inline"`). Keep these visually
+   * quiet — the pill is a hint strip, not a toolbar.
+   */
+  trailingSlot?: React.ReactNode;
 }
 
 // ============ COMPONENT ============
@@ -56,27 +61,23 @@ export const SpotlightFooter: React.FC<SpotlightFooterProps> = ({
   hasActiveAction,
   variant = "spotlight",
   activeActionChip = SPOTLIGHT_FOOTER_ACTIVE_CHIP.back,
+  trailingSlot,
 }) => {
   const { t } = useTranslation();
 
   const inner = (
     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-[11px] text-text-2">
       <span className="flex items-center gap-1.5">
-        {/* `↑↓` stays as a hand-rolled paired pill: the shared
-            KeyboardShortcut component renders one pill per key, but the
-            macOS convention is to show navigation arrows joined inside a
-            single pill. Background/height match the spotlightFooter
-            variant so the look is consistent. */}
-        <kbd className="flex h-[18px] items-center gap-0.5 rounded bg-fill-3 px-1.5 font-medium leading-none text-text-2">
-          <ArrowUp size={10} strokeWidth={2} />
-          <ArrowDown size={10} strokeWidth={2} />
-        </kbd>
+        <KeyboardShortcut
+          shortcutId={"spotlight_navigate"}
+          variant={KEYBOARD_SHORTCUT_VARIANT.spotlightFooter}
+        />
         <span>{t("selectors.spotlightFooter.navigate")}</span>
       </span>
 
       <span className="flex items-center gap-1.5">
         <KeyboardShortcut
-          shortcut="enter"
+          shortcutId={"spotlight_select"}
           variant={KEYBOARD_SHORTCUT_VARIANT.spotlightFooter}
         />
         <span>{t("selectors.spotlightFooter.select")}</span>
@@ -87,7 +88,7 @@ export const SpotlightFooter: React.FC<SpotlightFooterProps> = ({
         activeActionChip === SPOTLIGHT_FOOTER_ACTIVE_CHIP.switchSection ? (
           <span className="flex items-center gap-1.5">
             <KeyboardShortcut
-              shortcut="tab"
+              shortcutId={"spotlight_switch_focus"}
               variant={KEYBOARD_SHORTCUT_VARIANT.spotlightFooter}
             />
             <span>
@@ -99,7 +100,7 @@ export const SpotlightFooter: React.FC<SpotlightFooterProps> = ({
         ) : (
           <span className="flex items-center gap-1.5">
             <KeyboardShortcut
-              shortcut="backspace"
+              shortcutId={"spotlight_back"}
               variant={KEYBOARD_SHORTCUT_VARIANT.spotlightFooter}
             />
             <span>{t("actions.back")}</span>
@@ -108,11 +109,13 @@ export const SpotlightFooter: React.FC<SpotlightFooterProps> = ({
 
       <span className="flex items-center gap-1.5">
         <KeyboardShortcut
-          shortcut="esc"
+          shortcutId={"spotlight_close"}
           variant={KEYBOARD_SHORTCUT_VARIANT.spotlightFooter}
         />
         <span>{t("actions.close")}</span>
       </span>
+
+      {trailingSlot}
     </div>
   );
 

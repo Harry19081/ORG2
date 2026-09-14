@@ -1,17 +1,18 @@
 /**
  * Assembles the Team Sessions section's `NavigationMenuItem[]` list
- * (`cloudSessionsSection.tsx`): the separator header (refresh + member
+ * (`cloudSessionsSection.tsx`): the separator header (search, refresh + member
  * filter row actions), one row per visible fork thread via `buildRowItem`,
  * the "Load more" pagination row, and the empty/loading/error placeholder
  * row.
  */
 import type { TFunction } from "i18next";
-import { ListFilter, RefreshCw } from "lucide-react";
 import React, { useMemo } from "react";
 
 import type { CloudSessionFilter } from "@src/features/Org2Cloud/cloudSessionFilter";
 import type { CloudSessionThread } from "@src/features/Org2Cloud/cloudSessionThreads";
 import type { CloudRemoteSessionsFetchState } from "@src/features/Org2Cloud/org2CloudRemoteSessionsAtom";
+import { FilterMailIcon, Refresh04Icon, Search01Icon } from "@src/icons";
+import { openAgentSessionSearchSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 
 import { separator } from "../useSessionMenuItems/menuItemBuilders";
@@ -62,14 +63,25 @@ export function useCloudTeamSessionMenuItems({
     );
     header.rowActions = [
       {
-        icon: RefreshCw,
+        showOnSidebarHover: true,
+        icon: Search01Icon,
+        dataIcon: "search",
+        label: t("sidebar.search.sessions"),
+        dataTestId: "cloud-team-sessions-search",
+        onClick: openAgentSessionSearchSpotlight,
+      },
+      {
+        showOnSidebarHover: true,
+        icon: Refresh04Icon,
+        dataIcon: "refresh-cw",
         iconClassName: refreshSpinClass,
         label: tCommon("actions.refresh"),
         dataTestId: "cloud-team-sessions-refresh",
         onClick: handleRefreshClick,
       },
       {
-        icon: ListFilter,
+        showOnSidebarHover: true,
+        icon: FilterMailIcon,
         label: t("cloud.sidebar.sessionFilter"),
         active: memberMenu !== null || filter.kind !== "all",
         dataTestId: "cloud-team-sessions-filter",
@@ -83,16 +95,11 @@ export function useCloudTeamSessionMenuItems({
     ];
     const items: NavigationMenuItem[] = [header];
     for (const thread of visibleThreads) {
-      if (thread.descendants.length === 0) {
-        items.push(buildRowItem(thread.root));
-      } else {
-        items.push(
-          buildRowItem(
-            thread.root,
-            thread.descendants.map((descendant) => buildRowItem(descendant))
-          )
-        );
-      }
+      // One conversation, one row: descendants never render as child rows —
+      // the conversation surface stitches the whole family, so the fork
+      // topology is wiring, not navigation. Descendants still feed the
+      // row's aggregated unread badge.
+      items.push(buildRowItem(thread.root, thread.descendants));
     }
     if (visibleThreads.length < threads.length) {
       items.push(

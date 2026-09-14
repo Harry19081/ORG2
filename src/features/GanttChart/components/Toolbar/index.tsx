@@ -4,13 +4,19 @@
  * Toolbar with view scope toggle and navigation controls.
  * Layout: [Scale Toggle] ... [Zoom] < [Date Range] > [Today]
  */
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import TabPill from "@src/components/TabPill";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks";
+import {
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  HugeiconsIcon,
+  ZoomInAreaIcon,
+  ZoomOutAreaIcon,
+} from "@src/icons";
+import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 
 import { VIEW_SCOPE_OPTIONS } from "../../config";
 import type { ZoomLevel } from "../../hooks/useGanttZoom";
@@ -20,7 +26,7 @@ import type { GanttTimeScale, GanttViewScope } from "../../types";
 // Types
 // ============================================
 
-export interface GanttToolbarProps {
+interface GanttToolbarProps {
   /** @deprecated Use viewScope instead */
   timeScale?: GanttTimeScale;
   /** Current view scope (3d, 7d, 1m, 3m) */
@@ -145,7 +151,9 @@ const GanttToolbar: React.FC<GanttToolbarProps> = ({
             <Button
               {...PANEL_HEADER_TOKENS.actionButton}
               icon={
-                <ZoomOut
+                <HugeiconsIcon
+                  icon={ZoomOutAreaIcon}
+                  data-icon="zoom-out"
                   size={PANEL_HEADER_TOKENS.buttonIconSize}
                   strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
                 />
@@ -154,18 +162,23 @@ const GanttToolbar: React.FC<GanttToolbarProps> = ({
               disabled={zoomLevel === 50}
               title={t("tooltips.zoomOut")}
             />
-            <button
-              type="button"
-              className="min-w-12 cursor-pointer rounded border-none bg-fill-1 px-2 py-1 text-[11px] font-medium text-text-2 transition-all duration-150 hover:bg-fill-2 hover:text-text-1"
+            <Button
+              variant="tertiary"
+              appearance="ghost"
+              size="mini"
+              htmlType="button"
+              className="min-w-12 text-[11px] font-medium transition-all hover:bg-fill-2 hover:text-text-1"
               onClick={onResetZoom}
               title={t("tooltips.resetZoom")}
             >
               {zoomLevel}%
-            </button>
+            </Button>
             <Button
               {...PANEL_HEADER_TOKENS.actionButton}
               icon={
-                <ZoomIn
+                <HugeiconsIcon
+                  icon={ZoomInAreaIcon}
+                  data-icon="zoom-in"
                   size={PANEL_HEADER_TOKENS.buttonIconSize}
                   strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
                 />
@@ -182,7 +195,9 @@ const GanttToolbar: React.FC<GanttToolbarProps> = ({
         <Button
           {...PANEL_HEADER_TOKENS.actionButton}
           icon={
-            <ChevronLeft
+            <HugeiconsIcon
+              icon={ArrowLeft01Icon}
+              data-icon="chevron-left"
               size={PANEL_HEADER_TOKENS.buttonIconSize}
               strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
             />
@@ -202,7 +217,9 @@ const GanttToolbar: React.FC<GanttToolbarProps> = ({
         <Button
           {...PANEL_HEADER_TOKENS.actionButton}
           icon={
-            <ChevronRight
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              data-icon="chevron-right"
               size={PANEL_HEADER_TOKENS.buttonIconSize}
               strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
             />
@@ -212,14 +229,17 @@ const GanttToolbar: React.FC<GanttToolbarProps> = ({
         />
 
         {/* Today */}
-        <button
-          type="button"
-          className="ml-1 cursor-pointer rounded-md border-none bg-fill-1 px-3 py-1 text-xs text-text-2 transition-all duration-150 hover:bg-fill-2 hover:text-text-1"
+        <Button
+          variant="tertiary"
+          appearance="ghost"
+          size="mini"
+          htmlType="button"
+          className="ml-1 text-xs transition-all hover:bg-fill-2 hover:text-text-1"
           onClick={onGoToToday}
           title={t("tooltips.goToToday")}
         >
           Today
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks";
+import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { ArrowLeft01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
+import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 import Modal from "@src/scaffold/ModalSystem";
 
 import BuilderTypeAvatar from "./BuilderTypeAvatar";
@@ -57,7 +58,7 @@ export function BuilderTypeDetailContent({
 
   return (
     <section
-      className="rounded-xl border border-border-1 bg-primary-container p-4"
+      className={DETAIL_PANEL_TOKENS.primaryContainer}
       aria-labelledby="builder-type-detail-title"
       data-testid="builder-type-detail"
     >
@@ -142,7 +143,9 @@ export default function BuilderTypeDetailModal({
           onClick={onPrevious}
           data-testid="builder-type-previous"
           icon={
-            <ChevronLeft
+            <HugeiconsIcon
+              icon={ArrowLeft01Icon}
+              data-icon="chevron-left"
               size={PANEL_HEADER_TOKENS.buttonIconSize}
               strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
             />
@@ -158,7 +161,9 @@ export default function BuilderTypeDetailModal({
           onClick={onNext}
           data-testid="builder-type-next"
           icon={
-            <ChevronRight
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              data-icon="chevron-right"
               size={PANEL_HEADER_TOKENS.buttonIconSize}
               strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
             />

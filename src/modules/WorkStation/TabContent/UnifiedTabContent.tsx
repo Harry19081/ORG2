@@ -20,12 +20,11 @@ import { REGISTRY } from "./registry";
 
 export interface UnifiedTabContentDispatcherProps {
   tab: WorkStationTab;
-  paneId: string;
   isActive: boolean;
 }
 
 export const UnifiedTabContent: React.FC<UnifiedTabContentDispatcherProps> =
-  memo(({ tab, paneId, isActive }) => {
+  memo(({ tab, isActive }) => {
     const entry = REGISTRY[tab.type];
     if (!entry) {
       return <UnknownTabPlaceholder type={tab.type} />;
@@ -33,15 +32,21 @@ export const UnifiedTabContent: React.FC<UnifiedTabContentDispatcherProps> =
     const { Component } = entry;
     const fallback =
       tab.type === "github-issue-detail" ? (
-        <GitHubDetailSkeleton kind="issue" showHeader={false} />
+        <GitHubDetailSkeleton
+          kind="issue"
+          showHeader={false}
+          showTabs={false}
+          title={tab.data.issueTitle as string}
+          number={tab.data.issueNumber as number}
+        />
       ) : tab.type === "github-pr-detail" ? (
-        <GitHubDetailSkeleton kind="pr" showHeader={false} />
+        <GitHubDetailSkeleton kind="pr" showHeader={false} showTabs={false} />
       ) : (
         <TabLoadingPlaceholder />
       );
     return (
       <Suspense fallback={fallback}>
-        <Component tab={tab} paneId={paneId} isActive={isActive} />
+        <Component tab={tab} isActive={isActive} />
       </Suspense>
     );
   });

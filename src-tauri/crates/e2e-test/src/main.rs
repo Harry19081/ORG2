@@ -44,6 +44,7 @@ mod lsp;
 mod mcp;
 mod os;
 mod sde;
+mod shell_jobs;
 mod subagent;
 mod sync;
 mod sync_conflict;
@@ -501,6 +502,37 @@ fn all_scenarios() -> Vec<ScenarioDef> {
             "subagent-wake-race-after-poll",
             subagent::subagent_wake_race_after_poll
         ),
+        // Background-shell waiting protocol (repeat guard / wake / note / stall)
+        scenario!(
+            "shell-jobs",
+            "shell-chatty-wait-never-breaks",
+            shell_jobs::shell_chatty_wait_never_breaks
+        ),
+        scenario!(
+            "shell-jobs",
+            "shell-silent-break-then-wake-resumes",
+            shell_jobs::shell_silent_break_then_wake_resumes
+        ),
+        scenario!(
+            "shell-jobs",
+            "shell-midturn-completion-note",
+            shell_jobs::shell_midturn_completion_note
+        ),
+        scenario!(
+            "shell-jobs",
+            "shell-stall-advisory-leads-to-kill",
+            shell_jobs::shell_stall_advisory_leads_to_kill
+        ),
+        scenario!(
+            "shell-jobs",
+            "job-wait-progress-subagent",
+            shell_jobs::job_wait_progress_subagent
+        ),
+        scenario!(
+            "shell-jobs",
+            "job-midturn-note-subagent",
+            shell_jobs::job_midturn_note_subagent
+        ),
         // Housekeeping (deferred disk cleanup)
         scenario!(
             "housekeeping",
@@ -670,18 +702,13 @@ fn all_scenarios() -> Vec<ScenarioDef> {
         ),
         scenario!(
             "agent-org",
-            "agent-org-production-return-to-work-drains-visible-input",
-            agent_org::production_return_to_work_drains_inbox_into_member_transcript
-        ),
-        scenario!(
-            "agent-org",
             "agent-org-run-pause-resume-toggles-status",
             agent_org::run_pause_resume_toggles_status
         ),
         scenario!(
             "agent-org",
-            "agent-org-app-restart-transitions-running-runs-to-paused",
-            agent_org::app_restart_transitions_running_runs_to_paused
+            "agent-org-app-restart-recovers-exact-task-execution-once",
+            agent_org::app_restart_recovers_exact_task_execution_once
         ),
         scenario!(
             "agent-org",

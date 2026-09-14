@@ -5,18 +5,39 @@
  * Follows the same pattern as DROPDOWN_CLASSES in @src/components/Dropdown/tokens.
  *
  * Used by: FileHeader, WebUrlBar, SearchBar,
- *          CollapsibleSection, PanelSectionHeader, ActionBar, IconButton, etc.
+ *          CollapsibleSection, PanelSectionHeader, ActionBar, Button, etc.
  */
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 
 /** Orgii Editor tab canvas — matches CodeMirror (--cm-editor-background on :root). */
-export const EDITOR_TAB_CANVAS_BG_CLASS = "bg-[var(--cm-editor-background)]";
+export const EDITOR_TAB_CANVAS_BG_CLASS = "bg-(--cm-editor-background)";
 
-/** Primary sidebar panel background — editor canvas from the former comfort palette. */
+/** Primary sidebar panel background — follows the host's editor/pane surface. */
 export const PRIMARY_SIDEBAR_SURFACE_BG_CLASS = EDITOR_TAB_CANVAS_BG_CLASS;
 
-/** Full-area empty / loading surfaces outside the main no-tabs placeholder. */
-export const WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS = "bg-pane-raised";
+/** Full-area empty / loading surfaces inherit the host's primary pane paint. */
+export const WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS =
+  EDITOR_TAB_CANVAS_BG_CLASS;
+
+/**
+ * Shared geometry for compact content inside floating Workstation trails.
+ * Keep entity/property trails on these classes so row height, insets, and
+ * section rhythm cannot drift from the focused-chat environment trail.
+ */
+const WORKSTATION_TRAIL_ROW_HORIZONTAL_PADDING = "pl-2 pr-1.5";
+export const WORKSTATION_TRAIL_SECTION_LABEL =
+  "text-left text-[11px] font-medium uppercase tracking-wide text-text-3";
+
+export const WORKSTATION_TRAIL_CONTENT = {
+  sectionList: "space-y-3",
+  section: "space-y-1",
+  sectionLabel: `px-2 ${WORKSTATION_TRAIL_SECTION_LABEL}`,
+  sectionLabelInline: `pl-2 pr-1 ${WORKSTATION_TRAIL_SECTION_LABEL}`,
+  rows: "space-y-1",
+  row: "flex h-7 min-w-0 items-center rounded-lg",
+  rowHorizontalPadding: WORKSTATION_TRAIL_ROW_HORIZONTAL_PADDING,
+  rowContent: `flex h-full min-w-0 flex-1 items-center gap-1.5 ${WORKSTATION_TRAIL_ROW_HORIZONTAL_PADDING} text-left text-[12px]`,
+} as const;
 
 export const PRIMARY_SIDEBAR_HOVER = {
   row: SURFACE_TOKENS.hover,
@@ -32,6 +53,8 @@ export const HEADER_HEIGHT = 40;
 
 /** Icon sizes used inside header buttons */
 export const HEADER_ICON_SIZE = {
+  /** Compact discard glyph; button hit area stays unchanged. */
+  discard: 12,
   /** Standard icon size (14px) — section headers, file headers, action bars */
   sm: 14,
   /** Larger icon size (16px) — bottom panel, URL bar, tab bar */
@@ -42,32 +65,50 @@ export const HEADER_ICON_SIZE = {
 // Button Tokens
 // ============================================
 
-/** Base class shared by all icon-only header buttons */
-const BUTTON_BASE =
-  "flex items-center justify-center rounded transition-colors";
+/** Shared icon-button geometry; callers own display/hover-reveal behavior. */
+export const ICON_BUTTON_BASE =
+  "shrink-0 items-center justify-center transition-colors";
+const BUTTON_BASE = `flex ${ICON_BUTTON_BASE}`;
 
-/** Size classes for icon-only buttons */
+/** Size and radius classes for icon-only buttons */
 export const BUTTON_SIZE = {
   /** 20×20 — standard header / row action button (single source of truth) */
-  sm: "h-5 w-5",
+  sm: "h-5 w-5 rounded-sm",
   /** 24×24 — larger header action button */
-  md: "h-6 w-6",
+  md: "h-6 w-6 rounded-lg",
   /** 28×28 — collapse toggles, modal headers */
-  lg: "h-7 w-7",
+  lg: "h-7 w-7 rounded-lg",
 } as const;
 
-/** Variant classes for icon-only buttons */
+/** One palette for compact row, terminal, and header actions. */
+const DEFAULT_BUTTON_VARIANT =
+  "text-text-2 enabled:hover:bg-button-hover enabled:hover:text-text-1 focus-visible:bg-button-hover focus-visible:text-text-1";
+
 export const BUTTON_VARIANT = {
-  /** Default: muted text, hover shows fill background (use outside tree rows) */
-  default: `text-text-3 ${SURFACE_TOKENS.hover} hover:text-text-1`,
-  /** Default for tree rows / section headers — parent row uses shared hover, so the button steps up to the button-hover surface. */
-  defaultTreeRow: "text-text-3 hover:bg-button-hover hover:text-text-1",
-  /** Danger: muted text, hover shows danger background */
-  danger: "text-text-3 hover:bg-danger-1 hover:text-danger-6",
-  /** Success: muted text, hover shows success background */
-  success: "text-text-3 hover:bg-success-1 hover:text-success-6",
-  /** Active/toggled: primary highlight with selected surface; hover steps up over selected rows. */
-  active: `${SURFACE_TOKENS.selected} text-primary-6 hover:bg-button-hover`,
+  default: DEFAULT_BUTTON_VARIANT,
+  noDrop:
+    "text-text-2 enabled:hover:bg-button-hover-no-drop enabled:hover:text-text-1 focus-visible:bg-button-hover-no-drop focus-visible:text-text-1",
+  defaultTreeRow: DEFAULT_BUTTON_VARIANT,
+  danger:
+    "text-danger-6 enabled:hover:bg-danger-2 enabled:hover:text-danger-6 focus-visible:bg-danger-2 focus-visible:text-danger-6",
+  dangerNoDrop:
+    "text-danger-6 enabled:hover:bg-danger-1 enabled:hover:text-danger-6 focus-visible:bg-danger-1 focus-visible:text-danger-6",
+  primary:
+    "text-text-2 enabled:hover:bg-primary-3 enabled:hover:text-primary-6 focus-visible:bg-primary-3 focus-visible:text-primary-6",
+  success:
+    "text-success-6 enabled:hover:bg-success-3 focus-visible:bg-success-3",
+  active:
+    "bg-surface-selected text-primary-6 enabled:hover:bg-button-hover focus-visible:bg-button-hover",
+} as const;
+
+/** Standard 20px row controls. Add flex or the row's hover-reveal classes. */
+const ROW_BUTTON_BASE = `${ICON_BUTTON_BASE} ${BUTTON_SIZE.sm}`;
+export const ROW_BUTTON = {
+  default: `${ROW_BUTTON_BASE} ${BUTTON_VARIANT.default}`,
+  danger: `${ROW_BUTTON_BASE} ${BUTTON_VARIANT.danger}`,
+  primary: `${ROW_BUTTON_BASE} ${BUTTON_VARIANT.primary}`,
+  success: `${ROW_BUTTON_BASE} ${BUTTON_VARIANT.success}`,
+  active: `${ROW_BUTTON_BASE} ${BUTTON_VARIANT.active}`,
 } as const;
 
 /**
@@ -84,24 +125,22 @@ export const BUTTON_VARIANT = {
  * </button>
  * ```
  */
-const HEADER_BUTTON_SM_TREEROW = `${BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.defaultTreeRow}`;
-
 export const HEADER_BUTTON = {
   /** Standard action button (20×20, default variant) */
-  action: `${BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.default}`,
-  /** Standard for tree rows & section headers — hover fill-3 over shared row hover */
-  actionTreeRow: HEADER_BUTTON_SM_TREEROW,
+  action: `flex ${ROW_BUTTON.default}`,
+  /** Compact row / section action with the shared neutral hover fill. */
+  actionTreeRow: `flex ${ROW_BUTTON.default}`,
   /** Standard action button with disabled support */
-  actionDisabled: `${BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.default} disabled:cursor-not-allowed disabled:opacity-30`,
+  actionDisabled: `flex ${ROW_BUTTON.default} disabled:cursor-not-allowed disabled:opacity-30`,
   /** Danger action button (20×20) */
-  danger: `${BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.danger}`,
+  danger: `flex ${ROW_BUTTON.danger}`,
   /** Success action button (20×20) — merge, accept, run test */
-  success: `${BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.success}`,
+  success: `flex ${ROW_BUTTON.success}`,
   /** Active/toggled button (20×20) */
-  active: `${BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.active}`,
+  active: `flex ${ROW_BUTTON.active}`,
   /** Medium (24×24) — modal close, etc. */
   actionMd: `${BUTTON_BASE} ${BUTTON_SIZE.md} ${BUTTON_VARIANT.default}`,
-  /** Md for tree rows — hover fill-3 over shared row hover */
+  /** Medium row action — uses the same default palette. */
   actionMdTreeRow: `${BUTTON_BASE} ${BUTTON_SIZE.md} ${BUTTON_VARIANT.defaultTreeRow}`,
   /** Large (28×28) — collapse toggles, panel headers */
   actionLg: `${BUTTON_BASE} ${BUTTON_SIZE.lg} ${BUTTON_VARIANT.default}`,
@@ -109,7 +148,7 @@ export const HEADER_BUTTON = {
    * Workstation tab bar trailing slot — regular header action styling.
    * Prefer this name in tab-strip code for clarity.
    */
-  tabBarTrailing: `${BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.default}`,
+  tabBarTrailing: `flex ${ROW_BUTTON.default}`,
   /** Tab bar trailing — toggled on (e.g. split view, properties panel) */
   tabBarTrailingActive: `${BUTTON_BASE} ${BUTTON_SIZE.sm} ${SURFACE_TOKENS.selected} text-primary-6 ${SURFACE_TOKENS.selectedHover}`,
 } as const;
@@ -134,6 +173,11 @@ export const TAB_BAR_CONTROLS_ROW_PADDING_FULL = "pl-1 pr-2";
  * Matches the standard tab-bar trailing edge inset.
  */
 export const TAB_BAR_CONTROLS_ROW_PADDING_TRAILING_ONLY = "pl-1 pr-2";
+/**
+ * The `pr-2` above, in pixels. Hosts that reserve window-edge space for
+ * pinned chrome subtract it so the reservation's 1px gap is not doubled.
+ */
+export const TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX = 8;
 
 /** Default: full horizontal padding (most toolbars). */
 export const TAB_BAR_CONTROLS_ROW_CLASS = `${TAB_BAR_CONTROLS_ROW_BASE_CLASS} ${TAB_BAR_CONTROLS_ROW_PADDING_FULL}`;
@@ -177,34 +221,35 @@ export const TAB_BAR_TRAILING_EDGE_CLASS =
  */
 export const SPLIT_BUTTON = {
   /** Outer wrapper — shared surface hover covers both halves */
-  container: `group/split flex items-center rounded transition-colors ${SURFACE_TOKENS.hover}`,
+  container:
+    "group/split flex items-center rounded transition-colors hover:bg-button-hover focus-within:bg-button-hover",
   /** Left (primary action) — inherits the shared hover surface from container */
   left: "flex h-5 w-5 items-center justify-center rounded-l text-text-3 transition-colors group-hover/split:text-text-1",
   /** Right (chevron) — button hover surface stacks on top of container hover */
   right:
-    "flex h-5 items-center justify-center rounded-r px-0.5 text-text-3 transition-colors group-hover/split:text-text-1 hover:bg-button-hover",
+    "flex h-5 items-center justify-center rounded-r px-0.5 text-text-3 transition-colors group-hover/split:text-text-1 hover:bg-fill-3",
 } as const;
 
 // ============================================
 // Header Class Strings
 // ============================================
 
-/** Shared left inset aligning 40px header content with the first tab icon. */
+/** Shared left inset aligning header content with the first tab icon. */
 export const HEADER_CONTENT_LEFT_PADDING_CLASS = "pl-[15px]";
-/** Shared right inset for content inside My Station's 40px header bars. */
+/** Shared right inset for content inside My Station header bars. */
 export const HEADER_CONTENT_RIGHT_PADDING_CLASS = "pr-2";
-/** Shared tab-aligned left and compact right insets for 40px header bars. */
+/** Shared tab-aligned left and compact right insets for header bars. */
 export const HEADER_CONTENT_HORIZONTAL_PADDING_CLASS = `${HEADER_CONTENT_LEFT_PADDING_CLASS} ${HEADER_CONTENT_RIGHT_PADDING_CLASS}`;
 
-/** Shared 40px file-bar row geometry (used by FileHeader + search rows). */
-export const FILE_BAR_ROW_CLASSES = `work-station-file-bar flex h-[40px] flex-shrink-0 items-center gap-1.5 ${HEADER_CONTENT_HORIZONTAL_PADDING_CLASS}`;
+/** Shared 36px file-bar row geometry (used by FileHeader + search rows). */
+export const FILE_BAR_ROW_CLASSES = `work-station-file-bar flex h-9 shrink-0 items-center gap-1.5 ${HEADER_CONTENT_HORIZONTAL_PADDING_CLASS}`;
 
 export const HEADER_CLASSES = {
   /**
    * File bar header (top bar showing file path / URL / preview info).
    * Used by: FileHeader, WebUrlBar
    *
-   * Height: 40px, horizontal layout, shrink-proof, tab-aligned left inset.
+   * Height: 36px, horizontal layout, shrink-proof, tab-aligned left inset.
    */
   fileBar: FILE_BAR_ROW_CLASSES,
 
@@ -212,9 +257,9 @@ export const HEADER_CLASSES = {
    * Page-level header (bordered, with background).
    * Used by: ProjectsPageHeader, WorkItemsPageHeader
    *
-   * Height: 40px, bottom border, tab-aligned left inset.
+   * Height: 36px, bottom border, tab-aligned left inset.
    */
-  pageHeader: `flex h-[40px] flex-shrink-0 items-center gap-2 border-b border-border-2 ${HEADER_CONTENT_HORIZONTAL_PADDING_CLASS}`,
+  pageHeader: `flex h-9 shrink-0 items-center gap-2 border-b border-border-2 ${HEADER_CONTENT_HORIZONTAL_PADDING_CLASS}`,
 
   /**
    * Section title header (inline title for property groups, no border/bg).
@@ -222,7 +267,7 @@ export const HEADER_CLASSES = {
    *
    * Height: 40px, transparent background, 12px horizontal padding.
    */
-  sectionTitle: "flex h-[40px] flex-shrink-0 items-center gap-2 px-4",
+  sectionTitle: "flex h-[40px] shrink-0 items-center gap-2 px-4",
 
   /**
    * Sidebar section header (collapsible section title row).
@@ -231,7 +276,7 @@ export const HEADER_CLASSES = {
    * Height: 32px, space-between layout, shrink-proof, transparent surface.
    */
   sectionHeader:
-    "flex h-8 min-w-0 flex-shrink-0 items-center justify-between overflow-hidden bg-transparent pl-3 pr-2",
+    "flex h-8 min-w-0 shrink-0 items-center justify-between overflow-hidden bg-transparent pl-3 pr-2",
 } as const;
 
 /**
@@ -284,7 +329,7 @@ export const TYPOGRAPHY = {
 
 export const COUNT_BADGE = {
   /** Base: flex, centered, rounded-full, 18px height, 11px font */
-  base: "flex h-[18px] flex-shrink-0 items-center justify-center rounded-full text-[11px] font-medium",
+  base: "flex h-[18px] shrink-0 items-center justify-center rounded-full text-[11px] font-medium",
   /** Single digit (0–9): 18×18 square */
   sizeSingle: "w-[18px]",
   /** Multi digit (10+): min width with padding */
@@ -317,7 +362,7 @@ export function getCountBadgeSizeClass(count: number): string {
 export const DIFF_STATS = {
   /** Container: inline flex, shrink-proof, 12px, padded for header context */
   container:
-    "flex flex-shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[12px]",
+    "flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[12px]",
   /** Compact variant for tree rows (11px, no padding) */
   containerCompact: "flex shrink-0 items-center gap-1 text-[11px]",
   /** Additions text */
@@ -327,12 +372,12 @@ export const DIFF_STATS = {
 } as const;
 
 export const SECTION_ACTION_BUTTON = {
-  /** Base + primary sidebar hover variant. */
-  base: `flex items-center justify-center rounded transition-colors ${BUTTON_VARIANT.defaultTreeRow}`,
+  /** Header actions without a backdrop use the fill-2 hover/focus palette. */
+  base: `flex ${ICON_BUTTON_BASE} ${BUTTON_VARIANT.noDrop}`,
   /** Icon-only (20×20) */
-  iconOnly: "h-5 w-5",
+  iconOnly: BUTTON_SIZE.sm,
   /** With label (compact inline) */
-  withLabel: "gap-1 px-1.5 py-0.5 text-[11px]",
+  withLabel: "gap-1 rounded-lg px-1.5 py-0.5 text-[11px]",
 } as const;
 
 // ============================================
@@ -342,17 +387,6 @@ export const SECTION_ACTION_BUTTON = {
 export const FOLDER_HEADER = {
   /** Outer wrapper for a folder section */
   section: "flex flex-col",
-  /** Header row: named group for row-local hover-reveal actions */
-  row: `group/folder-header flex h-7 flex-shrink-0 items-center transition-colors ${PRIMARY_SIDEBAR_HOVER.row}`,
-  /** Clickable button area inside header */
-  button: "flex min-w-0 flex-1 items-center gap-1.5 pl-4 pr-2 text-left",
-  /** Folder name text */
-  name: "min-w-0 truncate text-[12px] font-medium text-text-1",
   /** Branch name text */
   branch: "min-w-0 truncate text-[11px] text-text-3",
-  /** Standard folder/worktree row action button. Visibility is controlled by the row's action wrapper. */
-  action: HEADER_BUTTON.actionTreeRow,
-  /** Folder/worktree row action wrapper — hidden until the parent row is hovered/focused so it does not reserve space. */
-  actions:
-    "mr-1.5 hidden shrink-0 items-center gap-0.5 group-focus-within/folder-header:flex group-hover/folder-header:flex has-[[data-state=open]]:flex",
 } as const;

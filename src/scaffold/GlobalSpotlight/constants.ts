@@ -32,21 +32,26 @@ export const SPOTLIGHT_TOKENS = {
   itemHeight: 34,
   /** Item row height (with desc line) */
   itemHeightWithDesc: 48,
+  /** List edge inset, matching the row horizontal margin (mx-2). */
+  listInset: 8,
+  /** Space after an option row (headers have no trailing gap). */
+  itemGap: 3,
   /** Icon size inside item rows */
   iconSize: 16,
 } as const;
 
 export const SPOTLIGHT_CLASSES = {
+  /** Shared option-row geometry and default typography, also used by launchpad. */
+  itemRow: "flex items-center gap-2.5 rounded-lg px-2",
+  itemIcon: "flex h-6 w-6 shrink-0 items-center justify-center",
+  itemIconTone: "text-text-2",
+  itemLabelWeight: "font-normal",
+  itemLabelTone: "text-text-1",
+  panel: "overflow-hidden rounded-2xl border border-border-2 bg-bg-2 shadow-xl",
   /** Primary contextual pill used by palette navigation and active state badges. */
   primaryPill:
     "flex items-center gap-1 rounded-full bg-primary-1 px-2.5 py-1 text-primary-6",
+  /** Hover and press feedback only for pills that navigate back. */
+  interactivePill:
+    "cursor-pointer transition-colors duration-150 hover:bg-primary-2 hover:text-primary-7 active:bg-primary-3 motion-reduce:transition-none",
 } as const;
-
-// ============ LIMITS ============
-
-export const LIMITS = {
-  pageSize: 25,
-  quickActionsMax: 25,
-  unifiedSearchMax: 25,
-  scrollThreshold: 100,
-};

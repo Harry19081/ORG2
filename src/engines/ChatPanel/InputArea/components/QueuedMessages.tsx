@@ -6,7 +6,7 @@
  *
  * Edit triggers the main input box via queueEditTargetAtom.
  *
- * Exports `reorderActiveRef` — a module-level flag so the parent file drop zone
+ * Shares `reorderActiveRef` — a module-level flag so the parent file drop zone
  * can check synchronously whether a queue reorder drag is in progress and skip
  * showing the file drop overlay.
  */
@@ -25,32 +25,30 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useAtomValue, useSetAtom } from "jotai";
-import { MessageCircleMore } from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import {
   CHAT_COMPOSER_STACK_BAR_INNER_PADDING_X_CLASS,
   CHAT_COMPOSER_STACK_BAR_SURFACE_BG_CLASS,
 } from "@src/config/composerStackTokens";
+import { HugeiconsIcon, MessageCircleMoreIcon } from "@src/icons";
 import { useWebViewSensors } from "@src/lib/dndKit";
 import {
   type QueuedMessage,
+  messageQueueHandoffIdsAtom,
   queueEditTargetAtom,
 } from "@src/store/ui/messageQueueAtom";
+import { reorderActiveRef } from "@src/store/ui/queueReorderState";
 
 import ComposerStackHeader from "./ComposerStackHeader";
 import QueuedMessageItem from "./QueuedMessageItem";
 
-/**
- * Module-level flag — set synchronously in onDragStart, cleared in onDragEnd.
- * Accessible by global drag detection to skip file drop overlay during reorder.
- */
-export const reorderActiveRef = { current: false };
-
 export interface QueuedMessagesProps {
   messages: QueuedMessage[];
   onCancel: (messageId: string) => void;
+  onClear: () => void;
   onSendNow: (messageId: string) => void;
   onReorder: (fromIndex: number, toIndex: number) => void;
   /** Called when the user closes the card (header collapse button). */
@@ -58,10 +56,15 @@ export interface QueuedMessagesProps {
 }
 
 const QueuedMessages: React.FC<QueuedMessagesProps> = memo(
-  ({ messages, onCancel, onSendNow, onReorder, onToggle }) => {
-    const { t } = useTranslation();
+  ({ messages, onCancel, onClear, onSendNow, onReorder, onToggle }) => {
+    // Bind the namespace explicitly.  The queue can render during startup
+    // before the default namespace finishes reconciling; passing a qualified
+    // key through that transient state was displayed as the raw
+    // `actions.clearAll` key in the composer.
+    const { t } = useTranslation("common");
     const setEditTarget = useSetAtom(queueEditTargetAtom);
     const editTarget = useAtomValue(queueEditTargetAtom);
+    const handoffIds = useAtomValue(messageQueueHandoffIdsAtom);
 
     // Clear edit target if the message being edited was removed from the queue
     useEffect(() => {
@@ -109,9 +112,13 @@ const QueuedMessages: React.FC<QueuedMessagesProps> = memo(
 
     const startEdit = useCallback(
       (msg: QueuedMessage) => {
+        // Seed the editor from the DISPLAY copy: `msg.content` is the agent
+        // projection (skill tokens expanded, canvas contract) and must never
+        // become visible/editable text. `editMessageAtom` re-runs the
+        // projection on save, so editing from the display form is lossless.
         setEditTarget({
           messageId: msg.id,
-          content: msg.content,
+          content: msg.displayContent,
           imageDataUrls: msg.imageDataUrls,
         });
       },
@@ -127,14 +134,32 @@ const QueuedMessages: React.FC<QueuedMessagesProps> = memo(
         className={`${CHAT_COMPOSER_STACK_BAR_SURFACE_BG_CLASS} overflow-hidden rounded-lg border border-solid border-border-2`}
       >
         <ComposerStackHeader
-          icon={<MessageCircleMore size={14} />}
+          icon={
+            <HugeiconsIcon
+              icon={MessageCircleMoreIcon}
+              data-icon="message-circle-more"
+              size={14}
+            />
+          }
           label={t("common:labels.queuedCount", { count: messages.length })}
           actions={
-            draggable ? (
-              <span className="text-[10px] text-text-4">
-                {t("common:labels.dragToReorder")}
-              </span>
-            ) : undefined
+            <>
+              {draggable && (
+                <span className="text-[10px] text-text-4">
+                  {t("common:labels.dragToReorder")}
+                </span>
+              )}
+              <Button
+                htmlType="button"
+                variant="tertiary"
+                size="mini"
+                onClick={onClear}
+                title={t("actions.clearAll")}
+                data-testid="queued-messages-clear-all"
+              >
+                {t("actions.clearAll")}
+              </Button>
+            </>
           }
           expanded={true}
           onToggle={onToggle}
@@ -161,6 +186,7 @@ const QueuedMessages: React.FC<QueuedMessagesProps> = memo(
                   draggable={draggable}
                   isDragging={draggingId === msg.id}
                   isEditing={editTarget?.messageId === msg.id}
+                  isHandoff={Boolean(handoffIds?.has(msg.id))}
                   onStartEdit={startEdit}
                   onSendNow={onSendNow}
                   onCancel={onCancel}

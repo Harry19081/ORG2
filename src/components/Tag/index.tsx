@@ -32,13 +32,11 @@
  * </Tag>
  * ```
  */
-import { X } from "lucide-react";
 import React, { useState } from "react";
 
-import {
-  createKeyboardActivationHandler,
-  getInteractiveTabIndex,
-} from "@src/util/dom/keyboardActivation";
+import Button from "@src/components/Button";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import { getInteractiveTabIndex } from "@src/util/dom/keyboardActivation";
 import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 import "./index.scss";
@@ -187,11 +185,6 @@ const Tag: React.FC<TagProps> = ({
     onClose?.(e);
   };
 
-  const handleCloseKeyboard = () => {
-    dismissTag();
-    onClose?.({ stopPropagation: () => undefined } as React.MouseEvent);
-  };
-
   const activateTag = () => {
     if (checkable) {
       const newChecked = !checked;
@@ -247,31 +240,30 @@ const Tag: React.FC<TagProps> = ({
   return (
     <span className={tagClasses} style={tagStyle}>
       {isInteractive ? (
-        <span
+        <Button
+          layout="custom"
+          appearance="custom"
           className="tag-body"
-          role="button"
+          aria-pressed={checkable ? checked : undefined}
           tabIndex={getInteractiveTabIndex(false)}
           onClick={handleClick}
-          onKeyDown={createKeyboardActivationHandler(() => {
-            activateTag();
-          })}
         >
           {tagBody}
-        </span>
+        </Button>
       ) : (
         tagBody
       )}
       {closable && (
-        <span
+        <Button
+          layout="custom"
+          appearance="custom"
           className="tag-close"
-          role="button"
           tabIndex={getInteractiveTabIndex(false)}
           aria-label="Close"
           onClick={handleClose}
-          onKeyDown={createKeyboardActivationHandler(handleCloseKeyboard)}
         >
-          <X size={14} />
-        </span>
+          <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
+        </Button>
       )}
     </span>
   );

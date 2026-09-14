@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 import { clearSessionAtom } from "@src/engines/SessionCore/core/atoms";
 import {
-  openCreateTargetInChatPanelStartPageAtom,
+  openChatPanelCreateTargetAtom,
   openExploreInChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
 import {
@@ -12,18 +12,15 @@ import {
 } from "@src/store/session";
 import {
   CHAT_PANEL_CREATE_TARGET,
-  CHAT_PANEL_SURFACE_KIND,
-  chatPanelNavigateAtom,
   chatPanelStartPageOpenAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import { resetChatPanelSessionSurfaceAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 
 export function useChatPanelNavigationActions() {
   const setStartPageOpen = useSetAtom(chatPanelStartPageOpenAtom);
-  const navigateChatPanel = useSetAtom(chatPanelNavigateAtom);
+  const resetSessionSurface = useSetAtom(resetChatPanelSessionSurfaceAtom);
   const openExploreTab = useSetAtom(openExploreInChatPanelTabAtom);
-  const openCreateTargetInStartPage = useSetAtom(
-    openCreateTargetInChatPanelStartPageAtom
-  );
+  const openCreateTarget = useSetAtom(openChatPanelCreateTargetAtom);
   const dispatchClearSession = useSetAtom(clearSessionAtom);
   const setWorkstationActiveSessionId = useSetAtom(
     workstationActiveSessionIdAtom
@@ -37,9 +34,8 @@ export function useChatPanelNavigationActions() {
   }, [dispatchClearSession, setActiveSessionId, setWorkstationActiveSessionId]);
 
   const showSessionSurface = useCallback(() => {
-    setStartPageOpen(false);
-    navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
-  }, [navigateChatPanel, setStartPageOpen]);
+    resetSessionSurface();
+  }, [resetSessionSurface]);
 
   const resetToSessionSurface = useCallback(() => {
     showSessionSurface();
@@ -47,18 +43,16 @@ export function useChatPanelNavigationActions() {
   }, [resetActiveSession, showSessionSurface]);
 
   const openWorkItemCreate = useCallback(() => {
-    openCreateTargetInStartPage({
+    openCreateTarget({
       target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
     });
-    resetActiveSession();
-  }, [openCreateTargetInStartPage, resetActiveSession]);
+  }, [openCreateTarget]);
 
   const openProjectCreate = useCallback(() => {
-    openCreateTargetInStartPage({
+    openCreateTarget({
       target: CHAT_PANEL_CREATE_TARGET.PROJECT,
     });
-    resetActiveSession();
-  }, [openCreateTargetInStartPage, resetActiveSession]);
+  }, [openCreateTarget]);
 
   const openWorkspaceExplore = useCallback(() => {
     openExploreTab();

@@ -4,16 +4,19 @@
  * Renders the My Station / Agent's Station icon segmented toggle.
  */
 import { useAtom } from "jotai";
-import { Infinity, Laptop, type LucideIcon } from "lucide-react";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-import SegmentedIconButton from "@src/components/SegmentedIconButton";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { Infinity01Icon, type IconSvgElement, LaptopIcon } from "@src/icons";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { type StationMode, stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { getCurrentStationWindowMode } from "@src/util/platform/tauri/windowIdentity";
 
-import { WorkstationToolbarTooltip } from "../WorkstationToolbarTooltip";
+import { useOpenStationInNewWindow } from "../StationPaneControls";
 
 const MY_STATION_SHORTCUT_ID = "open_my_station";
 const AGENT_STATION_SHORTCUT_ID = "open_agent_station";
@@ -23,10 +26,9 @@ interface IconSwitchButtonProps {
   tooltipLabel: string;
   selected: boolean;
   onClick: () => void;
-  icon: LucideIcon;
+  icon: IconSvgElement;
   testId?: string;
   shortcut: string;
-  selectedClassName?: string;
 }
 
 const IconSwitchButton: React.FC<IconSwitchButtonProps> = ({
@@ -34,35 +36,35 @@ const IconSwitchButton: React.FC<IconSwitchButtonProps> = ({
   tooltipLabel,
   selected,
   onClick,
-  icon: Icon,
+  icon,
   testId,
   shortcut,
-  selectedClassName = "bg-primary-6 text-white",
 }) => {
-  const buttonSizeClass = "h-6 w-7";
-
   return (
-    <WorkstationToolbarTooltip
+    <ToolbarTooltip
       label={tooltipLabel}
       shortcut={shortcut || undefined}
       position="bottom"
     >
       <span className="inline-flex">
-        <SegmentedIconButton
-          icon={Icon}
-          selected={selected}
+        <Button
+          appearance={selected ? "solid" : "ghost"}
+          variant={selected ? "primary" : "secondary"}
+          size="mini"
+          shape="round"
+          iconOnly
+          icon={<AnyIcon icon={icon} size={16} strokeWidth={1.85} />}
           onClick={onClick}
-          ariaLabel={label}
-          ariaPressed={selected}
-          testId={testId}
-          sizeClassName={buttonSizeClass}
-          selectedClassName={selectedClassName}
-          unselectedClassName="bg-transparent text-text-1 hover:bg-fill-3"
-          transitionClassName="transition-colors duration-150"
-          strokeWidth={1.85}
+          aria-label={label}
+          aria-pressed={selected}
+          data-testid={testId}
+          className={`h-6 w-7 ${
+            selected ? "" : "bg-transparent text-text-1 enabled:hover:bg-fill-3"
+          }`}
+          style={{ height: 24, width: 28 }}
         />
       </span>
-    </WorkstationToolbarTooltip>
+    </ToolbarTooltip>
   );
 };
 
@@ -73,13 +75,21 @@ const StationModePill: React.FC = () => {
   const mySegment = t("terminology.myStation");
   const agentSegment = t("terminology.agentStation");
 
-  const myStationShortcut = getShortcutKeys(MY_STATION_SHORTCUT_ID);
-  const agentStationShortcut = getShortcutKeys(AGENT_STATION_SHORTCUT_ID);
+  const myStationShortcut = useShortcutKeys(MY_STATION_SHORTCUT_ID);
+  const agentStationShortcut = useShortcutKeys(AGENT_STATION_SHORTCUT_ID);
+  // Inside a detached station window the mode is pinned by the window, so
+  // "switching" means bringing up the other station's window instead.
+  const pinnedStationMode = getCurrentStationWindowMode();
+  const openStationInNewWindow = useOpenStationInNewWindow();
   const handleChange = useCallback(
     (mode: StationMode) => {
+      if (pinnedStationMode !== null) {
+        if (mode !== pinnedStationMode) openStationInNewWindow(mode);
+        return;
+      }
       setStationMode(mode);
     },
-    [setStationMode]
+    [openStationInNewWindow, pinnedStationMode, setStationMode]
   );
 
   return (
@@ -90,7 +100,7 @@ const StationModePill: React.FC = () => {
       <IconSwitchButton
         label={mySegment}
         tooltipLabel={t("actions.switchToStation", { station: mySegment })}
-        icon={Laptop}
+        icon={LaptopIcon}
         selected={stationMode === "my-station"}
         onClick={() => handleChange("my-station")}
         testId="station-mode-my-station"
@@ -99,7 +109,7 @@ const StationModePill: React.FC = () => {
       <IconSwitchButton
         label={agentSegment}
         tooltipLabel={t("actions.switchToStation", { station: agentSegment })}
-        icon={Infinity}
+        icon={Infinity01Icon}
         selected={stationMode === "agent-station"}
         onClick={() => handleChange("agent-station")}
         testId="station-mode-agent-station"

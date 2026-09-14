@@ -1,8 +1,10 @@
 /**
  * Shared utilities for slash-menu item construction.
- * Used by useSlashItemsCache, useSlashCommand, PinnedActionsBar, and FlyoutSubmenu.
+ * Used by useSlashItemsCache, useSlashCommand, and PinnedActionsBar.
  */
-import type { InstalledSkill } from "@src/types/extensions";
+import type { ComposerInputRef } from "@src/components/ComposerInput";
+import i18n from "@src/i18n";
+import { type InstalledSkill, SLASH_ACTIONS } from "@src/types/extensions";
 
 /**
  * Placeholder description emitted by the Rust skill scanner when a SKILL.md
@@ -52,7 +54,8 @@ export function resolveSkillGroup(skill: InstalledSkill): string {
     if (normalized.startsWith(`${home}/.hermes/skills`)) return "Hermes Skills";
     if (normalized.startsWith(`${home}/.openclaw/skills`))
       return "OpenClaw Skills";
-    if (normalized.startsWith(`${home}/.orgii/skills`)) return "ORGII Skills";
+    if (normalized.startsWith(`${home}/.orgii/skills`))
+      return i18n.t("common:appMessages.skillsSource");
     const homeRelativePath = normalized.slice(home.length + 1);
     const homeDiscoveredMatch = homeRelativePath.match(/^(\.[^/]+)\/skills\//);
     if (homeDiscoveredMatch) {
@@ -87,4 +90,30 @@ export function buildMcpToolCommand(
 ): string {
   const serverSlug = serverName.replace(/-/g, "_");
   return `/mcp__${serverSlug}__${toolName} `;
+}
+
+/** Build the canonical editable text inserted for a built-in slash action. */
+export function buildSlashActionCommand(actionName: string): string {
+  return `/${actionName} `;
+}
+
+const ATOMIC_SLASH_ACTIONS = new Set<string>([
+  SLASH_ACTIONS.CANVAS,
+  SLASH_ACTIONS.COMPACT,
+]);
+
+/**
+ * Insert built-in commands that behave like first-class composer tokens.
+ * Returning false lets callers preserve the plain-text behavior of other
+ * built-in actions without duplicating the token registry.
+ */
+export function insertAtomicSlashActionPill(
+  composerInput: Pick<ComposerInputRef, "focus" | "insertFilePill">,
+  actionName: string
+): boolean {
+  if (!ATOMIC_SLASH_ACTIONS.has(actionName)) return false;
+
+  composerInput.insertFilePill(`/${actionName}`, false, "skill", actionName);
+  composerInput.focus();
+  return true;
 }

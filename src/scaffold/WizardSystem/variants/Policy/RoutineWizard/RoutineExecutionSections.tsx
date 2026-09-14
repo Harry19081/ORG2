@@ -1,10 +1,10 @@
-import { FolderGit2, Grip } from "lucide-react";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import Input from "@src/components/Input";
 import ModelIcon from "@src/components/ModelIcon";
 import Select from "@src/components/Select";
+import { FolderGitTwoIcon, GripIcon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
@@ -17,18 +17,18 @@ import type { RoutineDraft, UpdateRoutineDraft } from "./routineDraft";
 interface RoutineExecutionSectionsProps {
   draft: RoutineDraft;
   updateDraft: UpdateRoutineDraft;
-  isWorkspacePaletteOpen: boolean;
+  isWorkingDirectoryPaletteOpen: boolean;
   isModelPaletteOpen: boolean;
-  onOpenWorkspacePalette: () => void;
+  onOpenWorkingDirectoryPalette: () => void;
   onOpenModelPalette: () => void;
 }
 
 const RoutineExecutionSections: React.FC<RoutineExecutionSectionsProps> = ({
   draft,
   updateDraft,
-  isWorkspacePaletteOpen,
+  isWorkingDirectoryPaletteOpen,
   isModelPaletteOpen,
-  onOpenWorkspacePalette,
+  onOpenWorkingDirectoryPalette,
   onOpenModelPalette,
 }) => {
   const { t } = useTranslation("integrations");
@@ -65,11 +65,18 @@ const RoutineExecutionSections: React.FC<RoutineExecutionSectionsProps> = ({
             <SpotlightSelectTrigger
               value={draft.workspaceLabel || draft.workspacePath || undefined}
               placeholder={t("routineFields.workspacePathPlaceholder")}
-              onClick={onOpenWorkspacePalette}
-              active={isWorkspacePaletteOpen}
+              onClick={onOpenWorkingDirectoryPalette}
+              active={isWorkingDirectoryPaletteOpen}
               size="default"
               style={SECTION_CONTROL_STYLE}
-              prefix={<FolderGit2 size={16} className="text-text-2" />}
+              prefix={
+                <HugeiconsIcon
+                  icon={FolderGitTwoIcon}
+                  data-icon="folder-git-2"
+                  size={16}
+                  className="text-text-2"
+                />
+              }
               dataTestId="routine-wizard-workspace-trigger"
               ariaLabel={t("routineFields.workspacePath")}
             />
@@ -106,7 +113,12 @@ const RoutineExecutionSections: React.FC<RoutineExecutionSectionsProps> = ({
               draft.modelType ? (
                 <ModelIcon agentType={draft.modelType} size={16} />
               ) : (
-                <Grip size={16} className="text-text-2" />
+                <HugeiconsIcon
+                  icon={GripIcon}
+                  data-icon="grip"
+                  size={16}
+                  className="text-text-2"
+                />
               )
             }
             dataTestId="routine-wizard-model-trigger"

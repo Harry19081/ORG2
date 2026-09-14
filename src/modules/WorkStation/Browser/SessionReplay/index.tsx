@@ -1,37 +1,33 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { ChevronRight, Plus, Shield } from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
-import { SIMULATOR_PRIMARY_SIDEBAR } from "@src/config/simulatorPrimarySidebar";
+import { Placeholder } from "@src/components/Placeholder";
+import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { useBrowserAutomation } from "@src/engines/BrowserCore/hooks/useBrowserAutomation";
-import EventWrapper from "@src/engines/ChatPanel/adapters/EventWrapper";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
-import { usePublishWorkstationTabHeader } from "@src/hooks/workStation";
-import { useBrowserSessions } from "@src/hooks/workStation/browser/useBrowserSessions";
+import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
+import {
+  Add01Icon,
+  ArrowRight01Icon,
+  HugeiconsIcon,
+  Shield01Icon,
+} from "@src/icons";
 import { buildSelectedElementLabel } from "@src/modules/WorkStation/Browser/BrowserLayout/browserLayoutUtils";
-import { buildDomComponentJsonFromElementInfo } from "@src/modules/WorkStation/Browser/BrowserLayout/buildDomComponentJson";
+import { useBrowserSessions } from "@src/modules/WorkStation/Browser/hooks/useBrowserSessions";
 import {
   NoTabsPlaceholder,
-  SimulatorReplayChrome,
-  TabBarTrailingIconButton,
-  WorkStationShell,
+  ReplayShellLayout,
   buildPrimarySidebarConfig,
   buildSecondaryPanelConfig,
   useSimulatorAwaitingAgentCaption,
   useSimulatorPlaceholderActions,
 } from "@src/modules/WorkStation/shared";
+import { useSimulatorReplaySidebar } from "@src/modules/WorkStation/shared/SessionReplay/useSimulatorReplaySidebar";
 import { BrowserStatusBar } from "@src/modules/WorkStation/shared/StatusBar";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
-import {
-  simulatorEffectiveDockAppAtom,
-  simulatorPrimarySidebarCollapsedAtom,
-  simulatorPrimarySidebarPositionAtom,
-  simulatorPrimarySidebarWidthAtom,
-  simulatorPrimarySidebarWidthPersistAtom,
-} from "@src/store/ui/simulatorAtom";
+import { simulatorEffectiveDockAppAtom } from "@src/store/ui/simulatorAtom";
 import {
   clearScreenshotCacheAtom,
   insertScreenshotCacheAtom,
@@ -46,6 +42,7 @@ import {
   SharedBrowserDevToolsPanel,
   SharedBrowserWorkspace,
 } from "../shared";
+import { sendSelectedElementToChat } from "../shared/sendSelectedElementToChat";
 import BrowserSidebar from "./BrowserSidebar";
 import {
   TAB_ID_BY_ENTRY_CATEGORY,
@@ -58,7 +55,7 @@ import { useBrowserReplayTabs } from "./useBrowserReplayTabs";
 import { useReplayScreenshotResolution } from "./useReplayScreenshotResolution";
 import { hasScreenshotMarker, inferImageMime } from "./utils/browserEventUtils";
 
-export interface SessionReplayBrowserProps {
+interface SessionReplayBrowserProps {
   currentEvent?: unknown;
   mode?: "interactive" | "simulation";
   isActive?: boolean;
@@ -80,16 +77,8 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
   const myTabsBrowserState = myTabsBrowser.browserState;
   const setMyTabsDevToolsCollapsed = myTabsBrowser.setDevToolsCollapsed;
   const setMyTabsDevToolsPosition = myTabsBrowser.setDevToolsPosition;
-  const primarySidebarCollapsed = useAtomValue(
-    simulatorPrimarySidebarCollapsedAtom
-  );
-  const primarySidebarPosition = useAtomValue(
-    simulatorPrimarySidebarPositionAtom
-  );
-  const primarySidebarWidth = useAtomValue(simulatorPrimarySidebarWidthAtom);
-  const setPrimarySidebarWidthPersist = useSetAtom(
-    simulatorPrimarySidebarWidthPersistAtom
-  );
+  const { layoutMode: primarySidebarPosition, sidebar } =
+    useSimulatorReplaySidebar();
   const setAddToAgent = useSetAtom(addToAgentAtom);
   const automation = useBrowserAutomation({ enabled: isBrowserReplayActive });
   const isAutomationActive = automation.isRunning;
@@ -110,13 +99,6 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
   const simulatorAwaitingAgentCaption = useSimulatorAwaitingAgentCaption();
 
   const [devToolsPanelHeight, setDevToolsPanelHeight] = useState(240);
-
-  const handlePrimarySidebarWidthChange = useCallback(
-    (width: number) => {
-      setPrimarySidebarWidthPersist(width);
-    },
-    [setPrimarySidebarWidthPersist]
-  );
 
   const handleCloseDevTools = useCallback(() => {
     setMyTabsDevToolsCollapsed(true);
@@ -167,7 +149,6 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
     handleNewPrivateMyTabsSession,
     handleSelectMyTabsSession,
     handleCloseMyTabsSession,
-    handleOpenMyTabsHistoryUrl,
   } = useBrowserReplayTabs({
     browserEntries,
     internalBrowserEntries,
@@ -197,12 +178,17 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
     return (
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
         {activeHeaderInfo.categoryIcon}
-        <span className="flex-shrink-0 text-[13px] text-text-2">
+        <span className="shrink-0 text-[13px] text-text-2">
           {activeHeaderInfo.categoryLabel}
         </span>
         {activeHeaderInfo.detailText && (
           <>
-            <ChevronRight size={12} className="flex-shrink-0 text-text-4" />
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              data-icon="chevron-right"
+              size={12}
+              className="shrink-0 text-text-4"
+            />
             {activeHeaderInfo.detailIcon}
             <span className="min-w-0 truncate text-[13px] font-medium text-text-1">
               {activeHeaderInfo.detailText}
@@ -211,7 +197,12 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
         )}
         {activeSubtool === "internal_browser" && isMaskShown && (
           <div className="ml-auto flex items-center gap-1">
-            <Shield size={14} className="text-warning-6" />
+            <HugeiconsIcon
+              icon={Shield01Icon}
+              data-icon="shield"
+              size={14}
+              className="text-warning-6"
+            />
           </div>
         )}
       </div>
@@ -259,7 +250,6 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
                 onNewSession={handleNewMyTabsSession}
                 onNewPrivateSession={handleNewPrivateMyTabsSession}
                 onCloseSession={handleCloseMyTabsSession}
-                onOpenHistoryUrl={handleOpenMyTabsHistoryUrl}
               />
             </div>
             <div
@@ -281,12 +271,7 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
             </div>
           </div>
         ),
-        collapsed: primarySidebarCollapsed,
-        size: primarySidebarWidth,
-        onSizeChange: handlePrimarySidebarWidthChange,
-        minSize: SIMULATOR_PRIMARY_SIDEBAR.minWidth,
-        maxSize: SIMULATOR_PRIMARY_SIDEBAR.maxWidth,
-        resetSize: SIMULATOR_PRIMARY_SIDEBAR.defaultWidth,
+        ...sidebar,
       }),
     [
       browserEntries,
@@ -301,11 +286,8 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
       handleCloseMyTabsSession,
       handleNewMyTabsSession,
       handleNewPrivateMyTabsSession,
-      handleOpenMyTabsHistoryUrl,
       handleSelectAgentEntry,
-      primarySidebarCollapsed,
-      primarySidebarWidth,
-      handlePrimarySidebarWidthChange,
+      sidebar,
     ]
   );
 
@@ -386,20 +368,14 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
   const clearSelection = myTabsBrowser.clearSelection;
 
   const handleSendSelectedElementToChat = useCallback(() => {
-    if (!selectedElement) return;
-
-    const { jsonText, fileName } = buildDomComponentJsonFromElementInfo(
+    sendSelectedElementToChat({
       selectedElement,
-      currentUrl
-    );
-
-    setAddToAgent({
-      type: "dom-component",
-      fileName,
-      jsonText,
+      currentUrl,
+      setAddToAgent,
+      clearSelection,
+      onSent: () =>
+        Message.success(tCommon("browser.selectedElement.sentToChat")),
     });
-    clearSelection();
-    Message.success(tCommon("browser.selectedElement.sentToChat"));
   }, [selectedElement, currentUrl, clearSelection, setAddToAgent, tCommon]);
 
   const myTabsStatusBar = useMemo(() => {
@@ -424,7 +400,7 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
         }
         onSendSelectedElementToChat={handleSendSelectedElementToChat}
         onClearSelectedElement={myTabsBrowser.clearSelection}
-        className="!h-[48px]"
+        className="h-[48px]!"
       />
     );
   }, [
@@ -506,7 +482,7 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
               </div>
             ) : (
               <div className="scrollbar-overlay h-full overflow-y-auto p-4 pb-[100px]">
-                <pre className="whitespace-pre-wrap break-words text-[13px] leading-relaxed text-text-2">
+                <pre className="text-[13px] leading-relaxed wrap-break-word whitespace-pre-wrap text-text-2">
                   {displayData.text}
                 </pre>
               </div>
@@ -528,7 +504,12 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
 
         {activeSubtool === "internal_browser" && isMaskShown && (
           <div className="flex items-center gap-2 border-t border-border-1 bg-warning-1 px-3 py-1.5">
-            <Shield size={14} className="text-warning-6" />
+            <HugeiconsIcon
+              icon={Shield01Icon}
+              data-icon="shield"
+              size={14}
+              className="text-warning-6"
+            />
             <span className="text-xs text-warning-6">
               User interaction blocked - Agent is controlling the browser
             </span>
@@ -543,43 +524,39 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
   }
 
   return (
-    <EventWrapper
-      event={currentEvent as unknown as BackendEvent}
-      mode={mode}
-      expand={true}
-      padding="p-0"
-    >
-      <SimulatorReplayChrome
-        tabs={browserTabs}
-        activeEventId={visibleActiveTabId}
-        onTabClick={handleBrowserTabClick}
-        trailingSlot={
-          <TabBarTrailingIconButton
-            data-action="browser.newTab"
-            title={tCommon("commands.newTab")}
-            shortcutId="browser_new_tab"
-            onClick={handleNewMyTabsSession}
-          >
-            <Plus size={18} strokeWidth={2} />
-          </TabBarTrailingIconButton>
-        }
-      >
-        <div className="flex min-h-0 flex-1">
-          <WorkStationShell
-            primarySidebarConfig={primarySidebarConfig}
-            secondaryPanelConfig={secondaryPanelConfig}
-            content={mainContent}
-            statusBar={myTabsStatusBar}
-            layoutMode={primarySidebarPosition === "right" ? "right" : "left"}
-            appClassName="session-replay-browser"
+    <ReplayShellLayout
+      tabs={browserTabs}
+      activeEventId={visibleActiveTabId}
+      onTabClick={handleBrowserTabClick}
+      trailingSlot={
+        <TabBarTrailingIconButton
+          data-action="browser.newTab"
+          title={tCommon("commands.newTab")}
+          shortcutId="browser_new_tab"
+          onClick={handleNewMyTabsSession}
+        >
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={18}
+            strokeWidth={2}
           />
-        </div>
-      </SimulatorReplayChrome>
-    </EventWrapper>
+        </TabBarTrailingIconButton>
+      }
+      eventWrapper={{ event: currentEvent as unknown as BackendEvent, mode }}
+      workstation={{
+        primarySidebarConfig,
+        secondaryPanelConfig,
+        statusBar: myTabsStatusBar,
+        layoutMode: primarySidebarPosition,
+        appClassName: "session-replay-browser",
+      }}
+    >
+      {mainContent}
+    </ReplayShellLayout>
   );
 };
 
-export const SessionReplayBrowser = memo(SessionReplayBrowserComponent);
-export { SessionReplayBrowser as SimulatorBrowser };
+const SessionReplayBrowser = memo(SessionReplayBrowserComponent);
 
 export default SessionReplayBrowser;

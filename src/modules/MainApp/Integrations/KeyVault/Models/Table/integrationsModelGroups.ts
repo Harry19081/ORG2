@@ -1,16 +1,13 @@
-import type { ModelTableVariantInfo } from "@src/components/ModelTable/types";
 import { isOrgiiTierModel } from "@src/config/orgiiCategories";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
+import type { ModelTableVariantInfo } from "@src/types/modelTable";
 import {
   type ModelGroup,
   groupModels,
   isLegacyGroup,
   isUncategorizedModelGroup,
 } from "@src/util/modelGrouping";
-import {
-  groupHasParsedModelVariants,
-  resolveModelVariantFields,
-} from "@src/util/modelVariants";
+import { resolveModelVariantFields } from "@src/util/modelVariants";
 
 import type {
   ConsolidatedModelRow,
@@ -229,21 +226,4 @@ export function buildVariantsByModelFromAccounts(
     map.set(model, resolveModelVariantFields(model, backendByModel.get(model)));
   }
   return map;
-}
-
-export function integrationsGroupHasParsedVariants(
-  group: IntegrationsModelGroupRow,
-  _variantsByModel: Map<string, ModelTableVariantInfo>
-): boolean {
-  if (group.isOrgiiGroup) return false;
-  return groupHasParsedModelVariants(group.models.map((row) => row.model));
-}
-
-export function integrationsGroupShowsVariantsTab(
-  group: IntegrationsModelGroupRow,
-  variantsByModel: Map<string, ModelTableVariantInfo>
-): boolean {
-  if (group.isOrgiiGroup) return group.models.length > 1;
-  if (group.models.length > 1) return true;
-  return integrationsGroupHasParsedVariants(group, variantsByModel);
 }

@@ -5,7 +5,6 @@
  * WorkStation `agent-config` tab (`variant: "org"`) hosting the existing
  * `OrgDetailView`, so editing semantics stay identical to before.
  */
-import { Plus, Trash2 } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -15,21 +14,20 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
+import { Add01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
 import { openAgentConfigInWorkStation } from "@src/util/ui/openAgentConfigInWorkStation";
 
-import type { OrgMember } from "../types";
+import type { OrgDefinition } from "../types";
 
 interface OrgsTableProps {
-  orgs: OrgMember[];
+  orgs: OrgDefinition[];
   loading?: boolean;
   onAddOrg: () => void;
   onDeleteOrg: (orgId: string) => void | Promise<void>;
 }
 
-function countMembers(org: OrgMember): number {
-  let count = 1;
-  for (const child of org.children ?? []) count += countMembers(child);
-  return count;
+function countMembers(org: OrgDefinition): number {
+  return org.members.length + 1;
 }
 
 const ORGS_TABLE_COL_WIDTH = {
@@ -56,7 +54,7 @@ const OrgsTable: React.FC<OrgsTableProps> = ({
     );
   }, [orgs, searchQuery]);
 
-  const handleView = useCallback((row: OrgMember) => {
+  const handleView = useCallback((row: OrgDefinition) => {
     openAgentConfigInWorkStation({
       variant: "org",
       entityId: row.id,
@@ -65,7 +63,7 @@ const OrgsTable: React.FC<OrgsTableProps> = ({
     });
   }, []);
 
-  const columns = useMemo<SettingsTableColumn<OrgMember>[]>(
+  const columns = useMemo<SettingsTableColumn<OrgDefinition>[]>(
     () => [
       {
         key: "name",
@@ -93,7 +91,7 @@ const OrgsTable: React.FC<OrgsTableProps> = ({
         width: SETTINGS_TABLE_COL.fill,
         renderCell: (row) => (
           <span
-            className={`${SETTINGS_TABLE_CELL.muted} block w-0 min-w-full max-w-full truncate`}
+            className={`${SETTINGS_TABLE_CELL.muted} block w-0 max-w-full min-w-full truncate`}
             title={row.description ?? undefined}
           >
             {row.description ?? ""}
@@ -127,7 +125,13 @@ const OrgsTable: React.FC<OrgsTableProps> = ({
               variant="danger"
               appearance="outline"
               size="small"
-              icon={<Trash2 size={14} />}
+              icon={
+                <HugeiconsIcon
+                  icon={Delete02Icon}
+                  data-icon="trash-2"
+                  size={14}
+                />
+              }
               iconOnly
               data-testid={`agent-orgs-org-delete-row-button-${row.id}`}
               onClick={() => void onDeleteOrg(row.id)}
@@ -148,7 +152,7 @@ const OrgsTable: React.FC<OrgsTableProps> = ({
     <Button
       variant="secondary"
       size="default"
-      icon={<Plus size={14} />}
+      icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       iconOnly
       aria-label={addOrgLabel}
       title={addOrgLabel}
@@ -158,7 +162,7 @@ const OrgsTable: React.FC<OrgsTableProps> = ({
   );
 
   return (
-    <SettingsTable<OrgMember>
+    <SettingsTable<OrgDefinition>
       hover
       loading={loading}
       columns={columns}

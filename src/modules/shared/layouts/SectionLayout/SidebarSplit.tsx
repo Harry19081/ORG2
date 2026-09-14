@@ -1,6 +1,8 @@
 import cn from "classnames";
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
+
 export interface SectionSidebarSplitProps {
   sidebar: React.ReactNode;
   children: React.ReactNode;
@@ -19,7 +21,7 @@ export const SectionSidebarSplit: React.FC<SectionSidebarSplitProps> = memo(
     >
       <aside
         className={cn(
-          "border-b border-border-1 p-2 @[720px]:border-b-0 @[720px]:border-r",
+          "border-b border-border-1 p-2 @[720px]:border-r @[720px]:border-b-0",
           sidebarClassName
         )}
       >
@@ -67,9 +69,11 @@ export const SectionSidebarItem: React.FC<SectionSidebarItemProps> = memo(
     type = "button",
     ...buttonProps
   }) => (
-    <button
+    <Button
+      layout="custom"
+      appearance="custom"
       {...buttonProps}
-      type={type}
+      htmlType={type}
       aria-pressed={selected}
       className={cn(
         "flex min-h-9 w-full min-w-0 items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors",
@@ -91,7 +95,7 @@ export const SectionSidebarItem: React.FC<SectionSidebarItemProps> = memo(
           {trailing}
         </span>
       ) : null}
-    </button>
+    </Button>
   )
 );
 

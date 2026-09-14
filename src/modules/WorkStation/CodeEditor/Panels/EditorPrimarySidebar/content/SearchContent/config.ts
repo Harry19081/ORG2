@@ -1,28 +1,4 @@
-/**
- * RepoSearchPanel Configuration
- */
-import {
-  CaseSensitive,
-  ChevronDown,
-  ChevronRight,
-  RefreshCw,
-  Regex,
-  Search,
-  WholeWord,
-  X,
-} from "lucide-react";
-
-export const ICON_CONFIG = {
-  search: Search,
-  caseSensitive: CaseSensitive,
-  wholeWord: WholeWord,
-  regex: Regex,
-  refresh: RefreshCw,
-  clear: X,
-  chevronRight: ChevronRight,
-  chevronDown: ChevronDown,
-} as const;
-
+/** Repo search configuration. */
 export const SEARCH_CONSTANTS = {
   /** Debounce delay for search input (ms) - VSCode uses 150ms */
   DEBOUNCE_MS: 150,

@@ -5,17 +5,22 @@
  * the payload in a full-height WorkStation view. Closing the card closes the
  * tab and clears the matching Canvas entry.
  */
-import { Layout, SquareArrowOutUpRight, X } from "lucide-react";
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-import IconButton from "@src/components/IconButton";
+import Button from "@src/components/Button";
 import CanvasPreviewSurface from "@src/engines/ChatPanel/blocks/CanvasInlineCard/CanvasPreviewSurface";
 import {
   buildHtmlDocument,
   buildReactDocument,
 } from "@src/engines/ChatPanel/blocks/CanvasInlineCard/canvasBuilder";
 import { useCanvasForTurn } from "@src/engines/ChatPanel/blocks/CanvasInlineCard/useCanvasForTurn";
+import {
+  Cancel01Icon,
+  HugeiconsIcon,
+  Layout01Icon,
+  SquareArrowUpRight02Icon,
+} from "@src/icons";
 import { EditorTabService } from "@src/services/workStation/EditorTabService";
 import { getCanvasPreviewTabId } from "@src/store/workstation/tabs/factories/canvasPreview";
 
@@ -60,7 +65,12 @@ const CanvasPreviewTabRenderer: React.FC<UnifiedTabContentProps> = memo(
     if (!payload) {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-3 text-text-4">
-          <Layout size={32} strokeWidth={1} />
+          <HugeiconsIcon
+            icon={Layout01Icon}
+            data-icon="panels-top-left"
+            size={32}
+            strokeWidth={1}
+          />
           <span className="text-sm">{t("previews.noCanvasAvailable")}</span>
         </div>
       );
@@ -70,7 +80,12 @@ const CanvasPreviewTabRenderer: React.FC<UnifiedTabContentProps> = memo(
       <div className="flex h-full flex-col overflow-hidden">
         <div className="flex shrink-0 items-center justify-between border-b border-border-1 bg-fill-2 px-3 py-1.5">
           <div className="flex min-w-0 items-center gap-2">
-            <Layout size={13} className="shrink-0 text-primary-6" />
+            <HugeiconsIcon
+              icon={Layout01Icon}
+              data-icon="panels-top-left"
+              size={13}
+              className="shrink-0 text-primary-6"
+            />
             <span className="truncate text-xs font-medium text-text-2">
               {payload.title ?? t("previews.canvas")}
             </span>
@@ -87,22 +102,34 @@ const CanvasPreviewTabRenderer: React.FC<UnifiedTabContentProps> = memo(
             )}
           </div>
           <div className="flex shrink-0 items-center gap-0.5">
-            <IconButton
+            <Button
               onClick={handleOpenExternal}
               title={t("previews.openInBrowser")}
               aria-label={t("previews.openInBrowser")}
-              size="sm"
-            >
-              <SquareArrowOutUpRight size={12} />
-            </IconButton>
-            <IconButton
+              size="mini"
+              variant="tertiary"
+              appearance="soft"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={SquareArrowUpRight02Icon}
+                  data-icon="square-arrow-out-up-right"
+                  size={12}
+                />
+              }
+            />
+            <Button
               onClick={handleDismiss}
               title={t("previews.closeCanvas")}
               aria-label={t("previews.closeCanvas")}
-              size="sm"
-            >
-              <X size={12} />
-            </IconButton>
+              size="mini"
+              variant="tertiary"
+              appearance="soft"
+              iconOnly
+              icon={
+                <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />
+              }
+            />
           </div>
         </div>
 

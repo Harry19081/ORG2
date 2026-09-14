@@ -8,8 +8,6 @@
 @import "../styles/editor-tokens";
 @import "../styles/diff-mixins";
 
-@import "../../../components/CustomScrollbar/index.scss";
-
 .codemirror-editor-wrapper {
   position: relative;
   width: 100%;
@@ -18,6 +16,51 @@
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+}
+
+// Match the diff viewer: a far-left rail with a continuous row/number fill.
+.codemirror-editor .cm-editor .cm-gutters {
+  overflow: hidden;
+
+  .cm-gutter.cm-dirty-diff-gutter {
+    order: -1;
+    overflow: visible;
+  }
+}
+
+@each $kind in added, modified, deleted {
+  .codemirror-editor .cm-editor .cm-dirty-diff-row-#{$kind} {
+    --dirty-diff-row-bg: var(--diff-#{$kind}-bg);
+  }
+
+  .codemirror-editor .cm-editor .cm-line.cm-dirty-diff-row-#{$kind} {
+    background-color: var(--dirty-diff-row-bg);
+  }
+
+  .codemirror-editor .cm-lineNumbers .cm-dirty-diff-row-#{$kind} {
+    color: var(--diff-#{$kind}-color);
+  }
+}
+
+.codemirror-editor .cm-dirty-diff-gutter .cm-gutterElement {
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 100vw;
+    background: var(--dirty-diff-row-bg, transparent);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+.codemirror-editor .cm-dirty-diff-marker.cm-dirty-diff-deleted {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--diff-deleted-color) 0 1px,
+    transparent 1px 3px
+  ) !important;
 }
 
 // Flex container for editor + minimap (sibling layout)
@@ -44,13 +87,14 @@
 .codemirror-minimap-host {
   flex: 0 0 80px;
   height: 100%;
-  background: var(--color-bg-2);
+  background: transparent;
   overflow: hidden;
   position: relative;
+  user-select: none;
   cursor: var(--interactive-cursor, default);
 
   // Canvas for code rendering
-  :global(.minimap-canvas) {
+  .minimap-canvas {
     position: absolute;
     top: 0;
     left: 0;
@@ -61,28 +105,30 @@
 
   // Viewport indicator - shows visible region
   // Uses transform (GPU-composited) instead of top to avoid layout triggers
-  :global(.minimap-viewport) {
+  .minimap-viewport {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    background: color-mix(in srgb, var(--color-primary-6) 10%, transparent);
+    // Keep the visible range readable while the pointer is in the editor.
+    background: color-mix(in srgb, var(--color-text-1) 12%, transparent);
+    box-shadow: inset 2px 0
+      color-mix(in srgb, var(--color-text-1) 30%, transparent);
     pointer-events: none;
     will-change: transform;
-    min-height: 20px;
   }
 
   // Hover state for the host
   &:hover {
-    :global(.minimap-viewport) {
-      background: color-mix(in srgb, var(--color-primary-6) 15%, transparent);
+    .minimap-viewport {
+      background: color-mix(in srgb, var(--color-text-1) 18%, transparent);
     }
   }
 
   // Active/dragging state
-  &:active {
-    :global(.minimap-viewport) {
-      background: color-mix(in srgb, var(--color-primary-6) 20%, transparent);
+  &.minimap-dragging {
+    .minimap-viewport {
+      background: color-mix(in srgb, var(--color-text-1) 24%, transparent);
     }
   }
 }

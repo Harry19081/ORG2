@@ -1,4 +1,3 @@
-import { RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +18,7 @@ import SettingsTable, {
 import Tag, { type TagProps } from "@src/components/Tag";
 import { parseUnifiedDiffToOldNew } from "@src/engines/SessionCore/rendering/props/extractorShared";
 import { CodeMirrorDiff } from "@src/features/CodeMirror/Diff";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import {
   SECTION_GAP_CLASSES,
@@ -30,6 +30,7 @@ import {
 } from "@src/modules/shared/layouts/blocks";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
 
+import { RuntimeRefreshButton } from "./RuntimeSectionHeader";
 import SessionProvenanceSourceIcon from "./SessionProvenanceSourceIcon";
 import { tildePath } from "./sourcePath";
 
@@ -213,6 +214,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
   const requestGenerationRef = useRef(0);
   const inFlightRef = useRef<
     Promise<SessionProvenanceRecentSignal[]> | undefined
@@ -268,11 +270,9 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
   }, [load, open, signals]);
 
   useEffect(() => {
-    mountedRef.current = true;
     return () => {
       // Tauri invokes are not abortable. Invalidate late completions so an
       // unmounted Hooks view cannot retain or publish stale signal rows.
-      mountedRef.current = false;
       requestGenerationRef.current += 1;
     };
   }, []);
@@ -410,8 +410,10 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
           ? "text-text-2"
           : "font-mono text-[12px] text-text-3";
         return (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             onClick={() =>
               openSession(row.sessionId, title || undefined, row.workspacePath)
             }
@@ -421,10 +423,10 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
               session: label,
             })}
             style={{ maxWidth: PATH_COL_MAX_PX }}
-            className={`flex min-w-0 max-w-full items-center text-left hover:text-text-1 hover:underline focus-visible:underline ${tone}`}
+            className={`flex max-w-full min-w-0 items-center text-left hover:text-text-1 hover:underline focus-visible:underline ${tone}`}
           >
             <span className="truncate">{label}</span>
-          </button>
+          </Button>
         );
       },
     },
@@ -504,17 +506,16 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
             onSearchClear: () => setSearchQuery(""),
             searchInputSize: "default",
             rightContent: (
-              <Button
+              <RuntimeRefreshButton
+                iconOnly
                 variant="secondary"
-                size="default"
-                loading={refreshing}
-                icon={<RefreshCw size={14} />}
-                onClick={() => void load()}
-              >
-                {t("agentOrgs.sessionProvenance.signals.refresh", {
+                label={t("agentOrgs.sessionProvenance.signals.refresh", {
                   defaultValue: "Refresh",
                 })}
-              </Button>
+                onRefresh={() => void load()}
+                refreshing={refreshing}
+                dataTestId="session-provenance-recent-signals-refresh"
+              />
             ),
           }}
         />

@@ -12,17 +12,16 @@
  * - /orgii/app/settings/*  - Settings inside the Workbench shell
  * - /orgii/app/*           - Standalone application pages
  */
-import type { LucideIcon } from "lucide-react";
+import type { IconSvgElement } from "@src/icons";
 
 import { ICON_NAME_MAP } from "./iconMapping";
 // Route group constants — imported for use below and re-exported for consumers
 import {
   APP_AGENT_ORGS_ROUTE,
-  APP_IDEA_ROUTES,
-  APP_MARKET_ROUTES,
-  APP_SELECT_REPO_ROUTE,
   APP_SETTINGS_ROUTE,
+  APP_STATION_WINDOW_ROUTE,
   AUTH_ROUTES,
+  MOBILE_REMOTE_ROUTE,
   WORK_STATION_ROUTES,
 } from "./routeGroups";
 // Shared route-display metadata stays independent from router state.
@@ -33,11 +32,10 @@ export type { RouteLabelContext, RouteInfo };
 
 export {
   APP_AGENT_ORGS_ROUTE,
-  APP_IDEA_ROUTES,
-  APP_MARKET_ROUTES,
-  APP_SELECT_REPO_ROUTE,
   APP_SETTINGS_ROUTE,
+  APP_STATION_WINDOW_ROUTE,
   AUTH_ROUTES,
+  MOBILE_REMOTE_ROUTE,
   WORK_STATION_ROUTES,
 };
 
@@ -50,11 +48,9 @@ export const ROUTES = {
   workStation: WORK_STATION_ROUTES,
   auth: AUTH_ROUTES,
   app: {
-    selectRepo: APP_SELECT_REPO_ROUTE,
     agentOrgs: APP_AGENT_ORGS_ROUTE,
     settings: APP_SETTINGS_ROUTE,
-    ideas: APP_IDEA_ROUTES,
-    market: APP_MARKET_ROUTES,
+    stationWindow: APP_STATION_WINDOW_ROUTE,
   },
 } as const;
 
@@ -166,17 +162,30 @@ export function getIconForPath(path: string): string | undefined {
 /**
  * Get icon component for a path
  */
-export function getIconComponentForPath(path: string): LucideIcon | null {
+export function getIconComponentForPath(path: string): IconSvgElement | null {
   const iconName = getIconForPath(path);
   if (!iconName) return null;
   return ICON_NAME_MAP[iconName] ?? null;
 }
 
-/** Whether a pathname is owned by the persistent Workbench shell. */
+function isWithinRoute(pathname: string, routePath: string): boolean {
+  return pathname === routePath || pathname.startsWith(`${routePath}/`);
+}
+
+/** Whether a pathname is the detached station window page. */
+export function isStationWindowPath(pathname: string): boolean {
+  return isWithinRoute(pathname, ROUTES.app.stationWindow.path);
+}
+
+/**
+ * Whether a pathname is owned by a Workbench surface: the persistent
+ * Workbench shell, or a detached station window, which renders the same
+ * workstation surface on its own and takes the same tab / palette shortcuts.
+ */
 export function isWorkbenchPath(pathname: string): boolean {
-  const isWithin = (routePath: string) =>
-    pathname === routePath || pathname.startsWith(`${routePath}/`);
   return (
-    isWithin(ROUTES.workStation.base.path) || isWithin(ROUTES.app.settings.path)
+    isWithinRoute(pathname, ROUTES.workStation.base.path) ||
+    isWithinRoute(pathname, ROUTES.app.settings.path) ||
+    isStationWindowPath(pathname)
   );
 }

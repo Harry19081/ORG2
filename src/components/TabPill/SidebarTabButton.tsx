@@ -1,8 +1,9 @@
 import React, { useCallback } from "react";
 
+import Button from "@src/components/Button";
 import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
+import { classNames } from "@src/util/ui/classNames";
 
-import { cn } from "./cn";
 import { BoldStableLabel } from "./tabContent";
 import type { TabPillItem } from "./types";
 
@@ -27,15 +28,17 @@ export const SidebarTabButton: React.FC<{
   }, [markClicked, onClick]);
 
   return (
-    <button
+    <Button
+      layout="custom"
+      appearance="custom"
       onClick={handleClick}
       disabled={tab.disabled}
       data-action="panel.setLeftTab"
       data-action-id={tab.key}
       data-testid={tab.dataTestId}
       onMouseLeave={resetCursor}
-      className={cn(
-        "group relative flex flex-1 select-none items-center justify-center",
+      className={classNames(
+        "group relative flex flex-1 items-center justify-center select-none",
         cursorReset || isActive ? "cursor-default" : "cursor-pointer",
         "rounded-[100px] border-none",
         "h-[28px] px-[10px]",
@@ -51,8 +54,8 @@ export const SidebarTabButton: React.FC<{
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 px-[10px]">
         {iconOnly && tab.icon && (
           <div
-            className={cn(
-              "flex flex-shrink-0 items-center justify-center transition-colors duration-150 group-hover:text-text-1",
+            className={classNames(
+              "flex shrink-0 items-center justify-center transition-colors duration-150 group-hover:text-text-1",
               isActive
                 ? "text-primary-6 group-hover:text-primary-6"
                 : "text-text-2"
@@ -63,7 +66,7 @@ export const SidebarTabButton: React.FC<{
         )}
         {!iconOnly && (
           <span
-            className={cn(
+            className={classNames(
               "text-xs transition-colors duration-150 group-hover:text-text-1",
               isActive ? "text-text-1" : "text-text-2"
             )}
@@ -72,6 +75,6 @@ export const SidebarTabButton: React.FC<{
           </span>
         )}
       </div>
-    </button>
+    </Button>
   );
 };

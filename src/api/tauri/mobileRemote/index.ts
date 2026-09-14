@@ -4,10 +4,22 @@
  * Thin TypeScript wrappers around the `mobile_remote_*` Tauri commands
  * registered in `src-tauri/src/commands/handler_list.inc`. The Rust
  * commands return camelCase JSON (see `#[serde(rename_all = "camelCase")]`
- * on `PairingInitOutput` / `PairedDeviceInfo` / `RelayUrlInfo`), so the
- * types below mirror that wire shape directly — no conversion layer.
+ * on `PairingInitResponse` / `PairedDeviceInfo` / `RelayUrlInfo`). Shared
+ * wire types are generated from Rust; no conversion layer is needed.
  */
 import { invoke } from "@tauri-apps/api/core";
+
+import type {
+  PairedDeviceInfo,
+  PairingInitResponse as PairingInitOutput,
+  PermissionTier,
+} from "@src/contracts/mobile-relay/v1/relay";
+
+export type {
+  PairedDeviceInfo,
+  PermissionTier,
+  PairingInitResponse as PairingInitOutput,
+} from "@src/contracts/mobile-relay/v1/relay";
 
 // ============================================================
 // Types
@@ -17,42 +29,40 @@ import { invoke } from "@tauri-apps/api/core";
  * Permission tier for a paired mobile device. Mirrors the Rust
  * `PermissionTier` enum's `serde(rename_all = "snake_case")` shape.
  */
-export type PermissionTier = "read_only" | "full";
-
 export const PERMISSION_TIER = {
   READ_ONLY: "read_only" as const,
   FULL: "full" as const,
 } as const;
 
-/** Output of `mobile_remote_pair_init`. */
-export interface PairingInitOutput {
-  pairingCode: string;
-  confirmationPhrase: string;
-  /** JSON-encoded payload the QR component renders directly. */
-  qrPayload: string;
-  expiresInSeconds: number;
-}
-
-/** One row in the paired-device list. */
-export interface PairedDeviceInfo {
-  deviceId: string;
-  /**
-   * Desktop the device is paired to. Required for the "set as primary"
-   * affordance, which targets a desktop (not a device) at the relay layer.
-   */
-  desktopId: string;
-  label: string;
-  /** Wire string — narrowed via `PermissionTier` after parsing. */
-  tier: string;
-  isPrimary: boolean;
-  pairedAtMs: number;
-  lastSeenMs: number | null;
-}
-
 /** Snapshot of the relay URL config. */
 export interface RelayUrlInfo {
   url: string;
   isDefault: boolean;
+}
+
+export type RelayPhase =
+  | "disabled"
+  | "config_error"
+  | "connecting"
+  | "online"
+  | "backoff"
+  | "stopped";
+
+export interface RelayStatus {
+  phase: RelayPhase;
+  message: string | null;
+  reconnectAttempt: number;
+  connectedAtMs: number | null;
+}
+
+/** Exact row projection currently rendered by the desktop Sidebar. */
+export interface MobileSidebarSessionSnapshotRow {
+  id: string;
+  name: string;
+  status: "running" | "idle";
+  repoPath?: string | null;
+  repoName?: string | null;
+  updatedAtMs?: number | null;
 }
 
 // ============================================================
@@ -126,6 +136,28 @@ export async function getRelayUrl(): Promise<RelayUrlInfo> {
   return result as RelayUrlInfo;
 }
 
+export async function getRelayStatus(): Promise<RelayStatus> {
+  const result = await invoke<unknown>("mobile_remote_relay_status");
+  return result as RelayStatus;
+}
+
+/** Ask the relay supervisor to re-read ORG2 Cloud auth and reconnect. */
+export async function notifyCloudAuthChanged(): Promise<void> {
+  await invoke<unknown>("mobile_remote_notify_cloud_auth_changed");
+}
+
+/**
+ * Publish the desktop Sidebar's current local/My Sessions window for mobile.
+ * Returns whether the app-lifetime snapshot changed.
+ */
+export async function syncSidebarSessions(
+  sessions: readonly MobileSidebarSessionSnapshotRow[]
+): Promise<boolean> {
+  return invoke<boolean>("mobile_remote_sync_sidebar_sessions", {
+    sessions,
+  });
+}
+
 export const mobileRemoteApi = {
   pairInit,
   pairComplete,
@@ -135,6 +167,9 @@ export const mobileRemoteApi = {
   setPrimaryDesktop,
   setRelayUrl,
   getRelayUrl,
+  getRelayStatus,
+  notifyCloudAuthChanged,
+  syncSidebarSessions,
 };
 
 export default mobileRemoteApi;

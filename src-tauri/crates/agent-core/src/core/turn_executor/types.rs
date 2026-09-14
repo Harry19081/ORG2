@@ -98,6 +98,9 @@ pub struct TurnConfig {
     pub turn_intent_id: String,
     /// Agent Org Inbox rows that this turn will acknowledge on success.
     pub projected_inbox_ids: Vec<i64>,
+    /// Exact runtime owner and cancellation for background shell processes
+    /// started by this Turn. Background/offline callers intentionally use None.
+    pub turn_process_control: Option<crate::tools::call_context::TurnProcessControl>,
     /// Model identifier (provider-specific).
     pub model: String,
     /// KeyVault account id backing this turn. Threaded through so
@@ -309,6 +312,7 @@ pub trait TurnEventHandler: Send + Sync {
     /// Optional: called after a file-modifying tool succeeds.
     /// Returns additional text to append to the tool result (e.g., LSP diagnostics).
     /// Default returns None (no post-processing).
+    /// Skipped once cancellation is observed; completed tool results are still persisted.
     async fn post_tool_hook(
         &self,
         _tool_name: &str,
@@ -347,6 +351,8 @@ pub trait TurnEventHandler: Send + Sync {
 
     /// Called after a tool is executed. For observability (logging, memory ingestion).
     /// Implementations should not block the agent loop.
+    /// Skipped once cancellation is observed. Durable result writes belong in
+    /// `on_tool_result_with_metadata`, which still runs for completed tools.
     async fn after_tool_execute(
         &self,
         _session_id: &str,
@@ -452,6 +458,7 @@ mod tests {
         let config = TurnConfig {
             turn_intent_id: String::new(),
             projected_inbox_ids: Vec::new(),
+            turn_process_control: None,
             model: "test".to_string(),
             account_id: None,
             context_window_override: None,
@@ -476,6 +483,7 @@ mod tests {
         let config = TurnConfig {
             turn_intent_id: String::new(),
             projected_inbox_ids: Vec::new(),
+            turn_process_control: None,
             model: "test".to_string(),
             account_id: None,
             context_window_override: None,

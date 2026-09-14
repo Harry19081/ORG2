@@ -49,6 +49,33 @@ fn make_tool_result(id: &str, call_id: &str) -> SessionEvent {
 }
 
 #[test]
+fn test_conditional_set_preserves_events_written_during_refresh() {
+    let mut store = EventStore::new();
+    store.set(vec![make_event("old", "message")]);
+    let observed = store.version();
+    store.append(vec![make_event("new-turn", "message")]);
+    let current = store.version();
+    assert!(!store.set_if_version(vec![make_event("stale", "message")], observed));
+    assert_eq!(store.version(), current);
+    assert!(store.get_by_id("new-turn").is_some());
+    assert!(store.get_by_id("stale").is_none());
+    assert!(store.set_if_version(vec![make_event("native-turn", "message")], current));
+    assert!(store.get_by_id("native-turn").is_some());
+}
+
+#[test]
+fn test_late_cache_hydration_cannot_replace_a_new_authoritative_load() {
+    for authoritative in [vec![make_event("native-new", "message")], vec![]] {
+        let mut store = EventStore::new();
+        let before_cache_read = store.version();
+        store.set(authoritative.clone());
+        assert!(!store.set_if_version(vec![make_event("old-cache", "message")], before_cache_read));
+        assert_eq!(store.event_count(), authoritative.len());
+        assert!(store.get_by_id("old-cache").is_none());
+    }
+}
+
+#[test]
 fn test_set_replaces_all() {
     let mut store = EventStore::new();
     store.set(vec![
@@ -536,11 +563,108 @@ fn test_remove_synthetic_user_inputs_keeps_backend_user_input_ids() {
     backend.display_text = "authoritative different text".to_string();
 
     store.set(vec![synthetic, backend]);
-    let removed = store.remove_synthetic_user_inputs();
+    let removed = store.remove_synthetic_user_inputs(None);
 
     assert_eq!(removed, 1);
     assert!(store.get_by_id("user-input-synthetic").is_none());
     assert!(store.get_by_id("user-input-cliagent-real").is_some());
+}
+
+fn make_synthetic_user_event(id: &str, text: &str, created_at: &str) -> SessionEvent {
+    let mut event = make_event(id, "raw");
+    event.source = EventSource::User;
+    event.function_name = "user_message".to_string();
+    event.ui_canonical = "user_message".to_string();
+    event.result = serde_json::json!({
+        "type": "user",
+        "message": { "content": text, "role": "user" },
+        "syntheticUserInput": true,
+    });
+    event.chunk_id = None;
+    event.display_text = text.to_string();
+    event.created_at = created_at.to_string();
+    event
+}
+
+#[test]
+fn test_scoped_synthetic_removal_keeps_unechoed_newer_placeholder() {
+    let mut store = EventStore::new();
+    store.set(vec![
+        make_synthetic_user_event("user-input-echoed", "first message", "2026-08-14T10:00:00Z"),
+        make_synthetic_user_event(
+            "user-input-fresh",
+            "follow-up after abort",
+            "2026-08-14T10:05:00Z",
+        ),
+    ]);
+
+    // A history merge carrying only the FIRST turn's real user row (stale
+    // JSONL right after an abort) must evict the echoed placeholder but keep
+    // the fresh follow-up whose echo has not arrived yet.
+    let removed = store.remove_synthetic_user_inputs(Some((
+        &["first message".to_string()],
+        &[],
+        Some("2026-08-14T10:00:00Z"),
+    )));
+
+    assert_eq!(removed, 1);
+    assert!(store.get_by_id("user-input-echoed").is_none());
+    assert!(store.get_by_id("user-input-fresh").is_some());
+}
+
+#[test]
+fn test_scoped_synthetic_removal_drops_placeholder_predating_newest_real_turn() {
+    let mut store = EventStore::new();
+    store.set(vec![make_synthetic_user_event(
+        "user-input-stale-pill",
+        "/skill pill form",
+        "2026-08-14T09:00:00Z",
+    )]);
+
+    // A pill placeholder's wire content differs from its display text, so it
+    // can never content-match its echo — it is reaped by predating the
+    // newest real user turn instead.
+    let removed = store.remove_synthetic_user_inputs(Some((
+        &["expanded yaml payload".to_string()],
+        &[],
+        Some("2026-08-14T09:30:00Z"),
+    )));
+
+    assert_eq!(removed, 1);
+    assert!(store.get_by_id("user-input-stale-pill").is_none());
+}
+
+#[test]
+fn test_scoped_synthetic_removal_does_not_timestamp_evict_new_intent() {
+    let mut store = EventStore::new();
+    let mut pending = make_synthetic_user_event(
+        "user-input-next",
+        "continue exploring",
+        "2026-08-14T10:00:00Z",
+    );
+    pending.result["turnIntentId"] = serde_json::json!("turn-next");
+    store.set(vec![pending]);
+
+    // A replayed OLD turn may be materialized later and therefore carry a
+    // misleadingly newer timestamp. It cannot settle the current intent.
+    let old_contents = vec!["old request".to_string()];
+    let old_intents = vec!["turn-old".to_string()];
+    let removed = store.remove_synthetic_user_inputs(Some((
+        &old_contents,
+        &old_intents,
+        Some("2026-08-14T11:00:00Z"),
+    )));
+    assert_eq!(removed, 0);
+    assert!(store.get_by_id("user-input-next").is_some());
+
+    let matching_intents = vec!["turn-next".to_string()];
+    let removed = store.remove_synthetic_user_inputs(Some((
+        &[],
+        &matching_intents,
+        Some("2026-08-14T11:00:00Z"),
+    )));
+    assert_eq!(removed, 1);
+    assert!(store.get_by_id("user-input-next").is_none());
 }
 
 #[test]
@@ -550,7 +674,10 @@ fn test_merge_authoritative_user_message_evicts_matching_synthetic_placeholder()
     synthetic.source = EventSource::User;
     synthetic.function_name = "user_message".to_string();
     synthetic.ui_canonical = "user_message".to_string();
-    synthetic.result = serde_json::json!({ "syntheticUserInput": true });
+    synthetic.result = serde_json::json!({
+        "syntheticUserInput": true,
+        "turnIntentId": "turn-live-1",
+    });
     synthetic.chunk_id = None;
     synthetic.display_text = "hello from user".to_string();
 
@@ -566,7 +693,13 @@ fn test_merge_authoritative_user_message_evicts_matching_synthetic_placeholder()
     store.merge_events(vec![backend]);
 
     assert!(store.get_by_id("user-input-synthetic").is_none());
-    assert!(store.get_by_id("user-input-cliagent-real").is_some());
+    assert_eq!(
+        store
+            .get_by_id("user-input-cliagent-real")
+            .and_then(|event| event.result.get("turnIntentId"))
+            .and_then(|value| value.as_str()),
+        Some("turn-live-1")
+    );
 }
 
 #[test]
@@ -575,7 +708,10 @@ fn test_set_reconciles_persisted_matching_synthetic_placeholder() {
     let mut synthetic = make_event("user-input-synthetic", "raw");
     synthetic.source = EventSource::User;
     synthetic.function_name = "user_message".to_string();
-    synthetic.result = serde_json::json!({ "syntheticUserInput": true });
+    synthetic.result = serde_json::json!({
+        "syntheticUserInput": true,
+        "turnIntentId": "turn-reload-1",
+    });
     synthetic.display_text = "persisted duplicate".to_string();
 
     let mut backend = make_event("user-input-real", "raw");
@@ -586,7 +722,46 @@ fn test_set_reconciles_persisted_matching_synthetic_placeholder() {
     store.set(vec![synthetic, backend]);
 
     assert!(store.get_by_id("user-input-synthetic").is_none());
-    assert!(store.get_by_id("user-input-real").is_some());
+    assert_eq!(
+        store
+            .get_by_id("user-input-real")
+            .and_then(|event| event.result.get("turnIntentId"))
+            .and_then(|value| value.as_str()),
+        Some("turn-reload-1")
+    );
+}
+
+#[test]
+fn test_repeated_user_text_reconciles_one_intent_per_authoritative_row() {
+    let mut store = EventStore::new();
+    let mut first = make_synthetic_user_event(
+        "user-input-synthetic-1",
+        "repeat me",
+        "2026-08-29T00:00:00Z",
+    );
+    first.result["turnIntentId"] = serde_json::json!("turn-repeat-1");
+    let mut second = make_synthetic_user_event(
+        "user-input-synthetic-2",
+        "repeat me",
+        "2026-08-29T00:00:01Z",
+    );
+    second.result["turnIntentId"] = serde_json::json!("turn-repeat-2");
+    store.append(vec![first, second]);
+
+    let mut authoritative = make_event("user-input-real-1", "raw");
+    authoritative.source = EventSource::User;
+    authoritative.display_text = "repeat me".to_string();
+    store.merge_events(vec![authoritative]);
+
+    assert!(store.get_by_id("user-input-synthetic-1").is_none());
+    assert!(store.get_by_id("user-input-synthetic-2").is_some());
+    assert_eq!(
+        store
+            .get_by_id("user-input-real-1")
+            .and_then(|event| event.result.get("turnIntentId"))
+            .and_then(|value| value.as_str()),
+        Some("turn-repeat-1")
+    );
 }
 
 #[test]
@@ -609,6 +784,90 @@ fn test_merge_authoritative_message_keeps_legitimate_repeated_user_text() {
 
     assert!(store.get_by_id("user-input-first").is_some());
     assert!(store.get_by_id("user-input-second").is_some());
+}
+
+fn make_runtime_user_projection(
+    id: &str,
+    function_name: &str,
+    turn_intent_id: &str,
+    backend_persisted: bool,
+) -> SessionEvent {
+    let mut event = make_event(id, "raw");
+    event.source = EventSource::User;
+    event.function_name = function_name.to_string();
+    event.ui_canonical = function_name.to_string();
+    event.display_text = "one logical user turn".to_string();
+    event.result = serde_json::json!({
+        "type": "user",
+        "message": { "content": "one logical user turn", "role": "user" },
+        "turnIntentId": turn_intent_id,
+        "backendPersisted": backend_persisted,
+    });
+    event
+}
+
+#[test]
+fn test_merge_user_turn_prefers_persisted_projection_by_turn_intent() {
+    let mut store = EventStore::new();
+    let mut live =
+        make_runtime_user_projection("message-42", "user_input", "turn-intent-42", false);
+    live.created_at = "2026-08-30T10:00:00.000Z".to_string();
+    let mut persisted = make_runtime_user_projection(
+        "user-message-message-42",
+        "user_message",
+        "turn-intent-42",
+        true,
+    );
+    persisted.result["messageId"] = serde_json::json!("message-42");
+    persisted.created_at = "2026-08-30T10:00:00.001Z".to_string();
+
+    store.append(vec![live]);
+    store.merge_events(vec![persisted]);
+
+    assert_eq!(store.event_count(), 1);
+    assert!(store.get_by_id("message-42").is_none());
+    let canonical = store
+        .get_by_id("user-message-message-42")
+        .expect("persisted projection survives");
+    assert_eq!(canonical.created_at, "2026-08-30T10:00:00.000Z");
+    assert_eq!(canonical.result["backendPersisted"], true);
+}
+
+#[test]
+fn test_late_low_level_user_projection_cannot_duplicate_persisted_turn() {
+    let mut store = EventStore::new();
+    let mut persisted = make_runtime_user_projection(
+        "user-message-message-43",
+        "user_message",
+        "turn-intent-43",
+        true,
+    );
+    persisted.result["messageId"] = serde_json::json!("message-43");
+    let live = make_runtime_user_projection("message-43", "user_input", "turn-intent-43", false);
+
+    store.append(vec![persisted]);
+    store.merge_events(vec![live]);
+
+    assert_eq!(store.event_count(), 1);
+    assert!(store.get_by_id("message-43").is_none());
+    assert!(store.get_by_id("user-message-message-43").is_some());
+}
+
+#[test]
+fn test_hydration_collapses_legacy_message_id_pair_without_text_dedup() {
+    let mut store = EventStore::new();
+    let live = make_runtime_user_projection("message-44", "user_input", "", false);
+    let mut persisted =
+        make_runtime_user_projection("user-message-message-44", "user_message", "", true);
+    persisted.result["messageId"] = serde_json::json!("message-44");
+    let repeated = make_runtime_user_projection("message-45", "user_input", "", false);
+
+    store.set(vec![live, persisted, repeated]);
+
+    assert_eq!(store.event_count(), 2);
+    assert!(store.get_by_id("message-44").is_none());
+    assert!(store.get_by_id("user-message-message-44").is_some());
+    assert!(store.get_by_id("message-45").is_some());
 }
 
 #[test]
@@ -1323,6 +1582,33 @@ fn test_cancel_orphan_interactive_events_cancels_awaiting_user() {
 }
 
 #[test]
+fn test_cancel_orphan_interactive_events_sweeps_pending_cli_question() {
+    let mut store = EventStore::new();
+    // Managed-CLI question events are stamped Pending (not AwaitingUser) by
+    // infer_display_status; the restart sweep must catch them too.
+    let mut cli_question = make_tool_call("cli-ask-1", "call-cli-ask-1");
+    cli_question.function_name = "AskUserQuestion".to_string();
+    cli_question.ui_canonical = "ask_user_questions".to_string();
+    cli_question.display_status = EventDisplayStatus::Pending;
+    // A pending NON-question tool call must be left alone.
+    let mut pending_other = make_tool_call("other-1", "call-other-1");
+    pending_other.display_status = EventDisplayStatus::Pending;
+    store.set(vec![cli_question, pending_other]);
+
+    let cancelled = store.cancel_orphan_interactive_events();
+
+    assert_eq!(cancelled, vec!["cli-ask-1".to_string()]);
+    assert_eq!(
+        store.get_by_id("cli-ask-1").unwrap().display_status,
+        EventDisplayStatus::Completed
+    );
+    assert_eq!(
+        store.get_by_id("other-1").unwrap().display_status,
+        EventDisplayStatus::Pending
+    );
+}
+
+#[test]
 fn test_cancel_orphan_interactive_events_leaves_running_untouched() {
     let mut store = EventStore::new();
     let running = make_tool_call("run-1", "call-run-1");
@@ -1393,6 +1679,31 @@ fn make_turn_placeholder(turn_id: &str, next_turn_id: Option<&str>) -> SessionEv
             "nextTurnId": next_turn_id,
         }
     });
+    event
+}
+
+fn make_provider_turn_preview(
+    event_id: &str,
+    turn_id: &str,
+    next_turn_id: Option<&str>,
+    preview: &str,
+) -> SessionEvent {
+    let mut event = make_event(event_id, "assistant");
+    event.function_name = "assistant".to_string();
+    event.ui_canonical = "agent_message".to_string();
+    event.args = serde_json::json!({ "turnPreviewOnly": true });
+    event.result = serde_json::json!({
+        "observation": preview,
+        "content": preview,
+        "role": "assistant",
+        "unloadedTurn": {
+            "turnId": turn_id,
+            "bodyEventCount": 2,
+            "nextTurnId": next_turn_id,
+        }
+    });
+    event.display_text = preview.to_string();
+    event.display_variant = EventDisplayVariant::Message;
     event
 }
 
@@ -1527,6 +1838,51 @@ fn test_unload_turn_body_preserves_final_reply_as_preview() {
 }
 
 #[test]
+fn test_merge_round_window_events_removes_provider_final_reply_preview() {
+    let mut store = EventStore::new();
+    store.set_round_window(vec![
+        make_user_turn_header("codex-user-1", "2026-01-01T00:00:00Z"),
+        make_provider_turn_preview(
+            "codex-unloaded-turn-codex-user-1",
+            "codex-user-1",
+            Some("codex-user-2"),
+            "Finished the work",
+        ),
+        make_user_turn_header("codex-user-2", "2026-01-01T00:01:00Z"),
+    ]);
+
+    let mut loaded_reply = make_event("codex-assistant-1", "assistant");
+    loaded_reply.function_name = "assistant".to_string();
+    loaded_reply.ui_canonical = "agent_message".to_string();
+    loaded_reply.display_variant = EventDisplayVariant::Message;
+    loaded_reply.display_text = "Finished the work".to_string();
+    loaded_reply.result = serde_json::json!({
+        "observation": "Finished the work",
+        "content": "Finished the work",
+        "role": "assistant",
+    });
+    loaded_reply.created_at = "2026-01-01T00:00:20Z".to_string();
+
+    store.merge_round_window_events(vec![
+        make_user_turn_header("codex-user-1", "2026-01-01T00:00:00Z"),
+        loaded_reply,
+    ]);
+
+    assert!(store
+        .get_by_id("codex-unloaded-turn-codex-user-1")
+        .is_none());
+    assert!(store.get_by_id("codex-assistant-1").is_some());
+    assert_eq!(
+        store
+            .events()
+            .iter()
+            .filter(|event| event.display_text == "Finished the work")
+            .count(),
+        1
+    );
+}
+
+#[test]
 fn test_merge_round_window_events_removes_loaded_turn_placeholder() {
     let mut store = EventStore::new();
     store.set_round_window(vec![
@@ -1564,4 +1920,17 @@ fn test_merge_round_window_events_removes_loaded_turn_placeholder() {
         store.hydration_mode(),
         crate::agent_sessions::event_pipeline::store::HydrationMode::RoundWindow
     );
+}
+
+#[test]
+fn native_preview_replace_never_claims_full_hydration() {
+    use crate::agent_sessions::event_pipeline::store::HydrationMode;
+    let mut store = EventStore::new();
+    store.set(vec![make_turn_placeholder("old", None)]);
+    assert_eq!(store.hydration_mode(), HydrationMode::RoundWindow);
+    let version = store.version();
+    assert!(store.set_if_version(vec![make_turn_placeholder("new", None)], version));
+    assert_eq!(store.hydration_mode(), HydrationMode::RoundWindow);
+    store.set(vec![]);
+    assert_eq!(store.hydration_mode(), HydrationMode::Full);
 }

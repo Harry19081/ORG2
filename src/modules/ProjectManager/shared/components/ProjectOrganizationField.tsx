@@ -1,4 +1,3 @@
-import { Network } from "lucide-react";
 import { type FC, useEffect, useMemo, useState } from "react";
 
 import { DROPDOWN_ITEM } from "@src/components/Dropdown/tokens";
@@ -8,6 +7,7 @@ import {
   SearchableDropdown,
 } from "@src/components/PropertyField/PropertyFieldEditable";
 import type { SelectOption } from "@src/components/Select";
+import { HierarchyCircle01Icon, HugeiconsIcon } from "@src/icons";
 
 export interface ProjectOrganizationFieldProps {
   label?: string;
@@ -39,7 +39,13 @@ const ProjectOrganizationField: FC<ProjectOrganizationFieldProps> = ({
   dataTestId,
 }) => {
   const [open, setOpen] = useState(false);
-  const networkIcon = <Network size={DROPDOWN_ITEM.iconSize} />;
+  const networkIcon = (
+    <HugeiconsIcon
+      icon={HierarchyCircle01Icon}
+      data-icon="network"
+      size={DROPDOWN_ITEM.iconSize}
+    />
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -79,7 +85,10 @@ const ProjectOrganizationField: FC<ProjectOrganizationFieldProps> = ({
       data-testid={dataTestId}
     >
       <FieldRow
-        icon={networkIcon}
+        icon={
+          options.find((option) => String(option.value) === value)?.icon ??
+          networkIcon
+        }
         label={label}
         value={valueLabel}
         isSelected
@@ -104,7 +113,7 @@ const ProjectOrganizationField: FC<ProjectOrganizationFieldProps> = ({
               .map((option) => (
                 <Option
                   key={option.value}
-                  icon={networkIcon}
+                  icon={option.icon ?? networkIcon}
                   label={option.displayLabel}
                   isSelected={String(option.value) === value}
                   disabled={option.disabled}

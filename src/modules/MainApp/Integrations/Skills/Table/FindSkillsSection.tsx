@@ -1,8 +1,9 @@
-import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import PageNotice from "@src/components/PageNotice";
+import { ChevronsDownUpIcon, HugeiconsIcon, UnfoldMoreIcon } from "@src/icons";
 import {
   SectionContainer,
   SectionRow,
@@ -27,9 +28,17 @@ const FindSkillsSection: React.FC<FindSkillsSectionProps> = ({ onPreview }) => {
           variant="secondary"
           icon={
             expanded ? (
-              <ChevronsDownUp size={14} />
+              <HugeiconsIcon
+                icon={ChevronsDownUpIcon}
+                data-icon="chevrons-down-up"
+                size={14}
+              />
             ) : (
-              <ChevronsUpDown size={14} />
+              <HugeiconsIcon
+                icon={UnfoldMoreIcon}
+                data-icon="chevrons-up-down"
+                size={14}
+              />
             )
           }
           onClick={() => setExpanded((current) => !current)}
@@ -42,9 +51,9 @@ const FindSkillsSection: React.FC<FindSkillsSectionProps> = ({ onPreview }) => {
         <SectionRow showHeader={false} className="pt-0">
           <div className="flex w-full min-w-0 flex-col gap-3">
             {findSkills.error && (
-              <div className="rounded border border-solid border-danger-3 bg-danger-1 px-3 py-2 text-[12px] text-danger-6">
+              <PageNotice type="danger" role="alert">
                 {findSkills.error}
-              </div>
+              </PageNotice>
             )}
             <FindSkillsResults
               query={findSkills.query}

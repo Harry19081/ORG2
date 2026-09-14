@@ -1,5 +1,3 @@
-import { useSetAtom } from "jotai";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import React, {
   Suspense,
   memo,
@@ -11,27 +9,39 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import FileTypeIcon from "@src/components/FileTypeIcon";
+import Message from "@src/components/Message";
+import { Placeholder } from "@src/components/Placeholder";
+import Tooltip from "@src/components/Tooltip";
 import {
   type GitFileStatus,
   getStatusColor,
   getStatusLetterForFile,
 } from "@src/config/gitStatus";
-import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
-import { FileHeader } from "@src/modules/shared/components/FileHeader";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import {
-  TextSelectionDropdown,
-  useTextSelectionDropdown,
-} from "@src/scaffold/ContextMenu/exports";
-import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
+  EDITOR_TAB_CANVAS_BG_CLASS,
+  HEADER_ICON_SIZE,
+} from "@src/config/workstation/tokens";
+import type { ReviewDiffSearch } from "@src/features/CodeMirror/Diff/reviewSearchNavigation";
+import {
+  ArrowDown01Icon,
+  ArrowRight01Icon,
+  Copy01Icon,
+  HugeiconsIcon,
+  LinkSquare02Icon,
+} from "@src/icons";
+import { FileHeader } from "@src/modules/shared/components/FileHeader";
 import type { DiffViewMode } from "@src/types/git/types";
+import { copyText } from "@src/util/data/clipboard";
 import { isBinaryByExtension } from "@src/util/file/binaryDetection";
 import {
   getPreviewType,
   supportsSourceControlWorkingCopyPreview,
 } from "@src/util/file/previewTypes";
+
+import { SelectedTextAddToChat } from "../SelectedTextAddToChat";
 
 const LazyImagePreview = React.lazy(
   () =>
@@ -57,10 +67,6 @@ const LazyPptxPreview = React.lazy(
   () =>
     import("@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/FilePreviewContent/PptxPreview")
 );
-const LazyPagesPreview = React.lazy(
-  () =>
-    import("@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/FilePreviewContent/PagesPreview")
-);
 const LazyCodeMirrorDiff = React.lazy(
   () => import("@src/features/CodeMirror/Diff")
 );
@@ -83,8 +89,9 @@ export interface DiffFileSectionData {
   isUnavailable?: boolean;
 }
 
-export interface DiffFileSectionProps {
+interface DiffFileSectionProps {
   file: DiffFileSectionData;
+  reviewSearch?: ReviewDiffSearch;
   viewMode: DiffViewMode;
   defaultExpanded?: boolean;
   expansionSignal?: number;
@@ -132,11 +139,13 @@ function getFileNameAndDir(path: string): {
 
 const DiffFileSection: React.FC<DiffFileSectionProps> = ({
   file,
+  reviewSearch,
   viewMode,
   defaultExpanded = true,
   expansionSignal = 0,
   repoPath,
   sectionRef,
+  onFileSelect,
   onRequestContent,
   onExpansionChange,
   hideDirectory = false,
@@ -152,42 +161,12 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
     signal: number;
     value: boolean;
   } | null>(null);
-  const expanded =
-    manualExpanded?.signal === expansionSignal
+  const expanded = reviewSearch?.match
+    ? true
+    : manualExpanded?.signal === expansionSignal
       ? manualExpanded.value
       : defaultExpanded;
   const previousExpandedRef = useRef(expanded);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const setAddToAgent = useSetAtom(addToAgentAtom);
-
-  const { fileName: displayName } = useMemo(
-    () => getFileNameAndDir(getDisplayPath(file.path, repoPath)),
-    [file.path, repoPath]
-  );
-
-  const handleAddToContext = useCallback(
-    (text: string, _sessionId: string | null) => {
-      setAddToAgent({
-        type: "terminal",
-        text,
-        displayName: displayName || file.path,
-      });
-    },
-    [setAddToAgent, displayName, file.path]
-  );
-
-  const {
-    visible: dropdownVisible,
-    position: dropdownPosition,
-    selectedText,
-    hideDropdown,
-  } = useTextSelectionDropdown({
-    source: "terminal",
-    containerRef,
-    onAddToContext: handleAddToContext,
-    enabled: expanded,
-  });
 
   const isDeleted = file.status === "deleted";
 
@@ -262,6 +241,20 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
     file.path.startsWith("/") || !repoPath
       ? file.path
       : `${repoPath}/${file.path}`;
+  const canOpenFile = !isDeleted && !!onFileSelect;
+  const handleOpenFile = useCallback(() => {
+    onFileSelect?.(absoluteFilePath);
+  }, [absoluteFilePath, onFileSelect]);
+
+  const handleCopyPath = useCallback(() => {
+    copyText(absoluteFilePath)
+      .then(() => {
+        Message.success(t("common:status.copiedFilePath"));
+      })
+      .catch(() => {
+        Message.error(t("common:errors.failedToCopyFilePath"));
+      });
+  }, [absoluteFilePath, t]);
 
   function renderPreviewContent(): React.ReactNode {
     if (!isPreviewable || file.status === "deleted") return null;
@@ -295,10 +288,6 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
         return (
           <LazyPptxPreview filePath={absoluteFilePath} className="h-full" />
         );
-      case "pages":
-        return (
-          <LazyPagesPreview filePath={absoluteFilePath} className="h-full" />
-        );
       default:
         return null;
     }
@@ -319,12 +308,17 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
       : null;
 
   const diffContent = (
-    <div ref={containerRef}>
+    <SelectedTextAddToChat
+      displayName={fileName || file.path}
+      enabled={expanded}
+      scopeKey={file.path}
+    >
       {previewContent ? (
         <div className="h-[480px] min-h-[320px] overflow-hidden">
           <Suspense
             fallback={
               <Placeholder
+                loadingIconOnly
                 variant="loading"
                 placement="detail-panel"
                 fillParentHeight
@@ -344,6 +338,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
         <Suspense
           fallback={
             <Placeholder
+              loadingIconOnly
               variant="loading"
               placement="detail-panel"
               title={t("placeholders.loadingChanges")}
@@ -351,6 +346,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           }
         >
           <LazyCodeMirrorDiff
+            reviewSearch={reviewSearch}
             oldValue={resolvedDiff.oldContent || ""}
             newValue={resolvedDiff.newContent || ""}
             filePath={file.path}
@@ -374,61 +370,70 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
         />
       ) : (
         <Placeholder
+          loadingIconOnly
           variant="loading"
           placement="detail-panel"
           title={t("placeholders.loadingChanges")}
         />
       )}
-    </div>
+    </SelectedTextAddToChat>
   );
 
   if (flat) {
     return (
-      <>
-        <div
-          ref={sectionRef}
-          className={showBottomBorder ? "border-b border-border-2" : undefined}
-          data-diff-section-path={dataPath}
-        >
-          <FileHeader
-            filePath={file.path}
-            repoPath={repoPath}
-            additions={additions}
-            deletions={deletions}
-            publishEnabled={false}
-          />
-          {diffContent}
-        </div>
-        <TextSelectionDropdown
-          visible={dropdownVisible}
-          position={dropdownPosition}
-          selectedText={selectedText}
-          source="terminal"
-          onClose={hideDropdown}
-          onAddToContext={handleAddToContext}
-        />
-      </>
-    );
-  }
-
-  return (
-    <>
       <div
         ref={sectionRef}
         className={showBottomBorder ? "border-b border-border-2" : undefined}
         data-diff-section-path={dataPath}
       >
-        <button
-          className={`sticky top-0 z-10 flex w-full min-w-0 items-center gap-2 py-2 text-left hover:bg-fill-2 disabled:cursor-default disabled:hover:bg-transparent ${compactHeaderGutter ? "px-2" : "px-3"} ${EDITOR_TAB_CANVAS_BG_CLASS}`}
+        <FileHeader
+          filePath={file.path}
+          repoPath={repoPath}
+          additions={additions}
+          deletions={deletions}
+          publishEnabled={false}
+        />
+        {diffContent}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={sectionRef}
+      className={showBottomBorder ? "border-b border-border-2" : undefined}
+      data-diff-section-path={dataPath}
+    >
+      <div
+        className={`group/diff-header sticky top-0 z-10 h-9 w-full min-w-0 ${isDeleted ? "" : "hover:bg-fill-2"} ${compactHeaderGutter ? "px-2" : "px-3"} ${EDITOR_TAB_CANVAS_BG_CLASS}`}
+      >
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
+          className="absolute inset-0 w-full cursor-pointer focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset disabled:cursor-default"
           onClick={toggleExpanded}
           disabled={isDeleted}
-        >
+          aria-label={`${t(expanded ? "actions.collapse" : "actions.expand")} ${displayPath}`}
+          aria-expanded={isDeleted ? undefined : expanded}
+        />
+        <div className="pointer-events-none relative z-10 flex h-full min-w-0 items-center gap-2 pr-2">
           {isDeleted ? (
             <span className="inline-block w-[14px] shrink-0" aria-hidden />
           ) : expanded ? (
-            <ChevronDown size={14} className="shrink-0 text-text-3" />
+            <HugeiconsIcon
+              icon={ArrowDown01Icon}
+              data-icon="chevron-down"
+              size={14}
+              className="shrink-0 text-text-3"
+            />
           ) : (
-            <ChevronRight size={14} className="shrink-0 text-text-3" />
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              data-icon="chevron-right"
+              size={14}
+              className="shrink-0 text-text-3"
+            />
           )}
           <FileTypeIcon
             fileName={file.path}
@@ -458,27 +463,72 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
               </>
             ) : null}
           </div>
-          <DiffStatsBadge
-            additions={additions}
-            deletions={deletions}
-            variant="compact"
-          />
-          <span className={`shrink-0 text-[11px] font-medium ${statusColor}`}>
-            {statusLetter}
+          <span className="-ml-2 flex w-0 shrink-0 items-center gap-px overflow-hidden opacity-0 group-focus-within/diff-header:ml-0 group-focus-within/diff-header:w-auto group-focus-within/diff-header:opacity-100 group-hover/diff-header:ml-0 group-hover/diff-header:w-auto group-hover/diff-header:opacity-100">
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="small"
+              iconOnly
+              className="pointer-events-auto shrink-0"
+              onClick={handleCopyPath}
+              title={t("actions.copyPath")}
+              aria-label={`${t("actions.copyPath")}: ${displayPath}`}
+              icon={
+                <HugeiconsIcon icon={Copy01Icon} size={HEADER_ICON_SIZE.sm} />
+              }
+            />
+            {canOpenFile && (
+              <Button
+                variant="tertiary"
+                appearance="soft"
+                size="small"
+                iconOnly
+                className="pointer-events-auto shrink-0"
+                onClick={handleOpenFile}
+                title={t("common:actions.openInNewTab")}
+                aria-label={`${t("common:actions.openInNewTab")}: ${displayPath}`}
+                icon={
+                  <HugeiconsIcon
+                    icon={LinkSquare02Icon}
+                    data-icon="open-file-arrow"
+                    size={HEADER_ICON_SIZE.sm}
+                  />
+                }
+              />
+            )}
           </span>
-        </button>
-
-        {!isDeleted && expanded && diffContent}
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
+            className="pointer-events-auto flex shrink-0 cursor-pointer items-center gap-2 pr-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none aria-disabled:cursor-default"
+            onClick={isDeleted ? undefined : toggleExpanded}
+            aria-disabled={isDeleted || undefined}
+            aria-label={`${t(expanded ? "actions.collapse" : "actions.expand")} ${displayPath}`}
+            aria-expanded={isDeleted ? undefined : expanded}
+          >
+            <DiffStatsBadge
+              additions={additions}
+              deletions={deletions}
+              variant="compact"
+              reserveValueWidth={false}
+            />
+            <Tooltip
+              content={t(`common:gitLabels.${statusLetter}`)}
+              mouseEnterDelay={500}
+            >
+              <span
+                className={`shrink-0 text-[11px] font-medium ${statusColor}`}
+              >
+                {statusLetter}
+              </span>
+            </Tooltip>
+          </Button>
+        </div>
       </div>
-      <TextSelectionDropdown
-        visible={dropdownVisible}
-        position={dropdownPosition}
-        selectedText={selectedText}
-        source="terminal"
-        onClose={hideDropdown}
-        onAddToContext={handleAddToContext}
-      />
-    </>
+
+      {!isDeleted && expanded && diffContent}
+    </div>
   );
 };
 

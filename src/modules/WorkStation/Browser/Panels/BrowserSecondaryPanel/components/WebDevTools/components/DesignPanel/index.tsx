@@ -4,19 +4,25 @@
  * Visual design editor for the selected element.
  * Shows position, layout (flow, size, padding, margin), box model, and effects.
  */
-import { Eclipse, MoreHorizontal, SquareRoundCorner } from "lucide-react";
 import React, { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
+import {
+  EclipseIcon,
+  HugeiconsIcon,
+  MoreHorizontalIcon,
+  SquareRoundCornerIcon,
+} from "@src/icons";
 import type { FullComputedStyles } from "@src/modules/WorkStation/Browser/hooks/useWebviewStyleEditor";
-import { HEADER_BUTTON } from "@src/modules/WorkStation/shared/tokens";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import {
+  EditableField,
+  LinkedInputPair,
+} from "@src/modules/WorkStation/shared/PropertyEditor";
 
-import { BoxModelDiagram } from "./BoxModelDiagram";
 import { CollapsibleSection, SubSection } from "./CollapsibleSection";
-import { EditableField } from "./EditableField";
 import { LayoutButtons } from "./LayoutButtons";
-import { LinkedInputPair } from "./LinkedInputPair";
 
 // Corner radius icons for each corner position
 const CornerIcon: React.FC<{
@@ -48,7 +54,7 @@ const CornerIcon: React.FC<{
 // Types
 // ============================================
 
-export interface DesignPanelProps {
+interface DesignPanelProps {
   /** Computed styles for the selected element */
   styles: FullComputedStyles | null;
   /** Callback to change a style property */
@@ -62,7 +68,7 @@ export interface DesignPanelProps {
 }
 
 // Re-export sub-components
-export { BoxModelDiagram, EditableField, LayoutButtons };
+export { EditableField };
 
 // ============================================
 // Component
@@ -93,15 +99,24 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
 
     // Link toggle button component
     const renderLinkButton = (isLinked: boolean, onToggle: () => void) => (
-      <button
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        aria-pressed={!isLinked}
+        aria-label={isLinked ? "Unlink values" : "Link values"}
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={MoreHorizontalIcon}
+            data-icon="ellipsis"
+            size={12}
+          />
+        }
         onClick={onToggle}
-        className={`${HEADER_BUTTON.action} ${
-          isLinked ? "text-text-2" : "text-primary-6"
-        }`}
+        className={`${isLinked ? "text-text-2" : "text-primary-6"}`}
         title={isLinked ? "Unlink values" : "Link values"}
-      >
-        <MoreHorizontal size={12} />
-      </button>
+      />
     );
 
     if (!styles) {
@@ -114,7 +129,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
     }
 
     return (
-      <div className="flex h-full flex-col overflow-y-auto px-3 py-2 scrollbar-hide">
+      <div className="scrollbar-hide flex h-full flex-col overflow-y-auto px-3 py-2">
         {/* Position Section */}
         <CollapsibleSection
           title="Position"
@@ -236,7 +251,13 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
             {/* Opacity */}
             <SubSection title="Opacity">
               <EditableField
-                icon={<Eclipse size={14} />}
+                icon={
+                  <HugeiconsIcon
+                    icon={EclipseIcon}
+                    data-icon="eclipse"
+                    size={14}
+                  />
+                }
                 value={Math.round((parseFloat(styles.opacity) || 1) * 100)}
                 unit="%"
                 onChange={(value) => {
@@ -256,17 +277,30 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
             <SubSection
               title="Corners"
               headerActions={
-                <button
+                <Button
+                  variant="tertiary"
+                  appearance="soft"
+                  size="sidebar"
+                  aria-pressed={radiusExpanded}
+                  aria-label={
+                    radiusExpanded ? "Use single radius" : "Customize corners"
+                  }
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={MoreHorizontalIcon}
+                      data-icon="ellipsis"
+                      size={12}
+                    />
+                  }
                   onClick={() => setRadiusExpanded(!radiusExpanded)}
-                  className={`${HEADER_BUTTON.action} ${
+                  className={`${
                     radiusExpanded ? "text-primary-6" : "text-text-2"
                   }`}
                   title={
                     radiusExpanded ? "Use single radius" : "Customize corners"
                   }
-                >
-                  <MoreHorizontal size={12} />
-                </button>
+                />
               }
             >
               {radiusExpanded ? (
@@ -310,7 +344,13 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
                 </div>
               ) : (
                 <EditableField
-                  icon={<SquareRoundCorner size={14} />}
+                  icon={
+                    <HugeiconsIcon
+                      icon={SquareRoundCornerIcon}
+                      data-icon="square-round-corner"
+                      size={14}
+                    />
+                  }
                   value={parseNumeric(styles.borderRadius)}
                   unit="px"
                   onChange={(value) => onStyleChange("borderRadius", value)}
@@ -424,5 +464,3 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
 );
 
 DesignPanel.displayName = "DesignPanel";
-
-export default DesignPanel;

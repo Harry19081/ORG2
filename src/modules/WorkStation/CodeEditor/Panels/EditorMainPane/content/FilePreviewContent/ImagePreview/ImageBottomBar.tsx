@@ -6,13 +6,17 @@
  *   - "preview": shows metadata + zoom controls
  *   - "diff": shows old → new file info with color-coded sizes
  */
-import { ArrowRight, Maximize, ZoomIn, ZoomOut } from "lucide-react";
 import React from "react";
 
+import Button from "@src/components/Button";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import {
-  HEADER_BUTTON,
-  HEADER_ICON_SIZE,
-} from "@src/modules/WorkStation/shared/tokens";
+  ArrowExpand01Icon,
+  ArrowRight02Icon,
+  HugeiconsIcon,
+  ZoomInAreaIcon,
+  ZoomOutAreaIcon,
+} from "@src/icons";
 
 import { PreviewBottomBar, formatFileSize } from "../PreviewBottomBar";
 
@@ -110,7 +114,12 @@ const DiffLeft: React.FC<DiffModeProps> = ({ oldImage, newImage, status }) => {
       ) : (
         <span>{isAdded ? "New file" : "—"}</span>
       )}
-      <ArrowRight size={12} className="text-text-3" />
+      <HugeiconsIcon
+        icon={ArrowRight02Icon}
+        data-icon="arrow-right"
+        size={12}
+        className="text-text-3"
+      />
       {newImage ? (
         <span className="text-success-6">
           {newImage.width} × {newImage.height} · {formatFileSize(newImage.size)}
@@ -151,38 +160,67 @@ const ZoomControls: React.FC<ZoomProps> = ({
   const zoomPercent = `${Math.round(zoom * 100)}%`;
   return (
     <>
-      <button
-        onClick={onFit}
-        className={fitMode ? HEADER_BUTTON.active : HEADER_BUTTON.action}
-      >
-        <Maximize size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
-      </button>
-      <button
-        onClick={onActualSize}
-        className={
-          !fitMode && zoom === 1 ? HEADER_BUTTON.active : HEADER_BUTTON.action
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        aria-pressed={fitMode}
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={ArrowExpand01Icon}
+            data-icon="maximize"
+            size={HEADER_ICON_SIZE.md}
+            strokeWidth={1.75}
+          />
         }
-      >
-        <span className="text-[11px] font-medium">1:1</span>
-      </button>
+        onClick={onFit}
+      />
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        aria-pressed={!fitMode && zoom === 1}
+        iconOnly
+        icon={<span className="text-[11px] font-medium">1:1</span>}
+        onClick={onActualSize}
+      />
       <div className="mx-1 h-3 w-px bg-border-2" />
-      <button
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={ZoomOutAreaIcon}
+            data-icon="zoom-out"
+            size={HEADER_ICON_SIZE.md}
+            strokeWidth={1.75}
+          />
+        }
         onClick={onZoomOut}
         disabled={zoom <= minZoom}
-        className={HEADER_BUTTON.actionDisabled}
-      >
-        <ZoomOut size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
-      </button>
+      />
       <span className="min-w-[40px] text-center text-[11px] text-text-2">
         {zoomPercent}
       </span>
-      <button
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={ZoomInAreaIcon}
+            data-icon="zoom-in"
+            size={HEADER_ICON_SIZE.md}
+            strokeWidth={1.75}
+          />
+        }
         onClick={onZoomIn}
         disabled={zoom >= maxZoom}
-        className={HEADER_BUTTON.actionDisabled}
-      >
-        <ZoomIn size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
-      </button>
+      />
     </>
   );
 };

@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  listOpenPRsLocal,
   mergePRLocal,
   removePRReviewersLocal,
   requestPRReviewersLocal,
   setPRAutoMergeLocal,
+  updatePRDraftStateLocal,
 } from "./pullRequests";
 
 const mocks = vi.hoisted(() => ({
@@ -18,6 +20,31 @@ vi.mock("./client", () => ({
 describe("pull request action IPC payloads", () => {
   beforeEach(() => {
     mocks.invokeWithAuth.mockReset().mockResolvedValue({});
+  });
+
+  it("keeps existing list defaults and sends pagination/lean options only when requested", async () => {
+    await listOpenPRsLocal("org/repo", 100);
+    expect(mocks.invokeWithAuth).toHaveBeenLastCalledWith("github_list_prs", {
+      repoFullName: "org/repo",
+      state: "open",
+      perPage: 100,
+    });
+    await listOpenPRsLocal("org/repo", 50, { page: 2, includeMetadata: false });
+    expect(mocks.invokeWithAuth).toHaveBeenLastCalledWith("github_list_prs", {
+      repoFullName: "org/repo",
+      state: "open",
+      perPage: 50,
+      page: 2,
+      includeMetadata: false,
+    });
+    await listOpenPRsLocal("org/repo", 50, { page: 2, includeMetadata: true });
+    expect(mocks.invokeWithAuth).toHaveBeenLastCalledWith("github_list_prs", {
+      repoFullName: "org/repo",
+      state: "open",
+      perPage: 50,
+      page: 2,
+      includeMetadata: true,
+    });
   });
 
   it("sends the merge method and expected head SHA", async () => {
@@ -59,6 +86,22 @@ describe("pull request action IPC payloads", () => {
       2,
       "github_remove_pr_reviewers",
       { repoFullName: "org/repo", prNumber: 42, reviewers: ["reviewer"] }
+    );
+  });
+
+  it("sends explicit draft and ready-for-review states", async () => {
+    await updatePRDraftStateLocal("org/repo", 42, true);
+    await updatePRDraftStateLocal("org/repo", 42, false);
+
+    expect(mocks.invokeWithAuth).toHaveBeenNthCalledWith(
+      1,
+      "github_update_pr_draft_state",
+      { repoFullName: "org/repo", prNumber: 42, draft: true }
+    );
+    expect(mocks.invokeWithAuth).toHaveBeenNthCalledWith(
+      2,
+      "github_update_pr_draft_state",
+      { repoFullName: "org/repo", prNumber: 42, draft: false }
     );
   });
 });

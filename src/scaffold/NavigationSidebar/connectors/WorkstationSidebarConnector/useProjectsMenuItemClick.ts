@@ -1,9 +1,13 @@
 import { useSetAtom } from "jotai";
 import { useCallback } from "react";
 
+import {
+  openCollabOrgSpotlight,
+  openGitHubIssuesImportSpotlight,
+} from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import {
-  openCreateTargetInChatPanelStartPageAtom,
+  openChatPanelCreateTargetAtom,
   openOrganizationInChatPanelTabAtom,
   openProjectInChatPanelTabAtom,
   openWorkItemInChatPanelTabAtom,
@@ -13,7 +17,7 @@ import {
   CHAT_PANEL_CREATE_TARGET,
   type ChatPanelSelectedProject,
   type ChatPanelSelectedWorkItem,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import { STORY_ORG_SCOPE } from "@src/store/workstation/tabs";
 
 import {
@@ -30,7 +34,7 @@ import {
   getProjectsProjectOverviewSlug,
   getProjectsWorkItemCreateOrgId,
   getProjectsWorkItemId,
-} from "../useProjectsWorkItemMenuItems";
+} from "../useProjectsWorkItemMenuItems/index";
 
 interface UseProjectsMenuItemClickParams<
   Project,
@@ -40,7 +44,6 @@ interface UseProjectsMenuItemClickParams<
   LinearWorkItem,
 > {
   activateMyStationRouteForProjectTabContent: () => void;
-  activateMyStationRouteForProjectsContent: () => void;
   getProjectsLoadMoreGroupId: (id: string) => string | null;
   loadProjectsLinearOrgWorkItems: (orgId: string) => void;
   openProjectsLinearOrg: (org: LinearOrg) => void;
@@ -52,19 +55,12 @@ interface UseProjectsMenuItemClickParams<
   projectsWorkItemMap: ReadonlyMap<string, WorkItem>;
   linkedSessionIds: ReadonlySet<string>;
   openLinkedSession: (item: NavigationMenuItem) => void;
-  resetWorkManagementStateForProjectsContent: () => void;
   setProjectsGroupVisibleCounts: React.Dispatch<
     React.SetStateAction<Map<string, number>>
   >;
   setProjectsSelectedMenuItemId: (id: string) => void;
   toChatPanelProject: (project: Project) => ChatPanelSelectedProject;
   toChatPanelWorkItem: (workItem: WorkItem) => ChatPanelSelectedWorkItem;
-}
-
-interface OpenNewWorkItemFromSidebarParams {
-  openWorkItemCreator: () => void;
-  resetWorkManagementStateForProjectsContent: () => void;
-  setProjectsSelectedMenuItemId: (id: string) => void;
 }
 
 interface TryOpenLinkedSessionFromSidebarParams {
@@ -86,16 +82,6 @@ export function tryOpenLinkedSessionFromSidebar({
   return true;
 }
 
-export function openNewWorkItemFromSidebar({
-  openWorkItemCreator,
-  resetWorkManagementStateForProjectsContent,
-  setProjectsSelectedMenuItemId,
-}: OpenNewWorkItemFromSidebarParams): void {
-  resetWorkManagementStateForProjectsContent();
-  setProjectsSelectedMenuItemId(PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID);
-  openWorkItemCreator();
-}
-
 export function useProjectsMenuItemClick<
   Project,
   WorkItem,
@@ -104,7 +90,6 @@ export function useProjectsMenuItemClick<
   LinearWorkItem,
 >({
   activateMyStationRouteForProjectTabContent,
-  activateMyStationRouteForProjectsContent,
   getProjectsLoadMoreGroupId,
   loadProjectsLinearOrgWorkItems,
   openProjectsLinearOrg,
@@ -116,7 +101,6 @@ export function useProjectsMenuItemClick<
   projectsWorkItemMap,
   linkedSessionIds,
   openLinkedSession,
-  resetWorkManagementStateForProjectsContent,
   setProjectsGroupVisibleCounts,
   setProjectsSelectedMenuItemId,
   toChatPanelProject,
@@ -133,49 +117,28 @@ export function useProjectsMenuItemClick<
   const openWorkItemTab = useSetAtom(openWorkItemInChatPanelTabAtom);
   const openProjectTab = useSetAtom(openProjectInChatPanelTabAtom);
   const openOrganizationTab = useSetAtom(openOrganizationInChatPanelTabAtom);
-  const openCreateTargetInStartPage = useSetAtom(
-    openCreateTargetInChatPanelStartPageAtom
-  );
+  const openCreateTarget = useSetAtom(openChatPanelCreateTargetAtom);
   return useCallback(
     (_key: string, item: NavigationMenuItem) => {
       if (item.id === COLLAB_ADD_ORG_MENU_ITEM_ID) {
-        resetWorkManagementStateForProjectsContent();
-        setProjectsSelectedMenuItemId(COLLAB_ADD_ORG_MENU_ITEM_ID);
-        openCreateTargetInStartPage({
-          target: CHAT_PANEL_CREATE_TARGET.COLLAB_ORG,
-        });
+        openCollabOrgSpotlight();
         return;
       }
 
       if (item.id === PROJECTS_NEW_PROJECT_MENU_ITEM_ID) {
-        resetWorkManagementStateForProjectsContent();
-        setProjectsSelectedMenuItemId(PROJECTS_NEW_PROJECT_MENU_ITEM_ID);
-        openCreateTargetInStartPage({
+        openCreateTarget({
           target: CHAT_PANEL_CREATE_TARGET.PROJECT,
         });
         return;
       }
 
       if (item.id === PROJECTS_IMPORT_GITHUB_ISSUES_MENU_ITEM_ID) {
-        resetWorkManagementStateForProjectsContent();
-        setProjectsSelectedMenuItemId(
-          PROJECTS_IMPORT_GITHUB_ISSUES_MENU_ITEM_ID
-        );
-        openCreateTargetInStartPage({
-          target: CHAT_PANEL_CREATE_TARGET.GITHUB_ISSUES_PROJECT,
-        });
+        openGitHubIssuesImportSpotlight();
         return;
       }
 
       if (item.id === PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID) {
-        openNewWorkItemFromSidebar({
-          openWorkItemCreator: () =>
-            openCreateTargetInStartPage({
-              target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
-            }),
-          resetWorkManagementStateForProjectsContent,
-          setProjectsSelectedMenuItemId,
-        });
+        openCreateTarget({ target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM });
         return;
       }
 
@@ -193,7 +156,7 @@ export function useProjectsMenuItemClick<
       if (localOrgId) {
         const localOrg = projectsLocalOrgMap.get(localOrgId);
         if (!localOrg) return;
-        activateMyStationRouteForProjectsContent();
+        activateMyStationRouteForProjectTabContent();
         setProjectsSelectedMenuItemId(item.id);
         openOrganizationTab({
           organization: {
@@ -222,12 +185,10 @@ export function useProjectsMenuItemClick<
 
       const createWorkItemOrgId = getProjectsWorkItemCreateOrgId(item.id);
       if (createWorkItemOrgId) {
-        resetWorkManagementStateForProjectsContent();
-        setProjectsSelectedMenuItemId(item.id);
         // The row is org-scoped, so the creation surface must carry the org:
         // NEW_WORK_ITEM without `createProjectContext` writes standalone
         // items under personal-org (see createWorkItemFromDraft).
-        openCreateTargetInStartPage({
+        openCreateTarget({
           target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
           createProjectContext: { orgId: createWorkItemOrgId },
         });
@@ -256,7 +217,7 @@ export function useProjectsMenuItemClick<
       if (projectOverviewSlug) {
         const project = projectsProjectMap.get(projectOverviewSlug);
         if (!project) return;
-        activateMyStationRouteForProjectsContent();
+        activateMyStationRouteForProjectTabContent();
         setProjectsSelectedMenuItemId(item.id);
         openProjectTab(toChatPanelProject(project));
         return;
@@ -277,17 +238,16 @@ export function useProjectsMenuItemClick<
       const workItem = projectsWorkItemMap.get(workItemId);
       if (!workItem) return;
       const chatPanelWorkItem = toChatPanelWorkItem(workItem);
-      activateMyStationRouteForProjectsContent();
+      activateMyStationRouteForProjectTabContent();
       setProjectsSelectedMenuItemId(item.id);
       openWorkItemTab(chatPanelWorkItem);
     },
     [
       activateMyStationRouteForProjectTabContent,
-      activateMyStationRouteForProjectsContent,
       getProjectsLoadMoreGroupId,
       loadProjectsLinearOrgWorkItems,
       linkedSessionIds,
-      openCreateTargetInStartPage,
+      openCreateTarget,
       openOrganizationTab,
       openProjectTab,
       openProjectsLinearOrg,
@@ -299,7 +259,6 @@ export function useProjectsMenuItemClick<
       projectsLocalOrgMap,
       projectsProjectMap,
       projectsWorkItemMap,
-      resetWorkManagementStateForProjectsContent,
       setProjectsGroupVisibleCounts,
       setProjectsSelectedMenuItemId,
       toChatPanelProject,

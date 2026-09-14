@@ -3,24 +3,22 @@
  *
  * A resizable, collapsible section for panel layouts.
  * Used to create multiple stacked sections (Files, Outline, etc.)
- * Uses flex-grow for proportional space distribution.
+ * Uses grow for proportional space distribution.
  *
  * Shared by: CodeEditor, DatabaseManager, Browser
  */
-import { ChevronDown, ChevronRight } from "lucide-react";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useState } from "react";
 
+import Button from "@src/components/Button";
+import { SidebarSectionHeader } from "@src/components/SidebarSectionHeader";
 import {
   type SectionHeaderAction,
   isSectionHeaderCustomAction,
 } from "@src/components/TreePanelSidebar/types";
-import {
-  BUTTON_SIZE,
-  SECTION_ACTION_BUTTON,
-} from "@src/modules/WorkStation/shared/tokens";
+import { TreeRowActionGroup } from "@src/components/TreeRow/TreeRowActionGroup";
 import { HorizontalResizeHandle } from "@src/scaffold/Resize";
 
-import { HEADER_CLASSES } from "../tokens";
+import { SectionHeaderActionsContext } from "./SectionHeaderActions";
 
 // ============================================
 // Types
@@ -47,7 +45,7 @@ export interface CollapsibleSectionProps {
   actions?: SectionHeaderAction[];
   /** Callback when resize starts */
   onResizeStart?: (event: React.MouseEvent) => void;
-  /** Whether this section should use auto height instead of flex-grow */
+  /** Whether this section should use auto height instead of grow */
   autoHeight?: boolean;
   /** Whether to show top border instead of bottom border (for global sections) */
   showTopBorder?: boolean;
@@ -77,6 +75,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
     hideSeparator = false,
     headerTestId,
   }) => {
+    const [actionsHost, setActionsHost] = useState<HTMLDivElement | null>(null);
     const effectiveCollapsed = collapsible ? collapsed : false;
 
     // Handle collapse toggle
@@ -129,89 +128,74 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
       >
         {showSeparator && (
           <div
-            className={`pointer-events-none absolute left-2 right-2 ${separatorPositionClass} h-px bg-border-1`}
+            className={`pointer-events-none absolute right-2 left-2 ${separatorPositionClass} h-px bg-border-1`}
             aria-hidden
           />
         )}
         {/* Header */}
-        <div className={HEADER_CLASSES.sectionHeader}>
-          <div
-            data-testid={headerTestId}
-            data-collapsed={effectiveCollapsed ? "true" : "false"}
-            className={`flex min-w-0 flex-1 items-center gap-1.5 ${collapsible ? "cursor-pointer" : ""}`}
-            onClick={handleToggle}
-          >
-            {/* Chevron */}
-            {collapsible && (
-              <span
-                className={`${BUTTON_SIZE.sm} flex flex-shrink-0 items-center justify-center`}
-              >
-                {effectiveCollapsed ? (
-                  <ChevronRight size={14} className="text-text-3" />
-                ) : (
-                  <ChevronDown size={14} className="text-text-3" />
-                )}
-              </span>
-            )}
-
-            {/* Title */}
-            {typeof title === "string" ? (
-              <span className="truncate text-[12px] font-medium uppercase text-text-2">
-                {title}
-              </span>
-            ) : (
-              <div className="truncate text-[12px] font-medium uppercase text-text-2">
-                {title}
-              </div>
-            )}
-          </div>
-
-          {/* Action buttons - show on hover, or always when forceVisible */}
-          {actions.length > 0 && (
-            <div
-              className={`items-center gap-0.5 ${
-                actions.some((action) => action.forceVisible)
-                  ? "flex"
-                  : "hidden group-focus-within/section:flex group-hover/section:flex"
-              }`}
-            >
-              {actions.map((action) => {
-                // Support custom rendering for complex actions (dropdowns, etc.)
-                if (isSectionHeaderCustomAction(action)) {
-                  return <div key={action.key}>{action.customRender}</div>;
-                }
-
-                const hasLabel = !!action.label;
-                const button = (
-                  <button
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      action.onClick();
-                    }}
-                    className={`${SECTION_ACTION_BUTTON.base} ${
-                      hasLabel
-                        ? SECTION_ACTION_BUTTON.withLabel
-                        : SECTION_ACTION_BUTTON.iconOnly
-                    }`}
-                    title={
-                      action.key === "refresh-git" ? undefined : action.tooltip
+        <SidebarSectionHeader
+          surface="panel"
+          title={title}
+          expanded={!effectiveCollapsed}
+          onToggle={collapsible ? handleToggle : undefined}
+          toggleTestId={headerTestId}
+          actionsAlwaysVisible
+          actions={
+            <>
+              <div
+                ref={setActionsHost}
+                className="flex shrink-0 items-center gap-px"
+              />
+              {/* Action buttons - show on hover, or always when forceVisible */}
+              {actions.length > 0 && (
+                <TreeRowActionGroup
+                  hoverGroup="section"
+                  alwaysVisible={actions.some((action) => action.forceVisible)}
+                >
+                  {actions.map((action) => {
+                    // Support custom rendering for complex actions (dropdowns, etc.)
+                    if (isSectionHeaderCustomAction(action)) {
+                      return <div key={action.key}>{action.customRender}</div>;
                     }
-                  >
-                    {action.icon}
-                    {action.label && <span>{action.label}</span>}
-                  </button>
-                );
 
-                return <div key={action.key}>{button}</div>;
-              })}
-            </div>
-          )}
-        </div>
+                    const hasLabel = !!action.label;
+                    const button = (
+                      <Button
+                        variant="tertiary"
+                        appearance="soft-no-drop"
+                        size="sidebar"
+                        iconOnly={!hasLabel}
+                        icon={action.icon}
+                        aria-label={action.tooltip}
+                        disabled={action.disabled}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          action.onClick();
+                        }}
+                        title={
+                          action.key === "refresh-git"
+                            ? undefined
+                            : action.tooltip
+                        }
+                      >
+                        {action.label}
+                      </Button>
+                    );
+
+                    return <div key={action.key}>{button}</div>;
+                  })}
+                </TreeRowActionGroup>
+              )}
+            </>
+          }
+        />
 
         {/* Content - only render when not collapsed */}
         {!effectiveCollapsed && (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            {children}
+            <SectionHeaderActionsContext.Provider value={actionsHost}>
+              {children}
+            </SectionHeaderActionsContext.Provider>
           </div>
         )}
 

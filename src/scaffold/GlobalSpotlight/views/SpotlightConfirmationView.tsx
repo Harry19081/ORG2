@@ -7,6 +7,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
+import type { IconSvgElement } from "@src/icons";
+
 import type { UseConfirmationPageReturn } from "../hooks/core/types";
 
 // ============================================
@@ -16,10 +20,10 @@ import type { UseConfirmationPageReturn } from "../hooks/core/types";
 type ConfirmationParameter = {
   label: string;
   value: string;
-  icon?: string | React.ComponentType<Record<string, unknown>>;
+  icon?: string | IconSvgElement | React.ComponentType<Record<string, unknown>>;
 };
 
-export interface SpotlightConfirmationViewProps {
+interface SpotlightConfirmationViewProps {
   confirmationPage: UseConfirmationPageReturn;
 }
 
@@ -46,20 +50,9 @@ export const SpotlightConfirmationView: React.FC<
     <div className="flex flex-col gap-4 p-6">
       {/* Action Header */}
       <div className="flex items-center gap-3">
-        {typeof actionIcon === "string" ? (
-          <i className={`${actionIcon} text-[24px] text-primary-6`} />
-        ) : (
-          React.createElement(
-            actionIcon as unknown as React.ComponentType<{
-              size: number;
-              className: string;
-            }>,
-            {
-              size: 24,
-              className: "text-primary-6",
-            }
-          )
-        )}
+        {/* Every action definition carries glyph data (or a component);
+            AnyIcon renders both shapes safely. */}
+        <AnyIcon icon={actionIcon} size={24} className="text-primary-6" />
         <h2 className="text-[20px] font-semibold text-text-1">{actionLabel}</h2>
       </div>
 
@@ -77,18 +70,24 @@ export const SpotlightConfirmationView: React.FC<
 
       {/* Actions */}
       <div className="flex items-center justify-between gap-3">
-        <button
+        <Button
+          variant="secondary"
+          appearance="outline"
+          size="mini"
           onClick={confirmationPage.back}
-          className="flex items-center gap-2 rounded-lg border border-border-2 px-4 py-2 text-[14px] text-text-1 hover:bg-fill-1"
+          className="gap-2 text-[14px] hover:bg-fill-1"
         >
           ← {t("actions.back")}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="primary"
+          appearance="solid"
+          size="default"
           onClick={confirmationPage.confirm}
-          className="flex items-center gap-2 rounded-lg bg-primary-6 px-4 py-2 text-[14px] text-text-white transition-colors hover:bg-primary-5"
+          className="gap-2 text-[14px] text-text-white hover:bg-primary-5"
         >
           {actionLabel} →
-        </button>
+        </Button>
       </div>
     </div>
   );

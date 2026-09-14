@@ -8,16 +8,10 @@
  * Similar to Zoom's status bar at the bottom of meetings
  */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-  ChevronLeft,
-  ChevronRight,
-  MousePointer2,
-  Pause,
-  Play,
-} from "lucide-react";
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
@@ -31,6 +25,14 @@ import {
   replayModeAtom,
   simulatorEventCountAtom,
 } from "@src/engines/SessionCore";
+import {
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  Cursor02Icon,
+  HugeiconsIcon,
+  PauseIcon,
+  PlayIcon,
+} from "@src/icons";
 import {
   simulatorFollowAppLockAtom,
   simulatorSelectedAppAtom,
@@ -47,7 +49,7 @@ import {
   STATUS_BAR_TEXT_20,
 } from "./tokens";
 
-export interface SimulatorStatusBarProps {
+interface SimulatorStatusBarProps {
   /** Callback when toggling between follow/free browsing */
   onToggleMode?: () => void;
   /** Whether auto-play is active */
@@ -123,7 +125,7 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
 
     return (
       <div
-        className={`relative inline-flex h-8 transform-gpu items-center overflow-hidden rounded-full shadow-md ring-1 ring-border-2 [isolation:isolate] ${pillBgClass}`}
+        className={`relative isolate inline-flex h-8 transform-gpu items-center overflow-hidden rounded-full shadow-md ring-1 ring-border-2 ${pillBgClass}`}
       >
         <div className="inline-flex h-8 items-center gap-1.5 px-1.5">
           {replayMode === "replay" && <ReplayTimestampSegment />}
@@ -135,7 +137,7 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
                 text-only label; the `pl-1.5` keeps the text off the
                 pill's left edge when the leading Keyboard cluster is
                 hidden (chat visible). */}
-              <span className="inline-flex h-5 shrink-0 items-center pl-1.5 text-[11px] font-medium leading-none text-white">
+              <span className="inline-flex h-5 shrink-0 items-center pl-1.5 text-[11px] leading-none font-medium text-white">
                 {t("simulator.replay.followingAgent")}
               </span>
               <EventFilterDropdown variant="primary" iconOnly />
@@ -150,33 +152,48 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
                 mouseEnterDelay={200}
                 framedPanel
               >
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
+                  data-testid="session-replay-free-browse"
+                  aria-label={t("simulator.replay.freeBrowse")}
                   onClick={handleToggleToReplay}
                   className="flex h-5 w-5 transform-gpu items-center justify-center rounded-full text-white hover:bg-white/15 hover:text-white"
                 >
-                  {React.createElement(MousePointer2, {
-                    size: 12,
-                    strokeWidth: 1.75,
-                  })}
-                </button>
+                  <HugeiconsIcon
+                    icon={Cursor02Icon}
+                    size={12}
+                    strokeWidth={1.75}
+                  />
+                </Button>
               </Tooltip>
             </>
           ) : replayMode === "replay" ? (
             <>
               {/* Prev / Play / Next — then speed, then follow controls. */}
-              <button
+              <Button
+                variant="tertiary"
+                appearance="ghost"
+                size="sidebar"
+                aria-label={t("simulator.replay.previousEvent")}
+                iconOnly
+                icon={
+                  <HugeiconsIcon
+                    icon={ArrowLeft01Icon}
+                    size={14}
+                    strokeWidth={1.5}
+                  />
+                }
                 data-testid="session-replay-previous"
                 onClick={() => navigatePrev()}
                 disabled={eventCount === 0}
                 className={`ml-0.5 ${STATUS_BAR_ICON_BTN_20}`}
                 title={t("simulator.replay.previousEvent")}
-              >
-                {React.createElement(ChevronLeft, {
-                  size: 14,
-                  strokeWidth: 1.5,
-                })}
-              </button>
-              <button
+              />
+              <Button
+                layout="custom"
+                appearance="custom"
                 data-testid="session-replay-play-pause"
                 onClick={onPlayPause}
                 disabled={eventCount === 0}
@@ -191,24 +208,33 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
                     : t("simulator.replay.play")
                 }
               >
-                {React.createElement(isReplaying ? Pause : Play, {
-                  size: 12,
-                  fill: "currentColor",
-                  strokeWidth: 0,
-                })}
-              </button>
-              <button
+                <HugeiconsIcon
+                  icon={isReplaying ? PauseIcon : PlayIcon}
+                  data-icon={isReplaying ? "pause" : "play"}
+                  size={12}
+                  fill="currentColor"
+                  strokeWidth={0}
+                />
+              </Button>
+              <Button
+                variant="tertiary"
+                appearance="ghost"
+                size="sidebar"
+                aria-label={t("simulator.replay.nextEvent")}
+                iconOnly
+                icon={
+                  <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    size={14}
+                    strokeWidth={1.5}
+                  />
+                }
                 data-testid="session-replay-next"
                 onClick={() => navigateNext()}
                 disabled={eventCount === 0}
                 className={STATUS_BAR_ICON_BTN_20}
                 title={t("simulator.replay.nextEvent")}
-              >
-                {React.createElement(ChevronRight, {
-                  size: 14,
-                  strokeWidth: 1.5,
-                })}
-              </button>
+              />
               {playbackSpeed != null && onPlaybackSpeedChange != null ? (
                 <PlaybackSpeedInline
                   value={playbackSpeed}
@@ -223,14 +249,16 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
               <EventFilterDropdown iconOnly />
               <FollowModeDropdown />
               <div className="ml-1 h-4 w-px shrink-0 bg-border-2" />
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 onClick={handleToggleToFollow}
                 title={t("simulator.replay.follow")}
                 className={`${STATUS_BAR_TEXT_20} shrink-0 transform-gpu rounded-full px-2 font-medium text-text-2 ${SURFACE_TOKENS.hover} hover:text-primary-6`}
               >
                 {t("simulator.replay.follow")}
-              </button>
+              </Button>
             </>
           ) : null}
         </div>

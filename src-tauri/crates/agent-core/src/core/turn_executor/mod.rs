@@ -10,8 +10,10 @@ mod execute;
 pub(crate) mod file_tracker;
 pub mod helpers;
 mod length_recovery;
+mod owned_job_finality;
 #[cfg(debug_assertions)]
 pub mod provider_request_capture;
+mod repeat_guard;
 mod screenshot;
 pub(crate) use screenshot::resolve_screenshot_markers;
 mod stream_error_recovery;

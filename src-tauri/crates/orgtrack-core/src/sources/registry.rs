@@ -99,7 +99,7 @@ static REGISTERED: &[RegisteredSource] = &[
     },
     RegisteredSource {
         id: metadata::SOURCE_CURSOR_CLI,
-        label: "Cursor CLI",
+        label: "Cursor",
         scan: cursor_cli::history::list_cursor_cli_history_sessions_paginated,
         continuation: None,
     },
@@ -126,7 +126,7 @@ static REGISTERED: &[RegisteredSource] = &[
     },
     RegisteredSource {
         id: metadata::SOURCE_COPILOT,
-        label: "Copilot CLI",
+        label: "GitHub Copilot",
         scan: copilot::history::list_copilot_history_sessions_paginated,
         continuation: None,
     },
@@ -174,7 +174,7 @@ static REGISTERED: &[RegisteredSource] = &[
     },
     RegisteredSource {
         id: metadata::SOURCE_KIMI,
-        label: "Kimi",
+        label: "Kimi Code CLI",
         scan: kimi::history::list_kimi_history_sessions_paginated,
         continuation: None,
     },
@@ -260,6 +260,8 @@ fn normalize_cursor_ide_page(
                 lines_removed: row.lines_removed,
                 touched_files: row.touched_files,
                 parent_session_id: None,
+                client_origin: None,
+                client_origin_raw: None,
             })
             .collect(),
     })

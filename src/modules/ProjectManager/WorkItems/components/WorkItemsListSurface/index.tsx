@@ -1,6 +1,11 @@
 import type { FC, ReactNode } from "react";
 import type React from "react";
+import { useTranslation } from "react-i18next";
 
+import DetailPaneLayout, {
+  DetailPanePlaceholder,
+} from "@src/modules/shared/layouts/DetailPaneLayout";
+import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
 import type { DropdownOption, Person } from "@src/types/core/shared";
 import type {
   WorkItem as WorkItemExtended,
@@ -11,9 +16,11 @@ import type {
 } from "@src/types/core/workItem";
 
 import type { WorkItemGroup } from "../../workItemsViewModel";
+import WorkItemsCompactList from "../WorkItemsCompactList";
 import WorkItemsListContent from "../WorkItemsListContent";
 
 interface WorkItemsListSurfaceProps {
+  statusOrgId: string | null;
   groupedWorkItems: WorkItemGroup<WorkItemExtended>[];
   filteredWorkItems: WorkItemExtended[];
   selectedWorkItem: WorkItemExtended | null;
@@ -56,11 +63,14 @@ interface WorkItemsListSurfaceProps {
   defaultCollapsedStatuses?: readonly string[];
   renderSectionPlaceholder?: (status: string) => ReactNode | undefined;
   onSectionExpandedChange?: (status: string, expanded: boolean) => void;
+  listFullscreen?: boolean;
+  listHeader?: ReactNode;
 }
 
 const EMPTY_CHECKED_WORK_ITEM_IDS = new Set<string>();
 
 const WorkItemsListSurface: FC<WorkItemsListSurfaceProps> = ({
+  statusOrgId,
   groupedWorkItems,
   filteredWorkItems,
   selectedWorkItem,
@@ -95,9 +105,13 @@ const WorkItemsListSurface: FC<WorkItemsListSurfaceProps> = ({
   defaultCollapsedStatuses = [],
   renderSectionPlaceholder,
   onSectionExpandedChange,
+  listFullscreen = false,
+  listHeader,
 }) => {
+  const { t } = useTranslation("common");
   const listContent = (
     <WorkItemsListContent
+      statusOrgId={statusOrgId}
       groupedWorkItems={groupedWorkItems}
       filteredWorkItems={filteredWorkItems}
       workItems={workItems}
@@ -131,22 +145,43 @@ const WorkItemsListSurface: FC<WorkItemsListSurfaceProps> = ({
     />
   );
 
-  const isDetail = !!selectedWorkItem;
-
-  return (
+  const fullContent = (
     <div className="flex h-full min-h-0 overflow-hidden">
       <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-        <div className={isDetail ? "hidden" : "h-full min-h-0"}>
-          {listContent}
-        </div>
-        {isDetail && detailContent && (
-          <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden scrollbar-hide">
-            {detailContent}
-          </div>
-        )}
+        <div className="h-full min-h-0">{listContent}</div>
       </div>
-      {!isDetail && !hidePropertiesPanel && propertiesPanel}
+      {!hidePropertiesPanel && propertiesPanel}
     </div>
+  );
+  const resolvedDetailContent = detailContent ?? (
+    <DetailPaneLayout testId="work-items-detail-placeholder">
+      <DetailPanePlaceholder
+        variant="empty"
+        title={t("teamInbox.empty.selectTitle")}
+        subtitle={t("teamInbox.empty.selectSubtitle")}
+      />
+    </DetailPaneLayout>
+  );
+
+  return (
+    <InboxListDetailLayout
+      testId="project-work-items-list-detail-layout"
+      detailOpen={Boolean(selectedWorkItem && detailContent)}
+      defaultSplit
+      listFullscreen={listFullscreen}
+      listHeader={listHeader}
+      fullContent={fullContent}
+      listContent={
+        <WorkItemsCompactList
+          items={filteredWorkItems}
+          selectedWorkItemId={selectedWorkItemId}
+          onSelectWorkItem={onSelectWorkItem}
+          workItemPrefix={workItemPrefix}
+          testId="project-work-items-compact-list"
+        />
+      }
+      detailContent={resolvedDetailContent}
+    />
   );
 };
 

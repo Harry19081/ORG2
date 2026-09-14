@@ -7,8 +7,8 @@ import type { MenuItemId } from "@/src/scaffold/ContextMenu/config";
 import { type MutableRefObject, type RefObject, useCallback } from "react";
 
 import type { ComposerInputRef } from "@src/components/ComposerInput";
-import { getTerminalBuffer } from "@src/components/TerminalInteractive/bufferCache";
 import { storePillText } from "@src/config/pillTokens";
+import { getTerminalBuffer } from "@src/engines/TerminalCore/components/TerminalInteractive/bufferCache";
 import { referenceInsertText } from "@src/features/Org2Cloud/referenceInsertText";
 import { createLogger } from "@src/hooks/logger";
 import {
@@ -148,7 +148,7 @@ export function useAtMention(options: UseAtMentionOptions): AtMentionHandlers {
         }
         case "cloudSession": {
           // A teammate's session has no local id, so it goes in as the
-          // reference text the markdown renderer turns into a chip rather
+          // reference text the read boundary turns into a session card rather
           // than through the pill path, which assumes a local session.
           composerInputRef.current.insertMentionText(
             referenceInsertText(value)
@@ -246,8 +246,14 @@ export function useAtMention(options: UseAtMentionOptions): AtMentionHandlers {
         return;
       }
 
+      const audiencePath = (() => {
+        const target = option.audienceTarget;
+        if (!target) return `member://${encodeURIComponent(option.id)}`;
+        if (target.kind === "all") return "audience://all";
+        return `${target.kind}://${encodeURIComponent(target.id)}`;
+      })();
       composerInputRef.current.insertFilePill(
-        `member://${option.id}`,
+        audiencePath,
         false,
         "member",
         option.label

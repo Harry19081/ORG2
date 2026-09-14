@@ -8,7 +8,7 @@
  *   expanded ≤ min(320px, 30vh)). Whenever the natural content height
  *   exceeds the collapsed cap, a "Show more" / "Show less" toggle is
  *   rendered.
- * - Optional Shiki syntax highlighting (e.g. lang="log" for terminal
+ * - Optional Prism syntax highlighting (e.g. lang="log" for terminal
  *   output).
  *
  * Used by TerminalBlock, ToolCallBlock, and any block that displays
@@ -16,6 +16,8 @@
  */
 import Ansi from "ansi-to-react";
 import React, {
+  Suspense,
+  lazy,
   memo,
   useCallback,
   useEffect,
@@ -26,13 +28,8 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import ExpandOverlay from "@src/components/ExpandOverlay";
-import {
-  hasTuiSequences,
-  processAnsiContent,
-  stripAnsiCodes,
-} from "@src/components/TerminalDisplay/utils/ansiProcessor";
-import XtermOutput from "@src/components/XtermOutput";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
 import type { PayloadRef } from "@src/engines/SessionCore/core/types";
 import {
@@ -42,7 +39,12 @@ import {
   trackPendingPayloadLoad,
   unloadPayload,
 } from "@src/engines/SessionCore/payloads";
-import { useShikiHighlight } from "@src/hooks/code";
+import {
+  hasTuiSequences,
+  processAnsiContent,
+  stripAnsiCodes,
+} from "@src/engines/TerminalCore/components/TerminalDisplay/utils/ansiProcessor";
+import { useSyntaxHighlight } from "@src/hooks/code/useSyntaxHighlight";
 
 import "./_block-output.scss";
 import {
@@ -51,6 +53,13 @@ import {
   EVENT_BLOCK_FADE_FROM,
   EVENT_SNIPPET_INNER_PADDING_CLASS,
 } from "./config";
+
+// Lazy: pulls @xterm/xterm plus its addons, and only the rare TUI-sequence
+// branch below renders it. Xterm paints asynchronously after mount anyway,
+// so the empty Suspense fallback is not a visible behavior change.
+const XtermOutput = lazy(
+  () => import("@src/engines/TerminalCore/components/XtermOutput")
+);
 
 /**
  * Height policy — measured in pixels, not lines.
@@ -89,11 +98,9 @@ export interface BlockOutputProps {
   status?: BlockOutputStatus;
   /** Optional custom line renderer (e.g. for highlighting refs in browser snapshots) */
   renderLine?: (line: string, idx: number) => React.ReactNode;
-  /** Shiki language for syntax highlighting (e.g. "log"). When set, output
-   *  is highlighted with Shiki instead of ANSI. */
+  /** Prism language for syntax highlighting (e.g. "log"). When set, output
+   *  is highlighted with Prism instead of ANSI. */
   highlightLang?: string;
-  /** Shiki theme — defaults to "one-dark-pro" */
-  shikiTheme?: string;
   /** Draw an event-block border around this output region. Disable when parent shell already owns the border. */
   withBorder?: boolean;
   sessionId?: string;
@@ -126,7 +133,6 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
     status: _status = "default",
     renderLine,
     highlightLang,
-    shikiTheme = "one-dark-pro",
     withBorder = true,
     sessionId,
     eventId,
@@ -175,7 +181,7 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
       [processedOutput]
     );
 
-    // Shiki-highlighted HTML for the full output
+    // Prism-highlighted HTML for the full output
     const plainText = useMemo(
       () => (highlightLang ? stripAnsiCodes(processedOutput) : ""),
       [highlightLang, processedOutput]
@@ -184,9 +190,8 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
       Boolean(highlightLang) &&
       plainText.length > 0 &&
       plainText.length <= HIGHLIGHT_MAX_CHARS;
-    const highlightedHtml = useShikiHighlight(plainText, {
+    const highlightedHtml = useSyntaxHighlight(plainText, {
       lang: highlightLang,
-      theme: shikiTheme,
       enabled: canHighlight,
     });
 
@@ -194,7 +199,7 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
     // the viewport itself whether its scrollHeight exceeds clientHeight to
     // decide whether the fade + "Show more" pill should be shown. Doing the
     // measurement against the always-clamped viewport (rather than a
-    // separate content wrapper whose layout depends on async Shiki and
+    // separate content wrapper whose layout depends on async Prism and
     // ResizeObserver wakeups) keeps `needsExpand` correct the moment the
     // browser settles — regardless of highlight timing or fast-refresh
     // remounts.
@@ -323,14 +328,15 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
         {useTopCollapsedOverlay ? expandOverlay : null}
         <div ref={contentRef}>
           {useTuiRenderer ? (
-            <XtermOutput
-              content={processedOutput}
-              className={EVENT_SNIPPET_INNER_PADDING_CLASS}
-            />
+            <Suspense fallback={null}>
+              <XtermOutput
+                content={processedOutput}
+                className={EVENT_SNIPPET_INNER_PADDING_CLASS}
+              />
+            </Suspense>
           ) : highlightLang && highlightedHtml ? (
-            <div
-              className={`${preClassesShared} [&_pre.shiki]:!m-0 [&_pre.shiki]:!bg-transparent [&_pre.shiki]:!p-0 [&_pre.shiki]:!shadow-none`}
-              // eslint-disable-next-line react/no-danger
+            <pre
+              className={`${preClassesShared} prism-html`}
               dangerouslySetInnerHTML={{ __html: highlightedHtml }}
             />
           ) : (
@@ -359,9 +365,12 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
                 ? " · preview retained for rendering"
                 : ""}
             </span>
-            <button
-              type="button"
-              className="rounded-md border border-border-2 px-2 py-1 text-text-2 hover:bg-fill-2"
+            <Button
+              variant="secondary"
+              appearance="outline"
+              size="mini"
+              htmlType="button"
+              className="hover:bg-fill-2"
               onClick={() => {
                 unloadPayload(payloadKey);
                 setFullPayload(null);
@@ -369,7 +378,7 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
               }}
             >
               {t("common:showLess")}
-            </button>
+            </Button>
           </div>
         )}
 
@@ -378,16 +387,19 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
             <span>
               {payloadRef?.fullSizeBytes.toLocaleString()} bytes previewed
             </span>
-            <button
-              type="button"
-              className="rounded-md border border-border-2 px-2 py-1 text-text-2 hover:bg-fill-2 disabled:opacity-60"
+            <Button
+              variant="secondary"
+              appearance="outline"
+              size="mini"
+              htmlType="button"
+              className="hover:bg-fill-2 disabled:opacity-60"
               disabled={isLoadingPayload}
               onClick={handleLoadFullPayload}
             >
               {isLoadingPayload
                 ? t("common:status.loading")
                 : t("common:showMore")}
-            </button>
+            </Button>
           </div>
         )}
 

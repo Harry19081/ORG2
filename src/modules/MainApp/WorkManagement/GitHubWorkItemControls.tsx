@@ -1,10 +1,3 @@
-import {
-  Funnel,
-  GitPullRequest,
-  Link2,
-  MessageCircle,
-  MoreHorizontal,
-} from "lucide-react";
 import React, { useCallback, useState } from "react";
 
 import type { GitHubIssueUser } from "@src/api/tauri/github";
@@ -15,6 +8,14 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import type { SelectOption } from "@src/components/Select";
+import {
+  BubbleChatIcon,
+  FunnelIcon,
+  GitPullRequestIcon,
+  HugeiconsIcon,
+  Link02Icon,
+  MoreHorizontalIcon,
+} from "@src/icons";
 import {
   WorkManagementAssigneeCell,
   toggleWorkManagementAssigneeIds,
@@ -36,10 +37,10 @@ export function IssuePersonalFilterDropdown({
   filterLabel: string;
   onSelect: (values: (string | number)[]) => void;
 }): React.ReactNode {
-  const accessibleLabel =
-    selectedFilters.length > 0
-      ? `${filterLabel} (${selectedFilters.length})`
-      : filterLabel;
+  const hasSelectedFilters = selectedFilters.length > 0;
+  const accessibleLabel = hasSelectedFilters
+    ? `${filterLabel} (${selectedFilters.length})`
+    : filterLabel;
 
   return (
     <Dropdown
@@ -47,16 +48,25 @@ export function IssuePersonalFilterDropdown({
       value={selectedFilters}
       mode="multiple"
       position="bottom-end"
-      className={`${DROPDOWN_CLASSES.panelAnimated} ${DROPDOWN_WIDTHS.menuClass}`}
+      className={`${DROPDOWN_CLASSES.panelAnimated} ${DROPDOWN_WIDTHS.fileTreeClass}`}
       onSelect={(value) => onSelect(Array.isArray(value) ? value : [value])}
     >
       <Button
         htmlType="button"
-        variant="secondary"
-        icon={<Funnel size={13} strokeWidth={1.8} />}
+        variant="tertiary"
+        size="small"
+        className={hasSelectedFilters ? "bg-fill-1! text-primary-6!" : ""}
+        icon={
+          <HugeiconsIcon
+            icon={FunnelIcon}
+            data-icon="funnel"
+            size={14}
+            strokeWidth={1.8}
+          />
+        }
         iconOnly
         aria-label={accessibleLabel}
-        title={accessibleLabel}
+        aria-pressed={hasSelectedFilters}
       />
     </Dropdown>
   );
@@ -71,13 +81,23 @@ export function ManagedIssueContextMeta({
     <div className="flex shrink-0 items-center gap-2 text-[11px] text-text-1">
       {issue.linkedPullRequests > 0 ? (
         <span className="flex items-center gap-1">
-          <GitPullRequest size={12} strokeWidth={1.8} />
+          <HugeiconsIcon
+            icon={GitPullRequestIcon}
+            data-icon="git-pull-request"
+            size={12}
+            strokeWidth={1.8}
+          />
           {issue.linkedPullRequests}
         </span>
       ) : null}
       {issue.comments > 0 ? (
         <span className="flex items-center gap-1">
-          <MessageCircle size={12} strokeWidth={1.8} />
+          <HugeiconsIcon
+            icon={BubbleChatIcon}
+            data-icon="message-circle"
+            size={12}
+            strokeWidth={1.8}
+          />
           {issue.comments}
         </span>
       ) : null}
@@ -169,8 +189,10 @@ export function ManagedIssueActionsCell({
   const closeMenu = useCallback(() => setMenuVisible(false), []);
   const droplist = (
     <div className={`${DROPDOWN_CLASSES.menuPanelBase} min-w-[180px]`}>
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         className={DROPDOWN_CLASSES.menuActionItem}
         onClick={() => {
           onOpenIssueInBrowser(issue);
@@ -178,7 +200,7 @@ export function ManagedIssueActionsCell({
         }}
       >
         <span className="min-w-0 flex-1 truncate">{openInBrowserLabel}</span>
-      </button>
+      </Button>
     </div>
   );
 
@@ -189,7 +211,7 @@ export function ManagedIssueActionsCell({
         variant="tertiary"
         appearance="ghost"
         size="mini"
-        icon={<Link2 size={12} />}
+        icon={<HugeiconsIcon icon={Link02Icon} data-icon="link-2" size={12} />}
         onClick={() => onAddIssue(issue)}
         aria-label={`${addLabel} #${issue.id}`}
       >
@@ -209,7 +231,13 @@ export function ManagedIssueActionsCell({
           variant="tertiary"
           appearance="ghost"
           size="mini"
-          icon={<MoreHorizontal size={13} />}
+          icon={
+            <HugeiconsIcon
+              icon={MoreHorizontalIcon}
+              data-icon="ellipsis"
+              size={13}
+            />
+          }
           iconOnly
           aria-label={moreActionsLabel}
           aria-expanded={menuVisible}
@@ -235,7 +263,7 @@ export function ManagedPrActionsCell({
         variant="tertiary"
         appearance="ghost"
         size="mini"
-        icon={<Link2 size={12} />}
+        icon={<HugeiconsIcon icon={Link02Icon} data-icon="link-2" size={12} />}
         onClick={() => onAddPr(pr)}
         aria-label={`${addLabel} #${pr.id}`}
       >

@@ -1,4 +1,3 @@
-import { Eye, Play, RefreshCw, RotateCcw, Square } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -9,17 +8,26 @@ import {
   containerApi,
 } from "@src/api/tauri/container";
 import Button from "@src/components/Button";
+import { TEXT_HOVER_REFRESH_BUTTON_PROPS } from "@src/components/Button/refreshActionProps";
 import Message from "@src/components/Message";
+import { Placeholder } from "@src/components/Placeholder";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import {
+  HugeiconsIcon,
+  PlayIcon,
+  Refresh04Icon,
+  RotateLeft01Icon,
+  SquareIcon,
+  ViewIcon,
+} from "@src/icons";
 import {
   CollapsibleSection,
   DETAIL_PANEL_TOKENS,
-  Placeholder,
 } from "@src/modules/shared/layouts/blocks";
 
 interface ContainersSectionProps {
@@ -213,7 +221,9 @@ const ContainersSection: React.FC<ContainersSectionProps> = ({
               <Button
                 variant="tertiary"
                 size="mini"
-                icon={<Eye size={13} />}
+                icon={
+                  <HugeiconsIcon icon={ViewIcon} data-icon="eye" size={13} />
+                }
                 loading={actionLoading}
                 onClick={() => handleInspect(row)}
                 aria-label={t("navigation:launchpad.containers.inspect")}
@@ -222,7 +232,13 @@ const ContainersSection: React.FC<ContainersSectionProps> = ({
                 <Button
                   variant="tertiary"
                   size="mini"
-                  icon={<Square size={13} />}
+                  icon={
+                    <HugeiconsIcon
+                      icon={SquareIcon}
+                      data-icon="square"
+                      size={13}
+                    />
+                  }
                   loading={actionLoading}
                   onClick={() => runAction(row, "stop")}
                   aria-label={t("navigation:launchpad.containers.stop")}
@@ -231,7 +247,9 @@ const ContainersSection: React.FC<ContainersSectionProps> = ({
                 <Button
                   variant="tertiary"
                   size="mini"
-                  icon={<Play size={13} />}
+                  icon={
+                    <HugeiconsIcon icon={PlayIcon} data-icon="play" size={13} />
+                  }
                   loading={actionLoading}
                   onClick={() => runAction(row, "start")}
                   aria-label={t("navigation:launchpad.containers.start")}
@@ -240,7 +258,13 @@ const ContainersSection: React.FC<ContainersSectionProps> = ({
               <Button
                 variant="tertiary"
                 size="mini"
-                icon={<RotateCcw size={13} />}
+                icon={
+                  <HugeiconsIcon
+                    icon={RotateLeft01Icon}
+                    data-icon="rotate-ccw"
+                    size={13}
+                  />
+                }
                 loading={actionLoading}
                 onClick={() => runAction(row, "restart")}
                 aria-label={t("navigation:launchpad.containers.restart")}
@@ -261,9 +285,16 @@ const ContainersSection: React.FC<ContainersSectionProps> = ({
       compact={compact}
       actions={
         <Button
-          variant="tertiary"
+          {...TEXT_HOVER_REFRESH_BUTTON_PROPS}
           size="mini"
-          icon={<RefreshCw size={13} className={spinClass} />}
+          icon={
+            <HugeiconsIcon
+              icon={Refresh04Icon}
+              data-icon="refresh-cw"
+              size={13}
+              className={spinClass}
+            />
+          }
           onClick={handleRefreshClick}
           aria-label={t("common:actions.refresh")}
         />

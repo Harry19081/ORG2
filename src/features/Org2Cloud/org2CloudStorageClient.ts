@@ -70,15 +70,17 @@ export async function uploadReplayObject(
   });
   if (response.ok) return;
   const body = await response.text().catch(() => "");
-  // Replay objects are content-addressed (segment hash in the key) and the
-  // storage policies grant INSERT but never UPDATE, so re-uploading an
-  // existing name is rejected rather than applied — the normal retry/resume
-  // path. Supabase reports it as 409, or as a 400 envelope wrapping a 403
-  // RLS denial when the policy blocks the implied update, which is
-  // indistinguishable by status from a genuine authorization failure.
-  // Confirm the object is actually readable before treating it as done, so
-  // a real denial still surfaces.
-  if (mayMeanReplayObjectExists(response.status, body)) {
+  // Replay objects are content-addressed (segment hash in the key), so a
+  // duplicate-name rejection means the exact bytes are already stored —
+  // resume treats it as success without a read-back: the member read path
+  // walks the session read ladder, which denies replay reads on
+  // metadata-only shares, so an existence probe cannot confirm objects the
+  // uploader is not allowed to read and would fail this path forever.
+  if (isDuplicateObjectRejection(response.status, body)) return;
+  // A 400/403 RLS denial is ambiguous: the policy blocks the implied
+  // update on an existing name with the same text as a genuine
+  // authorization failure. Only here does the read-back decide.
+  if (mayBeMaskedDuplicate(response.status, body)) {
     const exists = await replayObjectExists(
       accessToken,
       path,
@@ -94,14 +96,22 @@ export async function uploadReplayObject(
   );
 }
 
-/** Statuses/bodies that can mean "this object name is already stored". */
-function mayMeanReplayObjectExists(status: number, body: string): boolean {
+/** Rejections that unambiguously mean "this object name is already stored". */
+function isDuplicateObjectRejection(status: number, body: string): boolean {
   if (status === 409) return true;
   if (status !== 400 && status !== 403) return false;
   return (
-    body.includes("row-level security policy") ||
     body.includes("Duplicate") ||
+    body.includes("KeyAlreadyExists") ||
     body.includes("already exists")
+  );
+}
+
+/** RLS denials that may be masking an insert onto an existing name. */
+function mayBeMaskedDuplicate(status: number, body: string): boolean {
+  return (
+    (status === 400 || status === 403) &&
+    body.includes("row-level security policy")
   );
 }
 
@@ -122,6 +132,27 @@ async function replayObjectExists(
   } catch {
     return false;
   }
+}
+
+/**
+ * Upload a frozen segment only when its immutable object name is not stored
+ * yet. Object names embed the content hash, so an existing object already
+ * holds these bytes; posting it again is rejected by the bucket's unique
+ * name constraint, and every such rejection is logged as a database error
+ * server-side. One HEAD per segment avoids that on re-pushes.
+ */
+export async function ensureReplayObject(
+  accessToken: string,
+  path: string,
+  bytes: Uint8Array,
+  endpoint: CloudEndpoint = getCloudEndpoint(),
+  signal?: AbortSignal
+): Promise<"existing" | "uploaded"> {
+  if (await replayObjectExists(accessToken, path, endpoint, signal)) {
+    return "existing";
+  }
+  await uploadReplayObject(accessToken, path, bytes, endpoint, signal);
+  return "uploaded";
 }
 
 export async function downloadReplayObject(

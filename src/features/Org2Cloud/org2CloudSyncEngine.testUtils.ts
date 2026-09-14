@@ -3,16 +3,21 @@ import { vi } from "vitest";
 import type { CollabOutboxPushItem } from "@src/api/http/project";
 import { getImportedHistorySourceBySessionId } from "@src/api/tauri/externalHistory";
 import Message from "@src/components/Message";
+import {
+  loadLocalCanonicalConversationSnapshot,
+  loadLocalExecutionChildrenRevision,
+} from "@src/engines/SessionCore/conversations/localConversationExecutionTail";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
 import type {
   EventDisplayStatus,
   SessionEvent,
 } from "@src/engines/SessionCore/core/types";
 import { processChunksRust } from "@src/engines/SessionCore/ingestion/rustBridge";
+import { buildInitialChatPanelTabsState } from "@src/store/chatPanel/chatPanelTabFactories";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import type { Session } from "@src/store/session/sessionAtom/types";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import {
@@ -54,6 +59,7 @@ import {
   org2CloudPushCursorsAtom,
   org2CloudPushedMetadataAtom,
   org2CloudRepoScopesAtom,
+  org2CloudRetentionParkedAtom,
   org2CloudSyncEnabledAtom,
 } from "./org2CloudSyncAtoms";
 import type {
@@ -104,6 +110,18 @@ vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
   },
 }));
 
+vi.mock("@src/engines/SessionCore/sync/adapters/cli/cliHistory", () => ({
+  loadCliTranscriptRevision: vi.fn(async () => undefined),
+}));
+
+vi.mock(
+  "@src/engines/SessionCore/conversations/localConversationExecutionTail",
+  () => ({
+    loadLocalExecutionChildrenRevision: vi.fn(),
+    loadLocalCanonicalConversationSnapshot: vi.fn(),
+  })
+);
+
 vi.mock("@src/engines/SessionCore/ingestion/rustBridge", () => ({
   processChunksRust: vi.fn(),
 }));
@@ -152,6 +170,12 @@ vi.mock("./org2CloudProjectOrgAlias", () => ({
 }));
 
 export const eventStoreMock = vi.mocked(eventStoreProxy);
+export const localExecutionRevisionMock = vi.mocked(
+  loadLocalExecutionChildrenRevision
+);
+export const localCanonicalSnapshotMock = vi.mocked(
+  loadLocalCanonicalConversationSnapshot
+);
 export const processChunksRustMock = vi.mocked(processChunksRust);
 export const peekMock = vi.mocked(peekShareableScopeKeys);
 export const primeMock = vi.mocked(primeShareableScopeKey);
@@ -326,12 +350,15 @@ export function createEngineFixture() {
   store.set(org2CloudOrgsAtom, [
     { orgId: "corg-1", name: "Cloud Team", role: "member" },
   ]);
-  store.set(chatPanelSelectedCloudOrgAtom, null);
+  // The shared store keeps the previous test's tab strip; an open organization
+  // tab would otherwise still count as the visible management org.
+  store.set(chatPanelTabsAtom, buildInitialChatPanelTabsState());
   store.set(sidebarActiveCloudOrgIdAtom, "corg-1");
   store.set(org2CloudRepoScopesAtom, { "corg-1": [SCOPE_KEY] });
   store.set(org2CloudSyncEnabledAtom, {});
   store.set(org2CloudPushCursorsAtom, {});
   store.set(org2CloudPushedMetadataAtom, {});
+  store.set(org2CloudRetentionParkedAtom, {});
   store.set(org2CloudCollabStateCursorsAtom, {});
   store.set(sessionOrgTagsAtom, {});
   store.set(org2CloudAccessSettingsAtom, {
@@ -366,6 +393,13 @@ export function createEngineFixture() {
     eventCount: 2,
     revision: 1,
   });
+  localExecutionRevisionMock.mockResolvedValue("[]");
+  localCanonicalSnapshotMock.mockResolvedValue({
+    events: [],
+    rootEvents: [],
+    segments: [],
+    childRevision: "[]",
+  });
   processChunksRustMock.mockResolvedValue([]);
   vi.useFakeTimers();
   engine.start(store);
@@ -391,7 +425,6 @@ export const engineTestDeps = {
   COLLAB_LISTING_SHARE_WINDOW_MS,
   DATA_CHANGED_DEBOUNCE_MS,
   EXTERNAL_HISTORY_ACTIVITY_DEBOUNCE_MS,
-  chatPanelSelectedCloudOrgAtom,
   ensureProjectOrgForCloudOrg,
   getImportedHistorySourceBySessionId,
   INACTIVE_ORG_BACKOFF_COOLDOWN_MS,

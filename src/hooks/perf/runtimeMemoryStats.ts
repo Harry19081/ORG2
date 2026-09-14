@@ -4,6 +4,8 @@ interface RuntimeMemoryEntry {
   label?: string;
 }
 
+type RuntimeMemoryEntryReader = () => RuntimeMemoryEntry;
+
 export interface RuntimeMemoryTopEntry {
   label: string;
   bytes: number;
@@ -59,7 +61,10 @@ interface SidebarMemoryEntry extends RuntimeMemoryEntry {
 
 const fileTreeMemoryEntries = new Map<symbol, RuntimeMemoryEntry>();
 const codeMirrorMemoryEntries = new Map<symbol, RuntimeMemoryEntry>();
-const chatRenderedTreeMemoryEntries = new Map<symbol, RuntimeMemoryEntry>();
+const chatRenderedTreeMemoryEntryReaders = new Map<
+  symbol,
+  RuntimeMemoryEntryReader
+>();
 const sidebarMemoryEntries = new Map<symbol, SidebarMemoryEntry>();
 
 const DEFAULT_ESTIMATION_NODE_LIMIT = 5_000;
@@ -332,19 +337,27 @@ export function getCodeMirrorMemoryStats(): RuntimeMemoryStats {
   return summarizeMemoryEntries(codeMirrorMemoryEntries);
 }
 
-export function updateChatRenderedTreeMemoryEntry(
+export function registerChatRenderedTreeMemoryEntry(
   key: symbol,
-  entry: RuntimeMemoryEntry
-): void {
-  chatRenderedTreeMemoryEntries.set(key, normalizeMemoryEntry(entry));
-}
-
-export function removeChatRenderedTreeMemoryEntry(key: symbol): void {
-  chatRenderedTreeMemoryEntries.delete(key);
+  readEntry: RuntimeMemoryEntryReader
+): () => void {
+  chatRenderedTreeMemoryEntryReaders.set(key, readEntry);
+  return () => {
+    if (chatRenderedTreeMemoryEntryReaders.get(key) === readEntry) {
+      chatRenderedTreeMemoryEntryReaders.delete(key);
+    }
+  };
 }
 
 export function getChatRenderedTreeMemoryStats(): RuntimeMemoryStats {
-  return summarizeMemoryEntries(chatRenderedTreeMemoryEntries);
+  const entries = Array.from(
+    chatRenderedTreeMemoryEntryReaders.values(),
+    (readEntry) => normalizeMemoryEntry(readEntry())
+  );
+  return summarizeRuntimeMemoryEntries(
+    entries,
+    chatRenderedTreeMemoryEntryReaders.size
+  );
 }
 
 export function updateSidebarMemoryEntry(
@@ -387,4 +400,79 @@ export function getSidebarMemoryStatsByKind(): SidebarMemoryStatsByKind {
       entriesByKind[SIDEBAR_MEMORY_KIND.SETTINGS].length
     ),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Loaded script source
+// ---------------------------------------------------------------------------
+
+export interface LoadedScriptSourceStats {
+  /** Chunk pushes recorded in the bundler's chunk registry. */
+  chunks: number;
+  /** Module factories across those chunks. */
+  modules: number;
+  /**
+   * Total source-text length of the module factories. Bundled JS is ASCII, so
+   * chars ≈ bytes. JSC retains this text for every evaluated function, and the
+   * dev `eval-*` devtool retains it twice (outer chunk script + inner eval'd
+   * string), so the resident cost is at least this figure.
+   */
+  sourceBytes: number;
+}
+
+const CHUNK_REGISTRY_KEY_PATTERN = /^(rspack|webpack)Chunk/;
+
+let loadedScriptSourceCache: {
+  chunkCount: number;
+  stats: LoadedScriptSourceStats;
+} | null = null;
+
+/**
+ * Sum the source text of every module factory the bundler has pushed into
+ * its chunk registry (`self.rspackChunk<name>` / `self.webpackChunk<name>`).
+ * Recomputed only when the number of pushed chunks changes: `toString()` on
+ * thousands of factories copies tens of MB of strings.
+ */
+export function getLoadedScriptSourceStats(
+  globalObject: Record<string, unknown> = globalThis as unknown as Record<
+    string,
+    unknown
+  >
+): LoadedScriptSourceStats {
+  const registries = Object.keys(globalObject)
+    .filter((key) => CHUNK_REGISTRY_KEY_PATTERN.test(key))
+    .map((key) => globalObject[key])
+    .filter((value): value is unknown[] => Array.isArray(value));
+  const chunkCount = registries.reduce(
+    (sum, registry) => sum + registry.length,
+    0
+  );
+  const isDefaultGlobal = globalObject === (globalThis as unknown);
+  if (
+    isDefaultGlobal &&
+    loadedScriptSourceCache &&
+    loadedScriptSourceCache.chunkCount === chunkCount
+  ) {
+    return loadedScriptSourceCache.stats;
+  }
+
+  let modules = 0;
+  let sourceBytes = 0;
+  for (const registry of registries) {
+    for (const entry of registry) {
+      const factories = Array.isArray(entry) ? entry[1] : null;
+      if (!factories || typeof factories !== "object") continue;
+      for (const factory of Object.values(factories)) {
+        if (typeof factory !== "function") continue;
+        modules += 1;
+        sourceBytes += Function.prototype.toString.call(factory).length;
+      }
+    }
+  }
+
+  const stats = { chunks: chunkCount, modules, sourceBytes };
+  if (isDefaultGlobal) {
+    loadedScriptSourceCache = { chunkCount, stats };
+  }
+  return stats;
 }

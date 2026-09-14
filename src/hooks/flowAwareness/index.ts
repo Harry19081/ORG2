@@ -20,32 +20,10 @@
 export { useFlowAwareness } from "./useFlowAwareness";
 
 export type {
-  // Core types
-  ActivityType,
-  FileEditType,
-  SearchScope,
-  ClipboardOp,
-  GitOpType,
-  NavigationTarget,
-  ErrorType,
-  DebugAction,
-
   // Interface types
   ActivityInput,
-  FlowSummary,
-  UseFlowAwarenessOptions,
-  UseFlowAwarenessReturn,
-
-  // Utility types
-  ActivityTypeGuard,
-  ActivityCreators,
 } from "./types";
 
 export { useGlobalFlowTracker } from "./useGlobalFlowTracker";
 
-export {
-  FLOW_AWARENESS_CONFIG,
-  ACTIVITY_TYPES,
-  SEARCH_SCOPES,
-  ERROR_TYPES,
-} from "./config";
+export { FLOW_AWARENESS_CONFIG } from "./config";

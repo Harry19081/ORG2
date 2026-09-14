@@ -1,4 +1,3 @@
-import { Globe, KeyRound, Keyboard, ScanSearch } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -9,8 +8,14 @@ import {
   detectGitHubCredentials,
 } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
+import {
+  InternetIcon,
+  Key02Icon,
+  KeyboardIcon,
+  SearchAreaIcon,
+} from "@src/icons";
 import type { ChannelProbeResult } from "@src/modules/MainApp/Integrations/Connections/Channels/types";
 import {
   SECTION_CONTROL_STYLE,
@@ -82,9 +87,9 @@ export const ChannelContent: React.FC<ChannelContentProps> = ({
       </SectionContainer>
       {probeResult && !probeResult.ok && !probeErrorDismissed && (
         <div className="mt-3">
-          <InlineAlert type="danger" onClose={onDismissProbeError}>
+          <PageNotice type="danger" onClose={onDismissProbeError}>
             {probeResult.error || t("integrations.probeFailed")}
-          </InlineAlert>
+          </PageNotice>
         </div>
       )}
     </>
@@ -124,12 +129,12 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
       {
         key: STORY_SYNC_AUTH_METHOD.OAUTH,
         label: t("keyVault.guidedSetup"),
-        icon: Globe,
+        icon: InternetIcon,
       },
       {
         key: STORY_SYNC_AUTH_METHOD.PAT,
         label: t("keyVault.enterToken"),
-        icon: Keyboard,
+        icon: KeyboardIcon,
       },
     ],
     [t]
@@ -235,7 +240,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
 
       {projectSubmitError && (
         <div className="mt-3">
-          <InlineAlert type="danger">{projectSubmitError}</InlineAlert>
+          <PageNotice type="danger">{projectSubmitError}</PageNotice>
         </div>
       )}
     </>
@@ -282,22 +287,22 @@ export const GitContent: React.FC<GitContentProps> = ({
       {
         key: STORY_SYNC_AUTH_METHOD.SCAN,
         label: t("gitConnections.methodScan", "Auto Detect"),
-        icon: ScanSearch,
+        icon: SearchAreaIcon,
       },
       {
         key: STORY_SYNC_AUTH_METHOD.OAUTH,
         label: t("gitConnections.methodOAuth", "Sign in with GitHub"),
-        icon: Globe,
+        icon: InternetIcon,
       },
       {
         key: STORY_SYNC_AUTH_METHOD.PAT,
         label: "PAT",
-        icon: Keyboard,
+        icon: KeyboardIcon,
       },
       {
         key: STORY_SYNC_AUTH_METHOD.SSH,
         label: "SSH key",
-        icon: KeyRound,
+        icon: Key02Icon,
       },
     ],
     [t]
@@ -424,7 +429,7 @@ export const GitContent: React.FC<GitContentProps> = ({
 
       {gitSubmitError && (
         <div className="mt-3">
-          <InlineAlert type="danger">{gitSubmitError}</InlineAlert>
+          <PageNotice type="danger">{gitSubmitError}</PageNotice>
         </div>
       )}
     </>
@@ -542,7 +547,7 @@ const GitScanPanel: React.FC<GitScanPanelProps> = ({
   }
 
   if (detectError) {
-    return <InlineAlert type="danger">{detectError}</InlineAlert>;
+    return <PageNotice type="danger">{detectError}</PageNotice>;
   }
 
   if (candidates.length === 0) {
@@ -574,35 +579,28 @@ const GitScanPanel: React.FC<GitScanPanelProps> = ({
         layout="vertical"
         required
       >
-        <div className="flex flex-col gap-1.5">
-          {candidates.map((candidate) => {
-            const isSelected =
-              !!selected &&
-              selected.kind === candidate.kind &&
-              selected.secret === candidate.secret;
-            return (
-              <button
-                key={`${candidate.kind}:${candidate.secret}`}
-                type="button"
-                onClick={() => onSelect(isSelected ? null : candidate)}
-                disabled={isDuplicateName}
-                className={`flex items-center justify-between rounded-md border px-3 py-2 text-left text-[12px] transition-colors ${
-                  isSelected
-                    ? "border-primary-6 bg-primary-1 text-text-1"
-                    : "border-border-2 text-text-2 hover:border-border-3"
-                } disabled:cursor-not-allowed disabled:opacity-50`}
-              >
-                <span className="flex flex-col">
-                  <span className="font-medium">{candidate.label}</span>
-                  {candidate.username && (
-                    <span className="text-text-3">{candidate.username}</span>
-                  )}
-                </span>
-                {isSelected && <span className="text-primary-6">✓</span>}
-              </button>
-            );
-          })}
-        </div>
+        <SelectionGrid
+          vertical
+          showRadio
+          options={candidates.map((candidate, index) => ({
+            key: String(index),
+            label: candidate.label,
+            description: candidate.username,
+            disabled: isDuplicateName,
+          }))}
+          selected={
+            selected
+              ? String(
+                  candidates.findIndex(
+                    (candidate) =>
+                      candidate.kind === selected.kind &&
+                      candidate.secret === selected.secret
+                  )
+                )
+              : null
+          }
+          onSelect={(key) => onSelect(candidates[Number(key)])}
+        />
       </SectionRow>
     </SectionContainer>
   );

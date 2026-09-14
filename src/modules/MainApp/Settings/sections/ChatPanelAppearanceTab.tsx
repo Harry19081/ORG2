@@ -19,7 +19,10 @@ export const ChatPanelAppearanceTab: React.FC = () => {
   return (
     <>
       <SectionContainer>
-        <SectionRow label={t("agentSessions.chatFontSize")}>
+        <SectionRow
+          settingsSearchKeys="chat.fontSize"
+          label={t("agentSessions.chatFontSize")}
+        >
           <NumberInput
             value={chatAppearance.fontSize}
             min={10}
@@ -27,7 +30,7 @@ export const ChatPanelAppearanceTab: React.FC = () => {
             step={1}
             suffix={tCommon("common.px")}
             controlsPosition="sides"
-            onChange={(value) => {
+            onValueChange={(value) => {
               updateChatAppearance({
                 fontSize: value ?? DEFAULT_CHAT_APPEARANCE.fontSize,
               });
@@ -36,7 +39,10 @@ export const ChatPanelAppearanceTab: React.FC = () => {
             style={SECTION_CONTROL_STYLE}
           />
         </SectionRow>
-        <SectionRow label={t("agentSessions.codeFontSize")}>
+        <SectionRow
+          settingsSearchKeys="chat.codeFontSize"
+          label={t("agentSessions.codeFontSize")}
+        >
           <NumberInput
             value={chatAppearance.codeFontSize}
             min={10}
@@ -44,14 +50,17 @@ export const ChatPanelAppearanceTab: React.FC = () => {
             step={1}
             suffix={tCommon("common.px")}
             controlsPosition="sides"
-            onChange={(value) => {
+            onValueChange={(value) => {
               updateChatAppearance({ codeFontSize: value ?? 13 });
             }}
             size="default"
             style={SECTION_CONTROL_STYLE}
           />
         </SectionRow>
-        <SectionRow label={t("agentSessions.lineHeight")}>
+        <SectionRow
+          settingsSearchKeys="chat.lineHeight"
+          label={t("agentSessions.lineHeight")}
+        >
           <NumberInput
             value={chatAppearance.lineHeight}
             min={1.2}
@@ -59,7 +68,7 @@ export const ChatPanelAppearanceTab: React.FC = () => {
             step={0.1}
             suffix={tCommon("common.multiplier")}
             controlsPosition="sides"
-            onChange={(value) => {
+            onValueChange={(value) => {
               updateChatAppearance({ lineHeight: value ?? 1.6 });
             }}
             size="default"
@@ -70,18 +79,20 @@ export const ChatPanelAppearanceTab: React.FC = () => {
 
       <SectionContainer>
         <SectionRow
+          settingsSearchKeys="chat.typingEffectEnabled"
           label={t("agentSessions.typingAnimation")}
           description={t("agentSessions.typingAnimationDesc")}
         >
           <Switch
             checked={chatAppearance.typingEffectEnabled}
-            onChange={(checked) => {
+            onCheckedChange={(checked) => {
               updateChatAppearance({ typingEffectEnabled: checked });
             }}
           />
         </SectionRow>
         {chatAppearance.typingEffectEnabled && (
           <SectionRow
+            settingsSearchKeys="chat.typingSpeed"
             label={t("agentSessions.typingSpeed")}
             description={t("agentSessions.typingSpeedDesc")}
             indent
@@ -92,7 +103,7 @@ export const ChatPanelAppearanceTab: React.FC = () => {
               max={50}
               suffix={tCommon("common.ms")}
               controlsPosition="sides"
-              onChange={(value) => {
+              onValueChange={(value) => {
                 updateChatAppearance({ typingSpeed: value ?? 5 });
               }}
               size="default"
@@ -101,23 +112,25 @@ export const ChatPanelAppearanceTab: React.FC = () => {
           </SectionRow>
         )}
         <SectionRow
+          settingsSearchKeys="chat.decryptEffectEnabled"
           label={t("agentSessions.decryptEffect")}
           description={t("agentSessions.decryptEffectDesc")}
         >
           <Switch
             checked={chatAppearance.decryptEffectEnabled}
-            onChange={(checked) => {
+            onCheckedChange={(checked) => {
               updateChatAppearance({ decryptEffectEnabled: checked });
             }}
           />
         </SectionRow>
         <SectionRow
+          settingsSearchKeys="chat.sendOnEnter"
           label={t("agentSessions.sendOnEnter")}
           description={t("agentSessions.sendOnEnterDesc")}
         >
           <Switch
             checked={chatAppearance.sendOnEnter}
-            onChange={(checked) => {
+            onCheckedChange={(checked) => {
               updateChatAppearance({ sendOnEnter: checked });
             }}
           />

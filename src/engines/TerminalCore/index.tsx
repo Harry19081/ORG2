@@ -2,7 +2,7 @@
  * TerminalCore Component
  *
  * Reusable terminal component that can work with:
- * 1. TerminalContext (for main terminal page)
+ * 1. Canonical terminal atoms via useTerminalState (for main terminal page)
  * 2. Prop-based state (for simulator or standalone use)
  *
  * Features:
@@ -18,29 +18,22 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
+import { Placeholder } from "@src/components/Placeholder";
+import { useTerminalProcessPoller } from "@src/hooks/terminal";
+import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+
 import {
   type TerminalFileLinkTarget,
   TerminalView,
   type TerminalViewHandle,
-} from "@src/components/TerminalInteractive";
-import { useTerminalProcessPoller } from "@src/hooks/terminal";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
-import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanelAtom";
-import {
-  commandCwdChangedAtom,
-  commandExecutedAtom,
-  commandFinishedAtom,
-  commandPromptStartAtom,
-} from "@src/store/workstation/codeEditor/terminal/commandDetection";
-
+} from "./components/TerminalInteractive";
 import { TerminalSearchPanel } from "./components/TerminalSearchPanel";
+import {
+  pushRecentTerminalId,
+  selectMountedTerminalSessions,
+} from "./terminalMountWindow";
 import type { UseTerminalStateReturn } from "./types";
-
-// Lazy-load the read-only terminal to keep xterm (~300KB) from doubling the chunk
-const TerminalReadOnly = React.lazy(
-  () => import("@src/components/TerminalReadOnly")
-);
 
 // ============================================
 // Types
@@ -61,12 +54,27 @@ export interface TerminalCoreProps {
   className?: string;
   /** Background color override */
   backgroundColor?: string;
+  /** Font size in pixels for this host; defaults to the terminal setting. */
+  fontSize?: number;
   /** Repository path for terminal working directory */
   repoPath?: string;
   /** Opens file references detected in terminal output */
   onOpenFileLink?: (target: TerminalFileLinkTarget) => void;
   /** True when this terminal tree is visible after tab switching. */
   visible?: boolean;
+  /** Host-owned renderer for SessionCore read-only terminal sessions. */
+  renderReadOnlySession?: (agentSessionId: string) => React.ReactNode;
+  /**
+   * Sessions another host currently mounts (today: the terminal docked
+   * under the Workstation trail). A PTY is bound to one xterm through
+   * `TerminalView`'s `sessionKey`, so mounting it here as well would give
+   * one PTY two writers and two competing resizes. Suppressed sessions stay in
+   * `terminalState.sessions` — only their mount is skipped — and remount
+   * through the normal PTY attach/restore path once released.
+   */
+  suppressedSessionIds?: ReadonlySet<string>;
+  /** Host-owned placeholder shown when the active session is suppressed. */
+  renderSuppressedSession?: (sessionId: string) => React.ReactNode;
 }
 
 // ============================================
@@ -77,9 +85,13 @@ export const TerminalCore: React.FC<TerminalCoreProps> = ({
   terminalState,
   className = "",
   backgroundColor,
+  fontSize,
   repoPath,
   onOpenFileLink,
   visible = true,
+  renderReadOnlySession,
+  suppressedSessionIds,
+  renderSuppressedSession,
 }) => {
   const { sessions, activeSessionId, initializedSessions, updateSessionInfo } =
     terminalState;
@@ -97,12 +109,6 @@ export const TerminalCore: React.FC<TerminalCoreProps> = ({
     updateSessionInfo,
   });
 
-  // Command detection dispatchers (OSC 633)
-  const dispatchPromptStart = useSetAtom(commandPromptStartAtom);
-  const dispatchCommandExecuted = useSetAtom(commandExecutedAtom);
-  const dispatchCommandFinished = useSetAtom(commandFinishedAtom);
-  const dispatchCwdChanged = useSetAtom(commandCwdChangedAtom);
-
   const { t } = useTranslation("sessions");
 
   const setAddToAgent = useSetAtom(addToAgentAtom);
@@ -111,6 +117,19 @@ export const TerminalCore: React.FC<TerminalCoreProps> = ({
   const terminalRefs = useRef<Map<string, TerminalViewHandle>>(new Map());
 
   const [searchOpen, setSearchOpen] = useState(false);
+
+  // Most-recently-active terminal ids (newest first) — see
+  // ./terminalMountWindow.ts for the mount policy this drives.
+  const [recentTerminalIds, setRecentTerminalIds] = useState<readonly string[]>(
+    []
+  );
+  // Derived-from-previous-render state (React's "storing information from
+  // previous renders" pattern): update synchronously during render instead
+  // of in an effect so the evicted pane never renders once with stale data.
+  if (activeSessionId) {
+    const nextRecent = pushRecentTerminalId(recentTerminalIds, activeSessionId);
+    if (nextRecent !== recentTerminalIds) setRecentTerminalIds(nextRecent);
+  }
 
   const [selection, setSelection] = useState<SelectionState>({
     visible: false,
@@ -310,9 +329,14 @@ export const TerminalCore: React.FC<TerminalCoreProps> = ({
 
   const bgColor = backgroundColor || "var(--cm-editor-background)";
 
-  const visibleSessions = sessions.filter(
-    (session) =>
-      initializedSessions.has(session.id) || session.id === activeSessionId
+  const activeSessionSuppressed =
+    suppressedSessionIds?.has(activeSessionId) === true;
+  const visibleSessions = selectMountedTerminalSessions(
+    sessions,
+    activeSessionId,
+    initializedSessions,
+    recentTerminalIds,
+    suppressedSessionIds
   );
 
   return (
@@ -330,9 +354,13 @@ export const TerminalCore: React.FC<TerminalCoreProps> = ({
         className="terminal-content-area relative flex flex-1 flex-col overflow-hidden"
         style={{ backgroundColor: bgColor }}
       >
-        {visibleSessions.length === 0 && (
+        {activeSessionSuppressed ? (
+          (renderSuppressedSession?.(activeSessionId) ?? (
+            <Placeholder variant="empty" fillParentHeight />
+          ))
+        ) : visibleSessions.length === 0 ? (
           <Placeholder variant="empty" fillParentHeight />
-        )}
+        ) : null}
         {visibleSessions.map((session) => (
           <div
             key={session.id}
@@ -343,9 +371,7 @@ export const TerminalCore: React.FC<TerminalCoreProps> = ({
             }}
           >
             {session.readOnly && session.agentSessionId ? (
-              <React.Suspense fallback={null}>
-                <TerminalReadOnly agentSessionId={session.agentSessionId} />
-              </React.Suspense>
+              (renderReadOnlySession?.(session.agentSessionId) ?? null)
             ) : (
               <TerminalView
                 ref={(handle) => {
@@ -356,11 +382,26 @@ export const TerminalCore: React.FC<TerminalCoreProps> = ({
                   }
                 }}
                 sessionKey={session.id}
+                // Every session in this list stays mounted and is hidden with
+                // `display: none`, so the pane itself has to say whether it is
+                // on screen. Without it every terminal ever opened claims a
+                // foreground output schedule and a GPU context forever.
+                //
+                // `visible` is as load-bearing as the active-session check.
+                // A host can mount a *single-session* TerminalCore whose
+                // `activeSessionId` is that one session (the chat pane does
+                // this, one host per terminal tab), which makes the comparison
+                // below vacuously true. Such a host is hidden with its own
+                // `display: none` and reports that through `visible`, so
+                // without this conjunct every background chat terminal would
+                // hold a GPU context and a foreground drain.
+                isForeground={visible && session.id === activeSessionId}
                 onSelectionChange={handleSelectionChange}
                 repoPath={session.cwd || repoPath}
                 workingDirectory={session.liveCwd || session.cwd}
                 onOpenFileLink={onOpenFileLink}
                 backgroundColor={bgColor}
+                fontSize={fontSize}
                 // Managed CLI terminals use the configured default shell.
                 // `session.shell` becomes runtime metadata after the PTY connects,
                 // so reusing it as a launch override would recreate xterm.
@@ -392,26 +433,9 @@ export const TerminalCore: React.FC<TerminalCoreProps> = ({
                   requestProcessRefresh();
                 }}
                 shellIntegration={{
-                  onPromptStart: () => dispatchPromptStart(session.id),
-                  onCommandExecuted: (commandLine) => {
-                    requestProcessRefresh();
-                    dispatchCommandExecuted({
-                      sessionId: session.id,
-                      commandLine,
-                    });
-                  },
-                  onCommandFinished: (exitCode) => {
-                    requestProcessRefresh();
-                    dispatchCommandFinished({
-                      sessionId: session.id,
-                      exitCode,
-                    });
-                  },
+                  onCommandExecuted: () => requestProcessRefresh(),
+                  onCommandFinished: () => requestProcessRefresh(),
                   onCwdChanged: (cwd) => {
-                    dispatchCwdChanged({
-                      sessionId: session.id,
-                      cwd,
-                    });
                     updateSessionInfo(session.id, { liveCwd: cwd });
                   },
                 }}

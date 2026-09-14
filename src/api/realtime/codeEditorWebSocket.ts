@@ -5,7 +5,6 @@
  * code-editor events:
  * - File watcher updates (repo:status_updated, file:changed)
  * - Git operation updates (repo:git_operation)
- * - LSP diagnostics (lsp:diagnostics)
  * - Git status changes
  *
  * This replaces the unreliable Tauri event system for push notifications.
@@ -151,7 +150,7 @@ export class CodeEditorWebSocketClient {
         try {
           handler(data as CodeEditorWebSocketMessage);
         } catch (err) {
-          log.error(`[CodeEditorWS] Handler error for ${eventType}:`, err);
+          log.error(`Handler error for ${eventType}:`, err);
         }
       }
     }
@@ -190,7 +189,10 @@ export function getCodeEditorWebSocket(): CodeEditorWebSocketClient | null {
 // Initialize on module load in the app. Unit tests import broad UI graphs in
 // jsdom; opening a real socket there leaks asynchronous undici events across
 // test files and can fail after the owning test has already completed.
-if (typeof window !== "undefined" && process.env.NODE_ENV !== "test") {
+if (
+  typeof window !== "undefined" &&
+  (process.env.NODE_ENV !== "test" || process.env.ORGII_E2E === "1")
+) {
   // Auto-connect when app loads
   wsClientInstance = new CodeEditorWebSocketClient();
   wsClientInstance.connect().catch((err) => {

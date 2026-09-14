@@ -1,7 +1,30 @@
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import type { Session, SessionListCategory } from "@src/store/session";
 
-import type { GroupByMode } from "../types";
+import type { GroupByMode, SessionGroupVisibleCount } from "../types";
+
+/**
+ * Per-workspace header affordances for the Organize-by-workspace view: the
+ * hover `+` (start a session in that workspace) and `…` (hide/unhide) actions,
+ * plus the hidden set the builder needs to sort hidden groups last.
+ *
+ * Owned by `useWorkspaceGroupActions`; passed through as one object so the
+ * connector chain does not grow a parameter per affordance.
+ */
+export interface WorkspaceGroupActions {
+  /** Workspace keys the viewer pinned — sorted above every other group. */
+  pinnedWorkspaceKeys: ReadonlySet<string>;
+  /** Workspace keys the viewer hid — sorted last and collapsed by default. */
+  hiddenWorkspaceKeys: ReadonlySet<string>;
+  /** Start a new session sourced at `workspaceKey` (a repo path). */
+  onCreateSession: (workspaceKey: string) => void;
+  /** Open the header's `…` menu (pin / hide) for `workspaceKey`. */
+  onOpenMenu: (workspaceKey: string) => void;
+  /** `+` tooltip/aria label. */
+  createSessionLabel: string;
+  /** `…` tooltip/aria label. */
+  moreActionsLabel: string;
+}
 
 export interface UseSessionMenuItemsParams {
   sortedSessions: Session[];
@@ -9,7 +32,6 @@ export interface UseSessionMenuItemsParams {
   repoPathToName: Map<string, string>;
   groupByMode: GroupByMode;
   untitledSession: string;
-  searchQuery?: string;
   /**
    * Org ids accepted by the sidebar org selector (see orgFilter.ts). A set,
    * not a single id: a collab org selection also accepts its local
@@ -31,6 +53,8 @@ export interface UseSessionMenuItemsParams {
   excludedSessionIds?: ReadonlySet<string>;
   includeExternal: boolean;
   groupVisibleCounts: ReadonlyMap<string, number>;
+  /** Initial rows shown in every local session group. */
+  defaultGroupVisibleCount: SessionGroupVisibleCount;
   /**
    * Render every session already present in each subgroup and let the caller
    * own the only visible client-side pager. Cloud scope uses this before it
@@ -40,6 +64,11 @@ export interface UseSessionMenuItemsParams {
   expandedSubagentParentIds?: ReadonlySet<string>;
   /** IDs temporarily forced through view filters for cross-surface reveal. */
   revealedSessionIds?: ReadonlySet<string>;
+  /**
+   * Workspace header actions. Only consumed by the `byWorkspace` grouping;
+   * omitted (tests, cloud scope) the headers render without hover actions.
+   */
+  workspaceGroupActions?: WorkspaceGroupActions;
 }
 
 export interface UseSessionMenuItemsResult {

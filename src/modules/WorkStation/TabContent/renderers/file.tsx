@@ -13,12 +13,13 @@
  */
 import React, { Suspense, memo } from "react";
 
+import { Placeholder } from "@src/components/Placeholder";
 import { getGitFileForPath } from "@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/sourceControlMainProps";
 import { useEditorHostContext } from "@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/context/editorHostContext";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { requiresFilePreviewRoute as shouldUseDedicatedPreviewRoute } from "@src/util/file/previewTypes";
 
 import type { UnifiedTabContentProps } from "../types";
+import { useFileGitBaseline } from "./useFileGitBaseline";
 
 const CodeViewerContent = React.lazy(
   () =>
@@ -34,13 +35,13 @@ function isCsvTableFile(filePath: string): boolean {
   return lowerPath.endsWith(".csv") || lowerPath.endsWith(".tsv");
 }
 
-const FileTabRenderer: React.FC<UnifiedTabContentProps> = memo(({ tab }) => {
+const FileTabRenderer: React.FC<UnifiedTabContentProps> = memo((props) => {
+  const { tab, isActive } = props;
   const {
     fileContentState,
     gitFilesByPath,
     repoPath,
     onFileSelect,
-    onDiagnosticsChange,
     onCursorPositionChange,
     forceRefresh,
     onBinaryUnsavedChange,
@@ -51,6 +52,12 @@ const FileTabRenderer: React.FC<UnifiedTabContentProps> = memo(({ tab }) => {
   const gitFileInfo = filePath
     ? getGitFileForPath(filePath, repoPath, gitFilesByPath)
     : undefined;
+  const loadedBaseline = useFileGitBaseline(
+    gitFileInfo,
+    repoPath,
+    isActive,
+    fileContentState.originalContent
+  );
 
   // Check if file was deleted (exists in git but removed from disk)
   // Also treat as deleted if we have git info with oldContent and file read failed
@@ -69,18 +76,17 @@ const FileTabRenderer: React.FC<UnifiedTabContentProps> = memo(({ tab }) => {
       ? "" // Untracked file - compare against empty to show all green
       : gitFileInfo.status === "deleted"
         ? "" // Deleted file - compare against empty (we'll mark all as deleted)
-        : gitFileInfo.oldContent
+        : loadedBaseline
     : undefined;
 
   // For deleted files, show the old content instead of trying to read from disk
   const displayContent = isDeletedFile
-    ? (gitFileInfo?.oldContent ?? "")
+    ? (loadedBaseline ?? "")
     : fileContentState.content;
 
   // Saved-on-disk content for unsaved changes diff (when file not in git status)
-  const savedContent = isDeletedFile
-    ? undefined
-    : fileContentState.originalContent;
+  const savedContent =
+    isDeletedFile || gitFileInfo ? undefined : fileContentState.originalContent;
 
   return (
     <Suspense fallback={<LazyFallback />}>
@@ -112,7 +118,6 @@ const FileTabRenderer: React.FC<UnifiedTabContentProps> = memo(({ tab }) => {
         }
         defaultPreviewMode={tab.data.defaultPreviewMode as boolean}
         contentReady={isDeletedFile ? true : fileContentState.contentReady}
-        onDiagnosticsChange={onDiagnosticsChange}
         onCursorPositionChange={onCursorPositionChange}
         onSaveSuccess={forceRefresh}
         onBinaryUnsavedChange={onBinaryUnsavedChange}

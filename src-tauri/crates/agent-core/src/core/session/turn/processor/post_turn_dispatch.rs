@@ -1,13 +1,13 @@
-//! Post-turn dispatch: broadcasts, hooks, locks, fire-and-forget jobs.
+//! Post-turn dispatch: broadcasts, hooks, locks, and bounded background submissions.
 //!
 //! Runs after `turn_executor::execute_turn` returns. Order matters:
 //!
 //! 1. **`agent:complete` broadcast** — first, so the user sees "done"
 //!    before any background work fires.
 //! 2. **Computer Use lock release** — best-effort, no-op if not held.
-//! 3. **Session memory extraction** — fire-and-forget, 60s timeout.
-//! 4. **Extract memories** — forked extractor agent, fire-and-forget.
-//! 5. **Auto-dream** — periodic memory consolidation, fire-and-forget.
+//! 3. **Session memory extraction** — coordinator-owned, 60s timeout.
+//! 4. **Extract memories** — coordinator-owned forked extractor.
+//! 5. **Auto-dream** — coordinator-owned periodic consolidation.
 //!
 //! (`HookEvent::Stop` no longer fires here — it runs *inside* the turn
 //! loop as a blocking gate; see `on_turn_stop_check`.)
@@ -24,6 +24,33 @@ use crate::turn_executor::TurnResult;
 use super::super::post_turn as post_turn_jobs;
 use super::super::streaming::{broadcast_agent_complete, AgentCompleteParams};
 
+/// Last-request context includes cache reads/writes after provider normalization.
+/// Per-turn prompt totals are billing counters: they omit cached input and can
+/// also count the same context repeatedly across tool iterations.
+pub(super) fn session_memory_context_tokens(
+    result: &TurnResult,
+    messages: &[serde_json::Value],
+) -> usize {
+    if result.context_tokens > 0 {
+        result.context_tokens as usize
+    } else {
+        crate::model_context::tokenizer::count_messages_tokens(messages)
+    }
+}
+
+fn should_spawn_goal_loop(
+    final_turn_state: DialogTurnState,
+    is_stream_error: bool,
+    is_agent_org_session: bool,
+) -> bool {
+    final_turn_state != DialogTurnState::Cancelled
+        && !is_stream_error
+        // Agent Org has its own durable multi-member progress loop. Starting
+        // the ordinary SDE presence goal-loop would create an unowned side
+        // provider that Team Archive cannot represent as a formal Turn.
+        && !is_agent_org_session
+}
+
 /// Inputs for [`UnifiedMessageProcessor::dispatch_post_turn_work`].
 ///
 /// Bundled into a struct so the call site stays a single line. The
@@ -34,26 +61,30 @@ pub(super) struct PostTurnInputs<'a> {
     pub session_id: &'a str,
     pub turn_id: &'a str,
     pub response_text: &'a str,
-    pub messages: &'a [serde_json::Value],
     pub result: &'a TurnResult,
     pub tool_calls_count: u32,
     pub final_turn_state: DialogTurnState,
     pub turn_started_at_ms: i64,
+    pub sm_current_tokens: usize,
+    pub sm_last_turn_has_tool_calls: bool,
+    pub suppress_background_finalizers: bool,
 }
 
 impl UnifiedMessageProcessor {
     /// Runs every post-turn step (broadcast, Stop hook, CU lock release,
-    /// four fire-and-forget spawns) in order.
+    /// bounded memory submissions) in order.
     pub(super) async fn dispatch_post_turn_work(&self, inputs: PostTurnInputs<'_>) {
         let PostTurnInputs {
             session_id,
             turn_id,
             response_text,
-            messages,
             result,
             tool_calls_count,
             final_turn_state,
             turn_started_at_ms,
+            sm_current_tokens,
+            sm_last_turn_has_tool_calls,
+            suppress_background_finalizers,
         } = inputs;
 
         // 9. Broadcast completion FIRST — user sees "done" immediately.
@@ -91,6 +122,14 @@ impl UnifiedMessageProcessor {
             }
         }
 
+        if suppress_background_finalizers {
+            // Direct work and the formal Turn it safely interrupted own only
+            // their visible response/exact tool side effects. They must not
+            // spawn memory providers, Work Item receipts, goal continuations,
+            // or another background finalizer after the FIFO slot is terminal.
+            return;
+        }
+
         let fork_provider = post_turn_jobs::ForkProviderSpec {
             model: self.runtime.model.clone(),
             account_id: self.runtime.account_id.clone(),
@@ -99,59 +138,86 @@ impl UnifiedMessageProcessor {
             workspace: self.runtime.workspace_state.read().clone(),
         };
 
-        // 9b. Session memory extraction (fire-and-forget, 60s timeout).
+        // 9b. Coordinator-owned session-memory extraction. SM is part of the
+        // context-window pipeline, not long-term memory, so it is gated by
+        // `sm_config.enabled` alone — never by the learnings policy. The gate
+        // and counter bookkeeping run here at dispatch: a job cancelled while
+        // queued can no longer lose them, and only due extractions are ever
+        // submitted.
         if should_run_post_turn_work(self.sm_config.enabled, final_turn_state) {
-            post_turn_jobs::spawn_session_memory_extraction(
-                post_turn_jobs::SessionMemoryExtractionInput {
-                    session_id,
-                    messages,
-                    prompt_tokens: result.prompt_tokens,
-                    tool_calls_count,
-                    sm_state: self.sm_state.clone(),
-                    sm_config: self.sm_config.clone(),
-                    fork_provider: fork_provider.clone(),
-                },
+            let baseline_ready = post_turn_jobs::prepare_session_memory_baseline(
+                session_id,
+                self.sm_state.clone(),
+                sm_current_tokens,
             )
             .await;
+            let should_extract_now = {
+                let mut sm_state = self.sm_state.lock().await;
+                sm_state.record_tool_calls(tool_calls_count as usize);
+                baseline_ready
+                    && crate::model_context::session_memory::should_extract(
+                        &sm_state,
+                        &self.sm_config,
+                        sm_current_tokens,
+                        sm_last_turn_has_tool_calls,
+                    )
+            };
+            if should_extract_now {
+                post_turn_jobs::spawn_session_memory_extraction(
+                    post_turn_jobs::SessionMemoryExtractionInput {
+                        session_id,
+                        agent_id: self.runtime.agent_definition_id.clone(),
+                        current_tokens: sm_current_tokens,
+                        sm_state: self.sm_state.clone(),
+                        sm_config: self.sm_config.clone(),
+                        fork_provider: fork_provider.clone(),
+                    },
+                );
+            }
         }
 
         // 9c. Extract memories — forked extractor agent (fire-and-forget).
         // Subagents bypass this branch structurally (they don't go through
         // UnifiedMessageProcessor), so no explicit agent_id check is needed.
+        // The turn counter advances here at dispatch so cancelled or
+        // coalesced jobs cannot lose it; the job body no longer records.
         if should_run_post_turn_work(
-            self.runtime.resolved.learnings.extract_memories_enabled,
+            self.runtime.resolved.learnings.enabled
+                && self.runtime.resolved.learnings.extract_memories_enabled,
             final_turn_state,
         ) && !result.is_stream_error
         {
             if let Some(ws_path) = self.workspace_root() {
+                {
+                    let mut em_state = self.session.em_state.lock().await;
+                    crate::memory::workspace_memory::extract::record_turn(&mut em_state);
+                }
                 post_turn_jobs::spawn_extract_memories(post_turn_jobs::ExtractMemoriesInput {
                     session_id,
+                    agent_id: self.runtime.agent_definition_id.clone(),
                     ws_path,
-                    messages,
-                    final_text: result.content.as_deref(),
                     em_state: self.session.em_state.clone(),
                     fork_provider: fork_provider.clone(),
                     tool_registry: self.runtime.tool_registry.clone(),
-                })
-                .await;
+                });
             }
         }
 
         // 9d. Auto-dream — periodic memory consolidation (fire-and-forget).
         if should_run_post_turn_work(
-            self.runtime.resolved.learnings.auto_dream_enabled,
+            self.runtime.resolved.learnings.enabled
+                && self.runtime.resolved.learnings.auto_dream_enabled,
             final_turn_state,
         ) {
             if let Some(ws_path) = self.workspace_root() {
                 post_turn_jobs::spawn_auto_dream(post_turn_jobs::AutoDreamInput {
                     session_id,
+                    agent_id: self.runtime.agent_definition_id.clone(),
                     ws_path,
-                    messages: messages.to_vec(),
                     ad_state: self.session.ad_state.clone(),
                     fork_provider: fork_provider.clone(),
                     tool_registry: self.runtime.tool_registry.clone(),
-                })
-                .await;
+                });
             }
         }
 
@@ -168,7 +234,11 @@ impl UnifiedMessageProcessor {
         // the presence policy enables it (Invisible / custom autonomous
         // modes). Fire-and-forget; skipped for cancelled turns (the user
         // explicitly stopped — auto-continuing would fight the Stop).
-        if final_turn_state != DialogTurnState::Cancelled && !result.is_stream_error {
+        if should_spawn_goal_loop(
+            final_turn_state,
+            result.is_stream_error,
+            self.runtime.agent_org_context.is_some(),
+        ) {
             crate::session::goal_loop::spawn_turn_end_evaluation(
                 crate::session::goal_loop::GoalLoopTurnEnd {
                     session_id: session_id.to_string(),
@@ -182,5 +252,104 @@ impl UnifiedMessageProcessor {
                 },
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::should_spawn_goal_loop;
+    use crate::core::session::types::DialogTurnState;
+
+    fn usage_result(prompt: i64, context: i64) -> crate::turn_executor::TurnResult {
+        crate::turn_executor::TurnResult {
+            content: None,
+            messages: vec![],
+            is_stream_error: false,
+            hit_max_iterations: false,
+            prompt_tokens: prompt,
+            completion_tokens: 24,
+            total_tokens: prompt + 24,
+            context_tokens: context,
+            context_usage_snapshot: None,
+            cache_read_tokens: 30_961,
+            cache_write_tokens: 12_424,
+            usage_telemetry: Default::default(),
+        }
+    }
+
+    #[test]
+    fn session_memory_cached_context_crosses_initialization_gate() {
+        use crate::model_context::session_memory::{
+            should_extract, SessionMemoryConfig, SessionMemoryState,
+        };
+        // Real Anthropic usage: 1,668 uncached + 30,961 read + 12,424 write.
+        let result = usage_result(1_668, 45_053);
+        let tokens = super::session_memory_context_tokens(&result, &[]);
+        assert_eq!(tokens, 45_053);
+        assert!(should_extract(
+            &SessionMemoryState::default(),
+            &SessionMemoryConfig::default(),
+            tokens,
+            false
+        ));
+        // A fully cached response must not switch to the local fallback.
+        assert_eq!(
+            super::session_memory_context_tokens(&usage_result(0, 45_053), &[]),
+            45_053
+        );
+    }
+
+    #[test]
+    fn session_memory_does_not_sum_repeated_iteration_inputs() {
+        use crate::model_context::session_memory::{
+            should_extract, SessionMemoryConfig, SessionMemoryState,
+        };
+        let tokens = super::session_memory_context_tokens(&usage_result(60_000, 8_000), &[]);
+        assert_eq!(tokens, 8_000);
+        assert!(!should_extract(
+            &SessionMemoryState::default(),
+            &SessionMemoryConfig::default(),
+            tokens,
+            false
+        ));
+    }
+
+    #[test]
+    fn session_memory_missing_provider_context_uses_transcript() {
+        let messages = vec![
+            serde_json::json!({"role":"user", "content":"retain this local fallback context"}),
+        ];
+        let expected = crate::model_context::tokenizer::count_messages_tokens(&messages);
+        assert!(expected > 0);
+        for unavailable in [0, -1] {
+            assert_eq!(
+                super::session_memory_context_tokens(&usage_result(60_000, unavailable), &messages),
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn agent_org_turns_never_start_the_standalone_goal_loop() {
+        assert!(!should_spawn_goal_loop(
+            DialogTurnState::Completed,
+            false,
+            true
+        ));
+        assert!(should_spawn_goal_loop(
+            DialogTurnState::Completed,
+            false,
+            false
+        ));
+        assert!(!should_spawn_goal_loop(
+            DialogTurnState::Cancelled,
+            false,
+            false
+        ));
+        assert!(!should_spawn_goal_loop(
+            DialogTurnState::Completed,
+            true,
+            false
+        ));
     }
 }

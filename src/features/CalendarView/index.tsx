@@ -35,7 +35,7 @@ import {
 // Types
 // ============================================
 
-export interface CalendarViewProps {
+interface CalendarViewProps {
   /** Array of events to display */
   events: CalendarEvent[];
   /** Default view mode */
@@ -186,10 +186,5 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 export default CalendarView;
 
 // Re-export types for convenience
-export type {
-  CalendarConfig,
-  CalendarEvent,
-  CalendarViewMode,
-  PositionedEvent,
-} from "./types";
+export type { CalendarEvent } from "./types";
 export { DEFAULT_CALENDAR_CONFIG } from "./types";

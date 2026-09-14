@@ -1,12 +1,10 @@
 import type { CloudChannelVisibility } from "@src/features/Org2Cloud/channels/types";
 import type {
-  ChatPanelSelectedCloudOrg,
   ChatPanelSelectedOrganization,
   ChatPanelSelectedProject,
-  ChatPanelSelectedProjectOrg,
   ChatPanelSelectedWorkItem,
   ChatPanelSelectedWorkspace,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionTypes";
 import {
   WORK_MANAGEMENT_SECTION,
   type WorkManagementSection,
@@ -21,7 +19,6 @@ export type ChatPanelTabType =
   | "terminal"
   | "start-page"
   | "runtime"
-  | "team-inbox"
   | "work-management"
   | "workspace"
   | "organization"
@@ -30,15 +27,15 @@ export type ChatPanelTabType =
   | "github-pr"
   | "project"
   | "explore"
-  | "channel";
+  | "channel"
+  | "run-group";
 
 /**
  * Payload for a "channel" tab, discriminated by scope. Local channels live in
  * `localChannelsAtom` (this machine, single user); cloud channels are org
  * rows from the `0014_org_channels.sql` control plane. Unlike the other tab
- * payloads this type lives here rather than in `chatPanelAtom.ts` — a channel
- * tab needs no `chatPanelSelected*Atom` replay, so it never joins the
- * navigate-command surface.
+ * payloads this type lives here rather than in `selectionTypes.ts` — a channel
+ * tab has no selection projection, so it never joins the surface state.
  */
 export type ChatPanelSelectedChannel =
   | { scope: "local"; channelId: string; name: string }
@@ -71,11 +68,6 @@ export interface ChatPanelTab {
    */
   terminalSessionId?: string;
   /**
-   * When true the terminal / session output is forced through xterm.js
-   * instead of ansi-to-react.
-   */
-  tuiMode?: boolean;
-  /**
    * For "terminal" tabs opened via the CLI launch bar: the bare binary command
    * to write to the PTY once the shell prompt is ready (e.g. "claude\n").
    * Written once after the PTY reports initialized; cleared afterwards.
@@ -83,8 +75,7 @@ export interface ChatPanelTab {
   cliCommand?: string;
   /**
    * For "workspace" tabs: the workspace whose overview / detail page this pill
-   * owns. Activating the tab replays this into `chatPanelSelectedWorkspaceAtom`
-   * (via `chatPanelNavigateAtom`) so the overview surface re-renders.
+   * owns. The overview surface renders straight from this payload.
    */
   workspace?: ChatPanelSelectedWorkspace;
   /**
@@ -111,6 +102,12 @@ export interface ChatPanelTab {
    * pill owns. The surface renders straight from this payload.
    */
   channel?: ChatPanelSelectedChannel;
+  /**
+   * For "run-group" tabs: the multi-runner fan-out this pill owns. Only the id
+   * is stored — the group itself lives in `runGroupsAtom`, and each run's live
+   * state is read from the session store, so the tab payload cannot go stale.
+   */
+  runGroupId?: string;
 }
 
 export interface ChatPanelTabsState {
@@ -121,87 +118,178 @@ export interface ChatPanelTabsState {
 /** Fixed id of the shared cloud/local organization management tab. */
 export const ORGANIZATION_TAB_ID = "chat-organization-management";
 
-type ChatPanelTabStationAccess = "always" | "wide-only";
+type ChatPanelTabStationAccess = "always" | "never";
+export type ChatPanelWorkstationTransferKind =
+  | "session"
+  | "github-issue"
+  | "github-pr";
+
+/** Layout and transfer policy every chat-pane tab type must declare. */
+export interface ChatPanelTabTypePolicy {
+  /**
+   * When the tab can share the workbench with a Station surface.
+   * Conversation-oriented tabs can always remain docked beside the Station;
+   * standalone management and detail surfaces always own the full workbench.
+   */
+  stationAccess: ChatPanelTabStationAccess;
+  /** Lossless Chat Panel -> My Station mapping, or null when the tab cannot move. */
+  workstationTransfer: ChatPanelWorkstationTransferKind | null;
+  /**
+   * Standalone tool surfaces (Work lists / Kanban, Runtime) keep the pane
+   * header visible without any session controls or Launchpad search.
+   */
+  standaloneTool: boolean;
+  /**
+   * Whether the collapsed header shows the type icon beside the title.
+   * Surfaces that publish their own entity header omit it rather than
+   * adding a second identity icon.
+   */
+  collapsedHeadingIcon: boolean;
+  /**
+   * Whether the floating side-chat launcher earns its corner. The Launchpad
+   * already is a composer and a session tab already shows its transcript
+   * and composer, so both hide it; every other surface carries no chat of
+   * its own.
+   */
+  sideChatLauncher: boolean;
+}
 
 /**
- * Minimum viewport width at which standalone Chat Panel surfaces may share
- * the workbench with a Station pane.
+ * Intentionally exhaustive: a new tab type must make every layout decision
+ * explicitly instead of silently inheriting an unsafe default.
  */
-export const CHAT_PANEL_STATION_WIDE_VIEWPORT_MIN_PX = 1920;
-
-/**
- * When a Chat Panel tab can share the workbench with a Station surface.
- *
- * This record is intentionally exhaustive: a new tab type must make an
- * explicit layout decision instead of silently inheriting an unsafe default.
- * Conversation-oriented tabs can always remain docked beside the Station;
- * standalone management and detail surfaces unlock the split layout only on
- * a wide desktop viewport.
- */
-const CHAT_PANEL_TAB_STATION_ACCESS: Record<
+export const CHAT_PANEL_TAB_TYPE_POLICY: Record<
   ChatPanelTabType,
-  ChatPanelTabStationAccess
+  ChatPanelTabTypePolicy
 > = {
-  session: "always",
-  terminal: "always",
-  "start-page": "always",
-  channel: "always",
-  runtime: "wide-only",
-  "team-inbox": "wide-only",
-  "work-management": "wide-only",
-  workspace: "wide-only",
-  organization: "wide-only",
-  "work-item": "wide-only",
-  "github-issue": "wide-only",
-  "github-pr": "wide-only",
-  project: "wide-only",
-  explore: "wide-only",
+  session: {
+    stationAccess: "always",
+    workstationTransfer: "session",
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: false,
+  },
+  terminal: {
+    stationAccess: "always",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  "start-page": {
+    stationAccess: "always",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: true,
+    sideChatLauncher: false,
+  },
+  channel: {
+    stationAccess: "always",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  "run-group": {
+    stationAccess: "always",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  runtime: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: true,
+    collapsedHeadingIcon: true,
+    sideChatLauncher: true,
+  },
+  "work-management": {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: true,
+    collapsedHeadingIcon: true,
+    sideChatLauncher: true,
+  },
+  workspace: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  organization: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: true,
+    sideChatLauncher: true,
+  },
+  "work-item": {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  "github-issue": {
+    stationAccess: "never",
+    workstationTransfer: "github-issue",
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  "github-pr": {
+    stationAccess: "never",
+    workstationTransfer: "github-pr",
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  project: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
+  explore: {
+    stationAccess: "never",
+    workstationTransfer: null,
+    standaloneTool: false,
+    collapsedHeadingIcon: false,
+    sideChatLauncher: true,
+  },
 };
 
-/**
- * Tab types safe to restore from persisted state. Terminals are process-bound,
- * and unknown/retired surface types are discarded after legacy migrations.
- */
-const PERSISTED_CHAT_PANEL_TAB_TYPES = new Set<ChatPanelTabType>([
-  "session",
-  "start-page",
-  "runtime",
-  "team-inbox",
-  "work-management",
-  "workspace",
-  "organization",
-  "work-item",
-  "github-issue",
-  "github-pr",
-  "project",
-  "explore",
-  "channel",
-]);
+function resolveChatPanelTabType(
+  tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined
+): ChatPanelTabType | null {
+  return typeof tabOrType === "string" ? tabOrType : (tabOrType?.type ?? null);
+}
 
 export function isChatPanelTabStationAvailable(
-  tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined,
-  viewportWidth: number | undefined
+  tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined
 ): boolean {
-  const type =
-    typeof tabOrType === "string" ? tabOrType : (tabOrType?.type ?? null);
+  const type = resolveChatPanelTabType(tabOrType);
   if (type === null) return true;
-  const access = CHAT_PANEL_TAB_STATION_ACCESS[type];
-  return (
-    access === "always" ||
-    (viewportWidth !== undefined &&
-      viewportWidth >= CHAT_PANEL_STATION_WIDE_VIEWPORT_MIN_PX)
-  );
+  return CHAT_PANEL_TAB_TYPE_POLICY[type].stationAccess === "always";
+}
+
+/** Whether the active tab is a standalone tool surface (Work lists, Runtime). */
+export function isStandaloneChatPanelToolTab(
+  tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined
+): boolean {
+  const type = resolveChatPanelTabType(tabOrType);
+  return type !== null && CHAT_PANEL_TAB_TYPE_POLICY[type].standaloneTool;
 }
 
 /** Resolve the layout without mutating the user's persisted maximize choice. */
 export function resolveChatPanelMaximizedForLayout(
   userMaximized: boolean,
-  tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined,
-  viewportWidth: number | undefined
+  tabOrType: ChatPanelTab | ChatPanelTabType | null | undefined
 ): boolean {
-  return (
-    userMaximized || !isChatPanelTabStationAvailable(tabOrType, viewportWidth)
-  );
+  return userMaximized || !isChatPanelTabStationAvailable(tabOrType);
 }
 
 export function getWorkManagementFallbackTitle(
@@ -210,6 +298,8 @@ export function getWorkManagementFallbackTitle(
   switch (section) {
     case WORK_MANAGEMENT_SECTION.PROJECTS:
       return "Projects";
+    case WORK_MANAGEMENT_SECTION.INBOX:
+      return "Inbox";
     case WORK_MANAGEMENT_SECTION.GITHUB_ISSUES:
       return "GitHub Issues";
     case WORK_MANAGEMENT_SECTION.GITHUB_PRS:
@@ -225,129 +315,4 @@ export function isWorkManagementListSection(
   section: WorkManagementSection
 ): boolean {
   return section !== WORK_MANAGEMENT_SECTION.KANBAN;
-}
-
-export function normalizePersistedChatPanelTabsState(
-  value: unknown
-): ChatPanelTabsState | null {
-  if (!value || typeof value !== "object") return null;
-  const candidate = value as Partial<ChatPanelTabsState>;
-  if (!Array.isArray(candidate.tabs)) return null;
-
-  const mappedTabs = candidate.tabs
-    .map((tab) => {
-      const persistedType = (tab as { type: string }).type;
-      const legacyTab = tab as ChatPanelTab & {
-        cloudOrg?: ChatPanelSelectedCloudOrg;
-        projectOrg?: ChatPanelSelectedProjectOrg;
-      };
-      if (persistedType === "cloud-org" && legacyTab.cloudOrg) {
-        return {
-          ...tab,
-          type: "organization",
-          organization: { kind: "cloud", cloudOrg: legacyTab.cloudOrg },
-          cloudOrg: undefined,
-        } as ChatPanelTab;
-      }
-      if (persistedType === "project-org" && legacyTab.projectOrg) {
-        return {
-          ...tab,
-          type: "organization",
-          organization: { kind: "local", projectOrg: legacyTab.projectOrg },
-          projectOrg: undefined,
-        } as ChatPanelTab;
-      }
-      if (persistedType === "session" && !tab.sessionId) {
-        return {
-          ...tab,
-          type: "start-page",
-          title: "Launchpad",
-        } as ChatPanelTab;
-      }
-      if (persistedType === "launchpad" || persistedType === "dashboard") {
-        return {
-          ...tab,
-          type: "start-page",
-          title: "Launchpad",
-        } as ChatPanelTab;
-      }
-      if (persistedType === "work-management") {
-        const managementSection =
-          tab.managementSection ?? WORK_MANAGEMENT_SECTION.KANBAN;
-        return {
-          ...tab,
-          title: getWorkManagementFallbackTitle(managementSection),
-          managementSection,
-        } as ChatPanelTab;
-      }
-      return tab;
-    })
-    .filter((tab) => PERSISTED_CHAT_PANEL_TAB_TYPES.has(tab.type));
-
-  const activeMappedTab = mappedTabs.find(
-    (tab) => tab.id === candidate.activeTabId
-  );
-  const preferredWorkManagementTabIds = new Map<"kanban" | "work", string>();
-  for (const tab of mappedTabs) {
-    if (tab.type !== "work-management" || !tab.managementSection) continue;
-    const tabGroup = isWorkManagementListSection(tab.managementSection)
-      ? "work"
-      : "kanban";
-    const preferredTabId = preferredWorkManagementTabIds.get(tabGroup);
-    if (
-      preferredTabId === undefined ||
-      (activeMappedTab?.type === "work-management" &&
-        activeMappedTab.id === tab.id)
-    ) {
-      preferredWorkManagementTabIds.set(tabGroup, tab.id);
-    }
-  }
-  const preferredRuntimeTabId =
-    activeMappedTab?.type === "runtime"
-      ? activeMappedTab.id
-      : mappedTabs.find((tab) => tab.type === "runtime")?.id;
-  const preferredTeamInboxTabId =
-    activeMappedTab?.type === "team-inbox"
-      ? activeMappedTab.id
-      : mappedTabs.find((tab) => tab.type === "team-inbox")?.id;
-  const preferredOrganizationTab =
-    activeMappedTab?.type === "organization"
-      ? activeMappedTab
-      : mappedTabs.find((tab) => tab.type === "organization");
-  // The Launchpad start page is a singleton: collapse any persisted duplicates
-  // to a single tab (preferring the active one) so new-session / launchpad
-  // entry points can never stack more than one.
-  const preferredStartPageTabId =
-    activeMappedTab?.type === "start-page"
-      ? activeMappedTab.id
-      : mappedTabs.find((tab) => tab.type === "start-page")?.id;
-  const survivingTabs = mappedTabs
-    .filter(
-      (tab) =>
-        (tab.type !== "work-management" ||
-          (tab.managementSection !== undefined &&
-            tab.id ===
-              preferredWorkManagementTabIds.get(
-                isWorkManagementListSection(tab.managementSection)
-                  ? "work"
-                  : "kanban"
-              ))) &&
-        (tab.type !== "runtime" || tab.id === preferredRuntimeTabId) &&
-        (tab.type !== "team-inbox" || tab.id === preferredTeamInboxTabId) &&
-        (tab.type !== "organization" || tab === preferredOrganizationTab) &&
-        (tab.type !== "start-page" || tab.id === preferredStartPageTabId)
-    )
-    .map((tab) =>
-      tab.type === "organization" ? { ...tab, id: ORGANIZATION_TAB_ID } : tab
-    );
-  if (survivingTabs.length === 0) return null;
-
-  const activeTabId =
-    preferredOrganizationTab !== undefined &&
-    activeMappedTab === preferredOrganizationTab
-      ? ORGANIZATION_TAB_ID
-      : survivingTabs.some((tab) => tab.id === candidate.activeTabId)
-        ? (candidate.activeTabId as string)
-        : survivingTabs[0].id;
-  return { tabs: survivingTabs, activeTabId };
 }

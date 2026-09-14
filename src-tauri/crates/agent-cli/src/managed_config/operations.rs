@@ -68,7 +68,7 @@ pub(super) fn status_for_unlocked(agent_name: &str) -> Result<CliConfigManagedSt
             let default_backup_path = PathBuf::from(&target.default_backup_path);
             let current_hash = file_hash(&target_path)?;
             let has_default_backup = target.default_was_missing || default_backup_path.exists();
-            let conflict = mode == CliConfigMode::OrgiiManaged
+            let conflict = mode != CliConfigMode::Default
                 && target.last_applied_hash.is_some()
                 && current_hash != target.last_applied_hash;
             any_backup |= has_default_backup;
@@ -137,8 +137,41 @@ pub(super) fn enable_agent_orgii_managed_unlocked(
     model: Option<String>,
     force: bool,
 ) -> Result<CliConfigManagedStatus, String> {
+    apply_connection_unlocked(agent_name, key_id, provider, model, force, None)
+}
+
+pub(super) fn apply_connection_unlocked(
+    agent_name: &str,
+    key_id: Option<String>,
+    provider: Option<String>,
+    model: Option<String>,
+    force: bool,
+    direct: Option<&super::direct::DirectConnection>,
+) -> Result<CliConfigManagedStatus, String> {
+    if agent_name == super::desktop::TARGET {
+        if direct.is_none() {
+            return Err("Claude Desktop currently supports direct connections only".into());
+        }
+        super::desktop::ensure_unmanaged()?;
+    }
+    if let Some(profile) = direct.and_then(|d| d.profile.as_ref()) {
+        if profile.target != agent_name {
+            return Err("Profile belongs to a different app".into());
+        }
+        super::provider_profiles::require_saved_unlocked(profile)?;
+    }
     let fallback_targets = agent_manifest_targets(agent_name)?;
     let existing_manifest = read_manifest(agent_name)?;
+    if let Some(manifest) = &existing_manifest {
+        for target in &manifest.target_files {
+            if !fallback_targets
+                .iter()
+                .any(|current| current.id == target.id && current.target_path == target.target_path)
+            {
+                return Err("Harness configuration root changed. Restore the original root before switching.".into());
+            }
+        }
+    }
     let targets = targets_with_fallbacks(existing_manifest.as_ref(), &fallback_targets);
     let snapshots = read_target_snapshots(&targets)?;
     let mut current_contents = BTreeMap::new();
@@ -157,7 +190,7 @@ pub(super) fn enable_agent_orgii_managed_unlocked(
     }
 
     if let Some(existing_manifest) = &existing_manifest {
-        if existing_manifest.mode == CliConfigMode::OrgiiManaged && !force {
+        if existing_manifest.mode != CliConfigMode::Default && !force {
             for target in &existing_manifest.target_files {
                 if let Some(last_hash) = &target.last_applied_hash {
                     let current_hash = snapshots
@@ -165,7 +198,7 @@ pub(super) fn enable_agent_orgii_managed_unlocked(
                         .and_then(|snapshot| snapshot.hash.as_ref());
                     if current_hash != Some(last_hash) {
                         return Err(
-                            "Current CLI config was modified outside ORGII. Restore or force apply before overwriting it."
+                            "Current CLI config was modified outside ORG2. Restore or force apply before overwriting it."
                                 .to_string(),
                         );
                     }
@@ -176,19 +209,29 @@ pub(super) fn enable_agent_orgii_managed_unlocked(
 
     let proxy_url = managed_proxy_url();
     let proxy_token = generate_proxy_token();
-    let managed_contents = generate_managed_configs(
-        agent_name,
-        &current_contents,
-        model.as_deref(),
-        &proxy_url,
-        &proxy_token,
-    )?;
+    let managed_contents = if let Some(connection) = direct {
+        super::direct::generate_direct_configs(
+            agent_name,
+            &current_contents,
+            connection,
+            existing_manifest.as_ref(),
+        )?
+    } else {
+        generate_managed_configs(
+            agent_name,
+            &current_contents,
+            model.as_deref(),
+            &proxy_url,
+            &proxy_token,
+        )?
+    };
 
     let now = now_stamp();
     let refresh_default_backup = existing_manifest
         .as_ref()
         .is_none_or(|manifest| manifest.mode == CliConfigMode::Default);
     let mut manifest = existing_manifest.unwrap_or_else(|| CliConfigProfileManifest {
+        provider_profile: None,
         agent: agent_name.to_string(),
         mode: CliConfigMode::Default,
         target_files: fallback_targets.clone(),
@@ -229,13 +272,18 @@ pub(super) fn enable_agent_orgii_managed_unlocked(
         managed_targets.push(target);
     }
 
-    manifest.mode = CliConfigMode::OrgiiManaged;
+    manifest.mode = if direct.is_some() {
+        CliConfigMode::Direct
+    } else {
+        CliConfigMode::OrgiiManaged
+    };
+    manifest.provider_profile = direct.and_then(|d| d.profile.clone());
     manifest.target_files = managed_targets;
     manifest.selected_key_id = key_id;
     manifest.selected_provider = provider;
     manifest.selected_model = model;
-    manifest.proxy_url = Some(proxy_url);
-    manifest.proxy_token = Some(proxy_token);
+    manifest.proxy_url = direct.is_none().then_some(proxy_url);
+    manifest.proxy_token = direct.is_none().then_some(proxy_token);
     manifest.updated_at = now_stamp();
     execute_transaction(agent_name, &snapshots, &mutations, &manifest)?;
     status_for_unlocked(agent_name)
@@ -245,6 +293,9 @@ pub(super) fn restore_agent_default_unlocked(
     agent_name: &str,
     force: bool,
 ) -> Result<CliConfigManagedStatus, String> {
+    if agent_name == super::desktop::TARGET {
+        super::desktop::ensure_unmanaged()?;
+    }
     let mut manifest = read_manifest(agent_name)?
         .ok_or_else(|| format!("No Default backup exists for {agent_name} yet"))?;
     if manifest.mode == CliConfigMode::Default {
@@ -254,14 +305,14 @@ pub(super) fn restore_agent_default_unlocked(
     let mut mutations = BTreeMap::new();
 
     for target in &manifest.target_files {
-        if manifest.mode == CliConfigMode::OrgiiManaged && !force {
+        if manifest.mode != CliConfigMode::Default && !force {
             if let Some(last_hash) = &target.last_applied_hash {
                 let current_hash = snapshots
                     .get(&target.id)
                     .and_then(|snapshot| snapshot.hash.as_ref());
                 if current_hash != Some(last_hash) {
                     return Err(
-                        "Current CLI config was modified outside ORGII. Force restore to overwrite it."
+                        "Current CLI config was modified outside ORG2. Force restore to overwrite it."
                             .to_string(),
                     );
                 }

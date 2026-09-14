@@ -1,6 +1,7 @@
 import cn from "classnames";
 import React from "react";
 
+import Button from "@src/components/Button";
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
 import InlineExpandedSplitCard from "@src/modules/shared/layouts/blocks/InlineExpandedSplitCard";
@@ -78,7 +79,7 @@ export function InlineCardSectionLabel({
   return (
     <div
       className={cn(
-        "text-[11px] font-medium uppercase tracking-wide text-text-3",
+        "text-[11px] font-medium tracking-wide text-text-3 uppercase",
         className
       )}
     >
@@ -165,12 +166,14 @@ export function InlineSplitNavRow({
   onSelect,
 }: InlineSplitNavRowProps) {
   return (
-    <div
-      role="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      disabled={disabled}
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled || undefined}
       className={cn(
-        "flex h-9 min-h-9 items-center justify-between gap-3 rounded-md px-3 text-xs",
+        "flex h-9 min-h-9 w-full items-center justify-between gap-3 rounded-md px-3 text-left text-xs",
         disabled
           ? "cursor-not-allowed opacity-50"
           : "cursor-pointer hover:bg-fill-1",
@@ -180,22 +183,15 @@ export function InlineSplitNavRow({
         if (disabled) return;
         onSelect();
       }}
-      onKeyDown={(event) => {
-        if (disabled) return;
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onSelect();
-        }
-      }}
     >
-      <span className="min-w-0 flex-1 truncate font-medium leading-none text-text-1">
+      <span className="min-w-0 flex-1 truncate leading-none font-medium text-text-1">
         {label}
       </span>
       {meta ? (
-        <span className="shrink-0 font-normal tabular-nums text-text-2">
+        <span className="shrink-0 font-normal text-text-2 tabular-nums">
           {meta}
         </span>
       ) : null}
-    </div>
+    </Button>
   );
 }

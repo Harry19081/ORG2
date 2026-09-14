@@ -1,0 +1,45 @@
+.work-item-context-menu {
+  position: fixed;
+  transition: opacity 0.1s ease;
+}
+
+.work-item-context-menu__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-text-2);
+}
+
+.work-item-context-menu__label {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-item-context-menu__secondary {
+  max-width: 132px;
+  margin-left: auto;
+  overflow: hidden;
+  color: var(--color-text-3);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-item-context-menu__shortcut {
+  margin-left: auto;
+  padding-left: 16px;
+}
+
+.work-item-context-menu__secondary + .work-item-context-menu__shortcut {
+  margin-left: 8px;
+  padding-left: 0;
+}
+
+.work-item-context-menu__arrow {
+  color: var(--color-text-3);
+  margin-left: auto;
+}

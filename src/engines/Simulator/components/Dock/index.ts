@@ -1,45 +1,15 @@
 /**
  * Simulator dock — macOS-style app strip (My Station + Agent Station).
  *
- * Layout primitives live in dockLayout.tsx (not inlined here): Dock and DockReplayControl
- * must import from that file directly to avoid a circular dependency with this barrel.
+ * Internal layout primitives stay in dockLayout.tsx; this barrel exposes only
+ * the dock surfaces and data consumed outside this directory.
  */
 export type { DockApp } from "./config";
-export {
-  BACKGROUND_TASKS_DOCK_APP,
-  DOCK_APP_SEGMENTS,
-  DOCK_APPS,
-  getAppById,
-} from "./config";
-
-export { Dock } from "./Dock";
-export type { DockAppItem } from "./Dock";
+export { DOCK_APPS, getAppById } from "./config";
 
 export { DockContextMenu } from "./DockContextMenu";
-export type { DockContextMenuProps } from "./DockContextMenu";
 
 export { DockReplayControl } from "./DockReplayControl";
 
 export { StationDockChrome } from "./StationDockChrome";
-export type { StationDockChromeProps } from "./StationDockChrome";
-
-export {
-  DOCK_COLUMN_HEIGHT_SPACER_PX,
-  DOCK_LUCIDE_ICON_PROPS,
-  DockIconColumn,
-  DockSegmentDivider,
-  StationDockGlassPill,
-  StationDockRow,
-  dockIconHitAreaClassName,
-} from "./dockLayout";
-export type {
-  DockIconColumnProps,
-  DockIconTrailerMode,
-  StationDockGlassPillProps,
-  StationDockRowProps,
-} from "./dockLayout";
-
-export {
-  getWorkStationStationTitleCenter,
-  getSimulatorDockTitleCenter,
-} from "./dockTitleCenter";
+export { getSimulatorDockTitleCenter } from "./dockTitleCenter";

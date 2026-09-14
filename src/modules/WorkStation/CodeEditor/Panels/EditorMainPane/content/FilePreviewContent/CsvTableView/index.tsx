@@ -1,4 +1,3 @@
-import { Loader2 } from "lucide-react";
 import Papa from "papaparse";
 import React, {
   useCallback,
@@ -15,9 +14,10 @@ import {
   saveSpreadsheetCsvPatches,
 } from "@src/api/tauri/spreadsheetCsv";
 import { Message } from "@src/components/Message";
-import { invalidateFileCache } from "@src/hooks/workStation/editor/useFileContent";
+import { Placeholder } from "@src/components/Placeholder";
+import { HugeiconsIcon, Loading03Icon } from "@src/icons";
+import { invalidateFileCache } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/useFileContent";
 import { UnsavedChangesBar } from "@src/modules/WorkStation/shared";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 
 import { SpreadsheetEditor, type SpreadsheetSheet } from "../SpreadsheetEditor";
 import { ROW_LOAD_INCREMENT } from "../SpreadsheetEditor/constants";
@@ -37,7 +37,7 @@ function patchesToMap(patches: SpreadsheetCsvCellPatch[]): PatchMap {
   );
 }
 
-export interface CsvTableViewProps {
+interface CsvTableViewProps {
   content: string;
   filePath?: string;
   className?: string;
@@ -390,8 +390,12 @@ export const CsvTableView: React.FC<CsvTableViewProps> = ({
         />
       )}
       {loadingMoreRows && (
-        <div className="pointer-events-none absolute bottom-12 right-4 text-text-3">
-          <Loader2 className="h-4 w-4 animate-spin" />
+        <div className="pointer-events-none absolute right-4 bottom-12 text-text-3">
+          <HugeiconsIcon
+            icon={Loading03Icon}
+            data-icon="loader-2"
+            className="h-4 w-4 animate-spin"
+          />
         </div>
       )}
     </div>

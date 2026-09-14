@@ -8,8 +8,6 @@
 // Import shared diff mixins (CSS variables are loaded globally in src/index.scss)
 @import "../styles/diff-mixins";
 
-@import "../../../components/CustomScrollbar/index.scss";
-
 .codemirror-diff-wrapper {
   position: relative;
   width: 100%;
@@ -57,8 +55,12 @@
   height: 100%;
   overflow: hidden;
 
-  // Global override to remove ALL underlines in diff view
-  .cm-content *,
+  .cm-editor .cm-content {
+    padding-top: 0;
+  }
+
+  // Remove code underlines without resetting the collapsed widget surface.
+  .cm-content *:not(.cm-collapsedLines),
   .cm-gutters * {
     text-decoration: none !important;
     text-decoration-line: none !important;
@@ -200,7 +202,7 @@
     .cm-deletedChunk .cm-deletedLine {
       display: block;
       padding: 0 !important;
-      white-space: pre;
+      white-space: inherit;
     }
 
     .cm-deletedChunk .cm-deletedLine > del {
@@ -362,7 +364,9 @@
   margin: 0 !important;
   padding: 0 !important;
   text-indent: 0 !important;
-  white-space: pre;
+  // Follow .cm-content's shared word-wrap setting, including break-spaces
+  // for long tokens and preserved indentation, just like regular lines.
+  white-space: inherit;
 }
 
 .codemirror-diff
@@ -379,3 +383,214 @@
 
 // Note: .cm-collapsedLines styles are applied via EditorView.baseTheme()
 // in Diff/index.tsx to properly override CodeMirror's internal styles
+
+// Keep the change rail at the outside edge of each editor. Its row backdrop
+// paints behind the other gutters and is clipped to their combined width.
+.codemirror-diff .cm-editor .cm-gutters {
+  --cm-diff-fold-gutter-width: calc(var(--cm-icon-size, 14px) + 2px);
+  overflow: hidden;
+
+  .cm-lineNumbers {
+    // Expansion buttons span the rounded gutter surface, including fold space.
+    overflow: visible;
+  }
+
+  .cm-foldGutter {
+    width: var(--cm-diff-fold-gutter-width);
+    min-width: var(--cm-diff-fold-gutter-width);
+  }
+
+  .cm-gutter.cm-changeGutter {
+    // CodeMirror clips each gutter column by default. Let the row backdrop
+    // reach the number/fold columns, then clip it once at .cm-gutters.
+    overflow: visible;
+    --diff-row-bg: var(--diff-added-bg);
+    --diff-row-color: var(--diff-added-color);
+    --diff-row-marker: var(--diff-added-color);
+    order: -1;
+    padding-left: 0;
+
+    .cm-gutterElement {
+      position: relative;
+    }
+
+    .cm-changedLineGutter,
+    .cm-deletedLineGutter {
+      background: transparent !important;
+
+      &::before {
+        content: "";
+        @include diff-gutter-marker;
+        background: var(--diff-row-marker) !important;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset-block: 0;
+        left: 0;
+        width: 100vw;
+        background: var(--diff-row-bg);
+        pointer-events: none;
+        z-index: -1;
+      }
+    }
+  }
+}
+
+.codemirror-diff .cm-lineNumbers .cm-diffAddedNumber {
+  color: var(--diff-added-color);
+  background-color: var(--diff-added-bg);
+}
+
+.codemirror-diff .cm-editor .cm-gutters .cm-collapsedGutter {
+  position: relative;
+}
+
+.codemirror-diff .cm-editor .cm-changeGutter .cm-collapsedGutter::after {
+  content: "";
+  position: absolute;
+  inset-block: 2px;
+  left: 8px;
+  width: 100vw;
+  border-radius: 10px 0 0 10px;
+  background: var(--color-fill-1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.codemirror-diff .cm-editor .cm-collapseControl {
+  position: absolute;
+  // Match the rounded backdrop across the number and fold columns.
+  // The marker's containing block is only the line-number cell.
+  inset-block: 2px;
+  left: calc(
+    8px - var(--diff-gutter-width, 7px) - var(
+        --cm-line-number-padding-left,
+        8px
+      )
+  );
+  right: calc(-1 * var(--cm-diff-fold-gutter-width));
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: stretch;
+  width: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-3);
+  cursor: var(--interactive-cursor, default);
+
+  &:hover {
+    color: var(--color-text-2);
+  }
+}
+
+.codemirror-diff .cm-editor .cm-collapseArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-6);
+    outline-offset: -2px;
+  }
+}
+
+.codemirror-diff .cm-editor .cm-collapsedLines {
+  // Both halves paint an inset pseudo-element. Prevent merge theme defaults
+  // from painting a second, full-height background behind the right half.
+  background: transparent !important;
+  border-block: 0 !important;
+  border-left: 2px solid var(--cm-editor-background);
+}
+
+.codemirror-diff .cm-editor .cm-collapsedLines.cm-collapsedRowHovered {
+  --cm-collapsed-fill: var(--color-fill-3);
+}
+
+.codemirror-diff .cm-editor .cm-collapsedLines::after {
+  // The merge theme adds a 7px decorative margin; the divider owns this gap.
+  margin: 0;
+}
+
+.codemirror-diff
+  .cm-editor
+  .cm-changeGutter
+  .cm-collapsedGutter.cm-collapsedRowHovered::after {
+  background-color: var(--color-fill-3);
+}
+
+.codemirror-diff .cm-editor .cm-changeGutter .cm-collapsedGutter--split::after {
+  background: linear-gradient(
+    to bottom,
+    var(--cm-collapse-top-fill, var(--color-fill-1)) 0 calc(50% - 1px),
+    var(--cm-editor-background) calc(50% - 1px) calc(50% + 1px),
+    var(--cm-collapse-bottom-fill, var(--color-fill-1)) calc(50% + 1px) 100%
+  );
+}
+
+.codemirror-diff .cm-collapsedRowHovered,
+.codemirror-diff .cm-collapsedRowHoverTop {
+  --cm-collapse-top-fill: var(--color-fill-3);
+}
+
+.codemirror-diff .cm-collapsedRowHovered,
+.codemirror-diff .cm-collapsedRowHoverBottom {
+  --cm-collapse-bottom-fill: var(--color-fill-3);
+}
+
+.codemirror-diff .cm-editor .cm-collapsedRowHovered .cm-collapseControl {
+  color: var(--color-text-2);
+}
+
+.codemirror-diff .cm-editor:not(:has(.cm-lineNumbers)) .cm-collapsedLines {
+  &::before {
+    display: inline-block;
+  }
+}
+
+.codemirror-diff .cm-lineNumbers .cm-diffDeletedNumber,
+.codemirror-diff-wrapper--full-deletion
+  .codemirror-diff--unified
+  .cm-lineNumbers
+  .cm-diffAddedNumber {
+  color: var(--diff-deleted-color);
+  background-color: var(--diff-deleted-bg);
+}
+
+.codemirror-diff .cm-editor .cm-changeGutter .cm-deletedLineGutter,
+.codemirror-diff .cm-editor.cm-merge-a .cm-changeGutter .cm-changedLineGutter,
+.codemirror-diff-wrapper--full-deletion
+  .codemirror-diff--unified
+  .cm-editor
+  .cm-changeGutter
+  .cm-changedLineGutter {
+  --diff-row-bg: var(--diff-deleted-bg);
+  --diff-row-color: var(--diff-deleted-color);
+
+  --diff-row-marker: repeating-linear-gradient(
+    to bottom,
+    var(--diff-row-color) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+.cm-review-search-match {
+  outline: 2px solid var(--color-primary-6);
+  outline-offset: -2px;
+}
+
+::highlight(orgii-review-search) {
+  background-color: var(--color-warning-3);
+  color: var(--color-text-1);
+}

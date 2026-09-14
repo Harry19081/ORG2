@@ -1,22 +1,12 @@
 /**
  * ProjectsTab Configuration
  */
-import {
-  Box,
-  FolderKanban,
-  Github,
-  Import,
-  ListChecks,
-  Plus,
-  RefreshCw,
-  Settings,
-  SquarePen,
-} from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import type { ProjectOrg } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -25,9 +15,19 @@ import {
 } from "@src/components/Dropdown/tokens";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
 import { useDropdownEngine } from "@src/hooks/dropdown";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
-  HEADER_BUTTON,
+  Add01Icon,
+  DeliveryBox01Icon,
+  GithubIcon,
+  HugeiconsIcon,
+  ImportIcon,
+  ListChecksIcon,
+  PencilEdit02Icon,
+  Refresh04Icon,
+  Settings01Icon,
+} from "@src/icons";
+import {
   HEADER_ICON_SIZE,
   type PrimarySidebarTab,
 } from "@src/modules/WorkStation/shared";
@@ -96,9 +96,22 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        aria-pressed={isOpen}
+        aria-label={addOrgLabel}
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={HEADER_ICON_SIZE.md}
+          />
+        }
         ref={triggerRef}
-        className={`${HEADER_BUTTON.actionTreeRow} ${isOpen ? "!bg-surface-selected !text-primary-6" : ""}`}
+        className={`${isOpen ? "bg-surface-selected! text-primary-6!" : ""}`}
         data-dropdown-open={isOpen}
         onMouseDown={(event) => {
           event.stopPropagation();
@@ -108,10 +121,8 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
           toggle();
         }}
         title={addOrgLabel}
-        type="button"
-      >
-        <Plus size={HEADER_ICON_SIZE.md} />
-      </button>
+        htmlType="button"
+      />
       {isOpen &&
         isPositioned &&
         createPortal(
@@ -132,32 +143,40 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
               event.stopPropagation();
             }}
           >
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleAddOrg}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
             >
-              <Plus
+              <HugeiconsIcon
+                icon={Add01Icon}
+                data-icon="plus"
                 size={ACTION_ICON_SIZE}
                 strokeWidth={ACTION_ICON_STROKE}
                 className="text-text-2"
               />
               <span className="min-w-0 flex-1 truncate">{addOrgLabel}</span>
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleImportOrgs}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
             >
-              <Import
+              <HugeiconsIcon
+                icon={ImportIcon}
+                data-icon="import"
                 size={ACTION_ICON_SIZE}
                 strokeWidth={ACTION_ICON_STROKE}
                 className="text-text-2"
               />
               <span className="min-w-0 flex-1 truncate">{importOrgsLabel}</span>
-            </button>
+            </Button>
           </div>,
           document.body
         )}
@@ -208,9 +227,22 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
 
   return (
     <>
-      <button
+      <Button
+        variant="tertiary"
+        appearance="soft"
+        size="sidebar"
+        aria-pressed={isOpen}
+        aria-label={createLabel}
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={HEADER_ICON_SIZE.md}
+          />
+        }
         ref={triggerRef}
-        className={`${HEADER_BUTTON.actionTreeRow} ${isOpen ? "!bg-surface-selected !text-primary-6" : ""}`}
+        className={`${isOpen ? "bg-surface-selected! text-primary-6!" : ""}`}
         data-dropdown-open={isOpen}
         onMouseDown={(event) => {
           event.stopPropagation();
@@ -220,10 +252,8 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
           toggle();
         }}
         title={createLabel}
-        type="button"
-      >
-        <Plus size={HEADER_ICON_SIZE.md} />
-      </button>
+        htmlType="button"
+      />
       {isOpen &&
         isPositioned &&
         createPortal(
@@ -244,13 +274,17 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
               event.stopPropagation();
             }}
           >
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleCreateWorkItem}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
             >
-              <ListChecks
+              <HugeiconsIcon
+                icon={ListChecksIcon}
+                data-icon="list-checks"
                 size={ACTION_ICON_SIZE}
                 strokeWidth={ACTION_ICON_STROKE}
                 className="text-text-2"
@@ -258,14 +292,18 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
               <span className="min-w-0 flex-1 truncate">
                 {createWorkItemLabel}
               </span>
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleCreateProject}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
             >
-              <Box
+              <HugeiconsIcon
+                icon={DeliveryBox01Icon}
+                data-icon="box"
                 size={ACTION_ICON_SIZE}
                 strokeWidth={ACTION_ICON_STROKE}
                 className="text-text-2"
@@ -273,14 +311,18 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
               <span className="min-w-0 flex-1 truncate">
                 {createProjectLabel}
               </span>
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={handleImportGithubIssuesProject}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
             >
-              <Github
+              <HugeiconsIcon
+                icon={GithubIcon}
+                data-icon="github"
                 size={ACTION_ICON_SIZE}
                 strokeWidth={ACTION_ICON_STROKE}
                 className="text-text-2"
@@ -288,7 +330,7 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
               <span className="min-w-0 flex-1 truncate">
                 {importGithubIssuesProjectLabel}
               </span>
-            </button>
+            </Button>
           </div>,
           document.body
         )}
@@ -355,14 +397,26 @@ export function useProjectsTabConfig({
     () => [
       {
         key: "create-project",
-        icon: <Box size={ACTION_ICON_SIZE} strokeWidth={ACTION_ICON_STROKE} />,
+        icon: (
+          <HugeiconsIcon
+            icon={DeliveryBox01Icon}
+            data-icon="box"
+            size={ACTION_ICON_SIZE}
+            strokeWidth={ACTION_ICON_STROKE}
+          />
+        ),
         tooltip: t("projects:projects.createProject"),
         onClick: onCreateProject,
       },
       {
         key: "create-work-item",
         icon: (
-          <SquarePen size={ACTION_ICON_SIZE} strokeWidth={ACTION_ICON_STROKE} />
+          <HugeiconsIcon
+            icon={PencilEdit02Icon}
+            data-icon="square-pen"
+            size={ACTION_ICON_SIZE}
+            strokeWidth={ACTION_ICON_STROKE}
+          />
         ),
         tooltip: t("projects:workItems.createWorkItem"),
         onClick: onCreateWorkItem,
@@ -388,7 +442,9 @@ export function useProjectsTabConfig({
       {
         key: "refresh",
         icon: (
-          <RefreshCw
+          <HugeiconsIcon
+            icon={Refresh04Icon}
+            data-icon="refresh-cw"
             size={ACTION_ICON_SIZE}
             strokeWidth={ACTION_ICON_STROKE}
             className={refreshSpinClass}
@@ -400,7 +456,12 @@ export function useProjectsTabConfig({
       {
         key: "settings",
         icon: (
-          <Settings size={ACTION_ICON_SIZE} strokeWidth={ACTION_ICON_STROKE} />
+          <HugeiconsIcon
+            icon={Settings01Icon}
+            data-icon="settings"
+            size={ACTION_ICON_SIZE}
+            strokeWidth={ACTION_ICON_STROKE}
+          />
         ),
         tooltip: t("common:tabs.settings"),
         onClick: onOpenSettings,
@@ -441,7 +502,13 @@ export function useProjectsTabConfig({
     () => ({
       key: "projects",
       label: t("labels.projects"),
-      icon: <FolderKanban size={TAB_ICON_SIZE} />,
+      icon: (
+        <HugeiconsIcon
+          icon={DeliveryBox01Icon}
+          data-icon="box"
+          size={TAB_ICON_SIZE}
+        />
+      ),
       sections: [
         {
           key: "workspace",

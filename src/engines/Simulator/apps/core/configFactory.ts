@@ -31,7 +31,7 @@ export interface SimulatorAppFactoryConfig<
   appType: AppType;
   /** Display name */
   name: string;
-  /** Lucide icon name */
+  /** Icon name (lucide-era slug) */
   icon: string;
   /**
    * Derive app-specific state from filtered events.
@@ -78,15 +78,6 @@ export function defineSimulatorAppConfig<TState extends SimulatorAppBaseState>(
 // ============================================
 // Helper: Common State Derivation Patterns
 // ============================================
-
-/**
- * Common interface for operation-based app states.
- * Used by Database, Project Manager, etc.
- */
-export interface OperationBasedState<TOperation> extends SimulatorAppBaseState {
-  operations: TOperation[];
-  selectedOperation: TOperation | null;
-}
 
 /**
  * Helper to derive operation-based state.

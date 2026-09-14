@@ -1,29 +1,41 @@
 import React, { useCallback } from "react";
 
 import { SessionFilterButton } from "../SessionFilterButton";
-import { GROUP_BY_MODES, type GroupByMode } from "../types";
-import type { WorkstationSidebarKey } from "./types";
+import {
+  GROUP_BY_MODES,
+  type GroupByMode,
+  type SessionGroupVisibleCount,
+} from "../types";
+import type { SessionSidebarView } from "./types";
 
 interface UseSidebarBottomRightActionsParams {
-  activeSidebarKey: WorkstationSidebarKey;
+  activeViewKey: SessionSidebarView;
   groupByMode: GroupByMode;
+  groupVisibleCount: SessionGroupVisibleCount;
   includeExternal: boolean;
   handleCollapseAll: () => void;
   handleMarkAllRead: () => void;
   handleRefreshSessions: () => void;
+  handleConfigureExternalSources: () => void;
   setGroupByMode: (mode: GroupByMode) => void;
+  setGroupVisibleCount: (count: SessionGroupVisibleCount) => void;
   setIncludeExternal: (includeExternal: boolean) => void;
+  resetGroupVisibleCounts: () => void;
 }
 
 export function useSidebarBottomRightActions({
-  activeSidebarKey,
+  activeViewKey,
   groupByMode,
+  groupVisibleCount,
   includeExternal,
   handleCollapseAll,
   handleMarkAllRead,
   handleRefreshSessions,
+  handleConfigureExternalSources,
   setGroupByMode,
+  setGroupVisibleCount,
   setIncludeExternal,
+  resetGroupVisibleCounts,
 }: UseSidebarBottomRightActionsParams): React.ReactNode {
   const handleSessionGroupBySelect = useCallback(
     (mode: string) => {
@@ -34,17 +46,28 @@ export function useSidebarBottomRightActions({
     },
     [setGroupByMode]
   );
+  const handleGroupVisibleCountSelect = useCallback(
+    (count: SessionGroupVisibleCount) => {
+      if (count === groupVisibleCount) return;
+      setGroupVisibleCount(count);
+      resetGroupVisibleCounts();
+    },
+    [groupVisibleCount, resetGroupVisibleCounts, setGroupVisibleCount]
+  );
 
-  if (activeSidebarKey === "projects") {
+  if (activeViewKey !== "sessions") {
     return null;
   }
 
   return (
     <SessionFilterButton
       groupByMode={groupByMode}
+      groupVisibleCount={groupVisibleCount}
       includeExternal={includeExternal}
       onSelect={handleSessionGroupBySelect}
+      onSelectGroupVisibleCount={handleGroupVisibleCountSelect}
       onToggleIncludeExternal={setIncludeExternal}
+      onConfigureExternalSources={handleConfigureExternalSources}
       onCollapseAll={handleCollapseAll}
       onMarkAllRead={handleMarkAllRead}
       onRefreshSessions={handleRefreshSessions}

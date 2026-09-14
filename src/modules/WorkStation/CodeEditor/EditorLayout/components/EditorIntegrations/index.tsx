@@ -3,55 +3,32 @@
  *
  * Side-effect only component that handles all integration hooks.
  * These hooks don't contribute to rendering but provide important functionality:
- * - Test runner auto-discovery
- * - Git output integration (streams git operations to Output panel)
- * - Task output integration (streams build/task operations to Output panel)
- * - File watch integration (displays file system events)
- * - LSP diagnostics
- * - GUIAgentService connection
+ * - Git operations (push/pull/fetch/commit/stage), published via atom
+ * - Editor go-to-line event bridge
  *
  * By isolating these in a separate component, we prevent unnecessary re-renders
  * of the main editor when integration state changes.
+ *
+ * The test runner, Output-panel streaming (git / task / file watch), LSP
+ * diagnostics, and the GUIAgentService output bridge used to be wired here.
+ * Those surfaces were archived — see `.archive/README.md`.
  */
-import { useLspDiagnostics } from "@/src/hooks/workStation/diagnostics/useLspDiagnostics";
 import { useSetAtom } from "jotai";
-import { type FC, memo, useCallback, useEffect } from "react";
+import { type FC, memo, useEffect } from "react";
 
 import { ACTION_ID, useActionSystem } from "@src/ActionSystem";
-import { useTestRunner } from "@src/hooks/testRunner";
-import { useFileWatchOutputIntegration } from "@src/hooks/workStation/output/useFileWatchOutputIntegration";
-import type { UseOutputChannelsReturn } from "@src/hooks/workStation/output/useOutputChannels";
-import { useTaskOutputIntegration } from "@src/hooks/workStation/output/useTaskOutputIntegration";
-import { useGitOutputIntegration } from "@src/hooks/workStation/useGitOutputIntegration";
-import { GUIAgentService } from "@src/services";
-import type {
-  BottomPanelTab,
-  PrimarySidebarTabKey,
-} from "@src/store/ui/workStationAtom";
-import {
-  gitOutputIntegrationAtom,
-  taskOutputIntegrationAtom,
-} from "@src/store/workstation/codeEditor/outputIntegration";
+import { useGitOutputIntegration } from "@src/modules/WorkStation/CodeEditor/hooks/gitOutputIntegration/useGitOutputIntegration";
+import { gitOutputIntegrationAtom } from "@src/store/workstation/codeEditor/outputIntegration";
 
 // ============================================
 // Types
 // ============================================
 
-export interface EditorIntegrationsProps {
+interface EditorIntegrationsProps {
   /** Repository path */
   repoPath: string;
   /** Repository ID (UUID or path) */
   repoId: string;
-  /** Current primary sidebar tab for test runner activation */
-  primarySidebarTab: PrimarySidebarTabKey;
-  /** Output channels state for streaming output */
-  outputState: UseOutputChannelsReturn;
-  /** Bottom panel tab setter */
-  setBottomPanelTab: (tab: BottomPanelTab) => void;
-  /** Whether bottom panel is collapsed */
-  bottomPanelCollapsed: boolean;
-  /** Toggle bottom panel visibility */
-  toggleBottomPanel: () => void;
 }
 
 // ============================================
@@ -59,107 +36,21 @@ export interface EditorIntegrationsProps {
 // ============================================
 
 export const EditorIntegrations: FC<EditorIntegrationsProps> = memo(
-  ({
-    repoPath,
-    repoId,
-    primarySidebarTab,
-    outputState,
-    setBottomPanelTab,
-    bottomPanelCollapsed,
-    toggleBottomPanel,
-  }) => {
+  ({ repoPath, repoId }) => {
     // ============================================
-    // Test Runner Integration
+    // Git Operations
     // ============================================
-    // Auto-discovers tests when testing panel is active
-    useTestRunner({
-      repoPath,
-      autoDiscover: true,
-      isActive: primarySidebarTab === "testing",
-    });
-
-    // ============================================
-    // Git Output Integration
-    // ============================================
-    const onSwitchToGitOutput = useCallback(() => {
-      setBottomPanelTab("output");
-      if (bottomPanelCollapsed) {
-        toggleBottomPanel();
-      }
-    }, [setBottomPanelTab, bottomPanelCollapsed, toggleBottomPanel]);
-
     const gitOutput = useGitOutputIntegration({
-      outputState,
       repoPath,
       repoId, // Use actual repo ID (matches backend events)
-      autoSwitchToOutput: false,
-      onSwitchToOutput: onSwitchToGitOutput,
     });
 
-    // Set Git channel as default active channel
-    useEffect(() => {
-      const gitChannelId = gitOutput.getGitChannelId();
-      if (gitChannelId && !outputState.activeChannelId) {
-        outputState.setActiveChannel(gitChannelId);
-      }
-    }, [gitOutput, outputState]);
-
-    // Make git output integration available globally via atom
+    // Make git operations available globally via atom
     const setGitOutputIntegration = useSetAtom(gitOutputIntegrationAtom);
     useEffect(() => {
       setGitOutputIntegration(gitOutput);
       return () => setGitOutputIntegration(null);
     }, [gitOutput, setGitOutputIntegration]);
-
-    // ============================================
-    // Task Output Integration
-    // ============================================
-    const onSwitchToTaskOutput = useCallback(() => {
-      setBottomPanelTab("output");
-      if (bottomPanelCollapsed) {
-        toggleBottomPanel();
-      }
-    }, [setBottomPanelTab, bottomPanelCollapsed, toggleBottomPanel]);
-
-    const taskOutput = useTaskOutputIntegration({
-      outputState,
-      cwd: repoPath,
-      autoSwitchToOutput: false,
-      onSwitchToOutput: onSwitchToTaskOutput,
-    });
-
-    // Make task output integration available globally via atom
-    const setTaskOutputIntegration = useSetAtom(taskOutputIntegrationAtom);
-    useEffect(() => {
-      setTaskOutputIntegration(taskOutput);
-      return () => setTaskOutputIntegration(null);
-    }, [taskOutput, setTaskOutputIntegration]);
-
-    // ============================================
-    // File Watch Integration
-    // ============================================
-    useFileWatchOutputIntegration({
-      outputState,
-      repoId, // Use UUID if available, fallback to path
-      repoPath,
-      enabled: true, // Can be toggled via settings
-    });
-
-    // ============================================
-    // LSP Diagnostics Integration
-    // ============================================
-    useLspDiagnostics({
-      repoPath,
-      enabled: true, // Add setting to toggle later
-    });
-
-    // ============================================
-    // GUIAgentService Connection
-    // ============================================
-    useEffect(() => {
-      GUIAgentService.connect(outputState);
-      return () => GUIAgentService.disconnect();
-    }, [outputState]);
 
     // ============================================
     // Editor Go To Line Event Handler

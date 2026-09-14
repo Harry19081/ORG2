@@ -4,35 +4,36 @@
  * sidebar-memory persistence hook (`useWorkstationSidebarMemory`), which is
  * a pure side effect keyed off the same section/selection state.
  */
-import { useCallback, useMemo } from "react";
+import { useSetAtom } from "jotai";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useMemo,
+} from "react";
 
-import { createLogger } from "@src/hooks/logger";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import { type Session, markAllSessionsVisited } from "@src/store/session";
+import {
+  createRuntimeScanningNavigationIntent,
+  runtimeNavigationIntentAtom,
+} from "@src/store/ui/runtimeNavigationAtom";
 
+import type { SessionGroupVisibleCount } from "../types";
 import { getAllSectionIds } from "../workstationSidebarData";
 import { useSidebarBottomRightActions } from "./bottomActions";
 import { useWorkstationSidebarMemory } from "./sidebarMemory";
-import { rescanSidebarSessions } from "./sidebarSessionRefresh";
-import type { WorkstationSidebarKey } from "./types";
-
-const logger = createLogger("WorkstationSidebar");
+import type { SessionSidebarView } from "./types";
 
 export function resolveSidebarSelectedMenuItemId({
-  activeSidebarKey,
+  activeViewKey,
   selectedCloudMenuItemId,
   selectedMenuItemId,
-  workItemsContentVisible,
 }: Pick<
   UseWorkstationSidebarBottomActionsParams,
-  | "activeSidebarKey"
-  | "selectedCloudMenuItemId"
-  | "selectedMenuItemId"
-  | "workItemsContentVisible"
+  "activeViewKey" | "selectedCloudMenuItemId" | "selectedMenuItemId"
 >): string {
-  return activeSidebarKey === "workstation" &&
-    !workItemsContentVisible &&
-    selectedCloudMenuItemId
+  return activeViewKey !== "work-items" && selectedCloudMenuItemId
     ? selectedCloudMenuItemId
     : selectedMenuItemId;
 }
@@ -53,16 +54,22 @@ interface UseWorkstationSidebarBottomActionsParams {
     nextCollapsedSectionIds: Set<string>
   ) => void;
   sessions: Session[];
-  workItemsContentVisible: boolean;
-  channelSidebarVisible: boolean;
-  activeSidebarKey: WorkstationSidebarKey;
+  activeViewKey: SessionSidebarView;
   projectsWorkItemsLoading: boolean;
   projectsSidebarMenuItems: NavigationMenuItem[];
   sessionsLoading: boolean;
+  handleRefreshSessions: () => void;
+  openRuntimeTab: (title: string) => void;
+  runtimeLabel: string;
   groupByMode: BottomRightActionsParams["groupByMode"];
+  groupVisibleCount: SessionGroupVisibleCount;
   includeExternal: boolean;
   setGroupByMode: BottomRightActionsParams["setGroupByMode"];
+  setGroupVisibleCount: (count: SessionGroupVisibleCount) => void;
   setIncludeExternal: BottomRightActionsParams["setIncludeExternal"];
+  setGroupVisibleCounts: Dispatch<SetStateAction<Map<string, number>>>;
+  resetCloudTeamPagination: () => void;
+  resetCloudMyPagination: () => void;
   selectedCloudMenuItemId: string | null;
   selectedMenuItemId: string;
   activeSessionId: string;
@@ -74,16 +81,22 @@ export function useWorkstationSidebarBottomActions({
   sidebarMenuItems,
   resolvedOnCollapsedSectionIdsChange,
   sessions,
-  workItemsContentVisible,
-  channelSidebarVisible,
-  activeSidebarKey,
+  activeViewKey,
   projectsWorkItemsLoading,
   projectsSidebarMenuItems,
   sessionsLoading,
+  handleRefreshSessions,
+  openRuntimeTab,
+  runtimeLabel,
   groupByMode,
+  groupVisibleCount,
   includeExternal,
   setGroupByMode,
+  setGroupVisibleCount,
   setIncludeExternal,
+  setGroupVisibleCounts,
+  resetCloudTeamPagination,
+  resetCloudMyPagination,
   selectedCloudMenuItemId,
   selectedMenuItemId,
   activeSessionId,
@@ -100,48 +113,56 @@ export function useWorkstationSidebarBottomActions({
   const handleMarkAllRead = useCallback(() => {
     markAllSessionsVisited(sessions.map((session) => session.session_id));
   }, [sessions]);
-  const handleRefreshSessions = useCallback(() => {
-    void rescanSidebarSessions().catch((error) => {
-      logger.warn("Failed to rescan sidebar sessions:", error);
-    });
-  }, []);
-  const isLoading = channelSidebarVisible
-    ? false
-    : workItemsContentVisible || activeSidebarKey === "projects"
-      ? projectsWorkItemsLoading &&
-        !hasSidebarMenuRows(projectsSidebarMenuItems)
-      : sessionsLoading && sessions.length === 0;
-  const sessionBottomRightActions = useSidebarBottomRightActions({
-    activeSidebarKey: workItemsContentVisible ? "projects" : activeSidebarKey,
+  const resetGroupVisibleCounts = useCallback(() => {
+    setGroupVisibleCounts(new Map());
+    resetCloudTeamPagination();
+    resetCloudMyPagination();
+  }, [resetCloudMyPagination, resetCloudTeamPagination, setGroupVisibleCounts]);
+  const setRuntimeNavigationIntent = useSetAtom(runtimeNavigationIntentAtom);
+  // The sidebar's include-external toggle is all-or-nothing; per-source
+  // visibility is owned by Runtime → Scanning, so the menu links there instead
+  // of growing a second copy of that source list.
+  const handleConfigureExternalSources = useCallback(() => {
+    setRuntimeNavigationIntent(createRuntimeScanningNavigationIntent());
+    openRuntimeTab(runtimeLabel);
+  }, [openRuntimeTab, runtimeLabel, setRuntimeNavigationIntent]);
+  const isLoading =
+    activeViewKey === "channels"
+      ? false
+      : activeViewKey === "work-items"
+        ? projectsWorkItemsLoading &&
+          !hasSidebarMenuRows(projectsSidebarMenuItems)
+        : sessionsLoading && sessions.length === 0;
+  const sidebarBottomRightActions = useSidebarBottomRightActions({
+    activeViewKey,
     groupByMode,
+    groupVisibleCount,
     includeExternal,
     handleCollapseAll,
     handleMarkAllRead,
     handleRefreshSessions,
+    handleConfigureExternalSources,
     setGroupByMode,
+    setGroupVisibleCount,
     setIncludeExternal,
+    resetGroupVisibleCounts,
   });
-  const sidebarBottomRightActions = channelSidebarVisible
-    ? null
-    : sessionBottomRightActions;
 
   const resolvedSelectedMenuItemId = resolveSidebarSelectedMenuItemId({
-    activeSidebarKey,
+    activeViewKey,
     selectedCloudMenuItemId,
     selectedMenuItemId,
-    workItemsContentVisible,
   });
 
   useWorkstationSidebarMemory({
     activeSessionId,
-    activeSidebarKey,
+    activeViewKey,
     allSectionIds,
     collapsedSectionIds,
     groupByMode,
     pinnedMenuItems,
     selectedMenuItemId: resolvedSelectedMenuItemId,
     sidebarMenuItems,
-    tabCount: 0,
   });
 
   return {

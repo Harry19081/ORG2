@@ -9,21 +9,17 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useWorkStationTabs } from "@src/hooks/workStation/tabs";
+import { Placeholder } from "@src/components/Placeholder";
+import { useWorkStationTabs } from "@src/hooks/tabHost/useWorkStationTabs";
 import type { LinearProjectSelection } from "@src/modules/ProjectManager/Panels/ProjectManagerSidebar/content/WorkspaceTreeContent";
 import type { ProjectWorkItemSelection } from "@src/modules/ProjectManager/ProjectManagerLayout/components/ProjectWorkItemsTabContent";
 import type { ActiveRepoView } from "@src/modules/ProjectManager/ProjectManagerLayout/types";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import {
-  openCreateTargetInChatPanelStartPageAtom,
+  openChatPanelCreateTargetAtom,
   openWorkItemInChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { projectListRefreshAtom } from "@src/store/project/projectAtom";
-import {
-  CHAT_PANEL_CREATE_TARGET,
-  activeStationChatVisibleAtom,
-} from "@src/store/ui/chatPanelAtom";
-import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
 import {
   STORY_ORG_SCOPE,
   WORK_MANAGEMENT_PROJECTS_VIEW,
@@ -33,6 +29,7 @@ import {
 import type { WorkItem } from "@src/types/core/workItem";
 
 import type { WorkManagementDetailHost } from "./workManagementDetailHost";
+import { useWorkManagementSplitHeader } from "./workManagementSplitHeaderContext";
 
 const LinearProjectsPage = React.lazy(
   () => import("@src/modules/ProjectManager/LinearProjects")
@@ -84,6 +81,8 @@ const WorkManagementProjectsSurface: React.FC<{
   detailHost: WorkManagementDetailHost;
 }> = memo(({ detailHost }) => {
   const { t } = useTranslation("projects");
+  const { splitDatasetControl, surfaceDatasetControl } =
+    useWorkManagementSplitHeader();
   const [workManagementProjectsView, setWorkManagementProjectsView] = useAtom(
     workManagementProjectsViewAtom
   );
@@ -99,11 +98,7 @@ const WorkManagementProjectsSurface: React.FC<{
   const { openTab } = useWorkStationTabs();
   const openWorkItemInChatPanel = useSetAtom(openWorkItemInChatPanelTabAtom);
 
-  const setStationMode = useSetAtom(stationModeAtom);
-  const setStationChatVisible = useSetAtom(activeStationChatVisibleAtom);
-  const openCreateTargetInStartPage = useSetAtom(
-    openCreateTargetInChatPanelStartPageAtom
-  );
+  const openCreateTarget = useSetAtom(openChatPanelCreateTargetAtom);
 
   const activeOrgScope =
     view.kind === "repo" ? (view.orgScope ?? STORY_ORG_SCOPE.ALL) : null;
@@ -181,20 +176,16 @@ const WorkManagementProjectsSurface: React.FC<{
   }, [bumpProjectListRefresh, handleOpenProjects]);
 
   const handleCreateProject = useCallback(() => {
-    openCreateTargetInStartPage({
+    openCreateTarget({
       target: CHAT_PANEL_CREATE_TARGET.PROJECT,
     });
-    setStationMode("my-station");
-    setStationChatVisible("my-station", true);
-  }, [openCreateTargetInStartPage, setStationChatVisible, setStationMode]);
+  }, [openCreateTarget]);
 
   const handleCreateWorkItem = useCallback(() => {
-    openCreateTargetInStartPage({
+    openCreateTarget({
       target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
     });
-    setStationMode("my-station");
-    setStationChatVisible("my-station", true);
-  }, [openCreateTargetInStartPage, setStationChatVisible, setStationMode]);
+  }, [openCreateTarget]);
 
   const handleOpenProjectWorkItem = useCallback(
     (
@@ -255,7 +246,7 @@ const WorkManagementProjectsSurface: React.FC<{
           selection.projectId,
           selection.projectName,
           selection.workItem.session_id,
-          selection.workItem.name || t("workItems.untitled"),
+          selection.workItem.name || t("common:placeholders.untitled"),
           selection.projectSlug,
           undefined,
           undefined,
@@ -284,6 +275,7 @@ const WorkManagementProjectsSurface: React.FC<{
           isActive
           workStationTabId="work-management-projects"
           workstationHeaderHost="workManagement"
+          splitHeaderLeading={splitDatasetControl}
           onProjectSlugResolved={setSelectedProjectSlug}
           onOpenProjects={handleOpenProjects}
           onCreateProject={handleCreateProject}
@@ -321,6 +313,8 @@ const WorkManagementProjectsSurface: React.FC<{
             onOpenLinearProject={handleOpenLinearProjects}
             allowExternalSources={activeOrgScope === STORY_ORG_SCOPE.ALL}
             publishToWorkstationHeader
+            surfaceOwnedHeader
+            surfaceHeaderLeading={surfaceDatasetControl}
             workStationTabId="work-management-projects"
             workstationHeaderHost="workManagement"
           />
@@ -331,6 +325,7 @@ const WorkManagementProjectsSurface: React.FC<{
             breadcrumbSegments={[]}
             workStationTabId="work-management-projects"
             workstationHeaderHost="workManagement"
+            splitHeaderLeading={splitDatasetControl}
             orgId={scopedOrgId}
             onCreateProject={handleCreateProject}
             onCreateWorkItem={handleCreateWorkItem}
@@ -382,6 +377,8 @@ const WorkManagementProjectsSurface: React.FC<{
     selectedProjectSlug,
     activeOrgScope,
     scopedOrgId,
+    splitDatasetControl,
+    surfaceDatasetControl,
     t,
     view,
   ]);

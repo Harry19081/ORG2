@@ -9,14 +9,15 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Placeholder } from "@src/components/Placeholder";
 import {
   type DiffFileNavigationItem,
   type DiffFileSectionData,
   DiffSectionList,
 } from "@src/modules/WorkStation/shared";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { DiffViewMode } from "@src/types/git/types";
+import { openFileInWorkStation } from "@src/util/ui/openFileInWorkStation";
 
 import type { DiffReplayTab } from "./types";
 import type { SubmissionRepoContext } from "./useSubmissionsData";
@@ -124,6 +125,7 @@ export function useDiffDetailContent({
 
     return (
       <DiffSectionList
+        enableReviewSearch
         sections={consolidatedSections}
         viewMode={diffViewMode}
         loading={orgtrackFinalDiffsLoading}
@@ -135,6 +137,10 @@ export function useDiffDetailContent({
         focusedNonce={focusedDiffNonce}
         collapseSignal={collapseAllSignal}
         collapseThreshold={3}
+        repoPath={fallbackRepoContext.repoPath}
+        onFileSelect={
+          fallbackRepoContext.repoPath ? openFileInWorkStation : undefined
+        }
         hideBottomPadding
       />
     );

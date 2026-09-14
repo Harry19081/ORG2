@@ -116,7 +116,7 @@ impl Tool for InspectTerminalsTool {
     }
 
     fn description(&self) -> &str {
-        "Inspect and control live ORGII-managed terminal sessions: list sessions, read recent output, write input, or close a session."
+        "Inspect and control live ORG2-managed terminal sessions: list sessions, read recent output, write input, or close a session."
     }
 
     fn category(&self) -> &str {
@@ -130,8 +130,9 @@ impl Tool for InspectTerminalsTool {
     async fn execute_text(
         &self,
         params: Value,
-        _ctx: &crate::tools::traits::CallContext,
+        ctx: &crate::tools::traits::CallContext,
     ) -> Result<String, ToolError> {
+        ctx.require_tool_authority(self.name())?;
         let params: InspectTerminalsParams = parse_params_described(params)?;
 
         match params.action.as_str() {

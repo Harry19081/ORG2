@@ -3,6 +3,9 @@ import type { SetStateAction } from "react";
 import { wasRecentlyOptimisticallyStarted } from "@src/engines/SessionCore/control/optimisticTurnStatus";
 import { getTurnIntentDispatch } from "@src/engines/SessionCore/control/turnIntentDispatchLifecycle";
 import {
+  getLastTurnTerminal,
+  getTurnGeneration,
+  isTurnActive,
   markTurnRunning,
   markTurnTerminal,
   toTurnTerminalStatus,
@@ -17,7 +20,7 @@ import type {
   SessionEvent,
   SessionLoadStatus,
 } from "@src/engines/SessionCore/core/types";
-import { type SessionStatus, updateSessionStatus } from "@src/store/session";
+import { updateSessionStatus } from "@src/store/session";
 import type {
   ContextBreakdown,
   ContextUsageSnapshot,
@@ -26,7 +29,8 @@ import type {
 import type { CliSessionStatus } from "@src/types/session/session";
 import { isSessionRuntimeExecuting } from "@src/util/session/sessionRuntimeExecuting";
 
-import { toCliSessionStatus } from "./sessionSyncUtils";
+import type { NativeHistoryLoadRevision } from "./nativeHistoryLoadRevision";
+import { toCliSessionStatus, toSessionListStatus } from "./sessionSyncUtils";
 import type {
   EventHandlerCallbacks,
   PostLoadResult,
@@ -34,6 +38,8 @@ import type {
 } from "./types";
 
 type LoadSessionPayload = {
+  storeHydrated?: boolean;
+  nativeHistoryRevision?: NativeHistoryLoadRevision;
   sessionId: string;
   events: SessionEvent[];
   isFromCache?: boolean;
@@ -92,7 +98,10 @@ export interface SessionEventHandlerStateActions {
    * native-store parse once a terminal status lands. No-op for legacy
    * (chunk-persisted) sessions.
    */
-  scheduleNativeTranscriptReconcile?: (sessionId: string) => void;
+  scheduleNativeTranscriptReconcile?: (
+    sessionId: string,
+    terminalStatus: string
+  ) => void;
 }
 
 const TERMINAL_HANDLER_STATUSES = new Set<string>([
@@ -107,6 +116,50 @@ const RUNNING_HANDLER_STATUSES = new Set<string>([
   "waiting_for_user",
   "waiting_for_funds",
 ]);
+
+interface PostLoadLifecycleSnapshot {
+  readonly lastTerminal: ReturnType<typeof getLastTurnTerminal>;
+  readonly generation: number;
+}
+
+/**
+ * Capture the terminal edge visible when an async adapter post-load begins.
+ * Object identity is intentional: every accepted terminal replaces the
+ * lifecycle record, so a later comparison detects even two terminals in the
+ * same millisecond without relying on wall-clock ordering.
+ */
+export function capturePostLoadLifecycleSnapshot(
+  sessionId: string
+): PostLoadLifecycleSnapshot {
+  return {
+    lastTerminal: getLastTurnTerminal(sessionId),
+    generation: getTurnGeneration(sessionId),
+  };
+}
+
+interface ApplyPostLoadResultOptions {
+  readonly lifecycleSnapshot?: PostLoadLifecycleSnapshot;
+  /** Reconcile may accept a terminal only if no newer dispatch won the race. */
+  readonly acceptTerminalForUnchangedGeneration?: boolean;
+}
+
+/**
+ * A post-load `running` snapshot must not resurrect a turn that reached a
+ * provider terminal while the DB/runtime read was in flight.
+ */
+export function isPostLoadRunStatusSuperseded(
+  sessionId: string,
+  runStatus: string | undefined,
+  snapshot: PostLoadLifecycleSnapshot | undefined
+): boolean {
+  return Boolean(
+    snapshot &&
+    runStatus &&
+    RUNNING_HANDLER_STATUSES.has(runStatus) &&
+    getLastTurnTerminal(sessionId) !== snapshot.lastTerminal
+  );
+}
+
 export function resetSessionSwitchState(
   actions: SessionSwitchStateActions,
   sessionId?: string,
@@ -148,7 +201,8 @@ export function applyPostLoadResult(
     | "setSessionContextUsage"
     | "setSessionRuntimeStatus"
     | "setSessionRuntimeError"
-  >
+  >,
+  options: ApplyPostLoadResultOptions = {}
 ): void {
   if (!postResult) return;
   if (postResult.contextTokens !== undefined) {
@@ -158,15 +212,55 @@ export function applyPostLoadResult(
     actions.setSessionContextUsage(postResult.contextUsage);
   }
   if (postResult.runStatus !== undefined) {
-    actions.setSessionRuntimeStatus(toCliSessionStatus(postResult.runStatus));
+    if (
+      isPostLoadRunStatusSuperseded(
+        sessionId,
+        postResult.runStatus,
+        options.lifecycleSnapshot
+      )
+    ) {
+      return;
+    }
+    if (
+      TERMINAL_HANDLER_STATUSES.has(postResult.runStatus) &&
+      isTurnActive(sessionId)
+    ) {
+      // postLoad reads a point-in-time DB status. Right after an abort the
+      // row is still terminal ("cancelled") while a follow-up turn is
+      // already dispatching/working — applying that stale terminal would
+      // close the live turn's FSM and flip the composer mid-run. The live
+      // status broadcast owns the transition; skip the stale snapshot.
+      const acceptsReconcileTerminal = Boolean(
+        options.acceptTerminalForUnchangedGeneration &&
+        options.lifecycleSnapshot &&
+        getTurnGeneration(sessionId) === options.lifecycleSnapshot.generation
+      );
+      if (!acceptsReconcileTerminal) return;
+    }
+    // `PostLoadResult.runStatus` is the raw wire string. Narrow it ONCE here
+    // and feed both destinations from the narrowed value: the runtime atom and
+    // the session-list row. Casting the raw string into `Session.status` let
+    // values outside the union (and the CLI-only `installing`) reach sidebar
+    // grouping, Kanban lanes and every terminal-status predicate.
+    const runStatus = toCliSessionStatus(postResult.runStatus);
     if (TERMINAL_HANDLER_STATUSES.has(postResult.runStatus)) {
-      markTurnTerminal(sessionId, toTurnTerminalStatus(postResult.runStatus));
+      const accepted = markTurnTerminal(
+        sessionId,
+        toTurnTerminalStatus(postResult.runStatus),
+        {
+          generation: options.acceptTerminalForUnchangedGeneration
+            ? options.lifecycleSnapshot?.generation
+            : undefined,
+        }
+      );
+      if (!accepted) return;
     } else if (RUNNING_HANDLER_STATUSES.has(postResult.runStatus)) {
       // Restored a session whose turn is still in flight — open the turn so
       // queueing decisions see it as active until the provider terminal lands.
-      markTurnRunning(sessionId);
+      if (!markTurnRunning(sessionId)) return;
     }
-    updateSessionStatus(sessionId, postResult.runStatus as SessionStatus);
+    actions.setSessionRuntimeStatus(runStatus);
+    updateSessionStatus(sessionId, toSessionListStatus(runStatus));
   }
   if (postResult.runError !== undefined) {
     actions.setSessionRuntimeError(postResult.runError);
@@ -240,25 +334,46 @@ export function createSessionEventHandlerCallbacks(
       // session status. Finality attribution and presentation state must move
       // together or not at all.
       if (terminalDispatch && terminalDispatch.sessionId !== sessionId) return;
-      actions.setSessionRuntimeStatus(toCliSessionStatus(status));
-      if (status === "failed" && errorMessage) {
-        actions.setSessionRuntimeError(errorMessage);
+      // The same rule applies across turns of one session. A delayed terminal
+      // from generation N must not flip the runtime mirror to completed after
+      // the user has already reserved generation N+1 during native-history
+      // preparation; markTurnTerminal rejects it, so reject the presentation
+      // writes here as well.
+      if (
+        terminalDispatch &&
+        terminalDispatch.generation !== getTurnGeneration(sessionId)
+      ) {
+        return;
       }
+      // `status` is the raw wire string off the provider event. Narrow once so
+      // the runtime atom and the session-list row below are both written from
+      // a validated value rather than an `as` cast.
+      const cliStatus = toCliSessionStatus(status);
+      let lifecycleAccepted = true;
       if (TERMINAL_HANDLER_STATUSES.has(status)) {
         // Turn finality has exactly one ingestion point: a terminal status
         // here. Intermediate signals already returned above.
-        markTurnTerminal(
+        lifecycleAccepted = markTurnTerminal(
           sessionId,
           toTurnTerminalStatus(meta?.turnStatus ?? status),
           { generation: terminalDispatch?.generation }
         );
+      } else if (isSessionRuntimeExecuting(status)) {
+        lifecycleAccepted = markTurnRunning(sessionId);
+      }
+      if (!lifecycleAccepted) return;
+
+      actions.setSessionRuntimeStatus(cliStatus);
+      if (status === "failed" && errorMessage) {
+        actions.setSessionRuntimeError(errorMessage);
+      }
+      if (TERMINAL_HANDLER_STATUSES.has(status)) {
         actions.setPendingCancel(false);
         eventStoreProxy.unpinSession(sessionId);
-        updateSessionStatus(sessionId, status as SessionStatus);
-        actions.scheduleNativeTranscriptReconcile?.(sessionId);
+        updateSessionStatus(sessionId, toSessionListStatus(cliStatus));
+        actions.scheduleNativeTranscriptReconcile?.(sessionId, status);
       }
       if (isSessionRuntimeExecuting(status)) {
-        markTurnRunning(sessionId);
         actions.setSessionRuntimeError(null);
         eventStoreProxy.pinSession(sessionId);
         actions.setSessionRolledBack(false);
@@ -269,8 +384,10 @@ export function createSessionEventHandlerCallbacks(
         actions.dismissCanvasAtNewTurn(sessionId);
       }
     },
-    onTokenUpdate: (tokens) => {
+    onTokenUpdate: (tokens, contextUsage) => {
       actions.setSessionContextTokens(tokens);
+      if (contextUsage !== undefined)
+        actions.setSessionContextUsage(contextUsage);
     },
     onStreamingDelta: (info) => {
       updateStreamingDeltaContent(

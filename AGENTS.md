@@ -2,9 +2,11 @@
 
 This file orients Codex / orgii agents working in this repo. It tells you **which audit / methodology skill to invoke** for which kind of task, and what to deliver before declaring work done.
 
-> Cursor IDE users: live UI-feature delivery rules live in `.cursor/rules/ui-feature-workflow.mdc`. This file does **not** replace those — it's about skill routing for AI agents, not unit-test gates.
+> Test conventions — where a test file belongs, how to name it, and what each
+> suite actually runs — live in `.github/CONTRIBUTING.md` under **Where tests live**.
+> This file does not restate them; it is about skill routing.
 
-This is **advisory**, not a hard contract. Use judgment based on PR size and risk.
+Skill routing is **advisory**; use judgment based on PR size and risk. Explicit implementation conventions and delivery contracts below still apply, including when an audit is skipped.
 
 ---
 
@@ -21,11 +23,11 @@ This is **advisory**, not a hard contract. Use judgment based on PR size and ris
 
 Skills live at:
 
-- `~/.orgii/skills/architecture-audit/SKILL.md` (user-global)
-- `~/.orgii/skills/frontend-ui-audit/SKILL.md` (user-global)
-- `.orgii/skills/architecture-audit/SKILL.md` (workspace copy, if present)
+- `.orgii/skills/architecture-audit/SKILL.md` (workspace)
+- `.orgii/skills/frontend-ui-audit/SKILL.md` (workspace)
 - `.orgii/skills/react-best-practices/SKILL.md` (workspace; ORGII overlay for Vercel's React guidance)
 - `.orgii/skills/e2e-testing/SKILL.md` (workspace)
+- `.orgii/skills/dual-instance-verification/SKILL.md` (workspace; 双机实测 protocol for cloud sync / sharing)
 - `.orgii/skills/org2-performance-guard/SKILL.md` (workspace)
 
 If the skill block isn't already prefetched in your context, read its `SKILL.md` before acting on it.
@@ -51,6 +53,27 @@ Review gate: any UI predicate introduced to hide malformed data must cite an exp
 ---
 
 ## Default Delivery Flow
+
+### UI copy conventions
+
+- Settings-row descriptions must not end in sentence-ending punctuation (`.` or `。`) in any locale. Internal punctuation between sentences is allowed.
+
+### Shared Button convention
+
+- Production React action buttons MUST use `Button` from `@src/components/Button`, or an existing reusable control built on it. Do not introduce raw `<button>` elements or `createElement("button", ...)` outside the shared Button implementation. Do not bypass this rule with clickable `div`/`span` elements, `role="button"`, or `<input type="button">`.
+- Read the current `ButtonProps` and presentation definitions in `src/components/Button/` before adding or changing button presentation. Match the surrounding toolbar, row, panel, or form through shared props instead of copying per-site button styling.
+- Choose `variant` for semantic importance and `appearance` for the surface: for example, `soft` for compact hover-fill actions, `soft-no-drop` for a transparent button layer, and `ghost` for text-color-only hover. Use the appropriate primary, secondary, tertiary, or destructive treatment for the action and its neighbors.
+- Match the surrounding dimensions with `size`: `sidebar` (20px), `mini` (24px), `small` (28px), `default` (32px), or `large` (40px). Use `inline` for text actions that inherit surrounding typography without a fixed height. Preserve intentional caller-owned geometry, including widths that collapse until hover; shared inline dimensions must not override that behavior.
+- For icon actions, use `iconOnly` with the glyph passed through `icon={...}`; default-layout `iconOnly` does not render children. Provide an accessible name such as `aria-label` and preserve useful tooltips.
+- Use `disabled`, `loading`, and `htmlType` rather than recreating their behavior. `htmlType` defaults to `"button"`; specify `"submit"` or `"reset"` when intended. Preserve refs, event propagation, keyboard behavior, and state semantics (`aria-pressed` for toggles, `aria-expanded` for disclosures).
+- Reserve `layout="custom"` and `appearance="custom"` for compound controls whose direct children, geometry, or token-based surface cannot be expressed through standard Button props, such as menu rows, switch tracks, tabs, or selectable cards. Document the concrete reason in the reusable component or audit report. Custom props are not a shortcut for ordinary actions; reuse or extend an existing control family instead of duplicating its styling at each call site.
+- Native buttons are allowed at genuine non-React boundaries, such as CodeMirror `GutterMarker.toDOM` and bootstrap fallback HTML, where rendering the React component is unavailable. Document why the boundary requires native DOM. These exceptions do not authorize raw buttons in React components. Test fixtures and displayed code examples are not production button sites.
+
+Before completing any change that adds or modifies action controls, inspect the changed production files and diff for raw button JSX, native button creation, and substitute clickable elements. Resolve new bypasses or document the concrete non-React exception. Use source/AST inspection to distinguish rendered controls from comments, fixtures, and example strings; a regex count alone is insufficient. This check applies even when `frontend-ui-audit` is skipped and is an author/review obligation, not an automatic lint or CI gate.
+
+### Shared input convention
+
+Production form and search fields must use shared `Input`, `Textarea`, `Checkbox`, `Radio`, or `Select` as appropriate. For an existing search, URL, grid, or editor shell, prefer bare appearance and element-level style/class props so the shell keeps its geometry. Adapt the shared component's value/event callback contract explicitly and preserve native refs, selection, labels, keyboard handling, and resize limits. Keep native elements only within reusable primitive implementations or documented browser-specific boundaries such as hidden file inputs and native color/range controls. Include `.ts` React `createElement` calls as well as JSX in source checks.
 
 ### Touching `*.tsx` files (UI work)
 
@@ -79,6 +102,17 @@ Run `org2-performance-guard` whenever a change adds or modifies polling, timers,
 ### Pull request contract
 
 Every pull request created or updated by an agent MUST follow these rules.
+Before touching a pull request, read `.github/PR_RULES.md`; it is the tracked,
+repository-wide source of truth shared by Codex, Claude, Cursor, and human
+contributors. If this section and `.github/PR_RULES.md` ever differ, follow
+`.github/PR_RULES.md` and fix the stale adapter in the same pull request.
+
+Dependabot-generated descriptions have the narrow exception documented in
+`.github/PR_RULES.md`; title and build/security checks still apply.
+
+Hard gates: one responsibility; a scoped Conventional Commit title; the
+required `Problem`, `Solution`, `Potential risks`, and `Verification` sections;
+and a final GitHub read-back of the published pull request.
 
 #### Single responsibility
 
@@ -166,10 +200,14 @@ order:
 
 #### Draft, ready, and review lifecycle
 
-- Keep the PR in Draft while material design choices, known blockers, required
-  migrations, or risk-proportionate verification remain incomplete.
-- Mark the PR ready only when its acceptance criteria are met and the
-  description reflects the current implementation.
+- Open pull requests ready for review by default. Incomplete verification,
+  unverified paths, and missing visual evidence are not reasons to use Draft;
+  disclose them in `Potential risks` and `Verification`.
+- Use Draft only when the author asks for it, or when material design choices,
+  a known blocker, or an incomplete migration mean the change must not be
+  reviewed yet.
+- Mark a Draft ready once those resolve and the description reflects the
+  implementation.
 - If scope, behavior, or the chosen solution changes materially after review
   begins, update the description and notify reviewers instead of silently
   changing direction.
@@ -181,9 +219,8 @@ order:
 - It does **not** force every PR to produce an audit report. Single bug fixes, copy tweaks, hotfix patches → just ship.
 - It does **not** make `react-best-practices` a gate for every `*.tsx` edit. Styling, copy, ordinary UI assembly, and routine single-file bug fixes do not trigger it unless performance is explicitly in scope.
 - It does **not** replace the skills' own `When NOT To Use` rules.
-- It does **not** replace `.cursor/rules/ui-feature-workflow.mdc` for human/Cursor flow (unit tests + TEST_CASES.md + acceptance criteria). Those gates are about delivery quality; this routing is about which methodology to apply.
 - It does **not** mandate any commit-message format (commitlint handles that), any lint rule, or any pre-commit hook. Audit reports are docs, not gates.
-- It does **not** lock in skill content. If `~/.orgii/skills/*/SKILL.md` updates, this file's routing still applies — read the current SKILL.md, not your memory of it.
+- It does **not** lock in skill content. If `.orgii/skills/*/SKILL.md` updates, this file's routing still applies — read the current SKILL.md, not your memory of it.
 
 ---
 

@@ -1,10 +1,11 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@src/components/Button";
 import Markdown from "@src/components/MarkDown";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
-export interface CaptionBarProps {
+interface CaptionBarProps {
   text: string;
   getPortalBounds?: () => { left: number; right: number } | null;
 }
@@ -77,7 +78,7 @@ const CaptionBar: React.FC<CaptionBarProps> = memo(
       ? createPortal(
           <div
             ref={panelRef}
-            className="fixed z-[9999] flex -translate-x-1/2 items-center rounded-lg border border-solid border-border-2 bg-chat-input p-3 text-text-1 shadow-md"
+            className="fixed z-9999 flex -translate-x-1/2 items-center rounded-lg border border-solid border-border-2 bg-chat-input p-3 text-text-1 shadow-md"
             style={{
               top: panelPosition.top,
               left: panelPosition.left,
@@ -87,7 +88,7 @@ const CaptionBar: React.FC<CaptionBarProps> = memo(
             onClick={(event) => event.stopPropagation()}
           >
             <div
-              className="chat-text overflow-y-auto text-[13px] leading-relaxed text-text-1 scrollbar-hide"
+              className="chat-text scrollbar-hide overflow-y-auto text-[13px] leading-relaxed text-text-1"
               style={{ maxHeight: panelPosition.maxHeight }}
             >
               <Markdown
@@ -109,13 +110,15 @@ const CaptionBar: React.FC<CaptionBarProps> = memo(
         data-testid="simulator-caption-bar"
       >
         {expandedPanel}
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={handleToggle}
           className="flex h-7 w-full max-w-full cursor-pointer items-center px-3 text-[13px] text-text-2 transition-colors hover:text-text-1"
         >
           <span className="truncate">{text}</span>
-        </button>
+        </Button>
       </div>
     );
   }

@@ -3,8 +3,8 @@ export { default as CommandResultCard } from "./CommandResultCard";
 export { default as OrgtrackEnvelopeCard } from "./OrgtrackEnvelopeCard";
 export { default as FileCard } from "./FileCard";
 export { default as SessionLinkCard } from "./SessionLinkCard";
-export type { SessionLinkCardData } from "./SessionLinkCard";
+
 export { default as ProjectCard } from "./ProjectCard";
-export { TaskListCard, default as TaskUpdateCard } from "./TaskUpdateCard";
+export { TaskListCard } from "./TaskUpdateCard";
 export { default as WebsiteCard } from "./WebsiteCard";
 export { default as WorkItemCard } from "./WorkItemCard";

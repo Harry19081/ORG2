@@ -16,15 +16,22 @@
  *   6. Otherwise              → Submit (arrow up, inactive color, noop)
  */
 import { useAtomValue } from "jotai";
-import { ArrowUp, RotateCcw, Square } from "lucide-react";
 import React, { memo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Message from "@src/components/Message";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import {
+  ArrowUp02Icon,
+  HugeiconsIcon,
+  RotateLeft01Icon,
+  SendIcon,
+  SquareIcon,
+} from "@src/icons";
 import { chatAppearanceAtom } from "@src/store/config/configAtom";
 
 import {
@@ -55,6 +62,7 @@ interface InputActionsProps {
   onResume: () => Promise<void>;
   tone?: "primary" | "warning";
   submitDisabled?: boolean;
+  commentMode?: boolean;
 }
 
 const InputActions: React.FC<InputActionsProps> = memo(
@@ -71,9 +79,13 @@ const InputActions: React.FC<InputActionsProps> = memo(
     onResume,
     tone = "primary",
     submitDisabled = false,
+    commentMode = false,
   }) => {
     const { t } = useTranslation();
     const { sendOnEnter } = useAtomValue(chatAppearanceAtom);
+    const sendShortcut = useShortcutKeys("chat_send", {
+      chatSendOnEnter: sendOnEnter,
+    });
     const lastInputActionRef = useRef<InputActionGuardState | null>(null);
 
     // Non-empty input ALWAYS wins over the working indicator: the user can
@@ -145,12 +157,14 @@ const InputActions: React.FC<InputActionsProps> = memo(
     // layer-promotion shake explanation. `transition-colors` keeps the
     // 200ms animation limited to the background swap.
     const baseClass = `flex ${INPUT_AREA_BUTTONS.iconButtonSizeClass} shrink-0 items-center justify-center rounded-full transition-colors duration-200 focus:outline-none`;
-    const activeButtonClass =
-      tone === "warning"
+    const activeButtonClass = commentMode
+      ? "cursor-pointer border-none bg-purple-6 text-white hover:bg-purple-5"
+      : tone === "warning"
         ? "cursor-pointer border-none bg-warning-6 text-white hover:bg-warning-5"
         : INPUT_AREA_BUTTONS.iconButtonActive;
-    const inactiveButtonClass =
-      tone === "warning"
+    const inactiveButtonClass = commentMode
+      ? "border-none bg-purple-6 text-white opacity-50"
+      : tone === "warning"
         ? "border-none bg-warning-6 text-white opacity-50"
         : INPUT_AREA_BUTTONS.iconButtonInactive;
 
@@ -160,7 +174,7 @@ const InputActions: React.FC<InputActionsProps> = memo(
         : activeButtonClass
       : showStop
         ? canStopAgent
-          ? "cursor-pointer border-none bg-text-2 text-white hover:bg-text-1"
+          ? INPUT_AREA_BUTTONS.iconButtonActive
           : "cursor-not-allowed border border-solid border-border-2 bg-transparent text-text-3 opacity-50"
         : showRetry
           ? "cursor-pointer border-none bg-warning-6 text-white hover:bg-warning-5"
@@ -190,12 +204,14 @@ const InputActions: React.FC<InputActionsProps> = memo(
           : "submit";
 
     // `lineHeight: 0` + `block` SVGs eliminate the inline-flow descender
-    // that lucide icons inherit by default. Without this, surrounding
+    // that icon SVGs inherit by default. Without this, surrounding
     // toolbar re-layout (hover, tooltip mount, focus ring) nudges the
     // icon by a sub-pixel amount and the ArrowUp visually "shakes".
     const buttonNode = (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onClick={handleClick}
         disabled={disabled}
         className={`${baseClass} ${stateClass} leading-none`}
@@ -205,24 +221,34 @@ const InputActions: React.FC<InputActionsProps> = memo(
       >
         {showStop && !showSubmit ? (
           canStopAgent ? (
-            <Square size={10} fill="currentColor" strokeWidth={0} />
+            <HugeiconsIcon
+              icon={SquareIcon}
+              data-icon="square"
+              size={10}
+              fill="currentColor"
+              strokeWidth={0}
+            />
           ) : (
             <div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
           )
         ) : showRetry ? (
-          <RotateCcw
+          <HugeiconsIcon
+            icon={RotateLeft01Icon}
+            data-icon="rotate-ccw"
             size={INPUT_AREA_BUTTONS.iconSize}
             strokeWidth={2}
             className="block text-[#fff]"
           />
         ) : (
-          <ArrowUp
+          <HugeiconsIcon
+            icon={commentMode ? SendIcon : ArrowUp02Icon}
+            data-icon={commentMode ? "send" : "arrow-up"}
             size={INPUT_AREA_BUTTONS.iconSize}
             strokeWidth={2}
             className="block text-[#fff]"
           />
         )}
-      </button>
+      </Button>
     );
 
     // Stop / Retry / Working states have no keyboard shortcut — show a plain
@@ -237,9 +263,7 @@ const InputActions: React.FC<InputActionsProps> = memo(
     const tooltipContent = isSendLike ? (
       <KeyboardShortcutTooltipContent
         label={sendTooltipLabel}
-        shortcut={getShortcutKeys("chat_send", {
-          chatSendOnEnter: sendOnEnter,
-        })}
+        shortcut={sendShortcut}
       />
     ) : (
       title

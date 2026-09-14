@@ -4,10 +4,11 @@
  * A simple collapsible section for the DesignPanel.
  * Follows the same styling as PanelSectionHeader.
  */
-import { ChevronDown, ChevronRight } from "lucide-react";
 import React, { memo, useEffect } from "react";
 
+import Button from "@src/components/Button";
 import { useCollapsible } from "@src/hooks/ui/useCollapsible";
+import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
 // ============================================
 // Types
@@ -86,46 +87,54 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
 
     useEffect(() => {
       if (collapseAllKey !== undefined) close();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [collapseAllKey]);
+    }, [collapseAllKey, close]);
 
     useEffect(() => {
       if (expandAllKey !== undefined) open();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [expandAllKey]);
+    }, [expandAllKey, open]);
 
     return (
       <div className="mb-2 last:mb-0">
         {/* Header */}
         <div className="flex items-center gap-1.5 py-1.5">
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             onClick={handleToggle}
             className="flex flex-1 items-center gap-1.5 text-left"
           >
             {isExpanded ? (
-              <ChevronDown size={14} className="flex-shrink-0 text-text-3" />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                data-icon="chevron-down"
+                size={14}
+                className="shrink-0 text-text-3"
+              />
             ) : (
-              <ChevronRight size={14} className="flex-shrink-0 text-text-3" />
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                data-icon="chevron-right"
+                size={14}
+                className="shrink-0 text-text-3"
+              />
             )}
-            <span className="flex-1 text-[12px] font-medium uppercase text-text-2">
+            <span className="flex-1 text-[12px] font-medium text-text-2 uppercase">
               {title}
             </span>
             {rightContent && (
               <span className="text-[11px] text-text-3">{rightContent}</span>
             )}
-          </button>
+          </Button>
           {headerActions && (
             <div className="flex items-center">{headerActions}</div>
           )}
         </div>
 
         {/* Content */}
-        {isExpanded && <div className="pb-2 pt-2">{children}</div>}
+        {isExpanded && <div className="pt-2 pb-2">{children}</div>}
       </div>
     );
   }
 );
 
 CollapsibleSection.displayName = "CollapsibleSection";
-
-export default CollapsibleSection;

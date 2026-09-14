@@ -1,25 +1,21 @@
-import { ChevronsUpDown } from "lucide-react";
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useAtomValue } from "jotai";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { AgentOrgRunMemberView, AgentOrgTask } from "@src/api/tauri/agent";
 import Button from "@src/components/Button";
+import { useChatSearchPanePresentation } from "@src/engines/ChatPanel/ChatHistory/hooks/chatSearch";
+import { useTranscriptViewport } from "@src/engines/ChatPanel/ChatHistory/viewport/useTranscriptViewport";
 import { useStreamingDeltaForSession } from "@src/engines/SessionCore";
+import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
 import {
   derivePlanApprovalViewState,
   isPlanDisplayEvent,
 } from "@src/engines/SessionCore/derived/planDisplayEvents";
 import { usePendingPlanApproval } from "@src/hooks/session/usePendingPlanApproval";
+import { HugeiconsIcon, UnfoldMoreIcon } from "@src/icons";
 import type { SessionReplayPlaceholderMode } from "@src/modules/WorkStation/shared";
 
-import { isEmailBubbleEvent } from "./EmailMessageBubble";
 import { EmptyState } from "./EmptyState";
 import {
   BubbleWrapper,
@@ -37,6 +33,7 @@ import {
 } from "./MessageViewer/planDocViewModel";
 import { PlanDocPanel } from "./PlanDocPanel";
 import { TodoKanban } from "./TodoKanban";
+import { isEmailBubbleEvent } from "./emailBubbleEvent";
 import type { MessageEntry, MessageViewMode } from "./types";
 
 function minuteBucket(timestamp: string): number {
@@ -114,6 +111,8 @@ export interface MessageViewerProps {
   orgMembers?: ReadonlyArray<AgentOrgRunMemberView>;
   /** Durable task snapshot for Agent Org sessions. Undefined for ordinary sessions. */
   agentOrgTasks?: ReadonlyArray<AgentOrgTask>;
+  /** Shared chat-search sync: drop panel-local selection when the active match moves. */
+  onSearchActiveEventChange?: (eventId: string | null) => void;
 }
 
 export const MessageViewer: React.FC<MessageViewerProps> = ({
@@ -131,16 +130,14 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
   setViewMode,
   orgMembers,
   agentOrgTasks,
+  onSearchActiveEventChange,
 }) => {
   const handleNavigateToTodoList = useCallback(() => {
     setViewMode?.("todo");
   }, [setViewMode]);
   const { t } = useTranslation(["common", "sessions"]);
+  const sessionId = useAtomValue(sessionIdAtom);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const loadMoreScrollAnchorRef = useRef<{
-    scrollTop: number;
-    scrollHeight: number;
-  } | null>(null);
   const replayWindowKey = `${viewMode}:${currentEventId ?? ""}`;
   const initialRenderedMessageCount =
     viewMode === "chat" || viewMode === "todo"
@@ -174,15 +171,41 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
   );
   const liveContentLength =
     latestLiveDelta?.kind === "message" ? latestLiveDelta.content.length : 0;
+  const viewportContentKey = `${replayWindowKey}:${messages.length}:${lastMessageId ?? ""}:${liveContentLength}`;
+  const {
+    detachForNavigation,
+    handleScroll,
+    preserveForLayoutMutation,
+    setScrollRoot,
+  } = useTranscriptViewport({
+    sessionKey: `${sessionId ?? "session"}:${sessionReplayMode}:${viewMode}`,
+    contentKey: viewportContentKey,
+    itemCount: visibleMessages.length,
+  });
+  const setScrollContainer = useCallback(
+    (node: HTMLDivElement | null) => {
+      scrollContainerRef.current = node;
+      setScrollRoot(node);
+    },
+    [setScrollRoot]
+  );
+  const handleSearchActiveEventChange = useCallback(
+    (eventId: string | null) => {
+      if (eventId) detachForNavigation();
+      onSearchActiveEventChange?.(eventId);
+    },
+    [detachForNavigation, onSearchActiveEventChange]
+  );
+  const { activeEventId: activeSearchEventId } = useChatSearchPanePresentation({
+    sessionId,
+    highlightRootRef: scrollContainerRef,
+    scrollRootRef: scrollContainerRef,
+    onActiveEventChange: handleSearchActiveEventChange,
+    layoutKey: `${viewMode}:${currentEventId ?? ""}:${messages.length}`,
+  });
 
   const handleLoadMoreMessages = useCallback(() => {
-    const scrollContainer = scrollContainerRef.current;
-    loadMoreScrollAnchorRef.current = scrollContainer
-      ? {
-          scrollTop: scrollContainer.scrollTop,
-          scrollHeight: scrollContainer.scrollHeight,
-        }
-      : null;
+    preserveForLayoutMutation();
 
     setMessageWindow((current) => ({
       key: replayWindowKey,
@@ -193,33 +216,11 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
           : initialRenderedMessageCount) + LOAD_MORE_MESSAGE_COUNT
       ),
     }));
-  }, [initialRenderedMessageCount, messages.length, replayWindowKey]);
-
-  useLayoutEffect(() => {
-    const anchor = loadMoreScrollAnchorRef.current;
-    const scrollContainer = scrollContainerRef.current;
-    if (!anchor || !scrollContainer) return;
-
-    loadMoreScrollAnchorRef.current = null;
-    const heightDelta = scrollContainer.scrollHeight - anchor.scrollHeight;
-    scrollContainer.scrollTop = anchor.scrollTop + heightDelta;
-  }, [renderedMessageCount, visibleMessages.length]);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
-
-    const frameId = requestAnimationFrame(() => {
-      scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    });
-
-    return () => cancelAnimationFrame(frameId);
   }, [
-    currentEventId,
-    lastMessageId,
-    liveContentLength,
+    initialRenderedMessageCount,
     messages.length,
-    viewMode,
+    preserveForLayoutMutation,
+    replayWindowKey,
   ]);
 
   const latestPlanMessage = useMemo(() => {
@@ -310,14 +311,17 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
       data-testid="communication-message-viewer"
     >
       <div
-        ref={scrollContainerRef}
-        className="min-h-0 flex-1 overflow-y-auto px-4 scrollbar-hide"
+        ref={setScrollContainer}
+        data-testid="communication-message-scroll-container"
+        tabIndex={0}
+        className="scrollbar-hide min-h-0 flex-1 overflow-y-auto px-4"
+        onScroll={() => handleScroll()}
       >
         <div
           className={
             viewMode === "chat"
-              ? "flex flex-col gap-2 pb-[120px] pt-3"
-              : "flex flex-col gap-6 pb-[120px] pt-4"
+              ? "flex flex-col gap-2 pt-3 pb-[120px]"
+              : "flex flex-col gap-6 pt-4 pb-[120px]"
           }
         >
           {canLoadMoreMessages && (
@@ -327,7 +331,13 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
                 variant="tertiary"
                 appearance="ghost"
                 size="small"
-                icon={<ChevronsUpDown size={14} />}
+                icon={
+                  <HugeiconsIcon
+                    icon={UnfoldMoreIcon}
+                    data-icon="chevrons-up-down"
+                    size={14}
+                  />
+                }
                 data-testid="communication-load-more-messages"
                 onClick={handleLoadMoreMessages}
               >
@@ -364,6 +374,7 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
                   }
                   showChrome={showChrome}
                   orgMembers={orgMembers}
+                  activeSearchEventId={activeSearchEventId}
                 />
               </React.Fragment>
             );

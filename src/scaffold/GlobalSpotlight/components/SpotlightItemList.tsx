@@ -8,7 +8,6 @@
  *
  * Row rendering is delegated to SpotlightItemRow.
  */
-import { ChevronDown } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -18,15 +17,18 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Placeholder } from "@src/components/Placeholder";
 import { useKeyboardMouseMode } from "@src/hooks/keyboard";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 
+import { SPOTLIGHT_TOKENS } from "../constants";
+import { usePickerVirtualization } from "../hooks/usePickerVirtualization";
 import type { SpotlightItem } from "../types";
-import { ITEM_HEIGHT, SpotlightItemRow } from "./SpotlightItemRow";
+import { SpotlightItemRow, getItemHeight } from "./SpotlightItemRow";
 
 // ============ TYPES ============
 
-export interface SpotlightItemListProps {
+interface SpotlightItemListProps {
   /** Items to render */
   items: SpotlightItem[];
   /** Currently selected index */
@@ -53,11 +55,12 @@ export interface SpotlightItemListProps {
   loadingMessage?: string;
   /** Use fixed height instead of maxHeight (prevents layout shift when items change) */
   fixedHeight?: boolean;
+  /** Fetch the next bounded page when the user scrolls near the end. */
+  onLoadMore?: () => void;
 }
 
 // ============ CONSTANTS ============
 
-const OVERSCAN_COUNT = 5;
 const EMPTY_STATE_DELAY_MS = 350;
 
 // ============ MAIN COMPONENT ============
@@ -76,11 +79,10 @@ export const SpotlightItemList: React.FC<SpotlightItemListProps> = ({
   isLoadingInitial = false,
   loadingMessage,
   fixedHeight = false,
+  onLoadMore,
 }) => {
   const { t } = useTranslation();
   const resolvedLoadingMessage = loadingMessage ?? t("status.loading");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollTop, setScrollTop] = useState(0);
 
   const { isKeyboardMode, handleMouseMove, dataKeyboardMode } =
     useKeyboardMouseMode();
@@ -110,56 +112,39 @@ export const SpotlightItemList: React.FC<SpotlightItemListProps> = ({
     };
   }, [items.length, isLoadingInitial, searchQuery]);
 
-  // Virtual scrolling parameters
-  const totalHeight = items.length * ITEM_HEIGHT;
-  const visibleCount = Math.ceil(containerHeight / ITEM_HEIGHT);
-  const startIndex = Math.max(
-    0,
-    Math.floor(scrollTop / ITEM_HEIGHT) - OVERSCAN_COUNT
+  const stickyIndices = useMemo(
+    () => items.flatMap((item, index) => (item.data?.isHeader ? [index] : [])),
+    [items]
   );
-  const endIndex = Math.min(
-    items.length,
-    startIndex + visibleCount + OVERSCAN_COUNT * 2
+  const useVirtualization = fixedHeight || items.length > 30;
+  const getItemKey = useCallback((index: number) => items[index].id, [items]);
+  const estimateSize = useCallback(
+    (index: number) =>
+      items[index].data?.isHeader
+        ? SPOTLIGHT_TOKENS.itemHeight
+        : getItemHeight(items[index]) + SPOTLIGHT_TOKENS.itemGap,
+    [items]
   );
-
-  const visibleItems = useMemo(() => {
-    return items.slice(startIndex, endIndex);
-  }, [items, startIndex, endIndex]);
-
-  const handleScroll = useCallback(
-    (event: React.UIEvent<HTMLDivElement>) => {
-      setScrollTop(event.currentTarget.scrollTop);
-      onScrollExternal?.(event);
-    },
-    [onScrollExternal]
-  );
-
-  // Scroll selected item into view when selection changes via keyboard
-  useEffect(() => {
-    if (isKeyboardMode && containerRef.current && selectedIndex >= 0) {
-      const selectedElement = containerRef.current.querySelector(
-        `[data-spotlight-item-index="${selectedIndex}"]`
-      ) as HTMLElement;
-
-      if (selectedElement) {
-        selectedElement.scrollIntoView({
-          block: "nearest",
-          behavior: "smooth",
-        });
-      }
-    }
-  }, [selectedIndex, isKeyboardMode]);
-
-  // Virtualization with a single ITEM_HEIGHT causes drift for mixed-height rows,
-  // so we only virtualize when all items are uniform or the caller opts in via fixedHeight.
-  const hasMixedHeights = useMemo(() => {
-    if (items.length === 0) return false;
-    const firstHasDesc = Boolean(items[0].desc);
-    return items.some((item) => Boolean(item.desc) !== firstHasDesc);
-  }, [items]);
-
-  const useVirtualization =
-    fixedHeight || (items.length > 30 && !hasMixedHeights);
+  const {
+    containerRef,
+    stickyIndex,
+    rows: virtualRows,
+    totalSize,
+    handleScroll,
+  } = usePickerVirtualization({
+    stickyIndices,
+    scrollPadding: stickyIndices.length ? SPOTLIGHT_TOKENS.itemHeight : 0,
+    count: items.length,
+    getItemKey,
+    estimateSize,
+    enabled: useVirtualization,
+    containerHeight,
+    selectedIndex,
+    keyboardNavigated: isKeyboardMode,
+    searchQuery,
+    onScrollExternal,
+    onLoadMore,
+  });
 
   const nonVirtualizedContainerRef = useRef<HTMLDivElement>(null);
 
@@ -226,29 +211,42 @@ export const SpotlightItemList: React.FC<SpotlightItemListProps> = ({
     );
   }
 
-  // Non-virtualized rendering for small / mixed-height lists
+  // Small lists keep their natural height; large lists can include mixed rows.
   if (!useVirtualization) {
     return (
       <div
         ref={nonVirtualizedContainerRef}
         className="spotlight-scrollable overflow-y-auto"
-        style={{ maxHeight: containerHeight }}
-        onScroll={onScrollExternal}
+        style={{
+          maxHeight: containerHeight,
+          paddingBottom: SPOTLIGHT_TOKENS.listInset - SPOTLIGHT_TOKENS.itemGap,
+          scrollPaddingTop: stickyIndices.length
+            ? SPOTLIGHT_TOKENS.itemHeight
+            : 0,
+        }}
+        onScroll={handleScroll}
         onMouseMove={handleMouseMove}
         data-keyboard-mode={dataKeyboardMode}
       >
         {items.map((item, idx) => (
-          <SpotlightItemRow
+          <div
             key={item.id}
-            item={item}
-            index={idx}
-            isSelected={selectedIndex === idx}
-            isKeyboardMode={isKeyboardMode}
-            onSelect={onItemSelect}
-            onHover={onItemHover}
-            onHoverEnd={onItemHoverEnd}
-            searchQuery={searchQuery}
-          />
+            className={
+              item.data?.isHeader ? "sticky top-0 z-10 bg-bg-2" : undefined
+            }
+          >
+            <SpotlightItemRow
+              item={item}
+              selectionState={item.data?.selectionState}
+              index={idx}
+              isSelected={selectedIndex === idx}
+              isKeyboardMode={isKeyboardMode}
+              onSelect={onItemSelect}
+              onHover={onItemHover}
+              onHoverEnd={onItemHoverEnd}
+              searchQuery={searchQuery}
+            />
+          </div>
         ))}
 
         {isLoadingMore && (
@@ -262,7 +260,12 @@ export const SpotlightItemList: React.FC<SpotlightItemListProps> = ({
 
         {hasMore && !isLoadingMore && (
           <div className="flex items-center justify-center gap-1 py-3">
-            <ChevronDown className="text-text-4" size={14} />
+            <HugeiconsIcon
+              icon={ArrowDown01Icon}
+              data-icon="chevron-down"
+              className="text-text-4"
+              size={14}
+            />
             <span className="text-[11px] text-text-4">
               {t("placeholders.scrollForMore")}
             </span>
@@ -277,37 +280,41 @@ export const SpotlightItemList: React.FC<SpotlightItemListProps> = ({
     <div
       ref={containerRef}
       className="spotlight-scrollable overflow-y-auto"
-      style={{ height: containerHeight }}
+      style={{
+        height: containerHeight,
+        paddingBottom: SPOTLIGHT_TOKENS.listInset - SPOTLIGHT_TOKENS.itemGap,
+      }}
       onScroll={handleScroll}
       onMouseMove={handleMouseMove}
       data-keyboard-mode={dataKeyboardMode}
     >
-      <div style={{ height: totalHeight, position: "relative" }}>
-        <div
-          style={{
-            position: "absolute",
-            top: startIndex * ITEM_HEIGHT,
-            left: 0,
-            right: 0,
-          }}
-        >
-          {visibleItems.map((item, idx) => {
-            const actualIndex = startIndex + idx;
-            return (
-              <SpotlightItemRow
-                key={item.id}
-                item={item}
-                index={actualIndex}
-                isSelected={selectedIndex === actualIndex}
-                isKeyboardMode={isKeyboardMode}
-                onSelect={onItemSelect}
-                onHover={onItemHover}
-                onHoverEnd={onItemHoverEnd}
-                searchQuery={searchQuery}
-              />
-            );
-          })}
-        </div>
+      <div style={{ height: totalSize, position: "relative" }}>
+        {virtualRows.map((row) => (
+          <div
+            key={row.key}
+            className={
+              items[row.index].data?.isHeader ? "z-10 bg-bg-2" : undefined
+            }
+            style={{
+              position: row.index === stickyIndex ? "sticky" : "absolute",
+              top: row.index === stickyIndex ? 0 : row.start,
+              left: 0,
+              right: 0,
+            }}
+          >
+            <SpotlightItemRow
+              item={items[row.index]}
+              selectionState={items[row.index].data?.selectionState}
+              index={row.index}
+              isSelected={selectedIndex === row.index}
+              isKeyboardMode={isKeyboardMode}
+              onSelect={onItemSelect}
+              onHover={onItemHover}
+              onHoverEnd={onItemHoverEnd}
+              searchQuery={searchQuery}
+            />
+          </div>
+        ))}
       </div>
 
       {isLoadingMore && (
@@ -321,7 +328,12 @@ export const SpotlightItemList: React.FC<SpotlightItemListProps> = ({
 
       {hasMore && !isLoadingMore && (
         <div className="flex items-center justify-center gap-1 py-3">
-          <ChevronDown className="text-text-4" size={14} />
+          <HugeiconsIcon
+            icon={ArrowDown01Icon}
+            data-icon="chevron-down"
+            className="text-text-4"
+            size={14}
+          />
           <span className="text-[11px] text-text-4">
             {t("placeholders.scrollForMore")}
           </span>

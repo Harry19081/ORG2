@@ -7,12 +7,10 @@
  *  - `memory`    — embedded {@link WorkspaceMemoryBrowser}
  *  - `evolution` — empty placeholder, agent-evolution surface lands here
  */
-import { Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { MODEL_TABLE_SWITCH_SIZE } from "@src/components/ModelTable/types";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
@@ -20,7 +18,10 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
+import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { CursorRepo, PolicyInfo } from "@src/hooks/policies";
+import { Add01Icon, Delete02Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
+import SecuritySection from "@src/modules/MainApp/Settings/sections/SecuritySection";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
@@ -40,7 +41,11 @@ import AgentEvolutionPanel from "../Evolution/AgentEvolutionPanel";
 import WorkspaceMemoryBrowser from "../Memory/WorkspaceMemoryBrowser";
 import InlineExternalRulesImport from "./InlineExternalRulesImport";
 
-type RulesMemoryEvolutionPageTab = "rules" | "memory" | "evolution";
+type RulesMemoryEvolutionPageTab =
+  | "rules"
+  | "memory"
+  | "evolution"
+  | "security";
 type RuleScopeFilterKey = "all" | "user" | `workspace:${string}`;
 
 interface RulesMemoryEvolutionTableProps {
@@ -151,12 +156,6 @@ export const RulesMemoryEvolutionTable: React.FC<
     [t]
   );
 
-  const setSingleExpandedRule = (rule: PolicyInfo) => {
-    const ruleKey = getRuleKey(rule);
-    const shouldOpen = !expandedRuleKeys.includes(ruleKey);
-    setExpandedRuleKeys(shouldOpen ? [ruleKey] : []);
-  };
-
   const renderExpandedRuleCard = (rule: PolicyInfo) => (
     <InlineInfoCard>
       <div className="flex min-w-0 flex-col gap-3">
@@ -247,12 +246,16 @@ export const RulesMemoryEvolutionTable: React.FC<
             <Switch
               size={MODEL_TABLE_SWITCH_SIZE}
               checked={rule.enabled}
-              onChange={(enabled) => onToggleMarkdownRule?.(rule, enabled)}
+              onCheckedChange={(enabled) =>
+                onToggleMarkdownRule?.(rule, enabled)
+              }
             />
             <Button
               variant="secondary"
               size="small"
-              icon={<Pencil size={14} />}
+              icon={
+                <HugeiconsIcon icon={Pen01Icon} data-icon="pencil" size={14} />
+              }
               iconOnly
               onClick={() => openRuleInEditor(rule)}
               aria-label={t("common:actions.edit")}
@@ -263,7 +266,13 @@ export const RulesMemoryEvolutionTable: React.FC<
                 variant="danger"
                 appearance="outline"
                 size="small"
-                icon={<Trash2 size={14} />}
+                icon={
+                  <HugeiconsIcon
+                    icon={Delete02Icon}
+                    data-icon="trash-2"
+                    size={14}
+                  />
+                }
                 iconOnly
                 onClick={() => onDeleteMarkdownRule(rule)}
                 aria-label={t("common:actions.remove")}
@@ -289,15 +298,19 @@ export const RulesMemoryEvolutionTable: React.FC<
       { key: "rules", label: t("rulesTabs.rules", "Rules") },
       { key: "memory", label: t("rulesTabs.memory", "Memory") },
       { key: "evolution", label: t("rulesTabs.evolution", "Evolution") },
+      {
+        key: "security",
+        label: tSettings("sections.security"),
+      },
     ],
-    [t]
+    [t, tSettings]
   );
 
   const addRuleButton = (
     <Button
       variant="secondary"
       size="default"
-      icon={<Plus size={14} />}
+      icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       onClick={onAdd}
     >
       {t("addOptions.addRule")}
@@ -333,6 +346,12 @@ export const RulesMemoryEvolutionTable: React.FC<
             <AgentEvolutionPanel />
           </div>
         </ScrollPreservation>
+      ) : activeTab === "security" ? (
+        <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
+          <div className={DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop}>
+            <SecuritySection />
+          </div>
+        </ScrollPreservation>
       ) : (
         <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
           <div className={DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop}>
@@ -349,7 +368,6 @@ export const RulesMemoryEvolutionTable: React.FC<
                     onSelectMarkdownRule(
                       selectedRowId === ruleKey ? null : rule.name
                     );
-                    setSingleExpandedRule(rule);
                   }}
                   headerHeight="tall"
                   className="table-expanded-no-hover table-policy-fixed-layout"

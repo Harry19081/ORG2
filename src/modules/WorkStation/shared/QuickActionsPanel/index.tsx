@@ -19,15 +19,17 @@
  *   />
  */
 import { AnimatePresence, motion } from "framer-motion";
-import { Box } from "lucide-react";
 import React, { memo, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import {
   KEYBOARD_SHORTCUT_VARIANT,
   KeyboardShortcut,
 } from "@src/components/KeyboardShortcut";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { BoxIcon, HugeiconsIcon } from "@src/icons";
 
 import type { QuickAction, QuickActionsPanelProps } from "./types";
 
@@ -74,10 +76,10 @@ const ActionItem = memo<ActionItemProps>(({ action, onAction }) => {
     onAction?.();
   }, [action, onAction]);
 
-  const Icon = action.icon;
-
   return (
-    <button
+    <Button
+      layout="custom"
+      appearance="custom"
       onClick={handleClick}
       disabled={action.disabled}
       className={`flex w-full items-center justify-between px-4 py-2.5 transition-colors ${
@@ -87,8 +89,9 @@ const ActionItem = memo<ActionItemProps>(({ action, onAction }) => {
       }`}
     >
       <div className="flex items-center gap-3">
-        {Icon && (
-          <Icon
+        {action.icon && (
+          <AnyIcon
+            icon={action.icon}
             size={16}
             strokeWidth={1.5}
             className={action.disabled ? "text-text-4" : "text-text-2"}
@@ -108,7 +111,7 @@ const ActionItem = memo<ActionItemProps>(({ action, onAction }) => {
           variant={KEYBOARD_SHORTCUT_VARIANT.workStation}
         />
       )}
-    </button>
+    </Button>
   );
 });
 
@@ -119,9 +122,11 @@ ActionItem.displayName = "ActionItem";
 // ============================================
 
 const AppLogo = memo(() => (
-  <div className="flex justify-center pb-6 pt-2">
+  <div className="flex justify-center pt-2 pb-6">
     <div className="flex h-[120px] w-[120px] items-center justify-center">
-      <Box
+      <HugeiconsIcon
+        icon={BoxIcon}
+        data-icon="box"
         size={80}
         strokeWidth={1}
         className="text-text-4 opacity-40"
@@ -173,7 +178,7 @@ export const QuickActionsPanel = memo<QuickActionsPanelProps>(
       <AnimatePresence>
         {visible && (
           <motion.div
-            className="fixed inset-0 z-[9999] flex items-center justify-center"
+            className="fixed inset-0 z-9999 flex items-center justify-center"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"

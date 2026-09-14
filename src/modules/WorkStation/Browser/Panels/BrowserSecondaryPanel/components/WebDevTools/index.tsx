@@ -11,29 +11,26 @@
  *
  * Elements panel state/effects live in hooks/useWebDevToolsElementsPanel.ts.
  */
-import {
-  HEADER_BUTTON,
-  HEADER_ICON_SIZE,
-} from "@/src/modules/WorkStation/shared/tokens";
-import {
-  CircleMinus,
-  CopyPlus,
-  ListChevronsDownUp,
-  Loader2,
-  RefreshCw,
-  X,
-} from "lucide-react";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import TabPill from "@src/components/TabPill";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
-import { useRatioResize } from "@src/hooks/ui";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { useRatioResize } from "@src/hooks/ui/useRatioResize";
+import {
+  Cancel01Icon,
+  CopyPlusIcon,
+  HugeiconsIcon,
+  ListChevronsDownUpIcon,
+  Loading03Icon,
+  Refresh04Icon,
+} from "@src/icons";
 import {
   PanelPositionToggle,
   PanelTabBar,
-  WorkstationToolbarTooltip,
 } from "@src/modules/WorkStation/shared";
 import type { PanelTabBarTab } from "@src/modules/WorkStation/shared";
 import {
@@ -52,13 +49,7 @@ import { useWebDevToolsElementsPanel } from "./hooks/useWebDevToolsElementsPanel
 import type { ComponentsSubTab, DevToolsTab, WebDevToolsProps } from "./types";
 
 // Re-export types for external use
-export type {
-  ConsoleEntry,
-  FilterLevel,
-  LogLevel,
-  NetworkEntry,
-  WebDevToolsProps,
-} from "./types";
+export type { ConsoleEntry, NetworkEntry } from "./types";
 
 // ============================================
 // Main Component
@@ -140,16 +131,10 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
       handleStyleChange,
       handleStyleEditsUndo,
       handleStyleEditsSend,
-      enrichedSourceLocation,
-      componentDefinition,
-      componentUsages,
-      isLookingUp,
-      isIndexBuilt,
+      sourceLocation,
       openFileAtLine,
       searchForComponent,
       canSearchForComponent,
-      handleBuildIndex,
-      handleClearIndex,
     } = useWebDevToolsElementsPanel({
       isOpen,
       activeTab,
@@ -200,7 +185,7 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                   onToggle={onTogglePosition}
                 />
               )}
-              <WorkstationToolbarTooltip label={t("tooltips.closeDevTools")}>
+              <ToolbarTooltip label={t("tooltips.closeDevTools")}>
                 <Button
                   htmlType="button"
                   variant="tertiary"
@@ -208,9 +193,15 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                   iconOnly
                   onClick={onClose}
                   aria-label={t("tooltips.closeDevTools")}
-                  icon={<X size={HEADER_ICON_SIZE.md} />}
+                  icon={
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      data-icon="x"
+                      size={HEADER_ICON_SIZE.md}
+                    />
+                  }
                 />
-              </WorkstationToolbarTooltip>
+              </ToolbarTooltip>
             </>
           }
         />
@@ -243,43 +234,56 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                       activeTab="dom-tree"
                       tabs={[{ key: "dom-tree", label: t("tooltips.domTree") }]}
                       variant="simple"
+                      showActiveIndicator={false}
                       fillWidth={false}
                       size="small"
                     />
                     <div className="invisible flex items-center gap-1 group-hover/devtools:visible">
                       {treeLoading && (
-                        <Loader2
+                        <HugeiconsIcon
+                          icon={Loading03Icon}
+                          data-icon="loader-2"
                           size={SPINNER_TOKENS.small}
                           className="animate-spin text-text-3"
                         />
                       )}
-                      <WorkstationToolbarTooltip
-                        label={t("tooltips.collapseAll")}
-                      >
-                        <button
-                          type="button"
+                      <ToolbarTooltip label={t("tooltips.collapseAll")}>
+                        <Button
+                          variant="tertiary"
+                          appearance="soft"
+                          size="sidebar"
+                          iconOnly
+                          icon={
+                            <HugeiconsIcon
+                              icon={ListChevronsDownUpIcon}
+                              data-icon="list-chevrons-down-up"
+                              size={HEADER_ICON_SIZE.md}
+                            />
+                          }
+                          htmlType="button"
                           onClick={collapseAll}
-                          className={HEADER_BUTTON.actionTreeRow}
                           aria-label={t("tooltips.collapseAll")}
-                        >
-                          <ListChevronsDownUp size={HEADER_ICON_SIZE.md} />
-                        </button>
-                      </WorkstationToolbarTooltip>
-                      <WorkstationToolbarTooltip
-                        label={t("tooltips.refreshTree")}
-                      >
-                        <button
-                          type="button"
+                        />
+                      </ToolbarTooltip>
+                      <ToolbarTooltip label={t("tooltips.refreshTree")}>
+                        <Button
+                          variant="tertiary"
+                          appearance="soft"
+                          size="sidebar"
+                          iconOnly
+                          icon={
+                            <HugeiconsIcon
+                              icon={Refresh04Icon}
+                              data-icon="refresh-cw"
+                              size={HEADER_ICON_SIZE.sm}
+                              className={refreshTreeSpinClass}
+                            />
+                          }
+                          htmlType="button"
                           onClick={handleRefreshTreeClick}
-                          className={HEADER_BUTTON.actionTreeRow}
                           aria-label={t("tooltips.refreshTree")}
-                        >
-                          <RefreshCw
-                            size={HEADER_ICON_SIZE.sm}
-                            className={refreshTreeSpinClass}
-                          />
-                        </button>
-                      </WorkstationToolbarTooltip>
+                        />
+                      </ToolbarTooltip>
                     </div>
                   </div>
                   <div className="min-h-0 flex-1 overflow-hidden">
@@ -318,6 +322,7 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                         setComponentsSubTab(key as ComponentsSubTab)
                       }
                       variant="simple"
+                      showActiveIndicator={false}
                       fillWidth={false}
                       size="small"
                       tabs={[
@@ -325,7 +330,7 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                         { key: "css", label: t("tabs.css") },
                         {
                           key: "source",
-                          label: enrichedSourceLocation?.path
+                          label: sourceLocation?.path
                             ? `${t("tabs.source")} •`
                             : t("tabs.source"),
                         },
@@ -333,34 +338,41 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                     />
                     <div className="invisible flex items-center gap-1 group-hover/devtools:visible">
                       {(stylesLoading || stylesPending) && (
-                        <Loader2
+                        <HugeiconsIcon
+                          icon={Loading03Icon}
+                          data-icon="loader-2"
                           size={SPINNER_TOKENS.small}
                           className="animate-spin text-text-3"
                         />
                       )}
-                      {componentsSubTab === "source" && isIndexBuilt && (
-                        <WorkstationToolbarTooltip
-                          label={t("tooltips.clearUiIndex")}
-                        >
-                          <button
-                            type="button"
-                            onClick={handleClearIndex}
-                            className={HEADER_BUTTON.danger}
-                            aria-label={t("tooltips.clearUiIndex")}
-                          >
-                            <CircleMinus size={HEADER_ICON_SIZE.sm} />
-                          </button>
-                        </WorkstationToolbarTooltip>
-                      )}
-                      <WorkstationToolbarTooltip
+                      <ToolbarTooltip
                         label={
                           isAllCollapsed
                             ? t("tooltips.expandAll")
                             : t("tooltips.collapseAll")
                         }
                       >
-                        <button
-                          type="button"
+                        <Button
+                          variant="tertiary"
+                          appearance="soft"
+                          size="sidebar"
+                          iconOnly
+                          icon={
+                            isAllCollapsed ? (
+                              <HugeiconsIcon
+                                icon={CopyPlusIcon}
+                                data-icon="copy-plus"
+                                size={HEADER_ICON_SIZE.sm}
+                              />
+                            ) : (
+                              <HugeiconsIcon
+                                icon={ListChevronsDownUpIcon}
+                                data-icon="list-chevrons-down-up"
+                                size={HEADER_ICON_SIZE.md}
+                              />
+                            )
+                          }
+                          htmlType="button"
                           onClick={() => {
                             if (isAllCollapsed) {
                               setExpandAllKey((prev) => prev + 1);
@@ -370,36 +382,13 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                               setIsAllCollapsed(true);
                             }
                           }}
-                          className={HEADER_BUTTON.actionTreeRow}
                           aria-label={
                             isAllCollapsed
                               ? t("tooltips.expandAll")
                               : t("tooltips.collapseAll")
                           }
-                        >
-                          {isAllCollapsed ? (
-                            <CopyPlus size={HEADER_ICON_SIZE.sm} />
-                          ) : (
-                            <ListChevronsDownUp size={HEADER_ICON_SIZE.md} />
-                          )}
-                        </button>
-                      </WorkstationToolbarTooltip>
-                      {componentsSubTab === "source" &&
-                        repoPath &&
-                        !isIndexBuilt && (
-                          <WorkstationToolbarTooltip
-                            label={t("workstation.buildUiIndex")}
-                          >
-                            <button
-                              type="button"
-                              onClick={handleBuildIndex}
-                              className="rounded bg-primary-6 px-3 py-0.5 text-[10px] font-medium text-white hover:bg-primary-5"
-                              aria-label={t("workstation.buildUiIndex")}
-                            >
-                              Index
-                            </button>
-                          </WorkstationToolbarTooltip>
-                        )}
+                        />
+                      </ToolbarTooltip>
                     </div>
                   </div>
                   <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -424,21 +413,18 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                       )}
                       {componentsSubTab === "source" && (
                         <SourcePanel
-                          sourceLocation={enrichedSourceLocation}
+                          key={
+                            sourceLocation?.path ??
+                            sourceLocation?.componentName ??
+                            sourceLocation?.searchHint ??
+                            "no-source"
+                          }
+                          sourceLocation={sourceLocation}
                           onOpenFile={openFileAtLine}
                           onSearchComponent={searchForComponent}
                           canSearchComponent={canSearchForComponent(
-                            enrichedSourceLocation
+                            sourceLocation
                           )}
-                          definition={componentDefinition}
-                          usages={componentUsages}
-                          isLoading={isLookingUp}
-                          onBuildIndex={
-                            !isIndexBuilt && repoPath
-                              ? handleBuildIndex
-                              : undefined
-                          }
-                          isIndexBuilt={isIndexBuilt}
                           collapseAllKey={collapseAllKey}
                           expandAllKey={expandAllKey}
                         />

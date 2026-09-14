@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import madge from "madge";
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
@@ -23,6 +23,38 @@ function isResolvableExternalSpecifier(specifier) {
   }
 }
 
+// Path aliases from tsconfig.json that madge does not apply to specifiers
+// carrying a webpack resource query.
+const ALIAS_ROOTS = [
+  ["@src/", join(ROOT, "src")],
+  ["@/", ROOT],
+];
+const RESOURCE_QUERIES = ["raw", "url"];
+
+function isResolvableRootRawSpecifier(specifier) {
+  const alias = ALIAS_ROOTS.find(([prefix]) => specifier.startsWith(prefix));
+  if (!alias) return false;
+
+  // Madge reports webpack `?raw` / `?url` imports as skipped before applying
+  // the path alias. Accept them only when the aliased target is a real file.
+  const queryIndex = specifier.indexOf("?");
+  if (queryIndex === -1) return false;
+
+  const query = new URLSearchParams(specifier.slice(queryIndex + 1));
+  if (!RESOURCE_QUERIES.some((name) => query.has(name))) return false;
+
+  const [prefix, aliasRoot] = alias;
+  const candidate = resolve(
+    aliasRoot,
+    specifier.slice(prefix.length, queryIndex)
+  );
+  if (!candidate.startsWith(`${ROOT}${sep}`) || !existsSync(candidate)) {
+    return false;
+  }
+
+  return statSync(candidate).isFile();
+}
+
 function printCycles(cycles) {
   console.error(
     `Found ${cycles.length} circular dependenc${cycles.length === 1 ? "y" : "ies"}:`
@@ -32,7 +64,9 @@ function printCycles(cycles) {
   }
 }
 
-const madgeConfig = JSON.parse(readFileSync(join(ROOT, ".madgerc"), "utf8"));
+const madgeConfig = JSON.parse(
+  readFileSync(join(ROOT, "config", "madge.json"), "utf8")
+);
 const result = await madge(join(ROOT, "src"), {
   ...madgeConfig,
   fileExtensions: ["ts", "tsx"],
@@ -56,7 +90,9 @@ const result = await madge(join(ROOT, "src"), {
 const cycles = result.circular();
 const skipped = result.warnings().skipped;
 const unresolved = skipped.filter(
-  (specifier) => !isResolvableExternalSpecifier(specifier)
+  (specifier) =>
+    !isResolvableExternalSpecifier(specifier) &&
+    !isResolvableRootRawSpecifier(specifier)
 );
 
 if (JSON_OUTPUT) {

@@ -1,11 +1,12 @@
-import { Save } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { LinearTeamSummary } from "@src/api/http/integrations";
 import Button from "@src/components/Button";
+import Input from "@src/components/Input";
 import Select from "@src/components/Select";
 import Textarea from "@src/components/Textarea";
+import { FloppyDiskIcon, HugeiconsIcon } from "@src/icons";
 
 import type { ProjectDraft } from "./types";
 
@@ -33,13 +34,14 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
   const { t } = useTranslation(["projects", "common"]);
   return (
     <div className="mt-4 space-y-3">
-      <input
+      <Input
+        size="large"
+        className="w-full"
         value={draft.name}
-        onChange={(event) =>
+        onChange={(_value, event) =>
           onDraftChange({ ...draft, name: event.target.value })
         }
         placeholder={t("linearProjects.forms.projectName")}
-        className="h-9 w-full rounded-lg border border-border-1 bg-bg-1 px-3 text-sm outline-none focus:border-primary-5"
       />
       <Textarea
         value={draft.description}
@@ -75,7 +77,9 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
           size="small"
           variant="primary"
           appearance="solid"
-          icon={<Save size={14} />}
+          icon={
+            <HugeiconsIcon icon={FloppyDiskIcon} data-icon="save" size={14} />
+          }
           loading={saving}
           disabled={!draft.name.trim() || (!hideTeamSelect && !draft.teamId)}
           onClick={onSubmit}

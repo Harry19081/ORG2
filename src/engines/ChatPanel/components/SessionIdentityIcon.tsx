@@ -1,8 +1,10 @@
 import { useAtomValue } from "jotai";
 import React, { memo } from "react";
 
+import AnyIcon from "@src/components/AnyIcon";
 import { sessionHydrationByIdAtom } from "@src/engines/SessionCore";
-import type { Session } from "@src/store/session";
+import { useCloudSessionPendingPlayEntry } from "@src/features/Org2Cloud/useCloudSessionDownloadSurface";
+import { type Session, sessionByIdAtom } from "@src/store/session";
 import { resolveSessionRowIconPresentation } from "@src/util/session/sessionSidebarRow";
 
 interface SessionIdentityIconProps {
@@ -12,7 +14,29 @@ interface SessionIdentityIconProps {
   className?: string;
 }
 
+interface SessionIdentityIconByIdProps {
+  sessionId: string;
+  isSelected?: boolean;
+  className?: string;
+}
+
 export const SESSION_IDENTITY_ICON_SIZE = 14;
+
+export function resolveSessionIdentityIconSource(
+  session: Session | null | undefined,
+  sessionId: string,
+  pendingIconId: string | null | undefined,
+  hydrationIconId: string | null | undefined
+): Session | { session_id: string; agentIconId: string } | string {
+  if (pendingIconId) {
+    return { session_id: sessionId, agentIconId: pendingIconId };
+  }
+  if (session) return session;
+  if (hydrationIconId) {
+    return { session_id: sessionId, agentIconId: hydrationIconId };
+  }
+  return sessionId;
+}
 
 export function resolveSessionIdentityIconColorClass(
   isSelected: boolean,
@@ -26,11 +50,14 @@ export function resolveSessionIdentityIconColorClass(
 const SessionIdentityIcon: React.FC<SessionIdentityIconProps> = memo(
   ({ session, sessionId, isSelected = true, className = "" }) => {
     const hydration = useAtomValue(sessionHydrationByIdAtom(sessionId));
+    const pendingPlay = useCloudSessionPendingPlayEntry(sessionId);
     const { Icon, isMonochromeBrandIcon } = resolveSessionRowIconPresentation(
-      session ??
-        (hydration?.iconId
-          ? { session_id: sessionId, agentIconId: hydration.iconId }
-          : sessionId)
+      resolveSessionIdentityIconSource(
+        session,
+        sessionId,
+        pendingPlay?.iconId,
+        hydration?.iconId
+      )
     );
     const colorClass = resolveSessionIdentityIconColorClass(
       isSelected,
@@ -42,16 +69,33 @@ const SessionIdentityIcon: React.FC<SessionIdentityIconProps> = memo(
         className={`inline-flex h-4 w-4 shrink-0 items-center justify-center ${colorClass} ${className}`.trim()}
         aria-hidden
       >
-        {React.createElement(Icon, {
-          size: SESSION_IDENTITY_ICON_SIZE,
-          strokeWidth: 2,
-          className: "shrink-0",
-        })}
+        <AnyIcon
+          icon={Icon}
+          size={SESSION_IDENTITY_ICON_SIZE}
+          className="shrink-0"
+        />
       </span>
     );
   }
 );
 
 SessionIdentityIcon.displayName = "SessionIdentityIcon";
+
+/** Resolve and render the canonical identity icon for a session ID. */
+export const SessionIdentityIconById = memo(function SessionIdentityIconById({
+  sessionId,
+  isSelected = true,
+  className,
+}: SessionIdentityIconByIdProps) {
+  const session = useAtomValue(sessionByIdAtom(sessionId));
+  return (
+    <SessionIdentityIcon
+      session={session}
+      sessionId={sessionId}
+      isSelected={isSelected}
+      className={className}
+    />
+  );
+});
 
 export default SessionIdentityIcon;

@@ -1,10 +1,15 @@
+import { Provider, createStore } from "jotai";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { sessionsAtom } from "@src/store/session";
+
 import SessionIdentityIcon, {
   SESSION_IDENTITY_ICON_SIZE,
+  SessionIdentityIconById,
   resolveSessionIdentityIconColorClass,
+  resolveSessionIdentityIconSource,
 } from "./SessionIdentityIcon";
 
 describe("SessionIdentityIcon", () => {
@@ -20,6 +25,38 @@ describe("SessionIdentityIcon", () => {
     expect(markup).toContain("inline-flex h-4 w-4");
     expect(markup).toContain('width="14"');
     expect(markup).toContain('height="14"');
+  });
+
+  it("resolves the stored provider icon from only a session ID", () => {
+    const store = createStore();
+    const session = {
+      session_id: "session-provider-icon",
+      status: "completed",
+      created_at: "2026-09-04T00:00:00.000Z",
+      updated_at: "2026-09-04T00:00:00.000Z",
+      agentIconId: "codex",
+    };
+    store.set(sessionsAtom, [session]);
+
+    const resolvedMarkup = renderToStaticMarkup(
+      React.createElement(
+        Provider,
+        { store },
+        React.createElement(SessionIdentityIconById, {
+          sessionId: session.session_id,
+          isSelected: false,
+        })
+      )
+    );
+    const expectedMarkup = renderToStaticMarkup(
+      React.createElement(SessionIdentityIcon, {
+        session,
+        sessionId: session.session_id,
+        isSelected: false,
+      })
+    );
+
+    expect(resolvedMarkup).toBe(expectedMarkup);
   });
 });
 
@@ -40,5 +77,35 @@ describe("resolveSessionIdentityIconColorClass", () => {
     expect(resolveSessionIdentityIconColorClass(false, true)).toBe(
       "text-text-2"
     );
+  });
+});
+
+describe("resolveSessionIdentityIconSource", () => {
+  it("uses the parked remote source identity before any local session", () => {
+    expect(
+      resolveSessionIdentityIconSource(
+        null,
+        "pending-session",
+        "codex",
+        undefined
+      )
+    ).toEqual({ session_id: "pending-session", agentIconId: "codex" });
+  });
+
+  it("keeps pending remote identity authoritative over a stale local row", () => {
+    expect(
+      resolveSessionIdentityIconSource(
+        {
+          session_id: "pending-session",
+          status: "running",
+          created_at: "2026-08-14T00:00:00.000Z",
+          updated_at: "2026-08-14T00:00:00.000Z",
+          agentIconId: "orgii",
+        },
+        "pending-session",
+        "codex",
+        undefined
+      )
+    ).toEqual({ session_id: "pending-session", agentIconId: "codex" });
   });
 });

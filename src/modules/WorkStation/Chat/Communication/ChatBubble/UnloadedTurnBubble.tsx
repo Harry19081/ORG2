@@ -39,11 +39,11 @@
  * eviction is confirmed, retries a bounded number of times before falling
  * back to a manual "tap to retry" affordance instead of spinning forever.
  */
-import { Loader2, RotateCw } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
+import Button from "@src/components/Button";
 import {
   CHAT_BUBBLE_WIDTH_TOKENS,
   ChatBubbleAvatar,
@@ -60,6 +60,7 @@ import {
   unregisterMountedTurnPlaceholder,
 } from "@src/engines/SessionCore/turns";
 import { createLogger } from "@src/hooks/logger";
+import { HugeiconsIcon, Loading03Icon, RotateClockwiseIcon } from "@src/icons";
 import {
   formatSmartDateTime,
   toIntlLocaleTag,
@@ -228,20 +229,30 @@ const UnloadedTurnBubbleContent: React.FC<UnloadedTurnBubbleContentProps> = ({
         className={`${CHAT_BUBBLE_WIDTH_TOKENS.body} rounded-lg bg-fill-1 p-3 text-left text-text-1`}
       >
         {showRetryAffordance ? (
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             onClick={handleManualRetry}
             data-testid="communication-unloaded-turn-retry"
-            className={`flex w-full items-center gap-2 rounded border-0 bg-transparent p-0 text-left italic text-text-3 transition-colors hover:text-text-1 ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}
+            className={`flex w-full items-center gap-2 rounded border-0 bg-transparent p-0 text-left text-text-3 italic transition-colors hover:text-text-1 ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}
           >
-            <RotateCw size={13} strokeWidth={2} className="shrink-0" />
+            <HugeiconsIcon
+              icon={RotateClockwiseIcon}
+              data-icon="rotate-cw"
+              size={13}
+              strokeWidth={2}
+              className="shrink-0"
+            />
             {retryBody}
-          </button>
+          </Button>
         ) : (
           <div
-            className={`flex items-center gap-2 italic text-text-3 ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}
+            className={`flex items-center gap-2 text-text-3 italic ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}
           >
-            <Loader2
+            <HugeiconsIcon
+              icon={Loading03Icon}
+              data-icon="loader-2"
               size={13}
               strokeWidth={2}
               className="shrink-0 animate-spin"

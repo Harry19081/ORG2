@@ -1,25 +1,79 @@
-import { FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS } from "@src/modules/shared/layouts/blocks/WorkstationTrailSurface";
-import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsAtom";
+import {
+  FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
+  WORKSTATION_TRAIL_WIDTH,
+} from "@src/modules/shared/layouts/blocks/workstationTrailTokens";
+import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 
+/**
+ * Width at which a maximized chat pane is wide enough to give the
+ * conversation minimap a column of its own. Below it the pane is as tight as
+ * a side pane, so the rail floats over the transcript there instead of
+ * taking 36px the transcript cannot spare.
+ */
+export const FOCUSED_CHAT_MINIMAP_COLUMN_CONTAINER_PX = 850;
+
+/**
+ * Host for the conversation minimap inside the trail column.
+ *
+ * In-flow from 850px up, where the track reserves the rail's 36px (see
+ * `resolveFocusedChatWorkstationRailTrackClass`). Below that the track is
+ * zero-width and the host is a 36px box pinned to the pane's right edge —
+ * the same box the side pane's rail floats in, so the pill inside lands on
+ * the identical spot in both.
+ */
 export const FOCUSED_CHAT_WORKSTATION_MINIMAP_HOST_CLASS =
-  "pointer-events-none absolute right-0 top-0 h-full w-9 @[1100px]/focusedchat:relative @[1100px]/focusedchat:ml-auto @[1100px]/focusedchat:h-auto @[1100px]/focusedchat:min-h-0 @[1100px]/focusedchat:flex-1";
+  "pointer-events-none absolute right-0 top-0 h-full w-9 @[850px]/focusedchat:relative @[850px]/focusedchat:ml-auto @[850px]/focusedchat:h-auto @[850px]/focusedchat:min-h-0 @[850px]/focusedchat:flex-1";
 
 export function resolveFocusedChatWorkstationSectionOrder(
-  hasOpenTabs: boolean
-): Array<"workspace" | "tabs"> {
-  return hasOpenTabs ? ["workspace", "tabs"] : ["workspace"];
+  hasOpenTabs: boolean,
+  hasSessionEnvironment: boolean,
+  hasSubagents = false,
+  sessionEnvironmentKind?: "local" | "cloud"
+): Array<"session" | "workspace" | "subagents" | "tabs"> {
+  const environmentSections = hasSessionEnvironment
+    ? sessionEnvironmentKind === "cloud"
+      ? (["session", "workspace"] as const)
+      : (["workspace", "session"] as const)
+    : (["workspace"] as const);
+  return [
+    ...environmentSections,
+    // Spawned workers follow the environment groups and precede unrelated
+    // open tabs, regardless of which environment group leads.
+    ...(hasSubagents ? (["subagents"] as const) : []),
+    ...(hasOpenTabs ? (["tabs"] as const) : []),
+  ];
+}
+
+export function isSameFocusedChatGitEnvironment({
+  localBranchName,
+  localRepoPath,
+  sessionBranchName,
+  sessionRepoPath,
+}: {
+  localBranchName?: string;
+  localRepoPath?: string;
+  sessionBranchName?: string;
+  sessionRepoPath?: string;
+}): boolean {
+  if (
+    !localBranchName ||
+    !localRepoPath ||
+    !sessionBranchName ||
+    !sessionRepoPath
+  ) {
+    return false;
+  }
+  const normalize = (value: string) => value.replace(/[\\/]+$/u, "");
+  return (
+    localBranchName === sessionBranchName &&
+    normalize(localRepoPath) === normalize(sessionRepoPath)
+  );
 }
 
 interface FocusedChatWorkstationMountInput {
   activeTabType: ChatPanelTab["type"] | null;
   isChatFocus: boolean;
   showSessionContent: boolean;
-}
-
-interface FocusedChatWorkstationPlaceholderInput {
-  activeTabType: ChatPanelTab["type"] | null;
-  isChatFocus: boolean;
-  startPageOpen: boolean;
 }
 
 /**
@@ -35,23 +89,19 @@ export function shouldMountFocusedChatWorkstationControls({
 }
 
 /**
- * Keep focused Launchpad content aligned with a session using the collapsed
- * workstation track, without mounting the rail's live data or controls.
+ * Width of the trail column, in three steps.
+ *
+ * Under 850px the pane is too tight to spend 36px on chrome, so the column
+ * is zero and the minimap floats over the transcript exactly as it does in a
+ * non-maximized pane. From 850px the column reserves the minimap's rail. At
+ * 1100px the trail surface itself arrives and takes over the width.
  */
-export function shouldReserveFocusedChatWorkstationPlaceholder({
-  activeTabType,
-  isChatFocus,
-  startPageOpen,
-}: FocusedChatWorkstationPlaceholderInput): boolean {
-  return isChatFocus && activeTabType === "start-page" && startPageOpen;
-}
-
 export function resolveFocusedChatWorkstationRailTrackClass(
   collapsed: boolean
 ): string {
   return collapsed
-    ? `w-0 @[1100px]/focusedchat:w-11 ${FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS}`
-    : `w-0 @[1100px]/focusedchat:w-64 ${FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS}`;
+    ? `w-0 @[850px]/focusedchat:w-9 ${WORKSTATION_TRAIL_WIDTH.collapsedResponsiveClass} ${FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS}`
+    : `w-0 @[850px]/focusedchat:w-9 ${WORKSTATION_TRAIL_WIDTH.resizableResponsiveClass} ${FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS} @[1100px]/focusedchat:mr-2`;
 }
 
 /** Keep the rail below overlaid chat chrome while the transcript scrolls behind it. */

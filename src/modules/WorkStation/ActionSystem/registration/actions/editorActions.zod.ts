@@ -8,7 +8,15 @@ import { z } from "zod";
 import { ACTION_ID } from "@src/ActionSystem/actionIds";
 import { defineZodAction } from "@src/ActionSystem/schema/defineZodAction";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
-import { EditorService } from "@src/services/workStation/EditorService";
+
+// EditorService pulls @codemirror/{view,state,search,commands} statically.
+// These actions are registered at app boot (GlobalShortcuts → ActionSystem),
+// so load the service on first invocation instead of dragging CodeMirror
+// into the startup graph.
+const loadEditorService = () =>
+  import("@src/services/workStation/EditorService").then(
+    (mod) => mod.EditorService
+  );
 
 // ============================================
 // Editor Actions
@@ -26,10 +34,13 @@ export const editorGoToLine = defineZodAction(
         .min(1, "Line must be at least 1")
         .describe("Line number to go to"),
     }),
-    shortcut: getShortcutKeys("go_to_line"),
+    get shortcut() {
+      return getShortcutKeys("go_to_line");
+    },
     examples: ["go to line 42", "jump to line 100"],
   },
   async ({ line }) => {
+    const EditorService = await loadEditorService();
     const success = EditorService.goToLine(line);
     if (success) {
       return { success: true, message: `Went to line ${line}` };
@@ -59,10 +70,13 @@ export const editorFind = defineZodAction(
         .default(false)
         .describe("Case sensitive search"),
     }),
-    shortcut: getShortcutKeys("find"),
+    get shortcut() {
+      return getShortcutKeys("find");
+    },
     examples: ["find TODO", "search for function"],
   },
   async ({ query, caseSensitive }) => {
+    const EditorService = await loadEditorService();
     const success = EditorService.find(query, { caseSensitive });
     if (success) {
       return { success: true, message: `Finding: ${query}` };
@@ -93,10 +107,13 @@ export const editorReplace = defineZodAction(
         .default(false)
         .describe("Replace all occurrences"),
     }),
-    shortcut: getShortcutKeys("find_replace"),
+    get shortcut() {
+      return getShortcutKeys("find_replace");
+    },
     examples: ["replace foo with bar"],
   },
   async ({ find, replace, all }) => {
+    const EditorService = await loadEditorService();
     const success = EditorService.replace(find, replace, { all });
     if (success) {
       return {
@@ -121,10 +138,13 @@ export const editorUndo = defineZodAction(
     category: "editor",
     description: "Undo last edit",
     params: z.object({}),
-    shortcut: getShortcutKeys("undo"),
+    get shortcut() {
+      return getShortcutKeys("undo");
+    },
     examples: ["undo", "undo last change"],
   },
   async () => {
+    const EditorService = await loadEditorService();
     const success = EditorService.undo();
     if (success) {
       return { success: true, message: "Undone" };
@@ -144,10 +164,13 @@ export const editorRedo = defineZodAction(
     category: "editor",
     description: "Redo last undone edit",
     params: z.object({}),
-    shortcut: getShortcutKeys("redo"),
+    get shortcut() {
+      return getShortcutKeys("redo");
+    },
     examples: ["redo", "redo last change"],
   },
   async () => {
+    const EditorService = await loadEditorService();
     const success = EditorService.redo();
     if (success) {
       return { success: true, message: "Redone" };
@@ -167,10 +190,13 @@ export const editorFormat = defineZodAction(
     category: "editor",
     description: "Format the current document",
     params: z.object({}),
-    shortcut: "Shift+Alt+F",
+    get shortcut() {
+      return getShortcutKeys("format_document");
+    },
     examples: ["format document", "format code", "prettify"],
   },
   async () => {
+    const EditorService = await loadEditorService();
     const success = await EditorService.format();
     if (success) {
       return { success: true, message: "Document formatted" };
@@ -194,6 +220,7 @@ export const editorFold = defineZodAction(
     examples: ["fold all", "collapse code"],
   },
   async ({ all }) => {
+    const EditorService = await loadEditorService();
     const success = EditorService.fold(all);
     return success
       ? { success: true, message: "Code folded" }
@@ -212,6 +239,7 @@ export const editorUnfold = defineZodAction(
     examples: ["unfold all", "expand code"],
   },
   async ({ all }) => {
+    const EditorService = await loadEditorService();
     const success = EditorService.unfold(all);
     return success
       ? { success: true, message: "Code unfolded" }

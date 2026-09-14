@@ -9,7 +9,7 @@ import {
   getGlobalTheme,
   resolveGlobalThemePreference,
 } from "@src/config/appearance/globalThemes";
-import { updateSettingsBatchAtom } from "@src/store";
+import { updateSettingsBatchAtom } from "@src/store/settings/settingsAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 import { swapThemeCss } from "@src/util/ui/theme/swapThemeCss";
 import { showThemeTransitionCover } from "@src/util/ui/theme/themeTransitionCover";
@@ -27,7 +27,6 @@ async function applyTheme(
     await swapThemeCss(selectedTheme.baseCssPath);
     store.set(updateSettingsBatchAtom, {
       "general.theme": themePreference,
-      "general.primaryColor": selectedTheme.defaultPrimaryColor,
     });
     localStorage.setItem("theme", themePreference);
     return selectedTheme.id;
@@ -62,41 +61,28 @@ function defineThemeAction(
 const themeSetSystem = defineThemeAction(
   ACTION_ID.THEME_SET_SYSTEM,
   THEME_PREFERENCE.SYSTEM,
-  "Switch ORGII to follow the system theme",
+  "Switch ORG2 to follow the system theme",
   "System theme enabled",
   ["follow system theme", "use system theme", "sync theme with system"]
 );
 
 const themeSetLight = defineThemeAction(
   ACTION_ID.THEME_SET_LIGHT,
-  "github-light",
-  "Switch ORGII to the light theme",
+  "light",
+  "Switch ORG2 to the light theme",
   "Light theme enabled",
   ["use light theme", "switch to light mode", "turn off dark mode"]
 );
 
 const themeSetDark = defineThemeAction(
   ACTION_ID.THEME_SET_DARK,
-  "github-dark",
-  "Switch ORGII to the dark theme",
+  "dark",
+  "Switch ORG2 to the dark theme",
   "Dark theme enabled",
   ["use dark theme", "switch to dark mode", "turn on dark mode"]
 );
 
-const themeSetHighContrast = defineThemeAction(
-  ACTION_ID.THEME_SET_HIGH_CONTRAST,
-  "orgii-high-contrast",
-  "Switch ORGII to the high contrast theme",
-  "High contrast theme enabled",
-  ["use high contrast", "switch to high contrast theme", "enable high contrast"]
-);
-
-export const themeZodActions = [
-  themeSetSystem,
-  themeSetLight,
-  themeSetDark,
-  themeSetHighContrast,
-];
+export const themeZodActions = [themeSetSystem, themeSetLight, themeSetDark];
 
 export const themeActionRegistration =
   defineAppActionRegistration(themeZodActions);

@@ -14,15 +14,15 @@
 //!    `budget_tokens` (which they reject with HTTP 400).
 //! 3. **Translating** `(mode, level)` into each provider's wire parameter.
 //!
-//! The suffix token set mirrors the frontend `VARIANT_SUFFIX_TOKENS`
-//! (`src/util/modelVariants.ts`) so front- and back-end agree on what a
-//! "variant suffix" is.
+//! The suffix grammar lives in `model_variant.rs`; its frontend counterpart is
+//! `MODEL_VARIANT_SUFFIX_TOKENS` in `src/util/modelNameGrammar.ts`.
 
 use regex::Regex;
 use serde_json::{json, Value};
 use std::sync::OnceLock;
 
 use crate::providers::model_capabilities::{classify_family, ModelFamily};
+use crate::providers::model_variant::parse_model_variant_id;
 
 /// User-selectable reasoning effort, independent of provider protocol.
 /// Mirrors the frontend `MODEL_REASONING_LEVEL`.
@@ -35,6 +35,8 @@ pub enum ReasoningLevel {
     High,
     ExtraHigh,
     Max,
+    /// Max reasoning plus harness-level delegation; not a wire effort above Max.
+    Ultra,
     Ultracode,
 }
 
@@ -50,7 +52,8 @@ impl ReasoningLevel {
             "medium" => Some(Self::Medium),
             "high" => Some(Self::High),
             "extra" | "extra-high" | "xhigh" => Some(Self::ExtraHigh),
-            "max" | "ultra" => Some(Self::Max),
+            "max" => Some(Self::Max),
+            "ultra" => Some(Self::Ultra),
             "ultracode" => Some(Self::Ultracode),
             _ => None,
         }
@@ -103,73 +106,22 @@ impl ParsedVariant {
     }
 }
 
-/// Tokens that may appear as ORG2-encoded variant suffixes. Matches the
-/// frontend `VARIANT_SUFFIX_TOKENS` exactly. Provider-native suffixes
-/// (`mini`, `flash`, date stamps, `20250514`) are deliberately absent so they
-/// are never stripped.
-const SUFFIX_TOKENS: &[&str] = &[
-    "none",
-    "baseline",
-    "low",
-    "medium",
-    "high",
-    "extra",
-    "extra-high",
-    "xhigh",
-    "max",
-    "ultra",
-    "ultracode",
-    "minimal",
-    "thinking",
-    "fast",
-];
-
-fn is_suffix_token(tok: &str) -> bool {
-    SUFFIX_TOKENS.contains(&tok)
-}
-
 /// Split a (possibly suffixed) model id into base alias + variant metadata.
 ///
 /// Peels trailing tokens that belong to ORG2's variant vocabulary only;
 /// provider-native suffixes are preserved. `extra` + `high` are merged into
 /// `extra-high` exactly as the frontend (`mergeCompoundTokens`) does.
 pub fn parse_model_variant(model: &str) -> ParsedVariant {
-    let lower = model.to_lowercase();
-    let lower_segments: Vec<&str> = lower.split('-').collect();
-
-    // Walk from the end, peeling recognised suffix tokens off the base.
-    let mut split = lower_segments.len();
-    while split > 1 {
-        if !is_suffix_token(lower_segments[split - 1]) {
-            break;
-        }
-        split -= 1;
-    }
-
-    if split == lower_segments.len() {
+    let parsed_id = parse_model_variant_id(model);
+    if parsed_id.suffix_tokens.is_empty() {
         // No suffix token peeled — id carries no encoded variant.
         return ParsedVariant::bare(model);
-    }
-
-    let raw_tokens: Vec<&str> = lower_segments[split..].to_vec();
-
-    // Merge `extra` + `high` → `extra-high`.
-    let mut merged: Vec<String> = Vec::with_capacity(raw_tokens.len());
-    let mut i = 0;
-    while i < raw_tokens.len() {
-        if raw_tokens[i] == "extra" && i + 1 < raw_tokens.len() && raw_tokens[i + 1] == "high" {
-            merged.push("extra-high".to_string());
-            i += 2;
-        } else {
-            merged.push(raw_tokens[i].to_string());
-            i += 1;
-        }
     }
 
     let mut thinking = false;
     let mut fast = false;
     let mut level: Option<ReasoningLevel> = None;
-    for tok in &merged {
+    for tok in &parsed_id.suffix_tokens {
         match tok.as_str() {
             "thinking" => thinking = true,
             "fast" => fast = true,
@@ -178,11 +130,8 @@ pub fn parse_model_variant(model: &str) -> ParsedVariant {
         }
     }
 
-    // Base model keeps original casing (take the first `split` segments).
-    let base_model: String = model.split('-').take(split).collect::<Vec<_>>().join("-");
-
     ParsedVariant {
-        base_model,
+        base_model: parsed_id.base_model,
         level,
         thinking,
         fast,
@@ -202,7 +151,8 @@ impl ReasoningLevel {
             Self::High => 4,
             Self::ExtraHigh => 5,
             Self::Max => 6,
-            Self::Ultracode => 7,
+            Self::Ultra => 7,
+            Self::Ultracode => 8,
         }
     }
 
@@ -216,6 +166,7 @@ impl ReasoningLevel {
             Self::High => "high",
             Self::ExtraHigh => "xhigh",
             Self::Max => "max",
+            Self::Ultra => "ultra",
             Self::Ultracode => "ultracode",
         }
     }
@@ -259,10 +210,20 @@ pub fn detect_reasoning_trigger(text: &str) -> Option<ReasoningLevel> {
 /// Parses the ORG2 variant suffix, takes the max of the encoded level and
 /// `min_level`, and rebuilds the id. Returns the original id unchanged when
 /// the encoded level already meets or exceeds `min_level`, so per-turn
-/// escalation never *lowers* an explicit user selection. Provider-agnostic:
-/// the returned id goes through the same `parse_model_variant` path every
-/// provider already uses.
-pub fn escalate_model_reasoning(model: &str, min_level: ReasoningLevel) -> String {
+/// escalation never *lowers* an explicit user selection. The returned id
+/// goes through the same `parse_model_variant` path every provider already
+/// uses — except the `custom` provider, whose ids are user-owned literals
+/// sent verbatim: rewriting `my-deployment` into `my-deployment-high` would
+/// fabricate an id the endpoint has never heard of, so those are returned
+/// unchanged.
+pub fn escalate_model_reasoning(
+    model: &str,
+    min_level: ReasoningLevel,
+    provider_name: &str,
+) -> String {
+    if provider_name == crate::providers::registry::provider_id::CUSTOM {
+        return model.to_string();
+    }
     let parsed = parse_model_variant(model);
     let current_rank = parsed.level.map(|l| l.rank()).unwrap_or(0);
     if current_rank >= min_level.rank() {
@@ -329,7 +290,7 @@ mod reasoning_trigger_tests {
     #[test]
     fn escalate_appends_suffix_to_bare_model() {
         assert_eq!(
-            escalate_model_reasoning("claude-opus-4-6", ReasoningLevel::High),
+            escalate_model_reasoning("claude-opus-4-6", ReasoningLevel::High, "anthropic"),
             "claude-opus-4-6-high"
         );
     }
@@ -337,7 +298,7 @@ mod reasoning_trigger_tests {
     #[test]
     fn escalate_never_lowers_explicit_level() {
         assert_eq!(
-            escalate_model_reasoning("claude-opus-4-6-max", ReasoningLevel::Medium),
+            escalate_model_reasoning("claude-opus-4-6-max", ReasoningLevel::Medium, "anthropic"),
             "claude-opus-4-6-max"
         );
     }
@@ -345,19 +306,34 @@ mod reasoning_trigger_tests {
     #[test]
     fn escalate_raises_lower_level() {
         assert_eq!(
-            escalate_model_reasoning("claude-opus-4-6-low", ReasoningLevel::Max),
+            escalate_model_reasoning("claude-opus-4-6-low", ReasoningLevel::Max, "anthropic"),
             "claude-opus-4-6-max"
+        );
+    }
+
+    #[test]
+    fn escalate_leaves_custom_provider_ids_literal() {
+        use crate::providers::registry::provider_id;
+        for model in ["my-deployment", "deployment-high", "new-provider/model-2026-09-01"] {
+            assert_eq!(
+                escalate_model_reasoning(model, ReasoningLevel::Max, provider_id::CUSTOM),
+                model
+            );
+        }
+        assert_eq!(
+            escalate_model_reasoning("my-deployment", ReasoningLevel::Max, provider_id::OPENAI),
+            "my-deployment-max"
         );
     }
 
     #[test]
     fn escalate_preserves_thinking_and_fast_flags() {
         assert_eq!(
-            escalate_model_reasoning("glm-4.7-thinking", ReasoningLevel::High),
+            escalate_model_reasoning("glm-4.7-thinking", ReasoningLevel::High, "anthropic"),
             "glm-4.7-thinking-high"
         );
         assert_eq!(
-            escalate_model_reasoning("claude-opus-4-6-fast", ReasoningLevel::High),
+            escalate_model_reasoning("claude-opus-4-6-fast", ReasoningLevel::High, "anthropic"),
             "claude-opus-4-6-high-fast"
         );
     }
@@ -471,7 +447,7 @@ pub fn anthropic_effort(mode: ThinkingMode, level: Option<ReasoningLevel>) -> Op
         ReasoningLevel::Medium => "medium",
         ReasoningLevel::High => "high",
         ReasoningLevel::ExtraHigh => xhigh_target,
-        ReasoningLevel::Max => "max",
+        ReasoningLevel::Max | ReasoningLevel::Ultra => "max",
         ReasoningLevel::Ultracode => "ultracode",
         ReasoningLevel::Baseline | ReasoningLevel::None => return None,
     })
@@ -522,7 +498,7 @@ fn anthropic_legacy_budget(level: Option<ReasoningLevel>, max_tokens: u32) -> u3
         Some(ReasoningLevel::Medium) => 16_384,
         Some(ReasoningLevel::High) => 24_576,
         Some(ReasoningLevel::ExtraHigh) => 28_672,
-        Some(ReasoningLevel::Max | ReasoningLevel::Ultracode) => 32_768,
+        Some(ReasoningLevel::Max | ReasoningLevel::Ultra | ReasoningLevel::Ultracode) => 32_768,
         _ => (max_tokens / 2).clamp(1024, 32_768),
     }
 }
@@ -544,15 +520,19 @@ pub fn anthropic_max_tokens_floor(
     }
 }
 
-/// OpenAI `reasoning_effort` value. OpenAI's vocabulary tops out at `high`,
-/// so extra_high/max are truncated. baseline/none → don't send (use the
-/// model default, which avoids a 400 on non-reasoning variants).
+/// OpenAI wire effort. Preserve selectable `xhigh` and `max` values instead
+/// of silently lowering them. Model discovery owns which levels are offered;
+/// unsupported explicit selections should be rejected by the provider.
+/// Ultra uses Max reasoning; its delegation mode is applied by the harness.
+/// Baseline/none retain the existing behavior of using the model default.
 pub fn openai_effort(level: Option<ReasoningLevel>) -> Option<&'static str> {
     Some(match level? {
         ReasoningLevel::Low => "low",
         ReasoningLevel::Medium => "medium",
         ReasoningLevel::High => "high",
-        ReasoningLevel::ExtraHigh | ReasoningLevel::Max | ReasoningLevel::Ultracode => "high",
+        ReasoningLevel::ExtraHigh => "xhigh",
+        ReasoningLevel::Max | ReasoningLevel::Ultra => "max",
+        ReasoningLevel::Ultracode => "high",
         ReasoningLevel::Baseline | ReasoningLevel::None => return None,
     })
 }
@@ -586,7 +566,11 @@ pub fn resolve_openai_compat_thinking(
     resolved_model: &str,
     provider_name: &str,
 ) -> OpenAiCompatThinking {
-    let parsed = parse_model_variant(resolved_model);
+    let parsed = if provider_name == crate::providers::registry::provider_id::CUSTOM {
+        ParsedVariant::bare(resolved_model)
+    } else {
+        parse_model_variant(resolved_model)
+    };
     let mode = resolve_thinking_mode(&parsed.base_model, provider_name);
     let reasoning_effort = if mode == ThinkingMode::OpenAiEffort {
         openai_effort(parsed.level).map(str::to_string)
@@ -645,12 +629,29 @@ mod tests {
         assert!(!p.thinking);
     }
 
+    /// Fable 5.1's minor-version segment is not a variant token — peeling the
+    /// effort suffix must stop at `-1` and leave the base model intact.
     #[test]
-    fn parses_codex_ultra_as_max() {
+    fn parses_fable_5_1_effort_suffix_without_eating_the_minor_version() {
+        let p = parse_model_variant("claude-fable-5-1-ultracode");
+        assert_eq!(p.base_model, "claude-fable-5-1");
+        assert_eq!(p.level, Some(ReasoningLevel::Ultracode));
+
+        let bare = parse_model_variant("claude-fable-5-1");
+        assert_eq!(bare.base_model, "claude-fable-5-1");
+        assert!(bare.level.is_none());
+    }
+
+    #[test]
+    fn parses_codex_ultra_without_losing_the_delegation_mode() {
         let p = parse_model_variant("gpt-5.6-sol-ultra-fast");
         assert_eq!(p.base_model, "gpt-5.6-sol");
-        assert_eq!(p.level, Some(ReasoningLevel::Max));
+        assert_eq!(p.level, Some(ReasoningLevel::Ultra));
         assert!(p.fast);
+        assert_eq!(
+            escalate_model_reasoning("gpt-5.6-sol-ultra-fast", ReasoningLevel::Max, "anthropic"),
+            "gpt-5.6-sol-ultra-fast"
+        );
     }
 
     #[test]
@@ -680,6 +681,8 @@ mod tests {
             "claude-opus-4-8",
             "claude-opus-5",
             "claude-fable-5",
+            "claude-fable-5-1",
+            "anthropic.claude-fable-5-1-v1",
             "anthropic.claude-opus-4-7-v1",
             "claude-mythos",
         ] {
@@ -820,8 +823,13 @@ mod tests {
     // ── OpenAI / Zhipu ──────────────────────────────────────────────────────
 
     #[test]
-    fn openai_effort_truncates_extra_high() {
-        assert_eq!(openai_effort(Some(ReasoningLevel::ExtraHigh)), Some("high"));
+    fn openai_effort_preserves_extra_high_and_max() {
+        assert_eq!(
+            openai_effort(Some(ReasoningLevel::ExtraHigh)),
+            Some("xhigh")
+        );
+        assert_eq!(openai_effort(Some(ReasoningLevel::Max)), Some("max"));
+        assert_eq!(openai_effort(Some(ReasoningLevel::Ultra)), Some("max"));
         assert_eq!(openai_effort(Some(ReasoningLevel::High)), Some("high"));
         assert_eq!(openai_effort(Some(ReasoningLevel::Baseline)), None);
     }
@@ -857,6 +865,21 @@ mod tests {
         assert_eq!(r.base_model, "gpt-5.5");
         assert_eq!(r.reasoning_effort.as_deref(), Some("high"));
         assert!(r.thinking.is_none());
+    }
+
+    #[test]
+    fn openai_compat_preserves_gpt_5_6_upper_efforts() {
+        for base in ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"] {
+            for effort in ["xhigh", "max"] {
+                let r = resolve_openai_compat_thinking(
+                    &format!("{base}-{effort}"),
+                    provider_id::OPENAI,
+                );
+                assert_eq!(r.base_model, base);
+                assert_eq!(r.reasoning_effort.as_deref(), Some(effort));
+                assert!(r.thinking.is_none());
+            }
+        }
     }
 
     #[test]

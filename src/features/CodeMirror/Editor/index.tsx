@@ -18,6 +18,7 @@
  * - Callback refs are updated without triggering extension rebuilds
  */
 import CodeMirror from "@uiw/react-codemirror";
+import { useSetAtom } from "jotai";
 import React, {
   useCallback,
   useEffect,
@@ -25,14 +26,18 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 import { CustomScrollbar } from "@src/components/CustomScrollbar";
 import { useGitBlame } from "@src/hooks/git/useGitBlame";
+import { createLogger } from "@src/hooks/logger";
 import {
   removeCodeMirrorMemoryEntry,
   updateCodeMirrorMemoryEntry,
 } from "@src/hooks/perf/runtimeMemoryStats";
 import { useEditorAppearanceSettings } from "@src/hooks/settings";
+import { editorShowMinimapAtom } from "@src/store/ui/editorSettingsAtom";
+import { popupNativeMenu } from "@src/util/platform/tauri/nativeMenuPopup";
 
 import { BASIC_SETUP_CONFIG, getCodeMirrorTheme } from "../config";
 import {
@@ -46,6 +51,8 @@ import {
 } from "./hooks";
 import "./index.scss";
 import type { CallbackRefs, CodeMirrorEditorProps } from "./types";
+
+const log = createLogger("CodeMirrorEditor");
 
 const MAX_SCROLL_STATE_ENTRIES = 100;
 const editorScrollTopByKey = new Map<string, number>();
@@ -104,13 +111,11 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
   onChange,
   onCursorChange,
   onTextSelection,
-  onDiagnosticsChange,
   className = "",
   enableMinimap: enableMinimapProp,
   enableIndentGuides: enableIndentGuidesProp,
   enableGoToLine = true,
   enableFindReplace = true,
-  enableLinting = true,
   enableDirtyDiff = true,
   isDeletedFile = false,
   registerWithService = true,
@@ -120,12 +125,32 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
 }) => {
   // ============================================
   // APPEARANCE SETTINGS: Read from global store
-  // Props can override global settings when explicitly provided
+  // The global minimap setting is authoritative; callers can opt out
   // ============================================
   const appearanceSettings = useEditorAppearanceSettings();
 
-  // Merge global settings with props (props take precedence when defined)
-  const enableMinimap = enableMinimapProp ?? appearanceSettings.showMinimap;
+  const setShowMinimap = useSetAtom(editorShowMinimapAtom);
+  const { t } = useTranslation("settings");
+  const enableMinimap =
+    appearanceSettings.showMinimap && enableMinimapProp !== false;
+  const handleMinimapContextMenu = useCallback<
+    React.MouseEventHandler<HTMLDivElement>
+  >(
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      void popupNativeMenu({
+        source: "codemirror-minimap",
+        buildItems: () => [
+          {
+            text: t("editor.hideMinimap"),
+            action: () => setShowMinimap(false),
+          },
+        ],
+      }).catch((error) => log.error("Failed to open minimap menu:", error));
+    },
+    [setShowMinimap, t]
+  );
   const enableIndentGuides =
     enableIndentGuidesProp ?? appearanceSettings.showIndentGuides;
 
@@ -212,13 +237,11 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
   // ============================================
   // LARGE FILE HANDLING: Auto-disable expensive features
   // ============================================
-  const { effectiveMinimap, effectiveIndentGuides, effectiveLinting } =
-    useLargeFileHandling({
-      value,
-      enableMinimap,
-      enableIndentGuides,
-      enableLinting,
-    });
+  const { effectiveMinimap, effectiveIndentGuides } = useLargeFileHandling({
+    value,
+    enableMinimap,
+    enableIndentGuides,
+  });
 
   // ============================================
   // LAZY LOADING: Language extension
@@ -236,7 +259,6 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
     callbackRefs.current = {
       onCursorChange,
       onTextSelection,
-      onDiagnosticsChange,
       onChange,
       filePath,
     };
@@ -278,14 +300,11 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
     enableFindReplace,
     effectiveMinimap,
     effectiveIndentGuides,
-    effectiveLinting,
     lazyLangExtension,
     cursorExtension,
     selectionExtension,
     copyExtension,
     minimapHostRef,
-    callbackRefs,
-    onDiagnosticsChange,
     enableGitBlame,
     blameDataRef,
     lineNumberStart,
@@ -354,7 +373,11 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
 
         {/* Minimap host - sibling element for proper flex layout */}
         {effectiveMinimap && (
-          <div ref={minimapHostRef} className="codemirror-minimap-host" />
+          <div
+            ref={minimapHostRef}
+            className="codemirror-minimap-host"
+            onContextMenu={handleMinimapContextMenu}
+          />
         )}
       </div>
       <CustomScrollbar scrollElement={scrollElement} totalLines={totalLines} />

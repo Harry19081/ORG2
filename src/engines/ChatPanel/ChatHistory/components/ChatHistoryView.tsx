@@ -3,11 +3,12 @@ import { createPortal } from "react-dom";
 
 import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
-import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 import { ChatLoadingBlock } from "@src/engines/ChatPanel/blocks/primitives";
+import { resolveTranscriptTopPaddingPx } from "@src/engines/ChatPanel/header/chatPanelHeaderLayout";
 import CloudSessionDownloadProgressCard from "@src/features/Org2Cloud/CloudSessionDownloadProgressCard";
 import { useCloudSessionHasDownloadSurface } from "@src/features/Org2Cloud/useCloudSessionDownloadSurface";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 import SessionHeader from "../../ChatItems/SessionHeader";
 import { ChatHistoryDisplayModeProvider } from "../chatDisplayModeContext";
@@ -16,9 +17,12 @@ import type { useChatHistoryItemActions } from "../hooks/useChatHistoryItemActio
 import type { useChatHistoryProjectionModel } from "../hooks/useChatHistoryProjectionModel";
 import type { UseChatHistoryStateReturn } from "../hooks/useChatHistoryState";
 import type { useChatNavigationController } from "../hooks/useChatNavigationController";
-import type { UseChatSearchIntegrationReturn } from "../hooks/useChatSearchIntegration";
+import type { UseChatSearchReturn } from "../hooks/useChatSearch";
 import type { useChatViewportController } from "../hooks/useChatViewportController";
-import { useGroupHeaderRenderer } from "../hooks/useGroupHeaderRenderer";
+import {
+  isRetryableFailedUserIntentHeader,
+  useGroupHeaderRenderer,
+} from "../hooks/useGroupHeaderRenderer";
 import type { useReloadSession } from "../hooks/useReloadSession";
 import ChatHistoryEmptyState from "./ChatHistoryEmptyState";
 import ChatPinnedHeaderLayer from "./ChatPinnedHeaderLayer";
@@ -51,6 +55,7 @@ interface ChatHistoryViewProps {
   agentOrgMembers: AgentOrgRunMemberView[];
   agentOrgOverviewPanel?: React.ReactNode;
   bottomInset: number;
+  chromeTopInset: number;
   chatPanelPosition: "left" | "right";
   displayMode: ChatHistoryDisplayMode;
   emptyState: UseChatEmptyStateReturn;
@@ -71,7 +76,7 @@ interface ChatHistoryViewProps {
   pinnedHeaderPortalHost: HTMLElement | null;
   planningIndicatorScope: { sessionId: string; isLive: boolean } | null;
   projection: ProjectionModel;
-  search: UseChatSearchIntegrationReturn;
+  search: UseChatSearchReturn;
   surfaceBgClass: string;
   turnPaginationEnabled: boolean;
   viewport: ViewportModel;
@@ -85,6 +90,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
   agentOrgMembers,
   agentOrgOverviewPanel,
   bottomInset,
+  chromeTopInset,
   chatPanelPosition,
   displayMode,
   emptyState,
@@ -117,15 +123,12 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     chatFontSize,
     chatCodeFontSize,
     chatLineHeight,
-    codeBlockContainerWidth,
     sessionLoadStatus,
     sessionLoadError,
     isWpGeneWorkingRef,
-    isExploringRef,
   } = historyState;
   const {
     activeProjectionHistory,
-    collapseTailWhenIdle,
     currentPageIndex,
     currentTurnPageLabel,
     currentTurnPageTimeLabel,
@@ -134,14 +137,12 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     displayGroupCounts,
     displayGroupHeaders,
     displayGroupMeta,
-    displayLastAssistantFlatIndexPerItem,
     displaySourceGroupIndices,
     displayTotalFlatItems,
     displayTurnIds,
     groupCounts,
     groupHeaders,
     groupMeta,
-    handleLastTurnPage,
     handleNextTurnPage,
     handlePreviousTurnPage,
     pageCount,
@@ -151,6 +152,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     selectTurnPage,
     setTurnPageListOpen,
     setTurnPageSortAscending,
+    tailTurnPhase,
     turnMetadataReloadKey,
     turnPageListOpen,
     turnPageSortAscending,
@@ -175,40 +177,45 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
   } = navigation;
   const {
     conversationMinimapScrolling,
+    detachForNavigation,
     footerSpacerHeight,
     handleChatListScrollStateChange,
     handleRangeChanged,
     handleTurnPageEndReached,
     isLoadingMore,
+    preserveForLayoutMutation,
     scrollAreaRef,
+    scrollToBottom,
+    setScrollRoot,
     staticScrollerRef,
-    turnCollapseInteractionAtRef,
     virtuosoScrollerRef,
   } = viewport;
   const {
     handleEditUserMessage,
     handleHeaderRestoreCheckpoint,
-    handleIgnoreQuestion,
     handlePinnedEditSubmit,
     handleRegenerateGroup,
-    handleSubmitAnswers,
   } = actions;
-  const {
-    search: searchState,
-    isSearchVisible,
-    searchBarRef,
-    handleCloseSearch,
-  } = search;
 
   const getIsWpGeneWorking = useCallback(
     () => isWpGeneWorkingRef.current ?? false,
     [isWpGeneWorkingRef]
   );
-  const getIsExploring = useCallback(
-    () => isExploringRef.current ?? false,
-    [isExploringRef]
-  );
   const hasCloudDownloadProgress = useCloudSessionHasDownloadSurface(activeId);
+  // Anchor for the live status trail's elapsed readout. Read from the FULL
+  // projection, not the current page: with turn pagination on, the visible
+  // page may not hold the running round, and the trail is about that round.
+  const tailTurnStartedAtMs = useMemo(
+    () => groupMeta[groupMeta.length - 1]?.startMs ?? null,
+    [groupMeta]
+  );
+  // Newest timestamped thing in the transcript, for the trail's quiet-session
+  // timeout. Falls back to the turn's own start: a round that has produced no
+  // body items yet still had activity when the user sent it.
+  const tailTurnLastActivityAtMs = useMemo(() => {
+    const tail = groupMeta[groupMeta.length - 1];
+    return tail?.endMs ?? tail?.startMs ?? null;
+  }, [groupMeta]);
 
   const renderGroupHeader = useGroupHeaderRenderer({
     displaySourceGroupIndices,
@@ -218,11 +225,12 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     displayGroupCount: displayGroupCounts.length,
     collapseLabelVariant: groupChatEnabled ? "agents" : "agent",
     turnPaginationEnabled,
-    collapseTailWhenIdle,
+    tailTurnPhase,
     hideUserMessage: hideGroupUserMessage,
     defaultTurnCollapsed,
-    turnCollapseInteractionAtRef,
+    onBeforeTurnCollapseToggle: preserveForLayoutMutation,
     onEditSubmit: mutationActionsDisabled ? undefined : handleEditUserMessage,
+    onFailedUserIntentEdit: handleEditUserMessage,
     onRestoreCheckpoint: mutationActionsDisabled
       ? undefined
       : handleHeaderRestoreCheckpoint,
@@ -251,10 +259,35 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       }) as React.CSSProperties,
     [chatFontSize, chatCodeFontSize, chatLineHeight]
   );
+  const conversationMinimapOpen =
+    !turnPaginationEnabled && !turnPageListOpen && !agentOrgOverviewOpen;
+  // The scrollport reserves nothing for the minimap rail. While the rail has
+  // no space of its own it floats as an inset pill over the transcript, and
+  // it only goes flush against the edge once the pane is wide enough that it
+  // covers nothing (see `ConversationMinimap`'s placement classes).
   const showTurnContextRow =
     turnPaginationEnabled ||
     Boolean(agentOrgCurrentMemberName) ||
     Boolean(agentOrgOverviewPanel);
+  const transcriptTopPaddingPx = resolveTranscriptTopPaddingPx(
+    chromeTopInset,
+    turnPaginationEnabled || groupChatViewActive
+  );
+  const handlePreviousTurnPageNavigation = useCallback(() => {
+    detachForNavigation();
+    handlePreviousTurnPage();
+  }, [detachForNavigation, handlePreviousTurnPage]);
+  const handleNextTurnPageNavigation = useCallback(() => {
+    detachForNavigation();
+    handleNextTurnPage();
+  }, [detachForNavigation, handleNextTurnPage]);
+  const handleTurnPageSelect = useCallback(
+    (pageIndex: number) => {
+      detachForNavigation();
+      selectTurnPage(pageIndex);
+    },
+    [detachForNavigation, selectTurnPage]
+  );
   const pinnedHeaderLayer = (
     <ChatPinnedHeaderLayer
       showTurnContextRow={showTurnContextRow}
@@ -276,9 +309,9 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       currentTurnPageTimeLabel={currentTurnPageTimeLabel}
       currentPageIndex={currentPageIndex}
       pageCount={pageCount}
-      onPreviousTurnPage={handlePreviousTurnPage}
-      onNextTurnPage={handleNextTurnPage}
-      onLastTurnPage={handleLastTurnPage}
+      onPreviousTurnPage={handlePreviousTurnPageNavigation}
+      onNextTurnPage={handleNextTurnPageNavigation}
+      onLastTurnPage={scrollToBottom}
       trailingActions={paginationTrailingSlot}
       groupChatViewAvailable={groupChatViewAvailable}
       groupChatViewActive={groupChatViewActive}
@@ -289,23 +322,45 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       header={activePinnedHeader}
       meta={activePinnedMeta}
       collapseLabelVariant={groupChatEnabled ? "agents" : "agent"}
-      collapseTailWhenIdle={collapseTailWhenIdle}
+      tailTurnPhase={tailTurnPhase}
       hideUserMessage={hideGroupUserMessage}
       defaultTurnCollapsed={defaultTurnCollapsed}
-      turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
+      onBeforeTurnCollapseToggle={preserveForLayoutMutation}
       onEditSubmit={
-        mutationActionsDisabled ? undefined : handlePinnedEditSubmit
+        mutationActionsDisabled &&
+        !isRetryableFailedUserIntentHeader(activePinnedHeader)
+          ? undefined
+          : handlePinnedEditSubmit
       }
       onRestoreCheckpoint={
         mutationActionsDisabled ? undefined : handleHeaderRestoreCheckpoint
       }
     />
   );
+  // Share the outer split-view anchor with file Find so switching scope
+  // never moves the card between pane headers.
+  const searchOverlayHost =
+    pinnedHeaderPortalHost?.closest<HTMLElement>(
+      "[data-pane-surface-underlay]"
+    ) ??
+    pinnedHeaderPortalHost?.closest<HTMLElement>("[data-chat-panel]") ??
+    pinnedHeaderPortalHost?.parentElement;
+  const searchOverlay = search.isSearchVisible ? (
+    <div
+      className="pointer-events-none absolute top-2 right-2 left-2 z-50"
+      style={chatHistoryContainerStyle}
+      data-chat-search-chrome
+    >
+      <div className="pointer-events-auto ml-auto w-full max-w-sm">
+        <ChatSearchBar search={search} sessionId={activeId} />
+      </div>
+    </div>
+  ) : null;
 
   return (
     <ChatHistoryDisplayModeProvider value={displayMode}>
       <div
-        className="wp__chat__history relative z-20 flex h-full min-w-0 max-w-full flex-1 flex-col self-stretch overflow-hidden"
+        className="wp__chat__history relative z-20 flex h-full max-w-full min-w-0 flex-1 flex-col self-stretch overflow-hidden"
         data-testid="chat-message-list"
         data-chat-history-count={chatHistory.length}
         data-optimized-count={activeProjectionHistory.length}
@@ -314,16 +369,13 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
         ref={chatContainerRef as React.RefObject<HTMLDivElement>}
         style={chatHistoryContainerStyle}
       >
-        <div className={DETAIL_PANEL_TOKENS.contentWidth}>
+        <div className={CHAT_PANEL_WIDTH_TOKENS.contentWidth}>
           <SessionHeader sessionInfo={sessionInfo} />
         </div>
 
-        <ChatSearchBar
-          ref={searchBarRef}
-          search={searchState}
-          isVisible={isSearchVisible}
-          onClose={handleCloseSearch}
-        />
+        {searchOverlayHost
+          ? createPortal(searchOverlay, searchOverlayHost)
+          : searchOverlay}
 
         {pinnedHeaderPortalHost
           ? createPortal(
@@ -343,7 +395,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
             layer sits above chat content but below app modals (z-10000+). */}
         {hasCloudDownloadProgress && activeProjectionHistory.length > 0 && (
           <div
-            className={`pointer-events-none absolute left-0 right-0 top-0 z-[9999] mx-auto p-2 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+            className={`pointer-events-none absolute top-0 right-0 left-0 z-9999 mx-auto p-2 ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
           >
             <CloudSessionDownloadProgressCard sessionId={activeId} />
           </div>
@@ -352,10 +404,10 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
         <div className="flex min-h-0 flex-1 flex-col">
           {agentOrgOverviewOpen && agentOrgOverviewPanel && (
             <div
-              className={`max-h-[45%] flex-shrink-0 overflow-y-auto scrollbar-hide ${surfaceBgClass}`}
+              className={`scrollbar-hide max-h-[45%] shrink-0 overflow-y-auto ${surfaceBgClass}`}
             >
               <div
-                className={`mx-auto w-full px-2 pb-2 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+                className={`mx-auto w-full px-2 pb-2 ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
               >
                 <div
                   data-agent-org-overview-panel="true"
@@ -368,27 +420,25 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
           )}
 
           <div
-            className="relative min-h-0 flex-1 @container/chatbody"
+            className="@container/chatbody relative min-h-0 flex-1"
             style={VIRTUALIZED_BODY_STYLE}
             data-chat-virtualized-body-layer
           >
-            {!turnPaginationEnabled &&
-              !turnPageListOpen &&
-              !agentOrgOverviewOpen && (
-                <ConversationMinimap
-                  groupHeaders={displayGroupHeaders}
-                  groupMeta={displayGroupMeta}
-                  groupCounts={displayGroupCounts}
-                  flatItems={displayFlatItems}
-                  chatPanelPosition={chatPanelPosition}
-                  activeGroupIndex={activeGroupIndex}
-                  visibleGroupIndices={visibleGroupIndices}
-                  isAtBottom={historyState.atBottom}
-                  isScrolling={conversationMinimapScrolling}
-                  labelVariant={groupChatEnabled ? "agents" : "agent"}
-                  onNavigate={handleConversationMinimapNavigate}
-                />
-              )}
+            {conversationMinimapOpen && (
+              <ConversationMinimap
+                groupHeaders={displayGroupHeaders}
+                groupMeta={displayGroupMeta}
+                groupCounts={displayGroupCounts}
+                flatItems={displayFlatItems}
+                chatPanelPosition={chatPanelPosition}
+                activeGroupIndex={activeGroupIndex}
+                visibleGroupIndices={visibleGroupIndices}
+                isAtBottom={historyState.atBottom}
+                isScrolling={conversationMinimapScrolling}
+                labelVariant={groupChatEnabled ? "agents" : "agent"}
+                onNavigate={handleConversationMinimapNavigate}
+              />
+            )}
 
             {turnPageListOpen &&
               (turnPaginationEnabled
@@ -404,7 +454,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                   turnPageSortAscending={turnPageSortAscending}
                   onSelectTurnPage={
                     turnPaginationEnabled
-                      ? selectTurnPage
+                      ? handleTurnPageSelect
                       : handleConversationHistorySelect
                   }
                   onToggleSort={
@@ -422,7 +472,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
 
             {isLoadingMore && (
               <div
-                className={`pointer-events-none absolute left-0 right-0 top-0 z-[9999] mx-auto p-2 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+                className={`pointer-events-none absolute top-0 right-0 left-0 z-9999 mx-auto p-2 ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
               >
                 <div className={`pointer-events-auto ${surfaceBgClass}`}>
                   <ChatLoadingBlock />
@@ -432,7 +482,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
 
             {bottomInset > 0 && (
               <div
-                className="pointer-events-none absolute bottom-0 left-0 right-0 z-10"
+                className="pointer-events-none absolute right-0 bottom-0 left-0 z-10"
                 style={{
                   height: bottomInset,
                   maskImage: `linear-gradient(to bottom, transparent 0, black ${BOTTOM_OVERLAY_FADE_PX}px)`,
@@ -459,20 +509,18 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                       planningIndicatorScope={planningIndicatorScope}
                       planningIndicatorEnabled={planningIndicatorEnabled}
                       onPlanningIndicatorCount={handlePlanningIndicatorCount}
+                      tailTurnStartedAtMs={tailTurnStartedAtMs}
+                      tailTurnLastActivityAtMs={tailTurnLastActivityAtMs}
                       flatItems={displayFlatItems}
                       groupCounts={displayGroupCounts}
                       turnIds={displayTurnIds}
                       totalFlatItems={displayTotalFlatItems}
-                      lastAssistantFlatIndexPerItem={
-                        displayLastAssistantFlatIndexPerItem
-                      }
-                      codeBlockContainerWidth={codeBlockContainerWidth ?? 0}
                       footerSpacerHeight={footerSpacerHeight}
                       bottomInset={bottomInset}
+                      topPaddingPx={transcriptTopPaddingPx}
                       virtualListRef={virtualListRef}
                       virtualListDataKey={virtualListDataKey}
                       getIsWpGeneWorking={getIsWpGeneWorking}
-                      getIsExploring={getIsExploring}
                       renderGroupHeader={
                         turnPaginationEnabled
                           ? renderNoGroupHeader
@@ -488,8 +536,6 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                           ? undefined
                           : handleRegenerateGroup
                       }
-                      onSubmit={handleSubmitAnswers}
-                      onSkip={handleIgnoreQuestion}
                       onEditUserMessage={
                         mutationActionsDisabled
                           ? undefined
@@ -497,6 +543,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                       }
                       virtualScrollerRef={virtuosoScrollerRef}
                       staticScrollerRef={staticScrollerRef}
+                      onScrollRootChange={setScrollRoot}
                       newEventDividerLabel={newEventDividerLabel}
                     />
                   </>

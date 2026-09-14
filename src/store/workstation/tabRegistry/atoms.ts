@@ -9,6 +9,9 @@
  */
 import { type Getter, type Setter, atom } from "jotai";
 
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+
 import {
   type PanelState,
   type WorkStationLayoutState,
@@ -16,11 +19,18 @@ import {
   closeSavedTabs as closeSavedTabsMutation,
   closeTab as closeTabMutation,
   closeWorkstationTabsAtom,
+  openTab as openTabMutation,
   presentedWorkstationWorkspaceKeyAtom,
+  recentWorkstationTabsAtom,
   reorderTabs as reorderTabsMutation,
   switchTab as switchTabMutation,
   workstationLayoutAtom,
 } from "../tabs";
+import {
+  recordRecentWorkstationTabAtom,
+  removeRecentWorkstationTabAtom,
+} from "../tabs/recentTabs";
+import { requestNewBrowserSessionAtom } from "../workstationTabBarAtoms";
 import type {
   TabCloseOtherRequest,
   TabCloseRequest,
@@ -87,12 +97,26 @@ focusTabAtom.debugLabel = "focusTabAtom";
 export const closeTabAtom = atom(null, (get, set, request: TabCloseRequest) => {
   const layout = get(workstationLayoutAtom);
   if (!layout) return;
+  const tab = layout.mainPane.tabs.find(
+    (candidate) => candidate.id === request.tabId
+  );
+  if (!tab) return;
+  const closesSoleLaunchpad =
+    get(stationModeAtom) === "my-station" &&
+    layout.mainPane.tabs.length === 1 &&
+    layout.mainPane.tabs[0]?.id === request.tabId &&
+    layout.mainPane.tabs[0].type === "start";
+  const workspace = get(presentedWorkstationWorkspaceKeyAtom);
   closePresentedTabs(
     get,
     set,
     closeTabMutation(layout.mainPane, request.tabId),
     layout.mainPane
   );
+  set(recordRecentWorkstationTabAtom, { workspace, tab });
+  if (closesSoleLaunchpad) {
+    set(chatPanelMaximizedAtom, true);
+  }
 });
 closeTabAtom.debugLabel = "closeTabAtom";
 
@@ -160,12 +184,16 @@ export const closeOtherTabsAtom = atom(
   (get, set, request: TabCloseOtherRequest) => {
     const layout = get(workstationLayoutAtom);
     if (!layout) return;
-    closePresentedTabs(
-      get,
-      set,
-      closeOtherTabsMutation(layout.mainPane, request.keepTabId),
-      layout.mainPane
+    const nextPane = closeOtherTabsMutation(layout.mainPane, request.keepTabId);
+    const nextIds = new Set(nextPane.tabs.map((tab) => tab.id));
+    const closedTabs = layout.mainPane.tabs.filter(
+      (tab) => !nextIds.has(tab.id)
     );
+    const workspace = get(presentedWorkstationWorkspaceKeyAtom);
+    closePresentedTabs(get, set, nextPane, layout.mainPane);
+    for (const tab of closedTabs) {
+      set(recordRecentWorkstationTabAtom, { workspace, tab });
+    }
   }
 );
 closeOtherTabsAtom.debugLabel = "closeOtherTabsAtom";
@@ -173,11 +201,45 @@ closeOtherTabsAtom.debugLabel = "closeOtherTabsAtom";
 export const closeSavedTabsAtom = atom(null, (get, set) => {
   const layout = get(workstationLayoutAtom);
   if (!layout) return;
-  closePresentedTabs(
-    get,
-    set,
-    closeSavedTabsMutation(layout.mainPane),
-    layout.mainPane
-  );
+  const nextPane = closeSavedTabsMutation(layout.mainPane);
+  const nextIds = new Set(nextPane.tabs.map((tab) => tab.id));
+  const closedTabs = layout.mainPane.tabs.filter((tab) => !nextIds.has(tab.id));
+  const workspace = get(presentedWorkstationWorkspaceKeyAtom);
+  closePresentedTabs(get, set, nextPane, layout.mainPane);
+  for (const tab of closedTabs) {
+    set(recordRecentWorkstationTabAtom, { workspace, tab });
+  }
 });
 closeSavedTabsAtom.debugLabel = "closeSavedTabsAtom";
+
+/** Focus an open recent tab or restore it into the presented workspace. */
+export const openRecentWorkstationTabAtom = atom(
+  null,
+  (get, set, tabId: string): string | null => {
+    const tab = get(recentWorkstationTabsAtom).find(
+      (candidate) => candidate.id === tabId
+    );
+    if (!tab) return null;
+    const layout = get(workstationLayoutAtom);
+    if (!layout) return null;
+    const workspace = get(presentedWorkstationWorkspaceKeyAtom);
+    const isAlreadyOpen = layout.mainPane.tabs.some(
+      (candidate) => candidate.id === tab.id
+    );
+
+    if (tab.type === "browser-session" && !isAlreadyOpen) {
+      const url = typeof tab.data.url === "string" ? tab.data.url : undefined;
+      const isPrivate = tab.data.incognito === true;
+      set(requestNewBrowserSessionAtom, { url, isPrivate });
+    } else {
+      set(
+        workstationLayoutAtom,
+        setMainPane(layout, openTabMutation(layout.mainPane, tab))
+      );
+    }
+
+    set(removeRecentWorkstationTabAtom, { workspace, tabId });
+    return tab.id;
+  }
+);
+openRecentWorkstationTabAtom.debugLabel = "openRecentWorkstationTabAtom";

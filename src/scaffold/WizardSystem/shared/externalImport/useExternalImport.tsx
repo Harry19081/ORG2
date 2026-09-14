@@ -12,7 +12,6 @@
  * without collapsing them into a single import destination.
  */
 import { invoke } from "@tauri-apps/api/core";
-import { Code2, ShieldAlert, User } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -27,18 +26,25 @@ import type {
   SourceAgent,
 } from "@src/api/types/externalImport";
 import { CLI_AGENT, type ModelType } from "@src/api/types/keys";
-import Button from "@src/components/Button";
+import AnyIcon from "@src/components/AnyIcon";
 import Checkbox from "@src/components/Checkbox";
 import Dropdown from "@src/components/Dropdown";
 import Menu from "@src/components/Menu";
 import ModelIcon from "@src/components/ModelIcon";
+import type { SettingsTableColumn } from "@src/components/SettingsTable";
 import {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
-  type SettingsTableColumn,
-} from "@src/components/SettingsTable";
+} from "@src/components/SettingsTable/tokens";
+import SplitButton from "@src/components/SplitButton";
 import { createLogger } from "@src/hooks/logger";
 import type { CursorRepo } from "@src/hooks/policies";
+import {
+  CodeXmlIcon,
+  HugeiconsIcon,
+  ShieldAlertIcon,
+  UserIcon,
+} from "@src/icons";
 import { getFileManagerRevealLabelKey } from "@src/util/platform/fileManagerLabels";
 import { openFileInWorkStation } from "@src/util/ui/openFileInWorkStation";
 
@@ -79,7 +85,7 @@ const SOURCE_ICON_MODEL_TYPE: Record<SourceAgent, ModelType> = {
   codex: CLI_AGENT.CODEX,
 };
 
-export interface ExternalImportColumnLabels {
+interface ExternalImportColumnLabels {
   /** Header for the leftmost (item-name) column. */
   itemColumnHeader: string;
 }
@@ -299,14 +305,21 @@ export function useExternalImport({
     };
   }, [active, kind, repoKey, cursorRepos, detectionRefreshKey]);
 
-  const handleToggle = useCallback((key: string, checked: boolean) => {
+  const handleToggle = useCallback((key: string, checked?: boolean) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (checked) next.add(key);
+      if (checked ?? !prev.has(key)) next.add(key);
       else next.delete(key);
       return next;
     });
   }, []);
+
+  const handleRowClick = useCallback(
+    (row: ExternalImportRow) => {
+      handleToggle(rowKey(row));
+    },
+    [handleToggle]
+  );
 
   const handleSelectAll = useCallback(() => {
     if (allSelected) {
@@ -395,7 +408,7 @@ export function useExternalImport({
         key: "name",
         label: (
           <label className="flex items-center gap-3">
-            <Checkbox checked={allSelected} onChange={handleSelectAll} />
+            <Checkbox checked={allSelected} onCheckedChange={handleSelectAll} />
             <span>{labels.itemColumnHeader}</span>
           </label>
         ),
@@ -405,11 +418,12 @@ export function useExternalImport({
             (warning) => warning.kind === "readonly_downgraded"
           );
           return (
-            <label className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1">
               <div className="flex items-center gap-3">
                 <Checkbox
+                  ariaLabel={row.suggestedName}
                   checked={selected.has(rowKey(row))}
-                  onChange={(checked) =>
+                  onCheckedChange={(checked) =>
                     handleToggle(rowKey(row), checked as boolean)
                   }
                 />
@@ -427,13 +441,18 @@ export function useExternalImport({
                     }
                   )}
                 >
-                  <ShieldAlert size={12} aria-hidden />
+                  <HugeiconsIcon
+                    icon={ShieldAlertIcon}
+                    data-icon="shield-alert"
+                    size={12}
+                    aria-hidden
+                  />
                   <span>
                     {t("agentOrgs.externalImport.readonlyDowngradedBadge")}
                   </span>
                 </div>
               )}
-            </label>
+            </div>
           );
         },
       },
@@ -451,12 +470,12 @@ export function useExternalImport({
           return labelA.localeCompare(labelB);
         },
         renderCell: (row) => {
-          const Icon = row.targetRepoPath ? Code2 : User;
+          const Icon = row.targetRepoPath ? CodeXmlIcon : UserIcon;
           return (
             <span
               className={`${SETTINGS_TABLE_CELL.muted} inline-flex items-center gap-2 whitespace-nowrap`}
             >
-              <Icon size={14} className="shrink-0" aria-hidden />
+              <AnyIcon icon={Icon} size={14} className="shrink-0" aria-hidden />
               <span>
                 {row.targetRepoPath
                   ? row.repoName || row.targetRepoPath
@@ -493,11 +512,11 @@ export function useExternalImport({
           const actionKey = rowKey(row);
           const dropdownVisible = actionsDropdownRowKey === actionKey;
           return (
-            <Button
+            <SplitButton
               variant="secondary"
               size="small"
               onClick={() => handleOpen(row)}
-              dropdownMenu={
+              menu={
                 <Dropdown
                   droplist={
                     <Menu>
@@ -523,21 +542,22 @@ export function useExternalImport({
                   }
                   getPopupContainer={() => document.body}
                   avoidViewportOverflow
-                  className="z-[9999]"
+                  className="z-9999"
                   style={{ zIndex: 9999 }}
                 >
                   <div />
                 </Dropdown>
               }
-              onDropdownClick={(event) => {
+              onMenuButtonClick={(event) => {
                 event.stopPropagation();
                 setActionsDropdownRowKey(dropdownVisible ? null : actionKey);
               }}
-              dropdownVisible={dropdownVisible}
-              splitWidthMode="hug"
+              menuOpen={dropdownVisible}
+              menuButtonLabel={t("common:actions.view")}
+              widthMode="hug"
             >
               {t("common:actions.view")}
-            </Button>
+            </SplitButton>
           );
         },
       },
@@ -568,6 +588,7 @@ export function useExternalImport({
     importError,
     importErrors,
     importColumns,
+    handleRowClick,
     handleImport,
   };
 }

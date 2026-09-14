@@ -1,12 +1,12 @@
 import type { TFunction } from "i18next";
 import { useAtomValue } from "jotai";
-import { TerminalSquare } from "lucide-react";
 import { useMemo } from "react";
 
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { getTerminalDisplayTitle } from "@src/engines/TerminalCore/types";
+import { Refresh04Icon, Search01Icon, SquareTerminalIcon } from "@src/icons";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
-import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { terminalSessionsAtom } from "@src/store/chatPanel/chatPanelTerminalAtom";
 import type { Session, SessionCreatorDraft } from "@src/store/session";
 import { toChatPanelTuiSessionId } from "@src/util/ui/terminal/chatPanelTuiSessionId";
@@ -18,10 +18,12 @@ import {
   buildPinnedMenuItems,
   buildProjectsPinnedMenuItems,
 } from "../workstationSidebarMenuItems";
-import type { WorkstationSidebarViewKey } from "./WorkstationSidebarViewSwitcher";
+import type { SessionSidebarView } from "./types";
+
+const PINNED_SESSION_SEPARATOR_ID = "separator-pinned";
 
 interface UsePinnedMenuItemsParams {
-  activeViewKey: WorkstationSidebarViewKey;
+  activeViewKey: SessionSidebarView;
   createProjectLabel: string;
   createWorkItemLabel: string;
   importGithubIssuesLabel: string;
@@ -62,9 +64,13 @@ export function usePinnedMenuItems({
     () =>
       buildPinnedMenuItems({
         newSessionLabel,
-        newSessionShortcut: getShortcutKeys("new_session"),
+        get newSessionShortcut() {
+          return getShortcutKeys("new_session");
+        },
         kanbanLabel,
-        kanbanShortcut: getShortcutKeys("open_kanban"),
+        get kanbanShortcut() {
+          return getShortcutKeys("open_kanban");
+        },
         runtimeLabel,
         teamInboxLabel,
         teamInboxUnreadCount,
@@ -121,13 +127,78 @@ export function usePinnedMenuItems({
   return { pinnedMenuItems };
 }
 
+export function addActionsToFirstSessionSection({
+  menuItems,
+  searchLabel,
+  refreshLabel,
+  refreshIconClassName,
+  onSearch,
+  onRefresh,
+}: {
+  menuItems: readonly NavigationMenuItem[];
+  searchLabel: string;
+  refreshLabel: string;
+  refreshIconClassName?: string;
+  onSearch: () => void;
+  onRefresh: () => void;
+}): readonly NavigationMenuItem[] {
+  const sectionIndex = menuItems.findIndex(
+    (item) =>
+      item.id.startsWith("separator-") &&
+      item.id !== PINNED_SESSION_SEPARATOR_ID &&
+      item.label.length > 0
+  );
+  if (sectionIndex < 0) return menuItems;
+
+  const section = menuItems[sectionIndex];
+  const sectionWithActions: NavigationMenuItem = {
+    ...section,
+    rowActions: [
+      ...(section.rowActions ?? []),
+      {
+        showOnSidebarHover: true,
+        icon: Search01Icon,
+        dataIcon: "search",
+        label: searchLabel,
+        dataTestId: "sidebar-sessions-search",
+        onClick: onSearch,
+      },
+      {
+        showOnSidebarHover: true,
+        icon: Refresh04Icon,
+        dataIcon: "refresh-cw",
+        iconClassName: refreshIconClassName,
+        label: refreshLabel,
+        dataTestId: "sidebar-sessions-refresh",
+        onClick: onRefresh,
+      },
+    ],
+  };
+
+  return [
+    ...menuItems.slice(0, sectionIndex),
+    sectionWithActions,
+    ...menuItems.slice(sectionIndex + 1),
+  ];
+}
+
 export function useSessionSidebarMenuItems({
   menuItems,
   sessionCreatorDrafts,
+  searchLabel,
+  refreshLabel,
+  refreshIconClassName,
+  onSearch,
+  onRefresh,
   t,
 }: {
   menuItems: readonly NavigationMenuItem[];
   sessionCreatorDrafts: readonly SessionCreatorDraft[];
+  searchLabel: string;
+  refreshLabel: string;
+  refreshIconClassName?: string;
+  onSearch: () => void;
+  onRefresh: () => void;
   t: TFunction<"navigation">;
 }): NavigationMenuItem[] {
   const draftMenuItems = useMemo<NavigationMenuItem[]>(
@@ -174,15 +245,36 @@ export function useSessionSidebarMenuItems({
         id: `chat-terminal-${tab.id}`,
         key: `chat-terminal-${tab.id}`,
         label: tab.title || "Terminal",
-        icon: TerminalSquare,
+        icon: SquareTerminalIcon,
+        opensChatPanelTab: true,
       });
     }
     return items;
   }, [terminalTabs, t]);
 
+  const sessionMenuItems = useMemo(
+    () =>
+      addActionsToFirstSessionSection({
+        menuItems,
+        searchLabel,
+        refreshLabel,
+        refreshIconClassName,
+        onSearch,
+        onRefresh,
+      }),
+    [
+      menuItems,
+      onRefresh,
+      onSearch,
+      refreshIconClassName,
+      refreshLabel,
+      searchLabel,
+    ]
+  );
+
   return useMemo(
-    () => [...draftMenuItems, ...terminalMenuItems, ...menuItems],
-    [draftMenuItems, terminalMenuItems, menuItems]
+    () => [...draftMenuItems, ...terminalMenuItems, ...sessionMenuItems],
+    [draftMenuItems, terminalMenuItems, sessionMenuItems]
   );
 }
 

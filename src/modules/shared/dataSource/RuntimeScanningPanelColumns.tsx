@@ -8,20 +8,21 @@
  * this array on every render before extraction — same behavior here.
  */
 import type { TFunction } from "i18next";
-import { RefreshCw } from "lucide-react";
 import React, { type Dispatch, type SetStateAction } from "react";
 
 import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
 import Menu from "@src/components/Menu";
 import Select from "@src/components/Select";
+import type { SettingsTableColumn } from "@src/components/SettingsTable";
 import {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
-  type SettingsTableColumn,
-} from "@src/components/SettingsTable";
+} from "@src/components/SettingsTable/tokens";
+import SplitButton from "@src/components/SplitButton";
 import Switch from "@src/components/Switch";
 import Tag from "@src/components/Tag";
+import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
   type DataSourceConfigMap,
   type SourceFrequency,
@@ -89,7 +90,7 @@ export function buildRuntimeScanningPanelColumns({
         const cfg = getSourceConfig(configMap, row.probe.sourceId);
         const disabled = row.importable && !cfg.enabled;
         return row.importable && !disabled && row.stats ? (
-          <span className="tabular-nums text-text-2">
+          <span className="text-text-2 tabular-nums">
             {row.stats.sessionCount}
           </span>
         ) : null;
@@ -108,33 +109,12 @@ export function buildRuntimeScanningPanelColumns({
         // Only Cursor has sub-agent sessions today; show a muted dash for the
         // sources that have none so the column doesn't read as a stray "0".
         return row.stats.subagentCount > 0 ? (
-          <span className="tabular-nums text-text-2">
+          <span className="text-text-2 tabular-nums">
             {row.stats.subagentCount}
           </span>
         ) : (
-          <span className="tabular-nums text-text-4">–</span>
+          <span className="text-text-4 tabular-nums">–</span>
         );
-      },
-    },
-    {
-      key: "lastScan",
-      label: t("col.lastScan"),
-      width: "118px",
-      sorter: (a, b) => {
-        const ta = getSourceConfig(configMap, a.probe.sourceId).lastScannedAt;
-        const tb = getSourceConfig(configMap, b.probe.sourceId).lastScannedAt;
-        return (
-          (ta ? new Date(ta).getTime() : 0) - (tb ? new Date(tb).getTime() : 0)
-        );
-      },
-      renderCell: (row) => {
-        const cfg = getSourceConfig(configMap, row.probe.sourceId);
-        const disabled = row.importable && !cfg.enabled;
-        return row.importable && !disabled && cfg.lastScannedAt ? (
-          <span className="whitespace-nowrap text-text-3">
-            {formatRelativeElapsedShort(new Date(cfg.lastScannedAt))}
-          </span>
-        ) : null;
       },
     },
     {
@@ -150,9 +130,19 @@ export function buildRuntimeScanningPanelColumns({
           <div className="flex items-center justify-end gap-2">
             {row.importable && (
               <>
+                {!disabled && cfg.lastScannedAt ? (
+                  <span
+                    className="whitespace-nowrap text-text-3"
+                    title={t("col.lastScan")}
+                  >
+                    {formatRelativeElapsedShort(new Date(cfg.lastScannedAt))}
+                  </span>
+                ) : null}
                 <Switch
                   checked={cfg.enabled}
-                  onChange={(checked) => void toggleEnabled(row, checked)}
+                  onCheckedChange={(checked) =>
+                    void toggleEnabled(row, checked)
+                  }
                   size="default"
                   ariaLabel={cfg.enabled ? t("disable") : t("enable")}
                 />
@@ -179,24 +169,35 @@ export function buildRuntimeScanningPanelColumns({
                 // Importable sources have a cache, so offer two rescan modes via
                 // a split button: the main click runs Update (incremental
                 // re-sync); the caret opens Update / Clear + rescan (full rebuild).
-                <Button
+                // It remains icon-only because this dense row also owns a
+                // frequency selector and a second menu action; its treatment
+                // uses the same secondary treatment as the toolbar refresh.
+                <SplitButton
                   variant="secondary"
                   size="small"
                   iconOnly
-                  splitDropdownWidth={22}
+                  menuSegmentWidth={22}
                   loading={row.rescanning}
                   loadingSpinIcon
-                  icon={<RefreshCw size={14} />}
+                  icon={
+                    <HugeiconsIcon
+                      icon={Refresh04Icon}
+                      data-icon="refresh-cw"
+                      size={14}
+                    />
+                  }
+                  aria-label={t("rescan")}
                   title={t("rescan")}
                   onClick={() => void handleRescan(row, false)}
-                  dropdownVisible={openRescanMenu === row.probe.sourceId}
-                  onDropdownClick={(event) => {
+                  menuOpen={openRescanMenu === row.probe.sourceId}
+                  menuButtonLabel={t("rescan")}
+                  onMenuButtonClick={(event) => {
                     event.stopPropagation();
                     setOpenRescanMenu((current) =>
                       current === row.probe.sourceId ? null : row.probe.sourceId
                     );
                   }}
-                  dropdownMenu={
+                  menu={
                     <Dropdown
                       trigger="click"
                       position="bottom-end"
@@ -239,7 +240,13 @@ export function buildRuntimeScanningPanelColumns({
                   size="small"
                   iconOnly
                   loading={row.rescanning}
-                  icon={<RefreshCw size={14} />}
+                  icon={
+                    <HugeiconsIcon
+                      icon={Refresh04Icon}
+                      data-icon="refresh-cw"
+                      size={14}
+                    />
+                  }
                   title={t("rescan")}
                   onClick={() => void handleRescan(row)}
                 />

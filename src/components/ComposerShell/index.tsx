@@ -3,7 +3,7 @@
  *
  * Shared outer shell for all composer/input surfaces (chat panel, session
  * creator, edit mode).  Owns the border, border-radius, padding, background,
- * and focus-within ring so every surface looks identical without duplicating
+ * edge shadow, and focus-within ring without duplicating
  * token references.
  *
  * Variants
@@ -18,7 +18,7 @@ import React, { forwardRef } from "react";
 
 import { INPUT_AREA } from "@src/config/inputAreaTokens";
 
-export type ComposerShellVariant =
+type ComposerShellVariant =
   | "default"
   | "embedded"
   | "comment"
@@ -42,9 +42,9 @@ export interface ComposerShellProps {
 }
 
 const VARIANT_CLASSES: Record<ComposerShellVariant, string> = {
-  default: `${INPUT_AREA.borderRadiusClass}  px-1.5 pt-2.5 pb-1.5 gap-2`,
-  embedded: `${INPUT_AREA.borderRadiusClass}  px-1.5 pt-2.5 pb-1.5 gap-2`,
-  comment: `${INPUT_AREA.borderRadiusClass} px-1.5 py-1.5 gap-1.5`,
+  default: `composer-surface-shadow ${INPUT_AREA.borderRadiusClass} px-1.5 pt-2.5 pb-1.5 gap-2`,
+  embedded: `composer-surface-shadow ${INPUT_AREA.borderRadiusClass} px-1.5 pt-2.5 pb-1.5 gap-2`,
+  comment: `composer-surface-shadow ${INPUT_AREA.borderRadiusClass} px-1.5 py-1.5 gap-1.5`,
   // `edit` is the OUTER label strip — the inner editor card is rendered as
   // a separately-styled child (see `InputArea`). The strip itself is just
   // a padded container that hosts the label row + the inner card.
@@ -73,6 +73,31 @@ const VARIANT_INTERACTION_CLASSES: Record<ComposerShellVariant, string> = {
   historyEdit: INPUT_AREA.shellEditInteractionClasses,
 };
 
+function focusComposerFromBackground(event: React.MouseEvent<HTMLDivElement>) {
+  const shell = event.currentTarget;
+  const target = event.target;
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    !(target instanceof Element) ||
+    !shell.contains(target)
+  ) {
+    return;
+  }
+  const control = target.closest(
+    "button, a, input, textarea, select, label, summary, [role], [tabindex], [contenteditable]"
+  );
+  if (control && shell.contains(control)) return;
+
+  // Only fill the gaps around ComposerInput; clicks inside the editor retain
+  // native caret placement, and portaled controls must not steal focus back.
+  shell
+    .querySelector<HTMLElement>(
+      '.composer-input-content[contenteditable="true"]'
+    )
+    ?.focus({ preventScroll: true });
+}
+
 const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
   (
     {
@@ -94,6 +119,7 @@ const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
         ref={ref}
         className={`relative flex w-full ${variant === "comment" ? "flex-row items-end" : "flex-col"} transition-[padding] duration-200 ease-out ${VARIANT_INTERACTION_CLASSES[variant]} ${VARIANT_CLASSES[variant]} ${VARIANT_BG_CLASS[variant]} ${className}`}
         style={style}
+        onClick={focusComposerFromBackground}
         onKeyDown={onKeyDown}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}

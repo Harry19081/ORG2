@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 
+import { AGENT_ORG_ENABLED } from "@src/config/agentOrgAvailability";
 import {
   getAgentOrgRunViewSnapshot,
   refreshAgentOrgRunView,
@@ -21,6 +22,7 @@ const EMPTY_RESULT = { view: null, error: null } as const;
  */
 export function useAgentOrgRunView(sessionId: string | null) {
   const canFetchRunView =
+    AGENT_ORG_ENABLED &&
     !!sessionId &&
     !isCliSession(sessionId) &&
     !isImportedHistorySession(sessionId);

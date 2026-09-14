@@ -5,16 +5,15 @@
  * Uses the shared TabBar component.
  */
 import BrowserCore from "@/src/engines/BrowserCore";
-import type { UseBrowserStateReturn } from "@/src/engines/BrowserCore/hooks/useBrowserState";
+import type { BrowserState } from "@/src/engines/BrowserCore/types";
 import { TabBar, type WorkStationTab } from "@/src/modules/WorkStation/shared";
 import { useSetAtom } from "jotai";
-import { Globe, HatGlasses } from "lucide-react";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
-import type { WorkstationTabHeaderHost } from "@src/hooks/workStation";
-import { getSiteNameFromUrl } from "@src/store/ui/navigationSidebarTabsAtom";
+import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
+import { ImportCookiesModal } from "@src/modules/WorkStation/Browser/ImportCookies";
+import { focusBrowserUrlBar } from "@src/modules/WorkStation/Browser/shared/urlBarFocus";
 import {
   closeBrowserTabAtom,
   extractSessionId,
@@ -24,22 +23,16 @@ import {
 } from "@src/store/workstation/browser/tabs";
 
 import { useWebviewScreenshot } from "../../../../hooks/useWebviewScreenshot";
-import WebUrlBar, { focusBrowserUrlBar } from "../../components/WebUrlBar";
-
-const ABOUT_BLANK_URL = "about:blank";
-
-function isBlankBrowserUrl(url?: string): boolean {
-  const normalizedUrl = url?.trim().toLowerCase();
-  return !normalizedUrl || normalizedUrl.startsWith(ABOUT_BLANK_URL);
-}
+import WebUrlBar from "../../components/WebUrlBar";
+import BrowserBlankTabPlaceholder from "./BrowserBlankTabPlaceholder";
 
 // ============================================
 // Types
 // ============================================
 
-export interface WebViewportProps {
+interface WebViewportProps {
   /** Browser state from context */
-  browserState: UseBrowserStateReturn;
+  browserState: BrowserState;
   /** Open native browser DevTools (Safari Inspector / Edge DevTools) */
   onOpenNativeDevTools?: () => void;
   /** Toggle the WorkStation Browser secondary DevTools pane. */
@@ -48,7 +41,7 @@ export interface WebViewportProps {
   devToolsPaneCollapsed?: boolean;
   /** Hide the tab bar (when using shared tab bar) */
   hideTabBar?: boolean;
-  /** Hide webviews (e.g., when designer mode is active) */
+  /** Hide webviews when their host or viewport is inactive */
   hideWebviews?: boolean;
   /** Header host to publish the URL bar into. Defaults to My Station Browser. */
   publishUrlBarToHost?: WorkstationTabHeaderHost;
@@ -70,6 +63,11 @@ export interface WebViewportProps {
    * Defaults to true so this viewport owns visible browser webviews.
    */
   manageWebviews?: boolean;
+}
+
+function hasActiveBrowserWebview(url?: string): boolean {
+  const normalizedUrl = url?.trim().toLowerCase();
+  return Boolean(normalizedUrl && !normalizedUrl.startsWith("about:blank"));
 }
 
 // ============================================
@@ -195,6 +193,7 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
       const historyIndex = activeSession.historyIndex ?? 0;
       return historyIndex < history.length - 1;
     }, [activeSession]);
+    const hasActiveWebview = hasActiveBrowserWebview(activeSession?.url);
 
     // Handle URL navigation
     const handleNavigate = useCallback(
@@ -213,14 +212,6 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
             isLoading: true,
             history: newHistory,
             historyIndex: newHistory.length - 1,
-            historyEntries: [
-              ...(activeSession.historyEntries ?? []),
-              {
-                url,
-                title: getSiteNameFromUrl(url),
-                visitedAt: Date.now(),
-              },
-            ],
           });
         }
       },
@@ -284,8 +275,12 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
       webviewLabel: activeWebviewLabel,
     });
 
-    const shouldShowBlankTabPlaceholder =
-      !hideWebviews && activeSession && isBlankBrowserUrl(activeSession.url);
+    const [importCookiesOpen, setImportCookiesOpen] = useState(false);
+    const handleReloadAfterImport = useCallback(() => {
+      if (effectiveActiveSessionId && activeSession?.url) {
+        updateSession(effectiveActiveSessionId, { isLoading: true });
+      }
+    }, [effectiveActiveSessionId, activeSession?.url, updateSession]);
 
     return (
       <div className="flex h-full w-full flex-col overflow-hidden">
@@ -315,6 +310,7 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
             onStop={handleStop}
             canGoBack={canGoBack}
             canGoForward={canGoForward}
+            hasActiveWebview={hasActiveWebview}
             onOpenNativeDevTools={onOpenNativeDevTools}
             onToggleDevToolsPane={onToggleDevToolsPane}
             devToolsPaneCollapsed={devToolsPaneCollapsed}
@@ -335,37 +331,25 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
             respectModalBlocking={respectModalBlocking}
             manageWebviews={manageWebviews}
             hidden={hideWebviews}
+            blankTabPlaceholder={
+              publishUrlBarToHost === "browser" ? (
+                <BrowserBlankTabPlaceholder
+                  isIncognito={activeSession?.incognito}
+                  onOpen={handleNavigate}
+                  onImportCookies={() => setImportCookiesOpen(true)}
+                />
+              ) : undefined
+            }
           />
-          {shouldShowBlankTabPlaceholder && (
-            <div
-              className={`absolute inset-0 z-30 flex items-center justify-center p-6 ${EDITOR_TAB_CANVAS_BG_CLASS}`}
-            >
-              <div className="flex max-w-[400px] flex-col items-center gap-4 text-center">
-                {activeSession.incognito ? (
-                  <HatGlasses
-                    size={64}
-                    strokeWidth={1.5}
-                    className="text-warning-6 opacity-80"
-                  />
-                ) : (
-                  <Globe
-                    size={64}
-                    strokeWidth={1.5}
-                    className="text-primary-6 opacity-80"
-                  />
-                )}
-                <h3 className="m-0 text-[20px] font-semibold text-text-1">
-                  {activeSession.incognito
-                    ? t("workstation.browserCore.privateBrowsingEmptyTitle")
-                    : t("workstation.browserCore.enterUrlToStart")}
-                </h3>
-                <p className="m-0 text-[14px] leading-relaxed text-text-2">
-                  {t("workstation.browserCore.tlsDevNote")}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Mounted only while open: the flow resets by unmounting. */}
+        {importCookiesOpen ? (
+          <ImportCookiesModal
+            onClose={() => setImportCookiesOpen(false)}
+            onImported={handleReloadAfterImport}
+          />
+        ) : null}
       </div>
     );
   }

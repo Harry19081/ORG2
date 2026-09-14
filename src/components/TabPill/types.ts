@@ -7,6 +7,8 @@ export interface TabPillItem {
   label: string;
   icon?: ReactNode;
   hoverIcon?: ReactNode;
+  /** Keep this tab's label visible when its siblings collapse to icons. */
+  alwaysShowLabel?: boolean;
   badge?: ReactNode;
   /** Trailing content revealed on hover while preserving the tab's width. */
   hoverBadge?: ReactNode;
@@ -22,12 +24,20 @@ export interface TabPillProps {
   activeTab?: string;
   defaultActiveTab?: string;
   onChange?: (key: string) => void;
-  activeTabs?: string[];
-  onMultiChange?: (keys: string[]) => void;
   variant?: "sidebar" | "pill" | "simple";
   color?: "default" | "fill";
   className?: string;
   iconOnly?: boolean;
+  /**
+   * Keeps the selected tab readable while compacting the remaining tabs to
+   * their icons. Tabs still expose their labels through accessible names and
+   * native tooltips.
+   */
+  inactiveIconOnly?: boolean;
+  /** Text treatment for the selected pill. */
+  activeTone?: "primary" | "neutral";
+  /** Show the active-state dot used by the compact `simple` variant. */
+  showActiveIndicator?: boolean;
   fillWidth?: boolean;
   wrap?: boolean;
   size?: "mini" | "small" | "default" | "large" | "chatPanel";
@@ -42,5 +52,4 @@ export interface TabPillProps {
   buttonStyle?: boolean;
   /** Explicit outer control height in pixels for compact toolbar placement. */
   height?: number;
-  onDropdownRef?: (close: () => void) => void;
 }

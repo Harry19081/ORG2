@@ -47,10 +47,7 @@ import {
   startNewSessionCreatorDraftAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
-import {
-  CHAT_PANEL_SURFACE_KIND,
-  chatPanelNavigateAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { resetChatPanelSessionSurfaceAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 
 // ============================================
 // Types
@@ -85,7 +82,6 @@ export interface UseAppNavigationReturn {
   goToIntegrations: (options?: {
     category?: IntegrationsCategorySegment;
     modelsTab?: string;
-    devToolsTab?: string;
     skillsetTab?: ExternalSkillsetsTab;
   }) => void;
   goToNewSession: (options?: GoToNewSessionOptions) => void;
@@ -99,7 +95,9 @@ export function useAppNavigation(): UseAppNavigationReturn {
   const setWorkstationActiveSessionId = useSetAtom(
     workstationActiveSessionIdAtom
   );
-  const navigateChatPanel = useSetAtom(chatPanelNavigateAtom);
+  const resetChatPanelSessionSurface = useSetAtom(
+    resetChatPanelSessionSurfaceAtom
+  );
   const startNewSessionCreatorDraft = useSetAtom(
     startNewSessionCreatorDraftAtom
   );
@@ -142,7 +140,6 @@ export function useAppNavigation(): UseAppNavigationReturn {
     (options?: {
       category?: IntegrationsCategorySegment;
       modelsTab?: string;
-      devToolsTab?: string;
       skillsetTab?: ExternalSkillsetsTab;
     }) => {
       const category = options?.category ?? "externalSkillsets";
@@ -152,9 +149,6 @@ export function useAppNavigation(): UseAppNavigationReturn {
         const [pathname, existingSearch = ""] = built.split("?");
         const search = new URLSearchParams(existingSearch);
         if (options?.modelsTab) search.set("modelsTab", options.modelsTab);
-        if (options?.devToolsTab) {
-          search.set("devToolsTab", options.devToolsTab);
-        }
         const query = search.toString();
         navigateTo(query ? `${pathname}?${query}` : pathname);
         return;
@@ -163,7 +157,6 @@ export function useAppNavigation(): UseAppNavigationReturn {
       const basePath = buildIntegrationsPath({ category });
       const search = new URLSearchParams();
       if (options?.modelsTab) search.set("modelsTab", options.modelsTab);
-      if (options?.devToolsTab) search.set("devToolsTab", options.devToolsTab);
       const query = search.toString();
       const path = query ? `${basePath}?${query}` : basePath;
       navigateTo(path);
@@ -174,7 +167,7 @@ export function useAppNavigation(): UseAppNavigationReturn {
   const goToNewSession = useCallback(
     (options?: GoToNewSessionOptions) => {
       dispatchClearSession();
-      navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+      resetChatPanelSessionSurface();
       // Starting a session changes chat identity, not the WorkStation layout.
       setActiveSessionId(null);
       setWorkstationActiveSessionId(null);
@@ -197,14 +190,16 @@ export function useAppNavigation(): UseAppNavigationReturn {
         params.set("workflowId", options.workflowId);
       }
       const query = params.toString();
+      // Host-specific routes reopen My Station on entry. Session creation must
+      // preserve the current station and the user's chat-only/split layout.
       const path = query
-        ? `${ROUTES.workStation.code.path}?${query}`
-        : ROUTES.workStation.code.path;
+        ? `${ROUTES.workStation.base.path}?${query}`
+        : ROUTES.workStation.base.path;
       navigate(path);
     },
     [
       dispatchClearSession,
-      navigateChatPanel,
+      resetChatPanelSessionSurface,
       setActiveSessionId,
       setWorkstationActiveSessionId,
       promoteActiveSessionCreatorDraft,

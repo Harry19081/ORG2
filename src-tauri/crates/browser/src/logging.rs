@@ -350,24 +350,6 @@ pub async fn toggle_webview_inspect_mode(app: AppHandle, label: String) -> Resul
     Ok(state_str == "true")
 }
 
-/// Enable element inspect mode in a webview.
-#[tauri::command]
-pub async fn enable_webview_inspect_mode(app: AppHandle, label: String) -> Result<(), String> {
-    let webview = app
-        .get_webview(&label)
-        .ok_or_else(|| format!("Webview '{}' not found", label))?;
-
-    let _ = webview.eval(
-        r#"
-        if (typeof window.__ORGII_ENABLE_INSPECT_MODE__ === 'function') {
-            window.__ORGII_ENABLE_INSPECT_MODE__();
-        }
-    "#,
-    );
-
-    Ok(())
-}
-
 /// Disable element inspect mode in a webview.
 #[tauri::command]
 pub async fn disable_webview_inspect_mode(app: AppHandle, label: String) -> Result<(), String> {
@@ -470,45 +452,6 @@ pub async fn open_webview_devtools(app: AppHandle, label: String) -> Result<(), 
         let _ = (&app, &label);
     }
     Ok(())
-}
-
-/// Close the native DevTools for a webview.
-///
-/// No-op in release builds.
-#[tauri::command]
-pub async fn close_webview_devtools(app: AppHandle, label: String) -> Result<(), String> {
-    #[cfg(debug_assertions)]
-    {
-        let webview = app
-            .get_webview(&label)
-            .ok_or_else(|| format!("Webview '{}' not found", label))?;
-        webview.close_devtools();
-        println!("[DevTools] Closed for webview: {}", label);
-    }
-    #[cfg(not(debug_assertions))]
-    {
-        let _ = (&app, &label);
-    }
-    Ok(())
-}
-
-/// Check if DevTools is open for a webview.
-///
-/// Always returns false in release builds.
-#[tauri::command]
-pub async fn is_webview_devtools_open(app: AppHandle, label: String) -> Result<bool, String> {
-    #[cfg(debug_assertions)]
-    {
-        let webview = app
-            .get_webview(&label)
-            .ok_or_else(|| format!("Webview '{}' not found", label))?;
-        Ok(webview.is_devtools_open())
-    }
-    #[cfg(not(debug_assertions))]
-    {
-        let _ = (&app, &label);
-        Ok(false)
-    }
 }
 
 // ============================================
@@ -787,46 +730,6 @@ pub async fn get_element_computed_styles(
                 "[ComputedStyles] JSON was: {}...",
                 &styles_json[..styles_json.len().min(200)]
             );
-            Ok(None)
-        }
-    }
-}
-
-/// Get the path of xpaths from root to the currently selected element.
-///
-/// Used to expand the tree to show the selected element.
-#[tauri::command]
-pub async fn get_element_path(
-    app: AppHandle,
-    label: String,
-) -> Result<Option<Vec<String>>, String> {
-    let webview = app
-        .get_webview(&label)
-        .ok_or_else(|| format!("Webview '{}' not found", label))?;
-
-    let _ = webview.eval(
-        r#"
-        if (typeof window.__ORGII_GET_ELEMENT_PATH__ === 'function') {
-            window.__ORGII_ELEMENT_PATH__ = window.__ORGII_GET_ELEMENT_PATH__();
-        } else {
-            window.__ORGII_ELEMENT_PATH__ = 'null';
-        }
-    "#,
-    );
-
-    tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
-
-    let path_json =
-        eval_js_with_result(&webview, "window.__ORGII_ELEMENT_PATH__ || 'null'", "null").await;
-
-    if path_json == "null" || path_json.is_empty() {
-        return Ok(None);
-    }
-
-    match serde_json::from_str(&path_json) {
-        Ok(paths) => Ok(Some(paths)),
-        Err(e) => {
-            println!("[ElementPath] Failed to parse: {}", e);
             Ok(None)
         }
     }

@@ -17,13 +17,14 @@
  */
 import React from "react";
 
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
+
 import { type BasePaletteProps, SpotlightInput } from "../../shared";
 import { SpotlightShell } from "../../shell";
-import { useSelectorKernel } from "../core";
 
 // ============ PROPS ============
 
-export interface ContentSearchPaletteProps extends BasePaletteProps {
+interface ContentSearchPaletteProps extends BasePaletteProps {
   query: string;
   onQueryChange: (query: string) => void;
   placeholder?: string;

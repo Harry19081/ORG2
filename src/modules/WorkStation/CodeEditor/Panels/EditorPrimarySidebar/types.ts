@@ -6,8 +6,8 @@
 import type {
   FileNode,
   FileSearchResult,
-} from "@src/hooks/workStation/useCodeEditor";
-import type { PrimarySidebarTabKey } from "@src/store/ui/workStationAtom";
+} from "@src/modules/WorkStation/CodeEditor/hooks/useCodeEditor";
+import type { PrimarySidebarTabKey } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import type { GitFile } from "@src/types/git/types";
 
 // ============================================
@@ -57,7 +57,6 @@ export interface EditorPrimarySidebarProps {
   /** Callback when search button is clicked */
   onSearchClick: () => void;
   /** Callback when refresh is clicked */
-  onRefresh?: () => void;
   /** Callback when collapse all is clicked */
   onCollapseAll?: () => void;
   /** Callback for filter search */

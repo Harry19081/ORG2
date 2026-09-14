@@ -1,6 +1,5 @@
 import { useSetAtom } from "jotai";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import { PROJECT_ORG_SYNC_PROVIDER } from "@src/api/http/project";
@@ -9,20 +8,17 @@ import {
   buildIntegrationsPath,
   buildWizardPath,
 } from "@src/config/mainAppPaths";
-import {
-  usePrimarySidebarState,
-  useWorkStationTabShortcutBridge,
-  useWorkStationTabs,
-} from "@src/hooks/workStation";
+import { useCloseTabWithGuard } from "@src/hooks/tabHost/useCloseTabWithGuard";
+import { usePrimarySidebarState } from "@src/hooks/tabHost/useWorkStationPanels";
+import { useWorkStationTabShortcutBridge } from "@src/hooks/tabHost/useWorkStationTabShortcutBridge";
+import { useWorkStationTabs } from "@src/hooks/tabHost/useWorkStationTabs";
 import { WorkStationShell } from "@src/modules/WorkStation/shared";
-import { openCreateTargetInChatPanelStartPageAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { projectListRefreshAtom } from "@src/store/project/projectAtom";
 import {
-  CHAT_PANEL_CREATE_TARGET,
-  activeStationChatVisibleAtom,
-} from "@src/store/ui/chatPanelAtom";
-import { stationModeAtom } from "@src/store/ui/simulatorAtom";
-import { projectStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
+  openCollabOrgSpotlight,
+  openGitHubIssuesImportSpotlight,
+} from "@src/scaffold/GlobalSpotlight/openSpotlight";
+import { projectListRefreshAtom } from "@src/store/project/projectAtom";
+import { projectStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import {
   STORY_ORG_SCOPE,
   getProjectWorkItemsTabChrome,
@@ -41,15 +37,9 @@ import { useProjectStatusBar } from "./hooks/useProjectStatusBar";
 import { useProjectTabActions } from "./hooks/useProjectTabActions";
 import type { ProjectManagerLayoutProps } from "./types";
 
-export type { ProjectManagerLayoutProps } from "./types";
-
 export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
   ({ repoPath, repoName }) => {
-    const { t } = useTranslation();
     const navigate = useNavigate();
-    const openCreateTargetInStartPage = useSetAtom(
-      openCreateTargetInChatPanelStartPageAtom
-    );
 
     const {
       layoutMode,
@@ -64,31 +54,16 @@ export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
       tabs,
       activeTab,
       openTab,
-      closeTab,
+      removeTab,
       setTabUnsaved,
       updateTabData,
       updateTabMeta,
     } = useWorkStationTabs();
 
+    const dismissTab = useCloseTabWithGuard();
     const handleCloseTab = useCallback(
-      async (tabId: string) => {
-        const tabToClose = tabs.find((tab) => tab.id === tabId);
-        if (tabToClose?.hasUnsavedChanges) {
-          const { ask } = await import("@tauri-apps/plugin-dialog");
-          const confirmed = await ask(
-            `"${tabToClose.title}" has unsaved changes. Discard them and close?`,
-            {
-              title: t("workstation.unsavedChangesTitle"),
-              kind: "warning",
-              okLabel: t("actions.discard"),
-              cancelLabel: t("actions.cancel"),
-            }
-          );
-          if (!confirmed) return;
-        }
-        closeTab(tabId);
-      },
-      [tabs, closeTab, t]
+      (tabId: string) => dismissTab({ tabId }),
+      [dismissTab]
     );
 
     const activeProjectSlug =
@@ -140,8 +115,6 @@ export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
     ]);
 
     const bumpProjectListRefresh = useSetAtom(projectListRefreshAtom);
-    const setStationMode = useSetAtom(stationModeAtom);
-    const setStationChatVisible = useSetAtom(activeStationChatVisibleAtom);
     const handleProjectListRefreshRequested = useCallback(() => {
       bumpProjectListRefresh((prev) => prev + 1);
     }, [bumpProjectListRefresh]);
@@ -167,7 +140,6 @@ export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
       tabs,
       activeTab,
       openTab,
-      closeTab,
       primarySidebarCollapsed,
     });
 
@@ -226,21 +198,15 @@ export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
     }, [navigate]);
 
     const handleCreateOrg = useCallback(() => {
-      openCreateTargetInStartPage({
-        target: CHAT_PANEL_CREATE_TARGET.COLLAB_ORG,
-        title: t("navigation:routes.launchpad"),
-      });
-      setStationMode("my-station");
-      setStationChatVisible("my-station", true);
-    }, [openCreateTargetInStartPage, setStationChatVisible, setStationMode, t]);
+      openCollabOrgSpotlight();
+    }, []);
 
     const handleImportGithubIssuesProject = useCallback(() => {
-      openCreateTargetInStartPage({
-        target: CHAT_PANEL_CREATE_TARGET.GITHUB_ISSUES_PROJECT,
+      openGitHubIssuesImportSpotlight({
+        repoName,
+        repoPath,
       });
-      setStationMode("my-station");
-      setStationChatVisible("my-station", true);
-    }, [openCreateTargetInStartPage, setStationChatVisible, setStationMode]);
+    }, [repoName, repoPath]);
 
     const { activePrimarySidebarConfig } = useProjectManagerSidebarConfig({
       repoPath,
@@ -285,7 +251,7 @@ export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
         onOpenRepoSettings: handleOpenRepoSettings,
         onExpandWorkItemToTab: handleExpandWorkItemToTab,
         onOpenChatSession: handleOpenChatSession,
-        onCloseTab: closeTab,
+        onCloseTab: removeTab,
         onUpdateTabData: updateTabData,
         onUpdateTabMeta: updateTabMeta,
         onSetTabUnsaved: setTabUnsaved,
@@ -305,7 +271,7 @@ export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
         handleOpenRepoSettings,
         handleExpandWorkItemToTab,
         handleOpenChatSession,
-        closeTab,
+        removeTab,
         updateTabData,
         updateTabMeta,
         setTabUnsaved,
@@ -320,22 +286,6 @@ export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
         tabs={tabs}
         activeTab={activeTab}
         projectQuickActions={projectQuickActions}
-        onSelectProject={handleSelectProject}
-        onOpenProjects={handleOpenProjects}
-        onCreateProject={handleCreateProject}
-        onCreateWorkItem={handleCreateWorkItem}
-        onOpenLinearProjects={handleOpenLinearProjects}
-        onOpenRepoSettings={handleOpenRepoSettings}
-        onExpandWorkItemToTab={handleExpandWorkItemToTab}
-        onOpenChatSession={handleOpenChatSession}
-        onCloseTab={closeTab}
-        onUpdateTabData={updateTabData}
-        onUpdateTabMeta={updateTabMeta}
-        onSetTabUnsaved={setTabUnsaved}
-        onEmbeddedWorkItemDetailStateChange={
-          handleEmbeddedWorkItemDetailStateChange
-        }
-        onProjectListRefreshRequested={handleProjectListRefreshRequested}
       />
     );
 

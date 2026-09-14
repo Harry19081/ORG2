@@ -14,13 +14,12 @@
 //! - [`commands`]: Tauri commands for the frontend settings UI
 
 // External callers (lib.rs, init/, state/commands/, api/agent/test/) reach
-// `commands`, `bridge`, `config`, and `registries` through their flat
+// `commands`, `bridge`, and `config` through their flat
 // submodule paths. Everything else is consumed only by sibling submodules
 // inside this crate, so we keep it `pub(crate)` to avoid leaking surface.
 pub mod bridge;
 pub mod commands;
 pub mod config;
-pub mod registries;
 
 pub(crate) mod auth_tool;
 pub(crate) mod client;
@@ -40,3 +39,4 @@ pub(crate) mod result;
 
 pub use bridge::register_mcp_tools;
 pub use manager::McpManager;
+pub use resource_tools::{LIST_MCP_RESOURCES_TOOL_NAME, READ_MCP_RESOURCE_TOOL_NAME};

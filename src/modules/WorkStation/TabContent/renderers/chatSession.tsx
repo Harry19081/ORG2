@@ -18,12 +18,13 @@ import {
   SessionHeaderViewControls,
   SessionRawToolbarActions,
 } from "@src/engines/ChatPanel/components/SessionViewSwitcher";
+import { useConversationTargetBinding } from "@src/engines/ChatPanel/hooks/useConversationTargetBinding";
 import { useSessionActionModals } from "@src/engines/ChatPanel/hooks/useSessionActionModals";
 import { useSessionHeaderActions } from "@src/engines/ChatPanel/hooks/useSessionHeaderActions";
 import { useSessionViewMode } from "@src/engines/ChatPanel/hooks/useSessionViewMode";
 import SessionViewersIndicator from "@src/features/Org2Cloud/SessionViewersIndicator";
-import { usePublishWorkstationTabHeader } from "@src/hooks/workStation";
-import { getChatPanelBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
+import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
+import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import { sessionByIdAtom } from "@src/store/session";
 import type { SessionContinuation } from "@src/store/session/sessionTabPlacementAtom";
 import {
@@ -45,9 +46,10 @@ const ChatSessionTabRenderer: React.FC<UnifiedTabContentProps> = memo(
     ]);
     const sessionId = String(tab.data.sessionId ?? "");
     const session = useAtomValue(sessionByIdAtom(sessionId));
+    const conversationTargetBinding = useConversationTargetBinding(sessionId);
     const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
-    const chatPanelSurfaceStyle = useMemo(
-      () => getChatPanelBackgroundStyle(backgroundConfig.pageOpacity),
+    const primaryPaneSurfaceStyle = useMemo(
+      () => getPrimaryPaneBackgroundStyle(backgroundConfig.pageOpacity),
       [backgroundConfig.pageOpacity]
     );
     const humanSession =
@@ -60,7 +62,10 @@ const ChatSessionTabRenderer: React.FC<UnifiedTabContentProps> = memo(
     const handleReloadSession = useReloadSession(sessionId || null);
     const retargetSessionTab = useSetAtom(retargetWorkstationSessionTabAtom);
     const moveSessionTab = useSetAtom(moveSessionTabAtom);
-    const headerActions = useSessionHeaderActions({ handleReloadSession });
+    const headerActions = useSessionHeaderActions({
+      sessionId: sessionId || null,
+      handleReloadSession,
+    });
     const { closeHeaderActionsMenu } = headerActions;
     const sessionActions = useSessionActionModals({
       activeSession: session,
@@ -121,6 +126,7 @@ const ChatSessionTabRenderer: React.FC<UnifiedTabContentProps> = memo(
           activeSessionExists={Boolean(session)}
           copyEventJsonLabel={headerActions.copyEventJsonLabel}
           currentSessionId={sessionId || null}
+          appOpenSessionId={conversationTargetBinding?.appOpenSessionId ?? null}
           displayMode={headerActions.displayMode}
           eventsLength={headerActions.eventCount}
           handleCompactDisplayModeToggle={
@@ -135,7 +141,6 @@ const ChatSessionTabRenderer: React.FC<UnifiedTabContentProps> = memo(
             sessionActions.handleOpenExportSessionJson
           }
           handleOpenLinkWorkItem={sessionActions.handleOpenLinkWorkItem}
-          handleOpenRawTranscript={sessionView.showRaw}
           handleOpenSearch={headerActions.handleOpenSearch}
           handlePaginationToggle={headerActions.handlePaginationToggle}
           handleReloadFromMenu={headerActions.handleReloadFromMenu}
@@ -176,7 +181,7 @@ const ChatSessionTabRenderer: React.FC<UnifiedTabContentProps> = memo(
       <div
         data-chat-panel
         className="flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-chat-pane text-sm"
-        style={chatPanelSurfaceStyle}
+        style={primaryPaneSurfaceStyle}
       >
         {/* Hidden, never unmounted — see ChatPanelContent for why the
             virtualized transcript must survive a view switch. */}
@@ -187,10 +192,9 @@ const ChatSessionTabRenderer: React.FC<UnifiedTabContentProps> = memo(
         >
           <SessionContentView
             sessionId={sessionId}
+            conversationTargetBinding={conversationTargetBinding}
             secondary
             displayMode={headerActions.displayMode}
-            onRegisterSearchOpen={headerActions.handleRegisterSearchOpen}
-            onSessionContinuation={handleSessionContinuation}
             turnPaginationEnabled={headerActions.paginationEnabled}
           />
         </div>

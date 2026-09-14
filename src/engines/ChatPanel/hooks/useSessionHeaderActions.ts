@@ -1,5 +1,5 @@
-import { useAtom, useAtomValue } from "jotai";
-import { useCallback, useRef, useState } from "react";
+import { useAtom, useAtomValue, useStore } from "jotai";
+import { useCallback, useState } from "react";
 
 import {
   eventCountAtom,
@@ -11,17 +11,20 @@ import {
   chatTokenUsageVisibleAtom,
   chatTurnMetadataVisibleAtom,
   chatTurnPaginationEnabledAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import { chatFindInChatOpenAtomFamily } from "@src/store/ui/chatPanel/miscAtoms";
+import { copyText } from "@src/util/data/clipboard";
 
 interface UseSessionHeaderActionsOptions {
+  sessionId: string | null;
   handleReloadSession: () => void;
 }
 
 /** Shared session-menu state used by Chat Panel and My Station. */
 export function useSessionHeaderActions({
+  sessionId,
   handleReloadSession,
 }: UseSessionHeaderActionsOptions) {
-  const openSearchRef = useRef<(() => void) | null>(null);
   const {
     isOpen: isHeaderActionsOpen,
     isPositioned: isHeaderActionsPositioned,
@@ -34,6 +37,9 @@ export function useSessionHeaderActions({
     gap: 4,
     align: "right",
     placement: "bottom",
+    // The session menu owns keyboard navigation across its left-side submenus.
+    autoKeyboardNavigation: false,
+    closeOnEsc: false,
   });
 
   const [paginationEnabled, setPaginationEnabled] = useAtom(
@@ -47,22 +53,18 @@ export function useSessionHeaderActions({
     chatTurnMetadataVisibleAtom
   );
   const eventCount = useAtomValue(eventCountAtom);
-  const events = useAtomValue(eventsAtom);
+  const store = useStore();
+  const [, setFindInChatOpen] = useAtom(
+    chatFindInChatOpenAtomFamily(sessionId ?? "")
+  );
   const [copyEventJsonLabel, setCopyEventJsonLabel] = useState<
     "idle" | "copied" | "failed"
   >("idle");
 
-  const handleRegisterSearchOpen = useCallback(
-    (handler: (() => void) | null) => {
-      openSearchRef.current = handler;
-    },
-    []
-  );
-
   const handleOpenSearch = useCallback(() => {
-    openSearchRef.current?.();
+    if (sessionId) setFindInChatOpen(true);
     closeHeaderActionsMenu();
-  }, [closeHeaderActionsMenu]);
+  }, [closeHeaderActionsMenu, sessionId, setFindInChatOpen]);
 
   const handleReloadFromMenu = useCallback(() => {
     handleReloadSession();
@@ -87,9 +89,8 @@ export function useSessionHeaderActions({
   );
 
   const handleCopyEventJson = useCallback(() => {
-    const json = JSON.stringify(events, null, 2);
-    navigator.clipboard
-      .writeText(json)
+    const json = JSON.stringify(store.get(eventsAtom), null, 2);
+    copyText(json)
       .then(() => {
         setCopyEventJsonLabel("copied");
         setTimeout(() => setCopyEventJsonLabel("idle"), 2000);
@@ -99,7 +100,7 @@ export function useSessionHeaderActions({
         setTimeout(() => setCopyEventJsonLabel("idle"), 2000);
       });
     closeHeaderActionsMenu();
-  }, [closeHeaderActionsMenu, events]);
+  }, [closeHeaderActionsMenu, store]);
 
   return {
     closeHeaderActionsMenu,
@@ -110,7 +111,6 @@ export function useSessionHeaderActions({
     handleCopyEventJson,
     handleOpenSearch,
     handlePaginationToggle,
-    handleRegisterSearchOpen,
     handleReloadFromMenu,
     handleTokenUsageVisibleToggle,
     handleTurnMetadataVisibleToggle,

@@ -259,7 +259,9 @@ export async function forkSession(
         localKeys
       ))
   ) {
-    throw new Error(
+    throw new ForkOperationError(
+      "agent_unavailable",
+      remoteSession.sourceSessionId,
       "The selected account/model is no longer available; choose another before forking."
     );
   }
@@ -350,6 +352,8 @@ export async function forkSession(
     name,
     repoPath,
     branch: remoteSession.branch,
+    baseBranch: remoteSession.baseBranch,
+    worktreeBranch: remoteSession.worktreeBranch,
     // Runnable category (NOT "external_history"): the fork must be
     // dispatchable and eligible for collab push as this member's own session.
     category: DISPATCH_CATEGORY.RUST_AGENT,

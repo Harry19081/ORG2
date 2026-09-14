@@ -2,7 +2,6 @@
  * Local types for WorkItem page
  */
 import type { MemberEntry } from "@src/api/http/project";
-import type { Person } from "@src/types/core/shared";
 import {
   WORK_ITEM_STATUS,
   type WorkItemStatus,
@@ -22,25 +21,13 @@ export type ActivityType =
   | "labeled"
   | "unlabeled";
 
-export interface ActivityItem {
-  id: string;
-  type: ActivityType;
-  user: Person;
-  timestamp: string;
-  details?: {
-    from?: string;
-    to?: string;
-    field?: string;
-    content?: string;
-  };
-}
-
 // ============================================
 // View Types
 // ============================================
 
 export type WorkItemsViewTab =
   | "List"
+  | "Table"
   | "Kanban"
   | "Gantt"
   | "Calendar"
@@ -53,6 +40,7 @@ export type StatusFilterType =
   | "todo"
   | "inProgress"
   | "inReview"
+  | "blocked"
   | "done"
   | "cancelled"
   | "duplicate"
@@ -66,6 +54,7 @@ export interface StatusCounts {
   todo: number;
   inProgress: number;
   inReview: number;
+  blocked: number;
   done: number;
   cancelled: number;
   duplicate: number;
@@ -85,6 +74,7 @@ export const FILTER_TO_STATUS: Record<StatusFilterType, WorkItemStatus | null> =
     todo: "planned",
     inProgress: "in_progress",
     inReview: "in_review",
+    blocked: "blocked",
     done: "completed",
     cancelled: "cancelled",
     duplicate: "duplicate",
@@ -100,6 +90,7 @@ export const STATUS_FILTER_KEYS: StatusFilterType[] = [
   "todo",
   "inProgress",
   "inReview",
+  "blocked",
   "done",
   "backlog",
   "cancelled",

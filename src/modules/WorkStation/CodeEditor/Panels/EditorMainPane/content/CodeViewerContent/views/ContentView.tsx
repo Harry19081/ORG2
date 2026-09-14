@@ -10,6 +10,7 @@ import React, { Suspense, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import Markdown from "@src/components/MarkDown";
+import { Placeholder } from "@src/components/Placeholder";
 import {
   CodeMirrorConflictEditor,
   CodeMirrorEditor,
@@ -20,7 +21,6 @@ import {
   TabBarBottomPanelToggle,
   UnsavedChangesBar,
 } from "@src/modules/WorkStation/shared";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { EditorService } from "@src/services/workStation/EditorService";
 import {
   editorHighlightActiveLineAtom,
@@ -29,7 +29,7 @@ import {
   editorShowMinimapAtom,
   editorWordWrapAtom,
 } from "@src/store/ui/editorSettingsAtom";
-import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
+import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { stampStyleNonces } from "@src/util/iframeCspNonce";
 
 import type { ContentViewProps } from "../types";
@@ -74,7 +74,6 @@ export const ContentView: React.FC<ContentViewProps> = ({
   onContentChange,
   onCursorChange,
   onTextSelection,
-  onDiagnosticsChange,
   onResolveConflict,
   onSave,
   onDiscard,
@@ -268,11 +267,7 @@ export const ContentView: React.FC<ContentViewProps> = ({
             onTextSelection={
               readOnly || isDeletedFile ? undefined : onTextSelection
             }
-            onDiagnosticsChange={
-              readOnly || isDeletedFile ? undefined : onDiagnosticsChange
-            }
             readOnly={readOnly || isDeletedFile}
-            enableLinting={!readOnly && !isDeletedFile}
             isDeletedFile={isDeletedFile}
             enableGitBlame={showBlame && !isDeletedFile}
             repoPath={repoPath}

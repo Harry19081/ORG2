@@ -1,13 +1,15 @@
-import {
-  GitMerge,
-  GitPullRequest,
-  GitPullRequestClosed,
-  GitPullRequestDraft,
-} from "lucide-react";
 import type { ReactNode } from "react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Tag from "@src/components/Tag";
+import {
+  GitMergeIcon,
+  GitPullRequestClosedIcon,
+  GitPullRequestDraftIcon,
+  GitPullRequestIcon,
+  HugeiconsIcon,
+} from "@src/icons";
 import {
   type PrStatusIconName,
   getPrStatusIconName,
@@ -16,13 +18,15 @@ import {
 } from "@src/shared/pr/prStatus";
 import { classNames } from "@src/util/ui/classNames";
 
-export interface PrStatusBadgeProps {
+interface PrStatusBadgeProps {
   status: string;
   label?: ReactNode;
   showIcon?: boolean;
   showDot?: boolean;
   size?: "xs" | "sm";
   className?: string;
+  pill?: boolean;
+  iconSize?: number;
 }
 
 const SIZE_CLASSES = {
@@ -30,17 +34,37 @@ const SIZE_CLASSES = {
   sm: "rounded-full px-2 py-0.5 text-[11px]",
 } as const;
 
-function StatusIcon({ name }: { name: PrStatusIconName }) {
+function StatusIcon({ name, size }: { name: PrStatusIconName; size: number }) {
   switch (name) {
     case "merge":
-      return <GitMerge size={10} />;
+      return (
+        <HugeiconsIcon icon={GitMergeIcon} data-icon="git-merge" size={size} />
+      );
     case "closed":
-      return <GitPullRequestClosed size={10} />;
+      return (
+        <HugeiconsIcon
+          icon={GitPullRequestClosedIcon}
+          data-icon="git-pull-request-closed"
+          size={size}
+        />
+      );
     case "draft":
-      return <GitPullRequestDraft size={10} />;
+      return (
+        <HugeiconsIcon
+          icon={GitPullRequestDraftIcon}
+          data-icon="git-pull-request-draft"
+          size={size}
+        />
+      );
     case "pull-request":
     default:
-      return <GitPullRequest size={10} />;
+      return (
+        <HugeiconsIcon
+          icon={GitPullRequestIcon}
+          data-icon="git-pull-request"
+          size={size}
+        />
+      );
   }
 }
 
@@ -52,12 +76,55 @@ const PrStatusBadge = memo<PrStatusBadgeProps>(
     showDot = false,
     size = "xs",
     className,
+    pill = false,
+    iconSize = 10,
   }) => {
     const { t } = useTranslation("common");
     const variant = getPrStatusVariant(status);
     const iconName = getPrStatusIconName(status);
     const badgeLabel =
       label ?? t(getPrStatusLabelKey(status), status || "unknown");
+
+    if (pill) {
+      return (
+        <Tag
+          pill
+          size={size === "xs" ? "mini" : "small"}
+          className={className}
+          color={
+            status === "open"
+              ? "success"
+              : status === "closed"
+                ? "danger"
+                : "default"
+          }
+          style={
+            status === "merged"
+              ? {
+                  backgroundColor: "var(--color-purple-1)",
+                  color: "var(--color-purple-6)",
+                }
+              : undefined
+          }
+          icon={
+            showIcon ? (
+              <StatusIcon name={iconName} size={iconSize} />
+            ) : undefined
+          }
+        >
+          {showDot && (
+            <span
+              className={classNames(
+                "inline-block size-1.5 rounded-full",
+                variant.dotClass
+              )}
+              aria-hidden
+            />
+          )}
+          {badgeLabel}
+        </Tag>
+      );
+    }
 
     return (
       <span
@@ -68,7 +135,7 @@ const PrStatusBadge = memo<PrStatusBadgeProps>(
           className
         )}
       >
-        {showIcon && <StatusIcon name={iconName} />}
+        {showIcon && <StatusIcon name={iconName} size={iconSize} />}
         {showDot && (
           <span
             className={classNames("h-1.5 w-1.5 rounded-full", variant.dotClass)}

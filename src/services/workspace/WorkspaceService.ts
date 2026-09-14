@@ -7,6 +7,7 @@
  * - Recent workspace tracking (localStorage)
  */
 import { createLogger } from "@src/hooks/logger";
+import i18n from "@src/i18n";
 import type {
   RecentWorkspace,
   WorkspaceConfig,
@@ -20,7 +21,7 @@ const log = createLogger("WorkspaceService");
 const LEGACY_RECENT_WORKSPACES_KEY = "soyd_recent_workspaces";
 const RECENT_WORKSPACES_KEY = "orgii_recent_workspaces";
 const RECENT_WORKSPACES_CHANGED_EVENT = "orgii:recent-workspaces-changed";
-const AUTO_WORKSPACE_FILE_NAME = "last-workspace.orgii-workspace";
+
 const MAX_RECENT_WORKSPACES = 7;
 
 function foldersToEntries(folders: WorkspaceFolder[]): WorkspaceFolderEntry[] {
@@ -38,12 +39,6 @@ function entriesToFolders(entries: WorkspaceFolderEntry[]): WorkspaceFolder[] {
     uri: `file://${entry.path}`,
     isPrimary: index === 0,
   }));
-}
-
-async function getAutoWorkspacePath(): Promise<string> {
-  const { appDataDir, join } = await import("@tauri-apps/api/path");
-  const baseDir = await appDataDir();
-  return join(baseDir, AUTO_WORKSPACE_FILE_NAME);
 }
 
 export async function saveWorkspace(
@@ -78,7 +73,7 @@ export async function saveWorkspaceAs(
   const filePath = await save({
     filters: [
       {
-        name: "ORGII Workspace",
+        name: i18n.t("common:appMessages.workspaceFile"),
         extensions: [WORKSPACE_FILE_EXTENSION.replace(".", "")],
       },
     ],
@@ -90,19 +85,6 @@ export async function saveWorkspaceAs(
   return filePath;
 }
 
-export async function autoSaveWorkspace(
-  folders: WorkspaceFolder[]
-): Promise<void> {
-  await saveWorkspace(await getAutoWorkspacePath(), folders);
-}
-
-export async function loadLastWorkspace(): Promise<WorkspaceFolder[] | null> {
-  const { exists } = await import("@tauri-apps/plugin-fs");
-  const filePath = await getAutoWorkspacePath();
-  if (!(await exists(filePath))) return null;
-  return loadWorkspace(filePath);
-}
-
 export async function openWorkspaceFile(): Promise<{
   folders: WorkspaceFolder[];
   filePath: string;
@@ -111,7 +93,7 @@ export async function openWorkspaceFile(): Promise<{
   const filePath = await open({
     filters: [
       {
-        name: "ORGII Workspace",
+        name: i18n.t("common:appMessages.workspaceFile"),
         extensions: [WORKSPACE_FILE_EXTENSION.replace(".", "")],
       },
     ],
@@ -205,18 +187,6 @@ export function recordRecentWorkspace(
  */
 export function listRecentWorkspaces(): RecentWorkspace[] {
   return readRecentWorkspaces();
-}
-
-/**
- * Remove a recent workspace entry by path (used when the file is deleted
- * or fails to load).
- */
-export function removeRecentWorkspace(filePath: string): void {
-  const remaining = readRecentWorkspaces().filter(
-    (entry) => entry.path !== filePath
-  );
-  writeRecentWorkspaces(remaining);
-  notifyRecentWorkspacesChanged();
 }
 
 /**

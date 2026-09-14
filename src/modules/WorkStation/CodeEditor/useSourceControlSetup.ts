@@ -3,10 +3,8 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitWorktreeEntry } from "@src/api/http/git/types";
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { useRepoGitInitialization } from "@src/hooks/git";
-import { useGitFiles } from "@src/hooks/git/sourceControl";
-import type { UseGitDiffStateReturn } from "@src/hooks/workStation/git/useGitDiffState";
 import {
   sourceControlFilterModeAtom,
   sourceControlFilterModeHandlerAtom,
@@ -37,8 +35,13 @@ import {
   type ScopePickerWorktreeEntry,
   resolveScopeRepoRoot,
 } from "./Panels/EditorPrimarySidebar/tabs/sourceControlScopePickerHelpers";
+import { useGitFiles } from "./hooks/sourceControl/useGitFiles";
+import type { UseGitDiffStateReturn } from "./hooks/useGitDiffState";
 import { resolveGitDiffSelection } from "./sourceControlSelection";
-import { rememberSourceControlFocusPath } from "./sourceControlStateTransitions";
+import {
+  rememberSourceControlFocusPath,
+  switchSourceControlCategory,
+} from "./sourceControlStateTransitions";
 import { useStashCount } from "./useStashCount";
 
 interface UseSourceControlSetupParams {
@@ -47,6 +50,14 @@ interface UseSourceControlSetupParams {
   currentBranch: string | undefined;
   gitDiffState: UseGitDiffStateReturn;
   activeTab: WorkStationTab | undefined | null;
+  /**
+   * True while the Source Control surface is mounted — active, or kept warm
+   * by the tab retention policy. Worktree loading follows this rather than
+   * "active" so leaving and returning to a retained Review does not clear
+   * and refetch the worktree list (which flips the scope identity and paints
+   * a loading overlay over the sidebar). Defaults to "active".
+   */
+  sourceControlSurfaceMounted?: boolean;
   setPrimaryPanel: (updater: (prev: PanelState) => PanelState) => void;
   handleGitFileSelect: (file: GitFile) => void;
 }
@@ -80,6 +91,7 @@ export function useSourceControlSetup({
   currentBranch,
   gitDiffState,
   activeTab,
+  sourceControlSurfaceMounted,
   setPrimaryPanel,
   handleGitFileSelect,
 }: UseSourceControlSetupParams): UseSourceControlSetupReturn {
@@ -92,6 +104,8 @@ export function useSourceControlSetup({
   const { isGitInitialized } = useRepoGitInitialization(repoPath);
   const resolvedRepoId = repoId ?? repoPath;
   const isSourceControlActive = activeTab?.type === "source-control";
+  const isSourceControlMounted =
+    sourceControlSurfaceMounted ?? isSourceControlActive;
   const {
     worktrees,
     mainDiffSummary,
@@ -101,7 +115,7 @@ export function useSourceControlSetup({
   } = useGitWorktrees({
     repoId: resolvedRepoId,
     repoPath,
-    enabled: isGitInitialized === true && isSourceControlActive,
+    enabled: isGitInitialized === true && isSourceControlMounted,
   });
   const { scope, setScope } = useSourceControlScope({
     repoPath,
@@ -185,40 +199,18 @@ export function useSourceControlSetup({
 
   const handleSourceControlFilterModeChange = useCallback(
     (mode: SourceControlFilterMode) => {
+      if (mode === sourceControlFilterMode) return;
       setSourceControlFilterMode(mode);
-      if (mode === "history" || mode === "pr" || mode === "issues") return;
-      setPrimaryPanel((prev: PanelState) => {
-        const tabIndex = prev.tabs.findIndex(
-          (item) => item.type === "source-control"
-        );
-        if (tabIndex === -1) return prev;
-        const existing = prev.tabs[tabIndex];
-        const nextStaged = mode === "staged";
-        const nextFileCount = sourceControlFilterCounts[mode];
-        const shouldUpdateStaged = existing.data.staged !== nextStaged;
-        const shouldUpdateFileCount = existing.data.fileCount !== nextFileCount;
-        const shouldClearHistory = Boolean(existing.data.historySelection);
-        if (
-          !shouldUpdateStaged &&
-          !shouldUpdateFileCount &&
-          !shouldClearHistory
-        ) {
-          return prev;
-        }
-        const nextTabs = [...prev.tabs];
-        nextTabs[tabIndex] = {
-          ...existing,
-          data: {
-            ...existing.data,
-            staged: nextStaged,
-            fileCount: nextFileCount,
-            historySelection: null,
-          },
-        };
-        return { ...prev, tabs: nextTabs };
-      });
+      setPrimaryPanel((prev) =>
+        switchSourceControlCategory(prev, mode, sourceControlFilterCounts)
+      );
     },
-    [setPrimaryPanel, setSourceControlFilterMode, sourceControlFilterCounts]
+    [
+      setPrimaryPanel,
+      setSourceControlFilterMode,
+      sourceControlFilterMode,
+      sourceControlFilterCounts,
+    ]
   );
 
   const setSourceControlFilterModeHandler = useSetAtom(

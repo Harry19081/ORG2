@@ -125,25 +125,6 @@ pub async fn agent_secret_capture_cancel(
     Ok(())
 }
 
-/// Inspect captured secrets for a session — labels, kinds, lengths only.
-///
-/// Used by the frontend to render a per-session "secret vault" panel so the
-/// user can see what they have provided and discard entries they no longer
-/// want the agent to be able to resolve. Plaintext is never returned.
-#[tauri::command]
-pub async fn agent_secret_capture_list(
-    state: tauri::State<'_, AgentAppState>,
-    session_id: String,
-) -> Result<serde_json::Value, String> {
-    let session = state.get_session(&session_id).await;
-    let entries = if let Some(session) = session {
-        session.secret_broker.list().await
-    } else {
-        Vec::new()
-    };
-    Ok(serde_json::json!({ "secrets": entries }))
-}
-
 /// Discard a single captured secret immediately.
 ///
 /// Resolves the token, drops the `Zeroizing<String>` wrapper (which wipes
@@ -285,6 +266,48 @@ pub async fn agent_get_pending_plan_approval(
         "originToolCallId": &snapshot.origin_tool_call_id,
         "autoApproveAt": auto_approve_at_ms,
     })))
+}
+
+/// Save edited content for the current pending plan without approving it.
+/// The manager owns file + SQLite snapshot consistency and rejects stale
+/// revision ids, so every frontend surface can treat the returned snapshot as
+/// a mirror of durable backend state.
+#[tauri::command]
+pub async fn agent_update_pending_plan_content(
+    state: tauri::State<'_, AgentAppState>,
+    session_id: String,
+    plan_revision_id: Option<String>,
+    content: String,
+) -> Result<serde_json::Value, String> {
+    if state.get_session(&session_id).await.is_none() {
+        crate::init::register_session_with_rehydrate(&state, &session_id).await?;
+    }
+
+    let session = state
+        .get_session(&session_id)
+        .await
+        .ok_or_else(|| format!("No session found: {session_id}"))?;
+    let manager = session
+        .plan_approval_manager
+        .as_ref()
+        .ok_or_else(|| format!("Session {session_id} has no plan-approval manager"))?;
+    let snapshot = manager
+        .update_pending_content(&session_id, plan_revision_id.as_deref(), content)
+        .await?;
+    let auto_approve_at_ms =
+        crate::interaction::plan_approval::auto_approve_deadline_for_snapshot(&snapshot);
+
+    Ok(serde_json::json!({
+        "sessionId": &snapshot.session_id,
+        "planPath": &snapshot.plan_path,
+        "planTitle": &snapshot.plan_title,
+        "planContent": &snapshot.plan_content,
+        "toolCallId": &snapshot.tool_call_id,
+        "planId": &snapshot.plan_id,
+        "planRevisionId": &snapshot.plan_revision_id,
+        "originToolCallId": &snapshot.origin_tool_call_id,
+        "autoApproveAt": auto_approve_at_ms,
+    }))
 }
 
 /// Build button response from the plan card.
@@ -553,7 +576,10 @@ pub(crate) async fn plan_approval_response_impl(
         None,
         None,
         false,
+        None,
+        None,
         false,
+        None,
         None,
         None,
         None,

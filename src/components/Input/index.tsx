@@ -22,11 +22,12 @@
  * <Input errorMessage="Name already exists" errorPlacement="left" />
  * ```
  */
-import { Eye, EyeOff, X } from "lucide-react";
 import React, { forwardRef, useCallback, useState } from "react";
 
+import Button from "@src/components/Button";
 import type { FieldAppearance } from "@src/components/controlAppearance";
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
+import { Cancel01Icon, HugeiconsIcon, ViewIcon, ViewOffIcon } from "@src/icons";
 import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 import "./index.scss";
@@ -119,7 +120,17 @@ export interface InputProps extends Omit<
    * Input type
    * @default 'text'
    */
-  type?: "text" | "password" | "email" | "number" | "tel" | "url" | "search";
+  type?:
+    | "text"
+    | "password"
+    | "email"
+    | "number"
+    | "tel"
+    | "url"
+    | "search"
+    | "time"
+    | "date"
+    | "datetime-local";
 
   /**
    * Show password visibility toggle (for password type)
@@ -321,25 +332,37 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
 
           {showClearButton && (
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               className="input-clear"
               onClick={handleClear}
               tabIndex={-1}
             >
-              <X size={16} />
-            </button>
+              <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={16} />
+            </Button>
           )}
 
           {showPasswordToggle && (
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               className="input-password-toggle"
               onClick={togglePasswordVisibility}
               tabIndex={-1}
             >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
+              {showPassword ? (
+                <HugeiconsIcon
+                  icon={ViewOffIcon}
+                  data-icon="eye-off"
+                  size={16}
+                />
+              ) : (
+                <HugeiconsIcon icon={ViewIcon} data-icon="eye" size={16} />
+              )}
+            </Button>
           )}
 
           {suffix && <span className="input-suffix">{suffix}</span>}

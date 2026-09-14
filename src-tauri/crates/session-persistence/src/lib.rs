@@ -37,11 +37,12 @@ mod types;
 
 pub use orgtrack_core::projectors::turn_metadata::{TurnModifiedFile, TurnResourceInteraction};
 pub use turn_index::{
-    ensure_turn_index_fresh, load_turn_index, load_turn_summaries, rebuild_turn_index,
-    CachedTurnSummary,
+    ensure_turn_index_fresh, load_cached_turn_index, load_turn_index, load_turn_summaries,
+    rebuild_turn_index, CachedTurnSummary,
 };
 pub use turn_window::{
-    load_initial_turn_window, load_turn_body_window, CachedInitialTurnWindow, CachedTurnBodyWindow,
+    load_initial_turn_window, load_session_pinned_artifact_events, load_turn_body_window,
+    CachedInitialTurnWindow, CachedTurnBodyWindow,
 };
 pub use types::{
     CacheStats, CachedEvent, CachedSession, CrossSessionSearchHit, SearchResult, SessionMetadata,
@@ -56,23 +57,24 @@ pub use connection::get_connection;
 pub use schema::init_session_tables;
 
 pub use crud::{
-    clear_old_sessions, count_events, delete_session, finalize_deferred_event_import,
-    find_awaiting_user_events_by_function, get_all_sessions, get_cache_stats, get_event,
-    get_session_metadata, load_events, load_session, save_events, save_events_deferred,
-    save_session, search_all_sessions, search_events, update_session_specs,
+    any_event_matching, clear_old_sessions, count_events, delete_session,
+    finalize_deferred_event_import, find_awaiting_user_events_by_function, get_all_sessions,
+    get_cache_stats, get_event, get_session_metadata, load_events, load_session, save_events,
+    save_events_deferred, save_session, search_all_sessions, search_events, update_session_specs,
 };
-pub use editing::{clear_session_history, delete_event, truncate_after_event, update_event};
+pub use editing::{
+    clear_session_history, delete_event, delete_events_by_ids, truncate_after_event, update_event,
+};
 
 // Tauri commands — registered in `app::commands::handler_list.inc` as
 // `session_persistence::cache_*` (formerly `session::cache::cache_*`).
 pub use commands::{
     cache_clear_old_sessions, cache_clear_session_history, cache_delete_event,
-    cache_delete_session, cache_get_all_sessions, cache_get_event, cache_get_session_diff,
-    cache_get_session_metadata, cache_get_stats, cache_load_events, cache_load_session,
-    cache_load_turn_index, cache_save_events, cache_save_session, cache_search_all_sessions,
-    cache_search_events, cache_truncate_after_event, cache_update_event,
-    cache_update_session_specs, get_session_llm_usage_spans, get_session_token_usage_records,
-    get_session_tool_usage_attributions, get_session_tool_usage_attributions_for_call,
+    cache_delete_session, cache_get_all_sessions, cache_get_session_diff,
+    cache_get_session_metadata, cache_get_stats, cache_load_events, cache_save_events,
+    cache_search_all_sessions, cache_truncate_after_event, get_session_llm_usage_spans,
+    get_session_token_usage_records, get_session_tool_usage_attributions,
+    get_session_tool_usage_attributions_for_call,
 };
 
 /// Tests in several modules temporarily redirect the process-wide

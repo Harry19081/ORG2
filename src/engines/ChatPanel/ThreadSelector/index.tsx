@@ -11,9 +11,11 @@
  * - Click to navigate to thread's events
  * - Smooth transitions
  */
-import { ChevronRight } from "lucide-react";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
+
+import Button from "@src/components/Button";
+import { ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
 import { formatThreadDisplayName } from "./config";
 import type { ExecutionThread, ThreadSelectorProps } from "./types";
@@ -108,7 +110,7 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
           <span className="text-[11px] font-medium text-text-2">
             {t("chat.executionThreads")}
           </span>
-          <span className="text-[10px] tabular-nums text-text-3">
+          <span className="text-[10px] text-text-3 tabular-nums">
             {completedCount}/{totalCount}
           </span>
         </div>
@@ -117,8 +119,10 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
         <div className="flex flex-wrap gap-1.5">
           {/* All button */}
           {showAllOption && threads.length > 1 && (
-            <button
-              type="button"
+            <Button
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
               onClick={() => handleThreadClick(null)}
               className={`flex items-center rounded-md px-2 py-1 text-[11px] transition-all duration-150 ${
                 selectedThreadId === null
@@ -136,7 +140,7 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
               >
                 {totalCount}
               </span>
-            </button>
+            </Button>
           )}
 
           {/* Thread buttons */}
@@ -146,9 +150,11 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
               thread.displayName || formatThreadDisplayName(thread.threadId);
 
             return (
-              <button
+              <Button
+                layout="custom"
+                appearance="custom"
                 key={thread.threadId}
-                type="button"
+                htmlType="button"
                 onClick={() => handleThreadClick(thread.threadId)}
                 className={`group flex items-center rounded-md px-2 py-1 text-[11px] transition-all duration-150 ${
                   isSelected
@@ -166,7 +172,7 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
                   count={thread.eventCount}
                   isSelected={isSelected}
                 />
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -175,7 +181,12 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
         {selectedThreadId && selectedDisplayName && selectedThread && (
           <div className="mt-2 flex items-center justify-between rounded-md bg-fill-1 px-2 py-1.5 transition-all duration-200">
             <div className="flex items-center gap-1.5 text-[11px]">
-              <ChevronRight size={12} className="text-primary-6" />
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                data-icon="chevron-right"
+                size={12}
+                className="text-primary-6"
+              />
               <span className="font-medium text-text-1">
                 {selectedDisplayName}
               </span>
@@ -184,13 +195,16 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
                 · {t("chat.eventCount", { count: selectedThread.eventCount })}
               </span>
             </div>
-            <button
-              type="button"
+            <Button
+              variant="tertiary"
+              appearance="ghost"
+              size="inline"
+              htmlType="button"
               onClick={() => handleThreadClick(null)}
-              className="text-[10px] text-text-3 transition-colors hover:text-primary-6"
+              className="text-[10px] hover:text-primary-6"
             >
               {t("chat.showAll")}
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -201,4 +215,3 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
 ThreadSelector.displayName = "ThreadSelector";
 
 export default ThreadSelector;
-export type { ThreadSelectorProps };

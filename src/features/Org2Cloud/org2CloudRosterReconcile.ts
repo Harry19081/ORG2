@@ -23,6 +23,7 @@ import { type WritableAtom, createStore, useAtomValue, useStore } from "jotai";
 import { useEffect, useRef } from "react";
 
 import { createLogger } from "@src/hooks/logger";
+import { isMainAppWindow } from "@src/util/platform/tauri/windowIdentity";
 
 import {
   org2CloudAuthAtom,
@@ -37,6 +38,7 @@ import {
   org2CloudPushCursorsAtom,
   org2CloudPushedMetadataAtom,
   org2CloudRepoScopesAtom,
+  org2CloudRetentionParkedAtom,
   org2CloudSyncEnabledAtom,
 } from "./org2CloudSyncAtoms";
 
@@ -131,6 +133,14 @@ export function reconcileOrg2CloudPersistedState(
     liveOrgIds,
     prunedByOrg
   );
+  sweepAtom(
+    store,
+    "retentionParked",
+    org2CloudRetentionParkedAtom,
+    liveOrgIds,
+    prunedByOrg,
+    orgIdOfCompositeKey
+  );
   for (const [orgId, mapNames] of prunedByOrg) {
     log.info(
       `pruned dead cloud org ${orgId} from persisted maps: ${mapNames.join(", ")}`
@@ -173,6 +183,11 @@ export function useOrg2CloudRosterReconcile(): void {
   );
 
   useEffect(() => {
+    // Main-window-only: the sweep is a read-modify-write of whole persisted
+    // records, and a secondary window pruning from a stale snapshot can drop
+    // push cursors the main window just wrote. Main's webview is never
+    // destroyed while the app runs, so it is the single stable owner.
+    if (!isMainAppWindow()) return;
     if (!reconcileKey) {
       if (!authIdentityKey) reconciledRosterRef.current = null;
       return;

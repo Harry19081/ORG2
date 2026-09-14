@@ -3,6 +3,7 @@
 use std::path::{Path, PathBuf};
 
 use super::detect::detect_all;
+use super::mcp_config::load_external_mcp_config;
 use super::types::{
     frontmatter_declares_readonly, readonly_excluded_tool_names, DetectedItem, ImportItemReport,
     ImportReport, ImportSelection, ImportStatus, ItemKind, SourceScope,
@@ -10,7 +11,7 @@ use super::types::{
 use crate::core::definitions::schema::{AgentDefinition, AgentTier, AgentToolSelection};
 use crate::core::definitions::store::AgentDefinitionsStore;
 use crate::specialization::mcp::config::{
-    global_config_path, workspace_config_path, McpConfigFile,
+    global_config_path, update_config_file, workspace_config_path,
 };
 use crate::specialization::policies::config::PolicyConfig;
 use crate::specialization::policies::{
@@ -368,50 +369,6 @@ fn copy_dir_recursive(from: &Path, to: &Path) -> Result<(), String> {
 // MCP import
 // ============================================================
 
-fn load_external_mcp_config(path: &Path) -> Result<McpConfigFile, String> {
-    let raw = std::fs::read_to_string(path)
-        .map_err(|err| format!("Failed to read MCP config {}: {}", path.display(), err))?;
-    let mut value: serde_json::Value = serde_json::from_str(&raw)
-        .map_err(|err| format!("Failed to parse MCP config {}: {}", path.display(), err))?;
-    let Some(servers) = value
-        .get_mut("mcpServers")
-        .and_then(|entry| entry.as_object_mut())
-    else {
-        return Ok(McpConfigFile::default());
-    };
-
-    for server in servers.values_mut() {
-        let Some(server_obj) = server.as_object_mut() else {
-            continue;
-        };
-        if !server_obj.contains_key("type") {
-            let inferred = if server_obj.contains_key("url") {
-                "streamableHttp"
-            } else {
-                "stdio"
-            };
-            server_obj.insert(
-                "type".to_string(),
-                serde_json::Value::String(inferred.to_string()),
-            );
-        }
-        if server_obj.get("type").and_then(|entry| entry.as_str()) == Some("http") {
-            server_obj.insert(
-                "type".to_string(),
-                serde_json::Value::String("streamableHttp".to_string()),
-            );
-        }
-    }
-
-    serde_json::from_value(value).map_err(|err| {
-        format!(
-            "Failed to parse MCP server entries {}: {}",
-            path.display(),
-            err
-        )
-    })
-}
-
 fn apply_mcp_import(
     selection: &ImportSelection,
     target_repo_path: Option<&Path>,
@@ -440,21 +397,22 @@ fn apply_mcp_import(
         Some(repo_path) => workspace_config_path(repo_path),
         None => global_config_path(),
     };
-    let mut target_config = McpConfigFile::load_from(&target_path)?;
-    if !selection.overwrite
-        && target_config
+    update_config_file(&target_path, move |target_config| {
+        if !selection.overwrite
+            && target_config
+                .mcp_servers
+                .contains_key(&selection.target_name)
+        {
+            return Err(format!(
+                "MCP server '{}' already exists; pass `overwrite: true` to replace it",
+                selection.target_name
+            ));
+        }
+        target_config
             .mcp_servers
-            .contains_key(&selection.target_name)
-    {
-        return Err(format!(
-            "MCP server '{}' already exists; pass `overwrite: true` to replace it",
-            selection.target_name
-        ));
-    }
-    target_config
-        .mcp_servers
-        .insert(selection.target_name.clone(), server_config);
-    target_config.save_to(&target_path)
+            .insert(selection.target_name.clone(), server_config);
+        Ok(())
+    })
 }
 
 // ============================================================

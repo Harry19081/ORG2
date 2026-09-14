@@ -4,18 +4,23 @@
  * Header for detail panels with title, navigation (prev/next), close, and optional actions.
  * Uses shared WorkStation header tokens for consistent styling.
  */
-import { ChevronDown, ChevronUp, X } from "lucide-react";
 import React from "react";
 
+import Button from "@src/components/Button";
 import {
-  HEADER_BUTTON,
   HEADER_CLASSES,
   HEADER_ICON_SIZE,
 } from "@src/config/workstation/tokens";
+import {
+  ArrowDown01Icon,
+  ArrowUp01Icon,
+  Cancel01Icon,
+  HugeiconsIcon,
+} from "@src/icons";
 
-import { useWindowDrag } from "./useWindowDrag";
+import { useWindowDrag } from "../FloatingWindow/useWindowDrag";
 
-export interface DetailPanelHeaderProps {
+interface DetailPanelHeaderProps {
   /** Title to display */
   title: string;
   /** Callback when close button is clicked */
@@ -30,8 +35,10 @@ export interface DetailPanelHeaderProps {
   actions?: React.ReactNode;
   /**
    * When true, dragging the header repositions the nearest
-   * `[data-draggable-window]` ancestor. Used by the floating Kanban detail
-   * panel; docked panels leave this off.
+   * `[data-draggable-window]` ancestor, and the header drops its bottom
+   * border so the floating window reads as one continuous surface. Used by
+   * the floating windows (Kanban session preview, side chat); docked panels
+   * leave this off.
    */
   draggable?: boolean;
 }
@@ -50,7 +57,7 @@ const DetailPanelHeader: React.FC<DetailPanelHeaderProps> = ({
     <div
       className={
         draggable
-          ? `${HEADER_CLASSES.pageHeader} cursor-grab select-none`
+          ? `${HEADER_CLASSES.pageHeader} cursor-grab border-b-0! select-none`
           : HEADER_CLASSES.pageHeader
       }
       onPointerDown={onPointerDown}
@@ -61,38 +68,65 @@ const DetailPanelHeader: React.FC<DetailPanelHeaderProps> = ({
         </span>
       </div>
 
-      <div className="flex flex-shrink-0 items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1.5">
         {actions}
         {actions && (
-          <span aria-hidden className="h-4 w-px flex-shrink-0 bg-border-2" />
+          <span aria-hidden className="h-4 w-px shrink-0 bg-border-2" />
         )}
         {onNavigate && (
           <>
-            <button
-              className={HEADER_BUTTON.actionDisabled}
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="sidebar"
+              aria-label="Previous"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={ArrowUp01Icon}
+                  data-icon="chevron-up"
+                  size={HEADER_ICON_SIZE.sm}
+                />
+              }
               onClick={() => onNavigate("prev")}
               disabled={!hasPrev}
               title="Previous"
-            >
-              <ChevronUp size={HEADER_ICON_SIZE.sm} />
-            </button>
-            <button
-              className={HEADER_BUTTON.actionDisabled}
+            />
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="sidebar"
+              aria-label="Next"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={ArrowDown01Icon}
+                  data-icon="chevron-down"
+                  size={HEADER_ICON_SIZE.sm}
+                />
+              }
               onClick={() => onNavigate("next")}
               disabled={!hasNext}
               title="Next"
-            >
-              <ChevronDown size={HEADER_ICON_SIZE.sm} />
-            </button>
+            />
           </>
         )}
-        <button
-          className={HEADER_BUTTON.action}
+        <Button
+          variant="tertiary"
+          appearance="soft"
+          size="sidebar"
+          aria-label="Close"
+          iconOnly
+          icon={
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              data-icon="x"
+              size={HEADER_ICON_SIZE.sm}
+            />
+          }
           onClick={onClose}
           title="Close"
-        >
-          <X size={HEADER_ICON_SIZE.sm} />
-        </button>
+        />
       </div>
     </div>
   );

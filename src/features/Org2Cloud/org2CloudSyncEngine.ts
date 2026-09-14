@@ -57,7 +57,7 @@ import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { createLogger } from "@src/hooks/logger";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import type { Session } from "@src/store/session/sessionAtom/types";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 import { isImportedHistorySession } from "@src/util/session/sessionDispatch";
 
 import type { ProjectSyncBridge } from "../TeamCollaboration/engine/projectSyncBridge";
@@ -84,6 +84,7 @@ import {
   type Org2CloudAuthState,
   commitRefreshedAuth,
   org2CloudAuthAtom,
+  org2CloudAuthIdentityKey,
 } from "./org2CloudAuthAtom";
 import { ensureFreshSession, schemaVersion } from "./org2CloudClient";
 import { resolveOrgEndpoint } from "./org2CloudEndpointDirectory";
@@ -109,7 +110,10 @@ import {
   org2CloudPushCursorsAtom,
   org2CloudPushedMetadataAtom,
   org2CloudRepoScopesAtom,
+  org2CloudRetentionParkedAtom,
   org2CloudSyncEnabledAtom,
+  pruneRetentionParked,
+  retentionParkKey,
 } from "./org2CloudSyncAtoms";
 import * as org2CloudSyncClient from "./org2CloudSyncClient";
 import {
@@ -141,12 +145,14 @@ import {
   type ContinuationStatusResolver,
   type LocalSessionIdResolver,
   type SupersededPushedSession,
+  continuationLiveSessionIds,
   findSupersededPushedSessions,
   findSupersededSelfOwnedRemoteSessions,
   findVanishedPushedSessionIds,
   resolveContinuationStatusesViaCache,
   resolveLocalSessionIdsViaAggregateList,
 } from "./org2CloudSyncEngine.vanishedSessions";
+import { recordSyncEvent } from "./org2CloudSyncJournal";
 import {
   type CloudStore,
   Org2CloudSyncLifecycle,
@@ -177,6 +183,7 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
   /** Last roster version for each locally owned external-history session. */
   private readonly externalHistoryRosterVersions = new Map<string, string>();
   private externalHistoryRosterInitialized = false;
+  private retentionIdentityKey: string | null = null;
   private sessionRosterUnsubscribe: (() => void) | null = null;
   private scopeResolutionUnsubscribe: (() => void) | null = null;
   private scopeResolutionTimer: ReturnType<typeof setTimeout> | null = null;
@@ -255,6 +262,8 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
 
   override start(store: CloudStore): void {
     if (this.sessionRosterUnsubscribe) return;
+    const auth = store.get(org2CloudAuthAtom);
+    this.retentionIdentityKey = auth ? org2CloudAuthIdentityKey(auth) : null;
     super.start(store);
     this.captureExternalHistoryRosterActivity(store);
     this.sessionRosterUnsubscribe = store.sub(sessionsAtom, () => {
@@ -323,7 +332,46 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
     this.scheduleActivityPass(changedSessionIds[0]!);
   }
 
+  private isRetentionParked(orgId: string, session: Session): boolean {
+    const store = this.store;
+    const auth = store?.get(org2CloudAuthAtom);
+    if (!store || !auth) return false;
+    const key = retentionParkKey(
+      org2CloudAuthIdentityKey(auth),
+      orgId,
+      session.session_id
+    );
+    return store.get(org2CloudRetentionParkedAtom)[key] === session.updated_at;
+  }
+
+  private parkRetentionExpired(
+    auth: Org2CloudAuthState,
+    orgId: string,
+    session: Session
+  ): void {
+    const key = retentionParkKey(
+      org2CloudAuthIdentityKey(auth),
+      orgId,
+      session.session_id
+    );
+    this.store?.set(org2CloudRetentionParkedAtom, (current) => {
+      // Reinsert renewed entries at the end of the bounded insertion-order cache.
+      const next = { ...current };
+      delete next[key];
+      return pruneRetentionParked({ ...next, [key]: session.updated_at });
+    });
+  }
+
   protected override resetSyncState(): void {
+    // Startup/router remount can restart this singleton under the SAME auth
+    // identity. Only a real sign-out/account/endpoint transition invalidates
+    // durable parks; treating every stop as sign-out defeats cold-boot parking.
+    const auth = this.store?.get(org2CloudAuthAtom);
+    const currentIdentity = auth ? org2CloudAuthIdentityKey(auth) : null;
+    if (!currentIdentity || currentIdentity !== this.retentionIdentityKey) {
+      this.store?.set(org2CloudRetentionParkedAtom, {});
+    }
+    this.retentionIdentityKey = null;
     this.orgBackoff.reset();
     this.sessionSync.reset();
     this.repoScopeSync.reset();
@@ -439,8 +487,16 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
         resolveOrgEndpoint(org, getCloudEndpoint()),
       ])
     );
+    // Explicitly tagged sessions must publish (and keep publishing
+    // updates) no matter which org the user is looking at — otherwise
+    // Move to Org completes its awaited pass without ever visiting the
+    // target org, reports success, and the session stays invisible to
+    // every other member until the owner happens to activate that org.
     const sessionPushOrgs = orgs.filter(
-      (org) => this.isActiveOrg(org.orgId) || isOrgBackgroundUploadEnabled(org)
+      (org) =>
+        this.isActiveOrg(org.orgId) ||
+        isOrgBackgroundUploadEnabled(org) ||
+        orgsWithTaggedSessions.has(org.orgId)
     );
     await this.repoScopeSync.hydrateRepoScopes(
       fresh,
@@ -483,6 +539,9 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
       for (const session of store.get(sessionsAtom)) {
         if (this.generation !== generation) return;
         if (!isCloudPushCandidate(session)) continue;
+        if (this.isRetentionParked(org.orgId, session)) {
+          continue;
+        }
         // A fork is a continuation inside the source collaboration boundary,
         // not a new ordinary repo session. Repo scopes may overlap across a
         // team org and the forker's personal org, so scope matching alone
@@ -601,10 +660,9 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
         if (matchedScope === undefined) {
           // A pending or failed network-identity lookup cannot prove
           // out-of-scope. Skip until the resolver's completion event runs one
-          // coalesced follow-up pass.
-          log.rateLimited(
-            `scope-check-deferred-${session.session_id}-${org.orgId}`,
-            60_000,
+          // coalesced follow-up pass. Expected steady-state on every poll
+          // while resolution is in flight — trace-level, not console noise.
+          log.trace(
             `scope check deferred for session ${session.session_id} org ` +
               `${org.orgId}: network identity unresolved this pass`
           );
@@ -617,7 +675,9 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
           // the first passes after launch. Skip the session until this run
           // has read the org's scopes from the server.
           if (!this.repoScopeSync.hasServerConfirmedScopes(org.orgId)) {
-            log.info(
+            // Same expected steady-state as the network-identity wait above:
+            // fires on every poll until the org's scopes land — trace-level.
+            log.trace(
               `scope check deferred for session ${session.session_id} org ` +
                 `${org.orgId}: repo scopes not yet confirmed this run`
             );
@@ -739,6 +799,33 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
           if (isCloudSyncBackoffError(error)) {
             this.orgBackoff.backOffOrg(org.orgId, error);
             break; // Stop touching this org for the rest of the run.
+          }
+          if (
+            org2CloudSyncClient.isOrg2SyncErrorCode(
+              error,
+              "ORG2_RETENTION_EXPIRED"
+            )
+          ) {
+            const currentAuth = store.get(org2CloudAuthAtom);
+            if (
+              !currentAuth ||
+              org2CloudAuthIdentityKey(currentAuth) !==
+                org2CloudAuthIdentityKey(auth) ||
+              getCloudEndpoint().supabaseUrl !== passSupabaseUrl
+            )
+              return;
+            this.parkRetentionExpired(auth, org.orgId, session);
+            recordSyncEvent({
+              level: "warn",
+              kind: "session_retention_parked",
+              orgId: org.orgId,
+              message: `Push parked for session ${session.session_id}: past the org's retention window`,
+              code: "ORG2_RETENTION_EXPIRED",
+            });
+            log.warn(
+              `cloud push parked for retention-expired session ${session.session_id}`
+            );
+            continue;
           }
           log.warn(
             `cloud push failed for session ${session.session_id}:`,
@@ -1001,10 +1088,13 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
     // tradeoff: the demoted row is the only cloud replay of the pre-compact
     // detail; the winner carries the compacted continuation. The source
     // transcript stays on the owner's disk and can always be re-shared.
+    // A demoted sibling can still sit in the roster (union merge, persisted
+    // rehydrate); judge it by lineage rather than by mere presence.
+    const continuationLiveIds = continuationLiveSessionIds(liveSessions);
     const superseded = await findSupersededPushedSessions({
       orgId,
       markedSessionIds,
-      liveSessionIds,
+      liveSessionIds: continuationLiveIds,
       resolveStatuses: this.resolveContinuationStatuses,
     });
     if (this.generation !== generation) return;
@@ -1038,7 +1128,7 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
         remoteSelfSessionIds: [...remoteSelfIds].filter(
           (sessionId) => !markedSessionIds.has(sessionId)
         ),
-        liveSessionIds,
+        liveSessionIds: continuationLiveIds,
         resolveStatuses: this.resolveContinuationStatuses,
       });
       if (this.generation !== generation) return;

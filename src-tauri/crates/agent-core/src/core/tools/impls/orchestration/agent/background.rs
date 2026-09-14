@@ -39,6 +39,8 @@ pub(super) struct BackgroundSpawnArgs<'a> {
     pub provider: Arc<dyn LLMProvider>,
     pub work_item_id: Option<String>,
     pub parent_cancel_flag: Option<Arc<AtomicBool>>,
+    /// Exact parent Turn owner for Agent Org same-Turn convergence.
+    pub parent_turn_owner: Option<crate::tools::call_context::TurnProcessOwner>,
     pub handler: UnifiedSubagentHandler,
     /// When the subagent runs inside a worktree isolation, this is the repo
     /// root needed to call `remove_session_worktree` after the task exits.
@@ -69,6 +71,7 @@ impl AgentTool {
             provider,
             work_item_id,
             parent_cancel_flag,
+            parent_turn_owner,
             handler,
             worktree_workspace_root,
         } = args;
@@ -97,12 +100,21 @@ impl AgentTool {
         // - ForceSend (Send Now) pulses the parent flag but must NOT stop
         //   background workers (`boundary_effect().cancel_background_workers
         //   == false`), which a shared flag cannot express.
-        let (broadcast_tx, job_cancel_flag) = job_registry::register_subagent(
-            bg_session_id.clone(),
-            subagent_type_label,
-            bg_agent_name.clone(),
-            parent_session_id.clone(),
-        );
+        let (broadcast_tx, job_cancel_flag) = match parent_turn_owner.clone() {
+            Some(owner) => job_registry::register_owned_subagent(
+                bg_session_id.clone(),
+                subagent_type_label,
+                bg_agent_name.clone(),
+                parent_session_id.clone(),
+                owner,
+            ),
+            None => job_registry::register_subagent(
+                bg_session_id.clone(),
+                subagent_type_label,
+                bg_agent_name.clone(),
+                parent_session_id.clone(),
+            ),
+        };
         // Parent flag is delivered via the explicit fan-out above, not by
         // sharing the Arc. Drop it here so nobody reintroduces the pulse race.
         drop(bg_cancel_flag);
@@ -239,8 +251,11 @@ impl AgentTool {
                             );
                         }
                     }
-                    job_registry::set_final_result(&bg_session_id, resp.clone());
-                    job_registry::mark_exited(&bg_session_id, job_registry::JobStatus::Completed);
+                    job_registry::finish_subagent(
+                        &bg_session_id,
+                        job_registry::JobStatus::Completed,
+                        resp.clone(),
+                    );
                     info!(
                         "[agent:bg] '{}' done (model={}, cancelled={}): {} tokens",
                         bg_agent_name, bg_model, was_cancelled, result.total_tokens
@@ -285,8 +300,11 @@ impl AgentTool {
                     ));
                     let msg = super::helpers::prepend_worktree_note(msg, kept_worktree.as_ref());
                     broadcasting_handler.broadcast_error();
-                    job_registry::set_final_result(&bg_session_id, msg.clone());
-                    job_registry::mark_exited(&bg_session_id, job_registry::JobStatus::Failed);
+                    job_registry::finish_subagent(
+                        &bg_session_id,
+                        job_registry::JobStatus::Failed,
+                        msg.clone(),
+                    );
                     warn!("[agent:bg] '{}' failed: {}", bg_agent_name, err);
 
                     if let Some(ref wid) = bg_work_item_id {
@@ -313,8 +331,13 @@ impl AgentTool {
             // parent is still running (the next turn's reminder covers that)
             // or when no app handle is installed (headless / tests). Mirrors
             // Claude Code's task-notification → idle-queue-processor design.
-            crate::tools::impls::orchestration::subagent_wake::current_subagent_completion_wake_hook()
-                .wake_parent(&bg_parent_session_id);
+            if parent_turn_owner.is_none() {
+                crate::tools::impls::orchestration::job_wake::current_job_completion_wake_hook()
+                    .wake_owner(&bg_parent_session_id);
+            } else {
+                crate::tools::impls::orchestration::job_wake::current_job_completion_wake_hook()
+                    .resume_user_directed_handoff(&bg_parent_session_id);
+            }
 
             // Remove from registry once the parent has consumed the result,
             // or after a hard cap if it never does.
@@ -323,30 +346,16 @@ impl AgentTool {
             // raced the parent: a worker that finished while the parent was
             // idle (and slow to take its next turn) had its result deleted
             // before the Background Jobs reminder could ever surface it, so
-            // the parent never learned the worker completed. Now we retain
-            // the job until `acknowledge_output` is called (the reminder /
-            // await path marks it read), polling at a coarse interval, with
-            // a hard upper bound so a parent that never returns cannot leak
-            // the entry forever.
-            const ACK_POLL_INTERVAL: Duration = Duration::from_secs(5);
-            const MAX_RETENTION: Duration = Duration::from_secs(30 * 60);
-            let retain_deadline = std::time::Instant::now() + MAX_RETENTION;
-            loop {
-                tokio::time::sleep(ACK_POLL_INTERVAL).await;
-                // Missing (already removed elsewhere) or acknowledged → done.
-                match job_registry::is_output_acknowledged(&bg_session_id) {
-                    None | Some(true) => break,
-                    Some(false) => {}
-                }
-                if std::time::Instant::now() >= retain_deadline {
-                    warn!(
-                        "[agent:bg] '{}' result was never acknowledged within retention window; evicting",
-                        bg_session_id
-                    );
-                    break;
-                }
+            // the parent never learned the worker completed. Retaining until
+            // `acknowledge_output` (bounded) closes that race.
+            if parent_turn_owner.is_none() {
+                job_registry::retain_until_acknowledged_then_remove(
+                    &bg_session_id,
+                    Duration::from_secs(30 * 60),
+                    "agent:bg",
+                )
+                .await;
             }
-            job_registry::remove(&bg_session_id);
         });
 
         // Store JoinHandle so registry::kill_subagent can abort it

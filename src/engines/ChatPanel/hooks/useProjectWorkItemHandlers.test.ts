@@ -18,8 +18,8 @@ import type { CreatedWorkItemResult } from "@src/modules/ProjectManager/WorkItem
 import {
   activeChatPanelTabAtom,
   chatPanelTabsAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
-import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanelAtom";
+} from "@src/store/chatPanel/chatPanelTabsState";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { useProjectWorkItemHandlers } from "./useProjectWorkItemHandlers";
 
@@ -31,8 +31,7 @@ const callbacks = {
   handleReturnToSessionCreator: vi.fn(),
   setActiveSessionId: vi.fn(),
   setCreateTarget: vi.fn(),
-  setSelectedProject: vi.fn(),
-  setSelectedWorkItem: vi.fn(),
+  setCreatorWorkItemContext: vi.fn(),
   setShowProjectAgentCreator: vi.fn(),
   setShowWorkItemAgentCreator: vi.fn(),
   setWorkItemCreateDraft: vi.fn(),

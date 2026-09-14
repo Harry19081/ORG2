@@ -264,20 +264,48 @@ describe("groupBranchOptions", () => {
     ]);
   });
 
-  it("flattens default + other branches into a single Other group tail", () => {
+  it("promotes the current and default branches to the top", () => {
     const options = [
       dated("f1", 12),
       dated("f2", 11),
       dated("f3", 10),
       dated("f4", 9),
       dated("f5", 8),
-      dated("main", 1), // oldest default branch → Other tail
+      dated("main", 1),
+      dated("feature/current", 2),
     ];
-    const groups = groupBranchOptions(options);
+    const groups = groupBranchOptions(options, undefined, "feature/current");
+    const recent = groups.find((g) => g.key === "recent");
     const other = groups.find((g) => g.key === "other");
-    expect(other).toBeDefined();
-    expect(other?.labelKey).toBe("otherBranches");
-    expect(other?.options.map((o) => o.name)).toContain("main");
+    expect(recent?.options.map((o) => o.name)).toEqual([
+      "feature/current",
+      "main",
+      "f1",
+      "f2",
+      "f3",
+      "f4",
+    ]);
+    expect(other?.options.map((o) => o.name)).toEqual(["f5"]);
+    const allNames = groups.flatMap((group) =>
+      group.options.map((option) => option.name)
+    );
+    expect(allNames.filter((name) => name === "main")).toHaveLength(1);
+    expect(allNames.filter((name) => name === "feature/current")).toHaveLength(
+      1
+    );
+  });
+
+  it("honors the API current flag when no current branch name is supplied", () => {
+    const groups = groupBranchOptions([
+      dated("main", 1),
+      option({ name: "feature/current", isCurrent: true }),
+      dated("feature/recent", 12),
+    ]);
+    expect(groups[0].options.map((o) => o.name)).toEqual([
+      "feature/current",
+      "main",
+      "feature/recent",
+    ]);
   });
 
   it("ignores worktree paths for names not present in the option list", () => {
@@ -307,15 +335,21 @@ describe("formatBranchTimestamp", () => {
   });
 
   it("formats a recent commit with the shared 'short' relative style", () => {
+    // `formatRelativeTime("short")` is Intl-backed, so the exact strings
+    // ("1 hr. ago") belong to the runtime's ICU data. The standalone
+    // yesterday label is sentence-cased by the shared formatter.
+    const short = (value: number, unit: Intl.RelativeTimeFormatUnit) =>
+      new Intl.RelativeTimeFormat("en", { style: "short" }).format(value, unit);
+
     expect(
       formatBranchTimestamp(option({ lastCommitDate: "2026-07-11T11:00:00Z" }))
-    ).toBe("1 hr ago");
+    ).toBe(short(-1, "hour"));
     expect(
       formatBranchTimestamp(option({ lastCommitDate: "2026-07-10T12:00:00Z" }))
     ).toBe("Yesterday");
     expect(
       formatBranchTimestamp(option({ lastCommitDate: "2026-07-09T12:00:00Z" }))
-    ).toBe("2 days ago");
+    ).toBe(short(-2, "day"));
   });
 });
 

@@ -5,7 +5,7 @@
  * callers) or teleports into the global Workstation tab-header strip via
  * {@link usePublishWorkstationTabHeader} (My Station panes).
  *
- * The teleported variant intentionally drops the row chrome (40px height,
+ * The teleported variant intentionally drops the row chrome (36px height,
  * border, padding) since the workstation tab header already supplies it.
  */
 import React from "react";
@@ -14,7 +14,7 @@ import { HEADER_CLASSES } from "@src/config/workstation/tokens";
 import {
   type WorkstationTabHeaderHost,
   usePublishWorkstationTabHeader,
-} from "@src/hooks/workStation";
+} from "@src/hooks/tabHost/useWorkstationTabHeader";
 
 export interface FileHeaderShellProps {
   className?: string;

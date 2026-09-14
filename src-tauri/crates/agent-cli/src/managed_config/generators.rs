@@ -167,6 +167,10 @@ pub(super) fn generate_claude_code_managed_config(
         return Err("Failed to build Claude Code env object".to_string());
     };
 
+    super::claude_models::clear_role_overrides(env);
+    env.remove("ANTHROPIC_API_KEY");
+    env.remove("CLAUDE_CODE_OAUTH_TOKEN");
+    env.insert("ANTHROPIC_DEFAULT_FABLE_MODEL".into(), model.into());
     env.insert(
         "ANTHROPIC_AUTH_TOKEN".to_string(),
         serde_json::Value::String(proxy_token.to_string()),
@@ -325,7 +329,7 @@ pub(super) fn generate_managed_configs(
     proxy_token: &str,
 ) -> Result<BTreeMap<String, String>, String> {
     let adapter = managed_config_adapter(agent_name)
-        .ok_or_else(|| format!("ORGII managed config is not available for {agent_name}"))?;
+        .ok_or_else(|| format!("ORG2 managed config is not available for {agent_name}"))?;
     let content = |file_id: &str| {
         existing_contents
             .get(file_id)

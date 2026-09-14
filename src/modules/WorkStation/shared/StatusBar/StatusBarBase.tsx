@@ -17,6 +17,7 @@
  */
 import React, { forwardRef, memo } from "react";
 
+import Button from "@src/components/Button";
 import type { ButtonVariant } from "@src/components/Button";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { classNames } from "@src/util/ui/classNames";
@@ -124,9 +125,11 @@ export const StatusBarButton = memo(
           : STATUS_BAR_TOKENS.buttonGhost;
 
       return (
-        <button
+        <Button
+          layout="custom"
+          appearance="custom"
           ref={ref}
-          type="button"
+          htmlType="button"
           className={classNames(
             STATUS_BAR_TOKENS.button,
             variantClass,
@@ -145,7 +148,7 @@ export const StatusBarButton = memo(
           data-testid={dataTestId}
         >
           {children}
-        </button>
+        </Button>
       );
     }
   )
@@ -255,6 +258,8 @@ export const StatusBarText: React.FC<StatusBarTextProps> = memo(
 StatusBarText.displayName = "StatusBarText";
 
 export interface StatusBarDividerProps {
+  /** Divider treatment. */
+  orientation?: "dot" | "vertical";
   /** Additional class name */
   className?: string;
 }
@@ -263,7 +268,16 @@ export interface StatusBarDividerProps {
  * Visual divider between status bar sections.
  */
 export const StatusBarDivider: React.FC<StatusBarDividerProps> = memo(
-  ({ className }) => {
+  ({ orientation = "dot", className }) => {
+    if (orientation === "vertical") {
+      return (
+        <span
+          aria-hidden
+          className={classNames("mx-1 h-3 w-px bg-border-2", className)}
+        />
+      );
+    }
+
     return <span className={classNames("text-text-3", className)}>·</span>;
   }
 );

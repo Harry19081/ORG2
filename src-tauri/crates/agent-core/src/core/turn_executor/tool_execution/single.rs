@@ -5,7 +5,7 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use serde_json::Value;
-use tracing::{info, warn};
+use tracing::{debug, info, warn};
 
 use crate::core::tools::traits::ToolExecuteResult;
 use crate::providers::traits::ToolCallRequest;
@@ -45,6 +45,7 @@ pub(super) async fn execute_single_tool(
     session_id: &str,
     turn_intent_id: &str,
     projected_inbox_ids: &[i64],
+    turn_process_control: Option<&crate::tools::call_context::TurnProcessControl>,
     handler: &dyn TurnEventHandler,
     permission_provider: Option<&dyn PermissionProvider>,
     cancel_flag: Option<&Arc<AtomicBool>>,
@@ -172,6 +173,19 @@ pub(super) async fn execute_single_tool(
             if is_cancelled(cancel_flag) {
                 return SingleResult::EarlyExit(ToolBatchOutcome::Cancelled);
             }
+            if matches!(
+                policy.call_authority(),
+                crate::tools::call_context::ToolCallAuthority::PersistedAgentOrg(
+                    crate::tools::call_context::AgentOrgTurnToolProfile::CoordinatorOrchestration
+                )
+            ) {
+                debug!(
+                    session_id,
+                    turn_intent_id,
+                    tool_name = %tool_call.name,
+                    "[agent_org_metric] coordinator_tool_denied"
+                );
+            }
             handler.on_tool_result(
                 session_id,
                 &tool_call.id,
@@ -215,17 +229,19 @@ pub(super) async fn execute_single_tool(
                 tool_call.name, stale_err
             );
             let err_result = format!("Error: {}", stale_err);
-            handler
-                .after_tool_execute(
-                    session_id,
-                    &tool_call.id,
-                    &tool_call.name,
-                    &effective_args,
-                    &err_result,
-                    Some(&stale_err),
-                    0,
-                )
-                .await;
+            if !is_cancelled(cancel_flag) {
+                handler
+                    .after_tool_execute(
+                        session_id,
+                        &tool_call.id,
+                        &tool_call.name,
+                        &effective_args,
+                        &err_result,
+                        Some(&stale_err),
+                        0,
+                    )
+                    .await;
+            }
             result_is_error = true;
             err_result
         } else {
@@ -240,12 +256,14 @@ pub(super) async fn execute_single_tool(
             );
 
             let exec_start = Instant::now();
-            let ctx = crate::tools::call_context::CallContext::for_turn(
+            let ctx = crate::tools::call_context::CallContext::for_runtime_turn(
                 &tool_call.id,
                 session_id,
                 turn_intent_id,
                 projected_inbox_ids.to_vec(),
-            );
+                turn_process_control.cloned(),
+            )
+            .with_authority(policy.call_authority());
             let raw_outcome = tools
                 .execute_with_policy(&tool_call.name, effective_args.clone(), policy, &ctx)
                 .await;
@@ -303,11 +321,14 @@ pub(super) async fn execute_single_tool(
             // Hook/policy appends happen after budget accounting, so cap
             // them — an uncapped hook would bypass both the per-tool and
             // aggregate budgets.
-            if let Some(extra) = handler
-                .post_tool_hook(&tool_call.name, &effective_args, &truncated)
-                .await
-            {
-                truncated.push_str(&truncate_output(&extra, Some(super::HOOK_APPEND_MAX_CHARS)));
+            if !is_cancelled(cancel_flag) {
+                if let Some(extra) = handler
+                    .post_tool_hook(&tool_call.name, &effective_args, &truncated)
+                    .await
+                {
+                    truncated
+                        .push_str(&truncate_output(&extra, Some(super::HOOK_APPEND_MAX_CHARS)));
+                }
             }
 
             if FILE_READ_TOOLS.contains(&tool_call.name.as_str()) && !is_error {
@@ -325,17 +346,19 @@ pub(super) async fn execute_single_tool(
             } else {
                 None
             };
-            handler
-                .after_tool_execute(
-                    session_id,
-                    &tool_call.id,
-                    &tool_call.name,
-                    &effective_args,
-                    &truncated,
-                    error_str,
-                    duration_ms,
-                )
-                .await;
+            if !is_cancelled(cancel_flag) {
+                handler
+                    .after_tool_execute(
+                        session_id,
+                        &tool_call.id,
+                        &tool_call.name,
+                        &effective_args,
+                        &truncated,
+                        error_str,
+                        duration_ms,
+                    )
+                    .await;
+            }
 
             truncated
         }
@@ -376,6 +399,13 @@ pub(super) async fn execute_single_tool(
                 result_is_error,
             );
         }
+    }
+
+    if matches!(
+        rich.as_ref().and_then(|result| result.turn_directive),
+        Some(crate::tools::result::ToolTurnDirective::EndTurn)
+    ) {
+        return SingleResult::EarlyExit(ToolBatchOutcome::EndTurn(String::new()));
     }
 
     if is_cancelled(cancel_flag) {
@@ -483,6 +513,7 @@ mod tests {
             "session-test",
             "",
             &[],
+            None,
             &handler,
             None,
             None,

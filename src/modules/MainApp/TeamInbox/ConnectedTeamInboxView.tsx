@@ -28,6 +28,9 @@ const ConnectedTeamInboxView: React.FC = () => {
         prStatus: pullRequest.rawPr.draft ? "draft" : pullRequest.state,
         headBranch: pullRequest.sourceBranch,
         baseBranch: pullRequest.targetBranch,
+        updatedAt: pullRequest.updatedAt,
+        additions: pullRequest.rawPr.additions,
+        deletions: pullRequest.rawPr.deletions,
         repoPath: pullRequest.repoPath,
         repoId: pullRequest.repoId,
       });
@@ -44,6 +47,7 @@ const ConnectedTeamInboxView: React.FC = () => {
       onNavigate={navigate}
       pullRequests={pullRequests.items}
       pullRequestsLoading={pullRequests.loading}
+      pullRequestsInitialLoading={pullRequests.initialLoading}
       pullRequestsError={pullRequests.error}
       onRefreshPullRequests={pullRequests.refresh}
       onOpenPullRequestTab={openPullRequestTab}

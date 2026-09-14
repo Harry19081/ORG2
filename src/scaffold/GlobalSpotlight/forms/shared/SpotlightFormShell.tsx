@@ -1,11 +1,9 @@
 /**
  * SpotlightFormShell + SpotlightFormBody
  *
- * Shared chrome for every spotlight modal form (clone, import, create
- * repo/folder, create-workspace). All eight forms previously hand-rolled
- * the same wrapper structure (rounded panel containing a `p-3` body and a
- * `PanelFooter`); these two components are the single source of truth for
- * that layout.
+ * Shared structure for every spotlight modal form (clone, import, create
+ * repo/folder, create-workspace). The form runs edge-to-edge inside the
+ * spotlight panel while the body and footer own their section spacing.
  *
  * Usage:
  *
@@ -25,10 +23,10 @@ interface SpotlightFormShellProps {
 }
 
 /**
- * Outer panel that visually separates the form from the surrounding
- * spotlight glass container. The background comes from
- * `SPOTLIGHT_MODAL_FORM_TOKENS`; padding is left to `SpotlightFormBody`
- * and `PanelFooter` so each section can manage its own spacing semantics.
+ * Edge-to-edge form surface. The spotlight shell owns the outer border and
+ * radius; this layer only provides the form background and clips its sections.
+ * Padding is left to `SpotlightFormBody` and `PanelFooter` so each section can
+ * manage its own spacing semantics.
  */
 export const SpotlightFormShell: React.FC<SpotlightFormShellProps> = ({
   children,
@@ -41,10 +39,12 @@ interface SpotlightFormBodyProps {
 }
 
 /**
- * Standard body region for a form panel. Applies the canonical `p-3`
+ * Standard body region for a form panel. Applies the canonical `px-3 pb-3`
  * inset so the body and the `PanelFooter` (`px-3 h-12`) line up on the
  * horizontal axis.
  */
 export const SpotlightFormBody: React.FC<SpotlightFormBodyProps> = ({
   children,
-}) => <div className="p-3">{children}</div>;
+}) => (
+  <div className={SPOTLIGHT_MODAL_FORM_TOKENS.bodyClassName}>{children}</div>
+);

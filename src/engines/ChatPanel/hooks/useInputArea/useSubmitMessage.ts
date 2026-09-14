@@ -18,17 +18,21 @@ import { useAtomValue, useStore } from "jotai";
 import React, { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-import { rejectQuestion, respondQuestion } from "@src/api/tauri/agent";
+import { zodActionRegistry } from "@src/ActionSystem/schema/zodRegistry";
+import type { ComposerSnapshot } from "@src/components/ComposerInput";
+import { serializePillNode } from "@src/components/ComposerInput/utils";
 import Message from "@src/components/Message";
-import { extractQuestionBatch } from "@src/engines/ChatPanel/InputArea/AskQuestionCard/extractQuestionBatch";
-import { chatEventsAtom } from "@src/engines/SessionCore";
-import { parseAddressCommentsSlashCommand } from "@src/features/Org2Cloud/addressCommentsSlashToken";
-import { useAddressCommentsSlashCommand } from "@src/features/Org2Cloud/useAddressCommentsSlashCommand";
+import { chatEventsAtom, eventsAtom } from "@src/engines/SessionCore";
 import { createLogger } from "@src/hooks/logger";
 import { useSecretScanGuard } from "@src/hooks/security/useSecretScanGuard";
+import { useSessionCommandActions } from "@src/hooks/session/useSessionPatch";
 import { sessionByIdAtom } from "@src/store/session";
+import { creatorDefaultExecModeAtom } from "@src/store/session/creatorDefaultExecModeAtom";
+import { creatorDefaultProductModeAtom } from "@src/store/session/creatorDefaultProductModeAtom";
 import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
-import { wpReadOnlyAtom } from "@src/store/ui/chatPanelAtom";
+import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
+import { modelSelectorAtom } from "@src/store/ui/modelSelectorAtom";
+import { isCliSession } from "@src/util/session/sessionDispatch";
 
 import { clearImageDraft } from "../../InputArea/utils/imageDraftCache";
 import {
@@ -36,38 +40,68 @@ import {
   parseCompactSlashCommand,
   useManualCompact,
 } from "../useManualCompact";
+import { executeComposerCommand } from "./executeComposerCommand";
+import { executeNativeCliCommand } from "./executeNativeCliCommand";
 import { resolveMcpSlashCommand } from "./mcpSlashCommand";
+import {
+  isTerminalNativeSlashCommand,
+  nativeSlashNames,
+  parseNativeSlashCommand,
+} from "./nativeSlashCommands";
+import { expandSkillPills } from "./outgoingTextTransforms";
+import { projectOutgoingUserMessage } from "./projectOutgoingUserMessage";
+import { interceptPendingQuestionBatches } from "./questionIntercept";
+import { shouldRestoreSubmissionAfterDispatchError } from "./submissionErrors";
 import type {
   CiteCodeSnapshot,
   InputAreaRefs,
   SubmitMessageOptions,
   SubmitOverrideInput,
 } from "./types";
+import { SubmitRetainedDeliveryError } from "./types";
+
+// Re-exported for existing consumers/tests; the implementation moved to the
+// shared outgoing-text transform module so every projection entry point uses
+// the same copy.
+export { stripContextPillBase64 } from "./outgoingTextTransforms";
 
 const log = createLogger("useSubmitMessage");
 
-/**
- * Strip the `::<base64>` payload from serialized context pills
- * (`[paste:path::encoded]` → `[paste:path]`).
- *
- * `serializePillNode` embeds the pill's stored text as a base64 blob so the
- * composer can round-trip it back into an editable pill (drafts / edit mode).
- * That blob is editor-internal — the LLM must never see it. The submit flow
- * already re-attaches each context pill's *plaintext* as a fenced ```block```
- * (see `contextBlocks` below), so leaving the base64 in the agent content both
- * duplicates the payload AND feeds the model a multi-KB opaque token soup —
- * which has triggered Anthropic `stop_reason=refusal` (empty response, turn
- * ends with no output). We keep the lightweight `[paste:path]` reference so the
- * fenced block still has an anchor, but drop the blob.
- */
-const CONTEXT_PILL_TYPE_ALTERNATION =
-  "paste|terminal|browser|workitem|dom-element|dom-component|pr|issue";
-const CONTEXT_PILL_BASE64_REGEX = new RegExp(
-  `\\[(${CONTEXT_PILL_TYPE_ALTERNATION}):([^\\]]+?)::[A-Za-z0-9+/=]+\\]`,
-  "g"
-);
-export function stripContextPillBase64(text: string): string {
-  return text.replace(CONTEXT_PILL_BASE64_REGEX, "[$1:$2]");
+export function serializeSubmissionSnapshot(
+  snapshot: ComposerSnapshot,
+  omitMemberPills: boolean
+): string {
+  return snapshot.parts
+    .map((part) => {
+      if (part.kind === "text") return part.text;
+      if (part.kind === "newline") return "\n";
+      if (omitMemberPills && part.attrs.iconType === "member") return "";
+      return serializePillNode(part.attrs);
+    })
+    .join("")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/^[ \t]+|[ \t]+$/g, "");
+}
+
+export function memberMentionsFromSnapshot(
+  snapshot: ComposerSnapshot
+): Array<{ memberId: string; displayName: string }> {
+  const seen = new Set<string>();
+  const mentions: Array<{ memberId: string; displayName: string }> = [];
+  for (const part of snapshot.parts) {
+    if (part.kind !== "pill" || part.attrs.iconType !== "member") continue;
+    if (!part.attrs.filePath.startsWith("member://")) {
+      throw new Error("Agent Team Member pill has no canonical member:// id");
+    }
+    const memberId = part.attrs.filePath.slice("member://".length).trim();
+    if (!memberId) {
+      throw new Error("Agent Team Member pill has an empty canonical id");
+    }
+    if (seen.has(memberId)) continue;
+    seen.add(memberId);
+    mentions.push({ memberId, displayName: part.attrs.fileName });
+  }
+  return mentions;
 }
 
 // ============================================================================
@@ -80,7 +114,6 @@ export interface UseSubmitMessageOptions {
   /** Session whose comment threads Address Comments targets when the
    * composer dispatches elsewhere (external-history fork composer, where
    * `draftSessionId` is empty by design). */
-  addressSessionId?: string | null;
   replyTargetEventId: string | undefined;
   flushDraft: (text: string) => Promise<void>;
   clearReplyTarget: () => Promise<void>;
@@ -117,10 +150,30 @@ function lastSerializedPillLabel(rawLabel: string): string {
   return lastSpaceIdx >= 0 ? trimmed.slice(lastSpaceIdx + 1).trim() : trimmed;
 }
 
+export function resolveSubmitInput(
+  options: SubmitMessageOptions,
+  liveDisplayText: string,
+  liveHasImages: boolean
+): {
+  isExplicitAction: boolean;
+  displayText: string;
+  hasAttachedImages: boolean;
+} {
+  const isExplicitAction = options.source === "explicit-action";
+  return {
+    isExplicitAction,
+    displayText: isExplicitAction
+      ? (options.capturedText ?? "")
+      : liveDisplayText.trim().length > 0
+        ? liveDisplayText
+        : (options.capturedText ?? ""),
+    hasAttachedImages: !isExplicitAction && liveHasImages,
+  };
+}
+
 export function useSubmitMessage({
   refs,
   draftSessionId,
-  addressSessionId,
   replyTargetEventId,
   flushDraft,
   clearReplyTarget,
@@ -134,27 +187,24 @@ export function useSubmitMessage({
   const { t } = useTranslation("sessions");
   const store = useStore();
   const wpReadOnly = useAtomValue(wpReadOnlyAtom);
+  const submitAttemptsInFlightRef = useRef(new Set<string>());
   const submitInFlightKeyRef = useRef<string | null>(null);
   const { runManualCompact } = useManualCompact();
+  const { setPlan, rename } = useSessionCommandActions(draftSessionId);
   const guardAgainstSecrets = useSecretScanGuard();
-  const addressComments = useAddressCommentsSlashCommand(
-    draftSessionId || addressSessionId || null
-  );
-
-  return useCallback(
+  const submitMessage = useCallback(
     async (options: SubmitMessageOptions = {}) => {
       // Imported teammate replays are intentionally read-only in the event
-      // store, but their composer owns an onSubmitOverride that performs
-      // fork-before-send. Let that coordinator inspect the submission before
-      // applying the ordinary read-only guard; otherwise the generic
-      // "No active session" toast makes the fork flow unreachable.
+      // store, but their composer owns an onSubmitOverride that admits the
+      // turn to the canonical conversation queue. Let that coordinator inspect
+      // the submission before applying the ordinary read-only guard; otherwise
+      // the generic "No active session" toast makes continuation unreachable.
       if (wpReadOnly && !onSubmitOverride) {
         Message.warning(t("chat.noActiveSession"));
         return;
       }
 
       if (!refs.composerInputRef.current) return;
-
       // ── Compaction gate ──────────────────────────────────────────────────
       // While this session's durable transcript is being rewritten by a
       // manual compaction, hold new messages instead of dispatching them.
@@ -168,47 +218,150 @@ export function useSubmitMessage({
         return;
       }
 
-      const liveDisplayText = refs.composerInputRef.current.getTextWithPills();
-      let displayText =
-        liveDisplayText.trim().length > 0
-          ? liveDisplayText
-          : (options.capturedText ?? "");
+      const isExplicitAction = options.source === "explicit-action";
+      const submitComposerSnapshot = isExplicitAction
+        ? undefined
+        : refs.composerInputRef.current.getSnapshot();
+      const liveDisplayText = submitComposerSnapshot
+        ? serializeSubmissionSnapshot(submitComposerSnapshot, false)
+        : refs.composerInputRef.current.getTextWithPills();
+      const resolvedInput = resolveSubmitInput(
+        options,
+        liveDisplayText,
+        imageAttachment.hasImages
+      );
+      // Capture typed mention identities before any async secret scan, MCP
+      // expansion, or pending-pill load. Display text is not an identity
+      // source: a roster rename while those awaits run must not retarget the
+      // Team Chat message.
+      let { displayText } = resolvedInput;
       const hasText = displayText.trim().length > 0;
-      const hasAttachedImages = imageAttachment.hasImages;
+      const { hasAttachedImages } = resolvedInput;
 
-      if (!hasText && !hasAttachedImages) return;
+      if (!hasText && !hasAttachedImages) {
+        return;
+      }
+
+      const provider = store.get(sessionByIdAtom(draftSessionId))?.cliAgentType;
+      if (enableAgentInterceptors && !hasAttachedImages) {
+        // Older pinned Compact actions serialize as an ORG2 skill pill.
+        // Normalize that explicit command before choosing the native path.
+        const compact =
+          provider === "codex" || provider === "claude_code"
+            ? parseCompactSlashCommand(displayText)
+            : null;
+        const nativeCommandText = compact
+          ? `/compact${compact.instructions ? ` ${compact.instructions}` : ""}`
+          : displayText;
+        const command = parseNativeSlashCommand(nativeCommandText);
+        if (command) {
+          if (command.name === "plan" && submitDisabled) return;
+          try {
+            const remaining = await executeComposerCommand(command, {
+              showStatus: () => {
+                const session = store.get(sessionByIdAtom(draftSessionId));
+                Message.info(
+                  [
+                    session?.name,
+                    session?.model,
+                    session?.agentExecMode,
+                    session?.repoPath,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")
+                );
+              },
+              openModel: () => store.set(modelSelectorAtom, { isOpen: true }),
+              setPlan: () =>
+                draftSessionId
+                  ? setPlan()
+                  : Promise.resolve().then(() => {
+                      store.set(creatorDefaultExecModeAtom, "plan");
+                      store.set(creatorDefaultProductModeAtom, null);
+                    }),
+              rename,
+              dispatch: (action) => zodActionRegistry.execute(action, {}),
+            });
+            if (
+              remaining === undefined &&
+              isCliSession(draftSessionId) &&
+              isTerminalNativeSlashCommand(
+                provider,
+                draftSessionId,
+                store.get(eventsAtom),
+                command.name
+              )
+            ) {
+              throw new Error(
+                `/${command.name} requires the native terminal and is unavailable through the provider SDK. Your draft has been kept.`
+              );
+            }
+            if (
+              remaining === undefined &&
+              isCliSession(draftSessionId) &&
+              nativeSlashNames(
+                provider,
+                draftSessionId,
+                store.get(eventsAtom)
+              ).includes(command.name)
+            ) {
+              if (submitDisabled || !(await guardAgainstSecrets(displayText)))
+                return;
+              await executeNativeCliCommand(draftSessionId, nativeCommandText);
+              if (!isExplicitAction) {
+                refs.composerInputRef.current?.clear();
+                await flushDraft("");
+              }
+              options.onSubmitted?.();
+              return;
+            }
+            if (remaining !== undefined) {
+              if (!remaining) {
+                if (!isExplicitAction) {
+                  refs.composerInputRef.current?.clear();
+                  await flushDraft("");
+                }
+                options.onSubmitted?.();
+                return;
+              }
+              displayText = remaining;
+            }
+          } catch (error) {
+            Message.error(
+              error instanceof Error ? error.message : String(error)
+            );
+            return;
+          }
+        }
+      }
 
       // ── /compact slash command ───────────────────────────────────────────
       // `/compact [instructions]` runs a manual context compaction instead
       // of dispatching a message (Claude Code parity). Only a pure text
       // command qualifies — attached images mean the user is sending real
       // content that happens to start with "/compact".
-      if (enableAgentInterceptors && hasText && !hasAttachedImages) {
+      if (
+        enableAgentInterceptors &&
+        hasText &&
+        !hasAttachedImages &&
+        !(
+          isCliSession(draftSessionId) &&
+          (provider === "codex" || provider === "claude_code")
+        )
+      ) {
         const compactCommand = parseCompactSlashCommand(displayText);
         if (compactCommand) {
-          refs.composerInputRef.current.clear();
-          void flushDraft("").catch((err: unknown) => {
-            log.warn("[useSubmitMessage] flushDraft(compact) failed:", err);
-          });
+          if (!isExplicitAction) {
+            refs.composerInputRef.current.clear();
+            void flushDraft("").catch((err: unknown) => {
+              log.warn("[useSubmitMessage] flushDraft(compact) failed:", err);
+            });
+          }
           void runManualCompact(
             draftSessionId || null,
             compactCommand.instructions
           );
-          return;
-        }
-
-        const addressDraft = parseAddressCommentsSlashCommand(displayText);
-        if (addressDraft) {
-          refs.composerInputRef.current.clear();
-          if (draftSessionId) {
-            void flushDraft("").catch((err: unknown) => {
-              log.warn("[useSubmitMessage] flushDraft(address) failed:", err);
-            });
-          }
-          addressComments.run({
-            selectedHeadIds: addressDraft.selectedHeadIds,
-            instruction: addressDraft.instruction,
-          });
+          options.onSubmitted?.();
           return;
         }
       }
@@ -217,7 +370,9 @@ export function useSubmitMessage({
       // compaction is a maintenance job queued behind the active turn by the
       // backend scheduler. Parse the command first so selecting its pill never
       // becomes a silent no-op while the session is working.
-      if (submitDisabled) return;
+      if (submitDisabled) {
+        return;
+      }
 
       // ── Secret scan gate ─────────────────────────────────────────────────
       // Warn before a typed API key / token / password enters the transcript
@@ -230,31 +385,15 @@ export function useSubmitMessage({
       // ── Question intercept ────────────────────────────────────────────────
       // When the agent asked a question and the user typed a reply in the main
       // input, forward the typed text as the question answer before dispatching.
+      // Finalizes locally even when the native commands fail (no CLI bridge) —
+      // see questionIntercept.ts.
       if (enableAgentInterceptors && hasText && draftSessionId) {
-        const events = store.get(chatEventsAtom);
-        for (const event of events) {
-          if (event.sessionId && event.sessionId !== draftSessionId) continue;
-          const batch = extractQuestionBatch(event);
-          if (!batch) continue;
-          const isFreeText = batch.questions.every(
-            (question) => question.options.length === 0
-          );
-          if (isFreeText) {
-            void respondQuestion(batch.sessionId, batch.questionId, [
-              [displayText.trim()],
-            ]).catch((err: unknown) => {
-              log.warn("[useSubmitMessage] respondQuestion failed:", err);
-              Message.warning(t("chat.questionExpired"));
-            });
-          } else {
-            void rejectQuestion(batch.sessionId, batch.questionId).catch(
-              (err: unknown) => {
-                log.warn("[useSubmitMessage] rejectQuestion failed:", err);
-                Message.warning(t("chat.questionExpired"));
-              }
-            );
-          }
-        }
+        interceptPendingQuestionBatches(
+          store.get(chatEventsAtom),
+          draftSessionId,
+          displayText.trim(),
+          t("chat.skippedByUser")
+        );
       }
 
       // ── MCP slash-command resolution ─────────────────────────────────────
@@ -274,18 +413,18 @@ export function useSubmitMessage({
 
       // ── Skill pill expansion ──────────────────────────────────────────────
       // displayText keeps `name [skill:/<name>]` for rendering pills in
-      // history. The Rust backend expects `/<name>` to expand skill content,
-      // so we extract the path token (already starts with "/") directly.
-      const skillExpanded = displayText.replace(
-        /([^[]+?)\s*\[skill:([^\]]+)\]/g,
-        (_match, _displayName, skillPath: string) => skillPath
-      );
-      const hasSkillPills = skillExpanded !== displayText;
+      // history. The shared transform extracts the `/<name>` path token the
+      // Rust backend expects; the result feeds the session-pill scan below
+      // (the final agent projection re-runs the same transform internally).
+      const { expanded: skillExpanded, hasSkillPills } =
+        expandSkillPills(displayText);
 
       // ── Context pill async loads ──────────────────────────────────────────
-      const { waitForPendingPills } =
-        await import("@src/util/contextPillContent");
-      await waitForPendingPills();
+      if (!isExplicitAction) {
+        const { waitForPendingPills } =
+          await import("@src/util/contextPillContent");
+        await waitForPendingPills();
+      }
 
       // ── Session pill ID injection ─────────────────────────────────────────
       // Session pills carry only the session ID (no transcript). Extract them
@@ -310,16 +449,10 @@ export function useSubmitMessage({
       }
 
       // ── Terminal/PR pill text collection ─────────────────────────────────
-      const terminalTexts =
-        refs.composerInputRef.current.getTerminalPillTexts();
+      const terminalTexts = isExplicitAction
+        ? {}
+        : refs.composerInputRef.current.getTerminalPillTexts();
       const terminalEntries = Object.entries(terminalTexts);
-      let agentContent: string | undefined;
-      // The text the LLM sees must not carry the editor-internal `::base64`
-      // pill payload. `displayText` keeps the full serialized form for history
-      // rendering / re-editing; `base` is the agent-facing copy.
-      const base = stripContextPillBase64(
-        hasSkillPills ? skillExpanded : displayText
-      );
       const contextBlocks: string[] = [];
 
       if (terminalEntries.length > 0) {
@@ -379,21 +512,45 @@ export function useSubmitMessage({
         contextBlocks.push(...sessionRefs);
       }
 
-      if (contextBlocks.length > 0) {
-        agentContent = base + "\n\n" + contextBlocks.join("\n\n");
-      } else if (hasSkillPills || base !== displayText) {
-        // `base !== displayText` means base64 pill payload was stripped — send
-        // the cleaned copy so the LLM never receives the raw blob even if no
-        // context/skill block was produced.
-        agentContent = base;
-      }
+      // The shared projection owns the display/agent split: skill expansion,
+      // `::base64` strip, and the Canvas contract. Canvas is additionally
+      // gated like /compact and Address Comments above — attached images mean
+      // the user is sending real content that happens to mention the command
+      // — and on session capability: CLI agents have no render_inline_canvas
+      // tool, so the message must pass through as ordinary text there.
+      const { displayContent, agentContent } = projectOutgoingUserMessage({
+        displayText,
+        contextBlocks,
+        enableAgentInterceptors,
+        allowCanvasInterception:
+          !hasAttachedImages && !isCliSession(draftSessionId || null),
+      });
+      displayText = displayContent;
+      const displayTextWithoutMemberMentions = submitComposerSnapshot
+        ? serializeSubmissionSnapshot(submitComposerSnapshot, true)
+        : displayText;
+      const { agentContent: agentContentWithoutMemberMentions } =
+        projectOutgoingUserMessage({
+          displayText: displayTextWithoutMemberMentions,
+          contextBlocks,
+          enableAgentInterceptors,
+          allowCanvasInterception:
+            !hasAttachedImages && !isCliSession(draftSessionId || null),
+        });
+      const memberMentions = submitComposerSnapshot
+        ? memberMentionsFromSnapshot(submitComposerSnapshot)
+        : [];
 
-      const imageDataUrls = imageAttachment.images.map((img) => img.dataUrl);
+      const imageDataUrls = isExplicitAction
+        ? []
+        : imageAttachment.images.map((img) => img.dataUrl);
       const submitKey = JSON.stringify({
         draftSessionId,
         displayText,
         agentContent,
+        memberIds: memberMentions.map((mention) => mention.memberId),
         imageDataUrls,
+        composerSnapshot: submitComposerSnapshot,
       });
       if (submitInFlightKeyRef.current === submitKey) return;
       submitInFlightKeyRef.current = submitKey;
@@ -401,21 +558,26 @@ export function useSubmitMessage({
       let submitSucceeded = false;
       try {
         // ── Snapshot before optimistic clear ─────────────────────────────────
-        // Lets us restore the full composer state (text + images + cite-code)
-        // if the outgoing request fails, preventing silent data loss.
-        const editorSnapshot = refs.composerInputRef.current.getSnapshot();
-        const imagesSnapshot: ChatImageAttachment[] =
-          imageAttachment.images.slice();
+        // Captured only so a true pre-send validation failure can leave the
+        // composer untouched. Transport/provider failures remain visible on
+        // the failed transcript row and never repopulate this editor.
+        const editorSnapshot = submitComposerSnapshot ?? null;
+        const imagesSnapshot: ChatImageAttachment[] = isExplicitAction
+          ? []
+          : imageAttachment.images.slice();
         const citeSnapshot: CiteCodeSnapshot | null = citeCode.isCiteCode
-          ? citeCode.captureCiteCode()
+          ? isExplicitAction
+            ? null
+            : citeCode.captureCiteCode()
           : null;
 
         // ── Optimistic clear ──────────────────────────────────────────────────
         const editorTextBeforeClear =
           refs.composerInputRef.current.getTextWithPills();
         const editorStillContainsSubmittedText =
-          editorTextBeforeClear === displayText ||
-          editorTextBeforeClear.trim() === displayText.trim();
+          !isExplicitAction &&
+          (editorTextBeforeClear === displayText ||
+            editorTextBeforeClear.trim() === displayText.trim());
         if (editorStillContainsSubmittedText) {
           refs.composerInputRef.current.clear();
           refs.setHasContent(false);
@@ -441,63 +603,82 @@ export function useSubmitMessage({
                 displayText: displayText || "(image)",
                 agentContent,
                 imageDataUrls: dispatchImages,
+                composerSnapshot: submitComposerSnapshot,
+                memberMentions,
+                displayTextWithoutMemberMentions,
+                agentContentWithoutMemberMentions:
+                  agentContentWithoutMemberMentions ??
+                  displayTextWithoutMemberMentions,
               })
             : false;
           if (!overrideHandled) {
+            const ordinaryAgentContent =
+              memberMentions.length > 0
+                ? (agentContentWithoutMemberMentions ??
+                  displayTextWithoutMemberMentions)
+                : agentContent;
             // Queue-vs-direct is decided inside handleSessChatSubmit against
             // the turn-lifecycle FSM — no composer-side heuristics.
             await handleSessChatSubmit(
               undefined,
               displayText || "(image)",
-              agentContent,
+              ordinaryAgentContent,
               dispatchImages
             );
           }
           submitSucceeded = true;
         } catch (err) {
-          // ── Restore on failure ────────────────────────────────────────────
-          // Each restore branch is independent so one failure doesn't block others.
-          try {
+          // Until a transport has retained a visible failed row, the composer
+          // remains the only recoverable copy of the user's text, images and
+          // structured mention pills. Optimistic transports explicitly mark
+          // that ownership hand-off with SubmitRetainedDeliveryError. A Group
+          // delivery with an unknown outcome similarly owns an immutable retry
+          // envelope and must not also repopulate the editor.
+          if (
+            !(err instanceof SubmitRetainedDeliveryError) &&
+            shouldRestoreSubmissionAfterDispatchError(err)
+          ) {
             const editor = refs.composerInputRef.current;
             if (editor && editorSnapshot) {
-              editor.setContent(editorSnapshot);
-              refs.setHasContent(true);
-              if (draftSessionId) {
-                const restoredText = editor.getTextWithPills();
-                void flushDraft(restoredText).catch((err: unknown) => {
-                  log.warn(
-                    "[useSubmitMessage] flushDraft(restore) failed:",
-                    err
+              try {
+                editor.setContent(editorSnapshot);
+                refs.setHasContent(true);
+                if (draftSessionId) {
+                  void flushDraft(editor.getTextWithPills()).catch(
+                    (restoreError: unknown) => {
+                      log.warn(
+                        "[useSubmitMessage] flushDraft(validation restore) failed:",
+                        restoreError
+                      );
+                    }
                   );
-                });
+                }
+              } catch (restoreError) {
+                log.warn(
+                  "[useSubmitMessage] editor restore failed:",
+                  restoreError
+                );
               }
             }
-          } catch (restoreErr) {
-            log.warn(
-              "[useSubmitMessage] failed to restore editor content:",
-              restoreErr
-            );
-          }
-
-          if (imagesSnapshot.length > 0) {
-            try {
-              imageAttachment.restoreImages(imagesSnapshot);
-            } catch (restoreErr) {
-              log.warn(
-                "[useSubmitMessage] failed to restore image attachments:",
-                restoreErr
-              );
+            if (imagesSnapshot.length > 0) {
+              try {
+                imageAttachment.restoreImages(imagesSnapshot);
+              } catch (restoreError) {
+                log.warn(
+                  "[useSubmitMessage] image restore failed:",
+                  restoreError
+                );
+              }
             }
-          }
-
-          if (citeSnapshot) {
-            try {
-              citeCode.restoreCiteCode(citeSnapshot);
-            } catch (restoreErr) {
-              log.warn(
-                "[useSubmitMessage] failed to restore cite-code state:",
-                restoreErr
-              );
+            if (citeSnapshot) {
+              try {
+                citeCode.restoreCiteCode(citeSnapshot);
+              } catch (restoreError) {
+                log.warn(
+                  "[useSubmitMessage] cite restore failed:",
+                  restoreError
+                );
+              }
             }
           }
 
@@ -512,7 +693,7 @@ export function useSubmitMessage({
       if (!submitSucceeded) return;
 
       // ── Post-send cleanup ─────────────────────────────────────────────────
-      if (draftSessionId && replyTargetEventId) {
+      if (!isExplicitAction && draftSessionId && replyTargetEventId) {
         void clearReplyTarget().catch((err: unknown) => {
           log.warn(
             "[useSubmitMessage] clearReplyTarget(post-send) failed:",
@@ -520,6 +701,7 @@ export function useSubmitMessage({
           );
         });
       }
+      options.onSubmitted?.();
     },
     [
       wpReadOnly,
@@ -538,7 +720,42 @@ export function useSubmitMessage({
       submitDisabled,
       enableAgentInterceptors,
       runManualCompact,
-      addressComments,
+      setPlan,
+      rename,
+    ]
+  );
+
+  return useCallback(
+    async (options?: SubmitMessageOptions) => {
+      // Lock before asynchronous preprocessing (secret scan, MCP expansion,
+      // pending-pill reads). A second Enter/click can otherwise start with the
+      // same live editor text, arrive at the late payload-key guard only after
+      // the first dispatch finishes, and send the same user intent twice.
+      const liveDisplayText =
+        refs.composerInputRef.current?.getTextWithPills() ?? "";
+      const displayText =
+        liveDisplayText.trim().length > 0
+          ? liveDisplayText
+          : (options?.capturedText ?? "");
+      const submitAttemptKey = JSON.stringify({
+        draftSessionId,
+        displayText,
+        imageDataUrls: imageAttachment.images.map((image) => image.dataUrl),
+      });
+      const inFlightAttempts = submitAttemptsInFlightRef.current;
+      if (inFlightAttempts.has(submitAttemptKey)) return;
+      inFlightAttempts.add(submitAttemptKey);
+      try {
+        await submitMessage(options);
+      } finally {
+        inFlightAttempts.delete(submitAttemptKey);
+      }
+    },
+    [
+      draftSessionId,
+      imageAttachment.images,
+      refs.composerInputRef,
+      submitMessage,
     ]
   );
 }

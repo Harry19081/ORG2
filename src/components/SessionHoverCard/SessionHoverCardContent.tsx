@@ -1,18 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useAtomValue } from "jotai";
-import {
-  Check,
-  Clock,
-  Diff,
-  Fingerprint,
-  GitBranch,
-  GitCommitVertical,
-  Grip,
-  Save,
-  Timer,
-} from "lucide-react";
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { IMPORTED_HISTORY_SOURCE_DESCRIPTORS } from "@src/api/tauri/externalHistory/imported/descriptors";
@@ -21,6 +10,17 @@ import {
   getOrgtrackSessionSummary,
 } from "@src/api/tauri/lineage";
 import { isHostedKey } from "@src/api/tauri/session";
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
+import {
+  HoverCardPanel,
+  HoverCardRow,
+} from "@src/components/HoverCard/HoverCardBase";
+import {
+  HoverCardMetadataRow,
+  HoverCardMetadataValue,
+} from "@src/components/HoverCard/HoverCardMetadataRow";
+import { HOVER_CARD } from "@src/components/HoverCard/tokens";
 import ModelIcon from "@src/components/ModelIcon";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import TaskImpactLine from "@src/features/KanbanBoard/components/TaskImpactLine";
@@ -29,6 +29,20 @@ import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { createLogger } from "@src/hooks/logger";
 import { useResolvedModelLabel } from "@src/hooks/models";
 import { useValidatedLastPair } from "@src/hooks/models/useValidatedLastPair";
+import { useKeyedCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import {
+  Clock01Icon,
+  FileDiffIcon,
+  FingerPrintIcon,
+  FloppyDiskIcon,
+  GitCommitVerticalIcon,
+  GitForkIcon,
+  GripIcon,
+  HugeiconsIcon,
+  Tick01Icon,
+  Timer01Icon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
 import { workspaceGitStatusMapAtom } from "@src/store/git/gitStatusAtom";
 import type { LastModelSelection } from "@src/store/session/creatorDefaultModelAtom";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom/atoms";
@@ -51,7 +65,7 @@ import {
 } from "@src/util/session/sessionDisplayMetadata";
 import { formatDuration } from "@src/util/time/formatDuration";
 
-import { HoverCardPanel, HoverCardRow } from "./HoverCardBase";
+import { COPIED_FLASH_MS, formatCompactSessionId } from "./sessionIdFormat";
 import {
   type SessionTurnOverview,
   useSessionTurnOverview,
@@ -119,20 +133,6 @@ function normalizePath(path: string): string {
   return path.replace(/\/+$/u, "");
 }
 
-/** How long the copied-check flash stays visible on the session-id row. */
-const COPIED_FLASH_MS = 1500;
-/** Characters kept on each side when middle-truncating a session id. */
-const COMPACT_ID_EDGE_CHARS = 8;
-
-/**
- * Middle-truncate a session id so both the distinctive head and tail stay
- * visible (UUIDs differ at both ends; opencode `ses_` ids differ at the tail).
- */
-function formatCompactSessionId(id: string): string {
-  if (id.length <= COMPACT_ID_EDGE_CHARS * 2 + 2) return id;
-  return `${id.slice(0, COMPACT_ID_EDGE_CHARS)}…${id.slice(-COMPACT_ID_EDGE_CHARS)}`;
-}
-
 /**
  * Strip the imported-history prefix (`claudecodeapp-`, `codexapp-`,
  * `cursoride-`, ...) and return the RAW source-store session id — the value
@@ -159,10 +159,16 @@ function handleRevealPath(path: string): void {
 function getAgentSessionInfo(
   display: SessionDisplayMetadata
 ): AgentSessionInfo {
-  const AgentIcon = resolveAgentIcon(display.agentIconId);
+  const agentIcon = resolveAgentIcon(display.agentIconId);
 
   return {
-    icon: <AgentIcon size={13} strokeWidth={1.75} />,
+    icon: (
+      <AnyIcon
+        icon={agentIcon}
+        size={HOVER_CARD.iconSize}
+        strokeWidth={HOVER_CARD.iconStrokeWidth}
+      />
+    ),
     label: display.agentLabel,
     textClassName: "text-text-1",
   };
@@ -201,11 +207,22 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
       sessionId: string;
       cliSessionId: string | null;
     } | null>(null);
-    // Keyed on session id so switching cards never shows a stale check.
-    const [copiedForSessionId, setCopiedForSessionId] = useState<string | null>(
-      null
+    const copyUnderlyingId = useCallback(
+      async (value: string) => {
+        try {
+          await copyText(value);
+        } catch (error) {
+          logger.warn("failed to copy session id", { error, sessionId });
+          throw error;
+        }
+      },
+      [sessionId]
     );
-    const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // Keyed on the copied id so switching cards never shows a stale check.
+    const {
+      copiedKey: copiedUnderlyingId,
+      handleCopy: handleCopyUnderlyingId,
+    } = useKeyedCopyCheck(copyUnderlyingId, { durationMs: COPIED_FLASH_MS });
 
     useEffect(() => {
       let cancelled = false;
@@ -276,16 +293,6 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
         cancelled = true;
       };
     }, [sessionId]);
-
-    // Clear any pending copied-flash timer on unmount.
-    useEffect(() => {
-      return () => {
-        if (copiedTimerRef.current !== null) {
-          clearTimeout(copiedTimerRef.current);
-          copiedTimerRef.current = null;
-        }
-      };
-    }, []);
 
     const transcriptLocation =
       transcriptLocationState?.sessionId === sessionId
@@ -402,23 +409,6 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
       sessionDisplay ??
       resolveSessionDisplayMetadata({ kind: "local", session });
 
-    const handleCopyUnderlyingId = (value: string): void => {
-      void copyText(value)
-        .then(() => {
-          setCopiedForSessionId(sessionId);
-          if (copiedTimerRef.current !== null) {
-            clearTimeout(copiedTimerRef.current);
-          }
-          copiedTimerRef.current = setTimeout(() => {
-            copiedTimerRef.current = null;
-            setCopiedForSessionId(null);
-          }, COPIED_FLASH_MS);
-        })
-        .catch((error: unknown) => {
-          logger.warn("failed to copy session id", { error, sessionId });
-        });
-    };
-
     const repoName = session.repo_name || (repoPath ? basename(repoPath) : "");
     const worktreePath = session.worktreePath;
     const normalizedRepoPath = repoPath ? normalizePath(repoPath) : undefined;
@@ -432,14 +422,15 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
       !!activeWorkspaceRootPath &&
       normalizedRepoPath === normalizePath(activeWorkspaceRootPath);
     const branchLabel =
-      formatBranchLabel(session.worktreeBranch) ||
-      (worktreePath ? worktreePathLabel : "") ||
       formatBranchLabel(effectiveBranch) ||
       formatBranchLabel(session.baseBranch) ||
       formatBranchLabel(workspaceGitStatus?.current_branch) ||
       (sessionRepoMatchesActive
         ? formatBranchLabel(activeWorkspaceBranch)
         : "");
+    const worktreeBranchLabel =
+      formatBranchLabel(session.worktreeBranch) ||
+      (worktreePath ? worktreePathLabel : "");
     const modelIconName =
       lastModel?.listingModel || lastModel?.model || undefined;
     const modelIconAgent =
@@ -495,10 +486,15 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
                     <ModelIcon
                       modelName={modelIconName}
                       agentType={modelIconAgent}
-                      size={13}
+                      size={HOVER_CARD.iconSize}
                     />
                   ) : (
-                    <Grip size={13} strokeWidth={1.75} />
+                    <HugeiconsIcon
+                      icon={GripIcon}
+                      data-icon="grip"
+                      size={HOVER_CARD.iconSize}
+                      strokeWidth={HOVER_CARD.iconStrokeWidth}
+                    />
                   )}
                 </span>
                 <span className="truncate">{modelLabel}</span>
@@ -507,45 +503,100 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
           </div>
         </HoverCardRow>
         {(repoName || branchLabel) && (
-          <HoverCardRow icon={<GitBranch size={13} strokeWidth={1.75} />}>
-            <div className="truncate text-text-2">
+          <HoverCardMetadataRow
+            icon={WorkflowCircle05Icon}
+            dataIcon="git-branch"
+          >
+            <div
+              className="flex min-w-0 items-center text-text-2"
+              data-testid="session-hover-repo-branch"
+              title={[repoName, branchLabel].filter(Boolean).join(" · ")}
+            >
               {repoName &&
                 (repoPath ? (
-                  // The repo folder is the location row, folded in: the name
-                  // is the link, its tooltip carries the full path.
-                  <button
-                    type="button"
-                    className={INLINE_LINK_CLASS_NAME}
+                  <Button
+                    layout="custom"
+                    appearance="custom"
+                    htmlType="button"
+                    className={`${INLINE_LINK_CLASS_NAME} min-w-0 truncate text-left ${
+                      branchLabel ? "max-w-[calc(50%-6px)]" : "flex-1"
+                    }`}
+                    data-testid="session-hover-workspace"
                     title={`${revealLabel} · ${repoPath}`}
                     aria-label={`${revealLabel} ${repoPath}`}
                     onClick={() => handleRevealPath(repoPath)}
                   >
                     {repoName}
-                  </button>
+                  </Button>
                 ) : (
-                  <span>{repoName}</span>
+                  <span
+                    className={
+                      branchLabel
+                        ? "max-w-[calc(50%-6px)] min-w-0 truncate"
+                        : "min-w-0 flex-1 truncate"
+                    }
+                    data-testid="session-hover-workspace"
+                    title={repoName}
+                  >
+                    {repoName}
+                  </span>
                 ))}
               {repoName && branchLabel && (
-                <span className="mx-1 text-text-4">·</span>
+                <span className="mx-1 shrink-0 text-text-4">·</span>
               )}
-              {branchLabel && <span>{branchLabel}</span>}
+              {branchLabel && (
+                <span
+                  className={
+                    repoName
+                      ? "max-w-[calc(50%-6px)] min-w-0 truncate"
+                      : "min-w-0 flex-1 truncate"
+                  }
+                  data-testid="session-hover-branch"
+                  title={branchLabel}
+                >
+                  {branchLabel}
+                </span>
+              )}
             </div>
-          </HoverCardRow>
+          </HoverCardMetadataRow>
+        )}
+        {worktreeBranchLabel && worktreeBranchLabel !== branchLabel && (
+          <HoverCardMetadataRow icon={GitForkIcon} dataIcon="git-fork">
+            <div
+              className="truncate text-text-2"
+              data-testid="session-hover-worktree-branch"
+              title={worktreeBranchLabel}
+            >
+              {worktreeBranchLabel}
+            </div>
+          </HoverCardMetadataRow>
         )}
         {(underlyingSessionId || storageRowPath || isNativeTranscript) && (
           <HoverCardRow
             icon={
               underlyingSessionId ? (
-                <Fingerprint size={13} strokeWidth={1.75} />
+                <HugeiconsIcon
+                  icon={FingerPrintIcon}
+                  data-icon="fingerprint"
+                  size={HOVER_CARD.iconSize}
+                  strokeWidth={HOVER_CARD.iconStrokeWidth}
+                />
               ) : (
-                <Save size={13} strokeWidth={1.75} />
+                <HugeiconsIcon
+                  icon={FloppyDiskIcon}
+                  data-icon="save"
+                  size={HOVER_CARD.iconSize}
+                  strokeWidth={HOVER_CARD.iconStrokeWidth}
+                />
               )
             }
           >
             <div className="flex min-w-0 items-center gap-1">
               {underlyingSessionId ? (
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className={`${PATH_ROW_CLASS_NAME} min-w-0 flex-1`}
                   title={underlyingSessionId}
                   aria-label={`${t("common:actions.copy")} ${t(
@@ -553,30 +604,32 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
                   )}`}
                   onClick={() => handleCopyUnderlyingId(underlyingSessionId)}
                 >
-                  <span className="text-text-3">
-                    {t("history.detail.sessionId")}
-                  </span>
-                  <span className="mx-1 text-text-4">·</span>
-                  <span>{formatCompactSessionId(underlyingSessionId)}</span>
-                  {copiedForSessionId === sessionId && (
-                    <Check
-                      size={12}
-                      strokeWidth={2}
+                  <HoverCardMetadataValue label={t("history.detail.sessionId")}>
+                    {formatCompactSessionId(underlyingSessionId)}
+                  </HoverCardMetadataValue>
+                  {copiedUnderlyingId === underlyingSessionId && (
+                    <HugeiconsIcon
+                      icon={Tick01Icon}
+                      data-icon="check"
+                      size={HOVER_CARD.compactIconSize}
+                      strokeWidth={HOVER_CARD.feedbackStrokeWidth}
                       className="ml-1 inline-block align-[-1px] text-success-6"
                       aria-hidden="true"
                     />
                   )}
-                </button>
+                </Button>
               ) : storageRowPath ? (
-                <button
-                  type="button"
+                <Button
+                  layout="custom"
+                  appearance="custom"
+                  htmlType="button"
                   className={`${PATH_ROW_CLASS_NAME} min-w-0 flex-1`}
                   title={`${revealLabel} · ${storageRowPath}`}
                   aria-label={`${revealLabel} ${storageRowPath}`}
                   onClick={() => handleRevealPath(storageRowPath)}
                 >
                   {formatCompactPath(storageRowPath)}
-                </button>
+                </Button>
               ) : (
                 <span className="min-w-0 flex-1 truncate text-text-2">
                   {t("history.detail.cliNativeStore")}
@@ -584,27 +637,37 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
               )}
               {/* Transcript file for a row already spoken for by the id. */}
               {underlyingSessionId && storageRowPath && (
-                <button
-                  type="button"
+                <Button
+                  variant="tertiary"
+                  appearance="ghost"
+                  size="mini"
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={FloppyDiskIcon}
+                      data-icon="save"
+                      size={HOVER_CARD.compactIconSize}
+                      strokeWidth={HOVER_CARD.iconStrokeWidth}
+                    />
+                  }
+                  htmlType="button"
                   className={REVEAL_ICON_BUTTON_CLASS_NAME}
                   title={`${revealLabel} · ${storageRowPath}`}
                   aria-label={`${revealLabel} ${storageRowPath}`}
                   onClick={() => handleRevealPath(storageRowPath)}
-                >
-                  <Save size={12} strokeWidth={1.75} />
-                </button>
+                />
               )}
             </div>
           </HoverCardRow>
         )}
         {impactTask && (
-          <HoverCardRow icon={<Diff size={13} strokeWidth={1.75} />}>
+          <HoverCardMetadataRow icon={FileDiffIcon} dataIcon="file-diff">
             <TaskImpactLine task={impactTask} showUnavailable={false} />
-          </HoverCardRow>
+          </HoverCardMetadataRow>
         )}
         {(workedDurationLabel ||
           (turnOverview && turnOverview.turnCount > 0)) && (
-          <HoverCardRow icon={<Timer size={13} strokeWidth={1.75} />}>
+          <HoverCardMetadataRow icon={Timer01Icon} dataIcon="timer">
             <div
               className="truncate text-text-2"
               title={workedDurationLabel ?? undefined}
@@ -631,24 +694,25 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
                 </>
               )}
             </div>
-          </HoverCardRow>
+          </HoverCardMetadataRow>
         )}
-        <HoverCardRow icon={<Clock size={13} strokeWidth={1.75} />}>
+        <HoverCardMetadataRow icon={Clock01Icon} dataIcon="clock">
           <div className="truncate text-text-2" title={createdLabel}>
-            <span className="text-text-3">{t("history.detail.created")}</span>
-            <span className="mx-1 text-text-4">·</span>
-            <span>{createdLabel}</span>
+            <HoverCardMetadataValue label={t("history.detail.created")}>
+              {createdLabel}
+            </HoverCardMetadataValue>
           </div>
-        </HoverCardRow>
-        <HoverCardRow icon={<GitCommitVertical size={13} strokeWidth={1.75} />}>
+        </HoverCardMetadataRow>
+        <HoverCardMetadataRow
+          icon={GitCommitVerticalIcon}
+          dataIcon="git-commit-vertical"
+        >
           <div className="truncate text-text-2" title={updatedLabel}>
-            <span className="text-text-3">
-              {t("history.detail.lastUpdated")}
-            </span>
-            <span className="mx-1 text-text-4">·</span>
-            <span>{updatedLabel}</span>
+            <HoverCardMetadataValue label={t("history.detail.lastUpdated")}>
+              {updatedLabel}
+            </HoverCardMetadataValue>
           </div>
-        </HoverCardRow>
+        </HoverCardMetadataRow>
       </HoverCardPanel>
     );
   });

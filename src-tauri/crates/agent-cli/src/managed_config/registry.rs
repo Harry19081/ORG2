@@ -338,7 +338,7 @@ pub(super) const MANAGED_CONFIG_ADAPTERS: &[CliManagedConfigAdapter] = &[
 const MANAGED_CONFIG_UNAVAILABLE: &[(&str, &str)] = &[
     (
         "cursor_cli",
-        "Cursor CLI uses Cursor account/subscription authentication and does not expose a Provider base URL switch",
+        "Cursor uses Cursor account/subscription authentication and does not expose a Provider base URL switch",
     ),
     (
         "kiro",
@@ -383,6 +383,10 @@ const MANAGED_CONFIG_UNAVAILABLE: &[(&str, &str)] = &[
     (
         "trae_cli",
         "Trae Agent is configured per-invocation and exposes no stable persisted config file for managed switching",
+    ),
+    (
+        "deepseek_harness",
+        "DeepSeek Harness owns provider and model selection inside its profile settings; ORG2 does not rewrite those profiles",
     ),
 ];
 
@@ -439,11 +443,12 @@ pub fn managed_config_unavailable_reason_for_agent(agent_name: &str) -> Option<&
 }
 
 pub(super) fn supported_agent(agent_name: &str) -> bool {
-    managed_config_adapter(agent_name).is_some()
+    (agent_name == super::desktop::TARGET && super::desktop::supported())
+        || managed_config_adapter(agent_name).is_some()
 }
 
 pub(super) fn unavailable_agent_message(agent_name: &str) -> String {
     managed_config_unavailable_reason_for_agent(agent_name)
         .map(str::to_string)
-        .unwrap_or_else(|| format!("ORGII managed config is not registered for {agent_name}"))
+        .unwrap_or_else(|| format!("ORG2 managed config is not registered for {agent_name}"))
 }

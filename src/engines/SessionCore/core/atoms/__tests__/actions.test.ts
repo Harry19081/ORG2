@@ -15,7 +15,10 @@ import type {
   loadSessionAtom as LoadSessionAtomType,
 } from "../actions";
 import type { eventsAtom as EventsAtomType } from "../events";
-import type { transcriptReplaceEpochAtom as TranscriptReplaceEpochAtomType } from "../metadata";
+import type {
+  pendingSyntheticEventAtom as PendingSyntheticEventAtomType,
+  transcriptReplaceEpochAtom as TranscriptReplaceEpochAtomType,
+} from "../metadata";
 
 vi.mock("../../store/EventStoreProxy", () => ({
   eventStoreProxy: {
@@ -48,13 +51,15 @@ let appendEventsAtom: typeof AppendEventsAtomType;
 let clearSessionAtom: typeof ClearSessionAtomType;
 let loadSessionAtom: typeof LoadSessionAtomType;
 let eventsAtom: typeof EventsAtomType;
+let pendingSyntheticEventAtom: typeof PendingSyntheticEventAtomType;
 let transcriptReplaceEpochAtom: typeof TranscriptReplaceEpochAtomType;
 
 beforeAll(async () => {
   ({ appendEventsAtom, clearSessionAtom, loadSessionAtom } =
     await import("../actions"));
   ({ eventsAtom } = await import("../events"));
-  ({ transcriptReplaceEpochAtom } = await import("../metadata"));
+  ({ pendingSyntheticEventAtom, transcriptReplaceEpochAtom } =
+    await import("../metadata"));
 });
 
 beforeEach(() => {
@@ -110,6 +115,28 @@ function makeUserMessageEvent(
 }
 
 describe("loadSessionAtom", () => {
+  it("does not rewrite an already hydrated native history or append its evicted prefix", () => {
+    const store = createStore();
+    const events = Array.from({ length: 8192 }, (_, i) =>
+      makeMessageEvent(`message-${i}`)
+    );
+    store.set(loadSessionAtom, {
+      sessionId: "session-1",
+      events: events.slice(192),
+    });
+    vi.mocked(eventStoreProxy.mergeEvents).mockClear();
+    store.set(loadSessionAtom, {
+      sessionId: "session-1",
+      events,
+      storeHydrated: true,
+    });
+    expect(store.get(eventsAtom).map((e) => e.id)).toEqual(
+      events.map((e) => e.id)
+    );
+    expect(eventStoreProxy.set).not.toHaveBeenCalled();
+    expect(eventStoreProxy.mergeEvents).toHaveBeenCalledWith([], "session-1");
+  });
+
   it("preserves existing same-session rounds when a later load carries only a new tail event", () => {
     const store = createStore();
     const existingEvents = [
@@ -446,6 +473,82 @@ describe("loadSessionAtom", () => {
     expect(store.get(transcriptReplaceEpochAtom)).toBe(epochBefore + 1);
   });
 
+  it("replace: keeps the just-sent synthetic when a stale replay carries only older turns (abort → send)", () => {
+    const store = createStore();
+    const replayUser = makeReplayEvent(
+      "claudecodeapp-user-0",
+      "first message",
+      "user",
+      "2026-05-16T00:00:01.000Z"
+    );
+    const replayAssistant = makeReplayEvent(
+      "claudecodeapp-asst-1",
+      "aborted partial answer",
+      "assistant",
+      "2026-05-16T00:00:02.000Z"
+    );
+    const freshSynthetic = {
+      ...makeUserMessageEvent("user-input-2", "follow-up after abort", {
+        synthetic: true,
+      }),
+      createdAt: "2026-05-16T00:00:05.000Z",
+    };
+
+    store.set(loadSessionAtom, {
+      sessionId: "session-1",
+      events: [replayUser, replayAssistant, freshSynthetic],
+    });
+    // Post-abort reconcile replays a JSONL that does not know about the
+    // follow-up yet — the fresh bubble must survive, after the history.
+    store.set(loadSessionAtom, {
+      sessionId: "session-1",
+      events: [replayUser, replayAssistant],
+      replace: true,
+    });
+
+    expect(store.get(eventsAtom).map((event) => event.id)).toEqual([
+      "claudecodeapp-user-0",
+      "claudecodeapp-asst-1",
+      "user-input-2",
+    ]);
+  });
+
+  it("merge: drops the echoed synthetic but keeps the fresh one still awaiting its echo", () => {
+    const store = createStore();
+    const echoedSynthetic = {
+      ...makeUserMessageEvent("user-input-1", "first message", {
+        synthetic: true,
+      }),
+      createdAt: "2026-05-16T00:00:00.500Z",
+    };
+    const freshSynthetic = {
+      ...makeUserMessageEvent("user-input-2", "follow-up after abort", {
+        synthetic: true,
+      }),
+      createdAt: "2026-05-16T00:00:05.000Z",
+    };
+    const replayUser = makeReplayEvent(
+      "claudecodeapp-user-0",
+      "first message",
+      "user",
+      "2026-05-16T00:00:01.000Z"
+    );
+
+    store.set(loadSessionAtom, {
+      sessionId: "session-1",
+      events: [echoedSynthetic, freshSynthetic],
+    });
+    store.set(loadSessionAtom, {
+      sessionId: "session-1",
+      events: [replayUser],
+    });
+
+    const ids = store.get(eventsAtom).map((event) => event.id);
+    expect(ids).toContain("user-input-2");
+    expect(ids).toContain("claudecodeapp-user-0");
+    expect(ids).not.toContain("user-input-1");
+  });
+
   it("replace: still recovers the synthetic user event when the replay has no backend user message yet", () => {
     const store = createStore();
     const synthetic = makeUserMessageEvent("user-input-1", "fix the bug", {
@@ -474,6 +577,41 @@ describe("loadSessionAtom", () => {
       "user-input-1",
       "claudecodeapp-asst-0",
     ]);
+  });
+
+  it("replace: restores a parked next-turn user row after the Rust snapshot was already overwritten", () => {
+    const store = createStore();
+    const priorAssistant = makeReplayEvent(
+      "claudecodeapp-asst-0",
+      "previous turn complete",
+      "assistant",
+      "2026-05-16T00:00:02.000Z"
+    );
+    const nextTurn = {
+      ...makeUserMessageEvent("user-input-next", "continue exploring", {
+        synthetic: true,
+      }),
+      createdAt: "2026-05-16T00:00:03.000Z",
+    };
+
+    store.set(loadSessionAtom, {
+      sessionId: "session-1",
+      events: [priorAssistant],
+    });
+    // Models the delayed native reconcile race: the Rust replace notification
+    // has already removed the EventStore copy, leaving only the parked row.
+    store.set(pendingSyntheticEventAtom, nextTurn);
+    store.set(loadSessionAtom, {
+      sessionId: "session-1",
+      events: [priorAssistant],
+      replace: true,
+    });
+
+    expect(store.get(eventsAtom).map((event) => event.id)).toEqual([
+      "claudecodeapp-asst-0",
+      "user-input-next",
+    ]);
+    expect(store.get(pendingSyntheticEventAtom)?.id).toBe("user-input-next");
   });
 
   it("carries optimistic user images onto a live persisted echo", () => {

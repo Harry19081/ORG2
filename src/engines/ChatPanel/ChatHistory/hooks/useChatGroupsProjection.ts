@@ -1,3 +1,5 @@
+import { isInternalLifecycleEvent } from "@src/engines/SessionCore/ingestion/visibilityFilters";
+
 import {
   isAgentOrgGroupChatUserMessage,
   isAgentOrgInboxTranscriptEvent,
@@ -19,8 +21,17 @@ export interface UnloadedTurnMeta {
 
 export interface ChatGroupMeta {
   turnId: string | null;
+  /** Provider-exact model recorded on this turn's assistant LLM span. */
+  assistantModelId?: string | null;
   durationMs: number;
+  /** Rendered rows in the turn body. A grouped stack counts as one row. */
   itemCount: number;
+  /**
+   * Session events the turn body stands for, expanding grouped rows. Always
+   * >= `itemCount`; the two differ whenever the item pipeline folded several
+   * tool calls into a single row.
+   */
+  bodyEventCount: number;
   previewText: string;
   startMs: number | null;
   endMs: number | null;
@@ -35,17 +46,27 @@ export interface UseChatGroupsReturn {
   totalFlatItems: number;
   originalToFlatIndex: Map<number, number>;
   lastGroupFirstFlatIndex: number | null;
-  lastAssistantFlatIndexPerItem: (number | null)[];
 }
 
 export type TurnGroupingPolicy =
   | { mode: "standard" }
+  | { mode: "agent-org-member" }
   | { mode: "agent-org"; coordinatorSessionId: string };
+
+/**
+ * Lifecycle phase of the tail (latest) turn, produced by `useTailTurnPhase`:
+ * `"running"` while the round is in flight (no collapse bar, no folding);
+ * `"complete"` once it ends (bar renders immediately, turn stays expanded by
+ * default); `"stale"` once the session's newest event is older than the
+ * stale window (the turn also DEFAULTS to collapsed like a historical one).
+ * Stale implies complete, so the illegal combination cannot exist.
+ */
+export type TailTurnPhase = "running" | "complete" | "stale";
 
 export interface ChatGroupsProjectionOptions {
   collapseOverrides?: ReadonlyMap<string, boolean>;
-  isAgentWorking?: boolean;
-  collapseTailWhenIdle?: boolean;
+  /** Defaults to `"running"` (tail not collapsible) when omitted. */
+  tailTurnPhase?: TailTurnPhase;
   forceCollapseAllTurns?: boolean;
   disableTurnCollapse?: boolean;
   allTurnsCollapsed?: boolean;
@@ -100,6 +121,10 @@ function isUnloadedTurnItem(item: OptimizedChatItem | undefined): boolean {
   return getUnloadedTurnMeta(item) !== null;
 }
 
+function isLifecycleItem(item: OptimizedChatItem): boolean {
+  return Boolean(item.event && isInternalLifecycleEvent(item.event));
+}
+
 export function isTurnPreviewItem(
   item: OptimizedChatItem | undefined
 ): boolean {
@@ -148,6 +173,16 @@ function resolveTurnPredicates(options: UseChatGroupsOptions): {
     };
   }
 
+  if (grouping.mode === "agent-org-member") {
+    return {
+      // Each inbox transcript is the durable user-side header of one member
+      // execution. Standard sessions intentionally hide these internal
+      // messages, but member history needs them to preserve round boundaries.
+      isHeader: isUserMessageItem,
+      isBoundary: () => false,
+    };
+  }
+
   return {
     isHeader: (item) =>
       isUserMessageItem(item) && !isAgentOrgInboxTranscriptItem(item),
@@ -180,30 +215,102 @@ function parseEpochMs(iso: string | undefined): number | null {
   return Number.isFinite(ms) ? ms : null;
 }
 
-const TURN_COLLAPSE_ITEM_COUNT_THRESHOLD = 10;
+/**
+ * The user-message event does not record a model. The associated assistant
+ * event does, once provider usage telemetry is attached to the turn. Read it
+ * here while the complete turn is still available rather than falling back to
+ * the session's mutable current-model setting.
+ */
+function assistantModelIdForGroup(group: ChatGroup): string | null {
+  for (const item of group.items) {
+    const model = item.event?.llmUsage?.model?.trim();
+    if (model) return model;
+  }
+  return null;
+}
+
+/**
+ * How many session events one rendered row stands for.
+ *
+ * The item pipeline folds consecutive tool calls into a SINGLE row —
+ * `readFileGroup`, `actionSummaryGroup`, and `activityStackGroup`, the last
+ * of which stacks terminal and edit activity from one event up
+ * (`minTerminalActivitiesToGroup: 1`). A round that ran nothing but shell
+ * commands therefore reaches the projection as one item, so counting rows
+ * alone reports a "trivial" body no matter how much work it holds.
+ *
+ * Floored at 1 so a row always weighs at least itself: this count only ever
+ * raises the old row count, never lowers it.
+ */
+function countItemBodyEvents(item: OptimizedChatItem): number {
+  if (item.readFileEvents) {
+    return Math.max(1, item.readFileEvents.length);
+  }
+  if (item.actionSummaryItems) {
+    return Math.max(1, item.actionSummaryItems.length);
+  }
+  if (item.actionSummaryEntries) {
+    return Math.max(
+      1,
+      item.actionSummaryEntries.reduce(
+        (total, entry) => total + entry.events.length,
+        0
+      )
+    );
+  }
+  if (item.activityStackGroup) {
+    return Math.max(1, item.activityStackGroup.events.length);
+  }
+  return 1;
+}
 
 export function isTurnCollapseEligible(
   meta: ChatGroupMeta | undefined,
   groupIndex: number,
   groupCount: number,
   options: {
-    collapseTailWhenIdle?: boolean;
+    tailTurnPhase?: TailTurnPhase;
     forceCollapseAllTurns?: boolean;
   } = {}
 ): boolean {
   if (!meta || meta.turnId === null) return false;
-  const bodyItemCount = meta.unloadedTurn?.bodyEventCount ?? meta.itemCount;
-  // Loaded turns render their items inline, so a trivial (≤1 item) body has
-  // nothing to collapse. An UNLOADED turn renders nothing inline — the
+  const bodyItemCount =
+    meta.unloadedTurn?.bodyEventCount ?? meta.bodyEventCount;
+  // Loaded turns render their items inline, so a trivial (≤1 event) body has
+  // nothing to collapse. Measured in EVENTS, not rendered rows: a round whose
+  // whole body is one grouped tool stack renders as a single row but still
+  // holds every command in it. An UNLOADED turn renders nothing inline — the
   // collapse bar is its only expand affordance (and, with turn pagination
   // off, the only way to fetch the body at all), so any nonzero count must
   // show it. Zero means the source measured a genuinely bodyless round.
   if (meta.unloadedTurn ? bodyItemCount < 1 : bodyItemCount <= 1) return false;
   if (options.forceCollapseAllTurns === true) return true;
   if (groupIndex < groupCount - 1) return true;
-  if (options.collapseTailWhenIdle !== true) return false;
-  if (meta.unloadedTurn) return true;
-  return meta.itemCount + 1 > TURN_COLLAPSE_ITEM_COUNT_THRESHOLD;
+  // The tail round shows its bar as soon as it ends; whether it defaults to
+  // collapsed is decided separately (resolveTurnDefaultCollapsed).
+  return (options.tailTurnPhase ?? "running") !== "running";
+}
+
+/**
+ * Default collapse state for one turn group. Shared by `projectChatGroups`
+ * and the pin bar's chevron mirror in `GroupHeaderRenderer` so the two can
+ * never drift: a completed tail turn is collapse-ELIGIBLE (bar renders,
+ * manual toggles and collapse-all work) before it is collapse-DEFAULTED —
+ * it only folds on its own once the session goes stale, so finishing a
+ * round never hides its content abruptly.
+ */
+export function resolveTurnDefaultCollapsed(
+  isTailGroup: boolean,
+  options: {
+    defaultTurnCollapsed?: boolean;
+    tailTurnPhase?: TailTurnPhase;
+    forceCollapseAllTurns?: boolean;
+  } = {}
+): boolean {
+  if (options.defaultTurnCollapsed === false) return false;
+  if (!isTailGroup) return true;
+  if (options.forceCollapseAllTurns === true) return true;
+  return options.tailTurnPhase === "stale";
 }
 
 /** Pure grouping/collapse projection. It has no React, Jotai, or DOM dependency. */
@@ -213,8 +320,7 @@ export function projectChatGroups(
 ): UseChatGroupsReturn {
   const {
     collapseOverrides,
-    isAgentWorking = false,
-    collapseTailWhenIdle = false,
+    tailTurnPhase = "running",
     forceCollapseAllTurns = false,
     disableTurnCollapse = false,
     allTurnsCollapsed,
@@ -238,7 +344,22 @@ export function projectChatGroups(
   const groupMeta: ChatGroupMeta[] = groups.map((group) => {
     const headerEvent = group.header?.event;
     const turnId = headerEvent?.id ?? null;
-    const startMs = parseEpochMs(headerEvent?.createdAt);
+    const messageMs = parseEpochMs(headerEvent?.createdAt);
+    // Native runtimes can accept a queued/retried message long after it was
+    // written. Their execution boundary, when available, owns worked-for
+    // timing; the user-message timestamp remains unchanged.
+    let executionStartMs: number | null = null;
+    for (const item of group.items) {
+      if (item.event?.actionType !== "task_start") continue;
+      const candidate = parseEpochMs(item.event.createdAt);
+      if (
+        candidate !== null &&
+        (messageMs === null || candidate >= messageMs)
+      ) {
+        executionStartMs = candidate;
+      }
+    }
+    const startMs = executionStartMs ?? messageMs;
     let endMs: number | null = null;
     for (let i = group.items.length - 1; i >= 0; i--) {
       const itemMs = parseEpochMs(group.items[i].event?.createdAt);
@@ -263,8 +384,13 @@ export function projectChatGroups(
 
     return {
       turnId,
+      assistantModelId: assistantModelIdForGroup(group),
       durationMs: unloadedTurn?.durationMs ?? durationMs,
       itemCount: group.items.length,
+      bodyEventCount: group.items.reduce(
+        (total, item) => total + countItemBodyEvents(item),
+        0
+      ),
       previewText: headerEvent?.displayText ?? "",
       startMs: unloadedStartMs ?? startMs,
       endMs: unloadedEndMs ?? endMs,
@@ -283,7 +409,7 @@ export function projectChatGroups(
     const eligible =
       !disableTurnCollapse &&
       isTurnCollapseEligible(meta, groupIndex, groups.length, {
-        collapseTailWhenIdle,
+        tailTurnPhase,
         forceCollapseAllTurns,
       });
     const override =
@@ -291,18 +417,24 @@ export function projectChatGroups(
         ? collapseOverrides.get(meta.turnId)
         : undefined;
     const isCollapsed =
-      eligible && (override ?? allTurnsCollapsed ?? defaultTurnCollapsed);
+      eligible &&
+      (override ??
+        allTurnsCollapsed ??
+        resolveTurnDefaultCollapsed(groupIndex === groups.length - 1, {
+          defaultTurnCollapsed,
+          tailTurnPhase,
+          forceCollapseAllTurns,
+        }));
 
     if (!isCollapsed) {
       const keepStructuralPlaceholder = meta.unloadedTurn !== null;
-      const surviving = keepStructuralPlaceholder
-        ? group.items
-        : group.items.filter((item) => !isUnloadedTurnItem(item));
+      const shouldKeep = (item: OptimizedChatItem) =>
+        !isLifecycleItem(item) &&
+        (keepStructuralPlaceholder || !isUnloadedTurnItem(item));
+      const surviving = group.items.filter(shouldKeep);
       survivingPerGroup[groupIndex] = surviving;
       droppedItemTargetByGroup[groupIndex] = group.items.map((item) =>
-        !keepStructuralPlaceholder && isUnloadedTurnItem(item)
-          ? runningFlatIdx
-          : null
+        shouldKeep(item) ? null : runningFlatIdx
       );
       groupCounts[groupIndex] = surviving.length;
       runningFlatIdx += surviving.length;
@@ -323,10 +455,13 @@ export function projectChatGroups(
         groupCounts[groupIndex] = previews.length;
         runningFlatIdx += previews.length;
       } else {
-        survivingPerGroup[groupIndex] = group.items;
-        droppedItemTargetByGroup[groupIndex] = group.items.map(() => null);
-        groupCounts[groupIndex] = group.items.length;
-        runningFlatIdx += group.items.length;
+        const surviving = group.items.filter((item) => !isLifecycleItem(item));
+        survivingPerGroup[groupIndex] = surviving;
+        droppedItemTargetByGroup[groupIndex] = group.items.map((item) =>
+          isLifecycleItem(item) ? runningFlatIdx : null
+        );
+        groupCounts[groupIndex] = surviving.length;
+        runningFlatIdx += surviving.length;
       }
       continue;
     }
@@ -364,7 +499,7 @@ export function projectChatGroups(
 
     if (keepIndex === -1) {
       const structuralSourceIndex = group.items.findIndex(
-        (item) => !isUnloadedTurnItem(item)
+        (item) => !isUnloadedTurnItem(item) && !isLifecycleItem(item)
       );
       const structuralSource = group.items[structuralSourceIndex];
       if (!structuralSource) {
@@ -387,7 +522,9 @@ export function projectChatGroups(
       continue;
     }
 
-    const keptIndices = [keepIndex, ...pinnedIndices];
+    // Collapse changes visibility, not chronology: a failed attempt before
+    // a successful retry must not become the apparent final result.
+    const keptIndices = [keepIndex, ...pinnedIndices].sort((a, b) => a - b);
     const keptIndexSet = new Set(keptIndices);
     const kept = keptIndices.map((index) => group.items[index]);
     survivingPerGroup[groupIndex] = kept;
@@ -401,27 +538,6 @@ export function projectChatGroups(
 
   const flatItems = survivingPerGroup.flat();
   const maxFlat = Math.max(0, flatItems.length - 1);
-  const lastAssistantFlatIndexPerItem = new Array<number | null>(
-    flatItems.length
-  ).fill(null);
-  let cursor = 0;
-  for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
-    const items = survivingPerGroup[groupIndex];
-    let lastIndex: number | null = null;
-    if (!(groupIndex === groups.length - 1 && isAgentWorking)) {
-      for (let i = items.length - 1; i >= 0; i--) {
-        if (isCompletedAssistantMessage(items[i])) {
-          lastIndex = cursor + i;
-          break;
-        }
-      }
-    }
-    for (let i = 0; i < items.length; i++) {
-      lastAssistantFlatIndexPerItem[cursor + i] = lastIndex;
-    }
-    cursor += items.length;
-  }
-
   const originalToFlatIndex = new Map<number, number>();
   let originalIndex = 0;
   let flatIndexCursor = 0;
@@ -462,6 +578,5 @@ export function projectChatGroups(
     totalFlatItems: flatItems.length,
     originalToFlatIndex,
     lastGroupFirstFlatIndex,
-    lastAssistantFlatIndexPerItem,
   };
 }

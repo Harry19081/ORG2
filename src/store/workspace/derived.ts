@@ -170,11 +170,6 @@ function rootContextFromFolder(
   };
 }
 
-export const activeWorkspaceFolderRepoAtom = atom<Repo | undefined>((get) => {
-  return resolveFolderRepo(get(activeFolderAtom), get(reposAtom));
-});
-activeWorkspaceFolderRepoAtom.debugLabel = "activeWorkspaceFolderRepoAtom";
-
 export const activeWorkspaceRootAtom = atom<WorkspaceRootContext | null>(
   (get) => {
     const folderRoot = rootContextFromFolder(
@@ -207,6 +202,17 @@ export const activeWorkspaceRootPathAtom = atom<string>((get) => {
 });
 activeWorkspaceRootPathAtom.debugLabel = "activeWorkspaceRootPathAtom";
 
+/**
+ * Display name of the active workspace root, paired with
+ * `activeWorkspaceRootPathAtom`. Surfaces that show workspace identity (status
+ * bar, shell placeholders) read it from here rather than having it pushed in
+ * by whichever content host happens to be mounted.
+ */
+export const activeWorkspaceRootNameAtom = atom<string>((get) => {
+  return get(activeWorkspaceRootAtom)?.name ?? "";
+});
+activeWorkspaceRootNameAtom.debugLabel = "activeWorkspaceRootNameAtom";
+
 export const primaryWorkspaceRootAtom = atom<WorkspaceRootContext | null>(
   (get) => rootContextFromFolder(get(primaryFolderAtom), get(reposAtom))
 );
@@ -216,19 +222,6 @@ export const primaryWorkspaceRootPathAtom = atom<string>((get) => {
   return get(primaryWorkspaceRootAtom)?.path ?? "";
 });
 primaryWorkspaceRootPathAtom.debugLabel = "primaryWorkspaceRootPathAtom";
-
-export const workspaceFolderRepoMapAtom = atom<Map<string, Repo | undefined>>(
-  (get) => {
-    const repos = get(reposAtom);
-    return new Map(
-      get(workspaceFoldersAtom).map((folder) => [
-        folder.id,
-        resolveFolderRepo(folder, repos),
-      ])
-    );
-  }
-);
-workspaceFolderRepoMapAtom.debugLabel = "workspaceFolderRepoMapAtom";
 
 /**
  * Display name for the current workspace.
@@ -272,11 +265,3 @@ export const workspaceNameAtom = atom<string>((get) => {
   return `${repoName ?? primary.name} Workspace`;
 });
 workspaceNameAtom.debugLabel = "workspaceNameAtom";
-
-/**
- * Number of folders currently in the workspace (for UI badges like "(3)").
- */
-export const workspaceFolderCountAtom = atom<number>((get) => {
-  return get(workspaceFoldersAtom).length;
-});
-workspaceFolderCountAtom.debugLabel = "workspaceFolderCountAtom";

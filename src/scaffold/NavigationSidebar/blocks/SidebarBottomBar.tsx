@@ -6,18 +6,14 @@
  * organization selector. User presence remains available as a reusable menu
  * for the Settings dropdown and roomier composer/header surfaces.
  *
- * Right side hosts compact action buttons, including the Settings gear
- * that opens quick settings actions and links to the app settings route.
- * `AppShell` detects that route and renders Settings inside the
- * chat-panel slot with the WorkStation kept visible underneath, so the
- * URL stays deeplinkable while the layout matches the slot affordance.
- * Extra actions can be supplied by the caller (e.g. session group-by).
+ * Right side hosts compact contextual actions and the update control.
  */
 import { useAtom, useAtomValue } from "jotai";
-import { Circle, HatGlasses, type LucideIcon, Moon } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
 import Dropdown, { type DropdownPosition } from "@src/components/Dropdown";
 import DropdownSelectedCheck from "@src/components/Dropdown/DropdownSelectedCheck";
 import {
@@ -26,6 +22,13 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import PillGroup, { type PillGroupSegment } from "@src/components/PillGroup";
+import {
+  CircleIcon,
+  HatGlassesIcon,
+  HugeiconsIcon,
+  type IconSvgElement,
+  MoonIcon,
+} from "@src/icons";
 import {
   userPresenceAtom,
   userPresenceModeAtom,
@@ -48,16 +51,14 @@ import { resolveCustomRoleIcon } from "./customRoleIcons";
 interface SidebarBottomBarProps {
   /** Content rendered in the footer's left-side slot. */
   leftContent?: React.ReactNode;
-  /** Extra action buttons rendered to the left of the Settings gear. */
+  /** Extra action buttons rendered to the left of the update control. */
   rightActions?: React.ReactNode;
-  /** Settings menu trigger supplied by sidebar variants that expose it. */
-  settingsAction?: React.ReactNode;
 }
 
-const PRESENCE_ICON: Record<BuiltInPresenceMode, LucideIcon> = {
-  [USER_PRESENCE_MODE.ONLINE]: Circle,
-  [USER_PRESENCE_MODE.INVISIBLE]: HatGlasses,
-  [USER_PRESENCE_MODE.AWAY]: Moon,
+const PRESENCE_ICON: Record<BuiltInPresenceMode, IconSvgElement> = {
+  [USER_PRESENCE_MODE.ONLINE]: CircleIcon,
+  [USER_PRESENCE_MODE.INVISIBLE]: HatGlassesIcon,
+  [USER_PRESENCE_MODE.AWAY]: MoonIcon,
 };
 
 const PRESENCE_COLOR: Record<BuiltInPresenceMode, string> = {
@@ -123,9 +124,9 @@ const PRESENCE_MENU_ORDER: ReadonlyArray<BuiltInPresenceMode> = [
  * - `detailed`: first-person framing, e.g. "I am Online" — used in
  *   roomier surfaces like the SessionCreator under the composer.
  */
-export type PresenceMenuButtonVariant = "concise" | "detailed";
+type PresenceMenuButtonVariant = "concise" | "detailed";
 
-export interface PresenceMenuButtonProps {
+interface PresenceMenuButtonProps {
   variant?: PresenceMenuButtonVariant;
   /**
    * Where the dropdown opens relative to the trigger pill. Defaults to
@@ -152,7 +153,7 @@ const PRESENCE_LABEL_KEY: Record<
   },
 };
 
-export interface PresenceMenuItemsProps {
+interface PresenceMenuItemsProps {
   onSelectionComplete?: () => void;
   className?: string;
 }
@@ -204,15 +205,18 @@ export const PresenceMenuItems: React.FC<PresenceMenuItemsProps> = ({
       {PRESENCE_MENU_ORDER.map((option) => {
         const OptionIcon = PRESENCE_ICON[option];
         return (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             key={option}
-            type="button"
+            htmlType="button"
             onClick={() => handleSelectMode(option)}
             className={DROPDOWN_CLASSES.menuActionItem}
           >
             <PresenceItemContent
               icon={
-                <OptionIcon
+                <AnyIcon
+                  icon={OptionIcon}
                   size={DROPDOWN_ITEM.iconSize}
                   className={PRESENCE_COLOR[option]}
                 />
@@ -220,26 +224,29 @@ export const PresenceMenuItems: React.FC<PresenceMenuItemsProps> = ({
               label={t(`sidebar.presence.${option}`)}
               selected={option === mode}
             />
-          </button>
+          </Button>
         );
       })}
 
       {customRoles.length > 0 && (
         <>
-          <div className={DROPDOWN_CLASSES.menuSeparator} />
+          <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
           {customRoles.map((role) => {
             const RoleIcon = resolveCustomRoleIcon(role.iconId);
             const roleMode = buildCustomRoleMode(role.id);
             return (
-              <button
+              <Button
+                layout="custom"
+                appearance="custom"
                 key={role.id}
-                type="button"
+                htmlType="button"
                 onClick={() => handleSelectMode(roleMode)}
                 className={DROPDOWN_CLASSES.menuActionItem}
               >
                 <PresenceItemContent
                   icon={
-                    <RoleIcon
+                    <AnyIcon
+                      icon={RoleIcon}
                       size={DROPDOWN_ITEM.iconSize}
                       className={CUSTOM_ROLE_COLOR_CLASS}
                     />
@@ -247,7 +254,7 @@ export const PresenceMenuItems: React.FC<PresenceMenuItemsProps> = ({
                   label={role.label}
                   selected={roleMode === mode}
                 />
-              </button>
+              </Button>
             );
           })}
         </>
@@ -255,14 +262,16 @@ export const PresenceMenuItems: React.FC<PresenceMenuItemsProps> = ({
 
       {mode === USER_PRESENCE_MODE.AWAY && (
         <>
-          <div className={DROPDOWN_CLASSES.menuSeparator} />
+          <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
           <div className={DROPDOWN_CLASSES.sectionLabel}>
             {t("sidebar.presence.awayDurationHeading")}
           </div>
           {AWAY_DURATIONS.map((entry) => (
-            <button
+            <Button
+              layout="custom"
+              appearance="custom"
               key={entry.id}
-              type="button"
+              htmlType="button"
               onClick={() => handleSelectAwayDuration(entry.id)}
               className={DROPDOWN_CLASSES.menuActionItem}
             >
@@ -270,7 +279,7 @@ export const PresenceMenuItems: React.FC<PresenceMenuItemsProps> = ({
                 label={t(entry.labelKey)}
                 selected={presence.awayDurationLabel === entry.id}
               />
-            </button>
+            </Button>
           ))}
         </>
       )}
@@ -305,7 +314,7 @@ export const PresenceMenuButton: React.FC<PresenceMenuButtonProps> = ({
     ? PRESENCE_ICON[mode]
     : activeCustomRole
       ? resolveCustomRoleIcon(activeCustomRole.iconId)
-      : Circle;
+      : CircleIcon;
   const colorClass = isBuiltInPresenceMode(mode)
     ? PRESENCE_COLOR[mode]
     : CUSTOM_ROLE_COLOR_CLASS;
@@ -329,19 +338,11 @@ export const PresenceMenuButton: React.FC<PresenceMenuButtonProps> = ({
   // pills: icon at rest, chevron on hover, chevron-up while open. The
   // surrounding Dropdown owns the click — segment onClick is a noop so
   // the parent's click handler fires unopposed.
-  // `React.createElement` (rather than `<Icon … />`) keeps the
-  // `react-hooks/static-components` lint rule happy: the rule flags
-  // any PascalCase variable used as a JSX tag inside a hook callback
-  // as a "component created during render", which we aren't actually
-  // doing — `Icon` is just a stable lucide component reference.
   const segments: PillGroupSegment[] = useMemo(
     () => [
       {
         id: "presence",
-        icon: React.createElement(Icon, {
-          size: 12,
-          className: colorClass,
-        }),
+        icon: <HugeiconsIcon icon={Icon} size={12} className={colorClass} />,
         label: pillLabel,
         active: menuVisible,
         ariaLabel,
@@ -374,17 +375,14 @@ export const PresenceMenuButton: React.FC<PresenceMenuButtonProps> = ({
 };
 
 const SidebarBottomBar: React.FC<SidebarBottomBarProps> = React.memo(
-  ({ leftContent, rightActions, settingsAction }) => {
+  ({ leftContent, rightActions }) => {
     return (
-      <div className="flex h-[52px] flex-shrink-0 items-center justify-between gap-2 px-3">
+      <div className="flex h-[52px] shrink-0 items-center justify-between gap-2 px-3">
         <div className="flex min-w-0 flex-1 items-center gap-1">
           {leftContent}
         </div>
         <div className="flex items-center gap-1">
-          <div className="flex items-center gap-1">
-            {rightActions}
-            {settingsAction}
-          </div>
+          <div className="flex items-center gap-1">{rightActions}</div>
           <SidebarUpdateButton />
         </div>
       </div>

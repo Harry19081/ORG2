@@ -54,29 +54,43 @@ export interface OpenPRItem {
   base_branch: string;
   draft: boolean;
   ci_status: PullRequestCiStatus;
+  additions?: number | null;
+  deletions?: number | null;
   created_at: string;
   updated_at: string;
 }
 
 export type PullRequestListState = "open" | "closed";
 
+export interface PullRequestListOptions {
+  page?: number;
+  /** Include batched CI rollups and diff statistics; defaults to true. */
+  includeMetadata?: boolean;
+}
+
 export async function listPRsLocal(
   repoFullName: string,
   state: PullRequestListState,
-  perPage?: number
+  perPage?: number,
+  options?: PullRequestListOptions
 ): Promise<OpenPRItem[]> {
   return invokeWithAuth<OpenPRItem[]>("github_list_prs", {
     repoFullName,
     state,
     perPage: perPage ?? null,
+    ...(options && {
+      page: options.page ?? null,
+      includeMetadata: options.includeMetadata ?? null,
+    }),
   });
 }
 
 export async function listOpenPRsLocal(
   repoFullName: string,
-  perPage?: number
+  perPage?: number,
+  options?: PullRequestListOptions
 ): Promise<OpenPRItem[]> {
-  return listPRsLocal(repoFullName, "open", perPage);
+  return listPRsLocal(repoFullName, "open", perPage, options);
 }
 
 export async function updatePRStateLocal(
@@ -88,6 +102,18 @@ export async function updatePRStateLocal(
     repoFullName,
     prNumber,
     state,
+  });
+}
+
+export async function updatePRDraftStateLocal(
+  repoFullName: string,
+  prNumber: number,
+  draft: boolean
+): Promise<void> {
+  return invokeWithAuth<void>("github_update_pr_draft_state", {
+    repoFullName,
+    prNumber,
+    draft,
   });
 }
 

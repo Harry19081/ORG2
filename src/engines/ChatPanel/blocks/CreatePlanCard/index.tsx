@@ -8,14 +8,17 @@
  */
 import type { TFunction } from "i18next";
 import { useAtomValue, useSetAtom } from "jotai";
-import { X } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { respondPlanApproval } from "@src/api/tauri/agent";
+import {
+  updatePendingPlanContent as persistPendingPlanContent,
+  respondPlanApproval,
+} from "@src/api/tauri/agent";
 import Button from "@src/components/Button";
 import Markdown from "@src/components/MarkDown";
 import Message from "@src/components/Message";
+import Textarea from "@src/components/Textarea";
 import { getToolIcon } from "@src/config/toolIcons";
 import {
   beginOptimisticTurn,
@@ -36,7 +39,8 @@ import {
 } from "@src/engines/SessionCore/derived/planDisplayEvents";
 import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { usePendingPlanApproval } from "@src/hooks/session/usePendingPlanApproval";
-import { FileService } from "@src/services/file";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import { startVisibilityAwareInterval } from "@src/shared/scheduling/visibilityAwareInterval";
 import { sessionRuntimeStatusAtom } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultModelSelectionAtom } from "@src/store/session/creatorDefaultModelAtom";
 import {
@@ -85,7 +89,7 @@ function getPlanStateLabel(
   return t("planDoc.idle");
 }
 
-export interface CreatePlanCardProps {
+interface CreatePlanCardProps {
   content: string;
   title: string;
   isStreaming: boolean;
@@ -200,8 +204,12 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
 
     useEffect(() => {
       if (!autoApproveAt || submitting) return;
-      const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
-      return () => window.clearInterval(timer);
+      const timer = startVisibilityAwareInterval(
+        document,
+        () => setNowMs(Date.now()),
+        1000
+      );
+      return () => timer();
     }, [autoApproveAt, submitting]);
 
     const autoApproveRemaining =
@@ -335,11 +343,11 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
       try {
         await persistEditedPlanContent({
           sessionId,
-          planPath: pendingSnapshot?.planPath ?? null,
+          planRevisionId: pendingSnapshot?.planRevisionId,
           pendingAliases: getPendingPlanAliases(pendingSnapshot),
           content: editedContent,
           io: {
-            saveFile: (path, content) => FileService.save(path, content),
+            persistPendingContent: persistPendingPlanContent,
             getEvents: (id) => eventStoreProxy.getEvents(id),
             patchEvent: (id, args, sid) =>
               eventStoreProxy.updateById(id, { args }, sid),
@@ -397,7 +405,14 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
           iconOnly
           data-testid="create-plan-collapse"
           onClick={() => onCollapse()}
-          icon={<X size={12} strokeWidth={2} />}
+          icon={
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              data-icon="x"
+              size={12}
+              strokeWidth={2}
+            />
+          }
           title={t("planDoc.collapse")}
         />
       ) : null;
@@ -414,7 +429,7 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
         onClick={(event) => event.stopPropagation()}
       >
         {countdownLabel && (
-          <span className="chat-block-xs mr-auto min-w-0 truncate tabular-nums text-text-3">
+          <span className="chat-block-xs mr-auto min-w-0 truncate text-text-3 tabular-nums">
             {countdownLabel}
           </span>
         )}
@@ -479,7 +494,7 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
         <EventBlockHeader
           isCollapsed={isCollapsed}
           withHover
-          onClick={handleLocate}
+          onToggleCollapse={handleHeaderClick}
           onNavigate={handlePreviewNavigate}
           onMouseEnter={handleHeaderMouseEnter}
           onMouseLeave={handleHeaderMouseLeave}
@@ -490,9 +505,7 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
             isCollapsed={isCollapsed}
             isHeaderHovered={isHeaderHovered}
             iconSize={PLAN_ICON_SIZE}
-            onToggle={handleHeaderClick}
             hasContent
-            revealChevronOnIconHoverOnly={Boolean(eventId)}
             isLoading={isStreaming}
           />
           <EventBlockHeaderTitle isLoading={isStreaming}>
@@ -515,17 +528,22 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
         {!isCollapsed &&
           (isEditing ? (
             <div className="px-3 py-2">
-              <textarea
+              <Textarea
+                size="small"
+                resize="vertical"
+                className="w-full"
+                textareaStyle={{ height: 280 }}
                 ref={textareaRef}
-                className="scrollbar-overlay h-[280px] w-full resize-y rounded-md border border-border-2 bg-bg-1 px-3 py-2 text-[13px] leading-relaxed text-text-1 outline-none focus:border-primary-6"
                 value={editedContent}
-                onChange={(event) => setEditedContent(event.target.value)}
+                onChange={(_value, event) =>
+                  setEditedContent(event.target.value)
+                }
                 spellCheck={false}
               />
             </div>
           ) : (
             <div
-              className={`overflow-y-auto overflow-x-hidden px-3 py-2 ${ready ? "max-h-[280px]" : "max-h-[160px]"}`}
+              className={`overflow-x-hidden overflow-y-auto px-3 py-2 ${ready ? "max-h-[280px]" : "max-h-[160px]"}`}
             >
               {content.trim() ? (
                 <div className="chat-block-content leading-relaxed text-text-2">

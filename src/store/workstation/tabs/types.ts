@@ -2,7 +2,7 @@
  * Workstation Tabs Type Definitions
  *
  * Unified tab system supporting all Workstation apps:
- * - Code Editor (file, git-diff, terminal, output, settings)
+ * - Code Editor (file, git-diff, terminal)
  * - Database Explorer (table, query, schema)
  * - Browser (browser-session)
  */
@@ -21,20 +21,14 @@ export type WorkStationTabType =
   | "explorer" // Default pinned "home" tab — sidebar shows file tree, main pane shows placeholder
   | "git-diff"
   | "source-control"
-  | "timeline-diff"
   | "git-log" // Git error log viewer (CodeMirror-based)
   | "git-commit-detail" // Git commit detail (split: file list + diff)
   | "git-stash-detail" // Git stash detail (split: file list + diff)
   | "terminal-content" // Terminal output viewer (read-only, from pill double-click)
   | "dom-component-preview" // Pasted DOM-component JSON viewer (Raw / Preview iframe)
   | "terminal"
-  | "output"
-  | "settings"
   | "search" // Repository-wide search tab
-  | "lint-scan" // Workspace lint scan configuration
-  | "ai-impact" // AI session impact dashboard
   | "search-sessions" // Session search + table (reuses SessionTable; launchpad tab)
-  | "benchmark" // Benchmark task browser and runner setup
   | "url-preview" // URL preview (agent-triggered webview in editor)
   // Browser tabs
   | "browser-session"
@@ -75,7 +69,7 @@ export type WorkStationTabType =
  * Unified tab type - single flat interface for all tab types
  *
  * This is used across all Workstation apps:
- * - Code Editor: file, git-diff, source-control, timeline-diff, terminal, output, settings
+ * - Code Editor: file, git-diff, source-control, terminal
  * - Database Explorer: table, query, schema
  * - Browser: browser-session
  */
@@ -93,11 +87,7 @@ export type WorkStationTabCategory =
   | "git" // git-diff, source-control, git-commit-detail, git-stash-detail, git-log
   | "search"
   | "terminal"
-  | "settings"
-  | "lint"
-  | "ai-impact"
   | "search-sessions"
-  | "benchmark"
   | "preview"
   | "subagent"
   | "agent-config"
@@ -192,9 +182,9 @@ export interface WorkstationSharedState {
   tabs: WorkStationTab[];
 }
 
-/** Persisted v3 state. Runtime storage splits this document into per-scope keys. */
-export interface WorkstationTabsStateV3 {
-  version: 3;
+/** Persisted v4 state. Runtime storage splits this document into per-scope keys. */
+export interface WorkstationTabsStateV4 {
+  version: 4;
   shared: WorkstationSharedState;
   globalWorkspace: WorkstationWorkspaceState;
   sessionWorkspaces: Record<string, WorkstationWorkspaceState>;
@@ -231,16 +221,12 @@ export function getWorkstationTabOwnership(
     case "explorer":
     case "git-diff":
     case "source-control":
-    case "timeline-diff":
     case "git-log":
     case "git-commit-detail":
     case "git-stash-detail":
     case "terminal-content":
     case "dom-component-preview":
-    case "output":
     case "search":
-    case "lint-scan":
-    case "ai-impact":
     case "search-sessions":
     case "url-preview":
     case "subagent-detail":
@@ -250,8 +236,6 @@ export function getWorkstationTabOwnership(
       return "workspace-local";
 
     case "terminal":
-    case "settings":
-    case "benchmark":
     case "browser-session":
     case "devtools":
     case "project-dashboard":
@@ -294,102 +278,6 @@ export interface TimelineDiffCommitInfo {
   message: string;
   author: string;
   timestamp: string;
-}
-
-// ============================================
-// Browser Tab Data Types
-// ============================================
-
-/**
- * Data stored in browser session tabs
- */
-export interface BrowserSessionTabData {
-  sessionId: string;
-  url: string;
-  incognito?: boolean;
-  isLoading?: boolean;
-}
-
-// ============================================
-// Project Manager Tab Data Types
-// ============================================
-
-/**
- * Data stored in project work items tabs
- */
-export interface ProjectWorkItemsTabData {
-  projectId: string;
-  projectName: string;
-  projectSlug?: string;
-  dataPath?: string;
-}
-
-/**
- * Data stored in new project (create) tabs — draft lives in a jotai atom keyed by tab ID
- */
-export interface NewProjectTabData {
-  /** intentionally empty — form state cached in projectDraftsAtom */
-}
-
-/**
- * Data stored in a single work item detail tab (expanded from inline panel)
- */
-export interface WorkItemDetailTabData {
-  projectId?: string;
-  projectName?: string;
-  projectSlug?: string;
-  orgId?: string;
-  dataPath?: string;
-  workItemId: string;
-  workItemName: string;
-  workItemStatus?: string;
-  /** Unsaved changes transferred from the inline detail panel */
-  pendingUpdates?: Record<string, unknown>;
-}
-
-/**
- * Data stored in new work item (create) tabs
- */
-export interface NewWorkItemTabData {
-  projectId: string;
-  projectName: string;
-}
-
-/**
- * Data stored in token category tabs
- */
-export interface TokenCategoryTabData {
-  category: string;
-}
-
-// ============================================
-// URL Preview Tab Data Types
-// ============================================
-
-/**
- * Data stored in URL preview tabs (agent-opened webview in editor)
- */
-export interface UrlPreviewTabData {
-  /** URL to display */
-  url: string;
-  /** Optional title (extracted from page or provided) */
-  title?: string;
-}
-
-// ============================================
-// Chat Session Tab Data Types
-// ============================================
-
-/**
- * Data stored in chat session tabs (opened from work items, session history, etc.)
- */
-export interface ChatSessionTabData {
-  /** The agent/coding session ID to display in the chat view */
-  sessionId: string;
-  /** Optional work item ID this session is linked to */
-  workItemId?: string;
-  /** Optional work item short ID for display (e.g. "PROJ-0042") */
-  workItemShortId?: string;
 }
 
 // ============================================
@@ -469,7 +357,7 @@ export interface AgentConfigTabData {
 export interface EditorRepoCache {
   /** Repo path (key) */
   repoPath: string;
-  /** File tabs only (type: "file", "git-diff", "source-control", "timeline-diff") */
+  /** File tabs only (type: "file", "git-diff", "source-control") */
   fileTabs: WorkStationTab[];
   /** Active file tab ID (null if no file tab was active) */
   activeFileTabId: string | null;
@@ -491,46 +379,9 @@ export const FILE_TAB_TYPES = [
   "file",
   "git-diff",
   "source-control",
-  "timeline-diff",
   "git-log",
   "git-commit-detail",
   "git-stash-detail",
   "terminal-content",
   "dom-component-preview",
 ] as const;
-
-/** Tab types that are TOOL tabs (global, not cached per-repo) */
-export const TOOL_TAB_TYPES = [
-  "terminal",
-  "output",
-  "settings",
-  "search",
-  "lint-scan",
-  "ai-impact",
-  "search-sessions",
-  "url-preview",
-  // Browser tabs
-  "browser-session",
-  // Project Manager tabs
-  "project-dashboard",
-  "project-work-items",
-  "project-linear-projects",
-  "project-linear-work-items",
-  "project-settings",
-  "project-org",
-  "project-org-settings",
-  "project-workitems",
-  "workItem-detail",
-  "chat-session",
-  "subagent-detail",
-  "agent-config",
-  // GitHub Issues detail
-  "github-issue-detail",
-  // GitHub Pull Request detail
-  "github-pr-detail",
-  // Start page launcher
-  "start",
-] as const;
-
-export type FileTabType = (typeof FILE_TAB_TYPES)[number];
-export type ToolTabType = (typeof TOOL_TAB_TYPES)[number];

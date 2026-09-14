@@ -7,8 +7,6 @@ import type { TabPillItem } from "@src/components/TabPill";
 import WorkItemContentStack from "@src/modules/ProjectManager/WorkItems/components/WorkItemContentStack";
 import { RepoDetailPage } from "@src/modules/shared/launchpad/components";
 import RepoActionButtons from "@src/modules/shared/launchpad/components/RepoActionButtons";
-import { WorkspaceToolsReadiness } from "@src/modules/shared/launchpad/components/WorkspaceToolsReadiness";
-import { useRepoDetection } from "@src/modules/shared/launchpad/hooks";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
@@ -21,33 +19,11 @@ import {
   WORKSPACE_OVERVIEW_TAB,
   type WorkspaceOverviewTab,
   chatPanelWorkspaceOverviewTabAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 interface WorkspaceOverviewPanelViewProps {
   selectedWorkspace: ChatPanelSelectedWorkspace;
 }
-
-interface WorkspaceOverviewBodyProps {
-  repoPath: string;
-}
-
-const WorkspaceOverviewBody = memo(
-  ({ repoPath }: WorkspaceOverviewBodyProps) => {
-    const { repoType, configFiles, hasDocker, hasMakefile } =
-      useRepoDetection(repoPath);
-
-    return (
-      <WorkspaceToolsReadiness
-        workspacePath={repoPath}
-        repoType={repoType}
-        configFiles={configFiles}
-        hasDocker={hasDocker}
-        hasMakefile={hasMakefile}
-      />
-    );
-  }
-);
-WorkspaceOverviewBody.displayName = "WorkspaceOverviewBody";
 
 interface WorkspaceOverviewFooterProps {
   repo: Repo;
@@ -64,7 +40,7 @@ const WorkspaceOverviewFooter = memo(
           shape="square"
           showDetails={false}
           showClose={false}
-          className="overflow-x-auto scrollbar-hide"
+          className="scrollbar-hide overflow-x-auto"
         />
       }
     />
@@ -90,10 +66,6 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
 
     const isRepo = selectedWorkspace.kind === "repo";
     const detailsTabAvailable = isRepo && Boolean(selectedRepo);
-
-    // Tools readiness works for repositories and plain folder workspaces.
-    // Prefer the hydrated repo path and fall back to the selected folder path.
-    const overviewPath = selectedRepo?.path ?? selectedWorkspace.path ?? null;
 
     // Force back to Overview when the selected workspace cannot show details
     // (workspace-kind, or repo not yet hydrated). Prevents a stale "details"
@@ -143,11 +115,6 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
         <RepoDetailPage repo={selectedRepo} />
       ) : null;
 
-    const overviewBody =
-      resolvedActiveTab === WORKSPACE_OVERVIEW_TAB.OVERVIEW && overviewPath ? (
-        <WorkspaceOverviewBody repoPath={overviewPath} />
-      ) : null;
-
     const actionFooter =
       selectedRepo && resolvedActiveTab === WORKSPACE_OVERVIEW_TAB.OVERVIEW ? (
         <WorkspaceOverviewFooter
@@ -171,8 +138,7 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
             size="chatPanel"
           />
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-          {overviewBody}
+        <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto">
           {detailsBody}
         </div>
       </section>

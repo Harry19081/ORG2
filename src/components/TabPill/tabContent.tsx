@@ -23,7 +23,7 @@ export function BoldStableLabel({
     <span className="grid items-center justify-items-start">
       <span
         aria-hidden="true"
-        className="invisible col-start-1 row-start-1 whitespace-nowrap font-semibold"
+        className="invisible col-start-1 row-start-1 font-semibold whitespace-nowrap"
       >
         {label}
       </span>
@@ -48,8 +48,6 @@ export function renderTabContent(
   const displayIcon = isHovered && tab.hoverIcon ? tab.hoverIcon : tab.icon;
   const displayBadge = isHovered && tab.hoverBadge ? tab.hoverBadge : tab.badge;
   const reservedBadge = displayBadge ?? tab.hoverBadge;
-  const alignBadgeToLabelBaseline =
-    !tab.icon && !tab.hoverIcon && Boolean(tab.badge || tab.hoverBadge);
   if (isIconOnly || (tab.icon && !tab.label)) {
     return displayIcon || <span className="truncate">{tab.label}</span>;
   }
@@ -60,18 +58,14 @@ export function renderTabContent(
   );
   if (tab.icon || tab.badge || tab.hoverIcon || tab.hoverBadge) {
     return (
-      <div
-        className={`flex gap-1.5 ${
-          alignBadgeToLabelBaseline ? "items-baseline" : "items-center"
-        }`}
-      >
+      <div className="flex items-center gap-1.5">
         {displayIcon && (
-          <div className="flex flex-shrink-0 items-center">{displayIcon}</div>
+          <div className="flex shrink-0 items-center">{displayIcon}</div>
         )}
         {label}
         {reservedBadge && (
           <div
-            className={`flex flex-shrink-0 items-center ${
+            className={`flex shrink-0 items-center ${
               displayBadge ? "" : "invisible"
             }`}
           >

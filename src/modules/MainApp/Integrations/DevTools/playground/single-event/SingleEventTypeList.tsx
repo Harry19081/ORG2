@@ -65,7 +65,7 @@ export function SingleEventTypeList({
           >
             <span className="flex min-w-0 flex-1 items-center gap-1.5">
               {getPlaygroundMockEventRowIcon(eventType)}
-              <span className="break-all text-left text-[13px] text-text-2">
+              <span className="text-left text-[13px] break-all text-text-2">
                 {getEventTypeDisplayLabel(eventType)}
               </span>
             </span>
@@ -82,13 +82,13 @@ export function SingleEventTypeList({
         <Checkbox
           key={eventType}
           checked={selectedTypesMulti.includes(eventType)}
-          onChange={(checked) => onMultiToggle(eventType, checked)}
+          onCheckedChange={(checked) => onMultiToggle(eventType, checked)}
           size="small"
           className="flex items-center gap-2 py-0.5"
         >
           <span className="flex min-w-0 flex-1 items-center gap-1.5">
             {getPlaygroundMockEventRowIcon(eventType)}
-            <span className="break-all text-left text-[13px] text-text-2">
+            <span className="text-left text-[13px] break-all text-text-2">
               {getEventTypeDisplayLabel(eventType)}
             </span>
           </span>

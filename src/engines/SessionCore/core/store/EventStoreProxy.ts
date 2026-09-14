@@ -24,6 +24,7 @@
 import { rpc } from "@src/api/tauri/rpc";
 import { TURN_WINDOW_RECENT_BODY_COUNT } from "@src/engines/SessionCore/turns/turnWindowConfig";
 import { createLogger } from "@src/hooks/logger";
+import { registerCache } from "@src/util/memory/cacheRegistry";
 
 import type { EventPayloadBody, SessionEvent } from "../types";
 import type {
@@ -33,17 +34,18 @@ import type {
   SessionListener,
   Snapshot,
 } from "./EventStoreProxyTypes";
-import { inferSessionId, isRealUserEvent } from "./eventStoreEvents";
+import {
+  type SyntheticEvictionScope,
+  inferSessionId,
+  syntheticEvictionScopeForRealUserEvents,
+} from "./eventStoreEvents";
 import { SnapshotCacheManager } from "./snapshotCacheManager";
 
 export type {
   DerivedSnapshot,
-  EventStoreMemoryStats,
   Snapshot,
   SnapshotDelta,
   SnapshotEnvelope,
-  SnapshotEventMembership,
-  SnapshotPayload,
   StreamingSnapshot,
 } from "./EventStoreProxyTypes";
 export {
@@ -54,6 +56,10 @@ export {
 const log = createLogger("EventStoreProxy");
 
 class EventStoreProxyImpl {
+  private activityRequests = new Map<
+    string,
+    Promise<Record<string, boolean>>
+  >();
   /**
    * JS-side snapshot cache, listener registry and coalescing queue. The
    * delta base-miss fallback routes back through `getSnapshot` so the fetch
@@ -173,16 +179,23 @@ class EventStoreProxyImpl {
     events: SessionEvent[],
     sessionId?: string | null
   ): Promise<void> {
-    if (!events.some(isRealUserEvent)) return;
+    const scope = syntheticEvictionScopeForRealUserEvents(events);
+    if (!scope) return;
     await this.removeSyntheticUserInputEvents(
-      sessionId ?? inferSessionId(events)
+      sessionId ?? inferSessionId(events),
+      scope
     );
   }
 
   /** Replace all events (session load / clear). */
-  async set(events: SessionEvent[], sessionId?: string): Promise<void> {
+  async set(
+    events: SessionEvent[],
+    sessionId?: string,
+    expectedVersion?: number
+  ): Promise<void> {
     await rpc.sessionCore.eventStore.set({
       events,
+      ...(expectedVersion === undefined ? {} : { expectedVersion }),
       sessionId: sessionId ?? inferSessionId(events),
     });
   }
@@ -313,8 +326,9 @@ class EventStoreProxyImpl {
   async evictSession(sessionId: string): Promise<void> {
     await rpc.sessionCore.eventStore.evictSession({ sessionId });
     // Mirror the Rust-side eviction in the JS snapshot cache so large event
-    // arrays are freed on the JS heap as well.
-    this.evictSessionCache(sessionId);
+    // arrays are freed on the JS heap as well. Mounted subscribers own their
+    // lifetime: Reload, edit and compaction must keep delivering new snapshots.
+    this.releaseSessionSnapshot(sessionId);
   }
 
   /** Buffer events for a background session. */
@@ -329,6 +343,22 @@ class EventStoreProxyImpl {
   // =========================================================================
 
   /** Fetch the full derived snapshot from Rust. */
+  getChatActivity(sessionIds: string[]): Promise<Record<string, boolean>> {
+    const ids = [...new Set(sessionIds)].sort();
+    const key = JSON.stringify(ids);
+    const existing = this.activityRequests.get(key);
+    if (existing) return existing;
+    const request = rpc.sessionCore.eventStore.getChatActivity({
+      sessionIds: ids,
+    });
+    this.activityRequests.set(key, request);
+    void request.then(
+      () => this.activityRequests.delete(key),
+      () => this.activityRequests.delete(key)
+    );
+    return request;
+  }
+
   async getSnapshot(sessionId?: string): Promise<DerivedSnapshot> {
     const snapshot = (await rpc.sessionCore.eventStore.getSnapshot({
       sessionId: sessionId ?? null,
@@ -501,12 +531,21 @@ class EventStoreProxyImpl {
     });
   }
 
-  /** Remove frontend-injected user placeholders after backend echo arrives. */
+  /**
+   * Remove frontend-injected user placeholders after backend echo arrives.
+   * Without a scope every placeholder is removed; with one, only
+   * placeholders the scope proves are echoed/stale (see
+   * syntheticEvictionScopeForRealUserEvents).
+   */
   async removeSyntheticUserInputEvents(
-    sessionId?: string | null
+    sessionId?: string | null,
+    scope?: SyntheticEvictionScope
   ): Promise<number> {
     return rpc.sessionCore.eventStore.removeSyntheticUserInputs({
       sessionId: sessionId ?? null,
+      matchingContents: scope?.matchingContents,
+      matchingTurnIntentIds: scope?.matchingTurnIntentIds,
+      olderThan: scope?.olderThan,
     });
   }
 
@@ -563,4 +602,13 @@ class EventStoreProxyImpl {
  * that are fed from snapshot notifications.
  */
 export const eventStoreProxy = new EventStoreProxyImpl();
+
+registerCache({
+  id: "sessionCore.snapshotCache",
+  tier: 1,
+  estimate: () => {
+    const stats = eventStoreProxy.getMemoryStats();
+    return { bytes: stats.bytes, entries: stats.cachedEvents };
+  },
+});
 export type { EventStoreProxyImpl as EventStoreProxy };

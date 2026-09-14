@@ -1,18 +1,28 @@
-import { Gauge } from "lucide-react";
+import { useAtomValue } from "jotai";
 import React, { useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_PANEL,
 } from "@src/components/Dropdown/tokens";
+import PageNotice from "@src/components/PageNotice";
 import { useDropdownEngine } from "@src/hooks/dropdown";
-import { formatRuntimeBytes, getAppMemoryTotals } from "@src/hooks/perf";
+import {
+  describeAppMemoryMeasurement,
+  formatRuntimeBytes,
+  getAppMemoryRoleLabelKey,
+  getAppMemoryTotals,
+} from "@src/hooks/perf";
+import { GaugeIcon } from "@src/icons";
+import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 
 import HoverAnimatedIcon, {
   triggerIconAnimation,
 } from "../../components/HoverAnimatedIcon";
+import { CacheRegistrySection } from "./CacheRegistrySection";
 import { MemoryBreakdownSection } from "./MemoryBreakdownSection";
 import { MemoryStatRow } from "./MemoryStatRow";
 import { SUCCESS_FPS_THRESHOLD, SUCCESS_RAM_THRESHOLD_MB } from "./constants";
@@ -29,6 +39,7 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
   const { t: tCommon } = useTranslation("common");
   const { t } = useTranslation();
   const [showAttributionHints, setShowAttributionHints] = useState(false);
+  const devModeEnabled = useAtomValue(devModeEnabledAtom);
   const {
     snapshot,
     appMemoryState,
@@ -47,8 +58,40 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
     totalBytes: totalAppMemoryBytes,
     backendBytes: backendEffectiveBytes,
     webviewHelperBytes: webviewEffectiveBytes,
+    residentPrivateBytes,
+    swappedBytes,
+    hasBreakdown,
   } = getAppMemoryTotals(appMemorySnapshot);
   const totalAppRamMb = totalAppMemoryBytes / (1024 * 1024);
+  const translateSettings = (key: string) => tSettings(key);
+  const measurementLabel = describeAppMemoryMeasurement(
+    appMemorySnapshot,
+    translateSettings
+  );
+  const withPeak = (label: string, peakBytes: number | null): string =>
+    peakBytes
+      ? `${label} · ${tSettings("monitor.peakSuffix", {
+          value: formatRuntimeBytes(peakBytes),
+        })}`
+      : label;
+  const backendProcess = appMemorySnapshot?.processes.find(
+    (process) => process.role === "backend"
+  );
+  const helperProcessRows: MemoryBreakdownRow[] = (
+    appMemorySnapshot?.processes ?? []
+  )
+    .filter((process) => process.role !== "backend")
+    .map((process) => ({
+      key: `helper-${process.process_instance_id}`,
+      label: withPeak(
+        tSettings(getAppMemoryRoleLabelKey(process.role)),
+        process.peak_effective_memory_bytes
+      ),
+      value: formatRuntimeBytes(process.effective_memory_bytes),
+      bytes: process.effective_memory_bytes,
+      indentLevel: 1,
+      alwaysVisible: true,
+    }));
   const fileCacheMb = snapshot.memoryBreakdown?.file_cache_mb ?? 0;
   const terminalPtyBufferBytes = snapshot.ptyMemory.reduce(
     (sum, ptyInfo) => sum + ptyInfo.buffer_bytes,
@@ -69,9 +112,13 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
   const ramBreakdownRows: MemoryBreakdownRow[] = [
     {
       key: "backendGroup",
-      label: tSettings("monitor.appBackend"),
+      label: withPeak(
+        tSettings("monitor.appBackend"),
+        backendProcess?.peak_effective_memory_bytes ?? null
+      ),
       value: formatRuntimeBytes(backendEffectiveBytes),
       bytes: backendEffectiveBytes,
+      alwaysVisible: true,
     },
     {
       key: "backendFileCache",
@@ -85,7 +132,9 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
       label: tSettings("monitor.appWebviewHelpers"),
       value: formatRuntimeBytes(webviewEffectiveBytes),
       bytes: webviewEffectiveBytes,
+      alwaysVisible: true,
     },
+    ...helperProcessRows,
     {
       key: "rssMappedTotal",
       label: tSettings("monitor.rssMappedDiagnostic"),
@@ -175,7 +224,7 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
               left: panelPosition.left,
             }}
           >
-            <div className="max-h-[600px] space-y-2 overflow-y-auto px-3 pt-3 scrollbar-hide">
+            <div className="scrollbar-hide max-h-[600px] space-y-2 overflow-y-auto px-3 pt-3">
               <MemoryStatRow
                 label={t("layoutSettings.ramFps")}
                 value={fpsValue}
@@ -199,16 +248,37 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
                     : undefined
                 }
               />
+              {hasBreakdown && (
+                <>
+                  <MemoryStatRow
+                    label={tSettings("monitor.residentPrivate")}
+                    value={formatRuntimeBytes(residentPrivateBytes)}
+                    indentLevel={1}
+                  />
+                  <MemoryStatRow
+                    label={tSettings("monitor.swappedMemory")}
+                    value={formatRuntimeBytes(swappedBytes)}
+                    indentLevel={1}
+                  />
+                </>
+              )}
               <MemoryStatRow
                 label={tSettings("monitor.measurement")}
-                value={tSettings(
-                  `monitor.measurementKinds.${appMemorySnapshot?.measurement ?? "unavailable"}`
-                )}
+                value={measurementLabel}
               />
               <MemoryStatRow
                 label={tSettings("monitor.webViewDomNodes")}
                 value={String(webViewDiagnostics?.domNodes ?? 0)}
               />
+              {snapshot.scriptSources && snapshot.scriptSources.modules > 0 && (
+                <MemoryStatRow
+                  label={tSettings("monitor.loadedScriptSources", {
+                    modules: snapshot.scriptSources.modules,
+                    chunks: snapshot.scriptSources.chunks,
+                  })}
+                  value={formatRuntimeBytes(snapshot.scriptSources.sourceBytes)}
+                />
+              )}
               <MemoryStatRow
                 label={tSettings("monitor.webViewCompositedCandidates", {
                   sampled: webViewDiagnostics?.compositedSampleCount ?? 0,
@@ -218,7 +288,9 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
                 )}
               />
 
-              <div className="my-2 border-t border-border-2" />
+              <div
+                className={`${DROPDOWN_CLASSES.menuGroupSeparator} my-0.5!`}
+              />
               <MemoryStatRow
                 label={tSettings("monitor.memoryBreakdown")}
                 value={null}
@@ -230,12 +302,15 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
                 toggleAriaLabel={attributionToggleAriaLabel}
                 onToggleAttributionHints={handleToggleAttributionHints}
               />
+              {devModeEnabled && (
+                <CacheRegistrySection rows={snapshot.cacheRegistry} />
+              )}
 
               {(snapshot.errorMessage || appMemoryState.errorMessage) && (
-                <div className="text-danger-7 rounded-md border border-danger-3 bg-danger-1 px-2 py-1.5 text-[11px] leading-snug">
+                <PageNotice type="danger" role="alert">
                   {tCommon("status.error")} ·{" "}
                   {snapshot.errorMessage || appMemoryState.errorMessage}
-                </div>
+                </PageNotice>
               )}
             </div>
           </div>,
@@ -259,24 +334,29 @@ export const SidebarRamMonitorButton: React.FC = React.memo(() => {
   return (
     <>
       <div ref={triggerRef} title={triggerTitle}>
-        <button
-          type="button"
-          className={`flex h-[28px] w-[28px] cursor-pointer items-center justify-center rounded-[100px] border-none p-0 transition-colors duration-150 ${
+        <Button
+          htmlType="button"
+          variant="tertiary"
+          size="small"
+          iconOnly
+          aria-label={triggerTitle}
+          className={`${
             isOpen
-              ? "bg-sidebar-selected"
-              : "bg-transparent hover:bg-sidebar-selected"
+              ? "bg-sidebar-selected! text-text-1!"
+              : "hover:bg-sidebar-selected!"
           }`}
           onClick={toggle}
           onMouseEnter={(event) => triggerIconAnimation(event.currentTarget)}
-        >
-          <HoverAnimatedIcon
-            icon={Gauge}
-            iconName="gauge"
-            size={16}
-            strokeWidth={2}
-            className={buttonActiveClassName}
-          />
-        </button>
+          icon={
+            <HoverAnimatedIcon
+              icon={GaugeIcon}
+              iconName="gauge"
+              size={16}
+              strokeWidth={2}
+              className={buttonActiveClassName}
+            />
+          }
+        />
       </div>
       {isPositioned && (
         <SidebarRamMonitorPanel

@@ -1,9 +1,13 @@
-import { ExternalLink } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { RoutineDefinition, RoutineFire } from "@src/api/http/project";
+import type {
+  RoutineActivation,
+  RoutineDefinition,
+  RoutineFire,
+} from "@src/api/http/project";
 import { projectApi } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -13,6 +17,7 @@ import SettingsTable, {
 import Switch from "@src/components/Switch";
 import TabPill from "@src/components/TabPill";
 import { useRoutineResultNavigation } from "@src/hooks/navigation";
+import { HugeiconsIcon, SquareArrowUpRight02Icon } from "@src/icons";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
@@ -118,9 +123,12 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
             {new Date(fire.firedAt).toLocaleString()}
           </span>
           {fire.sessionId && (
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 text-primary-6 hover:underline"
+            <Button
+              variant="primary"
+              appearance="ghost"
+              size="inline"
+              htmlType="button"
+              className="gap-1 hover:underline"
               onClick={(event) => {
                 event.stopPropagation();
                 void openResult({ sessionId: fire.sessionId }).catch(() =>
@@ -131,15 +139,25 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
                   )
                 );
               }}
+              icon={
+                <HugeiconsIcon
+                  icon={SquareArrowUpRight02Icon}
+                  data-icon="external-link"
+                  size={11}
+                />
+              }
+              iconPosition="right"
             >
               {t("routineFields.openSession")}
-              <ExternalLink size={11} />
-            </button>
+            </Button>
           )}
           {fire.workItemId && (
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 text-primary-6 hover:underline"
+            <Button
+              variant="primary"
+              appearance="ghost"
+              size="inline"
+              htmlType="button"
+              className="gap-1 hover:underline"
               onClick={(event) => {
                 event.stopPropagation();
                 void openResult({
@@ -153,13 +171,20 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
                   )
                 );
               }}
+              icon={
+                <HugeiconsIcon
+                  icon={SquareArrowUpRight02Icon}
+                  data-icon="external-link"
+                  size={11}
+                />
+              }
+              iconPosition="right"
             >
               {t("routineFields.openWorkItem")}
-              <ExternalLink size={11} />
-            </button>
+            </Button>
           )}
           {fire.error && (
-            <span className="w-full break-words pl-4 text-danger-6">
+            <span className="w-full pl-4 wrap-break-word text-danger-6">
               {fire.error}
             </span>
           )}
@@ -169,10 +194,32 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
   );
 };
 
+function getActivationLabel(activation: RoutineActivation): string {
+  switch (activation.type) {
+    case "schedule":
+      return `Cron: ${activation.cron} · ${activation.timezone}`;
+    case "one_time":
+      return `One-time: ${activation.at}`;
+    case "provider_event":
+      return `Event: ${activation.provider}/${activation.eventKind}`;
+    default:
+      return "Manual";
+  }
+}
+
 function getTriggerLabel(routine: RoutineDefinition): string {
-  if (routine.trigger.kind === "one_time")
-    return `One-time: ${routine.trigger.at}`;
-  return `Cron: ${routine.trigger.cron} · ${routine.trigger.timezone}`;
+  const activations = routine.activations ?? [];
+  if (activations.length === 0) {
+    const trigger = routine.trigger;
+    if (!trigger) return "Manual";
+    return trigger.kind === "one_time"
+      ? `One-time: ${trigger.at}`
+      : `Cron: ${trigger.cron} · ${trigger.timezone}`;
+  }
+  const label = getActivationLabel(activations[0]);
+  return activations.length > 1
+    ? `${label} (+${activations.length - 1})`
+    : label;
 }
 
 function getNextFireLabel(routine: RoutineDefinition): string | null {
@@ -350,11 +397,6 @@ export const RoutinesTable: React.FC<RoutinesTableProps> = ({
               columns={routinesColumns}
               rows={filteredRoutines}
               getRowKey={(routine) => routine.id}
-              onRowClick={(routine) => {
-                const isExpanded = expandedKeys.includes(routine.id);
-                setExpandedKeys(isExpanded ? [] : [routine.id]);
-                onSelectRoutine(isExpanded ? null : routine.id);
-              }}
               rowClassName={selectedRowClassName(
                 (routine: RoutineDefinition) => routine.id,
                 selectedRowId
@@ -415,7 +457,7 @@ export const RoutinesTable: React.FC<RoutinesTableProps> = ({
                                 label={t("routineFields.prompt")}
                                 layout="vertical"
                               >
-                                <span className="break-words text-[12px] text-text-2">
+                                <span className="text-[12px] wrap-break-word text-text-2">
                                   {routine.runTemplate.prompt}
                                 </span>
                               </InfoRow>
@@ -431,7 +473,7 @@ export const RoutinesTable: React.FC<RoutinesTableProps> = ({
                                     size="small"
                                     checked={routine.enabled}
                                     dataTestId={`integrations-routine-enabled-switch-${routine.id}`}
-                                    onChange={onToggleEnabled}
+                                    onCheckedChange={onToggleEnabled}
                                   />
                                 </InfoRow>
                               )}

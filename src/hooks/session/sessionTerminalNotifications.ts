@@ -2,7 +2,6 @@
 import type { TFunction } from "i18next";
 
 import {
-  TASK_FAILURE_NOTIFICATION_BODY,
   notifyError,
   notifyTaskCompletion,
 } from "@src/api/services/notification";
@@ -44,40 +43,44 @@ export function deliverSessionTerminalNotification(
     const body = t("notifications.taskCompletedBody", {
       name: event.sessionName,
     });
-    void notifyTaskCompletion(body, settings, {
+    notifyTaskCompletion(body, settings, {
       title: t("notifications.taskCompletedTitle"),
       context,
       summaryLabel: event.sessionName,
-    }).then((result) => {
-      if (result.disposition !== "delivered" || !event.attentionRequired)
-        return;
-      Message.success({
-        content: t("notifications.taskCompletedToast", {
-          name: event.sessionName,
-        }),
-        duration: 0,
-        closable: true,
-        // The copy says "open the Session" — give it an actual door.
-        action: {
-          label: t("notifications.openSessionAction", {
-            defaultValue: "Open Session",
+    })
+      .then((result) => {
+        if (result.disposition !== "delivered" || !event.attentionRequired)
+          return;
+        Message.success({
+          content: t("notifications.taskCompletedToast", {
+            name: event.sessionName,
           }),
-          onClick: () => {
-            void Promise.all([
-              import("@src/util/core/state/instrumentedStore"),
-              import("@src/store/chatPanel/chatPanelTabsAtom"),
-            ]).then(([storeModule, tabsModule]) => {
-              storeModule
-                .getInstrumentedStore()
-                .set(tabsModule.openOrFocusSessionInChatPanelTabAtom, {
-                  sessionId: event.sessionId,
-                  sessionName: event.sessionName,
-                });
-            });
+          // Actionable completion notices still expire; duration is milliseconds.
+          duration: 6000,
+          closable: true,
+          // The copy says "open the Session" — give it an actual door.
+          action: {
+            label: t("notifications.openSessionAction", {
+              defaultValue: "Open Session",
+            }),
+            onClick: () => {
+              void Promise.all([
+                import("@src/util/core/state/instrumentedStore"),
+                import("@src/store/chatPanel/chatPanelTabsAtom"),
+              ]).then(([storeModule, tabsModule]) => {
+                storeModule
+                  .getInstrumentedStore()
+                  .set(tabsModule.openOrFocusSessionInChatPanelTabAtom, {
+                    sessionId: event.sessionId,
+                    sessionName: event.sessionName,
+                  });
+              });
+            },
           },
-        },
-      });
-    });
+        });
+      })
+      // Notification delivery is best effort and this public boundary is void.
+      .catch(() => undefined);
     return;
   }
 
@@ -89,26 +92,28 @@ export function deliverSessionTerminalNotification(
       name: event.sessionName,
       detail,
     });
-    void notifyError(TASK_FAILURE_NOTIFICATION_BODY, settings, {
+    notifyError(t("notifications.taskFailedPrivateBody"), settings, {
       title: t("notifications.taskFailedTitle"),
       context,
-    }).then((result) => {
-      if (result.disposition !== "delivered" || !event.attentionRequired)
-        return;
-      Message.error({
-        content: toastBody,
-        duration: 8000,
-        closable: true,
-      });
-    });
+    })
+      .then((result) => {
+        if (result.disposition !== "delivered" || !event.attentionRequired)
+          return;
+        Message.error({
+          content: toastBody,
+          duration: 8000,
+          closable: true,
+        });
+      })
+      // Match completion delivery: native notifications are best effort.
+      .catch(() => undefined);
     return;
   }
 
   if (
     event.status === "cancelled" &&
     event.attentionRequired &&
-    settings.enabled &&
-    !settings.mutedSessionIds.includes(event.sessionId)
+    settings.enabled
   ) {
     Message.warning({
       content: t("notifications.taskCancelledToast", {

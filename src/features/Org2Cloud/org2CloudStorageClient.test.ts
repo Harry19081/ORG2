@@ -8,6 +8,7 @@ import {
   Org2CloudStorageError,
   buildReplayObjectPath,
   downloadReplayObject,
+  ensureReplayObject,
   uploadReplayObject,
 } from "./org2CloudStorageClient";
 
@@ -125,14 +126,32 @@ describe("uploadReplayObject", () => {
     expect((error as Org2CloudStorageError).status).toBe(400);
   });
 
-  it("accepts a plain 409 duplicate when the object is readable", async () => {
-    fetchMock
-      .mockResolvedValueOnce(new Response(null, { status: 409 }))
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+  it("accepts a plain 409 duplicate without a read-back probe", async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 409 }));
 
     await expect(
       uploadReplayObject("jwt-1", "org-1/s-1/1/1-h.gz", new Uint8Array([1]))
     ).resolves.toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("accepts a 400-wrapped KeyAlreadyExists even when the object is unreadable", async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          statusCode: "409",
+          error: "Duplicate",
+          message: "The resource already exists",
+          code: "KeyAlreadyExists",
+        }),
+        { status: 400 }
+      )
+    );
+
+    await expect(
+      uploadReplayObject("jwt-1", "org-1/s-1/1/1-h.gz", new Uint8Array([1]))
+    ).resolves.toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -177,5 +196,44 @@ describe("downloadReplayObject", () => {
       expect.any(String),
       expect.objectContaining({ signal: controller.signal })
     );
+  });
+});
+
+describe("ensureReplayObject", () => {
+  it("skips the upload when the immutable object already exists", async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 200 }));
+    const result = await ensureReplayObject(
+      "jwt-1",
+      "org-1/s-1/3/7-abc.gz",
+      new Uint8Array([1])
+    );
+    expect(result).toBe("existing");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(lastCall().init.method).toBe("HEAD");
+  });
+
+  it("uploads when the HEAD probe reports the object missing", async () => {
+    fetchMock
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    const result = await ensureReplayObject(
+      "jwt-1",
+      "org-1/s-1/3/7-abc.gz",
+      new Uint8Array([1])
+    );
+    expect(result).toBe("uploaded");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(lastCall().init.method).toBe("POST");
+  });
+
+  it("still uploads when the probe itself fails", async () => {
+    fetchMock
+      .mockRejectedValueOnce(new TypeError("Load failed"))
+      .mockRejectedValueOnce(new TypeError("Load failed"))
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    await expect(
+      ensureReplayObject("jwt-1", "org-1/s-1/3/7-abc.gz", new Uint8Array([1]))
+    ).resolves.toBe("uploaded");
+    expect(lastCall().init.method).toBe("POST");
   });
 });

@@ -298,7 +298,7 @@ pub const EXTERNAL_CLI_SOURCES: &[ExternalCliSourceSpec] = &[
     ),
     source(
         "cursor_cli",
-        "Cursor CLI",
+        "Cursor",
         "cursor",
         "cursor-agent",
         &[],
@@ -323,7 +323,7 @@ pub const EXTERNAL_CLI_SOURCES: &[ExternalCliSourceSpec] = &[
     ),
     source(
         "kimi",
-        "Kimi",
+        "Kimi Code CLI",
         "kimi",
         "kimi",
         &[],
@@ -485,6 +485,17 @@ pub const EXTERNAL_CLI_SOURCES: &[ExternalCliSourceSpec] = &[
         &[],
         "trae-cli interactive",
         "trae-cli",
+        false,
+        &[],
+    ),
+    source(
+        "deepseek_harness",
+        "DeepSeek Harness",
+        "deepseek",
+        "dsh",
+        &[],
+        "dsh --profile tui",
+        "dsh",
         false,
         &[],
     ),
@@ -829,6 +840,14 @@ mod tests {
             .expect("Trae CLI source");
         assert_eq!(trae.detect_cmd, "trae-cli");
         assert_eq!(trae.launch_cmd, "trae-cli interactive");
+
+        let deepseek = EXTERNAL_CLI_SOURCES
+            .iter()
+            .find(|source| source.source_id == "deepseek_harness")
+            .expect("DeepSeek Harness source");
+        assert_eq!(deepseek.detect_cmd, "dsh");
+        assert_eq!(deepseek.launch_cmd, "dsh --profile tui");
+        assert!(!deepseek.history_import);
 
         let qwen = EXTERNAL_CLI_SOURCES
             .iter()

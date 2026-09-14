@@ -3,14 +3,12 @@ import { useCallback } from "react";
 import type { GoToNewSessionOptions } from "@src/hooks/navigation/useAppNavigation";
 import {
   CHAT_PANEL_CREATE_TARGET,
-  CHAT_PANEL_SURFACE_KIND,
   type ChatPanelCreateTarget,
-  type ChatPanelNavigateCommand,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 interface UseSessionEntryActionsParams {
   goToNewSession: (options?: GoToNewSessionOptions) => void;
-  navigateChatPanel: (command: ChatPanelNavigateCommand) => void;
+  resetChatPanelSessionSurface: () => void;
   openNewChatTab: () => void;
   setChatPanelCreateTarget: (target: ChatPanelCreateTarget) => void;
 }
@@ -22,13 +20,13 @@ interface UseSessionEntryActionsResult {
 export function openNewChatFromSidebar(
   {
     goToNewSession,
-    navigateChatPanel,
+    resetChatPanelSessionSurface,
     openNewChatTab,
     setChatPanelCreateTarget,
   }: UseSessionEntryActionsParams,
   options?: GoToNewSessionOptions
 ): void {
-  navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+  resetChatPanelSessionSurface();
   setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.AGENT_SESSION);
   goToNewSession(options);
   openNewChatTab();
@@ -36,7 +34,7 @@ export function openNewChatFromSidebar(
 
 export function useSessionEntryActions({
   goToNewSession,
-  navigateChatPanel,
+  resetChatPanelSessionSurface,
   openNewChatTab,
   setChatPanelCreateTarget,
 }: UseSessionEntryActionsParams): UseSessionEntryActionsResult {
@@ -45,7 +43,7 @@ export function useSessionEntryActions({
       openNewChatFromSidebar(
         {
           goToNewSession,
-          navigateChatPanel,
+          resetChatPanelSessionSurface,
           openNewChatTab,
           setChatPanelCreateTarget,
         },
@@ -54,7 +52,7 @@ export function useSessionEntryActions({
     },
     [
       goToNewSession,
-      navigateChatPanel,
+      resetChatPanelSessionSurface,
       openNewChatTab,
       setChatPanelCreateTarget,
     ]

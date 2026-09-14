@@ -12,9 +12,9 @@
  * Size tokens for sm/md are sourced from CompoundPill/config to stay in sync
  * with the CompoundPill segment dimensions.
  */
-import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { forwardRef, useCallback, useState } from "react";
 
+import Button from "@src/components/Button";
 import {
   PILL_CONTROL_ACTIVE_SURFACE_CLASS,
   PILL_CONTROL_HOVER_CLASS,
@@ -25,6 +25,7 @@ import {
 } from "@src/components/CompoundPill/config";
 import Tooltip, { type TooltipPosition } from "@src/components/Tooltip";
 import type { BareControlAppearance } from "@src/components/controlAppearance";
+import { ArrowDown01Icon, ArrowUp01Icon, HugeiconsIcon } from "@src/icons";
 
 // ── Size variants ────────────────────────────────────────────────────────────
 // "sm" — h-[28px] px-3 text-[12px]  14px icon  (toolbar pills: ModePill, RunningLocationPill)
@@ -60,7 +61,17 @@ const ICON_SIZES = {
   xl: 28,
 } as const;
 
-export type SelectorPillSize = keyof typeof SIZE_CLASSES;
+type SelectorPillSize = keyof typeof SIZE_CLASSES;
+
+function resolveHorizontalPaddingClass(
+  size: SelectorPillSize,
+  leadingFlush: boolean
+): string {
+  if (!leadingFlush) return SIZE_CLASSES[size];
+  if (size === "sm") return `${PILL_SM_HEIGHT_CLASS} pl-0 pr-3 text-[12px]`;
+  if (size === "md") return "h-[32px] pl-0 pr-3 text-[14px]";
+  return SIZE_CLASSES[size];
+}
 
 interface SelectorPillContentProps {
   icon: React.ReactNode;
@@ -102,12 +113,19 @@ const SelectorPillContent: React.FC<SelectorPillContentProps> = ({
       className={`inline-flex h-full min-w-0 items-center ${label && !textOnly ? GAP_CLASSES[size] : ""}`}
     >
       {!textOnly && (
+        // `leading-none` on the icon slot and its inner spans is load-bearing,
+        // not cosmetic: a caller's icon is usually an inline <svg>, whose line
+        // box reserves descender space it never draws into. With the swap
+        // below hiding that span on hover and revealing an absolutely
+        // positioned chevron, the leftover line box shifts the pill's content
+        // baseline a sub-pixel each way — the icon visibly shakes on hover.
+        // Zeroing the line height removes the phantom space entirely.
         <span
-          className={`relative inline-flex shrink-0 items-center justify-center ${ICON_CONTAINER_CLASSES[size]}`}
+          className={`relative inline-flex shrink-0 items-center justify-center leading-none ${ICON_CONTAINER_CLASSES[size]}`}
         >
           {trailingChevron ? (
             <span
-              className={`inline-flex items-center justify-center ${iconColor}`}
+              className={`inline-flex items-center justify-center leading-none ${iconColor}`}
             >
               {icon}
             </span>
@@ -115,25 +133,34 @@ const SelectorPillContent: React.FC<SelectorPillContentProps> = ({
             <>
               {icon !== null && (
                 <span
-                  className={`${active ? "hidden" : "group-hover/pill:hidden"} inline-flex items-center justify-center ${iconColor}`}
+                  // The active branch must not also carry `inline-flex`:
+                  // Tailwind v4 emits display utilities in alphabetical order,
+                  // so `.inline-flex` lands after `.hidden` at equal
+                  // specificity and would win, leaving the rest icon painted
+                  // under the absolutely positioned chevron.
+                  className={`${active ? "hidden" : "inline-flex group-hover/pill:hidden"} items-center justify-center leading-none ${iconColor}`}
                 >
                   {icon}
                 </span>
               )}
               {active ? (
-                <ChevronUp
+                <HugeiconsIcon
+                  icon={ArrowUp01Icon}
+                  data-icon="chevron-up"
                   size={iconSize}
                   strokeWidth={1.75}
                   className={`absolute block ${chevronColor}`}
                 />
               ) : hoverIcon ? (
                 <span
-                  className={`absolute hidden items-center justify-center ${chevronColor} group-hover/pill:flex`}
+                  className={`absolute hidden items-center justify-center leading-none ${chevronColor} group-hover/pill:flex`}
                 >
                   {hoverIcon}
                 </span>
               ) : (
-                <ChevronDown
+                <HugeiconsIcon
+                  icon={ArrowDown01Icon}
+                  data-icon="chevron-down"
                   size={iconSize}
                   strokeWidth={1.75}
                   className={`absolute hidden ${chevronColor} group-hover/pill:block`}
@@ -164,9 +191,19 @@ const SelectorPillContent: React.FC<SelectorPillContentProps> = ({
           className={`inline-flex shrink-0 items-center justify-center ${chevronColor} ${chevronClassName ?? ""}`}
         >
           {active ? (
-            <ChevronUp size={14} strokeWidth={2} />
+            <HugeiconsIcon
+              icon={ArrowUp01Icon}
+              data-icon="chevron-up"
+              size={14}
+              strokeWidth={2}
+            />
           ) : (
-            <ChevronDown size={14} strokeWidth={2} />
+            <HugeiconsIcon
+              icon={ArrowDown01Icon}
+              data-icon="chevron-down"
+              size={14}
+              strokeWidth={2}
+            />
           )}
         </span>
       )}
@@ -174,7 +211,7 @@ const SelectorPillContent: React.FC<SelectorPillContentProps> = ({
   );
 };
 
-export interface SelectorPillProps {
+interface SelectorPillProps {
   /** Icon shown at rest (before hover). Pass null to show nothing at rest. */
   icon: React.ReactNode;
   /** Label text */
@@ -195,6 +232,8 @@ export interface SelectorPillProps {
   tooltipMouseEnterDelay?: number;
   /** Whether the pill is in an open/active state */
   active?: boolean;
+  /** Color treatment for the open/active state. */
+  activeTone?: "primary" | "neutral";
   /** Render label in danger color to signal a missing required selection */
   danger?: boolean;
   /** Size variant */
@@ -222,6 +261,8 @@ export interface SelectorPillProps {
   labelStyle?: React.CSSProperties;
   dataTestId?: string;
   disabled?: boolean;
+  /** Drop left padding so the icon lines up with composer editor text. */
+  leadingFlush?: boolean;
 }
 
 export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
@@ -237,6 +278,7 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
       tooltipPosition = "top",
       tooltipMouseEnterDelay = 400,
       active = false,
+      activeTone = "primary",
       danger = false,
       size = "sm",
       appearance = "default",
@@ -257,47 +299,53 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
       labelStyle,
       dataTestId,
       disabled,
+      leadingFlush = false,
     },
     ref
   ) => {
     const idleColor = "text-text-1";
+    const activeColor = activeTone === "neutral" ? idleColor : "text-primary-6";
     const labelColor = danger
       ? "text-primary-6"
       : active
-        ? "text-primary-6"
+        ? activeColor
         : idleColor;
     const iconSize = ICON_SIZES[size];
     const iconColor = danger ? "text-primary-6" : idleColor;
     const chevronColor = danger
       ? "text-primary-6"
       : active
-        ? "text-primary-6"
+        ? activeColor
         : idleColor;
     const appearanceClasses =
       appearance === "bare"
         ? ""
         : active
           ? PILL_CONTROL_ACTIVE_SURFACE_CLASS
-          : PILL_CONTROL_HOVER_CLASS;
+          : disabled
+            ? "hover:bg-surface-hover!"
+            : PILL_CONTROL_HOVER_CLASS;
 
     // Controlled tooltip visibility so that opening the dropdown (active=true)
     // immediately hides the tooltip instead of leaving it covering the panel.
     // We track hover/focus intent only; the effective visibility is gated on
     // `active` so no effect is needed to re-hide when the pill activates.
     const [hoverIntent, setHoverIntent] = useState(false);
-    const tooltipVisible = hoverIntent && !active;
-    const handleTooltipVisibleChange = useCallback((next: boolean) => {
+    const tooltipOpen = hoverIntent && !active;
+    const handleTooltipOpenChange = useCallback((next: boolean) => {
       setHoverIntent(next);
     }, []);
 
     const buttonSizeClass = label
-      ? SIZE_CLASSES[size]
+      ? resolveHorizontalPaddingClass(size, leadingFlush)
       : "h-[28px] w-[28px] justify-center px-0";
 
     const button = (
-      <button
+      <Button
+        layout="custom"
+        appearance="custom"
         ref={ref}
-        type="button"
+        htmlType="button"
         onClick={onClick}
         onMouseDown={onMouseDown}
         onMouseEnter={onMouseEnter}
@@ -328,7 +376,7 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
           iconSize={iconSize}
           labelStyle={labelStyle}
         />
-      </button>
+      </Button>
     );
 
     if (tooltip) {
@@ -337,8 +385,8 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
           content={tooltip}
           position={tooltipPosition}
           mouseEnterDelay={tooltipMouseEnterDelay}
-          popupVisible={tooltipVisible}
-          onVisibleChange={handleTooltipVisibleChange}
+          open={tooltipOpen}
+          onOpenChange={handleTooltipOpenChange}
           framedPanel={tooltipFramed}
           framedPanelWide={tooltipFramedWide}
         >

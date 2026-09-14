@@ -31,7 +31,7 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-vi.mock("@src/hooks/ui", () => ({
+vi.mock("@src/hooks/ui/useRefreshSpin", () => ({
   useRefreshSpin: (onRefresh: () => void) => ({
     spinClass: undefined,
     handleClick: onRefresh,
@@ -106,6 +106,11 @@ vi.mock("@src/modules/shared/layouts/blocks", () => ({
     iconStrokeWidth: 1.75,
   },
   STAT_GRID_TOKENS: { cols3: "", cols4: "" },
+}));
+
+vi.mock("@src/components/Placeholder", () => ({
+  Placeholder: ({ variant, title }: { variant: string; title?: string }) =>
+    createElement("div", { "data-testid": `placeholder-${variant}` }, title),
 }));
 
 vi.mock("@src/modules/shared/layouts/SectionLayout", () => ({

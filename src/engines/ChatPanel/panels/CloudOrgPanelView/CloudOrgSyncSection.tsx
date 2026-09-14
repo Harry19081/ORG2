@@ -13,12 +13,11 @@
  * passed in, rendered, or copied.
  */
 import type { TFunction } from "i18next";
-import { UsersRound } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 
-import Avatar from "@src/components/Avatar";
 import AvatarChip from "@src/components/AvatarChip";
 import Button from "@src/components/Button";
+import PersonAvatar from "@src/components/PersonAvatar";
 import Select from "@src/components/Select";
 import type { CloudCapabilities } from "@src/features/Org2Cloud/org2CloudCapabilities";
 import type { RepoSyncCoverage } from "@src/features/Org2Cloud/org2CloudSyncCoverage";
@@ -27,6 +26,8 @@ import type {
   SyncJournalMember,
 } from "@src/features/Org2Cloud/org2CloudSyncJournal";
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import { HugeiconsIcon, Refresh04Icon, UsersRoundIcon } from "@src/icons";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SectionContainer,
@@ -91,7 +92,7 @@ function CoverageRow({ t, row }: CoverageRowProps) {
     >
       <div className="flex items-center justify-end gap-2.5">
         <span
-          className="text-[12px] tabular-nums text-text-3"
+          className="text-[12px] text-text-3 tabular-nums"
           data-testid="cloud-org-sync-coverage-repo-count"
         >
           {`${row.synced.toLocaleString()}/${row.syncable.toLocaleString()}`}
@@ -110,7 +111,7 @@ function CoverageRow({ t, row }: CoverageRowProps) {
           />
         </div>
         <span
-          className="w-9 shrink-0 text-right text-[12px] font-medium tabular-nums text-text-2"
+          className="w-9 shrink-0 text-right text-[12px] font-medium text-text-2 tabular-nums"
           data-testid="cloud-org-sync-coverage-repo-percent"
         >
           {`${row.percent}%`}
@@ -136,10 +137,6 @@ function formatAbsolute(atMs: number | null): string {
 
 function memberDisplayName(member: SyncJournalMember): string {
   return member.displayName?.trim() || member.userId;
-}
-
-function memberInitial(member: SyncJournalMember): string {
-  return memberDisplayName(member).slice(0, 1).toLocaleUpperCase();
 }
 
 function memberFilterValue(userId: string): string {
@@ -182,7 +179,7 @@ function SyncLogMemberPill({ member }: { member: SyncJournalMember }) {
       <AvatarChip
         size="xs"
         avatarSize={14}
-        avatarFallback={memberInitial(member)}
+        avatarName={displayName}
         label={displayName}
         labelClassName="max-w-36"
       />
@@ -248,17 +245,19 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
       {
         value: ALL_MEMBERS_FILTER_VALUE,
         label: t("cloud.sidebar.everyone"),
-        icon: <UsersRound size={14} />,
+        icon: (
+          <HugeiconsIcon
+            icon={UsersRoundIcon}
+            data-icon="users-round"
+            size={14}
+          />
+        ),
         dataTestId: "cloud-org-sync-logs-member-all",
       },
       ...memberOptions.map((member) => ({
         value: memberFilterValue(member.userId),
         label: member.displayName,
-        icon: (
-          <Avatar size={14}>
-            <span aria-hidden>{member.displayName.slice(0, 1)}</span>
-          </Avatar>
-        ),
+        icon: <PersonAvatar size={14} name={member.displayName} />,
         dataTestId: `cloud-org-sync-logs-member-${member.userId}`,
       })),
     ],
@@ -269,6 +268,8 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
     await copyText(formatSyncJournalForCopy(visibleEntries));
   }, [visibleEntries]);
   const { copied, handleCopy } = useCopyCheck(copyLog);
+  const { spinClass: syncSpinClass, handleClick: handleSyncClick } =
+    useRefreshSpin(status.runSync, status.running);
 
   const schemaLabel =
     status.schemaStatus === "checking"
@@ -339,7 +340,6 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
         <SectionRow
           dataTestId="cloud-org-sync-manual"
           label={t("cloud.orgPanel.sync.manualLabel")}
-          align="start"
         >
           {/* Outcome note LEADS the button: the row is right-aligned, so the
           button stays pinned to the edge and the note grows leftward instead
@@ -368,8 +368,17 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
               variant="primary"
               disabled={status.running}
               loading={status.running}
+              loadingSpinIcon
+              icon={
+                <HugeiconsIcon
+                  icon={Refresh04Icon}
+                  data-icon="refresh-cw"
+                  size={14}
+                  className={syncSpinClass}
+                />
+              }
               data-testid="cloud-org-sync-run"
-              onClick={status.runSync}
+              onClick={handleSyncClick}
             >
               {status.running
                 ? t("cloud.orgPanel.sync.manualRunning")
@@ -426,7 +435,7 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
               dataTestId="cloud-org-sync-account"
               label={t("cloud.orgPanel.sync.signedInLabel")}
             >
-              <span className="break-all text-[12px] text-text-2">
+              <span className="text-[12px] break-all text-text-2">
                 {status.userId}
               </span>
             </SectionRow>
@@ -627,7 +636,9 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
                         </span>
                       </>
                     ) : null}
-                    <span className="min-w-0 break-words">{entry.message}</span>
+                    <span className="min-w-0 wrap-break-word">
+                      {entry.message}
+                    </span>
                   </div>
                 </li>
               ))}

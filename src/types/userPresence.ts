@@ -93,10 +93,6 @@ export const PRESENCE_STANCES: PresenceStance[] = [
   PRESENCE_STANCE.AUTONOMOUS,
 ];
 
-export function isPresenceStance(value: string): value is PresenceStance {
-  return (PRESENCE_STANCES as readonly string[]).includes(value);
-}
-
 /** Full per-mode record: prompt identity + runtime behavior policy. */
 export interface PresenceModeSpec {
   /** "online" | "invisible" | "away" | "role:<slug>" */
@@ -257,7 +253,7 @@ export function computeBackAtMs(
 /**
  * Picker palette for custom-role icons. Stored as a string id so the
  * persisted shape doesn't depend on a component reference. The pill /
- * dropdown look up the actual lucide component via `CUSTOM_ROLE_ICONS`
+ * dropdown look up the actual glyph via `CUSTOM_ROLE_ICONS`
  * in `src/scaffold/NavigationSidebar/blocks/customRoleIcons.ts`.
  */
 export type CustomRoleIconId =

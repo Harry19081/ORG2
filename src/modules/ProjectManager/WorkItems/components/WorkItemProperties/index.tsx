@@ -1,4 +1,3 @@
-import { ListChevronsUpDown } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -12,7 +11,11 @@ import Button from "@src/components/Button";
 import { pillControlStateClass } from "@src/components/CompoundPill/config";
 import { DROPDOWN_ITEM } from "@src/components/Dropdown/tokens";
 import { usePropertyDropdownDirection } from "@src/components/PropertyField/PropertyDropdownDirection";
+import type { FieldRowVariant } from "@src/components/PropertyField/PropertyFieldEditable";
+import { WORKSTATION_TRAIL_CONTENT } from "@src/config/workstation/tokens";
+import { HugeiconsIcon, ListChevronsDownUpIcon } from "@src/icons";
 import { DEFAULT_LABELS } from "@src/modules/ProjectManager/config/manage";
+import { WorkstationTrailSection } from "@src/modules/shared/layouts/blocks";
 import type { ContextMenuItem } from "@src/types/core/shared";
 import type {
   WorkItemPriority,
@@ -50,39 +53,30 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 }) => {
   if (variant === "workstation-trail") {
     return (
-      <section className="contents">
+      <section className={WORKSTATION_TRAIL_CONTENT.section}>
         {!hideTitle ? (
-          <div className="mt-1 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-text-3">
-            {title}
-          </div>
+          <div className={WORKSTATION_TRAIL_CONTENT.sectionLabel}>{title}</div>
         ) : null}
-        <div className="flex w-full flex-col [&>*]:w-full">{children}</div>
+        <div
+          className={`${WORKSTATION_TRAIL_CONTENT.rows} flex w-full flex-col *:w-full`}
+        >
+          {children}
+        </div>
       </section>
     );
   }
 
   return (
-    <section className="overflow-visible rounded-lg border border-solid border-border-2 bg-[var(--cm-editor-background,var(--color-bg-1))] shadow-[0_2px_6px_rgb(0_0_0_/_4%)]">
+    <section className="overflow-visible rounded-lg border border-solid border-border-2 bg-(--cm-editor-background,var(--color-bg-1)) shadow-[0_2px_6px_rgb(0_0_0/4%)]">
       <div className="flex h-10 items-center px-4">
         <span className="text-[13px] font-medium text-text-1">{title}</span>
       </div>
-      <div className="flex w-full flex-col gap-0.5 pb-2 [&>*]:w-full">
+      <div className="flex w-full flex-col gap-0.5 pb-2 *:w-full">
         {children}
       </div>
     </section>
   );
 };
-
-export const WORK_ITEM_PROPERTY_ESSENTIAL_FIELDS: WorkItemPropertyFieldKey[] = [
-  "project",
-  "status",
-  "priority",
-];
-
-export const WORK_ITEM_PROPERTY_INLINE_FIELDS: WorkItemPropertyFieldKey[] = [
-  "status",
-  "priority",
-];
 
 /**
  * Canonical property summary for thread-style Work Item surfaces.
@@ -95,7 +89,6 @@ export const WORK_ITEM_THREAD_PROPERTY_FIELDS: WorkItemPropertyFieldKey[] = [
   "status",
   "priority",
   "assignee",
-  "reviewer",
   "date",
 ];
 
@@ -104,7 +97,6 @@ const DEFAULT_VISIBLE_FIELDS: WorkItemPropertyFieldKey[] = [
   "status",
   "priority",
   "assignee",
-  "reviewer",
   "milestone",
   "startDate",
   "date",
@@ -123,6 +115,7 @@ const CONTEXT_MENU_FIELD_IDS: Partial<
 };
 
 const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
+  statusOrgId,
   workItem,
   onUpdate,
   availableProjects = [],
@@ -134,11 +127,10 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
     color: label.color,
   })),
   availableMembers = [],
-  availableAgents = [],
-  availableOrgs = [],
   projectIconType,
   projectReadonly = false,
   assigneeReadonly = false,
+  labelsReadonly = false,
   showTime = true,
   externalStatusConfig,
   externalAssigneeConfig,
@@ -146,6 +138,7 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
   pillLayout = "nowrap",
   visibleFields = DEFAULT_VISIBLE_FIELDS,
   showMoreMenu = false,
+  showSchedule = true,
   panelVariant = "cards",
 }) => {
   const { t } = useTranslation("projects");
@@ -197,9 +190,6 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
   const handlers = useWorkItemPropertyHandlers({
     workItem,
     onUpdate,
-    availableMembers,
-    availableAgents,
-    availableOrgs,
     closePicker,
     t,
   });
@@ -230,8 +220,7 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
       if (action === "assignee") {
         const assignee = availableMembers.find((member) => member.id === value);
         handlers.handleAssigneeChange(
-          value === "none" ? null : (assignee ?? null),
-          value === "none" ? undefined : "human"
+          value === "none" ? null : (assignee ?? null)
         );
         return;
       }
@@ -326,6 +315,7 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
             visibleFields={visibleFieldSet}
           />
           <StatusPrioritySection
+            statusOrgId={statusOrgId}
             workItem={workItem}
             openPicker={openPicker}
             togglePicker={togglePicker}
@@ -340,8 +330,6 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
             openPicker={openPicker}
             togglePicker={togglePicker}
             availableMembers={availableMembers}
-            availableAgents={availableAgents}
-            availableOrgs={availableOrgs}
             handlers={handlers}
             t={t}
             fieldVariant={fieldVariant}
@@ -368,6 +356,7 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
               handlers={handlers}
               t={t}
               fieldVariant={fieldVariant}
+              readonly={labelsReadonly}
             />
           )}
           {showMoreMenu && moreMenuItems.length > 0 && (
@@ -376,10 +365,16 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
               size="small"
               shape="circle"
               iconOnly
-              icon={<ListChevronsUpDown size={DROPDOWN_ITEM.iconSize} />}
+              icon={
+                <HugeiconsIcon
+                  icon={ListChevronsDownUpIcon}
+                  data-icon="list-chevrons-up-down"
+                  size={DROPDOWN_ITEM.iconSize}
+                />
+              }
               onClick={handleMoreClick}
               aria-label={t("workItems.contextMenu.moreProperties")}
-              className={`!h-7 !w-7 !min-w-7 !rounded-full !border !border-solid !border-border-2 !p-0 !text-text-2 ${pillControlStateClass(Boolean(moreMenuPosition))}`}
+              className={`h-7! w-7! min-w-7! rounded-full! border! border-solid! border-border-2! p-0! text-text-2! ${pillControlStateClass(Boolean(moreMenuPosition))}`}
             />
           )}
         </div>
@@ -394,6 +389,9 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
       </section>
     );
   }
+
+  const propertyFieldVariant: FieldRowVariant =
+    panelVariant === "workstation-trail" ? "workstation-trail" : "row";
 
   const propertyGroups = (
     <>
@@ -412,15 +410,19 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
           t={t}
           projectIconType={projectIconType}
           projectReadonly={projectReadonly}
+          fieldVariant={propertyFieldVariant}
           visibleFields={visibleFieldSet}
         />
         <StatusPrioritySection
+          statusOrgId={statusOrgId}
           workItem={workItem}
           openPicker={openPicker}
           togglePicker={togglePicker}
           handlers={handlers}
           externalStatusConfig={externalStatusConfig}
           t={t}
+          fieldVariant={propertyFieldVariant}
+          visibleFields={visibleFieldSet}
         />
         <DatesScheduleSection
           workItem={workItem}
@@ -429,16 +431,40 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
           handlers={handlers}
           showTime={showTime}
           t={t}
+          fieldVariant={propertyFieldVariant}
+          visibleFields={visibleFieldSet}
         />
-        <LabelsSection
+        {visibleFieldSet.has("labels") ? (
+          labelsReadonly ? (
+            <WorkstationTrailSection title={t("workItems.properties.labels")}>
+              <LabelsSection
+                workItem={workItem}
+                openPicker={openPicker}
+                togglePicker={togglePicker}
+                availableLabels={availableLabels}
+                handlers={handlers}
+                t={t}
+                fieldVariant={propertyFieldVariant}
+                readonly
+              />
+            </WorkstationTrailSection>
+          ) : (
+            <LabelsSection
+              workItem={workItem}
+              openPicker={openPicker}
+              togglePicker={togglePicker}
+              availableLabels={availableLabels}
+              handlers={handlers}
+              t={t}
+              fieldVariant={propertyFieldVariant}
+            />
+          )
+        ) : null}
+        <DelegationsSection
           workItem={workItem}
-          openPicker={openPicker}
-          togglePicker={togglePicker}
-          availableLabels={availableLabels}
-          handlers={handlers}
           t={t}
+          fieldVariant={propertyFieldVariant}
         />
-        <DelegationsSection workItem={workItem} t={t} />
       </PropertyCard>
       <PropertyCard
         title={t("workItems.properties.assignment")}
@@ -449,30 +475,40 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
           openPicker={openPicker}
           togglePicker={togglePicker}
           availableMembers={availableMembers}
-          availableAgents={availableAgents}
-          availableOrgs={availableOrgs}
           handlers={handlers}
           t={t}
+          fieldVariant={propertyFieldVariant}
           assigneeReadonly={assigneeReadonly}
           externalAssigneeConfig={externalAssigneeConfig}
         />
-        {panelVariant === "cards" ? (
-          <div className="mx-4 my-2 h-px bg-border-1" />
+        {panelVariant === "cards" && showSchedule ? (
+          <>
+            <div className="mx-4 my-2 h-px bg-border-1" />
+            <ScheduleEditor
+              schedule={workItem.schedule}
+              onChange={handlers.handleScheduleChange}
+              t={t}
+            />
+          </>
         ) : null}
+      </PropertyCard>
+      {panelVariant === "workstation-trail" && showSchedule ? (
         <ScheduleEditor
           schedule={workItem.schedule}
           onChange={handlers.handleScheduleChange}
           t={t}
-          compact={panelVariant === "workstation-trail"}
+          compact
         />
-      </PropertyCard>
+      ) : null}
     </>
   );
 
   if (panelVariant === "workstation-trail") {
     return (
       <section ref={containerRef} className="min-w-0 overflow-visible">
-        <div className="flex flex-col">{propertyGroups}</div>
+        <div className={WORKSTATION_TRAIL_CONTENT.sectionList}>
+          {propertyGroups}
+        </div>
       </section>
     );
   }
@@ -482,7 +518,7 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
       ref={containerRef}
       className="flex h-full flex-col overflow-hidden p-2"
     >
-      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+      <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-col gap-2 pb-2">{propertyGroups}</div>
       </div>
     </section>

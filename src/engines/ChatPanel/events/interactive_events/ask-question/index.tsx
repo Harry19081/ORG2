@@ -43,7 +43,7 @@ import { AskQuestionHistoryBody } from "./AskQuestionHistoryChrome";
 // Types
 // ============================================
 
-export interface AskQuestionEventProps extends RawEventInput {
+interface AskQuestionEventProps extends RawEventInput {
   variant?: EventVariant;
 }
 
@@ -350,7 +350,9 @@ const QuestionHistoryBlock: React.FC<{
       <EventBlockHeader
         isCollapsed={collapsed}
         withHover={false}
-        onClick={locateEventId ? handleLocate : undefined}
+        onToggleCollapse={
+          !isSimulator && hasBody ? handleHeaderClick : undefined
+        }
         onNavigate={locateEventId ? handleLocate : undefined}
         onMouseEnter={handleHeaderMouseEnter}
         onMouseLeave={handleHeaderMouseLeave}
@@ -359,9 +361,7 @@ const QuestionHistoryBlock: React.FC<{
           icon={STATUS_ICON[status]}
           isCollapsed={collapsed}
           isHeaderHovered={isHeaderHovered}
-          onToggle={isSimulator ? undefined : handleHeaderClick}
           hasContent={hasBody && !isSimulator}
-          revealChevronOnIconHoverOnly={Boolean(locateEventId)}
         />
         <EventBlockHeaderTitle
           isLoading={status === "pending" && showActiveEventPainting}
@@ -396,7 +396,7 @@ const QuestionHistoryBlock: React.FC<{
                     </div>
                   ) : null}
                   {status === "answered" && pair.answers.length === 0 ? (
-                    <div className="chat-block-title italic text-text-3">
+                    <div className="chat-block-title text-text-3 italic">
                       {t("chat.noAnswerProvided")}
                     </div>
                   ) : null}

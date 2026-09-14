@@ -8,22 +8,14 @@ import { allAgentDefsAtom } from "@src/modules/MainApp/AgentOrgs/store/builtInAg
 import { router } from "@src/router";
 import { openWorkItemInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { reposAtom, selectedRepoIdAtom } from "@src/store/repo/atoms";
-import {
-  CHAT_PANEL_CONTENT_MODE,
-  activeStationChatVisibleAtom,
-  chatPanelContentModeAtom,
-  chatPanelMaximizedAtom,
-  chatPanelSelectedWorkItemAtom,
-  chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   simulatorSelectedAppAtom,
   stationModeAtom,
 } from "@src/store/ui/simulatorAtom";
-import {
-  editorPanelPositionPersistAtom,
-  workStationEditorSecondaryCollapsedPersistAtom,
-} from "@src/store/ui/workStationAtom";
+import "@src/store/ui/workStationLayout";
 import { activeHostAtom } from "@src/store/workstation";
 import type { AgentConfigTabVariant } from "@src/store/workstation/tabs";
 import {
@@ -136,8 +128,6 @@ export function createNavigationHelpers(store: E2EStore) {
       store.set(stationModeAtom, "my-station");
       store.set(chatPanelMaximizedAtom, false);
       store.set(activeStationChatVisibleAtom, "my-station", false);
-      store.set(workStationEditorSecondaryCollapsedPersistAtom, false);
-      store.set(editorPanelPositionPersistAtom, "bottom");
       const rustAgentType = getRustAgentType(agentId);
       const variant: AgentConfigTabVariant =
         rustAgentType === "os"
@@ -191,8 +181,6 @@ export function createNavigationHelpers(store: E2EStore) {
       store.set(stationModeAtom, "my-station");
       store.set(chatPanelMaximizedAtom, false);
       store.set(activeStationChatVisibleAtom, "my-station", false);
-      store.set(workStationEditorSecondaryCollapsedPersistAtom, false);
-      store.set(editorPanelPositionPersistAtom, "bottom");
       const orgs = await rpc.agentOrgs.orgs.list();
       const orgSnapshot = orgs.find((org) => org.id === orgId);
       const tab = createAgentConfigTab({
@@ -239,7 +227,6 @@ export function createNavigationHelpers(store: E2EStore) {
       store.set(stationModeAtom, "my-station");
       store.set(chatPanelMaximizedAtom, true);
       store.set(chatWidthAtom, 560);
-      store.set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
       const selection = {
         workItem: enrichedWorkItemToUI(workItem),
         projectId: project?.slug ?? projectSlug,
@@ -247,9 +234,8 @@ export function createNavigationHelpers(store: E2EStore) {
         projectSlug,
         shortId,
       };
-      store.set(chatPanelSelectedWorkItemAtom, selection);
-      // The active tab owns the visible surface since the launchpad rework;
-      // a bare selection write no longer switches away from the start page.
+      // The active tab owns the visible surface; opening the keyed tab both
+      // stores the payload and switches away from the start page.
       store.set(openWorkItemInChatPanelTabAtom, selection);
       await new Promise((resolve) => window.setTimeout(resolve, 100));
       return { ok: true };

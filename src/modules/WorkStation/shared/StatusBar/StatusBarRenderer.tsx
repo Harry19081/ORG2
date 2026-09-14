@@ -14,7 +14,7 @@ import React, { memo } from "react";
 import {
   activeStatusBarCallbacksAtom,
   activeStatusBarStateAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/statusBarAtoms";
 
 import BrowserStatusBar from "./BrowserStatusBar";
 import { EditorStatusBar } from "./EditorStatusBar";
@@ -25,7 +25,7 @@ interface StatusBarRendererProps {
 }
 
 const FLOATING_STATUS_BAR_CLASS =
-  "mx-2 !w-auto self-stretch rounded-lg border border-border-1 bg-[var(--cm-editor-background,var(--color-bg-1))] px-2 shadow-[0_2px_8px_rgb(0_0_0/0.03)]";
+  "mx-2 w-auto! self-stretch rounded-lg border border-border-1 bg-(--cm-editor-background,var(--color-bg-1)) px-2 shadow-[0_2px_8px_rgb(0_0_0/0.03)]";
 
 export const StatusBarRenderer: React.FC<StatusBarRendererProps> = memo(
   ({ floating = false }) => {
@@ -74,10 +74,7 @@ export const StatusBarRenderer: React.FC<StatusBarRendererProps> = memo(
         cursor={state.cursor}
         filePath={state.filePath || undefined}
         totalLines={state.totalLines}
-        repoName={state.repoName}
-        branchName={state.branchName}
         commitInfo={state.commitInfo}
-        lspStatus={state.lspStatus}
         onRepoClick={callbacks.onRepoClick}
         onBranchClick={callbacks.onBranchClick}
         onWorktreeClick={callbacks.onWorktreeClick}

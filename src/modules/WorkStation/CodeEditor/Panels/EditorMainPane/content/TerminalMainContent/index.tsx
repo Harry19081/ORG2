@@ -1,21 +1,29 @@
+// This type-only import is erased at build time, so the value import below
+// remains lazy and xterm is still loaded only when the terminal mounts.
+import type { TerminalCoreProps } from "@/src/engines/TerminalCore";
 import {
-  type TerminalCoreProps,
   type UseTerminalStateReturn,
   getTerminalDisplayTitle,
-} from "@/src/engines/TerminalCore/exports";
+} from "@/src/engines/TerminalCore/types";
 import { useAtomValue, useSetAtom } from "jotai";
-import { Trash2 } from "lucide-react";
 import React, { Suspense, memo, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { Placeholder } from "@src/components/Placeholder";
+import { ProcessStopButton } from "@src/components/ProcessStopButton";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import {
   FileHeader,
   TerminalInfoButton,
   TerminalNewSessionSplitButton,
 } from "@src/modules/WorkStation/shared";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import {
+  miniTerminalSuppressedIdsAtom,
+  releaseMiniTerminalSessionAtom,
+} from "@src/store/ui/miniTerminalAtom";
 import {
   clearTerminalTargetReferencesAtom,
   codeEditorTerminalTargetAtom,
@@ -23,11 +31,9 @@ import {
 
 import { resolveRestoredPtySessionId } from "./restorePtySelection";
 
-const TerminalCore = React.lazy(
-  () => import("@/src/engines/TerminalCore/exports")
-);
+const TerminalCore = React.lazy(() => import("@/src/engines/TerminalCore"));
 const TerminalReadOnly = React.lazy(
-  () => import("@src/components/TerminalReadOnly")
+  () => import("@src/engines/SessionCore/components/TerminalReadOnly")
 );
 
 interface TerminalMainContentProps {
@@ -49,6 +55,25 @@ const TerminalMainContent: React.FC<TerminalMainContentProps> = ({
   const clearTerminalTargetReferences = useSetAtom(
     clearTerminalTargetReferencesAtom
   );
+  // Sessions the trail's docked terminal currently mounts. One PTY can only
+  // have one xterm, so this pane skips their mount and offers to take them
+  // back instead.
+  const suppressedSessionIds = useAtomValue(miniTerminalSuppressedIdsAtom);
+  const releaseMiniTerminalSession = useSetAtom(releaseMiniTerminalSessionAtom);
+  const renderSuppressedSession = useCallback(
+    (sessionId: string) => (
+      <Placeholder
+        variant="empty"
+        fillParentHeight
+        title={t("common:git.rail.sessionInMiniTerminal")}
+        action={{
+          label: t("common:git.rail.returnFromMiniTerminal"),
+          onClick: () => releaseMiniTerminalSession(sessionId),
+        }}
+      />
+    ),
+    [releaseMiniTerminalSession, t]
+  );
 
   const activePtySession = terminalState.activeSession;
   const terminalKindLabel =
@@ -65,6 +90,12 @@ const TerminalMainContent: React.FC<TerminalMainContentProps> = ({
   const isAgentTerminal = terminalTarget?.kind === "agent";
   const terminalPid = activePtySession?.pid;
   const terminalShell = activePtySession?.shell ?? "zsh";
+  const renderReadOnlySession = useCallback(
+    (agentSessionId: string) => (
+      <TerminalReadOnly agentSessionId={agentSessionId} />
+    ),
+    []
+  );
 
   useEffect(() => {
     const restoredSessionId = resolveRestoredPtySessionId(
@@ -128,10 +159,14 @@ const TerminalMainContent: React.FC<TerminalMainContentProps> = ({
         {!isAgentTerminal && (
           <>
             <span className="flex items-center gap-px">
-              <TerminalNewSessionSplitButton
-                onNewTerminal={handleNewTerminal}
-                splitMainWidth={24}
-              />
+              <ToolbarTooltip
+                label={t("controlTower.sidebar.newTerminal", "New Terminal")}
+              >
+                <TerminalNewSessionSplitButton
+                  onNewTerminal={handleNewTerminal}
+                  splitMainWidth={24}
+                />
+              </ToolbarTooltip>
             </span>
             <span
               className="pointer-events-none mx-1 h-4 w-px shrink-0 bg-border-2"
@@ -140,18 +175,36 @@ const TerminalMainContent: React.FC<TerminalMainContentProps> = ({
           </>
         )}
         <span className="flex items-center gap-px">
-          <Button
-            htmlType="button"
-            variant="tertiary"
-            size="small"
-            iconOnly
-            title={t("tooltips.killTerminal")}
-            onClick={handleKillTerminal}
-            icon={<Trash2 size={14} />}
-          />
+          <ToolbarTooltip
+            label={t(
+              isAgentTerminal
+                ? "common:actions.close"
+                : "common:tooltips.killTerminal"
+            )}
+          >
+            {isAgentTerminal ? (
+              <Button
+                htmlType="button"
+                variant="tertiary"
+                size="small"
+                iconOnly
+                aria-label={t("common:actions.close")}
+                onClick={handleKillTerminal}
+                icon={
+                  <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
+                }
+              />
+            ) : (
+              <ProcessStopButton
+                label={t("common:tooltips.killTerminal")}
+                title=""
+                size="lg"
+                onClick={handleKillTerminal}
+              />
+            )}
+          </ToolbarTooltip>
           {!isAgentTerminal && (
             <TerminalInfoButton
-              title={t("common:terminology.myTerminalInfo")}
               name={displayTitle}
               pid={terminalPid}
               shell={terminalShell}
@@ -180,6 +233,9 @@ const TerminalMainContent: React.FC<TerminalMainContentProps> = ({
         repoPath={repoPath}
         backgroundColor="var(--cm-editor-background)"
         onOpenFileLink={handleOpenFileLink}
+        renderReadOnlySession={renderReadOnlySession}
+        suppressedSessionIds={suppressedSessionIds}
+        renderSuppressedSession={renderSuppressedSession}
       />
     );
 

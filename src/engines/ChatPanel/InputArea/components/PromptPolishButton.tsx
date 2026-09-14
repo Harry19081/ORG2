@@ -1,6 +1,6 @@
-import { Loader2, Sparkles } from "lucide-react";
 import React, { memo } from "react";
 
+import Button from "@src/components/Button";
 import {
   PILL_CONTROL_ACTIVE_ACCENT_CLASS,
   PILL_CONTROL_IDLE_SURFACE_CLASS,
@@ -8,6 +8,7 @@ import {
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import type { PromptPolishControl } from "@src/engines/ChatPanel/hooks/useInputArea/types";
+import { HugeiconsIcon, Loading03Icon, SparklesIcon } from "@src/icons";
 
 interface PromptPolishButtonProps {
   control: PromptPolishControl;
@@ -35,8 +36,10 @@ const PromptPolishButton: React.FC<PromptPolishButtonProps> = memo(
         : `cursor-pointer text-text-2 hover:text-text-1 ${PILL_CONTROL_IDLE_SURFACE_CLASS}`;
 
     const button = (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         aria-label={tooltip}
         aria-pressed={control.isPolished}
         disabled={isDisabled}
@@ -50,19 +53,23 @@ const PromptPolishButton: React.FC<PromptPolishButtonProps> = memo(
         }}
       >
         {control.isPolishing ? (
-          <Loader2
+          <HugeiconsIcon
+            icon={Loading03Icon}
+            data-icon="loader-2"
             size={INPUT_AREA_BUTTONS.iconSize}
             strokeWidth={2}
             className="block animate-spin"
           />
         ) : (
-          <Sparkles
+          <HugeiconsIcon
+            icon={SparklesIcon}
+            data-icon="sparkles"
             size={INPUT_AREA_BUTTONS.iconSize}
             strokeWidth={2}
             className="block"
           />
         )}
-      </button>
+      </Button>
     );
 
     return (

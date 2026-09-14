@@ -19,7 +19,9 @@ export const workstationToggleChatFocus = defineZodAction(
     category: "view",
     description: "Focus the Workstation chat panel or restore Workstation",
     params: z.object({}),
-    shortcut: getShortcutKeys("maximize_chat"),
+    get shortcut() {
+      return getShortcutKeys("maximize_chat");
+    },
     tags: ["workstation", "chat", "view"],
     examples: [
       "focus chat panel",
@@ -43,7 +45,9 @@ export const workstationToggleChatPanelVisibility = defineZodAction(
     category: "view",
     description: "Maximize Workstation or restore the Chat Panel",
     params: z.object({}),
-    shortcut: getShortcutKeys("maximize_work_station"),
+    get shortcut() {
+      return getShortcutKeys("maximize_work_station");
+    },
     tags: ["workstation", "chat", "view"],
     examples: [
       "maximize work station",
@@ -110,13 +114,61 @@ export const workstationOpenAgentStation = defineOpenStationAction(
   ["open agent station", "switch to agent station", "show agent station"]
 );
 
+function defineOpenStationWindowAction(
+  id: ActionId,
+  mode: "my-station" | "agent-station",
+  description: string,
+  message: string,
+  examples: string[]
+) {
+  return defineZodAction(
+    {
+      id,
+      category: "navigation",
+      description,
+      params: z.object({}),
+      tags: ["workstation", "station", mode, "window", "navigation"],
+      examples,
+    },
+    async () => {
+      const workStationViewService = await getWorkStationViewService();
+      const success = await workStationViewService.openStationWindow(mode);
+      return success
+        ? { success: true, message }
+        : { success: false, message: "Could not open the station window" };
+    }
+  );
+}
+
+export const workstationOpenMyStationWindow = defineOpenStationWindowAction(
+  ACTION_ID.WORKSTATION_OPEN_MY_STATION_WINDOW,
+  "my-station",
+  "Open My Station in a new window",
+  "Opened My Station in a new window",
+  ["open my station in a new window", "detach my station", "pop out my station"]
+);
+
+export const workstationOpenAgentStationWindow = defineOpenStationWindowAction(
+  ACTION_ID.WORKSTATION_OPEN_AGENT_STATION_WINDOW,
+  "agent-station",
+  "Open Agent Station in a new window",
+  "Opened Agent Station in a new window",
+  [
+    "open agent station in a new window",
+    "detach agent station",
+    "pop out agent station",
+  ]
+);
+
 export const workstationOpenKanban = defineZodAction(
   {
     id: ACTION_ID.WORKSTATION_OPEN_KANBAN,
     category: "navigation",
     description: "Open Kanban in the chat pane",
     params: z.object({}),
-    shortcut: getShortcutKeys("open_kanban"),
+    get shortcut() {
+      return getShortcutKeys("open_kanban");
+    },
     tags: ["workstation", "chat", "kanban", "navigation"],
     examples: ["open kanban", "go to kanban", "show kanban"],
   },
@@ -136,7 +188,9 @@ export const workstationToggleSidebar = defineZodAction(
     description:
       "Toggle the Workstation sidebar between collapsed and expanded",
     params: z.object({}),
-    shortcut: getShortcutKeys("toggle_workstation_sidebar"),
+    get shortcut() {
+      return getShortcutKeys("toggle_workstation_sidebar");
+    },
     tags: ["workstation", "work-station-sidebar", "tool-sidebar", "view"],
     examples: [
       "toggle work station sidebar",
@@ -181,7 +235,9 @@ export const workstationOpenFileFolderTab = defineZodAction(
     description:
       "Open the last visited regular file tab or the default File Folder tab",
     params: z.object({}),
-    shortcut: getShortcutKeys("open_file_folder_tab"),
+    get shortcut() {
+      return getShortcutKeys("open_file_folder_tab");
+    },
     tags: ["workstation", "code-editor", "file", "folder"],
     examples: ["open file folder", "go to last file", "show explorer"],
   },
@@ -202,7 +258,9 @@ export const workstationOpenSourceControlTab = defineZodAction(
     category: "navigation",
     description: "Open the Code Editor Source Control tab",
     params: z.object({}),
-    shortcut: getShortcutKeys("open_source_control_tab"),
+    get shortcut() {
+      return getShortcutKeys("open_source_control_tab");
+    },
     tags: ["workstation", "code-editor", "source-control", "git"],
     examples: ["open source control", "show git changes"],
   },
@@ -229,7 +287,9 @@ export const workstationOpenSearchSidebar = defineZodAction(
         .optional()
         .describe("Optional search query to populate"),
     }),
-    shortcut: getShortcutKeys("search_files"),
+    get shortcut() {
+      return getShortcutKeys("search_files");
+    },
     tags: ["workstation", "code-editor", "search", "sidebar"],
     examples: ["open search sidebar", "search in files", "focus search"],
   },
@@ -249,21 +309,19 @@ export const workstationCreateProject = defineZodAction(
   {
     id: ACTION_ID.WORKSTATION_CREATE_PROJECT,
     category: "navigation",
-    description: "Navigate to My Station and open the Create Project form",
+    description: "Open the Create Project form",
     params: z.object({}),
     tags: ["workstation", "project", "create", "navigation"],
     examples: ["create project", "new project", "add project"],
   },
   async () => {
-    const workStationViewService = await getWorkStationViewService();
-    await workStationViewService.openStationMode("my-station");
-    const { openCreateTargetInChatPanelStartPageAtom } =
+    const { openChatPanelCreateTargetAtom } =
       await import("@src/store/chatPanel/chatPanelTabsAtom");
     const { CHAT_PANEL_CREATE_TARGET } =
-      await import("@src/store/ui/chatPanelAtom");
+      await import("@src/store/ui/chatPanel/selectionAtoms");
     const { getInstrumentedStore } =
       await import("@src/util/core/state/instrumentedStore");
-    getInstrumentedStore().set(openCreateTargetInChatPanelStartPageAtom, {
+    getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
       target: CHAT_PANEL_CREATE_TARGET.PROJECT,
     });
     return { success: true, message: "Opened Create Project" };
@@ -274,7 +332,7 @@ export const workstationCreateWorkItem = defineZodAction(
   {
     id: ACTION_ID.WORKSTATION_CREATE_WORK_ITEM,
     category: "navigation",
-    description: "Navigate to My Station and open the Create Work Item form",
+    description: "Open the Create Work Item form",
     params: z.object({}),
     tags: ["workstation", "work-item", "create", "navigation"],
     examples: [
@@ -285,15 +343,13 @@ export const workstationCreateWorkItem = defineZodAction(
     ],
   },
   async () => {
-    const workStationViewService = await getWorkStationViewService();
-    await workStationViewService.openStationMode("my-station");
-    const { openCreateTargetInChatPanelStartPageAtom } =
+    const { openChatPanelCreateTargetAtom } =
       await import("@src/store/chatPanel/chatPanelTabsAtom");
     const { CHAT_PANEL_CREATE_TARGET } =
-      await import("@src/store/ui/chatPanelAtom");
+      await import("@src/store/ui/chatPanel/selectionAtoms");
     const { getInstrumentedStore } =
       await import("@src/util/core/state/instrumentedStore");
-    getInstrumentedStore().set(openCreateTargetInChatPanelStartPageAtom, {
+    getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
       target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
     });
     return { success: true, message: "Opened Create Work Item" };
@@ -306,7 +362,9 @@ export const workstationOpenTerminalTab = defineZodAction(
     category: "navigation",
     description: "Open the WorkStation terminal view",
     params: z.object({}),
-    shortcut: getShortcutKeys("open_terminal_tab"),
+    get shortcut() {
+      return getShortcutKeys("open_terminal_tab");
+    },
     tags: ["workstation", "code-editor", "terminal"],
     examples: ["open terminal tab", "show terminal"],
   },
@@ -326,6 +384,8 @@ export const workStationViewZodActions = [
   workstationToggleChatPanelVisibility,
   workstationOpenMyStation,
   workstationOpenAgentStation,
+  workstationOpenMyStationWindow,
+  workstationOpenAgentStationWindow,
   workstationOpenKanban,
   workstationToggleSidebar,
   workstationOpenCodeEditorTab,

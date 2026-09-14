@@ -37,35 +37,33 @@ vi.mock("@src/store/settings", () => ({
   ],
 }));
 
-vi.mock("@src/store/ui/notificationAtom", () => ({
-  notificationSettingsAtom: {},
-}));
-
-vi.mock("jotai", () => ({
-  useAtomValue: () => ({
-    enabled: true,
-    systemNotificationEnabled: false,
-    dockBadgeEnabled: false,
-    soundEnabled: false,
-    soundPreset: "classic",
-    soundVolume: 70,
-    criticalOnly: false,
-    quietHours: {
-      enabled: false,
-      start: "23:00",
-      end: "08:00",
-      allowCritical: true,
-    },
-    backgroundCompletionSummary: true,
-    mutedSessionIds: [],
-    categories: {
-      taskCompletion: true,
-      agentApproval: true,
-      errors: true,
-      teamInbox: true,
-    },
-  }),
-}));
+vi.mock("@src/store/ui/notificationAtom", async () => {
+  const { atom } = await import("jotai");
+  return {
+    notificationSettingsAtom: atom({
+      enabled: true,
+      systemNotificationEnabled: false,
+      dockBadgeEnabled: false,
+      soundEnabled: false,
+      soundPreset: "classic",
+      soundVolume: 70,
+      criticalOnly: false,
+      quietHours: {
+        enabled: false,
+        start: "23:00",
+        end: "08:00",
+        allowCritical: true,
+      },
+      backgroundCompletionSummary: true,
+      categories: {
+        taskCompletion: true,
+        agentApproval: true,
+        errors: true,
+        teamInbox: true,
+      },
+    }),
+  };
+});
 
 vi.mock("@src/api/services/notification", () => ({
   checkNotificationPermission: mocks.checkPermission,
@@ -92,17 +90,17 @@ vi.mock("@src/components/Switch", () => ({
   default: ({
     checked,
     disabled,
-    onChange,
+    onCheckedChange,
   }: {
     checked?: boolean;
     disabled?: boolean;
-    onChange?: () => void;
+    onCheckedChange?: () => void;
   }) =>
     createElement("button", {
       type: "button",
       disabled,
       "data-checked": String(Boolean(checked)),
-      onClick: onChange,
+      onClick: onCheckedChange,
     }),
 }));
 
@@ -194,7 +192,6 @@ describe("notification settings lifecycle", () => {
       "notifications.quietHours.end": "08:00",
       "notifications.quietHours.allowCritical": true,
       "notifications.backgroundCompletionSummary": true,
-      "notifications.mutedSessionIds": [],
       "notifications.categories.taskCompletion": true,
       "notifications.categories.agentApproval": true,
       "notifications.categories.errors": true,
@@ -216,6 +213,9 @@ describe("notification settings lifecycle", () => {
     expect(
       container.querySelector('[data-label="notifications.teamInbox"]')
     ).not.toBeNull();
+    expect(
+      container.querySelector('[data-label="notifications.mutedSessions"]')
+    ).toBeNull();
     const systemRow = container.querySelector(
       '[data-label="notifications.enableSystem"]'
     );

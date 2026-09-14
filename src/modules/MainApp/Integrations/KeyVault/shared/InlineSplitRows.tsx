@@ -1,9 +1,10 @@
 import cn from "classnames";
-import { Plus } from "lucide-react";
 import React from "react";
 
+import Button from "@src/components/Button";
 import Switch from "@src/components/Switch";
 import Tooltip from "@src/components/Tooltip";
+import { Add01Icon, HugeiconsIcon } from "@src/icons";
 
 /** Shared 44px header row for left/right split panes (kept in sync with right-pane variant header). */
 export const INLINE_SPLIT_HEADER_ROW_CLASS =
@@ -33,7 +34,7 @@ export function InlineSplitHeaderRow({
         withSeparator && "mb-1 rounded-none border-0 border-b border-border-2"
       )}
     >
-      <span className="min-w-0 flex-1 truncate font-medium leading-none text-text-1">
+      <span className="min-w-0 flex-1 truncate leading-none font-medium text-text-1">
         {label}
       </span>
       {trailing ? (
@@ -68,7 +69,7 @@ export function InlineSplitSelectableRow({
   onToggle,
 }: InlineSplitSelectableRowProps) {
   const switchElement = (
-    <Switch size="small" checked={switchChecked} onChange={onToggle} />
+    <Switch size="small" checked={switchChecked} onCheckedChange={onToggle} />
   );
   return (
     <div
@@ -80,6 +81,9 @@ export function InlineSplitSelectableRow({
       )}
       onClick={onSelect}
       onKeyDown={(event) => {
+        // Secondary actions own their keyboard events.
+        if (event.target !== event.currentTarget) return;
+
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           onSelect();
@@ -118,16 +122,18 @@ export function InlineSplitAddKeyRow({
   onClick,
 }: InlineSplitAddKeyRowProps) {
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       onClick={onClick}
       className="flex h-9 min-h-9 w-full cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs text-text-2 hover:bg-fill-1"
     >
       <span className="flex h-[14px] w-[14px] shrink-0 items-center justify-center text-text-3">
-        <Plus size={14} />
+        <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />
       </span>
       <span className="truncate">{label}</span>
-    </button>
+    </Button>
   );
 }
 
@@ -148,7 +154,7 @@ export function InlineSplitDefaultVersionHeaderRow({
         "mb-1 min-w-0 rounded-none border-0 border-b border-border-2"
       )}
     >
-      <span className="min-w-0 flex-1 truncate font-medium leading-none text-text-1">
+      <span className="min-w-0 flex-1 truncate leading-none font-medium text-text-1">
         {label}
       </span>
       <span

@@ -8,7 +8,7 @@
  * Uses WorkStationShell for consistent layout with the interactive CodeEditor.
  * Integrated with SimulatorApps framework for replay-aware state management.
  */
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import React, {
   memo,
   useCallback,
@@ -18,23 +18,15 @@ import React, {
   useState,
 } from "react";
 
-import { SIMULATOR_PRIMARY_SIDEBAR } from "@src/config/simulatorPrimarySidebar";
-import EventWrapper from "@src/engines/ChatPanel/adapters/EventWrapper";
 import { getIDEEventType } from "@src/engines/SessionCore/rendering/registry/toolRegistryDomain";
-import {
-  simulatorIdeTerminalRevealRequestAtom,
-  simulatorPrimarySidebarCollapsedAtom,
-  simulatorPrimarySidebarPositionAtom,
-  simulatorPrimarySidebarWidthAtom,
-  simulatorPrimarySidebarWidthPersistAtom,
-} from "@src/store/ui/simulatorAtom";
+import { useSimulatorReplaySidebar } from "@src/modules/WorkStation/shared/SessionReplay/useSimulatorReplaySidebar";
+import { simulatorIdeTerminalRevealRequestAtom } from "@src/store/ui/simulatorAtom";
 import type { BackendEvent } from "@src/types/session/steps";
 
 import {
+  ReplayShellLayout,
   type ReplayTab,
-  SimulatorReplayChrome,
   type TimestampedReplayTab,
-  WorkStationShell,
   buildPrimarySidebarConfig,
   capNewestWithActive,
   mergeNewestFirstByTimestamp,
@@ -84,23 +76,8 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
   const terminalRevealRequest = useAtomValue(
     simulatorIdeTerminalRevealRequestAtom
   );
-  const primarySidebarCollapsed = useAtomValue(
-    simulatorPrimarySidebarCollapsedAtom
-  );
-  const primarySidebarPosition = useAtomValue(
-    simulatorPrimarySidebarPositionAtom
-  );
-  const primarySidebarWidth = useAtomValue(simulatorPrimarySidebarWidthAtom);
-  const setPrimarySidebarWidthPersist = useSetAtom(
-    simulatorPrimarySidebarWidthPersistAtom
-  );
-
-  const handlePrimarySidebarWidthChange = useCallback(
-    (width: number) => {
-      setPrimarySidebarWidthPersist(width);
-    },
-    [setPrimarySidebarWidthPersist]
-  );
+  const { layoutMode: primarySidebarPosition, sidebar } =
+    useSimulatorReplaySidebar();
 
   const {
     fileViewMode,
@@ -309,12 +286,7 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
           currentEventId={eventId}
         />
       ),
-      collapsed: primarySidebarCollapsed,
-      size: primarySidebarWidth,
-      onSizeChange: handlePrimarySidebarWidthChange,
-      minSize: SIMULATOR_PRIMARY_SIDEBAR.minWidth,
-      maxSize: SIMULATOR_PRIMARY_SIDEBAR.maxWidth,
-      resetSize: SIMULATOR_PRIMARY_SIDEBAR.defaultWidth,
+      ...sidebar,
     });
   }, [
     fileViewMode,
@@ -333,9 +305,7 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
     handleShellSelect,
     handleToolSelect,
     eventId,
-    primarySidebarCollapsed,
-    primarySidebarWidth,
-    handlePrimarySidebarWidthChange,
+    sidebar,
   ]);
 
   // Build a UNIFIED newest-first timeline across every op kind. Each kind
@@ -483,34 +453,24 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
   );
 
   return (
-    <EventWrapper
-      event={currentEvent as unknown as BackendEvent}
-      mode={mode}
-      expand={true}
-      padding="p-0"
+    <ReplayShellLayout
+      tabs={replayTabs}
+      activeEventId={replayActiveEventId}
+      onTabClick={onReplayTabClick}
+      onTabDoubleClick={onReplayTabDoubleClick}
+      eventWrapper={{ event: currentEvent as unknown as BackendEvent, mode }}
+      workstation={{
+        primarySidebarConfig,
+        layoutMode: primarySidebarPosition,
+        appClassName: "session-replay-ide",
+      }}
     >
-      <SimulatorReplayChrome
-        tabs={replayTabs}
-        activeEventId={replayActiveEventId}
-        onTabClick={onReplayTabClick}
-        onTabDoubleClick={onReplayTabDoubleClick}
-      >
-        <div className="flex min-h-0 flex-1">
-          <WorkStationShell
-            primarySidebarConfig={primarySidebarConfig}
-            content={mainContent}
-            statusBar={null}
-            layoutMode={primarySidebarPosition === "right" ? "right" : "left"}
-            appClassName="session-replay-ide"
-          />
-        </div>
-      </SimulatorReplayChrome>
-    </EventWrapper>
+      {mainContent}
+    </ReplayShellLayout>
   );
 };
 
 export const SessionReplayIDE = memo(SessionReplayIDEComponent);
 SessionReplayIDE.displayName = "SessionReplayIDE";
 
-export { SessionReplayIDE as SimulatorIDE };
 export default SessionReplayIDE;

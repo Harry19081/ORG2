@@ -11,21 +11,18 @@
  * is now `agent_message` to better reflect the actual purpose.
  */
 import { useAtomValue } from "jotai";
-import React, { useMemo } from "react";
+import React, { Suspense, lazy, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import Markdown from "@src/components/MarkDown";
 import { getEventIcon } from "@src/config/toolIcons";
 import AgentChatItemDefault from "@src/engines/ChatPanel/ChatItems/AgentChatItemDefault";
-import { AgentMessageBlock } from "@src/engines/ChatPanel/blocks";
+import AgentMessageBlock from "@src/engines/ChatPanel/blocks/AgentMessageBlock";
 import CanvasInlineCard from "@src/engines/ChatPanel/blocks/CanvasInlineCard";
+import CanvasRevisionProgress from "@src/engines/ChatPanel/blocks/CanvasInlineCard/CanvasRevisionProgress";
+import { isCanvasRevisionPayload } from "@src/engines/ChatPanel/blocks/CanvasInlineCard/canvasRevision";
 import { useCanvasForTurn } from "@src/engines/ChatPanel/blocks/CanvasInlineCard/useCanvasForTurn";
-import MessageReferenceCards from "@src/engines/ChatPanel/blocks/MessageReferenceCards";
 import LlmUsageBadge from "@src/engines/ChatPanel/blocks/ToolCallBlock/LlmUsageBadge";
-import {
-  SessionLinkCard,
-  type SessionLinkCardData,
-} from "@src/engines/ChatPanel/blocks/ToolCallBlock/cards";
 import {
   EventBlockHeader,
   EventBlockHeaderIcon,
@@ -34,7 +31,10 @@ import {
   getEventBlockContentClasses,
   useEventBlockHeader,
 } from "@src/engines/ChatPanel/blocks/primitives";
-import { useStreamingDeltaForSession } from "@src/engines/SessionCore";
+import {
+  useCanvasRevisionDraftForSession,
+  useStreamingDeltaForSession,
+} from "@src/engines/SessionCore";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
 import {
   type RawEventInput,
@@ -48,14 +48,20 @@ import {
   extractThinkContent,
   stripThinkTags,
 } from "@src/engines/SessionCore/sync/adapters/shared/streamingParsers";
-import { SimulatorMessages } from "@src/modules/WorkStation/Chat/Communication";
-import { parseGitArtifactsFromText } from "@src/shared/git/sessionGitArtifacts";
+
+// Lazy (same as user-message / thinking): SimulatorMessages is only used by
+// the simulator variant, but a static import here made every chat message
+// renderer pull the whole Communication app — SessionReplay CodePanel,
+// CodeMirror, react-syntax-highlighter / Prism, file previewers.
+const LazySimulatorMessages = lazy(
+  () => import("@src/modules/WorkStation/Chat/Communication")
+);
 
 // ============================================
 // Types
 // ============================================
 
-export interface AgentMessageEventProps extends RawEventInput {
+interface AgentMessageEventProps extends RawEventInput {
   variant?: EventVariant;
 }
 
@@ -78,6 +84,7 @@ const InlineThinkingBlock: React.FC<{ content: string }> = ({ content }) => {
       <EventBlockHeader
         isCollapsed={isCollapsed}
         withHover={false}
+        onToggleCollapse={handleHeaderClick}
         onMouseEnter={handleHeaderMouseEnter}
         onMouseLeave={handleHeaderMouseLeave}
       >
@@ -85,7 +92,6 @@ const InlineThinkingBlock: React.FC<{ content: string }> = ({ content }) => {
           icon={getEventIcon("agent_message")}
           isCollapsed={isCollapsed}
           isHeaderHovered={isHeaderHovered}
-          onToggle={handleHeaderClick}
           hasContent
         />
         <EventBlockHeaderTitle>{t("tools.thought")}</EventBlockHeaderTitle>
@@ -93,7 +99,7 @@ const InlineThinkingBlock: React.FC<{ content: string }> = ({ content }) => {
 
       {!isCollapsed && (
         <div className={getEventBlockContentClasses({ padding: "p-0" })}>
-          <div className="activity-thinking activity-thinking--no-style allow-select">
+          <div className="activity-thinking allow-select">
             <div className="activity-thinking__content allow-select">
               <Markdown textContent={content} />
             </div>
@@ -105,71 +111,26 @@ const InlineThinkingBlock: React.FC<{ content: string }> = ({ content }) => {
 };
 
 // ============================================
-// PR Session Link Cards (extracted from agent message text)
-// ============================================
-
-function extractPrCards(content: string): SessionLinkCardData[] {
-  const artifacts = parseGitArtifactsFromText(content);
-  return artifacts
-    .filter(
-      (a) => a.kind === "pullRequest" && a.url && a.repoFullName && a.prNumber
-    )
-    .map((a) => ({
-      prUrl: a.url!,
-      prStatus: "open" as const,
-      repoFullName: a.repoFullName!,
-      prNumber: a.prNumber!,
-      prTitle: `PR #${a.prNumber}`,
-    }));
-}
-
-const PrSessionLinkCards: React.FC<{
-  content: string;
-  isStreaming: boolean;
-}> = React.memo(({ content, isStreaming }) => {
-  const cards = useMemo(
-    () => (isStreaming ? [] : extractPrCards(content)),
-    [content, isStreaming]
-  );
-  if (cards.length === 0) return null;
-  return (
-    <>
-      {cards.map((card) => (
-        <SessionLinkCard
-          key={`${card.repoFullName}#${card.prNumber}`}
-          card={card}
-        />
-      ))}
-    </>
-  );
-});
-PrSessionLinkCards.displayName = "PrSessionLinkCards";
-
-// ============================================
 // Chat Variant
 // ============================================
 
 interface ChatVariantProps {
   content?: string;
   thinkingContent?: string | null;
-  itemIndex?: number;
   isStreaming?: boolean;
   sessionId?: string | null;
   llmUsage?: UniversalEventProps["llmUsage"];
   /** Event id used by AgentMessageBlock's locate-in-simulator arrow. */
   eventId?: string;
-  timestamp?: string;
 }
 
 const ChatVariant: React.FC<ChatVariantProps> = ({
   content,
   thinkingContent,
-  itemIndex = 0,
   isStreaming = false,
   sessionId,
   llmUsage,
   eventId,
-  timestamp,
 }) => {
   // Canvas preview from the global atom is only relevant for the live
   // streaming message. Historical (non-streaming) messages already have
@@ -182,6 +143,10 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
   );
   const streamingCanvasPayload = streamingCanvas.payload;
   const canvasPayload = isStreaming ? streamingCanvasPayload : null;
+  const revisionDraft = useCanvasRevisionDraftForSession(
+    isStreaming ? sessionId : null
+  );
+  const showRevisionReceiving = revisionDraft?.phase === "receiving";
 
   if (!content && !thinkingContent && !isStreaming && !canvasPayload)
     return null;
@@ -191,7 +156,8 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
   // is populated. In that case we render only the inline thinking block
   // and skip the empty assistant bubble — otherwise the user sees a blank
   // chat row with no testid content.
-  const hasVisibleContent = Boolean(content) || isStreaming;
+  const hasVisibleContent =
+    Boolean(content) || (isStreaming && revisionDraft === null);
 
   return (
     <>
@@ -200,40 +166,21 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
         <AgentMessageBlock
           eventId={eventId}
           isStreaming={isStreaming}
-          itemIndex={itemIndex}
-          messageContent={content}
-          messageTimestamp={timestamp}
           rightContent={
             llmUsage ? <LlmUsageBadge usage={llmUsage} /> : undefined
           }
         >
-          <AgentChatItemDefault
-            itemIndex={itemIndex}
-            expand={true}
-            finish={!isStreaming}
-            streamHtml={isStreaming}
-            showCopyButton={false}
-            appendedContent={
-              <>
-                <MessageReferenceCards
-                  content={content || ""}
-                  enabled={!isStreaming}
-                  sessionId={sessionId}
-                />
-                {!isStreaming && content && (
-                  <PrSessionLinkCards
-                    content={content}
-                    isStreaming={isStreaming}
-                  />
-                )}
-              </>
-            }
-          >
+          <AgentChatItemDefault streamHtml={isStreaming}>
             {content || ""}
           </AgentChatItemDefault>
         </AgentMessageBlock>
       )}
-      {canvasPayload && (
+      {showRevisionReceiving && (
+        <div className="px-2">
+          <CanvasRevisionProgress draft={revisionDraft} />
+        </div>
+      )}
+      {canvasPayload && !isCanvasRevisionPayload(canvasPayload) && (
         <div className="px-2">
           <CanvasInlineCard
             mode={canvasPayload.mode}
@@ -267,11 +214,13 @@ const SimulatorVariant: React.FC<SimulatorVariantProps> = ({
   const eventSessionId =
     (event as { event?: { sessionId?: string } })?.event?.sessionId ?? null;
   return (
-    <SimulatorMessages
-      currentEvent={event}
-      mode={mode}
-      sessionId={eventSessionId}
-    />
+    <Suspense fallback={null}>
+      <LazySimulatorMessages
+        currentEvent={event}
+        mode={mode}
+        sessionId={eventSessionId}
+      />
+    </Suspense>
   );
 };
 
@@ -355,12 +304,10 @@ export const AgentMessageEvent: React.FC<AgentMessageEventProps> = (props) => {
       <ChatVariant
         content={content}
         thinkingContent={thinkingContent}
-        itemIndex={props.itemIndex}
         isStreaming={props.isStreaming}
         sessionId={sessionId}
         llmUsage={normalizedProps?.llmUsage}
         eventId={normalizedProps?.eventId}
-        timestamp={normalizedProps?.timestamp ?? props.event?.createdAt}
       />
     );
   }

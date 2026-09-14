@@ -13,7 +13,6 @@
  *   ProtectedBranchDialog,
  *   LargePushConfirmDialog,
  *   RebaseConflictDialog,
- *   RemoteBranchDeletedDialog,
  * } from "@src/components/GitDialogs";
  *
  * // All dialogs use the same imperative API pattern:
@@ -28,56 +27,21 @@
 // Dialog Exports
 // ============================================
 
-export {
-  PullConflictDialog,
-  type PullConflictOptions,
-  type PullConflictResult,
-} from "./PullConflictDialog";
+export { PullConflictDialog } from "./PullConflictDialog";
 
-export {
-  PushRejectedDialog,
-  type PushRejectedOptions,
-  type PushRejectedResult,
-} from "./PushRejectedDialog";
+export { PushRejectedDialog } from "./PushRejectedDialog";
 
-export {
-  DetachedHeadDialog,
-  type DetachedHeadOptions,
-  type DetachedHeadResult,
-} from "./DetachedHeadDialog";
+export { DetachedHeadDialog } from "./DetachedHeadDialog";
 
-export {
-  ProtectedBranchDialog,
-  type ProtectedBranchOptions,
-  type ProtectedBranchResult,
-} from "./ProtectedBranchDialog";
+export { ProtectedBranchDialog } from "./ProtectedBranchDialog";
 
 export {
   LargePushConfirmDialog,
   LARGE_PUSH_THRESHOLD,
-  type LargePushOptions,
-  type LargePushResult,
 } from "./LargePushConfirmDialog";
 
-export {
-  RebaseConflictDialog,
-  type RebaseConflictOptions,
-  type RebaseConflictResult,
-} from "./RebaseConflictDialog";
+export { RebaseConflictDialog } from "./RebaseConflictDialog";
 
-export {
-  RemoteBranchDeletedDialog,
-  type RemoteBranchDeletedOptions,
-  type RemoteBranchDeletedResult,
-} from "./RemoteBranchDeletedDialog";
+export { CheckoutConflictDialog } from "./CheckoutConflictDialog";
 
-export {
-  CheckoutConflictDialog,
-  type CheckoutConflictOptions,
-  type CheckoutConflictResult,
-} from "./CheckoutConflictDialog";
-
-export {
-  CheckoutBlockedDialog,
-  type CheckoutBlockedOptions,
-} from "./CheckoutBlockedDialog";
+export { CheckoutBlockedDialog } from "./CheckoutBlockedDialog";

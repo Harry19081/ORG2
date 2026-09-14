@@ -27,25 +27,16 @@ vi.mock("@src/router/lazy/pages", () => {
     AuthCallback: Placeholder,
     ConsumerWallet: Placeholder,
     DelegationHistoryPage: Placeholder,
-    FlowAwarenessTestPage: Placeholder,
     LoginPage: Placeholder,
+    MobileRemotePage: Placeholder,
     Profile: Placeholder,
     ProviderBoost: Placeholder,
     ProviderEarnings: Placeholder,
     PublicProfilePage: Placeholder,
-    SelectRepoPage: Placeholder,
-    SetupWalkthrough: () =>
-      React.createElement(
-        "div",
-        { "data-testid": "setup-walkthrough-route" },
-        "Setup walkthrough"
-      ),
+    SessionWindowPage: Placeholder,
+    StationWindowPage: Placeholder,
   };
 });
-
-vi.mock("@src/modules/shared/layouts/MainAppShell", () => ({
-  default: () => null,
-}));
 
 vi.mock("@src/modules/shared/layouts/blocks", () => ({
   Placeholder: () => null,
@@ -71,7 +62,7 @@ const RouteHarness = () =>
     },
   ]);
 
-describe("setup walkthrough route", () => {
+describe("standalone app routes", () => {
   let container: HTMLDivElement;
   let root: Root;
 
@@ -106,12 +97,22 @@ describe("setup walkthrough route", () => {
     });
   };
 
-  it("remains reachable when hosted login is disabled", async () => {
-    await renderRoute("/orgii/app/walkthrough");
-
+  it("does not register the retired setup walkthrough URL", () => {
     expect(
-      container.querySelector('[data-testid="setup-walkthrough-route"]')
-    ).not.toBeNull();
+      appStandaloneRouteGroup.some((route) => route.path === "app/walkthrough")
+    ).toBe(false);
+  });
+
+  it("registers the detached session and station window routes", () => {
+    const paths = new Set(appStandaloneRouteGroup.map((route) => route.path));
+    expect(paths.has("app/session/:sessionId")).toBe(true);
+    expect(paths.has("app/station/:stationMode")).toBe(true);
+  });
+
+  it("registers the mobile remote demo route", () => {
+    expect(
+      appStandaloneRouteGroup.some((route) => route.path === "mobile")
+    ).toBe(true);
   });
 
   it("keeps the login page behind the hosted-login guard", async () => {
@@ -120,8 +121,5 @@ describe("setup walkthrough route", () => {
     expect(
       container.querySelector('[data-testid="workstation-route"]')
     ).not.toBeNull();
-    expect(
-      container.querySelector('[data-testid="setup-walkthrough-route"]')
-    ).toBeNull();
   });
 });

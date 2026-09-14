@@ -1,17 +1,60 @@
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
+import { basename } from "@src/util/path";
 import { resolveSessionDisplayMetadata } from "@src/util/session/sessionDisplayMetadata";
 
-type CloudSessionReplayIconInput = Partial<
+import type {
+  CloudPendingPlay,
+  CloudSessionEnvironmentIdentity,
+  CloudSessionOwnerIdentity,
+} from "./cloudSessionDownloadControlAtoms";
+
+type CloudSessionPresentationInput = Partial<
   Pick<
     RemoteTeammateSessionMetadata,
     | "sourceSessionId"
+    | "forkedFrom"
     | "cliAgentType"
     | "agentDisplayName"
     | "agentDefinitionId"
     | "model"
     | "origin"
+    | "repoPath"
+    | "repoScopeKey"
+    | "branch"
+    | "baseBranch"
+    | "worktreeBranch"
+    | "ownerUserId"
+    | "ownerDisplayName"
+    | "ownerAvatarUrl"
   >
 >;
+
+export function resolveCloudSessionEnvironmentIdentity(
+  session: CloudSessionPresentationInput
+): CloudSessionEnvironmentIdentity {
+  const repoIdentity = session.repoScopeKey || session.repoPath;
+  const rawRepoName = repoIdentity ? basename(repoIdentity) : undefined;
+  return {
+    repoName: rawRepoName?.replace(/\.git$/, "") || undefined,
+    branchName: session.branch || session.baseBranch || undefined,
+    baseBranchName: session.baseBranch || undefined,
+    worktreeBranchName: session.worktreeBranch || undefined,
+  };
+}
+
+export function resolveCloudSessionOwnerIdentity(
+  session: CloudSessionPresentationInput
+): CloudSessionOwnerIdentity | undefined {
+  const userId = session.ownerUserId?.trim();
+  if (!userId) return undefined;
+  const displayName = session.ownerDisplayName?.trim();
+  const avatarUrl = session.ownerAvatarUrl?.trim();
+  return {
+    identityId: userId,
+    ...(displayName ? { displayName } : {}),
+    ...(avatarUrl ? { avatarUrl } : {}),
+  };
+}
 
 /**
  * Icon identity already visible on the source row before local hydration.
@@ -21,12 +64,47 @@ type CloudSessionReplayIconInput = Partial<
  * their own.
  */
 export function resolveCloudSessionReplayIconId(
-  session: CloudSessionReplayIconInput
+  session: CloudSessionPresentationInput
 ): string {
   return resolveSessionDisplayMetadata({
     kind: "remote",
     session: { ...session, sourceSessionId: session.sourceSessionId ?? "" },
   }).agentIconId;
+}
+
+/**
+ * Preserve the remote row's display identity while a large transcript is
+ * parked before download. No local Session exists yet, so every pre-download
+ * surface must project from this entry instead of falling back to ORGII.
+ */
+export function buildCloudPendingPlayEntry({
+  remoteSession,
+  authIdentityKey,
+  orgId,
+  pendingEvents,
+  etaMs,
+  kind,
+}: {
+  remoteSession: RemoteTeammateSessionMetadata;
+  authIdentityKey: string;
+  orgId: string;
+  pendingEvents: number;
+  etaMs: number;
+  kind: CloudPendingPlay["kind"];
+}): CloudPendingPlay {
+  const sessionOwner = resolveCloudSessionOwnerIdentity(remoteSession);
+  return {
+    authIdentityKey,
+    rowId: remoteSession.id,
+    orgId,
+    sourceSession: remoteSession,
+    iconId: resolveCloudSessionReplayIconId(remoteSession),
+    sessionEnvironment: resolveCloudSessionEnvironmentIdentity(remoteSession),
+    ...(sessionOwner ? { sessionOwner } : {}),
+    pendingEvents,
+    etaMs,
+    kind,
+  };
 }
 
 /**

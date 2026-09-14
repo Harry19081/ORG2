@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
 import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { QueuedConversationDispatchResolution } from "@src/engines/SessionCore/conversations/queuedConversationContract";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 export interface FollowAgentNavState {
   showFollowAgent: boolean;
@@ -63,11 +64,12 @@ export interface ChatHistoryProps {
   onScrollNavChange?: (state: ScrollNavState) => void;
   followAgentNav?: FollowAgentNavState;
   browserAddToConversationNav?: BrowserAddToConversationNavState;
-  onRegisterSearchOpen?: (handler: (() => void) | null) => void;
   displayMode?: ChatHistoryDisplayMode;
   turnPaginationEnabled?: boolean;
   /** Optional external host for pinned/pagination chrome, outside the scroll body subtree. */
   pinnedHeaderPortalHost?: HTMLElement | null;
+  /** Floating chrome height transcript offsets must clear (0 = in-flow chrome). */
+  chromeTopInset?: number;
   /** Height in px of the overlapping input area, used to keep the last message reachable. */
   bottomInset?: number;
   /**
@@ -80,6 +82,8 @@ export interface ChatHistoryProps {
    * keep their surfaced turn expanded.
    */
   disableTailCollapse?: boolean;
+  /** Compact monitor surfaces may opt into unconditional tail following. */
+  tailFollowMode?: "reader-controlled" | "always";
   /** Trailing content for turn pagination controls; ignored when pagination is disabled. */
   paginationTrailingSlot?: ReactNode;
   /** Omit each turn's leading user-message card while retaining its turn boundary. */
@@ -90,6 +94,18 @@ export interface ChatHistoryProps {
   groupChatViewActive?: boolean;
   onGroupChatViewToggle?: (active: boolean) => void;
   mutationActionsDisabled?: boolean;
+  /** Re-admit a failed canonical Agent intent through its canonical queue. */
+  onFailedUserIntentRetry?: (input: {
+    displayText: string;
+    agentContent?: string;
+    imageDataUrls?: string[];
+    turnIntentId?: string;
+  }) => Promise<boolean>;
+  /**
+   * The canonical dispatch a retry of a held Agent row should carry: the
+   * current root and the runtime the picker shows now.
+   */
+  resolveFailedUserIntentDispatch?: () => QueuedConversationDispatchResolution;
   /**
    * Session-scoped source for the planning footer. Session-scoped surfaces
    * should set `isLive` to false while showing a replay slice.

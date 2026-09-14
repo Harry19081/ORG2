@@ -6,38 +6,26 @@
  */
 
 // Types
-export type { ComponentIssuePayload, BoundingRect } from "./types";
+export type { ComponentIssuePayload } from "./types";
 
 // State accessors (for external use)
-export {
-  isInspectModeEnabled,
-  isHighlightLocked,
-  getCurrentLevel,
-  areLabelsHidden,
-  getLastHoveredElement,
-} from "./state";
+export { isInspectModeEnabled, getLastHoveredElement } from "./state";
 
 // Hover tracking
-export { ensureHoverTracking, stopHoverTracking } from "./hoverTracking";
+export { ensureHoverTracking } from "./hoverTracking";
 
 // Inspect mode controls
 export {
-  toggleInspectMode,
   enableInspectMode,
   disableInspectMode,
-  lockHighlight,
-  unlockHighlight,
-  cleanupInspectMode,
   moveUpLevel,
   moveDownLevel,
-  resetLevel,
   toggleLabelsHidden,
   hideLabels,
 } from "./inspectMode";
 
 // Element navigation
 export {
-  getCurrentSelectedElement,
   getEffectiveElement,
   setLastHoveredElement,
   getPreviousElement,

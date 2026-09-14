@@ -1,19 +1,17 @@
-import { ChevronDown } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 
-import FilePathBreadcrumb from "@src/components/FilePathBreadcrumb";
+import {
+  FILE_TREE_HOVER_DELAY_MS,
+  FileTreePreview,
+} from "@src/components/FileTreePreview/exports";
 import Tooltip from "@src/components/Tooltip";
 import { TREE_ROW_HEIGHT, TreeRowBase } from "@src/components/TreeRow";
 import type {
   FlattenedTreeNode,
   StickyScrollNode,
 } from "@src/components/VirtualizedStickyTree";
-import {
-  CHEVRON_SIZE,
-  STICKY_ROW,
-  VirtualizedStickyTree,
-  stickyRowPadding,
-} from "@src/components/VirtualizedStickyTree";
+import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
+import { StickyTreeRow } from "@src/components/VirtualizedStickyTree/StickyTreeRow";
 import { AGENT_DOT_TOKENS } from "@src/engines/Simulator/config";
 
 import {
@@ -23,9 +21,6 @@ import {
   flattenFileTree,
 } from "../fileTreeUtils";
 
-/** Long enough that scanning down the list doesn't flash a card per row. */
-const PATH_HOVER_DELAY_MS = 400;
-
 interface SimulatorTreePanelProps {
   items: FileTreeInput[];
   selectedId: string | null;
@@ -34,6 +29,8 @@ interface SimulatorTreePanelProps {
   onSelectItem: (eventId: string) => void;
   emptyMessage: string;
   viewMode: "list-tree" | "list";
+  /** Disable for terminal entries whose tree paths are synthetic event IDs. */
+  showFilePathPreview?: boolean;
 }
 
 const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
@@ -43,6 +40,7 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
   onSelectItem,
   emptyMessage,
   viewMode,
+  showFilePathPreview = true,
 }) => {
   const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set());
 
@@ -99,7 +97,7 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
         >
           {item.node.statusLabel && (
             <div
-              className={`flex h-5 w-5 flex-shrink-0 items-center justify-center text-[11px] font-bold ${item.node.statusColorClass || "text-text-2"}`}
+              className={`flex h-5 w-5 shrink-0 items-center justify-center text-[11px] font-bold ${item.node.statusColorClass || "text-text-2"}`}
             >
               {item.node.statusLabel}
             </div>
@@ -114,38 +112,32 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
 
       // The row itself only shows the file name — the full path lives in a
       // hover card so long paths never squeeze the name out of the sidebar.
-      if (!isFile) return row;
+      if (!isFile || !showFilePathPreview) return row;
 
       return (
         <Tooltip
-          content={
-            <FilePathBreadcrumb path={item.node.path} maxSegments={null} />
-          }
+          content={<FileTreePreview path={item.node.path} />}
           position="right"
           smartPlacement
-          framedPanel
-          framedPanelWide
-          mouseEnterDelay={PATH_HOVER_DELAY_MS}
+          showArrow={false}
+          mouseEnterDelay={FILE_TREE_HOVER_DELAY_MS}
+          style={{ padding: 0, background: "transparent", boxShadow: "none" }}
         >
           {row}
         </Tooltip>
       );
     },
-    [selectedId, handleNodeClick, agentSelectedIds]
+    [selectedId, handleNodeClick, agentSelectedIds, showFilePathPreview]
   );
 
   const renderStickyItem = useCallback(
     (stickyNode: StickyScrollNode<SimulatorTreeNode>, onClick: () => void) => (
-      <div
-        className={STICKY_ROW.row}
-        style={stickyRowPadding(stickyNode.depth)}
+      <StickyTreeRow
+        depth={stickyNode.depth}
+        expanded
+        name={stickyNode.node.name}
         onClick={onClick}
-      >
-        <div className={STICKY_ROW.chevronBox}>
-          <ChevronDown size={CHEVRON_SIZE} className={STICKY_ROW.chevronIcon} />
-        </div>
-        <span className={STICKY_ROW.name}>{stickyNode.node.name}</span>
-      </div>
+      />
     ),
     []
   );

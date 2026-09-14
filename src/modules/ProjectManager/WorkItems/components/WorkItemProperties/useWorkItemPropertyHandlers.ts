@@ -1,16 +1,6 @@
-import { useAtomValue } from "jotai";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 
-import type {
-  OrchestratorConfig,
-  ReviewerRefType,
-  WorkItemSchedule,
-} from "@src/api/http/project";
-import { builtInAgentsAtom } from "@src/modules/MainApp/AgentOrgs/store/builtInAgentsAtom";
-import type {
-  AgentDefinition,
-  OrgMember,
-} from "@src/modules/MainApp/AgentOrgs/types";
+import type { WorkItemSchedule } from "@src/api/http/project";
 import type { Person } from "@src/types/core/shared";
 import type {
   WorkItem as WorkItemExtended,
@@ -21,44 +11,28 @@ import type {
   WorkItemStatus,
 } from "@src/types/core/workItem";
 
-import { DEFAULT_ORCHESTRATOR_CONFIG } from "../../constants";
-
-type WorkItemOrchestratorConfigRuntime = OrchestratorConfig & {
-  agentDefinitionId?: string;
-};
-
 interface UseWorkItemPropertyHandlersParams {
   workItem: WorkItemExtended;
   onUpdate: (updates: Partial<WorkItemExtended>) => void;
-  availableMembers: Person[];
-  availableAgents: AgentDefinition[];
-  availableOrgs: OrgMember[];
   closePicker: () => void;
   t: (key: string, options?: Record<string, unknown>) => string;
+}
+
+export function buildHumanAssigneeUpdate(
+  person: Person | null
+): Partial<WorkItemExtended> {
+  return {
+    assignee: person || undefined,
+    assigneeType: person ? "human" : undefined,
+  };
 }
 
 export function useWorkItemPropertyHandlers({
   workItem,
   onUpdate,
-  availableMembers,
-  availableAgents,
-  availableOrgs,
   closePicker,
   t,
 }: UseWorkItemPropertyHandlersParams) {
-  const builtInAgents = useAtomValue(builtInAgentsAtom);
-
-  // Memoized so downstream `useCallback` deps (notably the reviewer-display
-  // callback) stay stable across renders — eslint react-hooks/exhaustive-deps
-  // flagged the inline array literal as a re-rendering trigger.
-  const allAgentList = useMemo(
-    () => [
-      ...builtInAgents.map((agent) => ({ id: agent.id, name: agent.name })),
-      ...availableAgents.map((agent) => ({ id: agent.id, name: agent.name })),
-    ],
-    [builtInAgents, availableAgents]
-  );
-
   const handleStatusChange = useCallback(
     (value: WorkItemStatus) => {
       onUpdate({ workItemStatus: value });
@@ -76,112 +50,12 @@ export function useWorkItemPropertyHandlers({
   );
 
   const handleAssigneeChange = useCallback(
-    (person: Person | null, assigneeType?: string) => {
-      const updates: Partial<WorkItemExtended> = {
-        assignee: person || undefined,
-        assigneeType: assigneeType ?? undefined,
-      };
-
-      const baseConfig: WorkItemOrchestratorConfigRuntime = {
-        ...DEFAULT_ORCHESTRATOR_CONFIG,
-        ...workItem.orchestratorConfig,
-      };
-
-      if (assigneeType === "agent" && person) {
-        updates.orchestratorConfig = {
-          ...baseConfig,
-          agent_definition_id: person.id,
-          org_id: undefined,
-          sub_agent_ids: undefined,
-        };
-      } else if (assigneeType === "org" && person) {
-        const org = availableOrgs.find((orgItem) => orgItem.id === person.id);
-        updates.orchestratorConfig = {
-          ...baseConfig,
-          org_id: person.id,
-          agent_definition_id: org?.agentId || undefined,
-          sub_agent_ids:
-            org?.children?.map((member) => member.agentId).filter(Boolean) ??
-            [],
-        };
-      } else {
-        const {
-          agent_definition_id: _defId,
-          agentDefinitionId: _staleDefId,
-          org_id: _orgId,
-          sub_agent_ids: _subIds,
-          ...rest
-        } = baseConfig;
-        updates.orchestratorConfig = rest as OrchestratorConfig;
-      }
-
-      onUpdate(updates);
+    (person: Person | null) => {
+      onUpdate(buildHumanAssigneeUpdate(person));
       closePicker();
     },
-    [workItem.orchestratorConfig, availableOrgs, onUpdate, closePicker]
+    [onUpdate, closePicker]
   );
-
-  const reviewConfig = workItem.orchestratorConfig?.review_config;
-  const currentReviewer = reviewConfig?.reviewer;
-
-  const handleReviewerChange = useCallback(
-    (reviewerType: ReviewerRefType | null, reviewerId?: string) => {
-      const existingConfig: OrchestratorConfig = {
-        ...DEFAULT_ORCHESTRATOR_CONFIG,
-        ...workItem.orchestratorConfig,
-      };
-      if (reviewerType === null) {
-        onUpdate({
-          orchestratorConfig: {
-            ...existingConfig,
-            review_enabled: false,
-            review_config: undefined,
-          },
-        });
-      } else {
-        onUpdate({
-          orchestratorConfig: {
-            ...existingConfig,
-            review_enabled: true,
-            review_config: {
-              reviewer: { type: reviewerType, id: reviewerId },
-              max_rounds: reviewConfig?.max_rounds ?? 3,
-            },
-          },
-        });
-      }
-      closePicker();
-    },
-    [workItem.orchestratorConfig, reviewConfig, onUpdate, closePicker]
-  );
-
-  const getReviewerDisplay = useCallback((): string => {
-    if (!currentReviewer) return t("workItems.properties.noReviewer");
-    switch (currentReviewer.type) {
-      case "self_review":
-        return t("workItems.agentSettings.reviewerSelfReview");
-      case "agent": {
-        if (currentReviewer.id) {
-          const found = allAgentList.find(
-            (agent) => agent.id === currentReviewer.id
-          );
-          return found?.name ?? currentReviewer.id;
-        }
-        return t("workItems.agentSettings.reviewerAgent");
-      }
-      case "human": {
-        if (currentReviewer.id) {
-          const found = availableMembers.find(
-            (person) => person.id === currentReviewer.id
-          );
-          return found?.name ?? currentReviewer.id;
-        }
-        return t("workItems.agentSettings.reviewerHuman");
-      }
-      default:
-        return t("workItems.properties.noReviewer");
-    }
-  }, [currentReviewer, allAgentList, availableMembers, t]);
 
   const handleScheduleChange = useCallback(
     (schedule: WorkItemSchedule | null) => {
@@ -305,14 +179,9 @@ export function useWorkItemPropertyHandlers({
   );
 
   return {
-    builtInAgents,
-    allAgentList,
-    currentReviewer,
     handleStatusChange,
     handlePriorityChange,
     handleAssigneeChange,
-    handleReviewerChange,
-    getReviewerDisplay,
     handleScheduleChange,
     handleLabelToggle,
     handleLabelsClear,

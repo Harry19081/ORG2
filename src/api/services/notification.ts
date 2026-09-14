@@ -2,13 +2,12 @@ import { invoke, isTauri } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   isPermissionGranted,
-  onAction,
-  registerActionTypes,
   requestPermission,
   sendNotification,
 } from "@tauri-apps/plugin-notification";
 
 import { createLogger } from "@src/hooks/logger";
+import i18n from "@src/i18n";
 import type {
   BackgroundCompletionSummary,
   NotificationCategory,
@@ -32,9 +31,6 @@ import { BackgroundCompletionSummaryCoordinator } from "./notificationSummaryCoo
 const log = createLogger("Notification");
 
 export type NotificationPermissionStatus = "granted" | "denied" | "unknown";
-
-export const TASK_FAILURE_NOTIFICATION_BODY =
-  "A task failed. Open ORGII for details.";
 
 export interface NotificationOptions {
   title: string;
@@ -168,35 +164,22 @@ export const sendSystemNotification = async (
   }
 };
 
-/** Project the authoritative Team Inbox unread count into the dock badge. */
-export const registerTeamInboxNotificationActionType = async (
-  viewLabel: string
-): Promise<void> => {
-  await registerActionTypes([
-    {
-      id: TEAM_INBOX_NOTIFICATION_ACTION_TYPE_ID,
-      actions: [
-        {
-          id: "view-team-inbox",
-          title: viewLabel,
-          foreground: true,
-        },
-      ],
-    },
-  ]);
-};
-
 /**
- * Listen for native notification activation while the application process is
- * alive. The returned disposer is safe to call during React effect cleanup.
+ * Notification action buttons are a mobile-only concept in the notification
+ * plugin: its desktop `invoke_handler` registers just notify/permission
+ * commands, so `registerActionTypes` and the action listener can only fail
+ * with "Command not found" on every desktop launch. Both entry points are
+ * kept as inert seams for a future mobile target.
  */
+export const registerTeamInboxNotificationActionType = async (
+  _viewLabel: string
+): Promise<void> => {};
+
+/** See `registerTeamInboxNotificationActionType` — inert on desktop. */
 export const listenForSystemNotificationActions = async (
-  handler: (action: SystemNotificationAction) => void
+  _handler: (action: SystemNotificationAction) => void
 ): Promise<() => void> => {
-  const listener = await onAction((notification) => {
-    handler({ extra: notification.extra ?? {} });
-  });
-  return () => listener.unregister();
+  return () => {};
 };
 
 /**
@@ -357,7 +340,6 @@ export const notify = async (
         eventKey:
           options.context?.eventKey ??
           `summary:${Date.now()}:${++anonymousSummaryEventSequence}`,
-        sessionId: options.context?.sessionId,
         sessionName: options.summaryLabel ?? options.body,
       },
       settings
@@ -460,8 +442,8 @@ export const sendTestNotification = async (
 ): Promise<boolean> => {
   const result = await deliverNotification(
     {
-      title: "Test Notification",
-      body: "This is a test notification from ORGII",
+      title: i18n.t("settings:notifications.testNotification"),
+      body: i18n.t("common:appMessages.testNotificationBody"),
       category: "taskCompletion",
       playSound: true,
     },

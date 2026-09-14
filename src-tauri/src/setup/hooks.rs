@@ -13,17 +13,6 @@ use crate::{agent_sessions, api};
 pub(crate) fn register_database_schemas() {
     fn init_sessions(conn: &rusqlite::Connection) -> rusqlite::Result<()> {
         session_persistence::init_session_tables(conn)?;
-        match session_persistence::turn_intents::reconcile_in_flight_after_restart(conn) {
-            Ok(0) => {}
-            Ok(count) => tracing::info!(
-                "[startup] Closed {} turn intent(s) left in-flight by the previous process",
-                count
-            ),
-            Err(err) => tracing::warn!(
-                "[startup] Failed to reconcile in-flight turn intents: {}",
-                err
-            ),
-        }
 
         agent_core::persistence::session_snapshots::ensure_tables_with(conn)?;
         agent_core::session::persistence::init(conn)?;
@@ -119,6 +108,7 @@ pub(crate) fn register_settings_hooks() {
             agent_core::utils::set_global_http_version_pref(pref);
         }
         agent_core::session::housekeeper_compaction::update_from_settings(value);
+        crate::api::mobile_bridge::relay::notify_settings_changed(value);
     }));
 }
 
@@ -133,13 +123,6 @@ pub(crate) fn register_integrations_hooks() {
             serde_json::json!({ "sessionId": session_id }),
         );
     }));
-}
-
-/// Wire the inversion-of-control hook the `lsp` crate uses to publish
-/// language-server diagnostics over the IDE WebSocket. Registered once at
-/// startup so the `lsp` crate never has to depend on `api::websocket_handler`.
-pub(crate) fn register_lsp_hooks() {
-    lsp::register_broadcast(api::websocket_handler::broadcast);
 }
 
 /// Wire the IoC hooks the `agent_core::bus` module uses to reach the IDE

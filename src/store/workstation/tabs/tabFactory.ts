@@ -7,7 +7,7 @@
  * ## ID Patterns
  *
  * Three types of ID generation:
- * 1. **Singleton** - Fixed ID like "settings:main" (only one instance)
+ * 1. **Singleton** - Fixed ID like "project-settings:main" (only one instance)
  * 2. **Data-keyed** - ID from data like "file:/path/to/file" (deduped by key)
  * 3. **Unique** - Timestamp-based like "search:1234567890-abc123" (always new)
  *
@@ -21,7 +21,7 @@ import type {
   WorkStationTabType,
 } from "./types";
 
-export { getFileName } from "@src/util/file/pathUtils";
+export { getFileExtension, getFileName } from "@src/util/file/pathUtils";
 
 // ============================================
 // Types
@@ -45,7 +45,7 @@ export interface TabFactoryConfig<TData> {
   idStrategy: TabIdStrategy<TData>;
   /** Get display title from data */
   getTitle: (data: TData) => string;
-  /** Optional icon (Lucide icon name) */
+  /** Optional icon (lucide-era icon name) */
   icon?: string;
   /** Whether tab is closable (default: true) */
   closable?: boolean;
@@ -66,7 +66,7 @@ export interface TabFactoryConfig<TData> {
  * `category` field when a tab type wants its own mount slot (e.g. a
  * read-only viewer that should not share state with the editor).
  */
-const DEFAULT_CATEGORY_BY_TYPE: Record<
+export const DEFAULT_CATEGORY_BY_TYPE: Record<
   WorkStationTabType,
   WorkStationTabCategory
 > = {
@@ -75,20 +75,14 @@ const DEFAULT_CATEGORY_BY_TYPE: Record<
   explorer: "explorer",
   "git-diff": "git",
   "source-control": "git",
-  "timeline-diff": "git",
   "git-log": "git",
   "git-commit-detail": "git",
   "git-stash-detail": "git",
   "terminal-content": "terminal",
   "dom-component-preview": "preview",
   terminal: "terminal",
-  output: "terminal",
-  settings: "settings",
   search: "search",
-  "lint-scan": "lint",
-  "ai-impact": "ai-impact",
   "search-sessions": "search-sessions",
-  benchmark: "benchmark",
   "url-preview": "preview",
   "browser-session": "browser",
   devtools: "browser",
@@ -120,10 +114,10 @@ const DEFAULT_CATEGORY_BY_TYPE: Record<
  *
  * @example
  * // Singleton tab (only one instance)
- * const settingsTabFactory = defineTabFactory({
- *   tabType: "settings",
- *   idStrategy: { type: "singleton", id: "settings:main" },
- *   getTitle: () => "Settings",
+ * const projectSettingsTabFactory = defineTabFactory({
+ *   tabType: "project-settings",
+ *   idStrategy: { type: "singleton", id: "project-settings:main" },
+ *   getTitle: () => "Project settings",
  *   icon: "Settings",
  * });
  *
@@ -174,9 +168,4 @@ export function defineTabFactory<TData>(
       hideWhenOthersExist: config.hideWhenOthersExist ?? false,
     };
   };
-}
-
-export function getFileExtension(name: string): string {
-  const parts = name.split(".");
-  return parts.length > 1 ? parts[parts.length - 1] : "";
 }

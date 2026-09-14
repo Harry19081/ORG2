@@ -8,16 +8,13 @@
  *   import { PanelService } from "@src/services/panel";
  *   PanelService.showPrimarySidebar("testing");
  */
+import { workStationEditorSecondaryCollapsedPersistAtom } from "@src/store/ui/workStationLayout/bottomPanelAtoms";
 import {
-  type BottomPanelTab,
   type PrimarySidebarTabKey,
-  workStationBottomPanelTabPersistAtom,
-  workStationEditorSecondaryCollapsedAtom,
-  workStationEditorSecondaryCollapsedPersistAtom,
   workStationPrimarySidebarCollapsedAtom,
   workStationPrimarySidebarCollapsedPersistAtom,
   workStationPrimarySidebarTabAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 const getStore = () => getInstrumentedStore();
@@ -48,17 +45,6 @@ export const PanelService = {
   // ==========================================
   // Bottom Panel
   // ==========================================
-
-  /**
-   * Show a specific bottom panel tab. Expands the panel if collapsed.
-   */
-  showBottomPanel(tab: BottomPanelTab): void {
-    const store = getStore();
-    store.set(workStationBottomPanelTabPersistAtom, tab);
-    if (store.get(workStationEditorSecondaryCollapsedAtom)) {
-      store.set(workStationEditorSecondaryCollapsedPersistAtom, false);
-    }
-  },
 
   /**
    * Toggle bottom panel visibility (persisted).

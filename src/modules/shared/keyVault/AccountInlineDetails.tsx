@@ -1,10 +1,10 @@
-import { Check, Copy } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { getFullKey } from "@src/api/services/keyValidation";
 import { CLI_AGENT } from "@src/api/tauri/rpc/schemas/validation";
 import { isApiKeyProvider } from "@src/assets/providers";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import {
   getQuotaBgColorClass,
@@ -19,7 +19,8 @@ import {
   resolveAccountUsageItems,
   resolveQuotaPlanLabel,
 } from "@src/hooks/keyVault/accountQuotaDisplay";
-import { useCopyCheck } from "@src/hooks/ui";
+import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import { Copy01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 import InlineExpandedSplitCard from "@src/modules/shared/layouts/blocks/InlineExpandedSplitCard";
 import { copyText } from "@src/util/data/clipboard";
@@ -50,10 +51,6 @@ function hasTotalPercentUsed(
     typeof (quotaInfo as { total_percent_used?: unknown })
       .total_percent_used === "number"
   );
-}
-
-function resolvePlanLabel(account: KeyVaultAccount): string | null {
-  return resolveQuotaPlanLabel(account);
 }
 
 export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
@@ -113,7 +110,7 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
     if (!showQuota || !account.quotaInfo) return null;
 
     const quotaInfo = account.quotaInfo;
-    const planLabel = resolvePlanLabel(account);
+    const planLabel = resolveQuotaPlanLabel(account, t);
     const remainingPercent = hasTotalPercentUsed(quotaInfo)
       ? 100 - quotaInfo.total_percent_used
       : (quotaInfo.remaining_percentage ?? 0);
@@ -125,7 +122,7 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
       textColorClass: getQuotaTextColorClass(remainingPercent),
       isUnlimited: quotaInfo.is_unlimited === true,
     };
-  }, [account, showQuota]);
+  }, [account, showQuota, t]);
 
   const quotaUsageItems = useMemo(() => {
     if (!showQuota || !account.quotaInfo) {
@@ -349,13 +346,30 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
                   <span className="min-w-0 flex-1 truncate text-[12px] text-text-1">
                     {account.apiKeyPreview ?? t("keyVault.info.configured")}
                   </span>
-                  <button
-                    type="button"
+                  <Button
+                    variant="tertiary"
+                    appearance="ghost"
+                    size="mini"
+                    iconOnly
+                    icon={
+                      apiKeyCopied ? (
+                        <HugeiconsIcon
+                          icon={Tick01Icon}
+                          data-icon="check"
+                          size={13}
+                        />
+                      ) : (
+                        <HugeiconsIcon
+                          icon={Copy01Icon}
+                          data-icon="copy"
+                          size={13}
+                        />
+                      )
+                    }
+                    htmlType="button"
                     onClick={handleCopyApiKey}
                     className={`transition-colors ${apiKeyCopied ? "text-success-6" : "text-text-2 hover:text-text-1"}`}
-                  >
-                    {apiKeyCopied ? <Check size={13} /> : <Copy size={13} />}
-                  </button>
+                  />
                 </div>
               </InfoRow>
             ) : null}
@@ -370,7 +384,7 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
           <span className="text-[12px] font-semibold text-text-1">
             {t("keyVault.descriptionOptional")}
           </span>
-          <p className="whitespace-pre-wrap break-words text-[12px] text-text-2">
+          <p className="text-[12px] wrap-break-word whitespace-pre-wrap text-text-2">
             {account.description}
           </p>
         </div>

@@ -1,7 +1,10 @@
 import type {
   TeamInboxFilter,
+  TeamInboxIssue,
   TeamInboxItem,
   TeamInboxNavigationIntent,
+  TeamInboxPage,
+  WorkItemUpdateItem,
 } from "./types";
 
 const INVALID_TIMESTAMP = Number.NEGATIVE_INFINITY;
@@ -35,6 +38,16 @@ export function isActionableTeamInboxItem(item: TeamInboxItem): boolean {
     .toLowerCase()
     .replace(/[\s-]+/g, "_");
   return !TERMINAL_ASSIGNED_WORK_ITEM_STATUSES.has(status);
+}
+
+export function isWorkItemEvent(
+  item: TeamInboxItem
+): item is WorkItemUpdateItem {
+  return (
+    item.kind === "work_item_updated" ||
+    item.kind === "work_item_run_failed" ||
+    item.kind === "child_completed"
+  );
 }
 
 /**
@@ -76,6 +89,7 @@ export function filterTeamInboxItems(
   items: readonly TeamInboxItem[],
   filter: TeamInboxFilter
 ): TeamInboxItem[] {
+  if (filter === "archived") return [...items];
   const actionableItems = items.filter(isActionableTeamInboxItem);
   if (filter === "all") return actionableItems;
   const kind = filter === "mentions" ? "comment_mention" : "assigned_work_item";
@@ -107,9 +121,12 @@ function searchableText(item: TeamInboxItem): string[] {
   return [
     item.payload.title,
     item.payload.summary ?? "",
-    item.payload.assigneeName ?? item.payload.assigneeMemberId,
+    item.kind === "assigned_work_item"
+      ? (item.payload.assigneeName ?? item.payload.assigneeMemberId)
+      : (item.payload.recipientName ?? item.payload.recipientMemberId),
     item.payload.status,
     item.payload.priority,
+    item.kind === "assigned_work_item" ? "" : item.payload.eventKind,
     item.actor.displayName,
   ];
 }
@@ -158,7 +175,7 @@ export function countUnreadTeamInboxItemsByFilter(
         if (item.readAt !== null) return counts;
         counts.all += 1;
         if (item.kind === "comment_mention") counts.mentions += 1;
-        else counts.assigned += 1;
+        else if (item.kind === "assigned_work_item") counts.assigned += 1;
         return counts;
       },
       { all: 0, mentions: 0, assigned: 0 }
@@ -180,6 +197,7 @@ export function toTeamInboxNavigationIntent(
   if (item.target.kind === "session_comment") {
     return {
       kind: "open_session_comment",
+      ...(item.target.orgId ? { orgId: item.target.orgId } : {}),
       sessionId: item.target.sessionId,
       commentId: item.target.commentId,
       threadId: item.target.threadId,
@@ -193,4 +211,26 @@ export function toTeamInboxNavigationIntent(
     projectId: item.target.projectId,
     workItemId: item.target.workItemId,
   };
+}
+
+export interface LoadState {
+  status: "loading" | "ready" | "warning" | "error";
+  message: string | null;
+}
+
+export function loadStateForPage(
+  page: TeamInboxPage,
+  issueMessage: (issue: TeamInboxIssue) => string
+): LoadState {
+  if (page.issue) {
+    return {
+      status: page.issue.code === "partial_load" ? "warning" : "error",
+      message: issueMessage(page.issue),
+    };
+  }
+  // A retained snapshot remains usable while it revalidates. Only an empty
+  // scope needs a blocking loading state.
+  return page.loading && page.items.length === 0
+    ? { status: "loading", message: null }
+    : { status: "ready", message: null };
 }

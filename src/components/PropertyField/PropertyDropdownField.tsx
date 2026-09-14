@@ -1,7 +1,7 @@
-import { ChevronDown } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@src/components/Button";
 import {
   PILL_CONTROL_FIELD_FOCUS_CLASS,
   type PillControlFocusTreatment,
@@ -11,7 +11,8 @@ import {
   DROPDOWN_CLASSES,
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
-import { useDropdownEngine } from "@src/hooks/dropdown";
+import { getDropdownPanelStyle, useDropdownEngine } from "@src/hooks/dropdown";
+import { ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 
 import { usePropertyDropdownDirection } from "./PropertyDropdownDirection";
 import {
@@ -33,6 +34,7 @@ export type PropertyDropdownPlacement = "inline" | "portal";
 export type PropertyDropdownTriggerVariant =
   | "row"
   | "pill"
+  | "workstation-trail"
   | "iconOnly"
   | "iconChevron";
 
@@ -51,6 +53,8 @@ interface PropertyDropdownFieldProps<T extends string> {
   interactionDisabled?: boolean;
   searchable?: boolean;
   searchPlaceholder?: string;
+  /** Size the dropdown panel to the rendered trigger instead of its content. */
+  matchTriggerWidth?: boolean;
   selected?: boolean;
   active?: boolean;
   onActiveChange?: (active: boolean) => void;
@@ -82,6 +86,7 @@ export function PropertyDropdownField<T extends string>({
   interactionDisabled = false,
   searchable = true,
   searchPlaceholder,
+  matchTriggerWidth = false,
   selected = true,
   active,
   onActiveChange,
@@ -149,7 +154,9 @@ export function PropertyDropdownField<T extends string>({
   );
 
   const resolvedTriggerVariant = triggerVariant ?? fieldVariant;
-  const isRowTrigger = resolvedTriggerVariant === "row";
+  const isRowTrigger =
+    resolvedTriggerVariant === "row" ||
+    resolvedTriggerVariant === "workstation-trail";
   const isIconTrigger =
     resolvedTriggerVariant === "iconOnly" ||
     resolvedTriggerVariant === "iconChevron";
@@ -183,8 +190,10 @@ export function PropertyDropdownField<T extends string>({
     .join(" ");
 
   const trigger = isIconTrigger ? (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       title={label}
       aria-label={label}
       aria-disabled={readonly || interactionDisabled}
@@ -206,10 +215,15 @@ export function PropertyDropdownField<T extends string>({
       </span>
       {isIconChevronTrigger && !readonly ? (
         <span className="flex h-6 w-5 items-center justify-center">
-          <ChevronDown size={12} strokeWidth={1.8} />
+          <HugeiconsIcon
+            icon={ArrowDown01Icon}
+            data-icon="chevron-down"
+            size={12}
+            strokeWidth={1.8}
+          />
         </span>
       ) : null}
-    </button>
+    </Button>
   ) : (
     <FieldRow
       icon={icon}
@@ -221,7 +235,13 @@ export function PropertyDropdownField<T extends string>({
       showChevron
       suffix={
         fieldVariant === "pill" && !readonly ? (
-          <ChevronDown className="ml-1 shrink-0" size={12} strokeWidth={1.8} />
+          <HugeiconsIcon
+            icon={ArrowDown01Icon}
+            data-icon="chevron-down"
+            className="ml-1 shrink-0"
+            size={12}
+            strokeWidth={1.8}
+          />
         ) : undefined
       }
       variant={fieldVariant}
@@ -302,9 +322,9 @@ export function PropertyDropdownField<T extends string>({
           <div
             ref={dropdownRef}
             data-property-dropdown
-            className={`absolute ${fieldVariant === "pill" ? "left-0" : "left-2 right-2"} ${
+            className={`absolute ${matchTriggerWidth ? "right-0 left-0" : fieldVariant === "pill" ? "left-0" : "right-2 left-2"} ${
               dropdownDirection === "up" ? "bottom-full mb-1" : "top-full mt-1"
-            } flex flex-col ${fieldVariant === "pill" ? DROPDOWN_WIDTHS.wideMenuClass : ""} ${DROPDOWN_CLASSES.panelAnimated}`}
+            } flex flex-col ${!matchTriggerWidth && fieldVariant === "pill" ? DROPDOWN_WIDTHS.wideMenuClass : ""} ${DROPDOWN_CLASSES.panelAnimated}`}
           >
             {dropdownContent()}
           </div>
@@ -319,15 +339,11 @@ export function PropertyDropdownField<T extends string>({
           <div
             ref={dropdownRef}
             data-property-dropdown
-            className={`fixed flex flex-col ${DROPDOWN_WIDTHS.wideMenuClass} ${DROPDOWN_CLASSES.panelAnimated}`}
-            style={{
-              top: dropdownPosition.top,
-              left:
-                dropdownPosition.right === undefined
-                  ? dropdownPosition.left
-                  : undefined,
-              right: dropdownPosition.right,
-            }}
+            className={`fixed flex flex-col ${matchTriggerWidth ? "" : DROPDOWN_WIDTHS.wideMenuClass} ${DROPDOWN_CLASSES.panelAnimated}`}
+            style={getDropdownPanelStyle(dropdownPosition, {
+              widthMode: matchTriggerWidth ? "match" : "none",
+              constrainHeight: false,
+            })}
           >
             {dropdownContent()}
           </div>,

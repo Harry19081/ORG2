@@ -1,7 +1,13 @@
-import { extractGptModelTier } from "./modelGrouping";
+import {
+  extractGptModelTier,
+  isModelVariantSuffixToken,
+  stripCursorHostedModelPrefix,
+  withCursorHostedModelPrefix,
+} from "./modelNameGrammar";
 
 export const MODEL_REASONING_LEVEL = {
   NONE: "none",
+  // No explicit effort override. Keep the internal key stable; display as Default.
   BASELINE: "baseline",
   LOW: "low",
   MEDIUM: "medium",
@@ -44,22 +50,6 @@ const GPT_BASE_PATTERN = /^(gpt-\d+(?:\.\d+)?)(?:-(.+))?$/i;
 const COMPOSER_BASE_PATTERN = /^(composer-\d+(?:\.\d+)?)(?:-(.+))?$/i;
 const O_SERIES_BASE_PATTERN = /^o(\d+(?:\.\d+)?)(?:-(.+))?$/i;
 
-const VARIANT_SUFFIX_TOKENS = new Set<string>([
-  "none",
-  "low",
-  "medium",
-  "high",
-  "extra",
-  "extra-high",
-  "xhigh",
-  "ultra",
-  "max",
-  "ultracode",
-  "minimal",
-  "thinking",
-  "fast",
-]);
-
 function normalizeReasoning(
   value: string | undefined
 ): ModelReasoningLevel | undefined {
@@ -91,7 +81,7 @@ function collectSuffixTokens(
   const suffixTokens: string[] = [];
   while (baseSegments.length > minBaseLength) {
     const last = baseSegments.at(-1);
-    if (!last || !VARIANT_SUFFIX_TOKENS.has(last)) break;
+    if (!last || !isModelVariantSuffixToken(last)) break;
     suffixTokens.unshift(last);
     baseSegments.pop();
   }
@@ -256,6 +246,24 @@ function parseOSeriesVariant(model: string): ModelVariantMetadata | undefined {
 export function parseModelVariant(
   model: string
 ): ModelVariantMetadata | undefined {
+  const { isCursorHosted, coreModelName } = stripCursorHostedModelPrefix(model);
+  const parsed = parseCoreModelVariant(coreModelName);
+  if (!parsed) return undefined;
+
+  if (!isCursorHosted) {
+    return { ...parsed, model };
+  }
+
+  return {
+    ...parsed,
+    model,
+    baseModel: withCursorHostedModelPrefix(parsed.baseModel, true),
+  };
+}
+
+function parseCoreModelVariant(
+  model: string
+): Omit<ModelVariantMetadata, "model"> | undefined {
   const gptVariant = parseGptVariant(model);
   if (gptVariant) return gptVariant;
 
@@ -301,7 +309,7 @@ export function formatReasoningLevel(
     case MODEL_REASONING_LEVEL.NONE:
       return "None";
     case MODEL_REASONING_LEVEL.BASELINE:
-      return "Baseline";
+      return "Default";
     case MODEL_REASONING_LEVEL.LOW:
       return "Light";
     case MODEL_REASONING_LEVEL.MEDIUM:
@@ -319,12 +327,6 @@ export function formatReasoningLevel(
     default:
       return "—";
   }
-}
-
-export function modelVariantsByModel(
-  variants: ModelVariantMetadata[] | undefined
-): Map<string, ModelVariantMetadata> {
-  return new Map((variants ?? []).map((variant) => [variant.model, variant]));
 }
 
 /**

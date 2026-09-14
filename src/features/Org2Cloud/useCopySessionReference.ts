@@ -1,5 +1,5 @@
 /**
- * "Copy ID" for a LOCAL session row.
+ * "Copy URL" for a LOCAL session row.
  *
  * The teammate rows in Team Sessions have always offered this, because
  * their row data already carries the `(org, owner, session)` tuple a
@@ -91,9 +91,9 @@ export function useCopySessionReference(): CopySessionReferenceResult {
           sourceSessionId: session.session_id,
         })
       )
-        .then(() => Message.success(i18n.t("common:actions.copied")))
+        .then(() => Message.success(i18n.t("common:status.copied")))
         .catch(() =>
-          Message.error(i18n.t("common:actions.copyFailed"), {
+          Message.error(i18n.t("common:status.copyFailed"), {
             duration: REFUSAL_MESSAGE_DURATION_MS,
             closable: true,
           })
@@ -105,6 +105,6 @@ export function useCopySessionReference(): CopySessionReferenceResult {
   return {
     isCopyReferenceEligible,
     handleCopyReference,
-    copyReferenceLabel: i18n.t("navigation:cloud.sidebar.copyId"),
+    copyReferenceLabel: i18n.t("navigation:cloud.sidebar.copyUrl"),
   };
 }

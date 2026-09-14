@@ -12,7 +12,6 @@ export {
 } from "./detectLanguage";
 
 export {
-  LANGUAGE_DISPLAY_NAMES,
-  SPECIAL_FILENAMES,
   getLanguageDisplayName,
-} from "./languageMap";
+  getLanguageIconFile,
+} from "@src/config/languageMap";

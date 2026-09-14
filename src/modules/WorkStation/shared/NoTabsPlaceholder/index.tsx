@@ -7,29 +7,32 @@
  * Usage:
  *   <NoTabsPlaceholder icon="editor" actions={quickActions} />
  */
-import {
-  ChartNoAxesGantt,
-  Code,
-  Database,
-  GitBranch,
-  Globe,
-  Layout,
-  MessageCircle,
-  MessagesSquare,
-  Phone,
-  Power,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import React, { memo } from "react";
 
-import {
-  KEYBOARD_SHORTCUT_VARIANT,
-  KeyboardShortcut,
-} from "@src/components/KeyboardShortcut";
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
+import {
+  BubbleChatIcon,
+  ContentWritingIcon,
+  DatabaseIcon,
+  DeliveryBox01Icon,
+  type IconSvgElement,
+  InternetIcon,
+  Layout01Icon,
+  MessageMultiple01Icon,
+  PowerServiceIcon,
+  SmartPhone01Icon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
+import {
+  SPOTLIGHT_CLASSES,
+  SPOTLIGHT_TOKENS,
+} from "@src/scaffold/GlobalSpotlight/constants";
 
 import type { QuickAction } from "../QuickActionsPanel/types";
-import { EDITOR_TAB_CANVAS_BG_CLASS } from "../tokens";
 
 // ============================================
 // Types
@@ -47,7 +50,7 @@ export type PlaceholderIcon =
   | "cargo"
   | "canvas";
 
-export interface NoTabsPlaceholderProps {
+interface NoTabsPlaceholderProps {
   /** Tool icon to display */
   icon: PlaceholderIcon;
   /** Optional line shown below the icon (e.g. simulator awaiting Agent) */
@@ -56,23 +59,25 @@ export interface NoTabsPlaceholderProps {
   actions?: QuickAction[];
   /** Optional click handler for actions */
   onActionClick?: (action: QuickAction) => void;
+  /** Optional contextual content rendered below the shortcut actions */
+  children?: React.ReactNode;
 }
 
 // ============================================
 // Icon Config
 // ============================================
 
-const ICON_MAP: Record<PlaceholderIcon, LucideIcon> = {
-  editor: Code,
-  "source-control": GitBranch,
-  browser: Globe,
-  database: Database,
-  project: ChartNoAxesGantt,
-  simulator: Power,
-  messages: MessagesSquare,
-  chat: MessageCircle,
-  cargo: Phone,
-  canvas: Layout,
+const ICON_MAP: Record<PlaceholderIcon, IconSvgElement> = {
+  editor: ContentWritingIcon,
+  "source-control": WorkflowCircle05Icon,
+  browser: InternetIcon,
+  database: DatabaseIcon,
+  project: DeliveryBox01Icon,
+  simulator: PowerServiceIcon,
+  messages: MessageMultiple01Icon,
+  chat: BubbleChatIcon,
+  cargo: SmartPhone01Icon,
+  canvas: Layout01Icon,
 };
 
 // ============================================
@@ -93,29 +98,30 @@ const ActionItem = memo<ActionItemProps>(({ action, onClick }) => {
   };
 
   return (
-    <button
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       onClick={handleClick}
       disabled={action.disabled}
-      className={`flex w-full items-center justify-between rounded-lg px-4 py-2.5 transition-colors ${
+      className={`${SPOTLIGHT_CLASSES.itemRow} w-full text-left transition-colors ${
         action.disabled
           ? "cursor-not-allowed opacity-50"
           : `${SURFACE_TOKENS.hover} active:bg-fill-3`
       }`}
+      style={{ height: SPOTLIGHT_TOKENS.itemHeight }}
     >
       <span
-        className={`text-[14px] font-medium ${
+        className={`min-w-0 flex-1 truncate text-[14px] font-medium ${
           action.disabled ? "text-text-4" : "text-text-3"
         }`}
       >
         {action.label}
       </span>
       {action.shortcut && (
-        <KeyboardShortcut
-          shortcut={action.shortcut}
-          variant={KEYBOARD_SHORTCUT_VARIANT.workStation}
-        />
+        <KeyboardShortcut shortcut={action.shortcut} rendering="original" />
       )}
-    </button>
+    </Button>
   );
 });
 
@@ -130,12 +136,11 @@ interface ToolIconProps {
 }
 
 const ToolIcon = memo<ToolIconProps>(({ icon }) => {
-  const IconComponent = ICON_MAP[icon];
-
   return (
     <div className="flex justify-center pb-4">
       <div className="flex h-[100px] w-[100px] items-center justify-center">
-        <IconComponent
+        <AnyIcon
+          icon={ICON_MAP[icon]}
           size={72}
           strokeWidth={1.25}
           className="text-text-1 opacity-30"
@@ -152,7 +157,7 @@ ToolIcon.displayName = "ToolIcon";
 // ============================================
 
 export const NoTabsPlaceholder: React.FC<NoTabsPlaceholderProps> = memo(
-  ({ icon, caption, actions, onActionClick }) => {
+  ({ icon, caption, actions, onActionClick, children }) => {
     return (
       <div
         className={`flex h-full w-full items-center justify-center ${EDITOR_TAB_CANVAS_BG_CLASS}`}
@@ -169,7 +174,10 @@ export const NoTabsPlaceholder: React.FC<NoTabsPlaceholderProps> = memo(
 
           {/* Actions list */}
           {actions && actions.length > 0 && (
-            <div className="flex flex-col">
+            <div
+              className="flex flex-col"
+              style={{ gap: SPOTLIGHT_TOKENS.itemGap }}
+            >
               {actions.map((action) => (
                 <ActionItem
                   key={action.id}
@@ -179,6 +187,8 @@ export const NoTabsPlaceholder: React.FC<NoTabsPlaceholderProps> = memo(
               ))}
             </div>
           )}
+
+          {children}
         </div>
       </div>
     );

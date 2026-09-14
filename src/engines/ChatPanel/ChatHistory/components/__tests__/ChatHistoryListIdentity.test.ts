@@ -1,0 +1,270 @@
+// @vitest-environment jsdom
+import {
+  type MutableRefObject,
+  act,
+  createElement,
+  createRef,
+  useEffect,
+} from "react";
+import { type Root, createRoot } from "react-dom/client";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+
+import { HIDDEN_AGENT_STATUS_TRAIL_STATE } from "@src/engines/ChatPanel/hooks/agentStatusTrailMath";
+
+import type { OptimizedChatItem } from "../../chatItemPipeline/types";
+import type { GroupHeaderRenderPart } from "../../renderers/GroupHeaderRenderer";
+import ChatHistoryList from "../ChatHistoryList";
+import { sameChatHistoryListProps } from "../ChatHistoryListEquality";
+import { buildChatGroupRenderKeys } from "../ChatHistoryListLayout";
+import type {
+  ChatHistoryListHandle,
+  ChatHistoryListProps,
+} from "../ChatHistoryListTypes";
+
+const { measureElementSpy } = vi.hoisted(() => ({
+  measureElementSpy: vi.fn(),
+}));
+const resizeUnobserveSpy = vi.fn();
+
+vi.mock("@tanstack/react-virtual", () => ({
+  useVirtualizer: (options: {
+    count: number;
+    getItemKey: (index: number) => string | number;
+  }) => {
+    const items = Array.from({ length: options.count }, (_, index) => ({
+      index,
+      key: options.getItemKey(index),
+      start: index * 360,
+    }));
+    return {
+      getTotalSize: () => options.count * 360,
+      getVirtualItems: () => items,
+      measureElement: measureElementSpy,
+      scrollToIndex: () => undefined,
+    };
+  },
+}));
+
+vi.mock("../../renderers", () => ({
+  GroupItemRenderer: () => null,
+}));
+
+function bodyItem(index: number): OptimizedChatItem {
+  return {
+    chunk_id: `body-${index}`,
+    type: "activity",
+    event: { id: `event-${index}` },
+  } as OptimizedChatItem;
+}
+
+describe("buildChatGroupRenderKeys", () => {
+  it("keeps turn identity independent from visible body items", () => {
+    expect(
+      buildChatGroupRenderKeys(["turn-with-image", null, "turn-with-image"])
+    ).toEqual([
+      "chat-turn:turn-with-image:occurrence:0",
+      "chat-group-index:1",
+      "chat-turn:turn-with-image:occurrence:1",
+    ]);
+  });
+
+  it("uses an immutable event identity for headerless groups", () => {
+    expect(
+      buildChatGroupRenderKeys([null, "turn-b"], ["event-a", "event-b"])
+    ).toEqual([
+      "chat-event:event-a:occurrence:0",
+      "chat-turn:turn-b:occurrence:0",
+    ]);
+  });
+});
+
+describe("ChatHistoryList turn identity", () => {
+  let container: HTMLDivElement;
+  let root: Root;
+  let imageMounts = 0;
+  let imageUnmounts = 0;
+  let originalRequestAnimationFrame: typeof window.requestAnimationFrame;
+  let originalCancelAnimationFrame: typeof window.cancelAnimationFrame;
+
+  const actEnvironment = globalThis as typeof globalThis & {
+    IS_REACT_ACT_ENVIRONMENT?: boolean;
+  };
+  const virtualListRef = createRef<ChatHistoryListHandle>();
+  const virtualScrollerRef: MutableRefObject<HTMLDivElement | null> = {
+    current: null,
+  };
+  const staticScrollerRef: MutableRefObject<HTMLDivElement | null> = {
+    current: null,
+  };
+  const noop = () => undefined;
+  const renderGroupHeader = (
+    _groupIndex: number,
+    renderPart: GroupHeaderRenderPart = "all"
+  ) => {
+    if (renderPart === "collapse") return null;
+    return createElement(HeaderImage);
+  };
+
+  function HeaderImage() {
+    useEffect(() => {
+      imageMounts += 1;
+      return () => {
+        imageUnmounts += 1;
+      };
+    }, []);
+    return createElement("img", {
+      "data-testid": "appended-image",
+      alt: "Attached",
+      src: "data:image/png;base64,AA==",
+    });
+  }
+
+  it.each([
+    ["queueMessageId", "old-owner", undefined],
+    ["deliveryOwnerRetired", undefined, true],
+    ["deliveryStatus", "failed", "pending"],
+    ["deliveryError", "old failure", "new failure"],
+    ["turnIntentId", "old-intent", "retry-intent"],
+  ])("invalidates cached actions when %s changes", (key, before, after) => {
+    const item = bodyItem(0);
+    const previous = listProps(
+      [
+        {
+          ...item,
+          event: { ...item.event!, result: { [key]: before } },
+        },
+      ],
+      "same-session"
+    );
+    const next = {
+      ...previous,
+      flatItems: [
+        {
+          ...item,
+          event: { ...item.event!, result: { [key]: after } },
+        },
+      ],
+    };
+    expect(sameChatHistoryListProps(previous, next)).toBe(false);
+    expect(sameChatHistoryListProps(previous, previous)).toBe(true);
+  });
+
+  function listProps(
+    flatItems: OptimizedChatItem[],
+    virtualListDataKey: string
+  ): ChatHistoryListProps {
+    return {
+      flatItems,
+      groupCounts: [flatItems.length],
+      turnIds: ["turn-with-image"],
+      totalFlatItems: flatItems.length,
+      footerSpacerHeight: 0,
+      bottomInset: 0,
+      topPaddingPx: 0,
+      planningIndicatorCount: 0,
+      planningVariantIndex: 0,
+      planningFooterMode: "planning",
+      statusTrail: HIDDEN_AGENT_STATUS_TRAIL_STATE,
+      statusTrailSessionId: null,
+      virtualListRef,
+      virtualListDataKey,
+      getIsWpGeneWorking: () => false,
+      renderGroupHeader,
+      onAtBottomStateChange: noop,
+      onRangeChanged: noop,
+      onEndReached: noop,
+      virtualScrollerRef,
+      staticScrollerRef,
+    };
+  }
+
+  beforeAll(() => {
+    actEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
+    originalRequestAnimationFrame = window.requestAnimationFrame;
+    originalCancelAnimationFrame = window.cancelAnimationFrame;
+    window.requestAnimationFrame = () => 1;
+    window.cancelAnimationFrame = () => undefined;
+  });
+
+  beforeEach(() => {
+    imageMounts = 0;
+    imageUnmounts = 0;
+    measureElementSpy.mockClear();
+    resizeUnobserveSpy.mockClear();
+    vi.stubGlobal(
+      "ResizeObserver",
+      class ResizeObserverMock {
+        observe = vi.fn();
+        unobserve = resizeUnobserveSpy;
+        disconnect = vi.fn();
+      }
+    );
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    container.remove();
+    vi.unstubAllGlobals();
+  });
+
+  afterAll(() => {
+    Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
+    window.requestAnimationFrame = originalRequestAnimationFrame;
+    window.cancelAnimationFrame = originalCancelAnimationFrame;
+  });
+
+  it("preserves the appended image while collapse changes the body and render mode", () => {
+    const collapsedItems = [bodyItem(24)];
+    const expandedItems = Array.from({ length: 25 }, (_, index) =>
+      bodyItem(index)
+    );
+
+    act(() =>
+      root.render(
+        createElement(ChatHistoryList, listProps(collapsedItems, "collapsed"))
+      )
+    );
+    const originalImage = container.querySelector(
+      '[data-testid="appended-image"]'
+    );
+    expect(
+      originalImage
+        ?.closest("[data-transcript-anchor-id]")
+        ?.getAttribute("data-transcript-anchor-id")
+    ).toBe("chat-turn:turn-with-image:occurrence:0");
+
+    act(() =>
+      root.render(
+        createElement(ChatHistoryList, listProps(expandedItems, "expanded"))
+      )
+    );
+    act(() =>
+      root.render(
+        createElement(
+          ChatHistoryList,
+          listProps(collapsedItems, "collapsed-again")
+        )
+      )
+    );
+
+    expect(imageMounts).toBe(1);
+    expect(imageUnmounts).toBe(0);
+    expect(container.querySelector('[data-testid="appended-image"]')).toBe(
+      originalImage
+    );
+    expect(measureElementSpy).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+    expect(resizeUnobserveSpy).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+  });
+});

@@ -9,10 +9,17 @@
  * allow-forms, no allow-popups-to-escape-sandbox. No eval bridge is injected
  * into the document. External URLs are never loaded.
  */
-import { Maximize2, Minimize2, SquareArrowOutUpRight, X } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
+import {
+  ArrowExpand01Icon,
+  ArrowShrink01Icon,
+  Cancel01Icon,
+  HugeiconsIcon,
+  SquareArrowUpRight02Icon,
+} from "@src/icons";
 import { IFRAME_STYLE_NONCE, stampStyleNonces } from "@src/util/iframeCspNonce";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -107,32 +114,66 @@ const CodePreview: React.FC<CodePreviewProps> = ({
           {t("codePreview.label")}
         </span>
         <div className="flex items-center gap-1">
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="mini"
+            aria-label={
+              isMaxHeight ? t("codePreview.shrink") : t("codePreview.expand")
+            }
+            iconOnly
+            icon={
+              isMaxHeight ? (
+                <HugeiconsIcon
+                  icon={ArrowShrink01Icon}
+                  data-icon="minimize-2"
+                  size={12}
+                />
+              ) : (
+                <HugeiconsIcon
+                  icon={ArrowExpand01Icon}
+                  data-icon="maximize-2"
+                  size={12}
+                />
+              )
+            }
+            htmlType="button"
             onClick={handleToggleSize}
-            className="rounded p-1 text-text-4 transition-colors hover:bg-fill-3 hover:text-text-2"
+            className="hover:bg-fill-3 hover:text-text-2"
             title={
               isMaxHeight ? t("codePreview.shrink") : t("codePreview.expand")
             }
-          >
-            {isMaxHeight ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-          </button>
-          <button
-            type="button"
+          />
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="mini"
+            aria-label={t("codePreview.openExternal")}
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={SquareArrowUpRight02Icon}
+                data-icon="square-arrow-out-up-right"
+                size={12}
+              />
+            }
+            htmlType="button"
             onClick={handleOpenExternal}
-            className="rounded p-1 text-text-4 transition-colors hover:bg-fill-3 hover:text-text-2"
+            className="hover:bg-fill-3 hover:text-text-2"
             title={t("codePreview.openExternal")}
-          >
-            <SquareArrowOutUpRight size={12} />
-          </button>
-          <button
-            type="button"
+          />
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="mini"
+            aria-label={t("codePreview.close")}
+            iconOnly
+            icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />}
+            htmlType="button"
             onClick={onClose}
-            className="rounded p-1 text-text-4 transition-colors hover:bg-fill-3 hover:text-text-2"
+            className="hover:bg-fill-3 hover:text-text-2"
             title={t("codePreview.close")}
-          >
-            <X size={12} />
-          </button>
+          />
         </div>
       </div>
 

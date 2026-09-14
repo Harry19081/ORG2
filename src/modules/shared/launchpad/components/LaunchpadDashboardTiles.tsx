@@ -7,13 +7,19 @@
  *
  * Extracted from LaunchpadDashboard.tsx to keep it under 600 lines.
  */
-import { Plus } from "lucide-react";
-import React, { memo, useLayoutEffect, useRef, useState } from "react";
+import React, { memo, useRef } from "react";
 
+import Button from "@src/components/Button";
+import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
+import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
 import type { Repo } from "@src/store/repo/types";
 
 import MacFolderIcon from "./MacFolderIcon";
+
+/** Tile footprint (`w-20`) and wrap gap (`gap-2`) in px, used to derive the column count. */
+const LAUNCHPAD_TILE_WIDTH_PX = 80;
+const LAUNCHPAD_TILE_GAP_PX = 8;
 
 const LAUNCHPAD_TILE_CLASS =
   "group/launchpadtile flex w-20 shrink-0 flex-col items-center gap-1.5 border-none bg-transparent p-0 text-center outline-none";
@@ -57,29 +63,17 @@ export const LaunchpadTileWrap: React.FC<{
   action?: React.ReactNode;
 }> = ({ children, actionAfterIndex = -1, action }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [columnCount, setColumnCount] = useState(1);
+  const containerWidth = useElementDimensions(containerRef, {
+    dimension: "width",
+  });
+  const columnCount = Math.max(
+    1,
+    Math.floor(
+      (containerWidth + LAUNCHPAD_TILE_GAP_PX) /
+        (LAUNCHPAD_TILE_WIDTH_PX + LAUNCHPAD_TILE_GAP_PX)
+    )
+  );
   const items = React.Children.toArray(children);
-
-  useLayoutEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const updateColumnCount = (): void => {
-      const tileWidth = 80;
-      const gap = 8;
-      setColumnCount(
-        Math.max(
-          1,
-          Math.floor((container.clientWidth + gap) / (tileWidth + gap))
-        )
-      );
-    };
-
-    updateColumnCount();
-    const observer = new ResizeObserver(updateColumnCount);
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
 
   const rowEndIndex =
     actionAfterIndex >= 0
@@ -126,7 +120,7 @@ export const LaunchpadTile: React.FC<LaunchpadTileProps> = memo(
         >
           {icon}
           {status ? (
-            <span className="absolute right-1.5 top-1.5">{status}</span>
+            <span className="absolute top-1.5 right-1.5">{status}</span>
           ) : null}
         </div>
         <span
@@ -143,8 +137,10 @@ export const LaunchpadTile: React.FC<LaunchpadTileProps> = memo(
 
     if (onClick) {
       return (
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onClick}
           className={LAUNCHPAD_TILE_CLASS}
           title={title ?? label}
@@ -152,7 +148,7 @@ export const LaunchpadTile: React.FC<LaunchpadTileProps> = memo(
           data-testid={dataTestId}
         >
           {content}
-        </button>
+        </Button>
       );
     }
 
@@ -172,8 +168,10 @@ interface LaunchpadAddTileProps {
 
 export const LaunchpadAddTile: React.FC<LaunchpadAddTileProps> = memo(
   ({ onCreate, label }) => (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       onClick={onCreate}
       className={LAUNCHPAD_TILE_CLASS}
       title={label}
@@ -181,11 +179,17 @@ export const LaunchpadAddTile: React.FC<LaunchpadAddTileProps> = memo(
     >
       <div className={LAUNCHPAD_TILE_ICON_CLASS}>
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-bg-1">
-          <Plus size={18} strokeWidth={1.75} className="text-text-3" />
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={18}
+            strokeWidth={1.75}
+            className="text-text-3"
+          />
         </span>
       </div>
       <span className={LAUNCHPAD_TILE_LABEL_CLASS}>{label}</span>
-    </button>
+    </Button>
   )
 );
 LaunchpadAddTile.displayName = "LaunchpadAddTile";
@@ -203,8 +207,10 @@ export const LaunchpadWorkspaceCard: React.FC<LaunchpadWorkspaceCardProps> =
     const handleClick = () => onSelect(repo);
 
     return (
-      <button
-        type="button"
+      <Button
+        layout="custom"
+        appearance="custom"
+        htmlType="button"
         onClick={handleClick}
         className={LAUNCHPAD_TILE_CLASS}
         title={repo.path ?? label}
@@ -233,7 +239,7 @@ export const LaunchpadWorkspaceCard: React.FC<LaunchpadWorkspaceCardProps> =
         >
           {label}
         </span>
-      </button>
+      </Button>
     );
   });
 LaunchpadWorkspaceCard.displayName = "LaunchpadWorkspaceCard";

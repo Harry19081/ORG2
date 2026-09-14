@@ -7,19 +7,20 @@
  */
 import React, { Suspense, memo } from "react";
 
-import {
-  NoTabsPlaceholder,
-  type QuickAction,
-} from "@src/modules/WorkStation/shared";
+import { Placeholder } from "@src/components/Placeholder";
+import type { QuickAction } from "@src/modules/WorkStation/shared";
+import GitHubDetailSkeleton from "@src/modules/shared/components/GitHubDetailSkeleton";
 import { useGitHubIssueDetailState } from "@src/modules/shared/hooks/useGitHubIssueDetailState";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { workstationRepoScopeKey } from "@src/store/workstation/codeEditor/workstationPrAtom";
+import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
 
+import { SourceControlSelectionPlaceholder } from "./SourceControlSelectionPlaceholder";
 import {
   type SourceControlMainTabData,
   deriveSourceControlMainProps,
 } from "./sourceControlMainProps";
+import { useSourceControlIssueDetailTab } from "./useSourceControlIssueDetailTab";
 
 const SourceControlMainContent = React.lazy(
   () => import("./SourceControlMainContent")
@@ -48,7 +49,13 @@ export interface SourceControlMainPaneProps {
   onForceReload?: () => void;
   onFileSelect?: (path: string) => void;
   onCloseFocus?: () => void;
+  onOpenHistoryInNewTab?: (selection: SourceControlHistorySelection) => void;
   onGitDiffUnsavedChange?: (hasUnsaved: boolean) => void;
+  /**
+   * Owning tab id; per-tab view state is saved under it so this active-only
+   * pane restores expansion, scroll, and sub-tab selection on remount.
+   */
+  viewStateKey?: string;
 }
 
 const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
@@ -65,7 +72,9 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
   onForceReload,
   onFileSelect,
   onCloseFocus,
+  onOpenHistoryInNewTab,
   onGitDiffUnsavedChange,
+  viewStateKey,
 }) => {
   const scopeKey = workstationRepoScopeKey(repoId, repoPath);
   const {
@@ -77,6 +86,10 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
     repoId: repoId ?? undefined,
     stateScopeKey: scopeKey,
   });
+  const [issueDetailTab, setIssueDetailTab] = useSourceControlIssueDetailTab(
+    viewStateKey,
+    selectedIssueState.issue?.html_url
+  );
 
   const { mode, staged, historySelection, allFiles, focusGitFile, hasFocus } =
     deriveSourceControlMainProps({
@@ -90,23 +103,28 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
 
   if (sourceControlFilterMode === "issues") {
     if (!selectedIssueState.issue) {
-      return (
-        <NoTabsPlaceholder
-          icon="source-control"
-          actions={sourceControlQuickActions}
-        />
-      );
+      return <SourceControlSelectionPlaceholder mode="issues" />;
     }
 
     return (
-      <Suspense fallback={<LazyFallback />}>
+      <Suspense
+        fallback={
+          <GitHubDetailSkeleton
+            kind="issue"
+            showHeader={false}
+            title={selectedIssueState.issue.title}
+            number={selectedIssueState.issue.number}
+          />
+        }
+      >
         <IssueDetailPanel
           issue={selectedIssueState.issue}
           timeline={selectedIssueState.timeline}
           timelineLoading={selectedIssueState.timelineLoading}
           interaction={interaction}
           assigneeConfig={assigneeConfig}
-          showHeader={false}
+          activeTab={issueDetailTab}
+          onTabChange={setIssueDetailTab}
         />
       </Suspense>
     );
@@ -116,12 +134,15 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
     sourceControlFilterMode === "pr" &&
     (!historySelection || historySelection.type !== "pr")
   ) {
-    return (
-      <NoTabsPlaceholder
-        icon="source-control"
-        actions={sourceControlQuickActions}
-      />
-    );
+    return <SourceControlSelectionPlaceholder mode="pr" />;
+  }
+
+  if (
+    (sourceControlFilterMode === "stashed" ||
+      sourceControlFilterMode === "history") &&
+    !historySelection
+  ) {
+    return <SourceControlSelectionPlaceholder mode={sourceControlFilterMode} />;
   }
 
   return (
@@ -134,6 +155,7 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
           onForceReload={onForceReload}
           onFileSelect={onFileSelect}
           onCloseFocus={onCloseFocus}
+          onOpenHistoryInNewTab={onOpenHistoryInNewTab}
           onGitDiffUnsavedChange={onGitDiffUnsavedChange}
           historySelection={historySelection}
           files={allFiles}
@@ -143,6 +165,7 @@ const SourceControlMainPane: React.FC<SourceControlMainPaneProps> = ({
           repoPath={repoPath}
           collapseAllSignal={sourceControlCollapseAllSignal}
           emptyFocusActions={sourceControlQuickActions}
+          viewStateKey={viewStateKey}
         />
       </Suspense>
     </div>

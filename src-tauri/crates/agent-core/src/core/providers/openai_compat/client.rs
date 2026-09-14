@@ -157,12 +157,18 @@ impl OpenAICompatClient {
         body: &str,
         retry_after_secs: Option<u64>,
     ) -> ProviderError {
-        use crate::providers::safe_truncate::safe_truncate_utf8;
+        use crate::utils::safe_truncate_utf8;
         tracing::warn!(
             "[provider] API error HTTP {}: {}",
             status,
             safe_truncate_utf8(body, 500)
         );
+
+        if crate::providers::http_error_body::is_model_unavailable(status, body) {
+            return ProviderError::ModelNotFound(
+                crate::providers::http_error_body::clean_error_message(status, body),
+            );
+        }
 
         if let Ok(err_resp) = serde_json::from_str::<ApiErrorResponse>(body) {
             if let Some(err) = err_resp.error {

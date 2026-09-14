@@ -15,6 +15,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import { Message } from "@src/components/Message";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import type {
   ConflictResolutionChoice,
   CursorPosition,
@@ -22,11 +23,10 @@ import type {
 } from "@src/features/CodeMirror";
 import { hasConflictMarkers } from "@src/features/CodeMirror";
 import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
-import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanelAtom";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { editorAutoSaveAtom } from "@src/store/ui/editorSettingsAtom";
 import { askNativeDialogSafely } from "@src/util/dialogs/nativeDialog";
 
-import type { Diagnostic } from "../../../../EditorBottomPanel/content/ProblemsContent/types";
 import type {
   CallbackRefs,
   CodeViewerContentProps,
@@ -70,7 +70,6 @@ export interface UseCodeViewerHandlersReturn {
   handleDiscard: () => void;
   handleReload: () => Promise<void>;
   handleFileSelect: (filePath: string) => void;
-  handleDiagnosticsChange: (diagnostics: Diagnostic[]) => void;
   handleTogglePreview: () => void;
   handleResolveConflict: (
     conflictId: string,
@@ -114,7 +113,6 @@ export function useCodeViewerHandlers(
     onSave,
     onDiscard,
     onReload,
-    onDiagnosticsChange,
     onCursorPositionChange,
   } = props;
 
@@ -222,7 +220,6 @@ export function useCodeViewerHandlers(
       onSave,
       onDiscard,
       onReload,
-      onDiagnosticsChange,
       onCursorPositionChange,
     };
   });
@@ -245,10 +242,6 @@ export function useCodeViewerHandlers(
 
   const handleCursorChange = useCallback((cursor: CursorPosition) => {
     callbackRefs.current.onCursorPositionChange?.(cursor);
-  }, []);
-
-  const handleDiagnosticsChange = useCallback((diagnostics: Diagnostic[]) => {
-    callbackRefs.current.onDiagnosticsChange?.(diagnostics);
   }, []);
 
   const handleFileSelect = useCallback((filePath: string) => {
@@ -446,16 +439,12 @@ export function useCodeViewerHandlers(
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Save: Cmd/Ctrl+S
-      if ((event.metaKey || event.ctrlKey) && event.key === "s") {
+      if (matchesShortcut(event, "save_file")) {
         event.preventDefault();
         handleSave();
       }
       // Reload: Cmd/Ctrl+Shift+R
-      else if (
-        (event.metaKey || event.ctrlKey) &&
-        event.shiftKey &&
-        event.key === "r"
-      ) {
+      else if (matchesShortcut(event, "reload_file")) {
         event.preventDefault();
         handleReload();
       }
@@ -491,7 +480,6 @@ export function useCodeViewerHandlers(
     handleDiscard,
     handleReload,
     handleFileSelect,
-    handleDiagnosticsChange,
     handleTogglePreview,
     handleResolveConflict,
     handleAskAgent,

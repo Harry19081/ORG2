@@ -3,12 +3,7 @@ import {
   type CliAgentType,
 } from "@src/api/tauri/rpc/schemas/validation";
 
-export type {
-  AgentAction,
-  AgentEnvConfig,
-  AvailableAgent,
-  CliInstallMethod,
-} from "./types";
+export type { AgentAction, AvailableAgent } from "./types";
 export type { CliInstallMethod as InstallMethod } from "./types";
 
 /**
@@ -23,7 +18,7 @@ export type { CliInstallMethod as InstallMethod } from "./types";
  * describes what the CLI itself supports; this set reflects the transport
  * ORGII's GUI actually uses today.
  */
-export const ACP_CLI_AGENTS: ReadonlySet<CliAgentType> = new Set<CliAgentType>([
+const ACP_CLI_AGENTS: ReadonlySet<CliAgentType> = new Set<CliAgentType>([
   CLI_AGENT.OPENCODE,
   CLI_AGENT.COPILOT,
   CLI_AGENT.KIRO,

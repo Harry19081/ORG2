@@ -10,6 +10,8 @@
  */
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 
+import Button from "@src/components/Button";
+
 // ============================================
 // Default presets
 // ============================================
@@ -41,7 +43,7 @@ const SIZE_CLASSES = {
 // Component
 // ============================================
 
-export interface ColorPickerProps {
+interface ColorPickerProps {
   /** Current color value (hex string) */
   value: string;
   /** Called when a color is selected */
@@ -116,20 +118,24 @@ const ColorPicker: React.FC<ColorPickerProps> = memo(
     return (
       <div
         ref={wrapperRef}
-        className={`relative flex flex-shrink-0 items-center self-center ${className}`}
+        className={`relative flex shrink-0 items-center self-center ${className}`}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           className={`${sizeConfig.dot} block rounded-full leading-none transition-transform hover:scale-110 ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
           style={{ backgroundColor: value }}
           onClick={handleToggle}
           disabled={disabled}
         />
         {open && (
-          <div className="absolute left-0 top-[calc(100%+4px)] z-10 flex gap-1 rounded-lg border border-border-2 bg-bg-1 p-2 shadow-lg">
+          <div className="absolute top-[calc(100%+4px)] left-0 z-10 flex gap-1 rounded-lg border border-border-2 bg-bg-1 p-2 shadow-lg">
             {presets.map((preset) => (
-              <button
-                type="button"
+              <Button
+                layout="custom"
+                appearance="custom"
+                htmlType="button"
                 key={preset}
                 className={`${sizeConfig.preset} rounded-full transition-transform hover:scale-110 ${preset === value ? "ring-2 ring-primary-5 ring-offset-1" : ""}`}
                 style={{ backgroundColor: preset }}

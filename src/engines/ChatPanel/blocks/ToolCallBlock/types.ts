@@ -80,14 +80,14 @@ export interface BackgroundJobRow {
   label: string;
 }
 
-export type ProjectToolRowChange = "added" | "updated" | "deleted";
+type ProjectToolRowChange = "added" | "updated" | "deleted";
 
 export interface ProjectToolListRow {
   name: string;
   change?: ProjectToolRowChange;
 }
 
-export interface LspStatusRow {
+interface LspStatusRow {
   key: string;
   label: string;
   value: string;
@@ -256,9 +256,10 @@ export interface TaskListCardData {
   tasks: TaskUpdateCardData[];
   total?: number;
   orgRunId?: string;
+  observation?: "results" | "no_new_work_facts" | "new_trigger_pending";
 }
 
-export type StyledOutput =
+type StyledOutput =
   | { type: "workspaces"; workspaces: WorkspaceEntry[] }
   | { type: "workspaceInfo"; rows: WorkspaceInfoRow[] }
   | { type: "jobListing"; jobs: BackgroundJobRow[] }

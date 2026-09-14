@@ -27,9 +27,7 @@ vi.mock("@src/components/MarkDown", () => ({
     React.createElement("div", { "data-testid": "markdown" }, textContent),
 }));
 
-vi.mock("@src/modules/shared/components/RichMarkdownEditor", () => ({
-  RICH_MARKDOWN_COMPOSER_TOOLBAR_CLASS:
-    "!min-h-0 !border-b-0 !pb-0.5 [&_svg]:size-3.5",
+vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", () => ({
   default: ({ dataTestId }: { dataTestId?: string }) =>
     React.createElement("div", { "data-testid": dataTestId }),
 }));
@@ -94,7 +92,6 @@ describe("mapGitHubIssueToThreadWorkItem", () => {
   it("preserves GitHub identity and metadata for the canonical thread", () => {
     expect(mapGitHubIssueToThreadWorkItem(issue)).toMatchObject({
       session_id: issue.html_url,
-      shortId: "#42",
       name: issue.title,
       spec: issue.body,
       status: "open",
@@ -183,7 +180,7 @@ describe("mapGitHubIssueToThreadWorkItem", () => {
     );
   });
 
-  it("contributes semantic stops to the shared issue and work-item trail", () => {
+  it("contributes the issue description to the shared scroll trail", () => {
     const markup = renderToStaticMarkup(
       React.createElement(GitHubIssueThreadSurface, {
         issue,
@@ -197,9 +194,9 @@ describe("mapGitHubIssueToThreadWorkItem", () => {
     expect(markup).toContain(
       'data-scroll-trail-label="Use one issue detail surface"'
     );
-    expect(
-      markup.match(/data-scroll-trail-target/g)?.length
-    ).toBeGreaterThanOrEqual(3);
+    // GitHub issues do not render the local Sub-items section, and this fixture
+    // has no timeline entries, so the description is the only semantic stop.
+    expect(markup.match(/data-scroll-trail-target/g)).toHaveLength(1);
   });
 
   it("toggles external assignees without duplicating login casing", () => {
@@ -210,5 +207,15 @@ describe("mapGitHubIssueToThreadWorkItem", () => {
       "Ada",
       "Linus",
     ]);
+  });
+
+  it("claims no local Work Item identity for a remote issue", () => {
+    // A synthesized `#<number>` made every local discussion read resolve
+    // against an id the store cannot have ("Work item '#890' not found"), and
+    // a bare "890" would be worse — it would bind to an unrelated local Work
+    // Item. A remote issue simply has no local identity.
+    const mapped = mapGitHubIssueToThreadWorkItem(issue);
+    expect(mapped.shortId).toBeUndefined();
+    expect(mapped.session_id).toBe(issue.html_url);
   });
 });

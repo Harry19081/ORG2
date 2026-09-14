@@ -5,14 +5,20 @@
  * User selects 2+ repos from a checklist; on submit, the selected
  * repos become workspace folders via setWorkspaceFoldersAtom.
  */
-import { Check, Folder, Search } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { WorkspaceRecord } from "@src/api/tauri/workspace";
 import Checkbox from "@src/components/Checkbox";
 import Input from "@src/components/Input";
-import { PanelFooter, Placeholder } from "@src/modules/shared/layouts/blocks";
+import { Placeholder } from "@src/components/Placeholder";
+import {
+  FolderClosedIcon,
+  HugeiconsIcon,
+  Search01Icon,
+  Tick01Icon,
+} from "@src/icons";
+import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import { REPO_KIND } from "@src/store/repo";
 
 import { ICONS } from "../../config";
@@ -122,7 +128,8 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
     : generatedWorkspaceName;
 
   const handleSubmit = useCallback(() => {
-    const name = effectiveName || t("workspaceForm.defaultName", "Workspace");
+    const name =
+      effectiveName || t("workspaceForm.defaultName", "Working Directory");
     const selectedRepoIds = orderedRepos
       .filter((repo) => selectedIds.has(repo.id))
       .map((repo) => repo.id);
@@ -144,10 +151,10 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
         icon={ICONS.workspace}
         title={
           isEditing
-            ? t("workspaceForm.editTitle", "Edit Workspace")
-            : t("workspaceForm.title", "Create Multi-repo Workspace")
+            ? t("workspaceForm.editTitle", "Edit Working Directory")
+            : t("workspaceForm.title", "Create Multi-repo Working Directory")
         }
-        badge="WORKSPACE"
+        badge="WORKING DIRECTORY"
         badgeColor="green"
         statusText={t(`workspaceForm.${statusKey}`, {
           defaultValue:
@@ -162,13 +169,16 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
       <SpotlightFormShell>
         <SpotlightFormBody>
           <div className="mb-3">
-            <label className="mb-2 block text-[14px] font-[400] text-text-2">
-              {t("workspaceForm.workspaceName", "Workspace Name")}
+            <label className="mb-2 block text-[14px] font-normal text-text-2">
+              {t("workspaceForm.workspaceName", "Working Directory Name")}
             </label>
             <Input
               placeholder={
                 effectiveName ||
-                t("workspaceForm.workspaceNamePlaceholder", "My Workspace")
+                t(
+                  "workspaceForm.workspaceNamePlaceholder",
+                  "My Working Directory"
+                )
               }
               value={displayedWorkspaceName}
               onChange={(name) => {
@@ -179,7 +189,8 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
               }}
               className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
               prefix={
-                <ICONS.workspace
+                <HugeiconsIcon
+                  icon={ICONS.workspace}
                   className="text-[16px] text-text-2"
                   size={16}
                 />
@@ -198,12 +209,22 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
               onChange={setRepoSearchQuery}
               allowClear
               className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
-              prefix={<Search size={16} className="text-text-2" />}
+              prefix={
+                <HugeiconsIcon
+                  icon={Search01Icon}
+                  data-icon="search"
+                  size={16}
+                  className="text-text-2"
+                />
+              }
             />
           </div>
 
           <div className="mb-1 text-[12px] font-medium text-text-3">
-            {t("workspaceForm.selectRepos", "Select repos for workspace")}
+            {t(
+              "workspaceForm.selectRepos",
+              "Select repos for working directory"
+            )}
             {selectedIds.size > 0 && (
               <span className="ml-1 text-primary-6">({selectedIds.size})</span>
             )}
@@ -229,13 +250,21 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
                       <Checkbox
                         checked={isChecked}
                         disabled={isSelectionDisabled}
-                        onChange={(checked) => handleToggle(repo.id, checked)}
+                        onCheckedChange={(checked) =>
+                          handleToggle(repo.id, checked)
+                        }
                       />
                       <div className="flex min-w-0 flex-1 items-center gap-2">
                         {repo.kind === REPO_KIND.FOLDER ? (
-                          <Folder size={13} className="shrink-0 text-text-3" />
+                          <HugeiconsIcon
+                            icon={FolderClosedIcon}
+                            data-icon="folder"
+                            size={13}
+                            className="shrink-0 text-text-3"
+                          />
                         ) : (
-                          <ICONS.repo
+                          <HugeiconsIcon
+                            icon={ICONS.repo}
                             size={13}
                             className="shrink-0 text-text-3"
                           />
@@ -245,7 +274,11 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
                         </span>
                         {isCurrent && (
                           <span className="flex items-center gap-0.5 text-[11px] text-primary-6">
-                            <Check size={10} />
+                            <HugeiconsIcon
+                              icon={Tick01Icon}
+                              data-icon="check"
+                              size={10}
+                            />
                             {t("workspaceForm.current", "current")}
                           </span>
                         )}

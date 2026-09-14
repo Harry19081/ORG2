@@ -1,5 +1,4 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { Cloud, Laptop } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -14,9 +13,10 @@ import {
 import { buildOrgSelectorEntries } from "@src/features/Organizations/orgSelectorEntries";
 import { createLogger } from "@src/hooks/logger";
 import { useProjectDataChanged } from "@src/hooks/project";
+import { CloudIcon, HugeiconsIcon, LaptopIcon } from "@src/icons";
 import { openOrganizationInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
-import type { ChatPanelSelectedOrganization } from "@src/store/ui/chatPanelAtom";
+import type { ChatPanelSelectedOrganization } from "@src/store/ui/chatPanel/selectionAtoms";
 import { PROJECT_ORG_SURFACE_VIEW } from "@src/store/workstation/tabs";
 import { STORY_ORG_SCOPE } from "@src/store/workstation/tabs";
 
@@ -82,9 +82,19 @@ export function OrganizationPanelHeader({
       label: entry.label,
       icon:
         entry.kind === "cloud" ? (
-          <Cloud size={13} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={CloudIcon}
+            data-icon="cloud"
+            size={13}
+            strokeWidth={2}
+          />
         ) : (
-          <Laptop size={13} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={LaptopIcon}
+            data-icon="laptop"
+            size={13}
+            strokeWidth={2}
+          />
         ),
       dataTestId: `organization-picker-${entry.kind}-${entry.value}`,
     }));
@@ -95,7 +105,14 @@ export function OrganizationPanelHeader({
       options.unshift({
         value: organization.projectOrg.orgId,
         label: organization.projectOrg.orgName,
-        icon: <Laptop size={13} strokeWidth={2} />,
+        icon: (
+          <HugeiconsIcon
+            icon={LaptopIcon}
+            data-icon="laptop"
+            size={13}
+            strokeWidth={2}
+          />
+        ),
         dataTestId: `organization-picker-local-${organization.projectOrg.orgId}`,
       });
     }

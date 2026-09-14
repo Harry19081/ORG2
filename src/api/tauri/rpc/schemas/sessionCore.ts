@@ -35,6 +35,32 @@ export const EventDisplayStatusSchema = z.enum([
   "awaiting_user",
 ]);
 
+export const SessionTurnIntentInput = z.object({
+  sessionId: z.string().min(1),
+  turnIntentId: z.string().min(1),
+});
+
+export const SessionTurnIntentWaitInput = SessionTurnIntentInput.extend({
+  timeoutMs: z.number().int().positive().max(60_000),
+});
+
+export const SessionTurnIntentStatusSchema = z.object({
+  sessionId: z.string().min(1),
+  turnIntentId: z.string().min(1),
+  status: z.enum([
+    "optimistic",
+    "queued",
+    "running",
+    "completed",
+    "failed",
+    "cancelled",
+    "stale",
+    "coalesced",
+    "rejected",
+  ]),
+  updatedAt: z.string(),
+});
+
 export const EventDisplayVariantSchema = z.enum([
   "tool_call",
   "message",
@@ -260,6 +286,17 @@ export const NullableSessionIdInput = z.object({
   sessionId: z.string().nullable(),
 });
 
+export const ExportMarkdownInput = NullableSessionIdInput.extend({
+  outputPath: z.string().min(1).optional(),
+});
+
+export const RemoveSyntheticUserInputsInput = z.object({
+  sessionId: z.string().nullable(),
+  matchingContents: z.array(z.string()).optional(),
+  matchingTurnIntentIds: z.array(z.string()).optional(),
+  olderThan: z.string().optional(),
+});
+
 export const SessionIdInput = z.object({
   sessionId: z.string(),
 });
@@ -267,6 +304,10 @@ export const SessionIdInput = z.object({
 export const EventsInput = z.object({
   events: SessionEventArraySchema,
   sessionId: z.string().nullable(),
+});
+
+export const SetEventsInput = EventsInput.extend({
+  expectedVersion: z.number().int().nonnegative().optional(),
 });
 
 export const EventInput = z.object({
@@ -410,8 +451,6 @@ export const TurnGitArtifactSchema = z.object({
   sourceBranch: z.string().optional(),
   targetBranch: z.string().optional(),
 });
-
-export type TurnGitArtifact = z.output<typeof TurnGitArtifactSchema>;
 
 export const TurnSummarySchema = z.object({
   sessionId: z.string(),

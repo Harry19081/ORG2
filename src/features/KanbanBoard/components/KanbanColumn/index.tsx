@@ -13,7 +13,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import cn from "classnames";
-import { Plus } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -23,12 +22,12 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  HEADER_BUTTON,
-  HEADER_ICON_SIZE,
-} from "@src/config/workstation/tokens";
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import { getUiScaleFromCssVar } from "@src/lib/dndKit";
-import { Placeholder } from "@src/modules/shared/layouts/blocks/Placeholder";
 
 import type { KanbanColumnConfig, KanbanTask } from "../../types";
 import TaskCard from "../TaskCard";
@@ -63,7 +62,7 @@ interface ScrollEdgeState {
   atBottom: boolean;
 }
 
-export interface KanbanColumnProps {
+interface KanbanColumnProps {
   column: KanbanColumnConfig;
   tasks: KanbanTask[];
   onTaskClick?: (task: KanbanTask) => void;
@@ -242,7 +241,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
       >
         <div className="kanban-column__header-left">
           <div className="kanban-column__icon" style={{ color: column.color }}>
-            <Icon size={16} />
+            <AnyIcon icon={Icon} size={16} />
           </div>
           <div className="kanban-column__title">
             {/* `column.title` is the source of truth for the header label.
@@ -256,13 +255,22 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
           <span className="kanban-column__count">{tasks.length}</span>
         </div>
         {showAddButton && (
-          <button
-            type="button"
-            className={`kanban-column__add-btn ${HEADER_BUTTON.actionTreeRow}`}
+          <Button
+            variant="tertiary"
+            appearance="soft"
+            size="sidebar"
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={Add01Icon}
+                data-icon="plus"
+                size={HEADER_ICON_SIZE.sm}
+              />
+            }
+            htmlType="button"
+            className={`kanban-column__add-btn`}
             onClick={handleAddTask}
-          >
-            <Plus size={HEADER_ICON_SIZE.sm} />
-          </button>
+          />
         )}
       </div>
 

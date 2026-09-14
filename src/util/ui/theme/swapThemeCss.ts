@@ -7,7 +7,16 @@
  * loading, creating a mixed light/dark state. This utility avoids that
  * by keeping the old CSS active until the new one is fully loaded.
  */
-import { isWindows } from "@src/util/platform/tauri";
+import {
+  type GlobalThemePreference,
+  type SystemColorScheme,
+  THEME_PREFERENCE,
+  readStoredGlobalThemePreference,
+} from "@src/config/appearance/globalThemes";
+import { syncMacosRootTint } from "@src/util/platform/macosRootTint";
+import { isMacOS, isWindows } from "@src/util/platform/tauri";
+
+import { applySkinTokensForVariant } from "./applySkinTokens";
 
 const THEME_LINK_ATTR = "data-orgii-theme";
 const PRELOAD_LINK_ATTR = "data-orgii-theme-preload";
@@ -15,46 +24,80 @@ const SWAP_TIMEOUT_MS = 4000;
 
 let latestRequestedCssPath = "";
 
+/**
+ * The stylesheet path is authoritative for the variant.
+ *
+ * This used to sniff the computed `--color-bg-2` and fall back to the path.
+ * That inverted once skins landed: `syncThemeAppearance` runs at promotion
+ * time, when `<body>` still carries the *previous* skin's inline tokens — so
+ * switching from a dark skin to a light one read the old dark surface, decided
+ * the app was dark, and re-applied the dark skin over the light stylesheet.
+ * With exactly two base stylesheets there is nothing to sniff for anyway.
+ */
 function isActiveThemeDark(cssPath: string): boolean {
-  const background = getComputedStyle(document.body)
-    .getPropertyValue("--color-bg-2")
-    .trim();
-  const hexMatch = /^#([\da-f]{6})$/i.exec(background);
-
-  if (hexMatch) {
-    const value = hexMatch[1];
-    const red = Number.parseInt(value.slice(0, 2), 16);
-    const green = Number.parseInt(value.slice(2, 4), 16);
-    const blue = Number.parseInt(value.slice(4, 6), 16);
-    const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
-    return luminance < 0.5;
-  }
-
-  return (
-    cssPath.endsWith("/orgii_high_contrast.css") ||
-    cssPath.endsWith("/orgii_dark.css")
-  );
+  return cssPath.endsWith("/orgii_dark.css");
 }
 
-/** Keep CSS chrome and the Windows system backdrop on the same color scheme. */
+/**
+ * The native theme to pin for a painted variant.
+ *
+ * Tauri's `setTheme` is app-wide on macOS (it sets `NSApp.appearance`), and
+ * WKWebView derives `prefers-color-scheme` from that effective appearance. A
+ * "follow system" preference must therefore stay unpinned (`null`): pinning
+ * the resolved scheme would freeze the very media query the system mode
+ * watches, so an OS flip would never reach the app again. An explicit
+ * light/dark preference pins its own scheme so the window chrome AppKit draws
+ * — inactive traffic lights above all — matches what the page paints.
+ */
+export function resolveNativeTheme(
+  colorScheme: SystemColorScheme,
+  preference: GlobalThemePreference
+): SystemColorScheme | null {
+  return preference === THEME_PREFERENCE.SYSTEM ? null : colorScheme;
+}
+
+/**
+ * Keep CSS chrome, the active skin, and the native window appearance on the
+ * same color scheme.
+ *
+ * On macOS the window is transparent and the page paints the light theme in
+ * CSS, so without this AppKit still believes the window is whatever the OS
+ * is. macOS 26 draws the inactive traffic lights relative to that appearance
+ * — lightened in a DarkAqua window, darkened in an Aqua window — so a light
+ * page under a DarkAqua window shows white dots on white and the buttons
+ * vanish whenever another window has focus. Windows keeps pinning the
+ * resolved scheme, which is what its translucent backdrop expects.
+ *
+ * The skin tokens are applied here, in the same tick the new stylesheet is
+ * promoted, rather than being left to React. `useAppSkin` reacts to the variant
+ * atom, which the swap callers only update *after* awaiting this — so relying
+ * on it alone leaves a painted frame where the new stylesheet is live but the
+ * previous variant's skin still overrides its surfaces. That frame is most
+ * visible on an OS-driven light/dark flip, which is precisely when the app is
+ * expected to change appearance cleanly.
+ */
 export function syncThemeAppearance(cssPath: string): void {
-  const isHighContrast = cssPath.endsWith("/orgii_high_contrast.css");
   const isDark = isActiveThemeDark(cssPath);
   const colorScheme = isDark ? "dark" : "light";
   const root = document.documentElement;
 
   root.dataset.theme = colorScheme;
-  root.dataset.themeId = isHighContrast
-    ? "orgii-high-contrast"
-    : isDark
-      ? "github-dark"
-      : "github-light";
+  root.dataset.themeId = colorScheme;
   root.style.colorScheme = colorScheme;
+  applySkinTokensForVariant(colorScheme);
+  // The base stylesheet changed `--color-bg-2`; re-measure the root tint the
+  // native macOS layer mirrors (no-op off macOS).
+  void syncMacosRootTint();
 
-  if (!isWindows()) return;
+  const nativeTheme = isMacOS()
+    ? resolveNativeTheme(colorScheme, readStoredGlobalThemePreference())
+    : isWindows()
+      ? colorScheme
+      : undefined;
+  if (nativeTheme === undefined) return;
 
   void import("@tauri-apps/api/window")
-    .then(({ getCurrentWindow }) => getCurrentWindow().setTheme(colorScheme))
+    .then(({ getCurrentWindow }) => getCurrentWindow().setTheme(nativeTheme))
     .catch(() => {
       // Browser previews and windows closing during a theme swap have no
       // native backdrop to synchronize.
@@ -65,7 +108,7 @@ export function syncThemeAppearance(cssPath: string): void {
  * Warm the browser's stylesheet cache for the given theme CSS files so a
  * subsequent `swapThemeCss(...)` finishes parsing on the same frame as the
  * JS atom flip — avoiding a 1–2 frame lag where Tailwind/CSS-variable
- * surfaces visibly trail JS-driven surfaces (background, glass, etc.)
+ * surfaces visibly trail JS-driven theme-token surfaces
  * during a theme switch.
  *
  * Implemented as `<link rel="preload" as="style">` so the browser fetches,

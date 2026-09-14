@@ -1,16 +1,16 @@
-import { MoreHorizontal, Plus } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import {
   HEADER_ICON_SIZE,
   TAB_BAR_CONTROLS_ROW_BASE_CLASS,
   TAB_BAR_CONTROLS_ROW_CLASS,
   TAB_BAR_CONTROLS_ROW_PADDING_TRAILING_ONLY,
-} from "../../../tokens";
-import { TabBarTrailingIconButton } from "../TabBarTrailingIconButton";
+} from "@src/config/workstation/tokens";
+import { Add01Icon, HugeiconsIcon, MoreHorizontalIcon } from "@src/icons";
 
-export interface TabBarControlsProps {
+interface TabBarControlsProps {
   hasTabs: boolean;
   onNewTab?: () => void;
   onNewTabShortcutId?: string;
@@ -48,7 +48,12 @@ export const TabBarControls: React.FC<TabBarControlsProps> = ({
           shortcutId={onNewTabShortcutId}
           onClick={onNewTab}
         >
-          <Plus size={18} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={18}
+            strokeWidth={2}
+          />
         </TabBarTrailingIconButton>
       )}
 
@@ -58,7 +63,12 @@ export const TabBarControls: React.FC<TabBarControlsProps> = ({
           title={t("tooltips.moreOptions")}
           onClick={onMoreOptions}
         >
-          <MoreHorizontal size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
+          <HugeiconsIcon
+            icon={MoreHorizontalIcon}
+            data-icon="ellipsis"
+            size={HEADER_ICON_SIZE.md}
+            strokeWidth={1.75}
+          />
         </TabBarTrailingIconButton>
       )}
 

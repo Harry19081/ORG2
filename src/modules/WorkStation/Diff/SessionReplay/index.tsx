@@ -13,22 +13,27 @@
  * `TurnMetadataFooter` "Review"/file click still scrolls the cumulative list to
  * the clicked file, but never filters it down to a single round.
  */
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { GitBranch, ListChevronsDownUp, RotateCcw, Send } from "lucide-react";
+import { useAtom, useAtomValue } from "jotai";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
 import TabPill from "@src/components/TabPill";
-import { SIMULATOR_PRIMARY_SIDEBAR } from "@src/config/simulatorPrimarySidebar";
 import { simulatorEventsAtom } from "@src/engines/SessionCore/derived/simulatorEvents";
 import type { SimulatorAppProps } from "@src/engines/Simulator/apps/core/types";
 import { useFileReviewBatchActions } from "@src/hooks/fileReview/useFileReview";
-import { usePublishWorkstationTabHeader } from "@src/hooks/workStation";
+import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
+import {
+  HugeiconsIcon,
+  ListChevronsDownUpIcon,
+  MailSend01Icon,
+  RotateLeft01Icon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
 import {
   NoTabsPlaceholder,
-  SimulatorReplayChrome,
-  WorkStationShell,
+  ReplayShellLayout,
   buildConsolidatedSessionReplayDiffSectionItems,
   buildPrimarySidebarConfig,
   useSimulatorAwaitingAgentCaption,
@@ -36,17 +41,13 @@ import {
 } from "@src/modules/WorkStation/shared";
 import { PrimarySidebarLayoutWithSections } from "@src/modules/WorkStation/shared/PrimarySidebarLayout";
 import type { ReplayTab } from "@src/modules/WorkStation/shared/SessionReplay/ReplayTabBar";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { useSimulatorReplaySidebar } from "@src/modules/WorkStation/shared/SessionReplay/useSimulatorReplaySidebar";
 import { reposAtom } from "@src/store/repo/atoms";
 import { sessionByIdAtom } from "@src/store/session";
 import {
   simulatorDiffCommitNavigationRequestAtom,
   simulatorDiffRefreshNonceAtom,
   simulatorDiffScopeRequestAtom,
-  simulatorPrimarySidebarCollapsedAtom,
-  simulatorPrimarySidebarPositionAtom,
-  simulatorPrimarySidebarWidthAtom,
-  simulatorPrimarySidebarWidthPersistAtom,
 } from "@src/store/ui/simulatorAtom";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
@@ -150,22 +151,8 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
 
   const consolidatedSections = sidebarItems;
 
-  const primarySidebarCollapsed = useAtomValue(
-    simulatorPrimarySidebarCollapsedAtom
-  );
-  const primarySidebarPosition = useAtomValue(
-    simulatorPrimarySidebarPositionAtom
-  );
-  const primarySidebarWidth = useAtomValue(simulatorPrimarySidebarWidthAtom);
-  const setPrimarySidebarWidthPersist = useSetAtom(
-    simulatorPrimarySidebarWidthPersistAtom
-  );
-  const handlePrimarySidebarWidthChange = useCallback(
-    (width: number) => {
-      setPrimarySidebarWidthPersist(width);
-    },
-    [setPrimarySidebarWidthPersist]
-  );
+  const { layoutMode: primarySidebarPosition, sidebar } =
+    useSimulatorReplaySidebar();
 
   const simulatorPlaceholderActions = useSimulatorPlaceholderActions(mode);
   const simulatorAwaitingAgentCaption = useSimulatorAwaitingAgentCaption();
@@ -237,10 +224,16 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
                 variant="tertiary"
                 size="small"
                 iconOnly
-                className="flex-shrink-0"
+                className="shrink-0"
                 onClick={handleUndoAll}
                 title={tCommon("actions.undoAll")}
-                icon={<RotateCcw size={14} />}
+                icon={
+                  <HugeiconsIcon
+                    icon={RotateLeft01Icon}
+                    data-icon="rotate-ccw"
+                    size={14}
+                  />
+                }
               />
             ) : null}
             {canUndoAll ? <div className="mx-2 h-5 w-px bg-border-2" /> : null}
@@ -249,10 +242,16 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
               variant="tertiary"
               size="small"
               iconOnly
-              className="flex-shrink-0"
+              className="shrink-0"
               onClick={handleCollapseAll}
               title={tCommon("actions.collapseAll")}
-              icon={<ListChevronsDownUp size={14} />}
+              icon={
+                <HugeiconsIcon
+                  icon={ListChevronsDownUpIcon}
+                  data-icon="list-chevrons-down-up"
+                  size={14}
+                />
+              }
             />
           </div>
         ) : undefined,
@@ -285,7 +284,14 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
           finalDiffCount
         ),
         title: t("simulator.replay.diffApp.tabLabel"),
-        icon: <GitBranch size={14} className="shrink-0" />,
+        icon: (
+          <HugeiconsIcon
+            icon={WorkflowCircle05Icon}
+            data-icon="git-branch"
+            size={14}
+            className="shrink-0"
+          />
+        ),
       },
       {
         eventId: TAB_IDS.submissions,
@@ -295,7 +301,14 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
           submissionCount
         ),
         title: t("simulator.replay.diffApp.submissions.tabLabel"),
-        icon: <Send size={14} className="shrink-0" />,
+        icon: (
+          <HugeiconsIcon
+            icon={MailSend01Icon}
+            data-icon="send"
+            size={14}
+            className="shrink-0"
+          />
+        ),
       },
     ];
   }, [
@@ -369,20 +382,9 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
             hideTabs
           />
         ),
-        collapsed: primarySidebarCollapsed,
-        size: primarySidebarWidth,
-        onSizeChange: handlePrimarySidebarWidthChange,
-        minSize: SIMULATOR_PRIMARY_SIDEBAR.minWidth,
-        maxSize: SIMULATOR_PRIMARY_SIDEBAR.maxWidth,
-        resetSize: SIMULATOR_PRIMARY_SIDEBAR.defaultWidth,
+        ...sidebar,
       }),
-    [
-      sidebarTab,
-      noopTabChange,
-      primarySidebarCollapsed,
-      primarySidebarWidth,
-      handlePrimarySidebarWidthChange,
-    ]
+    [sidebarTab, noopTabChange, sidebar]
   );
 
   const detailContent = useDiffDetailContent({
@@ -414,7 +416,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     !hasActiveCommitDetail
   ) {
     return (
-      <SimulatorReplayChrome
+      <ReplayShellLayout
         tabs={tabs}
         activeEventId={TAB_IDS[activeTab]}
         onTabClick={handleTabClick}
@@ -434,33 +436,24 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
             />
           )}
         </div>
-      </SimulatorReplayChrome>
+      </ReplayShellLayout>
     );
   }
 
   return (
-    <SimulatorReplayChrome
+    <ReplayShellLayout
       tabs={tabs}
       activeEventId={TAB_IDS[activeTab]}
       onTabClick={handleTabClick}
+      workstation={{
+        primarySidebarConfig,
+        layoutMode: primarySidebarPosition,
+        appClassName: "session-replay-diff",
+      }}
     >
-      <div className="flex min-h-0 flex-1">
-        <WorkStationShell
-          primarySidebarConfig={primarySidebarConfig}
-          content={
-            <div className="flex h-full min-h-0 w-full flex-col">
-              {detailContent}
-            </div>
-          }
-          statusBar={null}
-          layoutMode={primarySidebarPosition === "right" ? "right" : "left"}
-          appClassName="session-replay-diff"
-        />
-      </div>
-    </SimulatorReplayChrome>
+      <div className="flex h-full min-h-0 w-full flex-col">{detailContent}</div>
+    </ReplayShellLayout>
   );
 };
-
-export { SessionReplayDiff as SimulatorDiff };
 export { finalDiffToSection } from "./diffSessionReplay.finalDiffSection";
 export default memo(SessionReplayDiff);

@@ -2,7 +2,6 @@
  * State and handlers for McpAddWizard.
  * Extracted to keep the component under the UI line limit.
  */
-import { Globe, type LucideIcon, Terminal, Zap } from "lucide-react";
 import {
   type Dispatch,
   type SetStateAction,
@@ -13,6 +12,12 @@ import {
 import { useTranslation } from "react-i18next";
 
 import type { McpConfigScope } from "@src/api/tauri/rpc/schemas/mcp";
+import {
+  ComputerTerminal01Icon,
+  FlashIcon,
+  type IconSvgElement,
+  InternetIcon,
+} from "@src/icons";
 import type {
   McpServerConfig,
   McpTestResult,
@@ -26,7 +31,7 @@ import { type KvRow, kvRowsFromRecord, kvRowsToRecord } from "./KvTableEditor";
 
 export type McpTransportType = McpServerConfig["type"];
 
-export const EMPTY_CONFIG: McpServerConfig = {
+const EMPTY_CONFIG: McpServerConfig = {
   type: "stdio",
   command: "",
   args: [],
@@ -108,20 +113,24 @@ export function formatArgs(args: readonly string[]): string {
 // Hook
 // ============================================================================
 
-export interface UseMcpAddWizardOptions {
+interface UseMcpAddWizardOptions {
   onSave: (
     name: string,
     config: McpServerConfig,
     scope: McpConfigScope
   ) => Promise<void>;
-  onTest: (name: string, config: McpServerConfig) => Promise<McpTestResult>;
+  onTest: (
+    name: string,
+    config: McpServerConfig,
+    scope: McpConfigScope
+  ) => Promise<McpTestResult>;
   onCancel: () => void;
   editName?: string;
   editConfig?: McpServerConfig;
   initialScope?: McpConfigScope;
 }
 
-export interface UseMcpAddWizardReturn {
+interface UseMcpAddWizardReturn {
   serverName: string;
   setServerName: (name: string) => void;
   config: McpServerConfig;
@@ -143,7 +152,7 @@ export interface UseMcpAddWizardReturn {
   transportOptions: Array<{
     key: McpTransportType;
     label: string;
-    icon: LucideIcon;
+    icon: IconSvgElement;
   }>;
   wizardTitle: string;
   updateEnvRow: (id: string, field: "key" | "value", val: string) => void;
@@ -199,17 +208,17 @@ export function useMcpAddWizard({
       {
         key: "stdio" as const,
         label: t("mcp.transportStdio"),
-        icon: Terminal,
+        icon: ComputerTerminal01Icon,
       },
       {
         key: "sse" as const,
         label: t("mcp.transportSse"),
-        icon: Zap,
+        icon: FlashIcon,
       },
       {
         key: "streamableHttp" as const,
         label: t("mcp.transportHttp"),
-        icon: Globe,
+        icon: InternetIcon,
       },
     ],
     [t]
@@ -311,7 +320,7 @@ export function useMcpAddWizard({
     setTestResult(null);
     setError(null);
     try {
-      const result = await onTest(serverName, config);
+      const result = await onTest(serverName, config, scope);
       setTestResult(result);
     } catch (err) {
       setTestResult({
@@ -323,7 +332,7 @@ export function useMcpAddWizard({
     } finally {
       setTesting(false);
     }
-  }, [serverName, config, onTest, t]);
+  }, [serverName, config, scope, onTest, t]);
 
   const handleSave = useCallback(async () => {
     if (!serverName.trim()) {

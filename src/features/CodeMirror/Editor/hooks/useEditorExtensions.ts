@@ -4,12 +4,11 @@
  * Builds the CodeMirror extensions array based on feature flags and settings.
  * This is the main orchestrator for all editor extensions.
  */
-import type { Diagnostic } from "@/src/modules/WorkStation/CodeEditor/Panels/EditorBottomPanel/content/ProblemsContent/types";
 import { autocompletion } from "@codemirror/autocomplete";
 import { indentUnit } from "@codemirror/language";
 import { EditorState, Extension } from "@codemirror/state";
 import { EditorView, lineNumbers } from "@codemirror/view";
-import { MutableRefObject, RefObject, useMemo } from "react";
+import { RefObject, useMemo } from "react";
 
 import { useEditorAppearanceSettings } from "@src/hooks/settings";
 
@@ -27,15 +26,12 @@ import {
   indentGuidesExtension,
   minimapExtension,
 } from "../../config";
-import { createLinterExtension } from "../extensions/linter";
-import type { CallbackRefs } from "../types";
 
 // ============================================
 // Types
 // ============================================
 
 export interface UseEditorExtensionsOptions {
-  /** File path for language detection and linting */
   filePath?: string;
   /** Original value ref for dirty diff */
   originalValueRef: RefObject<string>;
@@ -54,7 +50,6 @@ export interface UseEditorExtensionsOptions {
   /** Effective indent guides setting (after large file check) */
   effectiveIndentGuides: boolean;
   /** Effective linting setting (after large file check) */
-  effectiveLinting: boolean;
   /** Lazy-loaded language extension */
   lazyLangExtension: Extension | null;
   /** Cursor tracking extension */
@@ -65,10 +60,6 @@ export interface UseEditorExtensionsOptions {
   copyExtension: Extension | null;
   /** Ref to minimap host element */
   minimapHostRef: RefObject<HTMLDivElement | null>;
-  /** Callback refs for diagnostics */
-  callbackRefs: MutableRefObject<CallbackRefs>;
-  /** Diagnostics change callback (for linting check) */
-  onDiagnosticsChange?: (diagnostics: Diagnostic[]) => void;
   /** Whether inline git blame is enabled */
   enableGitBlame?: boolean;
   /** Ref to blame data map (line number -> BlameLineData) */
@@ -98,23 +89,17 @@ export function useEditorExtensions(
     enableFindReplace,
     effectiveMinimap,
     effectiveIndentGuides,
-    effectiveLinting,
     lazyLangExtension,
     cursorExtension,
     selectionExtension,
     copyExtension,
     minimapHostRef,
-    callbackRefs,
-    onDiagnosticsChange,
     enableGitBlame,
     blameDataRef,
     lineNumberStart,
   } = options;
 
   const appearanceSettings = useEditorAppearanceSettings();
-
-  // Track if linting is enabled for this file
-  const hasLinting = effectiveLinting && !!filePath && !!onDiagnosticsChange;
 
   // Create git blame extension when enabled
   const gitBlameExt = useMemo(() => {
@@ -252,19 +237,7 @@ export function useEditorExtensions(
     }
 
     if (enableFindReplace) {
-      exts.push(findReplaceExtension());
-    }
-
-    // Linter extension
-    if (hasLinting && filePath) {
-      exts.push(
-        createLinterExtension({
-          filePath,
-          onDiagnosticsChange: (diagnostics) => {
-            callbackRefs.current.onDiagnosticsChange?.(diagnostics);
-          },
-        })
-      );
+      exts.push(findReplaceExtension(filePath));
     }
 
     // Dirty diff gutter
@@ -279,6 +252,7 @@ export function useEditorExtensions(
 
     return exts;
   }, [
+    filePath,
     themeExtension,
     copyExtension,
     lazyLangExtension,
@@ -288,8 +262,6 @@ export function useEditorExtensions(
     effectiveIndentGuides,
     effectiveMinimap,
     enableFindReplace,
-    hasLinting,
-    filePath,
     dirtyDiffExtension,
     gitBlameExt,
     appearanceSettings.wordWrap,
@@ -297,6 +269,5 @@ export function useEditorExtensions(
     appearanceSettings.lineNumbers,
     lineNumberStart,
     minimapHostRef,
-    callbackRefs,
   ]);
 }

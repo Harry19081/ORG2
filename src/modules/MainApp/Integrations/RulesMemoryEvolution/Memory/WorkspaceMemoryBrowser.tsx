@@ -5,7 +5,6 @@
  * and allows reading and editing their contents. Calls into the Tauri backend via
  * `rpc.workspaceMemory.*` commands.
  */
-import { BookOpen, FolderOpen, RefreshCw, Trash2 } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +18,13 @@ import SettingsTable, {
   type SettingsTableSelectFilter,
 } from "@src/components/SettingsTable";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
+import {
+  BookOpen01Icon,
+  Delete02Icon,
+  FolderOpenIcon,
+  HugeiconsIcon,
+  Refresh04Icon,
+} from "@src/icons";
 import {
   ToolInlineCompactRows,
   ToolInlineInfoCard,
@@ -70,7 +76,6 @@ const WorkspaceMemoryBrowser: React.FC = () => {
     handleShowIndex,
     handleDelete,
     handleClearAll,
-    setSingleExpandedFile,
     loadFileDetail,
     setExpandedFileKeys,
     setSelectedFile,
@@ -170,7 +175,13 @@ const WorkspaceMemoryBrowser: React.FC = () => {
           <Button
             variant="secondary"
             size="small"
-            icon={<Trash2 size={14} />}
+            icon={
+              <HugeiconsIcon
+                icon={Delete02Icon}
+                data-icon="trash-2"
+                size={14}
+              />
+            }
             iconOnly
             onClick={() => handleDelete(entry.filename)}
             aria-label={t("common:actions.delete")}
@@ -233,7 +244,13 @@ const WorkspaceMemoryBrowser: React.FC = () => {
       </div>
       <Button
         onClick={handleShowIndex}
-        icon={<BookOpen size={14} />}
+        icon={
+          <HugeiconsIcon
+            icon={BookOpen01Icon}
+            data-icon="book-open"
+            size={14}
+          />
+        }
         iconOnly
         title={t("indexing.workspaceMemoryViewIndex")}
       />
@@ -244,19 +261,34 @@ const WorkspaceMemoryBrowser: React.FC = () => {
             invoke("open_folder", { path: memoryDirPath });
           });
         }}
-        icon={<FolderOpen size={14} />}
+        icon={
+          <HugeiconsIcon
+            icon={FolderOpenIcon}
+            data-icon="folder-open"
+            size={14}
+          />
+        }
         iconOnly
         title={t("storage.openFolder")}
       />
       <Button
         onClick={handleRefreshClick}
-        icon={<RefreshCw size={14} className={spinClass} />}
+        icon={
+          <HugeiconsIcon
+            icon={Refresh04Icon}
+            data-icon="refresh-cw"
+            size={14}
+            className={spinClass}
+          />
+        }
         iconOnly
         title={t("common:actions.refresh")}
       />
       <Button
         onClick={handleClearAll}
-        icon={<Trash2 size={14} />}
+        icon={
+          <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={14} />
+        }
         iconOnly
         disabled={files.length === 0}
         title={t("indexing.workspaceMemoryClearAll")}
@@ -319,7 +351,12 @@ const WorkspaceMemoryBrowser: React.FC = () => {
               />
             ) : (
               <div className="flex min-h-[96px] items-center justify-center gap-2 text-xs text-text-3">
-                <RefreshCw size={12} className="animate-spin" />
+                <HugeiconsIcon
+                  icon={Refresh04Icon}
+                  data-icon="refresh-cw"
+                  size={12}
+                  className="animate-spin"
+                />
                 {t("common:status.loading")}
               </div>
             )
@@ -351,7 +388,6 @@ const WorkspaceMemoryBrowser: React.FC = () => {
         columns={memoryColumns}
         rows={isLoading ? [] : filteredFiles}
         getRowKey={(entry) => entry.filename}
-        onRowClick={setSingleExpandedFile}
         headerHeight="tall"
         className="table-expanded-no-hover"
         expandable={{

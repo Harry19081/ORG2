@@ -4,7 +4,7 @@ import { renderToString } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ROUTES } from "@src/config/routes";
-import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
@@ -57,7 +57,7 @@ describe("useRoutineResultNavigation", () => {
 
     function HookProbe(): null {
       // Test probe: capture the hook API synchronously from server rendering.
-      // eslint-disable-next-line react-hooks/globals
+      // eslint-disable-next-line react-hooks/globals -- server-rendered test probe synchronously exports the hook callback; the component never mounts or re-renders
       openResult = useRoutineResultNavigation();
       return null;
     }

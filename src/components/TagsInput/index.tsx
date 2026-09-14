@@ -13,12 +13,13 @@
  * Controlled-only. Caller owns the `value` array and receives changes
  * via `onChange`. Duplicate tags are silently ignored.
  */
-import { X } from "lucide-react";
 import React, { useCallback, useState } from "react";
 
+import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
-export interface TagsInputProps {
+interface TagsInputProps {
   /** Current list of committed tags */
   value: string[];
   /** Called whenever the tag list changes (add / remove / pop) */
@@ -89,18 +90,25 @@ const TagsInput: React.FC<TagsInputProps> = ({
               data-testid={
                 dataTestId ? `${dataTestId}-chip-${index}` : undefined
               }
-              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border-2 bg-bg-2 pl-3 pr-2 text-[12px] text-text-1"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border-2 bg-bg-2 pr-2 pl-3 text-[12px] text-text-1"
             >
               <span className="leading-none">{tag}</span>
-              <button
-                type="button"
+              <Button
+                variant="tertiary"
+                appearance="soft-no-drop"
+                size="mini"
+                shape="round"
+                iconOnly
+                icon={
+                  <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={11} />
+                }
+                style={{ width: 16, height: 16 }}
+                htmlType="button"
                 disabled={disabled}
                 onClick={() => handleRemove(tag)}
-                className="inline-flex h-4 w-4 items-center justify-center rounded-full text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-50"
+                className="hover:bg-fill-2 hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label={removeAriaLabel?.(tag) ?? `Remove ${tag}`}
-              >
-                <X size={11} />
-              </button>
+              />
             </span>
           ))}
         </div>

@@ -1,12 +1,13 @@
-import { ChevronRight, Plus } from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Tooltip from "@src/components/Tooltip";
 import {
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
 } from "@src/config/workstation/tokens";
+import { Add01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import type { DropdownOption } from "@src/types/core/shared";
 
 interface WorkItemSectionProps {
@@ -45,7 +46,10 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const isExpanded = expanded ?? internalExpanded;
   const sectionLabel =
-    label ?? t(`workItems.statusLabels.${statusConfig.value}`);
+    label ??
+    t(`workItems.statusLabels.${statusConfig.value}`, {
+      defaultValue: statusConfig.label ?? statusConfig.value,
+    });
   const addTitle =
     addButtonTitle ??
     t("workItems.addStatusItem", {
@@ -88,6 +92,9 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
         }`}
         onClick={toggleExpanded}
         onKeyDown={(event) => {
+          // Secondary actions own their keyboard events.
+          if (event.target !== event.currentTarget) return;
+
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             toggleExpanded();
@@ -99,7 +106,11 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
           <div
             className={`${HEADER_BUTTON.actionMdTreeRow} [&>svg]:transition-transform [&>svg]:duration-150 ${isExpanded ? "[&>svg]:rotate-90" : ""}`}
           >
-            <ChevronRight size={HEADER_ICON_SIZE.sm} />
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              data-icon="chevron-right"
+              size={HEADER_ICON_SIZE.sm}
+            />
           </div>
         </div>
 
@@ -116,12 +127,12 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
         </Tooltip>
 
         {/* Label - hug text, left aligned */}
-        <span className="whitespace-nowrap text-[13px] font-medium text-text-1">
+        <span className="text-[13px] font-medium whitespace-nowrap text-text-1">
           {sectionLabel}
         </span>
 
         <span
-          className="ml-2.5 text-[13px] font-semibold tabular-nums leading-none"
+          className="ml-2.5 text-[13px] leading-none font-semibold tabular-nums"
           style={{ color: statusConfig.color }}
         >
           {count}
@@ -132,16 +143,26 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
 
         {onAddItem && (
           <Tooltip content={addTitle} position="top" mouseEnterDelay={300}>
-            <button
-              type="button"
-              className={`${HEADER_BUTTON.actionTreeRow} mr-2 shrink-0 opacity-0 transition-opacity group-hover:opacity-100`}
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="sidebar"
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={Add01Icon}
+                  data-icon="plus"
+                  size={HEADER_ICON_SIZE.sm}
+                />
+              }
+              htmlType="button"
+              className={`mr-2 shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100`}
+              aria-label={addTitle}
               onClick={(event) => {
                 event.stopPropagation();
                 onAddItem();
               }}
-            >
-              <Plus size={HEADER_ICON_SIZE.sm} />
-            </button>
+            />
           </Tooltip>
         )}
       </div>

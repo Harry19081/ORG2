@@ -11,16 +11,25 @@
  */
 import { homeDir, join } from "@tauri-apps/api/path";
 import { readFile, stat } from "@tauri-apps/plugin-fs";
-import { ImageIcon, ImageOff } from "lucide-react";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
-import { uint8ArrayToDataUrl } from "@src/util/file/binaryUtils";
+import {
+  useIsSessionFileShared,
+  useOpenSessionSharedFile,
+} from "@src/features/Org2Cloud/SharedSessionFilesContext";
+import { HugeiconsIcon, Image01Icon, ImageNotFound01Icon } from "@src/icons";
+import {
+  releaseImageUrl,
+  uint8ArrayToImageUrl,
+} from "@src/util/file/binaryUtils";
 import { getImageMimeType } from "@src/util/file/previewTypes";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
 import { openFileInWorkStation } from "@src/util/ui/openFileInWorkStation";
 
+import { parseMarkdownFileRef } from "./markdownFileRef";
 import { classifyMarkdownImageSrc } from "./markdownImageSrc";
 
 export async function resolveLocalMarkdownPath(
@@ -39,7 +48,11 @@ export async function openLocalMarkdownRef(
   path: string,
   homeRelative: boolean
 ): Promise<void> {
-  const absolutePath = await resolveLocalMarkdownPath(path, homeRelative);
+  const fileRef = parseMarkdownFileRef(path);
+  const absolutePath = await resolveLocalMarkdownPath(
+    fileRef.path,
+    homeRelative
+  );
   let isDirectory = false;
   try {
     isDirectory = (await stat(absolutePath)).isDirectory;
@@ -48,6 +61,8 @@ export async function openLocalMarkdownRef(
   }
   if (isDirectory) {
     openFileInEditor(absolutePath, { isDirectory: true });
+  } else if (fileRef.line !== undefined) {
+    openFileInWorkStation(absolutePath, { line: fileRef.line });
   } else {
     openFileInWorkStation(absolutePath);
   }
@@ -60,7 +75,7 @@ async function loadLocalImage(
   const absolutePath = await resolveLocalMarkdownPath(path, homeRelative);
   const mimeType = getImageMimeType(absolutePath) ?? "image/png";
   const data = await readFile(absolutePath);
-  return uint8ArrayToDataUrl(data, mimeType);
+  return uint8ArrayToImageUrl(data, mimeType);
 }
 
 function imageLabel(alt: string | undefined, path: string): string {
@@ -80,53 +95,107 @@ interface MarkdownLocalImageProps {
   workspaceRootPath?: string | null;
 }
 
+interface LocalImageState {
+  sourceKey: string | null;
+  asyncSrc: string | null;
+  failed: boolean;
+  showOverlay: boolean;
+}
+
+function createLocalImageState(sourceKey: string | null): LocalImageState {
+  return { sourceKey, asyncSrc: null, failed: false, showOverlay: false };
+}
+
 const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
   ({ src, alt, workspaceRootPath }) => {
-    const [asyncSrc, setAsyncSrc] = useState<string | null>(null);
-    const [failed, setFailed] = useState(false);
-    const [showOverlay, setShowOverlay] = useState(false);
-
-    const source = classifyMarkdownImageSrc(src, workspaceRootPath);
+    const openSharedFile = useOpenSessionSharedFile();
+    const shared = useIsSessionFileShared();
+    const source = useMemo(
+      () => classifyMarkdownImageSrc(src, workspaceRootPath),
+      [src, workspaceRootPath]
+    );
     const localIsImage =
       source.kind === "local" && getImageMimeType(source.path) !== undefined;
+    const sourceKey =
+      source.kind === "local" && localIsImage
+        ? `${source.homeRelative === true ? "home" : "absolute"}:${source.path}`
+        : null;
+    const [imageState, setImageState] = useState<LocalImageState>(() =>
+      createLocalImageState(sourceKey)
+    );
+    const nextImageState =
+      imageState.sourceKey === sourceKey
+        ? imageState
+        : createLocalImageState(sourceKey);
+    if (nextImageState !== imageState) {
+      setImageState(nextImageState);
+    }
+    const { asyncSrc, failed, showOverlay } = nextImageState;
 
     useEffect(() => {
-      if (source.kind !== "local" || !localIsImage) return;
+      if (shared || source.kind !== "local" || !localIsImage) return;
       let cancelled = false;
-      setAsyncSrc(null);
-      setFailed(false);
+      // Object URL owned by this effect run; released on teardown so the
+      // Blob does not outlive the image it backs.
+      let objectUrl: string | null = null;
       loadLocalImage(source.path, source.homeRelative === true)
-        .then((dataUrl) => {
-          if (!cancelled) setAsyncSrc(dataUrl);
+        .then((imageUrl) => {
+          if (cancelled) {
+            releaseImageUrl(imageUrl);
+            return;
+          }
+          objectUrl = imageUrl;
+          setImageState((current) =>
+            current.sourceKey === sourceKey
+              ? { ...current, asyncSrc: imageUrl, failed: false }
+              : current
+          );
         })
         .catch(() => {
-          if (!cancelled) setFailed(true);
+          if (!cancelled) {
+            setImageState((current) =>
+              current.sourceKey === sourceKey
+                ? { ...current, asyncSrc: null, failed: true }
+                : current
+            );
+          }
         });
       return () => {
         cancelled = true;
+        releaseImageUrl(objectUrl);
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- `source` is derived from src/workspaceRootPath; keying on them avoids re-running on every render for an unmemoized object.
-    }, [src, workspaceRootPath, localIsImage]);
+    }, [localIsImage, source, sourceKey, shared]);
 
     const handleImageClick = useCallback((event: React.MouseEvent) => {
       containClick(event);
-      setShowOverlay(true);
+      setImageState((current) => ({ ...current, showOverlay: true }));
     }, []);
 
     const handleFileChipClick = useCallback(
       (event: React.MouseEvent) => {
         containClick(event);
         if (source.kind !== "local") return;
+        if (openSharedFile(source.path)) return;
         void openLocalMarkdownRef(source.path, source.homeRelative === true);
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the scalars behind `source`.
-      [src, workspaceRootPath]
+      [source, openSharedFile]
     );
 
     const handleClose = useCallback(() => {
-      setShowOverlay(false);
+      setImageState((current) => ({ ...current, showOverlay: false }));
     }, []);
 
+    if (shared && source.kind === "local") {
+      return (
+        <a
+          href={src}
+          onClick={handleFileChipClick}
+          className="text-primary-6 underline-offset-2 hover:underline"
+        >
+          {imageLabel(alt, source.path)}
+        </a>
+      );
+    }
     if (source.kind === "skip") {
       return alt?.trim() ? (
         <span className="text-text-3">[{alt.trim()}]</span>
@@ -140,16 +209,19 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
     if (!localIsImage || failed) {
       const label = imageLabel(alt, source.path);
       return (
-        <span
+        <Button
+          layout="custom"
+          appearance="custom"
           className="inline-flex max-w-full cursor-pointer items-center gap-1.5 rounded-md border border-border-2 bg-fill-1 px-2 py-1 align-middle text-xs text-text-2"
           title={source.path}
-          role="button"
           tabIndex={0}
           data-image-state={failed ? "unavailable" : "file"}
           onClick={failed ? containClick : handleFileChipClick}
         >
           {failed ? (
-            <ImageOff
+            <HugeiconsIcon
+              icon={ImageNotFound01Icon}
+              data-icon="image-off"
               size={14}
               strokeWidth={1.5}
               className="shrink-0 text-text-3"
@@ -158,7 +230,7 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
             <FileTypeIcon fileName={label} size="small" />
           )}
           <span className="truncate">{label}</span>
-        </span>
+        </Button>
       );
     }
 
@@ -169,7 +241,9 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
           data-image-state="loading"
           onClick={containClick}
         >
-          <ImageIcon
+          <HugeiconsIcon
+            icon={Image01Icon}
+            data-icon="image-icon"
             size={16}
             strokeWidth={1.5}
             className="animate-pulse motion-reduce:animate-none"
@@ -193,7 +267,6 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
             dataUrl={asyncSrc}
             fileName={imageLabel(alt, source.path)}
             onClose={handleClose}
-            showCopyButton={false}
           />
         )}
       </>

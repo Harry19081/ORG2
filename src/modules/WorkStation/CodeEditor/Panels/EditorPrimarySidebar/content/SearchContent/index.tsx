@@ -15,11 +15,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
-  ArrowUpRightFromSquare,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
-import {
   forwardRef,
   memo,
   useCallback,
@@ -31,11 +26,16 @@ import {
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
 import { createLogger } from "@src/hooks/logger";
+import {
+  ArrowDown01Icon,
+  ArrowRight01Icon,
+  HugeiconsIcon,
+  LinkSquare02Icon,
+} from "@src/icons";
 import { HUMANTOOLS_TEXT_KEYS } from "@src/modules/WorkStation/shared";
-import { HEADER_BUTTON } from "@src/modules/WorkStation/shared/tokens";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { workStationSearchFocusSignalAtom } from "@src/store/ui/workStationAtom";
+import { workStationSearchFocusSignalAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import {
   searchOptionsAtom,
   searchQueryAtom,
@@ -293,7 +293,7 @@ export const SearchContent = forwardRef<
     return (
       <div className="flex h-full flex-col">
         {/* Search mode selector - shared component */}
-        <div className="flex-shrink-0 px-3 pb-2">
+        <div className="shrink-0 px-3 pb-2">
           <SearchModeSelect
             value={searchMode}
             onChange={setSearchMode}
@@ -305,21 +305,39 @@ export const SearchContent = forwardRef<
         {/* Search/Replace section with chevron layout */}
         <div className="flex gap-1.5 px-3">
           {/* Left column - Chevron toggle (centered vertically) */}
-          <button
+          <Button
+            variant="tertiary"
+            appearance="ghost"
+            size="mini"
+            aria-label={
+              showReplace
+                ? t(HUMANTOOLS_TEXT_KEYS.search.collapseReplace)
+                : t(HUMANTOOLS_TEXT_KEYS.search.expandReplace)
+            }
+            iconOnly
+            icon={
+              showReplace ? (
+                <HugeiconsIcon
+                  icon={ArrowDown01Icon}
+                  data-icon="chevron-down"
+                  size={14}
+                />
+              ) : (
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  data-icon="chevron-right"
+                  size={14}
+                />
+              )
+            }
             onClick={handleExpandToggle}
-            className="flex items-center justify-center self-center text-text-3"
+            className="self-center"
             title={
               showReplace
                 ? t(HUMANTOOLS_TEXT_KEYS.search.collapseReplace)
                 : t(HUMANTOOLS_TEXT_KEYS.search.expandReplace)
             }
-          >
-            {showReplace ? (
-              <ChevronDown size={14} />
-            ) : (
-              <ChevronRight size={14} />
-            )}
-          </button>
+          />
 
           {/* Center column - Input fields (stacked, left-aligned) */}
           <div className="flex min-w-0 flex-1 flex-col gap-1.5 py-1.5">
@@ -374,17 +392,27 @@ export const SearchContent = forwardRef<
 
         {/* Results count + refine hint + open in editor */}
         {resultText && (
-          <div className="flex-shrink-0 py-1.5 pl-3 pr-2">
+          <div className="shrink-0 py-1.5 pr-2 pl-3">
             <div className="flex items-center justify-between gap-2">
               <p className="text-[12px] text-text-3">{resultText}</p>
               {results.length > 0 && !loading && !loadingMore && (
-                <button
+                <Button
+                  variant="tertiary"
+                  appearance="soft"
+                  size="sidebar"
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={LinkSquare02Icon}
+                      data-icon="link-square-02"
+                      size={14}
+                      strokeWidth={1.75}
+                    />
+                  }
                   onClick={handleOpenInTab}
-                  className={HEADER_BUTTON.actionTreeRow}
-                  title={t("tooltips.openInEditorTab")}
-                >
-                  <ArrowUpRightFromSquare size={14} strokeWidth={1.75} />
-                </button>
+                  title={t("common:actions.openInNewTab")}
+                  aria-label={t("common:actions.openInNewTab")}
+                />
               )}
             </div>
             {showRefineHint && !loading && !loadingMore && (
@@ -421,7 +449,7 @@ export const SearchContent = forwardRef<
 
               {/* Loading more indicator */}
               {hasMore && loadingMore && (
-                <div className="flex-shrink-0 border-t border-border-2 px-4 py-2 text-center">
+                <div className="shrink-0 border-t border-border-2 px-4 py-2 text-center">
                   <p className="text-[12px] text-text-3">
                     {t("placeholders.loadingMore")}
                   </p>
@@ -430,7 +458,7 @@ export const SearchContent = forwardRef<
 
               {/* Truncation warning */}
               {isTruncated && !hasMore && (
-                <div className="flex-shrink-0 border-t border-border-2 bg-fill-1 px-4 py-2">
+                <div className="shrink-0 border-t border-border-2 bg-fill-1 px-4 py-2">
                   <p className="text-[12px] text-text-3">
                     {t("placeholders.maxLimitReached")}
                   </p>
@@ -450,8 +478,16 @@ export const SearchContent = forwardRef<
                 size="small"
                 className="w-full"
                 onClick={handleOpenInTab}
+                icon={
+                  <HugeiconsIcon
+                    icon={LinkSquare02Icon}
+                    data-icon="link-square-02"
+                    size={14}
+                    aria-hidden
+                  />
+                }
               >
-                {t("actions.openInTab")}
+                {t("common:actions.openInNewTab")}
               </Button>
             </div>
           ) : null}

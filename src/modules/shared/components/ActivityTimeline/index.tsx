@@ -1,10 +1,11 @@
 /** Shared activity timeline primitives used by work items, work logs, issues, and PRs. */
-import { Check, Copy } from "lucide-react";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button, { type ButtonProps } from "@src/components/Button";
-import { useCopyCheck } from "@src/hooks/ui";
+import SkeletonBar from "@src/components/Skeleton";
+import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import { Copy01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 import { normalizeScrollTrailLabel } from "@src/modules/shared/layouts/blocks/ScrollTrail";
 import { copyText } from "@src/util/data/clipboard";
 import {
@@ -16,10 +17,9 @@ import {
 export {
   MARKDOWN_CONTENT_PREVIEW_MAX_HEIGHT,
   MarkdownContent,
-  normalizeMarkdownContent,
 } from "@src/modules/shared/components/MarkdownContent";
 
-export interface ActivityHeaderActionButtonProps extends Omit<
+interface ActivityHeaderActionButtonProps extends Omit<
   ButtonProps,
   | "variant"
   | "appearance"
@@ -49,7 +49,7 @@ export function ActivityHeaderActionButton({
       icon={icon}
       title={label}
       aria-label={label}
-      className={`shrink-0 text-text-3 hover:bg-fill-2 hover:text-text-1 ${className}`.trim()}
+      className={`shrink-0 text-text-3 select-none hover:bg-fill-2 hover:text-text-1 ${className}`.trim()}
       {...buttonProps}
     />
   );
@@ -72,9 +72,19 @@ export function TimelineCopyButton({
     <ActivityHeaderActionButton
       icon={
         copied ? (
-          <Check size={12} strokeWidth={1.75} />
+          <HugeiconsIcon
+            icon={Tick01Icon}
+            data-icon="check"
+            size={12}
+            strokeWidth={1.75}
+          />
         ) : (
-          <Copy size={12} strokeWidth={1.75} />
+          <HugeiconsIcon
+            icon={Copy01Icon}
+            data-icon="copy"
+            size={12}
+            strokeWidth={1.75}
+          />
         )
       }
       label={copied ? t("status.copied") : t("actions.copy")}
@@ -165,18 +175,18 @@ export function TimelineLoadingSkeleton({
       role="status"
       aria-busy="true"
       aria-label={label}
-      className="min-w-0 animate-pulse overflow-hidden rounded-xl border border-border-1 bg-chat-pane motion-reduce:animate-none"
+      className="min-w-0 overflow-hidden rounded-xl border border-border-1 bg-chat-pane"
       data-testid="timeline-loading-skeleton"
     >
       <div className="flex h-10 items-center gap-2 border-b border-border-1 bg-primary-container px-3">
-        <span aria-hidden className="size-5 rounded-full bg-fill-2" />
-        <span aria-hidden className="h-3 w-28 rounded bg-fill-2" />
-        <span aria-hidden className="h-3 w-16 rounded bg-fill-2" />
+        <SkeletonBar className="size-5 rounded-full" />
+        <SkeletonBar className="h-3 w-28" />
+        <SkeletonBar className="h-3 w-16" />
       </div>
       <div className="space-y-2.5 px-3 py-3">
-        <span aria-hidden className="block h-3 w-full rounded bg-fill-2" />
-        <span aria-hidden className="block h-3 w-11/12 rounded bg-fill-2" />
-        <span aria-hidden className="block h-3 w-2/3 rounded bg-fill-2" />
+        <SkeletonBar className="h-3 w-full" />
+        <SkeletonBar className="h-3 w-11/12" />
+        <SkeletonBar className="h-3 w-2/3" />
       </div>
     </div>
   );
@@ -202,7 +212,7 @@ export function ConnectedTimelineItem({
     >
       {!isLast ? (
         <div
-          className="pointer-events-none absolute bottom-0 left-5 top-5 border-l border-border-1"
+          className="pointer-events-none absolute top-5 bottom-0 left-5 border-l border-border-1"
           data-testid="timeline-connector"
           aria-hidden
         />
@@ -235,7 +245,7 @@ export function TimelineCard({
     <div
       className={`flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border-1 bg-chat-pane ${className}`.trim()}
     >
-      <div className="flex min-w-0 select-text items-center justify-between gap-3 border-b border-border-1 bg-primary-container px-3 py-2">
+      <div className="allow-select-deep flex min-w-0 items-center justify-between gap-3 border-b border-border-1 bg-primary-container px-3 py-2">
         {header}
         {copyBody || actions ? (
           <div className="flex shrink-0 items-center gap-1">
@@ -244,7 +254,9 @@ export function TimelineCard({
           </div>
         ) : null}
       </div>
-      <div className={`min-w-0 select-text px-3 py-3 ${bodyClassName}`.trim()}>
+      <div
+        className={`allow-select-deep min-w-0 px-3 py-3 ${bodyClassName}`.trim()}
+      >
         {children}
       </div>
       {footer}

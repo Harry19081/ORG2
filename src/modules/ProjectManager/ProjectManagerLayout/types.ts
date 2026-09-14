@@ -23,7 +23,7 @@ export type SelectProjectHandler = (
   projectSlug?: string
 ) => void;
 
-export type CreateWorkItemHandler = (
+type CreateWorkItemHandler = (
   projectId?: string,
   projectName?: string,
   projectSlug?: string
@@ -39,7 +39,7 @@ export type ExpandWorkItemToTabHandler = (
   workItemStatus?: string
 ) => void;
 
-export type OpenChatSessionHandler = (
+type OpenChatSessionHandler = (
   sessionId: string,
   title?: string,
   workItemId?: string,
@@ -51,6 +51,10 @@ export interface ProjectManagerContentRouterProps {
   tabs: WorkStationTab[];
   activeTab: WorkStationTab | null;
   projectQuickActions: QuickAction[];
+}
+
+/** Actions published to project renderers through the host context. */
+export interface ProjectHostActions {
   onSelectProject: SelectProjectHandler;
   onOpenProjects: () => void;
   onCreateProject: () => void;

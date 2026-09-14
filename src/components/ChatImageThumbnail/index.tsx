@@ -11,24 +11,42 @@
  *   2. `asset://`     — Tauri asset protocol URL; the path is extracted
  *                       and read directly via `readFile`
  *   3. absolute path  — read directly via `readFile`
+ *   4. HTTP/blob URL  — browser-managed loading, without a JS byte buffer
  */
 import { readFile } from "@tauri-apps/plugin-fs";
-import { ImageIcon, ImageOff } from "lucide-react";
 import React, { memo, useCallback, useEffect, useState } from "react";
 
+import { readTranscriptImage } from "@src/api/tauri/externalHistory/sources/codexApp/images";
+import Button from "@src/components/Button";
 import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
-import { uint8ArrayToDataUrl } from "@src/util/file/binaryUtils";
-import { imageRefToRustPath } from "@src/util/file/imageRefs";
+import { createLogger } from "@src/hooks/logger";
+import { HugeiconsIcon, Image01Icon, ImageNotFound01Icon } from "@src/icons";
+import {
+  releaseImageUrl,
+  uint8ArrayToImageUrl,
+} from "@src/util/file/binaryUtils";
+import {
+  imageRefToRustPath,
+  isDirectImageUrl,
+  parseTranscriptImageRef,
+} from "@src/util/file/imageRefs";
 import { getImageMimeType } from "@src/util/file/previewTypes";
 
-async function resolveImageSrc(ref: string): Promise<string> {
-  if (ref.startsWith("data:")) return ref;
+const log = createLogger("ChatImageThumbnail");
 
+async function resolveImageSrc(ref: string): Promise<string> {
+  if (isDirectImageUrl(ref)) return ref;
+
+  const transcript = parseTranscriptImageRef(ref);
+  if (transcript) {
+    const embedded = await readTranscriptImage(transcript);
+    if (embedded) return embedded;
+  }
   const filePath = imageRefToRustPath(ref);
 
   const mimeType = getImageMimeType(filePath) ?? "image/png";
   const data = await readFile(filePath);
-  return uint8ArrayToDataUrl(data, mimeType);
+  return uint8ArrayToImageUrl(data, mimeType);
 }
 
 interface ChatImageThumbnailProps {
@@ -38,34 +56,47 @@ interface ChatImageThumbnailProps {
   alt: string;
   /** Thumbnail size class (default `h-10 w-10`). */
   sizeClassName?: string;
+  gallery?: { src: string; fileName?: string }[];
+  galleryIndex?: number;
 }
 
 export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
-  ({ imageRef, alt, sizeClassName = "h-10 w-10" }) => {
+  ({ imageRef, alt, sizeClassName = "h-10 w-10", gallery, galleryIndex }) => {
     const [showOverlay, setShowOverlay] = useState(false);
-    // For `data:` refs we use the ref itself directly — no state needed.
+    // Browser URLs are loaded lazily by the image element, without JS byte copies.
     // For asset/path refs we load the bytes asynchronously into `asyncSrc`.
     // The parent keys items by ref so a ref change remounts this component,
     // which guarantees `asyncSrc` always starts fresh (no stale thumbnail).
-    const isDataUrl = imageRef.startsWith("data:");
+    const isDirectUrl = isDirectImageUrl(imageRef);
     const [asyncSrc, setAsyncSrc] = useState<string | null>(null);
     const [loadFailed, setLoadFailed] = useState(false);
-    const resolvedSrc = isDataUrl ? imageRef : asyncSrc;
+    const resolvedSrc = isDirectUrl ? imageRef : asyncSrc;
 
     useEffect(() => {
-      if (isDataUrl) return;
+      if (isDirectUrl) return;
       let cancelled = false;
+      // Object URL owned by this effect run; released on teardown.
+      let objectUrl: string | null = null;
       resolveImageSrc(imageRef)
         .then((src) => {
-          if (!cancelled) setAsyncSrc(src);
+          if (cancelled) {
+            releaseImageUrl(src);
+            return;
+          }
+          objectUrl = src;
+          setAsyncSrc(src);
         })
-        .catch(() => {
-          if (!cancelled) setLoadFailed(true);
+        .catch((error: unknown) => {
+          if (!cancelled) {
+            log.warn("Attachment image could not be read", { imageRef, error });
+            setLoadFailed(true);
+          }
         });
       return () => {
         cancelled = true;
+        releaseImageUrl(objectUrl);
       };
-    }, [imageRef, isDataUrl]);
+    }, [imageRef, isDirectUrl]);
 
     // Stop propagation so the parent chat row (which may own a click
     // handler for edit-mode in the main chat panel or jump-to-message in
@@ -85,9 +116,14 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
 
     return (
       <>
-        <div
-          className={`group relative inline-flex flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-2 bg-fill-1 text-text-3 ${resolvedSrc ? "cursor-pointer" : "cursor-default"} ${sizeClassName}`}
+        <Button
+          layout="custom"
+          appearance="custom"
+          disabled={!resolvedSrc}
+          className={`group relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-2 bg-fill-1 text-text-3 ${resolvedSrc ? "cursor-pointer" : "cursor-default"} ${sizeClassName}`}
           onClick={handleClick}
+          tabIndex={resolvedSrc ? 0 : -1}
+          aria-label={alt}
           data-image-state={
             resolvedSrc ? "ready" : loadFailed ? "unavailable" : "loading"
           }
@@ -102,21 +138,31 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
               decoding="async"
             />
           ) : loadFailed ? (
-            <ImageOff size={16} strokeWidth={1.5} aria-label={alt} />
+            <HugeiconsIcon
+              icon={ImageNotFound01Icon}
+              data-icon="image-off"
+              size={16}
+              strokeWidth={1.5}
+              aria-label={alt}
+            />
           ) : (
-            <ImageIcon
+            <HugeiconsIcon
+              icon={Image01Icon}
+              data-icon="image-icon"
               size={16}
               strokeWidth={1.5}
               className="animate-pulse motion-reduce:animate-none"
               aria-label={alt}
             />
           )}
-        </div>
+        </Button>
         {showOverlay && resolvedSrc && (
           <ImagePreviewOverlay
             dataUrl={resolvedSrc}
             onClose={handleClose}
-            showCopyButton={false}
+            images={gallery}
+            initialIndex={galleryIndex}
+            resolveImage={resolveImageSrc}
           />
         )}
       </>
@@ -140,6 +186,19 @@ interface ChatImageThumbnailRowProps {
  */
 export const ChatImageThumbnailRow: React.FC<ChatImageThumbnailRowProps> = memo(
   ({ images, altPrefix = "Attached image", sizeClassName }) => {
+    const gallery = React.useMemo(
+      () =>
+        (images ?? []).map((src) => {
+          const path = imageRefToRustPath(src);
+          return {
+            src,
+            fileName: /^(data:|blob:)/.test(path)
+              ? undefined
+              : path.split(/[\\/]/).pop(),
+          };
+        }),
+      [images]
+    );
     if (!images || images.length === 0) return null;
     return (
       <div className="flex flex-wrap gap-1.5">
@@ -149,6 +208,8 @@ export const ChatImageThumbnailRow: React.FC<ChatImageThumbnailRowProps> = memo(
             imageRef={ref}
             alt={`${altPrefix} ${idx + 1}`}
             sizeClassName={sizeClassName}
+            gallery={gallery}
+            galleryIndex={idx}
           />
         ))}
       </div>

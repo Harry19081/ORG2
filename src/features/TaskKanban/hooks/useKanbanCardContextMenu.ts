@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import type { KanbanTask } from "@src/features/KanbanBoard";
 import { createLogger } from "@src/hooks/logger";
 import { openOrFocusSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanelAtom";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import {
   type NativeMenuItemOptions,
   popupNativeMenu,
@@ -28,7 +28,7 @@ const log = createLogger("TaskKanban");
 export interface UseKanbanCardContextMenuParams {
   /**
    * Open the board's floating preview — the same action the primary click
-   * performs, including the team-session replay import it may have to start.
+   * performs, including the team-session import it may have to start.
    */
   onOpenFloatingPane: (task: KanbanTask) => void;
   /** Teammate cloud cards keyed by task id, as projected by `useKanbanTasks`. */

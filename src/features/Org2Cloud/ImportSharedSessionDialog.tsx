@@ -1,11 +1,17 @@
 /** Paste-a-share-link entry point: the parsed link is queued as a unique attempt; `CloudShareImportDialog` owns the registered-user resolve → import flow. */
-import Modal from "@/src/scaffold/ModalSystem";
 import { useSetAtom } from "jotai";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Button from "@src/components/Button";
-import Input from "@src/components/Input";
+import Textarea from "@src/components/Textarea";
+import { Download01Icon } from "@src/icons";
+import { PanelFooter } from "@src/modules/shared/layouts/blocks";
+import {
+  SpotlightFormBody,
+  SpotlightFormShell,
+} from "@src/scaffold/GlobalSpotlight/forms/shared";
+import { SpotlightFormLayout } from "@src/scaffold/GlobalSpotlight/forms/shared/SpotlightFormLayout";
+import { SpotlightShell } from "@src/scaffold/GlobalSpotlight/shell";
 
 import { parseCloudShareInput } from "./org2CloudOrgManagement";
 import { queueOrg2CloudPendingShareAtom } from "./org2CloudPendingShareAtom";
@@ -13,13 +19,17 @@ import { queueOrg2CloudPendingShareAtom } from "./org2CloudPendingShareAtom";
 interface ImportSharedSessionDialogProps {
   visible: boolean;
   onClose: () => void;
+  asBody?: boolean;
+  onGoBack?: () => void;
 }
 
 const ImportSharedSessionDialog: React.FC<ImportSharedSessionDialogProps> = ({
   visible,
   onClose,
+  asBody = false,
+  onGoBack,
 }) => {
-  const { t } = useTranslation("navigation");
+  const { t } = useTranslation(["navigation", "common"]);
   const queuePendingShare = useSetAtom(queueOrg2CloudPendingShareAtom);
   const [value, setValue] = useState("");
   const [invalid, setInvalid] = useState(false);
@@ -29,17 +39,6 @@ const ImportSharedSessionDialog: React.FC<ImportSharedSessionDialogProps> = ({
     setInvalid(false);
     onClose();
   }, [onClose]);
-
-  const handlePasteFromClipboard = useCallback(() => {
-    navigator.clipboard
-      .readText()
-      .then((text) => {
-        if (!text) return;
-        setValue(text);
-        setInvalid(false);
-      })
-      .catch(() => undefined);
-  }, []);
 
   const handleSubmit = useCallback(() => {
     const parsed = parseCloudShareInput(value);
@@ -51,53 +50,96 @@ const ImportSharedSessionDialog: React.FC<ImportSharedSessionDialogProps> = ({
     handleClose();
   }, [handleClose, queuePendingShare, value]);
 
-  return (
-    <Modal
-      visible={visible}
-      title={t("cloud.share.importDialogTitle")}
-      onCancel={handleClose}
-      footer={null}
-      width={440}
+  const body = (
+    <SpotlightFormLayout
+      header={{
+        path: [
+          {
+            type: "action",
+            id: "import-session",
+            label: t("cloud.share.importEntry"),
+            icon: Download01Icon,
+            color: "primary",
+          },
+        ],
+        onRemoveSegment: () => {
+          setValue("");
+          setInvalid(false);
+          (onGoBack ?? onClose)();
+        },
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t("cloud.share.importEntry")}
     >
-      <div className="flex flex-col gap-3" data-testid="import-session-dialog">
-        <Input
-          value={value}
-          onChange={(next) => {
-            setValue(next);
-            setInvalid(false);
+      <SpotlightFormShell>
+        <SpotlightFormBody>
+          <div
+            className="flex flex-col gap-2"
+            data-testid="import-session-dialog"
+          >
+            <Textarea
+              value={value}
+              onChange={(next) => {
+                setValue(next);
+                setInvalid(false);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                  event.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              placeholder={t("cloud.share.importInputPlaceholder")}
+              error={invalid}
+              aria-invalid={invalid}
+              aria-describedby={
+                invalid ? "import-session-input-error" : undefined
+              }
+              aria-label={t("cloud.share.importEntry")}
+              autoFocus
+              autoComplete="off"
+              spellCheck={false}
+              rows={3}
+              resize="vertical"
+              size="large"
+              data-testid="import-session-input"
+            />
+            {invalid && (
+              <div
+                id="import-session-input-error"
+                role="alert"
+                className="text-xs text-danger-6"
+              >
+                {t("cloud.share.importInvalidInput")}
+              </div>
+            )}
+          </div>
+        </SpotlightFormBody>
+        <PanelFooter
+          secondaryActions={[
+            { label: t("common:actions.cancel"), onClick: handleClose },
+          ]}
+          primaryAction={{
+            label: t("cloud.share.importSubmit"),
+            onClick: handleSubmit,
+            disabled: !value.trim(),
+            dataTestId: "import-session-submit",
           }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") handleSubmit();
-          }}
-          placeholder={t("cloud.share.importInputPlaceholder")}
-          errorMessage={
-            invalid ? t("cloud.share.importInvalidInput") : undefined
-          }
-          autoComplete="off"
-          spellCheck={false}
-          data-testid="import-session-input"
         />
-        <div className="flex items-center justify-between gap-2">
-          <Button
-            htmlType="button"
-            size="small"
-            variant="secondary"
-            onClick={handlePasteFromClipboard}
-          >
-            {t("cloud.share.importPasteClipboard")}
-          </Button>
-          <Button
-            htmlType="button"
-            variant="primary"
-            disabled={!value.trim()}
-            onClick={handleSubmit}
-            data-testid="import-session-submit"
-          >
-            {t("cloud.share.importSubmit")}
-          </Button>
-        </div>
-      </div>
-    </Modal>
+      </SpotlightFormShell>
+    </SpotlightFormLayout>
+  );
+  if (asBody) return visible ? body : null;
+  return (
+    <SpotlightShell
+      isOpen={visible}
+      onClose={handleClose}
+      hasActiveAction
+      hideFooter
+    >
+      {body}
+    </SpotlightShell>
   );
 };
 

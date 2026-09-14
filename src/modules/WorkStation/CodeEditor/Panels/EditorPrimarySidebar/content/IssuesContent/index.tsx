@@ -21,6 +21,8 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import type { GitHubIssue } from "@src/api/tauri/github";
+import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
 import { buildIntegrationsPath } from "@src/config/mainAppPaths/integrations";
 import { SectionFilterInput } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/components/SectionFilterInput";
 import {
@@ -28,7 +30,6 @@ import {
   SectionStatusRow,
 } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/components/SectionStatusRow";
 import { TreeSectionHeader } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/components/TreeSectionHeader";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { workstationIssueCallbackAtomFamily } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import { workstationRepoScopeKey } from "@src/store/workstation/codeEditor/workstationPrAtom";
 
@@ -46,7 +47,7 @@ type IssueVirtualRow =
   | { kind: "issue"; issue: GitHubIssue }
   | { kind: "loadMore"; section: "open" | "closed" };
 
-export interface IssuesContentProps {
+interface IssuesContentProps {
   repoPath: string;
   repoId?: string;
   branchName?: string;
@@ -287,7 +288,6 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
       openStatus,
     ]);
 
-    // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Virtual exposes imperative helpers that cannot be memoized safely.
     const issueListVirtualizer = useVirtualizer({
       count: virtualRows.length,
       getScrollElement: () => listRef.current,
@@ -410,16 +410,19 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
               : closedLoadingMore;
             return (
               <div className="flex justify-center py-1.5">
-                <button
-                  type="button"
-                  className="rounded-md px-2 py-1 text-[11px] font-medium text-text-2 transition-colors hover:bg-fill-1 disabled:cursor-default disabled:opacity-60"
+                <Button
+                  variant="tertiary"
+                  appearance="ghost"
+                  size="mini"
+                  htmlType="button"
+                  className="text-[11px] font-medium hover:bg-fill-1 disabled:cursor-default disabled:opacity-60"
                   disabled={isLoading}
                   onClick={isOpenSection ? loadMoreOpen : loadMoreClosed}
                 >
                   {isLoading
                     ? t("actions.loading", "Loading…")
                     : t("actions.loadMore", "Load more")}
-                </button>
+                </Button>
               </div>
             );
           }
@@ -439,7 +442,7 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
                   key={virtualItem.key}
                   ref={issueListVirtualizer.measureElement}
                   data-index={virtualItem.index}
-                  className="absolute left-0 top-0 w-full"
+                  className="absolute top-0 left-0 w-full"
                   style={{ transform: `translateY(${virtualItem.start}px)` }}
                 >
                   {renderVirtualRow(row)}

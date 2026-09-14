@@ -21,15 +21,28 @@ export function stripScreenshotMarkers(text: string): string {
   return text.replace(SCREENSHOT_MARKER_RE, "").trim();
 }
 
-/** Extract screenshot IDs from text containing [screenshot:ID] markers. */
-export function extractScreenshotIds(text: string): string[] {
-  const ids: string[] = [];
-  let match;
-  const re = new RegExp(SCREENSHOT_MARKER_RE.source, "g");
-  while ((match = re.exec(text)) !== null) {
-    ids.push(match[1]);
+/**
+ * Rewrite simple grep alternation (`foo|bar`) into a readable comma list.
+ * Leaves general regex patterns unchanged.
+ */
+function humanizeGrepAlternation(query: string): string {
+  if (!query.includes("|") || query.includes("\\|")) return query;
+  const parts = query
+    .split("|")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length < 2) return query;
+  if (parts.every((part) => /^[\w.-]+$/.test(part))) {
+    return parts.join(", ");
   }
-  return ids;
+  return query;
+}
+
+/** One-line subtitle for grep / code-search tool headers. */
+export function formatSearchQuerySubtitle(query: string): string {
+  const normalized = humanizeGrepAlternation(query.trim());
+  if (!normalized) return "";
+  return `"${truncate(normalized, 40, { ellipsis: "..." })}"`;
 }
 
 function formatSearchArgsSummary(
@@ -39,7 +52,7 @@ function formatSearchArgsSummary(
   const pattern =
     (args.pattern as string | undefined) || (args.query as string | undefined);
   if (pattern) {
-    return `"${truncate(pattern, 40, { ellipsis: "..." })}"`;
+    return formatSearchQuerySubtitle(pattern);
   }
   const path = args.path as string | undefined;
   if (path) return path;

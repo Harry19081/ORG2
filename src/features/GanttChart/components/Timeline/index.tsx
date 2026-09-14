@@ -7,7 +7,7 @@ import type { VirtualItem } from "@tanstack/react-virtual";
 import React, { RefObject, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { Placeholder } from "@src/components/Placeholder";
 
 import {
   type ViewScopePeriod,
@@ -31,7 +31,7 @@ import { MarkerTimelineRow } from "./MarkerTimelineRow";
 import { TimelineRow, isPeriodEmphasized } from "./TimelineRow";
 import "./index.scss";
 
-export interface GanttTimelineProps {
+interface GanttTimelineProps {
   tasks: GanttTask[];
   markerRows?: GanttMarkerRow[];
   config: GanttConfig;

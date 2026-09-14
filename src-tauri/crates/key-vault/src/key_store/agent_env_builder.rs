@@ -11,6 +11,14 @@ const ZENMUX_ANTHROPIC_BASE_URL: &str = "https://zenmux.ai/api/anthropic";
 const LONGCAT_OPENAI_BASE_URL: &str = "https://api.longcat.chat/openai";
 const LONGCAT_ANTHROPIC_BASE_URL: &str = "https://api.longcat.chat/anthropic";
 const ATLASCLOUD_ANTHROPIC_BASE_URL: &str = "https://api.atlascloud.ai";
+const CLAUDE_CROSS_TYPE_MODEL_ENV_KEYS: &[&str] = &[
+    "ANTHROPIC_MODEL",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+    "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS",
+    "DISABLE_INTERLEAVED_THINKING",
+];
 
 impl KeyService {
     /// Get environment variables for running an agent
@@ -73,6 +81,14 @@ impl KeyService {
                 }
             },
             ModelType::ClaudeCode => {
+                // Rebuild Claude routing from the selected account instead of
+                // trusting an old env mirror. Auth methods are exclusive, the
+                // endpoint comes from the account's canonical base_url, and
+                // compatible-provider model overrides never belong to a
+                // native Claude account.
+                let stale_env_base_url = env.remove("ANTHROPIC_BASE_URL");
+                env.remove("ANTHROPIC_API_KEY");
+                env.remove("ANTHROPIC_AUTH_TOKEN");
                 if entry.auth_method == AuthMethod::Oauth {
                     if let Some(token) = entry
                         .session_token
@@ -81,8 +97,15 @@ impl KeyService {
                     {
                         env.insert("ANTHROPIC_AUTH_TOKEN".to_string(), token.to_string());
                     }
-                } else if let Some(ref key) = entry.api_key {
-                    env.insert("ANTHROPIC_API_KEY".to_string(), key.clone());
+                } else {
+                    if let Some(ref key) = entry.api_key {
+                        env.insert("ANTHROPIC_API_KEY".to_string(), key.clone());
+                    }
+                }
+                if !is_cross_type {
+                    for key in CLAUDE_CROSS_TYPE_MODEL_ENV_KEYS {
+                        env.remove(*key);
+                    }
                 }
                 // Official Claude OAuth tokens (sk-ant-oat…) only authenticate
                 // at api.anthropic.com. A non-official base_url on such a row
@@ -97,16 +120,14 @@ impl KeyService {
                         .as_deref()
                         .is_some_and(is_claude_official_oauth_token);
                 if official_oauth
-                    && !is_official_anthropic_endpoint(
-                        env.get("ANTHROPIC_BASE_URL").map(String::as_str),
-                    )
+                    && !is_official_anthropic_endpoint(stale_env_base_url.as_deref())
+                    && stale_env_base_url.is_some()
                 {
                     tracing::warn!(
                         "[agent_env_builder] Claude OAuth key {} has a non-official ANTHROPIC_BASE_URL env var; \
                          official OAuth tokens only authenticate at api.anthropic.com — dropping it",
                         entry.id
                     );
-                    env.remove("ANTHROPIC_BASE_URL");
                 }
                 let official_oauth_with_stale_base_url =
                     official_oauth && !is_official_anthropic_endpoint(entry.base_url.as_deref());
@@ -346,6 +367,14 @@ impl KeyService {
                     env.insert("OPENCODE_BASE_URL".to_string(), url.clone());
                 }
             }
+            ModelType::DeepseekHarness => {
+                if let Some(ref key) = entry.api_key {
+                    env.insert("DEEPSEEK_API_KEY".to_string(), key.clone());
+                }
+                if let Some(ref url) = entry.base_url {
+                    env.insert("DEEPSEEK_BASE_URL".to_string(), url.clone());
+                }
+            }
             // Extended CLI agents — api_key available under ORGII_API_KEY if set.
             ModelType::Aider
             | ModelType::Goose
@@ -516,6 +545,10 @@ impl KeyService {
             ModelType::OpenCode => {
                 // OpenCode uses its own config for provider credentials.
                 // Proxy token is available via ORGII_PROXY_TOKEN (set above).
+            }
+            ModelType::DeepseekHarness => {
+                env.insert("DEEPSEEK_API_KEY".to_string(), proxy_token.to_string());
+                env.insert("DEEPSEEK_BASE_URL".to_string(), proxy_url.to_string());
             }
             // Extended CLI agents — proxy token available via ORGII_PROXY_TOKEN.
             ModelType::Aider

@@ -8,22 +8,26 @@
  * Managed properties:
  * - Native WebView scale + coordinate scale variables         (uiScaleAtom, 0–200 %)
  * - `--app-font-family`                                    (applicationUiFontAtom)
+ * - `--app-solid-background`                       (resolvedBackgroundConfigAtom)
  * - Chat typography variables                              (chat appearance settings)
- * - `html.fullscreen` class                                (windowFullscreenAtom)
+ * - `html.fullscreen` class                                (windowFullscreenAtom,
+ *   kept in sync with the native window by `useWindowFullscreenSync`)
  *
  * This hook must run in AppBootstrap (before first render) so the styles are
  * applied before any child component paints, avoiding a flash of unstyled UI.
  */
 import { useAtomValue } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 import { getApplicationUiFontStack } from "@src/config/appearance/applicationUiFonts";
 import { createLogger } from "@src/hooks/logger";
+import { useWindowFullscreenSync } from "@src/hooks/platform/useWindowFullscreenSync";
 import {
   chatCodeFontSizeAtom,
   chatFontSizeAtom,
   chatLineHeightAtom,
 } from "@src/store/config/configAtom";
+import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import {
   applicationUiFontAtom,
   uiScaleAtom,
@@ -36,12 +40,25 @@ import { resolveNativeFrameScale } from "@src/util/platform/tauri/nativeFrame";
 const logger = createLogger("AppShellEffects");
 
 export function useAppShellEffects(): void {
+  useWindowFullscreenSync();
   const uiScale = useAtomValue(uiScaleAtom);
   const applicationUiFont = useAtomValue(applicationUiFontAtom);
   const isFullscreen = useAtomValue(windowFullscreenAtom);
   const chatFontSize = useAtomValue(chatFontSizeAtom);
   const chatCodeFontSize = useAtomValue(chatCodeFontSizeAtom);
   const chatLineHeight = useAtomValue(chatLineHeightAtom);
+  const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
+
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty(
+      "--app-solid-background",
+      backgroundConfig.backgroundColor ?? "var(--color-bg-2, var(--splash-bg))"
+    );
+    return () => {
+      root.style.removeProperty("--app-solid-background");
+    };
+  }, [backgroundConfig.backgroundColor]);
 
   useEffect(() => {
     let disposed = false;
@@ -94,7 +111,10 @@ export function useAppShellEffects(): void {
     root.style.zoom = "";
     root.style.setProperty("--ui-scale", "1");
     root.style.setProperty("--native-frame-scale", String(scaleValue));
-    invokeTauri("set_main_webview_zoom", { scaleFactor: scaleValue }).catch(
+    // Per-window command: each window (main or detached session) zooms its
+    // own webview. `set_main_webview_zoom` would re-zoom main from every
+    // window and never scale a secondary one.
+    invokeTauri("set_webview_zoom", { scaleFactor: scaleValue }).catch(
       (error) => {
         logger.error("failed to set native WebView zoom:", error);
       }

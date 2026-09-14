@@ -1,8 +1,4 @@
-import { Check } from "lucide-react";
-import React, { useState } from "react";
-
-import Button from "@src/components/Button";
-import Tooltip from "@src/components/Tooltip";
+import React from "react";
 
 import CollapsibleSection from "./CollapsibleSection";
 import InlineInfoCard from "./InlineInfoCard";
@@ -22,60 +18,6 @@ export interface InlineOptionCardProps {
   className?: string;
   contentClassName?: string;
   hideSectionTitles?: boolean;
-}
-
-export function InlineOptionPill({
-  label,
-  selected,
-  tooltip,
-  onClick,
-}: {
-  label: React.ReactNode;
-  selected: boolean;
-  tooltip?: React.ReactNode;
-  onClick?: () => void;
-}) {
-  const [suppressHover, setSuppressHover] = useState(false);
-
-  const checkIcon = (
-    <span
-      className={`flex size-3.5 shrink-0 items-center justify-center rounded-full border ${
-        selected
-          ? "border-primary-6 bg-primary-6"
-          : "border-border-3 bg-primary-container"
-      }`}
-    >
-      {selected && <Check size={10} className="text-white" />}
-    </span>
-  );
-
-  const pill = (
-    <Button
-      variant="secondary"
-      appearance="outline"
-      shape="round"
-      size="small"
-      icon={checkIcon}
-      onClick={(event) => {
-        event.currentTarget.blur();
-        setSuppressHover(true);
-        onClick?.();
-      }}
-      onMouseLeave={() => setSuppressHover(false)}
-      className={`!inline-flex !max-w-full !flex-row !items-center !gap-1.5 border-border-2 bg-fill-1 px-2.5 py-1 text-[12px] !font-normal text-text-2 ${
-        suppressHover ? "hover:!border-border-2" : ""
-      }`}
-    >
-      {label}
-    </Button>
-  );
-
-  if (!tooltip) return pill;
-  return (
-    <Tooltip content={tooltip} position="top">
-      {pill}
-    </Tooltip>
-  );
 }
 
 const InlineOptionCard: React.FC<InlineOptionCardProps> = ({
@@ -111,7 +53,7 @@ const InlineOptionCard: React.FC<InlineOptionCardProps> = ({
             )}
 
             {description != null && (
-              <p className="whitespace-pre-line text-xs leading-5 text-text-2">
+              <p className="text-xs leading-5 whitespace-pre-line text-text-2">
                 {description}
               </p>
             )}

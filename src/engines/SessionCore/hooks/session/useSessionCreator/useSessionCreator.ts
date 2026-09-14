@@ -24,6 +24,7 @@ import type { SessionCreatorLaunchMode } from "@src/features/SessionCreator/type
 import { createSystemPathSessionSource } from "@src/features/SessionCreator/utils/systemPathSource";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { useAddToAgentInsertion, useComposerInput } from "@src/hooks/input";
+import { useFileUpload } from "@src/hooks/useFileUpload";
 import {
   SYSTEM_PATH_ID,
   type SessionSource,
@@ -41,7 +42,6 @@ import { getRustAgentType } from "@src/util/session/sessionDispatch";
 import type { UseSessionCreatorReturn } from "./types";
 import { useAdvancedConfig } from "./useAdvancedConfig";
 import { useDraftManagement } from "./useDraftManagement";
-import { useFileUpload } from "./useFileUpload";
 import { useMarketDeeplink } from "./useMarketDeeplink";
 import { useSessionLaunch } from "./useSessionLaunch";
 import type {
@@ -198,7 +198,6 @@ export function useSessionCreator(
     handleAtMention,
     handleAtMentionClose,
     handleAtSelect,
-    handleAtMentionClick,
     isDark,
     showSlashMenu,
     slashQuery,
@@ -210,7 +209,6 @@ export function useSessionCreator(
     includeProjectMode,
     filteredSlashItems: baseFilteredSlashItems,
     slashLoading,
-    prefetchSlashItems,
   } = useComposerInput({
     onContentChange: (content) => {
       setEditorContent(content);
@@ -494,7 +492,6 @@ export function useSessionCreator(
     includeProjectMode,
     filteredSlashItems,
     slashLoading,
-    prefetchSlashItems,
 
     // Event handlers
     handleFileUpload,
@@ -503,7 +500,6 @@ export function useSessionCreator(
     handleContentChange,
     handleAtMention,
     handleAtMentionClose,
-    handleAtMentionClick,
     handleAtSelect,
     handleLaunch,
     canLaunch,

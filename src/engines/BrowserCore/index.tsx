@@ -13,29 +13,41 @@
  * - Native webview rendering
  */
 import { useAtomValue } from "jotai";
-import {
-  CloudOff,
-  Globe,
-  HatGlasses,
-  Monitor,
-  RefreshCw,
-  SquareArrowOutUpRight,
-} from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
+import { Placeholder } from "@src/components/Placeholder";
 import { createLogger } from "@src/hooks/logger";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { webviewBlockedAtom } from "@src/store/ui/overlayAtom";
+import {
+  CloudLoadingIcon,
+  HugeiconsIcon,
+  MonitorIcon,
+  Refresh04Icon,
+  SquareArrowUpRight02Icon,
+} from "@src/icons";
+import {
+  webviewBlockedAtom,
+  webviewOverlayBlockedAtom,
+} from "@src/store/ui/overlayAtom";
+import { activeOverlayCountAtom } from "@src/store/ui/overlayLayerAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { openExternalLink } from "@src/util/platform/ipcRenderer";
 
 import BrowserSessionWebview from "./BrowserSessionWebview";
-import type { UseBrowserStateReturn } from "./hooks/useBrowserState";
 import "./index.scss";
 import { BROWSER_WEBVIEW_FRAME_ANCHOR_ATTRIBUTE } from "./nativeFrameAnchor";
+import type { BrowserState } from "./types";
+import {
+  pushRecentWebviewId,
+  selectMountedBrowserSessions,
+} from "./webviewMountWindow";
 
 const log = createLogger("BrowserCore");
 
@@ -70,15 +82,17 @@ function shouldShowEmbeddedBrowserFallback(url?: string): boolean {
 // Props
 // ============================================
 
-export interface BrowserCoreProps {
+interface BrowserCoreProps {
   /** Browser state (sessions, active session, handlers) */
-  browserState: UseBrowserStateReturn;
+  browserState: BrowserState;
   /** Whether to show modal-blocking detection (for hiding webview) */
   respectModalBlocking?: boolean;
   /** Custom className */
   className?: string;
   /** Show simulator-specific notice */
   showSimulatorNotice?: boolean;
+  /** Optional complete placeholder shown only on a visible blank tab */
+  blankTabPlaceholder?: React.ReactNode;
   /** Force hide all webviews (e.g., when designer mode is active) */
   hidden?: boolean;
   /**
@@ -106,6 +120,7 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
   respectModalBlocking = true,
   className = "",
   showSimulatorNotice = false,
+  blankTabPlaceholder,
   hidden = false,
   manageWebviews = true,
   bypassStationModeBlocking = false,
@@ -113,11 +128,38 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
   const { t } = useTranslation();
   const { sessions, activeSessionId, updateSession, addSession } = browserState;
 
+  // Most-recently-active browser session ids (newest first) — see
+  // ./webviewMountWindow.ts for the mount policy this drives.
+  const [recentWebviewIds, setRecentWebviewIds] = useState<readonly string[]>(
+    []
+  );
+  // Derived-from-previous-render state (React's "storing information from
+  // previous renders" pattern), matching TerminalCore: update synchronously
+  // during render so an evicted session never renders once with stale data.
+  if (activeSessionId) {
+    const nextRecent = pushRecentWebviewId(recentWebviewIds, activeSessionId);
+    if (nextRecent !== recentWebviewIds) setRecentWebviewIds(nextRecent);
+  }
+  const mountedWebviewSessions = selectMountedBrowserSessions(
+    sessions,
+    activeSessionId,
+    recentWebviewIds
+  );
+
   // Check if webviews should be blocked by overlays or station ownership.
   const isWebviewBlocked = useAtomValue(webviewBlockedAtom);
+  // Overlay-only slice: station-mode ownership must not trigger the
+  // "temporarily hidden" notice, because closing a dropdown won't fix that.
+  const isOverlayBlocked = useAtomValue(webviewOverlayBlockedAtom);
+  // macOS keeps the webview alive but sends it behind the React layer instead
+  // of blocking it, so the pane still blanks without `isOverlayBlocked` set.
+  const activeOverlayCount = useAtomValue(activeOverlayCountAtom);
 
   const stationMode = useAtomValue(stationModeAtom);
+  // Non-owning shared surfaces are already scoped by their `hidden` prop.
+  // Applying the native-webview station gate to them blanks My Station UI.
   const isSecondaryStationHidden =
+    manageWebviews &&
     !respectModalBlocking &&
     !bypassStationModeBlocking &&
     stationMode !== "agent-station";
@@ -179,7 +221,6 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
   ]);
 
   const isLoadingRaw = currentSession?.isLoading || false;
-  const isIncognito = currentSession?.incognito || false;
   const displayError = currentSession?.error || null;
   const currentUrl = currentSession?.url;
   const [embeddedFallbackUrl, setEmbeddedFallbackUrl] = React.useState<
@@ -191,6 +232,25 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
   const shouldShowUrlPlaceholder =
     isTabReallyActive && isBlankBrowserUrl(currentSession?.url);
   const shouldRenderContentArea = hasSessionWithUrl || shouldShowUrlPlaceholder;
+  /**
+   * A dropdown/modal either blocks the native webview (`SharedBrowserApp`
+   * hides it off `webviewOverlayBlockedAtom`) or, on macOS, drops it behind
+   * the React layer (`useGlobalBrowserWebviewLayering`). Either way the pane
+   * blanks with no explanation, so say why.
+   *
+   * Deliberately NOT gated on `respectModalBlocking`: the visible chrome for
+   * the shared runtime (`SharedBrowserWorkspace` -> `WebViewport`) passes
+   * `respectModalBlocking={false}` because it does not own the webview — but
+   * it is exactly the surface the user is looking at when the pane blanks.
+   * `bypassStationModeBlocking` excludes the aria-hidden owner host itself,
+   * which is stacked over the same rect and would double the notice.
+   */
+  const shouldShowOverlayHiddenNotice =
+    isWebviewAvailable &&
+    !bypassStationModeBlocking &&
+    (isOverlayBlocked || activeOverlayCount > 0) &&
+    !hidden &&
+    !isBlankBrowserUrl(currentUrl);
 
   // Delay showing the loading overlay by 500ms to avoid flash on fast loads
   const [isLoading, setIsLoading] = React.useState(false);
@@ -246,43 +306,44 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
             aria-hidden="true"
           />
           {shouldShowUrlPlaceholder && (
-            <div
-              className={`browser-native-info ${EDITOR_TAB_CANVAS_BG_CLASS}`}
-            >
-              <div className="browser-native-placeholder">
-                {isIncognito ? (
-                  <HatGlasses
-                    size={64}
-                    strokeWidth={1.5}
-                    className="text-warning-6 opacity-80"
-                  />
-                ) : (
-                  <Globe
-                    size={64}
-                    strokeWidth={1.5}
-                    className="text-primary-6 opacity-80"
-                  />
-                )}
-                <h3>
-                  {isIncognito
-                    ? t("workstation.browserCore.privateBrowsingEmptyTitle")
-                    : t("workstation.browserCore.enterUrlToStart")}
-                </h3>
-                {showSimulatorNotice && (
-                  <p className="mt-2 text-xs font-semibold text-text-3">
-                    {t("workstation.browserCore.simulatorBrowserNotice")}
-                  </p>
-                )}
-                <p className="mt-2 text-xs text-text-3">
-                  {t("workstation.browserCore.tlsDevNote")}
-                </p>
-              </div>
+            <div className="browser-native-info">
+              {blankTabPlaceholder ?? (
+                <Placeholder
+                  variant="empty"
+                  placement="detail-panel"
+                  title={
+                    currentSession?.incognito
+                      ? t("workstation.browserCore.privateBrowsingEmptyTitle")
+                      : t("workstation.browserCore.enterUrlToStart")
+                  }
+                  subtitle={
+                    showSimulatorNotice
+                      ? t("workstation.browserCore.simulatorBrowserNotice")
+                      : undefined
+                  }
+                  fillParentHeight
+                />
+              )}
+            </div>
+          )}
+
+          {/* Overlay-hidden notice — the native webview is parked offscreen
+              while a dropdown/modal is open, so the pane would read as broken. */}
+          {shouldShowOverlayHiddenNotice && (
+            <div className="browser-native-info browser-webview-hidden-notice">
+              <Placeholder
+                variant="empty"
+                placement="detail-panel"
+                title={t("workstation.browserCore.webviewHiddenTitle")}
+                subtitle={t("workstation.browserCore.webviewHiddenBody")}
+                fillParentHeight
+              />
             </div>
           )}
 
           {/* Only the owning instance renders BrowserSessionWebview. */}
           {manageWebviews &&
-            sessions.map((session) => (
+            mountedWebviewSessions.map((session) => (
               <BrowserSessionWebview
                 key={session.id}
                 session={session}
@@ -298,7 +359,12 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
           {!isWebviewAvailable && (
             <div className="browser-native-info">
               <div className="browser-native-placeholder">
-                <Monitor size={48} className="text-text-2 opacity-60" />
+                <HugeiconsIcon
+                  icon={MonitorIcon}
+                  data-icon="monitor"
+                  size={48}
+                  className="text-text-2 opacity-60"
+                />
                 <h3>{t("workstation.browserCore.desktopOnlyTitle")}</h3>
                 <p>{t("workstation.browserCore.desktopOnlyBody")}</p>
                 <div className="mt-4 text-left text-xs text-text-3">
@@ -354,7 +420,9 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
             !displayError && (
               <div className="browser-native-info browser-embedded-fallback">
                 <div className="browser-native-placeholder">
-                  <CloudOff
+                  <HugeiconsIcon
+                    icon={CloudLoadingIcon}
+                    data-icon="cloud-off"
                     size={64}
                     strokeWidth={1.5}
                     className="text-text-3 opacity-60"
@@ -374,7 +442,12 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
                       variant="primary"
                       size="small"
                       icon={
-                        <SquareArrowOutUpRight size={14} strokeWidth={1.75} />
+                        <HugeiconsIcon
+                          icon={SquareArrowUpRight02Icon}
+                          data-icon="square-arrow-out-up-right"
+                          size={14}
+                          strokeWidth={1.75}
+                        />
                       }
                       htmlType="button"
                       onClick={handleOpenExternal}
@@ -392,7 +465,14 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
                     <Button
                       variant="secondary"
                       size="small"
-                      icon={<RefreshCw size={14} strokeWidth={1.75} />}
+                      icon={
+                        <HugeiconsIcon
+                          icon={Refresh04Icon}
+                          data-icon="refresh-cw"
+                          size={14}
+                          strokeWidth={1.75}
+                        />
+                      }
                       htmlType="button"
                       onClick={() => {
                         if (!currentSession) return;
@@ -414,7 +494,9 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
           {isWebviewAvailable && isTabReallyActive && displayError && (
             <div className="browser-native-info">
               <div className="browser-native-placeholder">
-                <CloudOff
+                <HugeiconsIcon
+                  icon={CloudLoadingIcon}
+                  data-icon="cloud-off"
                   size={64}
                   strokeWidth={1.5}
                   className="text-text-3 opacity-60"
@@ -429,7 +511,14 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
                   <Button
                     variant="primary"
                     size="small"
-                    icon={<RefreshCw size={14} strokeWidth={1.75} />}
+                    icon={
+                      <HugeiconsIcon
+                        icon={Refresh04Icon}
+                        data-icon="refresh-cw"
+                        size={14}
+                        strokeWidth={1.75}
+                      />
+                    }
                     htmlType="button"
                     onClick={() => {
                       if (!currentSession) return;

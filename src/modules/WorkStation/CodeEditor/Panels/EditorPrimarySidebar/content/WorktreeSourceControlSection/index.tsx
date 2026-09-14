@@ -11,6 +11,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
 } from "react";
 
@@ -22,7 +23,7 @@ import {
 } from "../../hooks/usePerRepoSourceControl";
 import SourceControlContent from "../SourceControlContent";
 
-export interface WorktreeSourceControlSectionProps {
+interface WorktreeSourceControlSectionProps {
   worktreePath: string;
   /** Host repository id used for git-api calls and status websocket events. */
   hostRepoId: string;
@@ -110,7 +111,8 @@ export const WorktreeSourceControlSection = forwardRef<
       onGitFilesChange?.(absoluteFiles, worktreePath);
     }, [onGitFilesChange, absoluteFiles, worktreePath]);
 
-    useEffect(() => {
+    // Resolve the parent overlay before paint when scoped data is ready.
+    useLayoutEffect(() => {
       onLoadingChange?.(loading);
     }, [loading, onLoadingChange]);
 

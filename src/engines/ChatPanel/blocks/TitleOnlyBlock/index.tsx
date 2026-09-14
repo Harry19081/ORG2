@@ -28,7 +28,7 @@ import {
 } from "../primitives";
 import { useBlockHeader } from "../useBlockLocate";
 
-export interface TitleOnlyBlockProps {
+interface TitleOnlyBlockProps {
   /** Pre-translated header title (state-aware label from the Rust registry). */
   title: string;
   /** Header icon (resolved from the tool's `icon_id` by the adapter). */
@@ -68,11 +68,9 @@ const TitleOnlyBlock: React.FC<TitleOnlyBlockProps> = React.memo(
         <EventBlockHeader
           isCollapsed
           withHover={false}
-          onClick={handleLocate}
           onNavigate={handleLocate}
           onMouseEnter={handleHeaderMouseEnter}
           onMouseLeave={handleHeaderMouseLeave}
-          className={eventId ? "cursor-pointer" : undefined}
           rightContent={
             toolUsage ? <ToolUsageBadge usage={toolUsage} /> : undefined
           }
@@ -82,7 +80,6 @@ const TitleOnlyBlock: React.FC<TitleOnlyBlockProps> = React.memo(
             isCollapsed
             isHeaderHovered={isHeaderHovered}
             hasContent={false}
-            revealChevronOnIconHoverOnly={Boolean(eventId)}
             isLoading={isLoading}
             isFailed={isFailed}
           />

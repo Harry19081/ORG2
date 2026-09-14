@@ -25,6 +25,9 @@ mod diff_feedback;
 mod parallel;
 mod single;
 
+#[cfg(test)]
+mod cancellation_tests;
+
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 
@@ -249,6 +252,7 @@ pub(crate) async fn execute_tool_calls(
     session_id: &str,
     turn_intent_id: &str,
     projected_inbox_ids: &[i64],
+    turn_process_control: Option<&crate::tools::call_context::TurnProcessControl>,
     handler: &dyn TurnEventHandler,
     permission_provider: Option<&dyn PermissionProvider>,
     cancel_flag: Option<&Arc<AtomicBool>>,
@@ -273,6 +277,7 @@ pub(crate) async fn execute_tool_calls(
                     session_id,
                     turn_intent_id,
                     projected_inbox_ids,
+                    turn_process_control,
                     handler,
                     permission_provider,
                     cancel_flag,
@@ -304,6 +309,7 @@ pub(crate) async fn execute_tool_calls(
                         session_id,
                         turn_intent_id,
                         projected_inbox_ids,
+                        turn_process_control,
                         handler,
                         permission_provider,
                         cancel_flag,
@@ -333,6 +339,7 @@ pub(crate) async fn execute_tool_calls(
                     session_id,
                     turn_intent_id,
                     projected_inbox_ids,
+                    turn_process_control,
                     handler,
                     permission_provider,
                     cancel_flag,

@@ -347,7 +347,10 @@ mod tests {
     fn missing_home_is_typed_unavailable_not_a_fake_path() {
         let env = CursorEnv::default();
         for platform in ALL_PLATFORMS {
-            assert_eq!(env.global_storage_dir(platform), Err(CursorPathsUnavailable));
+            assert_eq!(
+                env.global_storage_dir(platform),
+                Err(CursorPathsUnavailable)
+            );
             assert_eq!(env.state_db_path(platform), Err(CursorPathsUnavailable));
         }
         assert_eq!(env.plugins_cache_dir(), Err(CursorPathsUnavailable));

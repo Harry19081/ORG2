@@ -1,5 +1,4 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { AlertTriangle, Check, RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -11,8 +10,16 @@ import {
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
 import { Message } from "@src/components/Message";
+import PageNotice from "@src/components/PageNotice";
+import { Placeholder } from "@src/components/Placeholder";
+import Textarea from "@src/components/Textarea";
 import { CodeMirrorConflictEditor } from "@src/features/CodeMirror";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import {
+  Alert01Icon,
+  HugeiconsIcon,
+  Refresh04Icon,
+  Tick01Icon,
+} from "@src/icons";
 import {
   projectGitFolderSyncResultByOrgAtom,
   setProjectGitFolderSyncResultAtom,
@@ -139,7 +146,12 @@ export const ProjectGitSyncReviewContent: React.FC<
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-bg-1">
       <div className="flex h-11 shrink-0 items-center justify-between border-b border-border-1 px-4">
         <div className="flex min-w-0 items-center gap-2">
-          <AlertTriangle size={16} className="shrink-0 text-warning-6" />
+          <HugeiconsIcon
+            icon={Alert01Icon}
+            data-icon="alert-triangle"
+            size={16}
+            className="shrink-0 text-warning-6"
+          />
           <div className="min-w-0 truncate text-sm font-medium text-text-1">
             {t("gitSyncReview.title", { org: orgName ?? syncResult.org_id })}
           </div>
@@ -153,23 +165,30 @@ export const ProjectGitSyncReviewContent: React.FC<
           disabled={syncing}
           onClick={() => void handleSyncAgain()}
         >
-          <RefreshCw size={14} className={syncing ? "animate-spin" : ""} />
+          <HugeiconsIcon
+            icon={Refresh04Icon}
+            data-icon="refresh-cw"
+            size={14}
+            className={syncing ? "animate-spin" : ""}
+          />
           {t("gitSyncReview.syncAgain")}
         </Button>
       </div>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <aside className="flex w-72 shrink-0 flex-col overflow-hidden border-r border-border-1 bg-fill-1">
-          <div className="shrink-0 px-3 py-2 text-xs font-medium uppercase tracking-wide text-text-4">
+          <div className="shrink-0 px-3 py-2 text-xs font-medium tracking-wide text-text-4 uppercase">
             {t("gitSyncReview.files")}
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
             {conflicts.map((conflict) => {
               const active = selectedConflict?.id === conflict.id;
               return (
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   key={conflict.id}
-                  type="button"
+                  htmlType="button"
                   className={`flex w-full flex-col rounded-md px-2 py-2 text-left transition-colors ${
                     active
                       ? "bg-fill-3 text-text-1"
@@ -183,7 +202,7 @@ export const ProjectGitSyncReviewContent: React.FC<
                   <span className="mt-0.5 truncate text-xs text-text-4">
                     {conflict.relative_path}
                   </span>
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -203,7 +222,11 @@ export const ProjectGitSyncReviewContent: React.FC<
                   loading={saving}
                   onClick={() => void handleSaveResolved()}
                 >
-                  <Check size={14} />
+                  <HugeiconsIcon
+                    icon={Tick01Icon}
+                    data-icon="check"
+                    size={14}
+                  />
                   {t("gitSyncReview.saveResolved")}
                 </Button>
               </div>
@@ -218,13 +241,18 @@ export const ProjectGitSyncReviewContent: React.FC<
                   />
                 ) : (
                   <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden p-4">
-                    <div className="text-warning-7 rounded-md border border-warning-4 bg-warning-1 p-3 text-sm">
+                    <PageNotice type="warning" role="status">
                       {selectedConflict.message}
-                    </div>
-                    <textarea
-                      className="focus:border-accent-9 min-h-0 flex-1 resize-none rounded-md border border-border-2 bg-bg-2 p-3 text-sm text-text-1 outline-none"
+                    </PageNotice>
+                    <Textarea
+                      resize="none"
+                      className="min-h-0 flex-1 [&>.textarea-inner]:flex-1"
+                      textareaClassName="flex-1"
+                      textareaStyle={{ minHeight: 0, maxHeight: "none" }}
                       value={editedContent}
-                      onChange={(event) => setEditedContent(event.target.value)}
+                      onChange={(_value, event) =>
+                        setEditedContent(event.target.value)
+                      }
                     />
                   </div>
                 )}

@@ -7,8 +7,8 @@
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Placeholder } from "@src/components/Placeholder";
 import type { FullComputedStyles } from "@src/modules/WorkStation/Browser/hooks/useWebviewStyleEditor";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 
 import { StyleSection } from "./StyleSection";
 
@@ -16,7 +16,7 @@ import { StyleSection } from "./StyleSection";
 // Types
 // ============================================
 
-export interface CSSPanelProps {
+interface CSSPanelProps {
   /** Computed styles for the selected element */
   styles: FullComputedStyles | null;
   /** Callback to change a style property */
@@ -167,7 +167,7 @@ export const CSSPanel: React.FC<CSSPanelProps> = memo(
     }
 
     return (
-      <div className="flex h-full flex-col overflow-y-auto px-3 py-2 scrollbar-hide">
+      <div className="scrollbar-hide flex h-full flex-col overflow-y-auto px-3 py-2">
         {categoryData.map((category) => (
           <StyleSection
             key={category.name}

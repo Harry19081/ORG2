@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import type { Session } from "@src/store/session";
 import { WORK_MANAGEMENT_SECTION } from "@src/store/workstation";
 
@@ -13,9 +13,9 @@ const labels: ChatPanelTabDisplayLabels = {
   newSession: "New session",
   runtime: "Runtime",
   organization: "Manage ORG",
-  teamInbox: "Inbox",
   workManagement: {
     kanban: "Kanban",
+    inbox: "Inbox",
     work: "Work Items",
   },
   sessionFallback: "Chat",
@@ -60,16 +60,28 @@ describe("resolveChatPanelTabDisplayTitle", () => {
     ).toBe("Channels");
   });
 
-  it("uses the same localized Inbox title as the sidebar", () => {
-    expect(
-      resolveChatPanelTabDisplayTitle(tab("team-inbox"), null, labels)
-    ).toBe("Inbox");
-  });
-
   it("keeps Work datasets under one localized tab title", () => {
     expect(
-      resolveChatPanelTabDisplayTitle(tab("work-management"), null, labels)
+      resolveChatPanelTabDisplayTitle(
+        tab("work-management", "Inbox"),
+        null,
+        labels
+      )
+    ).toBe("Inbox");
+    expect(
+      resolveChatPanelTabDisplayTitle(
+        tab("work-management", "Ignored", WORK_MANAGEMENT_SECTION.KANBAN),
+        null,
+        labels
+      )
     ).toBe("Kanban");
+    expect(
+      resolveChatPanelTabDisplayTitle(
+        tab("work-management", "Ignored", WORK_MANAGEMENT_SECTION.INBOX),
+        null,
+        labels
+      )
+    ).toBe("Inbox");
     expect(
       resolveChatPanelTabDisplayTitle(
         tab("work-management", "Ignored", WORK_MANAGEMENT_SECTION.PROJECTS),

@@ -20,14 +20,15 @@
  * depth / url).
  */
 import { invoke } from "@tauri-apps/api/core";
-import { PenTool } from "lucide-react";
 import React, { Suspense, memo, useCallback, useMemo, useState } from "react";
 
+import Button from "@src/components/Button";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { Placeholder } from "@src/components/Placeholder";
 import { createLogger } from "@src/hooks/logger";
+import { HugeiconsIcon, PenTool01Icon } from "@src/icons";
 import { FileHeader } from "@src/modules/WorkStation/shared";
-import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import type { ToggleOption } from "@src/modules/shared/components/FileHeader";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { IFRAME_STYLE_NONCE } from "@src/util/iframeCspNonce";
 
 const CodeViewerContent = React.lazy(() => import("../CodeViewerContent"));
@@ -313,16 +314,25 @@ const MetaStrip: React.FC<MetaStripProps> = memo(
             {url}
           </span>
         )}
-        <WorkstationToolbarTooltip label="Inspect with DevTools">
-          <button
-            type="button"
+        <ToolbarTooltip label="Inspect with DevTools">
+          <Button
+            variant="tertiary"
+            appearance="soft-no-drop"
+            size="mini"
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={PenTool01Icon}
+                data-icon="pen-tool"
+                size={14}
+              />
+            }
+            htmlType="button"
             onClick={handleOpenDevtools}
             aria-label="Inspect with DevTools"
-            className="ml-auto inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border-none bg-transparent p-0 text-text-3 hover:bg-fill-2 hover:text-text-2"
-          >
-            <PenTool size={14} />
-          </button>
-        </WorkstationToolbarTooltip>
+            className="ml-auto shrink-0 hover:bg-fill-2 hover:text-text-2"
+          />
+        </ToolbarTooltip>
       </div>
     );
   }

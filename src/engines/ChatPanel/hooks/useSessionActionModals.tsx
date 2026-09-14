@@ -1,18 +1,29 @@
 import { emit } from "@tauri-apps/api/event";
 import type { TFunction } from "i18next";
-import { type ComponentProps, useCallback, useState } from "react";
+import {
+  type ComponentProps,
+  Suspense,
+  lazy,
+  useCallback,
+  useState,
+} from "react";
 
 import Message from "@src/components/Message";
 import CloudSessionShareDialog from "@src/features/Org2Cloud/CloudSessionShareDialog";
 import { useCloudSessionShareDialog } from "@src/features/Org2Cloud/CloudSessionShareDialog/useCloudSessionShareDialog";
-import { SessionImportExportModal } from "@src/scaffold/NavigationSidebar/connectors/SessionImportExportModal";
+import { SessionExportModal } from "@src/scaffold/NavigationSidebar/connectors/SessionExportModal";
 import type { Session } from "@src/store/session/sessionAtom/types";
 
-import SessionRawTranscriptDialog from "../components/SessionRawTranscriptDialog";
 import LinkSessionToWorkItemModal from "../panels/LinkSessionToWorkItemModal";
 
+// Lazy: the raw-transcript dialog pulls CodeMirror, and it only ever mounts
+// after the user picks it from the header actions menu.
+const SessionRawTranscriptDialog = lazy(
+  () => import("../components/SessionRawTranscriptDialog")
+);
+
 type ExportActiveSession = ComponentProps<
-  typeof SessionImportExportModal
+  typeof SessionExportModal
 >["activeSession"];
 
 interface UseSessionActionModalsOptions {
@@ -79,13 +90,11 @@ export function useSessionActionModals({
         onClose={() => setLinkWorkItemModalOpen(false)}
         onLinked={handleSessionLinkedToWorkItem}
       />
-      <SessionImportExportModal
+      <SessionExportModal
         visible={isExportModalOpen}
-        mode="export"
         activeSession={activeSession}
         sessionFallbackName={t("chat.defaultTitle")}
         onClose={() => setExportModalOpen(false)}
-        onImported={() => undefined}
       />
       <CloudSessionShareDialog
         session={cloudShare.cloudShareSession}
@@ -93,11 +102,13 @@ export function useSessionActionModals({
         onClose={cloudShare.closeCloudShare}
       />
       {rawTranscriptSessionId ? (
-        <SessionRawTranscriptDialog
-          visible
-          sessionId={rawTranscriptSessionId}
-          onClose={() => setRawTranscriptSessionId(null)}
-        />
+        <Suspense fallback={null}>
+          <SessionRawTranscriptDialog
+            visible
+            sessionId={rawTranscriptSessionId}
+            onClose={() => setRawTranscriptSessionId(null)}
+          />
+        </Suspense>
       ) : null}
     </>
   );

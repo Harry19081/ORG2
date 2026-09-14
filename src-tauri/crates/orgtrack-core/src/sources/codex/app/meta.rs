@@ -8,7 +8,7 @@ use serde_json::Value;
 
 use crate::sources::codex::canonical_session_id;
 use crate::sources::imported_history::{
-    self,
+    self, client_origin,
     metadata::{
         ImportedHistoryCacheInput, ImportedHistoryDiscoveredRecord, ImportedHistoryImpactStats,
         StoredRoundUsage, SOURCE_CODEX_APP,
@@ -21,7 +21,7 @@ use super::index::{
     codex_sessions_dir_for_session_path, codex_thread_id_from_file_stem,
     collect_codex_session_files,
 };
-use super::transcript::user_message_from_payload;
+use super::transcript::user_message_text_from_line;
 use super::{
     CodexAppSessionMeta, CodexAppSourceMetadata, CodexJsonlLine, CODEX_APP_METADATA_PARSER_VERSION,
 };
@@ -55,6 +55,9 @@ struct CodexSessionMetaState {
     first_prompt: String,
     model: Option<String>,
     repo_path: Option<String>,
+    /// Client that wrote the rollout, from `session_meta.payload.originator`.
+    #[serde(default)]
+    originator: String,
     // Session totals are accumulated from per-round deltas (robust to codex's
     // cumulative resets on /compact). `input_tokens` is cache-inclusive here to
     // match the imported-cache convention.
@@ -100,7 +103,7 @@ impl CodexSessionMetaState {
             }
         }
         if self.first_prompt.is_empty() {
-            if let Some(message) = user_message_from_payload(&parsed.payload) {
+            if let Some(message) = user_message_text_from_line(&parsed) {
                 self.first_prompt = message;
             }
         }
@@ -116,7 +119,30 @@ impl CodexSessionMetaState {
             );
         }
         if parsed.line_type == "session_meta" {
+            if self.source_metadata.continuation_group_key.is_none() {
+                self.source_metadata.continuation_group_key = parsed
+                    .payload
+                    .get("id")
+                    .and_then(Value::as_str)
+                    .map(str::trim)
+                    .filter(|id| !id.is_empty())
+                    .map(str::to_string);
+            }
             capture_subagent_source_metadata(&parsed.payload, &mut self.source_metadata);
+            if self.originator.is_empty() {
+                // `originator` names the client; the sibling `source` field
+                // does not (the Codex desktop app reports `source: "vscode"`
+                // for its own sessions), so provenance reads this one only.
+                if let Some(originator) = parsed
+                    .payload
+                    .get("originator")
+                    .and_then(Value::as_str)
+                    .map(str::trim)
+                    .filter(|originator| !originator.is_empty())
+                {
+                    self.originator = originator.to_string();
+                }
+            }
         }
         if self.model.is_none() || self.repo_path.is_none() {
             if let Ok(turn_context) =
@@ -234,6 +260,7 @@ impl CodexSessionMetaState {
         source_metadata.first_prompt =
             (!self.first_prompt.trim().is_empty()).then_some(self.first_prompt);
         Some(CodexAppSessionMeta {
+            originator: self.originator,
             source_session_id: record.source_session_id.clone(),
             session_id,
             source_path: record.source_path.to_string_lossy().to_string(),
@@ -390,10 +417,14 @@ pub(crate) fn parse_codex_session_meta(
 }
 
 pub(super) fn session_meta_to_cache_input(meta: CodexAppSessionMeta) -> ImportedHistoryCacheInput {
-    let source_metadata_json = meta
-        .parent_session_id
-        .as_ref()
-        .and_then(|_| serde_json::to_string(&meta.source_metadata).ok());
+    let source_metadata_json = if meta.parent_session_id.is_some() {
+        serde_json::to_string(&meta.source_metadata).ok()
+    } else {
+        imported_history::cache::continuation_metadata_json(
+            meta.source_metadata.continuation_group_key.as_deref(),
+            &[],
+        )
+    };
     ImportedHistoryCacheInput {
         source: SOURCE_CODEX_APP,
         source_session_id: meta.source_session_id,
@@ -418,6 +449,8 @@ pub(super) fn session_meta_to_cache_input(meta: CodexAppSessionMeta) -> Imported
         listable: true,
         source_metadata_json,
         parent_session_id: meta.parent_session_id,
+        client_origin: client_origin::classify_codex_originator(&meta.originator),
+        client_origin_raw: (!meta.originator.trim().is_empty()).then_some(meta.originator),
     }
 }
 
@@ -493,6 +526,7 @@ fn codex_parent_session_id_for_record(
 /// Resolve a Codex thread UUID to the concrete rollout file that ORGII can
 /// replay. Lifecycle hooks identify the parent with a stable thread UUID, but
 /// their common `transcript_path` may point at the active child rollout.
+/// When the thread was rotated by resend, the newest rollout wins.
 pub fn resolve_codex_transcript_for_thread_id_near_path(
     reference_path: &Path,
     thread_id: &str,
@@ -500,9 +534,12 @@ pub fn resolve_codex_transcript_for_thread_id_near_path(
     let Some(sessions_dir) = codex_sessions_dir_for_session_path(reference_path) else {
         return Ok(None);
     };
+    // Resend rotates the physical rollout while keeping the thread UUID, so
+    // one directory can hold several generations. Rollout stems sort by their
+    // timestamp prefix; the last match is the current generation.
     let find_locator = |mut files: Vec<PathBuf>| {
         files.sort();
-        files.into_iter().find_map(|path| {
+        files.into_iter().rev().find_map(|path| {
             let file_stem = path
                 .file_stem()
                 .and_then(|value| value.to_str())?

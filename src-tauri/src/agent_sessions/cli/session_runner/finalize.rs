@@ -1,10 +1,11 @@
 //! Post-run finalization for CLI sessions.
 //!
 //! Everything after the spawn/stdout loop returns: compute the final session
-//! status, extract a user-facing error message from stderr, persist status,
-//! clear live-status, requeue Agent Org member turns, broadcast the terminal
-//! event, commit worktree changes, fetch Cursor usage, and tear down the MITM
-//! proxy / proxy token / synced skill files. Extracted from
+//! status, extract a user-facing error message from stderr, flush and publish
+//! provider-native history, persist status, clear live-status, requeue Agent
+//! Org member turns, broadcast the terminal event, commit worktree changes,
+//! fetch Cursor usage, and tear down the MITM proxy / proxy token / synced
+//! skill files. Extracted from
 //! `session::run_session`.
 
 use std::collections::{HashSet, VecDeque};
@@ -24,12 +25,106 @@ use super::proxy_release::release_proxy_token_for_session;
 use super::token_sync::sync_codex_cli_auth_to_key_vault;
 use crate::api::websocket_handler;
 
+const CURSOR_HISTORY_READY_ATTEMPTS: usize = 3;
+const CURSOR_HISTORY_READY_RETRY_MS: u64 = 100;
+
 fn normalized_total_tokens(input_tokens: u64, output_tokens: u64, reported_total: u64) -> u64 {
     if reported_total > 0 {
         reported_total
     } else {
         input_tokens.saturating_add(output_tokens)
     }
+}
+
+fn cursor_cli_history_changed_message(
+    session_id: &str,
+    history_session_id: &str,
+    turn_intent_id: Option<&str>,
+) -> serde_json::Value {
+    let mut message = serde_json::json!({
+        "type": "code_session.history_changed",
+        "session_id": session_id,
+        "history_session_id": history_session_id,
+        "source": "cursor_cli",
+        "status": "turn_settled",
+    });
+    if let Some(turn_intent_id) = turn_intent_id {
+        message["turn_intent_id"] = serde_json::Value::String(turn_intent_id.to_string());
+    }
+    message
+}
+
+/// Advertise replay invalidation only after the provider-owned Cursor store
+/// is bound to the managed id and its current meta/root manifest can be read.
+async fn notify_cursor_cli_history_changed_when_readable(
+    session_id: &str,
+    turn_intent_id: Option<&str>,
+) {
+    let managed_session_id = session_id.to_string();
+    let history_session_id = match tokio::task::spawn_blocking(move || {
+        super::super::native_transcript::imported_transcript_id_for_managed_session(
+            &managed_session_id,
+        )
+    })
+    .await
+    {
+        Ok(Some(history_session_id)) => history_session_id,
+        Ok(None) => {
+            tracing::warn!(
+                session_id,
+                "Cursor CLI turn settled without a persisted native transcript binding"
+            );
+            return;
+        }
+        Err(err) => {
+            tracing::warn!(
+                session_id,
+                error = %err,
+                "Cursor CLI native transcript binding probe failed"
+            );
+            return;
+        }
+    };
+
+    for attempt in 0..CURSOR_HISTORY_READY_ATTEMPTS {
+        match crate::orgtrack::history_commands::cursor_cli_history_is_readable(
+            history_session_id.clone(),
+        )
+        .await
+        {
+            Ok(true) => {
+                websocket_handler::broadcast(
+                    cursor_cli_history_changed_message(
+                        session_id,
+                        &history_session_id,
+                        turn_intent_id,
+                    )
+                    .to_string(),
+                );
+                return;
+            }
+            Ok(false) => {}
+            Err(err) => tracing::debug!(
+                session_id,
+                history_session_id,
+                attempt,
+                error = %err,
+                "Cursor CLI transcript is not readable yet"
+            ),
+        }
+        if attempt + 1 < CURSOR_HISTORY_READY_ATTEMPTS {
+            tokio::time::sleep(tokio::time::Duration::from_millis(
+                CURSOR_HISTORY_READY_RETRY_MS,
+            ))
+            .await;
+        }
+    }
+
+    tracing::warn!(
+        session_id,
+        history_session_id,
+        "Cursor CLI turn settled but its provider transcript remained unreadable"
+    );
 }
 
 /// Outcome of the spawn/stdout loop, consumed by [`finalize_session_run`].
@@ -240,7 +335,7 @@ pub(super) async fn finalize_session_run(
     })
     .await;
 
-    let raw_final_status = if cli_plan_approval_gate_reached {
+    let mut raw_final_status = if cli_plan_approval_gate_reached {
         SessionStatus::Completed
     } else if use_codex_app_server {
         // exit_code is meaningless here — we kill the long-lived server
@@ -261,27 +356,64 @@ pub(super) async fn finalize_session_run(
     } else {
         SessionStatus::Failed
     };
-    if raw_final_status == SessionStatus::Failed {
-        super::input_assembly::forget_session_context(session_id);
-    }
-
+    // A CLI that exhausted its context can exit 0 while its result frame
+    // reports `terminal_reason: prompt_too_long`. Demote the false success
+    // so the run records the overflow and the next wake starts fresh.
+    raw_final_status = if raw_final_status == SessionStatus::Completed
+        && terminal_error_message
+            .as_deref()
+            .is_some_and(app_utils::runtime_errors::is_context_exhausted_message)
+    {
+        SessionStatus::Failed
+    } else {
+        raw_final_status
+    };
     // CLI member sessions inside an Agent Org run must land on `Idle` after each
     // successful turn so they remain available for the next coordinator dispatch.
-    // `Completed` is terminal (is_terminal() == true) and would cause
-    // `reconcile_run_finality` to prematurely end the run.
+    // `Completed` is terminal (is_terminal() == true) and would make the
+    // member unavailable to the canonical Team Quiescence projection.
     let is_org_member = session.org_member_id.is_some();
-    let final_status = if raw_final_status == SessionStatus::Completed && is_org_member {
+    let mut final_status = if raw_final_status == SessionStatus::Completed && is_org_member {
         SessionStatus::Idle
     } else {
         raw_final_status
     };
 
-    let error_message: Option<String> = if final_status == SessionStatus::Failed {
+    let mut error_message: Option<String> = if final_status == SessionStatus::Failed {
         let buf = stderr_lines.lock().await;
         resolve_cli_failure_message(terminal_oauth_error.clone(), terminal_error_message, &buf)
     } else {
         None
     };
+    // Native providers write the selected profile directly. Flushing final
+    // deltas is the only terminal persistence boundary.
+    flush_and_broadcast(session_id, turn_intent_id).await;
+
+    // Converge the provider-written file before publishing the terminal
+    // lifecycle. Consumers may start the next runtime as soon as that durable
+    // status is visible, so the exact native transcript/alias must already be
+    // authoritative. Only the best-effort App catalog refresh is deferred.
+    if let Err(error) =
+        super::super::native_materializer::converge_bound_native_transcript_and_schedule_catalog(
+            session_id,
+        )
+        .await
+    {
+        let convergence_error =
+            format!("Provider-native transcript could not be finalized safely: {error}");
+        tracing::error!(
+            session_id,
+            error = %error,
+            "failing terminal lifecycle because provider-native transcript did not converge"
+        );
+        raw_final_status = SessionStatus::Failed;
+        final_status = SessionStatus::Failed;
+        error_message = Some(convergence_error);
+    }
+
+    if raw_final_status == SessionStatus::Failed {
+        super::input_assembly::forget_session_context(session_id);
+    }
 
     super::harness_hooks::finish_turn(
         session_id,
@@ -409,9 +541,9 @@ pub(super) async fn finalize_session_run(
         clear_live_status(agent, session_id, cli_session_id_out.as_deref());
     }
 
-    // For CLI sessions that are Agent Org members, requeue any in-progress work
-    // and notify the coordinator that this member is idle/available. This mirrors
-    // the Rust-native member path in `agent_core::lifecycle::finalize_session`.
+    // For CLI sessions that are Agent Org members, recover only the Task bound
+    // to this exact failed Turn and notify the coordinator that this member is
+    // idle/available. This mirrors the Rust-native member finalization path.
     // app_handle is unavailable in the CLI runner, so inbox-wake via AppHandle is
     // skipped (fire-and-forget; the coordinator will drain on its next turn boundary).
     if is_org_member {
@@ -423,11 +555,13 @@ pub(super) async fn finalize_session_run(
                 .unwrap_or("unknown error")
                 .to_string())
         };
-        agent_core::lifecycle::finalize_agent_org_member_turn(None, session_id, &outcome);
+        agent_core::lifecycle::finalize_agent_org_member_turn(
+            None,
+            session_id,
+            turn_intent_id,
+            &outcome,
+        );
     }
-
-    // Flush any pending streaming deltas before signaling session end
-    flush_and_broadcast(session_id).await;
 
     let mut status_msg = serde_json::json!({
         "type": "code_session.status_changed",
@@ -445,6 +579,15 @@ pub(super) async fn finalize_session_run(
         status_msg["turn_intent_id"] = serde_json::Value::String(turn_intent_id.to_string());
     }
     websocket_handler::broadcast(status_msg.to_string());
+
+    // The generic terminal status preserves the existing lifecycle contract,
+    // but it is not a replay-readiness barrier: Cursor may commit the provider
+    // transcript through SQLite/WAL independently of ORGII's stream flush.
+    // Advertise the dedicated history invalidation only after that transcript
+    // and its managed-session binding are both readable.
+    if *agent == ModelType::CursorCli {
+        notify_cursor_cli_history_changed_when_readable(session_id, turn_intent_id).await;
+    }
 
     // ── Worktree: commit changes on completion ──
     if raw_final_status == SessionStatus::Completed {
@@ -508,7 +651,7 @@ pub(super) async fn finalize_session_run(
 
 #[cfg(test)]
 mod usage_tests {
-    use super::normalized_total_tokens;
+    use super::{cursor_cli_history_changed_message, normalized_total_tokens};
 
     #[test]
     fn reported_total_wins_when_present() {
@@ -518,5 +661,36 @@ mod usage_tests {
     #[test]
     fn missing_total_is_derived_from_input_and_output() {
         assert_eq!(normalized_total_tokens(91_133, 1_876, 0), 93_009);
+    }
+
+    #[test]
+    fn cursor_history_changed_event_is_session_scoped_and_turn_settled() {
+        let message = cursor_cli_history_changed_message(
+            "cliagent-managed",
+            "cursorcliapp-native",
+            Some("intent-1"),
+        );
+
+        assert_eq!(
+            message,
+            serde_json::json!({
+                "type": "code_session.history_changed",
+                "session_id": "cliagent-managed",
+                "history_session_id": "cursorcliapp-native",
+                "source": "cursor_cli",
+                "status": "turn_settled",
+                "turn_intent_id": "intent-1",
+            })
+        );
+    }
+
+    #[test]
+    fn cursor_history_changed_event_omits_absent_turn_intent() {
+        let message =
+            cursor_cli_history_changed_message("cliagent-managed", "cursorcliapp-native", None);
+
+        assert!(message.get("turn_intent_id").is_none());
+        assert_eq!(message["session_id"], "cliagent-managed");
+        assert_eq!(message["history_session_id"], "cursorcliapp-native");
     }
 }

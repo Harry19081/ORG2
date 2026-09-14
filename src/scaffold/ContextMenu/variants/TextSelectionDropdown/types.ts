@@ -5,8 +5,6 @@
  */
 import type { RefObject } from "react";
 
-import { DropdownAction, SessionItem } from "./config";
-
 // ============================================
 // Component Props
 // ============================================
@@ -39,16 +37,8 @@ export interface TextSelectionDropdownProps {
 // ============================================
 
 export interface UseTextSelectionDropdownOptions {
-  /** Whether the dropdown functionality is enabled */
-  enabled?: boolean;
   /** Container element to watch for selections */
   containerRef?: RefObject<HTMLElement | null>;
-  /** Source type for the selection */
-  source: "terminal" | "browser" | "editor";
-  /** Callback when "Ask Agent" is triggered */
-  onAskAgent?: (text: string) => void;
-  /** Callback when "Add to Session Context" is triggered */
-  onAddToContext?: (text: string, sessionId: string | null) => void;
 }
 
 export interface UseTextSelectionDropdownReturn {
@@ -62,25 +52,4 @@ export interface UseTextSelectionDropdownReturn {
   showDropdown: (position: { x: number; y: number }, text: string) => void;
   /** Hide the dropdown */
   hideDropdown: () => void;
-  /** Handle action selection */
-  handleAction: (action: DropdownAction, sessionId?: string | null) => void;
-}
-
-// ============================================
-// Session Selector Types
-// ============================================
-
-export interface SessionSelectorProps {
-  /** Available sessions */
-  sessions: SessionItem[];
-  /** Loading state */
-  loading?: boolean;
-  /** Currently active/selected session index */
-  activeIndex: number;
-  /** Callback when session is selected (null = new session) */
-  onSelect: (sessionId: string | null) => void;
-  /** Callback when hovering over an item */
-  onHover: (index: number) => void;
-  /** Callback to go back to main menu */
-  onBack: () => void;
 }

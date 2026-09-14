@@ -2,13 +2,14 @@
  * ImageAttachmentPreview
  *
  * Displays pasted/dropped image thumbnails above the chat input.
- * Click opens fullscreen preview overlay with download/close.
+ * Click opens fullscreen preview overlay with copy/download/close.
  */
 import { useAtom } from "jotai";
-import { X } from "lucide-react";
 import React, { memo, useCallback, useState } from "react";
 
+import Button from "@src/components/Button";
 import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import {
   type ChatImageAttachment,
   chatImageAttachmentsAtom,
@@ -46,7 +47,7 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = memo(
     return (
       <>
         <div
-          className="group relative inline-flex h-10 w-10 flex-shrink-0 cursor-pointer overflow-hidden rounded-md border border-border-2 bg-fill-1"
+          className="group relative inline-flex h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-border-2 bg-fill-1"
           onClick={handleClick}
           data-testid="chat-image-attachment-thumbnail"
           data-image-file-name={image.fileName}
@@ -60,22 +61,28 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = memo(
             decoding="async"
             data-testid="chat-image-attachment-img"
           />
-          <button
-            type="button"
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
             onClick={handleRemove}
-            className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-bg-3 text-text-2 opacity-0 shadow-sm transition-opacity hover:bg-fill-2 hover:text-text-1 group-hover:opacity-100"
+            className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-bg-3 text-text-2 opacity-0 shadow-xs transition-opacity group-hover:opacity-100 hover:bg-fill-2 hover:text-text-1"
             aria-label={`Remove ${image.fileName}`}
             data-testid="chat-image-attachment-remove"
           >
-            <X size={10} strokeWidth={2.5} />
-          </button>
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              data-icon="x"
+              size={10}
+              strokeWidth={2.5}
+            />
+          </Button>
         </div>
         {showOverlay && (
           <ImagePreviewOverlay
             dataUrl={image.dataUrl}
             fileName={image.fileName}
             onClose={handleCloseOverlay}
-            showCopyButton={false}
           />
         )}
       </>

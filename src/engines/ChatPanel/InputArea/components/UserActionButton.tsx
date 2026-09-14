@@ -1,7 +1,8 @@
-import { X } from "lucide-react";
 import React from "react";
 
+import Button from "@src/components/Button";
 import { PILL_CONTROL_IDLE_SURFACE_CLASS } from "@src/components/CompoundPill/config";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
 interface UserActionButtonProps {
   title: string;
@@ -19,8 +20,10 @@ export default function UserActionButton({
   onClose,
 }: UserActionButtonProps) {
   return (
-    <button
-      type="button"
+    <Button
+      layout="custom"
+      appearance="custom"
+      htmlType="button"
       className={`inline-flex h-[28px] cursor-pointer items-center rounded-full border border-solid border-border-2 px-3 py-2 transition-colors ${PILL_CONTROL_IDLE_SURFACE_CLASS}`}
       onClick={onClick}
     >
@@ -38,7 +41,9 @@ export default function UserActionButton({
           }}
         >
           {rightIcon || (
-            <X
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              data-icon="x"
               size={12}
               strokeWidth={1.75}
               className="text-text-2 hover:text-text-1"
@@ -46,6 +51,6 @@ export default function UserActionButton({
           )}
         </div>
       )}
-    </button>
+    </Button>
   );
 }

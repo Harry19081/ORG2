@@ -1,4 +1,3 @@
-import { ArrowLeftRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -7,6 +6,8 @@ import {
   ChatStatusSegmentedBar,
   ChatStatusTwoLineContent,
 } from "@src/engines/ChatPanel/components/ChatStatusBanners";
+import { ArrowLeftRightIcon, HugeiconsIcon } from "@src/icons";
+import { startVisibilityAwareInterval } from "@src/shared/scheduling/visibilityAwareInterval";
 
 import { MODE_LABELS } from "./useModeSwitchActions";
 
@@ -46,8 +47,12 @@ export function ModeSwitchCardBody({
 
   useEffect(() => {
     if (!createdAt) return;
-    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
-    return () => window.clearInterval(timer);
+    const timer = startVisibilityAwareInterval(
+      document,
+      () => setNowMs(Date.now()),
+      1000
+    );
+    return () => timer();
   }, [createdAt]);
 
   const autoSkipRemaining = getAutoSkipRemaining(createdAt, nowMs);
@@ -77,7 +82,7 @@ export function ModeSwitchCardBody({
               {autoSkipRemaining !== null &&
                 autoSkipRemaining !== undefined && (
                   <span
-                    className="chat-block-xs tabular-nums text-text-3"
+                    className="chat-block-xs text-text-3 tabular-nums"
                     data-testid="mode-switch-auto-skip-countdown"
                     data-auto-skip-remaining={autoSkipRemaining}
                   >
@@ -101,7 +106,14 @@ export function ModeSwitchCardBody({
                 size="mini"
                 onClick={onSwitch}
                 data-testid="mode-switch-confirm"
-                icon={<ArrowLeftRight size={12} strokeWidth={2} />}
+                icon={
+                  <HugeiconsIcon
+                    icon={ArrowLeftRightIcon}
+                    data-icon="arrow-left-right"
+                    size={12}
+                    strokeWidth={2}
+                  />
+                }
               >
                 {t("tools.modeSwitch.switch")}
               </Button>

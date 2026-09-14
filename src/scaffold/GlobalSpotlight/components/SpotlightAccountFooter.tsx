@@ -19,6 +19,7 @@ import {
   getCliCompatibleAccounts,
   useAgentCompatibility,
 } from "@src/hooks/models/useAgentCompatibility";
+import { credentialedAccounts } from "@src/scaffold/GlobalSpotlight/palettes/DispatchCategoryPalette/credentialedAccounts";
 
 // ============ TYPES ============
 
@@ -38,7 +39,7 @@ interface CliModeProps {
   showIncompatible?: boolean;
 }
 
-export type SpotlightAccountFooterProps = ApiModeProps | CliModeProps;
+type SpotlightAccountFooterProps = ApiModeProps | CliModeProps;
 
 // ============ SUBCOMPONENTS ============
 
@@ -87,9 +88,12 @@ export const SpotlightAccountFooter: React.FC<SpotlightAccountFooterProps> = (
       showIncompatible = false,
       incompatibleAccounts = [],
     } = props;
-    const keyCount = accounts.length;
+    const availableAccounts = credentialedAccounts(accounts);
+    const keyCount = availableAccounts.length;
     const hasKeys = keyCount > 0;
-    const incompatibleCount = incompatibleAccounts.length;
+    const availableIncompatibleAccounts =
+      credentialedAccounts(incompatibleAccounts);
+    const incompatibleCount = availableIncompatibleAccounts.length;
     const showIncompatibleRow = showIncompatible && incompatibleCount > 0;
 
     if (!hasKeys && !showIncompatibleRow) return null;
@@ -103,8 +107,8 @@ export const SpotlightAccountFooter: React.FC<SpotlightAccountFooterProps> = (
           </span>
           <span className="shrink-0 tabular-nums">{keyCount}</span>
           {hasKeys && (
-            <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
-              {accounts.map((acc) => (
+            <div className="scrollbar-hide flex items-center gap-1 overflow-x-auto">
+              {availableAccounts.map((acc) => (
                 <AccountChip key={acc.id} account={acc} />
               ))}
             </div>
@@ -116,11 +120,11 @@ export const SpotlightAccountFooter: React.FC<SpotlightAccountFooterProps> = (
             <span className="shrink-0 text-text-4">
               {t("selectors.spotlightFooter.incompatible")}:
             </span>
-            <span className="shrink-0 tabular-nums text-text-4">
+            <span className="shrink-0 text-text-4 tabular-nums">
               {incompatibleCount}
             </span>
-            <div className="flex min-w-0 items-center gap-1 overflow-x-auto scrollbar-hide">
-              {incompatibleAccounts.map((acc) => (
+            <div className="scrollbar-hide flex min-w-0 items-center gap-1 overflow-x-auto">
+              {availableIncompatibleAccounts.map((acc) => (
                 <AccountChip key={acc.id} account={acc} />
               ))}
             </div>
@@ -131,7 +135,9 @@ export const SpotlightAccountFooter: React.FC<SpotlightAccountFooterProps> = (
   }
 
   const { agentType, accounts, showIncompatible = false } = props;
-  const readyAccounts = getCliCompatibleAccounts(registry, agentType, accounts);
+  const readyAccounts = credentialedAccounts(
+    getCliCompatibleAccounts(registry, agentType, accounts)
+  );
   const planAccounts = readyAccounts.filter(
     (acc) => !isApiKeyProvider(acc.modelType)
   );
@@ -145,7 +151,10 @@ export const SpotlightAccountFooter: React.FC<SpotlightAccountFooterProps> = (
   const incompatibleAccounts = showIncompatible
     ? accounts.filter(
         (acc) =>
-          acc.status === "ready" && acc.hasKey && !compatibleSet.has(acc.id)
+          acc.status === "ready" &&
+          acc.enabled &&
+          acc.hasKey &&
+          !compatibleSet.has(acc.id)
       )
     : [];
   const incompatibleCount = incompatibleAccounts.length;
@@ -159,7 +168,7 @@ export const SpotlightAccountFooter: React.FC<SpotlightAccountFooterProps> = (
         </span>
         <span className="shrink-0 tabular-nums">{planCount}</span>
         {planCount > 0 && (
-          <div className="flex min-w-0 items-center gap-1 overflow-x-auto scrollbar-hide">
+          <div className="scrollbar-hide flex min-w-0 items-center gap-1 overflow-x-auto">
             {planAccounts.map((acc) => (
               <AccountChip key={acc.id} account={acc} />
             ))}
@@ -173,7 +182,7 @@ export const SpotlightAccountFooter: React.FC<SpotlightAccountFooterProps> = (
         </span>
         <span className="shrink-0 tabular-nums">{keysCount}</span>
         {keysCount > 0 && (
-          <div className="flex min-w-0 items-center gap-1 overflow-x-auto scrollbar-hide">
+          <div className="scrollbar-hide flex min-w-0 items-center gap-1 overflow-x-auto">
             {keysAccounts.map((acc) => (
               <AccountChip key={acc.id} account={acc} />
             ))}
@@ -186,10 +195,10 @@ export const SpotlightAccountFooter: React.FC<SpotlightAccountFooterProps> = (
           <span className="shrink-0 text-text-4">
             {t("selectors.spotlightFooter.incompatible")}:
           </span>
-          <span className="shrink-0 tabular-nums text-text-4">
+          <span className="shrink-0 text-text-4 tabular-nums">
             {incompatibleCount}
           </span>
-          <div className="flex min-w-0 items-center gap-1 overflow-x-auto scrollbar-hide">
+          <div className="scrollbar-hide flex min-w-0 items-center gap-1 overflow-x-auto">
             {incompatibleAccounts.map((acc) => (
               <AccountChip key={acc.id} account={acc} />
             ))}

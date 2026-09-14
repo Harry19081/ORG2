@@ -4,10 +4,7 @@
  * Publishes the Browser host's rendering surface ABOVE the tab dispatcher so
  * that `UnifiedTabContent` renderers for browser tab types (`browser-session`,
  * `devtools`) can consume it directly, instead of receiving it as props
- * threaded through the bespoke `BrowserLayout` render tree. This is the "host
- * context hoist" the staged renderers (`TabContent/renderers/browserSession.tsx`,
- * `TabContent/renderers/devtools.tsx`) wait on before they can drop their
- * `HostCoupledPlaceholder` stubs.
+ * threaded through the bespoke `BrowserLayout` render tree.
  *
  * Mirrors `ProjectHostProvider` (Phase 2.1). Two payloads:
  *   - The shared webview workspace surface (`browserState` + activation flags +
@@ -26,9 +23,9 @@
  */
 import { type ReactNode, createContext, useContext } from "react";
 
-import type { UseBrowserStateReturn } from "@src/engines/BrowserCore/hooks/useBrowserState";
-import type { UseBrowserSessionsReturn } from "@src/hooks/workStation/browser/useBrowserSessions";
-import type { SecondaryPanelPosition } from "@src/store/ui/workStationAtom";
+import type { BrowserState } from "@src/engines/BrowserCore/types";
+import type { UseBrowserSessionsReturn } from "@src/modules/WorkStation/Browser/hooks/useBrowserSessions";
+import type { SecondaryPanelPosition } from "@src/store/ui/workStationLayout/secondaryPanelPositionAtoms";
 
 export interface BrowserHostContextValue {
   /** Repository path for source navigation + token scanning. */
@@ -39,7 +36,7 @@ export interface BrowserHostContextValue {
   // ============================================
 
   /** Global browser session store (from `useBrowserContextAdapter`). */
-  browserState: UseBrowserStateReturn;
+  browserState: BrowserState;
   /**
    * Host-level activation for the shared webview: browser mode is active, the
    * viewport should show, and no automation run is overlaying it. A renderer

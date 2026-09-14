@@ -6,7 +6,7 @@
  */
 import type { GitFile } from "@src/types/git/types";
 
-import type { GitFileTreeNode } from "../components/GitFileTreeItem";
+import type { GitFileTreeNode } from "../components/GitFileTreeNode";
 import { buildVSCodeStyleTree, flattenGitFileTree } from "./treeUtils";
 
 // ============================================
@@ -246,17 +246,4 @@ export function flattenSourceControlTree(
   );
 
   return result;
-}
-
-/**
- * Toggle a directory in the flattened tree
- */
-export function getDirectoryPathFromNode(node: SourceControlNode): string {
-  // Extract the actual path without section prefix for directory toggling
-  if (node.treeNode) {
-    return node.treeNode.path;
-  }
-  // Remove section prefix
-  const colonIndex = node.path.indexOf(":");
-  return colonIndex >= 0 ? node.path.substring(colonIndex + 1) : node.path;
 }

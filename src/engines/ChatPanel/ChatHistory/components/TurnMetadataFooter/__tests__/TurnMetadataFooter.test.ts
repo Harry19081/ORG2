@@ -61,7 +61,6 @@ describe("TurnMetadataFooter tabs", () => {
 
     expect(markup).toContain('data-testid="turn-metadata-edits-tab"');
     expect(markup).not.toContain('data-testid="turn-metadata-reads-tab"');
-    expect(markup).not.toContain("lucide-file-code-2");
   });
 
   it("hides Edits when the turn only contains reads", () => {
@@ -82,11 +81,12 @@ describe("TurnMetadataFooter tabs", () => {
 
     expect(markup).not.toContain('data-testid="turn-metadata-edits-tab"');
     expect(markup).toContain('data-testid="turn-metadata-reads-tab"');
-    expect(markup).not.toContain("lucide-book-open-text");
-    expect(markup).toContain("flex gap-1.5 items-baseline");
+    expect(markup).toContain(
+      'data-testid="turn-metadata-reads-count">1</span>'
+    );
   });
 
-  it("keeps the larger expansion control pinned outside the hidden-scroll list", () => {
+  it("keeps the larger expansion control pinned outside the visible-scrollbar list", () => {
     const summary: TurnSummary = {
       ...BASE_SUMMARY,
       resourceInteractions: Array.from({ length: 6 }, (_, index) => ({
@@ -110,7 +110,10 @@ describe("TurnMetadataFooter tabs", () => {
       'data-testid="turn-metadata-pinned-controls"'
     );
 
-    expect(markup).toContain("min-h-0 flex-1 overflow-y-auto scrollbar-hide");
+    expect(markup).toContain(
+      "turn-metadata-scroll-area min-h-0 flex-1 overflow-y-auto pr-2"
+    );
+    expect(markup).not.toContain("scrollbar-hide");
     expect(
       markup.match(/data-testid="turn-metadata-read"/g) ?? []
     ).toHaveLength(4);
@@ -120,7 +123,7 @@ describe("TurnMetadataFooter tabs", () => {
     expect(markup).toContain('data-testid="turn-metadata-expansion-toggle"');
     expect(markup).toContain('aria-expanded="false"');
     expect(markup).toContain('data-size="medium"');
-    expect(markup).toContain('class="lucide lucide-ellipsis');
+    expect(markup).toContain('data-icon="ellipsis"');
     expect(markup).toContain('width="16"');
   });
 });

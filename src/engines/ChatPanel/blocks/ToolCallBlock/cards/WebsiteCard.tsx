@@ -1,8 +1,18 @@
-import { Globe, SquareArrowOutUpRight } from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { openUrlInBrowserApp } from "@src/components/MarkDown/markdownUtils";
+import {
+  BUTTON_SIZE,
+  BUTTON_VARIANT,
+  ICON_BUTTON_BASE,
+} from "@src/config/workstation/tokens";
+import {
+  InternetIcon as Chromium,
+  InternetIcon as Globe,
+  HugeiconsIcon,
+} from "@src/icons";
 
 import type { WebsiteCardData } from "../types";
 
@@ -60,7 +70,14 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ card }) => {
             }
           />
         )}
-        {!showFavicon && <Globe size={18} className="text-text-4" />}
+        {!showFavicon && (
+          <HugeiconsIcon
+            icon={Globe}
+            data-icon="globe"
+            size={18}
+            className="text-text-4"
+          />
+        )}
       </div>
 
       <div className="min-w-0 flex-1">
@@ -74,15 +91,26 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ card }) => {
         </div>
       </div>
 
-      <button
-        type="button"
+      <Button
+        variant="tertiary"
+        appearance="soft-no-drop"
+        size="sidebar"
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={Chromium}
+            data-icon="chrome"
+            size={14}
+            strokeWidth={1.75}
+            aria-hidden
+          />
+        }
+        htmlType="button"
         onClick={handleOpen}
-        className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-text-3 opacity-0 transition-colors hover:bg-fill-2 hover:text-text-1 group-hover/website-card:opacity-100"
+        className={`flex ${ICON_BUTTON_BASE} ${BUTTON_SIZE.sm} ${BUTTON_VARIANT.noDrop} cursor-pointer border-none bg-transparent opacity-0 group-focus-within/website-card:opacity-100 group-hover/website-card:opacity-100 focus-visible:opacity-100`}
         title={t("cards.openLink")}
         aria-label={t("cards.openLink")}
-      >
-        <SquareArrowOutUpRight size={14} />
-      </button>
+      />
     </div>
   );
 };

@@ -5,25 +5,55 @@ import {
   APPLICATION_UI_FONT_IDS,
 } from "@src/config/appearance/applicationUiFonts";
 import { GLOBAL_THEME_PREFERENCES } from "@src/config/appearance/globalThemes";
-import { DEFAULT_PRIMARY_COLOR_PRESET } from "@src/config/appearance/primaryColors";
+import {
+  ACCENT_PRESETS,
+  DEFAULT_ACCENT_PRESET,
+} from "@src/config/appearance/skins/accent";
+import {
+  DEFAULT_SKIN_ID,
+  getSkinsForVariant,
+} from "@src/config/appearance/skins/registry";
 import {
   FAMILIAR_LANGUAGE_TECH_STACKS,
   TECH_SAVVY_LEVELS,
 } from "@src/config/profile/userProfile";
-import {
-  DEFAULT_SETUP_WALKTHROUGH_PROGRESS,
-  SetupWalkthroughProgressSchema,
-} from "@src/config/settingsSchema/setupWalkthroughProgress";
 import type { SettingDefinition } from "@src/config/settingsSchema/types";
 
-const USER_PROFILE_PRESET_SCHEMA = z.object({
-  id: z.string(),
-  name: z.string(),
-  techSavvy: z.enum(["", ...TECH_SAVVY_LEVELS]),
-  jobRoles: z.array(z.string()),
-  familiarTechStacks: z.array(z.enum(FAMILIAR_LANGUAGE_TECH_STACKS)),
-  description: z.string(),
-});
+/**
+ * Skins are declared per variant, so each picker only offers ids that actually
+ * provide that variant — most Codex skins are dark-only.
+ */
+const LIGHT_SKINS = getSkinsForVariant("light");
+const DARK_SKINS = getSkinsForVariant("dark");
+
+const LIGHT_SKIN_IDS = LIGHT_SKINS.map((skin) => skin.id) as [
+  string,
+  ...string[],
+];
+const DARK_SKIN_IDS = DARK_SKINS.map((skin) => skin.id) as [
+  string,
+  ...string[],
+];
+
+const LIGHT_SKIN_LABELS = Object.fromEntries(
+  LIGHT_SKINS.map((skin) => [skin.id, skin.label])
+);
+const DARK_SKIN_LABELS = Object.fromEntries(
+  DARK_SKINS.map((skin) => [skin.id, skin.label])
+);
+
+const ACCENT_ENUM_LABELS: Record<string, string> = {
+  matchSkin: "Match skin",
+  blue: "Blue",
+  violet: "Violet",
+  green: "Green",
+  teal: "Teal",
+  orange: "Orange",
+  gold: "Gold",
+  red: "Red",
+  rose: "Rose",
+  mono: "Mono",
+};
 
 export const GENERAL_SETTINGS_REGISTRY = {
   "general.language": {
@@ -71,40 +101,87 @@ export const GENERAL_SETTINGS_REGISTRY = {
     schema: z.enum(GLOBAL_THEME_PREFERENCES),
     default: "system",
     description:
-      "Global UI theme preference, or system to follow the OS color scheme",
+      "Global UI appearance mode, or system to follow the OS color scheme. " +
+      "The palette used within each mode is chosen by general.lightSkin / general.darkSkin.",
     category: "general",
     enumLabels: {
       system: "Follow system",
-      "github-light": "ORGII Light",
-      "github-dark": "ORGII Dark",
-      "orgii-high-contrast": "ORGII High Contrast",
+      light: "Light",
+      dark: "Dark",
     },
   },
-  "general.primaryColor": {
-    schema: z.enum([
-      "blue",
-      "violet",
-      "green",
-      "teal",
-      "orange",
-      "gold",
-      "red",
-      "rose",
-      "mono",
-    ]),
-    default: DEFAULT_PRIMARY_COLOR_PRESET,
-    description: "Primary accent color preset for interactive UI elements",
+  "general.linkSkinVariants": {
+    schema: z.boolean(),
+    default: false,
+    description:
+      "Use one skin and accent for both light and dark. " +
+      "Only skins that ship both variants can be linked",
+    category: "general",
+  },
+  "general.lightSkin": {
+    schema: z.enum(LIGHT_SKIN_IDS),
+    default: DEFAULT_SKIN_ID.light,
+    description: "Palette used whenever the app is painting in light mode",
+    category: "general",
+    enumLabels: LIGHT_SKIN_LABELS,
+  },
+  "general.darkSkin": {
+    schema: z.enum(DARK_SKIN_IDS),
+    default: DEFAULT_SKIN_ID.dark,
+    description: "Palette used whenever the app is painting in dark mode",
+    category: "general",
+    enumLabels: DARK_SKIN_LABELS,
+  },
+  "general.primaryColorLight": {
+    schema: z.enum(ACCENT_PRESETS),
+    default: DEFAULT_ACCENT_PRESET,
+    description:
+      "Accent color for interactive UI elements while in light mode. " +
+      "matchSkin follows whatever accent the active light skin declares.",
+    category: "general",
+    enumLabels: ACCENT_ENUM_LABELS,
+  },
+  "general.primaryColorDark": {
+    schema: z.enum(ACCENT_PRESETS),
+    default: DEFAULT_ACCENT_PRESET,
+    description:
+      "Accent color for interactive UI elements while in dark mode. " +
+      "matchSkin follows whatever accent the active dark skin declares.",
+    category: "general",
+    enumLabels: ACCENT_ENUM_LABELS,
+  },
+  "general.translucentSidebar": {
+    schema: z.boolean(),
+    default: true,
+    description:
+      "Let the sidebar blur and tint whatever sits behind it. " +
+      "When off the sidebar paints as a solid surface and ignores its opacity setting.",
+    category: "general",
+  },
+  "general.iconStyle": {
+    schema: z.enum(["colorful", "monochrome"]),
+    default: "colorful",
+    description:
+      "Rendering style for file-type and model/provider icons. " +
+      "monochrome desaturates them so they read as part of the interface rather than as logos.",
     category: "general",
     enumLabels: {
-      blue: "Blue",
-      violet: "Violet",
-      green: "Green",
-      teal: "Teal",
-      orange: "Orange",
-      gold: "Gold",
-      red: "Red",
-      rose: "Rose",
-      mono: "Mono",
+      colorful: "Colorful",
+      monochrome: "Monochrome",
+    },
+  },
+  "general.dockIcon": {
+    schema: z.enum(["dark", "light", "rainbow"]),
+    default: "dark",
+    description:
+      "Icon the running app shows in the macOS Dock and app switcher, or the Windows/Linux taskbar. " +
+      "dark is the bundled icon (dark tile, light mark); light is its inverse; rainbow uses a multicolor tile. " +
+      "Per-process only: the installed bundle keeps its signed icon in Finder and Launchpad.",
+    category: "general",
+    enumLabels: {
+      dark: "Dark",
+      light: "Light",
+      rainbow: "Rainbow",
     },
   },
   "general.uiScale": {
@@ -159,20 +236,12 @@ export const GENERAL_SETTINGS_REGISTRY = {
       "Show a theme-aware depth edge between the macOS sidebar and content panel",
     category: "general",
   },
-  "general.workStationChatPosition": {
+  "general.chatPanelPosition": {
+    // Edited in the sidebar layout menu, not a settings page.
+    settingsSearch: false,
     schema: z.enum(["left", "right"]),
     default: "left" as const,
-    description: "Chat panel side for My Station layouts",
-    category: "general",
-    enumLabels: {
-      left: "Left",
-      right: "Right",
-    },
-  },
-  "general.sessionChatPosition": {
-    schema: z.enum(["left", "right"]),
-    default: "left" as const,
-    description: "Chat panel side for Agent Station layouts",
+    description: "Chat panel side shared by My Station and Agent Station",
     category: "general",
     enumLabels: {
       left: "Left",
@@ -180,6 +249,8 @@ export const GENERAL_SETTINGS_REGISTRY = {
     },
   },
   "general.chatTurnPaginationEnabled": {
+    // Edited in the sidebar layout menu, not a settings page.
+    settingsSearch: false,
     schema: z.boolean(),
     default: false,
     description:
@@ -187,6 +258,8 @@ export const GENERAL_SETTINGS_REGISTRY = {
     category: "general",
   },
   "general.modelPickerStyle": {
+    // Edited in the sidebar layout menu, not a settings page.
+    settingsSearch: false,
     schema: z.enum(["spotlight", "dropdown"]),
     default: "spotlight" as const,
     description:
@@ -198,6 +271,8 @@ export const GENERAL_SETTINGS_REGISTRY = {
     },
   },
   "general.userDisplayName": {
+    // Used as a Task Kanban creator-name fallback; no settings-page editor.
+    settingsSearch: false,
     schema: z.string(),
     default: "",
     description: "User display name shown in the app",
@@ -235,18 +310,6 @@ export const GENERAL_SETTINGS_REGISTRY = {
     description: "Short user profile background for agent context",
     category: "general",
   },
-  "general.activeProfileId": {
-    schema: z.string(),
-    default: "default",
-    description: "ID of the user profile preset currently sent to agents",
-    category: "general",
-  },
-  "general.profilePresets": {
-    schema: z.array(USER_PROFILE_PRESET_SCHEMA),
-    default: [],
-    description: "Named user profile presets for manual profile switching",
-    category: "general",
-  },
   "general.timezone": {
     schema: z.string(),
     default: "auto",
@@ -266,54 +329,6 @@ export const GENERAL_SETTINGS_REGISTRY = {
     default: "auto",
     description:
       "Release channel for app updates. auto follows the installed build (prerelease builds track beta, release builds track stable); stable and beta pin the channel explicitly. Switching from beta to stable never downgrades — it takes effect at the next stable release",
-    category: "general",
-  },
-  "general.setupWalkthroughOutcome": {
-    schema: z.enum(["open", "completed", "dismissed"]),
-    default: "open",
-    description:
-      "First-use setup walkthrough outcome. Open shows the walkthrough automatically; completed and dismissed keep it closed",
-    category: "general",
-  },
-  "general.setupWalkthroughProgress": {
-    schema: SetupWalkthroughProgressSchema,
-    default: DEFAULT_SETUP_WALKTHROUGH_PROGRESS,
-    description:
-      "Resumable, secret-free readiness state for the first-use setup walkthrough",
-    category: "general",
-  },
-  "general.githubStarPromptCompleted": {
-    schema: z.boolean(),
-    default: false,
-    description:
-      "Whether GitHub has confirmed that the current user starred the canonical ORG2 repository",
-    category: "general",
-  },
-  "general.githubStarPromptDisabled": {
-    schema: z.boolean(),
-    default: false,
-    description: "Permanently disable the optional GitHub Star reminder",
-    category: "general",
-  },
-  "general.githubStarPromptDeferredUntil": {
-    schema: z.number().nonnegative(),
-    default: 0,
-    description:
-      "Unix timestamp in milliseconds before the GitHub Star reminder may appear again",
-    category: "general",
-  },
-  "general.githubStarPromptLastShownAt": {
-    schema: z.number().nonnegative(),
-    default: 0,
-    description:
-      "Unix timestamp in milliseconds when the GitHub Star reminder was last shown",
-    category: "general",
-  },
-  "general.githubStarPromptNextEligibleValueCount": {
-    schema: z.number().int().positive(),
-    default: 1,
-    description:
-      "Value-moment count required before the optional GitHub Star reminder is eligible",
     category: "general",
   },
   "general.voiceInputEnabled": {

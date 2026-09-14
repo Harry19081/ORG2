@@ -27,14 +27,17 @@ import {
   projectApi,
   projectDataToUI,
 } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import type { SelectOption } from "@src/components/Select";
+import { INPUT_AREA_EDITOR_HEIGHT } from "@src/config/inputAreaTokens";
 import { org2CloudOrgsAtom } from "@src/features/Org2Cloud/org2CloudOrgsAtom";
 import { sidebarSelectedOrgIdAtom } from "@src/features/Organizations/sidebarOrgScopeAtom";
 import LaunchButton from "@src/features/SessionCreator/components/LaunchButton";
 import { useKeyboardSave } from "@src/hooks/keyboard";
 import { createLogger } from "@src/hooks/logger";
-import { useUndoStackWithRestore } from "@src/hooks/ui";
+import { useUndoStackWithRestore } from "@src/hooks/ui/useUndoableState";
+import { CloudIcon, HugeiconsIcon, LaptopIcon } from "@src/icons";
 import {
   CreateComposerHeader,
   CreateComposerPinnedActions,
@@ -42,15 +45,19 @@ import {
   DetailSplitLayout,
   type LinkedRepoOption,
   ManualCreateComposer,
-  PROJECT_PROPERTY_CONCISE_FIELDS,
   ProjectContentEditor,
   type ProjectContentEditorRef,
   type ProjectData,
   ProjectOrganizationSelect,
   ProjectPropertyFields,
+  type ProjectPropertyFieldsProps,
 } from "@src/modules/ProjectManager/shared";
+import type { MarkdownEditorMode } from "@src/modules/shared/components/MarkdownTextareaEditor";
+import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
 import { CreatorContentLayout } from "@src/modules/shared/layouts/blocks";
 import { reposAtom } from "@src/store/repo";
+import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
+import { manualCreatorAtom } from "@src/store/ui/manualCreatorAtom";
 import {
   type ProjectDraft,
   createDefaultProjectDraft,
@@ -77,7 +84,9 @@ export interface CreatedProjectResult {
   orgName?: string;
 }
 
-export interface CreateProjectViewProps {
+interface CreateProjectViewProps {
+  layout?: "page" | "spotlight";
+  onCancel?: () => void;
   /** Tab ID used to key the draft cache */
   tabId: string;
   /**
@@ -96,7 +105,7 @@ export interface CreateProjectViewProps {
   /** Mark this tab as having unsaved changes */
   onSetUnsaved: (hasUnsaved: boolean) => void;
   /** Called after project is successfully created */
-  onProjectCreated: (result: CreatedProjectResult) => void;
+  onProjectCreated?: (result: CreatedProjectResult) => void;
   /** Show the Agent composer instead of the manual Project composer. */
   aiGenerateMode?: boolean;
   /** Optional content centered in the page above the bottom-docked manual composer. */
@@ -118,6 +127,12 @@ export interface CreateProjectViewProps {
 
 const logger = createLogger("CreateProjectView");
 
+// Match Work Item creation: keep the essentials inline and the rest in More.
+const CREATE_PROJECT_INLINE_FIELDS = [
+  "status",
+  "priority",
+] satisfies ProjectPropertyFieldsProps["visibleFields"];
+
 const CreateProjectView: React.FC<CreateProjectViewProps> = ({
   tabId,
   repoPath,
@@ -127,13 +142,17 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
   onSetUnsaved,
   onProjectCreated,
   aiGenerateMode = false,
+  layout = "page",
+  onCancel,
   middleContent,
   creatorModeControl,
   renderAgentComposer,
   publishHeaderToWorkstation = false,
 }) => {
   const { t } = useTranslation("projects");
+  const manualCreator = useAtomValue(manualCreatorAtom);
   const [saving, setSaving] = useState(false);
+  const [editorMode, setEditorMode] = useState<MarkdownEditorMode>("write");
   const [availableOrgs, setAvailableOrgs] = useState<ProjectOrg[]>([]);
   const cloudOrgs = useAtomValue(org2CloudOrgsAtom);
   const globalOrgSelectorValue = useAtomValue(sidebarSelectedOrgIdAtom);
@@ -189,7 +208,7 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
   const propertiesRef = useRef<HTMLDivElement>(null);
 
   const undoStack = useUndoStackWithRestore<ProjectDraft>({
-    keyboardShortcut: true,
+    keyboardShortcut: layout === "spotlight" || !manualCreator,
     currentValue: draft,
     onRestore: (prev) => setDraft({ tabId, draft: prev }),
   });
@@ -310,7 +329,7 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
 
       await emit("orgii-data-changed");
       removeDraft(tabId);
-      onProjectCreated({
+      onProjectCreated?.({
         project: projectDataToUI(
           { meta, description, slug },
           { labelMap: new Map(), memberMap: new Map() }
@@ -341,7 +360,10 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
 
   useKeyboardSave(
     handleCreate,
-    !aiGenerateMode && !saving && !!draft.name.trim()
+    (layout === "spotlight" || !manualCreator) &&
+      !aiGenerateMode &&
+      !saving &&
+      !!draft.name.trim()
   );
 
   const selectableOrgs = useMemo(
@@ -388,13 +410,31 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
 
   const orgOptions = useMemo<SelectOption[]>(
     () =>
-      selectableOrgs.map((org) => ({
-        value: org.id,
-        label: org.name,
-        triggerLabel: org.name,
-        dataTestId: `create-project-org-option-${org.id}`,
-      })),
-    [selectableOrgs]
+      selectableOrgs.map((org) => {
+        const isCloud = cloudOrgs.some(
+          (cloud) =>
+            cloud.orgId === org.id || cloud.orgId === org.external_org_id
+        );
+        const name =
+          org.id === DEFAULT_SESSION_ORG_ID ? t("orgs.personalOrg") : org.name;
+        const source = t(isCloud ? "orgs.sources.cloud" : "orgs.sources.local");
+        return {
+          value: org.id,
+          label: name,
+          triggerLabel: name,
+          icon: (
+            <HugeiconsIcon
+              icon={isCloud ? CloudIcon : LaptopIcon}
+              aria-label={source}
+              role="img"
+              size={14}
+              strokeWidth={1.75}
+            />
+          ),
+          dataTestId: `create-project-org-option-${org.id}`,
+        };
+      }),
+    [selectableOrgs, cloudOrgs, t]
   );
 
   const selectedOrgLabel =
@@ -416,7 +456,7 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
       options={orgOptions}
       onChange={handleOrgChange}
       placeholder={selectedOrgLabel}
-      placement="top"
+      placement={layout === "spotlight" ? "bottom" : "top"}
       dataTestId="create-project-org-select"
     />
   );
@@ -429,7 +469,7 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
         availableRepos={availableRepos}
         containerRef={propertiesRef}
         fieldVariant="pill"
-        visibleFields={PROJECT_PROPERTY_CONCISE_FIELDS}
+        visibleFields={CREATE_PROJECT_INLINE_FIELDS}
         showMoreMenu
       />
     </div>
@@ -451,7 +491,10 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
   );
 
   const projectPinnedActions = (
-    <CreateComposerPinnedActions dataTestId="create-project-pinned-actions">
+    <CreateComposerPinnedActions
+      direction={layout === "spotlight" ? "down" : "up"}
+      dataTestId="create-project-pinned-actions"
+    >
       {creatorModeControl}
       {orgTrailSelect}
       {propertyPills}
@@ -467,14 +510,56 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
       onDescriptionChange={handleDescriptionChange}
       titleVisible={false}
       separatorVisible={false}
-      descriptionClassName="no-bottom-border [&_.ProseMirror]:!pl-1.5"
-      descriptionMaxHeight="100%"
+      descriptionClassName="no-bottom-border [&_textarea]:pl-1.5! [&_textarea]:text-[14px]!"
+      autoFocusDescription
+      descriptionMinRows={2}
+      descriptionMinHeight={INPUT_AREA_EDITOR_HEIGHT.min}
+      descriptionMaxHeight={INPUT_AREA_EDITOR_HEIGHT.max}
+      descriptionMode={editorMode}
+      onDescriptionModeChange={setEditorMode}
       repoPath={repoPath}
       className="flex min-h-0 flex-1 flex-col"
       dataTestId="create-project-editor"
-      dropdownDirection="up"
     />
   );
+
+  const manualComposer = (
+    <ManualCreateComposer
+      spotlight={layout === "spotlight"}
+      dataTestId="create-project-manual-composer"
+      editorRef={editorRef}
+      headerContent={composerHeaderContent}
+      editorContent={projectEditor}
+      pinnedActionsContent={projectPinnedActions}
+      pills={
+        <MarkdownEditorModeSwitch
+          mode={editorMode}
+          onModeChange={setEditorMode}
+          disabled={saving}
+          dataTestId="create-project-description-mode-switch"
+        />
+      }
+      submitButton={
+        <>
+          {layout === "spotlight" && onCancel && (
+            <Button variant="secondary" size="small" onClick={onCancel}>
+              {t("common:actions.cancel")}
+            </Button>
+          )}
+          <LaunchButton
+            ariaLabel={t("projects.createProject")}
+            dataTestId="create-project-submit"
+            disabled={!draft.name.trim() || saving}
+            loading={saving}
+            onClick={() => {
+              void handleCreate();
+            }}
+          />
+        </>
+      }
+    />
+  );
+  if (layout === "spotlight") return manualComposer;
 
   return (
     <DetailSplitLayout
@@ -488,28 +573,9 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
           contentDataTestId="create-project-creator-content"
           middleContent={middleContent}
         >
-          {aiGenerateMode && renderAgentComposer ? (
-            renderAgentComposer(composerHeaderContent, projectPinnedActions)
-          ) : (
-            <ManualCreateComposer
-              dataTestId="create-project-manual-composer"
-              editorRef={editorRef}
-              headerContent={composerHeaderContent}
-              editorContent={projectEditor}
-              pinnedActionsContent={projectPinnedActions}
-              submitButton={
-                <LaunchButton
-                  ariaLabel={t("projects.createProject")}
-                  dataTestId="create-project-submit"
-                  disabled={!draft.name.trim() || saving}
-                  loading={saving}
-                  onClick={() => {
-                    void handleCreate();
-                  }}
-                />
-              }
-            />
-          )}
+          {aiGenerateMode && renderAgentComposer
+            ? renderAgentComposer(composerHeaderContent, projectPinnedActions)
+            : manualComposer}
         </CreatorContentLayout>
       }
     />

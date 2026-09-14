@@ -1,17 +1,19 @@
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import {
-  Check,
-  Clipboard,
-  GitBranch,
-  Layers,
-  SquareArrowOutUpRight,
-} from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { CursorPluginInfo } from "@src/api/tauri/rpc/procedures/agentOrgs";
+import Button from "@src/components/Button";
 import { createLogger } from "@src/hooks/logger";
-import { useCopyCheck } from "@src/hooks/ui";
+import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import {
+  ClipboardIcon,
+  HugeiconsIcon,
+  Layers01Icon,
+  SquareArrowUpRight02Icon,
+  Tick01Icon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
 import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 import { copyText } from "@src/util/data/clipboard";
 import { extractSkillPreviewDescription } from "@src/util/skills/skillFrontmatter";
@@ -160,21 +162,30 @@ const CursorPluginInlineExpandedCard: React.FC<
   const skillsContent = (
     <div className="flex flex-col overflow-hidden">
       {visibleSkills.map((skill) => (
-        <button
+        <Button
+          layout="custom"
+          appearance="custom"
           key={skill.slug}
-          type="button"
+          htmlType="button"
           onClick={() =>
             openFileInWorkStation(skill.skillPath, { defaultPreviewMode: true })
           }
           className="flex min-w-0 items-center gap-2 overflow-hidden rounded-md px-3 py-2 text-left hover:bg-fill-1"
         >
-          <Layers size={12} className="shrink-0 text-text-3" />
+          <HugeiconsIcon
+            icon={Layers01Icon}
+            data-icon="layers"
+            size={12}
+            className="shrink-0 text-text-3"
+          />
           <div className="min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center justify-between gap-2">
               <span className="truncate text-[12px] font-medium text-text-1">
                 {skill.name}
               </span>
-              <SquareArrowOutUpRight
+              <HugeiconsIcon
+                icon={SquareArrowUpRight02Icon}
+                data-icon="square-arrow-out-up-right"
                 size={11}
                 className="shrink-0 text-text-3"
               />
@@ -185,16 +196,18 @@ const CursorPluginInlineExpandedCard: React.FC<
               </span>
             )}
           </div>
-        </button>
+        </Button>
       ))}
       {!skillsExpanded && hiddenCount > 0 && (
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={() => setSkillsExpanded(true)}
           className="px-3 py-1.5 text-left text-[12px] text-text-3 hover:text-text-1"
         >
           {t("cursorPlugins.viewMore", { count: hiddenCount })}
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -202,21 +215,30 @@ const CursorPluginInlineExpandedCard: React.FC<
   const hooksContent = (
     <div className="flex flex-col overflow-hidden">
       {plugin.hooks.map((hook) => (
-        <button
+        <Button
+          layout="custom"
+          appearance="custom"
           key={hook.eventType}
-          type="button"
+          htmlType="button"
           onClick={() =>
             openFileInWorkStation(hook.hookPath, { defaultPreviewMode: true })
           }
           className="flex min-w-0 items-center gap-2 overflow-hidden rounded-md px-3 py-2 text-left hover:bg-fill-1"
         >
-          <GitBranch size={12} className="shrink-0 text-text-3" />
+          <HugeiconsIcon
+            icon={WorkflowCircle05Icon}
+            data-icon="git-branch"
+            size={12}
+            className="shrink-0 text-text-3"
+          />
           <div className="min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center justify-between gap-2">
               <span className="truncate text-[12px] font-medium text-text-1">
                 {hook.label}
               </span>
-              <SquareArrowOutUpRight
+              <HugeiconsIcon
+                icon={SquareArrowUpRight02Icon}
+                data-icon="square-arrow-out-up-right"
                 size={11}
                 className="shrink-0 text-text-3"
               />
@@ -225,7 +247,7 @@ const CursorPluginInlineExpandedCard: React.FC<
               {hook.eventType}
             </span>
           </div>
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -253,15 +275,26 @@ const CursorPluginInlineExpandedCard: React.FC<
         <InlineCardBody>{tabContent}</InlineCardBody>
         {activeTab === PLUGIN_INLINE_TAB.MCP && hasMcp && (
           <InlineCardFooter>
-            <button
+            <Button
+              variant="secondary"
+              appearance="outline"
+              size="mini"
               onClick={handleCopyMcp}
-              className="inline-flex items-center gap-1.5 rounded border border-border-2 px-3 py-1.5 text-[12px] text-text-2 transition-colors hover:bg-fill-3 hover:text-text-1"
+              className="gap-1.5 text-[12px] hover:bg-fill-3 hover:text-text-1"
             >
-              {mcpCopied ? <Check size={12} /> : <Clipboard size={12} />}
+              {mcpCopied ? (
+                <HugeiconsIcon icon={Tick01Icon} data-icon="check" size={12} />
+              ) : (
+                <HugeiconsIcon
+                  icon={ClipboardIcon}
+                  data-icon="clipboard"
+                  size={12}
+                />
+              )}
               {mcpCopied
                 ? t("common:status.copied")
                 : t("cursorPlugins.copyMcpConfig")}
-            </button>
+            </Button>
           </InlineCardFooter>
         )}
       </InlineCardShell>

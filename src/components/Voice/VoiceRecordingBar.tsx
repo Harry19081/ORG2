@@ -11,13 +11,14 @@
  * heights with a staggered CSS animation, which is exactly what the reference
  * UI does and avoids the cost of an AudioContext just for cosmetics.
  */
-import { Check, Plus, X } from "lucide-react";
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
+import { Add01Icon, Cancel01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 
-import "./VoiceRecordingBar.scss";
+import "./VoiceRecordingBar.css";
 
 interface VoiceRecordingBarProps {
   elapsedSeconds: number;
@@ -77,8 +78,10 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
         role="region"
         aria-label={t("common:tooltips.startVoiceInput")}
       >
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onAddContent}
           disabled={!onAddContent}
           className={[
@@ -92,8 +95,13 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
           aria-label={t("common:actions.add")}
           tabIndex={onAddContent ? 0 : -1}
         >
-          <Plus size={INPUT_AREA_BUTTONS.iconSize} strokeWidth={1.75} />
-        </button>
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={INPUT_AREA_BUTTONS.iconSize}
+            strokeWidth={1.75}
+          />
+        </Button>
 
         <div className="composer-voice-waveform">
           <div className="composer-voice-waveform__baseline" aria-hidden />
@@ -103,33 +111,47 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
         </div>
 
         <span
-          className="font-variant-numeric-tabular min-w-[2.5rem] shrink-0 text-right text-[12px] text-text-2"
+          className="font-variant-numeric-tabular min-w-10 shrink-0 text-right text-[12px] text-text-2"
           data-testid="composer-voice-elapsed"
         >
           {formatElapsed(elapsedSeconds)}
         </span>
 
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onCancel}
           className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer leading-none`}
           style={{ lineHeight: 0 }}
           data-testid="composer-voice-cancel"
           aria-label={t("common:tooltips.cancelRecording")}
         >
-          <X size={INPUT_AREA_BUTTONS.iconSize} strokeWidth={1.75} />
-        </button>
+          <HugeiconsIcon
+            icon={Cancel01Icon}
+            data-icon="x"
+            size={INPUT_AREA_BUTTONS.iconSize}
+            strokeWidth={1.75}
+          />
+        </Button>
 
-        <button
-          type="button"
+        <Button
+          layout="custom"
+          appearance="custom"
+          htmlType="button"
           onClick={onAccept}
           className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer bg-fill-3 leading-none`}
           style={{ lineHeight: 0 }}
           data-testid="composer-voice-accept"
           aria-label={t("common:tooltips.stopAndTranscribe")}
         >
-          <Check size={INPUT_AREA_BUTTONS.iconSize} strokeWidth={1.75} />
-        </button>
+          <HugeiconsIcon
+            icon={Tick01Icon}
+            data-icon="check"
+            size={INPUT_AREA_BUTTONS.iconSize}
+            strokeWidth={1.75}
+          />
+        </Button>
       </div>
     );
   }

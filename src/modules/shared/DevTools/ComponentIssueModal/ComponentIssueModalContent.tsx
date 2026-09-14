@@ -7,9 +7,10 @@
  * - ComponentIssuePayloadView: full payload detail view
  * - ComponentIssueSuggestions: component suggestions list / empty state / legend
  */
-import { Copy } from "lucide-react";
 import React from "react";
 
+import Button from "@src/components/Button";
+import { Copy01Icon, HugeiconsIcon } from "@src/icons";
 import { getConfidenceLabel } from "@src/util/config/componentMapping";
 import type { ComponentIssuePayload } from "@src/util/core/error/componentIssueTracker/";
 
@@ -67,13 +68,15 @@ export function ComponentIssueDetailSection({
           )}
         </div>
         {copyValue && (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             className="component-issue-copy-btn"
             onClick={() => onCopyField(label, copyValue)}
             aria-label={`Copy ${label}`}
           >
-            <Copy size={16} />
-          </button>
+            <HugeiconsIcon icon={Copy01Icon} data-icon="copy" size={16} />
+          </Button>
         )}
       </div>
       <div className="component-issue-value">{value}</div>
@@ -121,13 +124,15 @@ export function ComponentIssueSuggestions({
                 <span className="component-issue-suggestion-name">
                   <HighlightText text={suggestion.name} query={searchQuery} />
                 </span>
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   className="component-issue-suggestion-copy"
                   onClick={() => onCopyField("File path", suggestion.filePath)}
                   title="Copy file path"
                 >
-                  <Copy size={16} />
-                </button>
+                  <HugeiconsIcon icon={Copy01Icon} data-icon="copy" size={16} />
+                </Button>
               </div>
               <div className="component-issue-suggestion-file">
                 <HighlightText text={suggestion.filePath} query={searchQuery} />

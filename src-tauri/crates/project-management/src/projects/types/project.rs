@@ -209,6 +209,17 @@ fn default_todo_status() -> String {
     "pending".to_string()
 }
 
+/// Typed explicit recipient of a Discussion comment. `mentioned_user_ids`
+/// stays the member-only compatibility field; routing reads this.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum MentionTarget {
+    Member { id: String },
+    Agent { id: String },
+    AgentOrg { id: String },
+    All,
+}
+
 /// A comment on a work item
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct CommentEntry {
@@ -216,8 +227,14 @@ pub struct CommentEntry {
     pub author: String,
     pub content: String,
     pub created_at: String,
+    /// Per-comment optimistic concurrency token. Legacy comments deserialize
+    /// as revision 0, so old workspace payloads remain editable.
+    #[serde(default)]
+    pub revision: i64,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub mentioned_user_ids: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub mentions: Vec<MentionTarget>,
     /// Replies form a stable thread tree. `thread_id` always names the root;
     /// top-level comments use their own id.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -232,6 +249,16 @@ pub struct CommentEntry {
     pub conclusion: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub agent_session_id: Option<String>,
+    /// A2A chain: who caused the authoring agent's run (`member:<id>`,
+    /// `session:<id>`, or `user`). Absent on human-authored comments.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub originator: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub edited_at: Option<String>,
+    /// Tombstone: content and mentions are cleared, thread structure and
+    /// routing metadata stay so replies keep resolving.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deleted_at: Option<String>,
 }
 
 /// A market delegation entry on a work item

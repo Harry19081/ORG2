@@ -13,6 +13,7 @@ import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { WingmanMonitor } from "@src/api/tauri/agent";
+import Button from "@src/components/Button";
 import Modal from "@src/scaffold/ModalSystem";
 
 export interface ScreenPickerModalProps {
@@ -32,7 +33,7 @@ const ScreenPickerModal: React.FC<ScreenPickerModalProps> = memo(
         width={460}
         footer={null}
       >
-        <div className="p-4">
+        <div>
           <div className="grid grid-cols-2 gap-[12px]">
             {monitors.map((m) => {
               // Approximate aspect ratio of the real screen so the tile
@@ -42,17 +43,19 @@ const ScreenPickerModal: React.FC<ScreenPickerModalProps> = memo(
               const tileWidth = Math.min(Math.max(tileHeight * ratio, 72), 112);
               const n = m.index + 1;
               return (
-                <button
+                <Button
+                  layout="custom"
+                  appearance="custom"
                   key={m.index}
-                  type="button"
+                  htmlType="button"
                   onClick={() => onSelect(m.index)}
                   className="flex flex-col items-center gap-2 rounded border border-border-2 bg-fill-2 p-3 transition-colors hover:border-primary-5"
                 >
                   <div
-                    className="flex items-center justify-center rounded-sm bg-bg-2 tabular-nums"
+                    className="flex items-center justify-center rounded-xs bg-bg-2 tabular-nums"
                     style={{ width: tileWidth, height: tileHeight }}
                   >
-                    <span className="text-xl font-semibold leading-none text-text-2">
+                    <span className="text-xl leading-none font-semibold text-text-2">
                       {n}
                     </span>
                   </div>
@@ -64,7 +67,7 @@ const ScreenPickerModal: React.FC<ScreenPickerModalProps> = memo(
                         : ""}
                     </span>
                   </div>
-                </button>
+                </Button>
               );
             })}
           </div>

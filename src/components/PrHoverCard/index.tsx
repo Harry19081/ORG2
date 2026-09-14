@@ -1,30 +1,47 @@
-import { Clock, GitBranch, GitPullRequest } from "lucide-react";
-import React, { memo, useCallback } from "react";
+import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { OpenPRItem } from "@src/api/tauri/github";
-import HoverCardBase, {
-  HoverCardPanel,
-  type HoverCardPosition,
-  HoverCardRow,
-} from "@src/components/SessionHoverCard/HoverCardBase";
-import { HoverCardUrlRow } from "@src/components/SessionHoverCard/HoverCardUrlRow";
-import { formatHoverCardTimeAgo } from "@src/components/SessionHoverCard/hoverCardTime";
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
+import HoverCard, {
+  type HoverCardTriggerProps,
+} from "@src/components/HoverCard";
+import { HoverCardPanel } from "@src/components/HoverCard/HoverCardBase";
+import {
+  HoverCardMetadataRow,
+  HoverCardMetadataValue,
+} from "@src/components/HoverCard/HoverCardMetadataRow";
+import { HoverCardUrlRow } from "@src/components/HoverCard/HoverCardUrlRow";
+import { formatHoverCardTimeAgo } from "@src/components/HoverCard/hoverCardTime";
+import {
+  Clock01Icon,
+  FileDiffIcon,
+  GitPullRequestIcon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
 import {
   getPrStatusLabelKey,
   getPrStatusVariant,
 } from "@src/shared/pr/prStatus";
 
-interface PrHoverCardProps {
-  pr?: OpenPRItem | null;
-  children: React.ReactElement;
-  position?: HoverCardPosition;
-  mouseEnterDelay?: number;
-  mouseLeaveDelay?: number;
+export interface PrHoverCardData {
+  number: number;
+  url?: string;
+  title: string;
+  state: string;
+  head_branch?: string;
+  base_branch?: string;
+  draft?: boolean;
+  additions?: number | null;
+  deletions?: number | null;
+  updated_at?: string;
+}
+
+interface PrHoverCardProps extends HoverCardTriggerProps {
+  pr?: PrHoverCardData | null;
 }
 
 interface PrHoverCardContentProps {
-  pr: OpenPRItem;
+  pr: PrHoverCardData;
 }
 
 function truncateBranchLabel(branch: string, max = 80): string {
@@ -42,11 +59,15 @@ const PrHoverCardContent: React.FC<PrHoverCardContentProps> = memo(({ pr }) => {
   const branchLabel = pr.head_branch
     ? truncateBranchLabel(pr.head_branch)
     : null;
+  const additions = pr.additions ?? 0;
+  const deletions = pr.deletions ?? 0;
+  const hasDiffStats = additions > 0 || deletions > 0;
 
   return (
     <HoverCardPanel title={pr.title}>
-      <HoverCardRow
-        icon={<GitPullRequest size={13} strokeWidth={1.75} />}
+      <HoverCardMetadataRow
+        icon={GitPullRequestIcon}
+        dataIcon="git-pull-request"
         iconClassName={statusIconClassName}
       >
         <div className="truncate text-text-2">
@@ -54,12 +75,12 @@ const PrHoverCardContent: React.FC<PrHoverCardContentProps> = memo(({ pr }) => {
           <span className="mx-1 text-text-4">·</span>
           <span>#{pr.number}</span>
         </div>
-      </HoverCardRow>
+      </HoverCardMetadataRow>
 
       {pr.url && <HoverCardUrlRow url={pr.url} />}
 
       {branchLabel && (
-        <HoverCardRow icon={<GitBranch size={13} strokeWidth={1.75} />}>
+        <HoverCardMetadataRow icon={WorkflowCircle05Icon} dataIcon="git-branch">
           <div className="truncate text-text-2" title={pr.head_branch}>
             <span>{branchLabel}</span>
             {pr.base_branch && (
@@ -69,24 +90,42 @@ const PrHoverCardContent: React.FC<PrHoverCardContentProps> = memo(({ pr }) => {
               </>
             )}
           </div>
-        </HoverCardRow>
+        </HoverCardMetadataRow>
       )}
 
-      <HoverCardRow icon={<Clock size={13} strokeWidth={1.75} />}>
-        <div className="truncate text-text-2">
-          <span className="text-text-3">
-            {t("git.issues.updated", { defaultValue: "Last updated" })}
-          </span>
-          {pr.updated_at && (
-            <>
-              <span className="mx-1 text-text-4">·</span>
-              <span>
-                {formatHoverCardTimeAgo(pr.updated_at, i18n.language)}
-              </span>
-            </>
-          )}
-        </div>
-      </HoverCardRow>
+      {hasDiffStats && (
+        <HoverCardMetadataRow icon={FileDiffIcon} dataIcon="file-diff">
+          <div
+            className="flex min-w-0 items-center"
+            data-testid="pr-hover-card-diff-stats"
+          >
+            <span className="text-text-3">
+              {t("git.pr.tabs.changes", { defaultValue: "Changes" })}
+            </span>
+            <span className="mx-1 text-text-4">·</span>
+            <DiffStatsBadge
+              additions={additions}
+              deletions={deletions}
+              variant="plain"
+              size="md"
+              weight="normal"
+              reserveValueWidth={false}
+            />
+          </div>
+        </HoverCardMetadataRow>
+      )}
+
+      {pr.updated_at && (
+        <HoverCardMetadataRow icon={Clock01Icon} dataIcon="clock">
+          <div className="truncate text-text-2">
+            <HoverCardMetadataValue
+              label={t("git.issues.updated", { defaultValue: "Last updated" })}
+            >
+              {formatHoverCardTimeAgo(pr.updated_at, i18n.language)}
+            </HoverCardMetadataValue>
+          </div>
+        </HoverCardMetadataRow>
+      )}
     </HoverCardPanel>
   );
 });
@@ -95,26 +134,16 @@ PrHoverCardContent.displayName = "PrHoverCardContent";
 
 const PrHoverCard: React.FC<PrHoverCardProps> = ({
   pr,
-  children,
   position = "right-start",
-  mouseEnterDelay,
-  mouseLeaveDelay,
+  ...triggerProps
 }) => {
-  const renderContent = useCallback(
-    () => (pr ? <PrHoverCardContent pr={pr} /> : null),
-    [pr]
-  );
-
   return (
-    <HoverCardBase
+    <HoverCard
+      {...triggerProps}
       cardId={pr ? `github-pr:${pr.number}` : null}
       position={position}
-      mouseEnterDelay={mouseEnterDelay}
-      mouseLeaveDelay={mouseLeaveDelay}
-      renderContent={renderContent}
-    >
-      {children}
-    </HoverCardBase>
+      content={pr ? <PrHoverCardContent pr={pr} /> : null}
+    />
   );
 };
 

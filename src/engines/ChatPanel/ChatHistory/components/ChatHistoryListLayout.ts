@@ -15,6 +15,33 @@ import type {
 
 const AT_BOTTOM_EPSILON_PX = 4;
 
+/**
+ * React identities for turn rows. A turn's visible body items change when the
+ * user expands/collapses it, so body-derived keys remount the unchanged header
+ * (including attached-image thumbnails). Keep identity on the turn instead.
+ *
+ * Headerless groups cannot use a turn id, so prefer their first immutable
+ * event/chunk id. This keeps their identity stable when older history prepends.
+ */
+export function buildChatGroupRenderKeys(
+  turnIds: readonly (string | null)[],
+  fallbackIds: readonly (string | null)[] = []
+): string[] {
+  const occurrences = new Map<string, number>();
+  return turnIds.map((turnId, groupIndex) => {
+    const stableIdentity =
+      turnId === null
+        ? fallbackIds[groupIndex]
+          ? `chat-event:${fallbackIds[groupIndex]}`
+          : null
+        : `chat-turn:${turnId}`;
+    if (stableIdentity === null) return `chat-group-index:${groupIndex}`;
+    const occurrence = occurrences.get(stableIdentity) ?? 0;
+    occurrences.set(stableIdentity, occurrence + 1);
+    return `${stableIdentity}:occurrence:${occurrence}`;
+  });
+}
+
 export function isScrolledToContentBottom(params: {
   element: HTMLElement;
   footerSpacerHeight: number;
@@ -32,14 +59,12 @@ export function isScrolledToContentBottom(params: {
 }
 
 export const EMPTY_ROW_GROUP_META: RowGroupMeta = {
-  lastAssistantFlatIndex: null,
   isLastItemInGroup: false,
   isLastGroup: false,
 };
 
 export function buildRowGroupMeta(
-  groupCounts: readonly number[],
-  lastAssistantFlatIndexPerItem: readonly (number | null)[]
+  groupCounts: readonly number[]
 ): RowGroupMeta[] {
   const result: RowGroupMeta[] = [];
   let flatIndex = 0;
@@ -50,8 +75,6 @@ export function buildRowGroupMeta(
     const isLastGroup = groupIndex === lastGroupIndex;
     for (let itemOffset = 0; itemOffset < groupCount; itemOffset++) {
       result[flatIndex] = {
-        lastAssistantFlatIndex:
-          lastAssistantFlatIndexPerItem[flatIndex] ?? null,
         isLastItemInGroup: flatIndex === groupEndFlatIndex,
         isLastGroup,
       };

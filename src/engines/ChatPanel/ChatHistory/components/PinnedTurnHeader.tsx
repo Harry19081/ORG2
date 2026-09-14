@@ -14,10 +14,10 @@ interface PinnedTurnHeaderProps {
   header: OptimizedChatItem | null | undefined;
   meta: ChatGroupMeta | undefined;
   collapseLabelVariant?: GroupHeaderRendererProps["collapseLabelVariant"];
-  collapseTailWhenIdle: boolean;
+  tailTurnPhase: GroupHeaderRendererProps["tailTurnPhase"];
   hideUserMessage: boolean;
   defaultTurnCollapsed: boolean;
-  turnCollapseInteractionAtRef: React.MutableRefObject<number>;
+  onBeforeTurnCollapseToggle?: () => void;
   onEditSubmit: GroupHeaderRendererProps["onEditSubmit"];
   onRestoreCheckpoint: GroupHeaderRendererProps["onRestoreCheckpoint"];
 }
@@ -47,6 +47,7 @@ function samePinnedMeta(
     left.turnId === right.turnId &&
     left.durationMs === right.durationMs &&
     left.itemCount === right.itemCount &&
+    left.bodyEventCount === right.bodyEventCount &&
     left.previewText === right.previewText &&
     left.startMs === right.startMs &&
     left.endMs === right.endMs &&
@@ -63,11 +64,10 @@ function samePinnedTurnHeaderProps(
     previous.sourceGroupIndex === next.sourceGroupIndex &&
     previous.sourceGroupCount === next.sourceGroupCount &&
     previous.collapseLabelVariant === next.collapseLabelVariant &&
-    previous.collapseTailWhenIdle === next.collapseTailWhenIdle &&
+    previous.tailTurnPhase === next.tailTurnPhase &&
     previous.hideUserMessage === next.hideUserMessage &&
     previous.defaultTurnCollapsed === next.defaultTurnCollapsed &&
-    previous.turnCollapseInteractionAtRef ===
-      next.turnCollapseInteractionAtRef &&
+    previous.onBeforeTurnCollapseToggle === next.onBeforeTurnCollapseToggle &&
     previous.onEditSubmit === next.onEditSubmit &&
     previous.onRestoreCheckpoint === next.onRestoreCheckpoint &&
     samePinnedHeader(previous.header, next.header) &&
@@ -82,17 +82,17 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
   header,
   meta,
   collapseLabelVariant = "agent",
-  collapseTailWhenIdle,
+  tailTurnPhase,
   hideUserMessage,
   defaultTurnCollapsed,
-  turnCollapseInteractionAtRef,
+  onBeforeTurnCollapseToggle,
   onEditSubmit,
   onRestoreCheckpoint,
 }) => {
   if (!visible || !header) return null;
 
   return (
-    <div className="relative z-[70]">
+    <div className="relative z-70">
       <GroupHeaderRenderer
         groupIndex={0}
         sourceGroupIndex={sourceGroupIndex}
@@ -101,11 +101,11 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
         groupMeta={meta ? [meta] : []}
         groupCount={1}
         collapseLabelVariant={collapseLabelVariant}
-        collapseTailWhenIdle={collapseTailWhenIdle}
+        tailTurnPhase={tailTurnPhase}
         hideUserMessage={hideUserMessage}
         defaultTurnCollapsed={defaultTurnCollapsed}
         suppressRoundGap
-        turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
+        onBeforeTurnCollapseToggle={onBeforeTurnCollapseToggle}
         onEditSubmit={onEditSubmit}
         onRestoreCheckpoint={onRestoreCheckpoint}
       />

@@ -1,9 +1,33 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  buildCloudPendingPlayEntry,
   resolveCloudSessionReplayIconId,
   runImmediateCloudSessionReplay,
 } from "./cloudSessionReplayLifecycle";
+
+const REMOTE_SESSION = {
+  id: "remote-row-1",
+  orgId: "org-1",
+  ownerMemberId: "member-ada",
+  ownerUserId: "user-ada",
+  ownerDisplayName: "Ada Lovelace",
+  ownerAvatarUrl: "https://example.com/ada.png",
+  ownerIdentityKind: "human",
+  sourceSessionId: "code-session-1",
+  title: "Portable runtime audit",
+  origin: { kind: "external_history", source: "codex_app" },
+  repoScopeKey: "github.com/acme/ORGII.git",
+  branch: "develop",
+  baseBranch: "main",
+  worktreeBranch: "agent/session-1",
+  cliAgentType: "codex",
+  model: "gpt-5.6-sol",
+  eventsEpoch: 1,
+  eventsFrozenSeq: 42,
+  eventsCount: 953,
+  eventsTailHash: "tail-hash",
+} as const;
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -73,5 +97,40 @@ describe("resolveCloudSessionReplayIconId", () => {
       "opencode"
     );
     expect(resolveCloudSessionReplayIconId({})).toBe("orgii");
+  });
+});
+
+describe("buildCloudPendingPlayEntry", () => {
+  it("preserves the remote row and source brand before local import", () => {
+    expect(
+      buildCloudPendingPlayEntry({
+        remoteSession: REMOTE_SESSION,
+        authIdentityKey: "https://cloud.example.test|user-1",
+        orgId: "org-1",
+        pendingEvents: 953,
+        etaMs: 20_000,
+        kind: "replay",
+      })
+    ).toEqual({
+      authIdentityKey: "https://cloud.example.test|user-1",
+      rowId: "remote-row-1",
+      orgId: "org-1",
+      sourceSession: REMOTE_SESSION,
+      iconId: "codex",
+      sessionEnvironment: {
+        repoName: "ORGII",
+        branchName: "develop",
+        baseBranchName: "main",
+        worktreeBranchName: "agent/session-1",
+      },
+      sessionOwner: {
+        identityId: "user-ada",
+        displayName: "Ada Lovelace",
+        avatarUrl: "https://example.com/ada.png",
+      },
+      pendingEvents: 953,
+      etaMs: 20_000,
+      kind: "replay",
+    });
   });
 });

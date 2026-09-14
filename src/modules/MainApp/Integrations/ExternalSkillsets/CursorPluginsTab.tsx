@@ -3,19 +3,27 @@
  *
  * Uses the same SettingsTable + expandable pattern as LanguageServersTable.
  */
-import { Check, Clipboard, Puzzle, Server, Zap } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { rpc } from "@src/api/tauri/rpc";
 import type { CursorPluginInfo } from "@src/api/tauri/rpc/procedures/agentOrgs";
+import Button from "@src/components/Button";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import { createLogger } from "@src/hooks/logger";
-import { useCopyCheck } from "@src/hooks/ui";
+import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import {
+  ClipboardIcon,
+  FlashIcon,
+  HugeiconsIcon,
+  PuzzleIcon,
+  ServerStack01Icon,
+  Tick01Icon,
+} from "@src/icons";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
@@ -53,7 +61,12 @@ const PluginLogoCell: React.FC<{
   }
   return (
     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-fill-3">
-      <Puzzle size={13} className="text-text-3" />
+      <HugeiconsIcon
+        icon={PuzzleIcon}
+        data-icon="puzzle"
+        size={13}
+        className="text-text-3"
+      />
     </div>
   );
 };
@@ -86,13 +99,20 @@ const CopyAllButton: React.FC<{ plugins: CursorPluginInfo[] }> = ({
   if (!hasMcp) return null;
   return (
     <div className="flex items-center px-4 py-2">
-      <button
+      <Button
+        variant="tertiary"
+        appearance="ghost"
+        size="mini"
         onClick={handleCopy}
-        className="inline-flex items-center gap-1.5 rounded px-2 py-1.5 text-[12px] text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+        className="gap-1.5 text-[12px] hover:bg-fill-2 hover:text-text-1"
       >
-        {copied ? <Check size={12} /> : <Clipboard size={12} />}
+        {copied ? (
+          <HugeiconsIcon icon={Tick01Icon} data-icon="check" size={12} />
+        ) : (
+          <HugeiconsIcon icon={ClipboardIcon} data-icon="clipboard" size={12} />
+        )}
         {copied ? t("common:status.copied") : t("cursorPlugins.copyAllMcp")}
-      </button>
+      </Button>
     </div>
   );
 };
@@ -122,12 +142,6 @@ const CursorPluginsTab: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  const setSingleExpanded = useCallback((plugin: CursorPluginInfo) => {
-    setExpandedKeys((current) =>
-      current.includes(plugin.slug) ? [] : [plugin.slug]
-    );
   }, []);
 
   const filtered = useMemo(() => {
@@ -180,7 +194,12 @@ const CursorPluginsTab: React.FC = () => {
         align: "center",
         renderCell: (plugin) =>
           plugin.mcpConfig ? (
-            <Server size={13} className="mx-auto text-text-3" />
+            <HugeiconsIcon
+              icon={ServerStack01Icon}
+              data-icon="server"
+              size={13}
+              className="mx-auto text-text-3"
+            />
           ) : null,
       },
       {
@@ -191,8 +210,8 @@ const CursorPluginsTab: React.FC = () => {
         sorter: (rowA, rowB) => rowA.skills.length - rowB.skills.length,
         renderCell: (plugin) =>
           plugin.skills.length > 0 ? (
-            <span className="inline-flex items-center justify-center gap-1 whitespace-nowrap text-[12px] text-text-3">
-              <Zap size={11} />
+            <span className="inline-flex items-center justify-center gap-1 text-[12px] whitespace-nowrap text-text-3">
+              <HugeiconsIcon icon={FlashIcon} data-icon="zap" size={11} />
               {plugin.skills.length}
             </span>
           ) : null,
@@ -204,7 +223,12 @@ const CursorPluginsTab: React.FC = () => {
         align: "center",
         renderCell: (plugin) =>
           plugin.hooks.length > 0 ? (
-            <Puzzle size={13} className="mx-auto text-text-3" />
+            <HugeiconsIcon
+              icon={PuzzleIcon}
+              data-icon="puzzle"
+              size={13}
+              className="mx-auto text-text-3"
+            />
           ) : null,
       },
     ],
@@ -221,7 +245,6 @@ const CursorPluginsTab: React.FC = () => {
             columns={columns}
             rows={filtered}
             getRowKey={(p) => p.slug}
-            onRowClick={setSingleExpanded}
             expandable={{
               rowExpandable: () => true,
               expandedRowKeys: expandedKeys,

@@ -23,10 +23,10 @@ import {
 import { cliAdapter } from "@src/engines/SessionCore/sync/adapters";
 import { getAdapterForSession } from "@src/engines/SessionCore/sync/types";
 import {
-  chatPanelTabsAtom,
   openOrFocusChatPanelStartPageTabAtom,
   openOrFocusSessionInChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { reposAtom, selectedRepoIdAtom } from "@src/store/repo/atoms";
 import {
   type ContextUsageSnapshot,
@@ -56,24 +56,24 @@ import {
 } from "@src/store/session/viewAtom";
 import { chatImageAttachmentsAtom } from "@src/store/ui/chatImageAtom";
 import {
-  CHAT_PANEL_CONTENT_MODE,
   DEFAULT_CHAT_PANEL_CREATE_TARGET,
-  chatPanelContentModeAtom,
   chatPanelCreateTargetAtom,
-  chatPanelMaximizedAtom,
   chatPanelSelectedWorkItemAtom,
-  chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import {
+  chatPanelContentModeAtom,
+  chatPanelMaximizedAtom,
+} from "@src/store/ui/chatPanel/surfaceAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   messageQueueAtom,
   queueEditTargetAtom,
-  queueFlushRequestAtom,
 } from "@src/store/ui/messageQueueAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   workStationPrimarySidebarCollapsedAtom,
   workStationPrimarySidebarTabAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import {
   type WorkStationLayoutState,
@@ -280,19 +280,16 @@ export function createSessionHelpers(store: E2EStore) {
       // the empty WorkStation tab-pool start page, so resetting there no
       // longer mounts SessionCreator even after all session atoms are clear.
       store.set(stationModeAtom, "agent-station");
-      store.set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.SESSION);
       // New-session creation now lives inside the singleton Launchpad's Work
       // tab. Focus that canonical tab instead of forcing the legacy bare
       // session surface, which no longer mounts SessionCreator by itself.
       store.set(openOrFocusChatPanelStartPageTabAtom, {});
       store.set(chatPanelCreateTargetAtom, DEFAULT_CHAT_PANEL_CREATE_TARGET);
-      store.set(chatPanelSelectedWorkItemAtom, null);
       store.set(chatPanelMaximizedAtom, true);
       store.set(chatWidthAtom, 560);
       store.set(sessionIdAtom, null);
       store.set(messageQueueAtom, []);
       store.set(queueEditTargetAtom, null);
-      store.set(queueFlushRequestAtom, 0);
       resetTurnLifecycleForTests();
       store.set(chatImageAttachmentsAtom, []);
       store.set(isPendingCancelAtom, false);
@@ -451,9 +448,7 @@ export function createSessionHelpers(store: E2EStore) {
           : undefined;
 
       store.set(stationModeAtom, "my-station");
-      store.set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.SESSION);
       store.set(chatPanelCreateTargetAtom, DEFAULT_CHAT_PANEL_CREATE_TARGET);
-      store.set(chatPanelSelectedWorkItemAtom, null);
       store.set(chatPanelMaximizedAtom, true);
       store.set(chatWidthAtom, 560);
       // Keep the canonical tab identity and the legacy session atoms in one
@@ -842,6 +837,7 @@ export function createSessionHelpers(store: E2EStore) {
     seedSessionContextUsage,
     seedPersistedCachedSession,
     seedChatEvents: seeders.seedChatEvents,
+    streamChatEventText: seeders.streamChatEventText,
     seedSidebarSession: seeders.seedSidebarSession,
     openWorkManagementTab: seeders.openWorkManagementTab,
     seedModeSwitchSession: seeders.seedModeSwitchSession,

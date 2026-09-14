@@ -4,7 +4,7 @@
  *
  * 2026-06 incident: the refocus effect keyed on the raw `items` array (a
  * fresh reference every parent render) with no isOpen gate. A CLOSED
- * WorkspacePalette mounted under the session-creator page therefore re-fired
+ * WorkingDirectoryPalette mounted under the session-creator page therefore re-fired
  * the effect on every parent render, each run queuing setTimeout(0) →
  * input.focus() — ~700 focus steals per second, blurring the composer the
  * user was typing in and feeding back into more renders.
@@ -136,5 +136,22 @@ describe("useSelector focus steal", () => {
     await dispatch(() => controls.setIds(["delta", "epsilon"]));
     await settle();
     expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("releases global list navigation when a tab's palette becomes inactive", async () => {
+    const arrow = () => {
+      const event = new KeyboardEvent("keydown", {
+        key: "ArrowDown",
+        bubbles: true,
+        cancelable: true,
+      });
+      document.body.dispatchEvent(event);
+      return event.defaultPrevented;
+    };
+    expect(arrow()).toBe(false);
+    await dispatch(() => controls.setOpen(true));
+    await dispatch(() => expect(arrow()).toBe(true));
+    await dispatch(() => controls.setOpen(false));
+    expect(arrow()).toBe(false);
   });
 });

@@ -9,16 +9,26 @@
  * - Debounces rendering during streaming (300ms stability wait)
  * - Click-to-zoom: click diagram to toggle fullscreen overlay
  */
-import { Maximize2, Minus, Plus, RotateCcw, Workflow, X } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import Button from "@src/components/Button";
 import {
   EventBlockHeader,
   EventBlockHeaderIcon,
   EventBlockHeaderTitle,
   getEventBlockContainerClasses,
 } from "@src/engines/ChatPanel/blocks/primitives";
+import {
+  Add01Icon,
+  ArrowExpand01Icon,
+  Cancel01Icon,
+  HugeiconsIcon,
+  MinusSignIcon,
+  RotateLeft01Icon,
+  WorkflowCircle01Icon,
+} from "@src/icons";
+import { registerCache } from "@src/util/memory/cacheRegistry";
 
 // ============================================
 // Module-level SVG cache (FIFO, max 50)
@@ -101,6 +111,18 @@ function setCachedSvg(code: string, dark: boolean, svg: string): void {
   svgCache.set(key, { svg, bytes: entryBytes });
   svgCacheBytes += entryBytes;
 }
+
+function clearSvgCache(): void {
+  svgCache.clear();
+  svgCacheBytes = 0;
+}
+
+registerCache({
+  id: "markdown.mermaidSvgCache",
+  tier: 0,
+  estimate: () => ({ bytes: svgCacheBytes, entries: svgCache.size }),
+  trim: clearSvgCache,
+});
 
 // ============================================
 // Lazy mermaid loader (singleton per theme)
@@ -229,16 +251,21 @@ const MermaidBlockHeader: React.FC<MermaidBlockHeaderProps> = ({
   <EventBlockHeader
     isCollapsed={isCollapsed}
     withHover={false}
-    onClick={onToggle}
+    onToggleCollapse={onToggle}
     onMouseEnter={onMouseEnter}
     onMouseLeave={onMouseLeave}
     rightContent={rightContent}
   >
     <EventBlockHeaderIcon
-      icon={<Workflow size={14} />}
+      icon={
+        <HugeiconsIcon
+          icon={WorkflowCircle01Icon}
+          data-icon="workflow"
+          size={14}
+        />
+      }
       isCollapsed={isCollapsed}
       isHeaderHovered={isHeaderHovered}
-      onToggle={onToggle}
       hasContent
     />
     <EventBlockHeaderTitle>Mermaid</EventBlockHeaderTitle>
@@ -494,7 +521,9 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
             onMouseEnter={handleHeaderMouseEnter}
             onMouseLeave={handleHeaderMouseLeave}
             rightContent={
-              <button
+              <Button
+                layout="custom"
+                appearance="custom"
                 className="mermaid-block__expand-btn"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -502,8 +531,12 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
                 }}
                 title="Fullscreen"
               >
-                <Maximize2 size={14} />
-              </button>
+                <HugeiconsIcon
+                  icon={ArrowExpand01Icon}
+                  data-icon="maximize-2"
+                  size={14}
+                />
+              </Button>
             }
           />
           {!isCollapsed && svg && (
@@ -518,7 +551,7 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
           svg &&
           createPortal(
             <div
-              className="fixed inset-0 z-[99999] flex flex-col bg-black/80"
+              className="fixed inset-0 z-99999 flex flex-col bg-black/80"
               onClick={toggleExpand}
               role="dialog"
               aria-modal="true"
@@ -530,39 +563,63 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="flex items-center gap-1">
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
                     onClick={zoomOut}
                     title="Zoom out"
                   >
-                    <Minus size={15} />
-                  </button>
-                  <span className="min-w-[3rem] text-center text-xs text-white/70">
+                    <HugeiconsIcon
+                      icon={MinusSignIcon}
+                      data-icon="minus"
+                      size={15}
+                    />
+                  </Button>
+                  <span className="min-w-12 text-center text-xs text-white/70">
                     {Math.round(zoom * 100)}%
                   </span>
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
                     onClick={zoomIn}
                     title="Zoom in"
                   >
-                    <Plus size={15} />
-                  </button>
+                    <HugeiconsIcon
+                      icon={Add01Icon}
+                      data-icon="plus"
+                      size={15}
+                    />
+                  </Button>
                   <div className="mx-1 h-4 w-px bg-white/20" />
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
                     onClick={resetZoom}
                     title="Reset (100%)"
                   >
-                    <RotateCcw size={15} />
-                  </button>
+                    <HugeiconsIcon
+                      icon={RotateLeft01Icon}
+                      data-icon="rotate-ccw"
+                      size={15}
+                    />
+                  </Button>
                   <div className="mx-1 h-4 w-px bg-white/20" />
-                  <button
+                  <Button
+                    layout="custom"
+                    appearance="custom"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
                     onClick={toggleExpand}
                     title="Close"
                   >
-                    <X size={15} />
-                  </button>
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      data-icon="x"
+                      size={15}
+                    />
+                  </Button>
                 </div>
               </div>
 

@@ -12,8 +12,10 @@
  *
  * Hover color change is scoped to the header row only (not the expanded body).
  */
-import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import React, { memo, useCallback, useState } from "react";
+
+import Button from "@src/components/Button";
+import { ChevronsDownUpIcon, HugeiconsIcon, UnfoldMoreIcon } from "@src/icons";
 
 export interface ComposerStackHeaderProps {
   /** Header label text */
@@ -76,9 +78,17 @@ const ComposerStackHeader: React.FC<ComposerStackHeaderProps> = memo(
     const colors = COLOR[labelVariant];
 
     const chevronNode = expanded ? (
-      <ChevronsDownUp size={ICON_SIZE} />
+      <HugeiconsIcon
+        icon={ChevronsDownUpIcon}
+        data-icon="chevrons-down-up"
+        size={ICON_SIZE}
+      />
     ) : (
-      <ChevronsUpDown size={ICON_SIZE} />
+      <HugeiconsIcon
+        icon={UnfoldMoreIcon}
+        data-icon="chevrons-up-down"
+        size={ICON_SIZE}
+      />
     );
 
     const iconSlot = (
@@ -98,14 +108,16 @@ const ComposerStackHeader: React.FC<ComposerStackHeaderProps> = memo(
         onMouseLeave={onLeave}
       >
         {isCollapsible ? (
-          <button
+          <Button
+            layout="custom"
+            appearance="custom"
             onClick={onToggle}
             className="flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-left"
           >
             {iconSlot}
             <span className={labelClass}>{label}</span>
             {badges}
-          </button>
+          </Button>
         ) : (
           <span className="flex min-w-0 flex-1 items-center gap-1.5">
             {icon && iconSlot}
@@ -114,7 +126,9 @@ const ComposerStackHeader: React.FC<ComposerStackHeaderProps> = memo(
           </span>
         )}
 
-        {actions && <div className="flex items-center gap-0.5">{actions}</div>}
+        {actions && (
+          <div className="flex shrink-0 items-center gap-0.5">{actions}</div>
+        )}
       </div>
     );
   }
@@ -135,7 +149,7 @@ export default ComposerStackHeader;
 export const ComposerStackHeaderCountBadge: React.FC<{
   children: React.ReactNode;
 }> = memo(({ children }) => (
-  <span className="ml-1 shrink-0 text-[13px] font-medium tabular-nums text-text-3">
+  <span className="ml-1 shrink-0 text-[13px] font-medium text-text-3 tabular-nums">
     {children}
   </span>
 ));

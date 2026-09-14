@@ -6,14 +6,6 @@
  */
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useAtomValue } from "jotai";
-import {
-  GitMerge,
-  GitPullRequest,
-  GitPullRequestClosed,
-  GitPullRequestDraft,
-  Loader2,
-  TriangleAlert,
-} from "lucide-react";
 import React, {
   memo,
   useCallback,
@@ -25,20 +17,35 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import type { OpenPRItem } from "@src/api/tauri/github";
+import AnyIcon from "@src/components/AnyIcon";
+import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
 import PrHoverCard from "@src/components/PrHoverCard";
 import { TreeRowBase, type TreeRowNode } from "@src/components/TreeRow";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
+import { TYPOGRAPHY } from "@src/config/workstation/tokens";
+import {
+  GitMergeIcon,
+  GitPullRequestClosedIcon,
+  GitPullRequestDraftIcon,
+  GitPullRequestIcon,
+  HugeiconsIcon,
+  Loading03Icon,
+  TriangleAlertIcon,
+} from "@src/icons";
 import {
   type SectionStatus,
   SectionStatusRow,
 } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/components/SectionStatusRow";
 import { TreeSectionHeader } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/components/TreeSectionHeader";
 import type { TabDragPillPayload } from "@src/modules/WorkStation/shared/TabBar/tabDragTypes";
-import { TYPOGRAPHY } from "@src/modules/WorkStation/shared/tokens";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { ReferenceDragGhost } from "@src/shared/dnd/ReferenceDragGhost";
 import { setPrDragStash } from "@src/shared/dnd/dragSideChannel";
 import { useReferencePillDrag } from "@src/shared/dnd/useReferencePillDrag";
+import {
+  getPrStatusIconName,
+  getPrStatusVariant,
+} from "@src/shared/pr/prStatus";
 import {
   workstationAllClosedPrsAtomFamily,
   workstationAllOpenPrsAtomFamily,
@@ -50,12 +57,12 @@ import {
   workstationPrCallbackAtomFamily,
   workstationRepoScopeKey,
 } from "@src/store/workstation/codeEditor/workstationPrAtom";
+import { retainWorkstationRepoScope } from "@src/store/workstation/codeEditor/workstationRepoScopeRetention";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 
 import { filterPullRequestsByQuery } from "../../hooks/workstationPrHelpers";
-import { getPrStatusIconName, getPrStatusVariant } from "./prCardHelpers";
 
-export interface PullRequestContentProps {
+interface PullRequestContentProps {
   branchName?: string;
   filterQuery?: string;
   onHistorySelectionChange?: (selection: SourceControlHistorySelection) => void;
@@ -84,13 +91,12 @@ type PrVirtualRow =
 interface PrRowProps {
   pr: OpenPRItem;
   depth?: number;
-  isCurrentBranch: boolean;
   isSelected: boolean;
   onClick: (pr: OpenPRItem) => void;
 }
 
 const PrRow: React.FC<PrRowProps> = memo(
-  ({ pr, depth = 1, isCurrentBranch, isSelected, onClick }) => {
+  ({ pr, depth = 1, isSelected, onClick }) => {
     const statusKey = pr.draft ? "draft" : pr.state;
     const statusVariant = getPrStatusVariant(statusKey);
 
@@ -125,12 +131,12 @@ const PrRow: React.FC<PrRowProps> = memo(
       const iconName = getPrStatusIconName(statusKey);
       const PrIcon =
         iconName === "draft"
-          ? GitPullRequestDraft
+          ? GitPullRequestDraftIcon
           : iconName === "merge"
-            ? GitMerge
+            ? GitMergeIcon
             : iconName === "closed"
-              ? GitPullRequestClosed
-              : GitPullRequest;
+              ? GitPullRequestClosedIcon
+              : GitPullRequestIcon;
       return {
         id: String(pr.number),
         name: pr.title,
@@ -138,7 +144,7 @@ const PrRow: React.FC<PrRowProps> = memo(
         type: "file",
         icon: (
           <span className={statusVariant.dotClass.replace("bg-", "text-")}>
-            <PrIcon size={14} strokeWidth={1.75} />
+            <AnyIcon icon={PrIcon} size={14} strokeWidth={1.75} />
           </span>
         ),
       };
@@ -162,14 +168,9 @@ const PrRow: React.FC<PrRowProps> = memo(
             showIndentGuides={false}
             onMouseDown={stashPrDrag}
             {...dragHandlers}
-            className={
-              isCurrentBranch
-                ? "border-l-2 border-primary-5 !pl-[calc(theme(spacing.3)+2px+theme(spacing.4))]"
-                : undefined
-            }
           >
             <span className="ml-auto flex shrink-0 items-center gap-1">
-              <span className="min-w-[28px] text-right text-[11px] tabular-nums text-text-3">
+              <span className="min-w-[28px] text-right text-[11px] text-text-3 tabular-nums">
                 #{pr.number}
               </span>
             </span>
@@ -192,6 +193,8 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
 }) => {
   const { t } = useTranslation("common");
   const scopeKey = workstationRepoScopeKey(repoId, repoPath);
+  // Keep this repo's list atoms alive while the panel is mounted.
+  useEffect(() => retainWorkstationRepoScope(scopeKey), [scopeKey]);
   const {
     prUrl,
     readyToCreate,
@@ -413,7 +416,6 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
           <PrRow
             pr={row.pr}
             depth={1}
-            isCurrentBranch={row.pr.head_branch === branchName}
             isSelected={row.pr.number === selectedPrNumber}
             onClick={handlePrClick}
           />
@@ -435,6 +437,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
           onToggle={() => setOpenCollapsed((prev) => !prev)}
         />
         <Placeholder
+          loadingIconOnly
           variant={openStatus?.kind === "loading" ? "loading" : "empty"}
           placement="sidebar"
           title={
@@ -467,7 +470,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
                 key={virtualItem.key}
                 ref={prListVirtualizer.measureElement}
                 data-index={virtualItem.index}
-                className="absolute left-0 top-0 w-full"
+                className="absolute top-0 left-0 w-full"
                 style={{ transform: `translateY(${virtualItem.start}px)` }}
               >
                 {renderVirtualRow(row)}
@@ -496,25 +499,32 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
             <div
               className={`flex items-center gap-2 ${TYPOGRAPHY.secondary} text-text-3`}
             >
-              <Loader2
+              <HugeiconsIcon
+                icon={Loading03Icon}
+                data-icon="loader-2"
                 size={SPINNER_TOKENS.default}
                 className="animate-spin text-text-3"
               />
               <span>{t("labels.creatingPullRequest", "Creating…")}</span>
             </div>
           ) : (
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              appearance="solid"
+              size="small"
+              htmlType="button"
               onClick={handleCreate}
               disabled={!onCreatePr}
-              className="flex h-7 items-center justify-center rounded-md bg-primary-6 px-2.5 text-[12px] font-medium text-white transition-colors hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-50"
+              className="text-[12px] font-medium hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t("actions.createPullRequest", "Create pull request")}
-            </button>
+            </Button>
           )}
           {localCreateError && (
             <div className="flex items-start gap-1.5 rounded-md bg-fill-2 px-2 py-1.5">
-              <TriangleAlert
+              <HugeiconsIcon
+                icon={TriangleAlertIcon}
+                data-icon="triangle-alert"
                 size={12}
                 className="mt-0.5 shrink-0 text-warning-6"
               />

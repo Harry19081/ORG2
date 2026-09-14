@@ -10,7 +10,8 @@
 //! the `sessionId` it describes so the frontend can route to per-session
 //! listeners.
 
-mod analytics;
+mod agent_org_group_visibility;
+mod agent_org_plan_history;
 mod batch_update;
 mod cache_bridge;
 pub(crate) mod event_conversion;
@@ -18,7 +19,6 @@ mod extractors;
 mod history;
 mod ingestion;
 mod notify;
-mod pagination;
 mod push_events;
 mod runtime_artifacts;
 mod search;
@@ -46,6 +46,7 @@ pub(crate) fn prepare_loaded_events(
 ) -> Vec<SessionEvent> {
     let events = event_conversion::dedup_by_call_id(events);
     let mut events = event_conversion::dedup_stream_transcript_chunk_pairs(events);
+    agent_org_plan_history::rehydrate_agent_org_plan_history(session_id, &mut events);
     event_conversion::backfill_tool_inputs_from_messages(session_id, &mut events);
     event_conversion::backfill_subagent_links(session_id, &mut events);
     backfill_provider_subagent_prompts(&mut events);
@@ -300,10 +301,8 @@ pub use event_conversion::*;
 pub use turn_window::*;
 
 // Analytics commands
-pub use analytics::*;
 
 // Pagination commands
-pub use pagination::*;
 
 // Batch update commands
 pub use batch_update::*;
@@ -319,3 +318,6 @@ pub use search::*;
 
 // History commands
 pub use history::*;
+
+#[cfg(test)]
+pub(crate) use snapshot::{export_markdown_output, export_session_markdown};

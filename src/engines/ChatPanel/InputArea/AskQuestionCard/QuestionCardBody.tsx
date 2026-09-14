@@ -8,10 +8,11 @@
  * All interaction state is passed in via props so each consumer can wire its
  * own submission / selection logic.
  */
-import { PenLine } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import Textarea from "@src/components/Textarea";
+import { HugeiconsIcon, PenLineIcon } from "@src/icons";
 import { classNames } from "@src/util/ui/classNames";
 
 import { QuestionRow } from "./QuestionRow";
@@ -82,6 +83,16 @@ export function QuestionCardBody({
                 )}
               </QuestionRow>
 
+              {question.freeText && (
+                <Textarea
+                  size="small"
+                  autoSize={{ minRows: 1, maxRows: 4 }}
+                  resize="none"
+                  placeholder={t("chat.typeYourAnswer")}
+                  value={customTexts.get(qIdx) ?? ""}
+                  onChange={(value) => onCustomTextChange(qIdx, value)}
+                />
+              )}
               {question.options.length > 0 && (
                 <div className={ASK_QUESTION_CARD_OPTIONS}>
                   {question.options.map((option, optIdx) => {
@@ -89,9 +100,11 @@ export function QuestionCardBody({
                     const letter = OPTION_LABELS[optIdx] || String(optIdx + 1);
 
                     return (
-                      <button
+                      <Button
+                        layout="custom"
+                        appearance="custom"
                         key={optIdx}
-                        type="button"
+                        htmlType="button"
                         onClick={() =>
                           onOptionClick(qIdx, optIdx, question.multiSelect)
                         }
@@ -122,19 +135,21 @@ export function QuestionCardBody({
                             ? `${option.label} — ${option.description}`
                             : option.label}
                         </span>
-                      </button>
+                      </Button>
                     );
                   })}
 
                   <div
                     className={classNames(
                       ASK_QUESTION_CARD_OPTION_BASE,
-                      "flex-col !items-stretch",
+                      "flex-col items-stretch!",
                       isCustomSelected && ASK_QUESTION_CARD_OPTION_SELECTED
                     )}
                   >
-                    <button
-                      type="button"
+                    <Button
+                      layout="custom"
+                      appearance="custom"
+                      htmlType="button"
                       onClick={() => {
                         onOptionClick(
                           qIdx,
@@ -154,7 +169,11 @@ export function QuestionCardBody({
                             : "bg-bg-2 text-primary-6"
                         )}
                       >
-                        <PenLine size={12} />
+                        <HugeiconsIcon
+                          icon={PenLineIcon}
+                          data-icon="pen-line"
+                          size={12}
+                        />
                       </span>
                       <span
                         className={classNames(
@@ -164,7 +183,7 @@ export function QuestionCardBody({
                       >
                         {t("chat.describeItYourself")}
                       </span>
-                    </button>
+                    </Button>
                     {isCustomSelected && (
                       <Textarea
                         ref={registerCustomInput(qIdx)}

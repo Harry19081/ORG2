@@ -14,10 +14,10 @@ import type { AddToAgentRequest } from "@src/store/ui/addToAgentAtom";
 import {
   browserStatusBarCallbacksAtom,
   browserStatusBarStateAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/statusBarAtoms";
 
+import { sendSelectedElementToChat } from "../shared/sendSelectedElementToChat";
 import { buildSelectedElementLabel } from "./browserLayoutUtils";
-import { buildDomComponentJsonFromElementInfo } from "./buildDomComponentJson";
 
 interface BrowserStatusBarSyncOptions {
   isActive: boolean;
@@ -30,8 +30,6 @@ interface BrowserStatusBarSyncOptions {
   sessionCount: number;
   currentSessionIndex: number;
   selectedElement: ElementInfo | null;
-  primarySidebarCollapsed: boolean;
-  togglePrimarySidebar: () => void;
   handleToggleDevTools: () => void;
   handlePrevSession: () => void;
   handleNextSession: () => void;
@@ -52,8 +50,6 @@ export function useBrowserStatusBar({
   sessionCount,
   currentSessionIndex,
   selectedElement,
-  primarySidebarCollapsed,
-  togglePrimarySidebar,
   handleToggleDevTools,
   handlePrevSession,
   handleNextSession,
@@ -105,19 +101,18 @@ export function useBrowserStatusBar({
   useEffect(() => {
     if (!isActive) return;
     const handleSendSelectedElementToChat = () => {
-      if (!selectedElement) return;
-      const { jsonText, fileName } = buildDomComponentJsonFromElementInfo(
+      sendSelectedElementToChat({
         selectedElement,
-        currentUrl
-      );
-      setAddToAgent({ type: "dom-component", fileName, jsonText });
-      toastSuccess(chatSentToastMessage);
+        currentUrl,
+        setAddToAgent,
+        onSent: () => toastSuccess(chatSentToastMessage),
+      });
     };
 
     setStatusBarCallbacks((prev) => ({
       ...prev,
-      primaryPanelCollapsed: primarySidebarCollapsed,
-      onTogglePrimaryPanel: togglePrimarySidebar,
+      onTogglePrimaryPanel: undefined,
+      primaryPanelCollapsed: undefined,
       onToggleDevTools: handleToggleDevTools,
       devToolsOpen: !devToolsCollapsed,
       onPrevSession: handlePrevSession,
@@ -132,11 +127,8 @@ export function useBrowserStatusBar({
       if (ref.current) return;
       setStatusBarCallbacks({});
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isActive,
-    primarySidebarCollapsed,
-    togglePrimarySidebar,
     handleToggleDevTools,
     devToolsCollapsed,
     handlePrevSession,
@@ -148,5 +140,6 @@ export function useBrowserStatusBar({
     setAddToAgent,
     toastSuccess,
     chatSentToastMessage,
+    isMountedRef,
   ]);
 }

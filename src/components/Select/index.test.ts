@@ -88,6 +88,8 @@ describe("Select keyboard navigation", () => {
     const secondOption = document.body.querySelector<HTMLElement>(
       '[data-testid="select-option-two"]'
     );
+    expect(secondOption?.getAttribute("role")).toBe("option");
+    expect(secondOption?.getAttribute("aria-selected")).toBe("false");
     expect(secondOption?.classList.contains("bg-fill-2")).toBe(true);
 
     act(() => {
@@ -100,5 +102,29 @@ describe("Select keyboard navigation", () => {
       "two",
       expect.objectContaining({ value: "two" })
     );
+  });
+
+  it("applies an ownership class to the portalled dropdown panel", async () => {
+    await act(async () => {
+      root.render(
+        React.createElement(Select, {
+          value: "one",
+          options: [
+            { label: "One", value: "one", dataTestId: "owned-option-one" },
+            { label: "Two", value: "two", dataTestId: "owned-option-two" },
+          ],
+          defaultPopupVisible: true,
+          panelClassName: "agent-org-overview-owned-overlay",
+          ariaLabel: "Replacement owner",
+        })
+      );
+      await new Promise((resolve) => window.setTimeout(resolve, 20));
+    });
+
+    const option = document.body.querySelector<HTMLElement>(
+      '[data-testid="owned-option-two"]'
+    );
+    expect(option).not.toBeNull();
+    expect(option?.closest(".agent-org-overview-owned-overlay")).not.toBeNull();
   });
 });

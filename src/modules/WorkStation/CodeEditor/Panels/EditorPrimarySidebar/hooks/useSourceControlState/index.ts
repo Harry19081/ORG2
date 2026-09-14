@@ -12,13 +12,11 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { DetachedHeadDialog } from "@src/components/GitDialogs";
-import { useGitStatus } from "@src/contexts/git";
-import {
-  useCommitForm,
-  useFileSelection,
-  useGitFiles,
-} from "@src/hooks/git/sourceControl";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
+import { useCommitForm } from "@src/modules/WorkStation/CodeEditor/hooks/sourceControl/useCommitForm";
+import { useFileSelection } from "@src/modules/WorkStation/CodeEditor/hooks/sourceControl/useFileSelection";
+import { useGitFiles } from "@src/modules/WorkStation/CodeEditor/hooks/sourceControl/useGitFiles";
 import { gitAutoCreatePrAtom } from "@src/store/ui/editorSettingsAtom";
 import { gitReviewNavigationAtom } from "@src/store/workstation/codeEditor/gitReviewNavigationAtom";
 import { gitOutputIntegrationAtom } from "@src/store/workstation/codeEditor/outputIntegration";
@@ -28,6 +26,7 @@ import {
   workstationPrCommitMessageAtomFamily,
   workstationRepoScopeKey,
 } from "@src/store/workstation/codeEditor/workstationPrAtom";
+import { retainWorkstationRepoScope } from "@src/store/workstation/codeEditor/workstationRepoScopeRetention";
 
 import { useStashState } from "../useStashState";
 import type {
@@ -38,13 +37,6 @@ import type {
 import { useFileOperations } from "./useFileOperations";
 import { useMergeRebaseState } from "./useMergeRebaseState";
 import { useSyncOperations } from "./useSyncOperations";
-
-// Re-export types
-export type {
-  SourceControlState,
-  UseSourceControlStateOptions,
-  UseSourceControlStateResult,
-} from "./types";
 
 export function useSourceControlState(
   options: UseSourceControlStateOptions
@@ -258,6 +250,7 @@ export function useSourceControlState(
     behind,
     hasUpstream,
     stashPush,
+    stashPop,
     fetchGitStatus,
     refreshStashes,
     onCreatePrRef,
@@ -267,6 +260,8 @@ export function useSourceControlState(
   // useSourceControlSetup). Mirror its published atoms here instead of mounting
   // a second copy — that previously caused duplicate GitHub lookups, duplicate
   // auto-create timers and last-writer-wins races on the global atom.
+  // Keep this repo's list atoms alive while Source Control is mounted.
+  useEffect(() => retainWorkstationRepoScope(scopeKey), [scopeKey]);
   const {
     prUrl,
     isCreating: prCreating,

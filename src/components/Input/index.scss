@@ -143,6 +143,41 @@
     }
   }
 
+  &.input-sidebar-surface {
+    .input-inner {
+      background: var(--sidebar-selected-row-bg);
+    }
+  }
+
+  &.input-sidebar-search {
+    // The inner keeps a 1px transparent border at rest, so 7px padding aligns
+    // its content with the navigation rows' 8px inset in every state.
+    .input-inner {
+      padding-right: 7px;
+      padding-left: 7px;
+    }
+
+    .input-prefix {
+      margin-right: 12px;
+    }
+
+    // Stay visually quiet until the user interacts with the search field.
+    // Once focused, the standard input focus treatment applies unchanged.
+    &:not(.input-focused) {
+      .input-inner {
+        border-color: transparent;
+        background: transparent;
+      }
+
+      &:hover:not(.input-disabled):not(.input-readonly) {
+        .input-inner {
+          border-color: var(--color-border-3);
+          background: var(--sidebar-selected-row-bg);
+        }
+      }
+    }
+  }
+
   &.input-field-ghost,
   &.input-field-bare {
     .input-inner {
@@ -440,4 +475,21 @@
   font-size: 12px;
   color: var(--color-text-3);
   white-space: nowrap;
+}
+
+// Native date/time segments share a primary selection, including AM/PM.
+// Keep these selectors separate: unsupported native pseudo-elements must not
+// invalidate selection styling on engines that expose a different set.
+.input:is([type="date"], [type="time"], [type="datetime-local"]) {
+  &::selection {
+    background-color: var(--color-primary-6);
+    color: #fff;
+  }
+
+  @each $segment in day, month, year, hour, minute, second, millisecond, ampm {
+    &::-webkit-datetime-edit-#{$segment}-field:focus {
+      background-color: var(--color-primary-6);
+      color: #fff;
+    }
+  }
 }

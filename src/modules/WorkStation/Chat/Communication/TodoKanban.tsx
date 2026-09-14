@@ -13,14 +13,6 @@
  * per-task lifecycle is conveyed on the card's second line (the `description`
  * slot) so the column count reflects "remaining work", not lifecycle phase.
  */
-import {
-  CheckCircle2,
-  Circle,
-  Clock,
-  type LucideIcon,
-  Plus,
-  XCircle,
-} from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -35,6 +27,14 @@ import KanbanBoard, {
   type TaskStatus,
 } from "@src/features/KanbanBoard";
 import { createLogger } from "@src/hooks/logger";
+import {
+  Add01Icon,
+  CancelCircleIcon,
+  CheckmarkCircle01Icon,
+  CircleIcon,
+  Clock01Icon,
+  type IconSvgElement,
+} from "@src/icons";
 import { normalizeActivity } from "@src/lib/activityData";
 import { preserveTodoContent } from "@src/store/ui/todoMerge";
 import { formatSmartDateTime } from "@src/util/data/formatters/date";
@@ -94,13 +94,12 @@ type TodoLifecycleStatus =
   | "pending"
   | "in_progress"
   | "completed"
+  | "failed"
   | "cancelled";
 
-// `manage_todo` (and the equivalent Cursor IDE `todo_write` tool, normalized
-// by `cursor_db_history.rs`) only emits four status values: `pending`,
-// `in_progress`, `completed`, `cancelled`. Both schemas are pinned in their
-// respective JSON-schema enums, so we map them as exact-string matches —
-// no substring `includes()` games, no silent fallback for unknown values.
+// `manage_todo` and Cursor `todo_write` emit four states; Agent Org's durable
+// Task board additionally emits `failed`. Map the union by exact value so a
+// failed/cancelled formal Task can never fall into the pending column.
 function normalizeLifecycleStatus(
   status: string | undefined
 ): TodoLifecycleStatus {
@@ -111,6 +110,8 @@ function normalizeLifecycleStatus(
       return "completed";
     case "cancelled":
       return "cancelled";
+    case "failed":
+      return "failed";
     case "pending":
     case "":
       return "pending";
@@ -118,7 +119,7 @@ function normalizeLifecycleStatus(
       if (process.env.NODE_ENV !== "production") {
         log.warn(
           `[TodoKanban] Unknown todo status ${JSON.stringify(status)} — ` +
-            `routing to 'pending'. Expected one of: pending, in_progress, completed, cancelled.`
+            `routing to 'pending'. Expected one of: pending, in_progress, completed, failed, cancelled.`
         );
       }
       return "pending";
@@ -133,6 +134,7 @@ function lifecycleToColumn(status: TodoLifecycleStatus): TaskStatus {
     case "completed":
       return "completed";
     case "cancelled":
+    case "failed":
       return "cancelled";
     case "pending":
     case "in_progress":
@@ -169,7 +171,7 @@ function buildTodoColumns(): KanbanColumnConfig[] {
     {
       ...openBase,
       title: "sessions:planner.todoList.columnOpen",
-      icon: Circle,
+      icon: CircleIcon,
     },
     {
       ...doneBase,
@@ -476,17 +478,17 @@ export const TodoKanban: React.FC<TodoKanbanProps> = ({
         // describes when the todo entered the list, not its current
         // state — coloring it would imply the creation itself succeeded
         // or failed.
-        let updatedIcon: LucideIcon = Clock;
+        let updatedIcon: IconSvgElement = Clock01Icon;
         let updatedColor: string = "var(--color-text-2)";
         if (lifecycle === "completed") {
-          updatedIcon = CheckCircle2;
+          updatedIcon = CheckmarkCircle01Icon;
           updatedColor = "var(--color-success-6)";
-        } else if (lifecycle === "cancelled") {
-          updatedIcon = XCircle;
+        } else if (lifecycle === "cancelled" || lifecycle === "failed") {
+          updatedIcon = CancelCircleIcon;
           updatedColor = "var(--color-danger-6)";
         }
         const metaLines: Array<{
-          icon: LucideIcon;
+          icon: IconSvgElement;
           text: string;
           color?: string;
         }> = [];
@@ -499,7 +501,7 @@ export const TodoKanban: React.FC<TodoKanbanProps> = ({
         }
         if (createdLabel) {
           metaLines.push({
-            icon: Plus,
+            icon: Add01Icon,
             text: createdLabel,
             color: "var(--color-text-2)",
           });
@@ -519,6 +521,7 @@ export const TodoKanban: React.FC<TodoKanbanProps> = ({
           priority: todo.priority,
           metaLines,
           status: lifecycleToColumn(lifecycle),
+          resultStatus: lifecycle === "failed" ? "failed" : undefined,
         };
       }),
     [todos, timeline, yesterdayLabel, nowLabel, minutesAgoLabel]

@@ -9,45 +9,6 @@ import {
 import type { DispatchCategory } from "@src/api/tauri/session";
 
 /**
- * Session Dispatch Utilities
- *
- * Centralized detection for session dispatch routing based on session ID prefixes.
- * Use these helpers instead of ad-hoc string checks throughout the codebase.
- *
- * Two orthogonal concepts:
- *
- * 1. Dispatch category (transport/routing):
- *    - "cli_agent": CLI Agent session (external CLI process via Tauri)
- *    - "rust_agent": Rust-native agent session (OS Agent, SDE Agent, Custom)
- *    - "human_session": User-authored proof-of-work session
- *
- * 2. Key source (billing / own key vs hosted key):
- *    - "own_key": User's own API keys (BYOK)
- *    - "hosted_key": Hosted ORGII key (proxied via the marketplace)
- *
- * Key source is stored on the session record, not derived from session ID.
- */
-
-// ============================================
-// Session Prefixes Registry
-// ============================================
-
-/**
- * Lifecycle hooks for IDE session types that require a persistent backend
- * watch (e.g. a CDP WebSocket to a running IDE renderer). Both callbacks
- * receive the full `sessionId` (e.g. `cursoride-<uuid>`).
- *
- * Reserved for future live-watch IDE integrations (Trae, Windsurf, etc.).
- * Currently no session type registers a live watch.
- */
-export interface SessionLiveWatchHooks {
-  /** Start the backend watch for this session. Called once on mount. */
-  startWatch: (sessionId: string) => Promise<void>;
-  /** Stop the backend watch. Called on unmount (navigation away). */
-  stopWatch: (sessionId: string) => Promise<void>;
-}
-
-/**
  * Session prefix configuration.
  * When adding a new agent type, add an entry here — all detection functions
  * will automatically recognize it.
@@ -59,13 +20,16 @@ export interface SessionPrefixConfig {
   category: DispatchCategory;
   /** Agent variant for Rust-native agents; undefined for non-agent sessions */
   variant?: RustAgentType;
-  /** Lucide icon slug for UI display */
+  /** Icon slug (lucide-era vocabulary) for UI display */
   iconId: string;
   /** Agent definition ID for built-in agents (e.g., "builtin:os") */
   defId?: string;
   /** Source subtype for imported read-only external history sessions. */
   externalHistorySourceId?: ImportedHistorySourceId;
 }
+
+/** Icon slug for the built-in SDE Agent across current and historical sessions. */
+export const SDE_AGENT_ICON_ID = "ai-programming";
 
 /**
  * Registry of all known session prefixes.
@@ -88,7 +52,7 @@ export const SESSION_PREFIX_REGISTRY: readonly SessionPrefixConfig[] = [
     prefix: "sdeagent-",
     category: "rust_agent",
     variant: RUST_AGENT_TYPE.SDE,
-    iconId: "code",
+    iconId: SDE_AGENT_ICON_ID,
     defId: "builtin:sde",
   },
   {
@@ -102,7 +66,7 @@ export const SESSION_PREFIX_REGISTRY: readonly SessionPrefixConfig[] = [
     prefix: "agentsession-",
     category: "rust_agent",
     variant: RUST_AGENT_TYPE.SDE,
-    iconId: "code",
+    iconId: SDE_AGENT_ICON_ID,
   },
   {
     prefix: "cliagent-",
@@ -158,17 +122,11 @@ export const OPENCODE_HISTORY_SESSION_PREFIX = "opencodeapp-";
 /** Prefix for imported Windsurf event session IDs. */
 export const WINDSURF_HISTORY_SESSION_PREFIX = "windsurfapp-";
 
-/** Prefix for imported WorkBuddy event session IDs. */
-export const WORKBUDDY_HISTORY_SESSION_PREFIX = "workbuddyapp-";
-
 /** Prefix for imported Warp event session IDs. */
 export const WARP_HISTORY_SESSION_PREFIX = "warpapp-";
 
 /** Deterministic local cache ID for a teammate collaboration replay. */
 export const COLLAB_IMPORTED_SESSION_PREFIX = "imported-session-";
-
-/** Prefix for Wingman Agent session IDs */
-export const WINGMAN_SESSION_PREFIX = "wingman-";
 
 /** Agent definition ID for the built-in OS Agent */
 export const BUILTIN_OS_DEF_ID = "builtin:os";
@@ -178,9 +136,6 @@ export const BUILTIN_ADE_MANAGER_DEF_ID = "builtin:agent-architect";
 
 /** Agent definition ID for the built-in SDE Agent */
 export const BUILTIN_SDE_DEF_ID = "builtin:sde";
-
-/** Agent definition ID for the built-in Wingman Agent */
-export const BUILTIN_WINGMAN_DEF_ID = "builtin:wingman";
 
 // ============================================
 // Internal Helpers
@@ -260,6 +215,21 @@ export function getExternalHistorySourceId(
   return config?.externalHistorySourceId;
 }
 
+/**
+ * Runnable native-CLI provider owned by an external-history session.
+ * Sources without a native resume contract deliberately return undefined.
+ */
+export function getExternalHistoryCliAgentType(
+  sessionId: string | null | undefined
+): string | undefined {
+  const sourceId = getExternalHistorySourceId(sessionId);
+  return sourceId
+    ? IMPORTED_HISTORY_SOURCE_DESCRIPTORS.find(
+        (descriptor) => descriptor.sourceId === sourceId
+      )?.cliResume?.agentType
+    : undefined;
+}
+
 export function isCodexAppSession(
   sessionId: string | null | undefined
 ): boolean {
@@ -282,12 +252,6 @@ export function isWindsurfHistorySession(
   sessionId: string | null | undefined
 ): boolean {
   return getExternalHistorySourceId(sessionId) === "windsurf";
-}
-
-export function isWorkBuddyHistorySession(
-  sessionId: string | null | undefined
-): boolean {
-  return getExternalHistorySourceId(sessionId) === "workbuddy";
 }
 
 export function isWarpHistorySession(
@@ -382,7 +346,7 @@ export function composerIdFromSessionId(sessionId: string): string | null {
 }
 
 /**
- * Map a session ID to a Lucide icon slug based on its prefix.
+ * Map a session ID to an icon slug based on its prefix.
  * Pair with `resolveAgentIcon()` from `@src/config/agentIcons` to get the component.
  *
  * Uses the prefix registry — no need to edit this function when adding new agents.
@@ -425,7 +389,7 @@ function escapePatternLiteral(value: string): string {
  * RegExp objects carry mutable `lastIndex` state.
  *
  * Canonical single source for "what does a session id look like in prose" —
- * used by chat reference-card extraction AND by the git-artifact parser to
+ * used by chat session-attachment projection AND by the git-artifact parser to
  * mask session IDs before commit-SHA matching (session UUIDs contain hex
  * segments that otherwise false-positive as commit SHAs).
  */

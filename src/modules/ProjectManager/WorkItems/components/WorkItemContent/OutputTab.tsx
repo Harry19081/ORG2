@@ -8,7 +8,6 @@ import {
 } from "@src/api/http/project";
 import { useProjectDataChanged } from "@src/hooks/project";
 import ChangedFilesList from "@src/modules/ProjectManager/WorkItems/components/AgentWorkflow/ChangedFilesList";
-import ReviewFeedbackPanel from "@src/modules/ProjectManager/WorkItems/components/AgentWorkflow/ReviewFeedbackPanel";
 import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
 
 import PrSection from "./PrSection";
@@ -22,13 +21,7 @@ const OutputTab: React.FC<OutputTabContentProps> = ({
   shortId,
   orgId,
   onOpenFileDiff,
-  onOpenFileAtLine,
   onReviewAllFiles,
-  onOpenSession,
-  onRetry,
-  onAcceptAsIs,
-  onCreateFollowUp,
-  onCancel,
   onCreatePr,
 }) => {
   const { t } = useTranslation("projects");
@@ -135,7 +128,6 @@ const OutputTab: React.FC<OutputTabContentProps> = ({
         {hasChangedFiles ? (
           <ChangedFilesList
             diffStats={effectiveDiffStats}
-            reviewComments={proofOfWork?.review_feedback?.comments}
             isLive={isLiveSde}
             onOpenFileDiff={onOpenFileDiff}
             onReviewAllFiles={onReviewAllFiles}
@@ -151,27 +143,6 @@ const OutputTab: React.FC<OutputTabContentProps> = ({
           </div>
         )}
       </CollapsibleSection>
-
-      {proofOfWork?.review_feedback && (
-        <CollapsibleSection
-          title={t("workItems.agentWorkflow.reviewPhase")}
-          defaultOpen={true}
-        >
-          <ReviewFeedbackPanel
-            latestReview={proofOfWork.review_feedback}
-            reviewHistory={proofOfWork.review_history}
-            phase={phase}
-            onOpenSession={onOpenSession}
-            onOpenFileAtLine={onOpenFileAtLine}
-            onRetry={phase === "awaiting_user" ? onRetry : undefined}
-            onAcceptAsIs={phase === "awaiting_user" ? onAcceptAsIs : undefined}
-            onCreateFollowUp={
-              phase === "awaiting_user" ? onCreateFollowUp : undefined
-            }
-            onCancel={phase === "awaiting_user" ? onCancel : undefined}
-          />
-        </CollapsibleSection>
-      )}
 
       {(displayedUsage.costUsd > 0 || displayedUsage.totalTokens > 0) && (
         <CollapsibleSection

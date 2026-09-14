@@ -10,15 +10,15 @@ import JSZip from "jszip";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Placeholder } from "@src/components/Placeholder";
 import i18n from "@src/i18n";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { getFileName } from "@src/util/file/pathUtils";
 
 // ============================================
 // Types
 // ============================================
 
-export interface PptxPreviewProps {
+interface PptxPreviewProps {
   filePath: string;
   className?: string;
 }
@@ -188,7 +188,7 @@ export const PptxPreview: React.FC<PptxPreviewProps> = ({
                   ))}
                 </div>
               ) : (
-                <p className="text-[13px] italic text-text-3">
+                <p className="text-[13px] text-text-3 italic">
                   {t("previews.noTextContent")}
                 </p>
               )}

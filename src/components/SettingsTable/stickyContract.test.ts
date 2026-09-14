@@ -16,9 +16,9 @@ const tableSource = readFileSync(
 );
 
 describe("SettingsTable sticky toolbar contract", () => {
-  it("separates raised table chrome from the chat-pane row surface", () => {
+  it("keeps the body on the raised table surface by default", () => {
     expect(tableStyles).toMatch(
-      /\.table-settings\s*\{[\s\S]*--settings-table-surface:\s*var\(--color-primary-container\);[\s\S]*--settings-table-body-surface:\s*var\(--color-chat-pane\);/
+      /\.table-settings\s*\{[\s\S]*--settings-table-surface:\s*var\(--color-primary-container\);[\s\S]*--settings-table-body-surface:\s*var\(--settings-table-surface\);/
     );
     expect(tableStyles).toMatch(
       /\.table,\s*\.table-tbody\s*\{\s*background:\s*var\(--settings-table-body-surface\);/
@@ -28,7 +28,16 @@ describe("SettingsTable sticky toolbar contract", () => {
     );
   });
 
-  it("keeps title rows, frozen columns, and covering shades on the chat pane", () => {
+  it("blends the body into the chat pane only for pane-body tables", () => {
+    expect(tableStyles).toMatch(
+      /&\.table-settings-pane-body\s*\{\s*--settings-table-body-surface:\s*var\(--color-chat-pane\);\s*\}/
+    );
+    expect(settingsTableSource).toContain(
+      'bodySurface === "pane" && "table-settings-pane-body"'
+    );
+  });
+
+  it("keeps title rows, frozen columns, and covering shades on the body surface", () => {
     expect(tableStyles).toMatch(
       /\.table-fixed-header\s*\{[\s\S]*background:\s*var\(--settings-table-body-surface\);/
     );
@@ -58,6 +67,39 @@ describe("SettingsTable sticky toolbar contract", () => {
     );
     expect(tableStyles).toMatch(
       /\.table-row > \.table-td:last-child\s*\{[^}]*z-index:\s*3;/
+    );
+  });
+
+  it("uses the row hover surface for regular and pinned cell paint layers", () => {
+    expect(tableStyles).toContain(
+      "--settings-table-row-hover-surface: var(--settings-table-body-surface);"
+    );
+    expect(tableStyles).toMatch(
+      /\.table-settings\.table-settings-page-list-hover\.table-hover\s*\{\s*--settings-table-row-hover-surface:\s*var\(--color-surface-hover\);/
+    );
+    expect(tableStyles).toMatch(
+      /&\.table-settings-sticky-first-col[\s\S]*\.table-row:hover[\s\S]*> \.table-td:first-child\s*\{\s*background:\s*var\(--settings-table-row-hover-surface\);/
+    );
+    expect(tableStyles).toMatch(
+      /&\.table-hover \.table-row:hover > \.table-td:last-child,[\s\S]*background:\s*var\(--settings-table-row-hover-surface\);/
+    );
+    expect(tableStyles).toMatch(
+      /color-mix\(\s*in srgb,\s*var\(--settings-table-row-hover-surface\) 90%,\s*transparent\s*\)[\s\S]*var\(--settings-table-row-hover-surface\) 100%/
+    );
+  });
+
+  it("insets and rounds page-list row hover surfaces", () => {
+    expect(tableStyles).toMatch(
+      /\.table-settings\.table-settings-page-list-hover\.table-hover\s*\{[\s\S]*--settings-table-page-list-gutter:\s*8px;[\s\S]*\.table-container\s*\{\s*padding-inline:\s*var\(--settings-table-page-list-gutter\);/
+    );
+    expect(tableStyles).toMatch(
+      /\.table-settings\.table-settings-page-list-hover\.table-hover\s*\{[\s\S]*\.table\s*\{\s*border-collapse:\s*separate;\s*border-spacing:\s*0;/
+    );
+    expect(tableStyles).toMatch(
+      /\.table-row:hover\s*\{\s*background:\s*transparent;\s*\}[\s\S]*\.table-row:hover > \.table-td:first-child\s*\{\s*border-radius:\s*var\(--settings-table-page-list-row-radius\)/
+    );
+    expect(tableStyles).toMatch(
+      /\.table-row:hover > \.table-td:last-child\s*\{\s*border-radius:\s*0 var\(--settings-table-page-list-row-radius\)/
     );
   });
 
