@@ -704,7 +704,6 @@
     "performActions_other": "{{count}} Aktionen ausführen",
     "showInlineDiffs": "Inline-Diffs",
     "inputSettings": "Eingabeeinstellungen",
-    "compactInput": "Kompakte Eingabe",
     "replay": {
       "follow": "Folgen"
     },

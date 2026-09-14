@@ -704,7 +704,6 @@
     "performActions_other": "Thực hiện {{count}} thao tác",
     "showInlineDiffs": "Thay đổi ngay trong nội dung",
     "inputSettings": "Cài đặt nhập liệu",
-    "compactInput": "Ô nhập liệu thu gọn",
     "replay": {
       "follow": "Theo dõi"
     },

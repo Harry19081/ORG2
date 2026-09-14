@@ -98,8 +98,6 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
     voiceFeatureEnabled,
     isContextualPanel,
     isContextual,
-    isCompactRow,
-    onEditorContentChange,
     handleOpenContextMenu,
     handleKeyboardAtMention,
     editContainerRef,
@@ -123,7 +121,6 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
       data-chat-file-drop-disabled={allowFileAttachments ? undefined : true}
       data-testid={isEditMode ? "chat-message-edit-composer" : undefined}
       variant={getComposerShellVariant({
-        compactShell: isCompactRow,
         isEditMode,
         quietEditSurface,
         surfaceBg,
@@ -199,7 +196,7 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
           slashCommandKeyboardHandlerRef={slashCommandKeyboardHandlerRef}
           onSlashCommand={handleSlashCommand}
           onSlashCommandClose={handleSlashCommandClose}
-          onContentChange={onEditorContentChange}
+          onContentChange={handleContentChange}
           onAtMention={handleKeyboardAtMention}
           onAtMentionClose={handleAtMentionClose}
           onSubmit={submitMessage}
@@ -227,7 +224,6 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
           showVoiceUi={showVoiceUi}
           voice={voice}
           currentRepoPath={currentRepoPath}
-          isCompactRow={isCompactRow}
           contextualPanel={isContextualPanel}
           inlineLeadingContent={isContextual ? topRowPills : undefined}
           placeholder={

@@ -704,7 +704,6 @@
     "performActions_other": "Realizar {{count}} ações",
     "showInlineDiffs": "Diferenças em linha",
     "inputSettings": "Configurações de entrada",
-    "compactInput": "Entrada compacta",
     "replay": {
       "follow": "Acompanhar"
     },

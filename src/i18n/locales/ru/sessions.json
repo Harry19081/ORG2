@@ -704,7 +704,6 @@
     "performActions_other": "Выполнить {{count}} действий",
     "showInlineDiffs": "Встроенные различия",
     "inputSettings": "Настройки ввода",
-    "compactInput": "Компактное поле ввода",
     "replay": {
       "follow": "Следовать"
     },

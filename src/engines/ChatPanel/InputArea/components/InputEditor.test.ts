@@ -67,10 +67,7 @@ describe("InputEditor leading content", () => {
     Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  function renderEditor(
-    leadingContent?: React.ReactNode,
-    compact: boolean = false
-  ) {
+  function renderEditor(leadingContent?: React.ReactNode) {
     act(() =>
       root.render(
         createElement(InputEditor, {
@@ -79,7 +76,6 @@ describe("InputEditor leading content", () => {
           contextMenuKeyboardHandlerRef: { current: null },
           placeholder: "Describe what to change…",
           leadingContent,
-          compact,
         })
       )
     );
@@ -126,25 +122,6 @@ describe("InputEditor leading content", () => {
     });
     expect(testState.composerInputProps?.className).not.toContain(
       "chat-input-compact"
-    );
-    expect(testState.composerInputProps?.overflowY).toBeUndefined();
-  });
-
-  it("keeps a contextual reference inside the shared single-row editor", () => {
-    renderEditor(createElement("span", null, "Button"), true);
-
-    const leading = container.querySelector<HTMLElement>(
-      "[data-composer-leading-content]"
-    );
-    expect(leading?.className).toContain("h-full");
-    expect(testState.composerInputProps).toMatchObject({
-      minHeight: 0,
-      maxHeight: 36,
-      overflowY: "visible",
-      className: expect.stringContaining("chat-input-compact"),
-    });
-    expect(testState.composerInputProps?.className).not.toContain(
-      "chat-input-editor-leading"
     );
   });
 });

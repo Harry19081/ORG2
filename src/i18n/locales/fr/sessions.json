@@ -704,7 +704,6 @@
     "performActions_other": "Effectuer {{count}} actions",
     "showInlineDiffs": "Différences en ligne",
     "inputSettings": "Paramètres de saisie",
-    "compactInput": "Saisie compacte",
     "replay": {
       "follow": "Suivre"
     },

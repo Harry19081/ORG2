@@ -704,7 +704,6 @@
     "performActions_other": "{{count}} 件の操作を実行",
     "showInlineDiffs": "インライン差分",
     "inputSettings": "入力設定",
-    "compactInput": "コンパクト入力欄",
     "replay": {
       "follow": "フォロー"
     },
