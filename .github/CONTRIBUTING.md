@@ -94,6 +94,16 @@ Vitest discovers `src/**/*.test.ts` only. Two consequences worth knowing:
 - Only `.test.ts` is collected — not `.test.tsx`. Keep test files as `.ts` and import
   the component under test, rather than renaming the test to `.tsx`.
 
+Pull request CI runs only the test files whose import graph reaches a changed path,
+plus every test that reads files through `node:fs` or runs commands through
+`node:child_process`, directly or through a helper. Dependency, TypeScript,
+Vite/Vitest config, and setup-file changes run the whole suite, and every push to
+`develop` runs it again. So a test that depends on a file it does not import (a Rust
+source, `index.html`, another module's text) must read that file through `node:fs`;
+that is what makes CI run it on every pull request. To see what CI would select for
+your branch, run
+`git diff --name-only -z origin/develop...HEAD | node scripts/ci/run-unit-tests.mjs --dry-run`.
+
 Import the module under test with a **relative** path (`../foo`, `./foo`) and pull
 anything cross-module through the `@src/` alias. Most test files use both, and that
 is the intended split — not drift.

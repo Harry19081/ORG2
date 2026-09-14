@@ -11,9 +11,11 @@
 # allocating a macOS runner.
 #
 # Within the frontend job, lint covers only the files the pull request changed
-# (see scripts/ci/select-lint-targets.cjs). Typecheck and the unit suite stay
-# whole-repo: both have cross-file failure modes that a per-file diff cannot
-# bound.
+# (see scripts/ci/select-lint-targets.cjs), and unit tests cover only the test
+# files whose import graphs reach the diff, plus the guard tests that read
+# files outside their imports (see scripts/ci/select-unit-tests.cjs).
+# unit-tests-develop.yml runs the whole unit suite on every push to develop.
+# Typecheck stays whole-repo.
 #
 # Gitleaks independently scans full HEAD history against an exact reviewed baseline.
 #
@@ -220,8 +222,21 @@ jobs:
           pnpm run test:i18n-keys
           pnpm run check:i18n-keys
 
+      # Runs the test files this pull request can affect, selected from each
+      # file's Vitest import graph; dependency, config, and setup-file changes
+      # run the whole suite. The step summary lists the selection and its
+      # reason. The diff goes to a file first so a failed `git diff` stops the
+      # step, rather than reaching the runner as an empty diff that it would
+      # answer with the whole suite.
       - name: Unit tests
-        run: pnpm run test
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git diff --name-only -z "${BASE_SHA}...${HEAD_SHA}" \
+            > "${RUNNER_TEMP}/unit-test-paths"
+          node scripts/ci/run-unit-tests.mjs < "${RUNNER_TEMP}/unit-test-paths"
 
   # ── Rust ────────────────────────────────────────────────────────────────────
   rust:
