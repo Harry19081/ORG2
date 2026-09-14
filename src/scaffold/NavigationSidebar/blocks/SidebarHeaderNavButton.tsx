@@ -22,10 +22,12 @@ const SidebarHeaderNavButton: React.FC<SidebarHeaderNavButtonProps> = ({
   bold = true,
 }) => {
   return (
+    // `text-left` overrides the native <button> UA `text-align: center`, which
+    // the flex-1 label column would otherwise inherit and center.
     <Button
       layout="custom"
       appearance="custom"
-      className={`group mt-1 flex h-7 w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg px-2 text-text-1 transition-colors duration-150 hover:bg-sidebar-selected ${className}`}
+      className={`group mt-1 flex h-7 w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg px-2 text-left text-text-1 transition-colors duration-150 hover:bg-sidebar-selected ${className}`}
       onClick={onClick}
       tabIndex={0}
       aria-label={ariaLabel ?? label}
