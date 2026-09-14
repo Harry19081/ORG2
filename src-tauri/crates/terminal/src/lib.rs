@@ -16,3 +16,5 @@
 pub mod agent_tool;
 pub mod pty_commands;
 pub mod redaction;
+
+pub mod pty_io;

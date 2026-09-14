@@ -3,12 +3,9 @@
 
 use chrono::{DateTime, Utc};
 use portable_pty::{Child, PtyPair};
-use std::{
-    io::{BufReader, Read, Write},
-    sync::{
-        atomic::{AtomicBool, AtomicU32, AtomicU64, AtomicUsize},
-        Arc, Mutex,
-    },
+use std::sync::{
+    atomic::{AtomicBool, AtomicU32, AtomicU64, AtomicUsize},
+    Arc, Mutex,
 };
 use tauri::async_runtime::Mutex as AsyncMutex;
 use tauri::ipc::{Channel, InvokeResponseBody};
@@ -30,11 +27,12 @@ pub struct PtySession {
     /// The PTY master/slave pair (platform-specific implementation)
     pub pty_pair: Arc<AsyncMutex<PtyPair>>,
     /// Writer handle for sending input to the PTY (keystrokes, commands)
-    pub writer: Arc<AsyncMutex<Box<dyn Write + Send>>>,
+    pub writer: Arc<AsyncMutex<crate::pty_io::PtyWriter>>,
     /// Buffered reader for receiving output from the PTY
-    pub reader: Arc<AsyncMutex<BufReader<Box<dyn Read + Send>>>>,
+    pub reader: Arc<AsyncMutex<crate::pty_io::PtyReader>>,
     /// Process ID of the shell (derived from session ID for display purposes)
     pub pid: Option<u32>,
+    pub io_stop: Arc<crate::pty_io::IoStop>,
     /// Shell's `start_time` (seconds since boot, sysinfo convention). Captured
     /// once at spawn and used by the app-exit sweep to tell our shell apart
     /// from a later PID-reuse holder. Meaningful on Unix; 0 and unused on
@@ -102,6 +100,7 @@ pub struct PtySession {
 
 impl Drop for PtySession {
     fn drop(&mut self) {
+        self.io_stop.cancel();
         // Kill the spawned shell so it (and, on Windows, its ConPTY conhost
         // host) cannot outlive the session. `close_session` and the reader's
         // natural-exit path take() the child first; if either already did,
@@ -116,13 +115,11 @@ impl Drop for PtySession {
             .take();
 
         if let Some(mut child) = child {
-            // Termination must happen synchronously: when the app is exiting,
-            // detached threads are not joined and may never get scheduled.
-            // Session-removal paths move the session out of the map before
-            // Drop, so portable-pty's Unix grace period does not hold the
-            // session-map lock. Reaping may block, and is safe to defer.
-            let _ = child.kill();
+            // Drop can run after an async future is cancelled. Explicit close
+            // and app shutdown call terminate_child_sync on their blocking
+            // owner first; this fallback must not block an async worker.
             std::thread::spawn(move || {
+                let _ = child.kill();
                 let _ = child.wait();
             });
         }
@@ -130,6 +127,18 @@ impl Drop for PtySession {
 }
 
 impl PtySession {
+    /// Finite shell termination, called only on a blocking/shutdown owner.
+    /// Reaping runs after PTY handles can drop (macOS tty exit may need that).
+    pub(crate) fn terminate_child_sync(&self) {
+        self.io_stop.cancel();
+        if let Some(mut child) = self.child.lock().unwrap_or_else(|p| p.into_inner()).take() {
+            let _ = child.kill();
+            std::thread::spawn(move || {
+                let _ = child.wait();
+            });
+        }
+    }
+
     /// Terminate a PTY child and wait until it has been reaped.
     ///
     /// Callers must invoke this outside the session-map lock. It may briefly
@@ -137,5 +146,55 @@ impl PtySession {
     pub(crate) fn terminate_and_reap(mut child: Box<dyn Child + Send>) {
         let _ = child.kill();
         let _ = child.wait();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn session() -> PtySession {
+        let pair = portable_pty::native_pty_system()
+            .openpty(portable_pty::PtySize {
+                rows: 24,
+                cols: 80,
+                pixel_width: 0,
+                pixel_height: 0,
+            })
+            .unwrap();
+        let reader = pair.master.try_clone_reader().unwrap();
+        let writer = pair.master.take_writer().unwrap();
+        let (reader, writer, io_stop) =
+            crate::pty_io::wrap(pair.master.as_ref(), reader, writer).unwrap();
+        PtySession {
+            pty_pair: Arc::new(AsyncMutex::new(pair)),
+            writer: Arc::new(AsyncMutex::new(writer)),
+            reader: Arc::new(AsyncMutex::new(reader)),
+            pid: None,
+            start_time: 0,
+            io_stop,
+            redacted_output: Arc::new(Mutex::new(String::new())),
+            child: Arc::new(Mutex::new(None)),
+            shell: "test".into(),
+            shell_kind: ShellKind::from_shell_path("/bin/sh"),
+            cwd: None,
+            name: None,
+            output_tap: None,
+            unacked_bytes: Arc::new(AtomicUsize::new(0)),
+            ack_notify: Arc::new(Notify::new()),
+            frontend_render_ms: Arc::new(AtomicU32::new(0)),
+            created_at: Utc::now(),
+            last_output_at: Arc::new(Mutex::new(None)),
+            detached: Arc::new(AtomicBool::new(false)),
+            covers_seq: Arc::new(AtomicU64::new(0)),
+            missed_while_detached: Arc::new(AtomicUsize::new(0)),
+            output_channel: Arc::new(Mutex::new(None)),
+        }
+    }
+    #[tokio::test]
+    async fn dropping_session_cancels_its_io_owner() {
+        let session = session();
+        let stop = session.io_stop.clone();
+        drop(session);
+        assert!(stop.is_cancelled());
     }
 }
