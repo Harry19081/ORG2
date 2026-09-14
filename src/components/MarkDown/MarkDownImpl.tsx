@@ -37,6 +37,7 @@ import CodeBlock from "./MarkdownCodeBlock";
 import MarkdownFilePathHoverCard from "./MarkdownFilePathHoverCard";
 import MarkdownLinkIcon, { hasMarkdownLinkIcon } from "./MarkdownLinkIcon";
 import MarkdownLocalImage, { openLocalMarkdownRef } from "./MarkdownLocalImage";
+import MarkdownTable from "./MarkdownTable";
 import MermaidBlock from "./MermaidBlock";
 import SessionReferenceCards from "./SessionReferenceCards";
 import "./index.scss";
@@ -241,6 +242,9 @@ const MarkdownComponent: React.FC<MarkdownProps> = ({
   // Memoize components object to prevent recreation
   const markdownComponents = useMemo((): Components => {
     const baseComponents: Components = {
+      table({ node: _node, ...props }) {
+        return <MarkdownTable {...props} />;
+      },
       pre({ children, ...props }) {
         if (
           React.isValidElement(children) &&
