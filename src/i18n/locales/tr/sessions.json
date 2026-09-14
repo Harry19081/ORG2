@@ -704,6 +704,12 @@
     "performActions_other": "{{count}} işlem gerçekleştir",
     "showInlineDiffs": "Satır içi farklar",
     "inputSettings": "Giriş ayarları",
+    "navigation": {
+      "title": "Gezinme",
+      "openLinksIn": "Bağlantıları şurada aç",
+      "internalBrowser": "Dahili tarayıcı",
+      "externalBrowser": "Harici tarayıcı"
+    },
     "compactInput": "Kompakt giriş alanı",
     "replay": {
       "follow": "Takip et"

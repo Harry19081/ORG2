@@ -13,7 +13,7 @@ import { useBranchPullRequestStatus } from "@src/hooks/git/useBranchPullRequestS
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { FileDiffIcon, GitPullRequestIcon } from "@src/icons";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openLink } from "@src/util/ui/openLink";
 
 import type { FocusedChatRailItem, FocusedChatSessionContext } from "./types";
 
@@ -120,7 +120,7 @@ export function useWorkstationRailGitHub({
               label: t("common:git.actions.compareBranch"),
               icon: GitHubRailIcon,
               external: true,
-              onClick: () => void openExternalLink(branchCompareUrl),
+              onClick: () => openLink(branchCompareUrl, { navigate: true }),
             },
           ]
         : []),
@@ -132,7 +132,7 @@ export function useWorkstationRailGitHub({
               icon: GitPullRequestIcon,
               external: true,
               status: branchPullRequestStatus,
-              onClick: () => void openExternalLink(branchPullRequest.url),
+              onClick: () => openLink(branchPullRequest.url),
             },
           ]
         : []),
@@ -192,8 +192,7 @@ export function useWorkstationRailGitHub({
               icon: GitPullRequestIcon,
               external: true,
               status: sessionPullRequestStatus,
-              onClick: () =>
-                void openExternalLink(resolvedSessionBranchPullRequest.url),
+              onClick: () => openLink(resolvedSessionBranchPullRequest.url),
             },
           ]
         : [],

@@ -705,6 +705,12 @@
     "performActions_other": "Perform {{count}} actions",
     "showInlineDiffs": "Inline diffs",
     "inputSettings": "Input settings",
+    "navigation": {
+      "title": "Navigation",
+      "openLinksIn": "Open links in",
+      "internalBrowser": "Internal browser",
+      "externalBrowser": "External browser"
+    },
     "compactInput": "Compact input",
     "replay": {
       "follow": "Follow"

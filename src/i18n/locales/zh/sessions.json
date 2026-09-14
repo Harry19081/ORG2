@@ -705,6 +705,12 @@
     "performActions_other": "执行 {{count}} 项操作",
     "showInlineDiffs": "行内差异",
     "inputSettings": "输入设置",
+    "navigation": {
+      "title": "导航",
+      "openLinksIn": "链接打开方式",
+      "internalBrowser": "内置浏览器",
+      "externalBrowser": "外部浏览器"
+    },
     "compactInput": "紧凑输入框",
     "replay": {
       "follow": "跟随"

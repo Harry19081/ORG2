@@ -24,7 +24,7 @@ import {
   loadGitHubIssueMetadata,
 } from "@src/modules/shared/githubIssueDetailCoordinator";
 import { parseGithubRepoFullName } from "@src/services/git/operations/createPullRequest";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openLink } from "@src/util/ui/openLink";
 
 import {
   type ExtractedGitHubReference,
@@ -156,7 +156,7 @@ function LinkedReferenceCard({
         }`}
         data-testid="github-linked-reference-row"
         onClick={() => {
-          if (item.htmlUrl) void openExternalLink(item.htmlUrl);
+          if (item.htmlUrl) openLink(item.htmlUrl, { navigate: true });
         }}
       >
         <span

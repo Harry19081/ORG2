@@ -704,6 +704,12 @@
     "performActions_other": "Выполнить {{count}} действий",
     "showInlineDiffs": "Встроенные различия",
     "inputSettings": "Настройки ввода",
+    "navigation": {
+      "title": "Навигация",
+      "openLinksIn": "Открывать ссылки в",
+      "internalBrowser": "Встроенный браузер",
+      "externalBrowser": "Внешний браузер"
+    },
     "compactInput": "Компактное поле ввода",
     "replay": {
       "follow": "Следовать"

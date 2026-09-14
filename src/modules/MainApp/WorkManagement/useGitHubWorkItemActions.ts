@@ -24,7 +24,7 @@ import {
   createGitHubIssueDetailTab,
   createGitHubPrDetailTab,
 } from "@src/store/workstation/tabs";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openLink } from "@src/util/ui/openLink";
 
 import type { ManagedIssueItem, ManagedPrItem } from "./githubManagedItemModel";
 import type { WorkManagementDetailHost } from "./workManagementDetailHost";
@@ -55,7 +55,7 @@ export function useGitHubWorkItemActions({
   const { openTab } = useWorkStationTabs();
 
   const openIssueInBrowser = useCallback((issue: ManagedIssueItem) => {
-    void openExternalLink(issue.rawIssue.html_url);
+    openLink(issue.rawIssue.html_url, { navigate: true });
   }, []);
 
   const openIssueInTab = useCallback(

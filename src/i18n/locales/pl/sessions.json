@@ -704,6 +704,12 @@
     "performActions_other": "Wykonaj {{count}} działań",
     "showInlineDiffs": "Różnice w treści",
     "inputSettings": "Ustawienia wprowadzania",
+    "navigation": {
+      "title": "Nawigacja",
+      "openLinksIn": "Otwieraj linki w",
+      "internalBrowser": "Wbudowana przeglądarka",
+      "externalBrowser": "Zewnętrzna przeglądarka"
+    },
     "compactInput": "Kompaktowe pole wprowadzania",
     "replay": {
       "follow": "Śledź"
