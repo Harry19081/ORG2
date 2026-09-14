@@ -71,7 +71,7 @@ import {
   shouldShowExternalHistoryContinuationComposer,
   shouldShowMainChatComposer,
 } from "./chatViewComposerVisibility";
-import { resolveInitialFileChanges } from "./chatViewFileChanges";
+import { resolveImportedFileChangeStats } from "./chatViewFileChanges";
 import type { ConversationTargetBinding } from "./conversationTargetSelection";
 import { useConversationSubmitRouter } from "./hooks/conversationSubmit/useConversationSubmitRouter";
 import { useBrowserAddToConversationAction } from "./hooks/useBrowserAddToConversationAction";
@@ -123,7 +123,6 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
     );
 
     const isCursorIde = isCursorIdeSession(sessionId);
-    const isExternalHistory = isExternalHistorySession(sessionId);
     const isImportedHistory = isImportedHistorySession(sessionId);
     const isReadOnlySurface = readOnly || isImportedHistory;
 
@@ -148,18 +147,6 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
       hydratedSessionIdsRef.current.add(sessionId);
       void loadSessions({ forceRefresh: true });
     }, [currentSession?.productMode, isImportedHistory, sessionId]);
-    const orgtrackSummary = useChatViewOrgtrackSummary(sessionId);
-
-    const initialFileChanges = useMemo(
-      () =>
-        resolveInitialFileChanges({
-          currentSession,
-          isCursorIde,
-          isExternalHistory,
-          orgtrackSummary,
-        }),
-      [currentSession, isCursorIde, isExternalHistory, orgtrackSummary]
-    );
 
     // Backend `agent_session_list_workspaces` only resolves sessions whose
     // runtime is currently attached. Historical sessions (status
@@ -241,6 +228,40 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
       [sessionId]
     );
     const followUpEvents = useAtomValue(followUpEventsAtom);
+    // Imported sessions keep changing underneath the view: the external CLI
+    // keeps writing and rescans refresh the cached row. Re-read their summary
+    // when that row refreshes or another assistant reply completes. Native
+    // pills read edit artifacts, so one summary read per open suffices.
+    const summaryReloadKey = isImportedHistory
+      ? `${currentSession?.updated_at ?? ""}\0${latestCompletedAssistantFingerprint(followUpEvents) ?? ""}`
+      : undefined;
+    const orgtrackSummary = useChatViewOrgtrackSummary(
+      sessionId,
+      summaryReloadKey
+    );
+    const importedFileStats = isImportedHistory
+      ? resolveImportedFileChangeStats({
+          summary: orgtrackSummary,
+          session: currentSession,
+        })
+      : null;
+    // Row upserts (debounced draft saves) and summary re-reads replace the
+    // source objects; key the pill's identity to its numbers so they do not
+    // re-render the whole composer.
+    const fileStatsCount = importedFileStats?.count;
+    const fileStatsAdditions = importedFileStats?.additions ?? 0;
+    const fileStatsDeletions = importedFileStats?.deletions ?? 0;
+    const resolvedFileChangeStats = useMemo(
+      () =>
+        fileStatsCount === undefined
+          ? undefined
+          : {
+              count: fileStatsCount,
+              additions: fileStatsAdditions,
+              deletions: fileStatsDeletions,
+            },
+      [fileStatsCount, fileStatsAdditions, fileStatsDeletions]
+    );
     const showCurrentPlanSurfaceAtom = useMemo(
       () =>
         selectAtom(
@@ -468,7 +489,7 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
         onProcessVisibleCountChange: setProcessVisibleCount,
         onFilesExpand: openAgentStationDiff,
         filesMenu,
-        initialFileChanges,
+        resolvedFileChangeStats,
         groupChatPendingMessage,
         groupChatViewActive,
         hasAnyInlineSection: hasAny,
@@ -517,7 +538,7 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
         setProcessVisibleCount,
         openAgentStationDiff,
         filesMenu,
-        initialFileChanges,
+        resolvedFileChangeStats,
         groupChatPendingMessage,
         groupChatViewActive,
         currentAgentOrgMember,
