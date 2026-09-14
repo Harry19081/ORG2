@@ -322,7 +322,7 @@
   },
   "optional": "可选",
   "common": {
-    "display": "显示",
+    "display": "界面设置",
     "on": "开",
     "off": "关",
     "default": "默认",

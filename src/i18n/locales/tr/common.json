@@ -491,7 +491,7 @@
   },
   "optional": "isteğe bağlı",
   "common": {
-    "display": "Görünüm",
+    "display": "Arayüz ayarları",
     "on": "Açık",
     "off": "Kapalı",
     "default": "Varsayılan",

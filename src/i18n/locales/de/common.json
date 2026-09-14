@@ -491,7 +491,7 @@
   },
   "optional": "optional",
   "common": {
-    "display": "Anzeige",
+    "display": "Oberflächeneinstellungen",
     "on": "Ein",
     "off": "Aus",
     "default": "Standard",

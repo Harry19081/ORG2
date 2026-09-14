@@ -491,7 +491,7 @@
   },
   "optional": "선택",
   "common": {
-    "display": "표시",
+    "display": "UI 설정",
     "on": "켜기",
     "off": "끄기",
     "default": "기본값",

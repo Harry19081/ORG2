@@ -491,7 +491,7 @@
   },
   "optional": "tùy chọn",
   "common": {
-    "display": "Hiển thị",
+    "display": "Cài đặt giao diện",
     "on": "Bật",
     "off": "Tắt",
     "default": "Mặc định",
