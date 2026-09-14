@@ -723,6 +723,7 @@
       "internalBrowser": "Internal browser",
       "externalBrowser": "External browser"
     },
+    "compactInput": "Compact input",
     "replay": {
       "follow": "Follow"
     },

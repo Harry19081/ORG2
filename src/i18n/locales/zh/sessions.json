@@ -723,6 +723,7 @@
       "internalBrowser": "内置浏览器",
       "externalBrowser": "外部浏览器"
     },
+    "compactInput": "紧凑输入框",
     "replay": {
       "follow": "跟随"
     },

@@ -722,6 +722,7 @@
       "internalBrowser": "Trình duyệt tích hợp",
       "externalBrowser": "Trình duyệt bên ngoài"
     },
+    "compactInput": "Ô nhập liệu thu gọn",
     "replay": {
       "follow": "Theo dõi"
     },

@@ -722,6 +722,7 @@
       "internalBrowser": "内蔵ブラウザ",
       "externalBrowser": "外部ブラウザ"
     },
+    "compactInput": "コンパクト入力欄",
     "replay": {
       "follow": "フォロー"
     },

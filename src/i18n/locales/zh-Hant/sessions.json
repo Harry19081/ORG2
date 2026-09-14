@@ -722,6 +722,7 @@
       "internalBrowser": "內建瀏覽器",
       "externalBrowser": "外部瀏覽器"
     },
+    "compactInput": "緊湊輸入框",
     "replay": {
       "follow": "跟隨"
     },

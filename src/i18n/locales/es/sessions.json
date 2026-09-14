@@ -722,6 +722,7 @@
       "internalBrowser": "Navegador interno",
       "externalBrowser": "Navegador externo"
     },
+    "compactInput": "Entrada compacta",
     "replay": {
       "follow": "Seguir"
     },
