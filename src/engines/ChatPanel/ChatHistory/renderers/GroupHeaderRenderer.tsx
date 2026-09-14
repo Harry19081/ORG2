@@ -50,6 +50,7 @@ function sameMeta(
     left.durationMs === right.durationMs &&
     left.itemCount === right.itemCount &&
     left.bodyEventCount === right.bodyEventCount &&
+    left.hasBody === right.hasBody &&
     left.previewText === right.previewText &&
     left.startMs === right.startMs &&
     left.endMs === right.endMs &&
@@ -77,12 +78,17 @@ function sameGroupHeaderProps(
   const previousSourceGroupCount =
     previous.sourceGroupCount ?? previous.groupCount;
   const nextSourceGroupCount = next.sourceGroupCount ?? next.groupCount;
+  // The preceding round decides whether this header stacks under it.
+  const previousPrecedingHasBody =
+    previous.groupMeta[previous.groupIndex - 1]?.hasBody;
+  const nextPrecedingHasBody = next.groupMeta[next.groupIndex - 1]?.hasBody;
 
   return (
     previous.groupIndex === next.groupIndex &&
     previousHeaderKey === nextHeaderKey &&
     previousSourceGroupIndex === nextSourceGroupIndex &&
     previousSourceGroupCount === nextSourceGroupCount &&
+    previousPrecedingHasBody === nextPrecedingHasBody &&
     previous.collapseLabelVariant === next.collapseLabelVariant &&
     previous.hideCollapseTimeRange === next.hideCollapseTimeRange &&
     previous.suppressRoundGap === next.suppressRoundGap &&
@@ -244,8 +250,14 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
     if (!showUserPart && !showCollapsePart) return null;
 
     const headerPaddingBottomClass = showCollapsePart ? "" : "pb-2";
+    // After a round the agent never worked in (no bar, no rows), this user
+    // message stacks under the previous one instead of opening a new section.
+    const followsBodylessTurn = groupMeta[groupIndex - 1]?.hasBody === false;
     const roundGap =
-      renderPart !== "collapse" && groupIndex > 0 && !suppressRoundGap
+      renderPart !== "collapse" &&
+      groupIndex > 0 &&
+      !suppressRoundGap &&
+      !followsBodylessTurn
         ? CHAT_FOOTER_SPACER.ROUND_GAP_PX
         : 0;
 

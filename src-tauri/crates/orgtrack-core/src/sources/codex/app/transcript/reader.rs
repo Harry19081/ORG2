@@ -228,6 +228,13 @@ fn load_codex_turn_at(
             if let Some((previous_user, mut previous_summary)) =
                 load_codex_turn_header(session_id, path, previous_offset)?
             {
+                // The header probe parses only the user row, so its summary
+                // reports an empty body. The catalog entry measured the real
+                // one; without it this placeholder replaces the initial
+                // window's on merge and the round loses its expand bar.
+                previous_summary.body_event_count =
+                    i64::try_from(previous_entry.following_line_count).unwrap_or(i64::MAX);
+                previous_summary.event_count = previous_summary.body_event_count.saturating_add(1);
                 // The context placeholder spans up to the loaded turn's
                 // start. The header-only summary carries ended_at ==
                 // started_at, and that created_at tie flips the placeholder
@@ -400,7 +407,9 @@ fn codex_catalog_turn_header(
             user_chunk.result["images"] = serde_json::json!(refs);
         }
     }
-    let body_event_count = i64::try_from(entry.following_line_count.max(1)).unwrap_or(i64::MAX);
+    // Zero stays zero: the catalog only counts lines the parser can render,
+    // so an empty count is a round with no body to fetch.
+    let body_event_count = i64::try_from(entry.following_line_count).unwrap_or(i64::MAX);
     let summary = ProjectedTurnMetadata {
         turn_id: user_chunk.chunk_id.clone(),
         start_sequence: i64::try_from(sequence).unwrap_or(i64::MAX),

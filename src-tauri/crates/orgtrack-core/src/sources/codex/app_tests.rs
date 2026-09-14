@@ -582,6 +582,85 @@ fn codex_current_rollout_reads_latest_turn_and_pages_backward_from_tail() {
 }
 
 #[test]
+fn codex_rounds_without_rendered_output_advertise_no_body() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-bodyless-rounds-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+    let path = temp_dir.join("rollout-bodyless-rounds.jsonl");
+    // Round 2 is interrupted before any output; round 3 finishes with only
+    // encrypted reasoning. Both are surrounded by lines the parser never
+    // renders: user-message mirrors, lifecycle, turn context, token counts.
+    let content = r#"{"timestamp":"2026-09-14T01:00:00.000Z","type":"event_msg","payload":{"type":"task_started","turn_id":"turn-1"}}
+{"timestamp":"2026-09-14T01:00:00.100Z","type":"event_msg","payload":{"type":"user_message","message":"first"}}
+{"timestamp":"2026-09-14T01:00:01.000Z","type":"event_msg","payload":{"type":"agent_message","message":"first reply"}}
+{"timestamp":"2026-09-14T01:00:02.000Z","type":"event_msg","payload":{"type":"task_complete","turn_id":"turn-1","last_agent_message":"first reply"}}
+{"timestamp":"2026-09-14T01:01:00.000Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"never answered"}]}}
+{"timestamp":"2026-09-14T01:01:00.050Z","type":"event_msg","payload":{"type":"task_started","turn_id":"turn-2"}}
+{"timestamp":"2026-09-14T01:01:00.100Z","type":"event_msg","payload":{"type":"user_message","message":"never answered"}}
+{"timestamp":"2026-09-14T01:01:00.200Z","type":"turn_context","payload":{"turn_id":"turn-2","cwd":"/tmp/project","model":"gpt-5.3-codex"}}
+{"timestamp":"2026-09-14T01:01:00.300Z","type":"event_msg","payload":{"type":"token_count","info":null}}
+{"timestamp":"2026-09-14T01:01:01.000Z","type":"event_msg","payload":{"type":"turn_aborted","turn_id":"turn-2","reason":"interrupted"}}
+{"timestamp":"2026-09-14T01:02:00.000Z","type":"event_msg","payload":{"type":"task_started","turn_id":"turn-3"}}
+{"timestamp":"2026-09-14T01:02:00.100Z","type":"event_msg","payload":{"type":"user_message","message":"thinks silently"}}
+{"timestamp":"2026-09-14T01:02:01.000Z","type":"response_item","payload":{"type":"reasoning","summary":[],"content":null,"encrypted_content":"opaque"}}
+{"timestamp":"2026-09-14T01:02:02.000Z","type":"event_msg","payload":{"type":"task_complete","turn_id":"turn-3","last_agent_message":null}}
+{"timestamp":"2026-09-14T01:03:00.100Z","type":"event_msg","payload":{"type":"user_message","message":"fourth"}}
+{"timestamp":"2026-09-14T01:03:01.000Z","type":"response_item","payload":{"type":"reasoning","summary":[{"type":"summary_text","text":"checking"}],"content":null}}
+{"timestamp":"2026-09-14T01:03:02.000Z","type":"response_item","payload":{"type":"function_call","name":"shell","arguments":"{\"command\":\"pwd\"}","call_id":"call_1"}}
+{"timestamp":"2026-09-14T01:03:03.000Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call_1","output":"/tmp/project"}}
+{"timestamp":"2026-09-14T01:03:04.000Z","type":"event_msg","payload":{"type":"agent_message","message":"fourth reply"}}
+{"timestamp":"2026-09-14T01:04:00.100Z","type":"event_msg","payload":{"type":"user_message","message":"fifth"}}
+{"timestamp":"2026-09-14T01:04:01.000Z","type":"event_msg","payload":{"type":"agent_message","message":"fifth reply"}}
+"#;
+    std::fs::write(&path, content).expect("write fixture");
+
+    let window =
+        load_codex_app_initial_window_from_path("codexapp-bodyless", &path, 1).expect("window");
+    let placeholder_counts = window
+        .chunks
+        .iter()
+        .filter_map(|chunk| chunk.result.pointer("/unloadedTurn/bodyEventCount"))
+        .filter_map(Value::as_i64)
+        .collect::<Vec<_>>();
+    // A nonzero count on rounds 2 and 3 paints an empty "Agent worked for"
+    // bar; tool calls still weigh their call and output lines.
+    assert_eq!(placeholder_counts, vec![1, 0, 0, 4]);
+
+    // The parser agrees that rounds 2 and 3 render nothing but lifecycle.
+    let chunks = load_codex_app_from_path("codexapp-bodyless", &path).expect("parse");
+    let parsed_body_counts = crate::projectors::turn_metadata::project_activity_chunks(&chunks)
+        .iter()
+        .map(|turn| turn.body_event_count)
+        .collect::<Vec<_>>();
+    assert_eq!(parsed_body_counts, vec![1, 0, 0, 3, 1]);
+
+    // Loading a round rebuilds the previous round's placeholder, which then
+    // replaces the initial one on merge: it must keep the measured count.
+    let user_ids = window
+        .chunks
+        .iter()
+        .filter(|chunk| chunk.function == imported_history::FUNCTION_USER_MESSAGE)
+        .map(|chunk| chunk.chunk_id.clone())
+        .collect::<Vec<_>>();
+    for (loaded_index, expected_previous_count) in [(1, 1), (3, 0)] {
+        let turn =
+            load_codex_app_turn_from_path("codexapp-bodyless", &path, &user_ids[loaded_index])
+                .expect("load turn");
+        let previous_count = turn
+            .chunks
+            .iter()
+            .find_map(|chunk| chunk.result.pointer("/unloadedTurn/bodyEventCount"))
+            .and_then(Value::as_i64);
+        assert_eq!(previous_count, Some(expected_previous_count));
+    }
+
+    std::fs::remove_file(&path).expect("remove fixture");
+    std::fs::remove_dir(&temp_dir).expect("remove temp dir");
+}
+
+#[test]
 fn codex_initial_window_keeps_one_hundred_rounds_discoverable() {
     let temp_dir = std::env::temp_dir().join(format!(
         "orgii-codex-hundred-round-window-test-{}",

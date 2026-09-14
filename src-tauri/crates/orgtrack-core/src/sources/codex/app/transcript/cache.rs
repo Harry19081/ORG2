@@ -46,6 +46,9 @@ pub(super) struct CodexTurnCatalogEntry {
     pub(super) started_at: String,
     pub(super) user_preview: String,
     pub(super) last_agent_preview: Option<CodexAgentPreview>,
+    /// Lines after this user row, up to the next one, that the replay parser
+    /// can render (`line_might_produce_codex_body`). Zero means the agent
+    /// never answered the round.
     pub(super) following_line_count: usize,
 }
 
