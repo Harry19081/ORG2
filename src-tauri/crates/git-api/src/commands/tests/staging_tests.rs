@@ -287,3 +287,48 @@ fn resolve_conflict_on_literal_pattern_preserves_other_unmerged_file() {
         "private.txt"
     );
 }
+
+/// Regression: the global `--literal-pathspecs` flag is exported to hooks as
+/// `GIT_LITERAL_PATHSPECS=1`, so a hook that uses glob pathspecs silently
+/// matched nothing during stage/discard. Per-argument `:(literal)` magic must
+/// leave the hook environment alone.
+#[cfg(unix)]
+#[test]
+fn literal_paths_do_not_leak_into_the_hook_environment() {
+    use crate::commands::staging::stage_file;
+    use std::os::unix::fs::PermissionsExt as _;
+    let fixture = Fixture(make_repo("hook-env"));
+    let repo = &fixture.0;
+    let hooks = repo.join("hooks-under-test");
+    std::fs::create_dir_all(&hooks).unwrap();
+    let hook = hooks.join("post-index-change");
+    std::fs::write(
+        &hook,
+        "#!/bin/sh\nprintf 'LIT=%s|%s' \"${GIT_LITERAL_PATHSPECS:-unset}\" \"$(git ls-files -- '*.txt' | tr '\\n' ' ')\" > hook-observed\n",
+    )
+    .unwrap();
+    std::fs::set_permissions(&hook, std::fs::Permissions::from_mode(0o755)).unwrap();
+    git_in(repo, &["config", "core.hooksPath", "hooks-under-test"]);
+    std::fs::write(repo.join("tracked.txt"), "edited\n").unwrap();
+    stage_file(repo, "tracked.txt").unwrap();
+    let observed = std::fs::read_to_string(repo.join("hook-observed")).unwrap();
+    assert_eq!(observed, "LIT=unset|tracked.txt ");
+}
+
+/// `git reset HEAD --` with no pathspec resets the whole index; an empty
+/// selection must never widen to that.
+#[test]
+fn empty_selection_is_a_no_op_for_path_operations() {
+    use crate::commands::staging::{stage_file, unstage_files};
+    use crate::commands::utils::run_git_path_operation;
+    let fixture = Fixture(make_repo("empty-selection"));
+    let repo = &fixture.0;
+    std::fs::write(repo.join("tracked.txt"), "edited\n").unwrap();
+    stage_file(repo, "tracked.txt").unwrap();
+    run_git_path_operation(repo, &["reset", "HEAD"], &[]).unwrap();
+    unstage_files(repo, &[]).unwrap();
+    assert_eq!(
+        read_git(repo, &["diff", "--cached", "--name-only"]).trim(),
+        "tracked.txt"
+    );
+}

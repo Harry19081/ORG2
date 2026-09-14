@@ -29,9 +29,6 @@ pub fn stage_file(repo_path: &Path, file: &str) -> Result<(), String> {
 
 /// Unstage the selected literal paths in one index transaction.
 pub fn unstage_files(repo_path: &Path, files: &[String]) -> Result<(), String> {
-    if files.is_empty() {
-        return Ok(());
-    }
     let paths: Vec<_> = files.iter().map(String::as_str).collect();
     run_git_path_operation(repo_path, &["reset", "HEAD"], &paths)
 }
@@ -185,17 +182,14 @@ pub fn discard_changes(repo_path: &Path, files: &[String]) -> Result<(), String>
     // For discard-all, also run git checkout -- . to catch any remaining tracked changes
     // (e.g., files with only worktree modifications that weren't in the staged set)
     if discard_all {
-        let output = run_git(
-            repo_path,
-            &super::utils::literal_pathspec_args(&["checkout"], &["."]),
-        )?;
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            // Don't fail if checkout has nothing to do
-            if !stderr.is_empty() && !stderr.contains("error: pathspec") {
-                return Err(stderr.to_string());
+        // Don't fail if checkout has nothing to do
+        run_git_path_operation(repo_path, &["checkout"], &["."]).or_else(|stderr| {
+            if stderr.is_empty() || stderr.contains("error: pathspec") {
+                Ok(())
+            } else {
+                Err(stderr)
             }
-        }
+        })?;
     }
 
     Ok(())

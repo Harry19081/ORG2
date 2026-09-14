@@ -602,7 +602,8 @@ pub async fn stage_stream(
         Err(err) => return git_resolution_error_response(err),
     };
     let paths: Vec<_> = files.iter().map(String::as_str).collect();
-    cmd.args(super::utils::literal_pathspec_args(&["add"], &paths));
+    let args = super::utils::literal_pathspec_args(&["add"], &paths);
+    cmd.args(&args);
     cmd.current_dir(&repo_path)
         .env("GIT_TERMINAL_PROMPT", "0")
         .env("GIT_ASKPASS", "")
@@ -613,7 +614,9 @@ pub async fn stage_stream(
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
 
-    let command_str = format!("git add {}", files.join(" "));
+    // Echo the argument vector that actually runs, so a selected name such as
+    // `--all` is never reported as the option it is not.
+    let command_str = format!("git {}", args.join(" "));
 
     let stream = stream_git_command(cmd, command_str, "stage").await;
 

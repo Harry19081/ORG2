@@ -395,6 +395,10 @@ async fn stage_endpoint_uses_literal_files_and_preserves_explicit_bulk_request()
             "[\"--all\"]" => {
                 assert!(body.contains("\"success\":true"));
                 assert_eq!(output.stdout, b"--all\0");
+                // The start event must echo the literal invocation, never the
+                // option the selected name resembles.
+                assert!(body.contains("git add -- :(literal)--all"));
+                assert!(!body.contains("git add --all"));
             }
             _ => {
                 assert!(body.contains("\"success\":true"));

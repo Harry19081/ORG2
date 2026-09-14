@@ -89,26 +89,48 @@ pub fn run_git_command(repo_path: &Path, args: &[&str]) -> Result<String, String
 }
 
 /// File operations accept literal repository paths, never options or Git
-/// pathspec expressions. A literal directory (including the explicit "."
-/// bulk-operation sentinel) still selects its descendants.
-pub fn literal_pathspec_args<'a>(command: &[&'a str], paths: &[&'a str]) -> Vec<&'a str> {
-    let mut args = Vec::with_capacity(command.len() + paths.len() + 2);
-    args.push("--literal-pathspecs");
-    args.extend_from_slice(command);
-    args.push("--");
-    args.extend_from_slice(paths);
+/// pathspec expressions. Each selected path is prefixed with git's
+/// `:(literal)` pathspec magic so it is matched byte for byte: no globbing,
+/// no `:(...)` magic, and a leading `-` can never be read as an option.
+///
+/// Per-argument magic is used instead of the `--literal-pathspecs` global
+/// flag on purpose. Git implements that flag as `GIT_LITERAL_PATHSPECS=1` in
+/// its own environment, which every hook and filter driver spawned by the
+/// operation inherits, so a `post-checkout` or `post-index-change` hook that
+/// uses glob pathspecs would silently match nothing. The global flag is also
+/// rejected outright when the user's environment already sets another global
+/// pathspec mode (`GIT_ICASE_PATHSPECS`, `GIT_GLOB_PATHSPECS`,
+/// `GIT_NOGLOB_PATHSPECS`). Neither applies to `:(literal)`.
+///
+/// A literal directory (including the explicit "." bulk-operation sentinel)
+/// still selects its descendants.
+pub fn literal_pathspec_args(command: &[&str], paths: &[&str]) -> Vec<String> {
+    let mut args = Vec::with_capacity(command.len() + paths.len() + 1);
+    args.extend(command.iter().map(|arg| (*arg).to_string()));
+    args.push("--".to_string());
+    args.extend(paths.iter().map(|path| literal_pathspec(path)));
     args
 }
 
+/// A single selected path as a literal pathspec argument.
+pub fn literal_pathspec(path: &str) -> String {
+    format!(":(literal){path}")
+}
+
+/// Run a mutating git command over the selected literal paths.
+///
+/// An empty selection is a no-op: `git reset HEAD --` and `git checkout --`
+/// with no pathspec operate on the whole tree, and a caller that selected
+/// nothing must never widen to that.
 pub fn run_git_path_operation(
     repo_path: &Path,
     command: &[&str],
     paths: &[&str],
 ) -> Result<(), String> {
-    let output = run_git(repo_path, &literal_pathspec_args(command, paths))?;
-    if output.status.success() {
-        Ok(())
-    } else {
-        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    if paths.is_empty() {
+        return Ok(());
     }
+    let args = literal_pathspec_args(command, paths);
+    let arg_refs: Vec<&str> = args.iter().map(String::as_str).collect();
+    run_git_command(repo_path, &arg_refs).map(drop)
 }
