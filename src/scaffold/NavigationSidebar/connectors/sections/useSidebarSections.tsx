@@ -103,15 +103,15 @@ export function useSidebarSections(
         inFlight = false;
         if (pending && !disposed) {
           pending = false;
-          void refresh();
+          void refresh().catch(report);
         }
       }
     };
     const onFocus = () => {
-      if (document.visibilityState !== "hidden") void refresh();
+      if (document.visibilityState !== "hidden") void refresh().catch(report);
     };
     const onVisibility = () => {
-      if (document.visibilityState === "visible") void refresh();
+      if (document.visibilityState === "visible") void refresh().catch(report);
     };
     const unlisten = listen("sidebar-sections-changed", onFocus).catch(
       (error) => {
@@ -119,7 +119,7 @@ export function useSidebarSections(
         return () => {};
       }
     );
-    void refresh();
+    void refresh().catch(report);
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
@@ -129,7 +129,7 @@ export function useSidebarSections(
       requestSet.clear();
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("focus", onFocus);
-      void unlisten.then((dispose) => dispose());
+      void unlisten.then((dispose) => dispose()).catch(report);
     };
   }, [enabled, report, invalidate]);
 
@@ -217,11 +217,20 @@ export function useSidebarSections(
         )
           await load(section.id);
       }
-    })();
+    })().catch(report);
     return () => {
       cancelled = true;
     };
-  }, [enabled, snapshot.sections, collapsed, pages, failed, load, revision]);
+  }, [
+    enabled,
+    snapshot.sections,
+    collapsed,
+    pages,
+    failed,
+    load,
+    revision,
+    report,
+  ]);
 
   const mutate = useCallback(
     async (mutation: SidebarSectionMutation) => {
@@ -274,14 +283,18 @@ export function useSidebarSections(
                       kind: "assign",
                       sessionId,
                       sectionId: section.id,
-                    });
+                    }).catch(report);
                   },
                 })),
                 {
                   text: t("sidebar.sections.remove"),
                   enabled: membership.has(sessionId),
                   action: () => {
-                    void mutate({ kind: "assign", sessionId, sectionId: null });
+                    void mutate({
+                      kind: "assign",
+                      sessionId,
+                      sectionId: null,
+                    }).catch(report);
                   },
                 },
                 { item: "Separator" as const },
@@ -293,7 +306,7 @@ export function useSidebarSections(
             },
           ]
         : [],
-    [enabled, snapshot.sections, membership, mutate, openCreate, t]
+    [enabled, snapshot.sections, membership, mutate, openCreate, t, report]
   );
 
   const headers = useMemo(
@@ -334,14 +347,16 @@ export function useSidebarSections(
                           ids[index + direction],
                           ids[index],
                         ];
-                        void mutate({ kind: "reorder", ids });
+                        void mutate({ kind: "reorder", ids }).catch(report);
                       },
                     })),
                     { item: "Separator" },
                     {
                       text: t("sidebar.sections.delete"),
                       action: () => {
-                        void mutate({ kind: "delete", id: section.id });
+                        void mutate({ kind: "delete", id: section.id }).catch(
+                          report
+                        );
                       },
                     },
                   ],
@@ -375,10 +390,10 @@ export function useSidebarSections(
     (id: string) => {
       const section = snapshot.sections.find((s) => pageItemId(s.id) === id);
       if (!section) return false;
-      void load(section.id, pages[section.id]?.cursor ?? null);
+      void load(section.id, pages[section.id]?.cursor ?? null).catch(report);
       return true;
     },
-    [snapshot.sections, load, pages]
+    [snapshot.sections, load, pages, report]
   );
 
   const confirmName = () => {
@@ -392,9 +407,11 @@ export function useSidebarSections(
             name: dialog.name,
             sessionId: dialog.sessionId,
           }
-    ).then((success) => {
-      if (success && mounted.current) setDialog(null);
-    });
+    )
+      .then((success) => {
+        if (success && mounted.current) setDialog(null);
+      })
+      .catch(report);
   };
   return {
     membership: enabled ? membership : new Map<string, string>(),

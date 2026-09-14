@@ -13,6 +13,9 @@ import {
 } from "../sidebarSessionOrder";
 import { useSessionSidebarOrdering } from "./useSessionSidebarOrdering";
 
+const reportError = vi.hoisted(() => vi.fn());
+vi.mock("@src/components/Message", () => ({ default: { error: reportError } }));
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
@@ -142,6 +145,33 @@ describe("session sidebar drag integration", () => {
       expect(view.onMoveToSection).toHaveBeenCalledWith("a", "research");
       expect(view.store.get(sidebarSessionSortAtom)).toBe("updated");
       expect(view.onTogglePin).not.toHaveBeenCalled();
+    } finally {
+      view.unmount();
+    }
+  });
+  it("reports rejected section moves without unpinning the session", async () => {
+    const view = mount(["a"], new Map([["b", "research"]]));
+    view.onMoveToSection.mockRejectedValueOnce(new Error("move failed"));
+    try {
+      view.start("a");
+      await act(async () => {
+        view.drop("b");
+      });
+      expect(reportError).toHaveBeenCalledWith("Error: move failed");
+      expect(view.onTogglePin).not.toHaveBeenCalled();
+    } finally {
+      view.unmount();
+    }
+  });
+  it("handles a rejected unpin after a successful section move", async () => {
+    const view = mount(["a"], new Map([["b", "research"]]));
+    view.onTogglePin.mockRejectedValueOnce(new Error("unpin failed"));
+    try {
+      view.start("a");
+      await act(async () => {
+        view.drop("b");
+      });
+      expect(reportError).toHaveBeenCalledWith("Error: unpin failed");
     } finally {
       view.unmount();
     }

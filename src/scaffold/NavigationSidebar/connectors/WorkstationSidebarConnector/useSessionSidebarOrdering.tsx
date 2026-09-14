@@ -9,6 +9,7 @@ import React, {
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import Message from "@src/components/Message";
 import type { TabDragEventDetail } from "@src/modules/WorkStation/shared/TabBar/tabDragTypes";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import type { Session } from "@src/store/session";
@@ -183,10 +184,13 @@ export function useSessionSidebarOrdering({
         current.onMoveToSection &&
         (sourceSection !== targetSection || drop.sectionId)
       ) {
-        void current.onMoveToSection(id, targetSection).then((success) => {
-          if (success && current.sessionMap.get(id)?.pinned)
-            void current.onTogglePin(id);
-        });
+        void current
+          .onMoveToSection(id, targetSection)
+          .then(async (success) => {
+            if (success && current.sessionMap.get(id)?.pinned)
+              await current.onTogglePin(id);
+          })
+          .catch((error) => Message.error(String(error)));
         return;
       }
       const visibleIds = current.items
@@ -219,7 +223,9 @@ export function useSessionSidebarOrdering({
       if (!drop.pinned && sectionOf(id) !== sectionOf(drop.id))
         setGroup("none");
       if (current.sessionMap.get(id)?.pinned && !drop.pinned)
-        void current.onTogglePin(id);
+        void current
+          .onTogglePin(id)
+          .catch((error) => Message.error(String(error)));
     };
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape") reset();
