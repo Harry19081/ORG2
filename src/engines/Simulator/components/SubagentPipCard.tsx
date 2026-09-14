@@ -29,7 +29,7 @@ import {
   ArrowLeft01Icon,
   ArrowLeft02Icon,
   ArrowRight01Icon,
-  ArrowShrink01Icon,
+  ArrowShrink02Icon,
   HugeiconsIcon,
 } from "@src/icons";
 import BreadcrumbFileHeader from "@src/modules/shared/components/FileHeader/BreadcrumbFileHeader";
@@ -578,7 +578,7 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
               icon={
                 gridExpanded ? (
                   <HugeiconsIcon
-                    icon={ArrowShrink01Icon}
+                    icon={ArrowShrink02Icon}
                     data-icon="minimize-2"
                     size={14}
                     strokeWidth={1.75}

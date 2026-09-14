@@ -54,7 +54,6 @@ interface RenderOptions {
   tabRowCollapsed: boolean;
   sessionHeaderContent?: ReactNode;
   shouldOffsetHeaderForCollapsedSidebar?: boolean;
-  stationAvailable?: boolean;
   publishedHeaderSlots?: ChatPanelHeaderSlots | null;
 }
 
@@ -62,7 +61,6 @@ function render({
   tabRowCollapsed,
   sessionHeaderContent = createElement("span", { "data-session-name": "true" }),
   shouldOffsetHeaderForCollapsedSidebar = false,
-  stationAvailable = true,
   publishedHeaderSlots = null,
 }: RenderOptions): string {
   const store = createStore();
@@ -101,7 +99,6 @@ function render({
         tokenUsageVisible: false,
         turnMetadataVisible: false,
         shouldOffsetHeaderForCollapsedSidebar,
-        stationAvailable,
         showHeader: true,
         showSessionContent: true,
         showCloudShareSettings: false,
@@ -123,17 +120,11 @@ function render({
 }
 
 describe("ChatPanelHeader tab row collapse", () => {
-  it("explains why Workstation cannot be shown for an excluded page", () => {
-    const markup = render({
-      tabRowCollapsed: false,
-      stationAvailable: false,
-    });
-
-    expect(markup).toContain(
-      'data-tooltip-label="chat.workstationUnavailableForPage"'
-    );
-    expect(markup).toContain('aria-label="chat.workstationUnavailableForPage"');
-    expect(markup).toContain("disabled");
+  it("always offers the pane-level restore action", () => {
+    const markup = render({ tabRowCollapsed: false });
+    expect(markup).toContain('data-tooltip-label="chat.showWorkstation"');
+    expect(markup).not.toContain("workstationUnavailableForPage");
+    expect(markup).not.toContain("disabled");
   });
 
   it("keeps its own maximize toggle unless the pinned group sits in its corner", () => {

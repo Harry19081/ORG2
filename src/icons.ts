@@ -63,7 +63,7 @@ export { default as ArrowRight01Icon } from "@hugeicons/core-free-icons/ArrowRig
 export { default as ArrowRight02Icon } from "@hugeicons/core-free-icons/ArrowRight02Icon";
 export { default as ArrowRightBigIcon } from "@hugeicons/core-free-icons/ArrowRightBigIcon";
 export { default as ArrowRightDoubleIcon } from "@hugeicons/core-free-icons/ArrowRightDoubleIcon";
-export { default as ArrowShrink01Icon } from "@hugeicons/core-free-icons/ArrowShrink01Icon";
+export { default as ArrowShrink02Icon } from "@hugeicons/core-free-icons/ArrowShrink02Icon";
 export { default as ArrowUp01Icon } from "@hugeicons/core-free-icons/ArrowUp01Icon";
 export { default as ArrowUp02Icon } from "@hugeicons/core-free-icons/ArrowUp02Icon";
 export { default as ArrowUpBigIcon } from "@hugeicons/core-free-icons/ArrowUpBigIcon";

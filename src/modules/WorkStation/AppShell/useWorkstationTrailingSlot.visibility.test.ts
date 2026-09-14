@@ -15,6 +15,7 @@ import {
 } from "vitest";
 
 import { ROUTES } from "@src/config/routes";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { workstationProjectTabBarAtom } from "@src/store/workstation";
 import {
   type WorkstationTabHost,
@@ -107,7 +108,10 @@ describe("useWorkstationTrailingSlot pane controls", () => {
     Reflect.deleteProperty(reactActEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  function renderHost(host: WorkstationTabHost): void {
+  function renderHost(
+    host: WorkstationTabHost,
+    path: string = ROUTES.workStation.base.path
+  ): void {
     act(() => {
       root.render(
         createElement(
@@ -115,7 +119,7 @@ describe("useWorkstationTrailingSlot pane controls", () => {
           { store },
           createElement(
             MemoryRouter,
-            { initialEntries: [ROUTES.workStation.base.path] },
+            { initialEntries: [path] },
             createElement(TrailingSlotHarness, { host })
           )
         )
@@ -166,6 +170,21 @@ describe("useWorkstationTrailingSlot pane controls", () => {
     ).not.toBeNull();
   });
 
+  it("uses the Settings pane action without chat or detach controls", () => {
+    renderHost("code", ROUTES.app.settings.path);
+    expect(
+      container.querySelector('[title="panel.maximizeSettings"]')
+    ).not.toBeNull();
+    expect(
+      container.querySelector('[title="chat.maximizeWorkStation"]')
+    ).toBeNull();
+    expect(
+      container.querySelector(
+        '[title="common:spotlightActions.openMyStationInNewWindow"]'
+      )
+    ).toBeNull();
+  });
+
   it("drops the pane controls and the detach button inside a station window", () => {
     stationWindowMock.mockReturnValue(true);
     renderHost("code");
@@ -193,5 +212,54 @@ describe("useWorkstationTrailingSlot pane controls", () => {
 
     expect(container.querySelector('[title="project-actions"]')).not.toBeNull();
     expectPaneControls();
+  });
+
+  it("keeps exactly one shrink action to restore chat across tab hosts", () => {
+    renderHost("code");
+    act(() => {
+      store.set(activeStationChatVisibleAtom, "my-station", false);
+    });
+    for (const host of ["code", "browser", "project"] as const) {
+      renderHost(host);
+      const restoreButtons = container.querySelectorAll(
+        'button[title="chat.restoreChatPanel"]'
+      );
+      expect(restoreButtons).toHaveLength(1);
+      expect(
+        restoreButtons[0].querySelector('[data-icon="arrow-shrink-02"]')
+      ).not.toBeNull();
+      expect(
+        container.querySelector('[data-icon="message-circle"]')
+      ).toBeNull();
+      expect(
+        container.querySelector('button[title="chat.hideWorkstation"]')
+      ).toBeNull();
+    }
+  });
+
+  it("keeps the same four station controls together at the trailing edge across tab switches", () => {
+    store.set(workstationProjectTabBarAtom, { onAddProject: vi.fn() });
+    renderHost("code");
+
+    const stationControls = Array.from(container.querySelectorAll("button"));
+    expect(stationControls.map((control) => control.title)).toEqual([
+      "new-tab",
+      "common:spotlightActions.openMyStationInNewWindow",
+      "chat.maximizeWorkStation",
+      "chat.hideWorkstation",
+    ]);
+
+    for (const host of ["project", "browser", "code"] as const) {
+      renderHost(host);
+
+      const controls = Array.from(container.firstElementChild!.children);
+      expect(controls.slice(-4)).toEqual(stationControls);
+      controls.slice(-4).forEach((control, index) => {
+        expect(control).toBe(stationControls[index]);
+      });
+      if (host === "project") {
+        expect(controls[0].getAttribute("title")).toBe("project-actions");
+      }
+    }
   });
 });

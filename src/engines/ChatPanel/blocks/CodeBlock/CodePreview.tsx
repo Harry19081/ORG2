@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import {
   ArrowExpand01Icon,
-  ArrowShrink01Icon,
+  ArrowShrink02Icon,
   Cancel01Icon,
   HugeiconsIcon,
   SquareArrowUpRight02Icon,
@@ -125,7 +125,7 @@ const CodePreview: React.FC<CodePreviewProps> = ({
             icon={
               isMaxHeight ? (
                 <HugeiconsIcon
-                  icon={ArrowShrink01Icon}
+                  icon={ArrowShrink02Icon}
                   data-icon="minimize-2"
                   size={12}
                 />

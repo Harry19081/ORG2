@@ -275,10 +275,15 @@ describe("PinnedWorkbenchChrome", () => {
     expect(query("pinned-workbench-chrome-chat-visibility")).not.toBeNull();
     expect(query("pinned-workbench-chrome-maximize-chat")).toBeNull();
     expect(query("pinned-workbench-chrome")?.childElementCount).toBe(1);
+    expect(
+      query("pinned-workbench-chrome-chat-visibility")?.querySelector(
+        '[data-icon="arrow-shrink-02"]'
+      )
+    ).not.toBeNull();
   });
 
   it.each(["organization", "work-management"] as const)(
-    "reserves one disabled sidebar control for full-width %s tabs with a saved split layout",
+    "keeps pane actions enabled for %s tabs with a saved split layout",
     (type) => {
       render();
       act(() => {
@@ -295,18 +300,18 @@ describe("PinnedWorkbenchChrome", () => {
         });
       });
 
-      expect(query("pinned-workbench-chrome-chat-visibility")).toBeNull();
-      expect(query("pinned-workbench-chrome-maximize-chat")).toBeNull();
-      const sidebarButton = query("pinned-workbench-chrome-show-workstation");
-      expect(sidebarButton).toBeInstanceOf(HTMLButtonElement);
-      expect((sidebarButton as HTMLButtonElement).disabled).toBe(true);
-      expect(query("pinned-workbench-chrome")?.childElementCount).toBe(1);
-      expect(query("right-edge-reservation")?.dataset.owner).toBe("chat");
-      expect(query("right-edge-reservation")?.dataset.reservedRight).toBe(
-        String(getPinnedWorkbenchChromeReservedRight(1))
+      expect(query("pinned-workbench-chrome-chat-visibility")).not.toBeNull();
+      expect(query("pinned-workbench-chrome-maximize-chat")).not.toBeNull();
+      expect(query("pinned-workbench-chrome-show-workstation")).toBeNull();
+      expect(query("pinned-workbench-chrome")?.childElementCount).toBe(2);
+      expect(query("right-edge-reservation")?.dataset.owner).toBe(
+        "workstation"
       );
-      click("pinned-workbench-chrome-show-workstation");
-      expect(store.get(chatPanelMaximizedAtom)).toBe(false);
+      expect(query("right-edge-reservation")?.dataset.reservedRight).toBe(
+        String(getPinnedWorkbenchChromeReservedRight(2))
+      );
+      click("pinned-workbench-chrome-maximize-chat");
+      expect(store.get(chatPanelMaximizedAtom)).toBe(true);
     }
   );
 
