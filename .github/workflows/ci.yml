@@ -265,6 +265,46 @@ jobs:
         working-directory: src-tauri
         run: cargo test --workspace --no-fail-fast
 
+  # ── Rust (Windows) ──────────────────────────────────────────────────────────
+  # The macOS job above cannot see a `#[cfg(windows)]` / `#[cfg(unix)]` split
+  # that only breaks on Windows: the compiler configures the other arm out.
+  # Two consecutive releases (v2.0.0, v2.0.1) failed in exactly that way,
+  # each on a Windows-only unresolved import that no PR check had compiled.
+  # This job runs the same warnings-denied clippy gate on the release target
+  # so such a defect fails the PR instead of the tag build.
+  #
+  # Compile-only on purpose: the workspace test suite already runs on macOS,
+  # and the Windows runner's job is to prove the release target builds.
+  rust-windows:
+    name: Rust (clippy, Windows)
+    needs: changes
+    if: needs.changes.outputs.rust_required == 'true'
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # windows-latest's host toolchain is x86_64-pc-windows-msvc, the same
+      # triple release.yaml builds, so no explicit --target is needed.
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      # warm-rust-cache.yml publishes this same shared key from develop. Keep
+      # the key and workspace mapping in sync with that workflow.
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          shared-key: "ci-windows"
+
+      - name: Stage org2-pm sidecar
+        run: node scripts/tauri/prepare-sidecars.cjs --profile debug
+
+      - name: cargo clippy (all targets, warnings denied)
+        working-directory: src-tauri
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
   # ── Dependency audit ────────────────────────────────────────────────────────
   # Only signal on the ~1000-crate Rust closure; nothing else watches Cargo.lock.
   # Runs on its own runner rather than inside the `rust` job so an advisory
