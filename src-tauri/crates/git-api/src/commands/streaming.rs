@@ -601,10 +601,8 @@ pub async fn stage_stream(
         Ok(command) => command,
         Err(err) => return git_resolution_error_response(err),
     };
-    cmd.arg("add");
-    for file in &files {
-        cmd.arg(file);
-    }
+    let paths: Vec<_> = files.iter().map(String::as_str).collect();
+    cmd.args(super::utils::literal_pathspec_args(&["add"], &paths));
     cmd.current_dir(&repo_path)
         .env("GIT_TERMINAL_PROMPT", "0")
         .env("GIT_ASKPASS", "")

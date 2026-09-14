@@ -87,3 +87,28 @@ pub fn run_git_command(repo_path: &Path, args: &[&str]) -> Result<String, String
         Err(String::from_utf8_lossy(&output.stderr).to_string())
     }
 }
+
+/// File operations accept literal repository paths, never options or Git
+/// pathspec expressions. A literal directory (including the explicit "."
+/// bulk-operation sentinel) still selects its descendants.
+pub fn literal_pathspec_args<'a>(command: &[&'a str], paths: &[&'a str]) -> Vec<&'a str> {
+    let mut args = Vec::with_capacity(command.len() + paths.len() + 2);
+    args.push("--literal-pathspecs");
+    args.extend_from_slice(command);
+    args.push("--");
+    args.extend_from_slice(paths);
+    args
+}
+
+pub fn run_git_path_operation(
+    repo_path: &Path,
+    command: &[&str],
+    paths: &[&str],
+) -> Result<(), String> {
+    let output = run_git(repo_path, &literal_pathspec_args(command, paths))?;
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
+}

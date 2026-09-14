@@ -1,4 +1,4 @@
-use super::utils::run_git;
+use super::utils::{run_git, run_git_path_operation};
 /**
  * Staging Operations
  *
@@ -24,26 +24,16 @@ pub fn stage_all_files(repo_path: &Path) -> Result<(), String> {
 
 /// Stage a specific file
 pub fn stage_file(repo_path: &Path, file: &str) -> Result<(), String> {
-    let output = run_git(repo_path, &["add", file])?;
-
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).to_string());
-    }
-
-    Ok(())
+    run_git_path_operation(repo_path, &["add"], &[file])
 }
 
-/// Unstage files
+/// Unstage the selected literal paths in one index transaction.
 pub fn unstage_files(repo_path: &Path, files: &[String]) -> Result<(), String> {
-    for file in files {
-        let output = run_git(repo_path, &["reset", "HEAD", file])?;
-
-        if !output.status.success() {
-            return Err(String::from_utf8_lossy(&output.stderr).to_string());
-        }
+    if files.is_empty() {
+        return Ok(());
     }
-
-    Ok(())
+    let paths: Vec<_> = files.iter().map(String::as_str).collect();
+    run_git_path_operation(repo_path, &["reset", "HEAD"], &paths)
 }
 
 /// Discard changes in files
@@ -157,11 +147,8 @@ pub fn discard_changes(repo_path: &Path, files: &[String]) -> Result<(), String>
         if conflict_files.contains(file.as_str()) {
             // Conflict file: restore to pre-merge state using HEAD version
             // First reset the index entry, then checkout from HEAD
-            let _ = run_git(repo_path, &["reset", "HEAD", "--", file]);
-            let output = run_git(repo_path, &["checkout", "HEAD", "--", file])?;
-            if !output.status.success() {
-                return Err(String::from_utf8_lossy(&output.stderr).to_string());
-            }
+            let _ = run_git_path_operation(repo_path, &["reset", "HEAD"], &[file]);
+            run_git_path_operation(repo_path, &["checkout", "HEAD"], &[file])?;
         } else if untracked_files.contains(file.as_str()) {
             // Untracked file: delete from filesystem
             if file_path.exists() {
@@ -175,7 +162,7 @@ pub fn discard_changes(repo_path: &Path, files: &[String]) -> Result<(), String>
             }
         } else if staged_new_files.contains(file.as_str()) {
             // Staged new file: unstage first, then delete
-            let _ = run_git(repo_path, &["reset", "HEAD", "--", file]);
+            let _ = run_git_path_operation(repo_path, &["reset", "HEAD"], &[file]);
             // Now delete the file
             if file_path.exists() {
                 if file_path.is_dir() {
@@ -187,24 +174,21 @@ pub fn discard_changes(repo_path: &Path, files: &[String]) -> Result<(), String>
                 }
             }
         } else {
-            // Tracked file (modified/deleted): may need to unstage first
+            // Preserve existing unstaging behavior, scoped to the literal path.
             if staged_files.contains(file.as_str()) {
-                let _ = run_git(repo_path, &["reset", "HEAD", "--", file]);
+                let _ = run_git_path_operation(repo_path, &["reset", "HEAD"], &[file]);
             }
-
-            // Now checkout to discard working tree changes
-            let output = run_git(repo_path, &["checkout", "--", file])?;
-
-            if !output.status.success() {
-                return Err(String::from_utf8_lossy(&output.stderr).to_string());
-            }
+            run_git_path_operation(repo_path, &["checkout"], &[file])?;
         }
     }
 
     // For discard-all, also run git checkout -- . to catch any remaining tracked changes
     // (e.g., files with only worktree modifications that weren't in the staged set)
     if discard_all {
-        let output = run_git(repo_path, &["checkout", "--", "."])?;
+        let output = run_git(
+            repo_path,
+            &super::utils::literal_pathspec_args(&["checkout"], &["."]),
+        )?;
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
             // Don't fail if checkout has nothing to do
@@ -236,16 +220,6 @@ pub fn resolve_conflict(repo_path: &Path, file: &str, strategy: &str) -> Result<
         }
     };
 
-    let output = run_git(repo_path, &["checkout", flag, "--", file])?;
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).to_string());
-    }
-
-    // Stage the file to mark conflict as resolved
-    let output = run_git(repo_path, &["add", file])?;
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).to_string());
-    }
-
-    Ok(())
+    run_git_path_operation(repo_path, &["checkout", flag], &[file])?;
+    run_git_path_operation(repo_path, &["add"], &[file])
 }
