@@ -9,10 +9,12 @@ import { useCallback, useMemo, useState } from "react";
 import { ACTION_ID, useActionSystem } from "@src/ActionSystem";
 import { ROUTES } from "@src/config/routes";
 import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
+import { navigateApp } from "@src/router/navigateApp";
 import { FileOperationsService } from "@src/services/file";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { activeWorkspaceRootAtom } from "@src/store/workspace";
 import { activeWorkStationFilePathAtom } from "@src/store/workstation/tabs";
+import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
 import type { SpotlightItem } from "../../../shared";
 import type { EditorPaletteMode, EditorPaletteState } from "../types";
@@ -82,6 +84,10 @@ export function useEditorPalette({
   const { dispatch, isValidAction } = useActionSystem();
 
   const navigateToCodeEditor = useCallback(() => {
+    if (isStationWindow()) {
+      navigateApp(ROUTES.workStation.code.path);
+      return;
+    }
     if (window.location.pathname === ROUTES.workStation.code.path) return;
     navigate(ROUTES.workStation.code.path);
   }, [navigate]);
