@@ -44,6 +44,7 @@ let listeners: {
 }[];
 let aborts: AbortController[];
 const base = {
+  session_generation: "2",
   output: "",
   covers_seq: 0,
   missed_output: true,
@@ -80,6 +81,22 @@ function refs() {
 async function settle() {
   for (let i = 0; i < 12; i++) await Promise.resolve();
 }
+function exit(payload: unknown) {
+  listeners
+    .filter(
+      (entry) =>
+        entry.name.startsWith("pty-exit") &&
+        entry.unlisten.mock.calls.length === 0
+    )
+    .slice(-1)[0]!
+    .callback({ payload });
+}
+function currentExit() {
+  return {
+    session_generation: base.session_generation,
+    owner_id: paneMap.get(sessionId)!.ownerId,
+  };
+}
 function output(bytes: number[], seq: number) {
   const listener = listeners
     .filter(
@@ -115,6 +132,95 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 describe("PTY connection ownership and stream restoration", () => {
+  it("a delayed native exit cannot disable replacement output", async () => {
+    const shared = refs();
+    const old = start(shared);
+    await old.promise;
+    const oldExit = { ...currentExit(), session_generation: "1" };
+    old.abort.abort();
+    cleanupPtyListeners(shared);
+    shared.terminalRef.current = {
+      write: vi.fn(),
+      writeln: vi.fn(),
+      focus: vi.fn(),
+    };
+    const replacement = start(shared);
+    await replacement.promise;
+    // The old native payload arrives on the new listener's reusable event name.
+    exit(oldExit);
+    output([65], 0);
+    flushBacklog(sessionId, 100);
+    expect(shared.terminalRef.current.write).toHaveBeenCalledWith("A");
+    expect(
+      shared.terminalRef.current.write.mock.calls.flat().join("")
+    ).not.toContain("Session ended");
+  });
+  it.each(["live", "attach", "create"] as const)(
+    "rejects stale-generation and unversioned exits during %s",
+    async (phase) => {
+      const pending = deferred<typeof base>();
+      transport.invoke.mockImplementation((name) => {
+        if (name === "resize_pty" && phase === "create")
+          return Promise.reject(new Error("not found"));
+        if (name === "create_pty" || name === "attach_pty_stream")
+          return phase === "live" ? Promise.resolve(base) : pending.promise;
+        return Promise.resolve();
+      });
+      const connection = start();
+      if (phase === "live") await connection.promise;
+      else await settle();
+      // Even if an event happens to carry the current owner, generation wins.
+      exit({ ...currentExit(), session_generation: "1" });
+      if (phase !== "live") pending.resolve(base);
+      await connection.promise;
+      exit(null);
+      output([65], 0);
+      flushBacklog(sessionId, 100);
+      const text = connection.terminalRef.current.write.mock.calls
+        .flat()
+        .join("");
+      expect(text).toContain("A");
+      expect(text).not.toContain("Session ended");
+      expect(paneMap.has(sessionId)).toBe(true);
+    }
+  );
+  it("handles a matching exit before create returns and ignores an old-owner exit afterward", async () => {
+    const pending = deferred<typeof base>();
+    transport.invoke.mockImplementation((name) => {
+      if (name === "resize_pty") return Promise.reject(new Error("not found"));
+      return name === "create_pty" ? pending.promise : Promise.resolve();
+    });
+    const connection = start();
+    await settle();
+    output([90], 0);
+    const matching = currentExit();
+    exit(matching);
+    exit({ session_generation: "1", owner_id: matching.owner_id! - 1 });
+    pending.resolve(base);
+    await connection.promise;
+    const text = connection.terminalRef.current.write.mock.calls
+      .flat()
+      .join("");
+    expect(text).toContain("Session ended");
+    expect(text.indexOf("Z")).toBeLessThan(text.indexOf("Session ended"));
+    expect(paneMap.has(sessionId)).toBe(false);
+  });
+  it("accepts unversioned exits only after a legacy handshake", async () => {
+    transport.invoke.mockImplementation((name) =>
+      Promise.resolve(
+        name === "attach_pty_stream"
+          ? { ...base, session_generation: undefined }
+          : undefined
+      )
+    );
+    const connection = start();
+    await connection.promise;
+    exit(null);
+    expect(
+      connection.terminalRef.current.write.mock.calls.flat().join("")
+    ).toContain("Session ended");
+    expect(paneMap.has(sessionId)).toBe(false);
+  });
   it("late output-listener registration cannot remove the remounted pane", async () => {
     const pending = deferred<() => void>();
     const oldUnlisten = vi.fn();
@@ -259,9 +365,7 @@ describe("PTY connection ownership and stream restoration", () => {
     const connection = start();
     await settle();
     output([90], 0);
-    listeners
-      .find((entry) => entry.name.startsWith("pty-exit"))!
-      .callback({ payload: undefined });
+    exit(currentExit());
     pending.resolve(base);
     await connection.promise;
     const text = connection.terminalRef.current.write.mock.calls

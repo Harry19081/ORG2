@@ -33,7 +33,7 @@ use tokio::sync::{broadcast, Notify};
 use tokio::task;
 use tracing::warn;
 
-use crate::pty_commands::pty::{encode_pty_output_frame, PtySession};
+use crate::pty_commands::pty::{encode_pty_output_frame, PtySession, PtySessionIdentity};
 use crate::pty_commands::shell_integration;
 use crate::pty_commands::shells::ShellKind;
 
@@ -261,7 +261,7 @@ fn poll_pty_child(child: &ManagedPtyChild) -> PtyChildPoll {
 ///
 /// When `output_tap` is provided, the reader task also sends all PTY output
 /// to the broadcast channel, allowing the caller to capture command output.
-pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
+pub async fn create_session(params: CreateSessionParams) -> Result<PtySessionIdentity, String> {
     let CreateSessionParams {
         owner_id,
         session_id,
@@ -525,7 +525,9 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
         format!("Failed to initialize PTY I/O: {error}")
     })?;
     let snapshot = Arc::new(Mutex::new(crate::stream_snapshot::StreamSnapshot::default()));
+    let identity = PtySessionIdentity::new();
     let session = PtySession {
+        identity: identity.clone(),
         stream_owner: Arc::new(AtomicU64::new(owner_id.unwrap_or(0))),
         io_stop,
         snapshot: snapshot.clone(),
@@ -591,6 +593,7 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
     let app_clone = app_handle.clone();
     let sessions_clone = sessions.clone();
     let child_exited_reader = Arc::clone(&child_exited);
+    let reader_identity = identity.clone();
 
     task::spawn(async move {
         // Pre-allocate event names to avoid repeated string formatting
@@ -656,7 +659,10 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
                         map.contains_key(&event_session_id)
                     };
                     if !exists {
-                        if let Err(err) = app_clone.emit(&exit_event, ()) {
+                        if let Err(err) = app_clone.emit(
+                            &exit_event,
+                            reader_identity.exit_event(stream_owner_reader.load(Ordering::Acquire)),
+                        ) {
                             warn!(
                                 "[terminal] Failed to emit exit event {}: {}",
                                 exit_event, err
@@ -836,26 +842,15 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
         // A PTY read EOF/error means this particular session has ended. Remove
         // only if the map still points at the same reader: a rapid recreate
         // may already have replaced this session ID with a new PTY.
-        let finished_session = {
-            let mut session_map = sessions_clone.lock().await;
-            if session_map
-                .get(&event_session_id)
-                .is_some_and(|session| Arc::ptr_eq(&session.reader, &reader_arc))
-            {
-                session_map.remove(&event_session_id)
-            } else {
-                None
-            }
-        };
-        if finished_session.is_some() {
-            if let Err(err) = app_clone.emit(&exit_event, ()) {
+        let finished_session =
+            PtySession::take_finished(&sessions_clone, &event_session_id, &reader_arc).await;
+        if let Some((session, event)) = finished_session {
+            if let Err(err) = app_clone.emit(&exit_event, event) {
                 warn!(
                     "[terminal] Failed to emit exit event {}: {}",
                     exit_event, err
                 );
             }
-        }
-        if let Some(session) = finished_session {
             let _ = task::spawn_blocking(move || {
                 session.terminate_child_sync();
                 drop(session);
@@ -864,7 +859,7 @@ pub async fn create_session(params: CreateSessionParams) -> Result<(), String> {
         }
     });
 
-    Ok(())
+    Ok(identity)
 }
 
 /// Write raw data to a PTY session.

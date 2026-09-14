@@ -11,6 +11,7 @@ use tauri::async_runtime::Mutex as AsyncMutex;
 use tauri::ipc::{Channel, InvokeResponseBody};
 use tokio::sync::{broadcast, Notify};
 
+use super::types::{PtyExitEvent, PtySessionIdentity};
 use crate::pty_commands::shells::ShellKind;
 
 // ============================================
@@ -24,6 +25,7 @@ use crate::pty_commands::shells::ShellKind;
 /// - A writer for sending input to the shell
 /// - A buffered reader for receiving output from the shell
 pub struct PtySession {
+    pub identity: PtySessionIdentity,
     /// The PTY master/slave pair (platform-specific implementation)
     pub pty_pair: Arc<AsyncMutex<PtyPair>>,
     /// Writer handle for sending input to the PTY (keystrokes, commands)
@@ -127,6 +129,29 @@ impl Drop for PtySession {
 }
 
 impl PtySession {
+    /// Capture exit identity while removing exactly the reader that finished.
+    /// Dispatch may happen after a replacement has acquired the same map key.
+    pub(crate) async fn take_finished(
+        sessions: &AsyncMutex<std::collections::HashMap<String, PtySession>>,
+        session_id: &str,
+        reader: &Arc<AsyncMutex<crate::pty_io::PtyReader>>,
+    ) -> Option<(Self, PtyExitEvent)> {
+        let mut sessions = sessions.lock().await;
+        if !sessions
+            .get(session_id)
+            .is_some_and(|session| Arc::ptr_eq(&session.reader, reader))
+        {
+            return None;
+        }
+        let session = sessions.remove(session_id)?;
+        let event = session.identity.exit_event(
+            session
+                .stream_owner
+                .load(std::sync::atomic::Ordering::Acquire),
+        );
+        Some((session, event))
+    }
+
     /// Finite shell termination, called only on a blocking/shutdown owner.
     /// Reaping runs after PTY handles can drop (macOS tty exit may need that).
     pub(crate) fn terminate_child_sync(&self) {
@@ -204,6 +229,7 @@ mod tests {
         let (reader, writer, io_stop) =
             crate::pty_io::wrap(pair.master.as_ref(), reader, writer).unwrap();
         PtySession {
+            identity: PtySessionIdentity::new(),
             pty_pair: Arc::new(AsyncMutex::new(pair)),
             writer: Arc::new(AsyncMutex::new(writer)),
             reader: Arc::new(AsyncMutex::new(reader)),
@@ -228,6 +254,38 @@ mod tests {
             missed_while_detached: Arc::new(AtomicUsize::new(0)),
             output_channel: Arc::new(Mutex::new(None)),
         }
+    }
+    #[tokio::test]
+    async fn delayed_exit_keeps_removed_native_identity_after_same_id_recreation() {
+        let old = session();
+        old.claim_stream(Some(10)).unwrap();
+        let old_reader = old.reader.clone();
+        let old_generation = old.identity.session_generation.clone();
+        let sessions = AsyncMutex::new(std::collections::HashMap::from([("same-id".into(), old)]));
+        // Production removal captures the payload; dispatch is delayed until
+        // another PTY occupies the same registry key.
+        let (_finished, event) = PtySession::take_finished(&sessions, "same-id", &old_reader)
+            .await
+            .unwrap();
+        let replacement = session();
+        replacement.claim_stream(Some(20)).unwrap();
+        let replacement_generation = replacement.identity.session_generation.clone();
+        sessions.lock().await.insert("same-id".into(), replacement);
+        let payload = serde_json::to_value(event).unwrap();
+        assert_eq!(payload["session_generation"], old_generation);
+        assert_eq!(payload["owner_id"], 10);
+        assert_ne!(payload["session_generation"], replacement_generation);
+        assert!(PtySession::take_finished(&sessions, "same-id", &old_reader)
+            .await
+            .is_none());
+        let sessions = sessions.lock().await;
+        let replacement = &sessions["same-id"];
+        replacement.claim_stream(Some(30)).unwrap();
+        assert_eq!(
+            replacement.identity.session_generation,
+            replacement_generation
+        );
+        assert!(replacement.owns_stream(Some(30)));
     }
     #[tokio::test]
     async fn stale_attach_cannot_take_over_new_owner_or_authorize_old_cleanup() {

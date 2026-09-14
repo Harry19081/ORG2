@@ -3,7 +3,10 @@
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, sync::atomic::Ordering};
+use std::{
+    collections::HashMap,
+    sync::atomic::{AtomicU64, Ordering},
+};
 
 use super::session::PtySession;
 use crate::pty_commands::shells::ShellKind;
@@ -11,6 +14,37 @@ use crate::pty_commands::shells::ShellKind;
 // ============================================
 // Request Types
 // ============================================
+
+/// Immutable identity of one native PTY, also returned by `create_pty`.
+/// A decimal string avoids JavaScript's integer precision limit. The counter
+/// is process-local: no event or PTY survives a native process restart.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PtySessionIdentity {
+    pub session_generation: String,
+}
+
+impl PtySessionIdentity {
+    pub(crate) fn new() -> Self {
+        static NEXT_GENERATION: AtomicU64 = AtomicU64::new(1);
+        Self {
+            session_generation: NEXT_GENERATION.fetch_add(1, Ordering::Relaxed).to_string(),
+        }
+    }
+
+    pub(crate) fn exit_event(&self, owner_id: u64) -> PtyExitEvent {
+        PtyExitEvent {
+            session_generation: self.session_generation.clone(),
+            owner_id,
+        }
+    }
+}
+
+/// Captured before releasing registry ownership, never looked up at dispatch.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PtyExitEvent {
+    pub session_generation: String,
+    pub owner_id: u64,
+}
 
 /// Request payload for creating a new PTY session.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -96,6 +130,7 @@ pub(super) fn pty_info_from_session(session_id: &str, session: &PtySession) -> P
 /// Response for `attach_pty_stream`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AttachPtyStream {
+    pub session_generation: String,
     /// Incomplete UTF-8 suffix to seed the new webview decoder.
     pub pending_utf8_b64: String,
     /// Bounded local display replay; agent inspection uses a separate redacted projection.

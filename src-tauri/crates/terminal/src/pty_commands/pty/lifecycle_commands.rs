@@ -10,7 +10,7 @@ use tauri::{
 };
 
 use super::state::PtyState;
-use super::types::{AttachPtyStream, CreatePtyRequest, ResizePtyRequest};
+use super::types::{AttachPtyStream, CreatePtyRequest, PtySessionIdentity, ResizePtyRequest};
 
 // ============================================
 // Tauri Commands
@@ -30,7 +30,7 @@ pub async fn create_pty(
     request: serde_json::Value,
     app: AppHandle,
     state: State<'_, PtyState>,
-) -> Result<(), String> {
+) -> Result<PtySessionIdentity, String> {
     // Handle both { request: {...} } and direct {...} formats
     let req: CreatePtyRequest = if request.get("request").is_some() {
         serde_json::from_value(request["request"].clone())
@@ -158,6 +158,7 @@ pub async fn attach_pty_stream(
     let pending_utf8_b64 = STANDARD.encode(snapshot.pending_utf8());
 
     Ok(AttachPtyStream {
+        session_generation: session.identity.session_generation.clone(),
         pending_utf8_b64,
         output,
         covers_seq,

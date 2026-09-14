@@ -67,7 +67,15 @@ function estimateByteLength(s: string): number {
   return len;
 }
 
-interface AttachPtyStreamResponse {
+interface PtySessionIdentity {
+  session_generation: string;
+}
+
+interface PtyExitEvent extends PtySessionIdentity {
+  owner_id: number;
+}
+
+interface AttachPtyStreamResponse extends Partial<PtySessionIdentity> {
   pending_utf8_b64?: string;
   output: string;
   covers_seq: number;
@@ -217,6 +225,7 @@ async function fetchPtyInfo(
 
 async function reconnectOrCreatePty({
   ownerId,
+  onSessionIdentity,
   restorePendingUtf8,
   cols,
   rows,
@@ -235,6 +244,7 @@ async function reconnectOrCreatePty({
   onSessionInfoReady,
 }: {
   ownerId: number;
+  onSessionIdentity: (identity: Partial<PtySessionIdentity> | void) => void;
   restorePendingUtf8: (b64: string) => void;
   cols: number;
   rows: number;
@@ -279,7 +289,7 @@ async function reconnectOrCreatePty({
       forceRepoCwd,
     });
 
-    await invokeTauri("create_pty", {
+    const created = await invokeTauri<PtySessionIdentity | void>("create_pty", {
       request: {
         session_id: sessionId,
         owner_id: ownerId,
@@ -293,6 +303,7 @@ async function reconnectOrCreatePty({
       },
     });
 
+    onSessionIdentity(created);
     if (!isTerminalLive()) return;
     await fetchPtyInfo(
       sessionId,
@@ -313,6 +324,7 @@ async function reconnectOrCreatePty({
       { sessionId, ownerId }
     );
 
+    onSessionIdentity(attach);
     if (!isTerminalLive()) return attach.covers_seq;
     const cachedBuffer = getTerminalBuffer(sessionId);
     deleteTerminalBuffer(sessionId);
@@ -492,6 +504,7 @@ export async function initPtyConnection({
     abortSignal?.addEventListener("abort", release, { once: true });
     let restoring = true;
     let restoredThrough: number | undefined;
+    let sessionGeneration: string | undefined;
     const restorePendingUtf8 = (b64: string) => {
       utf8Decoder.decode(
         Uint8Array.from(atob(b64), (char) => char.charCodeAt(0)),
@@ -575,7 +588,20 @@ export async function initPtyConnection({
       release();
     };
 
-    let exitPending = false;
+    // Owner filtering below confines this slot to this connection's native
+    // exit (duplicates coalesce). Keep identity until the handshake resolves.
+    let exitPending: { payload: PtyExitEvent | null } | undefined;
+    const matchesExit = (payload: PtyExitEvent | null) => {
+      if (sessionGeneration !== undefined) {
+        return (
+          payload?.session_generation === sessionGeneration &&
+          payload.owner_id === ownerId
+        );
+      }
+      // Only a legacy handshake may accept an unversioned legacy exit.
+      // Paired releases always require both generation and attachment owner.
+      return payload === null;
+    };
     const finishExit = () => {
       if (!isTerminalLive()) return;
 
@@ -591,13 +617,19 @@ export async function initPtyConnection({
       terminalWrite("\r\n\x1b[33m[Session ended]\x1b[0m\r\n");
       unregisterPane(sessionId, pane);
     };
-    const unlistenExit = await listenTauri(`pty-exit-${sessionId}`, () => {
-      if (restoring) {
-        exitPending = true;
-        return;
+    const unlistenExit = await listenTauri<PtyExitEvent | null>(
+      `pty-exit-${sessionId}`,
+      (event) => {
+        if (!isTerminalLive()) return;
+        const payload = event.payload ?? null;
+        if (payload && payload.owner_id !== ownerId) return;
+        if (restoring) {
+          exitPending = { payload };
+          return;
+        }
+        if (matchesExit(payload)) finishExit();
       }
-      finishExit();
-    });
+    );
     ownExitUnlisten = unlistenExit;
     if (!isTerminalLive()) {
       release();
@@ -613,6 +645,9 @@ export async function initPtyConnection({
     try {
       coversSeq = await reconnectOrCreatePty({
         ownerId,
+        onSessionIdentity: (identity) => {
+          sessionGeneration = identity?.session_generation;
+        },
         restorePendingUtf8,
         cols,
         rows,
@@ -652,7 +687,8 @@ export async function initPtyConnection({
           consumePtyBytes(pending.chunk, pending.byteCount, pending.seq);
         pendingChunks.length = 0;
         resumePane(sessionId);
-        if (exitPending) finishExit();
+        if (exitPending && matchesExit(exitPending.payload)) finishExit();
+        exitPending = undefined;
       } else {
         pendingChunks.length = 0;
         release();
