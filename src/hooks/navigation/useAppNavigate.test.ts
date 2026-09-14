@@ -44,6 +44,12 @@ describe("useAppNavigate", () => {
     expect(mocks.navigate).toHaveBeenCalledWith("/reauth", options);
   });
 
+  it("preserves calls without navigation options", () => {
+    const { result } = renderHook(() => useAppNavigate());
+    result.current("/chat");
+    expect(mocks.navigate).toHaveBeenCalledExactlyOnceWith("/chat");
+  });
+
   it("forwards history deltas and supports synchronous routers", () => {
     const { result } = renderHook(() => useAppNavigate());
     expect(result.current(-1)).toBeUndefined();

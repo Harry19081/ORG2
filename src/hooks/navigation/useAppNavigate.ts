@@ -16,7 +16,11 @@ export function useAppNavigate(): AppNavigateFunction {
   return useCallback(
     (to: To | number, options?: NavigateOptions) => {
       const completion =
-        typeof to === "number" ? navigate(to) : navigate(to, options);
+        typeof to === "number"
+          ? navigate(to)
+          : options === undefined
+            ? navigate(to)
+            : navigate(to, options);
       completion?.catch((error: unknown) => {
         logger.error("Navigation failed", error);
       });
