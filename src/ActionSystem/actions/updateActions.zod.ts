@@ -12,6 +12,7 @@ import { z } from "zod";
 import { ACTION_ID } from "@src/ActionSystem/actionIds";
 import { defineAppActionRegistration } from "@src/ActionSystem/schema/actionRegistration";
 import { defineZodAction } from "@src/ActionSystem/schema/defineZodAction";
+import i18n from "@src/i18n";
 import { checkForUpdatesManually } from "@src/scaffold/AppUpdater/actions";
 
 const emptyParams = z.object({});
@@ -27,7 +28,7 @@ const appCheckForUpdates = defineZodAction(
   },
   async () => {
     await checkForUpdatesManually();
-    return { success: true, message: "Checked for updates" };
+    return { success: true, message: i18n.t("settings:update.checked") };
   }
 );
 

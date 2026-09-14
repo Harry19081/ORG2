@@ -2,8 +2,9 @@ import { useAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import AppMark from "@src/components/AppMark";
+import updateImage from "@src/assets/illustrations/update.png";
 import Button from "@src/components/Button";
+import { PANEL_FOOTER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelFooter";
 import Modal from "@src/scaffold/ModalSystem";
 import { settingsLoadedAtom } from "@src/store/settings/settingsAtom";
 
@@ -12,7 +13,7 @@ import {
   expandDownloadProgressNotice,
   installAvailableAppUpdate,
   postponeAppUpdate,
-  skipAppUpdateVersion,
+  // skipAppUpdateVersion,
   startAutomaticAppUpdates,
   usesSeparateApplicationInstall,
 } from "./service";
@@ -37,10 +38,10 @@ export const AppUpdater: React.FC = () => {
     postponeAppUpdate(availableUpdate?.version);
   }, [availableUpdate]);
 
-  const handleSkipVersion = useCallback(() => {
-    skipAppUpdateVersion(availableUpdate?.version);
-    setInstallPromptVisible(false);
-  }, [availableUpdate, setInstallPromptVisible]);
+  // const handleSkipVersion = useCallback(() => {
+  //   skipAppUpdateVersion(availableUpdate?.version);
+  //   setInstallPromptVisible(false);
+  // }, [availableUpdate, setInstallPromptVisible]);
 
   const handleInstallConfirm = useCallback(async () => {
     await installAvailableAppUpdate({ confirmed: true });
@@ -62,38 +63,36 @@ export const AppUpdater: React.FC = () => {
             ? t("update.installOfficialConfirmTitle")
             : t("update.installConfirmTitle")
         }
-        width={620}
+        size="medium"
+        image={{ src: updateImage, alt: "" }}
         closable={false}
         maskClosable={false}
         escToExit={false}
         onCancel={handleInstallLater}
         onClose={handleInstallLater}
-        bodyClassName="px-6 py-5"
         footer={
-          <div className="flex items-center justify-between gap-3 px-5 py-4">
+          <div className={PANEL_FOOTER_TOKENS.container}>
+            {/* Skip-version action temporarily disabled.
             <Button
               variant="tertiary"
               appearance="ghost"
-              size="large"
-              shape="round"
+              size="small"
               onClick={handleSkipVersion}
             >
               {t("update.skipVersion")}
             </Button>
-            <div className="flex items-center gap-2">
+            */}
+            <div className="flex flex-1 items-center justify-end gap-2">
               <Button
                 variant="secondary"
-                appearance="solid"
-                size="large"
-                shape="round"
+                size="small"
                 onClick={handleInstallLater}
               >
                 {t("common:actions.later")}
               </Button>
               <Button
                 variant="primary"
-                size="large"
-                shape="round"
+                size="small"
                 onClick={handleInstallConfirm}
                 data-modal-primary-action
               >
@@ -106,21 +105,14 @@ export const AppUpdater: React.FC = () => {
           </div>
         }
       >
-        <div className="flex items-center gap-5">
-          <AppMark
-            size={72}
-            className="border border-border-2 bg-bg-2 shadow-xs"
-            glyphClassName="text-text-1"
-          />
-          <p className="min-w-0 flex-1 text-sm leading-6 text-text-2">
-            {t(
-              buildProvenance && usesSeparateApplicationInstall(buildProvenance)
-                ? "update.installOfficialConfirmDesc"
-                : "update.installConfirmDesc",
-              { version: availableUpdate?.version }
-            )}
-          </p>
-        </div>
+        <p className="text-sm text-text-2">
+          {t(
+            buildProvenance && usesSeparateApplicationInstall(buildProvenance)
+              ? "update.installOfficialConfirmDesc"
+              : "update.installConfirmDesc",
+            { version: availableUpdate?.version }
+          )}
+        </p>
       </Modal>
       <DownloadProgressOrb
         progress={downloadProgress}

@@ -110,23 +110,26 @@ contributors. If this section and `.github/PR_RULES.md` ever differ, follow
 Dependabot-generated descriptions have the narrow exception documented in
 `.github/PR_RULES.md`; title and build/security checks still apply.
 
-Hard gates: one responsibility; a scoped Conventional Commit title; the
+Hard gates: one coherent theme or objective; a scoped Conventional Commit title; the
 required `Problem`, `Solution`, `Potential risks`, and `Verification` sections;
 and a final GitHub read-back of the published pull request.
 
-#### Single responsibility
+#### Coherent scope
 
-- One PR solves one problem or delivers one feature. Do not combine multiple
-  features, unrelated bug fixes, opportunistic refactors, cleanup, formatting,
-  or documentation changes in the same PR.
-- Supporting tests and documentation belong in the same PR only when they
-  directly verify or explain that PR's single change.
-- If requested work contains independent changes, split them into separate
-  branches/worktrees and separate PRs.
+- One PR may group related changes under one coherent theme or user-facing
+  objective, such as update-dialog design, copy, and update-flow localization.
+  Explain the shared theme and how each change supports it. Different layers
+  or independently implementable fixes do not by themselves require a split.
+- Split unrelated themes or objectives into separate branches/worktrees and
+  PRs. Sharing a repository or request does not make unrelated changes one theme.
+- Supporting tests and documentation belong with the theme they verify or
+  explain. Explicitly requested delivery-policy changes may accompany that
+  work when identified in the description.
 - If a new unrelated request arrives after a PR has been opened, do not append
   it to the existing branch. Create a separate PR.
 - Before handoff, compare the branch against its base and confirm every changed
-  file maps directly to the PR's stated problem or solution.
+  file maps directly to the PR's stated theme, problem, or solution, or an
+  explicitly requested delivery-policy change.
 
 #### Description format
 
