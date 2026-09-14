@@ -35,11 +35,11 @@ static QUIT_CONFIRMATION_ACTIVE: AtomicBool = AtomicBool::new(false);
 /// Create the application menu bar
 pub fn create_app_menu(app: &AppHandle) -> Result<Menu<Wry>, tauri::Error> {
     // ========================================
-    // App Menu (ORGII)
+    // App Menu (ORG2)
     // ========================================
-    let quit_item = MenuItem::with_id(app, "app_quit", "Quit ORGII", true, Some("CmdOrCtrl+Q"))?;
+    let quit_item = MenuItem::with_id(app, "app_quit", "Quit ORG2", true, Some("CmdOrCtrl+Q"))?;
 
-    let app_menu = SubmenuBuilder::new(app, "ORGII")
+    let app_menu = SubmenuBuilder::new(app, "ORG2")
         .about(None)
         .separator()
         .services()

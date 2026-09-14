@@ -62,7 +62,7 @@ mod macos_impl {
         // kIOPMAssertPreventUserIdleSystemSleep — prevents the system from
         // sleeping due to idleness. Display may still dim/sleep.
         let assertion_type = CFString::new("PreventUserIdleSystemSleep");
-        let assertion_name = CFString::new("ORGII — agent session running");
+        let assertion_name = CFString::new("ORG2 — agent session running");
         let mut id: IOPMAssertionID = 0;
         let result = unsafe {
             IOPMAssertionCreateWithName(

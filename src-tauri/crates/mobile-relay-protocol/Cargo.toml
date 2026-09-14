@@ -3,7 +3,7 @@ name = "mobile-relay-protocol"
 version = "0.1.0"
 edition = "2021"
 license = "AGPL-3.0-or-later"
-description = "Shared wire types for ORGII Mobile Remote relay and desktop client"
+description = "Shared wire types for ORG2 Mobile Remote relay and desktop client"
 
 [lib]
 name = "mobile_relay_protocol"
