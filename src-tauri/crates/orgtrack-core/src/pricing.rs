@@ -13,6 +13,10 @@
 //! rate card as static build-time data: parsed once into an in-memory index. This
 //! keeps the read-only guarantee intact (no DB writes) and removes the dead table.
 //!
+//! These are standard short-context reference rates, not invoice reconciliation.
+//! The model-only lookup cannot account for service tier, request size, cache
+//! lifetime, or historical rate changes. See `docs/model-pricing-2026-09-14.md`.
+//!
 //! ## Lookup order
 //!
 //! 1. Local/self-hosted providers price at `$0`.
@@ -352,6 +356,51 @@ mod tests {
             pricing
         );
         assert_eq!(normalize_model_id("claude-fable-5-1"), "claude-fable-5-1");
+    }
+
+    #[test]
+    fn current_published_rates_resolve_without_stale_family_defaults() {
+        // Independent expected values from the provider sources recorded in
+        // docs/model-pricing-2026-09-14.md, in input/output/write/read order.
+        let cases = [
+            ("gpt-6-astra", [10.0, 50.0, 12.5, 1.0]),
+            ("gpt-5.6-sol", [4.0, 20.0, 5.0, 0.4]),
+            ("gpt-5.6", [4.0, 20.0, 5.0, 0.4]),
+            ("gpt-5.6-terra", [2.0, 12.0, 2.5, 0.2]),
+            ("gpt-5.6-luna", [0.2, 1.2, 0.25, 0.02]),
+            ("gpt-5.5-pro", [30.0, 180.0, 30.0, 30.0]),
+            ("claude-fable-5-1", [10.0, 50.0, 12.5, 0.25]),
+            ("claude-mythos-5-1", [10.0, 50.0, 12.5, 0.25]),
+            ("claude-mythos-5", [10.0, 50.0, 12.5, 1.0]),
+            ("claude-sonnet-5", [2.0, 10.0, 2.5, 0.2]),
+            ("gemini-2.5-pro", [1.25, 10.0, 1.25, 0.125]),
+            ("gemini-2.5-flash", [0.3, 2.5, 0.3, 0.03]),
+            ("gemini-2.5-flash-lite", [0.1, 0.4, 0.1, 0.01]),
+            ("gemini-flash", [0.3, 2.5, 0.3, 0.03]),
+            ("gemini-3.5-flash", [1.5, 9.0, 1.5, 0.15]),
+            ("minimax-m3", [0.3, 1.2, 0.3, 0.06]),
+            ("minimax", [0.3, 1.2, 0.3, 0.06]),
+            ("deepseek-v4-pro", [1.32, 3.96, 1.32, 0.044]),
+            ("deepseek-v4-flash", [0.3, 1.2, 0.3, 0.006]),
+            ("deepseek-flash", [0.3, 1.2, 0.3, 0.006]),
+            ("deepseek", [0.3, 1.2, 0.3, 0.006]),
+        ];
+        for (model, [input, output, write, read]) in cases {
+            let expected = ModelPricing {
+                input_per_mtok: input,
+                output_per_mtok: output,
+                cache_creation_per_mtok: write,
+                cache_read_per_mtok: read,
+            };
+            for id in [
+                model.to_string(),
+                format!("provider/{}", model.to_uppercase()),
+                format!("{model}-20260914"),
+                format!("{model}-xhigh"),
+            ] {
+                assert_eq!(resolve_pricing(Some(&id)), expected, "{id}");
+            }
+        }
     }
 
     #[test]
