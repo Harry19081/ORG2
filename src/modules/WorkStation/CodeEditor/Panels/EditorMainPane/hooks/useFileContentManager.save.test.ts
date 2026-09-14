@@ -9,7 +9,7 @@ import {
   clearFileCache,
 } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/cache";
 
-import { useFileContentManager } from "../useFileContentManager";
+import { useFileContentManager } from "./useFileContentManager";
 
 vi.mock("@tauri-apps/plugin-fs", () => ({
   readTextFile: vi.fn(async (path: string) => `${path}-disk`),
