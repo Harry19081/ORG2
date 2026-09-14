@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
@@ -34,7 +34,6 @@ import NavigationSidebar from "../../variants/NavigationSidebar";
 import SidebarAccountButton from "../SidebarAccountButton";
 import { sidebarCustomCollapsedAtom } from "../sections/collapsePreference";
 import { useSidebarSections } from "../sections/useSidebarSections";
-import { NEW_SESSION_MENU_ITEM_ID } from "../sidebarConnectorUtils";
 import type { SidebarTabDisposition } from "../sidebarTabNavigation";
 import { useSessionMenuItems } from "../useSessionMenuItems/index";
 import { DEFAULT_COLLAPSED_SECTION_IDS } from "../workstationSidebarData";
@@ -50,6 +49,7 @@ import { useWorkstationSidebarPinnedAndRevealData } from "./sidebarConnector.pin
 import { useWorkstationSidebarRevealNavigationEffects } from "./sidebarConnector.revealNavigationEffects";
 import { useWorkstationSidebarRevealRequestState } from "./sidebarConnector.revealRequestState";
 import { useWorkstationSidebarScopeAndPagination } from "./sidebarConnector.scopeAndPagination";
+import { useWorkstationSidebarSectionPresentation } from "./sidebarConnector.sectionPresentation";
 import { useWorkstationSidebarSelectionAndCollapse } from "./sidebarConnector.selectionAndCollapse";
 import { useWorkstationSidebarSessionInteractionHandlers } from "./sidebarConnector.sessionInteractionHandlers";
 import { useSidebarSessionRefreshAction } from "./sidebarSessionRefresh";
@@ -61,12 +61,6 @@ import { useSidebarStationNavigation } from "./useSidebarStationNavigation";
 import { useWorkItemsSidebarSurface } from "./useWorkItemsSidebarSurface";
 import { useWorkspaceGroupActions } from "./useWorkspaceGroupActions";
 
-/**
- * Owns organization scope, cross-surface reveal/selection, and shared sidebar chrome.
- * Work-item state/actions, channel scope composition, session row actions/dialogs,
- * workflows have dedicated owners. Every controller remains mounted
- * with this connector; switching views only changes the existing visibility gates.
- */
 export const WorkstationSidebarConnector: React.FC = () => {
   const { t } = useTranslation("navigation");
   const { t: tProjects } = useTranslation("projects");
@@ -132,7 +126,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const [activeViewKey, setActiveViewKey] =
     useState<SessionSidebarView>("sessions");
   const workItemsContentVisible = activeViewKey === "work-items";
-  const channelSidebarVisible = activeViewKey === "channels";
 
   const {
     sortedSessions,
@@ -212,9 +205,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     workspaceUnavailableMessage,
   } = buildWorkstationSidebarLabels({ t, tProjects, tSessions, tCommon });
 
-  // Same entry point as the sidebar's own "+ New session", so a workspace
-  // header `+` lands the user on the identical surface — it only pre-seeds
-  // the creator's source with that workspace first.
+  // Match the sidebar's "+ New session" flow while pre-seeding the workspace.
   const openNewSessionFromSidebar = useCallback(() => {
     openNewChatFromSidebar({
       goToNewSession,
@@ -509,42 +500,24 @@ export const WorkstationSidebarConnector: React.FC = () => {
       setCollapsedSectionIds,
     });
 
-  const sidebarMenuItems = workItemsContentVisible
-    ? workItems.menuItems
-    : channelSidebarVisible
-      ? channelMenuItems
-      : sessionMenuItems;
-  const sidebarScrollLayout = useMemo(() => {
-    if (activeViewKey !== "sessions") {
-      return { pinnedMenuItems, menuItems: sidebarMenuItems };
-    }
-    return {
-      pinnedMenuItems: pinnedMenuItems.filter(
-        (item) => item.id === NEW_SESSION_MENU_ITEM_ID
-      ),
-      menuItems: [
-        ...pinnedMenuItems.filter(
-          (item) => item.id !== NEW_SESSION_MENU_ITEM_ID
-        ),
-        ...sidebarMenuItems,
-      ],
-    };
-  }, [activeViewKey, pinnedMenuItems, sidebarMenuItems]);
-  const resolvedCollapsedSectionIds = workItemsContentVisible
-    ? workItems.collapsedSectionIds
-    : collapsedSectionIds;
-  const resolvedOnCollapsedSectionIdsChange = workItemsContentVisible
-    ? workItems.onCollapsedSectionIdsChange
-    : (ids: Set<string>) => {
-        setSavedCustomCollapsed(
-          [...ids].filter((id) =>
-            customSections.headers.some(
-              (header) => header.id === `separator-${id}`
-            )
-          )
-        );
-        handleSessionCollapsedSectionIdsChange(ids);
-      };
+  const {
+    sidebarScrollLayout,
+    resolvedCollapsedSectionIds,
+    resolvedOnCollapsedSectionIdsChange,
+    resolvedSidebarMenuItems: sidebarMenuItems,
+  } = useWorkstationSidebarSectionPresentation({
+    activeViewKey,
+    pinnedMenuItems,
+    workItemsMenuItems: workItems.menuItems,
+    channelMenuItems,
+    sessionMenuItems,
+    workItemsContentVisible,
+    workItemsCollapsedSectionIds: workItems.collapsedSectionIds,
+    collapsedSectionIds,
+    customSectionHeaders: customSections.headers,
+    setSavedCustomCollapsed,
+    handleSessionCollapsedSectionIdsChange,
+  });
 
   useWorkstationSidebarRevealNavigationEffects({
     sessionSidebarRevealRequest,
