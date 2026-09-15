@@ -27,7 +27,7 @@ import { DataProvider } from "@src/contexts/workspace/DataContext";
 import ChatPanel from "@src/engines/ChatPanel";
 import ChatPanelSideChat from "@src/engines/ChatPanel/SideChat";
 import {
-  CHAT_WIDTH_CSS_VAR,
+  CHAT_WIDTH_STYLE_VALUE,
   clampChatWidth,
 } from "@src/engines/ChatPanel/config";
 import type { SessionLaunchSuccessInfo } from "@src/engines/SessionCore/hooks/session/useSessionCreator/useSessionLaunch/types";
@@ -36,6 +36,7 @@ import SessionSyncProvider from "@src/engines/SessionCore/sync/SessionSyncProvid
 import { SessionCreatorChatPanel } from "@src/features/SessionCreator/variants";
 import type { SessionCreatorChatPanelProps } from "@src/features/SessionCreator/variants/ChatPanel";
 import { dispatchWebviewLayoutChanged } from "@src/hooks/platform/useInlineWebview/webviewLayoutEvents";
+import { useMacosPageBackdropSurface } from "@src/hooks/platform/useMacosPageBackdropSurface";
 import {
   PANE_WIDTH_TRANSITION_CLASSES,
   getChatSlotLayoutStyle,
@@ -181,6 +182,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
   const isChatPanelDragging = useAtomValue(chatPanelDraggingAtom);
   const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
   const chatSlotRef = useRef<HTMLDivElement>(null);
+  const paneSurfaceRef = useMacosPageBackdropSurface<HTMLDivElement>();
   const [resizeIndicatorHostElement, setResizeIndicatorHostElement] =
     React.useState<HTMLDivElement | null>(null);
   // Settings-in-slot must always have a usable width even if the user
@@ -190,7 +192,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
   const effectiveRawWidth =
     rawChatWidth > 0 ? rawChatWidth : isSettingsSlot ? DEFAULT_CHAT_WIDTH : 0;
   const chatWidth = clampChatWidth(effectiveRawWidth, viewportWidth);
-  const chatWidthStyleValue = chatWidth > 0 ? `var(${CHAT_WIDTH_CSS_VAR})` : 0;
+  const chatWidthStyleValue = chatWidth > 0 ? CHAT_WIDTH_STYLE_VALUE : 0;
   const isChatOnLeft = chatPosition === "left";
   const isChatVisible = chatPanelMaximized || (showChatPanel && chatWidth > 0);
   // Settings doesn't have a "session" to render — when the slot is in
@@ -321,6 +323,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
             data-main-content
           >
             <div
+              ref={paneSurfaceRef}
               className="relative isolate flex h-full min-h-0 min-w-0 flex-row overflow-hidden"
               style={paneUnderlayStyle}
               data-pane-surface-underlay

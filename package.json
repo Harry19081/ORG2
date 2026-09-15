@@ -1,6 +1,6 @@
 {
   "name": "orgii",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "Self-evolving agentic development framework — ORG2 desktop app",
   "main": "src/index.tsx",
   "scripts": {
@@ -180,6 +180,7 @@
     "sql-formatter": "^15.7.0",
     "sucrase": "^3.35.0",
     "uuid": "^14.0.2",
+    "yaml": "^2.9.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

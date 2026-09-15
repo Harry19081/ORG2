@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "無法開啟系統設定",
     "preventSleep": "會話運行時阻止系統休眠",
     "preventSleepDesc": "在任何 Agent 會話正在工作時,保持 Mac 或 PC 處於喚醒狀態。所有會話結束後自動釋放",
+    "highRefreshRate": "高更新率",
+    "highRefreshRateDesc": "以顯示器的最高更新率繪製介面，ProMotion 顯示器上最高 120 Hz。捲動、調整大小和動畫更流暢，但執行時耗電更多",
     "devMode": "開發者模式",
     "devModeDesc": "啓用原生 Inspect Element 右鍵菜單和瀏覽器 DevTools。僅供開發和調試使用",
     "presenceGuidanceOnline": "線上 — Agent 行為指引",
@@ -383,13 +385,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "桌面控制時隱藏 ORG2",
-      "hideBeforeActionHelper": "Peekaboo 操作期間隱藏 ORG2 主視窗，並顯示 Wingman 列和浮動提示，避免 Agent 手動管理焦點。",
+      "hideBeforeActionHelper": "Peekaboo 操作期間隱藏 ORG2 主視窗，並顯示 Wingman 列和浮動提示，避免 Agent 手動管理焦點",
       "antiDetection": "HID 反自動化強化",
-      "antiDetectionHelper": "讓 Peekaboo 透過真實的 CGEvent（HID）事件執行點擊與按鍵，而非純粹的輔助使用操作，從而降低具有反自動化偵測的應用程式（如微信）封鎖桌面控制的可能性。",
+      "antiDetectionHelper": "讓 Peekaboo 透過真實的 CGEvent（HID）事件執行點擊與按鍵，而非純粹的輔助使用操作，從而降低具有反自動化偵測的應用程式（如微信）封鎖桌面控制的可能性",
       "humanInputProfile": "擬人化輸入節奏",
-      "humanInputProfileHelper": "為合成按鍵套用擬人化的時間節奏。關閉後將以最高速度輸入。",
+      "humanInputProfileHelper": "為合成按鍵套用擬人化的時間節奏。關閉後將以最高速度輸入",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "缺少命令：{{bins}}",
     "skillMissingEnv": "缺少環境變量：{{vars}}",
@@ -551,7 +553,7 @@
       "title": "Git",
       "pullStrategy": "Pull 策略",
       "pullStrategyDesc": "同步時 git pull 如何整合 remote 更改",
-      "pullStrategyHint": "Rebase（默認）：將你的 commit replay 到 remote 之上，創建 linear history。\n\nMerge：branch 有 diverge 時創建 merge commit，保留完整 history。\n\nFast-forward only：僅在不需要 merge 時允許 pull，若 branch 已 diverge 則拒絕。",
+      "pullStrategyHint": "Rebase（默認）：將你的 commit replay 到 remote 之上，創建 linear history。\n\nMerge：branch 有 diverge 時創建 merge commit，保留完整 history。\n\nFast-forward only：僅在不需要 merge 時允許 pull，若 branch 已 diverge 則拒絕",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase（默認）",
       "strategyFfOnly": "僅 Fast-forward（嚴格）",
@@ -760,7 +762,7 @@
     "tableVersion": "版本",
     "tableStatus": "狀態",
     "installSection": "安裝",
-    "installHintNote": "針對你當前平臺的建議安裝命令。大多數系統依賴需要管理員權限，所以我們不會自動執行——請複製到你的 terminal 中運行。"
+    "installHintNote": "針對你當前平臺的建議安裝命令。大多數系統依賴需要管理員權限，所以我們不會自動執行——請複製到你的 terminal 中運行"
   },
   "agentSessions": {
     "chatFontSize": "聊天字體大小",
@@ -822,7 +824,7 @@
   "agentEvolution": {
     "enableForAgent": "為 {{agentName}} 啟用進化",
     "noAgentsTitle": "沒有可用 Agent",
-    "noAgentsSubtitle": "建立或匯入 Agent 以設定進化。"
+    "noAgentsSubtitle": "建立或匯入 Agent 以設定進化"
   },
   "org": {},
   "learningsBrowser": {
@@ -969,10 +971,10 @@
     "developerOptions": "開發者選項",
     "retryConnection": "重試連線",
     "enabled": "行動遙控",
-    "enabledDesc": "讓已配對的手機透過同一個 Wi‑Fi 區域網路或公開 Relay 操控此桌面上的 Agent 工作階段",
+    "enabledDesc": "用手機查看和操作此電腦上的工作階段",
     "securityNotice": "開啟區域網路曝露後，同一網路內持有連線 URL 和 token 的任何人都可以控制工作階段。若懷疑外洩，請重新產生 token",
-    "outdoorTitle": "戶外連線",
-    "outdoorDesc": "讓桌面主動向外連線至公開 Relay，手機使用 4G、5G 或其他網路也能連線",
+    "outdoorTitle": "允許網際網路連線",
+    "outdoorDesc": "關閉後，手機無法透過網際網路連線至此電腦",
     "relayEnabled": "連線至公開 Relay",
     "relayEnabledDesc": "桌面只會建立向外的 WSS 連線，不需要設定路由器連接埠轉發",
     "relayUrl": "Relay 位址",
@@ -981,7 +983,7 @@
     "relayPresetLocal": "本機",
     "relayPresetProduction": "正式環境",
     "cloudLoginTitle": "ORG2 Cloud 登入",
-    "cloudLoginDescSignedIn": "已以 {{identity}} 登入 — Relay 會使用此帳號進行戶外配對",
+    "cloudLoginDescSignedIn": "已登入 {{identity}}",
     "cloudLoginDescSignedOut": "透過公開 Relay 配對前，請先登入 ORG2 Cloud",
     "relayStatusCloudLoginRequired": "請在「設定 → 通用」登入 ORG2 Cloud，然後重新整理 Relay 狀態",
     "relayStatusAuthFailedSignedIn": "Relay 拒絕了連線 — 請在「設定 → 通用」登出後重新登入",
@@ -992,7 +994,7 @@
     "relayStatus_disabled": "已停用",
     "relayStatus_config_error": "設定錯誤",
     "relayStatus_stopped": "已停止",
-    "startOutdoorPairing": "產生戶外配對碼",
+    "startOutdoorPairing": "產生配對碼",
     "fullAccess": "允許執行操作",
     "fullAccessDesc": "開啟後手機可傳送訊息、停止工作階段和回應權限請求；關閉後僅能檢視",
     "pairingExpires": "配對碼將在 {{seconds}} 秒後過期",
@@ -1027,16 +1029,19 @@
     "pairedDevicesDesc": "透過 Relay 授權的手機；可隨時撤銷存取權",
     "devicesLoadFailed": "無法載入已配對裝置",
     "noDevices": "尚無已配對裝置",
-    "noDevicesDesc": "產生戶外配對碼，然後在行動遙控 PWA 中掃描或貼上",
+    "noDevicesDesc": "新增手機後，即可查看和操作此電腦上的工作階段",
     "deviceLabel": "裝置",
     "deviceTier": "權限層級",
-    "deviceTierFull": "完整存取",
-    "deviceTierReadOnly": "唯讀",
+    "deviceTierFull": "可操作",
+    "deviceTierReadOnly": "僅查看",
     "deviceLastSeen": "最後上線",
     "devicePairedAt": "配對於 {{time}}",
     "deviceLastSeenValue": "最後上線 {{time}}",
     "deviceNeverSeen": "從未連線",
     "deviceOnline": "線上",
-    "deviceOffline": "離線"
+    "deviceOffline": "離線",
+    "addPhone": "新增手機",
+    "pairingPermission": "手機權限",
+    "relayDisabledHint": "網際網路連線已關閉，可在進階設定中開啟"
   }
 }

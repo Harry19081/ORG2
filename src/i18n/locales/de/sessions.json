@@ -896,10 +896,10 @@
       "exportJson": "JSON exportieren",
       "importAction": "Session importieren",
       "exportDescription": "Exportiert die aktive Session als portablen JSON-Snapshot",
-      "importDescription": "Importiert einen Session-JSON-Snapshot in die Seitenleiste.",
+      "importDescription": "Importiert einen Session-JSON-Snapshot in die Seitenleiste",
       "jsonSnapshotNote": "Importierte Sessions sind schreibgeschützte Snapshots und behalten den ursprünglichen Ereignisverlauf",
       "chooseJson": "JSON-Datei auswählen",
-      "chooseJsonHint": "Wähle eine .orgii-session.json-Exportdatei aus.",
+      "chooseJsonHint": "Wähle eine .orgii-session.json-Exportdatei aus",
       "loadingPreview": "Session-Ereignisse werden gezählt…",
       "noActiveSession": "Keine aktive Session ausgewählt.",
       "importedName": "Importierte Session: {{name}}",
@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "Warten, bis das Terminal fertig ist",
     "runShellFailed": "Befehl fehlgeschlagen",
     "runCommands": "Befehle ausführen",
+    "waitBackgroundTasks": "Auf Hintergrundaufgaben warten",
     "terminalSummary": {
       "command_one": "{{count}} Befehl",
       "command_other": "{{count}} Befehle",
@@ -1134,6 +1135,10 @@
       "check_one": "{{count}} Prüfung",
       "check_other": "{{count}} Prüfungen",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}}-mal",
+      "count_other": "{{count}}-mal"
     },
     "inspectTerminalsRunning": "Terminals werden geprüft",
     "inspectTerminalsDone": "Terminals geprüft",
@@ -1903,7 +1908,7 @@
     "start": "Starten",
     "missingGit": {
       "title": "Git fehlt",
-      "body": "Git ist nicht installiert oder konnte nicht gefunden werden. Bitte ADE Manager oder SDE Agent bitten, Git auf diesem Gerät zu installieren, und ORG2 anschließend neu starten."
+      "body": "Git ist nicht installiert oder konnte nicht gefunden werden. Bitte ADE Manager oder SDE Agent bitten, Git auf diesem Gerät zu installieren, und ORG2 anschließend neu starten"
     },
     "model": "Modell",
     "contextMenu": {
@@ -2118,7 +2123,7 @@
       "archiveTeardownRetained": "Archiviert, aber {{count}} Laufzeit konnte nicht freigegeben werden. Löschen bleibt gesperrt.",
       "archiveTeardownQuiesced": "Archiviert und vollständig beendet. Dauerhaftes Löschen ist jetzt möglich.",
       "dangerZone": "Gefahrenbereich",
-      "deleteDescription": "Dieses Team mit allen Sitzungen und Verläufen dauerhaft löschen.",
+      "deleteDescription": "Dieses Team mit allen Sitzungen und Verläufen dauerhaft löschen",
       "deleteTeam": "Team löschen",
       "deleteTitle": "Dieses Team dauerhaft löschen?",
       "deleteWarning": "Alle Teamsitzungen und Verläufe werden dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",

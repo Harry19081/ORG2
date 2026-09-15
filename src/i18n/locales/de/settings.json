@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "Systemeinstellungen konnten nicht geöffnet werden",
     "preventSleep": "Ruhezustand während Sessions verhindern",
     "preventSleepDesc": "Hält deinen Mac oder PC wach, solange eine Agent-Session aktiv arbeitet. Wird automatisch freigegeben, wenn alle Sessions beendet sind",
+    "highRefreshRate": "Hohe Bildwiederholrate",
+    "highRefreshRateDesc": "Rendert mit der vollen Bildwiederholrate deines Displays, auf ProMotion-Displays bis zu 120 Hz. Scrollen, Größenänderungen und Animationen wirken flüssiger, verbrauchen währenddessen aber mehr Energie",
     "devMode": "Entwicklermodus",
     "devModeDesc": "Aktiviert das native Inspect-Element-Kontextmenü und die Browser-DevTools. Nur für Entwicklung und Debugging",
     "presenceGuidanceOnline": "Online — Hinweise für Agenten",
@@ -383,13 +385,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "ORG2 während der Desktop-Steuerung ausblenden",
-      "hideBeforeActionHelper": "Blendet das ORG2-Hauptfenster aus, während Peekaboo arbeitet, und zeigt die Wingman-Leiste mit schwebender Beschriftung, damit der Agent den Fokus nicht verwalten muss.",
+      "hideBeforeActionHelper": "Blendet das ORG2-Hauptfenster aus, während Peekaboo arbeitet, und zeigt die Wingman-Leiste mit schwebender Beschriftung, damit der Agent den Fokus nicht verwalten muss",
       "antiDetection": "HID-Anti-Automatisierungs-Härtung",
-      "antiDetectionHelper": "Lässt Peekaboo echte CGEvent-(HID-)Eingaben für Klicks und Tastenanschläge senden statt reiner Accessibility-Aktionen, sodass Apps mit Automatisierungserkennung (z. B. WeChat) die Desktop-Steuerung seltener blockieren.",
+      "antiDetectionHelper": "Lässt Peekaboo echte CGEvent-(HID-)Eingaben für Klicks und Tastenanschläge senden statt reiner Accessibility-Aktionen, sodass Apps mit Automatisierungserkennung (z. B. WeChat) die Desktop-Steuerung seltener blockieren",
       "humanInputProfile": "Menschliche Tipp-Kadenz",
-      "humanInputProfileHelper": "Wendet ein menschenähnliches Timing-Profil auf synthetisierte Tastenanschläge an. Deaktivieren, um mit maximaler Geschwindigkeit zu tippen.",
+      "humanInputProfileHelper": "Wendet ein menschenähnliches Timing-Profil auf synthetisierte Tastenanschläge an. Deaktivieren, um mit maximaler Geschwindigkeit zu tippen",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Fehlt: {{bins}}",
     "skillMissingEnv": "Fehlende Umgebungsvariablen: {{vars}}",
@@ -551,7 +553,7 @@
       "title": "Git",
       "pullStrategy": "Pull-Strategie",
       "pullStrategyDesc": "Wie git pull Änderungen von remote bei der Synchronisierung integriert",
-      "pullStrategyHint": "Rebase (Standard): Replays Ihre commits auf remote. Erstellt linear history.\n\nMerge: Erstellt einen merge commit, wenn branches diverged sind. Bewahrt die vollständige history.\n\nFast-forward only: Erlaubt pull nur, wenn kein merge nötig ist. Lehnt ab, wenn branches diverged sind.",
+      "pullStrategyHint": "Rebase (Standard): Replays Ihre commits auf remote. Erstellt linear history.\n\nMerge: Erstellt einen merge commit, wenn branches diverged sind. Bewahrt die vollständige history.\n\nFast-forward only: Erlaubt pull nur, wenn kein merge nötig ist. Lehnt ab, wenn branches diverged sind",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (Standard)",
       "strategyFfOnly": "Nur Fast-forward (strikt)",
@@ -600,7 +602,7 @@
     "checkFailed": "Update-Prüfung fehlgeschlagen",
     "checking": "Updates werden gesucht…",
     "officialInstalled": "Offizielle App installiert",
-    "officialInstalledDesc": "{{version}} wurde unter {{path}} installiert. Dieser lokale Build läuft unverändert weiter.",
+    "officialInstalledDesc": "{{version}} wurde unter {{path}} installiert. Dieser lokale Build läuft unverändert weiter",
     "downloadFailed": "Update-Download fehlgeschlagen",
     "retryNow": "Jetzt erneut versuchen",
     "downloadTimeout": "Zeitüberschreitung beim Download. Prüfe Netzwerk oder Proxy und versuche es erneut.",
@@ -736,7 +738,7 @@
     "tableVersion": "Version",
     "tableStatus": "Status",
     "installSection": "Installieren",
-    "installHintNote": "Vorgeschlagener Installationsbefehl für deine Plattform. Die meisten Systemabhängigkeiten benötigen Administratorrechte, daher führen wir sie nicht automatisch aus — kopiere ihn in dein terminal."
+    "installHintNote": "Vorgeschlagener Installationsbefehl für deine Plattform. Die meisten Systemabhängigkeiten benötigen Administratorrechte, daher führen wir sie nicht automatisch aus — kopiere ihn in dein terminal"
   },
   "storage": {
     "dataDirectory": "Datenverzeichnis",
@@ -822,7 +824,7 @@
   "agentEvolution": {
     "enableForAgent": "Evolution für {{agentName}} aktivieren",
     "noAgentsTitle": "Keine Agents verfügbar",
-    "noAgentsSubtitle": "Erstellen oder importieren Sie einen Agent, um Evolution zu konfigurieren."
+    "noAgentsSubtitle": "Erstellen oder importieren Sie einen Agent, um Evolution zu konfigurieren"
   },
   "org": {},
   "learningsBrowser": {
@@ -969,10 +971,10 @@
     "developerOptions": "Entwickleroptionen",
     "retryConnection": "Verbindung erneut versuchen",
     "enabled": "Mobile Remote",
-    "enabledDesc": "Erlaubt einem gekoppelten Telefon, Agent-Sessions auf diesem Desktop über dasselbe WLAN oder über das öffentliche Relay zu steuern",
+    "enabledDesc": "Mit deinem Smartphone Sitzungen auf diesem Computer ansehen und steuern",
     "securityNotice": "Bei aktivierter LAN-Freigabe kann jeder in deinem Netzwerk mit Verbindungs-URL und Token Sessions steuern. Erzeuge das Token neu, wenn du vermutest, dass es durchgesickert ist",
-    "outdoorTitle": "Verbindung von unterwegs",
-    "outdoorDesc": "Verbindet den Desktop ausgehend mit einem öffentlichen Relay, damit dein Telefon über 4G, 5G oder ein anderes Netzwerk funktioniert",
+    "outdoorTitle": "Internetverbindungen erlauben",
+    "outdoorDesc": "Wenn deaktiviert, können Smartphones keine Internetverbindung zu diesem Computer herstellen",
     "relayEnabled": "Mit öffentlichem Relay verbinden",
     "relayEnabledDesc": "Der Desktop öffnet eine ausgehende WSS-Verbindung; keine Portweiterleitung am Router nötig",
     "relayUrl": "Relay-Adresse",
@@ -981,7 +983,7 @@
     "relayPresetLocal": "Lokal",
     "relayPresetProduction": "Produktion",
     "cloudLoginTitle": "ORG2 Cloud-Anmeldung",
-    "cloudLoginDescSignedIn": "Angemeldet als {{identity}} — das Relay verwendet dieses Konto für die Kopplung von unterwegs",
+    "cloudLoginDescSignedIn": "Angemeldet als {{identity}}",
     "cloudLoginDescSignedOut": "Melde dich bei ORG2 Cloud an, bevor du über das öffentliche Relay koppelst",
     "relayStatusCloudLoginRequired": "Melde dich unter Einstellungen → Allgemein bei ORG2 Cloud an und aktualisiere dann den Relay-Status",
     "relayStatusAuthFailedSignedIn": "Relay hat die Verbindung abgelehnt — melde dich unter Einstellungen → Allgemein ab und erneut an",
@@ -992,7 +994,7 @@
     "relayStatus_disabled": "Deaktiviert",
     "relayStatus_config_error": "Konfigurationsfehler",
     "relayStatus_stopped": "Gestoppt",
-    "startOutdoorPairing": "Kopplungscode für unterwegs erzeugen",
+    "startOutdoorPairing": "Kopplungscode erstellen",
     "fullAccess": "Aktionen erlauben",
     "fullAccessDesc": "Wenn ein, kann das Telefon Nachrichten senden, Sessions stoppen und Berechtigungen beantworten; wenn aus, ist es nur lesend",
     "pairingExpires": "Kopplungscode läuft in {{seconds}} Sekunden ab",
@@ -1027,16 +1029,19 @@
     "pairedDevicesDesc": "Über das Relay autorisierte Telefone; der Zugriff kann jederzeit widerrufen werden",
     "devicesLoadFailed": "Gekoppelte Geräte konnten nicht geladen werden",
     "noDevices": "Keine gekoppelten Geräte",
-    "noDevicesDesc": "Erzeuge einen Kopplungscode für unterwegs und scanne ihn oder füge ihn in der Mobile Remote PWA ein",
+    "noDevicesDesc": "Nach dem Hinzufügen eines Smartphones kannst du auf Sitzungen auf diesem Computer zugreifen",
     "deviceLabel": "Gerät",
     "deviceTier": "Stufe",
-    "deviceTierFull": "Vollzugriff",
-    "deviceTierReadOnly": "Nur lesen",
+    "deviceTierFull": "Steuerung erlaubt",
+    "deviceTierReadOnly": "Nur ansehen",
     "deviceLastSeen": "Zuletzt gesehen",
     "devicePairedAt": "Gekoppelt {{time}}",
     "deviceLastSeenValue": "Zuletzt gesehen {{time}}",
     "deviceNeverSeen": "Nie verbunden",
     "deviceOnline": "Online",
-    "deviceOffline": "Offline"
+    "deviceOffline": "Offline",
+    "addPhone": "Smartphone hinzufügen",
+    "pairingPermission": "Smartphone-Berechtigungen",
+    "relayDisabledHint": "Internetverbindungen sind deaktiviert. Aktiviere sie in den erweiterten Einstellungen"
   }
 }

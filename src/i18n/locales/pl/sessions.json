@@ -896,10 +896,10 @@
       "exportJson": "Eksportuj JSON",
       "importAction": "Importuj Session",
       "exportDescription": "Eksportuj aktywną Session jako przenośny snapshot JSON",
-      "importDescription": "Importuj snapshot JSON Session do paska bocznego.",
+      "importDescription": "Importuj snapshot JSON Session do paska bocznego",
       "jsonSnapshotNote": "Zaimportowane Sessions są snapshotami tylko do odczytu i zachowują oryginalną historię zdarzeń",
       "chooseJson": "Wybierz plik JSON",
-      "chooseJsonHint": "Wybierz plik eksportu .orgii-session.json.",
+      "chooseJsonHint": "Wybierz plik eksportu .orgii-session.json",
       "loadingPreview": "Zliczanie zdarzeń Session…",
       "noActiveSession": "Nie wybrano aktywnej Session.",
       "importedName": "Zaimportowana Session: {{name}}",
@@ -1143,6 +1143,7 @@
     "terminalWaitRunning": "Oczekiwanie na zakończenie terminala",
     "runShellFailed": "Polecenie nieudane",
     "runCommands": "Wykonaj polecenia",
+    "waitBackgroundTasks": "Czekaj na zadania w tle",
     "terminalSummary": {
       "command_one": "{{count}} polecenie",
       "command_other": "{{count}} polecenia",
@@ -1153,6 +1154,10 @@
       "check_one": "{{count}} sprawdzenie",
       "check_other": "{{count}} sprawdzenia",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} raz",
+      "count_other": "{{count}} razy"
     },
     "inspectTerminalsRunning": "Sprawdzanie terminali",
     "inspectTerminalsDone": "Terminale sprawdzone",
@@ -1922,7 +1927,7 @@
     "start": "Start",
     "missingGit": {
       "title": "Brakuje Git",
-      "body": "Git nie jest zainstalowany albo nie można go znaleźć. Poproś ADE Manager lub SDE Agent o zainstalowanie Git na tym komputerze, a następnie uruchom ponownie ORG2."
+      "body": "Git nie jest zainstalowany albo nie można go znaleźć. Poproś ADE Manager lub SDE Agent o zainstalowanie Git na tym komputerze, a następnie uruchom ponownie ORG2"
     },
     "model": "Model",
     "contextMenu": {
@@ -2137,7 +2142,7 @@
       "archiveTeardownRetained": "Zarchiwizowano, ale nie zwolniono {{count}} środowiska. Usuwanie pozostaje zablokowane.",
       "archiveTeardownQuiesced": "Zarchiwizowano i całkowicie zatrzymano. Można już trwale usunąć.",
       "dangerZone": "Strefa niebezpieczna",
-      "deleteDescription": "Trwale usuń ten zespół, wszystkie sesje i historię.",
+      "deleteDescription": "Trwale usuń ten zespół, wszystkie sesje i historię",
       "deleteTeam": "Usuń zespół",
       "deleteTitle": "Trwale usunąć ten zespół?",
       "deleteWarning": "Wszystkie sesje i historia zespołu zostaną trwale usunięte. Tej operacji nie można cofnąć.",

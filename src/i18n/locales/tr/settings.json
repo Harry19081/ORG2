@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "Sistem Ayarları açılamadı",
     "preventSleep": "Oturumlar sırasında sistem uykusunu engelle",
     "preventSleepDesc": "Herhangi bir Agent oturumu çalışırken Mac veya PC'nizin uyumasını engeller. Tüm oturumlar bittiğinde otomatik olarak serbest bırakılır",
+    "highRefreshRate": "Yüksek yenileme hızı",
+    "highRefreshRateDesc": "Arayüzü ekranınızın tam yenileme hızında, ProMotion ekranlarda 120 Hz'ye kadar işler. Kaydırma, yeniden boyutlandırma ve animasyonlar daha akıcı görünür ancak çalışırken daha fazla enerji kullanır",
     "devMode": "Geliştirici Modu",
     "devModeDesc": "Yerel Inspect Element bağlam menüsünü ve tarayıcı DevTools'u etkinleştirir. Yalnızca geliştirme ve hata ayıklama için",
     "presenceGuidanceOnline": "Çevrimiçi — Agent'lar için yönerge",
@@ -383,13 +385,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Masaüstü kontrolü sırasında ORG2’yi gizle",
-      "hideBeforeActionHelper": "Peekaboo çalışırken ana ORG2 penceresini gizler ve Wingman çubuğu ile yüzen açıklamayı gösterir; böylece Agent odağı yönetmek zorunda kalmaz.",
+      "hideBeforeActionHelper": "Peekaboo çalışırken ana ORG2 penceresini gizler ve Wingman çubuğu ile yüzen açıklamayı gösterir; böylece Agent odağı yönetmek zorunda kalmaz",
       "antiDetection": "HID otomasyon karşıtı sertleştirme",
-      "antiDetectionHelper": "Peekaboo’nun tıklamalar ve tuş vuruşları için saf Erişilebilirlik eylemleri yerine gerçek CGEvent (HID) girişleri göndermesini sağlar; böylece otomasyon algılama özelliği olan uygulamaların (ör. WeChat) masaüstü kontrolünü engelleme olasılığı azalır.",
+      "antiDetectionHelper": "Peekaboo’nun tıklamalar ve tuş vuruşları için saf Erişilebilirlik eylemleri yerine gerçek CGEvent (HID) girişleri göndermesini sağlar; böylece otomasyon algılama özelliği olan uygulamaların (ör. WeChat) masaüstü kontrolünü engelleme olasılığı azalır",
       "humanInputProfile": "İnsansı yazma temposu",
-      "humanInputProfileHelper": "Sentezlenen tuş vuruşlarına insana benzer bir zamanlama profili uygular. En yüksek hızda yazmak için devre dışı bırakın.",
+      "humanInputProfileHelper": "Sentezlenen tuş vuruşlarına insana benzer bir zamanlama profili uygular. En yüksek hızda yazmak için devre dışı bırakın",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Eksik: {{bins}}",
     "skillMissingEnv": "Eksik ortam değişkenleri: {{vars}}",
@@ -551,7 +553,7 @@
       "title": "Git",
       "pullStrategy": "Pull stratejisi",
       "pullStrategyDesc": "Senkronizasyon sırasında git pull'un remote değişiklikleri nasıl entegre edeceği",
-      "pullStrategyHint": "Rebase (varsayılan): Commit'lerinizi remote üzerine replays. Linear history oluşturur.\n\nMerge: Branches diverged olduğunda merge commit oluşturur. Tam history'yi korur.\n\nFast-forward only: Merge gerekmediğinde pull'a izin verir. Branches diverged ise reddeder.",
+      "pullStrategyHint": "Rebase (varsayılan): Commit'lerinizi remote üzerine replays. Linear history oluşturur.\n\nMerge: Branches diverged olduğunda merge commit oluşturur. Tam history'yi korur.\n\nFast-forward only: Merge gerekmediğinde pull'a izin verir. Branches diverged ise reddeder",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (varsayılan)",
       "strategyFfOnly": "Yalnızca Fast-forward (katı)",
@@ -600,7 +602,7 @@
     "checkFailed": "Güncelleme denetimi başarısız",
     "checking": "Güncellemeler denetleniyor…",
     "officialInstalled": "Resmi uygulama yüklendi",
-    "officialInstalledDesc": "{{version}}, {{path}} konumuna yüklendi. Bu yerel derleme değişmeden çalışmaya devam ediyor.",
+    "officialInstalledDesc": "{{version}}, {{path}} konumuna yüklendi. Bu yerel derleme değişmeden çalışmaya devam ediyor",
     "downloadFailed": "Güncelleme indirmesi başarısız",
     "retryNow": "Şimdi yeniden dene",
     "downloadTimeout": "İndirme zaman aşımına uğradı. Ağınızı veya proxy ayarlarınızı kontrol edip yeniden deneyin.",
@@ -760,7 +762,7 @@
     "tableVersion": "Sürüm",
     "tableStatus": "Durum",
     "installSection": "Yükle",
-    "installHintNote": "Platformunuz için önerilen yükleme komutu. Çoğu sistem bağımlılığı yönetici izni gerektirir, bu yüzden otomatik çalıştırmıyoruz — kopyalayıp terminal'inize yapıştırın."
+    "installHintNote": "Platformunuz için önerilen yükleme komutu. Çoğu sistem bağımlılığı yönetici izni gerektirir, bu yüzden otomatik çalıştırmıyoruz — kopyalayıp terminal'inize yapıştırın"
   },
   "agentSessions": {
     "chatFontSize": "Sohbet Yazı Boyutu",
@@ -822,7 +824,7 @@
   "agentEvolution": {
     "enableForAgent": "{{agentName}} için Evrim’i etkinleştir",
     "noAgentsTitle": "Kullanılabilir Agent yok",
-    "noAgentsSubtitle": "Evrim’i yapılandırmak için bir Agent oluşturun veya içe aktarın."
+    "noAgentsSubtitle": "Evrim’i yapılandırmak için bir Agent oluşturun veya içe aktarın"
   },
   "org": {},
   "learningsBrowser": {
@@ -969,10 +971,10 @@
     "developerOptions": "Geliştirici seçenekleri",
     "retryConnection": "Bağlantıyı yeniden dene",
     "enabled": "Mobil Uzaktan Erişim",
-    "enabledDesc": "Eşleştirilmiş bir telefonun bu masaüstündeki agent oturumlarını aynı Wi‑Fi LAN üzerinden veya genel aktarıcı aracılığıyla yönetmesine izin ver",
+    "enabledDesc": "Bu bilgisayardaki oturumları telefonunuzdan görüntüleyin ve yönetin",
     "securityNotice": "LAN erişimi açıkken ağınızdaki bağlantı URL'si ve token'ına sahip herkes oturumları kontrol edebilir. Sızdığını düşünüyorsanız token'ı yeniden oluşturun",
-    "outdoorTitle": "Dış bağlantı",
-    "outdoorDesc": "Telefonunuzun 4G, 5G veya başka bir ağ üzerinden çalışması için masaüstünü genel bir aktarıcıya giden yönde bağlayın",
+    "outdoorTitle": "İnternet bağlantılarına izin ver",
+    "outdoorDesc": "Kapalıyken telefonlar bu bilgisayara internet üzerinden bağlanamaz",
     "relayEnabled": "Genel aktarıcıya bağlan",
     "relayEnabledDesc": "Masaüstü giden bir WSS bağlantısı açar; yönlendiricide port yönlendirme gerekmez",
     "relayUrl": "Aktarıcı adresi",
@@ -981,7 +983,7 @@
     "relayPresetLocal": "Yerel",
     "relayPresetProduction": "Üretim",
     "cloudLoginTitle": "ORG2 Cloud girişi",
-    "cloudLoginDescSignedIn": "{{identity}} olarak giriş yapıldı — aktarıcı dış eşleştirme için bu hesabı kullanır",
+    "cloudLoginDescSignedIn": "{{identity}} olarak oturum açıldı",
     "cloudLoginDescSignedOut": "Genel aktarıcı üzerinden eşleştirmeden önce ORG2 Cloud'a giriş yapın",
     "relayStatusCloudLoginRequired": "Ayarlar → Genel bölümünden ORG2 Cloud'a giriş yapın, ardından aktarıcı durumunu yenileyin",
     "relayStatusAuthFailedSignedIn": "Aktarıcı bağlantıyı reddetti — Ayarlar → Genel altında çıkış yapıp yeniden giriş yapın",
@@ -992,7 +994,7 @@
     "relayStatus_disabled": "Devre dışı",
     "relayStatus_config_error": "Yapılandırma hatası",
     "relayStatus_stopped": "Durduruldu",
-    "startOutdoorPairing": "Dış eşleştirme kodu oluştur",
+    "startOutdoorPairing": "Eşleştirme kodu oluştur",
     "fullAccess": "Eylemlere izin ver",
     "fullAccessDesc": "Açıkken telefon mesaj gönderebilir, oturumları durdurabilir ve izinleri yanıtlayabilir; kapalıyken yalnızca görüntüleme yapabilir",
     "pairingExpires": "Eşleştirme kodunun süresi {{seconds}} saniye içinde doluyor",
@@ -1027,16 +1029,19 @@
     "pairedDevicesDesc": "Aktarıcı üzerinden yetkilendirilen telefonlar; erişim istediğiniz zaman iptal edilebilir",
     "devicesLoadFailed": "Eşleştirilmiş cihazlar yüklenemedi",
     "noDevices": "Eşleştirilmiş cihaz yok",
-    "noDevicesDesc": "Bir dış eşleştirme kodu oluşturun, ardından Mobil Uzaktan Erişim PWA'sında tarayın veya yapıştırın",
+    "noDevicesDesc": "Bir telefon ekledikten sonra bu bilgisayardaki oturumlara erişebilirsiniz",
     "deviceLabel": "Cihaz",
     "deviceTier": "Düzey",
-    "deviceTierFull": "Tam erişim",
-    "deviceTierReadOnly": "Salt okunur",
+    "deviceTierFull": "Kontrol edebilir",
+    "deviceTierReadOnly": "Yalnızca görüntüleme",
     "deviceLastSeen": "Son görülme",
     "devicePairedAt": "Eşleştirilme: {{time}}",
     "deviceLastSeenValue": "Son görülme: {{time}}",
     "deviceNeverSeen": "Hiç bağlanmadı",
     "deviceOnline": "Çevrimiçi",
-    "deviceOffline": "Çevrimdışı"
+    "deviceOffline": "Çevrimdışı",
+    "addPhone": "Telefon ekle",
+    "pairingPermission": "Telefon izinleri",
+    "relayDisabledHint": "İnternet bağlantıları kapalı. Gelişmiş ayarlardan etkinleştirebilirsiniz"
   }
 }

@@ -16,7 +16,10 @@ use crate::sources::imported_history::{
     watermark::{ImportedParseWatermark, WatermarkedTranscriptReader},
 };
 
-use super::impact::{collect_codex_impact_from_patch_apply_end, collect_codex_impact_from_payload};
+use super::impact::{
+    collect_codex_impact_from_file_change_item, collect_codex_impact_from_patch_apply_end,
+    collect_codex_impact_from_payload,
+};
 use super::index::{
     codex_sessions_dir_for_session_path, codex_thread_id_from_file_stem,
     collect_codex_session_files,
@@ -71,11 +74,16 @@ struct CodexSessionMetaState {
     prev_cached: i64,
     prev_cache_write: i64,
     prev_output: i64,
-    // Primary impact source: `patch_apply_end` events, which Codex emits after
-    // every *successful* apply with a structured `changes` map (path ->
-    // unified_diff). This covers every edit path uniformly — the `apply_patch`
-    // tool, `exec`-wrapped patches, etc. The tool-call scan is only a
-    // fallback for older rollouts that predate `patch_apply_end`.
+    // Impact sources, in `finish` priority order. Codex Desktop records each
+    // *successful* apply as a completed `FileChange` item — the only record of
+    // `exec`-wrapped patches. CLI rollouts that persist events instead carry
+    // the same `changes` map on `patch_apply_end`. Both describe the same
+    // applies, so they are tallied apart and never summed. The tool-call scan
+    // is only a fallback for rollouts that predate both.
+    #[serde(default)]
+    file_change_impact: ImportedHistoryImpactStats,
+    #[serde(default)]
+    file_change_touched: BTreeSet<String>,
     impact: ImportedHistoryImpactStats,
     touched_files: BTreeSet<String>,
     fallback_impact: ImportedHistoryImpactStats,
@@ -203,6 +211,11 @@ impl CodexSessionMetaState {
                 self.prev_output = cum_output;
             }
         }
+        collect_codex_impact_from_file_change_item(
+            &parsed.payload,
+            &mut self.file_change_impact,
+            &mut self.file_change_touched,
+        );
         collect_codex_impact_from_patch_apply_end(
             &parsed.payload,
             &mut self.impact,
@@ -220,12 +233,15 @@ impl CodexSessionMetaState {
         record: &ImportedHistoryDiscoveredRecord,
         external_title: String,
     ) -> Option<CodexAppSessionMeta> {
-        // Prefer the authoritative `patch_apply_end` tally; only fall back to
-        // the tool-call scan when no successful applies were recorded.
-        if self.touched_files.is_empty()
-            && self.impact.lines_added == 0
-            && self.impact.lines_removed == 0
-        {
+        // Prefer an authoritative tally of successful applies; only fall back
+        // to the tool-call scan when neither record kind was written.
+        let is_empty = |impact: &ImportedHistoryImpactStats, touched: &BTreeSet<String>| {
+            touched.is_empty() && impact.lines_added == 0 && impact.lines_removed == 0
+        };
+        if !is_empty(&self.file_change_impact, &self.file_change_touched) {
+            self.impact = self.file_change_impact;
+            self.touched_files = self.file_change_touched;
+        } else if is_empty(&self.impact, &self.touched_files) {
             self.impact = self.fallback_impact;
             self.touched_files = self.fallback_touched;
         }

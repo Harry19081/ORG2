@@ -13,7 +13,9 @@ import {
 } from "vitest";
 
 import {
+  type PairedDeviceInfo,
   type PairingInitOutput,
+  type RelayStatus,
   mobileRemoteApi,
 } from "@src/api/tauri/mobileRemote";
 import Message from "@src/components/Message";
@@ -37,6 +39,16 @@ const mocks = vi.hoisted(() => ({
   settings: new Map<string, unknown>(),
   setRelayUrl: vi.fn(),
   saveSettings: vi.fn(),
+  relayStatus: null as RelayStatus | null,
+  relayStatusLoading: false,
+  relayStatusError: null as string | null,
+  refreshRelayStatus: vi.fn(),
+  manualRefreshRequired: false,
+  setRelayEnabled: vi.fn(),
+  devices: [] as PairedDeviceInfo[],
+  devicesLoading: false,
+  devicesError: null as string | null,
+  refreshDevices: vi.fn(),
 }));
 
 vi.mock("react-i18next", () => ({
@@ -54,7 +66,13 @@ vi.mock("jotai", async (importOriginal) => {
   const actual = await importOriginal<typeof import("jotai")>();
   return {
     ...actual,
-    useAtomValue: () => mocks.cloudAuth,
+    useAtomValue: () =>
+      mocks.cloudAuth
+        ? {
+            supabaseUrl: "https://cloud.example.test",
+            ...mocks.cloudAuth,
+          }
+        : null,
     useSetAtom: () => mocks.saveSettings,
   };
 });
@@ -81,6 +99,9 @@ vi.mock("@src/components/Message", () => ({
 
 vi.mock("@src/hooks/settings/useSettings", () => ({
   useSetting: (key: string) => {
+    if (key === "mobileRemote.relayEnabled") {
+      return [mocks.settings.get(key), mocks.setRelayEnabled];
+    }
     if (key === "mobileRemote.relayUrl") {
       return [mocks.settings.get(key), mocks.setRelayUrl];
     }
@@ -90,19 +111,20 @@ vi.mock("@src/hooks/settings/useSettings", () => ({
 
 vi.mock("@src/hooks/async/useAsyncData", () => ({
   useAsyncData: <T>({ initialData }: { initialData: T }) => ({
-    data: initialData,
-    error: null,
-    loading: false,
-    refresh: vi.fn(),
+    data: Array.isArray(initialData) ? mocks.devices : initialData,
+    error: mocks.devicesError,
+    loading: mocks.devicesLoading,
+    refresh: mocks.refreshDevices,
   }),
 }));
 
 vi.mock("../useMobileRelayStatus", () => ({
   useMobileRelayStatus: () => ({
-    data: null,
-    loading: false,
-    error: null,
-    refresh: vi.fn(),
+    data: mocks.relayStatus,
+    loading: mocks.relayStatusLoading,
+    error: mocks.relayStatusError,
+    refresh: mocks.refreshRelayStatus,
+    manualRefreshRequired: mocks.manualRefreshRequired,
   }),
 }));
 
@@ -147,6 +169,18 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     mocks.settings.set("mobileRemote.lanToken", "lan-token");
     mocks.settings.set("mobileRemote.lanPort", 13847);
     mocks.setRelayUrl.mockReset();
+    mocks.setRelayEnabled.mockReset().mockImplementation((next) => {
+      mocks.settings.set("mobileRemote.relayEnabled", next);
+    });
+    mocks.relayStatus = null;
+    mocks.relayStatusLoading = false;
+    mocks.relayStatusError = null;
+    mocks.manualRefreshRequired = false;
+    mocks.refreshRelayStatus.mockReset();
+    mocks.devices = [];
+    mocks.devicesLoading = false;
+    mocks.devicesError = null;
+    mocks.refreshDevices.mockReset();
     mocks.saveSettings.mockReset().mockImplementation(async (updates) => {
       for (const [key, value] of Object.entries(updates))
         mocks.settings.set(key, value);
@@ -196,7 +230,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     );
     await renderSection();
     expect(container.querySelector("input")).toBeNull();
-    expect(container.textContent).toContain("mobileRemote.relayStatus");
+    expect(container.textContent).not.toContain("mobileRemote.outdoorTitle");
     openAdvanced();
     expect(container.querySelector<HTMLInputElement>("input")?.value).toBe(
       "wss://custom.example.test/v1/mobile/ws"
@@ -215,6 +249,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
       mocks.settings.set("mobileRemote.relayEnabled", false);
       mocks.settings.set("mobileRemote.relayUrl", url);
       await renderSection();
+      openAdvanced();
       act(() =>
         container
           .querySelectorAll<HTMLButtonElement>('[role="switch"]')[1]
@@ -335,6 +370,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
   });
 
   it("requests an actual reconnect and prevents duplicate retries while pending", async () => {
+    mocks.cloudAuth = { userId: "user-1" };
     let resolve!: () => void;
     vi.mocked(mobileRemoteApi.notifyCloudAuthChanged).mockImplementationOnce(
       () =>
@@ -420,6 +456,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     mocks.settings.set("mobileRemote.relayEnabled", false);
     await renderSection();
 
+    openAdvanced();
     const text = container.textContent ?? "";
     expect(text.indexOf("mobileRemote.cloudLoginTitle")).toBeLessThan(
       text.indexOf("mobileRemote.outdoorTitle")
@@ -453,6 +490,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
   it("uses the same ORG2 Cloud login row for the local preset", async () => {
     mocks.settings.set("mobileRemote.relayUrl", MOBILE_REMOTE_RELAY_LOCAL_URL);
     await renderSection();
+    openAdvanced();
 
     expect(container.textContent).toContain("mobileRemote.cloudLoginTitle");
     expect(container.textContent).toContain(
@@ -468,8 +506,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     await renderSection();
 
     const pairingButton = Array.from(container.querySelectorAll("button")).find(
-      (candidate) =>
-        candidate.textContent?.trim() === "mobileRemote.startOutdoorPairing"
+      (candidate) => candidate.textContent?.trim() === "mobileRemote.addPhone"
     );
     expect(pairingButton?.disabled).toBe(true);
   });
@@ -479,8 +516,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     await renderSection();
 
     const pairingButton = Array.from(container.querySelectorAll("button")).find(
-      (candidate) =>
-        candidate.textContent?.trim() === "mobileRemote.startOutdoorPairing"
+      (candidate) => candidate.textContent?.trim() === "mobileRemote.addPhone"
     );
     expect(pairingButton?.disabled).toBe(true);
   });
@@ -494,8 +530,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     await renderSection();
 
     const pairingButton = Array.from(container.querySelectorAll("button")).find(
-      (candidate) =>
-        candidate.textContent?.trim() === "mobileRemote.startOutdoorPairing"
+      (candidate) => candidate.textContent?.trim() === "mobileRemote.addPhone"
     );
     expect(pairingButton?.disabled).toBe(false);
     expect(container.textContent).toContain(
@@ -515,10 +550,9 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
       expect(container.textContent).not.toContain("mobileRemote.lanAdvanced");
       expect(container.textContent).not.toContain("mobileRemote.refreshLanIp");
 
+      clickText("mobileRemote.addPhone");
       if (tier === "read_only") {
-        const switches =
-          container.querySelectorAll<HTMLButtonElement>('[role="switch"]');
-        act(() => switches[switches.length - 1].click());
+        clickText("mobileRemote.deviceTierReadOnly");
       }
 
       const findButton = (label: string): HTMLButtonElement => {
@@ -573,9 +607,119 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
         pairingCode: pairing.pairingCode,
         tier,
       });
-      expect(findButton("mobileRemote.startOutdoorPairing").disabled).toBe(
-        false
-      );
+      expect(findButton("mobileRemote.addPhone").disabled).toBe(false);
     }
   );
+  it("keeps one account identity and places advanced settings after devices", async () => {
+    mocks.cloudAuth = { userId: "user-1", profile: { displayName: "Junyu" } };
+    mocks.relayStatus = {
+      phase: "online",
+      message: null,
+      reconnectAttempt: 0,
+      connectedAtMs: 1,
+    };
+    await renderSection();
+    expect((container.textContent?.match(/Junyu/g) ?? []).length).toBe(1);
+    expect(container.textContent).not.toContain("mobileRemote.cloudLoginTitle");
+    expect(container.textContent).not.toContain("mobileRemote.outdoorTitle");
+    expect(container.textContent).not.toContain("mobileRemote.fullAccess");
+    expect(container.textContent).not.toContain("mobileRemote.sasDesktopHint");
+    expect(container.querySelectorAll('[role="switch"]')).toHaveLength(1);
+    const text = container.textContent ?? "";
+    expect(text.indexOf("mobileRemote.addPhone")).toBeLessThan(
+      text.indexOf("mobileRemote.pairedDevices")
+    );
+    expect(text.indexOf("mobileRemote.pairedDevices")).toBeLessThan(
+      text.indexOf("mobileRemote.advancedSettings")
+    );
+    expect(container.querySelector('[role="status"]')?.textContent).toBe(
+      "mobileRemote.relayStatus_online"
+    );
+    expect(text).not.toContain("common:actions.refresh");
+    expect(text).not.toContain("mobileRemote.retryConnection");
+  });
+
+  it.each(["subscription", "read"])(
+    "preserves manual recovery after a %s failure",
+    async (failure) => {
+      mocks.cloudAuth = { userId: "user-1" };
+      mocks.relayStatus = {
+        phase: "online",
+        message: null,
+        reconnectAttempt: 0,
+        connectedAtMs: 1,
+      };
+      mocks.manualRefreshRequired = failure === "subscription";
+      mocks.relayStatusError = failure === "read" ? "status unavailable" : null;
+      await renderSection();
+      clickText("common:actions.refresh");
+      expect(mocks.refreshRelayStatus).toHaveBeenCalledOnce();
+      expect(mobileRemoteApi.notifyCloudAuthChanged).not.toHaveBeenCalled();
+    }
+  );
+
+  it("preserves the connected snapshot during an automatic status refresh", async () => {
+    mocks.cloudAuth = { userId: "user-1" };
+    mocks.relayStatus = {
+      phase: "online",
+      message: null,
+      reconnectAttempt: 0,
+      connectedAtMs: 1,
+    };
+    mocks.relayStatusLoading = true;
+    await renderSection();
+    expect(container.querySelector('[role="status"]')?.textContent).toBe(
+      "mobileRemote.relayStatus_online"
+    );
+    expect(container.textContent).not.toContain("common:actions.refresh");
+  });
+
+  it("keeps device management and advanced recovery available with internet connections off", async () => {
+    mocks.cloudAuth = { userId: "user-1" };
+    mocks.settings.set("mobileRemote.relayEnabled", false);
+    mocks.devices = [
+      {
+        deviceId: "phone-123456",
+        desktopId: "desktop-1",
+        label: "My phone",
+        tier: "read_only",
+        isPrimary: true,
+        pairedAtMs: 1,
+        lastSeenMs: 2,
+      },
+    ];
+    await renderSection();
+    expect(container.textContent).toContain("mobileRemote.relayDisabledHint");
+    expect(
+      container.querySelector(
+        '[data-testid="mobile-remote-paired-device-phone-123456"]'
+      )
+    ).not.toBeNull();
+    const add = Array.from(container.querySelectorAll("button")).find(
+      (button) => button.textContent === "mobileRemote.addPhone"
+    );
+    expect(add?.disabled).toBe(true);
+    openAdvanced();
+    expect(
+      container.querySelector('[aria-label="mobileRemote.outdoorTitle"]')
+    ).not.toBeNull();
+    expect(mocks.saveSettings).not.toHaveBeenCalled();
+    expect(mocks.settings.get("mobileRemote.allowLanExposure")).toBe(false);
+  });
+
+  it("keeps the device loading, empty, and error recovery states", async () => {
+    mocks.cloudAuth = { userId: "user-1" };
+    mocks.devicesLoading = true;
+    await renderSection();
+    expect(container.textContent).not.toContain("mobileRemote.noDevices");
+    mocks.devicesLoading = false;
+    await renderSection();
+    expect(container.textContent).toContain("mobileRemote.noDevices");
+    mocks.devicesError = "device list unavailable";
+    await renderSection();
+    expect(container.textContent).toContain("mobileRemote.devicesLoadFailed");
+    expect(container.textContent).toContain("device list unavailable");
+    clickText("actions.retry");
+    expect(mocks.refreshDevices).toHaveBeenCalledOnce();
+  });
 });

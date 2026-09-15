@@ -35,6 +35,10 @@ import type { SpotlightPlacement } from "@src/store/ui/uiAtom";
 
 import { AppIconPicker } from "./AppIconPicker";
 import { ChatPanelAppearanceTab } from "./ChatPanelAppearanceTab";
+import {
+  HIGH_REFRESH_RATE_SUPPORTED,
+  HighRefreshRateRow,
+} from "./HighRefreshRateRow";
 import { UI_SCALE_OPTIONS, useAppearanceState } from "./useAppearanceState";
 
 const getApproxFontSize = (scale: number): string => {
@@ -170,6 +174,12 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
               />
             </SectionRow>
           </SectionContainer>
+
+          {HIGH_REFRESH_RATE_SUPPORTED && (
+            <SectionContainer>
+              <HighRefreshRateRow settingsSearchKeys="general.highRefreshRate" />
+            </SectionContainer>
+          )}
 
           <SectionContainer title={t("general.skins")}>
             <SectionRow

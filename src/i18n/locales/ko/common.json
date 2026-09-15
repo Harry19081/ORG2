@@ -491,7 +491,7 @@
   },
   "optional": "선택",
   "common": {
-    "display": "표시",
+    "display": "UI 설정",
     "on": "켜기",
     "off": "끄기",
     "default": "기본값",
@@ -1093,7 +1093,7 @@
       "createTokenButton": "Token 만들기",
       "openGitSettingsButton": "설정 열기",
       "configureInSettings": "설정에서 Git 구성",
-      "configureInSettingsDesc": "설정 → 연결에서 GitHub App 액세스를 추가하거나 token을 저장하거나 로컬 자격 증명을 스캔한 다음 이 Git 작업을 다시 시도하세요."
+      "configureInSettingsDesc": "설정 → 연결에서 GitHub App 액세스를 추가하거나 token을 저장하거나 로컬 자격 증명을 스캔한 다음 이 Git 작업을 다시 시도하세요"
     },
     "actions": {
       "publish": "Publish",
@@ -1332,7 +1332,7 @@
       "cannotParseRepoName": "origin 원격 저장소에서 저장소 이름을 파싱할 수 없습니다",
       "authRequired": {
         "title": "GitHub 연결",
-        "description": "설정 → 연결에서 GitHub 계정을 연결하세요."
+        "description": "설정 → 연결에서 GitHub 계정을 연결하세요"
       },
       "navigationTrail": "Pull request 탐색",
       "failedToLoad": "pull request를 불러오지 못했습니다",
@@ -1502,10 +1502,10 @@
       "newIssueBodyPlaceholder": "Issue 설명 (선택 사항)…",
       "authRequired": {
         "title": "GitHub 연결",
-        "description": "설정 → 연결에서 GitHub 계정을 연결하세요."
+        "description": "설정 → 연결에서 GitHub 계정을 연결하세요"
       },
       "reAuthRequired": "GitHub 인증 필요",
-      "reAuthDescription": "GitHub token이 만료되었습니다. 설정 → 연결에서 다시 연결하세요.",
+      "reAuthDescription": "GitHub token이 만료되었습니다. 설정 → 연결에서 다시 연결하세요",
       "goToSettings": "설정으로 이동",
       "loadingTimeline": "활동 불러오는 중…",
       "label": "Issue",
@@ -2151,7 +2151,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "ORG2를 종료하시겠습니까?",
-    "subtitle": "실행 중인 세션은 현재 상태를 유지합니다. 나중에 ORG2를 다시 열 수 있습니다.",
+    "subtitle": "실행 중인 세션은 현재 상태를 유지합니다. 나중에 ORG2를 다시 열 수 있습니다",
     "cancel": "취소",
     "confirm": "종료"
   },
@@ -2181,7 +2181,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari는 macOS가 보호하는 폴더에 쿠키를 저장합니다. 시스템 설정의 전체 디스크 접근 권한에서 ORG2를 허용한 다음 다시 확인하세요.",
+      "explain": "Safari는 macOS가 보호하는 폴더에 쿠키를 저장합니다. 시스템 설정의 전체 디스크 접근 권한에서 ORG2를 허용한 다음 다시 확인하세요",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2206,7 +2206,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2215,7 +2215,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"

@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "システム設定を開けませんでした",
     "preventSleep": "セッション実行中のスリープを防止",
     "preventSleepDesc": "いずれかの Agent セッションが作動している間、Mac または PC をスリープさせません。すべてのセッションが終了すると自動的に解除されます",
+    "highRefreshRate": "高リフレッシュレート",
+    "highRefreshRateDesc": "ディスプレイの最大リフレッシュレート（ProMotion ディスプレイでは最大 120 Hz）で描画します。スクロール、サイズ変更、アニメーションが滑らかになりますが、動作中はより多くの電力を消費します",
     "devMode": "開発者モード",
     "devModeDesc": "ネイティブの Inspect Element コンテキストメニューとブラウザ DevTools を有効にします。開発とデバッグ専用",
     "presenceGuidanceOnline": "オンライン — Agent への指示",
@@ -383,13 +385,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "デスクトップ制御中に ORG2 を隠す",
-      "hideBeforeActionHelper": "Peekaboo の操作中は ORG2 のメインウィンドウを隠し、Wingman バーとフローティングキャプションを表示して、Agent がフォーカスを管理しなくて済むようにします。",
+      "hideBeforeActionHelper": "Peekaboo の操作中は ORG2 のメインウィンドウを隠し、Wingman バーとフローティングキャプションを表示して、Agent がフォーカスを管理しなくて済むようにします",
       "antiDetection": "HID 自動化検出対策の強化",
-      "antiDetectionHelper": "Peekaboo がクリックやキー入力に対し、純粋なアクセシビリティ操作ではなく実際の CGEvent（HID）入力を送出するようにします。これにより自動化検出を備えたアプリ（例: WeChat）がデスクトップ制御をブロックしにくくなります。",
+      "antiDetectionHelper": "Peekaboo がクリックやキー入力に対し、純粋なアクセシビリティ操作ではなく実際の CGEvent（HID）入力を送出するようにします。これにより自動化検出を備えたアプリ（例: WeChat）がデスクトップ制御をブロックしにくくなります",
       "humanInputProfile": "人間的な入力リズム",
-      "humanInputProfileHelper": "合成したキー入力に人間らしいタイミングプロファイルを適用します。無効にすると最高速度で入力します。",
+      "humanInputProfileHelper": "合成したキー入力に人間らしいタイミングプロファイルを適用します。無効にすると最高速度で入力します",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "不足：{{bins}}",
     "skillMissingEnv": "不足する環境変数：{{vars}}",
@@ -551,7 +553,7 @@
       "title": "Git",
       "pullStrategy": "Pull 戦略",
       "pullStrategyDesc": "同期時に git pull が remote の変更をどう統合するか",
-      "pullStrategyHint": "Rebase（デフォルト）：あなたの commit を remote の上に replay。linear history を作成。\n\nMerge：branch が diverge した場合に merge commit を作成。完全な history を保持。\n\nFast-forward only：merge が不要な場合のみ pull を許可。branch が diverge している場合は拒否。",
+      "pullStrategyHint": "Rebase（デフォルト）：あなたの commit を remote の上に replay。linear history を作成。\n\nMerge：branch が diverge した場合に merge commit を作成。完全な history を保持。\n\nFast-forward only：merge が不要な場合のみ pull を許可。branch が diverge している場合は拒否",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase（デフォルト）",
       "strategyFfOnly": "Fast-forward のみ（厳格）",
@@ -600,7 +602,7 @@
     "checkFailed": "更新の確認に失敗しました",
     "checking": "更新を確認中…",
     "officialInstalled": "公式アプリをインストールしました",
-    "officialInstalledDesc": "{{version}} を {{path}} にインストールしました。このローカルビルドは変更されず、引き続き実行されます。",
+    "officialInstalledDesc": "{{version}} を {{path}} にインストールしました。このローカルビルドは変更されず、引き続き実行されます",
     "downloadFailed": "更新のダウンロードに失敗しました",
     "retryNow": "今すぐ再試行",
     "downloadTimeout": "ダウンロードがタイムアウトしました。ネットワークまたはプロキシを確認して再試行してください。",
@@ -736,7 +738,7 @@
     "tableVersion": "バージョン",
     "tableStatus": "ステータス",
     "installSection": "インストール",
-    "installHintNote": "お使いのプラットフォーム向けに推奨されるインストールコマンドです。ほとんどのシステム依存は管理者権限が必要なため、自動実行はしません — terminal にコピー & ペーストしてください。"
+    "installHintNote": "お使いのプラットフォーム向けに推奨されるインストールコマンドです。ほとんどのシステム依存は管理者権限が必要なため、自動実行はしません — terminal にコピー & ペーストしてください"
   },
   "storage": {
     "dataDirectory": "データディレクトリ",
@@ -822,7 +824,7 @@
   "agentEvolution": {
     "enableForAgent": "{{agentName}} の進化を有効化",
     "noAgentsTitle": "利用可能な Agent はありません",
-    "noAgentsSubtitle": "進化を設定するには Agent を作成またはインポートしてください。"
+    "noAgentsSubtitle": "進化を設定するには Agent を作成またはインポートしてください"
   },
   "org": {},
   "learningsBrowser": {
@@ -969,10 +971,10 @@
     "developerOptions": "開発者向けオプション",
     "retryConnection": "接続を再試行",
     "enabled": "Mobile Remote",
-    "enabledDesc": "ペアリングしたスマートフォンから、同じ Wi‑Fi LAN または公開リレー経由でこのデスクトップの Agent セッションを操作できるようにします",
+    "enabledDesc": "スマートフォンでこのコンピューター上のセッションを表示・操作",
     "securityNotice": "LAN 公開がオンの場合、接続 URL とトークンを知っているネットワーク上の誰もがセッションを操作できます。漏洩が疑われる場合はトークンを再生成してください",
-    "outdoorTitle": "外出先からの接続",
-    "outdoorDesc": "デスクトップから公開リレーへ外向きに接続し、4G、5G、または別のネットワークからスマートフォンで利用できるようにします",
+    "outdoorTitle": "インターネット接続を許可",
+    "outdoorDesc": "オフの場合、スマートフォンからインターネット経由でこのコンピューターに接続できません",
     "relayEnabled": "公開リレーに接続",
     "relayEnabledDesc": "デスクトップが外向きの WSS 接続を開くため、ルーターのポート転送は不要です",
     "relayUrl": "リレーアドレス",
@@ -981,7 +983,7 @@
     "relayPresetLocal": "ローカル",
     "relayPresetProduction": "本番",
     "cloudLoginTitle": "ORG2 Cloud ログイン",
-    "cloudLoginDescSignedIn": "{{identity}} としてログイン中 — リレーはこのアカウントを外出先ペアリングに使用します",
+    "cloudLoginDescSignedIn": "{{identity}} としてログイン済み",
     "cloudLoginDescSignedOut": "公開リレー経由でペアリングする前に ORG2 Cloud にログインしてください",
     "relayStatusCloudLoginRequired": "設定 → 一般で ORG2 Cloud にログインしてから、リレーの状態を更新してください",
     "relayStatusAuthFailedSignedIn": "リレーが接続を拒否しました — 設定 → 一般でログアウトして再度ログインしてください",
@@ -992,7 +994,7 @@
     "relayStatus_disabled": "無効",
     "relayStatus_config_error": "設定エラー",
     "relayStatus_stopped": "停止",
-    "startOutdoorPairing": "外出先用ペアリングコードを生成",
+    "startOutdoorPairing": "ペアリングコードを生成",
     "fullAccess": "操作を許可",
     "fullAccessDesc": "オンにすると、スマートフォンからメッセージの送信、セッションの停止、権限への応答ができます。オフの場合は閲覧のみです",
     "pairingExpires": "ペアリングコードは {{seconds}} 秒後に期限切れになります",
@@ -1027,16 +1029,19 @@
     "pairedDevicesDesc": "リレー経由で認可されたスマートフォン。アクセスはいつでも取り消せます",
     "devicesLoadFailed": "ペアリング済みデバイスを読み込めませんでした",
     "noDevices": "ペアリング済みデバイスはありません",
-    "noDevicesDesc": "外出先用ペアリングコードを生成し、Mobile Remote PWA でスキャンまたは貼り付けてください",
+    "noDevicesDesc": "スマートフォンを追加すると、このコンピューター上のセッションにアクセスできます",
     "deviceLabel": "デバイス",
     "deviceTier": "権限",
-    "deviceTierFull": "フルアクセス",
-    "deviceTierReadOnly": "閲覧のみ",
+    "deviceTierFull": "操作可能",
+    "deviceTierReadOnly": "表示のみ",
     "deviceLastSeen": "最終接続",
     "devicePairedAt": "ペアリング {{time}}",
     "deviceLastSeenValue": "最終接続 {{time}}",
     "deviceNeverSeen": "未接続",
     "deviceOnline": "オンライン",
-    "deviceOffline": "オフライン"
+    "deviceOffline": "オフライン",
+    "addPhone": "スマートフォンを追加",
+    "pairingPermission": "スマートフォンの権限",
+    "relayDisabledHint": "インターネット接続はオフです。詳細設定で有効にできます"
   }
 }

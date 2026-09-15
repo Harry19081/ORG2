@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import Switch from "@src/components/Switch";
 import { CodeMirrorEditor } from "@src/features/CodeMirror/Editor";
 import type { UseSkillEditorReturn } from "@src/hooks/skills/useSkillEditor";
@@ -139,6 +140,7 @@ export const BundledFileEntry: React.FC<{
       <div className="mb-2 flex items-center gap-2">
         <Input
           value={file.relativePath}
+          disabled={Boolean(file.readError || file.binary)}
           onChange={(val: string) => onChange({ ...file, relativePath: val })}
           placeholder={t("skillsHub.filePathPlaceholder")}
           size="default"
@@ -157,19 +159,27 @@ export const BundledFileEntry: React.FC<{
           title={t("skillsHub.removeFile")}
         />
       </div>
-      <div className="h-[150px] overflow-hidden rounded-md border border-border-2">
-        <CodeMirrorEditor
-          value={file.content}
-          onChange={(val) => onChange({ ...file, content: val })}
-          language={languageFromPath(file.relativePath)}
-          height="150px"
-          enableMinimap={false}
-          enableDirtyDiff={false}
-          enableFindReplace={false}
-          enableGoToLine={false}
-          registerWithService={false}
-        />
-      </div>
+      {file.readError || file.binary ? (
+        <PageNotice type="warning" title={t("common:status.error")}>
+          {file.binary
+            ? t("common:placeholders.binaryUnsupportedEncoding")
+            : file.readError}
+        </PageNotice>
+      ) : (
+        <div className="h-[150px] overflow-hidden rounded-md border border-border-2">
+          <CodeMirrorEditor
+            value={file.content}
+            onChange={(val) => onChange({ ...file, content: val })}
+            language={languageFromPath(file.relativePath)}
+            height="150px"
+            enableMinimap={false}
+            enableDirtyDiff={false}
+            enableFindReplace={false}
+            enableGoToLine={false}
+            registerWithService={false}
+          />
+        </div>
+      )}
     </div>
   );
 };

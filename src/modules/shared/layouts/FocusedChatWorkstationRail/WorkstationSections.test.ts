@@ -74,7 +74,7 @@ describe("WorkstationSections", () => {
     expect(markup).not.toContain("@Alice");
   });
 
-  it("shows the repository between the environment kind and agent harness", () => {
+  it("shows the branch between the repository and agent harness", () => {
     const markup = renderToStaticMarkup(
       createElement(WorkstationSections, {
         compact: true,
@@ -88,6 +88,7 @@ describe("WorkstationSections", () => {
                 icon: FolderClosedIcon,
                 label: "Codex Harness",
               },
+              branchName: "develop",
               repoName: "ORGII",
             },
             items: [],
@@ -98,7 +99,8 @@ describe("WorkstationSections", () => {
 
     expect(markup).toContain('data-testid="session-environment-agent-harness"');
     expect(markup.indexOf("Local")).toBeLessThan(markup.indexOf("ORGII"));
-    expect(markup.indexOf("ORGII")).toBeLessThan(
+    expect(markup.indexOf("ORGII")).toBeLessThan(markup.indexOf("develop"));
+    expect(markup.indexOf("develop")).toBeLessThan(
       markup.indexOf("Codex Harness")
     );
   });

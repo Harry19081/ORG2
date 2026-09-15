@@ -122,8 +122,7 @@ export interface GroupHeaderRendererProps {
   suppressRoundGap?: boolean;
   /**
    * Lifecycle phase of the tail turn: "complete" renders its "Agent worked
-   * for X" bar immediately (still expanded by default); "stale" also
-   * defaults it to collapsed like a historical turn.
+   * for X" bar and defaults it to collapsed like a historical turn.
    */
   tailTurnPhase?: TailTurnPhase;
   /**
@@ -168,7 +167,7 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
     tailTurnPhase = "running",
     hideUserMessage = false,
     compactUserMessage = true,
-    defaultTurnCollapsed = false,
+    defaultTurnCollapsed = true,
     renderPart = "all",
     onBeforeTurnCollapseToggle,
     onEditSubmit,

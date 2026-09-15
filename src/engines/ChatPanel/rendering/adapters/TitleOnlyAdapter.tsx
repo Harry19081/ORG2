@@ -34,6 +34,7 @@ import {
   type AwaitMeta,
   formatDurationShort,
   readAwaitMetaFromResult,
+  resolveAwaitWaitedMs,
   tallyItems,
 } from "./awaitMeta";
 
@@ -73,29 +74,6 @@ function resolveAwaitCommand(
     return "wait_for";
   }
   return "monitor";
-}
-
-/** Read Codex's wall-time line, falling back to the requested yield window. */
-function readCodexWaitedMs(
-  args: Record<string, unknown> | undefined,
-  result: Record<string, unknown> | undefined
-): number | undefined {
-  if (
-    args?.cell_id === undefined &&
-    args?.yield_time_ms === undefined &&
-    args?.duration_ms === undefined
-  ) {
-    return undefined;
-  }
-
-  for (const value of [result?.output, result?.content, result?.observation]) {
-    if (typeof value !== "string") continue;
-    const match = value.match(/Wall time\s*:?\s+([\d.]+)\s+seconds?/i);
-    if (match) return Number.parseFloat(match[1]) * 1000;
-  }
-
-  const requestedMs = args?.duration_ms ?? args?.yield_time_ms;
-  return typeof requestedMs === "number" ? requestedMs : undefined;
 }
 
 /** Format a remaining-ms value for `Waiting {{countdown}} ...` titles. */
@@ -226,8 +204,7 @@ function useAwaitExtras(
   const items = meta?.items ?? [];
   const representative =
     items.find((it) => it.status !== "running") ?? items[0];
-  const waitedMs =
-    representative?.waitedMs ?? readCodexWaitedMs(props.args, props.result);
+  const waitedMs = resolveAwaitWaitedMs(props.args, props.result, meta);
 
   const summary = buildSummary(items, t);
 

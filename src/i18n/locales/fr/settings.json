@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "Impossible d'ouvrir les Réglages Système",
     "preventSleep": "Empêcher la mise en veille pendant les sessions",
     "preventSleepDesc": "Garde votre Mac ou PC éveillé tant qu'une session Agent travaille. Libéré automatiquement à la fin de toutes les sessions",
+    "highRefreshRate": "Taux de rafraîchissement élevé",
+    "highRefreshRateDesc": "Affiche l'interface à la fréquence de rafraîchissement complète de votre écran, jusqu'à 120 Hz sur les écrans ProMotion. Le défilement, le redimensionnement et les animations sont plus fluides, mais consomment plus d'énergie pendant leur exécution",
     "devMode": "Mode développeur",
     "devModeDesc": "Active le menu contextuel natif Inspect Element et les DevTools du navigateur. Réservé au développement et au débogage",
     "presenceGuidanceOnline": "En ligne — consignes pour les agents",
@@ -383,13 +385,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Masquer ORG2 pendant le contrôle du bureau",
-      "hideBeforeActionHelper": "Masque la fenêtre principale ORG2 pendant que Peekaboo agit, et affiche la barre Wingman avec une légende flottante afin que l’Agent n’ait pas à gérer le focus.",
+      "hideBeforeActionHelper": "Masque la fenêtre principale ORG2 pendant que Peekaboo agit, et affiche la barre Wingman avec une légende flottante afin que l’Agent n’ait pas à gérer le focus",
       "antiDetection": "Renforcement anti-automatisation HID",
-      "antiDetectionHelper": "Fait envoyer à Peekaboo de véritables événements CGEvent (HID) pour les clics et les frappes au lieu de simples actions d’Accessibilité, afin que les applications avec détection d’automatisation (p. ex. WeChat) soient moins susceptibles de bloquer le contrôle du bureau.",
+      "antiDetectionHelper": "Fait envoyer à Peekaboo de véritables événements CGEvent (HID) pour les clics et les frappes au lieu de simples actions d’Accessibilité, afin que les applications avec détection d’automatisation (p. ex. WeChat) soient moins susceptibles de bloquer le contrôle du bureau",
       "humanInputProfile": "Cadence de frappe humaine",
-      "humanInputProfileHelper": "Applique un profil de minutage proche de l’humain aux frappes synthétisées. Désactivez pour taper à vitesse maximale.",
+      "humanInputProfileHelper": "Applique un profil de minutage proche de l’humain aux frappes synthétisées. Désactivez pour taper à vitesse maximale",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Manquant : {{bins}}",
     "skillMissingEnv": "Variables d'env manquantes : {{vars}}",
@@ -551,7 +553,7 @@
       "title": "Git",
       "pullStrategy": "Stratégie de pull",
       "pullStrategyDesc": "Comment git pull intègre les changements de remote lors de la synchronisation",
-      "pullStrategyHint": "Rebase (par défaut) : Replays vos commits sur remote. Crée un linear history.\n\nMerge : Crée un merge commit quand les branches ont diverged. Préserve le history complet.\n\nFast-forward only : N'autorise le pull que lorsqu'aucun merge n'est nécessaire. Refuse si les branches ont diverged.",
+      "pullStrategyHint": "Rebase (par défaut) : Replays vos commits sur remote. Crée un linear history.\n\nMerge : Crée un merge commit quand les branches ont diverged. Préserve le history complet.\n\nFast-forward only : N'autorise le pull que lorsqu'aucun merge n'est nécessaire. Refuse si les branches ont diverged",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (par défaut)",
       "strategyFfOnly": "Fast-forward uniquement (strict)",
@@ -600,7 +602,7 @@
     "checkFailed": "Échec de la recherche de mises à jour",
     "checking": "Recherche de mises à jour…",
     "officialInstalled": "Application officielle installée",
-    "officialInstalledDesc": "La version {{version}} est installée dans {{path}}. Cette build locale continue de fonctionner sans modification.",
+    "officialInstalledDesc": "La version {{version}} est installée dans {{path}}. Cette build locale continue de fonctionner sans modification",
     "downloadFailed": "Échec du téléchargement de la mise à jour",
     "retryNow": "Réessayer maintenant",
     "downloadTimeout": "Le téléchargement a expiré. Vérifiez votre réseau ou proxy, puis réessayez.",
@@ -760,7 +762,7 @@
     "tableVersion": "Version",
     "tableStatus": "Statut",
     "installSection": "Installer",
-    "installHintNote": "Commande d'installation suggérée pour votre plateforme. La plupart des dépendances système nécessitent des privilèges administrateur, nous ne les lançons donc pas automatiquement — copiez-la dans votre terminal."
+    "installHintNote": "Commande d'installation suggérée pour votre plateforme. La plupart des dépendances système nécessitent des privilèges administrateur, nous ne les lançons donc pas automatiquement — copiez-la dans votre terminal"
   },
   "agentSessions": {
     "chatFontSize": "Taille de police du chat",
@@ -822,7 +824,7 @@
   "agentEvolution": {
     "enableForAgent": "Activer l’évolution pour {{agentName}}",
     "noAgentsTitle": "Aucun Agent disponible",
-    "noAgentsSubtitle": "Créez ou importez un Agent pour configurer l’évolution."
+    "noAgentsSubtitle": "Créez ou importez un Agent pour configurer l’évolution"
   },
   "org": {},
   "learningsBrowser": {
@@ -969,10 +971,10 @@
     "developerOptions": "Options de développement",
     "retryConnection": "Réessayer la connexion",
     "enabled": "Mobile Remote",
-    "enabledDesc": "Permettre à un téléphone appairé de piloter les sessions d’agent sur cet ordinateur via le même réseau Wi‑Fi ou via le relais public",
+    "enabledDesc": "Utilisez votre téléphone pour consulter et contrôler les sessions sur cet ordinateur",
     "securityNotice": "Toute personne sur votre réseau disposant de l’URL de connexion et du token peut contrôler les sessions lorsque l’exposition LAN est activée. Régénérez le token si vous pensez qu’il a fuité",
-    "outdoorTitle": "Connexion à distance",
-    "outdoorDesc": "Connecter l’ordinateur en sortie à un relais public pour que votre téléphone fonctionne en 4G, 5G ou sur un autre réseau",
+    "outdoorTitle": "Autoriser les connexions Internet",
+    "outdoorDesc": "Si cette option est désactivée, les téléphones ne peuvent pas se connecter à cet ordinateur via Internet",
     "relayEnabled": "Se connecter au relais public",
     "relayEnabledDesc": "L’ordinateur ouvre une connexion WSS sortante ; aucune redirection de port n’est nécessaire sur le routeur",
     "relayUrl": "Adresse du relais",
@@ -981,7 +983,7 @@
     "relayPresetLocal": "Local",
     "relayPresetProduction": "Production",
     "cloudLoginTitle": "Connexion ORG2 Cloud",
-    "cloudLoginDescSignedIn": "Connecté en tant que {{identity}} — le relais utilise ce compte pour l’appairage à distance",
+    "cloudLoginDescSignedIn": "Connecté en tant que {{identity}}",
     "cloudLoginDescSignedOut": "Connectez-vous à ORG2 Cloud avant d’appairer via le relais public",
     "relayStatusCloudLoginRequired": "Connectez-vous à ORG2 Cloud dans Paramètres → Général, puis actualisez l’état du relais",
     "relayStatusAuthFailedSignedIn": "Le relais a refusé la connexion — déconnectez-vous puis reconnectez-vous dans Paramètres → Général",
@@ -992,7 +994,7 @@
     "relayStatus_disabled": "Désactivé",
     "relayStatus_config_error": "Erreur de configuration",
     "relayStatus_stopped": "Arrêté",
-    "startOutdoorPairing": "Générer un code d’appairage à distance",
+    "startOutdoorPairing": "Générer un code d’association",
     "fullAccess": "Autoriser les actions",
     "fullAccessDesc": "Lorsque activé, le téléphone peut envoyer des messages, arrêter des sessions et répondre aux demandes de permission ; lorsque désactivé, il est en lecture seule",
     "pairingExpires": "Le code d’appairage expire dans {{seconds}} secondes",
@@ -1027,16 +1029,19 @@
     "pairedDevicesDesc": "Téléphones autorisés via le relais ; l’accès peut être révoqué à tout moment",
     "devicesLoadFailed": "Impossible de charger les appareils appairés",
     "noDevices": "Aucun appareil appairé",
-    "noDevicesDesc": "Générez un code d’appairage à distance, puis scannez-le ou collez-le dans la PWA Mobile Remote",
+    "noDevicesDesc": "Après avoir ajouté un téléphone, vous pouvez accéder aux sessions sur cet ordinateur",
     "deviceLabel": "Appareil",
     "deviceTier": "Niveau",
-    "deviceTierFull": "Accès complet",
-    "deviceTierReadOnly": "Lecture seule",
+    "deviceTierFull": "Contrôle autorisé",
+    "deviceTierReadOnly": "Consultation seule",
     "deviceLastSeen": "Dernière activité",
     "devicePairedAt": "Appairé {{time}}",
     "deviceLastSeenValue": "Dernière activité {{time}}",
     "deviceNeverSeen": "Jamais connecté",
     "deviceOnline": "En ligne",
-    "deviceOffline": "Hors ligne"
+    "deviceOffline": "Hors ligne",
+    "addPhone": "Ajouter un téléphone",
+    "pairingPermission": "Autorisations du téléphone",
+    "relayDisabledHint": "Les connexions Internet sont désactivées. Activez-les dans les paramètres avancés"
   }
 }

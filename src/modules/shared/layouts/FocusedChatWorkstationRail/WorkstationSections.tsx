@@ -131,14 +131,6 @@ export function WorkstationSections({
                       label={section.environment.repoName}
                     />
                   )}
-                  {section.environment.agentHarness && (
-                    <WorkspaceContextRow
-                      compact={compact}
-                      icon={section.environment.agentHarness.icon}
-                      label={section.environment.agentHarness.label}
-                      testId="session-environment-agent-harness"
-                    />
-                  )}
                   {section.environment.branchName && (
                     <WorkspaceContextRow
                       compact={compact}
@@ -150,6 +142,14 @@ export function WorkstationSections({
                       onRequestClose={onRequestClose}
                       title={section.environment.branchAction?.label}
                       ariaLabel={section.environment.branchAction?.label}
+                    />
+                  )}
+                  {section.environment.agentHarness && (
+                    <WorkspaceContextRow
+                      compact={compact}
+                      icon={section.environment.agentHarness.icon}
+                      label={section.environment.agentHarness.label}
+                      testId="session-environment-agent-harness"
                     />
                   )}
                   {section.environment.worktreeBranchName && (

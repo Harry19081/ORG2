@@ -19,6 +19,8 @@
  * cycle that invalidates the token for the whole document.
  */
 @theme inline reference {
+  --font-mono: var(--code-font-family);
+
   --color-pane-raised: var(--color-pane-raised);
   --color-pane-input: var(--color-pane-input);
 

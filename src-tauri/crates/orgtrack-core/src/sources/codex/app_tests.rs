@@ -2472,6 +2472,205 @@ fn codex_failed_patch_apply_end_is_ignored() {
     std::fs::remove_dir(&temp_dir).expect("remove temp dir");
 }
 
+/// Parse a rollout written from `records` (one JSON object per line).
+fn parse_codex_fixture_meta(name: &str, records: &[Value]) -> CodexAppSessionMeta {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-history-{name}-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp dir");
+    let path = temp_dir.join(format!("rollout-{name}.jsonl"));
+    let content = records
+        .iter()
+        .map(|record| format!("{record}\n"))
+        .collect::<String>();
+    std::fs::write(&path, content).expect("write fixture");
+    let (source_mtime_ms, source_size_bytes) =
+        imported_paths::file_metadata_signature(&path, "Codex").expect("metadata");
+    let record = ImportedHistoryDiscoveredRecord {
+        source_session_id: format!("rollout-{name}"),
+        source_path: path.clone(),
+        source_record_key: format!("rollout-{name}"),
+        source_mtime_ms,
+        source_size_bytes,
+        source_fingerprint: String::new(),
+        parser_version: CODEX_APP_METADATA_PARSER_VERSION,
+    };
+    let meta = parse_codex_session_meta(&record)
+        .expect("parse")
+        .expect("session meta");
+    std::fs::remove_file(&path).expect("remove fixture");
+    std::fs::remove_dir(&temp_dir).expect("remove temp dir");
+    meta
+}
+
+fn codex_desktop_session_meta_record() -> Value {
+    json!({
+        "timestamp": "2026-09-14T12:31:07.539Z",
+        "type": "session_meta",
+        "payload": { "cwd": "/Users/me/project", "id": "desktop", "originator": "Codex Desktop" }
+    })
+}
+
+/// Codex Desktop's generated `exec` wrapper around one `tools.apply_patch`.
+fn codex_desktop_exec_patch_record(call_id: &str, patch: &str) -> Value {
+    json!({
+        "timestamp": "2026-09-14T12:31:18.978Z",
+        "type": "response_item",
+        "payload": {
+            "type": "custom_tool_call",
+            "status": "completed",
+            "call_id": call_id,
+            "name": "exec",
+            "input": format!(
+                "const patch = {};\ntext(await tools.apply_patch(patch));\n",
+                Value::String(patch.to_string())
+            )
+        }
+    })
+}
+
+fn codex_file_change_item_record(status: &str, changes: Value) -> Value {
+    json!({
+        "timestamp": "2026-09-14T12:31:19.681Z",
+        "type": "event_msg",
+        "payload": {
+            "type": "item_completed",
+            "thread_id": "desktop",
+            "turn_id": "turn-1",
+            "item": {
+                "type": "FileChange",
+                "id": "exec-1",
+                "changes": changes,
+                "status": status,
+                "stdout": "",
+                "stderr": ""
+            }
+        }
+    })
+}
+
+#[test]
+fn codex_desktop_file_change_items_are_authoritative_impact_source() {
+    // Codex Desktop applies patches inside its `exec` wrapper and records the
+    // applied result only as completed `FileChange` items — never as
+    // `patch_apply_end`. Updates carry a unified diff; adds and deletes carry
+    // the whole file as `content`; a rename counts once, at its destination.
+    let patch = "*** Begin Patch\n*** Update File: /Users/me/project/src/app.rs\n@@\n-old\n+new\n*** End Patch";
+    let meta = parse_codex_fixture_meta(
+        "desktop-file-change",
+        &[
+            codex_desktop_session_meta_record(),
+            codex_desktop_exec_patch_record("call_edit", patch),
+            codex_file_change_item_record(
+                "completed",
+                json!({
+                    "/Users/me/project/src/app.rs": {
+                        "type": "update",
+                        "unified_diff": "@@ -1,1 +1,2 @@\n-old\n+new\n+extra\n",
+                        "move_path": null
+                    },
+                    "/Users/me/project/src/added.rs": {
+                        "type": "add",
+                        "content": "fn a() {}\nfn b() {}\n"
+                    },
+                    "/Users/me/project/src/gone.rs": {
+                        "type": "delete",
+                        "content": "fn gone() {}\n"
+                    },
+                    "/Users/me/project/src/old_name.rs": {
+                        "type": "update",
+                        "unified_diff": "",
+                        "move_path": "/Users/me/project/src/new_name.rs"
+                    }
+                }),
+            ),
+            // A declined apply changed nothing.
+            codex_file_change_item_record(
+                "declined",
+                json!({
+                    "/Users/me/project/src/declined.rs": {
+                        "type": "add",
+                        "content": "nope\n"
+                    }
+                }),
+            ),
+        ],
+    );
+
+    assert_eq!(
+        meta.impact.touched_files,
+        vec![
+            "/Users/me/project/src/added.rs".to_string(),
+            "/Users/me/project/src/app.rs".to_string(),
+            "/Users/me/project/src/gone.rs".to_string(),
+            "/Users/me/project/src/new_name.rs".to_string(),
+        ]
+    );
+    assert_eq!(meta.impact.files_changed, 4);
+    assert_eq!(meta.impact.lines_added, 4); // +new +extra, 2 added lines
+    assert_eq!(meta.impact.lines_removed, 2); // -old, 1 deleted line
+}
+
+#[test]
+fn codex_file_change_items_and_patch_apply_end_are_not_summed() {
+    // A rollout that persists both records for the same apply counts it once.
+    let changes = json!({
+        "src/app.rs": { "type": "update", "unified_diff": "@@\n-old\n+new\n", "move_path": null }
+    });
+    let meta = parse_codex_fixture_meta(
+        "file-change-and-patch-apply-end",
+        &[
+            codex_desktop_session_meta_record(),
+            json!({
+                "timestamp": "2026-09-14T12:31:19.000Z",
+                "type": "event_msg",
+                "payload": {
+                    "type": "patch_apply_end",
+                    "call_id": "call_edit",
+                    "success": true,
+                    "changes": changes.clone()
+                }
+            }),
+            codex_file_change_item_record("completed", changes),
+        ],
+    );
+
+    assert_eq!(meta.impact.files_changed, 1);
+    assert_eq!(meta.impact.lines_added, 1);
+    assert_eq!(meta.impact.lines_removed, 1);
+}
+
+#[test]
+fn codex_desktop_exec_patch_without_file_change_is_not_counted() {
+    // When the wrapped patch fails verification Codex writes no `FileChange`
+    // item; the wrapper's patch text must not be counted as an edit.
+    let patch = "*** Begin Patch\n*** Update File: /Users/me/project/src/app.rs\n@@\n-missing\n+new\n*** End Patch";
+    let meta = parse_codex_fixture_meta(
+        "desktop-failed-exec-patch",
+        &[
+            codex_desktop_session_meta_record(),
+            codex_desktop_exec_patch_record("call_failed", patch),
+            json!({
+                "timestamp": "2026-09-14T12:31:19.681Z",
+                "type": "response_item",
+                "payload": {
+                    "type": "custom_tool_call_output",
+                    "call_id": "call_failed",
+                    "output": [{
+                        "type": "input_text",
+                        "text": "Script error:\napply_patch verification failed"
+                    }]
+                }
+            }),
+        ],
+    );
+
+    assert_eq!(meta.impact.files_changed, 0);
+    assert_eq!(meta.impact.lines_added, 0);
+    assert_eq!(meta.impact.lines_removed, 0);
+}
+
 #[test]
 fn parses_codex_session_metadata() {
     let temp_dir = std::env::temp_dir().join(format!(

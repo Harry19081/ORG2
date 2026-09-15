@@ -491,7 +491,7 @@
   },
   "optional": "необязательно",
   "common": {
-    "display": "Отображение",
+    "display": "Настройки интерфейса",
     "on": "Вкл",
     "off": "Выкл",
     "default": "По умолчанию",
@@ -1093,7 +1093,7 @@
       "createTokenButton": "Создать token",
       "openGitSettingsButton": "Открыть настройки",
       "configureInSettings": "Настройте Git в настройках",
-      "configureInSettingsDesc": "Добавьте доступ GitHub App, сохраните token или просканируйте локальные учетные данные в Настройки → Подключения, затем повторите эту операцию Git."
+      "configureInSettingsDesc": "Добавьте доступ GitHub App, сохраните token или просканируйте локальные учетные данные в Настройки → Подключения, затем повторите эту операцию Git"
     },
     "actions": {
       "publish": "Publish",
@@ -1332,7 +1332,7 @@
       "cannotParseRepoName": "Не удалось определить имя репозитория из remote origin",
       "authRequired": {
         "title": "Подключить GitHub",
-        "description": "Перейдите в Настройки → Подключения, чтобы подключить учётную запись GitHub."
+        "description": "Перейдите в Настройки → Подключения, чтобы подключить учётную запись GitHub"
       },
       "navigationTrail": "Навигация по pull request",
       "failedToLoad": "Не удалось загрузить pull requests",
@@ -1502,10 +1502,10 @@
       "newIssueBodyPlaceholder": "Опишите issue (необязательно)…",
       "authRequired": {
         "title": "Подключить GitHub",
-        "description": "Перейдите в Настройки → Подключения, чтобы подключить учётную запись GitHub."
+        "description": "Перейдите в Настройки → Подключения, чтобы подключить учётную запись GitHub"
       },
       "reAuthRequired": "Требуется авторизация GitHub",
-      "reAuthDescription": "Срок действия вашего token GitHub истёк. Перейдите в Настройки → Подключения, чтобы переподключиться.",
+      "reAuthDescription": "Срок действия вашего token GitHub истёк. Перейдите в Настройки → Подключения, чтобы переподключиться",
       "goToSettings": "Перейти в настройки",
       "loadingTimeline": "Загрузка активности…",
       "label": "Issue",
@@ -2151,7 +2151,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "Выйти из ORG2?",
-    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORG2 позже.",
+    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORG2 позже",
     "cancel": "Отмена",
     "confirm": "Выйти"
   },
@@ -2181,7 +2181,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari хранит файлы cookie в папке, защищённой macOS. Разрешите ORG2 полный доступ к диску в системных настройках и повторите проверку.",
+      "explain": "Safari хранит файлы cookie в папке, защищённой macOS. Разрешите ORG2 полный доступ к диску в системных настройках и повторите проверку",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2206,7 +2206,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2215,7 +2215,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"

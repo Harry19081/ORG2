@@ -154,7 +154,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
               components={{
                 1: (
                   <a
-                    href="https://github.com/YORG-AI/orgii/blob/main/LICENSE"
+                    href="https://github.com/org2AI/ORG2/blob/main/LICENSE"
                     target="_blank"
                     rel="noreferrer noopener"
                     className="text-text-2 underline hover:text-text-1"
