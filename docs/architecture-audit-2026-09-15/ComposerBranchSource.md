@@ -66,8 +66,14 @@ Performance verdict: blocked for live runtime claims; whole-repository compilati
 
 ## Verification
 
-- `pnpm test src/engines/SessionCore/hooks/session/useSessionCreator/useSessionCreatorSource.test.ts src/engines/SessionCore/hooks/session/__tests__/launchPayload.test.ts src/features/SessionCreator/components/__tests__/SessionInfoLine.test.ts src/features/SessionCreator/components/__tests__/WorktreeSourceSelector.test.ts src/modules/WorkStation/shared/StatusBar/__tests__/EditorStatusBar.hostless.test.ts src/features/SessionCreator/variants/ChatPanel/resolveRepoChangePath.test.ts` — 53 tests passed across six suites, including 16 source cases and local/worktree launch payloads.
-- `pnpm exec eslint` on the six added/changed TypeScript files, with `--max-warnings 0` — passed.
+- `pnpm test src/engines/SessionCore/hooks/session/useSessionCreator/useSessionCreatorSource.test.ts src/engines/SessionCore/hooks/session/__tests__/launchPayload.test.ts src/features/SessionCreator/components/__tests__/SessionInfoLine.test.ts src/features/SessionCreator/components/__tests__/WorktreeSourceSelector.test.ts src/modules/WorkStation/shared/StatusBar/__tests__/EditorStatusBar.hostless.test.ts src/features/SessionCreator/variants/ChatPanel/resolveRepoChangePath.test.ts src/features/SessionCreator/variants/ChatPanel/useSessionCreatorChatPanelHandlers.test.ts` — 56 tests passed across seven suites, including 16 source cases and local/worktree launch payloads.
+- `pnpm exec eslint` on the seven added/changed TypeScript files, with `--max-warnings 0` — passed.
 - `pnpm typecheck:fast` — passed in the isolated PR worktree based on latest `develop`, using the existing installed dependencies plus its declared `yaml@2.9.0`. The earlier shared checkout had unrelated `hasBody` errors; those edits are excluded from this PR.
 - `git diff --check` — passed.
 - No GUI verification, real Git checkout or live profile performed. The PR was prepared in an isolated worktree, preserving unrelated workspace edits.
+
+## Import promise handling
+
+The type-aware lint workflow found an unhandled import promise in `useSessionCreatorChatPanelHandlers`. The comment update changed the source fingerprint of an existing baseline finding; ordinary ESLint and typechecking do not run this separate gate. The import chain now catches and logs rejection. A failed import preserves the system-path source without selecting a repository. Success and cancellation retain their behavior. Three hook tests cover these outcomes; the lint baseline and rules are unchanged.
+
+Verification: `NODE_OPTIONS=--max-old-space-size=6144 pnpm check:typed-lint` passed with 1098 existing findings and zero new or increased findings. `pnpm typecheck:fast`, changed-file ESLint and `git diff --check` also passed.
