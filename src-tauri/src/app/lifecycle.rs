@@ -66,6 +66,7 @@ pub(crate) fn handle_window_close_and_destroy(
     // still attributed to a dead window.
     if let tauri::WindowEvent::Destroyed = _event {
         app_window::unpin_traffic_lights(_window.label());
+        app_window::release_page_backdrop(_window.label());
         system_services::power::release_sleep_inhibitor_for_window_label(_window.label());
         if app_window::is_station_window_label(_window.label()) {
             browser::inline::release_station_window_webview_state(_window.label());
