@@ -5,6 +5,7 @@ import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const bundleId = "org2ai.org2.remote";
+export const minimumIosSdkMajor = 26;
 
 export function releaseConfig(version, build, team) {
   assert.match(
@@ -44,6 +45,12 @@ export function validateDistribution(
     "Wrong release version",
   );
   assert.equal(info.CFBundleVersion, build, "Wrong build number");
+  const sdkMatch = /^iphoneos(\d+)(?:\.\d+)*$/.exec(info.DTSDKName ?? "");
+  assert.ok(sdkMatch, "Built iPhoneOS SDK metadata missing or invalid");
+  assert.ok(
+    Number(sdkMatch[1]) >= minimumIosSdkMajor,
+    `App must be built with iOS ${minimumIosSdkMajor} SDK or newer`,
+  );
   assert.ok(
     info.NSCameraUsageDescription?.trim(),
     "Camera purpose string missing",
@@ -216,6 +223,25 @@ export function validatePrivacyManifest(privacy) {
   );
 }
 
+export function validateAltoolResult(output, phase, status) {
+  const successPattern = {
+    validation: /No errors validating archive|VALIDATION SUCCEEDED/i,
+    upload: /UPLOAD SUCCEEDED|No errors uploading/i,
+  }[phase];
+  assert.ok(successPattern, "Unknown App Store Connect phase");
+  assert.equal(status, 0, `App Store Connect ${phase} command failed`);
+  assert.doesNotMatch(
+    output,
+    /(^|\s)ERROR:|VERIFY FAILED|UPLOAD FAILED|Failed to validate package|Failed to upload package/i,
+    `App Store Connect ${phase} reported a failure`,
+  );
+  assert.match(
+    output,
+    successPattern,
+    `App Store Connect ${phase} did not return a recognized success response`,
+  );
+}
+
 if (
   process.argv[1] &&
   import.meta.url === pathToFileURL(resolve(process.argv[1])).href
@@ -237,8 +263,21 @@ if (
       console.log(
         "Signed iOS bundle structural checks passed; manual release checklist still required.",
       );
+    } else if (
+      process.argv[2] === "altool" &&
+      process.argv[3] &&
+      process.argv[4] &&
+      process.argv[5]
+    ) {
+      validateAltoolResult(
+        readFileSync(resolve(process.argv[5]), "utf8"),
+        process.argv[3],
+        Number(process.argv[4]),
+      );
     } else {
-      throw new Error("Usage: readiness.mjs config | app <app-path>");
+      throw new Error(
+        "Usage: readiness.mjs config | app <app-path> | altool <phase> <status> <log-path>",
+      );
     }
   } catch {
     console.error(

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
   releaseConfig,
+  validateAltoolResult,
   validateDistribution,
   validatePrivacyManifest,
   bundleId,
@@ -33,6 +34,7 @@ function fixture() {
     CFBundleIdentifier: bundleId,
     CFBundleShortVersionString: expected.version,
     CFBundleVersion: expected.build,
+    DTSDKName: "iphoneos26.0",
     NSCameraUsageDescription: "Scan pairing codes",
     NSMicrophoneUsageDescription: "Record dictation",
     NSSpeechRecognitionUsageDescription: "Transcribe dictation",
@@ -60,6 +62,33 @@ test("release config rejects shell-like and invalid version/build/team inputs", 
   ]) {
     assert.throws(() => releaseConfig(...args));
   }
+});
+
+test("rejects an altool API failure even when altool exits successfully", () => {
+  assert.throws(() =>
+    validateAltoolResult(
+      "ERROR: Failed to validate package. UPLOAD FAILED (409)",
+      "upload",
+      0,
+    ),
+  );
+});
+
+test("requires an explicit altool success marker", () => {
+  assert.throws(() =>
+    validateAltoolResult(
+      "Transfer completed without a final response",
+      "upload",
+      0,
+    ),
+  );
+  assert.doesNotThrow(() =>
+    validateAltoolResult(
+      "UPLOAD SUCCEEDED",
+      "upload",
+      0,
+    ),
+  );
 });
 test("accepts matching distribution metadata, including legacy App ID prefixes", () => {
   const f = fixture();
@@ -176,6 +205,18 @@ for (const [name, mutate] of [
     "wrong build",
     (f) => {
       f.info.CFBundleVersion = "9";
+    },
+  ],
+  [
+    "outdated iOS SDK",
+    (f) => {
+      f.info.DTSDKName = "iphoneos18.5";
+    },
+  ],
+  [
+    "missing iOS SDK metadata",
+    (f) => {
+      delete f.info.DTSDKName;
     },
   ],
   [

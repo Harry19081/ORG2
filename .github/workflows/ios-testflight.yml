@@ -90,7 +90,13 @@ jobs:
           PY
           )"
           export DEVELOPER_DIR="$xcode_path/Contents/Developer"
+          sudo xcode-select --switch "$DEVELOPER_DIR"
           echo "DEVELOPER_DIR=$DEVELOPER_DIR" >> "$GITHUB_ENV"
+          [[ "$(xcode-select -p)" == "$DEVELOPER_DIR" ]] || { echo '::error::System Xcode selection does not match Xcode 26'; exit 1; }
+          [[ "$(xcrun --find xcodebuild)" == "$DEVELOPER_DIR/usr/bin/xcodebuild" ]] || { echo '::error::xcrun is not resolving tools from Xcode 26'; exit 1; }
+          ios_sdk_version="$(xcrun --sdk iphoneos --show-sdk-version)"
+          ios_sdk_major="${ios_sdk_version%%.*}"
+          [[ "$ios_sdk_major" =~ ^[0-9]+$ && "$ios_sdk_major" -ge 26 ]] || { echo "::error::Selected iPhoneOS SDK $ios_sdk_version is older than 26"; exit 1; }
           node scripts/ios-release/readiness.mjs config > "$RUNNER_TEMP/ios-release-config.json"
           xcodebuild -version
           major=$(xcodebuild -version | awk '/Xcode/{split($2,v,".");print v[1]}')
@@ -305,11 +311,28 @@ jobs:
           export API_PRIVATE_KEYS_DIR
           API_PRIVATE_KEYS_DIR=$(mktemp -d "$RUNNER_TEMP/ios-upload-key.XXXXXX")
           key_file="$API_PRIVATE_KEYS_DIR/AuthKey_$ASC_KEY_ID.p8"
-          trap 'rm -f "$key_file"; rmdir "$API_PRIVATE_KEYS_DIR"' EXIT
+          validation_log="$RUNNER_TEMP/ios-altool-validation.log"
+          upload_log="$RUNNER_TEMP/ios-altool-upload.log"
+          trap 'rm -f "$key_file" "$validation_log" "$upload_log"; rmdir "$API_PRIVATE_KEYS_DIR"' EXIT
           printf '%s' "$ASC_PRIVATE_KEY" > "$key_file"
           ipa='apps/remote-ios/src-tauri/gen/apple/build/arm64/ORG2 Remote.ipa'
-          xcrun altool --validate-app -f "$ipa" --type ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
-          xcrun altool --upload-app -f "$ipa" --type ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+
+          run_altool() {
+            local phase="$1"
+            local log="$2"
+            shift 2
+            local status
+            set +e
+            xcrun altool "$@" 2>&1 | tee "$log"
+            status="${PIPESTATUS[0]}"
+            set -e
+            node scripts/ios-release/readiness.mjs altool "$phase" "$status" "$log"
+          }
+
+          run_altool validation "$validation_log" \
+            --validate-app -f "$ipa" --type ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+          run_altool upload "$upload_log" \
+            --upload-app -f "$ipa" --type ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
           echo 'Upload accepted. Processing, export-compliance questions, tester access and review are separate App Store Connect steps.' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Remove iOS signing materials
