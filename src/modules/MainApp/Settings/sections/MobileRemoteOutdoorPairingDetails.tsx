@@ -32,7 +32,7 @@ const MobileRemoteOutdoorPairingDetails: React.FC<
   }, [pairing.qrPayload, t]);
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+    <div className="flex flex-col gap-4 @2xl:flex-row @2xl:items-start">
       <MobileRemoteQrCodeDisplay
         value={pairing.qrPayload}
         size={180}
