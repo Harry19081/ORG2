@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "Đang chờ terminal hoàn tất",
     "runShellFailed": "Lệnh thất bại",
     "runCommands": "Chạy lệnh",
+    "waitBackgroundTasks": "Chờ tác vụ nền",
     "terminalSummary": {
       "command_one": "{{count}} lệnh",
       "command_other": "{{count}} lệnh",
@@ -1134,6 +1135,10 @@
       "check_one": "{{count}} lần kiểm tra",
       "check_other": "{{count}} lần kiểm tra",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} lần",
+      "count_other": "{{count}} lần"
     },
     "inspectTerminalsRunning": "Đang kiểm tra terminal",
     "inspectTerminalsDone": "Đã kiểm tra terminal",
