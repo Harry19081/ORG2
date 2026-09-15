@@ -138,13 +138,28 @@ pub fn discard_changes(repo_path: &Path, files: &[String]) -> Result<(), String>
 
     let files_to_process: &[String] = if discard_all { &all_files } else { files };
 
+    // Updating the index is a prerequisite for destructive worktree edits.
+    // Do it once for the entire request before deleting even an untracked
+    // file: an index lock/permission failure must leave all selected files.
+    let paths_to_reset: Vec<_> = files_to_process
+        .iter()
+        .filter(|file| {
+            staged_new_files.contains(file.as_str())
+                || staged_files.contains(file.as_str())
+                || conflict_files.contains(file.as_str())
+        })
+        .map(String::as_str)
+        .collect();
+    if !paths_to_reset.is_empty() {
+        run_git_path_operation(repo_path, &["reset", "HEAD"], &paths_to_reset)?;
+    }
+
     for file in files_to_process {
         let file_path = repo_path.join(file);
 
         if conflict_files.contains(file.as_str()) {
             // Conflict file: restore to pre-merge state using HEAD version
             // First reset the index entry, then checkout from HEAD
-            let _ = run_git_path_operation(repo_path, &["reset", "HEAD"], &[file]);
             run_git_path_operation(repo_path, &["checkout", "HEAD"], &[file])?;
         } else if untracked_files.contains(file.as_str()) {
             // Untracked file: delete from filesystem
@@ -159,7 +174,6 @@ pub fn discard_changes(repo_path: &Path, files: &[String]) -> Result<(), String>
             }
         } else if staged_new_files.contains(file.as_str()) {
             // Staged new file: unstage first, then delete
-            let _ = run_git_path_operation(repo_path, &["reset", "HEAD"], &[file]);
             // Now delete the file
             if file_path.exists() {
                 if file_path.is_dir() {
@@ -171,10 +185,7 @@ pub fn discard_changes(repo_path: &Path, files: &[String]) -> Result<(), String>
                 }
             }
         } else {
-            // Preserve existing unstaging behavior, scoped to the literal path.
-            if staged_files.contains(file.as_str()) {
-                let _ = run_git_path_operation(repo_path, &["reset", "HEAD"], &[file]);
-            }
+            // The index prerequisite succeeded; restore only this literal path.
             run_git_path_operation(repo_path, &["checkout"], &[file])?;
         }
     }

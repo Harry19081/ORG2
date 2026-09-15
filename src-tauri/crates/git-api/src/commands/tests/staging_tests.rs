@@ -230,6 +230,41 @@ fn file_mutations_preserve_unselected_paths_matching_glob_or_magic() {
 }
 
 #[test]
+fn discard_checks_index_prerequisite_before_any_delete_and_can_retry() {
+    let fixture = Fixture(make_repo("locked-prerequisite"));
+    let repo = &fixture.0;
+    std::fs::write(repo.join("new.txt"), "staged content\n").unwrap();
+    std::fs::write(repo.join("untracked.txt"), "keep until reset succeeds\n").unwrap();
+    std::fs::write(repo.join("tracked.txt"), "staged modification\n").unwrap();
+    git_in(repo, &["add", "new.txt", "tracked.txt"]);
+    let index = std::fs::read(repo.join(".git/index")).unwrap();
+    std::fs::write(repo.join(".git/index.lock"), "test-owned lock").unwrap();
+    let files = vec![
+        "untracked.txt".into(),
+        "new.txt".into(),
+        "tracked.txt".into(),
+    ];
+    let error = discard_changes(repo, &files).unwrap_err();
+    assert!(error.contains("index.lock"));
+    assert_eq!(std::fs::read(repo.join(".git/index")).unwrap(), index);
+    assert!(repo.join("untracked.txt").exists());
+    assert!(repo.join("new.txt").exists());
+    assert_eq!(
+        std::fs::read_to_string(repo.join("tracked.txt")).unwrap(),
+        "staged modification\n"
+    );
+    std::fs::remove_file(repo.join(".git/index.lock")).unwrap();
+    discard_changes(repo, &files).unwrap();
+    assert!(!repo.join("new.txt").exists());
+    assert!(!repo.join("untracked.txt").exists());
+    assert_eq!(
+        std::fs::read_to_string(repo.join("tracked.txt")).unwrap(),
+        "one\n"
+    );
+    assert!(read_git(repo, &["status", "--porcelain"]).is_empty());
+}
+
+#[test]
 fn discard_initial_commit_and_explicit_bulk_keep_existing_semantics() {
     use crate::commands::staging::{stage_file, unstage_files};
     let fixture = Fixture(make_repo("unborn-and-bulk"));
