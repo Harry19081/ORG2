@@ -14,12 +14,14 @@ import {
   clearUnsavedContentCache,
   getCachedBinaryStatus,
   getCachedFileMetadata,
+  getDirtyCachedPaths,
   getUnsavedContentCacheStats,
   hasLoadedFileThisSession,
   invalidateFileCache,
   markFileLoadedThisSession,
   onExternalFileChange,
   popUnsavedContent,
+  saveCachedBufferForSwitch,
   subscribeToFileChanges,
   updateCachedFileMtime,
 } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/cache";
@@ -483,5 +485,25 @@ describe("fileContent/cache", () => {
       // Later files should still exist
       expect(hasLoadedFileThisSession("/file-1000.ts")).toBe(true);
     });
+  });
+});
+
+describe("awaited branch switch save", () => {
+  it("saves a spilled inactive buffer and removes it only after disk readback", async () => {
+    fakeFs.files.set("/switch-file", "base");
+    cacheUnsavedContent("/switch-file", "mine", "base", 2, 1, []);
+    await _flushUnsavedDraftIoForTests();
+    await saveCachedBufferForSwitch("/switch-file");
+    expect(fakeFs.files.get("/switch-file")).toBe("mine");
+    expect(getDirtyCachedPaths()).not.toContain("/switch-file");
+  });
+  it("keeps its recovery buffer when the underlying file changed externally", async () => {
+    fakeFs.files.set("/switch-file", "external");
+    cacheUnsavedContent("/switch-file", "mine", "base", 2, 1, []);
+    await expect(saveCachedBufferForSwitch("/switch-file")).rejects.toThrow(
+      "changed on disk"
+    );
+    expect(fakeFs.files.get("/switch-file")).toBe("external");
+    expect(getDirtyCachedPaths()).toContain("/switch-file");
   });
 });

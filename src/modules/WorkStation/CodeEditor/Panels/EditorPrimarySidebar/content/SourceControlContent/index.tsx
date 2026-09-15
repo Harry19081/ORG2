@@ -18,6 +18,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import { SavedChangesBanner } from "@src/components/GitDialogs/SavedChangesDialog/SavedChangesBanner";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
 import { TREE_ROW_HEIGHT } from "@src/components/TreeRow";
@@ -456,6 +457,11 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
     return (
       <div className={rootClassName}>
         {/* Commit Section */}
+        <SavedChangesBanner
+          repoPath={repoPath}
+          branch={branchName}
+          onRefresh={onRefresh}
+        />
         <CommitSection
           commitMessage={commitMessage}
           onCommitMessageChange={onCommitMessageChange}
