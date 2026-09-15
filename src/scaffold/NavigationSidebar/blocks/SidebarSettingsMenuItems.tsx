@@ -1,5 +1,4 @@
 import React from "react";
-import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -38,8 +37,7 @@ interface SidebarSettingsMenuLeadingItemsProps {
   signedIn: boolean;
   devModeEnabled: boolean;
   setActiveSubmenu: SetActiveSubmenu;
-  closeAll: () => void;
-  setShowWiki: React.Dispatch<React.SetStateAction<boolean>>;
+  handleOpenWiki: () => void;
   handleSignOut: () => void;
   handleViewRam: () => void;
 }
@@ -49,8 +47,7 @@ export function SidebarSettingsMenuLeadingItems({
   signedIn,
   devModeEnabled,
   setActiveSubmenu,
-  closeAll,
-  setShowWiki,
+  handleOpenWiki,
   handleSignOut,
   handleViewRam,
 }: SidebarSettingsMenuLeadingItemsProps): React.ReactElement {
@@ -88,11 +85,7 @@ export function SidebarSettingsMenuLeadingItems({
         className={`${DROPDOWN_CLASSES.menuActionItem} gap-2`}
         onMouseEnter={() => setActiveSubmenu(null)}
         onFocus={() => setActiveSubmenu(null)}
-        onClick={() => {
-          flushSync(closeAll);
-          setShowWiki(true);
-        }}
-        aria-haspopup="dialog"
+        onClick={handleOpenWiki}
         data-testid="sidebar-menu-wiki"
       >
         <HugeiconsIcon
