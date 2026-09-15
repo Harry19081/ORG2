@@ -121,8 +121,8 @@
     "usePointerCursorsDesc": "Zmieniaj kursor na wskazujący po najechaniu na elementy interaktywne",
     "timezoneAuto": "Auto (przeglądarka)",
     "timezoneSearchPlaceholder": "Szukaj najbliższych miast",
-    "sendOnEnter": "Wysyłaj wiadomości klawiszem Enter",
-    "sendOnEnterDesc": "Po włączeniu Enter wysyła, a Shift+Enter i Ctrl/Cmd+Enter wstawiają nową linię. Po wyłączeniu wysyła Ctrl/Cmd+Enter",
+    "sendOnEnter": "Wysyłaj wiadomości za pomocą",
+    "sendOnEnterDesc": "Wybierz skrót wysyłający wiadomość; pozostałe kombinacje z Enter wstawiają nową linię",
     "language": "Język",
     "languageSearchPlaceholder": "Szukaj języków...",
     "languageNames": {
@@ -223,8 +223,6 @@
     "linkSkinVariants": "Powiąż jasny i ciemny",
     "linkSkinVariantsDesc": "Używaj jednej skórki i akcentu w obu trybach. Powiązać można tylko skórki, które mają wariant jasny i ciemny",
     "license": "Licencja",
-    "licenseDesc": "Wyświetl licencję dołączoną do tej aplikacji",
-    "viewLicense": "Wyświetl licencję",
     "licenseTitle": "Licencja ORG2",
     "licenseLoading": "Wczytywanie licencji…",
     "licenseLoadFailed": "Nie można wczytać licencji aplikacji"
@@ -784,8 +782,8 @@
     "typingSpeedDesc": "Milisekundy na znak (1 ms = najszybciej, 50 ms = najwolniej)",
     "decryptEffect": "Efekt deszyfrowania",
     "decryptEffectDesc": "Włącz animację deszyfrowania dla wiadomości Agent",
-    "sendOnEnter": "Wysyłaj wiadomości klawiszem Enter",
-    "sendOnEnterDesc": "Po włączeniu Enter wysyła, a Shift+Enter i Ctrl/Cmd+Enter wstawiają nową linię. Po wyłączeniu wysyła Ctrl/Cmd+Enter"
+    "sendOnEnter": "Wysyłaj wiadomości za pomocą",
+    "sendOnEnterDesc": "Wybierz skrót wysyłający wiadomość; pozostałe kombinacje z Enter wstawiają nową linię"
   },
   "indexing": {
     "noWorkspaceMemories": "Brak wspomnień Workspace. Pojawią się po tym, jak sesje wyodrębnią informacje o tym Workspace.",

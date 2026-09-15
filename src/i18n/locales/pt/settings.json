@@ -121,8 +121,8 @@
     "usePointerCursorsDesc": "Altera o cursor para um ponteiro ao passar sobre elementos interativos",
     "timezoneAuto": "Automático (Navegador)",
     "timezoneSearchPlaceholder": "Pesquisar cidades próximas",
-    "sendOnEnter": "Enviar mensagens com Enter",
-    "sendOnEnterDesc": "Quando ativado, Enter envia; Shift+Enter e Ctrl/Cmd+Enter inserem uma nova linha. Quando desativado, Ctrl/Cmd+Enter envia",
+    "sendOnEnter": "Enviar mensagens com",
+    "sendOnEnterDesc": "Escolha o atalho que envia uma mensagem; as outras combinações com Enter inserem uma nova linha",
     "language": "Idioma",
     "languageSearchPlaceholder": "Pesquisar idiomas...",
     "languageNames": {
@@ -223,8 +223,6 @@
     "linkSkinVariants": "Vincular claro e escuro",
     "linkSkinVariantsDesc": "Usa um único skin e destaque para os dois modos. Só é possível vincular skins que incluem uma variante clara e uma escura",
     "license": "Licença",
-    "licenseDesc": "Ver a licença incluída com este aplicativo",
-    "viewLicense": "Ver licença",
     "licenseTitle": "Licença do ORG2",
     "licenseLoading": "Carregando licença…",
     "licenseLoadFailed": "Não foi possível carregar a licença do aplicativo"
@@ -784,8 +782,8 @@
     "typingSpeedDesc": "Milissegundos por caractere (1ms = mais rápido, 50ms = mais lento)",
     "decryptEffect": "Efeito de Decriptação",
     "decryptEffectDesc": "Habilita a animação de decriptação para mensagens do Agent",
-    "sendOnEnter": "Enviar mensagens com Enter",
-    "sendOnEnterDesc": "Quando ativado, Enter envia; Shift+Enter e Ctrl/Cmd+Enter inserem uma nova linha. Quando desativado, Ctrl/Cmd+Enter envia"
+    "sendOnEnter": "Enviar mensagens com",
+    "sendOnEnterDesc": "Escolha o atalho que envia uma mensagem; as outras combinações com Enter inserem uma nova linha"
   },
   "indexing": {
     "noWorkspaceMemories": "Ainda não há memórias deste Workspace. Elas aparecerão depois que as sessões extraírem informações sobre este Workspace.",

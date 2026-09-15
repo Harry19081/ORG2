@@ -121,8 +121,8 @@
     "usePointerCursorsDesc": "Đổi con trỏ sang dạng bàn tay khi di chuột qua các phần tử tương tác",
     "timezoneAuto": "Tự động (Trình duyệt)",
     "timezoneSearchPlaceholder": "Tìm kiếm thành phố gần nhất",
-    "sendOnEnter": "Gửi tin nhắn bằng Enter",
-    "sendOnEnterDesc": "Khi bật, Enter gửi; Shift+Enter và Ctrl/Cmd+Enter chèn dòng mới. Khi tắt, Ctrl/Cmd+Enter gửi",
+    "sendOnEnter": "Gửi tin nhắn bằng",
+    "sendOnEnterDesc": "Chọn phím tắt dùng để gửi tin nhắn; các tổ hợp Enter khác sẽ chèn dòng mới",
     "language": "Ngôn ngữ",
     "languageSearchPlaceholder": "Tìm kiếm ngôn ngữ...",
     "languageNames": {
@@ -223,8 +223,6 @@
     "linkSkinVariants": "Liên kết sáng và tối",
     "linkSkinVariantsDesc": "Dùng một skin và màu nhấn cho cả hai chế độ. Chỉ các skin có cả biến thể sáng và tối mới có thể liên kết",
     "license": "Giấy phép",
-    "licenseDesc": "Xem giấy phép đi kèm ứng dụng này",
-    "viewLicense": "Xem giấy phép",
     "licenseTitle": "Giấy phép ORG2",
     "licenseLoading": "Đang tải giấy phép…",
     "licenseLoadFailed": "Không thể tải giấy phép của ứng dụng"
@@ -784,8 +782,8 @@
     "typingSpeedDesc": "Mili giây mỗi ký tự (1ms = nhanh nhất, 50ms = chậm nhất)",
     "decryptEffect": "Hiệu ứng Decrypt",
     "decryptEffectDesc": "Bật hiệu ứng Decrypt cho tin nhắn Agent",
-    "sendOnEnter": "Gửi tin nhắn bằng Enter",
-    "sendOnEnterDesc": "Khi bật, Enter gửi; Shift+Enter và Ctrl/Cmd+Enter chèn dòng mới. Khi tắt, Ctrl/Cmd+Enter gửi"
+    "sendOnEnter": "Gửi tin nhắn bằng",
+    "sendOnEnterDesc": "Chọn phím tắt dùng để gửi tin nhắn; các tổ hợp Enter khác sẽ chèn dòng mới"
   },
   "indexing": {
     "noWorkspaceMemories": "Chưa có bộ nhớ Workspace. Chúng sẽ xuất hiện sau khi phiên trích xuất thông tin về không gian làm việc này.",

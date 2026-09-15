@@ -121,8 +121,8 @@
     "usePointerCursorsDesc": "將游標移至互動元素上時變更為指標",
     "timezoneAuto": "自動（瀏覽器）",
     "timezoneSearchPlaceholder": "搜索附近城市",
-    "sendOnEnter": "Enter 發送消息",
-    "sendOnEnterDesc": "啟用後 Enter 發送，Shift+Enter 與 Ctrl/Cmd+Enter 換行；關閉後 Ctrl/Cmd+Enter 發送",
+    "sendOnEnter": "發送消息快速鍵",
+    "sendOnEnterDesc": "選擇發送消息的快速鍵；其他 Enter 組合鍵用於換行",
     "language": "語言",
     "languageSearchPlaceholder": "搜索語言...",
     "languageNames": {
@@ -223,8 +223,6 @@
     "linkSkinVariants": "連動淺色與深色",
     "linkSkinVariantsDesc": "兩種模式使用同一套外觀主題和強調色。只有同時提供淺色與深色變體的外觀主題才能連動",
     "license": "授權條款",
-    "licenseDesc": "查看此應用程式隨附的授權條款",
-    "viewLicense": "查看授權條款",
     "licenseTitle": "ORG2 授權條款",
     "licenseLoading": "正在載入授權條款…",
     "licenseLoadFailed": "無法載入應用程式授權條款"
@@ -784,8 +782,8 @@
     "typingSpeedDesc": "每個字符的毫秒數（1ms = 最快，50ms = 最慢）",
     "decryptEffect": "解密效果",
     "decryptEffectDesc": "爲 Agent 消息啓用解密動畫效果",
-    "sendOnEnter": "Enter 發送消息",
-    "sendOnEnterDesc": "啟用後 Enter 發送，Shift+Enter 與 Ctrl/Cmd+Enter 換行；關閉後 Ctrl/Cmd+Enter 發送"
+    "sendOnEnter": "發送消息快速鍵",
+    "sendOnEnterDesc": "選擇發送消息的快速鍵；其他 Enter 組合鍵用於換行"
   },
   "indexing": {
     "noWorkspaceMemories": "暫無工作區記憶。會話提取工作區信息後，記憶將出現在這裏。",

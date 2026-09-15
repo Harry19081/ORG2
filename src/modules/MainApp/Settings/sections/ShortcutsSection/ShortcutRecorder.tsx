@@ -113,6 +113,15 @@ export default function ShortcutRecorder({
           size="small"
           appearance={recording ? "outline" : "ghost"}
           iconOnly={!recording}
+          icon={
+            recording ? undefined : (
+              <HugeiconsIcon
+                icon={PencilEdit02Icon}
+                data-icon="edit-shortcut"
+                size={14}
+              />
+            )
+          }
           aria-label={t("shortcuts.editCommand", { command })}
           aria-pressed={recording}
           onClick={() => {
@@ -120,11 +129,7 @@ export default function ShortcutRecorder({
             onRecord(id);
           }}
         >
-          {recording ? (
-            t("shortcuts.pressShortcut")
-          ) : (
-            <HugeiconsIcon icon={PencilEdit02Icon} size={14} />
-          )}
+          {recording ? t("shortcuts.pressShortcut") : null}
         </Button>
         {recording ? (
           <Button

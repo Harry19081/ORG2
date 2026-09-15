@@ -244,14 +244,15 @@ const NotificationsAdvancedBlocks: React.FC = () => {
                 </div>
                 <Button
                   size="default"
+                  iconOnly
                   icon={
                     <HugeiconsIcon icon={PlayIcon} data-icon="play" size={14} />
                   }
                   onClick={() => void handlePreviewSound(soundPreset)}
                   disabled={soundVolume === 0}
-                >
-                  {t("notifications.previewSound")}
-                </Button>
+                  aria-label={t("notifications.previewSound")}
+                  title={t("notifications.previewSound")}
+                />
               </div>
             </SectionRow>
             <SectionRow label={t("notifications.volume")} indent>

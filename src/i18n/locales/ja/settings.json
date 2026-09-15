@@ -121,8 +121,8 @@
     "usePointerCursorsDesc": "インタラクティブな要素にカーソルを合わせたときにポインターへ変更します",
     "timezoneAuto": "自動（ブラウザ）",
     "timezoneSearchPlaceholder": "近くの都市を検索",
-    "sendOnEnter": "Enter でメッセージを送信",
-    "sendOnEnterDesc": "有効にすると Enter で送信し、Shift+Enter と Ctrl/Cmd+Enter で改行します。無効の場合は Ctrl/Cmd+Enter で送信します",
+    "sendOnEnter": "メッセージ送信キー",
+    "sendOnEnterDesc": "メッセージを送信するショートカットを選択します。その他の Enter キーの組み合わせは改行を挿入します",
     "language": "言語",
     "languageSearchPlaceholder": "言語を検索...",
     "languageNames": {
@@ -223,8 +223,6 @@
     "linkSkinVariants": "ライトとダークを連動",
     "linkSkinVariantsDesc": "両方のモードで 1 つのスキンとアクセントを使用します。ライトとダークの両バリアントを備えたスキンのみ連動できます",
     "license": "ライセンス",
-    "licenseDesc": "このアプリに同梱されているライセンスを表示します",
-    "viewLicense": "ライセンスを表示",
     "licenseTitle": "ORG2 のライセンス",
     "licenseLoading": "ライセンスを読み込み中…",
     "licenseLoadFailed": "アプリのライセンスを読み込めません"
@@ -784,8 +782,8 @@
     "typingSpeedDesc": "1文字あたりのミリ秒（1ms = 最速、50ms = 最遅）",
     "decryptEffect": "Decrypt エフェクト",
     "decryptEffectDesc": "Agent メッセージに Decrypt アニメーションを有効にする",
-    "sendOnEnter": "Enter でメッセージを送信",
-    "sendOnEnterDesc": "有効にすると Enter で送信し、Shift+Enter と Ctrl/Cmd+Enter で改行します。無効の場合は Ctrl/Cmd+Enter で送信します"
+    "sendOnEnter": "メッセージ送信キー",
+    "sendOnEnterDesc": "メッセージを送信するショートカットを選択します。その他の Enter キーの組み合わせは改行を挿入します"
   },
   "indexing": {
     "noWorkspaceMemories": "Workspaceメモリはまだありません。セッションがこのワークスペースの情報を抽出すると表示されます。",
