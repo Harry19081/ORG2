@@ -491,7 +491,7 @@
   },
   "optional": "facultatif",
   "common": {
-    "display": "Affichage",
+    "display": "Paramètres de l’interface",
     "on": "Activé",
     "off": "Désactivé",
     "default": "Par défaut",

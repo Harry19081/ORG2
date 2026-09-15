@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "터미널 완료 대기 중",
     "runShellFailed": "명령 실행 실패",
     "runCommands": "명령 실행",
+    "waitBackgroundTasks": "백그라운드 작업 대기",
     "terminalSummary": {
       "command_one": "명령 {{count}}개",
       "command_other": "명령 {{count}}개",
@@ -1134,6 +1135,10 @@
       "check_one": "확인 {{count}}회",
       "check_other": "확인 {{count}}회",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}}회",
+      "count_other": "{{count}}회"
     },
     "inspectTerminalsRunning": "Terminal 검사 중",
     "inspectTerminalsDone": "Terminal 검사됨",

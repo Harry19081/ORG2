@@ -192,7 +192,7 @@ Use ORG2's built-in Rust harness or launch these supported coding-agent CLIs fro
 
 ## Download
 
-Current build version: v2.0.1 (2026-09-15)
+Current build version: v2.0.2 (2026-09-15)
 
 Download the latest ORG2 desktop app with one click:
 

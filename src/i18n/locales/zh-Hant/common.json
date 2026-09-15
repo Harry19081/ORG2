@@ -491,7 +491,7 @@
   },
   "optional": "可選",
   "common": {
-    "display": "顯示",
+    "display": "介面設定",
     "on": "開",
     "off": "關",
     "default": "默認",

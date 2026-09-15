@@ -322,7 +322,7 @@
   },
   "optional": "optional",
   "common": {
-    "display": "Display",
+    "display": "UI settings",
     "on": "On",
     "off": "Off",
     "default": "Default",

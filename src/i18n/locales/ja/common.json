@@ -491,7 +491,7 @@
   },
   "optional": "任意",
   "common": {
-    "display": "表示",
+    "display": "UI設定",
     "on": "オン",
     "off": "オフ",
     "default": "デフォルト",

@@ -941,6 +941,7 @@ pub async fn close_agent_session_tree(
         return Ok(());
     };
     let pid = session.pid;
+    #[cfg(unix)]
     let start_time = session.start_time;
 
     #[cfg(unix)]

@@ -1143,6 +1143,7 @@
     "terminalWaitRunning": "Waiting for terminal to finish",
     "runShellFailed": "Command failed",
     "runCommands": "Run commands",
+    "waitBackgroundTasks": "Wait for background tasks",
     "terminalSummary": {
       "command_one": "{{count}} command",
       "command_other": "{{count}} commands",
@@ -1153,6 +1154,10 @@
       "check_one": "{{count}} check",
       "check_other": "{{count}} checks",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} time",
+      "count_other": "{{count}} times"
     },
     "inspectTerminalsRunning": "Inspecting terminals",
     "inspectTerminalsDone": "Inspected terminals",

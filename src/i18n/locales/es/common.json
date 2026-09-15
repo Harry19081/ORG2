@@ -491,7 +491,7 @@
   },
   "optional": "opcional",
   "common": {
-    "display": "Visualización",
+    "display": "Ajustes de interfaz",
     "on": "Activado",
     "off": "Desactivado",
     "default": "Predeterminado",

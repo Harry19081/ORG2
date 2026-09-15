@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "Terminalin bitmesi bekleniyor",
     "runShellFailed": "Komut başarısız",
     "runCommands": "Komutları çalıştır",
+    "waitBackgroundTasks": "Arka plan görevlerini bekle",
     "terminalSummary": {
       "command_one": "{{count}} komut",
       "command_other": "{{count}} komut",
@@ -1134,6 +1135,10 @@
       "check_one": "{{count}} kontrol",
       "check_other": "{{count}} kontrol",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} kez",
+      "count_other": "{{count}} kez"
     },
     "inspectTerminalsRunning": "Terminaller inceleniyor",
     "inspectTerminalsDone": "Terminaller incelendi",

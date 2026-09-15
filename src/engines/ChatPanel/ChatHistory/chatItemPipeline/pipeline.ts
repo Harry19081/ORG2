@@ -7,6 +7,7 @@
  * - Groups consecutive read file events
  * - Groups consecutive exploration tool calls
  * - Groups consecutive shell commands, MCP calls, and terminal follow-ups
+ * - Collapses runs of background-job waits that no terminal stack absorbed
  * - Groups file edits/deletions with reads performed between them
  * - Stacks consecutive browser actions
  * - Consolidates partial observations
@@ -24,6 +25,7 @@ import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import {
   type ActionSummaryCategory,
   getActionSummaryCategory,
+  isAwaitOutputEvent,
   isBrowserEvent,
   isCommandGroupActivityEvent,
   isFileModificationEvent,
@@ -409,6 +411,56 @@ export function processChatItems(
     flushPartialBuffer();
   };
 
+  // A wait lands as its own row when no terminal stack absorbs it: a provider
+  // poll with no command row beside it, or a subagent wait. Adjacent rows of
+  // that kind collapse into one wait stack. A run that ends the list is still
+  // live, so it stays open like a trailing terminal stack.
+  const groupStandaloneWaits = (
+    items: OptimizedChatItem[]
+  ): OptimizedChatItem[] => {
+    if (!opts.groupWaitActivities) return items;
+
+    const minToGroup = opts.minWaitActivitiesToGroup ?? 2;
+    const grouped: OptimizedChatItem[] = [];
+    let run: { item: OptimizedChatItem; event: SessionEvent }[] = [];
+    const flushRun = (closedByBoundary: boolean) => {
+      if (run.length > 0 && run.length >= minToGroup) {
+        const waitEvents = run.map(({ event }) => event);
+        waitEvents.forEach((event) => updateVisibleStatusCount(event, -1));
+        grouped.push({
+          chunk_id: createActivityStackGroupId(
+            "wait",
+            getStableActivityItemId(waitEvents[0])
+          ),
+          type: "activityStackGroup",
+          activityStackGroup: {
+            category: "wait",
+            events: waitEvents,
+            closedByBoundary,
+          },
+        });
+      } else {
+        grouped.push(...run.map(({ item }) => item));
+      }
+      run = [];
+    };
+
+    for (const item of items) {
+      if (
+        item.type === "activity" &&
+        item.event &&
+        isAwaitOutputEvent(item.event)
+      ) {
+        run.push({ item, event: item.event });
+        continue;
+      }
+      flushRun(true);
+      grouped.push(item);
+    }
+    flushRun(false);
+    return grouped;
+  };
+
   // ------------------------------------------
   // Pre-pass: dedup running tool_call chunks + assistant messages
   // ------------------------------------------
@@ -641,5 +693,5 @@ export function processChatItems(
   flushEditBuffer(false);
   flushPartialBuffer();
 
-  return { items: ensureUniqueChunkIds(result), stats };
+  return { items: ensureUniqueChunkIds(groupStandaloneWaits(result)), stats };
 }
