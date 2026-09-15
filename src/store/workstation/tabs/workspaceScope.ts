@@ -1,5 +1,6 @@
 import { type Getter, atom } from "jotai";
 
+import { createLogger } from "@src/hooks/logger";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom/atoms";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import {
@@ -10,10 +11,16 @@ import {
 import { workstationWorkspaceId } from "./storage";
 import type { WorkstationWorkspaceKey } from "./types";
 
+const log = createLogger("WorkstationSharing");
+
 export const myStationSharingAtom = atom(
   (get) => get(settingsAtom)["general.myStationSharing"],
   (_get, set, value: "working-directory" | "chat-tab") => {
-    set(updateSettingAtom, { key: "general.myStationSharing", value });
+    set(updateSettingAtom, { key: "general.myStationSharing", value }).catch(
+      (error: unknown) => {
+        log.warn("Failed to persist general.myStationSharing:", error);
+      }
+    );
   }
 );
 myStationSharingAtom.debugLabel = "myStationSharingAtom";
