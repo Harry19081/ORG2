@@ -10,7 +10,7 @@ use serde::Serialize;
 
 use orgtrack_core::canonical::CollaborationSessionOrigin;
 
-/// Workstation projection of canonical resource interactions, grouped by
+/// My Station projection of canonical resource interactions, grouped by
 /// session for one file.
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]

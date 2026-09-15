@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "Error al copiar",
     "moveTo": "Mover página a…",
     "projectLinks": "Vínculos del proyecto",
-    "moveToWorkstation": "Mover a Workstation",
+    "moveToWorkstation": "Mover a Mi Workstation",
     "moveToChatPanel": "Mover al panel de chat",
     "rawTranscript": {
       "title": "Transcripción sin procesar de la sesión",
@@ -1931,7 +1931,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "Revisar",
-      "viewMyStation": "Ver en Workstation",
+      "viewMyStation": "Ver en My Station",
       "viewAgentStation": "Ver en Agent Station"
     },
     "osAgent": "OS Agent",
@@ -2301,7 +2301,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "Abrir en Workstation"
+      "openInMyStation": "Abrir en My Station"
     }
   },
   "groupChat": {

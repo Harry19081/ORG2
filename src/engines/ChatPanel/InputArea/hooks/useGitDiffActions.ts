@@ -5,7 +5,7 @@
  * behavior:
  * - commit / commit & push / push → agent prompt (runs in the agent's own
  *   workspace)
- * - View in Workstation            → Workstation Source Control tab
+ * - View in my station            → My Station Source Control tab
  * - View in Agent station         → existing Agent Station diff navigation
  *
  * The agent-prompt sequence mirrors PinnedActionsBar's "Commit & Push" pill.

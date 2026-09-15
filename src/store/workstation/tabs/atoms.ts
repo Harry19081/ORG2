@@ -46,7 +46,7 @@ const EMPTY_WORKSPACE: WorkstationWorkspaceState = {
   tabOrder: [],
 };
 
-/** Recent tabs belonging to the workspace currently visible in Workstation. */
+/** Recent tabs belonging to the workspace currently visible in My Station. */
 export const recentWorkstationTabsAtom = atom((get) => {
   const workspace = get(presentedWorkstationWorkspaceKeyAtom);
   return get(recentWorkstationTabEntriesAtom)

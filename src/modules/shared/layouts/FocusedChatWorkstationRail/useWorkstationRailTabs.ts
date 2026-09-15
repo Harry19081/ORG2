@@ -1,5 +1,5 @@
 /**
- * "Opened Tabs" rows of the focused-chat workstation rail: Workstation tabs
+ * "Opened Tabs" rows of the focused-chat workstation rail: My Station tabs
  * plus the user-driven PTY sessions, and the handlers that hand a row over to
  * the Workstation host or the docked trail terminal.
  */
@@ -129,7 +129,7 @@ export function useWorkstationRailTabs({
       .filter(
         (session) =>
           !session.readOnly &&
-          // Opened Tabs is a Workstation list, not the shared PTY pool.
+          // Opened Tabs is a My Station list, not the shared PTY pool.
           !isChatPanelTerminalId(session.id) &&
           !isAgentPtySessionId(session.id) &&
           // Pinned terminals belong only in their docked panel, even when

@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "Kopieren fehlgeschlagen",
     "moveTo": "Seite verschieben nach…",
     "projectLinks": "Projektverknüpfungen",
-    "moveToWorkstation": "In Workstation verschieben",
+    "moveToWorkstation": "In meine Workstation verschieben",
     "moveToChatPanel": "In das Chat-Panel verschieben",
     "rawTranscript": {
       "title": "Rohtranskript der Sitzung",
@@ -1931,7 +1931,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "Überprüfen",
-      "viewMyStation": "In Workstation anzeigen",
+      "viewMyStation": "In My Station anzeigen",
       "viewAgentStation": "In Agent Station anzeigen"
     },
     "osAgent": "OS Agent",
@@ -2301,7 +2301,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "In Workstation öffnen"
+      "openInMyStation": "In My Station öffnen"
     }
   },
   "groupChat": {

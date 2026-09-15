@@ -487,7 +487,7 @@ export async function openAgentRow(agentId, label, tab = "general") {
   );
   await pointerClick(
     '[data-testid="station-mode-my-station"]',
-    `${label} Workstation switch`,
+    `${label} My Station switch`,
     {
       rootSelector: null,
       jsClick: true,

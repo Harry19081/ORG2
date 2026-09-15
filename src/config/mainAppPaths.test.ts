@@ -15,7 +15,7 @@ import {
   parseSettingsSectionTab,
 } from "./mainAppPaths";
 
-describe("Workstation Code Editor icon", () => {
+describe("My Station Code Editor icon", () => {
   it("uses the writing glyph in path-derived navigation", () => {
     expect(getPathIcon("/orgii/workstation/code")).toBe(ContentWritingIcon);
   });

@@ -318,7 +318,7 @@ describe("PinnedWorkbenchChrome", () => {
   it("follows the station on screen: Agent Station keeps its maximize toggle", () => {
     render();
     act(() => {
-      // Workstation's chat is hidden; Agent Station's is showing.
+      // My Station's chat is hidden; Agent Station's is showing.
       store.set(activeStationChatVisibleAtom, "my-station", false);
       store.set(stationModeAtom, "agent-station");
       store.set(activeStationChatVisibleAtom, "agent-station", true);

@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "コピー失敗",
     "moveTo": "ページの移動先…",
     "projectLinks": "プロジェクトの関連付け",
-    "moveToWorkstation": "Workstation に移動",
+    "moveToWorkstation": "マイ Workstation に移動",
     "moveToChatPanel": "チャットパネルに移動",
     "rawTranscript": {
       "title": "セッションの生トランスクリプト",
@@ -1931,7 +1931,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "レビュー",
-      "viewMyStation": "Workstation で表示",
+      "viewMyStation": "My Station で表示",
       "viewAgentStation": "Agent Station で表示"
     },
     "osAgent": "OS Agent",
@@ -2301,7 +2301,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "Workstation で開く"
+      "openInMyStation": "My Station で開く"
     }
   },
   "groupChat": {

@@ -4,7 +4,7 @@
 | ------------------ | ------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | Background work    | keep    | Corner listeners and one pending animation frame exist only during a terminal drag | Release, cancellation, blur, document hidden and unmount dispose resources; the fixed trail no longer installs a resize hook        | Rendered grip lifecycle tests                                       |
 | Memory             | keep    | Fixed dimension state and at most three dock claims                                | Capacity is checked before session creation, including stale callbacks; no new cache, worker, observer or polling loop              | Repeated-drag cleanup, capacity and repeated-add tests              |
-| Scope/isolation    | fix     | Existing sessions and claims remain authoritative in the current Jotai store       | Workstation Open Tabs excludes pinned, chat-panel and agent-owned terminals in both wide and compact renderers                       | Production rail tests with real creation, claim and release writers |
+| Scope/isolation    | fix     | Existing sessions and claims remain authoritative in the current Jotai store       | My Station Open Tabs excludes pinned, chat-panel and agent-owned terminals in both wide and compact renderers                       | Production rail tests with real creation, claim and release writers |
 | Rendering/hot path | keep    | Geometry is read at drag start; moves only record coordinates and queue one frame  | Live resizing avoids storage writes and skips unchanged sizes; release flushes final coordinates                                    | 60 moves coalesce into one frame/update; persistence tests          |
 | Terminal ownership | keep    | Collapse changes geometry and visibility without dropping the mounted host         | Only the expanded body reserves extra column width; hide releases claims without killing; stop uses the existing termination writer | Dock integration and claim suites                                   |
 | Font appearance    | keep    | Both initialization and live updates use the resolved host font size               | Pinned host uses 12px; other hosts retain the global setting; no global write or xterm recreation                                   | Two real component chains with mocked xterm/native setup            |
@@ -15,7 +15,7 @@
 The terminal session pool contains valid sessions from several owners. Pinned
 membership is authoritative in miniTerminalClaimedIdsAtom, written through
 openMiniTerminalAtom and release/close actions. Open Tabs previously ignored
-that membership and owner scope. Exclusion is the user's explicit Workstation
+that membership and owner scope. Exclusion is the user's explicit My Station
 product requirement, not a workaround for malformed data. Existing owner-ID
 helpers exclude chat-panel and agent PTYs. Collapse retains claims; release/hide
 returns eligible sessions to Open Tabs. No historical cleanup is required.

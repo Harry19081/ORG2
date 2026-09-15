@@ -157,7 +157,7 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
 
   const stationMode = useAtomValue(stationModeAtom);
   // Non-owning shared surfaces are already scoped by their `hidden` prop.
-  // Applying the native-webview station gate to them blanks Workstation UI.
+  // Applying the native-webview station gate to them blanks My Station UI.
   const isSecondaryStationHidden =
     manageWebviews &&
     !respectModalBlocking &&

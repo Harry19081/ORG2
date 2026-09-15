@@ -78,7 +78,7 @@ export function useCloudRemoteSessionMenuItems({
           ),
           openInMyStation: tSessions(
             "controlTower.sidebar.openInMyStation",
-            "Open in Workstation"
+            "Open in My Station"
           ),
           copyUrl: t("cloud.sidebar.copyUrl"),
           togglePin: isPinned

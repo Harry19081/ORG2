@@ -20,7 +20,7 @@ interface UseSessionHeaderActionsOptions {
   handleReloadSession: () => void;
 }
 
-/** Shared session-menu state used by Chat Panel and Workstation. */
+/** Shared session-menu state used by Chat Panel and My Station. */
 export function useSessionHeaderActions({
   sessionId,
   handleReloadSession,

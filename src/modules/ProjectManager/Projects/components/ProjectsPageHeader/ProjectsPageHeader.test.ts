@@ -95,7 +95,7 @@ describe("ProjectsPageHeader", () => {
     );
   });
 
-  it("publishes Workstation filters on the left and search with actions on the right", () => {
+  it("publishes My Station filters on the left and search with actions on the right", () => {
     renderToStaticMarkup(
       React.createElement(ProjectsPageHeader, {
         title: "Projects",

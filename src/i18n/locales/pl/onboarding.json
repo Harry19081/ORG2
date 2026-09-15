@@ -8,7 +8,7 @@
       "finish": "Zakończ prezentację",
       "keyboardHint": "Użyj ← / → lub < / >",
       "desktop": "Pulpit",
-      "myStation": "Workstation",
+      "myStation": "Moja stacja",
       "infinity": "Infinity",
       "agentStation": "Stacja agentów"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "Stacja przełączania tryby",
-          "body": "Użyj tej pigułki, aby przełączać tryby stacji. Pulpit oznacza Workstation, Twoje miejsce pracy. Infinity oznacza Agent Station, widok aktywności agenta"
+          "body": "Użyj tej pigułki, aby przełączać tryby stacji. Pulpit oznacza My Station, Twoje miejsce pracy. Infinity oznacza Agent Station, widok aktywności agenta"
         },
         "dock": {
           "title": "Dok Agent Station",

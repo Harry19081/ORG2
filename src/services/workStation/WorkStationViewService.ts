@@ -52,7 +52,7 @@ async function unmaximizeChatPanel(): Promise<void> {
 
 /**
  * Prepare the Code Editor surface for opening a `mainPane` tab: unmaximize
- * the chat panel and snap into Workstation. The unified content host follows
+ * the chat panel and snap into My Station. The unified content host follows
  * the active tab, so opening the tab itself reveals the Code Editor.
  */
 async function revealCodeSurface(): Promise<void> {

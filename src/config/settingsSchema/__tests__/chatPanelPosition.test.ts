@@ -22,7 +22,7 @@ describe("chat panel position setting", () => {
     ).toBe("right");
   });
 
-  it("migrates Workstation first when legacy positions disagree", () => {
+  it("migrates My Station first when legacy positions disagree", () => {
     expect(
       validateSettings({
         "general.workStationChatPosition": "right",

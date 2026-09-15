@@ -1,5 +1,5 @@
 /**
- * Shared TabBar for Workstation: Code / Browser / Project Manager
+ * Shared TabBar for My Station: Code / Browser / Project Manager
  * filter to their own tab host.
  */
 import { useAtomValue } from "jotai";

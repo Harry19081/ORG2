@@ -61,7 +61,7 @@ locationSelectorOpenAtom.debugLabel = "locationSelectorOpenAtom";
 /**
  * Blocks shared native webviews for app-wide overlays.
  * Station-mode-specific blocking is layered by webviewBlockedAtom for legacy
- * Workstation owners; the shared Browser singleton uses this atom directly so
+ * My Station owners; the shared Browser singleton uses this atom directly so
  * Agent Station can host the same native browser without recreating it.
  */
 export const webviewOverlayBlockedAtom = atom((get) => {

@@ -44,7 +44,7 @@ interface WebViewportProps {
   hideTabBar?: boolean;
   /** Hide webviews when their host or viewport is inactive */
   hideWebviews?: boolean;
-  /** Header host to publish the URL bar into. Defaults to Workstation Browser. */
+  /** Header host to publish the URL bar into. Defaults to My Station Browser. */
   publishUrlBarToHost?: WorkstationTabHeaderHost;
   /** Render the URL bar inline instead of publishing to the Workstation header slot. */
   inlineUrlBar?: boolean;
@@ -56,7 +56,7 @@ interface WebViewportProps {
    * When false, the underlying BrowserCore ignores the global webview-blocked
    * atom (overlays, station-mode switches) and always renders its webviews.
    * Pass false for embedded browser panes that should ignore global overlay
-   * blocking. Defaults to true for standalone Workstation Browser.
+   * blocking. Defaults to true for standalone My Station Browser.
    */
   respectModalBlocking?: boolean;
   /**
@@ -99,7 +99,7 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
     } = browserState;
     const { t } = useTranslation();
 
-    // Also drive browserTabsAtom so Workstation Browser's reverse-sync effect
+    // Also drive browserTabsAtom so My Station Browser's reverse-sync effect
     // (in useBrowserLayoutState) doesn't forward a stale activeTabId back into
     // BrowserContext and revert this click. Control Tower doesn't read
     // browserTabsAtom for active selection, so this write is a no-op there.
@@ -150,7 +150,7 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
     const handleTabClick = useCallback(
       (tabId: string) => {
         const sessionId = extractSessionId(tabId);
-        // Switch the WorkStation Browser tab strip first so Workstation's
+        // Switch the WorkStation Browser tab strip first so My Station's
         // reverse-sync effect (browserTabsAtom -> BrowserContext) sees the
         // new active tab, then update BrowserContext.
         switchBrowserTab(tabId);

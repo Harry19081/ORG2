@@ -99,10 +99,10 @@ function defineOpenStationAction(
 export const workstationOpenMyStation = defineOpenStationAction(
   ACTION_ID.WORKSTATION_OPEN_MY_STATION,
   "my-station",
-  "Switch Workstation to Workstation",
-  "Opened Workstation",
+  "Switch Workstation to My Station",
+  "Opened My Station",
   "",
-  ["open Workstation", "switch to Workstation", "show Workstation"]
+  ["open my station", "switch to my station", "show my station"]
 );
 
 export const workstationOpenAgentStation = defineOpenStationAction(
@@ -143,13 +143,9 @@ function defineOpenStationWindowAction(
 export const workstationOpenMyStationWindow = defineOpenStationWindowAction(
   ACTION_ID.WORKSTATION_OPEN_MY_STATION_WINDOW,
   "my-station",
-  "Open Workstation in a new window",
-  "Opened Workstation in a new window",
-  [
-    "open Workstation in a new window",
-    "detach Workstation",
-    "pop out Workstation",
-  ]
+  "Open My Station in a new window",
+  "Opened My Station in a new window",
+  ["open my station in a new window", "detach my station", "pop out my station"]
 );
 
 export const workstationOpenAgentStationWindow = defineOpenStationWindowAction(

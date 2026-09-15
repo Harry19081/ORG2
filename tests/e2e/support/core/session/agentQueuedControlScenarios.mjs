@@ -189,17 +189,17 @@ async function assertStationSurfacesConsistent(label) {
   }
   if (myStation.filesPillText !== agentStation.filesPillText) {
     throw new Error(
-      `${label} file pill mismatch between Workstation and Agent: my=${JSON.stringify(myStation)} agent=${JSON.stringify(agentStation)}`
+      `${label} file pill mismatch between My Station and Agent: my=${JSON.stringify(myStation)} agent=${JSON.stringify(agentStation)}`
     );
   }
   if (myStation.roundLabel !== agentStation.roundLabel) {
     throw new Error(
-      `${label} round label mismatch between Workstation and Agent: my=${JSON.stringify(myStation)} agent=${JSON.stringify(agentStation)}`
+      `${label} round label mismatch between My Station and Agent: my=${JSON.stringify(myStation)} agent=${JSON.stringify(agentStation)}`
     );
   }
   if (myStation.changesCount !== agentStation.changesCount) {
     throw new Error(
-      `${label} changes count mismatch between Workstation and Agent: my=${JSON.stringify(myStation)} agent=${JSON.stringify(agentStation)}`
+      `${label} changes count mismatch between My Station and Agent: my=${JSON.stringify(myStation)} agent=${JSON.stringify(agentStation)}`
     );
   }
   return { myStation, agentStation, comparedBothStations: true };

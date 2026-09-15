@@ -34,7 +34,7 @@ Claude / Codex / Cursor hooks                   ├─> canonical resource inter
   -> ~/.orgii/session-provenance/inbox/*.json ──┘
                                                         |
                                                         v
-                                              Workstation / Session Blame
+                                              My Station / Session Blame
 ```
 
 External hooks never open SQLite. A hook invokes the ORG2 executable with
@@ -59,7 +59,7 @@ checkpoint table is also the durable work queue: a restart simply discovers
 the same repository sessions and resumes the non-current fingerprints.
 
 The RPC reports `queued`, `discovering`, `indexing`, `complete`, `partial`, or
-`failed` coverage plus indexed/total/failed counts. Workstation polls only while
+`failed` coverage plus indexed/total/failed counts. My Station polls only while
 the job is active. Concurrent file views join the same repository job, and a
 30-second completed-job window prevents source rescans during one UI burst.
 Source discovery or parsing failures produce an explicit partial/failed state
@@ -123,7 +123,7 @@ The model stores precision explicitly instead of presenting inferred ownership
 as exact. Later transcript reconciliation can append or reconcile higher
 precision records without changing the version-1 hook contract.
 
-## Workstation projection and transcript navigation
+## My Station projection and transcript navigation
 
 Session Blame projects a hierarchy instead of a flat list:
 
@@ -140,7 +140,7 @@ methods, and attribution precision. When an actor ID resolves to a real cached
 child session (for example Claude Code `agent_id` to
 `claudecodeapp-agent-{agent_id}`), the participant uses the child session as
 its navigation target and displays the child title. Clicking it runs the same
-production session loader used elsewhere in Workstation, so the child
+production session loader used elsewhere in My Station, so the child
 transcript—not only an ID change—is loaded and rendered.
 
 The root aggregate already includes every interaction in the group. A
@@ -194,5 +194,5 @@ localization cannot weaken the interaction assertions.
    do not change SQLite or UI types unless the canonical contract changes.
 4. New resource kinds add a typed resource table and reuse the common resource
    and interaction tables.
-5. Workstation reads a grouped projection, not vendor payloads or raw event
+5. My Station reads a grouped projection, not vendor payloads or raw event
    tables.

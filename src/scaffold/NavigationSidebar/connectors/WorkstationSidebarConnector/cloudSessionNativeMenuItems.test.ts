@@ -15,7 +15,7 @@ describe("buildCloudSessionNativeMenuItems", () => {
       labels: {
         openInNewTab: "Open in New Tab",
         openInNewWindow: "Open in New Window",
-        openInMyStation: "Open in Workstation",
+        openInMyStation: "Open in My Station",
         copyUrl: "Copy URL",
         togglePin: "Pin",
         remove: "Remove",
@@ -33,7 +33,7 @@ describe("buildCloudSessionNativeMenuItems", () => {
     ).toEqual([
       "Open in New Tab",
       "Open in New Window",
-      "Open in Workstation",
+      "Open in My Station",
       "Copy URL",
       "Pin",
       "Separator",

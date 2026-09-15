@@ -76,7 +76,7 @@ export function buildWorkItemNavigationTarget(
       : (card.projectName ?? card.projectSlug),
     // Session rows store cloud orgs in selector form (`cloud:<id>`), while
     // Work Item APIs take the raw organization id. Normalize at the navigation
-    // boundary so a Workstation detail tab does not briefly open and then fall
+    // boundary so a My Station detail tab does not briefly open and then fall
     // back to an empty result.
     orgId: normalizeWorkItemOrgId(card.orgId),
   };

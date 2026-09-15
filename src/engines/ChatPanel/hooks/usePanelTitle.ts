@@ -67,7 +67,7 @@ export function usePanelTitle(): UsePanelTitleResult {
   // claiming the pipeline (or WorkStation's remembered selection) would
   // otherwise leak a session into this pane while it sits on Launchpad. Keying
   // off the active tab guarantees a live session is owned by exactly one
-  // surface — so moving a chat to Workstation and switching WorkStation tabs no
+  // surface — so moving a chat to My Station and switching WorkStation tabs no
   // longer mistriggers the session here.
   const activeTab = useAtomValue(activeChatPanelTabAtom);
   const currentSessionId =

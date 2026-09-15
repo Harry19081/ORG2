@@ -2,7 +2,7 @@
  * WorkstationTabHeader
  *
  * Shared 36px global tab-header strip rendered immediately below the
- * {@link WorkstationTabBar} and spanning the full width of the Workstation
+ * {@link WorkstationTabBar} and spanning the full width of the My Station
  * shell. Replaces the per-tab headers (file breadcrumb, URL bar,
  * commit-info bar, etc.) that each pane used to render inline above its
  * own content.

@@ -4,7 +4,7 @@
  *
  * 1. Session follow. A station window renders the station for the MAIN
  *    window's remembered session (`workstationActiveSessionIdAtom`): Agent
- *    Station replays it, Workstation shows its per-session tab workspace.
+ *    Station replays it, My Station shows its per-session tab workspace.
  *    Every change is pushed to both station labels over a window-targeted
  *    Tauri event; a label with no live window simply has no receivers, so
  *    the bridge never has to know which windows exist. The window's initial

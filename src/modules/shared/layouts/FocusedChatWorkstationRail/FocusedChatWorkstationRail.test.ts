@@ -389,7 +389,7 @@ describe.each(["wide rail", "compact menu"])(
       expect(requestedPaths()).toContain("/workspace/secondary");
     });
 
-    it("lists Workstation files and terminals without docked or chat-panel terminals", async () => {
+    it("lists My Station files and terminals without docked or chat-panel terminals", async () => {
       addStationTerminal("Station shell");
       const pinned = addStationTerminal("Pinned shell");
       store.set(openMiniTerminalAtom, pinned);

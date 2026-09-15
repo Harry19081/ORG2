@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "복사 실패",
     "moveTo": "페이지를 다음으로 이동…",
     "projectLinks": "프로젝트 연결",
-    "moveToWorkstation": "Workstation으로 이동",
+    "moveToWorkstation": "내 Workstation으로 이동",
     "moveToChatPanel": "채팅 패널로 이동",
     "rawTranscript": {
       "title": "원시 세션 트랜스크립트",
@@ -1931,7 +1931,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "리뷰",
-      "viewMyStation": "Workstation에서 보기",
+      "viewMyStation": "My Station에서 보기",
       "viewAgentStation": "Agent Station에서 보기"
     },
     "osAgent": "OS Agent",
@@ -2301,7 +2301,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "Workstation 에서 열기"
+      "openInMyStation": "My Station 에서 열기"
     }
   },
   "groupChat": {

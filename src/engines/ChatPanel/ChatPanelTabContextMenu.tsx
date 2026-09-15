@@ -47,7 +47,7 @@ export function ChatPanelTabContextMenu(
             if (propsRef.current.onMoveToWorkstation) {
               items.push({
                 text: translate("sessions:chat.moveToWorkstation", {
-                  defaultValue: "Move to Workstation",
+                  defaultValue: "Move to My Station",
                 }),
                 action: () => {
                   const current = propsRef.current;

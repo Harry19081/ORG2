@@ -8,7 +8,7 @@
       "finish": "Terminar o tour",
       "keyboardHint": "Use ← / → ou < / >",
       "desktop": "Desktop",
-      "myStation": "Workstation",
+      "myStation": "Minha estação",
       "infinity": "Infinity",
       "agentStation": "Agent Station"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "Alternar estação modos",
-          "body": "Use esta pílula para alternar os modos de estação. Desktop significa Workstation, seu espaço de trabalho. Infinito significa Agent Station, a visualização da atividade do agente"
+          "body": "Use esta pílula para alternar os modos de estação. Desktop significa My Station, seu espaço de trabalho. Infinito significa Agent Station, a visualização da atividade do agente"
         },
         "dock": {
           "title": "Agent Station dock",

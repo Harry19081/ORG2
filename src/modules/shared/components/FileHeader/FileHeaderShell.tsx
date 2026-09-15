@@ -3,7 +3,7 @@
  *
  * Wraps the {@link FileHeader} body so it either renders inline (legacy
  * callers) or teleports into the global Workstation tab-header strip via
- * {@link usePublishWorkstationTabHeader} (Workstation panes).
+ * {@link usePublishWorkstationTabHeader} (My Station panes).
  *
  * The teleported variant intentionally drops the row chrome (36px height,
  * border, padding) since the workstation tab header already supplies it.

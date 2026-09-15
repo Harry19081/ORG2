@@ -15,7 +15,7 @@ export function useAppShellSimulatorPanelSync({
 
   // This is intentionally a gated mirror, not an always-live derivation:
   // native browser webviews observe this atom to schedule position updates.
-  // Workstation layout edits must not invalidate their simulator geometry.
+  // My Station layout edits must not invalidate their simulator geometry.
   useEffect(() => {
     if (!isAgentStation) return;
     setSimSidebarPosition(layoutMode);

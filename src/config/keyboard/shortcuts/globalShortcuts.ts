@@ -37,7 +37,7 @@ export const GLOBAL_SHORTCUTS: ShortcutEntry[] = [
   },
   {
     id: "open_my_station",
-    command: "Open Workstation",
+    command: "Open My Station",
     macKeys: "⌘1",
     winKeys: "Ctrl+1",
     scope: "global",

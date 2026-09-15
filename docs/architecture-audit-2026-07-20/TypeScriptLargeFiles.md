@@ -179,7 +179,7 @@ The latest `develop` baseline moved Token Manager content under `.archive`. The 
 - `useGitHubIssueDetail.ts` is the single owner of local detail state, comment loading, close/reopen mutations, comment submission state, host back-state publication, and unmount cleanup.
 - Every async completion checks the captured issue `html_url` against the currently open detail before applying data, preserving the original stale-episode guard when users switch or close issues mid-request.
 - Scope transitions still originate in the coordinator and explicitly call the stable `closeDetail` action; the hook's effects synchronize only external host state and do not synchronously mutate local state.
-- Workstation atom/tab setup and its independent comment-loading guard remain in the coordinator because they target a separate persistent workstation detail surface.
+- My Station atom/tab setup and its independent comment-loading guard remain in the coordinator because they target a separate persistent workstation detail surface.
 - Phase 4 reduces the coordinator from 1448 to 1325 LOC (2356 to 1325 across four phases) without changing request/cache loading, create mutation, pagination fetching, tab actions, or the public caller contract.
 
 ### GitHub work-items surface — Phase 5
@@ -189,15 +189,15 @@ The latest `develop` baseline moved Token Manager content under `.archive`. The 
 - `useGitHubWorkItemsLoadLifecycle.ts` owns Git-repository source resolution, credential-derived viewer identity, cache-first issue/PR maps, initial revalidation, force-refresh nonce handling, loading/error state, and stale effect cancellation.
 - Existing request semantics remain unchanged: issue and PR branches start in parallel, per-repo issue states share the same coalescing key, PR state requests retain their per-state keys, cache freshness checks remain authoritative, and issue errors still take precedence over PR errors.
 - The two cancellation checks remain after source resolution and after issue/PR loading, so a scope/search-state/repository transition cannot publish stale sources or results.
-- The hook exposes one semantic issue-map updater and list-error action for the existing load-more/create paths; it does not absorb pagination ordering, create mutation feedback, Workstation state, tab navigation, or add-to-agent behavior.
+- The hook exposes one semantic issue-map updater and list-error action for the existing load-more/create paths; it does not absorb pagination ordering, create mutation feedback, My Station state, tab navigation, or add-to-agent behavior.
 - Phase 5 reduces the coordinator from 1325 to 959 LOC (2356 to 959 across five phases) while preserving public caller and wire/request payload shapes.
 
 ### GitHub work-items surface — Phase 6
 
 `managed items + workstation/store services → useGitHubWorkItemActions → list rows/create success → GitHubWorkItemsSurface coordinator`
 
-- `useGitHubWorkItemActions.ts` owns issue browser opening, Workstation issue seeding/tab opening/guarded comment loading, PR detail tab opening, station-mode switching, and issue/PR context publication.
-- Workstation comment completion still compares the current atom issue `html_url` with the captured issue before publishing, preserving the original stale-tab guard.
+- `useGitHubWorkItemActions.ts` owns issue browser opening, My Station issue seeding/tab opening/guarded comment loading, PR detail tab opening, station-mode switching, and issue/PR context publication.
+- My Station comment completion still compares the current atom issue `html_url` with the captured issue before publishing, preserving the original stale-tab guard.
 - Issue-list, PR-list, and newly-created issue context payloads now share one issue projection while preserving the original per-path toast/store ordering and user-facing names.
 - Create mutation and repo-map/cache insertion remain in the coordinator; only its successful context-publication step delegates to the action controller.
 - Phase 6 reduces the coordinator from 959 to 847 LOC (2356 to 847 across six phases) without changing tab identities, request payloads, workstation state shape, i18n keys, or public caller API.

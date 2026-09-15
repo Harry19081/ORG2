@@ -8,7 +8,7 @@
       "finish": "Turu bitir",
       "keyboardHint": "← / → veya < / > kullanın",
       "desktop": "Masaüstü",
-      "myStation": "Workstation",
+      "myStation": "İstasyonum",
       "infinity": "Infinity",
       "agentStation": "Agent Station"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "İstasyon değiştir modlar",
-          "body": "İstasyon modlarını değiştirmek için bu hapı kullanın. Masaüstü, Workstation, yani çalışma alanınız anlamına gelir. Sonsuzluk, ajan etkinlik görünümü olan Agent Station anlamına gelir"
+          "body": "İstasyon modlarını değiştirmek için bu hapı kullanın. Masaüstü, My Station, yani çalışma alanınız anlamına gelir. Sonsuzluk, ajan etkinlik görünümü olan Agent Station anlamına gelir"
         },
         "dock": {
           "title": "Agent Station bağlantı istasyonu",

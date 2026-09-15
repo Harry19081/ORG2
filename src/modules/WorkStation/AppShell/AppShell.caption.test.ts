@@ -168,7 +168,7 @@ describe("AppShell caption ownership", () => {
       expect(frameSpy.mock.calls[0][0].captionVisible).toBe(false);
     }
   );
-  it("handles no message and Workstation without caption spacing", () => {
+  it("handles no message and My Station without caption spacing", () => {
     captionHook.mockReturnValue(null);
     expect(render(true)).not.toContain("data-caption");
     expect(frameSpy.mock.calls[0][0].captionVisible).toBe(false);

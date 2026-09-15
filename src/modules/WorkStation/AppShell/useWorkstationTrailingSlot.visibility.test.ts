@@ -148,7 +148,7 @@ describe("useWorkstationTrailingSlot pane controls", () => {
     expectPaneControls();
   });
 
-  it("leaves empty Workstation controls to the pinned window chrome", () => {
+  it("leaves empty My Station controls to the pinned window chrome", () => {
     pinnedChromeVisibleMock.mockReturnValue(true);
     renderHost("code");
 
@@ -160,7 +160,7 @@ describe("useWorkstationTrailingSlot pane controls", () => {
     ).toBeNull();
   });
 
-  it("offers to open Workstation in a new window beside the pane controls", () => {
+  it("offers to open My Station in a new window beside the pane controls", () => {
     renderHost("code");
 
     expect(

@@ -47,7 +47,7 @@ function stateWith(
 describe("Chat Panel tab placement", () => {
   beforeEach(() => localStorage.clear());
 
-  it("moves a PR tab into the equivalent Workstation detail tab", () => {
+  it("moves a PR tab into the equivalent My Station detail tab", () => {
     const store = createInstrumentedStore();
     const githubPr: GitHubPrDetailTabData = {
       prNumber: 964,
@@ -92,7 +92,7 @@ describe("Chat Panel tab placement", () => {
     expect(store.get(stationModeAtom)).toBe(STATION_MODE.MY_STATION);
   });
 
-  it("moves an issue tab into the equivalent Workstation detail tab", () => {
+  it("moves an issue tab into the equivalent My Station detail tab", () => {
     const store = createInstrumentedStore();
     const githubIssue: GitHubIssueDetailTabData = {
       issueNumber: 42,
@@ -130,7 +130,7 @@ describe("Chat Panel tab placement", () => {
     expect(store.get(stationModeAtom)).toBe(STATION_MODE.MY_STATION);
   });
 
-  it("moves a Workstation PR tab into the equivalent Chat Panel tab", () => {
+  it("moves a My Station PR tab into the equivalent Chat Panel tab", () => {
     const store = createInstrumentedStore();
     const githubPr: GitHubPrDetailTabData = {
       prNumber: 1028,
@@ -220,7 +220,7 @@ describe("Chat Panel tab placement", () => {
     expect(store.get(workstationLayoutAtom).mainPane.tabs).toEqual([]);
   });
 
-  it("does not move a malformed Workstation PR payload", () => {
+  it("does not move a malformed My Station PR payload", () => {
     const store = createInstrumentedStore();
     const malformedTab = {
       id: "github-pr-detail:/repo:1028",
@@ -285,7 +285,7 @@ describe("Chat Panel tab placement", () => {
     expect(store.get(stationModeAtom)).toBe(STATION_MODE.MY_STATION);
   });
 
-  it("does not offer or move tabs without a lossless Workstation mapping", () => {
+  it("does not offer or move tabs without a lossless My Station mapping", () => {
     const store = createInstrumentedStore();
     const launchpad = {
       id: "launchpad",

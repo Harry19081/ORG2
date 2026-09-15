@@ -24,7 +24,7 @@ interface ChatPanelPublishedHeaderProps {
   trailingInsetPx?: number;
 }
 
-/** Chat-pane counterpart of Workstation's shared 36px published header. */
+/** Chat-pane counterpart of My Station's shared 36px published header. */
 export const ChatPanelPublishedHeader: React.FC<ChatPanelPublishedHeaderProps> =
   memo(
     ({

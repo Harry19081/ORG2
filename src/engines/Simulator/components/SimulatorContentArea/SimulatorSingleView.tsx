@@ -1,7 +1,7 @@
 /**
  * SimulatorSingleView Component
  *
- * Pure content frame for the simulator's single-view mode. Mirrors Workstation
+ * Pure content frame for the simulator's single-view mode. Mirrors My Station
  * exactly: the frame owns no chrome at all — every app renders its own tab
  * bar (`ReplayTabBar` or a regular `TabBar`) with a leading slot containing
  * the app-switcher chip + primary-sidebar toggle. The tab bar is the single

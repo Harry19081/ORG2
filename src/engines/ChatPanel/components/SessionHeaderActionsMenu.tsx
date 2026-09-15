@@ -99,7 +99,7 @@ export interface SessionHeaderActionsMenuProps {
   triggerTestId: string;
 }
 
-/** The canonical session dropdown shared by Chat Panel and Workstation. */
+/** The canonical session dropdown shared by Chat Panel and My Station. */
 export const SessionHeaderActionsMenu: React.FC<
   SessionHeaderActionsMenuProps
 > = ({
@@ -327,7 +327,7 @@ export const SessionHeaderActionsMenu: React.FC<
                   >
                     {moveToWorkstation
                       ? t("chat.moveToWorkstation", {
-                          defaultValue: "Move to Workstation",
+                          defaultValue: "Move to My Station",
                         })
                       : t("chat.moveToChatPanel", {
                           defaultValue: "Move to Chat Panel",

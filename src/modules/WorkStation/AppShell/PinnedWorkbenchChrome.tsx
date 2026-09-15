@@ -43,7 +43,7 @@ const PinnedWorkbenchChromeComponent: React.FC = () => {
   if (!visible || findOpen) return null;
 
   // The maximized chat owns its show-workstation action. Other states use
-  // the same pane-control selection as Workstation and Agent Station.
+  // the same pane-control selection as My Station and Agent Station.
   let paneControls: React.ReactNode;
   if (chatPanelMaximized && isChatPanelVisible) {
     paneControls = (

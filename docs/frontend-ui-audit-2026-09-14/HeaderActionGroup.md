@@ -9,6 +9,6 @@
 
 Verdict totals: **1 fix**, **3 keep with reason**, **0 abstract**.
 
-Scope: requested Workstation and chat-pane bars. AST inspection of all six changed production files found no native button JSX, native button creation or substitute clickable elements. No new input controls, colors, subscriptions or timers were introduced.
+Scope: requested My Station and chat-pane bars. AST inspection of all six changed production files found no native button JSX, native button creation or substitute clickable elements. No new input controls, colors, subscriptions or timers were introduced.
 
 Verification: 31 targeted Vitest tests passed across ChatPanelHeader, ChatPanelPublishedHeader, useWorkstationTrailingSlot.visibility and SortableTab. `pnpm run typecheck:fast`, targeted ESLint and `git diff --check` passed. Live visual verification was not performed because desktop computer control was not authorized; unit tests do not establish rendered motion behavior.

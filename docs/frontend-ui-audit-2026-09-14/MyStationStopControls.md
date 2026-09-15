@@ -1,11 +1,11 @@
-# Workstation stop controls UI audit
+# My Station stop controls UI audit
 
 Scope: requested stop-icon and terminal danger presentation changes across the three controls below. Reviewed shared Button props/presentation and the changed controls for D1–D5; existing surrounding layout is outside this presentation-only change.
 
 | Line                                                                                           | Element                              | Verdict          | Reason                                                                                                                                                        | Suggested change |
 | ---------------------------------------------------------------------------------------------- | ------------------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
 | `src/components/ProcessStopButton/index.tsx:27`                                                | Shared terminal and port stop action | keep with reason | Uses shared Button danger/soft presentation and StopCircleIcon; preserves sizes, accessible label, tooltip, loading/disabled state and propagation guard      | None             |
-| `src/modules/shared/layouts/FocusedChatWorkstationRail/WorkstationItemRow.tsx:145`             | Workstation terminal row stop         | keep with reason | Uses shared Button danger/soft presentation matching Source Control discard and StopCircleIcon with existing focus/hover visibility, menu semantics and label | None             |
+| `src/modules/shared/layouts/FocusedChatWorkstationRail/WorkstationItemRow.tsx:145`             | My Station terminal row stop         | keep with reason | Uses shared Button danger/soft presentation matching Source Control discard and StopCircleIcon with existing focus/hover visibility, menu semantics and label | None             |
 | `src/modules/shared/layouts/FocusedChatWorkstationRail/WorkstationTrailTerminalHeader.tsx:101` | Docked terminal stop                 | keep with reason | Uses shared Button danger/soft presentation matching Source Control discard and StopCircleIcon; preserves active-session handler and accessible label         | None             |
 
 Verdict totals: **0 fix**, **3 keep with reason**, **0 abstract**.

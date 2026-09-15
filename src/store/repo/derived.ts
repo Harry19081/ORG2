@@ -81,7 +81,7 @@ filteredReposAtom.debugLabel = "filteredReposAtom";
 
 /**
  * When the active WorkStation session's repo differs from the currently
- * selected Workstation workspace/root, returns the matching target so the
+ * selected My Station workspace/root, returns the matching target so the
  * status bar can show a "Switch to <name>" hint button.
  *
  * Returns `null` when:

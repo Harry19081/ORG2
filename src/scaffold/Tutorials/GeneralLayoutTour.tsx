@@ -34,7 +34,7 @@ type GeneralLayoutTourTarget =
 interface TourStep {
   id: string;
   target: GeneralLayoutTourTarget;
-  /** Snap into Workstation when this step becomes active (dock chrome steps). */
+  /** Snap into My Station when this step becomes active (dock chrome steps). */
   stationMode?: StationMode;
   demoStationModeSwitch?: boolean;
 }

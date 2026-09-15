@@ -34,7 +34,7 @@ import { useZoomShortcuts } from "./useZoomShortcuts";
  * - Command+E / Ctrl+E: Open Workstation Code Editor source control tab
  * - Command+J / Ctrl+J: Open Workstation Code Editor terminal tab
  * - Command+Option+B / Ctrl+Alt+B: Focus Chat Panel or show Workstation
- * - Command+1 / Ctrl+1: Open Workstation
+ * - Command+1 / Ctrl+1: Open My Station
  * - Command+2 / Ctrl+2: Open Agent's Station
  * - Command+3 / Ctrl+3: Open Kanban
  * - Command+Option+U / Ctrl+Alt+U: Toggle Workstation sidebar

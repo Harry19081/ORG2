@@ -8,7 +8,7 @@
       "finish": "完成教學",
       "keyboardHint": "使用 ← / → 或 < / >",
       "desktop": "桌面",
-      "myStation": "Workstation",
+      "myStation": "我的工作站",
       "infinity": "無限",
       "agentStation": "Agent 工作站"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "切換工作站模式",
-          "body": "使用此按鈕切換工作站模式。桌面代表“Workstation”，也就是你的 Workspace；無限代表“Agent 工作站”，用於查看 Agent 活動"
+          "body": "使用此按鈕切換工作站模式。桌面代表“我的工作站”，也就是你的 Workspace；無限代表“Agent 工作站”，用於查看 Agent 活動"
         },
         "dock": {
           "title": "Agent 工作站 Dock",

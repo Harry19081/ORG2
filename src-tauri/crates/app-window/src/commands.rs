@@ -375,7 +375,7 @@ pub async fn open_session_window(
     Ok(label)
 }
 
-/// Open (or focus) the detached window showing one station — Workstation
+/// Open (or focus) the detached window showing one station — My Station
 /// (`my-station`) or Agent Station (`agent-station`) — without the chat
 /// panel or sidebar. One window per mode: a second request focuses the
 /// existing window and the frontend retargets its session over the

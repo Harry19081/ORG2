@@ -766,7 +766,7 @@
     "copyEventJsonFailed": "复制失败",
     "moveTo": "将页面移动到…",
     "projectLinks": "项目关联",
-    "moveToWorkstation": "移动到 Workstation",
+    "moveToWorkstation": "移动到我的工作站",
     "moveToChatPanel": "移动到聊天面板",
     "rawTranscript": {
       "title": "原始会话记录",
@@ -1937,7 +1937,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "审查",
-      "viewMyStation": "在 Workstation 查看",
+      "viewMyStation": "在 My Station 查看",
       "viewAgentStation": "在 Agent Station 查看"
     },
     "osAgent": "OS Agent",
@@ -2300,7 +2300,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "在 Workstation 打开"
+      "openInMyStation": "在 My Station 打开"
     }
   },
   "groupChat": {

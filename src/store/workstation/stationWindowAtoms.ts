@@ -1,7 +1,7 @@
 /**
  * Detached station windows — the main-window side.
  *
- * `openStationInNewWindowAtom` detaches Workstation or Agent Station into its
+ * `openStationInNewWindowAtom` detaches My Station or Agent Station into its
  * own OS window (`app-window-station-<mode>`) seeded with the remembered
  * session. If the main window was showing that very station, the chat panel
  * takes the whole main window over (`chatPanelMaximizedAtom`) so the

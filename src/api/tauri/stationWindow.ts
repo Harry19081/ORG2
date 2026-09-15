@@ -4,7 +4,7 @@
  * `open_station_window` builds (or focuses) a native OS window whose label is
  * `app-window-station-<mode>` — inside the `app-window-*` capability glob, so
  * the window gets the full default permission set — and loads the standalone
- * `/orgii/app/station/<mode>` route: Workstation or Agent Station on its own,
+ * `/orgii/app/station/<mode>` route: My Station or Agent Station on its own,
  * with no chat panel or sidebar. One window per station mode. Window chrome
  * (macOS traffic lights, Win11 corners) is applied on the Rust side; a plain
  * `new WebviewWindow()` from JS cannot reach those post-build native calls.

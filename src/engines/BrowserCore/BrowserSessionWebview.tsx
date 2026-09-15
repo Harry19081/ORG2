@@ -360,7 +360,7 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
   ]);
 
   // Watch sidebar layout changes to immediately update webview position.
-  // Workstation and Agent Station use different sidebar atoms, but both can host
+  // My Station and Agent Station use different sidebar atoms, but both can host
   // the same browser-session webview labels.
   const sidebarWidth = useAtomValue(sidebarWidthAtom);
   const simulatorSidebarCollapsed = useAtomValue(

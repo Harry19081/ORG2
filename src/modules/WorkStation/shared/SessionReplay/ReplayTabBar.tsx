@@ -2,7 +2,7 @@
  * ReplayTabBar
  *
  * Generic read-only tab strip rendered above the main pane of a simulator's
- * session-replay view. Visually mirrors the Workstation app tab bars (same
+ * session-replay view. Visually mirrors the My Station app tab bars (same
  * TAB_BAR_HEIGHT, transparent strip, bg-fill-2 active tab pill, no underline, no DnD,
  * no close/split-view chrome) — this is the replay equivalent.
  *
@@ -270,7 +270,7 @@ const ReplayTabBarComponent: React.FC<ReplayTabBarProps> = ({
 
   const hasTabs = tabs.length > 0;
   // The bar still renders when there are no tabs as long as there's slot
-  // chrome to show — matches Workstation's TabBar so the app-switcher row
+  // chrome to show — matches My Station's TabBar so the app-switcher row
   // never "blinks away" during empty states (e.g. Browser with no entries
   // yet but we still need the title chip visible).
   if (!hasTabs && !leadingSlot && !trailingSlot) return null;

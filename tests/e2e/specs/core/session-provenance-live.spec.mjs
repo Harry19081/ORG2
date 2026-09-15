@@ -405,7 +405,7 @@ async function runCursorProvenance(repoPath) {
 async function switchToMyStationCodeEditor() {
   unwrap(
     await invokeE2E("navigateTo", "/orgii/workstation/code"),
-    "navigate to Workstation Code Editor"
+    "navigate to My Station Code Editor"
   );
   // tauri-wd currently cannot serialize this React-owned element for
   // waitForDisplayed/click (Node.contains receives a cross-realm wrapper).
@@ -422,7 +422,7 @@ async function switchToMyStationCodeEditor() {
     async () => {
       const surface = unwrap(
         await invokeE2E("inspectWorkstationSurface"),
-        "inspect Workstation route"
+        "inspect My Station route"
       );
       return (
         surface.pathname === "/orgii/workstation/code" &&
@@ -432,7 +432,7 @@ async function switchToMyStationCodeEditor() {
     {
       timeout: 30_000,
       interval: 500,
-      timeoutMsg: "Workstation route never became active",
+      timeoutMsg: "My Station route never became active",
     }
   );
 }
@@ -441,7 +441,7 @@ async function openFileTimeline(repoPath) {
   const absoluteFilePath = join(repoPath, TARGET_FILE);
   unwrap(
     await invokeE2E("openWorkstationFile", absoluteFilePath),
-    "open target file in Workstation"
+    "open target file in My Station"
   );
 
   // The workstation host is tab-driven rather than route-driven. Opening the
@@ -475,13 +475,13 @@ async function openFileTimeline(repoPath) {
         timeout: 30_000,
         interval: 500,
         timeoutMsg:
-          "Workstation Code Editor never rendered after opening the file tab",
+          "My Station Code Editor never rendered after opening the file tab",
       }
     );
   } catch {
     const surface = unwrap(
       await invokeE2E("inspectWorkstationSurface"),
-      "inspect missing Workstation Code Editor"
+      "inspect missing My Station Code Editor"
     );
     const diagnostic = await execJS(`
       return {
@@ -490,7 +490,7 @@ async function openFileTimeline(repoPath) {
       };
     `);
     throw new Error(
-      `Workstation Code Editor never rendered; surface=${JSON.stringify(surface)} diagnostic=${JSON.stringify(diagnostic)}`
+      `My Station Code Editor never rendered; surface=${JSON.stringify(surface)} diagnostic=${JSON.stringify(diagnostic)}`
     );
   }
 

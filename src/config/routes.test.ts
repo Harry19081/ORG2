@@ -3,7 +3,7 @@ import { ContentWritingIcon } from "@src/icons";
 import { ROUTES, getIconComponentForPath, isWorkbenchPath } from "./routes";
 
 describe("Workbench route ownership", () => {
-  it("uses the writing glyph for Workstation's Code Editor", () => {
+  it("uses the writing glyph for My Station's Code Editor", () => {
     expect(getIconComponentForPath(ROUTES.workStation.code.path)).toBe(
       ContentWritingIcon
     );

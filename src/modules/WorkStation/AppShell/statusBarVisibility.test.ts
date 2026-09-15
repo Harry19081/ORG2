@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { shouldShowWorkStationStatusBar } from "./statusBarVisibility";
 
 describe("shouldShowWorkStationStatusBar", () => {
-  it("hides the status bar for Workstation chat session tabs", () => {
+  it("hides the status bar for My Station chat session tabs", () => {
     expect(
       shouldShowWorkStationStatusBar({
         statusBarHidden: false,
@@ -13,7 +13,7 @@ describe("shouldShowWorkStationStatusBar", () => {
     ).toBe(false);
   });
 
-  it("keeps the status bar for ordinary Workstation tabs", () => {
+  it("keeps the status bar for ordinary My Station tabs", () => {
     expect(
       shouldShowWorkStationStatusBar({
         statusBarHidden: false,

@@ -19,7 +19,7 @@ Acceptance: pane layout and controls must not depend on active tab type; one sta
 
 Layers 1–7: TypeScript and lint checks; deleted stationAccess, its availability/maximize resolvers and the guarded active-tab toggle; actions call the canonical pane toggle. Restore-chat and restore-workstation remain distinct actions. The station-mode input selects the visibility key and detach destination, not tab-specific behavior. The shared exception component exposes only stationMode. Project search remains outside it.
 
-Layer 8: no IPC, schema or persistence-format changes; saved maximize preferences retain their meaning. Layer 9: Workstation and Agent Station share window policy; chat and pinned chrome share the focus button; service/shortcut actions and UI actions reach the same maximize atom. Layer 10: effective layout reads only the saved pane preference; active-tab state is no longer a competing fallback or override.
+Layer 8: no IPC, schema or persistence-format changes; saved maximize preferences retain their meaning. Layer 9: My Station and Agent Station share window policy; chat and pinned chrome share the focus button; service/shortcut actions and UI actions reach the same maximize atom. Layer 10: effective layout reads only the saved pane preference; active-tab state is no longer a competing fallback or override.
 
 Historical remediation: none needed. The removed layout override was derived and did not overwrite the saved preference. Restoring the old source behavior is sufficient to roll back; no data migration is involved.
 

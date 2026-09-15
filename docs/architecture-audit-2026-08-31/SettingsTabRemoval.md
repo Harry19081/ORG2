@@ -1,4 +1,4 @@
-# Workstation Settings tab removal architecture review
+# My Station Settings tab removal architecture review
 
 Acceptance criteria: remove the `settings` workstation tab type and all production creators/renderers; retain project settings tab types; keep editor preferences accessible through app settings; reject retired tabs when loading saved layouts; preserve other tabs and workspace selections.
 

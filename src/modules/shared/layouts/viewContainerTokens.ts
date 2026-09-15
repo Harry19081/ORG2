@@ -113,7 +113,7 @@ export function getSidebarSurfaceBackgroundStyle(
 }
 
 /**
- * Inline style for a primary pane host (Chat Panel, Workstation, or a detached
+ * Inline style for a primary pane host (Chat Panel, My Station, or a detached
  * session window). It paints the host once and rebinds every full-pane surface
  * alias used by descendants, so shared views do not need host-specific
  * background props or class branches.

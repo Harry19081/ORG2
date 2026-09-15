@@ -35,7 +35,7 @@ describe("useRoutineResultNavigation", () => {
     mocks.workItemDataToUI.mockReset();
   });
 
-  it("opens a standalone Work Item in Workstation and navigates there", async () => {
+  it("opens a standalone Work Item in My Station and navigates there", async () => {
     const storedWorkItem = {
       frontmatter: {
         id: "work-item-1",

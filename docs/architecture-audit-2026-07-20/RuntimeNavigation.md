@@ -6,7 +6,7 @@
 
 - [x] Runtime is a first-class, persisted `ChatPanelTabType` with an exhaustive renderer entry.
 - [x] The sidebar opens and selects the singleton Runtime tab directly below Work Items.
-- [x] Runtime uses the shared chat header, including its tab strip and Workstation maximize/restore control.
+- [x] Runtime uses the shared chat header, including its tab strip and My Station maximize/restore control.
 - [x] Usage / Scanning / Hooks / Assets remain a separate in-content navigation row, with Usage first and Assets last.
 - [x] Quota renders in Usage; the former Manage dashboard renders in Assets.
 - [x] Launchpad contains only the Work launcher content.

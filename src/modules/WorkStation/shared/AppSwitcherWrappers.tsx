@@ -246,7 +246,7 @@ SimulatorAgentChip.displayName = "SimulatorAgentChip";
  * so duplicating it here just stacks two identical pills above the
  * simulator. The primary-sidebar toggle lives in the global
  * {@link SimulatorWorkstationTabHeader} strip below the tab bar —
- * matches the Workstation shell.
+ * matches the My Station shell.
  */
 const SimulatorTabBarLeadingComponent: React.FC = () => (
   <TabBarLeadingLayout>
@@ -258,7 +258,7 @@ export const SimulatorTabBarLeading = memo(SimulatorTabBarLeadingComponent);
 SimulatorTabBarLeading.displayName = "SimulatorTabBarLeading";
 
 /**
- * Tab-bar `leadingSlot` content for Workstation: the station-mode chip only.
+ * Tab-bar `leadingSlot` content for My Station: the station-mode chip only.
  * Host switching is tab-driven (see `activeHostAtom`), so no per-app switcher
  * chip is rendered here. The primary-sidebar toggle lives in the global
  * {@link WorkstationTabHeader} strip below the tab bar, not here.

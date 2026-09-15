@@ -189,7 +189,7 @@ describe("AgentStationTopHeader", () => {
     );
   });
 
-  it("uses the same Settings pane action as Workstation", () => {
+  it("uses the same Settings pane action as My Station", () => {
     renderHeader(ROUTES.app.settings.path);
     const control = container.querySelector<HTMLButtonElement>(
       '[title="panel.maximizeSettings"]'

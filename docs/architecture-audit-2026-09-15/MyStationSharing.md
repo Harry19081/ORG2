@@ -1,13 +1,5 @@
 # Workstation sharing policy
 
-## Naming
-
-The user-facing name is **Workstation** for the tools and editing surface.
-**Agent Station** names the agent activity and replay surface. Settings,
-navigation, shortcuts, onboarding, and action labels use this distinction.
-Existing identifiers such as `myStationSharing` and historical document paths
-remain stable; the naming change does not migrate or reset saved workspaces.
-
 ## Behavior
 
 Settings → General → **Workstation sharing** uses `general.myStationSharing`:

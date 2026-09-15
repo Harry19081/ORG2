@@ -23,7 +23,7 @@ interface PublishedHeaderSlotsViewProps {
 }
 
 /**
- * Renders pane-owned controls into a shell-owned header row. Workstation,
+ * Renders pane-owned controls into a shell-owned header row. My Station,
  * Agent Station replay, and the chat pane share this exact slot layout.
  */
 export const PublishedHeaderSlotsView: React.FC<PublishedHeaderSlotsViewProps> =

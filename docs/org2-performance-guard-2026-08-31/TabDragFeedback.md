@@ -1,7 +1,7 @@
 # Tab drag feedback verification
 
 The insertion line now measures the same 32px content band as the rectangular
-drop highlight in Workstation and Chat Panel. Workstation's band includes unused
+drop highlight in My Station and Chat Panel. My Station's band includes unused
 tab space but excludes the leading and trailing header buttons. The previous
 line used `TAB_BAR_HEIGHT - 8` and header/pane bounds, ignoring the window-edge
 gap. It also updated its transform only when the horizontal position changed.

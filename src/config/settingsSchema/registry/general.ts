@@ -252,7 +252,7 @@ export const GENERAL_SETTINGS_REGISTRY = {
     settingsSearch: false,
     schema: z.enum(["left", "right"]),
     default: "left" as const,
-    description: "Chat panel side shared by Workstation and Agent Station",
+    description: "Chat panel side shared by My Station and Agent Station",
     category: "general",
     enumLabels: {
       left: "Left",

@@ -4,7 +4,7 @@
  * Single always-mounted listener for the "open-url-in-browser" CustomEvent.
  * Adds the URL as a Browser tab in the background without navigating away
  * from the current page. A toast notification lets the user know a tab was
- * opened; they can switch to Browser (Workstation or Agent Station) at will.
+ * opened; they can switch to Browser (My Station or Agent Station) at will.
  *
  * Taking a request calls `preventDefault()` on the event: that is how
  * `openLink` (`@src/util/ui/openLink`) knows this document has a Browser,
