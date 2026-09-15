@@ -385,13 +385,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "ORG2 während der Desktop-Steuerung ausblenden",
-      "hideBeforeActionHelper": "Blendet das ORG2-Hauptfenster aus, während Peekaboo arbeitet, und zeigt die Wingman-Leiste mit schwebender Beschriftung, damit der Agent den Fokus nicht verwalten muss.",
+      "hideBeforeActionHelper": "Blendet das ORG2-Hauptfenster aus, während Peekaboo arbeitet, und zeigt die Wingman-Leiste mit schwebender Beschriftung, damit der Agent den Fokus nicht verwalten muss",
       "antiDetection": "HID-Anti-Automatisierungs-Härtung",
-      "antiDetectionHelper": "Lässt Peekaboo echte CGEvent-(HID-)Eingaben für Klicks und Tastenanschläge senden statt reiner Accessibility-Aktionen, sodass Apps mit Automatisierungserkennung (z. B. WeChat) die Desktop-Steuerung seltener blockieren.",
+      "antiDetectionHelper": "Lässt Peekaboo echte CGEvent-(HID-)Eingaben für Klicks und Tastenanschläge senden statt reiner Accessibility-Aktionen, sodass Apps mit Automatisierungserkennung (z. B. WeChat) die Desktop-Steuerung seltener blockieren",
       "humanInputProfile": "Menschliche Tipp-Kadenz",
-      "humanInputProfileHelper": "Wendet ein menschenähnliches Timing-Profil auf synthetisierte Tastenanschläge an. Deaktivieren, um mit maximaler Geschwindigkeit zu tippen.",
+      "humanInputProfileHelper": "Wendet ein menschenähnliches Timing-Profil auf synthetisierte Tastenanschläge an. Deaktivieren, um mit maximaler Geschwindigkeit zu tippen",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Fehlt: {{bins}}",
     "skillMissingEnv": "Fehlende Umgebungsvariablen: {{vars}}",
@@ -553,7 +553,7 @@
       "title": "Git",
       "pullStrategy": "Pull-Strategie",
       "pullStrategyDesc": "Wie git pull Änderungen von remote bei der Synchronisierung integriert",
-      "pullStrategyHint": "Rebase (Standard): Replays Ihre commits auf remote. Erstellt linear history.\n\nMerge: Erstellt einen merge commit, wenn branches diverged sind. Bewahrt die vollständige history.\n\nFast-forward only: Erlaubt pull nur, wenn kein merge nötig ist. Lehnt ab, wenn branches diverged sind.",
+      "pullStrategyHint": "Rebase (Standard): Replays Ihre commits auf remote. Erstellt linear history.\n\nMerge: Erstellt einen merge commit, wenn branches diverged sind. Bewahrt die vollständige history.\n\nFast-forward only: Erlaubt pull nur, wenn kein merge nötig ist. Lehnt ab, wenn branches diverged sind",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (Standard)",
       "strategyFfOnly": "Nur Fast-forward (strikt)",
@@ -602,7 +602,7 @@
     "checkFailed": "Update-Prüfung fehlgeschlagen",
     "checking": "Updates werden gesucht…",
     "officialInstalled": "Offizielle App installiert",
-    "officialInstalledDesc": "{{version}} wurde unter {{path}} installiert. Dieser lokale Build läuft unverändert weiter.",
+    "officialInstalledDesc": "{{version}} wurde unter {{path}} installiert. Dieser lokale Build läuft unverändert weiter",
     "downloadFailed": "Update-Download fehlgeschlagen",
     "retryNow": "Jetzt erneut versuchen",
     "downloadTimeout": "Zeitüberschreitung beim Download. Prüfe Netzwerk oder Proxy und versuche es erneut.",
@@ -738,7 +738,7 @@
     "tableVersion": "Version",
     "tableStatus": "Status",
     "installSection": "Installieren",
-    "installHintNote": "Vorgeschlagener Installationsbefehl für deine Plattform. Die meisten Systemabhängigkeiten benötigen Administratorrechte, daher führen wir sie nicht automatisch aus — kopiere ihn in dein terminal."
+    "installHintNote": "Vorgeschlagener Installationsbefehl für deine Plattform. Die meisten Systemabhängigkeiten benötigen Administratorrechte, daher führen wir sie nicht automatisch aus — kopiere ihn in dein terminal"
   },
   "storage": {
     "dataDirectory": "Datenverzeichnis",
@@ -824,7 +824,7 @@
   "agentEvolution": {
     "enableForAgent": "Evolution für {{agentName}} aktivieren",
     "noAgentsTitle": "Keine Agents verfügbar",
-    "noAgentsSubtitle": "Erstellen oder importieren Sie einen Agent, um Evolution zu konfigurieren."
+    "noAgentsSubtitle": "Erstellen oder importieren Sie einen Agent, um Evolution zu konfigurieren"
   },
   "org": {},
   "learningsBrowser": {

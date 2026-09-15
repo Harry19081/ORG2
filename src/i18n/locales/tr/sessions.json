@@ -896,10 +896,10 @@
       "exportJson": "JSON dışa aktar",
       "importAction": "Session içe aktar",
       "exportDescription": "Etkin Session'ı taşınabilir bir JSON anlık görüntüsü olarak dışa aktarın",
-      "importDescription": "Bir Session JSON anlık görüntüsünü kenar çubuğuna içe aktarın.",
+      "importDescription": "Bir Session JSON anlık görüntüsünü kenar çubuğuna içe aktarın",
       "jsonSnapshotNote": "İçe aktarılan Sessions salt okunur anlık görüntülerdir ve özgün olay geçmişini korur",
       "chooseJson": "JSON dosyası seç",
-      "chooseJsonHint": "Bir .orgii-session.json dışa aktarma dosyası seçin.",
+      "chooseJsonHint": "Bir .orgii-session.json dışa aktarma dosyası seçin",
       "loadingPreview": "Session olayları sayılıyor…",
       "noActiveSession": "Etkin Session seçilmedi.",
       "importedName": "İçe aktarılan Session: {{name}}",
@@ -1908,7 +1908,7 @@
     "start": "Başlat",
     "missingGit": {
       "title": "Git eksik",
-      "body": "Git yüklü değil veya bulunamadı. ADE Manager ya da SDE Agent’tan bu makineye Git kurmasını isteyin, ardından ORG2’yi yeniden başlatın."
+      "body": "Git yüklü değil veya bulunamadı. ADE Manager ya da SDE Agent’tan bu makineye Git kurmasını isteyin, ardından ORG2’yi yeniden başlatın"
     },
     "model": "Model",
     "contextMenu": {
@@ -2123,7 +2123,7 @@
       "archiveTeardownRetained": "Arşivlendi ancak {{count}} çalışma ortamı serbest bırakılamadı. Silme engelli kalır.",
       "archiveTeardownQuiesced": "Arşivlendi ve tamamen durduruldu. Kalıcı silme artık kullanılabilir.",
       "dangerZone": "Tehlikeli Bölge",
-      "deleteDescription": "Bu ekibi, tüm oturumlarını ve geçmişini kalıcı olarak sil.",
+      "deleteDescription": "Bu ekibi, tüm oturumlarını ve geçmişini kalıcı olarak sil",
       "deleteTeam": "Ekibi sil",
       "deleteTitle": "Bu ekip kalıcı olarak silinsin mi?",
       "deleteWarning": "Ekibin tüm oturumları ve geçmişi kalıcı olarak silinir. Bu işlem geri alınamaz.",

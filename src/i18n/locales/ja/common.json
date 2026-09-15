@@ -1093,7 +1093,7 @@
       "createTokenButton": "Token を作成",
       "openGitSettingsButton": "設定を開く",
       "configureInSettings": "設定で Git を構成",
-      "configureInSettingsDesc": "設定 → 接続 で GitHub App アクセスの追加、token の保存、またはローカル認証情報のスキャンを行い、その後この Git 操作を再試行してください。"
+      "configureInSettingsDesc": "設定 → 接続 で GitHub App アクセスの追加、token の保存、またはローカル認証情報のスキャンを行い、その後この Git 操作を再試行してください"
     },
     "actions": {
       "publish": "Publish",
@@ -1332,7 +1332,7 @@
       "cannotParseRepoName": "origin リモートからリポジトリ名を解析できませんでした",
       "authRequired": {
         "title": "GitHub を接続",
-        "description": "設定 → 接続で GitHub アカウントを接続してください。"
+        "description": "設定 → 接続で GitHub アカウントを接続してください"
       },
       "navigationTrail": "pull request ナビゲーション",
       "failedToLoad": "pull request を読み込めませんでした",
@@ -1502,10 +1502,10 @@
       "newIssueBodyPlaceholder": "Issue の説明（任意）…",
       "authRequired": {
         "title": "GitHub を接続",
-        "description": "設定 → 接続で GitHub アカウントを接続してください。"
+        "description": "設定 → 接続で GitHub アカウントを接続してください"
       },
       "reAuthRequired": "GitHub の認証が必要です",
-      "reAuthDescription": "GitHub トークンの有効期限が切れました。設定 → 接続で再接続してください。",
+      "reAuthDescription": "GitHub トークンの有効期限が切れました。設定 → 接続で再接続してください",
       "goToSettings": "設定へ移動",
       "loadingTimeline": "アクティビティを読み込み中…",
       "label": "Issue",
@@ -2151,7 +2151,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "ORG2 を終了しますか？",
-    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORG2 を再度開くことができます。",
+    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORG2 を再度開くことができます",
     "cancel": "キャンセル",
     "confirm": "終了"
   },
@@ -2181,7 +2181,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari は macOS で保護されたフォルダに Cookie を保存します。システム設定の「フルディスクアクセス」で ORG2 を許可してから、もう一度確認してください。",
+      "explain": "Safari は macOS で保護されたフォルダに Cookie を保存します。システム設定の「フルディスクアクセス」で ORG2 を許可してから、もう一度確認してください",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2206,7 +2206,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2215,7 +2215,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"

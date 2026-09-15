@@ -896,10 +896,10 @@
       "exportJson": "Xuất JSON",
       "importAction": "Nhập Session",
       "exportDescription": "Xuất Session đang hoạt động thành ảnh chụp nhanh JSON di động",
-      "importDescription": "Nhập ảnh chụp nhanh Session JSON vào thanh bên.",
+      "importDescription": "Nhập ảnh chụp nhanh Session JSON vào thanh bên",
       "jsonSnapshotNote": "Sessions đã nhập là ảnh chụp nhanh chỉ đọc và giữ nguyên lịch sử sự kiện gốc",
       "chooseJson": "Chọn tệp JSON",
-      "chooseJsonHint": "Chọn tệp xuất .orgii-session.json.",
+      "chooseJsonHint": "Chọn tệp xuất .orgii-session.json",
       "loadingPreview": "Đang đếm sự kiện Session…",
       "noActiveSession": "Chưa chọn Session đang hoạt động.",
       "importedName": "Session đã nhập: {{name}}",
@@ -1908,7 +1908,7 @@
     "start": "Bắt đầu",
     "missingGit": {
       "title": "Thiếu Git",
-      "body": "Git chưa được cài đặt hoặc không tìm thấy. Hãy yêu cầu ADE Manager hoặc SDE Agent cài đặt Git cho máy này, rồi khởi động lại ORG2."
+      "body": "Git chưa được cài đặt hoặc không tìm thấy. Hãy yêu cầu ADE Manager hoặc SDE Agent cài đặt Git cho máy này, rồi khởi động lại ORG2"
     },
     "model": "Mô hình",
     "contextMenu": {
@@ -2123,7 +2123,7 @@
       "archiveTeardownRetained": "Đã lưu trữ nhưng không thể giải phóng {{count}} môi trường chạy. Việc xóa vẫn bị chặn.",
       "archiveTeardownQuiesced": "Đã lưu trữ và dừng hoàn toàn. Giờ có thể xóa vĩnh viễn.",
       "dangerZone": "Vùng nguy hiểm",
-      "deleteDescription": "Xóa vĩnh viễn nhóm này cùng mọi phiên và lịch sử.",
+      "deleteDescription": "Xóa vĩnh viễn nhóm này cùng mọi phiên và lịch sử",
       "deleteTeam": "Xóa nhóm",
       "deleteTitle": "Xóa vĩnh viễn nhóm này?",
       "deleteWarning": "Thao tác này xóa vĩnh viễn mọi phiên và lịch sử của nhóm. Không thể hoàn tác.",

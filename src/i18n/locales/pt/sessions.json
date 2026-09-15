@@ -896,10 +896,10 @@
       "exportJson": "Exportar JSON",
       "importAction": "Importar Session",
       "exportDescription": "Exporte a Session ativa como um snapshot JSON portátil",
-      "importDescription": "Importe um snapshot JSON de Session para a barra lateral.",
+      "importDescription": "Importe um snapshot JSON de Session para a barra lateral",
       "jsonSnapshotNote": "Sessions importadas são snapshots somente leitura e mantêm o histórico original de eventos",
       "chooseJson": "Escolher arquivo JSON",
-      "chooseJsonHint": "Selecione um arquivo de exportação .orgii-session.json.",
+      "chooseJsonHint": "Selecione um arquivo de exportação .orgii-session.json",
       "loadingPreview": "Contando eventos da Session…",
       "noActiveSession": "Nenhuma Session ativa selecionada.",
       "importedName": "Session importada: {{name}}",
@@ -1927,7 +1927,7 @@
     "start": "Iniciar",
     "missingGit": {
       "title": "Git ausente",
-      "body": "O Git não está instalado ou não foi encontrado. Peça ao ADE Manager ou ao SDE Agent para instalar o Git nesta máquina e depois reinicie o ORG2."
+      "body": "O Git não está instalado ou não foi encontrado. Peça ao ADE Manager ou ao SDE Agent para instalar o Git nesta máquina e depois reinicie o ORG2"
     },
     "model": "Modelo",
     "contextMenu": {
@@ -2142,7 +2142,7 @@
       "archiveTeardownRetained": "Arquivada, mas {{count}} processo não pôde ser liberado. A exclusão continua bloqueada.",
       "archiveTeardownQuiesced": "Arquivada e totalmente encerrada. A exclusão permanente já está disponível.",
       "dangerZone": "Zona de perigo",
-      "deleteDescription": "Excluir permanentemente esta equipe, todas as sessões e o histórico.",
+      "deleteDescription": "Excluir permanentemente esta equipe, todas as sessões e o histórico",
       "deleteTeam": "Excluir equipe",
       "deleteTitle": "Excluir esta equipe permanentemente?",
       "deleteWarning": "Isso exclui permanentemente todas as sessões e o histórico da equipe. A ação não pode ser desfeita.",

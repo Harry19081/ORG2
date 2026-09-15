@@ -901,10 +901,10 @@
       "exportJson": "导出 JSON",
       "importAction": "导入 Session",
       "exportDescription": "将当前 Session 导出为可移植的 JSON 快照",
-      "importDescription": "将 Session JSON 快照导入到侧边栏。",
+      "importDescription": "将 Session JSON 快照导入到侧边栏",
       "jsonSnapshotNote": "导入的 Session 是只读快照，并保留原始事件历史",
       "chooseJson": "选择 JSON 文件",
-      "chooseJsonHint": "选择一个 .orgii-session.json 导出文件。",
+      "chooseJsonHint": "选择一个 .orgii-session.json 导出文件",
       "loadingPreview": "正在统计 Session 事件…",
       "noActiveSession": "未选择活动 Session。",
       "importedName": "导入 Session：{{name}}",
@@ -1908,7 +1908,7 @@
     "start": "开始",
     "missingGit": {
       "title": "缺少 Git",
-      "body": "未安装 Git 或无法找到 Git。请让 ADE Manager 或 SDE Agent 为这台机器安装 Git，然后重启 ORG2。"
+      "body": "未安装 Git 或无法找到 Git。请让 ADE Manager 或 SDE Agent 为这台机器安装 Git，然后重启 ORG2"
     },
     "cliVersionOutdated": {
       "title": "{{cli}} 需要升级（{{installed}} > {{latest}}）",
@@ -2124,7 +2124,7 @@
       "archiveTeardownRetained": "已归档，但有 {{count}} 个运行时未能释放，仍无法删除。",
       "archiveTeardownQuiesced": "已归档并完全停止，现在可以永久删除。",
       "dangerZone": "危险区域",
-      "deleteDescription": "永久删除这个团队及其所有会话和历史记录。",
+      "deleteDescription": "永久删除这个团队及其所有会话和历史记录",
       "deleteTeam": "删除团队",
       "deleteTitle": "永久删除这个团队？",
       "deleteWarning": "这会永久删除团队的所有会话和历史记录，且无法撤销。",

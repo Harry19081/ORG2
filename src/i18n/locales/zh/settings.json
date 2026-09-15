@@ -463,13 +463,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "桌面控制时隐藏 ORG2",
-      "hideBeforeActionHelper": "Peekaboo 操作期间隐藏 ORG2 主窗口，并显示 Wingman 栏和浮动提示，避免 Agent 手动管理焦点。",
+      "hideBeforeActionHelper": "Peekaboo 操作期间隐藏 ORG2 主窗口，并显示 Wingman 栏和浮动提示，避免 Agent 手动管理焦点",
       "antiDetection": "HID 反自动化加固",
-      "antiDetectionHelper": "让 Peekaboo 通过真实的 CGEvent（HID）事件来执行点击和按键，而非纯粹的辅助功能操作，从而降低带有反自动化检测的应用（如微信）阻止桌面控制的可能性。",
+      "antiDetectionHelper": "让 Peekaboo 通过真实的 CGEvent（HID）事件来执行点击和按键，而非纯粹的辅助功能操作，从而降低带有反自动化检测的应用（如微信）阻止桌面控制的可能性",
       "humanInputProfile": "拟人化输入节奏",
-      "humanInputProfileHelper": "为合成按键应用拟人化的时间节奏。关闭后将以最高速度输入。",
+      "humanInputProfileHelper": "为合成按键应用拟人化的时间节奏。关闭后将以最高速度输入",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "缺少命令：{{bins}}",
     "skillMissingEnv": "缺少环境变量：{{vars}}",
@@ -631,7 +631,7 @@
       "title": "Git",
       "pullStrategy": "Pull 策略",
       "pullStrategyDesc": "同步时 git pull 如何整合 remote 更改",
-      "pullStrategyHint": "Rebase（默认）：将你的 commit replay 到 remote 之上，创建 linear history。\n\nMerge：branch 有 diverge 时创建 merge commit，保留完整 history。\n\nFast-forward only：仅在不需要 merge 时允许 pull，若 branch 已 diverge 则拒绝。",
+      "pullStrategyHint": "Rebase（默认）：将你的 commit replay 到 remote 之上，创建 linear history。\n\nMerge：branch 有 diverge 时创建 merge commit，保留完整 history。\n\nFast-forward only：仅在不需要 merge 时允许 pull，若 branch 已 diverge 则拒绝",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase（默认）",
       "strategyFfOnly": "仅 Fast-forward（严格）",
@@ -840,7 +840,7 @@
     "tableVersion": "版本",
     "tableStatus": "状态",
     "installSection": "安装",
-    "installHintNote": "针对你当前平台的建议安装命令。大多数系统依赖需要管理员权限，所以我们不会自动执行——请复制到你的 terminal 中运行。"
+    "installHintNote": "针对你当前平台的建议安装命令。大多数系统依赖需要管理员权限，所以我们不会自动执行——请复制到你的 terminal 中运行"
   },
   "agentSessions": {
     "chatFontSize": "聊天字体大小",
@@ -902,7 +902,7 @@
   "agentEvolution": {
     "enableForAgent": "为 {{agentName}} 启用进化",
     "noAgentsTitle": "没有可用 Agent",
-    "noAgentsSubtitle": "创建或导入 Agent 以配置进化。"
+    "noAgentsSubtitle": "创建或导入 Agent 以配置进化"
   },
   "org": {},
   "learningsBrowser": {

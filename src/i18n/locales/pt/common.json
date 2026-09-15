@@ -1093,7 +1093,7 @@
       "createTokenButton": "Criar token",
       "openGitSettingsButton": "Abrir configurações",
       "configureInSettings": "Configure o Git nas configurações",
-      "configureInSettingsDesc": "Adicione acesso do GitHub App, salve um token ou escaneie credenciais locais em Configurações → Conexões e tente esta operação Git novamente."
+      "configureInSettingsDesc": "Adicione acesso do GitHub App, salve um token ou escaneie credenciais locais em Configurações → Conexões e tente esta operação Git novamente"
     },
     "actions": {
       "publish": "Publicar",
@@ -1332,7 +1332,7 @@
       "cannotParseRepoName": "Não foi possível obter o nome do repositório a partir do remote origin",
       "authRequired": {
         "title": "Conectar GitHub",
-        "description": "Vá para Configurações → Conexões para conectar sua conta do GitHub."
+        "description": "Vá para Configurações → Conexões para conectar sua conta do GitHub"
       },
       "navigationTrail": "Navegação de pull requests",
       "failedToLoad": "Falha ao carregar pull requests",
@@ -1502,10 +1502,10 @@
       "newIssueBodyPlaceholder": "Descreva o issue (opcional)…",
       "authRequired": {
         "title": "Conectar GitHub",
-        "description": "Vá para Configurações → Conexões para conectar sua conta do GitHub."
+        "description": "Vá para Configurações → Conexões para conectar sua conta do GitHub"
       },
       "reAuthRequired": "Autorização do GitHub necessária",
-      "reAuthDescription": "Seu token do GitHub expirou. Vá para Configurações → Conexões para reconectar.",
+      "reAuthDescription": "Seu token do GitHub expirou. Vá para Configurações → Conexões para reconectar",
       "goToSettings": "Ir para Configurações",
       "loadingTimeline": "Carregando atividade…",
       "label": "Issue",
@@ -2151,7 +2151,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "Sair do ORG2?",
-    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORG2 mais tarde.",
+    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORG2 mais tarde",
     "cancel": "Cancelar",
     "confirm": "Sair"
   },
@@ -2181,7 +2181,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "O Safari guarda os cookies em uma pasta protegida pelo macOS. Permita o ORG2 em Acesso Total ao Disco nos Ajustes do Sistema e verifique novamente.",
+      "explain": "O Safari guarda os cookies em uma pasta protegida pelo macOS. Permita o ORG2 em Acesso Total ao Disco nos Ajustes do Sistema e verifique novamente",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2206,7 +2206,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2215,7 +2215,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"

@@ -385,13 +385,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Ocultar ORG2 durante el control del escritorio",
-      "hideBeforeActionHelper": "Oculta la ventana principal de ORG2 mientras Peekaboo opera y muestra la barra Wingman con una leyenda flotante para que el Agent no tenga que gestionar el foco.",
+      "hideBeforeActionHelper": "Oculta la ventana principal de ORG2 mientras Peekaboo opera y muestra la barra Wingman con una leyenda flotante para que el Agent no tenga que gestionar el foco",
       "antiDetection": "Refuerzo anti-automatización HID",
-      "antiDetectionHelper": "Hace que Peekaboo envíe eventos CGEvent (HID) reales para clics y pulsaciones en lugar de acciones de Accesibilidad puras, para que las apps con detección de automatización (p. ej. WeChat) tengan menos probabilidades de bloquear el control del escritorio.",
+      "antiDetectionHelper": "Hace que Peekaboo envíe eventos CGEvent (HID) reales para clics y pulsaciones en lugar de acciones de Accesibilidad puras, para que las apps con detección de automatización (p. ej. WeChat) tengan menos probabilidades de bloquear el control del escritorio",
       "humanInputProfile": "Cadencia de escritura humana",
-      "humanInputProfileHelper": "Aplica un perfil de tiempos similar al humano a las pulsaciones sintetizadas. Desactívalo para escribir a máxima velocidad.",
+      "humanInputProfileHelper": "Aplica un perfil de tiempos similar al humano a las pulsaciones sintetizadas. Desactívalo para escribir a máxima velocidad",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Falta: {{bins}}",
     "skillMissingEnv": "Faltan variables de entorno: {{vars}}",
@@ -553,7 +553,7 @@
       "title": "Git",
       "pullStrategy": "Estrategia de pull",
       "pullStrategyDesc": "Cómo git pull integra los cambios de remote al sincronizar",
-      "pullStrategyHint": "Rebase (predeterminado): Replays tus commits sobre remote. Crea linear history.\n\nMerge: Crea un merge commit cuando los branches han diverged. Preserva el history completo.\n\nFast-forward only: Solo permite pull cuando no se necesita merge. Rechaza si los branches han diverged.",
+      "pullStrategyHint": "Rebase (predeterminado): Replays tus commits sobre remote. Crea linear history.\n\nMerge: Crea un merge commit cuando los branches han diverged. Preserva el history completo.\n\nFast-forward only: Solo permite pull cuando no se necesita merge. Rechaza si los branches han diverged",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (predeterminado)",
       "strategyFfOnly": "Solo Fast-forward (estricto)",
@@ -602,7 +602,7 @@
     "checkFailed": "Error al buscar actualizaciones",
     "checking": "Buscando actualizaciones…",
     "officialInstalled": "Aplicación oficial instalada",
-    "officialInstalledDesc": "{{version}} se ha instalado en {{path}}. Esta compilación local sigue funcionando sin cambios.",
+    "officialInstalledDesc": "{{version}} se ha instalado en {{path}}. Esta compilación local sigue funcionando sin cambios",
     "downloadFailed": "Error al descargar la actualización",
     "retryNow": "Reintentar ahora",
     "downloadTimeout": "La descarga agotó el tiempo de espera. Comprueba la red o el proxy y vuelve a intentarlo.",
@@ -762,7 +762,7 @@
     "tableVersion": "Versión",
     "tableStatus": "Estado",
     "installSection": "Instalar",
-    "installHintNote": "Comando de instalación sugerido para tu plataforma. La mayoría de las dependencias del sistema requieren privilegios de administrador, así que no las ejecutamos automáticamente — cópialo en tu terminal."
+    "installHintNote": "Comando de instalación sugerido para tu plataforma. La mayoría de las dependencias del sistema requieren privilegios de administrador, así que no las ejecutamos automáticamente — cópialo en tu terminal"
   },
   "agentSessions": {
     "chatFontSize": "Tamaño de fuente del chat",
@@ -824,7 +824,7 @@
   "agentEvolution": {
     "enableForAgent": "Activar Evolución para {{agentName}}",
     "noAgentsTitle": "No hay Agents disponibles",
-    "noAgentsSubtitle": "Crea o importa un Agent para configurar Evolución."
+    "noAgentsSubtitle": "Crea o importa un Agent para configurar Evolución"
   },
   "org": {},
   "learningsBrowser": {

@@ -896,10 +896,10 @@
       "exportJson": "匯出 JSON",
       "importAction": "匯入 Session",
       "exportDescription": "將目前 Session 匯出為可攜式 JSON 快照",
-      "importDescription": "將 Session JSON 快照匯入側邊欄。",
+      "importDescription": "將 Session JSON 快照匯入側邊欄",
       "jsonSnapshotNote": "匯入的 Session 是唯讀快照，並保留原始事件歷史",
       "chooseJson": "選擇 JSON 檔案",
-      "chooseJsonHint": "選擇一個 .orgii-session.json 匯出檔案。",
+      "chooseJsonHint": "選擇一個 .orgii-session.json 匯出檔案",
       "loadingPreview": "正在統計 Session 事件…",
       "noActiveSession": "未選取作用中 Session。",
       "importedName": "匯入 Session：{{name}}",
@@ -1908,7 +1908,7 @@
     "start": "開始",
     "missingGit": {
       "title": "缺少 Git",
-      "body": "未安裝 Git 或找不到 Git。請讓 ADE Manager 或 SDE Agent 為這台機器安裝 Git，然後重新啟動 ORG2。"
+      "body": "未安裝 Git 或找不到 Git。請讓 ADE Manager 或 SDE Agent 為這台機器安裝 Git，然後重新啟動 ORG2"
     },
     "model": "模型",
     "contextMenu": {
@@ -2123,7 +2123,7 @@
       "archiveTeardownRetained": "已封存，但有 {{count}} 個執行環境未能釋放，仍無法刪除。",
       "archiveTeardownQuiesced": "已封存並完全停止，現在可以永久刪除。",
       "dangerZone": "危險區域",
-      "deleteDescription": "永久刪除這個團隊及其所有工作階段與歷史記錄。",
+      "deleteDescription": "永久刪除這個團隊及其所有工作階段與歷史記錄",
       "deleteTeam": "刪除團隊",
       "deleteTitle": "永久刪除這個團隊？",
       "deleteWarning": "這會永久刪除團隊的所有工作階段與歷史記錄，且無法復原。",

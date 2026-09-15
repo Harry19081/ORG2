@@ -896,10 +896,10 @@
       "exportJson": "JSON 내보내기",
       "importAction": "Session 가져오기",
       "exportDescription": "활성 Session을 휴대용 JSON 스냅샷으로 내보냅니다",
-      "importDescription": "Session JSON 스냅샷을 사이드바로 가져옵니다.",
+      "importDescription": "Session JSON 스냅샷을 사이드바로 가져옵니다",
       "jsonSnapshotNote": "가져온 Sessions는 읽기 전용 스냅샷이며 원본 이벤트 기록을 유지합니다",
       "chooseJson": "JSON 파일 선택",
-      "chooseJsonHint": ".orgii-session.json 내보내기 파일을 선택하세요.",
+      "chooseJsonHint": ".orgii-session.json 내보내기 파일을 선택하세요",
       "loadingPreview": "Session 이벤트 계산 중…",
       "noActiveSession": "활성 Session이 선택되지 않았습니다.",
       "importedName": "가져온 Session: {{name}}",
@@ -1908,7 +1908,7 @@
     "start": "시작",
     "missingGit": {
       "title": "Git 없음",
-      "body": "Git이 설치되어 있지 않거나 찾을 수 없습니다. ADE Manager 또는 SDE Agent에게 이 컴퓨터에 Git을 설치하도록 요청한 뒤 ORG2를 다시 시작하세요."
+      "body": "Git이 설치되어 있지 않거나 찾을 수 없습니다. ADE Manager 또는 SDE Agent에게 이 컴퓨터에 Git을 설치하도록 요청한 뒤 ORG2를 다시 시작하세요"
     },
     "model": "모델",
     "contextMenu": {
@@ -2123,7 +2123,7 @@
       "archiveTeardownRetained": "보관되었지만 런타임 {{count}}개를 해제하지 못했습니다. 삭제는 계속 차단됩니다.",
       "archiveTeardownQuiesced": "보관 및 완전 종료되었습니다. 이제 영구 삭제할 수 있습니다.",
       "dangerZone": "위험 영역",
-      "deleteDescription": "이 팀과 모든 세션 및 기록을 영구 삭제합니다.",
+      "deleteDescription": "이 팀과 모든 세션 및 기록을 영구 삭제합니다",
       "deleteTeam": "팀 삭제",
       "deleteTitle": "이 팀을 영구 삭제할까요?",
       "deleteWarning": "팀의 모든 세션과 기록이 영구 삭제됩니다. 이 작업은 취소할 수 없습니다.",
