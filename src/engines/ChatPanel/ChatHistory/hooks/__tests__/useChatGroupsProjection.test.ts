@@ -620,10 +620,8 @@ describe("isTurnCollapseEligible — unloaded placeholder affordance", () => {
     };
   }
 
-  it("keeps trivial loaded turns non-collapsible", () => {
-    expect(isTurnCollapseEligible(meta({ itemCount: 1 }), 0, 3, {})).toBe(
-      false
-    );
+  it("shows the summary for even a single loaded event", () => {
+    expect(isTurnCollapseEligible(meta({ itemCount: 1 }), 0, 3, {})).toBe(true);
     expect(isTurnCollapseEligible(meta({ itemCount: 2 }), 0, 3, {})).toBe(true);
   });
 
@@ -638,7 +636,7 @@ describe("isTurnCollapseEligible — unloaded placeholder affordance", () => {
         {}
       )
     ).toBe(true);
-    // A genuinely single-event body is still trivial.
+    // Single events get the same summary as grouped work.
     expect(
       isTurnCollapseEligible(
         meta({ itemCount: 1, bodyEventCount: 1 }),
@@ -646,7 +644,7 @@ describe("isTurnCollapseEligible — unloaded placeholder affordance", () => {
         3,
         {}
       )
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("shows the bar for any unloaded turn with a nonzero body surrogate", () => {
@@ -676,17 +674,14 @@ describe("isTurnCollapseEligible — unloaded placeholder affordance", () => {
     expect(
       isTurnCollapseEligible(smallTail, 2, 3, { tailTurnPhase: "complete" })
     ).toBe(true);
-    expect(
-      isTurnCollapseEligible(smallTail, 2, 3, { tailTurnPhase: "stale" })
-    ).toBe(true);
   });
 
-  it("still hides the bar for a trivial completed tail", () => {
+  it("shows the bar for a single-event completed tail", () => {
     expect(
       isTurnCollapseEligible(meta({ itemCount: 1 }), 2, 3, {
         tailTurnPhase: "complete",
       })
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("shows the completed tail bar for a single grouped tool row", () => {
@@ -700,19 +695,18 @@ describe("isTurnCollapseEligible — unloaded placeholder affordance", () => {
   it("resolves the shared default-collapse decision per phase", () => {
     // Non-tail turns default to collapsed.
     expect(resolveTurnDefaultCollapsed(false, {})).toBe(true);
-    // A fresh completed tail stays expanded…
+    // A completed tail collapses immediately.
     expect(
       resolveTurnDefaultCollapsed(true, { tailTurnPhase: "complete" })
+    ).toBe(true);
+    expect(
+      resolveTurnDefaultCollapsed(true, { tailTurnPhase: "running" })
     ).toBe(false);
-    // …until the session goes stale.
-    expect(resolveTurnDefaultCollapsed(true, { tailTurnPhase: "stale" })).toBe(
-      true
-    );
     // An explicit expanded-by-default surface wins over everything.
     expect(
       resolveTurnDefaultCollapsed(true, {
         defaultTurnCollapsed: false,
-        tailTurnPhase: "stale",
+        tailTurnPhase: "complete",
       })
     ).toBe(false);
   });
@@ -730,15 +724,11 @@ describe("projectChatGroups — completed tail turn", () => {
     ];
   }
 
-  it("keeps the completed tail expanded by default", () => {
+  it("collapses the completed tail immediately and keeps its final reply", () => {
     const result = projectChatGroups(history(), { tailTurnPhase: "complete" });
-
-    // Bar-eligible, but the tail's default stays expanded until the session
-    // goes stale.
-    expect(result.groupCounts).toEqual([1, 2]);
+    expect(result.groupCounts).toEqual([1, 1]);
     expect(flatTexts(result.flatItems)).toEqual([
       "first reply",
-      "run_shell",
       "current reply",
     ]);
   });
@@ -771,22 +761,20 @@ describe("projectChatGroups — completed tail turn", () => {
     expect(result.groupCounts).toEqual([1, 2]);
   });
 
-  it("defaults a stale tail to collapsed regardless of size", () => {
-    const result = projectChatGroups(history(), { tailTurnPhase: "stale" });
-
-    expect(result.groupCounts).toEqual([1, 1]);
-    expect(flatTexts(result.flatItems)).toEqual([
-      "first reply",
-      "current reply",
-    ]);
+  it("honors an expanded-by-default surface", () => {
+    const result = projectChatGroups(history(), {
+      tailTurnPhase: "complete",
+      defaultTurnCollapsed: false,
+    });
+    expect(result.groupCounts).toEqual([2, 2]);
   });
 
-  it("lets an explicit expand override beat the stale default", () => {
+  it("lets an explicit expand override beat the completed default", () => {
     const items = history();
     const tailTurnId = items[3].event!.id;
 
     const result = projectChatGroups(items, {
-      tailTurnPhase: "stale",
+      tailTurnPhase: "complete",
       collapseOverrides: new Map([[tailTurnId, false]]),
     });
 
@@ -864,7 +852,7 @@ describe("projectChatGroups — grouped tool rows carry their event weight", () 
     ).toBe(true);
   });
 
-  it("keeps a one-command turn trivial", () => {
+  it("gives a one-command completed turn its summary", () => {
     const result = projectChatGroups(shellOnlyTurn(1));
 
     expect(result.groupMeta[0].bodyEventCount).toBe(1);
@@ -872,6 +860,6 @@ describe("projectChatGroups — grouped tool rows carry their event weight", () 
       isTurnCollapseEligible(result.groupMeta[0], 0, result.groupMeta.length, {
         tailTurnPhase: "complete",
       })
-    ).toBe(false);
+    ).toBe(true);
   });
 });
