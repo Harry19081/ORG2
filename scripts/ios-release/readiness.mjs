@@ -6,6 +6,8 @@ import { pathToFileURL } from "node:url";
 
 export const bundleId = "org2ai.org2.remote";
 export const minimumIosSdkMajor = 26;
+export const appStoreExportMethod = "app-store-connect";
+export const adHocExportMethod = "ad-hoc";
 
 export function releaseConfig(version, build, team) {
   assert.match(
@@ -37,6 +39,11 @@ export function validateDistribution(
   now = Date.now(),
 ) {
   const { version, build, team } = expected;
+  const exportMethod = expected.exportMethod ?? appStoreExportMethod;
+  assert.ok(
+    [appStoreExportMethod, adHocExportMethod].includes(exportMethod),
+    "Unsupported iOS export method",
+  );
   releaseConfig(version, build, team);
   assert.equal(info.CFBundleIdentifier, bundleId, "Wrong application bundle");
   assert.equal(
@@ -83,11 +90,6 @@ export function validateDistribution(
       Date.parse(profile.ExpirationDate) > now,
     "Provisioning profile expired or invalid",
   );
-  assert.equal(
-    profile.ProvisionedDevices,
-    undefined,
-    "Ad hoc/development profiles cannot be used for App Store upload",
-  );
   assert.notEqual(
     profile.ProvisionsAllDevices,
     true,
@@ -98,11 +100,29 @@ export function validateDistribution(
     false,
     "Profile must disable debugging",
   );
-  assert.equal(
-    profile.Entitlements?.["beta-reports-active"],
-    true,
-    "Expected App Store distribution profile",
-  );
+  if (exportMethod === appStoreExportMethod) {
+    assert.equal(
+      profile.ProvisionedDevices,
+      undefined,
+      "Ad hoc/development profiles cannot be used for App Store upload",
+    );
+    assert.equal(
+      profile.Entitlements?.["beta-reports-active"],
+      true,
+      "Expected App Store distribution profile",
+    );
+  } else {
+    assert.ok(
+      Array.isArray(profile.ProvisionedDevices) &&
+        profile.ProvisionedDevices.length > 0,
+      "Ad Hoc profile must include registered devices",
+    );
+    assert.notEqual(
+      profile.Entitlements?.["beta-reports-active"],
+      true,
+      "Expected Ad Hoc distribution profile",
+    );
+  }
   assert.equal(
     entitlements["get-task-allow"],
     false,
@@ -251,6 +271,7 @@ if (
       version: process.env.IOS_VERSION,
       build: process.env.IOS_BUILD_NUMBER,
       team: process.env.APPLE_TEAM_ID,
+      exportMethod: process.env.IOS_EXPORT_METHOD ?? appStoreExportMethod,
     };
     if (process.argv[2] === "config") {
       console.log(

@@ -95,6 +95,23 @@ test("accepts matching distribution metadata, including legacy App ID prefixes",
   validateDistribution(f.info, f.profile, f.entitlements, f.expected);
 });
 
+test("accepts an Ad Hoc distribution profile with registered devices", () => {
+  const f = fixture();
+  f.expected.exportMethod = "ad-hoc";
+  f.profile.ProvisionedDevices = ["registered-device"];
+  delete f.profile.Entitlements["beta-reports-active"];
+  validateDistribution(f.info, f.profile, f.entitlements, f.expected);
+});
+
+test("rejects an Ad Hoc profile without registered devices", () => {
+  const f = fixture();
+  f.expected.exportMethod = "ad-hoc";
+  delete f.profile.Entitlements["beta-reports-active"];
+  assert.throws(() =>
+    validateDistribution(f.info, f.profile, f.entitlements, f.expected),
+  );
+});
+
 test("accepts a minimal privacy manifest without invalid empty declarations", () => {
   validatePrivacyManifest({ NSPrivacyTracking: false });
 });

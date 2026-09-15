@@ -11,6 +11,13 @@ on:
         description: "Unique increasing build number, never reuse after upload"
         required: true
         type: string
+      distribution_method:
+        description: "Create an App Store Connect or registered-device Ad Hoc package"
+        default: app-store-connect
+        type: choice
+        options:
+          - app-store-connect
+          - ad-hoc
       upload_testflight:
         description: "Upload to App Store Connect (does not submit review or invite testers)"
         default: false
@@ -32,6 +39,7 @@ jobs:
     env:
       IOS_VERSION: ${{ inputs.version }}
       IOS_BUILD_NUMBER: ${{ inputs.build_number }}
+      IOS_EXPORT_METHOD: ${{ inputs.distribution_method }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -41,7 +49,8 @@ jobs:
         env:
           HAS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE != '' }}
           HAS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD != '' }}
-          HAS_PROFILE: ${{ secrets.IOS_MOBILE_PROVISION != '' }}
+          HAS_APP_STORE_PROFILE: ${{ secrets.IOS_MOBILE_PROVISION != '' }}
+          HAS_AD_HOC_PROFILE: ${{ secrets.IOS_ADHOC_MOBILE_PROVISION != '' }}
           HAS_TEAM: ${{ secrets.APPLE_TEAM_ID != '' }}
           HAS_API_KEY: ${{ secrets.ASC_PRIVATE_KEY != '' }}
           HAS_API_KEY_ID: ${{ secrets.ASC_KEY_ID != '' }}
@@ -50,12 +59,25 @@ jobs:
           APPROVED_SHA: ${{ vars.IOS_RELEASE_APPROVED_SHA }}
         run: |
           set -euo pipefail
-          for name in HAS_CERTIFICATE HAS_CERTIFICATE_PASSWORD HAS_PROFILE HAS_TEAM; do
+          for name in HAS_CERTIFICATE HAS_CERTIFICATE_PASSWORD HAS_TEAM; do
             if [[ "${!name}" != true ]]; then
               echo "::error::Missing iOS signing configuration: $name (see docs/releases/ios-launch-readiness.md)"
               exit 1
             fi
           done
+          case "$IOS_EXPORT_METHOD" in
+            app-store-connect)
+              [[ "$HAS_APP_STORE_PROFILE" == true ]] || { echo '::error::Missing App Store Connect provisioning profile'; exit 1; }
+              ;;
+            ad-hoc)
+              [[ "$HAS_AD_HOC_PROFILE" == true ]] || { echo '::error::Missing Ad Hoc provisioning profile'; exit 1; }
+              [[ "$UPLOAD" != true ]] || { echo '::error::Ad Hoc packages cannot be uploaded to TestFlight'; exit 1; }
+              ;;
+            *)
+              echo "::error::Unsupported distribution method: $IOS_EXPORT_METHOD"
+              exit 1
+              ;;
+          esac
           if [[ "$UPLOAD" == true ]]; then
             for name in HAS_API_KEY HAS_API_KEY_ID HAS_ISSUER; do
               [[ "${!name}" == true ]] || { echo "::error::Missing upload configuration: $name"; exit 1; }
@@ -124,7 +146,7 @@ jobs:
         env:
           IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}
           IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-          IOS_MOBILE_PROVISION: ${{ secrets.IOS_MOBILE_PROVISION }}
+          IOS_MOBILE_PROVISION: ${{ inputs.distribution_method == 'ad-hoc' && secrets.IOS_ADHOC_MOBILE_PROVISION || secrets.IOS_MOBILE_PROVISION }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           set +x
@@ -132,8 +154,8 @@ jobs:
           umask 077
 
           certificate_path="$RUNNER_TEMP/ios-distribution.p12"
-          profile_path="$RUNNER_TEMP/ios-app-store.mobileprovision"
-          profile_plist="$RUNNER_TEMP/ios-app-store.plist"
+          profile_path="$RUNNER_TEMP/ios-distribution.mobileprovision"
+          profile_plist="$RUNNER_TEMP/ios-distribution.plist"
           keychain_path="$RUNNER_TEMP/ios-signing.keychain-db"
           keychain_password="$(uuidgen)$(uuidgen)"
           echo "::add-mask::$keychain_password"
@@ -219,12 +241,24 @@ jobs:
               raise SystemExit("Provisioning profile application prefix mismatch")
           if profile_bundle_id != bundle_id:
               raise SystemExit("Provisioning profile bundle ID mismatch")
-          if profile.get("ProvisionedDevices") is not None or profile.get("ProvisionsAllDevices") is True:
-              raise SystemExit("Expected an App Store Connect provisioning profile")
           if entitlements.get("get-task-allow") is not False:
               raise SystemExit("Provisioning profile allows debugging")
-          if entitlements.get("beta-reports-active") is not True:
-              raise SystemExit("Provisioning profile is not for App Store distribution")
+          method = os.environ["IOS_EXPORT_METHOD"]
+          if profile.get("ProvisionsAllDevices") is True:
+              raise SystemExit("Enterprise provisioning profiles are not supported")
+          if method == "app-store-connect":
+              if profile.get("ProvisionedDevices") is not None:
+                  raise SystemExit("Expected an App Store Connect provisioning profile")
+              if entitlements.get("beta-reports-active") is not True:
+                  raise SystemExit("Provisioning profile is not for App Store distribution")
+          elif method == "ad-hoc":
+              devices = profile.get("ProvisionedDevices")
+              if not isinstance(devices, list) or not devices:
+                  raise SystemExit("Ad Hoc provisioning profile has no registered devices")
+              if entitlements.get("beta-reports-active") is True:
+                  raise SystemExit("Expected an Ad Hoc provisioning profile")
+          else:
+              raise SystemExit(f"Unsupported distribution method: {method}")
           expiration = profile.get("ExpirationDate")
           if not isinstance(expiration, datetime):
               raise SystemExit("Provisioning profile expiration is missing")
@@ -256,6 +290,7 @@ jobs:
           IOS_SIGNING_XCCONFIG="$signing_xcconfig" \
           IOS_SIGNING_IDENTITY_FILE="$RUNNER_TEMP/ios-signing-identity" \
           IOS_PROFILE_UUID_FILE="$RUNNER_TEMP/ios-profile-uuid" \
+          IOS_EXPORT_METHOD="$IOS_EXPORT_METHOD" \
           node scripts/ios-release/manual-signing.mjs
           plutil -lint "$export_options"
 
@@ -274,7 +309,7 @@ jobs:
         run: |
           set -euo pipefail
           security unlock-keychain -p "$IOS_KEYCHAIN_PASSWORD" "$IOS_KEYCHAIN_PATH"
-          pnpm tauri:ios:build --ci --export-method app-store-connect --config "$RUNNER_TEMP/ios-release-config.json"
+          pnpm tauri:ios:build --ci --export-method "$IOS_EXPORT_METHOD" --config "$RUNNER_TEMP/ios-release-config.json"
 
       - name: Validate the exported IPA, not just source configuration
         env:
@@ -287,12 +322,12 @@ jobs:
           ditto -x -k "$ipa" "$inspection"
           node scripts/ios-release/readiness.mjs app "$inspection/Payload/ORG2 Remote.app"
           shasum -a 256 "$ipa" >> "$GITHUB_STEP_SUMMARY"
-          printf 'Source: %s\nVersion: %s (%s)\n' "$GITHUB_SHA" "$IOS_VERSION" "$IOS_BUILD_NUMBER" >> "$GITHUB_STEP_SUMMARY"
+          printf 'Source: %s\nVersion: %s (%s)\nDistribution: %s\n' "$GITHUB_SHA" "$IOS_VERSION" "$IOS_BUILD_NUMBER" "$IOS_EXPORT_METHOD" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Retain only the signed candidate
         uses: actions/upload-artifact@v4
         with:
-          name: ios-release-candidate-${{ inputs.version }}-${{ inputs.build_number }}
+          name: ios-${{ inputs.distribution_method }}-${{ inputs.version }}-${{ inputs.build_number }}
           path: apps/remote-ios/src-tauri/gen/apple/build/arm64/ORG2 Remote.ipa
           if-no-files-found: error
           retention-days: 7
@@ -347,8 +382,8 @@ jobs:
           [[ -z "${IOS_EXPORT_OPTIONS_FILE:-}" || ! -f "$RUNNER_TEMP/ios-export-options.plist.backup" ]] || cp "$RUNNER_TEMP/ios-export-options.plist.backup" "$IOS_EXPORT_OPTIONS_FILE"
           rm -f \
             "$RUNNER_TEMP/ios-distribution.p12" \
-            "$RUNNER_TEMP/ios-app-store.mobileprovision" \
-            "$RUNNER_TEMP/ios-app-store.plist" \
+            "$RUNNER_TEMP/ios-distribution.mobileprovision" \
+            "$RUNNER_TEMP/ios-distribution.plist" \
             "$RUNNER_TEMP/ios-profile-uuid" \
             "$RUNNER_TEMP/ios-signing-identity" \
             "$RUNNER_TEMP/ios-signing.xcconfig" \
