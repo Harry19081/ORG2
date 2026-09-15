@@ -86,6 +86,7 @@ import {
   HighRefreshRateRow,
 } from "./HighRefreshRateRow";
 import HttpVersionSettingsBlock from "./HttpVersionSettingsBlock";
+import LicenseModal from "./LicenseModal";
 
 export const GENERAL_TAB_KEYS = {
   GENERAL: "general",
@@ -145,6 +146,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
 
 const GeneralTabBody: React.FC = () => {
   const { t, i18n } = useTranslation("settings");
+  const [licenseModalVisible, setLicenseModalVisible] = useState(false);
   const [timezone, setTimezone] = useAtom(timezoneAtom);
   const [chatAppearance, updateChatAppearance] = useAtom(
     chatAppearancePersistAtom
@@ -515,6 +517,21 @@ const GeneralTabBody: React.FC = () => {
             openTitle={t("storage.openFolder")}
           />
         </SectionContainer>
+      )}
+
+      <SectionContainer>
+        <SectionRow
+          label={t("general.license")}
+          description={t("general.licenseDesc")}
+        >
+          <Button size="default" onClick={() => setLicenseModalVisible(true)}>
+            {t("general.viewLicense")}
+          </Button>
+        </SectionRow>
+      </SectionContainer>
+
+      {licenseModalVisible && (
+        <LicenseModal visible onClose={() => setLicenseModalVisible(false)} />
       )}
     </>
   );

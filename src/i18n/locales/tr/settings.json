@@ -217,7 +217,13 @@
     "skin": "Skin",
     "accent": "Vurgu rengi",
     "linkSkinVariants": "Açık ve koyuyu bağla",
-    "linkSkinVariantsDesc": "Her iki mod için tek bir skin ve vurgu rengi kullan. Yalnızca hem açık hem koyu varyantı olan skin'ler bağlanabilir"
+    "linkSkinVariantsDesc": "Her iki mod için tek bir skin ve vurgu rengi kullan. Yalnızca hem açık hem koyu varyantı olan skin'ler bağlanabilir",
+    "license": "Lisans",
+    "licenseDesc": "Bu uygulamayla birlikte gelen lisansı görüntüle",
+    "viewLicense": "Lisansı görüntüle",
+    "licenseTitle": "ORG2 lisansı",
+    "licenseLoading": "Lisans yükleniyor…",
+    "licenseLoadFailed": "Uygulama lisansı yüklenemedi"
   },
   "background": {
     "title": "Arka Plan",

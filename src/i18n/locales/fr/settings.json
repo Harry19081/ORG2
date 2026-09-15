@@ -217,7 +217,13 @@
     "skin": "Skin",
     "accent": "Accent",
     "linkSkinVariants": "Lier clair et sombre",
-    "linkSkinVariantsDesc": "Utiliser un seul skin et un seul accent pour les deux modes. Seuls les skins proposant une variante claire et une variante sombre peuvent être liés"
+    "linkSkinVariantsDesc": "Utiliser un seul skin et un seul accent pour les deux modes. Seuls les skins proposant une variante claire et une variante sombre peuvent être liés",
+    "license": "Licence",
+    "licenseDesc": "Afficher la licence incluse avec cette application",
+    "viewLicense": "Afficher la licence",
+    "licenseTitle": "Licence ORG2",
+    "licenseLoading": "Chargement de la licence…",
+    "licenseLoadFailed": "Impossible de charger la licence de l’application"
   },
   "background": {
     "title": "Arrière-plan",

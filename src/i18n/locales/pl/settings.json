@@ -217,7 +217,13 @@
     "skin": "Skórka",
     "accent": "Akcent",
     "linkSkinVariants": "Powiąż jasny i ciemny",
-    "linkSkinVariantsDesc": "Używaj jednej skórki i akcentu w obu trybach. Powiązać można tylko skórki, które mają wariant jasny i ciemny"
+    "linkSkinVariantsDesc": "Używaj jednej skórki i akcentu w obu trybach. Powiązać można tylko skórki, które mają wariant jasny i ciemny",
+    "license": "Licencja",
+    "licenseDesc": "Wyświetl licencję dołączoną do tej aplikacji",
+    "viewLicense": "Wyświetl licencję",
+    "licenseTitle": "Licencja ORG2",
+    "licenseLoading": "Wczytywanie licencji…",
+    "licenseLoadFailed": "Nie można wczytać licencji aplikacji"
   },
   "background": {
     "title": "Tło",

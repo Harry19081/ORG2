@@ -217,7 +217,13 @@
     "skin": "Skin",
     "accent": "Akzent",
     "linkSkinVariants": "Hell und Dunkel koppeln",
-    "linkSkinVariantsDesc": "Verwendet einen Skin und Akzent für beide Modi. Nur Skins mit heller und dunkler Variante können gekoppelt werden"
+    "linkSkinVariantsDesc": "Verwendet einen Skin und Akzent für beide Modi. Nur Skins mit heller und dunkler Variante können gekoppelt werden",
+    "license": "Lizenz",
+    "licenseDesc": "Die mit dieser App gebündelte Lizenz anzeigen",
+    "viewLicense": "Lizenz anzeigen",
+    "licenseTitle": "ORG2-Lizenz",
+    "licenseLoading": "Lizenz wird geladen…",
+    "licenseLoadFailed": "Die App-Lizenz konnte nicht geladen werden"
   },
   "background": {
     "title": "Hintergrund",

@@ -768,6 +768,7 @@ settings::commands::settings_write_partial,
 settings::commands::settings_reset,
 settings::commands::settings_get_path,
 settings::commands::settings_write_schema,
+settings::commands::app_license_read,
 // Codex config (~/.codex/config.toml)
 agent_cli::codex::commands::codex_config_read,
 agent_cli::codex::commands::codex_config_write_partial,

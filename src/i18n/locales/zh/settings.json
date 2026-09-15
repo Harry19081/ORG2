@@ -298,7 +298,13 @@
       "rainbow": "彩虹",
       "dark": "深色",
       "light": "浅色"
-    }
+    },
+    "license": "许可证",
+    "licenseDesc": "查看此应用附带的许可证",
+    "viewLicense": "查看许可证",
+    "licenseTitle": "ORG2 许可证",
+    "licenseLoading": "正在加载许可证…",
+    "licenseLoadFailed": "无法加载应用许可证"
   },
   "background": {
     "title": "背景",
