@@ -93,7 +93,7 @@ describe("simulator sidebar sync at the native webview boundary", () => {
     act(() => vi.advanceTimersByTime(200));
   }
 
-  it("keeps My Station edits quiet and preserves Agent Station's four resize ticks", () => {
+  it("keeps Workstation edits quiet and preserves Agent Station's four resize ticks", () => {
     render(false, "left");
     flush();
     expect(updatePosition).toHaveBeenCalledTimes(4);

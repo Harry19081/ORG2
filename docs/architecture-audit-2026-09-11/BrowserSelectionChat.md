@@ -4,13 +4,13 @@
 
 The live browser status bar and Agent Station browser repeat DOM payload construction, add-to-agent submission and success feedback wiring.
 
-Route both owners through sendSelectedElementToChat. Keep the existing formatter and make selection clearing explicit: My Station retains selection and Agent Station clears it after submission, before the success toast.
+Route both owners through sendSelectedElementToChat. Keep the existing formatter and make selection clearing explicit: Workstation retains selection and Agent Station clears it after submission, before the success toast.
 
 Acceptance: replace all matching in-scope callers, preserve user behavior and persistence, pass focused tests and frontend checks, and keep changes isolated from unrelated working-tree edits.
 
 | Line                                                                    | Element          | Verdict | Reason                                                                                                                                                                                                                      | Suggested change                                  |
 | ----------------------------------------------------------------------- | ---------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `src/modules/WorkStation/Browser/shared/sendSelectedElementToChat.ts:7` | Shared ownership | fix     | Route both owners through sendSelectedElementToChat. Keep the existing formatter and make selection clearing explicit: My Station retains selection and Agent Station clears it after submission, before the success toast. | Implemented in this change; no unrelated cleanup. |
+| `src/modules/WorkStation/Browser/shared/sendSelectedElementToChat.ts:7` | Shared ownership | fix     | Route both owners through sendSelectedElementToChat. Keep the existing formatter and make selection clearing explicit: Workstation retains selection and Agent Station clears it after submission, before the success toast. | Implemented in this change; no unrelated cleanup. |
 
 ## Architecture coverage
 
@@ -23,7 +23,7 @@ Layers 1–7: frontend compilation/lint, caller sweep, naming, distinct station/
 | Background work    | keep    | No new polling, listeners, workers or requests | Existing owner and mount/cleanup rules retained                                                                                                                                                                             | Focused suites below                |
 | Memory             | keep    | No new app-lifetime collections or caches      | State stays with current atoms/components                                                                                                                                                                                   | Diff inspection; no RSS measurement |
 | Scope/isolation    | keep    | Existing station and store boundaries          | No shared cross-account/session cache introduced                                                                                                                                                                            | Caller sweep                        |
-| Rendering/hot path | fix     | Common computation/config/action ownership     | Route both owners through sendSelectedElementToChat. Keep the existing formatter and make selection clearing explicit: My Station retains selection and Agent Station clears it after submission, before the success toast. | Focused tests; no timing claim      |
+| Rendering/hot path | fix     | Common computation/config/action ownership     | Route both owners through sendSelectedElementToChat. Keep the existing formatter and make selection clearing explicit: Workstation retains selection and Agent Station clears it after submission, before the success toast. | Focused tests; no timing claim      |
 
 Applicable matrix: mount/unmount and station/visibility transitions at changed UI boundaries; existing online/offline, identity, transport and multi-instance ownership is unchanged. No provider ingestion or sync changes. Native Tauri pixels/CPU/RSS were not measured: Computer Use was not authorized. Performance verdict: blocked for live native measurement; no performance improvement is claimed. Automated correctness evidence is listed separately.
 

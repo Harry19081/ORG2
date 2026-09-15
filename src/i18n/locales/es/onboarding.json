@@ -8,7 +8,7 @@
       "finish": "Finalizar recorrido",
       "keyboardHint": "Usa ← / → o < / >",
       "desktop": "Escritorio",
-      "myStation": "Mi estación",
+      "myStation": "Workstation",
       "infinity": "Infinity",
       "agentStation": "Estación de agente"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "Cambiar de estación modos",
-          "body": "Utilice esta pastilla para cambiar los modos de estación. Escritorio significa My Station, tu espacio de trabajo. Infinito significa Agent Station, la vista de actividad del agente"
+          "body": "Utilice esta pastilla para cambiar los modos de estación. Escritorio significa Workstation, tu espacio de trabajo. Infinito significa Agent Station, la vista de actividad del agente"
         },
         "dock": {
           "title": "Base de Agent Station",

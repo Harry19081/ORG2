@@ -12,11 +12,11 @@ The dropdown menu shown when the composer file-changes pill
 
 | #   | Steps                                | Expected Result                                                                                                                                                                        |
 | --- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Click the file-changes pill          | Dropdown opens above the pill (composer is at screen bottom), showing two groups: "Git Actions" (commit, commit & push, push) and "Review" (View in my station, View in Agent station) |
+| 1   | Click the file-changes pill          | Dropdown opens above the pill (composer is at screen bottom), showing two groups: "Git Actions" (commit, commit & push, push) and "Review" (View in Workstation, View in Agent station) |
 | 2   | Click "commit" (session idle)        | Menu closes; an agent prompt "Commit all current changes." is dispatched to the session                                                                                                |
 | 3   | Click "commit & push" (session idle) | Menu closes; an agent prompt "Commit all current changes and push to the remote." is dispatched                                                                                        |
 | 4   | Click "push" (session idle)          | Menu closes; an agent prompt "Push the latest commits to the remote." is dispatched                                                                                                    |
-| 5   | Click "View in my station"           | Menu closes; My Station Source Control tab opens showing current changes                                                                                                               |
+| 5   | Click "View in Workstation"           | Menu closes; Workstation Source Control tab opens showing current changes                                                                                                               |
 | 6   | Click "View in Agent station"        | Menu closes; Agent Station Diff view opens (the previous default behavior)                                                                                                             |
 
 ## Edge Cases
@@ -45,6 +45,6 @@ The dropdown menu shown when the composer file-changes pill
 
 - [ ] Clicking the pill opens the menu instead of navigating directly
 - [ ] commit / commit & push / push send the correct agent prompts and are disabled while the session is busy
-- [ ] View in my station opens the My Station Source Control tab
+- [ ] View in Workstation opens the Workstation Source Control tab
 - [ ] View in Agent station preserves the previous Agent Station Diff navigation
 - [ ] Selecting any item closes the menu

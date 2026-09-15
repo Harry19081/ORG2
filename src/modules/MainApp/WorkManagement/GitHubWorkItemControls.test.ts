@@ -237,7 +237,7 @@ describe("GitHub work-item row actions", () => {
 
     expect(markup).toContain(">Add</span>");
     expect(markup).toContain('aria-label="More actions"');
-    expect(markup).not.toContain("Open in My Station");
+    expect(markup).not.toContain("Open in Workstation");
     expect(markup).not.toContain("opacity-0");
   });
 

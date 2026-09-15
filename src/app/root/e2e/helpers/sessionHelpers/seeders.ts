@@ -189,7 +189,7 @@ export function createSessionSeederHelpers(store: E2EStore) {
   /**
    * Seed a bare session row into the sidebar list (`sessionsAtom`) without
    * opening it or touching the event store. Used by specs that exercise the
-   * REAL rendered sidebar-row click path (e.g. "My Station follows the
+   * REAL rendered sidebar-row click path (e.g. "Workstation follows the
    * active session's repo") — the spec performs the click; this only makes
    * the row exist with a deterministic `repoPath`.
    */

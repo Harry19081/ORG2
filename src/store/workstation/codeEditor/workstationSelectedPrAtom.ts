@@ -34,7 +34,7 @@ export function workstationPrScopeKey(
  * agents, the main pane) can read/act on the PR without prop-drilling.
  *
  * Keyed per repo + PR number via {@link workstationPrScopeKey}, so several PR
- * tabs (Source Control, My Station) can be open at once without clobbering
+ * tabs (Source Control, Workstation) can be open at once without clobbering
  * each other's state.
  */
 export type PrDetailTab = "conversation" | "commits" | "checks" | "changes";

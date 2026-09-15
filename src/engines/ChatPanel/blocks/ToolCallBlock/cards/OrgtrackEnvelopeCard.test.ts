@@ -72,7 +72,7 @@ describe("OrgtrackEnvelopeCard", () => {
     Reflect.deleteProperty(reactActEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  it("switches to My Station and opens the created item detail there", () => {
+  it("switches to Workstation and opens the created item detail there", () => {
     const store = createStore();
     store.set(stationModeAtom, "agent-station");
     store.set(workstationLayoutAtom, {

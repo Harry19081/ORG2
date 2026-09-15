@@ -45,7 +45,7 @@
 
 ## D5 — Visual Patterns Observed
 
-- GitHub Issues, source-control issue detail, and My Station issue tabs now flow through the same `IssueDetailPanel` adapter and the Inbox `WorkItemThreadSurface` composition.
+- GitHub Issues, source-control issue detail, and Workstation issue tabs now flow through the same `IssueDetailPanel` adapter and the Inbox `WorkItemThreadSurface` composition.
 - Repository/status metadata, issue description, and GitHub activity use the shared property-pill and bordered timeline-card hierarchy.
 - No multi-file design-system sweep candidate remains in the changed issue-detail surface.
 

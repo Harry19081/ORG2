@@ -199,7 +199,7 @@ describe("WorkItemsHeaderContent", () => {
     expect(markup).not.toContain("h-[40px]");
   });
 
-  it("hides shell-owned leading chrome for My Station Work Items", () => {
+  it("hides shell-owned leading chrome for Workstation Work Items", () => {
     renderToStaticMarkup(
       React.createElement(WorkItemsPageHeader, {
         projectName: "Work Items",

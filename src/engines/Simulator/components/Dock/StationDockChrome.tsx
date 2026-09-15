@@ -1,7 +1,7 @@
 /**
  * StationDockChrome
  *
- * Shared bottom chrome for Workstation My Station and Agent Station (simulator):
+ * Shared bottom chrome for Workstation and Agent Station (simulator):
  * centered dock column; with auto-hide, iPhone-style home pill below (hidden when
  * auto-hide is off). Hover/focus uses full-width layout plus extra
  * horizontal padding when auto-hide is on for a wider open trigger; when
@@ -102,7 +102,7 @@ export const StationDockChrome: React.FC<StationDockChromeProps> = memo(
 
     const expanded = !autoHide || openByPointer || focusInside;
 
-    // Fix the expanded dock body to a single 48px row so My Station's
+    // Fix the expanded dock body to a single 48px row so Workstation's
     // Keep dock content at one 48px row even when subagent, overflow, or
     // agent-working trailers are present. Without this, intrinsic content
     // height drifts by ~1–4px as those trailers change.

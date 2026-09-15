@@ -43,7 +43,7 @@ describe("new session navigation", () => {
       store.set(activeSessionIdAtom, "previous-session");
       store.set(workstationActiveSessionIdAtom, "previous-session");
       const layout = store.get(workstationLayoutAtom);
-      // Exercise the actual route-entry writer, which previously reopened My Station.
+      // Exercise the actual route-entry writer, which previously reopened Workstation.
       mocks.navigate.mockImplementation((path: string) => {
         store.set(enterWorkstationRouteAtom, path.split("?")[0]);
       });

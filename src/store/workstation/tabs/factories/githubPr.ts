@@ -4,7 +4,7 @@
  * Opens a github-pr-detail tab in the main pane when the user clicks a PR row
  * in Kanban (or elsewhere). Mirrors the github-issue-detail factory; the
  * renderer reuses the Source Control `PrDetailPanel`, so the PR opens as a
- * first-class My Station tab rather than in the Source Control sidebar.
+ * first-class Workstation tab rather than in the Source Control sidebar.
  */
 import type { GitHubPrDetailTabData } from "@src/types/githubDetail";
 

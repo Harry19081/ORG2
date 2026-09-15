@@ -2,8 +2,8 @@
  * WorkStation editor repo cache.
  *
  * File-tab caches and the active editor repo are partitioned by the presented
- * WorkStation workspace. A session and the Global Workspace may therefore use
- * the same repository without restoring or overwriting each other's file tabs.
+ * WorkStation workspace. Directory sharing reuses one cache across matching
+ * chats; per-chat-tab sharing retains separate session caches.
  * Shared resource tabs (Browser, Terminal, Database, etc.) are not stored here.
  *
  * Persistence uses new v3 keys. On the first v3 read, a valid legacy v2 cache
@@ -95,7 +95,11 @@ function sanitizeCacheByWorkspace(value: unknown): EditorCacheByWorkspace {
   if (!isRecord(value)) return {};
   const result: EditorCacheByWorkspace = {};
   for (const [workspaceId, cache] of Object.entries(value)) {
-    if (workspaceId !== "global" && !workspaceId.startsWith("session:")) {
+    if (
+      workspaceId !== "global" &&
+      !workspaceId.startsWith("session:") &&
+      !workspaceId.startsWith("directory:")
+    ) {
       continue;
     }
     result[workspaceId as WorkstationWorkspaceId] =
@@ -110,7 +114,11 @@ function sanitizeActiveReposByWorkspace(
   if (!isRecord(value)) return {};
   const result: ActiveEditorRepoByWorkspace = {};
   for (const [workspaceId, repoPath] of Object.entries(value)) {
-    if (workspaceId !== "global" && !workspaceId.startsWith("session:")) {
+    if (
+      workspaceId !== "global" &&
+      !workspaceId.startsWith("session:") &&
+      !workspaceId.startsWith("directory:")
+    ) {
       continue;
     }
     if (repoPath === null || typeof repoPath === "string") {

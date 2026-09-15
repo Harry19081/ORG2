@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "Sao chép thất bại",
     "moveTo": "Chuyển trang đến…",
     "projectLinks": "Liên kết dự án",
-    "moveToWorkstation": "Chuyển sang Workstation của tôi",
+    "moveToWorkstation": "Chuyển sang Workstation",
     "moveToChatPanel": "Chuyển sang bảng trò chuyện",
     "rawTranscript": {
       "title": "Bản ghi thô của phiên",
@@ -1931,7 +1931,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "Xem lại",
-      "viewMyStation": "Xem trong My Station",
+      "viewMyStation": "Xem trong Workstation",
       "viewAgentStation": "Xem trong Agent Station"
     },
     "osAgent": "OS Agent",
@@ -2301,7 +2301,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "Mở trong My Station"
+      "openInMyStation": "Mở trong Workstation"
     }
   },
   "groupChat": {

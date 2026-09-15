@@ -124,7 +124,7 @@ export function usePinnedWorkbenchChromeVisible(): boolean {
 
 /**
  * Whether the chat pane is showing for the station currently on screen —
- * the layout's own rule. Visibility is stored per station (My Station /
+ * the layout's own rule. Visibility is stored per station (Workstation /
  * Agent Station), so reading a fixed key would go blind in the other one.
  */
 export function useCurrentStationChatVisible(): boolean {

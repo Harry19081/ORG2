@@ -1,7 +1,7 @@
 /**
  * StationModePill Component
  *
- * Renders the My Station / Agent's Station icon segmented toggle.
+ * Renders the Workstation / Agent's Station icon segmented toggle.
  */
 import { useAtom } from "jotai";
 import React, { useCallback } from "react";

@@ -8,7 +8,7 @@
       "finish": "둘러보기 완료",
       "keyboardHint": "← / → 또는 < / > 사용",
       "desktop": "데스크톱",
-      "myStation": "내 스테이션",
+      "myStation": "Workstation",
       "infinity": "Infinity",
       "agentStation": "에이전트 스테이션"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "스테이션 모드 전환",
-          "body": "스테이션 모드를 전환하려면 이 알약을 사용하세요. 데스크탑은 작업 공간인 My Station을 의미합니다. Infinity는 에이전트 활동 보기인 Agent Station을 의미합니다"
+          "body": "스테이션 모드를 전환하려면 이 알약을 사용하세요. 데스크탑은 작업 공간인 Workstation을 의미합니다. Infinity는 에이전트 활동 보기인 Agent Station을 의미합니다"
         },
         "dock": {
           "title": "Agent Station 도킹",

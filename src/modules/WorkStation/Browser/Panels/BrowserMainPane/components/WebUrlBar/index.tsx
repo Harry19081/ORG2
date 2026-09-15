@@ -80,7 +80,7 @@ interface WebUrlBarProps {
   isInspectMode?: boolean;
   /** Toggle the element inspector (hover/click to select DOM nodes). */
   onToggleInspectMode?: () => void;
-  /** Header host to publish into. Defaults to My Station Browser. */
+  /** Header host to publish into. Defaults to Workstation Browser. */
   publishToHost?: WorkstationTabHeaderHost;
   /** Publish header content when not rendering inline. */
   publishEnabled?: boolean;

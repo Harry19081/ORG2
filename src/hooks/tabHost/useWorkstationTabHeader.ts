@@ -2,7 +2,7 @@
  * usePublishWorkstationTabHeader
  *
  * Pane-side helper for the global 40px tab-header strip rendered by
- * {@link WorkstationTabHeader}. The active My Station pane (Code / Browser /
+ * {@link WorkstationTabHeader}. The active Workstation pane (Code / Browser /
  * Project) calls this hook with its own header content (e.g. a
  * file breadcrumb, a URL bar, a commit-info panel); the strip reads the
  * matching host slot via {@link activeWorkstationTabHeaderAtom} and renders

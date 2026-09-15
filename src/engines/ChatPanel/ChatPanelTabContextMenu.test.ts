@@ -41,7 +41,7 @@ describe("ChatPanelTabContextMenu", () => {
     Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  it("offers Move to My Station when the tab supports it", async () => {
+  it("offers Move to Workstation when the tab supports it", async () => {
     const onMoveToWorkstation = vi.fn();
     const onDismiss = vi.fn();
     await act(async () => {
@@ -62,7 +62,7 @@ describe("ChatPanelTabContextMenu", () => {
       | { text?: string; action?: () => void }
       | undefined;
 
-    expect(moveItem?.text).toBe("Move to My Station");
+    expect(moveItem?.text).toBe("Move to Workstation");
     act(() => moveItem?.action?.());
     expect(onMoveToWorkstation).toHaveBeenCalledWith("chat-pr");
     expect(onDismiss).toHaveBeenCalledOnce();

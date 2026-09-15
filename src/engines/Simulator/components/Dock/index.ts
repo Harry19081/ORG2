@@ -1,5 +1,5 @@
 /**
- * Simulator dock — macOS-style app strip (My Station + Agent Station).
+ * Simulator dock — macOS-style app strip (Workstation + Agent Station).
  *
  * Internal layout primitives stay in dockLayout.tsx; this barrel exposes only
  * the dock surfaces and data consumed outside this directory.

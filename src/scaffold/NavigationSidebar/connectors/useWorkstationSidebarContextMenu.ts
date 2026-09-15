@@ -129,7 +129,7 @@ export function useWorkstationSidebarContextMenu({
       const openInMyStationItem: NativeMenuItemOptions = {
         text: tCommon(
           "sessions:controlTower.sidebar.openInMyStation",
-          "Open in My Station"
+          "Open in Workstation"
         ),
         action: () => handleOpenInMyStation(item.id),
       };

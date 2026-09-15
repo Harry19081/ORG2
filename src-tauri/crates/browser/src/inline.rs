@@ -6,7 +6,7 @@
 //! ## Single-owner model
 //!
 //! Each app window owns its live native browser views through SharedBrowserApp.
-//! My Station and Agent Station in that document share the same owner. Detached
+//! Workstation and Agent Station in that document share the same owner. Detached
 //! windows use scoped labels; a view is never reused under a different parent.
 //!
 //! The ref-count registry (`WEBVIEW_REF_COUNTS`) is retained as a safety net
@@ -245,7 +245,7 @@ pub async fn create_inline_webview(
         set_generation(&label, generation);
     }
 
-    // Increment ref count. Under the single-owner model only My Station calls
+    // Increment ref count. Under the single-owner model only Workstation calls
     // this, but the count guards against double-create races on fast navigation.
     let ref_count = increment_ref(&label);
     debug!(label = %label, ref_count, "browser::inline: ref count incremented");
@@ -438,7 +438,7 @@ pub fn update_inline_webview_position(
     } else {
         // Webview not yet created or already destroyed — not an error.
         // This is expected during the creation race (CT becomes active before
-        // My Station's BrowserSessionWebview finishes create_inline_webview).
+        // Workstation's BrowserSessionWebview finishes create_inline_webview).
         Ok(())
     }
 }
@@ -483,7 +483,7 @@ pub fn set_inline_webview_visibility(
 /// Close/destroy an inline webview.
 ///
 /// Uses a ref-count registry so that shared webviews (same label used by both
-/// My Station and Agent Station) are only destroyed when every React instance
+/// Workstation and Agent Station) are only destroyed when every React instance
 /// that opened them has also closed them. A single panel unmounting will
 /// decrement the count but not destroy the webview if another panel is still
 /// using it.
@@ -795,7 +795,7 @@ mod tests {
         assert_eq!(get_ref_count(&label), 0);
     }
 
-    // Panel-switch scenario: My Station + Control Tower both call create → ref=2.
+    // Panel-switch scenario: Workstation + Control Tower both call create → ref=2.
     // One panel unmounts → ref=1 (webview must NOT be destroyed).
     // Second panel closes → ref=0 (now safe to destroy).
     #[test]

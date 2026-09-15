@@ -53,7 +53,7 @@ function createWorkstationDetailTab(tab: ChatPanelTab): WorkStationTab | null {
   }
 }
 
-/** Move one losslessly representable Chat Panel tab into My Station. */
+/** Move one losslessly representable Chat Panel tab into Workstation. */
 export const moveChatPanelTabToWorkstationAtom = atom(
   null,
   (get, set, tabId: string): boolean => {
@@ -111,7 +111,7 @@ export function canMoveWorkstationPrTabToChatPanel(
   return getWorkstationPrData(tab) !== null;
 }
 
-/** Move one My Station pull-request tab into the Chat Panel tab strip. */
+/** Move one Workstation pull-request tab into the Chat Panel tab strip. */
 export const moveWorkstationPrTabToChatPanelAtom = atom(
   null,
   (get, set, tabId: string): boolean => {

@@ -350,7 +350,7 @@ simulatorPrimarySidebarPositionAtom.debugLabel =
 /**
  * Persisted width of the simulator primary sidebar (CodeEditor / Chat / Browser
  * session replay views). Separate from the live Workstation left panel so the
- * replay UIs can have their own default (200px) without affecting My Station.
+ * replay UIs can have their own default (200px) without affecting Workstation.
  *
  * Clamped to SIMULATOR_PRIMARY_SIDEBAR.minWidth .. maxWidth on write via the
  * persist atom below.

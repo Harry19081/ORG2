@@ -236,7 +236,7 @@ export const SPLIT_BUTTON = {
 
 /** Shared left inset aligning header content with the first tab icon. */
 export const HEADER_CONTENT_LEFT_PADDING_CLASS = "pl-[15px]";
-/** Shared right inset for content inside My Station header bars. */
+/** Shared right inset for content inside Workstation header bars. */
 export const HEADER_CONTENT_RIGHT_PADDING_CLASS = "pr-2";
 /** Shared tab-aligned left and compact right insets for header bars. */
 export const HEADER_CONTENT_HORIZONTAL_PADDING_CLASS = `${HEADER_CONTENT_LEFT_PADDING_CLASS} ${HEADER_CONTENT_RIGHT_PADDING_CLASS}`;

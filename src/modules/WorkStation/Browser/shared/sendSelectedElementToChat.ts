@@ -3,7 +3,7 @@ import type { AddToAgentRequest } from "@src/store/ui/addToAgentAtom";
 import { buildDomComponentJsonFromElementInfo } from "../BrowserLayout/buildDomComponentJson";
 import type { ElementInfo } from "../hooks/useWebviewInspector";
 
-/** Callers retain ownership of selection: My Station keeps it, replay clears it. */
+/** Callers retain ownership of selection: Workstation keeps it, replay clears it. */
 export function sendSelectedElementToChat({
   selectedElement,
   currentUrl,

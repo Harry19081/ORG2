@@ -1,5 +1,5 @@
 /**
- * Shared dropdown list chrome for app switchers (My Station route picker +
+ * Shared dropdown list chrome for app switchers (Workstation route picker +
  * Agent Station dock picker). Row hover/selected use {@link DROPDOWN_CLASSES}
  * (`itemHover` → fill-2, `itemSelected` → primary-1) with callers supplying
  * selection semantics only.

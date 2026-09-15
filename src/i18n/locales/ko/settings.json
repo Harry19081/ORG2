@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Workstation 공유 범위",
+    "myStationSharingDesc": "작업 디렉터리별로 Workstation 탭과 보기 상태를 공유하거나 채팅 탭마다 별도로 저장",
+    "myStationSharingDirectory": "작업 디렉터리",
+    "myStationSharingTab": "채팅 탭",
     "login": "로그인",
     "tabGeneral": "일반",
     "tabSelfHosted": "자체 호스팅",

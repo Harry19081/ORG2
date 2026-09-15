@@ -151,17 +151,22 @@ export interface PanelState {
 }
 
 /**
- * WorkStation task-workspace identity.
+ * Workstation workspace identity, selected by the sharing policy.
  *
  * This is deliberately distinct from browser/terminal resource session IDs
- * and from SessionCore's transient pipeline session. Only the WorkStation's
- * remembered agent-session selection may produce a `session` key.
+ * and from SessionCore's transient pipeline session. The remembered chat
+ * selection resolves to its working directory by default, or a session key
+ * under the per-chat-tab policy (also used when no directory is known).
  */
 export type WorkstationWorkspaceKey =
   | { kind: "global" }
-  | { kind: "session"; sessionId: string };
+  | { kind: "session"; sessionId: string }
+  | { kind: "directory"; directory: string };
 
-export type WorkstationWorkspaceId = "global" | `session:${string}`;
+export type WorkstationWorkspaceId =
+  | "global"
+  | `session:${string}`
+  | `directory:${string}`;
 
 export type WorkstationTabPartition = "shared" | "workspace";
 
@@ -170,7 +175,7 @@ export interface WorkstationTabRef {
   tabId: string;
 }
 
-/** Session/global-owned task context. Shared resource tabs live separately. */
+/** Directory/session/global-owned context. Shared resource tabs live separately. */
 export interface WorkstationWorkspaceState {
   tabs: WorkStationTab[];
   activeTabRef: WorkstationTabRef | null;
@@ -188,6 +193,8 @@ export interface WorkstationTabsStateV4 {
   shared: WorkstationSharedState;
   globalWorkspace: WorkstationWorkspaceState;
   sessionWorkspaces: Record<string, WorkstationWorkspaceState>;
+  /** Additive v4 partition; absent in saved state from before directory sharing. */
+  directoryWorkspaces?: Record<string, WorkstationWorkspaceState>;
   /**
    * Workspace-local v2 tabs waiting for the first explicitly opened session.
    * Cold-start Global Workspace must not consume this seed.

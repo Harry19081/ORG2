@@ -74,6 +74,7 @@ const EMPTY_WORKSPACE: WorkstationWorkspaceState = {
 interface ManifestV4 {
   version: 4;
   sessionIds: string[];
+  directories?: string[];
 }
 
 function hasLocalStorage(): boolean {
@@ -218,7 +219,10 @@ function writeJson(key: string, value: unknown): boolean {
 export function workstationWorkspaceId(
   key: WorkstationWorkspaceKey
 ): WorkstationWorkspaceId {
-  return key.kind === "global" ? "global" : `session:${key.sessionId}`;
+  if (key.kind === "global") return "global";
+  return key.kind === "directory"
+    ? `directory:${key.directory}`
+    : `session:${key.sessionId}`;
 }
 
 function v3SessionStorageKey(sessionId: string): string {
@@ -227,6 +231,10 @@ function v3SessionStorageKey(sessionId: string): string {
 
 function v4SessionStorageKey(sessionId: string): string {
   return `${WORKSTATION_V4_SESSION_PREFIX}${encodeURIComponent(sessionId)}`;
+}
+
+function directoryStorageKey(directory: string): string {
+  return `workstation:tabs:v4:directory:${encodeURIComponent(directory)}`;
 }
 
 export function emptyWorkstationTabsState(): WorkstationTabsStateV4 {
@@ -295,12 +303,26 @@ function readPersistedState(
       readJson(keys.session(sessionId))
     );
   }
+  const directories =
+    manifest.version === 4 && Array.isArray(manifest.directories)
+      ? manifest.directories.filter(
+          (value): value is string =>
+            typeof value === "string" && value.length > 0
+        )
+      : [];
+  const directoryWorkspaces = Object.fromEntries(
+    directories.map((directory) => [
+      directory,
+      sanitizeWorkspaceState(readJson(directoryStorageKey(directory))),
+    ])
+  );
   const rawLegacySeed = readJson(keys.legacySeed);
   return {
     version: 4,
     shared: { tabs: sanitizeSharedTabs(readJson(keys.shared)) },
     globalWorkspace: sanitizeWorkspaceState(readJson(keys.global)),
     sessionWorkspaces,
+    ...(directories.length ? { directoryWorkspaces } : {}),
     legacySeed: rawLegacySeed ? sanitizeWorkspaceState(rawLegacySeed) : null,
   };
 }
@@ -339,7 +361,14 @@ export function persistWorkstationTabsState(
 ): boolean {
   if (!hasLocalStorage()) return false;
   const sessionIds = Object.keys(state.sessionWorkspaces);
+  const directories = Object.keys(state.directoryWorkspaces ?? {});
   const writes = [
+    ...directories.map((directory) =>
+      writeJson(
+        directoryStorageKey(directory),
+        state.directoryWorkspaces?.[directory]
+      )
+    ),
     writeJson(WORKSTATION_V4_SHARED_KEY, state.shared),
     writeJson(WORKSTATION_V4_GLOBAL_KEY, state.globalWorkspace),
     state.legacySeed
@@ -353,7 +382,11 @@ export function persistWorkstationTabsState(
     ),
   ];
   if (writes.some((ok) => !ok)) return false;
-  const manifest: ManifestV4 = { version: 4, sessionIds };
+  const manifest: ManifestV4 = {
+    version: 4,
+    sessionIds,
+    ...(directories.length ? { directories } : {}),
+  };
   const committed = writeJson(WORKSTATION_V4_MANIFEST_KEY, manifest);
   // Keep v2 as a recovery source until its workspace-local seed has been
   // successfully claimed by an explicit session.

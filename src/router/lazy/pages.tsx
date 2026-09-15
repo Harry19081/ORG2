@@ -33,7 +33,7 @@ export const SessionWindowPage = React.lazy(
   () => import(/* webpackChunkName: "workspace" */ "@src/modules/SessionWindow")
 );
 
-// Detached station window (label `app-window-station-<mode>`): My Station or
+// Detached station window (label `app-window-station-<mode>`): Workstation or
 // Agent Station alone, no sidebar or chat panel. Opened by
 // `open_station_window` (Rust).
 export const StationWindowPage = React.lazy(

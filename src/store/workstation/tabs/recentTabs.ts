@@ -5,6 +5,7 @@ import {
   recordRecentTransition,
 } from "@src/shared/tabs/recentTabs";
 
+import { workstationWorkspaceId } from "./storage";
 import type { WorkStationTab, WorkstationWorkspaceKey } from "./types";
 
 export interface RecentWorkstationTabEntry {
@@ -22,17 +23,14 @@ export function isSameWorkstationWorkspace(
   left: WorkstationWorkspaceKey,
   right: WorkstationWorkspaceKey
 ): boolean {
-  return (
-    left.kind === right.kind &&
-    (left.kind === "global" ||
-      (right.kind === "session" && left.sessionId === right.sessionId))
-  );
+  return workstationWorkspaceId(left) === workstationWorkspaceId(right);
 }
 
 function entryId(entry: RecentWorkstationTabEntry): string {
-  return entry.workspace.kind === "global"
-    ? `global:${entry.tab.id}`
-    : `session:${entry.workspace.sessionId}:${entry.tab.id}`;
+  return JSON.stringify([
+    workstationWorkspaceId(entry.workspace),
+    entry.tab.id,
+  ]);
 }
 
 function recordRecentEntry(

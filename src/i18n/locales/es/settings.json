@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Uso compartido de Workstation",
+    "myStationSharingDesc": "Compartir las pestañas y el estado de las vistas de Workstation por directorio de trabajo o guardarlos por separado para cada pestaña de chat",
+    "myStationSharingDirectory": "Directorio de trabajo",
+    "myStationSharingTab": "Pestaña de chat",
     "login": "Inicio de sesión",
     "tabGeneral": "General",
     "tabSelfHosted": "Autoalojado",

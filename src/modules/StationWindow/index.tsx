@@ -102,7 +102,7 @@ function parseStationMode(value: string | undefined): StationMode | null {
  * Keep this window's remembered session on the main window's: the route seed
  * first, then every follow event. `jumpToSessionAtom` runs the same clear →
  * loading → set sequence the in-app owners use, so Agent Station replays and
- * My Station's per-session workspace both converge on it.
+ * Workstation's per-session workspace both converge on it.
  */
 function useStationWindowSessionFollower(seedSessionId: string | null): void {
   const store = useStore();

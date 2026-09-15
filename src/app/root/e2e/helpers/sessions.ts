@@ -276,7 +276,7 @@ export function createSessionHelpers(store: E2EStore) {
       store.set(clearSessionAtom);
       store.set(activeSessionIdAtom, null);
       store.set(workstationActiveSessionIdAtom, null);
-      // A new session is composed on Agent Station. My Station can now show
+      // A new session is composed on Agent Station. Workstation can now show
       // the empty WorkStation tab-pool start page, so resetting there no
       // longer mounts SessionCreator even after all session atoms are clear.
       store.set(stationModeAtom, "agent-station");

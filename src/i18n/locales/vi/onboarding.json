@@ -8,7 +8,7 @@
       "finish": "Kết thúc chuyến tham quan",
       "keyboardHint": "Dùng ← / → hoặc < / >",
       "desktop": "Máy tính để bàn",
-      "myStation": "Trạm của tôi",
+      "myStation": "Workstation",
       "infinity": "Infinity",
       "agentStation": "Trạm đại lý"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "Chuyển trạm chế độ",
-          "body": "Sử dụng viên thuốc này để chuyển đổi chế độ trạm. Máy tính để bàn có nghĩa là Trạm của tôi, không gian làm việc của bạn. Infinity có nghĩa là Trạm đại lý, chế độ xem hoạt động của đại lý"
+          "body": "Sử dụng viên thuốc này để chuyển đổi chế độ trạm. Máy tính để bàn có nghĩa là Workstation, không gian làm việc của bạn. Infinity có nghĩa là Trạm đại lý, chế độ xem hoạt động của đại lý"
         },
         "dock": {
           "title": "Đế trạm đại lý",

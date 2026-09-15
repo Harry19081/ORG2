@@ -114,7 +114,7 @@ workManagementProjectsViewAtom.debugLabel = "workManagementProjectsViewAtom";
 // ============================================
 // Global tab-header strip (36px, full-width)
 //
-// Each My Station app pane publishes structured chrome for the global tab
+// Each Workstation app pane publishes structured chrome for the global tab
 // header (breadcrumb / URL bar / commit info / mode controls / filters) into a
 // per-host slot. `AppShell` renders a single {@link WorkstationTabHeader} below
 // the {@link WorkstationTabBar}; the header reads the active app's slot and
@@ -196,7 +196,7 @@ workManagementWorkstationTabHeaderAtom.debugLabel =
   "workManagementWorkstationTabHeaderAtom";
 
 /**
- * Simulator (Agent Station replay) tab-header slot. Unlike the My Station
+ * Simulator (Agent Station replay) tab-header slot. Unlike the Workstation
  * hosts above, only one simulator app is mounted at a time per session view
  * (Code Editor / Browser / DB / Project / Communication share this single
  * atom), so we don't split it per app — whichever simulator pane is active

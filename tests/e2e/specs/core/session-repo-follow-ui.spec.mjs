@@ -1,7 +1,7 @@
 /**
  * session-repo-follow-ui.spec.mjs
  *
- * "My Station follows the active session's repo" (jumpToSessionAtom →
+ * "Workstation follows the active session's repo" (jumpToSessionAtom →
  * followSessionRepo, commit cc60bad7).
  *
  * Rendered, no-LLM coverage:
@@ -307,7 +307,7 @@ async function clickSidebarSessionRow(sessionId) {
   );
 }
 
-describe("My Station follows the active session's repo", () => {
+describe("Workstation follows the active session's repo", () => {
   before(async () => {
     createGitFixture(REPO_X_PATH, "E2E repo-follow repo X");
     createLinkedWorktree();
@@ -587,12 +587,12 @@ describe("My Station follows the active session's repo", () => {
     );
   });
 
-  it("switching to session B (repo Y) makes My Station show repo Y", async () => {
+  it("switching to session B (repo Y) makes Workstation show repo Y", async () => {
     await clickSidebarSessionRow(SESSION_B);
     await waitForStatusBarRepo(REPO_Y_NAME, "after clicking session B row");
   });
 
-  it("switching to session A (repo X) makes My Station show repo X", async () => {
+  it("switching to session A (repo X) makes Workstation show repo X", async () => {
     await clickSidebarSessionRow(SESSION_A);
     await waitForStatusBarRepo(REPO_X_NAME, "after clicking session A row");
   });

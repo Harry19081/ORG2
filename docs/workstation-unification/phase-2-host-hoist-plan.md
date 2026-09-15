@@ -204,7 +204,7 @@ Now every host is hoisted, so `AppShellContent` can collapse to a single `Unifie
 - `src/store/workstation/tabHost.ts` — becomes dead for routing; keep only if still used for status-bar app derivation (`activeStatusBarAppAtom`).
 - Status bar: `useAppShellDerivedState` currently sets `activeStatusBarAppAtom` from `effectiveHost` — re-derive it from the active tab's host via `tabToHost` instead.
 
-**Verify:** ⌘T / `+` menu, ⌘W, tab reorder (dnd-kit), pinned tabs, spotlight (⌘P), deep links to old sub-routes, Agent Station vs My Station toggle.
+**Verify:** ⌘T / `+` menu, ⌘W, tab reorder (dnd-kit), pinned tabs, spotlight (⌘P), deep links to old sub-routes, Agent Station vs Workstation toggle.
 
 ---
 

@@ -29,7 +29,7 @@ Applicable matrix: mount/unmount and station/visibility transitions at changed U
 
 ## Risks
 
-The gated mirror is deliberately retained to meet the no-webview-impact requirement. Tests protect silence during My Station edits, four forced resize ticks at 0/50/100/170 ms for Agent Station changes, no duplicate ticks on unchanged renders, inactive-tab suppression and unmount cancellation. Actual WKWebView pixels were not exercised; no native/webview source was changed. Rollback is a normal commit revert; no data migration or recovery is required.
+The gated mirror is deliberately retained to meet the no-webview-impact requirement. Tests protect silence during Workstation edits, four forced resize ticks at 0/50/100/170 ms for Agent Station changes, no duplicate ticks on unchanged renders, inactive-tab suppression and unmount cancellation. Actual WKWebView pixels were not exercised; no native/webview source was changed. Rollback is a normal commit revert; no data migration or recovery is required.
 
 ## Verification
 

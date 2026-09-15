@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "Ошибка копирования",
     "moveTo": "Переместить страницу в…",
     "projectLinks": "Связи проекта",
-    "moveToWorkstation": "Переместить в мою Workstation",
+    "moveToWorkstation": "Переместить в Workstation",
     "moveToChatPanel": "Переместить на панель чата",
     "rawTranscript": {
       "title": "Необработанная расшифровка сеанса",
@@ -1931,7 +1931,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "Обзор",
-      "viewMyStation": "Показать в My Station",
+      "viewMyStation": "Показать в Workstation",
       "viewAgentStation": "Показать в Agent Station"
     },
     "osAgent": "OS Agent",
@@ -2301,7 +2301,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "Открыть в My Station"
+      "openInMyStation": "Открыть в Workstation"
     }
   },
   "groupChat": {

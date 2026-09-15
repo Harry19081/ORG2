@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Partage de Workstation",
+    "myStationSharingDesc": "Partager les onglets et l’état des vues de Workstation par répertoire de travail ou les conserver séparément pour chaque onglet de discussion",
+    "myStationSharingDirectory": "Répertoire de travail",
+    "myStationSharingTab": "Onglet de discussion",
     "login": "Connexion",
     "tabGeneral": "Général",
     "tabSelfHosted": "Auto-hébergé",

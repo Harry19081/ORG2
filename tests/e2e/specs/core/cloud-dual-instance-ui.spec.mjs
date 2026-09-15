@@ -464,30 +464,30 @@ async function selectCloudOrgOn(client, orgId) {
 async function openFileTimelineOn(client, absoluteFilePath) {
   unwrapOn(
     await invokeOn(client, "navigateTo", "/orgii/workstation/code"),
-    "secondary navigate to My Station"
+    "secondary navigate to Workstation"
   );
   await waitForRenderedOn(
     client,
     '[data-testid="station-mode-my-station"]',
-    "secondary My Station switch"
+    "secondary Workstation switch"
   );
   await clickRenderedOn(
     client,
     '[data-testid="station-mode-my-station"]',
-    "secondary My Station switch"
+    "secondary Workstation switch"
   );
   await client.waitUntil(
     async () => {
       const surface = unwrapOn(
         await invokeOn(client, "inspectWorkstationSurface"),
-        "secondary inspect My Station"
+        "secondary inspect Workstation"
       );
       return surface.stationMode === "my-station";
     },
     {
       timeout: 30_000,
       interval: 250,
-      timeoutMsg: "secondary My Station never became active",
+      timeoutMsg: "secondary Workstation never became active",
     }
   );
   unwrapOn(

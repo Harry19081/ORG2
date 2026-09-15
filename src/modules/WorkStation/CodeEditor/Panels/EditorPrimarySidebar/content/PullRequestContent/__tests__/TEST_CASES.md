@@ -75,7 +75,7 @@ conversation comments, submitted review bodies, and inline review threads.
 | 5   | Reviewer management           | Open Reviewers, select or remove a direct user                 | Searchable picker requests/removes that reviewer and refreshes authoritative PR detail                                           |
 | 6   | Close and reopen              | Close an open PR, then reopen the resulting closed PR          | Close requires confirmation; both mutations refresh the header, status summary, and action row                                   |
 | 7   | Whole-PR review               | Enter an optional review body and click Approve or changes     | Existing whole-PR review submission remains available in Conversation; request-changes requires a non-empty body                 |
-| 8   | Shared hosts                  | Open the PR from Source Control, My Station, or the Chat panel | The same shared action row is present and status changes reconcile through the scoped PR atom rather than host-specific handlers |
+| 8   | Shared hosts                  | Open the PR from Source Control, Workstation, or the Chat panel | The same shared action row is present and status changes reconcile through the scoped PR atom rather than host-specific handlers |
 | 9   | Visual treatment              | Inspect the PR action row in light and dark themes             | The row adds no background or enclosing border; controls use design-system Button and Dropdown components                        |
 | 10  | Merge queue branch            | Open a PR whose base branch requires GitHub merge queue        | Direct merge methods are disabled; `Merge when ready` enables waiting or queues a ready PR, and a queued PR can be removed       |
 

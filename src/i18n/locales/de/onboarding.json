@@ -8,7 +8,7 @@
       "finish": "Tour beenden",
       "keyboardHint": "Nutze ← / → oder < / >",
       "desktop": "Desktop",
-      "myStation": "Meine Station",
+      "myStation": "Workstation",
       "infinity": "Infinity",
       "agentStation": "Agent Station"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "Wechseln Sie die Station Modi",
-          "body": "Verwenden Sie dieses Tablet, um den Sendermodus zu wechseln. Desktop bedeutet „Meine Station“, Ihr Arbeitsplatz. Infinity bedeutet Agent Station, die Agentenaktivitätsansicht"
+          "body": "Verwenden Sie dieses Tablet, um den Sendermodus zu wechseln. Desktop bedeutet „Workstation“, Ihr Arbeitsplatz. Infinity bedeutet Agent Station, die Agentenaktivitätsansicht"
         },
         "dock": {
           "title": "Agent Station-Dock",

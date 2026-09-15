@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "Falha ao copiar",
     "moveTo": "Mover página para…",
     "projectLinks": "Vínculos do projeto",
-    "moveToWorkstation": "Mover para a minha Workstation",
+    "moveToWorkstation": "Mover para Workstation",
     "moveToChatPanel": "Mover para o painel de chat",
     "rawTranscript": {
       "title": "Transcrição bruta da sessão",
@@ -1950,7 +1950,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "Revisar",
-      "viewMyStation": "Ver em My Station",
+      "viewMyStation": "Ver em Workstation",
       "viewAgentStation": "Ver em Agent Station"
     },
     "osAgent": "OS Agent",

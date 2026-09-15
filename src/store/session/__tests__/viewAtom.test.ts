@@ -224,7 +224,7 @@ describe("jumpToSessionAtom", () => {
     expect(view.repoPath).toBe("/repos/keep-me");
   });
 
-  it("does not switch My Station repo when selected session belongs to another repo", async () => {
+  it("does not switch Workstation repo when selected session belongs to another repo", async () => {
     const {
       jumpToSessionAtom,
       reposAtom,

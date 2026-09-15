@@ -125,7 +125,7 @@ export type ChatPanelWorkstationTransferKind =
 
 /** Content presentation and transfer policy for chat tabs; pane layout is independent. */
 export interface ChatPanelTabTypePolicy {
-  /** Lossless Chat Panel -> My Station mapping, or null when the tab cannot move. */
+  /** Lossless Chat Panel -> Workstation mapping, or null when the tab cannot move. */
   workstationTransfer: ChatPanelWorkstationTransferKind | null;
   /**
    * Standalone tool surfaces (Work lists / Kanban, Runtime) keep the pane

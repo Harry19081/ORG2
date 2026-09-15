@@ -2,7 +2,7 @@
 
 ## Acceptance and ownership
 
-My Station, Agent Station and pinned window chrome repeat the same chat visibility and maximize actions and button presentation.
+Workstation, Agent Station and pinned window chrome repeat the same chat visibility and maximize actions and button presentation.
 
 Share StationPaneControls and action callbacks across all three owners. Preserve each owner’s visibility gates, both pane restore affordances, Settings control, pinned availability, and the Agent header’s static directional icon.
 

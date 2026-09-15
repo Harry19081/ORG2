@@ -2,7 +2,7 @@
 
 ## Behavior and owning boundaries
 
-The My Station / Agent Station selector and corresponding shortcuts switch in the current window. A detached document seeds its initial mode from the native label and keeps later choices in a local atom. Explicit Open in new window actions remain the only station actions that create or focus another window. The current mode also drives the native title.
+The Workstation / Agent Station selector and corresponding shortcuts switch in the current window. A detached document seeds its initial mode from the native label and keeps later choices in a local atom. Explicit Open in new window actions remain the only station actions that create or focus another window. The current mode also drives the native title.
 
 Session following uses a local session-view atom in a detached window. Main remains the authoritative session selection; storage events cannot apply the cold-start null transform to the detached pipeline, and following cannot overwrite main's persisted metadata. The follower requests a current snapshot after its listener registers, closing the startup gap between route seeding and live events. Session updates preserve the user's local station choice; an explicit detach/open request can select its requested station.
 

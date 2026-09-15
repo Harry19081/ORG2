@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "Błąd kopiowania",
     "moveTo": "Przenieś stronę do…",
     "projectLinks": "Powiązania projektu",
-    "moveToWorkstation": "Przenieś do mojej Workstation",
+    "moveToWorkstation": "Przenieś do Workstation",
     "moveToChatPanel": "Przenieś do panelu czatu",
     "rawTranscript": {
       "title": "Surowy zapis sesji",
@@ -1950,7 +1950,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "Przegląd",
-      "viewMyStation": "Wyświetl w My Station",
+      "viewMyStation": "Wyświetl w Workstation",
       "viewAgentStation": "Wyświetl w Agent Station"
     },
     "osAgent": "OS Agent",
@@ -2301,7 +2301,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "Otwórz w My Station"
+      "openInMyStation": "Otwórz w Workstation"
     }
   },
   "groupChat": {

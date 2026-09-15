@@ -14,7 +14,7 @@ import { workStationPrimarySidebarWidthAtom } from "@src/store/ui/workStationLay
 
 import { useSimulatorReplaySidebar } from "./useSimulatorReplaySidebar";
 
-it("shares replay resize/collapse state without changing My Station dimensions", () => {
+it("shares replay resize/collapse state without changing Workstation dimensions", () => {
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   const store = createStore();
   const root = createRoot(document.createElement("div"));

@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Workstation 共用範圍",
+    "myStationSharingDesc": "依工作目錄共用 Workstation 分頁與檢視狀態，或為每個聊天分頁個別儲存",
+    "myStationSharingDirectory": "工作目錄",
+    "myStationSharingTab": "聊天分頁",
     "login": "登錄",
     "tabGeneral": "通用",
     "tabSelfHosted": "自託管",

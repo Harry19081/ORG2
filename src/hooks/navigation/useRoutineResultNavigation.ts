@@ -25,7 +25,7 @@ export interface RoutineResultTarget {
   projectSlug?: string;
 }
 
-/** Open a durable Routine result in My Station. */
+/** Open a durable Routine result in Workstation. */
 export function useRoutineResultNavigation(): (
   target: RoutineResultTarget
 ) => Promise<void> {

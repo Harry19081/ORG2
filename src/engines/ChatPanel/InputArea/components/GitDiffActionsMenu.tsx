@@ -9,7 +9,7 @@
  *
  * Two groups:
  * - Git Actions: commit / commit & push (agent-driven) and push (direct git)
- * - Review: open the diff in My Station or Agent Station
+ * - Review: open the diff in Workstation or Agent Station
  */
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -126,7 +126,7 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
             dataTestId="git-diff-action-view-my-station"
           >
             {t("creator.diffMenu.viewMyStation", {
-              defaultValue: "View in My Station",
+              defaultValue: "View in Workstation",
             })}
           </DropdownItem>
           <DropdownItem

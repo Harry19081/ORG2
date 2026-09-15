@@ -313,7 +313,7 @@ describe("SessionHeaderActionsMenu", () => {
     expect(props.toggleHeaderActionsMenu).toHaveBeenCalledOnce();
   });
 
-  it("keeps both destination actions and the reverse move in My Station", async () => {
+  it("keeps both destination actions and the reverse move in Workstation", async () => {
     render();
     click("session-move-submenu");
     click("move-session-to-workstation");

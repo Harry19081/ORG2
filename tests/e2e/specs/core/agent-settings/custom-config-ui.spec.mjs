@@ -261,7 +261,7 @@ async function openAgentDetail(agentId, label) {
   currentAgentConfigRootSelector = null;
   await pointerClick(
     '[data-testid="station-mode-my-station"]',
-    `${label} My Station switch`,
+    `${label} Workstation switch`,
     {
       jsClick: true,
     }

@@ -1,6 +1,6 @@
 # PR tab placement UI audit
 
-Scope: the shared My Station tab bar and its native context menu for moving pull-request tabs to the Chat Panel.
+Scope: the shared Workstation tab bar and its native context menu for moving pull-request tabs to the Chat Panel.
 
 | Line                     | Element                  | Verdict          | Reason                                                                                                                                                  | Suggested change |
 | ------------------------ | ------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |

@@ -36,7 +36,7 @@ vi.mock("../StationPaneControls", () => ({
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      if (key === "terminology.myStation") return "My Station";
+      if (key === "terminology.myStation") return "Workstation";
       if (key === "terminology.agentStation") return "Agent Station";
       return key;
     },
@@ -98,7 +98,7 @@ describe("StationModePill", () => {
       '[data-testid="station-mode-agent-station"]'
     );
 
-    expect(myStation?.getAttribute("aria-label")).toBe("My Station");
+    expect(myStation?.getAttribute("aria-label")).toBe("Workstation");
     expect(myStation?.getAttribute("aria-pressed")).toBe("true");
     expect(agentStation?.getAttribute("aria-label")).toBe("Agent Station");
     expect(agentStation?.getAttribute("aria-pressed")).toBe("false");

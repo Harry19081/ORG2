@@ -8,7 +8,7 @@
       "finish": "Terminer la visite",
       "keyboardHint": "Utilisez ← / → ou < / >",
       "desktop": "Bureau",
-      "myStation": "Ma Station",
+      "myStation": "Workstation",
       "infinity": "Infinity",
       "agentStation": "Agent Station"
     },
@@ -27,7 +27,7 @@
         },
         "station-mode-pill": {
           "title": "Changer de station modes",
-          "body": "Utilisez cette pilule pour changer de mode de station. Bureau signifie Ma Station, votre espace de travail. Infinity signifie Agent Station, la vue de l'activité de l'agent"
+          "body": "Utilisez cette pilule pour changer de mode de station. Bureau signifie Workstation, votre espace de travail. Infinity signifie Agent Station, la vue de l'activité de l'agent"
         },
         "dock": {
           "title": "Dock Agent Station",

@@ -164,6 +164,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Workstation 共享范围",
+    "myStationSharingDesc": "按工作目录共享 Workstation 标签页和视图状态，或为每个聊天标签页单独保存",
+    "myStationSharingDirectory": "工作目录",
+    "myStationSharingTab": "聊天标签页",
     "login": "登录",
     "tabGeneral": "通用",
     "tabSelfHosted": "自托管",

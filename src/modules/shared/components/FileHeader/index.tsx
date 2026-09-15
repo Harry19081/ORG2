@@ -173,7 +173,7 @@ export interface FileHeaderProps {
   className?: string;
   /**
    * When set, the header is teleported into the global Workstation tab-header
-   * strip for that host instead of rendering inline. Used by both My Station
+   * strip for that host instead of rendering inline. Used by both Workstation
    * panes (`code` / `data` / `browser` / `project`) and Agent Station's
    * simulator replay views (`simulator`) so the breadcrumb / toolbar always
    * lives in the 36px shell header rather than as a duplicate strip below

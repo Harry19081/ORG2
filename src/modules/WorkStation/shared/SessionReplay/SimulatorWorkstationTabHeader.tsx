@@ -4,7 +4,7 @@
  * Shared 40px global tab-header strip rendered immediately below the
  * {@link ReplayTabBar} in simulator replay views (Agent Station's Code
  * Editor, Browser, Database Manager, Project Manager, Communication).
- * Mirrors My Station's `WorkstationTabHeader` so the chrome shape stays
+ * Mirrors Workstation's `WorkstationTabHeader` so the chrome shape stays
  * identical across products.
  *
  * Layout:
@@ -47,7 +47,7 @@ const SimulatorWorkstationTabHeaderComponent: React.FC<
   const headerSlots = useAtomValue(workstationTabHeaderAtomByHost.simulator);
 
   // Border lives on this row (not on `ReplayTabBar` above) so the chrome
-  // shape mirrors My Station: tab bar transparent, header strip carries
+  // shape mirrors Workstation: tab bar transparent, header strip carries
   // the single separator line under the whole tabbar+header block.
   return (
     <div

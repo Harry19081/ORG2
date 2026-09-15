@@ -38,7 +38,7 @@ function tab(id: string, orgId?: string): WorkStationTab {
 }
 
 describe("closeTabAtom", () => {
-  it("maximizes chat when the sole My Station Launchpad closes", () => {
+  it("maximizes chat when the sole Workstation Launchpad closes", () => {
     const store = createStore();
     const launchpad = createStartTab();
     store.set(stationModeAtom, "my-station");

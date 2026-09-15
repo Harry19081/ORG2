@@ -50,12 +50,12 @@ describe("openStationInNewWindowAtom", () => {
 
     await store.set(openStationInNewWindowAtom, {
       stationMode: "my-station",
-      title: "My Station",
+      title: "Workstation",
     });
 
     expect(openStationWindow).toHaveBeenCalledWith("my-station", {
       sessionId: "session-1",
-      title: "My Station",
+      title: "Workstation",
     });
     expect(emitStationWindowSession).toHaveBeenCalledWith(
       "my-station",

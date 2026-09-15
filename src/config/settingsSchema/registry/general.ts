@@ -236,12 +236,23 @@ export const GENERAL_SETTINGS_REGISTRY = {
       "Show a theme-aware depth edge between the macOS sidebar and content panel",
     category: "general",
   },
+  "general.myStationSharing": {
+    schema: z.enum(["working-directory", "chat-tab"]),
+    default: "working-directory",
+    description:
+      "Share Workstation tabs and view state across chat tabs in the same working directory, or keep a separate workspace for each chat tab",
+    category: "general",
+    enumLabels: {
+      "working-directory": "Working directory",
+      "chat-tab": "Chat tab",
+    },
+  },
   "general.chatPanelPosition": {
     // Edited in the sidebar layout menu, not a settings page.
     settingsSearch: false,
     schema: z.enum(["left", "right"]),
     default: "left" as const,
-    description: "Chat panel side shared by My Station and Agent Station",
+    description: "Chat panel side shared by Workstation and Agent Station",
     category: "general",
     enumLabels: {
       left: "Left",

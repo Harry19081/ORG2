@@ -66,7 +66,7 @@ describe("resolveWorkstationTabIntegrationIcon", () => {
     expect(markup).not.toContain("max-w-none");
   });
 
-  it("uses text-1 for an active My Station tab and its monochrome icon", () => {
+  it("uses text-1 for an active Workstation tab and its monochrome icon", () => {
     const markup = renderToStaticMarkup(
       createElement(SortableTab, {
         tab: {

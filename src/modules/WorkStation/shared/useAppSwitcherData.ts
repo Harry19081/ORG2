@@ -69,7 +69,7 @@ export function useSimulatorAppSwitcher(): AppSwitcherChipData {
 
   const onSelect = useCallback(
     (appId: string) => {
-      // Browser in Agent Station switches to My Station Browser (real webview).
+      // Browser in Agent Station switches to Workstation Browser (real webview).
       // The Simulator Browser is session-replay only and has no live webview.
       if (appId === AppType.BROWSER) {
         setStationMode("my-station");

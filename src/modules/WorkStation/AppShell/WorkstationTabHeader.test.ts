@@ -145,10 +145,10 @@ describe("WorkstationTabHeader", () => {
     expect(markup).not.toContain("pl-[15px]");
   });
 
-  it("uses a compact My Station gutter without changing the shared default", () => {
+  it("uses a compact Workstation gutter without changing the shared default", () => {
     const store = createStore();
     store.set(workstationTabHeaderAtomByHost.code, {
-      content: React.createElement("span", null, "My Station content"),
+      content: React.createElement("span", null, "Workstation content"),
     });
 
     const markup = renderToStaticMarkup(
@@ -159,7 +159,7 @@ describe("WorkstationTabHeader", () => {
       )
     );
 
-    expect(markup).toContain("My Station content");
+    expect(markup).toContain("Workstation content");
     expect(markup).toContain("pl-2");
     expect(markup).not.toContain("pl-[15px]");
   });

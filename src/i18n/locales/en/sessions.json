@@ -766,7 +766,7 @@
     "copyEventJsonFailed": "Copy failed",
     "moveTo": "Move page to…",
     "projectLinks": "Project links",
-    "moveToWorkstation": "Move to My Station",
+    "moveToWorkstation": "Move to Workstation",
     "moveToChatPanel": "Move to Chat Panel",
     "rawTranscript": {
       "title": "Raw session transcript",
@@ -1956,7 +1956,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "Review",
-      "viewMyStation": "View in My Station",
+      "viewMyStation": "View in Workstation",
       "viewAgentStation": "View in Agent Station"
     },
     "osAgent": "OS Agent",
@@ -2300,7 +2300,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "Open in My Station"
+      "openInMyStation": "Open in Workstation"
     }
   },
   "groupChat": {

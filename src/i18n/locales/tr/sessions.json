@@ -765,7 +765,7 @@
     "copyEventJsonFailed": "Kopyalama başarısız",
     "moveTo": "Sayfayı şuraya taşı…",
     "projectLinks": "Proje bağlantıları",
-    "moveToWorkstation": "Workstation'ıma taşı",
+    "moveToWorkstation": "Workstation’a taşı",
     "moveToChatPanel": "Sohbet paneline taşı",
     "rawTranscript": {
       "title": "Ham oturum dökümü",
@@ -1931,7 +1931,7 @@
       "commitPush": "Commit & Push",
       "push": "Push",
       "review": "İncele",
-      "viewMyStation": "My Station'da görüntüle",
+      "viewMyStation": "Workstation'da görüntüle",
       "viewAgentStation": "Agent Station'da görüntüle"
     },
     "osAgent": "OS Agent",
@@ -2301,7 +2301,7 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "openInMyStation": "My Station'da aç"
+      "openInMyStation": "Workstation'da aç"
     }
   },
   "groupChat": {

@@ -26,7 +26,7 @@ Claude / Codex / Cursor / ORG2
        /          |           \
  SQLite        NDJSON       HTTP/Postgres
        \          |           /
-       query API / ORG2 My Station
+       query API / ORG2 Workstation
 ```
 
 ## Acceptance criteria

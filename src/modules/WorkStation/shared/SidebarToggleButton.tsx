@@ -6,7 +6,7 @@
  * itself, so the button is reachable when the sidebar is collapsed.
  *
  * Two convenience variants:
- * - {@link WorkStationSidebarToggleButton} — reads the active My Station
+ * - {@link WorkStationSidebarToggleButton} — reads the active Workstation
  *   primary-sidebar callbacks via `activeStatusBarCallbacksAtom`.
  * - {@link SimulatorSidebarToggleButton}   — reads `simulatorPrimarySidebarCollapsedAtom`
  *   directly (Agent Station replay views).
@@ -145,7 +145,7 @@ export const SidebarToggleButton = memo(SidebarToggleButtonComponent);
 SidebarToggleButton.displayName = "SidebarToggleButton";
 
 // ============================================
-// My Station wrapper (status-bar callbacks)
+// Workstation wrapper (status-bar callbacks)
 // ============================================
 
 interface WorkStationSidebarToggleButtonProps {
@@ -156,7 +156,7 @@ interface WorkStationSidebarToggleButtonProps {
 }
 
 /**
- * Always renders the My Station primary-sidebar toggle in the 40px app header.
+ * Always renders the Workstation primary-sidebar toggle in the 40px app header.
  * Active apps can override the callback/collapsed state; otherwise the shared
  * primary-sidebar atom is used so the header chrome never collapses away.
  */

@@ -3,11 +3,11 @@
  *
  * Action row for the Agent Station Communication plan preview (issue #28).
  * Lets the user edit a pending plan directly in the agent's workstation
- * (Edit → Cancel/Save) and jump to the plan file in My Station.
+ * (Edit → Cancel/Save) and jump to the plan file in Workstation.
  *
  * Mirrors the chat-panel `CreatePlanCard` focus rule: while editing, only the
  * relevant edit actions (Cancel + Save) are shown; the unrelated actions
- * (Edit toggle, Open in My Station) are hidden.
+ * (Edit toggle, Open in Workstation) are hidden.
  */
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
@@ -28,7 +28,7 @@ export interface PlanApprovalActionsProps {
   submitting: boolean;
   /** Save is disabled until the plan is actually pending / not mid-build. */
   saveDisabled: boolean;
-  /** Whether "Open in My Station" is available (plan path resolved). */
+  /** Whether "Open in Workstation" is available (plan path resolved). */
   canOpenInMyStation: boolean;
   onEditToggle: () => void;
   onSave: () => void;

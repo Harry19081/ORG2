@@ -40,7 +40,7 @@ interface SessionHeaderBreadcrumbProps {
   onParentSessionClick?: (target: SessionHeaderParentTarget) => void;
 }
 
-/** Shared My Station-style breadcrumb for session published headers. */
+/** Shared Workstation-style breadcrumb for session published headers. */
 const SessionHeaderBreadcrumb: React.FC<SessionHeaderBreadcrumbProps> = memo(
   ({ session, sessionId, fallbackName, onParentSessionClick }) => {
     const parentSessionId = resolveAgentChildParentSessionId(
