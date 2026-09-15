@@ -25,7 +25,7 @@ import { HugeiconsIcon, Loading03Icon } from "@src/icons";
 import { normalizePlaceholderSubtitle } from "./normalizePlaceholderSubtitle";
 
 export const PLACEHOLDER_TOKENS = {
-  iconSize: 32,
+  detailIconSize: 72,
 } as const;
 
 /**

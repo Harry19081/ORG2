@@ -310,7 +310,7 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
             <HugeiconsIcon
               icon={Archive04Icon}
               data-icon="archive-04"
-              size={PLACEHOLDER_TOKENS.iconSize}
+              size={PLACEHOLDER_TOKENS.detailIconSize}
             />
           }
           title={t("placeholders.noChanges")}
