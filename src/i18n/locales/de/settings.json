@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "Systemeinstellungen konnten nicht geöffnet werden",
     "preventSleep": "Ruhezustand während Sessions verhindern",
     "preventSleepDesc": "Hält deinen Mac oder PC wach, solange eine Agent-Session aktiv arbeitet. Wird automatisch freigegeben, wenn alle Sessions beendet sind",
+    "highRefreshRate": "Hohe Bildwiederholrate",
+    "highRefreshRateDesc": "Rendert mit der vollen Bildwiederholrate deines Displays, auf ProMotion-Displays bis zu 120 Hz. Scrollen, Größenänderungen und Animationen wirken flüssiger, verbrauchen währenddessen aber mehr Energie",
     "devMode": "Entwicklermodus",
     "devModeDesc": "Aktiviert das native Inspect-Element-Kontextmenü und die Browser-DevTools. Nur für Entwicklung und Debugging",
     "presenceGuidanceOnline": "Online — Hinweise für Agenten",

@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "No se pudo abrir Ajustes del Sistema",
     "preventSleep": "Evitar la suspensión del sistema durante las sesiones",
     "preventSleepDesc": "Mantén tu Mac o PC despierto mientras alguna sesión de Agent esté trabajando. Se libera automáticamente cuando finalizan todas las sesiones",
+    "highRefreshRate": "Alta frecuencia de actualización",
+    "highRefreshRateDesc": "Renderiza a la frecuencia de actualización completa de tu pantalla, hasta 120 Hz en pantallas ProMotion. El desplazamiento, el cambio de tamaño y las animaciones se ven más fluidos, pero consumen más energía mientras se ejecutan",
     "devMode": "Modo desarrollador",
     "devModeDesc": "Habilita el menú contextual nativo Inspect Element y las DevTools del navegador. Solo para desarrollo y depuración",
     "presenceGuidanceOnline": "En línea — instrucciones para los agentes",

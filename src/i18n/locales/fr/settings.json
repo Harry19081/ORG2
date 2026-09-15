@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "Impossible d'ouvrir les Réglages Système",
     "preventSleep": "Empêcher la mise en veille pendant les sessions",
     "preventSleepDesc": "Garde votre Mac ou PC éveillé tant qu'une session Agent travaille. Libéré automatiquement à la fin de toutes les sessions",
+    "highRefreshRate": "Taux de rafraîchissement élevé",
+    "highRefreshRateDesc": "Affiche l'interface à la fréquence de rafraîchissement complète de votre écran, jusqu'à 120 Hz sur les écrans ProMotion. Le défilement, le redimensionnement et les animations sont plus fluides, mais consomment plus d'énergie pendant leur exécution",
     "devMode": "Mode développeur",
     "devModeDesc": "Active le menu contextuel natif Inspect Element et les DevTools du navigateur. Réservé au développement et au débogage",
     "presenceGuidanceOnline": "En ligne — consignes pour les agents",

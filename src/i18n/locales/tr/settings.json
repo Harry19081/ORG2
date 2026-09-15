@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "Sistem Ayarları açılamadı",
     "preventSleep": "Oturumlar sırasında sistem uykusunu engelle",
     "preventSleepDesc": "Herhangi bir Agent oturumu çalışırken Mac veya PC'nizin uyumasını engeller. Tüm oturumlar bittiğinde otomatik olarak serbest bırakılır",
+    "highRefreshRate": "Yüksek yenileme hızı",
+    "highRefreshRateDesc": "Arayüzü ekranınızın tam yenileme hızında, ProMotion ekranlarda 120 Hz'ye kadar işler. Kaydırma, yeniden boyutlandırma ve animasyonlar daha akıcı görünür ancak çalışırken daha fazla enerji kullanır",
     "devMode": "Geliştirici Modu",
     "devModeDesc": "Yerel Inspect Element bağlam menüsünü ve tarayıcı DevTools'u etkinleştirir. Yalnızca geliştirme ve hata ayıklama için",
     "presenceGuidanceOnline": "Çevrimiçi — Agent'lar için yönerge",

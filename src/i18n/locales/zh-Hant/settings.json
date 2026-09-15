@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "無法開啟系統設定",
     "preventSleep": "會話運行時阻止系統休眠",
     "preventSleepDesc": "在任何 Agent 會話正在工作時,保持 Mac 或 PC 處於喚醒狀態。所有會話結束後自動釋放",
+    "highRefreshRate": "高更新率",
+    "highRefreshRateDesc": "以顯示器的最高更新率繪製介面，ProMotion 顯示器上最高 120 Hz。捲動、調整大小和動畫更流暢，但執行時耗電更多",
     "devMode": "開發者模式",
     "devModeDesc": "啓用原生 Inspect Element 右鍵菜單和瀏覽器 DevTools。僅供開發和調試使用",
     "presenceGuidanceOnline": "線上 — Agent 行為指引",

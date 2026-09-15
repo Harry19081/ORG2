@@ -179,6 +179,8 @@
     "voiceInputPermissionOpenFailed": "시스템 설정을 열 수 없습니다",
     "preventSleep": "세션 실행 중 시스템 절전 방지",
     "preventSleepDesc": "Agent 세션이 작업 중일 때 Mac 또는 PC가 절전 모드로 들어가지 않게 합니다. 모든 세션이 종료되면 자동으로 해제됩니다",
+    "highRefreshRate": "높은 주사율",
+    "highRefreshRateDesc": "디스플레이의 최대 주사율(ProMotion 디스플레이에서 최대 120Hz)로 렌더링합니다. 스크롤, 크기 조정, 애니메이션이 더 부드러워지지만 동작하는 동안 전력을 더 많이 사용합니다",
     "devMode": "개발자 모드",
     "devModeDesc": "네이티브 Inspect Element 컨텍스트 메뉴와 브라우저 DevTools를 활성화합니다. 개발 및 디버깅 전용",
     "presenceGuidanceOnline": "온라인 — Agent 행동 지침",

@@ -47,6 +47,7 @@ const APPEARANCE_APP_KEYS = new Set<SettingsKey>([
   "general.translucentSidebar",
   "general.iconStyle",
   "general.dockIcon",
+  "general.highRefreshRate",
   "general.uiScale",
   "general.usePointerCursors",
   "general.applicationUiFont",
