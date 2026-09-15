@@ -456,7 +456,7 @@ describe("cloud fork parent hover rendering", () => {
       id: "cloudremote-org|row",
       key: "cloudremote-org|row",
       label: "Forked session",
-      shortcut: "@alice · forked from @bob · 2m",
+      trailingLabel: "@alice · forked from @bob · 2m",
       showMoreActions: true,
       rowActions: [
         { icon: GitForkIcon, label: "Fork", onClick: vi.fn() },
@@ -468,6 +468,7 @@ describe("cloud fork parent hover rendering", () => {
     expect(markup).toContain("group/parent");
     expect(markup).toContain("group-hover/parent:opacity-100");
     expect(markup).toContain("@alice · forked from @bob · 2m");
+    expect(markup).not.toContain("<kbd");
     expect(markup).toContain('aria-label="Fork"');
     expect(markup).toContain('aria-label="More"');
   });
