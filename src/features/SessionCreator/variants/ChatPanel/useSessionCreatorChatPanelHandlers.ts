@@ -170,7 +170,7 @@ export function useSessionCreatorChatPanelHandlers({
             if (!repoId) return;
             // Align the repo-selection store with the imported workspace.
             // Without this, selectedRepoId keeps pointing at the previous
-            // repo, useChatPanelBranchSync bails on the repoId mismatch, and
+            // repo, the live source cannot match the new checkout, and
             // the branch pill stays icon-only until an unrelated refresh.
             selectRepo(repoId);
             setSessionSource({
