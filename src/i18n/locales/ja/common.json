@@ -1587,7 +1587,6 @@
         "createWorkspace": "新しい作業ディレクトリを作成"
       },
       "sources": {
-        "cloningFromGitHub": "GitHub からクローン中",
         "cloningFromGitHubUrl": "GitHub URL からクローン",
         "cloningFromMyGitHub": "自分の GitHub からクローン",
         "creatingWorkspace": "新しい作業ディレクトリを作成中",
@@ -1788,11 +1787,6 @@
         "integrations": "Agent と統合",
         "market": "マーケット",
         "actions": "アクション"
-      },
-      "paramLabels": {
-        "repo": "リポジトリ",
-        "folder": "フォルダー",
-        "branch": "ブランチ"
       },
       "actions": {
         "showInFinder": {

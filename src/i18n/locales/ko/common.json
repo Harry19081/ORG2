@@ -1587,7 +1587,6 @@
         "createWorkspace": "새 작업 디렉터리 만들기"
       },
       "sources": {
-        "cloningFromGitHub": "GitHub에서 클론 중",
         "cloningFromGitHubUrl": "GitHub URL에서 클론",
         "cloningFromMyGitHub": "내 GitHub에서 클론",
         "creatingWorkspace": "새 작업 디렉터리 만드는 중",
@@ -1788,11 +1787,6 @@
         "integrations": "Agent 및 통합",
         "market": "마켓",
         "actions": "작업"
-      },
-      "paramLabels": {
-        "repo": "리포지토리",
-        "folder": "폴더",
-        "branch": "브랜치"
       },
       "actions": {
         "showInFinder": {

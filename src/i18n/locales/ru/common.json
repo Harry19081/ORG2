@@ -1587,7 +1587,6 @@
         "createWorkspace": "Создать новый рабочий каталог"
       },
       "sources": {
-        "cloningFromGitHub": "клонирование из GitHub",
         "cloningFromGitHubUrl": "клонирование по URL GitHub",
         "cloningFromMyGitHub": "клонирование из моего GitHub",
         "creatingWorkspace": "создание нового рабочего каталога",
@@ -1788,11 +1787,6 @@
         "integrations": "Agent и интеграции",
         "market": "Маркет",
         "actions": "Действия"
-      },
-      "paramLabels": {
-        "repo": "Репозиторий",
-        "folder": "Папка",
-        "branch": "Ветка"
       },
       "actions": {
         "showInFinder": {

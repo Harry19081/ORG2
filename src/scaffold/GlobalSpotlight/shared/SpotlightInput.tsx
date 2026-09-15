@@ -31,8 +31,6 @@ interface SpotlightInputProps {
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   /** Placeholder text */
   placeholder?: string;
-  /** Loading state */
-  isLoading?: boolean;
   /** Static glyph to display (defaults to Search); use `iconElement` for arbitrary JSX */
   icon?: IconSvgElement;
   /** Custom icon element (overrides icon prop) */
@@ -50,7 +48,6 @@ export const SpotlightInput: React.FC<SpotlightInputProps> = ({
   ariaLabel,
   onKeyDown,
   placeholder = "Search...",
-  isLoading: _isLoading = false,
   icon: IconComponent = Search01Icon,
   iconElement,
   trailingSlot,
@@ -130,5 +127,3 @@ export const SpotlightInput: React.FC<SpotlightInputProps> = ({
     </div>
   );
 };
-
-export default SpotlightInput;

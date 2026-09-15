@@ -1587,7 +1587,6 @@
         "createWorkspace": "Tạo thư mục làm việc mới"
       },
       "sources": {
-        "cloningFromGitHub": "đang sao chép từ GitHub",
         "cloningFromGitHubUrl": "sao chép từ URL GitHub",
         "cloningFromMyGitHub": "sao chép từ GitHub của tôi",
         "creatingWorkspace": "đang tạo thư mục làm việc mới",
@@ -1788,11 +1787,6 @@
         "integrations": "Agent và Tích hợp",
         "market": "Thị trường",
         "actions": "Hành động"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Thư mục",
-        "branch": "Nhánh"
       },
       "actions": {
         "showInFinder": {

@@ -12,6 +12,7 @@ import {
 
 import type { SpotlightItem } from "../../types";
 import { VariantPill } from "./VariantPill";
+import { withModelRowAttributes } from "./modelRowAttributes";
 import type { SourceOption } from "./types";
 
 /** The {@link SourceOption} a Key Vault account is launched through. */
@@ -136,7 +137,7 @@ export function buildSourceItems({
       return <VariantPill modelId={previewBaseModel ?? ""} />;
     })();
 
-    return {
+    return withModelRowAttributes({
       id: source.id,
       label: source.label,
       icon: SourceIcon,
@@ -150,6 +151,6 @@ export function buildSourceItems({
         sourceType: source.type,
       },
       action: () => handleSourceSelect(source),
-    };
+    });
   });
 }

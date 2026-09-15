@@ -1587,7 +1587,6 @@
         "createWorkspace": "Yeni çalışma dizini oluştur"
       },
       "sources": {
-        "cloningFromGitHub": "GitHub'dan klonlanıyor",
         "cloningFromGitHubUrl": "GitHub URL'sinden klonla",
         "cloningFromMyGitHub": "GitHub hesabımdan klonla",
         "creatingWorkspace": "yeni çalışma dizini oluşturuluyor",
@@ -1788,11 +1787,6 @@
         "integrations": "Agent ve Entegrasyonlar",
         "market": "Pazar",
         "actions": "Eylemler"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Klasör",
-        "branch": "Dal"
       },
       "actions": {
         "showInFinder": {

@@ -4,10 +4,8 @@
  * Workspace/branch/worktree selection and CRUD action handlers for
  * `GlobalSpotlightInner` — select workspace, select/create/remove a
  * worktree, select/create/delete a branch, checkout detached HEAD.
- * Extracted verbatim from `GlobalSpotlight/index.tsx`; no behavior changes.
+ * Domain operations close the host; route state belongs to the host alone.
  */
-import type { TFunction } from "i18next";
-import type { Dispatch, SetStateAction } from "react";
 import { useCallback } from "react";
 
 import { gitApi, removeGitWorktree } from "@src/api/http/git";
@@ -19,7 +17,6 @@ import type { ActiveWorktreeSelection } from "@src/store/workspace";
 import { showGitActionDialogSafely } from "@src/util/dialogs/gitActionDialog";
 
 import {
-  type WorkingDirectoryPickerMode,
   getWorktreeBaseRef,
   getWorktreeCreateName,
 } from "../../globalSpotlight.helpers";
@@ -44,14 +41,8 @@ interface UseSpotlightPickerActionsOptions {
   selectBranch: (branch: string) => Promise<void>;
   refreshBranches: () => Promise<void>;
   closeModal: () => void;
-  t: TFunction;
   setActiveWorktree: (selection: ActiveWorktreeSelection | null) => void;
   setCurrentBranch: (branch: string) => void;
-  setWorkingDirectoryPickerMode: Dispatch<
-    SetStateAction<WorkingDirectoryPickerMode | null>
-  >;
-  setBranchPickerOpen: Dispatch<SetStateAction<boolean>>;
-  setWorktreePickerOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 interface UseSpotlightPickerActionsResult {
@@ -91,18 +82,14 @@ export function useSpotlightPickerActions(
     closeModal,
     setActiveWorktree,
     setCurrentBranch,
-    setWorkingDirectoryPickerMode,
-    setBranchPickerOpen,
-    setWorktreePickerOpen,
   } = deps;
 
   const handleWorkspaceSelect = useCallback(
     (repoId: string, _repo: RepoItem) => {
       selectRepo(repoId);
-      setWorkingDirectoryPickerMode(null);
       closeModal();
     },
-    [closeModal, selectRepo, setWorkingDirectoryPickerMode]
+    [closeModal, selectRepo]
   );
 
   const handleWorktreePickerSelect = useCallback(
@@ -115,16 +102,9 @@ export function useSpotlightPickerActions(
         isMain: worktree.is_main,
       });
       setCurrentBranch(worktree.branch);
-      setWorktreePickerOpen(false);
       closeModal();
     },
-    [
-      closeModal,
-      selectedRepoId,
-      setActiveWorktree,
-      setCurrentBranch,
-      setWorktreePickerOpen,
-    ]
+    [closeModal, selectedRepoId, setActiveWorktree, setCurrentBranch]
   );
 
   const handleWorktreePickerCreate = useCallback(
@@ -163,10 +143,9 @@ export function useSpotlightPickerActions(
       // Await the guarded checkout BEFORE tearing down the modal — otherwise
       // closeModal() races the CheckoutConflictDialog selectBranch may open.
       await selectBranch(branchName);
-      setBranchPickerOpen(false);
       closeModal();
     },
-    [closeModal, selectBranch, setBranchPickerOpen]
+    [closeModal, selectBranch]
   );
 
   const handleCreateBranch = useCallback(
@@ -186,16 +165,10 @@ export function useSpotlightPickerActions(
         startPoint
       );
       if (!result.success) return;
-      setBranchPickerOpen(false);
+
       closeModal();
     },
-    [
-      closeModal,
-      currentRepo,
-      currentRepoPath,
-      selectedRepoId,
-      setBranchPickerOpen,
-    ]
+    [closeModal, currentRepo, currentRepoPath, selectedRepoId]
   );
 
   const handleDeleteBranch = useCallback(
@@ -288,7 +261,7 @@ export function useSpotlightPickerActions(
     );
     if (!result.success) return;
     await refreshBranches();
-    setBranchPickerOpen(false);
+
     closeModal();
   }, [
     closeModal,
@@ -296,7 +269,6 @@ export function useSpotlightPickerActions(
     currentRepoPath,
     refreshBranches,
     selectedRepoId,
-    setBranchPickerOpen,
   ]);
 
   return {

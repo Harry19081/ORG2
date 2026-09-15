@@ -1587,7 +1587,6 @@
         "createWorkspace": "建立新工作目錄"
       },
       "sources": {
-        "cloningFromGitHub": "正在從 GitHub 克隆",
         "cloningFromGitHubUrl": "通過 GitHub URL 克隆",
         "cloningFromMyGitHub": "從已連接的 GitHub 克隆",
         "creatingWorkspace": "正在建立新工作目錄",
@@ -1788,11 +1787,6 @@
         "integrations": "Agent 與集成",
         "market": "市場",
         "actions": "操作"
-      },
-      "paramLabels": {
-        "repo": "倉庫",
-        "folder": "文件夾",
-        "branch": "分支"
       },
       "actions": {
         "showInFinder": {
