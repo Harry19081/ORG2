@@ -37,6 +37,13 @@
   --scrollbar-edge-inset: 3px;
 }
 
+// Chat pane width while its divider is dragged (`useChatPanelResize`). Not
+// inherited, so each frame's write restyles only the element it is set on.
+@property --orgii-chat-live-width {
+  syntax: "*";
+  inherits: false;
+}
+
 body {
   --scrollbar-thumb-color: color-mix(
     in srgb,

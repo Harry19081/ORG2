@@ -27,7 +27,7 @@ import { DataProvider } from "@src/contexts/workspace/DataContext";
 import ChatPanel from "@src/engines/ChatPanel";
 import ChatPanelSideChat from "@src/engines/ChatPanel/SideChat";
 import {
-  CHAT_WIDTH_CSS_VAR,
+  CHAT_WIDTH_STYLE_VALUE,
   clampChatWidth,
 } from "@src/engines/ChatPanel/config";
 import type { SessionLaunchSuccessInfo } from "@src/engines/SessionCore/hooks/session/useSessionCreator/useSessionLaunch/types";
@@ -192,7 +192,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
   const effectiveRawWidth =
     rawChatWidth > 0 ? rawChatWidth : isSettingsSlot ? DEFAULT_CHAT_WIDTH : 0;
   const chatWidth = clampChatWidth(effectiveRawWidth, viewportWidth);
-  const chatWidthStyleValue = chatWidth > 0 ? `var(${CHAT_WIDTH_CSS_VAR})` : 0;
+  const chatWidthStyleValue = chatWidth > 0 ? CHAT_WIDTH_STYLE_VALUE : 0;
   const isChatOnLeft = chatPosition === "left";
   const isChatVisible = chatPanelMaximized || (showChatPanel && chatWidth > 0);
   // Settings doesn't have a "session" to render — when the slot is in

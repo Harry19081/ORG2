@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
-  CHAT_WIDTH_CSS_VAR,
+  CHAT_WIDTH_STYLE_VALUE,
   clampChatWidth,
   getChatMaxWidth,
 } from "@src/engines/ChatPanel/config";
@@ -128,7 +128,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     useChatPanelAccessReconciliation(selectedCloudOrg);
 
     const chatWidthStyleValue =
-      chatWidth > 0 ? `var(${CHAT_WIDTH_CSS_VAR})` : chatWidth;
+      chatWidth > 0 ? CHAT_WIDTH_STYLE_VALUE : chatWidth;
     const { isDragging, panelRef, handleMouseDown } = useChatPanelResize({
       useExternalWidth,
       position,
