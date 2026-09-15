@@ -210,7 +210,7 @@ export function useSelector(options: UseSelectorOptions): UseSelectorReturn {
     if (isOpen && !hasInitializedRef.current) {
       hasInitializedRef.current = true;
 
-      Promise.resolve().then(() => {
+      queueMicrotask(() => {
         if (cancelled) return;
         setSearchQueryState("");
         setSelectedIndex(findFirstSelectable());
@@ -255,7 +255,7 @@ export function useSelector(options: UseSelectorOptions): UseSelectorReturn {
     if (prevItemsIdentityRef.current !== itemsIdentityKey) {
       prevItemsIdentityRef.current = itemsIdentityKey;
       if (resetSelectionOnItemsChange) {
-        Promise.resolve().then(() => {
+        queueMicrotask(() => {
           if (!cancelled) setSelectedIndex(findFirstSelectable());
         });
       }

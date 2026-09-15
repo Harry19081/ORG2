@@ -1587,7 +1587,6 @@
         "createWorkspace": "Criar novo diretório de trabalho"
       },
       "sources": {
-        "cloningFromGitHub": "clonando do GitHub",
         "cloningFromGitHubUrl": "clonar via URL do GitHub",
         "cloningFromMyGitHub": "clonar do meu GitHub",
         "creatingWorkspace": "criando novo diretório de trabalho",
@@ -1788,11 +1787,6 @@
         "integrations": "Agents e integrações",
         "market": "Market",
         "actions": "Ações"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Pasta",
-        "branch": "Branch"
       },
       "actions": {
         "showInFinder": {

@@ -1587,7 +1587,6 @@
         "createWorkspace": "Neues Arbeitsverzeichnis erstellen"
       },
       "sources": {
-        "cloningFromGitHub": "Klonen von GitHub",
         "cloningFromGitHubUrl": "Klonen von GitHub-URL",
         "cloningFromMyGitHub": "Klonen von meinem GitHub",
         "creatingWorkspace": "neues Arbeitsverzeichnis erstellen",
@@ -1788,11 +1787,6 @@
         "integrations": "Agents & Integrationen",
         "market": "Markt",
         "actions": "Aktionen"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Ordner",
-        "branch": "Branch"
       },
       "actions": {
         "showInFinder": {

@@ -2,9 +2,12 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { type ActionId, useActionSystemOptional } from "@src/ActionSystem";
+import { createLogger } from "@src/hooks/logger";
 import { useAppNavigate } from "@src/hooks/navigation/useAppNavigate";
 
 import { SpotlightFooterAction } from "./SpotlightFooterAction";
+
+const log = createLogger("SpotlightNavigationFooterAction");
 
 interface Props {
   onClose: () => void;
@@ -24,7 +27,9 @@ export function SpotlightNavigationFooterAction({
   const onClick = useCallback(() => {
     onClose();
     if (actionSystem?.isValidAction(actionId)) {
-      void actionSystem.dispatch(actionId, {}, "user");
+      actionSystem.dispatch(actionId, {}, "user").catch((error: unknown) => {
+        log.error("Failed to dispatch Spotlight navigation", error);
+      });
     } else {
       navigate(fallbackPath);
     }

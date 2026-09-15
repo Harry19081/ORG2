@@ -35,3 +35,7 @@ The shell centralizes panel fitting and themed surface only. Each picker retains
 - `git diff HEAD --check`: passed.
 
 No desktop control, screenshots or native pointer/theme/viewport evidence was collected because the user requires explicit opt-in for computer control. jsdom verifies markup and event contracts, not native hit-testing or layout. See the architecture and lifecycle cleanup reports for prior cleanup coverage; second-pass reports record additional follow-up findings, not claims that every reported issue was fixed.
+
+## CI follow-up
+
+Directory picker callbacks now handle rejection inside the shared control; navigation footer dispatch does the same. Neither change alters markup or presentation, and the verdict totals above are unchanged. Tests exercise rejected promises without changing a destination or triggering fallback navigation. Work Item consumer tests target the shared row activation Button instead of its non-interactive wrapper. No raw action controls were introduced.

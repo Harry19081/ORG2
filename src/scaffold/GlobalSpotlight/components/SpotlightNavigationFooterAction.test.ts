@@ -9,8 +9,12 @@ import { SpotlightNavigationFooterAction } from "./SpotlightNavigationFooterActi
 
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
-  actionDispatch: vi.fn(),
+  actionDispatch: vi.fn().mockResolvedValue(undefined),
+  error: vi.fn(),
   registered: false,
+}));
+vi.mock("@src/hooks/logger", () => ({
+  createLogger: () => ({ error: mocks.error }),
 }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -64,3 +68,30 @@ it.each([true, false])(
     }
   }
 );
+
+it("handles rejected navigation without starting a second fallback action", async () => {
+  const error = new Error("Dispatch failed");
+  mocks.registered = true;
+  mocks.navigate.mockClear();
+  mocks.error.mockClear();
+  mocks.actionDispatch.mockRejectedValueOnce(error);
+  const root = createSmokeRoot();
+  try {
+    await root.render(
+      createElement(SpotlightNavigationFooterAction, {
+        onClose: vi.fn(),
+        actionId: ACTION_ID.APP_GO_TO_INTEGRATIONS,
+        labelKey: "Manage models",
+        fallbackPath: "/models",
+      })
+    );
+    await dispatch(() => root.container.querySelector("button")!.click());
+    expect(mocks.error).toHaveBeenCalledWith(
+      "Failed to dispatch Spotlight navigation",
+      error
+    );
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  } finally {
+    await root.unmount();
+  }
+});

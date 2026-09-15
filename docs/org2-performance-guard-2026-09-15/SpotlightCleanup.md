@@ -38,3 +38,7 @@ Automated lifecycle checks, full fast TypeScript, scoped ESLint/oxlint, dependen
 The directory dialog remains delegated to existing callbacks; one field applies the chosen path. Active/open/close behavior retains the existing dropdown engine. Closing a clone form does not cancel an already-dispatched clone; cancellation semantics and cross-instance deduplication are not added by this change.
 
 **Performance verdict: blocked** for native measurement: no explicit computer-control opt-in. Visible/hidden idle CPU/RSS, real-window reopen loops and native pointer/focus measurements remain unexecuted. Automated lifecycle and concurrency tests pass; no runtime speed or memory improvement is claimed.
+
+## CI follow-up
+
+Selector reset and selection scheduling now use queueMicrotask directly; existing effect cancellation guards still reject work after cleanup. No new timer, retained state or resource owner is introduced. Navigation and directory callback promises now handle rejection explicitly. Automated lifecycle coverage is rerun; the native measurement limitation and performance verdict remain unchanged.

@@ -3,7 +3,10 @@ import { type ReactNode, useId } from "react";
 import Button from "@src/components/Button";
 import Form from "@src/components/Form";
 import Input from "@src/components/Input";
+import { createLogger } from "@src/hooks/logger";
 import { FolderClosedIcon, FolderOpenIcon, HugeiconsIcon } from "@src/icons";
+
+const log = createLogger("DirectoryPathField");
 
 interface DirectoryPathFieldProps {
   label: string;
@@ -74,9 +77,14 @@ export function DirectoryPathField({
           aria-label={chooseLabel}
           title={chooseLabel}
           className="shrink-0"
-          onClick={async () => {
-            const path = await onChoosePath();
-            if (path) onChange(path);
+          onClick={() => {
+            onChoosePath()
+              .then((path) => {
+                if (path) onChange(path);
+              })
+              .catch((error: unknown) => {
+                log.error("Failed to choose directory path", error);
+              });
           }}
         >
           {textAction ? chooseLabel : undefined}

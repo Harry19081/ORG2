@@ -60,3 +60,11 @@ No desktop control was used, per the user's preference. Native pointer layering,
 The six approved UI sweeps are implemented; see [the component report](../frontend-ui-audit-2026-09-15/SpotlightComponents.md). Architecture layers 1–7 cover additive Form.Item props, narrow field/footer/surface ownership and deletion of the unreachable combined clone route. Layer 9 preserves native form submission and guide anchors. Layer 10 covers directory-selection ownership and clone handler concurrency. Layer 8 was reviewed for scope only: these UI APIs are internal React contracts, with no persisted or wire changes.
 
 Clone busy state now reaches both live forms. A synchronous in-flight guard rejects a second clone before a render can disable the controls; finally releases the guard on success or failure. This supports the shared footer's busy policy. Other second-pass findings remain recorded for follow-up.
+
+## CI follow-up
+
+CI exposed two checks omitted from the initial local run: unused translation keys and the repository-wide typed-lint baseline comparison. Removed the four newly unused keys from all 13 common locale files, without changing the baseline. Navigation dispatch and directory selection now catch rejected promises; synchronous selector reset/selection work uses queueMicrotask with its existing cancellation guards. Rejection tests cover both async boundaries.
+
+The broader CI test selection also found Work Item consumer tests clicking the compound row wrapper. They now activate its shared Button while retaining assertions for domain selection, refresh/retry, focus restoration and disabled actions. This preserves the row's sibling-control structure.
+
+Validation: `pnpm check:i18n-keys` and `NODE_OPTIONS=--max-old-space-size=6144 pnpm check:typed-lint` pass with zero new findings; baselines are unchanged. CI's test selector ran 719 files: 717 passed, and the two consumer suites exposed seven obsolete wrapper-click assertions. After updating those selectors, `pnpm test src/features/SessionCreator/components/WorkItemPickerModal/WorkItemPickerModal.test.ts src/features/SessionCreator/variants/ChatPanel/WorkItemAttachmentControl.test.ts src/scaffold/GlobalSpotlight src/hooks/keyboard` passes **67 files, 325 tests**, including both consumers and both new rejection regressions. Full fast typecheck and scoped ESLint pass.
