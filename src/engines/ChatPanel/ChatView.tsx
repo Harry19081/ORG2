@@ -71,7 +71,6 @@ import {
   shouldShowExternalHistoryContinuationComposer,
   shouldShowMainChatComposer,
 } from "./chatViewComposerVisibility";
-import { resolveImportedFileChangeStats } from "./chatViewFileChanges";
 import type { ConversationTargetBinding } from "./conversationTargetSelection";
 import { useConversationSubmitRouter } from "./hooks/conversationSubmit/useConversationSubmitRouter";
 import { useBrowserAddToConversationAction } from "./hooks/useBrowserAddToConversationAction";
@@ -79,10 +78,10 @@ import { useChatViewAgentOrgSurface } from "./hooks/useChatViewAgentOrgSurface";
 import { useChatViewAgentStationDiff } from "./hooks/useChatViewAgentStationDiff";
 import { useChatViewFilesMenu } from "./hooks/useChatViewFilesMenu";
 import { useChatViewFloatingComposerInset } from "./hooks/useChatViewFloatingComposerInset";
-import { useChatViewOrgtrackSummary } from "./hooks/useChatViewOrgtrackSummary";
 import { useChatViewPipelineClaim } from "./hooks/useChatViewPipelineClaim";
 import { useChatViewPlanPillState } from "./hooks/useChatViewPlanPillState";
 import { useChatViewScrollToBottom } from "./hooks/useChatViewScrollToBottom";
+import { useChatViewSessionImpact } from "./hooks/useChatViewSessionImpact";
 import { useConversationTargetBinding } from "./hooks/useConversationTargetBinding";
 import { useFollowAgent } from "./hooks/useFollowAgent";
 import {
@@ -228,40 +227,15 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
       [sessionId]
     );
     const followUpEvents = useAtomValue(followUpEventsAtom);
-    // Imported sessions keep changing underneath the view: the external CLI
-    // keeps writing and rescans refresh the cached row. Re-read their summary
-    // when that row refreshes or another assistant reply completes. Native
-    // pills read edit artifacts, so one summary read per open suffices.
-    const summaryReloadKey = isImportedHistory
-      ? `${currentSession?.updated_at ?? ""}\0${latestCompletedAssistantFingerprint(followUpEvents) ?? ""}`
-      : undefined;
-    const orgtrackSummary = useChatViewOrgtrackSummary(
-      sessionId,
-      summaryReloadKey
-    );
-    const importedFileStats = isImportedHistory
-      ? resolveImportedFileChangeStats({
-          summary: orgtrackSummary,
-          session: currentSession,
-        })
-      : null;
-    // Row upserts (debounced draft saves) and summary re-reads replace the
-    // source objects; key the pill's identity to its numbers so they do not
-    // re-render the whole composer.
-    const fileStatsCount = importedFileStats?.count;
-    const fileStatsAdditions = importedFileStats?.additions ?? 0;
-    const fileStatsDeletions = importedFileStats?.deletions ?? 0;
-    const resolvedFileChangeStats = useMemo(
-      () =>
-        fileStatsCount === undefined
-          ? undefined
-          : {
-              count: fileStatsCount,
-              additions: fileStatsAdditions,
-              deletions: fileStatsDeletions,
-            },
-      [fileStatsCount, fileStatsAdditions, fileStatsDeletions]
-    );
+    const { orgtrackSummary, resolvedFileChangeStats } =
+      useChatViewSessionImpact({
+        sessionId,
+        isImportedHistory,
+        session: currentSession,
+        assistantFingerprint: isImportedHistory
+          ? latestCompletedAssistantFingerprint(followUpEvents)
+          : null,
+      });
     const showCurrentPlanSurfaceAtom = useMemo(
       () =>
         selectAtom(
