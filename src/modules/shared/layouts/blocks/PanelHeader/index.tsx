@@ -136,8 +136,8 @@ export interface PanelHeaderProps {
   /** Custom icon element for non-glyph icons (use when icon prop doesn't work) */
   iconElement?: React.ReactNode;
 
-  /** Subtitle or secondary text after title */
-  subtitle?: string;
+  /** Subtitle or secondary content after title */
+  subtitle?: React.ReactNode;
 
   /** Back button click handler - shows back arrow when provided */
   onBack?: () => void;

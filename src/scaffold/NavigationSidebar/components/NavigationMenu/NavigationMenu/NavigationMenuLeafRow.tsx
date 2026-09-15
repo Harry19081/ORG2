@@ -8,7 +8,11 @@ import { ReferenceDragGhost } from "@src/shared/dnd/ReferenceDragGhost";
 import { SIDEBAR_STYLE } from "../../../config";
 import type { NavigationMenuItem } from "../config";
 import { NavigationMenuRowAccessorySlot } from "./RowAccessorySlot";
-import { renderLeadingIcon, renderRowActions } from "./renderRowParts";
+import {
+  renderLeadingIcon,
+  renderNavigationMenuHoverContent,
+  renderRowActions,
+} from "./renderRowParts";
 import type {
   NavigationMenuIconRenderer,
   NavigationMenuItemClickHandler,
@@ -225,13 +229,10 @@ function renderLeafRowAccessory({
       <NavigationMenuRowAccessorySlot
         workingIndicatorContent={item.workingIndicator}
         persistentContent={item.trailingElement}
-        hoverContent={
-          item.shortcut ? (
-            <span className="max-w-16 truncate text-[11px] text-text-2">
-              {item.shortcut}
-            </span>
-          ) : undefined
-        }
+        hoverContent={renderNavigationMenuHoverContent(
+          item,
+          "max-w-16 truncate text-[11px] text-text-2"
+        )}
         actionContent={renderRowActions({
           item,
           t,
@@ -244,6 +245,7 @@ function renderLeafRowAccessory({
 
   if (
     !item.shortcut &&
+    !item.trailingLabel &&
     !item.trailingElement &&
     !item.workingIndicator &&
     !item.showDrillDownIndicator
@@ -270,13 +272,10 @@ function renderLeafRowAccessory({
           )}
         </>
       }
-      hoverContent={
-        item.shortcut ? (
-          <span className="max-w-18 truncate text-[11px] text-text-3">
-            {item.shortcut}
-          </span>
-        ) : undefined
-      }
+      hoverContent={renderNavigationMenuHoverContent(
+        item,
+        "max-w-18 truncate text-[11px] text-text-3"
+      )}
     />
   );
 }

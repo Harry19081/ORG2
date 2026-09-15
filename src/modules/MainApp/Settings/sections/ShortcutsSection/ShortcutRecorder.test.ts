@@ -66,6 +66,8 @@ it("records, updates its badge, resets, cancels, and releases capture on unmount
       "Ctrl+F6"
     );
     expect(node.textContent).toContain("F6");
+    expect(node.querySelector("kbd")?.className).toContain("h-6");
+    expect(node.querySelector('[data-icon="chevron-up"]')).not.toBeNull();
     await click(1);
     expect(getShortcutOverrides()).toEqual({});
     await click(0);
