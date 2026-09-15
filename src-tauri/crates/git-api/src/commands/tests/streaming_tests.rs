@@ -328,3 +328,82 @@ fn non_transient_error() {
     assert!(!is_transient_error("No such file or directory"));
     assert!(!is_transient_error(""));
 }
+
+#[tokio::test]
+async fn stage_endpoint_uses_literal_files_and_preserves_explicit_bulk_request() {
+    use crate::commands::streaming::{stage_stream, StageStreamQuery};
+    use axum::{
+        body::to_bytes,
+        extract::{Path, Query},
+    };
+    struct Fixture(std::path::PathBuf);
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+    let fixture = Fixture(
+        std::env::temp_dir().join(format!(
+            "git-stage-stream-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        )),
+    );
+    std::fs::create_dir(&fixture.0).unwrap();
+    let init = std::process::Command::new("git")
+        .arg("-C")
+        .arg(&fixture.0)
+        .arg("init")
+        .output()
+        .unwrap();
+    assert!(init.status.success());
+    for name in ["--all", "private.txt"] {
+        std::fs::write(fixture.0.join(name), "content").unwrap();
+    }
+    for files in ["[]", "malformed", "[\"--all\"]", "[\".\"]"] {
+        let response = stage_stream(
+            Path("fixture".into()),
+            Query(StageStreamQuery {
+                path: fixture.0.to_string_lossy().into_owned(),
+                files: files.into(),
+            }),
+        )
+        .await;
+        let bytes = tokio::time::timeout(
+            std::time::Duration::from_secs(10),
+            to_bytes(response.into_body(), 1024 * 1024),
+        )
+        .await
+        .unwrap()
+        .unwrap();
+        let body = String::from_utf8(bytes.to_vec()).unwrap();
+        let output = std::process::Command::new("git")
+            .arg("-C")
+            .arg(&fixture.0)
+            .args(["ls-files", "-z"])
+            .output()
+            .unwrap();
+        assert!(output.status.success());
+        match files {
+            "[]" | "malformed" => {
+                assert!(body.contains("invalid_request"));
+                assert!(output.stdout.is_empty());
+            }
+            "[\"--all\"]" => {
+                assert!(body.contains("\"success\":true"));
+                assert_eq!(output.stdout, b"--all\0");
+                // The start event must echo the literal invocation, never the
+                // option the selected name resembles.
+                assert!(body.contains("git add -- :(literal)--all"));
+                assert!(!body.contains("git add --all"));
+            }
+            _ => {
+                assert!(body.contains("\"success\":true"));
+                assert_eq!(output.stdout, b"--all\0private.txt\0");
+            }
+        }
+    }
+}
