@@ -121,8 +121,8 @@
     "usePointerCursorsDesc": "Den Cursor beim Bewegen über interaktive Elemente in einen Zeiger ändern",
     "timezoneAuto": "Automatisch (Browser)",
     "timezoneSearchPlaceholder": "Nächste Städte suchen",
-    "sendOnEnter": "Nachrichten mit Enter senden",
-    "sendOnEnterDesc": "Wenn aktiviert, sendet Enter; Shift+Enter und Ctrl/Cmd+Enter fügen eine neue Zeile ein. Wenn deaktiviert, sendet Ctrl/Cmd+Enter",
+    "sendOnEnter": "Nachrichten senden mit",
+    "sendOnEnterDesc": "Wähle die Tastenkombination zum Senden einer Nachricht; andere Enter-Kombinationen fügen eine neue Zeile ein",
     "language": "Sprache",
     "languageSearchPlaceholder": "Sprachen suchen...",
     "languageNames": {
@@ -223,8 +223,6 @@
     "linkSkinVariants": "Hell und Dunkel koppeln",
     "linkSkinVariantsDesc": "Verwendet einen Skin und Akzent für beide Modi. Nur Skins mit heller und dunkler Variante können gekoppelt werden",
     "license": "Lizenz",
-    "licenseDesc": "Die mit dieser App gebündelte Lizenz anzeigen",
-    "viewLicense": "Lizenz anzeigen",
     "licenseTitle": "ORG2-Lizenz",
     "licenseLoading": "Lizenz wird geladen…",
     "licenseLoadFailed": "Die App-Lizenz konnte nicht geladen werden"
@@ -784,8 +782,8 @@
     "typingSpeedDesc": "Millisekunden pro Zeichen (1ms = schnellste, 50ms = langsamste)",
     "decryptEffect": "Decrypt-Effekt",
     "decryptEffectDesc": "Decrypt-Animation für Agent-Nachrichten aktivieren",
-    "sendOnEnter": "Nachrichten mit Enter senden",
-    "sendOnEnterDesc": "Wenn aktiviert, sendet Enter; Shift+Enter und Ctrl/Cmd+Enter fügen eine neue Zeile ein. Wenn deaktiviert, sendet Ctrl/Cmd+Enter"
+    "sendOnEnter": "Nachrichten senden mit",
+    "sendOnEnterDesc": "Wähle die Tastenkombination zum Senden einer Nachricht; andere Enter-Kombinationen fügen eine neue Zeile ein"
   },
   "indexing": {
     "noWorkspaceMemories": "Noch keine Workspace-Erinnerungen. Sie erscheinen, nachdem Sitzungen Informationen über diesen Arbeitsbereich extrahiert haben.",

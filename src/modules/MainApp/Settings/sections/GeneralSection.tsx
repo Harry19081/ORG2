@@ -44,6 +44,7 @@ import {
 import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
+import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
 import type { TimezoneOption } from "@src/config/timezone";
@@ -88,6 +89,7 @@ import {
 } from "./HighRefreshRateRow";
 import HttpVersionSettingsBlock from "./HttpVersionSettingsBlock";
 import LicenseModal from "./LicenseModal";
+import SendOnEnterPill from "./SendOnEnterPill";
 
 export const GENERAL_TAB_KEYS = {
   GENERAL: "general",
@@ -327,19 +329,19 @@ const GeneralTabBody: React.FC = () => {
   );
 
   const updateChannelOptions = useMemo(
-    () => [
+    (): { value: UpdateChannel; label: string }[] => [
       { value: "stable", label: t("update.channelStable") },
       { value: "beta", label: t("update.channelBeta") },
     ],
     [t]
   );
 
-  // The Select shows the resolved channel, so an untouched "auto" preference
+  // The pill shows the resolved channel, so an untouched "auto" preference
   // renders as what the build actually tracks (beta for prerelease installs).
   // Picking an option pins the preference explicitly.
   const handleUpdateChannelChange = useCallback(
-    (value: string | number | (string | number)[]) => {
-      setUpdateChannelPreference(String(value) as UpdateChannel);
+    (value: UpdateChannel) => {
+      setUpdateChannelPreference(value);
       // Re-check against the new channel so an available update from the
       // previous channel doesn't linger in the install prompt.
       void checkForAppUpdates({ force: true });
@@ -400,10 +402,11 @@ const GeneralTabBody: React.FC = () => {
           label={t("general.sendOnEnter")}
           description={t("general.sendOnEnterDesc")}
         >
-          <Switch
-            checked={chatAppearance.sendOnEnter}
-            onCheckedChange={(checked) => {
-              updateChatAppearance({ sendOnEnter: checked });
+          <SendOnEnterPill
+            ariaLabel={t("general.sendOnEnter")}
+            sendOnEnter={chatAppearance.sendOnEnter}
+            onChange={(sendOnEnter) => {
+              updateChatAppearance({ sendOnEnter });
             }}
           />
         </SectionRow>
@@ -473,15 +476,15 @@ const GeneralTabBody: React.FC = () => {
             </span>
           }
         >
-          <Select
+          <SegmentedTextPill<UpdateChannel>
+            ariaLabel={t("update.channel")}
             value={resolveUpdateChannel(
               updateChannelPreference,
               appVersion || undefined
             )}
             onChange={handleUpdateChannelChange}
             options={updateChannelOptions}
-            size="default"
-            style={SECTION_CONTROL_STYLE}
+            size="large"
           />
         </SectionRow>
         <SectionRow label={t("update.currentVersion")}>
@@ -547,12 +550,9 @@ const GeneralTabBody: React.FC = () => {
       )}
 
       <SectionContainer>
-        <SectionRow
-          label={t("general.license")}
-          description={t("general.licenseDesc")}
-        >
+        <SectionRow label={t("general.license")}>
           <Button size="default" onClick={() => setLicenseModalVisible(true)}>
-            {t("general.viewLicense")}
+            {t("common:actions.view")}
           </Button>
         </SectionRow>
       </SectionContainer>

@@ -11,6 +11,8 @@ import Switch from "@src/components/Switch";
 import { useAgentConfig } from "@src/hooks/config/useAgentConfig";
 import { DEFAULT_CHAT_APPEARANCE } from "@src/store/config/configAtom";
 
+import SendOnEnterPill from "./SendOnEnterPill";
+
 export const ChatPanelAppearanceTab: React.FC = () => {
   const { t } = useTranslation("settings");
   const { t: tCommon } = useTranslation("common");
@@ -128,10 +130,11 @@ export const ChatPanelAppearanceTab: React.FC = () => {
           label={t("agentSessions.sendOnEnter")}
           description={t("agentSessions.sendOnEnterDesc")}
         >
-          <Switch
-            checked={chatAppearance.sendOnEnter}
-            onCheckedChange={(checked) => {
-              updateChatAppearance({ sendOnEnter: checked });
+          <SendOnEnterPill
+            ariaLabel={t("agentSessions.sendOnEnter")}
+            sendOnEnter={chatAppearance.sendOnEnter}
+            onChange={(sendOnEnter) => {
+              updateChatAppearance({ sendOnEnter });
             }}
           />
         </SectionRow>

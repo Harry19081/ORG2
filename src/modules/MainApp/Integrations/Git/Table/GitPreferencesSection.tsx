@@ -89,6 +89,9 @@ const GitPreferencesSection: React.FC = () => {
   );
   const [worktreeCleanupIntervalHours, setWorktreeCleanupIntervalHours] =
     useAtom(gitWorktreeCleanupIntervalHoursAtom);
+  const pullStrategyHints = tSettings("editor.git.pullStrategyHint").split(
+    /\n\s*\n/u
+  );
   const {
     proxyInfo,
     proxyHttpDraft,
@@ -111,7 +114,13 @@ const GitPreferencesSection: React.FC = () => {
         >
           <div className="flex items-center gap-2">
             <HintWithInfo
-              content={tSettings("editor.git.pullStrategyHint")}
+              content={
+                <div className="flex flex-col gap-2">
+                  {pullStrategyHints.map((hint) => (
+                    <span key={hint}>{hint}</span>
+                  ))}
+                </div>
+              }
               position="left"
             />
             <Select

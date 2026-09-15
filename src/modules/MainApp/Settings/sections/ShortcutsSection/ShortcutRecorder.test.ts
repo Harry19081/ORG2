@@ -38,6 +38,7 @@ it("records, updates its badge, resets, cancels, and releases capture on unmount
     });
   }
   await act(async () => root.render(createElement(Harness)));
+  expect(node.querySelector('[data-icon="edit-shortcut"]')).not.toBeNull();
   const click = async (index: number) => {
     await act(async () => {
       node.querySelectorAll("button")[index].click();
