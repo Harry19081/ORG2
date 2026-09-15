@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "まだ利用できません",
-      "prPendingHint": "Agent 完了後に PR が作成されます。",
-      "prNeutralHint": "PR はまだ作成されていません。",
+      "prPendingHint": "Agent 完了後に PR が作成されます",
+      "prNeutralHint": "PR はまだ作成されていません",
       "prCreatingHint": "Pull Request を作成中...",
       "prCreateButton": "Pull Request を作成",
       "prCreateError": "Pull Request の作成に失敗しました",
@@ -653,9 +653,9 @@
         "progressNoTotal": "{{count}} 件をインポート済み",
         "completedSummary": "リモートから {{count}} 件をインポートしました。",
         "cancelledSummary": "{{count}} 件をインポートしてからキャンセルしました。",
-        "pendingDescription": "初回同期ではリモートの履歴を一度だけ全件取り込みます。以降の同期は通常の差分サイクルを使用します。",
-        "runningDescription": "リモート履歴をページ単位で取り込んでいます。実行中も作業を続けられます。",
-        "failedDescription": "直前のページで永続的なエラーが発生しました。再試行するとカーソルから再開します。",
+        "pendingDescription": "初回同期ではリモートの履歴を一度だけ全件取り込みます。以降の同期は通常の差分サイクルを使用します",
+        "runningDescription": "リモート履歴をページ単位で取り込んでいます。実行中も作業を続けられます",
+        "failedDescription": "直前のページで永続的なエラーが発生しました。再試行するとカーソルから再開します",
         "cancel": "インポートをキャンセル",
         "retry": "再試行",
         "errors": {

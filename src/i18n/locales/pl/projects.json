@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "Jeszcze niedostępny",
-      "prPendingHint": "PR zostanie utworzony po ukończeniu pracy Agenta.",
-      "prNeutralHint": "Nie utworzono żadnego PR.",
+      "prPendingHint": "PR zostanie utworzony po ukończeniu pracy Agenta",
+      "prNeutralHint": "Nie utworzono żadnego PR",
       "prCreatingHint": "Tworzenie pull request...",
       "prCreateButton": "Utwórz Pull Request",
       "prCreateError": "Nie udało się utworzyć pull request",
@@ -653,9 +653,9 @@
         "progressNoTotal": "Zaimportowano {{count}} elementów",
         "completedSummary": "Zaimportowano {{count}} elementów ze zdalnego źródła.",
         "cancelledSummary": "Anulowano po zaimportowaniu {{count}} elementów.",
-        "pendingDescription": "Pierwsza synchronizacja jednokrotnie przejdzie pełną historię zdalną. Kolejne synchronizacje używają normalnego cyklu inkrementalnego.",
-        "runningDescription": "Przechodzenie zdalnej historii strona po stronie. Możesz kontynuować pracę podczas działania.",
-        "failedDescription": "Ostatnia strona zakończyła się trwałym niepowodzeniem. Wznowienie podejmuje od miejsca, w którym kursor się zatrzymał.",
+        "pendingDescription": "Pierwsza synchronizacja jednokrotnie przejdzie pełną historię zdalną. Kolejne synchronizacje używają normalnego cyklu inkrementalnego",
+        "runningDescription": "Przechodzenie zdalnej historii strona po stronie. Możesz kontynuować pracę podczas działania",
+        "failedDescription": "Ostatnia strona zakończyła się trwałym niepowodzeniem. Wznowienie podejmuje od miejsca, w którym kursor się zatrzymał",
         "cancel": "Anuluj import",
         "retry": "Ponów",
         "errors": {

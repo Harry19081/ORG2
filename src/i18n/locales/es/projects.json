@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "No disponible aún",
-      "prPendingHint": "El PR se creará cuando el Agent termine.",
-      "prNeutralHint": "No se ha creado ningún PR.",
+      "prPendingHint": "El PR se creará cuando el Agent termine",
+      "prNeutralHint": "No se ha creado ningún PR",
       "prCreatingHint": "Creando Pull Request...",
       "prCreateButton": "Crear Pull Request",
       "prCreateError": "Error al crear Pull Request",
@@ -653,9 +653,9 @@
         "progressNoTotal": "{{count}} elementos importados",
         "completedSummary": "{{count}} elementos importados desde el remoto.",
         "cancelledSummary": "Cancelada tras importar {{count}} elementos.",
-        "pendingDescription": "La primera sincronización recorre todo el historial remoto una vez. Las posteriores usan el ciclo incremental habitual.",
-        "runningDescription": "Recorriendo el historial remoto página a página. Puedes seguir trabajando mientras tanto.",
-        "failedDescription": "La última página falló de forma permanente. Al reintentar se reanuda desde el cursor.",
+        "pendingDescription": "La primera sincronización recorre todo el historial remoto una vez. Las posteriores usan el ciclo incremental habitual",
+        "runningDescription": "Recorriendo el historial remoto página a página. Puedes seguir trabajando mientras tanto",
+        "failedDescription": "La última página falló de forma permanente. Al reintentar se reanuda desde el cursor",
         "cancel": "Cancelar importación",
         "retry": "Reintentar",
         "errors": {

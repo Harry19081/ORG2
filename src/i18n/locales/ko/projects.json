@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "아직 사용 불가",
-      "prPendingHint": "Agent 완료 후 PR이 생성됩니다.",
-      "prNeutralHint": "PR이 아직 생성되지 않았습니다.",
+      "prPendingHint": "Agent 완료 후 PR이 생성됩니다",
+      "prNeutralHint": "PR이 아직 생성되지 않았습니다",
       "prCreatingHint": "Pull Request 생성 중...",
       "prCreateButton": "Pull Request 생성",
       "prCreateError": "Pull Request 생성 실패",
@@ -653,9 +653,9 @@
         "progressNoTotal": "{{count}}개 항목 가져옴",
         "completedSummary": "원격에서 {{count}}개 항목을 가져왔습니다.",
         "cancelledSummary": "{{count}}개 항목을 가져온 후 취소되었습니다.",
-        "pendingDescription": "첫 동기화는 원격 전체 이력을 한 번 순회합니다. 이후 동기화는 일반 증분 사이클을 사용합니다.",
-        "runningDescription": "원격 이력을 페이지 단위로 순회하고 있습니다. 진행 중에도 계속 작업할 수 있습니다.",
-        "failedDescription": "마지막 페이지에서 영구적인 오류가 발생했습니다. 재시도하면 커서 위치부터 이어집니다.",
+        "pendingDescription": "첫 동기화는 원격 전체 이력을 한 번 순회합니다. 이후 동기화는 일반 증분 사이클을 사용합니다",
+        "runningDescription": "원격 이력을 페이지 단위로 순회하고 있습니다. 진행 중에도 계속 작업할 수 있습니다",
+        "failedDescription": "마지막 페이지에서 영구적인 오류가 발생했습니다. 재시도하면 커서 위치부터 이어집니다",
         "cancel": "가져오기 취소",
         "retry": "재시도",
         "errors": {

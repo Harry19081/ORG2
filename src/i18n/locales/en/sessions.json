@@ -1997,9 +1997,9 @@
       "formatting": "Text formatting"
     },
     "regionNoticeTitle": "Possible regional limitations",
-    "regionNoticeBodyProvider": "You are in {{location}}. Certain models may be unavailable in your region.",
-    "regionNoticeBodySanctions": "You are in {{location}}. GitHub, npm, Docker Hub, and similar services may be unavailable.",
-    "regionNoticeBodyBoth": "You are in {{location}}. Certain models and services like GitHub, npm, and Docker Hub may be unavailable due to regional policy and trade rules.",
+    "regionNoticeBodyProvider": "You are in {{location}}. Certain models may be unavailable in your region",
+    "regionNoticeBodySanctions": "You are in {{location}}. GitHub, npm, Docker Hub, and similar services may be unavailable",
+    "regionNoticeBodyBoth": "You are in {{location}}. Certain models and services like GitHub, npm, and Docker Hub may be unavailable due to regional policy and trade rules",
     "selectAgent": "Select agent",
     "placeholderDefault": "Type a message, @ to add files, / to use skills",
     "wingmanPlaceholder": "Describe your mission — what should Wingman watch for?",

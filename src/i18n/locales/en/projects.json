@@ -405,8 +405,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "Not available yet",
-      "prPendingHint": "PR will be created after agent completes.",
-      "prNeutralHint": "No PR has been created.",
+      "prPendingHint": "PR will be created after agent completes",
+      "prNeutralHint": "No PR has been created",
       "prCreatingHint": "Creating pull request...",
       "prCreateButton": "Create Pull Request",
       "prCreateError": "Failed to create pull request",
@@ -653,9 +653,9 @@
         "progressNoTotal": "{{count}} items imported",
         "completedSummary": "Imported {{count}} items from the remote.",
         "cancelledSummary": "Cancelled after importing {{count}} items.",
-        "pendingDescription": "The first sync will walk the full remote history once. Subsequent syncs use the normal incremental cycle.",
-        "runningDescription": "Walking the remote history one page at a time. You can keep working while this runs.",
-        "failedDescription": "The last page failed permanently. Resume picks up where the cursor left off.",
+        "pendingDescription": "The first sync will walk the full remote history once. Subsequent syncs use the normal incremental cycle",
+        "runningDescription": "Walking the remote history one page at a time. You can keep working while this runs",
+        "failedDescription": "The last page failed permanently. Resume picks up where the cursor left off",
         "cancel": "Cancel import",
         "retry": "Retry",
         "errors": {

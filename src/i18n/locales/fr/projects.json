@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "Pas encore disponible",
-      "prPendingHint": "Le PR sera créé une fois l'Agent terminé.",
-      "prNeutralHint": "Aucun PR n'a été créé.",
+      "prPendingHint": "Le PR sera créé une fois l'Agent terminé",
+      "prNeutralHint": "Aucun PR n'a été créé",
       "prCreatingHint": "Création du Pull Request...",
       "prCreateButton": "Créer un Pull Request",
       "prCreateError": "Échec de la création du Pull Request",
@@ -653,9 +653,9 @@
         "progressNoTotal": "{{count}} éléments importés",
         "completedSummary": "{{count}} éléments importés depuis le distant.",
         "cancelledSummary": "Annulé après l'import de {{count}} éléments.",
-        "pendingDescription": "La première synchronisation parcourt tout l'historique distant une fois. Les suivantes utilisent le cycle incrémental habituel.",
-        "runningDescription": "Parcours de l'historique distant page par page. Vous pouvez continuer à travailler pendant ce temps.",
-        "failedDescription": "La dernière page a échoué de manière permanente. La reprise repart du curseur.",
+        "pendingDescription": "La première synchronisation parcourt tout l'historique distant une fois. Les suivantes utilisent le cycle incrémental habituel",
+        "runningDescription": "Parcours de l'historique distant page par page. Vous pouvez continuer à travailler pendant ce temps",
+        "failedDescription": "La dernière page a échoué de manière permanente. La reprise repart du curseur",
         "cancel": "Annuler l'import",
         "retry": "Réessayer",
         "errors": {

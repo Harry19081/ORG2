@@ -247,8 +247,8 @@
     "claudeCodeSignInDesc": "Sign in to Claude Code in the embedded browser. ORG2 will capture the authorization code and store the OAuth token locally",
     "claudeCodeReadyToSignIn": "Ready to sign in to Claude Code",
     "claudeCodeSignedIn": "Claude Code connected",
-    "claudeCodeOAuthHint": "This saves a claude_code OAuth account for Rust agents using anthropic_native.",
-    "claudeCodeBrowserHint": "Complete Claude Code authorization in the embedded browser.",
+    "claudeCodeOAuthHint": "This saves a claude_code OAuth account for Rust agents using anthropic_native",
+    "claudeCodeBrowserHint": "Complete Claude Code authorization in the embedded browser",
     "claudeCodeSignInErrorHint": "Close the browser and try signing in again. No token was saved",
     "connectedViaChatGpt": "Connected via ChatGPT Plus/Pro login",
     "apiKeyDetectedFromConfig": "API key detected from local config",
@@ -317,8 +317,8 @@
     "signInWithCodex": "Sign in with Codex",
     "codexReadyToSignIn": "Ready to sign in to Codex",
     "codexSignedIn": "Codex connected",
-    "codexOAuthHint": "This saves a codex OAuth account for ChatGPT Codex backend access.",
-    "codexBrowserHint": "Complete Codex authorization in the embedded browser.",
+    "codexOAuthHint": "This saves a codex OAuth account for ChatGPT Codex backend access",
+    "codexBrowserHint": "Complete Codex authorization in the embedded browser",
     "codexSignInErrorHint": "Close the browser and try signing in again. No token was saved",
     "codexAutodetectTitle": "Detect Codex session",
     "codexAutodetectDesc": "Reads ~/.codex/auth.json and OPENAI_API_KEY from your local environment",
@@ -770,15 +770,15 @@
     "tokenRequired": "Personal access token is required",
     "oauthWaiting": "Waiting for OAuth",
     "oauthDeviceDesc": "Open the verification URL and enter this code to authorize GitHub",
-    "oauthBrowserDesc": "Complete authorization in the browser window that opened.",
-    "oauthBrowserOpened": "A browser window was opened. Finish authorization there, then this wizard will continue."
+    "oauthBrowserDesc": "Complete authorization in the browser window that opened",
+    "oauthBrowserOpened": "A browser window was opened. Finish authorization there, then this wizard will continue"
   },
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "Auto Detect",
     "methodOAuth": "Sign in with GitHub",
-    "methodPickerDesc": "Pick how you want to authenticate to GitHub.",
-    "oauthDeviceDesc": "Open the verification URL and enter this code to authorize GitHub.",
+    "methodPickerDesc": "Pick how you want to authenticate to GitHub",
+    "oauthDeviceDesc": "Open the verification URL and enter this code to authorize GitHub",
     "scanCredHelper": "Git credential helper ({{name}})",
     "scanEmpty": "Nothing detected",
     "scanEmptyDesc": "No gh CLI tokens, credential helpers, or SSH keys were found. Pick another method above",
@@ -789,9 +789,9 @@
     "scanning": "Scanning…",
     "scanningDesc": "Looking for gh CLI tokens, credential helpers, and SSH keys on this machine",
     "sshKeyPath": "SSH key path",
-    "sshKeyPathDesc": "Absolute path to the private key (e.g. ~/.ssh/id_ed25519). The matching public key must already be registered on GitHub.",
-    "scanSelectRequired": "Pick a detected credential to import.",
-    "sshKeyPathRequired": "SSH key path is required."
+    "sshKeyPathDesc": "Absolute path to the private key (e.g. ~/.ssh/id_ed25519). The matching public key must already be registered on GitHub",
+    "scanSelectRequired": "Pick a detected credential to import",
+    "sshKeyPathRequired": "SSH key path is required"
   },
   "builtInTools": {
     "tabTools": "Built-in tools",
@@ -969,8 +969,8 @@
     "contentLabel": "Content",
     "contentDesc": "Write the SKILL.md body in Markdown. This is what the agent reads",
     "scopeLabel": "Scope",
-    "scopeDesc": "User skills are available across repos. Repo-specific skills are only loaded for that repo.",
-    "scopeDescEdit": "Switching scope on save will move the skill folder between user-level and repo-specific storage.",
+    "scopeDesc": "User skills are available across repos. Repo-specific skills are only loaded for that repo",
+    "scopeDescEdit": "Switching scope on save will move the skill folder between user-level and repo-specific storage",
     "scopeGlobal": "User",
     "binsLabel": "Required binaries",
     "binsDesc": "CLI programs this skill needs (e.g. git, python, docker)",
@@ -1357,8 +1357,8 @@
       "liveStatusToggleDesc": "Shows when running CLI agents are working or waiting. Off keeps provenance capture on",
       "codexApproval": {
         "title": "Verify ORG2 hooks in Codex",
-        "description": "Waiting for Codex to approve and execute the current ORG2 hooks.",
-        "instructions": "Open Codex, review the ORG2 hooks, then choose Trust all and continue. The SessionStart hook verifies activation automatically when the session starts.",
+        "description": "Waiting for Codex to approve and execute the current ORG2 hooks",
+        "instructions": "Open Codex, review the ORG2 hooks, then choose Trust all and continue. The SessionStart hook verifies activation automatically when the session starts",
         "review": "Review in Codex",
         "verified": "Verified by a real Codex hook signal {{time}}."
       }
