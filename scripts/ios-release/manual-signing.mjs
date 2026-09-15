@@ -4,6 +4,8 @@ import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 
 export const iosBundleId = "org2ai.org2.remote";
+export const defaultExportMethod = "app-store-connect";
+const supportedExportMethods = new Set([defaultExportMethod, "ad-hoc"]);
 
 function xmlEscape(value) {
   return value
@@ -89,11 +91,16 @@ export function signingXcconfig(inputs) {
 export function exportOptionsPlist(inputs) {
   validateInputs(inputs);
   const identity = xmlEscape(inputs.identity);
+  const exportMethod = inputs.exportMethod ?? defaultExportMethod;
+  assert.ok(
+    supportedExportMethods.has(exportMethod),
+    "Unsupported iOS export method",
+  );
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>method</key><string>app-store-connect</string>
+  <key>method</key><string>${exportMethod}</string>
   <key>signingStyle</key><string>manual</string>
   <key>signingCertificate</key><string>${identity}</string>
   <key>teamID</key><string>${inputs.team}</string>
@@ -133,6 +140,7 @@ if (
       team: process.env.APPLE_TEAM_ID,
       identity: readFileSync(process.env.IOS_SIGNING_IDENTITY_FILE, "utf8").trim(),
       profileUuid: readFileSync(process.env.IOS_PROFILE_UUID_FILE, "utf8").trim(),
+      exportMethod: process.env.IOS_EXPORT_METHOD ?? defaultExportMethod,
     });
   } catch (error) {
     console.error(`Failed to prepare explicit iOS signing: ${error.message}`);

@@ -66,6 +66,20 @@ test("writes matching manual archive and export settings", () => {
   assert.match(exportOptions, /12345678-1234-1234-1234-1234567890ab/);
 });
 
+test("writes Ad Hoc export options for registered-device distribution", () => {
+  const exportOptions = exportOptionsPlist({
+    ...inputs,
+    exportMethod: "ad-hoc",
+  });
+  assert.match(exportOptions, /<key>method<\/key><string>ad-hoc<\/string>/);
+});
+
+test("rejects unsupported export methods", () => {
+  assert.throws(() =>
+    exportOptionsPlist({ ...inputs, exportMethod: "enterprise" }),
+  );
+});
+
 test("rejects identities from another team", () => {
   assert.throws(() =>
     signingXcconfig({
