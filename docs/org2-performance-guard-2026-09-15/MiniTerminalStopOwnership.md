@@ -14,6 +14,8 @@ Stop now awaits canonical session removal before releasing the claim. At every o
 
 An operation-scoped, per-store set prevents repeated Stop clicks from issuing duplicate native kills while the tab remains visible. A stale callback for an unclaimed session is ignored. Entries are removed in `finally`; a reused ID can be stopped again. Completion reads current claims, preserving a different terminal opened while the earlier kill was pending.
 
+The UI adapts the async close action through one synchronous handler shared by the Stop control and TerminalCore close callback. It catches and logs failures, preserving the void-returning callback contracts without dropping Promise rejections.
+
 No UI filter, label rule, timer, persistence format, or native protocol was added. Hiding/releasing a dock without killing remains an intentional handoff. No historical remediation is needed: this was a transient ownership transition, not malformed saved session data. Existing unrelated workspace changes were left intact.
 
 ## Lifecycle evidence
@@ -33,7 +35,8 @@ Relevant states covered: pending native close, successful completion, logged nat
 - After the fix: `pnpm test src/store/ui/__tests__/miniTerminalAtom.test.ts src/store/workstation/codeEditor/terminal/__tests__/terminalAtoms.close.test.ts src/modules/shared/layouts/FocusedChatWorkstationRail/WorkstationTrailTerminal.test.ts`: **27 tests passed across 3 files**.
 - `pnpm exec eslint src/store/ui/miniTerminalAtom.ts src/store/ui/__tests__/miniTerminalAtom.test.ts --max-warnings 0`: passed.
 - `git diff --check -- src/store/ui/miniTerminalAtom.ts src/store/ui/__tests__/miniTerminalAtom.test.ts`: passed.
+- CI follow-up: `NODE_OPTIONS=--max-old-space-size=6144 pnpm check:typed-lint` passed with **1097 existing findings, 0 new or increased findings**; `pnpm test:typed-lint` passed **6 tests**. The 27 close/dock tests, changed-file regular and type-aware ESLint, and TypeScript checking were rerun and passed. No rule or baseline was weakened.
 - `pnpm typecheck:fast`: passed on the isolated PR branch. Earlier checks in the shared checkout encountered unrelated BranchPalette test errors.
-- No production React controls or Rust code changed. Native desktop visual and CPU/RSS measurements were not run because computer control was not authorized.
+- The CI follow-up changes only the shared close handler in WorkstationTrailTerminal.tsx; action controls still use the existing shared header and Button primitives. No Rust code changed. Native desktop visual and CPU/RSS measurements were not run because computer control was not authorized.
 
 Performance verdict: blocked — ownership, cleanup, duplicate suppression, and store isolation are covered by passing tests; native desktop measurement remains unverified. No measured CPU/RAM improvement is claimed.

@@ -28,6 +28,7 @@ import {
   type UseTerminalStateReturn,
   getTerminalDisplayTitle,
 } from "@src/engines/TerminalCore/types";
+import { createLogger } from "@src/hooks/logger";
 import { selectedRepoPathAtom } from "@src/store/repo";
 import {
   closeMiniTerminalAtom,
@@ -61,6 +62,7 @@ import {
 // Lazy: pulls TerminalCore (xterm + addons) only once the trail terminal is
 // actually opened, so the focused chat does not pay for it by default.
 const TerminalCore = React.lazy(() => import("@src/engines/TerminalCore"));
+const log = createLogger("WorkstationTrailTerminal");
 
 interface WorkstationTrailTerminalProps {
   width: number;
@@ -106,6 +108,15 @@ export function WorkstationTrailTerminal({
     [openMiniTerminal]
   );
 
+  const handleCloseSession = useCallback(
+    (sessionId: string) => {
+      closeMiniTerminalSession(sessionId).catch((error: unknown) => {
+        log.error("Failed to close docked terminal session", error);
+      });
+    },
+    [closeMiniTerminalSession]
+  );
+
   // Scoped runtime: the real Workstation sessions, narrowed to this panel's
   // claims and its own active tab, so `TerminalCore` mounts exactly the
   // sessions the Workstation pane is currently suppressing.
@@ -116,7 +127,7 @@ export function WorkstationTrailTerminal({
       activeSession: sessions.find((session) => session.id === activeId),
       initializedSessions: initializedIds,
       addSession: handleAddSession,
-      closeSession: (sessionId: string) => closeMiniTerminalSession(sessionId),
+      closeSession: handleCloseSession,
       setActiveSession: (sessionId: string) => setActiveId(sessionId),
       markSessionInitialized: (sessionId: string) => markInitialized(sessionId),
       updateSessionInfo: (sessionId, info) => updateInfo({ sessionId, info }),
@@ -125,7 +136,7 @@ export function WorkstationTrailTerminal({
     }),
     [
       activeId,
-      closeMiniTerminalSession,
+      handleCloseSession,
       handleAddSession,
       initializedIds,
       markInitialized,
@@ -173,7 +184,7 @@ export function WorkstationTrailTerminal({
         onToggleCollapsed={() => setCollapsed(!collapsed)}
         onAdd={() => handleAddSession()}
         onHide={closeMiniTerminal}
-        onStop={closeMiniTerminalSession}
+        onStop={handleCloseSession}
       />
       {/* Kept mounted while collapsed: unmounting would drop the xterm this
           panel is the only host for, leaving the claimed PTY unattached. */}
