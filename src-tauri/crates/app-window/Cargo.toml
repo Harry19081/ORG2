@@ -26,9 +26,6 @@ perf_utils = { path = "../perf-utils" }
 # `~/.orgii/settings.jsonc`. `settings` is itself a leaf crate (app_paths +
 # tauri), so this stays acyclic and does not pull in `app`.
 settings = { path = "../settings" }
-# `rendering_rate` reads `general.highRefreshRate` from the parsed settings
-# value the settings watcher hands to its change hook.
-serde_json = "1.0"
 
 tauri = { workspace = true }
 tracing = "0.1"

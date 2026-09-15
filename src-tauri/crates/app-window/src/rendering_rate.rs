@@ -26,13 +26,10 @@ use crate::commands::{SESSION_WINDOW_LABEL_PREFIX, STATION_WINDOW_LABEL_PREFIX};
 /// `src/config/settingsSchema/registry/general.ts`.
 pub const HIGH_REFRESH_RATE_SETTING_KEY: &str = "general.highRefreshRate";
 
-/// The stored preference. An absent key or a non-boolean value resolves to the
-/// registry default (on).
-pub fn high_refresh_rate_from_settings(settings: &serde_json::Value) -> bool {
-    settings
-        .get(HIGH_REFRESH_RATE_SETTING_KEY)
-        .and_then(serde_json::Value::as_bool)
-        .unwrap_or(true)
+/// The preference given the stored boolean, if any. An absent key or a
+/// non-boolean value resolves to the registry default (on).
+pub fn resolve_high_refresh_rate(stored: Option<bool>) -> bool {
+    stored.unwrap_or(true)
 }
 
 /// Windows that render ORG2's own UI: the main window and detached session /
@@ -48,23 +45,28 @@ pub fn is_app_ui_window(label: &str) -> bool {
 pub fn apply_stored_rendering_rate(window: &WebviewWindow) {
     #[cfg(target_os = "macos")]
     {
-        let high_refresh_rate = settings::file_io::read_settings()
-            .map(|settings| high_refresh_rate_from_settings(&settings))
-            .unwrap_or(true);
-        macos::apply(window, high_refresh_rate);
+        let stored = settings::file_io::read_settings()
+            .ok()
+            .and_then(|settings| {
+                settings
+                    .get(HIGH_REFRESH_RATE_SETTING_KEY)
+                    .and_then(|value| value.as_bool())
+            });
+        macos::apply(window, resolve_high_refresh_rate(stored));
     }
     #[cfg(not(target_os = "macos"))]
     let _ = window;
 }
 
-/// Re-apply after `settings.jsonc` changed. Webviews already at the requested
-/// pace are left untouched, so unrelated settings changes cost nothing visible.
-pub fn apply_rendering_rate_from_settings(app: &AppHandle, settings: &serde_json::Value) {
+/// Re-apply after `settings.jsonc` changed, given the stored boolean read by
+/// the settings hook. Webviews already at the requested pace are left
+/// untouched, so unrelated settings changes cost nothing visible.
+pub fn apply_rendering_rate_to_app_windows(app: &AppHandle, stored: Option<bool>) {
     #[cfg(target_os = "macos")]
     {
         use tauri::Manager;
 
-        let high_refresh_rate = high_refresh_rate_from_settings(settings);
+        let high_refresh_rate = resolve_high_refresh_rate(stored);
         for (label, window) in app.webview_windows() {
             if is_app_ui_window(&label) {
                 macos::apply(&window, high_refresh_rate);
@@ -72,7 +74,7 @@ pub fn apply_rendering_rate_from_settings(app: &AppHandle, settings: &serde_json
         }
     }
     #[cfg(not(target_os = "macos"))]
-    let _ = (app, settings);
+    let _ = (app, stored);
 }
 
 #[cfg(target_os = "macos")]
@@ -115,7 +117,9 @@ mod macos {
         };
         autoreleasepool(|_| {
             let Some(feature) = (unsafe { near_60_fps_feature() }) else {
-                tracing::debug!("WebKit exposes no page rendering pace feature; keeping its default");
+                tracing::debug!(
+                    "WebKit exposes no page rendering pace feature; keeping its default"
+                );
                 return;
             };
             // `configuration` is a copy, but it shares the live WKPreferences.
@@ -133,7 +137,8 @@ mod macos {
 
             let near_60_fps = !high_refresh_rate;
             if responds_to(preferences, sel!(_isEnabledForFeature:)) {
-                let current: Bool = unsafe { msg_send![preferences, _isEnabledForFeature: feature] };
+                let current: Bool =
+                    unsafe { msg_send![preferences, _isEnabledForFeature: feature] };
                 if current.as_bool() == near_60_fps {
                     return;
                 }
@@ -204,24 +209,17 @@ mod macos {
 
 #[cfg(test)]
 mod tests {
-    use super::{high_refresh_rate_from_settings, is_app_ui_window};
+    use super::{is_app_ui_window, resolve_high_refresh_rate};
 
     #[test]
     fn defaults_to_high_refresh_rate() {
-        assert!(high_refresh_rate_from_settings(&serde_json::json!({})));
-        assert!(high_refresh_rate_from_settings(
-            &serde_json::json!({ "general.highRefreshRate": "false" })
-        ));
+        assert!(resolve_high_refresh_rate(None));
     }
 
     #[test]
-    fn reads_the_stored_boolean() {
-        assert!(!high_refresh_rate_from_settings(
-            &serde_json::json!({ "general.highRefreshRate": false })
-        ));
-        assert!(high_refresh_rate_from_settings(
-            &serde_json::json!({ "general.highRefreshRate": true })
-        ));
+    fn follows_the_stored_boolean() {
+        assert!(!resolve_high_refresh_rate(Some(false)));
+        assert!(resolve_high_refresh_rate(Some(true)));
     }
 
     #[test]

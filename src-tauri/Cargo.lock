@@ -246,7 +246,6 @@ dependencies = [
  "objc2-app-kit",
  "objc2-foundation",
  "perf_utils",
- "serde_json",
  "settings",
  "tauri",
  "tracing",
