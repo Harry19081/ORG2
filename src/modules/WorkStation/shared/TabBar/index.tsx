@@ -49,6 +49,7 @@ import {
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { requestTeamInboxSessionHandoffAtom } from "@src/modules/MainApp/TeamInbox/store";
+import { useStationToggleInsetTransition } from "@src/modules/shared/layouts/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import {
   SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS,
@@ -224,6 +225,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
     // macOS pins the right-edge collapse toggles in window space; make room
     // whenever the workstation is the pane touching that edge.
     const rightEdge = useWorkbenchRightEdgeReservation();
+    const insetTransitionClassName = useStationToggleInsetTransition();
 
     const scrollReveal = useAtomValue(tabScrollRevealAtom);
     const gitStatusMap = useAtomValue(gitFileStatusMapAtom);
@@ -381,7 +383,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
         data-session-tab-drop-target="workstation"
         data-tour-target={dataTourTarget}
         data-is-dragging={draggingTabId ? "true" : undefined}
-        className={`work-station-tab-bar relative box-border shrink-0 overflow-clip pt-2 ${surfaceClassName}`}
+        className={`work-station-tab-bar relative box-border shrink-0 overflow-clip pt-2 ${insetTransitionClassName} ${surfaceClassName}`}
         data-tauri-drag-region
         style={
           {

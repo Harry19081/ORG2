@@ -23,7 +23,7 @@ import {
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { CaptionsIcon, HugeiconsIcon } from "@src/icons";
-import { CHROME_INSET_TRANSITION_CLASSES } from "@src/modules/shared/layouts/viewContainerTokens";
+import { useStationToggleInsetTransition } from "@src/modules/shared/layouts/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import {
   sessionMapAtom,
@@ -51,6 +51,7 @@ const AgentStationTopHeaderComponent = ({
   const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
   const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
   const rightEdge = useWorkbenchRightEdgeReservation();
+  const insetTransitionClassName = useStationToggleInsetTransition();
   const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
   const [captionEnabled, setCaptionEnabled] = useAtom(
     simulatorCaptionBarEnabledAtom
@@ -106,7 +107,7 @@ const AgentStationTopHeaderComponent = ({
   return (
     <div className="flex shrink-0 flex-col">
       <div
-        className={`relative flex h-11 min-h-11 shrink-0 items-center pt-2 ${CHROME_INSET_TRANSITION_CLASSES}`}
+        className={`relative flex h-11 min-h-11 shrink-0 items-center pt-2 ${insetTransitionClassName}`}
         data-tauri-drag-region
         style={
           {
