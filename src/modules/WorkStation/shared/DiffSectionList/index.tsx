@@ -50,6 +50,7 @@ interface DiffSectionListProps<TFile extends DiffFileSectionData> {
   loading?: boolean;
   emptyTitle: string;
   emptySubtitle?: string;
+  emptyIcon?: React.ReactNode;
   repoPath?: string;
   collapseThreshold?: number;
   /** Start collapsible sections closed regardless of list size. */
@@ -102,6 +103,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   loading = false,
   emptyTitle,
   emptySubtitle,
+  emptyIcon,
   repoPath,
   collapseThreshold = DEFAULT_COLLAPSE_THRESHOLD,
   defaultCollapsed = false,
@@ -362,6 +364,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
       <Placeholder
         variant="empty"
         placement="detail-panel"
+        icon={emptyIcon}
         title={emptyTitle}
         subtitle={emptySubtitle}
         fillParentHeight
