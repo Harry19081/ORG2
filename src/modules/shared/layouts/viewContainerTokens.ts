@@ -31,6 +31,10 @@ export const PANE_WIDTH_TRANSITION_CLASSES =
  * reservation flips the instant a pane collapses, but the pane itself takes
  * `PANE_WIDTH_TRANSITION_CLASSES` to move, so the inset must travel on the
  * same curve or the header's titles jump by the reservation and then glide.
+ *
+ * Station and chat headers apply it through `useStationToggleInsetTransition`,
+ * which limits it to a station opening or closing; tab changes inside a
+ * station must not animate the inset.
  */
 export const CHROME_INSET_TRANSITION_CLASSES =
   "transition-[padding] duration-200 ease-out motion-reduce:transition-none";

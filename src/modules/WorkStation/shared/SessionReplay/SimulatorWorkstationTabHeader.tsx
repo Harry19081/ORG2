@@ -51,9 +51,7 @@ const SimulatorWorkstationTabHeaderComponent: React.FC<
   // the single separator line under the whole tabbar+header block.
   return (
     <div
-      className={`flex h-9 shrink-0 items-center gap-2 pr-2 pl-1.5 ${
-        headerSlots?.joinWithFollowingRow ? "" : "border-b border-border-2"
-      }`}
+      className="flex h-9 shrink-0 items-center gap-2 border-b border-border-2 pr-2 pl-1.5"
       data-tauri-drag-region
     >
       <NoDragRegion className="flex w-7 shrink-0 items-center justify-center">

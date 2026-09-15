@@ -146,6 +146,9 @@ describe("ChatPanelHeader tab row collapse", () => {
     const pinned = render({ tabRowCollapsed: false });
     expect(pinned).not.toContain('aria-label="chat.showWorkstation"');
     expect(pinned).toContain("padding-right:66px");
+    // A reservation that appears without a station opening or closing (a tab
+    // change, for one) snaps into place instead of sliding.
+    expect(pinned).not.toContain("transition-[padding]");
   });
 
   it("keeps both rows while the tab strip is worth showing", () => {

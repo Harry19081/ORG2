@@ -17,6 +17,7 @@ import {
   SquareTerminalIcon,
 } from "@src/icons";
 import { ChatPaneFocusButton } from "@src/modules/WorkStation/shared/StationPaneControls";
+import { useStationToggleInsetTransition } from "@src/modules/shared/layouts/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
@@ -168,6 +169,7 @@ export function ChatPanelHeader({
   const trailingInsetPx = pinnedChromeInThisHeader
     ? rightEdge.reservedRight
     : undefined;
+  const insetTransitionClassName = useStationToggleInsetTransition();
   if (!showHeader) return null;
 
   const tuiModeLabel = tuiMode ? t("chat.tuiModeOn") : t("chat.tuiModeOff");
@@ -318,12 +320,6 @@ export function ChatPanelHeader({
                 <ChatPanelCollapsedTabHeading />
               </div>
             ) : undefined),
-          // Collapsed, this row stands in for the borderless tab row and is
-          // the maximized pane's only chrome — a rule under it would be a
-          // line the pane never had. Uncollapsed, the publisher decides.
-          joinWithFollowingRow:
-            tabRowCollapsed ||
-            (publishedHeaderSlots?.joinWithFollowingRow ?? false),
           trailing:
             publishedHeaderSlots?.trailing ||
             sessionPublishedActions ||
@@ -388,20 +384,19 @@ export function ChatPanelHeader({
       <ChatPanelPublishedHeader
         slots={effectivePublishedHeaderSlots}
         windowsHost={windowsHost}
-        hideBottomBorder={!tabRowCollapsed}
         trailingInsetPx={trailingInsetPx}
         leadingInsetPx={
           shouldOffsetHeaderForCollapsedSidebar
             ? collapsedSidebarChromeOffset
             : undefined
         }
+        insetTransitionClassName={insetTransitionClassName}
       />
     </div>
   ) : (
     <ChatPanelPublishedHeader
       slots={effectivePublishedHeaderSlots}
       windowsHost={windowsHost}
-      hideBottomBorder={!tabRowCollapsed}
     />
   );
 
@@ -424,7 +419,7 @@ export function ChatPanelHeader({
           (HEADER_CONTENT_LEFT_PADDING_CLASS 15px + breadcrumb px-1 4px). */}
       {tabRowCollapsed ? null : (
         <div
-          className={`workspace-header header-tab-group @container/launchpad-header z-40 grid h-11 min-h-11 grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 pt-2 pl-1 ${CHAT_PANEL_HEADER_RIGHT_PADDING_CLASS} ${
+          className={`workspace-header header-tab-group @container/launchpad-header z-40 grid h-11 min-h-11 grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 pt-2 pl-1 ${CHAT_PANEL_HEADER_RIGHT_PADDING_CLASS} ${insetTransitionClassName} ${
             overlayPublishedHeader
               ? "absolute top-0 right-0 left-0"
               : "relative shrink-0"

@@ -10,8 +10,6 @@ export interface PublishedHeaderSlots {
   leading?: ReactNode;
   content?: ReactNode;
   trailing?: ReactNode;
-  /** Visually joins this 36px header to a following pane-owned row. */
-  joinWithFollowingRow?: boolean;
   /** The active split surface owns this chrome in its left column instead. */
   hidden?: boolean;
 }
