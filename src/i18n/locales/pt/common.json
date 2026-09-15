@@ -491,7 +491,7 @@
   },
   "optional": "opcional",
   "common": {
-    "display": "Exibição",
+    "display": "Configurações da interface",
     "on": "Ligado",
     "off": "Desligado",
     "default": "Padrão",

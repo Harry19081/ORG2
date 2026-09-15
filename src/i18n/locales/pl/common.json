@@ -491,7 +491,7 @@
   },
   "optional": "opcjonalne",
   "common": {
-    "display": "Wyświetlanie",
+    "display": "Ustawienia interfejsu",
     "on": "Wł.",
     "off": "Wył.",
     "default": "Domyślnie",
