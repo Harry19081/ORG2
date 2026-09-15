@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "正在等待终端完成",
     "runShellFailed": "命令执行失败",
     "runCommands": "执行命令",
+    "waitBackgroundTasks": "等待后台任务",
     "terminalSummary": {
       "command_one": "{{count}} 个命令",
       "command_other": "{{count}} 个命令",
@@ -1134,6 +1135,10 @@
       "check_one": "{{count}} 次检查",
       "check_other": "{{count}} 次检查",
       "separator": "、"
+    },
+    "waitSummary": {
+      "count_one": "{{count}} 次",
+      "count_other": "{{count}} 次"
     },
     "inspectTerminalsRunning": "正在检查终端",
     "inspectTerminalsDone": "检查终端",

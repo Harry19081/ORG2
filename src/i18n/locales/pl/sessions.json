@@ -1143,6 +1143,7 @@
     "terminalWaitRunning": "Oczekiwanie na zakończenie terminala",
     "runShellFailed": "Polecenie nieudane",
     "runCommands": "Wykonaj polecenia",
+    "waitBackgroundTasks": "Czekaj na zadania w tle",
     "terminalSummary": {
       "command_one": "{{count}} polecenie",
       "command_other": "{{count}} polecenia",
@@ -1153,6 +1154,10 @@
       "check_one": "{{count}} sprawdzenie",
       "check_other": "{{count}} sprawdzenia",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} raz",
+      "count_other": "{{count}} razy"
     },
     "inspectTerminalsRunning": "Sprawdzanie terminali",
     "inspectTerminalsDone": "Terminale sprawdzone",

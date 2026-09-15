@@ -1124,6 +1124,7 @@
     "terminalWaitRunning": "Warten, bis das Terminal fertig ist",
     "runShellFailed": "Befehl fehlgeschlagen",
     "runCommands": "Befehle ausführen",
+    "waitBackgroundTasks": "Auf Hintergrundaufgaben warten",
     "terminalSummary": {
       "command_one": "{{count}} Befehl",
       "command_other": "{{count}} Befehle",
@@ -1134,6 +1135,10 @@
       "check_one": "{{count}} Prüfung",
       "check_other": "{{count}} Prüfungen",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}}-mal",
+      "count_other": "{{count}}-mal"
     },
     "inspectTerminalsRunning": "Terminals werden geprüft",
     "inspectTerminalsDone": "Terminals geprüft",
