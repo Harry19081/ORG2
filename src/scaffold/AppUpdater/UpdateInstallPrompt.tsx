@@ -2,8 +2,11 @@ import { useTranslation } from "react-i18next";
 
 import updateImage from "@src/assets/illustrations/update.png";
 import Button from "@src/components/Button";
+import { createLogger } from "@src/hooks/logger";
 import { PANEL_FOOTER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelFooter";
 import Modal from "@src/scaffold/ModalSystem";
+
+const log = createLogger("UpdateInstallPrompt");
 
 interface UpdateInstallPromptProps {
   visible: boolean;
@@ -45,7 +48,11 @@ export function UpdateInstallPrompt({
             <Button
               variant="primary"
               size="small"
-              onClick={onConfirm}
+              onClick={() => {
+                Promise.resolve(onConfirm()).catch((error) => {
+                  log.error("Update confirmation failed", error);
+                });
+              }}
               data-modal-primary-action
             >
               {separateInstall
