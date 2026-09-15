@@ -124,7 +124,12 @@ describe("docked terminal controls", () => {
     expect(header.textContent).toBe("Shell 1");
     expect(tabs()).toHaveLength(0);
     expect(header.querySelector('[role="tablist"]')).toBeNull();
-    expect(header.querySelector('[data-icon="chevron-down"]')).not.toBeNull();
+    const titleToggle = header
+      .querySelector('[data-icon="chevron-down"]')!
+      .closest("button")!;
+    expect(titleToggle.textContent).toBe("Shell 1");
+    expect(titleToggle.getAttribute("aria-expanded")).toBe("true");
+    expect(titleToggle.classList.contains("bg-transparent!")).toBe(true);
     expect(header.querySelector('[data-icon="stop"]')).not.toBeNull();
     expect(
       container
@@ -137,7 +142,13 @@ describe("docked terminal controls", () => {
     expect(document.getElementById(labelId)?.textContent).toBe("Shell 1");
     await clickLabel("Collapse");
     expect(header.textContent).toBe("Shell 1");
-    expect(header.querySelector('[data-icon="chevron-right"]')).not.toBeNull();
+    const foldedTitle = header
+      .querySelector('[data-icon="chevron-right"]')!
+      .closest("button")!;
+    expect(foldedTitle.textContent).toBe("Shell 1");
+    expect(foldedTitle.getAttribute("aria-expanded")).toBe("false");
+    await clickLabel("Expand");
+    expect(store.get(miniTerminalCollapsedAtom)).toBe(false);
   });
 
   it("shows all three tabs without an add button or overflow menu", async () => {
@@ -321,6 +332,10 @@ describe("docked terminal controls", () => {
     const header = container.querySelector("aside")!.firstElementChild!;
     expect(header.textContent).toBe("Shell 1");
     expect(tabs()).toHaveLength(0);
+    expect(
+      header.querySelector('[data-icon="chevron-down"]')!.closest("button")!
+        .textContent
+    ).toBe("Shell 1");
     const labelId = container
       .querySelector('[role="tabpanel"]')!
       .getAttribute("aria-labelledby")!;
