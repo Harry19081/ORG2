@@ -40,6 +40,7 @@ jobs:
       IOS_VERSION: ${{ inputs.version }}
       IOS_BUILD_NUMBER: ${{ inputs.build_number }}
       IOS_EXPORT_METHOD: ${{ inputs.distribution_method }}
+      IOS_TAURI_EXPORT_METHOD: ${{ inputs.distribution_method == 'ad-hoc' && 'release-testing' || 'app-store-connect' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -309,7 +310,7 @@ jobs:
         run: |
           set -euo pipefail
           security unlock-keychain -p "$IOS_KEYCHAIN_PASSWORD" "$IOS_KEYCHAIN_PATH"
-          pnpm tauri:ios:build --ci --export-method "$IOS_EXPORT_METHOD" --config "$RUNNER_TEMP/ios-release-config.json"
+          pnpm tauri:ios:build --ci --export-method "$IOS_TAURI_EXPORT_METHOD" --config "$RUNNER_TEMP/ios-release-config.json"
 
       - name: Validate the exported IPA, not just source configuration
         env:
