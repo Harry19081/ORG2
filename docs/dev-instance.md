@@ -85,3 +85,18 @@ Restart the dev process after rebuilding to see the new native icon.
 
 The editable source is `src/assets/appIcons/dev.svg`; regenerate the desktop
 PNG, ICNS, and ICO assets with `node scripts/tauri/dev-icons.mjs`.
+
+## macOS Dock name in development
+
+`tauri dev` launches Cargo's bare `org2` executable. The `productName` setting
+names a packaged `.app`, so it does not change that executable's Dock tooltip.
+Before native startup, the dedicated dev identity creates a sibling hard link
+named `ORG2 Dev` and uses `exec` to enter it. The executable stays beside its
+sidecars/resources; PID, arguments, environment, working directory, and inherited
+stdio are preserved. The filename check prevents a second exec.
+
+The alias is refreshed atomically on each original-binary launch so it follows
+rebuilds without copying the binary. Bundled apps and numbered test identities
+skip this step. If the build directory cannot create the link, startup continues
+with a diagnostic and the original filename. Restart development to apply the
+new name; the running process cannot acquire it from frontend hot reload alone.

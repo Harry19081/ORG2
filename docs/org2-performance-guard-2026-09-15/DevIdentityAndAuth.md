@@ -99,3 +99,22 @@ main-thread dispatch and image ownership remain unchanged.
 - `node --test scripts/dev/tauri-dev-processes.test.cjs scripts/tauri/run-with-features.test.cjs`: 14 passed
 - `node scripts/tauri/dev-icons.mjs`: regenerated desktop assets from the path-based SVG; 128px and 512px PNGs visually inspected
 - The live Dock/taskbar was not inspected; Windows/Linux native behavior remains unverified
+
+## macOS dev Dock name follow-up
+
+The label comes from the bare Cargo executable name, independent of the native
+icon. The dev identity now executes a sibling `ORG2 Dev` hard link before AppKit
+startup. This is one bounded startup operation with no extra process retained,
+polling, or listener. Its inode is shared with the compiled artifact; atomic
+replacement refreshes the alias after rebuilds. Process identity, arguments, cwd,
+environment, and inherited stdio survive exec, preserving existing supervision.
+Packaged apps and numbered identities are excluded. A filesystem failure logs a
+diagnostic and keeps the original launch. Live Dock tooltip and native hot-reload
+cycles remain unverified without desktop UI control.
+
+The frontend cleanup matcher is anchored to its exact Node process title so it
+does not match the newly named native executable's absolute command path.
+
+- `cargo test --manifest-path src-tauri/Cargo.toml --lib app::dev_process_name::tests -- --nocapture`: 4 passed, including real re-exec/PID preservation and rebuilt-inode replacement; existing linker unwind-size warning remains
+- `node --test scripts/dev/cleanup-orphans.test.cjs`: passed using stub process enumeration and kill commands, with no real process signals
+- `git diff --check`: passed
