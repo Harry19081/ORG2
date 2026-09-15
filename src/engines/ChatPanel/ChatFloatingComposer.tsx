@@ -14,10 +14,7 @@ import InputArea from "./InputArea";
 import CollapsedInlineRow, {
   type InlineSection,
 } from "./InputArea/components/CollapsedInlineRow";
-import type {
-  FileChangeVisibleStats,
-  FileChangesResult,
-} from "./InputArea/components/CompactFileChanges";
+import type { FileChangeVisibleStats } from "./InputArea/components/CompactFileChanges";
 import QueueEditModeCard from "./InputArea/components/QueueEditModeCard";
 import type QueuedMessages from "./InputArea/components/QueuedMessages";
 import { createFileInlineSection } from "./InputArea/hooks/useComposerSections";
@@ -74,7 +71,8 @@ interface ChatFloatingComposerProps {
   onProcessVisibleCountChange: (count: number) => void;
   onFilesExpand: () => void;
   filesMenu?: React.ReactNode;
-  initialFileChanges?: FileChangesResult;
+  /** Host-resolved files-pill stats; when set no artifact tracker mounts. */
+  resolvedFileChangeStats?: FileChangeVisibleStats;
   /** Idle-reload signal for the files pill (session/round/idle transitions). */
   filesReloadKey: string;
   groupChatPendingMessage: GroupChatPendingMessageView | null;
@@ -130,7 +128,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     onProcessVisibleCountChange,
     onFilesExpand,
     filesMenu,
-    initialFileChanges,
+    resolvedFileChangeStats,
     filesReloadKey,
     groupChatPendingMessage,
     groupChatViewActive,
@@ -173,17 +171,21 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
       );
     }, []);
 
+    // Host-resolved stats render in the same commit; tracker-reported stats
+    // arrive one effect later.
+    const visibleFileChangeStats = resolvedFileChangeStats ?? fileChangeStats;
+
     const localInlineSections = useMemo<InlineSection[]>(() => {
       const fileSection = createFileInlineSection({
-        fileChangeStats,
+        fileChangeStats: visibleFileChangeStats,
         onFilesExpand,
         filesMenu,
       });
       return fileSection ? [...inlineSections, fileSection] : inlineSections;
-    }, [fileChangeStats, filesMenu, inlineSections, onFilesExpand]);
+    }, [visibleFileChangeStats, filesMenu, inlineSections, onFilesExpand]);
 
     const hasLocalInlineSection =
-      hasAnyInlineSection || fileChangeStats.count > 0;
+      hasAnyInlineSection || visibleFileChangeStats.count > 0;
     const showTopRowPills =
       hasLocalInlineSection ||
       scrollNav?.showFollowAgent ||
@@ -235,7 +237,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
             processExpanded={processExpanded}
             onToggleProcess={onToggleProcess}
             onProcessVisibleCountChange={onProcessVisibleCountChange}
-            initialFileChanges={initialFileChanges}
+            trackFileChanges={!resolvedFileChangeStats}
             filesReloadKey={filesReloadKey}
             onFileChangeStatsChange={setFileChangeStats}
           />

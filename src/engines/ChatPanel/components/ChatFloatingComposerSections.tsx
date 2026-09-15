@@ -18,7 +18,6 @@ import ActiveProcesses from "../InputArea/components/ActiveProcesses";
 import AgentOrgInterventionPinBar from "../InputArea/components/AgentOrgInterventionPinBar";
 import CompactFileChanges, {
   type FileChangeVisibleStats,
-  type FileChangesResult,
 } from "../InputArea/components/CompactFileChanges";
 import QueuedMessages from "../InputArea/components/QueuedMessages";
 import CreatePlanCard from "../blocks/CreatePlanCard";
@@ -140,7 +139,8 @@ interface ComposerActivityTrackersProps {
   processExpanded: boolean;
   onToggleProcess: () => void;
   onProcessVisibleCountChange: (count: number) => void;
-  initialFileChanges?: FileChangesResult;
+  /** False when the host already resolved the files-pill stats. */
+  trackFileChanges: boolean;
   filesReloadKey: string;
   onFileChangeStatsChange: (next: FileChangeVisibleStats) => void;
 }
@@ -161,7 +161,7 @@ export const ComposerActivityTrackers: React.FC<
   processExpanded,
   onToggleProcess,
   onProcessVisibleCountChange,
-  initialFileChanges,
+  trackFileChanges,
   filesReloadKey,
   onFileChangeStatsChange,
 }) => (
@@ -193,13 +193,14 @@ export const ComposerActivityTrackers: React.FC<
         hidden
       />
     )}
-    <CompactFileChanges
-      key={`files-tracker-${inputAreaSessionId}`}
-      sessionIdOverride={inputAreaSessionId}
-      initialData={initialFileChanges}
-      reloadKey={filesReloadKey}
-      onVisibleStatsChange={onFileChangeStatsChange}
-    />
+    {trackFileChanges && (
+      <CompactFileChanges
+        key={`files-tracker-${inputAreaSessionId}`}
+        sessionIdOverride={inputAreaSessionId}
+        reloadKey={filesReloadKey}
+        onVisibleStatsChange={onFileChangeStatsChange}
+      />
+    )}
   </>
 );
 
