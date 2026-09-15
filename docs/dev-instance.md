@@ -77,7 +77,7 @@ theme initialization.
 
 ## Dev icon
 
-The dev identity uses an amber **IID** icon in the Dock/app switcher and window
+The dev identity uses an amber `<II>` icon in the Dock/app switcher and window
 icons. Its Tauri config supplies the icon before startup, and the native icon
 setter preserves it when the shared `general.dockIcon` preference is reapplied.
 The preference itself remains unchanged and still controls the installed app.

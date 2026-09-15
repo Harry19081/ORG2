@@ -89,7 +89,7 @@ no runtime performance improvement is claimed.
 
 ## Dev icon follow-up
 
-The dev Tauri config embeds an amber IID icon. The native icon setter selects
+The dev Tauri config embeds an amber `<II>` icon. The native icon setter selects
 that image by app identifier for startup and later preference reapplication,
 so shared settings cannot make dev look like the installed app. No preference
 write, new timer, listener, or background task is introduced. The existing
