@@ -236,7 +236,7 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
           type: "item",
           text: t("windowChrome.items.documentation"),
           action: () =>
-            openLink("https://github.com/YORG-AI/ORGII/wiki", {
+            openLink("https://github.com/org2AI/ORG2/wiki", {
               navigate: true,
             }),
         },
@@ -244,7 +244,7 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
           type: "item",
           text: t("windowChrome.items.reportIssue"),
           action: () =>
-            openLink("https://github.com/YORG-AI/ORGII/issues", {
+            openLink("https://github.com/org2AI/ORG2/issues", {
               navigate: true,
             }),
         },
