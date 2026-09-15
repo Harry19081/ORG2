@@ -213,6 +213,18 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     act(() => button.click());
   }
 
+  function findButtonByLabel(label: string): HTMLButtonElement {
+    const button = Array.from(container.querySelectorAll("button")).find(
+      (candidate) => candidate.getAttribute("aria-label") === label
+    );
+    if (!button) throw new Error(`Missing button label: ${label}`);
+    return button;
+  }
+
+  function clickLabel(label: string): void {
+    act(() => findButtonByLabel(label).click());
+  }
+
   function openAdvanced(): void {
     act(() =>
       container
@@ -363,6 +375,20 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
   it("restores the default address only on explicit request", async () => {
     await renderSection();
     openAdvanced();
+    const actionsRow = container.querySelector(
+      '[data-testid="mobile-remote-relay-actions"]'
+    );
+    expect(actionsRow?.querySelector("input")).toBeNull();
+    expect(actionsRow?.className).toContain("justify-end");
+    for (const label of [
+      "mobileRemote.restoreDefaultRelay",
+      "mobileRemote.developerOptions",
+    ]) {
+      const action = Array.from(
+        actionsRow?.querySelectorAll<HTMLButtonElement>("button") ?? []
+      ).find((candidate) => candidate.textContent?.trim() === label);
+      expect(action?.className).toContain("border-border-2");
+    }
     clickText("mobileRemote.restoreDefaultRelay");
     expect(mocks.setRelayUrl).toHaveBeenCalledWith(
       MOBILE_REMOTE_RELAY_PRODUCTION_URL
@@ -379,16 +405,24 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
         })
     );
     await renderSection();
-    clickText("mobileRemote.retryConnection");
-    clickText("mobileRemote.retryConnection");
+    const retryButton = findButtonByLabel("mobileRemote.retryConnection");
+    const actionGroup = retryButton.parentElement;
+    expect(actionGroup?.className).toContain("gap-2");
+    expect(actionGroup?.children[0]?.getAttribute("role")).toBe("switch");
+    expect(actionGroup?.children[1]).toBe(retryButton);
+    expect(retryButton.className).toContain("border-border-2");
+    expect(retryButton.textContent?.trim()).toBe("");
+
+    clickLabel("mobileRemote.retryConnection");
+    clickLabel("mobileRemote.retryConnection");
     expect(mobileRemoteApi.notifyCloudAuthChanged).toHaveBeenCalledOnce();
     await act(async () => resolve());
     vi.mocked(mobileRemoteApi.notifyCloudAuthChanged).mockRejectedValueOnce(
       new Error("offline")
     );
-    await act(async () => clickText("mobileRemote.retryConnection"));
+    await act(async () => clickLabel("mobileRemote.retryConnection"));
     expect(Message.error).toHaveBeenCalledWith({ content: "Error: offline" });
-    await act(async () => clickText("mobileRemote.retryConnection"));
+    await act(async () => clickLabel("mobileRemote.retryConnection"));
     expect(mobileRemoteApi.notifyCloudAuthChanged).toHaveBeenCalledTimes(3);
   });
 
@@ -449,6 +483,10 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     expect(container.textContent).toContain(
       "mobileRemote.cloudLoginDescSignedOut"
     );
+    const loginRow = Array.from(
+      container.querySelectorAll<HTMLElement>(".section-layout-row")
+    ).find((row) => row.textContent?.includes("mobileRemote.cloudLoginTitle"));
+    expect(loginRow?.className).toContain("@[480px]:flex-row");
     expect(container.textContent).not.toContain("mobileRemote.desktopToken");
   });
 
@@ -610,7 +648,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
       expect(findButton("mobileRemote.addPhone").disabled).toBe(false);
     }
   );
-  it("keeps one account identity and places advanced settings after devices", async () => {
+  it("keeps login status in a left-right row and advanced settings in a separate section", async () => {
     mocks.cloudAuth = { userId: "user-1", profile: { displayName: "Junyu" } };
     mocks.relayStatus = {
       phase: "online",
@@ -620,7 +658,14 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     };
     await renderSection();
     expect((container.textContent?.match(/Junyu/g) ?? []).length).toBe(1);
-    expect(container.textContent).not.toContain("mobileRemote.cloudLoginTitle");
+    expect(container.textContent).toContain("mobileRemote.cloudLoginTitle");
+    const loginRow = Array.from(
+      container.querySelectorAll<HTMLElement>(".section-layout-row")
+    ).find((row) =>
+      row.textContent?.includes("mobileRemote.cloudLoginDescSignedIn:Junyu")
+    );
+    expect(loginRow?.textContent).toContain("mobileRemote.cloudLoginTitle");
+    expect(loginRow?.className).toContain("@[480px]:flex-row");
     expect(container.textContent).not.toContain("mobileRemote.outdoorTitle");
     expect(container.textContent).not.toContain("mobileRemote.fullAccess");
     expect(container.textContent).not.toContain("mobileRemote.sasDesktopHint");
@@ -632,6 +677,16 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     expect(text.indexOf("mobileRemote.pairedDevices")).toBeLessThan(
       text.indexOf("mobileRemote.advancedSettings")
     );
+    expect(
+      container
+        .querySelector('[data-testid="mobile-remote-advanced-toggle"]')
+        ?.getAttribute("aria-expanded")
+    ).toBe("false");
+    expect(
+      container
+        .querySelector('[data-testid="mobile-remote-advanced-toggle"]')
+        ?.closest(".section-layout-row")
+    ).toBeNull();
     expect(container.querySelector('[role="status"]')?.textContent).toBe(
       "mobileRemote.relayStatus_online"
     );
@@ -652,7 +707,7 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
       mocks.manualRefreshRequired = failure === "subscription";
       mocks.relayStatusError = failure === "read" ? "status unavailable" : null;
       await renderSection();
-      clickText("common:actions.refresh");
+      clickLabel("common:actions.refresh");
       expect(mocks.refreshRelayStatus).toHaveBeenCalledOnce();
       expect(mobileRemoteApi.notifyCloudAuthChanged).not.toHaveBeenCalled();
     }

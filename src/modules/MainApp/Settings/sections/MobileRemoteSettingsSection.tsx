@@ -25,7 +25,9 @@ import {
 import { useOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
 import { useAsyncData } from "@src/hooks/async/useAsyncData";
 import { useSetting } from "@src/hooks/settings/useSettings";
+import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
+  SECTION_ACTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
 } from "@src/modules/shared/layouts/SectionLayout";
@@ -60,7 +62,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
   const [relayUrl, setRelayUrl] = useSetting("mobileRemote.relayUrl");
   const [lanToken] = useSetting("mobileRemote.lanToken");
 
-  const [advanced, setAdvanced] = useState(false);
   const [developerOptions, setDeveloperOptions] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
   const reconnectingRef = useRef(false);
@@ -194,16 +195,16 @@ const MobileRemoteSettingsSection: React.FC = () => {
   );
 
   return (
-    <SectionContainer>
-      <SectionRow
-        label={t("mobileRemote.enabled")}
-        description={
-          (enabled && relayStatusDescription) || t("mobileRemote.enabledDesc")
-        }
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          {enabled && relayEnabled && cloudSignedIn ? (
-            <div className="flex items-center gap-2">
+    <>
+      <SectionContainer>
+        <SectionRow
+          label={t("mobileRemote.enabled")}
+          description={
+            (enabled && relayStatusDescription) || t("mobileRemote.enabledDesc")
+          }
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            {enabled && relayEnabled && cloudSignedIn ? (
               <span
                 className="text-sm text-text-2"
                 role="status"
@@ -215,11 +216,35 @@ const MobileRemoteSettingsSection: React.FC = () => {
                       `mobileRemote.relayStatus_${relayStatus?.phase ?? "stopped"}`
                     )}
               </span>
-              {showRelayRecovery ? (
+            ) : null}
+            <div className={SECTION_ACTION_GAP_CLASSES}>
+              <Switch
+                checked={enabled}
+                disabled={savingEnabled}
+                ariaLabel={t("mobileRemote.enabled")}
+                onCheckedChange={(next) => {
+                  void handleEnabledChange(next).catch((error: unknown) => {
+                    Message.error({ content: String(error) });
+                  });
+                }}
+              />
+              {enabled && relayEnabled && cloudSignedIn && showRelayRecovery ? (
                 <Button
-                  variant="tertiary"
-                  appearance="ghost"
-                  size="small"
+                  variant="secondary"
+                  size="default"
+                  iconOnly
+                  icon={
+                    <HugeiconsIcon
+                      icon={Refresh04Icon}
+                      data-icon="refresh-cw"
+                      size={14}
+                    />
+                  }
+                  aria-label={t(
+                    relayNeedsRetry
+                      ? "mobileRemote.retryConnection"
+                      : "common:actions.refresh"
+                  )}
                   disabled={relayStatusLoading || reconnecting}
                   loading={reconnecting}
                   onClick={
@@ -227,179 +252,159 @@ const MobileRemoteSettingsSection: React.FC = () => {
                       ? () => void handleReconnect()
                       : refreshRelayStatus
                   }
-                >
-                  {t(
-                    relayNeedsRetry
-                      ? "mobileRemote.retryConnection"
-                      : "common:actions.refresh"
-                  )}
-                </Button>
+                />
               ) : null}
             </div>
-          ) : null}
-          <Switch
-            checked={enabled}
-            disabled={savingEnabled}
-            ariaLabel={t("mobileRemote.enabled")}
-            onCheckedChange={(next) => {
-              void handleEnabledChange(next).catch((error: unknown) => {
-                Message.error({ content: String(error) });
-              });
-            }}
-          />
-        </div>
-      </SectionRow>
+          </div>
+        </SectionRow>
 
-      {enabled ? (
-        <>
-          {cloudSignedIn ? (
-            <SectionRow indent compact>
-              <p className="text-sm break-words text-text-3">
-                {t("mobileRemote.cloudLoginDescSignedIn", {
-                  identity: cloudSignedInIdentity,
-                })}
-              </p>
-            </SectionRow>
-          ) : (
+        {enabled ? (
+          <>
             <SectionRow
               label={t("mobileRemote.cloudLoginTitle")}
-              description={t("mobileRemote.cloudLoginDescSignedOut")}
+              description={
+                cloudSignedIn
+                  ? undefined
+                  : t("mobileRemote.cloudLoginDescSignedOut")
+              }
               indent
             >
-              <Button
-                size="default"
-                onClick={handleCloudSignIn}
-                data-testid="mobile-remote-cloud-sign-in"
-              >
-                {t("navigation:cloud.signIn")}
-              </Button>
-            </SectionRow>
-          )}
-
-          <MobileRemotePairingFlow
-            key={relayQueryKey}
-            available={relayEnabled && relayConfigured}
-            onPaired={refreshDevices}
-          />
-
-          {relayConfigured ? (
-            <SectionRow
-              label={t("mobileRemote.pairedDevices")}
-              layout="vertical"
-              indent
-            >
-              {devicesLoading ? (
-                <Placeholder variant="loading" placement="sidebar" />
-              ) : devicesError ? (
-                <Placeholder
-                  variant="error"
-                  placement="sidebar"
-                  title={t("mobileRemote.devicesLoadFailed")}
-                  subtitle={devicesError}
-                  onRetry={refreshDevices}
-                />
-              ) : devices.length === 0 ? (
-                <Placeholder
-                  variant="empty"
-                  placement="sidebar"
-                  title={t("mobileRemote.noDevices")}
-                  subtitle={t("mobileRemote.noDevicesDesc")}
-                />
+              {cloudSignedIn ? (
+                <span className="text-sm break-words text-text-3">
+                  {t("mobileRemote.cloudLoginDescSignedIn", {
+                    identity: cloudSignedInIdentity,
+                  })}
+                </span>
               ) : (
-                <PairedDeviceList
-                  devices={devices}
-                  formatTimestamp={formatDeviceTimestamp}
-                  onRevoke={(deviceId) => void handleRevokeDevice(deviceId)}
-                />
+                <Button
+                  size="default"
+                  onClick={handleCloudSignIn}
+                  data-testid="mobile-remote-cloud-sign-in"
+                >
+                  {t("navigation:cloud.signIn")}
+                </Button>
               )}
             </SectionRow>
-          ) : null}
 
-          <SectionRow indent compact>
-            <Button
-              variant="tertiary"
-              appearance="ghost"
-              size="small"
-              aria-expanded={advanced}
-              aria-controls="mobile-remote-advanced"
-              data-testid="mobile-remote-advanced-toggle"
-              onClick={() => setAdvanced(!advanced)}
-            >
-              {t("mobileRemote.advancedSettings")}
-            </Button>
-          </SectionRow>
-          {advanced ? (
-            <div id="mobile-remote-advanced">
+            <MobileRemotePairingFlow
+              key={relayQueryKey}
+              available={relayEnabled && relayConfigured}
+              onPaired={refreshDevices}
+            />
+
+            {relayConfigured ? (
               <SectionRow
-                label={t("mobileRemote.outdoorTitle")}
-                description={t("mobileRemote.outdoorDesc")}
-                indent
-              >
-                <Switch
-                  checked={relayEnabled}
-                  ariaLabel={t("mobileRemote.outdoorTitle")}
-                  onCheckedChange={handleRelayEnabledChange}
-                />
-              </SectionRow>
-              <SectionRow
-                label={t("mobileRemote.relayUrl")}
-                description={t("mobileRemote.relayUrlDesc")}
+                label={t("mobileRemote.pairedDevices")}
                 layout="vertical"
                 indent
               >
-                <div className="flex w-full flex-col items-start gap-2">
-                  <Input
-                    aria-label={t("mobileRemote.relayUrl")}
-                    value={relayUrl}
-                    onChange={setRelayUrl}
-                    placeholder="wss://relay.example.com/v1/mobile/ws"
-                    spellCheck={false}
+                {devicesLoading ? (
+                  <Placeholder variant="loading" placement="sidebar" />
+                ) : devicesError ? (
+                  <Placeholder
+                    variant="error"
+                    placement="sidebar"
+                    title={t("mobileRemote.devicesLoadFailed")}
+                    subtitle={devicesError}
+                    onRetry={refreshDevices}
                   />
-                  <Button
-                    variant="tertiary"
-                    appearance="ghost"
-                    size="small"
-                    onClick={() =>
-                      setRelayUrl(MOBILE_REMOTE_RELAY_PRODUCTION_URL)
-                    }
-                  >
-                    {t("mobileRemote.restoreDefaultRelay")}
-                  </Button>
-                  <Button
-                    variant="tertiary"
-                    appearance="ghost"
-                    size="small"
-                    aria-expanded={developerOptions}
-                    onClick={() => setDeveloperOptions(!developerOptions)}
-                  >
-                    {t("mobileRemote.developerOptions")}
-                  </Button>
-                  {developerOptions ? (
-                    <SegmentedTextPill
-                      ariaLabel={t("mobileRemote.relayPresetAria")}
-                      dataTestId="mobile-remote-relay-preset"
-                      size="small"
-                      value={activeRelayPreset}
-                      options={[
-                        {
-                          value: "local",
-                          label: t("mobileRemote.relayPresetLocal"),
-                        },
-                        {
-                          value: "production",
-                          label: t("mobileRemote.relayPresetProduction"),
-                        },
-                      ]}
-                      onChange={handleRelayPresetChange}
-                    />
-                  ) : null}
-                </div>
+                ) : devices.length === 0 ? (
+                  <Placeholder
+                    variant="empty"
+                    placement="sidebar"
+                    title={t("mobileRemote.noDevices")}
+                    subtitle={t("mobileRemote.noDevicesDesc")}
+                  />
+                ) : (
+                  <PairedDeviceList
+                    devices={devices}
+                    formatTimestamp={formatDeviceTimestamp}
+                    onRevoke={(deviceId) => void handleRevokeDevice(deviceId)}
+                  />
+                )}
               </SectionRow>
+            ) : null}
+          </>
+        ) : null}
+      </SectionContainer>
+
+      {enabled ? (
+        <SectionContainer
+          title={t("mobileRemote.advancedSettings")}
+          collapsible
+          defaultOpen={false}
+          titleButtonTestId="mobile-remote-advanced-toggle"
+        >
+          <SectionRow
+            label={t("mobileRemote.outdoorTitle")}
+            description={t("mobileRemote.outdoorDesc")}
+          >
+            <Switch
+              checked={relayEnabled}
+              ariaLabel={t("mobileRemote.outdoorTitle")}
+              onCheckedChange={handleRelayEnabledChange}
+            />
+          </SectionRow>
+          <SectionRow
+            label={t("mobileRemote.relayUrl")}
+            description={t("mobileRemote.relayUrlDesc")}
+            layout="vertical"
+          >
+            <Input
+              aria-label={t("mobileRemote.relayUrl")}
+              value={relayUrl}
+              onChange={setRelayUrl}
+              placeholder="wss://relay.example.com/v1/mobile/ws"
+              spellCheck={false}
+            />
+          </SectionRow>
+          <SectionRow
+            showHeader={false}
+            className="flex justify-end"
+            dataTestId="mobile-remote-relay-actions"
+          >
+            <div
+              className={`${SECTION_ACTION_GAP_CLASSES} flex-wrap justify-end`}
+            >
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={() => setRelayUrl(MOBILE_REMOTE_RELAY_PRODUCTION_URL)}
+              >
+                {t("mobileRemote.restoreDefaultRelay")}
+              </Button>
+              <Button
+                variant="secondary"
+                size="small"
+                aria-expanded={developerOptions}
+                onClick={() => setDeveloperOptions(!developerOptions)}
+              >
+                {t("mobileRemote.developerOptions")}
+              </Button>
+              {developerOptions ? (
+                <SegmentedTextPill
+                  ariaLabel={t("mobileRemote.relayPresetAria")}
+                  dataTestId="mobile-remote-relay-preset"
+                  size="small"
+                  value={activeRelayPreset}
+                  options={[
+                    {
+                      value: "local",
+                      label: t("mobileRemote.relayPresetLocal"),
+                    },
+                    {
+                      value: "production",
+                      label: t("mobileRemote.relayPresetProduction"),
+                    },
+                  ]}
+                  onChange={handleRelayPresetChange}
+                />
+              ) : null}
             </div>
-          ) : null}
-        </>
+          </SectionRow>
+        </SectionContainer>
       ) : null}
-    </SectionContainer>
+    </>
   );
 };
 

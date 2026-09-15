@@ -11,6 +11,8 @@
  */
 import React, { memo } from "react";
 
+import CollapsibleSection from "@src/modules/shared/layouts/blocks/CollapsibleSection";
+
 import {
   SECTION_CONTAINER_CLASSES,
   SECTION_PADDING,
@@ -24,6 +26,12 @@ export interface SectionContainerProps {
   children: React.ReactNode;
   /** Optional sub-section title above the card */
   title?: string;
+  /** Allow the standard string title to expand and collapse the card content. */
+  collapsible?: boolean;
+  /** Initial visibility for collapsible content. */
+  defaultOpen?: boolean;
+  /** Optional test selector for the collapsible title button. */
+  titleButtonTestId?: string;
   /**
    * Optional fully-custom title row (e.g. a TabPill). When provided, this
    * REPLACES the `title` string rendering — the container draws this node
@@ -40,6 +48,9 @@ const SectionContainer: React.FC<SectionContainerProps> = memo(
   ({
     children,
     title,
+    collapsible = false,
+    defaultOpen = true,
+    titleButtonTestId,
     titleSlot,
     dataTestId,
     className = "",
@@ -55,6 +66,21 @@ const SectionContainer: React.FC<SectionContainerProps> = memo(
     );
 
     if (!title && !titleSlot) return card;
+    if (collapsible && title && !titleSlot) {
+      return (
+        <div className="not-first:mt-3">
+          <CollapsibleSection
+            title={title}
+            defaultOpen={defaultOpen}
+            compact
+            titleClassName={SECTION_SUBHEADING_CLASSES}
+            titleButtonTestId={titleButtonTestId}
+          >
+            {card}
+          </CollapsibleSection>
+        </div>
+      );
+    }
 
     return (
       <div className="flex flex-col gap-3 not-first:mt-3">
