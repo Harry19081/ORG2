@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "Noch nicht verfügbar",
-      "prPendingHint": "PR wird nach Abschluss des Agent erstellt.",
-      "prNeutralHint": "Es wurde noch kein PR erstellt.",
+      "prPendingHint": "PR wird nach Abschluss des Agent erstellt",
+      "prNeutralHint": "Es wurde noch kein PR erstellt",
       "prCreatingHint": "Pull Request wird erstellt...",
       "prCreateButton": "Pull Request erstellen",
       "prCreateError": "Pull Request konnte nicht erstellt werden",
@@ -653,9 +653,9 @@
         "progressNoTotal": "{{count}} Einträge importiert",
         "completedSummary": "{{count}} Einträge vom Remote importiert.",
         "cancelledSummary": "Nach dem Import von {{count}} Einträgen abgebrochen.",
-        "pendingDescription": "Die erste Synchronisation durchläuft den gesamten Remote-Verlauf einmal. Folgende Synchronisationen nutzen den normalen inkrementellen Zyklus.",
-        "runningDescription": "Der Remote-Verlauf wird Seite für Seite durchlaufen. Sie können in der Zwischenzeit weiterarbeiten.",
-        "failedDescription": "Die letzte Seite ist dauerhaft fehlgeschlagen. Bei einem erneuten Versuch wird ab dem Cursor fortgesetzt.",
+        "pendingDescription": "Die erste Synchronisation durchläuft den gesamten Remote-Verlauf einmal. Folgende Synchronisationen nutzen den normalen inkrementellen Zyklus",
+        "runningDescription": "Der Remote-Verlauf wird Seite für Seite durchlaufen. Sie können in der Zwischenzeit weiterarbeiten",
+        "failedDescription": "Die letzte Seite ist dauerhaft fehlgeschlagen. Bei einem erneuten Versuch wird ab dem Cursor fortgesetzt",
         "cancel": "Import abbrechen",
         "retry": "Erneut versuchen",
         "errors": {

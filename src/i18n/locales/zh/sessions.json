@@ -1979,9 +1979,9 @@
       "formatting": "文本格式"
     },
     "regionNoticeTitle": "可能存在地区限制",
-    "regionNoticeBodyProvider": "您所在位置：{{location}}。某些模型在您所在地区可能不可用。",
-    "regionNoticeBodySanctions": "您所在位置：{{location}}。GitHub、npm、Docker Hub 等服务可能不可用。",
-    "regionNoticeBodyBoth": "您所在位置：{{location}}。因地区政策与贸易规则，某些模型以及 GitHub、npm、Docker Hub 等服务可能不可用。",
+    "regionNoticeBodyProvider": "您所在位置：{{location}}。某些模型在您所在地区可能不可用",
+    "regionNoticeBodySanctions": "您所在位置：{{location}}。GitHub、npm、Docker Hub 等服务可能不可用",
+    "regionNoticeBodyBoth": "您所在位置：{{location}}。因地区政策与贸易规则，某些模型以及 GitHub、npm、Docker Hub 等服务可能不可用",
     "selectAgent": "选择 Agent",
     "placeholderDefault": "输入消息，使用 @ 添加文件，使用 / 调用 skills",
     "wingmanPlaceholder": "描述你的任务 — Wingman 应该关注什么？",

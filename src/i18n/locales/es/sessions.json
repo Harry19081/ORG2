@@ -1973,9 +1973,9 @@
       "formatting": "Formato de texto"
     },
     "regionNoticeTitle": "Posibles limitaciones regionales",
-    "regionNoticeBodyProvider": "Estás en {{location}}. Algunos modelos pueden no estar disponibles en tu región.",
-    "regionNoticeBodySanctions": "Estás en {{location}}. GitHub, npm, Docker Hub y servicios similares pueden no estar disponibles.",
-    "regionNoticeBodyBoth": "Estás en {{location}}. Algunos modelos y servicios como GitHub, npm y Docker Hub pueden no estar disponibles por políticas regionales y restricciones comerciales.",
+    "regionNoticeBodyProvider": "Estás en {{location}}. Algunos modelos pueden no estar disponibles en tu región",
+    "regionNoticeBodySanctions": "Estás en {{location}}. GitHub, npm, Docker Hub y servicios similares pueden no estar disponibles",
+    "regionNoticeBodyBoth": "Estás en {{location}}. Algunos modelos y servicios como GitHub, npm y Docker Hub pueden no estar disponibles por políticas regionales y restricciones comerciales",
     "selectAgent": "Seleccionar un agente",
     "placeholderDefault": "Escribe un mensaje, @ para añadir archivos, / para usar skills",
     "wingmanPlaceholder": "Describe tu misión — ¿qué debe vigilar Wingman?",

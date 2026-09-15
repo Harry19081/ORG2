@@ -1973,9 +1973,9 @@
       "formatting": "Форматирование текста"
     },
     "regionNoticeTitle": "Возможные региональные ограничения",
-    "regionNoticeBodyProvider": "Вы находитесь в {{location}}. Некоторые модели могут быть недоступны в вашем регионе.",
-    "regionNoticeBodySanctions": "Вы находитесь в {{location}}. GitHub, npm, Docker Hub и похожие сервисы могут быть недоступны.",
-    "regionNoticeBodyBoth": "Вы находитесь в {{location}}. Некоторые модели и сервисы вроде GitHub, npm и Docker Hub могут быть недоступны из-за региональной политики и торговых ограничений.",
+    "regionNoticeBodyProvider": "Вы находитесь в {{location}}. Некоторые модели могут быть недоступны в вашем регионе",
+    "regionNoticeBodySanctions": "Вы находитесь в {{location}}. GitHub, npm, Docker Hub и похожие сервисы могут быть недоступны",
+    "regionNoticeBodyBoth": "Вы находитесь в {{location}}. Некоторые модели и сервисы вроде GitHub, npm и Docker Hub могут быть недоступны из-за региональной политики и торговых ограничений",
     "selectAgent": "Выберите агент",
     "placeholderDefault": "Введите сообщение, @ чтобы добавить файлы, / чтобы использовать skills",
     "wingmanPlaceholder": "Опишите вашу миссию — за чем должен следить Wingman?",

@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "暫不可用",
-      "prPendingHint": "Agent 完成後將創建 PR。",
-      "prNeutralHint": "尚未創建 PR。",
+      "prPendingHint": "Agent 完成後將創建 PR",
+      "prNeutralHint": "尚未創建 PR",
       "prCreatingHint": "正在創建 Pull Request...",
       "prCreateButton": "創建 Pull Request",
       "prCreateError": "創建 Pull Request 失敗",
@@ -653,9 +653,9 @@
         "progressNoTotal": "已導入 {{count}} 項",
         "completedSummary": "已從遠端導入 {{count}} 項。",
         "cancelledSummary": "已取消，已導入 {{count}} 項。",
-        "pendingDescription": "首次同步會完整遍歷遠端歷史記錄一次，之後的同步使用常規增量循環。",
-        "runningDescription": "正在分頁遍歷遠端歷史記錄。導入期間你可以繼續工作。",
-        "failedDescription": "上一頁發生永久性失敗。重試將從游標位置繼續。",
+        "pendingDescription": "首次同步會完整遍歷遠端歷史記錄一次，之後的同步使用常規增量循環",
+        "runningDescription": "正在分頁遍歷遠端歷史記錄。導入期間你可以繼續工作",
+        "failedDescription": "上一頁發生永久性失敗。重試將從游標位置繼續",
         "cancel": "取消導入",
         "retry": "重試",
         "errors": {

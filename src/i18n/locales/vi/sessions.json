@@ -1973,9 +1973,9 @@
       "formatting": "Định dạng văn bản"
     },
     "regionNoticeTitle": "Có thể bị hạn chế theo khu vực",
-    "regionNoticeBodyProvider": "Bạn đang ở {{location}}. Một số mô hình có thể không khả dụng tại khu vực của bạn.",
-    "regionNoticeBodySanctions": "Bạn đang ở {{location}}. GitHub, npm, Docker Hub và các dịch vụ tương tự có thể không khả dụng.",
-    "regionNoticeBodyBoth": "Bạn đang ở {{location}}. Một số mô hình và dịch vụ như GitHub, npm và Docker Hub có thể không khả dụng do chính sách khu vực và hạn chế thương mại.",
+    "regionNoticeBodyProvider": "Bạn đang ở {{location}}. Một số mô hình có thể không khả dụng tại khu vực của bạn",
+    "regionNoticeBodySanctions": "Bạn đang ở {{location}}. GitHub, npm, Docker Hub và các dịch vụ tương tự có thể không khả dụng",
+    "regionNoticeBodyBoth": "Bạn đang ở {{location}}. Một số mô hình và dịch vụ như GitHub, npm và Docker Hub có thể không khả dụng do chính sách khu vực và hạn chế thương mại",
     "selectAgent": "Chọn một agent",
     "placeholderDefault": "Nhập tin nhắn, dùng @ để thêm tệp, dùng / để dùng skills",
     "wingmanPlaceholder": "Mô tả nhiệm vụ của bạn — Wingman nên theo dõi điều gì?",

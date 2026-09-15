@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "Henüz mevcut değil",
-      "prPendingHint": "Agent tamamlandıktan sonra PR oluşturulacak.",
-      "prNeutralHint": "Henüz PR oluşturulmadı.",
+      "prPendingHint": "Agent tamamlandıktan sonra PR oluşturulacak",
+      "prNeutralHint": "Henüz PR oluşturulmadı",
       "prCreatingHint": "Pull Request oluşturuluyor...",
       "prCreateButton": "Pull Request Oluştur",
       "prCreateError": "Pull Request oluşturulamadı",
@@ -653,9 +653,9 @@
         "progressNoTotal": "{{count}} öğe içe aktarıldı",
         "completedSummary": "Uzak kaynaktan {{count}} öğe içe aktarıldı.",
         "cancelledSummary": "{{count}} öğe içe aktarıldıktan sonra iptal edildi.",
-        "pendingDescription": "İlk senkronizasyon uzak geçmişi bir kez tarar. Sonraki senkronizasyonlar olağan artımlı döngüyü kullanır.",
-        "runningDescription": "Uzak geçmiş sayfa sayfa taranıyor. Bu sırada çalışmaya devam edebilirsiniz.",
-        "failedDescription": "Son sayfa kalıcı bir hatayla başarısız oldu. Yeniden deneme imleç konumundan devam eder.",
+        "pendingDescription": "İlk senkronizasyon uzak geçmişi bir kez tarar. Sonraki senkronizasyonlar olağan artımlı döngüyü kullanır",
+        "runningDescription": "Uzak geçmiş sayfa sayfa taranıyor. Bu sırada çalışmaya devam edebilirsiniz",
+        "failedDescription": "Son sayfa kalıcı bir hatayla başarısız oldu. Yeniden deneme imleç konumundan devam eder",
         "cancel": "İçe aktarımı iptal et",
         "retry": "Yeniden dene",
         "errors": {

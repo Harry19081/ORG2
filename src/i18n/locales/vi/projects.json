@@ -392,8 +392,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "Chưa có sẵn",
-      "prPendingHint": "PR sẽ được tạo sau khi Agent hoàn thành.",
-      "prNeutralHint": "Chưa có PR nào được tạo.",
+      "prPendingHint": "PR sẽ được tạo sau khi Agent hoàn thành",
+      "prNeutralHint": "Chưa có PR nào được tạo",
       "prCreatingHint": "Đang tạo Pull Request...",
       "prCreateButton": "Tạo Pull Request",
       "prCreateError": "Không thể tạo Pull Request",
@@ -653,9 +653,9 @@
         "progressNoTotal": "Đã nhập {{count}} mục",
         "completedSummary": "Đã nhập {{count}} mục từ phía remote.",
         "cancelledSummary": "Đã hủy sau khi nhập {{count}} mục.",
-        "pendingDescription": "Lần đồng bộ đầu tiên sẽ duyệt toàn bộ lịch sử remote một lần. Các lần đồng bộ sau dùng chu kỳ tăng dần thông thường.",
-        "runningDescription": "Đang duyệt lịch sử remote từng trang. Bạn có thể tiếp tục làm việc trong khi quá trình diễn ra.",
-        "failedDescription": "Trang gần nhất thất bại vĩnh viễn. Khi thử lại sẽ tiếp tục từ vị trí con trỏ.",
+        "pendingDescription": "Lần đồng bộ đầu tiên sẽ duyệt toàn bộ lịch sử remote một lần. Các lần đồng bộ sau dùng chu kỳ tăng dần thông thường",
+        "runningDescription": "Đang duyệt lịch sử remote từng trang. Bạn có thể tiếp tục làm việc trong khi quá trình diễn ra",
+        "failedDescription": "Trang gần nhất thất bại vĩnh viễn. Khi thử lại sẽ tiếp tục từ vị trí con trỏ",
         "cancel": "Hủy nhập",
         "retry": "Thử lại",
         "errors": {

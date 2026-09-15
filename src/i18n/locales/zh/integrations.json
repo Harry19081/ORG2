@@ -246,8 +246,8 @@
     "claudeCodeSignInDesc": "在内置浏览器中登录 Claude Code。ORG2 会捕获 authorization code，并将 OAuth Token 保存在本地",
     "claudeCodeReadyToSignIn": "准备登录 Claude Code",
     "claudeCodeSignedIn": "Claude Code 已连接",
-    "claudeCodeOAuthHint": "这会保存一个 claude_code OAuth 账户，供使用 anthropic_native 的 Rust agents 使用。",
-    "claudeCodeBrowserHint": "请在内置浏览器中完成 Claude Code 授权。",
+    "claudeCodeOAuthHint": "这会保存一个 claude_code OAuth 账户，供使用 anthropic_native 的 Rust agents 使用",
+    "claudeCodeBrowserHint": "请在内置浏览器中完成 Claude Code 授权",
     "claudeCodeSignInErrorHint": "关闭浏览器后重试登录。没有 Token 被保存",
     "connectedViaChatGpt": "已通过 ChatGPT Plus/Pro 登录连接",
     "apiKeyDetectedFromConfig": "已从本地配置检测到 API Key",
@@ -316,8 +316,8 @@
     "signInWithCodex": "使用 Codex 登录",
     "codexReadyToSignIn": "准备登录 Codex",
     "codexSignedIn": "Codex 已连接",
-    "codexOAuthHint": "这会保存一个用于 ChatGPT Codex 后端访问的 codex OAuth 账号。",
-    "codexBrowserHint": "请在内嵌浏览器中完成 Codex 授权。",
+    "codexOAuthHint": "这会保存一个用于 ChatGPT Codex 后端访问的 codex OAuth 账号",
+    "codexBrowserHint": "请在内嵌浏览器中完成 Codex 授权",
     "codexSignInErrorHint": "关闭浏览器并重新登录。没有保存任何 Token",
     "codexAutodetectTitle": "检测 Codex 会话",
     "codexAutodetectDesc": "从本地环境读取 ~/.codex/auth.json 和 OPENAI_API_KEY",
@@ -770,15 +770,15 @@
     "tokenRequired": "Personal access token 是必填项",
     "oauthWaiting": "正在等待 OAuth",
     "oauthDeviceDesc": "打开验证 URL 并输入此代码以授权 GitHub",
-    "oauthBrowserDesc": "在已打开的浏览器窗口中完成授权。",
-    "oauthBrowserOpened": "已打开浏览器窗口。请在那里完成授权，然后此向导会继续。"
+    "oauthBrowserDesc": "在已打开的浏览器窗口中完成授权",
+    "oauthBrowserOpened": "已打开浏览器窗口。请在那里完成授权，然后此向导会继续"
   },
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "自动检测",
     "methodOAuth": "使用 GitHub 登录",
-    "methodPickerDesc": "选择向 GitHub 进行身份验证的方式。",
-    "oauthDeviceDesc": "打开验证 URL 并输入此代码以授权 GitHub。",
+    "methodPickerDesc": "选择向 GitHub 进行身份验证的方式",
+    "oauthDeviceDesc": "打开验证 URL 并输入此代码以授权 GitHub",
     "scanCredHelper": "Git 凭据助手（{{name}}）",
     "scanEmpty": "未检测到任何凭据",
     "scanEmptyDesc": "未找到 gh CLI token、凭据助手或 SSH 密钥。请在上方选择其他方式",
@@ -789,9 +789,9 @@
     "scanning": "正在扫描…",
     "scanningDesc": "正在本机查找 gh CLI token、凭据助手和 SSH 密钥",
     "sshKeyPath": "SSH 密钥路径",
-    "sshKeyPathDesc": "私钥的绝对路径（例如 ~/.ssh/id_ed25519）。对应的公钥必须已在 GitHub 上注册。",
-    "scanSelectRequired": "请选择一个检测到的凭据进行导入。",
-    "sshKeyPathRequired": "SSH 密钥路径为必填项。"
+    "sshKeyPathDesc": "私钥的绝对路径（例如 ~/.ssh/id_ed25519）。对应的公钥必须已在 GitHub 上注册",
+    "scanSelectRequired": "请选择一个检测到的凭据进行导入",
+    "sshKeyPathRequired": "SSH 密钥路径为必填项"
   },
   "builtInTools": {
     "tabTools": "内置工具",
@@ -976,8 +976,8 @@
     "contentLabel": "内容",
     "contentDesc": "用 Markdown 编写 SKILL.md 内容，这是 Agent 读取的内容",
     "scopeLabel": "范围",
-    "scopeDesc": "User Skill 对所有仓库可用。Repo-specific Skill 只会在对应仓库中加载。",
-    "scopeDescEdit": "保存时切换范围会在用户级存储和仓库专属存储之间移动 Skill 文件夹。",
+    "scopeDesc": "User Skill 对所有仓库可用。Repo-specific Skill 只会在对应仓库中加载",
+    "scopeDescEdit": "保存时切换范围会在用户级存储和仓库专属存储之间移动 Skill 文件夹",
     "scopeGlobal": "User",
     "binsLabel": "所需可执行文件",
     "binsDesc": "此技能需要的 CLI 程序（如 git、python、docker）",
@@ -1364,8 +1364,8 @@
       "liveStatusToggleDesc": "显示运行中 CLI Agent 的工作或等待状态；关闭后仍会采集溯源记录",
       "codexApproval": {
         "title": "在 Codex 中验证 ORG2 hooks",
-        "description": "正在等待 Codex 授权并执行当前的 ORG2 hooks。",
-        "instructions": "打开 Codex，检查 ORG2 hooks，然后选择 Trust all and continue。会话启动时，SessionStart hook 会自动验证是否已启用。",
+        "description": "正在等待 Codex 授权并执行当前的 ORG2 hooks",
+        "instructions": "打开 Codex，检查 ORG2 hooks，然后选择 Trust all and continue。会话启动时，SessionStart hook 会自动验证是否已启用",
         "review": "在 Codex 中检查",
         "verified": "已通过真实 Codex hook 信号验证（{{time}}）。"
       }

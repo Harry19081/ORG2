@@ -1973,9 +1973,9 @@
       "formatting": "テキストの書式"
     },
     "regionNoticeTitle": "地域制限の可能性",
-    "regionNoticeBodyProvider": "お住まいの地域：{{location}}。一部のモデルはお住まいの地域で利用できない場合があります。",
-    "regionNoticeBodySanctions": "お住まいの地域：{{location}}。GitHub、npm、Docker Hub などのサービスが利用できない場合があります。",
-    "regionNoticeBodyBoth": "お住まいの地域：{{location}}。地域政策と貿易規制により、一部のモデルや GitHub、npm、Docker Hub などのサービスが利用できない場合があります。",
+    "regionNoticeBodyProvider": "お住まいの地域：{{location}}。一部のモデルはお住まいの地域で利用できない場合があります",
+    "regionNoticeBodySanctions": "お住まいの地域：{{location}}。GitHub、npm、Docker Hub などのサービスが利用できない場合があります",
+    "regionNoticeBodyBoth": "お住まいの地域：{{location}}。地域政策と貿易規制により、一部のモデルや GitHub、npm、Docker Hub などのサービスが利用できない場合があります",
     "selectAgent": "エージェントを選択",
     "placeholderDefault": "メッセージを入力、@ でファイルを追加、/ で skills を使用",
     "wingmanPlaceholder": "ミッションを説明してください — Wingman は何を監視すべきですか？",

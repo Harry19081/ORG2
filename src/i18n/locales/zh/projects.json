@@ -405,8 +405,8 @@
     "outputTab": {
       "prSection": "Pull Request",
       "prNotAvailable": "暂不可用",
-      "prPendingHint": "Agent 完成后将创建 PR。",
-      "prNeutralHint": "尚未创建 PR。",
+      "prPendingHint": "Agent 完成后将创建 PR",
+      "prNeutralHint": "尚未创建 PR",
       "prCreatingHint": "正在创建 Pull Request...",
       "prCreateButton": "创建 Pull Request",
       "prCreateError": "创建 Pull Request 失败",
@@ -653,9 +653,9 @@
         "progressNoTotal": "已导入 {{count}} 项",
         "completedSummary": "已从远端导入 {{count}} 项。",
         "cancelledSummary": "已取消，已导入 {{count}} 项。",
-        "pendingDescription": "首次同步会完整遍历远端历史记录一次，之后的同步使用常规增量循环。",
-        "runningDescription": "正在分页遍历远端历史记录。导入期间你可以继续工作。",
-        "failedDescription": "上一页发生永久性失败。重试将从游标位置继续。",
+        "pendingDescription": "首次同步会完整遍历远端历史记录一次，之后的同步使用常规增量循环",
+        "runningDescription": "正在分页遍历远端历史记录。导入期间你可以继续工作",
+        "failedDescription": "上一页发生永久性失败。重试将从游标位置继续",
         "cancel": "取消导入",
         "retry": "重试",
         "errors": {
