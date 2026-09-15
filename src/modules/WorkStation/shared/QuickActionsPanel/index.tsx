@@ -24,10 +24,7 @@ import { createPortal } from "react-dom";
 
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
-import {
-  KEYBOARD_SHORTCUT_VARIANT,
-  KeyboardShortcut,
-} from "@src/components/KeyboardShortcut";
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { BoxIcon, HugeiconsIcon } from "@src/icons";
 
@@ -105,12 +102,7 @@ const ActionItem = memo<ActionItemProps>(({ action, onAction }) => {
           {action.label}
         </span>
       </div>
-      {action.shortcut && (
-        <KeyboardShortcut
-          shortcut={action.shortcut}
-          variant={KEYBOARD_SHORTCUT_VARIANT.workStation}
-        />
-      )}
+      {action.shortcut && <KeyboardShortcut shortcut={action.shortcut} />}
     </Button>
   );
 });

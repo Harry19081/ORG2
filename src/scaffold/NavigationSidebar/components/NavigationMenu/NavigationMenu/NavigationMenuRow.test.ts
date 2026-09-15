@@ -209,7 +209,7 @@ describe("NavigationMenuRow", () => {
       createElement(NavigationMenuLeafRow, {
         item: {
           ...baseItem,
-          shortcut: "21h",
+          trailingLabel: "21h",
           showMoreActions: true,
           trailingElement: createElement("span", null, "dot"),
         },
@@ -245,6 +245,35 @@ describe("NavigationMenuRow", () => {
     expect(clippingLayer).toContain("-mr-0.5");
     expect(markup).not.toContain('class="-mr-0.5');
   });
+
+  it("uses the shared renderer for keyboard shortcuts, not trailing labels", () => {
+    const renderLeaf = (item: NavigationMenuItem) =>
+      renderToStaticMarkup(
+        createElement(NavigationMenuLeafRow, {
+          item,
+          isChild: false,
+          isSelected: false,
+          collapsed: false,
+          t: (key: string) => key,
+          renderIcon: () => null,
+          onMenuItemClick: vi.fn(),
+          onRowMouseEnter: vi.fn(),
+          onRowActionClick: vi.fn(),
+        })
+      );
+
+    const shortcutMarkup = renderLeaf({ ...baseItem, shortcut: "⌘N" });
+    const trailingLabelMarkup = renderLeaf({
+      ...baseItem,
+      trailingLabel: "21h",
+    });
+
+    expect(shortcutMarkup).toContain("<kbd");
+    expect(shortcutMarkup).toContain('data-icon="command"');
+    expect(trailingLabelMarkup).toContain("21h");
+    expect(trailingLabelMarkup).not.toContain("<kbd");
+  });
+
   it("keeps a label badge beside the label text, not at the row edge", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationMenuLeafRow, {

@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import Message from "@src/components/Message";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { Cancel01Icon, Copy01Icon, HugeiconsIcon } from "@src/icons";
@@ -279,7 +280,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
           <div className="component-issue-modal-content" ref={contentRef}>
             <div className="component-issue-empty">
               Hover over the UI element first, then press{" "}
-              <span className="component-issue-kbd">{captureShortcut}</span>
+              <KeyboardShortcut shortcut={captureShortcut} rendering="icons" />
             </div>
           </div>
         ) : (

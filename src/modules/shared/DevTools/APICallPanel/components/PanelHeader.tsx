@@ -4,6 +4,7 @@
 import React from "react";
 
 import Button from "@src/components/Button";
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { HugeiconsIcon } from "@src/icons";
 import {
@@ -70,7 +71,9 @@ const PanelHeader: React.FC<PanelHeaderProps> = ({
     <SharedPanelHeader
       title={headerTitle}
       icon={ICON_CONFIG.api}
-      subtitle={shortcut}
+      subtitle={
+        <KeyboardShortcut shortcut={shortcut} size="sm" rendering="icons" />
+      }
       actions={headerActions}
       className="rounded-tl-xl rounded-tr-xl"
     />

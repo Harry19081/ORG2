@@ -2,6 +2,7 @@ import type React from "react";
 
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import { SESSION_ROW_PRESENTATION } from "@src/components/SessionRowPresentation";
 import { ArrowDown01Icon } from "@src/icons";
 
@@ -11,6 +12,21 @@ import type {
   NavigationMenuIconRenderer,
   NavigationMenuRowActionClickHandler,
 } from "./types";
+
+export function renderNavigationMenuHoverContent(
+  item: NavigationMenuItem,
+  trailingLabelClassName: string
+): React.ReactNode {
+  if (item.shortcut) {
+    return (
+      <KeyboardShortcut shortcut={item.shortcut} size="sm" rendering="icons" />
+    );
+  }
+  if (item.trailingLabel) {
+    return <span className={trailingLabelClassName}>{item.trailingLabel}</span>;
+  }
+  return undefined;
+}
 
 interface RenderLeadingIconArgs {
   item: NavigationMenuItem;
