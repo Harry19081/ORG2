@@ -76,6 +76,7 @@ fn dev_and_bundle_share_persisted_sessions_across_processes() {
         let root = sandbox.path().join(directory);
         std::fs::create_dir(&root).unwrap();
         let conn = rusqlite::Connection::open(root.join("sessions.db")).unwrap();
+        database::db::configure_connection(&conn).unwrap();
         session_persistence::init_session_tables(&conn).unwrap();
     }
 

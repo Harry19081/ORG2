@@ -612,6 +612,7 @@ describe("isTurnCollapseEligible — unloaded placeholder affordance", () => {
       // Ungrouped rows weigh one event each; tests that need the two to
       // diverge pass `bodyEventCount` explicitly.
       bodyEventCount: itemCount,
+      hasBody: true,
       previewText: "",
       startMs: null,
       endMs: null,
@@ -663,6 +664,19 @@ describe("isTurnCollapseEligible — unloaded placeholder affordance", () => {
     expect(isTurnCollapseEligible(empty, 0, 3, {})).toBe(false);
   });
 
+  it("drops the bar from a historical round the agent never worked in", () => {
+    // Lifecycle markers alone clear the event threshold.
+    const bodyless = meta({ bodyEventCount: 2, hasBody: false });
+    expect(isTurnCollapseEligible(bodyless, 0, 3, {})).toBe(false);
+    expect(
+      isTurnCollapseEligible(bodyless, 0, 3, { forceCollapseAllTurns: true })
+    ).toBe(false);
+    // The tail keeps the regular rules: its agent may not have started yet.
+    expect(
+      isTurnCollapseEligible(bodyless, 2, 3, { tailTurnPhase: "complete" })
+    ).toBe(true);
+  });
+
   it("shows the tail bar as soon as the round ends, with no wait or size threshold", () => {
     const smallTail = meta({ itemCount: 2 });
     // A running tail is never collapsible.
@@ -709,6 +723,114 @@ describe("isTurnCollapseEligible — unloaded placeholder affordance", () => {
         tailTurnPhase: "complete",
       })
     ).toBe(false);
+  });
+});
+
+describe("projectChatGroups — rounds the agent never worked in", () => {
+  function lifecycleItem(
+    actionType: "task_start" | "task_completed"
+  ): OptimizedChatItem {
+    return item(makeEvent({ actionType, functionName: actionType }));
+  }
+
+  it.each([true, false])(
+    "gives a lifecycle-only historical round no bar and no rows (default collapsed=%s)",
+    (defaultTurnCollapsed) => {
+      const history = [
+        userItem("update the PR"),
+        lifecycleItem("task_start"),
+        lifecycleItem("task_completed"),
+        userItem("fix the conflict"),
+        toolItem(),
+        assistantItem("resolved"),
+      ];
+
+      const result = projectChatGroups(history, {
+        tailTurnPhase: "complete",
+        defaultTurnCollapsed,
+      });
+
+      expect(result.groupMeta.map((meta) => meta.hasBody)).toEqual([
+        false,
+        true,
+      ]);
+      // The two markers used to clear the one-event threshold and paint an
+      // "Agent worked for" bar over an empty round.
+      expect(result.groupMeta[0].bodyEventCount).toBe(2);
+      expect(
+        isTurnCollapseEligible(result.groupMeta[0], 0, 2, {
+          tailTurnPhase: "complete",
+        })
+      ).toBe(false);
+      // Completed turns now default to collapsed, leaving only the final reply.
+      expect(result.groupCounts).toEqual([0, defaultTurnCollapsed ? 1 : 2]);
+    }
+  );
+
+  it("keeps the regular bar rules for a lifecycle-only tail round", () => {
+    const history = [
+      userItem("first"),
+      toolItem(),
+      assistantItem("done"),
+      userItem("update the PR"),
+      lifecycleItem("task_start"),
+      lifecycleItem("task_completed"),
+    ];
+
+    const result = projectChatGroups(history, { tailTurnPhase: "complete" });
+
+    expect(result.groupMeta[1].hasBody).toBe(false);
+    expect(
+      isTurnCollapseEligible(result.groupMeta[1], 1, 2, {
+        tailTurnPhase: "complete",
+      })
+    ).toBe(true);
+  });
+
+  it("drops the placeholder row of an unloaded round measured as empty", () => {
+    const empty = userItem("update the PR");
+    const history = [
+      empty,
+      unloadedTurnItem(empty.event!.id, 0),
+      userItem("fix the conflict"),
+      assistantItem("resolved"),
+    ];
+
+    const result = projectChatGroups(history, { tailTurnPhase: "complete" });
+
+    expect(result.groupMeta[0]).toMatchObject({
+      hasBody: false,
+      unloadedTurn: { bodyEventCount: 0 },
+    });
+    // A kept placeholder rendered as a blank row plus a full turn gap.
+    expect(result.groupCounts).toEqual([0, 1]);
+    expect(flatTexts(result.flatItems)).toEqual(["resolved"]);
+  });
+
+  it("keeps unloaded rounds with a body or a reply preview", () => {
+    const measured = userItem("measured");
+    const previewed = userItem("previewed");
+    const history = [
+      measured,
+      unloadedTurnItem(measured.event!.id, 1),
+      previewed,
+      unloadedTurnPreviewItem(previewed.event!.id, 0, "final reply"),
+      userItem("current"),
+      assistantItem("done"),
+    ];
+
+    const result = projectChatGroups(history, { tailTurnPhase: "complete" });
+
+    expect(result.groupMeta.map((meta) => meta.hasBody)).toEqual([
+      true,
+      true,
+      true,
+    ]);
+    expect(
+      isTurnCollapseEligible(result.groupMeta[0], 0, 3, {
+        tailTurnPhase: "complete",
+      })
+    ).toBe(true);
   });
 });
 

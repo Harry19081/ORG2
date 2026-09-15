@@ -6,6 +6,7 @@ pub mod managed_mirror;
 pub mod managed_roots;
 pub mod metadata;
 pub mod paths;
+pub(crate) mod raw_json;
 #[cfg(feature = "git")]
 pub mod repo_identity;
 pub mod scan_snapshot;

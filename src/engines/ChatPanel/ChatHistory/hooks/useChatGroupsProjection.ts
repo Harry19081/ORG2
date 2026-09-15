@@ -32,6 +32,12 @@ export interface ChatGroupMeta {
    * tool calls into a single row.
    */
   bodyEventCount: number;
+  /**
+   * Whether the round holds anything besides internal lifecycle markers.
+   * False for a turn the agent never worked in: every loaded body item is a
+   * lifecycle marker, or the source measured the unloaded body as empty.
+   */
+  hasBody: boolean;
   previewText: string;
   startMs: number | null;
   endMs: number | null;
@@ -267,6 +273,10 @@ export function isTurnCollapseEligible(
   } = {}
 ): boolean {
   if (!meta || meta.turnId === null) return false;
+  // A historical round the agent never worked in has nothing to fold, and its
+  // bar would sit alone between two user messages. The tail keeps the rules
+  // below: its agent may simply not have started yet.
+  if (!meta.hasBody && groupIndex < groupCount - 1) return false;
   const bodyItemCount =
     meta.unloadedTurn?.bodyEventCount ?? meta.bodyEventCount;
   // Every nonempty completed turn gets its timing summary, even when its
@@ -356,6 +366,11 @@ export function projectChatGroups(
       (item) => !isUnloadedTurnItem(item) && !isTurnPreviewItem(item)
     );
     const unloadedTurn = hasLoadedBodyItem ? null : unloadedTurnPlaceholder;
+    const hasBody = unloadedTurn
+      ? unloadedTurn.bodyEventCount !== 0 || group.items.some(isTurnPreviewItem)
+      : group.items.some(
+          (item) => !isLifecycleItem(item) && !isUnloadedTurnItem(item)
+        );
     const unloadedStartMs = parseEpochMs(unloadedTurn?.startedAt);
     const unloadedEndMs = parseEpochMs(unloadedTurn?.endedAt);
     const durationMs =
@@ -372,6 +387,7 @@ export function projectChatGroups(
         (total, item) => total + countItemBodyEvents(item),
         0
       ),
+      hasBody,
       previewText: headerEvent?.displayText ?? "",
       startMs: unloadedStartMs ?? startMs,
       endMs: unloadedEndMs ?? endMs,
@@ -408,7 +424,10 @@ export function projectChatGroups(
         }));
 
     if (!isCollapsed) {
-      const keepStructuralPlaceholder = meta.unloadedTurn !== null;
+      // An empty round's placeholder stands for nothing; keeping it would
+      // leave a blank turn gap between the user messages around it.
+      const keepStructuralPlaceholder =
+        meta.unloadedTurn !== null && meta.hasBody;
       const shouldKeep = (item: OptimizedChatItem) =>
         !isLifecycleItem(item) &&
         (keepStructuralPlaceholder || !isUnloadedTurnItem(item));

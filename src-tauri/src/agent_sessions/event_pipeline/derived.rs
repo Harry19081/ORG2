@@ -73,10 +73,7 @@ pub fn is_visible_in_chat(event: &SessionEvent) -> bool {
     }
 
     // Hide task lifecycle and stage errors from chat (no UI components)
-    if matches!(
-        event.action_type.as_str(),
-        "native_command_catalog" | "task_start" | "task_completed" | "task_failed" | "stage_error"
-    ) {
+    if core_types::session_event::is_internal_lifecycle_action_type(&event.action_type) {
         return false;
     }
 
