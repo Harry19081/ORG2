@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Workstation の共有範囲",
+    "myStationSharingDesc": "作業ディレクトリごとに Workstation のタブと表示状態を共有するか、チャットタブごとに個別に保存",
+    "myStationSharingDirectory": "作業ディレクトリ",
+    "myStationSharingTab": "チャットタブ",
     "login": "ログイン",
     "tabGeneral": "一般",
     "tabSelfHosted": "セルフホスト",

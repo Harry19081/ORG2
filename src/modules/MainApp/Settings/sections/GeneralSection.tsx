@@ -79,6 +79,7 @@ import {
 import { voiceInputEnabledAtom } from "@src/store/platform/voiceInputAtom";
 import { languageAtom } from "@src/store/ui/languageAtom";
 import { timezoneAtom } from "@src/store/ui/timezoneAtom";
+import { myStationSharingAtom } from "@src/store/workstation/tabs/workspaceScope";
 import { copyText } from "@src/util/data/clipboard";
 
 import {
@@ -146,6 +147,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
 
 const GeneralTabBody: React.FC = () => {
   const { t, i18n } = useTranslation("settings");
+  const [myStationSharing, setMyStationSharing] = useAtom(myStationSharingAtom);
   const [licenseModalVisible, setLicenseModalVisible] = useState(false);
   const [timezone, setTimezone] = useAtom(timezoneAtom);
   const [chatAppearance, updateChatAppearance] = useAtom(
@@ -367,6 +369,31 @@ const GeneralTabBody: React.FC = () => {
           <Select {...timezoneSelectProps} />
         </SectionRow>
         <HttpVersionSettingsBlock />
+      </SectionContainer>
+      <SectionContainer>
+        <SectionRow
+          label={t("general.myStationSharing")}
+          description={t("general.myStationSharingDesc")}
+        >
+          <Select
+            ariaLabel={t("general.myStationSharing")}
+            value={myStationSharing}
+            onChange={(value) => {
+              if (value === "working-directory" || value === "chat-tab") {
+                setMyStationSharing(value);
+              }
+            }}
+            options={[
+              {
+                value: "working-directory",
+                label: t("general.myStationSharingDirectory"),
+              },
+              { value: "chat-tab", label: t("general.myStationSharingTab") },
+            ]}
+            size="default"
+            style={SECTION_CONTROL_STYLE}
+          />
+        </SectionRow>
       </SectionContainer>
       <SectionContainer>
         <SectionRow

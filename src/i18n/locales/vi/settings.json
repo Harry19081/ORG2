@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Chia sẻ Workstation",
+    "myStationSharingDesc": "Chia sẻ các tab và trạng thái hiển thị Workstation theo thư mục làm việc hoặc lưu riêng cho từng tab trò chuyện",
+    "myStationSharingDirectory": "Thư mục làm việc",
+    "myStationSharingTab": "Tab trò chuyện",
     "login": "Đăng nhập",
     "tabGeneral": "Chung",
     "tabSelfHosted": "Tự lưu trữ",

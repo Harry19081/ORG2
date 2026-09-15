@@ -167,6 +167,7 @@ const SETTINGS_SEARCH_UI_OVERRIDES: Partial<
     labelKey: "settings:general.preventSleep",
   },
   "general.updateChannel": { labelKey: "settings:update.channel" },
+  "general.myStationSharing": { labelKey: "settings:general.myStationSharing" },
   "general.voiceInputEnabled": { labelKey: "settings:general.voiceInput" },
   "layout.sidebarSelectedRowOpacity": {
     labelKey: "settings:general.selectedItemTransparency",

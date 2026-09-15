@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Workstation paylaşımı",
+    "myStationSharingDesc": "Workstation sekmelerini ve görünüm durumunu çalışma dizinine göre paylaşın veya her sohbet sekmesi için ayrı tutun",
+    "myStationSharingDirectory": "Çalışma dizini",
+    "myStationSharingTab": "Sohbet sekmesi",
     "login": "Giriş",
     "tabGeneral": "Genel",
     "tabSelfHosted": "Kendi kendine barındırılan",

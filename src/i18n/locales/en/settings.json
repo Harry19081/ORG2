@@ -167,6 +167,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Workstation sharing",
+    "myStationSharingDesc": "Share Workstation tabs and view state by working directory or keep them separate for each chat tab",
+    "myStationSharingDirectory": "Working directory",
+    "myStationSharingTab": "Chat tab",
     "login": "Login",
     "tabGeneral": "General",
     "tabSelfHosted": "Self-hosted",

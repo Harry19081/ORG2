@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Udostępnianie Workstation",
+    "myStationSharingDesc": "Współdziel karty i stan widoków Workstation według katalogu roboczego lub zapisuj je osobno dla każdej karty czatu",
+    "myStationSharingDirectory": "Katalog roboczy",
+    "myStationSharingTab": "Karta czatu",
     "login": "Logowanie",
     "tabGeneral": "Ogólne",
     "tabSelfHosted": "Hostowane samodzielnie",

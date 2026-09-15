@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Workstation teilen",
+    "myStationSharingDesc": "Tabs und Ansichtsstatus von Workstation nach Arbeitsverzeichnis teilen oder für jeden Chat-Tab getrennt speichern",
+    "myStationSharingDirectory": "Arbeitsverzeichnis",
+    "myStationSharingTab": "Chat-Tab",
     "login": "Anmeldung",
     "tabGeneral": "Allgemein",
     "tabSelfHosted": "Selbstgehostet",

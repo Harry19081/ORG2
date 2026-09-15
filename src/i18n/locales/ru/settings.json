@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Общее состояние Workstation",
+    "myStationSharingDesc": "Использовать общие вкладки и состояние представлений Workstation для рабочего каталога или сохранять их отдельно для каждой вкладки чата",
+    "myStationSharingDirectory": "Рабочий каталог",
+    "myStationSharingTab": "Вкладка чата",
     "login": "Вход",
     "tabGeneral": "Общие",
     "tabSelfHosted": "Самостоятельный хостинг",

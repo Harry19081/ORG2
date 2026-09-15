@@ -86,6 +86,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Partilha do Workstation",
+    "myStationSharingDesc": "Partilhar os separadores e o estado das vistas do Workstation por diretório de trabalho ou guardá-los separadamente para cada separador de conversa",
+    "myStationSharingDirectory": "Diretório de trabalho",
+    "myStationSharingTab": "Separador de conversa",
     "login": "Entrar",
     "tabGeneral": "Geral",
     "tabSelfHosted": "Auto-hospedado",
