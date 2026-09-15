@@ -391,13 +391,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Masaüstü kontrolü sırasında ORG2’yi gizle",
-      "hideBeforeActionHelper": "Peekaboo çalışırken ana ORG2 penceresini gizler ve Wingman çubuğu ile yüzen açıklamayı gösterir; böylece Agent odağı yönetmek zorunda kalmaz.",
+      "hideBeforeActionHelper": "Peekaboo çalışırken ana ORG2 penceresini gizler ve Wingman çubuğu ile yüzen açıklamayı gösterir; böylece Agent odağı yönetmek zorunda kalmaz",
       "antiDetection": "HID otomasyon karşıtı sertleştirme",
-      "antiDetectionHelper": "Peekaboo’nun tıklamalar ve tuş vuruşları için saf Erişilebilirlik eylemleri yerine gerçek CGEvent (HID) girişleri göndermesini sağlar; böylece otomasyon algılama özelliği olan uygulamaların (ör. WeChat) masaüstü kontrolünü engelleme olasılığı azalır.",
+      "antiDetectionHelper": "Peekaboo’nun tıklamalar ve tuş vuruşları için saf Erişilebilirlik eylemleri yerine gerçek CGEvent (HID) girişleri göndermesini sağlar; böylece otomasyon algılama özelliği olan uygulamaların (ör. WeChat) masaüstü kontrolünü engelleme olasılığı azalır",
       "humanInputProfile": "İnsansı yazma temposu",
-      "humanInputProfileHelper": "Sentezlenen tuş vuruşlarına insana benzer bir zamanlama profili uygular. En yüksek hızda yazmak için devre dışı bırakın.",
+      "humanInputProfileHelper": "Sentezlenen tuş vuruşlarına insana benzer bir zamanlama profili uygular. En yüksek hızda yazmak için devre dışı bırakın",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Eksik: {{bins}}",
     "skillMissingEnv": "Eksik ortam değişkenleri: {{vars}}",
@@ -559,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Pull stratejisi",
       "pullStrategyDesc": "Senkronizasyon sırasında git pull'un remote değişiklikleri nasıl entegre edeceği",
-      "pullStrategyHint": "Rebase (varsayılan): Commit'lerinizi remote üzerine replays. Linear history oluşturur.\n\nMerge: Branches diverged olduğunda merge commit oluşturur. Tam history'yi korur.\n\nFast-forward only: Merge gerekmediğinde pull'a izin verir. Branches diverged ise reddeder.",
+      "pullStrategyHint": "Rebase (varsayılan): Commit'lerinizi remote üzerine replays. Linear history oluşturur.\n\nMerge: Branches diverged olduğunda merge commit oluşturur. Tam history'yi korur.\n\nFast-forward only: Merge gerekmediğinde pull'a izin verir. Branches diverged ise reddeder",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (varsayılan)",
       "strategyFfOnly": "Yalnızca Fast-forward (katı)",
@@ -608,7 +608,7 @@
     "checkFailed": "Güncelleme denetimi başarısız",
     "checking": "Güncellemeler denetleniyor…",
     "officialInstalled": "Resmi uygulama yüklendi",
-    "officialInstalledDesc": "{{version}}, {{path}} konumuna yüklendi. Bu yerel derleme değişmeden çalışmaya devam ediyor.",
+    "officialInstalledDesc": "{{version}}, {{path}} konumuna yüklendi. Bu yerel derleme değişmeden çalışmaya devam ediyor",
     "downloadFailed": "Güncelleme indirmesi başarısız",
     "retryNow": "Şimdi yeniden dene",
     "downloadTimeout": "İndirme zaman aşımına uğradı. Ağınızı veya proxy ayarlarınızı kontrol edip yeniden deneyin.",
@@ -768,7 +768,7 @@
     "tableVersion": "Sürüm",
     "tableStatus": "Durum",
     "installSection": "Yükle",
-    "installHintNote": "Platformunuz için önerilen yükleme komutu. Çoğu sistem bağımlılığı yönetici izni gerektirir, bu yüzden otomatik çalıştırmıyoruz — kopyalayıp terminal'inize yapıştırın."
+    "installHintNote": "Platformunuz için önerilen yükleme komutu. Çoğu sistem bağımlılığı yönetici izni gerektirir, bu yüzden otomatik çalıştırmıyoruz — kopyalayıp terminal'inize yapıştırın"
   },
   "agentSessions": {
     "chatFontSize": "Sohbet Yazı Boyutu",
@@ -830,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "{{agentName}} için Evrim’i etkinleştir",
     "noAgentsTitle": "Kullanılabilir Agent yok",
-    "noAgentsSubtitle": "Evrim’i yapılandırmak için bir Agent oluşturun veya içe aktarın."
+    "noAgentsSubtitle": "Evrim’i yapılandırmak için bir Agent oluşturun veya içe aktarın"
   },
   "org": {},
   "learningsBrowser": {

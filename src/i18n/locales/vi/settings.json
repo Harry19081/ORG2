@@ -391,13 +391,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Ẩn ORG2 khi điều khiển màn hình",
-      "hideBeforeActionHelper": "Ẩn cửa sổ chính ORG2 trong khi Peekaboo thao tác, đồng thời hiển thị thanh Wingman và chú thích nổi để Agent không cần tự quản lý tiêu điểm.",
+      "hideBeforeActionHelper": "Ẩn cửa sổ chính ORG2 trong khi Peekaboo thao tác, đồng thời hiển thị thanh Wingman và chú thích nổi để Agent không cần tự quản lý tiêu điểm",
       "antiDetection": "Tăng cường chống phát hiện tự động hóa HID",
-      "antiDetectionHelper": "Khiến Peekaboo gửi các sự kiện CGEvent (HID) thực cho thao tác nhấp chuột và gõ phím thay vì thao tác Trợ năng thuần túy, để các ứng dụng có phát hiện tự động hóa (ví dụ: WeChat) ít có khả năng chặn điều khiển màn hình hơn.",
+      "antiDetectionHelper": "Khiến Peekaboo gửi các sự kiện CGEvent (HID) thực cho thao tác nhấp chuột và gõ phím thay vì thao tác Trợ năng thuần túy, để các ứng dụng có phát hiện tự động hóa (ví dụ: WeChat) ít có khả năng chặn điều khiển màn hình hơn",
       "humanInputProfile": "Nhịp gõ phím giống con người",
-      "humanInputProfileHelper": "Áp dụng hồ sơ thời gian giống con người cho các phím được tổng hợp. Tắt để gõ ở tốc độ tối đa.",
+      "humanInputProfileHelper": "Áp dụng hồ sơ thời gian giống con người cho các phím được tổng hợp. Tắt để gõ ở tốc độ tối đa",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Thiếu: {{bins}}",
     "skillMissingEnv": "Thiếu biến môi trường: {{vars}}",
@@ -559,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Chiến lược pull",
       "pullStrategyDesc": "Cách git pull tích hợp thay đổi từ remote khi đồng bộ",
-      "pullStrategyHint": "Rebase (mặc định): Replays commit của bạn lên remote. Tạo linear history.\n\nMerge: Tạo merge commit khi branches đã diverged. Giữ nguyên history đầy đủ.\n\nFast-forward only: Chỉ cho phép pull khi không cần merge. Từ chối nếu branches đã diverged.",
+      "pullStrategyHint": "Rebase (mặc định): Replays commit của bạn lên remote. Tạo linear history.\n\nMerge: Tạo merge commit khi branches đã diverged. Giữ nguyên history đầy đủ.\n\nFast-forward only: Chỉ cho phép pull khi không cần merge. Từ chối nếu branches đã diverged",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (mặc định)",
       "strategyFfOnly": "Chỉ Fast-forward (nghiêm ngặt)",
@@ -608,7 +608,7 @@
     "checkFailed": "Không thể kiểm tra bản cập nhật",
     "checking": "Đang kiểm tra bản cập nhật…",
     "officialInstalled": "Đã cài ứng dụng chính thức",
-    "officialInstalledDesc": "Đã cài {{version}} tại {{path}}. Bản dựng cục bộ này vẫn chạy và không thay đổi.",
+    "officialInstalledDesc": "Đã cài {{version}} tại {{path}}. Bản dựng cục bộ này vẫn chạy và không thay đổi",
     "downloadFailed": "Không thể tải bản cập nhật",
     "retryNow": "Thử lại ngay",
     "downloadTimeout": "Tải xuống quá thời gian chờ. Kiểm tra mạng hoặc proxy rồi thử lại.",
@@ -768,7 +768,7 @@
     "tableVersion": "Phiên bản",
     "tableStatus": "Trạng thái",
     "installSection": "Cài đặt",
-    "installHintNote": "Lệnh cài đặt được đề xuất cho nền tảng của bạn. Hầu hết các phụ thuộc hệ thống cần quyền quản trị, nên chúng tôi không tự động chạy — hãy sao chép và dán vào terminal."
+    "installHintNote": "Lệnh cài đặt được đề xuất cho nền tảng của bạn. Hầu hết các phụ thuộc hệ thống cần quyền quản trị, nên chúng tôi không tự động chạy — hãy sao chép và dán vào terminal"
   },
   "agentSessions": {
     "chatFontSize": "Cỡ chữ chat",
@@ -830,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "Bật Tiến hóa cho {{agentName}}",
     "noAgentsTitle": "Không có Agent khả dụng",
-    "noAgentsSubtitle": "Tạo hoặc nhập Agent để cấu hình Tiến hóa."
+    "noAgentsSubtitle": "Tạo hoặc nhập Agent để cấu hình Tiến hóa"
   },
   "org": {},
   "learningsBrowser": {

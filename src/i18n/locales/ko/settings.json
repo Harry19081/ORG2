@@ -391,13 +391,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "데스크톱 제어 중 ORG2 숨기기",
-      "hideBeforeActionHelper": "Peekaboo가 작업하는 동안 ORG2 기본 창을 숨기고 Wingman 바와 플로팅 캡션을 표시하여 Agent가 포커스를 직접 관리하지 않게 합니다.",
+      "hideBeforeActionHelper": "Peekaboo가 작업하는 동안 ORG2 기본 창을 숨기고 Wingman 바와 플로팅 캡션을 표시하여 Agent가 포커스를 직접 관리하지 않게 합니다",
       "antiDetection": "HID 자동화 탐지 방지 강화",
-      "antiDetectionHelper": "Peekaboo가 클릭과 키 입력에 대해 순수 접근성 동작 대신 실제 CGEvent(HID) 입력을 전송하도록 하여, 자동화 탐지 기능이 있는 앱(예: WeChat)이 데스크톱 제어를 차단할 가능성을 줄입니다.",
+      "antiDetectionHelper": "Peekaboo가 클릭과 키 입력에 대해 순수 접근성 동작 대신 실제 CGEvent(HID) 입력을 전송하도록 하여, 자동화 탐지 기능이 있는 앱(예: WeChat)이 데스크톱 제어를 차단할 가능성을 줄입니다",
       "humanInputProfile": "사람 같은 입력 리듬",
-      "humanInputProfileHelper": "합성된 키 입력에 사람과 유사한 타이밍 프로필을 적용합니다. 비활성화하면 최고 속도로 입력합니다.",
+      "humanInputProfileHelper": "합성된 키 입력에 사람과 유사한 타이밍 프로필을 적용합니다. 비활성화하면 최고 속도로 입력합니다",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "누락: {{bins}}",
     "skillMissingEnv": "누락된 환경 변수: {{vars}}",
@@ -559,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Pull 전략",
       "pullStrategyDesc": "동기화 시 git pull이 remote 변경 사항을 통합하는 방법",
-      "pullStrategyHint": "Rebase（기본값）：당신의 commit을 remote 위에 replay. linear history 생성.\n\nMerge：branch가 diverge했을 때 merge commit 생성. 전체 history 보존.\n\nFast-forward only：merge가 필요 없을 때만 pull 허용. branch가 diverge하면 거부.",
+      "pullStrategyHint": "Rebase（기본값）：당신의 commit을 remote 위에 replay. linear history 생성.\n\nMerge：branch가 diverge했을 때 merge commit 생성. 전체 history 보존.\n\nFast-forward only：merge가 필요 없을 때만 pull 허용. branch가 diverge하면 거부",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (기본값)",
       "strategyFfOnly": "Fast-forward만 (엄격)",
@@ -608,7 +608,7 @@
     "checkFailed": "업데이트 확인 실패",
     "checking": "업데이트 확인 중…",
     "officialInstalled": "공식 앱 설치 완료",
-    "officialInstalledDesc": "{{version}}이(가) {{path}}에 설치되었습니다. 현재 로컬 빌드는 변경 없이 계속 실행됩니다.",
+    "officialInstalledDesc": "{{version}}이(가) {{path}}에 설치되었습니다. 현재 로컬 빌드는 변경 없이 계속 실행됩니다",
     "downloadFailed": "업데이트 다운로드 실패",
     "retryNow": "지금 다시 시도",
     "downloadTimeout": "다운로드 시간이 초과되었습니다. 네트워크 또는 프록시를 확인한 후 다시 시도하세요.",
@@ -768,7 +768,7 @@
     "tableVersion": "버전",
     "tableStatus": "상태",
     "installSection": "설치",
-    "installHintNote": "현재 플랫폼에 권장되는 설치 명령어입니다. 대부분의 시스템 의존성은 관리자 권한이 필요하므로 자동으로 실행하지 않습니다 — terminal에 복사하여 붙여 넣으세요."
+    "installHintNote": "현재 플랫폼에 권장되는 설치 명령어입니다. 대부분의 시스템 의존성은 관리자 권한이 필요하므로 자동으로 실행하지 않습니다 — terminal에 복사하여 붙여 넣으세요"
   },
   "agentSessions": {
     "chatFontSize": "채팅 글꼴 크기",
@@ -830,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "{{agentName}}에 진화 활성화",
     "noAgentsTitle": "사용 가능한 Agent가 없습니다",
-    "noAgentsSubtitle": "진화를 구성하려면 Agent를 만들거나 가져오세요."
+    "noAgentsSubtitle": "진화를 구성하려면 Agent를 만들거나 가져오세요"
   },
   "org": {},
   "learningsBrowser": {

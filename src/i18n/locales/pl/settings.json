@@ -391,13 +391,13 @@
     "desktopConfig": {
       "title": "Bezpieczeństwo pulpitu",
       "hideBeforeAction": "Ukryj ORG2 podczas sterowania pulpitem",
-      "hideBeforeActionHelper": "Ukrywa główne okno ORG2 podczas działania Peekaboo oraz pokazuje pasek Wingman i pływający podpis, aby Agent nie musiał zarządzać fokusem.",
+      "hideBeforeActionHelper": "Ukrywa główne okno ORG2 podczas działania Peekaboo oraz pokazuje pasek Wingman i pływający podpis, aby Agent nie musiał zarządzać fokusem",
       "antiDetection": "Wzmocnienie ochrony przed wykrywaniem automatyzacji (HID)",
-      "antiDetectionHelper": "Sprawia, że Peekaboo wysyła prawdziwe zdarzenia CGEvent (HID) dla kliknięć i naciśnięć klawiszy zamiast samych akcji Dostępności, dzięki czemu aplikacje z wykrywaniem automatyzacji (np. WeChat) rzadziej blokują sterowanie pulpitem.",
+      "antiDetectionHelper": "Sprawia, że Peekaboo wysyła prawdziwe zdarzenia CGEvent (HID) dla kliknięć i naciśnięć klawiszy zamiast samych akcji Dostępności, dzięki czemu aplikacje z wykrywaniem automatyzacji (np. WeChat) rzadziej blokują sterowanie pulpitem",
       "humanInputProfile": "Ludzkie tempo pisania",
-      "humanInputProfileHelper": "Stosuje profil czasowy zbliżony do ludzkiego dla syntetyzowanych naciśnięć klawiszy. Wyłącz, aby pisać z maksymalną prędkością.",
+      "humanInputProfileHelper": "Stosuje profil czasowy zbliżony do ludzkiego dla syntetyzowanych naciśnięć klawiszy. Wyłącz, aby pisać z maksymalną prędkością",
       "escapeAbort": "Klawisz Escape systemu przerywa",
-      "escapeAbortHelper": "Traktuj wciśnięcie sprzętowego Escape jako sygnał przerwania trwającej automatyzacji pulpitu. Nasze syntetyzowane naciśnięcia Escape są zawsze wyłączane."
+      "escapeAbortHelper": "Traktuj wciśnięcie sprzętowego Escape jako sygnał przerwania trwającej automatyzacji pulpitu. Nasze syntetyzowane naciśnięcia Escape są zawsze wyłączane"
     },
     "skillMissingBins": "Brakuje: {{bins}}",
     "skillMissingEnv": "Brak zmiennych środowiskowych: {{vars}}",
@@ -559,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Strategia pull",
       "pullStrategyDesc": "Jak git pull integruje zmiany zdalne podczas synchronizacji",
-      "pullStrategyHint": "Rebase (domyślnie): Odtwarza Twoje commity na szczycie zdalnego. Tworzy liniową historię.\n\nMerge: Tworzy commit scalający, gdy gałęzie się rozeszły. Zachowuje pełną historię.\n\nFast-forward only: Pozwala na pull tylko, gdy scalanie nie jest potrzebne. Odmawia, jeśli gałęzie się rozeszły.",
+      "pullStrategyHint": "Rebase (domyślnie): Odtwarza Twoje commity na szczycie zdalnego. Tworzy liniową historię.\n\nMerge: Tworzy commit scalający, gdy gałęzie się rozeszły. Zachowuje pełną historię.\n\nFast-forward only: Pozwala na pull tylko, gdy scalanie nie jest potrzebne. Odmawia, jeśli gałęzie się rozeszły",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (domyślnie)",
       "strategyFfOnly": "Tylko fast-forward (ścisłe)",
@@ -608,7 +608,7 @@
     "checkFailed": "Sprawdzanie aktualizacji nie powiodło się",
     "checking": "Sprawdzanie aktualizacji…",
     "officialInstalled": "Oficjalna aplikacja zainstalowana",
-    "officialInstalledDesc": "Wersja {{version}} jest zainstalowana w {{path}}. Ta lokalna kompilacja nadal działa bez zmian.",
+    "officialInstalledDesc": "Wersja {{version}} jest zainstalowana w {{path}}. Ta lokalna kompilacja nadal działa bez zmian",
     "downloadFailed": "Pobieranie aktualizacji nie powiodło się",
     "retryNow": "Ponów teraz",
     "downloadTimeout": "Przekroczono czas pobierania. Sprawdź sieć lub serwer proxy i spróbuj ponownie.",
@@ -744,7 +744,7 @@
     "tableVersion": "Wersja",
     "tableStatus": "Status",
     "installSection": "Instalacja",
-    "installHintNote": "Sugerowane polecenie instalacji dla Twojej platformy. Większość zależności systemowych wymaga uprawnień administratora, więc nie uruchamiamy ich automatycznie — skopiuj i wklej do swojego terminala."
+    "installHintNote": "Sugerowane polecenie instalacji dla Twojej platformy. Większość zależności systemowych wymaga uprawnień administratora, więc nie uruchamiamy ich automatycznie — skopiuj i wklej do swojego terminala"
   },
   "storage": {
     "dataDirectory": "Katalog danych",
@@ -830,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "Włącz ewolucję dla {{agentName}}",
     "noAgentsTitle": "Brak dostępnych Agentów",
-    "noAgentsSubtitle": "Utwórz lub zaimportuj Agenta, aby skonfigurować ewolucję."
+    "noAgentsSubtitle": "Utwórz lub zaimportuj Agenta, aby skonfigurować ewolucję"
   },
   "org": {},
   "learningsBrowser": {

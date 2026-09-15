@@ -924,7 +924,7 @@
       "createTokenButton": "创建 Token",
       "openGitSettingsButton": "打开设置",
       "configureInSettings": "在设置中配置 Git",
-      "configureInSettingsDesc": "在 设置 → 连接 中添加 GitHub App 访问权限、保存 token 或扫描本地凭据，然后重试此 Git 操作。"
+      "configureInSettingsDesc": "在 设置 → 连接 中添加 GitHub App 访问权限、保存 token 或扫描本地凭据，然后重试此 Git 操作"
     },
     "actions": {
       "publish": "Publish",
@@ -1163,7 +1163,7 @@
       "cannotParseRepoName": "无法从 origin 远程仓库解析仓库名",
       "authRequired": {
         "title": "连接 GitHub",
-        "description": "前往 设置 → 连接 以连接你的 GitHub 账号。"
+        "description": "前往 设置 → 连接 以连接你的 GitHub 账号"
       },
       "navigationTrail": "Pull request 导航",
       "failedToLoad": "加载 pull request 失败",
@@ -1333,10 +1333,10 @@
       "newIssueBodyPlaceholder": "描述该 issue（可选）…",
       "authRequired": {
         "title": "连接 GitHub",
-        "description": "前往 设置 → 连接 以连接你的 GitHub 账号。"
+        "description": "前往 设置 → 连接 以连接你的 GitHub 账号"
       },
       "reAuthRequired": "需要 GitHub 授权",
-      "reAuthDescription": "你的 GitHub token 已过期。请前往 设置 → 连接 重新连接。",
+      "reAuthDescription": "你的 GitHub token 已过期。请前往 设置 → 连接 重新连接",
       "goToSettings": "前往设置",
       "loadingTimeline": "正在加载活动…",
       "label": "Issue",
@@ -2180,7 +2180,7 @@
   },
   "quitConfirmation": {
     "title": "退出 ORG2？",
-    "subtitle": "正在运行的会话会保留当前状态。你可以稍后重新打开 ORG2。",
+    "subtitle": "正在运行的会话会保留当前状态。你可以稍后重新打开 ORG2",
     "cancel": "取消",
     "confirm": "退出"
   },
@@ -2192,7 +2192,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "需要“完全磁盘访问”权限",
-      "explain": "Safari 将 Cookie 存储在受 macOS 保护的文件夹中。请在系统设置的“完全磁盘访问权限”中允许 ORG2，然后重新检查。",
+      "explain": "Safari 将 Cookie 存储在受 macOS 保护的文件夹中。请在系统设置的“完全磁盘访问权限”中允许 ORG2，然后重新检查",
       "openSettings": "打开系统设置",
       "checkAgain": "重新检查"
     },
@@ -2217,7 +2217,7 @@
     "doneSkipped_other": "已跳过 {{count}} 个 Cookie",
     "empty": {
       "title": "未找到受支持的浏览器",
-      "body": "请安装带有已保存登录信息的 Chrome、Edge、Brave 或 Firefox。"
+      "body": "请安装带有已保存登录信息的 Chrome、Edge、Brave 或 Firefox"
     },
     "category": {
       "banking": "银行",
@@ -2226,7 +2226,7 @@
     },
     "errors": {
       "openSettingsFailed": "无法打开系统设置",
-      "keychainDenied": "钥匙串访问被拒绝。请重新选择该配置文件并点击“允许”。",
+      "keychainDenied": "钥匙串访问被拒绝。请重新选择该配置文件并点击“允许”",
       "listFailed": "找不到可导入的浏览器",
       "previewFailed": "无法从该浏览器读取 Cookie",
       "importFailed": "无法导入所选 Cookie"

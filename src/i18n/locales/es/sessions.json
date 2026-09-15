@@ -896,10 +896,10 @@
       "exportJson": "Exportar JSON",
       "importAction": "Importar Session",
       "exportDescription": "Exporta la Session activa como una instantánea JSON portátil",
-      "importDescription": "Importa una instantánea JSON de Session en la barra lateral.",
+      "importDescription": "Importa una instantánea JSON de Session en la barra lateral",
       "jsonSnapshotNote": "Las Sessions importadas son instantáneas de solo lectura y conservan el historial de eventos original",
       "chooseJson": "Elegir archivo JSON",
-      "chooseJsonHint": "Selecciona un archivo de exportación .orgii-session.json.",
+      "chooseJsonHint": "Selecciona un archivo de exportación .orgii-session.json",
       "loadingPreview": "Contando eventos de Session…",
       "noActiveSession": "No hay ninguna Session activa seleccionada.",
       "importedName": "Session importada: {{name}}",
@@ -1908,7 +1908,7 @@
     "start": "Iniciar",
     "missingGit": {
       "title": "Falta Git",
-      "body": "Git no está instalado o no se pudo encontrar. Pide a ADE Manager o a SDE Agent que instale Git en esta máquina y luego reinicia ORG2."
+      "body": "Git no está instalado o no se pudo encontrar. Pide a ADE Manager o a SDE Agent que instale Git en esta máquina y luego reinicia ORG2"
     },
     "model": "Modelo",
     "contextMenu": {
@@ -2123,7 +2123,7 @@
       "archiveTeardownRetained": "Archivado, pero no se pudo liberar {{count}} proceso. La eliminación sigue bloqueada.",
       "archiveTeardownQuiesced": "Archivado y detenido por completo. Ya se puede eliminar permanentemente.",
       "dangerZone": "Zona de peligro",
-      "deleteDescription": "Eliminar permanentemente este equipo, sus sesiones y su historial.",
+      "deleteDescription": "Eliminar permanentemente este equipo, sus sesiones y su historial",
       "deleteTeam": "Eliminar equipo",
       "deleteTitle": "¿Eliminar permanentemente este equipo?",
       "deleteWarning": "Esto elimina permanentemente todas las sesiones y el historial del equipo. No se puede deshacer.",

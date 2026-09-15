@@ -4,6 +4,7 @@ import { flushSync } from "react-dom";
 import type { AppearanceMode } from "@src/config/appearance/globalThemes";
 import type { UseAppNavigationReturn } from "@src/hooks/navigation/useAppNavigation";
 import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
+import { openLink } from "@src/util/ui/openLink";
 
 interface UseSidebarSettingsMenuActionsOptions {
   closeAll: () => void;
@@ -12,7 +13,7 @@ interface UseSidebarSettingsMenuActionsOptions {
 }
 
 /**
- * Wiki and account dialog visibility, plus the menu actions that close every
+ * Account dialog visibility, plus the menu actions that close every
  * popover as they navigate, change the theme or open a dialog.
  */
 export function useSidebarSettingsMenuActions({
@@ -20,9 +21,13 @@ export function useSidebarSettingsMenuActions({
   goToSettings,
   handleAppearanceModeChange,
 }: UseSidebarSettingsMenuActionsOptions) {
-  const [showWiki, setShowWiki] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [showSignOutConfirmation, setShowSignOutConfirmation] = useState(false);
+
+  const handleOpenWiki = useCallback(() => {
+    flushSync(closeAll);
+    openLink("https://github.com/org2AI/ORG2/wiki", { navigate: true });
+  }, [closeAll]);
 
   const handleOpenOnboarding = useCallback(() => {
     flushSync(closeAll);
@@ -58,8 +63,7 @@ export function useSidebarSettingsMenuActions({
   );
 
   return {
-    showWiki,
-    setShowWiki,
+    handleOpenWiki,
     showSignInModal,
     setShowSignInModal,
     showSignOutConfirmation,

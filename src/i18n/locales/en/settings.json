@@ -469,13 +469,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Hide ORG2 during desktop control",
-      "hideBeforeActionHelper": "Hide the main ORG2 window while Peekaboo operates, and show the Wingman bar plus floating caption so the agent does not need to manage focus.",
+      "hideBeforeActionHelper": "Hide the main ORG2 window while Peekaboo operates, and show the Wingman bar plus floating caption so the agent does not need to manage focus",
       "antiDetection": "HID anti-automation hardening",
-      "antiDetectionHelper": "Make Peekaboo post real CGEvent (HID) input for clicks and keystrokes instead of pure Accessibility actions, so apps with anti-automation detection (e.g. WeChat) are less likely to block desktop control.",
+      "antiDetectionHelper": "Make Peekaboo post real CGEvent (HID) input for clicks and keystrokes instead of pure Accessibility actions, so apps with anti-automation detection (e.g. WeChat) are less likely to block desktop control",
       "humanInputProfile": "Human typing cadence",
-      "humanInputProfileHelper": "Apply a human-like timing profile to synthesized keystrokes. Disable to type at maximum speed.",
+      "humanInputProfileHelper": "Apply a human-like timing profile to synthesized keystrokes. Disable to type at maximum speed",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Missing: {{bins}}",
     "skillMissingEnv": "Missing env: {{vars}}",
@@ -637,7 +637,7 @@
       "title": "Git",
       "pullStrategy": "Pull strategy",
       "pullStrategyDesc": "How git pull integrates remote changes when syncing",
-      "pullStrategyHint": "Rebase (default): Replays your commits on top of remote. Creates linear history.\n\nMerge: Creates a merge commit when branches have diverged. Preserves full history.\n\nFast-forward only: Only allows pull when no merge is needed. Refuses if branches have diverged.",
+      "pullStrategyHint": "Rebase (default): Replays your commits on top of remote. Creates linear history.\n\nMerge: Creates a merge commit when branches have diverged. Preserves full history.\n\nFast-forward only: Only allows pull when no merge is needed. Refuses if branches have diverged",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (default)",
       "strategyFfOnly": "Fast-forward only (strict)",
@@ -686,7 +686,7 @@
     "checkFailed": "Update check failed",
     "checking": "Checking for updates…",
     "officialInstalled": "Official app installed",
-    "officialInstalledDesc": "{{version}} is installed at {{path}}. This local build is still running and unchanged.",
+    "officialInstalledDesc": "{{version}} is installed at {{path}}. This local build is still running and unchanged",
     "downloadFailed": "Update download failed",
     "retryNow": "Retry now",
     "downloadTimeout": "The download timed out. Check your network or proxy, then retry.",
@@ -822,7 +822,7 @@
     "tableVersion": "Version",
     "tableStatus": "Status",
     "installSection": "Install",
-    "installHintNote": "Suggested install command for your platform. Most system dependencies require admin privileges, so we don't run them automatically — copy and paste into your terminal."
+    "installHintNote": "Suggested install command for your platform. Most system dependencies require admin privileges, so we don't run them automatically — copy and paste into your terminal"
   },
   "storage": {
     "dataDirectory": "Data Directory",
@@ -908,7 +908,7 @@
   "agentEvolution": {
     "enableForAgent": "Enable Evolution for {{agentName}}",
     "noAgentsTitle": "No agents available",
-    "noAgentsSubtitle": "Create or import an agent to configure Evolution."
+    "noAgentsSubtitle": "Create or import an agent to configure Evolution"
   },
   "org": {},
   "learningsBrowser": {

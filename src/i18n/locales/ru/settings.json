@@ -391,13 +391,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Скрывать ORG2 при управлении рабочим столом",
-      "hideBeforeActionHelper": "Скрывает главное окно ORG2 во время работы Peekaboo и показывает панель Wingman с плавающей подписью, чтобы Agent не управлял фокусом вручную.",
+      "hideBeforeActionHelper": "Скрывает главное окно ORG2 во время работы Peekaboo и показывает панель Wingman с плавающей подписью, чтобы Agent не управлял фокусом вручную",
       "antiDetection": "Защита от обнаружения автоматизации (HID)",
-      "antiDetectionHelper": "Заставляет Peekaboo отправлять настоящие события CGEvent (HID) для кликов и нажатий клавиш вместо чистых действий Accessibility, чтобы приложения с детекцией автоматизации (например, WeChat) реже блокировали управление рабочим столом.",
+      "antiDetectionHelper": "Заставляет Peekaboo отправлять настоящие события CGEvent (HID) для кликов и нажатий клавиш вместо чистых действий Accessibility, чтобы приложения с детекцией автоматизации (например, WeChat) реже блокировали управление рабочим столом",
       "humanInputProfile": "Человекоподобный ритм ввода",
-      "humanInputProfileHelper": "Применяет человекоподобный профиль таймингов к синтезированным нажатиям клавиш. Отключите для ввода на максимальной скорости.",
+      "humanInputProfileHelper": "Применяет человекоподобный профиль таймингов к синтезированным нажатиям клавиш. Отключите для ввода на максимальной скорости",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Отсутствует: {{bins}}",
     "skillMissingEnv": "Отсутствуют переменные окружения: {{vars}}",
@@ -559,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Стратегия pull",
       "pullStrategyDesc": "Как git pull интегрирует изменения с remote при синхронизации",
-      "pullStrategyHint": "Rebase (по умолчанию): Replays ваши commits поверх remote. Создаёт linear history.\n\nMerge: Создаёт merge commit при diverge branches. Сохраняет полный history.\n\nFast-forward only: Разрешает pull только когда merge не нужен. Отказывает если branches diverged.",
+      "pullStrategyHint": "Rebase (по умолчанию): Replays ваши commits поверх remote. Создаёт linear history.\n\nMerge: Создаёт merge commit при diverge branches. Сохраняет полный history.\n\nFast-forward only: Разрешает pull только когда merge не нужен. Отказывает если branches diverged",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (по умолчанию)",
       "strategyFfOnly": "Только Fast-forward (строго)",
@@ -608,7 +608,7 @@
     "checkFailed": "Не удалось проверить обновления",
     "checking": "Проверка обновлений…",
     "officialInstalled": "Официальное приложение установлено",
-    "officialInstalledDesc": "Версия {{version}} установлена в {{path}}. Эта локальная сборка продолжает работать без изменений.",
+    "officialInstalledDesc": "Версия {{version}} установлена в {{path}}. Эта локальная сборка продолжает работать без изменений",
     "downloadFailed": "Не удалось загрузить обновление",
     "retryNow": "Повторить сейчас",
     "downloadTimeout": "Время ожидания загрузки истекло. Проверьте сеть или прокси и повторите попытку.",
@@ -744,7 +744,7 @@
     "tableVersion": "Версия",
     "tableStatus": "Статус",
     "installSection": "Установка",
-    "installHintNote": "Предлагаемая команда установки для вашей платформы. Большинство системных зависимостей требует прав администратора, поэтому мы не запускаем их автоматически — скопируйте и вставьте в свой terminal."
+    "installHintNote": "Предлагаемая команда установки для вашей платформы. Большинство системных зависимостей требует прав администратора, поэтому мы не запускаем их автоматически — скопируйте и вставьте в свой terminal"
   },
   "storage": {
     "dataDirectory": "Каталог данных",
@@ -830,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "Включить эволюцию для {{agentName}}",
     "noAgentsTitle": "Нет доступных Agent",
-    "noAgentsSubtitle": "Создайте или импортируйте Agent, чтобы настроить эволюцию."
+    "noAgentsSubtitle": "Создайте или импортируйте Agent, чтобы настроить эволюцию"
   },
   "org": {},
   "learningsBrowser": {

@@ -18,7 +18,7 @@
     "removeLocal": "Usuń lokalne",
     "unlist": "Wycofaj z listy",
     "confirmRemoveTitle": "Usunąć „{{name}}”?",
-    "confirmRemoveMessage": "To usunie lokalnie zapisany klucz. Tej operacji nie można cofnąć.",
+    "confirmRemoveMessage": "To usunie lokalnie zapisany klucz. Tej operacji nie można cofnąć",
     "toasts": {
       "refreshed": "{{name}} odświeżono pomyślnie",
       "refreshError": "Nie udało się odświeżyć {{name}}: {{error}}",
@@ -69,10 +69,10 @@
       "accountEmail": "E-mail konta"
     },
     "customModels": {
-      "manualSetupHint": "Dodaj dokładny identyfikator modelu akceptowany przez endpoint i opcjonalną nazwę. Wykrywanie modeli jest opcjonalne; włączenie nie sprawdza zgodności.",
+      "manualSetupHint": "Dodaj dokładny identyfikator modelu akceptowany przez endpoint i opcjonalną nazwę. Wykrywanie modeli jest opcjonalne; włączenie nie sprawdza zgodności",
       "modelNamePlaceholder": "Wprowadź id modelu...",
       "displayNamePlaceholder": "Opcjonalna etykieta",
-      "emptyHint": "Nie dodano jeszcze niestandardowych modeli.",
+      "emptyHint": "Nie dodano jeszcze niestandardowych modeli",
       "addModel": "Dodaj model",
       "testRequiresEndpoint": "Wprowadź punkt końcowy i klucz API, aby przetestować ten model",
       "invalidModelId": "Identyfikatory modeli muszą mieć od 1 do 256 bajtów, bez spacji i znaków sterujących.",
@@ -146,7 +146,7 @@
       "keysVerified": "Klucze zweryfikowane",
       "failedMessage": "Twój klucz API i Session Token nie wydają się należeć do tego samego konta Cursor.",
       "failedError": "Błąd: {{error}}",
-      "failedHint": "Utwórz nową ofertę z pasującymi kluczami z tego samego konta Cursor.",
+      "failedHint": "Utwórz nową ofertę z pasującymi kluczami z tego samego konta Cursor",
       "listingRejected": "Oferta odrzucona",
       "rejectedByAdmin": "Ta oferta została odrzucona przez administratora."
     },
@@ -268,7 +268,7 @@
     "opensEmbeddedBrowser": "Użyj wewnętrznej przeglądarki, aby połączyć konto Cursor.",
     "loggedIn": "Zalogowano",
     "loginStep": "Logowanie",
-    "signInToCursorHint": "Zaloguj się na swoje konto Cursor. To okno zamknie się automatycznie po logowaniu.",
+    "signInToCursorHint": "Zaloguj się na swoje konto Cursor. To okno zamknie się automatycznie po logowaniu",
     "loadingText": "Ładowanie...",
     "failedToLoadBrowser": "Nie udało się załadować przeglądarki",
     "copilotCreatePat": "Utwórz GitHub Personal Access Token",
@@ -303,7 +303,7 @@
     "cursorLoginBrowserTitle": "Logowanie Cursor",
     "modelCount": "{{count}} modeli",
     "cursorLoginReadyTitle": "Konto Cursor połączone",
-    "cursorLoginReadyDesc": "Wygeneruj i wklej poniżej Cursor API Key. Cursor agent nie będzie działać bez tego API Key.",
+    "cursorLoginReadyDesc": "Wygeneruj i wklej poniżej Cursor API Key. Cursor agent nie będzie działać bez tego API Key",
     "cursorApiKeyBrowserHint": "Po zalogowaniu ORG2 otworzy Cursor dashboard. Wygeneruj tam User API Key i wklej go poniżej",
     "cursorApiKeyRecommendedTitle": "Zalecany Cursor API Key",
     "cursorApiKeyRecommendedDesc": "Możesz kontynuować bez Cursor API Key, jeśli chcesz używać Cursor tylko z Rust agents ORG2; po prostu zaloguj się w przeglądarce wewnętrznej albo podaj session token",
@@ -573,7 +573,7 @@
     },
     "gateway": {
       "title": "Gateway Agent",
-      "description": "Gateway kieruje przychodzące wiadomości z każdego kanału. Wybierz klucz API i model, których ma używać do routingu semantycznego.",
+      "description": "Gateway kieruje przychodzące wiadomości z każdego kanału. Wybierz klucz API i model, których ma używać do routingu semantycznego",
       "statusReady": "Gotowe",
       "statusUnconfigured": "Nie skonfigurowano",
       "account": "Konto klucza API",
@@ -581,7 +581,7 @@
       "model": "Model",
       "modelPlaceholder": "Wybierz model",
       "groupPerUser": "Izoluj sesje czatu grupowego per użytkownik",
-      "groupPerUserDesc": "Każdy uczestnik czatu grupowego otrzymuje własny kontekst sesji."
+      "groupPerUserDesc": "Każdy uczestnik czatu grupowego otrzymuje własny kontekst sesji"
     },
     "emailProtocol": "Protokół",
     "matrixDeviceNamePlaceholder": "Bot ORG2"
@@ -769,13 +769,13 @@
     "oauthDeviceDesc": "Otwórz adres weryfikacyjny i wpisz ten kod, aby autoryzować GitHub.",
     "scanCredHelper": "Pomocnik poświadczeń Git ({{name}})",
     "scanEmpty": "Nic nie wykryto",
-    "scanEmptyDesc": "Nie znaleziono tokenów gh CLI, pomocników poświadczeń ani kluczy SSH. Wybierz inną metodę powyżej.",
+    "scanEmptyDesc": "Nie znaleziono tokenów gh CLI, pomocników poświadczeń ani kluczy SSH. Wybierz inną metodę powyżej",
     "scanGhCli": "GitHub CLI (gh)",
     "scanResults": "Wykryte poświadczenia",
-    "scanResultsDesc": "Wybierz jedno do zaimportowania. Przed zapisaniem sprawdzamy tokeny w GitHub.",
+    "scanResultsDesc": "Wybierz jedno do zaimportowania. Przed zapisaniem sprawdzamy tokeny w GitHub",
     "scanSshKey": "Klucz SSH — {{name}}",
     "scanning": "Skanowanie…",
-    "scanningDesc": "Wyszukiwanie tokenów gh CLI, pomocników poświadczeń i kluczy SSH na tej maszynie.",
+    "scanningDesc": "Wyszukiwanie tokenów gh CLI, pomocników poświadczeń i kluczy SSH na tej maszynie",
     "sshKeyPath": "Ścieżka klucza SSH",
     "sshKeyPathDesc": "Bezwzględna ścieżka do klucza prywatnego (np. ~/.ssh/id_ed25519). Odpowiadający klucz publiczny musi być już zarejestrowany w GitHub.",
     "scanSelectRequired": "Wybierz wykryte poświadczenie do zaimportowania.",
@@ -809,9 +809,9 @@
     "agentBrowserRestartPromptMessage": "Zmiana dostawcy Browser CLI wymaga ponownego uruchomienia ORG2, zanim agenci zobaczą wybrane narzędzie. Uruchomić ponownie teraz?",
     "sidecarDownloadsSectionTitle": "Pobieranie sidecarów",
     "sidecarAgentBrowserLabel": "Agent Browser CLI",
-    "sidecarAgentBrowserDesc": "Pobiera plik binarny Agent Browser dla tej platformy do ~/.orgii/bin. ORG2 nigdy nie pobiera go podczas uruchamiania.",
+    "sidecarAgentBrowserDesc": "Pobiera plik binarny Agent Browser dla tej platformy do ~/.orgii/bin. ORG2 nigdy nie pobiera go podczas uruchamiania",
     "sidecarPeekabooLabel": "Peekaboo CLI",
-    "sidecarPeekabooDesc": "Pobiera binarkę macOS Peekaboo do automatyzacji pulpitu do ~/.orgii/bin. Nieobsługiwane platformy pozostają wyłączone.",
+    "sidecarPeekabooDesc": "Pobiera binarkę macOS Peekaboo do automatyzacji pulpitu do ~/.orgii/bin. Nieobsługiwane platformy pozostają wyłączone",
     "sidecarUnsupported": "Nieobsługiwane",
     "sidecarInstalled": "Zainstalowano",
     "sidecarNotInstalled": "Nie zainstalowano",
@@ -867,7 +867,7 @@
     "connectMethodDesc": "Wybierz, jak połączyć swoje konto GitHub",
     "githubApp": "GitHub App",
     "detectFromSystem": "Wykryj z systemu",
-    "detectFromSystemDesc": "Użyj gh CLI, kluczy SSH lub credential helperów Git.",
+    "detectFromSystemDesc": "Użyj gh CLI, kluczy SSH lub credential helperów Git",
     "credentialsDetected": "Wykryto poświadczenia",
     "detectedVia": "Wykryto przez {{source}}",
     "sshKeyLabel": "Klucz SSH",
@@ -887,7 +887,7 @@
     "noCredentialsFound": "Nie znaleziono poświadczeń GitHub",
     "noCredentialsHint": "Zainstaluj GitHub CLI (gh) lub skonfiguruj klucze SSH, aby używać lokalnego wykrywania",
     "manuallyAddToken": "Dodaj token ręcznie",
-    "manualTokenDesc": "Wklej GitHub PAT do operacji Git przez HTTPS.",
+    "manualTokenDesc": "Wklej GitHub PAT do operacji Git przez HTTPS",
     "autoDetect": "Wykryj automatycznie",
     "autoDetectTokenSaved": "GitHub token zapisany",
     "autoDetectSshSwitched": "Remote przełączony na SSH",
@@ -913,7 +913,7 @@
     "coauthor": "Co-authored-by",
     "coauthorDesc": "Dodaj {{name}} <{{email}}> do commitów Git utworzonych z ORG2",
     "noTokenYet": "Potrzebujesz Tokenu?",
-    "createTokenDesc": "Otwórz GitHub i utwórz PAT z dostępem repo.",
+    "createTokenDesc": "Otwórz GitHub i utwórz PAT z dostępem repo",
     "accountConnected": "Konto GitHub połączone",
     "disconnectMsg": "Czy na pewno chcesz się rozłączyć? Spowoduje to usunięcie dostępu do wszystkich Repo z tego konta.",
     "disconnectTitle": "Rozłącz konto GitHub",
@@ -922,7 +922,7 @@
     "connectRepoDesc": "Połącz konto GitHub, aby uzyskać dostęp do Repo",
     "github": "GitHub",
     "signInWithGithub": "Zaloguj się przez GitHub",
-    "signInWithGithubDesc": "Autoryzuj ORG2 przez GitHub Device Flow. Bez konieczności hostowania serwera.",
+    "signInWithGithubDesc": "Autoryzuj ORG2 przez GitHub Device Flow. Bez konieczności hostowania serwera",
     "oauthWaiting": "Oczekiwanie na autoryzację",
     "oauthDeviceCodeDesc": "Otwórz URL poniżej i wpisz ten kod",
     "oauthOpenGithub": "Otwórz GitHub",
@@ -978,7 +978,7 @@
     "filePathPlaceholder": "np. scripts/validate.py",
     "removeFile": "Usuń plik",
     "editorNoDraftTitle": "Brak rozpoczętego szkicu umiejętności",
-    "editorNoDraftDesc": "Zacznij od kliknięcia Utwórz na stronie Umiejętności lub wybierz umiejętność do edycji.",
+    "editorNoDraftDesc": "Zacznij od kliknięcia Utwórz na stronie Umiejętności lub wybierz umiejętność do edycji",
     "scopeWorkspace": "Specyficzne dla repo",
     "deleteConfirmTitle": "Usunąć skill «{{name}}»?",
     "deleteConfirmMessage": "Spowoduje to usunięcie skilla i wszystkich jego plików. Tej operacji nie można cofnąć."
@@ -987,7 +987,7 @@
     "tab": "MCP",
     "searchPlaceholder": "Szukaj serwerów MCP...",
     "noServers": "Brak skonfigurowanych serwerów MCP",
-    "noServersDesc": "Dodaj serwer MCP, aby rozszerzyć możliwości Agent o zewnętrzne narzędzia.",
+    "noServersDesc": "Dodaj serwer MCP, aby rozszerzyć możliwości Agent o zewnętrzne narzędzia",
     "addServer": "Dodaj serwer MCP",
     "editServer": "Edytuj serwer MCP",
     "serverName": "Nazwa serwera",
@@ -1113,12 +1113,12 @@
     },
     "sessionProvenance": {
       "masterToggle": "Hooki pochodzenia",
-      "masterToggleDesc": "Po wyłączeniu wszystkie zarządzane hooki zostaną odinstalowane i żadne sygnały nie będą zbierane; wybory dla poszczególnych platform zostaną zachowane i przywrócone po ponownym włączeniu.",
+      "masterToggleDesc": "Po wyłączeniu wszystkie zarządzane hooki zostaną odinstalowane i żadne sygnały nie będą zbierane; wybory dla poszczególnych platform zostaną zachowane i przywrócone po ponownym włączeniu",
       "liveStatusToggle": "Stan agenta na żywo",
-      "liveStatusToggleDesc": "Pokazuje, czy uruchomieni agenci CLI pracują, czy czekają. Wyłączenie nie zatrzymuje rejestrowania pochodzenia.",
+      "liveStatusToggleDesc": "Pokazuje, czy uruchomieni agenci CLI pracują, czy czekają. Wyłączenie nie zatrzymuje rejestrowania pochodzenia",
       "title": "Pochodzenie sesji",
       "capture": "Rejestruj interakcje z plikami",
-      "description": "Rejestruje odczyty i zapisy plików jako metadane. Prompty, wyniki narzędzi i zawartość plików nie są przechowywane.",
+      "description": "Rejestruje odczyty i zapisy plików jako metadane. Prompty, wyniki narzędzi i zawartość plików nie są przechowywane",
       "installDrift": "Zapisane ustawienie różni się od zainstalowanego hooka. Przełącz rejestrowanie, aby naprawić zarządzany hook. Konfiguracja: {{path}}",
       "copyPath": "Kopiuj",
       "col": {
@@ -1181,7 +1181,7 @@
       "addMember": "Dodaj członka",
       "noMembers": "Dodaj członków, aby zbudować hierarchię org",
       "membersLabel": "Członkowie zespołu",
-      "membersDesc": "Każdy wiersz to członek z niezależnym uprawnieniem Writer i ustawieniami komunikacji. Nazwy muszą być unikalne; rola opisuje jedynie specjalizację.",
+      "membersDesc": "Każdy wiersz to członek z niezależnym uprawnieniem Writer i ustawieniami komunikacji. Nazwy muszą być unikalne; rola opisuje jedynie specjalizację",
       "memberName": "Nazwa",
       "memberNamePlaceholder": "Unikalna nazwa routingu (np. SDE-1)",
       "memberNameDuplicate": "Inny członek już używa tej nazwy. Nazwy muszą być unikalne w obrębie org.",
@@ -1234,9 +1234,9 @@
       "descriptionPlaceholder": "Czym zajmuje się ten Agent? (opcjonalnie)",
       "subAgentsTab": "Subagents",
       "maxToolUseConcurrencyLabel": "Maks. współbieżność użycia narzędzi",
-      "maxToolUseConcurrencyDesc": "Współbieżne wywołania narzędzi na wiadomość asystenta. Domyślnie: 10.",
+      "maxToolUseConcurrencyDesc": "Współbieżne wywołania narzędzi na wiadomość asystenta. Domyślnie: 10",
       "subAgentWorktreeIsolationLabel": "Izolacja Worktree",
-      "subAgentWorktreeIsolationDesc": "Uruchom w tymczasowym Worktree Git (izolowany dostęp do plików i Shell).",
+      "subAgentWorktreeIsolationDesc": "Uruchom w tymczasowym Worktree Git (izolowany dostęp do plików i Shell)",
       "addSubAgent": "Dodaj Sub-Agent...",
       "noSubAgents": "Brak skonfigurowanych Sub-Agents."
     },
@@ -1269,30 +1269,30 @@
     "applicableAgentsDesc": "Do których agentów ta reguła ma zastosowanie (pozostaw puste dla wszystkich)",
     "selectAgents": "Wybierz agentów…",
     "ruleSource": "Źródło",
-    "ruleSourceDesc": "Wybierz User dla wszystkich repo albo Repo dla wytycznej jednego repo.",
+    "ruleSourceDesc": "Wybierz User dla wszystkich repo albo Repo dla wytycznej jednego repo",
     "ruleSourceUser": "User",
-    "ruleSourceUserDesc": "Preferencja użytkownika dostępna we wszystkich repo.",
+    "ruleSourceUserDesc": "Preferencja użytkownika dostępna we wszystkich repo",
     "ruleSourceRepo": "Repo",
-    "ruleSourceRepoDesc": "Wytyczna zapisana dla jednego wybranego repo.",
+    "ruleSourceRepoDesc": "Wytyczna zapisana dla jednego wybranego repo",
     "ruleRepo": "Repo",
     "ruleRepoDesc": "Jedyne repo, którego dotyczy ta wytyczna",
     "selectRepo": "Wybierz repo…",
     "ruleSourcePersonal": "Osobiste",
-    "ruleSourcePersonalDesc": "Przechowywane w ~/.orgii/personal/rules/. Tylko OS Agent / sesje kanałów.",
+    "ruleSourcePersonalDesc": "Przechowywane w ~/.orgii/personal/rules/. Tylko OS Agent / sesje kanałów",
     "findSkills": {
       "title": "Szukaj Skills",
       "placeholder": "Szukaj Skills...",
       "installs": "Installs",
       "emptyTitle": "Szukaj Skills",
-      "emptySubtitle": "Wpisz co najmniej 2 znaki, a następnie naciśnij Enter, aby znaleźć Skills.",
+      "emptySubtitle": "Wpisz co najmniej 2 znaki, a następnie naciśnij Enter, aby znaleźć Skills",
       "noResults": "Nie znaleziono Skills",
-      "noResultsDesc": "Spróbuj użyć innego wyszukiwanego hasła."
+      "noResultsDesc": "Spróbuj użyć innego wyszukiwanego hasła"
     },
     "importAgentTitle": "Importuj Agents z innych apps",
     "importAgentColumn": "Agent",
     "importedItemAgents": "agentów",
     "emptySelectionTitle": "Wybierz członka lub Zespół Agent",
-    "emptySelectionSubtitle": "Wybierz Agent lub Zespół Agent z paska bocznego, aby wyświetlić i skonfigurować.",
+    "emptySelectionSubtitle": "Wybierz Agent lub Zespół Agent z paska bocznego, aby wyświetlić i skonfigurować",
     "applicableWorkspace": "Dotyczy Workspace",
     "tableTabs": {
       "agents": "Agents",
@@ -1325,18 +1325,18 @@
     "cliManagedConfig": {
       "title": "Przełącznik konfiguracji CLI",
       "modeLabel": "Tryb",
-      "modeDesc": "Domyślny przywraca własną konfigurację CLI. Zarządzany przez ORG2 zapisuje konfigurację proxy z kopią zapasową.",
+      "modeDesc": "Domyślny przywraca własną konfigurację CLI. Zarządzany przez ORG2 zapisuje konfigurację proxy z kopią zapasową",
       "modeDefault": "Domyślny",
       "modeOrgii": "Zarządzany przez ORG2",
       "conflict": "Zmiana zewnętrzna",
       "conflictTitle": "Konflikt",
-      "conflictDesc": "Aktywna konfiguracja CLI zmieniła się po zapisaniu jej przez ORG2.",
+      "conflictDesc": "Aktywna konfiguracja CLI zmieniła się po zapisaniu jej przez ORG2",
       "proxyStatus": "Proxy",
       "proxyDefault": "Tryb domyślny",
       "proxyReady": "Proxy gotowe",
       "proxyNotReady": "Proxy niegotowe",
       "keyLabel": "Klucz",
-      "keyDesc": "Wyświetlane są tylko klucze API zgodne z tym CLI i zarządzanym proxy.",
+      "keyDesc": "Wyświetlane są tylko klucze API zgodne z tym CLI i zarządzanym proxy",
       "selectKey": "Wybierz klucz",
       "modelLabel": "Model",
       "selectModel": "Wybierz model",
@@ -1349,7 +1349,7 @@
       "forceRestore": "Wymuś przywrócenie",
       "applySuccess": "Zastosowano konfigurację zarządzaną przez ORG2",
       "restoreSuccess": "Przywrócono domyślną konfigurację",
-      "proxyLifecycleDesc": "W tym trybie ORG2 musi pozostać uruchomione. Zamknięcie okna zostawia proxy w zasobniku; wyjście z ORG2 bezpiecznie przywraca tryb Domyślny, chyba że konfiguracja zmieniła się zewnętrznie."
+      "proxyLifecycleDesc": "W tym trybie ORG2 musi pozostać uruchomione. Zamknięcie okna zostawia proxy w zasobniku; wyjście z ORG2 bezpiecznie przywraca tryb Domyślny, chyba że konfiguracja zmieniła się zewnętrznie"
     }
   },
   "tableHeaders": {
@@ -1546,7 +1546,7 @@
       "elapsed": "Łączny czas: {{value}}s"
     },
     "title": "Rezydentny Housekeeper",
-    "description": "Lokalny MiniCPM obsługuje dopracowywanie promptów, krótkie objaśnienia kroków i lekkie sterowanie UI. Zadania programistyczne i złożona konfiguracja ADE nadal używają głównego modelu Agenta.",
+    "description": "Lokalny MiniCPM obsługuje dopracowywanie promptów, krótkie objaśnienia kroków i lekkie sterowanie UI. Zadania programistyczne i złożona konfiguracja ADE nadal używają głównego modelu Agenta",
     "autoAccount": "Automatycznie wybierz konto vLLM MiniCPM",
     "tiles": {
       "model": "Model",
@@ -1556,37 +1556,37 @@
     "settings": {
       "enabled": {
         "title": "Włącz housekeepera",
-        "description": "Po wyłączeniu dopracowywanie promptów, objaśnienia kroków i lekkie sterowanie UI nie będą używać MiniCPM."
+        "description": "Po wyłączeniu dopracowywanie promptów, objaśnienia kroków i lekkie sterowanie UI nie będą używać MiniCPM"
       },
       "account": {
         "title": "Konto vLLM MiniCPM",
-        "description": "Używa istniejącego konta vllm_api z KeyVault; nie tworzy osobnego magazynu poświadczeń."
+        "description": "Używa istniejącego konta vllm_api z KeyVault; nie tworzy osobnego magazynu poświadczeń"
       },
       "model": {
         "title": "ID modelu",
-        "description": "Docker vLLM MiniCPM5-1B domyślnie używa openbmb/MiniCPM5-1B."
+        "description": "Docker vLLM MiniCPM5-1B domyślnie używa openbmb/MiniCPM5-1B"
       },
       "context": {
         "title": "Bezpieczny budżet kontekstu",
-        "description": "Na GPU 4GB używaj ostrożnego budżetu 10000 tokenów zamiast polegać na teoretycznym limicie 32k."
+        "description": "Na GPU 4GB używaj ostrożnego budżetu 10000 tokenów zamiast polegać na teoretycznym limicie 32k"
       }
     },
     "features": {
       "promptPolish": {
         "title": "Dopracowywanie promptów",
-        "description": "Ręcznie dopracuj wpis przed wysłaniem go do silniejszego modelu programistycznego."
+        "description": "Ręcznie dopracuj wpis przed wysłaniem go do silniejszego modelu programistycznego"
       },
       "stepExplain": {
         "title": "Objaśnienia kroków Agenta",
-        "description": "Generuj jedno lub dwa krótkie objaśnienia po chińsku dla kroków odtwarzania sesji."
+        "description": "Generuj jedno lub dwa krótkie objaśnienia po chińsku dla kroków odtwarzania sesji"
       },
       "uiControl": {
         "title": "Lekkie sterowanie ADE/UI",
-        "description": "MiniCPM może jedynie klasyfikować żądania według ścisłej lokalnej białej listy akcji."
+        "description": "MiniCPM może jedynie klasyfikować żądania według ścisłej lokalnej białej listy akcji"
       },
       "contextCompact": {
         "title": "Automatyczna konserwacja kontekstu",
-        "description": "Pozwól MiniCPM utrzymywać odizolowane kroczące podsumowanie starszego kontekstu, gdy włączone sesje są bezczynne."
+        "description": "Pozwól MiniCPM utrzymywać odizolowane kroczące podsumowanie starszego kontekstu, gdy włączone sesje są bezczynne"
       }
     }
   },
@@ -1663,7 +1663,7 @@
     "shareToOrg": "Udostępnij organizacji",
     "share": "Udostępnij",
     "sharedToOrg": "Skill udostępniony organizacji",
-    "shareToOrgHint": "Członkowie organizacji otrzymują bieżącą migawkę tego skilla; po edycji udostępnij ponownie, aby opublikować aktualizację.",
+    "shareToOrgHint": "Członkowie organizacji otrzymują bieżącą migawkę tego skilla; po edycji udostępnij ponownie, aby opublikować aktualizację",
     "shareOrgPlaceholder": "Organizacja"
   }
 }

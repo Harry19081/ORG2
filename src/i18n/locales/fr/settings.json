@@ -391,13 +391,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Masquer ORG2 pendant le contrôle du bureau",
-      "hideBeforeActionHelper": "Masque la fenêtre principale ORG2 pendant que Peekaboo agit, et affiche la barre Wingman avec une légende flottante afin que l’Agent n’ait pas à gérer le focus.",
+      "hideBeforeActionHelper": "Masque la fenêtre principale ORG2 pendant que Peekaboo agit, et affiche la barre Wingman avec une légende flottante afin que l’Agent n’ait pas à gérer le focus",
       "antiDetection": "Renforcement anti-automatisation HID",
-      "antiDetectionHelper": "Fait envoyer à Peekaboo de véritables événements CGEvent (HID) pour les clics et les frappes au lieu de simples actions d’Accessibilité, afin que les applications avec détection d’automatisation (p. ex. WeChat) soient moins susceptibles de bloquer le contrôle du bureau.",
+      "antiDetectionHelper": "Fait envoyer à Peekaboo de véritables événements CGEvent (HID) pour les clics et les frappes au lieu de simples actions d’Accessibilité, afin que les applications avec détection d’automatisation (p. ex. WeChat) soient moins susceptibles de bloquer le contrôle du bureau",
       "humanInputProfile": "Cadence de frappe humaine",
-      "humanInputProfileHelper": "Applique un profil de minutage proche de l’humain aux frappes synthétisées. Désactivez pour taper à vitesse maximale.",
+      "humanInputProfileHelper": "Applique un profil de minutage proche de l’humain aux frappes synthétisées. Désactivez pour taper à vitesse maximale",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Manquant : {{bins}}",
     "skillMissingEnv": "Variables d'env manquantes : {{vars}}",
@@ -559,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Stratégie de pull",
       "pullStrategyDesc": "Comment git pull intègre les changements de remote lors de la synchronisation",
-      "pullStrategyHint": "Rebase (par défaut) : Replays vos commits sur remote. Crée un linear history.\n\nMerge : Crée un merge commit quand les branches ont diverged. Préserve le history complet.\n\nFast-forward only : N'autorise le pull que lorsqu'aucun merge n'est nécessaire. Refuse si les branches ont diverged.",
+      "pullStrategyHint": "Rebase (par défaut) : Replays vos commits sur remote. Crée un linear history.\n\nMerge : Crée un merge commit quand les branches ont diverged. Préserve le history complet.\n\nFast-forward only : N'autorise le pull que lorsqu'aucun merge n'est nécessaire. Refuse si les branches ont diverged",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (par défaut)",
       "strategyFfOnly": "Fast-forward uniquement (strict)",
@@ -608,7 +608,7 @@
     "checkFailed": "Échec de la recherche de mises à jour",
     "checking": "Recherche de mises à jour…",
     "officialInstalled": "Application officielle installée",
-    "officialInstalledDesc": "La version {{version}} est installée dans {{path}}. Cette build locale continue de fonctionner sans modification.",
+    "officialInstalledDesc": "La version {{version}} est installée dans {{path}}. Cette build locale continue de fonctionner sans modification",
     "downloadFailed": "Échec du téléchargement de la mise à jour",
     "retryNow": "Réessayer maintenant",
     "downloadTimeout": "Le téléchargement a expiré. Vérifiez votre réseau ou proxy, puis réessayez.",
@@ -768,7 +768,7 @@
     "tableVersion": "Version",
     "tableStatus": "Statut",
     "installSection": "Installer",
-    "installHintNote": "Commande d'installation suggérée pour votre plateforme. La plupart des dépendances système nécessitent des privilèges administrateur, nous ne les lançons donc pas automatiquement — copiez-la dans votre terminal."
+    "installHintNote": "Commande d'installation suggérée pour votre plateforme. La plupart des dépendances système nécessitent des privilèges administrateur, nous ne les lançons donc pas automatiquement — copiez-la dans votre terminal"
   },
   "agentSessions": {
     "chatFontSize": "Taille de police du chat",
@@ -830,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "Activer l’évolution pour {{agentName}}",
     "noAgentsTitle": "Aucun Agent disponible",
-    "noAgentsSubtitle": "Créez ou importez un Agent pour configurer l’évolution."
+    "noAgentsSubtitle": "Créez ou importez un Agent pour configurer l’évolution"
   },
   "org": {},
   "learningsBrowser": {

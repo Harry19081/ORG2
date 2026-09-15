@@ -391,13 +391,13 @@
     "desktopConfig": {
       "title": "Segurança de Desktop",
       "hideBeforeAction": "Ocultar ORG2 durante o controle da área de trabalho",
-      "hideBeforeActionHelper": "Oculta a janela principal do ORG2 enquanto o Peekaboo opera e mostra a barra Wingman com uma legenda flutuante para que o Agent não precise gerenciar o foco.",
+      "hideBeforeActionHelper": "Oculta a janela principal do ORG2 enquanto o Peekaboo opera e mostra a barra Wingman com uma legenda flutuante para que o Agent não precise gerenciar o foco",
       "antiDetection": "Reforço anti-automação HID",
-      "antiDetectionHelper": "Faz o Peekaboo enviar eventos CGEvent (HID) reais para cliques e teclas em vez de ações de Acessibilidade puras, para que apps com detecção de automação (ex.: WeChat) tenham menos probabilidade de bloquear o controle da área de trabalho.",
+      "antiDetectionHelper": "Faz o Peekaboo enviar eventos CGEvent (HID) reais para cliques e teclas em vez de ações de Acessibilidade puras, para que apps com detecção de automação (ex.: WeChat) tenham menos probabilidade de bloquear o controle da área de trabalho",
       "humanInputProfile": "Cadência de digitação humana",
-      "humanInputProfileHelper": "Aplica um perfil de tempo semelhante ao humano às teclas sintetizadas. Desative para digitar na velocidade máxima.",
+      "humanInputProfileHelper": "Aplica um perfil de tempo semelhante ao humano às teclas sintetizadas. Desative para digitar na velocidade máxima",
       "escapeAbort": "Tecla Escape do sistema aborta",
-      "escapeAbortHelper": "Trata uma tecla Escape pressionada por hardware como sinal de abortar para automação de desktop em andamento. Nossos próprios pressionamentos sintetizados de Escape são sempre excluídos."
+      "escapeAbortHelper": "Trata uma tecla Escape pressionada por hardware como sinal de abortar para automação de desktop em andamento. Nossos próprios pressionamentos sintetizados de Escape são sempre excluídos"
     },
     "skillMissingBins": "Faltando: {{bins}}",
     "skillMissingEnv": "Variáveis de ambiente faltando: {{vars}}",
@@ -559,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Estratégia de pull",
       "pullStrategyDesc": "Como o git pull integra alterações remotas ao sincronizar",
-      "pullStrategyHint": "Rebase (padrão): Reaplica seus commits sobre o remoto. Cria um histórico linear.\n\nMerge: Cria um commit de merge quando os branches divergiram. Preserva o histórico completo.\n\nApenas fast-forward: Permite pull apenas quando nenhum merge é necessário. Recusa se os branches divergiram.",
+      "pullStrategyHint": "Rebase (padrão): Reaplica seus commits sobre o remoto. Cria um histórico linear.\n\nMerge: Cria um commit de merge quando os branches divergiram. Preserva o histórico completo.\n\nApenas fast-forward: Permite pull apenas quando nenhum merge é necessário. Recusa se os branches divergiram",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (padrão)",
       "strategyFfOnly": "Apenas fast-forward (estrito)",
@@ -608,7 +608,7 @@
     "checkFailed": "Falha ao buscar atualizações",
     "checking": "Buscando atualizações…",
     "officialInstalled": "Aplicativo oficial instalado",
-    "officialInstalledDesc": "{{version}} foi instalado em {{path}}. Este build local continua em execução sem alterações.",
+    "officialInstalledDesc": "{{version}} foi instalado em {{path}}. Este build local continua em execução sem alterações",
     "downloadFailed": "Falha no download da atualização",
     "retryNow": "Tentar novamente agora",
     "downloadTimeout": "O download excedeu o tempo limite. Verifique a rede ou o proxy e tente novamente.",
@@ -744,7 +744,7 @@
     "tableVersion": "Versão",
     "tableStatus": "Status",
     "installSection": "Instalar",
-    "installHintNote": "Comando de instalação sugerido para sua plataforma. A maioria das dependências do sistema requer privilégios de administrador, então não as executamos automaticamente — copie e cole no seu terminal."
+    "installHintNote": "Comando de instalação sugerido para sua plataforma. A maioria das dependências do sistema requer privilégios de administrador, então não as executamos automaticamente — copie e cole no seu terminal"
   },
   "storage": {
     "dataDirectory": "Diretório de Dados",
@@ -830,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "Ativar Evolução para {{agentName}}",
     "noAgentsTitle": "Nenhum Agent disponível",
-    "noAgentsSubtitle": "Crie ou importe um Agent para configurar a Evolução."
+    "noAgentsSubtitle": "Crie ou importe um Agent para configurar a Evolução"
   },
   "org": {},
   "learningsBrowser": {

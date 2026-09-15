@@ -391,13 +391,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "桌面控制時隱藏 ORG2",
-      "hideBeforeActionHelper": "Peekaboo 操作期間隱藏 ORG2 主視窗，並顯示 Wingman 列和浮動提示，避免 Agent 手動管理焦點。",
+      "hideBeforeActionHelper": "Peekaboo 操作期間隱藏 ORG2 主視窗，並顯示 Wingman 列和浮動提示，避免 Agent 手動管理焦點",
       "antiDetection": "HID 反自動化強化",
-      "antiDetectionHelper": "讓 Peekaboo 透過真實的 CGEvent（HID）事件執行點擊與按鍵，而非純粹的輔助使用操作，從而降低具有反自動化偵測的應用程式（如微信）封鎖桌面控制的可能性。",
+      "antiDetectionHelper": "讓 Peekaboo 透過真實的 CGEvent（HID）事件執行點擊與按鍵，而非純粹的輔助使用操作，從而降低具有反自動化偵測的應用程式（如微信）封鎖桌面控制的可能性",
       "humanInputProfile": "擬人化輸入節奏",
-      "humanInputProfileHelper": "為合成按鍵套用擬人化的時間節奏。關閉後將以最高速度輸入。",
+      "humanInputProfileHelper": "為合成按鍵套用擬人化的時間節奏。關閉後將以最高速度輸入",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "缺少命令：{{bins}}",
     "skillMissingEnv": "缺少環境變量：{{vars}}",
@@ -559,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Pull 策略",
       "pullStrategyDesc": "同步時 git pull 如何整合 remote 更改",
-      "pullStrategyHint": "Rebase（默認）：將你的 commit replay 到 remote 之上，創建 linear history。\n\nMerge：branch 有 diverge 時創建 merge commit，保留完整 history。\n\nFast-forward only：僅在不需要 merge 時允許 pull，若 branch 已 diverge 則拒絕。",
+      "pullStrategyHint": "Rebase（默認）：將你的 commit replay 到 remote 之上，創建 linear history。\n\nMerge：branch 有 diverge 時創建 merge commit，保留完整 history。\n\nFast-forward only：僅在不需要 merge 時允許 pull，若 branch 已 diverge 則拒絕",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase（默認）",
       "strategyFfOnly": "僅 Fast-forward（嚴格）",
@@ -768,7 +768,7 @@
     "tableVersion": "版本",
     "tableStatus": "狀態",
     "installSection": "安裝",
-    "installHintNote": "針對你當前平臺的建議安裝命令。大多數系統依賴需要管理員權限，所以我們不會自動執行——請複製到你的 terminal 中運行。"
+    "installHintNote": "針對你當前平臺的建議安裝命令。大多數系統依賴需要管理員權限，所以我們不會自動執行——請複製到你的 terminal 中運行"
   },
   "agentSessions": {
     "chatFontSize": "聊天字體大小",
@@ -830,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "為 {{agentName}} 啟用進化",
     "noAgentsTitle": "沒有可用 Agent",
-    "noAgentsSubtitle": "建立或匯入 Agent 以設定進化。"
+    "noAgentsSubtitle": "建立或匯入 Agent 以設定進化"
   },
   "org": {},
   "learningsBrowser": {

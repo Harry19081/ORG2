@@ -896,10 +896,10 @@
       "exportJson": "Exporter en JSON",
       "importAction": "Importer une Session",
       "exportDescription": "Exportez la Session active sous forme d'instantané JSON portable",
-      "importDescription": "Importez un instantané JSON de Session dans la barre latérale.",
+      "importDescription": "Importez un instantané JSON de Session dans la barre latérale",
       "jsonSnapshotNote": "Les Sessions importées sont des instantanés en lecture seule et conservent l'historique d'événements original",
       "chooseJson": "Choisir un fichier JSON",
-      "chooseJsonHint": "Sélectionnez un fichier d'export .orgii-session.json.",
+      "chooseJsonHint": "Sélectionnez un fichier d'export .orgii-session.json",
       "loadingPreview": "Comptage des événements de Session…",
       "noActiveSession": "Aucune Session active sélectionnée.",
       "importedName": "Session importée : {{name}}",
@@ -1908,7 +1908,7 @@
     "start": "Démarrer",
     "missingGit": {
       "title": "Git est manquant",
-      "body": "Git n’est pas installé ou est introuvable. Demandez à ADE Manager ou à SDE Agent d’installer Git sur cette machine, puis redémarrez ORG2."
+      "body": "Git n’est pas installé ou est introuvable. Demandez à ADE Manager ou à SDE Agent d’installer Git sur cette machine, puis redémarrez ORG2"
     },
     "model": "Modèle",
     "contextMenu": {
@@ -2123,7 +2123,7 @@
       "archiveTeardownRetained": "Archivée, mais {{count}} processus n’a pas pu être libéré. La suppression reste bloquée.",
       "archiveTeardownQuiesced": "Archivée et complètement arrêtée. La suppression définitive est maintenant disponible.",
       "dangerZone": "Zone dangereuse",
-      "deleteDescription": "Supprimer définitivement cette équipe, toutes ses sessions et son historique.",
+      "deleteDescription": "Supprimer définitivement cette équipe, toutes ses sessions et son historique",
       "deleteTeam": "Supprimer l’équipe",
       "deleteTitle": "Supprimer définitivement cette équipe ?",
       "deleteWarning": "Toutes les sessions et l’historique de l’équipe seront définitivement supprimés. Cette action est irréversible.",
