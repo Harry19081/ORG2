@@ -218,12 +218,12 @@
     "accent": "Destaque",
     "linkSkinVariants": "Vincular claro e escuro",
     "linkSkinVariantsDesc": "Usa um único skin e destaque para os dois modos. Só é possível vincular skins que incluem uma variante clara e uma escura",
-    "license": "License",
-    "licenseDesc": "View the license bundled with this app",
-    "viewLicense": "View license",
-    "licenseTitle": "ORG2 license",
-    "licenseLoading": "Loading license…",
-    "licenseLoadFailed": "Unable to load the application license"
+    "license": "Licença",
+    "licenseDesc": "Ver a licença incluída com este aplicativo",
+    "viewLicense": "Ver licença",
+    "licenseTitle": "Licença do ORG2",
+    "licenseLoading": "Carregando licença…",
+    "licenseLoadFailed": "Não foi possível carregar a licença do aplicativo"
   },
   "background": {
     "title": "Plano de fundo",

@@ -218,12 +218,12 @@
     "accent": "強調色",
     "linkSkinVariants": "連動淺色與深色",
     "linkSkinVariantsDesc": "兩種模式使用同一套外觀主題和強調色。只有同時提供淺色與深色變體的外觀主題才能連動",
-    "license": "License",
-    "licenseDesc": "View the license bundled with this app",
-    "viewLicense": "View license",
-    "licenseTitle": "ORG2 license",
-    "licenseLoading": "Loading license…",
-    "licenseLoadFailed": "Unable to load the application license"
+    "license": "授權條款",
+    "licenseDesc": "查看此應用程式隨附的授權條款",
+    "viewLicense": "查看授權條款",
+    "licenseTitle": "ORG2 授權條款",
+    "licenseLoading": "正在載入授權條款…",
+    "licenseLoadFailed": "無法載入應用程式授權條款"
   },
   "background": {
     "title": "背景",

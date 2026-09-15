@@ -48,7 +48,7 @@ const LicenseModal: React.FC<LicenseModalProps> = ({ visible, onClose }) => {
         </div>
       }
     >
-      <div className="min-h-0 overflow-y-auto px-4 py-3">
+      <div className="allow-select-deep min-h-0 overflow-y-auto px-4 py-3">
         {loadError ? (
           <p className="text-sm text-danger-6">
             {t("general.licenseLoadFailed")}

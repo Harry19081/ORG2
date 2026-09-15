@@ -218,12 +218,12 @@
     "accent": "Màu nhấn",
     "linkSkinVariants": "Liên kết sáng và tối",
     "linkSkinVariantsDesc": "Dùng một skin và màu nhấn cho cả hai chế độ. Chỉ các skin có cả biến thể sáng và tối mới có thể liên kết",
-    "license": "License",
-    "licenseDesc": "View the license bundled with this app",
-    "viewLicense": "View license",
-    "licenseTitle": "ORG2 license",
-    "licenseLoading": "Loading license…",
-    "licenseLoadFailed": "Unable to load the application license"
+    "license": "Giấy phép",
+    "licenseDesc": "Xem giấy phép đi kèm ứng dụng này",
+    "viewLicense": "Xem giấy phép",
+    "licenseTitle": "Giấy phép ORG2",
+    "licenseLoading": "Đang tải giấy phép…",
+    "licenseLoadFailed": "Không thể tải giấy phép của ứng dụng"
   },
   "background": {
     "title": "Hình nền",
