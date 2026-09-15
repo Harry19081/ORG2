@@ -66,7 +66,7 @@ export const STATUS_BAR_TOKENS = {
    * status-bar CTAs read consistently.
    */
   buttonPrimary: `bg-primary-6 px-2.5 text-white hover:bg-primary-7 ${STATUS_BAR_TYPOGRAPHY.emphasis}`,
-  /** Non-interactive block (icon + labels), e.g. indexing */
+  /** Non-interactive block (icon + labels) */
   segment:
     "flex h-full shrink-0 cursor-default select-none items-center gap-1.5 px-2",
   /** Text-only segment */

@@ -507,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "Hiện thanh bên",
-      "hideSidebar": "Ẩn thanh bên",
-      "showBottomPanel": "Hiện bảng dưới"
+      "hideSidebar": "Ẩn thanh bên"
     },
     "multiTask": {
       "monitoringProgress": "Đang theo dõi tiến độ của {{count}} subagent",

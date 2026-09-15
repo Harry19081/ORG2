@@ -507,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "Mostrar barra lateral",
-      "hideSidebar": "Ocultar barra lateral",
-      "showBottomPanel": "Mostrar panel inferior"
+      "hideSidebar": "Ocultar barra lateral"
     },
     "multiTask": {
       "monitoringProgress": "Supervisando el progreso de {{count}} subagents",

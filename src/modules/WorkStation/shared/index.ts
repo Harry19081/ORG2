@@ -133,9 +133,6 @@ export {
   WorkStationSidebarToggleButton,
 } from "./SidebarToggleButton";
 
-// Tab bar trailing controls (per-app panel toggles)
-export { TabBarBottomPanelToggle } from "./TabBarTrailingControls";
-
 // Header and typography tokens (shared dimensions, button styles, class strings)
 export {
   WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS,

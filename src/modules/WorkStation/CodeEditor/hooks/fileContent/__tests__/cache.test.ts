@@ -21,7 +21,6 @@ import {
   onExternalFileChange,
   popUnsavedContent,
   subscribeToFileChanges,
-  updateCachedFileMtime,
 } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/cache";
 import { MAX_UNSAVED_CONTENT_CACHE_SIZE } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/constants";
 
@@ -122,24 +121,6 @@ describe("fileContent/cache", () => {
 
     it("returns null for non-cached file", async () => {
       expect(getCachedBinaryStatus("/uncached.txt")).toBeNull();
-    });
-  });
-
-  describe("updateCachedFileMtime", () => {
-    it("updates mtime for existing cached file", async () => {
-      cacheFileMetadata("/file.ts", false, 1000);
-
-      updateCachedFileMtime("/file.ts", 2000);
-
-      const metadata = getCachedFileMetadata("/file.ts");
-      expect(metadata?.mtime).toBe(2000);
-    });
-
-    it("creates new cache entry if file not cached", async () => {
-      updateCachedFileMtime("/new-file.ts", 3000);
-
-      const metadata = getCachedFileMetadata("/new-file.ts");
-      expect(metadata).toEqual({ isBinary: false, mtime: 3000 });
     });
   });
 

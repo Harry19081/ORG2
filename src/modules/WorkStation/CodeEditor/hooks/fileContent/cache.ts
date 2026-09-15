@@ -407,16 +407,3 @@ export function getUnsavedContentCacheStats(): {
     contentChars,
   };
 }
-
-export function updateCachedFileMtime(
-  filePath: string,
-  mtime: number | null
-): void {
-  const existing = metadataCache.get(filePath);
-  if (existing) {
-    existing.mtime = mtime;
-    return;
-  }
-
-  cacheFileMetadata(filePath, false, mtime);
-}

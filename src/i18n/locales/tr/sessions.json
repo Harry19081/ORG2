@@ -507,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "Kenar çubuğunu göster",
-      "hideSidebar": "Kenar çubuğunu gizle",
-      "showBottomPanel": "Alt paneli göster"
+      "hideSidebar": "Kenar çubuğunu gizle"
     },
     "multiTask": {
       "monitoringProgress": "{{count}} subagent'in ilerlemesi izleniyor",

@@ -507,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "サイドバーを表示",
-      "hideSidebar": "サイドバーを非表示",
-      "showBottomPanel": "下部パネルを表示"
+      "hideSidebar": "サイドバーを非表示"
     },
     "multiTask": {
       "monitoringProgress": "{{count}} 体の Subagent の進捗を監視中",
