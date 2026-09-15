@@ -29,6 +29,7 @@ import type {
 import { ICONS } from "../../config";
 import type { PathSegment } from "../../types";
 import { SpotlightFormBody, SpotlightFormShell } from "../shared";
+import { SpotlightFormField } from "../shared/SpotlightFormField";
 import { SpotlightFormLayout } from "../shared/SpotlightFormLayout";
 
 const LOCAL_SOURCE: SpotlightCollabOrgSource = "local";
@@ -305,40 +306,30 @@ const CollabOrgForm: React.FC<CollabOrgFormProps> = ({
               ) : null}
 
               {showOrgName ? (
-                <label className="flex flex-col gap-2 text-sm text-text-2">
-                  <span>
-                    {t("navigation:collaboration.orgName")}
-                    <span className="text-danger-6" aria-hidden>
-                      *
-                    </span>
-                  </span>
-                  <div
-                    className="w-full"
-                    data-guide-target={GUIDE_TARGETS.COLLAB_ORG_NAME_INPUT}
-                  >
-                    <Input
-                      data-testid="create-collab-org-name"
-                      aria-label={t("navigation:collaboration.orgName")}
-                      value={orgName}
-                      onChange={setOrgName}
-                      placeholder={t(
-                        "navigation:collaboration.orgNamePlaceholder"
-                      )}
-                      autoFocus
-                      required
-                    />
-                  </div>
-                </label>
+                <SpotlightFormField
+                  data-guide-target={GUIDE_TARGETS.COLLAB_ORG_NAME_INPUT}
+                  label={t("navigation:collaboration.orgName")}
+                  required
+                >
+                  <Input
+                    data-testid="create-collab-org-name"
+                    aria-label={t("navigation:collaboration.orgName")}
+                    value={orgName}
+                    onChange={setOrgName}
+                    placeholder={t(
+                      "navigation:collaboration.orgNamePlaceholder"
+                    )}
+                    autoFocus
+                    required
+                  />
+                </SpotlightFormField>
               ) : null}
 
               {showInvite ? (
-                <label className="flex flex-col gap-2 text-sm text-text-2">
-                  <span>
-                    {t("navigation:collaboration.inviteCode")}
-                    <span className="text-danger-6" aria-hidden>
-                      *
-                    </span>
-                  </span>
+                <SpotlightFormField
+                  label={t("navigation:collaboration.inviteCode")}
+                  required
+                >
                   <Input
                     data-testid="create-collab-org-invite"
                     aria-label={t("navigation:collaboration.inviteCode")}
@@ -350,7 +341,7 @@ const CollabOrgForm: React.FC<CollabOrgFormProps> = ({
                     autoFocus
                     required
                   />
-                </label>
+                </SpotlightFormField>
               ) : null}
 
               {error ? (

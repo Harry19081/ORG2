@@ -139,5 +139,3 @@ export const SpotlightShell: React.FC<SpotlightShellProps> = ({
     </SpotlightFooterActionContext.Provider>
   );
 };
-
-export default SpotlightShell;

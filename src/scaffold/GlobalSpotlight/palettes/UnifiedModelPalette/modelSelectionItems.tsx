@@ -18,6 +18,7 @@ import {
 
 import type { SpotlightItem } from "../../types";
 import { VariantPill } from "./VariantPill";
+import { withModelRowAttributes } from "./modelRowAttributes";
 import { MODEL_SECTION, type ModelSection } from "./modelSection";
 
 interface BuildModelSelectionRowParams {
@@ -147,7 +148,7 @@ export function buildModelSelectionSpotlightItem({
       <VariantPill modelId={variant?.baseModel ?? entry.modelId} />
     );
 
-  return {
+  return withModelRowAttributes({
     id: `${idPrefix}:${entry.modelId}:${entry.accountId ?? entry.sourceType}`,
     label: searchableLabel,
     icon: AccountListIcon,
@@ -163,7 +164,7 @@ export function buildModelSelectionSpotlightItem({
       searchAlias: `${concreteModelDisplay} ${entry.modelId}`,
     },
     action: () => onSelect(entry),
-  };
+  });
 }
 
 interface BuildAllModelItemsParams {
@@ -231,23 +232,25 @@ export function buildAllModelItems({
         <span className="shrink-0 font-normal text-text-1">{displayLabel}</span>
       );
 
-      items.push({
-        id: modelId,
-        label: displayLabel,
-        icon: ModelItemIcon,
-        type: "action" as const,
-        data: {
-          isSelector: true,
-          modelSection: MODEL_SECTION.ALL,
-          modelId,
-          groupModelIds: [modelId],
-          rightContent: renderAccountCount(accountCount),
-          showDisclosureChevron: true,
-          labelContent,
-          searchAlias: aliasDisplayName ? modelId : undefined,
-        },
-        action: () => handleModelSelect(modelId, displayLabel, [modelId]),
-      });
+      items.push(
+        withModelRowAttributes({
+          id: modelId,
+          label: displayLabel,
+          icon: ModelItemIcon,
+          type: "action" as const,
+          data: {
+            isSelector: true,
+            modelSection: MODEL_SECTION.ALL,
+            modelId,
+            groupModelIds: [modelId],
+            rightContent: renderAccountCount(accountCount),
+            showDisclosureChevron: true,
+            labelContent,
+            searchAlias: aliasDisplayName ? modelId : undefined,
+          },
+          action: () => handleModelSelect(modelId, displayLabel, [modelId]),
+        })
+      );
       continue;
     }
 
@@ -277,28 +280,30 @@ export function buildAllModelItems({
     const launchModel = resolveGroupLaunchModel(sortedVariants);
     const accountCount = getAccountCount(sortedVariants);
 
-    items.push({
-      id: `group:${group.label}:${group.sortVersion}`,
-      label: searchableLabel,
-      icon: GroupItemIcon,
-      type: "action" as const,
-      data: {
-        isSelector: true,
-        modelSection: MODEL_SECTION.ALL,
-        modelId: launchModel,
-        groupModelIds: sortedVariants,
-        labelContent,
-        rightContent: renderAccountCount(accountCount),
-        showDisclosureChevron: true,
-      },
-      action: () =>
-        handleModelSelect(
-          launchModel,
-          getModelAliasDisplayName(launchModel) ??
-            formatModelNameFull(launchModel),
-          sortedVariants
-        ),
-    });
+    items.push(
+      withModelRowAttributes({
+        id: `group:${group.label}:${group.sortVersion}`,
+        label: searchableLabel,
+        icon: GroupItemIcon,
+        type: "action" as const,
+        data: {
+          isSelector: true,
+          modelSection: MODEL_SECTION.ALL,
+          modelId: launchModel,
+          groupModelIds: sortedVariants,
+          labelContent,
+          rightContent: renderAccountCount(accountCount),
+          showDisclosureChevron: true,
+        },
+        action: () =>
+          handleModelSelect(
+            launchModel,
+            getModelAliasDisplayName(launchModel) ??
+              formatModelNameFull(launchModel),
+            sortedVariants
+          ),
+      })
+    );
   }
 
   return items;

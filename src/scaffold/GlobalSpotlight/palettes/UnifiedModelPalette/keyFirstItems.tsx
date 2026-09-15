@@ -28,6 +28,7 @@ import {
 
 import type { SpotlightItem } from "../../types";
 import { VariantPill } from "./VariantPill";
+import { withModelRowAttributes } from "./modelRowAttributes";
 import { MODEL_SECTION } from "./modelSection";
 
 export const KEY_FIRST_KEY_TEST_ID = "unified-model-key-option";
@@ -77,7 +78,7 @@ export function buildKeyItems({
       <span className="shrink-0 font-normal text-text-1">{account.name}</span>
     );
 
-    return {
+    return withModelRowAttributes({
       id: `key:${account.id}`,
       label: account.name,
       icon: KeyIcon,
@@ -97,7 +98,7 @@ export function buildKeyItems({
       // A key with nothing to pick in Step 2 is a one-click launch.
       action: () =>
         groupCount > 0 ? onSelectKey(account.id) : onCommit(account, ""),
-    };
+    });
   });
 }
 
@@ -190,23 +191,25 @@ export function buildKeyModelItems({
         <VariantPill modelId={baseModel} />
       );
 
-    items.push({
-      id: literalModels
-        ? `key-model:${account.id}:${representative}`
-        : `key-model:${account.id}:${group.label}:${group.sortVersion}`,
-      label: [displayLabel, ...sortedVariants].join(" "),
-      icon: ModelItemIcon,
-      type: "action" as const,
-      data: {
-        isSelector: true,
-        modelId: launchModel,
-        groupModelIds: sortedVariants,
-        labelContent,
-        rightContent: trailing,
-        testId: KEY_FIRST_MODEL_TEST_ID,
-      },
-      action: () => onCommit(account, launchModel),
-    });
+    items.push(
+      withModelRowAttributes({
+        id: literalModels
+          ? `key-model:${account.id}:${representative}`
+          : `key-model:${account.id}:${group.label}:${group.sortVersion}`,
+        label: [displayLabel, ...sortedVariants].join(" "),
+        icon: ModelItemIcon,
+        type: "action" as const,
+        data: {
+          isSelector: true,
+          modelId: launchModel,
+          groupModelIds: sortedVariants,
+          labelContent,
+          rightContent: trailing,
+          testId: KEY_FIRST_MODEL_TEST_ID,
+        },
+        action: () => onCommit(account, launchModel),
+      })
+    );
   }
 
   return items;
