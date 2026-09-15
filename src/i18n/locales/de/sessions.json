@@ -507,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "Seitenleiste anzeigen",
-      "hideSidebar": "Seitenleiste ausblenden",
-      "showBottomPanel": "Unteres Panel anzeigen"
+      "hideSidebar": "Seitenleiste ausblenden"
     },
     "multiTask": {
       "monitoringProgress": "Überwacht den Fortschritt von {{count}} Subagents",

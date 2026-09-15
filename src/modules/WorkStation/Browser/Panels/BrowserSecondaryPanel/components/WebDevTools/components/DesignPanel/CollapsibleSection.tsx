@@ -2,7 +2,6 @@
  * CollapsibleSection Component
  *
  * A simple collapsible section for the DesignPanel.
- * Follows the same styling as PanelSectionHeader.
  */
 import React, { memo, useEffect } from "react";
 

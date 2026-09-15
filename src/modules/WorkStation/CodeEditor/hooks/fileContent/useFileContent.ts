@@ -26,7 +26,6 @@ import {
   markFileLoadedThisSession,
   popUnsavedContent,
   subscribeToFileChanges,
-  updateCachedFileMtime,
 } from "./cache";
 import { MAX_EDIT_LOG_SIZE } from "./constants";
 import { classifyFileError } from "./errors";
@@ -45,7 +44,6 @@ export {
   clearUnsavedContentCache,
   invalidateFileCache,
   subscribeToFileChanges,
-  updateCachedFileMtime,
 };
 
 export function useFileContent(

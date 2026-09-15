@@ -507,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "사이드바 표시",
-      "hideSidebar": "사이드바 숨기기",
-      "showBottomPanel": "하단 패널 표시"
+      "hideSidebar": "사이드바 숨기기"
     },
     "multiTask": {
       "monitoringProgress": "{{count}}개 Subagent의 진행 상황 모니터링 중",

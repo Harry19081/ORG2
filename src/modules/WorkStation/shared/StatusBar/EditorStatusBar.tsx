@@ -13,17 +13,12 @@ import {
   activeWorkspaceRootPathAtom,
   activeWorktreeAtom,
 } from "@src/store/workspace";
-import {
-  indexingProgressAtom,
-  isIndexingAtom,
-} from "@src/store/workstation/codeEditor/search/indexingProgressAtom";
 
 import { BaseStatusBar } from "./StatusBarBase";
 import { EditorStatusBarLeft } from "./components/EditorStatusBarLeft";
 import { EditorStatusBarRight } from "./components/EditorStatusBarRight";
 import type { EditorStatusBarProps } from "./types";
 import { useEditorStatusBarGit } from "./utils/useEditorStatusBarGit";
-import { useIndexingIndicator } from "./utils/useIndexingIndicator";
 
 export type { CommitInfo, CursorPosition, EditorStatusBarProps } from "./types";
 
@@ -104,11 +99,6 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
     }, [sessionRepoHint, selectRepo, setActiveFolderId]);
     const showGitControls = isGitInitialized === true;
 
-    const isIndexingActive = useAtomValue(isIndexingAtom);
-    const indexingProgress = useAtomValue(indexingProgressAtom);
-
-    const showIndexingIndicator = useIndexingIndicator(isIndexingActive);
-
     const leftContent = useMemo(
       () => (
         <EditorStatusBarLeft
@@ -133,9 +123,6 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
           syncStatusLabel={syncStatusLabel}
           commitShortSha={commitInfo?.shortSha}
           sessionRepoHint={sessionRepoHint}
-          showIndexingIndicator={showIndexingIndicator}
-          isIndexingActive={isIndexingActive}
-          indexingProgress={indexingProgress}
           onRepoClick={onRepoClick}
           onBranchClick={onBranchClick}
           onWorktreeClick={onWorktreeClick}
@@ -177,9 +164,6 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
         handlePushClick,
         syncSpinClass,
         syncStatusLabel,
-        showIndexingIndicator,
-        isIndexingActive,
-        indexingProgress,
         isMultiRoot,
         workspaceLabel,
         sessionRepoHint,

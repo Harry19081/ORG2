@@ -98,8 +98,6 @@ interface TabBarProps {
   onTabClose: (tabId: string) => void;
   /** Callback when tabs are reordered via drag and drop */
   onTabReorder?: (startIndex: number, endIndex: number) => void;
-  /** Callback when more-options button is clicked */
-  onMoreOptions?: () => void;
   /** Opens a new tab (e.g. Browser); shows + in the right control section */
   onNewTab?: () => void;
   /** Optional keyboard shortcut displayed for the new-tab control. */
@@ -206,7 +204,6 @@ export const TabBar: React.FC<TabBarProps> = memo(
     onTabClick,
     onTabClose,
     onTabReorder,
-    onMoreOptions,
     onNewTab,
     onNewTabShortcutId,
     onCloseOtherTabs,
@@ -501,7 +498,6 @@ export const TabBar: React.FC<TabBarProps> = memo(
             hasTabs={hasTabs}
             onNewTab={onNewTab}
             onNewTabShortcutId={onNewTabShortcutId}
-            onMoreOptions={onMoreOptions}
             trailingSlot={trailingSlot}
           />
         </div>

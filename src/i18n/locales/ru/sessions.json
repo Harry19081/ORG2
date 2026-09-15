@@ -507,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "Показать боковую панель",
-      "hideSidebar": "Скрыть боковую панель",
-      "showBottomPanel": "Показать нижнюю панель"
+      "hideSidebar": "Скрыть боковую панель"
     },
     "multiTask": {
       "monitoringProgress": "Отслеживание прогресса {{count}} subagents",

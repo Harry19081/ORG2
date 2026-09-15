@@ -507,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "显示侧边栏",
-      "hideSidebar": "隐藏侧边栏",
-      "showBottomPanel": "显示底部面板"
+      "hideSidebar": "隐藏侧边栏"
     },
     "multiTask": {
       "monitoringProgress": "正在监控 {{count}} 个 Subagent 的进度",
