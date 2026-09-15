@@ -223,7 +223,12 @@ export function validatePrivacyManifest(privacy) {
   );
 }
 
-export function validateAltoolResult(output, phase, status, successPattern) {
+export function validateAltoolResult(output, phase, status) {
+  const successPattern = {
+    validation: /No errors validating archive|VALIDATION SUCCEEDED/i,
+    upload: /UPLOAD SUCCEEDED|No errors uploading/i,
+  }[phase];
+  assert.ok(successPattern, "Unknown App Store Connect phase");
   assert.equal(status, 0, `App Store Connect ${phase} command failed`);
   assert.doesNotMatch(
     output,
@@ -232,7 +237,7 @@ export function validateAltoolResult(output, phase, status, successPattern) {
   );
   assert.match(
     output,
-    new RegExp(successPattern, "i"),
+    successPattern,
     `App Store Connect ${phase} did not return a recognized success response`,
   );
 }
@@ -262,18 +267,16 @@ if (
       process.argv[2] === "altool" &&
       process.argv[3] &&
       process.argv[4] &&
-      process.argv[5] &&
-      process.argv[6]
+      process.argv[5]
     ) {
       validateAltoolResult(
         readFileSync(resolve(process.argv[5]), "utf8"),
         process.argv[3],
         Number(process.argv[4]),
-        process.argv[6],
       );
     } else {
       throw new Error(
-        "Usage: readiness.mjs config | app <app-path> | altool <phase> <status> <log-path> <success-pattern>",
+        "Usage: readiness.mjs config | app <app-path> | altool <phase> <status> <log-path>",
       );
     }
   } catch {

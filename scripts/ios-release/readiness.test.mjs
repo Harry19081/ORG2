@@ -70,7 +70,6 @@ test("rejects an altool API failure even when altool exits successfully", () => 
       "ERROR: Failed to validate package. UPLOAD FAILED (409)",
       "upload",
       0,
-      "UPLOAD SUCCEEDED|No errors uploading",
     ),
   );
 });
@@ -81,7 +80,6 @@ test("requires an explicit altool success marker", () => {
       "Transfer completed without a final response",
       "upload",
       0,
-      "UPLOAD SUCCEEDED|No errors uploading",
     ),
   );
   assert.doesNotThrow(() =>
@@ -89,7 +87,6 @@ test("requires an explicit altool success marker", () => {
       "UPLOAD SUCCEEDED",
       "upload",
       0,
-      "UPLOAD SUCCEEDED|No errors uploading",
     ),
   );
 });

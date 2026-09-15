@@ -320,19 +320,18 @@ jobs:
           run_altool() {
             local phase="$1"
             local log="$2"
-            local success_pattern="$3"
-            shift 3
+            shift 2
             local status
             set +e
             xcrun altool "$@" 2>&1 | tee "$log"
             status="${PIPESTATUS[0]}"
             set -e
-            node scripts/ios-release/readiness.mjs altool "$phase" "$status" "$log" "$success_pattern"
+            node scripts/ios-release/readiness.mjs altool "$phase" "$status" "$log"
           }
 
-          run_altool validation "$validation_log" 'No errors validating archive|VALIDATION SUCCEEDED' \
+          run_altool validation "$validation_log" \
             --validate-app -f "$ipa" --type ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
-          run_altool upload "$upload_log" 'UPLOAD SUCCEEDED|No errors uploading' \
+          run_altool upload "$upload_log" \
             --upload-app -f "$ipa" --type ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
           echo 'Upload accepted. Processing, export-compliance questions, tester access and review are separate App Store Connect steps.' >> "$GITHUB_STEP_SUMMARY"
 
