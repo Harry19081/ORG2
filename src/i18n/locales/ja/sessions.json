@@ -896,10 +896,10 @@
       "exportJson": "JSON をエクスポート",
       "importAction": "Session をインポート",
       "exportDescription": "アクティブな Session をポータブルな JSON スナップショットとしてエクスポートします",
-      "importDescription": "Session JSON スナップショットをサイドバーにインポートします。",
+      "importDescription": "Session JSON スナップショットをサイドバーにインポートします",
       "jsonSnapshotNote": "インポートされた Session は読み取り専用スナップショットで、元のイベント履歴を保持します",
       "chooseJson": "JSON ファイルを選択",
-      "chooseJsonHint": ".orgii-session.json エクスポートファイルを選択してください。",
+      "chooseJsonHint": ".orgii-session.json エクスポートファイルを選択してください",
       "loadingPreview": "Session イベントを集計中…",
       "noActiveSession": "アクティブな Session が選択されていません。",
       "importedName": "インポート済み Session: {{name}}",
@@ -1908,7 +1908,7 @@
     "start": "開始",
     "missingGit": {
       "title": "Git が見つかりません",
-      "body": "Git がインストールされていないか、見つかりません。ADE Manager または SDE Agent にこのマシンへ Git をインストールしてもらい、その後 ORG2 を再起動してください。"
+      "body": "Git がインストールされていないか、見つかりません。ADE Manager または SDE Agent にこのマシンへ Git をインストールしてもらい、その後 ORG2 を再起動してください"
     },
     "model": "モデル",
     "contextMenu": {
@@ -2123,7 +2123,7 @@
       "archiveTeardownRetained": "アーカイブ済みですが、{{count}} 個のランタイムを解放できませんでした。削除は引き続きブロックされます。",
       "archiveTeardownQuiesced": "アーカイブ済みで完全に停止しました。完全削除が可能です。",
       "dangerZone": "危険な操作",
-      "deleteDescription": "このチームとすべてのセッションおよび履歴を完全に削除します。",
+      "deleteDescription": "このチームとすべてのセッションおよび履歴を完全に削除します",
       "deleteTeam": "チームを削除",
       "deleteTitle": "このチームを完全に削除しますか？",
       "deleteWarning": "チームのすべてのセッションと履歴が完全に削除されます。元に戻せません。",
