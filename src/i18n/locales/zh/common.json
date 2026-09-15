@@ -1488,7 +1488,6 @@
         "createFrom": "基于分支创建",
         "deleteBranch": "删除分支",
         "refresh": "刷新分支",
-        "checkoutDetachedSuccess": "已切换到 detached HEAD 状态（当前提交）",
         "removeWorktree": "移除 Worktree",
         "newWorktree": "新建 Worktree...",
         "refreshPullRequests": "刷新 Pull requests"

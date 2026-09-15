@@ -1488,7 +1488,6 @@
         "createFrom": "Create Branch From",
         "deleteBranch": "Delete branch",
         "refresh": "Refresh branch",
-        "checkoutDetachedSuccess": "Now in detached HEAD state at current commit",
         "removeWorktree": "Remove Worktree",
         "newWorktree": "New Worktree...",
         "refreshPullRequests": "Refresh Pull requests"

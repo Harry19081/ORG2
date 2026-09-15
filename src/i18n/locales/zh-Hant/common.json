@@ -1657,7 +1657,6 @@
         "createFrom": "基於分支創建",
         "deleteBranch": "刪除分支",
         "refresh": "刷新分支",
-        "checkoutDetachedSuccess": "已切換到 detached HEAD 狀態（當前提交）",
         "removeWorktree": "移除 Worktree",
         "newWorktree": "新建 Worktree...",
         "refreshPullRequests": "重新整理 Pull requests"

@@ -13,6 +13,10 @@
 
 Verdict totals: **0 fix**, **8 keep with reason**, **0 abstract**.
 
-Real Modal/SelectionGrid DOM tests cover descriptions, default/exclusive selection, busy disablement, cancel cleanup and actual-branch/conflict text. Source/AST review found no new native button/input or click-container bypasses. The unchanged SourceControl empty-area selection-clear container is outside this change. Copy is translated in English, Simplified Chinese and Traditional Chinese; description lines have no terminal punctuation.
+Real Modal/SelectionGrid DOM tests cover descriptions, default/exclusive selection, busy disablement, cancel cleanup and actual-branch/conflict text. Source/AST review found no new native button/input or click-container bypasses. The unchanged SourceControl empty-area selection-clear container is outside this change. Copy is translated in all 13 supported locales; description lines have no terminal punctuation.
 
 Native-window screenshots, light/dark layout and real-window keyboard/focus verification remain unrun because computer control was not authorized.
+
+## CI follow-up
+
+Completed translations for all supported locales, reused the existing `status.loading` key, and removed the unused detached-checkout success key. Saved-change effect refreshes now have explicit, scope-aware rejection handlers. The i18n and typed-lint baselines remain unchanged.

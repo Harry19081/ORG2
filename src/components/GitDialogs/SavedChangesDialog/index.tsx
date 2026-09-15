@@ -44,7 +44,9 @@ export function SavedChangesDialog({
   );
   useEffect(() => {
     alive.current = true;
-    void load();
+    void load().catch((error: unknown) => {
+      if (alive.current) setMessage(String(error));
+    });
     return () => {
       alive.current = false;
     };
@@ -118,7 +120,7 @@ export function SavedChangesDialog({
         )}
         {busy && (
           <p role="status" className="text-xs text-text-3">
-            {t("common.loading", "Loading…")}
+            {t("status.loading", "Loading…")}
           </p>
         )}
         {!busy && snapshots.length === 0 && (

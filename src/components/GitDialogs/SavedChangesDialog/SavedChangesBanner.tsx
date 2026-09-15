@@ -26,6 +26,9 @@ export function SavedChangesBanner({
     let alive = true;
     let pending = false;
     let invalidated = false;
+    const handleRefreshFailure = () => {
+      if (alive) setLoaded({ path: repoPath, branch, available: false });
+    };
     const refresh = async () => {
       invalidated = true;
       if (pending || !alive || document.visibilityState === "hidden") return;
@@ -43,20 +46,21 @@ export function SavedChangesBanner({
           setLoaded({ path: repoPath, branch, available: false });
       } finally {
         pending = false;
-        if (alive && invalidated) void refresh();
+        if (alive && invalidated) void refresh().catch(handleRefreshFailure);
       }
     };
     const onChange = (event: Event) => {
       const scope = (event as CustomEvent).detail;
       if (!scope || scope.repoPath === repoPath) {
         onRefresh?.();
-        void refresh();
+        void refresh().catch(handleRefreshFailure);
       }
     };
     const onVisible = () => {
-      if (document.visibilityState !== "hidden") void refresh();
+      if (document.visibilityState !== "hidden")
+        void refresh().catch(handleRefreshFailure);
     };
-    void refresh();
+    void refresh().catch(handleRefreshFailure);
     window.addEventListener("orgii-branch-switch-completed", onChange);
     document.addEventListener("visibilitychange", onVisible);
     return () => {
