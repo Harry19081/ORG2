@@ -86,3 +86,16 @@ Windows/Linux runtime behavior, cross-process token-refresh stress, live UI prop
 active-session/background-worker ownership remain
 unverified. Performance verdict: blocked for a complete native lifecycle verdict;
 no runtime performance improvement is claimed.
+
+## Dev icon follow-up
+
+The dev Tauri config embeds an amber IID icon. The native icon setter selects
+that image by app identifier for startup and later preference reapplication,
+so shared settings cannot make dev look like the installed app. No preference
+write, new timer, listener, or background task is introduced. The existing
+main-thread dispatch and image ownership remain unchanged.
+
+- `cargo test --manifest-path src-tauri/Cargo.toml -p app_window --lib dock_icon::tests -- --nocapture`: 8 passed, including native image decoding and dev/primary/numbered selection across all preferences
+- `node --test scripts/dev/tauri-dev-processes.test.cjs scripts/tauri/run-with-features.test.cjs`: 14 passed
+- `node scripts/tauri/dev-icons.mjs`: regenerated desktop assets from the path-based SVG; 128px and 512px PNGs visually inspected
+- The live Dock/taskbar was not inspected; Windows/Linux native behavior remains unverified

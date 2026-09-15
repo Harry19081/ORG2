@@ -74,3 +74,14 @@ system-dark load therefore leaves a styled light app, while preserving the
 "Follow device" preference for later synchronization. The paint wait also has
 a timeout, so paused animation frames in a hidden macOS window cannot strand
 theme initialization.
+
+## Dev icon
+
+The dev identity uses an amber **IID** icon in the Dock/app switcher and window
+icons. Its Tauri config supplies the icon before startup, and the native icon
+setter preserves it when the shared `general.dockIcon` preference is reapplied.
+The preference itself remains unchanged and still controls the installed app.
+Restart the dev process after rebuilding to see the new native icon.
+
+The editable source is `src/assets/appIcons/dev.svg`; regenerate the desktop
+PNG, ICNS, and ICO assets with `node scripts/tauri/dev-icons.mjs`.

@@ -76,6 +76,11 @@ test("tauri args disable beforeDevCommand after wrapper starts webpack", () => {
     "orgii-dev",
   ]);
   assert.equal(config.plugins.updater.active, false);
+  assert.ok(config.bundle.icon.includes("icons/dev/icon.icns"));
+  assert.ok(config.bundle.icon.includes("icons/dev/icon.ico"));
+  for (const icon of config.bundle.icon) {
+    assert.ok(fs.existsSync(`src-tauri/${icon}`), `Missing dev icon: ${icon}`);
+  }
 });
 
 test("tauri args preserve features and devUrl override", () => {

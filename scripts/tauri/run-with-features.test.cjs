@@ -38,6 +38,7 @@ test("dev-only entry point passes the dev identity and frontend environment", ()
   const configPath = args[args.indexOf("--config") + 1];
   const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
   assert.equal(config.identifier, "org2ai.org2.dev");
+  assert.ok(config.bundle.icon.includes("icons/dev/icon.png"));
   assert.equal(
     config.build,
     undefined,
