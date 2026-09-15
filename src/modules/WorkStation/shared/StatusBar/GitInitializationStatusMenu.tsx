@@ -49,7 +49,8 @@ export const GitInitializationStatusMenu: React.FC<GitInitializationStatusMenuPr
     const handleInitialize = useCallback(() => {
       close();
       setIsActionPending(true);
-      void onInitialize().finally(() => setIsActionPending(false));
+      const clearPendingState = () => setIsActionPending(false);
+      onInitialize().then(clearPendingState, clearPendingState);
     }, [close, onInitialize]);
 
     const actionPending = isInitializing || isActionPending;
