@@ -217,7 +217,13 @@
     "skin": "Skin",
     "accent": "Acento",
     "linkSkinVariants": "Vincular claro y oscuro",
-    "linkSkinVariantsDesc": "Usa una sola skin y un solo acento para ambos modos. Solo se pueden vincular las skins que incluyen una variante clara y una oscura"
+    "linkSkinVariantsDesc": "Usa una sola skin y un solo acento para ambos modos. Solo se pueden vincular las skins que incluyen una variante clara y una oscura",
+    "license": "License",
+    "licenseDesc": "View the license bundled with this app",
+    "viewLicense": "View license",
+    "licenseTitle": "ORG2 license",
+    "licenseLoading": "Loading license…",
+    "licenseLoadFailed": "Unable to load the application license"
   },
   "background": {
     "title": "Fondo",

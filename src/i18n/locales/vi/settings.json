@@ -217,7 +217,13 @@
     "skin": "Skin",
     "accent": "Màu nhấn",
     "linkSkinVariants": "Liên kết sáng và tối",
-    "linkSkinVariantsDesc": "Dùng một skin và màu nhấn cho cả hai chế độ. Chỉ các skin có cả biến thể sáng và tối mới có thể liên kết"
+    "linkSkinVariantsDesc": "Dùng một skin và màu nhấn cho cả hai chế độ. Chỉ các skin có cả biến thể sáng và tối mới có thể liên kết",
+    "license": "License",
+    "licenseDesc": "View the license bundled with this app",
+    "viewLicense": "View license",
+    "licenseTitle": "ORG2 license",
+    "licenseLoading": "Loading license…",
+    "licenseLoadFailed": "Unable to load the application license"
   },
   "background": {
     "title": "Hình nền",

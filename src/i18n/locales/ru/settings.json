@@ -217,7 +217,13 @@
     "skin": "Скин",
     "accent": "Акцент",
     "linkSkinVariants": "Связать светлый и тёмный",
-    "linkSkinVariantsDesc": "Использовать один скин и акцент для обоих режимов. Связать можно только скины, имеющие светлый и тёмный варианты"
+    "linkSkinVariantsDesc": "Использовать один скин и акцент для обоих режимов. Связать можно только скины, имеющие светлый и тёмный варианты",
+    "license": "License",
+    "licenseDesc": "View the license bundled with this app",
+    "viewLicense": "View license",
+    "licenseTitle": "ORG2 license",
+    "licenseLoading": "Loading license…",
+    "licenseLoadFailed": "Unable to load the application license"
   },
   "background": {
     "title": "Фон",
