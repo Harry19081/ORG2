@@ -14,6 +14,7 @@
  */
 pub mod ai;
 pub mod branch;
+pub mod branch_switch;
 pub mod commit;
 pub mod cursor_chat;
 pub mod diff;

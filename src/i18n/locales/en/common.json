@@ -1333,6 +1333,37 @@
     "commit": {
       "copySha": "Copy SHA",
       "shaCopied": "SHA copied to clipboard"
+    },
+    "branchSwitch": {
+      "title": "Switch branch",
+      "conflictsTitle": "Changes need attention",
+      "blockedTitle": "Branch switch needs attention",
+      "working": "Saving and switching…",
+      "viewSaved": "View saved changes",
+      "current": "Current branch: {{branch}}",
+      "changedFiles": "{{count}} changed files",
+      "question": "What would you like to do with your changes?",
+      "leave": "Leave changes on {{branch}}",
+      "leaveDescription": "Save your work for later and switch with a clean working tree",
+      "bring": "Bring changes to {{branch}}",
+      "bringDescription": "Move your uncommitted changes to the destination branch",
+      "savedTitle": "Saved changes",
+      "nextPage": "Next page",
+      "noSaved": "No saved branch changes",
+      "applied": "Already applied · recovery copy",
+      "restore": "Restore",
+      "savedAvailable": "Saved changes available for this branch",
+      "worktreeTitle": "Branch is open in another worktree",
+      "openWorktree": "Open worktree",
+      "activeTask": "A task is using this worktree",
+      "activeTaskDescription": "Wait for the task to finish, stop it explicitly, or use another worktree before switching branches",
+      "saveTitle": "Save files before switching",
+      "saveDescription": "Open files have unsaved edits. Save them before choosing where to keep your changes",
+      "saveContinue": "Save all and continue",
+      "saveFailed": "Could not save all files",
+      "multipleBuffers": "This file has edits in more than one editor. Save or close those editors before switching",
+      "editedWhileSaving": "Files were edited while saving. Review the latest edits and try again",
+      "savePreview": "Save or discard edits in the spreadsheet editor before switching branches"
     }
   },
   "selectors": {
@@ -1448,7 +1479,6 @@
         "createFrom": "Create Branch From",
         "deleteBranch": "Delete branch",
         "refresh": "Refresh branch",
-        "checkoutDetachedSuccess": "Now in detached HEAD state at current commit",
         "removeWorktree": "Remove Worktree",
         "newWorktree": "New Worktree...",
         "refreshPullRequests": "Refresh Pull requests"

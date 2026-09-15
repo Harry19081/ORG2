@@ -2740,6 +2740,7 @@ dependencies = [
  "base64 0.22.1",
  "chrono",
  "dirs",
+ "fs2",
  "futures",
  "git",
  "git2",

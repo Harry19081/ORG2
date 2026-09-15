@@ -12,6 +12,7 @@ import { useCallback } from "react";
 
 import { gitApi, removeGitWorktree } from "@src/api/http/git";
 import type { GitWorktreeEntry } from "@src/api/http/git";
+import { performBranchSwitch } from "@src/services/git/operations/performBranchSwitch";
 import type { Repo } from "@src/store/repo";
 import type { WorktreeLaunchSource } from "@src/store/session/worktreeLaunchSourceAtom";
 import type { ActiveWorktreeSelection } from "@src/store/workspace";
@@ -88,7 +89,6 @@ export function useSpotlightPickerActions(
     selectBranch,
     refreshBranches,
     closeModal,
-    t,
     setActiveWorktree,
     setCurrentBranch,
     setWorkingDirectoryPickerMode,
@@ -176,31 +176,26 @@ export function useSpotlightPickerActions(
         return;
       }
 
-      // Create WITHOUT checking out, then route the checkout through
-      // selectBranch so a dirty working tree surfaces the CheckoutConflictDialog
-      // instead of the raw create+checkout bypassing the guard.
-      const result = await gitApi.gitCreateBranch({
-        repo_id: selectedRepoId,
-        repo_path: currentRepo.path,
-        name: branchName,
-        start_point: startPoint ?? null,
-        checkout: false,
-      });
-
-      if (!result.success) {
-        showGitActionDialogSafely(
-          result.error || `Failed to create branch "${branchName}"`,
-          "error"
-        );
-        return;
-      }
-
-      showGitActionDialogSafely(`Branch "${branchName}" created`, "info");
-      await selectBranch(branchName);
+      const result = await performBranchSwitch(
+        {
+          repoId: selectedRepoId,
+          repoPath: currentRepoPath || currentRepo.path,
+        },
+        branchName,
+        true,
+        startPoint
+      );
+      if (!result.success) return;
       setBranchPickerOpen(false);
       closeModal();
     },
-    [closeModal, currentRepo, selectBranch, selectedRepoId, setBranchPickerOpen]
+    [
+      closeModal,
+      currentRepo,
+      currentRepoPath,
+      selectedRepoId,
+      setBranchPickerOpen,
+    ]
   );
 
   const handleDeleteBranch = useCallback(
@@ -287,27 +282,21 @@ export function useSpotlightPickerActions(
       return;
     }
 
-    // Route through the guarded checkout flow (selectBranch special-cases
-    // HEAD-style refs) so a dirty tree surfaces the CheckoutConflictDialog
-    // rather than bypassing it with a raw gitCheckout. selectBranch reports its
-    // own failures; we keep the detached-HEAD success copy.
-    await selectBranch("HEAD");
-
-    showGitActionDialogSafely(
-      t("selectors.branch.actions.checkoutDetachedSuccess"),
-      "info"
+    const result = await performBranchSwitch(
+      { repoId: selectedRepoId, repoPath: currentRepoPath || currentRepo.path },
+      "HEAD"
     );
+    if (!result.success) return;
     await refreshBranches();
     setBranchPickerOpen(false);
     closeModal();
   }, [
     closeModal,
     currentRepo,
+    currentRepoPath,
     refreshBranches,
-    selectBranch,
     selectedRepoId,
     setBranchPickerOpen,
-    t,
   ]);
 
   return {
