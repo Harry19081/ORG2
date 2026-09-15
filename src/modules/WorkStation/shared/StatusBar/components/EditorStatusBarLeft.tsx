@@ -26,6 +26,7 @@ import type { ActiveWorktreeSelection } from "@src/store/workspace";
 import type { IndexingProgress } from "@src/store/workstation/codeEditor/search/indexingProgressAtom";
 
 import { CiStatusMenu } from "../CiStatusMenu";
+import GitInitializationStatusMenu from "../GitInitializationStatusMenu";
 import GitSyncStatusMenu from "../GitSyncStatusMenu";
 import { PortsStatusMenu } from "../PortsStatusMenu";
 import {
@@ -67,6 +68,8 @@ export interface EditorStatusBarLeftProps {
   onBranchClick?: () => void;
   onWorktreeClick?: () => void;
   onSyncClick: () => void;
+  isInitializingGit: boolean;
+  onInitializeGit: () => Promise<void>;
   onFetchClick: () => Promise<void>;
   onPullClick: () => Promise<void>;
   onRebaseClick: () => Promise<void>;
@@ -103,6 +106,8 @@ export const EditorStatusBarLeft: React.FC<EditorStatusBarLeftProps> = ({
   onBranchClick,
   onWorktreeClick,
   onSyncClick,
+  isInitializingGit,
+  onInitializeGit,
   onFetchClick,
   onPullClick,
   onRebaseClick,
@@ -165,20 +170,10 @@ export const EditorStatusBarLeft: React.FC<EditorStatusBarLeftProps> = ({
     )}
 
     {repoName && isGitInitialized === false && (
-      <StatusBarSegment
-        className="text-text-2"
-        title={t("workstation.notGitInitializedTooltip")}
-      >
-        <HugeiconsIcon
-          icon={WorkflowCircle05Icon}
-          data-icon="git-branch"
-          size={13}
-          className="text-text-2"
-        />
-        <StatusBarLabel emphasis className="text-text-2">
-          {t("workstation.notGitInitialized")}
-        </StatusBarLabel>
-      </StatusBarSegment>
+      <GitInitializationStatusMenu
+        isInitializing={isInitializingGit}
+        onInitialize={onInitializeGit}
+      />
     )}
 
     {showGitControls && branchName && (

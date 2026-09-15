@@ -20,10 +20,10 @@ import { useTranslation } from "react-i18next";
 
 import { gitFetchStream } from "@src/api/http/git/streaming";
 import Button from "@src/components/Button";
-import { Placeholder } from "@src/components/Placeholder";
+import { PLACEHOLDER_TOKENS, Placeholder } from "@src/components/Placeholder";
 import type { GitFileStatus } from "@src/config/gitStatus";
 import { CodeMirrorDiff } from "@src/features/CodeMirror";
-import { ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
+import { Archive04Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import {
   FileHeader,
   GIT_FILE_LIST_MAX_WIDTH,
@@ -306,6 +306,13 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
         <Placeholder
           variant="empty"
           placement="detail-panel"
+          icon={
+            <HugeiconsIcon
+              icon={Archive04Icon}
+              data-icon="archive-04"
+              size={PLACEHOLDER_TOKENS.iconSize}
+            />
+          }
           title={t("placeholders.noChanges")}
           subtitle={shortSha}
           fillParentHeight

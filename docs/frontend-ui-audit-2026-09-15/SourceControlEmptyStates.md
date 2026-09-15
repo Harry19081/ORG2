@@ -1,0 +1,9 @@
+# Source control empty states UI audit
+
+| Line                                                                                                    | Element                      | Verdict          | Reason                                                                                                                                                                                       | Suggested change |
+| ------------------------------------------------------------------------------------------------------- | ---------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| `src/components/Placeholder/index.tsx:168`                                                              | Placeholder action           | keep with reason | Uses the shared `Button`; the placement-aware default maps sidebar actions to the existing 28px `small` size and preserves caller overrides.                                                 | None.            |
+| `src/modules/WorkStation/shared/StatusBar/GitInitializationStatusMenu.tsx:115`                          | Git initialization menu item | keep with reason | Uses the shared `Button` with `layout="custom"` and `appearance="custom"` because the reusable dropdown item requires direct icon-and-label children and the shared dropdown surface tokens. | None.            |
+| `src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/GitCommitDetailContent/index.tsx:309` | No-changes detail-pane icon  | keep with reason | Reuses the shared `Placeholder`, `HugeiconsIcon`, and `PLACEHOLDER_TOKENS.iconSize`; no new visual primitive or arbitrary color was introduced.                                              | None.            |
+
+Verdict totals: **0 fix**, **3 keep with reason**, **0 abstract**, **0 watch**.

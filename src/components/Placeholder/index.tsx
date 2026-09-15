@@ -162,11 +162,12 @@ export const Placeholder: React.FC<PlaceholderProps> = memo(
       renderButton,
       dataTestId,
       className: actionClassName = "",
+      size: actionSize = isDetailPanel ? "default" : "small",
       ...buttonProps
     } = resolvedAction ?? {};
     const actionButton = resolvedAction ? (
       <Button
-        size="default"
+        size={actionSize}
         {...buttonProps}
         className={`${isDetailPanel ? "mt-3" : "mt-2"} ${actionClassName}`.trim()}
         data-testid={dataTestId}
