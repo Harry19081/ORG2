@@ -184,6 +184,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     handleTurnPageEndReached,
     isLoadingMore,
     preserveForLayoutMutation,
+    reconcileLayout,
     scrollAreaRef,
     scrollToBottom,
     setScrollRoot,
@@ -544,6 +545,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                       virtualScrollerRef={virtuosoScrollerRef}
                       staticScrollerRef={staticScrollerRef}
                       onScrollRootChange={setScrollRoot}
+                      onRowLayoutCommit={reconcileLayout}
                       newEventDividerLabel={newEventDividerLabel}
                     />
                   </>
