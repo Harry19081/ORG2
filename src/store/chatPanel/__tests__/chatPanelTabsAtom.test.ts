@@ -30,6 +30,7 @@ import {
   syncActiveChatPanelTabStateAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
 import {
+  activeChatPanelSessionIdAtom,
   activeChatPanelTabAtom,
   activeWorkManagementSectionAtom,
   chatPanelTabsAtom,
@@ -95,6 +96,7 @@ async function loadChatPanelTabAtoms() {
   const store = createInstrumentedStore();
 
   return {
+    activeChatPanelSessionIdAtom,
     activateChatPanelTabAtom,
     activeChatPanelTabAtom,
     activeChatPanelTabHistoryAtom,
@@ -1438,6 +1440,7 @@ describe("openSessionInNewChatTabAtom", () => {
 
   it("opens a linked tab and switches the WorkStation session", async () => {
     const {
+      activeChatPanelSessionIdAtom,
       activeSessionIdAtom,
       chatPanelTabsAtom,
       openSessionInNewChatTabAtom,
@@ -1466,6 +1469,12 @@ describe("openSessionInNewChatTabAtom", () => {
       repoPath: "/repos/orgii",
     });
     expect(store.get(activeSessionIdAtom)).toBe("session-target");
+    expect(store.get(activeChatPanelSessionIdAtom)).toBe("session-target");
+
+    // Nested chat surfaces can claim the singleton pipeline without changing
+    // which tab is selected. Completion-message routing follows the tab.
+    store.set(activeSessionIdAtom, "nested-session");
+    expect(store.get(activeChatPanelSessionIdAtom)).toBe("session-target");
   });
 
   it("activates a linked session tab through the shared activation action", async () => {
