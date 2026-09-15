@@ -468,7 +468,6 @@
     "gitOperations": "Hoạt động Git",
     "gitOperationsDesc": "Thông báo Git pull, push và đồng bộ",
     "soundPreset": "Âm thanh thông báo",
-    "soundPresetDesc": "Chọn âm thanh cho các thông báo có tiếng",
     "previewSound": "Nghe thử",
     "soundPresets": {
       "classic": "Cổ điển",

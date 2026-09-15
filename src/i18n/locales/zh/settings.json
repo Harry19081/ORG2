@@ -548,7 +548,6 @@
     "gitOperations": "Git 操作",
     "gitOperationsDesc": "Git pull、push 和同步通知",
     "soundPreset": "通知音效",
-    "soundPresetDesc": "选择通知提醒时播放的声音",
     "previewSound": "试听",
     "soundPresets": {
       "classic": "经典双音",

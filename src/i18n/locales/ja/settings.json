@@ -468,7 +468,6 @@
     "gitOperations": "Git 操作",
     "gitOperationsDesc": "Git Pull、Push、同期の通知",
     "soundPreset": "通知音",
-    "soundPresetDesc": "通知で再生する音を選択します",
     "previewSound": "試聴",
     "soundPresets": {
       "classic": "クラシック",

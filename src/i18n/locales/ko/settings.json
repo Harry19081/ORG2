@@ -468,7 +468,6 @@
     "gitOperations": "Git 작업",
     "gitOperationsDesc": "Git pull, push 및 동기화 알림",
     "soundPreset": "알림음",
-    "soundPresetDesc": "알림에 사용할 소리를 선택합니다",
     "previewSound": "미리 듣기",
     "soundPresets": {
       "classic": "클래식",

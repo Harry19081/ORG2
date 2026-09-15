@@ -468,7 +468,6 @@
     "gitOperations": "Git İşlemleri",
     "gitOperationsDesc": "Git pull, push ve senkronizasyon bildirimleri",
     "soundPreset": "Bildirim sesi",
-    "soundPresetDesc": "Sesli bildirimlerde çalınacak sesi seçin",
     "previewSound": "Önizle",
     "soundPresets": {
       "classic": "Klasik",

@@ -223,11 +223,7 @@ const NotificationsAdvancedBlocks: React.FC = () => {
 
         {soundEnabled && (
           <>
-            <SectionRow
-              label={t("notifications.soundPreset")}
-              description={t("notifications.soundPresetDesc")}
-              indent
-            >
+            <SectionRow label={t("notifications.soundPreset")} indent>
               <div
                 className={`${SECTION_ACTION_GAP_CLASSES} w-full flex-wrap`}
                 style={SECTION_CONTROL_STYLE}

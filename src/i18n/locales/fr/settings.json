@@ -468,7 +468,6 @@
     "gitOperations": "Opérations Git",
     "gitOperationsDesc": "Notifications de Git pull, push et synchronisation",
     "soundPreset": "Son de notification",
-    "soundPresetDesc": "Choisissez le son des notifications audibles",
     "previewSound": "Écouter",
     "soundPresets": {
       "classic": "Classique",
