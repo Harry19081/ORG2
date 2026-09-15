@@ -71,7 +71,10 @@ test("writes Ad Hoc export options for registered-device distribution", () => {
     ...inputs,
     exportMethod: "ad-hoc",
   });
-  assert.match(exportOptions, /<key>method<\/key><string>ad-hoc<\/string>/);
+  assert.match(
+    exportOptions,
+    /<key>method<\/key><string>release-testing<\/string>/,
+  );
 });
 
 test("rejects unsupported export methods", () => {

@@ -7,6 +7,14 @@ export const iosBundleId = "org2ai.org2.remote";
 export const defaultExportMethod = "app-store-connect";
 const supportedExportMethods = new Set([defaultExportMethod, "ad-hoc"]);
 
+export function xcodeExportMethod(exportMethod = defaultExportMethod) {
+  assert.ok(
+    supportedExportMethods.has(exportMethod),
+    "Unsupported iOS export method",
+  );
+  return exportMethod === "ad-hoc" ? "release-testing" : exportMethod;
+}
+
 function xmlEscape(value) {
   return value
     .replaceAll("&", "&amp;")
@@ -91,11 +99,7 @@ export function signingXcconfig(inputs) {
 export function exportOptionsPlist(inputs) {
   validateInputs(inputs);
   const identity = xmlEscape(inputs.identity);
-  const exportMethod = inputs.exportMethod ?? defaultExportMethod;
-  assert.ok(
-    supportedExportMethods.has(exportMethod),
-    "Unsupported iOS export method",
-  );
+  const exportMethod = xcodeExportMethod(inputs.exportMethod);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
