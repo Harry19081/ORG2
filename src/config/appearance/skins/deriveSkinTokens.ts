@@ -118,6 +118,7 @@ export function deriveSkinTokens(
   const pageSurface = seed.surface;
   const recessedSurface = isLight ? lift(0.05) : recede(0.25);
   const editorSurface = isLight ? pageSurface : recede(0.3);
+  const textSelection = tint(seed.accent, isLight ? 0.28 : 0.5);
 
   const tokens: SkinTokens = {
     // Surfaces
@@ -172,10 +173,10 @@ export function deriveSkinTokens(
     "--cm-editor-gutter-bg": editorSurface,
     "--cm-editor-foreground": seed.ink,
     "--cm-editor-gutter-fg": fade(isLight ? 0.5 : 0.45),
-    "--cm-editor-selection": tint(seed.accent, isLight ? 0.2 : 0.45),
+    "--cm-editor-selection": textSelection,
     "--cm-editor-line-highlight": isLight ? "transparent" : rgba(ink, 0.06),
-    "--text-selection": tint(seed.accent, isLight ? 0.28 : 0.5),
-    "--terminal-selection": tint(seed.accent, isLight ? 0.2 : 0.45),
+    "--text-selection": textSelection,
+    "--terminal-selection": textSelection,
 
     // Sidebar
     "--sidebar-bg": rgba(

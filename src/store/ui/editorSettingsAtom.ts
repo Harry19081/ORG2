@@ -46,10 +46,13 @@ export const CODE_FONT_FAMILIES: { value: CodeFontFamily; label: string }[] = [
   { value: "custom", label: "Custom" },
 ];
 
+/** System monospace stack shared by code and terminal surfaces. */
+const SYSTEM_CODE_FONT_FAMILY =
+  'ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
+
 /** CSS font-family values for each preset */
 export const CODE_FONT_FAMILY_CSS: Record<CodeFontFamily, string> = {
-  system:
-    '"SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace',
+  system: SYSTEM_CODE_FONT_FAMILY,
   "jetbrains-mono":
     '"JetBrains Mono", "SF Mono", "Menlo", "Monaco", "Consolas", monospace',
   "fira-code":
@@ -65,8 +68,7 @@ export const CODE_FONT_FAMILY_CSS: Record<CodeFontFamily, string> = {
   hack: '"Hack", "SF Mono", "Menlo", "Monaco", "Consolas", monospace',
   inconsolata:
     '"Inconsolata", "SF Mono", "Menlo", "Monaco", "Consolas", monospace',
-  custom:
-    '"SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace',
+  custom: SYSTEM_CODE_FONT_FAMILY,
 };
 
 /** Map human-readable font names (JSON) ↔ internal kebab-case IDs (code) */
@@ -129,32 +131,9 @@ export const resolvedCodeFontFamilyAtom = atom<string>((get) => {
   if (preset === "custom") {
     const customFont = get(customCodeFontFamilyAtom).trim();
     if (customFont) {
-      return `"${customFont}", "SF Mono", "Menlo", "Monaco", "Consolas", monospace`;
+      return `"${customFont}", ${SYSTEM_CODE_FONT_FAMILY}`;
     }
     return CODE_FONT_FAMILY_CSS.system;
-  }
-  return CODE_FONT_FAMILY_CSS[preset];
-});
-
-/**
- * Resolved CSS font-family string for the terminal.
- *
- * When the user has chosen a specific font preset it respects their choice
- * (same as the editor). When they are on "System Default", the terminal uses
- * Hack first and falls back to the platform monospace stack when Hack is not
- * installed.
- */
-export const resolvedTerminalFontFamilyAtom = atom<string>((get) => {
-  const preset = get(codeFontFamilyAtom);
-  if (preset === "custom") {
-    const customFont = get(customCodeFontFamilyAtom).trim();
-    if (customFont) {
-      return `"${customFont}", "Hack", "SF Mono", "Menlo", "Monaco", "Consolas", monospace`;
-    }
-    return '"Hack", "SF Mono", "Menlo", "Monaco", "Consolas", monospace';
-  }
-  if (preset === "system") {
-    return '"Hack", "SF Mono", "Menlo", "Monaco", "Consolas", monospace';
   }
   return CODE_FONT_FAMILY_CSS[preset];
 });
