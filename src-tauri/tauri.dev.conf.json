@@ -1,0 +1,12 @@
+{
+  "productName": "ORG2 Dev",
+  "identifier": "org2ai.org2.dev",
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["yorgai-dev", "orgii-dev"]
+      }
+    },
+    "updater": { "active": false }
+  }
+}
