@@ -21,12 +21,13 @@ export const KEYBOARD_SHORTCUT_VARIANT = {
   dropdown: "dropdown",
   spotlightFooter: "spotlightFooter",
   prominent: "prominent",
+  inline: "inline",
 } as const;
 
 export type KeyboardShortcutVariant =
   (typeof KEYBOARD_SHORTCUT_VARIANT)[keyof typeof KEYBOARD_SHORTCUT_VARIANT];
 
-export type KeyboardShortcutSize = "default" | "sm" | "lg";
+export type KeyboardShortcutSize = "default" | "sm" | "lg" | "inline";
 
 export interface KeyboardShortcutProps {
   shortcut?: string;
@@ -368,6 +369,13 @@ const KEY_CAP_SIZES: Record<
     text: "text-[11px]",
     iconSize: 14,
   },
+  inline: {
+    cap: "",
+    glyph: "text-[11px]",
+    glyphSlot: "w-3",
+    text: "text-[11px]",
+    iconSize: 12,
+  },
 };
 
 const KEY_CAP_STYLES: Record<KeyboardShortcutVariant, { kbd: string }> = {
@@ -386,6 +394,9 @@ const KEY_CAP_STYLES: Record<KeyboardShortcutVariant, { kbd: string }> = {
   prominent: {
     kbd: "bg-fill-2 font-medium text-text-2",
   },
+  inline: {
+    kbd: "text-current opacity-70",
+  },
 };
 
 export const KeyboardShortcut = memo<KeyboardShortcutProps>(
@@ -399,10 +410,15 @@ export const KeyboardShortcut = memo<KeyboardShortcutProps>(
   }) => {
     const resolvedSize =
       size ??
-      (variant === KEYBOARD_SHORTCUT_VARIANT.prominent ? "lg" : "default");
+      (variant === KEYBOARD_SHORTCUT_VARIANT.prominent
+        ? "lg"
+        : variant === KEYBOARD_SHORTCUT_VARIANT.inline
+          ? "inline"
+          : "default");
     const resolvedRendering =
       rendering ??
-      (variant === KEYBOARD_SHORTCUT_VARIANT.prominent
+      (variant === KEYBOARD_SHORTCUT_VARIANT.prominent ||
+      variant === KEYBOARD_SHORTCUT_VARIANT.inline
         ? "icons"
         : variant === KEYBOARD_SHORTCUT_VARIANT.spotlightFooter
           ? "original"
