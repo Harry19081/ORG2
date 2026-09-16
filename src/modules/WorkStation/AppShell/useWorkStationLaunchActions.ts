@@ -27,7 +27,6 @@ import {
   Shield02Icon,
   SquareTerminalIcon,
 } from "@src/icons";
-import { focusBrowserUrlBar } from "@src/modules/WorkStation/Browser/shared/urlBarFocus";
 import { openEditorSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import {
   CODE_EDITOR_MAIN_TERMINAL_SESSION_ID,
@@ -130,7 +129,6 @@ export function useWorkStationLaunchActions(): WorkStationLaunchAction[] {
   const openBrowser = useCallback(
     (isPrivate: boolean) => {
       requestNewBrowserSession(isPrivate ? { isPrivate: true } : {});
-      focusBrowserUrlBar();
     },
     [requestNewBrowserSession]
   );

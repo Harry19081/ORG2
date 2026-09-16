@@ -12,13 +12,7 @@
  * - Browser sessions sync their state to the tab store
  * - All tab switching goes through useBrowserPaneState
  */
-import { useAtom, useAtomValue } from "jotai";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-
-import {
-  workstationNewBrowserSessionConsumedTickAtom,
-  workstationNewBrowserSessionRequestAtom,
-} from "@src/store/workstation/workstationTabBarAtoms";
+import React, { memo, useCallback, useMemo, useState } from "react";
 
 import {
   WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS,
@@ -38,6 +32,7 @@ import {
 import { AgentBrowserOverlay } from "./AgentBrowserOverlay";
 import type { BrowserLayoutProps } from "./types";
 import { useBrowserLayoutState } from "./useBrowserLayoutState";
+import { useNewBrowserSessionRequest } from "./useNewBrowserSessionRequest";
 
 export const BrowserLayout: React.FC<BrowserLayoutProps> = memo(
   ({ repoPath, repoName: _repoName, isActive = true }) => {
@@ -55,33 +50,7 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = memo(
 
     const [devToolsPanelHeight, setDevToolsPanelHeight] = useState(300);
 
-    // Cross-host "New Browser Tab" intent: the unified `+` menu and the
-    // Launchpad bump `workstationNewBrowserSessionRequestAtom` via
-    // `requestNewBrowserSessionAtom`. We dispatch `addSession(url, isPrivate)`
-    // for any request whose tick exceeds the consumed-tick atom — including a
-    // request issued before this host mounted (e.g. "New Browser" clicked from
-    // the empty Launchpad), which a per-mount ref would have missed. The
-    // module-level consumed tick prevents re-firing on a later remount.
-    const newSessionRequest = useAtomValue(
-      workstationNewBrowserSessionRequestAtom
-    );
-    const [consumedTick, setConsumedTick] = useAtom(
-      workstationNewBrowserSessionConsumedTickAtom
-    );
-    const addBrowserSession = state.browser.browserState.addSession;
-    useEffect(() => {
-      if (newSessionRequest.tick > consumedTick) {
-        setConsumedTick(newSessionRequest.tick);
-        addBrowserSession(newSessionRequest.url, newSessionRequest.isPrivate);
-      }
-    }, [
-      newSessionRequest.tick,
-      newSessionRequest.url,
-      newSessionRequest.isPrivate,
-      consumedTick,
-      setConsumedTick,
-      addBrowserSession,
-    ]);
+    useNewBrowserSessionRequest(state.browser.browserState);
 
     // ============================================
     // Main content
