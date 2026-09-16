@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
 import { COLLAPSIBLE_SECTION_TOKENS } from "@src/config/detailPanelTokens";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
@@ -12,7 +13,6 @@ import {
   HugeiconsIcon,
   Refresh04Icon,
 } from "@src/icons";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 
 interface DetailHeaderCloseProps {
   onClick: () => void;

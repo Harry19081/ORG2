@@ -18,6 +18,13 @@ import React, { useMemo, useState } from "react";
 
 import Button from "@src/components/Button";
 import Select from "@src/components/Select";
+import {
+  SECTION_ACTION_GAP_CLASSES,
+  SECTION_CONTROL_STYLE,
+  SECTION_VALUE_SMALL_MUTED_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import { isAccessModeAtLeast } from "@src/features/Org2Cloud/org2CloudAccessSettings";
 import type { CloudOrgMember } from "@src/features/Org2Cloud/org2CloudClient";
 import {
@@ -29,13 +36,6 @@ import {
   getCloudInviteRemainingUses,
   isCloudAssignableRole,
 } from "@src/features/Org2Cloud/org2CloudOrgManagement";
-import {
-  SECTION_ACTION_GAP_CLASSES,
-  SECTION_CONTROL_STYLE,
-  SECTION_VALUE_SMALL_MUTED_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import {
   DEFAULT_INVITE_EXPIRY_DAYS,

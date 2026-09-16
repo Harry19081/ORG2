@@ -16,6 +16,7 @@ import type {
   OutboxProblemRow,
 } from "@src/api/http/project/sync";
 import Button from "@src/components/Button";
+import { SECTION_ACTION_GAP_CLASSES } from "@src/components/layout/Section";
 import {
   ArrowDown01Icon,
   ArrowRight01Icon,
@@ -26,7 +27,6 @@ import {
   Tag01Icon,
   UserIcon,
 } from "@src/icons";
-import { SECTION_ACTION_GAP_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
 /**

@@ -8,8 +8,8 @@ import {
 
 import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
 import type { SelectOption } from "@src/components/Select";
-import SplitListFullscreenButton from "@src/modules/shared/layouts/SplitListFullscreenButton";
-import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
+import SplitListFullscreenButton from "@src/scaffold/layouts/SplitListFullscreenButton";
+import SplitListHeader from "@src/scaffold/layouts/SplitListHeader";
 
 import {
   GitHubWorkItemsFilterControls,

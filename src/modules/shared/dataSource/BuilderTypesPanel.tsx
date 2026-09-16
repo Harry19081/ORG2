@@ -3,15 +3,15 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import {
+  SECTION_GAP_CLASSES,
+  SECTION_SUBHEADING_CLASSES,
+} from "@src/components/layout/Section";
+import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
+import {
   DETAIL_PANEL_TOKENS,
   STAT_GRID_TOKENS,
 } from "@src/config/detailPanelTokens";
 import { ArrowLeft02Icon, HugeiconsIcon } from "@src/icons";
-import {
-  SECTION_GAP_CLASSES,
-  SECTION_SUBHEADING_CLASSES,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 
 import BuilderTypeAvatar from "./BuilderTypeAvatar";
 import BuilderTypeDetailModal from "./BuilderTypeDetailPanel";

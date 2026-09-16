@@ -20,7 +20,7 @@ import {
   SECTION_PATH_TEXT_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@/src/modules/shared/layouts/SectionLayout";
+} from "@/src/components/layout/Section";
 import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { useAtom } from "jotai";
@@ -48,6 +48,7 @@ import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Select from "@src/components/Select";
 import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
+import { HintWithInfo } from "@src/components/layout/blocks/HintWithInfo";
 import type { TimezoneOption } from "@src/config/timezone";
 import CloudEndpointCard from "@src/features/Org2Cloud/CloudEndpointCard";
 import { Org2CloudLoginRows } from "@src/features/Org2Cloud/Org2CloudSection";
@@ -64,7 +65,6 @@ import {
 } from "@src/i18n";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import { NAV_BUTTON_PROPS } from "@src/modules/MainApp/Settings/config";
-import { HintWithInfo } from "@src/modules/shared/layouts/blocks/HintWithInfo";
 import {
   checkForAppUpdates,
   checkForUpdatesManually,

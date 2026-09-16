@@ -13,7 +13,7 @@ import {
   SECTION_CONTROL_STYLE,
   SECTION_DESCRIPTION_CLASSES,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
 
 export const MAIN_ROLES = ["sonnet", "opus", "fable", "haiku"] as const;
 const LABELS: Record<ClaudeRole, string> = {

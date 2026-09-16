@@ -35,4 +35,23 @@ describe("SidebarHeaderNavButton", () => {
     // spans the row, so without text-left the label drifts off the icon.
     expect(markup).toMatch(/^<button[^>]*\stext-left\s/);
   });
+
+  it("keeps the row full-width when a shortcut tooltip is attached", () => {
+    const markup = renderToStaticMarkup(
+      createElement(SidebarHeaderNavButton, {
+        icon: ArrowLeft01Icon,
+        label: "Settings",
+        ariaLabel: "Close Settings",
+        tooltipLabel: "Close Settings",
+        tooltipShortcutId: "close_tab",
+        onClick: vi.fn(),
+      })
+    );
+
+    // Tooltip clones its child rather than wrapping it, so the row stays the
+    // top-level element and keeps owning the sidebar's full width.
+    expect(markup).toMatch(/^<button/);
+    expect(markup).toContain("group mt-1 flex h-7 w-full");
+    expect(markup).toContain('aria-label="Close Settings"');
+  });
 });

@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import { Placeholder } from "@src/components/Placeholder";
 import { WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS } from "@src/config/workstation/tokens";
 import { useBrowserContextOptional } from "@src/contexts/workstation/BrowserContext";
-import DetailPaneErrorBoundary from "@src/modules/shared/layouts/DetailPaneErrorBoundary";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
+import DetailPaneErrorBoundary from "@src/scaffold/layouts/DetailPaneErrorBoundary";
 import {
   mainPaneHasBrowserHostTabsAtom,
   mainPaneHasRealTabsAtom,

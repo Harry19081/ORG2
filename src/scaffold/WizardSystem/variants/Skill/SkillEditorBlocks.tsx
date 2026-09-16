@@ -15,6 +15,7 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
 import Switch from "@src/components/Switch";
+import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import { CodeMirrorEditor } from "@src/features/CodeMirror/Editor";
 import type { UseSkillEditorReturn } from "@src/hooks/skills/useSkillEditor";
 import {
@@ -27,10 +28,6 @@ import type {
   BundledFileDraft,
   SkillEditorDraft,
 } from "@src/modules/MainApp/Integrations/store/skills/skillEditorDraftAtom";
-import {
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import { StringListTableEditor } from "@src/scaffold/WizardSystem/shared/StringListTableEditor";
 import {
   DESCRIPTION_QUALITY,

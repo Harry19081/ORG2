@@ -25,7 +25,7 @@ import {
   CHANNEL_TOPIC_MAX_LENGTH,
   normalizeChannelName,
   validateChannelName,
-} from "@src/features/DiscussionChannels/channelContract";
+} from "@src/contracts/channels";
 import { createLogger } from "@src/hooks/logger";
 import { createZodJsonStorage } from "@src/util/core/storage/zodStorage";
 

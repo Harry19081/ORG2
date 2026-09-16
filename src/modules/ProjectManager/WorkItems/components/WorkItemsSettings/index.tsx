@@ -28,8 +28,8 @@ import {
   UserIcon,
   UserMultipleIcon,
 } from "@src/icons";
-import SplitViewLayout from "@src/modules/shared/layouts/SplitViewLayout";
-import { SUBPAGE_CONTENT_WRAPPER_CLASSES } from "@src/modules/shared/layouts/SubpageLayout/tokens";
+import SplitViewLayout from "@src/scaffold/layouts/SplitViewLayout";
+import { SUBPAGE_CONTENT_WRAPPER_CLASSES } from "@src/scaffold/layouts/SubpageLayout/tokens";
 import type { Label, Person } from "@src/types/core/shared";
 
 import {

@@ -14,6 +14,10 @@ import Button from "@src/components/Button";
 import PersonAvatar from "@src/components/PersonAvatar";
 import Select from "@src/components/Select";
 import Tag from "@src/components/Tag";
+import {
+  SECTION_SUBHEADING_CLASSES,
+  SectionContainer,
+} from "@src/components/layout/Section";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import type {
   MemberRuntimeListEntry,
@@ -22,10 +26,6 @@ import type {
 import { MEMBER_RECENT_USAGE_WINDOW_MS } from "@src/features/Org2Cloud/memberRuntime/types";
 import type { CloudRemoteSessionsFetchState } from "@src/features/Org2Cloud/org2CloudRemoteSessionsAtom";
 import { HugeiconsIcon, Message02Icon } from "@src/icons";
-import {
-  SECTION_SUBHEADING_CLASSES,
-  SectionContainer,
-} from "@src/modules/shared/layouts/SectionLayout";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 

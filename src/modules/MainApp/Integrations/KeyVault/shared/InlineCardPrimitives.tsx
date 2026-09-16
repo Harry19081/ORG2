@@ -4,8 +4,8 @@ import React from "react";
 import Button from "@src/components/Button";
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
-import InlineExpandedSplitCard from "@src/modules/shared/layouts/blocks/InlineExpandedSplitCard";
-import InlineInfoCard from "@src/modules/shared/layouts/blocks/InlineInfoCard";
+import InlineExpandedSplitCard from "@src/components/layout/blocks/InlineExpandedSplitCard";
+import InlineInfoCard from "@src/components/layout/blocks/InlineInfoCard";
 
 interface InlineCardShellProps {
   children: React.ReactNode;

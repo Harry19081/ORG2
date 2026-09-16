@@ -11,13 +11,13 @@ import { useTranslation } from "react-i18next";
 
 import { Placeholder } from "@src/components/Placeholder";
 import TabPill from "@src/components/TabPill";
-import type { ExternalSkillsetsTab } from "@src/config/mainAppPaths";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InternalHeader,
   ScrollFadeContainer,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import type { ExternalSkillsetsTab } from "@src/config/mainAppPaths";
 
 import { ConnectionsCategoryView } from "./Connections/ConnectionsCategoryView";
 import type { ConnectionsCategoryTableProps } from "./Connections/categoryTableProps";

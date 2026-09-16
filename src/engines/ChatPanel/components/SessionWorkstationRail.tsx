@@ -23,7 +23,7 @@ import {
   type FocusedChatRailSubagent,
   type FocusedChatSessionContext,
   FocusedChatWorkstationRail,
-} from "@src/modules/shared/layouts/FocusedChatWorkstationRail";
+} from "@src/scaffold/AppLayout/FocusedChatWorkstationRail";
 import { openWorkItemInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import type { Session } from "@src/store/session";
 import type { WorkItemStatus } from "@src/types/core/workItem";

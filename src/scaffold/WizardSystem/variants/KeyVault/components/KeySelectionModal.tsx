@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import type { DetectedKey, ModelType } from "@src/api/types/keys";
 import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
+import { PanelFooter } from "@src/components/layout/blocks";
 import {
   AlertCircleIcon,
   CheckmarkCircle01Icon,
@@ -18,7 +19,6 @@ import {
   Key02Icon,
   Tick01Icon,
 } from "@src/icons";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import Modal from "@src/scaffold/ModalSystem";
 
 import { findEndpointByBaseUrl, useProviderConfig } from "../config";

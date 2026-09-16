@@ -13,12 +13,12 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
-import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
   CollapsibleSection,
   DETAIL_PANEL_TOKENS,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 
 interface ContainerEnginesSectionProps {
   engines: ContainerEngineCandidate[];

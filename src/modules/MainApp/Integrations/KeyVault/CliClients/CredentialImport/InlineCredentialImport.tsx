@@ -13,16 +13,13 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
 import SettingsTable from "@src/components/SettingsTable";
+import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import {
   ChevronsDownUpIcon,
   HugeiconsIcon,
   ImportIcon,
   UnfoldMoreIcon,
 } from "@src/icons";
-import {
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 
 import { credentialImportRowKey } from "./credentialImportUtils";
 import { useCredentialImport } from "./useCredentialImport";

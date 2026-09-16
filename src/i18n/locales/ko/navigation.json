@@ -45,7 +45,8 @@
     "diff": "Diff",
     "colleagues": "Colleagues",
     "terminals": "터미널",
-    "openSourceRepo": "오픈 소스 Repo"
+    "openSourceRepo": "오픈 소스 Repo",
+    "closeSettings": "설정 닫기"
   },
   "routes": {
     "session": "채팅",

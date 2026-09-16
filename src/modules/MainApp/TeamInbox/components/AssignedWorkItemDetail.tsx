@@ -5,6 +5,7 @@ import { getGitRemotes } from "@src/api/http/git/remotes";
 import type { WorkItemHandoffTransition } from "@src/api/http/project";
 import type { GitHubIssue } from "@src/api/tauri/github";
 import PageNotice from "@src/components/PageNotice";
+import PersistentDetailTabPanel from "@src/components/layout/blocks/PersistentDetailTabPanel";
 import {
   ArchiveArrowUpIcon,
   ArchiveIcon,
@@ -25,8 +26,7 @@ import {
 import ThreadDetailTabs, {
   type ThreadDetailTab,
 } from "@src/modules/shared/components/ThreadDetailTabs";
-import { DetailPanePlaceholder } from "@src/modules/shared/layouts/DetailPaneLayout";
-import PersistentDetailTabPanel from "@src/modules/shared/layouts/blocks/PersistentDetailTabPanel";
+import { DetailPanePlaceholder } from "@src/scaffold/layouts/DetailPaneLayout";
 import type { Person } from "@src/types/core/shared";
 import type { WorkItem } from "@src/types/core/workItem";
 import { resolveGithubRepoFullName } from "@src/util/git/githubRemote";

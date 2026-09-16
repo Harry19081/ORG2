@@ -14,9 +14,9 @@ import Input from "@src/components/Input";
 import { Message } from "@src/components/Message";
 import PageNotice from "@src/components/PageNotice";
 import Select, { type SelectOption } from "@src/components/Select";
+import { PanelFooter } from "@src/components/layout/blocks";
 import { createLogger } from "@src/hooks/logger";
 import { HugeiconsIcon, Loading03Icon } from "@src/icons";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import { projectListRefreshAtom } from "@src/store/project/projectAtom";
 import { STORY_PERSONAL_ORG_FILTER_ID } from "@src/store/workstation/tabs";
 

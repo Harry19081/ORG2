@@ -22,14 +22,14 @@ import {
 import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
-import { StartPageQuotaGrid } from "@src/engines/ChatPanel/StartPageQuotaGrid";
-import { DEBOUNCE_DELAYS, useDebouncedCallback } from "@src/hooks/perf";
-import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SECTION_SUBHEADING_CLASSES,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/Section";
+import { CollapsibleSection } from "@src/components/layout/blocks";
+import { StartPageQuotaGrid } from "@src/engines/ChatPanel/StartPageQuotaGrid";
+import { DEBOUNCE_DELAYS, useDebouncedCallback } from "@src/hooks/perf";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
 import {
   RuntimeRefreshButton,

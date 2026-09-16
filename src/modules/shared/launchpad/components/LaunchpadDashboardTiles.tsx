@@ -10,9 +10,9 @@
 import React, { memo, useRef } from "react";
 
 import Button from "@src/components/Button";
+import { CollapsibleSection } from "@src/components/layout/blocks";
 import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
-import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
 import type { Repo } from "@src/store/repo/types";
 
 import MacFolderIcon from "./MacFolderIcon";

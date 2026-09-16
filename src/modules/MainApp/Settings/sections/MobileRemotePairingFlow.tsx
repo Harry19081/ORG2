@@ -10,7 +10,7 @@ import {
 import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import SegmentedTextPill from "@src/components/SegmentedTextPill";
-import { SectionRow } from "@src/modules/shared/layouts/SectionLayout";
+import { SectionRow } from "@src/components/layout/Section";
 
 import MobileRemoteOutdoorPairingDetails from "./MobileRemoteOutdoorPairingDetails";
 import { suggestOutdoorPairingPhoneLabel } from "./pairedDeviceDisplay";

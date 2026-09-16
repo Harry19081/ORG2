@@ -19,6 +19,11 @@ import AvatarChip from "@src/components/AvatarChip";
 import Button from "@src/components/Button";
 import PersonAvatar from "@src/components/PersonAvatar";
 import Select from "@src/components/Select";
+import {
+  SECTION_ACTION_GAP_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import type { CloudCapabilities } from "@src/features/Org2Cloud/org2CloudCapabilities";
 import type { RepoSyncCoverage } from "@src/features/Org2Cloud/org2CloudSyncCoverage";
 import type {
@@ -28,11 +33,6 @@ import type {
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon, UsersRoundIcon } from "@src/icons";
-import {
-  SECTION_ACTION_GAP_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import { copyText } from "@src/util/data/clipboard";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 

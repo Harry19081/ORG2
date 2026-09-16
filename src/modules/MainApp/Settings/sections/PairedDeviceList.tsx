@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import type { PairedDeviceInfo } from "@src/api/tauri/mobileRemote";
 import Button from "@src/components/Button";
 import StatusDot from "@src/components/StatusDot";
+import { SECTION_VALUE_SMALL_MUTED_CLASSES } from "@src/components/layout/Section";
 import { TYPOGRAPHY } from "@src/config/workstation/tokens";
-import { SECTION_VALUE_SMALL_MUTED_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
 
 import {
   formatPairedDeviceSubtitle,

@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import SharedButton from "@src/components/Button";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
+import { ListPanelScrollArea } from "@src/components/layout/blocks";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import {
   Add01Icon,
@@ -22,7 +23,6 @@ import {
   HugeiconsIcon,
   Search01Icon,
 } from "@src/icons";
-import { ListPanelScrollArea } from "@src/modules/shared/layouts/blocks";
 
 import AccountListItem from "./AccountListItem";
 
