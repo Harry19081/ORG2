@@ -46,6 +46,7 @@ import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Select from "@src/components/Select";
+import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
 import type { TimezoneOption } from "@src/config/timezone";
 import CloudEndpointCard from "@src/features/Org2Cloud/CloudEndpointCard";
@@ -89,7 +90,6 @@ import {
 } from "./HighRefreshRateRow";
 import HttpVersionSettingsBlock from "./HttpVersionSettingsBlock";
 import LicenseModal from "./LicenseModal";
-import SendOnEnterPill from "./SendOnEnterPill";
 
 export const GENERAL_TAB_KEYS = {
   GENERAL: "general",

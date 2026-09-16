@@ -9,8 +9,11 @@ type SendOnEnterMode = "enter" | "modifier-enter";
 
 interface SendOnEnterPillProps {
   ariaLabel: string;
+  dataTestId?: string;
   onChange: (sendOnEnter: boolean) => void;
   sendOnEnter: boolean;
+  /** `large` for settings rows; `small` for the dropdown menu control rows. */
+  size?: "small" | "large";
 }
 
 export function getSendOnEnterOptions(
@@ -27,13 +30,16 @@ export function getSendOnEnterOptions(
 
 export default function SendOnEnterPill({
   ariaLabel,
+  dataTestId,
   onChange,
   sendOnEnter,
+  size = "large",
 }: SendOnEnterPillProps) {
   return (
     <SegmentedTextPill<SendOnEnterMode>
       ariaLabel={ariaLabel}
-      size="large"
+      dataTestId={dataTestId}
+      size={size}
       value={sendOnEnter ? "enter" : "modifier-enter"}
       options={getSendOnEnterOptions()}
       onChange={(value) => onChange(value === "enter")}

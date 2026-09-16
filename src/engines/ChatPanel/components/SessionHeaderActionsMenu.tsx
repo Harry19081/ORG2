@@ -17,6 +17,7 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import Message from "@src/components/Message";
+import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
 import { useCopySessionReference } from "@src/features/Org2Cloud/useCopySessionReference";
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
@@ -39,6 +40,7 @@ import {
   Share02Icon,
   ThirdBracketIcon,
 } from "@src/icons";
+import { chatSendOnEnterAtom } from "@src/store/config/configAtom";
 import { sessionByIdAtom, upsertSession } from "@src/store/session";
 import { compactComposerInputAtom } from "@src/store/session/compactComposerInputAtom";
 import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
@@ -150,8 +152,10 @@ export const SessionHeaderActionsMenu: React.FC<
   const [compactComposerInput, setCompactComposerInput] = useAtom(
     compactComposerInputAtom
   );
+  const [sendOnEnter, setSendOnEnter] = useAtom(chatSendOnEnterAtom);
   const showSkillsLabel = t("chat.startPage.showSkills");
   const compactInputLabel = t("chat.compactInput");
+  const sendMethodLabel = t("chat.sendMethod");
 
   // Track this / Convert to Project (orgtrack/v1 §7.2). Self-contained:
   // the backend command persists the switch + root WorkItem; only the
@@ -597,6 +601,16 @@ export const SessionHeaderActionsMenu: React.FC<
                   }
                   dataTestId="session-input-settings-submenu"
                 >
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">{sendMethodLabel}</span>
+                    <SendOnEnterPill
+                      size="small"
+                      ariaLabel={sendMethodLabel}
+                      dataTestId="session-menu-send-on-enter"
+                      sendOnEnter={sendOnEnter}
+                      onChange={setSendOnEnter}
+                    />
+                  </div>
                   <div className={DROPDOWN_CLASSES.menuControlItem}>
                     <span className="flex-1 truncate">{showSkillsLabel}</span>
                     <Switch

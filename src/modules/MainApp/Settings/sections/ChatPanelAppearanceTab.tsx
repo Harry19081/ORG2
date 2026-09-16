@@ -7,11 +7,10 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import NumberInput from "@src/components/NumberInput";
+import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
 import { useAgentConfig } from "@src/hooks/config/useAgentConfig";
 import { DEFAULT_CHAT_APPEARANCE } from "@src/store/config/configAtom";
-
-import SendOnEnterPill from "./SendOnEnterPill";
 
 export const ChatPanelAppearanceTab: React.FC = () => {
   const { t } = useTranslation("settings");
