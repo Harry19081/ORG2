@@ -374,14 +374,18 @@ export const ModelPropertiesDropdown: React.FC<
           choice feel faster than a menu of rows. */}
       {availableLevels.length > 0 && (
         <div className={`${DROPDOWN_CLASSES.sectionContainer} last:border-b-0`}>
-          <EffortSlider
-            key={getModelVariantBaseModel(value)}
-            levels={availableLevels}
-            value={selection.level}
-            onChange={handleLevelSelect}
-            fast={showFastRow && selection.fast}
-            animate={hasPosition}
-          />
+          {/* Inset to the switch rows' 10px content edge; the shared
+              section token and EffortSlider stay untouched. */}
+          <div className={`${DROPDOWN_ITEM.paddingXClass} py-1`}>
+            <EffortSlider
+              key={getModelVariantBaseModel(value)}
+              levels={availableLevels}
+              value={selection.level}
+              onChange={handleLevelSelect}
+              fast={showFastRow && selection.fast}
+              animate={hasPosition}
+            />
+          </div>
         </div>
       )}
 
