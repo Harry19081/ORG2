@@ -29,7 +29,7 @@ vi.mock("@src/util/platform/tauri/windowIdentity", async (importOriginal) => ({
   getCurrentStationWindowMode: vi.fn(() => null),
 }));
 
-vi.mock("../StationPaneControls", () => ({
+vi.mock("@src/scaffold/WorkbenchChrome/StationPaneControls", () => ({
   useOpenStationInNewWindow: () => openStationInNewWindowMock,
 }));
 

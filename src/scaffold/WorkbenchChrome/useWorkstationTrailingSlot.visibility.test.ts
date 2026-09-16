@@ -60,7 +60,7 @@ vi.mock("@src/components/TabPill/TabBarTrailingIconButton", () => ({
     title: string;
   }) => createElement("button", { onClick, title }, children),
 }));
-vi.mock("@src/modules/WorkStation/AppShell/TabBarPlusMenu", () => ({
+vi.mock("@src/scaffold/WorkbenchChrome/TabBarPlusMenu", () => ({
   TabBarPlusMenu: () => createElement("button", { title: "new-tab" }),
 }));
 vi.mock(

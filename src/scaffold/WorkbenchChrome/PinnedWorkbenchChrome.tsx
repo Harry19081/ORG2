@@ -27,7 +27,7 @@ import {
   ChatPaneFocusButton,
   StationPaneControls,
   useStationPaneActions,
-} from "../shared/StationPaneControls";
+} from "./StationPaneControls";
 
 const PinnedWorkbenchChromeComponent: React.FC = () => {
   const visible = usePinnedWorkbenchChromeVisible();
