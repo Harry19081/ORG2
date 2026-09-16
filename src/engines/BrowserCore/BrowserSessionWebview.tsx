@@ -6,7 +6,7 @@
  */
 import { invoke } from "@tauri-apps/api/core";
 import { type UnlistenFn, listen } from "@tauri-apps/api/event";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
 import type { BrowserSession } from "@src/engines/BrowserCore/types";
@@ -19,6 +19,10 @@ import {
   simulatorPrimarySidebarWidthAtom,
 } from "@src/store/ui/simulatorAtom";
 import { NEW_TAB_TITLE } from "@src/store/workstation/browser/tabs";
+import {
+  type BrowserWebviewLoadPhase,
+  browserWebviewLoadStateAtom,
+} from "@src/store/workstation/browser/webviewLoadStateAtom";
 import { getBrowserSessionWebviewLabel } from "@src/util/platform/tauri/browserSessionLabel";
 
 const log = createLogger("BrowserSessionWebview");
@@ -34,6 +38,30 @@ interface ActiveInternalBrowserSync {
   browserSessionId: string;
   label: string;
   updatedAt: number;
+}
+
+/**
+ * Emitted by `browser::inline::load_state` on every native navigation
+ * start/finish, and replayed when Rust hands an existing view to a new owner.
+ */
+const BROWSER_WEBVIEW_LOAD_STATE_EVENT = "browser-webview-load-state";
+
+interface BrowserWebviewLoadStatePayload {
+  label: string;
+  url: string;
+  phase: BrowserWebviewLoadPhase;
+}
+
+function isBrowserWebviewLoadStatePayload(
+  payload: unknown
+): payload is BrowserWebviewLoadStatePayload {
+  if (!payload || typeof payload !== "object") return false;
+  const candidate = payload as Partial<BrowserWebviewLoadStatePayload>;
+  return (
+    typeof candidate.label === "string" &&
+    typeof candidate.url === "string" &&
+    (candidate.phase === "started" || candidate.phase === "finished")
+  );
 }
 
 interface InternalBrowserUrlChangedPayload {
@@ -110,6 +138,7 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
   const activeInternalBrowserSyncRef = useRef<ActiveInternalBrowserSync | null>(
     null
   );
+  const setWebviewLoadState = useSetAtom(browserWebviewLoadStateAtom);
   const webviewLabel = useMemo(
     () => getBrowserSessionWebviewLabel(session.id),
     [session.id]
@@ -187,6 +216,14 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
           "browser-session-webview-destroyed"
         );
         activeInternalBrowserSyncRef.current = null;
+        // Drop the recorded phase with the view it described, so a recreated
+        // webview is not credited with the previous one's finished load.
+        setWebviewLoadState((previous) => {
+          if (!(webviewLabel in previous)) return previous;
+          const next = { ...previous };
+          delete next[webviewLabel];
+          return next;
+        });
       },
       onNavigate: (url: string) => {
         handleSessionNavigation(url);
@@ -209,6 +246,7 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
     webviewLabel,
     onSessionUpdate,
     onNewTab,
+    setWebviewLoadState,
   ]);
 
   const {
@@ -218,6 +256,67 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
     isWebviewAvailable,
     isWebviewCreated,
   } = useInlineWebview(webviewConfig);
+
+  // Native page-load phases for this webview. `finished` is the only positive
+  // evidence that the pane has content; BrowserCore treats a start that never
+  // finishes as a failed embedded load.
+  useEffect(() => {
+    if (!isWebviewAvailable) return;
+
+    let cancelled = false;
+    let unlisten: UnlistenFn | null = null;
+
+    void listen<BrowserWebviewLoadStatePayload>(
+      BROWSER_WEBVIEW_LOAD_STATE_EVENT,
+      (event) => {
+        const payload = event.payload;
+        if (!isBrowserWebviewLoadStatePayload(payload)) return;
+        if (payload.label !== webviewLabel) return;
+
+        setWebviewLoadState((previous) => ({
+          ...previous,
+          [webviewLabel]: {
+            phase: payload.phase,
+            url: payload.url,
+            at: Date.now(),
+          },
+        }));
+      }
+    )
+      .then((listener) => {
+        if (cancelled) {
+          listener();
+          return;
+        }
+        unlisten = listener;
+      })
+      .catch((error) => {
+        log.warn(
+          "[BrowserSessionWebview] Failed to listen for webview load state:",
+          error
+        );
+      });
+
+    return () => {
+      cancelled = true;
+      if (unlisten) {
+        unlisten();
+      }
+    };
+  }, [isWebviewAvailable, setWebviewLoadState, webviewLabel]);
+
+  // Forget this webview's phase once nothing renders it any more.
+  useEffect(
+    () => () => {
+      setWebviewLoadState((previous) => {
+        if (!(webviewLabel in previous)) return previous;
+        const next = { ...previous };
+        delete next[webviewLabel];
+        return next;
+      });
+    },
+    [setWebviewLoadState, webviewLabel]
+  );
 
   useEffect(() => {
     if (!isWebviewAvailable) return;

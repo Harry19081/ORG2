@@ -1040,8 +1040,8 @@
       "siteUnreachableTitle": "無法訪問此網站",
       "webviewHiddenTitle": "網頁檢視已暫時隱藏",
       "webviewHiddenBody": "關閉選單或對話框即可重新顯示。",
-      "embeddedFallbackTitle": "此網站可能無法在內嵌瀏覽器中運作",
-      "embeddedFallbackBody": "部分網站會封鎖或無法在應用程式 WebView 中呈現。如果頁面持續空白，請改用系統瀏覽器開啟。",
+      "loadStalledTitle": "此頁面未載入完成",
+      "loadStalledBody": "內嵌瀏覽器已開始載入該網址，但始終未完成。可嘗試重新載入，或改用系統瀏覽器開啟。",
       "currentUrl": "目前 URL"
     },
     "unsavedChangesTitle": "未保存的更改",

@@ -1040,8 +1040,8 @@
       "siteUnreachableTitle": "このサイトにアクセスできません",
       "webviewHiddenTitle": "Web ビューを一時的に非表示",
       "webviewHiddenBody": "メニューまたはダイアログを閉じると再表示されます。",
-      "embeddedFallbackTitle": "このサイトは埋め込みブラウザでは動作しない可能性があります",
-      "embeddedFallbackBody": "一部のサイトはアプリの WebView 内での表示をブロックしたり、正しく描画できなかったりします。ページが空白のままの場合はシステムブラウザで開いてください。",
+      "loadStalledTitle": "このページの読み込みが完了しませんでした",
+      "loadStalledBody": "埋め込みブラウザはこのアドレスの読み込みを開始しましたが、完了しませんでした。再読み込みするか、システムブラウザで開いてください。",
       "currentUrl": "現在の URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",

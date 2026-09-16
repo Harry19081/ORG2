@@ -1040,8 +1040,8 @@
       "siteUnreachableTitle": "Bu siteye ulaşılamıyor",
       "webviewHiddenTitle": "Web görünümü geçici olarak gizlendi",
       "webviewHiddenBody": "Yeniden göstermek için menüyü veya iletişim kutusunu kapatın.",
-      "embeddedFallbackTitle": "Bu site gömülü tarayıcıda çalışmayabilir",
-      "embeddedFallbackBody": "Bazı siteler uygulama WebView'leri içinde engellenir veya görüntülenemez. Sayfa boş kalırsa sistem tarayıcınızda açın.",
+      "loadStalledTitle": "Bu sayfanın yüklenmesi tamamlanmadı",
+      "loadStalledBody": "Gömülü tarayıcı bu adresi yüklemeye başladı ama hiçbir zaman tamamlamadı. Sayfayı yeniden yükleyin veya sistem tarayıcınızda açın.",
       "currentUrl": "Geçerli URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
