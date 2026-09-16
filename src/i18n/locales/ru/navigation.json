@@ -45,7 +45,8 @@
     "diff": "Diff",
     "colleagues": "Коллеги",
     "terminals": "Терминалы",
-    "openSourceRepo": "Open Source репо"
+    "openSourceRepo": "Open Source репо",
+    "closeSettings": "Закрыть настройки"
   },
   "routes": {
     "session": "Чат",

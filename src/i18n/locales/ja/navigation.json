@@ -45,7 +45,8 @@
     "diff": "Diff",
     "colleagues": "同僚",
     "terminals": "ターミナル",
-    "openSourceRepo": "ソース Repo を開く"
+    "openSourceRepo": "ソース Repo を開く",
+    "closeSettings": "設定を閉じる"
   },
   "routes": {
     "session": "チャット",
