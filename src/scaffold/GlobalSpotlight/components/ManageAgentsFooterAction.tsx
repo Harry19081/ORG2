@@ -1,5 +1,5 @@
-import { ACTION_ID } from "@src/ActionSystem";
 import { ROUTES } from "@src/config/routes";
+import { ACTION_ID } from "@src/scaffold/ActionSystem";
 
 import { SpotlightNavigationFooterAction } from "./SpotlightNavigationFooterAction";
 
