@@ -883,8 +883,8 @@
       "simulatorBrowserNotice": "This browser is for session replay only. For persistent browsing, use the Browser in Main App (Tools → Browser).",
       "tlsDevNote": "Note: Some HTTPS sites (like GitHub) may show TLS errors in development mode due to certificate validation. Try HTTP sites or simple HTTPS sites like example.com.",
       "siteUnreachableTitle": "This site can't be reached",
-      "embeddedFallbackTitle": "This site may not work in the embedded browser",
-      "embeddedFallbackBody": "Some sites block or fail to render inside app WebViews. Open it in your system browser if the page stays blank.",
+      "loadStalledTitle": "This page didn't finish loading",
+      "loadStalledBody": "The embedded browser started loading this address but never finished. Try reloading, or open it in your system browser.",
       "currentUrl": "Current URL",
       "webviewHiddenTitle": "Webview temporarily hidden",
       "webviewHiddenBody": "Close the menu or dialog to show it again."

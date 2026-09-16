@@ -1040,8 +1040,8 @@
       "siteUnreachableTitle": "Nie można dotrzeć do tej witryny",
       "webviewHiddenTitle": "Widok sieciowy tymczasowo ukryty",
       "webviewHiddenBody": "Zamknij menu lub okno dialogowe, aby wyświetlić go ponownie.",
-      "embeddedFallbackTitle": "Ta witryna może nie działać we wbudowanej przeglądarce",
-      "embeddedFallbackBody": "Niektóre witryny blokują lub nie renderują się w WebView aplikacji. Jeśli strona pozostaje pusta, otwórz ją w przeglądarce systemowej.",
+      "loadStalledTitle": "Ta strona nie zakończyła ładowania",
+      "loadStalledBody": "Wbudowana przeglądarka zaczęła ładować ten adres, ale nigdy nie zakończyła. Odśwież stronę lub otwórz ją w przeglądarce systemowej.",
       "currentUrl": "Bieżący URL"
     },
     "unsavedChangesTitle": "Niezapisane zmiany",

@@ -1040,8 +1040,8 @@
       "siteUnreachableTitle": "Không thể truy cập trang web này",
       "webviewHiddenTitle": "Chế độ xem web tạm thời bị ẩn",
       "webviewHiddenBody": "Đóng menu hoặc hộp thoại để hiển thị lại.",
-      "embeddedFallbackTitle": "Trang này có thể không hoạt động trong trình duyệt nhúng",
-      "embeddedFallbackBody": "Một số trang chặn hoặc không hiển thị được bên trong WebView của ứng dụng. Hãy mở bằng trình duyệt hệ thống nếu trang vẫn trống.",
+      "loadStalledTitle": "Trang này chưa tải xong",
+      "loadStalledBody": "Trình duyệt nhúng đã bắt đầu tải địa chỉ này nhưng chưa bao giờ hoàn tất. Hãy tải lại hoặc mở bằng trình duyệt hệ thống.",
       "currentUrl": "URL hiện tại"
     },
     "unsavedChangesTitle": "Unsaved Changes",

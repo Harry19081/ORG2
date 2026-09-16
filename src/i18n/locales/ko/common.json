@@ -1040,8 +1040,8 @@
       "siteUnreachableTitle": "사이트에 연결할 수 없음",
       "webviewHiddenTitle": "웹뷰가 일시적으로 숨겨졌습니다",
       "webviewHiddenBody": "메뉴나 대화 상자를 닫으면 다시 표시됩니다.",
-      "embeddedFallbackTitle": "이 사이트는 임베디드 브라우저에서 작동하지 않을 수 있습니다",
-      "embeddedFallbackBody": "일부 사이트는 앱 WebView 안에서 차단되거나 렌더링되지 않습니다. 페이지가 계속 비어 있으면 시스템 브라우저에서 여세요.",
+      "loadStalledTitle": "이 페이지의 로딩이 완료되지 않았습니다",
+      "loadStalledBody": "임베디드 브라우저가 이 주소를 불러오기 시작했지만 완료하지 못했습니다. 새로 고치거나 시스템 브라우저에서 열어 보세요.",
       "currentUrl": "현재 URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",

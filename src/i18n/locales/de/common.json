@@ -1040,8 +1040,8 @@
       "siteUnreachableTitle": "Diese Seite ist nicht erreichbar",
       "webviewHiddenTitle": "Webview vorübergehend ausgeblendet",
       "webviewHiddenBody": "Menü oder Dialog schließen, um sie wieder anzuzeigen.",
-      "embeddedFallbackTitle": "Diese Seite funktioniert im eingebetteten Browser möglicherweise nicht",
-      "embeddedFallbackBody": "Manche Seiten blockieren die Darstellung in App-WebViews oder werden dort nicht korrekt gerendert. Öffne sie im Systembrowser, wenn die Seite leer bleibt.",
+      "loadStalledTitle": "Diese Seite wurde nicht fertig geladen",
+      "loadStalledBody": "Der eingebettete Browser hat begonnen, diese Adresse zu laden, aber nie abgeschlossen. Lade sie neu oder öffne sie im Systembrowser.",
       "currentUrl": "Aktuelle URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",

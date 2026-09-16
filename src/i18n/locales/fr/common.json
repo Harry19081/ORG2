@@ -1040,8 +1040,8 @@
       "siteUnreachableTitle": "Impossible d’accéder à ce site",
       "webviewHiddenTitle": "Vue web temporairement masquée",
       "webviewHiddenBody": "Fermez le menu ou la boîte de dialogue pour l’afficher à nouveau.",
-      "embeddedFallbackTitle": "Ce site risque de ne pas fonctionner dans le navigateur intégré",
-      "embeddedFallbackBody": "Certains sites bloquent l’affichage ou échouent à se rendre dans les WebViews de l’app. Ouvrez-le dans votre navigateur système si la page reste vide.",
+      "loadStalledTitle": "Cette page n’a pas fini de se charger",
+      "loadStalledBody": "Le navigateur intégré a commencé à charger cette adresse sans jamais terminer. Rechargez-la ou ouvrez-la dans votre navigateur système.",
       "currentUrl": "URL actuelle"
     },
     "unsavedChangesTitle": "Unsaved Changes",
