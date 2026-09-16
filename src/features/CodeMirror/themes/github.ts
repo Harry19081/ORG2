@@ -25,7 +25,7 @@ export function createGithubTheme(): ReturnType<typeof createTheme> {
     selectionMatch: cssVar("--cm-editor-selection", "var(--color-fill-2)"),
     gutterBackground: cssVar("--cm-editor-gutter-bg", "#fff"),
     gutterForeground: cssVar("--cm-editor-gutter-fg", "#6e7781"),
-    lineHighlight: cssVar("--cm-editor-line-highlight", "transparent"),
+    lineHighlight: cssVar("--cm-editor-line-highlight", "var(--color-fill-2)"),
   };
 
   const keyword = cssVar("--cm-syntax-keyword", "#d73a49");
