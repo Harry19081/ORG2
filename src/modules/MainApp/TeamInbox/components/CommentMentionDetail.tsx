@@ -3,6 +3,13 @@ import { useTranslation } from "react-i18next";
 
 import PersonAvatar from "@src/components/PersonAvatar";
 import UserMessageContent from "@src/engines/ChatPanel/ChatHistory/components/UserMessageContent";
+import {
+  ConnectedTimelineItem,
+  MarkdownContent,
+  TimelineCard,
+  TimelineCardHeader,
+  TimelineStack,
+} from "@src/features/GitHubWork/ActivityTimeline";
 import { SharedSessionFilesProvider } from "@src/features/Org2Cloud/SharedSessionFilesContext";
 import { getCloudEndpoint } from "@src/features/Org2Cloud/config";
 import {
@@ -13,13 +20,6 @@ import {
   LinkSquare02Icon,
 } from "@src/icons";
 import { WORK_ITEM_THREAD_TOKENS } from "@src/modules/ProjectManager/WorkItems/components/WorkItemThread";
-import {
-  ConnectedTimelineItem,
-  MarkdownContent,
-  TimelineCard,
-  TimelineCardHeader,
-  TimelineStack,
-} from "@src/modules/shared/components/ActivityTimeline";
 
 import type { CommentMentionItem, TeamInboxNavigationIntent } from "../domain";
 import TeamInboxDetailLayout from "./TeamInboxDetailLayout";

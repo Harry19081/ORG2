@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import Message from "@src/components/Message";
 import Switch from "@src/components/Switch";
 import {
@@ -22,7 +23,6 @@ import {
   DetailSplitLayout,
   ManualCreateComposer,
 } from "@src/modules/ProjectManager/shared";
-import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
 import { manualCreatorAtom } from "@src/store/ui/manualCreatorAtom";
 import {
   MANUAL_WORK_ITEM_CREATOR_DRAFT_ID,

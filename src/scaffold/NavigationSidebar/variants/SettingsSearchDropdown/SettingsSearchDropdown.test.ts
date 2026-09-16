@@ -22,11 +22,11 @@ import SettingsSearchDropdown, {
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, options?: { query?: string }) =>
-      key === "noSettingsFound"
-        ? `No settings found for "${options?.query ?? ""}"`
-        : key === "searchPlaceholder"
-          ? "Search settings..."
+    t: (key: string) =>
+      key === "common.noResults"
+        ? "No results found"
+        : key === "common.searchPlaceholder"
+          ? "Search..."
           : key,
   }),
 }));

@@ -20,7 +20,7 @@ vi.mock("@src/hooks/ui/layout/useElementDimensions", () => ({
   useElementDimensions: () => 0,
 }));
 
-vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", async () => {
+vi.mock("@src/components/MarkdownTextareaEditor", async () => {
   const { forwardRef } = await import("react");
   return {
     default: forwardRef<HTMLDivElement, Record<string, unknown>>(

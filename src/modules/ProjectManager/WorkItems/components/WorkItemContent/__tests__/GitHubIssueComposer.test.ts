@@ -30,7 +30,7 @@ vi.mock("@src/components/Avatar", () => ({
     createElement("img", { src, alt: "viewer" }),
 }));
 
-vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", () => ({
+vi.mock("@src/components/MarkdownTextareaEditor", () => ({
   default: ({
     value,
     onChange,

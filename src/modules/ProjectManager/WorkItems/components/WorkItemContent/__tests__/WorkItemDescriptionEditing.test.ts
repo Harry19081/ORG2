@@ -129,7 +129,7 @@ vi.mock("@src/modules/ProjectManager/shared", () => ({
   }),
 }));
 
-vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", () => ({
+vi.mock("@src/components/MarkdownTextareaEditor", () => ({
   default: ({
     value,
     onChange,
@@ -180,7 +180,7 @@ vi.mock("../GitHubIssueComposer", () => ({
     }),
 }));
 
-vi.mock("@src/modules/shared/components/ActivityTimeline", () => ({
+vi.mock("@src/features/GitHubWork/ActivityTimeline", () => ({
   ActivityTimestamp: ({ timestamp }: { timestamp: string }) =>
     createElement("time", { dateTime: timestamp }, timestamp),
   ActivityHeaderActionButton: ({

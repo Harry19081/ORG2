@@ -1,7 +1,7 @@
 /** Hover presentation retains its visibility context around the shared route body. */
 import React from "react";
 
-import { useRouteLayoutType } from "@src/modules/shared/hooks";
+import { useRouteLayoutType } from "@src/modules/hooks";
 import { ForceVisibleSidebarProvider } from "@src/scaffold/NavigationSidebar/contexts/ForceVisibleContext";
 
 import { RouteSidebarBody } from "./RouteSidebarBody";

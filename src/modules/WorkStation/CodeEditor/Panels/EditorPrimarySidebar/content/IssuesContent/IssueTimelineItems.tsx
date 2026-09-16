@@ -3,14 +3,14 @@ import { useTranslation } from "react-i18next";
 
 import type { GitHubIssueTimelineItem } from "@src/api/tauri/github";
 import PersonAvatar from "@src/components/PersonAvatar";
-import { projectMarkdownSessionReferences } from "@src/features/Org2Cloud/markdown/sessionReferenceProjection";
 import {
   ConnectedTimelineItem,
   MarkdownContent,
   TimelineCard,
   TimelineCardHeader,
   TimelineLoadingSkeleton,
-} from "@src/modules/shared/components/ActivityTimeline";
+} from "@src/features/GitHubWork/ActivityTimeline";
+import { projectMarkdownSessionReferences } from "@src/features/Org2Cloud/markdown/sessionReferenceProjection";
 
 import { IssueTimelineEventRow } from "./IssueTimelineEvent";
 

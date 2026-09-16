@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import MarkdownEditor from "@src/components/MarkdownEditor";
 import NumberInput from "@src/components/NumberInput";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
@@ -38,7 +39,6 @@ import {
 } from "@src/components/layout/blocks";
 import SubAgentsEditor from "@src/modules/MainApp/AgentOrgs/config/shared/SubAgentsEditor";
 import type { AgentDefinition } from "@src/modules/MainApp/AgentOrgs/types";
-import MarkdownEditor from "@src/modules/shared/components/MarkdownEditor";
 import {
   WizardShell,
   WizardStepLayout,

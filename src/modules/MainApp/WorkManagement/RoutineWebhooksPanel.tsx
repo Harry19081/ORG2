@@ -20,13 +20,13 @@ import {
   projectApi,
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
-import Message from "@src/components/Message";
-import { Placeholder } from "@src/components/Placeholder";
-import { Copy01Icon, HugeiconsIcon, Link01Icon } from "@src/icons";
 import CompactListPanel, {
   type CompactListPanelEntry,
-} from "@src/modules/shared/components/CompactListPanel";
-import { WorkManagementRefreshButton } from "@src/modules/shared/components/WorkManagementRefreshButton";
+} from "@src/components/CompactListPanel";
+import Message from "@src/components/Message";
+import { Placeholder } from "@src/components/Placeholder";
+import { WorkManagementRefreshButton } from "@src/features/GitHubWork/WorkManagementRefreshButton";
+import { Copy01Icon, HugeiconsIcon, Link01Icon } from "@src/icons";
 import DetailPaneLayout, {
   DetailPanePlaceholder,
 } from "@src/scaffold/layouts/DetailPaneLayout";
