@@ -427,6 +427,29 @@
   }
 }
 
+// Inline confirm / cancel actions. The trailing padding equals the gap between
+// the action buttons and the field border (see InputEditActions sizes), so the
+// buttons sit evenly inset against the end of the field.
+.input-edit-actions {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 2px;
+  margin-left: 6px;
+}
+
+.input-wrapper.input-has-edit-actions {
+  &.input-size-mini .input-inner {
+    padding-right: 1px;
+  }
+
+  &.input-size-small .input-inner,
+  &.input-size-default .input-inner,
+  &.input-size-large .input-inner {
+    padding-right: 3px;
+  }
+}
+
 // Field wrapper — used when an error message is rendered with the input
 .input-field {
   display: inline-flex;
