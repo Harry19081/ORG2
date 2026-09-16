@@ -5,7 +5,7 @@
  * - mermaid library (~2MB) is loaded lazily on first use via dynamic import()
  * - SVG is rendered once via mermaid.render() and cached per (code + theme) key
  * - Module-level SVG cache (FIFO, max 50) avoids re-rendering identical diagrams
- * - Renders asynchronously; shows a shimmer placeholder while loading
+ * - Renders asynchronously; shows a skeleton placeholder while loading
  * - Debounces rendering during streaming (300ms stability wait)
  * - Click-to-zoom: click diagram to toggle fullscreen overlay
  */
@@ -13,6 +13,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import Button from "@src/components/Button";
+import SkeletonBar from "@src/components/Skeleton";
 import {
   Add01Icon,
   ArrowExpand01Icon,
@@ -536,7 +537,12 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
             onMouseEnter={handleHeaderMouseEnter}
             onMouseLeave={handleHeaderMouseLeave}
           />
-          {!isCollapsed && <div className="mermaid-block__shimmer" />}
+          {!isCollapsed && (
+            <SkeletonBar
+              className="m-4 h-30 rounded-md"
+              testId="mermaid-loading-block"
+            />
+          )}
         </div>
       );
     }
