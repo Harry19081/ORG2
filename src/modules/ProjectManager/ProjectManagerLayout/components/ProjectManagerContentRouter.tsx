@@ -170,7 +170,6 @@ function renderActiveContent({
     case "project-work-items":
     case "project-git-sync-review":
     case "project-org":
-    case "project-org-settings":
     case "project-settings":
     case "workItem-detail":
       return <UnifiedTabContent tab={activeTab} isActive />;

@@ -17,7 +17,6 @@ import { toFsPluginPath } from "@src/util/file/pathUtils";
 import {
   cacheFileMetadata,
   cacheUnsavedContent,
-  clearFileCache,
   clearUnsavedContentCache,
   getCachedBinaryStatus,
   getCachedFileMetadata,
@@ -40,7 +39,6 @@ const log = createLogger("FileContent");
 
 export type { FileError, UseFileContentOptions, UseFileContentReturn };
 export {
-  clearFileCache,
   clearUnsavedContentCache,
   invalidateFileCache,
   subscribeToFileChanges,

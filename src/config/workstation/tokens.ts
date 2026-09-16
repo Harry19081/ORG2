@@ -132,39 +132,6 @@ export const TAB_BAR_TRAILING_EDGE_CLASS =
   "flex h-full shrink-0 items-center gap-px pl-1 pr-2";
 
 // ============================================
-// Split Button Tokens
-// ============================================
-/**
- * Split action button: primary click + chevron dropdown.
- * Used by: terminal "new + profile picker", any action with a dropdown variant.
- *
- * Hover behaviour (each half is independent):
- *  - Left hover  → shared surface hover, icon → text-text-1
- *  - Right hover → bg-fill-3, icon → text-text-1
- *
- * ```tsx
- * <div className={SPLIT_BUTTON.container}>
- *   <button className={SPLIT_BUTTON.left} onClick={onDefault}>
- *     <Plus size={HEADER_ICON_SIZE.md} />
- *   </button>
- *   <button className={SPLIT_BUTTON.right} onClick={onToggleMenu}>
- *     <ChevronDown size={12} />
- *   </button>
- * </div>
- * ```
- */
-export const SPLIT_BUTTON = {
-  /** Outer wrapper — shared surface hover covers both halves */
-  container:
-    "group/split flex items-center rounded transition-colors hover:bg-button-hover focus-within:bg-button-hover",
-  /** Left (primary action) — inherits the shared hover surface from container */
-  left: "flex h-5 w-5 items-center justify-center rounded-l text-text-3 transition-colors group-hover/split:text-text-1",
-  /** Right (chevron) — button hover surface stacks on top of container hover */
-  right:
-    "flex h-5 items-center justify-center rounded-r px-0.5 text-text-3 transition-colors group-hover/split:text-text-1 hover:bg-fill-3",
-} as const;
-
-// ============================================
 // Header Class Strings
 // ============================================
 

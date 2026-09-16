@@ -41,7 +41,6 @@ export type WorkStationTabType =
   | "project-linear-work-items"
   | "project-settings"
   | "project-org"
-  | "project-org-settings"
   | "project-git-sync-review"
   | "project-workitems"
   | "workItem-detail"
@@ -251,7 +250,6 @@ export function getWorkstationTabOwnership(
     case "project-linear-work-items":
     case "project-settings":
     case "project-org":
-    case "project-org-settings":
     case "project-git-sync-review":
     case "project-workitems":
     case "workItem-detail":
