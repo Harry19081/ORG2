@@ -292,7 +292,7 @@ describe("SidebarSettingsMenuButton", () => {
       (button) => button.textContent === "cloud.signIn"
     )!;
     await act(async () => confirm.click());
-    expect(dialog()).toBeNull();
+    expect(dialog()?.textContent).toContain("auth:loading.waiting");
     expect(onSignIn).toHaveBeenCalledOnce();
   });
 
