@@ -1020,7 +1020,36 @@
     "authentication": "Authentication",
     "desktopScope": "Configures Claude Desktop separately from Claude Code CLI; fully quit and reopen Desktop after applying",
     "desktopApplied": "Desktop configuration saved — fully quit and reopen Claude Desktop",
-    "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop"
+    "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop",
+    "advancedDescription": "Custom API connections and one-time credential migration",
+    "marketApps": {
+      "workspace": "Official packages",
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "currentValue": "{{workspace}} · {{model}}",
+      "auto": "Automatic model",
+      "chooseInPicker": "Choose an official package and model",
+      "nonePurchased": "No official packages are currently available",
+      "claudeHelp": "Claude Code and Claude Desktop each keep their own package, model and restore point. Keep ORG2 running while using a managed connection.",
+      "checking": "Checking app…",
+      "unavailable": "Unavailable for this installed version",
+      "notInstalled": "Not installed",
+      "following": "Using the configured package",
+      "original": "Using the app’s original setup",
+      "connect": "Choose package",
+      "open": "Open app",
+      "disconnect": "Restore original setup",
+      "connected": "The app now follows the current ORG2 workspace",
+      "opened": "App opened",
+      "disconnected": "The app’s previous setup was restored",
+      "actionFailed": "Could not update this app connection",
+      "current": "Current",
+      "workspaceNumber": "Service {{index}} of {{count}}",
+      "openTerminal": "Open terminal",
+      "terminalOpened": "Terminal opened",
+      "provider": "ORG2 Market"
+    }
   },
   "claudeProfiles": {
     "new": "New profile",
@@ -1056,5 +1085,15 @@
   "development": {
     "updateAvailable": "Update available",
     "updateAvailableDesc": "Show update indicators across the app using version 99.0.0 — update actions only preview the dialog"
+  },
+  "managedUsage": {
+    "cancel": "Cancel",
+    "authorize": "Authorize usage",
+    "rates": "Input / output per million tokens",
+    "allRates": "All billing dimensions",
+    "limit": "Total usage limit (USD)",
+    "description": "Usage is charged from your wallet at these rates, within this total limit. Higher prices and new models require your confirmation.",
+    "accept": "I authorize usage at these rates and within this limit.",
+    "wallet": "Open wallet"
   }
 }

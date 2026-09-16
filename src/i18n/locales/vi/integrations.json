@@ -330,7 +330,7 @@
     "claudeCodeDetectErrorHint": "Đăng nhập bằng trình duyệt nhúng hoặc chạy claude auth login rồi thử phát hiện lại",
     "refreshModels": {
       "button": "Làm mới danh sách mô hình Cursor",
-      "failed": "Làm mới từ Cursor thất bại: {{error}}"
+      "failed": "Workspace Market này hiện không khả dụng. Hãy mở lại Market để làm mới quyền truy cập."
     },
     "revalidate": "Xác thực lại",
     "confirmRemoveActiveSessions_one": "{{count}} phiên đang hoạt động vẫn dùng tài khoản này và sẽ thất bại ở lượt tiếp theo:",
@@ -1657,7 +1657,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Nhập thất bại: {{message}}",
-    "partialFailure": "Một số thông tin xác thực không thể nhập:"
+    "partialFailure": "Một số thông tin xác thực không thể nhập:",
+    "importSucceeded": "Đã lưu vào Tài khoản: {{names}}. Thông tin xác thực đã nhập hiện có thể dùng làm kết nối có thể tái sử dụng."
   },
   "skills": {
     "shareToOrg": "Chia sẻ với tổ chức",
@@ -1665,5 +1666,14 @@
     "sharedToOrg": "Đã chia sẻ Skill với tổ chức",
     "shareToOrgHint": "Thành viên của tổ chức nhận được ảnh chụp hiện tại của skill này; hãy chia sẻ lại sau khi chỉnh sửa để phát hành bản cập nhật",
     "shareOrgPlaceholder": "Tổ chức"
+  },
+  "marketConnection": {
+    "loadingPurchases": "Loading official packages…",
+    "purchasesFailed": "Could not load official packages. Try again.",
+    "platformUnavailable": "Không thể kết nối không gian làm việc của người mua Market trên nền tảng này vì chưa hỗ trợ lưu thông tin xác thực an toàn",
+    "authorizationSaved": "Market authorization saved. Choose an official package and model in ORG2.",
+    "failed": "Không thể hoàn tất kết nối Market. Hãy mở lại kết nối không gian làm việc.",
+    "title": "Official packages",
+    "launchFailed": "Could not enable the selected package. Refresh the catalog and check wallet funds and usage authorization."
   }
 }

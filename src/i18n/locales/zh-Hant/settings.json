@@ -939,7 +939,36 @@
     "authentication": "驗證方式",
     "desktopScope": "單獨設定 Claude Desktop，不影響 Claude Code CLI；套用後需完全結束並重新開啟桌面應用程式",
     "desktopApplied": "桌面設定已儲存，請完全結束並重新開啟 Claude Desktop",
-    "desktopRestored": "已還原先前的桌面設定，請完全結束並重新開啟 Claude Desktop"
+    "desktopRestored": "已還原先前的桌面設定，請完全結束並重新開啟 Claude Desktop",
+    "advancedDescription": "自訂 API 連線和一次性憑證遷移",
+    "marketApps": {
+      "workspace": "官方套餐",
+      "workspaceHelp": "为当前 App 选择套餐和模型。各 App 独立保存选择，切换 ORG2 聊天来源不会修改 App。",
+      "loading": "正在加载官方套餐…",
+      "loadFailed": "无法加载官方套餐",
+      "currentValue": "{{workspace}} · {{model}}",
+      "auto": "自動選擇模型",
+      "chooseInPicker": "选择官方套餐和模型",
+      "nonePurchased": "暂时没有可用的官方套餐",
+      "claudeHelp": "Claude Code 和 Claude Desktop 分别保存自己的套餐、模型和恢复点。使用托管连接时请保持 ORG2 运行。",
+      "checking": "正在檢查應用程式…",
+      "unavailable": "目前安裝版本暫不可用",
+      "notInstalled": "尚未安裝",
+      "following": "使用当前配置的套餐",
+      "original": "正在使用應用程式原有設定",
+      "connect": "选择套餐",
+      "open": "開啟應用程式",
+      "disconnect": "恢复原有配置",
+      "connected": "應用程式已開始跟隨 ORG2 目前工作區",
+      "opened": "應用程式已開啟",
+      "disconnected": "已還原應用程式先前的設定",
+      "actionFailed": "無法更新此應用程式連線",
+      "current": "目前使用",
+      "workspaceNumber": "服務 {{index}} / {{count}}",
+      "openTerminal": "開啟終端機",
+      "terminalOpened": "已開啟終端機",
+      "provider": "ORG2 Market"
+    }
   },
   "claudeProfiles": {
     "new": "新增設定檔",
@@ -1056,5 +1085,15 @@
   "development": {
     "updateAvailable": "有可用更新",
     "updateAvailableDesc": "在整個應用中顯示版本 99.0.0 的更新提示 — 更新操作僅預覽對話框"
+  },
+  "managedUsage": {
+    "cancel": "取消",
+    "authorize": "授权使用",
+    "rates": "每百万输入 / 输出 token 价格",
+    "allRates": "全部计费项目",
+    "limit": "累计用量上限（美元）",
+    "description": "实际用量会按此价格从钱包扣款，累计不超过此上限。涨价或新增模型需要重新确认。",
+    "accept": "我同意按这些价格和预算上限使用。",
+    "wallet": "打开钱包"
   }
 }

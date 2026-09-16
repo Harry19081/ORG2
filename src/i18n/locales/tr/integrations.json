@@ -330,7 +330,7 @@
     "claudeCodeDetectErrorHint": "Yerleşik tarayıcıyla oturum açın veya claude auth login çalıştırıp algılamayı tekrar deneyin",
     "refreshModels": {
       "button": "Cursor model listesini yenile",
-      "failed": "Cursor'dan yenileme başarısız: {{error}}"
+      "failed": "Bu Market çalışma alanı kullanılamıyor. Yetkilendirmeyi yenilemek için Market’i yeniden açın."
     },
     "revalidate": "Yeniden doğrula",
     "confirmRemoveActiveSessions_one": "{{count}} etkin oturum hâlâ bu hesabı kullanıyor ve bir sonraki turunda başarısız olacak:",
@@ -1657,7 +1657,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "İçe aktarma başarısız: {{message}}",
-    "partialFailure": "Bazı kimlik bilgileri içe aktarılamadı:"
+    "partialFailure": "Bazı kimlik bilgileri içe aktarılamadı:",
+    "importSucceeded": "Hesaplar'a kaydedildi: {{names}}. İçe aktarılan kimlik bilgileri artık yeniden kullanılabilir bağlantılar olarak kullanılabilir."
   },
   "skills": {
     "shareToOrg": "Organizasyonla paylaş",
@@ -1665,5 +1666,14 @@
     "sharedToOrg": "Skill organizasyonla paylaşıldı",
     "shareToOrgHint": "Organizasyon üyeleri bu Skill'in geçerli anlık görüntüsünü alır; düzenledikten sonra güncelleme yayınlamak için yeniden paylaşın",
     "shareOrgPlaceholder": "Organizasyon"
+  },
+  "marketConnection": {
+    "loadingPurchases": "Loading official packages…",
+    "purchasesFailed": "Could not load official packages. Try again.",
+    "platformUnavailable": "Bu platform güvenli kimlik bilgisi depolamayı desteklemediği için Market alıcı bağlantıları kullanılamıyor",
+    "authorizationSaved": "Market authorization saved. Choose an official package and model in ORG2.",
+    "failed": "Market bağlantısı tamamlanamadı. Çalışma alanı bağlantısını yeniden açın.",
+    "title": "Official packages",
+    "launchFailed": "Could not enable the selected package. Refresh the catalog and check wallet funds and usage authorization."
   }
 }
