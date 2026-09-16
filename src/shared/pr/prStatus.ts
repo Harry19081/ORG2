@@ -16,7 +16,7 @@
  *   open → success (green), merged → GitHub purple, closed → danger (red),
  *   draft → neutral secondary text, unknown → neutral muted text.
  */
-import type { PrStatus } from "@src/api/http/project/types/agentWorkflow";
+import type { PrStatus } from "@src/contracts/project/agentWorkflow";
 
 /** Visual variant (badge + status dot) for a normalized PR status. */
 export interface PrStatusVariant {
