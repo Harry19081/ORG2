@@ -21,12 +21,12 @@ import InlineBanner, {
 import GitHubDetailSkeleton from "@src/features/GitHubWork/GitHubDetailSkeleton";
 import GitHubPrDetailTabs from "@src/features/GitHubWork/GitHubPrDetailTabs";
 import { ExternalBrowserButton } from "@src/modules/WorkStation/shared/ExternalBrowserButton";
-import { resolvePullRequestDetailStatus } from "@src/shared/pr/prLevelActions";
 import {
   type PrIdentity,
   workstationPrScopeKey,
   workstationSelectedPrAtomFamily,
 } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
+import { resolvePullRequestDetailStatus } from "@src/util/git/pr/prLevelActions";
 
 import { useWorkstationPrDetail } from "../../../hooks/useWorkstationPrDetail";
 import { PrDetailSidebarRail } from "./PrDetailSidebarRail";

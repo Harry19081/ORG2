@@ -15,7 +15,6 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { startVisibilityAwarePoller } from "@src/shared/scheduling/visibilityAwarePoller";
 import {
   clearApiCalls,
   disableApiTracking,
@@ -31,6 +30,7 @@ import type {
   PushHotspot,
   TimerHotspot,
 } from "@src/util/monitoring/apiTracker";
+import { startVisibilityAwarePoller } from "@src/util/time/scheduling/visibilityAwarePoller";
 
 // ============================================
 // Type Definitions

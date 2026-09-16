@@ -103,7 +103,7 @@ import {
   Cancel01Icon as X,
   CancelCircleIcon as XCircle,
 } from "@src/icons";
-import { normalizeFunctionName } from "@src/lib/activityData/activityNormalizers";
+import { normalizeFunctionName } from "@src/util/data/activityData/activityNormalizers";
 
 /** Default size/class for chat ToolCallBlock and Integrations tool rows. */
 export const DEFAULT_TOOL_ICON_SIZE = 14;

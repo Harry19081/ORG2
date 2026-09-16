@@ -3,7 +3,7 @@ import { atom } from "jotai";
 import {
   recordRecentItem,
   recordRecentTransition,
-} from "@src/shared/tabs/recentTabs";
+} from "@src/util/tabs/recentTabs";
 
 import { workstationWorkspaceId } from "./storage";
 import type { WorkStationTab, WorkstationWorkspaceKey } from "./types";

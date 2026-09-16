@@ -17,7 +17,6 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useActionSystem } from "@src/ActionSystem";
 import { getGitCommits } from "@src/api/http/git/commits";
 import type { GitCommitInfo } from "@src/api/http/git/types";
 import { Placeholder } from "@src/components/Placeholder";
@@ -28,6 +27,7 @@ import {
   useWorkStationTabs,
 } from "@src/hooks/tabHost/useWorkStationTabs";
 import { HugeiconsIcon, Loading03Icon } from "@src/icons";
+import { useActionSystem } from "@src/scaffold/ActionSystem";
 import {
   type GitHistoryRequest,
   getCachedGitHistory,

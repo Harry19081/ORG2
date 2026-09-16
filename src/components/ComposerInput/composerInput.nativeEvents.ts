@@ -10,7 +10,7 @@
  */
 import { useEffect } from "react";
 
-import { hasReferenceDragData } from "@src/shared/dnd/referenceDragData";
+import { hasReferenceDragData } from "@src/util/dnd/referenceDragData";
 import { EDIT_HISTORY_EVENT } from "@src/util/dom/editHistoryCommand";
 
 import { removePillForDeleteDirection } from "./keyboard";

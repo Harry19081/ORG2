@@ -10,6 +10,7 @@ import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
 } from "@src/components/Dropdown/tokens";
+import { insertPillFromTabPayload } from "@src/components/dnd/dropTargetUtils";
 import type { SessionLaunchWorkItemContext } from "@src/engines/SessionCore/hooks/session/useSessionCreator/useSessionLaunch/types";
 import {
   LaunchpadActionCard,
@@ -25,7 +26,6 @@ import {
   Link02Icon,
   ListTodoIcon,
 } from "@src/icons";
-import { insertPillFromTabPayload } from "@src/shared/dnd/dropTargetUtils";
 
 export interface WorkItemAttachmentControlProps {
   composerInputRef?: React.RefObject<ComposerInputRef | null>;

@@ -29,11 +29,11 @@ import {
 } from "@src/modules/WorkStation/AppShell/useWorkStationLaunchActions";
 import { WorkstationTabIcon } from "@src/modules/WorkStation/shared/TabBar/components/WorkstationTabIcon";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
-import { shouldShowInRecentTabsMenu } from "@src/shared/tabs/recentTabsMenu";
 import {
   openRecentWorkstationTabAtom,
   recentWorkstationTabsAtom,
 } from "@src/store/workstation";
+import { shouldShowInRecentTabsMenu } from "@src/util/tabs/recentTabsMenu";
 
 import { TabBarPlusMenuItems } from "./TabBarPlusMenuItems";
 
