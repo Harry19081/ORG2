@@ -1,12 +1,12 @@
 import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 
+import { isWorkbenchPath } from "@src/config/routes";
 import {
   ACTION_ID,
   type ActionId,
   useActionSystemOptional,
-} from "@src/ActionSystem";
-import { isWorkbenchPath } from "@src/config/routes";
+} from "@src/scaffold/ActionSystem";
 import {
   createAgentSessionSearchSpotlightRequest,
   createEditorSpotlightRequest,

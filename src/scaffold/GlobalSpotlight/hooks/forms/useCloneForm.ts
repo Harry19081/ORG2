@@ -9,11 +9,11 @@ import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { zodActionRegistry } from "@src/ActionSystem/schema/zodRegistry";
 import type { GitHubRepo } from "@src/api/http/github/types";
 import Message from "@src/components/Message";
 import { useGitHubConnections } from "@src/hooks/git";
 import { createLogger } from "@src/hooks/logger";
+import { zodActionRegistry } from "@src/scaffold/ActionSystem/schema/zodRegistry";
 import {
   effectiveWorkspaceDefaultRepoLocationAtom,
   workspaceCustomDefaultRepoPathAtom,

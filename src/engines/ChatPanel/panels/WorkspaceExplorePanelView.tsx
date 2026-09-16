@@ -16,7 +16,6 @@ import { useAtomValue } from "jotai";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { zodActionRegistry } from "@src/ActionSystem/schema/zodRegistry";
 import {
   type RepoSearchResponse,
   type RepoSearchSort,
@@ -39,6 +38,7 @@ import {
   SquareArrowUpRight02Icon,
   StarIcon,
 } from "@src/icons";
+import { zodActionRegistry } from "@src/scaffold/ActionSystem/schema/zodRegistry";
 import {
   effectiveWorkspaceDefaultRepoLocationAtom,
   workspaceCustomDefaultRepoPathAtom,

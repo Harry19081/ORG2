@@ -37,7 +37,6 @@ import React, {
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
-import { useActionSystemOptional } from "@src/ActionSystem";
 import { TAB_PILL_DRAG_OVERLAY_CLASS } from "@src/components/TabPill/TabPillSurface";
 import { TAB_PAIR_SEPARATOR_SLOT_CLASS } from "@src/components/TabPill/config";
 import { NoDragRegion } from "@src/components/WindowChrome";
@@ -50,6 +49,7 @@ import {
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { requestTeamInboxSessionHandoffAtom } from "@src/modules/MainApp/TeamInbox/store";
 import { useStationToggleInsetTransition } from "@src/modules/shared/layouts/useStationToggleInsetTransition";
+import { useActionSystemOptional } from "@src/scaffold/ActionSystem";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import {
   SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS,

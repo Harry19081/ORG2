@@ -2,7 +2,7 @@
 import { createElement } from "react";
 import { expect, it, vi } from "vitest";
 
-import { ACTION_ID } from "@src/ActionSystem";
+import { ACTION_ID } from "@src/scaffold/ActionSystem";
 import { createSmokeRoot, dispatch } from "@src/test/reactSmokeHarness";
 
 import { SpotlightNavigationFooterAction } from "./SpotlightNavigationFooterAction";
@@ -22,8 +22,8 @@ vi.mock("react-i18next", () => ({
 vi.mock("@src/hooks/navigation/useAppNavigate", () => ({
   useAppNavigate: () => mocks.navigate,
 }));
-vi.mock("@src/ActionSystem", async (load) => ({
-  ...(await load<typeof import("@src/ActionSystem")>()),
+vi.mock("@src/scaffold/ActionSystem", async (load) => ({
+  ...(await load<typeof import("@src/scaffold/ActionSystem")>()),
   useActionSystemOptional: () => ({
     isValidAction: () => mocks.registered,
     dispatch: mocks.actionDispatch,

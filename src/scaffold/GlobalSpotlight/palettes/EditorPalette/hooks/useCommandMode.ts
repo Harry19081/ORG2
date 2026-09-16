@@ -1,10 +1,10 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 
-import { ACTION_ID } from "@src/ActionSystem";
-import type { TypedDispatch } from "@src/ActionSystem/ActionSystemContext";
-import { zodActionRegistry } from "@src/ActionSystem/schema/zodRegistry";
 import { createLogger } from "@src/hooks/logger";
+import { ACTION_ID } from "@src/scaffold/ActionSystem";
+import type { TypedDispatch } from "@src/scaffold/ActionSystem/ActionSystemContext";
+import { zodActionRegistry } from "@src/scaffold/ActionSystem/schema/zodRegistry";
 
 import type { SpotlightItem } from "../../../shared";
 

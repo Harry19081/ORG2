@@ -24,9 +24,9 @@ import { useAtomValue } from "jotai";
 import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useActionSystem } from "@src/ActionSystem";
 import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { useWorkStationTabShortcutBridge } from "@src/hooks/tabHost/useWorkStationTabShortcutBridge";
+import { useActionSystem } from "@src/scaffold/ActionSystem";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 
 import { EditorPaneLayers } from "./EditorPaneLayers";

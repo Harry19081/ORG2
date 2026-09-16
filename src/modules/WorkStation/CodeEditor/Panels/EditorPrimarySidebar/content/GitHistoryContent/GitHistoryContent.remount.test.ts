@@ -21,7 +21,7 @@ vi.mock("@src/api/http/git/commits", () => ({
   getGitCommits: vi.fn(),
 }));
 
-vi.mock("@src/ActionSystem", () => ({
+vi.mock("@src/scaffold/ActionSystem", () => ({
   useActionSystem: () => ({ dispatch: vi.fn() }),
 }));
 

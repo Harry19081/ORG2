@@ -20,18 +20,18 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 
-import {
-  ACTION_ID,
-  initializeServices,
-  registerCoreActions,
-  zodActionRegistry,
-} from "@src/ActionSystem";
 import { sendAdeActionResult } from "@src/api/tauri/agent";
 import { clearSessionAtom } from "@src/engines/SessionCore/core/atoms/actions";
 import {
   GLOBAL_UI_CHANNEL_SESSION_ID,
   subscribeToSessionEvents,
 } from "@src/engines/SessionCore/sync/useSessionChannel";
+import {
+  ACTION_ID,
+  initializeServices,
+  registerCoreActions,
+  zodActionRegistry,
+} from "@src/scaffold/ActionSystem";
 import { reposAtom } from "@src/store/repo/atoms";
 import {
   SESSION_TARGET_KIND,

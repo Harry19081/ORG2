@@ -33,7 +33,6 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useActionSystem } from "@src/ActionSystem";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
 import type { TreePanelNode } from "@src/components/TreePanelSidebar/types";
@@ -55,6 +54,7 @@ import {
 import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
 import { HugeiconsIcon, Search01Icon } from "@src/icons";
 import { FolderHeaderRow } from "@src/modules/WorkStation/shared/FolderHeaderRow";
+import { useActionSystem } from "@src/scaffold/ActionSystem";
 import { fileTreeSelectedPathAtom } from "@src/store/ui/fileTreeSelectionAtom";
 
 import { FileExplorerContextMenu } from "./FileExplorerMenu";

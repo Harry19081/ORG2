@@ -5,7 +5,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import SourceControlTreeRow from "./SourceControlTreeRow";
 
-vi.mock("@src/ActionSystem", () => ({ useActionSystemOptional: () => null }));
+vi.mock("@src/scaffold/ActionSystem", () => ({
+  useActionSystemOptional: () => null,
+}));
 vi.mock("@src/hooks/files/useNativeDrag", () => ({
   useNativeDrag: () => ({ handleMouseDown: vi.fn() }),
 }));
