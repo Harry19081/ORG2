@@ -358,10 +358,7 @@
       "moreProperties": "Weitere Eigenschaften"
     },
     "propertyFields": {
-      "assignee": "Zuständiger",
-      "project": "Project",
-      "milestone": "Meilenstein",
-      "dueDate": "Fälligkeitsdatum"
+      "project": "Project"
     },
     "addWorkItem": "Arbeitselement hinzufügen",
     "agentWorkflow": {

@@ -358,10 +358,7 @@
       "moreProperties": "更多屬性"
     },
     "propertyFields": {
-      "assignee": "負責人",
-      "project": "專案",
-      "milestone": "里程碑",
-      "dueDate": "截止日期"
+      "project": "專案"
     },
     "addWorkItem": "添加工作項",
     "agentWorkflow": {

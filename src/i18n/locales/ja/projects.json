@@ -358,10 +358,7 @@
       "moreProperties": "その他のプロパティ"
     },
     "propertyFields": {
-      "assignee": "担当者",
-      "project": "Project",
-      "milestone": "マイルストーン",
-      "dueDate": "期限"
+      "project": "Project"
     },
     "addWorkItem": "ワークアイテムを追加",
     "agentWorkflow": {

@@ -358,10 +358,7 @@
       "moreProperties": "More properties"
     },
     "propertyFields": {
-      "assignee": "담당자",
-      "project": "Project",
-      "milestone": "마일스톤",
-      "dueDate": "마감일"
+      "project": "Project"
     },
     "addWorkItem": "작업 항목 추가",
     "agentWorkflow": {

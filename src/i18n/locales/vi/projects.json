@@ -358,10 +358,7 @@
       "moreProperties": "Thuộc tính khác"
     },
     "propertyFields": {
-      "assignee": "Người được gán",
-      "project": "Project",
-      "milestone": "Cột mốc",
-      "dueDate": "Hạn chót"
+      "project": "Project"
     },
     "addWorkItem": "Thêm mục công việc",
     "agentWorkflow": {

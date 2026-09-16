@@ -371,10 +371,7 @@
       "moreProperties": "More properties"
     },
     "propertyFields": {
-      "assignee": "Assignee",
-      "project": "Project",
-      "milestone": "Milestone",
-      "dueDate": "Due Date"
+      "project": "Project"
     },
     "addWorkItem": "Add Work Item",
     "agentWorkflow": {

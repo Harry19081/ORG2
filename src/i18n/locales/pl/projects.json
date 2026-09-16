@@ -358,10 +358,7 @@
       "moreProperties": "Więcej właściwości"
     },
     "propertyFields": {
-      "assignee": "Przypisany",
-      "project": "Historia",
-      "milestone": "Kamień milowy",
-      "dueDate": "Termin"
+      "project": "Historia"
     },
     "addWorkItem": "Dodaj zadanie",
     "agentWorkflow": {
