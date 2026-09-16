@@ -22,6 +22,11 @@ import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useActiveRepoRef } from "@src/hooks/git/useActiveRepoRef";
 import { useWorkingTreeDiffTotals } from "@src/hooks/git/useWorkingTreeDiffTotals";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
+import {
+  LAUNCHPAD_ACTION_IDS,
+  type WorkStationLaunchActionId,
+  useWorkStationLaunchActions,
+} from "@src/modules/WorkStation/AppShell/useWorkStationLaunchActions";
 import { WorkstationTabIcon } from "@src/modules/WorkStation/shared/TabBar/components/WorkstationTabIcon";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
 import { shouldShowInRecentTabsMenu } from "@src/shared/tabs/recentTabsMenu";
@@ -30,11 +35,6 @@ import {
   recentWorkstationTabsAtom,
 } from "@src/store/workstation";
 
-import {
-  LAUNCHPAD_ACTION_IDS,
-  type WorkStationLaunchActionId,
-  useWorkStationLaunchActions,
-} from "../useWorkStationLaunchActions";
 import { TabBarPlusMenuItems } from "./TabBarPlusMenuItems";
 
 const WORKSTATION_NEW_TAB_EVENT = "workstation-new-tab";

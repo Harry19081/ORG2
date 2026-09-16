@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { WorkstationMaximizeChatIcon } from "../shared/StationPaneControls";
+import { WorkstationMaximizeChatIcon } from "./StationPaneControls";
 
 describe("WorkstationMaximizeChatIcon", () => {
   it("keeps the X unchanged when the workstation is left of the chat panel", () => {

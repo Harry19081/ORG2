@@ -74,7 +74,7 @@ vi.mock("@src/components/TabPill/TabBarTrailingIconButton", () => ({
     title: string;
   }) => createElement("button", { onClick, title }, children),
 }));
-vi.mock("../shared", () => ({
+vi.mock("@src/modules/WorkStation/shared", () => ({
   SimulatorAgentChip: () => createElement("span"),
   StationModeChip: () => createElement("span"),
 }));

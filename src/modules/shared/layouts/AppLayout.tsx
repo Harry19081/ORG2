@@ -12,9 +12,9 @@
  * - Content: DYNAMIC (via children)
  * - ChatPanel: STABLE layer - stays mounted across view switches
  */
-import { PinnedWorkbenchChrome } from "@/src/modules/WorkStation/AppShell/PinnedWorkbenchChrome";
 import { HoverSidebar } from "@/src/scaffold/NavigationSidebar";
 import { PinnedSidebarChrome } from "@/src/scaffold/NavigationSidebar/PinnedSidebarChrome";
+import { PinnedWorkbenchChrome } from "@/src/scaffold/WorkbenchChrome/PinnedWorkbenchChrome";
 import { useAtomValue } from "jotai";
 import React, { memo, useCallback, useEffect, useRef } from "react";
 

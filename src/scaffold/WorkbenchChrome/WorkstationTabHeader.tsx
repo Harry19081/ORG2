@@ -27,12 +27,12 @@ import {
   NoDragRegion,
   PublishedHeaderSlotsView,
 } from "@src/components/WindowChrome";
+import { WorkStationSidebarToggleButton } from "@src/modules/WorkStation/shared";
 import { activeStatusBarAppAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { activeWorkstationTabHeaderAtom } from "@src/store/workstation";
 import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
 import { isWindows } from "@src/util/platform/tauri";
 
-import { WorkStationSidebarToggleButton } from "../shared";
 import { CodeSidebarHeaderActions } from "./CodeSidebarHeaderActions";
 import { SourceControlHeaderActions } from "./SourceControlHeaderActions";
 
