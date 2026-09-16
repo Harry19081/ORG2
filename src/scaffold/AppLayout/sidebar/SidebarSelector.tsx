@@ -6,7 +6,7 @@
  */
 import React from "react";
 
-import { useRouteLayoutType } from "@src/modules/shared/hooks";
+import { useRouteLayoutType } from "@src/modules/hooks";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 

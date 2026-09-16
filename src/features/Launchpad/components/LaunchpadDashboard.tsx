@@ -16,9 +16,9 @@ import {
   buildWizardPath,
 } from "@src/config/mainAppPaths";
 import { ROUTES } from "@src/config/routes";
+import { AccountStatusIndicator } from "@src/features/KeyVault/AccountStatusIndicator";
 import { useKeyVault } from "@src/hooks/keyVault";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
-import { AccountStatusIndicator } from "@src/modules/shared/keyVault/AccountStatusIndicator";
 import { openOrFocusChatPanelStartPageTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import type { Repo } from "@src/store/repo/types";
 import {
@@ -65,7 +65,7 @@ interface LaunchpadDashboardProps {
 }
 
 const AccountInlineDetails = React.lazy(
-  () => import("@src/modules/shared/keyVault/AccountInlineDetails")
+  () => import("@src/features/KeyVault/AccountInlineDetails")
 );
 
 const LaunchpadDashboard: React.FC<LaunchpadDashboardProps> = memo(

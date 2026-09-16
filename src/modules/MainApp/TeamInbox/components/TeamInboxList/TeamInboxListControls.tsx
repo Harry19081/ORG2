@@ -8,13 +8,13 @@ import {
   MULTI_SELECT_PANEL_WIDTH,
 } from "@src/components/Dropdown/tokens";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { WorkManagementRefreshButton } from "@src/features/GitHubWork/WorkManagementRefreshButton";
+import { WorkManagementSearchInput } from "@src/features/GitHubWork/WorkManagementSearchInput";
 import {
   HugeiconsIcon,
   NotificationOff01Icon,
   TickDouble01Icon,
 } from "@src/icons";
-import { WorkManagementRefreshButton } from "@src/modules/shared/components/WorkManagementRefreshButton";
-import { WorkManagementSearchInput } from "@src/modules/shared/components/WorkManagementSearchInput";
 
 import type {
   TeamInboxFilter,

@@ -3,8 +3,6 @@
     "customCommandUpdated": "カスタムコマンドを更新しました",
     "shellSettingUpdated": "シェル設定を更新しました"
   },
-  "noSettingsFound": "「{{query}}」に一致する設定が見つかりません",
-  "searchPlaceholder": "設定を検索...",
   "panel": {
     "maximizeSettings": "設定を最大化"
   },

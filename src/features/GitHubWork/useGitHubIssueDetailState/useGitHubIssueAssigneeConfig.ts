@@ -12,15 +12,15 @@ import {
   updateIssueLocal,
 } from "@src/api/tauri/github";
 import type { GitHubIssueUser } from "@src/api/tauri/github";
-import type { WorkItemExternalAssigneeConfig } from "@src/modules/ProjectManager/WorkItems/components/WorkItemProperties/types";
 import {
   issueHasAssigneeLogins,
   resolveGitHubAssigneeUsers,
-} from "@src/modules/shared/githubIssueAssignees";
+} from "@src/features/GitHubWork/githubIssueAssignees";
 import {
   invalidateGitHubIssueDetailBundle,
   loadGitHubAssignableUsers,
-} from "@src/modules/shared/githubIssueDetailCoordinator";
+} from "@src/features/GitHubWork/githubIssueDetailCoordinator";
+import type { WorkItemExternalAssigneeConfig } from "@src/modules/ProjectManager/WorkItems/components/WorkItemProperties/types";
 import type {
   WorkstationIssueCallbacks,
   WorkstationSelectedIssueState,

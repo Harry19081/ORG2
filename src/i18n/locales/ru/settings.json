@@ -3,8 +3,6 @@
     "customCommandUpdated": "Пользовательская команда обновлена",
     "shellSettingUpdated": "Настройка оболочки обновлена"
   },
-  "noSettingsFound": "Настройки для \"{{query}}\" не найдены",
-  "searchPlaceholder": "Поиск настроек...",
   "panel": {
     "maximizeSettings": "Развернуть настройки"
   },

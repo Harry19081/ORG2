@@ -11,7 +11,7 @@
  */
 import React, { Suspense, memo } from "react";
 
-import GitHubDetailSkeleton from "@src/modules/shared/components/GitHubDetailSkeleton";
+import GitHubDetailSkeleton from "@src/features/GitHubWork/GitHubDetailSkeleton";
 import DetailPaneErrorBoundary from "@src/scaffold/layouts/DetailPaneErrorBoundary";
 import type { WorkStationTab } from "@src/store/workstation/tabs/types";
 
