@@ -7,6 +7,10 @@ import Button from "@src/components/Button";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import Message from "@src/components/Message";
 import Switch from "@src/components/Switch";
+import {
+  CreatorContentLayout,
+  PANEL_HEADER_TOKENS,
+} from "@src/components/layout/blocks";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import LaunchButton from "@src/features/SessionCreator/components/LaunchButton";
 import { useKeyboardSave } from "@src/hooks/keyboard";
@@ -19,10 +23,6 @@ import {
   ManualCreateComposer,
 } from "@src/modules/ProjectManager/shared";
 import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
-import {
-  CreatorContentLayout,
-  PANEL_HEADER_TOKENS,
-} from "@src/modules/shared/layouts/blocks";
 import { manualCreatorAtom } from "@src/store/ui/manualCreatorAtom";
 import {
   MANUAL_WORK_ITEM_CREATOR_DRAFT_ID,

@@ -7,11 +7,11 @@ import { useTranslation } from "react-i18next";
 
 import type { DetectedKey, ModelType } from "@src/api/types/keys";
 import Button from "@src/components/Button";
-import { HugeiconsIcon, Tick01Icon } from "@src/icons";
 import {
   DETAIL_PANEL_TOKENS,
   PANEL_FOOTER_TOKENS,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import { HugeiconsIcon, Tick01Icon } from "@src/icons";
 
 import KeySelectionModal from "./KeySelectionModal";
 

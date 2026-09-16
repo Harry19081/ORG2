@@ -12,13 +12,13 @@ import { useTranslation } from "react-i18next";
 import SharedButton from "@src/components/Button";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
+import { ListPanelScrollArea } from "@src/components/layout/blocks";
 import {
   Add01Icon,
   ArrowLeft02Icon,
   HugeiconsIcon,
   Search01Icon,
 } from "@src/icons";
-import { ListPanelScrollArea } from "@src/modules/shared/layouts/blocks";
 
 export interface DrillDownItem {
   id: string;

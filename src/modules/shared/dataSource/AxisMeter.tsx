@@ -7,7 +7,7 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import { ExpandableTableRow } from "@src/modules/shared/layouts/SectionLayout";
+import { ExpandableTableRow } from "@src/components/layout/Section";
 
 /** Half the track: the meter is bipolar, so 0 sits at the midpoint. */
 const HALF = 50;

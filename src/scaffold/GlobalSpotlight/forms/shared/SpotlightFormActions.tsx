@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import PanelFooter, {
   type PanelFooterAction,
-} from "@src/modules/shared/layouts/blocks/PanelFooter";
+} from "@src/components/layout/blocks/PanelFooter";
 
 interface SpotlightFormActionsProps {
   backLabel: string;

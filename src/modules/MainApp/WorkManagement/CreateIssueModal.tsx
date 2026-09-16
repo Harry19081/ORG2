@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
+import { PanelFooter } from "@src/components/layout/blocks";
 import ComposerSurface from "@src/engines/ChatPanel/ComposerSurface";
 import { useSessionReferenceDropTarget } from "@src/features/Org2Cloud/useSessionReferenceDropTarget";
 import MarkdownTextareaEditor, {
@@ -11,7 +12,6 @@ import MarkdownTextareaEditor, {
 } from "@src/modules/shared/components/MarkdownTextareaEditor";
 import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
 import { compactRepositoryLabel } from "@src/modules/shared/githubRepositoryLabel";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import Modal from "@src/scaffold/ModalSystem";
 
 import type { GitHubRepoSource } from "./githubWorkItemsTypes";

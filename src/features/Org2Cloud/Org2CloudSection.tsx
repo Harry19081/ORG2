@@ -11,7 +11,7 @@
 import {
   SECTION_ACTION_GAP_CLASSES,
   SectionRow,
-} from "@/src/modules/shared/layouts/SectionLayout";
+} from "@/src/components/layout/Section";
 import { useAtom, useStore } from "jotai";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";

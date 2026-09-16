@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
 import Button from "@src/components/Button";
+import { SECTION_SUBHEADING_CLASSES } from "@src/components/layout/Section";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
-import { SECTION_SUBHEADING_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
 
 interface RuntimeSectionHeaderProps {
   title: ReactNode;

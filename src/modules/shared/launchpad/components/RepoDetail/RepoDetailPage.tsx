@@ -21,6 +21,11 @@ import SettingsTable, {
 import StatusDot from "@src/components/StatusDot";
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
+import {
+  CollapsibleSection,
+  DETAIL_PANEL_TOKENS,
+} from "@src/components/layout/blocks";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
 import { Copy01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   useContainers,
@@ -34,11 +39,6 @@ import type {
   RepoScript,
   ScriptCategory,
 } from "@src/modules/shared/launchpad/types";
-import {
-  CollapsibleSection,
-  DETAIL_PANEL_TOKENS,
-} from "@src/modules/shared/layouts/blocks";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 import type { Repo } from "@src/store/repo/types";
 import { copyText } from "@src/util/data/clipboard";
 

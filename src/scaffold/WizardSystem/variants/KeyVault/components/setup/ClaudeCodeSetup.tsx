@@ -3,13 +3,13 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
-import { ClaudeCodeSessionSetup } from "@src/features/SessionSetup";
-import { Login01Icon, SearchAreaIcon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { ClaudeCodeSessionSetup } from "@src/features/SessionSetup";
+import { Login01Icon, SearchAreaIcon } from "@src/icons";
 import {
   SelectionGrid,
   type SelectionGridOption,

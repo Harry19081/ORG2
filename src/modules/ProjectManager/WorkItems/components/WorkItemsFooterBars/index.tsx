@@ -2,11 +2,11 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   PANEL_FOOTER_TOKENS,
   PanelFooter,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 
 interface MultiSelectBarProps {
   selectedCount: number;

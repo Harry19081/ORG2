@@ -8,6 +8,7 @@ import {
 
 import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
+import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import SessionSetupStepIndicator from "@src/features/SessionSetup/components/SessionSetupStepIndicator";
 import { useOAuthBrowserAutoStart } from "@src/features/SessionSetup/hooks/useOAuthBrowserAutoStart";
@@ -21,10 +22,6 @@ import {
   Login01Icon,
   Refresh04Icon,
 } from "@src/icons";
-import {
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 
 /**
  * Localized strings a provider supplies to the shared OAuth shell. Every key

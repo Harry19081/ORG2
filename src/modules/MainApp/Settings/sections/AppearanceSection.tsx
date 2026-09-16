@@ -3,7 +3,7 @@ import {
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@/src/modules/shared/layouts/SectionLayout";
+} from "@/src/components/layout/Section";
 import { useAtom } from "jotai";
 import React from "react";
 import { useTranslation } from "react-i18next";

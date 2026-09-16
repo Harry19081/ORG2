@@ -15,16 +15,16 @@ import SettingsTable, {
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import TabPill from "@src/components/TabPill";
-import { createLogger } from "@src/hooks/logger";
-import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InlineInfoCard,
   InternalHeader,
   ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
+} from "@src/components/layout/blocks";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
+import { createLogger } from "@src/hooks/logger";
+import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 import {

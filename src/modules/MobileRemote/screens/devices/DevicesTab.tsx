@@ -5,12 +5,12 @@ import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import StatusDot from "@src/components/StatusDot";
-import { HugeiconsIcon, LaptopIcon, SmartPhone01Icon } from "@src/icons";
 import {
   SECTION_VALUE_SMALL_MUTED_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { HugeiconsIcon, LaptopIcon, SmartPhone01Icon } from "@src/icons";
 
 import { useMobileRemote } from "../../app";
 import { MobileTopBar } from "../../components/MobileTopBar";

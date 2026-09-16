@@ -24,21 +24,21 @@ import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
 import TabPill from "@src/components/TabPill";
 import Textarea from "@src/components/Textarea";
-import SubAgentsEditor from "@src/modules/MainApp/AgentOrgs/config/shared/SubAgentsEditor";
-import type { AgentDefinition } from "@src/modules/MainApp/AgentOrgs/types";
-import MarkdownEditor from "@src/modules/shared/components/MarkdownEditor";
 import {
   SECTION_DESCRIPTION_CLASSES,
   SECTION_GAP_CLASSES,
   SECTION_LABEL_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { SECTION_CONTROL_STYLE } from "@src/modules/shared/layouts/SectionLayout/tokens";
+} from "@src/components/layout/Section";
+import { SECTION_CONTROL_STYLE } from "@src/components/layout/Section/tokens";
 import {
   DETAIL_PANEL_TOKENS,
   InternalHeader,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import SubAgentsEditor from "@src/modules/MainApp/AgentOrgs/config/shared/SubAgentsEditor";
+import type { AgentDefinition } from "@src/modules/MainApp/AgentOrgs/types";
+import MarkdownEditor from "@src/modules/shared/components/MarkdownEditor";
 import {
   WizardShell,
   WizardStepLayout,

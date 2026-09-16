@@ -11,6 +11,8 @@ import {
   getQuotaTextColorClass,
 } from "@src/components/QuotaBar";
 import StatusDot from "@src/components/StatusDot";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
+import InlineExpandedSplitCard from "@src/components/layout/blocks/InlineExpandedSplitCard";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import {
   formatQuotaResetHint,
@@ -21,8 +23,6 @@ import {
 } from "@src/hooks/keyVault/accountQuotaDisplay";
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
 import { Copy01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
-import InlineExpandedSplitCard from "@src/modules/shared/layouts/blocks/InlineExpandedSplitCard";
 import { copyText } from "@src/util/data/clipboard";
 
 import { AccountCompatibilitySection } from "./AccountCompatibilitySection";

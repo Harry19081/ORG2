@@ -16,15 +16,15 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import TabPill from "@src/components/TabPill";
-import { useRoutineResultNavigation } from "@src/hooks/navigation";
-import { HugeiconsIcon, SquareArrowUpRight02Icon } from "@src/icons";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InternalHeader,
   ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
+} from "@src/components/layout/blocks";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
+import { useRoutineResultNavigation } from "@src/hooks/navigation";
+import { HugeiconsIcon, SquareArrowUpRight02Icon } from "@src/icons";
 
 import {
   InlineCardBody,

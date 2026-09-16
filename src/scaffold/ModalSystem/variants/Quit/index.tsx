@@ -63,10 +63,14 @@ const QuitConfirmationModal = () => {
       title={t("quitConfirmation.title")}
       closable={false}
       maskClosable={false}
+      // The capture handler above owns Escape, including composition checks.
+      escToExit={false}
       onCancel={handleCancel}
       onOk={handleQuit}
       okText={t("quitConfirmation.confirm")}
       cancelText={t("quitConfirmation.cancel")}
+      okButtonProps={{ shortcut: "Enter", "aria-keyshortcuts": "Enter" }}
+      cancelButtonProps={{ shortcut: "Esc", "aria-keyshortcuts": "Escape" }}
     >
       <p className="text-sm text-text-2">{t("quitConfirmation.subtitle")}</p>
     </Modal>

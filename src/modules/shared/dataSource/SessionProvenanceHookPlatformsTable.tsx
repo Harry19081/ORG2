@@ -25,6 +25,12 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import Tag, { type TagProps } from "@src/components/Tag";
+import {
+  SECTION_GAP_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
+import InlineInfoCard from "@src/components/layout/blocks/InlineInfoCard";
 import { INFO_CARD_TOKENS } from "@src/config/detailPanelTokens";
 import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import {
@@ -32,12 +38,6 @@ import {
   FolderOpenIcon,
   HugeiconsIcon,
 } from "@src/icons";
-import {
-  SECTION_GAP_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import InlineInfoCard from "@src/modules/shared/layouts/blocks/InlineInfoCard";
 import { TerminalService } from "@src/services/terminal";
 import {
   activeWorkspaceRootPathAtom,

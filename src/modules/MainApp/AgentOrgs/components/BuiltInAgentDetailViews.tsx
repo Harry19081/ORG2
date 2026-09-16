@@ -5,7 +5,7 @@ import type { RustAgentType } from "@src/api/tauri/agent/types";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import {
   BUILTIN_OS_DEF_ID,

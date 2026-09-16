@@ -45,7 +45,8 @@
     "diff": "Diff",
     "colleagues": "Collègues",
     "terminals": "Terminaux",
-    "openSourceRepo": "Ouvrir le repo source"
+    "openSourceRepo": "Ouvrir le repo source",
+    "closeSettings": "Fermer les paramètres"
   },
   "routes": {
     "session": "Chat",

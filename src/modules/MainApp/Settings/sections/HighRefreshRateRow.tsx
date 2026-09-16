@@ -1,14 +1,14 @@
-import { SectionRow } from "@/src/modules/shared/layouts/SectionLayout";
+import { SectionRow } from "@/src/components/layout/Section";
 import { useAtom } from "jotai";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Switch from "@src/components/Switch";
+import { HintWithInfo } from "@src/components/layout/blocks/HintWithInfo";
 import {
   HOST_DESKTOP,
   resolveHostDesktop,
 } from "@src/config/windowChromeRadius";
-import { HintWithInfo } from "@src/modules/shared/layouts/blocks/HintWithInfo";
 import { highRefreshRateAtom } from "@src/store/platform/highRefreshRateAtom";
 
 /**

@@ -16,6 +16,10 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
+import {
+  CollapsibleSection,
+  DETAIL_PANEL_TOKENS,
+} from "@src/components/layout/blocks";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   HugeiconsIcon,
@@ -25,10 +29,6 @@ import {
   SquareIcon,
   ViewIcon,
 } from "@src/icons";
-import {
-  CollapsibleSection,
-  DETAIL_PANEL_TOKENS,
-} from "@src/modules/shared/layouts/blocks";
 
 interface ContainersSectionProps {
   title: string;

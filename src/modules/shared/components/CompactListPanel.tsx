@@ -5,10 +5,7 @@ import {
   ListPanelItem,
   ListPanelSkeletonRows,
 } from "@src/components/ListPanel";
-import {
-  ListPanelScrollArea,
-  LoadingBar,
-} from "@src/modules/shared/layouts/blocks";
+import { ListPanelScrollArea, LoadingBar } from "@src/components/layout/blocks";
 
 export interface CompactListPanelEntry {
   key: string;

@@ -16,6 +16,11 @@ import OrganizationTabSwitch from "@src/components/OrganizationTabSwitch";
 import { Placeholder } from "@src/components/Placeholder";
 import type { SelectOption } from "@src/components/Select";
 import type { TabPillItem } from "@src/components/TabPill";
+import { SECTION_GAP_CLASSES } from "@src/components/layout/Section";
+import {
+  DETAIL_PANEL_TOKENS,
+  ScrollPreservation,
+} from "@src/components/layout/blocks";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import {
   buildCloudOrgSelectorValue,
@@ -26,11 +31,6 @@ import {
 } from "@src/features/Org2Cloud/org2CloudOrgsAtom";
 import { buildOrgSelectorEntries } from "@src/features/Organizations/orgSelectorEntries";
 import { CloudIcon, HugeiconsIcon, LaptopIcon } from "@src/icons";
-import { SECTION_GAP_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
-import {
-  DETAIL_PANEL_TOKENS,
-  ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
 import {

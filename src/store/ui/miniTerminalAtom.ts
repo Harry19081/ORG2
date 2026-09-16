@@ -17,7 +17,7 @@
  */
 import { atom } from "jotai";
 
-import type { AddSessionOptions } from "@src/engines/TerminalCore/types";
+import type { AddSessionOptions } from "@src/contracts/terminal";
 import { selectedRepoPathAtom } from "@src/store/repo";
 import {
   activeTerminalIdAtom,

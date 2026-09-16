@@ -6,7 +6,7 @@ import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InternalHeader,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
 
 import ComputerUseConfig from "./BuiltInTools/Preview/DesktopToolConfig";
 

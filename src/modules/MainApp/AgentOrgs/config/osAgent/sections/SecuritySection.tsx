@@ -15,12 +15,12 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
-import SaveableTextarea from "@src/modules/shared/components/SaveableTextarea";
 import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import SaveableTextarea from "@src/modules/shared/components/SaveableTextarea";
 
 import { getNestedBool, getNestedString, getNestedStringArray } from "../utils";
 

@@ -8,6 +8,10 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
+import {
+  DETAIL_PANEL_TOKENS,
+  ScrollPreservation,
+} from "@src/components/layout/blocks";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { CursorRepo } from "@src/hooks/policies";
 import { getInstalledSkillIdentity } from "@src/hooks/skills/installedSkillsMerge";
@@ -19,10 +23,6 @@ import {
   Refresh04Icon,
   Share02Icon,
 } from "@src/icons";
-import {
-  DETAIL_PANEL_TOKENS,
-  ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
 import { SKILL_SOURCE } from "@src/types/extensions";
 import type { HubSkillDetail, InstalledSkill } from "@src/types/extensions";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";

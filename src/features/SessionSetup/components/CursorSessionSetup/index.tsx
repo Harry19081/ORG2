@@ -18,6 +18,11 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
+import {
+  SECTION_GAP_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import { useCursorSessionCapture } from "@src/features/SessionSetup/hooks/useCursorSessionCapture";
 import { useWebviewPositionSync } from "@src/features/SessionSetup/hooks/useWebviewPositionSync";
@@ -28,11 +33,6 @@ import {
   Loading03Icon,
   Refresh04Icon,
 } from "@src/icons";
-import {
-  SECTION_GAP_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 
 const CURSOR_API_KEYS_URL = "https://cursor.com/dashboard/integrations";
 
