@@ -52,11 +52,8 @@ export default function UsageAuthorizationHost() {
     setPrompt(null);
     current?.resolve(amount);
   };
-  const rates =
-      prompt.service.models.find((m) => m.model === prompt.model)?.pricing ??
-      {},
-    valid = Number(budget) > 0 && Number(budget) <= 5000;
-  const price = (key: string) =>
+  const valid = Number(budget) > 0 && Number(budget) <= 5000;
+  const price = (rates: Record<string, unknown>, key: string) =>
     typeof rates[key] === "number"
       ? `$${((rates[key] as number) / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 6 })}`
       : "—";
@@ -76,27 +73,40 @@ export default function UsageAuthorizationHost() {
             disabled={!valid || !accepted}
             onClick={() => close(Math.round(Number(budget) * 1_000_000))}
           >
-            {t("managedUsage.authorize", "Authorize usage")}
+            {t("managedUsage.authorize", "Enable package")}
           </Button>
         </div>
       }
     >
       <div className="space-y-4">
-        <p>{prompt.model}</p>
         <p className="text-sm text-text-2">
-          {t("managedUsage.rates", "Input / output per million tokens")}:{" "}
-          {price("input_per_mtok_usd6")} / {price("output_per_mtok_usd6")}
+          {t(
+            "managedUsage.included",
+            "All models in this package are included and share one usage limit.",
+          )}
         </p>
-        <details className="text-xs">
-          <summary>
-            {t("managedUsage.allRates", "All billing dimensions")}
-          </summary>
-          <pre className="max-h-48 overflow-auto whitespace-pre-wrap">
-            {JSON.stringify(rates, null, 2)}
-          </pre>
-        </details>
+        <div className="max-h-64 space-y-3 overflow-y-auto">
+          {prompt.service.models.map((model) => (
+            <div key={model.model} className="space-y-1">
+              <p className="font-medium">{model.model}</p>
+              <p className="text-sm text-text-2">
+                {t("managedUsage.rates", "Input / output per million tokens")}:{" "}
+                {price(model.pricing, "input_per_mtok_usd6")} /{" "}
+                {price(model.pricing, "output_per_mtok_usd6")}
+              </p>
+              <details className="text-xs">
+                <summary>
+                  {t("managedUsage.allRates", "All billing dimensions")}
+                </summary>
+                <pre className="max-h-48 overflow-auto whitespace-pre-wrap">
+                  {JSON.stringify(model.pricing, null, 2)}
+                </pre>
+              </details>
+            </div>
+          ))}
+        </div>
         <label className="block text-sm">
-          {t("managedUsage.limit", "Total usage limit (USD)")}
+          {t("managedUsage.limit", "Shared package usage limit (USD)")}
           <Input
             value={budget}
             type="number"
@@ -108,13 +118,13 @@ export default function UsageAuthorizationHost() {
         <p className="text-sm text-text-3">
           {t(
             "managedUsage.description",
-            "Usage is charged from your wallet at these rates, within this total limit. Higher prices and new models require your confirmation.",
+            "Enable all models in this package at the displayed rates. Actual usage is charged from your wallet within one shared limit. Higher prices or added models require confirmation for the whole package.",
           )}
         </p>
         <Checkbox checked={accepted} onCheckedChange={setAccepted}>
           {t(
             "managedUsage.accept",
-            "I authorize usage at these rates and within this limit.",
+            "I authorize all models in this package at these rates, within one shared limit.",
           )}
         </Checkbox>
         <Button

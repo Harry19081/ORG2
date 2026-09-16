@@ -5,7 +5,6 @@ import type { MarketExecutionProfile } from "./marketProfiles";
 
 export interface UsagePrompt {
   service: ManagedService;
-  model: string;
   resolve: (budget: number | null) => void;
 }
 export const USAGE_AUTHORIZATION_EVENT = "org2-managed-usage-authorization";
@@ -21,7 +20,7 @@ export async function authorizedProfile(
   const selected = service.models.find((m) => m.model === model);
   if (!selected || selected.availability !== "available")
     throw new Error("model_temporarily_unavailable");
-  if (!selected.requires_confirmation && service.access?.status === "active")
+  if (!service.requires_confirmation && service.access?.status === "active")
     return profile;
   if (pending) throw new Error("usage_authorization_in_progress");
   pending = true;
@@ -29,7 +28,7 @@ export async function authorizedProfile(
     const budget = await new Promise<number | null>((resolve) =>
       window.dispatchEvent(
         new CustomEvent<UsagePrompt>(USAGE_AUTHORIZATION_EVENT, {
-          detail: { service, model, resolve },
+          detail: { service, resolve },
         }),
       ),
     );
@@ -37,7 +36,6 @@ export async function authorizedProfile(
     const access = await activateManagedService(
       profile.connection,
       service,
-      model,
       budget,
     );
     window.dispatchEvent(new Event(MARKET_PROFILES_CHANGED_EVENT));
@@ -48,9 +46,7 @@ export async function authorizedProfile(
       managed: {
         ...service,
         access,
-        models: service.models.map((m) =>
-          m.model === model ? { ...m, requires_confirmation: false } : m,
-        ),
+        requires_confirmation: false,
       },
     };
   } finally {

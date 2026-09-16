@@ -381,15 +381,15 @@ pub(super) fn validate_session_purchase(
                 && entry.entitlement_id == entitlement
                 && entry.status == "active"
                 && entry.managed.as_ref().is_none_or(|service| {
-                    service
-                        .access
-                        .as_ref()
-                        .is_some_and(|a| a.status == "active")
-                        && service.models.iter().any(|m| {
-                            m.model == model
-                                && !m.requires_confirmation
-                                && m.availability == "available"
-                        })
+                    !service.requires_confirmation
+                        && service
+                            .access
+                            .as_ref()
+                            .is_some_and(|a| a.status == "active")
+                        && service
+                            .models
+                            .iter()
+                            .any(|m| m.model == model && m.availability == "available")
                 })
                 && entry.expires_at.is_none_or(|expiry| expiry > now)
                 && entry

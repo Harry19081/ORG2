@@ -21,6 +21,7 @@ export const managedServiceSchema = z.object({
   service_id: z.string(),
   title: z.string(),
   version_id: z.string(),
+  requires_confirmation: z.boolean(),
   models: z.array(
     z.object({
       model: z.string(),
@@ -28,7 +29,6 @@ export const managedServiceSchema = z.object({
       clients: z.array(z.string()),
       pricing: z.record(z.string(), z.unknown()),
       availability: z.string(),
-      requires_confirmation: z.boolean(),
     }),
   ),
   access: managedAccessSchema.nullable(),
@@ -85,7 +85,6 @@ const activateService = defineProcedure("market_connection_activate_service")
     input.extend({
       request: z.object({
         service_id: z.string(),
-        model: z.string(),
         expected_version_id: z.string(),
         expected_revision: z.number().int().nullable(),
         budget_usd6: z.number().int().positive().max(5_000_000_000),
@@ -98,14 +97,12 @@ const activateService = defineProcedure("market_connection_activate_service")
 export const activateManagedService = (
   connection: Connection,
   service: ManagedService,
-  model: string,
   budgetUsd6: number,
 ) =>
   typedInvoke(activateService, {
     ...args(connection),
     request: {
       service_id: service.service_id,
-      model,
       expected_version_id: service.version_id,
       expected_revision: service.access?.revision ?? null,
       budget_usd6: budgetUsd6,

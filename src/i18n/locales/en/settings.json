@@ -1088,12 +1088,13 @@
   },
   "managedUsage": {
     "cancel": "Cancel",
-    "authorize": "Authorize usage",
+    "authorize": "Enable package",
     "rates": "Input / output per million tokens",
     "allRates": "All billing dimensions",
-    "limit": "Total usage limit (USD)",
-    "description": "Usage is charged from your wallet at these rates, within this total limit. Higher prices and new models require your confirmation.",
-    "accept": "I authorize usage at these rates and within this limit.",
-    "wallet": "Open wallet"
+    "limit": "Shared package usage limit (USD)",
+    "description": "Enable all models in this package at the displayed rates. Actual usage is charged from your wallet within one shared limit. Higher prices or added models require confirmation for the whole package.",
+    "accept": "I authorize all models in this package at these rates, within one shared limit.",
+    "wallet": "Open wallet",
+    "included": "All models are included and share one usage limit."
   }
 }

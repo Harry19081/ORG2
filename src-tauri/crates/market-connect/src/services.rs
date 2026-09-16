@@ -10,7 +10,6 @@ pub struct ManagedModel {
     pub clients: Vec<String>,
     pub pricing: serde_json::Value,
     pub availability: String,
-    pub requires_confirmation: bool,
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub struct ManagedAccess {
@@ -26,6 +25,7 @@ pub struct ManagedService {
     pub service_id: String,
     pub title: String,
     pub version_id: String,
+    pub requires_confirmation: bool,
     pub models: Vec<ManagedModel>,
     pub access: Option<ManagedAccess>,
 }
@@ -39,7 +39,6 @@ struct Catalog {
 #[serde(deny_unknown_fields)]
 pub struct ActivateService {
     pub service_id: String,
-    pub model: String,
     pub expected_version_id: String,
     pub expected_revision: Option<u32>,
     pub budget_usd6: u64,
@@ -138,8 +137,6 @@ impl Connection {
             || request.budget_usd6 > 5_000_000_000
             || !valid_service_id(&request.service_id, "pkg_")
             || !valid_service_id(&request.expected_version_id, "pv_")
-            || request.model.is_empty()
-            || request.model.len() > 256
         {
             return Err("invalid_usage_authorization");
         }
