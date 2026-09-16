@@ -33,7 +33,11 @@ import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 
 import SidebarBase from "../SidebarBase";
-import { SidebarBottomBar, SidebarHeaderNavButton } from "../blocks";
+import {
+  SidebarBottomBar,
+  SidebarHeaderNavButton,
+  SidebarSectionLabel,
+} from "../blocks";
 import SidebarSettingsMenuButton from "../blocks/SidebarSettingsMenuButton";
 import HoverAnimatedIcon, {
   triggerIconAnimation,
@@ -313,10 +317,8 @@ export const SettingsRootBody: React.FC<SettingsRootBodyProps> = ({
         onMenuItemClick={handleItemClick}
       />
       {namedSections.map((section) => (
-        <div key={section.id} className="mt-4">
-          <div className="mb-1 px-2 text-[11px] font-medium tracking-wider text-text-1 uppercase">
-            {section.label}
-          </div>
+        <div key={section.id} className="mt-2">
+          <SidebarSectionLabel label={section.label} />
           <NavigationMenu
             items={section.items}
             selectedKeys={selectedKeys}
