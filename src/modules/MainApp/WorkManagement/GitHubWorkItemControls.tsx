@@ -9,6 +9,10 @@ import {
 } from "@src/components/Dropdown/tokens";
 import type { SelectOption } from "@src/components/Select";
 import {
+  WorkManagementAssigneeCell,
+  toggleWorkManagementAssigneeIds,
+} from "@src/features/GitHubWork/WorkManagementAssigneeCell";
+import {
   BubbleChatIcon,
   FunnelIcon,
   GitPullRequestIcon,
@@ -16,10 +20,6 @@ import {
   Link02Icon,
   MoreHorizontalIcon,
 } from "@src/icons";
-import {
-  WorkManagementAssigneeCell,
-  toggleWorkManagementAssigneeIds,
-} from "@src/modules/shared/components/WorkManagementAssigneeCell";
 
 import {
   type ManagedIssueItem,

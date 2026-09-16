@@ -2,6 +2,7 @@ import { type ReactNode, useRef, useState } from "react";
 
 import { STORY_SYNC_ADAPTER } from "@src/api/http/integrations/syncConnections";
 import Button from "@src/components/Button";
+import DetailHeaderIconAction from "@src/components/DetailHeaderIconAction";
 import Input from "@src/components/Input";
 import IntegrationIcon from "@src/components/IntegrationIcon";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
@@ -22,7 +23,6 @@ import {
 } from "@src/modules/ProjectManager/WorkItems/workItemIdentity";
 import ProjectManagerBreadcrumb from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import DetailHeaderIconAction from "@src/modules/shared/components/DetailHeaderIconAction";
 import { DetailPaneCloseAction } from "@src/scaffold/layouts/DetailPaneLayout";
 import type { WorkItem as WorkItemExtended } from "@src/types/core/workItem";
 

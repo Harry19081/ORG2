@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
-import { TimelineLoadingSkeleton } from "@src/modules/shared/components/ActivityTimeline";
+import { TimelineLoadingSkeleton } from "@src/features/GitHubWork/ActivityTimeline";
 
 import type { GitHubLinkedReferencesProps } from ".";
 

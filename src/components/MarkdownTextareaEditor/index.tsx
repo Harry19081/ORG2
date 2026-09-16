@@ -7,9 +7,9 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import { MarkdownContent } from "@src/components/MarkdownContent";
 import "@src/components/MarkdownFormattingToolbar/index.css";
 import Textarea from "@src/components/Textarea";
-import { MarkdownContent } from "@src/modules/shared/components/MarkdownContent";
 
 import MarkdownTextareaToolbar from "./MarkdownTextareaToolbar";
 import MarkdownEditorModeSwitch, {

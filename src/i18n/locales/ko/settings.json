@@ -3,8 +3,6 @@
     "customCommandUpdated": "사용자 지정 명령이 업데이트되었습니다",
     "shellSettingUpdated": "셸 설정이 업데이트되었습니다"
   },
-  "noSettingsFound": "\"{{query}}\"에 대한 설정을 찾을 수 없습니다",
-  "searchPlaceholder": "설정 검색...",
   "panel": {
     "maximizeSettings": "설정 최대화"
   },

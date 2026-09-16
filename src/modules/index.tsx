@@ -58,7 +58,7 @@ import {
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
-import { useRouteLayoutType, useWorkspaceEvents } from "./shared/hooks";
+import { useRouteLayoutType, useWorkspaceEvents } from "./hooks";
 import { useNarrowChatFocus } from "./useNarrowChatFocus";
 import { useOpenUrlInBrowser } from "./useOpenUrlInBrowser";
 import { useStationWindowBridge } from "./useStationWindowBridge";

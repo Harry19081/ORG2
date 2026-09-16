@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from "jotai";
 import React, { useState } from "react";
 
-import { FileHeaderMoreMenu } from "@src/modules/shared/components/FileHeader/FileHeaderMoreMenu";
+import { FileHeaderMoreMenu } from "@src/features/FileHeader/FileHeaderMoreMenu";
 import {
   activeStatusBarCallbacksAtom,
   editorHighlightActiveLineAtom,

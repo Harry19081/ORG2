@@ -3,8 +3,6 @@
     "customCommandUpdated": "Benutzerdefinierter Befehl aktualisiert",
     "shellSettingUpdated": "Shell-Einstellung aktualisiert"
   },
-  "noSettingsFound": "Keine Einstellungen für \"{{query}}\" gefunden",
-  "searchPlaceholder": "Einstellungen durchsuchen...",
   "panel": {
     "maximizeSettings": "Einstellungen maximieren"
   },

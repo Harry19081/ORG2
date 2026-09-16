@@ -15,6 +15,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import MarkdownEditor from "@src/components/MarkdownEditor";
 import Message from "@src/components/Message";
 import {
   SECTION_ACTION_GAP_CLASSES,
@@ -23,7 +24,6 @@ import {
   SectionRow,
 } from "@src/components/layout/Section";
 import { Copy01Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
-import MarkdownEditor from "@src/modules/shared/components/MarkdownEditor";
 import { copyText } from "@src/util/data/clipboard";
 
 interface PersonalitySectionProps {
