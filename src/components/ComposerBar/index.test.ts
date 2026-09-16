@@ -22,6 +22,35 @@ vi.mock(
 );
 
 describe("ComposerBar", () => {
+  it.each([false, true])(
+    "groups model controls with mode pills on the left (inline=%s)",
+    (inlineLayout) => {
+      const markup = renderToStaticMarkup(
+        createElement(ComposerBar, {
+          inlineLayout,
+          editorSlot: createElement("span", null, "Editor"),
+          pills: createElement("span", { "data-testid": "mode" }, "Plan"),
+          modelPill: createElement("span", { "data-testid": "model" }, "Model"),
+          submitButton: createElement(
+            "span",
+            { "data-testid": "send" },
+            "Send"
+          ),
+        })
+      );
+      const document = new DOMParser().parseFromString(markup, "text/html");
+      const model = document.querySelector('[data-testid="model"]')!;
+      const group = model.parentElement!;
+
+      expect(group.querySelector('[data-testid="context-info"]')).toBeNull();
+      expect(group.querySelector('[data-testid="send"]')).toBeNull();
+      expect(group.querySelector('[data-testid="mode"]')).not.toBeNull();
+      expect(
+        [...group.children].map((child) => child.getAttribute("data-testid"))
+      ).toEqual(["mode", "model"]);
+    }
+  );
+
   it("uses the shared surface for the add-context trigger", () => {
     const markup = renderToStaticMarkup(
       createElement(ComposerBar, {
@@ -84,16 +113,16 @@ describe("ComposerBar", () => {
     );
     const row = new DOMParser().parseFromString(markup, "text/html").body
       .firstElementChild!;
-    const [left, editor, pills, right] = [...row.children];
+    const [left, editor, right] = [...row.children];
 
     expect(row.className).toContain("flex w-full min-w-0 items-center");
-    expect(row.children).toHaveLength(4);
+    expect(row.children).toHaveLength(3);
     expect(
       left.querySelector('[data-testid="composer-add-context-button"]')
     ).not.toBeNull();
     expect(editor.getAttribute("data-editor-slot")).toBe("true");
     expect(editor.className).toContain("flex-1");
-    expect(pills.textContent).toBe("Pills");
+    expect(left.textContent).toBe("Pills");
     expect(right.textContent).toBe("Send");
     expect(
       right

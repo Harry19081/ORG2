@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import ComposerBar from "@src/components/ComposerBar";
+import ComposerSendGroup from "@src/components/ComposerBar/ComposerSendGroup";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
 import { VoiceInputButton, VoiceRecordingBar } from "@src/components/Voice";
 import { INPUT_AREA_CONTROL_GROUP_CLASS } from "@src/config/inputAreaTokens";
@@ -171,12 +172,8 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
           onClearReplyInfo={onClearReplyInfo}
         />
       }
-      pills={
-        <>
-          {modePill}
-          {modelPill}
-        </>
-      }
+      pills={modePill}
+      modelPill={modelPill}
       submitButton={
         onEditSendNow ? (
           <div className="flex items-center gap-1">
@@ -406,11 +403,9 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
             </>
           }
           pills={
-            <div className={INPUT_AREA_CONTROL_GROUP_CLASS}>
-              {modePill}
-              {modelPill}
-            </div>
+            <div className={INPUT_AREA_CONTROL_GROUP_CLASS}>{modePill}</div>
           }
+          modelPill={modelPill}
           submitButton={
             <div className="flex h-7 items-center gap-0.5">
               {showAgentControls && !contextualPanel && (
@@ -419,33 +414,35 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
                   disabled={promptPolishDisabled}
                 />
               )}
-              {showAgentControls && voiceFeatureEnabled && (
-                <VoiceInputButton
-                  onPressStart={voice.start}
-                  onPressEnd={voice.stop}
-                  disabled={!voice.isSupported}
+              <ComposerSendGroup>
+                {showAgentControls && voiceFeatureEnabled && (
+                  <VoiceInputButton
+                    onPressStart={voice.start}
+                    onPressEnd={voice.stop}
+                    disabled={!voice.isSupported}
+                  />
+                )}
+                <InputActions
+                  isInputEmpty={currentInputEmpty}
+                  isWpGeneWorking={
+                    stopSuppressedForEmptyInput ? false : isWpGeneWorking
+                  }
+                  isPendingCancel={
+                    stopSuppressedForEmptyInput ? false : isPendingCancel
+                  }
+                  isHosted={isHosted}
+                  canStopAgent={
+                    stopSuppressedForEmptyInput ? false : canStopAgent
+                  }
+                  canResume={canResume}
+                  isSessionTerminal={isSessionTerminal}
+                  onSubmit={onSubmit}
+                  onInterrupt={onInterrupt}
+                  onResume={onResume}
+                  submitDisabled={submitDisabled}
+                  commentMode={commentMode}
                 />
-              )}
-              <InputActions
-                isInputEmpty={currentInputEmpty}
-                isWpGeneWorking={
-                  stopSuppressedForEmptyInput ? false : isWpGeneWorking
-                }
-                isPendingCancel={
-                  stopSuppressedForEmptyInput ? false : isPendingCancel
-                }
-                isHosted={isHosted}
-                canStopAgent={
-                  stopSuppressedForEmptyInput ? false : canStopAgent
-                }
-                canResume={canResume}
-                isSessionTerminal={isSessionTerminal}
-                onSubmit={onSubmit}
-                onInterrupt={onInterrupt}
-                onResume={onResume}
-                submitDisabled={submitDisabled}
-                commentMode={commentMode}
-              />
+              </ComposerSendGroup>
             </div>
           }
         />

@@ -36,6 +36,7 @@ vi.mock("@src/components/ComposerBar", async () => {
         props.leftPrefix,
         props.editorSlot,
         props.pills,
+        props.modelPill,
         props.submitButton
       );
     },

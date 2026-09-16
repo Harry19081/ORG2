@@ -103,6 +103,7 @@ export default function CliPermissionPill() {
         active={dropdown.isOpen}
         dataTestId="cli-permission-pill"
         size="sm"
+        paddingX="compact"
       />
       {dropdown.isOpen &&
         dropdown.isPositioned &&
