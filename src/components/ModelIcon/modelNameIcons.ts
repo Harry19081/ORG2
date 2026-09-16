@@ -120,6 +120,12 @@ export function getIconProviderFromModelName(
     return "nvidia";
   }
 
+  // Meta AI's Muse family (muse-spark-*) carries the Meta AI mark, not the
+  // Llama-era Meta logo; this sits above that rule so "meta/muse-*" lands here.
+  if (/(?:^|[^a-z0-9])muse(?:[^a-z0-9]|$)/.test(lower)) {
+    return "meta_ai";
+  }
+
   // Meta/Llama models
   if (lower.includes("llama") || lower.includes("meta")) {
     return "meta";
