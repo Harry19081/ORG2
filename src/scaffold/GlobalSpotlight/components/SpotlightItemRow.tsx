@@ -144,6 +144,8 @@ export interface SpotlightItemRowProps {
   onHover: (index: number) => void;
   onHoverEnd?: () => void;
   searchQuery: string;
+  /** Show the hover detail card for rows with extra metadata. */
+  showDetailPane?: boolean;
 }
 
 // ============ DESC LINE ============
@@ -251,6 +253,7 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
     onHover,
     onHoverEnd,
     searchQuery,
+    showDetailPane = true,
   }) => {
     const { t } = useTranslation();
     const data = item.data ?? {};
@@ -571,6 +574,7 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         </div>
       </div>
     );
+    if (!showDetailPane) return row;
     return <SpotlightDetailPane item={item}>{row}</SpotlightDetailPane>;
   }
 );
