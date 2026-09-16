@@ -17,11 +17,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import "@src/modules/WorkStation/actions/install";
 import { getAllCoreZodActions } from "@src/modules/WorkStation/actions/registerCoreActions";
-import {
-  SRC_ROOT,
-  reachableFilesMatching,
-  walkStaticImports,
-} from "@src/test/staticImportGraph";
+import { SRC_ROOT, walkStaticImports } from "@src/test/staticImportGraph";
 
 import { collectAppZodActions } from "../../collectAppActions";
 import { registerCoreActions } from "../../coreActionProvider";
@@ -104,12 +100,9 @@ describe("action system bootstrap", () => {
     const graph = walkStaticImports(["App.tsx"]);
 
     expect(
-      reachableFilesMatching(
-        graph,
-        new RegExp(`^${INSTALLER.replace(/\./g, "\\.")}$`)
-      ),
+      graph.files.has(path.join(SRC_ROOT, INSTALLER)),
       "the composition root must import the WorkStation action installer, or the registry is empty at runtime"
-    ).toEqual([INSTALLER]);
+    ).toBe(true);
   });
 
   it("never imports a module from the scaffold action system", () => {
