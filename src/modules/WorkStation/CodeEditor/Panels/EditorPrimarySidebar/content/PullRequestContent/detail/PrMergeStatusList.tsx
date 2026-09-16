@@ -44,7 +44,7 @@ import {
   summarizePullRequestMergeStatus,
 } from "@src/shared/pr/prMergeStatus";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openLink } from "@src/util/ui/openLink";
 
 import { PrChecksPanel } from "./PrChecksPanel";
 
@@ -167,7 +167,7 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
 
   const handleOpenDetails = useCallback(
     (url: string) => {
-      void openExternalLink(url);
+      openLink(url, { navigate: true });
       close();
     },
     [close]

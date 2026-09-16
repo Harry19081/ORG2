@@ -54,7 +54,7 @@ export interface ReplaceInputProps {
   /** Whether buttons are disabled */
   disabled?: boolean;
   /** Input ref - supports both input and textarea */
-  inputRef?: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
+  inputRef?: React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>;
   /** Custom class name */
   className?: string;
   /** Enable multiline input (uses textarea instead of input) */

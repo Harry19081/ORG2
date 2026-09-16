@@ -12,6 +12,7 @@ import React, { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import ComposerBar from "@src/components/ComposerBar";
+import ComposerSendGroup from "@src/components/ComposerBar/ComposerSendGroup";
 import ComposerInput, { ComposerInputRef } from "@src/components/ComposerInput";
 import ComposerShell from "@src/components/ComposerShell";
 import Message from "@src/components/Message";
@@ -582,40 +583,42 @@ const EditorArea: React.FC<EditorAreaProps> = ({
             onAddContent={handleManualContextMenuClick}
           />
         ) : (
-          <ComposerBar
-            onAddContent={handleManualContextMenuClick}
-            repoPath={repoPath}
-            showContextInfo={false}
-            pills={
-              <ControlButtons
-                advancedConfig={advancedConfig}
-                onConfigChange={onAdvancedConfigChange}
-                dropdownDirection={resolvedDropdownDirection}
-                requestModelOpen={requestModelOpen}
-                onModelOpenHandled={onModelOpenHandled}
-                hideModelSourcePill={hideModelSourcePill}
+          <ControlButtons
+            advancedConfig={advancedConfig}
+            onConfigChange={onAdvancedConfigChange}
+            dropdownDirection={resolvedDropdownDirection}
+            requestModelOpen={requestModelOpen}
+            onModelOpenHandled={onModelOpenHandled}
+            hideModelSourcePill={hideModelSourcePill}
+          >
+            {(slots) => (
+              <ComposerBar
+                {...slots}
+                onAddContent={handleManualContextMenuClick}
+                repoPath={repoPath}
+                showContextInfo={false}
+                submitButton={
+                  !hideLaunchButton ? (
+                    <ComposerSendGroup>
+                      {voiceFeatureEnabled && (
+                        <VoiceInputButton
+                          onPressStart={voice.start}
+                          onPressEnd={voice.stop}
+                          disabled={!voice.isSupported}
+                        />
+                      )}
+                      <LaunchButton
+                        ariaLabel={launchAriaLabel}
+                        disabled={launchDisabled ?? false}
+                        loading={isLoading}
+                        onClick={onLaunch}
+                      />
+                    </ComposerSendGroup>
+                  ) : undefined
+                }
               />
-            }
-            submitButton={
-              !hideLaunchButton ? (
-                <>
-                  {voiceFeatureEnabled && (
-                    <VoiceInputButton
-                      onPressStart={voice.start}
-                      onPressEnd={voice.stop}
-                      disabled={!voice.isSupported}
-                    />
-                  )}
-                  <LaunchButton
-                    ariaLabel={launchAriaLabel}
-                    disabled={launchDisabled ?? false}
-                    loading={isLoading}
-                    onClick={onLaunch}
-                  />
-                </>
-              ) : undefined
-            }
-          />
+            )}
+          </ControlButtons>
         )}
       </ComposerShell>
     </div>

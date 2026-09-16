@@ -91,8 +91,6 @@ export interface FileHeaderProps {
   extraActions?: React.ReactNode;
   /** Read-only labels shown before the trailing action group. */
   metadata?: React.ReactNode;
-  /** Optional control rendered immediately before the trailing more menu. */
-  beforeMoreMenuSlot?: React.ReactNode;
   /** For git diffs: current view mode */
   viewMode?: DiffViewMode;
   /** For git diffs: callback when view mode changes */
@@ -202,7 +200,6 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     extraActions,
     metadata,
     renderFileActions,
-    beforeMoreMenuSlot,
     viewMode,
     onViewModeChange,
     toggleOptions,
@@ -421,7 +418,6 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
       showViewModeToggle ||
       showCustomToggle ||
       showPreviewButton ||
-      !!beforeMoreMenuSlot ||
       showInlineMoreMenu ||
       showInlineOpenFileAction ||
       showCloseAction ||
@@ -593,10 +589,8 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
             )}
 
             {metadata}
-            {(showHeaderActionButtons || beforeMoreMenuSlot) && (
+            {showHeaderActionButtons && (
               <span className="flex items-center gap-px">
-                {beforeMoreMenuSlot}
-
                 {/* More actions */}
                 {showInlineMoreMenu && moreMenu}
 

@@ -19,11 +19,11 @@ const VARIANT_CLASSES: Record<
   string
 > = {
   standard: "min-w-14 max-w-[240px] shrink-0 gap-1.5 px-2.5",
-  compact: "h-8 w-8 shrink-0 justify-center",
+  compact: "h-7 w-7 shrink-0 justify-center",
   session: "min-w-0 max-w-[120px] shrink-0 gap-1.5 px-2.5",
 };
 
-export const TAB_PILL_DRAG_OVERLAY_CLASS = `flex h-8 shrink-0 cursor-grabbing items-center gap-1.5 rounded-lg border border-border-2 ${SURFACE_TOKENS.selected} pl-2.5 pr-2 text-text-1 shadow-lg`;
+export const TAB_PILL_DRAG_OVERLAY_CLASS = `flex h-7 shrink-0 cursor-grabbing items-center gap-1.5 rounded-[10px] border border-border-2 ${SURFACE_TOKENS.selected} pl-2.5 pr-2 text-text-1 shadow-lg`;
 
 export const TabPillSurface = React.forwardRef<
   TabPillElement,
@@ -76,7 +76,10 @@ export const TabPillSurface = React.forwardRef<
       : !isActive && !cursorReset && onClick
         ? "cursor-pointer"
         : "cursor-default";
-    const surfaceClassName = `work-station-editor-tab relative flex h-8 min-w-0 ${cursorClass} select-none items-center overflow-hidden rounded-lg transition-colors duration-150 ${VARIANT_CLASSES[variant]} ${stateClass} ${draggingClass} ${className}`;
+    const radiusClass = isActive
+      ? "rounded-[10px]"
+      : "rounded-lg hover:rounded-[10px]";
+    const surfaceClassName = `work-station-editor-tab relative flex h-7 min-w-0 ${cursorClass} select-none items-center overflow-hidden ${radiusClass} transition-colors duration-150 ${VARIANT_CLASSES[variant]} ${stateClass} ${draggingClass} ${className}`;
 
     if (as === "button") {
       return (

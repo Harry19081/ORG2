@@ -76,5 +76,3 @@ export const SpotlightPinnedActionSection: React.FC<
     </div>
   );
 };
-
-export default SpotlightPinnedActionSection;

@@ -18,6 +18,7 @@ import {
   checkRunState,
   statusContextState,
 } from "@src/services/git/ciCheckState";
+import { linkAnchorProps } from "@src/util/ui/openLink";
 
 interface CheckRowProps {
   state: CiCheckState;
@@ -55,9 +56,7 @@ function CheckRow({
       ) : null}
       {detailsUrl ? (
         <a
-          href={detailsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...linkAnchorProps(detailsUrl, { navigate: true })}
           className="shrink-0 text-text-3 hover:text-text-1"
           title={t("git.pr.details", "Details")}
         >

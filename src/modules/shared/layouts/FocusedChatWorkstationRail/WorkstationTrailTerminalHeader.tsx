@@ -63,14 +63,12 @@ export function WorkstationTrailTerminalHeader({
       list.scrollLeft += (tabRect.right - listRect.right) / scale;
   }, [activeId, collapsed]);
   const terminalsLabel = t("navigation:labels.terminals");
+  const singleTerminal = tabs.length === 1;
   const showTabs = !collapsed && tabs.length > 1;
   const title = showTabs ? null : tabs.length > 1 ? (
     t("common:git.rail.terminalProcessCount", { count: tabs.length })
   ) : (
-    <span
-      id={activeId ? `${panelId}-tab-${activeId}` : undefined}
-      className="normal-case"
-    >
+    <span id={activeId ? `${panelId}-tab-${activeId}` : undefined}>
       {activeTab?.label ?? terminalsLabel}
     </span>
   );
@@ -79,22 +77,30 @@ export function WorkstationTrailTerminalHeader({
     <WorkstationTrailHeader
       standalone={collapsed}
       title={title}
+      onTitleToggle={singleTerminal ? onToggleCollapsed : undefined}
+      titleToggleCollapsed={collapsed}
+      titleToggleLabels={{
+        collapse: t("common:actions.collapse"),
+        expand: t("common:actions.expand"),
+      }}
       titleActions={
-        <WorkstationTrailIconButton
-          className="pointer-events-none opacity-0 transition-opacity group-focus-within/workstation-trail-terminal:pointer-events-auto group-focus-within/workstation-trail-terminal:opacity-100 group-hover/workstation-trail-terminal:pointer-events-auto group-hover/workstation-trail-terminal:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100"
-          onClick={onToggleCollapsed}
-          aria-label={t(
-            collapsed ? "common:actions.expand" : "common:actions.collapse"
-          )}
-          aria-expanded={!collapsed}
-        >
-          <HugeiconsIcon
-            icon={collapsed ? ArrowRight01Icon : ArrowDown01Icon}
-            data-icon={collapsed ? "chevron-right" : "chevron-down"}
-            size={14}
-            strokeWidth={1.75}
-          />
-        </WorkstationTrailIconButton>
+        singleTerminal ? null : (
+          <WorkstationTrailIconButton
+            className="pointer-events-none opacity-0 transition-opacity group-focus-within/workstation-trail-terminal:pointer-events-auto group-focus-within/workstation-trail-terminal:opacity-100 group-hover/workstation-trail-terminal:pointer-events-auto group-hover/workstation-trail-terminal:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100"
+            onClick={onToggleCollapsed}
+            aria-label={t(
+              collapsed ? "common:actions.expand" : "common:actions.collapse"
+            )}
+            aria-expanded={!collapsed}
+          >
+            <HugeiconsIcon
+              icon={collapsed ? ArrowRight01Icon : ArrowDown01Icon}
+              data-icon={collapsed ? "chevron-right" : "chevron-down"}
+              size={14}
+              strokeWidth={1.75}
+            />
+          </WorkstationTrailIconButton>
+        )
       }
       actions={
         <>

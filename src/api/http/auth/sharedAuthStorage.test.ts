@@ -1,3 +1,4 @@
+import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -5,8 +6,16 @@ const mocks = vi.hoisted(() => ({
   disk: new Map<string, unknown>(),
   init: vi.fn(async () => {}),
   isTauri: vi.fn(() => true),
+  getIdentifier: vi.fn(async () => "org2ai.org2"),
+  appDataDir: vi.fn(async () => "/app-data/org2ai.org2.dev/"),
   reload: vi.fn(async () => {}),
   save: vi.fn(async () => {}),
+}));
+
+vi.mock("@tauri-apps/api/app", () => ({ getIdentifier: mocks.getIdentifier }));
+vi.mock("@tauri-apps/api/path", () => ({
+  appDataDir: mocks.appDataDir,
+  resolve: async (...parts: string[]) => path.resolve(...parts),
 }));
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -50,8 +59,66 @@ describe("shared service auth storage", () => {
     mocks.init.mockClear();
     mocks.isTauri.mockReset();
     mocks.isTauri.mockReturnValue(true);
+    mocks.getIdentifier.mockResolvedValue("org2ai.org2");
     mocks.reload.mockClear();
     mocks.save.mockClear();
+  });
+
+  it("dev reads and updates the bundled login through the primary auth file", async () => {
+    mocks.getIdentifier.mockResolvedValue("org2ai.org2.dev");
+    mocks.disk.set("__orgii_shared_auth_schema", 2);
+    mocks.disk.set("orgii.supabase.auth", "bundled-session");
+    mocks.disk.set("orgii:org2-cloud-v1:auth", "bundled-cloud-session");
+    const dev = await import("./sharedAuthStorage");
+    await dev.initializeSharedServiceAuthStorage();
+    expect(mocks.construct).toHaveBeenCalledWith(
+      "/app-data/org2ai.org2/shared-service-auth.json",
+      { defaults: {}, autoSave: false }
+    );
+    expect(localStorage.getItem("orgii.supabase.auth")).toBe("bundled-session");
+    expect(localStorage.getItem("orgii:org2-cloud-v1:auth")).toBe(
+      "bundled-cloud-session"
+    );
+
+    await dev.sharedServiceAuthStorage.setItem(
+      "orgii.supabase.auth",
+      "refreshed-session"
+    );
+    vi.resetModules();
+    mocks.getIdentifier.mockResolvedValue("org2ai.org2");
+    const bundled = await import("./sharedAuthStorage");
+    await bundled.initializeSharedServiceAuthStorage();
+    expect(localStorage.getItem("orgii.supabase.auth")).toBe(
+      "refreshed-session"
+    );
+
+    await bundled.sharedServiceAuthStorage.removeItem("orgii.supabase.auth");
+    await dev.synchronizeSharedServiceAuthStorage();
+    expect(localStorage.getItem("orgii.supabase.auth")).toBeNull();
+    expect(mocks.disk.has("orgii.supabase.auth")).toBe(false);
+  });
+
+  it("numbered test instances continue to use their own auth store", async () => {
+    mocks.getIdentifier.mockResolvedValue("org2ai.org2.instance2");
+    const { initializeSharedServiceAuthStorage } =
+      await import("./sharedAuthStorage");
+    await initializeSharedServiceAuthStorage();
+    expect(mocks.construct).toHaveBeenCalledWith("shared-service-auth.json", {
+      defaults: {},
+      autoSave: false,
+    });
+  });
+
+  it("retries a failed native path lookup on focus synchronization", async () => {
+    mocks.getIdentifier.mockRejectedValueOnce(new Error("IPC not ready"));
+    const auth = await import("./sharedAuthStorage");
+    await expect(auth.initializeSharedServiceAuthStorage()).rejects.toThrow(
+      "IPC not ready"
+    );
+    mocks.disk.set("__orgii_shared_auth_schema", 2);
+    mocks.disk.set("orgii.supabase.auth", "bundled-session");
+    await auth.synchronizeSharedServiceAuthStorage();
+    expect(localStorage.getItem("orgii.supabase.auth")).toBe("bundled-session");
   });
 
   it("migrates the first Tauri origin's existing login state", async () => {

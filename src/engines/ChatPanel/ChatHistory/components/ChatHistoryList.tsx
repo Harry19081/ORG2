@@ -23,9 +23,12 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
+  useReducer,
   useRef,
 } from "react";
+import { flushSync } from "react-dom";
 
 import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 import { AgentStatusTrail } from "@src/engines/ChatPanel/blocks/primitives";
@@ -95,6 +98,7 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = memo(
     virtualScrollerRef,
     staticScrollerRef,
     onScrollRootChange,
+    onRowLayoutCommit,
     newEventDividerLabel = null,
   }) => {
     // Planning indicator state in refs so polling ticks don't invalidate
@@ -176,32 +180,57 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = memo(
         groupRenderKeys[index] ?? `chat-group-index:${index}`,
     });
     const virtualItems = virtualizer.getVirtualItems();
+    // Row sizes the committed row offsets were computed from.
+    const committedRowSizesRef = useRef(new Map<number, number>());
+    useLayoutEffect(() => {
+      committedRowSizesRef.current = new Map(
+        virtualItems.map((item) => [item.index, item.size])
+      );
+    });
+    const [, commitRowLayout] = useReducer(
+      (revision: number) => revision + 1,
+      0
+    );
+    const onRowLayoutCommitRef = useRef(onRowLayoutCommit);
+    onRowLayoutCommitRef.current = onRowLayoutCommit;
     const rowResizeObserverRef = useRef<ResizeObserver | null>(null);
-    const measuredRowHeightsRef = useRef(new WeakMap<Element, number>());
     const measureVirtualRow = useCallback(
       (node: HTMLDivElement | null) => {
         virtualizer.measureElement(node);
         if (!node) return;
         if (!rowResizeObserverRef.current) {
           rowResizeObserverRef.current = new ResizeObserver((entries) => {
+            const resizedRows: Array<{ index: number; size: number }> = [];
             for (const entry of entries) {
-              const target = entry.target;
-              const nextHeight =
+              const blockSize =
                 entry.borderBoxSize[0]?.blockSize ??
-                target.getBoundingClientRect().height;
-              if (measuredRowHeightsRef.current.get(target) === nextHeight) {
-                continue;
-              }
-              measuredRowHeightsRef.current.set(target, nextHeight);
-              virtualizer.measureElement(target as HTMLElement);
+                entry.target.getBoundingClientRect().height;
+              const index = virtualizer.indexFromElement(
+                entry.target as HTMLDivElement
+              );
+              const size = Math.round(blockSize);
+              if (committedRowSizesRef.current.get(index) === size) continue;
+              resizedRows.push({ index, size });
             }
+            if (resizedRows.length === 0) return;
+            // Rows re-wrap on every frame of a pane resize. TanStack moves
+            // scrollTop as soon as it learns a size, but moves the rows only on
+            // its next asynchronous render, so this frame would paint shifted
+            // content at stale offsets. Commit the new offsets before paint and
+            // let the viewport owner correct against them.
+            flushSync(() => {
+              for (const { index, size } of resizedRows) {
+                virtualizer.resizeItem(index, size);
+              }
+              commitRowLayout();
+            });
+            onRowLayoutCommitRef.current?.();
           });
         }
         const observer = rowResizeObserverRef.current;
         observer.observe(node);
         return () => {
           observer.unobserve(node);
-          measuredRowHeightsRef.current.delete(node);
         };
       },
       [virtualizer]

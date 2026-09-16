@@ -35,11 +35,11 @@ static QUIT_CONFIRMATION_ACTIVE: AtomicBool = AtomicBool::new(false);
 /// Create the application menu bar
 pub fn create_app_menu(app: &AppHandle) -> Result<Menu<Wry>, tauri::Error> {
     // ========================================
-    // App Menu (ORGII)
+    // App Menu (ORG2)
     // ========================================
-    let quit_item = MenuItem::with_id(app, "app_quit", "Quit ORGII", true, Some("CmdOrCtrl+Q"))?;
+    let quit_item = MenuItem::with_id(app, "app_quit", "Quit ORG2", true, Some("CmdOrCtrl+Q"))?;
 
-    let app_menu = SubmenuBuilder::new(app, "ORGII")
+    let app_menu = SubmenuBuilder::new(app, "ORG2")
         .about(None)
         .separator()
         .services()
@@ -614,10 +614,10 @@ pub fn setup_menu_events(app: &AppHandle) {
             // NOTE: Toggle Sidebar (Cmd+B) and Toggle Terminal (Cmd+`) are NOT in the native menu.
             // They are context-dependent frontend actions handled by the webview's keydown handler.
             "help_documentation" => {
-                let _ = open::that("https://github.com/YORG-AI/ORGII/wiki");
+                let _ = open::that("https://github.com/org2AI/ORG2/wiki");
             }
             "help_report_issue" => {
-                let _ = open::that("https://github.com/YORG-AI/ORGII/issues");
+                let _ = open::that("https://github.com/org2AI/ORG2/issues");
             }
             MENU_ID_RESTART_SETUP => {
                 println!("[AppMenu] Restart Setup Guide requested");

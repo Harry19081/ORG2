@@ -54,9 +54,6 @@ export interface EditorPrimarySidebarProps {
   onFileSelectWithLine?: (path: string, line: number) => void;
   /** Callback when a directory is toggled */
   onDirectoryToggle: (path: string) => void;
-  /** Callback when search button is clicked */
-  onSearchClick: () => void;
-  /** Callback when refresh is clicked */
   /** Callback when collapse all is clicked */
   onCollapseAll?: () => void;
   /** Callback for filter search */

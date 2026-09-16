@@ -41,6 +41,7 @@ export { default as AnalyticsUpIcon } from "@hugeicons/core-free-icons/Analytics
 export { default as AppWindowIcon } from "@hugeicons/core-free-icons/AppWindowIcon";
 export { default as AppWindowMacIcon } from "@hugeicons/core-free-icons/AppWindowMacIcon";
 export { default as Archive03Icon } from "@hugeicons/core-free-icons/Archive03Icon";
+export { default as Archive04Icon } from "@hugeicons/core-free-icons/Archive04Icon";
 export { default as ArchiveArrowUpIcon } from "@hugeicons/core-free-icons/ArchiveArrowUpIcon";
 export { default as ArchiveIcon } from "@hugeicons/core-free-icons/ArchiveIcon";
 export { default as ArrangeByLettersZAIcon } from "@hugeicons/core-free-icons/ArrangeByLettersZAIcon";
@@ -63,7 +64,7 @@ export { default as ArrowRight01Icon } from "@hugeicons/core-free-icons/ArrowRig
 export { default as ArrowRight02Icon } from "@hugeicons/core-free-icons/ArrowRight02Icon";
 export { default as ArrowRightBigIcon } from "@hugeicons/core-free-icons/ArrowRightBigIcon";
 export { default as ArrowRightDoubleIcon } from "@hugeicons/core-free-icons/ArrowRightDoubleIcon";
-export { default as ArrowShrink01Icon } from "@hugeicons/core-free-icons/ArrowShrink01Icon";
+export { default as ArrowShrink02Icon } from "@hugeicons/core-free-icons/ArrowShrink02Icon";
 export { default as ArrowUp01Icon } from "@hugeicons/core-free-icons/ArrowUp01Icon";
 export { default as ArrowUp02Icon } from "@hugeicons/core-free-icons/ArrowUp02Icon";
 export { default as ArrowUpBigIcon } from "@hugeicons/core-free-icons/ArrowUpBigIcon";
@@ -135,6 +136,7 @@ export { default as ClipboardListIcon } from "@hugeicons/core-free-icons/Clipboa
 export { default as ClipboardPenIcon } from "@hugeicons/core-free-icons/ClipboardPenIcon";
 export { default as Clock01Icon } from "@hugeicons/core-free-icons/Clock01Icon";
 export { default as Clock03Icon } from "@hugeicons/core-free-icons/Clock03Icon";
+export { default as Clock04Icon } from "@hugeicons/core-free-icons/Clock04Icon";
 export { default as ClockArrowDownIcon } from "@hugeicons/core-free-icons/ClockArrowDownIcon";
 export { default as ClockArrowUpIcon } from "@hugeicons/core-free-icons/ClockArrowUpIcon";
 export { default as CloudAlertIcon } from "@hugeicons/core-free-icons/CloudAlertIcon";
@@ -397,7 +399,7 @@ export { default as SquareStackIcon } from "@hugeicons/core-free-icons/SquareSta
 export { default as SquareTerminalIcon } from "@hugeicons/core-free-icons/SquareTerminalIcon";
 export { default as SquareUnlock01Icon } from "@hugeicons/core-free-icons/SquareUnlock01Icon";
 export { default as StarIcon } from "@hugeicons/core-free-icons/StarIcon";
-export { default as StopCircleIcon } from "@hugeicons/core-free-icons/StopCircleIcon";
+export { default as StopCircleIcon } from "./assets/icons/StopCircleIcon";
 export { default as StopIcon } from "@hugeicons/core-free-icons/StopIcon";
 export { default as Store01Icon } from "@hugeicons/core-free-icons/Store01Icon";
 export { default as Sun01Icon } from "@hugeicons/core-free-icons/Sun01Icon";
@@ -411,6 +413,7 @@ export { default as TextBoldIcon } from "@hugeicons/core-free-icons/TextBoldIcon
 export { default as TextItalicIcon } from "@hugeicons/core-free-icons/TextItalicIcon";
 export { default as TextQuoteIcon } from "@hugeicons/core-free-icons/TextQuoteIcon";
 export { default as TextStrikethroughIcon } from "@hugeicons/core-free-icons/TextStrikethroughIcon";
+export { default as TextWrapIcon } from "@hugeicons/core-free-icons/TextWrapIcon";
 export { default as ThirdBracketIcon } from "@hugeicons/core-free-icons/ThirdBracketIcon";
 export { default as Tick01Icon } from "@hugeicons/core-free-icons/Tick01Icon";
 export { default as TickDouble01Icon } from "@hugeicons/core-free-icons/TickDouble01Icon";

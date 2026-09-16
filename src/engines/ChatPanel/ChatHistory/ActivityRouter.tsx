@@ -9,6 +9,7 @@ import React, { Suspense, memo, useMemo } from "react";
 
 import { MarkdownWorkspaceRootContext } from "@src/components/MarkDown/markdownWorkspaceRoot";
 import AgentMessageBlock from "@src/engines/ChatPanel/blocks/AgentMessageBlock";
+import { readTruncatedResponseTurn } from "@src/engines/ChatPanel/blocks/AgentMessageBlock/useAgentMessageExpansion";
 import LlmUsageBadge from "@src/engines/ChatPanel/blocks/ToolCallBlock/LlmUsageBadge";
 import { ChatLoadingBlock } from "@src/engines/ChatPanel/blocks/primitives";
 import {
@@ -65,6 +66,7 @@ const RESULT_COMPARE_KEYS = [
   "filePaths",
   "linesAdded",
   "linesRemoved",
+  "unloadedTurn",
 ] as const;
 
 function isResultEqual(
@@ -90,6 +92,7 @@ function arePropsEqual(
   const nextEvent = nextProps.event;
 
   if (prevEvent.id !== nextEvent.id) return false;
+  if (prevEvent.sessionId !== nextEvent.sessionId) return false;
   if (prevEvent.actionType !== nextEvent.actionType) return false;
   if (prevEvent.functionName !== nextEvent.functionName) return false;
   if (prevEvent.uiCanonical !== nextEvent.uiCanonical) return false;
@@ -281,6 +284,10 @@ const ActivityChatItem: React.FC<ActivityChatItemProps> = memo(
           return (
             <AgentMessageBlock
               isStreaming={isStreaming}
+              truncatedResponseTurn={readTruncatedResponseTurn(
+                event.sessionId,
+                event.result
+              )}
               rightContent={
                 llmUsage ? <LlmUsageBadge usage={llmUsage} /> : undefined
               }

@@ -30,7 +30,7 @@ import PersistentDetailTabPanel from "@src/modules/shared/layouts/blocks/Persist
 import type { Person } from "@src/types/core/shared";
 import type { WorkItem } from "@src/types/core/workItem";
 import { resolveGithubRepoFullName } from "@src/util/git/githubRemote";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openInSystemBrowser } from "@src/util/ui/openLink";
 
 import {
   type AssignedWorkItem,
@@ -497,7 +497,7 @@ const AssignedWorkItemDetail: React.FC<AssignedWorkItemDetailProps> = ({
                   aria-hidden
                 />
               ),
-              onClick: () => void openExternalLink(githubIssueUrl),
+              onClick: () => openInSystemBrowser(githubIssueUrl),
               testId: "team-inbox-open-github",
             }
           : undefined

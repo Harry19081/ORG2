@@ -89,6 +89,9 @@ export interface ChatItemPipelineOptions {
   minBrowserActionsToStack?: number;
   groupTerminalActivities?: boolean;
   minTerminalActivitiesToGroup?: number;
+  /** Collapse runs of standalone waits that no terminal stack absorbed. */
+  groupWaitActivities?: boolean;
+  minWaitActivitiesToGroup?: number;
   groupEditActivities?: boolean;
   minEditActivitiesToGroup?: number;
   consolidatePartialObservations?: boolean;
@@ -107,6 +110,8 @@ export const DEFAULT_PIPELINE_OPTIONS: ChatItemPipelineOptions = {
   minBrowserActionsToStack: 3,
   groupTerminalActivities: true,
   minTerminalActivitiesToGroup: 1,
+  groupWaitActivities: true,
+  minWaitActivitiesToGroup: 2,
   groupEditActivities: true,
   minEditActivitiesToGroup: 1,
   consolidatePartialObservations: true,

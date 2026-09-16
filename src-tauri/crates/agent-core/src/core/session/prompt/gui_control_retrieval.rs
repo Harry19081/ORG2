@@ -14,7 +14,7 @@ const CONTROL_CARDS: &[ControlCard] = &[
     ControlCard {
         id: "settings.language.set",
         kind: "action",
-        summary: "Set the ORGII app language/locale. Use directly for language requests; Spotlight also exposes this as a second-level language picker.",
+        summary: "Set the ORG2 app language/locale. Use directly for language requests; Spotlight also exposes this as a second-level language picker.",
         call: r#"control_orgii({ "action": "settings.language.set", "params": { "language": "fr" } }) for French. Supported language codes: en, fr, zh, zh-Hant, es, ru, pt, de, ja, ko, tr, vi, pl. In Spotlight, choose Language, then choose the target language."#,
         terms: &[
             "language", "locale", "translation", "french", "français", "francais", "fr", "english", "chinese", "spanish", "german", "japanese", "korean", "russian", "portuguese", "turkish", "vietnamese", "polish",
@@ -23,7 +23,7 @@ const CONTROL_CARDS: &[ControlCard] = &[
     ControlCard {
         id: "spotlight",
         kind: "tool",
-        summary: "Open or route ORGII Spotlight, command palette, workspace picker, branch picker, file search, or Agent session search.",
+        summary: "Open or route ORG2 Spotlight, command palette, workspace picker, branch picker, file search, or Agent session search.",
         call: r#"spotlight({ "operation": "open" | "close" | "toggle" | "workspace_picker" | "branch_picker" | "file_search" | "command_palette" | "agent_session_search", "mode": "switch" | "open" | "add" | "create" })"#,
         terms: &[
             "spotlight", "command palette", "cmd k", "command", "quick open", "file search", "find file", "workspace picker", "switch workspace", "open folder", "add workspace", "create workspace", "branch picker", "checkout branch", "session search", "find session",
@@ -41,7 +41,7 @@ const CONTROL_CARDS: &[ControlCard] = &[
     ControlCard {
         id: "theme.setLight/theme.setDark/theme.setHighContrast",
         kind: "actions",
-        summary: "Switch ORGII appearance using discrete theme commands. Prefer these over parameterized theme operations.",
+        summary: "Switch ORG2 appearance using discrete theme commands. Prefer these over parameterized theme operations.",
         call: r#"control_orgii({ "action": "theme.setLight", "params": {} }), control_orgii({ "action": "theme.setDark", "params": {} }), or control_orgii({ "action": "theme.setHighContrast", "params": {} })"#,
         terms: &[
             "theme", "appearance", "light theme", "light mode", "dark theme", "dark mode", "high contrast", "contrast", "accessibility theme",

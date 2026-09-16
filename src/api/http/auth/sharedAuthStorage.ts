@@ -1,13 +1,15 @@
+import { getIdentifier } from "@tauri-apps/api/app";
 import { isTauri } from "@tauri-apps/api/core";
+import { appDataDir, resolve } from "@tauri-apps/api/path";
 import { LazyStore } from "@tauri-apps/plugin-store";
 
 /**
- * Auth storage shared by every WebView origin that uses the primary ORG2
- * Tauri identifier. Tauri dev and the bundled app have different origins, so
+ * Auth storage shared by the primary ORG2 app and the dedicated dev identity.
+ * Tauri dev and the bundled app have different origins, so
  * browser localStorage cannot be the source of truth for their login session.
  *
- * Secondary app identifiers still get their own Tauri app-data directory and
- * therefore remain isolated from the primary identity.
+ * Numbered secondary identifiers keep their own auth store. Only the dev
+ * identity opts into the primary login; its other app data remains separate.
  */
 const SHARED_AUTH_STORE_PATH = "shared-service-auth.json";
 const SHARED_AUTH_SCHEMA_KEY = "__orgii_shared_auth_schema";
@@ -47,7 +49,7 @@ interface StringStorage {
   removeItem(key: string): void | Promise<void>;
 }
 
-let store: LazyStore | null = null;
+let storePromise: Promise<LazyStore> | null = null;
 let operationQueue: Promise<void> = Promise.resolve();
 let initializePromise: Promise<void> | null = null;
 let synchronizePromise: Promise<void> | null = null;
@@ -66,12 +68,26 @@ function setLocalValue(key: string, value: string | undefined): void {
   }
 }
 
-function getStore(): LazyStore {
-  store ??= new LazyStore(SHARED_AUTH_STORE_PATH, {
-    defaults: {},
-    autoSave: false,
+function getStore(): Promise<LazyStore> {
+  storePromise ??= (async () => {
+    const identifier = await getIdentifier();
+    const storePath =
+      identifier === "org2ai.org2.dev"
+        ? await resolve(
+            await appDataDir(),
+            "..",
+            "org2ai.org2",
+            SHARED_AUTH_STORE_PATH
+          )
+        : SHARED_AUTH_STORE_PATH;
+    return new LazyStore(storePath, { defaults: {}, autoSave: false });
+  })().catch((error: unknown) => {
+    // Startup can race native IPC availability. Preserve focus-return retry
+    // instead of caching a rejected identity/path lookup for the whole app.
+    storePromise = null;
+    throw error;
   });
-  return store;
+  return storePromise;
 }
 
 function enqueueStoreOperation<T>(operation: () => Promise<T>): Promise<T> {
@@ -165,7 +181,7 @@ async function initializeOrSynchronize(): Promise<void> {
   if (!isTauri()) return;
 
   await enqueueStoreOperation(async () => {
-    const sharedStore = getStore();
+    const sharedStore = await getStore();
     await reloadStore(sharedStore);
     const snapshot = await readStoreSnapshot(sharedStore);
     await migrateLocalAuthOnce(sharedStore, snapshot);
@@ -203,7 +219,7 @@ export const sharedServiceAuthStorage: StringStorage = {
     if (!isTauri()) return localValue(key);
 
     return enqueueStoreOperation(async () => {
-      const sharedStore = getStore();
+      const sharedStore = await getStore();
       await reloadStore(sharedStore);
       const value = await sharedStore.get<unknown>(key);
       return typeof value === "string" ? value : null;
@@ -217,7 +233,7 @@ export const sharedServiceAuthStorage: StringStorage = {
     }
 
     await enqueueStoreOperation(async () => {
-      const sharedStore = getStore();
+      const sharedStore = await getStore();
       await reloadStore(sharedStore);
       const snapshot = await readStoreSnapshot(sharedStore);
       await migrateLocalAuthOnce(sharedStore, snapshot);
@@ -233,7 +249,7 @@ export const sharedServiceAuthStorage: StringStorage = {
     }
 
     await enqueueStoreOperation(async () => {
-      const sharedStore = getStore();
+      const sharedStore = await getStore();
       await reloadStore(sharedStore);
       const snapshot = await readStoreSnapshot(sharedStore);
       await migrateLocalAuthOnce(sharedStore, snapshot);

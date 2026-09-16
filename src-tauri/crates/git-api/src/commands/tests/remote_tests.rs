@@ -19,13 +19,13 @@ fn list_remotes_uses_repository_metadata_without_git_cli() {
     {
         let repository = git2::Repository::init(&repo_path).expect("initialize test repository");
         repository
-            .remote("origin", "git@github.com:org2ai/ORGII.git")
+            .remote("origin", "git@github.com:org2AI/ORG2.git")
             .expect("add origin");
         let mut config = repository.config().expect("open repository config");
         config
             .set_str(
                 "remote.origin.pushurl",
-                "https://github.com/org2ai/ORGII.git",
+                "https://github.com/org2AI/ORG2.git",
             )
             .expect("set push URL");
     }
@@ -37,11 +37,11 @@ fn list_remotes_uses_repository_metadata_without_git_cli() {
     assert_eq!(remotes[0].name, "origin");
     assert_eq!(
         remotes[0].fetch_url.as_deref(),
-        Some("git@github.com:org2ai/ORGII.git")
+        Some("git@github.com:org2AI/ORG2.git")
     );
     assert_eq!(
         remotes[0].push_url.as_deref(),
-        Some("https://github.com/org2ai/ORGII.git")
+        Some("https://github.com/org2AI/ORG2.git")
     );
 
     let _ = std::fs::remove_dir_all(&repo_path);

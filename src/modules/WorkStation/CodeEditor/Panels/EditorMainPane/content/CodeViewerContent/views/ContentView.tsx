@@ -16,11 +16,7 @@ import {
   CodeMirrorEditor,
   type ConflictResolutionChoice,
 } from "@src/features/CodeMirror";
-import {
-  FileHeader,
-  TabBarBottomPanelToggle,
-  UnsavedChangesBar,
-} from "@src/modules/WorkStation/shared";
+import { FileHeader, UnsavedChangesBar } from "@src/modules/WorkStation/shared";
 import { EditorService } from "@src/services/workStation/EditorService";
 import {
   editorHighlightActiveLineAtom,
@@ -151,7 +147,6 @@ export const ContentView: React.FC<ContentViewProps> = ({
         showGitBlameToggle={canToggleBlame}
         gitBlameEnabled={showBlame}
         onGitBlameChange={setShowBlame}
-        beforeMoreMenuSlot={<TabBarBottomPanelToggle />}
         onMoreSettings={onOpenSettings}
         loading={false}
         hasUnsavedChanges={hasUnsavedChanges}

@@ -2,7 +2,7 @@
  * Git Dialogs
  *
  * Collection of imperative dialogs for git operations.
- * All dialogs use native Tauri system dialogs for consistency.
+ * Branch switching uses the shared in-app modal; other operations retain their existing dialogs.
  *
  * @example
  * ```tsx
@@ -42,6 +42,4 @@ export {
 
 export { RebaseConflictDialog } from "./RebaseConflictDialog";
 
-export { CheckoutConflictDialog } from "./CheckoutConflictDialog";
-
-export { CheckoutBlockedDialog } from "./CheckoutBlockedDialog";
+export { createBranchSwitchDialog } from "./CheckoutConflictDialog";

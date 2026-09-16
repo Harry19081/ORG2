@@ -1,5 +1,4 @@
 import { LogicalPosition } from "@tauri-apps/api/dpi";
-import { open } from "@tauri-apps/plugin-shell";
 import type { TFunction } from "i18next";
 import React, { memo, useCallback, useMemo, useSyncExternalStore } from "react";
 
@@ -22,6 +21,7 @@ import {
   type NativeMenuItemOptions,
   popupNativeMenu,
 } from "@src/util/platform/tauri/nativeMenuPopup";
+import { openLink } from "@src/util/ui/openLink";
 
 import { NoDragRegion } from "./NoDragRegion";
 
@@ -235,12 +235,18 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
         {
           type: "item",
           text: t("windowChrome.items.documentation"),
-          action: () => open("https://github.com/YORG-AI/ORGII/wiki"),
+          action: () =>
+            openLink("https://github.com/org2AI/ORG2/wiki", {
+              navigate: true,
+            }),
         },
         {
           type: "item",
           text: t("windowChrome.items.reportIssue"),
-          action: () => open("https://github.com/YORG-AI/ORGII/issues"),
+          action: () =>
+            openLink("https://github.com/org2AI/ORG2/issues", {
+              navigate: true,
+            }),
         },
       ];
   }

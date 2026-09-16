@@ -11,7 +11,6 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
-import { openMarkdownLinkInBrowserApp } from "@src/components/MarkDown/markdownUtils";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
 import {
   CHAT_COMPOSER_STACK_BAR_INNER_PADDING_X_CLASS,
@@ -46,6 +45,7 @@ import {
   stationModeAtom,
 } from "@src/store/ui/simulatorAtom";
 import { getFileName } from "@src/util/file/pathUtils";
+import { openLink } from "@src/util/ui/openLink";
 
 import "./index.css";
 import { mapTurnModifiedFilesToFileChanges } from "./turnFilesMapping";
@@ -236,13 +236,13 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
       ]
     );
 
-    // PR rows open in the workstation Browser and bring it into view (the
-    // chat panel un-maximizes and the station switches to Browser), matching
-    // inline PR links in assistant markdown.
+    // PR rows open like inline PR links in assistant markdown: in the
+    // workstation Browser, brought into view (the chat panel un-maximizes and
+    // the station switches to Browser), unless links go to the system browser.
     const openPullRequest = useCallback(
       (artifact: ExtractedGitArtifactData) => {
         if (!artifact.url) return;
-        openMarkdownLinkInBrowserApp(artifact.url);
+        openLink(artifact.url);
       },
       []
     );

@@ -324,18 +324,6 @@
           "agentBrowser": "Agent 브라우저",
           "searchFetch": "검색 및 가져오기"
         },
-        "sections": {
-          "browserTitle": "브라우저 활동",
-          "interactionsTitle": "상호작용",
-          "webSearchesTitle": "웹 검색",
-          "pagesFetchedTitle": "가져온 페이지"
-        },
-        "empty": {
-          "noBrowserActivity": "브라우저 활동 없음",
-          "noBrowserInteractions": "브라우저 상호작용 없음",
-          "noWebSearches": "웹 검색 없음",
-          "noPagesFetched": "가져온 페이지 없음"
-        },
         "header": {
           "categoryBrowser": "브라우저",
           "categoryLiveBrowser": "라이브 브라우저",
@@ -519,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "사이드바 표시",
-      "hideSidebar": "사이드바 숨기기",
-      "showBottomPanel": "하단 패널 표시"
+      "hideSidebar": "사이드바 숨기기"
     },
     "multiTask": {
       "monitoringProgress": "{{count}}개 Subagent의 진행 상황 모니터링 중",
@@ -591,6 +578,7 @@
     "voicePermissionSheetTitle": "마이크 접근 권한 필요"
   },
   "chat": {
+    "draftTooLong": "초안이 너무 깁니다(최대 {{max}}자)",
     "cliPermissions": {
       "ask": "승인 요청",
       "workspace": "작업 공간 접근",
@@ -625,10 +613,9 @@
       "inputPosition": "입력창",
       "positionBottom": "하단",
       "positionMiddle": "중앙",
-      "trailPosition": "컨텍스트 바",
+      "repoBarPosition": "저장소 바",
       "positionUp": "위",
       "positionDown": "아래",
-      "uiControls": "UI 컨트롤",
       "showQuickActions": "빠른 작업 표시",
       "showSkills": "고정된 스킬",
       "showCliUpdate": "CLI 업데이트 표시",
@@ -716,6 +703,14 @@
     "performActions_other": "작업 {{count}}개 수행",
     "showInlineDiffs": "인라인 변경 사항",
     "inputSettings": "입력 설정",
+    "sendMethod": "보내기 단축키",
+    "navigation": {
+      "title": "탐색",
+      "openLinksIn": "링크 열기 위치",
+      "internalBrowser": "내장 브라우저",
+      "externalBrowser": "외부 브라우저"
+    },
+    "compactInput": "컴팩트 입력창",
     "replay": {
       "follow": "팔로우"
     },
@@ -901,10 +896,10 @@
       "exportJson": "JSON 내보내기",
       "importAction": "Session 가져오기",
       "exportDescription": "활성 Session을 휴대용 JSON 스냅샷으로 내보냅니다",
-      "importDescription": "Session JSON 스냅샷을 사이드바로 가져옵니다.",
+      "importDescription": "Session JSON 스냅샷을 사이드바로 가져옵니다",
       "jsonSnapshotNote": "가져온 Sessions는 읽기 전용 스냅샷이며 원본 이벤트 기록을 유지합니다",
       "chooseJson": "JSON 파일 선택",
-      "chooseJsonHint": ".orgii-session.json 내보내기 파일을 선택하세요.",
+      "chooseJsonHint": ".orgii-session.json 내보내기 파일을 선택하세요",
       "loadingPreview": "Session 이벤트 계산 중…",
       "noActiveSession": "활성 Session이 선택되지 않았습니다.",
       "importedName": "가져온 Session: {{name}}",
@@ -1129,6 +1124,7 @@
     "terminalWaitRunning": "터미널 완료 대기 중",
     "runShellFailed": "명령 실행 실패",
     "runCommands": "명령 실행",
+    "waitBackgroundTasks": "백그라운드 작업 대기",
     "terminalSummary": {
       "command_one": "명령 {{count}}개",
       "command_other": "명령 {{count}}개",
@@ -1139,6 +1135,10 @@
       "check_one": "확인 {{count}}회",
       "check_other": "확인 {{count}}회",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}}회",
+      "count_other": "{{count}}회"
     },
     "inspectTerminalsRunning": "Terminal 검사 중",
     "inspectTerminalsDone": "Terminal 검사됨",
@@ -1447,10 +1447,13 @@
     "awaitOutputListFailed": "백그라운드 작업 목록을 가져오지 못했습니다",
     "awaitOutputKeepWaiting": "여전히 실행 중",
     "awaitOutputStillRunning": "실행 중",
+    "awaitOutputSummaryShellSingle": "터미널 프로세스",
     "awaitOutputSummaryShell_one": "터미널 프로세스 1개",
     "awaitOutputSummaryShell_other": "터미널 프로세스 {{count}}개",
+    "awaitOutputSummarySubagentSingle": "Subagent",
     "awaitOutputSummarySubagent_one": "Subagent 1개",
     "awaitOutputSummarySubagent_other": "Subagent {{count}}개",
+    "awaitOutputSummaryUnknownSingle": "백그라운드 작업",
     "awaitOutputSummaryUnknown_one": "백그라운드 작업 1개",
     "awaitOutputSummaryUnknown_other": "백그라운드 작업 {{count}}개",
     "awaitOutputSummaryMixed": "{{shell}}, {{subagent}}",
@@ -1905,7 +1908,7 @@
     "start": "시작",
     "missingGit": {
       "title": "Git 없음",
-      "body": "Git이 설치되어 있지 않거나 찾을 수 없습니다. ADE Manager 또는 SDE Agent에게 이 컴퓨터에 Git을 설치하도록 요청한 뒤 ORG2를 다시 시작하세요."
+      "body": "Git이 설치되어 있지 않거나 찾을 수 없습니다. ADE Manager 또는 SDE Agent에게 이 컴퓨터에 Git을 설치하도록 요청한 뒤 ORG2를 다시 시작하세요"
     },
     "model": "모델",
     "contextMenu": {
@@ -1969,9 +1972,9 @@
       "formatting": "텍스트 서식"
     },
     "regionNoticeTitle": "지역 제한 가능성",
-    "regionNoticeBodyProvider": "위치: {{location}}. 일부 모델은 해당 지역에서 사용할 수 없을 수 있습니다.",
-    "regionNoticeBodySanctions": "위치: {{location}}. GitHub, npm, Docker Hub 및 유사 서비스가 사용할 수 없을 수 있습니다.",
-    "regionNoticeBodyBoth": "위치: {{location}}. 지역 정책 및 무역 규제로 인해 일부 모델과 GitHub, npm, Docker Hub 등 서비스가 사용할 수 없을 수 있습니다.",
+    "regionNoticeBodyProvider": "위치: {{location}}. 일부 모델은 해당 지역에서 사용할 수 없을 수 있습니다",
+    "regionNoticeBodySanctions": "위치: {{location}}. GitHub, npm, Docker Hub 및 유사 서비스가 사용할 수 없을 수 있습니다",
+    "regionNoticeBodyBoth": "위치: {{location}}. 지역 정책 및 무역 규제로 인해 일부 모델과 GitHub, npm, Docker Hub 등 서비스가 사용할 수 없을 수 있습니다",
     "selectAgent": "에이전트 선택",
     "placeholderDefault": "메시지를 입력하고 @로 파일 추가, /로 skills 사용",
     "wingmanPlaceholder": "미션을 설명하세요 — Wingman이 무엇을 감시해야 하나요?",
@@ -2120,7 +2123,7 @@
       "archiveTeardownRetained": "보관되었지만 런타임 {{count}}개를 해제하지 못했습니다. 삭제는 계속 차단됩니다.",
       "archiveTeardownQuiesced": "보관 및 완전 종료되었습니다. 이제 영구 삭제할 수 있습니다.",
       "dangerZone": "위험 영역",
-      "deleteDescription": "이 팀과 모든 세션 및 기록을 영구 삭제합니다.",
+      "deleteDescription": "이 팀과 모든 세션 및 기록을 영구 삭제합니다",
       "deleteTeam": "팀 삭제",
       "deleteTitle": "이 팀을 영구 삭제할까요?",
       "deleteWarning": "팀의 모든 세션과 기록이 영구 삭제됩니다. 이 작업은 취소할 수 없습니다.",

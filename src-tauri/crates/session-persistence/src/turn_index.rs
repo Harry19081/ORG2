@@ -34,7 +34,9 @@ const TURN_STATUS_FAILED: &str = "failed";
 /// v13: treat provider-native canonical `user_input` events as the same turn
 /// boundary. These are emitted by the shared role/tool transcript adapter and
 /// can arrive through Team Session, personal Cloud sync, or runtime migration.
-const TURN_INDEX_VERSION: i64 = 13;
+/// v14: exclude internal lifecycle rows from `body_event_count`, so an
+/// imported round aborted before any output no longer advertises a body.
+const TURN_INDEX_VERSION: i64 = 14;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -81,6 +83,9 @@ struct IndexEventRow {
     content: String,
     created_at: String,
     order_sequence: i64,
+    /// The row's action type (`events.event_type`); `None` for rows built in
+    /// code rather than read from the table.
+    event_type: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -94,6 +99,8 @@ struct TurnDraft {
     user_event_ids: Vec<String>,
     user_preview: String,
     event_count: i64,
+    /// Rows after the user row(s) that the chat renders; lifecycle markers
+    /// are excluded so an aborted round advertises no body.
     body_event_count: i64,
     /// Canonical user-intent id for this turn, if the source rows carried
     /// one. Used by `build_turn_drafts` to collapse a synthetic + backend
@@ -101,6 +108,15 @@ struct TurnDraft {
     turn_intent_id: Option<String>,
     /// Provider-neutral Orgtrack metadata accumulated from body events.
     metadata_accumulator: TurnMetadataAccumulator,
+}
+
+impl TurnDraft {
+    /// Any row after the user row(s), lifecycle markers included. Retention
+    /// and the legacy status key off this rather than `body_event_count`, so
+    /// a round that only started and aborted keeps its user bubble.
+    fn has_activity_rows(&self) -> bool {
+        self.event_count > self.user_event_ids.len() as i64
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -121,6 +137,7 @@ fn index_event_row(row: &rusqlite::Row<'_>) -> SqliteResult<IndexEventRow> {
         content: row.get(4)?,
         created_at: row.get(5)?,
         order_sequence: row.get(6)?,
+        event_type: row.get(7)?,
     })
 }
 
@@ -296,6 +313,7 @@ fn load_existing_user_event_keys(
             content: content.clone(),
             created_at: String::new(),
             order_sequence: 0,
+            event_type: None,
         };
         if is_synthetic_user_input(&event_row)
             && !is_authoritative_agent_org_direct_input(&event_row)
@@ -490,7 +508,15 @@ impl<'a> TurnDraftBuilder<'a> {
         if let Some(ref mut turn) = self.current {
             turn.ended_at = Some(max_timestamp(&turn.started_at, &row.created_at));
             turn.event_count += 1;
-            turn.body_event_count += 1;
+            // Lifecycle markers (e.g. an imported round that was aborted before
+            // any output) never render, so they are activity but not body.
+            if !row
+                .event_type
+                .as_deref()
+                .is_some_and(core_types::session_event::is_internal_lifecycle_action_type)
+            {
+                turn.body_event_count += 1;
+            }
             turn.metadata_accumulator.add_event_at(
                 row.function_name.as_deref(),
                 &row.args_json,
@@ -526,7 +552,7 @@ fn stream_turn_drafts(
 ) -> SqliteResult<Vec<TurnDraft>> {
     let mut stmt = conn.prepare_cached(
         "SELECT id, function_name, args_json, result_json, content, created_at,
-                history_sequence AS order_sequence
+                history_sequence AS order_sequence, event_type
          FROM events
          WHERE session_id = ?1
          ORDER BY history_sequence ASC, created_at ASC, id ASC",
@@ -546,7 +572,7 @@ fn materialized_turn_drafts(drafts: Vec<TurnDraft>) -> Vec<TurnDraft> {
         .into_iter()
         .enumerate()
         .filter_map(|(index, draft)| {
-            if draft.body_event_count > 0 || index == last_index {
+            if draft.has_activity_rows() || index == last_index {
                 Some(draft)
             } else {
                 None
@@ -636,9 +662,9 @@ fn rebuild_turn_index_inner(session_id: &str) -> SqliteResult<Vec<CachedTurnSumm
                 serde_json::to_string(draft.metadata_accumulator.git_artifacts())
                     .unwrap_or_else(|_| "[]".to_string());
             // Status derivation: lifecycle store wins when available.
-            // Falls back to the legacy `body_event_count > 0` heuristic for
-            // rows that predate the canonical intent id (no row in
-            // `session_turn_intents`). The lifecycle store is the
+            // Falls back to the legacy "any activity after the user row"
+            // heuristic for rows that predate the canonical intent id (no row
+            // in `session_turn_intents`). The lifecycle store is the
             // authoritative source for cancelled turns that had zero body
             // events and for turns interrupted mid-stream.
             let status = draft
@@ -654,7 +680,7 @@ fn rebuild_turn_index_inner(session_id: &str) -> SqliteResult<Vec<CachedTurnSumm
                     _ => TURN_STATUS_PENDING,
                 })
                 .unwrap_or_else(|| {
-                    if draft.body_event_count > 0 {
+                    if draft.has_activity_rows() {
                         TURN_STATUS_COMPLETED
                     } else {
                         TURN_STATUS_PENDING
@@ -858,6 +884,7 @@ mod tests {
             content: id.to_string(),
             created_at: "2026-05-27T00:00:00Z".to_string(),
             order_sequence: sequence,
+            event_type: None,
         }
     }
 
@@ -1164,6 +1191,48 @@ mod tests {
         assert_eq!(drafts.len(), 1);
         assert_eq!(drafts[0].turn_id, "user-message-latest");
         assert_eq!(drafts[0].body_event_count, 0);
+    }
+
+    #[test]
+    fn lifecycle_rows_keep_the_round_but_add_no_body() {
+        // An imported round aborted before any output: only its lifecycle
+        // markers follow the user row. Counting them advertised a body and
+        // drew an empty "Agent worked for" bar over the round.
+        let lifecycle = |id: &str, action_type: &str, sequence| IndexEventRow {
+            event_type: Some(action_type.to_string()),
+            ..row(id, Some(action_type), "{}", sequence)
+        };
+        let mut assistant = row("assistant-event", Some("assistant"), "{}", 5);
+        assistant.event_type = Some("assistant".to_string());
+        let rows = vec![
+            row(
+                "user-message-aborted",
+                Some(USER_MESSAGE_FUNCTION),
+                r#"{"backendPersisted":true}"#,
+                1,
+            ),
+            lifecycle("task-start", "task_start", 2),
+            lifecycle("task-failed", "task_failed", 3),
+            row(
+                "user-message-answered",
+                Some(USER_MESSAGE_FUNCTION),
+                r#"{"backendPersisted":true}"#,
+                4,
+            ),
+            assistant,
+        ];
+
+        let drafts = build_turn_drafts(&rows, &StaleIntentIds::new());
+
+        // The aborted round stays in the index so its user bubble survives.
+        assert_eq!(
+            drafts
+                .iter()
+                .map(|draft| (draft.turn_id.as_str(), draft.body_event_count))
+                .collect::<Vec<_>>(),
+            vec![("user-message-aborted", 0), ("user-message-answered", 1)]
+        );
+        assert!(drafts[0].has_activity_rows());
     }
 
     #[test]

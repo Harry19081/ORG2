@@ -31,12 +31,14 @@ import { parseSharedSessionFileReference } from "@src/features/Org2Cloud/sharedS
 import { useOpenCloudSessionReference } from "@src/features/Org2Cloud/useOpenCloudSessionReference";
 import { themesAtom } from "@src/store/ui/uiAtom";
 import { activeWorkspaceRootAtom } from "@src/store/workspace";
+import { openLink } from "@src/util/ui/openLink";
 
 import LinkHoverCard from "./LinkHoverCard";
 import CodeBlock from "./MarkdownCodeBlock";
 import MarkdownFilePathHoverCard from "./MarkdownFilePathHoverCard";
 import MarkdownLinkIcon, { hasMarkdownLinkIcon } from "./MarkdownLinkIcon";
 import MarkdownLocalImage, { openLocalMarkdownRef } from "./MarkdownLocalImage";
+import MarkdownTable from "./MarkdownTable";
 import MermaidBlock from "./MermaidBlock";
 import SessionReferenceCards from "./SessionReferenceCards";
 import "./index.scss";
@@ -55,7 +57,6 @@ import {
   detectCodeType,
   normalizeCopyableMarkdownDocumentFence,
   openFileInEditor,
-  openMarkdownLinkInBrowserApp,
   preprocessTextContent,
   renderChildren,
 } from "./markdownUtils";
@@ -221,7 +222,7 @@ const MarkdownComponent: React.FC<MarkdownProps> = ({
         );
         return;
       }
-      openMarkdownLinkInBrowserApp(linkTarget.url);
+      openLink(linkTarget.url);
     },
     [fileRootPath, openSharedFile]
   );
@@ -241,6 +242,9 @@ const MarkdownComponent: React.FC<MarkdownProps> = ({
   // Memoize components object to prevent recreation
   const markdownComponents = useMemo((): Components => {
     const baseComponents: Components = {
+      table({ node: _node, ...props }) {
+        return <MarkdownTable {...props} />;
+      },
       pre({ children, ...props }) {
         if (
           React.isValidElement(children) &&

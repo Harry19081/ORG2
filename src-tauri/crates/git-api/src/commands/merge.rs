@@ -377,11 +377,7 @@ pub fn reset_file(
     file_path: &str,
     target_ref: &str,
 ) -> Result<GitResetResult, String> {
-    let output = run_git(repo_path, &["checkout", target_ref, "--", file_path])?;
-
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).to_string());
-    }
+    super::utils::run_git_path_operation(repo_path, &["checkout", target_ref], &[file_path])?;
 
     Ok(GitResetResult {
         success: true,

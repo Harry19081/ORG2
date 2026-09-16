@@ -3,7 +3,7 @@
 A standalone command-line tool that **loads and analyzes AI coding-assistant
 sessions** across every tool `orgtrack_core` can read — Claude Code, Codex,
 Cursor (CLI & IDE), Cline, OpenCode, Warp, Windsurf, Trae, Qoder, and more — and
-reports token/cost analytics, without the ORGII desktop app.
+reports token/cost analytics, without the ORG2 desktop app.
 
 It is a thin front-end: all of the loading and analysis is `orgtrack_core`'s,
 reached through three entry points — the source **registry** (scan), the

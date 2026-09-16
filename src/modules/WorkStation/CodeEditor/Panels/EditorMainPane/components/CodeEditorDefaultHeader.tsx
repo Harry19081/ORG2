@@ -2,10 +2,7 @@ import { useAtom, useAtomValue } from "jotai";
 import React, { useCallback } from "react";
 
 import Message from "@src/components/Message";
-import {
-  FileHeader,
-  TabBarBottomPanelToggle,
-} from "@src/modules/WorkStation/shared";
+import { FileHeader } from "@src/modules/WorkStation/shared";
 import { FileOperationsService } from "@src/services/file/FileOperationsService";
 import {
   editorHighlightActiveLineAtom,
@@ -85,7 +82,6 @@ export const CodeEditorDefaultHeader: React.FC<
       onMinimapChange={setShowMinimap}
       highlightActiveLineEnabled={highlightActiveLine}
       onHighlightActiveLineChange={setHighlightActiveLine}
-      beforeMoreMenuSlot={<TabBarBottomPanelToggle />}
       onRevealInFileManager={
         activeFilePath ? handleRevealInFileManager : undefined
       }

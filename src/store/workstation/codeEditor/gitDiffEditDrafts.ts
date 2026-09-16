@@ -16,6 +16,8 @@
  * closing a `git-diff` tab deletes its file's draft (close means discard,
  * matching the pre-existing close behaviour).
  */
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+
 import { BoundedMap } from "@src/util/collections/BoundedMap";
 
 export interface GitDiffEditDraft {
@@ -75,4 +77,24 @@ export function hasGitDiffEditDraft(filePath: string): boolean {
 
 export function clearGitDiffEditDrafts(): void {
   drafts.clear();
+}
+
+export function getGitDiffDraftPaths(): string[] {
+  return [...drafts.keys()];
+}
+
+export async function saveGitDiffDraftForSwitch(
+  filePath: string
+): Promise<void> {
+  const draft = drafts.get(filePath);
+  if (!draft) throw new Error(`No saved editor buffer was found: ${filePath}`);
+  if ((await readTextFile(filePath)) !== draft.baseContent)
+    throw new Error(`File changed on disk: ${filePath}`);
+  await writeTextFile(filePath, draft.editedContent);
+  if (
+    drafts.get(filePath) !== draft ||
+    (await readTextFile(filePath)) !== draft.editedContent
+  )
+    throw new Error(`Editor changed while saving: ${filePath}`);
+  drafts.delete(filePath);
 }

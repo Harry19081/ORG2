@@ -138,6 +138,22 @@ export const chatAppearancePersistAtom = atom(
 );
 chatAppearancePersistAtom.debugLabel = "chatAppearancePersistAtom";
 
+/**
+ * Send-message shortcut on its own: reading it does not pull the rest of the
+ * chat appearance in, so a header menu re-renders only when this key changes.
+ * Writing goes through the same persist atom Settings uses, so both surfaces
+ * land on the single `chat.sendOnEnter` key with no menu-local copy.
+ */
+export const chatSendOnEnterAtom = atom(
+  (get) =>
+    get(settingsAtom)["chat.sendOnEnter"] ??
+    DEFAULT_CHAT_APPEARANCE.sendOnEnter,
+  (_get, set, value: boolean) => {
+    set(chatAppearancePersistAtom, { sendOnEnter: value });
+  }
+);
+chatSendOnEnterAtom.debugLabel = "chatSendOnEnterAtom";
+
 // ============================================
 // Focused Layout Atoms (selectAtom)
 // ChatHistory only needs layout props — subscribing to the full

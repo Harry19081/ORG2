@@ -407,7 +407,8 @@
     "openOnGitHub": "Abrir en GitHub",
     "createPullRequest": "Crear pull request",
     "expandView": "Expandir vista",
-    "restoreSplitView": "Restaurar vista dividida"
+    "restoreSplitView": "Restaurar vista dividida",
+    "overwrite": "Sobrescribir"
   },
   "status": {
     "yes": "Sí",
@@ -491,7 +492,7 @@
   },
   "optional": "opcional",
   "common": {
-    "display": "Visualización",
+    "display": "Ajustes de interfaz",
     "on": "Activado",
     "off": "Desactivado",
     "default": "Predeterminado",
@@ -560,7 +561,6 @@
     "globPatternsHint": "Patrones glob, separados por comas",
     "outline": "Esquema",
     "timeline": "Cronología",
-    "indexing": "Indexación",
     "testExplorer": "Explorador de pruebas",
     "installed": "Instaladas",
     "extensionViews": "Vistas de extensión",
@@ -678,7 +678,6 @@
     "explorer": "Explorador",
     "search": "Buscar",
     "sourceControl": "Control de código fuente",
-    "sessions": "Session",
     "myTabs": "Mis pestañas ({{count}})",
     "design": "Diseño",
     "settings": "Configuración",
@@ -789,7 +788,6 @@
     "closePanel": "Cerrar panel",
     "showSidebar": "Mostrar barra lateral",
     "hideSidebar": "Ocultar barra lateral",
-    "moreOptions": "Más opciones",
     "zoomIn": "Acercar",
     "zoomOut": "Alejar",
     "goBack": "Atrás",
@@ -820,7 +818,6 @@
     "movePanelToRight": "Mover panel a la derecha",
     "movePanelToBottom": "Mover panel abajo",
     "domTree": "Árbol DOM",
-    "closeSession": "Cerrar Session",
     "clearNetworkLogs": "Limpiar registros de red",
     "clearConsole": "Limpiar consola",
     "copyToClipboard": "Copiar al portapapeles",
@@ -871,7 +868,6 @@
     "pleaseTryAgain": "Por favor, inténtalo de nuevo",
     "noFileOpen": "Abre un archivo para empezar a editar",
     "selectFileToEdit": "Elige un archivo en el explorador",
-    "noTabs": "Abre una pestaña para comenzar",
     "noTabsOpen": "Abre un elemento para comenzar",
     "selectItemToStart": "Elige un elemento en la barra lateral",
     "noDatabaseConnected": "Sin base de datos conectada",
@@ -982,7 +978,6 @@
     "notGitInitialized": "Git no inicializado",
     "notGitInitializedTooltip": "Este directorio de trabajo aún no tiene un directorio .git.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
-    "scanningFiles": "Scanning files...",
     "branchTooltipSwitching": "Rama: {{branch}} (cambiando…)",
     "switchWorkspaceTooltip": "Cambiar directorio de trabajo",
     "switchWorktreeTooltip": "Cambiar de worktree",
@@ -993,12 +988,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Acciones de Git",
     "switchToSessionRepo": "Cambiar a {{name}}",
-    "embeddingProgress": "Embedding: {{count}} chunks procesados",
-    "embeddingProgressWithPercent": "Embedding: {{count}} chunks procesados ({{percent}}%)",
-    "embeddingShort": "Embedding {{percent}}%",
-    "embeddingLabel": "Embedding",
-    "indexingProgress": "Indexando: {{processed}}/{{total}} archivos ({{percent}}%)",
-    "indexingProgressWithFile": "Indexando: {{processed}}/{{total}} archivos ({{percent}}%)\nActual: {{file}}",
     "ports": {
       "workspaceSection": "Espacio de trabajo actual",
       "externalSection": "Externos",
@@ -1069,7 +1058,9 @@
         "skipped": "Omitidas",
         "passed": "Superadas"
       }
-    }
+    },
+    "fileChangedOnDiskTitle": "El archivo cambió en el disco",
+    "fileChangedOnDiskBody": "«{{name}}» cambió en el disco desde que lo abriste. ¿Sobrescribirlo con tu versión?"
   },
   "git": {
     "loading": "Cargando estado de Git...",
@@ -1096,7 +1087,7 @@
       "createTokenButton": "Crear token",
       "openGitSettingsButton": "Abrir ajustes",
       "configureInSettings": "Configura Git en Ajustes",
-      "configureInSettingsDesc": "Añade acceso de GitHub App, guarda un token o escanea credenciales locales en Ajustes → Conexiones y vuelve a intentar esta operación de Git."
+      "configureInSettingsDesc": "Añade acceso de GitHub App, guarda un token o escanea credenciales locales en Ajustes → Conexiones y vuelve a intentar esta operación de Git"
     },
     "actions": {
       "publish": "Publish",
@@ -1335,7 +1326,7 @@
       "cannotParseRepoName": "No se pudo obtener el nombre del repositorio a partir del remoto origin",
       "authRequired": {
         "title": "Conectar GitHub",
-        "description": "Ve a Ajustes → Conexiones para conectar tu cuenta de GitHub."
+        "description": "Ve a Ajustes → Conexiones para conectar tu cuenta de GitHub"
       },
       "navigationTrail": "Navegación de pull requests",
       "failedToLoad": "No se pudieron cargar los pull requests",
@@ -1505,15 +1496,46 @@
       "newIssueBodyPlaceholder": "Describe el issue (opcional)…",
       "authRequired": {
         "title": "Conectar GitHub",
-        "description": "Ve a Ajustes → Conexiones para conectar tu cuenta de GitHub."
+        "description": "Ve a Ajustes → Conexiones para conectar tu cuenta de GitHub"
       },
       "reAuthRequired": "Se requiere autorización de GitHub",
-      "reAuthDescription": "Tu token de GitHub ha caducado. Ve a Ajustes → Conexiones para volver a conectarte.",
+      "reAuthDescription": "Tu token de GitHub ha caducado. Ve a Ajustes → Conexiones para volver a conectarte",
       "goToSettings": "Ir a Ajustes",
       "loadingTimeline": "Cargando actividad…",
       "label": "Issue",
       "linkedLoading": "Cargando elementos vinculados",
       "detailNavigation": "Navegación de issues"
+    },
+    "branchSwitch": {
+      "title": "Cambiar de rama",
+      "conflictsTitle": "Los cambios requieren atención",
+      "blockedTitle": "El cambio de rama requiere atención",
+      "working": "Guardando y cambiando…",
+      "viewSaved": "Ver cambios guardados",
+      "current": "Rama actual: {{branch}}",
+      "changedFiles": "{{count}} archivos modificados",
+      "question": "¿Qué quieres hacer con tus cambios?",
+      "leave": "Dejar los cambios en {{branch}}",
+      "leaveDescription": "Guarda tu trabajo para más tarde y cambia con un árbol de trabajo limpio",
+      "bring": "Llevar los cambios a {{branch}}",
+      "bringDescription": "Lleva tus cambios sin confirmar a la rama de destino",
+      "savedTitle": "Cambios guardados",
+      "nextPage": "Página siguiente",
+      "noSaved": "No hay cambios de rama guardados",
+      "applied": "Ya aplicados · copia de recuperación",
+      "restore": "Restaurar",
+      "savedAvailable": "Hay cambios guardados disponibles para esta rama",
+      "worktreeTitle": "La rama está abierta en otro árbol de trabajo",
+      "openWorktree": "Abrir árbol de trabajo",
+      "activeTask": "Una tarea está usando este árbol de trabajo",
+      "activeTaskDescription": "Espera a que termine la tarea, detenla explícitamente o usa otro árbol de trabajo antes de cambiar de rama",
+      "saveTitle": "Guardar archivos antes de cambiar",
+      "saveDescription": "Los archivos abiertos tienen cambios sin guardar. Guárdalos antes de elegir dónde conservar tus cambios",
+      "saveContinue": "Guardar todo y continuar",
+      "saveFailed": "No se pudieron guardar todos los archivos",
+      "multipleBuffers": "Este archivo tiene cambios en varios editores. Guarda o cierra esos editores antes de cambiar",
+      "editedWhileSaving": "Se editaron archivos durante el guardado. Revisa los últimos cambios e inténtalo de nuevo",
+      "savePreview": "Guarda o descarta los cambios en el editor de hojas de cálculo antes de cambiar de rama"
     }
   },
   "selectors": {
@@ -1568,7 +1590,6 @@
         "createWorkspace": "Crear nuevo directorio de trabajo"
       },
       "sources": {
-        "cloningFromGitHub": "clonando desde GitHub",
         "cloningFromGitHubUrl": "clonar desde URL de GitHub",
         "cloningFromMyGitHub": "clonar desde mi GitHub",
         "creatingWorkspace": "creando nuevo directorio de trabajo",
@@ -1629,7 +1650,6 @@
         "createFrom": "Crear desde rama",
         "deleteBranch": "Eliminar rama",
         "refresh": "Actualizar rama",
-        "checkoutDetachedSuccess": "En estado detached HEAD en el commit actual",
         "removeWorktree": "Eliminar Worktree",
         "newWorktree": "Nuevo worktree...",
         "refreshPullRequests": "Actualizar Pull requests"
@@ -1770,11 +1790,6 @@
         "integrations": "Agents e Integraciones",
         "market": "Mercado",
         "actions": "Acciones"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Carpeta",
-        "branch": "Rama"
       },
       "actions": {
         "showInFinder": {
@@ -2154,7 +2169,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "¿Salir de ORG2?",
-    "subtitle": "Las sesiones en ejecución conservarán su estado actual. Puedes volver a abrir ORG2 más tarde.",
+    "subtitle": "Las sesiones en ejecución conservarán su estado actual. Puedes volver a abrir ORG2 más tarde",
     "cancel": "Cancelar",
     "confirm": "Salir"
   },
@@ -2184,7 +2199,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari guarda sus cookies en una carpeta protegida por macOS. Autoriza ORG2 en Acceso total al disco en Ajustes del Sistema y vuelve a comprobarlo.",
+      "explain": "Safari guarda sus cookies en una carpeta protegida por macOS. Autoriza ORG2 en Acceso total al disco en Ajustes del Sistema y vuelve a comprobarlo",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2209,7 +2224,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2218,7 +2233,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"
