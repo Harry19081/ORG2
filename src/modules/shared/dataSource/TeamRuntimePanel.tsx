@@ -17,6 +17,10 @@ import { useTranslation } from "react-i18next";
 
 import { externalCliSourcesDetect } from "@src/api/tauri/externalHistory/detection";
 import { Placeholder } from "@src/components/Placeholder";
+import {
+  SECTION_GAP_CLASSES,
+  SECTION_SUBHEADING_CLASSES,
+} from "@src/components/layout/Section";
 import type {
   MemberRuntimeListEntry,
   OrgRuntimeTelemetry,
@@ -24,10 +28,6 @@ import type {
 import { useCloudOrgRemoteSessions } from "@src/features/Org2Cloud/org2CloudRemoteSessionsAtom";
 import { useOpenCloudSessionReference } from "@src/features/Org2Cloud/useOpenCloudSessionReference";
 import { useOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
-import {
-  SECTION_GAP_CLASSES,
-  SECTION_SUBHEADING_CLASSES,
-} from "@src/modules/shared/layouts/SectionLayout";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 
 import { RuntimeRefreshButton } from "./RuntimeSectionHeader";

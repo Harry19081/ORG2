@@ -4,6 +4,7 @@ import type {
   GitHubIssue,
   GitHubIssueTimelineItem,
 } from "@src/api/tauri/github";
+import { PersistentDetailTabPanel } from "@src/components/layout/blocks";
 import { GitHubIssueThreadSurface } from "@src/modules/ProjectManager/WorkItems/components";
 import type { GitHubIssueInteractionConfig } from "@src/modules/ProjectManager/WorkItems/components/WorkItemContent/types";
 import type { WorkItemExternalAssigneeConfig } from "@src/modules/ProjectManager/WorkItems/components/WorkItemProperties/types";
@@ -17,7 +18,6 @@ import {
 import ThreadDetailTabs, {
   type ThreadDetailTab,
 } from "@src/modules/shared/components/ThreadDetailTabs";
-import { PersistentDetailTabPanel } from "@src/modules/shared/layouts/blocks";
 
 interface IssueDetailPanelProps {
   issue: GitHubIssue;

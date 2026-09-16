@@ -7,12 +7,9 @@ import {
   ListPanelSkeletonRows,
 } from "@src/components/ListPanel";
 import { Placeholder } from "@src/components/Placeholder";
+import { ListPanelScrollArea, LoadingBar } from "@src/components/layout/blocks";
 import type { ManagedPrItem } from "@src/modules/MainApp/WorkManagement/githubManagedItemModel";
-import CompactListHeader from "@src/modules/shared/layouts/CompactListHeader";
-import {
-  ListPanelScrollArea,
-  LoadingBar,
-} from "@src/modules/shared/layouts/blocks";
+import CompactListHeader from "@src/scaffold/layouts/CompactListHeader";
 
 import {
   type TeamInboxFilter,

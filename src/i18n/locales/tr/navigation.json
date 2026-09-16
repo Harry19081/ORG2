@@ -45,7 +45,8 @@
     "diff": "Diff",
     "colleagues": "Ekip arkadaşları",
     "terminals": "Terminaller",
-    "openSourceRepo": "Açık Kaynak Depo"
+    "openSourceRepo": "Açık Kaynak Depo",
+    "closeSettings": "Ayarları kapat"
   },
   "routes": {
     "session": "Sohbet",

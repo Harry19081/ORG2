@@ -16,6 +16,7 @@ import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { PANEL_FOOTER_TOKENS } from "@src/components/layout/blocks";
 import {
   HEADER_CLASSES,
   HEADER_ICON_SIZE,
@@ -29,7 +30,6 @@ import {
   HugeiconsIcon,
 } from "@src/icons";
 import ProjectManagerBreadcrumb from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import { PANEL_FOOTER_TOKENS } from "@src/modules/shared/layouts/blocks";
 import { VerticalResizeHandle } from "@src/scaffold/Resize";
 
 // ============================================

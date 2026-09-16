@@ -27,6 +27,7 @@ import {
   zodActionRegistry,
 } from "@src/ActionSystem";
 import { sendAdeActionResult } from "@src/api/tauri/agent";
+import type { PendingSessionProposal } from "@src/contracts/session/ade";
 import { clearSessionAtom } from "@src/engines/SessionCore/core/atoms/actions";
 import {
   GLOBAL_UI_CHANNEL_SESSION_ID,
@@ -60,14 +61,7 @@ import { resolveTrustedDispatchParams } from "./adeReplyBinding";
  * consumed by `AdeAwareSessionCreatorSlot` in AppLayout when the
  * user launches a session from the creator.
  */
-export interface PendingSessionProposal {
-  correlationId: string;
-  task: string;
-  agentDefinitionId?: string;
-  repoPath?: string;
-  model?: string;
-  expiresAt: number;
-}
+export type { PendingSessionProposal };
 
 export const pendingSessionProposal: {
   current: PendingSessionProposal | null;

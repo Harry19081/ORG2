@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 
 import type { UsageSummary } from "@src/api/tauri/usageDashboard";
 import Tooltip from "@src/components/Tooltip";
+import { STAT_GRID_TOKENS } from "@src/components/layout/blocks";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
-import { STAT_GRID_TOKENS } from "@src/modules/shared/layouts/blocks";
 
 import UsagePricingHint from "./UsagePricingHint";
 import {

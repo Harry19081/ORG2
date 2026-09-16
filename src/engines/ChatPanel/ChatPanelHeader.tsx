@@ -16,7 +16,7 @@ import {
   HugeiconsIcon,
   SquareTerminalIcon,
 } from "@src/icons";
-import { useStationToggleInsetTransition } from "@src/modules/shared/layouts/useStationToggleInsetTransition";
+import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { ChatPaneFocusButton } from "@src/scaffold/WorkbenchChrome/StationPaneControls";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";

@@ -22,7 +22,7 @@ import {
   SectionContainer,
   SectionHeading,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
 
 import ConflictRowComponent from "./syncSection/ConflictRow";
 import ImportPanel from "./syncSection/ImportPanel";

@@ -13,7 +13,7 @@ import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InternalHeader,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
 import { integrationsToolbarAtom } from "@src/store/ui/integrationsToolbarAtom";
 
 import { BuiltInToolsTable } from "./BuiltInTools/Table/BuiltInToolsTable";

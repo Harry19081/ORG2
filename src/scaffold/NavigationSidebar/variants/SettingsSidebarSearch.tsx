@@ -17,8 +17,8 @@ import { Cancel01Icon, HugeiconsIcon, Search01Icon } from "@src/icons";
 import {
   type RenderedSettingsControl,
   collectRenderedSettingsControls,
-} from "@src/modules/shared/layouts/blocks/SettingsSearchDropdown/settingsControlSearch";
-import { createSettingsSearchIndex } from "@src/modules/shared/layouts/blocks/SettingsSearchDropdown/settingsSearchIndex";
+} from "@src/scaffold/NavigationSidebar/variants/SettingsSearchDropdown/settingsControlSearch";
+import { createSettingsSearchIndex } from "@src/scaffold/NavigationSidebar/variants/SettingsSearchDropdown/settingsSearchIndex";
 
 import { SidebarList } from "../blocks";
 import { SIDEBAR_STYLE } from "../config";

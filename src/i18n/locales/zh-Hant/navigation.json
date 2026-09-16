@@ -45,7 +45,8 @@
     "diff": "Diff",
     "colleagues": "同事",
     "terminals": "終端機",
-    "openSourceRepo": "開啟原始碼倉庫"
+    "openSourceRepo": "開啟原始碼倉庫",
+    "closeSettings": "關閉設置"
   },
   "routes": {
     "session": "聊天",

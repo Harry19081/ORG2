@@ -1,9 +1,9 @@
 import { useAtomValue } from "jotai";
 import React from "react";
 
+import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
 import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
-import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import AgentStationChromeFrame from "@src/scaffold/WorkbenchChrome/AgentStationChromeFrame";
 import AgentStationTopHeader from "@src/scaffold/WorkbenchChrome/AgentStationTopHeader";

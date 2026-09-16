@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
 import type {
   McpResource,
   McpServerStatus,
   McpToolDef,
 } from "@src/modules/MainApp/AgentOrgs/config/mcp/useMcpServers";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 
 import {
   InlineCardBody,

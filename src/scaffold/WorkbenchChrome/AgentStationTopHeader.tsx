@@ -27,7 +27,7 @@ import {
   SimulatorAgentChip,
   StationModeChip,
 } from "@src/modules/WorkStation/shared";
-import { useStationToggleInsetTransition } from "@src/modules/shared/layouts/useStationToggleInsetTransition";
+import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import {
   sessionMapAtom,

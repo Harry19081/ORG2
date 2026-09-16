@@ -45,7 +45,8 @@
     "projects": "Projects",
     "projectManager": "Project Manager",
     "diff": "Diff",
-    "terminals": "Terminals"
+    "terminals": "Terminals",
+    "closeSettings": "Close Settings"
   },
   "workstation": {
     "agentComputer": {

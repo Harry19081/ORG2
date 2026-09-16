@@ -16,16 +16,16 @@ import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
-import type {
-  DatabaseConnectionConfig,
-  DatabaseType,
-} from "@src/engines/DatabaseCore";
 import {
   SECTION_CONTROL_STYLE,
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import type {
+  DatabaseConnectionConfig,
+  DatabaseType,
+} from "@src/engines/DatabaseCore";
 import {
   SelectionGrid,
   type SelectionGridOption,

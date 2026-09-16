@@ -44,7 +44,7 @@ vi.mock("@src/modules/WorkStation/shared", () => ({
     createElement("header", null, filePath),
 }));
 
-vi.mock("@src/modules/shared/layouts/blocks", () => ({
+vi.mock("@src/components/layout/blocks", () => ({
   Placeholder: ({ variant }: { variant: string }) =>
     createElement("div", { "data-placeholder": variant }, variant),
 }));

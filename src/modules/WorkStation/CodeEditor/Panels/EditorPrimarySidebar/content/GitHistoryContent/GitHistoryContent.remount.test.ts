@@ -33,7 +33,7 @@ vi.mock("@src/hooks/tabHost/useWorkStationTabs", () => ({
   }),
 }));
 
-vi.mock("@src/modules/shared/layouts/blocks", () => ({
+vi.mock("@src/components/layout/blocks", () => ({
   Placeholder: ({ variant }: { variant: string }) =>
     createElement("div", { "data-placeholder": variant }, variant),
 }));

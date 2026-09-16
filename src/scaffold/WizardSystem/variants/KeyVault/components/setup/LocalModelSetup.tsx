@@ -7,12 +7,12 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
 import Select from "@src/components/Select";
-import { HugeiconsIcon, Tick01Icon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { HugeiconsIcon, Tick01Icon } from "@src/icons";
 
 import type { AgentSetupProps } from "./types";
 

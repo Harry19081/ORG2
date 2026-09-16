@@ -233,9 +233,9 @@ vi.mock("@src/modules/ProjectManager/shared", () => ({
   PropertiesPanel: primitive("PropertiesPanel"),
   PropertiesRailFrame: primitive("PropertiesRailFrame"),
 }));
-vi.mock("@src/modules/shared/layouts/blocks", async () => ({
+vi.mock("@src/components/layout/blocks", async () => ({
   PersistentDetailTabPanel: (
-    await import("@src/modules/shared/layouts/blocks/PersistentDetailTabPanel")
+    await import("@src/components/layout/blocks/PersistentDetailTabPanel")
   ).default,
   DetailHeaderTabs: primitive("DetailHeaderTabs"),
   DetailPanelContainer: primitive("DetailPanelContainer"),

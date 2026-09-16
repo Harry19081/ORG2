@@ -2,6 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
   CHAT_WIDTH_STYLE_VALUE,
@@ -12,7 +13,6 @@ import { ConversationParticipantsChip } from "@src/features/Org2Cloud/SessionCon
 import SessionViewersIndicator from "@src/features/Org2Cloud/SessionViewersIndicator";
 import SessionForkHeaderExtras from "@src/features/TeamCollaboration/components/SessionForkHeaderExtras";
 import { useShouldOffsetChatPanelHeader } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
-import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import {
   openRuntimeInChatPanelTabAtom,

@@ -45,7 +45,8 @@
     "diff": "Diff",
     "colleagues": "Đồng nghiệp",
     "terminals": "Terminal",
-    "openSourceRepo": "Mở kho mã nguồn"
+    "openSourceRepo": "Mở kho mã nguồn",
+    "closeSettings": "Đóng cài đặt"
   },
   "routes": {
     "session": "Trò chuyện",

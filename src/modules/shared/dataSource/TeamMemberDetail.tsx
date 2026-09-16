@@ -26,6 +26,11 @@ import { Placeholder } from "@src/components/Placeholder";
 import ProgressBar from "@src/components/ProgressBar";
 import Select from "@src/components/Select";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
+import {
+  SECTION_SUBHEADING_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { getMemberUsage } from "@src/features/Org2Cloud/memberRuntime/memberRuntimeClient";
 import type {
@@ -39,11 +44,6 @@ import {
   ComputerTerminal01Icon,
   HugeiconsIcon,
 } from "@src/icons";
-import {
-  SECTION_SUBHEADING_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
 import AxisMeter from "./AxisMeter";
