@@ -12,10 +12,10 @@ import {
   vi,
 } from "vitest";
 
+import SectionRow from "@src/components/layout/Section/Row";
 import type { SettingsNavigationGroup } from "@src/config/settingsNavigation";
 import { Settings01Icon } from "@src/icons";
-import SectionRow from "@src/modules/shared/layouts/SectionLayout/Row";
-import * as settingsControls from "@src/modules/shared/layouts/blocks/SettingsSearchDropdown/settingsControlSearch";
+import * as settingsControls from "@src/scaffold/NavigationSidebar/variants/SettingsSearchDropdown/settingsControlSearch";
 
 import { SettingsRootBody } from "./SettingsSidebar";
 

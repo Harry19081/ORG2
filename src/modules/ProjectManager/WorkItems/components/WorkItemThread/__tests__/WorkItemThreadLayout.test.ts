@@ -25,7 +25,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock("@src/modules/shared/layouts/blocks", () => ({
+vi.mock("@src/components/layout/blocks", () => ({
   DetailPanelContainer: ({ children }: { children: ReactNode }) =>
     createElement("div", null, children),
   ScrollTrail: (props: unknown) => {

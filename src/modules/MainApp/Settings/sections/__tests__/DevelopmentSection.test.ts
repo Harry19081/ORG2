@@ -14,7 +14,7 @@ import DevelopmentSection from "../DevelopmentSection";
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
-vi.mock("@src/modules/shared/layouts/SectionLayout", () => ({
+vi.mock("@src/components/layout/Section", () => ({
   SectionContainer: ({ children }: { children: ReactNode }) => children,
   SectionRow: ({ children }: { children: ReactNode }) => children,
 }));

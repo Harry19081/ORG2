@@ -6248,24 +6248,24 @@
     "count": 1
   },
   {
-    "key": "9951685fd58b1a0a00cd49ef877369cd24dc0d9e12c81117174a6d94c4857366",
-    "file": "src/modules/shared/layouts/AppLayout.tsx",
+    "key": "782f9c413a5b23726404653f29e3a3c4f1bf2bce50e88266ac6c1ea142243317",
+    "file": "src/scaffold/AppLayout/AppLayout.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void sendAdeActionResult(proposal.correlationId, { success: true, message: `Session created: ${info.sessionId}`, data: { sessionId: info.sessionId }, });",
     "count": 1
   },
   {
-    "key": "a124d6b6b2de1cd3980ddc1f64c650646a2ba3dfb944d4605e541f802c0fe4bb",
-    "file": "src/modules/shared/layouts/blocks/sessionTableItem.tsx",
+    "key": "8a0f58d4ce4d6666edc939e04ba16d3a4d344222453d6b098eb3cec25dfe6930",
+    "file": "src/features/SessionTable/sessionTableItem.tsx",
     "rule": "@typescript-eslint/switch-exhaustiveness-check",
     "message": "Switch is not exhaustive. Cases not matched: undefined",
     "source": "task.resultStatus",
     "count": 1
   },
   {
-    "key": "6b5a0910ce8deba99cc44620d102a37a723223e411f21414e0bfdd415c366751",
-    "file": "src/modules/shared/layouts/FocusedChatWorkstationRail/index.tsx",
+    "key": "08fb21326c96c505f91bf088070af19278809ebe6aeeef461e7c333d70ee6dfb",
+    "file": "src/scaffold/AppLayout/FocusedChatWorkstationRail/index.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void closeTerminalSession(sessionId);",

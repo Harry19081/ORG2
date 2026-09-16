@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import PersonAvatar from "@src/components/PersonAvatar";
+import { ScrollTrailTarget } from "@src/components/layout/blocks";
 import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import {
@@ -12,7 +13,6 @@ import {
   NotificationOff01Icon,
 } from "@src/icons";
 import type { MarkdownEditorMode } from "@src/modules/shared/components/MarkdownTextareaEditor";
-import { ScrollTrailTarget } from "@src/modules/shared/layouts/blocks";
 
 import DiscussionThreads from "./DiscussionThreads";
 import HistoryTabComposer from "./HistoryTabComposer";

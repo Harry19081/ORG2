@@ -15,7 +15,7 @@ import {
 } from "@src/modules/shared/components/WorkManagementTable";
 import DetailPaneLayout, {
   DetailPanePlaceholder,
-} from "@src/modules/shared/layouts/DetailPaneLayout";
+} from "@src/scaffold/layouts/DetailPaneLayout";
 
 import type {
   AggregatedWorkItem,

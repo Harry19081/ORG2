@@ -83,9 +83,9 @@ vi.mock("../../../hooks/useWorkstationPrDetail", () => ({
   }),
 }));
 
-vi.mock("@src/modules/shared/layouts/blocks", async (importOriginal) => {
+vi.mock("@src/components/layout/blocks", async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import("@src/modules/shared/layouts/blocks")>();
+    await importOriginal<typeof import("@src/components/layout/blocks")>();
   return {
     ...actual,
     ScrollTrail: ({ testId }: { testId?: string }) =>

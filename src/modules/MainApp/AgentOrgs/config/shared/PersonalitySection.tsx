@@ -16,14 +16,14 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Message from "@src/components/Message";
-import { Copy01Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
-import MarkdownEditor from "@src/modules/shared/components/MarkdownEditor";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_PATH_TEXT_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { Copy01Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
+import MarkdownEditor from "@src/modules/shared/components/MarkdownEditor";
 import { copyText } from "@src/util/data/clipboard";
 
 interface PersonalitySectionProps {

@@ -26,6 +26,7 @@ import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
+import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
 import { hasMacWindowChrome } from "@src/config/windowChromeRadius";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { DataProvider } from "@src/contexts/workspace/DataContext";
@@ -55,7 +56,6 @@ import SessionViewersIndicator from "@src/features/Org2Cloud/SessionViewersIndic
 import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
 import { useMacosPageBackdropSurface } from "@src/hooks/platform/useMacosPageBackdropSurface";
 import { useNativeSessionStatusMonitor } from "@src/hooks/session/useNativeSessionStatusMonitor";
-import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import { sessionByIdAtom } from "@src/store/session";
 import type { SessionContinuation } from "@src/store/session/sessionTabPlacementAtom";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";

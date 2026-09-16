@@ -18,14 +18,14 @@ import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import Button, { type ButtonProps } from "@src/components/Button";
-import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 // Deep imports on purpose: the `layouts/blocks` barrel re-exports
 // SessionTable → SettingsTable → @tanstack/react-table, and Modal sits in the
 // startup graph (QuitConfirmationModal is mounted at boot).
-import PanelFooter from "@src/modules/shared/layouts/blocks/PanelFooter";
+import PanelFooter from "@src/components/layout/blocks/PanelFooter";
 import PanelHeader, {
   PANEL_HEADER_TOKENS,
-} from "@src/modules/shared/layouts/blocks/PanelHeader";
+} from "@src/components/layout/blocks/PanelHeader";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
 
 import "./index.scss";

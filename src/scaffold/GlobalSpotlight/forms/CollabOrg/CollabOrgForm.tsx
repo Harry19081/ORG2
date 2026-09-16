@@ -6,6 +6,7 @@ import { projectApi } from "@src/api/http/project";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import PageNotice from "@src/components/PageNotice";
+import { PanelFooter } from "@src/components/layout/blocks";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import { cloudManagementErrorMessage } from "@src/features/Org2Cloud/org2CloudOrgManagement";
 import {
@@ -14,7 +15,6 @@ import {
 } from "@src/features/Org2Cloud/useCloudOrgMembershipActions";
 import { useOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
 import { Add01Icon, CloudIcon, LaptopIcon, Login01Icon } from "@src/icons";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import SelectionGrid from "@src/scaffold/WizardSystem/primitives/SelectionGrid";
 import type { SelectionGridOption } from "@src/scaffold/WizardSystem/primitives/SelectionGrid";

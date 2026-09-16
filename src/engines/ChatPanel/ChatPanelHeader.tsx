@@ -17,7 +17,7 @@ import {
   SquareTerminalIcon,
 } from "@src/icons";
 import { ChatPaneFocusButton } from "@src/modules/WorkStation/shared/StationPaneControls";
-import { useStationToggleInsetTransition } from "@src/modules/shared/layouts/useStationToggleInsetTransition";
+import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";

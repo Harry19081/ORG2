@@ -6,15 +6,15 @@ import IntegrationIcon from "@src/components/IntegrationIcon";
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
 import {
-  COMING_SOON_CHANNEL_TYPES,
-  LIVE_CHANNEL_TYPES,
-} from "@src/modules/MainApp/Integrations/Connections/Channels/config";
-import {
   SECTION_CONTROL_STYLE,
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import {
+  COMING_SOON_CHANNEL_TYPES,
+  LIVE_CHANNEL_TYPES,
+} from "@src/modules/MainApp/Integrations/Connections/Channels/config";
 import {
   SelectionGrid,
   WizardStepLayout,

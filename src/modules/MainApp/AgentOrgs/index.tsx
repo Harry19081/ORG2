@@ -14,6 +14,11 @@ import { rpc } from "@src/api/tauri/rpc";
 import { Message } from "@src/components/Message";
 import TabPill from "@src/components/TabPill";
 import {
+  DETAIL_PANEL_TOKENS,
+  InternalHeader,
+  ScrollPreservation,
+} from "@src/components/layout/blocks";
+import {
   type AgentOrgsTabSegment,
   WIZARD_IDS,
   buildAgentOrgsPath,
@@ -27,11 +32,6 @@ import { createLogger } from "@src/hooks/logger";
 import { useWizardParam } from "@src/hooks/navigation";
 import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
 import { useCliAgents } from "@src/modules/MainApp/Integrations/KeyVault/CliClients/hooks/useCliAgents";
-import {
-  DETAIL_PANEL_TOKENS,
-  InternalHeader,
-  ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
 import { reposAtom } from "@src/store/repo/atoms";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 

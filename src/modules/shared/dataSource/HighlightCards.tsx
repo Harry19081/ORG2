@@ -2,8 +2,8 @@ import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { Highlight, HighlightKind } from "@src/api/tauri/builderProfile";
+import { STAT_GRID_TOKENS } from "@src/components/layout/blocks";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
-import { STAT_GRID_TOKENS } from "@src/modules/shared/layouts/blocks";
 
 /**
  * One fact per card: the question, the answer, and the line that makes the
