@@ -21,6 +21,7 @@ import type {
 } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
 import CiCheckStateIcon from "@src/components/CiCheckStateIcon";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_PANEL,
@@ -29,21 +30,19 @@ import {
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import {
   AlertCircleIcon,
-  ArrowDown01Icon,
-  ArrowRight01Icon,
   GitMergeIcon,
   GitPullRequestClosedIcon,
   GitPullRequestDraftIcon,
   HugeiconsIcon,
   Loading03Icon,
 } from "@src/icons";
+import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import {
   type PrMergeHeadlineKind,
   type PrMergeStatusRow,
   type PrMergeStatusTone,
   summarizePullRequestMergeStatus,
-} from "@src/shared/pr/prMergeStatus";
-import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
+} from "@src/util/git/pr/prMergeStatus";
 import { openLink } from "@src/util/ui/openLink";
 
 import { PrChecksPanel } from "./PrChecksPanel";
@@ -225,9 +224,8 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
             >
               <CiCheckStateIcon state={row.tone} size={13} />
               <span className="min-w-0 flex-1 truncate text-left">{label}</span>
-              <HugeiconsIcon
-                icon={isOpen ? ArrowDown01Icon : ArrowRight01Icon}
-                data-icon={isOpen ? "chevron-down" : "chevron-right"}
+              <DisclosureChevron
+                expanded={isOpen}
                 size={12}
                 strokeWidth={1.9}
                 className="shrink-0 text-text-3"

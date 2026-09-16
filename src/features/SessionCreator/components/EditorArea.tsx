@@ -17,6 +17,7 @@ import ComposerInput, { ComposerInputRef } from "@src/components/ComposerInput";
 import ComposerShell from "@src/components/ComposerShell";
 import Message from "@src/components/Message";
 import { VoiceInputButton, VoiceRecordingBar } from "@src/components/Voice";
+import { useTabDragEndToPill } from "@src/components/dnd/useTabDragEndToPill";
 import {
   INPUT_AREA,
   INPUT_AREA_EDITOR_CLASS,
@@ -31,17 +32,16 @@ import { useTabDragHover } from "@src/engines/ChatPanel/InputArea/hooks/useTabDr
 import { type VoiceInputError, useVoiceInput } from "@src/hooks/voice";
 import { useVoiceShortcut } from "@src/hooks/voice/useVoiceShortcut";
 import i18n from "@src/i18n";
-import {
-  clearReferenceDragData,
-  getReferenceDragPillData,
-  hasReferenceDragData,
-} from "@src/shared/dnd/referenceDragData";
-import { useTabDragEndToPill } from "@src/shared/dnd/useTabDragEndToPill";
 import { chatAppearanceAtom } from "@src/store/config/configAtom";
 import { voiceInputEnabledAtom } from "@src/store/platform/voiceInputAtom";
 import type { RepoKind } from "@src/store/repo/types";
 import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
 import type { SlashItem } from "@src/types/extensions";
+import {
+  clearReferenceDragData,
+  getReferenceDragPillData,
+  hasReferenceDragData,
+} from "@src/util/dnd/referenceDragData";
 
 import type { AdvancedConfig, UploadedFile } from "../types";
 import ControlButtons, { type DropdownDirection } from "./ControlButtons";

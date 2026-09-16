@@ -25,7 +25,7 @@ import {
 import {
   formatCompactStatNumber,
   formatDiffStatsLabel,
-} from "@src/shared/pr/formatStatNumber";
+} from "@src/util/git/pr/formatStatNumber";
 
 import {
   type ScopePickerWorktreeEntry,

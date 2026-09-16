@@ -7,11 +7,11 @@ import {
 } from "react";
 
 import Button, { type ButtonProps } from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import {
   TAB_BAR_TRAILING_CLUSTER_CLASS,
   WORKSTATION_TRAIL_CONTENT,
 } from "@src/config/workstation/tokens";
-import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
 import {
   WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS,
@@ -109,13 +109,10 @@ export const WorkstationTrailHeader: FC<WorkstationTrailHeaderProps> = ({
                 {title}
               </span>
             ) : null}
-            <HugeiconsIcon
-              icon={titleToggleCollapsed ? ArrowRight01Icon : ArrowDown01Icon}
-              data-icon={
-                titleToggleCollapsed ? "chevron-right" : "chevron-down"
-              }
+            <DisclosureChevron
+              expanded={!titleToggleCollapsed}
               aria-hidden
-              className="shrink-0 text-text-3 transition-colors group-hover/trail-title:text-text-2"
+              className="shrink-0 text-text-3 group-hover/trail-title:text-text-2"
               size={14}
               strokeWidth={1.75}
             />

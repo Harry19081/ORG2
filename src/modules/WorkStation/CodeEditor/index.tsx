@@ -8,8 +8,8 @@ import { useTerminalState } from "@/src/engines/TerminalCore/hooks/useTerminalSt
 import { invoke } from "@tauri-apps/api/core";
 import React, { memo, useEffect, useMemo } from "react";
 
-import { ActionSystemProvider } from "@src/ActionSystem";
 import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
+import { ActionSystemProvider } from "@src/scaffold/ActionSystem";
 
 import { WorkStationShell } from "../shared";
 // Imported from the SidebarModules entry (not the shared barrel): this

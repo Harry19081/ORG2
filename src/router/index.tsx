@@ -1,4 +1,4 @@
-import { registerAppActions } from "@/src/ActionSystem/registerAppActions";
+import { registerAppActions } from "@/src/scaffold/ActionSystem/registerAppActions";
 import { useEffect } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
 

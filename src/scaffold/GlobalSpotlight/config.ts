@@ -1,4 +1,3 @@
-import { ACTION_ID } from "@src/ActionSystem";
 import { LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from "@src/i18n";
 import {
   ArrowLeft02Icon,
@@ -42,6 +41,7 @@ import {
   WorkHistoryIcon,
   WorkflowCircle05Icon,
 } from "@src/icons";
+import { ACTION_ID } from "@src/scaffold/ActionSystem";
 
 import type { ActionDefinition } from "./types";
 

@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { useSessionDropTarget } from "@src/components/dnd/useSessionDropTarget";
 import { createLogger } from "@src/hooks/logger";
 import {
   Cancel01Icon,
@@ -12,8 +13,7 @@ import {
   LinkSquare02Icon,
   RotateLeft01Icon,
 } from "@src/icons";
-import type { SessionReferenceOpen } from "@src/shared/dnd/sessionTabDrag";
-import { useSessionDropTarget } from "@src/shared/dnd/useSessionDropTarget";
+import type { SessionReferenceOpen } from "@src/util/dnd/sessionTabDrag";
 
 import type {
   TeamInboxCreatedWorkItem,

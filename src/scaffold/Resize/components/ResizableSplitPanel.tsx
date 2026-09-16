@@ -7,7 +7,7 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { useResizeContextMenu } from "@src/hooks/ui/useResizeContextMenu";
-import { listenForDrag } from "@src/shared/interaction/dragLifecycle";
+import { listenForDrag } from "@src/util/dom/dragLifecycle";
 
 import { VerticalResizeHandle } from "./ResizeHandle";
 
