@@ -197,6 +197,14 @@ describe("htmlToMarkdown — blocks", () => {
     ).toBe("| a\\|b | c |\n| --- | --- |");
   });
 
+  it("escapes backslashes before pipes in table cells", () => {
+    // Escaping only "|" turned a literal "\\|" into "\\\\|": an escaped
+    // backslash followed by a column break, splitting the cell.
+    expect(
+      htmlToMarkdown("<table><tr><td>a\\|b</td><td>c</td></tr></table>")
+    ).toBe("| a\\\\\\|b | c |\n| --- | --- |");
+  });
+
   it("pads short rows to the widest row", () => {
     expect(
       htmlToMarkdown(
@@ -233,6 +241,29 @@ describe("htmlToMarkdown — resilience", () => {
         "<style>p{color:red}</style><script>alert(1)</script><p>kept</p>"
       )
     ).toBe("kept");
+  });
+
+  it("never runs markup from the clipboard while converting it", () => {
+    const probe = window as unknown as { __pasteProbe?: number };
+    delete probe.__pasteProbe;
+    const out = htmlToMarkdown(
+      '<p>kept<img src="x" onerror="window.__pasteProbe = 1">' +
+        '<svg onload="window.__pasteProbe = 2"></svg></p>' +
+        '<iframe srcdoc="<script>parent.__pasteProbe = 3</script>"></iframe>'
+    );
+    expect(out.startsWith("kept")).toBe(true);
+    expect(out).not.toMatch(/onerror|onload|__pasteProbe|script/i);
+    expect(probe.__pasteProbe).toBeUndefined();
+  });
+
+  it("keeps the text of custom elements through sanitizing", () => {
+    // GitHub's list rows are built from custom elements; their words must
+    // survive even though the tags themselves are dropped.
+    expect(
+      htmlToMarkdown(
+        '<p>#1846 opened <relative-time datetime="x">6 hours ago</relative-time></p>'
+      )
+    ).toBe("#1846 opened 6 hours ago");
   });
 
   it("drops markup-hidden elements", () => {

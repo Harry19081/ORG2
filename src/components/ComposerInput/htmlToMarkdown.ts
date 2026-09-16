@@ -15,9 +15,11 @@
  *     asterisk it protects.
  *   - Unknown/unsupported elements degrade to their text content rather than
  *     being dropped, so a paste can never silently lose the user's content.
- *   - `DOMParser` builds an inert document: no scripts run and no subresources
- *     load, so untrusted clipboard markup is only ever read as data.
+ *   - Clipboard markup is untrusted: it is sanitized with DOMPurify, which
+ *     parses it into an inert document and strips anything executable, before
+ *     any of it is read.
  */
+import DOMPurify from "dompurify";
 
 /**
  * `<base href>` of the payload currently being converted, when it has one.
@@ -406,10 +408,12 @@ function renderTable(el: Element, depth: number): string {
     if (cells.length === 0) continue;
     rows.push(
       cells.map((cell) =>
-        toSingleLine(renderInlineChildren(cell, depth + 1)).replace(
-          /\|/g,
-          "\\|"
-        )
+        // Backslashes first: escaping only "|" turns a literal "\|" into
+        // "\\|", which markdown reads as an escaped backslash followed by a
+        // column break.
+        toSingleLine(renderInlineChildren(cell, depth + 1))
+          .replace(/\\/g, "\\\\")
+          .replace(/\|/g, "\\|")
       )
     );
   }
@@ -559,24 +563,34 @@ function joinListItemBlocks(blocks: Block[]): string {
  * the payload is unusable (too large, unparseable, or empty of content).
  *
  * Exported for unit tests; production callers go through
- * `markdownFromClipboardHtml`, which also decides whether the conversion is an
+ * `convertClipboardHtml`, which also decides whether the conversion is an
  * improvement over the plain-text flavor.
  */
 export function htmlToMarkdown(html: string): string {
   if (!html || html.length > MAX_HTML_LENGTH) return "";
 
-  let doc: Document;
+  let root: Node;
   try {
-    doc = new DOMParser().parseFromString(html, "text/html");
+    // Clipboard markup is untrusted. DOMPurify parses it into an inert
+    // document and strips anything executable before it is walked. `<base>`
+    // is readmitted — it only resolves relative links here — so the whole
+    // document is kept rather than just its body.
+    root = DOMPurify.sanitize(html, {
+      WHOLE_DOCUMENT: true,
+      RETURN_DOM: true,
+      ADD_TAGS: ["base"],
+    });
   } catch {
     return "";
   }
-  if (!doc.body) return "";
+  if (!isElementNode(root)) return "";
+  const body = root.querySelector("body");
+  if (!body) return "";
 
   documentBaseUrl =
-    doc.querySelector("base")?.getAttribute("href")?.trim() ?? "";
+    root.querySelector("base")?.getAttribute("href")?.trim() ?? "";
 
-  return joinBlocks(renderChildBlocks(doc.body, 0))
+  return joinBlocks(renderChildBlocks(body, 0))
     .replace(/[ \t]+$/gm, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
