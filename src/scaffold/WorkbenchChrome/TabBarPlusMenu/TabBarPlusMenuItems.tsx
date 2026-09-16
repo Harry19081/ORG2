@@ -9,7 +9,10 @@ import {
   KeyboardShortcut,
 } from "@src/components/KeyboardShortcut";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
-import type { WorkStationLaunchAction } from "@src/modules/WorkStation/AppShell/useWorkStationLaunchActions";
+import {
+  type WorkStationLaunchAction,
+  getWorkStationLaunchSections,
+} from "@src/modules/WorkStation/AppShell/useWorkStationLaunchActions";
 
 interface TabBarPlusMenuItemsProps {
   actions: readonly WorkStationLaunchAction[];
@@ -24,46 +27,56 @@ export function TabBarPlusMenuItems({
   deletions,
   onActionComplete,
 }: TabBarPlusMenuItemsProps) {
+  const sections = getWorkStationLaunchSections(actions);
+
   return (
     <>
-      {actions.map((action) => {
-        return (
-          <Button
-            layout="custom"
-            appearance="custom"
-            key={action.id}
-            htmlType="button"
-            onClick={() => {
-              action.onClick();
-              onActionComplete();
-            }}
-            className={DROPDOWN_CLASSES.menuActionItem}
-          >
-            <span className="flex min-w-0 flex-1 items-center gap-2">
-              <AnyIcon icon={action.icon} size={HEADER_ICON_SIZE.sm} />
-              <span className="min-w-0 truncate">{action.label}</span>
-              {action.id === "sourceControl" &&
-              (additions > 0 || deletions > 0) ? (
-                <DiffStatsBadge
-                  additions={additions}
-                  deletions={deletions}
-                  variant="plain"
-                  size="xs"
-                  reserveValueWidth={false}
-                  className="shrink-0"
+      {sections.map((section, sectionIndex) => (
+        <React.Fragment key={section.id}>
+          {sectionIndex > 0 ? (
+            <div
+              role="separator"
+              className={DROPDOWN_CLASSES.menuGroupSeparator}
+            />
+          ) : null}
+          {section.actions.map((action) => (
+            <Button
+              key={action.id}
+              layout="custom"
+              appearance="custom"
+              htmlType="button"
+              onClick={() => {
+                action.onClick();
+                onActionComplete();
+              }}
+              className={DROPDOWN_CLASSES.menuActionItem}
+            >
+              <span className="flex min-w-0 flex-1 items-center gap-2">
+                <AnyIcon icon={action.icon} size={HEADER_ICON_SIZE.sm} />
+                <span className="min-w-0 truncate">{action.label}</span>
+                {action.id === "sourceControl" &&
+                (additions > 0 || deletions > 0) ? (
+                  <DiffStatsBadge
+                    additions={additions}
+                    deletions={deletions}
+                    variant="plain"
+                    size="xs"
+                    reserveValueWidth={false}
+                    className="shrink-0"
+                  />
+                ) : null}
+              </span>
+              {action.shortcutId ? (
+                <KeyboardShortcut
+                  shortcutId={action.shortcutId}
+                  variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
+                  size="sm"
                 />
               ) : null}
-            </span>
-            {action.shortcutId ? (
-              <KeyboardShortcut
-                shortcutId={action.shortcutId}
-                variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
-                size="sm"
-              />
-            ) : null}
-          </Button>
-        );
-      })}
+            </Button>
+          ))}
+        </React.Fragment>
+      ))}
     </>
   );
 }
