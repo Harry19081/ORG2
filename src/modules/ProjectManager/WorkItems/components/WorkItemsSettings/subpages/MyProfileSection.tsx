@@ -17,6 +17,13 @@ import type { LinkedEmail, MemberEntry } from "@src/api/http/project";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PersonAvatar from "@src/components/PersonAvatar";
+import {
+  SECTION_DESCRIPTION_CLASSES,
+  SectionContainer,
+  SectionHeading,
+  SectionRow,
+} from "@src/components/layout/Section";
+import { CARD_ROW_TOKENS } from "@src/components/layout/blocks";
 import { createLogger } from "@src/hooks/logger";
 import { useCurrentUserMemberIds } from "@src/hooks/project/useCurrentUserMemberId";
 import {
@@ -28,13 +35,6 @@ import {
   Tick01Icon,
 } from "@src/icons";
 import { ClaimIdentityModal } from "@src/modules/ProjectManager/shared/components";
-import {
-  SECTION_DESCRIPTION_CLASSES,
-  SectionContainer,
-  SectionHeading,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { CARD_ROW_TOKENS } from "@src/modules/shared/layouts/blocks";
 import { copyText } from "@src/util/data/clipboard";
 import { formatLastCommitDate } from "@src/util/datetime/formatLastCommitDate";
 

@@ -13,6 +13,11 @@ import { Placeholder } from "@src/components/Placeholder";
 import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Switch from "@src/components/Switch";
 import {
+  SECTION_ACTION_GAP_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
+import {
   MOBILE_REMOTE_RELAY_PRODUCTION_URL,
   type MobileRemoteRelayPreset,
   mobileRemoteRelayPresetUrl,
@@ -26,11 +31,6 @@ import { useOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
 import { useAsyncData } from "@src/hooks/async/useAsyncData";
 import { useSetting } from "@src/hooks/settings/useSettings";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
-import {
-  SECTION_ACTION_GAP_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import { saveSettingsBatchAtom } from "@src/store/settings/settingsAtom";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 

@@ -12,14 +12,14 @@ import { formatModelAgentType, isApiKeyProvider } from "@src/assets/providers";
 import type { SelectOption } from "@src/components/Select";
 import type { SettingsTableSelectFilter } from "@src/components/SettingsTable";
 import TabPill from "@src/components/TabPill";
-import type { AvailableAgent } from "@src/config/cliAgents";
-import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InternalHeader,
   ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import type { AvailableAgent } from "@src/config/cliAgents";
+import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import {
   accountMatchesBrandFilter,
   buildBrandProviderFilterOptions,

@@ -16,18 +16,18 @@ import SettingsTable, {
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import Tag, { type TagProps } from "@src/components/Tag";
+import {
+  SECTION_GAP_CLASSES,
+  SECTION_SUBHEADING_CLASSES,
+} from "@src/components/layout/Section";
+import {
+  CollapsibleSection,
+  InlineInfoCard,
+} from "@src/components/layout/blocks";
 import { parseUnifiedDiffToOldNew } from "@src/engines/SessionCore/rendering/props/extractorShared";
 import { CodeMirrorDiff } from "@src/features/CodeMirror/Diff";
 import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
-import {
-  SECTION_GAP_CLASSES,
-  SECTION_SUBHEADING_CLASSES,
-} from "@src/modules/shared/layouts/SectionLayout";
-import {
-  CollapsibleSection,
-  InlineInfoCard,
-} from "@src/modules/shared/layouts/blocks";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
 
 import { RuntimeRefreshButton } from "./RuntimeSectionHeader";

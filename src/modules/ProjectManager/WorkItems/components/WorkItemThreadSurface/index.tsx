@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import { WorkstationTrailSurface } from "@src/components/layout/blocks";
 import { PropertiesPanel } from "@src/modules/ProjectManager/shared";
-import { WorkstationTrailSurface } from "@src/modules/shared/layouts/blocks";
 
 import WorkItemContent from "../WorkItemContent";
 import type { WorkItemContentProps } from "../WorkItemContent/types";

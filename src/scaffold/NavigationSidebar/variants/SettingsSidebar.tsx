@@ -28,7 +28,7 @@ import { ArrowLeft01Icon, Settings01Icon } from "@src/icons";
 import {
   revealRenderedSettingsControl,
   revealSettingsControlWhenRendered,
-} from "@src/modules/shared/layouts/blocks/SettingsSearchDropdown/settingsControlSearch";
+} from "@src/scaffold/NavigationSidebar/variants/SettingsSearchDropdown/settingsControlSearch";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 

@@ -3,7 +3,7 @@ import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@/src/modules/shared/layouts/SectionLayout";
+} from "@/src/components/layout/Section";
 import { open as shellOpen } from "@tauri-apps/plugin-shell";
 import { useAtomValue } from "jotai";
 import React, { useEffect, useMemo, useState } from "react";

@@ -11,12 +11,12 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
-import { CopilotSessionSetup } from "@src/features/SessionSetup";
 import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { CopilotSessionSetup } from "@src/features/SessionSetup";
 
 import type { AgentSetupProps } from "./types";
 

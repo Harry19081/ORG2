@@ -13,7 +13,7 @@ import TabPill from "@src/components/TabPill";
 import {
   DETAIL_PANEL_TOKENS,
   InternalHeader,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
 
 interface AgentDetailHeaderProps {
   tabs: TabPillItem[];

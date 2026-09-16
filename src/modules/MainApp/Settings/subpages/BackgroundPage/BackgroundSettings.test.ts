@@ -12,7 +12,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 vi.mock("@src/components/Message", () => ({ default: { warning: vi.fn() } }));
-vi.mock("@src/modules/shared/layouts/SectionLayout", () => ({
+vi.mock("@src/components/layout/Section", () => ({
   SECTION_CONTROL_STYLE: { width: 280 },
   SectionContainer: ({ children }: { children: ReactNode }) =>
     createElement("section", null, children),

@@ -11,17 +11,17 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
 import {
+  SECTION_CONTROL_STYLE,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
+import {
   InternetIcon,
   Key02Icon,
   KeyboardIcon,
   SearchAreaIcon,
 } from "@src/icons";
 import type { ChannelProbeResult } from "@src/modules/MainApp/Integrations/Connections/Channels/types";
-import {
-  SECTION_CONTROL_STYLE,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import {
   SelectionGrid,
   type SelectionGridOption,

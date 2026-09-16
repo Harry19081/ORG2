@@ -60,7 +60,7 @@ vi.mock("@src/components/Tooltip", () => ({
     createElement("span", { title: content }, children as never),
 }));
 
-vi.mock("@src/modules/shared/layouts/blocks", () => ({
+vi.mock("@src/components/layout/blocks", () => ({
   Placeholder: ({ variant, title }: { variant: string; title?: string }) =>
     createElement("div", { "data-testid": `placeholder-${variant}` }, title),
   CollapsibleSection: ({
@@ -113,7 +113,7 @@ vi.mock("@src/components/Placeholder", () => ({
     createElement("div", { "data-testid": `placeholder-${variant}` }, title),
 }));
 
-vi.mock("@src/modules/shared/layouts/SectionLayout", () => ({
+vi.mock("@src/components/layout/Section", () => ({
   SECTION_GAP_CLASSES: "",
   SECTION_SUBHEADING_CLASSES: "",
   SectionContainer: ({ children }: { children?: unknown }) =>

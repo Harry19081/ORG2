@@ -23,7 +23,7 @@ import {
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { CaptionsIcon, HugeiconsIcon } from "@src/icons";
-import { useStationToggleInsetTransition } from "@src/modules/shared/layouts/useStationToggleInsetTransition";
+import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import {
   sessionMapAtom,

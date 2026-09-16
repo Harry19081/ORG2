@@ -201,7 +201,7 @@ vi.mock("./UsageTrendChart", () => ({
     }),
 }));
 
-vi.mock("@src/modules/shared/layouts/blocks", () => ({
+vi.mock("@src/components/layout/blocks", () => ({
   Placeholder: ({
     variant,
     title,
@@ -283,7 +283,7 @@ vi.mock("@src/components/Placeholder", () => ({
     ),
 }));
 
-vi.mock("@src/modules/shared/layouts/SectionLayout", () => ({
+vi.mock("@src/components/layout/Section", () => ({
   SECTION_GAP_CLASSES: "",
   SECTION_SUBHEADING_CLASSES: "",
   SectionContainer: ({ children }: { children?: unknown }) =>

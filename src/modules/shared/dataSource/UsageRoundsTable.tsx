@@ -13,8 +13,8 @@ import SettingsTable, {
   type SettingsTableSelectFilter,
 } from "@src/components/SettingsTable";
 import Tooltip from "@src/components/Tooltip";
-import { SECTION_SUBHEADING_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
-import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
+import { SECTION_SUBHEADING_CLASSES } from "@src/components/layout/Section";
+import { CollapsibleSection } from "@src/components/layout/blocks";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
 
 import { RuntimeRefreshButton } from "./RuntimeSectionHeader";

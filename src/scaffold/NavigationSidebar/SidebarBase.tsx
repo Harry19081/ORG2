@@ -15,6 +15,10 @@ import Button from "@src/components/Button";
 import SessionHistoryNav from "@src/components/SessionHistoryNav";
 import { SIDEBAR_CHROME_BUTTON_HOVER_CLASS } from "@src/components/SidebarChromeIconButton";
 import Tooltip from "@src/components/Tooltip";
+import {
+  PANE_WIDTH_TRANSITION_CLASSES,
+  getSidebarSurfaceBackgroundStyle,
+} from "@src/components/layout/tokens/viewContainerTokens";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
   HOST_DESKTOP,
@@ -25,10 +29,6 @@ import { useSettingValue } from "@src/hooks/settings/useSettings";
 import { useCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useSidebarState } from "@src/hooks/ui/sidebar/useSidebarState";
 import { Add01Icon } from "@src/icons";
-import {
-  PANE_WIDTH_TRANSITION_CLASSES,
-  getSidebarSurfaceBackgroundStyle,
-} from "@src/modules/shared/layouts/viewContainerTokens";
 import { VerticalResizeHandle } from "@src/scaffold/Resize";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import {

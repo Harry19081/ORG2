@@ -15,9 +15,9 @@ import type {
   ExternalSourceStats,
 } from "@src/api/tauri/externalHistory";
 import Button from "@src/components/Button";
+import InlineInfoCard from "@src/components/layout/blocks/InlineInfoCard";
 import { INFO_CARD_TOKENS } from "@src/config/detailPanelTokens";
 import { Copy01Icon, FolderOpenIcon, HugeiconsIcon } from "@src/icons";
-import InlineInfoCard from "@src/modules/shared/layouts/blocks/InlineInfoCard";
 import { copyText } from "@src/util/data/clipboard";
 
 import { storeKindLabel, tildePath } from "./sourcePath";

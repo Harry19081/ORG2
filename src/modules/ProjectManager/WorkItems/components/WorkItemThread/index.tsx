@@ -2,15 +2,15 @@ import React, { createContext, useContext, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
-import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
-import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
-import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
 import {
   DetailPanelContainer,
   ScrollTrail,
   WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
   WORKSTATION_TRAIL_WIDTH,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
+import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
 
 import { resolveWorkItemThreadHeaderPolicy } from "./presentation";
 import { WORK_ITEM_THREAD_TOKENS } from "./tokens";

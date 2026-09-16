@@ -3,7 +3,7 @@
  * Preset solid colors, saved DIY hex colors, and + picker in one row.
  */
 import Button from "@/src/components/Button";
-import { SectionRow } from "@/src/modules/shared/layouts/SectionLayout";
+import { SectionRow } from "@/src/components/layout/Section";
 import React from "react";
 import { useTranslation } from "react-i18next";
 

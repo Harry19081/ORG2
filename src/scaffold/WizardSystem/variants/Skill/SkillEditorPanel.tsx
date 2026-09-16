@@ -17,6 +17,11 @@ import type { RadioValue } from "@src/components/Radio";
 import Switch from "@src/components/Switch";
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
+import {
+  SECTION_CONTROL_STYLE,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import { CodeMirrorEditor } from "@src/features/CodeMirror/Editor";
 import type { UseSkillEditorReturn } from "@src/hooks/skills/useSkillEditor";
 import { Add01Icon, Alert01Icon, HugeiconsIcon } from "@src/icons";
@@ -24,11 +29,6 @@ import {
   SKILL_SCOPE,
   type SkillScope,
 } from "@src/modules/MainApp/Integrations/store/skills/skillEditorDraftAtom";
-import {
-  SECTION_CONTROL_STYLE,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import {
   WizardShell,
   WizardStepLayout,
