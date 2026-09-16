@@ -3,8 +3,6 @@
     "customCommandUpdated": "Custom command updated",
     "shellSettingUpdated": "Shell setting updated"
   },
-  "noSettingsFound": "No settings found for \"{{query}}\"",
-  "searchPlaceholder": "Search settings...",
   "panel": {
     "maximizeSettings": "Maximize Settings"
   },

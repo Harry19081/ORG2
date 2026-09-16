@@ -21,7 +21,8 @@ import { SettingsRootBody } from "./SettingsSidebar";
 
 vi.mock("react-i18next", () => {
   const labels: Record<string, string> = {
-    "settings:searchPlaceholder": "Search settings...",
+    "common:common.searchPlaceholder": "Search...",
+    "common:common.noResults": "No results found",
     "common:tooltips.clearSearch": "Clear search",
     "settings:general.lightSkin": "浅色皮肤",
     "settings:general.darkSkin": "深色皮肤",
@@ -29,10 +30,7 @@ vi.mock("react-i18next", () => {
     "settings:general.darkAccent": "深色强调色",
     "settings:general.accent": "强调色",
   };
-  const t = (key: string, options?: { query?: string }) =>
-    key === "settings:noSettingsFound"
-      ? `No settings found for "${options?.query ?? ""}"`
-      : (labels[key] ?? key);
+  const t = (key: string) => labels[key] ?? key;
   return { useTranslation: () => ({ t }) };
 });
 
@@ -353,8 +351,10 @@ describe("SettingsRootBody search integration", () => {
     key("Enter");
     expect(onSelect).toHaveBeenCalledWith(NAVIGATION_GROUPS[1].items[0]);
     await search("no-such-setting-987654");
-    expect(container.querySelector('[role="status"]')?.textContent).toContain(
-      "no-such-setting-987654"
+    // The empty state is the generic common:common.noResults string; it no
+    // longer echoes the query back, so assert the message, not the term.
+    expect(container.querySelector('[role="status"]')?.textContent).toBe(
+      "No results found"
     );
     expect(input().hasAttribute("aria-activedescendant")).toBe(false);
     key("Enter");
