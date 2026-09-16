@@ -30,7 +30,7 @@ vi.mock("@src/features/CodeViewer/VirtualizedModernDiff", () => ({
     React.createElement("div", { "data-testid": "single-diff" }),
 }));
 
-vi.mock("@src/modules/shared/components/FileHeader", () => ({
+vi.mock("@src/features/FileHeader", () => ({
   FileHeader: () => React.createElement("header"),
   default: () => React.createElement("header"),
 }));

@@ -28,6 +28,8 @@ import {
   projectDataToUI,
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
+import type { MarkdownEditorMode } from "@src/components/MarkdownTextareaEditor";
+import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import Message from "@src/components/Message";
 import type { SelectOption } from "@src/components/Select";
 import { CreatorContentLayout } from "@src/components/layout/blocks";
@@ -53,8 +55,6 @@ import {
   ProjectPropertyFields,
   type ProjectPropertyFieldsProps,
 } from "@src/modules/ProjectManager/shared";
-import type { MarkdownEditorMode } from "@src/modules/shared/components/MarkdownTextareaEditor";
-import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
 import { reposAtom } from "@src/store/repo";
 import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
 import { manualCreatorAtom } from "@src/store/ui/manualCreatorAtom";

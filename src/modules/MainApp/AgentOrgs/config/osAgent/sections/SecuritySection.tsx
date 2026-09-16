@@ -13,6 +13,7 @@ import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import SaveableTextarea from "@src/components/SaveableTextarea";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
 import {
@@ -20,7 +21,6 @@ import {
   SectionContainer,
   SectionRow,
 } from "@src/components/layout/Section";
-import SaveableTextarea from "@src/modules/shared/components/SaveableTextarea";
 
 import { getNestedBool, getNestedString, getNestedStringArray } from "../utils";
 

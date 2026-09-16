@@ -20,6 +20,7 @@ import type {
   GitHubPrReview,
 } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
+import CiCheckStateIcon from "@src/components/CiCheckStateIcon";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_PANEL,
@@ -36,7 +37,6 @@ import {
   HugeiconsIcon,
   Loading03Icon,
 } from "@src/icons";
-import CiCheckStateIcon from "@src/modules/shared/components/CiCheckStateIcon";
 import {
   type PrMergeHeadlineKind,
   type PrMergeStatusRow,

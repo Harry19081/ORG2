@@ -9,6 +9,8 @@ import {
   WorkstationTrailIconButton,
   WorkstationTrailSurface,
 } from "@src/components/layout/blocks";
+import LazyGitHubLinkedReferences from "@src/features/GitHubWork/GitHubLinkedReferences/lazy";
+import type { ThreadDetailTab } from "@src/features/GitHubWork/ThreadDetailTabs";
 import { useProjectDataChanged } from "@src/hooks/project";
 import { useCurrentUserMemberIds } from "@src/hooks/project/useCurrentUserMemberId";
 import { ArrowRightDoubleIcon, HugeiconsIcon } from "@src/icons";
@@ -20,8 +22,6 @@ import {
   PropertiesPanel,
   PropertiesRailFrame,
 } from "@src/modules/ProjectManager/shared";
-import LazyGitHubLinkedReferences from "@src/modules/shared/components/GitHubLinkedReferences/lazy";
-import type { ThreadDetailTab } from "@src/modules/shared/components/ThreadDetailTabs";
 import type { ChatPanelSelectedWorkItem } from "@src/store/ui/chatPanel/selectionAtoms";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import type { WorkItem } from "@src/types/core/workItem";

@@ -6,6 +6,7 @@ import { type WorkItemData, projectApi } from "@src/api/http/project";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Select, { type SelectOption } from "@src/components/Select";
+import { ActivityHeaderActionButton } from "@src/features/GitHubWork/ActivityTimeline";
 import {
   allocateCloudAwareStandaloneWorkItemId,
   allocateCloudAwareWorkItemId,
@@ -22,7 +23,6 @@ import {
   HierarchyFilesIcon,
   HugeiconsIcon,
 } from "@src/icons";
-import { ActivityHeaderActionButton } from "@src/modules/shared/components/ActivityTimeline";
 
 import {
   WORK_ITEM_THREAD_TOKENS,

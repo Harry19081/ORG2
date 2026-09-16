@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import { DETAIL_FLOW_HEADER_TOKENS } from "@src/components/DetailFlowHeader";
 import SkeletonBar from "@src/components/Skeleton";
 import WorkstationTrailSurface, {
   WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
@@ -14,8 +15,7 @@ import { WORKSTATION_TRAIL_CONTENT } from "@src/config/workstation/tokens";
 import {
   TimelineCard,
   TimelineLoadingSkeleton,
-} from "@src/modules/shared/components/ActivityTimeline";
-import { DETAIL_FLOW_HEADER_TOKENS } from "@src/modules/shared/components/DetailFlowHeader";
+} from "@src/features/GitHubWork/ActivityTimeline";
 import type { PrDetailTab } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 
 import GitHubPrDetailTabs from "../GitHubPrDetailTabs";

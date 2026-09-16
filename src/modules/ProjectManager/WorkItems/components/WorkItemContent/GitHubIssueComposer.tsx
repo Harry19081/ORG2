@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import ComposerShell from "@src/components/ComposerShell";
 import ComposerSurface from "@src/components/ComposerSurface";
-import PersonAvatar from "@src/components/PersonAvatar";
-import { LoadingBar } from "@src/components/layout/blocks";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
-} from "@src/modules/shared/components/MarkdownTextareaEditor";
-import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
+} from "@src/components/MarkdownTextareaEditor";
+import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
+import PersonAvatar from "@src/components/PersonAvatar";
+import { LoadingBar } from "@src/components/layout/blocks";
 
 import GitHubIssueCloseButton from "./GitHubIssueCloseButton";
 import type {

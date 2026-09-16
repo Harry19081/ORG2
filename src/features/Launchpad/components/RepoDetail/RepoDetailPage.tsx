@@ -26,19 +26,19 @@ import {
   DETAIL_PANEL_TOKENS,
 } from "@src/components/layout/blocks";
 import { InfoRow } from "@src/components/layout/blocks/InfoRow";
-import { Copy01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   useContainers,
   useEnvCrud,
   useRepoContainers,
   useRepoDetection,
   useScriptCrud,
-} from "@src/modules/shared/launchpad/hooks";
+} from "@src/features/Launchpad/hooks";
 import type {
   EnvVar,
   RepoScript,
   ScriptCategory,
-} from "@src/modules/shared/launchpad/types";
+} from "@src/features/Launchpad/types";
+import { Copy01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
 import type { Repo } from "@src/store/repo/types";
 import { copyText } from "@src/util/data/clipboard";
 
