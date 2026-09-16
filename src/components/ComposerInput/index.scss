@@ -215,3 +215,20 @@
     }
   }
 }
+
+// ===== Expandable composer (useComposerExpansion) =====
+//
+// Expanded: a fixed tall writing surface. `!important` beats the inline
+// min/max-height ComposerInput sets from its props. The wrapper and host fill
+// the box too, so a click anywhere below the last line lands in the document.
+.composer-input.composer-input-expanded {
+  --composer-input-expanded-height: min(50vh, 560px);
+
+  min-height: var(--composer-input-expanded-height) !important;
+  max-height: var(--composer-input-expanded-height) !important;
+
+  .composer-input-wrapper,
+  .composer-input-content {
+    min-height: var(--composer-input-expanded-height) !important;
+  }
+}

@@ -640,6 +640,8 @@
     "queryHistory": "Query history",
     "executeQuery": "Execute query ({{shortcut}})",
     "startVoiceInput": "Start voice input",
+    "expandInput": "Expand input",
+    "collapseInput": "Collapse input",
     "cancelRecording": "Cancel recording",
     "stopAndTranscribe": "Stop and transcribe",
     "htmlPreview": "HTML Preview",

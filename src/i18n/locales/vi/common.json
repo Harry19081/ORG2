@@ -809,6 +809,8 @@
     "queryHistory": "Lịch sử truy vấn",
     "executeQuery": "Thực thi truy vấn ({{shortcut}})",
     "startVoiceInput": "Bắt đầu nhập bằng giọng nói",
+    "expandInput": "Mở rộng ô nhập",
+    "collapseInput": "Thu gọn ô nhập",
     "cancelRecording": "Hủy ghi âm",
     "stopAndTranscribe": "Dừng và chuyển thành văn bản",
     "htmlPreview": "Xem trước HTML",

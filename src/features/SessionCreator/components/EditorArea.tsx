@@ -13,6 +13,8 @@ import { useTranslation } from "react-i18next";
 
 import ComposerSendGroup from "@src/components/ComposerBar/ComposerSendGroup";
 import ComposerInput, { ComposerInputRef } from "@src/components/ComposerInput";
+import ComposerExpandToggle from "@src/components/ComposerInput/ComposerExpandToggle";
+import { useComposerExpansion } from "@src/components/ComposerInput/useComposerExpansion";
 import ComposerShell from "@src/components/ComposerShell";
 import Message from "@src/components/Message";
 import { VoiceInputButton, VoiceRecordingBar } from "@src/components/Voice";
@@ -271,6 +273,7 @@ const EditorArea: React.FC<EditorAreaProps> = ({
   }, [composerInputRef, onUploadClick]);
 
   const editorContainerRef = React.useRef<HTMLDivElement>(null);
+  const expansion = useComposerExpansion(editorContainerRef, true);
 
   // ============================================
   // Voice input (push-to-talk dictation)
@@ -535,7 +538,7 @@ const EditorArea: React.FC<EditorAreaProps> = ({
           onSubmit={onSubmit}
           requireCmdEnter={!sendOnEnter}
           autoFocus={autoFocus}
-          className={INPUT_AREA_EDITOR_CLASS}
+          className={`${INPUT_AREA_EDITOR_CLASS} ${expansion.editorClassName}`.trim()}
           minHeight={INPUT_AREA_EDITOR_HEIGHT.min}
           maxHeight={INPUT_AREA_EDITOR_HEIGHT.max}
           onKeyDownForDropdown={handleKeyDownForDropdown}
@@ -598,23 +601,31 @@ const EditorArea: React.FC<EditorAreaProps> = ({
                 repoPath={repoPath}
                 showContextInfo={false}
                 submitButton={
-                  !hideLaunchButton ? (
-                    <ComposerSendGroup>
-                      {voiceFeatureEnabled && (
-                        <VoiceInputButton
-                          onPressStart={voice.start}
-                          onPressEnd={voice.stop}
-                          disabled={!voice.isSupported}
-                        />
-                      )}
-                      <LaunchButton
-                        ariaLabel={launchAriaLabel}
-                        disabled={launchDisabled ?? false}
-                        loading={isLoading}
-                        onClick={onLaunch}
+                  <>
+                    {expansion.showToggle && (
+                      <ComposerExpandToggle
+                        expanded={expansion.expanded}
+                        onToggle={expansion.toggle}
                       />
-                    </ComposerSendGroup>
-                  ) : undefined
+                    )}
+                    {!hideLaunchButton && (
+                      <ComposerSendGroup>
+                        {voiceFeatureEnabled && (
+                          <VoiceInputButton
+                            onPressStart={voice.start}
+                            onPressEnd={voice.stop}
+                            disabled={!voice.isSupported}
+                          />
+                        )}
+                        <LaunchButton
+                          ariaLabel={launchAriaLabel}
+                          disabled={launchDisabled ?? false}
+                          loading={isLoading}
+                          onClick={onLaunch}
+                        />
+                      </ComposerSendGroup>
+                    )}
+                  </>
                 }
               />
             )}

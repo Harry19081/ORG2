@@ -809,6 +809,8 @@
     "queryHistory": "Historia zapytań",
     "executeQuery": "Wykonaj zapytanie ({{shortcut}})",
     "startVoiceInput": "Rozpocznij wprowadzanie głosowe",
+    "expandInput": "Rozwiń pole wprowadzania",
+    "collapseInput": "Zwiń pole wprowadzania",
     "cancelRecording": "Anuluj nagrywanie",
     "stopAndTranscribe": "Zatrzymaj i transkrybuj",
     "htmlPreview": "Podgląd HTML",

@@ -809,6 +809,8 @@
     "queryHistory": "Historique des requêtes",
     "executeQuery": "Exécuter la requête ({{shortcut}})",
     "startVoiceInput": "Démarrer la saisie vocale",
+    "expandInput": "Agrandir la zone de saisie",
+    "collapseInput": "Réduire la zone de saisie",
     "cancelRecording": "Annuler l'enregistrement",
     "stopAndTranscribe": "Arrêter et transcrire",
     "htmlPreview": "Aperçu HTML",

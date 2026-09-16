@@ -809,6 +809,8 @@
     "queryHistory": "查詢歷史",
     "executeQuery": "執行查詢 ({{shortcut}})",
     "startVoiceInput": "開始語音輸入",
+    "expandInput": "展開輸入框",
+    "collapseInput": "收合輸入框",
     "cancelRecording": "取消錄製",
     "stopAndTranscribe": "停止並轉錄",
     "htmlPreview": "HTML 預覽",

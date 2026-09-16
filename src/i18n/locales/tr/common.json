@@ -809,6 +809,8 @@
     "queryHistory": "Sorgu geçmişi",
     "executeQuery": "Sorguyu çalıştır ({{shortcut}})",
     "startVoiceInput": "Sesli girişi başlat",
+    "expandInput": "Giriş alanını genişlet",
+    "collapseInput": "Giriş alanını daralt",
     "cancelRecording": "Kaydı iptal et",
     "stopAndTranscribe": "Durdur ve yazıya dök",
     "htmlPreview": "HTML önizleme",
