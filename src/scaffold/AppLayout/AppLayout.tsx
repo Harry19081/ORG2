@@ -18,7 +18,6 @@ import { PinnedSidebarChrome } from "@/src/scaffold/NavigationSidebar/PinnedSide
 import { useAtomValue } from "jotai";
 import React, { memo, useCallback, useEffect, useRef } from "react";
 
-import { ActionSystemProvider } from "@src/ActionSystem";
 import { sendAdeActionResult } from "@src/api/tauri/agent";
 import GlobalSessionSync from "@src/app/root/services/GlobalSessionSync";
 import { WindowsTopBar } from "@src/components/WindowChrome";
@@ -45,6 +44,7 @@ import { SessionCreatorChatPanel } from "@src/features/SessionCreator/variants";
 import type { SessionCreatorChatPanelProps } from "@src/features/SessionCreator/variants/ChatPanel";
 import { dispatchWebviewLayoutChanged } from "@src/hooks/platform/useInlineWebview/webviewLayoutEvents";
 import { useMacosPageBackdropSurface } from "@src/hooks/platform/useMacosPageBackdropSurface";
+import { ActionSystemProvider } from "@src/scaffold/ActionSystem";
 import { GlobalSpotlightPortal } from "@src/scaffold/GlobalSpotlight/GlobalSpotlightPortal";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";

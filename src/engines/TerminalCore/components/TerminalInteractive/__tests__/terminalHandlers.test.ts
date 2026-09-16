@@ -11,7 +11,7 @@ vi.mock("@src/util/platform/tauri/init", () => ({
   isTauriReady: () => true,
 }));
 vi.mock("@src/util/platform/tauri", () => ({ isMacOS: () => false }));
-vi.mock("@src/lib/dndKit", () => ({ getUiScaleFromCssVar: () => 1 }));
+vi.mock("@src/util/dom/uiScale", () => ({ getUiScaleFromCssVar: () => 1 }));
 vi.mock("../terminalPty", () => ({ notifyPtyUserInput: vi.fn() }));
 vi.mock("../bufferCache", () => ({ setTerminalBuffer: vi.fn() }));
 

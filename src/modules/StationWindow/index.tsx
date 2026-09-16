@@ -28,7 +28,6 @@ import React, { memo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useSearchParams } from "react-router-dom";
 
-import { ActionSystemProvider } from "@src/ActionSystem";
 import {
   STATION_WINDOW_SESSION_EVENT,
   type StationWindowSessionPayload,
@@ -48,6 +47,7 @@ import { useNativeSessionStatusMonitor } from "@src/hooks/session/useNativeSessi
 import { useGlobalBrowserWebviewLayering } from "@src/modules/WorkStation/Browser/hooks";
 import { useOpenUrlInBrowser } from "@src/modules/useOpenUrlInBrowser";
 import { useWorkStationPipelineBridge } from "@src/modules/useWorkStationPipelineBridge";
+import { ActionSystemProvider } from "@src/scaffold/ActionSystem";
 import { GlobalSpotlightPortal } from "@src/scaffold/GlobalSpotlight/GlobalSpotlightPortal";
 import { loadSessions } from "@src/store/session";
 import {

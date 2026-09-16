@@ -3,7 +3,7 @@ import { Provider, createStore } from "jotai";
 import React from "react";
 import { expect, it, vi } from "vitest";
 
-import { ACTION_ID } from "@src/ActionSystem";
+import { ACTION_ID } from "@src/scaffold/ActionSystem";
 import { reposAtom, selectedRepoIdAtom } from "@src/store/repo";
 import { darkSkinIdAtom, lightSkinIdAtom } from "@src/store/ui/uiAtom";
 import {
@@ -19,8 +19,8 @@ const actions = vi.hoisted(() => ({
   dispatch: vi.fn().mockResolvedValue({ success: true }),
   isValidAction: vi.fn(() => false),
 }));
-vi.mock("@src/ActionSystem", async (load) => ({
-  ...(await load<typeof import("@src/ActionSystem")>()),
+vi.mock("@src/scaffold/ActionSystem", async (load) => ({
+  ...(await load<typeof import("@src/scaffold/ActionSystem")>()),
   useActionSystemOptional: () => actions,
 }));
 

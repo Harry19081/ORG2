@@ -15,12 +15,12 @@
  */
 import { capPillText, storePillText } from "@src/config/pillTokens";
 import { createLogger } from "@src/hooks/logger";
+import type { InstalledSkill } from "@src/types/extensions";
 import {
   type ReferenceDragPillData,
   clearReferenceDragData,
   getReferenceDragPillData,
-} from "@src/shared/dnd/referenceDragData";
-import type { InstalledSkill } from "@src/types/extensions";
+} from "@src/util/dnd/referenceDragData";
 import { extractSkillNameFromPath } from "@src/util/skills/skillPath";
 
 import type { ComposerFragmentPart } from "./cutHandler";

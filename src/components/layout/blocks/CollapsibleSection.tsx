@@ -7,9 +7,9 @@
 import React from "react";
 
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import { COLLAPSIBLE_SECTION_TOKENS } from "@src/config/detailPanelTokens";
 import { useCollapsible } from "@src/hooks/ui/useCollapsible";
-import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
 export interface CollapsibleSectionProps {
   title: string;
@@ -74,18 +74,9 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     chevronClassNameProp ?? COLLAPSIBLE_SECTION_TOKENS.chevronClass;
   const chevronStrokeWidth = chevronStrokeWidthProp ?? 2;
 
-  const chevronIcon = isOpen ? (
-    <HugeiconsIcon
-      icon={ArrowDown01Icon}
-      data-icon="chevron-down"
-      size={chevronSize}
-      strokeWidth={chevronStrokeWidth}
-      className={chevronClass}
-    />
-  ) : (
-    <HugeiconsIcon
-      icon={ArrowRight01Icon}
-      data-icon="chevron-right"
+  const chevronIcon = (
+    <DisclosureChevron
+      expanded={isOpen}
       size={chevronSize}
       strokeWidth={chevronStrokeWidth}
       className={chevronClass}

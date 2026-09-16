@@ -13,8 +13,10 @@ const mocks = vi.hoisted(() => ({
   reposCache: new Map(),
   getRepos: vi.fn(),
 }));
-vi.mock("@src/ActionSystem/schema/zodRegistry", async (load) => ({
-  ...(await load<typeof import("@src/ActionSystem/schema/zodRegistry")>()),
+vi.mock("@src/scaffold/ActionSystem/schema/zodRegistry", async (load) => ({
+  ...(await load<
+    typeof import("@src/scaffold/ActionSystem/schema/zodRegistry")
+  >()),
   zodActionRegistry: { execute: mocks.execute },
 }));
 vi.mock("@src/hooks/git", () => ({

@@ -2,12 +2,12 @@
 import { createElement } from "react";
 import { expect, it, vi } from "vitest";
 
-import { ACTION_ID } from "@src/ActionSystem";
-import { zodActionRegistry } from "@src/ActionSystem/schema/zodRegistry";
 import {
   editorRedo,
   editorUndo,
-} from "@src/modules/WorkStation/ActionSystem/registration/actions/editorActions.zod";
+} from "@src/modules/WorkStation/actions/editorActions.zod";
+import { ACTION_ID } from "@src/scaffold/ActionSystem";
+import { zodActionRegistry } from "@src/scaffold/ActionSystem/schema/zodRegistry";
 import {
   createSmokeRoot,
   dispatch as update,

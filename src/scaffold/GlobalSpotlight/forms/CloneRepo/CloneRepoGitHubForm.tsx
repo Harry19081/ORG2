@@ -6,7 +6,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { ACTION_ID, useActionSystemOptional } from "@src/ActionSystem";
 import type { GitHubRepo } from "@src/api/http/github/types";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
@@ -21,6 +20,7 @@ import {
   LockIcon,
   SquareArrowUpRight02Icon,
 } from "@src/icons";
+import { ACTION_ID, useActionSystemOptional } from "@src/scaffold/ActionSystem";
 import { joinPathForDisplay } from "@src/util/file/pathUtils";
 
 import { ICONS } from "../../config";

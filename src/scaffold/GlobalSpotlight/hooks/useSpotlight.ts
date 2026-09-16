@@ -13,11 +13,6 @@ import {
   useRef,
 } from "react";
 
-import {
-  ACTION_ID,
-  type ActionId,
-  useActionSystemOptional,
-} from "@src/ActionSystem";
 import type { GlobalThemePreference } from "@src/config/appearance/globalThemes";
 import type { SkinVariant } from "@src/config/appearance/skins/types";
 import type { CloudSessionReference } from "@src/features/Org2Cloud/cloudSessionReference";
@@ -27,6 +22,11 @@ import { showScaleMessage } from "@src/hooks/navigation/useGlobalShortcuts/types
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import type { LanguagePreference } from "@src/i18n";
 import type { IconSvgElement } from "@src/icons";
+import {
+  ACTION_ID,
+  type ActionId,
+  useActionSystemOptional,
+} from "@src/scaffold/ActionSystem";
 import { checkForUpdatesManually } from "@src/scaffold/AppUpdater/actions";
 import {
   openAgentControlSpotlight,

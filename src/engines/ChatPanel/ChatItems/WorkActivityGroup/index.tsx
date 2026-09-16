@@ -11,7 +11,7 @@ import {
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { getChatLazyComponent } from "@src/engines/SessionCore/rendering/registry/events";
 import { ActivitySparkIcon, HugeiconsIcon, WaypointsIcon } from "@src/icons";
-import { getRegistryEventType } from "@src/lib/activityData/activityNormalizers";
+import { getRegistryEventType } from "@src/util/data/activityData/activityNormalizers";
 import { getToolDisplayLabelFromRegistry } from "@src/util/ui/rendering/registryToolLabel";
 import { deriveToolAction } from "@src/util/ui/rendering/toolAction";
 

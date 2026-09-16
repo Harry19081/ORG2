@@ -30,7 +30,6 @@ import {
   SquareTerminalIcon,
 } from "@src/icons";
 import { killAgentShellProcess } from "@src/services/terminal";
-import { startVisibilityAwareInterval } from "@src/shared/scheduling/visibilityAwareInterval";
 import { activeSessionIdAtom } from "@src/store/session";
 import {
   type ShellProcessState,
@@ -42,6 +41,7 @@ import {
   subagentJobMapAtom,
 } from "@src/store/session/subagentJobAtom";
 import { invokeTauri } from "@src/util/platform/tauri/init";
+import { startVisibilityAwareInterval } from "@src/util/time/scheduling/visibilityAwareInterval";
 
 import ComposerStackHeader from "./ComposerStackHeader";
 

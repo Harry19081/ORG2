@@ -1,9 +1,12 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-import { type ActionId, useActionSystemOptional } from "@src/ActionSystem";
 import { createLogger } from "@src/hooks/logger";
 import { useAppNavigate } from "@src/hooks/navigation/useAppNavigate";
+import {
+  type ActionId,
+  useActionSystemOptional,
+} from "@src/scaffold/ActionSystem";
 
 import { SpotlightFooterAction } from "./SpotlightFooterAction";
 
