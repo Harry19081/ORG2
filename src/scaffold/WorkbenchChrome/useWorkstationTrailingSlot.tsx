@@ -5,7 +5,7 @@ import ProjectManagerWorkItemsTabBarTrailing from "@src/modules/ProjectManager/P
 import { workstationProjectTabBarAtom } from "@src/store/workstation";
 import type { WorkstationTabHost } from "@src/store/workstation/tabHost";
 
-import { StationHeaderControls } from "../shared/StationHeaderControls";
+import { StationHeaderControls } from "./StationHeaderControls";
 import { TabBarPlusMenu } from "./TabBarPlusMenu";
 import type { UseWorkstationTabListReturn } from "./useWorkstationTabList";
 

@@ -6272,8 +6272,8 @@
     "count": 1
   },
   {
-    "key": "5a727e8393e3cdf975e3edcfb5bd8a6d4fb74176b0bffafeca7ba18c825c0a4a",
-    "file": "src/modules/WorkStation/AppShell/AgentStationTopHeader.tsx",
+    "key": "12dc1aec23ee313f756bf85d2f5c20b43088119c65055b3689d05be95eb7d4c2",
+    "file": "src/scaffold/WorkbenchChrome/AgentStationTopHeader.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void WorkStationViewService.showWorkStation();",
@@ -6296,24 +6296,24 @@
     "count": 1
   },
   {
-    "key": "df3ae951f2eb7f271405fddceaaca9c39487ae2ed497135b8ad5535b7051e6f7",
-    "file": "src/modules/WorkStation/AppShell/PinnedWorkbenchChrome.tsx",
+    "key": "f527b43a382fe23dba4c2d2bcb2520b4e2b7d75c5d2d298a458fbf2d81a26f86",
+    "file": "src/scaffold/WorkbenchChrome/PinnedWorkbenchChrome.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void WorkStationViewService.showWorkStation();",
     "count": 1
   },
   {
-    "key": "0b806fbbf97116be252351641a5381fb45a0a0f580cac5bfa1c227caa659a1e8",
-    "file": "src/modules/WorkStation/AppShell/useWorkstationTabList.ts",
+    "key": "8e84e5e30b03035bb7ab67ad31781def5a4b1244fcad51d565d16a5c9b0b3b42",
+    "file": "src/scaffold/WorkbenchChrome/useWorkstationTabList.ts",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void closeTab({ tabId });",
     "count": 1
   },
   {
-    "key": "d8daac1a03cd807230e26258b18076574e08c7b000a47b14722bcdf3a3a9b39b",
-    "file": "src/modules/WorkStation/AppShell/useWorkstationTrailingSlot.tsx",
+    "key": "28df036418cdd6b277ba676421d30826eec7b2ebc0c15fa9e3a6e78b65307787",
+    "file": "src/scaffold/WorkbenchChrome/useWorkstationTrailingSlot.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void WorkStationViewService.showWorkStation();",

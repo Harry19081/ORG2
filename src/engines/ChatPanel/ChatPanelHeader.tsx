@@ -16,9 +16,9 @@ import {
   HugeiconsIcon,
   SquareTerminalIcon,
 } from "@src/icons";
-import { ChatPaneFocusButton } from "@src/modules/WorkStation/shared/StationPaneControls";
 import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
+import { ChatPaneFocusButton } from "@src/scaffold/WorkbenchChrome/StationPaneControls";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { isWindows } from "@src/util/platform/tauri";

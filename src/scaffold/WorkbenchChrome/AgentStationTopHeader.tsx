@@ -23,6 +23,10 @@ import {
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { CaptionsIcon, HugeiconsIcon } from "@src/icons";
+import {
+  SimulatorAgentChip,
+  StationModeChip,
+} from "@src/modules/WorkStation/shared";
 import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import {
@@ -35,8 +39,7 @@ import {
 } from "@src/store/ui/simulatorAtom";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
-import { SimulatorAgentChip, StationModeChip } from "../shared";
-import { StationHeaderControls } from "../shared/StationHeaderControls";
+import { StationHeaderControls } from "./StationHeaderControls";
 
 interface AgentStationTopHeaderProps {
   captionMessage: CurrentTurnLastAgentMessage | null;

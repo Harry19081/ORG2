@@ -9,8 +9,7 @@ import {
   KeyboardShortcut,
 } from "@src/components/KeyboardShortcut";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
-
-import type { WorkStationLaunchAction } from "../useWorkStationLaunchActions";
+import type { WorkStationLaunchAction } from "@src/modules/WorkStation/AppShell/useWorkStationLaunchActions";
 
 interface TabBarPlusMenuItemsProps {
   actions: readonly WorkStationLaunchAction[];
