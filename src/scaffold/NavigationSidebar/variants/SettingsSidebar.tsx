@@ -171,6 +171,9 @@ const SettingsSidebar: React.FC = () => {
       <SidebarHeaderNavButton
         icon={ArrowLeft01Icon}
         label={t("navigation:labels.settings")}
+        ariaLabel={t("navigation:labels.closeSettings")}
+        tooltipLabel={t("navigation:labels.closeSettings")}
+        tooltipShortcutId="close_tab"
         onClick={handleBack}
       />
     ),
