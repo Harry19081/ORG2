@@ -394,6 +394,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
           ) : hasMultipleEdits ? (
             <SelectedTextAddToChat
               displayName={selectionDisplayName}
+              filePath={filePath}
               scopeKey={operation.eventId}
               className="min-w-0"
             >
@@ -405,6 +406,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
           ) : oldContent !== undefined || newContent !== undefined ? (
             <SelectedTextAddToChat
               displayName={selectionDisplayName}
+              filePath={filePath}
               scopeKey={operation.eventId}
               className="h-full min-h-0 min-w-0"
             >
