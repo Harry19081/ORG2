@@ -1,4 +1,4 @@
-# Test Cases: Shared PR utilities (`@src/shared/pr`)
+# Test Cases: PR utilities (`@src/util/git/pr`)
 
 Pure, cross-surface helpers consolidated from the WorkStation PR card,
 WorkItems `PrSection`, and the chat `SessionLinkCard`. Logic is covered by

@@ -41,6 +41,8 @@ import { useActionSystemOptional } from "@src/ActionSystem";
 import { TAB_PILL_DRAG_OVERLAY_CLASS } from "@src/components/TabPill/TabPillSurface";
 import { TAB_PAIR_SEPARATOR_SLOT_CLASS } from "@src/components/TabPill/config";
 import { NoDragRegion } from "@src/components/WindowChrome";
+import { useSessionTabDropTarget } from "@src/components/dnd/useSessionTabDropTarget";
+import { useTabInsertionIndicator } from "@src/components/dnd/useTabInsertionIndicator";
 import { TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX } from "@src/config/workstation/tokens";
 import SessionRawTranscriptDialog from "@src/engines/ChatPanel/components/SessionRawTranscriptDialog";
 import {
@@ -51,13 +53,6 @@ import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePin
 import { requestTeamInboxSessionHandoffAtom } from "@src/modules/MainApp/TeamInbox/store";
 import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
-import {
-  SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS,
-  type SessionReferenceOpen,
-  type SessionTabTransfer,
-} from "@src/shared/dnd/sessionTabDrag";
-import { useSessionTabDropTarget } from "@src/shared/dnd/useSessionTabDropTarget";
-import { useTabInsertionIndicator } from "@src/shared/dnd/useTabInsertionIndicator";
 import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpen/integrations";
 import {
   canMoveWorkstationPrTabToChatPanel,
@@ -70,6 +65,11 @@ import {
 } from "@src/store/session/sessionTabPlacementAtom";
 import { tabScrollRevealAtom } from "@src/store/workstation/tabs";
 import type { WorkStationTab } from "@src/store/workstation/tabs";
+import {
+  SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS,
+  type SessionReferenceOpen,
+  type SessionTabTransfer,
+} from "@src/util/dnd/sessionTabDrag";
 
 import TabContextMenu from "./TabContextMenu";
 import { SortableTab, TabBarControls } from "./components";

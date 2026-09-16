@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 
+import { ReferenceDragGhost } from "@src/components/dnd/ReferenceDragGhost";
 import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 import { ChevronsDownUpIcon, HugeiconsIcon, UnfoldMoreIcon } from "@src/icons";
-import { ReferenceDragGhost } from "@src/shared/dnd/ReferenceDragGhost";
 
 import type { NavigationMenuItem } from "../config";
 import { NavigationMenuRowAccessorySlot } from "./RowAccessorySlot";

@@ -20,7 +20,6 @@ import { collectRunGroupSessionIds } from "@src/features/SessionCreator/multiRun
 import { createLogger } from "@src/hooks/logger";
 import { useAgentDefinitions } from "@src/modules/MainApp/AgentOrgs/hooks/useAgentDefinitions";
 import { useCliAgents } from "@src/modules/MainApp/Integrations/KeyVault/CliClients/hooks/useCliAgents";
-import { startVisibilityAwareInterval } from "@src/shared/scheduling/visibilityAwareInterval";
 import {
   openOrFocusChatPanelStartPageTabAtom,
   openOrFocusSessionInChatPanelTabAtom,
@@ -28,6 +27,7 @@ import {
 import { getSessionByIdAtom } from "@src/store/session";
 import { seedLauncherFromRunGroupAtom } from "@src/store/session/multiRunnerAtom";
 import { runGroupByIdAtom } from "@src/store/session/runGroupsAtom";
+import { startVisibilityAwareInterval } from "@src/util/time/scheduling/visibilityAwareInterval";
 
 import RunGroupRunRow from "./RunGroupRunRow";
 import { RUN_ROW_STATE, resolveRunRowState } from "./runGroupRow";

@@ -41,8 +41,8 @@ import { CSS } from "@dnd-kit/utilities";
 import React, { type ReactNode, useCallback, useMemo } from "react";
 
 import Button from "@src/components/Button";
+import { useWebViewSensors } from "@src/components/dnd/useWebViewSensors";
 import { Add01Icon, GripVerticalIcon, HugeiconsIcon } from "@src/icons";
-import { useWebViewSensors } from "@src/lib/dndKit";
 
 // ── Public Types ──
 

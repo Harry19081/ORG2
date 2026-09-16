@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from "vitest";
 
-import { listenForDrag } from "./dragLifecycle";
+import { listenForDrag } from "../dragLifecycle";
 
 let dispose = () => {};
 afterEach(() => {

@@ -3,7 +3,7 @@ import type { IDisposable, Terminal } from "@xterm/xterm";
 import type { MutableRefObject } from "react";
 
 import { createLogger } from "@src/hooks/logger";
-import { getUiScaleFromCssVar } from "@src/lib/dndKit";
+import { getUiScaleFromCssVar } from "@src/util/dom/uiScale";
 import { isMacOS } from "@src/util/platform/tauri";
 import { invokeTauri, isTauriReady } from "@src/util/platform/tauri/init";
 

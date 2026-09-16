@@ -29,12 +29,12 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { useWebViewSensors } from "@src/components/dnd/useWebViewSensors";
 import {
   CHAT_COMPOSER_STACK_BAR_INNER_PADDING_X_CLASS,
   CHAT_COMPOSER_STACK_BAR_SURFACE_BG_CLASS,
 } from "@src/config/composerStackTokens";
 import { HugeiconsIcon, MessageCircleMoreIcon } from "@src/icons";
-import { useWebViewSensors } from "@src/lib/dndKit";
 import {
   type QueuedMessage,
   messageQueueHandoffIdsAtom,

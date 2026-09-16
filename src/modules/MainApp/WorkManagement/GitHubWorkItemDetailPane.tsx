@@ -16,9 +16,9 @@ import DetailPaneLayout, {
   DetailPaneCloseAction,
   DetailPanePlaceholder,
 } from "@src/scaffold/layouts/DetailPaneLayout";
-import { normalizePrStatus } from "@src/shared/pr/prStatus";
 import { workstationIssueDetailScopeKey } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
+import { normalizePrStatus } from "@src/util/git/pr/prStatus";
 
 import {
   GITHUB_ITEM_KIND,

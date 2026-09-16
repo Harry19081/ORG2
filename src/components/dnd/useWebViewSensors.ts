@@ -1,52 +1,17 @@
 /**
- * dnd-kit utilities for WebView/Tauri environments
+ * dnd-kit sensors for WebView/Tauri environments.
  *
- * Provides scale-aware modifiers and sensors that work correctly
- * when the UI is scaled (e.g., via CSS transform or zoom).
+ * Provides sensors that work correctly when the UI is scaled (e.g. via CSS
+ * transform or zoom).
  */
 import {
   KeyboardSensor,
-  type Modifier,
   PointerSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 
-/**
- * Gets the current UI scale from CSS variable
- * Falls back to 1 if not set
- */
-export function getUiScaleFromCssVar(): number {
-  if (typeof window === "undefined") return 1;
-
-  const root = document.documentElement;
-  const scaleValue = getComputedStyle(root).getPropertyValue("--ui-scale");
-
-  if (!scaleValue || scaleValue.trim() === "") {
-    return 1;
-  }
-
-  const parsed = parseFloat(scaleValue);
-  return isNaN(parsed) ? 1 : parsed;
-}
-
-/**
- * Scale-aware modifier for dnd-kit
- * Corrects drag transform coordinates when UI is scaled
- */
-export const scaleAwareModifier: Modifier = ({ transform }) => {
-  const scale = getUiScaleFromCssVar();
-
-  if (scale === 1) {
-    return transform;
-  }
-
-  return {
-    ...transform,
-    x: transform.x / scale,
-    y: transform.y / scale,
-  };
-};
+import { getUiScaleFromCssVar } from "@src/util/dom/uiScale";
 
 /**
  * Options for useWebViewSensors hook

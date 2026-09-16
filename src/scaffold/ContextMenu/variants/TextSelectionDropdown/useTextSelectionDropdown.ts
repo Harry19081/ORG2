@@ -16,7 +16,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useDebouncedCallback } from "@src/hooks/perf";
-import { getUiScaleFromCssVar } from "@src/lib/dndKit";
+import { getUiScaleFromCssVar } from "@src/util/dom/uiScale";
 
 import {
   UseTextSelectionDropdownOptions,

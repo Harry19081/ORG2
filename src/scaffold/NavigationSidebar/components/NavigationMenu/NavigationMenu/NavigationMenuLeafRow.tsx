@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 
 import { SESSION_ROW_PRESENTATION } from "@src/components/SessionRowPresentation";
+import { ReferenceDragGhost } from "@src/components/dnd/ReferenceDragGhost";
 import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 import { ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
-import { ReferenceDragGhost } from "@src/shared/dnd/ReferenceDragGhost";
 
 import { SIDEBAR_STYLE } from "../../../config";
 import type { NavigationMenuItem } from "../config";
