@@ -4,7 +4,11 @@ import {
   KEYBOARD_SHORTCUT_VARIANT,
   KeyboardShortcut,
 } from "@src/components/KeyboardShortcut";
-import { BUTTON_VARIANT } from "@src/config/workstation/tokens";
+import {
+  BUTTON_HOVER_INTENT_TEXT,
+  BUTTON_NEUTRAL_HOVER,
+  BUTTON_VARIANT,
+} from "@src/config/workstation/tokens";
 import { HugeiconsIcon, Loading03Icon } from "@src/icons";
 
 export type ButtonVariant =
@@ -27,6 +31,8 @@ export type ButtonSize =
   | "default"
   | "large";
 export type ButtonShape = "square" | "round" | "circle";
+/** Color a neutral button takes only while hovered, pressed or focused. */
+export type ButtonHoverIntent = keyof typeof BUTTON_HOVER_INTENT_TEXT;
 
 const BUTTON_SIZE_CONFIG = {
   inline: { height: 20, padding: "0", fontSize: 12, iconSize: 12 },
@@ -59,22 +65,29 @@ function defaultButtonAppearance(variant: ButtonVariant): ButtonAppearance {
  */
 function getButtonStyleClasses(
   variant: ButtonVariant,
-  appearance: ButtonAppearance
+  appearance: ButtonAppearance,
+  hoverIntent: ButtonHoverIntent | undefined
 ) {
   if (appearance === "custom") return "";
+  const isNeutral = variant === "tertiary" || variant === "secondary";
+  // Semantic variants already carry their color, so only neutral ones take an
+  // intent. It replaces the neutral hover text instead of being layered on top.
+  const intentText =
+    isNeutral && hoverIntent ? BUTTON_HOVER_INTENT_TEXT[hoverIntent] : "";
   if (appearance === "soft" || appearance === "soft-no-drop") {
-    const colors =
-      variant === "tertiary" || variant === "secondary"
-        ? appearance === "soft-no-drop"
-          ? BUTTON_VARIANT.noDrop
-          : BUTTON_VARIANT.default
-        : variant === "danger" && appearance === "soft-no-drop"
-          ? BUTTON_VARIANT.dangerNoDrop
-          : variant === "warning"
-            ? "text-warning-6 enabled:hover:bg-warning-3 focus-visible:bg-warning-3"
-            : variant === "merged"
-              ? "text-purple-6 enabled:hover:bg-purple-3 focus-visible:bg-purple-3"
-              : BUTTON_VARIANT[variant];
+    const colors = isNeutral
+      ? `${
+          appearance === "soft-no-drop"
+            ? BUTTON_NEUTRAL_HOVER.surfaceNoDrop
+            : BUTTON_NEUTRAL_HOVER.surface
+        } ${intentText || BUTTON_NEUTRAL_HOVER.text}`
+      : variant === "danger" && appearance === "soft-no-drop"
+        ? BUTTON_VARIANT.dangerNoDrop
+        : variant === "warning"
+          ? "text-warning-6 enabled:hover:bg-warning-3 focus-visible:bg-warning-3"
+          : variant === "merged"
+            ? "text-purple-6 enabled:hover:bg-purple-3 focus-visible:bg-purple-3"
+            : BUTTON_VARIANT[variant];
     return `border-0 bg-transparent ${colors} aria-pressed:bg-surface-selected aria-pressed:text-primary-6`;
   }
   const base = (() => {
@@ -147,14 +160,14 @@ function getButtonStyleClasses(
         case "merged":
           return "enabled:hover:bg-merged-hover enabled:active:bg-merged-active";
         case "secondary":
-          return "enabled:hover:bg-fill-3";
+          return `enabled:hover:bg-fill-3 ${intentText}`;
         case "tertiary":
-          return "enabled:hover:text-text-1 enabled:hover:bg-surface-hover enabled:active:bg-surface-selected focus-visible:text-text-1 focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
+          return `${intentText || BUTTON_NEUTRAL_HOVER.text} enabled:hover:bg-surface-hover enabled:active:bg-surface-selected focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]`;
       }
     }
     if (appearance === "outline" || appearance === "dashed") {
-      if (variant === "secondary" || variant === "tertiary") {
-        return "hover:border-border-3 focus-visible:border-(--color-primary-6) focus-visible:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
+      if (isNeutral) {
+        return `hover:border-border-3 focus-visible:border-(--color-primary-6) focus-visible:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)] ${intentText}`;
       }
       return "";
     }
@@ -171,11 +184,11 @@ function getButtonStyleClasses(
         return "enabled:hover:text-purple-5";
       case "secondary":
       case "tertiary":
-        return "enabled:hover:text-text-1";
+        return intentText || "enabled:hover:text-text-1";
     }
   })();
 
-  return [base, hover].filter(Boolean).join(" ");
+  return [base, hover.trim()].filter(Boolean).join(" ");
 }
 
 interface ButtonPresentationOptions {
@@ -190,6 +203,7 @@ interface ButtonPresentationOptions {
   icon?: React.ReactNode | string;
   iconPosition: "left" | "right";
   iconOnly: boolean;
+  hoverIntent?: ButtonHoverIntent;
   shortcut?: string;
   centerLabel: boolean;
   long: boolean;
@@ -210,6 +224,7 @@ export function useButtonPresentation({
   icon,
   iconPosition,
   iconOnly,
+  hoverIntent,
   shortcut,
   centerLabel,
   long,
@@ -338,7 +353,7 @@ export function useButtonPresentation({
     layout === "custom" ? "" : "button",
     baseClasses,
     layout === "custom" && appearance === "custom" ? "" : disabledClasses,
-    getButtonStyleClasses(variant, resolvedAppearance),
+    getButtonStyleClasses(variant, resolvedAppearance, hoverIntent),
     className,
   ]
     .filter(Boolean)

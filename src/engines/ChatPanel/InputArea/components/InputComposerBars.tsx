@@ -179,6 +179,7 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
           <div className="flex items-center gap-1">
             <Button
               variant="tertiary"
+              appearance="soft"
               size="mini"
               shape="circle"
               iconOnly
@@ -192,15 +193,14 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
                 />
               }
               aria-label={t("common:actions.cancel")}
-              className="enabled:hover:bg-fill-3 enabled:hover:text-text-1"
               onClick={onEditCancel}
             />
             <Button
               variant="tertiary"
+              appearance="soft"
               size="mini"
               shape="round"
               htmlType="button"
-              className="enabled:hover:bg-fill-3 enabled:hover:text-text-1"
               onClick={onEditSendNow}
             >
               {t("common:actions.sendNow")}

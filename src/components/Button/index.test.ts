@@ -344,3 +344,74 @@ describe("Button shortcut hints", () => {
     expect(markup).not.toContain("<kbd");
   });
 });
+
+describe("Button hover intent", () => {
+  const classesOf = (props: Record<string, unknown>) => {
+    const markup = renderToStaticMarkup(
+      React.createElement(Button, {
+        iconOnly: true,
+        icon: React.createElement("svg"),
+        ...props,
+      })
+    );
+    const match = markup.match(/class="([^"]*)"/);
+    return new Set((match?.[1] ?? "").split(/\s+/));
+  };
+
+  it.each([
+    ["tertiary", undefined, "enabled:hover:bg-surface-hover"],
+    ["tertiary", "soft", "enabled:hover:bg-button-hover"],
+    ["tertiary", "soft-no-drop", "enabled:hover:bg-button-hover-no-drop"],
+    ["tertiary", "ghost", null],
+    ["secondary", "solid", "enabled:hover:bg-fill-3"],
+  ])(
+    "swaps the neutral hover text for the intent on %s/%s",
+    (variant, appearance, hoverSurface) => {
+      const neutral = classesOf({ variant, appearance });
+      const danger = classesOf({ variant, appearance, hoverIntent: "danger" });
+      const primary = classesOf({
+        variant,
+        appearance,
+        hoverIntent: "primary",
+      });
+
+      for (const intent of [danger, primary]) {
+        expect(intent.has("enabled:hover:text-text-1")).toBe(false);
+        expect(intent.has("focus-visible:text-text-1")).toBe(false);
+        if (hoverSurface) expect(intent.has(hoverSurface)).toBe(true);
+        // Resting color is untouched.
+        for (const restClass of ["text-text-1", "text-text-2"]) {
+          expect(intent.has(restClass)).toBe(neutral.has(restClass));
+        }
+      }
+      for (const [classes, color] of [
+        [danger, "danger-6"],
+        [primary, "primary-6"],
+      ] as const) {
+        expect(classes.has(`enabled:hover:text-${color}`)).toBe(true);
+        expect(classes.has(`enabled:active:text-${color}`)).toBe(true);
+        expect(classes.has(`focus-visible:text-${color}`)).toBe(true);
+      }
+    }
+  );
+
+  it("keeps the neutral hover text when no intent is requested", () => {
+    for (const appearance of [undefined, "soft", "soft-no-drop", "ghost"]) {
+      expect(
+        classesOf({ variant: "tertiary", appearance }).has(
+          "enabled:hover:text-text-1"
+        )
+      ).toBe(true);
+    }
+  });
+
+  it("leaves semantic variants on their own palette", () => {
+    for (const variant of ["primary", "danger", "warning", "success"]) {
+      for (const appearance of ["solid", "soft", "ghost"]) {
+        expect(
+          classesOf({ variant, appearance, hoverIntent: "danger" })
+        ).toEqual(classesOf({ variant, appearance }));
+      }
+    }
+  });
+});

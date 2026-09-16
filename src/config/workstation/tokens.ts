@@ -74,14 +74,34 @@ export const BUTTON_SIZE = {
   lg: "h-7 w-7 rounded-lg",
 } as const;
 
+/**
+ * Neutral compact-action palette, split so the hover text color can be swapped
+ * for an intent color without also emitting the neutral one: two utilities with
+ * the same variant and property resolve by Tailwind's name order, not by
+ * className order.
+ */
+export const BUTTON_NEUTRAL_HOVER = {
+  surface:
+    "text-text-2 enabled:hover:bg-button-hover focus-visible:bg-button-hover",
+  surfaceNoDrop:
+    "text-text-2 enabled:hover:bg-button-hover-no-drop focus-visible:bg-button-hover-no-drop",
+  text: "enabled:hover:text-text-1 focus-visible:text-text-1",
+} as const;
+
+/** Text colors a neutral button shows only while hovered, pressed or focused. */
+export const BUTTON_HOVER_INTENT_TEXT = {
+  danger:
+    "enabled:hover:text-danger-6 enabled:active:text-danger-6 focus-visible:text-danger-6",
+  primary:
+    "enabled:hover:text-primary-6 enabled:active:text-primary-6 focus-visible:text-primary-6",
+} as const;
+
 /** One palette for compact row, terminal, and header actions. */
-const DEFAULT_BUTTON_VARIANT =
-  "text-text-2 enabled:hover:bg-button-hover enabled:hover:text-text-1 focus-visible:bg-button-hover focus-visible:text-text-1";
+const DEFAULT_BUTTON_VARIANT = `${BUTTON_NEUTRAL_HOVER.surface} ${BUTTON_NEUTRAL_HOVER.text}`;
 
 export const BUTTON_VARIANT = {
   default: DEFAULT_BUTTON_VARIANT,
-  noDrop:
-    "text-text-2 enabled:hover:bg-button-hover-no-drop enabled:hover:text-text-1 focus-visible:bg-button-hover-no-drop focus-visible:text-text-1",
+  noDrop: `${BUTTON_NEUTRAL_HOVER.surfaceNoDrop} ${BUTTON_NEUTRAL_HOVER.text}`,
   defaultTreeRow: DEFAULT_BUTTON_VARIANT,
   danger:
     "text-danger-6 enabled:hover:bg-danger-2 enabled:hover:text-danger-6 focus-visible:bg-danger-2 focus-visible:text-danger-6",

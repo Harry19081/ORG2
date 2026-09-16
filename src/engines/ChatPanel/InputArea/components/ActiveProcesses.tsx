@@ -92,12 +92,13 @@ const ProcessRow: React.FC<ProcessRowProps> = memo(({ process, onStop }) => {
         <Button
           htmlType="button"
           variant="tertiary"
+          appearance="soft"
           size="mini"
           icon={
             <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={12} />
           }
           iconOnly
-          className="enabled:hover:bg-fill-3 enabled:hover:text-danger-6"
+          hoverIntent="danger"
           onClick={handleStop}
           title={t("actions.stop")}
         />
@@ -152,12 +153,13 @@ const SubagentRow: React.FC<SubagentRowProps> = memo(({ job, now, onStop }) => {
         <Button
           htmlType="button"
           variant="tertiary"
+          appearance="soft"
           size="mini"
           icon={
             <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={12} />
           }
           iconOnly
-          className="enabled:hover:bg-fill-3 enabled:hover:text-danger-6"
+          hoverIntent="danger"
           onClick={handleStop}
           title={t("actions.stop")}
         />
