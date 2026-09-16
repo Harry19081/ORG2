@@ -31,7 +31,9 @@ vi.mock("./RuntimeSectionHeader", () => ({
     title: string;
     children: unknown;
   }) => createElement("div", null, title, children as never),
-  RuntimeRefreshButton: ({ onRefresh }: { onRefresh: () => void }) =>
+}));
+vi.mock("@src/components/Button/RefreshButton", () => ({
+  default: ({ onRefresh }: { onRefresh: () => void }) =>
     createElement("button", { onClick: onRefresh }, "Read history"),
 }));
 vi.mock("@src/components/Chart", () => ({

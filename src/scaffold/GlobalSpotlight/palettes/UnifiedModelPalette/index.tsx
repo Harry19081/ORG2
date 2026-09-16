@@ -23,8 +23,8 @@ import React, {
 } from "react";
 
 import Button from "@src/components/Button";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { useFilteredItems } from "@src/hooks/search";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { agentNameAtom } from "@src/store/session/creatorStateAtom";

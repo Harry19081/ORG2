@@ -18,6 +18,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import AvatarChip from "@src/components/AvatarChip";
 import Button from "@src/components/Button";
 import PersonAvatar from "@src/components/PersonAvatar";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import Select from "@src/components/Select";
 import {
   SECTION_ACTION_GAP_CLASSES,
@@ -31,7 +32,6 @@ import type {
   SyncJournalMember,
 } from "@src/features/Org2Cloud/org2CloudSyncJournal";
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon, UsersRoundIcon } from "@src/icons";
 import { copyText } from "@src/util/data/clipboard";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";

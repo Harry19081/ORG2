@@ -88,8 +88,7 @@
       "openFolder": "フォルダを開く",
       "tabs": {
         "all": "すべて",
-        "apps": "アプリ",
-        "clis": "CLI"
+        "apps": "アプリ"
       },
       "views": {
         "scanning": "スキャン",

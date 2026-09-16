@@ -20,6 +20,7 @@ import {
   usageDashboardOverview,
 } from "@src/api/tauri/usageDashboard";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import { Placeholder } from "@src/components/Placeholder";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
 import {
@@ -31,10 +32,7 @@ import { StartPageQuotaGrid } from "@src/engines/ChatPanel/StartPageQuotaGrid";
 import { DEBOUNCE_DELAYS, useDebouncedCallback } from "@src/hooks/perf";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
-import {
-  RuntimeRefreshButton,
-  RuntimeSectionHeader,
-} from "./RuntimeSectionHeader";
+import { RuntimeSectionHeader } from "./RuntimeSectionHeader";
 import UsageRangePicker from "./UsageRangePicker";
 import UsageRoundsTable, {
   USAGE_ROUNDS_DEFAULT_PAGE_SIZE,
@@ -425,7 +423,7 @@ export default function SessionUsagePanel() {
               }}
             />
           </div>
-          <RuntimeRefreshButton
+          <RefreshButton
             label={t("usage.refresh")}
             onRefresh={handleUsageRefresh}
             refreshing={usageRefreshing}

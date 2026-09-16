@@ -34,9 +34,9 @@
 import React, { createContext, memo, useContext } from "react";
 
 import Button from "@src/components/Button";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   ArrowLeft02Icon,
   ArrowRight01Icon,

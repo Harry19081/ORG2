@@ -1,7 +1,5 @@
 /**
- * RuntimeScanningPanelHelpers
- *
- * Pure helpers for RuntimeScanningPanel: which detected sources are
+ * Pure helpers for source scanning: which detected sources are
  * "importable" (have a cache and support Rescan), and the status tag
  * (color + i18n label key) shown for a row given its load/error/enabled
  * state.
@@ -12,7 +10,7 @@ import {
 } from "@src/api/tauri/externalHistory";
 import type { TagProps } from "@src/components/Tag";
 
-import type { SourceRow } from "./RuntimeScanningPanelTypes";
+import type { SourceRow } from "./sourceScanningTypes";
 
 // The sources ORGII imports history from (have a cache + support Rescan).
 export const IMPORTABLE_SOURCE_IDS = new Set<ImportedHistorySourceId>(

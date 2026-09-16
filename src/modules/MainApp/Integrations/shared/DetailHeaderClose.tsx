@@ -2,9 +2,9 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
 import { COLLAPSIBLE_SECTION_TOKENS } from "@src/config/detailPanelTokens";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   ArrowDown02Icon,
   ArrowExpand01Icon,

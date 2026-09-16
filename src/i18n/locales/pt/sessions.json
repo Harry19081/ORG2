@@ -88,8 +88,7 @@
       "openFolder": "Abrir pasta",
       "tabs": {
         "all": "Todos",
-        "apps": "Apps",
-        "clis": "CLIs"
+        "apps": "Apps"
       },
       "views": {
         "scanning": "Escaneamento",

@@ -17,6 +17,7 @@
     "agentOrg": "Agent 团队",
     "mobileRemote": "移动遥控",
     "harnessConnections": "应用连接",
+    "import": "导入",
     "development": "开发模式"
   },
   "coreSidebar": {

@@ -88,8 +88,7 @@
       "openFolder": "Mở thư mục",
       "tabs": {
         "all": "Tất cả",
-        "apps": "Ứng dụng",
-        "clis": "CLI"
+        "apps": "Ứng dụng"
       },
       "views": {
         "scanning": "Quét",

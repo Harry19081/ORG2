@@ -37,7 +37,9 @@ vi.mock("react-i18next", () => ({
 }));
 vi.mock("./RuntimeSectionHeader", () => ({
   RuntimeSectionHeader: () => null,
-  RuntimeRefreshButton: () => null,
+}));
+vi.mock("@src/components/Button/RefreshButton", () => ({
+  default: () => null,
 }));
 vi.mock("@src/components/Select", () => ({ default: () => null }));
 // Give the real chart a measurable viewport without mocking its SVG renderer.

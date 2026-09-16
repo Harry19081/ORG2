@@ -16,6 +16,7 @@
     "storage": "Хранилище",
     "agentOrg": "Команда Agent",
     "harnessConnections": "Подключения приложений",
+    "import": "Импорт",
     "mobileRemote": "Mobile Remote",
     "development": "Режим разработчика"
   },

@@ -88,8 +88,7 @@
       "openFolder": "폴더 열기",
       "tabs": {
         "all": "전체",
-        "apps": "앱",
-        "clis": "CLI"
+        "apps": "앱"
       },
       "views": {
         "scanning": "스캔",

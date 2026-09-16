@@ -8,8 +8,8 @@ import type { TFunction } from "i18next";
 import { useAtomValue } from "jotai";
 import React, { useCallback, useMemo } from "react";
 
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
   SectionFilterInput,

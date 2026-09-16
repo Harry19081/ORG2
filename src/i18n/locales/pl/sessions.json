@@ -88,8 +88,7 @@
       "openFolder": "Otwórz folder",
       "tabs": {
         "all": "Wszystkie",
-        "apps": "Aplikacje",
-        "clis": "CLI"
+        "apps": "Aplikacje"
       },
       "views": {
         "scanning": "Skanowanie",

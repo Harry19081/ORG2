@@ -88,8 +88,7 @@
       "openFolder": "開啟資料夾",
       "tabs": {
         "all": "全部",
-        "apps": "應用程式",
-        "clis": "命令列"
+        "apps": "應用程式"
       },
       "views": {
         "scanning": "掃描",

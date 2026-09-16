@@ -6,6 +6,7 @@ import type {
   UsageSessionSort,
 } from "@src/api/tauri/usageDashboard";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import { Placeholder } from "@src/components/Placeholder";
 import SettingsTable, {
   type SettingsTableColumn,
@@ -17,7 +18,6 @@ import { SECTION_SUBHEADING_CLASSES } from "@src/components/layout/Section";
 import { CollapsibleSection } from "@src/components/layout/blocks";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
 
-import { RuntimeRefreshButton } from "./RuntimeSectionHeader";
 import UsagePricingHint from "./UsagePricingHint";
 import { BucketIcon } from "./usageBuckets";
 import { formatCacheRW, formatTokensShort, formatUsd } from "./usageFormat";
@@ -311,7 +311,7 @@ export default function UsageRoundsTable({
           onSearchClear: () => onSearchQueryChange(""),
           searchInputSize: "default",
           rightContent: (
-            <RuntimeRefreshButton
+            <RefreshButton
               iconOnly
               variant="secondary"
               label={t("usage.refresh")}

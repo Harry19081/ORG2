@@ -1,7 +1,5 @@
 /**
- * RuntimeScanningPanelTypes
- *
- * Shared type definitions for RuntimeScanningPanel: the tab filter and the
+ * Shared type definitions for source scanning: the tab filter and the
  * per-row view model built from a source probe plus its imported-session
  * stats.
  */

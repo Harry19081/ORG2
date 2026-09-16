@@ -92,8 +92,7 @@
       },
       "tabs": {
         "all": "All",
-        "apps": "Apps",
-        "clis": "CLIs"
+        "apps": "Apps"
       },
       "views": {
         "scanning": "Scanning",

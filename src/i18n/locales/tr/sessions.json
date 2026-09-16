@@ -88,8 +88,7 @@
       "openFolder": "Klasörü aç",
       "tabs": {
         "all": "Tümü",
-        "apps": "Uygulamalar",
-        "clis": "CLI'ler"
+        "apps": "Uygulamalar"
       },
       "views": {
         "scanning": "Tarama",

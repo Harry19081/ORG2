@@ -15,6 +15,7 @@ import type {
   SessionProvenanceHookStatus,
 } from "@src/api/tauri/rpc/schemas/agentOrgs";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import Message from "@src/components/Message";
 import type { IconProvider } from "@src/components/ModelIcon";
 import PageNotice from "@src/components/PageNotice";
@@ -45,13 +46,12 @@ import {
 } from "@src/store/workspace";
 import { copyText } from "@src/util/data/clipboard";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
+import { tildePath } from "@src/util/path";
 import { getFileManagerRevealLabelKey } from "@src/util/platform/fileManagerLabels";
+import { startVisibilityAwarePoller } from "@src/util/time/scheduling/visibilityAwarePoller";
 import { openFileInWorkStation } from "@src/util/ui/openFileInWorkStation";
 
-import { RuntimeRefreshButton } from "./RuntimeSectionHeader";
-import SessionProvenanceSourceIcon from "./SessionProvenanceSourceIcon";
-import { tildePath } from "./sourcePath";
-import { startVisibilityAwarePolling } from "./visibilityPolling";
+import SourceIcon from "./SourceIcon";
 
 interface PlatformMeta {
   id: SessionProvenanceHookPlatform;
@@ -213,7 +213,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
 
   useEffect(() => {
     if (statuses.codex?.activationState !== "awaiting_verification") return;
-    return startVisibilityAwarePolling(
+    return startVisibilityAwarePoller(
       document,
       () => loadStatuses(true),
       2_000
@@ -337,7 +337,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
         return (
           <span className={`${SETTINGS_TABLE_CELL.primaryIcon} min-w-0`}>
             <span className="shrink-0 text-text-2">
-              <SessionProvenanceSourceIcon iconId={row.iconId} />
+              <SourceIcon iconId={row.iconId} />
             </span>
             <span className="truncate">{row.label}</span>
             <span
@@ -510,7 +510,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
           onSearchClear: () => setSearchQuery(""),
           searchInputSize: "default",
           rightContent: (
-            <RuntimeRefreshButton
+            <RefreshButton
               iconOnly
               variant="secondary"
               label={tCommon("actions.refresh")}
