@@ -296,10 +296,10 @@ describe.each(["wide rail", "compact menu"])(
         );
         expect(changesLabel?.classList.contains("text-left")).toBe(true);
         expect(changesRow.className).toContain(
-          "enabled:hover:bg-button-hover-no-drop"
+          "btn-hover:bg-button-hover-no-drop"
         );
         expect(titleButton().className).toContain(
-          "enabled:hover:bg-button-hover-no-drop"
+          "btn-hover:bg-button-hover-no-drop"
         );
         expect(changesRow.closest("section")!.textContent).toMatch(/^Changes/);
         expect(headerRow().className).toContain("mb-1");

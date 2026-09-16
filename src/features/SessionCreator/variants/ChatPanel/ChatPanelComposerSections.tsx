@@ -182,7 +182,7 @@ export const ChatPanelComposerGroup: React.FC<ChatPanelComposerGroupProps> = ({
         htmlType="button"
         onClick={onLaunch}
         disabled={!canLaunch || isLoading}
-        className="w-full text-[13px] font-semibold hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-40"
       >
         {t("creator.start")}
       </Button>

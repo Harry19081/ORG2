@@ -114,7 +114,9 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
           />
         }
         onClick={onToggle}
-        className={`${isLinked ? "text-text-2" : "text-primary-6"}`}
+        className={
+          isLinked ? "text-text-2" : "text-primary-6 hover:text-primary-6"
+        }
         title={isLinked ? "Unlink values" : "Link values"}
       />
     );
@@ -295,7 +297,9 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
                   }
                   onClick={() => setRadiusExpanded(!radiusExpanded)}
                   className={`${
-                    radiusExpanded ? "text-primary-6" : "text-text-2"
+                    radiusExpanded
+                      ? "text-primary-6 hover:text-primary-6"
+                      : "text-text-2"
                   }`}
                   title={
                     radiusExpanded ? "Use single radius" : "Customize corners"

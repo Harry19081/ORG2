@@ -148,9 +148,20 @@ interface ChatBubbleCopyButtonProps {
   placement?: "bubble-corner" | "message-corner" | "toolbar";
 }
 
-/** Shared geometry and interaction treatment for compact message actions. */
-export const CHAT_BUBBLE_TOOLBAR_BUTTON_CLASS =
-  "inline-flex h-6 min-w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent px-1 py-0 transition-colors hover:bg-fill-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30";
+/**
+ * Shared geometry and focus treatment for compact message actions. Colors come
+ * from the Button variant; a resting `bg-*` here would also pin the background
+ * over the variant's hover and any active-state class.
+ */
+export const CHAT_BUBBLE_TOOLBAR_BUTTON_BASE_CLASS =
+  "inline-flex h-6 min-w-6 cursor-pointer items-center justify-center rounded-md px-1 py-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30";
+
+/**
+ * Neutral message action: the base plus the toolbar's lighter hover fill.
+ * Semantic actions (e.g. danger) use the base so their variant's own hover
+ * surface shows.
+ */
+export const CHAT_BUBBLE_TOOLBAR_BUTTON_CLASS = `${CHAT_BUBBLE_TOOLBAR_BUTTON_BASE_CLASS} hover:bg-fill-2`;
 
 const ChatBubbleCopyButtonComponent: React.FC<ChatBubbleCopyButtonProps> = ({
   content,

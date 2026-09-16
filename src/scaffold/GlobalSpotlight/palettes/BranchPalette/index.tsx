@@ -133,7 +133,7 @@ export const WorktreePalette: React.FC<WorktreePaletteProps> = ({
           event.stopPropagation();
           void handleRemoveWorktree(worktreePath);
         }}
-        className="hover:bg-danger-6/10 disabled:cursor-not-allowed disabled:opacity-50"
+        className="disabled:cursor-not-allowed disabled:opacity-50"
         title={t("selectors.branch.actions.removeWorktree", "Remove Worktree")}
         aria-label={t(
           "selectors.branch.actions.removeWorktree",

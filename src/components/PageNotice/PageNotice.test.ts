@@ -92,6 +92,6 @@ describe("PageNotice", () => {
     expect(markup.indexOf('aria-label="Refresh"')).toBeLessThan(
       markup.indexOf('aria-label="Close"')
     );
-    expect(markup.split("enabled:hover:bg-surface-hover").length - 1).toBe(2);
+    expect(markup.split("btn-hover:bg-surface-hover").length - 1).toBe(2);
   });
 });

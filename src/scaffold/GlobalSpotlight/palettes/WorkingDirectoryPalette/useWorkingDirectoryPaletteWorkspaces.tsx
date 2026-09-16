@@ -394,7 +394,6 @@ export function useWorkingDirectoryPaletteWorkspaces({
               e.stopPropagation();
               void handleDeleteWorkspace(ws);
             }}
-            className="hover:text-error-6 hover:bg-fill-3"
             title={t("actions.delete", "Delete")}
           />
         </div>

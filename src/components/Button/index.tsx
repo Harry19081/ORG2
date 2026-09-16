@@ -21,6 +21,9 @@
  *                 "ghost"   = no border, no background — hover changes
  *                            only the text color
  *
+ * Button's own utilities are emitted in a nested cascade layer (the `btn:`
+ * variant), so any class passed through `className` overrides them.
+ *
  * @example
  * ```tsx
  * import Button from "@src/components/Button";
@@ -114,10 +117,9 @@ export interface ButtonProps extends Omit<
 
   /**
    * Color a neutral (secondary / tertiary) button shows only while hovered,
-   * pressed or keyboard-focused; it stays neutral at rest. It replaces the
-   * variant's own hover text color, so use it instead of `className` hover
-   * overrides, which lose to the variant's classes in Tailwind's output order.
-   * Semantic variants already carry a color and ignore it.
+   * pressed or keyboard-focused; it stays neutral at rest. Prefer it to
+   * hand-written hover color classes. Semantic variants already carry a color
+   * and ignore it.
    */
   hoverIntent?: ButtonHoverIntent;
 

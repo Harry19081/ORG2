@@ -102,10 +102,10 @@ describe("StationModePill", () => {
     expect(myStation?.getAttribute("aria-pressed")).toBe("true");
     expect(agentStation?.getAttribute("aria-label")).toBe("Agent Station");
     expect(agentStation?.getAttribute("aria-pressed")).toBe("false");
-    expect(myStation?.classList.contains("bg-primary-6")).toBe(true);
-    expect(myStation?.classList.contains("text-white")).toBe(true);
-    expect(agentStation?.classList.contains("bg-transparent")).toBe(true);
-    expect(agentStation?.classList.contains("text-text-1")).toBe(true);
+    expect(myStation?.classList.contains("btn:bg-primary-6")).toBe(true);
+    expect(myStation?.classList.contains("btn:text-white")).toBe(true);
+    expect(agentStation?.classList.contains("btn:bg-transparent")).toBe(true);
+    expect(agentStation?.classList.contains("btn:text-text-1")).toBe(true);
     expect(myStation?.style.height).toBe("24px");
     expect(myStation?.style.width).toBe("28px");
   });
@@ -122,7 +122,7 @@ describe("StationModePill", () => {
 
     expect(store.get(stationModeAtom)).toBe("agent-station");
     expect(agentStation?.getAttribute("aria-pressed")).toBe("true");
-    expect(agentStation?.classList.contains("bg-primary-6")).toBe(true);
+    expect(agentStation?.classList.contains("btn:bg-primary-6")).toBe(true);
   });
 
   it("switches both directions in the same detached window without opening another", () => {

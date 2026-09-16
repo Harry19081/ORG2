@@ -212,7 +212,6 @@ export function useWorkingDirectoryPaletteItems({
             log.warn("failed to remove repo", { error, repoId: repo.id });
           });
         }}
-        className="hover:bg-danger-6/10"
         title={t("actions.removeFromOrgii", "Remove from ORG2")}
       />
     ),

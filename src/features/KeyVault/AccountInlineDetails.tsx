@@ -368,7 +368,11 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
                     }
                     htmlType="button"
                     onClick={handleCopyApiKey}
-                    className={`transition-colors ${apiKeyCopied ? "text-success-6" : "text-text-2 hover:text-text-1"}`}
+                    className={`transition-colors ${
+                      apiKeyCopied
+                        ? "text-success-6 hover:text-success-6"
+                        : "text-text-2 hover:text-text-1"
+                    }`}
                   />
                 </div>
               </InfoRow>
