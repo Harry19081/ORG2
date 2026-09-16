@@ -268,7 +268,7 @@ export function TableBody<T>({
                         icon={expandIcon}
                         style={{ width: 14, height: 14 }}
                         htmlType="button"
-                        className="shrink-0 hover:text-text-1"
+                        className="table-expand-button shrink-0 hover:text-text-1"
                         onClick={(event) => {
                           event.stopPropagation();
                           event.currentTarget.blur();
