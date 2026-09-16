@@ -406,6 +406,7 @@ export function invalidateFileCache(filePath: string): void {
   loadedFilesThisSession.delete(filePath);
 }
 
+/** Test-only: drop the metadata + loaded-this-session caches. */
 export function clearFileCache(): void {
   metadataCache.clear();
   loadedFilesThisSession.clear();

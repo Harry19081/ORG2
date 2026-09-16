@@ -51,7 +51,6 @@ const VALID_WORKSTATION_TAB_TYPES = new Set<WorkStationTabType>([
   "project-linear-work-items",
   "project-settings",
   "project-org",
-  "project-org-settings",
   "project-git-sync-review",
   "project-workitems",
   "workItem-detail",
