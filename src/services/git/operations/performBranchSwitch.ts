@@ -1,8 +1,8 @@
 import type { SwitchScope } from "@src/api/http/git/branchSwitch";
 import { getGitWorktrees } from "@src/api/http/git/worktrees";
-import { branchSwitchQuestion } from "@src/components/GitDialogs/BranchSwitchQuestion";
-import { createBranchSwitchDialog } from "@src/components/GitDialogs/CheckoutConflictDialog";
 import Message from "@src/components/Message";
+import { branchSwitchQuestion } from "@src/features/GitDialogs/BranchSwitchQuestion";
+import { createBranchSwitchDialog } from "@src/features/GitDialogs/CheckoutConflictDialog";
 import i18n from "@src/i18n";
 import { currentBranchAtom, selectedRepoIdAtom } from "@src/store/repo";
 import {

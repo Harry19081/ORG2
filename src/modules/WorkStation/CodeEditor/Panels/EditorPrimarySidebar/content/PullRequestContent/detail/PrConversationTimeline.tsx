@@ -3,7 +3,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubReviewComment } from "@src/api/tauri/github";
-import { projectMarkdownSessionReferences } from "@src/components/MarkDown/sessionReferenceProjection";
 import PersonAvatar from "@src/components/PersonAvatar";
 import {
   ConnectedTimelineItem,
@@ -13,6 +12,7 @@ import {
   TimelineLoadingSkeleton,
   TimelineStack,
 } from "@src/features/GitHubWork/ActivityTimeline";
+import { projectMarkdownSessionReferences } from "@src/features/Org2Cloud/markdown/sessionReferenceProjection";
 import {
   CancelCircleIcon,
   CheckmarkCircle01Icon,

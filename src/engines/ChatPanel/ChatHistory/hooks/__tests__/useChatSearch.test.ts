@@ -4,8 +4,8 @@ import { act, createElement, useLayoutEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import FindCard from "@src/components/FindCard";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import FindCard from "@src/scaffold/GlobalSpotlight/FindCard";
 import {
   chatFindInChatOpenAtomFamily,
   chatSearchSyncAtomFamily,

@@ -2,11 +2,11 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import ComposerBar from "@src/components/ComposerBar";
 import ComposerSendGroup from "@src/components/ComposerBar/ComposerSendGroup";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
 import { VoiceInputButton, VoiceRecordingBar } from "@src/components/Voice";
 import { INPUT_AREA_CONTROL_GROUP_CLASS } from "@src/config/inputAreaTokens";
+import ComposerBar from "@src/engines/ChatPanel/ComposerBar";
 import type { PromptPolishControl } from "@src/engines/ChatPanel/hooks/useInputArea/types";
 import type { UseVoiceInputResult } from "@src/hooks/voice";
 import { Cancel01Icon, HugeiconsIcon, RotateLeft01Icon } from "@src/icons";

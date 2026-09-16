@@ -11,7 +11,6 @@ import { useAtomValue } from "jotai";
 import React, { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import ComposerBar from "@src/components/ComposerBar";
 import ComposerSendGroup from "@src/components/ComposerBar/ComposerSendGroup";
 import ComposerInput, { ComposerInputRef } from "@src/components/ComposerInput";
 import ComposerShell from "@src/components/ComposerShell";
@@ -25,6 +24,7 @@ import {
 } from "@src/config/inputAreaTokens";
 import { capPillText, storePillText } from "@src/config/pillTokens";
 import type { ComposerModeEntry } from "@src/config/sessionCreatorConfig";
+import ComposerBar from "@src/engines/ChatPanel/ComposerBar";
 import ContextMenuPortal from "@src/engines/ChatPanel/InputArea/components/ContextMenuPortal";
 import SlashCommandPortal from "@src/engines/ChatPanel/InputArea/components/SlashCommandPortal";
 import { useExternalFileDragOver } from "@src/engines/ChatPanel/InputArea/hooks/useContainerDrag";

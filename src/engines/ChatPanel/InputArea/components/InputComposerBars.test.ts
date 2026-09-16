@@ -12,7 +12,7 @@ import {
   vi,
 } from "vitest";
 
-import type ComposerBar from "@src/components/ComposerBar";
+import type ComposerBar from "@src/engines/ChatPanel/ComposerBar";
 
 import { NormalComposerContent } from "./InputComposerBars";
 
@@ -25,7 +25,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock("@src/components/ComposerBar", async () => {
+vi.mock("@src/engines/ChatPanel/ComposerBar", async () => {
   const ReactModule = await import("react");
   return {
     default: (props: React.ComponentProps<typeof ComposerBar>) => {

@@ -8,7 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
-import { RebaseConflictDialog } from "@src/components/GitDialogs";
+import { RebaseConflictDialog } from "@src/features/GitDialogs";
 import { createLogger } from "@src/hooks/logger";
 import { useActionSystemOptional } from "@src/scaffold/ActionSystem";
 import type { GitFile } from "@src/types/git/types";

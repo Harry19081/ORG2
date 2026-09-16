@@ -5,7 +5,7 @@
 import {
   PullConflictDialog,
   RebaseConflictDialog,
-} from "@src/components/GitDialogs";
+} from "@src/features/GitDialogs";
 import type { GitOperationResult } from "@src/hooks/git/useGitOperations";
 import { createLogger } from "@src/hooks/logger";
 import type { TypedDispatch } from "@src/scaffold/ActionSystem";

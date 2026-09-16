@@ -2,7 +2,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import ComposerSurface from "@src/components/ComposerSurface";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
   type MarkdownTextareaEditorRef,
@@ -10,6 +9,7 @@ import MarkdownTextareaEditor, {
 import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import ComposerSurface from "@src/engines/ChatPanel/ComposerSurface";
 
 interface PrConversationComposerProps {
   composerDockRef: React.RefObject<HTMLDivElement | null>;

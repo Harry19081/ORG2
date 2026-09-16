@@ -9,7 +9,6 @@ import { useAtomValue, useSetAtom } from "jotai";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
-import SidebarChromeIconButton from "@src/components/SidebarChromeIconButton";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import {
   ArrowLeft01Icon,
@@ -17,6 +16,7 @@ import {
   HugeiconsIcon,
   type IconSvgElement,
 } from "@src/icons";
+import SidebarChromeIconButton from "@src/scaffold/NavigationSidebar/components/SidebarChromeIconButton";
 import {
   activeChatPanelTabCanGoBackAtom,
   activeChatPanelTabCanGoForwardAtom,

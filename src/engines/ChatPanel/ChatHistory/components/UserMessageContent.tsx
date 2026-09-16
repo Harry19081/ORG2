@@ -7,13 +7,13 @@
  */
 import React, { memo, useMemo } from "react";
 
-import { ChatImageThumbnailRow } from "@src/components/ChatImageThumbnail";
-import SessionReferenceCards from "@src/components/MarkDown/SessionReferenceCards";
-import { projectMarkdownSessionReferences } from "@src/components/MarkDown/sessionReferenceProjection";
 import { PILL_LINE_HEIGHT } from "@src/config/pillTokens";
+import { ChatImageThumbnailRow } from "@src/engines/ChatPanel/ChatImageThumbnail";
 import { normalizeUserMessageText } from "@src/engines/ChatPanel/ChatItems/normalizeUserMessageText";
 import CanvasDomComponentPreview from "@src/features/DomSelection/CanvasDomComponentPreview";
 import { parseCanvasDomComponent } from "@src/features/DomSelection/domComponentPayload";
+import SessionReferenceCards from "@src/features/Org2Cloud/markdown/SessionReferenceCards";
+import { projectMarkdownSessionReferences } from "@src/features/Org2Cloud/markdown/sessionReferenceProjection";
 
 import { InlineReferenceLink, MentionPill } from "./UserMessagePills";
 import {

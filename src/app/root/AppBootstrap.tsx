@@ -38,6 +38,7 @@ import { AppDeferredServices } from "./AppDeferredServices";
 import { AppGlobalRecovery } from "./AppGlobalRecovery";
 import ErrorBoundary from "./components/ErrorBoundary";
 import GlobalShortcuts from "./components/GlobalShortcuts";
+import { registerAppMarkdownExtensions } from "./registerMarkdownExtensions";
 import { RepoLoader } from "./services/RepoLoader";
 import { useAppDeferredInitialization } from "./useAppDeferredInitialization";
 import { useAppShellEffects } from "./useAppShellEffects";
@@ -46,6 +47,11 @@ import { useMobileRelayCloudAuthSync } from "./useMobileRelayCloudAuthSync";
 import { useMobileRemoteDesktopActions } from "./useMobileRemoteDesktopActions";
 import { useMobileSessionReadStateSync } from "./useMobileSessionReadStateSync";
 import { usePostPaintGitProbe } from "./usePostPaintGitProbe";
+
+// Fill the Markdown renderer's extension slots before anything renders: the
+// renderer is a tier-1 primitive and cannot import the tiers that own chat
+// code blocks, canvas cards, cloud references or the image overlay.
+registerAppMarkdownExtensions();
 
 // The E2E bridge (`window.__e2e`) is dev-only and loads as its own chunk: its
 // helpers pull ~40 modules (session sync adapters, cloud client, agent-org

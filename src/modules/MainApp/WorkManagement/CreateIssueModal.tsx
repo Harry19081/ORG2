@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import ComposerSurface from "@src/components/ComposerSurface";
 import Input from "@src/components/Input";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
@@ -10,6 +9,7 @@ import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/Mod
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
 import { PanelFooter } from "@src/components/layout/blocks";
+import ComposerSurface from "@src/engines/ChatPanel/ComposerSurface";
 import { compactRepositoryLabel } from "@src/features/GitHubWork/githubRepositoryLabel";
 import { useSessionReferenceDropTarget } from "@src/features/Org2Cloud/useSessionReferenceDropTarget";
 import Modal from "@src/scaffold/ModalSystem";

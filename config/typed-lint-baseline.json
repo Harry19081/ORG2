@@ -176,8 +176,8 @@
     "count": 1
   },
   {
-    "key": "bee009c151f2f9ce9d2e8d649ff93c7dd3352c01912017f88a4c628f3fdbbec0",
-    "file": "src/components/ImagePreviewOverlay/index.tsx",
+    "key": "c8e6ae2fe33e70d66d557828fb3d8f0830510d01fe90521a14ac13a3e8c0ccf5",
+    "file": "src/scaffold/ImagePreviewOverlay/index.tsx",
     "rule": "@typescript-eslint/no-misused-promises",
     "message": "Promise-returning function provided to attribute where a void return was expected.",
     "source": "{handleCopy}",
