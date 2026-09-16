@@ -151,8 +151,14 @@ export function buildKeyModelItems({
       : (resolveDefaultVariant(baseModel, variantInfos, persisted) ??
         representative);
 
+    // The account is the agent hint: it is what tells a routing tier such as
+    // Cursor's "auto" apart from the same word on another agent's key.
     const ModelItemIcon = () => (
-      <ModelIcon modelName={representative} size={14} />
+      <ModelIcon
+        modelName={representative}
+        agentType={account.modelType}
+        size={14}
+      />
     );
 
     const hasMultipleVariants = sortedVariants.length > 1;

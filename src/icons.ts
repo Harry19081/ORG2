@@ -136,6 +136,7 @@ export { default as ClipboardListIcon } from "@hugeicons/core-free-icons/Clipboa
 export { default as ClipboardPenIcon } from "@hugeicons/core-free-icons/ClipboardPenIcon";
 export { default as Clock01Icon } from "@hugeicons/core-free-icons/Clock01Icon";
 export { default as Clock03Icon } from "@hugeicons/core-free-icons/Clock03Icon";
+export { default as Clock04Icon } from "@hugeicons/core-free-icons/Clock04Icon";
 export { default as ClockArrowDownIcon } from "@hugeicons/core-free-icons/ClockArrowDownIcon";
 export { default as ClockArrowUpIcon } from "@hugeicons/core-free-icons/ClockArrowUpIcon";
 export { default as CloudAlertIcon } from "@hugeicons/core-free-icons/CloudAlertIcon";

@@ -3,6 +3,7 @@ import React from "react";
 import ModelIcon from "@src/components/ModelIcon";
 import type { KeyVaultAccount } from "@src/hooks/keyVault/types";
 import { getModelAliasDisplayName } from "@src/hooks/models/modelAliasRegistry";
+import type { ModelAccountInfo } from "@src/hooks/models/types";
 import { accountHasModel } from "@src/hooks/models/useModelAccountLookup";
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
 import { resolveDefaultVariant } from "@src/util/defaultModelVariant";
@@ -84,7 +85,11 @@ export function buildModelSelectionSpotlightItem({
       </span>
       <span className={`mx-0.5 shrink-0 ${selectedDividerClassName}`}>›</span>
       <span className="shrink-0 text-text-1">
-        <ModelIcon modelName={entry.modelId} size={14} />
+        <ModelIcon
+          modelName={entry.modelId}
+          agentType={entry.cliAgentType ?? entry.modelType}
+          size={14}
+        />
       </span>
       <span
         className={`min-w-0 truncate font-semibold ${selectedTextClassName}`}
@@ -168,7 +173,7 @@ export function buildModelSelectionSpotlightItem({
 }
 
 interface BuildAllModelItemsParams {
-  accountLookup: ReadonlyMap<string, unknown>;
+  accountLookup: ReadonlyMap<string, ModelAccountInfo>;
   accounts: KeyVaultAccount[];
   handleModelSelect: (
     modelId: string,
@@ -214,9 +219,15 @@ export function buildAllModelItems({
       const aliasDisplayName = getModelAliasDisplayName(modelId);
       const displayLabel = aliasDisplayName ?? formatModelNameFull(modelId);
 
-      void info;
+      // Only an unambiguous owner can act as the agent hint: "default" means
+      // Cursor's tier on a Cursor key and "whatever the CLI picks" elsewhere,
+      // so a model exposed by several agents gets no hint at all.
+      const soleAgentType =
+        info.agentTypes.length === 1 ? info.agentTypes[0] : undefined;
 
-      const ModelItemIcon = () => <ModelIcon modelName={modelId} size={14} />;
+      const ModelItemIcon = () => (
+        <ModelIcon modelName={modelId} agentType={soleAgentType} size={14} />
+      );
       const accountCount = getAccountCount([modelId]);
 
       const labelContent = aliasDisplayName ? (
