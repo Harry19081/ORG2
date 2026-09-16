@@ -469,7 +469,10 @@ const Modal: React.FC<ModalProps> = ({
               }
             >
               {hasHeaderMedia ? (
-                <div id={titleId} className="text-lg font-semibold text-text-1">
+                <div
+                  id={titleId}
+                  className="text-base font-semibold text-text-1"
+                >
                   {title}
                 </div>
               ) : typeof title === "string" ? undefined : (
