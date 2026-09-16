@@ -102,6 +102,7 @@ export { default as Calendar01Icon } from "@hugeicons/core-free-icons/Calendar01
 export { default as Calendar02Icon } from "@hugeicons/core-free-icons/Calendar02Icon";
 export { default as CalendarBlock01Icon } from "@hugeicons/core-free-icons/CalendarBlock01Icon";
 export { default as CalendarRemove01Icon } from "@hugeicons/core-free-icons/CalendarRemove01Icon";
+export { default as CalendarSyncIcon } from "@hugeicons/core-free-icons/CalendarSyncIcon";
 export { default as Camera01Icon } from "@hugeicons/core-free-icons/Camera01Icon";
 export { default as Cancel01Icon } from "@hugeicons/core-free-icons/Cancel01Icon";
 export { default as CancelCircleIcon } from "@hugeicons/core-free-icons/CancelCircleIcon";
@@ -133,7 +134,6 @@ export { default as ClipboardCheckIcon } from "@hugeicons/core-free-icons/Clipbo
 export { default as ClipboardCopyIcon } from "@hugeicons/core-free-icons/ClipboardCopyIcon";
 export { default as ClipboardIcon } from "@hugeicons/core-free-icons/ClipboardIcon";
 export { default as ClipboardListIcon } from "@hugeicons/core-free-icons/ClipboardListIcon";
-export { default as ClipboardPenIcon } from "@hugeicons/core-free-icons/ClipboardPenIcon";
 export { default as Clock01Icon } from "@hugeicons/core-free-icons/Clock01Icon";
 export { default as Clock03Icon } from "@hugeicons/core-free-icons/Clock03Icon";
 export { default as Clock04Icon } from "@hugeicons/core-free-icons/Clock04Icon";
@@ -443,7 +443,6 @@ export { default as VariableIcon } from "@hugeicons/core-free-icons/VariableIcon
 export { default as ViewIcon } from "@hugeicons/core-free-icons/ViewIcon";
 export { default as ViewOffIcon } from "@hugeicons/core-free-icons/ViewOffIcon";
 export { default as Wallet01Icon } from "@hugeicons/core-free-icons/Wallet01Icon";
-export { default as WaypointsIcon } from "@hugeicons/core-free-icons/WaypointsIcon";
 export { default as WholeWordIcon } from "@hugeicons/core-free-icons/WholeWordIcon";
 export { default as WorkHistoryIcon } from "@hugeicons/core-free-icons/WorkHistoryIcon";
 export { default as WorkflowCircle01Icon } from "@hugeicons/core-free-icons/WorkflowCircle01Icon";
