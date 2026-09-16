@@ -7,9 +7,11 @@ import {
   REPLAY_SPEED_OPTIONS,
   type ReplaySpeed,
 } from "@src/config/workspace/replayConfig";
-import type { SimulatorEventFilterValue } from "@src/engines/SessionCore/core/types";
-import type { SubagentSession } from "@src/engines/Simulator/hooks/useSubagentSessions";
-import type { AppType } from "@src/engines/Simulator/types/appTypes";
+import type {
+  AppType,
+  SimulatorEventFilterValue,
+  SubagentSession,
+} from "@src/contracts/simulator";
 import { STATION_MODES, type StationMode } from "@src/types/ui/workstation";
 import { withCoalescedWrites } from "@src/util/core/storage/coalescedStorageWrite";
 import { createZodJsonStorage } from "@src/util/core/storage/zodStorage";

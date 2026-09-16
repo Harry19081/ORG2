@@ -5,7 +5,7 @@ import {
   normalizeChannelName,
   normalizeChannelNameInput,
   validateChannelName,
-} from "./channelContract";
+} from "./channelName";
 
 describe("channel name normalization", () => {
   it("lowercases, strips leading #, and hyphenates whitespace while typing", () => {
