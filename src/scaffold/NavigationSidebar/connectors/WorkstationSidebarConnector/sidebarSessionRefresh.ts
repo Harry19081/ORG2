@@ -4,8 +4,8 @@ import {
   IMPORTED_HISTORY_SOURCE_DESCRIPTORS,
   externalHistoryRescanSources,
 } from "@src/api/tauri/externalHistory";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { createLogger } from "@src/hooks/logger";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   loadSessionRoster,
   refreshRecentNativeSessions,

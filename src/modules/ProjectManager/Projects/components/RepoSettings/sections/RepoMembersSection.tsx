@@ -19,6 +19,7 @@ import Button from "@src/components/Button";
 import DisclosureChevron from "@src/components/DisclosureChevron";
 import Input from "@src/components/Input";
 import PersonAvatar from "@src/components/PersonAvatar";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_DESCRIPTION_CLASSES,
@@ -28,7 +29,6 @@ import {
 } from "@src/components/layout/Section";
 import { CARD_ROW_TOKENS } from "@src/components/layout/blocks";
 import { useCurrentUserMemberIds } from "@src/hooks/project/useCurrentUserMemberId";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Add01Icon,
   Cancel01Icon,

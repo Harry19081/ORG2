@@ -16,6 +16,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { externalCliSourcesDetect } from "@src/api/tauri/externalHistory/detection";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import { Placeholder } from "@src/components/Placeholder";
 import {
   SECTION_GAP_CLASSES,
@@ -30,7 +31,6 @@ import { useOpenCloudSessionReference } from "@src/features/Org2Cloud/useOpenClo
 import { useOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 
-import { RuntimeRefreshButton } from "./RuntimeSectionHeader";
 import TeamMemberCard, {
   type AgentCatalog,
   type AgentCatalogEntry,
@@ -138,7 +138,7 @@ function TeamRuntimeTodayConnected({
       sessionState={remoteSessions.state}
       onOpenSession={handleOpenSession}
       headerAction={
-        <RuntimeRefreshButton
+        <RefreshButton
           label={t("refresh")}
           onRefresh={refreshAll}
           refreshing={rosterRefreshing}
@@ -300,7 +300,7 @@ export default function TeamRuntimePanel({
             language={language}
             onBack={() => setOpenMemberId(null)}
             headerAction={
-              <RuntimeRefreshButton
+              <RefreshButton
                 label={t("refresh")}
                 onRefresh={roster.refresh}
                 refreshing={roster.refreshing}
@@ -353,7 +353,7 @@ export default function TeamRuntimePanel({
                             className="flex shrink-0 items-center"
                             data-testid="team-runtime-controls"
                           >
-                            <RuntimeRefreshButton
+                            <RefreshButton
                               label={t("refresh")}
                               onRefresh={roster.refresh}
                               refreshing={roster.refreshing}
@@ -409,7 +409,7 @@ export default function TeamRuntimePanel({
           className="flex min-h-9 items-center justify-end"
           data-testid="team-runtime-controls"
         >
-          <RuntimeRefreshButton
+          <RefreshButton
             label={t("refresh")}
             onRefresh={roster.refresh}
             refreshing={roster.refreshing}

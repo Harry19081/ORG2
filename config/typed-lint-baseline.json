@@ -6016,40 +6016,40 @@
     "count": 1
   },
   {
-    "key": "bceb224fa41e765a280a8d31b06934527d557bb1e591e8acfbc62d834d260e67",
-    "file": "src/features/RuntimeDataSource/RuntimeScanningPanelColumns.tsx",
+    "key": "93b1db23248feefcbe48a1ee3e90bed7524cd640ac88caaf490129b1a8616bfe",
+    "file": "src/features/ExternalSessionSources/sourceScanningColumns.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void handleRescan(row, true);",
     "count": 1
   },
   {
-    "key": "7acfc2ed80eeb26784ee4f808358845adc7a0714c52bf95cb7df1d76da894224",
-    "file": "src/features/RuntimeDataSource/RuntimeScanningPanelColumns.tsx",
+    "key": "ccf9f1278d8f225f98673c84346267e5a4d776e46812f6e8f992cbeeb1e9203c",
+    "file": "src/features/ExternalSessionSources/sourceScanningColumns.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void handleRescan(row, false);",
     "count": 1
   },
   {
-    "key": "e7d54064f975b573e547f00d178e7270205fbd9355f66469190d48ff793e43e2",
-    "file": "src/features/RuntimeDataSource/RuntimeScanningPanelInventory.ts",
+    "key": "dd3454208a70e207c207311fa45edb56a968d3cbb3db529dfd81e3cb8cc83f71",
+    "file": "src/features/ExternalSessionSources/useSourceScanningInventory.ts",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void loadScanningInventory();",
     "count": 1
   },
   {
-    "key": "d5daa5e4804a5f4b2760d3d24ae306a4714baaf4ec793155dccca8b55b26c096",
-    "file": "src/features/RuntimeDataSource/SessionProvenanceHookPlatformsTable.tsx",
+    "key": "e41848eace05e0ae6fd1a1d99a5835e2bb8d45aa9f3e6520d0e6956fe3b4a205",
+    "file": "src/features/ExternalSessionSources/SessionProvenanceHookPlatformsTable.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void loadStatuses();",
     "count": 1
   },
   {
-    "key": "9b772ee7e777ef8bedba5fe0c611bd842a0fd67543c4ae8ee3f9b2798d20715c",
-    "file": "src/features/RuntimeDataSource/SessionProvenanceRecentSignalsTable.tsx",
+    "key": "c2e5d10bed411503c88ae0e5abe16eab810c728eafacae9a509002aac2f3f136",
+    "file": "src/features/ExternalSessionSources/SessionProvenanceRecentSignalsTable.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void load();",

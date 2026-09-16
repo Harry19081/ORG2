@@ -36,6 +36,7 @@ import {
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import Select from "@src/components/Select";
 import {
   SECTION_CONTROL_STYLE,
@@ -50,7 +51,6 @@ import {
   type AgentBrowserProviderSetting,
 } from "@src/config/settingsSchema/registry/agentBrowser";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Download01Icon,
   HugeiconsIcon,

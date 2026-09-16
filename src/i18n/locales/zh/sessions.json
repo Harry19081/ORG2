@@ -90,8 +90,7 @@
       "openFolder": "打开文件夹",
       "tabs": {
         "all": "全部",
-        "apps": "应用",
-        "clis": "命令行"
+        "apps": "应用"
       },
       "views": {
         "scanning": "扫描",

@@ -19,8 +19,20 @@ import InlineInfoCard from "@src/components/layout/blocks/InlineInfoCard";
 import { INFO_CARD_TOKENS } from "@src/config/detailPanelTokens";
 import { Copy01Icon, FolderOpenIcon, HugeiconsIcon } from "@src/icons";
 import { copyText } from "@src/util/data/clipboard";
+import { tildePath } from "@src/util/path";
 
-import { storeKindLabel, tildePath } from "./sourcePath";
+/** Human labels for the on-disk store format ORGII parses. */
+const STORE_KIND_LABELS: Record<string, string> = {
+  jsonl: "JSONL",
+  sqlite: "SQLite",
+  json: "JSON",
+  markdown: "Markdown",
+};
+
+/** Display label for a source's store format, e.g. "JSONL". */
+function storeKindLabel(probe: ExternalCliSourceProbe): string {
+  return STORE_KIND_LABELS[probe.storeKind] ?? probe.storeKind;
+}
 
 export interface DataSourceDetailsCardProps {
   probe: ExternalCliSourceProbe;

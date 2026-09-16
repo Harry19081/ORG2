@@ -169,6 +169,7 @@ export { default as CursorMagicSelection04Icon } from "@hugeicons/core-free-icon
 export { default as CursorPointer02Icon } from "@hugeicons/core-free-icons/CursorPointer02Icon";
 export { default as DashboardSquare01Icon } from "@hugeicons/core-free-icons/DashboardSquare01Icon";
 export { default as DatabaseIcon } from "@hugeicons/core-free-icons/DatabaseIcon";
+export { default as DatabaseImportIcon } from "@hugeicons/core-free-icons/DatabaseImportIcon";
 export { default as Delete01Icon } from "@hugeicons/core-free-icons/Delete01Icon";
 export { default as Delete02Icon } from "@hugeicons/core-free-icons/Delete02Icon";
 export { default as DeliveryBox01Icon } from "@hugeicons/core-free-icons/DeliveryBox01Icon";

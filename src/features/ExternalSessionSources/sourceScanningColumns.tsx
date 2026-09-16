@@ -1,11 +1,9 @@
 /**
- * RuntimeScanningPanelColumns
- *
- * Builds the Data Sources settings-table column definitions for
- * RuntimeScanningPanel: source name/status, session + subagent counts, last
- * scan time, and the combined enable/frequency/rescan action column. Kept as
- * a plain builder function (not a hook/useMemo) since the panel recomputed
- * this array on every render before extraction — same behavior here.
+ * Builds the source-scanning settings-table column definitions: source
+ * name/status, session + subagent counts, last scan time, and the combined
+ * enable/frequency/rescan action column. Kept as a plain builder function
+ * (not a hook/useMemo) since the panel recomputed this array on every render
+ * before extraction — same behavior here.
  */
 import type { TFunction } from "i18next";
 import React, { type Dispatch, type SetStateAction } from "react";
@@ -13,6 +11,7 @@ import React, { type Dispatch, type SetStateAction } from "react";
 import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
 import Menu from "@src/components/Menu";
+import type { IconProvider } from "@src/components/ModelIcon";
 import Select from "@src/components/Select";
 import type { SettingsTableColumn } from "@src/components/SettingsTable";
 import {
@@ -30,11 +29,11 @@ import {
 } from "@src/store/session/dataSourceConfigAtom";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
 
-import { statusTagFor } from "./RuntimeScanningPanelHelpers";
-import RuntimeScanningPanelSourceIcon from "./RuntimeScanningPanelSourceIcon";
-import type { SourceRow } from "./RuntimeScanningPanelTypes";
+import SourceIcon from "./SourceIcon";
+import { statusTagFor } from "./sourceScanningHelpers";
+import type { SourceRow } from "./sourceScanningTypes";
 
-export interface RuntimeScanningPanelColumnsParams {
+export interface SourceScanningColumnsParams {
   t: TFunction<"sessions">;
   configMap: DataSourceConfigMap;
   sourceFrequencyOptions: { value: SourceFrequency; label: string }[];
@@ -48,7 +47,7 @@ export interface RuntimeScanningPanelColumnsParams {
   handleRescan: (row: SourceRow, clear?: boolean) => void | Promise<void>;
 }
 
-export function buildRuntimeScanningPanelColumns({
+export function buildSourceScanningColumns({
   t,
   configMap,
   sourceFrequencyOptions,
@@ -57,7 +56,7 @@ export function buildRuntimeScanningPanelColumns({
   toggleEnabled,
   updateConfig,
   handleRescan,
-}: RuntimeScanningPanelColumnsParams): SettingsTableColumn<SourceRow>[] {
+}: SourceScanningColumnsParams): SettingsTableColumn<SourceRow>[] {
   return [
     {
       key: "source",
@@ -70,7 +69,7 @@ export function buildRuntimeScanningPanelColumns({
         return (
           <span className={`${SETTINGS_TABLE_CELL.primaryIcon} min-w-0`}>
             <span className="shrink-0 text-text-2">
-              <RuntimeScanningPanelSourceIcon probe={row.probe} />
+              <SourceIcon iconId={row.probe.iconId as IconProvider} />
             </span>
             <span className="truncate">{row.probe.displayName}</span>
             <Tag size="mini" color={statusTag.color} pill className="shrink-0">

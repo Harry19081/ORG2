@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
@@ -15,7 +16,6 @@ import {
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { CursorRepo } from "@src/hooks/policies";
 import { getInstalledSkillIdentity } from "@src/hooks/skills/installedSkillsMerge";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Add01Icon,
   Delete02Icon,

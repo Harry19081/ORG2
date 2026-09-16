@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import Message from "@src/components/Message";
 import ModelIcon from "@src/components/ModelIcon";
 import {
@@ -16,10 +17,7 @@ import {
   getQuotaTextColorClass,
 } from "@src/components/QuotaBar";
 import { SECTION_GAP_CLASSES } from "@src/components/layout/Section";
-import {
-  RuntimeRefreshButton,
-  RuntimeSectionHeader,
-} from "@src/features/RuntimeDataSource/RuntimeSectionHeader";
+import { RuntimeSectionHeader } from "@src/features/RuntimeDataSource/RuntimeSectionHeader";
 import { useKeyVault } from "@src/hooks/keyVault";
 import {
   type AccountQuotaCard,
@@ -372,7 +370,7 @@ export function StartPageQuotaGrid({
           dataTestId="quota-refresh-controls"
           headingLevel="h3"
         >
-          <RuntimeRefreshButton
+          <RefreshButton
             label={t("chat.startPage.quota.refresh")}
             onRefresh={handleRefreshAll}
             refreshing={refreshing}

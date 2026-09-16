@@ -88,8 +88,7 @@
       "openFolder": "Ouvrir le dossier",
       "tabs": {
         "all": "Tous",
-        "apps": "Applis",
-        "clis": "CLIs"
+        "apps": "Applis"
       },
       "views": {
         "scanning": "Analyse",

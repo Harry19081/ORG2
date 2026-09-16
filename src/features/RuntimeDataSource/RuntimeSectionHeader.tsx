@@ -1,9 +1,6 @@
 import type { ReactNode } from "react";
 
-import Button from "@src/components/Button";
 import { SECTION_SUBHEADING_CLASSES } from "@src/components/layout/Section";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
-import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 
 interface RuntimeSectionHeaderProps {
   title: ReactNode;
@@ -37,52 +34,5 @@ export function RuntimeSectionHeader({
         <div className="flex shrink-0 items-center gap-1">{children}</div>
       ) : null}
     </div>
-  );
-}
-
-interface RuntimeRefreshButtonProps {
-  label: string;
-  variant?: "secondary" | "tertiary";
-  iconOnly?: boolean;
-  onRefresh: () => void;
-  refreshing: boolean;
-  disabled?: boolean;
-  dataTestId?: string;
-}
-
-/** Standard page and table-toolbar refresh action for Runtime. */
-export function RuntimeRefreshButton({
-  label,
-  iconOnly = false,
-  variant = "tertiary",
-  onRefresh,
-  refreshing,
-  disabled = false,
-  dataTestId,
-}: RuntimeRefreshButtonProps): ReactNode {
-  const { spinClass, handleClick } = useRefreshSpin(onRefresh, refreshing);
-
-  return (
-    <Button
-      htmlType="button"
-      variant={variant}
-      iconOnly={iconOnly}
-      size={variant === "secondary" ? "default" : "small"}
-      disabled={disabled || refreshing}
-      aria-label={label}
-      title={label}
-      onClick={handleClick}
-      icon={
-        <HugeiconsIcon
-          icon={Refresh04Icon}
-          data-icon="refresh-cw"
-          size={14}
-          className={spinClass}
-        />
-      }
-      data-testid={dataTestId}
-    >
-      {iconOnly ? null : label}
-    </Button>
   );
 }

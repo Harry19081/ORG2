@@ -8,6 +8,7 @@ import {
 import { rpc } from "@src/api/tauri/rpc";
 import type { SessionProvenanceRecentSignal } from "@src/api/tauri/rpc/schemas/agentOrgs";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import type { IconProvider } from "@src/components/ModelIcon";
 import SettingsTable, {
@@ -29,10 +30,9 @@ import { CodeMirrorDiff } from "@src/features/CodeMirror/Diff";
 import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
+import { tildePath } from "@src/util/path";
 
-import { RuntimeRefreshButton } from "./RuntimeSectionHeader";
-import SessionProvenanceSourceIcon from "./SessionProvenanceSourceIcon";
-import { tildePath } from "./sourcePath";
+import SourceIcon from "./SourceIcon";
 
 // Map the persisted interaction `source` string to a display label + icon.
 const SIGNAL_SOURCE_META: Record<
@@ -314,7 +314,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
         return (
           <span className={`${SETTINGS_TABLE_CELL.primaryIcon} min-w-0`}>
             <span className="shrink-0 text-text-2">
-              <SessionProvenanceSourceIcon iconId={meta.iconId} />
+              <SourceIcon iconId={meta.iconId} />
             </span>
             <span className="truncate">{meta.label}</span>
           </span>
@@ -506,7 +506,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
             onSearchClear: () => setSearchQuery(""),
             searchInputSize: "default",
             rightContent: (
-              <RuntimeRefreshButton
+              <RefreshButton
                 iconOnly
                 variant="secondary"
                 label={t("agentOrgs.sessionProvenance.signals.refresh", {

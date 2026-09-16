@@ -8,6 +8,7 @@ import {
 import Button from "@src/components/Button";
 import { TEXT_HOVER_REFRESH_BUTTON_PROPS } from "@src/components/Button/refreshActionProps";
 import { Placeholder } from "@src/components/Placeholder";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
@@ -17,7 +18,6 @@ import {
   CollapsibleSection,
   DETAIL_PANEL_TOKENS,
 } from "@src/components/layout/blocks";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 
 interface ContainerEnginesSectionProps {

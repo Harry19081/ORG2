@@ -1,15 +1,17 @@
+/**
+ * Icon for an external session source (app, CLI, or hook platform): its
+ * registered model icon, or a generic terminal glyph when none exists.
+ */
 import React from "react";
 
 import ModelIcon, { type IconProvider } from "@src/components/ModelIcon";
 import { ComputerTerminal01Icon, HugeiconsIcon } from "@src/icons";
 
-interface SessionProvenanceSourceIconProps {
+interface SourceIconProps {
   iconId: IconProvider;
 }
 
-const SessionProvenanceSourceIcon: React.FC<
-  SessionProvenanceSourceIconProps
-> = ({ iconId }) => (
+const SourceIcon: React.FC<SourceIconProps> = ({ iconId }) => (
   <ModelIcon
     provider={iconId}
     size={16}
@@ -24,4 +26,4 @@ const SessionProvenanceSourceIcon: React.FC<
   />
 );
 
-export default SessionProvenanceSourceIcon;
+export default SourceIcon;

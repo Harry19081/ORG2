@@ -30,11 +30,11 @@ import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { DiffViewModeToggle } from "@src/components/DiffViewModeToggle";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import Message from "@src/components/Message";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import TabPill from "@src/components/TabPill";
 import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Cancel01Icon,
   FileSymlinkIcon,

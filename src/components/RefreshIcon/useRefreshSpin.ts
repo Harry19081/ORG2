@@ -11,7 +11,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { REFRESH_ICON_TOKENS } from "@src/components/RefreshIcon/tokens";
+import { REFRESH_ICON_TOKENS } from "./tokens";
 
 const SPIN_DURATION_MS = 1200;
 const MAX_PERSISTED_SPIN_KEYS = 200;

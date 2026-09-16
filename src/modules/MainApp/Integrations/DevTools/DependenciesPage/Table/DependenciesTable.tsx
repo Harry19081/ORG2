@@ -9,13 +9,13 @@ import type { TabPillItem } from "@/src/components/TabPill";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import RefreshButton from "@src/components/Button/RefreshButton";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import { InfoRow } from "@src/components/layout/blocks/InfoRow";
-import { RuntimeRefreshButton } from "@src/features/RuntimeDataSource/RuntimeSectionHeader";
 import {
   type DependencyStatus,
   NON_DB_CATEGORIES,
@@ -180,7 +180,7 @@ const DependenciesTable: React.FC<DependenciesTableProps> = ({
         searchPlaceholder: tCommon("common.searchPlaceholder"),
         allowSearchClear: true,
         rightContent: onRefresh ? (
-          <RuntimeRefreshButton
+          <RefreshButton
             iconOnly
             variant="secondary"
             label={tCommon("actions.refresh")}

@@ -6,6 +6,7 @@ import AnyIcon from "@src/components/AnyIcon";
 import { HOVER_CARD } from "@src/components/HoverCard/tokens";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { createLogger } from "@src/hooks/logger";
+import { tildePath } from "@src/util/path";
 import type { SessionDisplayMetadata } from "@src/util/session/sessionDisplayMetadata";
 
 const logger = createLogger("SessionHoverCard");
@@ -44,7 +45,7 @@ export const REVEAL_ICON_BUTTON_CLASS_NAME =
 const COMPACT_PATH_MAX_CHARS = 44;
 
 export function formatCompactPath(path: string): string {
-  const compactPath = path.replace(/^\/Users\/[^/]+/u, "~");
+  const compactPath = tildePath(path);
   if (compactPath.length <= COMPACT_PATH_MAX_CHARS) return compactPath;
 
   const parts = compactPath.split("/").filter(Boolean);

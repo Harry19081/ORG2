@@ -16,6 +16,7 @@ import {
   ContentWritingIcon as ContentWriting,
   ContrastIcon as Contrast,
   DatabaseIcon as Database,
+  DatabaseImportIcon as DatabaseImport,
   FolderGitTwoIcon as FolderGit2,
   FolderOpenIcon as FolderOpen,
   LegalHammerIcon as Hammer,
@@ -155,6 +156,7 @@ export const SEGMENT_REGISTRY: Record<string, SegmentRegistryEntry> = {
     labelKey: "settings:sections.harnessConnections",
     icon: Plug,
   },
+  import: { labelKey: "settings:sections.import", icon: DatabaseImport },
 
   // work-station roots
   workstation: { labelKey: "navigation:labels.workspace", icon: FolderOpen },

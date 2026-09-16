@@ -10,6 +10,7 @@ import {
   builderProfileOverview,
 } from "@src/api/tauri/builderProfile";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import { Placeholder } from "@src/components/Placeholder";
 import ProgressBar from "@src/components/ProgressBar";
 import SettingsTable, {
@@ -31,10 +32,7 @@ import AxisMeter from "./AxisMeter";
 import { BuilderTypeDetailContent } from "./BuilderTypeDetailPanel";
 import BuilderTypesPanel from "./BuilderTypesPanel";
 import HighlightCards from "./HighlightCards";
-import {
-  RuntimeRefreshButton,
-  RuntimeSectionHeader,
-} from "./RuntimeSectionHeader";
+import { RuntimeSectionHeader } from "./RuntimeSectionHeader";
 import { getBuilderType } from "./builderTypes";
 
 /** Delay between background extraction batches while the panel is open. */
@@ -365,7 +363,7 @@ export default function BuilderProfilePanel() {
       dataTestId="builder-profile-title-controls"
       headingLevel="h2"
     >
-      <RuntimeRefreshButton
+      <RefreshButton
         label={t("refresh")}
         onRefresh={onRefresh}
         refreshing={loading}

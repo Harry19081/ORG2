@@ -17,6 +17,7 @@
     "agentOrg": "Agent Team",
     "mobileRemote": "Mobile Remote",
     "harnessConnections": "App connections",
+    "import": "Import",
     "development": "Dev mode"
   },
   "coreSidebar": {

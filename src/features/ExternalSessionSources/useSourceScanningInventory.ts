@@ -1,11 +1,8 @@
 /**
- * RuntimeScanningPanelInventory
- *
- * Encapsulates RuntimeScanningPanel's scanning-inventory state and its
- * mutations: the one-shot detect + stats fan-out on mount, per-source
- * rescan/reprobe, "rescan all", and the enabled toggle. Extracted verbatim
- * from the panel component so its render body only wires this state to
- * columns and JSX.
+ * Source-scanning inventory state and its mutations: the one-shot detect +
+ * stats fan-out on mount, per-source rescan/reprobe, "rescan all", and the
+ * enabled toggle. Kept out of `SourceScanningSettings` so its render body only
+ * wires this state to columns and JSX.
  */
 import { useAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -27,10 +24,10 @@ import {
   getSourceConfig,
 } from "@src/store/session/dataSourceConfigAtom";
 
-import { isImportableId } from "./RuntimeScanningPanelHelpers";
-import type { SourceRow } from "./RuntimeScanningPanelTypes";
+import { isImportableId } from "./sourceScanningHelpers";
+import type { SourceRow } from "./sourceScanningTypes";
 
-export function useRuntimeScanningPanelInventory() {
+export function useSourceScanningInventory() {
   const [rows, setRows] = useState<SourceRow[] | null>(null);
   const [rescanningAll, setRescanningAll] = useState(false);
   const [configMap, setConfigMap] = useAtom(dataSourceConfigAtom);

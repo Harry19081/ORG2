@@ -12,6 +12,7 @@ import {
 } from "recharts";
 
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import {
   CHART_AXIS_TICK,
   CHART_GRID_STROKE,
@@ -24,10 +25,7 @@ import Select from "@src/components/Select";
 import { useWeeklyQuotaHistory } from "@src/hooks/keyVault/useWeeklyQuotaHistory";
 import { ArrowLeft01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
-import {
-  RuntimeRefreshButton,
-  RuntimeSectionHeader,
-} from "./RuntimeSectionHeader";
+import { RuntimeSectionHeader } from "./RuntimeSectionHeader";
 import { weeklyQuotaRange } from "./weeklyQuotaRange";
 
 export default function WeeklyQuotaHistoryPanel() {
@@ -48,7 +46,7 @@ export default function WeeklyQuotaHistoryPanel() {
   return (
     <section className="space-y-3" data-testid="weekly-quota-history">
       <RuntimeSectionHeader title={text("title", "Weekly quota history")}>
-        <RuntimeRefreshButton
+        <RefreshButton
           label={text("refresh", "Refresh")}
           onRefresh={refresh}
           refreshing={loading}
