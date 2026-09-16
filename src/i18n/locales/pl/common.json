@@ -18,6 +18,12 @@
     "file": "Szukaj w pliku",
     "named": "Szukaj w {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Pasek boczny",
+    "showSidebar": "Pokaż pasek boczny",
+    "location": "Położenie",
+    "showIndentLines": "Pokaż linie wcięć"
+  },
   "teamInbox": {
     "title": "Skrzynka zespołu",
     "listLabel": "Lista skrzynki zespołu",

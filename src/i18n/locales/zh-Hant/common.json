@@ -18,6 +18,12 @@
     "file": "在檔案中搜尋",
     "named": "在 {{name}} 中搜尋"
   },
+  "sidebarSettings": {
+    "title": "側邊欄設定",
+    "showSidebar": "顯示側邊欄",
+    "location": "位置",
+    "showIndentLines": "顯示縮排線"
+  },
   "teamInbox": {
     "title": "團隊收件匣",
     "listLabel": "團隊收件匣清單",

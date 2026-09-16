@@ -18,6 +18,12 @@
     "file": "Search in file",
     "named": "Search in {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Sidebar settings",
+    "showSidebar": "Show sidebar",
+    "location": "Location",
+    "showIndentLines": "Show indent lines"
+  },
   "windowChrome": {
     "menus": {
       "file": "File",

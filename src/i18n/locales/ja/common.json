@@ -18,6 +18,12 @@
     "file": "ファイル内を検索",
     "named": "{{name}} 内を検索"
   },
+  "sidebarSettings": {
+    "title": "サイドバー設定",
+    "showSidebar": "サイドバーを表示",
+    "location": "位置",
+    "showIndentLines": "インデント線を表示"
+  },
   "teamInbox": {
     "title": "チームの受信トレイ",
     "listLabel": "チーム受信トレイの一覧",

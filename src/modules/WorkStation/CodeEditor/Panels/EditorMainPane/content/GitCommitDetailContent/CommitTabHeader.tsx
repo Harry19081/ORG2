@@ -101,6 +101,7 @@ export const CommitTabHeader: React.FC<CommitTabHeaderProps> = memo(
         highlightActiveLineEnabled={highlightActiveLine}
         onHighlightActiveLineChange={setHighlightActiveLine}
         onMoreSettings={onOpenSettings}
+        showSidebarSettings={publishToWorkstationHeader}
         onClose={onClose}
         onOpenInNewTab={onOpenInNewTab}
         publishToHost={publishToWorkstationHeader ? "code" : undefined}

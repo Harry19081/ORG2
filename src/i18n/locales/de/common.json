@@ -18,6 +18,12 @@
     "file": "In Datei suchen",
     "named": "In {{name}} suchen"
   },
+  "sidebarSettings": {
+    "title": "Seitenleiste",
+    "showSidebar": "Seitenleiste anzeigen",
+    "location": "Position",
+    "showIndentLines": "Einrückungslinien anzeigen"
+  },
   "teamInbox": {
     "title": "Team-Posteingang",
     "listLabel": "Liste des Team-Posteingangs",

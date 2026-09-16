@@ -7,6 +7,8 @@
  *  - File change actions     — Save / Discard.
  *  - Menu actions            — Search / Go to line / Copy relative path / Reload.
  *  - UI settings submenu     — Editor display switches / More settings.
+ *  - Sidebar settings submenu — WorkStation sidebar visibility / location /
+ *                               indent lines.
  *
  * Unavailable actions are omitted from the current file context.
  */
@@ -51,6 +53,8 @@ import {
 } from "@src/icons";
 import { getFileManagerRevealLabelKey } from "@src/util/platform/fileManagerLabels";
 
+import { FileHeaderSidebarSettingsSubmenu } from "./FileHeaderSidebarSettingsSubmenu";
+
 export interface FileHeaderMoreMenuProps {
   renderFileActions?: (close: () => void) => React.ReactNode;
   // Visibility flags
@@ -67,6 +71,8 @@ export interface FileHeaderMoreMenuProps {
   showHighlightActiveLineToggle: boolean;
   showGitBlameToggle: boolean;
   showMoreSettingsAction: boolean;
+  /** Show the WorkStation sidebar settings submenu. */
+  showSidebarSettings?: boolean;
 
   // Toggle current values
   lineNumbersEnabled: boolean;
@@ -114,6 +120,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
   showHighlightActiveLineToggle,
   showGitBlameToggle,
   showMoreSettingsAction,
+  showSidebarSettings = false,
   lineNumbersEnabled,
   wordWrapEnabled,
   minimapEnabled,
@@ -175,7 +182,8 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
     showMinimapToggle ||
     showHighlightActiveLineToggle ||
     showGitBlameToggle;
-  const hasDisplaySettings = hasDisplayToggles || showMoreSettingsAction;
+  const hasDisplaySettings =
+    hasDisplayToggles || showMoreSettingsAction || showSidebarSettings;
   const fileActions =
     menuVisible && isPositioned ? renderFileActions?.(close) : null;
   const hasFileActions = React.Children.toArray(fileActions).length > 0;
@@ -454,7 +462,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                 hasFileActions) && (
                 <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
               )}
-            {hasDisplaySettings && (
+            {(hasDisplayToggles || showMoreSettingsAction) && (
               <ActionSubmenu
                 label={t("common:common.display")}
                 icon={
@@ -527,6 +535,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                 )}
               </ActionSubmenu>
             )}
+            {showSidebarSettings && <FileHeaderSidebarSettingsSubmenu />}
           </ActionMenuSurface>,
           document.body
         )}
