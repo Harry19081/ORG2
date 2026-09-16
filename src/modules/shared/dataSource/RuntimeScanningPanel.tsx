@@ -33,7 +33,7 @@ import {
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
 import {
   ACTIVE_EXTERNAL_SESSION_REFRESH_FREQUENCIES,
   type ActiveExternalSessionRefreshFrequency,

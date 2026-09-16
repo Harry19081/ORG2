@@ -33,6 +33,7 @@ import {
   type StationWindowSessionPayload,
   requestStationWindowSession,
 } from "@src/api/tauri/stationWindow";
+import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { DataProvider } from "@src/contexts/workspace/DataContext";
 import { BrowserProvider } from "@src/contexts/workstation";
@@ -44,7 +45,6 @@ import { useTauriListen } from "@src/hooks/platform/useTauriListen";
 import { useProjectDataChangedListener } from "@src/hooks/project";
 import { useNativeSessionStatusMonitor } from "@src/hooks/session/useNativeSessionStatusMonitor";
 import { useGlobalBrowserWebviewLayering } from "@src/modules/WorkStation/Browser/hooks";
-import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import { useOpenUrlInBrowser } from "@src/modules/useOpenUrlInBrowser";
 import { useWorkStationPipelineBridge } from "@src/modules/useWorkStationPipelineBridge";
 import { ActionSystemProvider } from "@src/scaffold/ActionSystem";

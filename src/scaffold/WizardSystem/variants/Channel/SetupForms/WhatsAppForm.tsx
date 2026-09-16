@@ -2,12 +2,12 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Input from "@src/components/Input";
-import { CHANNEL_DEFAULTS } from "@src/modules/MainApp/Integrations/Connections/Channels/config";
 import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { CHANNEL_DEFAULTS } from "@src/modules/MainApp/Integrations/Connections/Channels/config";
 
 import { type ChannelFormProps, getString } from "./types";
 

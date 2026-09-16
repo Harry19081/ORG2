@@ -5,11 +5,11 @@ import Button from "@src/components/Button";
 import ComposerShell from "@src/components/ComposerShell";
 import ComposerSurface from "@src/components/ComposerSurface";
 import PersonAvatar from "@src/components/PersonAvatar";
+import { LoadingBar } from "@src/components/layout/blocks";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
 } from "@src/modules/shared/components/MarkdownTextareaEditor";
 import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
-import { LoadingBar } from "@src/modules/shared/layouts/blocks";
 
 import GitHubIssueCloseButton from "./GitHubIssueCloseButton";
 import type {

@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
-import { CodexSessionSetup } from "@src/features/SessionSetup";
-import { KeyboardIcon, Login01Icon, SearchAreaIcon } from "@src/icons";
 import {
   SECTION_CONTROL_STYLE,
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { CodexSessionSetup } from "@src/features/SessionSetup";
+import { KeyboardIcon, Login01Icon, SearchAreaIcon } from "@src/icons";
 import {
   SelectionGrid,
   type SelectionGridOption,

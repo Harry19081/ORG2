@@ -51,7 +51,7 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-vi.mock("@src/modules/shared/layouts/SplitViewLayout", () => ({
+vi.mock("@src/scaffold/layouts/SplitViewLayout", () => ({
   default: (props: Record<string, unknown>) => {
     splitViewProps.current = props;
     return createElement(
@@ -64,9 +64,9 @@ vi.mock("@src/modules/shared/layouts/SplitViewLayout", () => ({
   },
 }));
 
-vi.mock("@src/modules/shared/layouts/blocks", async (importOriginal) => {
+vi.mock("@src/components/layout/blocks", async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import("@src/modules/shared/layouts/blocks")>();
+    await importOriginal<typeof import("@src/components/layout/blocks")>();
   return {
     ...actual,
     LoadingBar: () => createElement("div", { "data-testid": "loading-bar" }),

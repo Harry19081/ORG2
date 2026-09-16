@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import PersonAvatar from "@src/components/PersonAvatar";
+import { PanelFooter } from "@src/components/layout/blocks";
 import type { useWorkItemImageInsert } from "@src/hooks/project";
 import { HugeiconsIcon, Pen01Icon, RepeatIcon } from "@src/icons";
 import {
@@ -19,7 +20,6 @@ import {
 } from "@src/modules/shared/components/ActivityTimeline";
 import MarkdownTextareaEditor from "@src/modules/shared/components/MarkdownTextareaEditor";
 import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import type { WorkItem } from "@src/types/core/workItem";
 
 import type { useWorkItemContentModel } from "./hooks/useWorkItemContentModel";

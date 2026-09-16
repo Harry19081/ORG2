@@ -15,7 +15,7 @@ import {
   type WorkItemsKanbanGroup,
 } from "@src/modules/ProjectManager/WorkItems/workItemsViewModel";
 import { WorkManagementSearchInput } from "@src/modules/shared/components/WorkManagementSearchInput";
-import SplitListFullscreenButton from "@src/modules/shared/layouts/SplitListFullscreenButton";
+import SplitListFullscreenButton from "@src/scaffold/layouts/SplitListFullscreenButton";
 
 import { STORY_WORK_ITEMS_VISIBLE_TABS } from "./ProjectWorkItemsTabContentConstants";
 import type {

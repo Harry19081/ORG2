@@ -8,7 +8,7 @@ import {
 } from "@src/icons";
 import DetailHeaderIconAction from "@src/modules/shared/components/DetailHeaderIconAction";
 import type { DetailHeaderIconActionProps } from "@src/modules/shared/components/DetailHeaderIconAction";
-import DetailPaneLayout from "@src/modules/shared/layouts/DetailPaneLayout";
+import DetailPaneLayout from "@src/scaffold/layouts/DetailPaneLayout";
 
 export interface TeamInboxDetailLayoutProps {
   title: string;

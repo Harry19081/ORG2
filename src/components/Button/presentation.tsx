@@ -1,5 +1,9 @@
 import React, { useMemo } from "react";
 
+import {
+  KEYBOARD_SHORTCUT_VARIANT,
+  KeyboardShortcut,
+} from "@src/components/KeyboardShortcut";
 import { BUTTON_VARIANT } from "@src/config/workstation/tokens";
 import { HugeiconsIcon, Loading03Icon } from "@src/icons";
 
@@ -186,6 +190,7 @@ interface ButtonPresentationOptions {
   icon?: React.ReactNode | string;
   iconPosition: "left" | "right";
   iconOnly: boolean;
+  shortcut?: string;
   centerLabel: boolean;
   long: boolean;
   children?: React.ReactNode;
@@ -205,6 +210,7 @@ export function useButtonPresentation({
   icon,
   iconPosition,
   iconOnly,
+  shortcut,
   centerLabel,
   long,
   children,
@@ -344,7 +350,23 @@ export function useButtonPresentation({
     resolvedAppearance,
     borderRadius,
     buttonStyles,
-    buttonContent,
+    buttonContent:
+      shortcut?.trim() && !iconOnly ? (
+        <>
+          {buttonContent}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none ml-2 inline-flex shrink-0"
+          >
+            <KeyboardShortcut
+              shortcut={shortcut}
+              variant={KEYBOARD_SHORTCUT_VARIANT.inline}
+            />
+          </span>
+        </>
+      ) : (
+        buttonContent
+      ),
     buttonClassName,
   };
 }

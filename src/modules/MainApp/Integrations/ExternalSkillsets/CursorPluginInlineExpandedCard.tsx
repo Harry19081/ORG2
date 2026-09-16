@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import type { CursorPluginInfo } from "@src/api/tauri/rpc/procedures/agentOrgs";
 import Button from "@src/components/Button";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
 import { createLogger } from "@src/hooks/logger";
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
 import {
@@ -14,7 +15,6 @@ import {
   Tick01Icon,
   WorkflowCircle05Icon,
 } from "@src/icons";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 import { copyText } from "@src/util/data/clipboard";
 import { extractSkillPreviewDescription } from "@src/util/skills/skillFrontmatter";
 import { openFileInWorkStation } from "@src/util/ui/openFileInWorkStation";

@@ -7,6 +7,11 @@ import Input from "@src/components/Input";
 import Select from "@src/components/Select";
 import Textarea from "@src/components/Textarea";
 import TimePicker from "@src/components/TimePicker";
+import {
+  SECTION_CONTROL_STYLE,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { useTimezoneSelect } from "@src/hooks/geo/useTimezoneSelect";
 import {
@@ -21,11 +26,6 @@ import {
   buildCron,
   parseCron,
 } from "@src/modules/ProjectManager/WorkItems/components/ScheduleEditor/cronUtils";
-import {
-  SECTION_CONTROL_STYLE,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 
 import SpotlightSelectTrigger from "./SpotlightSelectTrigger";
 import {

@@ -17,15 +17,15 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
-import { ArrowRight02Icon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SECTION_SUBHEADING_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/Section";
+import { CollapsibleSection } from "@src/components/layout/blocks";
+import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { ArrowRight02Icon, HugeiconsIcon } from "@src/icons";
 
 import AxisMeter from "./AxisMeter";
 import { BuilderTypeDetailContent } from "./BuilderTypeDetailPanel";

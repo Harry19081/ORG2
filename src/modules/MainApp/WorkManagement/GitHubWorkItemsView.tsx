@@ -7,7 +7,7 @@ import {
   WorkManagementTable,
   type WorkManagementTableRow,
 } from "@src/modules/shared/components/WorkManagementTable";
-import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
+import InboxListDetailLayout from "@src/scaffold/layouts/InboxListDetailLayout";
 
 import { CreateIssueModal } from "./CreateIssueModal";
 import GitHubWorkItemDetailPane from "./GitHubWorkItemDetailPane";

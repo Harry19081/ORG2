@@ -146,6 +146,7 @@ describe("KeyboardShortcut", () => {
       [{ shortcut: "G" }, "text-[12px]"],
       [{ shortcut: "G", size: "sm" as const }, "text-[10px]"],
       [{ shortcut: "G", variant: "prominent" as const }, "text-[11px]"],
+      [{ shortcut: "G", variant: "inline" as const }, "text-[11px]"],
     ] as const;
 
     for (const [props, textClass] of cases) {
@@ -172,6 +173,14 @@ describe("KeyboardShortcut", () => {
         expect(markup).toContain(paddingClass);
       }
     }
+
+    const inlineMarkup = renderToStaticMarkup(
+      createElement(KeyboardShortcut, {
+        shortcut: "G",
+        variant: "inline",
+      })
+    );
+    expect(inlineMarkup).not.toMatch(/\b(?:pl|pr)-/);
   });
 
   it("renders alternate chords as separate shared pills", async () => {

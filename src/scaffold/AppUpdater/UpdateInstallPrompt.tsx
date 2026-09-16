@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 
 import updateImage from "@src/assets/illustrations/update.png";
 import Button from "@src/components/Button";
+import { PANEL_FOOTER_TOKENS } from "@src/components/layout/blocks/PanelFooter";
 import { createLogger } from "@src/hooks/logger";
-import { PANEL_FOOTER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelFooter";
 import Modal from "@src/scaffold/ModalSystem";
 
 const log = createLogger("UpdateInstallPrompt");

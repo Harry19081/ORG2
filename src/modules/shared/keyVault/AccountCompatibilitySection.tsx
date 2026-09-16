@@ -10,9 +10,9 @@ import type {
 import { isApiKeyProvider } from "@src/assets/providers";
 import ModelIcon from "@src/components/ModelIcon";
 import StatusDot from "@src/components/StatusDot";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import { createLogger } from "@src/hooks/logger";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 
 const logger = createLogger("AccountCompatibilitySection");
 

@@ -29,8 +29,8 @@ import CompactListPanel, {
 import { WorkManagementRefreshButton } from "@src/modules/shared/components/WorkManagementRefreshButton";
 import DetailPaneLayout, {
   DetailPanePlaceholder,
-} from "@src/modules/shared/layouts/DetailPaneLayout";
-import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
+} from "@src/scaffold/layouts/DetailPaneLayout";
+import InboxListDetailLayout from "@src/scaffold/layouts/InboxListDetailLayout";
 import { copyText } from "@src/util/data/clipboard";
 
 const DELIVERY_STATUS_TONE: Record<string, string> = {

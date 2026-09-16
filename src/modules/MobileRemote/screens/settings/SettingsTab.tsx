@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { InlineBanner } from "@src/components/InlineBanner";
-import { ArrowRight02Icon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_VALUE_SMALL_MUTED_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { ArrowRight02Icon, HugeiconsIcon } from "@src/icons";
 
 import { useMobileRemote } from "../../app";
 import { MobileTopBar } from "../../components/MobileTopBar";

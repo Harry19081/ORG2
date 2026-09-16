@@ -106,6 +106,9 @@ export interface ButtonProps extends Omit<
   /** Icon-only button (no text) @default false */
   iconOnly?: boolean;
 
+  /** Display-only shortcut hint; the caller owns keyboard handling. Hidden for icon-only buttons. */
+  shortcut?: string;
+
   /**
    * Center the label on the button's own center, taking the icon out of flow so
    * it sits beside the centered label instead of shifting it. Intended for
@@ -147,6 +150,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       iconPosition = "left",
       iconOnly = false,
+      shortcut,
       centerLabel = false,
       long = false,
       htmlType = "button",
@@ -174,6 +178,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         icon,
         iconPosition,
         iconOnly,
+        shortcut,
         centerLabel,
         long,
         children,

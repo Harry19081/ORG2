@@ -15,7 +15,7 @@ import { useGitHubIssueDetailState } from "@src/modules/shared/hooks/useGitHubIs
 import DetailPaneLayout, {
   DetailPaneCloseAction,
   DetailPanePlaceholder,
-} from "@src/modules/shared/layouts/DetailPaneLayout";
+} from "@src/scaffold/layouts/DetailPaneLayout";
 import { normalizePrStatus } from "@src/shared/pr/prStatus";
 import { workstationIssueDetailScopeKey } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";

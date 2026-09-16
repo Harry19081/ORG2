@@ -13,6 +13,21 @@ import type { SelectOption } from "@src/components/Select/types";
 import Switch from "@src/components/Switch";
 import TabPill from "@src/components/TabPill";
 import {
+  SECTION_ACTION_GAP_CLASSES,
+  SECTION_CONTROL_STYLE,
+  SECTION_VALUE_SMALL_MUTED_CLASSES,
+  SECTION_VALUE_SMALL_SECONDARY_CLASSES,
+  SECTION_VALUE_TEXT_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
+import {
+  DETAIL_PANEL_TOKENS,
+  DetailPanelContainer,
+  InternalHeader,
+  ScrollFadeContainer,
+} from "@src/components/layout/blocks";
+import {
   WIZARD_IDS,
   buildIntegrationsPath,
   buildWizardPath,
@@ -23,21 +38,6 @@ import {
   useHousekeeperConfig,
 } from "@src/hooks/housekeeper";
 import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
-import {
-  SECTION_ACTION_GAP_CLASSES,
-  SECTION_CONTROL_STYLE,
-  SECTION_VALUE_SMALL_MUTED_CLASSES,
-  SECTION_VALUE_SMALL_SECONDARY_CLASSES,
-  SECTION_VALUE_TEXT_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import {
-  DETAIL_PANEL_TOKENS,
-  DetailPanelContainer,
-  InternalHeader,
-  ScrollFadeContainer,
-} from "@src/modules/shared/layouts/blocks";
 
 type HealthState =
   | { status: "idle" }
