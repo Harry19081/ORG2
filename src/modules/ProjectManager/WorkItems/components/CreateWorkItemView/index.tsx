@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import Message from "@src/components/Message";
 import Switch from "@src/components/Switch";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
@@ -18,7 +19,6 @@ import {
   DetailSplitLayout,
   ManualCreateComposer,
 } from "@src/modules/ProjectManager/shared";
-import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
 import {
   CreatorContentLayout,
   PANEL_HEADER_TOKENS,

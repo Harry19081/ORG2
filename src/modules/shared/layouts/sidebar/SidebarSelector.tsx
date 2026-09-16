@@ -6,10 +6,10 @@
  */
 import React from "react";
 
+import { useRouteLayoutType } from "@src/modules/hooks";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 
-import { useRouteLayoutType } from "../../hooks";
 import { RouteSidebarBody } from "./RouteSidebarBody";
 
 export const SidebarSelector: React.FC = React.memo(() => {

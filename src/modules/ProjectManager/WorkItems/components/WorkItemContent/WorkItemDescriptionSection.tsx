@@ -1,14 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import MarkdownTextareaEditor from "@src/components/MarkdownTextareaEditor";
+import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import PersonAvatar from "@src/components/PersonAvatar";
-import type { useWorkItemImageInsert } from "@src/hooks/project";
-import { HugeiconsIcon, Pen01Icon, RepeatIcon } from "@src/icons";
-import {
-  ProjectContentEditor,
-  type ProjectContentEditorRef,
-} from "@src/modules/ProjectManager/shared";
-import { IssueTimelineItems } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/IssuesContent/IssueTimelineItems";
 import {
   ActivityHeaderActionButton,
   ConnectedTimelineItem,
@@ -16,9 +11,14 @@ import {
   TimelineCard,
   TimelineCardHeader,
   TimelineStack,
-} from "@src/modules/shared/components/ActivityTimeline";
-import MarkdownTextareaEditor from "@src/modules/shared/components/MarkdownTextareaEditor";
-import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
+} from "@src/features/GitHubWork/ActivityTimeline";
+import type { useWorkItemImageInsert } from "@src/hooks/project";
+import { HugeiconsIcon, Pen01Icon, RepeatIcon } from "@src/icons";
+import {
+  ProjectContentEditor,
+  type ProjectContentEditorRef,
+} from "@src/modules/ProjectManager/shared";
+import { IssueTimelineItems } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/IssuesContent/IssueTimelineItems";
 import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import type { WorkItem } from "@src/types/core/workItem";
 

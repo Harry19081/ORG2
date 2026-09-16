@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import PersonAvatar from "@src/components/PersonAvatar";
 import Textarea from "@src/components/Textarea";
+import { MarkdownContent } from "@src/features/GitHubWork/ActivityTimeline";
 import {
   CheckmarkCircle01Icon,
   CornerUpLeftIcon,
@@ -12,7 +13,6 @@ import {
   HugeiconsIcon,
   RotateLeft01Icon,
 } from "@src/icons";
-import { MarkdownContent } from "@src/modules/shared/components/ActivityTimeline";
 import type { Person } from "@src/types/core/shared";
 import type { WorkItemComment } from "@src/types/core/workItem";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";

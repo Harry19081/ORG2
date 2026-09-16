@@ -8,6 +8,11 @@ import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import PrStatusBadge from "@src/components/PrStatusBadge";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { TimelineLoadingSkeleton } from "@src/features/GitHubWork/ActivityTimeline";
+import {
+  loadGitHubDetailAuthScope,
+  loadGitHubIssueMetadata,
+} from "@src/features/GitHubWork/githubIssueDetailCoordinator";
 import {
   CheckmarkCircle01Icon,
   CircleDotIcon,
@@ -18,11 +23,6 @@ import {
   LinkSquare02Icon,
 } from "@src/icons";
 import { resolveGitHubIssueRemoteUrl } from "@src/modules/ProjectManager/WorkItems/githubIssueRemote";
-import { TimelineLoadingSkeleton } from "@src/modules/shared/components/ActivityTimeline";
-import {
-  loadGitHubDetailAuthScope,
-  loadGitHubIssueMetadata,
-} from "@src/modules/shared/githubIssueDetailCoordinator";
 import { parseGithubRepoFullName } from "@src/services/git/operations/createPullRequest";
 import { openLink } from "@src/util/ui/openLink";
 

@@ -2,6 +2,9 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { WorkItemData as WorkItemDataPayload } from "@src/api/http/project";
+import LazyGitHubLinkedReferences from "@src/features/GitHubWork/GitHubLinkedReferences/lazy";
+import type { ExtractedGitHubReference } from "@src/features/GitHubWork/GitHubLinkedReferences/references";
+import type { ThreadDetailTab } from "@src/features/GitHubWork/ThreadDetailTabs";
 import { useResizeHandle } from "@src/hooks/ui/useResizeHandle";
 import type {
   AgentDefinition,
@@ -11,9 +14,6 @@ import {
   PropertiesPanel,
   PropertiesRailFrame,
 } from "@src/modules/ProjectManager/shared";
-import LazyGitHubLinkedReferences from "@src/modules/shared/components/GitHubLinkedReferences/lazy";
-import type { ExtractedGitHubReference } from "@src/modules/shared/components/GitHubLinkedReferences/references";
-import type { ThreadDetailTab } from "@src/modules/shared/components/ThreadDetailTabs";
 import DetailPaneErrorBoundary from "@src/modules/shared/layouts/DetailPaneErrorBoundary";
 import {
   PersistentDetailTabPanel,

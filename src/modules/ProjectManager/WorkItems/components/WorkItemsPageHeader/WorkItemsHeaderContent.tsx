@@ -4,6 +4,7 @@ import Button from "@src/components/Button";
 import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { WorkManagementRefreshButton } from "@src/features/GitHubWork/WorkManagementRefreshButton";
 import {
   HugeiconsIcon,
   InformationCircleIcon,
@@ -11,7 +12,6 @@ import {
   Search01Icon,
 } from "@src/icons";
 import ProjectManagerBreadcrumb from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import { WorkManagementRefreshButton } from "@src/modules/shared/components/WorkManagementRefreshButton";
 
 import type { StatusFilterType } from "../../types";
 import WorkItemsStatusFilterSelect from "../WorkItemsStatusFilterSelect";

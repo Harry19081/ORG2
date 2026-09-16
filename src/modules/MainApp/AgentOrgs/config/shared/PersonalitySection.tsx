@@ -15,9 +15,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import MarkdownEditor from "@src/components/MarkdownEditor";
 import Message from "@src/components/Message";
 import { Copy01Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
-import MarkdownEditor from "@src/modules/shared/components/MarkdownEditor";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_PATH_TEXT_CLASSES,

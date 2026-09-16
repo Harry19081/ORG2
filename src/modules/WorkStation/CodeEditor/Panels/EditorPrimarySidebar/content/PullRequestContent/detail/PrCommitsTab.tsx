@@ -17,6 +17,7 @@ import Button from "@src/components/Button";
 import PersonAvatar from "@src/components/PersonAvatar";
 import { Placeholder } from "@src/components/Placeholder";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { ActivityHeaderActionButton } from "@src/features/GitHubWork/ActivityTimeline";
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
 import {
   ArrowLeft01Icon,
@@ -31,7 +32,6 @@ import {
   Tick01Icon,
 } from "@src/icons";
 import GitCommitDetailContent from "@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/GitCommitDetailContent";
-import { ActivityHeaderActionButton } from "@src/modules/shared/components/ActivityTimeline";
 import { copyText } from "@src/util/data/clipboard";
 import { formatDate, toIntlLocaleTag } from "@src/util/data/formatters/date";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";

@@ -1,9 +1,9 @@
 /** Hover presentation retains its visibility context around the shared route body. */
 import React from "react";
 
+import { useRouteLayoutType } from "@src/modules/hooks";
 import { ForceVisibleSidebarProvider } from "@src/scaffold/NavigationSidebar/contexts/ForceVisibleContext";
 
-import { useRouteLayoutType } from "../../hooks";
 import { RouteSidebarBody } from "./RouteSidebarBody";
 
 export const FloatingSidebar: React.FC = React.memo(() => {

@@ -1,10 +1,10 @@
 import React, { type ComponentProps, memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import DetailHeaderIconAction from "@src/components/DetailHeaderIconAction";
 import { Placeholder } from "@src/components/Placeholder";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
-import DetailHeaderIconAction from "@src/modules/shared/components/DetailHeaderIconAction";
 
 import {
   DETAIL_PANEL_TOKENS,

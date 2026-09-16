@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 
 import { STORY_SYNC_ADAPTER } from "@src/api/http/integrations/syncConnections";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import LazyGitHubLinkedReferences from "@src/features/GitHubWork/GitHubLinkedReferences/lazy";
+import type { ThreadDetailTab } from "@src/features/GitHubWork/ThreadDetailTabs";
 import { useProjectDataChanged } from "@src/hooks/project";
 import { useCurrentUserMemberIds } from "@src/hooks/project/useCurrentUserMemberId";
 import { ArrowRightDoubleIcon, HugeiconsIcon } from "@src/icons";
@@ -15,8 +17,6 @@ import {
   PropertiesPanel,
   PropertiesRailFrame,
 } from "@src/modules/ProjectManager/shared";
-import LazyGitHubLinkedReferences from "@src/modules/shared/components/GitHubLinkedReferences/lazy";
-import type { ThreadDetailTab } from "@src/modules/shared/components/ThreadDetailTabs";
 import {
   PersistentDetailTabPanel,
   WorkstationTrailIconButton,

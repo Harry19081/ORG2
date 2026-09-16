@@ -21,19 +21,19 @@ import SettingsTable, {
 import StatusDot from "@src/components/StatusDot";
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
-import { Copy01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   useContainers,
   useEnvCrud,
   useRepoContainers,
   useRepoDetection,
   useScriptCrud,
-} from "@src/modules/shared/launchpad/hooks";
+} from "@src/features/Launchpad/hooks";
 import type {
   EnvVar,
   RepoScript,
   ScriptCategory,
-} from "@src/modules/shared/launchpad/types";
+} from "@src/features/Launchpad/types";
+import { Copy01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   CollapsibleSection,
   DETAIL_PANEL_TOKENS,

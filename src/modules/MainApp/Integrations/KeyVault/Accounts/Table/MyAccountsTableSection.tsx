@@ -12,6 +12,7 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
+import { KEY_VAULT_STATUS_DOT } from "@src/features/KeyVault/statusColors";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
@@ -21,7 +22,6 @@ import {
   Pen01Icon,
   Refresh04Icon,
 } from "@src/icons";
-import { KEY_VAULT_STATUS_DOT } from "@src/modules/shared/keyVault/statusColors";
 import { groupModels } from "@src/util/modelGrouping";
 
 import { EnabledFractionText } from "../../../shared/EnabledFractionText";

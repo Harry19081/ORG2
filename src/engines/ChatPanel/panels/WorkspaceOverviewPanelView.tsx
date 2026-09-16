@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
+import { RepoDetailPage } from "@src/features/Launchpad/components";
+import RepoActionButtons from "@src/features/Launchpad/components/RepoActionButtons";
 import WorkItemContentStack from "@src/modules/ProjectManager/WorkItems/components/WorkItemContentStack";
-import { RepoDetailPage } from "@src/modules/shared/launchpad/components";
-import RepoActionButtons from "@src/modules/shared/launchpad/components/RepoActionButtons";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,

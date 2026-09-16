@@ -15,6 +15,11 @@ import { useTranslation } from "react-i18next";
 
 import type { GitHubReviewComment } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
+import { MarkdownContent } from "@src/components/MarkdownContent";
+import MarkdownTextareaEditor, {
+  type MarkdownEditorMode,
+} from "@src/components/MarkdownTextareaEditor";
+import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import PersonAvatar from "@src/components/PersonAvatar";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import {
@@ -24,11 +29,6 @@ import {
   Message01Icon,
 } from "@src/icons";
 import { formatTimeAgo } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
-import { MarkdownContent } from "@src/modules/shared/components/MarkdownContent";
-import MarkdownTextareaEditor, {
-  type MarkdownEditorMode,
-} from "@src/modules/shared/components/MarkdownTextareaEditor";
-import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
 
 interface ThreadGroup {
   rootId: number;

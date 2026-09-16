@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { type WorkItemRun, projectApi } from "@src/api/http/project";
-import { useProjectDataChanged } from "@src/hooks/project";
-import { HugeiconsIcon, RepeatIcon } from "@src/icons";
 import {
   formatTokensShort,
   formatUsd,
-} from "@src/modules/shared/dataSource/usageFormat";
+} from "@src/features/RuntimeDataSource/usageFormat";
+import { useProjectDataChanged } from "@src/hooks/project";
+import { HugeiconsIcon, RepeatIcon } from "@src/icons";
 import {
   ScrollTrailTarget,
   SessionTable,

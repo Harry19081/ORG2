@@ -55,7 +55,7 @@ import {
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
-import { useRouteLayoutType, useWorkspaceEvents } from "./shared/hooks";
+import { useRouteLayoutType, useWorkspaceEvents } from "./hooks";
 import { AppLayout } from "./shared/layouts";
 import { FloatingSidebar } from "./shared/layouts/sidebar/FloatingSidebar";
 import { SidebarSelector } from "./shared/layouts/sidebar/SidebarSelector";

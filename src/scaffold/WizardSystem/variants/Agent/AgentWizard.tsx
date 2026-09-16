@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import MarkdownEditor from "@src/components/MarkdownEditor";
 import NumberInput from "@src/components/NumberInput";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
@@ -26,7 +27,6 @@ import TabPill from "@src/components/TabPill";
 import Textarea from "@src/components/Textarea";
 import SubAgentsEditor from "@src/modules/MainApp/AgentOrgs/config/shared/SubAgentsEditor";
 import type { AgentDefinition } from "@src/modules/MainApp/AgentOrgs/types";
-import MarkdownEditor from "@src/modules/shared/components/MarkdownEditor";
 import {
   SECTION_DESCRIPTION_CLASSES,
   SECTION_GAP_CLASSES,
