@@ -67,7 +67,7 @@ export { StationTabBarLeading } from "./StationTabBarLeading";
 export { TabBarLeadingLayout } from "./TabBarLeadingLayout";
 
 // File header with breadcrumb navigation (relocated to shared)
-export { default as FileHeader } from "@src/modules/shared/components/FileHeader";
+export { default as FileHeader } from "@src/features/FileHeader";
 
 export { default as GitFileList } from "./GitFileList";
 export {

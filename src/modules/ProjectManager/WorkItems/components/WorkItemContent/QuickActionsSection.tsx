@@ -11,6 +11,7 @@ import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import Select from "@src/components/Select";
 import Textarea from "@src/components/Textarea";
+import { ActivityHeaderActionButton } from "@src/features/GitHubWork/ActivityTimeline";
 import { useProjectCachedResource } from "@src/hooks/project";
 import {
   Add01Icon,
@@ -22,7 +23,6 @@ import {
   PlayIcon,
   Settings02Icon,
 } from "@src/icons";
-import { ActivityHeaderActionButton } from "@src/modules/shared/components/ActivityTimeline";
 import Modal from "@src/scaffold/ModalSystem";
 
 import { WorkItemThreadSection } from "../WorkItemThread";

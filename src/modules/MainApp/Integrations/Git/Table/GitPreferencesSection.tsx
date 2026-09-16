@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import SaveableTextarea from "@src/components/SaveableTextarea";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
 import {
@@ -14,7 +15,6 @@ import {
 } from "@src/components/layout/Section";
 import { HintWithInfo } from "@src/components/layout/blocks";
 import { Delete02Icon, HugeiconsIcon } from "@src/icons";
-import SaveableTextarea from "@src/modules/shared/components/SaveableTextarea";
 import {
   ORGII_COAUTHOR_EMAIL,
   ORGII_COAUTHOR_NAME,

@@ -14,8 +14,8 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
 import { SectionContainer, SectionRow } from "@src/components/layout/Section";
+import type { ScriptCategory } from "@src/features/Launchpad/types";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
-import type { ScriptCategory } from "@src/modules/shared/launchpad/types";
 
 import { CATEGORY_OPTIONS } from "./RepoDetailConfig";
 

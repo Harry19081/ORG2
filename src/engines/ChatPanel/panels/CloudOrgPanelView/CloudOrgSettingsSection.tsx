@@ -18,7 +18,7 @@ import type {
 import {
   RUNTIME_TELEMETRY_INTERVAL_OPTIONS,
   RUNTIME_TELEMETRY_OFF_VALUE,
-} from "@src/modules/shared/dataSource/teamRuntimeData";
+} from "@src/features/RuntimeDataSource/teamRuntimeData";
 import {
   COLLAB_SESSION_ACCESS_MODE,
   type CollabSessionAccessMode,

@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
+import { DiffViewModeToggle } from "@src/components/DiffViewModeToggle";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import Message from "@src/components/Message";
 import TabPill from "@src/components/TabPill";
@@ -43,7 +44,6 @@ import {
 import type { DiffViewMode } from "@src/types/git/types";
 import { copyText } from "@src/util/data/clipboard";
 
-import { DiffViewModeToggle } from "../DiffViewModeToggle";
 import BreadcrumbFileHeader from "./BreadcrumbFileHeader";
 import { FileHeaderMoreMenu } from "./FileHeaderMoreMenu";
 import { FileHeaderShell } from "./FileHeaderShell";

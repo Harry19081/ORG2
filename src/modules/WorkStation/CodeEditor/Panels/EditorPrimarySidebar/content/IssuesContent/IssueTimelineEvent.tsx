@@ -8,6 +8,10 @@ import type {
 import Tag from "@src/components/Tag";
 import { TYPOGRAPHY } from "@src/config/workstation/tokens";
 import {
+  ActivityTimestamp,
+  TimelineEventCard,
+} from "@src/features/GitHubWork/ActivityTimeline";
+import {
   Activity01Icon,
   ArchiveArrowUpIcon,
   ArchiveIcon,
@@ -43,10 +47,6 @@ import {
   WorkflowCircle05Icon,
 } from "@src/icons";
 import { getLabelColorStyle } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
-import {
-  ActivityTimestamp,
-  TimelineEventCard,
-} from "@src/modules/shared/components/ActivityTimeline";
 import { linkAnchorProps } from "@src/util/ui/openLink";
 
 const EVENT_ICON_PROPS = { size: 13, strokeWidth: 1.8 } as const;

@@ -12,17 +12,17 @@ import {
   updateIssueLocal,
 } from "@src/api/tauri/github";
 import type { GitHubIssue } from "@src/api/tauri/github";
-import type {
-  GitHubIssueInteractionConfig,
-  GitHubIssueStatusChangeOptions,
-} from "@src/modules/ProjectManager/WorkItems/components/WorkItemContent/types";
 import {
   invalidateGitHubIssueDetailBundle,
   invalidateGitHubIssueTimeline,
   loadGitHubIssueTimeline,
   primeGitHubIssueDetailBundle,
   primeGitHubIssueTimeline,
-} from "@src/modules/shared/githubIssueDetailCoordinator";
+} from "@src/features/GitHubWork/githubIssueDetailCoordinator";
+import type {
+  GitHubIssueInteractionConfig,
+  GitHubIssueStatusChangeOptions,
+} from "@src/modules/ProjectManager/WorkItems/components/WorkItemContent/types";
 import { issueCommentToTimelineItem } from "@src/services/git/operations/githubIssues";
 import type {
   WorkstationIssueCallbacks,

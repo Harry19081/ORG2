@@ -8,7 +8,7 @@
  */
 import React from "react";
 
-import DetailFlowHeader from "@src/modules/shared/components/DetailFlowHeader";
+import DetailFlowHeader from "@src/components/DetailFlowHeader";
 
 export interface GitHubFlowHeaderActor {
   login: string;
