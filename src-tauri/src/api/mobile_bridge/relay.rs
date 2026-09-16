@@ -25,8 +25,8 @@ use tokio_util::sync::CancellationToken;
 use super::auth::{self, MobileRemoteSettings};
 use super::fanout;
 use super::org2_cloud_auth::{self, SESSION_EXPIRED_MESSAGE};
-use super::rpc::{MobileTier, RpcContext};
 use super::request_scheduler;
+use super::rpc::{MobileTier, RpcContext};
 
 const ACTOR_QUEUE_CAPACITY: usize = request_scheduler::REQUEST_QUEUE_CAPACITY;
 const RELAY_OUTBOUND_CAPACITY: usize = 256;
@@ -462,11 +462,7 @@ async fn run_mobile_actor_with_scheduler<Run, RunFuture>(
     let (responses_tx, mut responses_rx) = mpsc::channel(ACTOR_QUEUE_CAPACITY);
     // This task belongs to the phone actor, including when the relay drops or
     // replaces it. Dropping a plain JoinHandle would leave its RPC work alive.
-    let _scheduler = ActorScheduler(tokio::spawn(run_scheduler(
-        context,
-        requests,
-        responses_tx,
-    )));
+    let _scheduler = ActorScheduler(tokio::spawn(run_scheduler(context, requests, responses_tx)));
 
     loop {
         tokio::select! {
@@ -523,7 +519,8 @@ async fn send_desktop_frame(
 fn build_websocket_request(
     plan: &RelayConnectionPlan,
 ) -> Result<tokio_tungstenite::tungstenite::http::Request<()>, String> {
-    let mut url = url::Url::parse(&plan.ws_url).map_err(|err| format!("invalid relay URL: {err}"))?;
+    let mut url =
+        url::Url::parse(&plan.ws_url).map_err(|err| format!("invalid relay URL: {err}"))?;
     url.query_pairs_mut()
         .append_pair("token", plan.access_token.trim());
     let mut request = url
@@ -878,7 +875,10 @@ mod tests {
                         let gate = gate.clone();
                         async move {
                             let _stopped = NotifyTaskStopped(stopped);
-                            started.send(ctx.conn_id).await.expect("test receiver alive");
+                            started
+                                .send(ctx.conn_id)
+                                .await
+                                .expect("test receiver alive");
                             let _permit = gate.acquire().await.expect("test gate open");
                             let response = serde_json::json!({
                                 "jsonrpc": "2.0", "id": request["id"], "result": "done"
@@ -952,7 +952,8 @@ mod tests {
             .expect("RPC response after release")
             .expect("response frame");
         let RelayWireFrame::DesktopFrame { payload, .. } =
-            serde_json::from_str(&response.into_text().expect("text response")).expect("relay frame")
+            serde_json::from_str(&response.into_text().expect("text response"))
+                .expect("relay frame")
         else {
             panic!("expected desktop response")
         };

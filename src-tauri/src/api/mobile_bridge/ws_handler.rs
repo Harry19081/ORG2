@@ -130,7 +130,8 @@ async fn handle_mobile_transport<S, R, E, F, Fut>(
     let mut tasks = JoinSet::new();
     tasks.spawn(async move {
         while let Some(message) = outbound_rx.recv().await {
-            if sender.send(Message::Text(message.into())).await.is_err() {
+            let result = sender.send(Message::Text(message.into())).await;
+            if result.is_err() {
                 break;
             }
         }
@@ -310,16 +311,12 @@ mod tests {
                 Ok::<_, std::io::Error>(outgoing)
             },
         ));
-        let task = tokio::spawn(handle_mobile_transport(
-            sender,
-            receiver,
-            MobileRemoteSettings {
-                enabled: true,
-                lan_token: "test-token".into(),
-                allow_lan_exposure: true,
-            },
-            run,
-        ));
+        let settings = MobileRemoteSettings {
+            enabled: true,
+            lan_token: "test-token".into(),
+            allow_lan_exposure: true,
+        };
+        let task = tokio::spawn(handle_mobile_transport(sender, receiver, settings, run));
         TestTransport {
             input,
             output,
