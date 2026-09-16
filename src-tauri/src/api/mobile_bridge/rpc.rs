@@ -292,6 +292,7 @@ mod tests {
     async fn opening_requires_initialize_and_validates_lease_before_history() {
         let mut ctx = RpcContext {
             conn_id: 0,
+            lan_lease: None,
             tier: MobileTier::ReadOnly,
             initialized: false,
             settings: MobileRemoteSettings::default(),
@@ -308,6 +309,7 @@ mod tests {
     async fn history_hydration_requires_initialize_and_is_readonly() {
         let mut ctx = RpcContext {
             conn_id: 0,
+            lan_lease: None,
             initialized: false,
             tier: MobileTier::ReadOnly,
             settings: MobileRemoteSettings {
