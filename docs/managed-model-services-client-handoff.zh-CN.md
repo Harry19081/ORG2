@@ -19,7 +19,7 @@
 
 | 调用 | 客户端读取/提交 |
 | --- | --- |
-| `GET /v1/market/packages` | schema、服务 ID/名称/版本、模型 ID/协议/兼容客户端、买家报价、公开可用状态、现有 access、服务级 `requires_confirmation` |
+| `GET /v1/market/packages` | schema、服务 ID/名称/版本、模型 ID/协议/兼容客户端、公开价格区间、当前买家费率及模型报价、公开可用状态、现有 access、服务级 `requires_confirmation` |
 | `POST /v1/market/package-access` | 服务、预期版本/revision、共用总预算、整包明确确认；不提交 model，返回无秘密 access |
 | `POST /v1/market/package-access/:id/token` | 精确模型与会话；原生模块校验返回的 access、workspace、模型、session、有效期和 gateway origin |
 | Tauri `market_connection_activate_service` | renderer 发起明确授权操作；原生层读取当前授权连接并代理公开 API |
@@ -68,3 +68,11 @@
 确认窗口展示所有包内模型并接受一个共用预算，不能勾选子集。服务端要求重新确认时仍为整包操作。新的托管目录必须提供服务级字段；缺失时拒绝解析，不猜测授权状态，发布需与公开服务合同协调。旧非托管来源解析不变。
 
 新增 `src/features/MarketConnect/usageAuthorization.test.ts` 覆盖一次确认后切模型、取消整包确认、单个模型暂时不可用。后续运行 `pnpm test -- src/features/MarketConnect/usageAuthorization.test.ts` 并做真实 UI/原生回归；本次未运行测试、类型检查、构建或 Computer Use，先前验收不能替代这次验证。另一轮 App connections 的未提交修复保持原样。
+
+## 公开价格区间展示
+
+目录新增可选的 `price_range_bps: { min, max }`，模型新增可选 `pricing_range: { min, max }`。确认窗口只展示公开区间和区间模型报价，不展示一个固定使用比例。Rust 与 TypeScript 同步解析；旧目录仍能读取，缺少公开区间时禁止新授权并提示刷新。
+
+授权仍覆盖包内全部模型和一个共用额度；区间内价格可变化，公开价格上限提高或增加模型时需重新确认。兼容字段 `pricing` 表达已发布区间的上限，新增界面不拿它冒充某个固定成交价。此仓库仅消费公开字段，没有增加服务端价格计算或运营配置。
+
+本轮只做源码检查与格式化，没有运行测试、类型检查、构建或 GUI 验收。后续需验证区间展示、不带 model 的整包授权、区间内变化不重复确认、上限提高需确认，以及旧目录缺少区间时的提示。

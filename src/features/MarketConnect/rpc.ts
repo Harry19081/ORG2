@@ -22,12 +22,25 @@ export const managedServiceSchema = z.object({
   title: z.string(),
   version_id: z.string(),
   requires_confirmation: z.boolean(),
+  price_range_bps: z
+    .object({
+      min: z.number().int().nonnegative(),
+      max: z.number().int().nonnegative(),
+    })
+    .refine((range) => range.min <= range.max)
+    .optional(),
   models: z.array(
     z.object({
       model: z.string(),
       protocol: z.enum(["anthropic_messages", "openai_responses"]),
       clients: z.array(z.string()),
       pricing: z.record(z.string(), z.unknown()),
+      pricing_range: z
+        .object({
+          min: z.record(z.string(), z.unknown()),
+          max: z.record(z.string(), z.unknown()),
+        })
+        .optional(),
       availability: z.string(),
     }),
   ),

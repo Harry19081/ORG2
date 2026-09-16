@@ -9,7 +9,14 @@ pub struct ManagedModel {
     pub protocol: String,
     pub clients: Vec<String>,
     pub pricing: serde_json::Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pricing_range: Option<ManagedModelPriceRange>,
     pub availability: String,
+}
+#[derive(Clone, Serialize, Deserialize)]
+pub struct ManagedModelPriceRange {
+    pub min: serde_json::Value,
+    pub max: serde_json::Value,
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub struct ManagedAccess {
@@ -21,11 +28,18 @@ pub struct ManagedAccess {
     pub revision: u32,
 }
 #[derive(Clone, Serialize, Deserialize)]
+pub struct ManagedPriceRange {
+    pub min: u32,
+    pub max: u32,
+}
+#[derive(Clone, Serialize, Deserialize)]
 pub struct ManagedService {
     pub service_id: String,
     pub title: String,
     pub version_id: String,
     pub requires_confirmation: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub price_range_bps: Option<ManagedPriceRange>,
     pub models: Vec<ManagedModel>,
     pub access: Option<ManagedAccess>,
 }
@@ -100,6 +114,10 @@ impl Connection {
                     || service.title.is_empty()
                     || service.title.len() > 480
                     || !valid_service_id(&service.version_id, "pv_")
+                    || service
+                        .price_range_bps
+                        .as_ref()
+                        .is_some_and(|range| range.min > range.max)
                     || service.models.is_empty()
                     || service.models.len() > 64
                     || service
