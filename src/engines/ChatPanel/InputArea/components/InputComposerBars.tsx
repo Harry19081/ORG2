@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import ComposerSendGroup from "@src/components/ComposerBar/ComposerSendGroup";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
+import ComposerExpandToggle from "@src/components/ComposerInput/ComposerExpandToggle";
+import { useComposerExpansion } from "@src/components/ComposerInput/useComposerExpansion";
 import { VoiceInputButton, VoiceRecordingBar } from "@src/components/Voice";
 import { INPUT_AREA_CONTROL_GROUP_CLASS } from "@src/config/inputAreaTokens";
 import ComposerBar from "@src/engines/ChatPanel/ComposerBar";
@@ -339,9 +341,16 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
   autoFocus = false,
 }) => {
   const { t } = useTranslation("sessions");
+  const contentRef = useRef<HTMLDivElement>(null);
+  // The recording bar replaces the editor, so pause while it shows; the
+  // observers re-attach to the editor that mounts afterwards.
+  const expansion = useComposerExpansion(
+    contentRef,
+    !isCompactRow && !showVoiceUi
+  );
 
   return (
-    <div className="flex min-h-0 w-full flex-col">
+    <div ref={contentRef} className="flex min-h-0 w-full flex-col">
       {showImageAttachments && (
         <ImageAttachmentPreview ownerId={dropTargetId} />
       )}
@@ -384,6 +393,7 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
               onImagePaste={onImagePaste}
               compact={isCompactRow}
               autoFocus={autoFocus}
+              editorClassName={expansion.editorClassName}
               leadingContent={
                 contextualPanel ? inlineLeadingContent : undefined
               }
@@ -412,6 +422,12 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
                 <PromptPolishButton
                   control={promptPolish}
                   disabled={promptPolishDisabled}
+                />
+              )}
+              {expansion.showToggle && (
+                <ComposerExpandToggle
+                  expanded={expansion.expanded}
+                  onToggle={expansion.toggle}
                 />
               )}
               <ComposerSendGroup>

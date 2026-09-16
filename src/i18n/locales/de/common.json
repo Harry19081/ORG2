@@ -809,6 +809,8 @@
     "queryHistory": "Abfrageverlauf",
     "executeQuery": "Abfrage ausführen ({{shortcut}})",
     "startVoiceInput": "Spracheingabe starten",
+    "expandInput": "Eingabefeld vergrößern",
+    "collapseInput": "Eingabefeld verkleinern",
     "cancelRecording": "Aufnahme abbrechen",
     "stopAndTranscribe": "Stoppen und transkribieren",
     "htmlPreview": "HTML-Vorschau",

@@ -809,6 +809,8 @@
     "queryHistory": "История запросов",
     "executeQuery": "Выполнить запрос ({{shortcut}})",
     "startVoiceInput": "Начать голосовой ввод",
+    "expandInput": "Развернуть поле ввода",
+    "collapseInput": "Свернуть поле ввода",
     "cancelRecording": "Отменить запись",
     "stopAndTranscribe": "Остановить и транскрибировать",
     "htmlPreview": "HTML предпросмотр",

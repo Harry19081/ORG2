@@ -809,6 +809,8 @@
     "queryHistory": "クエリ履歴",
     "executeQuery": "クエリを実行 ({{shortcut}})",
     "startVoiceInput": "音声入力を開始",
+    "expandInput": "入力欄を広げる",
+    "collapseInput": "入力欄を縮める",
     "cancelRecording": "録音をキャンセル",
     "stopAndTranscribe": "停止して文字起こし",
     "htmlPreview": "HTML プレビュー",

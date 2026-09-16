@@ -809,6 +809,8 @@
     "queryHistory": "Histórico de consultas",
     "executeQuery": "Executar consulta ({{shortcut}})",
     "startVoiceInput": "Iniciar entrada por voz",
+    "expandInput": "Expandir a caixa de entrada",
+    "collapseInput": "Recolher a caixa de entrada",
     "cancelRecording": "Cancelar gravação",
     "stopAndTranscribe": "Parar e transcrever",
     "htmlPreview": "Pré-visualização HTML",
