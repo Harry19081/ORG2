@@ -5,7 +5,7 @@ import type { MarketExecutionProfile } from "./marketProfiles";
 
 export interface UsagePrompt {
   service: ManagedService;
-  resolve: (budget: number | null) => void;
+  resolve: (accepted: boolean) => void;
 }
 export const USAGE_AUTHORIZATION_EVENT = "org2-managed-usage-authorization";
 let pending = false;
@@ -20,24 +20,24 @@ export async function authorizedProfile(
   const selected = service.models.find((m) => m.model === model);
   if (!selected || selected.availability !== "available")
     throw new Error("model_temporarily_unavailable");
-  if (!service.requires_confirmation && service.access?.status === "active")
+  if (
+    !service.requires_confirmation &&
+    service.access?.status === "active" &&
+    service.access.billing_mode === "wallet"
+  )
     return profile;
   if (pending) throw new Error("usage_authorization_in_progress");
   pending = true;
   try {
-    const budget = await new Promise<number | null>((resolve) =>
+    const accepted = await new Promise<boolean>((resolve) =>
       window.dispatchEvent(
         new CustomEvent<UsagePrompt>(USAGE_AUTHORIZATION_EVENT, {
           detail: { service, resolve },
         }),
       ),
     );
-    if (budget === null) throw new Error("usage_authorization_cancelled");
-    const access = await activateManagedService(
-      profile.connection,
-      service,
-      budget,
-    );
+    if (!accepted) throw new Error("usage_authorization_cancelled");
+    const access = await activateManagedService(profile.connection, service);
     window.dispatchEvent(new Event(MARKET_PROFILES_CHANGED_EVENT));
     return {
       ...profile,

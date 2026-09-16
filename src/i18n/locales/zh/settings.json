@@ -1097,6 +1097,9 @@
     "wallet": "打开钱包",
     "included": "包含全部模型，共用一个用量额度。",
     "priceRange": "套餐价格区间：官方价的 {{min}}%–{{max}}%",
-    "rangeUnavailable": "套餐价格区间暂不可用，请刷新目录后再启用套餐。"
+    "rangeUnavailable": "套餐价格区间暂不可用，请刷新目录后再启用套餐。",
+    "walletIncluded": "包含全部模型，直接使用钱包余额。",
+    "walletUnavailable": "钱包直扣暂不可用，请在服务更新后刷新。",
+    "walletConsent": "按所示价格区间启用此套餐的全部模型，实际用量直接从钱包余额扣费，无需为套餐单独预存或设置额度。"
   }
 }

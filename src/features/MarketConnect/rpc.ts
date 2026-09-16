@@ -14,7 +14,8 @@ export const managedAccessSchema = z.object({
   service_id: z.string(),
   workspace_id: z.string().regex(/^ws_[A-Za-z0-9_-]+$/),
   status: z.enum(["active", "revoked"]),
-  budget_usd6: z.number().int().nonnegative(),
+  budget_usd6: z.number().int().nonnegative().nullable(),
+  billing_mode: z.enum(["wallet", "package_limit"]).optional(),
   revision: z.number().int().positive(),
 });
 export const managedServiceSchema = z.object({
@@ -22,6 +23,7 @@ export const managedServiceSchema = z.object({
   title: z.string(),
   version_id: z.string(),
   requires_confirmation: z.boolean(),
+  wallet_billing_supported: z.boolean().optional(),
   price_range_bps: z
     .object({
       min: z.number().int().nonnegative(),
@@ -100,7 +102,7 @@ const activateService = defineProcedure("market_connection_activate_service")
         service_id: z.string(),
         expected_version_id: z.string(),
         expected_revision: z.number().int().nullable(),
-        budget_usd6: z.number().int().positive().max(5_000_000_000),
+        billing_mode: z.literal("wallet"),
         confirm_usage: z.literal(true),
       }),
     }),
@@ -110,7 +112,6 @@ const activateService = defineProcedure("market_connection_activate_service")
 export const activateManagedService = (
   connection: Connection,
   service: ManagedService,
-  budgetUsd6: number,
 ) =>
   typedInvoke(activateService, {
     ...args(connection),
@@ -118,7 +119,7 @@ export const activateManagedService = (
       service_id: service.service_id,
       expected_version_id: service.version_id,
       expected_revision: service.access?.revision ?? null,
-      budget_usd6: budgetUsd6,
+      billing_mode: "wallet",
       confirm_usage: true,
     },
   });

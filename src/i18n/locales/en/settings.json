@@ -1097,6 +1097,9 @@
     "wallet": "Open wallet",
     "included": "All models are included and share one usage limit.",
     "priceRange": "Package range: {{min}}%–{{max}}% of official pricing",
-    "rangeUnavailable": "Package price range unavailable. Refresh the catalog before enabling this package."
+    "rangeUnavailable": "Package price range unavailable. Refresh the catalog before enabling this package.",
+    "walletIncluded": "All included models use your wallet balance.",
+    "walletUnavailable": "Wallet billing is not available yet. Refresh after the service is updated.",
+    "walletConsent": "Enable every model in this package at the displayed price range. Actual usage is charged directly from your wallet balance; no separate package budget is required."
   }
 }

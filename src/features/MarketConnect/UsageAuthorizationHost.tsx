@@ -3,8 +3,6 @@ import { useTranslation } from "react-i18next";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import Modal from "@src/scaffold/ModalSystem";
 import Button from "@src/components/Button";
-import Input from "@src/components/Input";
-import Checkbox from "@src/components/Checkbox";
 import {
   USAGE_AUTHORIZATION_EVENT,
   type UsagePrompt,
@@ -14,27 +12,21 @@ import { marketConsoleUrl } from "./urlPolicy";
 
 export default function UsageAuthorizationHost() {
   const { t } = useTranslation("settings"),
-    [prompt, setPrompt] = useState<UsagePrompt | null>(null),
-    [budget, setBudget] = useState("10"),
-    [accepted, setAccepted] = useState(false);
+    [prompt, setPrompt] = useState<UsagePrompt | null>(null);
   const pending = useRef<UsagePrompt | null>(null);
   useEffect(() => {
     const cancel = () => {
-      pending.current?.resolve(null);
+      pending.current?.resolve(false);
       pending.current = null;
       setPrompt(null);
     };
     const show = (event: Event) => {
       const next = (event as CustomEvent<UsagePrompt>).detail;
       if (pending.current) {
-        next.resolve(null);
+        next.resolve(false);
         return;
       }
       pending.current = next;
-      setBudget(
-        String((next.service.access?.budget_usd6 ?? 10_000_000) / 1_000_000),
-      );
-      setAccepted(false);
       setPrompt(next);
     };
     window.addEventListener(USAGE_AUTHORIZATION_EVENT, show);
@@ -46,16 +38,15 @@ export default function UsageAuthorizationHost() {
     };
   }, []);
   if (!prompt) return null;
-  const close = (amount: number | null) => {
+  const close = (accepted: boolean) => {
     const current = pending.current;
     pending.current = null;
     setPrompt(null);
-    current?.resolve(amount);
+    current?.resolve(accepted);
   };
   const valid =
-    Number(budget) > 0 &&
-    Number(budget) <= 5000 &&
-    !!prompt.service.price_range_bps;
+    !!prompt.service.price_range_bps &&
+    prompt.service.wallet_billing_supported === true;
   const price = (rates: Record<string, unknown>, key: string) =>
     typeof rates[key] === "number"
       ? `$${((rates[key] as number) / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 6 })}`
@@ -64,17 +55,17 @@ export default function UsageAuthorizationHost() {
     <Modal
       visible
       title={prompt.service.title}
-      onClose={() => close(null)}
+      onClose={() => close(false)}
       width={500}
       footer={
         <div className="flex justify-end gap-2">
-          <Button onClick={() => close(null)}>
+          <Button onClick={() => close(false)}>
             {t("managedUsage.cancel", "Cancel")}
           </Button>
           <Button
             variant="primary"
-            disabled={!valid || !accepted}
-            onClick={() => close(Math.round(Number(budget) * 1_000_000))}
+            disabled={!valid}
+            onClick={() => close(true)}
           >
             {t("managedUsage.authorize", "Enable package")}
           </Button>
@@ -102,8 +93,8 @@ export default function UsageAuthorizationHost() {
         )}
         <p className="text-sm text-text-2">
           {t(
-            "managedUsage.included",
-            "All models in this package are included and share one usage limit.",
+            "managedUsage.walletIncluded",
+            "All models in this package are included and use your wallet balance.",
           )}
         </p>
         <div className="max-h-64 space-y-3 overflow-y-auto">
@@ -122,28 +113,20 @@ export default function UsageAuthorizationHost() {
             </div>
           ))}
         </div>
-        <label className="block text-sm">
-          {t("managedUsage.limit", "Shared package usage limit (USD)")}
-          <Input
-            value={budget}
-            type="number"
-            onChange={setBudget}
-            min="0.01"
-            max="5000"
-          />
-        </label>
         <p className="text-sm text-text-3">
           {t(
-            "managedUsage.description",
-            "Enable all models within the displayed price range and one shared wallet limit. Charges may vary within the range. A higher price ceiling or added models requires confirmation for the whole package.",
+            "managedUsage.walletConsent",
+            "Enable every model in this package at the displayed price range. Actual usage is charged directly from your wallet balance; no separate package budget is required.",
           )}
         </p>
-        <Checkbox checked={accepted} onCheckedChange={setAccepted}>
-          {t(
-            "managedUsage.accept",
-            "I authorize all models within this package’s price range and shared usage limit.",
-          )}
-        </Checkbox>
+        {!prompt.service.wallet_billing_supported && (
+          <p role="alert" className="text-sm text-text-3">
+            {t(
+              "managedUsage.walletUnavailable",
+              "Wallet billing is not available yet. Refresh after the service is updated.",
+            )}
+          </p>
+        )}
         <Button
           onClick={() => void openUrl(marketConsoleUrl("/buyer/billing"))}
         >

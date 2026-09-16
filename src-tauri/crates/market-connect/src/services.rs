@@ -24,7 +24,9 @@ pub struct ManagedAccess {
     pub service_id: String,
     pub workspace_id: String,
     pub status: String,
-    pub budget_usd6: u64,
+    pub budget_usd6: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub billing_mode: Option<String>,
     pub revision: u32,
 }
 #[derive(Clone, Serialize, Deserialize)]
@@ -38,6 +40,8 @@ pub struct ManagedService {
     pub title: String,
     pub version_id: String,
     pub requires_confirmation: bool,
+    #[serde(default)]
+    pub wallet_billing_supported: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub price_range_bps: Option<ManagedPriceRange>,
     pub models: Vec<ManagedModel>,
@@ -46,6 +50,8 @@ pub struct ManagedService {
 #[derive(Deserialize)]
 struct Catalog {
     schema_version: u32,
+    #[serde(default)]
+    billing_modes: Vec<String>,
     services: Vec<ManagedService>,
     next_cursor: Option<String>,
 }
@@ -55,7 +61,7 @@ pub struct ActivateService {
     pub service_id: String,
     pub expected_version_id: String,
     pub expected_revision: Option<u32>,
-    pub budget_usd6: u64,
+    pub billing_mode: String,
     pub confirm_usage: bool,
 }
 #[derive(Deserialize)]
@@ -75,8 +81,14 @@ impl ManagedAccess {
         self.service_id == service
             && valid_service_id(&self.access_id, "pa_")
             && crate::valid_workspace(&self.workspace_id)
-            && self.budget_usd6 > 0
-            && self.budget_usd6 <= 9_007_199_254_740_991
+            && match (
+                self.billing_mode.as_deref().unwrap_or("package_limit"),
+                self.budget_usd6,
+            ) {
+                ("wallet", None) => true,
+                ("package_limit", Some(budget)) => budget > 0 && budget <= 9_007_199_254_740_991,
+                _ => false,
+            }
             && self.revision > 0
             && matches!(self.status.as_str(), "active" | "revoked")
     }
@@ -93,7 +105,7 @@ impl Connection {
             let raw = self
                 .market_request(
                     &format!(
-                        "/v1/market/packages?limit=50{}",
+                        "/v1/market/packages?limit=50&wallet_billing=1{}",
                         if cursor.is_empty() {
                             String::new()
                         } else {
@@ -103,12 +115,14 @@ impl Connection {
                     None,
                 )
                 .await?;
-            let page: Catalog =
+            let mut page: Catalog =
                 serde_json::from_slice(&raw).map_err(|_| "invalid_service_catalog")?;
             if page.schema_version != 1 || result.len() + page.services.len() > 100 {
                 return Err("service_catalog_limit");
             }
-            for service in &page.services {
+            for service in &mut page.services {
+                service.wallet_billing_supported =
+                    page.billing_modes.iter().any(|mode| mode == "wallet");
                 if !valid_service_id(&service.service_id, "pkg_")
                     || !seen.insert(service.service_id.clone())
                     || service.title.is_empty()
@@ -151,8 +165,7 @@ impl Connection {
     ) -> Result<ManagedAccess, &'static str> {
         if self.metadata().target != Target::Org2
             || !request.confirm_usage
-            || request.budget_usd6 == 0
-            || request.budget_usd6 > 5_000_000_000
+            || request.billing_mode != "wallet"
             || !valid_service_id(&request.service_id, "pkg_")
             || !valid_service_id(&request.expected_version_id, "pv_")
         {
@@ -166,7 +179,10 @@ impl Connection {
             .await?;
         let response: Activated =
             serde_json::from_slice(&raw).map_err(|_| "invalid_usage_authorization")?;
-        if !response.access.valid(&request.service_id) || response.access.status != "active" {
+        if !response.access.valid(&request.service_id)
+            || response.access.status != "active"
+            || response.access.billing_mode.as_deref() != Some("wallet")
+        {
             return Err("invalid_usage_authorization");
         }
         Ok(response.access)

@@ -14,7 +14,8 @@ const access = {
   service_id: "pkg_example",
   workspace_id: "ws_example",
   status: "active" as const,
-  budget_usd6: 1_000_000,
+  budget_usd6: null,
+  billing_mode: "wallet" as const,
   revision: 1,
 };
 const profile = (): MarketExecutionProfile => ({
@@ -38,6 +39,7 @@ const profile = (): MarketExecutionProfile => ({
     title: "Example package",
     version_id: "pv_example",
     requires_confirmation: true,
+    wallet_billing_supported: true,
     access: null,
     models: [
       {
@@ -67,7 +69,7 @@ it("confirms all included models once and reuses the same access when switching 
   const confirm = (event: Event) => {
     const prompt = (event as CustomEvent<UsagePrompt>).detail;
     prompts.push(prompt);
-    prompt.resolve(1_000_000);
+    prompt.resolve(true);
   };
   window.addEventListener(USAGE_AUTHORIZATION_EVENT, confirm);
   vi.mocked(activateManagedService).mockResolvedValue(access);
@@ -82,7 +84,6 @@ it("confirms all included models once and reuses the same access when switching 
     expect(activateManagedService).toHaveBeenCalledExactlyOnceWith(
       selected.connection,
       selected.managed,
-      1_000_000,
     );
     const switched = await authorizedProfile(enabled, "example-responses");
     expect(switched).toBe(enabled);
@@ -98,7 +99,7 @@ it("cancelling a package confirmation grants access to none of its models", asyn
   const selected = profile();
   selected.managed!.access = access;
   const cancel = (event: Event) =>
-    (event as CustomEvent<UsagePrompt>).detail.resolve(null);
+    (event as CustomEvent<UsagePrompt>).detail.resolve(false);
   window.addEventListener(USAGE_AUTHORIZATION_EVENT, cancel);
   try {
     for (const model of selected.managed!.models) {
