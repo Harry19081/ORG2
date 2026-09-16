@@ -19,7 +19,9 @@ import ModelIcon from "@src/components/ModelIcon";
 import ModelPillTooltipContent from "@src/components/ModelPillTooltipContent";
 import ModelPropertiesDropdown from "@src/components/ModelPropertiesDropdown";
 import PillGroup, { type PillGroupSegment } from "@src/components/PillGroup";
-import SelectorPill from "@src/components/SelectorPill";
+import SelectorPill, {
+  type SelectorPillPaddingX,
+} from "@src/components/SelectorPill";
 import Tooltip from "@src/components/Tooltip";
 import {
   resolveModelDisplaySelection,
@@ -36,9 +38,12 @@ import {
   formatReasoningLevel,
 } from "@src/util/modelVariants";
 
-import ModelSettingsMenu from "./ModelSettingsMenu";
+import ModelSettingsMenu, {
+  type HarnessSwitchAction,
+} from "./ModelSettingsMenu";
 
 interface ModelSelectorPillProps {
+  harnessSwitch?: HarnessSwitchAction;
   selection: LastModelSelection | null | undefined;
   defaultLabel: string;
   active: boolean;
@@ -50,6 +55,8 @@ interface ModelSelectorPillProps {
   triggerClassName?: string;
   /** Drop left padding on the trigger so the icon lines up with editor text. */
   triggerLeadingFlush?: boolean;
+  /** Horizontal spacing shared by the model and effort triggers. */
+  paddingX?: SelectorPillPaddingX;
   dataTestId?: string;
   effortDataTestId?: string;
   ariaLabel?: string;
@@ -64,7 +71,7 @@ interface ModelSelectorPillProps {
   settingsMenuDefaultAdvanced?: boolean;
   /** Portal surface styling for constrained hosts such as Mobile Remote. */
   settingsMenuClassName?: string;
-  /** Mobile uses the combined settings menu whenever variant rows exist. */
+  /** Compatibility option; all enabled model pills now use the combined menu. */
   preferCombinedSettingsMenu?: boolean;
   /** Prevent opening a picker while its execution inventory is unresolved. */
   disabled?: boolean;
@@ -76,6 +83,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
   (
     {
       selection,
+      harnessSwitch,
       defaultLabel,
       active,
       onClick,
@@ -83,6 +91,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
       className,
       triggerClassName,
       triggerLeadingFlush = false,
+      paddingX = "standard",
       dataTestId,
       effortDataTestId = "chat-model-pill-effort",
       ariaLabel,
@@ -91,7 +100,6 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
       effortSegmentOverride,
       settingsMenuDefaultAdvanced = false,
       settingsMenuClassName,
-      preferCombinedSettingsMenu = false,
       disabled = false,
       disabledTooltip,
     },
@@ -247,6 +255,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
                 ariaLabel={effortAriaLabel}
                 labelStyle={{ maxWidth: 140 }}
                 size="sm"
+                paddingX={buttonProps.paddingX}
               />
             )}
           />
@@ -287,28 +296,14 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
     const variant = effortModelId
       ? variantOptions.parseSelection(effortModelId)
       : undefined;
-    const canEditVariants =
-      variantOptions.availableLevels.length > 1 ||
-      variantOptions.fastAvailableAnywhere ||
-      variantOptions.thinkingToggleable;
-    const useCombinedSettingsMenu =
-      !disabled &&
-      preferCombinedSettingsMenu &&
-      Boolean(effortModelId) &&
-      canEditVariants;
-    const useSliderSettingsMenu =
-      !disabled &&
-      !preferCombinedSettingsMenu &&
-      effortEditable &&
-      Boolean(effortModelId) &&
-      Boolean(variant) &&
-      variantOptions.availableLevels.length > 1;
-    if ((useCombinedSettingsMenu || useSliderSettingsMenu) && effortModelId) {
+    if (!disabled) {
       return (
         <ModelSettingsMenu
           anchorRef={modelSegmentRef}
           modelLabel={resolvedModelLabel}
           value={effortModelId}
+          harnessSwitch={harnessSwitch}
+          showVariantControls={effortEditable}
           variantOptions={variantOptions}
           onModelClick={onClick}
           onChange={handleEffortApply}
@@ -322,8 +317,12 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
             const shownLevel = previewLevel ?? variant?.level;
             const levelLabel = shownLevel
               ? formatReasoningLevel(shownLevel)
-              : effortLabel;
-            const combinedLabel = `${resolvedModelLabel} ${levelLabel}`;
+              : effortEditable
+                ? effortLabel
+                : "";
+            const combinedLabel = [resolvedModelLabel, levelLabel]
+              .filter(Boolean)
+              .join(" ");
             const levelToneClass =
               shownLevel === MODEL_REASONING_LEVEL.ULTRA
                 ? "text-purple-6"
@@ -350,11 +349,13 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
                     <span className="truncate font-medium">
                       {resolvedModelLabel}
                     </span>
-                    <span
-                      className={`ml-1 shrink-0 font-normal ${levelToneClass}`}
-                    >
-                      {levelLabel}
-                    </span>
+                    {levelLabel && (
+                      <span
+                        className={`ml-1 shrink-0 font-normal ${levelToneClass}`}
+                      >
+                        {levelLabel}
+                      </span>
+                    )}
                   </>
                 }
                 title={modelTitle}
@@ -368,6 +369,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
                 dataTestId={dataTestId}
                 className={`shrink-0 ${triggerClassName ?? ""} ${className ?? ""}`}
                 leadingFlush={triggerLeadingFlush}
+                paddingX={paddingX}
                 onClick={openMenu}
               />
             );
@@ -379,6 +381,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
     const pill = (
       <PillGroup
         segments={segments}
+        paddingX={paddingX}
         className={`shrink-0 text-[13px] ${className ?? ""}`}
         segmentClassName={`h-[28px] ${disabled ? "cursor-not-allowed [&>span]:opacity-50" : ""} ${triggerClassName ?? ""}`.trim()}
       />

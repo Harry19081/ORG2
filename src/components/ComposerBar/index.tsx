@@ -2,7 +2,7 @@
  * ComposerBar — shared bottom toolbar for input areas
  *
  * Used by both ChatPanel InputArea and SessionCreator EditorArea
- * to ensure identical layout: [+ button | pills] ---- [context | submit]
+ * to ensure identical layout: [+ button | mode | model] ---- [context | submit]
  *
  * When an editor slot is present, the editor uses the full-width row above
  * the shared toolbar controls, or sits between them in one row when
@@ -29,6 +29,8 @@ interface ComposerBarProps {
   leftTools?: React.ReactNode;
   /** Pills rendered after the + button (mode, model, source, settings…) */
   pills?: React.ReactNode;
+  /** Model controls grouped after mode pills on the left. */
+  modelPill?: React.ReactNode;
   /** Repo path forwarded to ContextInfoButton */
   repoPath?: string;
   /** Submit / launch button on the far right */
@@ -64,6 +66,7 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
     leftPrefix,
     leftTools,
     pills,
+    modelPill,
     repoPath,
     submitButton,
     bottomPaddingClassName = "",
@@ -116,6 +119,7 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
               {addButton}
               {leftTools}
               {pills}
+              {modelPill}
             </>
           ) : null}
         </div>
@@ -125,6 +129,7 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
               {addButton}
               {leftTools}
               {pills}
+              {modelPill}
             </>
           ) : null}
           {showContextInfo && <ContextInfoButton repoPath={repoPath} />}
@@ -156,11 +161,10 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
             {leftPrefix}
             {addButton}
             {leftTools}
+            {pills}
+            {modelPill}
           </div>
           {editorSlotNode}
-          <div key="pills" className={`${rowClass} shrink-0`}>
-            {pills}
-          </div>
           <div key="right" className={`${rowClass} shrink-0`}>
             {showContextInfo && (
               <ContextInfoButton repoPath={repoPath} variant="corner" compact />
