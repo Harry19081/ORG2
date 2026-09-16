@@ -32,6 +32,7 @@ import type { MarkdownEditorMode } from "@src/components/MarkdownTextareaEditor"
 import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import Message from "@src/components/Message";
 import type { SelectOption } from "@src/components/Select";
+import { CreatorContentLayout } from "@src/components/layout/blocks";
 import { INPUT_AREA_EDITOR_HEIGHT } from "@src/config/inputAreaTokens";
 import { org2CloudOrgsAtom } from "@src/features/Org2Cloud/org2CloudOrgsAtom";
 import { sidebarSelectedOrgIdAtom } from "@src/features/Organizations/sidebarOrgScopeAtom";
@@ -54,7 +55,6 @@ import {
   ProjectPropertyFields,
   type ProjectPropertyFieldsProps,
 } from "@src/modules/ProjectManager/shared";
-import { CreatorContentLayout } from "@src/modules/shared/layouts/blocks";
 import { reposAtom } from "@src/store/repo";
 import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
 import { manualCreatorAtom } from "@src/store/ui/manualCreatorAtom";

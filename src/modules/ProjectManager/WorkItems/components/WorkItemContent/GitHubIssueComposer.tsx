@@ -9,7 +9,7 @@ import MarkdownTextareaEditor, {
 } from "@src/components/MarkdownTextareaEditor";
 import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import PersonAvatar from "@src/components/PersonAvatar";
-import { LoadingBar } from "@src/modules/shared/layouts/blocks";
+import { LoadingBar } from "@src/components/layout/blocks";
 
 import GitHubIssueCloseButton from "./GitHubIssueCloseButton";
 import type {

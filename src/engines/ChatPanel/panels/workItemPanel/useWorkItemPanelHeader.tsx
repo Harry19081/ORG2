@@ -5,6 +5,7 @@ import { STORY_SYNC_ADAPTER } from "@src/api/http/integrations/syncConnections";
 import Button from "@src/components/Button";
 import IntegrationIcon from "@src/components/IntegrationIcon";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { DetailHeaderTabs } from "@src/components/layout/blocks";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { usePublishChatPanelHeader } from "@src/engines/ChatPanel/header";
 import ThreadDetailTabs, {
@@ -18,7 +19,6 @@ import {
 } from "@src/icons";
 import { WorkItemDetailHeaderBreadcrumb } from "@src/modules/ProjectManager/WorkItems/components/WorkItemDetail/WorkItemDetailHeader";
 import { ExternalBrowserButton } from "@src/modules/WorkStation/shared/ExternalBrowserButton";
-import { DetailHeaderTabs } from "@src/modules/shared/layouts/blocks";
 import type { ChatPanelSelectedWorkItem } from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkItem } from "@src/types/core/workItem";
 

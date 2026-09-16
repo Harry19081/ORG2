@@ -4,6 +4,11 @@ import { useTranslation } from "react-i18next";
 
 import { STORY_SYNC_ADAPTER } from "@src/api/http/integrations/syncConnections";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import {
+  PersistentDetailTabPanel,
+  WorkstationTrailIconButton,
+  WorkstationTrailSurface,
+} from "@src/components/layout/blocks";
 import LazyGitHubLinkedReferences from "@src/features/GitHubWork/GitHubLinkedReferences/lazy";
 import type { ThreadDetailTab } from "@src/features/GitHubWork/ThreadDetailTabs";
 import { useProjectDataChanged } from "@src/hooks/project";
@@ -17,11 +22,6 @@ import {
   PropertiesPanel,
   PropertiesRailFrame,
 } from "@src/modules/ProjectManager/shared";
-import {
-  PersistentDetailTabPanel,
-  WorkstationTrailIconButton,
-  WorkstationTrailSurface,
-} from "@src/modules/shared/layouts/blocks";
 import type { ChatPanelSelectedWorkItem } from "@src/store/ui/chatPanel/selectionAtoms";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import type { WorkItem } from "@src/types/core/workItem";

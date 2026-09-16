@@ -15,7 +15,7 @@ import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManage
 import { PROJECT_MANAGER_PLACEHOLDER_PLACEMENT } from "@src/modules/ProjectManager/shared/placeholderTokens";
 import DetailPaneLayout, {
   DetailPanePlaceholder,
-} from "@src/modules/shared/layouts/DetailPaneLayout";
+} from "@src/scaffold/layouts/DetailPaneLayout";
 
 import type {
   AggregatedWorkItem,

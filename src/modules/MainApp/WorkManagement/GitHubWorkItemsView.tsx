@@ -7,7 +7,7 @@ import {
   type WorkManagementTableRow,
 } from "@src/features/GitHubWork/WorkManagementTable";
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
-import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
+import InboxListDetailLayout from "@src/scaffold/layouts/InboxListDetailLayout";
 
 import { CreateIssueModal } from "./CreateIssueModal";
 import GitHubWorkItemDetailPane from "./GitHubWorkItemDetailPane";

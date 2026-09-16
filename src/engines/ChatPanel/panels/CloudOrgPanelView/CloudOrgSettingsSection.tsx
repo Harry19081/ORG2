@@ -5,6 +5,12 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
+import {
+  SECTION_ACTION_GAP_CLASSES,
+  SECTION_CONTROL_STYLE,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import type {
   CloudEntitlementState,
   CloudOrgMember,
@@ -13,12 +19,6 @@ import {
   RUNTIME_TELEMETRY_INTERVAL_OPTIONS,
   RUNTIME_TELEMETRY_OFF_VALUE,
 } from "@src/features/RuntimeDataSource/teamRuntimeData";
-import {
-  SECTION_ACTION_GAP_CLASSES,
-  SECTION_CONTROL_STYLE,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import {
   COLLAB_SESSION_ACCESS_MODE,
   type CollabSessionAccessMode,

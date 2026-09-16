@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
+import DetailTabStrip from "@src/components/layout/blocks/DetailTabStrip";
 import { HugeiconsIcon, Link02Icon, MessageMultiple01Icon } from "@src/icons";
-import DetailTabStrip from "@src/modules/shared/layouts/blocks/DetailTabStrip";
 
 export type ThreadDetailTab = "conversation" | "linked";
 

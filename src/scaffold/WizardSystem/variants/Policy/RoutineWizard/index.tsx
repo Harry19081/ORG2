@@ -6,9 +6,9 @@ import { type RoutineDefinition, projectApi } from "@src/api/http/project";
 import { rpc } from "@src/api/tauri/rpc";
 import type { DispatchCategory } from "@src/api/tauri/session";
 import Button from "@src/components/Button";
+import { SECTION_GAP_CLASSES } from "@src/components/layout/Section";
 import type { AdvancedConfig } from "@src/features/SessionCreator/types";
 import type { AgentDefinition } from "@src/modules/MainApp/AgentOrgs/types";
-import { SECTION_GAP_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
 import type { AgentSelection } from "@src/scaffold/GlobalSpotlight/palettes";
 import {
   DispatchCategoryPalette,

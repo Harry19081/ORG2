@@ -10,9 +10,9 @@ import {
   type ManagedPrItem,
   getManagedPullRequestKey,
 } from "@src/modules/MainApp/WorkManagement/githubManagedItemModel";
-import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
-import SplitListFullscreenButton from "@src/modules/shared/layouts/SplitListFullscreenButton";
-import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
+import InboxListDetailLayout from "@src/scaffold/layouts/InboxListDetailLayout";
+import SplitListFullscreenButton from "@src/scaffold/layouts/SplitListFullscreenButton";
+import SplitListHeader from "@src/scaffold/layouts/SplitListHeader";
 import { normalizePrStatus } from "@src/shared/pr/prStatus";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import type { WorkItem } from "@src/types/core/workItem";

@@ -7,14 +7,14 @@ import Input from "@src/components/Input";
 import SaveableTextarea from "@src/components/SaveableTextarea";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
-import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { HintWithInfo } from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/Section";
+import { HintWithInfo } from "@src/components/layout/blocks";
+import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   ORGII_COAUTHOR_EMAIL,
   ORGII_COAUTHOR_NAME,

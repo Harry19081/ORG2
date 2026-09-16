@@ -23,7 +23,7 @@ import {
 } from "@src/modules/ProjectManager/WorkItems/workItemIdentity";
 import ProjectManagerBreadcrumb from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import { DetailPaneCloseAction } from "@src/modules/shared/layouts/DetailPaneLayout";
+import { DetailPaneCloseAction } from "@src/scaffold/layouts/DetailPaneLayout";
 import type { WorkItem as WorkItemExtended } from "@src/types/core/workItem";
 
 export interface WorkItemDetailHeaderProps {

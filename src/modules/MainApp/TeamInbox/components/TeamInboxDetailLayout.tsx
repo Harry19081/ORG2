@@ -8,7 +8,7 @@ import {
   Mail01Icon,
   Tick01Icon,
 } from "@src/icons";
-import DetailPaneLayout from "@src/modules/shared/layouts/DetailPaneLayout";
+import DetailPaneLayout from "@src/scaffold/layouts/DetailPaneLayout";
 
 export interface TeamInboxDetailLayoutProps {
   title: string;

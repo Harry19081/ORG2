@@ -31,6 +31,7 @@ import { DiffViewModeToggle } from "@src/components/DiffViewModeToggle";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import Message from "@src/components/Message";
 import TabPill from "@src/components/TabPill";
+import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
@@ -40,7 +41,6 @@ import {
   HugeiconsIcon,
   LinkSquare02Icon,
 } from "@src/icons";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 import type { DiffViewMode } from "@src/types/git/types";
 import { copyText } from "@src/util/data/clipboard";
 

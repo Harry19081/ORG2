@@ -6,9 +6,9 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import Message from "@src/components/Message";
+import { PanelFooter } from "@src/components/layout/blocks";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { Cancel01Icon, Copy01Icon, HugeiconsIcon } from "@src/icons";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import { componentIssueModalOpenAtom } from "@src/store/ui/overlayAtom";
 import {
   ComponentIssuePayload,

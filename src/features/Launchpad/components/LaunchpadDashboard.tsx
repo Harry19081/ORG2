@@ -7,6 +7,7 @@ import type { CliAgentType } from "@src/api/tauri/rpc/schemas/validation";
 import AnyIcon from "@src/components/AnyIcon";
 import ModelIcon from "@src/components/ModelIcon";
 import { Placeholder } from "@src/components/Placeholder";
+import { InlineInfoCard } from "@src/components/layout/blocks";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import {
@@ -18,7 +19,6 @@ import { ROUTES } from "@src/config/routes";
 import { AccountStatusIndicator } from "@src/features/KeyVault/AccountStatusIndicator";
 import { useKeyVault } from "@src/hooks/keyVault";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
-import { InlineInfoCard } from "@src/modules/shared/layouts/blocks";
 import { openOrFocusChatPanelStartPageTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import type { Repo } from "@src/store/repo/types";
 import {

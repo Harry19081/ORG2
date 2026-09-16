@@ -11,7 +11,7 @@ import type { ButtonVariant } from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
+import { PanelFooter } from "@src/components/layout/blocks";
 
 import {
   CHANNEL_NAME_MAX_LENGTH,

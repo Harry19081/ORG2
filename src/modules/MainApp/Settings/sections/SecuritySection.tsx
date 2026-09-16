@@ -14,11 +14,8 @@ import { useTranslation } from "react-i18next";
 
 import SaveableTextarea from "@src/components/SaveableTextarea";
 import Switch from "@src/components/Switch";
+import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import { useSetting } from "@src/hooks/settings/useSettings";
-import {
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import { validateCustomPatterns } from "@src/util/secretScan";
 
 const SecuritySection: React.FC = () => {

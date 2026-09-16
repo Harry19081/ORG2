@@ -15,7 +15,7 @@ import type { ManagedPrItem } from "@src/modules/MainApp/WorkManagement/githubMa
 import DetailPaneLayout, {
   DetailPaneCloseAction,
   DetailPanePlaceholder,
-} from "@src/modules/shared/layouts/DetailPaneLayout";
+} from "@src/scaffold/layouts/DetailPaneLayout";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import type { WorkItem } from "@src/types/core/workItem";
 import { openInSystemBrowser } from "@src/util/ui/openLink";

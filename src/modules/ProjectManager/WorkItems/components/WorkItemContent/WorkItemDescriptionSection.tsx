@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import MarkdownTextareaEditor from "@src/components/MarkdownTextareaEditor";
 import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import PersonAvatar from "@src/components/PersonAvatar";
+import { PanelFooter } from "@src/components/layout/blocks";
 import {
   ActivityHeaderActionButton,
   ConnectedTimelineItem,
@@ -19,7 +20,6 @@ import {
   type ProjectContentEditorRef,
 } from "@src/modules/ProjectManager/shared";
 import { IssueTimelineItems } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/IssuesContent/IssueTimelineItems";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import type { WorkItem } from "@src/types/core/workItem";
 
 import type { useWorkItemContentModel } from "./hooks/useWorkItemContentModel";

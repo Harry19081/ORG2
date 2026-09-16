@@ -5,7 +5,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { SECTION_GAP_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
+import { SECTION_GAP_CLASSES } from "@src/components/layout/Section";
 
 import { RuntimeSectionHeader } from "./RuntimeSectionHeader";
 import HookPlatformsTable from "./SessionProvenanceHookPlatformsTable";

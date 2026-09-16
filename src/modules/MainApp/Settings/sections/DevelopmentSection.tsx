@@ -2,10 +2,7 @@ import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 
 import Switch from "@src/components/Switch";
-import {
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import { mockAppUpdateEnabledAtom } from "@src/scaffold/AppUpdater/state";
 
 export default function DevelopmentSection() {

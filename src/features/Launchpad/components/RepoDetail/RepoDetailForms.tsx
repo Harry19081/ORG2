@@ -13,12 +13,9 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
+import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import type { ScriptCategory } from "@src/features/Launchpad/types";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
-import {
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 
 import { CATEGORY_OPTIONS } from "./RepoDetailConfig";
 

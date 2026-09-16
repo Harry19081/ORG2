@@ -243,8 +243,13 @@ export function useTabShortcuts() {
     dispatchWorkStationAction(ACTION_ID.WORKSTATION_TOGGLE_CHAT_FOCUS);
   }, [dispatchWorkStationAction]);
 
+  // ⌘W / Ctrl+W. Settings owns the whole slot while it is open, so it is what
+  // the chord closes — before this, the settings pathname passed
+  // `isWorkbenchPath` and the chord silently closed the WorkStation tab
+  // hidden behind Settings.
   const handleCloseCurrentTab = useCallback(() => {
     const pathname = window.location.pathname;
+    if (AppViewService.closeSettings(pathname)) return true;
     if (!isWorkbenchPath(pathname)) return false;
 
     return closeActiveWorkStationTab();

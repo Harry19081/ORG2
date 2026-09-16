@@ -2,6 +2,10 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { WorkItemData as WorkItemDataPayload } from "@src/api/http/project";
+import {
+  PersistentDetailTabPanel,
+  WorkstationTrailSurface,
+} from "@src/components/layout/blocks";
 import LazyGitHubLinkedReferences from "@src/features/GitHubWork/GitHubLinkedReferences/lazy";
 import type { ExtractedGitHubReference } from "@src/features/GitHubWork/GitHubLinkedReferences/references";
 import type { ThreadDetailTab } from "@src/features/GitHubWork/ThreadDetailTabs";
@@ -14,12 +18,8 @@ import {
   PropertiesPanel,
   PropertiesRailFrame,
 } from "@src/modules/ProjectManager/shared";
-import DetailPaneErrorBoundary from "@src/modules/shared/layouts/DetailPaneErrorBoundary";
-import {
-  PersistentDetailTabPanel,
-  WorkstationTrailSurface,
-} from "@src/modules/shared/layouts/blocks";
 import { VerticalResizeHandle } from "@src/scaffold/Resize";
+import DetailPaneErrorBoundary from "@src/scaffold/layouts/DetailPaneErrorBoundary";
 import type { Person } from "@src/types/core/shared";
 import type {
   WorkItem as WorkItemExtended,

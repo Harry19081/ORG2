@@ -13,11 +13,11 @@ import {
   formatTokensShort,
   formatUsd,
 } from "@src/features/RuntimeDataSource/usageFormat";
-import { HugeiconsIcon, RotateLeft01Icon } from "@src/icons";
 import {
   SessionTable,
   type SessionTableItem,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/features/SessionTable";
+import { HugeiconsIcon, RotateLeft01Icon } from "@src/icons";
 import type { LinkedSession } from "@src/types/core/workItem";
 import {
   formatReplayDateLabel,

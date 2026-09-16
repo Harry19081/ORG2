@@ -17,11 +17,9 @@
 import { atom } from "jotai";
 
 import { cliAgentTuiRelease } from "@src/api/tauri/agent/cliTerminalSession";
+import { TERMINAL_AGENT_STATUS } from "@src/contracts/terminal";
 import { clearTerminalBufferCache } from "@src/engines/TerminalCore/components/TerminalInteractive/bufferCache";
-import {
-  TERMINAL_AGENT_STATUS,
-  type TerminalSession,
-} from "@src/engines/TerminalCore/types";
+import type { TerminalSession } from "@src/engines/TerminalCore/types";
 import {
   initializedTerminalIdsAtom,
   markTerminalInitializedAtom,

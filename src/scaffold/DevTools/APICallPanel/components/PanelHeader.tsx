@@ -5,12 +5,12 @@ import React from "react";
 
 import Button from "@src/components/Button";
 import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
-import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
-import { HugeiconsIcon } from "@src/icons";
 import {
   PANEL_HEADER_TOKENS,
   PanelHeader as SharedPanelHeader,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { HugeiconsIcon } from "@src/icons";
 
 import { ICON_CONFIG } from "../config";
 

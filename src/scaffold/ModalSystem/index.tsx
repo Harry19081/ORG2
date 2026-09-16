@@ -17,15 +17,15 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import Button from "@src/components/Button";
-import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import Button, { type ButtonProps } from "@src/components/Button";
 // Deep imports on purpose: the `layouts/blocks` barrel re-exports
 // SessionTable → SettingsTable → @tanstack/react-table, and Modal sits in the
 // startup graph (QuitConfirmationModal is mounted at boot).
-import PanelFooter from "@src/modules/shared/layouts/blocks/PanelFooter";
+import PanelFooter from "@src/components/layout/blocks/PanelFooter";
 import PanelHeader, {
   PANEL_HEADER_TOKENS,
-} from "@src/modules/shared/layouts/blocks/PanelHeader";
+} from "@src/components/layout/blocks/PanelHeader";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
 
 import "./index.scss";
@@ -93,13 +93,13 @@ interface ModalProps {
   /** Primary action button size in default footer */
   primaryButtonSize?: "small" | "default";
 
-  okButtonProps?: {
+  okButtonProps?: Pick<ButtonProps, "shortcut" | "aria-keyshortcuts"> & {
     status?: "danger" | "warning" | "success" | "default";
     loading?: boolean;
     disabled?: boolean;
   };
 
-  cancelButtonProps?: {
+  cancelButtonProps?: Pick<ButtonProps, "shortcut" | "aria-keyshortcuts"> & {
     disabled?: boolean;
   };
   /** Custom close icon */
@@ -259,6 +259,9 @@ const Modal: React.FC<ModalProps> = ({
                     },
                     variant: "secondary",
                     disabled: cancelButtonProps?.disabled,
+                    shortcut: cancelButtonProps?.shortcut,
+                    "aria-keyshortcuts":
+                      cancelButtonProps?.["aria-keyshortcuts"],
                   },
                 ]
               : undefined
@@ -271,6 +274,8 @@ const Modal: React.FC<ModalProps> = ({
             disabled: isDisabled || isLoading,
             loading: isLoading,
             variant: primaryVariant,
+            shortcut: okButtonProps?.shortcut,
+            "aria-keyshortcuts": okButtonProps?.["aria-keyshortcuts"],
           }}
         />
       );

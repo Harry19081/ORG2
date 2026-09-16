@@ -14,12 +14,12 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
 import { RuntimeRefreshButton } from "@src/features/RuntimeDataSource/RuntimeSectionHeader";
 import {
   type DependencyStatus,
   NON_DB_CATEGORIES,
 } from "@src/modules/MainApp/Integrations/hooks/useSystemDependencies";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 
 import {
   InlineCardBody,

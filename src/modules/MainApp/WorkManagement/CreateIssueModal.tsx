@@ -9,9 +9,9 @@ import MarkdownTextareaEditor, {
 import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
+import { PanelFooter } from "@src/components/layout/blocks";
 import { compactRepositoryLabel } from "@src/features/GitHubWork/githubRepositoryLabel";
 import { useSessionReferenceDropTarget } from "@src/features/Org2Cloud/useSessionReferenceDropTarget";
-import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import Modal from "@src/scaffold/ModalSystem";
 
 import type { GitHubRepoSource } from "./githubWorkItemsTypes";

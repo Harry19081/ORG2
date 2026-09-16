@@ -27,7 +27,7 @@ import {
 } from "@src/icons";
 import ProjectManagerBreadcrumb from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
+import SplitListHeader from "@src/scaffold/layouts/SplitListHeader";
 
 // ============================================
 // Types
