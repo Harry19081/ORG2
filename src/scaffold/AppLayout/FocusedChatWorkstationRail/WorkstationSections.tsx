@@ -1,4 +1,5 @@
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import {
   WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS,
   WORKSTATION_TRAIL_TITLE_BUTTON_CLASS,
@@ -9,12 +10,9 @@ import {
  */
 import { WORKSTATION_TRAIL_CONTENT } from "@src/config/workstation/tokens";
 import {
-  ArrowDown01Icon,
-  ArrowRight01Icon,
   FolderClosedIcon,
   FolderKanbanIcon,
   GitForkIcon,
-  HugeiconsIcon,
   WorkflowCircle05Icon,
 } from "@src/icons";
 
@@ -82,13 +80,10 @@ export function WorkstationSections({
                   >
                     {section.label}
                   </div>
-                  <HugeiconsIcon
-                    icon={groupCollapsed ? ArrowRight01Icon : ArrowDown01Icon}
-                    data-icon={
-                      groupCollapsed ? "chevron-right" : "chevron-down"
-                    }
+                  <DisclosureChevron
+                    expanded={!groupCollapsed}
                     aria-hidden
-                    className="shrink-0 text-text-3 transition-colors group-hover/section-toggle:text-text-2"
+                    className="shrink-0 text-text-3 group-hover/section-toggle:text-text-2"
                     size={14}
                     strokeWidth={1.75}
                   />

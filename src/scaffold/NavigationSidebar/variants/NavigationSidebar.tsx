@@ -13,12 +13,8 @@ import React, {
 } from "react";
 
 import Button from "@src/components/Button";
-import {
-  ArrowDown01Icon,
-  ArrowRight01Icon,
-  HugeiconsIcon,
-  type IconSvgElement,
-} from "@src/icons";
+import DisclosureChevron from "@src/components/DisclosureChevron";
+import { type IconSvgElement } from "@src/icons";
 
 import SidebarBase from "../SidebarBase";
 import { SidebarList } from "../blocks";
@@ -347,12 +343,8 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                               toggleSection(section.id);
                             }}
                             icon={
-                              <HugeiconsIcon
-                                icon={
-                                  isSectionCollapsed
-                                    ? ArrowRight01Icon
-                                    : ArrowDown01Icon
-                                }
+                              <DisclosureChevron
+                                expanded={!isSectionCollapsed}
                                 size={14}
                                 strokeWidth={2}
                                 className="text-text-2"
@@ -440,12 +432,8 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                               toggleSection(section.id);
                             }}
                             icon={
-                              <HugeiconsIcon
-                                icon={
-                                  isSectionCollapsed
-                                    ? ArrowRight01Icon
-                                    : ArrowDown01Icon
-                                }
+                              <DisclosureChevron
+                                expanded={!isSectionCollapsed}
                                 size={14}
                                 strokeWidth={2}
                                 className="text-text-2"

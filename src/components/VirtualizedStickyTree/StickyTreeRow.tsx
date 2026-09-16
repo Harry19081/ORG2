@@ -1,12 +1,12 @@
 import React, { type ReactNode } from "react";
 
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import { SidebarRowContent } from "@src/components/SidebarRow/SidebarRowContent";
 import {
   SIDEBAR_ROW_GAP_CLASS,
   getSidebarRowSurface,
 } from "@src/components/TreeRow/config";
-import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
 import { CHEVRON_SIZE, STICKY_ROW, stickyRowPadding } from "./tokens";
 
@@ -49,9 +49,8 @@ export function StickyTreeRow({
           leading={
             <>
               <span className={STICKY_ROW.chevronBox}>
-                <HugeiconsIcon
-                  icon={expanded ? ArrowDown01Icon : ArrowRight01Icon}
-                  data-icon={expanded ? "chevron-down" : "chevron-right"}
+                <DisclosureChevron
+                  expanded={expanded}
                   size={CHEVRON_SIZE}
                   className={STICKY_ROW.chevronIcon}
                 />

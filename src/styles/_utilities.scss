@@ -88,6 +88,45 @@
 }
 
 /**
+ * Disclosure Chevron Rotation
+ *
+ * Collapsible rows in the workstation trail and in the sidebars used to swap
+ * ArrowRight01Icon for ArrowDown01Icon on toggle, which pops between two
+ * glyphs with no motion. ArrowDown01Icon is ArrowRight01Icon rotated 90deg
+ * clockwise about the centre of the 24x24 viewBox — every control point maps
+ * onto its counterpart — so rendering the right chevron and rotating it is
+ * pixel-identical to the swap while giving the toggle something to animate.
+ *
+ * - .chevron-disclosure      — always applied; owns the transition
+ * - .chevron-disclosure-open — applied while expanded; points the chevron down
+ *
+ * `color` rides along in the transition because these rules are unlayered and
+ * would otherwise beat Tailwind's `transition-colors` on hover-tinted
+ * chevrons; the duration and easing match Tailwind's defaults, so hover
+ * tinting behaves exactly as it did before.
+ *
+ * Usage: render <DisclosureChevron expanded={...} /> from
+ * @src/components/DisclosureChevron rather than composing these by hand.
+ */
+.chevron-disclosure {
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+  transition:
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chevron-disclosure-open {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron-disclosure {
+    transition: none;
+  }
+}
+
+/**
  * Fill-3 Hover Button
  * Subtle fill-3 hover state for navigation/secondary buttons
  * 
