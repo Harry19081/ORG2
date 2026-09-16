@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 
 import type { LinkedEmail, MemberEntry } from "@src/api/http/project";
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import Input from "@src/components/Input";
 import PersonAvatar from "@src/components/PersonAvatar";
 import {
@@ -30,8 +31,6 @@ import { useCurrentUserMemberIds } from "@src/hooks/project/useCurrentUserMember
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Add01Icon,
-  ArrowDown01Icon,
-  ArrowRight01Icon,
   Cancel01Icon,
   HugeiconsIcon,
   MinusSignIcon,
@@ -394,21 +393,7 @@ const RepoMembersSection: React.FC<RepoMembersSectionProps> = ({
             )}
             <Button
               onClick={() => setExpanded(!expanded)}
-              icon={
-                expanded ? (
-                  <HugeiconsIcon
-                    icon={ArrowDown01Icon}
-                    data-icon="chevron-down"
-                    size={14}
-                  />
-                ) : (
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    data-icon="chevron-right"
-                    size={14}
-                  />
-                )
-              }
+              icon={<DisclosureChevron expanded={expanded} size={14} />}
               iconOnly
             />
           </div>
@@ -453,19 +438,7 @@ const RepoMembersSection: React.FC<RepoMembersSectionProps> = ({
               <Button
                 onClick={() => setInactiveExpanded(!inactiveExpanded)}
                 icon={
-                  inactiveExpanded ? (
-                    <HugeiconsIcon
-                      icon={ArrowDown01Icon}
-                      data-icon="chevron-down"
-                      size={14}
-                    />
-                  ) : (
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      data-icon="chevron-right"
-                      size={14}
-                    />
-                  )
+                  <DisclosureChevron expanded={inactiveExpanded} size={14} />
                 }
                 iconOnly
               />

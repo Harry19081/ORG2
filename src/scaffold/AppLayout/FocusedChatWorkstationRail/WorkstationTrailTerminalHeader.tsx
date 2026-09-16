@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import {
   WorkstationTrailHeader,
   WorkstationTrailIconButton,
@@ -9,8 +10,6 @@ import {
 import { WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS } from "@src/components/layout/tokens/workstationTrailTokens";
 import {
   Add01Icon,
-  ArrowDown01Icon,
-  ArrowRight01Icon,
   Cancel01Icon,
   HugeiconsIcon,
   StopCircleIcon,
@@ -95,9 +94,8 @@ export function WorkstationTrailTerminalHeader({
             )}
             aria-expanded={!collapsed}
           >
-            <HugeiconsIcon
-              icon={collapsed ? ArrowRight01Icon : ArrowDown01Icon}
-              data-icon={collapsed ? "chevron-right" : "chevron-down"}
+            <DisclosureChevron
+              expanded={!collapsed}
               size={14}
               strokeWidth={1.75}
             />
