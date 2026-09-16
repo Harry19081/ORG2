@@ -27,7 +27,7 @@ import {
   SimulatorAgentChip,
   StationModeChip,
 } from "@src/modules/WorkStation/shared";
-import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
+import { usePaneLayoutInsetTransition } from "@src/scaffold/AppLayout/usePaneLayoutInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import {
   sessionMapAtom,
@@ -54,7 +54,7 @@ const AgentStationTopHeaderComponent = ({
   const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
   const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
   const rightEdge = useWorkbenchRightEdgeReservation();
-  const insetTransitionClassName = useStationToggleInsetTransition();
+  const insetTransitionClassName = usePaneLayoutInsetTransition();
   const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
   const [captionEnabled, setCaptionEnabled] = useAtom(
     simulatorCaptionBarEnabledAtom

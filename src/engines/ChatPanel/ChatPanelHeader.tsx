@@ -16,7 +16,7 @@ import {
   HugeiconsIcon,
   SquareTerminalIcon,
 } from "@src/icons";
-import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
+import { usePaneLayoutInsetTransition } from "@src/scaffold/AppLayout/usePaneLayoutInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { ChatPaneFocusButton } from "@src/scaffold/WorkbenchChrome/StationPaneControls";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
@@ -169,7 +169,7 @@ export function ChatPanelHeader({
   const trailingInsetPx = pinnedChromeInThisHeader
     ? rightEdge.reservedRight
     : undefined;
-  const insetTransitionClassName = useStationToggleInsetTransition();
+  const insetTransitionClassName = usePaneLayoutInsetTransition();
   if (!showHeader) return null;
 
   const tuiModeLabel = tuiMode ? t("chat.tuiModeOn") : t("chat.tuiModeOff");
