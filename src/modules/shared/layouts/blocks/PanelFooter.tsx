@@ -30,7 +30,11 @@
 import React from "react";
 
 import Button from "@src/components/Button";
-import type { ButtonAppearance, ButtonVariant } from "@src/components/Button";
+import type {
+  ButtonAppearance,
+  ButtonProps,
+  ButtonVariant,
+} from "@src/components/Button";
 
 export const PANEL_FOOTER_TOKENS = {
   /** Footer height (px) */
@@ -59,7 +63,10 @@ export const PANEL_FOOTER_TOKENS = {
   spacer: "flex-1",
 } as const;
 
-export interface PanelFooterAction {
+export interface PanelFooterAction extends Pick<
+  ButtonProps,
+  "shortcut" | "aria-keyshortcuts"
+> {
   label: string;
   onClick?: () => void;
   icon?: React.ReactNode;
@@ -106,6 +113,8 @@ const PrimaryActionButton: React.FC<{
     icon={action.icon}
     iconPosition={action.iconPosition}
     iconOnly={action.iconOnly}
+    shortcut={action.shortcut}
+    aria-keyshortcuts={action["aria-keyshortcuts"]}
     title={action.title}
     disabled={action.disabled}
     loading={action.loading}
@@ -147,6 +156,8 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
           icon={action.icon}
           iconPosition={action.iconPosition}
           iconOnly={action.iconOnly}
+          shortcut={action.shortcut}
+          aria-keyshortcuts={action["aria-keyshortcuts"]}
           title={action.title}
           disabled={action.disabled}
           loading={action.loading}
