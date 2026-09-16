@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { EVENT_LOADING_SHIMMER_TEXT_CLASSES } from "@src/engines/ChatPanel/blocks/primitives";
+import BreadcrumbFileHeader from "@src/features/FileHeader/BreadcrumbFileHeader";
 import {
   ArrowDown01Icon,
   ArrowExpand01Icon,
@@ -32,7 +33,6 @@ import {
   ArrowShrink02Icon,
   HugeiconsIcon,
 } from "@src/icons";
-import BreadcrumbFileHeader from "@src/modules/shared/components/FileHeader/BreadcrumbFileHeader";
 import { HorizontalResizeHandle } from "@src/scaffold/Resize";
 
 import { useMultiSessionSimulatorEvents } from "../hooks/useMultiSessionSimulatorEvents";

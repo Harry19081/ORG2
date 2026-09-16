@@ -13,7 +13,7 @@ import {
   loadGitHubViewer,
   primeGitHubRepoPermissions,
   primeGitHubViewer,
-} from "@src/modules/shared/githubIssueDetailCoordinator";
+} from "@src/features/GitHubWork/githubIssueDetailCoordinator";
 import {
   retainWorkstationIssueDetailScope,
   workstationIssueCallbackAtomFamily,

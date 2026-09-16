@@ -6,19 +6,19 @@ import type { GitHubReviewComment } from "@src/api/tauri/github";
 import { projectMarkdownSessionReferences } from "@src/components/MarkDown/sessionReferenceProjection";
 import PersonAvatar from "@src/components/PersonAvatar";
 import {
-  CancelCircleIcon,
-  CheckmarkCircle01Icon,
-  FileDiffIcon,
-  HugeiconsIcon,
-} from "@src/icons";
-import {
   ConnectedTimelineItem,
   MarkdownContent,
   TimelineCard,
   TimelineCardHeader,
   TimelineLoadingSkeleton,
   TimelineStack,
-} from "@src/modules/shared/components/ActivityTimeline";
+} from "@src/features/GitHubWork/ActivityTimeline";
+import {
+  CancelCircleIcon,
+  CheckmarkCircle01Icon,
+  FileDiffIcon,
+  HugeiconsIcon,
+} from "@src/icons";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 
 import type { TimelineEntry } from "./types";

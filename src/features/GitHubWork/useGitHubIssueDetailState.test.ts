@@ -19,7 +19,7 @@ import {
   UNRESOLVED_AUTH_SCOPE,
   githubIssueResourceKey,
   resetGitHubIssueDetailCoordinator,
-} from "@src/modules/shared/githubIssueDetailCoordinator";
+} from "@src/features/GitHubWork/githubIssueDetailCoordinator";
 import { workstationSelectedIssueAtomFamily } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 
 import {

@@ -2,7 +2,7 @@ import type { Store } from "jotai/vanilla/store";
 import { type Dispatch, type SetStateAction, useCallback } from "react";
 
 import { listIssuesLocal } from "@src/api/tauri/github";
-import { loadGitHubDuplicateCandidates } from "@src/modules/shared/githubIssueDetailCoordinator";
+import { loadGitHubDuplicateCandidates } from "@src/features/GitHubWork/githubIssueDetailCoordinator";
 
 import type { GitHubIssueInteractionResolution } from "./resolution";
 
