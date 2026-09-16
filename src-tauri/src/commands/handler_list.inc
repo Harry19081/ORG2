@@ -618,12 +618,6 @@ file_ops::filter_ignored_paths,
 file_ops::list_directory_filtered,
 file_ops::list_directory_tree,
 // Performance optimization commands
-// - Binary file detection (SIMD-accelerated + magic bytes)
-perf_utils::check_binary_by_path,
-perf_utils::check_binary_content,
-perf_utils::check_file_is_binary,
-perf_utils::check_binary_content_enhanced,
-perf_utils::check_file_is_binary_enhanced,
 // - Fast JSON processing (simd-json)
 perf_utils::parse_json_fast,
 perf_utils::stringify_json_fast,
@@ -635,7 +629,6 @@ perf_utils::compute_sha256,
 perf_utils::compute_sha256_bytes,
 perf_utils::compute_blake3,
 perf_utils::compute_blake3_bytes,
-perf_utils::compute_file_hash,
 perf_utils::compute_blake3_batch,
 // - Diff and patch (fuzzy matching for AI code edits)
 perf_utils::diff_patch::compute_diff,
