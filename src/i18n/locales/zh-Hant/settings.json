@@ -3,8 +3,6 @@
     "customCommandUpdated": "自訂命令已更新",
     "shellSettingUpdated": "Shell 設定已更新"
   },
-  "noSettingsFound": "未找到\"{{query}}\"相關設置",
-  "searchPlaceholder": "搜索設置...",
   "panel": {
     "maximizeSettings": "最大化設定"
   },

@@ -3,8 +3,6 @@
     "customCommandUpdated": "Commande personnalisée mise à jour",
     "shellSettingUpdated": "Paramètre du shell mis à jour"
   },
-  "noSettingsFound": "Aucun paramètre trouvé pour \"{{query}}\"",
-  "searchPlaceholder": "Rechercher des paramètres...",
   "panel": {
     "maximizeSettings": "Agrandir les paramètres"
   },

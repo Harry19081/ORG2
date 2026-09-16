@@ -3,8 +3,6 @@
     "customCommandUpdated": "Özel komut güncellendi",
     "shellSettingUpdated": "Shell ayarı güncellendi"
   },
-  "noSettingsFound": "\"{{query}}\" için ayar bulunamadı",
-  "searchPlaceholder": "Ayarlarda ara...",
   "panel": {
     "maximizeSettings": "Ayarları büyüt"
   },

@@ -63,7 +63,7 @@ function SettingsSearchDropdown<TItem extends SettingsSearchDropdownItem>({
   align = "left",
   minWidth = 240,
 }: SettingsSearchDropdownProps<TItem>) {
-  const { t: tSettings } = useTranslation("settings");
+  const { t } = useTranslation("common");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectorOpen, setSelectorOpen] = useState(false);
   const listboxId = useId();
@@ -190,7 +190,7 @@ function SettingsSearchDropdown<TItem extends SettingsSearchDropdownItem>({
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyDown={handleSearchKeyDown}
-              placeholder={tSettings("searchPlaceholder")}
+              placeholder={t("common.searchPlaceholder")}
               role="combobox"
               aria-controls={listboxId}
               aria-expanded={isOpen}
@@ -202,7 +202,7 @@ function SettingsSearchDropdown<TItem extends SettingsSearchDropdownItem>({
             <div
               id={listboxId}
               role="listbox"
-              aria-label={tSettings("searchPlaceholder")}
+              aria-label={t("common.searchPlaceholder")}
               className={DROPDOWN_CLASSES.optionsContainerOverlay}
               style={{
                 maxHeight: Math.min(360, panelPosition.maxHeight - 44),
@@ -214,7 +214,7 @@ function SettingsSearchDropdown<TItem extends SettingsSearchDropdownItem>({
                   role="status"
                   aria-live="polite"
                 >
-                  {tSettings("noSettingsFound", { query: searchQuery.trim() })}
+                  {t("common.noResults")}
                 </div>
               ) : (
                 filteredGroups.map((group) => (
