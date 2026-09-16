@@ -59,6 +59,13 @@ describe("brand inference from model names", () => {
     ["gemini-3-pro", "gemini"],
     ["copilot-premium", "copilot"],
     ["longcat-2", "longcat"],
+    ["muse-spark-1.3", "meta_ai"],
+    ["muse-spark-1.3-max", "meta_ai"],
+    ["cursor/muse-spark-1-3", "meta_ai"],
+    ["meta/muse-spark", "meta_ai"],
+    ["Muse Spark 1.3", "meta_ai"],
+    ["llama-4-maverick", "meta"],
+    ["museum-7b", "unknown"],
     ["some-unlisted-model", "unknown"],
   ])("%s → %s", (modelName, provider) => {
     expect(getIconProviderFromModelName(modelName)).toBe(provider);
