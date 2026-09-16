@@ -124,18 +124,19 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
             <Button
               htmlType="button"
               variant="tertiary"
+              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon icon={Pen01Icon} data-icon="pencil" size={12} />
               }
               iconOnly
-              className="enabled:hover:bg-fill-3 enabled:hover:text-text-1"
               onClick={() => onStartEdit(msg)}
               title={t("common:actions.edit")}
             />
             <Button
               htmlType="button"
               variant="tertiary"
+              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon
@@ -145,13 +146,14 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
                 />
               }
               iconOnly
-              className="enabled:hover:bg-fill-3 enabled:hover:text-danger-6"
+              hoverIntent="danger"
               onClick={() => onCancel(msg.id)}
               title={t("common:actions.delete")}
             />
             <Button
               htmlType="button"
               variant="tertiary"
+              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon
@@ -161,7 +163,7 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
                 />
               }
               iconOnly
-              className="enabled:hover:bg-fill-3 enabled:hover:text-primary-6"
+              hoverIntent="primary"
               onClick={() => onSendNow(msg.id)}
               title={t("common:actions.sendNow")}
               data-testid="queued-message-send-now"

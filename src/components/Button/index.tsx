@@ -29,6 +29,7 @@
  * <Button variant="secondary" size="small">Cancel</Button>
  * <Button variant="danger" appearance="ghost">Remove</Button>
  * <Button variant="tertiary" appearance="ghost">Inline action</Button>
+ * <Button variant="tertiary" appearance="soft" hoverIntent="danger" iconOnly icon={<Trash />} />
  * <Button loading>Loading...</Button>
  * <Button variant="primary" icon={<Plus size={14} />}>Add</Button>
  * ```
@@ -37,13 +38,18 @@ import React, { forwardRef } from "react";
 
 import {
   type ButtonAppearance,
+  type ButtonHoverIntent,
   type ButtonShape,
   type ButtonSize,
   type ButtonVariant,
   useButtonPresentation,
 } from "./presentation";
 
-export type { ButtonAppearance, ButtonVariant } from "./presentation";
+export type {
+  ButtonAppearance,
+  ButtonHoverIntent,
+  ButtonVariant,
+} from "./presentation";
 
 export interface ButtonProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -106,6 +112,15 @@ export interface ButtonProps extends Omit<
   /** Icon-only button (no text) @default false */
   iconOnly?: boolean;
 
+  /**
+   * Color a neutral (secondary / tertiary) button shows only while hovered,
+   * pressed or keyboard-focused; it stays neutral at rest. It replaces the
+   * variant's own hover text color, so use it instead of `className` hover
+   * overrides, which lose to the variant's classes in Tailwind's output order.
+   * Semantic variants already carry a color and ignore it.
+   */
+  hoverIntent?: ButtonHoverIntent;
+
   /** Display-only shortcut hint; the caller owns keyboard handling. Hidden for icon-only buttons. */
   shortcut?: string;
 
@@ -150,6 +165,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       iconPosition = "left",
       iconOnly = false,
+      hoverIntent,
       shortcut,
       centerLabel = false,
       long = false,
@@ -178,6 +194,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         icon,
         iconPosition,
         iconOnly,
+        hoverIntent,
         shortcut,
         centerLabel,
         long,

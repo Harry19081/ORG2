@@ -110,10 +110,11 @@ export const FollowModeDropdown: React.FC = () => {
           onClick={toggle}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
+          hoverIntent="primary"
           className={`flex h-5 w-5 shrink-0 transform-gpu items-center justify-center rounded-full ${
             isOpen
               ? "bg-fill-3 text-primary-6"
-              : `text-text-2 ${SURFACE_TOKENS.hover} hover:text-primary-6`
+              : `text-text-2 ${SURFACE_TOKENS.hover}`
           }`}
         />
       </Tooltip>

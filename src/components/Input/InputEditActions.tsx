@@ -32,16 +32,6 @@ const ACTION_BUTTON_STYLE: React.CSSProperties = {
   borderRadius: "var(--radius-sm)",
 };
 
-/**
- * Neutral at rest; the action's intent color shows only while hovered or
- * pressed. `!` is required: the tertiary variant's own
- * `enabled:hover:text-text-1` is emitted after these and would win the tie.
- */
-const CANCEL_INTENT_CLASS =
-  "enabled:hover:text-danger-6! enabled:active:text-danger-6!";
-const CONFIRM_INTENT_CLASS =
-  "enabled:hover:text-primary-6! enabled:active:text-primary-6!";
-
 /** Keep focus (and the focus ring) on the input while an action is clicked. */
 const keepInputFocus = (event: React.MouseEvent) => event.preventDefault();
 
@@ -81,7 +71,8 @@ export const InputEditActions: React.FC<InputEditActionsProps> = ({
           icon={
             <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={iconSize} />
           }
-          className={`input-cancel ${CANCEL_INTENT_CLASS}`}
+          className="input-cancel"
+          hoverIntent="danger"
           style={ACTION_BUTTON_STYLE}
           tabIndex={-1}
           disabled={cancelDisabled}
@@ -103,7 +94,8 @@ export const InputEditActions: React.FC<InputEditActionsProps> = ({
               size={iconSize}
             />
           }
-          className={`input-confirm ${CONFIRM_INTENT_CLASS}`}
+          className="input-confirm"
+          hoverIntent="primary"
           style={ACTION_BUTTON_STYLE}
           tabIndex={-1}
           disabled={confirmDisabled}
