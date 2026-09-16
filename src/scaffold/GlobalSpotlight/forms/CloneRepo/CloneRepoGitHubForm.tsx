@@ -116,7 +116,7 @@ const CloneGitHubForm: React.FC<CloneGitHubFormProps> = ({
               placeholder={t("cloneForm.filterReposPlaceholder")}
               value={filterText}
               onChange={onFilterTextChange}
-              className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
+              className="h-[32px] rounded-lg text-[14px]"
               prefix={
                 <HugeiconsIcon
                   icon={FilterIcon}

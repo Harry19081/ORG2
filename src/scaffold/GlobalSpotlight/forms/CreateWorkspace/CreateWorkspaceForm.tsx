@@ -188,7 +188,7 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
                   name.trim() !== generatedWorkspaceName
                 );
               }}
-              className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
+              className="h-[32px] rounded-lg text-[14px]"
               prefix={
                 <HugeiconsIcon
                   icon={ICONS.workspace}
@@ -209,7 +209,7 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
               value={repoSearchQuery}
               onChange={setRepoSearchQuery}
               allowClear
-              className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
+              className="h-[32px] rounded-lg text-[14px]"
               prefix={
                 <HugeiconsIcon
                   icon={Search01Icon}

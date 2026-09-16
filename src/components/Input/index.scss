@@ -7,18 +7,72 @@
  * - Wrapper (.input-wrapper) handles ALL visual styling
  * - Input element (.input) is completely transparent
  * - This prevents double borders and conflicting styles
+ *
+ * Cascade layers:
+ * Tailwind v4 emits utilities in `@layer utilities`, and unlayered CSS beats
+ * every layered rule regardless of specificity. The wrapper's own box rules
+ * (width, height, display, min/max width, radius, font-size) are defaults that
+ * callers size through `className`, so they live in `@layer components`, where
+ * utilities such as `<Input className="w-48" />` override them. Everything else
+ * stays unlayered on purpose: the inner/input element rules and the state and
+ * surface modifiers must keep beating Input's own `rounded-lg bg-bg-2`
+ * utilities on `.input-inner`, the global element resets, and existing
+ * `inputClassName` callers written against the unlayered cascade.
  */
 
-.input-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  width: 100%;
-  box-sizing: border-box;
-  background: transparent;
-  border: none;
-  transition: all 0.1s cubic-bezier(0, 0, 1, 1);
+// The order `@import "tailwindcss"` (src/tailwind.css) declares: `@layer
+// properties;` then `@layer theme, base, components, utilities;`. Repeating it
+// keeps `components` below `utilities` even if this sheet is inserted first.
+@layer properties, theme, base, components, utilities;
 
+@layer components {
+  .input-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    border: none;
+    transition: all 0.1s cubic-bezier(0, 0, 1, 1);
+
+    &.input-size-mini {
+      height: 24px;
+      font-size: 12px;
+    }
+
+    &.input-size-small {
+      height: 28px;
+      font-size: 14px;
+    }
+
+    &.input-size-default {
+      height: 32px;
+      font-size: 14px;
+    }
+
+    &.input-size-large {
+      height: 36px;
+      font-size: 14px;
+    }
+
+    // After the sizes so auto-height wins, and before ghost so ghost's fixed
+    // height still wins over it (the pre-layer source order).
+    &.input-auto-height {
+      height: auto;
+    }
+
+    &.input-field-ghost {
+      height: 28px;
+      min-width: 0;
+      max-width: 100%;
+      border-radius: 8px;
+      transition: background-color 0.1s cubic-bezier(0, 0, 1, 1);
+    }
+  }
+}
+
+.input-wrapper {
   // Inner wrapper handles the visual styling
   .input-inner {
     display: inline-flex;
@@ -34,9 +88,6 @@
 
   // Size variants
   &.input-size-mini {
-    height: 24px;
-    font-size: 12px;
-
     .input-inner {
       padding: 0 8px;
     }
@@ -47,9 +98,6 @@
   }
 
   &.input-size-small {
-    height: 28px;
-    font-size: 14px;
-
     .input-inner {
       padding: 0 12px;
     }
@@ -60,9 +108,6 @@
   }
 
   &.input-size-default {
-    height: 32px;
-    font-size: 14px;
-
     .input-inner {
       padding: 0 12px;
     }
@@ -73,9 +118,6 @@
   }
 
   &.input-size-large {
-    height: 36px;
-    font-size: 14px;
-
     .input-inner {
       padding: 0 16px;
     }
@@ -202,8 +244,6 @@
   }
 
   &.input-auto-height {
-    height: auto;
-
     .input-inner {
       min-height: 0;
       padding: 0;
@@ -216,12 +256,9 @@
   }
 
   &.input-field-ghost {
-    height: 28px;
-    min-width: 0;
-    max-width: 100%;
+    // Stays unlayered: it must keep beating `.input-disabled`'s cursor, as it
+    // did before the box rules moved into a layer.
     cursor: default;
-    border-radius: 8px;
-    transition: background-color 0.1s cubic-bezier(0, 0, 1, 1);
 
     .input-inner {
       padding: 0 6px;

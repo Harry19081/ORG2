@@ -89,7 +89,7 @@ const CloneUrlForm: React.FC<CloneUrlFormProps> = ({
               placeholder={t("cloneForm.githubUrlPlaceholder")}
               value={repoUrl}
               onChange={onRepoUrlChange}
-              className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
+              className="h-[32px] rounded-lg text-[14px]"
               prefix={
                 <HugeiconsIcon
                   icon={CodeXmlIcon}

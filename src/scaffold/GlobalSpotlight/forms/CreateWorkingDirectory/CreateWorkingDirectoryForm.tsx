@@ -96,7 +96,7 @@ const CreateWorkingDirectoryForm: React.FC<CreateWorkingDirectoryFormProps> = ({
               placeholder={t("selectors.repo.forms.workspaceNamePlaceholder")}
               value={directoryName}
               onChange={handleDirectoryNameChange}
-              className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
+              className="h-[32px] rounded-lg text-[14px]"
               prefix={
                 <HugeiconsIcon
                   icon={CodeXmlIcon}
