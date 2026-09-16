@@ -351,7 +351,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
                     </span>
                     {levelLabel && (
                       <span
-                        className={`ml-1 shrink-0 font-normal ${levelToneClass}`}
+                        className={`ml-1.5 shrink-0 font-normal ${levelToneClass}`}
                       >
                         {levelLabel}
                       </span>
