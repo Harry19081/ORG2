@@ -116,7 +116,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
               htmlType="button"
               onClick={handleCreate}
               disabled={!onCreatePr}
-              className="text-[12px] font-medium hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-50"
+              className="text-[12px] font-medium disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t("actions.createPullRequest", "Create pull request")}
             </Button>

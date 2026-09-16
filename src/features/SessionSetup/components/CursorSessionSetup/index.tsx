@@ -297,7 +297,7 @@ const CursorSessionSetup: React.FC<CursorSessionSetupProps> = ({
                   appearance="solid"
                   size="default"
                   onClick={startCapture}
-                  className="text-sm font-medium text-text-white hover:bg-primary-7"
+                  className="text-sm font-medium text-text-white"
                 >
                   {t("common:actions.retry")}
                 </Button>

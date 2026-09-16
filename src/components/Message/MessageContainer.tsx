@@ -195,7 +195,7 @@ const MessageItem = ({
           size="mini"
           iconOnly
           icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />}
-          className="ml-1 shrink-0 opacity-60 transition-all ease-out hover:bg-white/10 hover:text-text-1 hover:opacity-100 active:scale-95"
+          className="ml-1 shrink-0 opacity-60 transition-all ease-out hover:text-text-1 hover:opacity-100 active:scale-95"
           onClick={handleClose}
           aria-label={t("actions.close")}
         />

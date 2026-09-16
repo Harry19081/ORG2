@@ -140,8 +140,8 @@ describe("IssueDetailExternalLinkButton", () => {
     expect(markup).toMatch(/<button\b[^>]*type="button"/);
     expect(markup).toContain('aria-label="Open in external browser"');
     expect(markup).toContain('data-icon="chrome"');
-    expect(markup).toContain("enabled:hover:bg-surface-hover");
-    expect(markup).toContain("enabled:active:bg-surface-selected");
+    expect(markup).toContain("btn-hover:bg-surface-hover");
+    expect(markup).toContain("btn-active:bg-surface-selected");
     expect(markup).not.toContain("<a ");
   });
 

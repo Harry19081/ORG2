@@ -16,8 +16,8 @@ describe("RefreshButton", () => {
     );
 
     expect(markup).toContain('data-testid="page-refresh"');
-    expect(markup).toContain("border-0 bg-transparent text-text-2");
-    expect(markup).toContain("enabled:hover:bg-surface-hover");
+    expect(markup).toContain("btn:border-0 btn:bg-transparent btn:text-text-2");
+    expect(markup).toContain("btn-hover:bg-surface-hover");
     expect(markup).toContain("height:28px");
     expect(markup).toContain('data-icon="refresh-cw"');
     expect(markup).toContain("Refresh");
@@ -34,7 +34,9 @@ describe("RefreshButton", () => {
       })
     );
 
-    expect(markup).toContain("border border-border-2 bg-bg-2 text-text-1");
+    expect(markup).toContain(
+      "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-text-1"
+    );
     expect(markup).toContain("height:32px");
     expect(markup).toContain("width:32px");
     expect(markup).toContain('aria-label="Rescan all"');

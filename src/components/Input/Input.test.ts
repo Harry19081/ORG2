@@ -227,16 +227,10 @@ describe("Input", () => {
         (button) => button.getAttribute("aria-label")
       )
     ).toEqual(["Discard", "Save name"]);
-    expect(cancel?.classList.contains("enabled:hover:text-danger-6")).toBe(
-      true
-    );
-    expect(confirm?.classList.contains("enabled:hover:text-primary-6")).toBe(
-      true
-    );
+    expect(cancel?.classList.contains("btn-hover:text-danger-6")).toBe(true);
+    expect(confirm?.classList.contains("btn-hover:text-primary-6")).toBe(true);
     for (const action of [cancel, confirm]) {
-      expect(action?.classList.contains("enabled:hover:text-text-1")).toBe(
-        false
-      );
+      expect(action?.classList.contains("btn-hover:text-text-1")).toBe(false);
     }
     expect(confirm?.getAttribute("aria-label")).toBe("Save name");
     expect(cancel?.getAttribute("aria-label")).toBe("Discard");

@@ -6,6 +6,8 @@ import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { BUTTON_VARIANT } from "@src/config/workstation/tokens";
+
 import Button from ".";
 
 function readThemeColor(css: string, token: string): string {
@@ -131,9 +133,9 @@ describe("compact shared actions", () => {
     expect(markup).toContain("width:20px");
     expect(markup).toContain("border-radius:var(--radius-sm)");
     expect(markup).toContain("action-icon");
-    expect(markup).toContain("enabled:hover:bg-button-hover");
+    expect(markup).toContain("btn-hover:bg-button-hover");
     expect(markup).not.toContain("bg-button-hover-no-drop");
-    expect(markup).not.toContain("enabled:hover:bg-primary-3");
+    expect(markup).not.toContain("hover:bg-primary-3");
   });
 
   it("opts transparent controls into fill-2 without changing sidebar hover", () => {
@@ -146,8 +148,8 @@ describe("compact shared actions", () => {
         icon: React.createElement("svg"),
       })
     );
-    expect(markup).toContain("enabled:hover:bg-button-hover-no-drop");
-    expect(markup).toContain("focus-visible:bg-button-hover-no-drop");
+    expect(markup).toContain("btn-hover:bg-button-hover-no-drop");
+    expect(markup).toContain("btn-focus:bg-button-hover-no-drop");
     const theme = readFileSync(resolve("src/tailwind.css"), "utf8");
     expect(theme).toContain(
       "--color-button-hover-no-drop: var(--color-fill-2)"
@@ -191,19 +193,19 @@ describe("compact shared actions", () => {
       await act(async () => root.render(React.createElement(Button, props)));
       const button = container.querySelector("button")!;
       expect(button.getAttribute("aria-label")).toBe("Discard file");
-      expect(button.classList.contains("text-danger-6")).toBe(true);
-      expect(button.classList.contains("text-text-2")).toBe(false);
-      expect(button.className).toContain("enabled:hover:bg-danger-2");
-      expect(button.className).toContain("focus-visible:bg-danger-2");
+      expect(button.classList.contains("btn:text-danger-6")).toBe(true);
+      expect(button.classList.contains("btn:text-text-2")).toBe(false);
+      expect(button.className).toContain("btn-hover:bg-danger-2");
+      expect(button.className).toContain("btn-focus:bg-danger-2");
       await act(async () =>
         root.render(
           React.createElement(Button, { ...props, appearance: "soft-no-drop" })
         )
       );
-      expect(button.classList.contains("text-danger-6")).toBe(true);
-      expect(button.classList.contains("text-text-2")).toBe(false);
-      expect(button.className).toContain("enabled:hover:bg-danger-1");
-      expect(button.className).not.toContain("enabled:hover:bg-danger-2");
+      expect(button.classList.contains("btn:text-danger-6")).toBe(true);
+      expect(button.classList.contains("btn:text-text-2")).toBe(false);
+      expect(button.className).toContain("btn-hover:bg-danger-1");
+      expect(button.className).not.toContain("hover:bg-danger-2");
       expect(button.className).not.toContain("bg-danger-3");
       await act(async () => button.click());
       expect(clicks).toBe(1);
@@ -359,11 +361,11 @@ describe("Button hover intent", () => {
   };
 
   it.each([
-    ["tertiary", undefined, "enabled:hover:bg-surface-hover"],
-    ["tertiary", "soft", "enabled:hover:bg-button-hover"],
-    ["tertiary", "soft-no-drop", "enabled:hover:bg-button-hover-no-drop"],
+    ["tertiary", undefined, "btn-hover:bg-surface-hover"],
+    ["tertiary", "soft", "btn-hover:bg-button-hover"],
+    ["tertiary", "soft-no-drop", "btn-hover:bg-button-hover-no-drop"],
     ["tertiary", "ghost", null],
-    ["secondary", "solid", "enabled:hover:bg-fill-3"],
+    ["secondary", "solid", "btn-hover:bg-fill-3"],
   ])(
     "swaps the neutral hover text for the intent on %s/%s",
     (variant, appearance, hoverSurface) => {
@@ -376,11 +378,11 @@ describe("Button hover intent", () => {
       });
 
       for (const intent of [danger, primary]) {
-        expect(intent.has("enabled:hover:text-text-1")).toBe(false);
-        expect(intent.has("focus-visible:text-text-1")).toBe(false);
+        expect(intent.has("btn-hover:text-text-1")).toBe(false);
+        expect(intent.has("btn-focus:text-text-1")).toBe(false);
         if (hoverSurface) expect(intent.has(hoverSurface)).toBe(true);
         // Resting color is untouched.
-        for (const restClass of ["text-text-1", "text-text-2"]) {
+        for (const restClass of ["btn:text-text-1", "btn:text-text-2"]) {
           expect(intent.has(restClass)).toBe(neutral.has(restClass));
         }
       }
@@ -388,9 +390,9 @@ describe("Button hover intent", () => {
         [danger, "danger-6"],
         [primary, "primary-6"],
       ] as const) {
-        expect(classes.has(`enabled:hover:text-${color}`)).toBe(true);
-        expect(classes.has(`enabled:active:text-${color}`)).toBe(true);
-        expect(classes.has(`focus-visible:text-${color}`)).toBe(true);
+        expect(classes.has(`btn-hover:text-${color}`)).toBe(true);
+        expect(classes.has(`btn-active:text-${color}`)).toBe(true);
+        expect(classes.has(`btn-focus:text-${color}`)).toBe(true);
       }
     }
   );
@@ -399,7 +401,7 @@ describe("Button hover intent", () => {
     for (const appearance of [undefined, "soft", "soft-no-drop", "ghost"]) {
       expect(
         classesOf({ variant: "tertiary", appearance }).has(
-          "enabled:hover:text-text-1"
+          "btn-hover:text-text-1"
         )
       ).toBe(true);
     }
@@ -413,5 +415,124 @@ describe("Button hover intent", () => {
         ).toEqual(classesOf({ variant, appearance }));
       }
     }
+  });
+});
+
+describe("Button default utilities sit below caller classes", () => {
+  const VARIANTS = [
+    "primary",
+    "secondary",
+    "tertiary",
+    "danger",
+    "warning",
+    "success",
+    "merged",
+  ] as const;
+  const APPEARANCES = [
+    undefined,
+    "solid",
+    "outline",
+    "dashed",
+    "ghost",
+    "soft",
+    "soft-no-drop",
+  ] as const;
+  const classesOf = (props: Record<string, unknown>) => {
+    const markup = renderToStaticMarkup(
+      React.createElement(Button, props, "Label")
+    );
+    return (markup.match(/class="([^"]*)"/)?.[1] ?? "").split(/\s+/);
+  };
+
+  it("emits every own utility through a component-default variant", () => {
+    for (const variant of VARIANTS) {
+      for (const appearance of APPEARANCES) {
+        for (const extra of [
+          {},
+          { disabled: true },
+          { hoverIntent: "danger" },
+        ]) {
+          const unlayered = classesOf({ variant, appearance, ...extra }).filter(
+            (name) =>
+              name !== "button" &&
+              !/^btn(-hover|-active|-focus|-pressed)?:/.test(name)
+          );
+          expect(unlayered, `${variant}/${appearance}`).toEqual([]);
+        }
+      }
+    }
+  });
+
+  it("passes caller classes through unprefixed so they outrank the defaults", () => {
+    const classes = classesOf({
+      variant: "tertiary",
+      className: "hidden bg-fill-2 hover:text-text-2",
+    });
+    expect(classes).toEqual(
+      expect.arrayContaining(["hidden", "bg-fill-2", "hover:text-text-2"])
+    );
+    expect(classes).toEqual(
+      expect.arrayContaining([
+        "btn:inline-flex",
+        "btn:bg-transparent",
+        "btn-hover:text-text-1",
+      ])
+    );
+  });
+
+  it.each([
+    ["tertiary", "soft", "default"],
+    ["tertiary", "soft-no-drop", "noDrop"],
+    ["primary", "soft", "primary"],
+    ["danger", "soft", "danger"],
+    ["danger", "soft-no-drop", "dangerNoDrop"],
+    ["success", "soft", "success"],
+  ] as const)(
+    "keeps the %s/%s palette in sync with BUTTON_VARIANT.%s",
+    (variant, appearance, token) => {
+      const TO_TAILWIND: Record<string, string> = {
+        "btn:": "",
+        "btn-hover:": "enabled:hover:",
+        "btn-active:": "enabled:active:",
+        "btn-focus:": "focus-visible:",
+        "btn-pressed:": "aria-pressed:",
+      };
+      const unprefixed = new Set(
+        classesOf({ variant, appearance }).map((name) =>
+          name.replace(
+            /^btn(-hover|-active|-focus|-pressed)?:/,
+            (prefix) => TO_TAILWIND[prefix] ?? prefix
+          )
+        )
+      );
+      for (const name of BUTTON_VARIANT[token].split(" ")) {
+        expect(unprefixed.has(name), name).toBe(true);
+      }
+    }
+  );
+
+  it("declares the component-default variants", () => {
+    const theme = readFileSync(resolve("src/tailwind.css"), "utf8");
+    expect(theme).toMatch(
+      /@custom-variant btn\s*{\s*@layer button\s*{\s*@slot;\s*}\s*}/
+    );
+    expect(theme).toMatch(
+      /@custom-variant btn-hover\s*{\s*@media \(hover: hover\)\s*{\s*&:where\(:enabled:hover\)\s*{\s*@slot;/
+    );
+    expect(theme).toContain(
+      "@custom-variant btn-active (&:where(:enabled:active));"
+    );
+    expect(theme).toContain(
+      "@custom-variant btn-focus (&:where(:focus-visible));"
+    );
+    expect(theme).toContain(
+      '@custom-variant btn-pressed (&:where([aria-pressed="true"]));'
+    );
+  });
+
+  it("follows the pointer-cursor preference instead of a fixed pointer", () => {
+    const classes = classesOf({ variant: "tertiary" });
+    expect(classes).toContain("btn:cursor-[var(--interactive-cursor,default)]");
+    expect(classes).not.toContain("btn:cursor-pointer");
   });
 });

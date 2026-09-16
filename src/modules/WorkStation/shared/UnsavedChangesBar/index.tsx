@@ -85,13 +85,12 @@ const FloatingBarUnsaved: React.FC<UnsavedChangesBarProps> = memo(
         <Button
           size="mini"
           htmlType="button"
-          variant="tertiary"
+          variant="primary"
           onClick={onSave}
           disabled={saving}
-          className="shrink-0 bg-primary-6 text-white hover:bg-primary-7!"
+          className="shrink-0"
           title={saving ? t("status.saving") : t("actions.save")}
           aria-label={saving ? t("status.saving") : t("actions.save")}
-          appearance="soft"
           iconOnly
           icon={
             saving ? (
