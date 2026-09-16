@@ -413,7 +413,7 @@ export default function AppConnectionPage({
               <div className="flex flex-wrap items-center gap-3">
                 <Select
                   value={choosingModel}
-                  onChange={setChoosingModel}
+                  onChange={(value) => setChoosingModel(String(value))}
                   options={choosingProfile.modelsByAgent[agent].map(
                     (value) => ({ value, label: value }),
                   )}

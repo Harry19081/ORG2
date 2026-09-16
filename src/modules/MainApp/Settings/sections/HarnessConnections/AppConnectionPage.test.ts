@@ -43,7 +43,8 @@ vi.mock("react-i18next", () => ({
       values ? `${key}:${values.index}:${values.count}` : key,
   }),
 }));
-vi.mock("jotai", () => ({
+vi.mock("jotai", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("jotai")>()),
   useAtomValue: () => [
     {
       marketProfileId: "market:user:second",
@@ -195,11 +196,18 @@ it("selects provider first and keeps duplicate purchases as separate private con
   expect(container.textContent).not.toMatch(/seller|email/i);
 
   await act(async () => first.click());
+  // Choosing a connection only stages it: the App connection is configured for
+  // one explicitly chosen model, so Connect is a second, deliberate action.
+  expect(configure).not.toHaveBeenCalled();
+  const connect = [...container.querySelectorAll("button")].find((item) =>
+    item.textContent?.startsWith("harnessConnections.connect")
+  ) as HTMLButtonElement;
+  await act(async () => connect.click());
   expect(configure).toHaveBeenCalledWith(
     profiles[0],
     "claude_code",
-    undefined,
-    undefined
+    "claude_code",
+    "claude-a"
   );
   expect(refresh.mock.invocationCallOrder[0]).toBeLessThan(
     reload.mock.invocationCallOrder[0]

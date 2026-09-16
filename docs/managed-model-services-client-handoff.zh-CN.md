@@ -67,7 +67,7 @@
 
 确认窗口展示所有包内模型并确认直接使用钱包，不能勾选模型子集。服务端要求重新确认时仍为整包操作。新的托管目录必须提供服务级字段；缺失时拒绝解析，不猜测授权状态，发布需与公开服务合同协调。旧非托管来源解析不变。
 
-新增 `src/features/MarketConnect/usageAuthorization.test.ts` 覆盖一次确认后切模型、取消整包确认、单个模型暂时不可用。后续运行 `pnpm test -- src/features/MarketConnect/usageAuthorization.test.ts` 并做真实 UI/原生回归；本次未运行测试、类型检查、构建或 Computer Use，先前验收不能替代这次验证。另一轮 App connections 的未提交修复保持原样。
+新增 `src/features/MarketConnect/usageAuthorization.test.ts` 覆盖一次确认后切模型、取消整包确认、单个模型暂时不可用。后续运行 `pnpm test -- src/features/MarketConnect/usageAuthorization.test.ts` 并做真实 UI/原生回归；本次未运行测试、类型检查、构建或 Computer Use，先前验收不能替代这次验证。App connections 的 review 修复已纳入后续提交：模型 Select 按共享回调类型转换为字符串；测试保留 Jotai 原始导出，并明确检查选择服务后尚未配置、点击连接后传入所选模型。套餐授权仍涵盖全部模型；这里的模型只用于目标 App 调用。本次只做源码审查和 diff 检查，未运行该测试或构建。
 
 ## 公开价格区间展示
 
