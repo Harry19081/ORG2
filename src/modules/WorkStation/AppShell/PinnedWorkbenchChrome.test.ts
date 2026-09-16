@@ -14,12 +14,6 @@ import {
   vi,
 } from "vitest";
 
-import {
-  type FindTarget,
-  adoptFindTarget,
-  closeFindTarget,
-  registerFindTarget,
-} from "@src/components/FindCard/findCoordinator";
 import { ROUTES } from "@src/config/routes";
 import {
   getPinnedWorkbenchChromeReservedRight,
@@ -28,6 +22,12 @@ import {
   shouldShowPinnedWorkbenchChrome,
   useWorkbenchRightEdgeReservation,
 } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
+import {
+  type FindTarget,
+  adoptFindTarget,
+  closeFindTarget,
+  registerFindTarget,
+} from "@src/scaffold/GlobalSpotlight/FindCard/findCoordinator";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import { settingsAtom } from "@src/store/settings";

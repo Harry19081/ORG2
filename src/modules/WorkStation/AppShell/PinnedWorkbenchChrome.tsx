@@ -11,15 +11,15 @@ import { useAtomValue } from "jotai";
 import React, { memo, useSyncExternalStore } from "react";
 
 import {
-  getFindOpen,
-  subscribeFind,
-} from "@src/components/FindCard/findCoordinator";
-import {
   PINNED_WORKBENCH_CHROME_CENTER_TOP,
   PINNED_WORKBENCH_CHROME_RIGHT_INSET,
   useCurrentStationChatVisible,
   usePinnedWorkbenchChromeVisible,
 } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
+import {
+  getFindOpen,
+  subscribeFind,
+} from "@src/scaffold/GlobalSpotlight/FindCard/findCoordinator";
 import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 

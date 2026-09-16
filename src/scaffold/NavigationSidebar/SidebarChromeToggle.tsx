@@ -15,7 +15,6 @@ import React, { memo, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { SessionHistoryNavVariant } from "@src/components/SessionHistoryNav";
-import SidebarChromeIconButton from "@src/components/SidebarChromeIconButton";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import {
   HugeiconsIcon,
@@ -23,6 +22,7 @@ import {
   LayoutAlignLeftIcon,
   PanelLeftIcon,
 } from "@src/icons";
+import SidebarChromeIconButton from "@src/scaffold/NavigationSidebar/components/SidebarChromeIconButton";
 import {
   SIDEBAR_HOVER_PREVIEW_DELAY,
   SIDEBAR_TOOLTIP_HOVER_DELAY,

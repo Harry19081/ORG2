@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   saveCached: vi.fn(),
   saveDiff: vi.fn(),
 }));
-vi.mock("@src/components/GitDialogs/BranchSwitchQuestion", () => ({
+vi.mock("@src/features/GitDialogs/BranchSwitchQuestion", () => ({
   branchSwitchQuestion: mocks.question,
 }));
 vi.mock("@src/i18n", () => ({

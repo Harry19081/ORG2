@@ -16,7 +16,7 @@ import {
   LargePushConfirmDialog,
   ProtectedBranchDialog,
   PushRejectedDialog,
-} from "@src/components/GitDialogs";
+} from "@src/features/GitDialogs";
 import {
   type GitOperationResult,
   useGitOperations,

@@ -2,9 +2,9 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import ComposerSurface from "@src/components/ComposerSurface";
 import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import ComposerSurface from "@src/engines/ChatPanel/ComposerSurface";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
   type MarkdownTextareaEditorRef,

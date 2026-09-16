@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import ComposerShell from "@src/components/ComposerShell";
-import ComposerSurface from "@src/components/ComposerSurface";
 import PersonAvatar from "@src/components/PersonAvatar";
+import ComposerSurface from "@src/engines/ChatPanel/ComposerSurface";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
 } from "@src/modules/shared/components/MarkdownTextareaEditor";

@@ -4,8 +4,8 @@
 import React, { memo, useCallback, useState } from "react";
 
 import Button from "@src/components/Button";
-import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import ImagePreviewOverlay from "@src/scaffold/ImagePreviewOverlay";
 
 const EditModeImageThumbnail: React.FC<{
   dataUrl: string;

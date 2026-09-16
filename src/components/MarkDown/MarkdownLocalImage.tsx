@@ -15,11 +15,6 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
-import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
-import {
-  useIsSessionFileShared,
-  useOpenSessionSharedFile,
-} from "@src/features/Org2Cloud/SharedSessionFilesContext";
 import { HugeiconsIcon, Image01Icon, ImageNotFound01Icon } from "@src/icons";
 import {
   releaseImageUrl,
@@ -29,6 +24,11 @@ import { getImageMimeType } from "@src/util/file/previewTypes";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
 import { openFileInWorkStation } from "@src/util/ui/openFileInWorkStation";
 
+import {
+  markdownExtensions,
+  useMarkdownLocalFileIntercepted,
+  useMarkdownLocalFileInterceptor,
+} from "./extensions";
 import { parseMarkdownFileRef } from "./markdownFileRef";
 import { classifyMarkdownImageSrc } from "./markdownImageSrc";
 
@@ -108,8 +108,8 @@ function createLocalImageState(sourceKey: string | null): LocalImageState {
 
 const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
   ({ src, alt, workspaceRootPath }) => {
-    const openSharedFile = useOpenSessionSharedFile();
-    const shared = useIsSessionFileShared();
+    const openSharedFile = useMarkdownLocalFileInterceptor();
+    const shared = useMarkdownLocalFileIntercepted();
     const source = useMemo(
       () => classifyMarkdownImageSrc(src, workspaceRootPath),
       [src, workspaceRootPath]
@@ -166,10 +166,17 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
       };
     }, [localIsImage, source, sourceKey, shared]);
 
-    const handleImageClick = useCallback((event: React.MouseEvent) => {
-      containClick(event);
-      setImageState((current) => ({ ...current, showOverlay: true }));
-    }, []);
+    const ImageOverlay = markdownExtensions().ImageOverlay;
+    const handleImageClick = useCallback(
+      (event: React.MouseEvent) => {
+        containClick(event);
+        // With no overlay registered the click is still swallowed, so a
+        // wrapping markdown link cannot navigate the webview.
+        if (!ImageOverlay) return;
+        setImageState((current) => ({ ...current, showOverlay: true }));
+      },
+      [ImageOverlay]
+    );
 
     const handleFileChipClick = useCallback(
       (event: React.MouseEvent) => {
@@ -262,8 +269,8 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
           onClick={handleImageClick}
           draggable={false}
         />
-        {showOverlay && (
-          <ImagePreviewOverlay
+        {showOverlay && ImageOverlay && (
+          <ImageOverlay
             dataUrl={asyncSrc}
             fileName={imageLabel(alt, source.path)}
             onClose={handleClose}

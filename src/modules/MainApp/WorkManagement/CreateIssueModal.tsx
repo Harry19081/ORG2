@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import ComposerSurface from "@src/components/ComposerSurface";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
+import ComposerSurface from "@src/engines/ChatPanel/ComposerSurface";
 import { useSessionReferenceDropTarget } from "@src/features/Org2Cloud/useSessionReferenceDropTarget";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,

@@ -14,12 +14,6 @@ import { createPortal } from "react-dom";
 
 import Button from "@src/components/Button";
 import {
-  EventBlockHeader,
-  EventBlockHeaderIcon,
-  EventBlockHeaderTitle,
-  getEventBlockContainerClasses,
-} from "@src/engines/ChatPanel/blocks/primitives";
-import {
   Add01Icon,
   ArrowExpand01Icon,
   Cancel01Icon,
@@ -29,6 +23,9 @@ import {
   WorkflowCircle01Icon,
 } from "@src/icons";
 import { registerCache } from "@src/util/memory/cacheRegistry";
+
+import { markdownExtensions } from "./extensions";
+import type { MarkdownBlockHeaderProps } from "./extensions";
 
 // ============================================
 // Module-level SVG cache (FIFO, max 50)
@@ -240,6 +237,51 @@ interface MermaidBlockHeaderProps {
   rightContent?: React.ReactNode;
 }
 
+const MERMAID_ICON = (
+  <HugeiconsIcon icon={WorkflowCircle01Icon} data-icon="workflow" size={14} />
+);
+
+/**
+ * Header used when no host surface registered its own block chrome: the same
+ * title, icon, right slot and toggle target, without the host's hover
+ * treatment. A diagram is never headerless.
+ */
+const PlainBlockHeader: React.FC<MarkdownBlockHeaderProps> = ({
+  title,
+  icon,
+  isCollapsed,
+  onToggle,
+  onMouseEnter,
+  onMouseLeave,
+  rightContent,
+}) => (
+  <div
+    className="flex h-8 w-full items-center gap-1.5 px-2 text-text-2"
+    role="button"
+    tabIndex={0}
+    aria-expanded={!isCollapsed}
+    onClick={onToggle}
+    onKeyDown={(event) => {
+      if (event.target !== event.currentTarget) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onToggle();
+      }
+    }}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
+    {icon}
+    <span className="min-w-0 flex-1 truncate text-left">{title}</span>
+    {rightContent}
+  </div>
+);
+
+/** Block container classes, falling back to the renderer's own frame. */
+const blockContainerClasses = (): string =>
+  markdownExtensions().blockChrome?.containerClassName() ??
+  "overflow-hidden rounded-lg border border-border-2";
+
 const MermaidBlockHeader: React.FC<MermaidBlockHeaderProps> = ({
   isCollapsed,
   isHeaderHovered,
@@ -247,30 +289,21 @@ const MermaidBlockHeader: React.FC<MermaidBlockHeaderProps> = ({
   onMouseEnter,
   onMouseLeave,
   rightContent,
-}) => (
-  <EventBlockHeader
-    isCollapsed={isCollapsed}
-    withHover={false}
-    onToggleCollapse={onToggle}
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-    rightContent={rightContent}
-  >
-    <EventBlockHeaderIcon
-      icon={
-        <HugeiconsIcon
-          icon={WorkflowCircle01Icon}
-          data-icon="workflow"
-          size={14}
-        />
-      }
+}) => {
+  const Header = markdownExtensions().blockChrome?.Header ?? PlainBlockHeader;
+  return (
+    <Header
+      title="Mermaid"
+      icon={MERMAID_ICON}
       isCollapsed={isCollapsed}
       isHeaderHovered={isHeaderHovered}
-      hasContent
+      onToggle={onToggle}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      rightContent={rightContent}
     />
-    <EventBlockHeaderTitle>Mermaid</EventBlockHeaderTitle>
-  </EventBlockHeader>
-);
+  );
+};
 
 const MermaidBlock: React.FC<MermaidBlockProps> = memo(
   ({ code, isDarkMode = false }) => {
@@ -469,7 +502,7 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
     if (error) {
       return (
         <div
-          className={`${getEventBlockContainerClasses()} mermaid-block mermaid-block--error`}
+          className={`${blockContainerClasses()} mermaid-block mermaid-block--error`}
         >
           <MermaidBlockHeader
             isCollapsed={isCollapsed}
@@ -494,7 +527,7 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
     if (loading) {
       return (
         <div
-          className={`${getEventBlockContainerClasses()} mermaid-block mermaid-block--loading`}
+          className={`${blockContainerClasses()} mermaid-block mermaid-block--loading`}
         >
           <MermaidBlockHeader
             isCollapsed={isCollapsed}
@@ -512,7 +545,7 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
       <>
         <div
           ref={containerRef}
-          className={`${getEventBlockContainerClasses()} mermaid-block ${isDarkMode ? "mermaid-block--dark" : ""}`}
+          className={`${blockContainerClasses()} mermaid-block ${isDarkMode ? "mermaid-block--dark" : ""}`}
         >
           <MermaidBlockHeader
             isCollapsed={isCollapsed}

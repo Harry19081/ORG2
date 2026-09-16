@@ -1,5 +1,5 @@
 import type { SwitchScope } from "@src/api/http/git/branchSwitch";
-import { branchSwitchQuestion } from "@src/components/GitDialogs/BranchSwitchQuestion";
+import { branchSwitchQuestion } from "@src/features/GitDialogs/BranchSwitchQuestion";
 import i18n from "@src/i18n";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";

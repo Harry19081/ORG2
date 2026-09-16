@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { CloudSessionHoverCardContent } from "@src/components/SessionHoverCard/CloudSessionHoverCard";
+import { CloudSessionHoverCardContent } from "@src/features/SessionHoverCard/CloudSessionHoverCard";
 import { GitForkIcon, MoreHorizontalIcon } from "@src/icons";
 import { NavigationMenuParentRow } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/NavigationMenu/NavigationMenuRow";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";

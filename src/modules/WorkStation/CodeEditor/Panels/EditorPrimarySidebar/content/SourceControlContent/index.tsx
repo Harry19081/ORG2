@@ -18,7 +18,6 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import { SavedChangesBanner } from "@src/components/GitDialogs/SavedChangesDialog/SavedChangesBanner";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
 import { TREE_ROW_HEIGHT } from "@src/components/TreeRow";
@@ -27,6 +26,7 @@ import type {
   StickyScrollNode,
 } from "@src/components/VirtualizedStickyTree";
 import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
+import { SavedChangesBanner } from "@src/features/GitDialogs/SavedChangesDialog/SavedChangesBanner";
 import { HugeiconsIcon, Search01Icon } from "@src/icons";
 import { usePrimarySidebarSurface } from "@src/modules/WorkStation/shared/hooks/usePrimarySidebarSurface";
 
