@@ -320,6 +320,7 @@ const SkillEditorPanel: React.FC<SkillEditorPanelProps> = ({
                       enableDirtyDiff={false}
                       enableFindReplace={false}
                       enableGoToLine={false}
+                      enableCodeNavigation={false}
                       registerWithService={false}
                     />
                   </div>

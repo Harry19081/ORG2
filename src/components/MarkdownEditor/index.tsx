@@ -250,6 +250,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
                   enableDirtyDiff={false}
                   enableFindReplace={false}
                   enableGoToLine={false}
+                  enableCodeNavigation={false}
                   registerWithService={false}
                 />
               </Suspense>
