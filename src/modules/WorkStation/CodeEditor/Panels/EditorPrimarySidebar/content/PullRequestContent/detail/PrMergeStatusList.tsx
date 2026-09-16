@@ -37,13 +37,13 @@ import {
   Loading03Icon,
 } from "@src/icons";
 import CiCheckStateIcon from "@src/modules/shared/components/CiCheckStateIcon";
+import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import {
   type PrMergeHeadlineKind,
   type PrMergeStatusRow,
   type PrMergeStatusTone,
   summarizePullRequestMergeStatus,
-} from "@src/shared/pr/prMergeStatus";
-import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
+} from "@src/util/git/pr/prMergeStatus";
 import { openLink } from "@src/util/ui/openLink";
 
 import { PrChecksPanel } from "./PrChecksPanel";

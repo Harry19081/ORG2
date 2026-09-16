@@ -24,11 +24,11 @@ import { useWorkingTreeDiffTotals } from "@src/hooks/git/useWorkingTreeDiffTotal
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import { WorkstationTabIcon } from "@src/modules/WorkStation/shared/TabBar/components/WorkstationTabIcon";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
-import { shouldShowInRecentTabsMenu } from "@src/shared/tabs/recentTabsMenu";
 import {
   openRecentWorkstationTabAtom,
   recentWorkstationTabsAtom,
 } from "@src/store/workstation";
+import { shouldShowInRecentTabsMenu } from "@src/util/tabs/recentTabsMenu";
 
 import {
   LAUNCHPAD_ACTION_IDS,

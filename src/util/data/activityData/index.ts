@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { normalizeActivity, normalizeFunctionName } from "@src/lib/activityData";
+ * import { normalizeActivity, normalizeFunctionName } from "@src/util/data/activityData";
  *
  * const normalized = normalizeActivity(rawEvent);
  * const uiCanonical = normalizeFunctionName("Read"); // → "read_file"

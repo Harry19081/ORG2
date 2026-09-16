@@ -20,7 +20,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { TabDragEventDetail } from "@src/modules/WorkStation/shared/TabBar/tabDragTypes";
-
 import {
   SESSION_TAB_DRAG_CANCEL_EVENT,
   SESSION_TAB_DRAG_END_EVENT,
@@ -30,7 +29,7 @@ import {
   type SessionTabDragStartDetail,
   getSessionReferenceFromDragDetail,
   isPointInsideElement,
-} from "./sessionTabDrag";
+} from "@src/util/dnd/sessionTabDrag";
 
 /** Which protocol delivered the drop, and where the pointer was released. */
 export interface SessionDropContext {

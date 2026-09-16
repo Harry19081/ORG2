@@ -12,11 +12,10 @@ import type {
   TabDragEventDetail,
   TabDragPillPayload,
 } from "@src/modules/WorkStation/shared/TabBar/tabDragTypes";
-
 import {
   clearWorkstationTabDrag,
   setWorkstationTabDrag,
-} from "./dragSideChannel";
+} from "@src/util/dnd/dragSideChannel";
 
 const DRAG_THRESHOLD_PX = 6;
 

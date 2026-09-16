@@ -51,7 +51,7 @@ vi.mock("@dnd-kit/sortable", () => ({
   verticalListSortingStrategy: vi.fn(),
 }));
 
-vi.mock("@src/lib/dndKit", () => ({
+vi.mock("@src/components/dnd/useWebViewSensors", () => ({
   useWebViewSensors: () => [],
 }));
 

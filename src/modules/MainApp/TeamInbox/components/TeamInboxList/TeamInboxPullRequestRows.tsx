@@ -20,7 +20,7 @@ import {
   getPrStatusIconName,
   getPrStatusVariant,
   normalizePrStatus,
-} from "@src/shared/pr/prStatus";
+} from "@src/util/git/pr/prStatus";
 
 const PULL_REQUEST_ICONS: Record<PrStatusIconName, IconSvgElement> = {
   "pull-request": GitPullRequestIcon,

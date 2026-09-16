@@ -27,7 +27,7 @@ import {
   SectionContainer,
   SectionRow,
 } from "@src/modules/shared/layouts/SectionLayout";
-import { startVisibilityAwarePoller } from "@src/shared/scheduling/visibilityAwarePoller";
+import { startVisibilityAwarePoller } from "@src/util/time/scheduling/visibilityAwarePoller";
 
 import type { AvailableCliAgent } from "../types";
 import {

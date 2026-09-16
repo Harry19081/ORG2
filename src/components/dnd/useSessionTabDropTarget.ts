@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { TabDragEventDetail } from "@src/modules/WorkStation/shared/TabBar/tabDragTypes";
-
 import {
   SESSION_TAB_DRAG_CANCEL_EVENT,
   SESSION_TAB_DRAG_END_EVENT,
@@ -13,7 +12,7 @@ import {
   type SessionTabTransfer,
   getSessionReferenceFromDragDetail,
   isPointInsideElement,
-} from "./sessionTabDrag";
+} from "@src/util/dnd/sessionTabDrag";
 
 interface UseSessionTabDropTargetOptions {
   target: SessionTabPlacement;

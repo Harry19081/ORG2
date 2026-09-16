@@ -13,9 +13,9 @@ import {
 import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
 import SplitListFullscreenButton from "@src/modules/shared/layouts/SplitListFullscreenButton";
 import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
-import { normalizePrStatus } from "@src/shared/pr/prStatus";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import type { WorkItem } from "@src/types/core/workItem";
+import { normalizePrStatus } from "@src/util/git/pr/prStatus";
 
 import { useWorkManagementSplitHeader } from "../WorkManagement/workManagementSplitHeaderContext";
 import { TeamInboxList } from "./components";

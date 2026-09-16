@@ -37,12 +37,12 @@ import {
   WorkstationTrailSection,
   WorkstationTrailSurface,
 } from "@src/modules/shared/layouts/blocks";
+import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import {
   presentPullRequestActions,
   readRequestedReviewers,
-} from "@src/shared/pr/prLevelActions";
-import { latestReviewVerdicts } from "@src/shared/pr/prReviewRollup";
-import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
+} from "@src/util/git/pr/prLevelActions";
+import { latestReviewVerdicts } from "@src/util/git/pr/prReviewRollup";
 
 import { PrLevelActions, reportPrAction } from "./PrLevelActions";
 import { PrMergeStatusList } from "./PrMergeStatusList";

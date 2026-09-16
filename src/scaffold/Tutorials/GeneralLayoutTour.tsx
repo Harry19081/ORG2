@@ -14,10 +14,7 @@ import {
   MonitorIcon,
   Tick01Icon,
 } from "@src/icons";
-import {
-  POPUP_ANIMATION,
-  getPopupSurfaceStyle,
-} from "@src/scaffold/shared/popupTokens";
+import { POPUP_ANIMATION, getPopupSurfaceStyle } from "@src/scaffold/tokens";
 import { type StationMode, stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 import { getViewportSize } from "@src/util/ui/window/viewport";

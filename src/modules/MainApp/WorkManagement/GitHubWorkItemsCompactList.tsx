@@ -23,7 +23,7 @@ import {
   getPrStatusIconName,
   getPrStatusVariant,
   normalizePrStatus,
-} from "@src/shared/pr/prStatus";
+} from "@src/util/git/pr/prStatus";
 
 import {
   GITHUB_ITEM_KIND,
