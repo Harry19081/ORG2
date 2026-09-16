@@ -219,7 +219,6 @@ export { default as FolderPenIcon } from "@hugeicons/core-free-icons/FolderPenIc
 export { default as FolderOutputIcon } from "@hugeicons/core-free-icons/FolderOutputIcon";
 export { default as FolderSearchIcon } from "@hugeicons/core-free-icons/FolderSearchIcon";
 export { default as FolderSymlinkIcon } from "@hugeicons/core-free-icons/FolderSymlinkIcon";
-export { default as FolderTreeIcon } from "@hugeicons/core-free-icons/FolderTreeIcon";
 export { default as Forward01Icon } from "@hugeicons/core-free-icons/Forward01Icon";
 export { default as FuelIcon } from "@hugeicons/core-free-icons/FuelIcon";
 export { default as FullScreenIcon } from "@hugeicons/core-free-icons/FullScreenIcon";
@@ -401,7 +400,6 @@ export { default as SquareTerminalIcon } from "@hugeicons/core-free-icons/Square
 export { default as SquareUnlock01Icon } from "@hugeicons/core-free-icons/SquareUnlock01Icon";
 export { default as StarIcon } from "@hugeicons/core-free-icons/StarIcon";
 export { default as StopCircleIcon } from "./assets/icons/StopCircleIcon";
-export { default as StopIcon } from "@hugeicons/core-free-icons/StopIcon";
 export { default as Store01Icon } from "@hugeicons/core-free-icons/Store01Icon";
 export { default as Sun01Icon } from "@hugeicons/core-free-icons/Sun01Icon";
 export { default as TablePropertiesIcon } from "@hugeicons/core-free-icons/TablePropertiesIcon";

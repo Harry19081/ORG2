@@ -142,19 +142,6 @@ export interface GitDiffTabData {
   origin?: "source-control" | "other";
 }
 
-export const gitDiffTabFactory = defineTabFactory<GitDiffTabData>({
-  tabType: "git-diff",
-  idStrategy: {
-    type: "keyed",
-    prefix: "git-diff",
-    getKey: (data) =>
-      data.isTimeline && data.commitSha
-        ? `${data.commitSha}:${data.filePath}`
-        : data.filePath,
-  },
-  getTitle: (data) => getFileName(data.filePath),
-});
-
 export function createTimelineDiffTab(
   filePath: string,
   commitSha: string,

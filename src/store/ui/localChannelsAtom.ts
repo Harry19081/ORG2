@@ -103,12 +103,6 @@ export function isLocalChannelRegistryHydrationDegraded(): boolean {
   return localChannelRegistryHydrationDegraded;
 }
 
-export const __LOCAL_CHANNELS_TEST_INTERNALS = {
-  setRegistryHydrationDegraded(value: boolean): void {
-    localChannelRegistryHydrationDegraded = value;
-  },
-};
-
 export const localChannelsAtom = atomWithStorage<LocalChannel[]>(
   LOCAL_CHANNELS_STORAGE_KEY,
   [],

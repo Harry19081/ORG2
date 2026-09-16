@@ -358,10 +358,7 @@
       "moreProperties": "Plus de propriétés"
     },
     "propertyFields": {
-      "assignee": "Assigné",
-      "project": "Project",
-      "milestone": "Jalon",
-      "dueDate": "Date d'échéance"
+      "project": "Project"
     },
     "addWorkItem": "Ajouter un élément de travail",
     "agentWorkflow": {

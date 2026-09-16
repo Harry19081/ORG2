@@ -187,5 +187,3 @@ export function supportsBothVariants(id: string | null | undefined): boolean {
   const skin = getSkin(id);
   return skin?.variants.light != null && skin?.variants.dark != null;
 }
-
-export const SKIN_IDS: readonly string[] = SKINS.map((skin) => skin.id);

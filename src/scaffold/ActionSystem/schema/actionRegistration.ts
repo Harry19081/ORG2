@@ -18,10 +18,6 @@ export interface WorkStationZodActionRegistration {
   ) => readonly ZodAction<ZodTypeAny>[];
 }
 
-export type ZodActionRegistration =
-  | AppZodActionRegistration
-  | WorkStationZodActionRegistration;
-
 export function defineAppActionRegistration(
   actions: readonly ZodAction<ZodTypeAny>[]
 ): AppZodActionRegistration {

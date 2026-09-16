@@ -358,10 +358,7 @@
       "moreProperties": "Больше свойств"
     },
     "propertyFields": {
-      "assignee": "Исполнитель",
-      "project": "Project",
-      "milestone": "Этап",
-      "dueDate": "Срок"
+      "project": "Project"
     },
     "addWorkItem": "Добавить рабочий элемент",
     "agentWorkflow": {

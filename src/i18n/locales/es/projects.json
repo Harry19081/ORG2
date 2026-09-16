@@ -358,10 +358,7 @@
       "moreProperties": "Más propiedades"
     },
     "propertyFields": {
-      "assignee": "Asignado",
-      "project": "Project",
-      "milestone": "Hito",
-      "dueDate": "Fecha límite"
+      "project": "Project"
     },
     "addWorkItem": "Agregar elemento de trabajo",
     "agentWorkflow": {

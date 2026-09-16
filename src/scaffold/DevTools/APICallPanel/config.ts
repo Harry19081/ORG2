@@ -8,7 +8,6 @@ import {
   Delete02Icon,
   FlashIcon,
   KeyboardIcon,
-  Search01Icon,
   Target01Icon,
   ViewIcon,
 } from "@src/icons";
@@ -27,12 +26,4 @@ export const ICON_CONFIG = {
   triggerKeyboard: KeyboardIcon,
   triggerFocus: Target01Icon,
   triggerAuto: FlashIcon,
-} as const;
-
-// ============================================
-// Empty State Icon
-// ============================================
-
-export const EMPTY_STATE_ICONS = {
-  all: Search01Icon,
 } as const;

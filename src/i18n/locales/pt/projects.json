@@ -358,10 +358,7 @@
       "moreProperties": "Mais propriedades"
     },
     "propertyFields": {
-      "assignee": "Responsável",
-      "project": "História",
-      "milestone": "Marco",
-      "dueDate": "Prazo"
+      "project": "História"
     },
     "addWorkItem": "Adicionar Item de Trabalho",
     "agentWorkflow": {
