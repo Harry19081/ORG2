@@ -33,7 +33,7 @@ export function createUnifiedSessionApi(
   return sessionApi;
 }
 
-export const unifiedSessionApi = {
+const unifiedSessionApi = {
   createUnifiedSessionApi,
   isHostedFromUrl,
   isHostedFromSearchParams,

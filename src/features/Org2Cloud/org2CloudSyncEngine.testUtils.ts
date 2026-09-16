@@ -25,7 +25,6 @@ import {
   peekShareableScopeKeys,
   primeShareableScopeKey,
   resolveMatchingOrgRepoScope,
-  subscribeShareableScopeKeys,
 } from "../TeamCollaboration/repoScopeResolver";
 import {
   PERSONAL_EXCLUDED_TOKEN,
@@ -181,7 +180,6 @@ export const peekMock = vi.mocked(peekShareableScopeKeys);
 export const primeMock = vi.mocked(primeShareableScopeKey);
 export const peekMatchingScopeMock = vi.mocked(peekMatchingOrgRepoScope);
 export const resolveMatchingScopeMock = vi.mocked(resolveMatchingOrgRepoScope);
-export const subscribeScopeKeysMock = vi.mocked(subscribeShareableScopeKeys);
 export const messageMock = vi.mocked(Message);
 
 export function notifyScopeKeysResolved(): void {

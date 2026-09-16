@@ -384,18 +384,3 @@ export function renderA2UIElement(
     }
   }
 }
-
-/**
- * Parse a JSONL string into A2UIElement[]. Lines that fail to parse are
- * surfaced as `{ type: "text", content: line }` so partial streams render
- * gracefully.
- */
-export function parseA2UILines(lines: string[]): A2UIElement[] {
-  return lines.map((line) => {
-    try {
-      return JSON.parse(line) as A2UIElement;
-    } catch {
-      return { type: "text", content: line } as A2UIElement;
-    }
-  });
-}

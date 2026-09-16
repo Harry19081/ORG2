@@ -10,6 +10,3 @@ export const SUBPAGE_CONTENT_WRAPPER_CLASSES = `${DETAIL_PANEL_TOKENS.contentWid
 
 /** Main App Settings scroll content: no top padding under the panel header; keeps bottom padding + scroll affordance. */
 export const SETTINGS_MAIN_CONTENT_WRAPPER_CLASSES = `${DETAIL_PANEL_TOKENS.contentWidth} flex flex-col gap-10 ${DETAIL_PANEL_TOKENS.contentScrollBottom}`;
-
-/** Main settings / panel content when a frosted PanelHeader overlays the top (scroll runs beneath the header). */
-export const SUBPAGE_CONTENT_WRAPPER_UNDER_PANEL_HEADER_CLASSES = `${DETAIL_PANEL_TOKENS.contentWidth} flex flex-col gap-10 pt-10 pb-[50vh]`;

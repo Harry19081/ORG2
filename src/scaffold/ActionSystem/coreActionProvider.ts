@@ -48,11 +48,6 @@ export function registerCoreActionProvider(
   };
 }
 
-/** Installed providers, in installation order. */
-export function getCoreActionProviders(): readonly CoreActionProvider[] {
-  return providers;
-}
-
 /** Initialize every installed surface's services for `repoPath`. */
 export async function initializeServices(
   repoPath: string,
