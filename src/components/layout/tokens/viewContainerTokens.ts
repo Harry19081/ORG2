@@ -32,9 +32,11 @@ export const PANE_WIDTH_TRANSITION_CLASSES =
  * `PANE_WIDTH_TRANSITION_CLASSES` to move, so the inset must travel on the
  * same curve or the header's titles jump by the reservation and then glide.
  *
- * Station and chat headers apply it through `useStationToggleInsetTransition`,
- * which limits it to a station opening or closing; tab changes inside a
- * station must not animate the inset.
+ * Station and chat headers apply it through `usePaneLayoutInsetTransition`,
+ * which limits it to the toggles that actually move a pane — the sidebar,
+ * the chat pane, a station opening or closing. Reservation changes that move
+ * nothing (a tab opening, a tab or session switch) must not animate the
+ * inset, or header controls glide on every tab change.
  */
 export const CHROME_INSET_TRANSITION_CLASSES =
   "transition-[padding] duration-200 ease-out motion-reduce:transition-none";

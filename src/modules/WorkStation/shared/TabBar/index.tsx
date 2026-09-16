@@ -51,7 +51,7 @@ import {
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { requestTeamInboxSessionHandoffAtom } from "@src/modules/MainApp/TeamInbox/store";
 import { useActionSystemOptional } from "@src/scaffold/ActionSystem";
-import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
+import { usePaneLayoutInsetTransition } from "@src/scaffold/AppLayout/usePaneLayoutInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpen/integrations";
 import {
@@ -225,7 +225,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
     // macOS pins the right-edge collapse toggles in window space; make room
     // whenever the workstation is the pane touching that edge.
     const rightEdge = useWorkbenchRightEdgeReservation();
-    const insetTransitionClassName = useStationToggleInsetTransition();
+    const insetTransitionClassName = usePaneLayoutInsetTransition();
 
     const scrollReveal = useAtomValue(tabScrollRevealAtom);
     const gitStatusMap = useAtomValue(gitFileStatusMapAtom);
