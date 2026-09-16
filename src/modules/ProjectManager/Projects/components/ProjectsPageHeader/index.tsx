@@ -13,6 +13,7 @@ import {
   HEADER_CLASSES,
   HEADER_ICON_SIZE,
 } from "@src/config/workstation/tokens";
+import { WorkManagementRefreshButton } from "@src/features/GitHubWork/WorkManagementRefreshButton";
 import {
   type WorkstationTabHeaderHost,
   usePublishWorkstationTabHeader,
@@ -26,8 +27,7 @@ import {
 } from "@src/icons";
 import ProjectManagerBreadcrumb from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import { WorkManagementRefreshButton } from "@src/modules/shared/components/WorkManagementRefreshButton";
-import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
+import SplitListHeader from "@src/scaffold/layouts/SplitListHeader";
 
 // ============================================
 // Types

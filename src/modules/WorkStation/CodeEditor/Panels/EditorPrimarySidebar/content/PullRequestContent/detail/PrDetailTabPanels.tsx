@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PersistentDetailTabPanel } from "@src/modules/shared/layouts/blocks";
+import { PersistentDetailTabPanel } from "@src/components/layout/blocks";
 import type {
   PrDetailTab,
   PrIdentity,

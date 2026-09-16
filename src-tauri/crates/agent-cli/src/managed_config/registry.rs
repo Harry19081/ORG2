@@ -66,7 +66,10 @@ pub(super) const PI_SETTINGS_FILE_NAME: &str = "settings.json";
 pub(super) const PI_MODELS_FILE_ID: &str = "models";
 pub(super) const PI_MODELS_FILE_NAME: &str = "models.json";
 pub(super) const ORGII_PROVIDER_ID: &str = "orgii";
-pub(super) const ORGII_PROVIDER_NAME: &str = "ORGII";
+pub(super) const ORGII_PROVIDER_NAME: &str = "ORG2";
+/// Display name used before the ORG2 rename. Continue and Droid find ORG2's
+/// managed model entry by display name, and existing configs still carry it.
+pub(super) const LEGACY_ORGII_PROVIDER_NAME: &str = "ORGII";
 pub(super) const DEFAULT_ORGII_MODEL: &str = "orgii-current-model";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -23,6 +23,7 @@ import {
 } from "@src/icons";
 import { EditorTabService } from "@src/services/workStation/EditorTabService";
 import { getCanvasPreviewTabId } from "@src/store/workstation/tabs/factories/canvasPreview";
+import { openLink } from "@src/util/ui/openLink";
 
 import type { UnifiedTabContentProps } from "../types";
 
@@ -50,7 +51,7 @@ const CanvasPreviewTabRenderer: React.FC<UnifiedTabContentProps> = memo(
     const handleOpenExternal = useCallback(() => {
       if (!payload) return;
       if (payload.mode === "url" && payload.url) {
-        window.open(payload.url, "_blank", "noopener,noreferrer");
+        openLink(payload.url, { navigate: true });
         return;
       }
       const srcDoc = buildExternalSrcDoc(payload.mode, payload.content);

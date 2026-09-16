@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
-import type { ScopeQuotaView } from "@src/features/Org2Cloud/org2CloudScopeQuota";
-import RepoScopePicker from "@src/features/TeamCollaboration/components/RepoScopePicker";
 import {
   SECTION_DESCRIPTION_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import type { ScopeQuotaView } from "@src/features/Org2Cloud/org2CloudScopeQuota";
+import RepoScopePicker from "@src/features/TeamCollaboration/components/RepoScopePicker";
 
 interface CloudOrgRepoScopesSectionProps {
   t: TFunction<"navigation">;

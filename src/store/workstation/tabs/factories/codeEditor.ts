@@ -155,16 +155,6 @@ export const gitDiffTabFactory = defineTabFactory<GitDiffTabData>({
   getTitle: (data) => getFileName(data.filePath),
 });
 
-export function createGitDiffTab(
-  filePath: string,
-  gitStatusLetter: string,
-  origin: GitDiffTabData["origin"] = "other"
-): WorkStationTab {
-  const name = getFileName(filePath);
-  const extension = getFileExtension(name);
-  return gitDiffTabFactory({ filePath, extension, gitStatusLetter, origin });
-}
-
 export function createTimelineDiffTab(
   filePath: string,
   commitSha: string,

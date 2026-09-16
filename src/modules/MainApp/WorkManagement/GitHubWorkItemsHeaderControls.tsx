@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
-import { WorkManagementSearchInput } from "@src/modules/shared/components/WorkManagementSearchInput";
-import { compactRepositoryLabel } from "@src/modules/shared/githubRepositoryLabel";
+import { WorkManagementSearchInput } from "@src/features/GitHubWork/WorkManagementSearchInput";
+import { compactRepositoryLabel } from "@src/features/GitHubWork/githubRepositoryLabel";
 
 import { IssuePersonalFilterDropdown } from "./GitHubWorkItemControls";
 import {

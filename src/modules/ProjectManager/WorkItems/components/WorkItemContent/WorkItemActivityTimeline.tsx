@@ -4,8 +4,17 @@ import { useTranslation } from "react-i18next";
 
 import { WORK_ITEM_HISTORY_ACTION } from "@src/api/http/project/types";
 import { projectMarkdownSessionReferences } from "@src/components/MarkDown/sessionReferenceProjection";
+import { MarkdownContent } from "@src/components/MarkdownContent";
 import PersonAvatar from "@src/components/PersonAvatar";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import {
+  ActivityTimestamp,
+  ConnectedTimelineItem,
+  TimelineCard,
+  TimelineCardHeader,
+  TimelineEventCard,
+  TimelineStack,
+} from "@src/features/GitHubWork/ActivityTimeline";
 import {
   Add01Icon,
   ArrowLeftRightIcon,
@@ -17,15 +26,6 @@ import {
   Pen01Icon,
   RotateLeft01Icon,
 } from "@src/icons";
-import {
-  ActivityTimestamp,
-  ConnectedTimelineItem,
-  TimelineCard,
-  TimelineCardHeader,
-  TimelineEventCard,
-  TimelineStack,
-} from "@src/modules/shared/components/ActivityTimeline";
-import { MarkdownContent } from "@src/modules/shared/components/MarkdownContent";
 import type { Person } from "@src/types/core/shared";
 import {
   formatSmartDateTime,

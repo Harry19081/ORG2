@@ -37,6 +37,13 @@
   --scrollbar-edge-inset: 3px;
 }
 
+// Chat pane width while its divider is dragged (`useChatPanelResize`). Not
+// inherited, so each frame's write restyles only the element it is set on.
+@property --orgii-chat-live-width {
+  syntax: "*";
+  inherits: false;
+}
+
 body {
   --scrollbar-thumb-color: color-mix(
     in srgb,
@@ -211,7 +218,7 @@ html[data-window-focused="false"] *::after {
   }
 
   // Global text selection color. Text surfaces share one semantic, theme-aware
-  // blue highlight; code editors and terminals keep their dedicated tokens.
+  // highlight; code-editor and terminal tokens resolve to the same color.
   ::selection {
     background: var(--text-selection, var(--color-primary-2));
   }

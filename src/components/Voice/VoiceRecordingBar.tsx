@@ -15,6 +15,8 @@ import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import ComposerSendGroup from "@src/components/ComposerBar/ComposerSendGroup";
+import { PILL_CONTROL_HOVER_CLASS } from "@src/components/CompoundPill/config";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import { Add01Icon, Cancel01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 
@@ -73,7 +75,7 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
 
     return (
       <div
-        className="flex h-9 min-h-9 w-full items-center gap-1 px-1 text-text-2"
+        className="flex h-9 min-h-9 w-full items-center gap-1 pt-2 text-text-2"
         data-testid="composer-voice-recording-bar"
         role="region"
         aria-label={t("common:tooltips.startVoiceInput")}
@@ -117,41 +119,43 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
           {formatElapsed(elapsedSeconds)}
         </span>
 
-        <Button
-          layout="custom"
-          appearance="custom"
-          htmlType="button"
-          onClick={onCancel}
-          className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer leading-none`}
-          style={{ lineHeight: 0 }}
-          data-testid="composer-voice-cancel"
-          aria-label={t("common:tooltips.cancelRecording")}
-        >
-          <HugeiconsIcon
-            icon={Cancel01Icon}
-            data-icon="x"
-            size={INPUT_AREA_BUTTONS.iconSize}
-            strokeWidth={1.75}
-          />
-        </Button>
+        <ComposerSendGroup>
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
+            onClick={onCancel}
+            className={`${INPUT_AREA_BUTTONS.iconButtonBase} ${PILL_CONTROL_HOVER_CLASS} cursor-pointer leading-none`}
+            style={{ lineHeight: 0 }}
+            data-testid="composer-voice-cancel"
+            aria-label={t("common:tooltips.cancelRecording")}
+          >
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              data-icon="x"
+              size={INPUT_AREA_BUTTONS.iconSize}
+              strokeWidth={1.75}
+            />
+          </Button>
 
-        <Button
-          layout="custom"
-          appearance="custom"
-          htmlType="button"
-          onClick={onAccept}
-          className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer bg-fill-3 leading-none`}
-          style={{ lineHeight: 0 }}
-          data-testid="composer-voice-accept"
-          aria-label={t("common:tooltips.stopAndTranscribe")}
-        >
-          <HugeiconsIcon
-            icon={Tick01Icon}
-            data-icon="check"
-            size={INPUT_AREA_BUTTONS.iconSize}
-            strokeWidth={1.75}
-          />
-        </Button>
+          <Button
+            layout="custom"
+            appearance="custom"
+            htmlType="button"
+            onClick={onAccept}
+            className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer bg-fill-3 leading-none`}
+            style={{ lineHeight: 0 }}
+            data-testid="composer-voice-accept"
+            aria-label={t("common:tooltips.stopAndTranscribe")}
+          >
+            <HugeiconsIcon
+              icon={Tick01Icon}
+              data-icon="check"
+              size={INPUT_AREA_BUTTONS.iconSize}
+              strokeWidth={1.75}
+            />
+          </Button>
+        </ComposerSendGroup>
       </div>
     );
   }

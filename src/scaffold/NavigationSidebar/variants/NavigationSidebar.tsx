@@ -12,11 +12,9 @@ import React, {
   useState,
 } from "react";
 
-import {
-  ArrowDown01Icon,
-  ArrowRight01Icon,
-  type IconSvgElement,
-} from "@src/icons";
+import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
+import { type IconSvgElement } from "@src/icons";
 
 import SidebarBase from "../SidebarBase";
 import { SidebarList } from "../blocks";
@@ -333,16 +331,25 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                         <span
                           className={`${isSectionCollapsed ? "inline-flex" : "hidden"} -ml-1 shrink-0 items-center leading-none text-text-2 group-hover/section-title:inline-flex`}
                         >
-                          <NavigationMenuRowActionButton
-                            icon={
-                              isSectionCollapsed
-                                ? ArrowRight01Icon
-                                : ArrowDown01Icon
-                            }
-                            label={section.title}
-                            onClick={() => {
+                          <Button
+                            variant="tertiary"
+                            appearance="ghost"
+                            size="sidebar"
+                            iconOnly
+                            aria-label={section.title ?? section.id}
+                            title={section.title ?? section.id}
+                            onClick={(event) => {
+                              event.stopPropagation();
                               toggleSection(section.id);
                             }}
+                            icon={
+                              <DisclosureChevron
+                                expanded={!isSectionCollapsed}
+                                size={14}
+                                strokeWidth={2}
+                                className="text-text-2"
+                              />
+                            }
                           />
                         </span>
                       </div>
@@ -413,16 +420,25 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                         <span
                           className={`${isSectionCollapsed ? "inline-flex" : "hidden"} -ml-1 shrink-0 items-center leading-none text-text-2 group-hover/section-title:inline-flex`}
                         >
-                          <NavigationMenuRowActionButton
-                            icon={
-                              isSectionCollapsed
-                                ? ArrowRight01Icon
-                                : ArrowDown01Icon
-                            }
-                            label={section.title ?? section.id}
-                            onClick={() => {
+                          <Button
+                            variant="tertiary"
+                            appearance="ghost"
+                            size="sidebar"
+                            iconOnly
+                            aria-label={section.title ?? section.id}
+                            title={section.title ?? section.id}
+                            onClick={(event) => {
+                              event.stopPropagation();
                               toggleSection(section.id);
                             }}
+                            icon={
+                              <DisclosureChevron
+                                expanded={!isSectionCollapsed}
+                                size={14}
+                                strokeWidth={2}
+                                className="text-text-2"
+                              />
+                            }
                           />
                         </span>
                       </span>

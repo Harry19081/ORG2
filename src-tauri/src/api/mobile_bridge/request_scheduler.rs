@@ -38,8 +38,9 @@ fn lane(request: &Value) -> Lane {
             Lane::Search
         }
         Some(
-            "session/list" | "session/resolve" | "session/round" | "session/image"
-            | "session/config" | "models/list" | "session/read_state",
+            "session/list" | "session/resolve" | "session/round" | "session/changes"
+            | "session/image" | "session/config" | "models/list" | "session/read_state"
+            | "session/history",
         ) => Lane::Read,
         // Includes subscribe/unsubscribe, read-receipt writes, interactions,
         // and unknown methods: additions must explicitly opt in to concurrency.

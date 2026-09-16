@@ -3,8 +3,6 @@
     "customCommandUpdated": "Пользовательская команда обновлена",
     "shellSettingUpdated": "Настройка оболочки обновлена"
   },
-  "noSettingsFound": "Настройки для \"{{query}}\" не найдены",
-  "searchPlaceholder": "Поиск настроек...",
   "panel": {
     "maximizeSettings": "Развернуть настройки"
   },
@@ -18,7 +16,8 @@
     "storage": "Хранилище",
     "agentOrg": "Команда Agent",
     "harnessConnections": "Подключения приложений",
-    "mobileRemote": "Mobile Remote"
+    "mobileRemote": "Mobile Remote",
+    "development": "Режим разработчика"
   },
   "coreSidebar": {
     "groups": {
@@ -86,6 +85,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Общее состояние Workstation",
+    "myStationSharingDesc": "Использовать общие вкладки и состояние представлений Workstation для рабочего каталога или сохранять их отдельно для каждой вкладки чата",
+    "myStationSharingDirectory": "Рабочий каталог",
+    "myStationSharingTab": "Вкладка чата",
     "login": "Вход",
     "tabGeneral": "Общие",
     "tabSelfHosted": "Самостоятельный хостинг",
@@ -117,8 +120,8 @@
     "usePointerCursorsDesc": "Менять курсор на указатель при наведении на интерактивные элементы",
     "timezoneAuto": "Авто (браузер)",
     "timezoneSearchPlaceholder": "Поиск ближайших городов",
-    "sendOnEnter": "Отправлять сообщения клавишей Enter",
-    "sendOnEnterDesc": "Если включено, Enter отправляет, а Shift+Enter и Ctrl/Cmd+Enter вставляют новую строку. Если выключено, отправка выполняется Ctrl/Cmd+Enter",
+    "sendOnEnter": "Отправлять сообщения с помощью",
+    "sendOnEnterDesc": "Выберите сочетание клавиш для отправки сообщения; другие сочетания с Enter вставляют новую строку",
     "language": "Язык",
     "languageSearchPlaceholder": "Поиск языков...",
     "languageNames": {
@@ -179,6 +182,8 @@
     "voiceInputPermissionOpenFailed": "Не удалось открыть Системные настройки",
     "preventSleep": "Запрещать спящий режим во время сессий",
     "preventSleepDesc": "Не давать Mac или ПК уснуть, пока работает хотя бы одна сессия Agent. Освобождается автоматически после завершения всех сессий",
+    "highRefreshRate": "Высокая частота обновления",
+    "highRefreshRateDesc": "Отрисовывать интерфейс с полной частотой обновления дисплея — до 120 Гц на дисплеях ProMotion. Прокрутка, изменение размера и анимации становятся плавнее, но во время работы расходуют больше энергии",
     "devMode": "Режим разработчика",
     "devModeDesc": "Включает нативное контекстное меню Inspect Element и DevTools браузера. Только для разработки и отладки",
     "presenceGuidanceOnline": "В сети — инструкции для агентов",
@@ -215,7 +220,11 @@
     "skin": "Скин",
     "accent": "Акцент",
     "linkSkinVariants": "Связать светлый и тёмный",
-    "linkSkinVariantsDesc": "Использовать один скин и акцент для обоих режимов. Связать можно только скины, имеющие светлый и тёмный варианты"
+    "linkSkinVariantsDesc": "Использовать один скин и акцент для обоих режимов. Связать можно только скины, имеющие светлый и тёмный варианты",
+    "license": "Лицензия",
+    "licenseTitle": "Лицензия ORG2",
+    "licenseLoading": "Загрузка лицензии…",
+    "licenseLoadFailed": "Не удалось загрузить лицензию приложения"
   },
   "background": {
     "title": "Фон",
@@ -383,13 +392,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Скрывать ORG2 при управлении рабочим столом",
-      "hideBeforeActionHelper": "Скрывает главное окно ORG2 во время работы Peekaboo и показывает панель Wingman с плавающей подписью, чтобы Agent не управлял фокусом вручную.",
+      "hideBeforeActionHelper": "Скрывает главное окно ORG2 во время работы Peekaboo и показывает панель Wingman с плавающей подписью, чтобы Agent не управлял фокусом вручную",
       "antiDetection": "Защита от обнаружения автоматизации (HID)",
-      "antiDetectionHelper": "Заставляет Peekaboo отправлять настоящие события CGEvent (HID) для кликов и нажатий клавиш вместо чистых действий Accessibility, чтобы приложения с детекцией автоматизации (например, WeChat) реже блокировали управление рабочим столом.",
+      "antiDetectionHelper": "Заставляет Peekaboo отправлять настоящие события CGEvent (HID) для кликов и нажатий клавиш вместо чистых действий Accessibility, чтобы приложения с детекцией автоматизации (например, WeChat) реже блокировали управление рабочим столом",
       "humanInputProfile": "Человекоподобный ритм ввода",
-      "humanInputProfileHelper": "Применяет человекоподобный профиль таймингов к синтезированным нажатиям клавиш. Отключите для ввода на максимальной скорости.",
+      "humanInputProfileHelper": "Применяет человекоподобный профиль таймингов к синтезированным нажатиям клавиш. Отключите для ввода на максимальной скорости",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Отсутствует: {{bins}}",
     "skillMissingEnv": "Отсутствуют переменные окружения: {{vars}}",
@@ -458,7 +467,6 @@
     "gitOperations": "Git операции",
     "gitOperationsDesc": "Уведомления о Git pull, push и синхронизации",
     "soundPreset": "Звук уведомления",
-    "soundPresetDesc": "Выберите звук для слышимых уведомлений",
     "previewSound": "Прослушать",
     "soundPresets": {
       "classic": "Классический",
@@ -551,7 +559,7 @@
       "title": "Git",
       "pullStrategy": "Стратегия pull",
       "pullStrategyDesc": "Как git pull интегрирует изменения с remote при синхронизации",
-      "pullStrategyHint": "Rebase (по умолчанию): Replays ваши commits поверх remote. Создаёт linear history.\n\nMerge: Создаёт merge commit при diverge branches. Сохраняет полный history.\n\nFast-forward only: Разрешает pull только когда merge не нужен. Отказывает если branches diverged.",
+      "pullStrategyHint": "Rebase (по умолчанию): Replays ваши commits поверх remote. Создаёт linear history.\n\nMerge: Создаёт merge commit при diverge branches. Сохраняет полный history.\n\nFast-forward only: Разрешает pull только когда merge не нужен. Отказывает если branches diverged",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (по умолчанию)",
       "strategyFfOnly": "Только Fast-forward (строго)",
@@ -585,20 +593,44 @@
     "fontFamilyCustom": "Пользовательский"
   },
   "update": {
+    "downloading": "Загрузка обновления…",
+    "downloadingPercent": "Загрузка обновления… {{percent}}%",
+    "preparingDownload": "Подготовка загрузки…",
+    "downloadBytes": "{{downloaded}} из {{total}}",
+    "downloadedBytes": "Загружено {{downloaded}}",
+    "downloadProgress": "Ход загрузки обновления",
+    "inProgress": "выполняется",
+    "openProgressLabel": "Загрузка обновления: {{progress}}. Открыть уведомление о ходе загрузки.",
+    "openProgress": "Открыть ход загрузки обновления",
+    "available": "Доступно обновление",
+    "availableVersion": "Версия {{version}} готова к установке.",
+    "updateNow": "Обновить сейчас",
+    "checkFailed": "Не удалось проверить обновления",
+    "checking": "Проверка обновлений…",
+    "officialInstalled": "Официальное приложение установлено",
+    "officialInstalledDesc": "Версия {{version}} установлена в {{path}}. Эта локальная сборка продолжает работать без изменений",
+    "downloadFailed": "Не удалось загрузить обновление",
+    "retryNow": "Повторить сейчас",
+    "downloadTimeout": "Время ожидания загрузки истекло. Проверьте сеть или прокси и повторите попытку.",
+    "installUnavailable": "Эта локальная сборка не может безопасно установить опубликованную версию на этой платформе.",
+    "installing": "Установка обновления",
+    "preparingInstall": "Подготовка v{{version}}…",
+    "installed": "Обновление установлено",
+    "installFailed": "Не удалось установить обновление",
+    "checked": "Проверка обновлений завершена",
     "detectUpdate": "Обнаружить обновление",
     "currentVersion": "Текущая версия",
     "channel": "Канал обновлений",
     "channelDesc": "Beta получает предварительные сборки раньше стабильного выпуска. Возврат на Stable никогда не откатывает версию — он вступит в силу при следующем стабильном выпуске",
     "channelStable": "Stable",
     "channelBeta": "Beta",
-    "installConfirmTitle": "Обновление готово к установке",
-    "installConfirmDesc": "Версия {{version}} загружена. Сохраните текущую работу перед установкой и перезапуском ORG2",
+    "installConfirmTitle": "Обновление готово",
+    "installConfirmDesc": "Версия {{version}} готова. Сохраните работу перед перезапуском",
     "installAndRestart": "Установить и перезапустить",
-    "installOfficialConfirmTitle": "Официальное приложение готово к установке",
-    "installOfficialConfirmDesc": "Установить официальную версию {{version}} в /Applications/ORG2.app. Эта локальная сборка останется открытой и без изменений",
-    "installOfficial": "Установить официальное приложение",
+    "installOfficialConfirmTitle": "Официальная версия готова",
+    "installOfficialConfirmDesc": "Установить {{version}} отдельно. Эта сборка останется открытой",
+    "installOfficial": "Установить официальную версию",
     "localBuild": "Локальная",
-    "skipVersion": "Пропустить эту версию",
     "upToDate": "Установлена последняя версия ORG2.",
     "upToDateVersion": "Установлена последняя версия ORG2 (v{{version}}).",
     "officialAlreadyInstalled": "Официальная версия ORG2 v{{version}} уже установлена в /Applications.",
@@ -712,7 +744,7 @@
     "tableVersion": "Версия",
     "tableStatus": "Статус",
     "installSection": "Установка",
-    "installHintNote": "Предлагаемая команда установки для вашей платформы. Большинство системных зависимостей требует прав администратора, поэтому мы не запускаем их автоматически — скопируйте и вставьте в свой terminal."
+    "installHintNote": "Предлагаемая команда установки для вашей платформы. Большинство системных зависимостей требует прав администратора, поэтому мы не запускаем их автоматически — скопируйте и вставьте в свой terminal"
   },
   "storage": {
     "dataDirectory": "Каталог данных",
@@ -748,8 +780,8 @@
     "typingSpeedDesc": "Миллисекунд на символ (1мс = быстрее, 50мс = медленнее)",
     "decryptEffect": "Эффект Decrypt",
     "decryptEffectDesc": "Включить Decrypt анимацию для сообщений Agent",
-    "sendOnEnter": "Отправлять сообщения клавишей Enter",
-    "sendOnEnterDesc": "Если включено, Enter отправляет, а Shift+Enter и Ctrl/Cmd+Enter вставляют новую строку. Если выключено, отправка выполняется Ctrl/Cmd+Enter"
+    "sendOnEnter": "Отправлять сообщения с помощью",
+    "sendOnEnterDesc": "Выберите сочетание клавиш для отправки сообщения; другие сочетания с Enter вставляют новую строку"
   },
   "indexing": {
     "noWorkspaceMemories": "Пока нет воспоминаний о проекте. Они появятся после того, как сеансы извлекут информацию об этом рабочем пространстве.",
@@ -798,7 +830,7 @@
   "agentEvolution": {
     "enableForAgent": "Включить эволюцию для {{agentName}}",
     "noAgentsTitle": "Нет доступных Agent",
-    "noAgentsSubtitle": "Создайте или импортируйте Agent, чтобы настроить эволюцию."
+    "noAgentsSubtitle": "Создайте или импортируйте Agent, чтобы настроить эволюцию"
   },
   "org": {},
   "learningsBrowser": {
@@ -945,10 +977,10 @@
     "developerOptions": "Параметры разработчика",
     "retryConnection": "Повторить подключение",
     "enabled": "Mobile Remote",
-    "enabledDesc": "Разрешить сопряжённому телефону управлять сессиями агентов на этом компьютере через ту же Wi‑Fi-сеть или через публичный relay",
+    "enabledDesc": "Просматривайте сеансы на этом компьютере и управляйте ими с телефона",
     "securityNotice": "Любой в вашей сети, у кого есть URL подключения и token, может управлять сессиями, когда включён доступ по LAN. Перегенерируйте token, если считаете, что он утёк",
-    "outdoorTitle": "Внешнее подключение",
-    "outdoorDesc": "Подключить компьютер к публичному relay исходящим соединением, чтобы телефон работал через 4G, 5G или другую сеть",
+    "outdoorTitle": "Разрешить подключения через интернет",
+    "outdoorDesc": "Если отключено, телефоны не смогут подключаться к этому компьютеру через интернет",
     "relayEnabled": "Подключаться к публичному relay",
     "relayEnabledDesc": "Компьютер открывает исходящее WSS-соединение; проброс портов на роутере не требуется",
     "relayUrl": "Адрес relay",
@@ -957,7 +989,7 @@
     "relayPresetLocal": "Локальное",
     "relayPresetProduction": "Production",
     "cloudLoginTitle": "Вход в ORG2 Cloud",
-    "cloudLoginDescSignedIn": "Выполнен вход как {{identity}} — relay использует этот аккаунт для внешнего сопряжения",
+    "cloudLoginDescSignedIn": "Выполнен вход как {{identity}}",
     "cloudLoginDescSignedOut": "Войдите в ORG2 Cloud перед сопряжением через публичный relay",
     "relayStatusCloudLoginRequired": "Войдите в ORG2 Cloud в Настройки → Общие, затем обновите статус relay",
     "relayStatusAuthFailedSignedIn": "Relay отклонил подключение — выйдите и войдите снова в Настройки → Общие",
@@ -968,7 +1000,7 @@
     "relayStatus_disabled": "Отключено",
     "relayStatus_config_error": "Ошибка конфигурации",
     "relayStatus_stopped": "Остановлено",
-    "startOutdoorPairing": "Сгенерировать код внешнего сопряжения",
+    "startOutdoorPairing": "Создать код сопряжения",
     "fullAccess": "Разрешить действия",
     "fullAccessDesc": "Когда включено, телефон может отправлять сообщения, останавливать сессии и отвечать на запросы разрешений; когда выключено — только просмотр",
     "pairingExpires": "Код сопряжения истекает через {{seconds}} с",
@@ -1003,16 +1035,23 @@
     "pairedDevicesDesc": "Телефоны, авторизованные через relay; доступ можно отозвать в любой момент",
     "devicesLoadFailed": "Не удалось загрузить сопряжённые устройства",
     "noDevices": "Нет сопряжённых устройств",
-    "noDevicesDesc": "Сгенерируйте код внешнего сопряжения, затем отсканируйте или вставьте его в PWA Mobile Remote",
+    "noDevicesDesc": "Добавив телефон, вы сможете получить доступ к сеансам на этом компьютере",
     "deviceLabel": "Устройство",
     "deviceTier": "Уровень",
-    "deviceTierFull": "Полный доступ",
-    "deviceTierReadOnly": "Только чтение",
+    "deviceTierFull": "Управление разрешено",
+    "deviceTierReadOnly": "Только просмотр",
     "deviceLastSeen": "Последняя активность",
     "devicePairedAt": "Сопряжено {{time}}",
     "deviceLastSeenValue": "Последняя активность {{time}}",
     "deviceNeverSeen": "Никогда не подключалось",
     "deviceOnline": "В сети",
-    "deviceOffline": "Не в сети"
+    "deviceOffline": "Не в сети",
+    "addPhone": "Добавить телефон",
+    "pairingPermission": "Разрешения телефона",
+    "relayDisabledHint": "Подключения через интернет отключены. Включите их в дополнительных настройках"
+  },
+  "development": {
+    "updateAvailable": "Доступно обновление",
+    "updateAvailableDesc": "Показывать индикаторы обновления во всём приложении для версии 99.0.0 — действия открывают только предпросмотр"
   }
 }

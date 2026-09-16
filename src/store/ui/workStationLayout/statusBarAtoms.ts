@@ -160,10 +160,6 @@ export interface StatusBarCallbacks {
   primaryPanelCollapsed?: boolean;
   /** Current sidebar layout mode. */
   layoutMode?: "left" | "right";
-  /** Toggles the bottom panel (terminal/output — Code Editor only). */
-  onToggleBottomPanel?: () => void;
-  /** Whether the bottom panel is currently collapsed. */
-  bottomPanelCollapsed?: boolean;
   onToggleDevTools?: () => void;
   /** Whether the DevTools panel is currently open (Browser only). */
   devToolsOpen?: boolean;

@@ -3,7 +3,7 @@ import { atom } from "jotai";
 import {
   type LocalConversationTarget,
   isLocalConversationTarget,
-} from "@src/engines/SessionCore/conversations/conversationTypes";
+} from "@src/contracts/conversation";
 
 const MAX_CONVERSATION_TARGET_OVERRIDES = 32;
 

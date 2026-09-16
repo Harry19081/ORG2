@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import TabPill from "@src/components/TabPill";
+import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
 import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
@@ -16,7 +17,6 @@ import {
   ZoomInAreaIcon,
   ZoomOutAreaIcon,
 } from "@src/icons";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 
 import { VIEW_SCOPE_OPTIONS } from "../../config";
 import type { ZoomLevel } from "../../hooks/useGanttZoom";

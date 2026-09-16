@@ -20,7 +20,7 @@ vi.mock("@src/hooks/ui/layout/useElementDimensions", () => ({
   useElementDimensions: () => 0,
 }));
 
-vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", async () => {
+vi.mock("@src/components/MarkdownTextareaEditor", async () => {
   const { forwardRef } = await import("react");
   return {
     default: forwardRef<HTMLDivElement, Record<string, unknown>>(
@@ -150,7 +150,7 @@ describe("PrConversationTab", () => {
     expect(input?.className).toContain("px-1.5");
     expect(input?.className).toContain("pt-1.5!");
     expect(input?.className).toContain("pb-1.5");
-    expect(actionRow?.className).toContain("px-1");
+    expect(actionRow?.className).toContain("pt-2");
     expect(composer?.textContent).toContain("Submit review");
     expect(composer?.textContent).toContain("Comment");
   });

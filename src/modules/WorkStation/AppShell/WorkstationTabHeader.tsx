@@ -60,11 +60,9 @@ const WorkstationTabHeader: React.FC = memo(() => {
 
   return (
     <div
-      className={`flex h-9 shrink-0 items-center ${
+      className={`flex h-9 shrink-0 items-center border-b border-border-2 ${
         isBrowserTab ? "gap-px" : "gap-2"
-      } pr-2 ${shellLeadingChromeHidden ? "" : "pl-1.5"} ${
-        headerSlots?.joinWithFollowingRow ? "" : "border-b border-border-2"
-      }`}
+      } pr-2 ${shellLeadingChromeHidden ? "" : "pl-1.5"}`}
       data-tauri-drag-region={windowsHost ? undefined : true}
     >
       {!shellLeadingChromeHidden && !isBrowserTab && (

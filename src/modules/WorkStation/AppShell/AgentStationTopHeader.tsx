@@ -8,7 +8,6 @@
 import { useAtom, useAtomValue } from "jotai";
 import React, { memo, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
 
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { NoDragRegion } from "@src/components/WindowChrome";
@@ -22,34 +21,22 @@ import {
   useCollapsedSidebarChromeOffset,
   useShouldOffsetWorkStationTopBar,
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
-import {
-  usePinnedWorkbenchChromeVisible,
-  useWorkbenchRightEdgeReservation,
-} from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
+import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { CaptionsIcon, HugeiconsIcon } from "@src/icons";
-import { CHROME_INSET_TRANSITION_CLASSES } from "@src/modules/shared/layouts/viewContainerTokens";
+import { useStationToggleInsetTransition } from "@src/scaffold/AppLayout/useStationToggleInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import {
   sessionMapAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
-import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
-import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   simulatorCaptionBarEnabledAtom,
   simulatorEffectiveDockAppAtom,
 } from "@src/store/ui/simulatorAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
-import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import { SimulatorAgentChip, StationModeChip } from "../shared";
-import {
-  StationChatVisibilityButton,
-  StationMaximizeChatButton,
-  StationOpenInNewWindowButton,
-  useStationPaneActions,
-} from "../shared/StationPaneControls";
+import { StationHeaderControls } from "../shared/StationHeaderControls";
 
 interface AgentStationTopHeaderProps {
   captionMessage: CurrentTurnLastAgentMessage | null;
@@ -63,22 +50,8 @@ const AgentStationTopHeaderComponent = ({
   const { t } = useTranslation("sessions");
   const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
   const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
-  const pinnedChrome = usePinnedWorkbenchChromeVisible();
   const rightEdge = useWorkbenchRightEdgeReservation();
-  const getStationChatVisible = useAtomValue(activeStationChatVisibleAtom);
-  const chatWidth = useAtomValue(chatWidthAtom);
-  const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
-  const isChatPanelVisible =
-    getStationChatVisible("agent-station") && chatWidth > 0;
-  const location = useLocation();
-  // Settings occupies the chat-panel slot; SettingsSlot owns its own
-  // maximize/restore button, so the workstation-side toggle is redundant
-  // and visually conflicting (two buttons driving the same atom).
-  const isSettingsRoute = location.pathname.startsWith("/orgii/app/settings");
-  // A detached station window has no chat pane to toggle and already is its
-  // own window, so it carries neither the pane controls nor the detach button.
-  const stationWindow = isStationWindow();
-  const showPaneControls = !isSettingsRoute && !pinnedChrome && !stationWindow;
+  const insetTransitionClassName = useStationToggleInsetTransition();
   const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
   const [captionEnabled, setCaptionEnabled] = useAtom(
     simulatorCaptionBarEnabledAtom
@@ -131,13 +104,10 @@ const AgentStationTopHeaderComponent = ({
     };
   }, []);
 
-  const { handleToggleChatPanel, handleToggleChatPanelMaximized } =
-    useStationPaneActions();
-
   return (
     <div className="flex shrink-0 flex-col">
       <div
-        className={`relative flex h-11 min-h-11 shrink-0 items-center pt-2 ${CHROME_INSET_TRANSITION_CLASSES}`}
+        className={`relative flex h-11 min-h-11 shrink-0 items-center pt-2 ${insetTransitionClassName}`}
         data-tauri-drag-region
         style={
           {
@@ -181,32 +151,7 @@ const AgentStationTopHeaderComponent = ({
               strokeWidth={2}
             />
           </TabBarTrailingIconButton>
-          {!stationWindow && !isSettingsRoute && (
-            <StationOpenInNewWindowButton
-              stationMode="agent-station"
-              testId="agent-station-open-in-new-window"
-            />
-          )}
-          {showPaneControls && !isChatPanelVisible && (
-            <StationChatVisibilityButton
-              visible={false}
-              restoreIcon="shrink"
-              onClick={handleToggleChatPanel}
-            />
-          )}
-          {showPaneControls && (
-            <StationChatVisibilityButton
-              visible={isChatPanelVisible}
-              onClick={handleToggleChatPanel}
-            />
-          )}
-          {showPaneControls && isChatPanelVisible && (
-            <StationMaximizeChatButton
-              chatPanelPosition={chatPanelPosition}
-              directionalHover={false}
-              onClick={handleToggleChatPanelMaximized}
-            />
-          )}
+          <StationHeaderControls stationMode="agent-station" />
         </NoDragRegion>
       </div>
       {captionVisible && captionMessage ? (

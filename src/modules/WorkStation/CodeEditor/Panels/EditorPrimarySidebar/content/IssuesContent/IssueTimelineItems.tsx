@@ -10,7 +10,7 @@ import {
   TimelineCard,
   TimelineCardHeader,
   TimelineLoadingSkeleton,
-} from "@src/modules/shared/components/ActivityTimeline";
+} from "@src/features/GitHubWork/ActivityTimeline";
 
 import { IssueTimelineEventRow } from "./IssueTimelineEvent";
 

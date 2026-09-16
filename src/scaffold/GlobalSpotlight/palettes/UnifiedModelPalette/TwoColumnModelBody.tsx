@@ -312,5 +312,3 @@ export const TwoColumnModelBody: React.FC<TwoColumnModelBodyProps> = ({
     </div>
   );
 };
-
-export default TwoColumnModelBody;

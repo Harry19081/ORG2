@@ -22,24 +22,24 @@ import {
   projectApi,
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
+import CompactListPanel, {
+  type CompactListPanelEntry,
+} from "@src/components/CompactListPanel";
 import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
 import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import TabPill from "@src/components/TabPill";
+import { WorkManagementRefreshButton } from "@src/features/GitHubWork/WorkManagementRefreshButton";
+import { WorkManagementSearchInput } from "@src/features/GitHubWork/WorkManagementSearchInput";
 import { useRoutineResultNavigation } from "@src/hooks/navigation";
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import { HugeiconsIcon, PlayCircleIcon } from "@src/icons";
-import CompactListPanel, {
-  type CompactListPanelEntry,
-} from "@src/modules/shared/components/CompactListPanel";
-import { WorkManagementRefreshButton } from "@src/modules/shared/components/WorkManagementRefreshButton";
-import { WorkManagementSearchInput } from "@src/modules/shared/components/WorkManagementSearchInput";
 import DetailPaneLayout, {
   DetailPanePlaceholder,
-} from "@src/modules/shared/layouts/DetailPaneLayout";
-import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
-import SplitListFullscreenButton from "@src/modules/shared/layouts/SplitListFullscreenButton";
-import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
+} from "@src/scaffold/layouts/DetailPaneLayout";
+import InboxListDetailLayout from "@src/scaffold/layouts/InboxListDetailLayout";
+import SplitListFullscreenButton from "@src/scaffold/layouts/SplitListFullscreenButton";
+import SplitListHeader from "@src/scaffold/layouts/SplitListHeader";
 
 import { useWorkManagementSplitHeader } from "./workManagementSplitHeaderContext";
 

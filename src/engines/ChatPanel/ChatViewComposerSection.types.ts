@@ -4,7 +4,7 @@ import type { SessionFollowUpSuggestion } from "@src/api/services/sessionFollowU
 
 import type { ScrollNavState } from "./ChatHistory";
 import type { InlineSection } from "./InputArea/components/CollapsedInlineRow";
-import type { FileChangesResult } from "./InputArea/components/compactFileChangesHelpers";
+import type { FileChangeVisibleStats } from "./InputArea/components/CompactFileChanges";
 import type { QueueEditInputAreaProps } from "./InputArea/hooks/useQueueEditMode";
 import type {
   CustomMentionOption,
@@ -71,7 +71,11 @@ export interface ChatViewComposerSectionProps {
   onProcessVisibleCountChange: (count: number) => void;
   onFilesExpand: () => void;
   filesMenu?: React.ReactNode;
-  initialFileChanges?: FileChangesResult;
+  /**
+   * Host-resolved files-pill stats (imported sessions). When set, the pill
+   * shows them directly and the orgtrack artifact tracker is not mounted.
+   */
+  resolvedFileChangeStats?: FileChangeVisibleStats;
   groupChatPendingMessage: GroupChatPendingMessageView | null;
   groupChatViewActive: boolean;
   hasAnyInlineSection: boolean;

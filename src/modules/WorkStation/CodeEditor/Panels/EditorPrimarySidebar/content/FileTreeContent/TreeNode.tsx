@@ -15,6 +15,7 @@ import React, {
   useState,
 } from "react";
 
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import {
   GitStatusBadge,
@@ -36,7 +37,6 @@ import {
   type NativeDragItem,
   useNativeDrag,
 } from "@src/hooks/files/useNativeDrag";
-import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import { useIsFileSelected } from "@src/store/ui/fileTreeSelectionAtom";
 
 import { InlineRenameInput } from "./InlineRenameInput";
@@ -161,21 +161,11 @@ const TreeNodeInner: React.FC<TreeNodeProps> = ({
             <span className="shrink-0">{node.icon}</span>
           ) : isDirectory ? (
             <div className="flex h-3.5 w-3.5 shrink-0 items-center justify-center">
-              {isExpanded ? (
-                <HugeiconsIcon
-                  icon={ArrowDown01Icon}
-                  data-icon="chevron-down"
-                  size={CHEVRON_SIZE}
-                  className="text-text-3"
-                />
-              ) : (
-                <HugeiconsIcon
-                  icon={ArrowRight01Icon}
-                  data-icon="chevron-right"
-                  size={CHEVRON_SIZE}
-                  className="text-text-3"
-                />
-              )}
+              <DisclosureChevron
+                expanded={isExpanded}
+                size={CHEVRON_SIZE}
+                className="text-text-3"
+              />
             </div>
           ) : (
             <FileTypeIcon

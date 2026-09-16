@@ -4,7 +4,6 @@
  * Shared layout shell for Workstation apps providing consistent structure:
  * - CodeEditor (code editor) - EditorPrimarySidebar
  * - DatabaseManager (database browser) - DatabasePrimarySidebar
- * - Browser (web browser) - BrowserPrimarySidebar
  * - ProjectManager, Chat, SessionReplay variants
  *
  * Layout modes:

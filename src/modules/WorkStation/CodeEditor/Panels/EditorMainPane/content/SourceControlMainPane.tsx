@@ -8,9 +8,9 @@
 import React, { Suspense, memo } from "react";
 
 import { Placeholder } from "@src/components/Placeholder";
+import GitHubDetailSkeleton from "@src/features/GitHubWork/GitHubDetailSkeleton";
+import { useGitHubIssueDetailState } from "@src/features/GitHubWork/useGitHubIssueDetailState";
 import type { QuickAction } from "@src/modules/WorkStation/shared";
-import GitHubDetailSkeleton from "@src/modules/shared/components/GitHubDetailSkeleton";
-import { useGitHubIssueDetailState } from "@src/modules/shared/hooks/useGitHubIssueDetailState";
 import { workstationRepoScopeKey } from "@src/store/workstation/codeEditor/workstationPrAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";

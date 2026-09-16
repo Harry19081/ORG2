@@ -10,7 +10,7 @@ import {
   Refresh04Icon,
   SquareArrowUpRight02Icon,
 } from "@src/icons";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openLink } from "@src/util/ui/openLink";
 
 import {
   InlineCardBody,
@@ -161,7 +161,7 @@ const CliClientInlineExpandedCard = ({
                 />
               }
               iconPosition="right"
-              onClick={() => openExternalLink(agent.docsUrl!)}
+              onClick={() => openLink(agent.docsUrl!, { navigate: true })}
             >
               {t("cliPreview.docs")}
             </Button>

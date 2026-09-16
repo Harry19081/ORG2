@@ -133,5 +133,3 @@ export const SpotlightFooter: React.FC<SpotlightFooterProps> = ({
     </div>
   );
 };
-
-export default SpotlightFooter;

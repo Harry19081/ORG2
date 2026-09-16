@@ -324,18 +324,6 @@
           "agentBrowser": "Agent ブラウザ",
           "searchFetch": "検索と取得"
         },
-        "sections": {
-          "browserTitle": "ブラウザアクティビティ",
-          "interactionsTitle": "インタラクション",
-          "webSearchesTitle": "ウェブ検索",
-          "pagesFetchedTitle": "取得したページ"
-        },
-        "empty": {
-          "noBrowserActivity": "ブラウザのアクティビティはありません",
-          "noBrowserInteractions": "ブラウザのインタラクションはありません",
-          "noWebSearches": "ウェブ検索はありません",
-          "noPagesFetched": "取得したページはありません"
-        },
         "header": {
           "categoryBrowser": "ブラウザ",
           "categoryLiveBrowser": "ライブブラウザ",
@@ -519,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "サイドバーを表示",
-      "hideSidebar": "サイドバーを非表示",
-      "showBottomPanel": "下部パネルを表示"
+      "hideSidebar": "サイドバーを非表示"
     },
     "multiTask": {
       "monitoringProgress": "{{count}} 体の Subagent の進捗を監視中",
@@ -591,6 +578,7 @@
     "voicePermissionSheetTitle": "マイクへのアクセスが必要です"
   },
   "chat": {
+    "draftTooLong": "下書きが長すぎます（最大 {{max}} 文字）",
     "cliPermissions": {
       "ask": "承認を求める",
       "workspace": "ワークスペースへのアクセス",
@@ -625,10 +613,9 @@
       "inputPosition": "入力欄",
       "positionBottom": "下部",
       "positionMiddle": "中央",
-      "trailPosition": "コンテキストバー",
+      "repoBarPosition": "リポジトリバー",
       "positionUp": "上",
       "positionDown": "下",
-      "uiControls": "UI コントロール",
       "showQuickActions": "クイックアクションを表示",
       "showSkills": "ピン留めしたスキル",
       "showCliUpdate": "CLI の更新を表示",
@@ -716,6 +703,14 @@
     "performActions_other": "{{count}} 件の操作を実行",
     "showInlineDiffs": "インライン差分",
     "inputSettings": "入力設定",
+    "sendMethod": "送信キー",
+    "navigation": {
+      "title": "ナビゲーション",
+      "openLinksIn": "リンクを開く場所",
+      "internalBrowser": "内蔵ブラウザ",
+      "externalBrowser": "外部ブラウザ"
+    },
+    "compactInput": "コンパクト入力欄",
     "replay": {
       "follow": "フォロー"
     },
@@ -901,10 +896,10 @@
       "exportJson": "JSON をエクスポート",
       "importAction": "Session をインポート",
       "exportDescription": "アクティブな Session をポータブルな JSON スナップショットとしてエクスポートします",
-      "importDescription": "Session JSON スナップショットをサイドバーにインポートします。",
+      "importDescription": "Session JSON スナップショットをサイドバーにインポートします",
       "jsonSnapshotNote": "インポートされた Session は読み取り専用スナップショットで、元のイベント履歴を保持します",
       "chooseJson": "JSON ファイルを選択",
-      "chooseJsonHint": ".orgii-session.json エクスポートファイルを選択してください。",
+      "chooseJsonHint": ".orgii-session.json エクスポートファイルを選択してください",
       "loadingPreview": "Session イベントを集計中…",
       "noActiveSession": "アクティブな Session が選択されていません。",
       "importedName": "インポート済み Session: {{name}}",
@@ -1129,6 +1124,7 @@
     "terminalWaitRunning": "Terminal の完了を待機中",
     "runShellFailed": "コマンド実行に失敗しました",
     "runCommands": "コマンドを実行",
+    "waitBackgroundTasks": "バックグラウンドタスクを待機",
     "terminalSummary": {
       "command_one": "{{count}} 件のコマンド",
       "command_other": "{{count}} 件のコマンド",
@@ -1139,6 +1135,10 @@
       "check_one": "{{count}} 件の確認",
       "check_other": "{{count}} 件の確認",
       "separator": "、"
+    },
+    "waitSummary": {
+      "count_one": "{{count}} 回",
+      "count_other": "{{count}} 回"
     },
     "inspectTerminalsRunning": "Terminal を確認中",
     "inspectTerminalsDone": "Terminal を確認しました",
@@ -1448,10 +1448,13 @@
     "awaitOutputListFailed": "バックグラウンドタスクの一覧表示に失敗しました",
     "awaitOutputKeepWaiting": "実行中",
     "awaitOutputStillRunning": "実行中",
+    "awaitOutputSummaryShellSingle": "ターミナルプロセス",
     "awaitOutputSummaryShell_one": "ターミナルプロセス1件",
     "awaitOutputSummaryShell_other": "ターミナルプロセス{{count}}件",
+    "awaitOutputSummarySubagentSingle": "Subagent",
     "awaitOutputSummarySubagent_one": "Subagent 1件",
     "awaitOutputSummarySubagent_other": "Subagent {{count}}件",
+    "awaitOutputSummaryUnknownSingle": "バックグラウンドタスク",
     "awaitOutputSummaryUnknown_one": "バックグラウンドタスク1件",
     "awaitOutputSummaryUnknown_other": "バックグラウンドタスク{{count}}件",
     "awaitOutputSummaryMixed": "{{shell}}、{{subagent}}",
@@ -1905,7 +1908,7 @@
     "start": "開始",
     "missingGit": {
       "title": "Git が見つかりません",
-      "body": "Git がインストールされていないか、見つかりません。ADE Manager または SDE Agent にこのマシンへ Git をインストールしてもらい、その後 ORG2 を再起動してください。"
+      "body": "Git がインストールされていないか、見つかりません。ADE Manager または SDE Agent にこのマシンへ Git をインストールしてもらい、その後 ORG2 を再起動してください"
     },
     "model": "モデル",
     "contextMenu": {
@@ -1969,9 +1972,9 @@
       "formatting": "テキストの書式"
     },
     "regionNoticeTitle": "地域制限の可能性",
-    "regionNoticeBodyProvider": "お住まいの地域：{{location}}。一部のモデルはお住まいの地域で利用できない場合があります。",
-    "regionNoticeBodySanctions": "お住まいの地域：{{location}}。GitHub、npm、Docker Hub などのサービスが利用できない場合があります。",
-    "regionNoticeBodyBoth": "お住まいの地域：{{location}}。地域政策と貿易規制により、一部のモデルや GitHub、npm、Docker Hub などのサービスが利用できない場合があります。",
+    "regionNoticeBodyProvider": "お住まいの地域：{{location}}。一部のモデルはお住まいの地域で利用できない場合があります",
+    "regionNoticeBodySanctions": "お住まいの地域：{{location}}。GitHub、npm、Docker Hub などのサービスが利用できない場合があります",
+    "regionNoticeBodyBoth": "お住まいの地域：{{location}}。地域政策と貿易規制により、一部のモデルや GitHub、npm、Docker Hub などのサービスが利用できない場合があります",
     "selectAgent": "エージェントを選択",
     "placeholderDefault": "メッセージを入力、@ でファイルを追加、/ で skills を使用",
     "wingmanPlaceholder": "ミッションを説明してください — Wingman は何を監視すべきですか？",
@@ -2120,7 +2123,7 @@
       "archiveTeardownRetained": "アーカイブ済みですが、{{count}} 個のランタイムを解放できませんでした。削除は引き続きブロックされます。",
       "archiveTeardownQuiesced": "アーカイブ済みで完全に停止しました。完全削除が可能です。",
       "dangerZone": "危険な操作",
-      "deleteDescription": "このチームとすべてのセッションおよび履歴を完全に削除します。",
+      "deleteDescription": "このチームとすべてのセッションおよび履歴を完全に削除します",
       "deleteTeam": "チームを削除",
       "deleteTitle": "このチームを完全に削除しますか？",
       "deleteWarning": "チームのすべてのセッションと履歴が完全に削除されます。元に戻せません。",

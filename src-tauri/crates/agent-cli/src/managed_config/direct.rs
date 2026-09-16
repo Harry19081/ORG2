@@ -168,7 +168,7 @@ fn codex(
         config["model_providers"] = Item::Table(Table::new());
     }
     let mut provider = Table::new();
-    provider["name"] = value("ORGII");
+    provider["name"] = value("ORG2");
     provider["base_url"] = value(&connection.base_url);
     provider["wire_api"] = value("responses");
     provider["requires_openai_auth"] = value(false);

@@ -10,15 +10,18 @@
  * - Uses refs for stable callback references
  * - Avoids recreating callbacks when content changes
  */
-import { writeTextFile } from "@tauri-apps/plugin-fs";
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { createLogger } from "@src/hooks/logger";
+import { confirmSaveOverDiskChanges } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/diskGuard";
 import {
   type UseFileContentReturn,
   invalidateFileCache,
   useFileContent,
 } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/useFileContent";
+import { registerBranchSwitchEditor } from "@src/services/git/operations/branchSwitchEditors";
 
 import type { UseFileContentManagerOptions } from "../types";
 
@@ -84,6 +87,34 @@ export function useFileContentManager(
   });
 
   // Handle content change (human edits from CodeMirror)
+  useEffect(() => {
+    if (!activeFilePath) return;
+    return registerBranchSwitchEditor({
+      path: activeFilePath,
+      dirty: () => fileContentStateRef.current.hasUnsavedChanges,
+      save: async () => {
+        const state = fileContentStateRef.current;
+        const content = state.content;
+        if (
+          activeFilePathRef.current !== activeFilePath ||
+          (await readTextFile(activeFilePath)) !== state.originalContent
+        )
+          throw new Error(
+            "The file changed on disk; review it before switching"
+          );
+        await writeTextFile(activeFilePath, content);
+        if (
+          activeFilePathRef.current !== activeFilePath ||
+          fileContentStateRef.current.content !== content ||
+          (await readTextFile(activeFilePath)) !== content
+        )
+          throw new Error("The file changed while saving");
+        flushSync(() => state.markSaved());
+        invalidateFileCache(activeFilePath);
+      },
+    });
+  }, [activeFilePath]);
+
   const handleContentChange = useCallback((newContent: string) => {
     fileContentStateRef.current.updateContent(newContent, { type: "human" });
   }, []); // No dependencies - uses ref
@@ -97,8 +128,30 @@ export function useFileContentManager(
 
     setSaving(true);
     try {
-      await writeTextFile(filePath, contentState.content);
-      contentState.markSaved();
+      // An agent shares this working tree, so the file may have been
+      // rewritten since the buffer loaded. Writing unconditionally would
+      // discard that work with no trace; ask before overwriting, and leave
+      // the buffer dirty if the user declines.
+      const content = contentState.content;
+      if (
+        !(await confirmSaveOverDiskChanges(
+          filePath,
+          contentState.originalContent
+        ))
+      ) {
+        return;
+      }
+      await writeTextFile(filePath, content);
+      // The confirm dialog yields, so the user may have switched files or
+      // kept typing while it was open. Only stamp the buffer clean when the
+      // bytes just written are still the bytes it holds; otherwise the edits
+      // made during the dialog would be marked saved without being written.
+      if (
+        activeFilePathRef.current === filePath &&
+        fileContentStateRef.current.content === content
+      ) {
+        contentState.markSaved();
+      }
 
       // Dispatch file save event to Filesync output
       window.dispatchEvent(

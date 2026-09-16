@@ -12,7 +12,7 @@ import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import TabPill from "@src/components/TabPill";
 import Textarea from "@src/components/Textarea";
-import { SectionRow } from "@src/modules/shared/layouts/SectionLayout";
+import { SectionRow } from "@src/components/layout/Section";
 
 import { InlineCardColumnStack } from "../../shared/InlineCardPrimitives";
 

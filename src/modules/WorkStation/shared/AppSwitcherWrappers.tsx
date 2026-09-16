@@ -264,7 +264,7 @@ SimulatorTabBarLeading.displayName = "SimulatorTabBarLeading";
  * {@link WorkstationTabHeader} strip below the tab bar, not here.
  */
 const WorkStationTabBarLeadingComponent: React.FC = () => (
-  <StationTabBarLeading />
+  <StationTabBarLeading trailingPadding={false} />
 );
 
 export const WorkStationTabBarLeading = memo(WorkStationTabBarLeadingComponent);

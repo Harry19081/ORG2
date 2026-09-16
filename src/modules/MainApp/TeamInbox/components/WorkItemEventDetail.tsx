@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Markdown from "@src/components/MarkDown";
+import { CARD_ROW_TOKENS } from "@src/components/layout/blocks";
 import {
   AlertCircleIcon,
   ArchiveArrowUpIcon,
@@ -11,7 +12,6 @@ import {
   Notification01Icon,
   SquareArrowUpRight02Icon,
 } from "@src/icons";
-import { CARD_ROW_TOKENS } from "@src/modules/shared/layouts/blocks";
 
 import {
   type TeamInboxNavigationIntent,

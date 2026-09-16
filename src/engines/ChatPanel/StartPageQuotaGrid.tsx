@@ -15,6 +15,11 @@ import {
   getQuotaBgColorClass,
   getQuotaTextColorClass,
 } from "@src/components/QuotaBar";
+import { SECTION_GAP_CLASSES } from "@src/components/layout/Section";
+import {
+  RuntimeRefreshButton,
+  RuntimeSectionHeader,
+} from "@src/features/RuntimeDataSource/RuntimeSectionHeader";
 import { useKeyVault } from "@src/hooks/keyVault";
 import {
   type AccountQuotaCard,
@@ -23,11 +28,6 @@ import {
 } from "@src/hooks/keyVault/accountQuotaDisplay";
 import { createLogger } from "@src/hooks/logger";
 import { ArrowLeft01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
-import {
-  RuntimeRefreshButton,
-  RuntimeSectionHeader,
-} from "@src/modules/shared/dataSource/RuntimeSectionHeader";
-import { SECTION_GAP_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
 
 const logger = createLogger("StartPageQuotaGrid");
 

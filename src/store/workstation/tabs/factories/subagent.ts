@@ -4,7 +4,7 @@
  * Tab factories for subagent details using defineTabFactory.
  */
 import { defineTabFactory } from "../tabFactory";
-import type { SubagentDetailTabData, WorkStationTab } from "../types";
+import type { SubagentDetailTabData } from "../types";
 
 export const subagentDetailTabFactory = defineTabFactory<SubagentDetailTabData>(
   {
@@ -14,25 +14,3 @@ export const subagentDetailTabFactory = defineTabFactory<SubagentDetailTabData>(
     icon: "MessageSquare",
   }
 );
-
-export function createSubagentDetailTab(
-  description: string,
-  subagentType?: string,
-  resultContent?: string,
-  success?: boolean,
-  subagentSessionId?: string,
-  elapsedMs?: number,
-  prompt?: string,
-  errorMessage?: string
-): WorkStationTab {
-  return subagentDetailTabFactory({
-    description,
-    subagentType,
-    resultContent,
-    success,
-    subagentSessionId,
-    elapsedMs,
-    prompt,
-    errorMessage,
-  });
-}

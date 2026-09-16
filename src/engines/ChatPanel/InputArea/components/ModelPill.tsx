@@ -30,7 +30,6 @@ import AnyIcon from "@src/components/AnyIcon";
 import { Message } from "@src/components/Message";
 import ModelIcon from "@src/components/ModelIcon";
 import ModelSelectorPill from "@src/components/ModelSelectorPill";
-import SelectorPill from "@src/components/SelectorPill";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { useConversationExecutionBinding } from "@src/engines/ChatPanel/ConversationExecutionBindingContext";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
@@ -82,7 +81,6 @@ const ModelPillComponent: React.FC = () => {
   const { t } = useTranslation();
   const modelPickerStyle = useAtomValue(modelPickerStyleAtom);
   const modelSegmentRef = useRef<HTMLButtonElement>(null);
-  const runtimeSegmentRef = useRef<HTMLButtonElement>(null);
   const [isRuntimeOpen, setIsRuntimeOpen] = useState(false);
   const [pendingRuntimePick, setPendingRuntimePick] = useState<{
     sessionId: string | null | undefined;
@@ -303,9 +301,19 @@ const ModelPillComponent: React.FC = () => {
   );
 
   const handleOpenModelSelector = useCallback(() => {
+    if (
+      conversationBinding?.readiness === "ready" &&
+      !conversationBinding.target &&
+      !conversationBinding.runtimeSelection &&
+      !pendingRuntimeSelection
+    ) {
+      setSelectorState({ isOpen: false });
+      setIsRuntimeOpen(true);
+      return;
+    }
     setIsRuntimeOpen(false);
     setSelectorState({ isOpen: true });
-  }, [setSelectorState]);
+  }, [conversationBinding, pendingRuntimeSelection, setSelectorState]);
 
   const handleToggleRuntimeSelector = useCallback(() => {
     if (!isRuntimeOpen) setSelectorState({ isOpen: false });
@@ -385,17 +393,6 @@ const ModelPillComponent: React.FC = () => {
     conversationBinding?.readiness === "loading"
       ? t("common:actions.loading")
       : (runtimeSelection?.agentName ?? t("sessions:creator.selectAgent"));
-  const runtimeIcon = runtimeSelection?.cliAgentType ? (
-    <ModelIcon agentType={runtimeSelection.cliAgentType} size={14} />
-  ) : runtimeSelection ? (
-    <AnyIcon
-      icon={resolveAgentIcon(runtimeSelection?.agentIconId)}
-      size={14}
-      className="text-text-2"
-    />
-  ) : (
-    <HugeiconsIcon icon={Infinity01Icon} size={14} className="text-text-2" />
-  );
   const paletteAdvancedConfig = pendingRuntimeSelection
     ? {
         keySource: KEY_SOURCE.OWN,
@@ -413,6 +410,29 @@ const ModelPillComponent: React.FC = () => {
       }
     >
       <ModelSelectorPill
+        harnessSwitch={
+          conversationBinding
+            ? {
+                label: runtimeLabel,
+                icon: runtimeSelection?.cliAgentType ? (
+                  <ModelIcon
+                    agentType={runtimeSelection.cliAgentType}
+                    size={14}
+                  />
+                ) : runtimeSelection ? (
+                  <AnyIcon
+                    icon={resolveAgentIcon(runtimeSelection.agentIconId)}
+                    size={14}
+                  />
+                ) : (
+                  <HugeiconsIcon icon={Infinity01Icon} size={14} />
+                ),
+                disabled: !runtimeReady,
+                onClick: handleToggleRuntimeSelector,
+              }
+            : undefined
+        }
+        paddingX="compact"
         ref={modelSegmentRef}
         selection={visiblePillSelection}
         defaultLabel={modelDefaultLabel}
@@ -423,7 +443,7 @@ const ModelPillComponent: React.FC = () => {
         dataTestId="chat-model-pill-model"
         ariaLabel={t("sessions:creator.selectModel")}
         isActiveSession={isActiveSession}
-        disabled={!conversationTargetReady}
+        disabled={!conversationTargetReady && !runtimeReady}
         disabledTooltip={
           conversationBinding?.readiness === "loading"
             ? t("common:actions.loading")
@@ -445,19 +465,6 @@ const ModelPillComponent: React.FC = () => {
     <>
       {conversationBinding && (
         <>
-          <SelectorPill
-            ref={runtimeSegmentRef}
-            icon={runtimeIcon}
-            label={runtimeLabel}
-            tooltip={t("sessions:creator.switchAgent")}
-            tooltipPosition="top"
-            active={effectiveRuntimeOpen}
-            disabled={!runtimeReady}
-            onClick={handleToggleRuntimeSelector}
-            size="sm"
-            ariaLabel={runtimeLabel}
-            dataTestId="chat-runtime-pill"
-          />
           <DispatchCategoryPicker
             style={modelPickerStyle}
             isOpen={effectiveRuntimeOpen}
@@ -468,7 +475,7 @@ const ModelPillComponent: React.FC = () => {
             currentCliAgentType={runtimeSelection?.cliAgentType}
             hideOrgs
             allowedCliAgentTypes={conversationBinding.nativeCliTargets}
-            anchorRef={runtimeSegmentRef}
+            anchorRef={modelSegmentRef}
             placement="top"
           />
         </>

@@ -41,7 +41,7 @@ interface UseEditorPaletteReturn {
 /**
  * Main hook to orchestrate EditorPalette functionality
  */
-export function useEditorPalette({
+function useEditorPalette({
   repoPath,
   initialMode = "file",
   initialQuery = "",
@@ -140,6 +140,9 @@ export function useEditorPalette({
 
   const commandMode = useCommandMode({
     enabled: isOpen && mode === "command",
+    searchTerm,
+    dispatch,
+    onClose,
   });
 
   const symbolMode = useSymbolMode({

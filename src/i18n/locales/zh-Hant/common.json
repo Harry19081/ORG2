@@ -407,7 +407,8 @@
     "clearSelection": "清除選擇",
     "clearAll": "全部清除",
     "expandView": "展開檢視",
-    "restoreSplitView": "恢復分割檢視"
+    "restoreSplitView": "恢復分割檢視",
+    "overwrite": "覆寫"
   },
   "status": {
     "yes": "是",
@@ -491,7 +492,7 @@
   },
   "optional": "可選",
   "common": {
-    "display": "顯示",
+    "display": "介面設定",
     "on": "開",
     "off": "關",
     "default": "默認",
@@ -560,7 +561,6 @@
     "globPatternsHint": "Glob 模式，逗號分隔",
     "outline": "大綱",
     "timeline": "時間線",
-    "indexing": "Index",
     "testExplorer": "測試瀏覽器",
     "installed": "已安裝",
     "extensionViews": "擴展視圖",
@@ -678,7 +678,6 @@
     "explorer": "資源管理器",
     "search": "搜索",
     "sourceControl": "源代碼管理",
-    "sessions": "Session",
     "myTabs": "我的分頁（{{count}}）",
     "design": "設計",
     "settings": "設置",
@@ -789,7 +788,6 @@
     "closePanel": "關閉面板",
     "showSidebar": "顯示側邊欄",
     "hideSidebar": "隱藏側邊欄",
-    "moreOptions": "更多選項",
     "zoomIn": "放大",
     "zoomOut": "縮小",
     "goBack": "後退",
@@ -820,7 +818,6 @@
     "movePanelToRight": "面板移至右側",
     "movePanelToBottom": "面板移至底部",
     "domTree": "DOM 樹",
-    "closeSession": "關閉 Session",
     "clearNetworkLogs": "清除網絡日誌",
     "clearConsole": "清除控制台",
     "copyToClipboard": "複製到剪貼板",
@@ -871,7 +868,6 @@
     "pleaseTryAgain": "請重試",
     "noFileOpen": "打開文件以開始編輯",
     "selectFileToEdit": "在資源管理器中選擇檔案",
-    "noTabs": "打開標籤頁以開始",
     "noTabsOpen": "打開項目以開始",
     "selectItemToStart": "在側邊欄中選擇項目",
     "noDatabaseConnected": "未連接數據庫",
@@ -982,7 +978,6 @@
     "notGitInitialized": "尚未初始化 Git",
     "notGitInitializedTooltip": "此工作目錄尚未有 .git 目錄。",
     "publishBranchToOrigin": "Publish 分支 \"{{branch}}\" 到 origin",
-    "scanningFiles": "正在掃描文件...",
     "branchTooltipSwitching": "分支：{{branch}}（切換中…）",
     "switchWorkspaceTooltip": "切換工作目錄",
     "switchWorktreeTooltip": "切換 Worktree",
@@ -993,12 +988,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Git 操作",
     "switchToSessionRepo": "切換到 {{name}}",
-    "embeddingProgress": "嵌入：已處理 {{count}} 個 chunk",
-    "embeddingProgressWithPercent": "嵌入：已處理 {{count}} 個 chunk（{{percent}}%）",
-    "embeddingShort": "嵌入 {{percent}}%",
-    "embeddingLabel": "嵌入",
-    "indexingProgress": "索引：{{processed}}/{{total}} 個文件（{{percent}}%）",
-    "indexingProgressWithFile": "索引：{{processed}}/{{total}} 個文件（{{percent}}%）\n當前：{{file}}",
     "ports": {
       "workspaceSection": "目前工作區",
       "externalSection": "外部",
@@ -1069,7 +1058,9 @@
         "skipped": "已跳過",
         "passed": "已通過"
       }
-    }
+    },
+    "fileChangedOnDiskTitle": "檔案在磁碟上已變更",
+    "fileChangedOnDiskBody": "「{{name}}」自你開啟後已在磁碟上變更。要用你的版本覆寫嗎？"
   },
   "git": {
     "loading": "正在加載 Git 狀態...",
@@ -1096,7 +1087,7 @@
       "createTokenButton": "建立 Token",
       "openGitSettingsButton": "開啟設定",
       "configureInSettings": "在設定中配置 Git",
-      "configureInSettingsDesc": "在 設定 → 連接 中加入 GitHub App 存取權限、儲存 token 或掃描本機憑證，然後重試此 Git 操作。"
+      "configureInSettingsDesc": "在 設定 → 連接 中加入 GitHub App 存取權限、儲存 token 或掃描本機憑證，然後重試此 Git 操作"
     },
     "actions": {
       "publish": "Publish",
@@ -1335,7 +1326,7 @@
       "cannotParseRepoName": "無法從 origin 遠端倉庫解析倉庫名稱",
       "authRequired": {
         "title": "連接 GitHub",
-        "description": "前往「設定 → 連接」以連接你的 GitHub 帳號。"
+        "description": "前往「設定 → 連接」以連接你的 GitHub 帳號"
       },
       "navigationTrail": "Pull request 導覽",
       "failedToLoad": "載入 pull request 失敗",
@@ -1505,15 +1496,46 @@
       "newIssueBodyPlaceholder": "描述此 issue（選填）…",
       "authRequired": {
         "title": "連接 GitHub",
-        "description": "前往「設定 → 連接」以連接你的 GitHub 帳號。"
+        "description": "前往「設定 → 連接」以連接你的 GitHub 帳號"
       },
       "reAuthRequired": "需要 GitHub 授權",
-      "reAuthDescription": "你的 GitHub token 已過期。請前往「設定 → 連接」重新連接。",
+      "reAuthDescription": "你的 GitHub token 已過期。請前往「設定 → 連接」重新連接",
       "goToSettings": "前往設定",
       "loadingTimeline": "正在載入活動…",
       "label": "Issue",
       "linkedLoading": "正在載入關聯項目",
       "detailNavigation": "Issue 導覽"
+    },
+    "branchSwitch": {
+      "title": "切換分支",
+      "conflictsTitle": "變更需要處理",
+      "blockedTitle": "切換分支需要處理",
+      "working": "正在儲存並切換…",
+      "viewSaved": "檢視已儲存的變更",
+      "current": "目前分支：{{branch}}",
+      "changedFiles": "{{count}} 個已變更檔案",
+      "question": "你想如何處理這些變更？",
+      "leave": "將變更留在 {{branch}}",
+      "leaveDescription": "儲存目前工作以便稍後繼續，並切換到乾淨的工作區",
+      "bring": "將變更帶到 {{branch}}",
+      "bringDescription": "將未提交的變更帶到目標分支",
+      "savedTitle": "已儲存的變更",
+      "nextPage": "下一頁",
+      "noSaved": "沒有已儲存的分支變更",
+      "applied": "已套用 · 復原副本",
+      "restore": "還原",
+      "savedAvailable": "此分支有可還原的已儲存變更",
+      "worktreeTitle": "此分支已在另一個工作樹中開啟",
+      "openWorktree": "開啟工作樹",
+      "activeTask": "有任務正在使用此工作樹",
+      "activeTaskDescription": "切換分支前，請等待任務完成、主動停止任務，或使用另一個工作樹",
+      "saveTitle": "切換前儲存檔案",
+      "saveDescription": "開啟的檔案有未儲存的編輯。請先儲存，再選擇將變更保留在哪裡",
+      "saveContinue": "全部儲存並繼續",
+      "saveFailed": "無法儲存所有檔案",
+      "multipleBuffers": "此檔案在多個編輯器中有變更。切換前請儲存或關閉這些編輯器",
+      "editedWhileSaving": "儲存期間檔案又被編輯。請檢查最新變更後重試",
+      "savePreview": "切換分支前，請在試算表編輯器中儲存或捨棄編輯"
     }
   },
   "selectors": {
@@ -1568,7 +1590,6 @@
         "createWorkspace": "建立新工作目錄"
       },
       "sources": {
-        "cloningFromGitHub": "正在從 GitHub 克隆",
         "cloningFromGitHubUrl": "通過 GitHub URL 克隆",
         "cloningFromMyGitHub": "從已連接的 GitHub 克隆",
         "creatingWorkspace": "正在建立新工作目錄",
@@ -1629,7 +1650,6 @@
         "createFrom": "基於分支創建",
         "deleteBranch": "刪除分支",
         "refresh": "刷新分支",
-        "checkoutDetachedSuccess": "已切換到 detached HEAD 狀態（當前提交）",
         "removeWorktree": "移除 Worktree",
         "newWorktree": "新建 Worktree...",
         "refreshPullRequests": "重新整理 Pull requests"
@@ -1770,11 +1790,6 @@
         "integrations": "Agent 與集成",
         "market": "市場",
         "actions": "操作"
-      },
-      "paramLabels": {
-        "repo": "倉庫",
-        "folder": "文件夾",
-        "branch": "分支"
       },
       "actions": {
         "showInFinder": {
@@ -2154,7 +2169,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "結束 ORG2？",
-    "subtitle": "正在執行的工作階段會保留目前狀態。你可以稍後重新開啟 ORG2。",
+    "subtitle": "正在執行的工作階段會保留目前狀態。你可以稍後重新開啟 ORG2",
     "cancel": "取消",
     "confirm": "結束"
   },
@@ -2184,7 +2199,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "需要「完整磁碟取用權限」",
-      "explain": "Safari 將 Cookie 儲存在受 macOS 保護的資料夾中。請在系統設定的「完整磁碟存取權限」中允許 ORG2，然後重新檢查。",
+      "explain": "Safari 將 Cookie 儲存在受 macOS 保護的資料夾中。請在系統設定的「完整磁碟存取權限」中允許 ORG2，然後重新檢查",
       "openSettings": "打開系統設定",
       "checkAgain": "重新檢查"
     },
@@ -2209,7 +2224,7 @@
     "doneSkipped_other": "已略過 {{count}} 個 Cookie",
     "empty": {
       "title": "找不到支援的瀏覽器",
-      "body": "請安裝帶有已儲存登入資訊的 Chrome、Edge、Brave 或 Firefox。"
+      "body": "請安裝帶有已儲存登入資訊的 Chrome、Edge、Brave 或 Firefox"
     },
     "category": {
       "banking": "銀行",
@@ -2218,7 +2233,7 @@
     },
     "errors": {
       "openSettingsFailed": "無法開啟系統設定",
-      "keychainDenied": "鑰匙圈存取遭拒。請重新選擇該設定檔並點選「允許」。",
+      "keychainDenied": "鑰匙圈存取遭拒。請重新選擇該設定檔並點選「允許」",
       "listFailed": "找不到可匯入的瀏覽器",
       "previewFailed": "無法從該瀏覽器讀取 Cookie",
       "importFailed": "無法匯入所選 Cookie"

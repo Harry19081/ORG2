@@ -48,6 +48,12 @@ import {
 } from "@src/components/Dropdown/tokens";
 import NumberInput from "@src/components/NumberInput";
 import Switch from "@src/components/Switch";
+import {
+  SECTION_CONTROL_STYLE,
+  SECTION_GAP_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { Add01Icon, Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import {
@@ -63,12 +69,6 @@ import {
   dedupeAgentsById,
   isSubAgentCandidate,
 } from "@src/modules/MainApp/AgentOrgs/utils/subAgentVisibility";
-import {
-  SECTION_CONTROL_STYLE,
-  SECTION_GAP_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 
 interface AddOption {
   value: string;

@@ -202,5 +202,3 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
     document.body
   );
 };
-
-export default SpotlightShellChrome;

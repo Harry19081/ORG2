@@ -8,14 +8,14 @@ import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { createLogger } from "@src/hooks/logger";
 import {
-  AppWindowIcon,
+  AppWindowMacIcon,
   ArrowExpand01Icon,
-  ArrowShrink01Icon,
-  BubbleChatIcon,
+  ArrowShrink02Icon,
   Cancel01Icon,
   HugeiconsIcon,
   LayoutAlignRightIcon,
   PanelRightIcon,
+  PanelRightOpenIcon,
 } from "@src/icons";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
@@ -24,13 +24,6 @@ import { openStationInNewWindowAtom } from "@src/store/workstation/stationWindow
 import type { StationMode } from "@src/types/ui/workstation";
 
 const logger = createLogger("StationPaneControls");
-
-/** i18n keys naming the detach action per station (shared with Spotlight). */
-export const OPEN_STATION_IN_NEW_WINDOW_LABEL_KEY: Record<StationMode, string> =
-  {
-    "my-station": "common:spotlightActions.openMyStationInNewWindow",
-    "agent-station": "common:spotlightActions.openAgentStationInNewWindow",
-  };
 
 /** i18n keys of the station display names, used as the window title. */
 export const STATION_TITLE_KEY: Record<StationMode, string> = {
@@ -75,14 +68,14 @@ export function StationOpenInNewWindowButton({
   }, [openStationInNewWindow, stationMode]);
   return (
     <TabBarTrailingIconButton
-      title={t(OPEN_STATION_IN_NEW_WINDOW_LABEL_KEY[stationMode])}
+      title={t("common:actions.openInNewWindow")}
       tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
       onClick={handleClick}
       data-testid={testId}
     >
       <HugeiconsIcon
-        icon={AppWindowIcon}
-        data-icon="app-window"
+        icon={AppWindowMacIcon}
+        data-icon="app-window-mac"
         size={14}
         strokeWidth={2}
       />
@@ -156,12 +149,10 @@ export function WorkstationMaximizeChatIcon({
 
 export function StationChatVisibilityButton({
   visible,
-  restoreIcon = "chat",
   onClick,
   testId,
 }: {
   visible: boolean;
-  restoreIcon?: "chat" | "shrink";
   onClick: () => void;
   testId?: string;
 }) {
@@ -177,20 +168,8 @@ export function StationChatVisibilityButton({
       data-testid={testId}
     >
       <HugeiconsIcon
-        icon={
-          visible
-            ? ArrowExpand01Icon
-            : restoreIcon === "shrink"
-              ? ArrowShrink01Icon
-              : BubbleChatIcon
-        }
-        data-icon={
-          visible
-            ? "maximize-2"
-            : restoreIcon === "shrink"
-              ? "minimize-2"
-              : "message-circle"
-        }
+        icon={visible ? ArrowExpand01Icon : ArrowShrink02Icon}
+        data-icon={visible ? "maximize-2" : "arrow-shrink-02"}
         size={14}
         strokeWidth={2}
       />
@@ -225,6 +204,106 @@ export function StationMaximizeChatButton({
         chatPanelPosition={chatPanelPosition}
         directionalHover={directionalHover}
       />
+    </TabBarTrailingIconButton>
+  );
+}
+
+/** One restore action when chat is hidden; distinct pane actions when split. */
+export function StationPaneControls({
+  chatVisible,
+  chatPanelPosition,
+  onToggleChat,
+  onMaximizeChat,
+  visibilityTestId,
+  maximizeTestId,
+}: {
+  chatVisible: boolean;
+  chatPanelPosition: ChatPanelPosition;
+  onToggleChat: () => void;
+  onMaximizeChat: () => void;
+  visibilityTestId?: string;
+  maximizeTestId?: string;
+}) {
+  return (
+    <>
+      <StationChatVisibilityButton
+        visible={chatVisible}
+        onClick={onToggleChat}
+        testId={visibilityTestId}
+      />
+      {chatVisible && (
+        <StationMaximizeChatButton
+          chatPanelPosition={chatPanelPosition}
+          directionalHover={false}
+          onClick={onMaximizeChat}
+          testId={maximizeTestId}
+        />
+      )}
+    </>
+  );
+}
+
+/** Chat-side maximize/restore action, shared with the pinned window chrome. */
+export function ChatPaneFocusButton({
+  focused,
+  chatPanelPosition,
+  onClick,
+  testId,
+}: {
+  focused: boolean;
+  chatPanelPosition: ChatPanelPosition;
+  onClick: () => void;
+  testId?: string;
+}) {
+  const { t } = useTranslation("sessions");
+  return (
+    <TabBarTrailingIconButton
+      title={t(focused ? "chat.showWorkstation" : "chat.maximizeChatPanel")}
+      shortcutId="maximize_chat"
+      tooltipPosition="bottom-end"
+      tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
+      nativeTitle={false}
+      onClick={onClick}
+      className="group"
+      data-testid={testId}
+    >
+      {focused ? (
+        <span className="flex h-4 w-4 items-center justify-center">
+          <HugeiconsIcon
+            icon={
+              chatPanelPosition === "left"
+                ? LayoutAlignRightIcon
+                : PanelRightIcon
+            }
+            data-icon={
+              chatPanelPosition === "left"
+                ? "layout-align-right"
+                : "panel-right"
+            }
+            size={HEADER_ICON_SIZE.md}
+            strokeWidth={1.75}
+            className="group-hover:hidden"
+          />
+          <HugeiconsIcon
+            icon={
+              chatPanelPosition === "left" ? PanelRightIcon : PanelRightOpenIcon
+            }
+            data-icon={
+              chatPanelPosition === "left" ? "panel-right" : "panel-right-open"
+            }
+            size={HEADER_ICON_SIZE.md}
+            strokeWidth={1.75}
+            className="hidden group-hover:block"
+          />
+        </span>
+      ) : (
+        <HugeiconsIcon
+          icon={ArrowExpand01Icon}
+          data-icon="maximize-2"
+          size={HEADER_ICON_SIZE.md}
+          strokeWidth={1.75}
+        />
+      )}
     </TabBarTrailingIconButton>
   );
 }

@@ -17,12 +17,14 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import Message from "@src/components/Message";
+import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
 import { useCopySessionReference } from "@src/features/Org2Cloud/useCopySessionReference";
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
 import {
   AppWindowMacIcon,
   ArrowBigRightDashIcon,
+  CompassIcon,
   Copy01Icon,
   CursorInWindowIcon,
   DeliveryBox01Icon,
@@ -38,16 +40,28 @@ import {
   Share02Icon,
   ThirdBracketIcon,
 } from "@src/icons";
+import { chatSendOnEnterAtom } from "@src/store/config/configAtom";
 import { sessionByIdAtom, upsertSession } from "@src/store/session";
+import { compactComposerInputAtom } from "@src/store/session/compactComposerInputAtom";
 import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
 import { openSessionInNewWindowAtom } from "@src/store/session/sessionTabPlacementAtom";
 import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import {
+  LINK_OPEN_TARGETS,
+  type LinkOpenTarget,
+  linkOpenTargetAtom,
+} from "@src/store/ui/linkOpenTargetAtom";
 import { isAgentSession } from "@src/util/session/sessionDispatch";
 
 import { SessionOpenInAppMenuItem } from "./SessionOpenInAppMenuItem";
 
 const HEADER_ICON_SIZE = 14;
+
+const LINK_OPEN_TARGET_LABEL_KEYS = {
+  internal: "chat.navigation.internalBrowser",
+  external: "chat.navigation.externalBrowser",
+} as const satisfies Record<LinkOpenTarget, string>;
 
 export interface SessionHeaderActionsMenuProps {
   activeSessionExists: boolean;
@@ -134,7 +148,14 @@ export const SessionHeaderActionsMenu: React.FC<
   const [collapseToolActivity, setCollapseToolActivity] = useAtom(
     collapseToolActivityAtom
   );
+  const [linkOpenTarget, setLinkOpenTarget] = useAtom(linkOpenTargetAtom);
+  const [compactComposerInput, setCompactComposerInput] = useAtom(
+    compactComposerInputAtom
+  );
+  const [sendOnEnter, setSendOnEnter] = useAtom(chatSendOnEnterAtom);
   const showSkillsLabel = t("chat.startPage.showSkills");
+  const compactInputLabel = t("chat.compactInput");
+  const sendMethodLabel = t("chat.sendMethod");
 
   // Track this / Convert to Project (orgtrack/v1 §7.2). Self-contained:
   // the backend command persists the switch + root WorkItem; only the
@@ -491,9 +512,9 @@ export const SessionHeaderActionsMenu: React.FC<
               appOpenSessionId={appOpenSessionId}
               onCloseMenu={toggleHeaderActionsMenu}
             />
+            <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
             {showTranscriptActions && (
               <>
-                <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
                 <ActionSubmenu
                   label={t("common:common.display")}
                   icon={
@@ -581,6 +602,16 @@ export const SessionHeaderActionsMenu: React.FC<
                   dataTestId="session-input-settings-submenu"
                 >
                   <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">{sendMethodLabel}</span>
+                    <SendOnEnterPill
+                      size="small"
+                      ariaLabel={sendMethodLabel}
+                      dataTestId="session-menu-send-on-enter"
+                      sendOnEnter={sendOnEnter}
+                      onChange={setSendOnEnter}
+                    />
+                  </div>
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
                     <span className="flex-1 truncate">{showSkillsLabel}</span>
                     <Switch
                       checked={pinnedActionsVisible}
@@ -590,9 +621,51 @@ export const SessionHeaderActionsMenu: React.FC<
                       dataTestId="session-menu-show-skills-toggle"
                     />
                   </div>
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">{compactInputLabel}</span>
+                    <Switch
+                      checked={compactComposerInput}
+                      onCheckedChange={setCompactComposerInput}
+                      size="small"
+                      ariaLabel={compactInputLabel}
+                      dataTestId="session-menu-compact-input-toggle"
+                    />
+                  </div>
                 </ActionSubmenu>
               </>
             )}
+            <ActionSubmenu
+              label={t("chat.navigation.title")}
+              icon={
+                <HugeiconsIcon
+                  icon={CompassIcon}
+                  size={DROPDOWN_ITEM.iconSize}
+                  strokeWidth={1.75}
+                />
+              }
+              dataTestId="session-navigation-submenu"
+            >
+              <div className={DROPDOWN_CLASSES.sectionLabel}>
+                {t("chat.navigation.openLinksIn")}
+              </div>
+              {LINK_OPEN_TARGETS.map((target) => {
+                const selected = linkOpenTarget === target;
+                return (
+                  <DropdownItem
+                    key={target}
+                    role="menuitemradio"
+                    ariaChecked={selected}
+                    tabIndex={0}
+                    fullWidth
+                    selected={selected}
+                    onClick={() => setLinkOpenTarget(target)}
+                    dataTestId={`session-menu-link-target-${target}`}
+                  >
+                    {t(LINK_OPEN_TARGET_LABEL_KEYS[target])}
+                  </DropdownItem>
+                );
+              })}
+            </ActionSubmenu>
           </ActionMenuSurface>,
           document.body
         )}

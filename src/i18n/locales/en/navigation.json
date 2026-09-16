@@ -45,7 +45,8 @@
     "projects": "Projects",
     "projectManager": "Project Manager",
     "diff": "Diff",
-    "terminals": "Terminals"
+    "terminals": "Terminals",
+    "closeSettings": "Close Settings"
   },
   "workstation": {
     "agentComputer": {
@@ -191,6 +192,19 @@
     "guide": {
       "startSession": "Start a session",
       "connectOrganization": "Connect or create a workspace"
+    },
+    "sections": {
+      "section": "Section",
+      "create": "New section",
+      "name": "Section name",
+      "rename": "Rename section",
+      "delete": "Delete section (keep sessions)",
+      "remove": "Remove from section",
+      "up": "Move up",
+      "down": "Move down",
+      "manage": "Manage section",
+      "more": "Load more",
+      "retry": "Retry"
     }
   },
   "collaboration": {
@@ -213,11 +227,11 @@
       "forkModelFallback": "The owner's model {{model}} isn't available with your keys — this fork will use {{fallback}} instead.",
       "forkModelUnavailable": "The owner's model {{model}} isn't available with your keys — choose a model before running this fork.",
       "forkPickCheckoutTitle": "Select your local checkout of {{repo}}",
-      "forkPickCheckoutHint": "The fork of \"{{session}}\" continues work on {{repo}}. Pick the workspace repo it should run in — only checkouts of that repo are selectable.",
+      "forkPickCheckoutHint": "The fork of \"{{session}}\" continues work on {{repo}}. Pick the workspace repo it should run in — only checkouts of that repo are selectable",
       "forkPickCheckoutClone": "Don't see it? Clone the repo and add it as a workspace first, then fork again.",
       "forkCheckoutMismatch": "The selected folder is not a checkout of {{repo}} — fork of \"{{session}}\" cancelled. Clone the repo first, then fork again.",
       "forkSetupTitle": "Continue on this machine",
-      "forkSetupHint": "Create a writable continuation of \"{{session}}\" using your local checkout and credentials.",
+      "forkSetupHint": "Create a writable continuation of \"{{session}}\" using your local checkout and credentials",
       "forkSetupWorkspace": "Workspace",
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
@@ -265,26 +279,26 @@
     "deleteRoleCancel": "Cancel",
     "deleteRoleOk": "Delete",
     "deleteRoleTitle": "Delete role?",
-    "followUpSuggestionsDesc": "Suggest possible next steps after a completed Work Item turn. This uses an additional model request.",
+    "followUpSuggestionsDesc": "Suggest possible next steps after a completed Work Item turn. This uses an additional model request",
     "followUpSuggestionsLabel": "Agent follow-up suggestions",
-    "goalMaxTurnsDesc": "Keep working toward my last request for up to N extra turns after the agent would normally stop (0 = off).",
+    "goalMaxTurnsDesc": "Keep working toward my last request for up to N extra turns after the agent would normally stop (0 = off)",
     "goalMaxTurnsLabel": "Goal continuation budget",
     "guidanceLabel": "Agent guidance",
     "guidancePlaceholder": "How should the agent adapt its behavior when this role is active?",
-    "modeSwitchAutoPlanDesc": "Auto-switch pending Plan mode suggestions when their confirmation timer expires.",
+    "modeSwitchAutoPlanDesc": "Auto-switch pending Plan mode suggestions when their confirmation timer expires",
     "modeSwitchAutoPlanLabel": "Mode switch auto-plan",
     "newRoleDefaultLabel": "Custom role",
-    "pageDescription": "Define the role you're playing right now. The agent reads the active role's guidance and adapts its behavior accordingly — for example, asking fewer clarifying questions when you're heads-down, or batching summaries when you're away.",
+    "pageDescription": "Define the role you're playing right now. The agent reads the active role's guidance and adapts its behavior accordingly — for example, asking fewer clarifying questions when you're heads-down, or batching summaries when you're away",
     "pageTitle": "My Roles",
-    "planAutoApproveDesc": "Auto-approve pending plans after N seconds (0 = wait for me).",
+    "planAutoApproveDesc": "Auto-approve pending plans after N seconds (0 = wait for me)",
     "planAutoApproveLabel": "Plan auto-approve",
-    "questionAutoSkipDesc": "Auto-skip pending agent questions after N seconds (0 = wait for me).",
+    "questionAutoSkipDesc": "Auto-skip pending agent questions after N seconds (0 = wait for me)",
     "questionAutoSkipLabel": "Question auto-skip",
     "roleNameLabel": "Name",
     "roleNamePlaceholder": "Role name",
     "stanceAutonomous": "Autonomous — never wait for me",
     "stanceDeferAndBatch": "Defer & batch — work first, ask later",
-    "stanceDesc": "How the agent treats blocking decisions while this role is active.",
+    "stanceDesc": "How the agent treats blocking decisions while this role is active",
     "stanceInteractive": "Interactive — ask me freely",
     "stanceLabel": "Behavior stance"
   },

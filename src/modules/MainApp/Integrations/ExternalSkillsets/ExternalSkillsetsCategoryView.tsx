@@ -9,14 +9,14 @@ import { useTranslation } from "react-i18next";
 
 import TabPill from "@src/components/TabPill";
 import {
-  type ExternalSkillsetsTab,
-  extensionKindForSkillsetTab,
-} from "@src/config/mainAppPaths";
-import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InternalHeader,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import {
+  type ExternalSkillsetsTab,
+  extensionKindForSkillsetTab,
+} from "@src/config/mainAppPaths";
 
 import { McpCategoryView } from "../Mcp/McpCategoryView";
 import type { McpCategoryTableProps } from "../Mcp/categoryTableProps";

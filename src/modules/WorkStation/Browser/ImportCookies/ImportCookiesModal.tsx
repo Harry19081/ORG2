@@ -32,6 +32,7 @@ import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import { InlineBanner } from "@src/components/InlineBanner";
 import SearchInput from "@src/components/SearchInput";
+import PanelFooter from "@src/components/layout/blocks/PanelFooter";
 import {
   ArrowRight01Icon,
   CheckmarkCircle01Icon,
@@ -44,7 +45,6 @@ import {
   Mail01Icon,
   Shield01Icon,
 } from "@src/icons";
-import PanelFooter from "@src/modules/shared/layouts/blocks/PanelFooter";
 import Modal from "@src/scaffold/ModalSystem";
 
 import {

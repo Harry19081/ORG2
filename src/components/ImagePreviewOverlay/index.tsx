@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import Slider from "@src/components/Slider";
+import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader";
 import {
   Add01Icon,
   ArrowLeft01Icon,
@@ -20,7 +21,6 @@ import {
   HugeiconsIcon,
   MinusSignIcon,
 } from "@src/icons";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader";
 import Modal from "@src/scaffold/ModalSystem";
 import { releaseImageUrl } from "@src/util/file/binaryUtils";
 

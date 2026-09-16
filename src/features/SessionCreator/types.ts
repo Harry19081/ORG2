@@ -18,14 +18,7 @@ import type { OrgMemberLaunchOverride } from "@src/modules/MainApp/AgentOrgs/typ
 // File Upload Types
 // ============================================
 
-export interface UploadedFile {
-  id: string;
-  name: string;
-  type: "text" | "image" | "document" | "folder";
-  file?: File;
-  /** File path for Tauri drops (used for image preview) */
-  path?: string;
-}
+export type { UploadedFile } from "@src/contracts/session/creator";
 
 export const SESSION_CREATOR_LAUNCH_MODE = {
   START_FOREGROUND: "start_foreground",

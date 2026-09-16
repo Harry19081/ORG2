@@ -66,6 +66,14 @@ export function getCodeMirrorTheme(): Extension {
  */
 export const CODEMIRROR_VISUAL_OVERRIDE_THEME = Prec.highest(
   EditorView.theme({
+    "& .cm-searchMatch, & .cm-searchMatch-selected": {
+      backgroundColor:
+        "var(--text-selection, var(--color-primary-2)) !important",
+    },
+    "& .cm-searchMatch-selected": {
+      outline: "1px solid var(--color-primary-6)",
+      outlineOffset: "-1px",
+    },
     "& .cm-content": {
       caretColor: "var(--cm-editor-caret, var(--color-primary-6)) !important",
     },
@@ -106,6 +114,7 @@ export const CODEMIRROR_BASE_LAYOUT_THEME = EditorView.theme({
   "&": {
     height: "100%",
     fontSize: CODE_FONT_SIZE,
+    fontWeight: "400",
     fontFamily: CODE_FONT_FAMILY,
     backgroundColor: "var(--cm-editor-background)",
   },

@@ -6,14 +6,17 @@
 import { writeTextFile } from "@tauri-apps/plugin-fs";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import type { ConflictResolutionChoice } from "@src/features/CodeMirror";
 import { createLogger } from "@src/hooks/logger";
+import { registerBranchSwitchEditor } from "@src/services/git/operations/branchSwitchEditors";
 import {
   deleteGitDiffEditDraft,
   restoreGitDiffEditDraft,
+  saveGitDiffDraftForSwitch,
   setGitDiffEditDraft,
 } from "@src/store/workstation/codeEditor/gitDiffEditDrafts";
 import type { GitFile } from "@src/types/git/types";
@@ -134,6 +137,18 @@ export function useGitDiffEditBuffer({
   }, []);
 
   // Git status context for refreshing after save
+  useEffect(() => {
+    if (!gitFile) return;
+    return registerBranchSwitchEditor({
+      path: gitFile.path,
+      dirty: () => hasUnsavedChanges,
+      save: async () => {
+        await saveGitDiffDraftForSwitch(gitFile.path);
+        flushSync(() => setHasUnsavedChanges(false));
+      },
+    });
+  }, [gitFile, hasUnsavedChanges]);
+
   const { forceRefresh } = useGitStatus();
 
   // Handle save

@@ -22,17 +22,17 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
 import type { TabPillItem } from "@src/components/TabPill";
-import { Cancel01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   PANEL_HEADER_TOKENS,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
+import { Cancel01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import {

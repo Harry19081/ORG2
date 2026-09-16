@@ -12,6 +12,10 @@ import SettingsTable, {
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
+import {
+  DETAIL_PANEL_TOKENS,
+  ScrollPreservation,
+} from "@src/components/layout/blocks";
 import type { CursorRepo } from "@src/hooks/policies";
 import {
   Add01Icon,
@@ -27,10 +31,6 @@ import type {
   McpServerStatus,
   McpToolDef,
 } from "@src/modules/MainApp/AgentOrgs/config/mcp/useMcpServers";
-import {
-  DETAIL_PANEL_TOKENS,
-  ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
 
 import { selectedRowClassName } from "../../Tables/shared";
 import type { DetailMode } from "../../types";

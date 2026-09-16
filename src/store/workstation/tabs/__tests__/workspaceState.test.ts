@@ -52,7 +52,6 @@ const EXPECTED_OWNERSHIP: Record<WorkStationTabType, WorkstationTabOwnership> =
     "project-linear-work-items": "shared-resource",
     "project-settings": "shared-resource",
     "project-org": "shared-resource",
-    "project-org-settings": "shared-resource",
     "project-git-sync-review": "shared-resource",
     "project-workitems": "shared-resource",
     "workItem-detail": "shared-resource",
@@ -113,7 +112,7 @@ describe("WorkStation tab ownership policy", () => {
       })
     );
 
-    expect(results).toHaveLength(33);
+    expect(results).toHaveLength(32);
     expect(results.every(({ actual, expected }) => actual === expected)).toBe(
       true
     );

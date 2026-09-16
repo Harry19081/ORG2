@@ -1,5 +1,6 @@
-import { ROUTES } from "@src/config/routes";
+import { ROUTES, isSettingsPath } from "@src/config/routes";
 import { navigateApp as dispatchNavigate } from "@src/router/navigateApp";
+import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 const getStore = () => getInstrumentedStore();
@@ -15,6 +16,19 @@ export const AppViewService = {
 
   async openSettings(): Promise<boolean> {
     dispatchNavigate(ROUTES.app.settings.path);
+    return true;
+  },
+
+  /**
+   * Leave the Settings surface, restoring the WorkStation URL the user came
+   * from. Synchronous and guarded by the pathname so the close-tab shortcut
+   * can ask "did this close Settings?" before falling through to the
+   * WorkStation tab strip. Returns false when Settings is not open.
+   */
+  closeSettings(pathname: string = window.location.pathname): boolean {
+    if (!isSettingsPath(pathname)) return false;
+    const returnPath = getStore().get(settingsReturnPathAtom);
+    dispatchNavigate(returnPath || ROUTES.workStation.base.path);
     return true;
   },
 

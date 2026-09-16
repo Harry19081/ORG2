@@ -120,12 +120,14 @@ export function useSubmitMessage({
       }
 
       const isExplicitAction = options.source === "explicit-action";
+      const editorTextAtSubmit =
+        refs.composerInputRef.current.getTextWithPills();
       const submitComposerSnapshot = isExplicitAction
         ? undefined
         : refs.composerInputRef.current.getSnapshot();
       const liveDisplayText = submitComposerSnapshot
         ? serializeSubmissionSnapshot(submitComposerSnapshot, false)
-        : refs.composerInputRef.current.getTextWithPills();
+        : editorTextAtSubmit;
       const resolvedInput = resolveSubmitInput(
         options,
         liveDisplayText,
@@ -282,8 +284,10 @@ export function useSubmitMessage({
           refs.composerInputRef.current.getTextWithPills();
         const editorStillContainsSubmittedText =
           !isExplicitAction &&
-          (editorTextBeforeClear === displayText ||
-            editorTextBeforeClear.trim() === displayText.trim());
+          // Compare the editor with itself before preprocessing. Snapshot
+          // serialization and MCP expansion can change the outgoing text
+          // without the user having edited the draft.
+          editorTextBeforeClear === editorTextAtSubmit;
         if (editorStillContainsSubmittedText) {
           refs.composerInputRef.current.clear();
           refs.setHasContent(false);

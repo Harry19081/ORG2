@@ -7,10 +7,7 @@
  * Sections use grow for proportional sizing and resize by adjusting
  * the grow values of adjacent sections.
  *
- * Used by Workstation primary sidebars:
- * - EditorPrimarySidebar (Code Editor)
- * - DatabasePrimarySidebar (Database Manager)
- * - BrowserPrimarySidebar (Browser)
+ * Used by Workstation primary sidebars.
  *
  * PERFORMANCE (Jan 2026):
  * Uses lazy mounting - tabs only mount when first visited, then stay mounted
@@ -26,18 +23,9 @@ import React, {
   useState,
   useTransition,
 } from "react";
-import { createPortal } from "react-dom";
 
-import Button from "@src/components/Button";
-import DropdownSelectedCheck from "@src/components/Dropdown/DropdownSelectedCheck";
-import {
-  DROPDOWN_CLASSES,
-  DROPDOWN_PANEL,
-  DROPDOWN_WIDTHS,
-} from "@src/components/Dropdown/tokens";
 import TabPill from "@src/components/TabPill";
 import { NoDragRegion } from "@src/components/WindowChrome";
-import { useDropdownEngine } from "@src/hooks/dropdown";
 import { SIDEBAR_MEMORY_KIND, useSidebarMemoryEntry } from "@src/hooks/perf";
 
 import { usePrimarySidebarSurface } from "../hooks/usePrimarySidebarSurface";
@@ -94,15 +82,6 @@ export interface PrimarySidebarLayoutWithSectionsProps {
   /** Whether to show only icons in tabs (VSCode style, default: true) */
   tabIconOnly?: boolean;
 
-  /** Width class - if not provided, will fill available width */
-  widthClass?: string;
-
-  /** Global section that persists across all tabs (e.g., AI Control) */
-  globalSection?: PanelSection;
-
-  /** Optional header rendered above the TabPill row. */
-  headerSlot?: ReactNode;
-
   /** When true, the tab pill row is not rendered (useful for single-tab sidebars) */
   hideTabs?: boolean;
 }
@@ -118,9 +97,6 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
       activeTab,
       onTabChange,
       tabIconOnly = true,
-      widthClass,
-      globalSection,
-      headerSlot,
       hideTabs = false,
     }) => {
       const { surfaceBgClass } = usePrimarySidebarSurface();
@@ -165,10 +141,6 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
         });
         return initial;
       });
-
-      // Track collapsed state for global section (separate from per-tab sections)
-      const [globalSectionCollapsed, setGlobalSectionCollapsed] =
-        useState<boolean>(globalSection?.defaultCollapsed || false);
 
       // Track resize state
       const [resizeState, setResizeState] = useState<{
@@ -279,29 +251,6 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
         [activeTab, tabs, mountedTabs]
       );
 
-      // Tab list dropdown (expandable view list)
-      const {
-        isOpen: tabListOpen,
-        isPositioned: tabListPositioned,
-        toggle: _toggleTabList,
-        close: closeTabList,
-        triggerRef: _tabListTriggerRef,
-        panelRef: tabListPanelRef,
-        panelPosition: tabListPosition,
-      } = useDropdownEngine<HTMLButtonElement>({
-        gap: DROPDOWN_PANEL.triggerGapTight,
-        placement: "bottom",
-        align: "right",
-      });
-
-      const handleTabListSelect = useCallback(
-        (key: string) => {
-          onTabChange(key);
-          closeTabList();
-        },
-        [onTabChange, closeTabList]
-      );
-
       const activeTabConfig = tabs.find((tab) => tab.key === activeTab);
       const mountedSectionCount = tabsToRender.reduce(
         (sum, tab) => sum + (tab.sections?.length ?? (tab.rawContent ? 1 : 0)),
@@ -315,12 +264,11 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
       useSidebarMemoryEntry({
         kind: SIDEBAR_MEMORY_KIND.SECOND_LEVEL,
         label: activeLabel,
-        items: tabs.length + mountedSectionCount + (globalSection ? 1 : 0),
-        sections: mountedSectionCount + (globalSection ? 1 : 0),
+        items: tabs.length + mountedSectionCount,
+        sections: mountedSectionCount,
         tabs: tabs.length,
         source: {
           activeTab,
-          globalSectionKey: globalSection?.key,
           mountedTabs: Array.from(mountedTabs),
           tabs: tabs.map((tab) => ({
             key: tab.key,
@@ -333,21 +281,15 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
 
       return (
         <div
-          className={`station-sidebar-scroll-area flex h-full min-h-0 flex-col ${surfaceBgClass} ${widthClass || "w-full"}`}
+          className={`station-sidebar-scroll-area flex h-full min-h-0 w-full flex-col ${surfaceBgClass}`}
         >
-          {/* App switcher + tab pills: transparent chrome (no banded fill) */}
+          {/* Tab pills: transparent chrome (no banded fill) */}
           <div
             className="flex shrink-0 flex-col bg-transparent"
             data-tauri-drag-region
             style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
           >
-            {headerSlot && (
-              <NoDragRegion className="flex shrink-0">
-                {headerSlot}
-              </NoDragRegion>
-            )}
-
-            {/* Tabs Row - TabPill icons + expand chevron */}
+            {/* Tabs row */}
             {!hideTabs && (
               <div className="relative flex h-[40px] shrink-0 items-center bg-transparent">
                 <NoDragRegion className="mx-auto flex items-center justify-center gap-1">
@@ -365,52 +307,6 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
               </div>
             )}
           </div>
-
-          {/* Tab list dropdown portal */}
-          {tabListOpen &&
-            tabListPositioned &&
-            createPortal(
-              <div
-                ref={tabListPanelRef}
-                className={`${DROPDOWN_CLASSES.panel} ${DROPDOWN_WIDTHS.sidebarMenuClass} ${DROPDOWN_PANEL.paddingClass}`}
-                style={{
-                  position: "fixed",
-                  top: tabListPosition.top,
-                  ...(tabListPosition.right !== undefined
-                    ? { right: tabListPosition.right }
-                    : { left: tabListPosition.left }),
-                  zIndex: DROPDOWN_PANEL.zIndex,
-                }}
-              >
-                <div className={DROPDOWN_CLASSES.itemsColumn}>
-                  {tabs.map((tab) => (
-                    <Button
-                      layout="custom"
-                      appearance="custom"
-                      key={tab.key}
-                      htmlType="button"
-                      className={`${DROPDOWN_CLASSES.item} ${
-                        tab.key === activeTab
-                          ? DROPDOWN_CLASSES.itemSelected
-                          : DROPDOWN_CLASSES.itemHover
-                      } flex w-full items-center justify-between gap-2`}
-                      onClick={() => handleTabListSelect(tab.key)}
-                    >
-                      {tab.icon && (
-                        <span className="flex shrink-0 items-center text-text-2">
-                          {tab.icon}
-                        </span>
-                      )}
-                      <span className="flex-1 truncate text-[12px]">
-                        {tab.label}
-                      </span>
-                      {tab.key === activeTab && <DropdownSelectedCheck />}
-                    </Button>
-                  ))}
-                </div>
-              </div>,
-              document.body
-            )}
 
           {/* PERFORMANCE: Render the active tab immediately, then keep previously visited tabs mounted hidden. */}
           {tabsToRender.map((tab) => {
@@ -450,26 +346,6 @@ export const PrimarySidebarLayoutWithSections: React.FC<PrimarySidebarLayoutWith
               </div>
             );
           })}
-
-          {/* Global Section - Persists across all tabs */}
-          {globalSection && (
-            <CollapsibleSection
-              key={globalSection.key}
-              title={globalSection.title}
-              flexGrow={0}
-              resizable={false}
-              isLast={true}
-              collapsed={globalSectionCollapsed}
-              onCollapseChange={setGlobalSectionCollapsed}
-              actions={globalSection.actions}
-              onResizeStart={() => {}}
-              autoHeight={true}
-              showTopBorder={true}
-              headerTestId={globalSection.headerTestId}
-            >
-              {globalSection.content}
-            </CollapsibleSection>
-          )}
         </div>
       );
     }
