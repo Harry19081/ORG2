@@ -173,6 +173,7 @@ export const BundledFileEntry: React.FC<{
             enableDirtyDiff={false}
             enableFindReplace={false}
             enableGoToLine={false}
+            enableCodeNavigation={false}
             registerWithService={false}
           />
         </div>
