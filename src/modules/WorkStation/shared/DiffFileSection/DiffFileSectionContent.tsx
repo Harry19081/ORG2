@@ -50,6 +50,7 @@ export function DiffFileSectionContent({
   return (
     <SelectedTextAddToChat
       displayName={fileName || file.path}
+      filePath={file.path}
       enabled={expanded}
       scopeKey={file.path}
     >

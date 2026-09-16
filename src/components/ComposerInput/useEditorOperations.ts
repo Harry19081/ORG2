@@ -14,6 +14,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 
 import { canInsertLineBreak } from "@src/util/data/canInsertLineBreak";
 
+import { findUrlWordEndingAt } from "./markdownLinkSegments";
 import {
   insertNodeAtCaret,
   placeCaretAfter,
@@ -80,6 +81,13 @@ export interface UseEditorOperationsResult {
   clearHost: () => void;
   /** Insert a newline only if the first line stays nonblank. Returns success. */
   insertNewline: () => boolean;
+  /**
+   * Turn the URL word that ends at the caret into a pill, as the user types a
+   * separator after it. Returns whether a pill was inserted.
+   */
+  autolinkUrlBeforeCaret: (
+    buildPill: (url: string) => ComposerPillAttrs | null
+  ) => boolean;
   /** Focus the editor at the end */
   focusHost: () => void;
   /** Remove the first pill whose `filePath` matches */
@@ -180,6 +188,45 @@ export function useEditorOperations(): UseEditorOperationsResult {
     }
     if (lastNode) placeCaretAfter(lastNode);
   }, []);
+
+  const autolinkUrlBeforeCaret = useCallback(
+    (buildPill: (url: string) => ComposerPillAttrs | null): boolean => {
+      const host = hostRef.current;
+      const selection = window.getSelection();
+      if (!host || !selection?.rangeCount || !selection.isCollapsed) {
+        return false;
+      }
+      const caret = selection.getRangeAt(0);
+      const node = caret.startContainer;
+      if (node.nodeType !== Node.TEXT_NODE || !host.contains(node)) {
+        return false;
+      }
+      const text = node as Text;
+      const word = findUrlWordEndingAt(text.data, caret.startOffset);
+      if (!word) return false;
+      const attrs = buildPill(word.url);
+      if (!attrs) return false;
+
+      // Replace only the address; punctuation typed after it stays as text.
+      const address = document.createRange();
+      address.setStart(text, word.start);
+      address.setEnd(text, word.start + word.url.length);
+      address.deleteContents();
+      selection.collapse(text, word.start);
+      insertPill(attrs);
+
+      // insertPill parks the caret at the end of the text after the pill,
+      // which is wrong when the address was typed mid-line. Put it back where
+      // the user was typing: after any trailing punctuation.
+      const pill = host.querySelector<HTMLElement>("[data-last-inserted-pill]");
+      const following = pill?.nextSibling;
+      if (following?.nodeType === Node.TEXT_NODE) {
+        selection.collapse(following, word.trailing.length);
+      }
+      return true;
+    },
+    [insertPill]
+  );
 
   const insertNewline = useCallback(() => {
     const host = hostRef.current;
@@ -467,6 +514,7 @@ export function useEditorOperations(): UseEditorOperationsResult {
       captureSnapshot,
       clearHost,
       insertNewline,
+      autolinkUrlBeforeCaret,
       focusHost,
       removePillByPath,
       isHostEmpty,
@@ -486,6 +534,7 @@ export function useEditorOperations(): UseEditorOperationsResult {
       captureSnapshot,
       clearHost,
       insertNewline,
+      autolinkUrlBeforeCaret,
       focusHost,
       removePillByPath,
       isHostEmpty,

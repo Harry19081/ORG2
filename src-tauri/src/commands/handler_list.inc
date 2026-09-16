@@ -659,6 +659,7 @@ infrastructure::storage_commands::get_disk_usage,
 infrastructure::storage_commands::get_memory_storage_path,
 infrastructure::storage_commands::clear_storage_category,
 // Frontend log persistence
+infrastructure::clipboard_html::read_clipboard_html,
 infrastructure::frontend_log::write_frontend_log,
 infrastructure::frontend_log::get_logs_directory,
 // Canvas react-artifact publishing (served back via the canvas-artifact custom scheme)
