@@ -15,11 +15,18 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import SegmentedTextPill from "@src/components/SegmentedTextPill";
+import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
 import { CREATOR_COMPOSER_POSITION } from "@src/config/sessionCreatorConfig";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { getDropdownPanelStyle, useDropdownEngine } from "@src/hooks/dropdown";
-import { HugeiconsIcon, Layers01Icon, MoreHorizontalIcon } from "@src/icons";
+import {
+  HugeiconsIcon,
+  InputCursorTextIcon,
+  Layers01Icon,
+  MoreHorizontalIcon,
+} from "@src/icons";
+import { chatSendOnEnterAtom } from "@src/store/config/configAtom";
 import { cliUpdateAlertsEnabledAtom } from "@src/store/session/cliUpdateAlertsAtom";
 import { creatorComposerPositionAtom } from "@src/store/session/creatorComposerPositionAtom";
 import { creatorLaunchpadActionsVisibleAtom } from "@src/store/session/creatorLaunchpadActionsVisibleAtom";
@@ -36,7 +43,7 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
   );
   const composerPosition = useAtomValue(creatorComposerPositionAtom);
   const setComposerPosition = useSetAtom(changeCreatorComposerPositionAtom);
-  const [trailPosition, setTrailPosition] = useAtom(
+  const [repoBarPosition, setRepoBarPosition] = useAtom(
     creatorRepoChromePositionAtom
   );
   const [launchpadActionsVisible, setLaunchpadActionsVisible] = useAtom(
@@ -45,6 +52,7 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
   const [pinnedActionsVisible, setPinnedActionsVisible] = useAtom(
     pinnedActionsVisibleAtom
   );
+  const [sendOnEnter, setSendOnEnter] = useAtom(chatSendOnEnterAtom);
   const {
     isOpen,
     isPositioned,
@@ -64,6 +72,7 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
   const showQuickActionsLabel = t("chat.startPage.showQuickActions");
   const showSkillsLabel = t("chat.startPage.showSkills");
   const showCliUpdateLabel = t("chat.startPage.showCliUpdate");
+  const sendMethodLabel = t("chat.sendMethod");
 
   return (
     <>
@@ -105,7 +114,7 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
             }}
           >
             <ActionSubmenu
-              label={t("chat.startPage.uiControls")}
+              label={t("common:common.display")}
               icon={
                 <HugeiconsIcon
                   icon={Layers01Icon}
@@ -113,7 +122,7 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
                   strokeWidth={1.75}
                 />
               }
-              dataTestId="new-chat-ui-controls-submenu"
+              dataTestId="new-chat-ui-settings-submenu"
             >
               <div className={DROPDOWN_CLASSES.menuControlItem}>
                 <span className="min-w-0 flex-1 truncate">
@@ -139,25 +148,6 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
               </div>
               <div className={DROPDOWN_CLASSES.menuControlItem}>
                 <span className="min-w-0 flex-1 truncate">
-                  {t("chat.startPage.trailPosition")}
-                </span>
-                <SegmentedTextPill
-                  size="small"
-                  ariaLabel={t("chat.startPage.trailPosition")}
-                  dataTestId="new-chat-trail-position"
-                  value={trailPosition}
-                  options={[
-                    { value: "top", label: t("chat.startPage.positionUp") },
-                    {
-                      value: "bottom",
-                      label: t("chat.startPage.positionDown"),
-                    },
-                  ]}
-                  onChange={setTrailPosition}
-                />
-              </div>
-              <div className={DROPDOWN_CLASSES.menuControlItem}>
-                <span className="min-w-0 flex-1 truncate">
                   {showQuickActionsLabel}
                 </span>
                 <Switch
@@ -170,18 +160,6 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
               </div>
               <div className={DROPDOWN_CLASSES.menuControlItem}>
                 <span className="min-w-0 flex-1 truncate">
-                  {showSkillsLabel}
-                </span>
-                <Switch
-                  checked={pinnedActionsVisible}
-                  onCheckedChange={setPinnedActionsVisible}
-                  size="small"
-                  ariaLabel={showSkillsLabel}
-                  dataTestId="new-chat-show-skills-toggle"
-                />
-              </div>
-              <div className={DROPDOWN_CLASSES.menuControlItem}>
-                <span className="min-w-0 flex-1 truncate">
                   {showCliUpdateLabel}
                 </span>
                 <Switch
@@ -190,6 +168,61 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
                   size="small"
                   ariaLabel={showCliUpdateLabel}
                   dataTestId="new-chat-show-cli-update-toggle"
+                />
+              </div>
+            </ActionSubmenu>
+            <ActionSubmenu
+              label={t("chat.inputSettings")}
+              icon={
+                <HugeiconsIcon
+                  icon={InputCursorTextIcon}
+                  size={DROPDOWN_ITEM.iconSize}
+                  strokeWidth={1.75}
+                />
+              }
+              dataTestId="new-chat-input-settings-submenu"
+            >
+              <div className={DROPDOWN_CLASSES.menuControlItem}>
+                <span className="min-w-0 flex-1 truncate">
+                  {t("chat.startPage.repoBarPosition")}
+                </span>
+                <SegmentedTextPill
+                  size="small"
+                  ariaLabel={t("chat.startPage.repoBarPosition")}
+                  dataTestId="new-chat-repo-bar-position"
+                  value={repoBarPosition}
+                  options={[
+                    { value: "top", label: t("chat.startPage.positionUp") },
+                    {
+                      value: "bottom",
+                      label: t("chat.startPage.positionDown"),
+                    },
+                  ]}
+                  onChange={setRepoBarPosition}
+                />
+              </div>
+              <div className={DROPDOWN_CLASSES.menuControlItem}>
+                <span className="min-w-0 flex-1 truncate">
+                  {sendMethodLabel}
+                </span>
+                <SendOnEnterPill
+                  size="small"
+                  ariaLabel={sendMethodLabel}
+                  dataTestId="new-chat-send-on-enter"
+                  sendOnEnter={sendOnEnter}
+                  onChange={setSendOnEnter}
+                />
+              </div>
+              <div className={DROPDOWN_CLASSES.menuControlItem}>
+                <span className="min-w-0 flex-1 truncate">
+                  {showSkillsLabel}
+                </span>
+                <Switch
+                  checked={pinnedActionsVisible}
+                  onCheckedChange={setPinnedActionsVisible}
+                  size="small"
+                  ariaLabel={showSkillsLabel}
+                  dataTestId="new-chat-show-skills-toggle"
                 />
               </div>
             </ActionSubmenu>

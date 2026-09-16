@@ -15,6 +15,7 @@ import {
   CursorInWindowIcon,
   ThirdBracketIcon,
 } from "@src/icons";
+import { chatSendOnEnterAtom } from "@src/store/config/configAtom";
 import { compactComposerInputAtom } from "@src/store/session/compactComposerInputAtom";
 import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import { linkOpenTargetAtom } from "@src/store/ui/linkOpenTargetAtom";
@@ -38,6 +39,8 @@ const mocks = vi.hoisted(() => ({
   linkOpenTarget: "internal",
   setLinkOpenTarget: vi.fn(),
   setCompactComposerInput: vi.fn(),
+  sendOnEnter: false,
+  setSendOnEnter: vi.fn(),
 }));
 
 vi.mock("@src/api/tauri/externalHistory/appOpen", () => ({
@@ -64,7 +67,9 @@ vi.mock("jotai", async (importOriginal) => ({
         ? [mocks.linkOpenTarget, mocks.setLinkOpenTarget]
         : atom === compactComposerInputAtom
           ? [false, mocks.setCompactComposerInput]
-          : [mocks.pinnedActionsVisible, mocks.setPinnedActionsVisible],
+          : atom === chatSendOnEnterAtom
+            ? [mocks.sendOnEnter, mocks.setSendOnEnter]
+            : [mocks.pinnedActionsVisible, mocks.setPinnedActionsVisible],
   useAtomValue: () => mocks.session,
   useSetAtom: () => mocks.openWindow,
 }));
@@ -159,6 +164,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.eligible = true;
   mocks.pinnedActionsVisible = false;
+  mocks.sendOnEnter = false;
   mocks.linkOpenTarget = "internal";
   mocks.appOpenPlan.mockResolvedValue(null);
   mocks.openInApp.mockResolvedValue(undefined);
@@ -494,6 +500,17 @@ describe("SessionHeaderActionsMenu", () => {
       ["chat.startPage.showSkills", "false"],
       ["chat.compactInput", "false"],
     ]);
+    const sendPill = element("session-menu-send-on-enter");
+    expect(sendPill.getAttribute("aria-label")).toBe("chat.sendMethod");
+    const sendOptions = sendPill.querySelectorAll<HTMLButtonElement>(
+      "button[aria-pressed]"
+    );
+    expect(
+      [...sendOptions].map((option) => option.getAttribute("aria-pressed"))
+    ).toEqual(["false", "true"]);
+    act(() => sendOptions[0]?.click());
+    expect(mocks.setSendOnEnter).toHaveBeenCalledWith(true);
+
     click("session-menu-show-skills-toggle");
     expect(mocks.setPinnedActionsVisible).toHaveBeenCalledWith(
       true,

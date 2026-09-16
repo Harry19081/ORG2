@@ -12,7 +12,7 @@ import {
   vi,
 } from "vitest";
 
-import SendOnEnterPill, { getSendOnEnterOptions } from "../SendOnEnterPill";
+import SendOnEnterPill, { getSendOnEnterOptions } from ".";
 
 const reactActEnvironment = globalThis as typeof globalThis & {
   IS_REACT_ACT_ENVIRONMENT?: boolean;

@@ -12,6 +12,7 @@ import {
   PINNED_ACTIONS_VISIBLE_STORAGE_KEY,
   pinnedActionsVisibleAtom,
 } from "@src/store/session/pinnedActionsVisibleAtom";
+import { settingsAtom } from "@src/store/settings/settingsAtom";
 
 import { NewChatHeaderActionsMenu } from "./NewChatHeaderActionsMenu";
 
@@ -97,6 +98,46 @@ describe("NewChatHeaderActionsMenu", () => {
 
     expect(store.get(creatorLaunchpadActionsVisibleAtom)).toBe(false);
     expect(toggle?.getAttribute("aria-checked")).toBe("false");
+  });
+
+  it("splits the controls into UI settings and input settings", () => {
+    const controlIds = (submenu: string) =>
+      [
+        ...document
+          .querySelector(`[data-testid="${submenu}"]`)!
+          .querySelectorAll("[data-testid]"),
+      ].map((node) => node.getAttribute("data-testid"));
+
+    expect(controlIds("new-chat-ui-settings-submenu")).toEqual([
+      "new-chat-composer-position",
+      "new-chat-show-quick-actions-toggle",
+      "new-chat-show-cli-update-toggle",
+    ]);
+    expect(controlIds("new-chat-input-settings-submenu")).toEqual([
+      "new-chat-repo-bar-position",
+      "new-chat-send-on-enter",
+      "new-chat-show-skills-toggle",
+    ]);
+  });
+
+  it("writes the shared send-shortcut setting from the input submenu", () => {
+    const pill = document.querySelector<HTMLElement>(
+      '[data-testid="new-chat-send-on-enter"]'
+    );
+
+    expect(pill).not.toBeNull();
+    expect(pill?.getAttribute("aria-label")).toBe("chat.sendMethod");
+    const options = pill!.querySelectorAll<HTMLButtonElement>(
+      "button[aria-pressed]"
+    );
+    expect(
+      [...options].map((node) => node.getAttribute("aria-pressed"))
+    ).toEqual(["false", "true"]);
+
+    act(() => options[0]?.click());
+
+    expect(store.get(settingsAtom)["chat.sendOnEnter"]).toBe(true);
+    expect(options[0]?.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("shows the skills toggle off by default and can enable pinned skills", () => {
