@@ -28,7 +28,7 @@ import { ArrowLeft01Icon, Settings01Icon } from "@src/icons";
 import {
   revealRenderedSettingsControl,
   revealSettingsControlWhenRendered,
-} from "@src/modules/shared/layouts/blocks/SettingsSearchDropdown/settingsControlSearch";
+} from "@src/scaffold/NavigationSidebar/variants/SettingsSearchDropdown/settingsControlSearch";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 
@@ -41,6 +41,7 @@ import HoverAnimatedIcon, {
 import NavigationMenu from "../components/NavigationMenu";
 import type { NavigationMenuItem } from "../components/NavigationMenu/config";
 import SidebarAccountButton from "../connectors/SidebarAccountButton";
+import SettingsSidebarCount from "./SettingsSidebarCount";
 import SettingsSidebarSearch from "./SettingsSidebarSearch";
 import type { SettingsControlSearchItem } from "./settingsSidebarSearchPages";
 
@@ -170,6 +171,9 @@ const SettingsSidebar: React.FC = () => {
       <SidebarHeaderNavButton
         icon={ArrowLeft01Icon}
         label={t("navigation:labels.settings")}
+        ariaLabel={t("navigation:labels.closeSettings")}
+        tooltipLabel={t("navigation:labels.closeSettings")}
+        tooltipShortcutId="close_tab"
         onClick={handleBack}
       />
     ),
@@ -229,6 +233,10 @@ export const SettingsRootBody: React.FC<SettingsRootBodyProps> = ({
         icon: item.icon,
         dataTestId: item.dataTestId,
         routePath: item.path,
+        labelBadge:
+          item.id === "general" || item.id === "development" ? (
+            <SettingsSidebarCount section={item.id} />
+          ) : undefined,
       })),
     []
   );

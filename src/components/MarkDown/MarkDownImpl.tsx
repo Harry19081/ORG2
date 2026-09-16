@@ -31,6 +31,7 @@ import { parseSharedSessionFileReference } from "@src/features/Org2Cloud/sharedS
 import { useOpenCloudSessionReference } from "@src/features/Org2Cloud/useOpenCloudSessionReference";
 import { themesAtom } from "@src/store/ui/uiAtom";
 import { activeWorkspaceRootAtom } from "@src/store/workspace";
+import { openLink } from "@src/util/ui/openLink";
 
 import LinkHoverCard from "./LinkHoverCard";
 import CodeBlock from "./MarkdownCodeBlock";
@@ -56,7 +57,6 @@ import {
   detectCodeType,
   normalizeCopyableMarkdownDocumentFence,
   openFileInEditor,
-  openMarkdownLinkInBrowserApp,
   preprocessTextContent,
   renderChildren,
 } from "./markdownUtils";
@@ -222,7 +222,7 @@ const MarkdownComponent: React.FC<MarkdownProps> = ({
         );
         return;
       }
-      openMarkdownLinkInBrowserApp(linkTarget.url);
+      openLink(linkTarget.url);
     },
     [fileRootPath, openSharedFile]
   );

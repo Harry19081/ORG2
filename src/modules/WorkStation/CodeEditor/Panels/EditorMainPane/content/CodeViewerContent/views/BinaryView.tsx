@@ -11,10 +11,7 @@ import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
-import {
-  FileHeader,
-  TabBarBottomPanelToggle,
-} from "@src/modules/WorkStation/shared";
+import { FileHeader } from "@src/modules/WorkStation/shared";
 import { FileOperationsService } from "@src/services/file/FileOperationsService";
 import { isTauriDesktop } from "@src/util/platform/tauri";
 
@@ -101,7 +98,6 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
             <DocumentOpenSubmenu filePath={selectedFile} onClose={close} />
           )
         : undefined,
-    beforeMoreMenuSlot: <TabBarBottomPanelToggle />,
     isMarkdownFile: false,
     isPreviewMode: true,
     onTogglePreview: undefined,

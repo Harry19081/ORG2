@@ -228,7 +228,8 @@
     "clearSelection": "Clear selection",
     "clearAll": "Clear All",
     "expandView": "Expand view",
-    "restoreSplitView": "Restore split view"
+    "restoreSplitView": "Restore split view",
+    "overwrite": "Overwrite"
   },
   "status": {
     "yes": "Yes",
@@ -322,7 +323,7 @@
   },
   "optional": "optional",
   "common": {
-    "display": "Display",
+    "display": "UI settings",
     "on": "On",
     "off": "Off",
     "default": "Default",
@@ -390,7 +391,6 @@
     "globPatternsHint": "Glob patterns, comma-separated",
     "outline": "Outline",
     "timeline": "Timeline",
-    "indexing": "Indexing",
     "testExplorer": "Test Explorer",
     "installed": "Installed",
     "extensionViews": "Extension Views",
@@ -509,7 +509,6 @@
     "explorer": "Explorer",
     "search": "Search",
     "sourceControl": "Source Control",
-    "sessions": "Sessions",
     "myTabs": "My tabs ({{count}})",
     "design": "Design",
     "settings": "Settings",
@@ -620,7 +619,6 @@
     "closePanel": "Close panel",
     "showSidebar": "Show Sidebar",
     "hideSidebar": "Hide Sidebar",
-    "moreOptions": "More Options",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "goBack": "Go back",
@@ -651,7 +649,6 @@
     "movePanelToRight": "Move panel to the right",
     "movePanelToBottom": "Move panel to the bottom",
     "domTree": "DOM Tree",
-    "closeSession": "Close session",
     "clearNetworkLogs": "Clear network logs",
     "clearConsole": "Clear console",
     "copyToClipboard": "Copy to clipboard",
@@ -703,7 +700,6 @@
     "pleaseTryAgain": "Please try again",
     "noFileOpen": "Open a file to start editing",
     "selectFileToEdit": "Choose a file in Explorer",
-    "noTabs": "Open a tab to get started",
     "noTabsOpen": "Open an item to get started",
     "selectItemToStart": "Choose an item in the sidebar",
     "noDatabaseConnected": "No database connected",
@@ -813,7 +809,6 @@
     "notGitInitialized": "Not git initialized",
     "notGitInitializedTooltip": "This working directory does not have a .git directory yet.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
-    "scanningFiles": "Scanning files...",
     "branchTooltipSwitching": "Branch: {{branch}} (switching...)",
     "switchWorkspaceTooltip": "Switch working directory",
     "switchWorktreeTooltip": "Switch worktree",
@@ -824,12 +819,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Git actions",
     "switchToSessionRepo": "Switch to {{name}}",
-    "embeddingProgress": "Embedding: {{count}} chunks processed",
-    "embeddingProgressWithPercent": "Embedding: {{count}} chunks processed ({{percent}}%)",
-    "embeddingShort": "Embedding {{percent}}%",
-    "embeddingLabel": "Embedding",
-    "indexingProgress": "Indexing: {{processed}}/{{total}} files ({{percent}}%)",
-    "indexingProgressWithFile": "Indexing: {{processed}}/{{total}} files ({{percent}}%)\nCurrent: {{file}}",
     "ports": {
       "workspaceSection": "Current workspace",
       "externalSection": "External",
@@ -900,7 +889,9 @@
       "webviewHiddenTitle": "Webview temporarily hidden",
       "webviewHiddenBody": "Close the menu or dialog to show it again."
     },
-    "unsavedChangesTitle": "Unsaved Changes"
+    "unsavedChangesTitle": "Unsaved Changes",
+    "fileChangedOnDiskTitle": "File changed on disk",
+    "fileChangedOnDiskBody": "\"{{name}}\" changed on disk since you opened it. Overwrite it with your version?"
   },
   "git": {
     "loading": "Loading git status...",
@@ -927,7 +918,7 @@
       "createTokenButton": "Create Token",
       "openGitSettingsButton": "Open Settings",
       "configureInSettings": "Configure Git in Settings",
-      "configureInSettingsDesc": "Add GitHub App access, save a token, or scan local credentials in Settings → Connections, then retry this Git operation."
+      "configureInSettingsDesc": "Add GitHub App access, save a token, or scan local credentials in Settings → Connections, then retry this Git operation"
     },
     "actions": {
       "publish": "Publish",
@@ -1172,7 +1163,7 @@
       },
       "authRequired": {
         "title": "Connect GitHub",
-        "description": "Go to Settings → Connections to connect your GitHub account."
+        "description": "Go to Settings → Connections to connect your GitHub account"
       },
       "flow": {
         "wantsToMergeCommitsInto_one": "wants to merge {{count}} commit into",
@@ -1317,10 +1308,10 @@
       },
       "authRequired": {
         "title": "Connect GitHub",
-        "description": "Go to Settings → Connections to connect your GitHub account."
+        "description": "Go to Settings → Connections to connect your GitHub account"
       },
       "reAuthRequired": "GitHub Authorization Required",
-      "reAuthDescription": "Your GitHub token has expired. Go to Settings → Connections to reconnect.",
+      "reAuthDescription": "Your GitHub token has expired. Go to Settings → Connections to reconnect",
       "goToSettings": "Go to Settings",
       "timelineErrorTitle": "GitHub activity unavailable",
       "tabs": {
@@ -1345,6 +1336,37 @@
     "commit": {
       "copySha": "Copy SHA",
       "shaCopied": "SHA copied to clipboard"
+    },
+    "branchSwitch": {
+      "title": "Switch branch",
+      "conflictsTitle": "Changes need attention",
+      "blockedTitle": "Branch switch needs attention",
+      "working": "Saving and switching…",
+      "viewSaved": "View saved changes",
+      "current": "Current branch: {{branch}}",
+      "changedFiles": "{{count}} changed files",
+      "question": "What would you like to do with your changes?",
+      "leave": "Leave changes on {{branch}}",
+      "leaveDescription": "Save your work for later and switch with a clean working tree",
+      "bring": "Bring changes to {{branch}}",
+      "bringDescription": "Move your uncommitted changes to the destination branch",
+      "savedTitle": "Saved changes",
+      "nextPage": "Next page",
+      "noSaved": "No saved branch changes",
+      "applied": "Already applied · recovery copy",
+      "restore": "Restore",
+      "savedAvailable": "Saved changes available for this branch",
+      "worktreeTitle": "Branch is open in another worktree",
+      "openWorktree": "Open worktree",
+      "activeTask": "A task is using this worktree",
+      "activeTaskDescription": "Wait for the task to finish, stop it explicitly, or use another worktree before switching branches",
+      "saveTitle": "Save files before switching",
+      "saveDescription": "Open files have unsaved edits. Save them before choosing where to keep your changes",
+      "saveContinue": "Save all and continue",
+      "saveFailed": "Could not save all files",
+      "multipleBuffers": "This file has edits in more than one editor. Save or close those editors before switching",
+      "editedWhileSaving": "Files were edited while saving. Review the latest edits and try again",
+      "savePreview": "Save or discard edits in the spreadsheet editor before switching branches"
     }
   },
   "selectors": {
@@ -1399,7 +1421,6 @@
         "createWorkspace": "Create new working directory"
       },
       "sources": {
-        "cloningFromGitHub": "cloning from GitHub",
         "cloningFromGitHubUrl": "clone from GitHub URL",
         "cloningFromMyGitHub": "clone from my GitHub",
         "creatingWorkspace": "creating new working directory",
@@ -1460,7 +1481,6 @@
         "createFrom": "Create Branch From",
         "deleteBranch": "Delete branch",
         "refresh": "Refresh branch",
-        "checkoutDetachedSuccess": "Now in detached HEAD state at current commit",
         "removeWorktree": "Remove Worktree",
         "newWorktree": "New Worktree...",
         "refreshPullRequests": "Refresh Pull requests"
@@ -1601,11 +1621,6 @@
         "integrations": "Agents & Integrations",
         "market": "Market",
         "actions": "Actions"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Folder",
-        "branch": "Branch"
       },
       "actions": {
         "showInFinder": {
@@ -2206,7 +2221,7 @@
   },
   "quitConfirmation": {
     "title": "Quit ORG2?",
-    "subtitle": "Any running sessions will keep their current state. You can reopen ORG2 later.",
+    "subtitle": "Any running sessions will keep their current state. You can reopen ORG2 later",
     "cancel": "Cancel",
     "confirm": "Quit"
   },
@@ -2218,7 +2233,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again.",
+      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2243,7 +2258,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2252,7 +2267,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"

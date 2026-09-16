@@ -324,18 +324,6 @@
           "agentBrowser": "Navegador del Agent",
           "searchFetch": "Buscar y obtener"
         },
-        "sections": {
-          "browserTitle": "Actividad del navegador",
-          "interactionsTitle": "Interacciones",
-          "webSearchesTitle": "Búsquedas web",
-          "pagesFetchedTitle": "Páginas obtenidas"
-        },
-        "empty": {
-          "noBrowserActivity": "Sin actividad del navegador",
-          "noBrowserInteractions": "Sin interacciones del navegador",
-          "noWebSearches": "Sin búsquedas web",
-          "noPagesFetched": "Sin páginas obtenidas"
-        },
         "header": {
           "categoryBrowser": "Navegador",
           "categoryLiveBrowser": "Navegador en vivo",
@@ -519,8 +507,7 @@
     },
     "titleBar": {
       "showSidebar": "Mostrar barra lateral",
-      "hideSidebar": "Ocultar barra lateral",
-      "showBottomPanel": "Mostrar panel inferior"
+      "hideSidebar": "Ocultar barra lateral"
     },
     "multiTask": {
       "monitoringProgress": "Supervisando el progreso de {{count}} subagents",
@@ -591,6 +578,7 @@
     "voicePermissionSheetTitle": "Se necesita acceso al micrófono"
   },
   "chat": {
+    "draftTooLong": "El borrador es demasiado largo (máximo {{max}} caracteres)",
     "cliPermissions": {
       "ask": "Solicitar aprobación",
       "workspace": "Acceso al espacio de trabajo",
@@ -625,10 +613,9 @@
       "inputPosition": "Entrada",
       "positionBottom": "Abajo",
       "positionMiddle": "Centro",
-      "trailPosition": "Barra de contexto",
+      "repoBarPosition": "Barra del repo",
       "positionUp": "Arriba",
       "positionDown": "Abajo",
-      "uiControls": "Controles de interfaz",
       "showQuickActions": "Mostrar acciones rápidas",
       "showSkills": "Skills fijadas",
       "showCliUpdate": "Mostrar actualizaciones de CLI",
@@ -716,6 +703,14 @@
     "performActions_other": "Realizar {{count}} acciones",
     "showInlineDiffs": "Diferencias en línea",
     "inputSettings": "Configuración de entrada",
+    "sendMethod": "Enviar con",
+    "navigation": {
+      "title": "Navegación",
+      "openLinksIn": "Abrir enlaces en",
+      "internalBrowser": "Navegador interno",
+      "externalBrowser": "Navegador externo"
+    },
+    "compactInput": "Entrada compacta",
     "replay": {
       "follow": "Seguir"
     },
@@ -901,10 +896,10 @@
       "exportJson": "Exportar JSON",
       "importAction": "Importar Session",
       "exportDescription": "Exporta la Session activa como una instantánea JSON portátil",
-      "importDescription": "Importa una instantánea JSON de Session en la barra lateral.",
+      "importDescription": "Importa una instantánea JSON de Session en la barra lateral",
       "jsonSnapshotNote": "Las Sessions importadas son instantáneas de solo lectura y conservan el historial de eventos original",
       "chooseJson": "Elegir archivo JSON",
-      "chooseJsonHint": "Selecciona un archivo de exportación .orgii-session.json.",
+      "chooseJsonHint": "Selecciona un archivo de exportación .orgii-session.json",
       "loadingPreview": "Contando eventos de Session…",
       "noActiveSession": "No hay ninguna Session activa seleccionada.",
       "importedName": "Session importada: {{name}}",
@@ -1129,6 +1124,7 @@
     "terminalWaitRunning": "Esperando a que termine el terminal",
     "runShellFailed": "Error en el comando",
     "runCommands": "Ejecutar comandos",
+    "waitBackgroundTasks": "Esperar tareas en segundo plano",
     "terminalSummary": {
       "command_one": "{{count}} comando",
       "command_other": "{{count}} comandos",
@@ -1139,6 +1135,10 @@
       "check_one": "{{count}} comprobación",
       "check_other": "{{count}} comprobaciones",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} vez",
+      "count_other": "{{count}} veces"
     },
     "inspectTerminalsRunning": "Inspeccionando terminales",
     "inspectTerminalsDone": "Terminales inspeccionadas",
@@ -1447,10 +1447,13 @@
     "awaitOutputListFailed": "Error al listar tareas en segundo plano",
     "awaitOutputKeepWaiting": "Aún ejecutándose",
     "awaitOutputStillRunning": "Ejecutándose",
+    "awaitOutputSummaryShellSingle": "proceso de terminal",
     "awaitOutputSummaryShell_one": "1 proceso de terminal",
     "awaitOutputSummaryShell_other": "{{count}} procesos de terminal",
+    "awaitOutputSummarySubagentSingle": "Subagent",
     "awaitOutputSummarySubagent_one": "1 Subagent",
     "awaitOutputSummarySubagent_other": "{{count}} Subagents",
+    "awaitOutputSummaryUnknownSingle": "una tarea en segundo plano",
     "awaitOutputSummaryUnknown_one": "una tarea en segundo plano",
     "awaitOutputSummaryUnknown_other": "{{count}} tareas en segundo plano",
     "awaitOutputSummaryMixed": "{{shell}}, {{subagent}}",
@@ -1905,7 +1908,7 @@
     "start": "Iniciar",
     "missingGit": {
       "title": "Falta Git",
-      "body": "Git no está instalado o no se pudo encontrar. Pide a ADE Manager o a SDE Agent que instale Git en esta máquina y luego reinicia ORG2."
+      "body": "Git no está instalado o no se pudo encontrar. Pide a ADE Manager o a SDE Agent que instale Git en esta máquina y luego reinicia ORG2"
     },
     "model": "Modelo",
     "contextMenu": {
@@ -1969,9 +1972,9 @@
       "formatting": "Formato de texto"
     },
     "regionNoticeTitle": "Posibles limitaciones regionales",
-    "regionNoticeBodyProvider": "Estás en {{location}}. Algunos modelos pueden no estar disponibles en tu región.",
-    "regionNoticeBodySanctions": "Estás en {{location}}. GitHub, npm, Docker Hub y servicios similares pueden no estar disponibles.",
-    "regionNoticeBodyBoth": "Estás en {{location}}. Algunos modelos y servicios como GitHub, npm y Docker Hub pueden no estar disponibles por políticas regionales y restricciones comerciales.",
+    "regionNoticeBodyProvider": "Estás en {{location}}. Algunos modelos pueden no estar disponibles en tu región",
+    "regionNoticeBodySanctions": "Estás en {{location}}. GitHub, npm, Docker Hub y servicios similares pueden no estar disponibles",
+    "regionNoticeBodyBoth": "Estás en {{location}}. Algunos modelos y servicios como GitHub, npm y Docker Hub pueden no estar disponibles por políticas regionales y restricciones comerciales",
     "selectAgent": "Seleccionar un agente",
     "placeholderDefault": "Escribe un mensaje, @ para añadir archivos, / para usar skills",
     "wingmanPlaceholder": "Describe tu misión — ¿qué debe vigilar Wingman?",
@@ -2120,7 +2123,7 @@
       "archiveTeardownRetained": "Archivado, pero no se pudo liberar {{count}} proceso. La eliminación sigue bloqueada.",
       "archiveTeardownQuiesced": "Archivado y detenido por completo. Ya se puede eliminar permanentemente.",
       "dangerZone": "Zona de peligro",
-      "deleteDescription": "Eliminar permanentemente este equipo, sus sesiones y su historial.",
+      "deleteDescription": "Eliminar permanentemente este equipo, sus sesiones y su historial",
       "deleteTeam": "Eliminar equipo",
       "deleteTitle": "¿Eliminar permanentemente este equipo?",
       "deleteWarning": "Esto elimina permanentemente todas las sesiones y el historial del equipo. No se puede deshacer.",

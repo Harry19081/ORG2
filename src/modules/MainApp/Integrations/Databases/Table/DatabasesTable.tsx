@@ -11,14 +11,14 @@ import SettingsTable, {
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import TabPill from "@src/components/TabPill";
-import type { DependencyStatus } from "@src/modules/MainApp/Integrations/hooks/useSystemDependencies";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InternalHeader,
   ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
+} from "@src/components/layout/blocks";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
+import type { DependencyStatus } from "@src/modules/MainApp/Integrations/hooks/useSystemDependencies";
 
 import {
   InlineCardBody,

@@ -23,16 +23,16 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { EVENT_LOADING_SHIMMER_TEXT_CLASSES } from "@src/engines/ChatPanel/blocks/primitives";
+import BreadcrumbFileHeader from "@src/features/FileHeader/BreadcrumbFileHeader";
 import {
   ArrowDown01Icon,
   ArrowExpand01Icon,
   ArrowLeft01Icon,
   ArrowLeft02Icon,
   ArrowRight01Icon,
-  ArrowShrink01Icon,
+  ArrowShrink02Icon,
   HugeiconsIcon,
 } from "@src/icons";
-import BreadcrumbFileHeader from "@src/modules/shared/components/FileHeader/BreadcrumbFileHeader";
 import { HorizontalResizeHandle } from "@src/scaffold/Resize";
 
 import { useMultiSessionSimulatorEvents } from "../hooks/useMultiSessionSimulatorEvents";
@@ -578,7 +578,7 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
               icon={
                 gridExpanded ? (
                   <HugeiconsIcon
-                    icon={ArrowShrink01Icon}
+                    icon={ArrowShrink02Icon}
                     data-icon="minimize-2"
                     size={14}
                     strokeWidth={1.75}

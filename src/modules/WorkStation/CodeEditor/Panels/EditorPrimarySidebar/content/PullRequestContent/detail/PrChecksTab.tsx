@@ -8,16 +8,17 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubChecksSummary } from "@src/api/tauri/github";
+import CiCheckStateIcon from "@src/components/CiCheckStateIcon";
 import { Placeholder } from "@src/components/Placeholder";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { HugeiconsIcon, SquareArrowUpRight02Icon } from "@src/icons";
 import { formatTimeAgo } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
-import CiCheckStateIcon from "@src/modules/shared/components/CiCheckStateIcon";
 import {
   type CiCheckState,
   checkRunState,
   statusContextState,
 } from "@src/services/git/ciCheckState";
+import { linkAnchorProps } from "@src/util/ui/openLink";
 
 interface CheckRowProps {
   state: CiCheckState;
@@ -55,9 +56,7 @@ function CheckRow({
       ) : null}
       {detailsUrl ? (
         <a
-          href={detailsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...linkAnchorProps(detailsUrl, { navigate: true })}
           className="shrink-0 text-text-3 hover:text-text-1"
           title={t("git.pr.details", "Details")}
         >

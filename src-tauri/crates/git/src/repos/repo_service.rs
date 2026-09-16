@@ -136,7 +136,7 @@ pub async fn import_repo(path: String, name: Option<String>) -> Result<RepoRecor
                 "--allow-empty",
                 "-m",
                 "Initial commit",
-                "--author=Orgii <orgii@local>",
+                "--author=ORG2 <orgii@local>",
             ])
             .current_dir(&canonical)
             .output()
@@ -285,7 +285,7 @@ pub async fn create_empty_repo(path: String, name: Option<String>) -> Result<Rep
             "--allow-empty",
             "-m",
             "Initial commit",
-            "--author=Orgii <orgii@local>",
+            "--author=ORG2 <orgii@local>",
         ])
         .current_dir(&path)
         .output()

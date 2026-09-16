@@ -26,7 +26,7 @@ vi.mock("@src/icons", () => ({
 vi.mock("@src/modules/MainApp/Settings/sections/SecuritySection", () => ({
   default: () => createElement("div", { "data-testid": "security" }),
 }));
-vi.mock("@src/modules/shared/layouts/blocks", () => ({
+vi.mock("@src/components/layout/blocks", () => ({
   DETAIL_PANEL_TOKENS: {
     headerWidth: "",
     scrollContentNoTop: "",
@@ -41,7 +41,7 @@ vi.mock("@src/modules/shared/layouts/blocks", () => ({
   ScrollPreservation: ({ children }: { children: React.ReactNode }) =>
     createElement("main", null, children),
 }));
-vi.mock("@src/modules/shared/layouts/blocks/InfoRow", () => ({
+vi.mock("@src/components/layout/blocks/InfoRow", () => ({
   InfoRow: () => createElement("div"),
 }));
 vi.mock("@src/util/ui/openFileInWorkStation", () => ({

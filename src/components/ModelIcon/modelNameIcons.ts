@@ -4,25 +4,45 @@ import type { IconProvider } from "./iconProviders";
 import { MODEL_TYPE_TO_ICON } from "./modelTypeIcons";
 
 /**
+ * Routing tiers, not models: "auto", "default" and "premium" are the names
+ * Cursor gives its own tiers, but every other agent uses the same words
+ * generically — a `claude_code` account's "default" means "whatever the CLI
+ * picks". Claiming them for Cursor unconditionally painted the Cursor cube on
+ * unrelated agents' rows, so they resolve to a brand only when the agent hint
+ * is Cursor itself.
+ */
+const GENERIC_TIER_MODEL_NAMES = new Set(["auto", "default", "premium"]);
+
+/**
+ * True for model ids that name a routing tier rather than a model. Such a name
+ * carries no brand, so callers must not fall back to the agent's mark for it —
+ * that would claim the session runs a specific model.
+ */
+export function isGenericTierModelName(modelName: string): boolean {
+  return GENERIC_TIER_MODEL_NAMES.has(modelName.toLowerCase());
+}
+
+/**
  * Detect icon provider from model name.
  * @param modelName - The model name string (e.g. "gpt-4o", "composer-1", "auto")
  * @param agentType - Optional agent type hint for generic names like "auto"
  */
-const CURSOR_MODEL_NAME_ICONS = new Set(["auto", "default", "premium"]);
-
 export function getIconProviderFromModelName(
   modelName: string,
   agentType?: string
 ): IconProvider {
   const lower = modelName.toLowerCase();
 
-  // Generic model names that depend on agent type context
-  if (lower === "auto" && agentType) {
-    return MODEL_TYPE_TO_ICON[agentType as ModelType] || "unknown";
+  // Routing tiers only name a brand when the agent behind them is Cursor.
+  if (GENERIC_TIER_MODEL_NAMES.has(lower)) {
+    const hinted = agentType
+      ? (MODEL_TYPE_TO_ICON[agentType as ModelType] as IconProvider | undefined)
+      : undefined;
+    return hinted === "cursor" || agentType === "cursor" ? "cursor" : "unknown";
   }
 
-  // Cursor models (composer and Cursor plan/tier names)
-  if (lower.includes("composer") || CURSOR_MODEL_NAME_ICONS.has(lower)) {
+  // Cursor models (the Composer family)
+  if (lower.includes("composer")) {
     return "cursor";
   }
 

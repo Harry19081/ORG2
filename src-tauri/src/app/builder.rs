@@ -21,6 +21,12 @@ pub(crate) fn run() {
     // secondary data root from the same identity that owns its WebView profile
     // and service ports.
     let context = tauri::generate_context!();
+    #[cfg(target_os = "macos")]
+    if let Err(error) =
+        super::dev_process_name::reexec_dev_with_display_name(&context.config().identifier)
+    {
+        eprintln!("Could not apply the dev Dock name: {error}");
+    }
     #[cfg(all(debug_assertions, feature = "webdriver", target_os = "macos"))]
     let context = {
         let mut context = context;

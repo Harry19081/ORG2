@@ -16,14 +16,21 @@ import { useTranslation } from "react-i18next";
 
 import type { LinkedEmail, MemberEntry } from "@src/api/http/project";
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import Input from "@src/components/Input";
 import PersonAvatar from "@src/components/PersonAvatar";
+import {
+  SECTION_ACTION_GAP_CLASSES,
+  SECTION_DESCRIPTION_CLASSES,
+  SectionContainer,
+  SectionHeading,
+  SectionRow,
+} from "@src/components/layout/Section";
+import { CARD_ROW_TOKENS } from "@src/components/layout/blocks";
 import { useCurrentUserMemberIds } from "@src/hooks/project/useCurrentUserMemberId";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Add01Icon,
-  ArrowDown01Icon,
-  ArrowRight01Icon,
   Cancel01Icon,
   HugeiconsIcon,
   MinusSignIcon,
@@ -33,14 +40,6 @@ import {
   UserAdd01Icon,
 } from "@src/icons";
 import { ClaimIdentityModal } from "@src/modules/ProjectManager/shared/components";
-import {
-  SECTION_ACTION_GAP_CLASSES,
-  SECTION_DESCRIPTION_CLASSES,
-  SectionContainer,
-  SectionHeading,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { CARD_ROW_TOKENS } from "@src/modules/shared/layouts/blocks";
 import { formatLastCommitDate } from "@src/util/datetime/formatLastCommitDate";
 
 export interface RepoMembersSectionProps {
@@ -394,21 +393,7 @@ const RepoMembersSection: React.FC<RepoMembersSectionProps> = ({
             )}
             <Button
               onClick={() => setExpanded(!expanded)}
-              icon={
-                expanded ? (
-                  <HugeiconsIcon
-                    icon={ArrowDown01Icon}
-                    data-icon="chevron-down"
-                    size={14}
-                  />
-                ) : (
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    data-icon="chevron-right"
-                    size={14}
-                  />
-                )
-              }
+              icon={<DisclosureChevron expanded={expanded} size={14} />}
               iconOnly
             />
           </div>
@@ -453,19 +438,7 @@ const RepoMembersSection: React.FC<RepoMembersSectionProps> = ({
               <Button
                 onClick={() => setInactiveExpanded(!inactiveExpanded)}
                 icon={
-                  inactiveExpanded ? (
-                    <HugeiconsIcon
-                      icon={ArrowDown01Icon}
-                      data-icon="chevron-down"
-                      size={14}
-                    />
-                  ) : (
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      data-icon="chevron-right"
-                      size={14}
-                    />
-                  )
+                  <DisclosureChevron expanded={inactiveExpanded} size={14} />
                 }
                 iconOnly
               />

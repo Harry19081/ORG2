@@ -38,11 +38,11 @@ const componentProps = vi.hoisted(() => ({
   placeholder: null as Record<string, unknown> | null,
   prDetail: null as Record<string, unknown> | null,
 }));
-const openExternalLink = vi.hoisted(() => vi.fn(async () => undefined));
+const openInSystemBrowser = vi.hoisted(() => vi.fn());
 const translate = vi.hoisted(() => vi.fn((key: string) => key));
 
-vi.mock("@src/util/platform/ipcRenderer", () => ({
-  openExternalLink,
+vi.mock("@src/util/ui/openLink", () => ({
+  openInSystemBrowser,
 }));
 
 vi.mock("react-i18next", () => ({
@@ -51,7 +51,7 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-vi.mock("@src/modules/shared/layouts/SplitViewLayout", () => ({
+vi.mock("@src/scaffold/layouts/SplitViewLayout", () => ({
   default: (props: Record<string, unknown>) => {
     splitViewProps.current = props;
     return createElement(
@@ -64,9 +64,9 @@ vi.mock("@src/modules/shared/layouts/SplitViewLayout", () => ({
   },
 }));
 
-vi.mock("@src/modules/shared/layouts/blocks", async (importOriginal) => {
+vi.mock("@src/components/layout/blocks", async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import("@src/modules/shared/layouts/blocks")>();
+    await importOriginal<typeof import("@src/components/layout/blocks")>();
   return {
     ...actual,
     LoadingBar: () => createElement("div", { "data-testid": "loading-bar" }),
@@ -1120,7 +1120,7 @@ describe("TeamInboxView split layout", () => {
     expect(tabAction.props.icon.props.icon).toBe(LinkSquare02Icon);
     expect(tabAction.props.testId).toBe("team-inbox-open-pr-tab");
     act(() => browserAction.props.onClick());
-    expect(openExternalLink).toHaveBeenCalledWith(
+    expect(openInSystemBrowser).toHaveBeenCalledWith(
       "https://github.com/orgii/desktop/pull/42"
     );
     act(() => tabAction.props.onClick());

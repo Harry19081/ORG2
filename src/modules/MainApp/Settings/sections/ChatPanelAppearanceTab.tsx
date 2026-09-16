@@ -2,11 +2,12 @@ import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@/src/modules/shared/layouts/SectionLayout";
+} from "@/src/components/layout/Section";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import NumberInput from "@src/components/NumberInput";
+import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
 import { useAgentConfig } from "@src/hooks/config/useAgentConfig";
 import { DEFAULT_CHAT_APPEARANCE } from "@src/store/config/configAtom";
@@ -128,10 +129,11 @@ export const ChatPanelAppearanceTab: React.FC = () => {
           label={t("agentSessions.sendOnEnter")}
           description={t("agentSessions.sendOnEnterDesc")}
         >
-          <Switch
-            checked={chatAppearance.sendOnEnter}
-            onCheckedChange={(checked) => {
-              updateChatAppearance({ sendOnEnter: checked });
+          <SendOnEnterPill
+            ariaLabel={t("agentSessions.sendOnEnter")}
+            sendOnEnter={chatAppearance.sendOnEnter}
+            onChange={(sendOnEnter) => {
+              updateChatAppearance({ sendOnEnter });
             }}
           />
         </SectionRow>

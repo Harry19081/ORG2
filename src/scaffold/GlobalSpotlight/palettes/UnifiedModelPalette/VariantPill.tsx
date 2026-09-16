@@ -176,5 +176,3 @@ export const VariantPill: React.FC<VariantPillProps> = ({
     />
   );
 };
-
-export default VariantPill;

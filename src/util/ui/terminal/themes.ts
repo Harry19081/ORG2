@@ -87,7 +87,7 @@ export const TERMINAL_THEMES: Record<TerminalThemeName, TerminalTheme> = {
     // default --color-primary-6 so the first paint is not a different color.
     cursor: "#43aafd",
     cursorAccent: "#141414",
-    selection: "#212121",
+    selection: "#264f78",
     black: "#09090b",
     red: "#ef4444",
     green: "#22c55e",
@@ -111,7 +111,7 @@ export const TERMINAL_THEMES: Record<TerminalThemeName, TerminalTheme> = {
     // Pre-mount fallback only — see the dark theme's cursor note.
     cursor: "#1d8ffd",
     cursorAccent: "#fafafa",
-    selection: "#efefef",
+    selection: "#bfe8ff",
     black: "#1f2937",
     red: "#dc2626",
     green: "#16a34a",

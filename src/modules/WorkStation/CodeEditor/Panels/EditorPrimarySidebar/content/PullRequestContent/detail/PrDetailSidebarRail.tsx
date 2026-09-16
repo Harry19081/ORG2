@@ -5,7 +5,7 @@ import {
   ScrollTrail,
   WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
   WORKSTATION_TRAIL_WIDTH,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
 import type {
   PrDetailTab,
   PrIdentity,

@@ -98,7 +98,6 @@ export {
   createDirectoryTab,
   createExplorerTab,
   createStartTab,
-  createGitDiffTab,
   createTimelineDiffTab,
   createSourceControlTab,
   createGitLogTab,
@@ -135,7 +134,6 @@ export {
   getProjectLinearWorkItemsTabChrome,
   getProjectWorkItemsTabChrome,
   getWorkItemDetailTabChrome,
-  createSubagentDetailTab,
   // Agent Config factories
   agentConfigTabFactory,
   createAgentConfigTab,

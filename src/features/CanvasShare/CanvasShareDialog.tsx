@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import { openLink } from "@src/util/ui/openLink";
 
 import type {
   CanvasShareDialogError,
@@ -157,9 +158,7 @@ const CanvasShareDialog: React.FC<CanvasShareDialogProps> = ({
                   <Button
                     htmlType="button"
                     variant="secondary"
-                    href={state.link}
-                    target="_blank"
-                    rel="noreferrer"
+                    onClick={() => openLink(state.link)}
                   >
                     {t("canvasApp.shareDialogOpen", "Open")}
                   </Button>

@@ -407,7 +407,8 @@
     "openOnGitHub": "Mở trên GitHub",
     "createPullRequest": "Tạo pull request",
     "expandView": "Mở rộng chế độ xem",
-    "restoreSplitView": "Khôi phục chế độ xem chia đôi"
+    "restoreSplitView": "Khôi phục chế độ xem chia đôi",
+    "overwrite": "Ghi đè"
   },
   "status": {
     "yes": "Có",
@@ -491,7 +492,7 @@
   },
   "optional": "tùy chọn",
   "common": {
-    "display": "Hiển thị",
+    "display": "Cài đặt giao diện",
     "on": "Bật",
     "off": "Tắt",
     "default": "Mặc định",
@@ -560,7 +561,6 @@
     "globPatternsHint": "Mẫu glob, phân cách bằng dấu phẩy",
     "outline": "Đề cương",
     "timeline": "Dòng thời gian",
-    "indexing": "Index",
     "testExplorer": "Trình duyệt kiểm thử",
     "installed": "Đã cài đặt",
     "extensionViews": "Chế độ xem tiện ích",
@@ -678,7 +678,6 @@
     "explorer": "Trình duyệt tệp",
     "search": "Tìm kiếm",
     "sourceControl": "Quản lý mã nguồn",
-    "sessions": "Session",
     "myTabs": "Tab của tôi ({{count}})",
     "design": "Thiết kế",
     "settings": "Cài đặt",
@@ -789,7 +788,6 @@
     "closePanel": "Đóng bảng",
     "showSidebar": "Hiện thanh bên",
     "hideSidebar": "Ẩn thanh bên",
-    "moreOptions": "Thêm tùy chọn",
     "zoomIn": "Phóng to",
     "zoomOut": "Thu nhỏ",
     "goBack": "Quay lại",
@@ -820,7 +818,6 @@
     "movePanelToRight": "Chuyển bảng sang phải",
     "movePanelToBottom": "Chuyển bảng xuống dưới",
     "domTree": "Cây DOM",
-    "closeSession": "Đóng Session",
     "clearNetworkLogs": "Xóa nhật ký mạng",
     "clearConsole": "Xóa bảng điều khiển",
     "copyToClipboard": "Sao chép vào bộ nhớ tạm",
@@ -871,7 +868,6 @@
     "pleaseTryAgain": "Vui lòng thử lại",
     "noFileOpen": "Mở tệp để bắt đầu chỉnh sửa",
     "selectFileToEdit": "Chọn tệp trong trình khám phá",
-    "noTabs": "Mở tab để bắt đầu",
     "noTabsOpen": "Mở mục để bắt đầu",
     "selectItemToStart": "Chọn mục trong thanh bên",
     "noDatabaseConnected": "Chưa kết nối cơ sở dữ liệu",
@@ -982,7 +978,6 @@
     "notGitInitialized": "Git chưa được khởi tạo",
     "notGitInitializedTooltip": "Thư mục làm việc này chưa có thư mục .git.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
-    "scanningFiles": "Scanning files...",
     "branchTooltipSwitching": "Nhánh: {{branch}} (đang chuyển…)",
     "switchWorkspaceTooltip": "Chuyển thư mục làm việc",
     "switchWorktreeTooltip": "Chuyển Worktree",
@@ -993,12 +988,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Thao tác Git",
     "switchToSessionRepo": "Chuyển sang {{name}}",
-    "embeddingProgress": "Embedding: đã xử lý {{count}} chunk",
-    "embeddingProgressWithPercent": "Embedding: đã xử lý {{count}} chunk ({{percent}}%)",
-    "embeddingShort": "Embedding {{percent}}%",
-    "embeddingLabel": "Embedding",
-    "indexingProgress": "Đang index: {{processed}}/{{total}} tệp ({{percent}}%)",
-    "indexingProgressWithFile": "Đang index: {{processed}}/{{total}} tệp ({{percent}}%)\nHiện tại: {{file}}",
     "ports": {
       "workspaceSection": "Không gian làm việc hiện tại",
       "externalSection": "Bên ngoài",
@@ -1069,7 +1058,9 @@
         "skipped": "Đã bỏ qua",
         "passed": "Đã đạt"
       }
-    }
+    },
+    "fileChangedOnDiskTitle": "Tệp đã thay đổi trên đĩa",
+    "fileChangedOnDiskBody": "\"{{name}}\" đã thay đổi trên đĩa kể từ khi bạn mở. Ghi đè bằng phiên bản của bạn?"
   },
   "git": {
     "loading": "Đang tải trạng thái Git...",
@@ -1096,7 +1087,7 @@
       "createTokenButton": "Tạo token",
       "openGitSettingsButton": "Mở cài đặt",
       "configureInSettings": "Cấu hình Git trong cài đặt",
-      "configureInSettingsDesc": "Thêm quyền truy cập GitHub App, lưu token hoặc quét thông tin xác thực cục bộ trong Cài đặt → Kết nối, rồi thử lại thao tác Git này."
+      "configureInSettingsDesc": "Thêm quyền truy cập GitHub App, lưu token hoặc quét thông tin xác thực cục bộ trong Cài đặt → Kết nối, rồi thử lại thao tác Git này"
     },
     "actions": {
       "publish": "Publish",
@@ -1335,7 +1326,7 @@
       "cannotParseRepoName": "Không thể phân tích tên kho lưu trữ từ remote origin",
       "authRequired": {
         "title": "Kết nối GitHub",
-        "description": "Vào Cài đặt → Kết nối để kết nối tài khoản GitHub của bạn."
+        "description": "Vào Cài đặt → Kết nối để kết nối tài khoản GitHub của bạn"
       },
       "navigationTrail": "Điều hướng pull request",
       "failedToLoad": "Không thể tải pull request",
@@ -1505,15 +1496,46 @@
       "newIssueBodyPlaceholder": "Mô tả issue (tùy chọn)…",
       "authRequired": {
         "title": "Kết nối GitHub",
-        "description": "Vào Cài đặt → Kết nối để kết nối tài khoản GitHub của bạn."
+        "description": "Vào Cài đặt → Kết nối để kết nối tài khoản GitHub của bạn"
       },
       "reAuthRequired": "Cần ủy quyền GitHub",
-      "reAuthDescription": "Token GitHub của bạn đã hết hạn. Vào Cài đặt → Kết nối để kết nối lại.",
+      "reAuthDescription": "Token GitHub của bạn đã hết hạn. Vào Cài đặt → Kết nối để kết nối lại",
       "goToSettings": "Đến Cài đặt",
       "loadingTimeline": "Đang tải hoạt động…",
       "label": "Issue",
       "linkedLoading": "Đang tải các mục liên kết",
       "detailNavigation": "Điều hướng issue"
+    },
+    "branchSwitch": {
+      "title": "Chuyển nhánh",
+      "conflictsTitle": "Cần xử lý các thay đổi",
+      "blockedTitle": "Cần xử lý việc chuyển nhánh",
+      "working": "Đang lưu và chuyển…",
+      "viewSaved": "Xem các thay đổi đã lưu",
+      "current": "Nhánh hiện tại: {{branch}}",
+      "changedFiles": "{{count}} tệp đã thay đổi",
+      "question": "Bạn muốn xử lý các thay đổi như thế nào?",
+      "leave": "Giữ các thay đổi trên {{branch}}",
+      "leaveDescription": "Lưu công việc để tiếp tục sau và chuyển nhánh với cây làm việc sạch",
+      "bring": "Mang các thay đổi sang {{branch}}",
+      "bringDescription": "Mang các thay đổi chưa commit sang nhánh đích",
+      "savedTitle": "Các thay đổi đã lưu",
+      "nextPage": "Trang tiếp theo",
+      "noSaved": "Không có thay đổi nhánh nào đã lưu",
+      "applied": "Đã áp dụng · bản sao khôi phục",
+      "restore": "Khôi phục",
+      "savedAvailable": "Có các thay đổi đã lưu cho nhánh này",
+      "worktreeTitle": "Nhánh đang mở trong cây làm việc khác",
+      "openWorktree": "Mở cây làm việc",
+      "activeTask": "Một tác vụ đang dùng cây làm việc này",
+      "activeTaskDescription": "Chờ tác vụ hoàn tất, chủ động dừng tác vụ hoặc dùng cây làm việc khác trước khi chuyển nhánh",
+      "saveTitle": "Lưu tệp trước khi chuyển",
+      "saveDescription": "Các tệp đang mở có nội dung chỉnh sửa chưa lưu. Hãy lưu trước khi chọn nơi giữ các thay đổi",
+      "saveContinue": "Lưu tất cả và tiếp tục",
+      "saveFailed": "Không thể lưu tất cả các tệp",
+      "multipleBuffers": "Tệp này có nội dung chỉnh sửa trong nhiều trình soạn thảo. Hãy lưu hoặc đóng các trình soạn thảo đó trước khi chuyển",
+      "editedWhileSaving": "Các tệp đã được chỉnh sửa trong khi lưu. Hãy kiểm tra các thay đổi mới nhất rồi thử lại",
+      "savePreview": "Lưu hoặc bỏ các chỉnh sửa trong trình chỉnh sửa bảng tính trước khi chuyển nhánh"
     }
   },
   "selectors": {
@@ -1568,7 +1590,6 @@
         "createWorkspace": "Tạo thư mục làm việc mới"
       },
       "sources": {
-        "cloningFromGitHub": "đang sao chép từ GitHub",
         "cloningFromGitHubUrl": "sao chép từ URL GitHub",
         "cloningFromMyGitHub": "sao chép từ GitHub của tôi",
         "creatingWorkspace": "đang tạo thư mục làm việc mới",
@@ -1629,7 +1650,6 @@
         "createFrom": "Tạo từ Branch",
         "deleteBranch": "Xóa nhánh",
         "refresh": "Làm mới nhánh",
-        "checkoutDetachedSuccess": "Đang ở trạng thái detached HEAD tại commit hiện tại",
         "removeWorktree": "Xóa Worktree",
         "newWorktree": "Worktree mới...",
         "refreshPullRequests": "Làm mới Pull requests"
@@ -1770,11 +1790,6 @@
         "integrations": "Agent và Tích hợp",
         "market": "Thị trường",
         "actions": "Hành động"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Thư mục",
-        "branch": "Nhánh"
       },
       "actions": {
         "showInFinder": {
@@ -2154,7 +2169,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "Thoát ORG2?",
-    "subtitle": "Các phiên đang chạy sẽ giữ nguyên trạng thái hiện tại. Bạn có thể mở lại ORG2 sau.",
+    "subtitle": "Các phiên đang chạy sẽ giữ nguyên trạng thái hiện tại. Bạn có thể mở lại ORG2 sau",
     "cancel": "Hủy",
     "confirm": "Thoát"
   },
@@ -2184,7 +2199,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari lưu cookie trong thư mục được macOS bảo vệ. Cho phép ORG2 trong mục Truy cập toàn bộ ổ đĩa của Cài đặt hệ thống, rồi kiểm tra lại.",
+      "explain": "Safari lưu cookie trong thư mục được macOS bảo vệ. Cho phép ORG2 trong mục Truy cập toàn bộ ổ đĩa của Cài đặt hệ thống, rồi kiểm tra lại",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2209,7 +2224,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2218,7 +2233,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"

@@ -9,6 +9,9 @@ import { WINDOW_CHROME_TOKENS } from "@src/config/windowChromeTokens";
 /** Hover dwell time before showing a sidebar control tooltip. */
 export const SIDEBAR_TOOLTIP_HOVER_DELAY = CHROME_TOOLTIP_HOVER_DELAY;
 
+/** Hover dwell time before previewing a collapsed sidebar. */
+export const SIDEBAR_HOVER_PREVIEW_DELAY = 750;
+
 // ============================================
 // Style Configuration
 // ============================================

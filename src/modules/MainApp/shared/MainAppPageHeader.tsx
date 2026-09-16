@@ -1,11 +1,11 @@
 import React from "react";
 
+import { PageBreadcrumb } from "@src/components/layout/blocks";
+import { CHROME_INSET_TRANSITION_CLASSES } from "@src/components/layout/tokens/viewContainerTokens";
 import {
   useCollapsedSidebarChromeOffset,
   useShouldOffsetMainAppHeader,
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
-import { PageBreadcrumb } from "@src/modules/shared/layouts/blocks";
-import { CHROME_INSET_TRANSITION_CLASSES } from "@src/modules/shared/layouts/viewContainerTokens";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 
 interface MainAppPageHeaderProps {

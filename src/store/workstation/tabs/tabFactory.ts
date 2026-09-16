@@ -92,7 +92,6 @@ export const DEFAULT_CATEGORY_BY_TYPE: Record<
   "project-linear-work-items": "project",
   "project-settings": "project",
   "project-org": "project",
-  "project-org-settings": "project",
   "project-git-sync-review": "project",
   "project-workitems": "project",
   "workItem-detail": "project",

@@ -8,6 +8,10 @@ import type {
 import Tag from "@src/components/Tag";
 import { TYPOGRAPHY } from "@src/config/workstation/tokens";
 import {
+  ActivityTimestamp,
+  TimelineEventCard,
+} from "@src/features/GitHubWork/ActivityTimeline";
+import {
   Activity01Icon,
   ArchiveArrowUpIcon,
   ArchiveIcon,
@@ -43,10 +47,7 @@ import {
   WorkflowCircle05Icon,
 } from "@src/icons";
 import { getLabelColorStyle } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
-import {
-  ActivityTimestamp,
-  TimelineEventCard,
-} from "@src/modules/shared/components/ActivityTimeline";
+import { linkAnchorProps } from "@src/util/ui/openLink";
 
 const EVENT_ICON_PROPS = { size: 13, strokeWidth: 1.8 } as const;
 
@@ -387,9 +388,7 @@ function CrossReferenceLink({
 }): React.ReactNode {
   return (
     <a
-      href={source.html_url}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...linkAnchorProps(source.html_url)}
       className="inline-flex max-w-full min-w-0 items-center gap-1 overflow-hidden align-middle font-medium text-primary-6 hover:underline"
       title={source.title}
     >

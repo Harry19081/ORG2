@@ -18,6 +18,7 @@ import {
   Layout01Icon,
   SquareArrowUpRight02Icon,
 } from "@src/icons";
+import { openLink } from "@src/util/ui/openLink";
 
 import type { A2UIActionHandler } from "./A2UIActionContext";
 import type { A2UIRendererHandle } from "./A2UIRenderer";
@@ -88,7 +89,7 @@ const NonEmbeddedUrlNotice: React.FC<{ url: string }> = ({ url }) => {
         <Button
           variant="secondary"
           size="small"
-          onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
+          onClick={() => openLink(url, { navigate: true })}
           icon={
             <HugeiconsIcon
               icon={SquareArrowUpRight02Icon}

@@ -59,7 +59,7 @@ vi.mock("@src/components/MarkDown", () => ({
     createElement("div", { "data-testid": "markdown" }, textContent),
 }));
 
-vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", () => ({
+vi.mock("@src/components/MarkdownTextareaEditor", () => ({
   default: forwardRef(function MockMarkdownTextareaEditor(
     {
       appearance,
@@ -82,7 +82,7 @@ vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", () => ({
   }),
 }));
 
-vi.mock("@src/modules/shared/components/GitHubLinkedReferences/lazy", () => ({
+vi.mock("@src/features/GitHubWork/GitHubLinkedReferences/lazy", () => ({
   default: ({ references }: { references: readonly unknown[] }) =>
     createElement("div", {
       "data-testid": "mock-linked-references",

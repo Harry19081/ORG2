@@ -167,10 +167,11 @@ const TerminalBlock: React.FC<TerminalBlockProps> = memo(
     const isStillRunning = isLoading || isBackground;
     // Visibility policy:
     // - Caller-provided defaults always win.
-    // - Still running OR backgrounded → expanded so progress remains visible.
+    // - Running, backgrounded, and settled commands all start collapsed so
+    //   command input/output does not expand the chat timeline by default.
     // - Every settled command → collapsed; failures remain visible in the
     //   header through their failed state and exit code, and can be expanded.
-    const effectiveDefaultCollapsed = defaultCollapsed ?? !isStillRunning;
+    const effectiveDefaultCollapsed = defaultCollapsed ?? true;
 
     const {
       isCollapsed,

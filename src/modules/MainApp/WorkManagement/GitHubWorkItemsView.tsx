@@ -2,12 +2,12 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { SelectOption } from "@src/components/Select";
-import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
   WorkManagementTable,
   type WorkManagementTableRow,
-} from "@src/modules/shared/components/WorkManagementTable";
-import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
+} from "@src/features/GitHubWork/WorkManagementTable";
+import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
+import InboxListDetailLayout from "@src/scaffold/layouts/InboxListDetailLayout";
 
 import { CreateIssueModal } from "./CreateIssueModal";
 import GitHubWorkItemDetailPane from "./GitHubWorkItemDetailPane";

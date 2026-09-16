@@ -302,3 +302,45 @@ describe("compound button surfaces", () => {
     }
   });
 });
+
+describe("Button shortcut hints", () => {
+  it("renders a trailing display hint without leaking a DOM attribute", () => {
+    const host = document.createElement("div");
+    host.innerHTML = renderToStaticMarkup(
+      React.createElement(
+        Button,
+        {
+          shortcut: "Esc",
+          "aria-keyshortcuts": "Escape",
+        },
+        "Cancel"
+      )
+    );
+    const button = host.querySelector("button")!;
+    expect(button.textContent).toBe("CancelEsc");
+    expect(button.hasAttribute("shortcut")).toBe(false);
+    expect(button.getAttribute("aria-keyshortcuts")).toBe("Escape");
+    expect(
+      button.querySelector("kbd")?.closest('[aria-hidden="true"]')
+    ).not.toBeNull();
+  });
+
+  it.each([undefined, "", "   "])("omits an empty hint (%s)", (shortcut) => {
+    const markup = renderToStaticMarkup(
+      React.createElement(Button, { shortcut }, "Action")
+    );
+    expect(markup).not.toContain("<kbd");
+  });
+
+  it("preserves icon-only geometry without rendering a shortcut", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(Button, {
+        iconOnly: true,
+        icon: React.createElement("svg"),
+        shortcut: "Enter",
+        "aria-label": "Send",
+      })
+    );
+    expect(markup).not.toContain("<kbd");
+  });
+});

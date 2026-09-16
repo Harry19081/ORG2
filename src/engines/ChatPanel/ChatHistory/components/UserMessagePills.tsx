@@ -17,7 +17,7 @@ import SharedSessionFileLink from "@src/features/Org2Cloud/SharedSessionFileLink
 import { useOpenSessionSharedFile } from "@src/features/Org2Cloud/SharedSessionFilesContext";
 import { parseSharedSessionFileReference } from "@src/features/Org2Cloud/sharedSessionFileReference";
 import { AtIcon, HugeiconsIcon } from "@src/icons";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
+import { openLink } from "@src/util/ui/openLink";
 
 import { type MentionSegment, type PillSegment } from "./userMessageSegments";
 
@@ -40,7 +40,7 @@ export const InlineReferenceLink: React.FC<{ segment: PillSegment }> = memo(
         e.preventDefault();
 
         if (isWebReference) {
-          void openExternalLink(href);
+          openLink(href);
           return;
         }
 
