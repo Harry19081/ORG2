@@ -133,9 +133,14 @@ describe("SessionFilterButton", () => {
   it("gives Include External a leading icon like every other action row", () => {
     const includeExternal = queryTestId("sidebar-include-external");
 
+    expect(includeExternal?.className).not.toContain("hover:bg-surface-hover");
     expect(
       includeExternal?.querySelector('[data-icon="folder-symlink"]')
     ).not.toBeNull();
+    expect(
+      includeExternal?.querySelector('[role="switch"]')?.parentElement
+        ?.className
+    ).toContain("items-center");
     const toggle = includeExternal?.querySelector('[role="switch"]');
     expect(toggle?.getAttribute("aria-checked")).toBe("true");
     expect(toggle?.getAttribute("aria-label")).toBe(
