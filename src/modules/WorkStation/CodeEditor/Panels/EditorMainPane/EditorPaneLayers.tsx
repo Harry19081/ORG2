@@ -9,12 +9,12 @@
 import React, { Suspense } from "react";
 
 import { Placeholder } from "@src/components/Placeholder";
+import { FileHeaderToolbarContext } from "@src/features/FileHeader/FileHeaderToolbarContext";
 import UnifiedTabContent from "@src/modules/WorkStation/TabContent/UnifiedTabContent";
 import {
   NoTabsPlaceholder,
   type QuickAction,
 } from "@src/modules/WorkStation/shared";
-import { FileHeaderToolbarContext } from "@src/modules/shared/components/FileHeader/FileHeaderToolbarContext";
 import type { WorkStationTab } from "@src/store/workstation/tabs";
 
 import type { SourceControlMainTabData } from "./content/sourceControlMainProps";

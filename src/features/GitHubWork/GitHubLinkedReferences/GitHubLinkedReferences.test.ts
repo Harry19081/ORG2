@@ -34,7 +34,7 @@ vi.mock("@src/util/ui/openLink", () => ({
   openLink: vi.fn(),
 }));
 
-vi.mock("@src/modules/shared/githubIssueDetailCoordinator", () => ({
+vi.mock("@src/features/GitHubWork/githubIssueDetailCoordinator", () => ({
   loadGitHubDetailAuthScope: mocks.loadGitHubDetailAuthScope,
   loadGitHubIssueMetadata: mocks.loadGitHubIssueMetadata,
 }));

@@ -13,7 +13,7 @@ const state = vi.hoisted(() => ({
   events: [] as string[],
   listeners: new Set<() => void>(),
 }));
-vi.mock("@src/modules/shared/hooks", () => ({
+vi.mock("@src/modules/hooks", () => ({
   useRouteLayoutType: () =>
     useSyncExternalStore(
       (listener) => {

@@ -24,7 +24,7 @@ vi.mock("@src/modules/WorkStation/TabContent/registry", () => ({
   },
 }));
 
-vi.mock("@src/modules/shared/components/GitHubDetailSkeleton", () => ({
+vi.mock("@src/features/GitHubWork/GitHubDetailSkeleton", () => ({
   default: () => null,
 }));
 

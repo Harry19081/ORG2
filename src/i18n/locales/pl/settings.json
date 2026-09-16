@@ -3,8 +3,6 @@
     "customCommandUpdated": "Zaktualizowano polecenie niestandardowe",
     "shellSettingUpdated": "Zaktualizowano ustawienie powłoki"
   },
-  "noSettingsFound": "Nie znaleziono ustawień dla \"{{query}}\"",
-  "searchPlaceholder": "Szukaj w ustawieniach...",
   "panel": {
     "maximizeSettings": "Maksymalizuj ustawienia"
   },

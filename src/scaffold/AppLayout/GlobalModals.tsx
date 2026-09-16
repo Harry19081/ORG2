@@ -10,7 +10,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { componentIssueModalOpenAtom } from "@src/store/ui/overlayAtom";
 
 const ComponentIssueModalProvider = React.lazy(() =>
-  import("@src/modules/shared/DevTools/ComponentIssueModal").then((module) => ({
+  import("@src/scaffold/DevTools/ComponentIssueModal").then((module) => ({
     default: module.ComponentIssueModalProvider,
   }))
 );

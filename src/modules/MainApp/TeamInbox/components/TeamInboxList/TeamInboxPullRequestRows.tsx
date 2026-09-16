@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import AnyIcon from "@src/components/AnyIcon";
 import Avatar from "@src/components/Avatar";
 import { ListPanelItem } from "@src/components/ListPanel";
+import { compactRepositoryLabel } from "@src/features/GitHubWork/githubRepositoryLabel";
 import {
   GitMergeIcon,
   GitPullRequestClosedIcon,
@@ -14,7 +15,6 @@ import {
   type ManagedPrItem,
   getManagedPullRequestKey,
 } from "@src/modules/MainApp/WorkManagement/githubManagedItemModel";
-import { compactRepositoryLabel } from "@src/modules/shared/githubRepositoryLabel";
 import {
   type PrStatusIconName,
   getPrStatusIconName,

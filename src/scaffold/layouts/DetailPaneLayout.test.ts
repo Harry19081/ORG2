@@ -22,7 +22,7 @@ vi.mock("@src/components/Placeholder", () => ({
     }),
 }));
 
-vi.mock("@src/modules/shared/components/DetailHeaderIconAction", () => ({
+vi.mock("@src/components/DetailHeaderIconAction", () => ({
   default: ({
     label,
     icon,

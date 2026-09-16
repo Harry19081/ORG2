@@ -3,13 +3,13 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import ComposerSurface from "@src/components/ComposerSurface";
-import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
-import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
   type MarkdownTextareaEditorRef,
-} from "@src/modules/shared/components/MarkdownTextareaEditor";
-import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
+} from "@src/components/MarkdownTextareaEditor";
+import MarkdownEditorModeSwitch from "@src/components/MarkdownTextareaEditor/ModeSwitch";
+import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
+import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 
 interface PrConversationComposerProps {
   composerDockRef: React.RefObject<HTMLDivElement | null>;
