@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { createLogger } from "@src/hooks/logger";
 import type {
   SearchTabSessionState,
   SearchOptions as StoreSearchOptions,
@@ -51,6 +52,7 @@ interface UseSearchTabContentReturn {
   isTruncated: boolean;
 }
 
+const log = createLogger("useSearchTabContent");
 const NO_OPEN_FILES: string[] = [];
 
 export function useSearchTabContent({
@@ -153,7 +155,9 @@ export function useSearchTabContent({
     resultActions.clearAtom();
     setLoading(Boolean(query.trim()));
     setSubmittedSearch(query.trim() ? { query, options: storeOptions } : null);
-    void executeSearch();
+    executeSearch().catch((error: unknown) => {
+      log.error("Failed to execute submitted search", error);
+    });
   }, [query, storeOptions, executeSearch, resultActions]);
   const awaitingSubmission =
     !submittedSearch ||

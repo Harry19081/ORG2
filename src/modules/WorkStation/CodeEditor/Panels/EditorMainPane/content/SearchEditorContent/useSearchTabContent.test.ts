@@ -16,10 +16,15 @@ import { useSearchTabContent } from "./useSearchTabContent";
 const api = vi.hoisted(() => ({
   search: vi.fn(async () => {}),
   cancel: vi.fn(async () => {}),
+  unlisten: vi.fn(),
+  logError: vi.fn(),
   listeners: new Map<
     string,
     (event: { payload: Record<string, unknown> }) => void
   >(),
+}));
+vi.mock("@src/hooks/logger", () => ({
+  createLogger: () => ({ error: api.logError }),
 }));
 vi.mock("@src/api/tauri/search", () => ({
   searchCodeFast: api.search,
@@ -35,6 +40,7 @@ vi.mock("@tauri-apps/api/event", () => ({
     ) => {
       api.listeners.set(name, callback);
       return () => {
+        api.unlisten();
         if (api.listeners.get(name) === callback) api.listeners.delete(name);
       };
     }
@@ -131,6 +137,33 @@ it("does no backend work while typing; submits explicitly and keeps draft state 
     expect(ref.current!.submittedSearch).toBeNull();
     expect(ref.current!.results).toEqual([]);
     expect(api.search).toHaveBeenCalledTimes(2);
+  } finally {
+    await act(async () => root.unmount());
+    environment.IS_REACT_ACT_ENVIRONMENT = previous;
+  }
+});
+
+it("handles rejected submission setup without an unhandled promise", async () => {
+  const environment = globalThis as typeof globalThis & {
+    IS_REACT_ACT_ENVIRONMENT?: boolean;
+  };
+  const previous = environment.IS_REACT_ACT_ENVIRONMENT;
+  environment.IS_REACT_ACT_ENVIRONMENT = true;
+  const root = createRoot(document.createElement("div"));
+  const ref = createRef<ReturnType<typeof useSearchTabContent>>();
+  try {
+    await act(async () => root.render(createElement(Probe, { ref })));
+    await act(async () => ref.current!.refresh());
+    const error = new Error("Listener cleanup failed");
+    api.unlisten.mockImplementationOnce(() => {
+      throw error;
+    });
+    await act(async () => ref.current!.refresh());
+    expect(api.logError).toHaveBeenCalledWith(
+      "Failed to execute submitted search",
+      error
+    );
+    expect(api.search).toHaveBeenCalledTimes(1);
   } finally {
     await act(async () => root.unmount());
     environment.IS_REACT_ACT_ENVIRONMENT = previous;
