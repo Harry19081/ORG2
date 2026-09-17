@@ -13,7 +13,7 @@ import {
 } from "@src/features/MarketConnect/marketProfiles";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 
-import { useUnifiedModelPaletteSelection } from "./useUnifiedModelPaletteSelection";
+import { useUnifiedModelPaletteSelection } from "../useUnifiedModelPaletteSelection";
 
 vi.mock("@src/components/Message", () => ({ Message: { error: vi.fn() } }));
 vi.mock("react-i18next", () => ({
