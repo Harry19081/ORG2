@@ -22,7 +22,8 @@
     "title": "Боковая панель",
     "showSidebar": "Показывать боковую панель",
     "location": "Расположение",
-    "showIndentLines": "Показывать линии отступов"
+    "showIndentLines": "Показывать линии отступов",
+    "colorSourceControlFiles": "Использовать цвета различий для файлов"
   },
   "teamInbox": {
     "title": "Общий почтовый ящик команды",
@@ -946,7 +947,6 @@
     "fileMayHaveBeenDeletedOrMoved": "Файл мог быть удален или перемещен.",
     "editorCouldNotOpenFileMissing": "Редактор не удалось открыть, потому что файл не найден или удален",
     "enterSearchQueryToBegin": "Введите поисковый запрос, чтобы начать",
-    "pressEnterToSearch": "Нажмите Enter для поиска",
     "unknownTabType": "Неизвестный тип вкладки",
     "noWorkspaceFolders": "Нет папок Workspace",
     "noRepoSelected": "No repository selected",
@@ -958,7 +958,8 @@
     "selectSidebarStash": "Выберите один stash",
     "selectSidebarCommit": "Выберите один commit",
     "selectSidebarPullRequest": "Выберите один pull request",
-    "selectSidebarIssue": "Выберите один issue"
+    "selectSidebarIssue": "Выберите один issue",
+    "pressEnterToSearch": "Нажмите Enter для поиска"
   },
   "inbox": {
     "scrollToBottom": "Вниз",

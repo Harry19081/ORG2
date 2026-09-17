@@ -20,10 +20,12 @@ import FileTypeIcon from "@src/components/FileTypeIcon";
 import { GitStatusBadge, type GitStatusInfo } from "@src/components/TreeRow";
 import type { StickyScrollNode } from "@src/components/VirtualizedStickyTree";
 import { StickyTreeRow } from "@src/components/VirtualizedStickyTree/StickyTreeRow";
+import { getStatusColorForFile } from "@src/config/gitStatus";
 import {
   COUNT_BADGE,
   getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
+import { gitSourceControlColorFileNamesAtom } from "@src/store/ui/editorSettingsAtom";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import type { SourceControlNode } from "../utils/virtualizedTreeUtils";
@@ -40,6 +42,7 @@ export const SourceControlStickyHeader: React.FC<
 > = ({ stickyNode, onClick, stickyBgClass, repoPath }) => {
   const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
   const effectiveRepoPath = repoPath ?? activeWorkspaceRootPath;
+  const colorFileNames = useAtomValue(gitSourceControlColorFileNamesAtom);
   const { node, depth } = stickyNode;
 
   if (node.nodeType === "section-header") {
@@ -96,6 +99,11 @@ export const SourceControlStickyHeader: React.FC<
         name={node.name}
         onClick={onClick}
         stickyBgClass={stickyBgClass}
+        nameClassName={
+          !isDirectory && colorFileNames && gitStatus
+            ? `min-w-0 flex-1 truncate text-[13px] ${getStatusColorForFile(gitStatus.status, gitStatus.staged)}`
+            : undefined
+        }
         icon={
           !isDirectory && (
             <FileTypeIcon

@@ -22,7 +22,8 @@
     "title": "Seitenleiste",
     "showSidebar": "Seitenleiste anzeigen",
     "location": "Position",
-    "showIndentLines": "Einrückungslinien anzeigen"
+    "showIndentLines": "Einrückungslinien anzeigen",
+    "colorSourceControlFiles": "Diff-Farben für Dateien verwenden"
   },
   "teamInbox": {
     "title": "Team-Posteingang",
@@ -946,7 +947,6 @@
     "fileMayHaveBeenDeletedOrMoved": "Die Datei wurde möglicherweise gelöscht oder verschoben.",
     "editorCouldNotOpenFileMissing": "Der Editor konnte nicht geöffnet werden, da die Datei nicht gefunden wurde oder entfernt wurde",
     "enterSearchQueryToBegin": "Geben Sie eine Suchanfrage ein, um zu beginnen",
-    "pressEnterToSearch": "Zum Suchen Enter drücken",
     "unknownTabType": "Unbekannter Tab-Typ",
     "noWorkspaceFolders": "Keine Workspace-Ordner",
     "noRepoSelected": "No repository selected",
@@ -958,7 +958,8 @@
     "selectSidebarStash": "Einen stash auswählen",
     "selectSidebarCommit": "Einen commit auswählen",
     "selectSidebarPullRequest": "Einen pull request auswählen",
-    "selectSidebarIssue": "Ein issue auswählen"
+    "selectSidebarIssue": "Ein issue auswählen",
+    "pressEnterToSearch": "Zum Suchen Enter drücken"
   },
   "inbox": {
     "scrollToBottom": "Nach unten scrollen",

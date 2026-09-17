@@ -22,7 +22,8 @@
     "title": "Sidebar settings",
     "showSidebar": "Show sidebar",
     "location": "Location",
-    "showIndentLines": "Show indent lines"
+    "showIndentLines": "Show indent lines",
+    "colorSourceControlFiles": "Use diff colors for files"
   },
   "windowChrome": {
     "menus": {
@@ -778,7 +779,6 @@
     "fileMayHaveBeenDeletedOrMoved": "The file may have been deleted or moved.",
     "editorCouldNotOpenFileMissing": "The editor could not be opened because the file was not found or removed",
     "enterSearchQueryToBegin": "Enter a search query to begin",
-    "pressEnterToSearch": "Press Enter to search",
     "unknownTabType": "Unknown tab type",
     "noWorkspaceFolders": "No workspace folders",
     "noRepoSelected": "No repository selected",
@@ -789,7 +789,8 @@
     "selectSidebarStash": "Select a stash",
     "selectSidebarCommit": "Select a commit",
     "selectSidebarPullRequest": "Select a pull request",
-    "selectSidebarIssue": "Select an issue"
+    "selectSidebarIssue": "Select an issue",
+    "pressEnterToSearch": "Press Enter to search"
   },
   "inbox": {
     "scrollToBottom": "Scroll to bottom",

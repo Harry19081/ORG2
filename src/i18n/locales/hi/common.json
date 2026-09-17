@@ -22,7 +22,8 @@
     "title": "साइडबार सेटिंग्स",
     "showSidebar": "साइडबार दिखाएँ",
     "location": "स्थान",
-    "showIndentLines": "इंडेंट रेखाएँ दिखाएँ"
+    "showIndentLines": "इंडेंट रेखाएँ दिखाएँ",
+    "colorSourceControlFiles": "फ़ाइलों के लिए डिफ़ रंगों का उपयोग करें"
   },
   "windowChrome": {
     "menus": {
@@ -778,7 +779,6 @@
     "fileMayHaveBeenDeletedOrMoved": "हो सकता है फ़ाइल हटा दी गई हो या स्थानांतरित कर दी गई हो।",
     "editorCouldNotOpenFileMissing": "एडिटर नहीं खुल सका क्योंकि फ़ाइल नहीं मिली या हटा दी गई",
     "enterSearchQueryToBegin": "शुरू करने के लिए खोज क्वेरी दर्ज करें",
-    "pressEnterToSearch": "खोजने के लिए Enter दबाएँ",
     "unknownTabType": "अज्ञात टैब प्रकार",
     "noWorkspaceFolders": "कोई वर्कस्पेस फ़ोल्डर नहीं",
     "noRepoSelected": "कोई रिपॉज़िटरी चयनित नहीं",
@@ -789,7 +789,8 @@
     "selectSidebarStash": "कोई स्टैश चुनें",
     "selectSidebarCommit": "कोई कमिट चुनें",
     "selectSidebarPullRequest": "कोई पुल रिक्वेस्ट चुनें",
-    "selectSidebarIssue": "कोई इश्यू चुनें"
+    "selectSidebarIssue": "कोई इश्यू चुनें",
+    "pressEnterToSearch": "खोजने के लिए Enter दबाएँ"
   },
   "inbox": {
     "scrollToBottom": "नीचे तक स्क्रॉल करें",

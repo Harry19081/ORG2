@@ -330,6 +330,19 @@ export const gitAutoFetchIntervalAtom = atom(
   }
 );
 
+/**
+ * Color Source Control file names using the existing diff-status palette.
+ */
+export const gitSourceControlColorFileNamesAtom = atom(
+  (get) => get(settingsAtom)["git.sourceControl.colorFileNames"],
+  async (_get, set, value: boolean) => {
+    await set(updateSettingAtom, {
+      key: "git.sourceControl.colorFileNames",
+      value,
+    });
+  }
+);
+
 export const gitCommitInstructionsAtom = atom(
   (get) => get(settingsAtom)["git.prompts.commitInstructions"] as string,
   (_get, set, value: string) => {

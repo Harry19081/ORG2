@@ -22,7 +22,8 @@
     "title": "Pengaturan bilah sisi",
     "showSidebar": "Tampilkan bilah sisi",
     "location": "Lokasi",
-    "showIndentLines": "Tampilkan garis indentasi"
+    "showIndentLines": "Tampilkan garis indentasi",
+    "colorSourceControlFiles": "Gunakan warna diff untuk file"
   },
   "windowChrome": {
     "menus": {
@@ -778,7 +779,6 @@
     "fileMayHaveBeenDeletedOrMoved": "File mungkin telah dihapus atau dipindahkan.",
     "editorCouldNotOpenFileMissing": "Editor tidak dapat dibuka karena file tidak ditemukan atau telah dihapus",
     "enterSearchQueryToBegin": "Masukkan kueri pencarian untuk memulai",
-    "pressEnterToSearch": "Tekan Enter untuk mencari",
     "unknownTabType": "Jenis tab tidak dikenal",
     "noWorkspaceFolders": "Tidak ada folder ruang kerja",
     "noRepoSelected": "Tidak ada repositori yang dipilih",
@@ -789,7 +789,8 @@
     "selectSidebarStash": "Pilih stash",
     "selectSidebarCommit": "Pilih commit",
     "selectSidebarPullRequest": "Pilih pull request",
-    "selectSidebarIssue": "Pilih issue"
+    "selectSidebarIssue": "Pilih issue",
+    "pressEnterToSearch": "Tekan Enter untuk mencari"
   },
   "inbox": {
     "scrollToBottom": "Gulir ke bawah",

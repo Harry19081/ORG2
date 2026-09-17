@@ -22,7 +22,8 @@
     "title": "Pasek boczny",
     "showSidebar": "Pokaż pasek boczny",
     "location": "Położenie",
-    "showIndentLines": "Pokaż linie wcięć"
+    "showIndentLines": "Pokaż linie wcięć",
+    "colorSourceControlFiles": "Użyj kolorów zmian dla plików"
   },
   "teamInbox": {
     "title": "Skrzynka zespołu",
@@ -946,7 +947,6 @@
     "fileMayHaveBeenDeletedOrMoved": "Plik mógł zostać usunięty lub przeniesiony.",
     "editorCouldNotOpenFileMissing": "Nie można otworzyć edytora, ponieważ plik nie został znaleziony lub został usunięty",
     "enterSearchQueryToBegin": "Wprowadź zapytanie wyszukiwania, aby rozpocząć",
-    "pressEnterToSearch": "Naciśnij Enter, aby wyszukać",
     "unknownTabType": "Nieznany typ karty",
     "noWorkspaceFolders": "Brak folderów Workspace",
     "noRepoSelected": "Nie wybrano Repo",
@@ -958,7 +958,8 @@
     "selectSidebarStash": "Wybierz jeden stash",
     "selectSidebarCommit": "Wybierz jeden commit",
     "selectSidebarPullRequest": "Wybierz jeden pull request",
-    "selectSidebarIssue": "Wybierz jedno issue"
+    "selectSidebarIssue": "Wybierz jedno issue",
+    "pressEnterToSearch": "Naciśnij Enter, aby wyszukać"
   },
   "inbox": {
     "scrollToBottom": "Przewiń na dół",

@@ -5,7 +5,10 @@ import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
-import { editorShowTreeIndentGuidesAtom } from "@src/store/ui/editorSettingsAtom";
+import {
+  editorShowTreeIndentGuidesAtom,
+  gitSourceControlColorFileNamesAtom,
+} from "@src/store/ui/editorSettingsAtom";
 import { activeOverlayCountAtom } from "@src/store/ui/overlayLayerAtom";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { workStationLayoutModeAtom } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
@@ -268,6 +271,7 @@ describe("FileHeaderMoreMenu", () => {
     ).toEqual([
       "sidebarSettings.showSidebar",
       "sidebarSettings.showIndentLines",
+      "sidebarSettings.colorSourceControlFiles",
     ]);
 
     const visible = element("file-header-sidebar-visible-toggle");
@@ -286,6 +290,11 @@ describe("FileHeaderMoreMenu", () => {
     expect(indent.getAttribute("aria-checked")).toBe("true");
     act(() => indent.click());
     expect(store.get(editorShowTreeIndentGuidesAtom)).toBe(false);
+
+    const diffColors = element("file-header-sidebar-diff-colors-toggle");
+    expect(diffColors.getAttribute("aria-checked")).toBe("false");
+    act(() => diffColors.click());
+    expect(store.get(gitSourceControlColorFileNamesAtom)).toBe(true);
     expect(props.setMenuVisible).not.toHaveBeenCalled();
     // Layout prefs queue a coalesced localStorage write; drop it here.
     _resetCoalescedStorageWritesForTests();

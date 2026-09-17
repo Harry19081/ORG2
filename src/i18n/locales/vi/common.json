@@ -22,7 +22,8 @@
     "title": "Cài đặt thanh bên",
     "showSidebar": "Hiện thanh bên",
     "location": "Vị trí",
-    "showIndentLines": "Hiện đường thụt lề"
+    "showIndentLines": "Hiện đường thụt lề",
+    "colorSourceControlFiles": "Dùng màu khác biệt cho tệp"
   },
   "teamInbox": {
     "title": "Hộp thư nhóm",
@@ -946,7 +947,6 @@
     "fileMayHaveBeenDeletedOrMoved": "Tệp có thể đã bị xóa hoặc di chuyển.",
     "editorCouldNotOpenFileMissing": "Không thể mở trình chỉnh sửa vì tệp không tồn tại hoặc đã bị xóa",
     "enterSearchQueryToBegin": "Nhập truy vấn tìm kiếm để bắt đầu",
-    "pressEnterToSearch": "Nhấn Enter để tìm kiếm",
     "unknownTabType": "Loại tab không xác định",
     "noWorkspaceFolders": "Không có thư mục Workspace",
     "noRepoSelected": "No repository selected",
@@ -958,7 +958,8 @@
     "selectSidebarStash": "Chọn một stash",
     "selectSidebarCommit": "Chọn một commit",
     "selectSidebarPullRequest": "Chọn một pull request",
-    "selectSidebarIssue": "Chọn một issue"
+    "selectSidebarIssue": "Chọn một issue",
+    "pressEnterToSearch": "Nhấn Enter để tìm kiếm"
   },
   "inbox": {
     "scrollToBottom": "Cuộn xuống cuối",

@@ -16,6 +16,7 @@ import React, { forwardRef, useCallback } from "react";
 import DisclosureChevron from "@src/components/DisclosureChevron";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { SidebarRowContent } from "@src/components/SidebarRow/SidebarRowContent";
+import { getStatusColorForFile } from "@src/config/gitStatus";
 import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 import { CornerDownRightIcon, HugeiconsIcon } from "@src/icons";
 import { editorShowTreeIndentGuidesAtom } from "@src/store/ui/editorSettingsAtom";
@@ -41,6 +42,8 @@ export const TreeRowBase = React.memo(
         depth,
         isSelected = false,
         isMultiSelected = false,
+        gitStatus,
+        colorLabelByGitStatus = false,
         onClick,
         onContextMenu,
         className = "",
@@ -106,6 +109,10 @@ export const TreeRowBase = React.memo(
         }
         return "text-text-2";
       };
+      const labelTextColorClass =
+        !isIgnored && !isSelected && colorLabelByGitStatus && gitStatus
+          ? getStatusColorForFile(gitStatus.status, gitStatus.staged)
+          : getTextColorClass();
 
       return (
         <div
@@ -203,7 +210,7 @@ export const TreeRowBase = React.memo(
                     : node.path || node.name
                   : undefined
               }
-              labelClassName={`text-[13px] ${isSelected ? "font-medium" : ""} ${getTextColorClass()}`}
+              labelClassName={`text-[13px] ${isSelected ? "font-medium" : ""} ${labelTextColorClass}`}
               trailing={
                 <>
                   {/* Additional content (action buttons, status badge, etc.) */}

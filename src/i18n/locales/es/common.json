@@ -22,7 +22,8 @@
     "title": "Barra lateral",
     "showSidebar": "Mostrar barra lateral",
     "location": "Posición",
-    "showIndentLines": "Mostrar líneas de sangría"
+    "showIndentLines": "Mostrar líneas de sangría",
+    "colorSourceControlFiles": "Usar colores de diferencias para archivos"
   },
   "teamInbox": {
     "title": "Bandeja del equipo",
@@ -946,7 +947,6 @@
     "fileMayHaveBeenDeletedOrMoved": "Es posible que el archivo se haya eliminado o movido.",
     "editorCouldNotOpenFileMissing": "No se pudo abrir el editor porque el archivo no se encontró o fue eliminado",
     "enterSearchQueryToBegin": "Introduce una consulta de búsqueda para comenzar",
-    "pressEnterToSearch": "Pulsa Enter para buscar",
     "unknownTabType": "Tipo de pestaña desconocido",
     "noWorkspaceFolders": "Sin carpetas de workspace",
     "noRepoSelected": "No repository selected",
@@ -958,7 +958,8 @@
     "selectSidebarStash": "Selecciona un stash",
     "selectSidebarCommit": "Selecciona un commit",
     "selectSidebarPullRequest": "Selecciona un pull request",
-    "selectSidebarIssue": "Selecciona un issue"
+    "selectSidebarIssue": "Selecciona un issue",
+    "pressEnterToSearch": "Pulsa Enter para buscar"
   },
   "inbox": {
     "scrollToBottom": "Ir al final",

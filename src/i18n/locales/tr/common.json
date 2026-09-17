@@ -22,7 +22,8 @@
     "title": "Kenar çubuğu ayarları",
     "showSidebar": "Kenar çubuğunu göster",
     "location": "Konum",
-    "showIndentLines": "Girinti çizgilerini göster"
+    "showIndentLines": "Girinti çizgilerini göster",
+    "colorSourceControlFiles": "Dosyalar için fark renklerini kullan"
   },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
@@ -946,7 +947,6 @@
     "fileMayHaveBeenDeletedOrMoved": "Dosya silinmiş veya taşınmış olabilir.",
     "editorCouldNotOpenFileMissing": "Dosya bulunamadığı veya kaldırıldığı için editör açılamadı",
     "enterSearchQueryToBegin": "Başlamak için bir arama sorgusu girin",
-    "pressEnterToSearch": "Aramak için Enter tuşuna basın",
     "unknownTabType": "Bilinmeyen sekme türü",
     "noWorkspaceFolders": "Workspace klasörü yok",
     "noRepoSelected": "No repository selected",
@@ -958,7 +958,8 @@
     "selectSidebarStash": "Bir stash seçin",
     "selectSidebarCommit": "Bir commit seçin",
     "selectSidebarPullRequest": "Bir pull request seçin",
-    "selectSidebarIssue": "Bir issue seçin"
+    "selectSidebarIssue": "Bir issue seçin",
+    "pressEnterToSearch": "Aramak için Enter tuşuna basın"
   },
   "inbox": {
     "scrollToBottom": "Alta kaydır",

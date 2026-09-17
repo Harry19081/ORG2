@@ -22,7 +22,8 @@
     "title": "側邊欄設定",
     "showSidebar": "顯示側邊欄",
     "location": "位置",
-    "showIndentLines": "顯示縮排線"
+    "showIndentLines": "顯示縮排線",
+    "colorSourceControlFiles": "使用差異顏色標記檔案"
   },
   "teamInbox": {
     "title": "團隊收件匣",
@@ -946,7 +947,6 @@
     "fileMayHaveBeenDeletedOrMoved": "檔案可能已被刪除或移動。",
     "editorCouldNotOpenFileMissing": "無法打開編輯器，因爲文件未找到或已被刪除",
     "enterSearchQueryToBegin": "輸入搜索查詢以開始",
-    "pressEnterToSearch": "按 Enter 鍵搜尋",
     "unknownTabType": "未知標籤頁類型",
     "noWorkspaceFolders": "沒有工作區文件夾",
     "noRepoSelected": "No repository selected",
@@ -958,7 +958,8 @@
     "selectSidebarStash": "選擇一個 stash",
     "selectSidebarCommit": "選擇一個 commit",
     "selectSidebarPullRequest": "選擇一個 pull request",
-    "selectSidebarIssue": "選擇一個 issue"
+    "selectSidebarIssue": "選擇一個 issue",
+    "pressEnterToSearch": "按 Enter 鍵搜尋"
   },
   "inbox": {
     "scrollToBottom": "滾動到底部",
