@@ -13,7 +13,10 @@ import {
 } from "vitest";
 
 import type { MobileRpcClient } from "../connection/mobileRpcClient";
-import { invalidateMobileSessionIdentities } from "../connection/mobileSessionIdentityCache";
+import {
+  invalidateMobileSessionIdentities,
+  prefetchMobileSessionIdentities,
+} from "../connection/mobileSessionIdentityCache";
 import type { TranscriptItem } from "../lib/transcriptReducer";
 import { SessionChatScreen } from "./SessionChatScreen";
 
@@ -170,11 +173,11 @@ describe("SessionChatScreen Agent loading state", () => {
     Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  async function renderScreen() {
+  async function renderScreen(sessionId = "session-a") {
     await act(async () => {
       root.render(
         React.createElement(SessionChatScreen, {
-          sessionId: "session-a",
+          sessionId,
           sessionName: "Remote session",
         })
       );
@@ -234,6 +237,38 @@ describe("SessionChatScreen Agent loading state", () => {
     expect(context.sendMessage).toHaveBeenCalledWith("owner", "hello", []);
   });
 
+  it.each([
+    "sdeagent-native",
+    "cliagent-native",
+    "claudecodeapp-history",
+    "cursoride-history",
+  ])(
+    "opens %s directly on identity-capable Desktop without a confirmation RPC",
+    async (id) => {
+      const call = vi.fn(() => new Promise(() => {}));
+      const context = createContext({
+        rpc: { call },
+        connection: {
+          status: "connected",
+          presence: "online",
+          tier: "read_only",
+          capabilities: { sessionIdentity: true },
+        },
+      });
+      mocks.context = context;
+      await renderScreen(id);
+      expect(call).not.toHaveBeenCalled();
+      expect(context.subscribeSession).toHaveBeenCalledWith(id);
+      expect(container.textContent).not.toContain(
+        "connection.resolvingSession"
+      );
+      expect(
+        container.querySelector('[data-testid="chat-transcript"]')
+      ).not.toBeNull();
+      expect(mocks.composerProps?.disabled).toBe(true);
+    }
+  );
+
   it("resolves before chat mounts, then uses one managed id for subscribe/send/model and navigation", async () => {
     let resolve!: (value: unknown) => void;
     const call = vi.fn(
@@ -255,7 +290,7 @@ describe("SessionChatScreen Agent loading state", () => {
     await act(async () =>
       root.render(
         React.createElement(SessionChatScreen, {
-          sessionId: "mirror",
+          sessionId: "codexapp-imported",
           sessionName: "Imported mirror",
           sendCapability: "read_only",
           onCanonicalSession,
@@ -294,6 +329,19 @@ describe("SessionChatScreen Agent loading state", () => {
       "cliagent-owner",
       { id: "model", accountId: "account" }
     );
+    await act(async () =>
+      root.render(
+        React.createElement(SessionChatScreen, {
+          sessionId: "cliagent-owner",
+          sessionName: "Imported mirror",
+          sendCapability: "read_only",
+          onCanonicalSession,
+        })
+      )
+    );
+    expect(call).toHaveBeenCalledOnce();
+    expect(mocks.context.subscribeSession).toHaveBeenCalledOnce();
+    expect(mocks.composerProps?.disabled).toBe(false);
   });
 
   it("reopens a resolved conversation without another identity request or confirmation gate", async () => {
@@ -317,10 +365,10 @@ describe("SessionChatScreen Agent loading state", () => {
       },
     });
     mocks.context = context;
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     await act(async () => root.render(null));
     mocks.composerProps = null;
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(call).toHaveBeenCalledOnce();
     expect(container.textContent).not.toContain("connection.resolvingSession");
     expect(
@@ -336,11 +384,117 @@ describe("SessionChatScreen Agent loading state", () => {
       sessionId: "replacement-owner",
       managed: true,
     });
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(call).toHaveBeenCalledTimes(2);
     expect(context.subscribeSession).toHaveBeenLastCalledWith(
       "replacement-owner"
     );
+  });
+
+  it("opens a prefetched legacy mirror without another resolve or confirmation gate", async () => {
+    const call = vi
+      .fn()
+      .mockResolvedValue({ sessionId: "cliagent-owner", managed: true });
+    const rpc: MobileRpcClient = {
+      call,
+      notify: vi.fn(),
+      close: vi.fn(),
+      readyState: 1,
+      onNotification: () => () => {},
+    };
+    await prefetchMobileSessionIdentities(rpc, [
+      {
+        id: "codexapp-imported",
+        name: "Imported Codex",
+        status: "idle",
+        sendCapability: "external_codex",
+      },
+    ]);
+    invalidateMobileSessionIdentities(rpc);
+    await prefetchMobileSessionIdentities(rpc, [
+      {
+        id: "codexapp-imported",
+        name: "Imported Codex",
+        status: "idle",
+        sendCapability: "external_codex",
+      },
+    ]);
+    expect(call).toHaveBeenCalledTimes(2);
+    call.mockClear();
+    const context = createContext({
+      rpc,
+      connection: {
+        status: "connected",
+        presence: "online",
+        tier: "full",
+        capabilities: { sessionIdentity: true },
+      },
+    });
+    mocks.context = context;
+
+    await act(async () =>
+      root.render(
+        React.createElement(SessionChatScreen, {
+          sessionId: "codexapp-imported",
+          sessionName: "Imported Codex",
+          sendCapability: "external_codex",
+        })
+      )
+    );
+
+    expect(call).not.toHaveBeenCalled();
+    expect(container.textContent).not.toContain("connection.resolvingSession");
+    expect(context.subscribeSession).toHaveBeenCalledWith("cliagent-owner");
+    expect(
+      container.querySelector('[data-testid="chat-transcript"]')
+    ).not.toBeNull();
+  });
+
+  it("rechecks a mounted imported mirror on invalidation before mounting its new owner", async () => {
+    let finish!: (value: unknown) => void;
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce({ sessionId: "codexapp-imported", managed: false })
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            finish = resolve;
+          })
+      );
+    const rpc: MobileRpcClient = {
+      call,
+      notify: vi.fn(),
+      close: vi.fn(),
+      readyState: 1,
+      onNotification: () => () => {},
+    };
+    const context = createContext({
+      rpc,
+      connection: {
+        status: "connected",
+        presence: "online",
+        tier: "full",
+        capabilities: { sessionIdentity: true },
+      },
+    });
+    mocks.context = context;
+    await renderScreen("codexapp-imported");
+    expect(context.subscribeSession).toHaveBeenCalledWith("codexapp-imported");
+    await act(async () => invalidateMobileSessionIdentities(rpc));
+    expect(call).toHaveBeenCalledTimes(2);
+    expect(
+      container.querySelector('[data-testid="chat-transcript"]')
+    ).toBeNull();
+    expect(context.unsubscribeSession).toHaveBeenCalledOnce();
+    await act(async () =>
+      finish({ sessionId: "cliagent-new-owner", managed: true })
+    );
+    expect(context.subscribeSession).toHaveBeenLastCalledWith(
+      "cliagent-new-owner"
+    );
+    expect(
+      container.querySelector('[data-testid="chat-transcript"]')
+    ).not.toBeNull();
   });
 
   it("shares an unresolved request across exit and reentry without aborting the new consumer", async () => {
@@ -361,9 +515,9 @@ describe("SessionChatScreen Agent loading state", () => {
       },
     });
     mocks.context = context;
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     await act(async () => root.render(null));
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(call).toHaveBeenCalledOnce();
     expect(context.subscribeSession).not.toHaveBeenCalled();
     await act(async () => finish({ sessionId: "owner", managed: true }));
@@ -386,7 +540,7 @@ describe("SessionChatScreen Agent loading state", () => {
       },
     });
     mocks.context = context;
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(container.querySelector('[role="alert"]')).not.toBeNull();
     expect(context.subscribeSession).not.toHaveBeenCalled();
 
@@ -394,12 +548,12 @@ describe("SessionChatScreen Agent loading state", () => {
       ...context,
       connection: { ...context.connection, presence: "offline" },
     };
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(container.textContent).toContain("connection.reconnecting");
     expect(call).toHaveBeenCalledTimes(1);
     mocks.context = context;
-    await renderScreen();
-    await renderScreen();
+    await renderScreen("codexapp-imported");
+    await renderScreen("codexapp-imported");
     expect(call).toHaveBeenCalledTimes(2);
     expect(context.subscribeSession).toHaveBeenCalledOnce();
     expect(context.subscribeSession).toHaveBeenCalledWith("recovered-owner");
@@ -429,16 +583,16 @@ describe("SessionChatScreen Agent loading state", () => {
       },
     });
     mocks.context = context;
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     const signal = call.mock.calls[0][2] as AbortSignal;
     mocks.context = {
       ...context,
       connection: { ...context.connection, presence: "offline" },
     };
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(signal.aborted).toBe(true);
     mocks.context = context;
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     await act(async () =>
       finishOld({ sessionId: "stale-owner", managed: true })
     );
@@ -465,7 +619,7 @@ describe("SessionChatScreen Agent loading state", () => {
       },
     });
     mocks.context = context;
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     await act(async () => container.querySelector("button")!.click());
     expect(context.retryConnection).toHaveBeenCalledOnce();
     expect(context.subscribeSession).not.toHaveBeenCalled();
@@ -474,7 +628,7 @@ describe("SessionChatScreen Agent loading state", () => {
       ...context,
       connection: { ...context.connection, presence: "offline" },
     };
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(
       container.querySelector('[data-testid="chat-transcript"]')
     ).not.toBeNull();
@@ -497,7 +651,7 @@ describe("SessionChatScreen Agent loading state", () => {
         capabilities: { sessionIdentity: true },
       },
     });
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(mocks.context.subscribeSession).not.toHaveBeenCalled();
     expect(container.querySelector('[role="alert"]')).not.toBeNull();
     await act(async () => container.querySelector("button")!.click());
@@ -526,7 +680,7 @@ describe("SessionChatScreen Agent loading state", () => {
         ),
       },
     });
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     mocks.context = createContext({
       connection,
       subscribeSession,
@@ -536,7 +690,7 @@ describe("SessionChatScreen Agent loading state", () => {
           .mockResolvedValue({ sessionId: "new-owner", managed: true }),
       },
     });
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     await act(async () => finishOld({ sessionId: "old-owner", managed: true }));
     expect(subscribeSession).toHaveBeenCalledTimes(1);
     expect(subscribeSession).toHaveBeenLastCalledWith("new-owner");
@@ -556,7 +710,7 @@ describe("SessionChatScreen Agent loading state", () => {
         capabilities: { sessionIdentity: true },
       },
     });
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(mocks.context.subscribeSession).toHaveBeenCalledWith("managed");
     expect(mocks.composerProps?.disabled).toBe(true);
     expect(mocks.composerProps?.disabledReason).toBe("composerDeviceReadOnly");
@@ -575,7 +729,7 @@ describe("SessionChatScreen Agent loading state", () => {
         capabilities: { sessionIdentity: true },
       },
     });
-    await renderScreen();
+    await renderScreen("codexapp-imported");
     expect(mocks.context.subscribeSession).not.toHaveBeenCalled();
     expect(mocks.context.sendMessage).not.toHaveBeenCalled();
     expect(mocks.composerProps).toBeNull();
