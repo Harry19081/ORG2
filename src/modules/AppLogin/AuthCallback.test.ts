@@ -119,7 +119,11 @@ describe("AuthCallback", () => {
     expect(mocks.navigate).not.toHaveBeenCalled();
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(750);
+      await vi.advanceTimersByTimeAsync(1999);
+    });
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
     });
 
     expect(mocks.navigate).toHaveBeenCalledWith("/orgii/mobile", {

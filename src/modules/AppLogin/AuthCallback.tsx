@@ -25,7 +25,7 @@ import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavig
 import { LoginLoadingState } from "./index";
 
 const log = createLogger("AuthCallback");
-const AUTH_SUCCESS_REDIRECT_DELAY_MS = 750;
+const AUTH_SUCCESS_REDIRECT_DELAY_MS = 2000;
 
 const AuthCallback: React.FC = () => {
   const { t } = useTranslation("market");

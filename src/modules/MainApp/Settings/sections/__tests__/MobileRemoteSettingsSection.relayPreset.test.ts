@@ -35,7 +35,7 @@ const mocks = vi.hoisted(() => ({
     userId: string;
     profile?: { displayName?: string; primaryEmail?: string };
   } | null,
-  cloudSignIn: vi.fn(),
+  cloudSignIn: vi.fn(async () => true),
   settings: new Map<string, unknown>(),
   setRelayUrl: vi.fn(),
   saveSettings: vi.fn(),

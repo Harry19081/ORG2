@@ -71,6 +71,9 @@ describe("SignInModal", () => {
     ).toContain("login-waiting");
     expect(onClose).not.toHaveBeenCalled();
 
+    const visibility = vi
+      .spyOn(document, "visibilityState", "get")
+      .mockReturnValue("hidden");
     await act(async () => {
       store.set(org2CloudAuthAtom, {
         kind: "org2_cloud",
@@ -93,7 +96,19 @@ describe("SignInModal", () => {
     ).toContain("login-success");
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(750);
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+    expect(onClose).not.toHaveBeenCalled();
+    act(() => {
+      visibility.mockReturnValue("visible");
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1999);
+    });
+    expect(onClose).not.toHaveBeenCalled();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
     });
     expect(onClose).toHaveBeenCalledOnce();
   });
@@ -160,7 +175,7 @@ describe("SignInModal", () => {
 
     act(() => root.render(null));
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(750);
+      await vi.advanceTimersByTimeAsync(2000);
     });
 
     expect(onClose).not.toHaveBeenCalled();

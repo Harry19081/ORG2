@@ -294,6 +294,29 @@ describe("SidebarSettingsMenuButton", () => {
     await act(async () => confirm.click());
     expect(dialog()?.textContent).toContain("auth:loading.waiting");
     expect(onSignIn).toHaveBeenCalledOnce();
+    const waitingDialog = dialog();
+    await act(async () => {
+      store.set(org2CloudAuthAtom, {
+        kind: "org2_cloud",
+        supabaseUrl: "https://cloud.example.test",
+        supabaseAnonKey: "test-key",
+        userId: "user-1",
+        accessToken: "test-token",
+        refreshToken: "test-refresh",
+        expiresAt: 2_000_000_000,
+      });
+      root.render(
+        React.createElement(
+          Provider,
+          { store },
+          React.createElement(SidebarSettingsMenuButton, {
+            onSignIn: undefined,
+          })
+        )
+      );
+    });
+    expect(dialog()).toBe(waitingDialog);
+    expect(dialog()?.textContent).toContain("auth:loading.success");
   });
 
   it("confirms logout before clearing the persisted account and showing login", async () => {

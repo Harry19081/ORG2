@@ -10,7 +10,7 @@ import Modal from "@src/scaffold/ModalSystem";
 import { SignInFeatures } from "./SignInFeatures";
 import { org2CloudAuthAtom } from "./org2CloudAuthAtom";
 
-const AUTH_SUCCESS_CLOSE_DELAY_MS = 750;
+const AUTH_SUCCESS_CLOSE_DELAY_MS = 2000;
 
 type SignInStage = "ready" | "waiting" | "failure";
 
@@ -19,7 +19,7 @@ export function SignInModal({
   onSignIn,
 }: {
   onClose: () => void;
-  onSignIn: () => void | Promise<unknown>;
+  onSignIn?: () => void | Promise<unknown>;
 }) {
   const { t } = useTranslation(["navigation", "common", "auth"]);
   const auth = useAtomValue(org2CloudAuthAtom);
@@ -28,8 +28,19 @@ export function SignInModal({
 
   useEffect(() => {
     if (displayStage !== "success") return;
-    const timer = setTimeout(onClose, AUTH_SUCCESS_CLOSE_DELAY_MS);
-    return () => clearTimeout(timer);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const scheduleClose = () => {
+      clearTimeout(timer);
+      if (document.visibilityState !== "hidden") {
+        timer = setTimeout(onClose, AUTH_SUCCESS_CLOSE_DELAY_MS);
+      }
+    };
+    scheduleClose();
+    document.addEventListener("visibilitychange", scheduleClose);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", scheduleClose);
+    };
   }, [displayStage, onClose]);
 
   const isWaiting = displayStage === "waiting";
@@ -78,7 +89,7 @@ export function SignInModal({
         if (isWaiting) return;
         setStage("waiting");
         try {
-          const result = await onSignIn();
+          const result = await onSignIn?.();
           if (result === false) setStage("failure");
         } catch {
           setStage("failure");

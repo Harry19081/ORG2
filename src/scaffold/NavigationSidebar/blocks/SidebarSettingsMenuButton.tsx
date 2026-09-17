@@ -139,7 +139,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
           </div>,
           document.body
         )}
-      {showSignInModal && onSignIn && (
+      {showSignInModal && (
         <SignInModal
           onClose={() => setShowSignInModal(false)}
           onSignIn={onSignIn}
