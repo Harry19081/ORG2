@@ -140,6 +140,32 @@ describe("normalizeUserMessageText", () => {
     ).toBe("User-authored text.");
   });
 
+  it("removes the request-only envelope together with its ambient context", () => {
+    expect(
+      normalizeUserMessageText(
+        [
+          '<in-app-browser-context source="ambient-ui-state">',
+          "Generated browser state",
+          "</in-app-browser-context>",
+          "## My request:",
+          "好的 启动一下ios移动端吧",
+          "",
+          "  preserve indentation",
+        ].join("\n")
+      )
+    ).toBe("好的 启动一下ios移动端吧\n\n  preserve indentation");
+  });
+
+  it.each([
+    "## My request:\nKeep this authored heading.",
+    "## My request for Codex:\nKeep this heading too.",
+    "Introduction\n## My request:\nKeep this section.",
+    "```md\n## My request:\n```",
+    "## My request:\nKeep this heading.\n<orgii_provider_context>trailing context</orgii_provider_context>",
+  ])("preserves unwrapped request headings: %s", (text) => {
+    expect(normalizeUserMessageText(text)).toContain("## My request");
+  });
+
   it("leaves ordinary user text unchanged", () => {
     const text = "# Review this file\nKeep the heading.";
     expect(normalizeUserMessageText(text)).toBe(text);
