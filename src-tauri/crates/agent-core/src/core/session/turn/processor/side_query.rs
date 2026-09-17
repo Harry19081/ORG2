@@ -23,18 +23,16 @@ impl UnifiedMessageProcessor {
             }
             SideQueryExecution::IsolatedSession => {
                 let workspace = self.runtime.workspace_state.read().clone();
-                let provider =
-                    crate::providers::factory::create_provider_with_native_harness_preflight(
-                        &self.runtime.model,
-                        self.runtime.account_id.as_deref(),
-                        &self.runtime.resolved.reliability,
-                        self.runtime.native_harness_type,
-                        Some(workspace),
-                    )
-                    .await
-                    .map_err(|err| {
-                        format!("Failed to create isolated side-query provider: {err}")
-                    })?;
+                let provider = crate::providers::factory::create_provider_with_selection_preflight(
+                    &self.runtime.model,
+                    self.runtime.account_id.as_deref(),
+                    self.runtime.provider.credential_source(),
+                    &self.runtime.resolved.reliability,
+                    self.runtime.native_harness_type,
+                    Some(workspace),
+                )
+                .await
+                .map_err(|err| format!("Failed to create isolated side-query provider: {err}"))?;
                 let provider: Arc<dyn LLMProvider> = Arc::from(provider);
                 provider.set_session_context(&format!("{session_id}:{label}"));
                 Ok(provider)

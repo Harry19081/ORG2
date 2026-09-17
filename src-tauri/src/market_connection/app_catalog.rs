@@ -184,6 +184,7 @@ mod tests {
     use super::*;
     fn entry(purchase: &str, model: &str) -> CatalogModel {
         let selection = Selection {
+            native_protocol: None,
             metadata: market_connect::ConnectionMetadata {
                 identity_user_id: "11111111-1111-4111-8111-111111111111".into(),
                 workspace_id: "ws_anchor".into(),

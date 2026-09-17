@@ -17,6 +17,7 @@ import { isHostedKey } from "@src/api/tauri/session";
 import { isOrgiiTierModel } from "@src/config/orgiiCategories";
 import {
   findMarketSourceForRecent,
+  marketSourceModelType,
   useMarketExecutionProfiles,
 } from "@src/features/MarketConnect/marketProfiles";
 import { useKeyVault } from "@src/hooks/keyVault";
@@ -74,8 +75,11 @@ export function useValidatedLastPair(): LastModelSelection | null {
     loading: marketProfilesLoading,
     error: marketProfilesError,
   } = useMarketExecutionProfiles({
-    enabled: isMarketPair && dispatchCategory === "cli_agent",
-    cliAgentType,
+    enabled:
+      isMarketPair &&
+      (dispatchCategory === "cli_agent" || dispatchCategory === "rust_agent"),
+    cliAgentType:
+      dispatchCategory === "rust_agent" ? "rust_agent" : cliAgentType,
   });
 
   return useMemo(() => {
@@ -98,7 +102,7 @@ export function useValidatedLastPair(): LastModelSelection | null {
         ...pair,
         accountName: source.label,
         marketProfileId: source.profile.id,
-        modelType: source.modelType,
+        modelType: marketSourceModelType(source, pair.modelId),
         cliAgentType: source.cliAgentType,
       });
     }

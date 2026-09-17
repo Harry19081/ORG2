@@ -44,6 +44,7 @@ const MEMORY_TRANSCRIPT_MAX_BYTES: usize = 512 * 1024;
 pub(super) struct ForkProviderSpec {
     pub model: String,
     pub account_id: Option<String>,
+    pub credential_source: Option<String>,
     pub reliability: ReliabilityConfig,
     pub native_harness_type: Option<NativeHarnessType>,
     pub workspace: SessionWorkspace,
@@ -52,9 +53,10 @@ pub(super) struct ForkProviderSpec {
 async fn fresh_fork_provider(
     spec: &ForkProviderSpec,
 ) -> Result<Arc<dyn LLMProvider>, ProviderError> {
-    crate::providers::factory::create_provider_with_native_harness_preflight(
+    crate::providers::factory::create_provider_with_selection_preflight(
         &spec.model,
         spec.account_id.as_deref(),
+        spec.credential_source.as_deref(),
         &spec.reliability,
         spec.native_harness_type,
         Some(spec.workspace.clone()),

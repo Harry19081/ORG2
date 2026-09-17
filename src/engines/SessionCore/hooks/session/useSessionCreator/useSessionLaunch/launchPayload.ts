@@ -340,8 +340,8 @@ export function buildSessionFromLaunchResult(options: {
       | typeof DISPATCH_CATEGORY.CLI_AGENT,
     model: result.model ?? undefined,
     cliAgentType: result.cliAgentType ?? launchCliAgentType ?? undefined,
-    ...(launchCredentialSource
-      ? { credentialSource: launchCredentialSource }
+    ...((result.credentialSource ?? launchCredentialSource)
+      ? { credentialSource: result.credentialSource ?? launchCredentialSource }
       : {}),
     ...(launchAgentDefinitionId
       ? { agentDefinitionId: launchAgentDefinitionId }

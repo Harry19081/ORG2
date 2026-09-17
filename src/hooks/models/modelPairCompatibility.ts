@@ -73,11 +73,9 @@ export function isPairCompatible(
   // Market selections contain a durable, opaque backend selector instead of
   // a Key Vault account. The backend revalidates the entitlement at use time.
   if (pair.credentialSource?.startsWith("market:")) {
-    return (
-      !ctx.orgiiPoolEnabled &&
-      Boolean(ctx.cliAgentType) &&
-      pair.cliAgentType === ctx.cliAgentType
-    );
+    return ctx.orgiiPoolEnabled
+      ? pair.cliAgentType === undefined
+      : Boolean(ctx.cliAgentType) && pair.cliAgentType === ctx.cliAgentType;
   }
 
   if (isOrgiiTierModel(pair.modelId)) {

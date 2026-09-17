@@ -105,3 +105,26 @@ describe("model pair compatibility", () => {
     ).toBe(false);
   });
 });
+
+it("keeps a Package-only native pair out of CLI runtimes", () => {
+  const pair = recentPair({
+    accountId: undefined,
+    credentialSource: "market:sde",
+    cliAgentType: undefined,
+  });
+  const base = {
+    accounts: [],
+    orgiiModelSet: new Map(),
+    orgiiCategoryIds: new Set<string>(),
+  };
+  expect(isPairCompatible(pair, { ...base, orgiiPoolEnabled: true })).toBe(
+    true
+  );
+  expect(
+    isPairCompatible(pair, {
+      ...base,
+      orgiiPoolEnabled: false,
+      cliAgentType: CLI_AGENT.CODEX,
+    })
+  ).toBe(false);
+});

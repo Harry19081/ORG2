@@ -123,6 +123,7 @@ pub struct SessionLaunchResult {
     pub background: bool,
     pub model: Option<String>,
     pub cli_agent_type: Option<String>,
+    pub credential_source: Option<String>,
     pub account_id: Option<String>,
     pub agent_org_id: Option<String>,
     pub agent_org_run_id: Option<String>,
@@ -144,11 +145,20 @@ pub async fn session_launch_impl(
     mut params: SessionLaunchParams,
 ) -> Result<SessionLaunchResult, String> {
     if params.credential_source.is_some()
-        && (params.category != SESSION_CATEGORY_CLI_AGENT
-            || params.account_id.is_some()
+        && (!matches!(
+            params.category.as_str(),
+            SESSION_CATEGORY_CLI_AGENT | SESSION_CATEGORY_RUST_AGENT
+        ) || params.account_id.is_some()
+            || params.native_harness_type.is_some()
             || params.key_source.as_deref().is_some_and(|s| s != "own_key"))
     {
-        return Err("Dynamic credential source requires an exclusive CLI account".into());
+        return Err("Dynamic credential source requires exclusive ownership".into());
+    }
+    if params.category == SESSION_CATEGORY_RUST_AGENT {
+        if let Some(source) = params.credential_source.as_deref() {
+            crate::providers::dynamic::build(source, params.model.as_deref().unwrap_or(""))
+                .map_err(|e| e.to_string())?;
+        }
     }
     validate_workspace_launch_fields(
         params.isolate,
@@ -292,6 +302,7 @@ async fn launch_rust_agent(
     let content = params.content.clone();
     let model = params.model.clone();
     let account_id = params.account_id.clone();
+    let credential_source = params.credential_source.clone();
     let session_branch = params.branch.clone();
     let background = params.background;
     let target = match params
@@ -363,6 +374,7 @@ async fn launch_rust_agent(
             resources: LaunchResourceSelection {
                 key_source: params.key_source,
                 account_id: params.account_id,
+                credential_source: params.credential_source,
                 model: params.model,
                 native_harness_type: params.native_harness_type,
             },
@@ -392,6 +404,7 @@ async fn launch_rust_agent(
         background,
         model,
         cli_agent_type: None,
+        credential_source,
         account_id,
         agent_org_id: result.agent_org_id,
         agent_org_run_id: result.agent_org_run_id,
@@ -477,6 +490,7 @@ async fn launch_cli_agent(
 
     ensure_cli_account_key_fresh(&platform, account_id.as_deref()).await?;
 
+    let credential_source = params.credential_source.clone();
     let bridge_params = CliLaunchParams {
         name: Some(name.clone()),
         cli_agent_type: platform.clone(),
@@ -531,6 +545,7 @@ async fn launch_cli_agent(
         model,
         cli_agent_type: Some(platform),
         account_id,
+        credential_source,
         agent_org_id: None,
         agent_org_run_id: None,
         org_id: Some(org_id),
@@ -605,5 +620,30 @@ mod tests {
         let error = validate_workspace_launch_fields(true, None, None, None)
             .expect_err("worktree mode needs a repository root");
         assert!(error.contains("requires workspacePath"));
+    }
+}
+
+#[cfg(test)]
+mod native_source_wire_tests {
+    use super::*;
+    #[test]
+    fn durable_work_item_launch_snapshot_preserves_public_source() {
+        let original = serde_json::json!({
+            "category": "rust_agent", "content": "work", "credentialSource": "market:metadata-only",
+            "model": "selected-model", "agentDefinitionId": "builtin:sde", "workItemId": "work-fixture"
+        });
+        let params: SessionLaunchParams = serde_json::from_value(original).unwrap();
+        assert_eq!(
+            params.credential_source.as_deref(),
+            Some("market:metadata-only")
+        );
+        let input =
+            serde_json::json!({"sessionLaunchParams": serde_json::to_value(&params).unwrap()});
+        let mut recovered: SessionLaunchParams =
+            serde_json::from_value(input["sessionLaunchParams"].clone()).unwrap();
+        recovered.durable_run_id = Some("retry-run".into());
+        assert_eq!(recovered.credential_source, params.credential_source);
+        assert_eq!(recovered.account_id, None);
+        assert_eq!(recovered.model, params.model);
     }
 }

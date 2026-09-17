@@ -147,6 +147,7 @@ pub(super) async fn configure(
                 continue;
             }
             let selection = source::Selection {
+                native_protocol: None,
                 metadata: connection.clone(),
                 workspace_id: package.entitlement_workspace_id.clone(),
                 entitlement_id: package.entitlement_id.clone(),

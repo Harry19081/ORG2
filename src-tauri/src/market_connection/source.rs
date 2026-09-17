@@ -14,6 +14,8 @@ pub(super) struct Selection {
     pub model: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub session_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub native_protocol: Option<String>,
 }
 impl Selection {
     pub(super) fn key(&self) -> Result<String, String> {
@@ -59,7 +61,16 @@ impl Selection {
                 .bytes()
                 .all(|c| c.is_ascii_alphanumeric() || c == b'_' || c == b'-')
             || selection.metadata.target != market_connect::Target::Org2
-            || !matches!(agent, "claude_code" | "claude_desktop" | "codex")
+            || !matches!(
+                agent,
+                "claude_code" | "claude_desktop" | "codex" | "rust_agent"
+            )
+            || (agent == "rust_agent"
+                && (!selection.entitlement_id.starts_with("pa_")
+                    || !matches!(
+                        selection.native_protocol.as_deref(),
+                        Some("anthropic_messages" | "openai_responses")
+                    )))
             || !(selection.entitlement_id.starts_with("ent_")
                 || selection.entitlement_id.starts_with("pa_"))
             || (selection.entitlement_id.starts_with("pa_")
@@ -356,16 +367,31 @@ pub(super) async fn prepare_session(
     if metadata.target != market_connect::Target::Org2 {
         return Err("Market session requires ORG2 authorization".into());
     }
-    let selection = Selection {
+    let mut selection = Selection {
         metadata,
         workspace_id,
         entitlement_id,
         model: Some(model.clone()),
         session_id: Some(uuid::Uuid::new_v4().to_string()),
+        native_protocol: None,
     };
+    let entries = options(selection.metadata.clone()).await?;
+    if agent == "rust_agent" {
+        if agent_core::providers::thinking_mode::parse_model_variant(&model).base_model != model {
+            return Err("Package catalog must provide a canonical native wire model".into());
+        }
+        selection.native_protocol = entries
+            .iter()
+            .find(|e| {
+                e.workspace_id == selection.workspace_id
+                    && e.entitlement_id == selection.entitlement_id
+            })
+            .and_then(|e| e.managed.as_ref())
+            .and_then(|s| s.models.iter().find(|m| m.model == model))
+            .map(|m| m.protocol.clone());
+    }
     let key = selection.key()?;
     Selection::parse(&key, &agent)?;
-    let entries = options(selection.metadata.clone()).await?;
     validate_session_purchase(
         &entries,
         &selection.workspace_id,
@@ -388,6 +414,7 @@ pub(super) fn validate_session_purchase(
     let wire_agent = match agent {
         "claude_code" | "claude_desktop" => "claude",
         "codex" => "codex",
+        "rust_agent" => "org2",
         _ => return Err("Unsupported Market session engine".into()),
     };
     if model.trim().is_empty()
@@ -396,22 +423,30 @@ pub(super) fn validate_session_purchase(
             entry.workspace_id == workspace
                 && entry.entitlement_id == entitlement
                 && entry.status == "active"
+                && (agent != "rust_agent" || entry.managed.is_some())
                 && entry.managed.as_ref().is_none_or(|service| {
                     !service.requires_confirmation
                         && service
                             .access
                             .as_ref()
                             .is_some_and(|a| a.status == "active")
-                        && service
-                            .models
-                            .iter()
-                            .any(|m| m.model == model && m.availability == "available")
+                        && service.models.iter().any(|m| {
+                            m.model == model
+                                && m.availability == "available"
+                                && (agent != "rust_agent"
+                                    || (m.clients.iter().any(|c| c == "org2")
+                                        && matches!(
+                                            m.protocol.as_str(),
+                                            "anthropic_messages" | "openai_responses"
+                                        )))
+                        })
                 })
                 && entry.expires_at.is_none_or(|expiry| expiry > now)
-                && entry
-                    .models_by_agent
-                    .get(wire_agent)
-                    .is_some_and(|models| models.iter().any(|m| m == model))
+                && (agent == "rust_agent"
+                    || entry
+                        .models_by_agent
+                        .get(wire_agent)
+                        .is_some_and(|models| models.iter().any(|m| m == model)))
         })
     {
         return Err("Market purchase or model is unavailable".into());
@@ -482,6 +517,7 @@ mod tests {
             entitlement_id: "ent_fixture".into(),
             model: None,
             session_id: None,
+            native_protocol: None,
         }
     }
     #[test]
@@ -523,6 +559,7 @@ mod tests {
             entitlement_id: "ent_selected_purchase".into(),
             model: None,
             session_id: None,
+            native_protocol: None,
         };
         let key = selection.key().unwrap();
         let destination = source.destination(&key, "codex").unwrap();
@@ -601,6 +638,26 @@ mod tests {
                 1,
             )
         };
+        assert!(validate_session_purchase(
+            std::slice::from_ref(&entry),
+            "ws_fixture",
+            "pa_fixture",
+            "rust_agent",
+            "claude-model",
+            1
+        )
+        .is_ok());
+        let mut unsupported = entry.clone();
+        unsupported.managed.as_mut().unwrap().models[0].clients = vec!["claude_code".into()];
+        assert!(validate_session_purchase(
+            &[unsupported],
+            "ws_fixture",
+            "pa_fixture",
+            "rust_agent",
+            "claude-model",
+            1
+        )
+        .is_err());
         assert!(check(&entry, "claude_code").is_ok());
         assert!(check(&entry, "claude_desktop").is_err());
         assert!(validate_session_purchase(

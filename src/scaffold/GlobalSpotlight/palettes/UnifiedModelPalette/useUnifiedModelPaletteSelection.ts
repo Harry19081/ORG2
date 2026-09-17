@@ -5,6 +5,7 @@ import { KEY_SOURCE } from "@src/api/tauri/session";
 import { Message } from "@src/components/Message";
 import {
   findMarketSourceForRecent,
+  marketSourceModelType,
   prepareMarketProfileSource,
 } from "@src/features/MarketConnect/marketProfiles";
 import type { AdvancedConfig } from "@src/features/SessionCreator/types";
@@ -208,19 +209,20 @@ export function useUnifiedModelPaletteSelection({
       marketSelectionPendingRef.current = true;
       void prepareMarketProfileSource(marketSource, modelId)
         .then(({ credentialSource }) => {
+          const modelType = marketSourceModelType(marketSource, modelId);
           onConfigChange({
             ...advancedConfig,
             keySource: KEY_SOURCE.OWN,
             selectedAccountId: undefined,
             credentialSource,
             marketProfileId: marketSource.profile.id,
-            agent: marketSource.modelType,
-            provider: marketSource.modelType,
+            agent: modelType,
+            provider: modelType,
             model: modelId,
             nativeHarnessType: undefined,
             cliAgentType: marketSource.cliAgentType,
             selectedSourceLabel: marketSource.label,
-            selectedSourceModelType: marketSource.modelType,
+            selectedSourceModelType: modelType,
           });
           recordRecent({
             modelId,
@@ -228,7 +230,7 @@ export function useUnifiedModelPaletteSelection({
             accountName: marketSource.label,
             credentialSource,
             marketProfileId: marketSource.profile.id,
-            modelType: marketSource.modelType,
+            modelType,
             cliAgentType: marketSource.cliAgentType,
           });
           onClose();

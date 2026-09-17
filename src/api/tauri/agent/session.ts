@@ -536,6 +536,7 @@ export interface SessionLaunchResult {
   model?: string | null;
   cliAgentType?: CliAgentType | null;
   accountId?: string | null;
+  credentialSource?: string | null;
   agentOrgId?: string | null;
   agentOrgRunId?: string | null;
   orgId?: string | null;

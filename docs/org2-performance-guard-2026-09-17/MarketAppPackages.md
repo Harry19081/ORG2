@@ -30,3 +30,19 @@ do not launch work; an already requested authentication operation may finish
 while hidden. Tests cover stale responses, failures, disposed subscriptions,
 repeated callbacks and synchronous login completion. Real native lifecycle and
 one-handoff UI measurements remain separate acceptance work.
+
+## Native picker and retained source metadata
+
+The native picker reuses the existing demand-loaded Market catalog cache and
+in-flight sharing; no new poll, timer or scan is added. A profiles-changed event
+invalidates the shared cache even while the picker is closed, without issuing a
+closed-picker network request. Reopening performs a fresh read; subsequent opens
+reuse the bounded cache. A rendered-hook regression first reproduced the stale
+closed-picker state, then verified refresh and reuse after the fix.
+
+Duplicate titles receive stable non-identifying ordinals while purchase IDs remain
+the routing identity. The canonical composer reads the exact source's local recent
+metadata through a scoped atom selector and retains the generic Market fallback
+when history is absent. This projection adds no catalog fetch or retained token.
+Native visible/hidden/close measurements on the final SDE execution build remain
+pending; unit and type evidence do not establish a runtime performance result.

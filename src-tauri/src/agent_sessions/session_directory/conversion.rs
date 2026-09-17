@@ -389,7 +389,7 @@ pub fn sde_session_to_aggregate_record(
         branch: None,
         model: session.model,
         account_id: session.account_id,
-        credential_source: None,
+        credential_source: session.credential_source,
         cli_agent_type: None,
         key_source: session.key_source,
         tier: None,
@@ -461,7 +461,7 @@ pub fn os_session_to_aggregate_record(
         branch: None,
         model: session.model,
         account_id: session.account_id,
-        credential_source: None,
+        credential_source: session.credential_source,
         cli_agent_type: None,
         key_source: session.key_source,
         tier: None,
@@ -605,6 +605,25 @@ mod tests {
 #[cfg(test)]
 mod dynamic_source_tests {
     use super::*;
+    #[test]
+    fn native_aggregates_roundtrip_source_without_an_account() {
+        let _sandbox = crate::test_utils::test_env::sandbox();
+        let session = session_persistence::UnifiedSessionRecord {
+            session_id: "sde-package-source".into(),
+            credential_source: Some("market:metadata-only".into()),
+            model: Some("selected-model".into()),
+            ..Default::default()
+        };
+        let mut resolver = AgentMetadataResolver::new();
+        for row in [
+            sde_session_to_aggregate_record(session.clone(), &mut resolver),
+            os_session_to_aggregate_record(session, &mut resolver),
+        ] {
+            let wire = serde_json::to_value(&row).unwrap();
+            assert_eq!(wire["credentialSource"], "market:metadata-only");
+            assert!(wire.get("accountId").is_none());
+        }
+    }
     #[test]
     fn cli_aggregate_retains_source_without_reclassifying_it_as_an_account() {
         let _sandbox = crate::test_utils::test_env::sandbox();

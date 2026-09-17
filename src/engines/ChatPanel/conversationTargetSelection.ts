@@ -95,8 +95,8 @@ function retainedDynamicTarget(
   if (
     !isLocalConversationTarget(target) ||
     !target.credentialSource ||
-    !target.cliAgentType ||
-    !nativeCliTargets.includes(target.cliAgentType as CliAgentType)
+    (target.cliAgentType !== undefined &&
+      !nativeCliTargets.includes(target.cliAgentType as CliAgentType))
   )
     return null;
   return { ...target, workspaceRepoPath };
@@ -125,6 +125,7 @@ function configForTarget(
     keySource: KEY_SOURCE.OWN,
     cliAgentType: target.cliAgentType as CliAgentType | undefined,
     selectedAccountId: target.accountId,
+    credentialSource: target.credentialSource,
     model: target.model,
     agent: account?.modelType,
     provider: account?.modelType,
@@ -143,6 +144,21 @@ function targetForResolvedConfig(
   config: AdvancedConfig,
   workspaceRepoPath: string | null
 ): LocalConversationTarget | null {
+  if (config.credentialSource !== undefined) {
+    const target = {
+      agentDefinitionId:
+        selection.category === "rust_agent" && "agentDefinitionId" in selection
+          ? selection.agentDefinitionId
+          : undefined,
+      cliAgentType:
+        selection.category === "cli_agent" ? selection.cliAgentType : undefined,
+      credentialSource: config.credentialSource,
+      accountId: config.selectedAccountId,
+      model: config.model,
+      workspaceRepoPath,
+    };
+    return isLocalConversationTarget(target) ? target : null;
+  }
   if (selection.category === "cli_agent" && selection.cliAgentType) {
     const accountId = config.selectedAccountId?.trim();
     const model = config.model?.trim();
@@ -290,9 +306,14 @@ export function resolveConversationRuntimeTarget({
   registry = EMPTY_AGENT_REGISTRY,
   nativeCliTargets,
 }: RuntimeConversationTargetInput): LocalConversationTarget | null {
-  if (selection.category === "cli_agent") {
-    const previous = [current, ...previousTargets].find(
-      (candidate) => candidate?.cliAgentType === selection.cliAgentType
+  if (
+    selection.category === "cli_agent" ||
+    selection.category === "rust_agent"
+  ) {
+    const previous = [current, ...previousTargets].find((candidate) =>
+      selection.category === "cli_agent"
+        ? candidate?.cliAgentType === selection.cliAgentType
+        : candidate?.agentDefinitionId === selection.agentDefinitionId
     );
     if (previous?.credentialSource !== undefined) {
       return retainedDynamicTarget(
@@ -359,6 +380,7 @@ export function resolveConversationTargetPillPresentation(params: {
           ? "default"
           : undefined),
       selectedAccountId: config.selectedAccountId,
+      credentialSource: config.credentialSource,
       cliAgentType: config.cliAgentType,
       selectedSourceLabel: config.selectedSourceLabel,
       selectedSourceModelType: config.selectedSourceModelType,

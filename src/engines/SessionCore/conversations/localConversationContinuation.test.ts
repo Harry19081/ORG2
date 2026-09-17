@@ -3205,3 +3205,71 @@ it("carries the dynamic source and selected model into a new execution episode",
   );
   expect(mocks.sendMessage).not.toHaveBeenCalled();
 });
+
+it("reloads the exact SDE Package execution source and refuses another purchase", async () => {
+  const nativeRoot = {
+    authority: "local-session",
+    authorityScope: [],
+    conversationId: "sdeagent-package",
+  };
+  const target = {
+    agentDefinitionId: "builtin:sde",
+    credentialSource: "market:first",
+    model: "gpt",
+    workspaceRepoPath: "/repo",
+  };
+  mocks.getAgentSession.mockResolvedValue({
+    ...target,
+    workspacePath: "/repo",
+    updatedAt: "2026-09-17",
+  });
+  expect(
+    (await loadLocalConversationExecutionTargets(nativeRoot))[0]?.target
+  ).toEqual(target);
+  expect(await candidateMatchesTarget(nativeRoot.conversationId, target)).toBe(
+    true
+  );
+  expect(
+    await candidateMatchesTarget(nativeRoot.conversationId, {
+      ...target,
+      credentialSource: "market:second",
+    })
+  ).toBe(false);
+  mocks.getAgentSession.mockResolvedValue({
+    ...target,
+    accountId: "mixed",
+    workspacePath: "/repo",
+    updatedAt: "2026-09-17",
+  });
+  expect(await loadLocalConversationExecutionTargets(nativeRoot)).toEqual([]);
+});
+
+it("carries the SDE Package into native execution creation without a CLI account", async () => {
+  await expect(
+    continueLocalConversationAfterTimelineLoad({
+      root,
+      title: "SDE package",
+      displayText: "continue",
+      turnIntentId: "sde-source-create",
+      target: {
+        agentDefinitionId: "builtin:sde",
+        credentialSource: "market:sde",
+        model: "gpt",
+        workspaceRepoPath: "/repo",
+      },
+      loadTimeline: async () => {
+        throw new Error("controlled timeline failure");
+      },
+    })
+  ).rejects.toThrow("controlled timeline failure");
+  expect(mocks.create).toHaveBeenCalledWith(
+    expect.objectContaining({
+      agentDefinitionId: "builtin:sde",
+      credentialSource: "market:sde",
+      model: "gpt",
+      cliAgentType: undefined,
+      accountId: undefined,
+    })
+  );
+  expect(mocks.sendMessage).not.toHaveBeenCalled();
+});

@@ -129,7 +129,7 @@ const prepareSession = defineProcedure("market_connection_prepare_session")
     input.extend({
       entitlementWorkspaceId: z.string().regex(/^ws_[A-Za-z0-9_-]{1,120}$/),
       entitlementId: z.string(),
-      agent: z.enum(["claude_code", "codex"]),
+      agent: z.enum(["claude_code", "codex", "rust_agent"]),
       model: z.string().min(1).max(256),
     })
   )
@@ -143,7 +143,7 @@ export const prepareSessionSource = (
   c: Connection,
   entitlementWorkspaceId: string,
   entitlementId: string,
-  agent: "claude_code" | "codex",
+  agent: "claude_code" | "codex" | "rust_agent",
   model: string
 ) =>
   typedInvoke(prepareSession, {

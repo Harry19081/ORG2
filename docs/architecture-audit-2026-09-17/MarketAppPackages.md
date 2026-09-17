@@ -123,3 +123,41 @@ A missing, unsupported or failing endpoint presents a retryable connection
 error. Live one-handoff acceptance requires the matching Market deployment and
 a rebuilt native bundle; the earlier `86172eab7` staging bundle does not contain
 this change.
+
+## Built-in SDE Package sources
+
+The ordinary source picker now projects protocol-declared managed Packages for
+`rust_agent`, alongside Account Keys. A Package stays one selectable source even
+when it contains both Messages and Responses models; the selected model supplies
+the display provider hint and the Rust execution owner revalidates the protocol.
+Legacy entitlements without protocol metadata remain available to their existing
+CLI readers and are not guessed into native execution. App Connection remains an
+independent external-application workflow.
+
+The source reference is mutually exclusive with an account throughout canonical
+conversation targets, per-runner overrides and launch. Native session projection
+retains the reference after reload; another Package cannot match the old execution
+episode even when the model names overlap. Runtime availability follows installed
+CLI runtimes or built-in/custom native definitions; a Package-only SDE does not
+require a KeyVault account to open its model picker. Malformed or incompatible
+dynamic selections fail closed rather than silently choosing ambient credentials.
+
+Layers reviewed: source ownership, tagged selection contract, UI-to-IPC launch,
+durable session restoration, runtime/provider boundary and bounded cache lifecycle.
+Billing settlement and external App configuration do not change in this follow-up.
+No token, access credential, browser cookie or seller key is added to frontend
+storage. The retained source is non-secret native selection metadata.
+
+Regression evidence covers managed-catalog ingestion through native source
+preparation, mixed protocols, native launch payload and optimistic session, durable
+execution reload and purchase mismatch, per-runner source isolation, and closed
+picker invalidation. Native calls, restart and billing correlation remain explicit
+acceptance requirements rather than inferred results of these tests.
+
+Compatibility and rollback: existing AccountKey sessions retain their source path.
+New native Package sessions require a build that understands `credentialSource`.
+The older native initializer rejects their missing account instead of using a
+default key, but older auxiliary learning code predates the source guard added
+here. Keep the acceptance profile isolated and restore its pre-test backup when
+returning to an older binary; do not treat downgrade as supported continuation of
+new Package sessions. No existing user profile was migrated by these source edits.

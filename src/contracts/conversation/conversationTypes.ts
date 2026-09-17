@@ -16,14 +16,15 @@ export type NativeConversationCliTarget =
   (typeof NATIVE_CONVERSATION_CLI_TARGETS)[number];
 
 export type LocalConversationTarget =
-  | {
+  | ({
       agentDefinitionId: string;
       cliAgentType?: never;
-      accountId: string;
-      credentialSource?: never;
       model: string;
       workspaceRepoPath?: string | null;
-    }
+    } & (
+      | { accountId: string; credentialSource?: never }
+      | { accountId?: never; credentialSource: string }
+    ))
   | {
       /** The external provider owns identity for provider-native execution. */
       agentDefinitionId?: never;
@@ -35,6 +36,15 @@ export type LocalConversationTarget =
       model?: string;
       workspaceRepoPath?: string | null;
     };
+
+function isCredentialSource(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.length > 0 &&
+    value.length <= 1024 &&
+    value === value.trim()
+  );
+}
 
 /** Fail closed when restoring a durable queue row from disk. */
 export function isLocalConversationTarget(
@@ -51,21 +61,20 @@ export function isLocalConversationTarget(
     return (
       target.agentDefinitionId.length > 0 &&
       target.cliAgentType === undefined &&
-      target.credentialSource === undefined &&
-      typeof target.accountId === "string" &&
-      target.accountId.length > 0 &&
+      (target.credentialSource !== undefined
+        ? target.accountId === undefined &&
+          isCredentialSource(target.credentialSource)
+        : typeof target.accountId === "string" &&
+          target.accountId.length > 0) &&
       typeof target.model === "string" &&
-      target.model.length > 0
+      target.model.trim().length > 0
     );
   }
   if (target.credentialSource !== undefined) {
     return (
       target.agentDefinitionId === undefined &&
       target.accountId === undefined &&
-      typeof target.credentialSource === "string" &&
-      target.credentialSource.length > 0 &&
-      target.credentialSource.length <= 1024 &&
-      target.credentialSource === target.credentialSource.trim() &&
+      isCredentialSource(target.credentialSource) &&
       typeof target.cliAgentType === "string" &&
       NATIVE_CONVERSATION_CLI_TARGETS.includes(
         target.cliAgentType as NativeConversationCliTarget

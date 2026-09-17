@@ -218,16 +218,14 @@ async function readExecutionRow(
   const accountId = optionalString(row.accountId);
   const model = optionalString(row.model);
   const updatedAt = optionalString(row.updatedAt);
-  if (!agentDefinitionId || !accountId || !model) return null;
-  return {
-    target: {
-      agentDefinitionId,
-      accountId,
-      model,
-      workspaceRepoPath: optionalString(row.workspacePath),
-    },
-    updatedAt,
+  const target = {
+    agentDefinitionId,
+    accountId,
+    credentialSource: row.credentialSource ?? undefined,
+    model,
+    workspaceRepoPath: optionalString(row.workspacePath),
   };
+  return isLocalConversationTarget(target) ? { target, updatedAt } : null;
 }
 
 /**

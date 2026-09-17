@@ -141,8 +141,11 @@ export function useUnifiedModelPaletteData({
     error: marketProfilesError,
     refresh: refreshMarketProfiles,
   } = useMarketExecutionProfiles({
-    enabled: isOpen && dispatchCategory === "cli_agent",
-    cliAgentType,
+    enabled:
+      isOpen &&
+      (dispatchCategory === "cli_agent" || dispatchCategory === "rust_agent"),
+    cliAgentType:
+      dispatchCategory === "rust_agent" ? "rust_agent" : cliAgentType,
   });
 
   const { orgiiCategories, orgiiModelSet, orgiiCategoryIds } =

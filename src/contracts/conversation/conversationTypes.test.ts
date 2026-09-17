@@ -114,3 +114,24 @@ describe("dynamic execution targets", () => {
     }
   });
 });
+
+it("validates durable SDE Package targets with exclusive source ownership", () => {
+  const target = {
+    agentDefinitionId: "builtin:sde",
+    credentialSource: "market:package",
+    model: "gpt",
+  };
+  expect(isLocalConversationTarget(JSON.parse(JSON.stringify(target)))).toBe(
+    true
+  );
+  for (const extra of [
+    { accountId: "other" },
+    { cliAgentType: "codex" },
+    { model: " " },
+    { credentialSource: "" },
+    { credentialSource: " market:x" },
+    { credentialSource: null },
+  ]) {
+    expect(isLocalConversationTarget({ ...target, ...extra })).toBe(false);
+  }
+});

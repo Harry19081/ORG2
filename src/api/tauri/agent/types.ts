@@ -139,6 +139,7 @@ export interface SessionMeta {
   workspacePath?: string;
   model?: string;
   accountId?: string;
+  credentialSource?: string;
   workItemId?: string;
   projectSlug?: string;
   agentDefinitionId?: string;

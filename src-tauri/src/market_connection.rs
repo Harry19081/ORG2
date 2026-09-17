@@ -8,11 +8,16 @@ mod configure_catalog;
 #[cfg(feature = "market-connect")]
 mod external_client;
 #[cfg(feature = "market-connect")]
+mod native_provider;
+#[cfg(feature = "market-connect")]
 pub(crate) mod source;
 
 pub(crate) fn register_source() -> Result<(), String> {
     #[cfg(feature = "market-connect")]
     {
+        agent_core::providers::dynamic::register(std::sync::Arc::new(
+            native_provider::NativeSource,
+        ))?;
         crate::dynamic_credentials::register(source::instance())?;
         crate::dynamic_credentials::register(std::sync::Arc::new(app_catalog::AppSource))?;
     }

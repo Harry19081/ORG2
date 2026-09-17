@@ -8,6 +8,7 @@ import {
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
 
 import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
+import { marketProfileLabel } from "./profileLabels";
 import type { ManagedService } from "./rpc";
 import {
   type Connection,
@@ -71,7 +72,7 @@ export interface MarketProfileSource {
   id: string;
   label: string;
   modelType: ModelType;
-  cliAgentType: MarketProfileAgent;
+  cliAgentType?: MarketProfileAgent;
   modelIds: string[];
   profile: MarketExecutionProfile;
 }
@@ -196,6 +197,32 @@ export function marketSourcesForAgent(
       : cliAgentType === CLI_AGENT.CODEX
         ? "codex"
         : null;
+  if (cliAgentType === "rust_agent") {
+    return profiles.flatMap((profile) => {
+      // Native execution uses the protocol declared by the managed Package;
+      // legacy entitlements do not supply this authoritative protocol metadata.
+      const models =
+        profile.managed?.models.filter(
+          (model) =>
+            model.clients.includes("org2") &&
+            (model.protocol === "anthropic_messages" ||
+              model.protocol === "openai_responses")
+        ) ?? [];
+      if (models.length === 0) return [];
+      return [
+        {
+          id: `${profile.id}:rust_agent`,
+          label: marketProfileLabel(profile, profiles),
+          modelType:
+            models[0].protocol === "anthropic_messages"
+              ? ("anthropic_api" as const)
+              : ("openai_api" as const),
+          modelIds: [...new Set(models.map((model) => model.model))],
+          profile,
+        },
+      ];
+    });
+  }
   if (!agent) return [];
 
   return profiles.flatMap((profile) => {
@@ -204,7 +231,7 @@ export function marketSourcesForAgent(
     return [
       {
         id: `${profile.id}:${agent}`,
-        label: profile.label,
+        label: marketProfileLabel(profile, profiles),
         modelType: agent as ModelType,
         cliAgentType: agent,
         modelIds,
@@ -231,6 +258,20 @@ export function findMarketSourceForRecent(
   );
 }
 
+/** UI provider hint follows the selected model; native routing revalidates it. */
+export function marketSourceModelType(
+  source: MarketProfileSource,
+  model: string
+): ModelType {
+  if (source.cliAgentType) return source.modelType;
+  const selected = source.profile.managed?.models.find(
+    (item) => item.model === model
+  );
+  return selected?.protocol === "anthropic_messages"
+    ? "anthropic_api"
+    : "openai_api";
+}
+
 export async function prepareMarketProfileSource(
   source: MarketProfileSource,
   model: string
@@ -243,7 +284,7 @@ export async function prepareMarketProfileSource(
     profile.connection,
     profile.entitlementWorkspaceId,
     profile.entitlementId,
-    source.cliAgentType,
+    source.cliAgentType ?? "rust_agent",
     model
   );
   return {
@@ -347,11 +388,12 @@ export function useMarketExecutionProfiles(options: {
 
   const load = useCallback(
     async (force = false) => {
+      if (force) invalidateMarketProfileCache();
       if (!enabled) return;
       const generation = ++generationRef.current;
       setLoading(true);
       try {
-        const result = await loadCachedMarketExecutionProfiles(force);
+        const result = await loadCachedMarketExecutionProfiles();
         if (generation !== generationRef.current) return;
         setProfiles(result.profiles);
         setError(

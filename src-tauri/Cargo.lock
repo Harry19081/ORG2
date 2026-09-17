@@ -5057,6 +5057,7 @@ dependencies = [
  "app_utils",
  "app_window",
  "assert_matches",
+ "async-trait",
  "axum",
  "base64 0.22.1",
  "block2",

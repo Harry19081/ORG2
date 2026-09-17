@@ -180,6 +180,7 @@ tauri-build = { version = "2.5.6", features = [] }
 cc = "1.0"
 
 [dependencies]
+async-trait = "0.1"
 market-connect = { path = "crates/market-connect", optional = true }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }

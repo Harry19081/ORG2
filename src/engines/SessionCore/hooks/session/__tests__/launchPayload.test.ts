@@ -47,6 +47,50 @@ describe("launchPayload", () => {
     expect(session.credentialSource).toBe("market:opaque-selection");
   });
 
+  it("launches SDE with a Package source and preserves it in the optimistic session", () => {
+    const options = baseLaunchOptions();
+    options.dispatchCategory = DISPATCH_CATEGORY.RUST_AGENT;
+    options.selectedAgentDefId = "builtin:sde";
+    options.resolvedKeys = {
+      ...options.resolvedKeys,
+      accountId: undefined,
+      credentialSource: "market:sde-package",
+      cliAgentType: undefined,
+      model: "gpt",
+    };
+    const { launchParams } = buildSessionLaunchPayload(options);
+    expect(launchParams).toMatchObject({
+      category: "rust_agent",
+      agentDefinitionId: "builtin:sde",
+      credentialSource: "market:sde-package",
+      model: "gpt",
+    });
+    expect(launchParams.accountId).toBeUndefined();
+    expect(launchParams.platform).toBeUndefined();
+    const session = buildSessionFromLaunchResult({
+      agentExecMode: "build",
+      effectiveSource: options.effectiveSource,
+      isBackgroundLaunch: false,
+      launchAgentDefinitionId: "builtin:sde",
+      result: {
+        sessionId: "sdeagent-package",
+        credentialSource: "market:sde-package",
+        category: "rust_agent",
+        name: "SDE",
+        status: "running",
+        createdAt: "2026-09-17T00:00:00Z",
+        userInput: "hello",
+        background: false,
+        model: "gpt",
+      },
+    });
+    expect(session).toMatchObject({
+      agentDefinitionId: "builtin:sde",
+      credentialSource: "market:sde-package",
+    });
+    expect(session.cliAgentType).toBeUndefined();
+  });
+
   it("persists launch workspacePath on the frontend session row", () => {
     const session = buildSessionFromLaunchResult({
       agentExecMode: "build",
