@@ -72,7 +72,10 @@ export function localConversationTargetFromSession(
   const workspaceRepoPath = session.worktreePath ?? session.repoPath ?? null;
   if (session.credentialSource !== undefined) {
     const target = {
-      agentDefinitionId: session.agentDefinitionId,
+      // CLI sessions may retain a definition as tool-scope metadata.
+      agentDefinitionId: session.cliAgentType
+        ? undefined
+        : session.agentDefinitionId,
       cliAgentType: session.cliAgentType,
       credentialSource: session.credentialSource,
       accountId: session.accountId,
