@@ -41,6 +41,8 @@ const FLUSH_INTERVAL_MS = 100;
 
 interface UseSearchExecutionParams {
   query: string;
+  /** Sidebar search is automatic; search tabs submit explicitly. */
+  automatic?: boolean;
   searchMode: SearchMode;
   repoPath: string;
   openFiles?: string[];
@@ -51,6 +53,8 @@ interface UseSearchExecutionParams {
 export interface UseSearchExecutionReturn {
   /** Execute search */
   search: () => Promise<void>;
+  /** Explicit refresh bypasses the completed-query cache. */
+  refresh: () => Promise<void>;
 }
 
 export function useSearchExecution(
@@ -58,6 +62,7 @@ export function useSearchExecution(
 ): UseSearchExecutionReturn {
   const {
     query,
+    automatic = true,
     searchMode,
     repoPath,
     openFiles,
@@ -116,6 +121,13 @@ export function useSearchExecution(
   const search = useCallback(async () => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) {
+      const previousSearchId = searchIdRef.current;
+      searchIdRef.current = "";
+      abortControllerRef.current?.abort();
+      if (previousSearchId) void cancelSearch(previousSearchId).catch(() => {});
+      await cleanupStreamingListeners();
+      if (searchIdRef.current !== "") return;
+      setLoading(false);
       clearAtom();
       lastSearchKeyRef.current = "";
       return;
@@ -155,11 +167,11 @@ export function useSearchExecution(
       abortControllerRef.current.abort();
     }
     abortControllerRef.current = new AbortController();
-    await cleanupStreamingListeners();
-
-    // Generate unique search ID for this search
+    // Claim ownership before awaiting cleanup so a newer submit wins.
     const searchId = `search-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     searchIdRef.current = searchId;
+    await cleanupStreamingListeners();
+    if (searchIdRef.current !== searchId) return;
 
     setLoading(true);
     setError(null);
@@ -213,6 +225,10 @@ export function useSearchExecution(
           }
         );
 
+        if (searchIdRef.current !== searchId) {
+          resultUnlisten();
+          return;
+        }
         const completeUnlisten = await listen<SearchCompleteEvent>(
           "search-complete",
           (event) => {
@@ -233,6 +249,11 @@ export function useSearchExecution(
           }
         );
 
+        if (searchIdRef.current !== searchId) {
+          resultUnlisten();
+          completeUnlisten();
+          return;
+        }
         streamingUnlistenRef.current = [resultUnlisten, completeUnlisten];
 
         // Use fast search (grep-searcher) if enabled
@@ -242,6 +263,7 @@ export function useSearchExecution(
           max_results: SEARCH_CONSTANTS.INITIAL_MAX_RESULTS,
         });
       } catch (err) {
+        if (searchIdRef.current !== searchId) return;
         const errorMessage =
           err instanceof Error ? err.message : "Search failed";
         log.error("[useSearchExecution] Streaming search error:", errorMessage);
@@ -262,6 +284,8 @@ export function useSearchExecution(
         ...filters,
         max_results: SEARCH_CONSTANTS.INITIAL_MAX_RESULTS,
       });
+
+      if (searchIdRef.current !== searchId) return;
 
       // Filter results based on include/exclude glob patterns (client-side)
       const filteredResults = filterResultsByGlob(
@@ -290,13 +314,14 @@ export function useSearchExecution(
       setActualTotalMatches(allMatches);
       setActualTotalFiles(filteredResults.length);
     } catch (err) {
+      if (searchIdRef.current !== searchId) return;
       const errorMessage = err instanceof Error ? err.message : "Search failed";
       log.error("[useSearchExecution] Fallback search error:", errorMessage);
       setError(errorMessage);
       setResults([]);
       setHasMore(false);
     } finally {
-      setLoading(false);
+      if (searchIdRef.current === searchId) setLoading(false);
     }
   }, [
     query,
@@ -323,20 +348,33 @@ export function useSearchExecution(
 
   // Trigger debounced search when query or mode changes
   useEffect(() => {
+    if (!automatic) {
+      debouncedSearch.cancel();
+      return;
+    }
     if (query.trim()) {
       debouncedSearch();
     } else {
       debouncedSearch.cancel();
       clearAtom();
     }
-  }, [query, searchMode, debouncedSearch, clearAtom]); // searchMode triggers re-search when changed
+  }, [automatic, query, searchMode, debouncedSearch, clearAtom]); // searchMode triggers re-search when changed
 
   // Cleanup streaming listeners on unmount
   useEffect(() => {
     return () => {
+      const previousSearchId = searchIdRef.current;
+      searchIdRef.current = "";
+      abortControllerRef.current?.abort();
+      if (previousSearchId) void cancelSearch(previousSearchId).catch(() => {});
       cleanupStreamingListeners();
     };
   }, [cleanupStreamingListeners]);
 
-  return { search };
+  const refresh = useCallback(() => {
+    lastSearchKeyRef.current = "";
+    return search();
+  }, [search]);
+
+  return { search, refresh };
 }

@@ -958,7 +958,8 @@
     "selectSidebarStash": "Chọn một stash",
     "selectSidebarCommit": "Chọn một commit",
     "selectSidebarPullRequest": "Chọn một pull request",
-    "selectSidebarIssue": "Chọn một issue"
+    "selectSidebarIssue": "Chọn một issue",
+    "pressEnterToSearch": "Nhấn Enter để tìm kiếm"
   },
   "inbox": {
     "scrollToBottom": "Cuộn xuống cuối",

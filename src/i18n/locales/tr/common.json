@@ -958,7 +958,8 @@
     "selectSidebarStash": "Bir stash seçin",
     "selectSidebarCommit": "Bir commit seçin",
     "selectSidebarPullRequest": "Bir pull request seçin",
-    "selectSidebarIssue": "Bir issue seçin"
+    "selectSidebarIssue": "Bir issue seçin",
+    "pressEnterToSearch": "Aramak için Enter tuşuna basın"
   },
   "inbox": {
     "scrollToBottom": "Alta kaydır",

@@ -958,7 +958,8 @@
     "selectSidebarStash": "選擇一個 stash",
     "selectSidebarCommit": "選擇一個 commit",
     "selectSidebarPullRequest": "選擇一個 pull request",
-    "selectSidebarIssue": "選擇一個 issue"
+    "selectSidebarIssue": "選擇一個 issue",
+    "pressEnterToSearch": "按 Enter 鍵搜尋"
   },
   "inbox": {
     "scrollToBottom": "滾動到底部",

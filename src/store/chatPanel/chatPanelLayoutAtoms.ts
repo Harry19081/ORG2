@@ -1,17 +1,46 @@
 import { atom } from "jotai";
 
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import {
+  chatPanelMaximizedAtom,
+  toggleChatPanelMaximizedAtom,
+} from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { workstationLayoutAtom } from "@src/store/workstation/tabs";
 import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
-import { chatPanelTabsAtom } from "./chatPanelTabsState";
+import {
+  isChatPanelTabStationAvailable,
+  resolveChatPanelMaximizedForLayout,
+} from "./chatPanelTabsModel";
+import {
+  activeChatPanelTabAtom,
+  chatPanelTabsAtom,
+} from "./chatPanelTabsState";
 
-/** Pane layout follows the saved preference, independently of the active tab. */
+/** Whether the active chat tab may share the workbench with a Station. */
+export const activeChatPanelTabStationAvailableAtom = atom((get) =>
+  isChatPanelTabStationAvailable(get(activeChatPanelTabAtom))
+);
+activeChatPanelTabStationAvailableAtom.debugLabel =
+  "activeChatPanelTabStationAvailable";
+
+/** Effective layout only; writes continue to target the saved preference. */
 export const effectiveChatPanelMaximizedAtom = atom((get) =>
-  get(chatPanelMaximizedAtom)
+  resolveChatPanelMaximizedForLayout(
+    get(chatPanelMaximizedAtom),
+    get(activeChatPanelTabAtom)
+  )
 );
 effectiveChatPanelMaximizedAtom.debugLabel = "effectiveChatPanelMaximized";
+
+/** User toggle guarded by the active tab's Station-access policy. */
+export const toggleActiveChatPanelMaximizedAtom = atom(null, (get, set) => {
+  if (!get(activeChatPanelTabStationAvailableAtom)) return false;
+  set(toggleChatPanelMaximizedAtom);
+  return true;
+});
+toggleActiveChatPanelMaximizedAtom.debugLabel =
+  "toggleActiveChatPanelMaximized";
 
 export const CLOSE_TAB_CHORD_FALLBACK = {
   CLOSE_MY_STATION: "close-my-station",

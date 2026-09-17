@@ -29,7 +29,7 @@ vi.mock("@src/util/platform/tauri/windowIdentity", async (importOriginal) => ({
 }));
 
 describe("effectiveChatPanelMaximizedAtom", () => {
-  it("keeps the pane layout stable across tab changes", () => {
+  it("tracks active-tab policy without writing the user's split preference", () => {
     const store = createStore();
     store.set(chatPanelMaximizedAtom, false);
     const tabs = [
@@ -39,7 +39,7 @@ describe("effectiveChatPanelMaximizedAtom", () => {
     store.set(chatPanelTabsAtom, { tabs, activeTabId: "session" });
     expect(store.get(effectiveChatPanelMaximizedAtom)).toBe(false);
     store.set(chatPanelTabsAtom, { tabs, activeTabId: "org" });
-    expect(store.get(effectiveChatPanelMaximizedAtom)).toBe(false);
+    expect(store.get(effectiveChatPanelMaximizedAtom)).toBe(true);
     expect(store.get(chatPanelMaximizedAtom)).toBe(false);
     store.set(chatPanelTabsAtom, { tabs, activeTabId: "session" });
     expect(store.get(effectiveChatPanelMaximizedAtom)).toBe(false);
@@ -71,9 +71,8 @@ it("does not notify layout consumers when a tab update keeps the same effective 
     activeTabId: "org",
     tabs: [{ id: "org", type: "organization", title: "Renamed organization" }],
   });
+  store.set(chatPanelMaximizedAtom, true);
   expect(notifications).toBe(0);
-  store.set(chatPanelMaximizedAtom, !store.get(chatPanelMaximizedAtom));
-  expect(notifications).toBe(1);
   unsubscribe();
   stopMount();
 });

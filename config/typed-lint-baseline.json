@@ -8008,10 +8008,10 @@
     "count": 1
   },
   {
-    "key": "140e6b545a2822816858f805b16968ca646216e1f84f09d028caa8ea86799403",
+    "key": "5c9d77c7a31e21f901315db58432db286ddd17b91e96e1f9411fd687b88e663e",
     "file": "src/modules/WorkStation/shared/TabBar/components/WorkstationTabContent.tsx",
     "rule": "@typescript-eslint/switch-exhaustiveness-check",
-    "message": "Switch is not exhaustive. Cases not matched: \"search\" | \"file\" | \"devtools\" | \"directory\" | \"git-diff\" | \"timeline-diff\" | \"git-log\" | \"git-commit-detail\" | \"git-stash-detail\" | \"terminal-content\" | \"dom-component-preview\" | \"url-preview\" | \"browser-session\" | \"project-settings\" | \"project-org\" | \"project-git-sync-review\" | \"project-workitems\" | \"workItem-detail\" | \"chat-session\" | \"subagent-detail\" | \"agent-config\" | \"canvas-preview\" | \"github-issue-detail\" | \"github-pr-detail\"",
+    "message": "Switch is not exhaustive. Cases not matched: \"search\" | \"file\" | \"directory\" | \"git-diff\" | \"timeline-diff\" | \"git-log\" | \"git-commit-detail\" | \"git-stash-detail\" | \"terminal-content\" | \"dom-component-preview\" | \"url-preview\" | \"browser-session\" | \"project-settings\" | \"project-org\" | \"project-git-sync-review\" | \"project-workitems\" | \"workItem-detail\" | \"chat-session\" | \"subagent-detail\" | \"agent-config\" | \"canvas-preview\" | \"github-issue-detail\" | \"github-pr-detail\"",
     "source": "tab.type",
     "count": 1
   },

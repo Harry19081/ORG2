@@ -958,7 +958,8 @@
     "selectSidebarStash": "stash を1つ選択",
     "selectSidebarCommit": "commit を1つ選択",
     "selectSidebarPullRequest": "pull request を1つ選択",
-    "selectSidebarIssue": "issue を1つ選択"
+    "selectSidebarIssue": "issue を1つ選択",
+    "pressEnterToSearch": "Enter キーを押して検索"
   },
   "inbox": {
     "scrollToBottom": "一番下へ",

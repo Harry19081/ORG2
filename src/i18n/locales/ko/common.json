@@ -958,7 +958,8 @@
     "selectSidebarStash": "stash 하나 선택",
     "selectSidebarCommit": "commit 하나 선택",
     "selectSidebarPullRequest": "pull request 하나 선택",
-    "selectSidebarIssue": "issue 하나 선택"
+    "selectSidebarIssue": "issue 하나 선택",
+    "pressEnterToSearch": "Enter 키를 눌러 검색"
   },
   "inbox": {
     "scrollToBottom": "맨 아래로",

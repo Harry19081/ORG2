@@ -12,7 +12,7 @@ import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip"
 import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
-import { BrushCleaningIcon, HugeiconsIcon } from "@src/icons";
+import { CleanIcon, HugeiconsIcon } from "@src/icons";
 
 import type {
   NetworkEntry,
@@ -163,8 +163,8 @@ export const NetworkTab: React.FC<NetworkTabProps> = memo(
               iconOnly
               icon={
                 <HugeiconsIcon
-                  icon={BrushCleaningIcon}
-                  data-icon="brush-cleaning"
+                  icon={CleanIcon}
+                  data-icon="clean"
                   size={HEADER_ICON_SIZE.sm}
                 />
               }

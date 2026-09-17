@@ -9,6 +9,7 @@ import { useAtomValue } from "jotai";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 
 import Button from "@src/components/Button";
+import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import { SidebarSectionHeader } from "@src/components/SidebarSectionHeader";
 import {
   GitStatusBadge,
@@ -461,67 +462,77 @@ const FileDirectoryRow: React.FC<FileDirectoryRowProps> = memo(
 
     return (
       <>
-        <TreeRowBase
-          ref={rowRef}
-          node={treeRowNode}
-          depth={depth}
-          isSelected={isSelected}
-          isMultiSelected={isMultiSelected}
-          gitStatus={gitStatus}
-          colorLabelByGitStatus={!isDirectory && colorFileNames}
-          onClick={handleClick}
-          onContextMenu={handleContextMenu}
-          rounded={shouldRound}
-          onMouseDown={handleMouseDown}
-          showPathHint={showPathHint}
+        <FileTreeHoverPreview
+          path={absolutePath}
+          itemType={isDirectory ? "folder" : "file"}
+          repoPath={effectiveRepoPath ?? undefined}
+          as="div"
+          display="block"
+          placement="right"
         >
-          {/* Action buttons for files (shown on hover) */}
-          {!isDirectory &&
-            node.file &&
-            (onDiscard ||
-              onStageToggle ||
-              (isConflictFile && onStageResolved)) && (
-              <TreeRowActionGroup>
-                {/* Discard action button */}
-                {onDiscard && (
-                  <TreeRowAction
-                    showOnRowHover={false}
-                    icon={Undo03Icon}
-                    iconSize={HEADER_ICON_SIZE.discard}
-                    variant="danger"
-                    onClick={handleDiscard}
-                    title={GIT_LABELS.discardChanges}
-                  />
-                )}
-                {/* Stage/Unstage/Resolve action button */}
-                {(onStageToggle || (isConflictFile && onStageResolved)) && (
-                  <TreeRowAction
-                    showOnRowHover={false}
-                    icon={
-                      isConflictFile
-                        ? Tick01Icon
-                        : isStaged
-                          ? MinusSignIcon
-                          : Add01Icon
-                    }
-                    variant={isConflictFile ? "success" : "default"}
-                    onClick={
-                      isConflictFile ? handleStageResolved : handleStageToggle
-                    }
-                    title={
-                      isConflictFile
-                        ? "Mark as Resolved (Stage)"
-                        : isStaged
-                          ? "Unstage Changes"
-                          : "Stage Changes"
-                    }
-                  />
-                )}
-              </TreeRowActionGroup>
-            )}
-          {/* Git status badge */}
-          <GitStatusBadge status={gitStatus} isDirectory={isDirectory} />
-        </TreeRowBase>
+          <TreeRowBase
+            ref={rowRef}
+            node={treeRowNode}
+            depth={depth}
+            isSelected={isSelected}
+            isMultiSelected={isMultiSelected}
+            gitStatus={gitStatus}
+            colorLabelByGitStatus={!isDirectory && colorFileNames}
+            onClick={handleClick}
+            onContextMenu={handleContextMenu}
+            rounded={shouldRound}
+            onMouseDown={handleMouseDown}
+            showPathHint={showPathHint}
+            showNativeTitle={false}
+          >
+            {/* Action buttons for files (shown on hover) */}
+            {!isDirectory &&
+              node.file &&
+              (onDiscard ||
+                onStageToggle ||
+                (isConflictFile && onStageResolved)) && (
+                <TreeRowActionGroup>
+                  {/* Discard action button */}
+                  {onDiscard && (
+                    <TreeRowAction
+                      showOnRowHover={false}
+                      icon={Undo03Icon}
+                      iconSize={HEADER_ICON_SIZE.discard}
+                      variant="danger"
+                      onClick={handleDiscard}
+                      title={GIT_LABELS.discardChanges}
+                    />
+                  )}
+                  {/* Stage/Unstage/Resolve action button */}
+                  {(onStageToggle || (isConflictFile && onStageResolved)) && (
+                    <TreeRowAction
+                      showOnRowHover={false}
+                      icon={
+                        isConflictFile
+                          ? Tick01Icon
+                          : isStaged
+                            ? MinusSignIcon
+                            : Add01Icon
+                      }
+                      variant={isConflictFile ? "success" : "default"}
+                      onClick={
+                        isConflictFile ? handleStageResolved : handleStageToggle
+                      }
+                      title={
+                        isConflictFile
+                          ? "Mark as Resolved (Stage)"
+                          : isStaged
+                            ? "Unstage Changes"
+                            : "Stage Changes"
+                      }
+                    />
+                  )}
+                </TreeRowActionGroup>
+              )}
+            {/* Git status badge */}
+            <GitStatusBadge status={gitStatus} isDirectory={isDirectory} />
+          </TreeRowBase>
+        </FileTreeHoverPreview>
         {showContextMenu && contextMenuFile && actionSystem?.dispatch && (
           <SourceControlContextMenu
             file={contextMenuFile}

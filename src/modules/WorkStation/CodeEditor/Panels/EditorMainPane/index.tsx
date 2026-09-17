@@ -39,7 +39,6 @@ import type { EditorContentProps } from "./types";
 import { useEditorHostValue } from "./useEditorHostValue";
 import { useEditorPaneFileState } from "./useEditorPaneFileState";
 import { useEditorPaneLayers } from "./useEditorPaneLayers";
-import { useSearchTabTitleChange } from "./useSearchTabTitleChange";
 import { useSourceControlTabHeader } from "./useSourceControlTabHeader";
 
 const NO_RETAINED_TABS: ReadonlySet<string> = new Set();
@@ -136,8 +135,6 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     // Tab Bar Handlers
     // ============================================
 
-    const handleSearchTabTitleChange = useSearchTabTitleChange(updatePaneState);
-
     const { handleGitDiffUnsavedChange, handleBinaryUnsavedChange } =
       useUnsavedChangeHandlers({ activeTabId, updatePaneState });
 
@@ -189,7 +186,6 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       onFileSelect,
       onFileSelectWithLine,
       onCursorPositionChange,
-      handleSearchTabTitleChange,
       handleGitDiffUnsavedChange,
       handleBinaryUnsavedChange,
       terminalState,

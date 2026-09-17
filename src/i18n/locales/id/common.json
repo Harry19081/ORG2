@@ -789,7 +789,8 @@
     "selectSidebarStash": "Pilih stash",
     "selectSidebarCommit": "Pilih commit",
     "selectSidebarPullRequest": "Pilih pull request",
-    "selectSidebarIssue": "Pilih issue"
+    "selectSidebarIssue": "Pilih issue",
+    "pressEnterToSearch": "Tekan Enter untuk mencari"
   },
   "inbox": {
     "scrollToBottom": "Gulir ke bawah",

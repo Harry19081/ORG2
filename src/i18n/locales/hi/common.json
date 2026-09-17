@@ -789,7 +789,8 @@
     "selectSidebarStash": "कोई स्टैश चुनें",
     "selectSidebarCommit": "कोई कमिट चुनें",
     "selectSidebarPullRequest": "कोई पुल रिक्वेस्ट चुनें",
-    "selectSidebarIssue": "कोई इश्यू चुनें"
+    "selectSidebarIssue": "कोई इश्यू चुनें",
+    "pressEnterToSearch": "खोजने के लिए Enter दबाएँ"
   },
   "inbox": {
     "scrollToBottom": "नीचे तक स्क्रॉल करें",
