@@ -2,11 +2,15 @@
 import { Provider } from "jotai";
 import { act, createElement, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { afterEach, beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 import { ROUTES } from "@src/config/routes";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
+import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
+  createProjectSettingsTab,
   createStartTab,
   workstationLayoutAtom,
 } from "@src/store/workstation/tabs";
@@ -16,7 +20,12 @@ import {
   resetInstrumentedStore,
 } from "@src/util/core/state/instrumentedStore";
 
+import { closeCurrentWindow } from "../closeCurrentWindow";
 import { useTabShortcuts } from "../useTabShortcuts";
+
+vi.mock("../closeCurrentWindow", () => ({
+  closeCurrentWindow: vi.fn(),
+}));
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -29,7 +38,10 @@ const handleNavigate = (event: Event) => {
 
 beforeEach(() => {
   resetInstrumentedStore();
-  createInstrumentedStore();
+  const store = createInstrumentedStore();
+  store.set(chatPanelMaximizedAtom, false);
+  store.set(stationModeAtom, "my-station");
+  vi.mocked(closeCurrentWindow).mockClear();
   navigationEvents.length = 0;
   window.addEventListener("action-system-navigate", handleNavigate);
 });
@@ -100,9 +112,9 @@ it("closes Settings instead of the WorkStation tab hidden behind it", async () =
 
 it("still closes the active tab on a WorkStation URL", async () => {
   const store = getInstrumentedStore();
-  const launchpad = createStartTab();
+  const settingsTab = createProjectSettingsTab();
   store.set(workstationLayoutAtom, {
-    mainPane: { tabs: [launchpad], activeTabId: launchpad.id },
+    mainPane: { tabs: [settingsTab], activeTabId: settingsTab.id },
   });
   window.history.replaceState({}, "", ROUTES.workStation.base.path);
 
@@ -115,6 +127,56 @@ it("still closes the active tab on a WorkStation URL", async () => {
   expect(closed).toBe(true);
   expect(navigationEvents).toEqual([]);
   expect(store.get(workstationLayoutAtom).mainPane.tabs).toEqual([]);
+  expect(closeCurrentWindow).not.toHaveBeenCalled();
+
+  await harness.unmount();
+});
+
+it("closes My Station's Launchpad first, then the window", async () => {
+  const store = getInstrumentedStore();
+  const launchpad = createStartTab();
+  store.set(workstationLayoutAtom, {
+    mainPane: { tabs: [launchpad], activeTabId: launchpad.id },
+  });
+  const chatTabs = store.get(chatPanelTabsAtom);
+  expect(chatTabs.tabs.map((tab) => tab.type)).toEqual(["start-page"]);
+  window.history.replaceState({}, "", ROUTES.workStation.base.path);
+
+  const harness = await mountTabShortcuts();
+  let closed = false;
+  await act(async () => {
+    closed = harness.handleCloseCurrentTab();
+  });
+
+  expect(closed).toBe(true);
+  expect(closeCurrentWindow).not.toHaveBeenCalled();
+  expect(store.get(workstationLayoutAtom).mainPane.tabs).toEqual([]);
+  expect(store.get(chatPanelMaximizedAtom)).toBe(true);
+
+  closed = false;
+  await act(async () => {
+    closed = harness.handleCloseCurrentTab();
+  });
+
+  expect(closed).toBe(true);
+  expect(closeCurrentWindow).toHaveBeenCalledTimes(1);
+  expect(store.get(chatPanelTabsAtom)).toBe(chatTabs);
+
+  await harness.unmount();
+});
+
+it("closes Settings before considering the window", async () => {
+  const store = getInstrumentedStore();
+  store.set(settingsReturnPathAtom, ROUTES.workStation.code.path);
+  window.history.replaceState({}, "", `${ROUTES.app.settings.path}/appearance`);
+
+  const harness = await mountTabShortcuts();
+  await act(async () => {
+    harness.handleCloseCurrentTab();
+  });
+
+  expect(navigationEvents).toEqual([{ path: ROUTES.workStation.code.path }]);
+  expect(closeCurrentWindow).not.toHaveBeenCalled();
 
   await harness.unmount();
 });
