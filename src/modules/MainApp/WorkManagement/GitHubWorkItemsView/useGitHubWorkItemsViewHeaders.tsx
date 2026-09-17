@@ -177,10 +177,6 @@ export function useGitHubWorkItemsViewHeaders({
         <SplitListHeader
           primary={
             <div className="flex min-w-0 flex-1 items-center gap-px">
-              {splitDatasetControl}
-              {splitDatasetControl ? (
-                <HeaderSectionSeparator className="mx-0.5" />
-              ) : null}
               {repositoryHeaderContent}
               <HeaderSectionSeparator className="mx-0.5" />
               <GitHubWorkItemsFilterControls {...sharedHeaderControlsProps} />
@@ -188,6 +184,10 @@ export function useGitHubWorkItemsViewHeaders({
           }
           secondary={
             <div className="flex min-w-0 flex-1 items-center gap-px">
+              {splitDatasetControl}
+              {splitDatasetControl ? (
+                <HeaderSectionSeparator className="mx-0.5" />
+              ) : null}
               <GitHubWorkItemsSearchAndActions
                 {...sharedHeaderControlsProps}
                 fillSearch

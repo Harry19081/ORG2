@@ -247,6 +247,7 @@ export const SourceControlHeaderContent: React.FC<
               icon={Refresh04Icon}
               data-icon="refresh-cw"
               size={HEADER_ICON_SIZE.sm}
+              strokeWidth={2}
               className={sourceControlRefreshSpinClass}
             />
           }
