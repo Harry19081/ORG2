@@ -1133,7 +1133,12 @@
       "returnFromMiniTerminal": "여기에 표시",
       "resizeTerminal": "터미널 크기 조정",
       "terminalProcessCount_one": "프로세스 {{count}}개",
-      "terminalProcessCount_other": "프로세스 {{count}}개"
+      "terminalProcessCount_other": "프로세스 {{count}}개",
+      "sources": "소스",
+      "sourcesCount_one": "소스 {{count}}개",
+      "sourcesCount_other": "소스 {{count}}개",
+      "loadMoreSources": "더 보기 (+{{count}})",
+      "sourceImage": "이미지"
     },
     "pr": {
       "title": "Pull request",

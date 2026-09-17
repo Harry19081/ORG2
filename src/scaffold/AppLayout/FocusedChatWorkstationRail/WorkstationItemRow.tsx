@@ -23,6 +23,7 @@ import {
   StopCircleIcon,
 } from "@src/icons";
 
+import { RailImageThumbnail } from "./RailImageThumbnail";
 import { RailItemStatus } from "./RailItemStatus";
 import type { FocusedChatRailItem } from "./types";
 
@@ -69,7 +70,13 @@ export function WorkstationItemRow({
         className={`${WORKSTATION_TRAIL_ROW.content} ${compact ? WORKSTATION_TRAIL_ROW.compactContent : WORKSTATION_TRAIL_ROW.wideContent}`}
       >
         <span className={WORKSTATION_TRAIL_ROW.icon}>
-          {item.fileName ? (
+          {item.imageRef ? (
+            <RailImageThumbnail
+              key={item.imageRef}
+              imageRef={item.imageRef}
+              size={WORKSTATION_TRAIL_ROW.iconSize}
+            />
+          ) : item.fileName ? (
             <FileTypeIcon
               fileName={item.fileName}
               size="small"

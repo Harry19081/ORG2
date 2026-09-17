@@ -964,7 +964,12 @@
       "subagentRunning": "Running",
       "subagentPending": "Pending",
       "subagentCompleted": "Completed",
-      "subagentFailed": "Failed"
+      "subagentFailed": "Failed",
+      "sources": "Sources",
+      "sourcesCount_one": "{{count}} Source",
+      "sourcesCount_other": "{{count}} Sources",
+      "loadMoreSources": "Load more (+{{count}})",
+      "sourceImage": "Image"
     },
     "messages": {
       "pushSuccess": "Successfully pushed changes to remote",

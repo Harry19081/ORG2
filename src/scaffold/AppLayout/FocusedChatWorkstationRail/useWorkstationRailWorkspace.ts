@@ -55,11 +55,12 @@ export function useWorkstationRailWorkspace({
     [workspaceFolders]
   );
 
-  // Subagents and every workspace after the first start folded. Workspace
-  // rows mount live Git totals, so this is both the requested presentation
-  // and the demand boundary for secondary-repository background work.
+  // Subagents, Sources and every workspace after the first start folded.
+  // Workspace rows mount live Git totals and source rows read image bytes, so
+  // this is both the requested presentation and the demand boundary for that
+  // background work.
   const [collapsedGroupKeys, setCollapsedGroupKeys] = useState<Set<string>>(
-    () => new Set(["subagents", ...secondaryWorkspaceGroupKeys])
+    () => new Set(["subagents", "sources", ...secondaryWorkspaceGroupKeys])
   );
   const knownSecondaryWorkspaceGroupKeysRef = useRef(
     new Set(secondaryWorkspaceGroupKeys)

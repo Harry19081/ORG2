@@ -1133,7 +1133,12 @@
       "returnFromMiniTerminal": "ここに表示",
       "resizeTerminal": "ターミナルのサイズを変更",
       "terminalProcessCount_one": "{{count}} 個のプロセス",
-      "terminalProcessCount_other": "{{count}} 個のプロセス"
+      "terminalProcessCount_other": "{{count}} 個のプロセス",
+      "sources": "ソース",
+      "sourcesCount_one": "ソース {{count}}件",
+      "sourcesCount_other": "ソース {{count}}件",
+      "loadMoreSources": "さらに表示 (+{{count}})",
+      "sourceImage": "画像"
     },
     "pr": {
       "title": "Pull request",

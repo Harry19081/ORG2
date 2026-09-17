@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -19,15 +19,21 @@ import { WorkstationCollapsedDiffStats } from "./WorkstationCollapsedDiffStats";
 import { WorkstationCollapsedRailItems } from "./WorkstationCollapsedRailItems";
 import { WorkstationCompactMenu } from "./WorkstationCompactMenu";
 import { WorkstationSections } from "./WorkstationSections";
+import { WorkstationSourceImagePreview } from "./WorkstationSourceImagePreview";
+import { WorkstationSourcesSubmenu } from "./WorkstationSourcesSubmenu";
 import { WorkstationSubagentsSubmenu } from "./WorkstationSubagentsSubmenu";
 import { WorkstationTrailHeaderActions } from "./WorkstationTrailHeaderActions";
 import { WorkstationTrailTerminal } from "./WorkstationTrailTerminal";
 import { getStoredRailCollapsed, persistRailCollapsed } from "./railStorage";
 import { resolveTrailWidthVariables } from "./trailWidth";
-import type { FocusedChatWorkstationRailProps } from "./types";
+import type {
+  FocusedChatRailSource,
+  FocusedChatWorkstationRailProps,
+} from "./types";
 import { useTrailPanelDimensions } from "./useTrailPanelDimensions";
 import { useWorkstationRailGitHub } from "./useWorkstationRailGitHub";
 import { useWorkstationRailSections } from "./useWorkstationRailSections";
+import { useWorkstationRailSources } from "./useWorkstationRailSources";
 import { useWorkstationRailSubagents } from "./useWorkstationRailSubagents";
 import { useWorkstationRailTabs } from "./useWorkstationRailTabs";
 import { useWorkstationRailTrailTerminal } from "./useWorkstationRailTrailTerminal";
@@ -35,6 +41,7 @@ import { useWorkstationRailWorkspace } from "./useWorkstationRailWorkspace";
 
 export type {
   FocusedChatRailIcon,
+  FocusedChatRailSource,
   FocusedChatRailSubagent,
   FocusedChatSessionContext,
 } from "./types";
@@ -47,10 +54,13 @@ export type {
  */
 const SDE_AGENT_RAIL_ICON = resolveAgentIcon(SDE_AGENT_ICON_ID);
 
+const EMPTY_SOURCES: FocusedChatRailSource[] = [];
+
 export function FocusedChatWorkstationRail({
   compactMenuHost,
   conversationMinimapHostRef,
   sessionContext,
+  sources = EMPTY_SOURCES,
   subagentIcon = SDE_AGENT_RAIL_ICON,
   subagents = [],
   topInset = 0,
@@ -92,7 +102,7 @@ export function FocusedChatWorkstationRail({
   });
 
   const {
-    handleMenuVisibleChange,
+    handleMenuVisibleChange: handleSubagentsMenuVisibleChange,
     openSubagentSession,
     subagentItems,
     subagentsSubmenuAnchor,
@@ -100,6 +110,30 @@ export function FocusedChatWorkstationRail({
     subagentsSubmenuPanelRef,
     subagentsSubmenuWidth,
   } = useWorkstationRailSubagents({ setMenuOpen, subagentIcon, subagents, t });
+
+  const {
+    closeImagePreview,
+    closeSourcesSubmenu,
+    imagePreview,
+    openSource,
+    sourceItems,
+    sourcesSubmenuAnchor,
+    sourcesSubmenuPanelRef,
+    sourcesSubmenuWidth,
+  } = useWorkstationRailSources({ setMenuOpen, sources, t });
+
+  // Both "load more" panels belong to the compact menu they open from.
+  const compactMenuInsideRefs = useMemo(
+    () => [...subagentsSubmenuInsideRefs, sourcesSubmenuPanelRef],
+    [sourcesSubmenuPanelRef, subagentsSubmenuInsideRefs]
+  );
+  const handleMenuVisibleChange = useCallback(
+    (visible: boolean) => {
+      handleSubagentsMenuVisibleChange(visible);
+      if (!visible) closeSourcesSubmenu();
+    },
+    [closeSourcesSubmenu, handleSubagentsMenuVisibleChange]
+  );
 
   const environmentLabel = t("navigation:labels.sessionEnvironment");
   const {
@@ -113,6 +147,8 @@ export function FocusedChatWorkstationRail({
     primaryWorkspaceTitle,
     sessionContext,
     sessionItems,
+    sourceCount: sources.length,
+    sourceItems,
     subagentCount: subagents.length,
     subagentItems,
     t,
@@ -129,7 +165,7 @@ export function FocusedChatWorkstationRail({
 
   const compactMenu = compactMenuHost ? (
     <WorkstationCompactMenu
-      additionalInsideRefs={subagentsSubmenuInsideRefs}
+      additionalInsideRefs={compactMenuInsideRefs}
       collapseGroupLabel={t("common:actions.collapse")}
       collapsedGroupKeys={collapsedGroupKeys}
       expandGroupLabel={t("common:actions.expand")}
@@ -253,6 +289,22 @@ export function FocusedChatWorkstationRail({
           panelRef={subagentsSubmenuPanelRef}
           subagents={subagents}
           width={subagentsSubmenuWidth}
+        />
+      ) : null}
+      {sourcesSubmenuAnchor ? (
+        <WorkstationSourcesSubmenu
+          anchor={sourcesSubmenuAnchor}
+          onOpenSource={openSource}
+          panelRef={sourcesSubmenuPanelRef}
+          sources={sources}
+          width={sourcesSubmenuWidth}
+        />
+      ) : null}
+      {imagePreview ? (
+        <WorkstationSourceImagePreview
+          images={imagePreview.images}
+          index={imagePreview.index}
+          onClose={closeImagePreview}
         />
       ) : null}
     </>

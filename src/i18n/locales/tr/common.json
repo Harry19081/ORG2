@@ -1133,7 +1133,12 @@
       "returnFromMiniTerminal": "Burada göster",
       "resizeTerminal": "Terminali yeniden boyutlandır",
       "terminalProcessCount_one": "{{count}} işlem",
-      "terminalProcessCount_other": "{{count}} işlem"
+      "terminalProcessCount_other": "{{count}} işlem",
+      "sources": "Kaynaklar",
+      "sourcesCount_one": "{{count}} kaynak",
+      "sourcesCount_other": "{{count}} kaynak",
+      "loadMoreSources": "Daha fazla yükle (+{{count}})",
+      "sourceImage": "Görsel"
     },
     "pr": {
       "title": "Pull request",

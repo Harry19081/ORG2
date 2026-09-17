@@ -1133,7 +1133,12 @@
       "returnFromMiniTerminal": "Показать здесь",
       "resizeTerminal": "Изменить размер терминала",
       "terminalProcessCount_one": "{{count}} процесс",
-      "terminalProcessCount_other": "{{count}} процесса"
+      "terminalProcessCount_other": "{{count}} процесса",
+      "sources": "Источники",
+      "sourcesCount_one": "Источники: {{count}}",
+      "sourcesCount_other": "Источники: {{count}}",
+      "loadMoreSources": "Показать ещё (+{{count}})",
+      "sourceImage": "Изображение"
     },
     "pr": {
       "title": "Pull request",
