@@ -47,6 +47,13 @@
   flex-shrink: 0;
 }
 
+// The send surface is smaller than its hit target: a transparent token-sized
+// inset keeps the 44px button clickable without painting an oversized disk.
+.mobile-composer-submit {
+  border: #{mobile.$space-3 * 0.5} solid transparent;
+  background-clip: padding-box;
+}
+
 .mobile-composer-recording {
   padding-block: mobile.$space-1;
 
@@ -61,6 +68,6 @@
   max-width: 100%;
   flex-shrink: 1;
   min-height: mobile.$touch-target;
-  font-size: var(--mobile-type-control-size);
+  font-size: var(--mobile-type-secondary-size);
   line-height: var(--mobile-type-control-leading);
 }

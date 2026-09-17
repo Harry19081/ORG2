@@ -286,7 +286,7 @@ export function MobileComposer({
                     disabled={disabled || !voice.isSupported}
                   />
                   <ComposerSubmitButton
-                    className="mobile-composer-icon-action"
+                    className="mobile-composer-icon-action mobile-composer-submit"
                     active={hasSendableContent && !submitDisabled}
                     disabled={submitDisabled}
                     busy={submitting}

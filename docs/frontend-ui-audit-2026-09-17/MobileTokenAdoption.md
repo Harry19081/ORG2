@@ -73,3 +73,13 @@ Physical-device keyboard/focus zoom, VoiceOver, OS launch-screen timing and scre
 The UI changes were isolated onto the current develop base for review. Session identity preparation and generated-prompt normalization are separate PRs and are not dependencies of this UI branch. The aggregate pre-integration evidence above describes the combined development worktree; after separation, the same listed Vitest command passed **119 files / 879 tests**. Changed-file ESLint also passed on this isolated branch. A second source review found no blocking appearance, shared-control compatibility, or navigation defect.
 
 The committed screenshots are synthetic fixtures of the real components captured before isolation, not installed-app screenshots or a substitute app. They contain no account or session content. Physical-device checks and complete loading/empty/error visual coverage remain outstanding.
+
+## Composer visual balance follow-up
+
+The submit button retains a 44px hit target but paints a 32px circle using a transparent inset derived from the existing mobile spacing token. The model trigger uses the 14px secondary typography token; the textarea retains the 16px body token. Shared Desktop controls and model-menu text sizes are unchanged.
+
+Rendered real-component fixtures confirmed the 44px hit target, 32px painted circle, 14px model label, and no horizontal overflow at 320px; light and dark captures were inspected, with an additional 390px dark capture. `pnpm test src/modules/MobileRemote/components/composer/MobileComposer.test.ts src/modules/MobileRemote/components/composer/MobileModelPicker.test.ts` passed 14 tests. Scoped ESLint, Prettier and diff checks passed. The actual installed simulator app was relaunched against the updated development bundle.
+
+![Light composer follow-up](assets/mobile-composer-compact-light.png)
+
+![Dark composer follow-up](assets/mobile-composer-compact-dark.png)
