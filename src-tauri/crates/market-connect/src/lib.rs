@@ -7,7 +7,7 @@ mod environment;
 mod process_lock;
 mod workspace;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-pub use client::{AccessCredential, Connection, ConnectionMetadata, Grant};
+pub use client::{AccessCredential, Connection, ConnectionMetadata, Grant, IdentitySession};
 pub use environment::{app_scheme, console_origin, control_origin, gateway_origin};
 use rand::Rng;
 use serde::{Deserialize, Serialize};

@@ -3,6 +3,12 @@ import { expect, it, vi } from "vitest";
 
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
+const nativeIdentity = vi.hoisted(() => ({
+  session: undefined as
+    | undefined
+    | { access_token: string; refresh_token: string; expires_at: number },
+}));
+
 vi.mock("@tauri-apps/plugin-opener", () => ({ openUrl: vi.fn() }));
 vi.mock("@src/api/tauri/rpc/invoke", () => ({
   defineProcedure: (name: string) => {
@@ -17,6 +23,7 @@ vi.mock("@src/api/tauri/rpc/invoke", () => ({
     name === "market_connection_begin"
       ? "https://market.org2.dev/buyer/connect/authorize"
       : {
+          identity_session: nativeIdentity.session,
           identity_user_id: "user-a",
           workspace_id: "ws_test",
           target: "org2",
@@ -83,4 +90,28 @@ it("reauthorizes a signed-out client instead of only reopening saved profiles", 
     )
   );
   expect(loadConnections).not.toHaveBeenCalled();
+});
+
+it("signs in from the PKCE backchannel without identity tokens in the URL", async () => {
+  const { org2CloudAuthAtom } =
+    await import("@src/features/Org2Cloud/org2CloudAuthAtom");
+  const { handleMarketConnectionUrl } = await import("./deepLink");
+  const store = createInstrumentedStore();
+  const expiresAt = Math.floor(Date.now() / 1000) + 3600;
+  nativeIdentity.session = {
+    access_token: "native-access",
+    refresh_token: "native-refresh",
+    expires_at: expiresAt,
+  };
+  handleMarketConnectionUrl(
+    `orgii://market/authorized?code=${"d".repeat(43)}&state=${"t".repeat(43)}`
+  );
+  await vi.waitFor(() =>
+    expect(store.get(org2CloudAuthAtom)).toEqual({
+      accessToken: "native-access",
+      refreshToken: "native-refresh",
+      expiresAt,
+    })
+  );
+  nativeIdentity.session = undefined;
 });

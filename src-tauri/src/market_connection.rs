@@ -14,6 +14,9 @@ pub(crate) fn register_source() -> Result<(), String> {
 
 #[derive(Serialize)]
 pub struct ConnectionView {
+    #[cfg(feature = "market-connect")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    identity_session: Option<market_connect::IdentitySession>,
     identity_user_id: String,
     workspace_id: String,
     target: String,
@@ -378,6 +381,7 @@ mod enabled {
     }
     fn view(record: ConnectionMetadata, phase: &'static str) -> ConnectionView {
         ConnectionView {
+            identity_session: None,
             identity_user_id: record.identity_user_id,
             workspace_id: record.workspace_id,
             target: record.target.wire_name().into(),
@@ -409,7 +413,7 @@ mod enabled {
             .map_err(|_| "market_connection_unavailable")?
             .take_redemption(&raw)?;
         let attempt = redemption.attempt_id().to_owned();
-        let grant = match redemption.exchange().await {
+        let mut grant = match redemption.exchange().await {
             Ok(grant) => grant,
             Err(error) => {
                 owner()
@@ -419,6 +423,7 @@ mod enabled {
                 return Err(error.into());
             }
         };
+        let identity_session = grant.take_identity_session();
         // Wait for native renewal commits before replacing an authorization.
         // Retire cached access so the next request reads the new OS-store grant.
         let source_guard = super::source::retire_for_reauthorization().await;
@@ -451,7 +456,9 @@ mod enabled {
                 agent_cli::managed_config::write_cli_profile_file_atomic(&index_path(), &bytes)
                     .map_err(|_| "market_connection_index_unavailable")
             })?;
-            Ok(view(metadata, "authorization_saved"))
+            let mut result = view(metadata, "authorization_saved");
+            result.identity_session = identity_session;
+            Ok(result)
         })
         .await
         .map_err(|_| "market_connection_unavailable")?

@@ -33,6 +33,13 @@ const complete = defineProcedure("market_connection_complete")
       workspace_id: z.string().regex(/^ws_[A-Za-z0-9_-]{1,120}$/),
       target: z.enum(["claude-code", "claude-app", "codex", "org2"]),
       phase: z.literal("authorization_saved"),
+      identity_session: z
+        .object({
+          access_token: z.string().min(1).max(8192),
+          refresh_token: z.string().min(1).max(4096),
+          expires_at: z.number().finite(),
+        })
+        .optional(),
     })
   )
   .build();
@@ -147,9 +154,19 @@ export function handleMarketConnectionUrl(raw: string): boolean {
           throw new Error("browser_open_failed");
         }
       } else if (url.pathname === "/authorized") {
-        const cloudSession = cloudSessionFromMarketCallback(url);
+        let cloudSession = cloudSessionFromMarketCallback(url);
         url.hash = "";
         const result = await typedInvoke(complete, { raw: url.toString() });
+        if (
+          result.identity_session &&
+          result.identity_session.expires_at > Date.now() / 1000
+        ) {
+          cloudSession = {
+            accessToken: result.identity_session.access_token,
+            refreshToken: result.identity_session.refresh_token,
+            expiresAt: result.identity_session.expires_at,
+          };
+        }
         rememberCompletedAuthorization(callbackState);
         const store = getInstrumentedStore();
         if (
@@ -162,7 +179,12 @@ export function handleMarketConnectionUrl(raw: string): boolean {
             store.set(org2CloudAuthAtom, value)
           );
         }
-        dispatchMarketConnection(MARKET_AUTHORIZATION_SAVED_EVENT, result);
+        dispatchMarketConnection(MARKET_AUTHORIZATION_SAVED_EVENT, {
+          identity_user_id: result.identity_user_id,
+          workspace_id: result.workspace_id,
+          target: result.target,
+          phase: result.phase,
+        });
         // ORG2-native services become profiles immediately. External clients
         // still need their existing configuration step in App connections.
         if (result.target !== "org2") {

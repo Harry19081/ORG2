@@ -8,9 +8,19 @@ pub struct ConnectionMetadata {
     pub workspace_id: String,
     pub target: crate::Target,
 }
+// Returned once to the UI after PKCE verification. Never persisted with Market
+// credentials: the application's identity store owns its refresh lifecycle.
+#[derive(Serialize, Deserialize)]
+pub struct IdentitySession {
+    pub access_token: String,
+    pub refresh_token: String,
+    pub expires_at: i64,
+}
 // This type is native-only. Serialize is for the OS credential store, never IPC.
 #[derive(Serialize, Deserialize)]
 pub struct Grant {
+    #[serde(default, skip_serializing)]
+    identity_session: Option<IdentitySession>,
     token: String,
     expires_at: i64,
     refresh_token: String,
@@ -23,6 +33,9 @@ pub struct Grant {
     state: String,
 }
 impl Grant {
+    pub fn take_identity_session(&mut self) -> Option<IdentitySession> {
+        self.identity_session.take()
+    }
     pub(crate) fn enrollment_state(&self) -> &str {
         &self.state
     }
@@ -483,7 +496,7 @@ fn platform_store(_account: &str, _raw: &str) -> Result<(), &'static str> {
 impl Redemption {
     pub async fn exchange(self) -> Result<Grant, &'static str> {
         let client = reqwest::Client::builder()
-            .timeout(Duration::from_secs(8))
+            .timeout(Duration::from_secs(40))
             .redirect(reqwest::redirect::Policy::none())
             .build()
             .map_err(|_| "connection_transport_unavailable")?;
@@ -496,7 +509,7 @@ impl Redemption {
         if !response.status().is_success() {
             return Err("connection_authorization_failed");
         }
-        let bytes = bounded_response(response).await?;
+        let bytes = bounded_response_limit(response, 32768).await?;
         let grant: Grant =
             serde_json::from_slice(&bytes).map_err(|_| "invalid_connection_response")?;
         grant.validate()?;
@@ -555,8 +568,25 @@ pub(crate) mod tests {
             )
         );
     }
+    #[test]
+    fn identity_session_is_one_shot_and_not_persisted_in_market_grant() {
+        let mut grant = fixture();
+        grant.identity_session = Some(IdentitySession {
+            access_token: "native-access-fixture".into(),
+            refresh_token: "native-refresh-fixture".into(),
+            expires_at: 5000,
+        });
+        let stored = serde_json::to_string(&grant).unwrap();
+        assert!(!stored.contains("native-access-fixture"));
+        assert!(!stored.contains("native-refresh-fixture"));
+        assert!(!stored.contains("identity_session"));
+        assert!(grant.take_identity_session().is_some());
+        assert!(grant.take_identity_session().is_none());
+    }
+
     fn fixture() -> Grant {
         Grant {
+            identity_session: None,
             token: concat!("og2ms.v1.", "fixture").into(),
             expires_at: 100000,
             refresh_token: format!("og2r_{}", "r".repeat(43)),
