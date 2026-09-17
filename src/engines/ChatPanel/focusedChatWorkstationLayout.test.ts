@@ -148,6 +148,21 @@ describe("resolveFocusedChatWorkstationSectionOrder", () => {
       resolveFocusedChatWorkstationSectionOrder(false, false, true)
     ).toEqual(["workspace", "subagents"]);
   });
+
+  it("slots sources after subagents and above open tabs", () => {
+    expect(
+      resolveFocusedChatWorkstationSectionOrder(true, true, true, "local", true)
+    ).toEqual(["workspace", "session", "subagents", "sources", "tabs"]);
+    expect(
+      resolveFocusedChatWorkstationSectionOrder(
+        false,
+        true,
+        false,
+        "cloud",
+        true
+      )
+    ).toEqual(["session", "workspace", "sources"]);
+  });
 });
 
 describe("isSameFocusedChatGitEnvironment", () => {

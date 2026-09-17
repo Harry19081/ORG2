@@ -1133,7 +1133,12 @@
       "returnFromMiniTerminal": "Mostrar aquí",
       "resizeTerminal": "Cambiar tamaño del terminal",
       "terminalProcessCount_one": "{{count}} proceso",
-      "terminalProcessCount_other": "{{count}} procesos"
+      "terminalProcessCount_other": "{{count}} procesos",
+      "sources": "Fuentes",
+      "sourcesCount_one": "{{count}} fuente",
+      "sourcesCount_other": "{{count}} fuentes",
+      "loadMoreSources": "Cargar más (+{{count}})",
+      "sourceImage": "Imagen"
     },
     "pr": {
       "title": "Pull request",

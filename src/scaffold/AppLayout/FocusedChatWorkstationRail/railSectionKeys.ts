@@ -5,6 +5,7 @@
 export const FOCUSED_CHAT_RAIL_SECTIONS = {
   session: { key: "session", label: null },
   subagents: { key: "subagents", label: null },
+  sources: { key: "sources", label: null },
   tabs: { key: "tabs", label: null },
   workspace: { key: "workspace", label: null },
 } as const;

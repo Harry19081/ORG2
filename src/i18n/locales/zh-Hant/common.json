@@ -1133,7 +1133,12 @@
       "returnFromMiniTerminal": "在此處顯示",
       "resizeTerminal": "調整終端大小",
       "terminalProcessCount_one": "{{count}} 個程序",
-      "terminalProcessCount_other": "{{count}} 個程序"
+      "terminalProcessCount_other": "{{count}} 個程序",
+      "sources": "來源",
+      "sourcesCount_one": "{{count}} 個來源",
+      "sourcesCount_other": "{{count}} 個來源",
+      "loadMoreSources": "載入更多（+{{count}}）",
+      "sourceImage": "圖片"
     },
     "pr": {
       "title": "Pull request",

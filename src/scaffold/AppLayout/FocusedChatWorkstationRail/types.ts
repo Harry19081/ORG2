@@ -6,6 +6,7 @@
 import type React from "react";
 import type { ComponentType } from "react";
 
+import type { SessionSource } from "@src/engines/ChatPanel/sessionSources/extractSessionSources";
 import type { IconSvgElement } from "@src/icons";
 import type { BranchCiStatus } from "@src/services/git/branchPullRequestStatus";
 
@@ -26,6 +27,8 @@ export type FocusedChatRailItem = {
   shortcut?: string;
   shortcutId?: string;
   fileName?: string;
+  /** Image reference shown as a thumbnail in place of the icon. */
+  imageRef?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   /**
    * Row opens a second-level panel anchored to itself: it must not close the
@@ -75,6 +78,9 @@ export interface FocusedChatRailSubagent {
   status: "pending" | "running" | "completed" | "failed";
 }
 
+/** One image or web link the user sent in the rail's active session. */
+export type FocusedChatRailSource = SessionSource;
+
 export interface FocusedChatWorkstationRailProps {
   /** Header host for the narrow-layout pinned trigger. */
   compactMenuHost: HTMLSpanElement | null;
@@ -82,6 +88,8 @@ export interface FocusedChatWorkstationRailProps {
   conversationMinimapHostRef: (node: HTMLDivElement | null) => void;
   /** Active session scope moved out of the transcript's former context row. */
   sessionContext?: FocusedChatSessionContext;
+  /** Images and links the user sent in the active session, newest first. */
+  sources?: FocusedChatRailSource[];
   /** The active session's spawned subagent sessions, newest first. */
   subagents?: FocusedChatRailSubagent[];
   /**

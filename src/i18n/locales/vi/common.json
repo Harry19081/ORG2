@@ -1133,7 +1133,12 @@
       "returnFromMiniTerminal": "Hiển thị tại đây",
       "resizeTerminal": "Thay đổi kích thước terminal",
       "terminalProcessCount_one": "{{count}} tiến trình",
-      "terminalProcessCount_other": "{{count}} tiến trình"
+      "terminalProcessCount_other": "{{count}} tiến trình",
+      "sources": "Nguồn",
+      "sourcesCount_one": "{{count}} nguồn",
+      "sourcesCount_other": "{{count}} nguồn",
+      "loadMoreSources": "Tải thêm (+{{count}})",
+      "sourceImage": "Hình ảnh"
     },
     "pr": {
       "title": "Pull request",

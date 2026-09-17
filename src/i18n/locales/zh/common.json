@@ -964,7 +964,12 @@
       "subagentRunning": "运行中",
       "subagentPending": "等待中",
       "subagentCompleted": "已完成",
-      "subagentFailed": "失败"
+      "subagentFailed": "失败",
+      "sources": "来源",
+      "sourcesCount_one": "{{count}} 个来源",
+      "sourcesCount_other": "{{count}} 个来源",
+      "loadMoreSources": "加载更多（+{{count}}）",
+      "sourceImage": "图片"
     },
     "pr": {
       "title": "Pull request",

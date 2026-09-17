@@ -732,6 +732,80 @@ fn rebuild_turn_index_inner(session_id: &str) -> SqliteResult<Vec<CachedTurnSumm
     load_turn_index(session_id)
 }
 
+/// One user message the chat shows, with its full text and every image
+/// reference.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StoredUserMessage {
+    pub id: String,
+    pub text: String,
+    pub images: Vec<String>,
+}
+
+/// Every user message of an own-db session, oldest first — the same rows the
+/// turn index opens rounds with. Unlike the initial turn window this never
+/// truncates text or caps images; it also does not rebuild the index.
+pub fn load_stored_user_messages(session_id: &str) -> SqliteResult<Vec<StoredUserMessage>> {
+    with_sessions_writer(|| -> SqliteResult<()> {
+        let conn = get_connection()?;
+        if backfill_missing_user_events(&conn, session_id)? > 0 {
+            normalize_session_sequences(&conn, session_id)?;
+        }
+        Ok(())
+    })?;
+    let conn = get_connection()?;
+    stored_user_messages(&conn, session_id)
+}
+
+fn stored_user_messages(
+    conn: &Connection,
+    session_id: &str,
+) -> SqliteResult<Vec<StoredUserMessage>> {
+    let mut stmt = conn.prepare_cached(
+        "SELECT id, function_name, args_json, result_json, content, created_at,
+                history_sequence AS order_sequence, event_type
+         FROM events
+         WHERE session_id = ?1 AND function_name IN (?2, ?3, ?4)
+         ORDER BY history_sequence ASC, created_at ASC, id ASC",
+    )?;
+    let rows = stmt.query_map(
+        params![
+            session_id,
+            USER_MESSAGE_FUNCTION,
+            IMPORTED_USER_MESSAGE_FUNCTION,
+            CANONICAL_USER_INPUT_FUNCTION
+        ],
+        index_event_row,
+    )?;
+    let mut messages = Vec::new();
+    for row in rows {
+        let row = row?;
+        if !is_user_message(&row) {
+            continue;
+        }
+        let result = serde_json::from_str::<serde_json::Value>(&row.result_json)
+            .unwrap_or(serde_json::Value::Null);
+        let text = result
+            .pointer("/message/content")
+            .and_then(serde_json::Value::as_str)
+            .map(str::to_string)
+            .unwrap_or(row.content);
+        let images = result
+            .get("images")
+            .and_then(serde_json::Value::as_array)
+            .into_iter()
+            .flatten()
+            .filter_map(serde_json::Value::as_str)
+            .map(str::to_string)
+            .collect();
+        messages.push(StoredUserMessage {
+            id: row.id,
+            text,
+            images,
+        });
+    }
+    Ok(messages)
+}
+
 pub fn ensure_turn_index_fresh(session_id: &str) -> SqliteResult<()> {
     // `backfill_missing_user_events` and `normalize_session_sequences`
     // are writers, so the freshness check and the optional rebuild all
@@ -944,6 +1018,43 @@ mod tests {
             )
             .unwrap();
         assert_eq!(index_states, 0);
+    }
+
+    #[test]
+    fn stored_user_messages_keep_full_text_and_images_without_synthetic_inputs() {
+        let conn = Connection::open_in_memory().unwrap();
+        create_backfill_test_tables(&conn);
+        let long_text = format!("{} https://example.com/end", "x".repeat(900));
+        conn.execute(
+            "INSERT INTO agent_messages (id, session_id, role, content, sequence, created_at, images)
+             VALUES (?1, ?2, 'user', ?3, 1, ?4, ?5)",
+            params![
+                "message-1",
+                "session-1",
+                long_text,
+                "2026-05-27T00:00:00Z",
+                r#"["/tmp/a.png","/tmp/b.png"]"#,
+            ],
+        )
+        .unwrap();
+        backfill_missing_user_events(&conn, "session-1").unwrap();
+        conn.execute(
+            "INSERT INTO events (id, session_id, event_type, function_name, args_json,
+                                 result_json, content, created_at, history_sequence)
+             VALUES ('synthetic-1', 'session-1', 'raw', 'user_message', '{}', ?1,
+                     'user_message plan', '2026-05-27T00:00:01Z', 2)",
+            params![r#"{"message":{"content":"[Plan approved] https://plan.dev"},"syntheticUserInput":true}"#],
+        )
+        .unwrap();
+
+        assert_eq!(
+            stored_user_messages(&conn, "session-1").unwrap(),
+            vec![StoredUserMessage {
+                id: "user-message-message-1".to_string(),
+                text: long_text,
+                images: vec!["/tmp/a.png".to_string(), "/tmp/b.png".to_string()],
+            }]
+        );
     }
 
     #[test]

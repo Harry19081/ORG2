@@ -7,12 +7,14 @@ mod image_prefix;
 mod messages;
 mod parser;
 mod reader;
+mod sources;
 mod tool_calls;
 
 const CODEX_PROVIDER_SLUG: &str = "codex";
 const NATIVE_SOURCE_EVENT_ID_ARG: &str = "__orgiiSourceEventId";
 const NATIVE_SOURCE_EVENT_ID_PREFIX: &str = "orgii_evt_";
 
+pub use sources::load_codex_user_source_messages_from_path;
 pub use reader::{
     load_codex_app_review_from_path,
     load_codex_app_review_context_from_path,
