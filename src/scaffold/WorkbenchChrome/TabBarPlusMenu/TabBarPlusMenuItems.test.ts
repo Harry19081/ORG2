@@ -57,8 +57,6 @@ describe("TabBarPlusMenuItems", () => {
     const markup = renderToStaticMarkup(
       createElement(TabBarPlusMenuItems, {
         actions: LAUNCHPAD_ACTION_IDS.map(createAction),
-        additions: 0,
-        deletions: 0,
         onActionComplete: vi.fn(),
       })
     );
@@ -73,12 +71,26 @@ describe("TabBarPlusMenuItems", () => {
     const markup = renderToStaticMarkup(
       createElement(TabBarPlusMenuItems, {
         actions: [createAction("searchFile"), createAction("projects")],
-        additions: 0,
-        deletions: 0,
         onActionComplete: vi.fn(),
       })
     );
 
     expect(markup).not.toContain('role="separator"');
+  });
+
+  it("keeps shortcut hints trailing and omits diff totals from Review", () => {
+    const review = {
+      ...createAction("sourceControl"),
+      shortcutId: "open_source_control_tab" as const,
+    };
+    const markup = renderToStaticMarkup(
+      createElement(TabBarPlusMenuItems, {
+        actions: [review],
+        onActionComplete: vi.fn(),
+      })
+    );
+
+    expect(markup).toContain("ml-auto");
+    expect(markup).not.toContain("font-mono");
   });
 });
