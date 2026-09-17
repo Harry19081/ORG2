@@ -30,6 +30,7 @@ import {
   selectFindScope,
   subscribeFind,
 } from "./findCoordinator";
+import { clipFindTargetName } from "./findTargetName";
 
 export interface FindCardSearch {
   query: string;
@@ -85,6 +86,16 @@ export function FindCard({
   const label = name
     ? t("common:findScope.named", { name })
     : scopeLabels[scope];
+  // The placeholder cannot ellipsize mid-string, so clip the name itself and
+  // keep the surrounding copy visible; aria labels keep the full name.
+  const clippedName = name && clipFindTargetName(name);
+  const placeholderLabel =
+    clippedName && clippedName !== name
+      ? t("common:findScope.named", { name: clippedName })
+      : label;
+  const placeholder = placeholderLabel.endsWith("…")
+    ? placeholderLabel
+    : `${placeholderLabel}...`;
 
   const {
     query,
@@ -210,7 +221,7 @@ export function FindCard({
         inputRef={inputRef}
         searchQuery={query}
         onSearchQueryChange={setQuery}
-        placeholder={`${label}...`}
+        placeholder={placeholder}
         ariaLabel={label}
         path={[]}
         onKeyDown={(event) => {
