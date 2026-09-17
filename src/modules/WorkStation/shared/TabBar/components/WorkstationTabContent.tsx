@@ -26,11 +26,12 @@ import type { WorkStationTab } from "@src/store/workstation/tabs";
 
 import { WorkstationTabIcon } from "./WorkstationTabIcon";
 
-// Only these singleton tools override their stored titles unconditionally.
+// These tools use localized labels, independent of stored titles or query data.
 const LOCALIZED_TOOL_TITLE_KEYS: Partial<
   Record<WorkStationTab["type"], string>
 > = {
   start: "navigation:routes.launchpad",
+  search: "common:tabs.search",
   "search-sessions": "navigation:workstation.plusMenu.searchSessions",
   explorer: "common:labels.files",
   "source-control": "common:actions.review",

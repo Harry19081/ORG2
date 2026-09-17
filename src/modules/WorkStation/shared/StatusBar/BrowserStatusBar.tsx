@@ -14,8 +14,8 @@ import { useTranslation } from "react-i18next";
 import {
   Add01Icon,
   Alert01Icon,
-  BrushCleaningIcon,
   CancelCircleIcon,
+  CleanIcon,
   HugeiconsIcon,
 } from "@src/icons";
 
@@ -144,11 +144,7 @@ const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
               title={clearLabel}
               className="text-text-2"
             >
-              <HugeiconsIcon
-                icon={BrushCleaningIcon}
-                data-icon="brush-cleaning"
-                size={13}
-              />
+              <HugeiconsIcon icon={CleanIcon} data-icon="clean" size={13} />
             </StatusBarButton>
           )}
           <StatusBarButton

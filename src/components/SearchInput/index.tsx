@@ -147,6 +147,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
 
     const handleKeyDown = useCallback(
       (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (event.nativeEvent.isComposing || event.keyCode === 229) return;
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();
           onSubmit?.();

@@ -45,6 +45,7 @@ const WorkstationTabHeader: React.FC = memo(() => {
     headerSlots?.shellLeadingChromeHidden ?? false;
   const isSourceControlTab =
     activeApp === "code" && activeTab?.type === "source-control";
+  const isSearchTab = activeApp === "code" && activeTab?.type === "search";
   const isBrowserTab = activeApp === "browser";
   // The Browser URL toolbar owns its leading controls and divider (see
   // WebUrlBar), so it starts flush with the shell edge rather than behind a
@@ -63,23 +64,30 @@ const WorkstationTabHeader: React.FC = memo(() => {
       className={`flex h-9 shrink-0 items-center border-b border-border-2 ${
         isBrowserTab ? "gap-px" : "gap-2"
       } pr-2 ${shellLeadingChromeHidden ? "" : "pl-1.5"}`}
+      data-workstation-tab-header
       data-tauri-drag-region={windowsHost ? undefined : true}
     >
-      {!shellLeadingChromeHidden && !isBrowserTab && (
+      {!shellLeadingChromeHidden && (
         <>
           <NoDragRegion className="flex shrink-0 items-center gap-px">
             <WorkStationSidebarToggleButton
               iconSize={14}
-              disabled={headerSlots?.sidebarToggleDisabled ?? false}
+              disabled={
+                isBrowserTab || (headerSlots?.sidebarToggleDisabled ?? false)
+              }
             />
-            <CodeSidebarHeaderActions />
+            {isSearchTab ? headerSlots?.leading : <CodeSidebarHeaderActions />}
             <SourceControlHeaderActions />
           </NoDragRegion>
           {!joinsSidebarGroup && <HeaderSectionSeparator />}
         </>
       )}
       <PublishedHeaderSlotsView
-        slots={headerSlots}
+        slots={
+          isSearchTab && headerSlots
+            ? { ...headerSlots, leading: undefined }
+            : headerSlots
+        }
         paddingLeftClassName={publishedHeaderPaddingLeftClassName}
       />
     </div>
