@@ -7,7 +7,7 @@ use crate::{
 };
 use axum::{
     extract::{Path, Query},
-    routing::{get, post},
+    routing::post,
     Json, Router,
 };
 use serde::Deserialize;
@@ -15,8 +15,6 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 struct Scope {
     path: Option<String>,
-    cursor: Option<String>,
-    branch: Option<String>,
 }
 
 pub fn routes() -> Router {
@@ -28,19 +26,6 @@ pub fn routes() -> Router {
         .route(
             "/api/git/repo/{repo_id}/branch-switch/execute",
             post(execute),
-        )
-        .route("/api/git/repo/{repo_id}/branch-switch/saved", get(saved))
-        .route(
-            "/api/git/repo/{repo_id}/branch-switch/available",
-            get(available),
-        )
-        .route(
-            "/api/git/repo/{repo_id}/branch-switch/saved/{id}",
-            get(preview),
-        )
-        .route(
-            "/api/git/repo/{repo_id}/branch-switch/restore",
-            post(restore),
         )
 }
 
@@ -74,35 +59,4 @@ async fn execute(
     Json(req): Json<switch::ExecuteRequest>,
 ) -> GitApiResult<Json<serde_json::Value>> {
     run(id, scope, move |p| switch::execute(&p, req)).await
-}
-async fn saved(
-    Path(id): Path<String>,
-    Query(scope): Query<Scope>,
-) -> GitApiResult<Json<serde_json::Value>> {
-    let cursor = scope.cursor.clone();
-    run(id, scope, move |p| {
-        switch::list_saved(&p, cursor.as_deref())
-    })
-    .await
-}
-async fn preview(
-    Path((repo, id)): Path<(String, String)>,
-    Query(scope): Query<Scope>,
-) -> GitApiResult<Json<serde_json::Value>> {
-    run(repo, scope, move |p| switch::preview(&p, &id)).await
-}
-async fn restore(
-    Path(id): Path<String>,
-    Query(scope): Query<Scope>,
-    Json(req): Json<switch::RestoreRequest>,
-) -> GitApiResult<Json<serde_json::Value>> {
-    run(id, scope, move |p| switch::restore(&p, &req.id)).await
-}
-
-async fn available(
-    Path(id): Path<String>,
-    Query(scope): Query<Scope>,
-) -> GitApiResult<Json<serde_json::Value>> {
-    let branch = scope.branch.clone().unwrap_or_default();
-    run(id, scope, move |p| switch::has_saved(&p, &branch)).await
 }

@@ -12,8 +12,6 @@ import Button from "@src/components/Button";
 import Modal from "@src/scaffold/ModalSystem";
 import SelectionGrid from "@src/scaffold/WizardSystem/primitives/SelectionGrid";
 
-import { openSavedChanges } from "../SavedChangesDialog";
-
 export type CheckoutConflictResult = SwitchStrategy | "cancel";
 interface ViewProps {
   scope: SwitchScope;
@@ -70,14 +68,6 @@ export function BranchSwitchDialogView({
       footer={
         terminal ? (
           <div className="flex justify-end gap-2">
-            <Button
-              onClick={() => {
-                onClose();
-                void openSavedChanges(scope);
-              }}
-            >
-              {t("git.branchSwitch.viewSaved", "View saved changes")}
-            </Button>
             <Button variant="primary" onClick={onClose}>
               {t("actions.close", "Close")}
             </Button>

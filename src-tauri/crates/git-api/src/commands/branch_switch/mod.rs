@@ -1,9 +1,7 @@
 //! Recoverable, user-directed branch switching. All writes stay behind this boundary.
-mod saved;
 mod state;
 pub mod types;
 use git2::{BranchType, ObjectType, Oid, Reference, Repository};
-pub use saved::{has_saved, list_saved, preview, restore};
 use state::*;
 use std::path::Path;
 pub use types::*;
