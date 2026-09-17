@@ -89,8 +89,10 @@ describe("TabBarPlusMenuItems", () => {
         onActionComplete: vi.fn(),
       })
     );
+    const visibleText = markup.replace(/<[^>]*>/gu, "");
 
     expect(markup).toContain("ml-auto");
     expect(markup).not.toContain("font-mono");
+    expect(visibleText).not.toMatch(/[+-]\d/u);
   });
 });
