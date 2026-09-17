@@ -234,7 +234,9 @@ export default function TeamRuntimePanel({
           subtitle={t("signedOut.subtitle")}
           action={{
             label: t("signedOut.action"),
-            onClick: signIn,
+            onClick: () => {
+              void signIn();
+            },
             variant: "primary",
             dataTestId: "team-runtime-sign-in",
           }}

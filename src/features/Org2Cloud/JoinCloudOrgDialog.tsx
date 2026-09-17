@@ -159,7 +159,9 @@ const JoinCloudOrgDialog: React.FC = () => {
             <Button
               htmlType="button"
               variant="primary"
-              onClick={openCloudSignIn}
+              onClick={() => {
+                void openCloudSignIn();
+              }}
               data-testid="cloud-join-org-sign-in"
             >
               {t("cloud.signIn")}

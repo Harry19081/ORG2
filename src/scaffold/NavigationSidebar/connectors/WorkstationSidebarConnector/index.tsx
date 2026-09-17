@@ -542,7 +542,9 @@ export const WorkstationSidebarConnector: React.FC = () => {
     addOrgLabel,
     cloudSignedIn: cloudSignedInIdentity !== null,
     manageOrgLabel,
-    handleCloudSignIn,
+    handleCloudSignIn: () => {
+      void handleCloudSignIn();
+    },
     activeViewKey,
     handleMenuItemContextMenu,
     activateMyStationRouteForProjectTabContent,
