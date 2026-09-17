@@ -1,5 +1,4 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { getDefaultStore } from "jotai";
 import { z } from "zod/v4";
 
 import { defineProcedure, typedInvoke } from "@src/api/tauri/rpc/invoke";
@@ -8,6 +7,7 @@ import { decodeJwtSub } from "@src/features/Org2Cloud/authCallback";
 import { completeOrg2CloudSignIn } from "@src/features/Org2Cloud/completeSignIn";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import i18n from "@src/i18n";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import {
   MARKET_AUTHORIZATION_SAVED_EVENT,
@@ -33,7 +33,7 @@ const complete = defineProcedure("market_connection_complete")
       workspace_id: z.string().regex(/^ws_[A-Za-z0-9_-]{1,120}$/),
       target: z.enum(["claude-code", "claude-app", "codex", "org2"]),
       phase: z.literal("authorization_saved"),
-    }),
+    })
   )
   .build();
 const cancel = defineProcedure("market_connection_cancel").build();
@@ -107,13 +107,16 @@ export function handleMarketConnectionUrl(raw: string): boolean {
   (async () => {
     try {
       if (url.pathname === "/connect") {
-        if (url.searchParams.get("target") === "org2") {
+        if (
+          url.searchParams.get("target") === "org2" &&
+          getInstrumentedStore().get(org2CloudAuthAtom) !== null
+        ) {
           const workspace = url.searchParams.get("workspace_id");
           const status = await loadConnections();
           for (const existing of status.connections.filter(
             (connection) =>
               connection.target === "org2" &&
-              connection.phase === "authorization_saved",
+              connection.phase === "authorization_saved"
           )) {
             try {
               const entries = await loadEntries(existing);
@@ -123,7 +126,7 @@ export function handleMarketConnectionUrl(raw: string): boolean {
               ) {
                 dispatchMarketConnection(
                   MARKET_CONNECTION_OPEN_EVENT,
-                  existing,
+                  existing
                 );
                 return;
               }
@@ -148,7 +151,7 @@ export function handleMarketConnectionUrl(raw: string): boolean {
         url.hash = "";
         const result = await typedInvoke(complete, { raw: url.toString() });
         rememberCompletedAuthorization(callbackState);
-        const store = getDefaultStore();
+        const store = getInstrumentedStore();
         if (
           result.target === "org2" &&
           cloudSession &&
@@ -156,7 +159,7 @@ export function handleMarketConnectionUrl(raw: string): boolean {
           store.get(org2CloudAuthAtom) === null
         ) {
           completeOrg2CloudSignIn(cloudSession, (value) =>
-            store.set(org2CloudAuthAtom, value),
+            store.set(org2CloudAuthAtom, value)
           );
         }
         dispatchMarketConnection(MARKET_AUTHORIZATION_SAVED_EVENT, result);
@@ -164,7 +167,7 @@ export function handleMarketConnectionUrl(raw: string): boolean {
         // still need their existing configuration step in App connections.
         if (result.target !== "org2") {
           Message.success(
-            i18n.t("integrations:marketConnection.authorizationSaved"),
+            i18n.t("integrations:marketConnection.authorizationSaved")
           );
         }
       } else {
@@ -178,8 +181,8 @@ export function handleMarketConnectionUrl(raw: string): boolean {
         i18n.t(
           code === "secure-storage-unavailable"
             ? "integrations:marketConnection.platformUnavailable"
-            : "integrations:marketConnection.failed",
-        ),
+            : "integrations:marketConnection.failed"
+        )
       );
     } finally {
       busy = false;
