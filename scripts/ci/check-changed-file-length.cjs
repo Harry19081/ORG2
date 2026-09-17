@@ -9,10 +9,12 @@
 // request added, copied, modified, or renamed (git diff --diff-filter=ACMR), so
 // deleted files never reach this script.
 //
-// Only .ts and .tsx files under src/ are judged. Markdown, JSON, styles, Rust,
-// scripts, and the vendored JavaScript under src/ are out of scope. Test code is
-// exempt too: test files, the shared Vitest setup, and the E2E bootstrap helpers
-// grow with coverage, not with responsibilities.
+// Only .ts and .tsx files under src/ are judged. Docs, Markdown, JSON (locale
+// catalogs included), styles, Rust, scripts, and the vendored JavaScript under
+// src/ are out of scope. Test code is exempt too: test files, the shared Vitest
+// setup, and the E2E bootstrap helpers grow with coverage, not with
+// responsibilities. So is i18n code: the locale registry and loaders grow with
+// every supported language, not with responsibilities.
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -29,6 +31,9 @@ const EXEMPT_PATTERNS = Object.freeze([
   /^src\/test\//,
   // E2E bootstrap helpers, seeders, and fixtures.
   /^src\/app\/root\/e2e\//,
+  // i18n registry, loaders, and any locale data kept in TypeScript.
+  /^src\/i18n\//,
+  /(^|\/)locales\//,
 ]);
 
 function isCheckedSource(filePath) {

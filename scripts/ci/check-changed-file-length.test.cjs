@@ -96,6 +96,24 @@ test("test code is exempt", () => {
   );
 });
 
+test("i18n code is exempt", () => {
+  // The locale registry and loaders grow with each supported language.
+  for (const exempt of [
+    "src/i18n/index.ts",
+    "src/i18n/loaders/resources.ts",
+    "src/modules/MobileRemote/locales/en.ts",
+  ]) {
+    assert.equal(isCheckedSource(exempt), false, exempt);
+  }
+
+  // Only the i18n directories are exempt, not every file that mentions i18n.
+  assert.equal(isCheckedSource("src/hooks/i18n/useRouteLabel.ts"), true);
+  assert.equal(isCheckedSource("src/modules/MobileRemote/mobileI18n.ts"), true);
+
+  const root = makeTree({ "src/i18n/index.ts": lines(MAX_LINES + 50) });
+  assert.deepEqual(findOversizedFiles(["src/i18n/index.ts"], { root }), []);
+});
+
 test("only .ts and .tsx files under src/ are judged", () => {
   for (const ignored of [
     "scripts/ci/pr-policy.cjs",
