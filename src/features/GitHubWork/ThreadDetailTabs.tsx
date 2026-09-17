@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import DetailTabStrip from "@src/components/layout/blocks/DetailTabStrip";
+import { SideChatHeaderHost } from "@src/engines/ChatPanel/SideChat/SideChatHeaderHost";
 import { HugeiconsIcon, Link02Icon, MessageMultiple01Icon } from "@src/icons";
 
 export type ThreadDetailTab = "conversation" | "linked";
@@ -76,7 +77,12 @@ export default function ThreadDetailTabs({
         },
       ]}
       onChange={(tab) => onChange?.(tab)}
-      trailing={trailing}
+      trailing={
+        <>
+          <SideChatHeaderHost />
+          {trailing}
+        </>
+      }
       variant={variant}
       className={className}
     />

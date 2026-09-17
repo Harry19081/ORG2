@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import DetailTabStrip from "@src/components/layout/blocks/DetailTabStrip";
+import { SideChatHeaderHost } from "@src/engines/ChatPanel/SideChat/SideChatHeaderHost";
 import {
   FileDiffIcon,
   GitCommitHorizontalIcon,
@@ -75,7 +76,12 @@ export default function GitHubPrDetailTabs({
         disabled: !onChange,
       }))}
       onChange={(tab) => onChange?.(tab)}
-      trailing={trailing}
+      trailing={
+        <>
+          <SideChatHeaderHost />
+          {trailing}
+        </>
+      }
       variant={variant}
     />
   );

@@ -20,6 +20,7 @@ import InlineBanner, {
 } from "@src/components/InlineBanner";
 import GitHubDetailSkeleton from "@src/features/GitHubWork/GitHubDetailSkeleton";
 import GitHubPrDetailTabs from "@src/features/GitHubWork/GitHubPrDetailTabs";
+import { useDetailRailLayout } from "@src/hooks/ui/layout/useDetailRailLayout";
 import { ExternalBrowserButton } from "@src/modules/WorkStation/shared/ExternalBrowserButton";
 import {
   type PrIdentity,
@@ -165,7 +166,22 @@ export const PrDetailPanel: React.FC<PrDetailPanelProps> = ({
       />
     ) : null;
 
-  if (state.loading || (state.detail === null && state.error === null)) {
+  const loading =
+    state.loading || (state.detail === null && state.error === null);
+  const { paneRef, inlineRail } = useDetailRailLayout(!loading);
+  const sidebar = (
+    <PrDetailSidebarRail
+      currentIdentity={currentIdentity}
+      state={state}
+      controller={controller}
+      activeTab={activeTab}
+      trailScrollContainerRef={trailScrollContainerRef}
+      trailContentRef={trailContentRef}
+      inline={inlineRail}
+    />
+  );
+
+  if (loading) {
     return (
       <GitHubDetailSkeleton
         kind="pr"
@@ -192,34 +208,40 @@ export const PrDetailPanel: React.FC<PrDetailPanelProps> = ({
       ) : null}
 
       {/* Detail tabs mount lazily, then remain mounted to preserve view state. */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <PrDetailTabPanels
-          identity={identity}
-          currentIdentity={currentIdentity}
-          repoPath={repoPath}
-          repoId={repoId}
-          state={state}
-          detailViewState={detailViewState}
-          activeTab={activeTab}
-          baseBranch={baseBranch}
-          controller={controller}
-          setConversationDraft={setConversationDraft}
-          setSelectedCommitSha={setSelectedCommitSha}
-          setSelectedChangedFilePath={setSelectedChangedFilePath}
-          setTabContentNode={setTabContentNode}
-          setConversationScrollNode={setConversationScrollNode}
-          setConversationContentNode={setConversationContentNode}
-          onFileSelect={onFileSelect}
-        />
+      <div
+        ref={paneRef}
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
+      >
+        {inlineRail && activeTab !== "conversation" ? (
+          <div className="max-h-64 shrink-0 overflow-y-auto px-4 py-4">
+            {sidebar}
+          </div>
+        ) : null}
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <PrDetailTabPanels
+            identity={identity}
+            currentIdentity={currentIdentity}
+            repoPath={repoPath}
+            repoId={repoId}
+            state={state}
+            detailViewState={detailViewState}
+            activeTab={activeTab}
+            baseBranch={baseBranch}
+            controller={controller}
+            setConversationDraft={setConversationDraft}
+            setSelectedCommitSha={setSelectedCommitSha}
+            setSelectedChangedFilePath={setSelectedChangedFilePath}
+            setTabContentNode={setTabContentNode}
+            setConversationScrollNode={setConversationScrollNode}
+            setConversationContentNode={setConversationContentNode}
+            onFileSelect={onFileSelect}
+            inlineProperties={
+              inlineRail && activeTab === "conversation" ? sidebar : undefined
+            }
+          />
 
-        <PrDetailSidebarRail
-          currentIdentity={currentIdentity}
-          state={state}
-          controller={controller}
-          activeTab={activeTab}
-          trailScrollContainerRef={trailScrollContainerRef}
-          trailContentRef={trailContentRef}
-        />
+          {!inlineRail ? sidebar : null}
+        </div>
       </div>
     </div>
   );
