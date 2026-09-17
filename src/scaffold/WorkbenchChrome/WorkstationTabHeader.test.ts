@@ -160,7 +160,8 @@ describe("WorkstationTabHeader", () => {
     );
 
     expect(markup).toContain("My Station content");
-    expect(markup).toContain("pl-2");
+    expect(markup).toContain('items-center pl-1"');
+    expect(markup).not.toContain("pl-2");
     expect(markup).not.toContain("pl-[15px]");
   });
 

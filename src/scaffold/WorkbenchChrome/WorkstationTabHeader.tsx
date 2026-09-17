@@ -51,7 +51,7 @@ const WorkstationTabHeader: React.FC = memo(() => {
   // WebUrlBar), so it starts flush with the shell edge rather than behind a
   // redundant leading gutter.
   const joinsSidebarGroup = isSourceControlTab || isBrowserTab;
-  const publishedHeaderPaddingLeftClassName = joinsSidebarGroup ? "" : "pl-2";
+  const publishedHeaderPaddingLeftClassName = joinsSidebarGroup ? "" : "pl-1";
 
   if (headerSlots?.hidden) return null;
 
