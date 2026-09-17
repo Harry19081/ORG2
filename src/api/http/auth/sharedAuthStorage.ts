@@ -334,7 +334,8 @@ async function initializeOrSynchronize(): Promise<void> {
     // Market verification may be offline while ordinary Cloud auth hydration
     // is still valid. Native keeps Market gated and retries on the next sync;
     // existing auth consumers must still receive the canonical snapshot.
-    if (!cloudTransition) trackNativeOwnerReady(synchronizeNativeCloudOwner());
+    if (!cloudTransition)
+      void trackNativeOwnerReady(synchronizeNativeCloudOwner()).catch(() => {});
     notifySharedAuthSynchronized();
   });
 }

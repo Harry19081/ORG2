@@ -448,6 +448,27 @@ describe("shared service auth storage", () => {
     expect(packageReady).toBe(true);
   });
 
+  it("keeps Package readiness rejected when startup handles its background verification failure", async () => {
+    mocks.disk.set("__orgii_shared_auth_schema", 2);
+    mocks.disk.set(CLOUD_KEY, cloudAuth());
+    let rejectVerification!: (error: Error) => void;
+    mocks.synchronize.mockImplementationOnce(
+      () =>
+        new Promise((_, reject) => {
+          rejectVerification = reject;
+        })
+    );
+    const { initializeSharedServiceAuthStorage, awaitNativeCloudOwnerReady } =
+      await import("./sharedAuthStorage");
+    await initializeSharedServiceAuthStorage();
+    expect(localStorage.getItem(CLOUD_KEY)).toBe(cloudAuth());
+    const readinessRejected = expect(
+      awaitNativeCloudOwnerReady()
+    ).rejects.toThrow("market_cloud_verification_unavailable");
+    rejectVerification(new Error("market_cloud_verification_unavailable"));
+    await readinessRejected;
+  });
+
   it("persists logout without waiting for an older native verification and follows newest readiness", async () => {
     mocks.disk.set("__orgii_shared_auth_schema", 2);
     let rejectOld!: (error: Error) => void;
