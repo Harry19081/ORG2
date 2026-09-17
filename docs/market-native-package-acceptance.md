@@ -89,15 +89,15 @@ Review also found that this artifact does not bind every saved Market source to
 the current Cloud identity. Its successful calls are historical evidence only,
 not acceptance of the pending identity-isolation fix. Do not ship this gap.
 
-| Scenario                                                 | Required result                                                                                                                                          | Evidence status                                            |
-| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Normal Cloud logout with an old Package selected         | Package inventory disappears; old SDE/CC sessions and external proxy calls fail before Market dispatch; ordinary Account Keys keep their normal behavior | Pending fixed artifact                                     |
-| Sign into another Cloud account or change Cloud endpoint | No previous owner's Package, cached credential or delayed selection is usable                                                                            | Pending fixed artifact and account-switch coverage         |
-| Same account token refresh                               | Existing valid Package selections remain usable without a second browser consent or background polling                                                   | Pending fixed artifact                                     |
-| Same account logout then web open                        | Normal Cloud identity recovery restores that account's permitted purchases; any saved grant reuse is explicitly identified                               | Cloud UI recovery observed on 8e86; fixed artifact pending |
-| Web open without a saved Market grant                    | One normal Cloud login flow followed by actual native issue/exchange and matching purchase discovery, without another Market authorization page          | Pending                                                    |
-| Logout while enrollment or selection is in flight        | Late authorization, consent, prepare and credential results cannot recreate or use the old identity's state                                              | Pending source tests and applicable real UI coverage       |
-| Restart while signed out                                 | Saved Package grants remain unusable until the matching Cloud identity is authenticated                                                                  | Pending fixed artifact                                     |
+| Scenario                                                 | Required result                                                                                                                                          | Evidence status                                                                                       |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Normal Cloud logout with an old Package selected         | Package inventory disappears; old SDE/CC sessions and external proxy calls fail before Market dispatch; ordinary Account Keys keep their normal behavior | cd93: normal Logout shows Login; old CC denied before dispatch and debit                              |
+| Sign into another Cloud account or change Cloud endpoint | No previous owner's Package, cached credential or delayed selection is usable                                                                            | Pending fixed artifact and account-switch coverage                                                    |
+| Same account token refresh                               | Existing valid Package selections remain usable without a second browser consent or background polling                                                   | Pending fixed artifact                                                                                |
+| Same account logout then web open                        | Normal Cloud identity recovery restores that account's permitted purchases; any saved grant reuse is explicitly identified                               | Cloud UI recovery observed on 8e86; fixed artifact pending                                            |
+| Web open without a saved Market grant                    | One normal Cloud login flow followed by actual native issue/exchange and matching purchase discovery, without another Market authorization page          | Pending                                                                                               |
+| Logout while enrollment or selection is in flight        | Late authorization, consent, prepare and credential results cannot recreate or use the old identity's state                                              | Source tests pass; logout during blocked Keychain work persisted; late-enrollment UI coverage pending |
+| Restart while signed out                                 | Saved Package grants remain unusable until the matching Cloud identity is authenticated                                                                  | cd93: signed-out restart retains Login and old CC denial; zero dispatch/debit                         |
 
 For the fixed artifact, record its source commit and binary hash separately.
 Do not use a UI-only filter or a manually invoked helper as proof that native
@@ -109,3 +109,39 @@ The first 8e86 restart attempt failed before dispatch with
 authorization of the new private build. It made no Market request and incurred
 no debit. After authorization, the same build completed both SDE restart calls;
 no timeout, credential-store bypass or fabricated session was used.
+
+## Rebuilt owner-isolation acceptance, 2026-09-17
+
+The private artifact source is `cd93acee997613b82e33d760fd3224e69c9db818`;
+its binary SHA-256 is
+`37b56bc5b9209d167f1cc46c0b90cd99ca8003711385f57ad1b8203c72b73fca`.
+The later `670e9edcc` commit moves a test only. The subsequent bootstrap
+rejection-handler change adds a `.catch` reaction and has separate unit/CI
+coverage; this artifact was not built from that later source.
+
+With Cloud auth present and matching saved Market metadata, the Package
+inventory status call waited in `Grant::load` through the macOS Keychain
+security service. The attempted old Claude Code continuation returned
+`412 credential_operation_busy`. There were no new Package requests or ledger
+postings. This is blocked positive acceptance, not a successful model call;
+matching local identity metadata alone does not prove server verification.
+
+Normal Cloud Logout immediately showed Login and persisted null canonical
+Cloud auth while the old Keychain work was still waiting. Retrying the saved
+Claude Code session returned `412 market_cloud_sign_in_required`. After normal
+quit and restart of the same artifact, Login and that denial persisted. The
+final PostgreSQL observation at 09:42:29.645 UTC showed zero new requests and
+postings; the one pre-existing unresolved request and its financial state
+were unchanged. Saved grant metadata remained stored but had no current owner.
+
+A 55.37-second visible, signed-out idle observation after restart contained 12
+rooted process samples: CPU 0.6–2.3%, RSS 91.9–96.6 MiB. Launchd-owned WebKit or
+separately launched Apps may be outside this process set. There is no
+comparative baseline, signed-in or hidden idle measurement, so this does not
+establish a performance improvement or complete lifecycle acceptance.
+
+The fixed source still needs positive calls after normal OS credential
+access, same-owner relogin, fresh web enrollment, account/endpoint switching,
+and the external native-App flows in the matrix. Earlier artifacts' calls and
+settlement evidence remain historical. No Package merge or installer release
+is justified by the negative checks above.
