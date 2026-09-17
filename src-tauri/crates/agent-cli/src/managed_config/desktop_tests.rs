@@ -210,11 +210,10 @@ fn proxy_backed_desktop_profile_uses_helper_and_restores_it_atomically() {
     assert_eq!(profile["inferenceCredentialKind"], "helper-script");
     assert_eq!(profile["inferenceGatewayAuthScheme"], "bearer");
     assert!(profile.get("inferenceGatewayApiKey").is_none());
-    assert_eq!(
+    assert!(
         std::fs::read_to_string(&helper_path)
             .unwrap()
-            .contains(&token),
-        true
+            .contains(&token)
     );
 
     operations::restore_agent_default_unlocked(desktop::TARGET, false).unwrap();

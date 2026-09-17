@@ -183,7 +183,6 @@ export function handleMarketConnectionUrl(raw: string): boolean {
           identity_user_id: result.identity_user_id,
           workspace_id: result.workspace_id,
           target: result.target,
-          phase: result.phase,
         });
         // ORG2-native services become profiles immediately. External clients
         // still need their existing configuration step in App connections.
