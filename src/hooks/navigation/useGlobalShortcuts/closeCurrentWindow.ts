@@ -8,11 +8,10 @@ const logger = createLogger("WindowShortcuts");
  * app keeps running and the dock or tray brings it back; detached session and
  * station windows close for real.
  */
-export async function closeCurrentWindow(): Promise<void> {
-  try {
-    const { getCurrentWindow } = await import("@tauri-apps/api/window");
-    await getCurrentWindow().close();
-  } catch (error) {
-    logger.error("failed to close window", error);
-  }
+export function closeCurrentWindow(): void {
+  import("@tauri-apps/api/window")
+    .then(({ getCurrentWindow }) => getCurrentWindow().close())
+    .catch((error: unknown) => {
+      logger.error("failed to close window", error);
+    });
 }

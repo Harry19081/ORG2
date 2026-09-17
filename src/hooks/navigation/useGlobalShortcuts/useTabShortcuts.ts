@@ -264,7 +264,7 @@ export function useTabShortcuts() {
       store.get(closeTabChordFallbackAtom) ===
       CLOSE_TAB_CHORD_FALLBACK.CLOSE_WINDOW
     ) {
-      void closeCurrentWindow();
+      closeCurrentWindow();
       return true;
     }
 

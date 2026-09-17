@@ -258,7 +258,7 @@ export function useGlobalKeydownShortcuts(
           spotlightOpenRef.current || !editable,
         ],
         ["search_files", handleOpenCodeEditorSearchSidebar],
-        ["window_close", () => void closeCurrentWindow()],
+        ["window_close", closeCurrentWindow],
         [
           "window_open_folder",
           () => {

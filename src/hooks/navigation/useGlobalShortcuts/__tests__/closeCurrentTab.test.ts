@@ -24,7 +24,7 @@ import { closeCurrentWindow } from "../closeCurrentWindow";
 import { useTabShortcuts } from "../useTabShortcuts";
 
 vi.mock("../closeCurrentWindow", () => ({
-  closeCurrentWindow: vi.fn(async () => {}),
+  closeCurrentWindow: vi.fn(),
 }));
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
