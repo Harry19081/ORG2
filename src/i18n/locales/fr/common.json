@@ -18,6 +18,12 @@
     "file": "Rechercher dans le fichier",
     "named": "Rechercher dans {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Barre latérale",
+    "showSidebar": "Afficher la barre latérale",
+    "location": "Position",
+    "showIndentLines": "Afficher les lignes d’indentation"
+  },
   "teamInbox": {
     "title": "Boîte de réception d’équipe",
     "listLabel": "Liste de la boîte de réception d’équipe",
@@ -940,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Le fichier a peut-être été supprimé ou déplacé.",
     "editorCouldNotOpenFileMissing": "L'éditeur n'a pas pu être ouvert car le fichier est introuvable ou a été supprimé",
     "enterSearchQueryToBegin": "Saisissez une requête de recherche pour commencer",
+    "pressEnterToSearch": "Appuyez sur Entrée pour rechercher",
     "unknownTabType": "Type d'onglet inconnu",
     "noWorkspaceFolders": "Aucun dossier de workspace",
     "noRepoSelected": "No repository selected",
@@ -1127,7 +1134,12 @@
       "returnFromMiniTerminal": "Afficher ici",
       "resizeTerminal": "Redimensionner le terminal",
       "terminalProcessCount_one": "{{count}} processus",
-      "terminalProcessCount_other": "{{count}} processus"
+      "terminalProcessCount_other": "{{count}} processus",
+      "sources": "Sources",
+      "sourcesCount_one": "{{count}} source",
+      "sourcesCount_other": "{{count}} sources",
+      "loadMoreSources": "Charger plus (+{{count}})",
+      "sourceImage": "Image"
     },
     "pr": {
       "title": "Pull request",
@@ -1513,7 +1525,6 @@
       "conflictsTitle": "Des modifications nécessitent votre attention",
       "blockedTitle": "Le changement de branche nécessite votre attention",
       "working": "Enregistrement et changement…",
-      "viewSaved": "Voir les modifications enregistrées",
       "current": "Branche actuelle : {{branch}}",
       "changedFiles": "{{count}} fichiers modifiés",
       "question": "Que souhaitez-vous faire de vos modifications ?",
@@ -1521,12 +1532,6 @@
       "leaveDescription": "Enregistrez votre travail pour plus tard et changez de branche avec un répertoire de travail propre",
       "bring": "Emporter les modifications vers {{branch}}",
       "bringDescription": "Emportez vos modifications non commitées vers la branche de destination",
-      "savedTitle": "Modifications enregistrées",
-      "nextPage": "Page suivante",
-      "noSaved": "Aucune modification de branche enregistrée",
-      "applied": "Déjà appliquées · copie de récupération",
-      "restore": "Restaurer",
-      "savedAvailable": "Des modifications enregistrées sont disponibles pour cette branche",
       "worktreeTitle": "La branche est ouverte dans un autre arbre de travail",
       "openWorktree": "Ouvrir l’arbre de travail",
       "activeTask": "Une tâche utilise cet arbre de travail",

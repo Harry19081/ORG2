@@ -44,7 +44,6 @@ const VALID_WORKSTATION_TAB_TYPES = new Set<WorkStationTabType>([
   "search-sessions",
   "url-preview",
   "browser-session",
-  "devtools",
   "project-dashboard",
   "project-work-items",
   "project-linear-projects",

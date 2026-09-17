@@ -26,7 +26,6 @@ import type {
   StickyScrollNode,
 } from "@src/components/VirtualizedStickyTree";
 import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
-import { SavedChangesBanner } from "@src/features/GitDialogs/SavedChangesDialog/SavedChangesBanner";
 import { HugeiconsIcon, Search01Icon } from "@src/icons";
 import { usePrimarySidebarSurface } from "@src/modules/WorkStation/shared/hooks/usePrimarySidebarSurface";
 
@@ -405,9 +404,10 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
           stickyNode={stickyNode}
           onClick={onClick}
           stickyBgClass={resolvedStickyBgClass}
+          repoPath={repoPath}
         />
       ),
-      [resolvedStickyBgClass]
+      [resolvedStickyBgClass, repoPath]
     );
 
     // Handle sticky header click — VS Code pattern: scroll-to-reveal only,
@@ -457,11 +457,6 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
     return (
       <div className={rootClassName}>
         {/* Commit Section */}
-        <SavedChangesBanner
-          repoPath={repoPath}
-          branch={branchName}
-          onRefresh={onRefresh}
-        />
         <CommitSection
           commitMessage={commitMessage}
           onCommitMessageChange={onCommitMessageChange}

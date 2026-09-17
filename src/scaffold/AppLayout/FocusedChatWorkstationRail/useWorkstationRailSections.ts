@@ -21,6 +21,8 @@ export function useWorkstationRailSections({
   primaryWorkspaceTitle,
   sessionContext,
   sessionItems,
+  sourceCount,
+  sourceItems,
   subagentCount,
   subagentItems,
   t,
@@ -31,6 +33,8 @@ export function useWorkstationRailSections({
   primaryWorkspaceTitle: string;
   sessionContext: FocusedChatSessionContext | undefined;
   sessionItems: FocusedChatRailItem[];
+  sourceCount: number;
+  sourceItems: FocusedChatRailItem[];
   subagentCount: number;
   subagentItems: FocusedChatRailItem[];
   t: TFunction;
@@ -49,7 +53,8 @@ export function useWorkstationRailSections({
       openTabItems.length > 0,
       hasSessionEnvironment,
       subagentItems.length > 0,
-      sessionContext?.environmentKind
+      sessionContext?.environmentKind,
+      sourceItems.length > 0
     ).flatMap((sectionKey): FocusedChatRailSection[] => {
       if (sectionKey === "workspace") return workspaceSections;
       return [
@@ -62,13 +67,17 @@ export function useWorkstationRailSections({
                 ? t("common:git.rail.subagentsCount", {
                     count: subagentCount,
                   })
-                : t("common:git.rail.openTabs"),
+                : sectionKey === "sources"
+                  ? t("common:git.rail.sourcesCount", { count: sourceCount })
+                  : t("common:git.rail.openTabs"),
           items:
             sectionKey === "tabs"
               ? openTabItems
               : sectionKey === "subagents"
                 ? subagentItems
-                : sessionItems,
+                : sectionKey === "sources"
+                  ? sourceItems
+                  : sessionItems,
           environment: sectionKey === "session" ? sessionContext : undefined,
         },
       ];
@@ -78,6 +87,8 @@ export function useWorkstationRailSections({
     openTabItems,
     sessionContext,
     sessionItems,
+    sourceCount,
+    sourceItems,
     subagentItems,
     subagentCount,
     t,

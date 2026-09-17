@@ -14,11 +14,13 @@ import {
   mobileComposerDesktopScope,
 } from "../components/composer/mobileComposerDraftStore";
 import { type MobileRpcClient } from "../connection/mobileRpcClient";
+import { prefetchMobileSessionIdentities } from "../connection/mobileSessionIdentityCache";
 import { createRemoteReconnectController } from "../connection/remoteReconnectController";
 import type {
   MobileConnectionConfig,
   MobileConnectionState,
   MobilePairedDesktopSummary,
+  MobileSessionRow,
 } from "../connection/types";
 import { DEMO_PERMISSION_REQUEST } from "../demo/demoFixtures";
 import { useMobileRemotePlatform } from "../platform";
@@ -125,8 +127,37 @@ export function useMobileRemoteState({
       mobileComposerDesktopScope(connectionConfig, connection),
     ])
   );
+  const prepareLegacySessionIdentities = useCallback(
+    (
+      client: MobileRpcClient,
+      sessions: readonly MobileSessionRow[],
+      isCurrent: () => boolean
+    ) => {
+      const capabilities = connectionRef.current.capabilities;
+      if (
+        capabilities?.sessionIdentity !== true ||
+        capabilities.sessionOpen === true
+      ) {
+        return;
+      }
+      // The authenticated client owns this bounded background batch. Route
+      // opening shares its single-flight entries; disconnect/hidden state
+      // prevents workers from taking more items, and misses retry on demand.
+      return prefetchMobileSessionIdentities(client, sessions, () => {
+        const current = connectionRef.current;
+        return (
+          isCurrent() &&
+          clientRef.current === client &&
+          current.status === "connected" &&
+          current.presence === "online" &&
+          !platform.runtime.isHidden()
+        );
+      });
+    },
+    [platform.runtime]
+  );
   const { sessions, sessionsHasMore, requestSessionList, resetSessions } =
-    useMobileSessionList(clientRef);
+    useMobileSessionList(clientRef, prepareLegacySessionIdentities);
   const {
     openingClient,
     openedSession,

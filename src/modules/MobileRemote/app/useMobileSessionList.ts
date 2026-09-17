@@ -12,7 +12,12 @@ import type { MobileSessionRow } from "../connection/types";
 
 /** Owns roster pagination and invalidation, not the transport lifetime. */
 export function useMobileSessionList(
-  clientRef: RefObject<MobileRpcClient | null>
+  clientRef: RefObject<MobileRpcClient | null>,
+  prepareSessions?: (
+    client: MobileRpcClient,
+    sessions: readonly MobileSessionRow[],
+    isCurrent: () => boolean
+  ) => void | Promise<void>
 ) {
   const [sessions, setSessions] = useState<MobileSessionRow[]>([]);
   const [sessionsHasMore, setSessionsHasMore] = useState(false);
@@ -33,6 +38,10 @@ export function useMobileSessionList(
       requestGeneration: number
     ) => {
       const snapshotRevision = snapshotRevisionRef.current;
+      const isCurrent = () =>
+        requestGeneration === sessionListGenerationRef.current &&
+        snapshotRevision === snapshotRevisionRef.current &&
+        clientRef.current === client;
       const targetOffset = append
         ? sessionNextOffsetRef.current + 50
         : Math.max(50, sessionNextOffsetRef.current);
@@ -48,12 +57,7 @@ export function useMobileSessionList(
           offset,
           limit: 200,
         });
-        if (
-          requestGeneration !== sessionListGenerationRef.current ||
-          snapshotRevision !== snapshotRevisionRef.current ||
-          clientRef.current !== client
-        )
-          return;
+        if (!isCurrent()) return;
         if (
           list.sessions &&
           (!Array.isArray(list.sessions) ||
@@ -69,12 +73,15 @@ export function useMobileSessionList(
         }
         offset = next!;
       } while (list.hasMore && offset < targetOffset);
-      if (
-        requestGeneration !== sessionListGenerationRef.current ||
-        snapshotRevision !== snapshotRevisionRef.current ||
-        clientRef.current !== client
-      ) {
-        return;
+      if (!isCurrent()) return;
+      // Preparation may start connection-owned background work, but roster
+      // publication stays on the successful session/list critical path.
+      try {
+        void Promise.resolve(prepareSessions?.(client, rows, isCurrent)).catch(
+          () => undefined
+        );
+      } catch {
+        // Best-effort preparation never changes a valid roster response.
       }
       sessionNextOffsetRef.current = offset;
       setSessionsHasMore(
@@ -92,21 +99,21 @@ export function useMobileSessionList(
           : rows
       );
     },
-    [clientRef]
+    [clientRef, prepareSessions]
   );
 
   const requestSessionList = useCallback(
     (client: MobileRpcClient, append = false): Promise<void> => {
+      // Every full refresh supersedes roster preparation started by the
+      // preceding snapshot, including work whose list flight already ended.
+      if (!append) snapshotRevisionRef.current += 1;
       const current = flightRef.current;
       if (
         current?.client === client &&
         current.generation === sessionListGenerationRef.current
       ) {
         if (append) current.append = true;
-        else {
-          current.refresh = true;
-          snapshotRevisionRef.current += 1;
-        }
+        else current.refresh = true;
         return current.promise;
       }
       const flight = {

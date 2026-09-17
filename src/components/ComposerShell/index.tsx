@@ -129,6 +129,7 @@ const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
     return (
       <div
         ref={ref}
+        data-composer-focus-scope
         className={`relative flex w-full ${variant === "comment" ? "flex-row items-end" : "flex-col"} ${SHELL_TRANSITION_CLASSES} ${VARIANT_INTERACTION_CLASSES[variant]} ${VARIANT_CLASSES[variant]} ${VARIANT_BG_CLASS[variant]} ${className}`}
         style={style}
         onClick={focusComposerFromBackground}

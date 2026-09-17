@@ -278,7 +278,9 @@ const MobileRemoteSettingsSection: React.FC = () => {
               ) : (
                 <Button
                   size="default"
-                  onClick={handleCloudSignIn}
+                  onClick={() => {
+                    void handleCloudSignIn().catch(() => undefined);
+                  }}
                   data-testid="mobile-remote-cloud-sign-in"
                 >
                   {t("navigation:cloud.signIn")}

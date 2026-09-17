@@ -18,6 +18,12 @@
     "file": "在文件中搜索",
     "named": "在 {{name}} 中搜索"
   },
+  "sidebarSettings": {
+    "title": "侧边栏设置",
+    "showSidebar": "显示侧边栏",
+    "location": "位置",
+    "showIndentLines": "显示缩进线"
+  },
   "windowChrome": {
     "menus": {
       "file": "文件",
@@ -772,6 +778,7 @@
     "fileMayHaveBeenDeletedOrMoved": "文件可能已被删除或移动。",
     "editorCouldNotOpenFileMissing": "无法打开编辑器，因为文件未找到或已被删除",
     "enterSearchQueryToBegin": "输入搜索查询以开始",
+    "pressEnterToSearch": "按 Enter 键搜索",
     "unknownTabType": "未知标签页类型",
     "noWorkspaceFolders": "没有工作区文件夹",
     "noRepoSelected": "No repository selected",
@@ -958,7 +965,12 @@
       "subagentRunning": "运行中",
       "subagentPending": "等待中",
       "subagentCompleted": "已完成",
-      "subagentFailed": "失败"
+      "subagentFailed": "失败",
+      "sources": "来源",
+      "sourcesCount_one": "{{count}} 个来源",
+      "sourcesCount_other": "{{count}} 个来源",
+      "loadMoreSources": "加载更多（+{{count}}）",
+      "sourceImage": "图片"
     },
     "pr": {
       "title": "Pull request",
@@ -1344,7 +1356,6 @@
       "conflictsTitle": "更改需要处理",
       "blockedTitle": "切换分支需要处理",
       "working": "正在保存并切换…",
-      "viewSaved": "查看已保存的更改",
       "current": "当前分支：{{branch}}",
       "changedFiles": "{{count}} 个已更改文件",
       "question": "你想如何处理这些更改？",
@@ -1352,12 +1363,6 @@
       "leaveDescription": "保存当前工作以便稍后继续，并切换到干净的工作区",
       "bring": "将更改带到 {{branch}}",
       "bringDescription": "将未提交的更改带到目标分支",
-      "savedTitle": "已保存的更改",
-      "nextPage": "下一页",
-      "noSaved": "没有已保存的分支更改",
-      "applied": "已应用 · 恢复副本",
-      "restore": "恢复",
-      "savedAvailable": "此分支有可恢复的已保存更改",
       "worktreeTitle": "此分支已在另一个工作树中打开",
       "openWorktree": "打开工作树",
       "activeTask": "有任务正在使用此工作树",

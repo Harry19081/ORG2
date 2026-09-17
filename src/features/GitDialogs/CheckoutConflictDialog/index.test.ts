@@ -20,7 +20,6 @@ vi.mock("react-i18next", () => ({
     },
   }),
 }));
-vi.mock("../SavedChangesDialog", () => ({ openSavedChanges: vi.fn() }));
 let container: HTMLDivElement;
 let root: Root;
 const scope = { repoId: "repo", repoPath: "/repo" };
@@ -130,7 +129,7 @@ it("reports the actual branch and conflict paths", async () => {
   });
   expect(document.body.textContent).toContain("Current branch: develop");
   expect(document.body.textContent).toContain("conflict.txt");
-  expect(button("View saved changes")).toBeTruthy();
+  expect(button("Close")).toBeTruthy();
 });
 it("cancel disposes the operation root and resolves once without a write", async () => {
   const controller = createBranchSwitchDialog(scope);

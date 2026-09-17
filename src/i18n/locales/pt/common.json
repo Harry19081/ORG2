@@ -18,6 +18,12 @@
     "file": "Pesquisar no arquivo",
     "named": "Pesquisar em {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Barra lateral",
+    "showSidebar": "Mostrar barra lateral",
+    "location": "Posição",
+    "showIndentLines": "Mostrar linhas de recuo"
+  },
   "teamInbox": {
     "title": "Caixa de entrada da equipe",
     "listLabel": "Lista da caixa de entrada da equipe",
@@ -940,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "O arquivo pode ter sido excluído ou movido.",
     "editorCouldNotOpenFileMissing": "O editor não pôde ser aberto porque o arquivo não foi encontrado ou foi removido",
     "enterSearchQueryToBegin": "Insira uma consulta de pesquisa para começar",
+    "pressEnterToSearch": "Pressione Enter para pesquisar",
     "unknownTabType": "Tipo de aba desconhecido",
     "noWorkspaceFolders": "Sem pastas de Workspace",
     "noRepoSelected": "Nenhum Repo selecionado",
@@ -1127,7 +1134,12 @@
       "returnFromMiniTerminal": "Mostrar aqui",
       "resizeTerminal": "Redimensionar terminal",
       "terminalProcessCount_one": "{{count}} processo",
-      "terminalProcessCount_other": "{{count}} processos"
+      "terminalProcessCount_other": "{{count}} processos",
+      "sources": "Fontes",
+      "sourcesCount_one": "{{count}} fonte",
+      "sourcesCount_other": "{{count}} fontes",
+      "loadMoreSources": "Carregar mais (+{{count}})",
+      "sourceImage": "Imagem"
     },
     "pr": {
       "title": "Pull request",
@@ -1513,7 +1525,6 @@
       "conflictsTitle": "As alterações precisam de atenção",
       "blockedTitle": "A troca de branch precisa de atenção",
       "working": "Salvando e trocando…",
-      "viewSaved": "Ver alterações salvas",
       "current": "Branch atual: {{branch}}",
       "changedFiles": "{{count}} arquivos alterados",
       "question": "O que você deseja fazer com suas alterações?",
@@ -1521,12 +1532,6 @@
       "leaveDescription": "Salve seu trabalho para continuar depois e troque com uma árvore de trabalho limpa",
       "bring": "Levar alterações para {{branch}}",
       "bringDescription": "Leve suas alterações não commitadas para a branch de destino",
-      "savedTitle": "Alterações salvas",
-      "nextPage": "Próxima página",
-      "noSaved": "Nenhuma alteração de branch salva",
-      "applied": "Já aplicadas · cópia de recuperação",
-      "restore": "Restaurar",
-      "savedAvailable": "Há alterações salvas disponíveis para esta branch",
       "worktreeTitle": "A branch está aberta em outra árvore de trabalho",
       "openWorktree": "Abrir árvore de trabalho",
       "activeTask": "Uma tarefa está usando esta árvore de trabalho",

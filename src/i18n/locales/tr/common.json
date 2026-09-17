@@ -18,6 +18,12 @@
     "file": "Dosyada ara",
     "named": "{{name}} içinde ara"
   },
+  "sidebarSettings": {
+    "title": "Kenar çubuğu ayarları",
+    "showSidebar": "Kenar çubuğunu göster",
+    "location": "Konum",
+    "showIndentLines": "Girinti çizgilerini göster"
+  },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
     "listLabel": "Ekip Gelen Kutusu listesi",
@@ -940,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Dosya silinmiş veya taşınmış olabilir.",
     "editorCouldNotOpenFileMissing": "Dosya bulunamadığı veya kaldırıldığı için editör açılamadı",
     "enterSearchQueryToBegin": "Başlamak için bir arama sorgusu girin",
+    "pressEnterToSearch": "Aramak için Enter tuşuna basın",
     "unknownTabType": "Bilinmeyen sekme türü",
     "noWorkspaceFolders": "Workspace klasörü yok",
     "noRepoSelected": "No repository selected",
@@ -1127,7 +1134,12 @@
       "returnFromMiniTerminal": "Burada göster",
       "resizeTerminal": "Terminali yeniden boyutlandır",
       "terminalProcessCount_one": "{{count}} işlem",
-      "terminalProcessCount_other": "{{count}} işlem"
+      "terminalProcessCount_other": "{{count}} işlem",
+      "sources": "Kaynaklar",
+      "sourcesCount_one": "{{count}} kaynak",
+      "sourcesCount_other": "{{count}} kaynak",
+      "loadMoreSources": "Daha fazla yükle (+{{count}})",
+      "sourceImage": "Görsel"
     },
     "pr": {
       "title": "Pull request",
@@ -1513,7 +1525,6 @@
       "conflictsTitle": "Değişikliklerle ilgilenilmesi gerekiyor",
       "blockedTitle": "Dal değiştirme işlemiyle ilgilenilmesi gerekiyor",
       "working": "Kaydediliyor ve değiştiriliyor…",
-      "viewSaved": "Kaydedilen değişiklikleri görüntüle",
       "current": "Geçerli dal: {{branch}}",
       "changedFiles": "{{count}} dosya değiştirildi",
       "question": "Değişikliklerinizle ne yapmak istersiniz?",
@@ -1521,12 +1532,6 @@
       "leaveDescription": "Daha sonra devam etmek üzere çalışmanızı kaydedin ve temiz bir çalışma ağacıyla dal değiştirin",
       "bring": "Değişiklikleri {{branch}} dalına taşı",
       "bringDescription": "Commit edilmemiş değişikliklerinizi hedef dala taşıyın",
-      "savedTitle": "Kaydedilen değişiklikler",
-      "nextPage": "Sonraki sayfa",
-      "noSaved": "Kaydedilmiş dal değişikliği yok",
-      "applied": "Zaten uygulandı · kurtarma kopyası",
-      "restore": "Geri yükle",
-      "savedAvailable": "Bu dal için kaydedilmiş değişiklikler var",
       "worktreeTitle": "Dal başka bir çalışma ağacında açık",
       "openWorktree": "Çalışma ağacını aç",
       "activeTask": "Bir görev bu çalışma ağacını kullanıyor",

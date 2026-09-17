@@ -34,7 +34,11 @@ import { getImageMimeType } from "@src/util/file/previewTypes";
 
 const log = createLogger("ChatImageThumbnail");
 
-async function resolveImageSrc(ref: string): Promise<string> {
+/**
+ * Displayable URL for an image reference. A `blob:` result belongs to the
+ * caller, which releases it with `releaseImageUrl`.
+ */
+export async function resolveImageSrc(ref: string): Promise<string> {
   if (isDirectImageUrl(ref)) return ref;
 
   const transcript = parseTranscriptImageRef(ref);
@@ -47,6 +51,49 @@ async function resolveImageSrc(ref: string): Promise<string> {
   const mimeType = getImageMimeType(filePath) ?? "image/png";
   const data = await readFile(filePath);
   return uint8ArrayToImageUrl(data, mimeType);
+}
+
+/**
+ * Load an image reference for display while the caller is mounted. Browser
+ * URLs pass straight through; asset/path/transcript refs are read into a URL
+ * this hook owns and releases on unmount or ref change. Callers key the
+ * component by ref so a new ref never shows the previous image.
+ */
+export function useResolvedImageSrc(imageRef: string): {
+  src: string | null;
+  failed: boolean;
+} {
+  const isDirectUrl = isDirectImageUrl(imageRef);
+  const [asyncSrc, setAsyncSrc] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    if (isDirectUrl) return;
+    let cancelled = false;
+    // Object URL owned by this effect run; released on teardown.
+    let objectUrl: string | null = null;
+    resolveImageSrc(imageRef)
+      .then((src) => {
+        if (cancelled) {
+          releaseImageUrl(src);
+          return;
+        }
+        objectUrl = src;
+        setAsyncSrc(src);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          log.warn("Attachment image could not be read", { imageRef, error });
+          setFailed(true);
+        }
+      });
+    return () => {
+      cancelled = true;
+      releaseImageUrl(objectUrl);
+    };
+  }, [imageRef, isDirectUrl]);
+
+  return { src: isDirectUrl ? imageRef : asyncSrc, failed };
 }
 
 interface ChatImageThumbnailProps {
@@ -64,39 +111,10 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
   ({ imageRef, alt, sizeClassName = "h-10 w-10", gallery, galleryIndex }) => {
     const [showOverlay, setShowOverlay] = useState(false);
     // Browser URLs are loaded lazily by the image element, without JS byte copies.
-    // For asset/path refs we load the bytes asynchronously into `asyncSrc`.
     // The parent keys items by ref so a ref change remounts this component,
-    // which guarantees `asyncSrc` always starts fresh (no stale thumbnail).
-    const isDirectUrl = isDirectImageUrl(imageRef);
-    const [asyncSrc, setAsyncSrc] = useState<string | null>(null);
-    const [loadFailed, setLoadFailed] = useState(false);
-    const resolvedSrc = isDirectUrl ? imageRef : asyncSrc;
-
-    useEffect(() => {
-      if (isDirectUrl) return;
-      let cancelled = false;
-      // Object URL owned by this effect run; released on teardown.
-      let objectUrl: string | null = null;
-      resolveImageSrc(imageRef)
-        .then((src) => {
-          if (cancelled) {
-            releaseImageUrl(src);
-            return;
-          }
-          objectUrl = src;
-          setAsyncSrc(src);
-        })
-        .catch((error: unknown) => {
-          if (!cancelled) {
-            log.warn("Attachment image could not be read", { imageRef, error });
-            setLoadFailed(true);
-          }
-        });
-      return () => {
-        cancelled = true;
-        releaseImageUrl(objectUrl);
-      };
-    }, [imageRef, isDirectUrl]);
+    // which guarantees the resolved source always starts fresh.
+    const { src: resolvedSrc, failed: loadFailed } =
+      useResolvedImageSrc(imageRef);
 
     // Stop propagation so the parent chat row (which may own a click
     // handler for edit-mode in the main chat panel or jump-to-message in

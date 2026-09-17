@@ -148,6 +148,7 @@ export const ContentView: React.FC<ContentViewProps> = ({
         gitBlameEnabled={showBlame}
         onGitBlameChange={setShowBlame}
         onMoreSettings={onOpenSettings}
+        showSidebarSettings
         loading={false}
         hasUnsavedChanges={hasUnsavedChanges}
         isMarkdownFile={isPreviewable}

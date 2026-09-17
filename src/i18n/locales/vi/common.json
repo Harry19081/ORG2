@@ -18,6 +18,12 @@
     "file": "Tìm trong tệp",
     "named": "Tìm trong {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Cài đặt thanh bên",
+    "showSidebar": "Hiện thanh bên",
+    "location": "Vị trí",
+    "showIndentLines": "Hiện đường thụt lề"
+  },
   "teamInbox": {
     "title": "Hộp thư nhóm",
     "listLabel": "Danh sách hộp thư nhóm",
@@ -940,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Tệp có thể đã bị xóa hoặc di chuyển.",
     "editorCouldNotOpenFileMissing": "Không thể mở trình chỉnh sửa vì tệp không tồn tại hoặc đã bị xóa",
     "enterSearchQueryToBegin": "Nhập truy vấn tìm kiếm để bắt đầu",
+    "pressEnterToSearch": "Nhấn Enter để tìm kiếm",
     "unknownTabType": "Loại tab không xác định",
     "noWorkspaceFolders": "Không có thư mục Workspace",
     "noRepoSelected": "No repository selected",
@@ -1127,7 +1134,12 @@
       "returnFromMiniTerminal": "Hiển thị tại đây",
       "resizeTerminal": "Thay đổi kích thước terminal",
       "terminalProcessCount_one": "{{count}} tiến trình",
-      "terminalProcessCount_other": "{{count}} tiến trình"
+      "terminalProcessCount_other": "{{count}} tiến trình",
+      "sources": "Nguồn",
+      "sourcesCount_one": "{{count}} nguồn",
+      "sourcesCount_other": "{{count}} nguồn",
+      "loadMoreSources": "Tải thêm (+{{count}})",
+      "sourceImage": "Hình ảnh"
     },
     "pr": {
       "title": "Pull request",
@@ -1513,7 +1525,6 @@
       "conflictsTitle": "Cần xử lý các thay đổi",
       "blockedTitle": "Cần xử lý việc chuyển nhánh",
       "working": "Đang lưu và chuyển…",
-      "viewSaved": "Xem các thay đổi đã lưu",
       "current": "Nhánh hiện tại: {{branch}}",
       "changedFiles": "{{count}} tệp đã thay đổi",
       "question": "Bạn muốn xử lý các thay đổi như thế nào?",
@@ -1521,12 +1532,6 @@
       "leaveDescription": "Lưu công việc để tiếp tục sau và chuyển nhánh với cây làm việc sạch",
       "bring": "Mang các thay đổi sang {{branch}}",
       "bringDescription": "Mang các thay đổi chưa commit sang nhánh đích",
-      "savedTitle": "Các thay đổi đã lưu",
-      "nextPage": "Trang tiếp theo",
-      "noSaved": "Không có thay đổi nhánh nào đã lưu",
-      "applied": "Đã áp dụng · bản sao khôi phục",
-      "restore": "Khôi phục",
-      "savedAvailable": "Có các thay đổi đã lưu cho nhánh này",
       "worktreeTitle": "Nhánh đang mở trong cây làm việc khác",
       "openWorktree": "Mở cây làm việc",
       "activeTask": "Một tác vụ đang dùng cây làm việc này",

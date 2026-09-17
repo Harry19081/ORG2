@@ -28,6 +28,7 @@ interface DiffFileSectionContentProps {
   };
   reviewSearch?: ReviewDiffSearch;
   viewMode: DiffViewMode;
+  wordWrap?: boolean;
   noBottomPadding: boolean;
   t: TFunction;
 }
@@ -44,6 +45,7 @@ export function DiffFileSectionContent({
   resolvedDiff,
   reviewSearch,
   viewMode,
+  wordWrap,
   noBottomPadding,
   t,
 }: DiffFileSectionContentProps) {
@@ -96,6 +98,7 @@ export function DiffFileSectionContent({
             newStartLine={resolvedDiff.newStartLine}
             showLineNumbers={file.showLineNumbers !== false}
             viewMode={viewMode}
+            wordWrap={wordWrap}
             readOnly={true}
             mergeControls={false}
             collapseUnchanged={true}

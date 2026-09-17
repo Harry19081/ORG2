@@ -28,8 +28,9 @@ export function resolveFocusedChatWorkstationSectionOrder(
   hasOpenTabs: boolean,
   hasSessionEnvironment: boolean,
   hasSubagents = false,
-  sessionEnvironmentKind?: "local" | "cloud"
-): Array<"session" | "workspace" | "subagents" | "tabs"> {
+  sessionEnvironmentKind?: "local" | "cloud",
+  hasSources = false
+): Array<"session" | "workspace" | "subagents" | "sources" | "tabs"> {
   const environmentSections = hasSessionEnvironment
     ? sessionEnvironmentKind === "cloud"
       ? (["session", "workspace"] as const)
@@ -40,6 +41,9 @@ export function resolveFocusedChatWorkstationSectionOrder(
     // Spawned workers follow the environment groups and precede unrelated
     // open tabs, regardless of which environment group leads.
     ...(hasSubagents ? (["subagents"] as const) : []),
+    // What the user handed the agent belongs with the session's own work,
+    // before unrelated open tabs.
+    ...(hasSources ? (["sources"] as const) : []),
     ...(hasOpenTabs ? (["tabs"] as const) : []),
   ];
 }

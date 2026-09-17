@@ -12,10 +12,8 @@ import { useCallback, useMemo } from "react";
 import { MoreHorizontalIcon } from "@src/icons";
 import { openSideChatAtom } from "@src/store/ui/sideChatAtom";
 
-import {
-  resolveSubagentRowStatus,
-  useWorkstationSubagentsSubmenu,
-} from "./WorkstationSubagentsSubmenu";
+import { useWorkstationRailSubmenu } from "./WorkstationRailSubmenu";
+import { resolveSubagentRowStatus } from "./WorkstationSubagentsSubmenu";
 import type {
   FocusedChatRailIcon,
   FocusedChatRailItem,
@@ -43,7 +41,7 @@ export function useWorkstationRailSubagents({
     panelRef: subagentsSubmenuPanelRef,
     toggle: toggleSubagentsSubmenu,
     width: subagentsSubmenuWidth,
-  } = useWorkstationSubagentsSubmenu();
+  } = useWorkstationRailSubmenu();
   const subagentsSubmenuInsideRefs = useMemo(
     () => [subagentsSubmenuPanelRef],
     [subagentsSubmenuPanelRef]

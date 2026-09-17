@@ -146,6 +146,8 @@ export interface FileHeaderProps {
   onGitBlameChange?: (enabled: boolean) => void;
   /** Callback when the final More settings menu action is requested. */
   onMoreSettings?: () => void;
+  /** Add the WorkStation sidebar settings submenu to the more menu. */
+  showSidebarSettings?: boolean;
   /** Whether the file is currently loading */
   loading?: boolean;
   /** Whether the file has unsaved changes */
@@ -228,6 +230,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     gitBlameEnabled = false,
     onGitBlameChange,
     onMoreSettings,
+    showSidebarSettings = false,
     loading,
     hasUnsavedChanges = false,
     isMarkdownFile,
@@ -391,7 +394,8 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
       showMinimapToggle ||
       showHighlightActiveLineToggle ||
       showGitBlameToggle ||
-      showMoreSettingsAction;
+      showMoreSettingsAction ||
+      showSidebarSettings;
     const showPreviewButton = isMarkdownFile && onTogglePreview && !hasStats;
     const showAnyTabSwitch =
       showViewModeToggle || showCustomToggle || showPreviewButton;
@@ -448,6 +452,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         showHighlightActiveLineToggle={showHighlightActiveLineToggle}
         showGitBlameToggle={showGitBlameToggle}
         showMoreSettingsAction={showMoreSettingsAction}
+        showSidebarSettings={showSidebarSettings}
         lineNumbersEnabled={lineNumbersEnabled}
         wordWrapEnabled={wordWrapEnabled}
         minimapEnabled={minimapEnabled}

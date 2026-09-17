@@ -78,6 +78,33 @@ function renderList(props: Record<string, unknown>) {
 }
 
 describe("VirtualList", () => {
+  it("updates the scroll extent when rows are removed or appended", () => {
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    const renderCount = (totalCount: number) => {
+      act(() => {
+        root.render(
+          React.createElement(VirtualList, {
+            totalCount,
+            fixedItemHeight: ROW_HEIGHT,
+            itemContent: (index: number) => `row-${index}`,
+          })
+        );
+      });
+      return (container.firstElementChild?.firstElementChild as HTMLElement)
+        .style.height;
+    };
+
+    try {
+      expect(renderCount(1000)).toBe("10000px");
+      expect(renderCount(145)).toBe("1450px");
+      expect(renderCount(200)).toBe("2000px");
+      expect(renderCount(0)).toBe("0px");
+    } finally {
+      act(() => root.unmount());
+    }
+  });
+
   it("mounts only the rows near the viewport", () => {
     const list = renderList({ totalCount: 1000, overscanPx: 0 });
 
@@ -142,6 +169,22 @@ describe("VirtualList", () => {
     // scroller.
     expect(sticky?.className).toContain("sticky");
     expect((sticky as HTMLElement).style.transform).toBe("");
+
+    list.unmount();
+  });
+
+  it("uses top positioning when row content owns sticky descendants", () => {
+    const list = renderList({
+      totalCount: 100,
+      overscanPx: 0,
+      preserveStickyDescendants: true,
+    });
+
+    const firstRow =
+      list.container.querySelector<HTMLElement>('[data-index="0"]');
+    expect(firstRow).toBeTruthy();
+    expect(firstRow?.style.top).toBe("0px");
+    expect(firstRow?.style.transform).toBe("");
 
     list.unmount();
   });

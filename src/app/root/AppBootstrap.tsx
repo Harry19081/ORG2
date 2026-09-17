@@ -33,6 +33,7 @@ import { hydrateCreatorDefaultModelAtom } from "@src/store/session/creatorDefaul
 import { useDataSourceAutoScan } from "@src/store/session/useDataSourceAutoScan";
 import { useSettingsSync } from "@src/store/settings";
 import { settingsLoadedAtom } from "@src/store/settings/settingsAtom";
+import { installBlurActiveComposerOnBackgroundMouseDown } from "@src/util/dom/blurActiveComposer";
 
 import { AppDeferredServices } from "./AppDeferredServices";
 import { AppGlobalRecovery } from "./AppGlobalRecovery";
@@ -81,6 +82,7 @@ export const AppBootstrap: FC = () => {
     if (!settingsLoaded) return;
     hydrateLastModel();
   }, [settingsLoaded, hydrateLastModel]);
+  useEffect(installBlurActiveComposerOnBackgroundMouseDown, []);
   useCrossWindowSettingsSync();
   useEditorAppearanceStyles();
   useAppSkin();

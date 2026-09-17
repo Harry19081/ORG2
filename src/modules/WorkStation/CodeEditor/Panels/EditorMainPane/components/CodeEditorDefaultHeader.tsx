@@ -86,6 +86,7 @@ export const CodeEditorDefaultHeader: React.FC<
         activeFilePath ? handleRevealInFileManager : undefined
       }
       onMoreSettings={onOpenSettings}
+      showSidebarSettings
     />
   );
 };

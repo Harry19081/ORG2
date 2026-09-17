@@ -18,6 +18,12 @@
     "file": "Search in file",
     "named": "Search in {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Sidebar settings",
+    "showSidebar": "Show sidebar",
+    "location": "Location",
+    "showIndentLines": "Show indent lines"
+  },
   "windowChrome": {
     "menus": {
       "file": "File",
@@ -772,6 +778,7 @@
     "fileMayHaveBeenDeletedOrMoved": "The file may have been deleted or moved.",
     "editorCouldNotOpenFileMissing": "The editor could not be opened because the file was not found or removed",
     "enterSearchQueryToBegin": "Enter a search query to begin",
+    "pressEnterToSearch": "Press Enter to search",
     "unknownTabType": "Unknown tab type",
     "noWorkspaceFolders": "No workspace folders",
     "noRepoSelected": "No repository selected",
@@ -958,7 +965,12 @@
       "subagentRunning": "Running",
       "subagentPending": "Pending",
       "subagentCompleted": "Completed",
-      "subagentFailed": "Failed"
+      "subagentFailed": "Failed",
+      "sources": "Sources",
+      "sourcesCount_one": "{{count}} Source",
+      "sourcesCount_other": "{{count}} Sources",
+      "loadMoreSources": "Load more (+{{count}})",
+      "sourceImage": "Image"
     },
     "messages": {
       "pushSuccess": "Successfully pushed changes to remote",
@@ -1344,7 +1356,6 @@
       "conflictsTitle": "Changes need attention",
       "blockedTitle": "Branch switch needs attention",
       "working": "Saving and switching…",
-      "viewSaved": "View saved changes",
       "current": "Current branch: {{branch}}",
       "changedFiles": "{{count}} changed files",
       "question": "What would you like to do with your changes?",
@@ -1352,12 +1363,6 @@
       "leaveDescription": "Save your work for later and switch with a clean working tree",
       "bring": "Bring changes to {{branch}}",
       "bringDescription": "Move your uncommitted changes to the destination branch",
-      "savedTitle": "Saved changes",
-      "nextPage": "Next page",
-      "noSaved": "No saved branch changes",
-      "applied": "Already applied · recovery copy",
-      "restore": "Restore",
-      "savedAvailable": "Saved changes available for this branch",
       "worktreeTitle": "Branch is open in another worktree",
       "openWorktree": "Open worktree",
       "activeTask": "A task is using this worktree",

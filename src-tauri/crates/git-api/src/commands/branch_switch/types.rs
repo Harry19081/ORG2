@@ -84,14 +84,3 @@ pub struct Snapshot {
     pub oid: Option<String>,
     pub phase: SnapshotPhase,
 }
-
-#[derive(Debug, Serialize)]
-pub struct SavedPage {
-    pub snapshots: Vec<Snapshot>,
-    pub next_cursor: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct RestoreRequest {
-    pub id: String,
-}

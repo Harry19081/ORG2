@@ -124,6 +124,8 @@ describe("chat search highlight scheduling", () => {
     act(() =>
       root.render(createElement(Provider, { store }, createElement(Harness)))
     );
+    expect(host.querySelector('[data-icon="search-list-01"]')).not.toBeNull();
+    expect(host.querySelector('[data-icon="search"]')).toBeNull();
     const buttons = Array.from(
       host.querySelectorAll<HTMLButtonElement>("button[aria-pressed]")
     );

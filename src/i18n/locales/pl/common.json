@@ -18,6 +18,12 @@
     "file": "Szukaj w pliku",
     "named": "Szukaj w {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Pasek boczny",
+    "showSidebar": "Pokaż pasek boczny",
+    "location": "Położenie",
+    "showIndentLines": "Pokaż linie wcięć"
+  },
   "teamInbox": {
     "title": "Skrzynka zespołu",
     "listLabel": "Lista skrzynki zespołu",
@@ -940,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Plik mógł zostać usunięty lub przeniesiony.",
     "editorCouldNotOpenFileMissing": "Nie można otworzyć edytora, ponieważ plik nie został znaleziony lub został usunięty",
     "enterSearchQueryToBegin": "Wprowadź zapytanie wyszukiwania, aby rozpocząć",
+    "pressEnterToSearch": "Naciśnij Enter, aby wyszukać",
     "unknownTabType": "Nieznany typ karty",
     "noWorkspaceFolders": "Brak folderów Workspace",
     "noRepoSelected": "Nie wybrano Repo",
@@ -1127,7 +1134,12 @@
       "returnFromMiniTerminal": "Pokaż tutaj",
       "resizeTerminal": "Zmień rozmiar terminala",
       "terminalProcessCount_one": "{{count}} proces",
-      "terminalProcessCount_other": "{{count}} procesu"
+      "terminalProcessCount_other": "{{count}} procesu",
+      "sources": "Źródła",
+      "sourcesCount_one": "Źródła: {{count}}",
+      "sourcesCount_other": "Źródła: {{count}}",
+      "loadMoreSources": "Załaduj więcej (+{{count}})",
+      "sourceImage": "Obraz"
     },
     "pr": {
       "title": "Pull request",
@@ -1513,7 +1525,6 @@
       "conflictsTitle": "Zmiany wymagają uwagi",
       "blockedTitle": "Przełączenie gałęzi wymaga uwagi",
       "working": "Zapisywanie i przełączanie…",
-      "viewSaved": "Wyświetl zapisane zmiany",
       "current": "Bieżąca gałąź: {{branch}}",
       "changedFiles": "Zmienione pliki: {{count}}",
       "question": "Co chcesz zrobić ze zmianami?",
@@ -1521,12 +1532,6 @@
       "leaveDescription": "Zapisz pracę na później i przełącz się z czystym drzewem roboczym",
       "bring": "Przenieś zmiany do {{branch}}",
       "bringDescription": "Przenieś niezatwierdzone zmiany do gałęzi docelowej",
-      "savedTitle": "Zapisane zmiany",
-      "nextPage": "Następna strona",
-      "noSaved": "Brak zapisanych zmian gałęzi",
-      "applied": "Już zastosowane · kopia do odzyskania",
-      "restore": "Przywróć",
-      "savedAvailable": "Dla tej gałęzi są dostępne zapisane zmiany",
       "worktreeTitle": "Gałąź jest otwarta w innym drzewie roboczym",
       "openWorktree": "Otwórz drzewo robocze",
       "activeTask": "Zadanie korzysta z tego drzewa roboczego",

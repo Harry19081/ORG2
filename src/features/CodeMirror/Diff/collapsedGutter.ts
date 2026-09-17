@@ -17,6 +17,7 @@ import {
 
 // Separate directions only when two expansion steps cannot reveal the whole gap.
 const COLLAPSE_SPLIT_THRESHOLD = COLLAPSE_EXPAND_STEP * 2;
+export const COLLAPSED_SPLIT_ROW_CLASS = "cm-collapsedLines--split";
 
 function isCollapsed(widget: WidgetType) {
   return "type" in widget && widget.type === "collapsed-unchanged-code";
@@ -26,6 +27,52 @@ function hiddenLineCount(view: EditorView, from: number, to: number) {
   return (
     view.state.doc.lineAt(to).number - view.state.doc.lineAt(from).number + 1
   );
+}
+
+function isSplitCollapsedBlock(view: EditorView, block: BlockInfo) {
+  return (
+    block.from > 0 &&
+    block.to < view.state.doc.length &&
+    hiddenLineCount(view, block.from, block.to) > COLLAPSE_SPLIT_THRESHOLD
+  );
+}
+
+interface CollapsedRowVariant {
+  row: HTMLElement;
+  split: boolean;
+}
+
+/** Read the rendered gutter contract after CodeMirror has updated both trees. */
+function readCollapsedRowVariants(view: EditorView): CollapsedRowVariant[] {
+  const splitPositions = new Set<number>();
+  for (const gutter of view.dom.querySelectorAll(
+    ".cm-collapsedGutter--split"
+  )) {
+    const positionClass = Array.from(gutter.classList).find((name) =>
+      name.startsWith("cm-collapsedAt-")
+    );
+    if (positionClass) {
+      splitPositions.add(Number(positionClass.slice("cm-collapsedAt-".length)));
+    }
+  }
+  return Array.from(
+    view.contentDOM.querySelectorAll<HTMLElement>(".cm-collapsedLines"),
+    (row) => ({ row, split: splitPositions.has(view.posAtDOM(row)) })
+  );
+}
+
+/** Keep content sizing tied to the gutter control variant, not DOM position. */
+function writeCollapsedRowVariants(
+  view: EditorView,
+  variants: readonly CollapsedRowVariant[]
+) {
+  let changed = false;
+  for (const { row, split } of variants) {
+    if (row.classList.contains(COLLAPSED_SPLIT_ROW_CLASS) === split) continue;
+    row.classList.toggle(COLLAPSED_SPLIT_ROW_CLASS, split);
+    changed = true;
+  }
+  if (changed) view.requestMeasure();
 }
 
 class CollapsedRow extends GutterMarker {
@@ -87,13 +134,7 @@ export const collapsedGutterBackground = [
   incrementalCollapse,
   gutterWidgetClass.of((view, widget, block) =>
     isCollapsed(widget)
-      ? new CollapsedRow(
-          block.from,
-          block.from > 0 &&
-            block.to < view.state.doc.length &&
-            hiddenLineCount(view, block.from, block.to) >
-              COLLAPSE_SPLIT_THRESHOLD
-        )
+      ? new CollapsedRow(block.from, isSplitCollapsedBlock(view, block))
       : null
   ),
   // Event-driven only: no layout reads, observers, timers, or retained nodes.
@@ -103,6 +144,13 @@ export const collapsedGutterBackground = [
         highlightCollapsedRow(this.view, event.target);
       private leave = (event: MouseEvent | FocusEvent) =>
         highlightCollapsedRow(this.view, event.relatedTarget);
+      private requestVariantSync = () => {
+        this.view.requestMeasure({
+          key: this,
+          read: () => readCollapsedRowVariants(this.view),
+          write: (variants) => writeCollapsedRowVariants(this.view, variants),
+        });
+      };
       constructor(private view: EditorView) {
         // Native content handlers do not receive gutter events, and merge
         // widgets ignore mouse events. Delegate from the editor root instead.
@@ -110,6 +158,10 @@ export const collapsedGutterBackground = [
         view.dom.addEventListener("mouseout", this.leave);
         view.dom.addEventListener("focusin", this.enter);
         view.dom.addEventListener("focusout", this.leave);
+        this.requestVariantSync();
+      }
+      docViewUpdate() {
+        this.requestVariantSync();
       }
       destroy() {
         this.view.dom.removeEventListener("mouseover", this.enter);
@@ -134,6 +186,8 @@ class CollapseControl extends GutterMarker {
   }
 
   toDOM(view: EditorView) {
+    // GutterMarker is a CodeMirror-owned, non-React DOM boundary, so these
+    // controls cannot use the shared React Button component.
     const control = document.createElement("div");
     control.className = "cm-collapseControl";
     const lines = hiddenLineCount(view, this.from, this.to);

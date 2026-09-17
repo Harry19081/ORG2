@@ -18,6 +18,12 @@
     "file": "Buscar en el archivo",
     "named": "Buscar en {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Barra lateral",
+    "showSidebar": "Mostrar barra lateral",
+    "location": "Posición",
+    "showIndentLines": "Mostrar líneas de sangría"
+  },
   "teamInbox": {
     "title": "Bandeja del equipo",
     "listLabel": "Lista de la bandeja del equipo",
@@ -940,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Es posible que el archivo se haya eliminado o movido.",
     "editorCouldNotOpenFileMissing": "No se pudo abrir el editor porque el archivo no se encontró o fue eliminado",
     "enterSearchQueryToBegin": "Introduce una consulta de búsqueda para comenzar",
+    "pressEnterToSearch": "Pulsa Enter para buscar",
     "unknownTabType": "Tipo de pestaña desconocido",
     "noWorkspaceFolders": "Sin carpetas de workspace",
     "noRepoSelected": "No repository selected",
@@ -1127,7 +1134,12 @@
       "returnFromMiniTerminal": "Mostrar aquí",
       "resizeTerminal": "Cambiar tamaño del terminal",
       "terminalProcessCount_one": "{{count}} proceso",
-      "terminalProcessCount_other": "{{count}} procesos"
+      "terminalProcessCount_other": "{{count}} procesos",
+      "sources": "Fuentes",
+      "sourcesCount_one": "{{count}} fuente",
+      "sourcesCount_other": "{{count}} fuentes",
+      "loadMoreSources": "Cargar más (+{{count}})",
+      "sourceImage": "Imagen"
     },
     "pr": {
       "title": "Pull request",
@@ -1513,7 +1525,6 @@
       "conflictsTitle": "Los cambios requieren atención",
       "blockedTitle": "El cambio de rama requiere atención",
       "working": "Guardando y cambiando…",
-      "viewSaved": "Ver cambios guardados",
       "current": "Rama actual: {{branch}}",
       "changedFiles": "{{count}} archivos modificados",
       "question": "¿Qué quieres hacer con tus cambios?",
@@ -1521,12 +1532,6 @@
       "leaveDescription": "Guarda tu trabajo para más tarde y cambia con un árbol de trabajo limpio",
       "bring": "Llevar los cambios a {{branch}}",
       "bringDescription": "Lleva tus cambios sin confirmar a la rama de destino",
-      "savedTitle": "Cambios guardados",
-      "nextPage": "Página siguiente",
-      "noSaved": "No hay cambios de rama guardados",
-      "applied": "Ya aplicados · copia de recuperación",
-      "restore": "Restaurar",
-      "savedAvailable": "Hay cambios guardados disponibles para esta rama",
       "worktreeTitle": "La rama está abierta en otro árbol de trabajo",
       "openWorktree": "Abrir árbol de trabajo",
       "activeTask": "Una tarea está usando este árbol de trabajo",

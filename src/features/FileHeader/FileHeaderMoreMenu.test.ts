@@ -5,7 +5,11 @@ import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
+import { editorShowTreeIndentGuidesAtom } from "@src/store/ui/editorSettingsAtom";
 import { activeOverlayCountAtom } from "@src/store/ui/overlayLayerAtom";
+import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
+import { workStationLayoutModeAtom } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
+import { _resetCoalescedStorageWritesForTests } from "@src/util/core/storage/coalescedStorageWrite";
 
 import {
   FileHeaderMoreMenu,
@@ -14,6 +18,10 @@ import {
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
+}));
+vi.mock("@src/api/tauri/rpc/invoke", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@src/api/tauri/rpc/invoke")>()),
+  rpcCall: vi.fn(async () => undefined),
 }));
 vi.mock("@src/util/ui/theme/themeUtils", () => ({
   useCurrentTheme: () => ({ isDark: false }),
@@ -187,6 +195,12 @@ describe("FileHeaderMoreMenu", () => {
     expect(menu.querySelectorAll('[role="menuitem"]')).toHaveLength(8);
     expect(menu.querySelector('[role="switch"]')).toBeNull();
     expect(menu.textContent).not.toContain("common:actions.moreSettings");
+    const searchAction = [
+      ...menu.querySelectorAll<HTMLElement>('[role="menuitem"]'),
+    ].find((item) => item.textContent?.includes("actions.search"));
+    expect(
+      searchAction?.querySelector('[data-icon="search-list-01"]')
+    ).not.toBeNull();
 
     const panel = openSettings();
     const switches =
@@ -215,6 +229,66 @@ describe("FileHeaderMoreMenu", () => {
     act(() => panel.querySelector<HTMLElement>('[role="menuitem"]')!.click());
     expect(props.onMoreSettingsClick).toHaveBeenCalledOnce();
     expect(document.querySelector('[role="menu"]')).toBeNull();
+  });
+
+  it("renders sidebar settings only when requested and writes the shared sidebar state", () => {
+    render();
+    expect(
+      document.querySelector(
+        '[data-testid="file-header-sidebar-settings-submenu"]'
+      )
+    ).toBeNull();
+
+    render({
+      showSidebarSettings: true,
+      showLineNumbersToggle: false,
+      showWordWrapToggle: false,
+      showMinimapToggle: false,
+      showHighlightActiveLineToggle: false,
+      showMoreSettingsAction: false,
+    });
+    expect(
+      document.querySelector('[data-testid="file-header-ui-settings-submenu"]')
+    ).toBeNull();
+    act(() => element("file-header-sidebar-settings-submenu").click());
+    const panel = element("file-header-sidebar-settings-submenu-panel");
+    const separator = element("file-header-sidebar-indent-lines-separator");
+    expect(separator.getAttribute("role")).toBe("separator");
+    expect(separator.getAttribute("aria-hidden")).toBe("true");
+    expect(separator.previousElementSibling).toBe(
+      element("file-header-sidebar-location").parentElement
+    );
+    expect(separator.nextElementSibling?.querySelector('[role="switch"]')).toBe(
+      element("file-header-sidebar-indent-lines-toggle")
+    );
+    expect(
+      [...panel.querySelectorAll('[role="switch"]')].map((control) =>
+        control.getAttribute("aria-label")
+      )
+    ).toEqual([
+      "sidebarSettings.showSidebar",
+      "sidebarSettings.showIndentLines",
+    ]);
+
+    const visible = element("file-header-sidebar-visible-toggle");
+    expect(visible.getAttribute("aria-checked")).toBe("true");
+    act(() => visible.click());
+    expect(store.get(workStationPrimarySidebarCollapsedAtom)).toBe(true);
+    expect(visible.getAttribute("aria-checked")).toBe("false");
+
+    const right = [
+      ...element("file-header-sidebar-location").querySelectorAll("button"),
+    ].find((button) => button.textContent === "layoutSettings.right")!;
+    act(() => right.click());
+    expect(store.get(workStationLayoutModeAtom)).toBe("right");
+
+    const indent = element("file-header-sidebar-indent-lines-toggle");
+    expect(indent.getAttribute("aria-checked")).toBe("true");
+    act(() => indent.click());
+    expect(store.get(editorShowTreeIndentGuidesAtom)).toBe(false);
+    expect(props.setMenuVisible).not.toHaveBeenCalled();
+    // Layout prefs queue a coalesced localStorage write; drop it here.
+    _resetCoalescedStorageWritesForTests();
   });
 
   it("opens by keyboard, navigates switches, and closes one layer at a time", () => {

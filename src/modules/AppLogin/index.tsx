@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { type Location, createPath, useLocation } from "react-router-dom";
 
+import LoginFailureArtwork from "@src/assets/illustrations/login-failure.png";
+import LoginSuccessArtwork from "@src/assets/illustrations/login-success.png";
+import LoginWaitingArtwork from "@src/assets/illustrations/login-waiting.png";
 import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
 import { MOBILE_REMOTE_ROUTE, ROUTES } from "@src/config/routes";
@@ -12,7 +15,12 @@ import {
 } from "@src/hooks/auth/useServiceAuth";
 import { createLogger } from "@src/hooks/logger";
 import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
-import { HugeiconsIcon, Login01Icon, Refresh04Icon } from "@src/icons";
+import {
+  CheckmarkCircle01Icon,
+  HugeiconsIcon,
+  Login01Icon,
+  Refresh04Icon,
+} from "@src/icons";
 import { captureOpaquePairingReturnLocation } from "@src/modules/MobileRemote/auth/mobileAuthIntent";
 
 import { LOGIN_ARTWORK_WIDTH_CLASS, LoginArtwork } from "./LoginArtwork";
@@ -40,6 +48,7 @@ export function resolveLoginRedirectPath(
 
 interface LoginLoadingStateProps {
   error?: string | null;
+  stage?: "waiting" | "success";
 }
 
 /**
@@ -48,6 +57,7 @@ interface LoginLoadingStateProps {
  */
 export const LoginLoadingState: React.FC<LoginLoadingStateProps> = ({
   error,
+  stage = "waiting",
 }) => {
   const { t } = useTranslation("auth");
 
@@ -57,7 +67,11 @@ export const LoginLoadingState: React.FC<LoginLoadingStateProps> = ({
     >
       {error ? (
         <>
-          <LoginArtwork />
+          <img
+            src={LoginFailureArtwork}
+            alt=""
+            className={`aspect-square rounded-lg object-cover ${LOGIN_COLUMN_WIDTH_CLASS}`}
+          />
           <div className="flex flex-col items-center gap-2 text-center">
             <div className="text-lg font-medium text-red-500">
               {t("loading.failed")}
@@ -69,7 +83,44 @@ export const LoginLoadingState: React.FC<LoginLoadingStateProps> = ({
           </div>
         </>
       ) : (
-        <LoginArtwork />
+        <>
+          <img
+            src={
+              stage === "success" ? LoginSuccessArtwork : LoginWaitingArtwork
+            }
+            alt=""
+            className={`aspect-square rounded-lg object-cover ${LOGIN_COLUMN_WIDTH_CLASS}`}
+          />
+          <div
+            className="flex flex-col items-center gap-2 text-center"
+            role="status"
+            aria-live="polite"
+          >
+            {stage === "success" ? (
+              <HugeiconsIcon
+                icon={CheckmarkCircle01Icon}
+                size={40}
+                className="text-success-6"
+                aria-hidden
+              />
+            ) : (
+              <span
+                className="h-8 w-8 animate-spin rounded-full border-2 border-border-2 border-t-primary-6"
+                aria-hidden
+              />
+            )}
+            <div className="text-lg font-medium text-text-1">
+              {stage === "success"
+                ? t("loading.success")
+                : t("loading.waiting")}
+            </div>
+            <div className="text-sm text-text-3">
+              {stage === "success"
+                ? t("loading.openingApp")
+                : t("login.signingIn")}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
@@ -259,6 +310,9 @@ const LoginPage: React.FC = () => {
   const [callbackError, setCallbackError] = useState<string | null>(null);
   // Track if user is actively switching accounts (hide account options during switch)
   const [isSwitchingAccount, setIsSwitchingAccount] = useState(false);
+  // Opening the external OAuth browser resolves before the callback arrives.
+  // Keep this surface mounted and make that wait explicit to the user.
+  const [isAwaitingCallback, setIsAwaitingCallback] = useState(false);
 
   // Get the redirect location (where user was trying to go before login)
   const locationState = location.state as {
@@ -312,11 +366,13 @@ const LoginPage: React.FC = () => {
   const handleLogin = async () => {
     // Clear any previous error
     setCallbackError(null);
+    setIsAwaitingCallback(true);
     // Store intended redirect URL
     sessionStorage.setItem("login_redirect", redirectPath);
     try {
       await login();
     } catch (err) {
+      setIsAwaitingCallback(false);
       log.error("[LoginPage] login() error:", err);
       setCallbackError(
         err instanceof Error ? err.message : t("loading.failed")
@@ -352,6 +408,10 @@ const LoginPage: React.FC = () => {
 
   if (!HOSTED_LOGIN_ENABLED) {
     return <LoginLoadingState />;
+  }
+
+  if (isAwaitingCallback) {
+    return <LoginLoadingState stage="waiting" />;
   }
 
   // Show authenticated options if user has a valid session

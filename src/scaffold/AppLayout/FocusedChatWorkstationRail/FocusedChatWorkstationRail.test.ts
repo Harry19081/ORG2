@@ -34,6 +34,7 @@ import { workstationLayoutAtom } from "@src/store/workstation/tabs";
 
 import { FocusedChatWorkstationRail } from ".";
 import type {
+  FocusedChatRailSource,
   FocusedChatRailSubagent,
   FocusedChatSessionContext,
 } from "./types";
@@ -49,6 +50,25 @@ const gitMocks = vi.hoisted(() => ({
   ),
 }));
 
+const openLinkMocks = vi.hoisted(() => ({ openInBrowserApp: vi.fn() }));
+
+vi.mock("@src/util/ui/openLink", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@src/util/ui/openLink")>()),
+  openInBrowserApp: openLinkMocks.openInBrowserApp,
+}));
+vi.mock("@src/scaffold/ImagePreviewOverlay", () => ({
+  default: (props: {
+    dataUrl: string;
+    images?: unknown[];
+    initialIndex?: number;
+  }) =>
+    React.createElement("div", {
+      "data-testid": "source-image-preview",
+      "data-src": props.dataUrl,
+      "data-count": props.images?.length,
+      "data-index": props.initialIndex,
+    }),
+}));
 vi.mock("@src/hooks/git/useActiveRepoRef", () => ({
   useActiveRepoRef: () => ({ repoId: null, repoPath: "" }),
 }));
@@ -143,7 +163,8 @@ describe.each(["wide rail", "compact menu"])(
 
     async function mount(
       subagents?: FocusedChatRailSubagent[],
-      sessionContext?: FocusedChatSessionContext
+      sessionContext?: FocusedChatSessionContext,
+      sources?: FocusedChatRailSource[]
     ) {
       await act(async () => {
         root.render(
@@ -160,6 +181,7 @@ describe.each(["wide rail", "compact menu"])(
                   compactMenuHost: menuHost,
                   conversationMinimapHostRef: () => {},
                   sessionContext,
+                  sources,
                   subagents,
                 })
               )
@@ -485,6 +507,103 @@ describe.each(["wide rail", "compact menu"])(
           '[data-testid="workstation-trail-subagents-submenu"]'
         )
       ).toBeNull();
+    });
+
+    it("folds sources by default and opens links in the Browser and images in the viewer", async () => {
+      openLinkMocks.openInBrowserApp.mockClear();
+      const image = (index: number): FocusedChatRailSource => ({
+        kind: "image",
+        key: `image:${index}`,
+        ref: `data:image/png;base64,${index}`,
+        fileName: index === 0 ? null : `shot-${index}.png`,
+      });
+      const link = (index: number): FocusedChatRailSource => ({
+        kind: "link",
+        key: `link:${index}`,
+        url: `https://example.com/page-${index}`,
+        label: `example.com/page-${index}`,
+      });
+      await mount(undefined, undefined, [
+        link(0),
+        image(0),
+        image(1),
+        link(1),
+        link(2),
+        image(2),
+        link(3),
+      ]);
+
+      const host = view === "wide rail" ? container : menuHost;
+      const sourceSection = () =>
+        [...host.querySelectorAll("section")].find((section) =>
+          section.textContent?.includes("7 Sources")
+        );
+
+      // Default collapsed: heading only, no rows and no image reads.
+      expect(sourceSection()).toBeDefined();
+      expect(sourceSection()?.textContent).not.toContain("example.com");
+      expect(sourceSection()?.querySelector("img")).toBeNull();
+
+      act(() =>
+        host
+          .querySelector<HTMLButtonElement>(
+            '[data-workstation-group-toggle="sources"]'
+          )!
+          .click()
+      );
+
+      const expanded = sourceSection()!;
+      for (const label of [
+        "example.com/page-0",
+        "Image",
+        "shot-1.png",
+        "example.com/page-1",
+        "example.com/page-2",
+      ]) {
+        expect(expanded.textContent).toContain(label);
+      }
+      expect(expanded.textContent).not.toContain("shot-2.png");
+      expect(expanded.textContent).toContain("Load more (+2)");
+      expect(expanded.querySelectorAll("img")).toHaveLength(2);
+
+      // A link opens in My Station's Browser.
+      const linkRow = [...expanded.querySelectorAll("button")].find((button) =>
+        button.textContent?.includes("example.com/page-1")
+      )!;
+      act(() => linkRow.click());
+      expect(openLinkMocks.openInBrowserApp).toHaveBeenCalledWith(
+        "https://example.com/page-1"
+      );
+
+      // The last row opens the full list; an image there opens the viewer
+      // with every image of the session as its gallery.
+      act(() =>
+        sourceSection()!
+          .querySelector<HTMLButtonElement>('[aria-haspopup="menu"]')!
+          .click()
+      );
+      const submenu = document.querySelector(
+        '[data-testid="workstation-trail-sources-submenu"]'
+      );
+      expect(submenu).not.toBeNull();
+      expect(submenu!.textContent).toContain("shot-2.png");
+      expect(submenu!.textContent).toContain("example.com/page-3");
+      const imageRow = [...submenu!.querySelectorAll('[role="menuitem"]')].find(
+        (row) => row.textContent?.includes("shot-2.png")
+      ) as HTMLElement;
+      act(() => imageRow.click());
+
+      expect(
+        document.querySelector(
+          '[data-testid="workstation-trail-sources-submenu"]'
+        )
+      ).toBeNull();
+      const preview = document.querySelector(
+        '[data-testid="source-image-preview"]'
+      );
+      expect(preview?.getAttribute("data-src")).toBe("data:image/png;base64,2");
+      expect(preview?.getAttribute("data-count")).toBe("3");
+      expect(preview?.getAttribute("data-index")).toBe("2");
     });
 
     it("keeps pins excluded while collapsed and restores them only on release", async () => {

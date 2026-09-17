@@ -40,6 +40,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
   file,
   reviewSearch,
   viewMode,
+  wordWrap,
   defaultExpanded = true,
   expansionSignal = 0,
   repoPath,
@@ -158,6 +159,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
       resolvedDiff={resolvedDiff}
       reviewSearch={reviewSearch}
       viewMode={viewMode}
+      wordWrap={wordWrap}
       noBottomPadding={noBottomPadding}
       t={t}
     />

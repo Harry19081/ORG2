@@ -97,7 +97,7 @@ function renderHeader(
 
 describe("SourceControlHeaderContent diff view controls", () => {
   it.each(["stashed", "history", "pr", "issues"] as const)(
-    "keeps Split, More, and Refresh in order in %s mode before selection",
+    "keeps Split, Refresh, and More in order in %s mode before selection",
     (filter) => {
       const markup = renderHeader("focus", null, 0, null, false, filter);
       const split = markup.indexOf(
@@ -106,8 +106,8 @@ describe("SourceControlHeaderContent diff view controls", () => {
       const menu = markup.indexOf('data-menu="diff-settings"');
       const refresh = markup.indexOf('aria-label="common:actions.refresh"');
       expect(split).toBeGreaterThan(-1);
-      expect(menu).toBeGreaterThan(split);
-      expect(refresh).toBeGreaterThan(menu);
+      expect(refresh).toBeGreaterThan(split);
+      expect(menu).toBeGreaterThan(refresh);
       expect(markup.match(/data-menu="diff-settings"/g)).toHaveLength(1);
     }
   );
@@ -161,18 +161,20 @@ describe("SourceControlHeaderContent diff view controls", () => {
     expect(markup.slice(split)).not.toContain('role="separator"');
   });
 
-  it("keeps aggregate split and menu adjacent after collapse controls", () => {
+  it("places the aggregate menu after refresh", () => {
     const markup = renderHeader("all-changes");
     const collapse = markup.indexOf('data-title="actions.collapseAll"');
     const separator = markup.indexOf('role="separator"', collapse);
     const split = markup.indexOf(
       'aria-label="workstation.switchToUnifiedDiff"'
     );
+    const refresh = markup.indexOf('aria-label="common:actions.refresh"');
     const menu = markup.indexOf('data-menu="diff-settings"');
     expect(separator).toBeGreaterThan(collapse);
     expect(split).toBeGreaterThan(separator);
-    expect(menu).toBeGreaterThan(split);
-    expect(markup.slice(split, menu)).not.toContain('role="separator"');
+    expect(refresh).toBeGreaterThan(split);
+    expect(menu).toBeGreaterThan(refresh);
+    expect(markup.slice(split, refresh)).not.toContain('role="separator"');
   });
 
   it.each([0, 3])(
