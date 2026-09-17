@@ -1,4 +1,4 @@
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { type ReactNode, startTransition, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -18,7 +18,10 @@ import {
   PanelRightOpenIcon,
 } from "@src/icons";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
-import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import {
+  activeChatPanelTabStationAvailableAtom,
+  toggleActiveChatPanelMaximizedAtom,
+} from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { openStationInNewWindowAtom } from "@src/store/workstation/stationWindowAtoms";
 import type { StationMode } from "@src/types/ui/workstation";
@@ -84,7 +87,7 @@ export function StationOpenInNewWindowButton({
 }
 
 export function useStationPaneActions() {
-  const toggleMaximized = useSetAtom(toggleChatPanelMaximizedAtom);
+  const toggleMaximized = useSetAtom(toggleActiveChatPanelMaximizedAtom);
   const handleToggleChatPanel = useCallback(() => {
     startTransition(() => {
       void WorkStationViewService.showWorkStation().catch((error: unknown) => {
@@ -243,7 +246,11 @@ export function StationPaneControls({
   );
 }
 
-/** Chat-side maximize/restore action, shared with the pinned window chrome. */
+/**
+ * Chat-side maximize/restore action, shared with the pinned window chrome.
+ * Disabled while the active chat tab owns the whole workbench (Station
+ * access "never" — Inbox, Kanban, Runtime, detail pages).
+ */
 export function ChatPaneFocusButton({
   focused,
   chatPanelPosition,
@@ -256,14 +263,20 @@ export function ChatPaneFocusButton({
   testId?: string;
 }) {
   const { t } = useTranslation("sessions");
+  const stationAvailable = useAtomValue(activeChatPanelTabStationAvailableAtom);
+  let title = t("chat.workstationUnavailableForPage");
+  if (stationAvailable) {
+    title = t(focused ? "chat.showWorkstation" : "chat.maximizeChatPanel");
+  }
   return (
     <TabBarTrailingIconButton
-      title={t(focused ? "chat.showWorkstation" : "chat.maximizeChatPanel")}
-      shortcutId="maximize_chat"
+      title={title}
+      shortcutId={stationAvailable ? "maximize_chat" : undefined}
       tooltipPosition="bottom-end"
       tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
       nativeTitle={false}
-      onClick={onClick}
+      onClick={stationAvailable ? onClick : undefined}
+      disabled={!stationAvailable}
       className="group"
       data-testid={testId}
     >

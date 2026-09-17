@@ -3,6 +3,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import {
   clearGitDiffEditDrafts,
   hasGitDiffEditDraft,
+  restoreGitDiffEditDraft,
   saveGitDiffDraftForSwitch,
   setGitDiffEditDraft,
 } from "./gitDiffEditDrafts";
@@ -34,13 +35,14 @@ it("retains a draft and does not write over external changes", async () => {
 });
 it("retains later edits if the buffer changes during the awaited write", async () => {
   setGitDiffEditDraft("/file", "base", "mine");
-  fs.readTextFile.mockResolvedValue("base");
+  fs.readTextFile.mockResolvedValueOnce("base").mockResolvedValueOnce("mine");
   fs.writeTextFile.mockImplementation(async () =>
     setGitDiffEditDraft("/file", "base", "later")
   );
   await expect(saveGitDiffDraftForSwitch("/file")).rejects.toThrow(
     "changed while saving"
   );
+  expect(restoreGitDiffEditDraft("/file", "mine")).toBe("later");
   expect(hasGitDiffEditDraft("/file")).toBe(true);
 });
 it("retains the only copy after failed disk IO", async () => {

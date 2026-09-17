@@ -85,7 +85,6 @@ export const DEFAULT_CATEGORY_BY_TYPE: Record<
   "search-sessions": "search-sessions",
   "url-preview": "preview",
   "browser-session": "browser",
-  devtools: "browser",
   "project-dashboard": "project",
   "project-work-items": "project",
   "project-linear-projects": "project",

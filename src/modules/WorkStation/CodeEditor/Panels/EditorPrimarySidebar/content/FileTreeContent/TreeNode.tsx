@@ -50,6 +50,7 @@ const TreeNodeInner: React.FC<TreeNodeProps> = ({
   onSelectNode,
   onToggleDirectory,
   isRenaming = false,
+  showNativeTitle = true,
   onRenameConfirm,
   onRenameCancel,
 }) => {
@@ -81,7 +82,7 @@ const TreeNodeInner: React.FC<TreeNodeProps> = ({
   const treeRowNode: TreeRowNode = useMemo(
     () => ({
       id: node.path,
-      name: node.name,
+      name: node.compactName ?? node.name,
       path: node.path,
       type: node.type,
       expanded: node.expanded ?? false,
@@ -92,6 +93,7 @@ const TreeNodeInner: React.FC<TreeNodeProps> = ({
     [
       node.path,
       node.name,
+      node.compactName,
       node.type,
       node.expanded,
       node.icon,
@@ -203,6 +205,7 @@ const TreeNodeInner: React.FC<TreeNodeProps> = ({
       onClick={handleClick}
       dataPath={node.path}
       onMouseDown={handleMouseDown}
+      showNativeTitle={showNativeTitle}
     >
       {node.isAgentSelected && (
         <div className="flex h-4 w-4 shrink-0 items-center justify-center">
