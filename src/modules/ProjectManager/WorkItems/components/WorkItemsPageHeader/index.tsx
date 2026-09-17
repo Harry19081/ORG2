@@ -117,16 +117,16 @@ const WorkItemsPageHeader = ({
   if (splitListHeader) {
     return (
       <SplitListHeader
-        primary={
+        primary={headerContent}
+        secondary={
           <>
             {splitHeaderLeading}
             {splitHeaderLeading ? (
               <HeaderSectionSeparator className="mx-0.5" />
             ) : null}
-            {headerContent}
+            {headerTrailing}
           </>
         }
-        secondary={headerTrailing}
       />
     );
   }

@@ -528,6 +528,17 @@ describe("GitHubWorkItemsView pull requests", () => {
     expect(markup).toContain('data-split-list-header-row="primary"');
     expect(markup).toContain('data-split-list-header-row="secondary"');
     expect(markup).toContain('data-testid="work-dataset-reviews"');
+    const topRow = markup.slice(
+      markup.indexOf('data-split-list-header-row="secondary"'),
+      markup.indexOf('data-split-list-header-row="primary"')
+    );
+    expect(topRow).toContain('data-testid="work-dataset-reviews"');
+    expect(topRow).toContain('data-testid="github-work-items-search"');
+    expect(topRow.indexOf('data-testid="work-dataset-reviews"')).toBeLessThan(
+      topRow.indexOf('data-testid="github-work-items-search"')
+    );
+    expect(topRow).not.toContain('data-testid="github-work-items-repository"');
+
     expect(markup).toContain('data-testid="github-work-items-repository"');
     expect(
       markup.match(/data-testid="github-work-items-state-open"/g)

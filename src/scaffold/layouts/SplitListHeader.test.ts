@@ -14,20 +14,24 @@ describe("SplitListHeader", () => {
     );
 
     expect(markup).toContain('data-split-list-header="true"');
+    expect(markup.indexOf("Search")).toBeLessThan(markup.indexOf("Context"));
     expect(markup).not.toContain("border-b");
     expect(markup).not.toContain("border-border-2");
   });
 
-  it("uses the host inset for a full-width surface row", () => {
+  it("keeps the list's left inset for full-width surface rows", () => {
     const markup = renderToStaticMarkup(
       createElement(SplitListHeader, {
         fullWidth: true,
         primary: createElement("span", null, "Controls"),
+        secondary: createElement("span", null, "Search"),
       })
     );
 
+    expect(markup.indexOf("Controls")).toBeLessThan(markup.indexOf("Search"));
     expect(markup).toContain("h-9");
-    expect(markup).toContain("pl-[15px]");
+    expect(markup.match(/pl-3/g)).toHaveLength(2);
+    expect(markup).not.toContain("pl-[15px]");
     expect(markup).toContain("pr-[7px]");
   });
 });

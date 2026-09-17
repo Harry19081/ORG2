@@ -638,7 +638,7 @@ describe("TeamInboxView split layout", () => {
     ).toBe("split");
   });
 
-  it("keeps the initial gate closed for a source loading snapshot", async () => {
+  it("keeps pending notifications hidden without withholding ready pull requests", async () => {
     let emitSnapshot: (() => void) | undefined;
     let page = {
       items: [] as AssignedWorkItem[],
@@ -666,7 +666,7 @@ describe("TeamInboxView split layout", () => {
     });
 
     expect(componentProps.list?.items).toEqual([]);
-    expect(componentProps.list?.pullRequests).toEqual([]);
+    expect(componentProps.list?.pullRequests).toEqual([createPullRequest()]);
     expect(componentProps.list?.loading).toBe(true);
 
     page = { items: [partialLoadItem], nextCursor: null, loading: false };
@@ -681,7 +681,7 @@ describe("TeamInboxView split layout", () => {
     expect(componentProps.list?.loading).toBe(false);
   });
 
-  it("holds the first Inbox snapshot until pull requests finish loading", async () => {
+  it("shows the first Inbox snapshot while pull requests are still loading", async () => {
     const listPage = vi.fn(async () => ({
       items: [partialLoadItem],
       nextCursor: null,
@@ -699,12 +699,12 @@ describe("TeamInboxView split layout", () => {
       await Promise.resolve();
     });
 
-    expect(componentProps.list?.items).toEqual([]);
+    expect(componentProps.list?.items).toEqual([partialLoadItem]);
     expect(componentProps.list?.pullRequests).toEqual([]);
     expect(componentProps.list?.unreadCounts).toEqual({
-      all: 0,
+      all: 1,
       mentions: 0,
-      assigned: 0,
+      assigned: 1,
     });
     expect(componentProps.list?.loading).toBe(true);
 
@@ -797,7 +797,7 @@ describe("TeamInboxView split layout", () => {
     });
   });
 
-  it("holds the first pull-request snapshot until Inbox loading finishes", async () => {
+  it("shows the first pull-request snapshot while Inbox is still loading", async () => {
     let resolveInbox!: (value: {
       items: AssignedWorkItem[];
       nextCursor: null;
@@ -823,7 +823,7 @@ describe("TeamInboxView split layout", () => {
     });
 
     expect(componentProps.list?.items).toEqual([]);
-    expect(componentProps.list?.pullRequests).toEqual([]);
+    expect(componentProps.list?.pullRequests).toEqual([createPullRequest()]);
     expect(componentProps.list?.loading).toBe(true);
 
     await act(async () => {

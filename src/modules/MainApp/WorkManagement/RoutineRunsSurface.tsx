@@ -373,15 +373,15 @@ const RoutineRunsSurface: React.FC = () => {
     <SplitListHeader
       primary={
         <div className="flex min-w-0 flex-1 items-center gap-px">
-          {splitDatasetControl}
-          {splitDatasetControl ? (
-            <HeaderSectionSeparator className="mx-0.5" />
-          ) : null}
           {datasetTabs}
         </div>
       }
       secondary={
         <div className="flex min-w-0 flex-1 items-center gap-px">
+          {splitDatasetControl}
+          {splitDatasetControl ? (
+            <HeaderSectionSeparator className="mx-0.5" />
+          ) : null}
           <WorkManagementSearchInput
             value={searchQuery}
             onChange={setSearchQuery}
