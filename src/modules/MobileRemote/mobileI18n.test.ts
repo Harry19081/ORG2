@@ -107,15 +107,15 @@ describe("mobileI18n", () => {
     const expected = {
       en: [
         "Help & about",
-        "Device authorization",
+        "Connection & devices",
         "Current computer",
         "Status unknown",
       ],
-      zh: ["帮助与关于", "设备授权", "当前电脑", "状态未知"],
+      zh: ["帮助与关于", "连接与设备", "当前电脑", "状态未知"],
     };
     const keys = [
       "profile.helpAndAbout",
-      "settings.authorization",
+      "settings.connectionDevices",
       "devices.currentDesktop",
       "devices.presenceUnknown",
     ];
