@@ -884,7 +884,11 @@ it("keeps the opened workspace scope when refreshed turn changes become empty", 
   await tick();
   expect(host.querySelector(".mobile-change-review__heading")).toBeNull();
   expect(
-    panel().querySelector(".mobile-change-review__scope button")?.textContent
-  ).toBe("changeReview.workspace");
+    accessibleDropdownName(
+      panel().querySelector<HTMLButtonElement>(
+        ".mobile-change-review__scope button"
+      )!
+    )
+  ).toBe("changeReview.scope changeReview.workspace");
   expect(panel().querySelector("pre")).toBe(editor);
 });
