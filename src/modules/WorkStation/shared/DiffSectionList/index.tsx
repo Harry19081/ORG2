@@ -409,6 +409,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
           computeItemKey={(_index, item) => item.renderKey}
           overscanPx={600}
           estimatedItemHeight={DIFF_SECTION_ESTIMATED_HEIGHT}
+          preserveStickyDescendants
           onScroll={handleScroll}
           footer={hideBottomPadding ? undefined : <DiffListFooter />}
           itemContent={(index, { section, renderKey }) => {

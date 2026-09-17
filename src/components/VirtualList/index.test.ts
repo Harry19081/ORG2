@@ -145,6 +145,22 @@ describe("VirtualList", () => {
 
     list.unmount();
   });
+
+  it("uses top positioning when row content owns sticky descendants", () => {
+    const list = renderList({
+      totalCount: 100,
+      overscanPx: 0,
+      preserveStickyDescendants: true,
+    });
+
+    const firstRow =
+      list.container.querySelector<HTMLElement>('[data-index="0"]');
+    expect(firstRow).toBeTruthy();
+    expect(firstRow?.style.top).toBe("0px");
+    expect(firstRow?.style.transform).toBe("");
+
+    list.unmount();
+  });
 });
 
 describe("findStickyIndex", () => {

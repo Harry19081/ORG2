@@ -111,7 +111,10 @@ interface CodeMirrorDiffProps {
 // Shared merge theme override (stable reference — defined outside component)
 // ============================================
 
-const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
+export const COLLAPSED_COMPACT_ROW_HEIGHT = "calc(1lh + 4px)";
+export const COLLAPSED_SPLIT_ROW_HEIGHT = "calc(2lh + 8px)";
+
+export const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
   "& .cm-changedLine, & .cm-insertedLine": {
     backgroundColor: "var(--diff-added-bg) !important",
   },
@@ -138,8 +141,8 @@ const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
     outline: "none",
     boxShadow: "none",
     color: "var(--color-text-3)",
-    padding:
-      "calc(var(--cm-gutter-padding, 4px) + 2px) var(--cm-line-padding-left, 12px)",
+    height: COLLAPSED_COMPACT_ROW_HEIGHT,
+    padding: "2px var(--cm-line-padding-left, 12px)",
     margin: "0 8px 0 0",
     cursor: "var(--interactive-cursor, default)",
     fontSize: "var(--cm-font-size-small, 12px)",
@@ -174,8 +177,9 @@ const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
       "--cm-collapsed-fill": "var(--color-fill-3)",
       color: "var(--color-text-2)",
     },
-    "&:not(:first-child):not(:last-child)": {
-      minHeight: "calc(2lh + 2 * var(--cm-gutter-padding, 4px))",
+    "&.cm-collapsedLines--split": {
+      height: COLLAPSED_SPLIT_ROW_HEIGHT,
+      paddingBlock: "4px",
     },
   },
 });
