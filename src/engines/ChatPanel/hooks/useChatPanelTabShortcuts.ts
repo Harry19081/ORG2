@@ -1,7 +1,8 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { type RefObject, useCallback, useEffect, useRef } from "react";
 
 import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
+import { closeTabChordFallbackAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import {
   closeAndDestroyChatPanelTabAtom,
   nextChatPanelTabAtom,
@@ -35,6 +36,7 @@ export function useChatPanelTabShortcuts({
   onNewTerminal,
   containerRef,
 }: UseChatPanelTabShortcutsOptions): void {
+  const store = useStore();
   const state = useAtomValue(chatPanelTabsAtom);
   const isChatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
   const closeTab = useSetAtom(closeAndDestroyChatPanelTabAtom);
@@ -83,6 +85,10 @@ export function useChatPanelTabShortcuts({
       if (!isChatPanelMaximized && !paneOwnsShortcutsRef.current) return;
 
       if (matchesShortcut(event, "close_tab")) {
+        // Closing the sole Launchpad only re-creates it. Leave the chord to
+        // the app-wide handler, which closes My Station's Launchpad first and
+        // the window once My Station is closed.
+        if (store.get(closeTabChordFallbackAtom)) return;
         const active = tabsRef.current.tabs.find(
           (tab) => tab.id === tabsRef.current.activeTabId
         );
@@ -120,6 +126,7 @@ export function useChatPanelTabShortcuts({
       nextTab,
       onNewSession,
       prevTab,
+      store,
     ]
   );
 
