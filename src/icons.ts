@@ -366,6 +366,7 @@ export { default as ScrollIcon } from "@hugeicons/core-free-icons/ScrollIcon";
 export { default as Search01Icon } from "@hugeicons/core-free-icons/Search01Icon";
 export { default as Search02Icon } from "@hugeicons/core-free-icons/Search02Icon";
 export { default as SearchAreaIcon } from "@hugeicons/core-free-icons/SearchAreaIcon";
+export { default as SearchList01Icon } from "@hugeicons/core-free-icons/SearchList01Icon";
 export { default as SearchMinusIcon } from "@hugeicons/core-free-icons/SearchMinusIcon";
 export { default as SecurityBlockIcon } from "@hugeicons/core-free-icons/SecurityBlockIcon";
 export { default as SecurityCheckIcon } from "@hugeicons/core-free-icons/SecurityCheckIcon";

@@ -37,6 +37,7 @@ export function SourceControlDiffSettingsMenu() {
       showHighlightActiveLineToggle
       showGitBlameToggle={false}
       showMoreSettingsAction={!!onOpenSettings}
+      showSidebarSettings
       lineNumbersEnabled={lineNumbers !== "off"}
       wordWrapEnabled={wordWrap}
       minimapEnabled={false}

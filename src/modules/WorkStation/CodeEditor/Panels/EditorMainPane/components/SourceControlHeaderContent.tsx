@@ -233,14 +233,6 @@ export const SourceControlHeaderContent: React.FC<
           onChange={onDiffViewModeChange}
           t={t}
         />
-        {showDetailToolbar ? (
-          <span
-            ref={focusToolbarRef}
-            className="flex shrink-0 items-center gap-px"
-          />
-        ) : (
-          <SourceControlDiffSettingsMenu />
-        )}
         <Button
           htmlType="button"
           variant="tertiary"
@@ -259,6 +251,14 @@ export const SourceControlHeaderContent: React.FC<
             />
           }
         />
+        {showDetailToolbar ? (
+          <span
+            ref={focusToolbarRef}
+            className="flex shrink-0 items-center gap-px"
+          />
+        ) : (
+          <SourceControlDiffSettingsMenu />
+        )}
       </span>
     </div>
   );
