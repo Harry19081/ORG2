@@ -276,6 +276,104 @@ describe("ChatTranscript tail follow", () => {
     expect(workToggle()?.getAttribute("aria-expanded")).toBe("false");
   });
 
+  it("preserves loaded prompt and final images through completion and busy transitions", async () => {
+    const loadImage = vi
+      .fn()
+      .mockResolvedValue("data:image/jpeg;base64,aGVsbG8=");
+    const items = workedItems.map((item) => ({
+      ...item,
+      imageCount: item.id === USER_ITEM.id || item.id === "answer" ? 1 : 0,
+    }));
+    const options = { roundId: "round-1", loadImage };
+    await renderTranscript([items[0]], {
+      ...options,
+      round: { ...completedRound, status: "pending" },
+    });
+    const promptLoad = Array.from(container.querySelectorAll("button")).find(
+      (button) => button.textContent?.includes("images.load")
+    )!;
+    await act(async () => promptLoad.click());
+    const promptImage = container.querySelector("img");
+    expect(promptImage).not.toBeNull();
+    await renderTranscript(items, {
+      ...options,
+      round: { ...completedRound, status: "pending" },
+    });
+    expect(container.querySelector("img")).toBe(promptImage);
+    const loadButtons = Array.from(container.querySelectorAll("button")).filter(
+      (button) => button.textContent?.includes("images.load")
+    );
+    for (const button of loadButtons) await act(async () => button.click());
+    const originalImages = Array.from(container.querySelectorAll("img"));
+    const originalPrompt = container.querySelector(
+      '[data-transcript-item-kind="user"]'
+    );
+    expect(originalImages).toHaveLength(2);
+    const assertPreserved = () => {
+      const images = container.querySelectorAll("img");
+      expect(images).toHaveLength(2);
+      originalImages.forEach((image, index) =>
+        expect(images[index]).toBe(image)
+      );
+      expect(
+        container.querySelector('[data-transcript-item-kind="user"]')
+      ).toBe(originalPrompt);
+      expect(loadImage).toHaveBeenCalledTimes(2);
+    };
+    await renderTranscript(items, { ...options, round: completedRound });
+    assertPreserved();
+    expect(workToggle()?.getAttribute("aria-expanded")).toBe("false");
+    for (let cycle = 0; cycle < 3; cycle += 1) {
+      await renderTranscript(items, {
+        ...options,
+        round: completedRound,
+        waitingForAgent: true,
+      });
+      expect(workToggle()).toBeNull();
+      assertPreserved();
+      await renderTranscript(items, { ...options, round: completedRound });
+      assertPreserved();
+    }
+    await act(async () => workToggle()!.click());
+    assertPreserved();
+    await act(async () => workToggle()!.click());
+    assertPreserved();
+    await renderTranscript(items, {
+      ...options,
+      roundId: "other-round",
+      round: completedRound,
+    });
+    expect(container.querySelectorAll("img")).toHaveLength(0);
+  });
+
+  it("preserves expanded tool rows during busy and terminal-state transitions", async () => {
+    await renderTranscript(workedItems, {
+      roundId: "round-1",
+      round: { ...completedRound, status: "pending" },
+    });
+    const originalTool = container.querySelector(
+      '[data-transcript-item-kind="tool"]'
+    );
+    expect(originalTool).not.toBeNull();
+    for (const status of ["failed", "cancelled", "interrupted"]) {
+      await renderTranscript(workedItems, {
+        roundId: "round-1",
+        round: { ...completedRound, status },
+      });
+      expect(
+        container.querySelector('[data-transcript-item-kind="tool"]')
+      ).toBe(originalTool);
+      await renderTranscript(workedItems, {
+        roundId: "round-1",
+        round: { ...completedRound, status },
+        waitingForAgent: true,
+      });
+      expect(
+        container.querySelector('[data-transcript-item-kind="tool"]')
+      ).toBe(originalTool);
+    }
+  });
+
   it.each(["completed", "failed", "cancelled", "interrupted"])(
     "folds every tool outcome in a %s round and restores the original order when expanded",
     async (status) => {
