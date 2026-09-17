@@ -18,6 +18,12 @@
     "file": "Buscar en el archivo",
     "named": "Buscar en {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Barra lateral",
+    "showSidebar": "Mostrar barra lateral",
+    "location": "Posición",
+    "showIndentLines": "Mostrar líneas de sangría"
+  },
   "teamInbox": {
     "title": "Bandeja del equipo",
     "listLabel": "Lista de la bandeja del equipo",

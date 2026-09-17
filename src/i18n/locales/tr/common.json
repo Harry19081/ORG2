@@ -18,6 +18,12 @@
     "file": "Dosyada ara",
     "named": "{{name}} içinde ara"
   },
+  "sidebarSettings": {
+    "title": "Kenar çubuğu ayarları",
+    "showSidebar": "Kenar çubuğunu göster",
+    "location": "Konum",
+    "showIndentLines": "Girinti çizgilerini göster"
+  },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
     "listLabel": "Ekip Gelen Kutusu listesi",

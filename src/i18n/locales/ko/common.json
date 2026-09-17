@@ -18,6 +18,12 @@
     "file": "파일에서 검색",
     "named": "{{name}}에서 검색"
   },
+  "sidebarSettings": {
+    "title": "사이드바 설정",
+    "showSidebar": "사이드바 표시",
+    "location": "위치",
+    "showIndentLines": "들여쓰기 선 표시"
+  },
   "teamInbox": {
     "title": "팀 수신함",
     "listLabel": "팀 수신함 목록",

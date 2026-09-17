@@ -18,6 +18,12 @@
     "file": "在文件中搜索",
     "named": "在 {{name}} 中搜索"
   },
+  "sidebarSettings": {
+    "title": "侧边栏设置",
+    "showSidebar": "显示侧边栏",
+    "location": "位置",
+    "showIndentLines": "显示缩进线"
+  },
   "windowChrome": {
     "menus": {
       "file": "文件",
