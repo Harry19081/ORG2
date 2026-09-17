@@ -22,7 +22,8 @@
     "title": "Cài đặt thanh bên",
     "showSidebar": "Hiện thanh bên",
     "location": "Vị trí",
-    "showIndentLines": "Hiện đường thụt lề"
+    "showIndentLines": "Hiện đường thụt lề",
+    "colorSourceControlFiles": "Dùng màu khác biệt cho tệp"
   },
   "teamInbox": {
     "title": "Hộp thư nhóm",

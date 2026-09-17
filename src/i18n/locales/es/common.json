@@ -22,7 +22,8 @@
     "title": "Barra lateral",
     "showSidebar": "Mostrar barra lateral",
     "location": "Posición",
-    "showIndentLines": "Mostrar líneas de sangría"
+    "showIndentLines": "Mostrar líneas de sangría",
+    "colorSourceControlFiles": "Usar colores de diferencias para archivos"
   },
   "teamInbox": {
     "title": "Bandeja del equipo",

@@ -22,7 +22,8 @@
     "title": "Sidebar settings",
     "showSidebar": "Show sidebar",
     "location": "Location",
-    "showIndentLines": "Show indent lines"
+    "showIndentLines": "Show indent lines",
+    "colorSourceControlFiles": "Use diff colors for files"
   },
   "windowChrome": {
     "menus": {

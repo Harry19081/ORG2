@@ -1,7 +1,11 @@
 // @vitest-environment jsdom
+import { Provider, createStore } from "jotai";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
+
+import { settingsAtom } from "@src/store/settings/settingsAtom";
+import { gitSourceControlColorFileNamesAtom } from "@src/store/ui/editorSettingsAtom";
 
 import SourceControlTreeRow from "./SourceControlTreeRow";
 
@@ -85,5 +89,48 @@ describe("SourceControlTreeRow section actions", () => {
     expect(group.classList.contains("group-hover/item:flex")).toBe(true);
     expect(group.children).toHaveLength(2);
     expect(group.nextElementSibling).not.toBeNull();
+  });
+
+  it("colors file names by diff status only when the default-off setting is enabled", () => {
+    const store = createStore();
+    const fileNode = {
+      path: "file.ts",
+      name: "file.ts",
+      isFolder: false,
+      expanded: false,
+      nodeType: "file" as const,
+      section: "unstaged" as const,
+      file: {
+        id: "file.ts",
+        path: "file.ts",
+        status: "modified" as const,
+        staged: false,
+        additions: 1,
+        deletions: 0,
+      },
+    };
+    const renderRow = () => {
+      const root = document.createElement("div");
+      root.innerHTML = renderToStaticMarkup(
+        createElement(
+          Provider,
+          { store },
+          createElement(SourceControlTreeRow, {
+            node: fileNode,
+            depth: 0,
+          })
+        )
+      );
+      return root.querySelector<HTMLElement>('span[title="file.ts"]')!;
+    };
+
+    expect(store.get(gitSourceControlColorFileNamesAtom)).toBe(false);
+    expect(renderRow().classList.contains("text-warning-6")).toBe(false);
+
+    store.set(settingsAtom, (settings) => ({
+      ...settings,
+      "git.sourceControl.colorFileNames": true,
+    }));
+    expect(renderRow().classList.contains("text-warning-6")).toBe(true);
   });
 });

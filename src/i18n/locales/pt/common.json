@@ -22,7 +22,8 @@
     "title": "Barra lateral",
     "showSidebar": "Mostrar barra lateral",
     "location": "Posição",
-    "showIndentLines": "Mostrar linhas de recuo"
+    "showIndentLines": "Mostrar linhas de recuo",
+    "colorSourceControlFiles": "Usar cores de diferenças nos arquivos"
   },
   "teamInbox": {
     "title": "Caixa de entrada da equipe",

@@ -36,6 +36,7 @@ import {
   Undo03Icon,
 } from "@src/icons";
 import { useActionSystemOptional } from "@src/scaffold/ActionSystem";
+import { gitSourceControlColorFileNamesAtom } from "@src/store/ui/editorSettingsAtom";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import type { GitFile } from "@src/types/git/types";
 
@@ -314,6 +315,7 @@ const FileDirectoryRow: React.FC<FileDirectoryRowProps> = memo(
     const isStaged = node.file?.staged ?? false;
     const rowRef = useRef<HTMLDivElement>(null);
     const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
+    const colorFileNames = useAtomValue(gitSourceControlColorFileNamesAtom);
     const actionSystem = useActionSystemOptional();
     const [showContextMenu, setShowContextMenu] = useState(false);
 
@@ -465,7 +467,8 @@ const FileDirectoryRow: React.FC<FileDirectoryRowProps> = memo(
           depth={depth}
           isSelected={isSelected}
           isMultiSelected={isMultiSelected}
-          gitStatus={null}
+          gitStatus={gitStatus}
+          colorLabelByGitStatus={!isDirectory && colorFileNames}
           onClick={handleClick}
           onContextMenu={handleContextMenu}
           rounded={shouldRound}

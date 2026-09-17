@@ -22,7 +22,8 @@
     "title": "사이드바 설정",
     "showSidebar": "사이드바 표시",
     "location": "위치",
-    "showIndentLines": "들여쓰기 선 표시"
+    "showIndentLines": "들여쓰기 선 표시",
+    "colorSourceControlFiles": "파일에 변경 색상 사용"
   },
   "teamInbox": {
     "title": "팀 수신함",

@@ -22,7 +22,8 @@
     "title": "サイドバー設定",
     "showSidebar": "サイドバーを表示",
     "location": "位置",
-    "showIndentLines": "インデント線を表示"
+    "showIndentLines": "インデント線を表示",
+    "colorSourceControlFiles": "ファイルに差分色を使用"
   },
   "teamInbox": {
     "title": "チームの受信トレイ",

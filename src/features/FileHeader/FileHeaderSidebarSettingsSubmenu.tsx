@@ -2,7 +2,8 @@
  * FileHeaderSidebarSettingsSubmenu
  *
  * "Sidebar settings" flyout in the file header's more menu: WorkStation
- * primary-sidebar visibility, left/right location, and tree indent lines.
+ * primary-sidebar visibility, left/right location, tree indent lines, and
+ * Source Control file-name colors.
  * Mounted only while the menu is open, so its atom subscriptions are too.
  */
 import { useAtom } from "jotai";
@@ -18,7 +19,10 @@ import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Switch from "@src/components/Switch";
 import { usePrimarySidebarState } from "@src/hooks/tabHost/useWorkStationPanels";
 import { HugeiconsIcon, SidebarLeftIcon, SidebarRightIcon } from "@src/icons";
-import { editorShowTreeIndentGuidesAtom } from "@src/store/ui/editorSettingsAtom";
+import {
+  editorShowTreeIndentGuidesAtom,
+  gitSourceControlColorFileNamesAtom,
+} from "@src/store/ui/editorSettingsAtom";
 import type { LayoutMode } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 
 function SwitchRow({
@@ -56,6 +60,9 @@ export function FileHeaderSidebarSettingsSubmenu() {
   } = usePrimarySidebarState();
   const [indentLinesEnabled, setIndentLinesEnabled] = useAtom(
     editorShowTreeIndentGuidesAtom
+  );
+  const [colorFileNames, setColorFileNames] = useAtom(
+    gitSourceControlColorFileNamesAtom
   );
   const locationLabel = t("sidebarSettings.location");
 
@@ -102,6 +109,12 @@ export function FileHeaderSidebarSettingsSubmenu() {
         checked={indentLinesEnabled}
         onChange={setIndentLinesEnabled}
         dataTestId="file-header-sidebar-indent-lines-toggle"
+      />
+      <SwitchRow
+        label={t("sidebarSettings.colorSourceControlFiles")}
+        checked={colorFileNames}
+        onChange={setColorFileNames}
+        dataTestId="file-header-sidebar-diff-colors-toggle"
       />
     </ActionSubmenu>
   );

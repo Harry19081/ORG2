@@ -22,7 +22,8 @@
     "title": "侧边栏设置",
     "showSidebar": "显示侧边栏",
     "location": "位置",
-    "showIndentLines": "显示缩进线"
+    "showIndentLines": "显示缩进线",
+    "colorSourceControlFiles": "使用差异颜色标记文件"
   },
   "windowChrome": {
     "menus": {

@@ -22,7 +22,8 @@
     "title": "Pengaturan bilah sisi",
     "showSidebar": "Tampilkan bilah sisi",
     "location": "Lokasi",
-    "showIndentLines": "Tampilkan garis indentasi"
+    "showIndentLines": "Tampilkan garis indentasi",
+    "colorSourceControlFiles": "Gunakan warna diff untuk file"
   },
   "windowChrome": {
     "menus": {

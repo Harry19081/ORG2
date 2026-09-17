@@ -22,7 +22,8 @@
     "title": "Kenar çubuğu ayarları",
     "showSidebar": "Kenar çubuğunu göster",
     "location": "Konum",
-    "showIndentLines": "Girinti çizgilerini göster"
+    "showIndentLines": "Girinti çizgilerini göster",
+    "colorSourceControlFiles": "Dosyalar için fark renklerini kullan"
   },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
