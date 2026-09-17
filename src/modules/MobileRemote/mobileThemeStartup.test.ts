@@ -44,7 +44,7 @@ afterEach(() => {
 describe("mobile theme startup preflight", () => {
   it("derives browser chrome from the loaded canvas rather than a fixed palette", () => {
     themeLinks.forEach((link) => document.head.append(link.cloneNode(true)));
-    localStorage.setItem("theme", "dark");
+    localStorage.setItem("mobileRemote.theme", "dark");
     window.matchMedia = () => ({ matches: false }) as MediaQueryList;
     runPreflight();
     expect(document.querySelector('meta[name="theme-color"]')).toBeNull();
@@ -64,13 +64,19 @@ describe("mobile theme startup preflight", () => {
   it.each([
     { preference: "dark", systemDark: false, expected: "dark" },
     { preference: "light", systemDark: true, expected: "light" },
+    { preference: "system", systemDark: true, expected: "dark" },
     { preference: undefined, systemDark: true, expected: "dark" },
+    { preference: undefined, systemDark: false, expected: "light" },
+    { preference: "invalid", systemDark: false, expected: "light" },
   ])(
     "resolves $preference with systemDark=$systemDark before React mounts",
     ({ preference, systemDark, expected }) => {
       expect(preflightScript).toBeTruthy();
       themeLinks.forEach((link) => document.head.append(link.cloneNode(true)));
-      if (preference) localStorage.setItem("theme", preference);
+      // A conflicting Desktop preference must never affect mobile startup.
+      const desktopPreference = expected === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", desktopPreference);
+      if (preference) localStorage.setItem("mobileRemote.theme", preference);
       window.matchMedia = () => ({ matches: systemDark }) as MediaQueryList;
 
       runPreflight();
@@ -84,6 +90,7 @@ describe("mobile theme startup preflight", () => {
         .filter((link) => link.media === "all")
         .map((link) => link.dataset.orgiiMobileTheme);
       expect(activeThemes).toEqual([expected]);
+      expect(localStorage.getItem("theme")).toBe(desktopPreference);
       expect(root.dataset.theme).toBe(expected);
       expect(root.dataset.themeId).toBe(expected);
       expect(root.style.colorScheme).toBe(expected);

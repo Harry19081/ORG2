@@ -32,7 +32,85 @@ describe("MobileThemeProvider", () => {
   afterEach(async () => {
     await act(async () => root.unmount());
     host.remove();
+    localStorage.clear();
     env.IS_REACT_ACT_ENVIRONMENT = previousAct;
+  });
+
+  it("keeps mobile persistence and reload hydration isolated from Desktop", async () => {
+    localStorage.setItem("theme", "dark");
+    const readPreference = vi.fn((key: string) => localStorage.getItem(key));
+    const writePreference = vi.fn((key: string, value: string) =>
+      localStorage.setItem(key, value)
+    );
+    const applyColorScheme = vi.fn();
+    const platform = {
+      runtime: {
+        readPreference,
+        writePreference,
+        isHidden: () => false,
+        subscribeVisibility: () => () => undefined,
+      },
+      appearance: {
+        getSystemColorScheme: () => "light",
+        subscribeSystemColorScheme: () => () => undefined,
+        applyColorScheme,
+      },
+    } as unknown as MobileRemotePlatform;
+    function Probe() {
+      const theme = useMobileTheme();
+      return React.createElement(
+        "button",
+        {
+          "data-preference": theme.preference,
+          onClick: () => void theme.setPreference("dark"),
+        },
+        theme.resolvedColorScheme
+      );
+    }
+    const render = async () => {
+      await act(async () => {
+        root.render(
+          React.createElement(
+            TestMobileThemeProvider,
+            { platform },
+            React.createElement(Probe)
+          )
+        );
+      });
+    };
+
+    await render();
+    expect(host.firstElementChild?.getAttribute("data-preference")).toBe(
+      "system"
+    );
+    expect(host.textContent).toBe("light");
+    expect(applyColorScheme).toHaveBeenLastCalledWith("light");
+    expect(readPreference).toHaveBeenCalledWith("mobileRemote.theme");
+    expect(readPreference).not.toHaveBeenCalledWith("theme");
+
+    // A user choice must not change Desktop's conflicting saved preference.
+    localStorage.setItem("theme", "light");
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>("button")!.click();
+    });
+    expect(localStorage.getItem("mobileRemote.theme")).toBe("dark");
+    expect(localStorage.getItem("theme")).toBe("light");
+    expect(writePreference).toHaveBeenCalledExactlyOnceWith(
+      "mobileRemote.theme",
+      "dark"
+    );
+
+    await act(async () => root.unmount());
+    root = createRoot(host);
+    // Desktop may sync its own preference while the mobile view is closed.
+    localStorage.setItem("theme", "system");
+    await render();
+    expect(host.firstElementChild?.getAttribute("data-preference")).toBe(
+      "dark"
+    );
+    expect(host.textContent).toBe("dark");
+    expect(applyColorScheme).toHaveBeenLastCalledWith("dark");
+    expect(localStorage.getItem("theme")).toBe("system");
   });
 
   it("persists explicit choices and only follows OS changes in system mode", async () => {
@@ -107,7 +185,7 @@ describe("MobileThemeProvider", () => {
     await act(async () =>
       host.querySelector<HTMLButtonElement>("button")!.click()
     );
-    expect(writePreference).toHaveBeenCalledWith("theme", "dark");
+    expect(writePreference).toHaveBeenCalledWith("mobileRemote.theme", "dark");
     expect(applyColorScheme).toHaveBeenLastCalledWith("dark");
 
     applyColorScheme.mockClear();

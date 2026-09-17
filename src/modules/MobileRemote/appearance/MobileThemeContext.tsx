@@ -17,7 +17,9 @@ import {
 
 import type { MobileRemotePlatform } from "../platform";
 
-const MOBILE_THEME_STORAGE_KEY = "theme";
+// Keep mobile choices separate from Desktop on shared browser origins.
+// Do not migrate "theme": that value may belong to Desktop.
+const MOBILE_THEME_STORAGE_KEY = "mobileRemote.theme";
 
 export type MobileThemeStatus = "idle" | "applying" | "error";
 
