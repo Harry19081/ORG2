@@ -1,9 +1,33 @@
 // @vitest-environment jsdom
-import { createElement } from "react";
+import { type ReactNode, createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { SourceControlStickyHeader } from "./SourceControlStickyHeader";
 import SourceControlTreeRow from "./SourceControlTreeRow";
+
+vi.mock("@src/components/FileTreePreview/exports", () => ({
+  FileTreeHoverPreview: ({
+    path,
+    repoPath,
+    itemType,
+    children,
+  }: {
+    path: string;
+    repoPath?: string;
+    itemType: string;
+    children: ReactNode;
+  }) =>
+    createElement(
+      "div",
+      {
+        "data-preview-path": path,
+        "data-preview-repo": repoPath,
+        "data-preview-type": itemType,
+      },
+      children
+    ),
+}));
 
 vi.mock("@src/scaffold/ActionSystem", () => ({
   useActionSystemOptional: () => null,
@@ -15,6 +39,56 @@ vi.mock("@src/hooks/files/useNativeDrag", () => ({
 vi.mock("./SourceControlContextMenu", () => ({ default: () => null }));
 
 describe("SourceControlTreeRow section actions", () => {
+  it.each(["file", "directory"] as const)(
+    "previews the canonical worktree path for %s rows and sticky headers",
+    (nodeType) => {
+      const node = {
+        path: "unstaged:src/nested",
+        name: "src / nested",
+        nodeType,
+        isFolder: nodeType === "directory",
+        expanded: true,
+        section: "unstaged" as const,
+        treeNode: {
+          path: "src/nested",
+          name: "nested",
+          type: nodeType,
+        },
+      };
+      for (const component of [
+        createElement(SourceControlTreeRow, {
+          node,
+          depth: 1,
+          overrideRepoPath: "/worktree",
+        }),
+        createElement(SourceControlStickyHeader, {
+          stickyNode: {
+            node,
+            depth: 1,
+            startIndex: 0,
+            endIndex: 0,
+            position: 0,
+            height: 28,
+          },
+          onClick: vi.fn(),
+          repoPath: "/worktree",
+        }),
+      ]) {
+        const root = document.createElement("div");
+        root.innerHTML = renderToStaticMarkup(component);
+        const preview = root.querySelector("[data-preview-path]")!;
+        expect(preview.getAttribute("data-preview-path")).toBe(
+          "/worktree/src/nested"
+        );
+        expect(preview.getAttribute("data-preview-repo")).toBe("/worktree");
+        expect(preview.getAttribute("data-preview-type")).toBe(
+          nodeType === "directory" ? "folder" : "file"
+        );
+        expect(root.querySelector("[title]")).toBeNull();
+      }
+    }
+  );
+
   it("reveals all unstaged actions together without mixing opacity fades and display changes", () => {
     const root = document.createElement("div");
     root.innerHTML = renderToStaticMarkup(
