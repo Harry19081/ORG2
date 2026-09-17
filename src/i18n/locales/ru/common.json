@@ -946,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Файл мог быть удален или перемещен.",
     "editorCouldNotOpenFileMissing": "Редактор не удалось открыть, потому что файл не найден или удален",
     "enterSearchQueryToBegin": "Введите поисковый запрос, чтобы начать",
+    "pressEnterToSearch": "Нажмите Enter для поиска",
     "unknownTabType": "Неизвестный тип вкладки",
     "noWorkspaceFolders": "Нет папок Workspace",
     "noRepoSelected": "No repository selected",

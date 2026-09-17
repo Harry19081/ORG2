@@ -15,12 +15,7 @@ import Select from "@src/components/Select";
 import { VirtualList } from "@src/components/VirtualList";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useKeyedCopyCheck } from "@src/hooks/ui/useCopyCheck";
-import {
-  BrushCleaningIcon,
-  Copy01Icon,
-  HugeiconsIcon,
-  Tick01Icon,
-} from "@src/icons";
+import { CleanIcon, Copy01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 import { copyText } from "@src/util/data/clipboard";
 
 import type { ConsoleEntry, FilterLevel, LogLevel } from "../../types";
@@ -403,8 +398,8 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
               iconOnly
               icon={
                 <HugeiconsIcon
-                  icon={BrushCleaningIcon}
-                  data-icon="brush-cleaning"
+                  icon={CleanIcon}
+                  data-icon="clean"
                   size={HEADER_ICON_SIZE.sm}
                 />
               }

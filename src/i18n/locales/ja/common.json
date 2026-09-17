@@ -946,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "ファイルは削除または移動された可能性があります。",
     "editorCouldNotOpenFileMissing": "ファイルが見つからないか削除されたため、エディタを開けませんでした",
     "enterSearchQueryToBegin": "検索クエリを入力して開始してください",
+    "pressEnterToSearch": "Enter キーを押して検索",
     "unknownTabType": "不明なタブ種別",
     "noWorkspaceFolders": "Workspace フォルダがありません",
     "noRepoSelected": "No repository selected",

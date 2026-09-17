@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
+  SearchTabSessionState,
   SearchOptions as StoreSearchOptions,
   SearchResultFile as StoreSearchResultFile,
 } from "@src/store/workstation/codeEditor/search";
@@ -34,6 +35,9 @@ interface UseSearchTabContentOptions {
 
 interface UseSearchTabContentReturn {
   query: string;
+  submittedSearch: SearchTabSessionState["submittedSearch"];
+  awaitingSubmission: boolean;
+  refresh: () => void;
   setQuery: (value: string) => void;
   options: SearchOptions;
   setOptions: (value: Partial<SearchOptions>) => void;
@@ -47,9 +51,11 @@ interface UseSearchTabContentReturn {
   isTruncated: boolean;
 }
 
+const NO_OPEN_FILES: string[] = [];
+
 export function useSearchTabContent({
   repoPath,
-  openFiles = [],
+  openFiles = NO_OPEN_FILES,
   searchMode,
   sessionScopeId,
   initialQuery,
@@ -69,13 +75,16 @@ export function useSearchTabContent({
     };
   }, [sessionScopeId, initialQuery, initialOptions]);
   const [query, setQuery] = useState<string>(initialState.query);
+  const [submittedSearch, setSubmittedSearch] = useState(
+    initialState.submittedSearch ?? null
+  );
   const [storeOptions, setStoreOptions] = useState<StoreSearchOptions>(
     initialState.options
   );
   const [storeResults, setStoreResults] = useState<StoreSearchResultFile[]>(
     initialState.results
   );
-  const [loading, setLoading] = useState<boolean>(initialState.loading);
+  const [loading, setLoading] = useState<boolean>(false);
   const [loadingMore, _setLoadingMore] = useState<boolean>(
     initialState.loadingMore
   );
@@ -130,7 +139,8 @@ export function useSearchTabContent({
     []
   );
 
-  useSearchExecution({
+  const { refresh: executeSearch } = useSearchExecution({
+    automatic: false,
     query,
     searchMode,
     repoPath,
@@ -139,10 +149,22 @@ export function useSearchTabContent({
     resultActions,
   });
 
+  const refresh = useCallback(() => {
+    resultActions.clearAtom();
+    setLoading(Boolean(query.trim()));
+    setSubmittedSearch(query.trim() ? { query, options: storeOptions } : null);
+    void executeSearch();
+  }, [query, storeOptions, executeSearch, resultActions]);
+  const awaitingSubmission =
+    !submittedSearch ||
+    query !== submittedSearch.query ||
+    storeOptions !== submittedSearch.options;
+
   useEffect(() => {
     setSearchTabSessionState(sessionScopeId, {
       query,
       options: storeOptions,
+      submittedSearch,
       results: storeResults,
       loading,
       loadingMore,
@@ -153,6 +175,7 @@ export function useSearchTabContent({
     });
   }, [
     sessionScopeId,
+    submittedSearch,
     query,
     storeOptions,
     storeResults,
@@ -168,6 +191,9 @@ export function useSearchTabContent({
 
   return {
     query,
+    submittedSearch,
+    awaitingSubmission,
+    refresh,
     setQuery,
     options,
     setOptions,

@@ -946,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Tệp có thể đã bị xóa hoặc di chuyển.",
     "editorCouldNotOpenFileMissing": "Không thể mở trình chỉnh sửa vì tệp không tồn tại hoặc đã bị xóa",
     "enterSearchQueryToBegin": "Nhập truy vấn tìm kiếm để bắt đầu",
+    "pressEnterToSearch": "Nhấn Enter để tìm kiếm",
     "unknownTabType": "Loại tab không xác định",
     "noWorkspaceFolders": "Không có thư mục Workspace",
     "noRepoSelected": "No repository selected",

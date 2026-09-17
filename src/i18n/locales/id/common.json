@@ -778,6 +778,7 @@
     "fileMayHaveBeenDeletedOrMoved": "File mungkin telah dihapus atau dipindahkan.",
     "editorCouldNotOpenFileMissing": "Editor tidak dapat dibuka karena file tidak ditemukan atau telah dihapus",
     "enterSearchQueryToBegin": "Masukkan kueri pencarian untuk memulai",
+    "pressEnterToSearch": "Tekan Enter untuk mencari",
     "unknownTabType": "Jenis tab tidak dikenal",
     "noWorkspaceFolders": "Tidak ada folder ruang kerja",
     "noRepoSelected": "Tidak ada repositori yang dipilih",

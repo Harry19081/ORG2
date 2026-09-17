@@ -946,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "檔案可能已被刪除或移動。",
     "editorCouldNotOpenFileMissing": "無法打開編輯器，因爲文件未找到或已被刪除",
     "enterSearchQueryToBegin": "輸入搜索查詢以開始",
+    "pressEnterToSearch": "按 Enter 鍵搜尋",
     "unknownTabType": "未知標籤頁類型",
     "noWorkspaceFolders": "沒有工作區文件夾",
     "noRepoSelected": "No repository selected",

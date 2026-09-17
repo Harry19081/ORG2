@@ -946,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Le fichier a peut-être été supprimé ou déplacé.",
     "editorCouldNotOpenFileMissing": "L'éditeur n'a pas pu être ouvert car le fichier est introuvable ou a été supprimé",
     "enterSearchQueryToBegin": "Saisissez une requête de recherche pour commencer",
+    "pressEnterToSearch": "Appuyez sur Entrée pour rechercher",
     "unknownTabType": "Type d'onglet inconnu",
     "noWorkspaceFolders": "Aucun dossier de workspace",
     "noRepoSelected": "No repository selected",
