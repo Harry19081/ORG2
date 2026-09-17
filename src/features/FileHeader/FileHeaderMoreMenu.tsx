@@ -20,18 +20,14 @@ import {
   ActionMenuSurface,
   ActionSubmenu,
 } from "@src/components/Dropdown/ActionMenuSurface";
-import DropdownItem from "@src/components/Dropdown/DropdownItem";
+import DropdownActionItem from "@src/components/Dropdown/DropdownActionItem";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
   DROPDOWN_PANEL,
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
-import {
-  KEYBOARD_SHORTCUT_VARIANT,
-  KeyboardShortcut,
-  KeyboardShortcutTooltipContent,
-} from "@src/components/KeyboardShortcut";
+import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Switch from "@src/components/Switch";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import Tooltip from "@src/components/Tooltip";
@@ -293,10 +289,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
             }}
           >
             {!saveDisabled && (
-              <DropdownItem
-                role="menuitem"
-                fullWidth
-                tabIndex={0}
+              <DropdownActionItem
                 icon={
                   <HugeiconsIcon
                     icon={FloppyDiskIcon}
@@ -305,25 +298,15 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                   />
                 }
                 disabled={saveDisabled}
-                suffix={
-                  saveShortcut ? (
-                    <KeyboardShortcut
-                      shortcut={saveShortcut}
-                      variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
-                    />
-                  ) : undefined
-                }
+                shortcut={saveShortcut}
                 onClick={onSaveClick}
               >
                 {t("common:actions.save")}
-              </DropdownItem>
+              </DropdownActionItem>
             )}
 
             {!discardDisabled && (
-              <DropdownItem
-                role="menuitem"
-                fullWidth
-                tabIndex={0}
+              <DropdownActionItem
                 icon={
                   <HugeiconsIcon
                     icon={Undo03Icon}
@@ -335,7 +318,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                 onClick={onDiscardClick}
               >
                 {t("common:workstation.discardChanges")}
-              </DropdownItem>
+              </DropdownActionItem>
             )}
 
             {hasFileChangeActions &&
@@ -344,10 +327,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
               )}
 
             {!searchDisabled && (
-              <DropdownItem
-                role="menuitem"
-                fullWidth
-                tabIndex={0}
+              <DropdownActionItem
                 icon={
                   <HugeiconsIcon
                     icon={SearchList01Icon}
@@ -356,25 +336,15 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                   />
                 }
                 disabled={searchDisabled}
-                suffix={
-                  searchShortcut ? (
-                    <KeyboardShortcut
-                      shortcut={searchShortcut}
-                      variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
-                    />
-                  ) : undefined
-                }
+                shortcut={searchShortcut}
                 onClick={onSearchClick}
               >
                 {t("actions.search")}
-              </DropdownItem>
+              </DropdownActionItem>
             )}
 
             {!goToLineDisabled && (
-              <DropdownItem
-                role="menuitem"
-                fullWidth
-                tabIndex={0}
+              <DropdownActionItem
                 icon={
                   <HugeiconsIcon
                     icon={HashtagIcon}
@@ -383,25 +353,15 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                   />
                 }
                 disabled={goToLineDisabled}
-                suffix={
-                  goToLineShortcut ? (
-                    <KeyboardShortcut
-                      shortcut={goToLineShortcut}
-                      variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
-                    />
-                  ) : undefined
-                }
+                shortcut={goToLineShortcut}
                 onClick={onGoToLineClick}
               >
                 {t("selectors.editorSpotlight.modes.goToLine.label")}
-              </DropdownItem>
+              </DropdownActionItem>
             )}
 
             {!copyRelativePathDisabled && (
-              <DropdownItem
-                role="menuitem"
-                fullWidth
-                tabIndex={0}
+              <DropdownActionItem
                 icon={
                   <HugeiconsIcon
                     icon={Copy01Icon}
@@ -413,14 +373,11 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                 onClick={onCopyRelativePathClick}
               >
                 {t("common:actions.copyRelativePath")}
-              </DropdownItem>
+              </DropdownActionItem>
             )}
 
             {!revealInFileManagerDisabled && (
-              <DropdownItem
-                role="menuitem"
-                fullWidth
-                tabIndex={0}
+              <DropdownActionItem
                 icon={
                   <HugeiconsIcon
                     icon={FolderOpenIcon}
@@ -432,14 +389,11 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                 onClick={onRevealInFileManagerClick}
               >
                 {t(revealInFileManagerLabelKey)}
-              </DropdownItem>
+              </DropdownActionItem>
             )}
 
             {!reloadDisabled && (
-              <DropdownItem
-                role="menuitem"
-                fullWidth
-                tabIndex={0}
+              <DropdownActionItem
                 icon={
                   <HugeiconsIcon
                     icon={Refresh04Icon}
@@ -452,7 +406,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                 onClick={onReloadClick}
               >
                 {t("common:actions.refresh")}
-              </DropdownItem>
+              </DropdownActionItem>
             )}
 
             {fileActions}
@@ -514,10 +468,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                 )}
 
                 {showMoreSettingsAction && (
-                  <DropdownItem
-                    role="menuitem"
-                    fullWidth
-                    tabIndex={0}
+                  <DropdownActionItem
                     disabled={!showMoreSettingsAction}
                     onClick={onMoreSettingsClick}
                     suffix={
@@ -531,7 +482,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                     }
                   >
                     {t("common:actions.moreSettings")}
-                  </DropdownItem>
+                  </DropdownActionItem>
                 )}
               </ActionSubmenu>
             )}

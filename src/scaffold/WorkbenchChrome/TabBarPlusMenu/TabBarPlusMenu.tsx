@@ -4,7 +4,7 @@
  * Trailing `+` button for the unified workstation tab bar. The action model is
  * shared with the empty-pool Launchpad through `useWorkStationLaunchActions`,
  * while the extracted item renderer keeps this coordinator focused on menu
- * state and repository diff data.
+ * state.
  */
 import { useAtomValue, useSetAtom } from "jotai";
 import React, { memo, useEffect, useMemo, useState } from "react";
@@ -19,8 +19,6 @@ import { RecentTabsMenuSection } from "@src/components/RecentTabsMenuSection";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
-import { useActiveRepoRef } from "@src/hooks/git/useActiveRepoRef";
-import { useWorkingTreeDiffTotals } from "@src/hooks/git/useWorkingTreeDiffTotals";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import {
   LAUNCHPAD_ACTION_IDS,
@@ -53,8 +51,6 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
 }) => {
   const { t } = useTranslation("navigation");
   const actions = useWorkStationLaunchActions();
-  const { repoId, repoPath } = useActiveRepoRef();
-  const { additions, deletions } = useWorkingTreeDiffTotals(repoId, repoPath);
   const [menuVisible, setMenuVisible] = useState(false);
   const recentTabs = useAtomValue(recentWorkstationTabsAtom);
   const openRecentTab = useSetAtom(openRecentWorkstationTabAtom);
@@ -78,13 +74,11 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
   const triggerLabel = t("workstation.plusMenu.title");
   const droplist = (
     <div
-      className={`${DROPDOWN_CLASSES.menuPanelBase} ${DROPDOWN_WIDTHS.wideMenuClass}`}
+      className={`${DROPDOWN_CLASSES.menuPanelBase} ${DROPDOWN_WIDTHS.sidebarMenuClass}`}
     >
       <div className={DROPDOWN_CLASSES.itemsColumn}>
         <TabBarPlusMenuItems
           actions={visibleActions}
-          additions={additions}
-          deletions={deletions}
           onActionComplete={() => setMenuVisible(false)}
         />
         <RecentTabsMenuSection
