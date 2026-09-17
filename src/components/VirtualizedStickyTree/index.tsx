@@ -298,6 +298,7 @@ function VirtualizedStickyTreeInner<TNode extends TreeNodeBase>(
             )}
             onScroll={handleScrollerScroll}
             endReached={onEndReached}
+            footer={<div aria-hidden="true" style={{ height: 60 }} />}
           />
         </div>
       )}
