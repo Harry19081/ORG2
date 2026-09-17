@@ -17,11 +17,15 @@ import {
   CaseSensitiveIcon,
   HugeiconsIcon,
   RegexIcon,
+  SearchList01Icon,
   WholeWordIcon,
 } from "@src/icons";
 import { BubbleChatIcon, File01Icon } from "@src/icons";
 import { SpotlightSearchBar } from "@src/scaffold/GlobalSpotlight/components/SpotlightSearchBar";
-import { SPOTLIGHT_CLASSES } from "@src/scaffold/GlobalSpotlight/constants";
+import {
+  SPOTLIGHT_CLASSES,
+  SPOTLIGHT_TOKENS,
+} from "@src/scaffold/GlobalSpotlight/constants";
 
 import {
   type FindScope,
@@ -224,6 +228,15 @@ export function FindCard({
         placeholder={placeholder}
         ariaLabel={label}
         path={[]}
+        leadingSlot={
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center text-text-2">
+            <HugeiconsIcon
+              icon={SearchList01Icon}
+              data-icon="search-list-01"
+              size={SPOTLIGHT_TOKENS.iconSize}
+            />
+          </span>
+        }
         onKeyDown={(event) => {
           if (event.key === "Enter" && !event.nativeEvent.isComposing) {
             event.preventDefault();

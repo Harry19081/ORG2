@@ -195,6 +195,12 @@ describe("FileHeaderMoreMenu", () => {
     expect(menu.querySelectorAll('[role="menuitem"]')).toHaveLength(8);
     expect(menu.querySelector('[role="switch"]')).toBeNull();
     expect(menu.textContent).not.toContain("common:actions.moreSettings");
+    const searchAction = [
+      ...menu.querySelectorAll<HTMLElement>('[role="menuitem"]'),
+    ].find((item) => item.textContent?.includes("actions.search"));
+    expect(
+      searchAction?.querySelector('[data-icon="search-list-01"]')
+    ).not.toBeNull();
 
     const panel = openSettings();
     const switches =
@@ -246,6 +252,15 @@ describe("FileHeaderMoreMenu", () => {
     ).toBeNull();
     act(() => element("file-header-sidebar-settings-submenu").click());
     const panel = element("file-header-sidebar-settings-submenu-panel");
+    const separator = element("file-header-sidebar-indent-lines-separator");
+    expect(separator.getAttribute("role")).toBe("separator");
+    expect(separator.getAttribute("aria-hidden")).toBe("true");
+    expect(separator.previousElementSibling).toBe(
+      element("file-header-sidebar-location").parentElement
+    );
+    expect(separator.nextElementSibling?.querySelector('[role="switch"]')).toBe(
+      element("file-header-sidebar-indent-lines-toggle")
+    );
     expect(
       [...panel.querySelectorAll('[role="switch"]')].map((control) =>
         control.getAttribute("aria-label")

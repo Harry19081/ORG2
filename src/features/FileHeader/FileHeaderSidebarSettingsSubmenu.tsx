@@ -91,6 +91,12 @@ export function FileHeaderSidebarSettingsSubmenu() {
           onChange={setLayoutMode}
         />
       </div>
+      <div
+        role="separator"
+        aria-hidden
+        className={DROPDOWN_CLASSES.menuGroupSeparator}
+        data-testid="file-header-sidebar-indent-lines-separator"
+      />
       <SwitchRow
         label={t("sidebarSettings.showIndentLines")}
         checked={indentLinesEnabled}
