@@ -135,6 +135,22 @@ pub(super) fn finalize_total(usage: &mut HashMap<String, i64>) {
     }
 }
 
+// Preserve reported cache-write lifetimes for downstream receipts. An omitted
+// lifetime remains unknown: never infer 5m/1h from the combined write counter.
+fn merge_cache_lifetimes(usage: &mut HashMap<String, i64>, creation: Option<&Value>) {
+    for (field, key) in [
+        ("ephemeral_5m_input_tokens", "cache_write_5m_tokens"),
+        ("ephemeral_1h_input_tokens", "cache_write_1h_tokens"),
+    ] {
+        if let Some(tokens) = creation
+            .and_then(|value| value.get(field))
+            .and_then(Value::as_i64)
+        {
+            usage.insert(key.to_owned(), tokens);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -188,21 +204,5 @@ mod tests {
         assert_eq!(usage[usage_key::PROMPT_TOKENS], 11);
         assert_eq!(usage[usage_key::CACHE_WRITE_TOKENS], 4195);
         assert!(!usage.contains_key(usage_key::CACHE_READ_TOKENS));
-    }
-}
-
-// Preserve reported cache-write lifetimes for downstream receipts. An omitted
-// lifetime remains unknown: never infer 5m/1h from the combined write counter.
-fn merge_cache_lifetimes(usage: &mut HashMap<String, i64>, creation: Option<&Value>) {
-    for (field, key) in [
-        ("ephemeral_5m_input_tokens", "cache_write_5m_tokens"),
-        ("ephemeral_1h_input_tokens", "cache_write_1h_tokens"),
-    ] {
-        if let Some(tokens) = creation
-            .and_then(|value| value.get(field))
-            .and_then(Value::as_i64)
-        {
-            usage.insert(key.to_owned(), tokens);
-        }
     }
 }
