@@ -8,11 +8,13 @@ import {
   editorLineNumbersAtom,
   editorWordWrapAtom,
 } from "@src/store/ui";
+import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 
 const noop = () => {};
 
 /** Aggregate diffs expose shared editor preferences without single-file actions. */
 export function SourceControlDiffSettingsMenu() {
+  const viewMode = useAtomValue(diffViewModeAtom);
   const [menuVisible, setMenuVisible] = useState(false);
   const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
   const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
@@ -30,7 +32,7 @@ export function SourceControlDiffSettingsMenu() {
       showCopyRelativePathAction={false}
       showRevealInFileManagerAction={false}
       showLineNumbersToggle
-      showWordWrapToggle
+      showWordWrapToggle={viewMode !== "split"}
       showMinimapToggle={false}
       showHighlightActiveLineToggle
       showGitBlameToggle={false}
