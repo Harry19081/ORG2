@@ -13,8 +13,14 @@
 // catalogs included), styles, Rust, scripts, and the vendored JavaScript under
 // src/ are out of scope. Test code is exempt too: test files, the shared Vitest
 // setup, and the E2E bootstrap helpers grow with coverage, not with
-// responsibilities. So is i18n code: the locale registry and loaders grow with
-// every supported language, not with responsibilities.
+// responsibilities. The same goes for files whose length tracks data rather than
+// logic:
+// - i18n code: the locale registry and loaders grow with every language.
+// - Declaration files (.d.ts): type shims mirror the API they describe.
+// - Data tables listed in DATA_TABLE_FILES, which grow one entry at a time.
+// - Generated code: a file whose header comment says it is generated and must
+//   not be edited by hand. Splitting it by hand is undone on the next
+//   regeneration.
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -34,13 +40,35 @@ const EXEMPT_PATTERNS = Object.freeze([
   // i18n registry, loaders, and any locale data kept in TypeScript.
   /^src\/i18n\//,
   /(^|\/)locales\//,
+  // Type declarations carry no runtime logic.
+  /\.d\.ts$/,
 ]);
+
+// Pure data tables, listed one by one so this never turns into a blanket
+// exemption for large files.
+const DATA_TABLE_FILES = Object.freeze([
+  // File-type metadata: one entry per supported language or extension.
+  "src/config/languageRegistry.ts",
+]);
+
+// A generated file declares itself in a comment near the top, e.g.
+// "// Generated from ... Do not edit" or " * DO NOT EDIT BY HAND."
+const GENERATED_HEADER_LINES = 10;
+const GENERATED_MARKER =
+  /^\s*(?:\/\/|\/\*|\*).*(?:\bdo not edit\b|@generated\b)/i;
+
+function isGeneratedSource(text) {
+  return text
+    .split("\n", GENERATED_HEADER_LINES)
+    .some((line) => GENERATED_MARKER.test(line));
+}
 
 function isCheckedSource(filePath) {
   return (
     filePath.startsWith(SOURCE_PREFIX) &&
     SOURCE_EXTENSIONS.some((extension) => filePath.endsWith(extension)) &&
-    !EXEMPT_PATTERNS.some((pattern) => pattern.test(filePath))
+    !EXEMPT_PATTERNS.some((pattern) => pattern.test(filePath)) &&
+    !DATA_TABLE_FILES.includes(filePath)
   );
 }
 
@@ -63,9 +91,9 @@ function findOversizedFiles(
   const oversized = [];
   for (const filePath of new Set(filePaths)) {
     if (!isCheckedSource(filePath)) continue;
-    const lines = countLines(
-      fs.readFileSync(path.join(root, filePath), "utf8")
-    );
+    const text = fs.readFileSync(path.join(root, filePath), "utf8");
+    if (isGeneratedSource(text)) continue;
+    const lines = countLines(text);
     if (lines > maxLines) oversized.push({ filePath, lines });
   }
   return oversized.sort(
@@ -117,5 +145,6 @@ module.exports = {
   countLines,
   findOversizedFiles,
   isCheckedSource,
+  isGeneratedSource,
   parseNullDelimitedPaths,
 };

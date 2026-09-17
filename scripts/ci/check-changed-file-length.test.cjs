@@ -10,6 +10,7 @@ const {
   countLines,
   findOversizedFiles,
   isCheckedSource,
+  isGeneratedSource,
   parseNullDelimitedPaths,
 } = require("./check-changed-file-length.cjs");
 
@@ -112,6 +113,63 @@ test("i18n code is exempt", () => {
 
   const root = makeTree({ "src/i18n/index.ts": lines(MAX_LINES + 50) });
   assert.deepEqual(findOversizedFiles(["src/i18n/index.ts"], { root }), []);
+});
+
+test("declaration files and listed data tables are exempt", () => {
+  for (const exempt of [
+    "src/types/ambient/global.d.ts",
+    "src/types/mammoth.d.ts",
+    "src/config/languageRegistry.ts",
+  ]) {
+    assert.equal(isCheckedSource(exempt), false, exempt);
+  }
+
+  // Data tables are listed by exact path, not by name.
+  assert.equal(isCheckedSource("src/config/sidebarRegistry.ts"), true);
+  assert.equal(isCheckedSource("src/config/languageRegistry.tsx"), true);
+});
+
+test("generated files are exempt by their header comment", () => {
+  assert.equal(
+    isGeneratedSource(
+      "// Generated from mobile-relay-protocol. Do not edit; run the script.\n"
+    ),
+    true
+  );
+  assert.equal(
+    isGeneratedSource(
+      "/**\n * Generated Codex skin.\n *\n * DO NOT EDIT BY HAND.\n */\n"
+    ),
+    true
+  );
+  assert.equal(isGeneratedSource("/** @generated */\nexport {};\n"), true);
+
+  // Code that merely mentions generation, or says so outside a header
+  // comment or below the header, is still judged.
+  assert.equal(
+    isGeneratedSource("const hint = `system-generated request`;\n"),
+    false
+  );
+  assert.equal(
+    isGeneratedSource('const msg = "do not edit this field";\n'),
+    false
+  );
+  assert.equal(
+    isGeneratedSource(`${lines(20)}// DO NOT EDIT below this line\n`),
+    false
+  );
+
+  const root = makeTree({
+    "src/contracts/relay.ts": `// Generated. Do not edit.\n${lines(MAX_LINES + 50)}`,
+    "src/contracts/handwritten.ts": lines(MAX_LINES + 50),
+  });
+  assert.deepEqual(
+    findOversizedFiles(
+      ["src/contracts/relay.ts", "src/contracts/handwritten.ts"],
+      { root }
+    ),
+    [{ filePath: "src/contracts/handwritten.ts", lines: MAX_LINES + 50 }]
+  );
 });
 
 test("only .ts and .tsx files under src/ are judged", () => {
