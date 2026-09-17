@@ -32,12 +32,16 @@ function fileEntryPill(line: string): string | null {
 /**
  * Normalizes Codex's generated attachment envelope into native ORGII history
  * text. File entries become serialized file/folder pills, while the injected
- * "Files mentioned" and "My request" headings are removed.
+ * "Files mentioned" and "My request" headings are removed. Codex can emit a
+ * request-only envelope when ambient context is present without attachments,
+ * so a leading request heading is removed only while that provenance exists.
  */
 export function normalizeUserMessageText(
   text: string,
   imageRefs: readonly string[] = []
 ): string {
+  const hasGeneratedContextPrefix =
+    /^\s*<(?:in-app-browser-context|orgii_provider_context)\b/u.test(text);
   const projectedText = text.replace(GENERATED_CONTEXT_BLOCK, "");
   const imagePaths = new Set(imageRefs.map(imageRefToRustPath));
   const lines = projectedText.split(/\r?\n/);
@@ -47,6 +51,15 @@ export function normalizeUserMessageText(
   if (firstContentLineIndex < 0) return "";
 
   const firstContentLine = normalizeLine(lines[firstContentLineIndex] ?? "");
+  if (
+    hasGeneratedContextPrefix &&
+    projectedText !== text &&
+    MY_REQUEST_HEADING.test(firstContentLine)
+  ) {
+    return stripLeadingBlankLines(
+      lines.slice(firstContentLineIndex + 1).join("\n")
+    ).trimEnd();
+  }
   if (!FILES_MENTIONED_HEADING.test(firstContentLine ?? "")) {
     return stripLeadingBlankLines(projectedText);
   }

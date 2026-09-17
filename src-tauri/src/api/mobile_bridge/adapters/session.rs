@@ -2721,6 +2721,20 @@ mod tests {
     }
 
     #[test]
+    fn mobile_request_heading_is_normalized_before_losing_envelope_provenance() {
+        let plain = "## My request:\n  keep indentation\n";
+        let wrapped = format!("<in-app-browser-context>state</in-app-browser-context>\n{plain}");
+        assert_eq!(
+            mobile_display_text("user", &wrapped, MAX_MOBILE_MESSAGE_TEXT_BYTES),
+            ("  keep indentation\n".into(), false)
+        );
+        assert_eq!(
+            mobile_display_text("user", plain, MAX_MOBILE_MESSAGE_TEXT_BYTES),
+            (plain.into(), false)
+        );
+    }
+
+    #[test]
     fn mobile_message_projection_preserves_plain_text_and_real_truncation() {
         let plain = "  indented first line\n\n```xml\n<custom>keep</custom>\n```";
         assert_eq!(
