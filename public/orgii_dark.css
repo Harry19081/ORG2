@@ -62,7 +62,7 @@
   --terminal-caret: #43aafd;
   --cm-editor-gutter-bg: var(--cm-editor-background);
   --cm-editor-gutter-fg: #8b949e;
-  --cm-editor-line-highlight: #36334280;
+  --cm-editor-line-highlight: var(--color-fill-2);
   --cm-syntax-keyword: #ff7b72;
   --cm-syntax-string: #a5d6ff;
   --cm-syntax-comment: #8b949e;
@@ -239,7 +239,7 @@ body {
   --terminal-caret: var(--color-primary-6);
   --cm-editor-gutter-bg: var(--cm-editor-background);
   --cm-editor-gutter-fg: #8b949e;
-  --cm-editor-line-highlight: #36334280;
+  --cm-editor-line-highlight: var(--color-fill-2);
   --cm-syntax-keyword: #ff7b72;
   --cm-syntax-string: #a5d6ff;
   --cm-syntax-comment: #8b949e;

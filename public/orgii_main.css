@@ -62,7 +62,7 @@
   --terminal-caret: #1d8ffd;
   --cm-editor-gutter-bg: var(--cm-editor-background);
   --cm-editor-gutter-fg: #6e7781;
-  --cm-editor-line-highlight: transparent;
+  --cm-editor-line-highlight: var(--color-fill-2);
   --cm-syntax-keyword: #d73a49;
   --cm-syntax-string: #032f62;
   --cm-syntax-comment: #6a737d;
