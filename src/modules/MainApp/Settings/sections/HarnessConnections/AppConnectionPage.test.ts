@@ -172,7 +172,7 @@ function button(text: string) {
 
 it("selects provider first and keeps duplicate purchases as separate private connections", async () => {
   await render("claude_code");
-  await act(async () => button("common:actions.select").click());
+  await act(async () => button("common:actions.configure").click());
   expect(container.textContent).toContain("harnessConnections.connection");
   expect(container.textContent).not.toContain("Same service");
 
@@ -200,7 +200,7 @@ it("selects provider first and keeps duplicate purchases as separate private con
   // one explicitly chosen model, so Connect is a second, deliberate action.
   expect(configure).not.toHaveBeenCalled();
   const connect = [...container.querySelectorAll("button")].find((item) =>
-    item.textContent?.startsWith("harnessConnections.connect")
+    item.textContent?.startsWith("harnessConnections.apply")
   ) as HTMLButtonElement;
   await act(async () => connect.click());
   expect(configure).toHaveBeenCalledWith(

@@ -942,28 +942,19 @@
     "desktopRestored": "Przywrócono poprzednią konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
     "advancedDescription": "Niestandardowe połączenia API i jednorazowy import poświadczeń",
     "marketApps": {
-      "workspace": "Official packages",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
-      "currentValue": "{{workspace}} · {{model}}",
-      "auto": "Model automatyczny",
-      "chooseInPicker": "Choose an official package and model",
       "nonePurchased": "No official packages are currently available",
-      "claudeHelp": "Claude Code and Claude Desktop each keep their own package, model and restore point. Keep ORG2 running while using a managed connection.",
       "checking": "Sprawdzanie aplikacji…",
       "unavailable": "Niedostępne dla tej zainstalowanej wersji",
       "notInstalled": "Nie zainstalowano",
-      "following": "Using the configured package",
       "original": "Używa pierwotnej konfiguracji aplikacji",
-      "connect": "Choose package",
       "open": "Otwórz aplikację",
-      "disconnect": "Restore original setup",
       "connected": "Aplikacja korzysta teraz z bieżącego obszaru ORG2",
       "opened": "Otwarto aplikację",
       "disconnected": "Przywrócono poprzednią konfigurację aplikacji",
       "actionFailed": "Nie udało się zaktualizować tego połączenia",
-      "current": "Bieżący",
       "workspaceNumber": "Usługa {{index}} z {{count}}",
       "openTerminal": "Otwórz terminal",
       "terminalOpened": "Terminal otwarty",
@@ -1085,5 +1076,16 @@
   "development": {
     "updateAvailable": "Dostępna aktualizacja",
     "updateAvailableDesc": "Pokaż wskaźniki aktualizacji w całej aplikacji dla wersji 99.0.0 — akcje aktualizacji otwierają tylko podgląd"
+  },
+  "managedUsage": {
+    "cancel": "Anuluj",
+    "authorize": "Włącz pakiet",
+    "rates": "Wejście / wyjście na milion tokenów",
+    "wallet": "Otwórz portfel",
+    "priceRange": "Zakres cen pakietu: {{min}}%–{{max}}% ceny oficjalnej",
+    "rangeUnavailable": "Zakres cen pakietu jest niedostępny. Odśwież katalog przed włączeniem pakietu.",
+    "walletIncluded": "Wszystkie zawarte modele korzystają z salda portfela.",
+    "walletUnavailable": "Rozliczanie z portfela nie jest jeszcze dostępne. Odśwież po aktualizacji usługi.",
+    "walletConsent": "Włącz wszystkie modele tego pakietu w wyświetlonym zakresie cen. Faktyczne użycie jest rozliczane bezpośrednio z salda portfela; osobny budżet pakietu nie jest wymagany."
   }
 }

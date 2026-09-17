@@ -942,28 +942,19 @@
     "desktopRestored": "Önceki yapılandırma geri yüklendi — Claude Desktop’ı tamamen kapatıp yeniden açın",
     "advancedDescription": "Özel API bağlantıları ve tek seferlik kimlik bilgisi taşıma",
     "marketApps": {
-      "workspace": "Official packages",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
-      "currentValue": "{{workspace}} · {{model}}",
-      "auto": "Otomatik model",
-      "chooseInPicker": "Choose an official package and model",
       "nonePurchased": "No official packages are currently available",
-      "claudeHelp": "Claude Code and Claude Desktop each keep their own package, model and restore point. Keep ORG2 running while using a managed connection.",
       "checking": "Uygulama denetleniyor…",
       "unavailable": "Bu yüklü sürüm için kullanılamıyor",
       "notInstalled": "Yüklü değil",
-      "following": "Using the configured package",
       "original": "Uygulamanın özgün ayarını kullanıyor",
-      "connect": "Choose package",
       "open": "Uygulamayı aç",
-      "disconnect": "Restore original setup",
       "connected": "Uygulama artık geçerli ORG2 çalışma alanını izliyor",
       "opened": "Uygulama açıldı",
       "disconnected": "Uygulamanın önceki ayarı geri yüklendi",
       "actionFailed": "Bu uygulama bağlantısı güncellenemedi",
-      "current": "Geçerli",
       "workspaceNumber": "Hizmet {{index}} / {{count}}",
       "openTerminal": "Terminali aç",
       "terminalOpened": "Terminal açıldı",
@@ -1085,5 +1076,16 @@
   "development": {
     "updateAvailable": "Güncelleme mevcut",
     "updateAvailableDesc": "Uygulama genelinde 99.0.0 sürümü için güncelleme göstergelerini göster — güncelleme işlemleri yalnızca önizlemeyi açar"
+  },
+  "managedUsage": {
+    "cancel": "İptal",
+    "authorize": "Paketi etkinleştir",
+    "rates": "Milyon token başına girdi / çıktı",
+    "wallet": "Cüzdanı aç",
+    "priceRange": "Paket aralığı: resmî fiyatın %{{min}}–%{{max}} oranı",
+    "rangeUnavailable": "Paket fiyat aralığı kullanılamıyor. Paketi etkinleştirmeden önce kataloğu yenileyin.",
+    "walletIncluded": "Dahil olan tüm modeller cüzdan bakiyenizi kullanır.",
+    "walletUnavailable": "Cüzdan faturalandırması henüz kullanılamıyor. Hizmet güncellendikten sonra yenileyin.",
+    "walletConsent": "Bu paketteki tüm modelleri gösterilen fiyat aralığında etkinleştirin. Gerçek kullanım doğrudan cüzdan bakiyenizden tahsil edilir; ayrı bir paket bütçesi gerekmez."
   }
 }

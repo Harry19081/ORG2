@@ -1,4 +1,3 @@
-import { authorizedProfile } from "./usageAuthorization";
 import { rpc } from "@src/api/tauri/rpc";
 import type { HarnessConnectionView } from "@src/api/tauri/rpc/schemas/agentOrgs";
 
@@ -7,6 +6,7 @@ import type {
   MarketProfileAgent,
 } from "./marketProfiles";
 import { configureMarketProfile } from "./rpc";
+import { authorizedProfile } from "./usageAuthorization";
 
 export type ExternalMarketTarget = "claude_code" | "claude_desktop" | "codex";
 
@@ -18,7 +18,7 @@ export function modelForExternalTarget(
   profile: MarketExecutionProfile,
   target: ExternalMarketTarget,
   preferredAgent?: MarketProfileAgent,
-  preferredModel?: string,
+  preferredModel?: string
 ): string | null {
   const agent = profileAgent(target);
   const models = profile.modelsByAgent[agent];
@@ -33,17 +33,17 @@ export function modelForExternalTarget(
 }
 
 export function isMarketManagedView(
-  view: HarnessConnectionView | null | undefined,
+  view: HarnessConnectionView | null | undefined
 ): boolean {
   return Boolean(
     view?.config.mode === "orgii_managed" &&
-    view.config.selectedKeyId?.startsWith("market:"),
+    view.config.selectedKeyId?.startsWith("market:")
   );
 }
 
 function expectedHashes(view: HarnessConnectionView) {
   return Object.fromEntries(
-    view.config.targetFiles.map((file) => [file.id, file.currentHash ?? null]),
+    view.config.targetFiles.map((file) => [file.id, file.currentHash ?? null])
   );
 }
 
@@ -55,14 +55,14 @@ export async function configureExternalMarketTarget(
   profile: MarketExecutionProfile,
   target: ExternalMarketTarget,
   preferredAgent?: MarketProfileAgent,
-  preferredModel?: string,
+  preferredModel?: string
 ) {
   const view = await readTarget(target);
   const model = modelForExternalTarget(
     profile,
     target,
     preferredAgent,
-    preferredModel,
+    preferredModel
   );
   if (!view.installed) throw new Error("client_not_installed");
   if (!view.config.supported) throw new Error("client_not_supported");
@@ -75,12 +75,12 @@ export async function configureExternalMarketTarget(
     authorized.entitlementId,
     target,
     model,
-    expectedHashes(view),
+    expectedHashes(view)
   );
 }
 
 export async function restoreExternalMarketTarget(
-  target: ExternalMarketTarget,
+  target: ExternalMarketTarget
 ) {
   const view = await readTarget(target);
   if (!isMarketManagedView(view)) return;

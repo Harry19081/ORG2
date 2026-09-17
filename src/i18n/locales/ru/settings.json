@@ -942,28 +942,19 @@
     "desktopRestored": "Предыдущие настройки восстановлены — полностью закройте и снова откройте Claude Desktop",
     "advancedDescription": "Пользовательские API-подключения и одноразовый импорт учетных данных",
     "marketApps": {
-      "workspace": "Official packages",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
-      "currentValue": "{{workspace}} · {{model}}",
-      "auto": "Автоматическая модель",
-      "chooseInPicker": "Choose an official package and model",
       "nonePurchased": "No official packages are currently available",
-      "claudeHelp": "Claude Code and Claude Desktop each keep their own package, model and restore point. Keep ORG2 running while using a managed connection.",
       "checking": "Проверка приложения…",
       "unavailable": "Недоступно для установленной версии",
       "notInstalled": "Не установлено",
-      "following": "Using the configured package",
       "original": "Использует исходные настройки приложения",
-      "connect": "Choose package",
       "open": "Открыть приложение",
-      "disconnect": "Restore original setup",
       "connected": "Приложение теперь следует текущему пространству ORG2",
       "opened": "Приложение открыто",
       "disconnected": "Предыдущая конфигурация приложения восстановлена",
       "actionFailed": "Не удалось обновить подключение приложения",
-      "current": "Текущая",
       "workspaceNumber": "Сервис {{index}} из {{count}}",
       "openTerminal": "Открыть терминал",
       "terminalOpened": "Терминал открыт",
@@ -1085,5 +1076,16 @@
   "development": {
     "updateAvailable": "Доступно обновление",
     "updateAvailableDesc": "Показывать индикаторы обновления во всём приложении для версии 99.0.0 — действия открывают только предпросмотр"
+  },
+  "managedUsage": {
+    "cancel": "Отмена",
+    "authorize": "Включить пакет",
+    "rates": "Вход / выход за миллион токенов",
+    "wallet": "Открыть кошелёк",
+    "priceRange": "Диапазон пакета: {{min}}%–{{max}}% от официальной цены",
+    "rangeUnavailable": "Диапазон цен пакета недоступен. Обновите каталог перед включением пакета.",
+    "walletIncluded": "Все включённые модели используют баланс вашего кошелька.",
+    "walletUnavailable": "Оплата из кошелька пока недоступна. Обновите страницу после обновления сервиса.",
+    "walletConsent": "Включить все модели этого пакета в указанном диапазоне цен. Фактическое использование оплачивается напрямую с баланса кошелька; отдельный бюджет пакета не требуется."
   }
 }

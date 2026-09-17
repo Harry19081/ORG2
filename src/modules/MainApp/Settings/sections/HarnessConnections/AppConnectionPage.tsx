@@ -1,4 +1,3 @@
-import Select from "@src/components/Select";
 import { useAtomValue } from "jotai";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,6 +6,7 @@ import { rpc } from "@src/api/tauri/rpc";
 import type { ConnectionHarness } from "@src/api/tauri/rpc/schemas/agentOrgs";
 import Button from "@src/components/Button";
 import Message from "@src/components/Message";
+import Select from "@src/components/Select";
 import {
   SECTION_DESCRIPTION_CLASSES,
   SectionContainer,
@@ -42,13 +42,13 @@ const agentFor = (target: ConnectionHarness): MarketProfileAgent =>
 function profileLabel(
   profile: MarketExecutionProfile,
   profiles: MarketExecutionProfile[],
-  suffix: (index: number, count: number) => string,
+  suffix: (index: number, count: number) => string
 ) {
   const matches = profiles.filter((item) => item.label === profile.label);
   if (matches.length < 2) return profile.label;
   return `${profile.label} · ${suffix(
     matches.findIndex((item) => item.id === profile.id) + 1,
-    matches.length,
+    matches.length
   )}`;
 }
 
@@ -79,24 +79,24 @@ export default function AppConnectionPage({
     [choosingModel, setChoosingModel] = useState("");
   const marketProfiles = useMemo(
     () => profiles.filter((profile) => profile.modelsByAgent[agent].length > 0),
-    [agent, profiles],
+    [agent, profiles]
   );
   const appliedMarketProfile = profileForAppliedMarketSelection(
     profiles,
-    state.view?.config.selectedKeyId,
+    state.view?.config.selectedKeyId
   );
   const activeMarketProfile = appliedMarketProfile;
   const marketManaged = isMarketManagedView(state.view);
   const configured = Boolean(
-    state.view && state.view.config.mode !== "default",
+    state.view && state.view.config.mode !== "default"
   );
   const accountName =
     state.view?.choices.find(
-      (choice) => choice.keyId === state.view?.config.selectedKeyId,
+      (choice) => choice.keyId === state.view?.config.selectedKeyId
     )?.name ?? null;
   const activeMarketName = activeMarketProfile
     ? profileLabel(activeMarketProfile, marketProfiles, (index, count) =>
-        t("harnessConnections.marketApps.workspaceNumber", { index, count }),
+        t("harnessConnections.marketApps.workspaceNumber", { index, count })
       )
     : null;
   const currentName = marketManaged
@@ -106,7 +106,7 @@ export default function AppConnectionPage({
           ? "harnessConnections.marketApps.loading"
           : profilesError
             ? "harnessConnections.marketApps.loadFailed"
-            : "harnessConnections.missingKey",
+            : "harnessConnections.missingKey"
       ))
     : (accountName ?? t("harnessConnections.original"));
   const issue =
@@ -119,7 +119,7 @@ export default function AppConnectionPage({
     !state.view?.config.supported ||
     state.view?.config.conflict ||
     state.error ||
-    state.view?.configurationIssue,
+    state.view?.configurationIssue
   );
 
   const refresh = async () => {
@@ -128,12 +128,12 @@ export default function AppConnectionPage({
   };
   const connectMarket = async (
     profile: MarketExecutionProfile,
-    chosenModel?: string,
+    chosenModel?: string
   ) => {
     setBusy("connect");
     try {
       const selected = recent.find(
-        (entry) => entry.marketProfileId === profile.id,
+        (entry) => entry.marketProfileId === profile.id
       );
       await configureExternalMarketTarget(
         profile,
@@ -144,7 +144,7 @@ export default function AppConnectionPage({
           : chosenModel
             ? agent
             : undefined,
-        chosenModel ?? selected?.modelId,
+        chosenModel ?? selected?.modelId
       );
       setPicker("closed");
       await refresh();
@@ -170,7 +170,7 @@ export default function AppConnectionPage({
         content: t(
           target === "claude_code"
             ? "harnessConnections.marketApps.terminalOpened"
-            : "harnessConnections.marketApps.opened",
+            : "harnessConnections.marketApps.opened"
         ),
       });
     } catch {
@@ -239,7 +239,7 @@ export default function AppConnectionPage({
                 {t(
                   marketManaged
                     ? "harnessConnections.marketApps.provider"
-                    : "harnessConnections.connection",
+                    : "harnessConnections.connection"
                 )}
               </span>
             )}
@@ -253,11 +253,13 @@ export default function AppConnectionPage({
               disabled={busy !== null || state.loading}
               onClick={() =>
                 setPicker((value) =>
-                  value === "closed" ? "provider" : "closed",
+                  value === "closed" ? "provider" : "closed"
                 )
               }
             >
-              {t(configured ? "common:actions.edit" : "common:actions.select")}
+              {t(
+                configured ? "common:actions.edit" : "common:actions.configure"
+              )}
             </Button>
             {marketManaged && (
               <Button
@@ -269,7 +271,7 @@ export default function AppConnectionPage({
                 {t(
                   target === "claude_code"
                     ? "harnessConnections.marketApps.openTerminal"
-                    : "harnessConnections.marketApps.open",
+                    : "harnessConnections.marketApps.open"
                 )}
               </Button>
             )}
@@ -297,7 +299,7 @@ export default function AppConnectionPage({
           title={t(
             picker === "provider"
               ? "common:labels.provider"
-              : "harnessConnections.connection",
+              : "harnessConnections.connection"
           )}
           dataTestId="connection-picker"
         >
@@ -341,7 +343,7 @@ export default function AppConnectionPage({
                   t(
                     id === "market"
                       ? "harnessConnections.marketApps.workspaceHelp"
-                      : "harnessConnections.empty",
+                      : "harnessConnections.empty"
                   )
                 }
                 onSelect={(id) =>
@@ -381,7 +383,7 @@ export default function AppConnectionPage({
                           t("harnessConnections.marketApps.workspaceNumber", {
                             index,
                             count,
-                          }),
+                          })
                       ),
                       models: profile.modelsByAgent[agent],
                       endpoint: null,
@@ -396,7 +398,7 @@ export default function AppConnectionPage({
                     }
                     onSelect={(id) => {
                       const profile = marketProfiles.find(
-                        (item) => item.id === id,
+                        (item) => item.id === id
                       );
                       if (profile) {
                         setChoosingProfile(profile);
@@ -415,7 +417,7 @@ export default function AppConnectionPage({
                   value={choosingModel}
                   onChange={(value) => setChoosingModel(String(value))}
                   options={choosingProfile.modelsByAgent[agent].map(
-                    (value) => ({ value, label: value }),
+                    (value) => ({ value, label: value })
                   )}
                 />
                 <Button
@@ -424,7 +426,7 @@ export default function AppConnectionPage({
                     void connectMarket(choosingProfile, choosingModel)
                   }
                 >
-                  {t("harnessConnections.connect", "Connect")}
+                  {t("harnessConnections.apply")}
                 </Button>
               </div>
             </SectionRow>

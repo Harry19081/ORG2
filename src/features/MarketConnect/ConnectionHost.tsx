@@ -1,10 +1,10 @@
-import UsageAuthorizationHost from "./UsageAuthorizationHost";
 import { useEffect } from "react";
 
 import { buildSettingsPath } from "@src/config/mainAppPaths/settings";
 import { ROUTES } from "@src/config/routes";
 import { useAppNavigate } from "@src/hooks/navigation/useAppNavigate";
 
+import UsageAuthorizationHost from "./UsageAuthorizationHost";
 import {
   MARKET_AUTHORIZATION_SAVED_EVENT,
   MARKET_CONNECTION_OPEN_EVENT,
@@ -20,7 +20,7 @@ export default function ConnectionHost() {
         navigate(
           value.data.target === "org2"
             ? ROUTES.workStation.base.path
-            : buildSettingsPath({ section: "harness-connections" }),
+            : buildSettingsPath({ section: "harness-connections" })
         );
       }
     };

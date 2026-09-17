@@ -1,5 +1,3 @@
-import { authorizedProfile } from "./usageAuthorization";
-import type { ManagedService } from "./rpc";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -10,6 +8,7 @@ import {
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
 
 import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
+import type { ManagedService } from "./rpc";
 import {
   type Connection,
   type Entry,
@@ -17,6 +16,7 @@ import {
   loadEntries,
   prepareSessionSource,
 } from "./rpc";
+import { authorizedProfile } from "./usageAuthorization";
 
 export type MarketProfileAgent = "claude_code" | "codex";
 export type MarketConnectionTarget =
@@ -87,7 +87,7 @@ function isActiveEntry(entry: Entry, now: number): boolean {
 export function adaptMarketEntries(
   connection: Connection,
   entries: Entry[],
-  now = Date.now(),
+  now = Date.now()
 ): MarketExecutionProfile[] {
   return entries
     .filter((entry) => isActiveEntry(entry, now))
@@ -109,7 +109,7 @@ export function adaptMarketEntries(
 
 /** Keep one purchase even if a stale duplicate ORG2 connection is present. */
 export function dedupeMarketProfiles(
-  profiles: MarketExecutionProfile[],
+  profiles: MarketExecutionProfile[]
 ): MarketExecutionProfile[] {
   const byEntitlement = new Map<string, MarketExecutionProfile>();
   for (const profile of profiles) {
@@ -122,7 +122,7 @@ export function dedupeMarketProfiles(
 
 function modelsForTarget(
   profile: MarketExecutionProfile,
-  target: MarketConnectionTarget,
+  target: MarketConnectionTarget
 ): string[] {
   if (profile.managed)
     return profile.managed.models
@@ -147,7 +147,7 @@ function modelsForTarget(
  */
 export function marketConnectionOptions(
   profiles: MarketExecutionProfile[],
-  target?: MarketConnectionTarget,
+  target?: MarketConnectionTarget
 ): ConnectionOption[] {
   const compatibleProfiles = target
     ? profiles.filter((profile) => modelsForTarget(profile, target).length > 0)
@@ -188,7 +188,7 @@ export function marketConnectionOptions(
 
 export function marketSourcesForAgent(
   profiles: MarketExecutionProfile[],
-  cliAgentType: CliAgentType | string | null | undefined,
+  cliAgentType: CliAgentType | string | null | undefined
 ): MarketProfileSource[] {
   const agent: MarketProfileAgent | null =
     cliAgentType === CLI_AGENT.CLAUDE_CODE
@@ -219,7 +219,7 @@ export function findMarketSourceForRecent(
   entry: Pick<
     RecentModelEntry,
     "marketProfileId" | "accountName" | "cliAgentType" | "modelId"
-  >,
+  >
 ): MarketProfileSource | undefined {
   return sources.find(
     (source) =>
@@ -227,13 +227,13 @@ export function findMarketSourceForRecent(
         ? source.profile.id === entry.marketProfileId
         : source.label === entry.accountName) &&
       source.cliAgentType === entry.cliAgentType &&
-      source.modelIds.includes(entry.modelId),
+      source.modelIds.includes(entry.modelId)
   );
 }
 
 export async function prepareMarketProfileSource(
   source: MarketProfileSource,
-  model: string,
+  model: string
 ): Promise<{ credentialSource: string }> {
   if (!source.modelIds.includes(model)) {
     throw new Error(`Market profile does not support model: ${model}`);
@@ -244,7 +244,7 @@ export async function prepareMarketProfileSource(
     profile.entitlementWorkspaceId,
     profile.entitlementId,
     source.cliAgentType,
-    model,
+    model
   );
   return {
     credentialSource: prepared.credential_source,
@@ -260,22 +260,21 @@ export async function loadMarketExecutionProfilesWithDiagnostics(): Promise<Mark
   const status = await loadConnections();
   const connections = status.connections.filter(
     (connection) =>
-      connection.target === "org2" &&
-      connection.phase === "authorization_saved",
+      connection.target === "org2" && connection.phase === "authorization_saved"
   );
   const results = await Promise.allSettled(
     connections.map(async (connection) =>
-      adaptMarketEntries(connection, await loadEntries(connection)),
-    ),
+      adaptMarketEntries(connection, await loadEntries(connection))
+    )
   );
   return {
     profiles: dedupeMarketProfiles(
       results.flatMap((result) =>
-        result.status === "fulfilled" ? result.value : [],
-      ),
+        result.status === "fulfilled" ? result.value : []
+      )
     ),
     errors: results.flatMap((result) =>
-      result.status === "rejected" ? [result.reason] : [],
+      result.status === "rejected" ? [result.reason] : []
     ),
   };
 }
@@ -300,7 +299,7 @@ export function invalidateMarketProfileCache(): void {
 }
 
 export async function loadCachedMarketExecutionProfiles(
-  force = false,
+  force = false
 ): Promise<MarketProfileLoadResult> {
   if (force) invalidateMarketProfileCache();
   if (cachedLoad && Date.now() < cacheExpires) return cachedLoad;
@@ -320,7 +319,7 @@ export async function loadCachedMarketExecutionProfiles(
         cacheExpires = Date.now() + 30_000;
       }
       return result;
-    },
+    }
   );
   inFlightLoad = request;
   try {
@@ -359,10 +358,10 @@ export function useMarketExecutionProfiles(options: {
           result.errors.length > 0
             ? result.errors
                 .map((cause) =>
-                  cause instanceof Error ? cause.message : String(cause),
+                  cause instanceof Error ? cause.message : String(cause)
                 )
                 .join("; ")
-            : null,
+            : null
         );
       } catch (cause) {
         if (generation !== generationRef.current) return;
@@ -374,16 +373,17 @@ export function useMarketExecutionProfiles(options: {
         }
       }
     },
-    [enabled],
+    [enabled]
   );
 
   const refresh = useCallback(async () => load(true), [load]);
 
   useEffect(() => {
     if (!enabled) return;
+    const requestGeneration = generationRef;
     load(false).catch(() => undefined);
     return () => {
-      generationRef.current++;
+      requestGeneration.current++;
     };
   }, [enabled, load]);
 
@@ -393,18 +393,18 @@ export function useMarketExecutionProfiles(options: {
     };
     window.addEventListener(
       MARKET_PROFILES_CHANGED_EVENT,
-      handleProfilesChanged,
+      handleProfilesChanged
     );
     return () =>
       window.removeEventListener(
         MARKET_PROFILES_CHANGED_EVENT,
-        handleProfilesChanged,
+        handleProfilesChanged
       );
   }, [load]);
 
   const sources = useMemo(
     () => marketSourcesForAgent(profiles, cliAgentType),
-    [profiles, cliAgentType],
+    [profiles, cliAgentType]
   );
 
   return {

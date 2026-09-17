@@ -15,7 +15,7 @@ const ENTITLEMENT = /^(?:ent|pa)_[A-Za-z0-9_-]{1,60}$/;
  * Legacy target grants are decoded for display only; Rust still rejects them
  * as runtime sources and requires canonical ORG2 authorization. */
 export function parseAppliedMarketSelection(
-  value: string | null | undefined,
+  value: string | null | undefined
 ): AppliedMarketSelection | null {
   if (!value?.startsWith("market:") || value.length > 1024) return null;
   try {
@@ -23,7 +23,7 @@ export function parseAppliedMarketSelection(
     const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
     const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
     const bytes = Uint8Array.from(atob(padded), (character) =>
-      character.charCodeAt(0),
+      character.charCodeAt(0)
     );
     const decoded = JSON.parse(new TextDecoder().decode(bytes)) as {
       metadata?: {
@@ -38,7 +38,7 @@ export function parseAppliedMarketSelection(
     const authorizationWorkspaceId = decoded.metadata?.workspace_id;
     const workspaceId = Object.prototype.hasOwnProperty.call(
       decoded,
-      "workspace_id",
+      "workspace_id"
     )
       ? decoded.workspace_id
       : authorizationWorkspaceId;
@@ -49,7 +49,7 @@ export function parseAppliedMarketSelection(
       typeof authorizationWorkspaceId !== "string" ||
       !WORKSPACE.test(authorizationWorkspaceId) ||
       !["org2", "claude-code", "claude-app", "codex"].includes(
-        String(decoded.metadata?.target),
+        String(decoded.metadata?.target)
       ) ||
       typeof workspaceId !== "string" ||
       !WORKSPACE.test(workspaceId) ||
@@ -66,7 +66,7 @@ export function parseAppliedMarketSelection(
 
 export function profileForAppliedMarketSelection(
   profiles: MarketExecutionProfile[],
-  value: string | null | undefined,
+  value: string | null | undefined
 ): MarketExecutionProfile | null {
   const selection = parseAppliedMarketSelection(value);
   if (!selection) return null;
@@ -75,7 +75,7 @@ export function profileForAppliedMarketSelection(
       (profile) =>
         profile.connection.identity_user_id === selection.identityUserId &&
         profile.entitlementWorkspaceId === selection.workspaceId &&
-        profile.entitlementId === selection.entitlementId,
+        profile.entitlementId === selection.entitlementId
     ) ?? null
   );
 }

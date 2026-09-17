@@ -44,7 +44,7 @@ export const managedServiceSchema = z.object({
         })
         .optional(),
       availability: z.string(),
-    }),
+    })
   ),
   access: managedAccessSchema.nullable(),
 });
@@ -58,9 +58,9 @@ const moduleStatus = defineProcedure("market_connection_status")
       connections: z.array(
         connectionSchema.extend({
           phase: z.enum(["authorization_saved", "reauthorization_required"]),
-        }),
+        })
       ),
-    }),
+    })
   )
   .build();
 export const loadConnections = () => typedInvoke(moduleStatus);
@@ -105,13 +105,13 @@ const activateService = defineProcedure("market_connection_activate_service")
         billing_mode: z.literal("wallet"),
         confirm_usage: z.literal(true),
       }),
-    }),
+    })
   )
   .output(managedAccessSchema)
   .build();
 export const activateManagedService = (
   connection: Connection,
-  service: ManagedService,
+  service: ManagedService
 ) =>
   typedInvoke(activateService, {
     ...args(connection),
@@ -131,12 +131,12 @@ const prepareSession = defineProcedure("market_connection_prepare_session")
       entitlementId: z.string(),
       agent: z.enum(["claude_code", "codex"]),
       model: z.string().min(1).max(256),
-    }),
+    })
   )
   .output(
     z.object({
       credential_source: z.string().startsWith("market:"),
-    }),
+    })
   )
   .build();
 export const prepareSessionSource = (
@@ -144,7 +144,7 @@ export const prepareSessionSource = (
   entitlementWorkspaceId: string,
   entitlementId: string,
   agent: "claude_code" | "codex",
-  model: string,
+  model: string
 ) =>
   typedInvoke(prepareSession, {
     ...args(c),
@@ -164,13 +164,13 @@ const configureProfile = defineProcedure("market_connection_configure_profile")
         model: z.string().min(1).max(256),
         expectedHashes: z.record(z.string(), z.string().nullable()),
       }),
-    }),
+    })
   )
   .output(
     z.object({
       status: CliConfigManagedStatusSchema,
       selection: z.string().startsWith("market:"),
-    }),
+    })
   )
   .build();
 
@@ -180,7 +180,7 @@ export const configureMarketProfile = (
   entitlementId: string,
   agent: "claude_code" | "claude_desktop" | "codex",
   model: string,
-  expectedHashes: Record<string, string | null>,
+  expectedHashes: Record<string, string | null>
 ) =>
   typedInvoke(configureProfile, {
     request: {

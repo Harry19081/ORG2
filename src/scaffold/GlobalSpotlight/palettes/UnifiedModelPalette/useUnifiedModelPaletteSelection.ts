@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 
 import { KEY_SOURCE } from "@src/api/tauri/session";
 import { Message } from "@src/components/Message";
-
 import {
   findMarketSourceForRecent,
   prepareMarketProfileSource,
@@ -133,7 +132,7 @@ export function useUnifiedModelPaletteSelection({
       });
       if (closeOnSourceSelect) onClose();
     },
-    [advancedConfig, closeOnSourceSelect, onConfigChange, onClose, recordRecent, t]
+    [advancedConfig, closeOnSourceSelect, onConfigChange, onClose, recordRecent]
   );
 
   const previewModel = useCallback(

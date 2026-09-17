@@ -942,28 +942,19 @@
     "desktopRestored": "Configuración anterior restaurada — cierra Claude Desktop por completo y vuelve a abrirlo",
     "advancedDescription": "Conexiones API personalizadas y migración única de credenciales",
     "marketApps": {
-      "workspace": "Official packages",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
-      "currentValue": "{{workspace}} · {{model}}",
-      "auto": "Modelo automático",
-      "chooseInPicker": "Choose an official package and model",
       "nonePurchased": "No official packages are currently available",
-      "claudeHelp": "Claude Code and Claude Desktop each keep their own package, model and restore point. Keep ORG2 running while using a managed connection.",
       "checking": "Comprobando aplicación…",
       "unavailable": "No disponible para esta versión instalada",
       "notInstalled": "No instalada",
-      "following": "Using the configured package",
       "original": "Usando la configuración original de la aplicación",
-      "connect": "Choose package",
       "open": "Abrir aplicación",
-      "disconnect": "Restore original setup",
       "connected": "La aplicación ahora sigue el espacio de ORG2 actual",
       "opened": "Aplicación abierta",
       "disconnected": "Se restauró la configuración anterior de la aplicación",
       "actionFailed": "No se pudo actualizar esta conexión",
-      "current": "Actual",
       "workspaceNumber": "Servicio {{index}} de {{count}}",
       "openTerminal": "Abrir terminal",
       "terminalOpened": "Terminal abierta",
@@ -1085,5 +1076,16 @@
   "development": {
     "updateAvailable": "Actualización disponible",
     "updateAvailableDesc": "Mostrar indicadores de actualización en toda la aplicación con la versión 99.0.0 — las acciones solo abren la vista previa"
+  },
+  "managedUsage": {
+    "cancel": "Cancelar",
+    "authorize": "Activar paquete",
+    "rates": "Entrada / salida por millón de tokens",
+    "wallet": "Abrir monedero",
+    "priceRange": "Rango del paquete: {{min}} %–{{max}} % del precio oficial",
+    "rangeUnavailable": "El rango de precios del paquete no está disponible. Actualiza el catálogo antes de activarlo.",
+    "walletIncluded": "Todos los modelos incluidos utilizan el saldo de tu monedero.",
+    "walletUnavailable": "La facturación del monedero aún no está disponible. Actualiza cuando se actualice el servicio.",
+    "walletConsent": "Activa todos los modelos de este paquete dentro del rango de precios mostrado. El uso real se cobra directamente del saldo de tu monedero; no se requiere un presupuesto separado para el paquete."
   }
 }

@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from "vitest";
+
 import type { MarketExecutionProfile } from "./marketProfiles";
 import { activateManagedService } from "./rpc";
 import {
-  authorizedProfile,
   USAGE_AUTHORIZATION_EVENT,
   type UsagePrompt,
+  authorizedProfile,
 } from "./usageAuthorization";
 
 vi.mock("./rpc", () => ({ activateManagedService: vi.fn() }));
@@ -83,7 +84,7 @@ it("confirms all included models once and reuses the same access when switching 
     expect(prompts[0]).not.toHaveProperty("model");
     expect(activateManagedService).toHaveBeenCalledExactlyOnceWith(
       selected.connection,
-      selected.managed,
+      selected.managed
     );
     const switched = await authorizedProfile(enabled, "example-responses");
     expect(switched).toBe(enabled);
@@ -104,7 +105,7 @@ it("cancelling a package confirmation grants access to none of its models", asyn
   try {
     for (const model of selected.managed!.models) {
       await expect(authorizedProfile(selected, model.model)).rejects.toThrow(
-        "usage_authorization_cancelled",
+        "usage_authorization_cancelled"
       );
     }
     expect(activateManagedService).not.toHaveBeenCalled();
@@ -119,10 +120,10 @@ it("keeps availability a call constraint rather than a per-model activation", as
   enabled.managed!.requires_confirmation = false;
   enabled.managed!.models[1]!.availability = "temporarily_unavailable";
   await expect(authorizedProfile(enabled, "example-responses")).rejects.toThrow(
-    "model_temporarily_unavailable",
+    "model_temporarily_unavailable"
   );
   await expect(authorizedProfile(enabled, "example-messages")).resolves.toBe(
-    enabled,
+    enabled
   );
   expect(activateManagedService).not.toHaveBeenCalled();
 });

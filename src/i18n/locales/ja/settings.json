@@ -942,28 +942,19 @@
     "desktopRestored": "以前の設定を復元しました。Claude Desktop を完全に終了して再起動してください",
     "advancedDescription": "カスタム API 接続と一度限りの認証情報移行",
     "marketApps": {
-      "workspace": "Official packages",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
-      "currentValue": "{{workspace}} · {{model}}",
-      "auto": "モデルを自動選択",
-      "chooseInPicker": "Choose an official package and model",
       "nonePurchased": "No official packages are currently available",
-      "claudeHelp": "Claude Code and Claude Desktop each keep their own package, model and restore point. Keep ORG2 running while using a managed connection.",
       "checking": "アプリを確認中…",
       "unavailable": "このインストール済みバージョンでは利用できません",
       "notInstalled": "未インストール",
-      "following": "Using the configured package",
       "original": "アプリ本来の設定を使用中",
-      "connect": "Choose package",
       "open": "アプリを開く",
-      "disconnect": "Restore original setup",
       "connected": "アプリが現在の ORG2 ワークスペースに追従します",
       "opened": "アプリを開きました",
       "disconnected": "以前のアプリ設定を復元しました",
       "actionFailed": "このアプリ接続を更新できませんでした",
-      "current": "現在",
       "workspaceNumber": "サービス {{index}} / {{count}}",
       "openTerminal": "ターミナルを開く",
       "terminalOpened": "ターミナルを開きました",
@@ -1085,5 +1076,16 @@
   "development": {
     "updateAvailable": "アップデートあり",
     "updateAvailableDesc": "バージョン 99.0.0 の更新表示をアプリ全体に表示 — 更新操作はダイアログのプレビューのみ"
+  },
+  "managedUsage": {
+    "cancel": "キャンセル",
+    "authorize": "パッケージを有効にする",
+    "rates": "100万トークンあたりの入力 / 出力",
+    "wallet": "ウォレットを開く",
+    "priceRange": "パッケージ価格帯：公式価格の {{min}}%～{{max}}%",
+    "rangeUnavailable": "パッケージの価格帯を取得できません。有効にする前にカタログを更新してください。",
+    "walletIncluded": "含まれるすべてのモデルでウォレット残高を使用します。",
+    "walletUnavailable": "ウォレット課金はまだ利用できません。サービスの更新後に再読み込みしてください。",
+    "walletConsent": "表示された価格帯で、このパッケージのすべてのモデルを有効にします。実際の使用量に応じてウォレット残高から直接請求されます。パッケージごとの予算設定は不要です。"
   }
 }

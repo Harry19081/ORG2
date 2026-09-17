@@ -34,7 +34,7 @@ export function parseMarketTarget(value: string | null) {
 }
 
 export function classifyMarketConnectionError(
-  error: unknown,
+  error: unknown
 ): MarketConnectionErrorCode {
   const message =
     error instanceof Error
@@ -44,25 +44,25 @@ export function classifyMarketConnectionError(
         : "";
   if (
     /\b(?:market_buyer_credential_store_unavailable|credential_store_unavailable|native_credential_store_not_supported)\b/.test(
-      message,
+      message
     )
   )
     return "secure-storage-unavailable";
   if (
     /\b(?:market_reauthorization_required|credential_store_read_failed|invalid_connection_grant|invalid_stored_credential|credential_scope_mismatch)\b/.test(
-      message,
+      message
     )
   )
     return "authorization-required";
   if (
     /\b(?:market_request_failed|connection_exchange_failed|connection_transport_unavailable)\b/.test(
-      message,
+      message
     )
   )
     return "network-unavailable";
   if (
     /\b(?:market_connection_index_unavailable|market_connection_index_invalid|market_connection_index_too_large)\b/.test(
-      message,
+      message
     )
   )
     return "local-state-unavailable";
@@ -79,12 +79,12 @@ export function dispatchMarketConnection(
   type:
     | typeof MARKET_AUTHORIZATION_SAVED_EVENT
     | typeof MARKET_CONNECTION_OPEN_EVENT,
-  connection: Connection,
+  connection: Connection
 ) {
   window.dispatchEvent(new CustomEvent(type, { detail: connection }));
   if (connection.target === "org2") {
     window.dispatchEvent(
-      new CustomEvent(MARKET_PROFILES_CHANGED_EVENT, { detail: connection }),
+      new CustomEvent(MARKET_PROFILES_CHANGED_EVENT, { detail: connection })
     );
   }
 }
@@ -92,7 +92,7 @@ export function dispatchMarketConnection(
 export function dispatchMarketConnectionError(
   error: unknown,
   operation: MarketConnectionOperation,
-  target?: Connection["target"],
+  target?: Connection["target"]
 ) {
   window.dispatchEvent(
     new CustomEvent<MarketConnectionErrorDetail>(
@@ -103,7 +103,7 @@ export function dispatchMarketConnectionError(
           operation,
           ...(target ? { target } : {}),
         },
-      },
-    ),
+      }
+    )
   );
 }

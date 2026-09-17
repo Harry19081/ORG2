@@ -942,28 +942,19 @@
     "desktopRestored": "Vorherige Desktop-Konfiguration wiederhergestellt — Claude Desktop vollständig beenden und neu öffnen",
     "advancedDescription": "Benutzerdefinierte API-Verbindungen und einmaliger Zugangsdatenimport",
     "marketApps": {
-      "workspace": "Official packages",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
-      "currentValue": "{{workspace}} · {{model}}",
-      "auto": "Automatisches Modell",
-      "chooseInPicker": "Choose an official package and model",
       "nonePurchased": "No official packages are currently available",
-      "claudeHelp": "Claude Code and Claude Desktop each keep their own package, model and restore point. Keep ORG2 running while using a managed connection.",
       "checking": "App wird geprüft…",
       "unavailable": "Für diese installierte Version nicht verfügbar",
       "notInstalled": "Nicht installiert",
-      "following": "Using the configured package",
       "original": "Verwendet die ursprüngliche App-Konfiguration",
-      "connect": "Choose package",
       "open": "App öffnen",
-      "disconnect": "Restore original setup",
       "connected": "Die App folgt jetzt dem aktuellen ORG2-Arbeitsbereich",
       "opened": "App geöffnet",
       "disconnected": "Die vorherige App-Konfiguration wurde wiederhergestellt",
       "actionFailed": "Diese App-Verbindung konnte nicht aktualisiert werden",
-      "current": "Aktuell",
       "workspaceNumber": "Dienst {{index}} von {{count}}",
       "openTerminal": "Terminal öffnen",
       "terminalOpened": "Terminal geöffnet",
@@ -1085,5 +1076,16 @@
   "development": {
     "updateAvailable": "Update verfügbar",
     "updateAvailableDesc": "Update-Anzeigen in der gesamten App mit Version 99.0.0 einblenden — Update-Aktionen öffnen nur die Vorschau"
+  },
+  "managedUsage": {
+    "cancel": "Abbrechen",
+    "authorize": "Paket aktivieren",
+    "rates": "Eingabe / Ausgabe pro Million Tokens",
+    "wallet": "Wallet öffnen",
+    "priceRange": "Paketpreis: {{min}} %–{{max}} % des offiziellen Preises",
+    "rangeUnavailable": "Der Preisbereich des Pakets ist nicht verfügbar. Aktualisiere den Katalog, bevor du das Paket aktivierst.",
+    "walletIncluded": "Alle enthaltenen Modelle nutzen dein Wallet-Guthaben.",
+    "walletUnavailable": "Wallet-Abrechnung ist noch nicht verfügbar. Aktualisiere nach der Dienstaktualisierung.",
+    "walletConsent": "Aktiviere alle Modelle dieses Pakets im angezeigten Preisbereich. Die tatsächliche Nutzung wird direkt von deinem Wallet-Guthaben abgebucht; ein separates Paketbudget ist nicht erforderlich."
   }
 }

@@ -1,14 +1,16 @@
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import Modal from "@src/scaffold/ModalSystem";
+
 import Button from "@src/components/Button";
+import Modal from "@src/scaffold/ModalSystem";
+
+import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
+import { marketConsoleUrl } from "./urlPolicy";
 import {
   USAGE_AUTHORIZATION_EVENT,
   type UsagePrompt,
 } from "./usageAuthorization";
-import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
-import { marketConsoleUrl } from "./urlPolicy";
 
 export default function UsageAuthorizationHost() {
   const { t } = useTranslation("settings"),
@@ -87,14 +89,14 @@ export default function UsageAuthorizationHost() {
           <p role="alert" className="text-sm text-text-3">
             {t(
               "managedUsage.rangeUnavailable",
-              "Package price range unavailable. Refresh the catalog before enabling this package.",
+              "Package price range unavailable. Refresh the catalog before enabling this package."
             )}
           </p>
         )}
         <p className="text-sm text-text-2">
           {t(
             "managedUsage.walletIncluded",
-            "All models in this package are included and use your wallet balance.",
+            "All models in this package are included and use your wallet balance."
           )}
         </p>
         <div className="max-h-64 space-y-3 overflow-y-auto">
@@ -116,14 +118,14 @@ export default function UsageAuthorizationHost() {
         <p className="text-sm text-text-3">
           {t(
             "managedUsage.walletConsent",
-            "Enable every model in this package at the displayed price range. Actual usage is charged directly from your wallet balance; no separate package budget is required.",
+            "Enable every model in this package at the displayed price range. Actual usage is charged directly from your wallet balance; no separate package budget is required."
           )}
         </p>
         {!prompt.service.wallet_billing_supported && (
           <p role="alert" className="text-sm text-text-3">
             {t(
               "managedUsage.walletUnavailable",
-              "Wallet billing is not available yet. Refresh after the service is updated.",
+              "Wallet billing is not available yet. Refresh after the service is updated."
             )}
           </p>
         )}

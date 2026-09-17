@@ -8,7 +8,7 @@ const openClient = defineProcedure("market_connection_open_client")
       agent: z.string(),
       selection: z.string(),
       model: z.string(),
-    }),
+    })
   )
   .output(z.null())
   .build();
@@ -16,5 +16,5 @@ const openClient = defineProcedure("market_connection_open_client")
 export const openConfiguredMarketClient = (
   agent: "claude_code" | "claude_desktop" | "codex",
   selection: string,
-  model: string,
+  model: string
 ) => typedInvoke(openClient, { agent, selection, model });

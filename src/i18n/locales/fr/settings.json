@@ -942,28 +942,19 @@
     "desktopRestored": "Configuration précédente restaurée — quittez complètement Claude Desktop puis rouvrez-le",
     "advancedDescription": "Connexions API personnalisées et migration ponctuelle des identifiants",
     "marketApps": {
-      "workspace": "Official packages",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
-      "currentValue": "{{workspace}} · {{model}}",
-      "auto": "Modèle automatique",
-      "chooseInPicker": "Choose an official package and model",
       "nonePurchased": "No official packages are currently available",
-      "claudeHelp": "Claude Code and Claude Desktop each keep their own package, model and restore point. Keep ORG2 running while using a managed connection.",
       "checking": "Vérification de l’application…",
       "unavailable": "Indisponible pour cette version installée",
       "notInstalled": "Non installée",
-      "following": "Using the configured package",
       "original": "Utilise la configuration d’origine de l’application",
-      "connect": "Choose package",
       "open": "Ouvrir l’application",
-      "disconnect": "Restore original setup",
       "connected": "L’application suit maintenant l’espace ORG2 actuel",
       "opened": "Application ouverte",
       "disconnected": "La configuration précédente de l’application a été restaurée",
       "actionFailed": "Impossible de mettre à jour cette connexion",
-      "current": "Actuel",
       "workspaceNumber": "Service {{index}} sur {{count}}",
       "openTerminal": "Ouvrir le terminal",
       "terminalOpened": "Terminal ouvert",
@@ -1085,5 +1076,16 @@
   "development": {
     "updateAvailable": "Mise à jour disponible",
     "updateAvailableDesc": "Afficher les indicateurs de mise à jour dans toute l’application avec la version 99.0.0 — les actions ouvrent uniquement l’aperçu"
+  },
+  "managedUsage": {
+    "cancel": "Annuler",
+    "authorize": "Activer le forfait",
+    "rates": "Entrée / sortie par million de tokens",
+    "wallet": "Ouvrir le portefeuille",
+    "priceRange": "Fourchette du forfait : {{min}} %–{{max}} % du tarif officiel",
+    "rangeUnavailable": "La fourchette de prix du forfait est indisponible. Actualisez le catalogue avant de l’activer.",
+    "walletIncluded": "Tous les modèles inclus utilisent le solde de votre portefeuille.",
+    "walletUnavailable": "La facturation du portefeuille n’est pas encore disponible. Actualisez après la mise à jour du service.",
+    "walletConsent": "Activez tous les modèles de ce forfait dans la fourchette de prix affichée. L’utilisation réelle est débitée directement du solde de votre portefeuille ; aucun budget distinct n’est requis pour le forfait."
   }
 }

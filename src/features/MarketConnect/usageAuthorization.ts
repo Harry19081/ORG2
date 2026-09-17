@@ -1,7 +1,7 @@
-import type { ManagedService } from "./rpc";
-import { activateManagedService } from "./rpc";
 import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
 import type { MarketExecutionProfile } from "./marketProfiles";
+import type { ManagedService } from "./rpc";
+import { activateManagedService } from "./rpc";
 
 export interface UsagePrompt {
   service: ManagedService;
@@ -13,7 +13,7 @@ let pending = false;
  * changes; activation remains bound to the selected native authorization. */
 export async function authorizedProfile(
   profile: MarketExecutionProfile,
-  model: string,
+  model: string
 ): Promise<MarketExecutionProfile> {
   const service = profile.managed;
   if (!service) return profile;
@@ -33,8 +33,8 @@ export async function authorizedProfile(
       window.dispatchEvent(
         new CustomEvent<UsagePrompt>(USAGE_AUTHORIZATION_EVENT, {
           detail: { service, resolve },
-        }),
-      ),
+        })
+      )
     );
     if (!accepted) throw new Error("usage_authorization_cancelled");
     const access = await activateManagedService(profile.connection, service);
