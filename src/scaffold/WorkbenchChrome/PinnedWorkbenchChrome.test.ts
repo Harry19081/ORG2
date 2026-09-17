@@ -30,7 +30,6 @@ import {
 } from "@src/scaffold/GlobalSpotlight/FindCard/findCoordinator";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
-import { settingsAtom } from "@src/store/settings";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
@@ -283,16 +282,12 @@ describe("PinnedWorkbenchChrome", () => {
   });
 
   it.each(["organization", "work-management"] as const)(
-    "keeps pane actions enabled for %s tabs with a saved split layout",
+    "disables the show-workstation action for %s tabs without touching the saved split layout",
     (type) => {
       render();
       act(() => {
         store.set(activeStationChatVisibleAtom, "my-station", true);
         store.set(chatWidthAtom, 360);
-        store.set(settingsAtom, {
-          ...store.get(settingsAtom),
-          "general.chatPanelPosition": "left",
-        });
         store.set(chatPanelMaximizedAtom, false);
         store.set(chatPanelTabsAtom, {
           activeTabId: "full-width-tab",
@@ -300,18 +295,13 @@ describe("PinnedWorkbenchChrome", () => {
         });
       });
 
-      expect(query("pinned-workbench-chrome-chat-visibility")).not.toBeNull();
-      expect(query("pinned-workbench-chrome-maximize-chat")).not.toBeNull();
-      expect(query("pinned-workbench-chrome-show-workstation")).toBeNull();
-      expect(query("pinned-workbench-chrome")?.childElementCount).toBe(2);
-      expect(query("right-edge-reservation")?.dataset.owner).toBe(
-        "workstation"
-      );
-      expect(query("right-edge-reservation")?.dataset.reservedRight).toBe(
-        String(getPinnedWorkbenchChromeReservedRight(2))
-      );
-      click("pinned-workbench-chrome-maximize-chat");
-      expect(store.get(chatPanelMaximizedAtom)).toBe(true);
+      const showWorkstation = query("pinned-workbench-chrome-show-workstation");
+      expect(showWorkstation).not.toBeNull();
+      expect(showWorkstation?.hasAttribute("disabled")).toBe(true);
+      expect(query("pinned-workbench-chrome-chat-visibility")).toBeNull();
+      expect(query("pinned-workbench-chrome-maximize-chat")).toBeNull();
+      click("pinned-workbench-chrome-show-workstation");
+      expect(store.get(chatPanelMaximizedAtom)).toBe(false);
     }
   );
 

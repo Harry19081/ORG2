@@ -76,7 +76,6 @@ interface ChatPanelHeaderProps {
   tokenUsageVisible: boolean;
   turnMetadataVisible: boolean;
   shouldOffsetHeaderForCollapsedSidebar: boolean;
-  /** Whether the active tab may reveal a Station beside the chat pane. */
   showHeader: boolean;
   showSessionContent: boolean;
   /** Owner-side share entry gate (design §6.3): own session + org in scope. */

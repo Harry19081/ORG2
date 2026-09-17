@@ -84,31 +84,46 @@ describe("WorkStationViewService work-management tabs", () => {
     expect(navigationEvents).toEqual([]);
   });
 
-  it("allows pane actions while a Runtime tab is active", async () => {
+  it("rejects Station-opening actions while a Runtime tab is active", async () => {
     const store = getInstrumentedStore();
     store.set(openRuntimeInChatPanelTabAtom, "Runtime");
 
-    expect(store.get(chatPanelMaximizedAtom)).toBe(false);
-    expect(await WorkStationViewService.toggleChatPanelMaximized()).toBe(true);
-    expect(await WorkStationViewService.showWorkStation()).toBe(true);
+    expect(await WorkStationViewService.toggleChatPanelMaximized()).toBe(false);
+    expect(await WorkStationViewService.showWorkStation()).toBe(false);
     expect(await WorkStationViewService.openStationMode("my-station")).toBe(
-      true
+      false
     );
     expect(store.get(chatPanelMaximizedAtom)).toBe(false);
-    expect(store.get(stationModeAtom)).toBe("my-station");
+    expect(store.get(stationModeAtom)).toBe("agent-station");
   });
 
-  it("allows pane actions on a wide viewport", async () => {
+  it("keeps Station-opening actions disabled on a wide viewport", async () => {
     const store = getInstrumentedStore();
     store.set(openRuntimeInChatPanelTabAtom, "Runtime");
     window.innerWidth = 2560;
 
+    expect(await WorkStationViewService.toggleChatPanelMaximized()).toBe(false);
+    expect(store.get(chatPanelMaximizedAtom)).toBe(false);
+    expect(await WorkStationViewService.showWorkStation()).toBe(false);
+    expect(await WorkStationViewService.openStationMode("my-station")).toBe(
+      false
+    );
+    expect(store.get(stationModeAtom)).toBe("agent-station");
+  });
+
+  it("allows Station-opening actions again once a session tab is active", async () => {
+    const store = getInstrumentedStore();
+    store.set(chatPanelTabsAtom, {
+      activeTabId: "chat",
+      tabs: [{ id: "chat", type: "session", title: "Session" }],
+    });
+
     expect(await WorkStationViewService.toggleChatPanelMaximized()).toBe(true);
     expect(store.get(chatPanelMaximizedAtom)).toBe(true);
-    expect(await WorkStationViewService.showWorkStation()).toBe(true);
     expect(await WorkStationViewService.openStationMode("my-station")).toBe(
       true
     );
+    expect(store.get(chatPanelMaximizedAtom)).toBe(false);
     expect(store.get(stationModeAtom)).toBe("my-station");
   });
 });
