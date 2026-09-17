@@ -99,6 +99,8 @@ beforeEach(() => {
   mocks.themePreference = "system";
   mocks.themeStatus = "idle";
   mocks.bypass = false;
+  mocks.connection.presence = "online";
+  mocks.connection.desktopName = "Home Mac";
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -186,7 +188,9 @@ describe("SettingsTab shared account destination", () => {
     const original = mocks.config.wsUrl;
     await render();
     expect(host.textContent).toContain("Home Mac");
-    expect(host.querySelector('[aria-label="settings.online"]')).not.toBeNull();
+    expect(
+      host.querySelector(".mobile-settings__presence .sr-only")?.textContent
+    ).toBe("settings.online");
     expect(host.textContent).not.toContain("settings.permissionTier");
     expect(host.textContent).not.toContain("settings.connectionDetails");
     expect(host.textContent).not.toContain("settings.relay");
@@ -197,11 +201,47 @@ describe("SettingsTab shared account destination", () => {
     const connection = host.querySelector(
       '[data-testid="mobile-remote-connection-settings"]'
     )!;
-    expect(connection.querySelector("button")?.getAttribute("aria-label")).toBe(
-      "settings.connectionDevices"
-    );
+    expect(
+      connection.querySelector("button")?.getAttribute("aria-label")
+    ).toBeNull();
     expect(mocks.config.wsUrl).toBe(original);
     expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+  it("keeps device identity and changing presence available to the row's accessible name", async () => {
+    for (const [presence, label] of [
+      ["online", "settings.online"],
+      ["offline", "settings.offline"],
+      ["unknown", "settings.notAvailable"],
+    ]) {
+      mocks.connection.presence = presence;
+      await render();
+      const row = host.querySelector<HTMLButtonElement>(
+        ".mobile-settings__device-entry"
+      )!;
+      // Native buttons derive their accessible name from content. An ARIA name
+      // on the row would override the device identity and presence below.
+      expect(row.hasAttribute("aria-label")).toBe(false);
+      expect(row.hasAttribute("aria-labelledby")).toBe(false);
+      expect(row.textContent).toBe(
+        `settings.connectionDevicesHome Mac${label}`
+      );
+      const presenceText = row.querySelector(
+        ".mobile-settings__presence .sr-only"
+      )!;
+      expect(presenceText.textContent).toBe(label);
+      expect(presenceText.closest('[aria-hidden="true"], [hidden]')).toBeNull();
+      expect(
+        row
+          .querySelector(".mobile-settings__status-dot")
+          ?.getAttribute("aria-hidden")
+      ).toBe("true");
+    }
+
+    mocks.connection.desktopName = "";
+    await render();
+    expect(
+      host.querySelector(".mobile-settings__desktop-name")?.textContent
+    ).toBe("settings.notAvailable");
   });
   it("offers persisted system, light and dark appearance choices", async () => {
     await render();
@@ -223,7 +263,7 @@ describe("SettingsTab shared account destination", () => {
   it("opens device management from the entire connection row without mutating a pairing", async () => {
     const onOpenDevices = vi.fn();
     await render({ onOpenDevices });
-    await click("settings.connectionDevices", host);
+    await click("settings.connectionDevicesHome Macsettings.online", host);
     expect(onOpenDevices).toHaveBeenCalledTimes(1);
     expect(mocks.navigate).not.toHaveBeenCalled();
     expect(host.textContent).not.toContain("settings.revokePairing");
