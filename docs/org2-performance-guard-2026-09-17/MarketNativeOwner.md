@@ -32,6 +32,8 @@ No persisted credential format, package routing protocol, database schema, prici
 
 - Mobile browser boundary follow-up: removed the unused desktop `useValidatedLastPair` re-export from the shared model-hook barrel. Every desktop caller already imports that leaf directly, so its owner guard is unchanged. The original mobile static-import boundary test and model-picker/identity regression suites pass (6 files, 40 tests); full `tsgo --noEmit` passes.
 
+- Integration with reviewed `develop` commit `84e73475c`: preserve the new anchored-dropdown source dismissal policy for Packages while keeping explicit recent selection closing and variant edits open, matching Account Keys. The original owner capture, stale-result assertion and disposal remain unchanged. Added source/retired-owner coverage in both dismissal modes, recent/variant coverage independent of that mode, and the required empty Market fixture for upstream AccountKey tests. Integration tests passed (122 files, 953 tests); final palette follow-up passed (7 files, 35 tests). Full `tsgo --noEmit` and typed lint passed (1076 existing findings, zero new/increased); independent review found no blocking issue. No prior private artifact establishes runtime acceptance of this integrated source.
+
 ## Architecture review
 
 | Layer                     | Verdict                         | Evidence                                                                                                                  |

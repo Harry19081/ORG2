@@ -8,19 +8,9 @@ pub struct ConnectionMetadata {
     pub workspace_id: String,
     pub target: crate::Target,
 }
-// Returned once to the UI after PKCE verification. Never persisted with Market
-// credentials: the application's identity store owns its refresh lifecycle.
-#[derive(Serialize, Deserialize)]
-pub struct IdentitySession {
-    pub access_token: String,
-    pub refresh_token: String,
-    pub expires_at: i64,
-}
 // This type is native-only. Serialize is for the OS credential store, never IPC.
 #[derive(Serialize, Deserialize)]
 pub struct Grant {
-    #[serde(default, skip_serializing)]
-    identity_session: Option<IdentitySession>,
     token: String,
     expires_at: i64,
     refresh_token: String,
@@ -33,9 +23,14 @@ pub struct Grant {
     state: String,
 }
 impl Grant {
-    pub fn take_identity_session(&mut self) -> Option<IdentitySession> {
-        self.identity_session.take()
+    /// Native ORG2 enrollment must match the already authenticated Cloud user.
+    pub fn require_cloud_identity(&self, expected: Option<&str>) -> Result<(), &'static str> {
+        if self.target == crate::Target::Org2 && expected != Some(self.identity_user_id.as_str()) {
+            return Err("market_identity_mismatch");
+        }
+        Ok(())
     }
+
     pub(crate) fn enrollment_state(&self) -> &str {
         &self.state
     }
@@ -569,24 +564,32 @@ pub(crate) mod tests {
         );
     }
     #[test]
-    fn identity_session_is_one_shot_and_not_persisted_in_market_grant() {
+    fn native_org2_enrollment_requires_the_current_cloud_identity() {
         let mut grant = fixture();
-        grant.identity_session = Some(IdentitySession {
-            access_token: "native-access-fixture".into(),
-            refresh_token: "native-refresh-fixture".into(),
-            expires_at: 5000,
+        grant.target = crate::Target::Org2;
+        assert!(grant.require_cloud_identity(None).is_err());
+        assert!(grant.require_cloud_identity(Some("another-user")).is_err());
+        assert!(grant
+            .require_cloud_identity(Some(&grant.identity_user_id))
+            .is_ok());
+        grant.target = crate::Target::Codex;
+        assert!(grant.require_cloud_identity(None).is_ok());
+    }
+    #[test]
+    fn legacy_identity_tokens_are_ignored_at_the_wire_boundary() {
+        let mut wire = serde_json::to_value(fixture()).unwrap();
+        wire["identity_session"] = serde_json::json!({
+            "access_token": "legacy-identity-access",
+            "refresh_token": "legacy-identity-refresh", "expires_at": 5000
         });
+        let grant: Grant = serde_json::from_value(wire).unwrap();
         let stored = serde_json::to_string(&grant).unwrap();
-        assert!(!stored.contains("native-access-fixture"));
-        assert!(!stored.contains("native-refresh-fixture"));
         assert!(!stored.contains("identity_session"));
-        assert!(grant.take_identity_session().is_some());
-        assert!(grant.take_identity_session().is_none());
+        assert!(!stored.contains("legacy-identity"));
     }
 
     fn fixture() -> Grant {
         Grant {
-            identity_session: None,
             token: concat!("og2ms.v1.", "fixture").into(),
             expires_at: 100000,
             refresh_token: format!("og2r_{}", "r".repeat(43)),

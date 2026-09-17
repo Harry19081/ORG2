@@ -204,7 +204,8 @@ export function useUnifiedModelPaletteSelection({
   const applyMarketSourceSelection = useCallback(
     (
       marketSource: NonNullable<SourceOption["marketSource"]>,
-      modelId: string
+      modelId: string,
+      options?: { close?: boolean }
     ) => {
       if (marketSelectionPendingRef.current) return;
       let owner: ReturnType<typeof captureMarketOwner>;
@@ -244,7 +245,7 @@ export function useUnifiedModelPaletteSelection({
             modelType,
             cliAgentType: marketSource.cliAgentType,
           });
-          onClose();
+          if (options?.close ?? closeOnSourceSelect) onClose();
         })
         .catch(() => {
           Message.error(t("marketConnection.launchFailed"));
@@ -254,7 +255,14 @@ export function useUnifiedModelPaletteSelection({
           marketSelectionPendingRef.current = false;
         });
     },
-    [advancedConfig, onClose, onConfigChange, recordRecent, t]
+    [
+      advancedConfig,
+      closeOnSourceSelect,
+      onClose,
+      onConfigChange,
+      recordRecent,
+      t,
+    ]
   );
 
   const handleSourceSelect = useCallback(
@@ -323,7 +331,9 @@ export function useUnifiedModelPaletteSelection({
           Message.error(t("marketConnection.failed"));
           return;
         }
-        applyMarketSourceSelection(currentSource, entry.modelId);
+        applyMarketSourceSelection(currentSource, entry.modelId, {
+          close: options?.close !== false,
+        });
         return;
       }
 
