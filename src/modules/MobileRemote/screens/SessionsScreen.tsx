@@ -34,7 +34,7 @@ import "../mobileDiscovery.scss";
 import { useMobileRemotePlatform } from "../platform";
 
 const SEARCH_ACTION_STYLE = {
-  minHeight: 44,
+  minHeight: "var(--mobile-touch-size)",
   fontSize: "var(--mobile-type-control-size)",
 };
 // Override Button's inline size defaults through its supported style API.
@@ -249,6 +249,7 @@ export function SessionsScreen({
             <Button
               variant="tertiary"
               className="mobile-discovery-cancel"
+              style={SEARCH_ACTION_STYLE}
               onClick={closeSecondary}
             >
               {t("inbox.backToSessions")}
@@ -372,6 +373,7 @@ export function SessionsScreen({
         {sessionsHasMore ? (
           <Button
             className="mobile-discovery-more"
+            style={SEARCH_ACTION_STYLE}
             disabled={offline || loading}
             loading={loading}
             onClick={() => {
@@ -434,6 +436,8 @@ export function SessionsScreen({
             ) : null}
             {search.phase === "ready" && search.sessions.length === 0 ? (
               <Placeholder
+                titleClassName="mobile-type-heading"
+                subtitleClassName="mobile-type-secondary"
                 variant="empty"
                 placement="detail-panel"
                 title={t(search.hasMore ? "search.continue" : "search.empty")}
@@ -495,6 +499,7 @@ export function SessionsScreen({
               <Button
                 variant="tertiary"
                 className="mobile-discovery-cancel"
+                style={SEARCH_ACTION_STYLE}
                 onClick={closeSecondary}
               >
                 {t("search.cancel")}
@@ -545,13 +550,21 @@ export function SessionsScreen({
                         scrollPositions.current.search = 0;
                         searchInput.current?.focus();
                       }}
-                    >
-                      <HugeiconsIcon
-                        icon={Cancel01Icon}
-                        size={18}
-                        aria-hidden
-                      />
-                    </IconButton>
+                      iconOnly
+                      shape="circle"
+                      style={{
+                        width: "var(--mobile-touch-size)",
+                        height: "var(--mobile-touch-size)",
+                        padding: 0,
+                      }}
+                      icon={
+                        <HugeiconsIcon
+                          icon={Cancel01Icon}
+                          size={18}
+                          aria-hidden
+                        />
+                      }
+                    />
                   ) : undefined
                 }
                 className="mobile-search-input min-w-0 flex-1"
@@ -573,6 +586,7 @@ export function SessionsScreen({
               <Button
                 variant="tertiary"
                 className="mobile-discovery-cancel"
+                style={SEARCH_ACTION_STYLE}
                 onClick={closeSecondary}
               >
                 {t("search.cancel")}

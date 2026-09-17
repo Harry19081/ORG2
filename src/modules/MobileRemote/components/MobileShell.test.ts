@@ -36,4 +36,34 @@ describe("MobileShell", () => {
     expect(viewport).toContain("max-width: 48rem");
     expect(viewport).not.toContain("393px");
   });
+
+  it("uses the chat canvas for the shell and detail header in every theme", () => {
+    const styles = readFileSync(
+      new URL("../mobileChrome.scss", import.meta.url),
+      "utf8"
+    );
+
+    expect(styles).toContain("--mobile-canvas: var(--color-chat-container);");
+    expect(styles).not.toContain("--mobile-canvas: #101010");
+    expect(styles).not.toContain("--mobile-canvas: #f8f8f8");
+    expect(styles).toMatch(
+      /\.mobile-shell__viewport\s*\{[^}]*background:\s*var\(--mobile-canvas\)/s
+    );
+  });
+
+  it("derives mobile chrome colors and elevation from shared theme tokens", () => {
+    const styles = readFileSync(
+      new URL("../mobileChrome.scss", import.meta.url),
+      "utf8"
+    );
+
+    expect(styles).toContain("--mobile-accent: var(--color-text-1);");
+    expect(styles).toContain("--mobile-glass-solid: var(--color-bg-2);");
+    expect(styles).toContain("--mobile-selected: var(--color-fill-2);");
+    expect(styles).toContain(
+      "--mobile-glass-shadow: var(--shadow-dropdown-soft);"
+    );
+    expect(styles).not.toMatch(/#[\da-f]{3,8}\b/i);
+    expect(styles).not.toMatch(/\brgba?\s*\(/i);
+  });
 });

@@ -69,7 +69,8 @@ afterEach(async () => {
   else Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
 });
 async function render(
-  overrides: Partial<React.ComponentProps<typeof MobileModelListDropdown>> = {}
+  overrides: Partial<React.ComponentProps<typeof MobileModelListDropdown>> = {},
+  settleFrames = true
 ) {
   await act(async () =>
     root.render(
@@ -99,7 +100,7 @@ async function render(
       )
     )
   );
-  await act(async () => vi.advanceTimersByTimeAsync(64));
+  if (settleFrames) await act(async () => vi.advanceTimersByTimeAsync(64));
 }
 
 it("reuses selected model rows, preserves account/family selection and commits keyboard selection once", async () => {
@@ -211,4 +212,48 @@ it("repositions an open intrinsic-width menu on resize without changing selectio
   expect(onSelect).not.toHaveBeenCalled();
   await render({ open: false });
   expect(document.querySelector(".mobile-model-menu")).toBeNull();
+});
+
+it("clamps the first visible panel using its intrinsic width before animation frames", async () => {
+  vi.stubGlobal("innerWidth", 320);
+  vi.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
+    x: 72,
+    y: 600,
+    top: 600,
+    left: 72,
+    bottom: 644,
+    right: 203,
+    width: 131,
+    height: 44,
+    toJSON: () => ({}),
+  });
+  const originalRect = HTMLElement.prototype.getBoundingClientRect;
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
+    function (this: HTMLElement) {
+      if (!this.classList.contains("mobile-model-menu"))
+        return originalRect.call(this);
+      return {
+        x: 0,
+        y: 0,
+        top: 0,
+        left: 0,
+        bottom: 200,
+        right: 288,
+        width: 288,
+        height: 200,
+        toJSON: () => ({}),
+      };
+    }
+  );
+  const onSelect = vi.fn();
+  for (let openCount = 0; openCount < 2; openCount += 1) {
+    await render({ onSelect }, false);
+    const panel = document.querySelector<HTMLElement>(".mobile-model-menu")!;
+    expect(panel.style.visibility).toBe("visible");
+    expect(Number.parseFloat(panel.style.left)).toBe(24);
+    expect(Number.parseFloat(panel.style.left) + 288).toBeLessThanOrEqual(320);
+    expect(onSelect).not.toHaveBeenCalled();
+    await render({ open: false, onSelect });
+    expect(document.querySelector(".mobile-model-menu")).toBeNull();
+  }
 });

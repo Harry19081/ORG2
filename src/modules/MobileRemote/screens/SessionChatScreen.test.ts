@@ -184,6 +184,25 @@ describe("SessionChatScreen Agent loading state", () => {
     });
   }
 
+  it("passes timing from the selected round instead of the latest round", async () => {
+    const earlier = { id: "earlier", status: "completed", durationMs: 198_000 };
+    const latest = { id: "latest", status: "pending", durationMs: null };
+    mocks.context = createContext({
+      transcriptRounds: [earlier, latest],
+      activeRoundId: earlier.id,
+      selectedRoundId: earlier.id,
+    });
+    await renderScreen();
+    expect(mocks.transcriptProps?.round).toEqual(earlier);
+    mocks.context = {
+      ...mocks.context,
+      activeRoundId: latest.id,
+      selectedRoundId: null,
+    };
+    await renderScreen();
+    expect(mocks.transcriptProps?.round).toEqual(latest);
+  });
+
   it("mounts combined opening immediately and keeps canonical route replacement on one subscription", async () => {
     const call = vi.fn();
     const context = createContext({

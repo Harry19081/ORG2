@@ -185,6 +185,7 @@ export default function ModelSettingsMenu({
         variant="tertiary"
         size="small"
         className="w-max shrink-0 px-1.5!"
+        style={{ fontSize: "var(--dropdown-font-size, 13px)" }}
         icon={
           <HugeiconsIcon
             icon={ArrowRight01Icon}
@@ -387,6 +388,7 @@ export default function ModelSettingsMenu({
                     size="small"
                     variant="tertiary"
                     className="w-max shrink-0 px-1.5!"
+                    style={{ fontSize: "var(--dropdown-font-size, 13px)" }}
                     icon={
                       <HugeiconsIcon
                         icon={ArrowRight01Icon}
@@ -456,6 +458,7 @@ export default function ModelSettingsMenu({
                     appearance="soft"
                     size="small"
                     aria-pressed={selection.thinking}
+                    style={{ fontSize: "var(--dropdown-font-size, 13px)" }}
                     data-testid="model-settings-thinking-toggle"
                     onClick={() =>
                       change({ ...selection, thinking: !selection.thinking })

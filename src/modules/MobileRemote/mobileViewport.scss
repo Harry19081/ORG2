@@ -6,6 +6,8 @@
  */
 
 @use "./mobileTypography" as typography;
+@use "./mobileUiTokens" as mobile;
+@use "./mobileOverlays";
 
 // Adapt shared transcript consumers to mobile roles, including body-portaled
 // sheets. This entry-only stylesheet never changes Desktop typography.
@@ -13,6 +15,16 @@
 // transcript uses py-0.5 by default and 2px between consecutive tool rows.
 $mobile-chat-item-gap-y: 2px;
 $mobile-chat-tool-run-gap-y: 2px;
+
+.mobile-turn-summary {
+  padding-block: mobile.$space-2;
+
+  &__toggle {
+    min-height: mobile.$touch-target;
+    font-size: var(--mobile-type-caption-size);
+    font-weight: normal;
+  }
+}
 
 html {
   @include typography.tokens;
@@ -84,11 +96,11 @@ html .orgii-bottom-sheet-panel {
     min-height: 0;
   }
   .orgii-bottom-sheet-close {
-    width: 44px;
-    height: 44px;
+    width: mobile.$touch-target;
+    height: mobile.$touch-target;
   }
   .orgii-bottom-sheet-footer button {
-    min-height: 44px;
+    min-height: mobile.$touch-target;
     max-width: 100%;
     height: auto;
     > .truncate {

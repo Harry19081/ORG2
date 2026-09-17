@@ -338,6 +338,7 @@ function SessionChatContent({
         <ChatTranscript
           sessionId={sessionId}
           roundId={activeRoundId}
+          round={transcriptRounds.find((round) => round.id === activeRoundId)}
           imageScope={imageScope}
           items={transcriptItems}
           phase={transcriptPhase}

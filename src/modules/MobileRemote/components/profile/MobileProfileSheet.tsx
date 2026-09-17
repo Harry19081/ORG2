@@ -2,7 +2,6 @@ import React, { useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import IconButton from "@src/components/Button";
 import { InlineBanner } from "@src/components/InlineBanner";
 import {
   ArrowLeft01Icon,
@@ -21,6 +20,7 @@ import Modal from "@src/scaffold/ModalSystem";
 
 import { useMobileAuth } from "../../auth/MobileAuthContext";
 import { useMobileAccountActions } from "../../auth/useMobileAccountActions";
+import { MobileHeaderIconButton } from "../MobileHeaderIconButton";
 import { MobileAccountAvatar } from "./MobileAccountAvatar";
 
 export function MobileProfileSheet({
@@ -53,20 +53,13 @@ export function MobileProfileSheet({
       bodyClassName="mobile-profile-body"
       initialFocusRef={closeRef}
       headerActions={
-        <IconButton
-          appearance="soft"
-          variant="tertiary"
+        <MobileHeaderIconButton
           ref={closeRef}
-          htmlType="button"
           className="mobile-profile-close"
-          aria-label={t(page === "help" ? "profile.back" : "profile.close")}
+          label={t(page === "help" ? "profile.back" : "profile.close")}
           onClick={page === "help" ? () => setPage("profile") : onClose}
-        >
-          <HugeiconsIcon
-            icon={page === "help" ? ArrowLeft01Icon : Cancel01Icon}
-            size={24}
-          />
-        </IconButton>
+          icon={page === "help" ? ArrowLeft01Icon : Cancel01Icon}
+        />
       }
     >
       {page === "help" ? (
@@ -86,7 +79,7 @@ export function MobileProfileSheet({
             <MobileAccountAvatar
               name={name}
               src={session.profile?.avatarUrl}
-              size={64}
+              size={48}
             />
             <div className="min-w-0">
               <h2>{name}</h2>
@@ -134,7 +127,10 @@ export function MobileProfileSheet({
             />
           </ProfileGroup>
           {!isDevelopmentBypass && (
-            <ProfileGroup title={t("profile.danger")}>
+            <ProfileGroup
+              title={t("profile.danger")}
+              hint={t("profile.deleteHint")}
+            >
               <ProfileRow
                 label={t("settings.deleteAccount")}
                 icon={Delete02Icon}
@@ -143,7 +139,6 @@ export function MobileProfileSheet({
                 disabled={opening}
                 onClick={() => void openCloudPage("/account")}
               />
-              <p className="mobile-profile-hint">{t("profile.deleteHint")}</p>
             </ProfileGroup>
           )}
           {opening && (
@@ -168,11 +163,13 @@ export function MobileProfileSheet({
 function ProfileGroup({
   title,
   children,
-}: React.PropsWithChildren<{ title: string }>) {
+  hint,
+}: React.PropsWithChildren<{ title: string; hint?: string }>) {
   return (
     <section className="mobile-profile-group" aria-label={title}>
       <h3>{title}</h3>
-      <div>{children}</div>
+      <div className="mobile-profile-group-card">{children}</div>
+      {hint ? <p className="mobile-profile-hint">{hint}</p> : null}
     </section>
   );
 }
@@ -196,20 +193,15 @@ function ProfileRow({
     <Button
       htmlType="button"
       variant={danger ? "danger" : "secondary"}
-      appearance="ghost"
+      // Compound menu row: CSS owns icon/label/trailing-action columns and touch geometry.
+      layout="custom"
+      appearance="custom"
       className={`mobile-profile-row ${danger ? "mobile-profile-row--danger" : ""}`}
-      // Shared Button's desktop sizing is inline; explicitly use mobile row sizing.
-      style={{
-        height: "auto",
-        padding: "12px 0",
-        fontSize: "var(--mobile-type-control-size)",
-        borderRadius: 0,
-      }}
       onClick={onClick}
       disabled={disabled}
     >
       <span className="mobile-profile-row-content">
-        <HugeiconsIcon icon={icon} size={22} aria-hidden="true" />
+        <HugeiconsIcon icon={icon} size={20} aria-hidden="true" />
         <span className="min-w-0 flex-1 text-left">{label}</span>
         <HugeiconsIcon
           icon={external ? ArrowUpRight01Icon : ArrowRight02Icon}

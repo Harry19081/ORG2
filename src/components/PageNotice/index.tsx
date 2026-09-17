@@ -80,18 +80,6 @@ const DEFAULT_ICONS: Record<string, React.ReactNode> = {
  */
 const SELECTABLE_TEXT_CLASS = "allow-select-deep page-notice__text";
 
-const PAGE_NOTICE_BASE_TEXT = {
-  title: "block text-[13px] font-medium leading-[14px]",
-  body: "text-[12px] font-normal leading-snug",
-  subtitle: "mt-1 block text-[11px] opacity-70",
-} as const;
-
-const PAGE_NOTICE_TOKENS = {
-  titleText: `${PAGE_NOTICE_BASE_TEXT.title} ${SELECTABLE_TEXT_CLASS}`,
-  bodyText: `${PAGE_NOTICE_BASE_TEXT.body} ${SELECTABLE_TEXT_CLASS}`,
-  subtitleText: `${PAGE_NOTICE_BASE_TEXT.subtitle} ${SELECTABLE_TEXT_CLASS}`,
-} as const;
-
 interface PageNoticeActionConfig {
   label: string;
   href?: string;
@@ -128,6 +116,12 @@ interface PageNoticeProps {
   hideIcon?: boolean;
   /** Optional subtitle below the body */
   subtitle?: React.ReactNode;
+  /** Override title typography; block layout, weight and selection are preserved. */
+  titleClassName?: string;
+  /** Override body typography; weight and selection are preserved. */
+  bodyClassName?: string;
+  /** Override subtitle typography; layout, opacity and selection are preserved. */
+  subtitleClassName?: string;
   /** Extra className on the outer container */
   className?: string;
   /** Reduce default-card vertical and right padding without shrinking action buttons. */
@@ -157,6 +151,9 @@ const PageNotice: React.FC<PageNoticeProps> = ({
   icon,
   hideIcon = false,
   subtitle,
+  titleClassName,
+  bodyClassName,
+  subtitleClassName,
   className,
   compact = false,
   presentation = "default",
@@ -168,6 +165,16 @@ const PageNotice: React.FC<PageNoticeProps> = ({
   role,
   dataTestId,
 }) => {
+  const baseText = {
+    title: `block font-medium ${titleClassName ?? "text-[13px] leading-[14px]"}`,
+    body: `font-normal ${bodyClassName ?? "text-[12px] leading-snug"}`,
+    subtitle: `mt-1 block opacity-70 ${subtitleClassName ?? "text-[11px]"}`,
+  };
+  const textClasses = {
+    title: `${baseText.title} ${SELECTABLE_TEXT_CLASS}`,
+    body: `${baseText.body} ${SELECTABLE_TEXT_CLASS}`,
+    subtitle: `${baseText.subtitle} ${SELECTABLE_TEXT_CLASS}`,
+  };
   const [expanded, setExpanded] = React.useState(presentation !== "pill");
   const isPill = presentation === "pill";
   const cardPaddingClass = compact ? "py-1 pl-3 pr-1" : "p-3";
@@ -240,20 +247,14 @@ const PageNotice: React.FC<PageNoticeProps> = ({
         {hasTitle ? (
           // Pill headers double as the expand/collapse hit area — keep their
           // text non-selectable so a drag doesn't fight the toggle.
-          <span
-            className={
-              isPill
-                ? PAGE_NOTICE_BASE_TEXT.title
-                : PAGE_NOTICE_TOKENS.titleText
-            }
-          >
+          <span className={isPill ? baseText.title : textClasses.title}>
             {title}
           </span>
         ) : (
           showContent &&
           children && (
             <div
-              className={`block ${isPill ? PAGE_NOTICE_BASE_TEXT.body : PAGE_NOTICE_TOKENS.bodyText}`}
+              className={`block ${isPill ? baseText.body : textClasses.body}`}
             >
               {children}
             </div>
@@ -302,10 +303,10 @@ const PageNotice: React.FC<PageNoticeProps> = ({
         )}
       </div>
       {showContent && hasTitle && children && (
-        <div className={`mt-2 ${PAGE_NOTICE_TOKENS.bodyText}`}>{children}</div>
+        <div className={`mt-2 ${textClasses.body}`}>{children}</div>
       )}
       {showContent && subtitle && (
-        <span className={PAGE_NOTICE_TOKENS.subtitleText}>{subtitle}</span>
+        <span className={textClasses.subtitle}>{subtitle}</span>
       )}
     </div>
   );

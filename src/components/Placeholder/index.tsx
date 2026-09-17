@@ -76,6 +76,10 @@ interface PlaceholderProps {
   loadingIconOnly?: boolean;
   /** Secondary message */
   subtitle?: string;
+  /** Override title typography while retaining the state color and layout. */
+  titleClassName?: string;
+  /** Override subtitle typography while retaining the state color and layout. */
+  subtitleClassName?: string;
   /** Optional action button */
   action?: Omit<ButtonProps, "children"> & {
     label: string;
@@ -107,6 +111,8 @@ export const Placeholder: React.FC<PlaceholderProps> = memo(
     placement,
     title,
     subtitle,
+    titleClassName,
+    subtitleClassName,
     loadingIconOnly = false,
     action,
     onRetry,
@@ -178,12 +184,12 @@ export const Placeholder: React.FC<PlaceholderProps> = memo(
     ) : null;
     const renderedAction =
       actionButton && renderButton ? renderButton(actionButton) : actionButton;
-    const titleClass = isDetailPanel
-      ? TYPOGRAPHY.contentTitle
-      : TYPOGRAPHY.panelTitle;
-    const subtitleClass = isDetailPanel
-      ? TYPOGRAPHY.contentSubtitle
-      : TYPOGRAPHY.panelSubtitle;
+    const titleClass =
+      titleClassName ??
+      (isDetailPanel ? TYPOGRAPHY.contentTitle : TYPOGRAPHY.panelTitle);
+    const subtitleClass =
+      subtitleClassName ??
+      (isDetailPanel ? TYPOGRAPHY.contentSubtitle : TYPOGRAPHY.panelSubtitle);
     /**
      * Detail-panel + fillParentHeight: use h-full (not flex-1) so the block fills non-flex parents
      * (e.g. AppShell Suspense wrappers). flex-1 only works as a flex item; without a flex parent the

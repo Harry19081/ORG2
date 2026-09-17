@@ -12,6 +12,7 @@ import {
   vi,
 } from "vitest";
 
+import type { TranscriptRoundSummary } from "../../lib/transcriptLoadState";
 import type { TranscriptItem } from "../../lib/transcriptReducer";
 import {
   MobileRemotePlatformProvider,
@@ -22,7 +23,10 @@ import { ChatTranscript } from "./ChatTranscript";
 import type { MobileFileTarget } from "./mobileFileTool";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, options?: { duration?: string }) =>
+      options?.duration ? `${key} ${options.duration}` : key,
+  }),
 }));
 
 vi.mock("./AgentBubble", () => ({
@@ -126,6 +130,7 @@ describe("ChatTranscript tail follow", () => {
     options: {
       sessionId?: string;
       roundId?: string;
+      round?: TranscriptRoundSummary;
       forceFollowKey?: string;
       waitingForAgent?: boolean;
       onOpenFile?: (eventId: string, target: MobileFileTarget) => Promise<void>;
@@ -141,6 +146,7 @@ describe("ChatTranscript tail follow", () => {
           React.createElement(ChatTranscript, {
             sessionId: options.sessionId ?? "session-1",
             roundId: options.roundId,
+            round: options.round,
             items,
             phase: "ready",
             forceFollowKey: options.forceFollowKey,
@@ -176,6 +182,228 @@ describe("ChatTranscript tail follow", () => {
       callbacks.forEach((callback) => callback(performance.now()));
     });
   };
+
+  const completedRound: TranscriptRoundSummary = {
+    id: "round-1",
+    status: "completed",
+    durationMs: 198_000,
+  };
+  const workedItems: TranscriptItem[] = [
+    USER_ITEM,
+    { id: "progress", kind: "agent", text: "Checking the repository" },
+    {
+      id: "tool",
+      kind: "tool",
+      text: "read_file",
+      toolName: "read_file",
+      toolCanonical: "read_file",
+      toolStatus: "completed",
+      toolData: {
+        kind: "file",
+        filePath: "/repo/session.ts",
+        fileName: "session.ts",
+        language: "typescript",
+        lineCount: 1,
+      },
+    },
+    { id: "answer", kind: "agent", text: "Final answer" },
+  ];
+  const workToggle = () =>
+    container.querySelector<HTMLButtonElement>(".mobile-turn-summary button");
+
+  it("folds completed work below the prompt, keeps the answer, and restores tool interactions on expand", async () => {
+    await renderTranscript(workedItems, {
+      roundId: "round-1",
+      round: completedRound,
+    });
+    expect(workToggle()?.textContent).toContain("3m 18s");
+    expect(workToggle()?.getAttribute("aria-expanded")).toBe("false");
+    expect(container.textContent).toContain("First question");
+    expect(container.textContent).toContain("Final answer");
+    expect(container.textContent).not.toContain("Checking the repository");
+    expect(
+      container.querySelector('[data-transcript-item-kind="tool"]')
+    ).toBeNull();
+    await act(async () => workToggle()!.click());
+    expect(workToggle()?.getAttribute("aria-expanded")).toBe("true");
+    expect(container.textContent).toContain("Checking the repository");
+    const readingPosition = scrollTop;
+    scrollHeight = 2_000;
+    act(() =>
+      ResizeObserverStub.instances.forEach((observer) => observer.trigger())
+    );
+    flushFrames();
+    expect(scrollTop).toBe(readingPosition);
+    expect(
+      container.querySelector('button[aria-label="transcript.scrollToBottom"]')
+    ).not.toBeNull();
+    const tool = container.querySelector<HTMLButtonElement>(
+      '[data-tool-call-name="read_file"]'
+    )!;
+    await act(async () => tool.click());
+    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+    await renderTranscript(workedItems, {
+      sessionId: "other",
+      roundId: "round-1",
+      round: completedRound,
+    });
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(workToggle()?.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("keeps live output expanded then folds on completion, preserving a manual expansion across updates", async () => {
+    await renderTranscript(workedItems, {
+      roundId: "round-1",
+      round: { ...completedRound, status: "pending" },
+    });
+    expect(workToggle()).toBeNull();
+    expect(container.textContent).toContain("Checking the repository");
+    await renderTranscript(workedItems, {
+      roundId: "round-1",
+      round: completedRound,
+    });
+    expect(workToggle()?.getAttribute("aria-expanded")).toBe("false");
+    await act(async () => workToggle()!.click());
+    await renderTranscript([...workedItems], {
+      roundId: "round-1",
+      round: { ...completedRound, durationMs: 200_000 },
+    });
+    expect(workToggle()?.getAttribute("aria-expanded")).toBe("true");
+    await renderTranscript(workedItems, {
+      roundId: "round-2",
+      round: { ...completedRound, id: "round-2" },
+    });
+    expect(workToggle()?.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it.each(["completed", "failed", "cancelled", "interrupted"])(
+    "folds every tool outcome in a %s round and restores the original order when expanded",
+    async (status) => {
+      const failedItems: TranscriptItem[] = [
+        ...workedItems.slice(0, -1),
+        {
+          id: "failure-1",
+          kind: "tool",
+          text: "failed command one",
+          toolStatus: "failed",
+        },
+        {
+          id: "failure-2",
+          kind: "tool",
+          text: "failed command two",
+          toolStatus: "failed",
+        },
+        workedItems[workedItems.length - 1],
+      ];
+      await renderTranscript(failedItems, {
+        round: { ...completedRound, status },
+      });
+      if (status !== "completed") {
+        expect(workToggle()?.getAttribute("aria-expanded")).toBe("true");
+        await act(async () => workToggle()!.click());
+      }
+      expect(workToggle()?.getAttribute("aria-expanded")).toBe("false");
+      expect(
+        container.querySelectorAll('[data-transcript-item-kind="tool"]')
+      ).toHaveLength(0);
+      expect(container.textContent).toContain("Final answer");
+      expect(container.textContent).not.toContain("failed command");
+      await act(async () => workToggle()!.click());
+      expect(
+        container.querySelectorAll('[data-transcript-item-kind="tool"]')
+      ).toHaveLength(3);
+      expect(container.textContent!.indexOf("failed command one")).toBeLessThan(
+        container.textContent!.indexOf("failed command two")
+      );
+      await act(async () => workToggle()!.click());
+      expect(
+        container.querySelectorAll('[data-transcript-item-kind="tool"]')
+      ).toHaveLength(0);
+      expect(
+        failedItems.filter((item) => item.toolStatus === "failed")
+      ).toHaveLength(2);
+    }
+  );
+
+  it("can collapse and reopen a failed tool-only round without a final reply", async () => {
+    await renderTranscript(
+      [
+        USER_ITEM,
+        {
+          id: "failed-only",
+          kind: "tool",
+          text: "failed without answer",
+          toolStatus: "failed",
+        },
+      ],
+      {
+        round: { ...completedRound, status: "failed" },
+      }
+    );
+    expect(workToggle()?.getAttribute("aria-expanded")).toBe("true");
+    await act(async () => workToggle()!.click());
+    expect(container.textContent).not.toContain("failed without answer");
+    expect(container.textContent).toContain("First question");
+    await act(async () => workToggle()!.click());
+    expect(container.textContent).toContain("failed without answer");
+  });
+
+  it("does not fold streaming, empty, or legacy multi-round transcripts and does not invent missing duration", async () => {
+    await renderTranscript(workedItems);
+    expect(workToggle()).toBeNull();
+    await renderTranscript([USER_ITEM], { round: completedRound });
+    expect(container.querySelector(".mobile-turn-summary")).toBeNull();
+    await renderTranscript(
+      [
+        ...workedItems,
+        { id: "new", kind: "agent", text: "Live", streaming: true },
+      ],
+      { round: completedRound }
+    );
+    expect(workToggle()).toBeNull();
+    await renderTranscript(
+      [
+        ...workedItems,
+        { id: "next-user", kind: "user", text: "Next question" },
+      ],
+      { round: completedRound }
+    );
+    expect(workToggle()).toBeNull();
+    await renderTranscript(workedItems, {
+      round: { id: "unknown-time", status: "completed" },
+    });
+    expect(workToggle()?.textContent).toBe("transcript.workSummary");
+  });
+
+  it("keeps tool-only work expandable and shows a static summary for an answer with nothing to fold", async () => {
+    await renderTranscript(
+      workedItems.slice(0, 3).filter((item) => item.kind !== "agent"),
+      {
+        round: {
+          id: "timed",
+          status: "completed",
+          startedAt: "2026-09-16T00:00:00Z",
+          endedAt: "2026-09-16T00:03:18Z",
+        },
+      }
+    );
+    expect(workToggle()?.textContent).toContain("3m 18s");
+    expect(
+      container.querySelector('[data-transcript-item-kind="tool"]')
+    ).toBeNull();
+    await act(async () => workToggle()!.click());
+    expect(
+      container.querySelector('[data-transcript-item-kind="tool"]')
+    ).not.toBeNull();
+    await renderTranscript([USER_ITEM, workedItems[3]], {
+      round: completedRound,
+    });
+    expect(workToggle()).toBeNull();
+    expect(
+      container.querySelector(".mobile-turn-summary")?.textContent
+    ).toContain("3m 18s");
+    expect(container.textContent).toContain("Final answer");
+  });
 
   it("mounts event image controls in the transcript and clears them on round change", async () => {
     const loadImage = vi

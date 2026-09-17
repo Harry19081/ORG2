@@ -26,12 +26,14 @@ export function ConnectionErrorScreen({
   return (
     <div className="mobile-flow-screen mobile-flow-screen--centered flex flex-1 flex-col items-center px-6">
       <Placeholder
+        titleClassName="mobile-type-heading"
+        subtitleClassName="mobile-type-secondary"
         variant="error"
         title={t("connectionFailed", { defaultValue: "Connection failed" })}
         subtitle={message}
       />
       {actionError ? (
-        <p role="alert" className="text-error mobile-type-secondary mt-4">
+        <p role="alert" className="mobile-type-secondary mt-4 text-danger-6">
           {t(`connectionRecovery.${actionError}Failed`)}
         </p>
       ) : null}

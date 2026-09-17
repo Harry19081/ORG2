@@ -19,6 +19,7 @@ import {
   saveScopedMobileConnectionConfig,
   selectScopedMobilePairedDesktop,
 } from "../../connection/mobileConnectionStorage";
+import { createMobileAppearancePort } from "../mobileAppearancePort";
 import { scanCameraQr } from "../scanCameraQr";
 import type { MobileRemotePlatform } from "../types";
 import { writeClipboardText } from "../writeClipboardText";
@@ -43,6 +44,7 @@ export function createBrowserMobileRemotePlatform(): MobileRemotePlatform {
 
   return {
     kind: "browser",
+    appearance: createMobileAppearancePort(window, document),
     writeClipboardText,
     scanQr: scanCameraQr,
     openExternal: (url) => window.location.assign(url),

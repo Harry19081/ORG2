@@ -99,15 +99,22 @@ type BubbleVariant = keyof typeof BODY_VARIANTS;
 interface ChatBubbleBodyProps {
   variant: BubbleVariant;
   className?: string;
+  /** Override body typography for shells with their own semantic text scale. */
+  bodyClassName?: string;
   children: React.ReactNode;
 }
 
 export const ChatBubbleBody: React.FC<ChatBubbleBodyProps> = memo(
-  ({ variant, className = "", children }) => (
+  ({
+    variant,
+    className = "",
+    bodyClassName = "text-[13px] leading-relaxed",
+    children,
+  }) => (
     <div
       className={`${CHAT_BUBBLE_WIDTH_TOKENS.body} text-left ${BODY_VARIANTS[variant]} ${className}`}
     >
-      <div className="min-w-0 text-[13px] leading-relaxed">{children}</div>
+      <div className={`min-w-0 ${bodyClassName}`}>{children}</div>
     </div>
   )
 );

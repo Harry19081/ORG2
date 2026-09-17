@@ -28,7 +28,9 @@ vi.mock("./screens/SessionChatScreen", () => ({
   SessionChatScreen: () => null,
 }));
 vi.mock("./screens/SessionsScreen", () => ({ SessionsScreen: () => null }));
-vi.mock("./screens/devices/DevicesTab", () => ({ DevicesTab: () => null }));
+vi.mock("./screens/devices/ConnectionDevicesScreen", () => ({
+  ConnectionDevicesScreen: () => null,
+}));
 vi.mock("./screens/settings/SettingsTab", () => ({ SettingsTab: () => null }));
 vi.mock("./components/MobileActionButton", () => ({
   MobileActionButton: ({

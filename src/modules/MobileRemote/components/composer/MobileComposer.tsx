@@ -28,6 +28,7 @@ import { MobileComposerImagePreview } from "./MobileComposerImagePreview";
 import { MobileModelPicker } from "./MobileModelPicker";
 import type { MobileModelPickerProps } from "./MobileModelPicker";
 import { MOBILE_DRAFT_TEXT_LIMIT } from "./mobileComposerDraftStore";
+import "./mobileComposerResponsive.scss";
 import { useMobileComposerImages } from "./useMobileComposerImages";
 
 const MOBILE_COMPOSER_EDITOR_MIN_HEIGHT = 36;
@@ -218,6 +219,8 @@ export function MobileComposer({
       >
         {showVoiceUi ? (
           <VoiceRecordingBar
+            className="mobile-composer-recording"
+            elapsedClassName="mobile-type-caption"
             elapsedSeconds={voice.elapsedSeconds}
             onCancel={voice.cancel}
             onAccept={voice.stop}
@@ -231,6 +234,7 @@ export function MobileComposer({
               />
             ) : null}
             <ComposerBarLayout
+              toolbarClassName="mobile-composer-toolbar"
               toolbarPaddingClassName={MOBILE_COMPOSER_CONTENT_INSET_X_CLASS}
               editorSlot={
                 <Textarea
@@ -247,6 +251,8 @@ export function MobileComposer({
                   className="min-w-0"
                   textareaClassName={`!${MOBILE_COMPOSER_CONTENT_INSET_X_CLASS} !py-1.5`}
                   textareaStyle={{
+                    fontSize: "var(--mobile-type-body-size)",
+                    lineHeight: "var(--mobile-type-body-leading)",
                     minHeight: MOBILE_COMPOSER_EDITOR_MIN_HEIGHT,
                     maxHeight: INPUT_AREA_EDITOR_HEIGHT.max,
                     paddingLeft: MOBILE_COMPOSER_CONTENT_INSET_PX,
@@ -272,13 +278,15 @@ export function MobileComposer({
                 </div>
               }
               rightContent={
-                <div className="flex h-7 items-center gap-0.5">
+                <div className="flex items-center gap-0.5">
                   <VoiceInputButton
+                    className="mobile-composer-icon-action"
                     onPressStart={handleVoiceStart}
                     onPressEnd={voice.stop}
                     disabled={disabled || !voice.isSupported}
                   />
                   <ComposerSubmitButton
+                    className="mobile-composer-icon-action mobile-composer-submit"
                     active={hasSendableContent && !submitDisabled}
                     disabled={submitDisabled}
                     busy={submitting}
@@ -304,6 +312,10 @@ export function MobileComposer({
             htmlType="button"
             variant="primary"
             className="min-h-11 w-full"
+            style={{
+              fontSize: "var(--mobile-type-control-size)",
+              lineHeight: "var(--mobile-type-control-leading)",
+            }}
             onClick={() => {
               setVoicePermissionSheetOpen(false);
               handleVoiceStart();

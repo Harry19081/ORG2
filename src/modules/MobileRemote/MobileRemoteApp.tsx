@@ -16,7 +16,7 @@ import { SASConfirmScreen } from "./screens/SASConfirmScreen";
 import { SessionChatScreen } from "./screens/SessionChatScreen";
 import { SessionsScreen } from "./screens/SessionsScreen";
 import { WelcomeScreen } from "./screens/WelcomeScreen";
-import { DevicesTab } from "./screens/devices/DevicesTab";
+import { ConnectionDevicesScreen } from "./screens/devices/ConnectionDevicesScreen";
 import { SettingsTab } from "./screens/settings/SettingsTab";
 
 export interface MobileRemoteAppProps {
@@ -118,6 +118,14 @@ function MobileRemoteRoutes({
         />
       );
       break;
+    case "connection_devices":
+      body = (
+        <ConnectionDevicesScreen
+          onBack={() => dispatch({ type: "back_from_devices" })}
+          onAddDesktop={() => dispatch({ type: "open_qr_scan" })}
+        />
+      );
+      break;
     case "sessions":
     case "chat":
       if (nav.selectedSessionId) {
@@ -134,10 +142,12 @@ function MobileRemoteRoutes({
             />
           </>
         );
-      } else if (nav.activeTab === "devices") {
-        body = <DevicesTab />;
       } else if (nav.activeTab === "settings") {
-        body = <SettingsTab />;
+        body = (
+          <SettingsTab
+            onOpenDevices={() => dispatch({ type: "open_devices" })}
+          />
+        );
       } else {
         body = null;
       }
@@ -157,14 +167,20 @@ function MobileRemoteRoutes({
         ) : null
       }
     >
-      {nav.screen === "sessions" || nav.screen === "chat" ? (
+      {nav.screen === "sessions" ||
+      nav.screen === "chat" ||
+      nav.screen === "connection_devices" ? (
         <SessionsScreen
           key={JSON.stringify([
             connectionConfig?.desktopId ?? connection.desktopId,
             connectionConfig?.host,
             connectionConfig?.port,
           ])}
-          active={!nav.selectedSessionId && nav.activeTab === "sessions"}
+          active={
+            nav.screen === "sessions" &&
+            !nav.selectedSessionId &&
+            nav.activeTab === "sessions"
+          }
           profileAction={<MobileProfileEntry />}
           onSelectSession={(sessionId) =>
             dispatch({ type: "select_session", sessionId })

@@ -49,18 +49,24 @@ function ProfileEntry({ variant }: { variant: "avatar" | "row" }) {
           appearance="ghost"
           long
           className="mobile-profile-settings-entry"
-          style={{ height: "auto", minHeight: 64, padding: "12px 0" }}
+          style={{
+            height: "auto",
+            minHeight: "var(--mobile-touch-size)",
+            padding: "calc(var(--spacing) * 3) 0",
+          }}
           aria-label={t("profile.open")}
           aria-haspopup="dialog"
           onClick={() => setView("profile")}
         >
           <span className="flex w-full min-w-0 items-center gap-3 text-left">
-            <MobileAccountAvatar name={name} src={session.profile?.avatarUrl} />
-            <span className="min-w-0 flex-1">
-              <span className="block truncate font-medium">{name}</span>
-              <span className="mobile-type-caption block text-text-3">
-                {t("profile.title")}
-              </span>
+            <MobileAccountAvatar
+              name={name}
+              src={session.profile?.avatarUrl}
+              size={32}
+            />
+            <span className="min-w-0 flex-1 truncate font-medium">{name}</span>
+            <span className="mobile-type-caption shrink-0 whitespace-nowrap text-text-3">
+              {t("profile.title")}
             </span>
             <HugeiconsIcon
               icon={ArrowRight02Icon}

@@ -11,6 +11,7 @@ import {
   summarizePairingInventory,
   updatePairingInventory,
 } from "../../connection/mobilePairedDesktopInventory";
+import { createMobileAppearancePort } from "../mobileAppearancePort";
 import type {
   MobileRemoteIntentEvent,
   MobileRemotePlatform,
@@ -213,6 +214,11 @@ export async function createTauriMobileRemotePlatformWithBridge({
 
   const platform: MobileRemotePlatform = {
     kind: "ios",
+    appearance: createMobileAppearancePort(
+      globalThis.document.defaultView!,
+      globalThis.document,
+      bridge.applyCanvasColor
+    ),
     writeClipboardText,
     scanQr: (video, signal) =>
       import("../scanCameraQr").then(({ scanCameraQr }) =>
@@ -379,6 +385,8 @@ async function createDefaultBridge(): Promise<TauriMobileRemoteBridge> {
     ]);
   return {
     openExternal: (url) => openUrl(url),
+    applyCanvasColor: (color) =>
+      invoke<void>("mobile_apply_canvas_color", { color }),
     async secureRead(key) {
       return invoke<string | null>("mobile_keychain_read", { key });
     },

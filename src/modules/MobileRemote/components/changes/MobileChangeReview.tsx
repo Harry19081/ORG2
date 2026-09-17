@@ -8,7 +8,6 @@ import type { DropdownOption } from "@src/components/Dropdown/types";
 import TabPill from "@src/components/TabPill";
 import {
   ArrowDown01Icon,
-  Cancel01Icon,
   ChevronsDownUpIcon,
   Copy01Icon,
   HugeiconsIcon,
@@ -21,6 +20,7 @@ import Modal from "@src/scaffold/ModalSystem";
 
 import type { MobileRpcClient } from "../../connection/mobileRpcClient";
 import { useMobileRemotePlatform } from "../../platform";
+import { MobileHeaderIconButton } from "../MobileHeaderIconButton";
 import "../transcript/mobileToolPreview.scss";
 import { useMobileCopyText } from "../transcript/useMobileCopyText";
 import { MobileChangeFileHeader } from "./MobileChangeFileHeader";
@@ -237,21 +237,10 @@ function ReviewPanel(
       closable={false}
       headerActions={
         <div className="mobile-change-review__header-actions">
-          <Button
-            iconOnly
-            shape="circle"
-            variant="tertiary"
-            appearance="soft"
+          <MobileHeaderIconButton
             className="mobile-change-review__close"
-            style={{
-              width: "var(--mobile-change-touch-size)",
-              height: "var(--mobile-change-touch-size)",
-            }}
-            aria-label={t("common:actions.close")}
+            label={t("common:actions.close")}
             onClick={props.onClose}
-            icon={
-              <HugeiconsIcon icon={Cancel01Icon} size={20} aria-hidden="true" />
-            }
           />
           {!full && (
             <Button

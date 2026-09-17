@@ -5,16 +5,13 @@ import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import StatusDot from "@src/components/StatusDot";
-import {
-  SECTION_VALUE_SMALL_MUTED_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/components/layout/Section";
+import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import { HugeiconsIcon, LaptopIcon, SmartPhone01Icon } from "@src/icons";
 
 import { useMobileRemote } from "../../app";
 import { MobileTopBar } from "../../components/MobileTopBar";
 import { derivePairedDesktopPresence } from "../../connection/mobilePairedDesktopPresence";
+import { resolvePermissionTierLabel } from "../../connection/mobilePermissionPresentation";
 import type { DesktopPresence } from "../../connection/types";
 
 function resolveDotColor(presence: DesktopPresence): string {
@@ -42,8 +39,14 @@ function resolvePresenceLabel(
   }
 }
 
-/** M-16 Devices — local device stub + paired desktop list from connection context. */
-export function DevicesTab() {
+/** Settings destination; the provider remains the owner of device selection. */
+export function ConnectionDevicesScreen({
+  onBack,
+  onAddDesktop,
+}: {
+  onBack: () => void;
+  onAddDesktop: () => void;
+}) {
   const { t } = useTranslation("mobileRemote");
   const [switchingDesktopId, setSwitchingDesktopId] = React.useState<
     string | null
@@ -61,17 +64,25 @@ export function DevicesTab() {
 
   return (
     <>
-      <MobileTopBar title={t("devices.title")} />
+      <MobileTopBar
+        title={t("settings.connectionDevices")}
+        onBack={onBack}
+        backAriaLabel={t("settings.back")}
+      />
       <div className="mobile-flow-screen flex-1 px-4 py-4">
         <div className="flex flex-col gap-5">
           <SectionContainer
-            title={t("devices.thisDevice")}
+            titleSlot={
+              <span className="mobile-type-secondary font-semibold text-text-1">
+                {t("devices.thisDevice")}
+              </span>
+            }
             dataTestId="mobile-remote-this-device"
           >
             <SectionRow
               layout="inline"
               label={
-                <span className="flex min-w-0 items-center gap-2">
+                <span className="mobile-type-body flex min-w-0 items-center gap-2">
                   <HugeiconsIcon
                     icon={SmartPhone01Icon}
                     size={16}
@@ -84,21 +95,25 @@ export function DevicesTab() {
                 </span>
               }
             >
-              <span
-                className={`block max-w-full min-w-0 truncate text-right ${SECTION_VALUE_SMALL_MUTED_CLASSES}`}
-              >
-                {t("devices.thisDeviceSubtitle")}
+              <span className="mobile-type-caption block max-w-full min-w-0 truncate text-right text-text-3">
+                {resolvePermissionTierLabel(connection.tier, t)}
               </span>
             </SectionRow>
           </SectionContainer>
 
           <SectionContainer
-            title={t("devices.pairedDesktops")}
+            titleSlot={
+              <span className="mobile-type-secondary font-semibold text-text-1">
+                {t("devices.pairedDesktops")}
+              </span>
+            }
             padding={pairedDesktops.length === 0 ? "default" : "none"}
             dataTestId="mobile-remote-paired-desktops"
           >
             {pairedDesktops.length === 0 ? (
               <Placeholder
+                titleClassName="mobile-type-heading"
+                subtitleClassName="mobile-type-secondary"
                 variant="empty"
                 title={t("devices.emptyDesktops")}
                 className="py-6"
@@ -114,7 +129,7 @@ export function DevicesTab() {
                       desktop.current ? (
                         <span
                           aria-current="true"
-                          className="flex min-h-11 min-w-0 items-center gap-2 text-text-1"
+                          className="mobile-type-body flex min-h-11 min-w-0 items-center gap-2 text-text-1"
                         >
                           <HugeiconsIcon
                             icon={LaptopIcon}
@@ -125,15 +140,11 @@ export function DevicesTab() {
                           <span className="flex min-w-0 flex-1 flex-col gap-1">
                             <span className="break-words">{desktop.name}</span>
                             {desktop.details ? (
-                              <span
-                                className={`font-normal break-words ${SECTION_VALUE_SMALL_MUTED_CLASSES}`}
-                              >
+                              <span className="mobile-type-caption font-normal break-words text-text-3">
                                 {desktop.details}
                               </span>
                             ) : null}
-                            <span
-                              className={`font-normal ${SECTION_VALUE_SMALL_MUTED_CLASSES}`}
-                            >
+                            <span className="mobile-type-caption font-normal text-text-3">
                               {t("devices.currentDesktop")}
                             </span>
                           </span>
@@ -146,8 +157,9 @@ export function DevicesTab() {
                           className="min-w-0 justify-start text-left disabled:cursor-default"
                           style={{
                             height: "auto",
-                            minHeight: 44,
+                            minHeight: "var(--mobile-touch-size)",
                             padding: "8px 0",
+                            fontSize: "var(--mobile-type-control-size)",
                           }}
                           disabled={switchingDesktopId !== null}
                           loading={switchingDesktopId === desktop.id}
@@ -163,24 +175,22 @@ export function DevicesTab() {
                               aria-hidden="true"
                             />
                           }
-                          onClick={async () => {
+                          onClick={() => {
                             setSwitchError(null);
                             setSwitchingDesktopId(desktop.id);
-                            try {
-                              await switchPairedDesktop(desktop.id);
-                            } catch {
-                              setSwitchError(t("devices.switchFailed"));
-                            } finally {
-                              setSwitchingDesktopId(null);
-                            }
+                            switchPairedDesktop(desktop.id).then(
+                              () => setSwitchingDesktopId(null),
+                              () => {
+                                setSwitchError(t("devices.switchFailed"));
+                                setSwitchingDesktopId(null);
+                              }
+                            );
                           }}
                         >
                           <span className="flex min-w-0 flex-1 flex-col gap-1 whitespace-normal">
                             <span className="break-words">{desktop.name}</span>
                             {desktop.details ? (
-                              <span
-                                className={`font-normal break-words ${SECTION_VALUE_SMALL_MUTED_CLASSES}`}
-                              >
+                              <span className="mobile-type-caption font-normal break-words text-text-3">
                                 {desktop.details}
                               </span>
                             ) : null}
@@ -197,12 +207,14 @@ export function DevicesTab() {
                           : t("devices.presenceUnknown")
                       }
                       size="inline"
+                      labelClassName="mobile-type-caption font-medium text-text-1"
                     />
                   </SectionRow>
                 ))}
                 {switchError ? (
                   <SectionRow showHeader={false} compact>
                     <PageNotice
+                      bodyClassName="mobile-type-secondary"
                       type="danger"
                       role="alert"
                       compact
@@ -215,10 +227,20 @@ export function DevicesTab() {
               </>
             )}
           </SectionContainer>
+          <Button
+            variant="secondary"
+            size="large"
+            className="min-h-11"
+            style={{ fontSize: "var(--mobile-type-control-size)" }}
+            disabled={switchingDesktopId !== null}
+            onClick={onAddDesktop}
+          >
+            {t("devices.addDesktop")}
+          </Button>
         </div>
       </div>
     </>
   );
 }
 
-DevicesTab.displayName = "DevicesTab";
+ConnectionDevicesScreen.displayName = "ConnectionDevicesScreen";

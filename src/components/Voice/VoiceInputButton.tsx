@@ -27,10 +27,18 @@ interface VoiceInputButtonProps {
   disabled?: boolean;
   /** Filled treatment for compact contextual composers. */
   appearance?: "default" | "solid";
+  /** Shell-owned touch geometry; glyph size remains shared. */
+  className?: string;
 }
 
 const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
-  ({ onPressStart, onPressEnd, disabled = false, appearance = "default" }) => {
+  ({
+    onPressStart,
+    onPressEnd,
+    disabled = false,
+    appearance = "default",
+    className = "",
+  }) => {
     const { t } = useTranslation();
     const activePointerIdRef = useRef<number | null>(null);
     const isPressingRef = useRef(false);
@@ -112,6 +120,7 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
               : `text-text-1 ${PILL_CONTROL_HOVER_CLASS}`,
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
           "leading-none",
+          className,
         ].join(" ")}
         style={{ lineHeight: 0 }}
         data-testid="composer-voice-input-button"

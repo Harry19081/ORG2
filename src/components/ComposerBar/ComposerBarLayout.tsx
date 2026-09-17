@@ -7,6 +7,8 @@ export interface ComposerBarLayoutProps {
   bottomPaddingClassName?: string;
   /** Horizontal padding for the footer toolbar row (defaults to desktop `px-1`). */
   toolbarPaddingClassName?: string;
+  /** Shell-owned toolbar density; defaults to the desktop row. */
+  toolbarClassName?: string;
 }
 
 /**
@@ -21,11 +23,12 @@ const ComposerBarLayout: React.FC<ComposerBarLayoutProps> = memo(
     rightContent,
     bottomPaddingClassName = "",
     toolbarPaddingClassName = "px-1",
+    toolbarClassName = "",
   }) => {
     const rowClass = "flex min-w-0 items-center gap-0.5";
     const toolbarRow = (
       <div
-        className={`flex h-9 min-h-9 w-full items-center justify-between ${toolbarPaddingClassName} text-text-2 ${bottomPaddingClassName}`.trim()}
+        className={`flex h-9 min-h-9 w-full items-center justify-between ${toolbarPaddingClassName} text-text-2 ${bottomPaddingClassName} ${toolbarClassName}`.trim()}
         style={{ transform: "translateZ(0)" }}
       >
         <div className={`${rowClass} flex-1`}>{leftContent}</div>

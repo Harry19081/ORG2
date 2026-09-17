@@ -2,16 +2,15 @@ import React, { useId } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import IconButton from "@src/components/Button";
 import {
   Copy01Icon,
   HugeiconsIcon,
-  Loading03Icon,
   TextWrapIcon,
   Tick01Icon,
 } from "@src/icons";
 
 import type { MobileFileTarget, mobileFilePreview } from "./mobileFileTool";
+import "./mobileFileViewerControls.scss";
 import { useMobileCopyText } from "./useMobileCopyText";
 
 interface MobileFileViewerControlsProps {
@@ -39,31 +38,45 @@ export function MobileFileViewerControls({
   const previewDescriptionId = useId();
   const source = preview.content;
   const clipboard = useMobileCopyText(source ?? "");
+  const copyActionLabel =
+    preview.kind === "merge"
+      ? t("fileViewer.copyModified")
+      : preview.kind === "patch"
+        ? t("fileViewer.copyPatch")
+        : common("actions.copy");
   const copyLabel =
-    clipboard.state === "copied"
-      ? common("status.copied")
-      : preview.kind === "merge"
-        ? t("fileViewer.copyModified")
-        : preview.kind === "patch"
-          ? t("fileViewer.copyPatch")
-          : common("actions.copy");
+    clipboard.state === "copied" ? common("status.copied") : copyActionLabel;
+  const actionStyle = {
+    height: "var(--mobile-file-control-size)",
+    padding: "0 var(--mobile-file-control-padding)",
+    fontSize: "var(--mobile-type-caption-size)",
+    borderRadius: "var(--mobile-file-control-radius)",
+  };
   const previewDescription = [
     truncated ? t("transcript.tools.truncated") : "",
     preview.kind === "patch" ? t("fileViewer.patchFallback") : "",
   ]
     .filter(Boolean)
     .join(" · ");
+  const previewLabel = t(
+    preview.kind === "snapshot"
+      ? "fileViewer.snapshot"
+      : preview.kind === "patch"
+        ? "fileViewer.patch"
+        : "fileViewer.diff"
+  );
   return (
-    <div className="shrink-0 border-b border-border-2 px-3 pb-2">
+    <div className="mobile-file-controls">
       {targets.length > 1 && (
         <div
-          className="flex gap-1 overflow-x-auto pt-2"
+          className="mobile-file-controls__files"
           aria-label={t("fileViewer.files")}
         >
           {targets.map((file) => (
             <Button
               key={`${file.targetIndex}:${file.filePath}`}
               size="small"
+              style={actionStyle}
               className="min-h-11 max-w-56 shrink-0"
               appearance={
                 target.targetIndex === file.targetIndex ? "solid" : "ghost"
@@ -77,70 +90,81 @@ export function MobileFileViewerControls({
           ))}
         </div>
       )}
-      <div className="flex min-h-11 items-center gap-1">
-        <span
-          className="mobile-type-caption mr-auto min-w-0 text-text-3"
+      <div className="mobile-file-controls__row">
+        <div
+          className="mobile-file-controls__status"
           title={previewDescription || undefined}
           aria-describedby={
             previewDescription ? previewDescriptionId : undefined
           }
+          data-mobile-file-status
         >
-          {t(
-            preview.kind === "snapshot"
-              ? "fileViewer.snapshot"
-              : preview.kind === "patch"
-                ? "fileViewer.patch"
-                : "fileViewer.diff"
+          <span className="mobile-type-caption truncate text-text-3">
+            {previewLabel}
+          </span>
+          {truncated && (
+            <span
+              className="mobile-file-controls__partial mobile-type-caption"
+              data-mobile-file-partial
+            >
+              {t("fileViewer.partial")}
+            </span>
           )}
-          {truncated && <> · {t("fileViewer.partial")}</>}
-        </span>
-        <IconButton
-          appearance="soft"
-          htmlType="button"
-          size="large"
-          variant={clipboard.state === "copied" ? "success" : "tertiary"}
-          className="min-h-11 min-w-11 shrink-0 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
-          disabled={source === undefined || clipboard.state === "pending"}
-          aria-busy={clipboard.state === "pending"}
-          aria-label={copyLabel}
-          title={copyLabel}
-          onClick={clipboard.copy}
+        </div>
+        <div
+          className="mobile-file-controls__actions"
+          role="toolbar"
+          aria-label={t("fileViewer.actions")}
+          data-mobile-file-toolbar
         >
-          <HugeiconsIcon
+          <Button
+            appearance="soft"
+            htmlType="button"
+            size="small"
+            className="mobile-file-controls__action min-h-11"
+            style={actionStyle}
+            aria-label={t("fileViewer.wrap")}
+            title={t("fileViewer.wrap")}
+            aria-pressed={wrap}
+            variant="tertiary"
+            disabled={source === undefined}
+            onClick={onToggleWrap}
             icon={
-              clipboard.state === "copied"
-                ? Tick01Icon
-                : clipboard.state === "pending"
-                  ? Loading03Icon
-                  : Copy01Icon
+              <HugeiconsIcon
+                icon={TextWrapIcon}
+                size={18}
+                strokeWidth={1.75}
+                aria-hidden="true"
+              />
             }
-            size={18}
-            strokeWidth={1.75}
-            aria-hidden="true"
-            className={
-              clipboard.state === "pending" ? "animate-spin" : undefined
+          >
+            {t("fileViewer.wrap")}
+          </Button>
+          <Button
+            appearance="soft"
+            htmlType="button"
+            size="small"
+            variant={clipboard.state === "copied" ? "success" : "tertiary"}
+            className="mobile-file-controls__action min-h-11"
+            style={actionStyle}
+            loading={clipboard.state === "pending"}
+            disabled={source === undefined}
+            aria-busy={clipboard.state === "pending"}
+            aria-label={copyLabel}
+            title={copyLabel}
+            onClick={clipboard.copy}
+            icon={
+              <HugeiconsIcon
+                icon={clipboard.state === "copied" ? Tick01Icon : Copy01Icon}
+                size={18}
+                strokeWidth={1.75}
+                aria-hidden="true"
+              />
             }
-          />
-        </IconButton>
-        <IconButton
-          appearance="soft"
-          htmlType="button"
-          size="large"
-          className="min-h-11 min-w-11 shrink-0 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
-          aria-label={t("fileViewer.wrap")}
-          title={t("fileViewer.wrap")}
-          aria-pressed={wrap}
-          variant={wrap ? "primary" : "tertiary"}
-          disabled={source === undefined}
-          onClick={onToggleWrap}
-        >
-          <HugeiconsIcon
-            icon={TextWrapIcon}
-            size={18}
-            strokeWidth={1.75}
-            aria-hidden="true"
-          />
-        </IconButton>
+          >
+            {copyActionLabel}
+          </Button>
+        </div>
       </div>
       {previewDescription && (
         <span id={previewDescriptionId} className="sr-only">

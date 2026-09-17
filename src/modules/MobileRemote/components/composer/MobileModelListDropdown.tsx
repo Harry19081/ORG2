@@ -115,7 +115,9 @@ export function MobileModelListDropdown({
     return () => cancelAnimationFrame(frame);
   }, [isPositioned, open]);
 
-  if (!open || !isPositioned || !portalContainer) return null;
+  // Mount hidden while positioning so the shared engine can measure the panel
+  // on its first pass and attach its existing resize observer to real content.
+  if (!open || !portalContainer) return null;
 
   return createPortal(
     <DropdownPanel

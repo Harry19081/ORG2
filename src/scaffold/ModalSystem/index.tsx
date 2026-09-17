@@ -164,7 +164,7 @@ const Modal: React.FC<ModalProps> = ({
   maskClosable = true,
   escToExit = true,
   initialFocusRef,
-  radius = 16,
+  radius,
   width,
   size,
   zIndex = 9999,
@@ -428,7 +428,10 @@ const Modal: React.FC<ModalProps> = ({
         <div
           ref={modalRef}
           className={`liquid-modal-content ${sizeClass} ${className}`}
-          style={{ ...mergedStyle, borderRadius: radius }}
+          style={{
+            ...mergedStyle,
+            borderRadius: radius ?? "var(--modal-radius, 16px)",
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           {headerMedia ??
@@ -443,7 +446,8 @@ const Modal: React.FC<ModalProps> = ({
           {/* Header */}
           {title && (
             <PanelHeader
-              className={hasHeaderMedia ? "h-auto! min-h-10 py-3" : undefined}
+              className={`liquid-modal-panel-header ${hasHeaderMedia ? "h-auto! min-h-10 py-3" : ""}`}
+              fontSize="var(--modal-title-font-size, 13px)"
               title={typeof title === "string" ? title : undefined}
               onBack={onBack}
               backLabel={backLabel}
@@ -454,6 +458,10 @@ const Modal: React.FC<ModalProps> = ({
                     {closable ? (
                       <Button
                         {...PANEL_HEADER_TOKENS.actionButton}
+                        style={{
+                          width: "var(--modal-action-size, 24px)",
+                          height: "var(--modal-action-size, 24px)",
+                        }}
                         icon={
                           closeIcon || (
                             <HugeiconsIcon
