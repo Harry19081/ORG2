@@ -30,6 +30,8 @@ No persisted credential format, package routing protocol, database schema, prici
 - Rebuilt `cd93acee9` GUI: normal logout and signed-out restart retained canonical null auth and rejected an old Claude Code continuation before dispatch or debit. Signed-in continuation was blocked in macOS Keychain and returned `credential_operation_busy`. A 55.37-second signed-out visible interval measured rooted CPU 0.6–2.3% and RSS 91.9–96.6 MiB; hidden/signed-in observations remain pending. Artifact provenance and limits are recorded in `docs/market-native-package-acceptance.md`.
 - Bootstrap rejection follow-up: full TypeScript check and typed lint passed (1077 existing findings, zero new/increased); shared-auth/native-owner suites passed 32 tests, including rejection of Package readiness while startup handles the same background failure. The original readiness promise remains authoritative; only the bootstrap caller adds a catch reaction. This later source was not used to build the `cd93acee9` artifact.
 
+- Mobile browser boundary follow-up: removed the unused desktop `useValidatedLastPair` re-export from the shared model-hook barrel. Every desktop caller already imports that leaf directly, so its owner guard is unchanged. The original mobile static-import boundary test and model-picker/identity regression suites pass (6 files, 40 tests); full `tsgo --noEmit` passes.
+
 ## Architecture review
 
 | Layer                     | Verdict                         | Evidence                                                                                                                  |
