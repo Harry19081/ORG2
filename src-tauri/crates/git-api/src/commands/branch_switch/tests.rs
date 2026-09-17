@@ -54,14 +54,16 @@ impl Fixture {
 #[test]
 fn clean_switch_and_same_branch_do_not_create_snapshots() {
     let f = Fixture::new();
-    assert_eq!(f.execute(Strategy::Leave).outcome, Outcome::Switched);
+    let result = f.execute(Strategy::Leave);
+    assert_eq!(result.outcome, Outcome::Switched);
+    assert!(result.snapshot_id.is_none());
     assert_eq!(branch(&open(&f.0).unwrap()), "develop");
-    assert!(list_saved(&f.0, None).unwrap().snapshots.is_empty());
+    assert_eq!(git(&f.0, &["stash", "list"]).unwrap(), "");
     assert!(prepare(&f.0, &f.target()).unwrap().same_branch);
 }
 
 #[test]
-fn leave_preserves_staged_unstaged_and_untracked_and_restores_by_id() {
+fn leave_preserves_staged_unstaged_and_untracked_in_the_recovery_snapshot() {
     let f = Fixture::new();
     f.write("file.txt", "staged\n");
     git(&f.0, &["add", "file.txt"]).unwrap();
@@ -71,18 +73,20 @@ fn leave_preserves_staged_unstaged_and_untracked_and_restores_by_id() {
     let id = r.snapshot_id.unwrap();
     assert_eq!(fs::read_to_string(f.0.join("file.txt")).unwrap(), "base\n");
     assert!(!f.0.join("new.txt").exists());
-    // Unrelated stash changes positional indices; restoration still uses the snapshot OID.
-    f.write("other.txt", "other\n");
-    git(&f.0, &["stash", "push", "-u", "-m", "unrelated"]).unwrap();
-    git(&f.0, &["checkout", "main"]).unwrap();
-    assert_eq!(restore(&f.0, &id).unwrap().outcome, Outcome::Switched);
-    assert_eq!(git(&f.0, &["show", ":file.txt"]).unwrap(), "staged");
+    let snapshot = load(&open(&f.0).unwrap(), &id).unwrap();
+    let oid = snapshot.oid.unwrap();
     assert_eq!(
-        fs::read_to_string(f.0.join("file.txt")).unwrap(),
-        "working\n"
+        git(&f.0, &["show", &format!("{oid}^2:file.txt")]).unwrap(),
+        "staged"
     );
-    assert_eq!(fs::read_to_string(f.0.join("new.txt")).unwrap(), "new\n");
-    assert_eq!(restore(&f.0, &id).unwrap().outcome, Outcome::Blocked);
+    assert_eq!(
+        git(&f.0, &["show", &format!("{oid}:file.txt")]).unwrap(),
+        "working"
+    );
+    assert_eq!(
+        git(&f.0, &["show", &format!("{oid}^3:new.txt")]).unwrap(),
+        "new"
+    );
 }
 #[test]
 fn bring_preserves_index_and_new_files() {
@@ -154,17 +158,9 @@ fn repeated_leave_keeps_existing_snapshots() {
     f.write("file.txt", "second\n");
     let b = f.execute(Strategy::Leave).snapshot_id.unwrap();
     assert_ne!(a, b);
-    assert_eq!(list_saved(&f.0, None).unwrap().snapshots.len(), 2);
-}
-#[test]
-fn restore_refuses_to_mix_worksets() {
-    let f = Fixture::new();
-    f.write("file.txt", "saved\n");
-    let id = f.execute(Strategy::Leave).snapshot_id.unwrap();
-    git(&f.0, &["checkout", "main"]).unwrap();
-    f.write("new.txt", "current\n");
-    assert_eq!(restore(&f.0, &id).unwrap().outcome, Outcome::Blocked);
-    assert_eq!(fs::read_to_string(f.0.join("file.txt")).unwrap(), "base\n");
+    let repo = open(&f.0).unwrap();
+    assert_eq!(load(&repo, &a).unwrap().id, a);
+    assert_eq!(load(&repo, &b).unwrap().id, b);
 }
 #[test]
 fn branch_in_another_worktree_blocks_before_stashing() {
@@ -356,59 +352,6 @@ fn bring_untracked_collision_keeps_snapshot() {
         "mine"
     );
 }
-#[test]
-fn partially_applied_journal_is_not_replayed() {
-    let f = Fixture::new();
-    f.write("file.txt", "mine\n");
-    let id = f.execute(Strategy::Leave).snapshot_id.unwrap();
-    git(&f.0, &["checkout", "main"]).unwrap();
-    let repo = open(&f.0).unwrap();
-    let mut s = load(&repo, &id).unwrap();
-    s.phase = SnapshotPhase::Applying;
-    save(&repo, &s).unwrap();
-    assert_eq!(
-        restore(&f.0, &id).unwrap().outcome,
-        Outcome::RecoveryRequired
-    );
-    assert_eq!(fs::read_to_string(f.0.join("file.txt")).unwrap(), "base\n");
-}
-#[test]
-fn availability_considers_all_pages_and_original_worktree() {
-    let f = Fixture::new();
-    f.write("file.txt", "mine\n");
-    let id = f.execute(Strategy::Leave).snapshot_id.unwrap();
-    let repo = open(&f.0).unwrap();
-    let mut s = load(&repo, &id).unwrap();
-    for i in 1..=60 {
-        s.id = uuid::Uuid::from_u128(i).to_string();
-        s.source_branch = if i == 60 { "old-branch" } else { "main" }.into();
-        save(&repo, &s).unwrap();
-    }
-    assert_eq!(list_saved(&f.0, None).unwrap().snapshots.len(), 50);
-    assert!(has_saved(&f.0, "old-branch").unwrap());
-    assert!(!has_saved(&f.0, "missing").unwrap());
-    let page = list_saved(&f.0, None).unwrap();
-    assert_eq!(
-        list_saved(&f.0, page.next_cursor.as_deref())
-            .unwrap()
-            .snapshots
-            .len(),
-        11
-    );
-}
-#[test]
-fn preview_includes_staged_unstaged_and_new_file_contents() {
-    let f = Fixture::new();
-    f.write("file.txt", "staged\n");
-    git(&f.0, &["add", "file.txt"]).unwrap();
-    f.write("file.txt", "unstaged\n");
-    f.write("new.txt", "new-content\n");
-    let id = f.execute(Strategy::Leave).snapshot_id.unwrap();
-    let text = preview(&f.0, &id).unwrap();
-    assert!(text.contains("+staged"));
-    assert!(text.contains("+unstaged"));
-    assert!(text.contains("+new-content"));
-}
 #[cfg(unix)]
 #[test]
 fn executable_bit_change_invalidates_even_when_content_status_stays_modified() {
@@ -453,10 +396,10 @@ fn directory_symlinks_are_saved_as_links_not_treated_as_nested_repositories() {
     fs::remove_file(f.0.join("link")).unwrap();
     symlink(".git/objects", f.0.join("link")).unwrap();
     let id = f.execute(Strategy::Leave).snapshot_id.unwrap();
-    git(&f.0, &["checkout", "main"]).unwrap();
-    assert_eq!(restore(&f.0, &id).unwrap().outcome, Outcome::Switched);
+    let snapshot = load(&open(&f.0).unwrap(), &id).unwrap();
+    let oid = snapshot.oid.unwrap();
     assert_eq!(
-        fs::read_link(f.0.join("link")).unwrap(),
-        PathBuf::from(".git/objects")
+        git(&f.0, &["show", &format!("{oid}:link")]).unwrap(),
+        ".git/objects"
     );
 }
