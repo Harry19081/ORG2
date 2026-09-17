@@ -429,6 +429,83 @@ describe("MobileRemoteProviders send lifecycle", () => {
     });
   });
 
+  it("prefetches imported identities only for a legacy identity-capable Desktop", async () => {
+    await act(async () => {
+      await latestContext!.unsubscribeSession();
+    });
+    const imported = {
+      id: "codexapp-prefetch",
+      name: "Imported Codex",
+      status: "idle",
+      sendCapability: "external_codex",
+    };
+    const native = {
+      id: "cliagent-native",
+      name: "Native",
+      status: "idle",
+      sendCapability: "native",
+    };
+    const base = mocks.call.getMockImplementation()!;
+    let capabilities: Record<string, boolean> = { sessionIdentity: true };
+    mocks.call.mockImplementation(
+      (method: string, params?: Record<string, unknown>) => {
+        if (method === "initialize")
+          return Promise.resolve({
+            protocolVersion: 1,
+            tier: "full",
+            capabilities,
+          });
+        if (method === "session/list")
+          return Promise.resolve({
+            sessions: [imported, native],
+            hasMore: false,
+          });
+        if (method === "session/resolve")
+          return Promise.resolve({
+            sessionId: `owner-for-${String(params?.sessionId)}`,
+            managed: true,
+          });
+        return base(method, params);
+      }
+    );
+
+    await act(async () => {
+      await latestContext!.connectLive({
+        wsUrl: "wss://legacy.example.test/v1/mobile/ws",
+      });
+    });
+    expect(latestContext!.sessions).toEqual([imported, native]);
+    expect(
+      mocks.call.mock.calls
+        .filter(([method]) => method === "session/resolve")
+        .map(([, params]) => params?.sessionId)
+    ).toEqual(["codexapp-prefetch"]);
+
+    mocks.call.mockClear();
+    capabilities = { sessionIdentity: true, sessionOpen: true };
+    await act(async () => {
+      await latestContext!.connectLive({
+        wsUrl: "wss://modern.example.test/v1/mobile/ws",
+      });
+    });
+    expect(latestContext!.sessions).toEqual([imported, native]);
+    expect(
+      mocks.call.mock.calls.filter(([method]) => method === "session/resolve")
+    ).toEqual([]);
+
+    mocks.call.mockClear();
+    capabilities = {};
+    await act(async () => {
+      await latestContext!.connectLive({
+        wsUrl: "wss://old.example.test/v1/mobile/ws",
+      });
+    });
+    expect(latestContext!.sessions).toEqual([imported, native]);
+    expect(
+      mocks.call.mock.calls.filter(([method]) => method === "session/resolve")
+    ).toEqual([]);
+  });
+
   it("restores the active transcript before a slow reconnect roster finishes", async () => {
     const roster = deferred<unknown>();
     const base = mocks.call.getMockImplementation()!;

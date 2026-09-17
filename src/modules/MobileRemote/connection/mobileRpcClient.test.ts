@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createMobileRpcClient } from "./mobileRpcClient";
 import {
   cachedMobileSessionIdentity,
+  prefetchMobileSessionIdentities,
   resolveMobileSessionIdentity,
 } from "./mobileSessionIdentityCache";
 
@@ -74,6 +75,56 @@ describe("createMobileRpcClient", () => {
       expect(cachedMobileSessionIdentity(client, "mirror")).toBeUndefined();
     }
   );
+
+  it("warms again after a real list-change notification without a mounted chat", async () => {
+    const socket = createMockSocket();
+    const client = createMobileRpcClient(
+      socket as unknown as WebSocket,
+      runtime
+    );
+    const rows = [
+      { id: "codexapp-imported", name: "Codex", status: "idle" as const },
+    ];
+    const first = prefetchMobileSessionIdentities(client, rows);
+    await vi.waitFor(() => expect(socket.send).toHaveBeenCalledOnce());
+    const request = JSON.parse(socket.send.mock.calls[0][0]);
+    expect(request).toMatchObject({
+      method: "session/resolve",
+      params: { sessionId: rows[0].id },
+    });
+    socket.emit(
+      "message",
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: request.id,
+        result: { sessionId: "cliagent-before", managed: true },
+      })
+    );
+    await first;
+    socket.emit(
+      "message",
+      JSON.stringify({ jsonrpc: "2.0", method: "session/list_changed" })
+    );
+    expect(cachedMobileSessionIdentity(client, rows[0].id)).toBeUndefined();
+    const refreshed = prefetchMobileSessionIdentities(client, rows);
+    await vi.waitFor(() => expect(socket.send).toHaveBeenCalledTimes(2));
+    const next = JSON.parse(socket.send.mock.calls[1][0]);
+    socket.emit(
+      "message",
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: next.id,
+        result: { sessionId: "cliagent-after", managed: true },
+      })
+    );
+    await refreshed;
+    expect(cachedMobileSessionIdentity(client, rows[0].id)?.sessionId).toBe(
+      "cliagent-after"
+    );
+    await resolveMobileSessionIdentity(client, rows[0].id);
+    expect(socket.send).toHaveBeenCalledTimes(2);
+    client.close();
+  });
 
   it("aborts locally, ignores the late reply, and allows another RPC immediately", async () => {
     vi.useFakeTimers();

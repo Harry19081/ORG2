@@ -1,4 +1,7 @@
+import { getExternalHistorySourceId } from "@src/util/session/sessionDispatch";
+
 import type { MobileRpcClient } from "./mobileRpcClient";
+import type { MobileSessionRow } from "./types";
 
 export interface MobileSessionIdentity {
   sessionId: string;
@@ -7,10 +10,28 @@ export interface MobileSessionIdentity {
 
 const MAX_IDENTITIES = 32;
 const MAX_PENDING_IDENTITIES = 8;
+const MAX_PREFETCH_IDENTITIES = 8;
+const PREFETCH_CONCURRENCY = 2;
 const IDENTITY_TTL_MS = 5 * 60_000;
+// At most two full batches per fixed transport timeout window, even when list
+// invalidations abandon requests whose wire replies have not arrived yet.
+const PREFETCH_WINDOW_MS = 15_000;
+const PREFETCH_WINDOW_LIMIT = 16;
+
+type PrefetchRequest = {
+  ids: string[];
+  shouldContinue: () => boolean;
+};
+type PrefetchState = {
+  queued?: PrefetchRequest;
+  running?: Promise<void>;
+  windowStart: number;
+  remaining: number;
+};
 
 type Cache = {
   generation: number;
+  listeners: Set<() => void>;
   resolved: Map<string, { value: MobileSessionIdentity; expiresAt: number }>;
   pending: Map<
     string,
@@ -21,11 +42,51 @@ type Cache = {
 // The authenticated RPC client is the lifetime and isolation boundary: no disk
 // persistence, no session-id-only global cache, and no new network listeners.
 const caches = new WeakMap<MobileRpcClient, Cache>();
+const prefetchStates = new WeakMap<MobileRpcClient, PrefetchState>();
+
+/** Matches the Desktop session_identity adapter: only Codex App mirrors remap. */
+export function needsMobileSessionIdentityResolution(
+  sessionId: string
+): boolean {
+  return getExternalHistorySourceId(sessionId) === "codex_app";
+}
 
 export class MobileSessionIdentityInvalidated extends Error {
   constructor() {
     super("Session identity was invalidated");
   }
+}
+
+function identityCache(client: MobileRpcClient): Cache {
+  let cache = caches.get(client);
+  if (!cache) {
+    cache = {
+      generation: 0,
+      listeners: new Set(),
+      resolved: new Map(),
+      pending: new Map(),
+    };
+    caches.set(client, cache);
+  }
+  return cache;
+}
+
+/** Changes only on authoritative invalidation, not on ordinary renders or reads. */
+export function mobileSessionIdentityGeneration(
+  client: MobileRpcClient
+): number {
+  return caches.get(client)?.generation ?? 0;
+}
+
+export function subscribeMobileSessionIdentities(
+  client: MobileRpcClient,
+  listener: () => void
+) {
+  const cache = identityCache(client);
+  cache.listeners.add(listener);
+  return () => {
+    cache.listeners.delete(listener);
+  };
 }
 
 export function cachedMobileSessionIdentity(
@@ -44,17 +105,14 @@ export function invalidateMobileSessionIdentities(client: MobileRpcClient) {
   const abandoned = Array.from(cache.pending.values());
   cache.pending.clear();
   for (const flight of abandoned) flight.abort.abort();
+  for (const listener of cache.listeners) listener();
 }
 
 export function resolveMobileSessionIdentity(
   client: MobileRpcClient,
   requested: string
 ): Promise<MobileSessionIdentity> {
-  let cache = caches.get(client);
-  if (!cache) {
-    cache = { generation: 0, resolved: new Map(), pending: new Map() };
-    caches.set(client, cache);
-  }
+  const cache = identityCache(client);
   const hit = cachedMobileSessionIdentity(client, requested);
   if (hit) return Promise.resolve(hit);
   const pending = cache.pending.get(requested);
@@ -110,4 +168,74 @@ export function resolveMobileSessionIdentity(
   });
   owner.pending.set(requested, { promise, abort });
   return promise;
+}
+
+/**
+ * Warm identities after discovery/refresh without holding roster publication.
+ * One coordinator per authenticated client coalesces snapshots to the latest
+ * batch. Invalidations may rewarm; hits cost no RPC. Work stays bounded without
+ * polling or idle timers. A miss/failure remains safely retryable on opening.
+ */
+export async function prefetchMobileSessionIdentities(
+  client: MobileRpcClient,
+  sessions: readonly MobileSessionRow[],
+  shouldContinue: () => boolean = () => true
+): Promise<void> {
+  const ids = Array.from(
+    new Set(
+      sessions
+        .filter((session) => needsMobileSessionIdentityResolution(session.id))
+        .map((session) => session.id)
+    )
+  ).slice(0, MAX_PREFETCH_IDENTITIES);
+  if (!shouldContinue()) return;
+  let state = prefetchStates.get(client);
+  if (!state) {
+    state = { windowStart: Date.now(), remaining: PREFETCH_WINDOW_LIMIT };
+    prefetchStates.set(client, state);
+  }
+  const owner = state;
+  owner.queued = { ids, shouldContinue };
+  if (owner.running) return owner.running;
+  const drain = async () => {
+    try {
+      while (owner.queued) {
+        const batch = owner.queued;
+        owner.queued = undefined;
+        let cursor = 0;
+        const worker = async () => {
+          while (cursor < batch.ids.length) {
+            // A newer roster supersedes queued rows, while in-flight RPCs remain
+            // shared with a user who opens the row during preparation.
+            if (owner.queued || !batch.shouldContinue()) return;
+            const id = batch.ids[cursor++];
+            if (cachedMobileSessionIdentity(client, id)) continue;
+            if (Date.now() - owner.windowStart >= PREFETCH_WINDOW_MS) {
+              owner.windowStart = Date.now();
+              owner.remaining = PREFETCH_WINDOW_LIMIT;
+            }
+            if (owner.remaining === 0) return;
+            owner.remaining -= 1;
+            try {
+              await resolveMobileSessionIdentity(client, id);
+            } catch {
+              // No automatic retry loop. The next roster or explicit open can
+              // retry, subject to the shared budget and normal RPC timeout.
+            }
+          }
+        };
+        await Promise.allSettled(
+          Array.from(
+            { length: Math.min(PREFETCH_CONCURRENCY, batch.ids.length) },
+            worker
+          )
+        );
+      }
+    } finally {
+      owner.running = undefined;
+    }
+  };
+  // Install the flight before workers start so synchronous roster callers share it.
+  owner.running = Promise.resolve().then(drain);
+  return owner.running;
 }
