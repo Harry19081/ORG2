@@ -12,12 +12,14 @@
  * was written against. `restoreGitDiffEditDraft` compares the stored base with
  * the current content and discards the draft when they differ (the file was
  * saved or changed on disk in between), so a stale draft can never resurrect
- * over newer content. Saving or discarding in the editor deletes the draft;
+ * over newer content. Saving acknowledges the actual disk baseline while
+ * preserving newer edits; discarding in the editor deletes the draft;
  * closing a `git-diff` tab deletes its file's draft (close means discard,
  * matching the pre-existing close behaviour).
  */
-import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { readTextFile } from "@tauri-apps/plugin-fs";
 
+import { updateTextFileSerial } from "@src/services/file/writeTextFileSerial";
 import { BoundedMap } from "@src/util/collections/BoundedMap";
 
 export interface GitDiffEditDraft {
@@ -71,6 +73,29 @@ export function deleteGitDiffEditDraft(filePath: string): void {
   drafts.delete(filePath);
 }
 
+/** A completed write changes the disk baseline, never a newer draft body. */
+export function acknowledgeGitDiffSave(
+  filePath: string,
+  savedContent: string,
+  clearSavedDraft: boolean
+): void {
+  const draft = drafts.get(filePath);
+  if (!draft) return;
+  // Content equality is sufficient here: there are no remaining unsaved bytes.
+  if (clearSavedDraft && draft.editedContent === savedContent) {
+    drafts.delete(filePath);
+  } else {
+    drafts.set(filePath, { ...draft, baseContent: savedContent });
+  }
+}
+
+/** A mounted editor may outlive another owner's pending save of this file. */
+export function getGitDiffEditDraftBaseline(
+  filePath: string
+): string | undefined {
+  return drafts.get(filePath)?.baseContent;
+}
+
 export function hasGitDiffEditDraft(filePath: string): boolean {
   return drafts.has(filePath);
 }
@@ -88,13 +113,14 @@ export async function saveGitDiffDraftForSwitch(
 ): Promise<void> {
   const draft = drafts.get(filePath);
   if (!draft) throw new Error(`No saved editor buffer was found: ${filePath}`);
-  if ((await readTextFile(filePath)) !== draft.baseContent)
-    throw new Error(`File changed on disk: ${filePath}`);
-  await writeTextFile(filePath, draft.editedContent);
-  if (
-    drafts.get(filePath) !== draft ||
-    (await readTextFile(filePath)) !== draft.editedContent
-  )
-    throw new Error(`Editor changed while saving: ${filePath}`);
-  drafts.delete(filePath);
+  await updateTextFileSerial(filePath, async (target) => {
+    if ((await readTextFile(target)) !== draft.baseContent)
+      throw new Error(`File changed on disk: ${filePath}`);
+    return draft.editedContent;
+  });
+  if ((await readTextFile(filePath)) !== draft.editedContent)
+    throw new Error(`File changed while saving: ${filePath}`);
+  const unchanged = drafts.get(filePath) === draft;
+  acknowledgeGitDiffSave(filePath, draft.editedContent, unchanged);
+  if (!unchanged) throw new Error(`Editor changed while saving: ${filePath}`);
 }
