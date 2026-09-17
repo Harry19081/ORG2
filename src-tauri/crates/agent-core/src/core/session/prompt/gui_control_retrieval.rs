@@ -15,7 +15,7 @@ const CONTROL_CARDS: &[ControlCard] = &[
         id: "settings.language.set",
         kind: "action",
         summary: "Set the ORG2 app language/locale. Use directly for language requests; Spotlight also exposes this as a second-level language picker.",
-        call: r#"control_orgii({ "action": "settings.language.set", "params": { "language": "fr" } }) for French. Supported language codes: en, fr, zh, zh-Hant, es, ru, pt, de, ja, ko, tr, vi, pl. In Spotlight, choose Language, then choose the target language."#,
+        call: r#"control_orgii({ "action": "settings.language.set", "params": { "language": "fr" } }) for French. Supported language codes: en, fr, zh, zh-Hant, es, hi, ru, pt, de, ja, ko, tr, vi, id, pl. In Spotlight, choose Language, then choose the target language."#,
         terms: &[
             "language", "locale", "translation", "french", "français", "francais", "fr", "english", "chinese", "spanish", "german", "japanese", "korean", "russian", "portuguese", "turkish", "vietnamese", "polish",
         ],
