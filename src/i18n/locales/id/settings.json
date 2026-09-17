@@ -1020,7 +1020,30 @@
     "authentication": "Autentikasi",
     "desktopScope": "Mengonfigurasi Claude Desktop secara terpisah dari Claude Code CLI; keluar sepenuhnya lalu buka kembali Desktop setelah menerapkan",
     "desktopApplied": "Konfigurasi Desktop disimpan — keluar sepenuhnya lalu buka kembali Claude Desktop",
-    "desktopRestored": "Konfigurasi Desktop sebelumnya dipulihkan — keluar sepenuhnya lalu buka kembali Claude Desktop"
+    "desktopRestored": "Konfigurasi Desktop sebelumnya dipulihkan — keluar sepenuhnya lalu buka kembali Claude Desktop",
+    "advancedDescription": "Koneksi API kustom dan migrasi kredensial satu kali",
+    "marketApps": {
+      "workspaceHelp": "Pilih paket dan model untuk aplikasi ini. Setiap aplikasi menyimpan pilihannya sendiri; mengubah sumber obrolan ORG2 tidak memperbarui aplikasi.",
+      "loading": "Memuat paket resmi…",
+      "loadFailed": "Paket resmi tidak dapat dimuat",
+      "nonePurchased": "Saat ini tidak ada paket resmi yang tersedia",
+      "checking": "Memeriksa aplikasi…",
+      "unavailable": "Tidak tersedia untuk versi yang terpasang ini",
+      "notInstalled": "Belum terpasang",
+      "original": "Menggunakan pengaturan asli aplikasi",
+      "open": "Buka aplikasi",
+      "connected": "Aplikasi kini mengikuti ruang kerja ORG2 saat ini",
+      "opened": "Aplikasi dibuka",
+      "disconnected": "Pengaturan aplikasi sebelumnya telah dipulihkan",
+      "actionFailed": "Tidak dapat memperbarui koneksi aplikasi ini",
+      "workspaceNumber": "Layanan {{index}} dari {{count}}",
+      "openTerminal": "Buka terminal",
+      "terminalOpened": "Terminal dibuka",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Pilih hingga 8 paket dan satu model default, lalu beralih paket di dalam aplikasi",
+      "defaultModel": "Model default",
+      "packageLimit": "Pilih hingga 8 paket"
+    }
   },
   "claudeProfiles": {
     "new": "Profil baru",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Pembaruan tersedia",
     "updateAvailableDesc": "Tampilkan indikator pembaruan di seluruh aplikasi menggunakan versi 99.0.0 — tindakan pembaruan hanya menampilkan pratinjau dialog"
+  },
+  "managedUsage": {
+    "cancel": "Batal",
+    "authorize": "Aktifkan paket",
+    "rates": "Input / output per satu juta token",
+    "wallet": "Buka dompet",
+    "priceRange": "Rentang harga paket: {{min}}%–{{max}}% dari harga resmi",
+    "rangeUnavailable": "Rentang harga paket tidak tersedia. Segarkan katalog sebelum mengaktifkan paket ini.",
+    "walletIncluded": "Semua model yang disertakan menggunakan saldo dompet Anda.",
+    "walletUnavailable": "Penagihan melalui dompet belum tersedia. Segarkan setelah layanan diperbarui.",
+    "walletConsent": "Aktifkan semua model dalam paket ini pada rentang harga yang ditampilkan. Penggunaan aktual ditagihkan langsung dari saldo dompet Anda; tidak diperlukan anggaran paket terpisah."
   }
 }
