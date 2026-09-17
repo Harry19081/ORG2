@@ -13,8 +13,8 @@ interface UseSidebarSettingsMenuActionsOptions {
 }
 
 /**
- * Account dialog visibility, plus the menu actions that close every
- * popover as they navigate, change the theme or open a dialog.
+ * Account dialog visibility, navigation actions that dismiss the menu, and
+ * in-place appearance updates that leave the menu tree available.
  */
 export function useSidebarSettingsMenuActions({
   closeAll,
@@ -57,9 +57,8 @@ export function useSidebarSettingsMenuActions({
   const handleSelectAppearanceMode = useCallback(
     async (mode: AppearanceMode) => {
       await handleAppearanceModeChange(mode);
-      closeAll();
     },
-    [closeAll, handleAppearanceModeChange]
+    [handleAppearanceModeChange]
   );
 
   return {

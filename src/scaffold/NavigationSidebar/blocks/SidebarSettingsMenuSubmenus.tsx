@@ -43,7 +43,6 @@ interface SidebarSettingsMenuSubmenusProps {
   submenuPanelRef: React.Ref<HTMLDivElement>;
   submenuPosition: SubmenuPosition | null;
   onModifyAppearance: () => void;
-  onPresenceSelectionComplete: () => void;
   onSelectAppearanceMode: (mode: AppearanceMode) => void;
   onSubmenuMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
   onSubmenuPointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
@@ -58,7 +57,6 @@ export function SidebarSettingsMenuSubmenus({
   submenuPanelRef,
   submenuPosition,
   onModifyAppearance,
-  onPresenceSelectionComplete,
   onSelectAppearanceMode,
   onSubmenuMouseDown,
   onSubmenuPointerDown,
@@ -74,7 +72,7 @@ export function SidebarSettingsMenuSubmenus({
         onPointerDown={onSubmenuPointerDown}
         onMouseDown={onSubmenuMouseDown}
       >
-        <PresenceMenuItems onSelectionComplete={onPresenceSelectionComplete} />
+        <PresenceMenuItems />
       </div>,
       document.body
     );

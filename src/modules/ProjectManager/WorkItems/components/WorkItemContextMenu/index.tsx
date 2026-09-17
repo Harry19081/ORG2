@@ -151,10 +151,10 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
     : null;
 
   const executeMenuItem = useCallback(
-    (item: ContextMenuItem) => {
+    (item: ContextMenuItem, nested: boolean) => {
       if (item.disabled || item.divider || item.submenu) return;
       item.action?.();
-      onClose();
+      if (item.closeMenuOnSelect ?? !nested) onClose();
     },
     [onClose]
   );
@@ -178,7 +178,7 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
           const submenuItem = activeSubmenuItem.submenu[numericIndex - 1];
           if (!submenuItem.disabled && !submenuItem.divider) {
             event.preventDefault();
-            executeMenuItem(submenuItem);
+            executeMenuItem(submenuItem, true);
           }
         }
         return;
@@ -208,7 +208,7 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
         return;
       }
 
-      executeMenuItem(matchingItem);
+      executeMenuItem(matchingItem, false);
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -226,22 +226,18 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
     (item: ContextMenuItem, event: React.MouseEvent) => {
       event.stopPropagation();
       cancelHover();
-      if (item.disabled || item.divider || item.submenu) return;
-      item.action?.();
-      onClose();
+      executeMenuItem(item, false);
     },
-    [cancelHover, onClose]
+    [cancelHover, executeMenuItem]
   );
 
   const handleSubmenuItemClick = useCallback(
     (item: ContextMenuItem, event: React.MouseEvent) => {
       event.stopPropagation();
       cancelHover();
-      if (item.disabled || item.divider || item.submenu) return;
-      item.action?.();
-      onClose();
+      executeMenuItem(item, true);
     },
-    [cancelHover, onClose]
+    [cancelHover, executeMenuItem]
   );
 
   const handleItemMouseEnter = useCallback(

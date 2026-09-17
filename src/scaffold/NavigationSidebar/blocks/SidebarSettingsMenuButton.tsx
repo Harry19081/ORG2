@@ -159,7 +159,6 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
         submenuPanelRef={submenuPanelRef}
         submenuPosition={submenuPosition}
         onModifyAppearance={handleModifyAppearance}
-        onPresenceSelectionComplete={closeAll}
         onSelectAppearanceMode={(mode) => void handleSelectAppearanceMode(mode)}
         onSubmenuMouseDown={handleSubmenuMouseDown}
         onSubmenuPointerDown={handleSubmenuPointerDown}

@@ -17,6 +17,7 @@ export function useUnifiedModelPalette({
   dispatchCategoryOverride,
   cliAgentTypeOverride,
   keyFirst = false,
+  closeOnSourceSelect = true,
 }: Pick<
   UnifiedModelPaletteProps,
   | "isOpen"
@@ -32,6 +33,8 @@ export function useUnifiedModelPalette({
    * model-first.
    */
   keyFirst?: boolean;
+  /** Keep an anchored dropdown open after committing its second-level source. */
+  closeOnSourceSelect?: boolean;
 }) {
   const { t: tCommon } = useTranslation();
   const modelAliasVersion = useModelAliasRegistryVersion();
@@ -86,6 +89,7 @@ export function useUnifiedModelPalette({
     advancedConfig,
     onConfigChange,
     onClose,
+    closeOnSourceSelect,
     recordRecent,
   });
 

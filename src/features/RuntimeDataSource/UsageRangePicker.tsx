@@ -167,7 +167,8 @@ export default function UsageRangePicker({
                           if (!parsed) return;
                           onChange(parsed);
                           setDraft(null);
-                          setOpen(false);
+                          setOpen(true);
+                          customTriggerRef.current?.focus();
                         }}
                       >
                         {tCommon("actions.apply")}

@@ -532,6 +532,36 @@ describe("SidebarSettingsMenuButton", () => {
 
     await act(async () => themeButtons[2]?.click());
     expect(mocks.handleAppearanceModeChange).toHaveBeenCalledWith("dark");
+    expect(mocks.closeDropdown).not.toHaveBeenCalled();
+    expect(
+      document.body.querySelector('[role="group"][aria-label="general.theme"]')
+    ).not.toBeNull();
+  });
+
+  it("keeps the menu tree open after changing presence", async () => {
+    const presenceTrigger = Array.from(
+      document.body.querySelectorAll<HTMLButtonElement>("button")
+    ).find((button) => button.textContent === "myRoles.tabs.presence");
+
+    await act(async () => {
+      presenceTrigger?.dispatchEvent(
+        new MouseEvent("mouseover", { bubbles: true })
+      );
+    });
+
+    const awayOption = Array.from(
+      document.body.querySelectorAll<HTMLButtonElement>("button")
+    ).find((button) => button.textContent === "sidebar.presence.away");
+    expect(awayOption).toBeDefined();
+
+    await act(async () => awayOption?.click());
+
+    expect(mocks.closeDropdown).not.toHaveBeenCalled();
+    expect(
+      Array.from(
+        document.body.querySelectorAll<HTMLButtonElement>("button")
+      ).find((button) => button.textContent === "sidebar.presence.away")
+    ).toBeDefined();
   });
 
   it("opens Appearance settings from Modify appearance", async () => {
