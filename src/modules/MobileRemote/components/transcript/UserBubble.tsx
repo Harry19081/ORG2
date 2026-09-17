@@ -12,7 +12,11 @@ export interface UserBubbleProps {
 export function UserBubble({ text, children }: UserBubbleProps) {
   return (
     <div className="flex justify-end">
-      <ChatBubbleBody variant="sessionUser" className="!max-w-[85%]">
+      <ChatBubbleBody
+        variant="sessionUser"
+        className="!max-w-[85%]"
+        bodyClassName="mobile-type-body"
+      >
         <PortableUserMessageContent text={text} />
         {children}
       </ChatBubbleBody>

@@ -105,10 +105,24 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             mobile_keychain_read,
             mobile_keychain_write,
-            mobile_keychain_delete
+            mobile_keychain_delete,
+            mobile_apply_canvas_color
         ])
         .run(tauri::generate_context!())
         .expect("failed to run ORG2 Remote");
+}
+
+/// Mirror the loaded semantic canvas into WKWebView. Tauri's JS webview
+/// setter is Desktop-only; the pinned Wry runtime implements this on iOS.
+/// The command-injected webview scopes the update to its caller. u8 channels
+/// reject malformed/out-of-range values at the IPC boundary.
+#[tauri::command]
+fn mobile_apply_canvas_color(webview: tauri::Webview, color: [u8; 3]) -> Result<(), String> {
+    webview
+        .set_background_color(Some(tauri::utils::config::Color(
+            color[0], color[1], color[2], 255,
+        )))
+        .map_err(|error| format!("mobile_canvas_color_failed:{error}"))
 }
 
 #[cfg(test)]

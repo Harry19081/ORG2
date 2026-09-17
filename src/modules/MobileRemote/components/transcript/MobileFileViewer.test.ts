@@ -446,7 +446,7 @@ describe("Mobile document viewing lifecycle", () => {
     await act(async () => copy.click());
     expect(write).toHaveBeenLastCalledWith(view.state.doc.toString());
     expect(copy.getAttribute("aria-label")).toBe("status.copied");
-    expect(copy.textContent).toBe("");
+    expect(copy.textContent).toBe("actions.copy");
     expect(document.querySelector('[role="status"]')?.textContent).toBe(
       "status.copied"
     );
@@ -457,7 +457,7 @@ describe("Mobile document viewing lifecycle", () => {
     expect(await editor()).not.toBe(view);
   });
 
-  it("keeps icon controls accessible during copying, suppresses repeat taps, and ignores results for a replaced file", async () => {
+  it("keeps labeled controls accessible during copying, suppresses repeat taps, and ignores results for a replaced file", async () => {
     let finish!: () => void;
     write.mockImplementationOnce(
       () =>
@@ -473,11 +473,16 @@ describe("Mobile document viewing lifecycle", () => {
     const wrap = document.querySelector(
       'button[aria-label="fileViewer.wrap"]'
     ) as HTMLButtonElement;
+    const toolbar = document.querySelector(
+      '[role="toolbar"][aria-label="fileViewer.actions"]'
+    );
+    expect(toolbar).not.toBeNull();
+    expect([...toolbar!.querySelectorAll("button")]).toEqual([wrap, copy]);
+    expect(copy.textContent).toBe("actions.copy");
+    expect(wrap.textContent).toBe("fileViewer.wrap");
     for (const button of [copy, wrap]) {
-      expect(button.textContent).toBe("");
       expect(button.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
       expect(button.classList.contains("min-h-11")).toBe(true);
-      expect(button.classList.contains("min-w-11")).toBe(true);
       expect(button.title).toBe(button.getAttribute("aria-label"));
     }
     expect(wrap.getAttribute("aria-pressed")).toBe("true");
@@ -526,7 +531,11 @@ describe("Mobile document viewing lifecycle", () => {
     });
     await editor();
     const summary = document.querySelector("[aria-describedby]")!;
-    expect(summary.textContent).toBe("fileViewer.patch · fileViewer.partial");
+    expect(summary.textContent).toContain("fileViewer.patch");
+    expect(summary.textContent).toContain("fileViewer.partial");
+    expect(
+      summary.querySelector("[data-mobile-file-partial]")?.textContent
+    ).toBe("fileViewer.partial");
     const explanation = document.getElementById(
       summary.getAttribute("aria-describedby")!
     )!;
@@ -568,7 +577,7 @@ describe("Mobile document viewing lifecycle", () => {
         `button[aria-label="${label}"]`
       ) as HTMLButtonElement;
       expect(button.disabled).toBe(true);
-      expect(button.textContent).toBe("");
+      expect(button.textContent).toBe(label);
     }
   });
 

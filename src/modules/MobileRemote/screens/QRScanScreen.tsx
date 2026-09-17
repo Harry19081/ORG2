@@ -131,6 +131,11 @@ export function QRScanScreen({ onBack, onAcceptPairing }: QRScanScreenProps) {
           </div>
         )}
         <Textarea
+          preventMobileFocusZoom
+          textareaStyle={{
+            fontSize: "var(--mobile-type-body-size)",
+            lineHeight: "var(--mobile-type-body-leading)",
+          }}
           disabled={scanning}
           value={payload}
           onChange={(value) => {
@@ -142,7 +147,12 @@ export function QRScanScreen({ onBack, onAcceptPairing }: QRScanScreenProps) {
           aria-label={t("pairing.urlPlaceholder")}
         />
         {errorKey ? (
-          <PageNotice type="danger" role="alert" className="mt-2">
+          <PageNotice
+            bodyClassName="mobile-type-secondary"
+            type="danger"
+            role="alert"
+            className="mt-2"
+          >
             {t(errorKey)}
           </PageNotice>
         ) : null}

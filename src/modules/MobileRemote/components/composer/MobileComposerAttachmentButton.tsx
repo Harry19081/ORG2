@@ -51,11 +51,8 @@ export function MobileComposerAttachmentButton({
         appearance="ghost"
         shape="circle"
         iconOnly
-        style={{
-          width: INPUT_AREA_BUTTONS.iconButtonSize,
-          height: INPUT_AREA_BUTTONS.iconButtonSize,
-          padding: 0,
-        }}
+        className="mobile-composer-icon-action"
+        style={{ padding: 0 }}
         onClick={handleClick}
         disabled={disabled || busy}
         aria-busy={busy}

@@ -5,7 +5,10 @@ import { Placeholder } from "@src/components/Placeholder";
 import ScrollToBottomButton from "@src/components/ScrollToBottomButton";
 import { CHAT_ITEM_PADDING_X } from "@src/engines/ChatPanel/blocks/primitives/config";
 
-import type { TranscriptLoadPhase } from "../../lib/transcriptLoadState";
+import type {
+  TranscriptLoadPhase,
+  TranscriptRoundSummary,
+} from "../../lib/transcriptLoadState";
 import type { TranscriptItem } from "../../lib/transcriptReducer";
 import { AgentBubble } from "./AgentBubble";
 import {
@@ -19,6 +22,7 @@ import {
   MobileLoadingDots,
   MobileTranscriptLoading,
 } from "./MobileTranscriptLoading";
+import { MobileTurnBody } from "./MobileTurnBody";
 import { UserBubble } from "./UserBubble";
 import {
   MOBILE_CHAT_ITEM_GAP,
@@ -30,6 +34,7 @@ import { useMobileChatScroll } from "./useMobileChatScroll";
 export interface ChatTranscriptProps {
   sessionId: string;
   roundId?: string | null;
+  round?: TranscriptRoundSummary;
   items: TranscriptItem[];
   phase: TranscriptLoadPhase;
   error?: string;
@@ -48,6 +53,7 @@ export interface ChatTranscriptProps {
 export function ChatTranscript({
   sessionId,
   roundId,
+  round,
   items,
   phase,
   error,
@@ -92,13 +98,18 @@ export function ChatTranscript({
     phase !== "error" &&
     phase !== "empty" &&
     (phase !== "loading" || items.length > 0);
-  const { contentRef, scrollRef, scrollToBottom, showScrollToBottom } =
-    useMobileChatScroll({
-      sessionId: `${sessionId}:${roundId ?? "no-round"}`,
-      contentKey,
-      enabled: transcriptVisible,
-      forceFollowKey,
-    });
+  const {
+    contentRef,
+    scrollRef,
+    scrollToBottom,
+    showScrollToBottom,
+    pauseTailFollow,
+  } = useMobileChatScroll({
+    sessionId: `${sessionId}:${roundId ?? "no-round"}`,
+    contentKey,
+    enabled: transcriptVisible,
+    forceFollowKey,
+  });
 
   if (phase === "error") {
     return (
@@ -142,62 +153,69 @@ export function ChatTranscript({
         aria-live="polite"
       >
         <div ref={contentRef} className="flex w-full min-w-0 flex-col">
-          {items.map((item, index) => {
-            const previousItem = index > 0 ? items[index - 1] : undefined;
-            const itemGapClass = mobileTranscriptItemGapClass(
-              item,
-              previousItem
-            );
-            let content: React.ReactNode;
-            if (item.kind === "user") {
-              content = (
-                <UserBubble text={item.text}>
-                  <MobileMessageImages
-                    key={imageResourceScope}
-                    eventId={item.id}
-                    count={item.imageCount ?? 0}
-                    loadImage={loadImage}
-                    retention={retention}
+          <MobileTurnBody
+            key={`${imageScope}:${transcriptScope}`}
+            items={items}
+            round={round}
+            busy={waitingForAgent || phase !== "ready"}
+            onBeforeToggle={pauseTailFollow}
+            renderItem={(item, index) => {
+              const previousItem = index > 0 ? items[index - 1] : undefined;
+              const itemGapClass = mobileTranscriptItemGapClass(
+                item,
+                previousItem
+              );
+              let content: React.ReactNode;
+              if (item.kind === "user") {
+                content = (
+                  <UserBubble text={item.text}>
+                    <MobileMessageImages
+                      key={imageResourceScope}
+                      eventId={item.id}
+                      count={item.imageCount ?? 0}
+                      loadImage={loadImage}
+                      retention={retention}
+                    />
+                  </UserBubble>
+                );
+              } else if (item.kind === "agent") {
+                content = (
+                  <AgentBubble text={item.text} streaming={item.streaming}>
+                    <MobileMessageImages
+                      key={imageResourceScope}
+                      eventId={item.id}
+                      count={item.imageCount ?? 0}
+                      loadImage={loadImage}
+                      retention={retention}
+                    />
+                  </AgentBubble>
+                );
+              } else {
+                content = (
+                  <MobileToolCall
+                    item={item}
+                    detailsOpen={toolDetailOpen && selectedTool?.id === item.id}
+                    onOpenDetails={() =>
+                      setToolDetail({
+                        scope: transcriptScope,
+                        itemId: item.id,
+                        open: true,
+                      })
+                    }
                   />
-                </UserBubble>
+                );
+              }
+              return (
+                <div
+                  key={item.id}
+                  className={`${itemGapClass} ${CHAT_ITEM_PADDING_X}`}
+                  data-transcript-item-kind={item.kind}
+                >
+                  {content}
+                </div>
               );
-            } else if (item.kind === "agent") {
-              content = (
-                <AgentBubble text={item.text} streaming={item.streaming}>
-                  <MobileMessageImages
-                    key={imageResourceScope}
-                    eventId={item.id}
-                    count={item.imageCount ?? 0}
-                    loadImage={loadImage}
-                    retention={retention}
-                  />
-                </AgentBubble>
-              );
-            } else {
-              content = (
-                <MobileToolCall
-                  item={item}
-                  detailsOpen={toolDetailOpen && selectedTool?.id === item.id}
-                  onOpenDetails={() =>
-                    setToolDetail({
-                      scope: transcriptScope,
-                      itemId: item.id,
-                      open: true,
-                    })
-                  }
-                />
-              );
-            }
-            return (
-              <div
-                key={item.id}
-                className={`${itemGapClass} ${CHAT_ITEM_PADDING_X}`}
-                data-transcript-item-kind={item.kind}
-              >
-                {content}
-              </div>
-            );
-          })}
+            }}
+          />
           {footer}
           {waitingForAgent ? (
             <div

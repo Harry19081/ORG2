@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import { HugeiconsIcon, Login02Icon } from "@src/icons";
@@ -47,6 +48,8 @@ export function MobileAuthScreen({
           {loading ? (
             <div aria-live="polite" data-testid="mobile-auth-loading">
               <Placeholder
+                titleClassName="mobile-type-heading"
+                subtitleClassName="mobile-type-secondary"
                 variant="loading"
                 placement="sidebar"
                 title={loadingTitle}
@@ -80,13 +83,24 @@ export function MobileAuthScreen({
               </div>
               {state.phase === "error" ? (
                 <PageNotice
+                  titleClassName="mobile-type-heading"
+                  bodyClassName="mobile-type-secondary"
                   type="danger"
                   role="alert"
                   title={t("auth.errorTitle")}
                   action={
-                    state.retryable
-                      ? { label: t("auth.retry"), onClick: onRetry }
-                      : undefined
+                    state.retryable ? (
+                      <Button
+                        variant="secondary"
+                        style={{
+                          minHeight: "var(--mobile-touch-size)",
+                          fontSize: "var(--mobile-type-control-size)",
+                        }}
+                        onClick={onRetry}
+                      >
+                        {t("auth.retry")}
+                      </Button>
+                    ) : undefined
                   }
                 >
                   {state.message}

@@ -28,6 +28,10 @@ interface VoiceRecordingBarProps {
   onAccept: () => void;
   /** Optional + click handler so the row keeps feature parity with the idle toolbar. */
   onAddContent?: () => void;
+  /** Shell-owned row and touch geometry. */
+  className?: string;
+  /** Override the elapsed label typography without changing desktop density. */
+  elapsedClassName?: string;
 }
 
 function formatElapsed(seconds: number): string {
@@ -53,7 +57,14 @@ const WAVEFORM_SEEDS: Array<{ peak: number; delay: number }> = Array.from(
 );
 
 const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
-  ({ elapsedSeconds, onCancel, onAccept, onAddContent }) => {
+  ({
+    elapsedSeconds,
+    onCancel,
+    onAccept,
+    onAddContent,
+    className = "",
+    elapsedClassName = "text-[12px]",
+  }) => {
     const { t } = useTranslation();
 
     const bars = useMemo(
@@ -75,7 +86,7 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
 
     return (
       <div
-        className="flex h-9 min-h-9 w-full items-center gap-1 pt-2 text-text-2"
+        className={`flex h-9 min-h-9 w-full items-center gap-1 pt-2 text-text-2 ${className}`}
         data-testid="composer-voice-recording-bar"
         role="region"
         aria-label={t("common:tooltips.startVoiceInput")}
@@ -113,7 +124,7 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
         </div>
 
         <span
-          className="font-variant-numeric-tabular min-w-10 shrink-0 text-right text-[12px] text-text-2"
+          className={`font-variant-numeric-tabular min-w-10 shrink-0 text-right text-text-2 ${elapsedClassName}`}
           data-testid="composer-voice-elapsed"
         >
           {formatElapsed(elapsedSeconds)}

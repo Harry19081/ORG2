@@ -1,3 +1,5 @@
+import type { SystemColorScheme } from "@src/config/appearance/globalThemes";
+
 import type { MobileAuthClient } from "../auth/mobileAuthClient";
 import type { MobileAuthSession } from "../auth/mobileAuthState";
 import type {
@@ -22,6 +24,14 @@ export interface MobileRemoteRuntimePort {
    * mounted container yet, in which case the caller renders nothing.
    */
   portalContainer(): Element | null;
+}
+
+export interface MobileRemoteAppearancePort {
+  getSystemColorScheme(): SystemColorScheme;
+  subscribeSystemColorScheme(
+    listener: (colorScheme: SystemColorScheme) => void
+  ): () => void;
+  applyColorScheme(colorScheme: SystemColorScheme): void | Promise<void>;
 }
 
 export interface MobileRemoteAuthPort {
@@ -83,6 +93,8 @@ export interface MobileRemotePlatform {
     readonly defaultDeviceLabel: string;
   };
   readonly runtime: MobileRemoteRuntimePort;
+  /** Optional only for lightweight test/alternate shells; production adapters provide it. */
+  readonly appearance?: MobileRemoteAppearancePort;
   readonly auth: MobileRemoteAuthPort;
   readonly connection: MobileRemoteConnectionPort;
 }

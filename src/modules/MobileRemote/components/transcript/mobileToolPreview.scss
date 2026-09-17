@@ -34,7 +34,7 @@
     flex-shrink: 0;
     height: auto;
     min-height: 56px;
-    padding: 6px 16px;
+    padding: 6px mobile.$space-4;
     border-bottom: 1px solid var(--color-border-2);
   }
 }
@@ -50,20 +50,29 @@
   white-space: nowrap;
 }
 
-.mobile-tool-preview__close {
-  flex-shrink: 0;
-  background: var(--color-fill-1);
-  color: var(--color-text-2);
-  touch-action: manipulation;
-}
-
 // File identity owns both lines in one header; keep the trailing close action
 // aligned to the collapsed row even while the user inspects a long full path.
 .liquid-modal-content.modal-fullscreen.mobile-tool-preview--file
   > :first-child {
   align-items: flex-start;
-  min-height: 60px;
-  padding: 8px 16px;
+  min-height: calc(#{mobile.$touch-target} + #{mobile.$space-4});
+  padding: mobile.$space-2 mobile.$space-4;
+  border-bottom: 0;
+  background: var(--mobile-file-surface);
+}
+
+.liquid-modal-content.modal-fullscreen.mobile-tool-preview--file {
+  --mobile-file-surface: var(--color-chat-container);
+  background: var(--mobile-file-surface);
+}
+
+.mobile-file-viewer {
+  --cm-editor-background: var(
+    --mobile-file-surface,
+    var(--color-chat-container)
+  );
+  --cm-editor-gutter-bg: var(--cm-editor-background);
+  background: var(--cm-editor-background);
 }
 
 .mobile-file-identity > summary::-webkit-details-marker {
@@ -73,7 +82,8 @@
 .mobile-tool-preview__body {
   min-height: 0;
   overscroll-behavior: contain;
-  padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  padding: mobile.$space-4 mobile.$space-4
+    calc(20px + env(safe-area-inset-bottom, 0px));
 }
 
 .mobile-terminal-detail__frame,
@@ -197,7 +207,7 @@
 
 .mobile-tool-preview__summary {
   margin-bottom: 18px;
-  padding: 10px 12px;
+  padding: 10px mobile.$space-3;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
@@ -213,7 +223,7 @@
 }
 
 .mobile-tool-preview__code {
-  padding: 12px;
+  padding: mobile.$space-3;
   overflow-x: auto;
   white-space: pre;
   overscroll-behavior-x: contain;

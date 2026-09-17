@@ -17,6 +17,8 @@ export function ConnectingScreen({ restoring = false }: ConnectingScreenProps) {
   return (
     <div className="mobile-flow-screen mobile-flow-screen--centered flex flex-1 flex-col items-center px-6">
       <Placeholder
+        titleClassName="mobile-type-heading"
+        subtitleClassName="mobile-type-secondary"
         variant="loading"
         title={t(
           restoring ? "connection.restoring" : "pairing.connectingTitle"

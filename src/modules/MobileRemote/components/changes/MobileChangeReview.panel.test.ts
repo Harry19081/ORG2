@@ -484,8 +484,12 @@ it("uses segmented modes and real icon-only controls with mobile geometry", asyn
     expect(icon.classList.contains("button")).toBe(true);
     expect(icon.querySelector("svg")).not.toBeNull();
     expect(icon.querySelector(".truncate")).toBeNull();
-    expect(icon.style.width).toBe("var(--mobile-change-touch-size)");
-    expect(icon.style.height).toBe("var(--mobile-change-touch-size)");
+    const size =
+      icon === icons[0]
+        ? "var(--mobile-header-icon-button-size)"
+        : "var(--mobile-change-touch-size)";
+    expect(icon.style.width).toBe(size);
+    expect(icon.style.height).toBe(size);
     expect(icon.style.padding).toBe("0px");
   }
   expect(icons[0].style.borderRadius).toBe("50%");

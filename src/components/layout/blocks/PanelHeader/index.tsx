@@ -166,6 +166,9 @@ export interface PanelHeaderProps {
   /** Custom children content (overrides title/breadcrumb) */
   children?: React.ReactNode;
 
+  /** Optional typography adaptation; the default remains Desktop panel chrome. */
+  fontSize?: React.CSSProperties["fontSize"];
+
   /** Additional className */
   className?: string;
 
@@ -216,6 +219,7 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
     searchQuery,
     children,
     className = "",
+    fontSize = PANEL_HEADER_TOKENS.fontSize,
     dataTestId,
     borderBottom = false,
     background,
@@ -260,10 +264,7 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
             {displayIconElement && (
               <span className="shrink-0 text-text-2">{displayIconElement}</span>
             )}
-            <span
-              className="text-text-2"
-              style={{ fontSize: PANEL_HEADER_TOKENS.fontSize }}
-            >
+            <span className="text-text-2" style={{ fontSize }}>
               {breadcrumb.parent}
             </span>
             <HugeiconsIcon
@@ -279,7 +280,7 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
             )}
             <span
               className="truncate font-medium text-text-1"
-              style={{ fontSize: PANEL_HEADER_TOKENS.fontSize }}
+              style={{ fontSize }}
             >
               {breadcrumb.current}
             </span>
@@ -304,7 +305,7 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
           {displayTitle && (
             <span
               className="truncate font-medium text-text-1"
-              style={{ fontSize: PANEL_HEADER_TOKENS.fontSize }}
+              style={{ fontSize }}
             >
               {displayTitle}
             </span>
@@ -312,10 +313,7 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
           {!searchQuery && subtitle && (
             <>
               <span className="text-text-4">/</span>
-              <span
-                className="truncate text-text-2"
-                style={{ fontSize: PANEL_HEADER_TOKENS.fontSize }}
-              >
+              <span className="truncate text-text-2" style={{ fontSize }}>
                 {subtitle}
               </span>
             </>

@@ -1,11 +1,10 @@
 import React from "react";
 
-import Button from "@src/components/Button";
 import { EventBlockHeaderInfo } from "@src/engines/ChatPanel/blocks/primitives/EventBlockHeaderTextSlots";
-import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import Modal from "@src/scaffold/ModalSystem";
 
 import type { TranscriptItem } from "../../lib/transcriptReducer";
+import { MobileHeaderIconButton } from "../MobileHeaderIconButton";
 import { MobileFileIdentity } from "./MobileFileIdentity";
 import MobileFileViewer from "./MobileFileViewer";
 import { MobileGenericToolDetail } from "./MobileGenericToolDetail";
@@ -88,27 +87,10 @@ function MobileToolDetailContent({
               {statusLabel}
             </EventBlockHeaderInfo>
           )}
-          <Button
-            iconOnly
-            shape="circle"
-            appearance="soft"
-            variant="tertiary"
-            htmlType="button"
-            className="mobile-tool-preview__close focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
-            style={{
-              width: "var(--mobile-tool-touch-size)",
-              height: "var(--mobile-tool-touch-size)",
-            }}
-            aria-label={t("transcript.tools.closeDetails")}
+          <MobileHeaderIconButton
+            className="mobile-tool-preview__close"
+            label={t("transcript.tools.closeDetails")}
             onClick={handleClose}
-            icon={
-              <HugeiconsIcon
-                icon={Cancel01Icon}
-                size={18}
-                strokeWidth={1.75}
-                aria-hidden="true"
-              />
-            }
           />
         </>
       }

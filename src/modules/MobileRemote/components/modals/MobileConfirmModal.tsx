@@ -50,6 +50,10 @@ export function MobileConfirmModal({
       footer={
         <div className="flex flex-wrap justify-end gap-2 px-5 py-4">
           <Button
+            style={{
+              fontSize: "var(--mobile-type-control-size)",
+              lineHeight: "var(--mobile-type-control-leading)",
+            }}
             ref={cancelRef}
             htmlType="button"
             variant="secondary"
@@ -58,6 +62,10 @@ export function MobileConfirmModal({
             {cancelLabel}
           </Button>
           <Button
+            style={{
+              fontSize: "var(--mobile-type-control-size)",
+              lineHeight: "var(--mobile-type-control-leading)",
+            }}
             htmlType="button"
             variant={danger ? "danger" : "primary"}
             onClick={() => decide(true)}

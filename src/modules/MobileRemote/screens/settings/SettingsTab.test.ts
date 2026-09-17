@@ -3,7 +3,8 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { SettingsTab, resolvePermissionTierLabel } from "./SettingsTab";
+import { resolvePermissionTierLabel } from "../../connection/mobilePermissionPresentation";
+import { SettingsTab } from "./SettingsTab";
 
 const mocks = vi.hoisted(() => ({
   signOut: vi.fn(),
@@ -20,6 +21,9 @@ const mocks = vi.hoisted(() => ({
     wsUrl:
       "wss://name:password@relay.example.test/v1/mobile/ws?ticket=secret#pairing",
   },
+  themePreference: "system",
+  themeStatus: "idle",
+  setThemePreference: vi.fn(),
 }));
 vi.mock("../../platform", () => ({
   useMobileRemotePlatform: () => ({ openExternal: mocks.navigate }),
@@ -28,6 +32,16 @@ vi.mock("../../app", () => ({
   useMobileRemote: () => ({
     connection: mocks.connection,
     connectionConfig: mocks.config,
+  }),
+}));
+vi.mock("../../appearance", () => ({
+  useMobileTheme: () => ({
+    preference: mocks.themePreference,
+    systemColorScheme: "light",
+    resolvedColorScheme:
+      mocks.themePreference === "system" ? "light" : mocks.themePreference,
+    status: mocks.themeStatus,
+    setPreference: mocks.setThemePreference,
   }),
 }));
 vi.mock("../../auth/MobileAuthContext", () => ({
@@ -67,7 +81,11 @@ async function click(label: string, scope?: ParentNode) {
   await act(async () => button(label, scope).click());
 }
 async function render(props = {}) {
-  await act(async () => root.render(React.createElement(SettingsTab, props)));
+  await act(async () =>
+    root.render(
+      React.createElement(SettingsTab, { onOpenDevices: vi.fn(), ...props })
+    )
+  );
 }
 beforeEach(() => {
   previousAct = env.IS_REACT_ACT_ENVIRONMENT;
@@ -77,6 +95,9 @@ beforeEach(() => {
   });
   mocks.navigate.mockReset().mockResolvedValue(undefined);
   mocks.signOut.mockReset();
+  mocks.setThemePreference.mockReset().mockResolvedValue(undefined);
+  mocks.themePreference = "system";
+  mocks.themeStatus = "idle";
   mocks.bypass = false;
   host = document.createElement("div");
   document.body.append(host);
@@ -164,8 +185,9 @@ describe("SettingsTab shared account destination", () => {
   it("keeps desktop and permissions without a connection-details entry or hidden endpoint", async () => {
     const original = mocks.config.wsUrl;
     await render();
-    expect(host.textContent).toContain("Home Mac · settings.online");
-    expect(host.textContent).toContain("settings.permissionFull");
+    expect(host.textContent).toContain("Home Mac");
+    expect(host.querySelector('[aria-label="settings.online"]')).not.toBeNull();
+    expect(host.textContent).not.toContain("settings.permissionTier");
     expect(host.textContent).not.toContain("settings.connectionDetails");
     expect(host.textContent).not.toContain("settings.relay");
     expect(host.textContent).not.toContain("settings.mode");
@@ -175,27 +197,36 @@ describe("SettingsTab shared account destination", () => {
     const connection = host.querySelector(
       '[data-testid="mobile-remote-connection-settings"]'
     )!;
-    expect(connection.querySelector("button")).toBeNull();
+    expect(connection.querySelector("button")?.getAttribute("aria-label")).toBe(
+      "settings.connectionDevices"
+    );
     expect(mocks.config.wsUrl).toBe(original);
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
-  it("places optional revoke in authorization, not help, and never renders an unwired action", async () => {
+  it("offers persisted system, light and dark appearance choices", async () => {
     await render();
+    const appearance = host.querySelector(
+      '[data-testid="mobile-remote-appearance-settings"]'
+    )!;
+    expect(appearance.textContent).toContain("settings.theme");
+    const trigger = appearance.querySelector<HTMLElement>('[role="combobox"]');
+    expect(trigger?.getAttribute("aria-label")).toBe("settings.theme");
+
+    await act(async () => trigger?.click());
+    const darkOption = Array.from(
+      document.querySelectorAll<HTMLElement>('[role="option"]')
+    ).find((option) => option.textContent === "settings.themeDark");
+    expect(darkOption).toBeTruthy();
+    await act(async () => darkOption?.click());
+    expect(mocks.setThemePreference).toHaveBeenCalledWith("dark");
+  });
+  it("opens device management from the entire connection row without mutating a pairing", async () => {
+    const onOpenDevices = vi.fn();
+    await render({ onOpenDevices });
+    await click("settings.connectionDevices", host);
+    expect(onOpenDevices).toHaveBeenCalledTimes(1);
+    expect(mocks.navigate).not.toHaveBeenCalled();
     expect(host.textContent).not.toContain("settings.revokePairing");
-    const onRevokePairing = vi.fn(),
-      onOpenPairingGuide = vi.fn();
-    await render({ onRevokePairing, onOpenPairingGuide });
-    expect(
-      host.querySelector('[data-testid="mobile-remote-authorization-settings"]')
-        ?.textContent
-    ).toContain("settings.revokePairing");
-    expect(
-      host.querySelector('[data-testid="mobile-remote-help-settings"]')
-        ?.textContent
-    ).not.toContain("settings.revokePairing");
-    await click("settings.revokePairing", host);
-    expect(onRevokePairing).toHaveBeenCalledTimes(1);
-    expect(onOpenPairingGuide).not.toHaveBeenCalled();
   });
   it("supports Profile/help in development bypass without fake account actions", async () => {
     mocks.bypass = true;

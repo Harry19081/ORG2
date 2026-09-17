@@ -197,11 +197,6 @@
     font-weight: var(--mobile-type-regular-weight);
     line-height: var(--mobile-type-control-leading);
   }
-  .mobile-change-review__close {
-    flex-shrink: 0;
-    color: var(--color-text-2);
-    background: var(--color-fill-2);
-  }
   .mobile-change-review__body {
     padding: 0 tokens.$space-4
       calc(#{tokens.$space-4} + env(safe-area-inset-bottom, 0px));

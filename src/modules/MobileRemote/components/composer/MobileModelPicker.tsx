@@ -150,6 +150,7 @@ export function MobileModelPicker({
         icon={<ModelIcon modelName={currentModelId} size={14} />}
         label={currentLabel}
         size="sm"
+        className="mobile-composer-model-trigger"
         active={false}
         disabled
         ariaLabel={currentLabel}
@@ -185,6 +186,7 @@ export function MobileModelPicker({
           settingsMenuDefaultAdvanced
           settingsMenuClassName="mobile-model-settings-menu"
           dataTestId="mobile-model-picker-pill"
+          triggerClassName="mobile-composer-model-trigger"
           ariaLabel={t("modelPicker.selectModel")}
           isActiveSession
           className={`max-w-full ${pickerDisabled ? "pointer-events-none opacity-60" : ""}`}

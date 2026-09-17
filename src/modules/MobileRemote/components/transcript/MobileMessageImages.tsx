@@ -5,6 +5,8 @@ import Button from "@src/components/Button";
 import { createLogger } from "@src/hooks/logger";
 import Modal from "@src/scaffold/ModalSystem";
 
+import { MobileHeaderIconButton } from "../MobileHeaderIconButton";
+
 export type LoadMessageImage = (
   eventId: string,
   imageIndex: number
@@ -119,7 +121,18 @@ function MessageImage({
             />
           </Button>
           {open && (
-            <Modal visible title={label} onClose={() => setOpen(false)}>
+            <Modal
+              visible
+              title={label}
+              onClose={() => setOpen(false)}
+              closable={false}
+              headerActions={
+                <MobileHeaderIconButton
+                  label={t("common:actions.close")}
+                  onClick={() => setOpen(false)}
+                />
+              }
+            >
               <img
                 src={current.url}
                 alt={label}

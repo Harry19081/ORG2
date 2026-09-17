@@ -15,13 +15,23 @@ vi.mock("@src/components/Button", () => ({
   default: ({
     children,
     variant: _variant,
+    appearance: _appearance,
+    iconOnly: _iconOnly,
+    shape: _shape,
+    htmlType: _htmlType,
+    icon: _icon,
     ...props
-  }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string }) =>
+  }: React.ComponentProps<typeof import("@src/components/Button").default>) =>
     React.createElement("button", props, children),
 }));
 vi.mock("@src/scaffold/ModalSystem", () => ({
-  default: ({ children }: { children: React.ReactNode }) =>
-    React.createElement("div", { role: "dialog" }, children),
+  default: ({
+    children,
+    headerActions,
+  }: {
+    children: React.ReactNode;
+    headerActions?: React.ReactNode;
+  }) => React.createElement("div", { role: "dialog" }, headerActions, children),
 }));
 
 describe("MobileMessageImages", () => {
@@ -79,6 +89,18 @@ describe("MobileMessageImages", () => {
     expect(container.querySelector("img")?.src).toBe(url);
     act(() => container.querySelector("button")!.click());
     expect(container.querySelector('[role="dialog"]')).not.toBeNull();
+    act(() =>
+      container
+        .querySelector<HTMLButtonElement>(
+          '[aria-label="common:actions.close"]'
+        )!
+        .click()
+    );
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
+    expect(container.querySelector("img")?.src).toBe(url);
+    act(() => container.querySelector("button")!.click());
+    expect(container.querySelector('[role="dialog"]')).not.toBeNull();
+    expect(load).toHaveBeenCalledTimes(1);
   });
   it("supports failure followed by retry", async () => {
     const load = vi
