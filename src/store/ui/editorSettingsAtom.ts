@@ -335,8 +335,8 @@ export const gitAutoFetchIntervalAtom = atom(
  */
 export const gitSourceControlColorFileNamesAtom = atom(
   (get) => get(settingsAtom)["git.sourceControl.colorFileNames"],
-  (_get, set, value: boolean) => {
-    set(updateSettingAtom, {
+  async (_get, set, value: boolean) => {
+    await set(updateSettingAtom, {
       key: "git.sourceControl.colorFileNames",
       value,
     });

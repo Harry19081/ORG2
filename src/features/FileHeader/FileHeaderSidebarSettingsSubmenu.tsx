@@ -64,6 +64,12 @@ export function FileHeaderSidebarSettingsSubmenu() {
   const [colorFileNames, setColorFileNames] = useAtom(
     gitSourceControlColorFileNamesAtom
   );
+  const handleColorFileNamesChange = React.useCallback(
+    (value: boolean) => {
+      setColorFileNames(value).catch(() => undefined);
+    },
+    [setColorFileNames]
+  );
   const locationLabel = t("sidebarSettings.location");
 
   return (
@@ -113,7 +119,7 @@ export function FileHeaderSidebarSettingsSubmenu() {
       <SwitchRow
         label={t("sidebarSettings.colorSourceControlFiles")}
         checked={colorFileNames}
-        onChange={setColorFileNames}
+        onChange={handleColorFileNamesChange}
         dataTestId="file-header-sidebar-diff-colors-toggle"
       />
     </ActionSubmenu>
