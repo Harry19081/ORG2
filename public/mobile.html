@@ -22,11 +22,12 @@
     />
     <script>
       // Resolve the persisted preference before React paints. Mobile owns a
-      // local preference because it cannot read Desktop's settings.jsonc.
+      // local preference, isolated from Desktop even on a shared origin.
+      // Do not migrate "theme": that value may belong to Desktop.
       (function () {
         var preference = "system";
         try {
-          preference = localStorage.getItem("theme") || "system";
+          preference = localStorage.getItem("mobileRemote.theme") || "system";
         } catch (error) {
           // Restricted WebViews may reject storage; follow the OS instead.
         }
