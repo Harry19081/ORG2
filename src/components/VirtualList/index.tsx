@@ -34,7 +34,6 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
 } from "react";
 
@@ -222,13 +221,12 @@ function VirtualListImpl<T>(
   }, [endReached, lastIndex, count]);
 
   const measureRef = fixedItemHeight ? undefined : virtualizer.measureElement;
-  const spacerStyle = useMemo(
-    () => ({
-      height: virtualizer.getTotalSize(),
-      position: "relative" as const,
-    }),
-    [virtualizer]
-  );
+  // The virtualizer instance is stable while its row count and measurements
+  // change. Read the current extent each render so removed rows leave no gap.
+  const spacerStyle = {
+    height: virtualizer.getTotalSize(),
+    position: "relative" as const,
+  };
 
   return (
     <div
