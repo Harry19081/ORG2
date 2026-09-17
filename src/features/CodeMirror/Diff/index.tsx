@@ -76,6 +76,8 @@ interface CodeMirrorDiffProps {
   height?: string;
   /** Diff view mode: unified (inline) or split (side-by-side) */
   viewMode?: DiffViewMode;
+  /** Override the editor word-wrap preference for this diff. */
+  wordWrap?: boolean;
   /** Read-only mode */
   readOnly?: boolean;
   /** Show merge controls (accept/reject buttons) */
@@ -199,6 +201,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   language,
   height = "100%",
   viewMode = "unified",
+  wordWrap,
   readOnly = true,
   mergeControls = true,
   collapseUnchanged = true,
@@ -213,6 +216,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   noBottomPadding = false,
 }) => {
   const appearanceSettings = useEditorAppearanceSettings();
+  const effectiveWordWrap = wordWrap ?? appearanceSettings.wordWrap;
   const isFullDeletion =
     changeType === "deleted" || (oldValue.length > 0 && newValue.length === 0);
   const unifiedDocumentValue = isFullDeletion ? "" : newValue;
@@ -325,7 +329,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
       exts.push(editorHistoryKeymapExtension());
       exts.push(bracketMatching());
     }
-    if (appearanceSettings.wordWrap) {
+    if (effectiveWordWrap) {
       exts.push(EditorView.lineWrapping);
     }
     exts.push(goToLineExtension());
@@ -439,7 +443,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     language,
     appearanceSettings.lineNumbers,
     appearanceSettings.highlightActiveLine,
-    appearanceSettings.wordWrap,
+    effectiveWordWrap,
     appearanceSettings.tabSize,
     selectionExtension,
   ]);
@@ -545,7 +549,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     language,
     appearanceSettings.lineNumbers,
     appearanceSettings.highlightActiveLine,
-    appearanceSettings.wordWrap,
+    effectiveWordWrap,
     appearanceSettings.tabSize,
     selectionExtension,
   ]);
