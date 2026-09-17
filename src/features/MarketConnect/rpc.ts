@@ -1,5 +1,6 @@
 import { z } from "zod/v4";
 
+import { awaitNativeCloudOwnerReady } from "@src/api/http/auth/sharedAuthStorage";
 import { defineProcedure, typedInvoke } from "@src/api/tauri/rpc/invoke";
 import { CliConfigManagedStatusSchema } from "@src/api/tauri/rpc/schemas/agentOrgs";
 
@@ -63,7 +64,10 @@ const moduleStatus = defineProcedure("market_connection_status")
     })
   )
   .build();
-export const loadConnections = () => typedInvoke(moduleStatus);
+export const loadConnections = async () => {
+  await awaitNativeCloudOwnerReady();
+  return typedInvoke(moduleStatus);
+};
 const input = z.object({
   identityUserId: z.string().uuid(),
   workspaceId: z.string(),

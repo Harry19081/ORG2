@@ -10,6 +10,8 @@ mod external_client;
 #[cfg(feature = "market-connect")]
 mod native_provider;
 #[cfg(feature = "market-connect")]
+mod owner;
+#[cfg(feature = "market-connect")]
 pub(crate) mod source;
 
 pub(crate) fn register_source() -> Result<(), String> {
@@ -24,11 +26,34 @@ pub(crate) fn register_source() -> Result<(), String> {
     Ok(())
 }
 
+/// Invalidate before the frontend's durable Cloud auth transition.
+#[tauri::command]
+pub async fn market_connection_suspend_owner() -> Result<u64, String> {
+    #[cfg(feature = "market-connect")]
+    {
+        owner::suspend().await
+    }
+    #[cfg(not(feature = "market-connect"))]
+    {
+        Ok(0)
+    }
+}
+/// Reads only this instance's canonical persisted Cloud auth; never accepts an identity.
+#[tauri::command]
+pub async fn market_connection_sync_owner(epoch: Option<u64>) -> Result<(), String> {
+    #[cfg(feature = "market-connect")]
+    {
+        owner::sync(epoch).await
+    }
+    #[cfg(not(feature = "market-connect"))]
+    {
+        let _ = epoch;
+        Ok(())
+    }
+}
+
 #[derive(Serialize)]
 pub struct ConnectionView {
-    #[cfg(feature = "market-connect")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    identity_session: Option<market_connect::IdentitySession>,
     identity_user_id: String,
     workspace_id: String,
     target: String,
@@ -92,8 +117,11 @@ pub async fn market_connection_begin(raw: String) -> Result<String, String> {
         .map_err(|_| "market_connection_unavailable")?
 }
 #[tauri::command]
-pub async fn market_connection_complete(raw: String) -> Result<ConnectionView, String> {
-    enabled::complete(raw).await
+pub async fn market_connection_complete(
+    raw: String,
+    expected_identity_user_id: Option<String>,
+) -> Result<ConnectionView, String> {
+    enabled::complete(raw, expected_identity_user_id).await
 }
 #[tauri::command]
 pub async fn market_connection_cancel() -> Result<(), String> {
@@ -226,6 +254,8 @@ pub async fn market_connection_configure_profile(
             serde_json::from_value(serde_json::Value::String(target))
                 .map_err(|_| "Invalid Market target")?;
         validate_external_profile_request(&target, &agent, &model)?;
+        let lease = owner::require()?;
+        lease.matches(&identity_user_id)?;
         crate::harness_connections::verify_installed_version(&agent).await?;
         let selection = source::prepare_session(
             market_connect::ConnectionMetadata {
@@ -278,6 +308,7 @@ pub async fn market_connection_configure_profile(
                 model,
                 models,
                 expected_hashes,
+                lease.operation(),
             )
             .await?
         } else {
@@ -286,6 +317,7 @@ pub async fn market_connection_configure_profile(
                 selection.clone(),
                 model,
                 expected_hashes,
+                lease.operation(),
             )
             .await?
         };
@@ -381,8 +413,13 @@ mod enabled {
     use market_connect::{ConnectionMetadata, Enrollment};
     use std::sync::{Mutex, OnceLock};
 
-    static ENROLLMENT: OnceLock<Mutex<Enrollment>> = OnceLock::new();
-    fn owner() -> &'static Mutex<Enrollment> {
+    #[derive(Default)]
+    struct EnrollmentOwner {
+        enrollment: Enrollment,
+        lease: Option<super::owner::Lease>,
+    }
+    static ENROLLMENT: OnceLock<Mutex<EnrollmentOwner>> = OnceLock::new();
+    fn owner() -> &'static Mutex<EnrollmentOwner> {
         ENROLLMENT.get_or_init(Default::default)
     }
     fn index_path() -> std::path::PathBuf {
@@ -415,7 +452,6 @@ mod enabled {
     }
     fn view(record: ConnectionMetadata, phase: &'static str) -> ConnectionView {
         ConnectionView {
-            identity_session: None,
             identity_user_id: record.identity_user_id,
             workspace_id: record.workspace_id,
             target: record.target.wire_name().into(),
@@ -426,38 +462,61 @@ mod enabled {
         market_connect::require_buyer_credential_store()?;
         let selection =
             market_connect::parse_selection(&raw).ok_or("invalid_market_connection_link")?;
-        owner()
+        let lease = super::owner::require()?;
+        let mut state = owner()
             .lock()
-            .map_err(|_| "market_connection_unavailable")?
-            .begin(selection)
-            .map_err(Into::into)
+            .map_err(|_| "market_connection_unavailable")?;
+        lease.check()?;
+        let url = state.enrollment.begin(selection).map_err(String::from)?;
+        state.lease = Some(lease);
+        Ok(url)
     }
     pub fn cancel() -> Result<(), String> {
-        owner()
+        let mut state = owner()
             .lock()
-            .map_err(|_| "market_connection_unavailable")?
-            .cancel();
+            .map_err(|_| "market_connection_unavailable")?;
+        state.enrollment.cancel();
+        state.lease = None;
         Ok(())
     }
-    pub async fn complete(raw: String) -> Result<ConnectionView, String> {
+    pub async fn complete(
+        raw: String,
+        expected_identity_user_id: Option<String>,
+    ) -> Result<ConnectionView, String> {
         // Also gate cold callbacks before consuming or exchanging a code.
         market_connect::require_buyer_credential_store()?;
-        let redemption = owner()
-            .lock()
-            .map_err(|_| "market_connection_unavailable")?
-            .take_redemption(&raw)?;
+        let (redemption, lease) = {
+            let mut state = owner()
+                .lock()
+                .map_err(|_| "market_connection_unavailable")?;
+            let lease = state.lease.clone().ok_or("market_cloud_sign_in_required")?;
+            lease.check()?;
+            (state.enrollment.take_redemption(&raw)?, lease)
+        };
         let attempt = redemption.attempt_id().to_owned();
-        let mut grant = match redemption.exchange().await {
+        let grant = match redemption.exchange().await {
             Ok(grant) => grant,
             Err(error) => {
                 owner()
                     .lock()
                     .map_err(|_| "market_connection_unavailable")?
+                    .enrollment
                     .cancel_attempt(&attempt);
                 return Err(error.into());
             }
         };
-        let identity_session = grant.take_identity_session();
+        lease.check()?;
+        if let Some(expected) = expected_identity_user_id.as_deref() {
+            lease.matches(expected)?;
+        }
+        if let Err(error) = grant.require_cloud_identity(Some(lease.user())) {
+            owner()
+                .lock()
+                .map_err(|_| "market_connection_unavailable")?
+                .enrollment
+                .cancel_attempt(&attempt);
+            return Err(error.into());
+        }
         // Wait for native renewal commits before replacing an authorization.
         // Retire cached access so the next request reads the new OS-store grant.
         let source_guard = super::source::retire_for_reauthorization().await;
@@ -467,6 +526,8 @@ mod enabled {
             let mut enrollment = owner()
                 .lock()
                 .map_err(|_| "market_connection_unavailable")?;
+            lease.check()?;
+            let enrollment = &mut enrollment.enrollment;
             let mut records = match read_index() {
                 Ok(records) => records,
                 Err(error) => {
@@ -486,35 +547,41 @@ mod enabled {
             }
             let bytes =
                 serde_json::to_vec(&records).map_err(|_| "market_connection_index_invalid")?;
+            lease.check()?;
             let metadata = enrollment.store_authorized(grant, &scope, || {
                 agent_cli::managed_config::write_cli_profile_file_atomic(&index_path(), &bytes)
                     .map_err(|_| "market_connection_index_unavailable")
             })?;
-            let mut result = view(metadata, "authorization_saved");
-            result.identity_session = identity_session;
-            Ok(result)
+            Ok(view(metadata, "authorization_saved"))
         })
         .await
         .map_err(|_| "market_connection_unavailable")?
     }
     pub async fn status() -> Result<ModuleStatus, String> {
-        tokio::task::spawn_blocking(|| {
+        let lease = super::owner::require().ok();
+        tokio::task::spawn_blocking(move || {
+            let mut connections = Vec::new();
+            if let Some(lease) = lease {
+                for record in read_index()?
+                    .into_iter()
+                    .filter(|r| r.identity_user_id == lease.user())
+                {
+                    lease.check()?;
+                    let scope = app_paths::orgii_root().to_string_lossy().into_owned();
+                    let phase = if market_connect::Grant::load(&scope, &record).is_ok() {
+                        "authorization_saved"
+                    } else {
+                        "reauthorization_required"
+                    };
+                    connections.push(view(record, phase));
+                }
+                lease.check()?;
+            }
             Ok(ModuleStatus {
                 enabled: true,
                 app_scheme: market_connect::app_scheme()?.to_string(),
                 buyer_persistent_credentials: market_connect::buyer_credential_store_supported(),
-                connections: read_index()?
-                    .into_iter()
-                    .map(|record| {
-                        let scope = app_paths::orgii_root().to_string_lossy().into_owned();
-                        let phase = if market_connect::Grant::load(&scope, &record).is_ok() {
-                            "authorization_saved"
-                        } else {
-                            "reauthorization_required"
-                        };
-                        view(record, phase)
-                    })
-                    .collect(),
+                connections,
             })
         })
         .await
@@ -528,7 +595,7 @@ mod enabled {
     pub fn begin(_: String) -> Result<String, String> {
         Err("market_module_disabled".into())
     }
-    pub async fn complete(_: String) -> Result<ConnectionView, String> {
+    pub async fn complete(_: String, _: Option<String>) -> Result<ConnectionView, String> {
         Err("market_module_disabled".into())
     }
     pub fn cancel() -> Result<(), String> {

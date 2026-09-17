@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { KEY_SOURCE } from "@src/api/tauri/session";
 import { Message } from "@src/components/Message";
+import { captureMarketOwner } from "@src/features/MarketConnect/identity";
 import {
   findMarketSourceForRecent,
   marketSourceModelType,
@@ -206,9 +207,19 @@ export function useUnifiedModelPaletteSelection({
       modelId: string
     ) => {
       if (marketSelectionPendingRef.current) return;
+      let owner: ReturnType<typeof captureMarketOwner>;
+      try {
+        owner = captureMarketOwner(
+          marketSource.profile.connection.identity_user_id
+        );
+      } catch {
+        Message.error(t("marketConnection.launchFailed"));
+        return;
+      }
       marketSelectionPendingRef.current = true;
       void prepareMarketProfileSource(marketSource, modelId)
         .then(({ credentialSource }) => {
+          owner.assertCurrent();
           const modelType = marketSourceModelType(marketSource, modelId);
           onConfigChange({
             ...advancedConfig,
@@ -239,6 +250,7 @@ export function useUnifiedModelPaletteSelection({
           Message.error(t("marketConnection.launchFailed"));
         })
         .finally(() => {
+          owner.dispose();
           marketSelectionPendingRef.current = false;
         });
     },

@@ -84,6 +84,7 @@ describe("useMobileRelayCloudAuthSync", () => {
   });
 
   beforeEach(() => {
+    localStorage.clear();
     mocks.ensureFreshSession.mockReset();
     mocks.awaitMirroredOrg2CloudAuth.mockReset();
     mocks.notifyCloudAuthChanged.mockReset();
@@ -167,6 +168,73 @@ describe("useMobileRelayCloudAuthSync", () => {
         mocks.notifyCloudAuthChanged.mock.invocationCallOrder[index]
       );
     }
+  });
+
+  it("does not mirror a transient refresh failure as sign-out", async () => {
+    mocks.ensureFreshSession.mockResolvedValue(null);
+    const store = createStore();
+    store.set(org2CloudAuthAtom, AUTH);
+    await act(async () => {
+      root.render(
+        React.createElement(Provider, { store }, React.createElement(HookProbe))
+      );
+    });
+    expect(mocks.awaitMirroredOrg2CloudAuth).not.toHaveBeenCalled();
+    expect(mocks.notifyCloudAuthChanged).not.toHaveBeenCalled();
+    expect(store.get(org2CloudAuthAtom)?.userId).toBe(AUTH.userId);
+  });
+
+  it.each([null, { ...AUTH, userId: "owner-b", accessToken: "owner-b-token" }])(
+    "does not persist a stale refresh after the canonical auth changes to %s",
+    async (replacement) => {
+      const pending: Array<(auth: typeof AUTH) => void> = [];
+      mocks.ensureFreshSession.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            pending.push(resolve);
+          })
+      );
+      const store = createStore();
+      store.set(org2CloudAuthAtom, AUTH);
+      await act(async () => {
+        root.render(
+          React.createElement(
+            Provider,
+            { store },
+            React.createElement(HookProbe)
+          )
+        );
+      });
+      expect(pending.length).toBeGreaterThan(0);
+      const oldPending = pending.splice(0);
+      await act(async () => {
+        store.set(org2CloudAuthAtom, replacement);
+      });
+      mocks.awaitMirroredOrg2CloudAuth.mockClear();
+      mocks.notifyCloudAuthChanged.mockClear();
+      await act(async () => {
+        for (const resolve of oldPending)
+          resolve({ ...AUTH, accessToken: "late-old-token" });
+      });
+      expect(mocks.awaitMirroredOrg2CloudAuth).not.toHaveBeenCalled();
+      expect(mocks.notifyCloudAuthChanged).not.toHaveBeenCalled();
+      expect(store.get(org2CloudAuthAtom)).toEqual(replacement);
+    }
+  );
+
+  it("handles a superseded mirror without waking the relay with stale auth", async () => {
+    mocks.awaitMirroredOrg2CloudAuth.mockRejectedValue(
+      new Error("Cloud auth write was superseded")
+    );
+    const store = createStore();
+    store.set(org2CloudAuthAtom, AUTH);
+    await act(async () => {
+      root.render(
+        React.createElement(Provider, { store }, React.createElement(HookProbe))
+      );
+    });
+    expect(mocks.awaitMirroredOrg2CloudAuth).toHaveBeenCalled();
+    expect(mocks.notifyCloudAuthChanged).not.toHaveBeenCalled();
   });
 
   it("does nothing while relay is disabled", async () => {

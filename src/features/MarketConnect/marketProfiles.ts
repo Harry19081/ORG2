@@ -1,3 +1,4 @@
+import { useAtomValue, useStore } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -6,8 +7,15 @@ import {
   type ModelType,
 } from "@src/api/tauri/rpc/schemas/validation";
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
+import {
+  type MarketStore,
+  captureMarketOwner,
+  marketConnectionMatchesOwner,
+  marketOwnerKeyAtom,
+} from "./identity";
 import { marketProfileLabel } from "./profileLabels";
 import type { ManagedService } from "./rpc";
 import {
@@ -279,17 +287,24 @@ export async function prepareMarketProfileSource(
   if (!source.modelIds.includes(model)) {
     throw new Error(`Market profile does not support model: ${model}`);
   }
-  const profile = await authorizedProfile(source.profile, model);
-  const prepared = await prepareSessionSource(
-    profile.connection,
-    profile.entitlementWorkspaceId,
-    profile.entitlementId,
-    source.cliAgentType ?? "rust_agent",
-    model
-  );
-  return {
-    credentialSource: prepared.credential_source,
-  };
+  const owner = captureMarketOwner(source.profile.connection.identity_user_id);
+  try {
+    const profile = await authorizedProfile(source.profile, model);
+    owner.assertCurrent();
+    const prepared = await prepareSessionSource(
+      profile.connection,
+      profile.entitlementWorkspaceId,
+      profile.entitlementId,
+      source.cliAgentType ?? "rust_agent",
+      model
+    );
+    owner.assertCurrent();
+    return {
+      credentialSource: prepared.credential_source,
+    };
+  } finally {
+    owner.dispose();
+  }
 }
 
 export interface MarketProfileLoadResult {
@@ -297,27 +312,46 @@ export interface MarketProfileLoadResult {
   errors: unknown[];
 }
 
-export async function loadMarketExecutionProfilesWithDiagnostics(): Promise<MarketProfileLoadResult> {
-  const status = await loadConnections();
-  const connections = status.connections.filter(
-    (connection) =>
-      connection.target === "org2" && connection.phase === "authorization_saved"
+export async function loadMarketExecutionProfilesWithDiagnostics(
+  store: MarketStore = getInstrumentedStore()
+): Promise<MarketProfileLoadResult> {
+  const ownerKey = store.get(marketOwnerKeyAtom);
+  if (!ownerKey) return { profiles: [], errors: [] };
+  const scope = captureMarketOwner(
+    ownerKey.slice(ownerKey.lastIndexOf("|") + 1),
+    store
   );
-  const results = await Promise.allSettled(
-    connections.map(async (connection) =>
-      adaptMarketEntries(connection, await loadEntries(connection))
-    )
-  );
-  return {
-    profiles: dedupeMarketProfiles(
-      results.flatMap((result) =>
-        result.status === "fulfilled" ? result.value : []
+  try {
+    const status = await loadConnections();
+    if (!scope.isCurrent()) return { profiles: [], errors: [] };
+    const connections = status.connections.filter(
+      (connection) =>
+        connection.target === "org2" &&
+        connection.phase === "authorization_saved" &&
+        marketConnectionMatchesOwner(connection.identity_user_id, ownerKey)
+    );
+    const results = await Promise.allSettled(
+      connections.map(async (connection) =>
+        adaptMarketEntries(connection, await loadEntries(connection))
       )
-    ),
-    errors: results.flatMap((result) =>
-      result.status === "rejected" ? [result.reason] : []
-    ),
-  };
+    );
+    if (!scope.isCurrent()) return { profiles: [], errors: [] };
+    return {
+      profiles: dedupeMarketProfiles(
+        results.flatMap((result) =>
+          result.status === "fulfilled" ? result.value : []
+        )
+      ),
+      errors: results.flatMap((result) =>
+        result.status === "rejected" ? [result.reason] : []
+      ),
+    };
+  } catch (error) {
+    if (!scope.isCurrent()) return { profiles: [], errors: [] };
+    throw error;
+  } finally {
+    scope.dispose();
+  }
 }
 
 export async function loadMarketExecutionProfiles(): Promise<
@@ -328,45 +362,73 @@ export async function loadMarketExecutionProfiles(): Promise<
   return result.profiles;
 }
 
-let cachedLoad: MarketProfileLoadResult | null = null;
-let cacheExpires = 0;
-let inFlightLoad: Promise<MarketProfileLoadResult> | null = null;
-let inFlightGeneration = 0;
-let sharedLoadGeneration = 0;
-
-export function invalidateMarketProfileCache(): void {
-  cachedLoad = null;
-  sharedLoadGeneration += 1;
+interface ProfileCache {
+  owner: string | null;
+  value: MarketProfileLoadResult | null;
+  expires: number;
+  generation: number;
+  flight: Promise<MarketProfileLoadResult> | null;
+  flightGeneration: number;
 }
-
-export async function loadCachedMarketExecutionProfiles(
-  force = false
-): Promise<MarketProfileLoadResult> {
-  if (force) invalidateMarketProfileCache();
-  if (cachedLoad && Date.now() < cacheExpires) return cachedLoad;
-  if (inFlightLoad) {
-    if (inFlightGeneration === sharedLoadGeneration) return inFlightLoad;
-    // A connection changed during the fetch. Drain the old read, then share
-    // one fresh read instead of racing a fetch per mounted selector.
-    await inFlightLoad.catch(() => undefined);
-    return loadCachedMarketExecutionProfiles();
+// One bounded cache per application store, rather than sharing users between stores.
+const caches = new WeakMap<MarketStore, ProfileCache>();
+function cacheFor(store: MarketStore): ProfileCache {
+  let cache = caches.get(store);
+  if (!cache) {
+    cache = {
+      owner: store.get(marketOwnerKeyAtom),
+      value: null,
+      expires: 0,
+      generation: 0,
+      flight: null,
+      flightGeneration: 0,
+    };
+    const owned = cache;
+    // Store-lifetime narrow subscription: no timer, request, or token-refresh work.
+    store.sub(marketOwnerKeyAtom, () => {
+      owned.owner = store.get(marketOwnerKeyAtom);
+      owned.value = null;
+      owned.generation++;
+    });
+    caches.set(store, cache);
   }
-  const generation = sharedLoadGeneration;
-  inFlightGeneration = generation;
-  const request = loadMarketExecutionProfilesWithDiagnostics().then(
+  return cache;
+}
+export function invalidateMarketProfileCache(
+  store: MarketStore = getInstrumentedStore()
+): void {
+  const cache = cacheFor(store);
+  cache.value = null;
+  cache.generation++;
+}
+export async function loadCachedMarketExecutionProfiles(
+  force = false,
+  store: MarketStore = getInstrumentedStore()
+): Promise<MarketProfileLoadResult> {
+  const cache = cacheFor(store);
+  if (force) invalidateMarketProfileCache(store);
+  if (!cache.owner) return { profiles: [], errors: [] };
+  if (cache.value && Date.now() < cache.expires) return cache.value;
+  if (cache.flight) {
+    if (cache.flightGeneration === cache.generation) return cache.flight;
+    await cache.flight.catch(() => undefined);
+    return loadCachedMarketExecutionProfiles(false, store);
+  }
+  const generation = cache.generation;
+  cache.flightGeneration = generation;
+  const request = loadMarketExecutionProfilesWithDiagnostics(store).then(
     (result) => {
-      if (generation === sharedLoadGeneration) {
-        cachedLoad = result;
-        cacheExpires = Date.now() + 30_000;
-      }
+      if (generation !== cache.generation) return { profiles: [], errors: [] };
+      cache.value = result;
+      cache.expires = Date.now() + 30_000;
       return result;
     }
   );
-  inFlightLoad = request;
+  cache.flight = request;
   try {
     return await request;
   } finally {
-    if (inFlightLoad === request) inFlightLoad = null;
+    if (cache.flight === request) cache.flight = null;
   }
 }
 
@@ -375,11 +437,17 @@ export async function loadCachedMarketExecutionProfiles(
  * handoff emits `market-profiles-changed`, which refreshes this source without
  * requiring an ORG2 restart.
  */
+const EMPTY_PROFILES: MarketExecutionProfile[] = [];
+
 export function useMarketExecutionProfiles(options: {
   enabled: boolean;
   cliAgentType?: CliAgentType | string | null;
 }) {
   const { enabled, cliAgentType } = options;
+  const store = useStore();
+  const ownerKey = useAtomValue(marketOwnerKeyAtom);
+  const resultOwner = useRef(ownerKey);
+  const [ownerRevision, setOwnerRevision] = useState(0);
   const [profiles, setProfiles] = useState<MarketExecutionProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -388,13 +456,15 @@ export function useMarketExecutionProfiles(options: {
 
   const load = useCallback(
     async (force = false) => {
-      if (force) invalidateMarketProfileCache();
-      if (!enabled) return;
+      if (force) invalidateMarketProfileCache(store);
+      if (!enabled || !ownerKey) return;
       const generation = ++generationRef.current;
       setLoading(true);
       try {
-        const result = await loadCachedMarketExecutionProfiles();
+        const result = await loadCachedMarketExecutionProfiles(false, store);
         if (generation !== generationRef.current) return;
+        if (store.get(marketOwnerKeyAtom) !== ownerKey) return;
+        resultOwner.current = ownerKey;
         setProfiles(result.profiles);
         setError(
           result.errors.length > 0
@@ -406,7 +476,12 @@ export function useMarketExecutionProfiles(options: {
             : null
         );
       } catch (cause) {
-        if (generation !== generationRef.current) return;
+        if (
+          generation !== generationRef.current ||
+          store.get(marketOwnerKeyAtom) !== ownerKey
+        )
+          return;
+        resultOwner.current = ownerKey;
         setError(cause instanceof Error ? cause.message : String(cause));
       } finally {
         if (generation === generationRef.current) {
@@ -415,10 +490,29 @@ export function useMarketExecutionProfiles(options: {
         }
       }
     },
-    [enabled]
+    [enabled, ownerKey, store]
   );
 
   const refresh = useCallback(async () => load(true), [load]);
+
+  // Observe every transition even when React batches A → B → A into one render.
+  useEffect(
+    () =>
+      store.sub(marketOwnerKeyAtom, () => {
+        generationRef.current++;
+        resultOwner.current = null;
+        setOwnerRevision((revision) => revision + 1);
+      }),
+    [store]
+  );
+
+  useEffect(() => {
+    generationRef.current++;
+    setProfiles([]);
+    setError(null);
+    setLoading(false);
+    setHasLoaded(false);
+  }, [ownerKey, ownerRevision]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -427,7 +521,7 @@ export function useMarketExecutionProfiles(options: {
     return () => {
       requestGeneration.current++;
     };
-  }, [enabled, load]);
+  }, [enabled, load, ownerRevision]);
 
   useEffect(() => {
     const handleProfilesChanged = () => {
@@ -444,16 +538,18 @@ export function useMarketExecutionProfiles(options: {
       );
   }, [load]);
 
+  const currentOwner = !!ownerKey && resultOwner.current === ownerKey;
+  const visibleProfiles = currentOwner ? profiles : EMPTY_PROFILES;
   const sources = useMemo(
-    () => marketSourcesForAgent(profiles, cliAgentType),
-    [profiles, cliAgentType]
+    () => marketSourcesForAgent(visibleProfiles, cliAgentType),
+    [visibleProfiles, cliAgentType]
   );
 
   return {
-    profiles,
+    profiles: visibleProfiles,
     sources,
-    loading: loading || (enabled && !hasLoaded),
-    error,
+    loading: !!ownerKey && enabled && (loading || !hasLoaded || !currentOwner),
+    error: currentOwner ? error : null,
     refresh,
   };
 }

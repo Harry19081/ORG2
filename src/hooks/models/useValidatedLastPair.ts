@@ -16,10 +16,15 @@ import { useMemo } from "react";
 import { isHostedKey } from "@src/api/tauri/session";
 import { isOrgiiTierModel } from "@src/config/orgiiCategories";
 import {
+  marketConnectionMatchesOwner,
+  marketOwnerKeyAtom,
+} from "@src/features/MarketConnect/identity";
+import {
   findMarketSourceForRecent,
   marketSourceModelType,
   useMarketExecutionProfiles,
 } from "@src/features/MarketConnect/marketProfiles";
+import { parseAppliedMarketSelection } from "@src/features/MarketConnect/marketSelection";
 import { useKeyVault } from "@src/hooks/keyVault";
 import { withNativeHarnessModels } from "@src/hooks/models/nativeHarnessAccountModels";
 import {
@@ -44,6 +49,7 @@ import {
 import { useOrgiiPoolCategories } from "./useOrgiiPoolCategories";
 
 export function useValidatedLastPair(): LastModelSelection | null {
+  const marketOwner = useAtomValue(marketOwnerKeyAtom);
   const pair = useAtomValue(creatorDefaultModelPairAtom);
   const dispatchCategory = useAtomValue(dispatchCategoryAtom);
   const cliAgentType = useAtomValue(cliAgentTypeAtom);
@@ -94,6 +100,12 @@ export function useValidatedLastPair(): LastModelSelection | null {
     if (!ok) return null;
     if (isHostedKey(pair.sourceType)) return deriveLastModelSelection(pair);
     if (pair.credentialSource?.startsWith("market:")) {
+      const selection = parseAppliedMarketSelection(pair.credentialSource);
+      if (
+        !selection ||
+        !marketConnectionMatchesOwner(selection.identityUserId, marketOwner)
+      )
+        return null;
       if (marketProfilesLoading) return deriveLastModelSelection(pair);
       if (marketProfilesError) return null;
       const source = findMarketSourceForRecent(marketSources, pair);
@@ -124,6 +136,7 @@ export function useValidatedLastPair(): LastModelSelection | null {
     orgiiModelSet,
     orgiiCategoryIds,
     cliAgentType,
+    marketOwner,
     marketProfilesError,
     marketProfilesLoading,
     marketSources,

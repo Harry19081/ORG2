@@ -3,6 +3,11 @@ import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
+import Message from "@src/components/Message";
+import { signedInStore } from "@src/features/MarketConnect/identity.test-utils";
+import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
+
 import AppConnectionPage from "./AppConnectionPage";
 
 vi.mock("./ClaudeProfileEditor", () => ({ default: () => null }));
@@ -140,6 +145,7 @@ let container: HTMLDivElement;
 let root: ReturnType<typeof createRoot>;
 
 beforeEach(() => {
+  signedInStore(identity);
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   vi.clearAllMocks();
   connected = false;
@@ -191,6 +197,9 @@ it("selects provider first and keeps duplicate purchases as separate private con
     item.textContent?.includes("Same service")
   );
   const [first, second] = choices;
+  // A new client has no applied Package yet; both initial choices must be usable.
+  expect(first.disabled).toBe(false);
+  expect(second.disabled).toBe(false);
   expect(first.textContent).toContain("Same service");
   expect(second.textContent).toContain("Same service");
   expect(first.textContent).toContain(
@@ -276,7 +285,8 @@ it("reports configuration conflicts without calling them unsupported versions", 
   expect(button("harnessConnections.restore").disabled).toBe(true);
 });
 
-it("can restore saved settings even when the client is no longer installed", async () => {
+it("can restore saved settings while signed out even when the client is no longer installed", async () => {
+  getInstrumentedStore().set(org2CloudAuthAtom, null);
   connected = true;
   installed = false;
   await render("claude_desktop");
@@ -296,4 +306,26 @@ it("offers a reload after a purchase lookup failure instead of claiming a missin
   await act(async () => provider.click());
   await act(async () => button("harnessConnections.refresh").click());
   expect(refreshProfiles).toHaveBeenCalledOnce();
+});
+
+it("does not announce a stale native open after Cloud logout", async () => {
+  connected = true;
+  let finish!: () => void;
+  open.mockImplementationOnce(
+    () =>
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      })
+  );
+  await render("claude_code");
+  await act(async () =>
+    button("harnessConnections.marketApps.openTerminal").click()
+  );
+  expect(open).toHaveBeenCalledOnce();
+  await act(async () => {
+    getInstrumentedStore().set(org2CloudAuthAtom, null);
+    finish();
+  });
+  expect(Message.success).not.toHaveBeenCalled();
+  expect(Message.error).toHaveBeenCalledOnce();
 });

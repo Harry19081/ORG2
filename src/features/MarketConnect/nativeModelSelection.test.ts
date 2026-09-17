@@ -1,13 +1,16 @@
 // @vitest-environment jsdom
-import { expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 
 import {
   resolveDefaultConversationTarget,
   resolvePickedConversationRuntimeTarget,
 } from "@src/engines/ChatPanel/conversationTargetSelection";
 import { localConversationTargetFromSession } from "@src/engines/ChatPanel/hooks/conversationTargetBinding/conversationSourceResolution";
+import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import { resolveAgentRuntimeSelection } from "@src/features/SessionCreator/agentRuntimeConfig";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
+import { signedInStore } from "./identity.test-utils";
 import {
   adaptMarketEntries,
   marketSourceModelType,
@@ -185,4 +188,27 @@ it("never turns a malformed or incompatible dynamic source into ambient Claude c
       })
     ).toEqual({ status: "needs_model_picker" });
   }
+});
+
+beforeEach(() => {
+  signedInStore();
+});
+
+it("rejects a late model preparation after the owner logs out", async () => {
+  const [source] = marketSourcesForAgent(
+    adaptMarketEntries(connection, [entry]),
+    "rust_agent"
+  );
+  let finish!: (value: { credential_source: string }) => void;
+  vi.mocked(prepareSessionSource).mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  const preparing = prepareMarketProfileSource(source, "gpt");
+  await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+  getInstrumentedStore().set(org2CloudAuthAtom, null);
+  finish({ credential_source: "market:late" });
+  await expect(preparing).rejects.toThrow("market_identity_mismatch");
 });

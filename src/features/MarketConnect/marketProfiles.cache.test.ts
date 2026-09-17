@@ -1,9 +1,14 @@
 // @vitest-environment jsdom
+import { Provider } from "jotai";
 import React, { act, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
+import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
+
 import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
+import { USER_B, authFor, signedInStore } from "./identity.test-utils";
 import {
   invalidateMarketProfileCache,
   useMarketExecutionProfiles,
@@ -19,6 +24,7 @@ vi.mock("./usageAuthorization", () => ({ authorizedProfile: vi.fn() }));
 const cleanup: Array<() => void> = [];
 beforeEach(() => {
   vi.clearAllMocks();
+  signedInStore();
   invalidateMarketProfileCache();
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   mocks.loadConnections.mockResolvedValue({
@@ -54,7 +60,13 @@ function picker() {
     async render(open: boolean) {
       enabled = open;
       await act(async () => {
-        root.render(React.createElement(Probe));
+        root.render(
+          React.createElement(
+            Provider,
+            { store: getInstrumentedStore() },
+            React.createElement(Probe)
+          )
+        );
       });
       return current!;
     },
@@ -123,4 +135,56 @@ it("projects identical package/model names as distinct picker sources with their
     },
   ]);
   expect(new Set(result.sources.map((source) => source.id)).size).toBe(2);
+});
+
+it("hides a rendered old-owner catalog immediately and loads only the new owner's entries", async () => {
+  mocks.loadEntries.mockResolvedValue([
+    {
+      workspace_id: "ws_purchase",
+      entitlement_id: "pa_one",
+      service_id: "pkg_one",
+      service_name: "One",
+      models: ["gpt"],
+      models_by_agent: { claude: ["gpt"], codex: [] },
+      status: "active",
+      expires_at: null,
+    },
+  ]);
+  const view = picker();
+  expect((await view.render(true)).profiles).toHaveLength(1);
+  await act(async () => {
+    getInstrumentedStore().set(org2CloudAuthAtom, authFor(USER_B));
+  });
+  expect((await view.render(true)).profiles).toEqual([]);
+  expect(mocks.loadEntries).toHaveBeenCalledTimes(1);
+  await act(async () => {
+    getInstrumentedStore().set(org2CloudAuthAtom, null);
+  });
+  const loggedOut = await view.render(true);
+  expect(loggedOut.profiles).toEqual([]);
+  expect(loggedOut.loading).toBe(false);
+});
+
+it("invalidates already rendered rows through a React-batched A to B to A transition", async () => {
+  mocks.loadEntries.mockResolvedValue([
+    {
+      workspace_id: "ws_purchase",
+      entitlement_id: "pa_one",
+      service_id: "pkg_one",
+      service_name: "One",
+      models: ["gpt"],
+      models_by_agent: { claude: ["gpt"], codex: [] },
+      status: "active",
+      expires_at: null,
+    },
+  ]);
+  const view = picker();
+  expect((await view.render(true)).profiles).toHaveLength(1);
+  mocks.loadEntries.mockResolvedValue([]);
+  await act(async () => {
+    getInstrumentedStore().set(org2CloudAuthAtom, authFor(USER_B));
+    getInstrumentedStore().set(org2CloudAuthAtom, authFor());
+  });
+  expect((await view.render(true)).profiles).toEqual([]);
+  expect(mocks.loadEntries).toHaveBeenCalledTimes(2);
 });

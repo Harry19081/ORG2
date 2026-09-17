@@ -1,6 +1,11 @@
 // @vitest-environment jsdom
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
+import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
+
+import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
+import { USER_B, authFor, signedInStore } from "./identity.test-utils";
 import type { MarketExecutionProfile } from "./marketProfiles";
 import { activateManagedService } from "./rpc";
 import {
@@ -126,4 +131,105 @@ it("keeps availability a call constraint rather than a per-model activation", as
     enabled
   );
   expect(activateManagedService).not.toHaveBeenCalled();
+});
+
+beforeEach(() => {
+  signedInStore();
+});
+
+it("cancels pending confirmation immediately on logout without activation", async () => {
+  let prompt!: UsagePrompt;
+  const show = (event: Event) => {
+    prompt = (event as CustomEvent<UsagePrompt>).detail;
+  };
+  window.addEventListener(USAGE_AUTHORIZATION_EVENT, show);
+  try {
+    const loading = authorizedProfile(profile(), "example-messages");
+    getInstrumentedStore().set(org2CloudAuthAtom, null);
+    prompt.resolve(true);
+    await expect(loading).rejects.toThrow("usage_authorization_cancelled");
+    expect(activateManagedService).not.toHaveBeenCalled();
+  } finally {
+    window.removeEventListener(USAGE_AUTHORIZATION_EVENT, show);
+  }
+});
+it("does not publish an activation that completes after logout", async () => {
+  let finish!: (value: typeof access) => void;
+  vi.mocked(activateManagedService).mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  const confirm = (event: Event) =>
+    (event as CustomEvent<UsagePrompt>).detail.resolve(true);
+  const changed = vi.fn();
+  window.addEventListener(USAGE_AUTHORIZATION_EVENT, confirm);
+  window.addEventListener(MARKET_PROFILES_CHANGED_EVENT, changed);
+  try {
+    const loading = authorizedProfile(profile(), "example-messages");
+    await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+    getInstrumentedStore().set(org2CloudAuthAtom, null);
+    finish(access);
+    await expect(loading).rejects.toThrow("market_identity_mismatch");
+    expect(changed).not.toHaveBeenCalled();
+  } finally {
+    window.removeEventListener(USAGE_AUTHORIZATION_EVENT, confirm);
+    window.removeEventListener(MARKET_PROFILES_CHANGED_EVENT, changed);
+  }
+});
+
+it("preserves a pending confirmation across same-user token refresh", async () => {
+  let prompt!: UsagePrompt;
+  const show = (event: Event) => {
+    prompt = (event as CustomEvent<UsagePrompt>).detail;
+  };
+  window.addEventListener(USAGE_AUTHORIZATION_EVENT, show);
+  vi.mocked(activateManagedService).mockResolvedValue(access);
+  try {
+    const loading = authorizedProfile(profile(), "example-messages");
+    getInstrumentedStore().set(org2CloudAuthAtom, {
+      ...authFor(),
+      accessToken: "fresh",
+    });
+    prompt.resolve(true);
+    expect((await loading).entitlementId).toBe(access.access_id);
+  } finally {
+    window.removeEventListener(USAGE_AUTHORIZATION_EVENT, show);
+  }
+});
+
+it("lets the new owner confirm while an old activation drains, without letting the old completion release the new prompt", async () => {
+  let finish!: (value: typeof access) => void;
+  vi.mocked(activateManagedService).mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  const prompts: UsagePrompt[] = [];
+  const show = (event: Event) => {
+    const prompt = (event as CustomEvent<UsagePrompt>).detail;
+    prompts.push(prompt);
+    if (prompts.length === 1) prompt.resolve(true);
+  };
+  window.addEventListener(USAGE_AUTHORIZATION_EVENT, show);
+  try {
+    const old = authorizedProfile(profile(), "example-messages");
+    await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+    getInstrumentedStore().set(org2CloudAuthAtom, authFor(USER_B));
+    const nextProfile = profile();
+    nextProfile.connection.identity_user_id = USER_B;
+    const next = authorizedProfile(nextProfile, "example-messages");
+    expect(prompts).toHaveLength(2);
+    finish(access);
+    await expect(old).rejects.toThrow("market_identity_mismatch");
+    await expect(
+      authorizedProfile(nextProfile, "example-messages")
+    ).rejects.toThrow("usage_authorization_in_progress");
+    prompts[1].resolve(false);
+    await expect(next).rejects.toThrow("usage_authorization_cancelled");
+  } finally {
+    window.removeEventListener(USAGE_AUTHORIZATION_EVENT, show);
+  }
 });

@@ -13,7 +13,15 @@ import {
 } from "./events";
 import { loadConnections, loadEntries } from "./rpc";
 
-const mocks = vi.hoisted(() => ({ invoke: vi.fn(), signIn: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  invoke: vi.fn(),
+  signIn: vi.fn(),
+  ready: vi.fn(),
+  refresh: vi.fn(),
+}));
+vi.mock("@src/api/http/auth/sharedAuthStorage", () => ({
+  awaitNativeCloudOwnerReady: mocks.ready,
+}));
 vi.mock("@tauri-apps/plugin-opener", () => ({ openUrl: vi.fn() }));
 vi.mock("@src/api/tauri/rpc/invoke", () => ({
   defineProcedure: (name: string) => {
@@ -37,10 +45,7 @@ vi.mock("@src/features/Org2Cloud/useOrg2CloudSignIn", () => ({
   openOrg2CloudSignIn: mocks.signIn,
 }));
 vi.mock("@src/features/Org2Cloud/org2CloudAuthAction", () => ({
-  refreshOrg2CloudAuthForAction: async (auth: unknown) => ({
-    status: "ready",
-    auth,
-  }),
+  refreshOrg2CloudAuthForAction: mocks.refresh,
 }));
 vi.mock("./rpc", () => ({
   loadConnections: vi.fn(async () => ({ connections: [] })),
@@ -64,6 +69,10 @@ const auth = {
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.signIn.mockReset();
+  mocks.ready.mockReset().mockResolvedValue(undefined);
+  mocks.refresh
+    .mockReset()
+    .mockImplementation(async (auth: unknown) => ({ status: "ready", auth }));
   vi.stubGlobal(
     "fetch",
     vi.fn(async () =>
@@ -111,6 +120,65 @@ it("signs in through Cloud and resumes the exact original Market selection", asy
     auth.accessToken
   );
 });
+it("waits for canonical auth persistence and verification when sign-in immediately resumes a first Package handoff", async () => {
+  let finish!: () => void;
+  mocks.ready.mockImplementationOnce(
+    () =>
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      })
+  );
+  const raw = "orgii://market/connect?workspace_id=ws_test&target=org2";
+  handleMarketConnectionUrl(raw);
+  await vi.waitFor(() => expect(mocks.signIn).toHaveBeenCalledOnce());
+  createInstrumentedStore().set(org2CloudAuthAtom, auth as never);
+  mocks.signIn.mock.calls[0][0].onSignedIn();
+  await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+  expect(loadConnections).not.toHaveBeenCalled();
+  expect(mocks.invoke).not.toHaveBeenCalled();
+  finish();
+  await vi.waitFor(() =>
+    expect(mocks.invoke).toHaveBeenCalledWith("market_connection_begin", {
+      raw,
+    })
+  );
+  await vi.waitFor(() =>
+    expect(dispatchMarketConnection).toHaveBeenCalledOnce()
+  );
+});
+
+it("waits for a background token refresh to synchronize before redeeming authorization", async () => {
+  let finish!: () => void;
+  mocks.refresh.mockImplementationOnce(async (current: unknown) => {
+    mocks.ready.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        })
+    );
+    return { status: "ready", auth: current };
+  });
+  createInstrumentedStore().set(org2CloudAuthAtom, auth as never);
+  handleMarketConnectionUrl(
+    "orgii://market/connect?workspace_id=ws_test&target=org2"
+  );
+  await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+  expect(
+    mocks.invoke.mock.calls.some(
+      ([name]) => name === "market_connection_complete"
+    )
+  ).toBe(false);
+  finish();
+  await vi.waitFor(() =>
+    expect(dispatchMarketConnection).toHaveBeenCalledOnce()
+  );
+  expect(
+    mocks.invoke.mock.calls.some(
+      ([name]) => name === "market_connection_complete"
+    )
+  ).toBe(true);
+});
+
 it("never signs Cloud in using Market callback fragments or identity_session", async () => {
   const store = createInstrumentedStore();
   handleMarketConnectionUrl(

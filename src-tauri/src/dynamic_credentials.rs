@@ -35,6 +35,13 @@ pub struct SourceModel {
     pub label: String,
 }
 
+/// Keeps a dynamic provider's authorization valid through a config commit.
+/// The source owns identity policy; generic client adapters only enforce it.
+#[cfg(feature = "market-connect")]
+pub(crate) trait OperationAuthorization: Send {
+    fn check(&self) -> Result<(), String>;
+}
+
 pub trait Source: Send + Sync {
     fn namespace(&self) -> &'static str;
     fn destination(&self, selection: &str, agent: &str) -> Result<Destination, String>;

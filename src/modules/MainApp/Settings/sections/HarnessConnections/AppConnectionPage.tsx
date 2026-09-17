@@ -17,6 +17,7 @@ import {
   modelsForExternalTarget,
   restoreExternalMarketTarget,
 } from "@src/features/MarketConnect/externalAppBridge";
+import { captureMarketOwner } from "@src/features/MarketConnect/identity";
 import { openConfiguredMarketClient } from "@src/features/MarketConnect/launch";
 import {
   type MarketExecutionProfile,
@@ -143,7 +144,11 @@ export default function AppConnectionPage({
   const connectMarket = async () => {
     if (!chosenValue || !selectedProfiles.length) return;
     setBusy("connect");
+    let owner: ReturnType<typeof captureMarketOwner> | undefined;
     try {
+      owner = captureMarketOwner(
+        selectedProfiles[0].connection.identity_user_id
+      );
       const [defaultProfileId, defaultModel] = JSON.parse(chosenValue) as [
         string,
         string,
@@ -154,8 +159,10 @@ export default function AppConnectionPage({
         defaultProfileId,
         defaultModel
       );
+      owner.assertCurrent();
       setPicker("closed");
       await refresh();
+      owner.assertCurrent();
       Message.success({
         content: t("harnessConnections.marketApps.connected"),
       });
@@ -164,6 +171,7 @@ export default function AppConnectionPage({
         content: t("harnessConnections.marketApps.actionFailed"),
       });
     } finally {
+      owner?.dispose();
       setBusy(null);
     }
   };
@@ -172,8 +180,13 @@ export default function AppConnectionPage({
     const model = state.view?.config.selectedModel;
     if (!selection || !model) return;
     setBusy("open");
+    let owner: ReturnType<typeof captureMarketOwner> | undefined;
     try {
+      const profile = appliedMarketProfiles[0];
+      if (!profile) throw new Error("market_identity_mismatch");
+      owner = captureMarketOwner(profile.connection.identity_user_id);
       await openConfiguredMarketClient(target, selection, model);
+      owner.assertCurrent();
       Message.success({
         content: t(
           target === "claude_code"
@@ -186,6 +199,7 @@ export default function AppConnectionPage({
         content: t("harnessConnections.marketApps.actionFailed"),
       });
     } finally {
+      owner?.dispose();
       setBusy(null);
     }
   };
@@ -273,7 +287,11 @@ export default function AppConnectionPage({
               <Button
                 variant="secondary"
                 loading={busy === "open"}
-                disabled={busy !== null || unavailable}
+                disabled={
+                  busy !== null ||
+                  unavailable ||
+                  appliedMarketProfiles.length === 0
+                }
                 onClick={() => void openClient()}
               >
                 {t(

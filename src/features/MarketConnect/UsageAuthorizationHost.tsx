@@ -8,6 +8,7 @@ import Modal from "@src/scaffold/ModalSystem";
 import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
 import { marketConsoleUrl } from "./urlPolicy";
 import {
+  USAGE_AUTHORIZATION_CANCEL_EVENT,
   USAGE_AUTHORIZATION_EVENT,
   type UsagePrompt,
 } from "./usageAuthorization";
@@ -33,9 +34,11 @@ export default function UsageAuthorizationHost() {
     };
     window.addEventListener(USAGE_AUTHORIZATION_EVENT, show);
     window.addEventListener(MARKET_PROFILES_CHANGED_EVENT, cancel);
+    window.addEventListener(USAGE_AUTHORIZATION_CANCEL_EVENT, cancel);
     return () => {
       window.removeEventListener(USAGE_AUTHORIZATION_EVENT, show);
       window.removeEventListener(MARKET_PROFILES_CHANGED_EVENT, cancel);
+      window.removeEventListener(USAGE_AUTHORIZATION_CANCEL_EVENT, cancel);
       cancel();
     };
   }, []);

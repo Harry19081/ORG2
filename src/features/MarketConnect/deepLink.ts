@@ -1,5 +1,6 @@
 import { z } from "zod/v4";
 
+import { awaitNativeCloudOwnerReady } from "@src/api/http/auth/sharedAuthStorage";
 import { defineProcedure, typedInvoke } from "@src/api/tauri/rpc/invoke";
 import Message from "@src/components/Message";
 import { getCloudEndpoint } from "@src/features/Org2Cloud/config";
@@ -77,6 +78,7 @@ async function completeMarketAuthorization(
   url: URL,
   isCurrent: () => boolean = () => true
 ): Promise<void> {
+  await awaitNativeCloudOwnerReady();
   // Identity login is owned by the Cloud PKCE controller, never Market.
   url.hash = "";
   const store = getInstrumentedStore();
@@ -158,6 +160,7 @@ export function handleMarketConnectionUrl(raw: string): boolean {
           await signInAndResume(raw);
           return;
         }
+        await awaitNativeCloudOwnerReady();
         if (
           url.searchParams.get("target") === "org2" &&
           getInstrumentedStore().get(org2CloudAuthAtom) !== null

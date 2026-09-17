@@ -946,11 +946,14 @@ async fn ensure_managed_proxy_running() -> Result<(), String> {
 /// Application adapter for trusted dynamic sources; normal KeyVault selection
 /// still uses its endpoint/model test receipt path below.
 #[cfg(feature = "market-connect")]
-pub(crate) async fn enable_dynamic_managed(
+pub(crate) async fn enable_dynamic_managed<
+    G: crate::dynamic_credentials::OperationAuthorization + 'static,
+>(
     agent: String,
     key: String,
     model: String,
     expected_hashes: std::collections::BTreeMap<String, Option<String>>,
+    authorization: impl std::future::Future<Output = Result<G, String>>,
 ) -> Result<agent_cli::managed_config::CliConfigManagedStatus, String> {
     if !matches!(agent.as_str(), "claude_code" | "codex") || model.is_empty() || model.len() > 256 {
         return Err("Unsupported dynamic client selection".into());
@@ -959,7 +962,9 @@ pub(crate) async fn enable_dynamic_managed(
         crate::dynamic_credentials::source(&key)?.ok_or("Dynamic credential source required")?;
     source.credential(&key, &agent).await?;
     ensure_managed_proxy_running().await?;
+    let authorization = authorization.await?;
     tokio::task::spawn_blocking(move || {
+        authorization.check()?;
         if !PROXY_RUNNING.load(Ordering::SeqCst) {
             return Err(proxy_unavailable_message());
         }
@@ -979,18 +984,23 @@ pub(crate) async fn enable_dynamic_managed(
 }
 
 #[cfg(feature = "market-connect")]
-pub(crate) async fn enable_dynamic_catalog(
+pub(crate) async fn enable_dynamic_catalog<
+    G: crate::dynamic_credentials::OperationAuthorization + 'static,
+>(
     agent: String,
     key: String,
     model: String,
     catalog: agent_cli::managed_config::model_catalog::ModelCatalog,
     expected_hashes: std::collections::BTreeMap<String, Option<String>>,
+    authorization: impl std::future::Future<Output = Result<G, String>>,
 ) -> Result<agent_cli::managed_config::CliConfigManagedStatus, String> {
     let source =
         crate::dynamic_credentials::source(&key)?.ok_or("Dynamic credential source required")?;
     source.credential(&key, &agent).await?;
     ensure_managed_proxy_running().await?;
+    let authorization = authorization.await?;
     tokio::task::spawn_blocking(move || {
+        authorization.check()?;
         if !PROXY_RUNNING.load(Ordering::SeqCst) {
             return Err(proxy_unavailable_message());
         }
@@ -1010,11 +1020,14 @@ pub(crate) async fn enable_dynamic_catalog(
 }
 
 #[cfg(feature = "market-connect")]
-pub(crate) async fn enable_dynamic_desktop(
+pub(crate) async fn enable_dynamic_desktop<
+    G: crate::dynamic_credentials::OperationAuthorization + 'static,
+>(
     key: String,
     model: String,
     models: Vec<String>,
     expected_hashes: std::collections::BTreeMap<String, Option<String>>,
+    authorization: impl std::future::Future<Output = Result<G, String>>,
 ) -> Result<agent_cli::managed_config::CliConfigManagedStatus, String> {
     use agent_cli::managed_config::{desktop::CredentialHelper, DirectConnection};
 
@@ -1025,7 +1038,9 @@ pub(crate) async fn enable_dynamic_desktop(
         crate::dynamic_credentials::source(&key)?.ok_or("Dynamic credential source required")?;
     source.credential(&key, "claude_desktop").await?;
     ensure_managed_proxy_running().await?;
+    let authorization = authorization.await?;
     tokio::task::spawn_blocking(move || {
+        authorization.check()?;
         if !PROXY_RUNNING.load(Ordering::SeqCst) {
             return Err(proxy_unavailable_message());
         }

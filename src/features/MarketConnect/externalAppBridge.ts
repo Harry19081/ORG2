@@ -1,6 +1,7 @@
 import { rpc } from "@src/api/tauri/rpc";
 import type { HarnessConnectionView } from "@src/api/tauri/rpc/schemas/agentOrgs";
 
+import { captureMarketOwner } from "./identity";
 import type {
   MarketExecutionProfile,
   MarketProfileAgent,
@@ -75,26 +76,35 @@ export async function configureExternalMarketTarget(
   preferredAgent?: MarketProfileAgent,
   preferredModel?: string
 ) {
-  const view = await readTarget(target);
-  const model = modelForExternalTarget(
-    profile,
-    target,
-    preferredAgent,
-    preferredModel
-  );
-  if (!view.installed) throw new Error("client_not_installed");
-  if (!view.config.supported) throw new Error("client_not_supported");
-  if (view.config.conflict) throw new Error("client_config_conflict");
-  if (!model) throw new Error("workspace_not_supported");
-  const authorized = await authorizedProfile(profile, model);
-  return configureMarketProfile(
-    authorized.connection,
-    authorized.entitlementWorkspaceId,
-    authorized.entitlementId,
-    target,
-    model,
-    expectedHashes(view)
-  );
+  const owner = captureMarketOwner(profile.connection.identity_user_id);
+  try {
+    const view = await readTarget(target);
+    owner.assertCurrent();
+    const model = modelForExternalTarget(
+      profile,
+      target,
+      preferredAgent,
+      preferredModel
+    );
+    if (!view.installed) throw new Error("client_not_installed");
+    if (!view.config.supported) throw new Error("client_not_supported");
+    if (view.config.conflict) throw new Error("client_config_conflict");
+    if (!model) throw new Error("workspace_not_supported");
+    const authorized = await authorizedProfile(profile, model);
+    owner.assertCurrent();
+    const result = await configureMarketProfile(
+      authorized.connection,
+      authorized.entitlementWorkspaceId,
+      authorized.entitlementId,
+      target,
+      model,
+      expectedHashes(view)
+    );
+    owner.assertCurrent();
+    return result;
+  } finally {
+    owner.dispose();
+  }
 }
 
 export async function restoreExternalMarketTarget(
@@ -121,39 +131,51 @@ export async function configureExternalMarketCatalog(
     new Set(profiles.map((profile) => profile.id)).size !== profiles.length
   )
     throw new Error("invalid_package_selection");
-  const view = await readTarget(target);
-  if (!view.installed) throw new Error("client_not_installed");
-  if (!view.config.supported) throw new Error("client_not_supported");
-  if (view.config.conflict) throw new Error("client_config_conflict");
-  const defaultPackage = profiles.findIndex(
-    (profile) => profile.id === defaultProfileId
-  );
-  if (
-    defaultPackage < 0 ||
-    !modelsForExternalTarget(profiles[defaultPackage], target).includes(
-      defaultModel
+  const owner = captureMarketOwner(profiles[0].connection.identity_user_id);
+  try {
+    const view = await readTarget(target);
+    owner.assertCurrent();
+    if (!view.installed) throw new Error("client_not_installed");
+    if (!view.config.supported) throw new Error("client_not_supported");
+    if (view.config.conflict) throw new Error("client_config_conflict");
+    const defaultPackage = profiles.findIndex(
+      (profile) => profile.id === defaultProfileId
+    );
+    if (
+      defaultPackage < 0 ||
+      !modelsForExternalTarget(profiles[defaultPackage], target).includes(
+        defaultModel
+      )
     )
-  )
-    throw new Error("workspace_not_supported");
-  const identity = profiles[0].connection.identity_user_id;
-  if (
-    profiles.some((profile) => profile.connection.identity_user_id !== identity)
-  )
-    throw new Error("market_identity_mismatch");
-  const authorized: MarketExecutionProfile[] = [];
-  for (const [index, profile] of profiles.entries()) {
-    const model =
-      index === defaultPackage
-        ? defaultModel
-        : modelForExternalTarget(profile, target);
-    if (!model) throw new Error("workspace_not_supported");
-    authorized.push(await authorizedProfile(profile, model));
+      throw new Error("workspace_not_supported");
+    const identity = profiles[0].connection.identity_user_id;
+    if (
+      profiles.some(
+        (profile) => profile.connection.identity_user_id !== identity
+      )
+    )
+      throw new Error("market_identity_mismatch");
+    const authorized: MarketExecutionProfile[] = [];
+    for (const [index, profile] of profiles.entries()) {
+      const model =
+        index === defaultPackage
+          ? defaultModel
+          : modelForExternalTarget(profile, target);
+      if (!model) throw new Error("workspace_not_supported");
+      owner.assertCurrent();
+      authorized.push(await authorizedProfile(profile, model));
+      owner.assertCurrent();
+    }
+    const result = await configureMarketCatalog(
+      authorized,
+      target,
+      defaultPackage,
+      defaultModel,
+      expectedHashes(view)
+    );
+    owner.assertCurrent();
+    return result;
+  } finally {
+    owner.dispose();
   }
-  return configureMarketCatalog(
-    authorized,
-    target,
-    defaultPackage,
-    defaultModel,
-    expectedHashes(view)
-  );
 }

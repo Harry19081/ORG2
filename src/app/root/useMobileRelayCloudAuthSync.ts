@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { useCallback, useEffect } from "react";
 
 import { awaitMirroredOrg2CloudAuth } from "@src/api/http/auth/sharedAuthStorage";
@@ -23,9 +23,11 @@ export function useMobileRelayCloudAuthSync(): void {
   const [relayEnabled] = useSetting("mobileRemote.relayEnabled");
   const auth = useAtomValue(org2CloudAuthAtom);
   const setAuth = useSetAtom(org2CloudAuthAtom);
+  const store = useStore();
 
   const syncRelayAuth = useCallback(async () => {
-    if (!enabled || !relayEnabled) return;
+    if (!enabled || !relayEnabled || store.get(org2CloudAuthAtom) !== auth)
+      return;
 
     if (!auth) {
       await awaitMirroredOrg2CloudAuth(null);
@@ -34,25 +36,25 @@ export function useMobileRelayCloudAuthSync(): void {
     }
 
     const fresh = await ensureFreshSession(auth);
-    if (!fresh) {
-      await awaitMirroredOrg2CloudAuth(null);
-      await notifyCloudAuthChanged();
-      return;
-    }
+    // A transient refresh failure is not a canonical sign-out. The auth
+    // owner handles definitive rejection through its guarded atom update.
+    if (!fresh || store.get(org2CloudAuthAtom) !== auth) return;
 
     if (fresh !== auth) {
-      commitRefreshedAuth(setAuth, auth, fresh);
+      if (!commitRefreshedAuth(setAuth, auth, fresh)) return;
     }
 
     await awaitMirroredOrg2CloudAuth(JSON.stringify(fresh));
     await notifyCloudAuthChanged();
-  }, [auth, enabled, relayEnabled, setAuth]);
+  }, [auth, enabled, relayEnabled, setAuth, store]);
 
   useEffect(() => {
-    void syncRelayAuth();
+    // A superseded durable write intentionally rejects; native stays gated
+    // and the current auth effect owns the next synchronization.
+    void syncRelayAuth().catch(() => {});
   }, [syncRelayAuth]);
 
   useTauriListen(RELAY_AUTH_REFRESH_EVENT, () => {
-    void syncRelayAuth();
+    void syncRelayAuth().catch(() => {});
   });
 }

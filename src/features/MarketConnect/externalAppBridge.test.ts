@@ -1,9 +1,14 @@
+// @vitest-environment jsdom
 import { beforeEach, expect, it, vi } from "vitest";
+
+import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import {
   configureExternalMarketCatalog,
   modelsForExternalTarget,
 } from "./externalAppBridge";
+import { USER_A, signedInStore } from "./identity.test-utils";
 import type { MarketExecutionProfile } from "./marketProfiles";
 
 const { status, configure, authorize } = vi.hoisted(() => ({
@@ -24,7 +29,7 @@ const profiles: MarketExecutionProfile[] = ["first", "second"].map((id) => ({
   id,
   label: `Package ${id}`,
   connection: {
-    identity_user_id: "user",
+    identity_user_id: USER_A,
     workspace_id: "ws_anchor",
     target: "org2",
     phase: "authorized",
@@ -36,6 +41,7 @@ const profiles: MarketExecutionProfile[] = ["first", "second"].map((id) => ({
   expiresAt: null,
 }));
 beforeEach(() => {
+  signedInStore();
   vi.clearAllMocks();
   status.mockResolvedValue({
     installed: true,
@@ -138,6 +144,30 @@ it("excludes unavailable models and unsupported native targets before authorizin
   ).rejects.toThrow("workspace_not_supported");
   profile.managed!.models[0].availability = "unavailable";
   expect(modelsForExternalTarget(profile, "claude_code")).toEqual([]);
+  expect(authorize).not.toHaveBeenCalled();
+  expect(configure).not.toHaveBeenCalled();
+});
+
+it("does not configure a native catalog when logout happens during client status lookup", async () => {
+  let finish!: (value: unknown) => void;
+  status.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  const configuring = configureExternalMarketCatalog(
+    profiles,
+    "codex",
+    profiles[0].id,
+    "gpt-shared"
+  );
+  getInstrumentedStore().set(org2CloudAuthAtom, null);
+  finish({
+    installed: true,
+    config: { supported: true, conflict: false, targetFiles: [] },
+  });
+  await expect(configuring).rejects.toThrow("market_identity_mismatch");
   expect(authorize).not.toHaveBeenCalled();
   expect(configure).not.toHaveBeenCalled();
 });

@@ -50,6 +50,7 @@ pub async fn open(agent: String, key: String, model: String) -> Result<(), Strin
     if !cfg!(target_os = "macos") {
         return Err("Opening Market clients is not available on this platform yet".into());
     }
+    let lease = super::owner::require()?;
     crate::harness_connections::verify_installed_version(&agent).await?;
     if key.starts_with("market-app:") {
         let catalog = super::app_catalog::Catalog::parse(&key, &agent)?;
@@ -77,7 +78,10 @@ pub async fn open(agent: String, key: String, model: String) -> Result<(), Strin
         return Err("Selected client configuration changed".into());
     }
 
+    let barrier = super::source::operation_barrier(&lease).await?;
     tokio::task::spawn_blocking(move || {
+        let _barrier = barrier;
+        lease.check()?;
         if let Some((bundle_id, deep_link, display_name)) = native_app(&agent) {
             let mut command = std::process::Command::new("/usr/bin/open");
             command.args(["-b", bundle_id]);

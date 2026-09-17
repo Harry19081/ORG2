@@ -53,15 +53,15 @@ const sharedOrg2CloudAuthStorage = {
     return localOrg2CloudAuthStorage.getItem(key, initialValue);
   },
   setItem(key: string, value: Org2CloudAuthState | null) {
-    localOrg2CloudAuthStorage.setItem(key, value);
     mirrorSharedServiceAuthValue(
       ORG2_CLOUD_AUTH_STORAGE_KEY,
       JSON.stringify(value)
     );
+    localOrg2CloudAuthStorage.setItem(key, value);
   },
   removeItem(key: string) {
-    localOrg2CloudAuthStorage.removeItem(key);
     mirrorSharedServiceAuthValue(ORG2_CLOUD_AUTH_STORAGE_KEY, null);
+    localOrg2CloudAuthStorage.removeItem(key);
   },
   subscribe(
     key: string,

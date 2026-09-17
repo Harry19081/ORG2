@@ -136,6 +136,24 @@ impl MarketSource {
         Ok((authorization, connection))
     }
 
+    async fn authorized_acquire(
+        &self,
+        metadata: &ConnectionMetadata,
+    ) -> Result<
+        (
+            super::owner::Lease,
+            tokio::sync::OwnedRwLockReadGuard<()>,
+            Arc<tokio::sync::Mutex<ConnectionState>>,
+        ),
+        String,
+    > {
+        let lease = super::owner::require()?;
+        lease.matches(&metadata.identity_user_id)?;
+        let (guard, entry) = self.acquire(metadata).await?;
+        lease.check()?;
+        Ok((lease, guard, entry))
+    }
+
     async fn retire(&self) -> tokio::sync::OwnedRwLockWriteGuard<()> {
         let guard = Arc::clone(&self.authorization).write_owned().await;
         *self.state.lock().await = State::default();
@@ -143,6 +161,24 @@ impl MarketSource {
     }
 }
 impl ConnectionState {
+    async fn authorized_credential<F, Fut>(
+        &mut self,
+        lease: &super::owner::Lease,
+        cache_key: &str,
+        agent: &str,
+        now: i64,
+        fetch: F,
+    ) -> Result<Credential, String>
+    where
+        F: FnOnce() -> Fut,
+        Fut: std::future::Future<Output = Result<WorkspaceCredential, String>>,
+    {
+        lease.check()?;
+        let credential = self.credential(cache_key, agent, now, fetch).await?;
+        lease.check()?;
+        Ok(credential)
+    }
+
     async fn credential<F, Fut>(
         &mut self,
         cache_key: &str,
@@ -271,12 +307,14 @@ impl Source for MarketSource {
                 // Cache by protocol, access, model and session. Each owner
                 // retains at most 32 short-lived credentials.
                 let cache_key = format!("{agent}:{key}");
-                let (_authorization, entry) = owner.acquire(&selection.metadata).await?;
+                let (lease, _authorization, entry) =
+                    owner.authorized_acquire(&selection.metadata).await?;
                 let mut state = entry.lock().await;
                 let connection = state.restore(selection.metadata.clone()).await?;
                 let now = chrono::Utc::now().timestamp_millis();
-                state
-                    .credential(&cache_key, agent, now, || async {
+                lease.check()?;
+                let credential = state
+                    .authorized_credential(&lease, &cache_key, agent, now, || async {
                         let wire_agent = if agent == "codex" { "codex" } else { "claude" };
                         if selection.entitlement_id.starts_with("pa_") {
                             return connection
@@ -301,7 +339,9 @@ impl Source for MarketSource {
                             .await
                             .map_err(String::from)
                     })
-                    .await
+                    .await?;
+                lease.check()?;
+                Ok(credential)
             })
             .await
             .map_err(|_| "Market credential task failed".to_string())?
@@ -312,6 +352,13 @@ impl Source for MarketSource {
 static INSTANCE: std::sync::OnceLock<Arc<MarketSource>> = std::sync::OnceLock::new();
 pub(super) fn instance() -> Arc<MarketSource> {
     Arc::clone(INSTANCE.get_or_init(|| Arc::new(MarketSource::default())))
+}
+pub(super) async fn operation_barrier(
+    lease: &super::owner::Lease,
+) -> Result<tokio::sync::OwnedRwLockReadGuard<()>, String> {
+    let guard = Arc::clone(&instance().authorization).read_owned().await;
+    lease.check()?;
+    Ok(guard)
 }
 pub(super) async fn retire_for_reauthorization() -> tokio::sync::OwnedRwLockWriteGuard<()> {
     instance().retire().await
@@ -325,14 +372,13 @@ pub(super) async fn options(
     }
     let source = instance();
     tokio::spawn(async move {
-        let (_authorization, entry) = source.acquire(&metadata).await?;
+        let (lease, _authorization, entry) = source.authorized_acquire(&metadata).await?;
         let mut state = entry.lock().await;
-        state
-            .restore(metadata)
-            .await?
-            .entitlements()
-            .await
-            .map_err(Into::into)
+        let connection = state.restore(metadata).await?;
+        lease.check()?;
+        let entries = connection.entitlements().await.map_err(String::from)?;
+        lease.check()?;
+        Ok(entries)
     })
     .await
     .map_err(|_| "Market workspace request failed")?
@@ -346,13 +392,16 @@ pub(super) async fn activate(
         return Err("Service activation requires ORG2 authorization".into());
     }
     let source = instance();
-    let (_authorization, entry) = source.acquire(&metadata).await?;
+    let (lease, _authorization, entry) = source.authorized_acquire(&metadata).await?;
     let mut state = entry.lock().await;
     let connection = state.restore(metadata).await?;
-    connection
+    lease.check()?;
+    let result = connection
         .activate_service(&request)
         .await
-        .map_err(Into::into)
+        .map_err(String::from)?;
+    lease.check()?;
+    Ok(result)
 }
 
 /// Prepare a public session source from authoritative purchase capabilities.
@@ -367,6 +416,8 @@ pub(super) async fn prepare_session(
     if metadata.target != market_connect::Target::Org2 {
         return Err("Market session requires ORG2 authorization".into());
     }
+    let lease = super::owner::require()?;
+    lease.matches(&metadata.identity_user_id)?;
     let mut selection = Selection {
         metadata,
         workspace_id,
@@ -400,6 +451,7 @@ pub(super) async fn prepare_session(
         &model,
         chrono::Utc::now().timestamp_millis(),
     )?;
+    lease.check()?;
     Ok(key)
 }
 
@@ -848,5 +900,60 @@ mod tests {
         assert!(source.acquire(&metadata).await.is_err());
         drop(source.retire().await);
         source.acquire(&metadata).await.unwrap();
+    }
+    fn owner_credential() -> WorkspaceCredential {
+        serde_json::from_value(serde_json::json!({
+            "workspace_id": "ws_fixture", "entitlement_id": "ent_fixture", "token": "fixture-only",
+            "base_url": "https://org2-market.fly.dev/w/ws_fixture", "token_expires_at": 999999
+        }))
+        .unwrap()
+    }
+    #[tokio::test]
+    async fn logout_denies_cached_credentials_without_network_or_store_restore() {
+        let (lease, logout) =
+            super::super::owner::test_lease("11111111-1111-4111-8111-111111111111");
+        let mut state = ConnectionState::default();
+        state
+            .authorized_credential(&lease, "key", "codex", 0, || async {
+                Ok(owner_credential())
+            })
+            .await
+            .unwrap();
+        state
+            .authorized_credential(&lease, "key", "codex", 1, || async {
+                panic!("cache hit may not fetch")
+            })
+            .await
+            .unwrap();
+        logout();
+        assert!(state
+            .authorized_credential(&lease, "key", "codex", 2, || async {
+                panic!("signed out may not fetch")
+            })
+            .await
+            .is_err());
+        assert!(lease
+            .matches("11111111-1111-4111-8111-111111111111")
+            .is_err());
+    }
+    #[tokio::test]
+    async fn credential_response_started_before_logout_is_never_delivered_afterward() {
+        let (lease, logout) =
+            super::super::owner::test_lease("11111111-1111-4111-8111-111111111111");
+        let mut state = ConnectionState::default();
+        let result = state
+            .authorized_credential(&lease, "key", "codex", 0, || async {
+                logout();
+                Ok(owner_credential())
+            })
+            .await;
+        assert!(result.is_err());
+    }
+    #[tokio::test]
+    async fn uninitialized_secondary_instance_cannot_restore_from_selection_metadata() {
+        let source = MarketSource::default();
+        let key = selection().key().unwrap();
+        assert!(source.credential(&key, "codex").await.is_err());
+        assert!(source.state.lock().await.connections.is_empty());
     }
 }

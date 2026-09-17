@@ -49,6 +49,7 @@ async fn codex_metadata() -> Result<serde_json::Value, String> {
 pub(super) async fn configure(
     request: ConfigureCatalogRequest,
 ) -> Result<ConfiguredProfile, String> {
+    let lease = super::owner::require()?;
     let ConfigureCatalogRequest {
         packages,
         agent,
@@ -108,6 +109,7 @@ pub(super) async fn configure(
         {
             return Err("Invalid or duplicate Market package".into());
         }
+        lease.matches(&package.identity_user_id)?;
         let connection = market_connect::ConnectionMetadata {
             identity_user_id: package.identity_user_id,
             workspace_id: package.workspace_id,
@@ -206,6 +208,7 @@ pub(super) async fn configure(
             catalog.default_model,
             catalog.models.into_iter().map(|model| model.id).collect(),
             expected_hashes,
+            lease.operation(),
         )
         .await?
     } else {
@@ -215,6 +218,7 @@ pub(super) async fn configure(
             catalog.default_model,
             picker,
             expected_hashes,
+            lease.operation(),
         )
         .await?
     };
