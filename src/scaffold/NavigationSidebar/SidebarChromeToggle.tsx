@@ -11,11 +11,10 @@
  * group, so it never moves between the two states there either.
  */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { SessionHistoryNavVariant } from "@src/components/SessionHistoryNav";
-import SidebarChromeIconButton from "@src/components/SidebarChromeIconButton";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import {
   HugeiconsIcon,
@@ -23,7 +22,11 @@ import {
   LayoutAlignLeftIcon,
   PanelLeftIcon,
 } from "@src/icons";
-import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "@src/scaffold/NavigationSidebar/config";
+import SidebarChromeIconButton from "@src/scaffold/NavigationSidebar/components/SidebarChromeIconButton";
+import {
+  SIDEBAR_HOVER_PREVIEW_DELAY,
+  SIDEBAR_TOOLTIP_HOVER_DELAY,
+} from "@src/scaffold/NavigationSidebar/config";
 import { hoverSidebarOpenAtom } from "@src/store/ui/hoverSidebarAtom";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 
@@ -33,6 +36,7 @@ interface ChromeButtonProps {
   shortcutId?: string;
   onClick: () => void;
   onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
   testId: string;
   icon: IconSvgElement;
   dataIcon: string;
@@ -47,6 +51,7 @@ const ChromeButton: React.FC<ChromeButtonProps> = ({
   shortcutId,
   onClick,
   onMouseEnter,
+  onMouseLeave,
   testId,
   icon,
   dataIcon,
@@ -81,6 +86,7 @@ const ChromeButton: React.FC<ChromeButtonProps> = ({
         tooltipMouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         className="group/toggle"
         data-testid={testId}
       >
@@ -97,6 +103,7 @@ const ChromeButton: React.FC<ChromeButtonProps> = ({
       nativeTitle={false}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className="group/toggle"
       data-testid={testId}
     >
@@ -126,14 +133,47 @@ const SidebarChromeToggleComponent: React.FC<SidebarChromeToggleProps> = ({
   const [collapsed, setCollapsed] = useAtom(sidebarCollapsedAtom);
   const hoverOpen = useAtomValue(hoverSidebarOpenAtom);
   const setHoverOpen = useSetAtom(hoverSidebarOpenAtom);
+  const peekTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suppressPeekRef = useRef(false);
+  const previousCollapsedRef = useRef(collapsed);
 
   const hide = useCallback(() => setCollapsed(true), [setCollapsed]);
   const show = useCallback(() => setCollapsed(false), [setCollapsed]);
-  const peek = useCallback(() => setHoverOpen(true), [setHoverOpen]);
+  const clearPeekTimeout = useCallback(() => {
+    if (peekTimeoutRef.current !== null) {
+      clearTimeout(peekTimeoutRef.current);
+      peekTimeoutRef.current = null;
+    }
+  }, []);
+  const peek = useCallback(() => {
+    if (suppressPeekRef.current || hoverOpen) return;
+    clearPeekTimeout();
+    peekTimeoutRef.current = setTimeout(() => {
+      peekTimeoutRef.current = null;
+      if (!suppressPeekRef.current) setHoverOpen(true);
+    }, SIDEBAR_HOVER_PREVIEW_DELAY);
+  }, [clearPeekTimeout, hoverOpen, setHoverOpen]);
+  const handlePeekMouseLeave = useCallback(() => {
+    clearPeekTimeout();
+    suppressPeekRef.current = false;
+  }, [clearPeekTimeout]);
   const expandFromHover = useCallback(() => {
+    clearPeekTimeout();
     setHoverOpen(false);
     setCollapsed(false);
-  }, [setCollapsed, setHoverOpen]);
+  }, [clearPeekTimeout, setCollapsed, setHoverOpen]);
+
+  useEffect(() => {
+    if (!collapsed || hoverOpen) clearPeekTimeout();
+    if (collapsed && !previousCollapsedRef.current) {
+      // The toggle is replaced in place after collapsing. Require a fresh
+      // pointer exit/entry rather than treating that replacement as a hover.
+      suppressPeekRef.current = true;
+    }
+    previousCollapsedRef.current = collapsed;
+  }, [clearPeekTimeout, collapsed, hoverOpen]);
+
+  useEffect(() => clearPeekTimeout, [clearPeekTimeout]);
 
   if (collapsed && hoverOpen) {
     return (
@@ -156,6 +196,7 @@ const SidebarChromeToggleComponent: React.FC<SidebarChromeToggleProps> = ({
         shortcutId="toggle_sidebar"
         onClick={show}
         onMouseEnter={peek}
+        onMouseLeave={handlePeekMouseLeave}
         testId="sidebar-chrome-show"
         icon={LayoutAlignLeftIcon}
         dataIcon="layout-align-left"

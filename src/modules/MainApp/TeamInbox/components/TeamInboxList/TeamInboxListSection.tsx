@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
 import { LIST_PANEL_SECTIONS } from "@src/components/ListPanel";
+import { CollapsibleSection } from "@src/components/layout/blocks";
 import { WORKSTATION_TRAIL_SECTION_LABEL } from "@src/config/workstation/tokens";
-import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
 
 export function TeamInboxListSection({
   title,

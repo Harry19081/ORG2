@@ -29,6 +29,9 @@ import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavig
 import { useProjectDataChangedListener } from "@src/hooks/project";
 import { useUrlPreviewEvents } from "@src/hooks/tabHost/useUrlPreviewEvents";
 import { useGlobalBrowserWebviewLayering } from "@src/modules/WorkStation/Browser/hooks";
+import { AppLayout } from "@src/scaffold/AppLayout";
+import { FloatingSidebar } from "@src/scaffold/AppLayout/sidebar/FloatingSidebar";
+import { SidebarSelector } from "@src/scaffold/AppLayout/sidebar/SidebarSelector";
 import { CODE_EDITOR_TOUR_EVENT } from "@src/scaffold/Tutorials/codeEditorTourConfig";
 import {
   GENERAL_LAYOUT_TOUR_EVENT,
@@ -55,10 +58,7 @@ import {
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
-import { useRouteLayoutType, useWorkspaceEvents } from "./shared/hooks";
-import { AppLayout } from "./shared/layouts";
-import { FloatingSidebar } from "./shared/layouts/sidebar/FloatingSidebar";
-import { SidebarSelector } from "./shared/layouts/sidebar/SidebarSelector";
+import { useRouteLayoutType, useWorkspaceEvents } from "./hooks";
 import { useNarrowChatFocus } from "./useNarrowChatFocus";
 import { useOpenUrlInBrowser } from "./useOpenUrlInBrowser";
 import { useStationWindowBridge } from "./useStationWindowBridge";

@@ -36,7 +36,14 @@ import {
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import Select from "@src/components/Select";
+import {
+  SECTION_CONTROL_STYLE,
+  SECTION_GAP_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import { buildAgentOrgsPath } from "@src/config/mainAppPaths";
 import {
   AGENT_BROWSER_PROVIDER,
@@ -44,7 +51,6 @@ import {
   type AgentBrowserProviderSetting,
 } from "@src/config/settingsSchema/registry/agentBrowser";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Download01Icon,
   HugeiconsIcon,
@@ -53,12 +59,6 @@ import {
   SquareArrowUpRight02Icon,
 } from "@src/icons";
 import { NAV_BUTTON_PROPS } from "@src/modules/MainApp/Settings/config";
-import {
-  SECTION_CONTROL_STYLE,
-  SECTION_GAP_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import {
   settingsAtom,
   updateSettingAtom,

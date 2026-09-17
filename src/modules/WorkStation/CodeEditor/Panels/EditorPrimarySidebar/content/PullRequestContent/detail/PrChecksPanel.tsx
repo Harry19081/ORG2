@@ -12,12 +12,12 @@ import { useTranslation } from "react-i18next";
 
 import type { GitHubChecksSummary } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
+import CiCheckStateIcon from "@src/components/CiCheckStateIcon";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
 } from "@src/components/Dropdown/tokens";
 import { ArrowUpRight01Icon, HugeiconsIcon, ListChecksIcon } from "@src/icons";
-import CiCheckStateIcon from "@src/modules/shared/components/CiCheckStateIcon";
 import {
   CI_CHECK_SECTION_ORDER,
   type CiCheckItem,

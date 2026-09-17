@@ -1,10 +1,14 @@
 import { useAtomValue } from "jotai";
 import React from "react";
 
+import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
 import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
-import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
+import AgentStationChromeFrame from "@src/scaffold/WorkbenchChrome/AgentStationChromeFrame";
+import AgentStationTopHeader from "@src/scaffold/WorkbenchChrome/AgentStationTopHeader";
+import WorkstationTabBar from "@src/scaffold/WorkbenchChrome/WorkstationTabBar";
+import WorkstationTabHeader from "@src/scaffold/WorkbenchChrome/WorkstationTabHeader";
 import { workstationActiveSessionIdAtom } from "@src/store/session";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
@@ -18,11 +22,7 @@ import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
 import { StatusBarRenderer } from "../shared/StatusBar/StatusBarRenderer";
 import { WorkspacePortScanner } from "../shared/StatusBar/WorkspacePortScanner";
 import { useWorkspacePortAdvertisedUrls } from "../shared/StatusBar/utils/useWorkspacePortAdvertisedUrls";
-import AgentStationChromeFrame from "./AgentStationChromeFrame";
-import AgentStationTopHeader from "./AgentStationTopHeader";
 import { AppShellContent } from "./AppShellContent";
-import WorkstationTabBar from "./WorkstationTabBar";
-import WorkstationTabHeader from "./WorkstationTabHeader";
 import { useAppShellActions } from "./hooks/useAppShellActions";
 import { useAppShellDerivedState } from "./hooks/useAppShellDerivedState";
 import { useAppShellDock } from "./hooks/useAppShellDock";

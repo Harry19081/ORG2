@@ -44,9 +44,9 @@ import {
   countCheckStates,
   flattenChecks,
 } from "@src/services/git/ciCheckState";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { classNames } from "@src/util/ui/classNames";
+import { openLink } from "@src/util/ui/openLink";
 
 import { StatusBarButton, StatusBarLabel } from "./StatusBarBase";
 import { StatusBarTooltip } from "./StatusBarTooltip";
@@ -251,7 +251,7 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
 
     const handleOpenDetails = useCallback(
       (url: string) => {
-        void openExternalLink(url);
+        openLink(url, { navigate: true });
         close();
       },
       [close]
@@ -259,7 +259,7 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
 
     const handleOpenPullRequest = useCallback(() => {
       if (!pr) return;
-      void openExternalLink(pr.url);
+      openLink(pr.url);
       close();
     }, [close, pr]);
 

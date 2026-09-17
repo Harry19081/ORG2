@@ -1,9 +1,17 @@
 // @vitest-environment jsdom
 import { MergeView, unifiedMergeView } from "@codemirror/merge";
 import { EditorView } from "@codemirror/view";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { collapsedGutterBackground } from "./collapsedGutter";
+import {
+  COLLAPSED_COMPACT_ROW_HEIGHT,
+  COLLAPSED_SPLIT_ROW_HEIGHT,
+  MERGE_THEME_OVERRIDE,
+} from ".";
+import {
+  COLLAPSED_SPLIT_ROW_CLASS,
+  collapsedGutterBackground,
+} from "./collapsedGutter";
 import { diffLineNumbers } from "./diffLineNumbers";
 
 const original = Array.from({ length: 100 }, (_, i) => `line ${i}`).join("\n");
@@ -13,6 +21,7 @@ const modified = original
 const extensions = [
   collapsedGutterBackground,
   diffLineNumbers({ formatNumber: String }),
+  MERGE_THEME_OVERRIDE,
 ];
 const mounted: { destroy(): void }[] = [];
 
@@ -22,9 +31,37 @@ afterEach(() => {
 });
 
 describe("collapsed gutter controls", () => {
+  it("uses compact boundary rows and a taller split-control middle row", async () => {
+    const view = new EditorView({
+      parent: document.body,
+      doc: modified,
+      extensions: [
+        ...extensions,
+        unifiedMergeView({
+          original,
+          collapseUnchanged: { margin: 3, minSize: 10 },
+        }),
+      ],
+    });
+    mounted.push(view);
+
+    const rows = view.dom.querySelectorAll<HTMLElement>(".cm-collapsedLines");
+    expect(rows).toHaveLength(3);
+    await vi.waitFor(() =>
+      expect(
+        Array.from(rows, (row) =>
+          row.classList.contains(COLLAPSED_SPLIT_ROW_CLASS)
+        )
+      ).toEqual([false, true, false])
+    );
+    expect(getComputedStyle(rows[0]).height).toBe(COLLAPSED_COMPACT_ROW_HEIGHT);
+    expect(getComputedStyle(rows[1]).height).toBe(COLLAPSED_SPLIT_ROW_HEIGHT);
+    expect(getComputedStyle(rows[2]).height).toBe(COLLAPSED_COMPACT_ROW_HEIGHT);
+  });
+
   it.each([10, 20, 21, 40, 41])(
     "uses a single expand-all control for a short middle gap (%i lines)",
-    (lines) => {
+    async (lines) => {
       const doc = original
         .replace("line 30\n", "changed 30\n")
         .replace(`line ${37 + lines}\n`, `changed ${37 + lines}\n`);
@@ -41,6 +78,13 @@ describe("collapsed gutter controls", () => {
         expect(
           control.parentElement?.classList.contains("cm-collapsedGutter--split")
         ).toBe(lines > 40);
+        await vi.waitFor(() =>
+          expect(
+            view.dom
+              .querySelectorAll(".cm-collapsedLines")[1]
+              .classList.contains(COLLAPSED_SPLIT_ROW_CLASS)
+          ).toBe(lines > 40)
+        );
         expect(
           view.dom.querySelectorAll(".cm-collapsedLines")[1].textContent
         ).toBe(`${lines} unchanged lines`);
@@ -181,5 +225,43 @@ describe("collapsed gutter controls", () => {
     expect(merge.b.dom.querySelector(".cm-collapsedLines")?.textContent).toBe(
       "7 unchanged lines"
     );
+  });
+
+  it("returns a split row to compact height when one expansion leaves a short gap", async () => {
+    const merge = new MergeView({
+      parent: document.body,
+      a: { doc: original, extensions },
+      b: { doc: modified, extensions },
+      collapseUnchanged: { margin: 3, minSize: 10 },
+    });
+    mounted.push(merge);
+
+    await vi.waitFor(() => {
+      for (const view of [merge.a, merge.b]) {
+        expect(
+          view.dom
+            .querySelectorAll(".cm-collapsedLines")[1]
+            .classList.contains(COLLAPSED_SPLIT_ROW_CLASS)
+        ).toBe(true);
+      }
+    });
+
+    merge.a.dom
+      .querySelectorAll<HTMLElement>(".cm-collapseControl")[1]
+      .querySelector<HTMLButtonElement>(".cm-collapseArrow--down")!
+      .click();
+
+    await vi.waitFor(() => {
+      for (const view of [merge.a, merge.b]) {
+        expect(
+          view.dom
+            .querySelectorAll(".cm-collapsedLines")[1]
+            .classList.contains(COLLAPSED_SPLIT_ROW_CLASS)
+        ).toBe(false);
+        expect(
+          view.dom.querySelectorAll(".cm-collapseControl")[1].children
+        ).toHaveLength(1);
+      }
+    });
   });
 });

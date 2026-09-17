@@ -84,12 +84,13 @@ describe("SplitButton", () => {
     expect(classes[0][1]).toContain(
       "group-hover/button-split:bg-button-hover-no-drop"
     );
-    expect(classes[0][1]).toContain("enabled:hover:bg-button-hover-no-drop");
-    expect(classes[1][1]).toContain("enabled:hover:bg-button-hover");
-    expect(classes[1][1]).toContain("focus-visible:bg-button-hover");
-    expect(classes[1][1]).not.toContain(
-      "enabled:hover:bg-button-hover-no-drop"
-    );
+    expect(classes[0][1]).toContain("btn-hover:bg-button-hover-no-drop");
+    // The menu segment's own stronger fill is a caller class, so it overrides
+    // the soft-no-drop default the underlying Button still emits.
+    const menuClasses = classes[1][1].split(" ");
+    expect(menuClasses).toContain("enabled:hover:bg-button-hover");
+    expect(menuClasses).toContain("focus-visible:bg-button-hover");
+    expect(menuClasses).not.toContain("enabled:hover:bg-button-hover-no-drop");
   });
 
   it.each([false, true])(

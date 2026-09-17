@@ -16,6 +16,7 @@ import { type MutableRefObject, useCallback, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { createLogger } from "@src/hooks/logger";
+import { confirmSaveOverDiskChanges } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/diskGuard";
 import { invalidateFileCache } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/useFileContent";
 import { writeTextFileSerial } from "@src/services/file/writeTextFileSerial";
 import { tabToHost } from "@src/store/workstation/tabHost";
@@ -46,6 +47,8 @@ function isCsvTableFile(filePath: string): boolean {
 interface FileContentStateRef {
   documentPath: string | null;
   content: string;
+  /** Bytes this buffer last agreed with on disk — the save-guard baseline. */
+  originalContent: string;
   hasUnsavedChanges: boolean;
   isBinary: boolean;
   markSaved: () => boolean;
@@ -182,6 +185,13 @@ export function useEditorPaneState(
               if (filePath) {
                 try {
                   const contentToSave = contentState.content ?? "";
+                  if (
+                    !(await confirmSaveOverDiskChanges(
+                      filePath,
+                      contentState.originalContent ?? ""
+                    ))
+                  )
+                    return;
                   await writeTextFileSerial(filePath, contentToSave);
                   if (!contentState.markSaved()) return;
                   invalidateFileCache(filePath);

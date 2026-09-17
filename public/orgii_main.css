@@ -30,8 +30,8 @@
 
   /* Code editor */
   --code-font-family:
-    "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New",
-    monospace;
+    ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
   --cm-font-family: var(--code-font-family);
   --cm-font-size: 13px;
   --cm-font-size-small: 12px;
@@ -52,17 +52,17 @@
   --cm-lint-info-color: 79, 109, 255;
   --cm-editor-background: #ffffff;
   --cm-editor-foreground: #24292e;
-  --cm-editor-selection: #efefef;
+  --cm-editor-selection: var(--text-selection);
   /* Static pre-accent defaults. The body scope below re-declares
      --cm-editor-caret / --terminal-caret as var(--color-primary-6) so both
      carets track the primary-color preset, like input carets do. */
   --cm-editor-caret: #1d8ffd;
   --text-selection: #bfe8ff;
-  --terminal-selection: #efefef;
+  --terminal-selection: var(--text-selection);
   --terminal-caret: #1d8ffd;
   --cm-editor-gutter-bg: var(--cm-editor-background);
   --cm-editor-gutter-fg: #6e7781;
-  --cm-editor-line-highlight: transparent;
+  --cm-editor-line-highlight: var(--color-fill-2);
   --cm-syntax-keyword: #d73a49;
   --cm-syntax-string: #032f62;
   --cm-syntax-comment: #6a737d;

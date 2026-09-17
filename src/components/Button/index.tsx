@@ -21,6 +21,9 @@
  *                 "ghost"   = no border, no background — hover changes
  *                            only the text color
  *
+ * Button's own utilities are emitted in a nested cascade layer (the `btn:`
+ * variant), so any class passed through `className` overrides them.
+ *
  * @example
  * ```tsx
  * import Button from "@src/components/Button";
@@ -29,6 +32,7 @@
  * <Button variant="secondary" size="small">Cancel</Button>
  * <Button variant="danger" appearance="ghost">Remove</Button>
  * <Button variant="tertiary" appearance="ghost">Inline action</Button>
+ * <Button variant="tertiary" appearance="soft" hoverIntent="danger" iconOnly icon={<Trash />} />
  * <Button loading>Loading...</Button>
  * <Button variant="primary" icon={<Plus size={14} />}>Add</Button>
  * ```
@@ -37,13 +41,18 @@ import React, { forwardRef } from "react";
 
 import {
   type ButtonAppearance,
+  type ButtonHoverIntent,
   type ButtonShape,
   type ButtonSize,
   type ButtonVariant,
   useButtonPresentation,
 } from "./presentation";
 
-export type { ButtonAppearance, ButtonVariant } from "./presentation";
+export type {
+  ButtonAppearance,
+  ButtonHoverIntent,
+  ButtonVariant,
+} from "./presentation";
 
 export interface ButtonProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -107,6 +116,17 @@ export interface ButtonProps extends Omit<
   iconOnly?: boolean;
 
   /**
+   * Color a neutral (secondary / tertiary) button shows only while hovered,
+   * pressed or keyboard-focused; it stays neutral at rest. Prefer it to
+   * hand-written hover color classes. Semantic variants already carry a color
+   * and ignore it.
+   */
+  hoverIntent?: ButtonHoverIntent;
+
+  /** Display-only shortcut hint; the caller owns keyboard handling. Hidden for icon-only buttons. */
+  shortcut?: string;
+
+  /**
    * Center the label on the button's own center, taking the icon out of flow so
    * it sits beside the centered label instead of shifting it. Intended for
    * full-width buttons — on a hug-width button the icon overhangs the edge.
@@ -147,6 +167,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       iconPosition = "left",
       iconOnly = false,
+      hoverIntent,
+      shortcut,
       centerLabel = false,
       long = false,
       htmlType = "button",
@@ -174,6 +196,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         icon,
         iconPosition,
         iconOnly,
+        hoverIntent,
+        shortcut,
         centerLabel,
         long,
         children,

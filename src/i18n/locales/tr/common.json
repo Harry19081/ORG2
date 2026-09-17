@@ -18,6 +18,12 @@
     "file": "Dosyada ara",
     "named": "{{name}} içinde ara"
   },
+  "sidebarSettings": {
+    "title": "Kenar çubuğu ayarları",
+    "showSidebar": "Kenar çubuğunu göster",
+    "location": "Konum",
+    "showIndentLines": "Girinti çizgilerini göster"
+  },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
     "listLabel": "Ekip Gelen Kutusu listesi",
@@ -407,7 +413,8 @@
     "openOnGitHub": "GitHub'da aç",
     "createPullRequest": "Pull request oluştur",
     "expandView": "Görünümü genişlet",
-    "restoreSplitView": "Bölünmüş görünümü geri yükle"
+    "restoreSplitView": "Bölünmüş görünümü geri yükle",
+    "overwrite": "Üzerine yaz"
   },
   "status": {
     "yes": "Evet",
@@ -491,7 +498,7 @@
   },
   "optional": "isteğe bağlı",
   "common": {
-    "display": "Görünüm",
+    "display": "Arayüz ayarları",
     "on": "Açık",
     "off": "Kapalı",
     "default": "Varsayılan",
@@ -560,7 +567,6 @@
     "globPatternsHint": "Glob desenleri, virgülle ayrılmış",
     "outline": "Anahat",
     "timeline": "Zaman çizelgesi",
-    "indexing": "İndeksleme",
     "testExplorer": "Test Gezgini",
     "installed": "Yüklü",
     "extensionViews": "Uzantı Görünümleri",
@@ -678,7 +684,6 @@
     "explorer": "Gezgin",
     "search": "Ara",
     "sourceControl": "Kaynak Denetimi",
-    "sessions": "Session",
     "myTabs": "Sekmelerim ({{count}})",
     "design": "Tasarım",
     "settings": "Ayarlar",
@@ -789,7 +794,6 @@
     "closePanel": "Paneli kapat",
     "showSidebar": "Kenar çubuğunu göster",
     "hideSidebar": "Kenar çubuğunu gizle",
-    "moreOptions": "Daha fazla seçenek",
     "zoomIn": "Yakınlaştır",
     "zoomOut": "Uzaklaştır",
     "goBack": "Geri",
@@ -811,6 +815,8 @@
     "queryHistory": "Sorgu geçmişi",
     "executeQuery": "Sorguyu çalıştır ({{shortcut}})",
     "startVoiceInput": "Sesli girişi başlat",
+    "expandInput": "Giriş alanını genişlet",
+    "collapseInput": "Giriş alanını daralt",
     "cancelRecording": "Kaydı iptal et",
     "stopAndTranscribe": "Durdur ve yazıya dök",
     "htmlPreview": "HTML önizleme",
@@ -820,7 +826,6 @@
     "movePanelToRight": "Paneli sağa taşı",
     "movePanelToBottom": "Paneli alta taşı",
     "domTree": "DOM ağacı",
-    "closeSession": "Session kapat",
     "clearNetworkLogs": "Ağ günlüklerini temizle",
     "clearConsole": "Konsolu temizle",
     "copyToClipboard": "Panoya kopyala",
@@ -871,7 +876,6 @@
     "pleaseTryAgain": "Lütfen tekrar deneyin",
     "noFileOpen": "Düzenlemeye başlamak için dosya açın",
     "selectFileToEdit": "Gezginden bir dosya seçin",
-    "noTabs": "Başlamak için bir sekme açın",
     "noTabsOpen": "Başlamak için bir öğe açın",
     "selectItemToStart": "Kenar çubuğundan bir öğe seçin",
     "noDatabaseConnected": "Bağlı veritabanı yok",
@@ -982,7 +986,6 @@
     "notGitInitialized": "Git başlatılmadı",
     "notGitInitializedTooltip": "Bu çalışma dizini henüz .git dizinine sahip değil.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
-    "scanningFiles": "Scanning files...",
     "branchTooltipSwitching": "Dal: {{branch}} (geçiş yapılıyor…)",
     "switchWorkspaceTooltip": "Çalışma dizinini değiştir",
     "switchWorktreeTooltip": "Worktree değiştir",
@@ -993,12 +996,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Git eylemleri",
     "switchToSessionRepo": "{{name}} konumuna geç",
-    "embeddingProgress": "Embedding: {{count}} chunk işlendi",
-    "embeddingProgressWithPercent": "Embedding: {{count}} chunk işlendi ({{percent}}%)",
-    "embeddingShort": "Embedding {{percent}}%",
-    "embeddingLabel": "Embedding",
-    "indexingProgress": "İndeksleme: {{processed}}/{{total}} dosya ({{percent}}%)",
-    "indexingProgressWithFile": "İndeksleme: {{processed}}/{{total}} dosya ({{percent}}%)\nGeçerli: {{file}}",
     "ports": {
       "workspaceSection": "Geçerli çalışma alanı",
       "externalSection": "Harici",
@@ -1051,8 +1048,8 @@
       "siteUnreachableTitle": "Bu siteye ulaşılamıyor",
       "webviewHiddenTitle": "Web görünümü geçici olarak gizlendi",
       "webviewHiddenBody": "Yeniden göstermek için menüyü veya iletişim kutusunu kapatın.",
-      "embeddedFallbackTitle": "Bu site gömülü tarayıcıda çalışmayabilir",
-      "embeddedFallbackBody": "Bazı siteler uygulama WebView'leri içinde engellenir veya görüntülenemez. Sayfa boş kalırsa sistem tarayıcınızda açın.",
+      "loadStalledTitle": "Bu sayfanın yüklenmesi tamamlanmadı",
+      "loadStalledBody": "Gömülü tarayıcı bu adresi yüklemeye başladı ama hiçbir zaman tamamlamadı. Sayfayı yeniden yükleyin veya sistem tarayıcınızda açın.",
       "currentUrl": "Geçerli URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
@@ -1069,7 +1066,9 @@
         "skipped": "Atlandı",
         "passed": "Geçti"
       }
-    }
+    },
+    "fileChangedOnDiskTitle": "Dosya diskte değişti",
+    "fileChangedOnDiskBody": "\"{{name}}\" siz açtıktan sonra diskte değişti. Kendi sürümünüzle üzerine yazılsın mı?"
   },
   "git": {
     "loading": "Git durumu yükleniyor...",
@@ -1096,7 +1095,7 @@
       "createTokenButton": "Token oluştur",
       "openGitSettingsButton": "Ayarları aç",
       "configureInSettings": "Git’i ayarlarda yapılandır",
-      "configureInSettingsDesc": "Ayarlar → Bağlantılar içinde GitHub App erişimi ekleyin, token kaydedin veya yerel kimlik bilgilerini tarayın; ardından bu Git işlemini yeniden deneyin."
+      "configureInSettingsDesc": "Ayarlar → Bağlantılar içinde GitHub App erişimi ekleyin, token kaydedin veya yerel kimlik bilgilerini tarayın; ardından bu Git işlemini yeniden deneyin"
     },
     "actions": {
       "publish": "Publish",
@@ -1134,7 +1133,12 @@
       "returnFromMiniTerminal": "Burada göster",
       "resizeTerminal": "Terminali yeniden boyutlandır",
       "terminalProcessCount_one": "{{count}} işlem",
-      "terminalProcessCount_other": "{{count}} işlem"
+      "terminalProcessCount_other": "{{count}} işlem",
+      "sources": "Kaynaklar",
+      "sourcesCount_one": "{{count}} kaynak",
+      "sourcesCount_other": "{{count}} kaynak",
+      "loadMoreSources": "Daha fazla yükle (+{{count}})",
+      "sourceImage": "Görsel"
     },
     "pr": {
       "title": "Pull request",
@@ -1335,7 +1339,7 @@
       "cannotParseRepoName": "Depo adı origin remote'tan çözümlenemedi",
       "authRequired": {
         "title": "GitHub'ı bağla",
-        "description": "GitHub hesabınızı bağlamak için Ayarlar → Bağlantılar bölümüne gidin."
+        "description": "GitHub hesabınızı bağlamak için Ayarlar → Bağlantılar bölümüne gidin"
       },
       "navigationTrail": "Pull request gezinmesi",
       "failedToLoad": "Pull requestler yüklenemedi",
@@ -1505,15 +1509,39 @@
       "newIssueBodyPlaceholder": "Issue’yu açıklayın (isteğe bağlı)…",
       "authRequired": {
         "title": "GitHub'ı bağla",
-        "description": "GitHub hesabınızı bağlamak için Ayarlar → Bağlantılar bölümüne gidin."
+        "description": "GitHub hesabınızı bağlamak için Ayarlar → Bağlantılar bölümüne gidin"
       },
       "reAuthRequired": "GitHub yetkilendirmesi gerekli",
-      "reAuthDescription": "GitHub token'ınızın süresi doldu. Yeniden bağlanmak için Ayarlar → Bağlantılar bölümüne gidin.",
+      "reAuthDescription": "GitHub token'ınızın süresi doldu. Yeniden bağlanmak için Ayarlar → Bağlantılar bölümüne gidin",
       "goToSettings": "Ayarlara git",
       "loadingTimeline": "Etkinlik yükleniyor…",
       "label": "Issue",
       "linkedLoading": "Bağlı öğeler yükleniyor",
       "detailNavigation": "Issue gezinmesi"
+    },
+    "branchSwitch": {
+      "title": "Dal değiştir",
+      "conflictsTitle": "Değişikliklerle ilgilenilmesi gerekiyor",
+      "blockedTitle": "Dal değiştirme işlemiyle ilgilenilmesi gerekiyor",
+      "working": "Kaydediliyor ve değiştiriliyor…",
+      "current": "Geçerli dal: {{branch}}",
+      "changedFiles": "{{count}} dosya değiştirildi",
+      "question": "Değişikliklerinizle ne yapmak istersiniz?",
+      "leave": "Değişiklikleri {{branch}} dalında bırak",
+      "leaveDescription": "Daha sonra devam etmek üzere çalışmanızı kaydedin ve temiz bir çalışma ağacıyla dal değiştirin",
+      "bring": "Değişiklikleri {{branch}} dalına taşı",
+      "bringDescription": "Commit edilmemiş değişikliklerinizi hedef dala taşıyın",
+      "worktreeTitle": "Dal başka bir çalışma ağacında açık",
+      "openWorktree": "Çalışma ağacını aç",
+      "activeTask": "Bir görev bu çalışma ağacını kullanıyor",
+      "activeTaskDescription": "Dal değiştirmeden önce görevin bitmesini bekleyin, görevi açıkça durdurun veya başka bir çalışma ağacı kullanın",
+      "saveTitle": "Dal değiştirmeden önce dosyaları kaydet",
+      "saveDescription": "Açık dosyalarda kaydedilmemiş düzenlemeler var. Değişikliklerinizi nerede tutacağınızı seçmeden önce bunları kaydedin",
+      "saveContinue": "Tümünü kaydet ve devam et",
+      "saveFailed": "Tüm dosyalar kaydedilemedi",
+      "multipleBuffers": "Bu dosya birden fazla düzenleyicide değiştirildi. Dal değiştirmeden önce bu düzenleyicilerde kaydedin veya onları kapatın",
+      "editedWhileSaving": "Kaydetme sırasında dosyalar düzenlendi. Son değişiklikleri gözden geçirip tekrar deneyin",
+      "savePreview": "Dal değiştirmeden önce hesap tablosu düzenleyicisindeki düzenlemeleri kaydedin veya atın"
     }
   },
   "selectors": {
@@ -1568,7 +1596,6 @@
         "createWorkspace": "Yeni çalışma dizini oluştur"
       },
       "sources": {
-        "cloningFromGitHub": "GitHub'dan klonlanıyor",
         "cloningFromGitHubUrl": "GitHub URL'sinden klonla",
         "cloningFromMyGitHub": "GitHub hesabımdan klonla",
         "creatingWorkspace": "yeni çalışma dizini oluşturuluyor",
@@ -1629,7 +1656,6 @@
         "createFrom": "Branch'ten oluştur",
         "deleteBranch": "Branch sil",
         "refresh": "Branch yenile",
-        "checkoutDetachedSuccess": "Mevcut commit'te detached HEAD durumunda",
         "removeWorktree": "Worktree kaldır",
         "newWorktree": "Yeni worktree...",
         "refreshPullRequests": "Pull requests yenile"
@@ -1770,11 +1796,6 @@
         "integrations": "Agent ve Entegrasyonlar",
         "market": "Pazar",
         "actions": "Eylemler"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Klasör",
-        "branch": "Dal"
       },
       "actions": {
         "showInFinder": {
@@ -2154,7 +2175,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "ORG2'den çıkılsın mı?",
-    "subtitle": "Çalışan oturumlar mevcut durumunu korur. ORG2'yi daha sonra yeniden açabilirsiniz.",
+    "subtitle": "Çalışan oturumlar mevcut durumunu korur. ORG2'yi daha sonra yeniden açabilirsiniz",
     "cancel": "İptal",
     "confirm": "Çık"
   },
@@ -2184,7 +2205,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari, çerezleri macOS tarafından korunan bir klasörde tutar. Sistem Ayarları’ndaki Tam Disk Erişimi bölümünde ORG2’ye izin verin, ardından yeniden kontrol edin.",
+      "explain": "Safari, çerezleri macOS tarafından korunan bir klasörde tutar. Sistem Ayarları’ndaki Tam Disk Erişimi bölümünde ORG2’ye izin verin, ardından yeniden kontrol edin",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2209,7 +2230,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2218,7 +2239,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"

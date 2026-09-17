@@ -10,6 +10,7 @@ import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { routeDebugModalOpenAtom } from "@src/store/ui/uiAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
+import { closeCurrentWindow } from "./closeCurrentWindow";
 import { resolveDigitZeroShortcut } from "./digitZeroShortcut";
 import { isEditableElement, isEditableElementExtended } from "./types";
 
@@ -257,14 +258,7 @@ export function useGlobalKeydownShortcuts(
           spotlightOpenRef.current || !editable,
         ],
         ["search_files", handleOpenCodeEditorSearchSidebar],
-        [
-          "window_close",
-          () => {
-            void import("@tauri-apps/api/window").then(({ getCurrentWindow }) =>
-              getCurrentWindow().close()
-            );
-          },
-        ],
+        ["window_close", closeCurrentWindow],
         [
           "window_open_folder",
           () => {

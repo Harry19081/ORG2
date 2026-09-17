@@ -7,7 +7,7 @@
 import React from "react";
 
 import Button from "@src/components/Button";
-import SessionHoverCard from "@src/components/SessionHoverCard";
+import SessionHoverCard from "@src/features/SessionHoverCard";
 import {
   STATUS_COLORS,
   WORK_ITEM_STATUS_COLOR,

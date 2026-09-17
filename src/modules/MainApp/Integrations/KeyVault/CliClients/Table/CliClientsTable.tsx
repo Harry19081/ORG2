@@ -6,6 +6,7 @@ import type { ModelType } from "@src/api/types/keys";
 import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
 import { Placeholder } from "@src/components/Placeholder";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import type { SelectOption } from "@src/components/Select";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -19,7 +20,6 @@ import Tag from "@src/components/Tag";
 import type { AvailableAgent } from "@src/config/cliAgents";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { Add01Icon, HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
   cliAgentVisibilityOverridesAtom,

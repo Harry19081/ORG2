@@ -7,16 +7,23 @@ import {
 } from "react";
 
 import type { MobileRpcClient } from "../connection/mobileRpcClient";
+import { hasValidSessionPresentation } from "../connection/sessionDiscoveryContract";
 import type { MobileSessionRow } from "../connection/types";
 
 /** Owns roster pagination and invalidation, not the transport lifetime. */
 export function useMobileSessionList(
-  clientRef: RefObject<MobileRpcClient | null>
+  clientRef: RefObject<MobileRpcClient | null>,
+  prepareSessions?: (
+    client: MobileRpcClient,
+    sessions: readonly MobileSessionRow[],
+    isCurrent: () => boolean
+  ) => void | Promise<void>
 ) {
   const [sessions, setSessions] = useState<MobileSessionRow[]>([]);
   const [sessionsHasMore, setSessionsHasMore] = useState(false);
   const sessionNextOffsetRef = useRef(0);
   const sessionListGenerationRef = useRef(0);
+  const snapshotRevisionRef = useRef(0);
   const flightRef = useRef<{
     client: MobileRpcClient;
     generation: number;
@@ -30,6 +37,11 @@ export function useMobileSessionList(
       append: boolean,
       requestGeneration: number
     ) => {
+      const snapshotRevision = snapshotRevisionRef.current;
+      const isCurrent = () =>
+        requestGeneration === sessionListGenerationRef.current &&
+        snapshotRevision === snapshotRevisionRef.current &&
+        clientRef.current === client;
       const targetOffset = append
         ? sessionNextOffsetRef.current + 50
         : Math.max(50, sessionNextOffsetRef.current);
@@ -41,12 +53,18 @@ export function useMobileSessionList(
       } = {};
       const rows: MobileSessionRow[] = [];
       do {
-        list = await client.call<typeof list>("session/list", { offset });
+        list = await client.call<typeof list>("session/list", {
+          offset,
+          limit: 200,
+        });
+        if (!isCurrent()) return;
         if (
-          requestGeneration !== sessionListGenerationRef.current ||
-          clientRef.current !== client
-        )
-          return;
+          list.sessions &&
+          (!Array.isArray(list.sessions) ||
+            !list.sessions.every(hasValidSessionPresentation))
+        ) {
+          throw new Error("Invalid session presentation metadata");
+        }
         rows.push(...(list.sessions ?? []));
         const next = list.nextOffset;
         if (!Number.isSafeInteger(next) || next! <= offset) {
@@ -55,11 +73,15 @@ export function useMobileSessionList(
         }
         offset = next!;
       } while (list.hasMore && offset < targetOffset);
-      if (
-        requestGeneration !== sessionListGenerationRef.current ||
-        clientRef.current !== client
-      ) {
-        return;
+      if (!isCurrent()) return;
+      // Preparation may start connection-owned background work, but roster
+      // publication stays on the successful session/list critical path.
+      try {
+        void Promise.resolve(prepareSessions?.(client, rows, isCurrent)).catch(
+          () => undefined
+        );
+      } catch {
+        // Best-effort preparation never changes a valid roster response.
       }
       sessionNextOffsetRef.current = offset;
       setSessionsHasMore(
@@ -77,11 +99,14 @@ export function useMobileSessionList(
           : rows
       );
     },
-    [clientRef]
+    [clientRef, prepareSessions]
   );
 
   const requestSessionList = useCallback(
     (client: MobileRpcClient, append = false): Promise<void> => {
+      // Every full refresh supersedes roster preparation started by the
+      // preceding snapshot, including work whose list flight already ended.
+      if (!append) snapshotRevisionRef.current += 1;
       const current = flightRef.current;
       if (
         current?.client === client &&
@@ -99,7 +124,7 @@ export function useMobileSessionList(
         append,
       };
       flightRef.current = flight;
-      flight.promise = Promise.resolve().then(async () => {
+      flight.promise = (async () => {
         try {
           while (
             flightRef.current === flight &&
@@ -121,7 +146,7 @@ export function useMobileSessionList(
         } finally {
           if (flightRef.current === flight) flightRef.current = null;
         }
-      });
+      })();
       return flight.promise;
     },
     [clientRef, readPage]

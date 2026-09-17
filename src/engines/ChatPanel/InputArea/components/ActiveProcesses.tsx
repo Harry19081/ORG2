@@ -30,7 +30,6 @@ import {
   SquareTerminalIcon,
 } from "@src/icons";
 import { killAgentShellProcess } from "@src/services/terminal";
-import { startVisibilityAwareInterval } from "@src/shared/scheduling/visibilityAwareInterval";
 import { activeSessionIdAtom } from "@src/store/session";
 import {
   type ShellProcessState,
@@ -42,6 +41,7 @@ import {
   subagentJobMapAtom,
 } from "@src/store/session/subagentJobAtom";
 import { invokeTauri } from "@src/util/platform/tauri/init";
+import { startVisibilityAwareInterval } from "@src/util/time/scheduling/visibilityAwareInterval";
 
 import ComposerStackHeader from "./ComposerStackHeader";
 
@@ -92,12 +92,13 @@ const ProcessRow: React.FC<ProcessRowProps> = memo(({ process, onStop }) => {
         <Button
           htmlType="button"
           variant="tertiary"
+          appearance="soft"
           size="mini"
           icon={
             <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={12} />
           }
           iconOnly
-          className="enabled:hover:bg-fill-3 enabled:hover:text-danger-6"
+          hoverIntent="danger"
           onClick={handleStop}
           title={t("actions.stop")}
         />
@@ -152,12 +153,13 @@ const SubagentRow: React.FC<SubagentRowProps> = memo(({ job, now, onStop }) => {
         <Button
           htmlType="button"
           variant="tertiary"
+          appearance="soft"
           size="mini"
           icon={
             <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={12} />
           }
           iconOnly
-          className="enabled:hover:bg-fill-3 enabled:hover:text-danger-6"
+          hoverIntent="danger"
           onClick={handleStop}
           title={t("actions.stop")}
         />

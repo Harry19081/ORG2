@@ -25,6 +25,8 @@ import type { SearchResultActions } from "./types";
 const log = createLogger("FileSearch");
 
 interface Parameters {
+  /** Search tabs submit explicitly; sidebar searches remain automatic. */
+  automatic?: boolean;
   query: string;
   searchMode: SearchMode;
   repoPath: string;
@@ -44,9 +46,11 @@ interface Owner {
 export interface UseSearchExecutionReturn {
   search: (maxResults?: number, loadMore?: boolean) => Promise<void>;
   clear: () => void;
+  refresh: () => Promise<void>;
 }
 
 export function useSearchExecution({
+  automatic = true,
   query,
   searchMode,
   repoPath,
@@ -99,6 +103,8 @@ export function useSearchExecution({
       release();
       const [text, , root, files, options] = request;
       if (!text || !root) {
+        resultActions.setLoading(false);
+        resultActions.setLoadingMore?.(false);
         resultActions.clearAtom();
         return;
       }
@@ -256,6 +262,7 @@ export function useSearchExecution({
   );
 
   useEffect(() => {
+    if (!automatic) return;
     // Cleanup runs on *every* semantic change, before the replacement debounce.
     release();
     resultActions.setLoading(false);
@@ -269,7 +276,10 @@ export function useSearchExecution({
     return () => {
       release();
     };
-  }, [request, search, release, resultActions]);
+  }, [automatic, request, search, release, resultActions]);
 
-  return { search, clear };
+  useEffect(() => () => release(), [release]);
+  const refresh = useCallback(() => search(), [search]);
+
+  return { search, clear, refresh };
 }

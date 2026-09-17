@@ -60,14 +60,34 @@ export function sanitizePillDisplayLabel(name: string): string {
 
 const VISIBLE_PILL_LABEL_MAX_CHARS = 10;
 
+/**
+ * Longest link label shown in full. Long enough for an ordinary address to
+ * read as typed ("https://github.com/org2AI/ORG2"), short enough that a pasted
+ * token-laden URL cannot run the width of the composer.
+ */
+const VISIBLE_LINK_LABEL_MAX_CHARS = 48;
+
+/**
+ * Truncate a link's label. Unlike a file name, a URL has no extension worth
+ * keeping — its last dot is usually the host's TLD — so this only cuts the
+ * tail; the full address stays available on hover.
+ */
+export function truncateVisibleLinkLabel(label: string): string {
+  if (label.length <= VISIBLE_LINK_LABEL_MAX_CHARS) return label;
+  return `${label.slice(0, VISIBLE_LINK_LABEL_MAX_CHARS)}...`;
+}
+
 export function truncateVisiblePillLabel(label: string): string {
   if (label.length <= VISIBLE_PILL_LABEL_MAX_CHARS) return label;
 
+  // Keep a file's extension visible ("verylongname...tsx"). Only a short
+  // dotted suffix counts: in a URL the last dot is in the host, and what
+  // follows it is the whole path and query, not an extension.
   const compoundExtensionMatch = label.match(/\.index\.[^.]+$/i);
-  const lastDotIndex = label.lastIndexOf(".");
   const extension =
     compoundExtensionMatch?.[0] ??
-    (lastDotIndex > 0 ? label.slice(lastDotIndex) : "");
+    label.match(/(?<=.)\.[^./\\?#&=\s]{1,10}$/)?.[0] ??
+    "";
   return `${label.slice(0, VISIBLE_PILL_LABEL_MAX_CHARS)}...${extension}`;
 }
 

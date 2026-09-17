@@ -377,7 +377,7 @@ pub(crate) fn ensure_project(codex_home: &Path, project_root: &Path) -> Result<S
                 let name = root
                     .file_name()
                     .and_then(|name| name.to_str())
-                    .unwrap_or("ORGII workspace");
+                    .unwrap_or("ORG2 workspace");
                 let key = format!(
                     "orgii-project-{:x}",
                     Sha256::digest(root.to_string_lossy().as_bytes())

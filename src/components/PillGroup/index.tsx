@@ -24,7 +24,9 @@
  */
 import React, { memo, useCallback, useRef, useState } from "react";
 
-import SelectorPill from "@src/components/SelectorPill";
+import SelectorPill, {
+  type SelectorPillPaddingX,
+} from "@src/components/SelectorPill";
 import type { TooltipProps } from "@src/components/Tooltip";
 
 const HOVER_LEAVE_DELAY_MS = 200;
@@ -34,6 +36,7 @@ const GHOST_PILL_ACTIVE_SURFACE_CLASS = "bg-fill-3!";
 interface PillGroupSegmentButtonProps {
   active: boolean;
   segmentClassName?: string;
+  paddingX?: SelectorPillPaddingX;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onFocus: () => void;
@@ -119,6 +122,7 @@ interface PillGroupSegmentRowProps {
   segments: PillGroupSegment[];
   hoveredIndex: number | null;
   segmentClassName?: string;
+  paddingX?: SelectorPillPaddingX;
   strongSurface: boolean;
   onEnter: (index: number) => void;
   onLeave: (index: number) => void;
@@ -131,6 +135,7 @@ const PillGroupSegmentRow: React.FC<PillGroupSegmentRowProps> = ({
   segments,
   hoveredIndex,
   segmentClassName,
+  paddingX,
   strongSurface,
   onEnter,
   onLeave,
@@ -178,6 +183,7 @@ const PillGroupSegmentRow: React.FC<PillGroupSegmentRowProps> = ({
 
   const buttonProps: PillGroupSegmentButtonProps = {
     active: isActive,
+    paddingX,
     segmentClassName: resolvedSegmentClassName,
     onMouseEnter: () => onEnter(index),
     onMouseLeave: () => onLeave(index),
@@ -218,6 +224,7 @@ const PillGroupSegmentRow: React.FC<PillGroupSegmentRowProps> = ({
       onFocus={buttonProps.onFocus}
       onBlur={buttonProps.onBlur}
       size="sm"
+      paddingX={paddingX}
       leadingFlush={segment.leadingFlush}
     />
   );
@@ -244,12 +251,19 @@ interface PillGroupProps {
   className?: string;
   /** Optional class applied to every segment button. */
   segmentClassName?: string;
+  paddingX?: SelectorPillPaddingX;
   /** Use a higher-contrast hover/open surface for prominent selector rows. */
   strongSurface?: boolean;
 }
 
 const PillGroup: React.FC<PillGroupProps> = memo(
-  ({ segments, className, segmentClassName, strongSurface = false }) => {
+  ({
+    segments,
+    className,
+    segmentClassName,
+    paddingX = "standard",
+    strongSurface = false,
+  }) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [groupHovered, setGroupHovered] = useState(false);
     const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -309,6 +323,7 @@ const PillGroup: React.FC<PillGroupProps> = memo(
             segments={segments}
             hoveredIndex={hoveredIndex}
             segmentClassName={segmentClassName}
+            paddingX={paddingX}
             strongSurface={strongSurface}
             onEnter={handleEnter}
             onLeave={handleLeave}

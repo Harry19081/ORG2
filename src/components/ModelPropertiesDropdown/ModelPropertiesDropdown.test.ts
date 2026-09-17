@@ -113,6 +113,15 @@ describe("ModelPropertiesDropdown immediate changes", () => {
       input.dispatchEvent(new Event("input", { bubbles: true }));
     });
   }
+  function effortTab(label: string) {
+    const button = Array.from(
+      document.querySelectorAll<HTMLButtonElement>(
+        '[role="group"][aria-label="Effort"] button'
+      )
+    ).find((candidate) => candidate.textContent === label);
+    if (!button) throw new Error(`${label} effort tab is missing`);
+    return button;
+  }
   function toggle(label: string) {
     const button = document.querySelector<HTMLButtonElement>(
       `[role="switch"][aria-label="${label}"]`
@@ -181,7 +190,8 @@ describe("ModelPropertiesDropdown immediate changes", () => {
       "gpt-5.6-sol-ultra",
     ]);
     open();
-    changeRange("1");
+    act(() => effortTab("Ultra").click());
+    expect(effortTab("Ultra").getAttribute("aria-pressed")).toBe("true");
     expect(save).toHaveBeenCalledOnce();
     expect(save).toHaveBeenCalledWith("gpt-5.6-sol-ultra");
     expect(
@@ -200,9 +210,10 @@ describe("ModelPropertiesDropdown immediate changes", () => {
     toggle("Thinking");
     expect(save).toHaveBeenCalledOnce();
     expect(save).toHaveBeenCalledWith("claude-opus-4-7-thinking-low");
-    changeRange("1");
+    act(() => effortTab("High").click());
     expect(save).toHaveBeenCalledTimes(1);
-    expect(range().getAttribute("aria-valuetext")).toBe("Light");
+    expect(effortTab("Light").getAttribute("aria-pressed")).toBe("true");
+    expect(effortTab("High").getAttribute("aria-pressed")).toBe("false");
   });
 
   it("uses refreshed values without writing and closes outside without reverting", () => {

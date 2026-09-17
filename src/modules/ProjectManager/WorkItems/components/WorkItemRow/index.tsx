@@ -415,6 +415,7 @@ const WorkItemRow: React.FC<WorkItemRowProps> = React.memo(
               htmlType="button"
               variant="tertiary"
               size="small"
+              hoverIntent="primary"
               className="ml-2 inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium text-primary-6 transition-colors hover:bg-primary-1"
               onClick={handleRestore}
               icon={

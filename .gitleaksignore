@@ -26,3 +26,6 @@ ba03bb3e7af65c6e927169e8db506fe475757107:src/features/Org2Cloud/org2CloudOrgMana
 8304c2a1957cf318db95c5de2af87de6088bf6a0:src-tauri/crates/mobile-relay-server/tests/relay_lifecycle.rs:generic-api-key:29
 81e6c0da7caddd3d04bfc8cbc183dd3e2e7421eb:src/modules/MobileRemote/auth/MobileAuthGate.test.ts:generic-api-key:44
 099bd068673a9ffed77499d55eaed138027596af:src-tauri/src/api/mobile_bridge/auth.rs:generic-api-key:158
+
+# Synthetic sequential AWS-shaped fixture exercises streaming redaction at every split.
+6494279265cead300e06441f64b464b943d9d56c:src-tauri/crates/terminal/src/stream_snapshot.rs:aws-access-token:195

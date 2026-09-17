@@ -90,8 +90,7 @@
       "openFolder": "打开文件夹",
       "tabs": {
         "all": "全部",
-        "apps": "应用",
-        "clis": "命令行"
+        "apps": "应用"
       },
       "views": {
         "scanning": "扫描",
@@ -337,18 +336,6 @@
           "agentBrowser": "Agent 浏览器",
           "searchFetch": "搜索与抓取"
         },
-        "sections": {
-          "browserTitle": "浏览器活动",
-          "interactionsTitle": "交互操作",
-          "webSearchesTitle": "网页搜索",
-          "pagesFetchedTitle": "已抓取页面"
-        },
-        "empty": {
-          "noBrowserActivity": "暂无浏览器活动",
-          "noBrowserInteractions": "暂无浏览器交互",
-          "noWebSearches": "暂无网页搜索",
-          "noPagesFetched": "暂无已抓取页面"
-        },
         "header": {
           "categoryBrowser": "浏览器",
           "categoryLiveBrowser": "实时浏览器",
@@ -519,8 +506,7 @@
     },
     "titleBar": {
       "showSidebar": "显示侧边栏",
-      "hideSidebar": "隐藏侧边栏",
-      "showBottomPanel": "显示底部面板"
+      "hideSidebar": "隐藏侧边栏"
     },
     "multiTask": {
       "monitoringProgress": "正在监控 {{count}} 个 Subagent 的进度",
@@ -598,6 +584,7 @@
       "full": "完全访问",
       "nextTurn": "权限设置从下一轮开始生效"
     },
+    "draftTooLong": "草稿过长（最多 {{max}} 个字符）",
     "planApprovedLabel": "执行已批准的计划",
     "planApprovedEditedLabel": "执行已批准的计划（已编辑）",
     "restoreCheckpoint": "恢复到此检查点",
@@ -626,10 +613,9 @@
       "inputPosition": "输入框",
       "positionBottom": "底部",
       "positionMiddle": "居中",
-      "trailPosition": "轨迹栏",
+      "repoBarPosition": "仓库栏",
       "positionUp": "上方",
       "positionDown": "下方",
-      "uiControls": "界面控制",
       "showQuickActions": "显示快捷操作",
       "showSkills": "固定 Skills",
       "showCliUpdate": "显示 CLI 更新",
@@ -717,6 +703,14 @@
     "performActions_other": "执行 {{count}} 项操作",
     "showInlineDiffs": "行内差异",
     "inputSettings": "输入设置",
+    "sendMethod": "发送方式",
+    "navigation": {
+      "title": "导航",
+      "openLinksIn": "链接打开方式",
+      "internalBrowser": "内置浏览器",
+      "externalBrowser": "外部浏览器"
+    },
+    "compactInput": "紧凑输入框",
     "replay": {
       "follow": "跟随"
     },
@@ -906,10 +900,10 @@
       "exportJson": "导出 JSON",
       "importAction": "导入 Session",
       "exportDescription": "将当前 Session 导出为可移植的 JSON 快照",
-      "importDescription": "将 Session JSON 快照导入到侧边栏。",
+      "importDescription": "将 Session JSON 快照导入到侧边栏",
       "jsonSnapshotNote": "导入的 Session 是只读快照，并保留原始事件历史",
       "chooseJson": "选择 JSON 文件",
-      "chooseJsonHint": "选择一个 .orgii-session.json 导出文件。",
+      "chooseJsonHint": "选择一个 .orgii-session.json 导出文件",
       "loadingPreview": "正在统计 Session 事件…",
       "noActiveSession": "未选择活动 Session。",
       "importedName": "导入 Session：{{name}}",
@@ -1129,6 +1123,7 @@
     "terminalWaitRunning": "正在等待终端完成",
     "runShellFailed": "命令执行失败",
     "runCommands": "执行命令",
+    "waitBackgroundTasks": "等待后台任务",
     "terminalSummary": {
       "command_one": "{{count}} 个命令",
       "command_other": "{{count}} 个命令",
@@ -1139,6 +1134,10 @@
       "check_one": "{{count}} 次检查",
       "check_other": "{{count}} 次检查",
       "separator": "、"
+    },
+    "waitSummary": {
+      "count_one": "{{count}} 次",
+      "count_other": "{{count}} 次"
     },
     "inspectTerminalsRunning": "正在检查终端",
     "inspectTerminalsDone": "检查终端",
@@ -1437,21 +1436,24 @@
     "webFetchRunning": "获取网页中",
     "webFetchDone": "获取网页",
     "webFetchFailed": "网页获取失败",
-    "awaitOutputWaitForRunning": "等待 {{summary}}（{{countdown}}）",
-    "awaitOutputWaitForDone": "等待 {{summary}} {{waited}}",
-    "awaitOutputWaitForFailed": "等待 {{summary}} 失败",
-    "awaitOutputMonitorRunning": "正在查看 {{summary}}",
-    "awaitOutputMonitorDone": "查看 {{summary}}",
-    "awaitOutputMonitorFailed": "检查 {{summary}} 失败",
+    "awaitOutputWaitForRunning": "等待{{summary}}（{{countdown}}）",
+    "awaitOutputWaitForDone": "等待{{summary}}{{waited}}",
+    "awaitOutputWaitForFailed": "等待{{summary}}失败",
+    "awaitOutputMonitorRunning": "正在查看{{summary}}",
+    "awaitOutputMonitorDone": "查看{{summary}}",
+    "awaitOutputMonitorFailed": "检查{{summary}}失败",
     "awaitOutputListRunning": "列出后台任务",
     "awaitOutputListDone": "列出后台任务",
     "awaitOutputListFailed": "列出后台任务失败",
     "awaitOutputKeepWaiting": "仍在运行",
     "awaitOutputStillRunning": "运行中",
+    "awaitOutputSummaryShellSingle": "终端进程",
     "awaitOutputSummaryShell_one": "1个终端进程",
     "awaitOutputSummaryShell_other": "{{count}}个终端进程",
+    "awaitOutputSummarySubagentSingle": "Subagent",
     "awaitOutputSummarySubagent_one": "1个 Subagent",
     "awaitOutputSummarySubagent_other": "{{count}}个 Subagent",
+    "awaitOutputSummaryUnknownSingle": "后台任务",
     "awaitOutputSummaryUnknown_one": "1个后台任务",
     "awaitOutputSummaryUnknown_other": "{{count}}个后台任务",
     "awaitOutputSummaryMixed": "{{shell}}、{{subagent}}",
@@ -1905,7 +1907,7 @@
     "start": "开始",
     "missingGit": {
       "title": "缺少 Git",
-      "body": "未安装 Git 或无法找到 Git。请让 ADE Manager 或 SDE Agent 为这台机器安装 Git，然后重启 ORG2。"
+      "body": "未安装 Git 或无法找到 Git。请让 ADE Manager 或 SDE Agent 为这台机器安装 Git，然后重启 ORG2"
     },
     "cliVersionOutdated": {
       "title": "{{cli}} 需要升级（{{installed}} > {{latest}}）",
@@ -1975,9 +1977,9 @@
       "formatting": "文本格式"
     },
     "regionNoticeTitle": "可能存在地区限制",
-    "regionNoticeBodyProvider": "您所在位置：{{location}}。某些模型在您所在地区可能不可用。",
-    "regionNoticeBodySanctions": "您所在位置：{{location}}。GitHub、npm、Docker Hub 等服务可能不可用。",
-    "regionNoticeBodyBoth": "您所在位置：{{location}}。因地区政策与贸易规则，某些模型以及 GitHub、npm、Docker Hub 等服务可能不可用。",
+    "regionNoticeBodyProvider": "您所在位置：{{location}}。某些模型在您所在地区可能不可用",
+    "regionNoticeBodySanctions": "您所在位置：{{location}}。GitHub、npm、Docker Hub 等服务可能不可用",
+    "regionNoticeBodyBoth": "您所在位置：{{location}}。因地区政策与贸易规则，某些模型以及 GitHub、npm、Docker Hub 等服务可能不可用",
     "selectAgent": "选择 Agent",
     "placeholderDefault": "输入消息，使用 @ 添加文件，使用 / 调用 skills",
     "wingmanPlaceholder": "描述你的任务 — Wingman 应该关注什么？",
@@ -2121,7 +2123,7 @@
       "archiveTeardownRetained": "已归档，但有 {{count}} 个运行时未能释放，仍无法删除。",
       "archiveTeardownQuiesced": "已归档并完全停止，现在可以永久删除。",
       "dangerZone": "危险区域",
-      "deleteDescription": "永久删除这个团队及其所有会话和历史记录。",
+      "deleteDescription": "永久删除这个团队及其所有会话和历史记录",
       "deleteTeam": "删除团队",
       "deleteTitle": "永久删除这个团队？",
       "deleteWarning": "这会永久删除团队的所有会话和历史记录，且无法撤销。",

@@ -14,6 +14,11 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
+import {
+  DETAIL_PANEL_TOKENS,
+  DetailPanelContainer,
+  ScrollPreservation,
+} from "@src/components/layout/blocks";
 import { createLogger } from "@src/hooks/logger";
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
 import {
@@ -24,11 +29,6 @@ import {
   ServerStack01Icon,
   Tick01Icon,
 } from "@src/icons";
-import {
-  DETAIL_PANEL_TOKENS,
-  DetailPanelContainer,
-  ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
 import { copyText } from "@src/util/data/clipboard";
 
 import CursorPluginInlineExpandedCard from "./CursorPluginInlineExpandedCard";

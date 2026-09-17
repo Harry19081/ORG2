@@ -4,8 +4,8 @@
 import React, { memo, useCallback, useState } from "react";
 
 import Button from "@src/components/Button";
-import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import ImagePreviewOverlay from "@src/scaffold/ImagePreviewOverlay";
 
 const EditModeImageThumbnail: React.FC<{
   dataUrl: string;
@@ -27,35 +27,40 @@ const EditModeImageThumbnail: React.FC<{
   return (
     <>
       <div
-        className="group relative inline-flex h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-md border border-border-2 bg-fill-1"
+        className="group relative inline-flex h-12 w-12 shrink-0 cursor-pointer rounded-md border border-border-2 bg-fill-1 transition-[border-color] duration-200 ease-in-out hover:border-border-3"
         onClick={handleClick}
         data-testid="edit-mode-image-thumbnail"
       >
         <img
           src={dataUrl}
           alt={alt}
-          className="h-full w-full object-cover"
+          className="h-full w-full rounded-[inherit] object-cover"
           draggable={false}
           loading="lazy"
           decoding="async"
         />
         {onRemove && (
           <Button
-            layout="custom"
-            appearance="custom"
+            variant="tertiary"
+            appearance="outline"
+            hoverIntent="danger"
+            size="sidebar"
+            shape="circle"
+            iconOnly
             htmlType="button"
             onClick={handleRemove}
-            className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-bg-3 text-text-2 opacity-0 shadow-xs transition-opacity group-hover:opacity-100 hover:bg-fill-2 hover:text-text-1"
+            className="absolute -top-1 -right-1 z-10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
             aria-label={`Remove ${alt}`}
             data-testid="edit-mode-image-remove"
-          >
-            <HugeiconsIcon
-              icon={Cancel01Icon}
-              data-icon="x"
-              size={10}
-              strokeWidth={2.5}
-            />
-          </Button>
+            icon={
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                data-icon="x"
+                size={12}
+                strokeWidth={2}
+              />
+            }
+          />
         )}
       </div>
       {showOverlay && (

@@ -33,9 +33,9 @@ import {
   GitPullRequestIcon,
   HugeiconsIcon,
 } from "@src/icons";
-import { presentPullRequestActions } from "@src/shared/pr/prLevelActions";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
+import { presentPullRequestActions } from "@src/util/git/pr/prLevelActions";
 
 interface PrLevelActionsProps {
   identity: PrIdentity;

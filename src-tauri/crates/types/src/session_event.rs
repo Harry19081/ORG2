@@ -44,6 +44,22 @@ pub enum EventSource {
     System,
 }
 
+/// Action types of internal execution bookkeeping: turn lifecycle markers,
+/// native command catalogs and stage errors. Chat never renders them, so turn
+/// indexes must not count them as round body either. TS twin:
+/// `INTERNAL_LIFECYCLE_ACTION_TYPES` in `visibilityFilters.ts`.
+pub const INTERNAL_LIFECYCLE_ACTION_TYPES: &[&str] = &[
+    "native_command_catalog",
+    "task_start",
+    "task_completed",
+    "task_failed",
+    "stage_error",
+];
+
+pub fn is_internal_lifecycle_action_type(action_type: &str) -> bool {
+    INTERNAL_LIFECYCLE_ACTION_TYPES.contains(&action_type)
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum EventDisplayVariant {

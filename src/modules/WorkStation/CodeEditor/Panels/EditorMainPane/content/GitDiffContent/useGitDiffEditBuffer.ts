@@ -10,6 +10,7 @@ import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import type { ConflictResolutionChoice } from "@src/features/CodeMirror";
 import { createLogger } from "@src/hooks/logger";
+import { registerBranchSwitchEditor } from "@src/services/git/operations/branchSwitchEditors";
 import type { GitFile } from "@src/types/git/types";
 
 import type { CallbackRefs, GitDiffContentProps } from "./types";
@@ -44,12 +45,21 @@ export function useGitDiffEditBuffer({
     edit,
     discard: handleDiscard,
     save: handleSave,
+    saveForSwitch,
   } = useGitDiffEditing(
     gitFile?.path,
     effectiveGitFile?.newContent,
     onSaved,
     onError
   );
+  useEffect(() => {
+    if (!gitFile) return;
+    return registerBranchSwitchEditor({
+      path: gitFile.path,
+      dirty: () => hasUnsavedChanges,
+      save: saveForSwitch,
+    });
+  }, [gitFile, hasUnsavedChanges, saveForSwitch]);
   const onUnsavedChangeRef = useRef(onUnsavedChange);
   useEffect(() => {
     onUnsavedChangeRef.current = onUnsavedChange;

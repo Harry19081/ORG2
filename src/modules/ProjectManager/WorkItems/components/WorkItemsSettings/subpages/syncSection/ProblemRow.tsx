@@ -16,9 +16,9 @@ import type {
   OutboxProblemRow,
 } from "@src/api/http/project/sync";
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
+import { SECTION_ACTION_GAP_CLASSES } from "@src/components/layout/Section";
 import {
-  ArrowDown01Icon,
-  ArrowRight01Icon,
   File02Icon,
   FolderClosedIcon,
   HugeiconsIcon,
@@ -26,7 +26,6 @@ import {
   Tag01Icon,
   UserIcon,
 } from "@src/icons";
-import { SECTION_ACTION_GAP_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
 /**
@@ -298,19 +297,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
         onClick={() => setShowPayload((prev) => !prev)}
         className="gap-1 self-start text-[12px] hover:text-text-2"
       >
-        {showPayload ? (
-          <HugeiconsIcon
-            icon={ArrowDown01Icon}
-            data-icon="chevron-down"
-            size={12}
-          />
-        ) : (
-          <HugeiconsIcon
-            icon={ArrowRight01Icon}
-            data-icon="chevron-right"
-            size={12}
-          />
-        )}
+        <DisclosureChevron expanded={showPayload} size={12} />
         <span>
           {showPayload
             ? t("settings.sync.problems.hidePayload")

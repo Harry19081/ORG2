@@ -384,7 +384,7 @@ pub async fn cli_agent_chunks(session_id: String) -> Result<Vec<ActivityChunk>, 
     result
 }
 
-pub(super) fn load_session_chunks(session_id: &str) -> Result<Vec<ActivityChunk>, String> {
+pub(crate) fn load_session_chunks(session_id: &str) -> Result<Vec<ActivityChunk>, String> {
     let session = persistence::get_session(session_id).map_err(|e| format!("DB error: {}", e))?;
     if let Some(session) = session.as_ref() {
         if let Some(mut chunks) = load_native_transcript_chunks(session)? {

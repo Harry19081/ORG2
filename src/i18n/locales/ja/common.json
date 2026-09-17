@@ -18,6 +18,12 @@
     "file": "ファイル内を検索",
     "named": "{{name}} 内を検索"
   },
+  "sidebarSettings": {
+    "title": "サイドバー設定",
+    "showSidebar": "サイドバーを表示",
+    "location": "位置",
+    "showIndentLines": "インデント線を表示"
+  },
   "teamInbox": {
     "title": "チームの受信トレイ",
     "listLabel": "チーム受信トレイの一覧",
@@ -407,7 +413,8 @@
     "openOnGitHub": "GitHub で開く",
     "createPullRequest": "Pull request を作成",
     "expandView": "ビューを展開",
-    "restoreSplitView": "分割ビューに戻す"
+    "restoreSplitView": "分割ビューに戻す",
+    "overwrite": "上書き"
   },
   "status": {
     "yes": "はい",
@@ -491,7 +498,7 @@
   },
   "optional": "任意",
   "common": {
-    "display": "表示",
+    "display": "UI設定",
     "on": "オン",
     "off": "オフ",
     "default": "デフォルト",
@@ -560,7 +567,6 @@
     "globPatternsHint": "Glob パターン、カンマ区切り",
     "outline": "アウトライン",
     "timeline": "タイムライン",
-    "indexing": "Index",
     "testExplorer": "テストエクスプローラー",
     "installed": "インストール済み",
     "extensionViews": "拡張機能ビュー",
@@ -678,7 +684,6 @@
     "explorer": "エクスプローラー",
     "search": "検索",
     "sourceControl": "ソース管理",
-    "sessions": "Session",
     "myTabs": "自分のタブ（{{count}}）",
     "design": "デザイン",
     "settings": "設定",
@@ -789,7 +794,6 @@
     "closePanel": "パネルを閉じる",
     "showSidebar": "サイドバーを表示",
     "hideSidebar": "サイドバーを非表示",
-    "moreOptions": "その他のオプション",
     "zoomIn": "拡大",
     "zoomOut": "縮小",
     "goBack": "戻る",
@@ -811,6 +815,8 @@
     "queryHistory": "クエリ履歴",
     "executeQuery": "クエリを実行 ({{shortcut}})",
     "startVoiceInput": "音声入力を開始",
+    "expandInput": "入力欄を広げる",
+    "collapseInput": "入力欄を縮める",
     "cancelRecording": "録音をキャンセル",
     "stopAndTranscribe": "停止して文字起こし",
     "htmlPreview": "HTML プレビュー",
@@ -820,7 +826,6 @@
     "movePanelToRight": "パネルを右側に移動",
     "movePanelToBottom": "パネルを下部に移動",
     "domTree": "DOM ツリー",
-    "closeSession": "Sessionを閉じる",
     "clearNetworkLogs": "ネットワークログをクリア",
     "clearConsole": "コンソールをクリア",
     "copyToClipboard": "クリップボードにコピー",
@@ -871,7 +876,6 @@
     "pleaseTryAgain": "もう一度お試しください",
     "noFileOpen": "ファイルを開いて編集を開始",
     "selectFileToEdit": "エクスプローラーでファイルを選択",
-    "noTabs": "タブを開いて開始",
     "noTabsOpen": "アイテムを開いて開始",
     "selectItemToStart": "サイドバーで項目を選択",
     "noDatabaseConnected": "データベース未接続",
@@ -982,7 +986,6 @@
     "notGitInitialized": "Git 未初期化",
     "notGitInitializedTooltip": "この作業ディレクトリにはまだ .git ディレクトリがありません。",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
-    "scanningFiles": "Scanning files...",
     "branchTooltipSwitching": "ブランチ: {{branch}}（切り替え中…）",
     "switchWorkspaceTooltip": "作業ディレクトリを切り替え",
     "switchWorktreeTooltip": "Worktree を切り替え",
@@ -993,12 +996,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Git アクション",
     "switchToSessionRepo": "{{name}} に切り替え",
-    "embeddingProgress": "Embedding: {{count}} チャンク処理済み",
-    "embeddingProgressWithPercent": "Embedding: {{count}} チャンク処理済み ({{percent}}%)",
-    "embeddingShort": "Embedding {{percent}}%",
-    "embeddingLabel": "Embedding",
-    "indexingProgress": "インデックス中: {{processed}}/{{total}} ファイル ({{percent}}%)",
-    "indexingProgressWithFile": "インデックス中: {{processed}}/{{total}} ファイル ({{percent}}%)\n現在: {{file}}",
     "ports": {
       "workspaceSection": "現在のワークスペース",
       "externalSection": "外部",
@@ -1051,8 +1048,8 @@
       "siteUnreachableTitle": "このサイトにアクセスできません",
       "webviewHiddenTitle": "Web ビューを一時的に非表示",
       "webviewHiddenBody": "メニューまたはダイアログを閉じると再表示されます。",
-      "embeddedFallbackTitle": "このサイトは埋め込みブラウザでは動作しない可能性があります",
-      "embeddedFallbackBody": "一部のサイトはアプリの WebView 内での表示をブロックしたり、正しく描画できなかったりします。ページが空白のままの場合はシステムブラウザで開いてください。",
+      "loadStalledTitle": "このページの読み込みが完了しませんでした",
+      "loadStalledBody": "埋め込みブラウザはこのアドレスの読み込みを開始しましたが、完了しませんでした。再読み込みするか、システムブラウザで開いてください。",
       "currentUrl": "現在の URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
@@ -1069,7 +1066,9 @@
         "skipped": "スキップ",
         "passed": "成功"
       }
-    }
+    },
+    "fileChangedOnDiskTitle": "ディスク上でファイルが変更されました",
+    "fileChangedOnDiskBody": "「{{name}}」は開いた後にディスク上で変更されました。自分のバージョンで上書きしますか？"
   },
   "git": {
     "loading": "Git ステータスを読み込み中...",
@@ -1096,7 +1095,7 @@
       "createTokenButton": "Token を作成",
       "openGitSettingsButton": "設定を開く",
       "configureInSettings": "設定で Git を構成",
-      "configureInSettingsDesc": "設定 → 接続 で GitHub App アクセスの追加、token の保存、またはローカル認証情報のスキャンを行い、その後この Git 操作を再試行してください。"
+      "configureInSettingsDesc": "設定 → 接続 で GitHub App アクセスの追加、token の保存、またはローカル認証情報のスキャンを行い、その後この Git 操作を再試行してください"
     },
     "actions": {
       "publish": "Publish",
@@ -1134,7 +1133,12 @@
       "returnFromMiniTerminal": "ここに表示",
       "resizeTerminal": "ターミナルのサイズを変更",
       "terminalProcessCount_one": "{{count}} 個のプロセス",
-      "terminalProcessCount_other": "{{count}} 個のプロセス"
+      "terminalProcessCount_other": "{{count}} 個のプロセス",
+      "sources": "ソース",
+      "sourcesCount_one": "ソース {{count}}件",
+      "sourcesCount_other": "ソース {{count}}件",
+      "loadMoreSources": "さらに表示 (+{{count}})",
+      "sourceImage": "画像"
     },
     "pr": {
       "title": "Pull request",
@@ -1335,7 +1339,7 @@
       "cannotParseRepoName": "origin リモートからリポジトリ名を解析できませんでした",
       "authRequired": {
         "title": "GitHub を接続",
-        "description": "設定 → 接続で GitHub アカウントを接続してください。"
+        "description": "設定 → 接続で GitHub アカウントを接続してください"
       },
       "navigationTrail": "pull request ナビゲーション",
       "failedToLoad": "pull request を読み込めませんでした",
@@ -1505,15 +1509,39 @@
       "newIssueBodyPlaceholder": "Issue の説明（任意）…",
       "authRequired": {
         "title": "GitHub を接続",
-        "description": "設定 → 接続で GitHub アカウントを接続してください。"
+        "description": "設定 → 接続で GitHub アカウントを接続してください"
       },
       "reAuthRequired": "GitHub の認証が必要です",
-      "reAuthDescription": "GitHub トークンの有効期限が切れました。設定 → 接続で再接続してください。",
+      "reAuthDescription": "GitHub トークンの有効期限が切れました。設定 → 接続で再接続してください",
       "goToSettings": "設定へ移動",
       "loadingTimeline": "アクティビティを読み込み中…",
       "label": "Issue",
       "linkedLoading": "リンクされた項目を読み込み中",
       "detailNavigation": "issue ナビゲーション"
+    },
+    "branchSwitch": {
+      "title": "ブランチを切り替え",
+      "conflictsTitle": "変更への対応が必要です",
+      "blockedTitle": "ブランチの切り替えに対応が必要です",
+      "working": "保存して切り替え中…",
+      "current": "現在のブランチ: {{branch}}",
+      "changedFiles": "変更されたファイル: {{count}} 件",
+      "question": "変更をどのように扱いますか？",
+      "leave": "変更を {{branch}} に残す",
+      "leaveDescription": "後で続けられるように作業を保存し、変更のない作業ツリーに切り替えます",
+      "bring": "変更を {{branch}} に持ち込む",
+      "bringDescription": "未コミットの変更を切り替え先のブランチに持ち込みます",
+      "worktreeTitle": "このブランチは別のワークツリーで開かれています",
+      "openWorktree": "ワークツリーを開く",
+      "activeTask": "タスクがこのワークツリーを使用しています",
+      "activeTaskDescription": "ブランチを切り替える前に、タスクの完了を待つか、明示的に停止するか、別のワークツリーを使用してください",
+      "saveTitle": "切り替える前にファイルを保存",
+      "saveDescription": "開いているファイルに未保存の編集があります。変更の保存先を選ぶ前に保存してください",
+      "saveContinue": "すべて保存して続行",
+      "saveFailed": "すべてのファイルを保存できませんでした",
+      "multipleBuffers": "このファイルは複数のエディターで編集されています。切り替える前にそれらのエディターで保存するか閉じてください",
+      "editedWhileSaving": "保存中にファイルが編集されました。最新の変更を確認して、もう一度お試しください",
+      "savePreview": "ブランチを切り替える前に、表計算エディターで編集内容を保存または破棄してください"
     }
   },
   "selectors": {
@@ -1568,7 +1596,6 @@
         "createWorkspace": "新しい作業ディレクトリを作成"
       },
       "sources": {
-        "cloningFromGitHub": "GitHub からクローン中",
         "cloningFromGitHubUrl": "GitHub URL からクローン",
         "cloningFromMyGitHub": "自分の GitHub からクローン",
         "creatingWorkspace": "新しい作業ディレクトリを作成中",
@@ -1629,7 +1656,6 @@
         "createFrom": "Branch から作成",
         "deleteBranch": "ブランチを削除",
         "refresh": "ブランチを更新",
-        "checkoutDetachedSuccess": "detached HEAD 状態になりました（現在のコミット）",
         "removeWorktree": "Worktree を削除",
         "newWorktree": "新規 Worktree...",
         "refreshPullRequests": "Pull requests を更新"
@@ -1770,11 +1796,6 @@
         "integrations": "Agent と統合",
         "market": "マーケット",
         "actions": "アクション"
-      },
-      "paramLabels": {
-        "repo": "リポジトリ",
-        "folder": "フォルダー",
-        "branch": "ブランチ"
       },
       "actions": {
         "showInFinder": {
@@ -2154,7 +2175,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "ORG2 を終了しますか？",
-    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORG2 を再度開くことができます。",
+    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORG2 を再度開くことができます",
     "cancel": "キャンセル",
     "confirm": "終了"
   },
@@ -2184,7 +2205,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari は macOS で保護されたフォルダに Cookie を保存します。システム設定の「フルディスクアクセス」で ORG2 を許可してから、もう一度確認してください。",
+      "explain": "Safari は macOS で保護されたフォルダに Cookie を保存します。システム設定の「フルディスクアクセス」で ORG2 を許可してから、もう一度確認してください",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2209,7 +2230,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2218,7 +2239,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"

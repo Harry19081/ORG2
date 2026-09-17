@@ -21,8 +21,8 @@ import {
   SECTION_SUBHEADING_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { DETAIL_PANEL_TOKENS } from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/Section";
+import { DETAIL_PANEL_TOKENS } from "@src/components/layout/blocks";
 import { SelectionGrid } from "@src/scaffold/WizardSystem/primitives";
 import { parseModelVariants } from "@src/util/modelVariants";
 

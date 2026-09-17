@@ -59,17 +59,20 @@ let root: Root;
 let controller: ReturnType<typeof useSearchExecution>;
 const pending: (() => void)[] = [];
 function Probe({
+  automatic = true,
   query = "needle",
   repoPath = "/fixture/A",
   storeOptions = options,
   openFiles = [],
 }: {
+  automatic?: boolean;
   query?: string;
   repoPath?: string;
   storeOptions?: typeof options;
   openFiles?: string[];
 }) {
   const value = useSearchExecution({
+    automatic,
     query,
     repoPath,
     searchMode: "regex",
@@ -307,4 +310,48 @@ it("open-file batches keep their repository glob base and report a capped batch 
   expect(resultActions.setHasMore).toHaveBeenLastCalledWith(true);
   await act(async () => controller.search(2, true));
   expect(resultActions.setHasMore).toHaveBeenLastCalledWith(false);
+});
+
+it("manual mode performs no work for drafts, refreshes explicitly and cancels on clear/unmount", async () => {
+  await render({ automatic: false });
+  for (let i = 0; i < 20; i++) {
+    await render({ automatic: false, query: `draft ${i}` });
+    await advance();
+  }
+  expect(api.searchCodeFast).not.toHaveBeenCalled();
+  expect(resultActions.clearAtom).not.toHaveBeenCalled();
+  await act(async () => {
+    void controller.refresh();
+  });
+  expect(api.searchCodeFast).toHaveBeenCalledTimes(1);
+  const firstId = api.searchCodeFast.mock.calls[0][0];
+  await render({
+    automatic: false,
+    query: "next",
+    storeOptions: { ...options, caseSensitive: true },
+  });
+  await advance();
+  expect(api.searchCodeFast).toHaveBeenCalledTimes(1);
+  expect(api.cancelSearch).not.toHaveBeenCalled();
+  await act(async () => {
+    void controller.refresh();
+  });
+  expect(api.cancelSearch).toHaveBeenCalledWith(firstId);
+  expect(api.searchCodeFast).toHaveBeenCalledTimes(2);
+  const secondId = api.searchCodeFast.mock.calls[1][0];
+  await render({ automatic: false, query: "" });
+  await act(async () => controller.refresh());
+  expect(api.cancelSearch).toHaveBeenCalledWith(secondId);
+  expect(resultActions.setLoading).toHaveBeenLastCalledWith(false);
+  expect(resultActions.clearAtom).toHaveBeenCalledTimes(1);
+  expect(api.listeners.get("search-result")?.size ?? 0).toBe(0);
+  await render({ automatic: false, query: "again" });
+  await act(async () => {
+    void controller.refresh();
+  });
+  const thirdId = api.searchCodeFast.mock.calls[2][0];
+  act(() => root.unmount());
+  expect(api.cancelSearch).toHaveBeenCalledWith(thirdId);
+  expect(api.listeners.get("search-result")?.size ?? 0).toBe(0);
+  root = createRoot(document.createElement("div"));
 });

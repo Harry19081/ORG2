@@ -259,16 +259,19 @@ const ModePill: React.FC<ModePillProps> = memo(
           onClick={handleTriggerClick}
           hoverIcon={
             resetToDefaultOnClick && mode !== DEFAULT_AGENT_EXEC_MODE ? (
-              <HugeiconsIcon
-                icon={Cancel01Icon}
-                data-icon="x"
-                size={14}
-                strokeWidth={1.75}
-              />
+              <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-current/15">
+                <HugeiconsIcon
+                  icon={Cancel01Icon}
+                  data-icon="x"
+                  size={14}
+                  strokeWidth={1.75}
+                />
+              </span>
             ) : undefined
           }
           className={toneClassName}
           size="sm"
+          paddingX="compact"
         />
 
         {isOpen &&

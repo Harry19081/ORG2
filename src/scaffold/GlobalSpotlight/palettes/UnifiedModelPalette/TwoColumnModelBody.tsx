@@ -114,6 +114,7 @@ const RowColumn: React.FC<{
         onSelect={() => onSelect(item, index)}
         onHover={onHover}
         searchQuery={searchQuery}
+        showDetailPane={false}
       />
     ))}
   </div>
@@ -303,6 +304,7 @@ export const TwoColumnModelBody: React.FC<TwoColumnModelBodyProps> = ({
                   onSelect={() => onSourceSelect(index)}
                   onHover={() => onSourceHover(index)}
                   searchQuery=""
+                  showDetailPane={false}
                 />
               ))}
             </div>
@@ -312,5 +314,3 @@ export const TwoColumnModelBody: React.FC<TwoColumnModelBodyProps> = ({
     </div>
   );
 };
-
-export default TwoColumnModelBody;

@@ -239,5 +239,3 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
     </div>
   );
 };
-
-export default SpotlightSearchBar;
