@@ -17,7 +17,7 @@ vi.mock("@src/components/Tooltip", () => ({
 }));
 
 vi.mock("./CodeSidebarHeaderActions", () => ({
-  CodeSidebarHeaderActions: () => null,
+  CodeSidebarHeaderActions: () => "sidebar-search-shortcut",
 }));
 
 vi.mock("./SourceControlHeaderActions", () => ({
@@ -164,7 +164,42 @@ describe("WorkstationTabHeader", () => {
     expect(markup).not.toContain("pl-[15px]");
   });
 
-  it("omits the sidebar toggle from the Browser header", () => {
+  it("replaces the search-tab shortcut with its filter before the query controls", () => {
+    const store = createStore();
+    const tab: WorkStationTab = {
+      id: "search:1",
+      type: "search",
+      title: "Search",
+      data: {},
+    };
+    const state = emptyWorkstationTabsState();
+    state.globalWorkspace = {
+      tabs: [tab],
+      activeTabRef: { partition: "workspace", tabId: tab.id },
+      tabOrder: [{ partition: "workspace", tabId: tab.id }],
+    };
+    store.set(workstationTabsStateAtom, state);
+    store.set(workstationTabHeaderAtomByHost.code, {
+      sidebarToggleDisabled: true,
+      leading: React.createElement("span", null, "search-filter-toggle"),
+      content: React.createElement("span", null, "search-query-controls"),
+    });
+    const markup = renderToStaticMarkup(
+      React.createElement(
+        Provider,
+        { store },
+        React.createElement(WorkstationTabHeader)
+      )
+    );
+    expect(markup).not.toContain("sidebar-search-shortcut");
+    expect(markup.match(/search-filter-toggle/g)).toHaveLength(1);
+    expect(markup.indexOf("search-filter-toggle")).toBeLessThan(
+      markup.indexOf("search-query-controls")
+    );
+    expect(markup).toMatch(/<button[^>]*disabled=""/);
+  });
+
+  it("keeps a disabled sidebar toggle in the Browser header", () => {
     const store = createStore();
     activateBrowserTab(store);
 
@@ -176,7 +211,7 @@ describe("WorkstationTabHeader", () => {
       )
     );
 
-    expect(markup).not.toContain('data-icon="sidebar-left"');
-    expect(markup).not.toContain('data-icon="layout-align-left"');
+    expect(markup).toContain('data-icon="sidebar-left"');
+    expect(markup).toMatch(/<button[^>]*disabled=""/);
   });
 });

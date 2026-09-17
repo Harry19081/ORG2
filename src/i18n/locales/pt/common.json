@@ -946,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "O arquivo pode ter sido excluído ou movido.",
     "editorCouldNotOpenFileMissing": "O editor não pôde ser aberto porque o arquivo não foi encontrado ou foi removido",
     "enterSearchQueryToBegin": "Insira uma consulta de pesquisa para começar",
+    "pressEnterToSearch": "Pressione Enter para pesquisar",
     "unknownTabType": "Tipo de aba desconhecido",
     "noWorkspaceFolders": "Sem pastas de Workspace",
     "noRepoSelected": "Nenhum Repo selecionado",

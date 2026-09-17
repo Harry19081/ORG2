@@ -52,8 +52,6 @@ export interface EditorHostContextValue {
   onFileSelectWithLine?: (path: string, line: number) => void;
   /** Cursor position change callback */
   onCursorPositionChange?: (position: CursorPosition | null) => void;
-  /** Update an active search tab title from its query */
-  onSearchTabTitleChange?: (tabId: string, query: string) => void;
   /** Sync git-diff local edits to tab bar unsaved indicator */
   onGitDiffUnsavedChange?: (hasUnsaved: boolean) => void;
   /** Sync binary preview edits to tab bar unsaved indicator */

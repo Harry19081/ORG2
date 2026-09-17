@@ -2,7 +2,7 @@
  * Renderer wrapper for `search` tabs.
  *
  * Renders `SearchEditorContent` through the unified dispatcher, pulling
- * repoPath + the result-click / title-change callbacks from the hoisted Code
+ * repoPath + the result-click callbacks from the hoisted Code
  * Editor host context and the query/options from tab data — a 1:1 mirror of
  * `TabContentRenderer`'s `case "search"` (including its `handleSearchResultClick`
  * line-aware navigation).
@@ -25,12 +25,8 @@ const LazyFallback = () => (
 );
 
 const SearchTabRenderer: React.FC<UnifiedTabContentProps> = memo(({ tab }) => {
-  const {
-    repoPath,
-    onFileSelect,
-    onFileSelectWithLine,
-    onSearchTabTitleChange,
-  } = useEditorHostContext();
+  const { repoPath, onFileSelect, onFileSelectWithLine } =
+    useEditorHostContext();
 
   const handleSearchResultClick = useCallback(
     (filePath: string, line: number, _column?: number) => {
@@ -51,7 +47,6 @@ const SearchTabRenderer: React.FC<UnifiedTabContentProps> = memo(({ tab }) => {
         repoPath={repoPath}
         initialQuery={String(tab.data.initialQuery || "")}
         initialOptions={tab.data.initialOptions as StoreSearchOptions}
-        onQueryChangeForTitle={onSearchTabTitleChange}
         onResultClick={handleSearchResultClick}
       />
     </Suspense>

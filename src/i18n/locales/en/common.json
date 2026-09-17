@@ -778,6 +778,7 @@
     "fileMayHaveBeenDeletedOrMoved": "The file may have been deleted or moved.",
     "editorCouldNotOpenFileMissing": "The editor could not be opened because the file was not found or removed",
     "enterSearchQueryToBegin": "Enter a search query to begin",
+    "pressEnterToSearch": "Press Enter to search",
     "unknownTabType": "Unknown tab type",
     "noWorkspaceFolders": "No workspace folders",
     "noRepoSelected": "No repository selected",

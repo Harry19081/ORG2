@@ -11,7 +11,7 @@ import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
-import { ArrowLeft01Icon, BlushBrush01Icon, HugeiconsIcon } from "@src/icons";
+import { ArrowLeft01Icon, CleanIcon, HugeiconsIcon } from "@src/icons";
 
 import { ICONS } from "../config";
 import { SPOTLIGHT_CLASSES, SPOTLIGHT_TOKENS } from "../constants";
@@ -220,7 +220,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
                   onClick={handleResetSearch}
                   icon={
                     <>
-                      <HugeiconsIcon icon={BlushBrush01Icon} size={14} />
+                      <HugeiconsIcon icon={CleanIcon} size={14} />
                       <span className="sr-only">
                         {t("common:actions.clear")}
                       </span>

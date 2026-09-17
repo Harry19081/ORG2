@@ -19,12 +19,7 @@ import {
 import Dropdown from "@src/components/Dropdown";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
-import {
-  Add01Icon,
-  BrushCleaningIcon,
-  HugeiconsIcon,
-  Layout01Icon,
-} from "@src/icons";
+import { Add01Icon, CleanIcon, HugeiconsIcon, Layout01Icon } from "@src/icons";
 
 import type { ScrollNavState } from "../../ChatHistory";
 
@@ -130,8 +125,8 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
               shape="round"
               icon={
                 <HugeiconsIcon
-                  icon={BrushCleaningIcon}
-                  data-icon="brush-cleaning"
+                  icon={CleanIcon}
+                  data-icon="clean"
                   size={13}
                   strokeWidth={2}
                 />

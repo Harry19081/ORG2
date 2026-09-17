@@ -72,6 +72,7 @@ import {
 } from "@src/util/dnd/sessionTabDrag";
 
 import TabContextMenu from "./TabContextMenu";
+import { blurHeaderInputOnPointerDown } from "./blurHeaderInputOnPointerDown";
 import { SortableTab, TabBarControls } from "./components";
 import { WorkstationTabContent } from "./components/WorkstationTabContent";
 import { TAB_BAR_HEIGHT, TAB_STRIP_SECTION_RULE_CLASS } from "./config";
@@ -380,6 +381,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
       <div
         ref={containerRef}
         data-pane-id={paneId}
+        onPointerDownCapture={blurHeaderInputOnPointerDown}
         data-session-tab-drop-target="workstation"
         data-tour-target={dataTourTarget}
         data-is-dragging={draggingTabId ? "true" : undefined}

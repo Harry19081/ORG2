@@ -778,6 +778,7 @@
     "fileMayHaveBeenDeletedOrMoved": "文件可能已被删除或移动。",
     "editorCouldNotOpenFileMissing": "无法打开编辑器，因为文件未找到或已被删除",
     "enterSearchQueryToBegin": "输入搜索查询以开始",
+    "pressEnterToSearch": "按 Enter 键搜索",
     "unknownTabType": "未知标签页类型",
     "noWorkspaceFolders": "没有工作区文件夹",
     "noRepoSelected": "No repository selected",

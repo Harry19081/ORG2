@@ -946,6 +946,7 @@
     "fileMayHaveBeenDeletedOrMoved": "Plik mógł zostać usunięty lub przeniesiony.",
     "editorCouldNotOpenFileMissing": "Nie można otworzyć edytora, ponieważ plik nie został znaleziony lub został usunięty",
     "enterSearchQueryToBegin": "Wprowadź zapytanie wyszukiwania, aby rozpocząć",
+    "pressEnterToSearch": "Naciśnij Enter, aby wyszukać",
     "unknownTabType": "Nieznany typ karty",
     "noWorkspaceFolders": "Brak folderów Workspace",
     "noRepoSelected": "Nie wybrano Repo",
