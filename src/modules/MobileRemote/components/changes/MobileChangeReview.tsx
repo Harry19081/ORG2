@@ -40,6 +40,7 @@ import {
   type ChangeScope,
   useChangeReview,
 } from "./useChangeReview";
+import { useReviewViewport } from "./useReviewViewport";
 
 const Editor = lazy(() => import("../transcript/MobileReadonlyEditor"));
 const iconStyle: React.CSSProperties = {
@@ -160,21 +161,23 @@ export function MobileChangeReview(props: Props) {
   ) : null;
   // Product policy: a successful empty turn has no footer. Keep an already
   // opened review mounted so refresh cannot dismiss another selected scope.
-  if (files?.length === 0) return panel;
   return (
     <>
-      <MobileChangeSummary
-        files={files}
-        online={props.online}
-        error={!!review.error}
-        expanded={expanded}
-        onToggle={() => setExpanded((value) => !value)}
-        onOpen={(path) => {
-          setSelected(path);
-          setOpen(true);
-        }}
-        onRetry={review.retry}
-      />
+      {files?.length !== 0 && (
+        <MobileChangeSummary
+          files={files}
+          online={props.online}
+          error={!!review.error}
+          refreshing={review.refreshing}
+          expanded={expanded}
+          onToggle={() => setExpanded((value) => !value)}
+          onOpen={(path) => {
+            setSelected(path);
+            setOpen(true);
+          }}
+          onRetry={review.retry}
+        />
+      )}
       {panel}
     </>
   );
@@ -349,12 +352,19 @@ function ReviewPanel(
       </div>
       {!props.online ? (
         <MobileChangeReviewState state="offline" />
-      ) : review.error ? (
+      ) : review.error && !review.value ? (
         <MobileChangeReviewState state="error" onRetry={review.retry} />
       ) : !review.value ? (
         <MobileChangeReviewState state="loading" />
       ) : (
         <>
+          {(review.refreshing || review.error) && (
+            <MobileChangeReviewState
+              state={review.error ? "refresh-error" : "refreshing"}
+              onRetry={review.retry}
+              compact
+            />
+          )}
           {!review.value.complete && (
             <details className="mobile-change-review__disclosure">
               <summary>{t("fileViewer.partial")}</summary>
@@ -427,18 +437,10 @@ function FileReview(
       ? expansion.value
       : (props.expandAll?.expanded ?? props.initialOpen));
   const [element, setElement] = useState<HTMLElement | null>(null);
-  const [onScreen, setOnScreen] = useState(false);
+  const { onScreen, retainedHeight } = useReviewViewport(element, expanded);
   useEffect(() => {
     if (props.selected) element?.scrollIntoView({ block: "nearest" });
   }, [element, props.selected]);
-  useEffect(() => {
-    if (!element) return;
-    const observer = new IntersectionObserver((entries) =>
-      setOnScreen(entries.some((entry) => entry.isIntersecting))
-    );
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [element]);
   const [before, setBefore] = useState(false);
   const [wrap, setWrap] = useState(true);
   const detail = useChangeReview(
@@ -464,7 +466,14 @@ function FileReview(
   const directory = parts.join("/");
   const copy = useMobileCopyText(content ?? "");
   return (
-    <section ref={setElement} className="mobile-change-review__file">
+    <section
+      ref={setElement}
+      className="mobile-change-review__file"
+      style={{
+        minHeight:
+          expanded && (!onScreen || !detail.value) ? retainedHeight : undefined,
+      }}
+    >
       <MobileChangeFileHeader
         file={file ?? props.file}
         expanded={expanded}
@@ -569,9 +578,16 @@ function FileReview(
               {t("changeReview.copyFailed")}
             </p>
           )}
+          {(detail.refreshing || (detail.error && detail.value)) && (
+            <MobileChangeReviewState
+              state={detail.error ? "refresh-error" : "refreshing"}
+              onRetry={detail.retry}
+              compact
+            />
+          )}
           {!props.online ? (
             <MobileChangeReviewState state="offline" compact />
-          ) : detail.error ? (
+          ) : detail.error && !detail.value ? (
             <MobileChangeReviewState
               state="error"
               onRetry={detail.retry}

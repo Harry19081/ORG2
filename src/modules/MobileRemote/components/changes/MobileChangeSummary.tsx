@@ -18,6 +18,7 @@ interface Props {
   files: readonly ChangeFile[] | undefined;
   online: boolean;
   error: boolean;
+  refreshing?: boolean;
   expanded: boolean;
   onToggle: () => void;
   onOpen: (path?: string) => void;
@@ -82,6 +83,7 @@ export function MobileChangeSummary({
   files,
   online,
   error,
+  refreshing = false,
   expanded,
   onToggle,
   onOpen,
@@ -112,7 +114,7 @@ export function MobileChangeSummary({
     <section
       className="mobile-change-review"
       aria-label={t("changeReview.title")}
-      aria-busy={loading}
+      aria-busy={loading || refreshing}
     >
       <div className="mobile-change-review__summary">
         <Button
@@ -159,10 +161,18 @@ export function MobileChangeSummary({
           />
         )}
       </div>
-      {!online || error ? (
+      {!online || error || refreshing ? (
         <div className="mobile-change-review__status">
           <p role="status" className="mobile-change-review__status-copy">
-            {t(!online ? "changeReview.offline" : "changeReview.loadFailed")}
+            {t(
+              !online
+                ? "changeReview.offline"
+                : error
+                  ? files
+                    ? "changeReview.refreshFailed"
+                    : "changeReview.loadFailed"
+                  : "changeReview.refreshing"
+            )}
           </p>
           {online && error && (
             <Button

@@ -54,19 +54,25 @@ export function useChangeReview(
   revision: string,
   filePath?: string
 ) {
-  const key = JSON.stringify([sessionId, roundId, scope, revision, filePath]);
+  // Tool/status revisions refresh this resource; they must not replace its reader.
+  const key = JSON.stringify([sessionId, roundId, scope, filePath]);
   const { runtime } = useMobileRemotePlatform();
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<{
     client: MobileRpcClient;
     key: string;
     attempt: number;
+    revision: string;
     value?: Review;
     error?: boolean;
   } | null>(null);
   // File viewers leave the viewport or collapse; do not retain their large
   // snapshots for the lifetime of the entire review panel.
-  if (!enabled && state !== null) setState(null);
+  if (
+    state !== null &&
+    (!enabled || state.client !== client || state.key !== key)
+  )
+    setState(null);
   useEffect(() => {
     if (!client || !enabled) return;
     const controller = new AbortController();
@@ -80,11 +86,21 @@ export function useChangeReview(
         .then(validateReview)
         .then((value) => {
           if (!controller.signal.aborted)
-            setState({ client, key, attempt, value });
+            setState({ client, key, attempt, revision, value });
         })
         .catch(() => {
           if (!controller.signal.aborted)
-            setState({ client, key, attempt, error: true });
+            setState((previous) => ({
+              client,
+              key,
+              attempt,
+              revision,
+              value:
+                previous?.client === client && previous.key === key
+                  ? previous.value
+                  : undefined,
+              error: true,
+            }));
         });
     }, 250);
     return () => {
@@ -100,17 +116,19 @@ export function useChangeReview(
     scope,
     filePath,
     attempt,
+    revision,
     runtime,
   ]);
   const current =
-    state?.client === client && state.key === key && state.attempt === attempt
-      ? state
-      : null;
+    enabled && state?.client === client && state.key === key ? state : null;
+  const settled = current?.revision === revision && current.attempt === attempt;
+  const error = settled ? current?.error : undefined;
   return {
+    refreshing: !!current?.value && !settled,
     value: current?.value,
-    error: current?.error,
+    error,
     retry: () => {
-      if (!client || !enabled || !current?.error) return;
+      if (!client || !enabled || !error) return;
       // Invalidate the failed result immediately. Repeated taps from the same
       // render may enqueue updates together; only the first starts a retry.
       setAttempt((pendingAttempt) =>

@@ -205,13 +205,14 @@ describe("useChangeReview", () => {
     expect(freshCall).toHaveBeenCalledTimes(1);
   });
 
-  it("coalesces revision bursts and clears previous successful data during refresh", async () => {
+  it("coalesces revision bursts while retaining the same resource during refresh", async () => {
     call.mockResolvedValue(review("before.ts"));
     await render();
     await advance();
     expect(current.value).toEqual(review("before.ts"));
     await render({ revision: "two" });
-    expect(current.value).toBeUndefined();
+    expect(current.value).toEqual(review("before.ts"));
+    expect(current.refreshing).toBe(true);
     await advance(100);
     await render({ revision: "three" });
     await advance(100);
@@ -320,3 +321,49 @@ describe("useChangeReview", () => {
     expect(current.value).toBeUndefined();
   });
 });
+
+it("keeps the last valid review through refresh failure and deduplicated retry", async () => {
+  call
+    .mockResolvedValueOnce(review("retained.ts"))
+    .mockRejectedValueOnce(new Error("offline"))
+    .mockResolvedValueOnce(review("updated.ts"));
+  await render();
+  await advance();
+  await render({ revision: "new" });
+  await advance();
+  expect(current.value).toEqual(review("retained.ts"));
+  expect(current.error).toBe(true);
+  expect(current.refreshing).toBe(false);
+  await act(async () => {
+    current.retry();
+    current.retry();
+  });
+  expect(current.value).toEqual(review("retained.ts"));
+  expect(current.error).toBeUndefined();
+  expect(current.refreshing).toBe(true);
+  await advance();
+  expect(current.value).toEqual(review("updated.ts"));
+  expect(current.refreshing).toBe(false);
+  expect(call).toHaveBeenCalledTimes(3);
+});
+
+it.each<Partial<Props>>([
+  { sessionId: "new-session" },
+  { roundId: "new-round" },
+  { scope: "workspace" },
+  { filePath: "new-file" },
+  { client: null },
+])(
+  "clears successful retained data immediately on identity change %j",
+  async (next) => {
+    call
+      .mockResolvedValueOnce(review("private.ts"))
+      .mockReturnValue(new Promise(() => {}));
+    await render();
+    await advance();
+    await render(next);
+    expect(current.value).toBeUndefined();
+    expect(current.error).toBeUndefined();
+    expect(current.refreshing).toBe(false);
+  }
+);
