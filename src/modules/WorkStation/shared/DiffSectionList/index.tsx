@@ -47,6 +47,7 @@ interface DiffSectionListProps<TFile extends DiffFileSectionData> {
   reviewSearchFiles?: readonly ReviewSearchFile[];
   loadReviewFile?: (path: string) => Promise<ReviewSearchFile | null>;
   viewMode: DiffViewMode;
+  wordWrap?: boolean;
   loading?: boolean;
   emptyTitle: string;
   emptySubtitle?: string;
@@ -102,6 +103,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
   reviewSearchFiles,
   loadReviewFile,
   viewMode,
+  wordWrap,
   loading = false,
   emptyTitle,
   emptySubtitle,
@@ -407,6 +409,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
           computeItemKey={(_index, item) => item.renderKey}
           overscanPx={600}
           estimatedItemHeight={DIFF_SECTION_ESTIMATED_HEIGHT}
+          preserveStickyDescendants
           onScroll={handleScroll}
           footer={hideBottomPadding ? undefined : <DiffListFooter />}
           itemContent={(index, { section, renderKey }) => {
@@ -440,6 +443,7 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
                     : undefined
                 }
                 viewMode={viewMode}
+                wordWrap={wordWrap}
                 defaultExpanded={
                   (reviewSearch.match?.path === section.file.path
                     ? true

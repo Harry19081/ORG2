@@ -270,7 +270,9 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
         lineNumbersEnabled={lineNumbers !== "off"}
         onLineNumbersChange={handleLineNumbersChange}
         wordWrapEnabled={wordWrap}
-        onWordWrapChange={setWordWrap}
+        onWordWrapChange={
+          viewMode === "split" && !fileHasConflicts ? undefined : setWordWrap
+        }
         highlightActiveLineEnabled={highlightActiveLine}
         onHighlightActiveLineChange={setHighlightActiveLine}
         onMoreSettings={onOpenSettings}

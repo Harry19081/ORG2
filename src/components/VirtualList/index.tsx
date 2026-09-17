@@ -93,6 +93,13 @@ interface VirtualListProps<T> {
   /** Off-screen buffer in PIXELS (Virtuoso's unit), converted to rows here. */
   overscanPx?: number;
   /**
+   * Position ordinary rows with `top` instead of a transform so an item's own
+   * `position: sticky` descendants resolve against this list's scroller.
+   * Leave disabled for ordinary lists, where transform positioning remains the
+   * cheaper default.
+   */
+  preserveStickyDescendants?: boolean;
+  /**
    * Ascending row indices that pin to the top of the scroller while the
    * viewport is inside their section — group headers. The active one stays
    * rendered even when scrolled out of range, which is how a sticky header
@@ -121,6 +128,7 @@ function VirtualListImpl<T>(
     fixedItemHeight,
     estimatedItemHeight,
     overscanPx = DEFAULT_OVERSCAN_PX,
+    preserveStickyDescendants = false,
     stickyIndices = NO_STICKY_INDICES,
     endReached,
     footer,
@@ -232,10 +240,10 @@ function VirtualListImpl<T>(
     >
       <div style={spacerStyle}>
         {virtualItems.map((virtualItem) => {
-          // A sticky header is pinned with `top`, never a transform: a
-          // transformed element establishes its own containing block, which
-          // makes `position: sticky` resolve against the row instead of the
-          // scroller and the header stops sticking.
+          // A sticky group row is pinned with `top`, never a transform. Rows
+          // whose content owns a sticky descendant also opt out of transforms:
+          // a transformed wrapper establishes a containing block that prevents
+          // that descendant from pinning to this scroller.
           const isSticky = virtualItem.index === activeStickyIndex;
           return (
             <div
@@ -250,7 +258,9 @@ function VirtualListImpl<T>(
               style={{
                 ...(isSticky
                   ? null
-                  : { transform: `translateY(${virtualItem.start}px)` }),
+                  : preserveStickyDescendants
+                    ? { top: virtualItem.start }
+                    : { transform: `translateY(${virtualItem.start}px)` }),
                 ...(fixedItemHeight ? { height: fixedItemHeight } : null),
               }}
             >

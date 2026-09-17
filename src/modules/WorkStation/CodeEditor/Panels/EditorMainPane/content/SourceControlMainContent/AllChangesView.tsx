@@ -198,6 +198,7 @@ const AllChangesView: React.FC<AllChangesViewProps> = ({
       loadReviewFile={loadSearchFile}
       sections={sections}
       viewMode={viewMode}
+      wordWrap={viewMode === "split" ? true : undefined}
       loading={loading}
       emptyTitle={
         staged ? t("placeholders.noStagedChanges") : t("placeholders.noChanges")
