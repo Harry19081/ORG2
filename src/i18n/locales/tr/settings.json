@@ -139,9 +139,9 @@
       "vi": "Vietnamca",
       "pt": "Portekizce",
       "pl": "Lehçe",
+      "zh-Hant": "Geleneksel Çince",
       "hi": "Hintçe",
-      "id": "Endonezce",
-      "zh-Hant": "Geleneksel Çince"
+      "id": "Endonezce"
     },
     "layout": "Düzen",
     "sidebar": "Kenar çubuğu",
@@ -939,7 +939,30 @@
     "authentication": "Kimlik doğrulama",
     "desktopScope": "Claude Desktop, Claude Code CLI’den ayrı yapılandırılır; uyguladıktan sonra Desktop’ı tamamen kapatıp yeniden açın",
     "desktopApplied": "Yapılandırma kaydedildi — Claude Desktop’ı tamamen kapatıp yeniden açın",
-    "desktopRestored": "Önceki yapılandırma geri yüklendi — Claude Desktop’ı tamamen kapatıp yeniden açın"
+    "desktopRestored": "Önceki yapılandırma geri yüklendi — Claude Desktop’ı tamamen kapatıp yeniden açın",
+    "advancedDescription": "Özel API bağlantıları ve tek seferlik kimlik bilgisi taşıma",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Uygulama denetleniyor…",
+      "unavailable": "Bu yüklü sürüm için kullanılamıyor",
+      "notInstalled": "Yüklü değil",
+      "original": "Uygulamanın özgün ayarını kullanıyor",
+      "open": "Uygulamayı aç",
+      "connected": "Uygulama artık geçerli ORG2 çalışma alanını izliyor",
+      "opened": "Uygulama açıldı",
+      "disconnected": "Uygulamanın önceki ayarı geri yüklendi",
+      "actionFailed": "Bu uygulama bağlantısı güncellenemedi",
+      "workspaceNumber": "Hizmet {{index}} / {{count}}",
+      "openTerminal": "Terminali aç",
+      "terminalOpened": "Terminal açıldı",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "En fazla 8 paket ve varsayılan bir model seçin, ardından uygulama içinde paketler arasında geçiş yapın",
+      "defaultModel": "Varsayılan model",
+      "packageLimit": "En fazla 8 paket seçin"
+    }
   },
   "claudeProfiles": {
     "new": "Yeni profil",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Güncelleme mevcut",
     "updateAvailableDesc": "Uygulama genelinde 99.0.0 sürümü için güncelleme göstergelerini göster — güncelleme işlemleri yalnızca önizlemeyi açar"
+  },
+  "managedUsage": {
+    "cancel": "İptal",
+    "authorize": "Paketi etkinleştir",
+    "rates": "Milyon token başına girdi / çıktı",
+    "wallet": "Cüzdanı aç",
+    "priceRange": "Paket aralığı: resmî fiyatın %{{min}}–%{{max}} oranı",
+    "rangeUnavailable": "Paket fiyat aralığı kullanılamıyor. Paketi etkinleştirmeden önce kataloğu yenileyin.",
+    "walletIncluded": "Dahil olan tüm modeller cüzdan bakiyenizi kullanır.",
+    "walletUnavailable": "Cüzdan faturalandırması henüz kullanılamıyor. Hizmet güncellendikten sonra yenileyin.",
+    "walletConsent": "Bu paketteki tüm modelleri gösterilen fiyat aralığında etkinleştirin. Gerçek kullanım doğrudan cüzdan bakiyenizden tahsil edilir; ayrı bir paket bütçesi gerekmez."
   }
 }

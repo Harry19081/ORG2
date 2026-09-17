@@ -38,7 +38,7 @@ import {
 } from "@src/engines/SessionCore/hooks/session/messageQueuePersistence";
 import {
   isUserIntentSendError,
-  setOptimisticQueueUserDelivery,
+  prepareOptimisticQueueUserRetry,
 } from "@src/engines/SessionCore/services/userIntentDispatch";
 import { deleteSession as deleteCachedSession } from "@src/engines/SessionCore/storage/cacheAdapter";
 import { mintTurnIntentId } from "@src/engines/SessionCore/sync/adapters/shared/eventFactories";
@@ -231,26 +231,18 @@ export function useEditUserMessage(
             // bubble or loses serialized mention/image payloads.
             try {
               await flushMessageQueuePersistence(store);
-              const pendingUpdated = await setOptimisticQueueUserDelivery(
-                {
-                  // Queue admission owns the concrete EventStore projection
-                  // session. The mounted surface can be the canonical root
-                  // while this row lives on a local execution child.
-                  sessionId: durableFailedQueueRow.sessionId,
-                  visibleText: projection.displayContent,
-                  imageDataUrls:
-                    resendImages ?? durableFailedQueueRow.imageDataUrls,
-                  turnIntentId: retryTurnIntentId,
-                  queueMessageId: durableFailedQueueRow.id,
-                  createdAt: durableFailedQueueRow.createdAt,
-                },
-                "pending"
-              );
-              if (!pendingUpdated) {
-                throw new Error(
-                  "failed delivery projection is no longer available"
-                );
-              }
+              await prepareOptimisticQueueUserRetry({
+                // Queue admission owns the concrete EventStore projection
+                // session. The mounted surface can be the canonical root
+                // while this row lives on a local execution child.
+                sessionId: durableFailedQueueRow.sessionId,
+                visibleText: projection.displayContent,
+                imageDataUrls:
+                  resendImages ?? durableFailedQueueRow.imageDataUrls,
+                turnIntentId: retryTurnIntentId,
+                queueMessageId: durableFailedQueueRow.id,
+                createdAt: durableFailedQueueRow.createdAt,
+              });
             } catch (retryPreparationError) {
               // The old failed bubble is still authoritative. Restore its
               // matching held queue owner instead of leaving a new pending

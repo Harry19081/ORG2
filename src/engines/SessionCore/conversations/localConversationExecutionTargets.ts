@@ -14,9 +14,10 @@ import {
   isCliSession,
 } from "@src/util/session/sessionDispatch";
 
-import type {
-  ConversationRootLocator,
-  LocalConversationTarget,
+import {
+  type ConversationRootLocator,
+  type LocalConversationTarget,
+  isLocalConversationTarget,
 } from "./conversationTypes";
 import { conversationExecutionParentId } from "./localConversationExecutionIdentity";
 import {
@@ -187,20 +188,28 @@ async function readExecutionRow(
     if (!row) return null;
     const cliAgentType = optionalString(row.cliAgentType);
     const accountId = optionalString(row.accountId);
+    const credentialSource = optionalString(row.credentialSource);
     const updatedAt = optionalString(row.updatedAt);
-    if (!cliAgentType || (!accountId && cliAgentType !== "claude_code")) {
+    if (
+      !cliAgentType ||
+      (!accountId && !credentialSource && cliAgentType !== "claude_code")
+    ) {
       return null;
     }
-    return {
-      target: {
-        cliAgentType,
-        accountId,
-        model: optionalString(row.model),
-        workspaceRepoPath:
-          optionalString(row.worktreePath) ?? optionalString(row.repoPath),
-      },
-      updatedAt,
+    const target = {
+      cliAgentType,
+      accountId,
+      credentialSource,
+      model: optionalString(row.model),
+      workspaceRepoPath:
+        optionalString(row.worktreePath) ?? optionalString(row.repoPath),
     };
+    if (
+      row.credentialSource != null &&
+      (!credentialSource || !isLocalConversationTarget(target))
+    )
+      return null;
+    return { target, updatedAt };
   }
 
   const row = await getAgentSession(sessionId);
@@ -209,16 +218,14 @@ async function readExecutionRow(
   const accountId = optionalString(row.accountId);
   const model = optionalString(row.model);
   const updatedAt = optionalString(row.updatedAt);
-  if (!agentDefinitionId || !accountId || !model) return null;
-  return {
-    target: {
-      agentDefinitionId,
-      accountId,
-      model,
-      workspaceRepoPath: optionalString(row.workspacePath),
-    },
-    updatedAt,
+  const target = {
+    agentDefinitionId,
+    accountId,
+    credentialSource: row.credentialSource ?? undefined,
+    model,
+    workspaceRepoPath: optionalString(row.workspacePath),
   };
+  return isLocalConversationTarget(target) ? { target, updatedAt } : null;
 }
 
 /**
@@ -277,6 +284,7 @@ export async function candidateMatchesTarget(
       target.workspaceRepoPath ?? undefined
     ) &&
     sameOptional(existing.accountId, target.accountId) &&
+    sameOptional(existing.credentialSource, target.credentialSource) &&
     sameOptional(existing.agentDefinitionId, target.agentDefinitionId);
   if (!matches) {
     log.info(

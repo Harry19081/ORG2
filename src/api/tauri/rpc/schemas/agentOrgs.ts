@@ -1,6 +1,10 @@
 import { z } from "zod/v4";
 
-import { ModelTypeSchema, NativeHarnessTypeSchema } from "./validation";
+import {
+  CliAgentTypeSchema,
+  ModelTypeSchema,
+  NativeHarnessTypeSchema,
+} from "./validation";
 
 const JsonRecordSchema = z.record(z.string(), z.unknown());
 
@@ -128,6 +132,9 @@ export const PlanApprovalPolicySchema = z.enum([
   "automatic",
 ]);
 export const OrgMemberRuntimeConfigSchema = z.object({
+  credentialSource: z.string().startsWith("market:").max(1024).optional(),
+  marketProfileId: z.string().startsWith("market:").max(512).optional(),
+  cliAgentType: CliAgentTypeSchema.optional(),
   keySource: z.enum(["own_key", "hosted_key"]).optional(),
   accountId: z.string().optional(),
   model: z.string().optional(),

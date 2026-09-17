@@ -15,7 +15,8 @@ use super::super::replay::{
     claude_local_command_output, claude_tool_result_text,
 };
 use super::super::types::{
-    is_claude_compact_summary, is_harness_injected_user_line, ClaudeJsonlLine,
+    is_claude_compact_summary, is_harness_injected_user_line, ClaudeControlEnvelope,
+    ClaudeJsonlLine,
 };
 use super::super::CLAUDE_CODE_PROVIDER_SLUG;
 
@@ -130,6 +131,7 @@ pub(in crate::sources::claude_code::history) fn index_claude_user_turns(
     let mut start_offset = 0u64;
     let mut turns = Vec::new();
     let mut awaiting_local_command_output = false;
+    let mut control_envelope = ClaudeControlEnvelope::default();
 
     loop {
         line.clear();
@@ -141,6 +143,15 @@ pub(in crate::sources::claude_code::history) fn index_claude_user_turns(
         }
         let current_offset = start_offset;
         start_offset = start_offset.saturating_add(bytes_read as u64);
+        // Most assistant bodies stay on the cheap raw-index path. Only a
+        // synthetic candidate needs provenance parsing; no second file scan.
+        if line_might_contain_json_string_field(&line, b"model", b"<synthetic>") {
+            if let Ok(parsed) = serde_json::from_slice::<ClaudeJsonlLine>(&line) {
+                if control_envelope.observe(&parsed) {
+                    continue;
+                }
+            }
+        }
         // A line that does not become a turn header counts toward the previous
         // turn's body-size surrogate when the parser could render it.
         let count_toward_previous_turn = |turns: &mut Vec<ClaudeIndexedTurn>| {
@@ -161,6 +172,9 @@ pub(in crate::sources::claude_code::history) fn index_claude_user_turns(
             awaiting_local_command_output = false;
         }
         if !line_might_be_claude_user(&line) || line_is_obvious_tool_result(&line) {
+            if line_might_be_claude_user(&line) && line_is_obvious_tool_result(&line) {
+                control_envelope.clear();
+            }
             count_toward_previous_turn(&mut turns);
             continue;
         }
@@ -168,6 +182,13 @@ pub(in crate::sources::claude_code::history) fn index_claude_user_turns(
             count_toward_previous_turn(&mut turns);
             continue;
         };
+        control_envelope.observe(&parsed);
+        if parsed.r#type == "user"
+            && !is_claude_compact_summary(&parsed)
+            && is_harness_injected_user_line(&parsed)
+        {
+            continue;
+        }
         if parsed.r#type != "user"
             || is_claude_compact_summary(&parsed)
             || is_harness_injected_user_line(&parsed)

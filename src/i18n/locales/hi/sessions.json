@@ -177,7 +177,8 @@
           "output": "आउटपुट",
           "cache": "कैश रीड",
           "cost": "लागत",
-          "filterBySession": "इस सत्र तक फ़िल्टर करें"
+          "filterBySession": "इस सत्र तक फ़िल्टर करें",
+          "purpose": "उद्देश्य"
         },
         "pricing": {
           "input": "इनपुट",
@@ -202,7 +203,17 @@
           "title": "अभी तक कोई उपयोग नहीं",
           "subtitle": "कुछ कोडिंग सत्र चलाएँ या स्कैन करें, उनका टोकन उपयोग यहाँ दिखाई देगा।"
         },
-        "loadError": "उपयोग डेटा लोड करने में विफल"
+        "loadError": "उपयोग डेटा लोड करने में विफल",
+        "purposes": {
+          "main": "मुख्य उत्तर",
+          "session_title": "सत्र का शीर्षक",
+          "session_memory": "सत्र मेमोरी",
+          "workspace_memory": "वर्कस्पेस मेमोरी",
+          "auto_dream": "मेमोरी समेकन",
+          "skill_prefetch": "कौशल चयन",
+          "memory_prefetch": "मेमोरी पुनर्प्राप्ति",
+          "compaction": "संदर्भ संपीड़न"
+        }
       },
       "sessions_one": "{{count}} सत्र",
       "sessions_other": "{{count}} सत्र",

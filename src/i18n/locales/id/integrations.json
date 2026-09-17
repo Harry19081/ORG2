@@ -332,7 +332,7 @@
     "claudeCodeDetectErrorHint": "Masuk dengan browser tersemat, atau jalankan claude auth login lalu coba deteksi lagi",
     "refreshModels": {
       "button": "Segarkan model",
-      "failed": "Gagal menyegarkan model: {{error}}"
+      "failed": "Ruang kerja Market ini tidak tersedia. Buka kembali Market untuk memperbarui otorisasi."
     },
     "revalidate": "Validasi ulang"
   },
@@ -1657,7 +1657,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Impor gagal: {{message}}",
-    "partialFailure": "Beberapa kredensial tidak dapat diimpor:"
+    "partialFailure": "Beberapa kredensial tidak dapat diimpor:",
+    "importSucceeded": "Disimpan ke Akun: {{names}}. Kredensial yang diimpor kini tersedia sebagai koneksi yang dapat digunakan kembali."
   },
   "skills": {
     "shareToOrg": "Bagikan ke organisasi",
@@ -1665,5 +1666,14 @@
     "sharedToOrg": "Skill dibagikan ke organisasi",
     "shareToOrgHint": "Anggota organisasi menerima snapshot skill ini saat ini; bagikan lagi setelah mengedit untuk menerbitkan pembaruan",
     "shareOrgPlaceholder": "Organisasi"
+  },
+  "marketConnection": {
+    "loadingPurchases": "Memuat paket resmi…",
+    "purchasesFailed": "Tidak dapat memuat paket resmi. Coba lagi.",
+    "platformUnavailable": "Koneksi pembeli Market tidak tersedia di platform ini karena penyimpanan kredensial yang aman tidak didukung",
+    "authorizationSaved": "Otorisasi Market disimpan. Pilih paket resmi dan model di ORG2.",
+    "failed": "Tidak dapat terhubung ke Market. Silakan coba lagi.",
+    "title": "Paket resmi",
+    "launchFailed": "Tidak dapat mengaktifkan paket yang dipilih. Segarkan katalog dan periksa saldo dompet serta otorisasi penggunaan."
   }
 }

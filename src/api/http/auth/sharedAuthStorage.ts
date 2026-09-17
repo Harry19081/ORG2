@@ -3,6 +3,12 @@ import { isTauri } from "@tauri-apps/api/core";
 import { appDataDir, resolve } from "@tauri-apps/api/path";
 import { LazyStore } from "@tauri-apps/plugin-store";
 
+import {
+  serializedCloudOwner,
+  suspendNativeCloudOwner,
+  synchronizeNativeCloudOwner,
+} from "./nativeCloudOwner";
+
 /**
  * Auth storage shared by the primary ORG2 app and the dedicated dev identity.
  * Tauri dev and the bundled app have different origins, so
@@ -53,6 +59,69 @@ let storePromise: Promise<LazyStore> | null = null;
 let operationQueue: Promise<void> = Promise.resolve();
 let initializePromise: Promise<void> | null = null;
 let synchronizePromise: Promise<void> | null = null;
+// Invocation order, not authorization. Native owns identity verification and
+// epochs; this single pending transition only coordinates durable writes.
+let projectedCloudOwner: string | null | undefined;
+let cloudTransition: { epoch: Promise<number> } | null = null;
+let cloudWriteNeedsRecovery = false;
+let cloudWriteGeneration = 0;
+let nativeOwnerReady: Promise<void> = Promise.resolve();
+let nativeOwnerFailed = false;
+let nativeOwnerSettled = true;
+function ownerChangeSignal() {
+  let resolve!: () => void;
+  const promise = new Promise<void>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
+let nativeOwnerChanged = ownerChangeSignal();
+
+function trackNativeOwnerReady(operation: Promise<void>): Promise<void> {
+  nativeOwnerReady = operation;
+  nativeOwnerFailed = false;
+  nativeOwnerSettled = false;
+  nativeOwnerChanged.resolve();
+  nativeOwnerChanged = ownerChangeSignal();
+  void operation.then(
+    () => {
+      if (nativeOwnerReady === operation) {
+        nativeOwnerSettled = true;
+        nativeOwnerChanged.resolve();
+      }
+    },
+    () => {
+      if (nativeOwnerReady === operation) {
+        nativeOwnerFailed = true;
+        nativeOwnerSettled = true;
+        nativeOwnerChanged.resolve();
+      }
+    }
+  );
+  return operation;
+}
+
+/** Only Package entry points wait for native verification, never App startup. */
+export async function awaitNativeCloudOwnerReady(): Promise<void> {
+  if (!isTauri()) return;
+  // A subsequent explicit Package action can retry a failed transition using
+  // canonical local auth. Do not retry automatically in the background.
+  if (nativeOwnerFailed)
+    void writeCloudAuth(
+      localValue(SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY),
+      true
+    ).catch(() => {});
+  if (nativeOwnerSettled) return nativeOwnerReady;
+  for (;;) {
+    const pending = nativeOwnerReady;
+    try {
+      await Promise.race([pending, nativeOwnerChanged.promise]);
+    } catch (error) {
+      if (pending === nativeOwnerReady) throw error;
+    }
+    if (pending === nativeOwnerReady) return;
+  }
+}
 
 function localValue(key: string): string | null {
   if (typeof localStorage === "undefined") return null;
@@ -97,6 +166,75 @@ function enqueueStoreOperation<T>(operation: () => Promise<T>): Promise<T> {
     () => undefined
   );
   return result;
+}
+
+function normalizedCloudValue(value: string | null): string | null {
+  return value === "null" ? null : value;
+}
+
+function writeCloudAuth(
+  value: string | null,
+  requireCurrentLocalValue = false
+): Promise<void> {
+  const currentMatches = () =>
+    normalizedCloudValue(localValue(SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY)) ===
+    normalizedCloudValue(value);
+  if (requireCurrentLocalValue && !currentMatches()) {
+    return Promise.reject(new Error("Cloud auth write was superseded"));
+  }
+  const generation = ++cloudWriteGeneration;
+  const previous =
+    projectedCloudOwner === undefined
+      ? serializedCloudOwner(localValue(SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY))
+      : projectedCloudOwner;
+  const next = serializedCloudOwner(value);
+  projectedCloudOwner = next;
+  if (previous !== next || cloudWriteNeedsRecovery) {
+    // Start before the atom publishes the new local value. Do not wait behind
+    // unrelated store writes while old native requests retain their owner.
+    const epoch = suspendNativeCloudOwner();
+    void epoch.catch(() => {});
+    cloudTransition = { epoch };
+    cloudWriteNeedsRecovery = false;
+  }
+  const transition = cloudTransition;
+  const persisted = enqueueStoreOperation(async () => {
+    const epoch = transition ? await transition.epoch : null;
+    const sharedStore = await getStore();
+    await reloadStore(sharedStore);
+    const snapshot = await readStoreSnapshot(sharedStore);
+    await migrateLocalAuthOnce(sharedStore, snapshot);
+    if (requireCurrentLocalValue && !currentMatches()) {
+      throw new Error("Cloud auth write was superseded");
+    }
+    if (value === null) {
+      await sharedStore.delete(SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY);
+    } else {
+      await sharedStore.set(SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY, value);
+    }
+    await sharedStore.save();
+    return epoch;
+  });
+  const ready = persisted
+    .then(async (epoch) => {
+      // Native verification/cache retirement must not hold the durable-write
+      // queue: a newer logout must save even while an old Keychain prompt waits.
+      await synchronizeNativeCloudOwner(epoch);
+      if (
+        generation === cloudWriteGeneration &&
+        cloudTransition === transition
+      ) {
+        cloudTransition = null;
+        cloudWriteNeedsRecovery = false;
+      }
+    })
+    .catch((error: unknown) => {
+      // A failed write/verification must not silently unpark the old owner.
+      // A later explicit write can establish a fresh native transition.
+      if (generation === cloudWriteGeneration) cloudWriteNeedsRecovery = true;
+      throw error;
+    });
+  return trackNativeOwnerReady(ready);
 }
 
 async function reloadStore(sharedStore: LazyStore): Promise<void> {
@@ -179,13 +317,25 @@ function notifySharedAuthSynchronized(): void {
 
 async function initializeOrSynchronize(): Promise<void> {
   if (!isTauri()) return;
+  const generation = cloudWriteGeneration;
 
   await enqueueStoreOperation(async () => {
     const sharedStore = await getStore();
     await reloadStore(sharedStore);
     const snapshot = await readStoreSnapshot(sharedStore);
     await migrateLocalAuthOnce(sharedStore, snapshot);
+    // A focus read started before a local logout/account change must not
+    // overwrite the new atom state while its durable write is queued.
+    if (generation !== cloudWriteGeneration) return;
     copySharedAuthToLocal(snapshot);
+    projectedCloudOwner = serializedCloudOwner(
+      localValue(SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY)
+    );
+    // Market verification may be offline while ordinary Cloud auth hydration
+    // is still valid. Native keeps Market gated and retries on the next sync;
+    // existing auth consumers must still receive the canonical snapshot.
+    if (!cloudTransition)
+      void trackNativeOwnerReady(synchronizeNativeCloudOwner()).catch(() => {});
     notifySharedAuthSynchronized();
   });
 }
@@ -207,7 +357,12 @@ export function initializeSharedServiceAuthStorage(): Promise<void> {
  */
 export function synchronizeSharedServiceAuthStorage(): Promise<void> {
   if (synchronizePromise) return synchronizePromise;
-  synchronizePromise = initializeOrSynchronize().finally(() => {
+  // Preserve a local logout/account change if its earlier durable write failed;
+  // copying the old disk snapshot first would resurrect that discarded owner.
+  const retry = cloudWriteNeedsRecovery
+    ? writeCloudAuth(localValue(SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY), true)
+    : Promise.resolve();
+  synchronizePromise = retry.then(initializeOrSynchronize).finally(() => {
     synchronizePromise = null;
   });
   return synchronizePromise;
@@ -232,6 +387,11 @@ export const sharedServiceAuthStorage: StringStorage = {
       return;
     }
 
+    if (key === SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY) {
+      await writeCloudAuth(value);
+      return;
+    }
+
     await enqueueStoreOperation(async () => {
       const sharedStore = await getStore();
       await reloadStore(sharedStore);
@@ -245,6 +405,11 @@ export const sharedServiceAuthStorage: StringStorage = {
   async removeItem(key) {
     if (!isTauri()) {
       setLocalValue(key, undefined);
+      return;
+    }
+
+    if (key === SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY) {
+      await writeCloudAuth(null);
       return;
     }
 
@@ -286,16 +451,7 @@ export async function awaitMirroredOrg2CloudAuth(
   serialized: string | null
 ): Promise<void> {
   if (!isTauri()) return;
-  if (serialized === null) {
-    await sharedServiceAuthStorage.removeItem(
-      SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY
-    );
-    return;
-  }
-  await sharedServiceAuthStorage.setItem(
-    SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY,
-    serialized
-  );
+  await writeCloudAuth(serialized, true);
 }
 
 export const __SHARED_AUTH_STORAGE_INTERNALS = {

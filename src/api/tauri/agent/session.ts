@@ -483,6 +483,7 @@ export interface SessionLaunchParams {
   workspacePath?: string;
   keySource?: string;
   accountId?: string;
+  credentialSource?: string;
   model?: string;
   nativeHarnessType?: NativeHarnessType;
   platform?: CliAgentType;
@@ -535,6 +536,7 @@ export interface SessionLaunchResult {
   model?: string | null;
   cliAgentType?: CliAgentType | null;
   accountId?: string | null;
+  credentialSource?: string | null;
   agentOrgId?: string | null;
   agentOrgRunId?: string | null;
   orgId?: string | null;

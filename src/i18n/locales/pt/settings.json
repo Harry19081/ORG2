@@ -139,9 +139,9 @@
       "vi": "Vietnamita",
       "pt": "Português",
       "pl": "Polonês",
+      "zh-Hant": "Chinês tradicional",
       "hi": "Hindi",
-      "id": "Indonésio",
-      "zh-Hant": "Chinês tradicional"
+      "id": "Indonésio"
     },
     "layout": "Layout",
     "sidebar": "Barra lateral",
@@ -939,7 +939,30 @@
     "authentication": "Autenticação",
     "desktopScope": "Configura o Claude Desktop separadamente do Claude Code CLI; encerre e reabra o Desktop após aplicar",
     "desktopApplied": "Configuração salva — encerre completamente e reabra o Claude Desktop",
-    "desktopRestored": "Configuração anterior restaurada — encerre completamente e reabra o Claude Desktop"
+    "desktopRestored": "Configuração anterior restaurada — encerre completamente e reabra o Claude Desktop",
+    "advancedDescription": "Conexões de API personalizadas e migração única de credenciais",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Verificando aplicativo…",
+      "unavailable": "Indisponível para esta versão instalada",
+      "notInstalled": "Não instalado",
+      "original": "Usando a configuração original do aplicativo",
+      "open": "Abrir aplicativo",
+      "connected": "O aplicativo agora segue o espaço atual do ORG2",
+      "opened": "Aplicativo aberto",
+      "disconnected": "A configuração anterior do aplicativo foi restaurada",
+      "actionFailed": "Não foi possível atualizar esta conexão",
+      "workspaceNumber": "Serviço {{index}} de {{count}}",
+      "openTerminal": "Abrir terminal",
+      "terminalOpened": "Terminal aberto",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Selecione até 8 pacotes e um modelo padrão para alternar entre pacotes no aplicativo",
+      "defaultModel": "Modelo padrão",
+      "packageLimit": "Selecione até 8 pacotes"
+    }
   },
   "claudeProfiles": {
     "new": "Novo perfil",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Atualização disponível",
     "updateAvailableDesc": "Mostrar indicadores de atualização em todo o aplicativo com a versão 99.0.0 — as ações apenas abrem a prévia"
+  },
+  "managedUsage": {
+    "cancel": "Cancelar",
+    "authorize": "Ativar pacote",
+    "rates": "Entrada / saída por milhão de tokens",
+    "wallet": "Abrir carteira",
+    "priceRange": "Faixa do pacote: {{min}}%–{{max}}% do preço oficial",
+    "rangeUnavailable": "A faixa de preços do pacote está indisponível. Atualize o catálogo antes de ativar o pacote.",
+    "walletIncluded": "Todos os modelos incluídos utilizam o saldo da sua carteira.",
+    "walletUnavailable": "A cobrança pela carteira ainda não está disponível. Atualize após a atualização do serviço.",
+    "walletConsent": "Ative todos os modelos deste pacote na faixa de preços exibida. O uso real é cobrado diretamente do saldo da sua carteira; não é necessário um orçamento separado para o pacote."
   }
 }

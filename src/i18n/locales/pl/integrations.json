@@ -330,7 +330,7 @@
     "claudeCodeDetectErrorHint": "Zaloguj się przez osadzoną przeglądarkę albo uruchom claude auth login i spróbuj wykryć ponownie",
     "refreshModels": {
       "button": "Odśwież listę modeli Cursor",
-      "failed": "Odświeżanie z Cursor nie powiodło się: {{error}}"
+      "failed": "Ten obszar roboczy Market jest niedostępny. Otwórz ponownie Market, aby odświeżyć autoryzację."
     },
     "revalidate": "Zweryfikuj ponownie",
     "confirmRemoveActiveSessions_one": "{{count}} aktywna sesja nadal używa tego konta i zakończy się błędem w następnej turze:",
@@ -1657,7 +1657,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Import nie powiódł się: {{message}}",
-    "partialFailure": "Nie udało się zaimportować niektórych poświadczeń:"
+    "partialFailure": "Nie udało się zaimportować niektórych poświadczeń:",
+    "importSucceeded": "Zapisano w Kontach: {{names}}. Zaimportowane dane logowania są teraz dostępne jako połączenia wielokrotnego użytku."
   },
   "skills": {
     "shareToOrg": "Udostępnij organizacji",
@@ -1665,5 +1666,14 @@
     "sharedToOrg": "Skill udostępniony organizacji",
     "shareToOrgHint": "Członkowie organizacji otrzymują bieżącą migawkę tego skilla; po edycji udostępnij ponownie, aby opublikować aktualizację",
     "shareOrgPlaceholder": "Organizacja"
+  },
+  "marketConnection": {
+    "loadingPurchases": "Loading official packages…",
+    "purchasesFailed": "Could not load official packages. Try again.",
+    "platformUnavailable": "Połączenia kupującego Market są niedostępne na tej platformie, ponieważ nie obsługuje ona bezpiecznego przechowywania danych uwierzytelniających",
+    "authorizationSaved": "Market authorization saved. Choose an official package and model in ORG2.",
+    "failed": "Nie udało się połączyć z Market. Spróbuj ponownie.",
+    "title": "Official packages",
+    "launchFailed": "Could not enable the selected package. Refresh the catalog and check wallet funds and usage authorization."
   }
 }

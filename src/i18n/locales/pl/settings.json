@@ -139,9 +139,9 @@
       "vi": "Wietnamski",
       "pt": "Portugalski",
       "pl": "Polski",
+      "zh-Hant": "Chiński tradycyjny",
       "hi": "Hindi",
-      "id": "Indonezyjski",
-      "zh-Hant": "Chiński tradycyjny"
+      "id": "Indonezyjski"
     },
     "layout": "Układ",
     "sidebar": "Pasek boczny",
@@ -939,7 +939,30 @@
     "authentication": "Uwierzytelnianie",
     "desktopScope": "Konfiguruje Claude Desktop niezależnie od Claude Code CLI; po zastosowaniu zamknij całkowicie aplikację i otwórz ją ponownie",
     "desktopApplied": "Zapisano konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
-    "desktopRestored": "Przywrócono poprzednią konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie"
+    "desktopRestored": "Przywrócono poprzednią konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
+    "advancedDescription": "Niestandardowe połączenia API i jednorazowy import poświadczeń",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Sprawdzanie aplikacji…",
+      "unavailable": "Niedostępne dla tej zainstalowanej wersji",
+      "notInstalled": "Nie zainstalowano",
+      "original": "Używa pierwotnej konfiguracji aplikacji",
+      "open": "Otwórz aplikację",
+      "connected": "Aplikacja korzysta teraz z bieżącego obszaru ORG2",
+      "opened": "Otwarto aplikację",
+      "disconnected": "Przywrócono poprzednią konfigurację aplikacji",
+      "actionFailed": "Nie udało się zaktualizować tego połączenia",
+      "workspaceNumber": "Usługa {{index}} z {{count}}",
+      "openTerminal": "Otwórz terminal",
+      "terminalOpened": "Terminal otwarty",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Wybierz do 8 pakietów i model domyślny, aby przełączać pakiety w aplikacji",
+      "defaultModel": "Model domyślny",
+      "packageLimit": "Wybierz do 8 pakietów"
+    }
   },
   "claudeProfiles": {
     "new": "Nowy profil",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Dostępna aktualizacja",
     "updateAvailableDesc": "Pokaż wskaźniki aktualizacji w całej aplikacji dla wersji 99.0.0 — akcje aktualizacji otwierają tylko podgląd"
+  },
+  "managedUsage": {
+    "cancel": "Anuluj",
+    "authorize": "Włącz pakiet",
+    "rates": "Wejście / wyjście na milion tokenów",
+    "wallet": "Otwórz portfel",
+    "priceRange": "Zakres cen pakietu: {{min}}%–{{max}}% ceny oficjalnej",
+    "rangeUnavailable": "Zakres cen pakietu jest niedostępny. Odśwież katalog przed włączeniem pakietu.",
+    "walletIncluded": "Wszystkie zawarte modele korzystają z salda portfela.",
+    "walletUnavailable": "Rozliczanie z portfela nie jest jeszcze dostępne. Odśwież po aktualizacji usługi.",
+    "walletConsent": "Włącz wszystkie modele tego pakietu w wyświetlonym zakresie cen. Faktyczne użycie jest rozliczane bezpośrednio z salda portfela; osobny budżet pakietu nie jest wymagany."
   }
 }

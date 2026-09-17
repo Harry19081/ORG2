@@ -139,9 +139,9 @@
       "vi": "Vietnamita",
       "pt": "Portugués",
       "pl": "Polaco",
+      "zh-Hant": "Chino tradicional",
       "hi": "Hindi",
-      "id": "Indonesio",
-      "zh-Hant": "Chino tradicional"
+      "id": "Indonesio"
     },
     "layout": "Diseño",
     "sidebar": "Barra lateral",
@@ -939,7 +939,30 @@
     "authentication": "Autenticación",
     "desktopScope": "Configura Claude Desktop por separado de Claude Code CLI; cierra Desktop por completo y vuelve a abrirlo después de aplicar",
     "desktopApplied": "Configuración guardada — cierra Claude Desktop por completo y vuelve a abrirlo",
-    "desktopRestored": "Configuración anterior restaurada — cierra Claude Desktop por completo y vuelve a abrirlo"
+    "desktopRestored": "Configuración anterior restaurada — cierra Claude Desktop por completo y vuelve a abrirlo",
+    "advancedDescription": "Conexiones API personalizadas y migración única de credenciales",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Comprobando aplicación…",
+      "unavailable": "No disponible para esta versión instalada",
+      "notInstalled": "No instalada",
+      "original": "Usando la configuración original de la aplicación",
+      "open": "Abrir aplicación",
+      "connected": "La aplicación ahora sigue el espacio de ORG2 actual",
+      "opened": "Aplicación abierta",
+      "disconnected": "Se restauró la configuración anterior de la aplicación",
+      "actionFailed": "No se pudo actualizar esta conexión",
+      "workspaceNumber": "Servicio {{index}} de {{count}}",
+      "openTerminal": "Abrir terminal",
+      "terminalOpened": "Terminal abierta",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Selecciona hasta 8 paquetes y un modelo predeterminado para cambiar de paquete dentro de la app",
+      "defaultModel": "Modelo predeterminado",
+      "packageLimit": "Selecciona hasta 8 paquetes"
+    }
   },
   "claudeProfiles": {
     "new": "Nuevo perfil",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Actualización disponible",
     "updateAvailableDesc": "Mostrar indicadores de actualización en toda la aplicación con la versión 99.0.0 — las acciones solo abren la vista previa"
+  },
+  "managedUsage": {
+    "cancel": "Cancelar",
+    "authorize": "Activar paquete",
+    "rates": "Entrada / salida por millón de tokens",
+    "wallet": "Abrir monedero",
+    "priceRange": "Rango del paquete: {{min}} %–{{max}} % del precio oficial",
+    "rangeUnavailable": "El rango de precios del paquete no está disponible. Actualiza el catálogo antes de activarlo.",
+    "walletIncluded": "Todos los modelos incluidos utilizan el saldo de tu monedero.",
+    "walletUnavailable": "La facturación del monedero aún no está disponible. Actualiza cuando se actualice el servicio.",
+    "walletConsent": "Activa todos los modelos de este paquete dentro del rango de precios mostrado. El uso real se cobra directamente del saldo de tu monedero; no se requiere un presupuesto separado para el paquete."
   }
 }

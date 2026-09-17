@@ -11,13 +11,15 @@ export default function ConnectionCards({
   disabled,
   onSelect,
   onAdd,
+  description,
 }: {
   choices: HarnessConnectionView["choices"];
-  selected: string;
-  active: string | null;
+  selected: string | readonly string[];
+  active: string | readonly string[] | null;
   disabled: boolean;
   onSelect: (keyId: string) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
+  description?: (keyId: string) => string;
 }) {
   const { t } = useTranslation("settings");
   return (
@@ -30,36 +32,58 @@ export default function ConnectionCards({
         {choices.map((choice) => (
           <Button
             key={choice.keyId}
-            variant={selected === choice.keyId ? "primary" : "secondary"}
+            variant={
+              (
+                Array.isArray(selected)
+                  ? selected.includes(choice.keyId)
+                  : selected === choice.keyId
+              )
+                ? "primary"
+                : "secondary"
+            }
             appearance="outline"
-            disabled={disabled}
-            aria-pressed={selected === choice.keyId}
+            disabled={disabled || Boolean(choice.reason)}
+            layout="custom"
+            style={{ height: "auto" }}
+            aria-pressed={
+              Array.isArray(selected)
+                ? selected.includes(choice.keyId)
+                : selected === choice.keyId
+            }
             onClick={() => onSelect(choice.keyId)}
-            className="h-auto min-w-0 justify-start py-3 text-left whitespace-normal"
+            className="min-w-0 justify-start p-3 text-left whitespace-normal"
           >
             <span className="flex min-w-0 flex-col gap-1">
-              <span className="font-medium break-words">
+              <span className="truncate font-medium" title={choice.name}>
                 {choice.name}
-                {active === choice.keyId && (
+                {(Array.isArray(active)
+                  ? active.includes(choice.keyId)
+                  : active === choice.keyId) && (
                   <span className="ml-2 text-xs text-success-6">
                     {t("harnessConnections.current")}
                   </span>
                 )}
               </span>
-              {choice.endpoint && (
+              {(choice.reason ||
+                description?.(choice.keyId) ||
+                choice.endpoint) && (
                 <span className="text-xs break-all text-text-3">
-                  {choice.endpoint}
+                  {choice.reason ??
+                    description?.(choice.keyId) ??
+                    choice.endpoint}
                 </span>
               )}
             </span>
           </Button>
         ))}
       </div>
-      <div>
-        <Button variant="secondary" disabled={disabled} onClick={onAdd}>
-          {t("harnessConnections.add")}
-        </Button>
-      </div>
+      {onAdd && (
+        <div>
+          <Button variant="secondary" disabled={disabled} onClick={onAdd}>
+            {t("harnessConnections.add")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

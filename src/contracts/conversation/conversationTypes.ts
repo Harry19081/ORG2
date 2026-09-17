@@ -16,22 +16,35 @@ export type NativeConversationCliTarget =
   (typeof NATIVE_CONVERSATION_CLI_TARGETS)[number];
 
 export type LocalConversationTarget =
-  | {
+  | ({
       agentDefinitionId: string;
       cliAgentType?: never;
-      accountId: string;
       model: string;
       workspaceRepoPath?: string | null;
-    }
+    } & (
+      | { accountId: string; credentialSource?: never }
+      | { accountId?: never; credentialSource: string }
+    ))
   | {
       /** The external provider owns identity for provider-native execution. */
       agentDefinitionId?: never;
       cliAgentType: string;
       /** Undefined means the provider's ambient local CLI profile. */
       accountId?: string;
+      /** Non-secret native dynamic source, mutually exclusive with accountId. */
+      credentialSource?: string;
       model?: string;
       workspaceRepoPath?: string | null;
     };
+
+function isCredentialSource(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.length > 0 &&
+    value.length <= 1024 &&
+    value === value.trim()
+  );
+}
 
 /** Fail closed when restoring a durable queue row from disk. */
 export function isLocalConversationTarget(
@@ -48,10 +61,26 @@ export function isLocalConversationTarget(
     return (
       target.agentDefinitionId.length > 0 &&
       target.cliAgentType === undefined &&
-      typeof target.accountId === "string" &&
-      target.accountId.length > 0 &&
+      (target.credentialSource !== undefined
+        ? target.accountId === undefined &&
+          isCredentialSource(target.credentialSource)
+        : typeof target.accountId === "string" &&
+          target.accountId.length > 0) &&
       typeof target.model === "string" &&
-      target.model.length > 0
+      target.model.trim().length > 0
+    );
+  }
+  if (target.credentialSource !== undefined) {
+    return (
+      target.agentDefinitionId === undefined &&
+      target.accountId === undefined &&
+      isCredentialSource(target.credentialSource) &&
+      typeof target.cliAgentType === "string" &&
+      NATIVE_CONVERSATION_CLI_TARGETS.includes(
+        target.cliAgentType as NativeConversationCliTarget
+      ) &&
+      typeof target.model === "string" &&
+      target.model.trim().length > 0
     );
   }
   const cliAgentType = target.cliAgentType as NativeConversationCliTarget;

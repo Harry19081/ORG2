@@ -220,9 +220,9 @@
       "vi": "越南语",
       "pt": "葡萄牙语",
       "pl": "波兰语",
+      "zh-Hant": "繁体中文",
       "hi": "印地语",
-      "id": "印度尼西亚语",
-      "zh-Hant": "繁体中文"
+      "id": "印度尼西亚语"
     },
     "layout": "布局",
     "sidebar": "侧边栏",
@@ -1020,7 +1020,30 @@
     "authentication": "认证方式",
     "desktopScope": "单独配置 Claude Desktop，不影响 Claude Code CLI；应用后需完全退出并重新打开桌面应用",
     "desktopApplied": "桌面配置已保存，请完全退出并重新打开 Claude Desktop",
-    "desktopRestored": "已恢复之前的桌面配置，请完全退出并重新打开 Claude Desktop"
+    "desktopRestored": "已恢复之前的桌面配置，请完全退出并重新打开 Claude Desktop",
+    "advancedDescription": "自定义 API 连接和一次性凭据迁移",
+    "marketApps": {
+      "workspaceHelp": "为当前 App 选择套餐和模型。各 App 独立保存选择，切换 ORG2 聊天来源不会修改 App。",
+      "loading": "正在加载官方套餐…",
+      "loadFailed": "无法加载官方套餐",
+      "nonePurchased": "暂时没有可用的官方套餐",
+      "checking": "正在检查应用…",
+      "unavailable": "当前安装版本暂不可用",
+      "notInstalled": "尚未安装",
+      "original": "正在使用应用原有配置",
+      "open": "打开应用",
+      "connected": "应用已开始跟随 ORG2 当前工作区",
+      "opened": "应用已打开",
+      "disconnected": "已恢复应用之前的配置",
+      "actionFailed": "无法更新此应用连接",
+      "workspaceNumber": "服务 {{index}} / {{count}}",
+      "openTerminal": "打开终端",
+      "terminalOpened": "已打开终端",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "可同时选择最多 8 个套餐和一个默认模型，连接后可在 App 内切换套餐",
+      "defaultModel": "默认模型",
+      "packageLimit": "最多选择 8 个套餐"
+    }
   },
   "claudeProfiles": {
     "new": "新建配置",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "有可用更新",
     "updateAvailableDesc": "在整个应用中显示版本 99.0.0 的更新提示 — 更新操作仅预览对话框"
+  },
+  "managedUsage": {
+    "cancel": "取消",
+    "authorize": "启用套餐",
+    "rates": "每百万输入 / 输出 token 价格",
+    "wallet": "打开钱包",
+    "priceRange": "套餐价格区间：官方价的 {{min}}%–{{max}}%",
+    "rangeUnavailable": "套餐价格区间暂不可用，请刷新目录后再启用套餐。",
+    "walletIncluded": "包含全部模型，直接使用钱包余额。",
+    "walletUnavailable": "钱包直扣暂不可用，请在服务更新后刷新。",
+    "walletConsent": "按所示价格区间启用此套餐的全部模型，实际用量直接从钱包余额扣费，无需为套餐单独预存或设置额度。"
   }
 }

@@ -330,7 +330,7 @@
     "claudeCodeDetectErrorHint": "Войдите через встроенный браузер или выполните claude auth login и повторите обнаружение",
     "refreshModels": {
       "button": "Обновить список моделей Cursor",
-      "failed": "Сбой обновления из Cursor: {{error}}"
+      "failed": "Это рабочее пространство Market недоступно. Снова откройте Market, чтобы обновить авторизацию."
     },
     "revalidate": "Перепроверить",
     "confirmRemoveActiveSessions_one": "{{count}} активная сессия всё ещё использует этот аккаунт и завершится ошибкой на следующем ходе:",
@@ -1657,7 +1657,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Ошибка импорта: {{message}}",
-    "partialFailure": "Некоторые учётные данные не удалось импортировать:"
+    "partialFailure": "Некоторые учётные данные не удалось импортировать:",
+    "importSucceeded": "Сохранено в разделе «Учётные записи»: {{names}}. Импортированные учётные данные теперь доступны как повторно используемые подключения."
   },
   "skills": {
     "shareToOrg": "Поделиться с организацией",
@@ -1665,5 +1666,14 @@
     "sharedToOrg": "Skill доступен организации",
     "shareToOrgHint": "Участники организации получат текущий снимок этого Skill; после редактирования поделитесь снова, чтобы опубликовать обновление",
     "shareOrgPlaceholder": "Организация"
+  },
+  "marketConnection": {
+    "loadingPurchases": "Loading official packages…",
+    "purchasesFailed": "Could not load official packages. Try again.",
+    "platformUnavailable": "Подключение покупателя Market недоступно на этой платформе, поскольку безопасное хранение учётных данных не поддерживается",
+    "authorizationSaved": "Market authorization saved. Choose an official package and model in ORG2.",
+    "failed": "Не удалось подключиться к Market. Повторите попытку.",
+    "title": "Official packages",
+    "launchFailed": "Could not enable the selected package. Refresh the catalog and check wallet funds and usage authorization."
   }
 }

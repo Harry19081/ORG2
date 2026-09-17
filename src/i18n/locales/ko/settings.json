@@ -139,9 +139,9 @@
       "vi": "베트남어",
       "pt": "포르투갈어",
       "pl": "폴란드어",
+      "zh-Hant": "중국어 번체",
       "hi": "힌디어",
-      "id": "인도네시아어",
-      "zh-Hant": "중국어 번체"
+      "id": "인도네시아어"
     },
     "layout": "레이아웃",
     "sidebar": "사이드바",
@@ -939,7 +939,30 @@
     "authentication": "인증 방식",
     "desktopScope": "Claude Code CLI와 별도로 Claude Desktop을 설정합니다. 적용 후 앱을 완전히 종료하고 다시 여세요",
     "desktopApplied": "설정을 저장했습니다. Claude Desktop을 완전히 종료하고 다시 여세요",
-    "desktopRestored": "이전 설정을 복원했습니다. Claude Desktop을 완전히 종료하고 다시 여세요"
+    "desktopRestored": "이전 설정을 복원했습니다. Claude Desktop을 완전히 종료하고 다시 여세요",
+    "advancedDescription": "사용자 지정 API 연결 및 일회성 자격 증명 이전",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "앱 확인 중…",
+      "unavailable": "설치된 이 버전에서는 사용할 수 없음",
+      "notInstalled": "설치되지 않음",
+      "original": "앱의 원래 설정 사용 중",
+      "open": "앱 열기",
+      "connected": "앱이 현재 ORG2 작업 공간을 따릅니다",
+      "opened": "앱을 열었습니다",
+      "disconnected": "이전 앱 설정을 복원했습니다",
+      "actionFailed": "이 앱 연결을 업데이트할 수 없습니다",
+      "workspaceNumber": "서비스 {{index}} / {{count}}",
+      "openTerminal": "터미널 열기",
+      "terminalOpened": "터미널을 열었습니다",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "최대 8개 패키지와 기본 모델을 선택한 후 앱 안에서 패키지를 전환하세요",
+      "defaultModel": "기본 모델",
+      "packageLimit": "최대 8개 패키지를 선택하세요"
+    }
   },
   "claudeProfiles": {
     "new": "새 프로필",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "업데이트 사용 가능",
     "updateAvailableDesc": "버전 99.0.0 업데이트 표시를 앱 전체에 표시 — 업데이트 작업은 대화 상자 미리 보기만 제공"
+  },
+  "managedUsage": {
+    "cancel": "취소",
+    "authorize": "패키지 활성화",
+    "rates": "백만 토큰당 입력 / 출력",
+    "wallet": "지갑 열기",
+    "priceRange": "패키지 가격 범위: 공식 가격의 {{min}}%–{{max}}%",
+    "rangeUnavailable": "패키지 가격 범위를 확인할 수 없습니다. 활성화하기 전에 카탈로그를 새로 고치세요.",
+    "walletIncluded": "포함된 모든 모델은 지갑 잔액을 사용합니다.",
+    "walletUnavailable": "지갑 결제는 아직 사용할 수 없습니다. 서비스 업데이트 후 새로 고치세요.",
+    "walletConsent": "표시된 가격 범위로 이 패키지의 모든 모델을 활성화합니다. 실제 사용량은 지갑 잔액에서 직접 차감되며 별도의 패키지 예산은 필요하지 않습니다."
   }
 }

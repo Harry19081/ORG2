@@ -139,9 +139,9 @@
       "vi": "Vietnamien",
       "pt": "Portugais",
       "pl": "Polonais",
+      "zh-Hant": "Chinois traditionnel",
       "hi": "Hindi",
-      "id": "Indonésien",
-      "zh-Hant": "Chinois traditionnel"
+      "id": "Indonésien"
     },
     "layout": "Disposition",
     "sidebar": "Barre latérale",
@@ -939,7 +939,30 @@
     "authentication": "Authentification",
     "desktopScope": "Configure Claude Desktop séparément de Claude Code CLI ; quittez complètement Desktop puis rouvrez-le après application",
     "desktopApplied": "Configuration enregistrée — quittez complètement Claude Desktop puis rouvrez-le",
-    "desktopRestored": "Configuration précédente restaurée — quittez complètement Claude Desktop puis rouvrez-le"
+    "desktopRestored": "Configuration précédente restaurée — quittez complètement Claude Desktop puis rouvrez-le",
+    "advancedDescription": "Connexions API personnalisées et migration ponctuelle des identifiants",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Vérification de l’application…",
+      "unavailable": "Indisponible pour cette version installée",
+      "notInstalled": "Non installée",
+      "original": "Utilise la configuration d’origine de l’application",
+      "open": "Ouvrir l’application",
+      "connected": "L’application suit maintenant l’espace ORG2 actuel",
+      "opened": "Application ouverte",
+      "disconnected": "La configuration précédente de l’application a été restaurée",
+      "actionFailed": "Impossible de mettre à jour cette connexion",
+      "workspaceNumber": "Service {{index}} sur {{count}}",
+      "openTerminal": "Ouvrir le terminal",
+      "terminalOpened": "Terminal ouvert",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Sélectionnez jusqu’à 8 forfaits et un modèle par défaut pour changer de forfait dans l’application",
+      "defaultModel": "Modèle par défaut",
+      "packageLimit": "Sélectionnez jusqu’à 8 forfaits"
+    }
   },
   "claudeProfiles": {
     "new": "Nouveau profil",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Mise à jour disponible",
     "updateAvailableDesc": "Afficher les indicateurs de mise à jour dans toute l’application avec la version 99.0.0 — les actions ouvrent uniquement l’aperçu"
+  },
+  "managedUsage": {
+    "cancel": "Annuler",
+    "authorize": "Activer le forfait",
+    "rates": "Entrée / sortie par million de tokens",
+    "wallet": "Ouvrir le portefeuille",
+    "priceRange": "Fourchette du forfait : {{min}} %–{{max}} % du tarif officiel",
+    "rangeUnavailable": "La fourchette de prix du forfait est indisponible. Actualisez le catalogue avant de l’activer.",
+    "walletIncluded": "Tous les modèles inclus utilisent le solde de votre portefeuille.",
+    "walletUnavailable": "La facturation du portefeuille n’est pas encore disponible. Actualisez après la mise à jour du service.",
+    "walletConsent": "Activez tous les modèles de ce forfait dans la fourchette de prix affichée. L’utilisation réelle est débitée directement du solde de votre portefeuille ; aucun budget distinct n’est requis pour le forfait."
   }
 }

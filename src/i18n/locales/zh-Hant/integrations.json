@@ -330,7 +330,7 @@
     "claudeCodeDetectErrorHint": "請使用內嵌瀏覽器登入，或執行 claude auth login 後重新偵測",
     "refreshModels": {
       "button": "重新整理模型",
-      "failed": "重新整理模型失敗：{{error}}"
+      "failed": "這個 Market 工作區目前無法使用。請重新開啟 Market 以更新授權。"
     },
     "revalidate": "重新驗證",
     "confirmRemoveActiveSessions_one": "仍有 {{count}} 個使用中的工作階段在使用此帳號，移除後它的下一輪將會失敗：",
@@ -1657,7 +1657,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "匯入失敗：{{message}}",
-    "partialFailure": "部分憑證無法匯入："
+    "partialFailure": "部分憑證無法匯入：",
+    "importSucceeded": "已儲存至「帳號」：{{names}}。這些憑證現在可作為連線重複使用。"
   },
   "skills": {
     "shareToOrg": "共享至組織",
@@ -1665,5 +1666,14 @@
     "sharedToOrg": "技能已共享至組織",
     "shareToOrgHint": "組織成員會收到此技能目前的快照；編輯後再次共享即可發布更新",
     "shareOrgPlaceholder": "組織"
+  },
+  "marketConnection": {
+    "loadingPurchases": "正在读取官方套餐…",
+    "purchasesFailed": "无法读取官方套餐，请重试。",
+    "platformUnavailable": "目前平台不支援安全儲存憑證，暫時無法連接 Market 買家工作區",
+    "authorizationSaved": "已保存 Market 授权，现在可以在 ORG2 中选择官方套餐和模型。",
+    "failed": "無法連線至 Market，請重試。",
+    "title": "官方套餐",
+    "launchFailed": "无法启用所选套餐。请刷新套餐，检查钱包余额和用量授权后重试。"
   }
 }

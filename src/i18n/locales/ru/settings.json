@@ -139,9 +139,9 @@
       "vi": "Вьетнамский",
       "pt": "Португальский",
       "pl": "Польский",
+      "zh-Hant": "Китайский традиционный",
       "hi": "Хинди",
-      "id": "Индонезийский",
-      "zh-Hant": "Китайский традиционный"
+      "id": "Индонезийский"
     },
     "layout": "Макет",
     "sidebar": "Боковая панель",
@@ -939,7 +939,30 @@
     "authentication": "Аутентификация",
     "desktopScope": "Настраивает Claude Desktop отдельно от Claude Code CLI; после применения полностью закройте и снова откройте Desktop",
     "desktopApplied": "Настройки сохранены — полностью закройте и снова откройте Claude Desktop",
-    "desktopRestored": "Предыдущие настройки восстановлены — полностью закройте и снова откройте Claude Desktop"
+    "desktopRestored": "Предыдущие настройки восстановлены — полностью закройте и снова откройте Claude Desktop",
+    "advancedDescription": "Пользовательские API-подключения и одноразовый импорт учетных данных",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Проверка приложения…",
+      "unavailable": "Недоступно для установленной версии",
+      "notInstalled": "Не установлено",
+      "original": "Использует исходные настройки приложения",
+      "open": "Открыть приложение",
+      "connected": "Приложение теперь следует текущему пространству ORG2",
+      "opened": "Приложение открыто",
+      "disconnected": "Предыдущая конфигурация приложения восстановлена",
+      "actionFailed": "Не удалось обновить подключение приложения",
+      "workspaceNumber": "Сервис {{index}} из {{count}}",
+      "openTerminal": "Открыть терминал",
+      "terminalOpened": "Терминал открыт",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Выберите до 8 пакетов и модель по умолчанию, затем переключайте пакеты в приложении",
+      "defaultModel": "Модель по умолчанию",
+      "packageLimit": "Выберите до 8 пакетов"
+    }
   },
   "claudeProfiles": {
     "new": "Новый профиль",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Доступно обновление",
     "updateAvailableDesc": "Показывать индикаторы обновления во всём приложении для версии 99.0.0 — действия открывают только предпросмотр"
+  },
+  "managedUsage": {
+    "cancel": "Отмена",
+    "authorize": "Включить пакет",
+    "rates": "Вход / выход за миллион токенов",
+    "wallet": "Открыть кошелёк",
+    "priceRange": "Диапазон пакета: {{min}}%–{{max}}% от официальной цены",
+    "rangeUnavailable": "Диапазон цен пакета недоступен. Обновите каталог перед включением пакета.",
+    "walletIncluded": "Все включённые модели используют баланс вашего кошелька.",
+    "walletUnavailable": "Оплата из кошелька пока недоступна. Обновите страницу после обновления сервиса.",
+    "walletConsent": "Включить все модели этого пакета в указанном диапазоне цен. Фактическое использование оплачивается напрямую с баланса кошелька; отдельный бюджет пакета не требуется."
   }
 }

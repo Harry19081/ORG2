@@ -173,7 +173,8 @@
           "output": "Salida",
           "cache": "Lectura de caché",
           "cost": "Coste",
-          "filterBySession": "Filtrar por esta sesión"
+          "filterBySession": "Filtrar por esta sesión",
+          "purpose": "Propósito"
         },
         "pricing": {
           "input": "Entrada",
@@ -198,7 +199,17 @@
           "title": "Aún no hay uso",
           "subtitle": "Ejecuta o escanea algunas sesiones de programación y su uso de tokens aparecerá aquí."
         },
-        "loadError": "No se pudieron cargar los datos de uso"
+        "loadError": "No se pudieron cargar los datos de uso",
+        "purposes": {
+          "main": "Respuesta principal",
+          "session_title": "Título de la sesión",
+          "session_memory": "Memoria de la sesión",
+          "workspace_memory": "Memoria del espacio de trabajo",
+          "auto_dream": "Consolidación de memoria",
+          "skill_prefetch": "Selección de habilidades",
+          "memory_prefetch": "Recuperación de memoria",
+          "compaction": "Compactación del contexto"
+        }
       },
       "sessions_one": "{{count}} sesión",
       "sessions_other": "{{count}} sesiones",

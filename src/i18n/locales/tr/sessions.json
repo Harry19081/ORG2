@@ -173,7 +173,8 @@
           "output": "Çıktı",
           "cache": "Önbellekten okuma",
           "cost": "Maliyet",
-          "filterBySession": "Bu oturuma göre filtrele"
+          "filterBySession": "Bu oturuma göre filtrele",
+          "purpose": "Amaç"
         },
         "pricing": {
           "input": "Girdi",
@@ -198,7 +199,17 @@
           "title": "Henüz kullanım yok",
           "subtitle": "Kodlama oturumlarını çalıştırın veya tarayın; token kullanımları burada görünsün."
         },
-        "loadError": "Kullanım verileri yüklenemedi"
+        "loadError": "Kullanım verileri yüklenemedi",
+        "purposes": {
+          "main": "Ana yanıt",
+          "session_title": "Oturum başlığı",
+          "session_memory": "Oturum belleği",
+          "workspace_memory": "Çalışma alanı belleği",
+          "auto_dream": "Bellek birleştirme",
+          "skill_prefetch": "Beceri seçimi",
+          "memory_prefetch": "Bellekten getirme",
+          "compaction": "Bağlam sıkıştırma"
+        }
       },
       "sessions_one": "{{count}} oturum",
       "sessions_other": "{{count}} oturum",

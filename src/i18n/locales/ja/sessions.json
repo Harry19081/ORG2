@@ -173,7 +173,8 @@
           "output": "出力",
           "cache": "キャッシュ読み取り",
           "cost": "コスト",
-          "filterBySession": "このセッションで絞り込む"
+          "filterBySession": "このセッションで絞り込む",
+          "purpose": "用途"
         },
         "pricing": {
           "input": "入力",
@@ -198,7 +199,17 @@
           "title": "使用量はまだありません",
           "subtitle": "コーディングセッションを実行またはスキャンすると、トークン使用量がここに表示されます。"
         },
-        "loadError": "使用量データを読み込めませんでした"
+        "loadError": "使用量データを読み込めませんでした",
+        "purposes": {
+          "main": "メイン応答",
+          "session_title": "セッションタイトル",
+          "session_memory": "セッションメモリ",
+          "workspace_memory": "ワークスペースメモリ",
+          "auto_dream": "メモリ統合",
+          "skill_prefetch": "スキル選択",
+          "memory_prefetch": "メモリ検索",
+          "compaction": "コンテキスト圧縮"
+        }
       },
       "sessions_other": "{{count}} 件のセッション",
       "details": {

@@ -139,9 +139,9 @@
       "vi": "Tiếng Việt",
       "pt": "Tiếng Bồ Đào Nha",
       "pl": "Tiếng Ba Lan",
+      "zh-Hant": "Tiếng Trung phồn thể",
       "hi": "Tiếng Hindi",
-      "id": "Tiếng Indonesia",
-      "zh-Hant": "Tiếng Trung phồn thể"
+      "id": "Tiếng Indonesia"
     },
     "layout": "Bố cục",
     "sidebar": "Thanh bên",
@@ -939,7 +939,30 @@
     "authentication": "Xác thực",
     "desktopScope": "Cấu hình Claude Desktop riêng với Claude Code CLI; thoát hoàn toàn rồi mở lại Desktop sau khi áp dụng",
     "desktopApplied": "Đã lưu cấu hình — thoát hoàn toàn rồi mở lại Claude Desktop",
-    "desktopRestored": "Đã khôi phục cấu hình trước — thoát hoàn toàn rồi mở lại Claude Desktop"
+    "desktopRestored": "Đã khôi phục cấu hình trước — thoát hoàn toàn rồi mở lại Claude Desktop",
+    "advancedDescription": "Kết nối API tùy chỉnh và di chuyển thông tin xác thực một lần",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Đang kiểm tra ứng dụng…",
+      "unavailable": "Không khả dụng cho phiên bản đã cài đặt này",
+      "notInstalled": "Chưa cài đặt",
+      "original": "Đang dùng cấu hình gốc của ứng dụng",
+      "open": "Mở ứng dụng",
+      "connected": "Ứng dụng hiện theo không gian ORG2 hiện tại",
+      "opened": "Đã mở ứng dụng",
+      "disconnected": "Đã khôi phục cấu hình trước của ứng dụng",
+      "actionFailed": "Không thể cập nhật kết nối ứng dụng này",
+      "workspaceNumber": "Dịch vụ {{index}} / {{count}}",
+      "openTerminal": "Mở terminal",
+      "terminalOpened": "Đã mở terminal",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Chọn tối đa 8 gói và một mô hình mặc định, sau đó chuyển gói trong ứng dụng",
+      "defaultModel": "Mô hình mặc định",
+      "packageLimit": "Chọn tối đa 8 gói"
+    }
   },
   "claudeProfiles": {
     "new": "Hồ sơ mới",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Có bản cập nhật",
     "updateAvailableDesc": "Hiện chỉ báo cập nhật trên toàn ứng dụng với phiên bản 99.0.0 — thao tác cập nhật chỉ mở bản xem trước"
+  },
+  "managedUsage": {
+    "cancel": "Hủy",
+    "authorize": "Bật gói",
+    "rates": "Đầu vào / đầu ra trên một triệu token",
+    "wallet": "Mở ví",
+    "priceRange": "Khoảng giá gói: {{min}}%–{{max}}% giá chính thức",
+    "rangeUnavailable": "Chưa có khoảng giá của gói. Hãy làm mới danh mục trước khi bật gói.",
+    "walletIncluded": "Tất cả mô hình trong gói sử dụng số dư ví của bạn.",
+    "walletUnavailable": "Thanh toán bằng ví chưa khả dụng. Hãy làm mới sau khi dịch vụ được cập nhật.",
+    "walletConsent": "Bật mọi mô hình trong gói này theo khoảng giá hiển thị. Chi phí sử dụng thực tế được trừ trực tiếp từ số dư ví; không cần ngân sách riêng cho gói."
   }
 }

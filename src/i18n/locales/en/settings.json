@@ -220,9 +220,9 @@
       "vi": "Vietnamese",
       "pt": "Portuguese",
       "pl": "Polish",
+      "zh-Hant": "Traditional Chinese",
       "hi": "Hindi",
-      "id": "Indonesian",
-      "zh-Hant": "Traditional Chinese"
+      "id": "Indonesian"
     },
     "layout": "Layout",
     "sidebar": "Sidebar",
@@ -1020,7 +1020,30 @@
     "authentication": "Authentication",
     "desktopScope": "Configures Claude Desktop separately from Claude Code CLI; fully quit and reopen Desktop after applying",
     "desktopApplied": "Desktop configuration saved — fully quit and reopen Claude Desktop",
-    "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop"
+    "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop",
+    "advancedDescription": "Custom API connections and one-time credential migration",
+    "marketApps": {
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Checking app…",
+      "unavailable": "Unavailable for this installed version",
+      "notInstalled": "Not installed",
+      "original": "Using the app’s original setup",
+      "open": "Open app",
+      "connected": "The app now follows the current ORG2 workspace",
+      "opened": "App opened",
+      "disconnected": "The app’s previous setup was restored",
+      "actionFailed": "Could not update this app connection",
+      "workspaceNumber": "Service {{index}} of {{count}}",
+      "openTerminal": "Open terminal",
+      "terminalOpened": "Terminal opened",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Select up to 8 packages and a default model, then switch packages inside the app",
+      "defaultModel": "Default model",
+      "packageLimit": "Select up to 8 packages"
+    }
   },
   "claudeProfiles": {
     "new": "New profile",
@@ -1056,5 +1079,16 @@
   "development": {
     "updateAvailable": "Update available",
     "updateAvailableDesc": "Show update indicators across the app using version 99.0.0 — update actions only preview the dialog"
+  },
+  "managedUsage": {
+    "cancel": "Cancel",
+    "authorize": "Enable package",
+    "rates": "Input / output per million tokens",
+    "wallet": "Open wallet",
+    "priceRange": "Package range: {{min}}%–{{max}}% of official pricing",
+    "rangeUnavailable": "Package price range unavailable. Refresh the catalog before enabling this package.",
+    "walletIncluded": "All included models use your wallet balance.",
+    "walletUnavailable": "Wallet billing is not available yet. Refresh after the service is updated.",
+    "walletConsent": "Enable every model in this package at the displayed price range. Actual usage is charged directly from your wallet balance; no separate package budget is required."
   }
 }

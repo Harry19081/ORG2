@@ -177,7 +177,8 @@
           "output": "Output",
           "cache": "Cache read",
           "cost": "Cost",
-          "filterBySession": "Filter to this session"
+          "filterBySession": "Filter to this session",
+          "purpose": "Purpose"
         },
         "pricing": {
           "input": "Input",
@@ -202,7 +203,17 @@
           "title": "No usage yet",
           "subtitle": "Run or scan some coding sessions and their token usage will show up here."
         },
-        "loadError": "Failed to load usage data"
+        "loadError": "Failed to load usage data",
+        "purposes": {
+          "main": "Main response",
+          "session_title": "Session title",
+          "session_memory": "Session memory",
+          "workspace_memory": "Workspace memory",
+          "auto_dream": "Memory consolidation",
+          "skill_prefetch": "Skill selection",
+          "memory_prefetch": "Memory retrieval",
+          "compaction": "Context compaction"
+        }
       },
       "sessions_one": "{{count}} session",
       "sessions_other": "{{count}} sessions",

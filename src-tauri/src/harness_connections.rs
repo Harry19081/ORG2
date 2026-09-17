@@ -311,6 +311,8 @@ pub async fn harness_connection_apply(
                 api_key: connection.api_key,
                 desktop_auth_scheme: (agent_name == "claude_desktop")
                     .then(|| connection.auth_scheme.as_str().to_string()),
+                desktop_helper: None,
+                proxy_token: None,
             },
             Some(&expected_hashes),
         )
@@ -349,7 +351,7 @@ pub(crate) fn authorize_managed(
     Err("Test this endpoint in Harness connections before enabling it".into())
 }
 
-async fn verify_installed_version(agent: &str) -> Result<(), String> {
+pub(crate) async fn verify_installed_version(agent: &str) -> Result<(), String> {
     if ConnectionTarget::try_from(agent)? == ConnectionTarget::ClaudeDesktop {
         let version = desktop::installation()
             .await?
