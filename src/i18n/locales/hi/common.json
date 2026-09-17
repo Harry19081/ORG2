@@ -22,8 +22,7 @@
     "title": "साइडबार सेटिंग्स",
     "showSidebar": "साइडबार दिखाएँ",
     "location": "स्थान",
-    "showIndentLines": "इंडेंट रेखाएँ दिखाएँ",
-    "colorSourceControlFiles": "फ़ाइलों के लिए डिफ़ रंगों का उपयोग करें"
+    "showIndentLines": "इंडेंट रेखाएँ दिखाएँ"
   },
   "windowChrome": {
     "menus": {
