@@ -173,7 +173,8 @@
           "output": "Wyjście",
           "cache": "Odczyt z pamięci podręcznej",
           "cost": "Koszt",
-          "filterBySession": "Filtruj według tej sesji"
+          "filterBySession": "Filtruj według tej sesji",
+          "purpose": "Cel"
         },
         "pricing": {
           "input": "Wejście",
@@ -198,7 +199,17 @@
           "title": "Brak danych o użyciu",
           "subtitle": "Uruchom lub zeskanuj sesje programistyczne, aby zobaczyć tutaj ich użycie tokenów."
         },
-        "loadError": "Nie udało się wczytać danych o użyciu"
+        "loadError": "Nie udało się wczytać danych o użyciu",
+        "purposes": {
+          "main": "Główna odpowiedź",
+          "session_title": "Tytuł sesji",
+          "session_memory": "Pamięć sesji",
+          "workspace_memory": "Pamięć obszaru roboczego",
+          "auto_dream": "Konsolidacja pamięci",
+          "skill_prefetch": "Wybór umiejętności",
+          "memory_prefetch": "Wyszukiwanie w pamięci",
+          "compaction": "Kompresja kontekstu"
+        }
       },
       "sessions_one": "{{count}} sesja",
       "sessions_other": "{{count}} sesji",

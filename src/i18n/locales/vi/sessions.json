@@ -173,7 +173,8 @@
           "output": "Đầu ra",
           "cache": "Đọc bộ nhớ đệm",
           "cost": "Chi phí",
-          "filterBySession": "Lọc theo phiên này"
+          "filterBySession": "Lọc theo phiên này",
+          "purpose": "Mục đích"
         },
         "pricing": {
           "input": "Đầu vào",
@@ -198,7 +199,17 @@
           "title": "Chưa có dữ liệu sử dụng",
           "subtitle": "Chạy hoặc quét một số phiên lập trình để mức sử dụng token xuất hiện tại đây."
         },
-        "loadError": "Không thể tải dữ liệu sử dụng"
+        "loadError": "Không thể tải dữ liệu sử dụng",
+        "purposes": {
+          "main": "Phản hồi chính",
+          "session_title": "Tiêu đề phiên",
+          "session_memory": "Bộ nhớ phiên",
+          "workspace_memory": "Bộ nhớ không gian làm việc",
+          "auto_dream": "Hợp nhất bộ nhớ",
+          "skill_prefetch": "Chọn kỹ năng",
+          "memory_prefetch": "Truy xuất bộ nhớ",
+          "compaction": "Nén ngữ cảnh"
+        }
       },
       "sessions_other": "{{count}} phiên",
       "details": {

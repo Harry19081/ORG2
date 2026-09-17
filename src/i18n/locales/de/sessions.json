@@ -173,7 +173,8 @@
           "output": "Ausgabe",
           "cache": "Cache-Lesevorgänge",
           "cost": "Kosten",
-          "filterBySession": "Nach dieser Sitzung filtern"
+          "filterBySession": "Nach dieser Sitzung filtern",
+          "purpose": "Zweck"
         },
         "pricing": {
           "input": "Eingabe",
@@ -198,7 +199,17 @@
           "title": "Noch keine Nutzung",
           "subtitle": "Führe Coding-Sitzungen aus oder scanne sie, damit ihre Token-Nutzung hier erscheint."
         },
-        "loadError": "Nutzungsdaten konnten nicht geladen werden"
+        "loadError": "Nutzungsdaten konnten nicht geladen werden",
+        "purposes": {
+          "main": "Hauptantwort",
+          "session_title": "Sitzungstitel",
+          "session_memory": "Sitzungsspeicher",
+          "workspace_memory": "Arbeitsbereichsspeicher",
+          "auto_dream": "Speicherkonsolidierung",
+          "skill_prefetch": "Skill-Auswahl",
+          "memory_prefetch": "Speicherabruf",
+          "compaction": "Kontextkomprimierung"
+        }
       },
       "sessions_one": "{{count}} Sitzung",
       "sessions_other": "{{count}} Sitzungen",

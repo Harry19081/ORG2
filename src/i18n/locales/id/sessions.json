@@ -177,7 +177,8 @@
           "output": "Output",
           "cache": "Baca cache",
           "cost": "Biaya",
-          "filterBySession": "Filter ke sesi ini"
+          "filterBySession": "Filter ke sesi ini",
+          "purpose": "Tujuan"
         },
         "pricing": {
           "input": "Input",
@@ -202,7 +203,17 @@
           "title": "Belum ada penggunaan",
           "subtitle": "Jalankan atau pindai beberapa sesi coding, dan penggunaan token-nya akan muncul di sini."
         },
-        "loadError": "Gagal memuat data penggunaan"
+        "loadError": "Gagal memuat data penggunaan",
+        "purposes": {
+          "main": "Jawaban utama",
+          "session_title": "Judul sesi",
+          "session_memory": "Memori sesi",
+          "workspace_memory": "Memori ruang kerja",
+          "auto_dream": "Konsolidasi memori",
+          "skill_prefetch": "Pemilihan keterampilan",
+          "memory_prefetch": "Pengambilan memori",
+          "compaction": "Pemadatan konteks"
+        }
       },
       "sessions_one": "{{count}} sesi",
       "sessions_other": "{{count}} sesi",

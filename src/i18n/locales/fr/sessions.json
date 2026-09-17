@@ -173,7 +173,8 @@
           "output": "Sortie",
           "cache": "Lecture du cache",
           "cost": "Coût",
-          "filterBySession": "Filtrer sur cette session"
+          "filterBySession": "Filtrer sur cette session",
+          "purpose": "Usage"
         },
         "pricing": {
           "input": "Entrée",
@@ -198,7 +199,17 @@
           "title": "Aucune utilisation pour le moment",
           "subtitle": "Exécutez ou analysez des sessions de programmation pour afficher leur utilisation de tokens ici."
         },
-        "loadError": "Impossible de charger les données d'utilisation"
+        "loadError": "Impossible de charger les données d'utilisation",
+        "purposes": {
+          "main": "Réponse principale",
+          "session_title": "Titre de la session",
+          "session_memory": "Mémoire de session",
+          "workspace_memory": "Mémoire de l’espace de travail",
+          "auto_dream": "Consolidation de la mémoire",
+          "skill_prefetch": "Sélection de compétences",
+          "memory_prefetch": "Récupération de mémoire",
+          "compaction": "Compression du contexte"
+        }
       },
       "sessions_one": "{{count}} session",
       "sessions_other": "{{count}} sessions",

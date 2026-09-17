@@ -173,7 +173,8 @@
           "output": "출력",
           "cache": "캐시 읽기",
           "cost": "비용",
-          "filterBySession": "이 세션으로 필터링"
+          "filterBySession": "이 세션으로 필터링",
+          "purpose": "용도"
         },
         "pricing": {
           "input": "입력",
@@ -198,7 +199,17 @@
           "title": "아직 사용량이 없습니다",
           "subtitle": "코딩 세션을 실행하거나 스캔하면 토큰 사용량이 여기에 표시됩니다."
         },
-        "loadError": "사용량 데이터를 불러오지 못했습니다"
+        "loadError": "사용량 데이터를 불러오지 못했습니다",
+        "purposes": {
+          "main": "주 응답",
+          "session_title": "세션 제목",
+          "session_memory": "세션 메모리",
+          "workspace_memory": "워크스페이스 메모리",
+          "auto_dream": "메모리 통합",
+          "skill_prefetch": "스킬 선택",
+          "memory_prefetch": "메모리 검색",
+          "compaction": "컨텍스트 압축"
+        }
       },
       "sessions_other": "{{count}}개 세션",
       "details": {
