@@ -61,12 +61,11 @@ export function MobileTurnBody({
   const singleRound =
     firstBodyIndex >= 0 &&
     !items.slice(firstBodyIndex).some((item) => item.kind === "user");
-  if (!round || !terminal || running || !singleRound) {
-    return <>{items.map(renderItem)}</>;
-  }
+  const showSummary = Boolean(round && terminal && !running && singleRound);
+  const bodyStart = firstBodyIndex < 0 ? items.length : firstBodyIndex;
 
   let finalIndex = -1;
-  for (let index = items.length - 1; index >= firstBodyIndex; index -= 1) {
+  for (let index = items.length - 1; index >= bodyStart; index -= 1) {
     if (items[index].kind === "agent") {
       finalIndex = index;
       break;
@@ -77,10 +76,11 @@ export function MobileTurnBody({
   // original ordered items and their unchanged statuses/detail actions.
   const isPinned = (index: number) => index === finalIndex;
   const collapsible = items.some(
-    (_, index) => index >= firstBodyIndex && !isPinned(index)
+    (_, index) => index >= bodyStart && !isPinned(index)
   );
-  const expanded = expandedOverride ?? round.status !== "completed";
-  const duration = roundDuration(round);
+  const expanded =
+    !showSummary || (expandedOverride ?? round?.status !== "completed");
+  const duration = round ? roundDuration(round) : null;
   const label =
     duration === null
       ? t("transcript.workSummary")
@@ -88,41 +88,46 @@ export function MobileTurnBody({
 
   return (
     <>
-      {items.slice(0, firstBodyIndex).map(renderItem)}
-      <div className={`mobile-turn-summary ${CHAT_ITEM_PADDING_X}`}>
-        {collapsible ? (
-          // Compound disclosure aligns its label and trailing chevron across
-          // the full transcript width; shared Button owns native semantics.
-          <Button
-            layout="custom"
-            variant="tertiary"
-            appearance="ghost"
-            className="mobile-turn-summary__toggle flex w-full items-center justify-between gap-2 text-left focus-visible:outline-2 focus-visible:outline-primary-6"
-            aria-expanded={expanded}
-            aria-controls={bodyId}
-            onClick={() => {
-              onBeforeToggle();
-              setExpandedOverride(!expanded);
-            }}
-          >
-            <span>{label}</span>
-            <HugeiconsIcon
-              icon={ArrowRight01Icon}
-              size={16}
-              aria-hidden
-              className={expanded ? "rotate-90" : ""}
-            />
-          </Button>
-        ) : (
-          <div className="mobile-turn-summary__toggle flex items-center text-text-2">
-            {label}
-          </div>
-        )}
-        <div className="h-px bg-border-1" aria-hidden />
-      </div>
+      {items.slice(0, bodyStart).map(renderItem)}
+      {showSummary ? (
+        <div className={`mobile-turn-summary ${CHAT_ITEM_PADDING_X}`}>
+          {collapsible ? (
+            // Compound disclosure aligns its label and trailing chevron across
+            // the full transcript width; shared Button owns native semantics.
+            <Button
+              layout="custom"
+              variant="tertiary"
+              appearance="ghost"
+              className="mobile-turn-summary__toggle flex w-full items-center justify-between gap-2 text-left focus-visible:outline-2 focus-visible:outline-primary-6"
+              aria-expanded={expanded}
+              aria-controls={bodyId}
+              onClick={() => {
+                onBeforeToggle();
+                setExpandedOverride(!expanded);
+              }}
+            >
+              <span>{label}</span>
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                size={16}
+                aria-hidden
+                className={expanded ? "rotate-90" : ""}
+              />
+            </Button>
+          ) : (
+            <div className="mobile-turn-summary__toggle flex items-center text-text-2">
+              {label}
+            </div>
+          )}
+          <div className="h-px bg-border-1" aria-hidden />
+        </div>
+      ) : null}
+      {/* Keep visible rows under the same parent through live/terminal and
+          reconnect transitions. Collapsed work still unmounts on purpose so
+          its editors, image state and effects do not remain active offscreen. */}
       <div id={bodyId} data-mobile-turn-body>
         {items.map((item, index) =>
-          index >= firstBodyIndex && (expanded || isPinned(index))
+          index >= bodyStart && (expanded || isPinned(index))
             ? renderItem(item, index)
             : null
         )}
