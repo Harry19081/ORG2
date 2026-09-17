@@ -211,8 +211,13 @@ describe("SessionUsagePanel", () => {
       }),
       expect.anything()
     );
+    const customOptionAfterApply = document.querySelector<HTMLDivElement>(
+      '[data-testid="usage-custom-range-option"]'
+    );
+    expect(customOptionAfterApply).not.toBeNull();
+    expect(document.querySelector('input[type="datetime-local"]')).toBeNull();
     const callsAfterApply = mocks.usageDashboardOverview.mock.calls.length;
-    await openCustom();
+    await act(async () => customOptionAfterApply!.click());
     const editedStart = document.querySelector<HTMLInputElement>(
       'input[type="datetime-local"]'
     )!;

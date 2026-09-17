@@ -165,6 +165,7 @@ export const UnifiedModelDropdown: React.FC<UnifiedModelDropdownProps> = ({
     onConfigChange,
     dispatchCategoryOverride,
     cliAgentTypeOverride,
+    closeOnSourceSelect: false,
   });
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -310,6 +311,7 @@ export const UnifiedModelDropdown: React.FC<UnifiedModelDropdownProps> = ({
       const sourceItem = sourceItems[index];
       if (!sourceItem) return;
       sourceItem.action?.();
+      setSubmenuOpen(false);
     },
     [sourceItems]
   );

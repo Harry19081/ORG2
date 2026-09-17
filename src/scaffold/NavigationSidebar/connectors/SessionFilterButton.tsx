@@ -84,7 +84,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
       onExportSessionJson,
       onImportSessionJson,
       close,
-      closeSubmenu,
     });
 
     const resolveGroupByLabel = useCallback(
@@ -168,8 +167,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
               resolveGroupByLabel={resolveGroupByLabel}
               handleSelect={handleSelect}
               handleGroupVisibleCountSelect={handleGroupVisibleCountSelect}
-              closeSubmenu={closeSubmenu}
-              close={close}
               handleSubmenuPointerDown={handleSubmenuPointerDown}
               handleSubmenuMouseDown={handleSubmenuMouseDown}
             />,

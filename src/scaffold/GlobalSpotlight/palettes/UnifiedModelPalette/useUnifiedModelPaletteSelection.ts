@@ -30,6 +30,7 @@ interface UseUnifiedModelPaletteSelectionParams {
   advancedConfig: AdvancedConfig;
   onConfigChange: (config: AdvancedConfig) => void;
   onClose: () => void;
+  closeOnSourceSelect?: boolean;
   recordRecent: (entry: RecentModelEntry) => void;
 }
 
@@ -42,6 +43,7 @@ export function useUnifiedModelPaletteSelection({
   advancedConfig,
   onConfigChange,
   onClose,
+  closeOnSourceSelect = true,
   recordRecent,
 }: UseUnifiedModelPaletteSelectionParams) {
   const [activeColumn, setActiveColumn] = useState<ActiveColumn>("models");
@@ -110,9 +112,9 @@ export function useUnifiedModelPaletteSelection({
         accountName: source.label,
         modelType: source.modelType,
       });
-      onClose();
+      if (closeOnSourceSelect) onClose();
     },
-    [advancedConfig, onConfigChange, onClose, recordRecent]
+    [advancedConfig, closeOnSourceSelect, onConfigChange, onClose, recordRecent]
   );
 
   const previewModel = useCallback(
