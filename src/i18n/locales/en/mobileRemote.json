@@ -30,6 +30,8 @@
     "retry": "Retry",
     "loadFailed": "Couldn't load changes",
     "selected": "Selected",
+    "refreshing": "Updating changes…",
+    "refreshFailed": "Couldn’t update changes. Showing the last loaded version.",
     "loading": "Loading…",
     "offline": "Desktop is offline",
     "empty": "No change records available",

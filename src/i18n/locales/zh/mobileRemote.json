@@ -30,6 +30,8 @@
     "retry": "重试",
     "loadFailed": "暂时无法加载变更",
     "selected": "已选择",
+    "refreshing": "正在更新更改…",
+    "refreshFailed": "更新失败，当前显示上次加载的版本",
     "loading": "正在加载…",
     "offline": "电脑已离线",
     "empty": "没有可用的变更记录",

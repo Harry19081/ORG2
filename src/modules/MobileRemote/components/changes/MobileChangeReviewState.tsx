@@ -15,7 +15,14 @@ import { classNames } from "@src/util/ui/classNames";
 import "./mobileChangeReviewState.scss";
 
 interface Props {
-  state: "loading" | "error" | "offline" | "empty" | "unavailable";
+  state:
+    | "loading"
+    | "refreshing"
+    | "refresh-error"
+    | "error"
+    | "offline"
+    | "empty"
+    | "unavailable";
   onRetry?: () => void;
   compact?: boolean;
 }
@@ -23,6 +30,8 @@ interface Props {
 const messages = {
   loading: "changeReview.loading",
   error: "changeReview.loadFailed",
+  refreshing: "changeReview.refreshing",
+  "refresh-error": "changeReview.refreshFailed",
   offline: "changeReview.offline",
   empty: "changeReview.empty",
   unavailable: "changeReview.unavailable",
@@ -44,7 +53,7 @@ export function MobileChangeReviewState({
       )}
       data-state={state}
       role="status"
-      aria-busy={loading}
+      aria-busy={loading || state === "refreshing"}
     >
       {loading ? (
         <>
@@ -60,17 +69,19 @@ export function MobileChangeReviewState({
           <span className="mobile-change-state__symbol" aria-hidden="true">
             <HugeiconsIcon
               icon={
-                state === "error"
+                state === "error" || state === "refresh-error"
                   ? AlertCircleIcon
-                  : state === "offline"
-                    ? Plug01Icon
-                    : FileSearchIcon
+                  : state === "refreshing"
+                    ? Refresh04Icon
+                    : state === "offline"
+                      ? Plug01Icon
+                      : FileSearchIcon
               }
               size={20}
             />
           </span>
           <p className="mobile-change-state__message">{t(messages[state])}</p>
-          {state === "error" && onRetry && (
+          {(state === "error" || state === "refresh-error") && onRetry && (
             <Button
               variant="tertiary"
               appearance="soft"

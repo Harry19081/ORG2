@@ -133,6 +133,13 @@ const deferred = () => {
 };
 beforeEach(() => {
   vi.useFakeTimers();
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      disconnect() {}
+    }
+  );
   (
     globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
   ).IS_REACT_ACT_ENVIRONMENT = true;
@@ -715,4 +722,149 @@ it("renders reconstructed history with provenance and allows both complete versi
   await act(async () => panelButton("changeReview.after").click());
   expect(panel().querySelector("pre")?.textContent).toBe(firstFile.before);
   expect(panelButton("changeReview.copy").disabled).toBe(false);
+});
+
+it("preserves the live editor, wrapping and disclosure through manifest/detail refresh and retry", async () => {
+  let refresh = false;
+  let fail = false;
+  const pending = deferred();
+  const call = vi.fn().mockImplementation(() => {
+    if (refresh)
+      return fail ? Promise.reject(new Error("network")) : pending.promise;
+    return Promise.resolve(review());
+  });
+  const props = propsFor(call);
+  await render(props);
+  await tick();
+  await open();
+  const editor = panel().querySelector("pre")!;
+  editor.scrollTop = 77;
+  const actions = panel().querySelector<HTMLDetailsElement>(
+    ".mobile-change-review__file-actions"
+  )!;
+  actions.open = true;
+  await act(async () => panelButton("changeReview.wrap").click());
+  expect(editor.dataset.wrap).toBe("false");
+  refresh = true;
+  await render({ ...props, revision: "2" });
+  expect(panel().querySelector("pre")).toBe(editor);
+  expect(panel().querySelector('[data-state="refreshing"]')).not.toBeNull();
+  fail = true;
+  await tick();
+  expect(panel().querySelector('[data-state="refresh-error"]')).not.toBeNull();
+  expect(panel().querySelector("pre")).toBe(editor);
+  fail = false;
+  await act(async () => {
+    for (const button of panel().querySelectorAll<HTMLButtonElement>(
+      ".mobile-change-state__retry"
+    ))
+      button.click();
+  });
+  await tick();
+  expect(panel().querySelector("pre")).toBe(editor);
+  await act(async () =>
+    pending.resolve(review([{ ...firstFile, after: "new after" }]))
+  );
+  expect(panel().querySelector("pre")).toBe(editor);
+  expect(editor.textContent).toBe("new after");
+  expect(editor.dataset.wrap).toBe("false");
+  expect(editor.scrollTop).toBe(77);
+  expect(actions.open).toBe(true);
+  expect(panel().querySelector('[data-state="refresh-error"]')).toBeNull();
+  expect(call).toHaveBeenCalledTimes(6);
+});
+
+it("preserves collapsed files across revisions without requesting their detail", async () => {
+  const call = vi.fn().mockResolvedValue(review());
+  const props = propsFor(call);
+  await render(props);
+  await tick();
+  await open();
+  await act(async () => fileToggle().click());
+  const toggle = fileToggle();
+  const detailCalls = call.mock.calls.filter(
+    ([, params]) => params.filePath
+  ).length;
+  await render({ ...props, revision: "2" });
+  await tick();
+  expect(fileToggle()).toBe(toggle);
+  expect(toggle.getAttribute("aria-expanded")).toBe("false");
+  expect(call.mock.calls.filter(([, params]) => params.filePath)).toHaveLength(
+    detailCalls
+  );
+});
+
+it("evicts offscreen heavy content while preserving measured space until detail returns", async () => {
+  const call = vi.fn().mockResolvedValue(review());
+  await render(propsFor(call));
+  await tick();
+  await open();
+  const section = panel().querySelector<HTMLElement>(
+    ".mobile-change-review__file"
+  )!;
+  vi.spyOn(section, "getBoundingClientRect").mockReturnValue({
+    height: 720,
+  } as DOMRect);
+  await inViewport(false);
+  expect(panel().querySelector("pre")).toBeNull();
+  expect(section.style.minHeight).toBe("720px");
+  const previousRequests = call.mock.calls.length;
+  await tick();
+  expect(call).toHaveBeenCalledTimes(previousRequests);
+  await inViewport(true);
+  expect(section.style.minHeight).toBe("720px");
+  await tick();
+  expect(panel().querySelector("pre")).not.toBeNull();
+  expect(section.style.minHeight).toBe("");
+  await act(async () => fileToggle().click());
+  expect(section.style.minHeight).toBe("");
+});
+
+it.each(["sessionId", "roundId", "client"] as const)(
+  "does not retain content across %s changes",
+  async (field) => {
+    const pending = deferred();
+    const call = vi.fn().mockResolvedValue(review());
+    const props = propsFor(call);
+    await render(props);
+    await tick();
+    await open();
+    const editor = panel().querySelector("pre");
+    call.mockReturnValue(pending.promise);
+    await render({
+      ...props,
+      [field]: field === "client" ? { call } : "different",
+    });
+    expect(panel().querySelector("pre")).toBeNull();
+    expect(editor?.isConnected).toBe(false);
+    expect(panel().textContent).not.toContain("after a");
+  }
+);
+
+it("keeps the opened workspace scope when refreshed turn changes become empty", async () => {
+  let emptyTurn = false;
+  const call = vi
+    .fn()
+    .mockImplementation((_method, params) =>
+      Promise.resolve(
+        review(emptyTurn && params.scope === "turn" ? [] : [firstFile])
+      )
+    );
+  const props = propsFor(call);
+  await render(props);
+  await tick();
+  await open();
+  await scope("workspace");
+  await tick();
+  await tick();
+  const editor = panel().querySelector("pre");
+  expect(editor).not.toBeNull();
+  emptyTurn = true;
+  await render({ ...props, revision: "2" });
+  await tick();
+  expect(host.querySelector(".mobile-change-review__heading")).toBeNull();
+  expect(
+    panel().querySelector(".mobile-change-review__scope button")?.textContent
+  ).toBe("changeReview.workspace");
+  expect(panel().querySelector("pre")).toBe(editor);
 });
