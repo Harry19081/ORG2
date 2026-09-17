@@ -175,7 +175,8 @@
           "output": "输出",
           "cache": "缓存读取",
           "cost": "成本",
-          "filterBySession": "筛选此会话"
+          "filterBySession": "筛选此会话",
+          "purpose": "用途"
         },
         "pricing": {
           "input": "输入",
@@ -200,7 +201,17 @@
           "title": "暂无用量",
           "subtitle": "运行或扫描一些编码会话后，其 Token 用量会显示在这里。"
         },
-        "loadError": "加载用量数据失败"
+        "loadError": "加载用量数据失败",
+        "purposes": {
+          "main": "主回复",
+          "session_title": "会话标题",
+          "session_memory": "会话记忆",
+          "workspace_memory": "工作区记忆",
+          "auto_dream": "记忆整理",
+          "skill_prefetch": "技能选择",
+          "memory_prefetch": "记忆检索",
+          "compaction": "上下文压缩"
+        }
       },
       "sessions_other": "{{count}} 个会话",
       "details": {

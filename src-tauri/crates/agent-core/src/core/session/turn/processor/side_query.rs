@@ -14,12 +14,12 @@ impl UnifiedMessageProcessor {
     pub(super) async fn side_query_provider(
         &self,
         session_id: &str,
-        label: &str,
+        label: &'static str,
     ) -> Result<Arc<dyn LLMProvider>, String> {
-        match self.runtime.provider.side_query_execution() {
+        let provider = match self.runtime.provider.side_query_execution() {
             SideQueryExecution::SharedSession => {
                 self.runtime.provider.set_session_context(session_id);
-                Ok(self.runtime.provider.clone())
+                self.runtime.provider.clone()
             }
             SideQueryExecution::IsolatedSession => {
                 let workspace = self.runtime.workspace_state.read().clone();
@@ -35,8 +35,16 @@ impl UnifiedMessageProcessor {
                 .map_err(|err| format!("Failed to create isolated side-query provider: {err}"))?;
                 let provider: Arc<dyn LLMProvider> = Arc::from(provider);
                 provider.set_session_context(&format!("{session_id}:{label}"));
-                Ok(provider)
+                provider
             }
-        }
+        };
+        Ok(Arc::new(
+            crate::session::auxiliary_usage::AuxiliaryUsageProvider::owned(
+                provider,
+                session_id,
+                label,
+                self.runtime.account_id.as_deref(),
+            ),
+        ))
     }
 }

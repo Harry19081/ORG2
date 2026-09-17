@@ -82,3 +82,5 @@ pub use commands::{
 /// those tests race and point unrelated connections at each other's databases.
 #[cfg(test)]
 pub(crate) static ORGII_HOME_TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+mod auxiliary_usage;

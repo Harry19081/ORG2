@@ -52,6 +52,8 @@ pub(super) struct ForkProviderSpec {
 
 async fn fresh_fork_provider(
     spec: &ForkProviderSpec,
+    session_id: &str,
+    purpose: &'static str,
 ) -> Result<Arc<dyn LLMProvider>, ProviderError> {
     crate::providers::factory::create_provider_with_selection_preflight(
         &spec.model,
@@ -62,7 +64,16 @@ async fn fresh_fork_provider(
         Some(spec.workspace.clone()),
     )
     .await
-    .map(Arc::from)
+    .map(|provider| {
+        Arc::new(
+            crate::session::auxiliary_usage::AuxiliaryUsageProvider::owned(
+                Arc::from(provider),
+                session_id,
+                purpose,
+                spec.account_id.as_deref(),
+            ),
+        ) as Arc<dyn LLMProvider>
+    })
 }
 
 /// The future is not polled during cooldown, so neither OAuth preflight nor
@@ -229,7 +240,7 @@ fn session_memory_job(input: SessionMemoryExtractionInput<'_>) -> MemoryJob {
             let Some(provider) = acquire_session_memory_provider(
                 &sm_state,
                 scope,
-                fresh_fork_provider(&fork_provider),
+                fresh_fork_provider(&fork_provider, &job_sid, "session_memory"),
             )
             .await
             .map_err(|err| format!("Failed to create fork provider: {err}"))?
@@ -425,7 +436,7 @@ pub(super) fn spawn_extract_memories(input: ExtractMemoriesInput<'_>) {
                 return Ok(());
             }
 
-            let provider = fresh_fork_provider(&fork_provider)
+            let provider = fresh_fork_provider(&fork_provider, &job_sid, "workspace_memory")
                 .await
                 .map_err(|err| format!("Failed to create fork provider: {err}"))?;
             let cancel_bridge = bridge_cancel_flag(cancel);
@@ -494,7 +505,7 @@ pub(super) fn spawn_auto_dream(input: AutoDreamInput<'_>) {
             }
 
             let (messages, _start_seqs) = load_durable_history_blocking(job_sid.clone()).await?;
-            let provider = fresh_fork_provider(&fork_provider)
+            let provider = fresh_fork_provider(&fork_provider, &job_sid, "auto_dream")
                 .await
                 .map_err(|err| format!("Failed to create fork provider: {err}"))?;
             let cancel_bridge = bridge_cancel_flag(cancel);

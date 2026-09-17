@@ -127,6 +127,15 @@ export default function UsageRoundsTable({
         ),
       },
       {
+        key: "purpose",
+        label: t("usage.roundsTable.purpose"),
+        renderCell: (record) => (
+          <span className="text-text-2">
+            {t(`usage.purposes.${record.usagePurpose || "main"}`)}
+          </span>
+        ),
+      },
+      {
         key: "input",
         label: t("usage.roundsTable.input"),
         align: "right",

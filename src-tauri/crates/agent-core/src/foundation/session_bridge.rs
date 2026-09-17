@@ -730,3 +730,33 @@ pub fn mark_pending_turn_intents_stale(session_id: &str) {
         implementation(session_id);
     }
 }
+
+/// One completed auxiliary provider response. No prompts, credentials or output
+/// are retained. The response identifier makes replay of a receipt idempotent.
+#[derive(Debug, Clone)]
+pub struct AuxiliaryUsageRow {
+    pub response_id: String,
+    pub credential_source: Option<String>,
+    pub session_id: String,
+    pub purpose: String,
+    pub model: String,
+    pub account_id: Option<String>,
+    pub provider: String,
+    pub usage: std::collections::HashMap<String, i64>,
+}
+
+pub type RecordAuxiliaryUsageFn = fn(&AuxiliaryUsageRow) -> rusqlite::Result<()>;
+static RECORD_AUXILIARY_USAGE: OnceLock<RecordAuxiliaryUsageFn> = OnceLock::new();
+
+pub fn register_record_auxiliary_usage(implementation: RecordAuxiliaryUsageFn) {
+    let _ = RECORD_AUXILIARY_USAGE.set(implementation);
+}
+
+pub fn record_auxiliary_usage(row: &AuxiliaryUsageRow) -> rusqlite::Result<()> {
+    match RECORD_AUXILIARY_USAGE.get() {
+        Some(implementation) => implementation(row),
+        None => Err(rusqlite::Error::InvalidParameterName(
+            "auxiliary usage recorder is not registered".into(),
+        )),
+    }
+}

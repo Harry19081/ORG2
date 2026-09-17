@@ -18,6 +18,7 @@ const SESSION_DELETE_TABLES: &[&str] = &[
     "agent_todos",
     "agent_snapshots",
     "agent_file_resolutions",
+    "session_auxiliary_usage",
     "session_token_usage",
     "session_llm_usage_spans",
     "session_tool_usage",
