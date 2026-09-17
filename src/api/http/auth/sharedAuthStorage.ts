@@ -68,7 +68,6 @@ let cloudWriteGeneration = 0;
 let nativeOwnerReady: Promise<void> = Promise.resolve();
 let nativeOwnerFailed = false;
 let nativeOwnerSettled = true;
-let nativeOwnerWait: Promise<void> | null = null;
 function ownerChangeSignal() {
   let resolve!: () => void;
   const promise = new Promise<void>((done) => {
@@ -113,20 +112,15 @@ export async function awaitNativeCloudOwnerReady(): Promise<void> {
       true
     ).catch(() => {});
   if (nativeOwnerSettled) return nativeOwnerReady;
-  nativeOwnerWait ??= (async () => {
-    for (;;) {
-      const pending = nativeOwnerReady;
-      try {
-        await Promise.race([pending, nativeOwnerChanged.promise]);
-      } catch (error) {
-        if (pending === nativeOwnerReady) throw error;
-      }
-      if (pending === nativeOwnerReady) return;
+  for (;;) {
+    const pending = nativeOwnerReady;
+    try {
+      await Promise.race([pending, nativeOwnerChanged.promise]);
+    } catch (error) {
+      if (pending === nativeOwnerReady) throw error;
     }
-  })().finally(() => {
-    nativeOwnerWait = null;
-  });
-  return nativeOwnerWait;
+    if (pending === nativeOwnerReady) return;
+  }
 }
 
 function localValue(key: string): string | null {
