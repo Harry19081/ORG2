@@ -1,14 +1,14 @@
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { z } from "zod/v4";
 
 import { defineProcedure, typedInvoke } from "@src/api/tauri/rpc/invoke";
 import Message from "@src/components/Message";
-import { decodeJwtSub } from "@src/features/Org2Cloud/authCallback";
-import { completeOrg2CloudSignIn } from "@src/features/Org2Cloud/completeSignIn";
+import { getCloudEndpoint } from "@src/features/Org2Cloud/config";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
+import { openOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
 import i18n from "@src/i18n";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
+import { authorizeMarketInBackground } from "./backgroundAuthorization";
 import {
   MARKET_AUTHORIZATION_SAVED_EVENT,
   MARKET_CONNECTION_OPEN_EVENT,
@@ -18,7 +18,7 @@ import {
   parseMarketTarget,
 } from "./events";
 import { loadConnections, loadEntries } from "./rpc";
-import { isMarketAppUrl, isTrustedMarketPage } from "./urlPolicy";
+import { isMarketAppUrl } from "./urlPolicy";
 
 const rawInput = z.object({ raw: z.string().max(2048) });
 const begin = defineProcedure("market_connection_begin")
@@ -26,20 +26,13 @@ const begin = defineProcedure("market_connection_begin")
   .output(z.string().url())
   .build();
 const complete = defineProcedure("market_connection_complete")
-  .input(rawInput)
+  .input(rawInput.extend({ expectedIdentityUserId: z.string().optional() }))
   .output(
     z.object({
       identity_user_id: z.string().uuid(),
       workspace_id: z.string().regex(/^ws_[A-Za-z0-9_-]{1,120}$/),
       target: z.enum(["claude-code", "claude-app", "codex", "org2"]),
       phase: z.literal("authorization_saved"),
-      identity_session: z
-        .object({
-          access_token: z.string().min(1).max(8192),
-          refresh_token: z.string().min(1).max(4096),
-          expires_at: z.number().finite(),
-        })
-        .optional(),
     })
   )
   .build();
@@ -68,23 +61,61 @@ function rememberCompletedAuthorization(state: string | null): void {
     completedAuthorizationStates.delete(oldest);
   }
 }
-function cloudSessionFromMarketCallback(url: URL) {
-  if (!url.hash) return null;
-  const params = new URLSearchParams(url.hash.slice(1));
-  const accessToken = params.get("access_token")?.trim();
-  const refreshToken = params.get("refresh_token")?.trim();
-  const expiresAt = Number(params.get("expires_at"));
-  if (
-    !accessToken ||
-    accessToken.length > 8192 ||
-    !refreshToken ||
-    refreshToken.length > 4096 ||
-    !Number.isFinite(expiresAt) ||
-    expiresAt <= Date.now() / 1000
-  )
-    return null;
-  return { accessToken, refreshToken, expiresAt };
+async function signInAndResume(raw: string): Promise<void> {
+  let resumed = false;
+  await openOrg2CloudSignIn({
+    onSignedIn: () => {
+      if (resumed) return;
+      resumed = true;
+      if (busy) queuedCallback = raw;
+      else handleMarketConnectionUrl(raw);
+    },
+  });
 }
+
+async function completeMarketAuthorization(
+  url: URL,
+  isCurrent: () => boolean = () => true
+): Promise<void> {
+  // Identity login is owned by the Cloud PKCE controller, never Market.
+  url.hash = "";
+  const store = getInstrumentedStore();
+  const auth = store.get(org2CloudAuthAtom);
+  if (
+    !auth ||
+    !getCloudEndpoint().isOfficial ||
+    getCloudEndpoint().supabaseUrl !== auth.supabaseUrl ||
+    !isCurrent()
+  )
+    throw Error("market_identity_mismatch");
+  const result = await typedInvoke(complete, {
+    raw: url.toString(),
+    expectedIdentityUserId: auth?.userId,
+  });
+  rememberCompletedAuthorization(authorizationState(url));
+  if (
+    result.target === "org2" &&
+    (!auth ||
+      result.identity_user_id !== auth.userId ||
+      store.get(org2CloudAuthAtom)?.userId !== auth.userId ||
+      store.get(org2CloudAuthAtom)?.supabaseUrl !== auth.supabaseUrl ||
+      !getCloudEndpoint().isOfficial ||
+      getCloudEndpoint().supabaseUrl !== auth.supabaseUrl ||
+      !isCurrent())
+  )
+    throw Error("market_identity_mismatch");
+  dispatchMarketConnection(MARKET_AUTHORIZATION_SAVED_EVENT, {
+    identity_user_id: result.identity_user_id,
+    workspace_id: result.workspace_id,
+    target: result.target,
+  });
+  // ORG2-native services become profiles immediately. External clients
+  // still need their existing configuration step in App connections.
+  if (result.target !== "org2") {
+    Message.success(i18n.t("integrations:marketConnection.authorizationSaved"));
+  }
+}
+
 export function handleMarketConnectionUrl(raw: string): boolean {
   let url: URL;
   try {
@@ -93,6 +124,7 @@ export function handleMarketConnectionUrl(raw: string): boolean {
     return false;
   }
   if (!isMarketAppUrl(url)) return false;
+  if (raw.length > 2048) return true;
   const callbackState =
     url.pathname === "/authorized" ? authorizationState(url) : null;
   // Browsers may leave the verified fallback link visible after the automatic
@@ -114,6 +146,18 @@ export function handleMarketConnectionUrl(raw: string): boolean {
   (async () => {
     try {
       if (url.pathname === "/connect") {
+        const auth = getInstrumentedStore().get(org2CloudAuthAtom);
+        // Native enrollment normalizes legacy external targets into ORG2 grants.
+        if (!requestedTarget) throw Error("invalid_market_connection_link");
+        if (
+          !getCloudEndpoint().isOfficial ||
+          (auth && auth.supabaseUrl !== getCloudEndpoint().supabaseUrl)
+        )
+          throw Error("market_identity_endpoint_mismatch");
+        if (!auth) {
+          await signInAndResume(raw);
+          return;
+        }
         if (
           url.searchParams.get("target") === "org2" &&
           getInstrumentedStore().get(org2CloudAuthAtom) !== null
@@ -123,6 +167,7 @@ export function handleMarketConnectionUrl(raw: string): boolean {
           for (const existing of status.connections.filter(
             (connection) =>
               connection.target === "org2" &&
+              connection.identity_user_id === auth?.userId &&
               connection.phase === "authorization_saved"
           )) {
             try {
@@ -131,6 +176,15 @@ export function handleMarketConnectionUrl(raw: string): boolean {
                 existing.workspace_id === workspace ||
                 entries.some((entry) => entry.workspace_id === workspace)
               ) {
+                if (
+                  getInstrumentedStore().get(org2CloudAuthAtom)?.userId !==
+                    auth.userId ||
+                  getInstrumentedStore().get(org2CloudAuthAtom)?.supabaseUrl !==
+                    auth.supabaseUrl ||
+                  !getCloudEndpoint().isOfficial ||
+                  getCloudEndpoint().supabaseUrl !== auth.supabaseUrl
+                )
+                  return;
                 dispatchMarketConnection(
                   MARKET_CONNECTION_OPEN_EVENT,
                   existing
@@ -138,59 +192,26 @@ export function handleMarketConnectionUrl(raw: string): boolean {
                 return;
               }
             } catch {
-              // A stale connection continues through the normal browser
+              // A stale connection continues through the background
               // authorization path below.
             }
           }
         }
+        if (!auth.oauthClientId) {
+          await signInAndResume(raw);
+          return;
+        }
         const authorization = new URL(await typedInvoke(begin, { raw }));
-        try {
-          if (!isTrustedMarketPage(authorization, "/buyer/connect/authorize")) {
-            throw new Error("invalid_authorization_destination");
-          }
-          await openUrl(authorization.toString());
-        } catch {
-          await typedInvoke(cancel);
-          throw new Error("browser_open_failed");
-        }
-      } else if (url.pathname === "/authorized") {
-        let cloudSession = cloudSessionFromMarketCallback(url);
-        url.hash = "";
-        const result = await typedInvoke(complete, { raw: url.toString() });
-        if (
-          result.identity_session &&
-          result.identity_session.expires_at > Date.now() / 1000
-        ) {
-          cloudSession = {
-            accessToken: result.identity_session.access_token,
-            refreshToken: result.identity_session.refresh_token,
-            expiresAt: result.identity_session.expires_at,
-          };
-        }
-        rememberCompletedAuthorization(callbackState);
-        const store = getInstrumentedStore();
-        if (
-          result.target === "org2" &&
-          cloudSession &&
-          decodeJwtSub(cloudSession.accessToken) === result.identity_user_id &&
-          store.get(org2CloudAuthAtom) === null
-        ) {
-          completeOrg2CloudSignIn(cloudSession, (value) =>
-            store.set(org2CloudAuthAtom, value)
-          );
-        }
-        dispatchMarketConnection(MARKET_AUTHORIZATION_SAVED_EVENT, {
-          identity_user_id: result.identity_user_id,
-          workspace_id: result.workspace_id,
-          target: result.target,
+        await authorizeMarketInBackground({
+          authorization,
+          selection: url,
+          auth,
+          complete: (callback, isCurrent) =>
+            completeMarketAuthorization(new URL(callback), isCurrent),
+          cancel: () => typedInvoke(cancel),
         });
-        // ORG2-native services become profiles immediately. External clients
-        // still need their existing configuration step in App connections.
-        if (result.target !== "org2") {
-          Message.success(
-            i18n.t("integrations:marketConnection.authorizationSaved")
-          );
-        }
+      } else if (url.pathname === "/authorized") {
+        await completeMarketAuthorization(url);
       } else {
         throw new Error("invalid_market_connection_link");
       }

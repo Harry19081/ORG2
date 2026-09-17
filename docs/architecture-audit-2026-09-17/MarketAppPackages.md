@@ -87,3 +87,39 @@ including an uncommitted prepared-profile copy that must not replace committed
 ownership evidence. The final managed-config suite passed all 64 tests.
 Actual native Desktop startup, model selection and calls remain pending and
 require a rebuilt debug bundle; the earlier bundle does not contain this fix.
+
+## One browser login, background enrollment
+
+The signed-out entry previously performed Cloud PKCE, replayed the original
+Market link, then opened a second Market authorization page and custom-protocol
+callback. The revised native entry retains Cloud PKCE and completes the Market
+proof through `POST /api/auth/native/authorize-desktop`. The original Rust
+verifier, one-time exchange, scope validation and OS credential-store owner are
+unchanged. An existing legacy Cloud session without `oauthClientId` goes through
+standard Cloud PKCE before the new endpoint; failures never fall back to the
+second browser workflow. Older clients retain their existing server endpoints.
+
+Audit layers 1–10: typecheck and focused tests cover compilation; one shared
+completion function owns dispatch; no new persistent credential type exists;
+Cloud login and Market enrollment remain distinct authorities; the official
+endpoint and legacy-session branches are explicit; the frontend only carries
+the public PKCE proof and one-time code; attempt ownership is scoped to current
+Cloud identity and endpoint; the strict wire response contains only code, state
+and expiry; signed-in, signed-out and synchronous login completion use the same
+background path; workspace, user, PKCE state and native grant are checked at
+their respective authoritative boundaries. Billing, configuration and model
+selection behavior are not modified by this continuation change.
+
+The token is sent only as the Authorization header to the configured trusted
+Market origin. Redirects and cookies are disabled. The response is bounded to
+4 KiB, its state must match, and its ISO expiry must be within 91 seconds. No
+Cloud bearer enters Market IPC, URLs, error details or new persistent storage.
+The existing Cloud auth refresh owner retains its ordinary compare-and-set
+persistence. Sign-out, account/endpoint changes invalidate the attempt, abort
+the request and cancel Rust enrollment; completion checks the scope again before
+publishing. Synchronous or repeated login callbacks resume at most once.
+
+A missing, unsupported or failing endpoint presents a retryable connection
+error. Live one-handoff acceptance requires the matching Market deployment and
+a rebuilt native bundle; the earlier `86172eab7` staging bundle does not contain
+this change.

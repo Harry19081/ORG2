@@ -16,3 +16,17 @@
 | Native post-close resources / identity switch        | Quit confirmed through native UI; exact Instance 89 process absent afterward. Identity switch with active Package credentials not run                                                                                                             |
 
 Performance verdict: blocked. Required native measurements and provider calls have not run; native enrollment is waiting for the Cloud OAuth continuation repair. Compilation, metadata readback and unit tests are not evidence that native runtime or billing acceptance passed.
+
+## Background enrollment continuation
+
+The new path creates one foreground HTTP request (15-second deadline) and one
+narrow auth-atom subscription per enrollment. It uses the existing single busy
+operation and bounded 32-state callback deduplication set, adds no polling,
+background retry, cache, process or file scan, and disposes the subscription on
+success or failure. Identity invalidation aborts the request and cancels the
+pending native proof; returning to the old identity cannot revive it. A normal
+token refresh within the same identity remains valid. Hidden/visible transitions
+do not launch work; an already requested authentication operation may finish
+while hidden. Tests cover stale responses, failures, disposed subscriptions,
+repeated callbacks and synchronous login completion. Real native lifecycle and
+one-handoff UI measurements remain separate acceptance work.
