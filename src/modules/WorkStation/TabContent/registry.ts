@@ -95,10 +95,6 @@ const BrowserSessionEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/browserSession")),
 };
 
-const DevtoolsEntry: RendererEntry = {
-  Component: lazy(() => import("./renderers/devtools")),
-};
-
 // ============================================
 // Project Manager renderers
 // ============================================
@@ -186,7 +182,6 @@ export const REGISTRY: TabContentRegistry = {
 
   // Browser
   "browser-session": BrowserSessionEntry,
-  devtools: DevtoolsEntry,
 
   // Project Manager
   "project-dashboard": ProjectDashboardEntry,

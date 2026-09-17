@@ -186,12 +186,12 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = memo(
     // ============================================
     // Phase 2.2: publish the Browser host's render surface above the tab
     // dispatcher. Mirrors `ProjectHostProvider` — the value bundles the
-    // shared-webview activation flags + the DevTools polling stack + panel
-    // handlers so staged browser renderers (`browser-session` / `devtools`)
-    // can consume it via `useBrowserHostContext` once `UnifiedTabContent` is
-    // mounted for browser tabs. Providing it here is additive — BrowserLayout
-    // below still renders its bespoke `SharedBrowserWorkspace` /
-    // `SharedBrowserDevToolsPanel` directly and is unchanged.
+    // shared-webview activation flags + inspect handlers so the staged
+    // `browser-session` renderer can consume it via `useBrowserHostContext`
+    // once `UnifiedTabContent` is mounted for browser tabs. Providing it here
+    // is additive — BrowserLayout below still renders its bespoke
+    // `SharedBrowserWorkspace` directly, and DevTools stays in the secondary
+    // panel above.
     // ============================================
 
     const browser = state.browser;
@@ -200,7 +200,6 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = memo(
 
     const browserHostValue = useMemo<BrowserHostContextValue>(
       () => ({
-        repoPath,
         browserState: browser.browserState,
         isWorkspaceActive:
           isActive && showBrowserViewport && !automationRunning,
@@ -211,49 +210,17 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = memo(
         onOpenNativeDevTools: browser.handleOpenNativeDevTools,
         onToggleDevToolsPane: browser.handleToggleDevTools,
         devToolsPaneCollapsed: browser.devToolsCollapsed,
-        devToolsCollapsed: browser.devToolsCollapsed,
-        onToggleDevToolsCollapse: browser.handleToggleDevTools,
-        devToolsPanelWidth: browser.devToolsPanelWidth,
-        onDevToolsPanelWidthChange: browser.setDevToolsPanelWidth,
-        devToolsPanelHeight,
-        onDevToolsPanelHeightChange: setDevToolsPanelHeight,
-        devToolsPosition,
-        onToggleDevToolsPosition: handleToggleDevToolsPosition,
-        consoleEntries: browser.entries,
-        onClearConsoleEntries: browser.clearEntries,
-        networkEntries: browser.networkEntries,
-        onClearNetworkEntries: browser.clearNetworkEntries,
-        errorCount: browser.errorCount,
-        warningCount: browser.warningCount,
-        selectedElement: browser.selectedElement,
-        webviewLabel: browser.activeWebviewLabel,
-        currentUrl: browser.currentUrl,
       }),
       [
-        repoPath,
         isActive,
         showBrowserViewport,
         automationRunning,
-        devToolsPanelHeight,
-        devToolsPosition,
-        handleToggleDevToolsPosition,
         browser.browserState,
         browser.isInspectMode,
         browser.toggleInspectMode,
         browser.handleOpenNativeDevTools,
         browser.handleToggleDevTools,
         browser.devToolsCollapsed,
-        browser.devToolsPanelWidth,
-        browser.setDevToolsPanelWidth,
-        browser.entries,
-        browser.clearEntries,
-        browser.networkEntries,
-        browser.clearNetworkEntries,
-        browser.errorCount,
-        browser.warningCount,
-        browser.selectedElement,
-        browser.activeWebviewLabel,
-        browser.currentUrl,
       ]
     );
 
