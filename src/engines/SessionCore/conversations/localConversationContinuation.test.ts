@@ -36,6 +36,7 @@ const mocks = vi.hoisted(() => ({
   removeEvents: vi.fn(),
   removeSyntheticUserInputs: vi.fn(),
   getStoredEvents: vi.fn(),
+  getPersistedEvents: vi.fn(),
   getLatestSnapshot: vi.fn(),
   subscribeSession: vi.fn(),
   loadEvents: vi.fn(),
@@ -85,6 +86,7 @@ vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
     removeByIdPrefix: mocks.removeEvents,
     removeSyntheticUserInputEvents: mocks.removeSyntheticUserInputs,
     getEvents: mocks.getStoredEvents,
+    getPersistedEvents: mocks.getPersistedEvents,
     getLatestSessionSnapshot: mocks.getLatestSnapshot,
     subscribeSession: mocks.subscribeSession,
   },
@@ -295,6 +297,7 @@ beforeEach(() => {
   mocks.removeEvents.mockResolvedValue(1);
   mocks.removeSyntheticUserInputs.mockResolvedValue(1);
   mocks.getStoredEvents.mockImplementation(async () => childEvents);
+  mocks.getPersistedEvents.mockResolvedValue([]);
   mocks.getLatestSnapshot.mockReturnValue(null);
   mocks.subscribeSession.mockReturnValue(() => undefined);
   mocks.storeGet.mockReturnValue(null);
@@ -3115,6 +3118,100 @@ describe("local native conversation continuation", () => {
 });
 
 describe("dynamic source execution identity", () => {
+  it("retries a proven unstarted child using the same execution and full prior history", async () => {
+    const localRoot = {
+      authority: "local-session",
+      authorityScope: [],
+      conversationId: "cliagent-market-root",
+    };
+    const childId = "cliagent-old-empty-child";
+    const nextTarget = {
+      cliAgentType: "claude_code",
+      credentialSource: "market:next-purchase",
+      model: "claude-sonnet-5",
+      workspaceRepoPath: "/repo",
+    };
+    const history = [
+      event("prior-user", "user", "previous paid Package question"),
+      event("prior-answer", "assistant", "previous paid Package answer"),
+    ];
+    mocks.cliStatus.mockImplementation(async ({ sessionId }) => ({
+      ...nextTarget,
+      sessionId,
+      credentialSource:
+        sessionId === childId
+          ? nextTarget.credentialSource
+          : "market:previous-purchase",
+      status: sessionId === childId ? "failed" : "completed",
+      repoPath: "/repo",
+      updatedAt: "2026-09-17T15:25:38Z",
+    }));
+    mocks.invokeTauri.mockResolvedValue([
+      {
+        sessionId: childId,
+        createdAt: "2026-09-17T15:00:28Z",
+        updatedAt: "2026-09-17T15:25:38Z",
+        status: "failed",
+        isTerminal: true,
+      },
+    ]);
+    mocks.loadCliRevision.mockImplementation(async () =>
+      childEvents.length
+        ? "native-ready"
+        : '["unstarted-native-child-v1","cliagent-old-empty-child"]'
+    );
+    mocks.loadEvents.mockImplementation(async (sessionId: string) => ({
+      events: sessionId === localRoot.conversationId ? history : childEvents,
+      source: "cli_history",
+    }));
+
+    // Normal Retry first asks whether the old execution accepted the durable
+    // intent. No accepted intent means the existing dispatch path may resume.
+    await expect(
+      recoverLocalConversationTurn({
+        root: localRoot,
+        target: nextTarget,
+        runnerSessionId: childId,
+        title: "Retry Package switch",
+        timeline: history,
+        displayText: "use the next Package",
+        turnIntentId: "old-package-switch",
+      })
+    ).resolves.toBeNull();
+    const result = await continueLocalConversationAfterTimelineLoad({
+      root: localRoot,
+      title: "Retry Package switch",
+      target: nextTarget,
+      displayText: "use the next Package",
+      turnIntentId: "old-package-switch",
+      loadTimeline: () => loadLocalCanonicalConversationTimeline(localRoot),
+    });
+    expect(result).toMatchObject({
+      sessionId: childId,
+      terminalStatus: "completed",
+    });
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.materialize).not.toHaveBeenCalled();
+    expect(mocks.synchronize).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: childId,
+        timeline: history,
+      })
+    );
+    expect(mocks.sendMessage).toHaveBeenCalledOnce();
+    expect(mocks.sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: childId,
+        turnIntentId: "old-package-switch",
+      })
+    );
+    expect(childEvents.map((item) => item.displayText)).toEqual([
+      "previous paid Package question",
+      "previous paid Package answer",
+      "use the next Package",
+      "native answer",
+    ]);
+  });
   it("snapshots the previous Package before creating its unbound native child", async () => {
     const localRoot = {
       authority: "local-session",
