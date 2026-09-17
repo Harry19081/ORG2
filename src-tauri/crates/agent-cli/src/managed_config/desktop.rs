@@ -1,11 +1,15 @@
 //! Claude Desktop's local third-party inference profile. This is a configuration
 //! target only: Desktop is never registered as an executable CLI agent.
-use super::{direct::DirectConnection, dto::CliConfigProfileManifest};
+use super::{
+    direct::DirectConnection,
+    dto::{CliConfigProfileManifest, CliConfigTargetFileManifest},
+};
 use serde_json::{json, Value};
 use std::{collections::BTreeMap, path::PathBuf};
 
 pub const TARGET: &str = "claude_desktop";
 const PROFILE_ID: &str = "01704638-8000-4000-8000-000000000002";
+const MANAGED_DEPLOYMENT_MODE: &str = "3p";
 
 pub struct CredentialHelper {
     pub path: PathBuf,
@@ -32,11 +36,9 @@ pub(super) fn targets() -> Result<Vec<(&'static str, String, PathBuf)>, String> 
     if !supported() {
         return Err("Claude Desktop connections currently support macOS and Windows".into());
     }
-    // Desktop's normal config selects 3P mode. The running 3P app owns and
-    // mutates its own `Claude-3p/claude_desktop_config.json`, so ORG2 must not
-    // snapshot or replace that runtime file; doing so creates false conflicts
-    // after every launch. ORG2 owns only the profile catalog and helper below.
-    let roaming = app_paths::external_history_data_dir();
+    // Desktop reads deploymentMode beside its third-party profile library.
+    // That file also contains runtime preferences, so ownership checks and
+    // restoration below are scoped to deploymentMode, not those preferences.
     let local = app_paths::external_history_data_local_dir();
     let library = local.join("Claude-3p/configLibrary");
     let helper_name = if cfg!(windows) {
@@ -49,7 +51,7 @@ pub(super) fn targets() -> Result<Vec<(&'static str, String, PathBuf)>, String> 
         (
             "desktop",
             "desktop.json".into(),
-            roaming.join("Claude/claude_desktop_config.json"),
+            local.join("Claude-3p/claude_desktop_config.json"),
         ),
         (
             "profile",
@@ -59,6 +61,61 @@ pub(super) fn targets() -> Result<Vec<(&'static str, String, PathBuf)>, String> 
         ("catalog", "catalog.json".into(), library.join("_meta.json")),
         ("helper", helper_name.into(), helper),
     ])
+}
+
+pub(super) fn owns_runtime_mode(target: &CliConfigTargetFileManifest) -> bool {
+    target.id == "desktop"
+        && std::path::Path::new(&target.target_path)
+            == app_paths::external_history_data_local_dir()
+                .join("Claude-3p/claude_desktop_config.json")
+}
+
+fn runtime_object(bytes: &[u8]) -> Result<serde_json::Map<String, Value>, String> {
+    if bytes.is_empty() {
+        return Ok(Default::default());
+    }
+    serde_json::from_slice::<Value>(bytes)
+        .ok()
+        .and_then(|value| value.as_object().cloned())
+        .ok_or_else(|| "Invalid Claude Desktop runtime configuration".into())
+}
+
+/// Native preference writes do not transfer ownership of deploymentMode.
+/// Whole-file snapshots still guard the actual transaction against races.
+pub(super) fn runtime_mode_matches(current: &[u8]) -> bool {
+    runtime_object(current).is_ok_and(|current| {
+        !current.contains_key("enterpriseConfig")
+            && current.get("deploymentMode").and_then(Value::as_str)
+                == Some(MANAGED_DEPLOYMENT_MODE)
+    })
+}
+
+pub(super) fn restore_runtime_mode(
+    target: &CliConfigTargetFileManifest,
+    current: &[u8],
+    original: Option<&[u8]>,
+) -> Result<super::snapshot::TargetMutation, String> {
+    use super::snapshot::TargetMutation;
+    // A failed apply may have prepared a newer managed-profile copy without
+    // committing its manifest. Only committed manifest hashes are evidence.
+    if target.last_applied_hash.as_ref() == Some(&super::file_io::sha256_bytes(current)) {
+        return Ok(original.map_or(TargetMutation::Remove, |bytes| {
+            TargetMutation::Write(bytes.to_vec())
+        }));
+    }
+    let mut value = runtime_object(current)?;
+    let original_value = runtime_object(original.unwrap_or_default())?;
+    if let Some(mode) = original_value.get("deploymentMode") {
+        value.insert("deploymentMode".into(), mode.clone());
+    } else {
+        value.remove("deploymentMode");
+    }
+    if original.is_none() && value.is_empty() {
+        return Ok(TargetMutation::Remove);
+    }
+    serde_json::to_vec_pretty(&value)
+        .map(TargetMutation::Write)
+        .map_err(|_| "Invalid Claude Desktop runtime configuration".into())
 }
 
 /// Do not claim a local profile can override administrator policy. Read-only
@@ -189,7 +246,7 @@ pub(super) fn generate(
     if desktop.get("enterpriseConfig").is_some() {
         return Err("Claude Desktop has inline enterprise configuration. Resolve it in Desktop before switching.".into());
     }
-    desktop["deploymentMode"] = json!("3p");
+    desktop["deploymentMode"] = json!(MANAGED_DEPLOYMENT_MODE);
     generated.insert("desktop".into(), desktop);
     let mut catalog = object(contents, "catalog")?;
     let mut entries = match catalog.get("entries") {

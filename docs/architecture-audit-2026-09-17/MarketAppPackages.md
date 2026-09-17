@@ -66,4 +66,24 @@ The merged OAuth acceptance is separate evidence. The latest multi-Package imple
 - `pnpm test -- src/modules/MainApp/Settings/sections/HarnessConnections/AppConnectionPage.test.ts`: 6 passed after fixing duplicate default-model labels and the shared Select accessible-name prop
 - `git diff --check`: passed
 
-The local Console and backend are now running against the isolated acceptance database. The active browser login attempt reached Cloud OAuth continuation and failed with `ORG2_OAUTH_CONTINUATION_FAILED`; Cloud callback repair is being handled separately. Real company Feishu login verifies the production administrator callback only and does not prove native Package enrollment. Browser verification must use the in-app browser, per the user. The remaining real acceptance rows and evidence requirements are tracked in `docs/market-native-package-acceptance.md`.
+The local Console and backend are now running against the isolated acceptance database. Cloud PR #109 (`b02e222d`) repaired `ORG2_OAUTH_CONTINUATION_FAILED`; the parent acceptance run observed standard browser SSO return automatically to local Market. Native Package enrollment and calls are still separate pending evidence. Real company Feishu login verifies the production administrator callback only and does not prove native Package enrollment. Browser verification must use the in-app browser, per the user. The remaining real acceptance rows and evidence requirements are tracked in `docs/market-native-package-acceptance.md`.
+
+## Claude Desktop deployment-mode follow-up
+
+Read-only inspection of installed Claude Desktop 2.110.1 established that its
+startup selects `deploymentMode` from `Claude-3p/claude_desktop_config.json`.
+The previous ORG2 target wrote the similarly named file in `Claude`, so a
+saved first-party mode could prevent the configured Package profile from
+being selected. The target now follows the actual native reader. Only
+`deploymentMode` is owned in that runtime file: native preference changes are
+retained across reapply/restore, an external mode change or inline enterprise
+configuration remains a conflict, and full-file transaction snapshots still
+protect against races. Old active manifests must be restored before adopting
+the new target path. No existing user file was migrated or edited in this audit.
+
+The isolated filesystem regression covers existing/missing originals, native
+preference writes, mode edits, inline enterprise conflicts, reapply and restore,
+including an uncommitted prepared-profile copy that must not replace committed
+ownership evidence. The final managed-config suite passed all 64 tests.
+Actual native Desktop startup, model selection and calls remain pending and
+require a rebuilt debug bundle; the earlier bundle does not contain this fix.

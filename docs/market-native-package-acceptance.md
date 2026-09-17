@@ -52,3 +52,17 @@ acceptance.
 After restoration, compare all affected files to their recorded pre-run
 hashes. Preserve concurrent user changes and report conflicts instead of
 force-restoring old backups.
+
+Claude Desktop 2.110.1 reads `deploymentMode` from
+`Claude-3p/claude_desktop_config.json`, beside `configLibrary`. ORG2 owns only
+that field in this runtime preferences file: native preference additions must
+survive reapply and restore, while an external change to `deploymentMode`
+must block both operations. The transaction still uses full-file snapshots
+and hashes to reject concurrent writes. Older active ORG2 manifests pointing
+at `Claude/claude_desktop_config.json` require Restore before applying the new
+target; no automatic rewrite of old ownership is performed.
+
+The installed packaged Claude Desktop removes `CLAUDE_USER_DATA_DIR` unless
+its signed internal harness authorization validates. `CLAUDE_CONFIG_DIR`
+alone isolates Code settings, not the Desktop application. Do not bypass that
+validation or claim a CLI invocation verifies the native Desktop UI.

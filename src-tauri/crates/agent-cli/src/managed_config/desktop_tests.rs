@@ -68,6 +68,90 @@ fn native_schema_preserves_other_profiles_without_enabling_unrelated_permissions
     assert_eq!(catalog["keep"], true);
 }
 
+#[cfg(any(target_os = "macos", windows))]
+#[test]
+fn desktop_runtime_preferences_survive_reapply_and_restore_but_mode_edits_conflict() {
+    let _lock = TEST_ENV_LOCK.get_or_init(|| Mutex::new(())).lock().unwrap();
+    for original in [None, Some(r#"{"deploymentMode":"1p","theme":"dark"}"#)] {
+        let temp = tempfile::tempdir().unwrap();
+        let _home = OrgiiHomeGuard::set(&temp.path().join("orgii"));
+        let _external = ExternalHome::set(temp.path());
+        let targets = desktop::targets().unwrap();
+        let runtime = &targets
+            .iter()
+            .find(|(id, _, _)| *id == "desktop")
+            .unwrap()
+            .2;
+        assert_eq!(
+            runtime,
+            &app_paths::external_history_data_local_dir()
+                .join("Claude-3p/claude_desktop_config.json")
+        );
+        std::fs::create_dir_all(runtime.parent().unwrap()).unwrap();
+        if let Some(original) = original {
+            std::fs::write(runtime, original).unwrap();
+        }
+        enable_direct(desktop::TARGET, connection(), None).unwrap();
+        let mut value: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(runtime).unwrap()).unwrap();
+        assert_eq!(value["deploymentMode"], "3p");
+        // The real Desktop process writes preferences after opening its 3P UI.
+        value["nativePreference"] = serde_json::json!({"keep":true});
+        std::fs::write(runtime, serde_json::to_vec(&value).unwrap()).unwrap();
+        assert!(
+            !operations::status_for_unlocked(desktop::TARGET)
+                .unwrap()
+                .conflict
+        );
+        enable_direct(desktop::TARGET, connection(), None).unwrap();
+        value["enterpriseConfig"] = serde_json::json!({"inferenceProvider":"other"});
+        std::fs::write(runtime, serde_json::to_vec(&value).unwrap()).unwrap();
+        assert!(
+            operations::status_for_unlocked(desktop::TARGET)
+                .unwrap()
+                .conflict
+        );
+        value.as_object_mut().unwrap().remove("enterpriseConfig");
+        value["deploymentMode"] = serde_json::json!("1p");
+        std::fs::write(runtime, serde_json::to_vec(&value).unwrap()).unwrap();
+        assert!(
+            operations::status_for_unlocked(desktop::TARGET)
+                .unwrap()
+                .conflict
+        );
+        assert!(enable_direct(desktop::TARGET, connection(), None).is_err());
+        assert!(operations::restore_agent_default_unlocked(desktop::TARGET, false).is_err());
+        value["deploymentMode"] = serde_json::json!("3p");
+        value["anotherNativePreference"] = serde_json::json!(42);
+        std::fs::write(runtime, serde_json::to_vec(&value).unwrap()).unwrap();
+        // Apply prepares these copies before committing the transaction. A
+        // failed apply must not replace the committed ownership evidence.
+        let manifest = manifest::read_manifest(desktop::TARGET).unwrap().unwrap();
+        let runtime_target = manifest
+            .target_files
+            .iter()
+            .find(|target| target.id == "desktop")
+            .unwrap();
+        std::fs::write(&runtime_target.managed_profile_path, b"uncommitted-copy").unwrap();
+        assert!(
+            !operations::status_for_unlocked(desktop::TARGET)
+                .unwrap()
+                .conflict
+        );
+        operations::restore_agent_default_unlocked(desktop::TARGET, false).unwrap();
+        let restored: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(runtime).unwrap()).unwrap();
+        assert_eq!(restored["nativePreference"]["keep"], true);
+        assert_eq!(restored["anotherNativePreference"], 42);
+        if original.is_some() {
+            assert_eq!(restored["deploymentMode"], "1p");
+            assert_eq!(restored["theme"], "dark");
+        } else {
+            assert!(restored.get("deploymentMode").is_none());
+        }
+    }
+}
+
 #[test]
 fn malformed_or_unowned_configuration_and_unsupported_models_are_rejected() {
     for (id, raw) in [
@@ -210,11 +294,9 @@ fn proxy_backed_desktop_profile_uses_helper_and_restores_it_atomically() {
     assert_eq!(profile["inferenceCredentialKind"], "helper-script");
     assert_eq!(profile["inferenceGatewayAuthScheme"], "bearer");
     assert!(profile.get("inferenceGatewayApiKey").is_none());
-    assert!(
-        std::fs::read_to_string(&helper_path)
-            .unwrap()
-            .contains(&token)
-    );
+    assert!(std::fs::read_to_string(&helper_path)
+        .unwrap()
+        .contains(&token));
 
     operations::restore_agent_default_unlocked(desktop::TARGET, false).unwrap();
     assert!(!helper_path.exists());

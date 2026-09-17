@@ -98,9 +98,21 @@ pub(super) fn status_for_unlocked(agent_name: &str) -> Result<CliConfigManagedSt
             let default_backup_path = PathBuf::from(&target.default_backup_path);
             let current_hash = file_hash(&target_path)?;
             let has_default_backup = target.default_was_missing || default_backup_path.exists();
-            let conflict = mode != CliConfigMode::Default
+            let mut conflict = mode != CliConfigMode::Default
                 && target.last_applied_hash.is_some()
                 && current_hash != target.last_applied_hash;
+            if conflict
+                && agent_name == super::desktop::TARGET
+                && super::desktop::owns_runtime_mode(&target)
+            {
+                let current = if current_hash.is_some() {
+                    std::fs::read(&target_path)
+                        .map_err(|_| "Cannot inspect Claude Desktop runtime configuration")?
+                } else {
+                    Vec::new()
+                };
+                conflict = !super::desktop::runtime_mode_matches(&current);
+            }
             any_backup |= has_default_backup;
             any_conflict |= conflict;
             Ok(CliConfigTargetFileStatus {
@@ -238,7 +250,15 @@ pub(super) fn apply_connection_unlocked(
                     let current_hash = snapshots
                         .get(&target.id)
                         .and_then(|snapshot| snapshot.hash.as_ref());
-                    if current_hash != Some(last_hash) {
+                    let mode_matches = if current_hash != Some(last_hash)
+                        && agent_name == super::desktop::TARGET
+                        && super::desktop::owns_runtime_mode(target)
+                    {
+                        super::desktop::runtime_mode_matches(&snapshots[&target.id].bytes)
+                    } else {
+                        false
+                    };
+                    if current_hash != Some(last_hash) && !mode_matches {
                         return Err(
                             "Current CLI config was modified outside ORG2. Restore or force apply before overwriting it."
                                 .to_string(),
@@ -404,7 +424,15 @@ pub(super) fn restore_agent_default_unlocked(
                 let current_hash = snapshots
                     .get(&target.id)
                     .and_then(|snapshot| snapshot.hash.as_ref());
-                if current_hash != Some(last_hash) {
+                let mode_matches = if current_hash != Some(last_hash)
+                    && agent_name == super::desktop::TARGET
+                    && super::desktop::owns_runtime_mode(target)
+                {
+                    super::desktop::runtime_mode_matches(&snapshots[&target.id].bytes)
+                } else {
+                    false
+                };
+                if current_hash != Some(last_hash) && !mode_matches {
                     return Err(
                         "Current CLI config was modified outside ORG2. Force restore to overwrite it."
                             .to_string(),
@@ -413,8 +441,8 @@ pub(super) fn restore_agent_default_unlocked(
             }
         }
 
-        if target.default_was_missing {
-            mutations.insert(target.id.clone(), TargetMutation::Remove);
+        let original = if target.default_was_missing {
+            None
         } else {
             let backup_path = PathBuf::from(&target.default_backup_path);
             if !backup_path.exists() {
@@ -431,8 +459,19 @@ pub(super) fn restore_agent_default_unlocked(
                     backup_path.display()
                 ));
             }
-            mutations.insert(target.id.clone(), TargetMutation::Write(bytes));
-        }
+            Some(bytes)
+        };
+        let mutation =
+            if agent_name == super::desktop::TARGET && super::desktop::owns_runtime_mode(target) {
+                super::desktop::restore_runtime_mode(
+                    target,
+                    &snapshots[&target.id].bytes,
+                    original.as_deref(),
+                )?
+            } else {
+                original.map_or(TargetMutation::Remove, TargetMutation::Write)
+            };
+        mutations.insert(target.id.clone(), mutation);
     }
 
     manifest.mode = CliConfigMode::Default;
