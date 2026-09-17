@@ -125,7 +125,7 @@ export function MobileThemeProvider({
       const colorScheme = next ?? appearance.getSystemColorScheme();
       setSystemColorScheme(colorScheme);
       if (preferenceRef.current === THEME_PREFERENCE.SYSTEM) {
-        void applyColorScheme(colorScheme);
+        applyColorScheme(colorScheme).catch(() => setStatus("error"));
       }
     };
 

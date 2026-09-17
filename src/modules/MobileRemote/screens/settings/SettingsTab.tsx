@@ -14,6 +14,7 @@ import {
   type GlobalThemePreference,
   THEME_PREFERENCE,
 } from "@src/config/appearance/globalThemes";
+import { createLogger } from "@src/hooks/logger";
 import {
   ArrowRight02Icon,
   HugeiconsIcon,
@@ -26,6 +27,8 @@ import { useMobileTheme } from "../../appearance";
 import { MobileTopBar } from "../../components/MobileTopBar";
 import { MobileProfileEntry } from "../../components/profile/MobileProfileEntry";
 import "./mobileSettings.scss";
+
+const logger = createLogger("mobile-settings");
 
 function presenceLabel(
   presence: "online" | "offline" | "unknown",
@@ -152,7 +155,10 @@ export function SettingsTab({ onOpenDevices }: SettingsTabProps) {
                   selectorClassName="justify-end [&_.select-value]:text-right"
                   style={SECTION_CONTROL_STYLE}
                   onChange={(value) => {
-                    void setPreference(String(value) as GlobalThemePreference);
+                    setPreference(String(value) as GlobalThemePreference).catch(
+                      (error) =>
+                        logger.warn("Mobile theme preference failed", error)
+                    );
                   }}
                 />
               </SectionRow>

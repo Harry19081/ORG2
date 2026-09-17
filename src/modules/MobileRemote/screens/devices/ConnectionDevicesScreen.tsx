@@ -175,16 +175,16 @@ export function ConnectionDevicesScreen({
                               aria-hidden="true"
                             />
                           }
-                          onClick={async () => {
+                          onClick={() => {
                             setSwitchError(null);
                             setSwitchingDesktopId(desktop.id);
-                            try {
-                              await switchPairedDesktop(desktop.id);
-                            } catch {
-                              setSwitchError(t("devices.switchFailed"));
-                            } finally {
-                              setSwitchingDesktopId(null);
-                            }
+                            switchPairedDesktop(desktop.id).then(
+                              () => setSwitchingDesktopId(null),
+                              () => {
+                                setSwitchError(t("devices.switchFailed"));
+                                setSwitchingDesktopId(null);
+                              }
+                            );
                           }}
                         >
                           <span className="flex min-w-0 flex-1 flex-col gap-1 whitespace-normal">
