@@ -17,8 +17,8 @@ import ThreadDetailTabs, {
   type ThreadDetailTab,
 } from "@src/features/GitHubWork/ThreadDetailTabs";
 import {
+  ArchiveArrowDownIcon,
   ArchiveArrowUpIcon,
-  ArchiveIcon,
   ClipboardListIcon,
   HugeiconsIcon,
   InternetIcon,
@@ -524,7 +524,7 @@ const AssignedWorkItemDetail: React.FC<AssignedWorkItemDetailProps> = ({
                 label: t("teamInbox.actions.archive"),
                 icon: (
                   <HugeiconsIcon
-                    icon={ArchiveIcon}
+                    icon={ArchiveArrowDownIcon}
                     data-icon="archive"
                     size={14}
                     strokeWidth={1.8}

@@ -5,8 +5,8 @@ import Markdown from "@src/components/MarkDown";
 import { CARD_ROW_TOKENS } from "@src/components/layout/blocks";
 import {
   AlertCircleIcon,
+  ArchiveArrowDownIcon,
   ArchiveArrowUpIcon,
-  ArchiveIcon,
   CircleCheckBigIcon,
   HugeiconsIcon,
   Notification01Icon,
@@ -95,7 +95,7 @@ const WorkItemEventDetail: React.FC<WorkItemEventDetailProps> = ({
                 label: t("teamInbox.actions.archive"),
                 icon: (
                   <HugeiconsIcon
-                    icon={ArchiveIcon}
+                    icon={ArchiveArrowDownIcon}
                     data-icon="archive"
                     size={14}
                     strokeWidth={1.8}
