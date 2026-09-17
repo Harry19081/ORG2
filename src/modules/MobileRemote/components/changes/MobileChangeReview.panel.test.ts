@@ -188,6 +188,18 @@ const panelButton = (label: string) =>
       button.getAttribute("aria-label") === label ||
       button.textContent === label
   )!;
+const accessibleDropdownName = (trigger: HTMLElement) => {
+  expect(trigger.hasAttribute("aria-label")).toBe(false);
+  const ids = trigger.getAttribute("aria-labelledby")!.split(" ");
+  expect(ids).toHaveLength(2);
+  return ids
+    .map((id) => {
+      const element = document.getElementById(id);
+      expect(element).not.toBeNull();
+      return element!.textContent;
+    })
+    .join(" ");
+};
 const tick = async () => {
   await act(async () => vi.advanceTimersByTimeAsync(300));
 };
@@ -353,9 +365,12 @@ it("shows the first available full file after a refreshed manifest removes the s
   ).toContain("c.ts");
   expect(panel().querySelector("pre")?.textContent).toBe("new file c");
   expect(
-    panel().querySelector(".mobile-change-review__file-picker button")
-      ?.textContent
-  ).toBe("src/c.ts");
+    accessibleDropdownName(
+      panel().querySelector<HTMLElement>(
+        ".mobile-change-review__file-picker button"
+      )!
+    )
+  ).toBe("changeReview.file src/c.ts");
   expect(panel().textContent).not.toContain("b.ts");
 });
 
@@ -454,7 +469,9 @@ it("uses segmented modes and real icon-only controls with mobile geometry", asyn
   const scopes = panel().querySelector<HTMLButtonElement>(
     ".mobile-change-review__scope button"
   )!;
-  expect(scopes.textContent).toBe("changeReview.turn");
+  expect(accessibleDropdownName(scopes)).toBe(
+    "changeReview.scope changeReview.turn"
+  );
   expect(panel().querySelector("select")).toBeNull();
   await act(async () => scopes.click());
   expect(document.querySelectorAll('[role="option"]')).toHaveLength(3);
@@ -507,7 +524,9 @@ it("uses segmented modes and real icon-only controls with mobile geometry", asyn
   expect(modes.querySelector('[data-tab-key="diff"] .sr-only')).toBeNull();
   expect(panel().querySelector(".mobile-change-review__expand-all")).toBeNull();
   await scope("session");
-  expect(scopes.textContent).toBe("changeReview.session");
+  expect(accessibleDropdownName(scopes)).toBe(
+    "changeReview.scope changeReview.session"
+  );
 });
 
 it("uses the shared searchable file dropdown and disposes its portal when review closes", async () => {
@@ -530,6 +549,7 @@ it("uses the shared searchable file dropdown and disposes its portal when review
   const trigger = panel().querySelector<HTMLButtonElement>(
     ".mobile-change-review__file-picker button"
   )!;
+  expect(accessibleDropdownName(trigger)).toBe("changeReview.file src/a.ts");
   expect(panel().querySelector("select")).toBeNull();
   const requests = call.mock.calls.length;
   await act(async () => trigger.click());
@@ -555,7 +575,7 @@ it("uses the shared searchable file dropdown and disposes its portal when review
   );
   await tick();
   expect(panel().querySelector("pre")?.textContent).toBe("after b");
-  expect(trigger.textContent).toBe("src/b.ts");
+  expect(accessibleDropdownName(trigger)).toBe("changeReview.file src/b.ts");
   expect(document.querySelector(".mobile-change-review-menu")).toBeNull();
   await act(async () => trigger.click());
   expect(document.querySelectorAll('[role="option"]')).toHaveLength(2);

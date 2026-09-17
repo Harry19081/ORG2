@@ -133,6 +133,42 @@ afterEach(async () => {
 });
 
 describe("mobile Profile entry", () => {
+  it("names the Settings row with the current account and restores its focus after closing", async () => {
+    const renderRow = async () =>
+      act(async () =>
+        root.render(
+          React.createElement(
+            MobileAuthContext.Provider,
+            { value: auth },
+            React.createElement(MobileProfileEntry, { variant: "row" })
+          )
+        )
+      );
+    await renderRow();
+    const trigger = button("Ada Lovelace · profile.title", host);
+    expect(trigger.textContent).toContain("Ada Lovelace");
+    expect(trigger.textContent).toContain("profile.title");
+    await act(async () => trigger.click());
+    await act(async () => vi.advanceTimersByTime(100));
+    await click("profile.close");
+    expect(dialog()).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+    auth = {
+      ...auth,
+      session: {
+        ...auth.session,
+        profile: {
+          ...auth.session.profile,
+          displayName: "",
+          primaryEmail: "updated@example.test",
+        },
+      },
+    };
+    await renderRow();
+    expect(button("updated@example.test · profile.title", host)).toBe(trigger);
+    expect(trigger.getAttribute("aria-label")).not.toContain("Ada Lovelace");
+  });
+
   it.each([false, true])(
     "keeps the full avatar inside a circular shared Button in the %s welcome slot",
     async (welcome) => {

@@ -54,7 +54,7 @@ function ProfileEntry({ variant }: { variant: "avatar" | "row" }) {
             minHeight: "var(--mobile-touch-size)",
             padding: "calc(var(--spacing) * 3) 0",
           }}
-          aria-label={t("profile.open")}
+          aria-label={`${name} · ${t("profile.title")}`}
           aria-haspopup="dialog"
           onClick={() => setView("profile")}
         >

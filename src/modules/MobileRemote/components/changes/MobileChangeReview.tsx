@@ -1,4 +1,11 @@
-import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
+import React, {
+  Suspense,
+  lazy,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -65,6 +72,8 @@ function ReviewDropdown({
 }) {
   const { runtime } = useMobileRemotePlatform();
   const [open, setOpen] = useState(false);
+  const labelId = useId();
+  const valueId = useId();
   const container = runtime.portalContainer?.();
   return (
     <div
@@ -101,12 +110,15 @@ function ReviewDropdown({
           variant="tertiary"
           appearance="ghost"
           className="mobile-change-review__dropdown-trigger"
-          aria-label={label}
+          aria-labelledby={`${labelId} ${valueId}`}
           aria-haspopup="listbox"
           aria-expanded={open}
           title={value}
         >
-          <span className="mobile-change-review__dropdown-label">
+          <span id={labelId} className="sr-only">
+            {label}
+          </span>
+          <span id={valueId} className="mobile-change-review__dropdown-label">
             {options.find((option) => option.value === value)?.label ?? value}
           </span>
           <HugeiconsIcon icon={ArrowDown01Icon} size={16} aria-hidden="true" />
