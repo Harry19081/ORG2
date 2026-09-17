@@ -13,8 +13,8 @@ import {
 import { SharedSessionFilesProvider } from "@src/features/Org2Cloud/SharedSessionFilesContext";
 import { getCloudEndpoint } from "@src/features/Org2Cloud/config";
 import {
+  ArchiveArrowDownIcon,
   ArchiveArrowUpIcon,
-  ArchiveIcon,
   AtIcon,
   HugeiconsIcon,
   LinkSquare02Icon,
@@ -96,7 +96,7 @@ const CommentMentionDetail: React.FC<CommentMentionDetailProps> = ({
                 label: t("teamInbox.actions.archive"),
                 icon: (
                   <HugeiconsIcon
-                    icon={ArchiveIcon}
+                    icon={ArchiveArrowDownIcon}
                     data-icon="archive"
                     size={14}
                     strokeWidth={1.8}
