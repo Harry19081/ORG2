@@ -135,11 +135,12 @@
 
     .cm-lineNumbers {
       border-right: none !important;
-      padding-left: var(--cm-line-number-padding-left, 8px);
+      padding-left: 0;
     }
 
     .cm-lineNumbers .cm-gutterElement {
       border-right: none !important;
+      padding-left: calc(var(--cm-line-number-padding-left, 8px) + 5px);
     }
 
     .cm-editor .cm-gutters .cm-gutterElement,
@@ -464,12 +465,7 @@
   // Match the rounded backdrop across the number and fold columns.
   // The marker's containing block is only the line-number cell.
   inset-block: 2px;
-  left: calc(
-    8px - var(--diff-gutter-width, 7px) - var(
-        --cm-line-number-padding-left,
-        8px
-      )
-  );
+  left: calc(8px - var(--diff-gutter-width, 7px));
   right: calc(-1 * var(--cm-diff-fold-gutter-width));
   z-index: 2;
   display: flex;

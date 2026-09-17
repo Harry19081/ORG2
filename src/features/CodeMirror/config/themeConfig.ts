@@ -140,10 +140,12 @@ export const CODEMIRROR_BASE_LAYOUT_THEME = EditorView.theme({
   },
   ".cm-lineNumbers": {
     borderRight: "none",
-    paddingLeft: "var(--cm-line-number-padding-left, 8px)",
+    paddingLeft: "0",
   },
   ".cm-lineNumbers .cm-gutterElement": {
     borderRight: "none",
+    // Row-owned spacing lets the active background cover the entire gutter.
+    paddingLeft: "calc(var(--cm-line-number-padding-left, 8px) + 5px)",
   },
   ".cm-line": {
     padding:
