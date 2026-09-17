@@ -31,6 +31,7 @@ import { usePrReviewModal } from "./usePrReviewModal";
 interface PrConversationTabProps {
   /** GitHub-style flow-title block rendered above the timeline. */
   flowHeader?: React.ReactNode;
+  inlineProperties?: React.ReactNode;
   detail: Record<string, unknown> | null;
   identity: PrIdentity;
   conversation: GitHubIssueComment[];
@@ -49,6 +50,7 @@ interface PrConversationTabProps {
 
 export const PrConversationTab: React.FC<PrConversationTabProps> = ({
   flowHeader,
+  inlineProperties,
   detail,
   identity,
   conversation,
@@ -117,6 +119,9 @@ export const PrConversationTab: React.FC<PrConversationTabProps> = ({
           <div
             className={`${DETAIL_PANEL_TOKENS.headerWidth} flex flex-col px-4 py-4`}
           >
+            {inlineProperties ? (
+              <div className="mb-4">{inlineProperties}</div>
+            ) : null}
             <div className="min-w-0 flex-1">
               <PrConversationTimeline
                 detail={detail}

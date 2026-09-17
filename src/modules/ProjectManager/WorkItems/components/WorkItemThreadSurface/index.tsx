@@ -28,6 +28,8 @@ interface WorkItemThreadSurfaceProps extends Omit<
    * The content remains readable and keeps the same thread presentation.
    */
   propertyProps?: ThreadPropertyProps;
+  /** Host-owned properties moved below the title in a narrow pane. */
+  headerProperties?: React.ReactNode;
   /** Limit the canonical property set to fields backed by this data source. */
   propertyFields?: WorkItemPropertyFieldKey[];
   /**
@@ -46,6 +48,7 @@ interface WorkItemThreadSurfaceProps extends Omit<
 const WorkItemThreadSurface: React.FC<WorkItemThreadSurfaceProps> = ({
   workItem,
   propertyProps,
+  headerProperties: hostHeaderProperties,
   propertyFields = WORK_ITEM_THREAD_PROPERTY_FIELDS,
   propertiesPlacement = "band",
   ...contentProps
@@ -89,7 +92,7 @@ const WorkItemThreadSurface: React.FC<WorkItemThreadSurfaceProps> = ({
       {...contentProps}
       workItem={workItem}
       presentation="thread"
-      headerProperties={headerProperties}
+      headerProperties={hostHeaderProperties ?? headerProperties}
       propertiesRail={propertiesRail}
     />
   );

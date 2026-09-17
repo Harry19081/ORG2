@@ -16,6 +16,7 @@ import { PrFlowHeader } from "./PrFlowHeader";
 import type { WorkstationPrDetailController } from "./types";
 
 interface PrDetailTabPanelsProps {
+  inlineProperties?: React.ReactNode;
   identity: PrIdentity;
   currentIdentity: PrIdentity;
   repoPath: string;
@@ -36,6 +37,7 @@ interface PrDetailTabPanelsProps {
 
 /** Conversation / Commits / Checks / Changes panels beside the details rail. */
 export function PrDetailTabPanels({
+  inlineProperties,
   identity,
   currentIdentity,
   repoPath,
@@ -69,6 +71,7 @@ export function PrDetailTabPanels({
           className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
         >
           <PrConversationTab
+            inlineProperties={inlineProperties}
             flowHeader={
               <PrFlowHeader
                 identity={currentIdentity}

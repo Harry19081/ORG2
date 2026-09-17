@@ -193,6 +193,71 @@ describe("WorkItemThreadLayout floating footer", () => {
     expect(scrollSection?.classList.contains("scrollbar-overlay")).toBe(false);
   });
 
+  it("moves one editable properties surface below the title when the pane narrows", () => {
+    let paneWidth = 700;
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(
+      () => paneWidth
+    );
+    const props: ComponentProps<typeof WorkItemThreadLayout> = {
+      sidebar: createElement(
+        "aside",
+        { "data-testid": "rail-content" },
+        "Properties"
+      ),
+      flowHeader: createElement("h2", null, "Title"),
+      floatingFooter: createElement("div", null, "Composer"),
+      children: createElement("article", null, "Timeline"),
+    };
+    act(() => root.render(createElement(WorkItemThreadLayout, props)));
+    expect(
+      container.querySelector('[data-testid="work-item-thread-details-rail"]')
+    ).not.toBeNull();
+    act(() => {
+      paneWidth = 699;
+      window.dispatchEvent(new Event("resize"));
+    });
+    const inline = container.querySelector(
+      '[data-testid="work-item-thread-inline-properties"]'
+    );
+    expect(inline?.textContent).toBe("Properties");
+    expect(
+      container
+        .querySelector('[data-testid="work-item-thread-floating-footer"]')
+        ?.hasAttribute("hidden")
+    ).toBe(false);
+    expect(
+      container.querySelectorAll('[data-testid="rail-content"]')
+    ).toHaveLength(1);
+    expect(
+      container.querySelector('[data-testid="work-item-thread-details-rail"]')
+    ).toBeNull();
+    expect(
+      container.querySelector("h2")?.compareDocumentPosition(inline as Node)
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(
+      inline?.compareDocumentPosition(
+        container.querySelector("article") as Node
+      )
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(
+      container.querySelector(
+        '[data-testid="work-item-thread-floating-footer"]'
+      )?.className
+    ).toContain("right-11");
+    act(() => {
+      paneWidth = 700;
+      window.dispatchEvent(new Event("resize"));
+    });
+    expect(
+      container.querySelector(
+        '[data-testid="work-item-thread-inline-properties"]'
+      )
+    ).toBeNull();
+    expect(
+      container.querySelectorAll('[data-testid="rail-content"]')
+    ).toHaveLength(1);
+  });
+
   it("hosts the navigation trail inside its own details rail", () => {
     const props: ComponentProps<typeof WorkItemThreadLayout> = {
       sidebar: createElement("aside", { "data-testid": "rail-content" }),

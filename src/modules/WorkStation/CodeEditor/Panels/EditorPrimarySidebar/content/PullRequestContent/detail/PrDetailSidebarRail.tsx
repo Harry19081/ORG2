@@ -20,6 +20,7 @@ interface PrDetailSidebarRailProps {
   state: WorkstationSelectedPrState;
   controller: WorkstationPrDetailController;
   activeTab: PrDetailTab;
+  inline?: boolean;
   trailScrollContainerRef: React.RefObject<HTMLElement | null>;
   trailContentRef: React.RefObject<HTMLElement | null>;
 }
@@ -30,6 +31,7 @@ export function PrDetailSidebarRail({
   state,
   controller,
   activeTab,
+  inline = false,
   trailScrollContainerRef,
   trailContentRef,
 }: PrDetailSidebarRailProps): React.ReactNode {
@@ -98,6 +100,8 @@ export function PrDetailSidebarRail({
       onLabelsChange={updateLabels}
     />
   );
+
+  if (inline) return sidebar;
 
   return (
     <div

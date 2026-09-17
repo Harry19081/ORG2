@@ -30,6 +30,7 @@ export const PublishedHeaderSlotsView: React.FC<PublishedHeaderSlotsViewProps> =
       return (
         <div
           className={`flex min-w-0 flex-1 items-center ${paddingLeftClassName}`}
+          data-published-header-slots
         >
           {slots?.leading && (
             <NoDragRegion className="flex shrink-0 items-center">

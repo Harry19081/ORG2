@@ -16,6 +16,7 @@ import {
   TimelineCard,
   TimelineLoadingSkeleton,
 } from "@src/features/GitHubWork/ActivityTimeline";
+import { useDetailRailLayout } from "@src/hooks/ui/layout/useDetailRailLayout";
 import type { PrDetailTab } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 
 import GitHubPrDetailTabs from "../GitHubPrDetailTabs";
@@ -96,9 +97,11 @@ function FlowSkeletonContent({
   number,
   loadingLabel,
   showFlowHeader,
+  inlineProperties,
 }: Pick<GitHubDetailSkeletonProps, "title" | "number"> & {
   loadingLabel: string;
   showFlowHeader: boolean;
+  inlineProperties?: React.ReactNode;
 }): React.ReactNode {
   return (
     <>
@@ -112,6 +115,7 @@ function FlowSkeletonContent({
       <div
         className={`${DETAIL_PANEL_TOKENS.headerWidth} ${DETAIL_PANEL_TOKENS.threadContentPadding} flex flex-col gap-3`}
       >
+        {inlineProperties}
         <SkeletonDescriptionCard />
         <TimelineLoadingSkeleton label={loadingLabel} />
       </div>
@@ -135,6 +139,7 @@ const GitHubDetailSkeleton: React.FC<GitHubDetailSkeletonProps> = memo(
     title,
     number,
   }) => {
+    const { paneRef, inlineRail } = useDetailRailLayout();
     const { t } = useTranslation("common");
     const sidebarSections =
       kind === "pr"
@@ -149,6 +154,44 @@ const GitHubDetailSkeleton: React.FC<GitHubDetailSkeletonProps> = memo(
             t("projects:workItems.properties.labels", "Labels"),
             t("projects:workItems.properties.assignment", "Assignment"),
           ];
+
+    const sidebar = (
+      <div
+        className={
+          inlineRail
+            ? "w-full"
+            : `box-border flex h-full shrink-0 flex-col ${WORKSTATION_TRAIL_RAIL_PADDING_CLASS}`
+        }
+        style={
+          inlineRail ? undefined : { width: WORKSTATION_TRAIL_WIDTH.expandedPx }
+        }
+        data-testid={`github-${kind}-detail-skeleton-sidebar`}
+      >
+        <WorkstationTrailSurface className="flex self-start">
+          {kind === "issue" ? (
+            <WorkstationTrailHeader
+              title={t(
+                "projects:workItems.properties.title",
+                "Work Item Properties"
+              )}
+            />
+          ) : null}
+          <WorkstationTrailBody
+            className={`${WORKSTATION_TRAIL_CONTENT.sectionList} py-1`}
+          >
+            {sidebarSections.map((label) => (
+              <WorkstationTrailSection key={label} title={label}>
+                <div className="px-2">
+                  <SkeletonBar
+                    className={`${SKELETON_CONTROL_HEIGHT} w-24 rounded-lg`}
+                  />
+                </div>
+              </WorkstationTrailSection>
+            ))}
+          </WorkstationTrailBody>
+        </WorkstationTrailSurface>
+      </div>
+    );
 
     return (
       <div
@@ -184,6 +227,7 @@ const GitHubDetailSkeleton: React.FC<GitHubDetailSkeletonProps> = memo(
           : null}
 
         <div
+          ref={paneRef}
           aria-busy="true"
           aria-label={t("status.loading")}
           className="flex min-h-0 flex-1 overflow-hidden"
@@ -203,37 +247,10 @@ const GitHubDetailSkeleton: React.FC<GitHubDetailSkeletonProps> = memo(
                   : t("git.issues.loadingTimeline", "Loading activity…")
               }
               showFlowHeader={showFlowHeader}
+              inlineProperties={inlineRail ? sidebar : undefined}
             />
           </div>
-          <div
-            className={`box-border flex h-full shrink-0 flex-col ${WORKSTATION_TRAIL_RAIL_PADDING_CLASS}`}
-            style={{ width: WORKSTATION_TRAIL_WIDTH.expandedPx }}
-            data-testid={`github-${kind}-detail-skeleton-sidebar`}
-          >
-            <WorkstationTrailSurface className="flex self-start">
-              {kind === "issue" ? (
-                <WorkstationTrailHeader
-                  title={t(
-                    "projects:workItems.properties.title",
-                    "Work Item Properties"
-                  )}
-                />
-              ) : null}
-              <WorkstationTrailBody
-                className={`${WORKSTATION_TRAIL_CONTENT.sectionList} py-1`}
-              >
-                {sidebarSections.map((label) => (
-                  <WorkstationTrailSection key={label} title={label}>
-                    <div className="px-2">
-                      <SkeletonBar
-                        className={`${SKELETON_CONTROL_HEIGHT} w-24 rounded-lg`}
-                      />
-                    </div>
-                  </WorkstationTrailSection>
-                ))}
-              </WorkstationTrailBody>
-            </WorkstationTrailSurface>
-          </div>
+          {!inlineRail ? sidebar : null}
         </div>
       </div>
     );
