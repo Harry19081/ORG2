@@ -235,15 +235,20 @@ describe("NavigationMenuRow", () => {
     expect(markup).toContain("group-hover:opacity-0");
     expect(markup).toContain("group-hover:opacity-100");
 
-    // The 2px edge nudge must sit ON the `overflow-hidden` layer. Inside it,
-    // those 2px fall outside the clip rect and shear the last button's right
-    // edge — which is exactly what the sidebar showed.
+    // The row is 28px high around a 20px action, so the action layer moves 4px
+    // into px-2 and leaves a right inset equal to the 4px vertical inset.
     const clippingLayer = markup.match(
       /class="[^"]*overflow-hidden[^"]*max-w-0[^"]*"|class="[^"]*max-w-0[^"]*overflow-hidden[^"]*"/
     )?.[0];
     expect(clippingLayer).toBeDefined();
-    expect(clippingLayer).toContain("-mr-0.5");
-    expect(markup).not.toContain('class="-mr-0.5');
+    expect(clippingLayer).toContain("-mr-1");
+    expect(markup).toContain(
+      'class="inline-flex items-center justify-end gap-px"'
+    );
+
+    // A 20px action inside the 28px / 8px-radius row uses the proportional
+    // 6px corner rather than the shared compact button's 4px default.
+    expect(markup).toContain("border-radius:6px");
   });
 
   it("uses the shared renderer for keyboard shortcuts, not trailing labels", () => {
