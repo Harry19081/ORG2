@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
@@ -89,7 +90,9 @@ describe("TabBarPlusMenuItems", () => {
         onActionComplete: vi.fn(),
       })
     );
-    const visibleText = markup.replace(/<[^>]*>/gu, "");
+    const template = document.createElement("template");
+    template.innerHTML = markup;
+    const visibleText = template.content.textContent;
 
     expect(markup).toContain("ml-auto");
     expect(markup).not.toContain("font-mono");
