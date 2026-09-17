@@ -123,12 +123,10 @@ export const WorkStationViewService = {
     if (isStationWindow()) return false;
     if (!isWorkbenchRoute()) return false;
 
-    const { toggleChatPanelMaximizedAtom } =
-      await import("@src/store/ui/chatPanel/surfaceAtoms");
+    const { toggleActiveChatPanelMaximizedAtom } =
+      await import("@src/store/chatPanel/chatPanelLayoutAtoms");
 
-    const store = getStore();
-    store.set(toggleChatPanelMaximizedAtom);
-    return true;
+    return getStore().set(toggleActiveChatPanelMaximizedAtom);
   },
 
   async showWorkStation(): Promise<boolean> {
@@ -136,16 +134,19 @@ export const WorkStationViewService = {
     if (!isWorkbenchRoute()) return false;
 
     const [
+      { activeChatPanelTabStationAvailableAtom },
       { stationModeAtom },
       { activeStationChatVisibleAtom, stationChatVisibilityAtom },
       { chatPanelMaximizedAtom },
     ] = await Promise.all([
+      import("@src/store/chatPanel/chatPanelLayoutAtoms"),
       import("@src/store/ui/simulatorAtom"),
       import("@src/store/ui/chatPanel/visibilityAtoms"),
       import("@src/store/ui/chatPanel/surfaceAtoms"),
     ]);
 
     const store = getStore();
+    if (!store.get(activeChatPanelTabStationAvailableAtom)) return false;
     if (store.get(chatPanelMaximizedAtom)) {
       store.set(chatPanelMaximizedAtom, false);
     }
@@ -192,10 +193,21 @@ export const WorkStationViewService = {
       return true;
     }
 
-    const { activeStationChatVisibleAtom } =
-      await import("@src/store/ui/chatPanel/visibilityAtoms");
+    const [
+      { activeChatPanelTabStationAvailableAtom },
+      { activeStationChatVisibleAtom },
+    ] = await Promise.all([
+      import("@src/store/chatPanel/chatPanelLayoutAtoms"),
+      import("@src/store/ui/chatPanel/visibilityAtoms"),
+    ]);
 
     const store = getStore();
+    if (
+      isWorkbenchRoute() &&
+      !store.get(activeChatPanelTabStationAvailableAtom)
+    ) {
+      return false;
+    }
 
     store.set(stationModeAtom, mode);
 

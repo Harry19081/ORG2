@@ -118,10 +118,9 @@ export async function saveGitDiffDraftForSwitch(
       throw new Error(`File changed on disk: ${filePath}`);
     return draft.editedContent;
   });
-  if (
-    drafts.get(filePath) !== draft ||
-    (await readTextFile(filePath)) !== draft.editedContent
-  )
-    throw new Error(`Editor changed while saving: ${filePath}`);
-  drafts.delete(filePath);
+  if ((await readTextFile(filePath)) !== draft.editedContent)
+    throw new Error(`File changed while saving: ${filePath}`);
+  const unchanged = drafts.get(filePath) === draft;
+  acknowledgeGitDiffSave(filePath, draft.editedContent, unchanged);
+  if (!unchanged) throw new Error(`Editor changed while saving: ${filePath}`);
 }

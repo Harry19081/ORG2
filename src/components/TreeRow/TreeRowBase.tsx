@@ -215,7 +215,6 @@ export const TreeRowBase = React.memo(
                       data-icon="corner-down-right"
                       size={12}
                       className="shrink-0 text-text-3"
-                      aria-label="symlink"
                     />
                   )}
                 </>

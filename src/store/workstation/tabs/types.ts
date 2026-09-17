@@ -32,8 +32,6 @@ export type WorkStationTabType =
   | "url-preview" // URL preview (agent-triggered webview in editor)
   // Browser tabs
   | "browser-session"
-  /** DevTools right panel (Elements / Console / Network) */
-  | "devtools"
   // Project Manager tabs
   | "project-dashboard"
   | "project-work-items"
@@ -243,7 +241,6 @@ export function getWorkstationTabOwnership(
 
     case "terminal":
     case "browser-session":
-    case "devtools":
     case "project-dashboard":
     case "project-work-items":
     case "project-linear-projects":

@@ -13,7 +13,10 @@ import { ConversationParticipantsChip } from "@src/features/Org2Cloud/SessionCon
 import SessionViewersIndicator from "@src/features/Org2Cloud/SessionViewersIndicator";
 import SessionForkHeaderExtras from "@src/features/TeamCollaboration/components/SessionForkHeaderExtras";
 import { useShouldOffsetChatPanelHeader } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
-import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
+import {
+  effectiveChatPanelMaximizedAtom,
+  toggleActiveChatPanelMaximizedAtom,
+} from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import {
   openRuntimeInChatPanelTabAtom,
   syncActiveChatPanelTabStateAtom,
@@ -30,10 +33,7 @@ import {
   chatPanelSelectedCloudOrgAtom,
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
-import {
-  activeChatPanelSurfaceAtom,
-  toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeChatPanelSurfaceAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { openSideChatAtom } from "@src/store/ui/sideChatAtom";
 import { isHumanSession } from "@src/util/session/sessionDispatch";
@@ -115,7 +115,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const selectedCloudOrg = useAtomValue(chatPanelSelectedCloudOrgAtom);
     const surface = useAtomValue(activeChatPanelSurfaceAtom);
     const syncActiveTabState = useSetAtom(syncActiveChatPanelTabStateAtom);
-    const toggleChatFocus = useSetAtom(toggleChatPanelMaximizedAtom);
+    const toggleChatFocus = useSetAtom(toggleActiveChatPanelMaximizedAtom);
     const rawChatWidth = useAtomValue(chatWidthAtom);
     const chatMaxWidth = getChatMaxWidth(viewportWidth);
     const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
