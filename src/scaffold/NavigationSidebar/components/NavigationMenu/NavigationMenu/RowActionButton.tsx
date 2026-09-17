@@ -6,6 +6,8 @@ import { MoreHorizontalIcon } from "@src/icons";
 
 import type { NavigationMenuItem } from "../config";
 
+const ROW_ACTION_RADIUS_PX = 6;
+
 interface NavigationMenuRowActionButtonProps {
   icon?: NavigationMenuItem["rowActionIcon"];
   dataIcon?: string;
@@ -39,6 +41,7 @@ export function NavigationMenuRowActionButton({
       title={label}
       data-testid={dataTestId}
       className="focus:outline-none focus-visible:bg-sidebar-selected! enabled:hover:bg-sidebar-selected! aria-pressed:bg-sidebar-selected!"
+      style={{ borderRadius: ROW_ACTION_RADIUS_PX }}
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
