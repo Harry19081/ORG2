@@ -5,13 +5,30 @@ import type {
   MarketExecutionProfile,
   MarketProfileAgent,
 } from "./marketProfiles";
-import { configureMarketProfile } from "./rpc";
+import { configureMarketCatalog, configureMarketProfile } from "./rpc";
 import { authorizedProfile } from "./usageAuthorization";
 
 export type ExternalMarketTarget = "claude_code" | "claude_desktop" | "codex";
 
 function profileAgent(target: ExternalMarketTarget): MarketProfileAgent {
   return target === "codex" ? "codex" : "claude_code";
+}
+
+/** Match the server's exact native target and current model availability. */
+export function modelsForExternalTarget(
+  profile: MarketExecutionProfile,
+  target: ExternalMarketTarget
+): string[] {
+  const engineModels = profile.modelsByAgent[profileAgent(target)];
+  if (!profile.managed) return engineModels;
+  return engineModels.filter((model) =>
+    profile.managed?.models.some(
+      (candidate) =>
+        candidate.model === model &&
+        candidate.availability === "available" &&
+        candidate.clients.includes(target)
+    )
+  );
 }
 
 export function modelForExternalTarget(
@@ -21,7 +38,7 @@ export function modelForExternalTarget(
   preferredModel?: string
 ): string | null {
   const agent = profileAgent(target);
-  const models = profile.modelsByAgent[agent];
+  const models = modelsForExternalTarget(profile, target);
   if (
     preferredAgent === agent &&
     preferredModel &&
@@ -37,7 +54,8 @@ export function isMarketManagedView(
 ): boolean {
   return Boolean(
     view?.config.mode === "orgii_managed" &&
-    view.config.selectedKeyId?.startsWith("market:")
+    (view.config.selectedKeyId?.startsWith("market:") ||
+      view.config.selectedKeyId?.startsWith("market-app:"))
   );
 }
 
@@ -88,4 +106,54 @@ export async function restoreExternalMarketTarget(
     agentName: target,
     force: false,
   });
+}
+
+/** Authorize every selected package, then atomically install one native catalog. */
+export async function configureExternalMarketCatalog(
+  profiles: MarketExecutionProfile[],
+  target: ExternalMarketTarget,
+  defaultProfileId: string,
+  defaultModel: string
+) {
+  if (
+    profiles.length < 1 ||
+    profiles.length > 8 ||
+    new Set(profiles.map((profile) => profile.id)).size !== profiles.length
+  )
+    throw new Error("invalid_package_selection");
+  const view = await readTarget(target);
+  if (!view.installed) throw new Error("client_not_installed");
+  if (!view.config.supported) throw new Error("client_not_supported");
+  if (view.config.conflict) throw new Error("client_config_conflict");
+  const defaultPackage = profiles.findIndex(
+    (profile) => profile.id === defaultProfileId
+  );
+  if (
+    defaultPackage < 0 ||
+    !modelsForExternalTarget(profiles[defaultPackage], target).includes(
+      defaultModel
+    )
+  )
+    throw new Error("workspace_not_supported");
+  const identity = profiles[0].connection.identity_user_id;
+  if (
+    profiles.some((profile) => profile.connection.identity_user_id !== identity)
+  )
+    throw new Error("market_identity_mismatch");
+  const authorized: MarketExecutionProfile[] = [];
+  for (const [index, profile] of profiles.entries()) {
+    const model =
+      index === defaultPackage
+        ? defaultModel
+        : modelForExternalTarget(profile, target);
+    if (!model) throw new Error("workspace_not_supported");
+    authorized.push(await authorizedProfile(profile, model));
+  }
+  return configureMarketCatalog(
+    authorized,
+    target,
+    defaultPackage,
+    defaultModel,
+    expectedHashes(view)
+  );
 }

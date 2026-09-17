@@ -15,6 +15,7 @@ pub mod claude_models;
 pub mod desktop;
 mod direct;
 mod dto;
+pub mod model_catalog;
 pub mod provider_profiles;
 mod target_lock;
 pub use direct::DirectConnection;
@@ -140,6 +141,30 @@ pub fn enable_orgii_managed_checked(
         return Err(unavailable_agent_message(agent_name));
     }
     enable_agent_orgii_managed_unlocked(agent_name, key_id, provider, model, force)
+}
+
+/// Apply a model picker and its routing manifest under one transaction.
+pub fn enable_orgii_managed_catalog(
+    agent: &str,
+    key: String,
+    provider: String,
+    model: String,
+    catalog: &model_catalog::ModelCatalog,
+    expected: &std::collections::BTreeMap<String, Option<String>>,
+) -> Result<CliConfigManagedStatus, String> {
+    let _guard = config_operation_guard()?;
+    let _target_lock = target_lock::lock_targets(agent)?;
+    recover_pending_transaction_unlocked(agent)?;
+    verify_expected_targets(agent, Some(expected))?;
+    operations::apply_connection_unlocked(
+        agent,
+        Some(key),
+        Some(provider),
+        Some(model),
+        false,
+        None,
+        Some(catalog),
+    )
 }
 
 /// Restore active managed CLI configs before the ORGII process exits.
@@ -303,6 +328,7 @@ fn enable_direct_inner(
         Some(connection.model.clone()),
         force,
         Some(&connection),
+        None,
     )
 }
 

@@ -958,7 +958,10 @@
       "workspaceNumber": "Сервис {{index}} из {{count}}",
       "openTerminal": "Открыть терминал",
       "terminalOpened": "Терминал открыт",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Выберите до 8 пакетов и модель по умолчанию, затем переключайте пакеты в приложении",
+      "defaultModel": "Модель по умолчанию",
+      "packageLimit": "Выберите до 8 пакетов"
     }
   },
   "claudeProfiles": {

@@ -958,7 +958,10 @@
       "workspaceNumber": "Hizmet {{index}} / {{count}}",
       "openTerminal": "Terminali aç",
       "terminalOpened": "Terminal açıldı",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "En fazla 8 paket ve varsayılan bir model seçin, ardından uygulama içinde paketler arasında geçiş yapın",
+      "defaultModel": "Varsayılan model",
+      "packageLimit": "En fazla 8 paket seçin"
     }
   },
   "claudeProfiles": {

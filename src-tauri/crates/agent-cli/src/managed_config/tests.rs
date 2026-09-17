@@ -66,6 +66,7 @@ pub(super) fn test_manifest(
     targets: Vec<CliConfigTargetFileManifest>,
 ) -> CliConfigProfileManifest {
     CliConfigProfileManifest {
+        native_model_catalog: false,
         provider_profile: None,
         agent: agent_name.to_string(),
         mode: CliConfigMode::OrgiiManaged,
@@ -283,11 +284,24 @@ fn every_managed_adapter_resolves_all_declared_targets() {
         let targets = agent_manifest_targets(adapter.agent_name).unwrap();
         assert_eq!(
             targets.len(),
-            adapter.targets.len(),
+            adapter.targets.len() + usize::from(adapter.agent_name == CODEX_AGENT),
             "{}",
             adapter.agent_name
         );
         assert!(!targets.is_empty(), "{}", adapter.agent_name);
+        for declared in adapter.targets {
+            assert!(targets.iter().any(|target| target.id == declared.file_id));
+        }
+        if adapter.agent_name == CODEX_AGENT {
+            let catalog = targets
+                .iter()
+                .find(|target| target.id == model_catalog::TARGET_ID)
+                .unwrap();
+            assert_eq!(
+                Path::new(&catalog.target_path),
+                model_catalog::path().unwrap()
+            );
+        }
     }
 
     let omp_targets = agent_manifest_targets(OMP_AGENT).unwrap();

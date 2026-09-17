@@ -204,6 +204,22 @@ impl Source for MarketSource {
     fn namespace(&self) -> &'static str {
         "market"
     }
+    fn request_selection(
+        &self,
+        key: &str,
+        agent: &str,
+        model: &str,
+    ) -> Result<Option<crate::dynamic_credentials::RequestSelection>, String> {
+        let mut selection = Selection::parse(key, agent)?;
+        if model.is_empty() || model.len() > 256 || model.chars().any(char::is_control) {
+            return Err("Invalid Market request model".into());
+        }
+        selection.model = Some(model.into());
+        Ok(Some(crate::dynamic_credentials::RequestSelection {
+            selection: selection.key()?,
+            model: model.into(),
+        }))
+    }
     fn destination(&self, key: &str, agent: &str) -> Result<Destination, String> {
         let selection = Selection::parse(key, agent)?;
         Ok(Destination {
@@ -403,6 +419,31 @@ pub(super) fn validate_session_purchase(
     Ok(())
 }
 
+/// External app support is stricter than ORG2's internal engine support.
+/// Older non-managed purchases retain their protocol-based compatibility.
+pub(super) fn validate_external_purchase(
+    entries: &[market_connect::WorkspaceEntitlement],
+    workspace: &str,
+    entitlement: &str,
+    agent: &str,
+    model: &str,
+    now: i64,
+) -> Result<(), String> {
+    validate_session_purchase(entries, workspace, entitlement, agent, model, now)?;
+    let entry = entries
+        .iter()
+        .find(|entry| entry.workspace_id == workspace && entry.entitlement_id == entitlement)
+        .ok_or("Market purchase is unavailable")?;
+    if entry.managed.as_ref().is_some_and(|service| {
+        !service.models.iter().any(|candidate| {
+            candidate.model == model && candidate.clients.iter().any(|client| client == agent)
+        })
+    }) {
+        return Err("Market model does not support the selected app".into());
+    }
+    Ok(())
+}
+
 // The generic Codex router strips its local /v1 prefix. Dynamic sources
 // therefore supply a protocol base, rather than a workspace root.
 pub(crate) fn protocol_base_url(workspace_root: &str, agent: &str) -> String {
@@ -532,6 +573,53 @@ mod tests {
         entry.expires_at = None;
         entry.status = "revoked".into();
         assert!(check(&entry, "ent_allowed", "codex", "codex-model", 999).is_err());
+    }
+
+    #[test]
+    fn external_purchase_checks_exact_client_without_restricting_internal_engine() {
+        let mut entry: market_connect::WorkspaceEntitlement = serde_json::from_value(serde_json::json!({
+            "workspace_id": "ws_fixture", "entitlement_id": "pa_fixture",
+            "service_id": "pkg_fixture", "service_name": "Fixture",
+            "models": ["claude-model"], "models_by_agent": {"claude": ["claude-model"]},
+            "status": "active", "expires_at": null,
+            "managed": {
+                "service_id": "pkg_fixture", "title": "Fixture", "version_id": "pv_fixture",
+                "requires_confirmation": false,
+                "models": [{"model": "claude-model", "protocol": "anthropic_messages",
+                    "clients": ["org2", "claude_code"], "pricing": {}, "availability": "available"}],
+                "access": {"access_id": "pa_fixture", "service_id": "pkg_fixture", "workspace_id": "ws_fixture",
+                    "status": "active", "budget_usd6": null, "billing_mode": "wallet", "revision": 1}
+            }
+        })).unwrap();
+        let check = |entry: &market_connect::WorkspaceEntitlement, agent| {
+            validate_external_purchase(
+                std::slice::from_ref(entry),
+                "ws_fixture",
+                "pa_fixture",
+                agent,
+                "claude-model",
+                1,
+            )
+        };
+        assert!(check(&entry, "claude_code").is_ok());
+        assert!(check(&entry, "claude_desktop").is_err());
+        assert!(validate_session_purchase(
+            std::slice::from_ref(&entry),
+            "ws_fixture",
+            "pa_fixture",
+            "claude_desktop",
+            "claude-model",
+            1
+        )
+        .is_ok());
+        entry.managed.as_mut().unwrap().models[0]
+            .clients
+            .push("claude_desktop".into());
+        assert!(check(&entry, "claude_desktop").is_ok());
+        entry.managed.as_mut().unwrap().models[0].availability = "unavailable".into();
+        assert!(check(&entry, "claude_desktop").is_err());
+        entry.managed = None;
+        assert!(check(&entry, "claude_desktop").is_ok());
     }
 
     #[test]

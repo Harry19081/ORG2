@@ -14,8 +14,8 @@ export default function ConnectionCards({
   description,
 }: {
   choices: HarnessConnectionView["choices"];
-  selected: string;
-  active: string | null;
+  selected: string | readonly string[];
+  active: string | readonly string[] | null;
   disabled: boolean;
   onSelect: (keyId: string) => void;
   onAdd?: () => void;
@@ -32,19 +32,33 @@ export default function ConnectionCards({
         {choices.map((choice) => (
           <Button
             key={choice.keyId}
-            variant={selected === choice.keyId ? "primary" : "secondary"}
+            variant={
+              (
+                Array.isArray(selected)
+                  ? selected.includes(choice.keyId)
+                  : selected === choice.keyId
+              )
+                ? "primary"
+                : "secondary"
+            }
             appearance="outline"
             disabled={disabled || Boolean(choice.reason)}
             layout="custom"
             style={{ height: "auto" }}
-            aria-pressed={selected === choice.keyId}
+            aria-pressed={
+              Array.isArray(selected)
+                ? selected.includes(choice.keyId)
+                : selected === choice.keyId
+            }
             onClick={() => onSelect(choice.keyId)}
             className="min-w-0 justify-start p-3 text-left whitespace-normal"
           >
             <span className="flex min-w-0 flex-col gap-1">
               <span className="truncate font-medium" title={choice.name}>
                 {choice.name}
-                {active === choice.keyId && (
+                {(Array.isArray(active)
+                  ? active.includes(choice.keyId)
+                  : active === choice.keyId) && (
                   <span className="ml-2 text-xs text-success-6">
                     {t("harnessConnections.current")}
                   </span>

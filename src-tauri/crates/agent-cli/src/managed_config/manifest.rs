@@ -73,7 +73,7 @@ pub(super) fn agent_manifest_targets(
     }
     let adapter = managed_config_adapter(agent_name)
         .ok_or_else(|| format!("Unsupported CLI managed config agent: {agent_name}"))?;
-    adapter
+    let mut targets: Vec<_> = adapter
         .targets
         .iter()
         .map(|target| {
@@ -86,7 +86,16 @@ pub(super) fn agent_manifest_targets(
                 &target_path,
             ))
         })
-        .collect()
+        .collect::<Result<_, String>>()?;
+    if agent_name == "codex" {
+        targets.push(manifest_target(
+            agent_name,
+            super::model_catalog::TARGET_ID,
+            "org2-model-catalog.json",
+            &super::model_catalog::path()?,
+        ));
+    }
+    Ok(targets)
 }
 
 pub(super) fn targets_with_fallbacks(

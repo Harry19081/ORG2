@@ -958,7 +958,10 @@
       "workspaceNumber": "服務 {{index}} / {{count}}",
       "openTerminal": "開啟終端機",
       "terminalOpened": "已開啟終端機",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "可同時選擇最多 8 個方案和一個預設模型，連線後可在 App 內切換方案",
+      "defaultModel": "預設模型",
+      "packageLimit": "最多選擇 8 個方案"
     }
   },
   "claudeProfiles": {

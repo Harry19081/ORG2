@@ -24,9 +24,32 @@ pub struct Credential {
     pub destination: Destination,
     pub secret: String,
 }
+pub struct RequestSelection {
+    pub selection: String,
+    pub model: String,
+}
+
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+pub struct SourceModel {
+    pub id: String,
+    pub label: String,
+}
+
 pub trait Source: Send + Sync {
     fn namespace(&self) -> &'static str;
     fn destination(&self, selection: &str, agent: &str) -> Result<Destination, String>;
+    /// Resolve model and credential ownership together before minting a token.
+    fn request_selection(
+        &self,
+        _selection: &str,
+        _agent: &str,
+        _model: &str,
+    ) -> Result<Option<RequestSelection>, String> {
+        Ok(None)
+    }
+    fn models(&self, _selection: &str, _agent: &str) -> Result<Option<Vec<SourceModel>>, String> {
+        Ok(None)
+    }
     fn credential<'a>(
         &'a self,
         selection: &'a str,

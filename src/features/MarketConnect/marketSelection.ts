@@ -79,3 +79,56 @@ export function profileForAppliedMarketSelection(
     ) ?? null
   );
 }
+
+/** Display-only decoder; Rust validates schema, aliases and identity on use. */
+export function profilesForAppliedMarketSelection(
+  profiles: MarketExecutionProfile[],
+  value: string | null | undefined
+): MarketExecutionProfile[] {
+  if (!value?.startsWith("market-app:")) {
+    const single = profileForAppliedMarketSelection(profiles, value);
+    return single ? [single] : [];
+  }
+  if (value.length > 64 * 1024) return [];
+  try {
+    const encoded = value
+      .slice("market-app:".length)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const bytes = Uint8Array.from(
+      atob(encoded.padEnd(Math.ceil(encoded.length / 4) * 4, "=")),
+      (c) => c.charCodeAt(0)
+    );
+    const catalog: unknown = JSON.parse(new TextDecoder().decode(bytes));
+    if (
+      !catalog ||
+      typeof catalog !== "object" ||
+      !("version" in catalog) ||
+      catalog.version !== 1 ||
+      !("models" in catalog) ||
+      !Array.isArray(catalog.models) ||
+      catalog.models.length < 1 ||
+      catalog.models.length > 64
+    )
+      return [];
+    const found = new Map<string, MarketExecutionProfile>();
+    for (const model of catalog.models) {
+      if (
+        !model ||
+        typeof model !== "object" ||
+        typeof model.selection !== "string"
+      )
+        return [];
+      const selection = parseAppliedMarketSelection(model.selection);
+      if (!selection) return [];
+      const profile = profileForAppliedMarketSelection(
+        profiles,
+        model.selection
+      );
+      if (profile) found.set(profile.id, profile);
+    }
+    return [...found.values()];
+  } catch {
+    return [];
+  }
+}

@@ -27,16 +27,22 @@ pub async fn open(agent: String, key: String, model: String) -> Result<(), Strin
         return Err("Opening Market clients is not available on this platform yet".into());
     }
     crate::harness_connections::verify_installed_version(&agent).await?;
-    let selection = super::source::Selection::parse(&key, &agent)?;
-    let entries = super::source::options(selection.metadata.clone()).await?;
-    super::source::validate_session_purchase(
-        &entries,
-        &selection.workspace_id,
-        &selection.entitlement_id,
-        &agent,
-        &model,
-        chrono::Utc::now().timestamp_millis(),
-    )?;
+    if key.starts_with("market-app:") {
+        let catalog = super::app_catalog::Catalog::parse(&key, &agent)?;
+        catalog.resolve(&model)?;
+        catalog.validate_live().await?;
+    } else {
+        let selection = super::source::Selection::parse(&key, &agent)?;
+        let entries = super::source::options(selection.metadata.clone()).await?;
+        super::source::validate_external_purchase(
+            &entries,
+            &selection.workspace_id,
+            &selection.entitlement_id,
+            &agent,
+            &model,
+            chrono::Utc::now().timestamp_millis(),
+        )?;
+    }
     let status = managed_config::cli_config_get_status(agent.clone()).await?;
     if !status.supported
         || status.conflict

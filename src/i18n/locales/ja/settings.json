@@ -958,7 +958,10 @@
       "workspaceNumber": "サービス {{index}} / {{count}}",
       "openTerminal": "ターミナルを開く",
       "terminalOpened": "ターミナルを開きました",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "最大 8 個のパッケージと既定のモデルを選択すると、アプリ内でパッケージを切り替えられます",
+      "defaultModel": "既定のモデル",
+      "packageLimit": "パッケージは最大 8 個まで選択できます"
     }
   },
   "claudeProfiles": {

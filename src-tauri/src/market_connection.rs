@@ -2,13 +2,20 @@
 //! configuration and credential crates do not depend on this module.
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "market-connect")]
+mod app_catalog;
+#[cfg(feature = "market-connect")]
+mod configure_catalog;
+#[cfg(feature = "market-connect")]
 mod external_client;
 #[cfg(feature = "market-connect")]
 pub(crate) mod source;
 
 pub(crate) fn register_source() -> Result<(), String> {
     #[cfg(feature = "market-connect")]
-    crate::dynamic_credentials::register(source::instance())?;
+    {
+        crate::dynamic_credentials::register(source::instance())?;
+        crate::dynamic_credentials::register(std::sync::Arc::new(app_catalog::AppSource))?;
+    }
     Ok(())
 }
 
@@ -227,9 +234,18 @@ pub async fn market_connection_configure_profile(
             model.clone(),
         )
         .await?;
+        let parsed = source::Selection::parse(&selection, &agent)?;
+        let entries = source::options(parsed.metadata.clone()).await?;
+        let now = chrono::Utc::now().timestamp_millis();
+        source::validate_external_purchase(
+            &entries,
+            &parsed.workspace_id,
+            &parsed.entitlement_id,
+            &agent,
+            &model,
+            now,
+        )?;
         let status = if agent == "claude_desktop" {
-            let parsed = source::Selection::parse(&selection, &agent)?;
-            let entries = source::options(parsed.metadata.clone()).await?;
             let models = entries
                 .iter()
                 .find(|entry| {
@@ -237,8 +253,21 @@ pub async fn market_connection_configure_profile(
                         && entry.entitlement_id == parsed.entitlement_id
                 })
                 .and_then(|entry| entry.models_by_agent.get("claude"))
+                .ok_or("No Claude models available")?
+                .iter()
+                .filter(|candidate| {
+                    source::validate_external_purchase(
+                        &entries,
+                        &parsed.workspace_id,
+                        &parsed.entitlement_id,
+                        &agent,
+                        candidate,
+                        now,
+                    )
+                    .is_ok()
+                })
                 .cloned()
-                .ok_or("No Claude models available")?;
+                .collect();
             crate::cli_managed_proxy::enable_dynamic_desktop(
                 selection.clone(),
                 model,
@@ -523,6 +552,40 @@ pub async fn market_connection_open_client(
     #[cfg(not(feature = "market-connect"))]
     {
         let _ = (agent, selection, model);
+        Err("market_module_disabled".into())
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PackageChoice {
+    identity_user_id: String,
+    workspace_id: String,
+    target: String,
+    entitlement_workspace_id: String,
+    entitlement_id: String,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ConfigureCatalogRequest {
+    packages: Vec<PackageChoice>,
+    agent: String,
+    default_package: usize,
+    default_model: String,
+    expected_hashes: std::collections::BTreeMap<String, Option<String>>,
+}
+
+#[tauri::command(rename_all = "camelCase")]
+pub async fn market_connection_configure_catalog(
+    request: ConfigureCatalogRequest,
+) -> Result<ConfiguredProfile, String> {
+    #[cfg(feature = "market-connect")]
+    {
+        configure_catalog::configure(request).await
+    }
+    #[cfg(not(feature = "market-connect"))]
+    {
+        let _ = request;
         Err("market_module_disabled".into())
     }
 }

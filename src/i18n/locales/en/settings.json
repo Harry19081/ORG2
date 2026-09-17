@@ -1039,7 +1039,10 @@
       "workspaceNumber": "Service {{index}} of {{count}}",
       "openTerminal": "Open terminal",
       "terminalOpened": "Terminal opened",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Select up to 8 packages and a default model, then switch packages inside the app",
+      "defaultModel": "Default model",
+      "packageLimit": "Select up to 8 packages"
     }
   },
   "claudeProfiles": {

@@ -1,4 +1,3 @@
-import { useAtomValue } from "jotai";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -13,18 +12,17 @@ import {
   SectionRow,
 } from "@src/components/layout/Section";
 import {
-  configureExternalMarketTarget,
+  configureExternalMarketCatalog,
   isMarketManagedView,
+  modelsForExternalTarget,
   restoreExternalMarketTarget,
 } from "@src/features/MarketConnect/externalAppBridge";
 import { openConfiguredMarketClient } from "@src/features/MarketConnect/launch";
 import {
   type MarketExecutionProfile,
-  type MarketProfileAgent,
   useMarketExecutionProfiles,
 } from "@src/features/MarketConnect/marketProfiles";
-import { profileForAppliedMarketSelection } from "@src/features/MarketConnect/marketSelection";
-import { recentModelEntriesAtom } from "@src/store/session/recentModelEntriesAtom";
+import { profilesForAppliedMarketSelection } from "@src/features/MarketConnect/marketSelection";
 
 import ClaudeProfileEditor from "./ClaudeProfileEditor";
 import ConnectionCards from "./ConnectionCards";
@@ -35,9 +33,6 @@ import {
 } from "./useHarnessConnection";
 
 type PickerStep = "closed" | "provider" | "market" | "accounts";
-
-const agentFor = (target: ConnectionHarness): MarketProfileAgent =>
-  target === "codex" ? "codex" : "claude_code";
 
 function profileLabel(
   profile: MarketExecutionProfile,
@@ -62,7 +57,6 @@ export default function AppConnectionPage({
   onDirtyChange?: (dirty: boolean) => void;
 }) {
   const { t } = useTranslation("settings");
-  const recent = useAtomValue(recentModelEntriesAtom);
   const {
     profiles,
     loading: profilesLoading,
@@ -73,19 +67,19 @@ export default function AppConnectionPage({
   const [picker, setPicker] = useState<PickerStep>("closed");
   const [busy, setBusy] = useState<"connect" | "open" | "restore" | null>(null);
 
-  const agent = agentFor(target);
-  const [choosingProfile, setChoosingProfile] =
-      useState<MarketExecutionProfile | null>(null),
-    [choosingModel, setChoosingModel] = useState("");
+  const [choosingProfiles, setChoosingProfiles] = useState<string[]>([]);
+  const [choosingModel, setChoosingModel] = useState("");
   const marketProfiles = useMemo(
-    () => profiles.filter((profile) => profile.modelsByAgent[agent].length > 0),
-    [agent, profiles]
+    () =>
+      profiles.filter(
+        (profile) => modelsForExternalTarget(profile, target).length > 0
+      ),
+    [target, profiles]
   );
-  const appliedMarketProfile = profileForAppliedMarketSelection(
+  const appliedMarketProfiles = profilesForAppliedMarketSelection(
     profiles,
     state.view?.config.selectedKeyId
   );
-  const activeMarketProfile = appliedMarketProfile;
   const marketManaged = isMarketManagedView(state.view);
   const configured = Boolean(
     state.view && state.view.config.mode !== "default"
@@ -94,11 +88,31 @@ export default function AppConnectionPage({
     state.view?.choices.find(
       (choice) => choice.keyId === state.view?.config.selectedKeyId
     )?.name ?? null;
-  const activeMarketName = activeMarketProfile
-    ? profileLabel(activeMarketProfile, marketProfiles, (index, count) =>
-        t("harnessConnections.marketApps.workspaceNumber", { index, count })
-      )
+  const activeMarketName = appliedMarketProfiles.length
+    ? appliedMarketProfiles
+        .map((profile) =>
+          profileLabel(profile, marketProfiles, (index, count) =>
+            t("harnessConnections.marketApps.workspaceNumber", { index, count })
+          )
+        )
+        .join(" · ")
     : null;
+  const selectedProfiles = marketProfiles.filter((profile) =>
+    choosingProfiles.includes(profile.id)
+  );
+  const modelOptions = selectedProfiles.flatMap((profile) =>
+    modelsForExternalTarget(profile, target).map((model) => ({
+      value: JSON.stringify([profile.id, model]),
+      label: `${profileLabel(profile, marketProfiles, (index, count) =>
+        t("harnessConnections.marketApps.workspaceNumber", { index, count })
+      )} · ${model}`,
+    }))
+  );
+  const chosenValue = modelOptions.some(
+    (option) => option.value === choosingModel
+  )
+    ? choosingModel
+    : (modelOptions[0]?.value ?? "");
   const currentName = marketManaged
     ? (activeMarketName ??
       t(
@@ -126,25 +140,19 @@ export default function AppConnectionPage({
     refreshHarnessConnections();
     await state.reload();
   };
-  const connectMarket = async (
-    profile: MarketExecutionProfile,
-    chosenModel?: string
-  ) => {
+  const connectMarket = async () => {
+    if (!chosenValue || !selectedProfiles.length) return;
     setBusy("connect");
     try {
-      const selected = recent.find(
-        (entry) => entry.marketProfileId === profile.id
-      );
-      await configureExternalMarketTarget(
-        profile,
+      const [defaultProfileId, defaultModel] = JSON.parse(chosenValue) as [
+        string,
+        string,
+      ];
+      await configureExternalMarketCatalog(
+        selectedProfiles,
         target,
-        selected?.cliAgentType === "claude_code" ||
-          selected?.cliAgentType === "codex"
-          ? selected.cliAgentType
-          : chosenModel
-            ? agent
-            : undefined,
-        chosenModel ?? selected?.modelId
+        defaultProfileId,
+        defaultModel
       );
       setPicker("closed");
       await refresh();
@@ -346,15 +354,22 @@ export default function AppConnectionPage({
                       : "harnessConnections.empty"
                   )
                 }
-                onSelect={(id) =>
-                  setPicker(id === "market" ? "market" : "accounts")
-                }
+                onSelect={(id) => {
+                  if (id === "market")
+                    setChoosingProfiles(
+                      appliedMarketProfiles.map((profile) => profile.id)
+                    );
+                  setPicker(id === "market" ? "market" : "accounts");
+                }}
               />
             </SectionRow>
           )}
           {picker === "market" && (
             <SectionRow showHeader={false}>
               <div className="flex w-full flex-col gap-2">
+                <p className={SECTION_DESCRIPTION_CLASSES}>
+                  {t("harnessConnections.marketApps.multiPackageHelp")}
+                </p>
                 {profilesLoading ? (
                   <p className={SECTION_DESCRIPTION_CLASSES}>
                     {t("harnessConnections.marketApps.loading")}
@@ -385,46 +400,47 @@ export default function AppConnectionPage({
                             count,
                           })
                       ),
-                      models: profile.modelsByAgent[agent],
+                      models: modelsForExternalTarget(profile, target),
                       endpoint: null,
                       requiresTest: false,
-                      reason: null,
+                      reason:
+                        choosingProfiles.length >= 8 &&
+                        !choosingProfiles.includes(profile.id)
+                          ? t("harnessConnections.marketApps.packageLimit")
+                          : null,
                     }))}
-                    selected={appliedMarketProfile?.id ?? ""}
-                    active={appliedMarketProfile?.id ?? null}
+                    selected={choosingProfiles}
+                    active={appliedMarketProfiles.map((profile) => profile.id)}
                     disabled={busy !== null || unavailable}
                     description={(id) =>
-                      `${marketProfiles.find((profile) => profile.id === id)?.modelsByAgent[agent].length ?? 0} · ${t("harnessConnections.model")}`
+                      `${modelsForExternalTarget(marketProfiles.find((profile) => profile.id === id)!, target).length} · ${t("harnessConnections.model")}`
                     }
-                    onSelect={(id) => {
-                      const profile = marketProfiles.find(
-                        (item) => item.id === id
-                      );
-                      if (profile) {
-                        setChoosingProfile(profile);
-                        setChoosingModel(profile.modelsByAgent[agent][0] ?? "");
-                      }
-                    }}
+                    onSelect={(id) =>
+                      setChoosingProfiles((selected) =>
+                        selected.includes(id)
+                          ? selected.filter((entry) => entry !== id)
+                          : selected.length < 8
+                            ? [...selected, id]
+                            : selected
+                      )
+                    }
                   />
                 )}
               </div>
             </SectionRow>
           )}
-          {picker === "market" && choosingProfile && (
+          {picker === "market" && selectedProfiles.length > 0 && (
             <SectionRow showHeader={false}>
               <div className="flex flex-wrap items-center gap-3">
                 <Select
-                  value={choosingModel}
+                  value={chosenValue}
                   onChange={(value) => setChoosingModel(String(value))}
-                  options={choosingProfile.modelsByAgent[agent].map(
-                    (value) => ({ value, label: value })
-                  )}
+                  options={modelOptions}
+                  ariaLabel={t("harnessConnections.marketApps.defaultModel")}
                 />
                 <Button
-                  disabled={!choosingModel || busy !== null}
-                  onClick={() =>
-                    void connectMarket(choosingProfile, choosingModel)
-                  }
+                  disabled={!chosenValue || busy !== null || unavailable}
+                  onClick={() => void connectMarket()}
                 >
                   {t("harnessConnections.apply")}
                 </Button>

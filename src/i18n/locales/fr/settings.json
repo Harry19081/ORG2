@@ -958,7 +958,10 @@
       "workspaceNumber": "Service {{index}} sur {{count}}",
       "openTerminal": "Ouvrir le terminal",
       "terminalOpened": "Terminal ouvert",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Sélectionnez jusqu’à 8 forfaits et un modèle par défaut pour changer de forfait dans l’application",
+      "defaultModel": "Modèle par défaut",
+      "packageLimit": "Sélectionnez jusqu’à 8 forfaits"
     }
   },
   "claudeProfiles": {

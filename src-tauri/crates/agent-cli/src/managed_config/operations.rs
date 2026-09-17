@@ -22,6 +22,7 @@ use super::snapshot::{ensure_default_backup_from_snapshot, read_target_snapshots
 use super::transaction::execute_transaction;
 
 fn clear_connection_metadata(manifest: &mut CliConfigProfileManifest) {
+    manifest.native_model_catalog = false;
     manifest.provider_profile = None;
     manifest.selected_key_id = None;
     manifest.selected_provider = None;
@@ -166,7 +167,7 @@ pub(super) fn enable_agent_orgii_managed_unlocked(
     model: Option<String>,
     force: bool,
 ) -> Result<CliConfigManagedStatus, String> {
-    apply_connection_unlocked(agent_name, key_id, provider, model, force, None)
+    apply_connection_unlocked(agent_name, key_id, provider, model, force, None, None)
 }
 
 pub(super) fn apply_connection_unlocked(
@@ -176,6 +177,7 @@ pub(super) fn apply_connection_unlocked(
     model: Option<String>,
     force: bool,
     direct: Option<&super::direct::DirectConnection>,
+    catalog: Option<&super::model_catalog::ModelCatalog>,
 ) -> Result<CliConfigManagedStatus, String> {
     if agent_name == super::desktop::TARGET {
         if direct.is_none() {
@@ -247,9 +249,32 @@ pub(super) fn apply_connection_unlocked(
         }
     }
 
+    if let Some(manifest) = existing_manifest
+        .as_ref()
+        .filter(|manifest| manifest.native_model_catalog)
+    {
+        if agent_name == "claude_code" {
+            let target = manifest
+                .target_files
+                .iter()
+                .find(|target| target.id == "settings")
+                .ok_or("Native model picker backup missing")?;
+            let original = if target.default_was_missing {
+                String::new()
+            } else {
+                let bytes = std::fs::read(&target.default_backup_path)
+                    .map_err(|_| "Native model picker backup unavailable")?;
+                if target.original_hash.as_ref() != Some(&sha256_bytes(&bytes)) {
+                    return Err("Native model picker backup hash mismatch".into());
+                }
+                String::from_utf8(bytes).map_err(|_| "Invalid model picker backup")?
+            };
+            super::model_catalog::restore_claude_picker(&mut current_contents, &original)?;
+        }
+    }
     let proxy_url = managed_proxy_url();
     let proxy_token = generate_proxy_token();
-    let managed_contents = if let Some(connection) = direct {
+    let mut managed_contents = if let Some(connection) = direct {
         super::direct::generate_direct_configs(
             agent_name,
             &current_contents,
@@ -266,11 +291,13 @@ pub(super) fn apply_connection_unlocked(
         )?
     };
 
+    super::model_catalog::apply(agent_name, &mut managed_contents, catalog, model.as_deref())?;
     let now = now_stamp();
     let refresh_default_backup = existing_manifest
         .as_ref()
         .is_none_or(|manifest| manifest.mode == CliConfigMode::Default);
     let mut manifest = existing_manifest.unwrap_or_else(|| CliConfigProfileManifest {
+        native_model_catalog: false,
         provider_profile: None,
         agent: agent_name.to_string(),
         mode: CliConfigMode::Default,
@@ -288,6 +315,21 @@ pub(super) fn apply_connection_unlocked(
     let mut mutations = BTreeMap::new();
     for target in targets {
         let Some(managed_content) = managed_contents.get(&target.id) else {
+            // Switching away from a catalog restores its owned artifact in the
+            // same transaction, instead of leaving an orphan or losing backup ownership.
+            if target.id == super::model_catalog::TARGET_ID && target.last_applied_hash.is_some() {
+                let mutation = if target.default_was_missing {
+                    TargetMutation::Remove
+                } else {
+                    let bytes = std::fs::read(&target.default_backup_path)
+                        .map_err(|_| "Native catalog backup unavailable")?;
+                    if target.original_hash.as_ref() != Some(&sha256_bytes(&bytes)) {
+                        return Err("Native catalog backup hash mismatch".into());
+                    }
+                    TargetMutation::Write(bytes)
+                };
+                mutations.insert(target.id.clone(), mutation);
+            }
             continue;
         };
         let snapshot = snapshots
@@ -320,6 +362,7 @@ pub(super) fn apply_connection_unlocked(
     } else {
         CliConfigMode::OrgiiManaged
     };
+    manifest.native_model_catalog = catalog.is_some();
     manifest.provider_profile = direct.and_then(|d| d.profile.clone());
     manifest.target_files = managed_targets;
     manifest.selected_key_id = key_id;

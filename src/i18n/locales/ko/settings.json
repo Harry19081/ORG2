@@ -958,7 +958,10 @@
       "workspaceNumber": "서비스 {{index}} / {{count}}",
       "openTerminal": "터미널 열기",
       "terminalOpened": "터미널을 열었습니다",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "최대 8개 패키지와 기본 모델을 선택한 후 앱 안에서 패키지를 전환하세요",
+      "defaultModel": "기본 모델",
+      "packageLimit": "최대 8개 패키지를 선택하세요"
     }
   },
   "claudeProfiles": {

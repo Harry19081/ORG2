@@ -1039,7 +1039,10 @@
       "workspaceNumber": "服务 {{index}} / {{count}}",
       "openTerminal": "打开终端",
       "terminalOpened": "已打开终端",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "可同时选择最多 8 个套餐和一个默认模型，连接后可在 App 内切换套餐",
+      "defaultModel": "默认模型",
+      "packageLimit": "最多选择 8 个套餐"
     }
   },
   "claudeProfiles": {

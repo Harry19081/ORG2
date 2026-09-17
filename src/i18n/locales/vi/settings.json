@@ -958,7 +958,10 @@
       "workspaceNumber": "Dịch vụ {{index}} / {{count}}",
       "openTerminal": "Mở terminal",
       "terminalOpened": "Đã mở terminal",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Chọn tối đa 8 gói và một mô hình mặc định, sau đó chuyển gói trong ứng dụng",
+      "defaultModel": "Mô hình mặc định",
+      "packageLimit": "Chọn tối đa 8 gói"
     }
   },
   "claudeProfiles": {

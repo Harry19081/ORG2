@@ -314,19 +314,6 @@ async fn proxy_agent_handler(
             "Invalid ORG2 proxy token".to_string(),
         );
     }
-    match crate::dynamic_credentials::source(&context.key_id) {
-        Ok(Some(source)) => match source.credential(&context.key_id, agent_name).await {
-            Ok(credential) => {
-                context.authentication = credential.destination.authentication;
-                context.api_key = credential.secret;
-                context.provider = credential.destination.provider;
-                context.upstream_base_url = credential.destination.base_url;
-            }
-            Err(error) => return json_error(StatusCode::PRECONDITION_FAILED, error),
-        },
-        Ok(None) => {}
-        Err(error) => return json_error(StatusCode::PRECONDITION_FAILED, error),
-    }
     let query = forwarded_query(&context.protocol, request.uri().query());
     let path = match query {
         Some(query) if !query.is_empty() => format!("{path}?{query}"),
@@ -345,18 +332,92 @@ async fn proxy_agent_handler(
     };
 
     let mut outbound_body = body_bytes.to_vec();
-    if is_json_request(&parts.headers) && !outbound_body.is_empty() {
-        if let Ok(mut value) = serde_json::from_slice::<Value>(&outbound_body) {
-            rewrite_request_model(&mut value, &context);
-            match serde_json::to_vec(&value) {
-                Ok(bytes) => outbound_body = bytes,
-                Err(err) => {
-                    return json_error(
-                        StatusCode::BAD_REQUEST,
-                        format!("Failed to serialize proxy request body: {err}"),
-                    );
+    let mut json_body = if is_json_request(&parts.headers) && !outbound_body.is_empty() {
+        match serde_json::from_slice::<Value>(&outbound_body) {
+            Ok(value) => Some(value),
+            Err(_) => return json_error(StatusCode::BAD_REQUEST, "Invalid JSON request".into()),
+        }
+    } else {
+        None
+    };
+    let source = match crate::dynamic_credentials::source(&context.key_id) {
+        Ok(value) => value,
+        Err(error) => return json_error(StatusCode::PRECONDITION_FAILED, error),
+    };
+    let mut resolved_model = false;
+    if let Some(source) = source {
+        if !outbound_body.is_empty() && json_body.as_ref().is_none_or(|value| !value.is_object()) {
+            return json_error(
+                StatusCode::BAD_REQUEST,
+                "Dynamic model requests require a JSON object".into(),
+            );
+        }
+        if json_body
+            .as_ref()
+            .and_then(|value| value.get("model"))
+            .is_some_and(|model| !model.is_string())
+        {
+            return json_error(StatusCode::BAD_REQUEST, "Invalid request model".into());
+        }
+        if parts.method == Method::GET
+            && matches!(
+                path.split('?').next().unwrap_or_default(),
+                "models" | "v1/models"
+            )
+        {
+            match source.models(&context.key_id, agent_name) {
+                Ok(Some(models)) => {
+                    let data: Vec<_> = models.iter().map(|model| serde_json::json!({
+                        "id": model.id, "display_name": model.label, "object": "model", "type": "model"
+                    })).collect();
+                    return axum::Json(
+                        serde_json::json!({"object":"list", "data":data, "has_more":false}),
+                    )
+                    .into_response();
                 }
+                Ok(None) => {}
+                Err(error) => return json_error(StatusCode::PRECONDITION_FAILED, error),
             }
+        }
+        let requested = json_body
+            .as_ref()
+            .and_then(|value| value.get("model"))
+            .and_then(Value::as_str)
+            .filter(|model| *model != ORGII_CURRENT_MODEL)
+            .unwrap_or(&context.model);
+        match source.request_selection(&context.key_id, agent_name, requested) {
+            Ok(Some(route)) => {
+                context.key_id = route.selection;
+                context.model = route.model;
+                resolved_model = true;
+            }
+            Ok(None) => {}
+            Err(error) => return json_error(StatusCode::BAD_REQUEST, error),
+        }
+    }
+    match crate::dynamic_credentials::source(&context.key_id) {
+        Ok(Some(source)) => match source.credential(&context.key_id, agent_name).await {
+            Ok(credential) => {
+                context.authentication = credential.destination.authentication;
+                context.api_key = credential.secret;
+                context.provider = credential.destination.provider;
+                context.upstream_base_url = credential.destination.base_url;
+            }
+            Err(error) => return json_error(StatusCode::PRECONDITION_FAILED, error),
+        },
+        Ok(None) => {}
+        Err(error) => return json_error(StatusCode::PRECONDITION_FAILED, error),
+    }
+
+    if let Some(ref mut value) = json_body {
+        if resolved_model {
+            rewrite_model_field(value, &context.model);
+        } else {
+            rewrite_request_model(value, &context);
+        }
+        match serde_json::to_vec(value) {
+            Ok(bytes) => outbound_body = bytes,
+            Err(_) => return json_error(StatusCode::BAD_REQUEST, "Invalid JSON request".into()),
         }
     }
 
@@ -911,6 +972,37 @@ pub(crate) async fn enable_dynamic_managed(
             Some(model),
             false,
             Some(&expected_hashes),
+        )
+    })
+    .await
+    .map_err(|_| "Client configuration task failed")?
+}
+
+#[cfg(feature = "market-connect")]
+pub(crate) async fn enable_dynamic_catalog(
+    agent: String,
+    key: String,
+    model: String,
+    catalog: agent_cli::managed_config::model_catalog::ModelCatalog,
+    expected_hashes: std::collections::BTreeMap<String, Option<String>>,
+) -> Result<agent_cli::managed_config::CliConfigManagedStatus, String> {
+    let source =
+        crate::dynamic_credentials::source(&key)?.ok_or("Dynamic credential source required")?;
+    source.credential(&key, &agent).await?;
+    ensure_managed_proxy_running().await?;
+    tokio::task::spawn_blocking(move || {
+        if !PROXY_RUNNING.load(Ordering::SeqCst) {
+            return Err(proxy_unavailable_message());
+        }
+        let context =
+            resolve_proxy_context_for_selection(&agent, Some(&key), Some(&model), String::new())?;
+        agent_cli::managed_config::enable_orgii_managed_catalog(
+            &agent,
+            key,
+            context.provider,
+            model,
+            &catalog,
+            &expected_hashes,
         )
     })
     .await
@@ -1505,3 +1597,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(all(test, feature = "market-connect"))]
+#[path = "cli_managed_proxy/catalog_tests.rs"]
+mod catalog_tests;

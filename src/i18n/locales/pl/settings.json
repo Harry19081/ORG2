@@ -958,7 +958,10 @@
       "workspaceNumber": "Usługa {{index}} z {{count}}",
       "openTerminal": "Otwórz terminal",
       "terminalOpened": "Terminal otwarty",
-      "provider": "ORG2 Market"
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Wybierz do 8 pakietów i model domyślny, aby przełączać pakiety w aplikacji",
+      "defaultModel": "Model domyślny",
+      "packageLimit": "Wybierz do 8 pakietów"
     }
   },
   "claudeProfiles": {

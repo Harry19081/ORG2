@@ -192,3 +192,58 @@ export const configureMarketProfile = (
       expectedHashes,
     },
   });
+
+const configureCatalog = defineProcedure("market_connection_configure_catalog")
+  .input(
+    z.object({
+      request: z.object({
+        packages: z
+          .array(
+            input.extend({
+              entitlementWorkspaceId: z
+                .string()
+                .regex(/^ws_[A-Za-z0-9_-]{1,120}$/),
+              entitlementId: z.string(),
+            })
+          )
+          .min(1)
+          .max(8),
+        agent: z.enum(["claude_code", "claude_desktop", "codex"]),
+        defaultPackage: z.number().int().min(0).max(7),
+        defaultModel: z.string().min(1).max(256),
+        expectedHashes: z.record(z.string(), z.string().nullable()),
+      }),
+    })
+  )
+  .output(
+    z.object({
+      status: CliConfigManagedStatusSchema,
+      selection: z.string().startsWith("market-app:"),
+    })
+  )
+  .build();
+
+export const configureMarketCatalog = (
+  packages: {
+    connection: Connection;
+    entitlementWorkspaceId: string;
+    entitlementId: string;
+  }[],
+  agent: "claude_code" | "claude_desktop" | "codex",
+  defaultPackage: number,
+  defaultModel: string,
+  expectedHashes: Record<string, string | null>
+) =>
+  typedInvoke(configureCatalog, {
+    request: {
+      packages: packages.map((profile) => ({
+        ...args(profile.connection),
+        entitlementWorkspaceId: profile.entitlementWorkspaceId,
+        entitlementId: profile.entitlementId,
+      })),
+      agent,
+      defaultPackage,
+      defaultModel,
+      expectedHashes,
+    },
+  });

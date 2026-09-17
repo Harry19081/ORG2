@@ -53,17 +53,23 @@ vi.mock("jotai", async (importOriginal) => ({
     },
   ],
 }));
-vi.mock("@src/features/MarketConnect/externalAppBridge", () => ({
-  configureExternalMarketTarget: (...args: unknown[]) => configure(...args),
-  restoreExternalMarketTarget: (...args: unknown[]) => restore(...args),
-  isMarketManagedView: (view: {
-    config?: { mode?: string; selectedKeyId?: string };
-  }) =>
-    Boolean(
-      view?.config?.mode === "orgii_managed" &&
-      view.config.selectedKeyId?.startsWith("market:")
-    ),
-}));
+vi.mock(
+  "@src/features/MarketConnect/externalAppBridge",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("@src/features/MarketConnect/externalAppBridge")
+    >()),
+    configureExternalMarketCatalog: (...args: unknown[]) => configure(...args),
+    restoreExternalMarketTarget: (...args: unknown[]) => restore(...args),
+    isMarketManagedView: (view: {
+      config?: { mode?: string; selectedKeyId?: string };
+    }) =>
+      Boolean(
+        view?.config?.mode === "orgii_managed" &&
+        view.config.selectedKeyId?.startsWith("market:")
+      ),
+  })
+);
 vi.mock("@src/features/MarketConnect/launch", () => ({
   openConfiguredMarketClient: (...args: unknown[]) => open(...args),
 }));
@@ -196,17 +202,26 @@ it("selects provider first and keeps duplicate purchases as separate private con
   expect(container.textContent).not.toMatch(/seller|email/i);
 
   await act(async () => first.click());
-  // Choosing a connection only stages it: the App connection is configured for
-  // one explicitly chosen model, so Connect is a second, deliberate action.
+  // Stage both purchases without mutating the native app until Apply.
+  await act(async () => second.click());
+  expect(first.getAttribute("aria-pressed")).toBe("true");
+  expect(second.getAttribute("aria-pressed")).toBe("true");
   expect(configure).not.toHaveBeenCalled();
+  const defaultModel = container.querySelector<HTMLElement>(
+    '[aria-label="harnessConnections.marketApps.defaultModel"]'
+  );
+  expect(defaultModel).not.toBeNull();
+  expect(defaultModel?.textContent).toContain(
+    "Same service · harnessConnections.marketApps.workspaceNumber:1:2 · claude-a"
+  );
   const connect = [...container.querySelectorAll("button")].find((item) =>
     item.textContent?.startsWith("harnessConnections.apply")
   ) as HTMLButtonElement;
   await act(async () => connect.click());
   expect(configure).toHaveBeenCalledWith(
-    profiles[0],
+    profiles,
     "claude_code",
-    "claude_code",
+    profiles[0].id,
     "claude-a"
   );
   expect(refresh.mock.invocationCallOrder[0]).toBeLessThan(
