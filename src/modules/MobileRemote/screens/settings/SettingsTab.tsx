@@ -93,7 +93,6 @@ export function SettingsTab({ onOpenDevices }: SettingsTabProps) {
                   appearance="custom"
                   className="mobile-settings__device-entry"
                   onClick={onOpenDevices}
-                  aria-label={t("settings.connectionDevices")}
                 >
                   <SettingsLabel
                     icon={LaptopIcon}
@@ -106,14 +105,14 @@ export function SettingsTab({ onOpenDevices }: SettingsTabProps) {
                     >
                       {connection.desktopName || t("settings.notAvailable")}
                     </span>
-                    <span
-                      className="mobile-settings__presence"
-                      aria-label={presenceLabel(connection.presence, t)}
-                    >
+                    <span className="mobile-settings__presence">
                       <span
                         className={`mobile-settings__status-dot mobile-settings__status-dot--${connection.presence}`}
                         aria-hidden="true"
                       />
+                      <span className="sr-only">
+                        {presenceLabel(connection.presence, t)}
+                      </span>
                     </span>
                     <HugeiconsIcon
                       icon={ArrowRight02Icon}
