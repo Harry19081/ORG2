@@ -14,8 +14,8 @@ import {
   SECTION_VALUE_TEXT_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { HintWithInfo } from "@src/modules/shared/layouts/blocks/HintWithInfo";
+} from "@src/components/layout/Section";
+import { HintWithInfo } from "@src/components/layout/blocks/HintWithInfo";
 
 import ConnectionCards from "./ConnectionCards";
 import {

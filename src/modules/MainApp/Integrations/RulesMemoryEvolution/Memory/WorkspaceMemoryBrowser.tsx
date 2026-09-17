@@ -19,16 +19,16 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
 import {
+  ToolInlineCompactRows,
+  ToolInlineInfoCard,
+} from "@src/components/layout/blocks";
+import {
   BookOpen01Icon,
   Delete02Icon,
   FolderOpenIcon,
   HugeiconsIcon,
   Refresh04Icon,
 } from "@src/icons";
-import {
-  ToolInlineCompactRows,
-  ToolInlineInfoCard,
-} from "@src/modules/shared/layouts/blocks";
 
 import MemoryContentViewer from "./MemoryContentViewer";
 import MemoryIndexPanel from "./MemoryIndexPanel";

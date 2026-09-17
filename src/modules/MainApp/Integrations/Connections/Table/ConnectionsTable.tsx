@@ -16,18 +16,18 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import TabPill from "@src/components/TabPill";
 import {
+  DETAIL_PANEL_TOKENS,
+  DetailPanelContainer,
+  InternalHeader,
+  ScrollPreservation,
+} from "@src/components/layout/blocks";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
+import {
   Add01Icon,
   Delete02Icon,
   HugeiconsIcon,
   Refresh04Icon,
 } from "@src/icons";
-import {
-  DETAIL_PANEL_TOKENS,
-  DetailPanelContainer,
-  InternalHeader,
-  ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 
 import {
   InlineCardBody,

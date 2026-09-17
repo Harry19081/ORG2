@@ -25,7 +25,6 @@ import {
   setCachedPrDetail,
 } from "@src/services/git/githubListCache";
 import { parseGithubRepoFullName } from "@src/services/git/operations/createPullRequest";
-import { readRequestedReviewers } from "@src/shared/pr/prLevelActions";
 import {
   type PrIdentity,
   initialSelectedPrState,
@@ -34,6 +33,7 @@ import {
   workstationPrScopeKey,
   workstationSelectedPrAtomFamily,
 } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
+import { readRequestedReviewers } from "@src/util/git/pr/prLevelActions";
 
 import { useWorkstationPrMutations } from "./useWorkstationPrMutations";
 import { useWorkstationPrPickerCandidates } from "./useWorkstationPrPickerCandidates";

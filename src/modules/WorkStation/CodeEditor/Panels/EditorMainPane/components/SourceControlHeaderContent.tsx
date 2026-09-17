@@ -13,6 +13,7 @@ import type { ReactNode } from "react";
 
 import type { GitHubIssue } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
+import { DiffViewModeToggle } from "@src/components/DiffViewModeToggle";
 import TabPill from "@src/components/TabPill";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import {
@@ -25,7 +26,6 @@ import {
 } from "@src/icons";
 import { ExternalBrowserButton } from "@src/modules/WorkStation/shared/ExternalBrowserButton";
 import type { SourceControlFilterMode } from "@src/modules/WorkStation/shared/SidebarModules";
-import { DiffViewModeToggle } from "@src/modules/shared/components/DiffViewModeToggle";
 import type {
   SourceControlHistorySelection,
   WorkStationTab,
@@ -233,14 +233,6 @@ export const SourceControlHeaderContent: React.FC<
           onChange={onDiffViewModeChange}
           t={t}
         />
-        {showDetailToolbar ? (
-          <span
-            ref={focusToolbarRef}
-            className="flex shrink-0 items-center gap-px"
-          />
-        ) : (
-          <SourceControlDiffSettingsMenu />
-        )}
         <Button
           htmlType="button"
           variant="tertiary"
@@ -259,6 +251,14 @@ export const SourceControlHeaderContent: React.FC<
             />
           }
         />
+        {showDetailToolbar ? (
+          <span
+            ref={focusToolbarRef}
+            className="flex shrink-0 items-center gap-px"
+          />
+        ) : (
+          <SourceControlDiffSettingsMenu />
+        )}
       </span>
     </div>
   );

@@ -30,13 +30,6 @@ import { createRoot } from "react-dom/client";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import FindCard from "@src/components/FindCard";
-import {
-  type FindTarget,
-  adoptFindTarget,
-  closeFindTarget,
-  registerFindTarget,
-} from "@src/components/FindCard/findCoordinator";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import {
   getOverride,
@@ -49,6 +42,13 @@ import {
   useDebouncedCallback,
 } from "@src/hooks/perf/useDebouncedCallback";
 import { HugeiconsIcon, ReplaceAllIcon, ReplaceIcon } from "@src/icons";
+import FindCard from "@src/scaffold/GlobalSpotlight/FindCard";
+import {
+  type FindTarget,
+  adoptFindTarget,
+  closeFindTarget,
+  registerFindTarget,
+} from "@src/scaffold/GlobalSpotlight/FindCard/findCoordinator";
 import { SpotlightSearchBar } from "@src/scaffold/GlobalSpotlight/components/SpotlightSearchBar";
 import { SPOTLIGHT_TOKENS } from "@src/scaffold/GlobalSpotlight/constants";
 import { getFileName } from "@src/util/file/pathUtils";

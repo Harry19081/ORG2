@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { ORGII_ORCHESTRATOR } from "@src/assets/providers/types";
 import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   type SettingsTableColumn,
@@ -10,7 +11,6 @@ import SettingsTable, {
 import Switch from "@src/components/Switch";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Add01Icon,
   ArrowDown01Icon,

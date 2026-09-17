@@ -131,10 +131,6 @@ const ProjectOrgEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/projectOrg")),
 };
 
-const ProjectOrgSettingsEntry: RendererEntry = {
-  Component: lazy(() => import("./renderers/projectOrgSettings")),
-};
-
 const ProjectGitSyncReviewEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/projectGitSyncReview")),
 };
@@ -199,7 +195,6 @@ export const REGISTRY: TabContentRegistry = {
   "project-linear-work-items": ProjectLinearWorkItemsEntry,
   "project-settings": ProjectSettingsEntry,
   "project-org": ProjectOrgEntry,
-  "project-org-settings": ProjectOrgSettingsEntry,
   "project-git-sync-review": ProjectGitSyncReviewEntry,
   "project-workitems": ProjectWorkitemsEntry,
   "workItem-detail": WorkItemDetailEntry,

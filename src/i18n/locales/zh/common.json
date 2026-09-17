@@ -18,6 +18,12 @@
     "file": "在文件中搜索",
     "named": "在 {{name}} 中搜索"
   },
+  "sidebarSettings": {
+    "title": "侧边栏设置",
+    "showSidebar": "显示侧边栏",
+    "location": "位置",
+    "showIndentLines": "显示缩进线"
+  },
   "windowChrome": {
     "menus": {
       "file": "文件",
@@ -228,7 +234,8 @@
     "clearSelection": "清除选择",
     "clearAll": "全部清除",
     "expandView": "展开视图",
-    "restoreSplitView": "恢复分栏视图"
+    "restoreSplitView": "恢复分栏视图",
+    "overwrite": "覆盖"
   },
   "status": {
     "yes": "是",
@@ -322,7 +329,7 @@
   },
   "optional": "可选",
   "common": {
-    "display": "显示",
+    "display": "界面设置",
     "on": "开",
     "off": "关",
     "default": "默认",
@@ -391,7 +398,6 @@
     "globPatternsHint": "Glob 模式，逗号分隔",
     "outline": "大纲",
     "timeline": "时间线",
-    "indexing": "Index",
     "testExplorer": "测试浏览器",
     "installed": "已安装",
     "extensionViews": "扩展视图",
@@ -509,7 +515,6 @@
     "explorer": "资源管理器",
     "search": "搜索",
     "sourceControl": "源代码管理",
-    "sessions": "Session",
     "myTabs": "我的标签页（{{count}}）",
     "design": "设计",
     "settings": "设置",
@@ -620,7 +625,6 @@
     "closePanel": "关闭面板",
     "showSidebar": "显示侧边栏",
     "hideSidebar": "隐藏侧边栏",
-    "moreOptions": "更多选项",
     "zoomIn": "放大",
     "zoomOut": "缩小",
     "goBack": "后退",
@@ -642,6 +646,8 @@
     "queryHistory": "查询历史",
     "executeQuery": "执行查询 ({{shortcut}})",
     "startVoiceInput": "开始语音输入",
+    "expandInput": "展开输入框",
+    "collapseInput": "收起输入框",
     "cancelRecording": "取消录制",
     "stopAndTranscribe": "停止并转录",
     "htmlPreview": "HTML 预览",
@@ -651,7 +657,6 @@
     "movePanelToRight": "面板移至右侧",
     "movePanelToBottom": "面板移至底部",
     "domTree": "DOM 树",
-    "closeSession": "关闭 Session",
     "clearNetworkLogs": "清除网络日志",
     "clearConsole": "清除控制台",
     "copyToClipboard": "复制到剪贴板",
@@ -703,7 +708,6 @@
     "pleaseTryAgain": "请重试",
     "noFileOpen": "打开文件以开始编辑",
     "selectFileToEdit": "在资源管理器中选择文件",
-    "noTabs": "打开标签页以开始",
     "noTabsOpen": "打开项目以开始",
     "selectItemToStart": "在侧边栏中选择项目",
     "noDatabaseConnected": "未连接数据库",
@@ -813,7 +817,6 @@
     "notGitInitialized": "未初始化 Git",
     "notGitInitializedTooltip": "此工作目录还没有 .git 目录。",
     "publishBranchToOrigin": "Publish 分支 \"{{branch}}\" 到 origin",
-    "scanningFiles": "正在扫描文件...",
     "branchTooltipSwitching": "分支：{{branch}}（切换中…）",
     "switchWorkspaceTooltip": "切换工作目录",
     "switchWorktreeTooltip": "切换 Worktree",
@@ -824,12 +827,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Git 操作",
     "switchToSessionRepo": "切换到 {{name}}",
-    "embeddingProgress": "嵌入：已处理 {{count}} 个 chunk",
-    "embeddingProgressWithPercent": "嵌入：已处理 {{count}} 个 chunk（{{percent}}%）",
-    "embeddingShort": "嵌入 {{percent}}%",
-    "embeddingLabel": "嵌入",
-    "indexingProgress": "索引：{{processed}}/{{total}} 个文件（{{percent}}%）",
-    "indexingProgressWithFile": "索引：{{processed}}/{{total}} 个文件（{{percent}}%）\n当前：{{file}}",
     "ports": {
       "workspaceSection": "当前工作区",
       "externalSection": "外部",
@@ -894,13 +891,15 @@
       "simulatorBrowserNotice": "此浏览器仅用于会话回放。持久浏览请使用主应用中的浏览器（工具 → 浏览器）。",
       "tlsDevNote": "说明：部分 HTTPS 网站（如 GitHub）在开发模式下可能因证书校验出现 TLS 错误。请尝试 HTTP 或 example.com 等简单 HTTPS 站点。",
       "siteUnreachableTitle": "无法访问此网站",
-      "embeddedFallbackTitle": "此网站可能无法在内嵌浏览器中显示",
-      "embeddedFallbackBody": "部分网站会拦截或无法渲染在应用内 WebView 中。如果页面一直空白，请用系统浏览器打开。",
+      "loadStalledTitle": "此页面未加载完成",
+      "loadStalledBody": "内嵌浏览器已开始加载该地址，但始终未完成。可尝试重新加载，或用系统浏览器打开。",
       "currentUrl": "当前 URL",
       "webviewHiddenTitle": "网页视图已临时隐藏",
       "webviewHiddenBody": "关闭菜单或弹窗即可重新显示。"
     },
-    "unsavedChangesTitle": "未保存的更改"
+    "unsavedChangesTitle": "未保存的更改",
+    "fileChangedOnDiskTitle": "文件在磁盘上已更改",
+    "fileChangedOnDiskBody": "“{{name}}”自你打开后已在磁盘上更改。用你的版本覆盖它吗？"
   },
   "git": {
     "loading": "正在加载 Git 状态...",
@@ -927,7 +926,7 @@
       "createTokenButton": "创建 Token",
       "openGitSettingsButton": "打开设置",
       "configureInSettings": "在设置中配置 Git",
-      "configureInSettingsDesc": "在 设置 → 连接 中添加 GitHub App 访问权限、保存 token 或扫描本地凭据，然后重试此 Git 操作。"
+      "configureInSettingsDesc": "在 设置 → 连接 中添加 GitHub App 访问权限、保存 token 或扫描本地凭据，然后重试此 Git 操作"
     },
     "actions": {
       "publish": "Publish",
@@ -965,7 +964,12 @@
       "subagentRunning": "运行中",
       "subagentPending": "等待中",
       "subagentCompleted": "已完成",
-      "subagentFailed": "失败"
+      "subagentFailed": "失败",
+      "sources": "来源",
+      "sourcesCount_one": "{{count}} 个来源",
+      "sourcesCount_other": "{{count}} 个来源",
+      "loadMoreSources": "加载更多（+{{count}}）",
+      "sourceImage": "图片"
     },
     "pr": {
       "title": "Pull request",
@@ -1166,7 +1170,7 @@
       "cannotParseRepoName": "无法从 origin 远程仓库解析仓库名",
       "authRequired": {
         "title": "连接 GitHub",
-        "description": "前往 设置 → 连接 以连接你的 GitHub 账号。"
+        "description": "前往 设置 → 连接 以连接你的 GitHub 账号"
       },
       "navigationTrail": "Pull request 导航",
       "failedToLoad": "加载 pull request 失败",
@@ -1336,15 +1340,39 @@
       "newIssueBodyPlaceholder": "描述该 issue（可选）…",
       "authRequired": {
         "title": "连接 GitHub",
-        "description": "前往 设置 → 连接 以连接你的 GitHub 账号。"
+        "description": "前往 设置 → 连接 以连接你的 GitHub 账号"
       },
       "reAuthRequired": "需要 GitHub 授权",
-      "reAuthDescription": "你的 GitHub token 已过期。请前往 设置 → 连接 重新连接。",
+      "reAuthDescription": "你的 GitHub token 已过期。请前往 设置 → 连接 重新连接",
       "goToSettings": "前往设置",
       "loadingTimeline": "正在加载活动…",
       "label": "Issue",
       "linkedLoading": "正在加载关联项目",
       "detailNavigation": "Issue 导航"
+    },
+    "branchSwitch": {
+      "title": "切换分支",
+      "conflictsTitle": "更改需要处理",
+      "blockedTitle": "切换分支需要处理",
+      "working": "正在保存并切换…",
+      "current": "当前分支：{{branch}}",
+      "changedFiles": "{{count}} 个已更改文件",
+      "question": "你想如何处理这些更改？",
+      "leave": "将更改留在 {{branch}}",
+      "leaveDescription": "保存当前工作以便稍后继续，并切换到干净的工作区",
+      "bring": "将更改带到 {{branch}}",
+      "bringDescription": "将未提交的更改带到目标分支",
+      "worktreeTitle": "此分支已在另一个工作树中打开",
+      "openWorktree": "打开工作树",
+      "activeTask": "有任务正在使用此工作树",
+      "activeTaskDescription": "切换分支前，请等待任务完成、主动停止任务，或使用另一个工作树",
+      "saveTitle": "切换前保存文件",
+      "saveDescription": "打开的文件有未保存的编辑。请先保存，再选择将更改保留在哪里",
+      "saveContinue": "全部保存并继续",
+      "saveFailed": "无法保存所有文件",
+      "multipleBuffers": "此文件在多个编辑器中有更改。切换前请保存或关闭这些编辑器",
+      "editedWhileSaving": "保存期间文件又被编辑。请检查最新更改后重试",
+      "savePreview": "切换分支前，请在表格编辑器中保存或放弃编辑"
     }
   },
   "selectors": {
@@ -1399,7 +1427,6 @@
         "createWorkspace": "创建新工作目录"
       },
       "sources": {
-        "cloningFromGitHub": "正在从 GitHub 克隆",
         "cloningFromGitHubUrl": "通过 GitHub URL 克隆",
         "cloningFromMyGitHub": "从已连接的 GitHub 克隆",
         "creatingWorkspace": "正在创建新工作目录",
@@ -1460,7 +1487,6 @@
         "createFrom": "基于分支创建",
         "deleteBranch": "删除分支",
         "refresh": "刷新分支",
-        "checkoutDetachedSuccess": "已切换到 detached HEAD 状态（当前提交）",
         "removeWorktree": "移除 Worktree",
         "newWorktree": "新建 Worktree...",
         "refreshPullRequests": "刷新 Pull requests"
@@ -1601,11 +1627,6 @@
         "integrations": "Agent 与集成",
         "market": "市场",
         "actions": "操作"
-      },
-      "paramLabels": {
-        "repo": "仓库",
-        "folder": "文件夹",
-        "branch": "分支"
       },
       "actions": {
         "showInFinder": {
@@ -2183,7 +2204,7 @@
   },
   "quitConfirmation": {
     "title": "退出 ORG2？",
-    "subtitle": "正在运行的会话会保留当前状态。你可以稍后重新打开 ORG2。",
+    "subtitle": "正在运行的会话会保留当前状态。你可以稍后重新打开 ORG2",
     "cancel": "取消",
     "confirm": "退出"
   },
@@ -2195,7 +2216,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "需要“完全磁盘访问”权限",
-      "explain": "Safari 将 Cookie 存储在受 macOS 保护的文件夹中。请在系统设置的“完全磁盘访问权限”中允许 ORG2，然后重新检查。",
+      "explain": "Safari 将 Cookie 存储在受 macOS 保护的文件夹中。请在系统设置的“完全磁盘访问权限”中允许 ORG2，然后重新检查",
       "openSettings": "打开系统设置",
       "checkAgain": "重新检查"
     },
@@ -2220,7 +2241,7 @@
     "doneSkipped_other": "已跳过 {{count}} 个 Cookie",
     "empty": {
       "title": "未找到受支持的浏览器",
-      "body": "请安装带有已保存登录信息的 Chrome、Edge、Brave 或 Firefox。"
+      "body": "请安装带有已保存登录信息的 Chrome、Edge、Brave 或 Firefox"
     },
     "category": {
       "banking": "银行",
@@ -2229,7 +2250,7 @@
     },
     "errors": {
       "openSettingsFailed": "无法打开系统设置",
-      "keychainDenied": "钥匙串访问被拒绝。请重新选择该配置文件并点击“允许”。",
+      "keychainDenied": "钥匙串访问被拒绝。请重新选择该配置文件并点击“允许”",
       "listFailed": "找不到可导入的浏览器",
       "previewFailed": "无法从该浏览器读取 Cookie",
       "importFailed": "无法导入所选 Cookie"

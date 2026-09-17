@@ -15,6 +15,7 @@ import {
   DEFAULT_DURATION,
   type MessageConfig,
   type MessageItemProps,
+  type MessagePlacement,
   type MessageType,
 } from "./types";
 
@@ -23,6 +24,9 @@ import {
 // ============================================
 
 const TYPE_STYLES: Record<MessageType, { border: string }> = {
+  regular: {
+    border: "border-border-2",
+  },
   success: {
     border: "border-success-6/30",
   },
@@ -191,7 +195,7 @@ const MessageItem = ({
           size="mini"
           iconOnly
           icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />}
-          className="ml-1 shrink-0 opacity-60 transition-all ease-out hover:bg-white/10 hover:text-text-1 hover:opacity-100 active:scale-95"
+          className="ml-1 shrink-0 opacity-60 transition-all ease-out hover:text-text-1 hover:opacity-100 active:scale-95"
           onClick={handleClose}
           aria-label={t("actions.close")}
         />
@@ -215,15 +219,40 @@ const MessageContainer: FC<MessageContainerProps> = ({
   messages,
   onRemove,
 }) => {
-  const messageArray = Array.from(messages.entries());
+  const messagesByPlacement = (placement: MessagePlacement) =>
+    Array.from(messages.entries()).filter(
+      ([, config]) => (config.placement ?? "bottom") === placement
+    );
 
-  return (
-    <div className="flex w-auto max-w-[380px] flex-col-reverse items-end gap-2 max-[480px]:max-w-full">
+  const renderMessages = (placement: MessagePlacement) => {
+    const messageArray = messagesByPlacement(placement);
+    if (messageArray.length === 0) return null;
+
+    return (
       <AnimatePresence>
         {messageArray.map(([id, config]) => (
           <MessageItem key={id} id={id} {...config} onRemove={onRemove} />
         ))}
       </AnimatePresence>
+    );
+  };
+
+  return (
+    <div className="h-full w-full">
+      <div
+        data-message-placement="spotlight"
+        className="pointer-events-none absolute inset-x-0 top-2 flex justify-center px-4 max-[480px]:px-2"
+      >
+        <div className="flex w-full max-w-[680px] flex-col gap-2">
+          {renderMessages("spotlight")}
+        </div>
+      </div>
+      <div
+        data-message-placement="bottom"
+        className="pointer-events-none absolute right-4 bottom-4 flex w-auto max-w-[380px] flex-col-reverse items-end gap-2 max-[480px]:right-2 max-[480px]:bottom-2 max-[480px]:left-2 max-[480px]:max-w-full"
+      >
+        {renderMessages("bottom")}
+      </div>
     </div>
   );
 };

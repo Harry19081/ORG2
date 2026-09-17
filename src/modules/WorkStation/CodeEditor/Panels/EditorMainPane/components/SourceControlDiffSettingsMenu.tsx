@@ -1,18 +1,20 @@
 import { useAtom, useAtomValue } from "jotai";
 import React, { useState } from "react";
 
-import { FileHeaderMoreMenu } from "@src/modules/shared/components/FileHeader/FileHeaderMoreMenu";
+import { FileHeaderMoreMenu } from "@src/features/FileHeader/FileHeaderMoreMenu";
 import {
   activeStatusBarCallbacksAtom,
   editorHighlightActiveLineAtom,
   editorLineNumbersAtom,
   editorWordWrapAtom,
 } from "@src/store/ui";
+import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 
 const noop = () => {};
 
 /** Aggregate diffs expose shared editor preferences without single-file actions. */
 export function SourceControlDiffSettingsMenu() {
+  const viewMode = useAtomValue(diffViewModeAtom);
   const [menuVisible, setMenuVisible] = useState(false);
   const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
   const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
@@ -30,11 +32,12 @@ export function SourceControlDiffSettingsMenu() {
       showCopyRelativePathAction={false}
       showRevealInFileManagerAction={false}
       showLineNumbersToggle
-      showWordWrapToggle
+      showWordWrapToggle={viewMode !== "split"}
       showMinimapToggle={false}
       showHighlightActiveLineToggle
       showGitBlameToggle={false}
       showMoreSettingsAction={!!onOpenSettings}
+      showSidebarSettings
       lineNumbersEnabled={lineNumbers !== "off"}
       wordWrapEnabled={wordWrap}
       minimapEnabled={false}

@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import Select, { type SelectOption } from "@src/components/Select";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
   TableSurface,

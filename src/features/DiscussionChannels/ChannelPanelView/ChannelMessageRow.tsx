@@ -28,10 +28,10 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import MarkDown from "@src/components/MarkDown";
 import PersonAvatar from "@src/components/PersonAvatar";
-import { LocalSessionReferenceCard } from "@src/components/SessionReferenceCard";
 import Textarea from "@src/components/Textarea";
 import Tooltip from "@src/components/Tooltip";
 import { CHAT_ITEM_PADDING_X } from "@src/engines/ChatPanel/blocks/primitives/config";
+import { LocalSessionReferenceCard } from "@src/features/SessionReferenceCard";
 import {
   Cancel01Icon,
   Delete02Icon,

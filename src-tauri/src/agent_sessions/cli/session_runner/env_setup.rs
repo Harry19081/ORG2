@@ -317,7 +317,7 @@ pub(super) fn setup_codex_compatible_profile(
 ) -> Result<(), String> {
     let base_url = codex_compatible_base_url(selected_key)?;
     let quoted_base_url = serde_json::to_string(&base_url).map_err(|err| err.to_string())?;
-    let provider_name = format!("ORGII {}", selected_key.model_type.as_str());
+    let provider_name = format!("ORG2 {}", selected_key.model_type.as_str());
     let quoted_provider_name =
         serde_json::to_string(&provider_name).map_err(|err| err.to_string())?;
     let model_id = codex_compatible_model_id(session_model, selected_key)?;

@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import ComposerBar from "@src/components/ComposerBar";
+import ComposerSendGroup from "@src/components/ComposerBar/ComposerSendGroup";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
+import ComposerExpandToggle from "@src/components/ComposerInput/ComposerExpandToggle";
+import { useComposerExpansion } from "@src/components/ComposerInput/useComposerExpansion";
 import { VoiceInputButton, VoiceRecordingBar } from "@src/components/Voice";
 import { INPUT_AREA_CONTROL_GROUP_CLASS } from "@src/config/inputAreaTokens";
+import ComposerBar from "@src/engines/ChatPanel/ComposerBar";
 import type { PromptPolishControl } from "@src/engines/ChatPanel/hooks/useInputArea/types";
 import type { UseVoiceInputResult } from "@src/hooks/voice";
 import { Cancel01Icon, HugeiconsIcon, RotateLeft01Icon } from "@src/icons";
@@ -171,17 +174,14 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
           onClearReplyInfo={onClearReplyInfo}
         />
       }
-      pills={
-        <>
-          {modePill}
-          {modelPill}
-        </>
-      }
+      pills={modePill}
+      modelPill={modelPill}
       submitButton={
         onEditSendNow ? (
           <div className="flex items-center gap-1">
             <Button
               variant="tertiary"
+              appearance="soft"
               size="mini"
               shape="circle"
               iconOnly
@@ -195,15 +195,14 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
                 />
               }
               aria-label={t("common:actions.cancel")}
-              className="enabled:hover:bg-fill-3 enabled:hover:text-text-1"
               onClick={onEditCancel}
             />
             <Button
               variant="tertiary"
+              appearance="soft"
               size="mini"
               shape="round"
               htmlType="button"
-              className="enabled:hover:bg-fill-3 enabled:hover:text-text-1"
               onClick={onEditSendNow}
             >
               {t("common:actions.sendNow")}
@@ -259,6 +258,8 @@ interface NormalComposerContentProps extends SharedComposerBarProps {
   showVoiceUi: boolean;
   voice: UseVoiceInputResult;
   currentRepoPath?: string;
+  /** Render the editor and controls in the compact single-row capsule. */
+  isCompactRow: boolean;
   contextualPanel?: boolean;
   inlineLeadingContent?: React.ReactNode;
   onContentChange: (text: string) => void;
@@ -319,6 +320,7 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
   showVoiceUi,
   voice,
   currentRepoPath,
+  isCompactRow,
   contextualPanel = false,
   inlineLeadingContent,
   placeholder,
@@ -339,9 +341,16 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
   autoFocus = false,
 }) => {
   const { t } = useTranslation("sessions");
+  const contentRef = useRef<HTMLDivElement>(null);
+  // The recording bar replaces the editor, so pause while it shows; the
+  // observers re-attach to the editor that mounts afterwards.
+  const expansion = useComposerExpansion(
+    contentRef,
+    !isCompactRow && !showVoiceUi
+  );
 
   return (
-    <div className="flex min-h-0 w-full flex-col">
+    <div ref={contentRef} className="flex min-h-0 w-full flex-col">
       {showImageAttachments && (
         <ImageAttachmentPreview ownerId={dropTargetId} />
       )}
@@ -356,6 +365,7 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
         <ComposerBar
           onAddContent={onAddContent}
           repoPath={currentRepoPath}
+          inlineLayout={isCompactRow}
           showContextInfo={
             showAgentControls && !isCursorIde && !contextualPanel
           }
@@ -381,7 +391,9 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
               placeholder={placeholder || t("input.defaultPlaceholder")}
               trailingHint={trailingHint}
               onImagePaste={onImagePaste}
+              compact={isCompactRow}
               autoFocus={autoFocus}
+              editorClassName={expansion.editorClassName}
               leadingContent={
                 contextualPanel ? inlineLeadingContent : undefined
               }
@@ -401,11 +413,9 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
             </>
           }
           pills={
-            <div className={INPUT_AREA_CONTROL_GROUP_CLASS}>
-              {modePill}
-              {modelPill}
-            </div>
+            <div className={INPUT_AREA_CONTROL_GROUP_CLASS}>{modePill}</div>
           }
+          modelPill={modelPill}
           submitButton={
             <div className="flex h-7 items-center gap-0.5">
               {showAgentControls && !contextualPanel && (
@@ -414,33 +424,41 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
                   disabled={promptPolishDisabled}
                 />
               )}
-              {showAgentControls && voiceFeatureEnabled && (
-                <VoiceInputButton
-                  onPressStart={voice.start}
-                  onPressEnd={voice.stop}
-                  disabled={!voice.isSupported}
+              {expansion.showToggle && (
+                <ComposerExpandToggle
+                  expanded={expansion.expanded}
+                  onToggle={expansion.toggle}
                 />
               )}
-              <InputActions
-                isInputEmpty={currentInputEmpty}
-                isWpGeneWorking={
-                  stopSuppressedForEmptyInput ? false : isWpGeneWorking
-                }
-                isPendingCancel={
-                  stopSuppressedForEmptyInput ? false : isPendingCancel
-                }
-                isHosted={isHosted}
-                canStopAgent={
-                  stopSuppressedForEmptyInput ? false : canStopAgent
-                }
-                canResume={canResume}
-                isSessionTerminal={isSessionTerminal}
-                onSubmit={onSubmit}
-                onInterrupt={onInterrupt}
-                onResume={onResume}
-                submitDisabled={submitDisabled}
-                commentMode={commentMode}
-              />
+              <ComposerSendGroup>
+                {showAgentControls && voiceFeatureEnabled && (
+                  <VoiceInputButton
+                    onPressStart={voice.start}
+                    onPressEnd={voice.stop}
+                    disabled={!voice.isSupported}
+                  />
+                )}
+                <InputActions
+                  isInputEmpty={currentInputEmpty}
+                  isWpGeneWorking={
+                    stopSuppressedForEmptyInput ? false : isWpGeneWorking
+                  }
+                  isPendingCancel={
+                    stopSuppressedForEmptyInput ? false : isPendingCancel
+                  }
+                  isHosted={isHosted}
+                  canStopAgent={
+                    stopSuppressedForEmptyInput ? false : canStopAgent
+                  }
+                  canResume={canResume}
+                  isSessionTerminal={isSessionTerminal}
+                  onSubmit={onSubmit}
+                  onInterrupt={onInterrupt}
+                  onResume={onResume}
+                  submitDisabled={submitDisabled}
+                  commentMode={commentMode}
+                />
+              </ComposerSendGroup>
             </div>
           }
         />

@@ -1,4 +1,5 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { writeTextFileSerial } from "@src/services/file/writeTextFileSerial";
 import {
@@ -6,6 +7,7 @@ import {
   deleteGitDiffEditDraft,
   getGitDiffEditDraftBaseline,
   restoreGitDiffEditDraft,
+  saveGitDiffDraftForSwitch,
   setGitDiffEditDraft,
 } from "@src/store/workstation/codeEditor/gitDiffEditDrafts";
 
@@ -132,6 +134,26 @@ export function useGitDiffEditing(
     }
   }, [owner, filePath, publish, onSaved, onError]);
 
+  const saveForSwitch = useCallback(async () => {
+    const saved = current.current;
+    if (!owner.active || saved.owner !== owner || !filePath)
+      throw new Error("The active diff changed before saving");
+    await saveGitDiffDraftForSwitch(filePath);
+    if (
+      !owner.active ||
+      current.current.owner !== owner ||
+      current.current.content !== saved.content
+    )
+      throw new Error("The active diff changed while saving");
+    flushSync(() =>
+      publish({
+        ...current.current,
+        baseline: saved.content ?? saved.baseline,
+        content: null,
+      })
+    );
+  }, [owner, filePath, publish]);
+
   const visible = state.owner === owner ? state : null;
   return {
     editedContent: visible?.content ?? visible?.baseline ?? null,
@@ -141,5 +163,6 @@ export function useGitDiffEditing(
     edit,
     discard,
     save,
+    saveForSwitch,
   };
 }

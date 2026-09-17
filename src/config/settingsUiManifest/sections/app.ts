@@ -124,4 +124,28 @@ export const APP_SETTINGS_UI_SECTIONS: SettingsSectionDefinition[] = [
     customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_HARNESS_CONNECTIONS,
     coveredKeys: [],
   },
+  {
+    // External session import: source scanning + provenance hooks. Their
+    // state lives in local-storage atoms and IPC, not the settings schema.
+    id: "import",
+    tab: "app",
+    labelKey: "sections.import",
+    headingTitleKey: "sections.import",
+    icon: iconForSegment("import"),
+    customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_IMPORT,
+    coveredKeys: [],
+  },
 ];
+
+// Build-time gate: the in-app Dev Mode preference cannot expose mocks in builds.
+if (process.env.NODE_ENV === "development") {
+  APP_SETTINGS_UI_SECTIONS.push({
+    id: "development",
+    tab: "app",
+    labelKey: "development",
+    headingTitleKey: "sections.development",
+    icon: iconForSegment("development"),
+    customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_DEVELOPMENT,
+    coveredKeys: [],
+  });
+}

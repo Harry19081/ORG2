@@ -3,8 +3,8 @@ import { useAtomValue } from "jotai";
 import React, { memo, useMemo, useState } from "react";
 
 import Markdown from "@src/components/MarkDown";
-import { projectMarkdownSessionReferences } from "@src/components/MarkDown/sessionReferenceProjection";
 import { isThemeCssPathDark } from "@src/config/appearance/globalThemes";
+import { projectMarkdownSessionReferences } from "@src/features/Org2Cloud/markdown/sessionReferenceProjection";
 import { chatAppearanceAtom } from "@src/store/config/configAtom";
 import { themesAtom } from "@src/store/ui/uiAtom";
 

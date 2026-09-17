@@ -9,7 +9,7 @@ import type { ReviewSearchFile } from "./reviewSearchTypes";
 import { useReviewSearch } from "./useReviewSearch";
 
 const mocks = vi.hoisted(() => ({ card: vi.fn(), navigate: vi.fn() }));
-vi.mock("@src/components/FindCard", () => ({
+vi.mock("@src/scaffold/GlobalSpotlight/FindCard", () => ({
   default: (props: unknown) => {
     mocks.card(props);
     return null;

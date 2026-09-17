@@ -13,10 +13,7 @@ import {
   Tick01Icon,
 } from "@src/icons";
 import type { SourceControlFilterMode } from "@src/modules/WorkStation/shared/SidebarModules/SourceControl/SourceControlFilterHeader";
-import {
-  POPUP_ANIMATION,
-  getPopupSurfaceStyle,
-} from "@src/scaffold/shared/popupTokens";
+import { POPUP_ANIMATION, getPopupSurfaceStyle } from "@src/scaffold/tokens";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { sourceControlFilterModeAtom } from "@src/store/workstation/codeEditor/sourceControlFilterModeAtom";

@@ -12,6 +12,13 @@ import Message from "@src/components/Message";
 import Select from "@src/components/Select";
 import StatusDot from "@src/components/StatusDot";
 import TabPill from "@src/components/TabPill";
+import {
+  SECTION_ACTION_GAP_CLASSES,
+  SECTION_CONTROL_STYLE,
+  SECTION_PATH_TEXT_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import {
   Alert01Icon,
@@ -20,14 +27,7 @@ import {
   RotateLeft01Icon,
   SecurityCheckIcon,
 } from "@src/icons";
-import {
-  SECTION_ACTION_GAP_CLASSES,
-  SECTION_CONTROL_STYLE,
-  SECTION_PATH_TEXT_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { startVisibilityAwarePoller } from "@src/shared/scheduling/visibilityAwarePoller";
+import { startVisibilityAwarePoller } from "@src/util/time/scheduling/visibilityAwarePoller";
 
 import type { AvailableCliAgent } from "../types";
 import {

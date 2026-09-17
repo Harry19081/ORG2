@@ -201,7 +201,8 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
               size="inline"
               htmlType="button"
               onClick={() => handleThreadClick(null)}
-              className="text-[10px] hover:text-primary-6"
+              hoverIntent="primary"
+              className="text-[10px]"
             >
               {t("chat.showAll")}
             </Button>

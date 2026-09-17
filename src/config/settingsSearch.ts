@@ -47,6 +47,7 @@ const APPEARANCE_APP_KEYS = new Set<SettingsKey>([
   "general.translucentSidebar",
   "general.iconStyle",
   "general.dockIcon",
+  "general.highRefreshRate",
   "general.uiScale",
   "general.usePointerCursors",
   "general.applicationUiFont",
@@ -166,6 +167,7 @@ const SETTINGS_SEARCH_UI_OVERRIDES: Partial<
     labelKey: "settings:general.preventSleep",
   },
   "general.updateChannel": { labelKey: "settings:update.channel" },
+  "general.myStationSharing": { labelKey: "settings:general.myStationSharing" },
   "general.voiceInputEnabled": { labelKey: "settings:general.voiceInput" },
   "layout.sidebarSelectedRowOpacity": {
     labelKey: "settings:general.selectedItemTransparency",

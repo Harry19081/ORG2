@@ -30,7 +30,7 @@ vi.mock("@src/components/Avatar", () => ({
     createElement("img", { src, alt: "viewer" }),
 }));
 
-vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", () => ({
+vi.mock("@src/components/MarkdownTextareaEditor", () => ({
   default: ({
     value,
     onChange,
@@ -155,7 +155,7 @@ describe("GitHubIssueComposer", () => {
     expect(
       input?.querySelector("[data-testid='github-issue-comment-submit']")
         ?.parentElement?.parentElement?.className
-    ).toContain("px-1");
+    ).toContain("pt-2");
     expect(
       input?.querySelector("[data-testid='github-issue-comment-submit']")
         ?.parentElement?.className

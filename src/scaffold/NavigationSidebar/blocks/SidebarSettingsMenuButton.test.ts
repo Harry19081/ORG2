@@ -32,6 +32,7 @@ const mocks = vi.hoisted(() => ({
   goToSettings: vi.fn(),
   handleAppearanceModeChange: vi.fn().mockResolvedValue(undefined),
   navigateTo: vi.fn(),
+  openLink: vi.fn(),
 }));
 
 function createRect({
@@ -61,6 +62,8 @@ function createRect({
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
+
+vi.mock("@src/util/ui/openLink", () => ({ openLink: mocks.openLink }));
 
 vi.mock("@src/hooks/navigation", () => ({
   useAppNavigation: () => ({
@@ -157,39 +160,35 @@ describe("SidebarSettingsMenuButton", () => {
     expect(adeManagerButton).toBeUndefined();
   });
 
-  it("opens and dismisses the separate wiki outside dev mode without opening onboarding", async () => {
-    act(() => store.set(devModeEnabledAtom, false));
-    const onOnboarding = vi.fn();
-    window.addEventListener(TUTORIALS_OPEN_EVENT, onOnboarding);
-    try {
-      const button = document.querySelector<HTMLButtonElement>(
-        '[data-testid="sidebar-menu-wiki"]'
-      );
-      expect(button?.textContent).toBe("Wiki");
-      await act(async () => {
-        button!.click();
-        await import("@src/features/Wiki/WikiModal");
-      });
-      expect(mocks.closeDropdown).toHaveBeenCalledOnce();
-      expect(
-        document.querySelector('[aria-label="Search the wiki"]')
-      ).not.toBeNull();
-      expect(
-        document.querySelector('[data-testid="onboarding-modal"]')
-      ).toBeNull();
-      expect(onOnboarding).not.toHaveBeenCalled();
-      act(() =>
-        document.dispatchEvent(
-          new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
-        )
-      );
-      expect(
-        document.querySelector('[aria-label="Search the wiki"]')
-      ).toBeNull();
-    } finally {
-      window.removeEventListener(TUTORIALS_OPEN_EVENT, onOnboarding);
+  it.each([false, true])(
+    "opens the official wiki with dev mode %s after closing the menu",
+    (devMode) => {
+      act(() => store.set(devModeEnabledAtom, devMode));
+      const onOnboarding = vi.fn();
+      window.addEventListener(TUTORIALS_OPEN_EVENT, onOnboarding);
+      try {
+        const button = document.querySelector<HTMLButtonElement>(
+          '[data-testid="sidebar-menu-wiki"]'
+        );
+        expect(button?.textContent).toBe("Wiki");
+        expect(button?.hasAttribute("aria-haspopup")).toBe(false);
+        expect(mocks.openLink).not.toHaveBeenCalled();
+        act(() => button!.click());
+        expect(mocks.closeDropdown).toHaveBeenCalledOnce();
+        expect(mocks.openLink).toHaveBeenCalledExactlyOnceWith(
+          "https://github.com/org2AI/ORG2/wiki",
+          { navigate: true }
+        );
+        expect(mocks.closeDropdown.mock.invocationCallOrder[0]).toBeLessThan(
+          mocks.openLink.mock.invocationCallOrder[0]
+        );
+        expect(document.querySelector('[role="dialog"]')).toBeNull();
+        expect(onOnboarding).not.toHaveBeenCalled();
+      } finally {
+        window.removeEventListener(TUTORIALS_OPEN_EVENT, onOnboarding);
+      }
     }
-  });
+  );
 
   it("hides onboarding when dev mode is disabled", () => {
     act(() => store.set(devModeEnabledAtom, false));
@@ -293,8 +292,31 @@ describe("SidebarSettingsMenuButton", () => {
       (button) => button.textContent === "cloud.signIn"
     )!;
     await act(async () => confirm.click());
-    expect(dialog()).toBeNull();
+    expect(dialog()?.textContent).toContain("auth:loading.waiting");
     expect(onSignIn).toHaveBeenCalledOnce();
+    const waitingDialog = dialog();
+    await act(async () => {
+      store.set(org2CloudAuthAtom, {
+        kind: "org2_cloud",
+        supabaseUrl: "https://cloud.example.test",
+        supabaseAnonKey: "test-key",
+        userId: "user-1",
+        accessToken: "test-token",
+        refreshToken: "test-refresh",
+        expiresAt: 2_000_000_000,
+      });
+      root.render(
+        React.createElement(
+          Provider,
+          { store },
+          React.createElement(SidebarSettingsMenuButton, {
+            onSignIn: undefined,
+          })
+        )
+      );
+    });
+    expect(dialog()).toBe(waitingDialog);
+    expect(dialog()?.textContent).toContain("auth:loading.success");
   });
 
   it("confirms logout before clearing the persisted account and showing login", async () => {

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { ask } from "@tauri-apps/plugin-dialog";
 import { writeTextFile } from "@tauri-apps/plugin-fs";
 import React, { act, useLayoutEffect } from "react";
 import { type Root, createRoot } from "react-dom/client";
@@ -11,8 +12,10 @@ import {
 
 import { useFileContentManager } from "./useFileContentManager";
 
+const disk = vi.hoisted(() => new Map<string, string>());
+vi.mock("@tauri-apps/plugin-dialog", () => ({ ask: vi.fn(async () => false) }));
 vi.mock("@tauri-apps/plugin-fs", () => ({
-  readTextFile: vi.fn(async (path: string) => `${path}-disk`),
+  readTextFile: vi.fn(async (path: string) => disk.get(path) ?? `${path}-disk`),
   writeTextFile: vi.fn(),
 }));
 vi.mock("@src/modules/WorkStation/CodeEditor/hooks/fileContent/mtime", () => ({
@@ -38,12 +41,17 @@ beforeEach(() => {
   _resetUnsavedContentCacheForTests();
   clearFileCache();
   finish.length = 0;
+  disk.clear();
+  vi.mocked(ask).mockClear();
   vi.mocked(writeTextFile)
     .mockReset()
     .mockImplementation(
-      () =>
+      (path, content) =>
         new Promise<void>((r) => {
-          finish.push(r);
+          finish.push(() => {
+            disk.set(String(path), content);
+            r();
+          });
         })
     );
   root = createRoot(document.createElement("div"));
@@ -182,4 +190,15 @@ it("keeps saving true until all queued saves for the file settle", async () => {
   });
   expect(controller.saving).toBe(false);
   expect(controller.hasUnsavedChanges).toBe(false);
+});
+
+it("preserves external disk changes when overwrite is declined", async () => {
+  await render();
+  act(() => controller.handleContentChange("draft"));
+  disk.set("/fixture/A.txt", "external edit");
+  await act(async () => controller.handleSave());
+  expect(ask).toHaveBeenCalledTimes(1);
+  expect(writeTextFile).not.toHaveBeenCalled();
+  expect(controller.hasUnsavedChanges).toBe(true);
+  expect(controller.saving).toBe(false);
 });

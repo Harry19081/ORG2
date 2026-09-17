@@ -88,8 +88,7 @@
       "openFolder": "Mở thư mục",
       "tabs": {
         "all": "Tất cả",
-        "apps": "Ứng dụng",
-        "clis": "CLI"
+        "apps": "Ứng dụng"
       },
       "views": {
         "scanning": "Quét",
@@ -324,18 +323,6 @@
           "agentBrowser": "Trình duyệt Agent",
           "searchFetch": "Tìm kiếm & tải"
         },
-        "sections": {
-          "browserTitle": "Hoạt động trình duyệt",
-          "interactionsTitle": "Tương tác",
-          "webSearchesTitle": "Tìm kiếm web",
-          "pagesFetchedTitle": "Trang đã tải"
-        },
-        "empty": {
-          "noBrowserActivity": "Không có hoạt động trình duyệt",
-          "noBrowserInteractions": "Không có tương tác trình duyệt",
-          "noWebSearches": "Không có tìm kiếm web",
-          "noPagesFetched": "Không có trang đã tải"
-        },
         "header": {
           "categoryBrowser": "Trình duyệt",
           "categoryLiveBrowser": "Trình duyệt trực tiếp",
@@ -519,8 +506,7 @@
     },
     "titleBar": {
       "showSidebar": "Hiện thanh bên",
-      "hideSidebar": "Ẩn thanh bên",
-      "showBottomPanel": "Hiện bảng dưới"
+      "hideSidebar": "Ẩn thanh bên"
     },
     "multiTask": {
       "monitoringProgress": "Đang theo dõi tiến độ của {{count}} subagent",
@@ -591,6 +577,7 @@
     "voicePermissionSheetTitle": "Cần quyền truy cập micrô"
   },
   "chat": {
+    "draftTooLong": "Bản nháp quá dài (tối đa {{max}} ký tự)",
     "cliPermissions": {
       "ask": "Yêu cầu phê duyệt",
       "workspace": "Truy cập không gian làm việc",
@@ -625,10 +612,9 @@
       "inputPosition": "Ô nhập",
       "positionBottom": "Dưới",
       "positionMiddle": "Giữa",
-      "trailPosition": "Thanh ngữ cảnh",
+      "repoBarPosition": "Thanh kho lưu trữ",
       "positionUp": "Trên",
       "positionDown": "Dưới",
-      "uiControls": "Điều khiển giao diện",
       "showQuickActions": "Hiển thị thao tác nhanh",
       "showSkills": "Kỹ năng đã ghim",
       "showCliUpdate": "Hiển thị bản cập nhật CLI",
@@ -716,6 +702,14 @@
     "performActions_other": "Thực hiện {{count}} thao tác",
     "showInlineDiffs": "Thay đổi ngay trong nội dung",
     "inputSettings": "Cài đặt nhập liệu",
+    "sendMethod": "Gửi bằng",
+    "navigation": {
+      "title": "Điều hướng",
+      "openLinksIn": "Mở liên kết trong",
+      "internalBrowser": "Trình duyệt tích hợp",
+      "externalBrowser": "Trình duyệt bên ngoài"
+    },
+    "compactInput": "Ô nhập liệu thu gọn",
     "replay": {
       "follow": "Theo dõi"
     },
@@ -901,10 +895,10 @@
       "exportJson": "Xuất JSON",
       "importAction": "Nhập Session",
       "exportDescription": "Xuất Session đang hoạt động thành ảnh chụp nhanh JSON di động",
-      "importDescription": "Nhập ảnh chụp nhanh Session JSON vào thanh bên.",
+      "importDescription": "Nhập ảnh chụp nhanh Session JSON vào thanh bên",
       "jsonSnapshotNote": "Sessions đã nhập là ảnh chụp nhanh chỉ đọc và giữ nguyên lịch sử sự kiện gốc",
       "chooseJson": "Chọn tệp JSON",
-      "chooseJsonHint": "Chọn tệp xuất .orgii-session.json.",
+      "chooseJsonHint": "Chọn tệp xuất .orgii-session.json",
       "loadingPreview": "Đang đếm sự kiện Session…",
       "noActiveSession": "Chưa chọn Session đang hoạt động.",
       "importedName": "Session đã nhập: {{name}}",
@@ -1129,6 +1123,7 @@
     "terminalWaitRunning": "Đang chờ terminal hoàn tất",
     "runShellFailed": "Lệnh thất bại",
     "runCommands": "Chạy lệnh",
+    "waitBackgroundTasks": "Chờ tác vụ nền",
     "terminalSummary": {
       "command_one": "{{count}} lệnh",
       "command_other": "{{count}} lệnh",
@@ -1139,6 +1134,10 @@
       "check_one": "{{count}} lần kiểm tra",
       "check_other": "{{count}} lần kiểm tra",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} lần",
+      "count_other": "{{count}} lần"
     },
     "inspectTerminalsRunning": "Đang kiểm tra terminal",
     "inspectTerminalsDone": "Đã kiểm tra terminal",
@@ -1447,10 +1446,13 @@
     "awaitOutputListFailed": "Không liệt kê được tác vụ nền",
     "awaitOutputKeepWaiting": "Vẫn đang chạy",
     "awaitOutputStillRunning": "Đang chạy",
+    "awaitOutputSummaryShellSingle": "tiến trình terminal",
     "awaitOutputSummaryShell_one": "1 tiến trình terminal",
     "awaitOutputSummaryShell_other": "{{count}} tiến trình terminal",
+    "awaitOutputSummarySubagentSingle": "Subagent",
     "awaitOutputSummarySubagent_one": "1 Subagent",
     "awaitOutputSummarySubagent_other": "{{count}} Subagents",
+    "awaitOutputSummaryUnknownSingle": "một tác vụ nền",
     "awaitOutputSummaryUnknown_one": "một tác vụ nền",
     "awaitOutputSummaryUnknown_other": "{{count}} tác vụ nền",
     "awaitOutputSummaryMixed": "{{shell}}, {{subagent}}",
@@ -1905,7 +1907,7 @@
     "start": "Bắt đầu",
     "missingGit": {
       "title": "Thiếu Git",
-      "body": "Git chưa được cài đặt hoặc không tìm thấy. Hãy yêu cầu ADE Manager hoặc SDE Agent cài đặt Git cho máy này, rồi khởi động lại ORG2."
+      "body": "Git chưa được cài đặt hoặc không tìm thấy. Hãy yêu cầu ADE Manager hoặc SDE Agent cài đặt Git cho máy này, rồi khởi động lại ORG2"
     },
     "model": "Mô hình",
     "contextMenu": {
@@ -1969,9 +1971,9 @@
       "formatting": "Định dạng văn bản"
     },
     "regionNoticeTitle": "Có thể bị hạn chế theo khu vực",
-    "regionNoticeBodyProvider": "Bạn đang ở {{location}}. Một số mô hình có thể không khả dụng tại khu vực của bạn.",
-    "regionNoticeBodySanctions": "Bạn đang ở {{location}}. GitHub, npm, Docker Hub và các dịch vụ tương tự có thể không khả dụng.",
-    "regionNoticeBodyBoth": "Bạn đang ở {{location}}. Một số mô hình và dịch vụ như GitHub, npm và Docker Hub có thể không khả dụng do chính sách khu vực và hạn chế thương mại.",
+    "regionNoticeBodyProvider": "Bạn đang ở {{location}}. Một số mô hình có thể không khả dụng tại khu vực của bạn",
+    "regionNoticeBodySanctions": "Bạn đang ở {{location}}. GitHub, npm, Docker Hub và các dịch vụ tương tự có thể không khả dụng",
+    "regionNoticeBodyBoth": "Bạn đang ở {{location}}. Một số mô hình và dịch vụ như GitHub, npm và Docker Hub có thể không khả dụng do chính sách khu vực và hạn chế thương mại",
     "selectAgent": "Chọn một agent",
     "placeholderDefault": "Nhập tin nhắn, dùng @ để thêm tệp, dùng / để dùng skills",
     "wingmanPlaceholder": "Mô tả nhiệm vụ của bạn — Wingman nên theo dõi điều gì?",
@@ -2120,7 +2122,7 @@
       "archiveTeardownRetained": "Đã lưu trữ nhưng không thể giải phóng {{count}} môi trường chạy. Việc xóa vẫn bị chặn.",
       "archiveTeardownQuiesced": "Đã lưu trữ và dừng hoàn toàn. Giờ có thể xóa vĩnh viễn.",
       "dangerZone": "Vùng nguy hiểm",
-      "deleteDescription": "Xóa vĩnh viễn nhóm này cùng mọi phiên và lịch sử.",
+      "deleteDescription": "Xóa vĩnh viễn nhóm này cùng mọi phiên và lịch sử",
       "deleteTeam": "Xóa nhóm",
       "deleteTitle": "Xóa vĩnh viễn nhóm này?",
       "deleteWarning": "Thao tác này xóa vĩnh viễn mọi phiên và lịch sử của nhóm. Không thể hoàn tác.",

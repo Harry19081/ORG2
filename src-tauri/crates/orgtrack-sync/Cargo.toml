@@ -3,7 +3,7 @@ name = "orgtrack_sync"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.85.0"
-description = "Shared metadata sync records for ORGII project, session, trajectory, and AI Blame graph synchronization."
+description = "Shared metadata sync records for ORG2 project, session, trajectory, and AI Blame graph synchronization."
 license = "AGPL-3.0-or-later"
 publish = false
 

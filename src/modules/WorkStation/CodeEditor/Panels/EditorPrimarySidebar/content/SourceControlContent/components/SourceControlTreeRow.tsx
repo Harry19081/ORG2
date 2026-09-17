@@ -8,7 +8,6 @@
 import { useAtomValue } from "jotai";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 
-import { useActionSystemOptional } from "@src/ActionSystem";
 import Button from "@src/components/Button";
 import { SidebarSectionHeader } from "@src/components/SidebarSectionHeader";
 import {
@@ -36,6 +35,7 @@ import {
   Tick01Icon,
   Undo03Icon,
 } from "@src/icons";
+import { useActionSystemOptional } from "@src/scaffold/ActionSystem";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import type { GitFile } from "@src/types/git/types";
 

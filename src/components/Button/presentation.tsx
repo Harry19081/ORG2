@@ -1,6 +1,9 @@
 import React, { useMemo } from "react";
 
-import { BUTTON_VARIANT } from "@src/config/workstation/tokens";
+import {
+  KEYBOARD_SHORTCUT_VARIANT,
+  KeyboardShortcut,
+} from "@src/components/KeyboardShortcut";
 import { HugeiconsIcon, Loading03Icon } from "@src/icons";
 
 export type ButtonVariant =
@@ -23,6 +26,8 @@ export type ButtonSize =
   | "default"
   | "large";
 export type ButtonShape = "square" | "round" | "circle";
+/** Color a neutral button takes only while hovered, pressed or focused. */
+export type ButtonHoverIntent = "danger" | "primary";
 
 const BUTTON_SIZE_CONFIG = {
   inline: { height: 20, padding: "0", fontSize: 12, iconSize: 12 },
@@ -49,83 +54,131 @@ function defaultButtonAppearance(variant: ButtonVariant): ButtonAppearance {
 }
 
 /**
- * Static Tailwind class strings for each (variant, appearance) cell.
- * Class strings must be statically analyzable — no dynamic interpolation
- * of class names, only dynamic selection between fully-written strings.
+ * Button's own utilities use the component-default variants from
+ * src/tailwind.css: resting styles carry `btn:` (a lower nested layer) and
+ * interaction states carry `btn-hover:` / `btn-active:` / `btn-focus:` /
+ * `btn-pressed:` (single-class specificity). A caller's `className` therefore
+ * overrides them like a later class in one list: resting classes beat resting
+ * defaults, and caller state classes beat default states. The cursor follows
+ * the app's pointer-cursor preference, like the `.cursor-pointer` override in
+ * src/index.scss.
+ *
+ * Class strings must be statically analyzable: fully written literals,
+ * selected or concatenated whole, never assembled from fragments.
  */
+const NEUTRAL_SOFT_SURFACE =
+  "btn:text-text-2 btn-hover:bg-button-hover btn-focus:bg-button-hover";
+const NEUTRAL_SOFT_SURFACE_NO_DROP =
+  "btn:text-text-2 btn-hover:bg-button-hover-no-drop btn-focus:bg-button-hover-no-drop";
+const NEUTRAL_HOVER_TEXT = "btn-hover:text-text-1 btn-focus:text-text-1";
+
+/** Text colors a neutral button shows only while hovered, pressed or focused. */
+const HOVER_INTENT_TEXT = {
+  danger:
+    "btn-hover:text-danger-6 btn-active:text-danger-6 btn-focus:text-danger-6",
+  primary:
+    "btn-hover:text-primary-6 btn-active:text-primary-6 btn-focus:text-primary-6",
+} as const;
+
+/** Semantic soft palettes; mirror `BUTTON_VARIANT` in workstation tokens. */
+const SEMANTIC_SOFT = {
+  primary:
+    "btn:text-text-2 btn-hover:bg-primary-3 btn-hover:text-primary-6 btn-focus:bg-primary-3 btn-focus:text-primary-6",
+  danger:
+    "btn:text-danger-6 btn-hover:bg-danger-2 btn-hover:text-danger-6 btn-focus:bg-danger-2 btn-focus:text-danger-6",
+  dangerNoDrop:
+    "btn:text-danger-6 btn-hover:bg-danger-1 btn-hover:text-danger-6 btn-focus:bg-danger-1 btn-focus:text-danger-6",
+  success: "btn:text-success-6 btn-hover:bg-success-3 btn-focus:bg-success-3",
+  warning: "btn:text-warning-6 btn-hover:bg-warning-3 btn-focus:bg-warning-3",
+  merged: "btn:text-purple-6 btn-hover:bg-purple-3 btn-focus:bg-purple-3",
+} as const;
+
+const FOCUS_RING_SHADOW =
+  "btn-focus:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
+
+/** Default utilities for each (variant, appearance) cell. */
 function getButtonStyleClasses(
   variant: ButtonVariant,
-  appearance: ButtonAppearance
+  appearance: ButtonAppearance,
+  hoverIntent: ButtonHoverIntent | undefined
 ) {
   if (appearance === "custom") return "";
+  const isNeutral = variant === "tertiary" || variant === "secondary";
+  // Semantic variants already carry their color, so only neutral ones take an
+  // intent. It replaces the neutral hover text instead of being layered on top.
+  const intentText =
+    isNeutral && hoverIntent ? HOVER_INTENT_TEXT[hoverIntent] : "";
   if (appearance === "soft" || appearance === "soft-no-drop") {
-    const colors =
-      variant === "tertiary" || variant === "secondary"
-        ? appearance === "soft-no-drop"
-          ? BUTTON_VARIANT.noDrop
-          : BUTTON_VARIANT.default
-        : variant === "danger" && appearance === "soft-no-drop"
-          ? BUTTON_VARIANT.dangerNoDrop
-          : variant === "warning"
-            ? "text-warning-6 enabled:hover:bg-warning-3 focus-visible:bg-warning-3"
-            : variant === "merged"
-              ? "text-purple-6 enabled:hover:bg-purple-3 focus-visible:bg-purple-3"
-              : BUTTON_VARIANT[variant];
-    return `border-0 bg-transparent ${colors} aria-pressed:bg-surface-selected aria-pressed:text-primary-6`;
+    const noDrop = appearance === "soft-no-drop";
+    const colors = isNeutral
+      ? `${noDrop ? NEUTRAL_SOFT_SURFACE_NO_DROP : NEUTRAL_SOFT_SURFACE} ${
+          intentText || NEUTRAL_HOVER_TEXT
+        }`
+      : variant === "danger"
+        ? noDrop
+          ? SEMANTIC_SOFT.dangerNoDrop
+          : SEMANTIC_SOFT.danger
+        : SEMANTIC_SOFT[variant];
+    return `btn:border-0 btn:bg-transparent ${colors} btn-pressed:bg-surface-selected btn-pressed:text-primary-6`;
   }
   const base = (() => {
     switch (variant) {
       case "primary":
-        if (appearance === "solid") return "border-0 text-white bg-primary-6";
+        if (appearance === "solid")
+          return "btn:border-0 btn:text-white btn:bg-primary-6";
         if (appearance === "outline")
-          return "border border-primary-6 bg-transparent text-primary-6";
+          return "btn:border btn:border-primary-6 btn:bg-transparent btn:text-primary-6";
         if (appearance === "dashed")
-          return "border border-dashed border-primary-6/50 bg-transparent text-primary-6";
-        return "border-0 bg-transparent text-primary-6";
+          return "btn:border btn:border-dashed btn:border-primary-6/50 btn:bg-transparent btn:text-primary-6";
+        return "btn:border-0 btn:bg-transparent btn:text-primary-6";
       case "secondary":
-        if (appearance === "solid") return "border-0 bg-fill-2 text-text-1";
+        if (appearance === "solid")
+          return "btn:border-0 btn:bg-fill-2 btn:text-text-1";
         if (appearance === "outline")
-          return "border border-border-2 bg-bg-2 text-text-1";
+          return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-text-1";
         if (appearance === "dashed")
-          return "border border-dashed border-border-2 bg-transparent text-text-1";
-        return "border-0 bg-transparent text-text-1";
+          return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-text-1";
+        return "btn:border-0 btn:bg-transparent btn:text-text-1";
       case "tertiary":
         if (appearance === "solid")
-          return "border-0 bg-transparent text-text-2";
+          return "btn:border-0 btn:bg-transparent btn:text-text-2";
         if (appearance === "outline")
-          return "border border-border-2 bg-bg-2 text-text-2";
+          return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-text-2";
         if (appearance === "dashed")
-          return "border border-dashed border-border-2 bg-transparent text-text-2";
-        return "border-0 bg-transparent text-text-2";
+          return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-text-2";
+        return "btn:border-0 btn:bg-transparent btn:text-text-2";
       case "danger":
-        if (appearance === "solid") return "border-0 text-white bg-danger-6";
+        if (appearance === "solid")
+          return "btn:border-0 btn:text-white btn:bg-danger-6";
         if (appearance === "outline")
-          return "border border-border-2 bg-bg-2 text-danger-6";
+          return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-danger-6";
         if (appearance === "dashed")
-          return "border border-dashed border-danger-6/50 bg-transparent text-danger-6";
-        return "border-0 bg-transparent text-danger-6";
+          return "btn:border btn:border-dashed btn:border-danger-6/50 btn:bg-transparent btn:text-danger-6";
+        return "btn:border-0 btn:bg-transparent btn:text-danger-6";
       case "warning":
-        if (appearance === "solid") return "border-0 text-white bg-warning-6";
+        if (appearance === "solid")
+          return "btn:border-0 btn:text-white btn:bg-warning-6";
         if (appearance === "outline")
-          return "border border-border-2 bg-bg-2 text-warning-6";
+          return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-warning-6";
         if (appearance === "dashed")
-          return "border border-dashed border-border-2 bg-transparent text-warning-6";
-        return "border-0 bg-transparent text-warning-6";
+          return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-warning-6";
+        return "btn:border-0 btn:bg-transparent btn:text-warning-6";
       case "success":
-        if (appearance === "solid") return "border-0 text-white bg-success-6";
+        if (appearance === "solid")
+          return "btn:border-0 btn:text-white btn:bg-success-6";
         if (appearance === "outline")
-          return "border border-border-2 bg-bg-2 text-success-6";
+          return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-success-6";
         if (appearance === "dashed")
-          return "border border-dashed border-success-6/50 bg-transparent text-success-6";
-        return "border-0 bg-transparent text-success-6";
+          return "btn:border btn:border-dashed btn:border-success-6/50 btn:bg-transparent btn:text-success-6";
+        return "btn:border-0 btn:bg-transparent btn:text-success-6";
       case "merged":
         if (appearance === "solid")
-          return "border-0 bg-merged text-merged-contrast";
+          return "btn:border-0 btn:bg-merged btn:text-merged-contrast";
         if (appearance === "outline")
-          return "border border-purple-6 bg-transparent text-purple-6";
+          return "btn:border btn:border-purple-6 btn:bg-transparent btn:text-purple-6";
         if (appearance === "dashed")
-          return "border border-dashed border-purple-6/50 bg-transparent text-purple-6";
-        return "border-0 bg-transparent text-purple-6";
+          return "btn:border btn:border-dashed btn:border-purple-6/50 btn:bg-transparent btn:text-purple-6";
+        return "btn:border-0 btn:bg-transparent btn:text-purple-6";
     }
   })();
 
@@ -133,45 +186,45 @@ function getButtonStyleClasses(
     if (appearance === "solid") {
       switch (variant) {
         case "primary":
-          return "enabled:hover:bg-primary-5 enabled:active:bg-primary-7";
+          return "btn-hover:bg-primary-5 btn-active:bg-primary-7";
         case "danger":
-          return "enabled:hover:bg-danger-5 enabled:active:bg-danger-6";
+          return "btn-hover:bg-danger-5 btn-active:bg-danger-6";
         case "warning":
-          return "enabled:hover:bg-warning-5 enabled:active:bg-warning-6";
+          return "btn-hover:bg-warning-5 btn-active:bg-warning-6";
         case "success":
-          return "enabled:hover:bg-success-5 enabled:active:bg-success-6";
+          return "btn-hover:bg-success-5 btn-active:bg-success-6";
         case "merged":
-          return "enabled:hover:bg-merged-hover enabled:active:bg-merged-active";
+          return "btn-hover:bg-merged-hover btn-active:bg-merged-active";
         case "secondary":
-          return "enabled:hover:bg-fill-3";
+          return `btn-hover:bg-fill-3 ${intentText}`;
         case "tertiary":
-          return "enabled:hover:text-text-1 enabled:hover:bg-surface-hover enabled:active:bg-surface-selected focus-visible:text-text-1 focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
+          return `${intentText || NEUTRAL_HOVER_TEXT} btn-hover:bg-surface-hover btn-active:bg-surface-selected btn-focus:outline-none ${FOCUS_RING_SHADOW}`;
       }
     }
     if (appearance === "outline" || appearance === "dashed") {
-      if (variant === "secondary" || variant === "tertiary") {
-        return "hover:border-border-3 focus-visible:border-(--color-primary-6) focus-visible:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
+      if (isNeutral) {
+        return `btn-hover:border-border-3 btn-focus:border-(--color-primary-6) ${FOCUS_RING_SHADOW} ${intentText}`;
       }
       return "";
     }
     switch (variant) {
       case "primary":
-        return "enabled:hover:text-primary-5";
+        return "btn-hover:text-primary-5";
       case "danger":
-        return "enabled:hover:text-danger-5";
+        return "btn-hover:text-danger-5";
       case "warning":
-        return "enabled:hover:text-warning-5";
+        return "btn-hover:text-warning-5";
       case "success":
-        return "enabled:hover:text-success-5";
+        return "btn-hover:text-success-5";
       case "merged":
-        return "enabled:hover:text-purple-5";
+        return "btn-hover:text-purple-5";
       case "secondary":
       case "tertiary":
-        return "enabled:hover:text-text-1";
+        return intentText || "btn-hover:text-text-1";
     }
   })();
 
-  return [base, hover].filter(Boolean).join(" ");
+  return [base, hover.trim()].filter(Boolean).join(" ");
 }
 
 interface ButtonPresentationOptions {
@@ -186,6 +239,8 @@ interface ButtonPresentationOptions {
   icon?: React.ReactNode | string;
   iconPosition: "left" | "right";
   iconOnly: boolean;
+  hoverIntent?: ButtonHoverIntent;
+  shortcut?: string;
   centerLabel: boolean;
   long: boolean;
   children?: React.ReactNode;
@@ -205,6 +260,8 @@ export function useButtonPresentation({
   icon,
   iconPosition,
   iconOnly,
+  hoverIntent,
+  shortcut,
   centerLabel,
   long,
   children,
@@ -324,15 +381,15 @@ export function useButtonPresentation({
   const baseClasses =
     layout === "custom"
       ? ""
-      : "inline-flex items-center justify-center font-medium whitespace-nowrap select-none no-underline outline-none transition-[border-color,box-shadow,background-color,color,opacity] duration-150";
+      : "btn:inline-flex btn:items-center btn:justify-center btn:font-medium btn:whitespace-nowrap btn:select-none btn:no-underline btn:outline-none btn:transition-[border-color,box-shadow,background-color,color,opacity] btn:duration-150";
   const disabledClasses = isDisabled
-    ? "cursor-not-allowed opacity-50"
-    : "cursor-pointer";
+    ? "btn:cursor-not-allowed btn:opacity-50"
+    : "btn:cursor-[var(--interactive-cursor,default)]";
   const buttonClassName = [
     layout === "custom" ? "" : "button",
     baseClasses,
     layout === "custom" && appearance === "custom" ? "" : disabledClasses,
-    getButtonStyleClasses(variant, resolvedAppearance),
+    getButtonStyleClasses(variant, resolvedAppearance, hoverIntent),
     className,
   ]
     .filter(Boolean)
@@ -344,7 +401,23 @@ export function useButtonPresentation({
     resolvedAppearance,
     borderRadius,
     buttonStyles,
-    buttonContent,
+    buttonContent:
+      shortcut?.trim() && !iconOnly ? (
+        <>
+          {buttonContent}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none ml-2 inline-flex shrink-0"
+          >
+            <KeyboardShortcut
+              shortcut={shortcut}
+              variant={KEYBOARD_SHORTCUT_VARIANT.inline}
+            />
+          </span>
+        </>
+      ) : (
+        buttonContent
+      ),
     buttonClassName,
   };
 }

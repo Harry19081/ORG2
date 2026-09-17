@@ -24,12 +24,12 @@ import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
 import Select from "@src/components/Select";
 import Textarea from "@src/components/Textarea";
-import { ClipboardCopyIcon, KeyboardIcon, SearchAreaIcon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import { ClipboardCopyIcon, KeyboardIcon, SearchAreaIcon } from "@src/icons";
 import {
   SelectionGrid,
   type SelectionGridOption,

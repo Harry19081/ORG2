@@ -553,7 +553,7 @@ fn continue_droid_and_autohand_configs_select_the_managed_model() {
     let continue_config: serde_yaml::Value =
         serde_yaml::from_str(&continue_config[CONTINUE_CLI_CONFIG_FILE_ID]).unwrap();
     assert_eq!(continue_config["name"].as_str(), Some("Existing"));
-    assert_eq!(continue_config["models"][0]["name"].as_str(), Some("ORGII"));
+    assert_eq!(continue_config["models"][0]["name"].as_str(), Some("ORG2"));
     assert_eq!(
         continue_config["models"][0]["model"].as_str(),
         Some("test-model")
@@ -573,7 +573,7 @@ fn continue_droid_and_autohand_configs_select_the_managed_model() {
     assert_eq!(droid["model"].as_str(), Some("test-model"));
     assert_eq!(
         droid["customModels"][0]["displayName"].as_str(),
-        Some("ORGII")
+        Some("ORG2")
     );
     assert_eq!(
         droid["customModels"][0]["baseUrl"].as_str(),
@@ -589,6 +589,42 @@ fn continue_droid_and_autohand_configs_select_the_managed_model() {
     assert_eq!(autohand["telemetry"].as_bool(), Some(false));
     assert_eq!(autohand["provider"].as_str(), Some("openai"));
     assert_eq!(autohand["openai"]["model"].as_str(), Some("test-model"));
+}
+
+#[test]
+fn continue_and_droid_replace_legacy_orgii_model_entries() {
+    let continue_config = generated_for(
+        CONTINUE_CLI_AGENT,
+        &[(
+            CONTINUE_CLI_CONFIG_FILE_ID,
+            "name: Existing\nversion: 2.0.0\nmodels:\n  - name: ORGII\n    model: old\n  - name: Mine\n    model: keep\n",
+        )],
+    );
+    let continue_config: serde_yaml::Value =
+        serde_yaml::from_str(&continue_config[CONTINUE_CLI_CONFIG_FILE_ID]).unwrap();
+    let continue_names: Vec<&str> = continue_config["models"]
+        .as_sequence()
+        .unwrap()
+        .iter()
+        .map(|entry| entry["name"].as_str().unwrap())
+        .collect();
+    assert_eq!(continue_names, ["ORG2", "Mine"]);
+
+    let droid = generated_for(
+        DROID_AGENT,
+        &[(
+            DROID_SETTINGS_FILE_ID,
+            r#"{"customModels":[{"displayName":"ORGII","model":"old"},{"displayName":"ORG2","model":"stale"},{"displayName":"Mine","model":"keep"}]}"#,
+        )],
+    );
+    let droid: serde_json::Value = serde_json::from_str(&droid[DROID_SETTINGS_FILE_ID]).unwrap();
+    let droid_names: Vec<&str> = droid["customModels"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|entry| entry["displayName"].as_str().unwrap())
+        .collect();
+    assert_eq!(droid_names, ["ORG2", "Mine"]);
 }
 
 #[test]

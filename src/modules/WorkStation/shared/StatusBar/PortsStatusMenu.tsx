@@ -17,9 +17,9 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import { ProcessStopButton } from "@src/components/ProcessStopButton";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { createLogger } from "@src/hooks/logger";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Copy01Icon,
   HugeiconsIcon,

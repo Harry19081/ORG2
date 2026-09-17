@@ -26,6 +26,7 @@ export const SECTION_IDS = {
   EDITOR: "editor",
   SECURITY: "security",
   MOBILE_REMOTE: "mobile-remote",
+  IMPORT: "import",
 } as const;
 
 // App sections (left sidebar items)
@@ -69,6 +70,11 @@ export const SECTION_TAB_META: Partial<
     { key: "chat-panel", labelKey: "appearance.tabChatPanel" },
   ],
   [SECTION_IDS.EDITOR]: [{ key: "editor", labelKey: "editor.tabEditor" }],
+  // Same labels as Runtime's Scanning / Hooks tabs, which render the same bodies.
+  [SECTION_IDS.IMPORT]: [
+    { key: "scanning", labelKey: "sessions:kanban.dataSource.views.scanning" },
+    { key: "hooks", labelKey: "sessions:kanban.dataSource.views.hooks" },
+  ],
 };
 
 /** Shared props for buttons that navigate to another page (outside settings) */

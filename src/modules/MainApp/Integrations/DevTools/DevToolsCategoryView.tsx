@@ -7,7 +7,7 @@ import {
   DetailPanelContainer,
   InternalHeader,
   ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/blocks";
 
 import { ThirdPartyDisclaimer } from "../Tables/TrademarkDisclaimer";
 import DependenciesPage from "./DependenciesPage";

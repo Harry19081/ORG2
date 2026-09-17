@@ -11,17 +11,17 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
 import {
+  SECTION_CONTROL_STYLE,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
+import {
   InternetIcon,
   Key02Icon,
   KeyboardIcon,
   SearchAreaIcon,
 } from "@src/icons";
 import type { ChannelProbeResult } from "@src/modules/MainApp/Integrations/Connections/Channels/types";
-import {
-  SECTION_CONTROL_STYLE,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import {
   SelectionGrid,
   type SelectionGridOption,
@@ -317,7 +317,7 @@ export const GitContent: React.FC<GitContentProps> = ({
           label={t("keyVault.setupMethod")}
           description={t(
             "gitConnections.methodPickerDesc",
-            "Pick how you want to authenticate to GitHub."
+            "Pick how you want to authenticate to GitHub"
           )}
           layout="vertical"
           required
@@ -353,7 +353,7 @@ export const GitContent: React.FC<GitContentProps> = ({
                 ? gitOAuthFlow.kind === OAUTH_FLOW_KIND.DEVICE
                   ? t(
                       "gitConnections.oauthDeviceDesc",
-                      "Open the verification URL and enter this code to authorize GitHub."
+                      "Open the verification URL and enter this code to authorize GitHub"
                     )
                   : t("projectConnections.oauthBrowserDesc")
                 : t("keyVault.signInDesc")
@@ -538,7 +538,7 @@ const GitScanPanel: React.FC<GitScanPanelProps> = ({
           <div className="text-[12px] text-text-2">
             {t(
               "gitConnections.scanningDesc",
-              "Looking for gh CLI tokens, credential helpers, and SSH keys on this machine."
+              "Looking for gh CLI tokens, credential helpers, and SSH keys on this machine"
             )}
           </div>
         </SectionRow>
@@ -560,7 +560,7 @@ const GitScanPanel: React.FC<GitScanPanelProps> = ({
           <div className="text-[12px] text-text-2">
             {t(
               "gitConnections.scanEmptyDesc",
-              "No gh CLI tokens, credential helpers, or SSH keys were found. Pick another method above."
+              "No gh CLI tokens, credential helpers, or SSH keys were found. Pick another method above"
             )}
           </div>
         </SectionRow>
@@ -574,7 +574,7 @@ const GitScanPanel: React.FC<GitScanPanelProps> = ({
         label={t("gitConnections.scanResults", "Detected credentials")}
         description={t(
           "gitConnections.scanResultsDesc",
-          "Pick one to import. We validate tokens against GitHub before saving."
+          "Pick one to import. We validate tokens against GitHub before saving"
         )}
         layout="vertical"
         required
@@ -629,7 +629,7 @@ const GitSshPanel: React.FC<GitSshPanelProps> = ({
         label={t("gitConnections.sshKeyPath", "SSH key path")}
         description={t(
           "gitConnections.sshKeyPathDesc",
-          "Absolute path to the private key (e.g. ~/.ssh/id_ed25519). The matching public key must already be registered on GitHub."
+          "Absolute path to the private key (e.g. ~/.ssh/id_ed25519). The matching public key must already be registered on GitHub"
         )}
         required
       >
