@@ -94,3 +94,7 @@ use windows::{
 #[cfg(test)]
 #[path = "history_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "history_control_tests.rs"]
+mod control_tests;

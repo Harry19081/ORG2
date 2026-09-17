@@ -377,7 +377,7 @@ fn harness_injected_user_lines_do_not_open_rounds() {
             .iter()
             .map(|turn| turn.following_line_count)
             .collect::<Vec<_>>(),
-        vec![5, 1]
+        vec![3, 1]
     );
 
     let chunks =
