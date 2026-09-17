@@ -91,7 +91,7 @@ it("settings preserves auth on cancel and clears it only after confirmation", as
     expect(mocks.signIn).not.toHaveBeenCalled();
     await act(async () => login());
     await act(async () => clickAction("cloud.signIn"));
-    expect(dialog()).toBeNull();
+    expect(dialog()?.textContent).toContain("auth:loading.waiting");
     expect(mocks.signIn).toHaveBeenCalledOnce();
   } finally {
     act(() => root.unmount());

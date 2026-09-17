@@ -42,10 +42,14 @@ export async function openOrg2CloudSignIn(
 }
 
 /** Stable click handler shared by Settings, Add ORG, invite, and share flows. */
-export function useOrg2CloudSignIn(): () => void {
-  return useCallback(() => {
-    void openOrg2CloudSignIn().catch((error: unknown) => {
+export function useOrg2CloudSignIn(): () => Promise<boolean> {
+  return useCallback(async () => {
+    try {
+      await openOrg2CloudSignIn();
+      return true;
+    } catch (error: unknown) {
       log.error("failed to open ORG2 Cloud login in system browser", error);
-    });
+      return false;
+    }
   }, []);
 }
