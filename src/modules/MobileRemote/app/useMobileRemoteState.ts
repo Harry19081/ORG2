@@ -143,7 +143,7 @@ export function useMobileRemoteState({
       // The authenticated client owns this bounded background batch. Route
       // opening shares its single-flight entries; disconnect/hidden state
       // prevents workers from taking more items, and misses retry on demand.
-      void prefetchMobileSessionIdentities(client, sessions, () => {
+      return prefetchMobileSessionIdentities(client, sessions, () => {
         const current = connectionRef.current;
         return (
           isCurrent() &&
