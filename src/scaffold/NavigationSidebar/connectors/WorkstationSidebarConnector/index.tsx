@@ -543,7 +543,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     cloudSignedIn: cloudSignedInIdentity !== null,
     manageOrgLabel,
     handleCloudSignIn: () => {
-      void handleCloudSignIn();
+      void handleCloudSignIn().catch(() => undefined);
     },
     activeViewKey,
     handleMenuItemContextMenu,

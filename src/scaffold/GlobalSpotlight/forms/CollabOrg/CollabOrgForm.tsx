@@ -298,7 +298,7 @@ const CollabOrgForm: React.FC<CollabOrgFormProps> = ({
                   action={{
                     label: t("navigation:cloud.signIn"),
                     onClick: () => {
-                      void openCloudSignIn();
+                      void openCloudSignIn().catch(() => undefined);
                     },
                   }}
                   dataTestId="create-cloud-org-sign-in-hint"

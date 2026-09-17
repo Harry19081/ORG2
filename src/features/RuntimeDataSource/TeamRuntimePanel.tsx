@@ -235,7 +235,7 @@ export default function TeamRuntimePanel({
           action={{
             label: t("signedOut.action"),
             onClick: () => {
-              void signIn();
+              void signIn().catch(() => undefined);
             },
             variant: "primary",
             dataTestId: "team-runtime-sign-in",

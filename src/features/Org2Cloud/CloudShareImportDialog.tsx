@@ -447,7 +447,7 @@ const CloudShareImportDialog: React.FC = () => {
               htmlType="button"
               variant="primary"
               onClick={() => {
-                void openCloudSignIn();
+                void openCloudSignIn().catch(() => undefined);
               }}
               data-testid="cloud-share-import-sign-in"
             >

@@ -160,7 +160,7 @@ const JoinCloudOrgDialog: React.FC = () => {
               htmlType="button"
               variant="primary"
               onClick={() => {
-                void openCloudSignIn();
+                void openCloudSignIn().catch(() => undefined);
               }}
               data-testid="cloud-join-org-sign-in"
             >
