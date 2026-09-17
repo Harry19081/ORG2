@@ -122,9 +122,9 @@ describe("SettingsTab shared account destination", () => {
       "settings.privacyPolicy",
     ])
       expect(host.textContent).not.toContain(key);
-    const trigger = button("profile.open", host);
+    const trigger = button("mobile@example.test · profile.title", host);
     trigger.focus();
-    await click("profile.open", host);
+    await click("mobile@example.test · profile.title", host);
     await act(async () => vi.advanceTimersByTime(100));
     expect(dialog()?.getAttribute("aria-label")).toBe("profile.title");
     expect(document.activeElement).toBe(button("profile.close"));
@@ -144,7 +144,7 @@ describe("SettingsTab shared account destination", () => {
   });
   it("retains shared confirmation: cancel returns to Profile, confirmed signout fires once after cleanup", async () => {
     await render();
-    await click("profile.open", host);
+    await click("mobile@example.test · profile.title", host);
     await click("settings.signOut");
     expect(dialog()?.getAttribute("aria-label")).toBe(
       "settings.signOutConfirmTitle"
@@ -166,7 +166,7 @@ describe("SettingsTab shared account destination", () => {
   });
   it("keeps web actions in Profile with retry and no local account deletion", async () => {
     await render();
-    await click("profile.open", host);
+    await click("mobile@example.test · profile.title", host);
     mocks.navigate.mockRejectedValueOnce(new Error("private failure"));
     await click("settings.manageAccount");
     expect(dialog()?.textContent).toContain("settings.openFailed");
@@ -231,7 +231,7 @@ describe("SettingsTab shared account destination", () => {
   it("supports Profile/help in development bypass without fake account actions", async () => {
     mocks.bypass = true;
     await render();
-    await click("profile.open", host);
+    await click("mobile@example.test · profile.title", host);
     expect(dialog()?.textContent).toContain("profile.development");
     for (const key of [
       "settings.signOut",
