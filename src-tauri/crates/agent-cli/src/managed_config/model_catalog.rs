@@ -159,6 +159,13 @@ mod tests {
     }
     #[test]
     fn codex_catalog_preserves_actual_capabilities_and_restores_owned_pointer() {
+        // `path()` resolves through the process environment; sibling tests move
+        // ORGII_EXTERNAL_HISTORY_HOME under this lock, so hold it for the whole
+        // apply/compare sequence or the expected path can change mid-test.
+        let _lock = crate::managed_config::tests::TEST_ENV_LOCK
+            .get_or_init(Default::default)
+            .lock()
+            .unwrap();
         let mut files = BTreeMap::from([(
             "config".into(),
             "model = 'gpt-shared-a'\nuser_setting = true\n".into(),
