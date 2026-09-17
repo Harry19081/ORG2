@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "$schema": "../node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "react", "oxc"],
   "categories": {
     "correctness": "error"
@@ -90,11 +90,15 @@
   },
   "overrides": [
     {
-      "files": ["src/icons.ts"],
+      "files": ["icons.ts"],
       "rules": {
         "no-restricted-imports": "off"
       }
     }
   ],
-  "ignorePatterns": ["**/*.css", "**/*.scss"]
+  "ignorePatterns": [
+    "**/*.css",
+    "**/*.scss",
+    "util/qr/qrcodeGeneratorVendor.js"
+  ]
 }

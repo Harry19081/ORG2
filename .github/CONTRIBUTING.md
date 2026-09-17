@@ -40,6 +40,8 @@ Copy `config/env.example` to the repository-root `.env` only when you need local
 
 Build, test, CSS, and commit-message configuration lives in `config/`. The package scripts and Git hooks select these files explicitly. Use `pnpm build`, `pnpm test`, and `pnpm test:watch`; direct webpack or Vitest commands need `--config config/webpack.config.js` or `--config config/vitest.config.ts`, respectively. Editor integrations that ask for a config path should use the files in `config/` as well.
 
+Knip and Gitleaks configuration also lives in `config/`; use the package scripts for Knip. Oxlint configuration lives in `src/.oxlintrc.json` because its exclusions are scoped to the configuration directory; use `pnpm lint:fast`. Direct Gitleaks runs need `--config config/gitleaks.toml --gitleaks-ignore-path config/gitleaksignore`. Point Oxlint editor integrations at `src/.oxlintrc.json` if they do not discover it automatically. Generated Node helper symlinks belong in `src-tauri/bin/`.
+
 ESLint, Prettier, and unimported settings live in `package.json` so editors and CLI tools can discover them automatically. See [linting conventions](../docs/development/linting.md) for the reasoning behind the lint rules.
 
 Restart a running dev server after changing or relocating build configuration. The webpack wrapper loads its config only at startup, so an existing process can keep using old loader paths even after source hot reloads.

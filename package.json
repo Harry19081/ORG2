@@ -49,7 +49,7 @@
     "typecheck": "tsc --noEmit --pretty false",
     "typecheck:fast": "tsgo --noEmit --pretty false",
     "lint": "pnpm lint:fast && eslint src/ --ext .ts,.tsx,.js,.jsx --max-warnings 0 --report-unused-disable-directives",
-    "lint:fast": "oxlint -c .oxlintrc.json --max-warnings 0 src",
+    "lint:fast": "oxlint -c src/.oxlintrc.json --max-warnings 0 src",
     "lint:fix": "eslint src/ --ext .ts,.tsx,.js,.jsx --fix --report-unused-disable-directives",
     "lint:file": "eslint",
     "lint:file:fix": "eslint --fix",
@@ -65,8 +65,8 @@
     "test": "vitest run --config config/vitest.config.ts",
     "test:coverage": "vitest run --config config/vitest.config.ts --coverage",
     "test:watch": "vitest --config config/vitest.config.ts",
-    "check:unused-exports": "knip",
-    "check:unused-exports:all": "knip --include files,dependencies,devDependencies,exports,types,nsExports,nsTypes",
+    "check:unused-exports": "knip --config config/knip.json",
+    "check:unused-exports:all": "knip --config config/knip.json --include files,dependencies,devDependencies,exports,types,nsExports,nsTypes",
     "check:e2e-oauth-guards": "node scripts/quality/check-e2e-oauth-guards.mjs",
     "check:i18n:cloud": "node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix cloud && node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix collaboration.forkImported",
     "check:i18n-keys": "node scripts/quality/i18n-keys/check.mjs",
@@ -282,6 +282,7 @@
       }
     },
     "ignorePatterns": [
+      "src/util/qr/qrcodeGeneratorVendor.js",
       "/*",
       "!/src",
       "*.css",
@@ -479,7 +480,7 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx,js,jsx}": [
-      "oxlint -c .oxlintrc.json --max-warnings 0"
+      "oxlint -c src/.oxlintrc.json --max-warnings 0"
     ],
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix",

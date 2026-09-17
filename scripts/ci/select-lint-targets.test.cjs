@@ -67,6 +67,7 @@ test("rule-changing diffs fall back to the full run", () => {
     ".prettierrc",
     ".prettierignore",
     "src/tailwind.css",
+    "src/.oxlintrc.json",
     "package.json",
     "pnpm-lock.yaml",
     "tsconfig.json",
