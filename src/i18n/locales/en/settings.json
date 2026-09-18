@@ -231,6 +231,12 @@
     "selectedItemTransparency": "Selected item transparency",
     "spotlightPlacement": "Spotlight position",
     "spotlightDimBackground": "Dim background",
+    "tooltips": "Tooltips",
+    "buttonTooltipsEnabled": "Show button tooltips",
+    "buttonTooltipsEnabledDesc": "Show the label and keyboard shortcut when hovering buttons. Info icon tooltips always show",
+    "buttonTooltipDelayMs": "Tooltip delay",
+    "buttonTooltipDelayImmediate": "Immediately",
+    "buttonTooltipDelaySeconds": "{{seconds}}s",
     "spotlightPlacementOptions": {
       "top": "Top",
       "center": "Middle"

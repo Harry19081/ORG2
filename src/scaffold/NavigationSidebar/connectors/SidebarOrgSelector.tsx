@@ -11,7 +11,6 @@ import {
   Login01Icon,
   Settings02Icon,
 } from "@src/icons";
-import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "@src/scaffold/NavigationSidebar/config";
 
 interface SidebarOrgSelectorProps {
   value: string;
@@ -157,7 +156,6 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
         <ToolbarTooltip
           label={t("collaboration.switchOrg")}
           position="bottom"
-          mouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
           disabled={menuOpen || !pointerMoved}
         >
           <div className="w-full min-w-0">

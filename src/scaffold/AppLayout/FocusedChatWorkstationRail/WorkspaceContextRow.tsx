@@ -97,7 +97,7 @@ export function WorkspaceContextRow({
           content={<KeyboardShortcutTooltipContent label={styledTooltip} />}
           position="left"
           framedPanel
-          mouseEnterDelay={200}
+          kind="button"
           smartPlacement
         >
           {button}

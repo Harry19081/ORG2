@@ -209,10 +209,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
             className={`flex shrink-0 items-center gap-px ${hideInput ? "ml-auto" : ""}`}
           >
             {!hideInput && searchQuery && !isCountingDown && (
-              <ToolbarTooltip
-                label={t("common:actions.clear")}
-                mouseEnterDelay={1000}
-              >
+              <ToolbarTooltip label={t("common:actions.clear")}>
                 <Button
                   variant="tertiary"
                   size="small"

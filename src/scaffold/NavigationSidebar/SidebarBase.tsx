@@ -38,7 +38,7 @@ import {
 import { popupNativeMenu } from "@src/util/platform/tauri/nativeMenuPopup";
 
 import { SidebarChromeToggle } from "./SidebarChromeToggle";
-import { SIDEBAR_STYLE, SIDEBAR_TOOLTIP_HOVER_DELAY } from "./config";
+import { SIDEBAR_STYLE } from "./config";
 import { useForceVisibleSidebar } from "./contexts/ForceVisibleContext";
 import type { SidebarBaseProps } from "./types";
 
@@ -230,10 +230,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
               style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
             >
               <SidebarChromeToggle variant="sidebar" />
-              <SessionHistoryNav
-                variant="sidebar"
-                tooltipMouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
-              />
+              <SessionHistoryNav variant="sidebar" />
             </div>
           ) : null}
           <div className="pointer-events-auto flex shrink-0 items-center gap-px opacity-100">
@@ -258,7 +255,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
                     i18next.t("navigation:sidebar.actions.addNew")
                   }
                   position="bottom"
-                  mouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
+                  kind="button"
                   showArrow={false}
                   framedPanel={!!addTooltipContent}
                 >

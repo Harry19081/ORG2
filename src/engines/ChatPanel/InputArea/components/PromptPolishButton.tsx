@@ -7,7 +7,6 @@ import {
 } from "@src/components/CompoundPill/config";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
-import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import type { PromptPolishControl } from "@src/engines/ChatPanel/hooks/useInputArea/types";
 import { HugeiconsIcon, Loading03Icon, SparklesIcon } from "@src/icons";
 
@@ -74,11 +73,7 @@ const PromptPolishButton: React.FC<PromptPolishButtonProps> = memo(
     );
 
     return (
-      <Tooltip
-        content={tooltip}
-        position="top-end"
-        mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
-      >
+      <Tooltip content={tooltip} position="top-end" kind="button">
         <span className="inline-flex">{button}</span>
       </Tooltip>
     );

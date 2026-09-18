@@ -61,7 +61,7 @@ const HeaderIconButton: React.FC<HeaderIconButtonProps> = ({ item }) => {
     <Tooltip
       content={item.tooltipContent}
       position="bottom-end"
-      mouseEnterDelay={200}
+      kind="button"
       framedPanel
     >
       <span className="inline-flex">{button}</span>

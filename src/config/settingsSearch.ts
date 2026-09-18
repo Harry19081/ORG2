@@ -53,6 +53,8 @@ const APPEARANCE_APP_KEYS = new Set<SettingsKey>([
   "general.applicationUiFont",
   "general.spotlightPlacement",
   "general.spotlightDimBackground",
+  "general.buttonTooltipsEnabled",
+  "general.buttonTooltipDelayMs",
   "layout.sidebarSelectedRowOpacity",
   "layout.sidebarEdgeDepthEnabled",
 ]);

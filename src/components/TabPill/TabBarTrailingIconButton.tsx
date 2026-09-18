@@ -17,7 +17,6 @@ export interface TabBarTrailingIconButtonProps extends Omit<
   active?: boolean;
   shortcutId?: string;
   tooltipPosition?: "top" | "bottom" | "bottom-start" | "bottom-end";
-  tooltipMouseEnterDelay?: number;
   tooltipDisabled?: boolean;
   /** Native fallback only when the styled tooltip is disabled. */
   nativeTitle?: boolean;
@@ -33,7 +32,6 @@ export const TabBarTrailingIconButton: React.FC<TabBarTrailingIconButtonProps> =
       active = false,
       shortcutId,
       tooltipPosition = "bottom",
-      tooltipMouseEnterDelay,
       tooltipDisabled = false,
       nativeTitle = true,
       className = "",
@@ -60,7 +58,6 @@ export const TabBarTrailingIconButton: React.FC<TabBarTrailingIconButtonProps> =
           label={title}
           shortcutId={shortcutId}
           position={tooltipPosition}
-          mouseEnterDelay={tooltipMouseEnterDelay}
           disabled={tooltipDisabled}
         >
           {button}

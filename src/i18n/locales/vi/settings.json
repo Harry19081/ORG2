@@ -150,6 +150,12 @@
     "selectedItemTransparency": "Độ trong suốt của mục đã chọn",
     "spotlightPlacement": "Vị trí Spotlight",
     "spotlightDimBackground": "Làm mờ nền",
+    "tooltips": "Chú giải",
+    "buttonTooltipsEnabled": "Hiện chú giải nút",
+    "buttonTooltipsEnabledDesc": "Hiện tên và phím tắt khi di chuột qua nút. Chú giải của biểu tượng thông tin luôn hiển thị",
+    "buttonTooltipDelayMs": "Độ trễ chú giải",
+    "buttonTooltipDelayImmediate": "Ngay lập tức",
+    "buttonTooltipDelaySeconds": "{{seconds}} giây",
     "spotlightPlacementOptions": {
       "top": "Trên cùng",
       "center": "Giữa"

@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
-import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { createLogger } from "@src/hooks/logger";
 import {
@@ -72,7 +71,6 @@ export function StationOpenInNewWindowButton({
   return (
     <TabBarTrailingIconButton
       title={t("common:actions.openInNewWindow")}
-      tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
       onClick={handleClick}
       data-testid={testId}
     >
@@ -166,7 +164,6 @@ export function StationChatVisibilityButton({
         visible ? t("chat.maximizeWorkStation") : t("chat.restoreChatPanel")
       }
       shortcutId="maximize_work_station"
-      tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
       onClick={onClick}
       data-testid={testId}
     >
@@ -196,7 +193,6 @@ export function StationMaximizeChatButton({
     <TabBarTrailingIconButton
       title={t("chat.hideWorkstation")}
       shortcutId="maximize_chat"
-      tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
       onClick={onClick}
       className={
         directionalHover && chatPanelPosition === "left" ? "group" : undefined
@@ -273,7 +269,6 @@ export function ChatPaneFocusButton({
       title={title}
       shortcutId={stationAvailable ? "maximize_chat" : undefined}
       tooltipPosition="bottom-end"
-      tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
       nativeTitle={false}
       onClick={stationAvailable ? onClick : undefined}
       disabled={!stationAvailable}

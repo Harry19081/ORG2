@@ -19,6 +19,10 @@ import {
 } from "@src/config/appearance/globalThemes";
 import type { AccentPreset } from "@src/config/appearance/skins/accent";
 import {
+  BUTTON_TOOLTIP_DELAY_OPTIONS_MS,
+  type ButtonTooltipDelayMs,
+} from "@src/config/tooltip";
+import {
   HOST_DESKTOP,
   resolveHostDesktop,
 } from "@src/config/windowChromeRadius";
@@ -90,6 +94,55 @@ const SidebarOpacityRow: React.FC = () => {
         />
       </div>
     </SectionRow>
+  );
+};
+
+/** Global show/hide + hover delay for button (label + shortcut) tooltips. */
+const ButtonTooltipsSection: React.FC = () => {
+  const { t } = useTranslation("settings");
+  const [enabled, setEnabled] = useSetting("general.buttonTooltipsEnabled");
+  const [delayMs, setDelayMs] = useSetting("general.buttonTooltipDelayMs");
+
+  return (
+    <SectionContainer title={t("general.tooltips")}>
+      <SectionRow
+        settingsSearchKeys="general.buttonTooltipsEnabled"
+        label={t("general.buttonTooltipsEnabled")}
+        description={t("general.buttonTooltipsEnabledDesc")}
+      >
+        <Switch
+          checked={enabled}
+          onCheckedChange={setEnabled}
+          ariaLabel={t("general.buttonTooltipsEnabled")}
+          dataTestId="button-tooltips-enabled-switch"
+        />
+      </SectionRow>
+      {enabled && (
+        <SectionRow
+          settingsSearchKeys="general.buttonTooltipDelayMs"
+          label={t("general.buttonTooltipDelayMs")}
+        >
+          <SegmentedTextPill<`${ButtonTooltipDelayMs}`>
+            ariaLabel={t("general.buttonTooltipDelayMs")}
+            value={`${delayMs}`}
+            onChange={(value) =>
+              setDelayMs(Number(value) as ButtonTooltipDelayMs)
+            }
+            options={BUTTON_TOOLTIP_DELAY_OPTIONS_MS.map((ms) => ({
+              value: `${ms}` as const,
+              label:
+                ms === 0
+                  ? t("general.buttonTooltipDelayImmediate")
+                  : t("general.buttonTooltipDelaySeconds", {
+                      seconds: ms / 1000,
+                    }),
+            }))}
+            size="large"
+            dataTestId="button-tooltip-delay-select"
+          />
+        </SectionRow>
+      )}
+    </SectionContainer>
   );
 };
 
@@ -392,6 +445,8 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
               />
             </SectionRow>
           </SectionContainer>
+
+          <ButtonTooltipsSection />
 
           <SectionContainer title={t("general.sidebar")}>
             <SectionRow

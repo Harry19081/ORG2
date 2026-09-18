@@ -150,6 +150,12 @@
     "selectedItemTransparency": "선택한 항목 투명도",
     "spotlightPlacement": "Spotlight 위치",
     "spotlightDimBackground": "배경 어둡게",
+    "tooltips": "툴팁",
+    "buttonTooltipsEnabled": "버튼 툴팁 표시",
+    "buttonTooltipsEnabledDesc": "버튼에 마우스를 올리면 이름과 키보드 단축키를 표시합니다. 정보 아이콘 툴팁은 항상 표시됩니다",
+    "buttonTooltipDelayMs": "툴팁 지연",
+    "buttonTooltipDelayImmediate": "즉시",
+    "buttonTooltipDelaySeconds": "{{seconds}}초",
     "spotlightPlacementOptions": {
       "top": "상단",
       "center": "중앙"

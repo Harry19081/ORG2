@@ -27,7 +27,6 @@ import FileTypeIcon from "@src/components/FileTypeIcon";
 import LinkHoverCard from "@src/components/MarkDown/LinkHoverCard";
 import Tooltip from "@src/components/Tooltip";
 import { PILL_SIZE, readPillText } from "@src/config/pillTokens";
-import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import {
   AtIcon,
   Cancel01Icon,
@@ -531,7 +530,7 @@ const ComposerPill: React.FC<ComposerPillProps> = ({
     <Tooltip
       content={<span className="break-all">{hoverDetail}</span>}
       position="top"
-      mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
+      kind="button"
       framedPanel
       smartPlacement
     >

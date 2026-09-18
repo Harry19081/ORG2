@@ -150,6 +150,12 @@
     "selectedItemTransparency": "Seçili öğe şeffaflığı",
     "spotlightPlacement": "Spotlight konumu",
     "spotlightDimBackground": "Arka planı karart",
+    "tooltips": "İpuçları",
+    "buttonTooltipsEnabled": "Düğme ipuçlarını göster",
+    "buttonTooltipsEnabledDesc": "Düğmelerin üzerine gelindiğinde adı ve klavye kısayolunu gösterir. Bilgi simgesi ipuçları her zaman gösterilir",
+    "buttonTooltipDelayMs": "İpucu gecikmesi",
+    "buttonTooltipDelayImmediate": "Hemen",
+    "buttonTooltipDelaySeconds": "{{seconds}} sn",
     "spotlightPlacementOptions": {
       "top": "Üst",
       "center": "Orta"

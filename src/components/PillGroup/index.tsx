@@ -70,8 +70,6 @@ export interface PillGroupSegment {
   tooltipFramedWide?: boolean;
   /** Tooltip placement relative to the segment. Defaults to `top`. */
   tooltipPosition?: TooltipProps["position"];
-  /** Delay before showing the segment tooltip. */
-  tooltipMouseEnterDelay?: number;
   /** ARIA label for the underlying button */
   ariaLabel?: string;
   /** Whether this segment's dropdown/selector is open. Forces pill styling. */
@@ -209,7 +207,6 @@ const PillGroupSegmentRow: React.FC<PillGroupSegmentRowProps> = ({
       tooltipFramed={segment.tooltipFramed}
       tooltipFramedWide={segment.tooltipFramedWide}
       tooltipPosition={segment.tooltipPosition ?? undefined}
-      tooltipMouseEnterDelay={segment.tooltipMouseEnterDelay}
       ariaLabel={segment.ariaLabel}
       dataTestId={segment.dataTestId}
       appearance={usesFill3Surface ? "bare" : "default"}

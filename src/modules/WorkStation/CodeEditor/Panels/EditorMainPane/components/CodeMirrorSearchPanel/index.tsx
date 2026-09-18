@@ -278,10 +278,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
       }}
       extraControls={
         !readOnly && (
-          <ToolbarTooltip
-            label={t("tooltips.replaceLabel")}
-            mouseEnterDelay={1000}
-          >
+          <ToolbarTooltip label={t("tooltips.replaceLabel")}>
             <Button
               variant="tertiary"
               className="aria-pressed:bg-surface-selected aria-pressed:text-primary-6"
@@ -342,7 +339,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
                   name: "replace-all",
                 },
               ].map(({ label, icon, action, name }) => (
-                <ToolbarTooltip key={name} label={label} mouseEnterDelay={1000}>
+                <ToolbarTooltip key={name} label={label}>
                   <Button
                     variant="tertiary"
                     size="small"

@@ -209,6 +209,7 @@ const MoveToOrgDialog: React.FC<MoveToOrgDialogProps> = ({
       }
       headerActions={
         <Tooltip
+          kind="button"
           content={t("cloud.moveToOrg.hint")}
           position="bottom"
           style={{ zIndex: MODAL_SELECT_Z_INDEX }}

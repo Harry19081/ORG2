@@ -23,10 +23,7 @@ import {
   PanelLeftIcon,
 } from "@src/icons";
 import SidebarChromeIconButton from "@src/scaffold/NavigationSidebar/components/SidebarChromeIconButton";
-import {
-  SIDEBAR_HOVER_PREVIEW_DELAY,
-  SIDEBAR_TOOLTIP_HOVER_DELAY,
-} from "@src/scaffold/NavigationSidebar/config";
+import { SIDEBAR_HOVER_PREVIEW_DELAY } from "@src/scaffold/NavigationSidebar/config";
 import { hoverSidebarOpenAtom } from "@src/store/ui/hoverSidebarAtom";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 
@@ -83,7 +80,6 @@ const ChromeButton: React.FC<ChromeButtonProps> = ({
       <SidebarChromeIconButton
         title={label}
         shortcutId={shortcutId}
-        tooltipMouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -99,7 +95,6 @@ const ChromeButton: React.FC<ChromeButtonProps> = ({
       title={label}
       shortcutId={shortcutId}
       tooltipPosition="bottom"
-      tooltipMouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
       nativeTitle={false}
       onClick={onClick}
       onMouseEnter={onMouseEnter}

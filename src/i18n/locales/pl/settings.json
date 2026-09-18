@@ -150,6 +150,12 @@
     "selectedItemTransparency": "Przezroczystość wybranego elementu",
     "spotlightPlacement": "Pozycja Spotlight",
     "spotlightDimBackground": "Przyciemnij tło",
+    "tooltips": "Podpowiedzi",
+    "buttonTooltipsEnabled": "Pokazuj podpowiedzi przycisków",
+    "buttonTooltipsEnabledDesc": "Pokazuje nazwę i skrót klawiszowy po najechaniu na przycisk. Podpowiedzi ikon informacji są zawsze widoczne",
+    "buttonTooltipDelayMs": "Opóźnienie podpowiedzi",
+    "buttonTooltipDelayImmediate": "Natychmiast",
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
     "spotlightPlacementOptions": {
       "top": "Góra",
       "center": "Środek"

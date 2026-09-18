@@ -98,7 +98,7 @@ export default function SegmentedTextPill<T extends string>({
             key={option.value}
             content={option.tooltip}
             position={tooltipPosition}
-            mouseEnterDelay={200}
+            kind="button"
             framedPanel
             smartPlacement
           >

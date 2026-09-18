@@ -150,6 +150,12 @@
     "selectedItemTransparency": "選取項目透明度",
     "spotlightPlacement": "Spotlight 位置",
     "spotlightDimBackground": "背景變暗",
+    "tooltips": "提示",
+    "buttonTooltipsEnabled": "顯示按鈕提示",
+    "buttonTooltipsEnabledDesc": "懸停按鈕時顯示名稱和快捷鍵。資訊圖示提示始終顯示",
+    "buttonTooltipDelayMs": "提示延遲",
+    "buttonTooltipDelayImmediate": "立即",
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
     "spotlightPlacementOptions": {
       "top": "頂部",
       "center": "置中"
