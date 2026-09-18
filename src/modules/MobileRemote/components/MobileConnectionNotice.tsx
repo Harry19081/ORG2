@@ -49,8 +49,6 @@ export function MobileConnectionNotice({
     try {
       const recovered = await onRetry();
       if (mounted.current) setRetryFailed(!recovered);
-    } catch {
-      if (mounted.current) setRetryFailed(true);
     } finally {
       pending.current = false;
       if (mounted.current) setBusy(false);
@@ -74,7 +72,9 @@ export function MobileConnectionNotice({
               disabled={busy}
               style={{ minHeight: "var(--mobile-touch-size)" }}
               onClick={() => {
-                void retry();
+                void retry().catch(() => {
+                  if (mounted.current) setRetryFailed(true);
+                });
               }}
             >
               {t("connectionRecovery.retry")}
