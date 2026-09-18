@@ -89,6 +89,33 @@ export function selectFindScope(scope: FindScope) {
   next.open();
   notify();
 }
+/**
+ * Opens the `scope` target nearest `anchor` — for menu entries that sit in a
+ * pane header outside the searchable surface. Returns false when none is visible.
+ */
+export function openFindTargetNear(anchor: Element | null, scope: FindScope) {
+  let owner: FindTarget | undefined;
+  for (let node = anchor; node && !owner; node = node.parentElement) {
+    const container = node;
+    owner = [...targets].reverse().find((target) => {
+      const element = target.element();
+      return (
+        target.scope === scope &&
+        !!element &&
+        container.contains(element) &&
+        available(target)
+      );
+    });
+  }
+  if (!owner) return false;
+  const previous = active;
+  active = owner;
+  switched = false;
+  if (previous !== owner) previous?.close();
+  owner.open();
+  notify();
+  return true;
+}
 function onInteraction(event: Event) {
   if (!(event.target instanceof Node)) return;
   if (

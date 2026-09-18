@@ -151,3 +151,50 @@ it("production diff keeps its unsaved controls and latest editor body after a st
     Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
   }
 });
+
+it("keeps the same file header mounted while the next file's diff loads", async () => {
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  const store = createStore();
+  const loaded: GitFile = {
+    id: "a",
+    path: "/fixture/a.ts",
+    status: "modified",
+    staged: false,
+    additions: 1,
+    deletions: 1,
+    oldContent: "old",
+    newContent: "new",
+  };
+  // Switching files hands over metadata first; the body arrives later.
+  const pending: GitFile = {
+    ...loaded,
+    id: "b",
+    path: "/fixture/b.ts",
+    oldContent: undefined,
+    newContent: undefined,
+  };
+  const render = (gitFile: GitFile) =>
+    root.render(
+      React.createElement(
+        Provider,
+        { store },
+        React.createElement(GitDiffContent, { gitFile, loading: false })
+      )
+    );
+  try {
+    await act(async () => render(loaded));
+    const header = container.querySelector("button");
+    expect(header).not.toBeNull();
+    await act(async () => render(pending));
+    expect(container.querySelector("button")).toBe(header);
+    await act(async () =>
+      render({ ...pending, oldContent: "", newContent: "x" })
+    );
+    expect(container.querySelector("button")).toBe(header);
+  } finally {
+    act(() => root.unmount());
+    Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
+  }
+});
