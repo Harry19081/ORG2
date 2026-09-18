@@ -133,7 +133,7 @@ describe("compact shared actions", () => {
     expect(markup).toContain("width:20px");
     expect(markup).toContain("border-radius:var(--radius-sm)");
     expect(markup).toContain("action-icon");
-    expect(markup).toContain("btn-hover:bg-button-hover");
+    expect(markup).toContain("btn-hover:bg-fill-2");
     expect(markup).not.toContain("bg-button-hover-no-drop");
     expect(markup).not.toContain("hover:bg-primary-3");
   });
@@ -362,7 +362,7 @@ describe("Button hover intent", () => {
 
   it.each([
     ["tertiary", undefined, "btn-hover:bg-surface-hover"],
-    ["tertiary", "soft", "btn-hover:bg-button-hover"],
+    ["tertiary", "soft", "btn-hover:bg-fill-2"],
     ["tertiary", "soft-no-drop", "btn-hover:bg-button-hover-no-drop"],
     ["tertiary", "ghost", null],
     ["secondary", "solid", "btn-hover:bg-fill-3"],

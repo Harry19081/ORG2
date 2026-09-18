@@ -67,7 +67,7 @@ function defaultButtonAppearance(variant: ButtonVariant): ButtonAppearance {
  * selected or concatenated whole, never assembled from fragments.
  */
 const NEUTRAL_SOFT_SURFACE =
-  "btn:text-text-2 btn-hover:bg-button-hover btn-focus:bg-button-hover";
+  "btn:text-text-2 btn-hover:bg-fill-2 btn-focus:bg-fill-2";
 const NEUTRAL_SOFT_SURFACE_NO_DROP =
   "btn:text-text-2 btn-hover:bg-button-hover-no-drop btn-focus:bg-button-hover-no-drop";
 const NEUTRAL_HOVER_TEXT = "btn-hover:text-text-1 btn-focus:text-text-1";
@@ -124,8 +124,11 @@ function getButtonStyleClasses(
   const base = (() => {
     switch (variant) {
       case "primary":
+        // The fill stops inside a transparent 1px border so its visible body
+        // matches the secondary outline's hairline-bordered box; a full-bleed
+        // fill reads taller than a secondary of the same height.
         if (appearance === "solid")
-          return "btn:border-0 btn:text-white btn:bg-primary-6";
+          return "btn:border btn:border-transparent btn:bg-clip-padding btn:text-white btn:bg-primary-6";
         if (appearance === "outline")
           return "btn:border btn:border-primary-6 btn:bg-transparent btn:text-primary-6";
         if (appearance === "dashed")
