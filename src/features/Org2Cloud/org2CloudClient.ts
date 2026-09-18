@@ -503,6 +503,8 @@ export async function refreshSession(
 }
 
 export interface EnsureFreshSessionOptions {
+  /** The server rejected this access token even though its local expiry is fresh. */
+  forceRefresh?: boolean;
   /** Called only when GoTrue explicitly rejects the refresh credential. */
   onRefreshRejected?: () => void;
 }
@@ -604,7 +606,10 @@ export async function ensureFreshSession(
   state: Org2CloudAuthState,
   options?: EnsureFreshSessionOptions
 ): Promise<Org2CloudAuthState | null> {
-  if (hasComfortablyFreshAccessToken(state, Date.now() / 1000)) {
+  if (
+    !options?.forceRefresh &&
+    hasComfortablyFreshAccessToken(state, Date.now() / 1000)
+  ) {
     return state;
   }
   const outcome = await withCrossWindowRefreshLock<EnsureFreshSessionOutcome>(
@@ -614,11 +619,19 @@ export async function ensureFreshSession(
         readPersistedOrg2CloudAuth(),
         Date.now() / 1000
       );
-      if (adopted) return { session: adopted, permanentlyRejected: false };
-      const attempt = await refreshSessionAttempt(state.refreshToken, {
-        supabaseUrl: state.supabaseUrl,
-        anonKey: state.supabaseAnonKey,
-        oauthClientId: state.oauthClientId,
+      if (
+        adopted &&
+        (!options?.forceRefresh || adopted.accessToken !== state.accessToken)
+      ) {
+        return { session: adopted, permanentlyRejected: false };
+      }
+      // A provider can rotate its refresh token without changing the access
+      // token bytes. A forced exchange must use the latest same-owner token.
+      const refreshBase = adopted ?? state;
+      const attempt = await refreshSessionAttempt(refreshBase.refreshToken, {
+        supabaseUrl: refreshBase.supabaseUrl,
+        anonKey: refreshBase.supabaseAnonKey,
+        oauthClientId: refreshBase.oauthClientId,
       });
       const refreshed = attempt.tokens;
       return {

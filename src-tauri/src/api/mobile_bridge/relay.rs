@@ -19,7 +19,7 @@ use tokio::task::JoinHandle;
 use tokio_tungstenite::tungstenite::client::IntoClientRequest;
 use tokio_tungstenite::tungstenite::http::HeaderValue;
 use tokio_tungstenite::tungstenite::http::StatusCode;
-use tokio_tungstenite::tungstenite::Message;
+use tokio_tungstenite::tungstenite::{Error as WebSocketError, Message};
 use tokio_util::sync::CancellationToken;
 
 use super::auth::{self, MobileRemoteSettings};
@@ -33,6 +33,48 @@ const RELAY_OUTBOUND_CAPACITY: usize = 256;
 const MAX_RELAY_FRAME_BYTES: usize = 1024 * 1024;
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(30);
 const MAX_BACKOFF_SECONDS: u64 = 30;
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
+const REGISTER_TIMEOUT: Duration = Duration::from_secs(10);
+const IO_TIMEOUT: Duration = Duration::from_secs(10);
+const IDLE_TIMEOUT: Duration = Duration::from_secs(75);
+
+#[derive(Debug)]
+enum RelayError {
+    Credentials(org2_cloud_auth::CloudAuthError),
+    Unauthorized,
+    Other(String),
+}
+
+impl RelayError {
+    fn needs_auth_refresh(&self) -> bool {
+        matches!(
+            self,
+            Self::Unauthorized | Self::Credentials(org2_cloud_auth::CloudAuthError::Expired)
+        )
+    }
+}
+
+impl std::fmt::Display for RelayError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Credentials(error) => error.fmt(f),
+            Self::Unauthorized => f.write_str(SESSION_EXPIRED_MESSAGE),
+            Self::Other(message) => f.write_str(message),
+        }
+    }
+}
+
+impl From<String> for RelayError {
+    fn from(message: String) -> Self {
+        Self::Other(message)
+    }
+}
+
+impl From<org2_cloud_auth::CloudAuthError> for RelayError {
+    fn from(error: org2_cloud_auth::CloudAuthError) -> Self {
+        Self::Credentials(error)
+    }
+}
 /// How long a registered relay session must survive before a drop is treated
 /// as a transient fault worth retrying at the floor delay. Sockets that the
 /// relay accepts and then closes right away (connection limit, or eviction by
@@ -72,18 +114,18 @@ impl RelaySettings {
             .unwrap_or_else(|_| Self::from_value(&Value::Null))
     }
 
-    fn connection_plan(&self) -> Result<RelayConnectionPlan, String> {
+    fn connection_plan(&self) -> Result<RelayConnectionPlan, RelayError> {
         if self.relay_url.trim().is_empty() {
-            return Err("relay URL is required".to_string());
+            return Err("relay URL is required".to_string().into());
         }
         if self.desktop_id.trim().is_empty() {
-            return Err("desktop identity is not configured".to_string());
+            return Err("desktop identity is not configured".to_string().into());
         }
         let access_token = org2_cloud_auth::current_access_token()?;
         let mut url = url::Url::parse(self.relay_url.trim())
             .map_err(|err| format!("invalid relay URL: {err}"))?;
         if !matches!(url.scheme(), "ws" | "wss") {
-            return Err("relay URL must use ws:// or wss://".to_string());
+            return Err("relay URL must use ws:// or wss://".to_string().into());
         }
         url.set_path(DESKTOP_WS_PATH);
         url.set_query(None);
@@ -189,7 +231,8 @@ pub fn request_auth_refresh() {
     if let Some(handle) = crate::api::get_app_handle() {
         let _ = handle.emit(RELAY_AUTH_REFRESH_EVENT, ());
     }
-    notify_cloud_auth_changed();
+    // A refresh request is not a completed credential write. Only the frontend
+    // acknowledges durable auth via notify_cloud_auth_changed.
 }
 
 pub fn current_status() -> RelayStatus {
@@ -213,7 +256,9 @@ async fn supervise(
             return;
         }
 
-        let current = settings_rx.borrow().clone();
+        // Consume buffered changes before reading the current credential snapshot.
+        let current = settings_rx.borrow_and_update().clone();
+        cloud_auth_rx.borrow_and_update();
         if !current.enabled || !current.relay_enabled {
             reconnect_attempt = 0;
             set_status(&status, RelayPhase::Disabled, None, 0, None);
@@ -224,11 +269,43 @@ async fn supervise(
             }
         }
 
-        let connection_plan = match current.connection_plan() {
-            Ok(plan) => plan,
-            Err(message) => {
+        // The shared credential store is disk-backed; keep file I/O off the
+        // async executor and allow shutdown/settings changes to cancel the wait.
+        let planning = tokio::task::spawn_blocking(move || current.connection_plan());
+        let plan = tokio::select! {
+            result = planning => result.unwrap_or_else(|_| Err(RelayError::Other("relay credential read failed".into()))),
+            _ = settings_rx.changed() => continue,
+            _ = cloud_auth_rx.changed() => continue,
+            _ = shutdown.cancelled() => continue,
+        };
+        let registered_at_ms = Arc::new(AtomicI64::new(0));
+        let error = match plan {
+            Ok(plan) => {
+                set_status(
+                    &status,
+                    RelayPhase::Connecting,
+                    None,
+                    reconnect_attempt,
+                    None,
+                );
+                tokio::select! {
+                    result = run_connection(plan, status.clone(), registered_at_ms.clone()) =>
+                        result.err().unwrap_or_else(|| RelayError::Other("relay connection closed".into())),
+                    _ = settings_rx.changed() => continue,
+                    _ = cloud_auth_rx.changed() => continue,
+                    _ = shutdown.cancelled() => continue,
+                }
+            }
+            Err(error) if error.needs_auth_refresh() => error,
+            Err(error) => {
                 reconnect_attempt = 0;
-                set_status(&status, RelayPhase::ConfigError, Some(message), 0, None);
+                set_status(
+                    &status,
+                    RelayPhase::ConfigError,
+                    Some(error.to_string()),
+                    0,
+                    None,
+                );
                 tokio::select! {
                     _ = settings_rx.changed() => continue,
                     _ = cloud_auth_rx.changed() => continue,
@@ -237,36 +314,28 @@ async fn supervise(
             }
         };
 
-        set_status(
-            &status,
-            RelayPhase::Connecting,
-            None,
-            reconnect_attempt,
-            None,
-        );
-        // Epoch milliseconds of the relay's registration confirmation for this
-        // attempt; `0` means the relay never confirmed it.
-        let registered_at_ms = Arc::new(AtomicI64::new(0));
-        let run = run_connection(connection_plan, status.clone(), registered_at_ms.clone());
-        let error = tokio::select! {
-            result = run => Some(result.err().unwrap_or_else(|| "relay connection closed".to_string())),
-            _ = settings_rx.changed() => None,
-            _ = cloud_auth_rx.changed() => None,
-            _ = shutdown.cancelled() => None,
-        };
-        if error.is_none() {
-            continue;
+        let auth_failure = error.needs_auth_refresh();
+        if auth_failure {
+            request_auth_refresh();
         }
-
         let established =
             session_was_established(registered_at_ms.load(Ordering::Relaxed), now_ms());
         reconnect_attempt = next_reconnect_attempt(reconnect_attempt, established);
         let delay = reconnect_delay(reconnect_attempt);
-        set_status(&status, RelayPhase::Backoff, error, reconnect_attempt, None);
+        set_status(
+            &status,
+            RelayPhase::Backoff,
+            Some(error.to_string()),
+            reconnect_attempt,
+            None,
+        );
         tokio::select! {
             _ = tokio::time::sleep(delay) => {}
             _ = settings_rx.changed() => reconnect_attempt = 0,
-            _ = cloud_auth_rx.changed() => reconnect_attempt = 0,
+            // A rejected token followed by a fast refresh must not cause an
+            // unbounded 401/refresh loop. Auth failures keep their backoff;
+            // the next attempt reads the latest durable credentials.
+            _ = cloud_auth_rx.changed(), if !auth_failure => reconnect_attempt = 0,
             _ = shutdown.cancelled() => {}
         }
     }
@@ -276,15 +345,42 @@ async fn run_connection(
     plan: RelayConnectionPlan,
     status: Arc<RwLock<RelayStatus>>,
     registered_at_ms: Arc<AtomicI64>,
-) -> Result<(), String> {
+) -> Result<(), RelayError> {
+    run_connection_with_timeouts(
+        plan,
+        status,
+        registered_at_ms,
+        CONNECT_TIMEOUT,
+        REGISTER_TIMEOUT,
+        IDLE_TIMEOUT,
+    )
+    .await
+}
+
+async fn run_connection_with_timeouts(
+    plan: RelayConnectionPlan,
+    status: Arc<RwLock<RelayStatus>>,
+    registered_at_ms: Arc<AtomicI64>,
+    connect_timeout: Duration,
+    register_timeout: Duration,
+    idle_timeout: Duration,
+) -> Result<(), RelayError> {
     let request = build_websocket_request(&plan)?;
-    let (socket, response) = tokio_tungstenite::connect_async(request)
-        .await
-        .map_err(|err| format!("connect to relay: {err}"))?;
-    if response.status() == StatusCode::UNAUTHORIZED {
-        request_auth_refresh();
-        return Err(SESSION_EXPIRED_MESSAGE.to_string());
-    }
+    let (socket, _) =
+        tokio::time::timeout(connect_timeout, tokio_tungstenite::connect_async(request))
+            .await
+            .map_err(|_| "relay handshake timed out".to_string())?
+            .map_err(|error| match error {
+                WebSocketError::Http(response) if response.status() == StatusCode::UNAUTHORIZED => {
+                    RelayError::Unauthorized
+                }
+                // Do not include server response bodies or request headers in status.
+                WebSocketError::Http(response) => RelayError::Other(format!(
+                    "relay handshake returned HTTP {}",
+                    response.status()
+                )),
+                other => RelayError::Other(format!("connect to relay: {other}")),
+            })?;
 
     // The WebSocket upgrade alone proves nothing: the relay still closes the
     // socket with 1013 when the desktop connection limit is reached, and the
@@ -298,9 +394,21 @@ async fn run_connection(
     let mut heartbeat = tokio::time::interval(HEARTBEAT_INTERVAL);
     heartbeat.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
 
+    let registration_deadline = tokio::time::Instant::now() + register_timeout;
+    let mut last_received = tokio::time::Instant::now();
     loop {
+        let registered = registered_at_ms.load(Ordering::Relaxed) != 0;
+        let deadline = if registered {
+            last_received + idle_timeout
+        } else {
+            registration_deadline
+        };
         tokio::select! {
+            _ = tokio::time::sleep_until(deadline) => {
+                return Err(RelayError::Other(if registered { "relay heartbeat timed out" } else { "relay registration timed out" }.into()));
+            }
             incoming = reader.next() => {
+                last_received = tokio::time::Instant::now();
                 match incoming {
                     Some(Ok(Message::Text(text))) if text.len() <= MAX_RELAY_FRAME_BYTES => {
                         if let Ok(frame) = serde_json::from_str::<RelayWireFrame>(&text) {
@@ -318,34 +426,36 @@ async fn run_connection(
                                     Some(confirmed_at),
                                 );
                             }
-                            handle_relay_frame(frame, &desktop_id, &outbound_tx, &mut actors).await;
+                            tokio::time::timeout(IO_TIMEOUT, handle_relay_frame(frame, &desktop_id, &outbound_tx, &mut actors))
+                                .await.map_err(|_| "relay dispatch timed out".to_string())?;
                         }
                     }
                     Some(Ok(Message::Ping(payload))) => {
                         if outbound_tx.try_send(Message::Pong(payload)).is_err() {
-                            return Err("relay outbound queue is full".to_string());
+                            return Err("relay outbound queue is full".to_string().into());
                         }
                     }
                     Some(Ok(Message::Close(frame))) => {
                         return Err(frame
                             .map(|frame| format!("relay closed connection: {}", frame.reason))
-                            .unwrap_or_else(|| "relay closed connection".to_string()));
+                            .unwrap_or_else(|| "relay closed connection".to_string()).into());
                     }
                     Some(Ok(_)) => {}
-                    Some(Err(err)) => return Err(format!("relay read failed: {err}")),
-                    None => return Err("relay connection ended".to_string()),
+                    Some(Err(err)) => return Err(format!("relay read failed: {err}").into()),
+                    None => return Err("relay connection ended".to_string().into()),
                 }
             }
             outbound = outbound_rx.recv() => {
                 let Some(message) = outbound else {
-                    return Err("relay outbound channel ended".to_string());
+                    return Err("relay outbound channel ended".to_string().into());
                 };
-                writer.send(message).await.map_err(|err| format!("relay write failed: {err}"))?;
+                tokio::time::timeout(IO_TIMEOUT, writer.send(message)).await
+                    .map_err(|_| "relay write timed out".to_string())?
+                    .map_err(|err| format!("relay write failed: {err}"))?;
             }
             _ = heartbeat.tick() => {
-                writer
-                    .send(Message::Ping(Vec::new().into()))
-                    .await
+                tokio::time::timeout(IO_TIMEOUT, writer.send(Message::Ping(Vec::new().into())))
+                    .await.map_err(|_| "relay heartbeat write timed out".to_string())?
                     .map_err(|err| format!("relay heartbeat failed: {err}"))?;
             }
         }
@@ -565,6 +675,7 @@ fn set_status(
     };
     // Invalidate after releasing the lock: readers fetch the canonical status.
     if changed {
+        tracing::info!(?phase, reconnect_attempt, "[MobileRelay] state changed");
         if let Some(handle) = crate::api::get_app_handle() {
             let _ = handle.emit("mobile-relay-status-changed", ());
         }
@@ -667,6 +778,9 @@ mod tests {
 
     #[test]
     fn local_and_production_connection_plans_use_cloud_auth() {
+        let _lock = org2_cloud_auth::TEST_AUTH_STORE_LOCK
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
         let dir = TempDir::new().expect("tempdir");
         write_auth_store(&dir);
         let value = serde_json::json!({
@@ -1020,3 +1134,7 @@ mod tests {
         assert_actor_cleaned_up(actor.conn_id, &mut actor.stopped).await;
     }
 }
+
+#[cfg(test)]
+#[path = "relay/recovery_tests.rs"]
+mod recovery_tests;
