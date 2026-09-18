@@ -149,6 +149,7 @@
     "sidebarEdgeDepth": "Kenar çubuğu kenar derinliği",
     "selectedItemTransparency": "Seçili öğe şeffaflığı",
     "spotlightPlacement": "Spotlight konumu",
+    "spotlightDimBackground": "Arka planı karart",
     "spotlightPlacementOptions": {
       "top": "Üst",
       "center": "Orta"

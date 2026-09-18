@@ -149,6 +149,7 @@
     "sidebarEdgeDepth": "Głębia krawędzi paska bocznego",
     "selectedItemTransparency": "Przezroczystość wybranego elementu",
     "spotlightPlacement": "Pozycja Spotlight",
+    "spotlightDimBackground": "Przyciemnij tło",
     "spotlightPlacementOptions": {
       "top": "Góra",
       "center": "Środek"

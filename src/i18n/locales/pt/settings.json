@@ -149,6 +149,7 @@
     "sidebarEdgeDepth": "Profundidade da borda da barra lateral",
     "selectedItemTransparency": "Transparência do item selecionado",
     "spotlightPlacement": "Posição do Spotlight",
+    "spotlightDimBackground": "Escurecer o fundo",
     "spotlightPlacementOptions": {
       "top": "Topo",
       "center": "Centro"

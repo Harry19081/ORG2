@@ -149,6 +149,7 @@
     "sidebarEdgeDepth": "Глубина границы боковой панели",
     "selectedItemTransparency": "Прозрачность выбранного элемента",
     "spotlightPlacement": "Положение Spotlight",
+    "spotlightDimBackground": "Затемнять фон",
     "spotlightPlacementOptions": {
       "top": "Сверху",
       "center": "По центру"

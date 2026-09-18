@@ -149,6 +149,7 @@
     "sidebarEdgeDepth": "Profondeur du bord de la barre latérale",
     "selectedItemTransparency": "Transparence de l’élément sélectionné",
     "spotlightPlacement": "Position de Spotlight",
+    "spotlightDimBackground": "Assombrir l’arrière-plan",
     "spotlightPlacementOptions": {
       "top": "Haut",
       "center": "Milieu"

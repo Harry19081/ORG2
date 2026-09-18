@@ -16,6 +16,7 @@ import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 
 import { CODEMIRROR_STYLE_NONCE } from "@src/features/CodeMirror/config/nonce";
+import { useSettingValue } from "@src/hooks/settings/useSettings";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
 import {
   sidebarCollapsedAtom,
@@ -61,6 +62,7 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
   const location = useLocation();
   const sidebarWidth = useAtomValue(sidebarWidthAtom);
   const sidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
+  const dimBackground = useSettingValue("general.spotlightDimBackground");
 
   const sidebarInset = getSpotlightSidebarInset(
     location.pathname,
@@ -162,6 +164,7 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
     <>
       <style nonce={CODEMIRROR_STYLE_NONCE}>{SPOTLIGHT_STYLES}</style>
       <div
+        className={dimBackground ? "spotlight-backdrop" : undefined}
         style={{
           position: "fixed",
           inset: 0,

@@ -227,6 +227,13 @@ export const GENERAL_SETTINGS_REGISTRY = {
       center: "Page center",
     },
   },
+  "general.spotlightDimBackground": {
+    schema: z.boolean(),
+    default: true,
+    description:
+      "Dim and slightly blur the rest of the window while Spotlight is open",
+    category: "general",
+  },
   "layout.sidebarSelectedRowOpacity": {
     schema: z.number().min(0).max(20),
     default: 5,

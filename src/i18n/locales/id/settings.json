@@ -230,6 +230,7 @@
     "sidebarEdgeDepth": "Kedalaman tepi sidebar",
     "selectedItemTransparency": "Transparansi item terpilih",
     "spotlightPlacement": "Posisi Spotlight",
+    "spotlightDimBackground": "Redupkan latar belakang",
     "spotlightPlacementOptions": {
       "top": "Atas",
       "center": "Tengah"
