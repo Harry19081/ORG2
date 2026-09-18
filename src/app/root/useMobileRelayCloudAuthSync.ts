@@ -101,7 +101,7 @@ export function useMobileRelayCloudAuthSync(): void {
         running = false;
         if (current() && (retryAttempt > 0 || forceRefresh)) {
           timer = setTimeout(
-            () => void sync(),
+            () => void sync().catch(() => {}),
             Math.min(30_000, 1000 * 2 ** Math.max(0, retryAttempt - 1))
           );
         }
@@ -110,9 +110,10 @@ export function useMobileRelayCloudAuthSync(): void {
     requestRefresh.current = () => {
       forceRefresh = true;
       // Coalesce native refresh signals and preserve failure backoff.
-      if (!running && retryAttempt === 0) void sync();
+      if (!running && retryAttempt === 0) void sync().catch(() => {});
     };
-    void sync();
+    // sync owns retry/backoff; event/effect entry points also consume rejection.
+    void sync().catch(() => {});
     return () => {
       disposed = true;
       requestRefresh.current = null;

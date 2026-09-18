@@ -235,11 +235,11 @@ function writeCloudAuth(
       if (generation === cloudWriteGeneration) cloudWriteNeedsRecovery = true;
       throw error;
     });
-  trackNativeOwnerReady(ready);
+  const nativeReady = trackNativeOwnerReady(ready);
   // Relay reads persisted credentials itself. Market verification must keep its
   // own gate without delaying or rejecting a successful relay credential write.
   return completion === "native-ready"
-    ? ready
+    ? nativeReady
     : persisted.then(() => undefined);
 }
 

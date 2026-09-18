@@ -130,3 +130,27 @@ opening Desktop Settings can empty the mobile list; returning to the workstation
 restores it. The previously prepared roster-lifecycle change is separate from
 this connection repair and must be integrated for that behavior. It is not a
 relay disconnect and was not hidden with a UI filter here.
+
+## CI follow-up
+
+The initial PR exposed gaps in the local checks: ordinary ESLint does not run
+the type-aware promise rules, and `clippy --lib` does not lint test targets.
+The effect/event entry points now explicitly consume sync rejections while
+the sync operation retains retry ownership. The Market readiness promise is
+returned through its existing completion branch. The native handshake fixture
+asserts that bytes were received, and its ping handling uses one condition.
+No lint rules or baseline allowances were changed.
+
+The CI-equivalent checks now pass locally:
+
+```sh
+NODE_OPTIONS=--max-old-space-size=6144 node scripts/quality/typed-lint/check.mjs
+node --test scripts/quality/typed-lint/*.test.mjs
+# From src-tauri:
+cargo clippy --workspace --all-targets -- -D warnings
+```
+
+Type-aware lint reports zero new/increased findings. The full workspace and
+all-target Clippy check passes with warnings denied. The four focused frontend
+test files above were rerun: 105 passed. Windows verification runs in CI;
+these local checks ran on macOS.

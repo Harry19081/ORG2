@@ -51,7 +51,11 @@ async fn unauthorized_handshake_is_a_refreshable_failure() {
     let server = tokio::spawn(async move {
         let (mut stream, _) = listener.accept().await.unwrap();
         let mut bytes = [0; 4096];
-        stream.read(&mut bytes).await.unwrap();
+        let received = stream.read(&mut bytes).await.unwrap();
+        assert!(
+            received > 0,
+            "client must send handshake bytes before rejection"
+        );
         stream
             .write_all(b"HTTP/1.1 401 Unauthorized\r\nContent-Length: 0\r\n\r\n")
             .await
@@ -250,10 +254,8 @@ async fn expired_auth_recovers_from_durable_refresh_even_without_notification() 
         .await
         .unwrap();
         while let Some(message) = ws.next().await {
-            if matches!(message, Ok(Message::Ping(_))) {
-                if ws.flush().await.is_err() {
-                    break;
-                }
+            if matches!(message, Ok(Message::Ping(_))) && ws.flush().await.is_err() {
+                break;
             }
         }
     });
