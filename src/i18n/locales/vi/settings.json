@@ -782,8 +782,6 @@
     "typingAnimationDesc": "Bật hiệu ứng máy đánh chữ cho tin nhắn Agent",
     "typingSpeed": "Tốc độ gõ",
     "typingSpeedDesc": "Mili giây mỗi ký tự (1ms = nhanh nhất, 50ms = chậm nhất)",
-    "decryptEffect": "Hiệu ứng Decrypt",
-    "decryptEffectDesc": "Bật hiệu ứng Decrypt cho tin nhắn Agent",
     "sendOnEnter": "Gửi tin nhắn bằng",
     "sendOnEnterDesc": "Chọn phím tắt dùng để gửi tin nhắn; các tổ hợp Enter khác sẽ chèn dòng mới"
   },

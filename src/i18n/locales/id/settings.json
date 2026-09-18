@@ -863,8 +863,6 @@
     "typingAnimationDesc": "Aktifkan animasi mesin tik untuk pesan Agen",
     "typingSpeed": "Kecepatan Pengetikan",
     "typingSpeedDesc": "Milidetik per karakter (1ms = tercepat, 50ms = paling lambat)",
-    "decryptEffect": "Efek Mesin Tik",
-    "decryptEffectDesc": "Tampilkan pesan Agen karakter demi karakter",
     "sendOnEnter": "Kirim pesan dengan",
     "sendOnEnterDesc": "Pilih pintasan untuk mengirim pesan; kombinasi Enter lainnya menyisipkan baris baru"
   },

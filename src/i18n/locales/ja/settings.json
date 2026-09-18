@@ -782,8 +782,6 @@
     "typingAnimationDesc": "Agent メッセージにタイプライターアニメーションを有効にする",
     "typingSpeed": "タイピング速度",
     "typingSpeedDesc": "1文字あたりのミリ秒（1ms = 最速、50ms = 最遅）",
-    "decryptEffect": "Decrypt エフェクト",
-    "decryptEffectDesc": "Agent メッセージに Decrypt アニメーションを有効にする",
     "sendOnEnter": "メッセージ送信キー",
     "sendOnEnterDesc": "メッセージを送信するショートカットを選択します。その他の Enter キーの組み合わせは改行を挿入します"
   },

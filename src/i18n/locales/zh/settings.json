@@ -863,8 +863,6 @@
     "typingAnimationDesc": "为 Agent 消息启用打字机动画",
     "typingSpeed": "打字速度",
     "typingSpeedDesc": "每个字符的毫秒数（1ms = 最快，50ms = 最慢）",
-    "decryptEffect": "打字机效果",
-    "decryptEffectDesc": "Agent 消息逐字显示",
     "sendOnEnter": "发送消息快捷键",
     "sendOnEnterDesc": "选择发送消息的快捷键；其他 Enter 组合键用于换行"
   },

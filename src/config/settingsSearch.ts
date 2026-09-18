@@ -194,9 +194,6 @@ const SETTINGS_SEARCH_UI_OVERRIDES: Partial<
     labelKey: "settings:agentSessions.typingAnimation",
   },
   "chat.typingSpeed": { labelKey: "settings:agentSessions.typingSpeed" },
-  "chat.decryptEffectEnabled": {
-    labelKey: "settings:agentSessions.decryptEffect",
-  },
   "chat.sendOnEnter": { labelKey: "settings:agentSessions.sendOnEnter" },
   "editor.customFontFamily": {
     labelKey: "settings:editor.customFontName",

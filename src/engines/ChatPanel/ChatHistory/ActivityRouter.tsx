@@ -292,10 +292,7 @@ const ActivityChatItem: React.FC<ActivityChatItemProps> = memo(
                 llmUsage ? <LlmUsageBadge usage={llmUsage} /> : undefined
               }
             >
-              <AgentChatItemDefault
-                streamHtml={isStreaming}
-                messageTimestamp={event.createdAt}
-              >
+              <AgentChatItemDefault streamHtml={isStreaming}>
                 {assistantContent}
               </AgentChatItemDefault>
             </AgentMessageBlock>

@@ -782,8 +782,6 @@
     "typingAnimationDesc": "Activer l'animation machine à écrire pour les messages Agent",
     "typingSpeed": "Vitesse de frappe",
     "typingSpeedDesc": "Millisecondes par caractère (1ms = plus rapide, 50ms = plus lent)",
-    "decryptEffect": "Effet Decrypt",
-    "decryptEffectDesc": "Activer l'animation Decrypt pour les messages Agent",
     "sendOnEnter": "Envoyer les messages avec",
     "sendOnEnterDesc": "Choisissez le raccourci qui envoie un message ; les autres combinaisons avec Entrée insèrent une nouvelle ligne"
   },

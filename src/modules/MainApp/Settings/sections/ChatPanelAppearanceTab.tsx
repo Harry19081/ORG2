@@ -113,18 +113,6 @@ export const ChatPanelAppearanceTab: React.FC = () => {
           </SectionRow>
         )}
         <SectionRow
-          settingsSearchKeys="chat.decryptEffectEnabled"
-          label={t("agentSessions.decryptEffect")}
-          description={t("agentSessions.decryptEffectDesc")}
-        >
-          <Switch
-            checked={chatAppearance.decryptEffectEnabled}
-            onCheckedChange={(checked) => {
-              updateChatAppearance({ decryptEffectEnabled: checked });
-            }}
-          />
-        </SectionRow>
-        <SectionRow
           settingsSearchKeys="chat.sendOnEnter"
           label={t("agentSessions.sendOnEnter")}
           description={t("agentSessions.sendOnEnterDesc")}

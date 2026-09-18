@@ -782,8 +782,6 @@
     "typingAnimationDesc": "Habilitar animación de máquina de escribir para mensajes de Agent",
     "typingSpeed": "Velocidad de escritura",
     "typingSpeedDesc": "Milisegundos por carácter (1ms = más rápido, 50ms = más lento)",
-    "decryptEffect": "Efecto Decrypt",
-    "decryptEffectDesc": "Activar animación Decrypt para mensajes del Agent",
     "sendOnEnter": "Enviar mensajes con",
     "sendOnEnterDesc": "Elige el atajo que envía un mensaje; las demás combinaciones con Enter insertan una nueva línea"
   },

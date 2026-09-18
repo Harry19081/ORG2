@@ -782,8 +782,6 @@
     "typingAnimationDesc": "爲 Agent 消息啓用打字機動畫",
     "typingSpeed": "打字速度",
     "typingSpeedDesc": "每個字符的毫秒數（1ms = 最快，50ms = 最慢）",
-    "decryptEffect": "解密效果",
-    "decryptEffectDesc": "爲 Agent 消息啓用解密動畫效果",
     "sendOnEnter": "發送消息快速鍵",
     "sendOnEnterDesc": "選擇發送消息的快速鍵；其他 Enter 組合鍵用於換行"
   },

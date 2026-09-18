@@ -782,8 +782,6 @@
     "typingAnimationDesc": "Włącz animację maszynopisu dla wiadomości Agent",
     "typingSpeed": "Prędkość pisania",
     "typingSpeedDesc": "Milisekundy na znak (1 ms = najszybciej, 50 ms = najwolniej)",
-    "decryptEffect": "Efekt deszyfrowania",
-    "decryptEffectDesc": "Włącz animację deszyfrowania dla wiadomości Agent",
     "sendOnEnter": "Wysyłaj wiadomości za pomocą",
     "sendOnEnterDesc": "Wybierz skrót wysyłający wiadomość; pozostałe kombinacje z Enter wstawiają nową linię"
   },

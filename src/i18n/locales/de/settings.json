@@ -782,8 +782,6 @@
     "typingAnimationDesc": "Schreibmaschinen-Animation für Agent-Nachrichten aktivieren",
     "typingSpeed": "Tippgeschwindigkeit",
     "typingSpeedDesc": "Millisekunden pro Zeichen (1ms = schnellste, 50ms = langsamste)",
-    "decryptEffect": "Decrypt-Effekt",
-    "decryptEffectDesc": "Decrypt-Animation für Agent-Nachrichten aktivieren",
     "sendOnEnter": "Nachrichten senden mit",
     "sendOnEnterDesc": "Wähle die Tastenkombination zum Senden einer Nachricht; andere Enter-Kombinationen fügen eine neue Zeile ein"
   },
