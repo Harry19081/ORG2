@@ -630,6 +630,7 @@
       "showQuickActions": "Tampilkan tindakan cepat",
       "showSkills": "Skill yang disematkan",
       "showCliUpdate": "Tampilkan pembaruan CLI",
+      "showSpotlight": "Tampilkan Spotlight",
       "title": "Apa yang ingin Anda lakukan?",
       "back": "Kembali ke halaman awal",
       "newSession": {
@@ -722,6 +723,7 @@
       "externalBrowser": "Browser eksternal"
     },
     "compactInput": "Input ringkas",
+    "composerGlow": "Tampilkan cahaya kolom input",
     "replay": {
       "follow": "Ikuti"
     },

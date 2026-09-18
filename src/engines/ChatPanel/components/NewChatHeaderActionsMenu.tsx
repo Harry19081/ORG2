@@ -28,8 +28,10 @@ import {
 } from "@src/icons";
 import { chatSendOnEnterAtom } from "@src/store/config/configAtom";
 import { cliUpdateAlertsEnabledAtom } from "@src/store/session/cliUpdateAlertsAtom";
+import { composerGlowVisibleAtom } from "@src/store/session/composerGlowVisibleAtom";
 import { creatorComposerPositionAtom } from "@src/store/session/creatorComposerPositionAtom";
 import { creatorLaunchpadActionsVisibleAtom } from "@src/store/session/creatorLaunchpadActionsVisibleAtom";
+import { creatorLaunchpadSearchVisibleAtom } from "@src/store/session/creatorLaunchpadSearchVisibleAtom";
 import {
   changeCreatorComposerPositionAtom,
   creatorRepoChromePositionAtom,
@@ -49,10 +51,16 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
   const [launchpadActionsVisible, setLaunchpadActionsVisible] = useAtom(
     creatorLaunchpadActionsVisibleAtom
   );
+  const [launchpadSearchVisible, setLaunchpadSearchVisible] = useAtom(
+    creatorLaunchpadSearchVisibleAtom
+  );
   const [pinnedActionsVisible, setPinnedActionsVisible] = useAtom(
     pinnedActionsVisibleAtom
   );
   const [sendOnEnter, setSendOnEnter] = useAtom(chatSendOnEnterAtom);
+  const [composerGlowVisible, setComposerGlowVisible] = useAtom(
+    composerGlowVisibleAtom
+  );
   const {
     isOpen,
     isPositioned,
@@ -72,7 +80,9 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
   const showQuickActionsLabel = t("chat.startPage.showQuickActions");
   const showSkillsLabel = t("chat.startPage.showSkills");
   const showCliUpdateLabel = t("chat.startPage.showCliUpdate");
+  const showSpotlightLabel = t("chat.startPage.showSpotlight");
   const sendMethodLabel = t("chat.sendMethod");
+  const composerGlowLabel = t("chat.composerGlow");
 
   return (
     <>
@@ -124,6 +134,22 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
               }
               dataTestId="new-chat-ui-settings-submenu"
             >
+              <div className={DROPDOWN_CLASSES.menuControlItem}>
+                <span className="min-w-0 flex-1 truncate">
+                  {showSpotlightLabel}
+                </span>
+                <Switch
+                  checked={launchpadSearchVisible}
+                  onCheckedChange={setLaunchpadSearchVisible}
+                  size="small"
+                  ariaLabel={showSpotlightLabel}
+                  dataTestId="new-chat-show-spotlight-toggle"
+                />
+              </div>
+              <div
+                role="separator"
+                className={DROPDOWN_CLASSES.menuGroupSeparator}
+              />
               <div className={DROPDOWN_CLASSES.menuControlItem}>
                 <span className="min-w-0 flex-1 truncate">
                   {t("chat.startPage.inputPosition")}
@@ -223,6 +249,18 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
                   size="small"
                   ariaLabel={showSkillsLabel}
                   dataTestId="new-chat-show-skills-toggle"
+                />
+              </div>
+              <div className={DROPDOWN_CLASSES.menuControlItem}>
+                <span className="min-w-0 flex-1 truncate">
+                  {composerGlowLabel}
+                </span>
+                <Switch
+                  checked={composerGlowVisible}
+                  onCheckedChange={setComposerGlowVisible}
+                  size="small"
+                  ariaLabel={composerGlowLabel}
+                  dataTestId="new-chat-composer-glow-toggle"
                 />
               </div>
             </ActionSubmenu>

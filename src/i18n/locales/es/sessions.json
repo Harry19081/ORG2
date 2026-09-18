@@ -629,6 +629,7 @@
       "showQuickActions": "Mostrar acciones rápidas",
       "showSkills": "Skills fijadas",
       "showCliUpdate": "Mostrar actualizaciones de CLI",
+      "showSpotlight": "Mostrar Spotlight",
       "title": "¿Qué quieres hacer?",
       "back": "Volver a la página inicial",
       "newSession": {
@@ -721,6 +722,7 @@
       "externalBrowser": "Navegador externo"
     },
     "compactInput": "Entrada compacta",
+    "composerGlow": "Mostrar brillo de la entrada",
     "replay": {
       "follow": "Seguir"
     },

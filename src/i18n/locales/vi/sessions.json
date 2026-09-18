@@ -629,6 +629,7 @@
       "showQuickActions": "Hiển thị thao tác nhanh",
       "showSkills": "Kỹ năng đã ghim",
       "showCliUpdate": "Hiển thị bản cập nhật CLI",
+      "showSpotlight": "Hiển thị Spotlight",
       "title": "Bạn muốn làm gì?",
       "back": "Quay lại trang bắt đầu",
       "newSession": {
@@ -721,6 +722,7 @@
       "externalBrowser": "Trình duyệt bên ngoài"
     },
     "compactInput": "Ô nhập liệu thu gọn",
+    "composerGlow": "Hiển thị hiệu ứng phát sáng ô nhập",
     "replay": {
       "follow": "Theo dõi"
     },

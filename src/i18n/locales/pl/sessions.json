@@ -629,6 +629,7 @@
       "showQuickActions": "Pokaż szybkie akcje",
       "showSkills": "Przypięte umiejętności",
       "showCliUpdate": "Pokaż aktualizacje CLI",
+      "showSpotlight": "Pokaż Spotlight",
       "title": "Co chcesz zrobić?",
       "back": "Wróć do strony startowej",
       "newSession": {
@@ -721,6 +722,7 @@
       "externalBrowser": "Zewnętrzna przeglądarka"
     },
     "compactInput": "Kompaktowe pole wprowadzania",
+    "composerGlow": "Pokaż poświatę pola wpisywania",
     "replay": {
       "follow": "Śledź"
     },

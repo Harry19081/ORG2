@@ -1,7 +1,9 @@
+import { useAtomValue } from "jotai";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import ComposerShell from "@src/components/ComposerShell";
+import { composerGlowVisibleAtom } from "@src/store/session/composerGlowVisibleAtom";
 
 import type { InputAreaInteractiveModel } from "../hooks/useInputAreaInteractiveModel";
 import EditModeHeader from "./EditModeHeader";
@@ -54,6 +56,7 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
   autoFocus,
 }) => {
   const { t } = useTranslation("sessions");
+  const composerGlowVisible = useAtomValue(composerGlowVisibleAtom);
   const {
     composerInputRef,
     contextMenuKeyboardHandlerRef,
@@ -132,6 +135,7 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
         isDragOver,
         isEditMode,
         quietEditSurface,
+        glowVisible: composerGlowVisible,
       })}
     >
       {isEditMode && !quietEditSurface && showEditHeader && (

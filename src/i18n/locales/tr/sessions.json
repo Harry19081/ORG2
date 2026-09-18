@@ -629,6 +629,7 @@
       "showQuickActions": "Hızlı eylemleri göster",
       "showSkills": "Sabitlenmiş beceriler",
       "showCliUpdate": "CLI güncellemelerini göster",
+      "showSpotlight": "Spotlight'ı göster",
       "title": "Ne yapmak istersiniz?",
       "back": "Başlangıç sayfasına dön",
       "newSession": {
@@ -721,6 +722,7 @@
       "externalBrowser": "Harici tarayıcı"
     },
     "compactInput": "Kompakt giriş alanı",
+    "composerGlow": "Giriş parıltısını göster",
     "replay": {
       "follow": "Takip et"
     },

@@ -6,6 +6,7 @@
  * (above or below the frame), and the composer body — the TUI start button or
  * the `EditorArea`.
  */
+import { useAtomValue } from "jotai";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +16,7 @@ import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import type { usePinnedActionsVisibilityContextMenu } from "@src/engines/ChatPanel/InputArea/components/PinnedActionsBar/usePinnedActionsVisibilityContextMenu";
 import { HugeiconsIcon, ScreenRotationIcon } from "@src/icons";
+import { composerGlowVisibleAtom } from "@src/store/session/composerGlowVisibleAtom";
 
 import { EditorArea, SessionInfoLine } from "../../components";
 import RepoChromeRow from "./RepoChromeRow";
@@ -108,6 +110,7 @@ export const ChatPanelComposerGroup: React.FC<ChatPanelComposerGroupProps> = ({
   spotlight,
 }) => {
   const { t } = useTranslation(["sessions", "common"]);
+  const composerGlowVisible = useAtomValue(composerGlowVisibleAtom);
   const sessionInfoLine = (
     <SessionInfoLine
       {...sessionInfoProps}
@@ -168,7 +171,7 @@ export const ChatPanelComposerGroup: React.FC<ChatPanelComposerGroupProps> = ({
     composerHeaderContent ?? editorAreaProps.headerContent;
   const composerGroupClassName = `session-creator-chat-panel-fullscreen-composer-group mx-auto w-full ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth} ${
     isLaunchpadLayout && !isCliTuiMode ? "composer-bottom-glow" : ""
-  }`;
+  } ${composerGlowVisible ? "" : "composer-glow-hidden"}`;
   const composerFrameClassName = `session-creator-chat-panel-fullscreen-composer w-full ${
     headerLayout === "compact"
       ? "session-creator-chat-panel-fullscreen-composer-compact"

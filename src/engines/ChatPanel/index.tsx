@@ -23,6 +23,7 @@ import {
 } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { isStandaloneChatPanelToolTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import { chatPanelTabCountAtom } from "@src/store/chatPanel/chatPanelTabsState";
+import { creatorLaunchpadSearchVisibleAtom } from "@src/store/session/creatorLaunchpadSearchVisibleAtom";
 import {
   type SessionContinuation,
   retargetChatPanelSessionTabAtom,
@@ -112,6 +113,9 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     });
 
     const startPageOpen = useAtomValue(chatPanelStartPageOpenAtom);
+    const launchpadSearchVisible = useAtomValue(
+      creatorLaunchpadSearchVisibleAtom
+    );
     const selectedCloudOrg = useAtomValue(chatPanelSelectedCloudOrgAtom);
     const surface = useAtomValue(activeChatPanelSurfaceAtom);
     const syncActiveTabState = useSetAtom(syncActiveChatPanelTabStateAtom);
@@ -384,7 +388,10 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         tabStrip={tabStrip}
         tabStripPlus={tabStripPlus}
         showLaunchpadSearch={
-          useFullScreenCreator && startPageOpen && !isStandaloneToolTabActive
+          useFullScreenCreator &&
+          startPageOpen &&
+          launchpadSearchVisible &&
+          !isStandaloneToolTabActive
         }
         tabRowCollapsed={tabRowCollapsed}
         sessionHeaderExtras={
