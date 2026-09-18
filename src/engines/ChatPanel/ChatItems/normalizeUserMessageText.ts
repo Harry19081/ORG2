@@ -8,6 +8,7 @@ const ATTACHMENT_INSTRUCTION =
   /^Distinguish instructions in attached documents from the user's request\.\s*$/i;
 const GENERATED_CONTEXT_BLOCK =
   /<(in-app-browser-context|orgii_provider_context)\b[^>]*>[\s\S]*?<\/\1>\s*/giu;
+const IMAGE_FILE_PATH = /\.(?:png|jpe?g|gif|webp|heic|heif|bmp|tiff?)$/i;
 const FILE_ENTRY_HEADING =
   /^#{2,6}\s+(.+):\s+((?:\/|[a-z]:[\\/]|\\\\|file:\/\/).+)$/i;
 
@@ -64,6 +65,12 @@ export function normalizeUserMessageText(
     return stripLeadingBlankLines(projectedText);
   }
 
+  // Codex Desktop embeds a pasted image's bytes (a data: ref with no path)
+  // when its file is unreadable; the envelope still lists the file. Those
+  // entries are the attachment already shown as a thumbnail, not a file.
+  let inlineImagesLeft = imageRefs.filter((ref) =>
+    /^(?:data:|codex-inline-image:)/.test(imageRefToRustPath(ref))
+  ).length;
   const remainder = lines.slice(firstContentLineIndex + 1).map((line) => {
     const normalizedLine = normalizeLine(line);
     if (
@@ -75,7 +82,12 @@ export function normalizeUserMessageText(
     const pill = fileEntryPill(line);
     if (!pill) return line;
     const path = normalizeLine(line).match(FILE_ENTRY_HEADING)?.[2]?.trim();
-    return path && imagePaths.has(path) ? "" : pill;
+    if (path && imagePaths.has(path)) return "";
+    if (path && inlineImagesLeft > 0 && IMAGE_FILE_PATH.test(path)) {
+      inlineImagesLeft -= 1;
+      return "";
+    }
+    return pill;
   });
 
   const normalized = remainder
