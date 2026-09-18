@@ -214,8 +214,7 @@ describe("PrConversationTab", () => {
         '[data-testid="pr-review-comment-row"]'
       );
       expect(modalBody?.className).toContain("p-0");
-      expect(reviewModalBody?.className).toContain("px-5");
-      expect(reviewModalBody?.className).toContain("py-4");
+      expect(reviewModalBody?.classList.contains("p-3")).toBe(true);
       expect(decisionRow?.className).not.toContain("grid-cols-");
       expect(commentRow?.className).toContain("block");
       expect(commentRow?.textContent).toContain("Review comment");
