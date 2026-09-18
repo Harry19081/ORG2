@@ -62,11 +62,3 @@ export async function searchCodeFast(
     filters,
   });
 }
-
-/**
- * Clear search result cache.
- * Should be called when files change.
- */
-export async function clearSearchCache(): Promise<void> {
-  return rpc.searchRegex.clearCache();
-}
