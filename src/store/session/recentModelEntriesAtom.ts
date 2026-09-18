@@ -34,13 +34,15 @@ export interface RecentModelEntry {
   cliModelDisplay?: string;
 }
 
+const marketProfileIdSchema = z.string().startsWith("market:").max(512);
+
 export const RecentModelEntrySchema = z.object({
   modelId: z.string(),
   sourceType: z.enum([KEY_SOURCE.OWN, KEY_SOURCE.HOSTED]),
   accountId: z.string().optional(),
   accountName: z.string().optional(),
   credentialSource: z.string().startsWith("market:").max(1024).optional(),
-  marketProfileId: z.string().startsWith("market:").max(512).optional(),
+  marketProfileId: marketProfileIdSchema.optional(),
   modelType: ModelTypeSchema,
   cliAgentType: CliAgentTypeSchema.optional(),
   cliAgentLabel: z.string().optional(),
@@ -56,6 +58,35 @@ export const recentModelEntriesAtom = atomWithStorage<RecentModelEntry[]>(
   [],
   createZodJsonStorage(RecentModelEntriesSchema)
 );
+
+type MarketSelectionIdentity = Pick<
+  RecentModelEntry,
+  "credentialSource" | "marketProfileId" | "cliAgentType"
+> & { modelType?: ModelType };
+
+/** UI identity only; selecting a Package still prepares fresh credentials. */
+export function marketSelectionsEquivalent(
+  left: MarketSelectionIdentity,
+  right: MarketSelectionIdentity
+): boolean {
+  const validProfileId = (id: string | undefined) =>
+    marketProfileIdSchema.safeParse(id).success;
+  if (
+    left.credentialSource?.startsWith("market:") &&
+    right.credentialSource?.startsWith("market:") &&
+    validProfileId(left.marketProfileId) &&
+    validProfileId(right.marketProfileId)
+  ) {
+    return (
+      left.marketProfileId === right.marketProfileId &&
+      (left.cliAgentType ?? left.modelType) ===
+        (right.cliAgentType ?? right.modelType)
+    );
+  }
+  // Old saved selections lack a stable profile id. Keep their exact-source
+  // identity instead of guessing from a Package's non-unique display name.
+  return left.credentialSource === right.credentialSource;
+}
 
 /**
  * Whether two recent entries represent the same account + model selection.
@@ -75,7 +106,7 @@ export function recentEntriesEquivalent(
   }
 
   if (left.credentialSource || right.credentialSource) {
-    return left.credentialSource === right.credentialSource;
+    return marketSelectionsEquivalent(left, right);
   }
 
   if (left.accountId && right.accountId) {

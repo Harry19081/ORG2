@@ -37,3 +37,29 @@ describe("toggleModelPin", () => {
     expect(toggleModelPin(full, entry("one-more"))).toEqual(full);
   });
 });
+
+it("keeps a Package pinned after preparing a new session, including a variant change", () => {
+  const first: RecentModelEntry = {
+    modelId: "gpt-6-astra-low",
+    sourceType: KEY_SOURCE.OWN,
+    modelType: "codex",
+    cliAgentType: "codex",
+    accountName: "Package",
+    marketProfileId: "market:00000000-0000-4000-8000-000000000001:pkg_one",
+    credentialSource: "market:prepared-session-a",
+  };
+  const selected = {
+    ...first,
+    modelId: "gpt-6-astra-high",
+    credentialSource: "market:prepared-session-b",
+  };
+  const pinned = toggleModelPin([], first);
+  expect(isModelPinned(pinned, selected)).toBe(true);
+  expect(toggleModelPin(pinned, selected)).toEqual([]);
+  expect(
+    isModelPinned(pinned, {
+      ...selected,
+      marketProfileId: `${first.marketProfileId}2`,
+    })
+  ).toBe(false);
+});

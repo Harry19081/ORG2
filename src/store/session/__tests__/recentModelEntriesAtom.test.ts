@@ -54,3 +54,54 @@ describe("recordRecentEntry", () => {
     ]);
   });
 });
+
+const packageEntry = (
+  sessionId: string,
+  overrides: Partial<RecentModelEntry> = {}
+): RecentModelEntry => ({
+  modelId: "gpt-6-astra-low",
+  sourceType: KEY_SOURCE.OWN,
+  accountName: "Coding package",
+  modelType: "codex",
+  cliAgentType: "codex",
+  marketProfileId: "market:00000000-0000-4000-8000-000000000001:pkg_one",
+  credentialSource: `market:${btoa(JSON.stringify({ session_id: sessionId }))}`,
+  ...overrides,
+});
+
+describe("Market recent identity", () => {
+  it("replaces the prepared session at the Recent writer without duplicating the Package", () => {
+    const old = packageEntry("session-a");
+    const selected = packageEntry("session-b", {
+      modelId: "gpt-6-astra-high",
+      accountName: "Renamed package",
+    });
+    expect(recordRecentEntry([old], selected)).toEqual([selected]);
+  });
+
+  it.each([
+    { marketProfileId: "market:00000000-0000-4000-8000-000000000001:pkg_two" },
+    { marketProfileId: "market:00000000-0000-4000-8000-000000000002:pkg_one" },
+    { modelType: "claude_code" as const, cliAgentType: "claude_code" as const },
+    { modelType: "openai_api" as const, cliAgentType: undefined },
+    { modelId: "gpt-5.6-luna" },
+  ])(
+    "keeps another Package, owner, engine or family separate: %o",
+    (change) => {
+      const old = packageEntry("session-a");
+      const selected = packageEntry("session-b", change);
+      expect(recordRecentEntry([old], selected)).toEqual([selected, old]);
+    }
+  );
+
+  it.each([undefined, "not-market", `market:${"x".repeat(512)}`])(
+    "preserves exact-source fallback when a stable id is unavailable (%s)",
+    (marketProfileId) => {
+      const old = packageEntry("session-a", { marketProfileId });
+      expect(recentEntriesEquivalent(old, { ...old })).toBe(true);
+      expect(recentEntriesEquivalent(old, packageEntry("session-b"))).toBe(
+        false
+      );
+    }
+  );
+});

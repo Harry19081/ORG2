@@ -37,3 +37,47 @@ describe("entryMatchesActiveConfig", () => {
     ).toBe(false);
   });
 });
+
+it("marks a Package current after fresh preparation without matching another owner or engine", () => {
+  const pinned = {
+    modelId: "gpt-6-astra-low",
+    sourceType: KEY_SOURCE.OWN,
+    modelType: "codex" as const,
+    cliAgentType: "codex" as const,
+    accountName: "Package",
+    marketProfileId: "market:00000000-0000-4000-8000-000000000001:pkg_one",
+    credentialSource: "market:prepared-session-a",
+  };
+  const config = {
+    model: "gpt-6-astra-high",
+    marketProfileId: pinned.marketProfileId,
+    credentialSource: "market:prepared-session-b",
+    cliAgentType: "codex" as const,
+    selectedSourceModelType: "codex" as const,
+    selectedSourceLabel: "Package renamed",
+  };
+  expect(entryMatchesActiveConfig(pinned, config)).toBe(true);
+  expect(
+    entryMatchesActiveConfig(pinned, {
+      ...config,
+      marketProfileId: "market:00000000-0000-4000-8000-000000000002:pkg_one",
+    })
+  ).toBe(false);
+  expect(
+    entryMatchesActiveConfig(pinned, {
+      ...config,
+      cliAgentType: "claude_code",
+      selectedSourceModelType: "claude_code",
+    })
+  ).toBe(false);
+  expect(
+    entryMatchesActiveConfig(pinned, { ...config, marketProfileId: undefined })
+  ).toBe(false);
+  expect(
+    entryMatchesActiveConfig(pinned, {
+      ...config,
+      marketProfileId: undefined,
+      credentialSource: pinned.credentialSource,
+    })
+  ).toBe(true);
+});

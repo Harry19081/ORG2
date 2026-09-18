@@ -1,5 +1,8 @@
 import type { AdvancedConfig } from "@src/features/SessionCreator/types";
-import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
+import {
+  type RecentModelEntry,
+  marketSelectionsEquivalent,
+} from "@src/store/session/recentModelEntriesAtom";
 import { groupModels } from "@src/util/modelGrouping";
 import { getModelVariantBaseModel } from "@src/util/modelVariants";
 
@@ -41,6 +44,7 @@ export function entryMatchesActiveConfig(
     | "listingModel"
     | "selectedAccountId"
     | "credentialSource"
+    | "marketProfileId"
     | "selectedSourceLabel"
     | "selectedSourceModelType"
     | "listingModelType"
@@ -57,7 +61,12 @@ export function entryMatchesActiveConfig(
   }
 
   if (entry.credentialSource || config.credentialSource) {
-    return entry.credentialSource === config.credentialSource;
+    return marketSelectionsEquivalent(entry, {
+      credentialSource: config.credentialSource,
+      marketProfileId: config.marketProfileId,
+      cliAgentType: config.cliAgentType,
+      modelType: config.selectedSourceModelType ?? config.listingModelType,
+    });
   }
 
   if (entry.accountId && config.selectedAccountId) {
