@@ -14,6 +14,7 @@ import SelectorPill from "@src/components/SelectorPill";
 import Switch from "@src/components/Switch";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { useModelPillLabel } from "@src/hooks/models";
 import { AiSettingIcon, HugeiconsIcon, UserMultipleIcon } from "@src/icons";
 import {
@@ -325,6 +326,7 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
                           )
                         }
                         label={modelLabel}
+                        tooltipMouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
                         tooltip={
                           <ModelSelectionBreadcrumb
                             accountName={modelAccountName}

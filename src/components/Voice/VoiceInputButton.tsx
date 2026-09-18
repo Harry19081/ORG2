@@ -15,6 +15,7 @@ import { PILL_CONTROL_HOVER_CLASS } from "@src/components/CompoundPill/config";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
+import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HugeiconsIcon, Mic01Icon } from "@src/icons";
 
 interface VoiceInputButtonProps {
@@ -146,7 +147,7 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
           />
         }
         position="top"
-        mouseEnterDelay={200}
+        mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
         framedPanel
       >
         {buttonNode}

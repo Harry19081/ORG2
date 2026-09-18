@@ -90,7 +90,7 @@ describe("buildSessionInfoSegments", () => {
       "branch",
     ]);
     expect(segments.map((segment) => segment.tooltipMouseEnterDelay)).toEqual([
-      2000, 2000, 2000,
+      750, 750, 750,
     ]);
     expect(segments.map((segment) => segment.maxLabelWidth)).toEqual([
       180,

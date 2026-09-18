@@ -14,6 +14,7 @@ import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { ArrowUp02Icon, HugeiconsIcon, Loading03Icon } from "@src/icons";
 import { chatAppearanceAtom } from "@src/store/config/configAtom";
 
@@ -120,7 +121,7 @@ const LaunchButton: React.FC<LaunchButtonProps> = ({
         />
       }
       position="top-end"
-      mouseEnterDelay={200}
+      mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
       framedPanel
     >
       {button}
