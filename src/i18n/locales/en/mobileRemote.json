@@ -267,8 +267,6 @@
     "retryFailed": "Could not reconnect. Try again.",
     "repairFailed": "Could not reset the connection. Try again."
   },
-  "offlineBanner": "Desktop is offline — messages cannot be sent",
-  "offlineBannerNamed": "{{desktopName}} is offline — messages cannot be sent",
   "composerOffline": "Your computer is offline. Reconnect to send messages",
   "composerReadOnly": "This conversation is currently view-only. Messages cannot be sent from your phone",
   "composerDeviceReadOnly": "This device has read-only access",

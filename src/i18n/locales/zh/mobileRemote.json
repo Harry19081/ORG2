@@ -267,8 +267,6 @@
     "retryFailed": "未能重新连接，请重试",
     "repairFailed": "未能重置当前连接，请重试"
   },
-  "offlineBanner": "桌面离线 — 无法发送消息",
-  "offlineBannerNamed": "{{desktopName}} 离线 — 无法发送消息",
   "composerOffline": "电脑已离线，连接后即可发送消息",
   "composerReadOnly": "此会话目前只能查看，无法从手机发送消息",
   "composerDeviceReadOnly": "这台设备只有查看权限，无法发送消息",

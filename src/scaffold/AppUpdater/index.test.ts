@@ -84,13 +84,6 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-vi.mock("@src/components/AppMark", async () => {
-  const React = await import("react");
-  return {
-    default: () => React.createElement("span", { "data-testid": "app-mark" }),
-  };
-});
-
 vi.mock("@src/components/Button", async () => {
   const React = await import("react");
   const { default: Button } = await vi.importActual<
