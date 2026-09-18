@@ -33,7 +33,6 @@ export default function OnboardingModal({
       image={{ src: onboardingImage, alt: "" }}
       footer={null}
       width={720}
-      bodyClassName="p-4"
     >
       <div
         className="flex flex-col gap-6"

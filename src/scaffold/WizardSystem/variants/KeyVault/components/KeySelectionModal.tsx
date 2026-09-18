@@ -70,7 +70,7 @@ const KeySelectionModal: React.FC<KeySelectionModalProps> = ({
       }
     >
       {/* Body */}
-      <div className="p-4">
+      <div className="p-3">
         <p className="mb-4 text-[13px] text-text-2">
           {t("keyVault.keysFoundForAgent", {
             count: keys.length,

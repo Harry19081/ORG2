@@ -81,7 +81,7 @@
     flex-shrink: 0;
     min-height: calc(#{mobile.$touch-target} + #{mobile.$space-2});
     height: auto;
-    padding: mobile.$space-1 var(--mobile-sheet-inset) mobile.$space-2;
+    padding: mobile.$space-1 mobile.$space-3 mobile.$space-2;
     border: 0;
     background: transparent;
 
@@ -105,8 +105,8 @@
 }
 
 .mobile-profile-body {
-  padding: mobile.$space-2 var(--mobile-sheet-inset)
-    max(var(--mobile-sheet-inset), env(safe-area-inset-bottom));
+  padding: mobile.$space-3 mobile.$space-3
+    max(#{mobile.$space-3}, env(safe-area-inset-bottom));
   overscroll-behavior: contain;
 }
 

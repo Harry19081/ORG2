@@ -53,7 +53,7 @@ export function PrReviewModal({
       cancelButtonProps={{ disabled: submittingReview }}
     >
       <div
-        className="flex flex-col gap-4 px-5 py-4"
+        className="flex flex-col gap-4 p-3"
         data-testid="pr-review-modal-body"
       >
         <p className="text-[13px] leading-5 text-text-3">

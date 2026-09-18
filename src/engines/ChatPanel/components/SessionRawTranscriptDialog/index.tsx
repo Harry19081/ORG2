@@ -73,7 +73,7 @@ const SessionRawTranscriptDialog: React.FC<SessionRawTranscriptDialogProps> =
           />
         }
       >
-        <div className="flex min-h-0 flex-1 flex-col gap-2 px-4 pb-4">
+        <div className="flex min-h-0 flex-1 flex-col gap-2 px-3 pb-3">
           <Suspense fallback={null}>
             <SessionRawTranscriptContent
               error={transcript.error}

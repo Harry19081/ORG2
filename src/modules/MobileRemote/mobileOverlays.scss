@@ -57,8 +57,6 @@ html .liquid-modal-wrapper {
 }
 
 html .liquid-modal-content {
-  --modal-chrome-padding: #{mobile.$space-4};
-
   > .liquid-modal-panel-header {
     height: auto;
     min-height: calc(#{mobile.$touch-target} + #{mobile.$space-2});

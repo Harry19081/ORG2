@@ -407,7 +407,7 @@ const WorktreeSourceModal: React.FC<WorktreeSourceModalProps> = ({
           aria-label={t("creator.worktreeSource.sourceTabs", {
             defaultValue: "Worktree source",
           })}
-          className="flex shrink-0 flex-wrap items-end gap-px border-b border-border-2 px-4 pt-1"
+          className="flex shrink-0 flex-wrap items-end gap-px border-b border-border-2 px-3 pt-1"
         >
           {tabs.map((tab) => (
             <Button
@@ -440,7 +440,7 @@ const WorktreeSourceModal: React.FC<WorktreeSourceModalProps> = ({
           role="tabpanel"
           id={`worktree-source-tabpanel-${activeTab}`}
           aria-labelledby={`worktree-source-tab-${activeTab}`}
-          className="min-h-80 p-4"
+          className="min-h-80 p-3"
         >
           {activeTab === "github" && renderGithubTab()}
           {activeTab === "branch" && renderBranchTab()}
@@ -450,7 +450,7 @@ const WorktreeSourceModal: React.FC<WorktreeSourceModalProps> = ({
           <div
             role="alert"
             aria-live="assertive"
-            className="border-t border-border-2 px-4 py-2 text-[12px] text-danger-6"
+            className="border-t border-border-2 px-3 py-2 text-[12px] text-danger-6"
           >
             {resolveError}
           </div>
