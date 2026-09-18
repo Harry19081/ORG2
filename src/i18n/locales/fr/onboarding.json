@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Prise en main et nouveautés",
-    "getStarted": "Bien démarrer",
-    "newFeatures": "Nouveautés",
-    "branchesTitle": "Branches du dépôt",
-    "branchesDescription": "Changez de branche de dépôt directement depuis Spotlight"
+    "title": "Prise en main",
+    "getStarted": "Bien démarrer"
   }
 }

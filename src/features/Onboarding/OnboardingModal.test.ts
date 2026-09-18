@@ -8,13 +8,6 @@ import { TUTORIALS } from "@src/scaffold/Tutorials/tutorialRegistry";
 
 import OnboardingModal from "./OnboardingModal";
 
-const actions = vi.hoisted(() => ({
-  openCollabOrgSpotlight: vi.fn(),
-  openSessionCreatorSpotlight: vi.fn(),
-  openWorkingDirectorySpotlight: vi.fn(),
-  openBranchSpotlight: vi.fn(),
-}));
-vi.mock("@src/scaffold/GlobalSpotlight/openSpotlight", () => actions);
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
@@ -66,26 +59,31 @@ describe("OnboardingModal", () => {
     expect(button?.tagName).toBe("BUTTON");
     act(() => button!.click());
   }
-  it.each([
-    ["onboarding-start-session", "openSessionCreatorSpotlight", []],
-    [
-      "onboarding-working-directories",
-      "openWorkingDirectorySpotlight",
-      ["switch"],
-    ],
-    ["onboarding-workspace", "openCollabOrgSpotlight", []],
-    [
-      "onboarding-feature-spotlight-repository-branches",
-      "openBranchSpotlight",
-      [],
-    ],
-  ] as const)("closes the modal before launching %s", (id, action, args) => {
-    actions[action].mockImplementation(() => {
-      expect(document.querySelector('[role="dialog"]')).toBeNull();
-    });
-    click(id);
-    expect(actions[action]).toHaveBeenCalledOnce();
-    expect(actions[action]).toHaveBeenCalledWith(...args);
+  it("uses the shared image-modal treatment with decorative onboarding artwork", () => {
+    const image = document.querySelector<HTMLImageElement>(
+      ".liquid-modal-image"
+    );
+
+    expect(image).not.toBeNull();
+    expect(image?.getAttribute("src")).toContain("onboarding.png");
+    expect(image?.getAttribute("alt")).toBe("");
+  });
+  it("shows tutorials without the legacy quick-action cards", () => {
+    expect(
+      document.querySelector('[data-testid="onboarding-start-session"]')
+    ).toBeNull();
+    expect(
+      document.querySelector('[data-testid="onboarding-working-directories"]')
+    ).toBeNull();
+    expect(
+      document.querySelector('[data-testid="onboarding-workspace"]')
+    ).toBeNull();
+
+    for (const tutorial of TUTORIALS) {
+      expect(
+        document.querySelector(`[data-testid="onboarding-tour-${tutorial.id}"]`)
+      ).not.toBeNull();
+    }
   });
   it.each(TUTORIALS)("launches the $id tour after closing", (tutorial) => {
     const listener = vi.fn(() =>
@@ -108,11 +106,8 @@ describe("OnboardingModal", () => {
     expect(document.querySelector('[role="dialog"]')).toBeNull();
     click("reopen");
     expect(
-      document.querySelector('[data-testid="onboarding-start-session"]')
-    ).not.toBeNull();
-    expect(
       document.querySelector(
-        '[data-testid="onboarding-feature-spotlight-repository-branches"]'
+        `[data-testid="onboarding-tour-${TUTORIALS[0].id}"]`
       )
     ).not.toBeNull();
   });

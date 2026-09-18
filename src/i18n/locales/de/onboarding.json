@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Einstieg und neue Funktionen",
-    "getStarted": "Erste Schritte",
-    "newFeatures": "Neue Funktionen",
-    "branchesTitle": "Repository-Branches",
-    "branchesDescription": "Wechsle Repository-Branches direkt in Spotlight"
+    "title": "Einstieg",
+    "getStarted": "Erste Schritte"
   }
 }

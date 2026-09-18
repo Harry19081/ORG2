@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Primeiros passos e novidades",
-    "getStarted": "Primeiros passos",
-    "newFeatures": "Novidades",
-    "branchesTitle": "Branches do repositório",
-    "branchesDescription": "Troque de branch do repositório diretamente pelo Spotlight"
+    "title": "Primeiros passos",
+    "getStarted": "Primeiros passos"
   }
 }

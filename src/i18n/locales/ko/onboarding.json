@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "시작 안내 및 새 기능",
-    "getStarted": "시작하기",
-    "newFeatures": "새 기능",
-    "branchesTitle": "저장소 브랜치",
-    "branchesDescription": "Spotlight에서 저장소 브랜치를 바로 전환하세요"
+    "title": "시작 안내",
+    "getStarted": "시작하기"
   }
 }

@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Pierwsze kroki i nowe funkcje",
-    "getStarted": "Pierwsze kroki",
-    "newFeatures": "Nowe funkcje",
-    "branchesTitle": "Gałęzie repozytorium",
-    "branchesDescription": "Przełączaj gałęzie repozytorium bezpośrednio w Spotlight"
+    "title": "Pierwsze kroki",
+    "getStarted": "Pierwsze kroki"
   }
 }

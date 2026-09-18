@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Начало работы и новые функции",
-    "getStarted": "Начало работы",
-    "newFeatures": "Новые функции",
-    "branchesTitle": "Ветки репозитория",
-    "branchesDescription": "Переключайте ветки репозитория прямо в Spotlight"
+    "title": "Начало работы",
+    "getStarted": "Начало работы"
   }
 }

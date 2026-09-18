@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Hướng dẫn bắt đầu và tính năng mới",
-    "getStarted": "Bắt đầu",
-    "newFeatures": "Tính năng mới",
-    "branchesTitle": "Nhánh kho mã",
-    "branchesDescription": "Chuyển nhánh kho mã trực tiếp từ Spotlight"
+    "title": "Hướng dẫn bắt đầu",
+    "getStarted": "Bắt đầu"
   }
 }

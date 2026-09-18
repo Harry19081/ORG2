@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Onboarding & new features",
-    "getStarted": "Get started",
-    "newFeatures": "New features",
-    "branchesTitle": "Repository branches",
-    "branchesDescription": "Switch repository branches directly from Spotlight"
+    "title": "Onboarding",
+    "getStarted": "Get started"
   }
 }
