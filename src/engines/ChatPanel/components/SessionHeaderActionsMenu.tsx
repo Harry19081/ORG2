@@ -44,6 +44,7 @@ import { sessionByIdAtom, upsertSession } from "@src/store/session";
 import { compactComposerInputAtom } from "@src/store/session/compactComposerInputAtom";
 import { composerGlowVisibleAtom } from "@src/store/session/composerGlowVisibleAtom";
 import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
+import { separateEffortPillAtom } from "@src/store/session/separateEffortPillAtom";
 import { openSessionInNewWindowAtom } from "@src/store/session/sessionTabPlacementAtom";
 import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
@@ -159,6 +160,10 @@ export const SessionHeaderActionsMenu: React.FC<
     composerGlowVisibleAtom
   );
   const composerGlowLabel = t("chat.composerGlow");
+  const [separateEffortPill, setSeparateEffortPill] = useAtom(
+    separateEffortPillAtom
+  );
+  const separateEffortPillLabel = t("chat.separateEffortPill");
   const sendMethodLabel = t("chat.sendMethod");
 
   // Track this / Convert to Project (orgtrack/v1 §7.2). Self-contained:
@@ -643,6 +648,18 @@ export const SessionHeaderActionsMenu: React.FC<
                       size="small"
                       ariaLabel={composerGlowLabel}
                       dataTestId="session-menu-composer-glow-toggle"
+                    />
+                  </div>
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">
+                      {separateEffortPillLabel}
+                    </span>
+                    <Switch
+                      checked={separateEffortPill}
+                      onCheckedChange={setSeparateEffortPill}
+                      size="small"
+                      ariaLabel={separateEffortPillLabel}
+                      dataTestId="session-menu-separate-effort-pill-toggle"
                     />
                   </div>
                 </ActionSubmenu>

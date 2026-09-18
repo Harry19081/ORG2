@@ -724,6 +724,7 @@
     },
     "compactInput": "紧凑输入框",
     "composerGlow": "显示输入框光晕",
+    "separateEffortPill": "独立 Effort 按钮",
     "replay": {
       "follow": "跟随"
     },

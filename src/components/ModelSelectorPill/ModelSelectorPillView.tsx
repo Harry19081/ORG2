@@ -3,7 +3,9 @@
  *
  * Shared model selector trigger used by the active chat input and the
  * SessionCreator input. Models with selectable effort use one combined pill
- * and settings menu. Other models retain their existing PillGroup control.
+ * and settings menu, or a model pill plus a separate effort pill when
+ * `separateEffortPill` is set. Other models retain their existing PillGroup
+ * control.
  */
 import React, {
   forwardRef,
@@ -39,6 +41,12 @@ import ModelSettingsMenu, {
   type HarnessSwitchAction,
 } from "./ModelSettingsMenu";
 
+/** Tone for a reasoning-level label: Ultra stays purple, open reads primary. */
+function levelToneClass(level: string | undefined, open: boolean): string {
+  if (level === MODEL_REASONING_LEVEL.ULTRA) return "text-purple-6";
+  return open ? "text-primary-6" : "text-text-3";
+}
+
 export interface ModelSelectorPillViewProps {
   /** Resolved by the owning runtime; this view never reads a local key vault. */
   displaySelection: LastModelSelection | null | undefined;
@@ -70,6 +78,11 @@ export interface ModelSelectorPillViewProps {
   settingsMenuClassName?: string;
   /** Compatibility option; all enabled model pills now use the combined menu. */
   preferCombinedSettingsMenu?: boolean;
+  /**
+   * Split effort into its own pill: the model pill then opens the model
+   * picker directly and the effort pill owns the settings menu.
+   */
+  separateEffortPill?: boolean;
   /** Prevent opening a picker while its execution inventory is unresolved. */
   disabled?: boolean;
   /** Explanation shown on hover or focus while the picker is disabled. */
@@ -101,10 +114,12 @@ const ModelSelectorPillView = forwardRef<
       settingsMenuClassName,
       disabled = false,
       disabledTooltip,
+      separateEffortPill = false,
     },
     ref
   ) => {
     const modelSegmentRef = useRef<HTMLButtonElement>(null);
+    const effortPillRef = useRef<HTMLButtonElement>(null);
     useImperativeHandle(
       ref,
       () => modelSegmentRef.current as HTMLButtonElement
@@ -148,14 +163,21 @@ const ModelSelectorPillView = forwardRef<
       handleApply: handleEffortApply,
     } = effortSegment;
 
+    const variant = useMemo(
+      () =>
+        effortModelId
+          ? variantOptions.parseSelection(effortModelId)
+          : undefined,
+      [effortModelId, variantOptions]
+    );
+
     const handleEffortOpenChange = useCallback((open: boolean) => {
       setEffortOpen(open);
     }, []);
 
-    const segments = useMemo((): PillGroupSegment[] => {
-      const modelSegment: PillGroupSegment = {
-        id: "model",
-        icon: hasModelSelection ? (
+    const modelIcon = useMemo(
+      () =>
+        hasModelSelection ? (
           <ModelIcon
             modelName={modelIconName}
             agentType={modelIconAgent}
@@ -170,9 +192,12 @@ const ModelSelectorPillView = forwardRef<
             className="text-primary-6"
           />
         ),
-        label: resolvedModelLabel,
-        title: modelTitle,
-        tooltip: disabled ? undefined : (
+      [hasModelSelection, iconSize, modelIconAgent, modelIconName]
+    );
+
+    const modelTooltip = useMemo(
+      () =>
+        disabled ? undefined : (
           <ModelPillTooltipContent
             accountName={accountName}
             modelLabel={displayParts.rawValue ?? displayParts.label}
@@ -185,6 +210,25 @@ const ModelSelectorPillView = forwardRef<
             shortcutId={"open_model_selector"}
           />
         ),
+      [
+        accountName,
+        disabled,
+        displayParts.label,
+        displayParts.rawValue,
+        displayParts.thinking,
+        displayParts.variantInfo,
+        modelIconAgent,
+        modelIconName,
+      ]
+    );
+
+    const segments = useMemo((): PillGroupSegment[] => {
+      const modelSegment: PillGroupSegment = {
+        id: "model",
+        icon: modelIcon,
+        label: resolvedModelLabel,
+        title: modelTitle,
+        tooltip: modelTooltip,
         tooltipFramed: true,
         tooltipFramedWide: true,
         ariaLabel: ariaLabel ?? defaultLabel,
@@ -212,56 +256,110 @@ const ModelSelectorPillView = forwardRef<
         active: effortOpen,
         dataTestId: effortDataTestId,
         maxLabelWidth: 140,
-        renderButton: (buttonProps) => (
-          <ModelPropertiesDropdown
-            variantOptions={variantOptions}
-            value={effortModelId}
-            onChange={handleEffortApply}
-            onOpenChange={handleEffortOpenChange}
-            renderTrigger={({
-              ref: triggerRef,
-              onClick: openEffort,
-              ariaExpanded,
-            }) => (
-              <SelectorPill
-                ref={triggerRef}
-                icon={null}
-                textOnly
-                label={effortLabel}
-                title={effortLabel}
-                tooltip={effortAriaLabel}
-                active={buttonProps.active || ariaExpanded}
-                className={buttonProps.segmentClassName}
-                labelClassName="text-[11px] font-normal text-text-2"
-                onClick={openEffort}
-                onMouseDown={buttonProps.onMouseDown}
-                onMouseEnter={buttonProps.onMouseEnter}
-                onMouseLeave={buttonProps.onMouseLeave}
-                onFocus={buttonProps.onFocus}
-                onBlur={buttonProps.onBlur}
-                dataTestId={effortDataTestId}
-                ariaLabel={effortAriaLabel}
-                labelStyle={{ maxWidth: 140 }}
-                size="sm"
-                paddingX={buttonProps.paddingX}
-              />
-            )}
-          />
-        ),
+        renderButton: (buttonProps) =>
+          separateEffortPill ? (
+            <ModelSettingsMenu
+              anchorRef={effortPillRef}
+              modelLabel={resolvedModelLabel}
+              value={effortModelId}
+              harnessSwitch={harnessSwitch}
+              variantOptions={variantOptions}
+              onModelClick={onClick}
+              onChange={handleEffortApply}
+              onOpenChange={handleEffortOpenChange}
+              defaultAdvanced={settingsMenuDefaultAdvanced}
+              className={settingsMenuClassName}
+              renderTrigger={({ open, onClick: openMenu, previewLevel }) => {
+                const shownLevel = previewLevel ?? variant?.level;
+                const levelLabel = shownLevel
+                  ? formatReasoningLevel(shownLevel)
+                  : effortLabel;
+                return (
+                  <SelectorPill
+                    ref={effortPillRef}
+                    icon={
+                      variant?.fast ? (
+                        <HugeiconsIcon
+                          icon={FlashIcon}
+                          data-icon="fast"
+                          size={iconSize}
+                        />
+                      ) : null
+                    }
+                    textOnly={!variant?.fast}
+                    label={levelLabel}
+                    labelContent={
+                      <span className={levelToneClass(shownLevel, open)}>
+                        {levelLabel}
+                      </span>
+                    }
+                    tooltip={effortAriaLabel}
+                    active={buttonProps.active || open}
+                    ariaExpanded={open}
+                    ariaLabel={`${effortAriaLabel}${variant?.fast ? " · Fast" : ""}`}
+                    // Label-only segment: even inset on both sides instead of
+                    // the compact icon-led inset the model segment uses.
+                    className={`${buttonProps.segmentClassName ?? ""} px-2!`}
+                    labelClassName="font-normal"
+                    onClick={openMenu}
+                    onMouseDown={buttonProps.onMouseDown}
+                    onMouseEnter={buttonProps.onMouseEnter}
+                    onMouseLeave={buttonProps.onMouseLeave}
+                    onFocus={buttonProps.onFocus}
+                    onBlur={buttonProps.onBlur}
+                    dataTestId={effortDataTestId}
+                    labelStyle={{ maxWidth: 140 }}
+                    size="sm"
+                    paddingX={buttonProps.paddingX}
+                  />
+                );
+              }}
+            />
+          ) : (
+            <ModelPropertiesDropdown
+              variantOptions={variantOptions}
+              value={effortModelId}
+              onChange={handleEffortApply}
+              onOpenChange={handleEffortOpenChange}
+              renderTrigger={({
+                ref: triggerRef,
+                onClick: openEffort,
+                ariaExpanded,
+              }) => (
+                <SelectorPill
+                  ref={triggerRef}
+                  icon={null}
+                  textOnly
+                  label={effortLabel}
+                  title={effortLabel}
+                  tooltip={effortAriaLabel}
+                  active={buttonProps.active || ariaExpanded}
+                  className={buttonProps.segmentClassName}
+                  labelClassName="text-[11px] font-normal text-text-2"
+                  onClick={openEffort}
+                  onMouseDown={buttonProps.onMouseDown}
+                  onMouseEnter={buttonProps.onMouseEnter}
+                  onMouseLeave={buttonProps.onMouseLeave}
+                  onFocus={buttonProps.onFocus}
+                  onBlur={buttonProps.onBlur}
+                  dataTestId={effortDataTestId}
+                  ariaLabel={effortAriaLabel}
+                  labelStyle={{ maxWidth: 140 }}
+                  size="sm"
+                  paddingX={buttonProps.paddingX}
+                />
+              )}
+            />
+          ),
       };
 
       return [modelSegment, effortSegment];
     }, [
-      accountName,
       active,
       ariaLabel,
       dataTestId,
       defaultLabel,
       disabled,
-      displayParts.label,
-      displayParts.rawValue,
-      displayParts.thinking,
-      displayParts.variantInfo,
       effortAriaLabel,
       effortDataTestId,
       effortEditable,
@@ -270,21 +368,23 @@ const ModelSelectorPillView = forwardRef<
       effortOpen,
       handleEffortApply,
       handleEffortOpenChange,
+      harnessSwitch,
       hasModelSelection,
       iconSize,
-      modelIconAgent,
-      modelIconName,
+      modelIcon,
       modelTitle,
+      modelTooltip,
       onClick,
       resolvedModelLabel,
+      separateEffortPill,
+      settingsMenuClassName,
+      settingsMenuDefaultAdvanced,
       triggerLeadingFlush,
+      variant,
       variantOptions,
     ]);
 
-    const variant = effortModelId
-      ? variantOptions.parseSelection(effortModelId)
-      : undefined;
-    if (!disabled) {
+    if (!disabled && !separateEffortPill) {
       return (
         <ModelSettingsMenu
           anchorRef={modelSegmentRef}
@@ -311,12 +411,6 @@ const ModelSelectorPillView = forwardRef<
             const combinedLabel = [resolvedModelLabel, levelLabel]
               .filter(Boolean)
               .join(" ");
-            const levelToneClass =
-              shownLevel === MODEL_REASONING_LEVEL.ULTRA
-                ? "text-purple-6"
-                : open
-                  ? "text-primary-6"
-                  : "text-text-3";
             return (
               <SelectorPill
                 ref={modelSegmentRef}
@@ -328,7 +422,7 @@ const ModelSelectorPillView = forwardRef<
                       size={iconSize}
                     />
                   ) : (
-                    segments[0].icon
+                    modelIcon
                   )
                 }
                 label={combinedLabel}
@@ -339,7 +433,7 @@ const ModelSelectorPillView = forwardRef<
                     </span>
                     {levelLabel && (
                       <span
-                        className={`ml-1.5 shrink-0 font-normal ${levelToneClass}`}
+                        className={`ml-1.5 shrink-0 font-normal ${levelToneClass(shownLevel, open)}`}
                       >
                         {levelLabel}
                       </span>
@@ -347,7 +441,7 @@ const ModelSelectorPillView = forwardRef<
                   </>
                 }
                 title={modelTitle}
-                tooltip={segments[0].tooltip}
+                tooltip={modelTooltip}
                 tooltipFramed
                 tooltipFramedWide
                 active={active || open}
