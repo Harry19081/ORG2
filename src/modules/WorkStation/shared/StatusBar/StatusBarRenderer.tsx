@@ -36,15 +36,9 @@ export const StatusBarRenderer: React.FC<StatusBarRendererProps> = memo(
     if (state.appType === "browser") {
       return (
         <BrowserStatusBar
-          url={state.browserUrl ?? ""}
-          isLoading={state.browserIsLoading ?? false}
           errorCount={state.browserErrorCount ?? 0}
           warningCount={state.browserWarningCount ?? 0}
-          isDevToolsOpen={state.browserIsDevToolsOpen ?? false}
           onToggleDevTools={callbacks.onToggleDevTools ?? (() => {})}
-          isPrivate={state.browserIsPrivate}
-          sessionCount={state.browserSessionCount ?? 0}
-          currentSessionIndex={state.browserCurrentSessionIndex ?? 0}
           hasSelectedElement={state.browserHasSelectedElement}
           selectedElementLabel={state.browserSelectedElementLabel}
           onSendSelectedElementToChat={callbacks.onSendSelectedElementToChat}

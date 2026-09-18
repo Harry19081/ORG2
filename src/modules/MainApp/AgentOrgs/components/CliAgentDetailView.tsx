@@ -17,6 +17,7 @@ import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
+  InternalHeader,
   PANEL_HEADER_TOKENS,
 } from "@src/components/layout/blocks";
 import { buildIntegrationsPath } from "@src/config/mainAppPaths";
@@ -37,7 +38,6 @@ import HarnessConnectionEditor from "@src/modules/MainApp/Settings/sections/Harn
 import { openLink } from "@src/util/ui/openLink";
 
 import type { AvailableCliAgent } from "../types";
-import AgentDetailHeader from "./AgentDetailHeader";
 import CliConfigSwitchCard from "./CliConfigSwitchCard";
 import CliRawConfigFileEditor from "./CliRawConfigFileEditor";
 
@@ -245,7 +245,8 @@ const CliAgentDetailView: React.FC<CliAgentDetailViewProps> = ({
 
   return (
     <DetailPanelContainer>
-      <AgentDetailHeader
+      <InternalHeader
+        noPanelHeader
         tabs={tabs}
         activeTab="core"
         onTabChange={() => undefined}

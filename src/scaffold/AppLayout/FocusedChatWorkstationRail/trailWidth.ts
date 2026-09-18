@@ -19,24 +19,21 @@ export const WORKSTATION_TRAIL_TRACK_PADDING_X = 8;
  * trail must stay at zero and the compact dropdown takes over. Collapsed,
  * the shipped `w-11` class owns the column and both boxes just fill it.
  */
-export function resolveTrailWidthVariables(options?: {
-  collapsed?: boolean;
-  terminalShown?: boolean;
-  terminalWidth?: number;
+export function resolveTrailWidthVariables(options: {
+  collapsed: boolean;
+  terminalShown: boolean;
+  /** Resolved terminal width (`useTrailPanelDimensions` owns the default). */
+  terminalWidth: number;
 }): CSSProperties {
-  if (options?.collapsed) {
+  if (options.collapsed) {
     return {
       [WORKSTATION_TRAIL_WIDTH_VARIABLE]: "100%",
       [WORKSTATION_TRAIL_TRACK_WIDTH_VARIABLE]: "100%",
     } as CSSProperties;
   }
   const width = WORKSTATION_TRAIL_WIDTH.expandedPx;
-  const trackWidth = options?.terminalShown
-    ? Math.max(
-        width,
-        (options.terminalWidth ?? WORKSTATION_TRAIL_TERMINAL_WIDTH) +
-          WORKSTATION_TRAIL_TRACK_PADDING_X
-      )
+  const trackWidth = options.terminalShown
+    ? Math.max(width, options.terminalWidth + WORKSTATION_TRAIL_TRACK_PADDING_X)
     : width;
   return {
     // The trail box itself sits inside the column's inset, exactly as it did

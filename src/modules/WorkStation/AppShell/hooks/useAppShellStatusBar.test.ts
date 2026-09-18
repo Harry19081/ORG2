@@ -26,7 +26,6 @@ const store = createInstrumentedStore();
 const panels = {
   togglePrimarySidebar: () => {},
   toggleBottomPanel: () => {},
-  layoutMode: "left",
   bottomPanelCollapsed: false,
 } as unknown as ReturnType<typeof useWorkStationPanels>;
 

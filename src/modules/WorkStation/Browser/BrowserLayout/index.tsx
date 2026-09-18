@@ -17,7 +17,6 @@ import React, { memo, useCallback, useMemo, useState } from "react";
 import {
   WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS,
   WorkStationShell,
-  buildSecondaryPanelConfig,
 } from "../../shared";
 import {
   type BrowserHostContextValue,
@@ -29,6 +28,7 @@ import {
   SharedBrowserDevToolsPanel,
   SharedBrowserWorkspace,
 } from "../shared";
+import { buildBrowserDevToolsPanelConfig } from "../shared/browserDevToolsPanelConfig";
 import { AgentBrowserOverlay } from "./AgentBrowserOverlay";
 import type { BrowserLayoutProps } from "./types";
 import { useBrowserLayoutState } from "./useBrowserLayoutState";
@@ -153,24 +153,17 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = memo(
     );
 
     // Secondary panel config — single mount, CSS grid relocates right/bottom.
-    // Size/handler are axis-appropriate: width for right, height for bottom.
     const secondaryPanelConfig = useMemo(
       () =>
-        buildSecondaryPanelConfig({
+        buildBrowserDevToolsPanelConfig({
           content: devToolsContent,
           position: devToolsPosition,
           collapsed: state.browser.devToolsCollapsed,
-          size:
-            devToolsPosition === "right"
-              ? state.browser.devToolsPanelWidth
-              : devToolsPanelHeight,
-          onSizeChange:
-            devToolsPosition === "right"
-              ? state.browser.setDevToolsPanelWidth
-              : setDevToolsPanelHeight,
+          width: state.browser.devToolsPanelWidth,
+          onWidthChange: state.browser.setDevToolsPanelWidth,
+          height: devToolsPanelHeight,
+          onHeightChange: setDevToolsPanelHeight,
           onClose: handleCloseDevTools,
-          minSize: devToolsPosition === "right" ? 200 : 160,
-          maxSize: devToolsPosition === "right" ? 400 : 600,
         }),
       [
         devToolsContent,

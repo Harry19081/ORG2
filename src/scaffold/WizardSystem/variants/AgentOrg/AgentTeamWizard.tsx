@@ -7,7 +7,6 @@ import { SECTION_GAP_CLASSES } from "@src/components/layout/Section";
 import { DETAIL_PANEL_TOKENS } from "@src/components/layout/blocks";
 import type { TeamMember } from "@src/modules/MainApp/AgentOrgs/components/TeamMemberTable";
 import { buildAgentOptions } from "@src/modules/MainApp/AgentOrgs/components/org/config";
-import "@src/modules/MainApp/AgentOrgs/components/org/index.css";
 import { builtInAgentsAtom } from "@src/modules/MainApp/AgentOrgs/store/builtInAgentsAtom";
 import {
   type AgentDefinition,

@@ -32,20 +32,4 @@ describe("DetailHeaderTabs", () => {
     expect(markup).toContain("flex-1");
     expect(markup).not.toContain('role="separator"');
   });
-
-  it("stacks title and tabs below the PR detail container breakpoint", () => {
-    const markup = renderToStaticMarkup(
-      createElement(DetailHeaderTabs, {
-        title: createElement("span", null, "Pull request title"),
-        tabs: createElement("span", null, "Pull request tabs"),
-        stackTabsBelow: true,
-      })
-    );
-
-    expect(markup).toContain("flex-col");
-    expect(markup).toContain("@[960px]/detailheader:flex-row");
-    expect(markup).toContain("@[960px]/detailheader:h-9");
-    expect(markup).toContain('data-testid="detail-header-tabs"');
-    expect(markup).not.toContain('role="separator"');
-  });
 });

@@ -168,7 +168,7 @@ const WorkStationSidebarToggleButtonComponent: React.FC<
   const fallbackCollapsed = useAtomValue(
     workStationPrimarySidebarCollapsedAtom
   );
-  const fallbackLayoutMode = useAtomValue(workStationLayoutModeAtom);
+  const layoutMode = useAtomValue(workStationLayoutModeAtom);
   const setFallbackCollapsed = useSetAtom(
     workStationPrimarySidebarCollapsedPersistAtom
   );
@@ -177,7 +177,6 @@ const WorkStationSidebarToggleButtonComponent: React.FC<
     setFallbackCollapsed("toggle");
   }, [setFallbackCollapsed]);
 
-  const layoutMode = callbacks.layoutMode ?? fallbackLayoutMode;
   const position = layoutMode === "right" ? "right" : "left";
 
   return (

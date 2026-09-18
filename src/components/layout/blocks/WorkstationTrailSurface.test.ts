@@ -2,8 +2,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { WORKSTATION_TRAIL_WIDTH } from "../tokens/workstationTrailTokens";
 import WorkstationTrailSurface, {
-  WORKSTATION_TRAIL_WIDTH,
   WorkstationTrailBody,
   WorkstationTrailEmptyText,
   WorkstationTrailHeader,

@@ -14,14 +14,12 @@ import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
 export type DetailPaneHeaderProps = Omit<
   PanelHeaderProps,
-  "background" | "borderBottom" | "className" | "height" | "variant"
+  "borderBottom" | "className" | "height"
 >;
 
 export interface DetailPaneLayoutProps {
   /** Domain-owned identity rendered in the shared 36px detail header. */
   header?: DetailPaneHeaderProps;
-  /** Draw a divider beneath the detail header. Defaults to true. */
-  headerBorderBottom?: boolean;
   children?: React.ReactNode;
   className?: string;
   testId?: string;
@@ -32,24 +30,21 @@ export interface DetailPaneLayoutProps {
   >;
   /** Standard right-edge close action, including header-only empty panes. */
   onClose?: () => void;
-  closeLabel?: string;
   closeTestId?: string;
 }
 
 export interface DetailPaneCloseActionProps {
   onClose: () => void;
-  label?: string;
   testId?: string;
 }
 
 /** One close action shared by detail headers and tab strips. */
 export const DetailPaneCloseAction: React.FC<DetailPaneCloseActionProps> = memo(
-  ({ onClose, label, testId }) => {
+  ({ onClose, testId }) => {
     const { t } = useTranslation("common");
-    const resolvedLabel = label ?? t("actions.close");
     return (
       <DetailHeaderIconAction
-        label={resolvedLabel}
+        label={t("actions.close")}
         icon={
           <HugeiconsIcon
             icon={Cancel01Icon}
@@ -77,14 +72,12 @@ DetailPaneCloseAction.displayName = "DetailPaneCloseAction";
 const DetailPaneLayout: React.FC<DetailPaneLayoutProps> = memo(
   ({
     header,
-    headerBorderBottom = true,
     children,
     className = "",
     testId,
     rootProps,
     dataAttributes,
     onClose,
-    closeLabel,
     closeTestId,
   }) => {
     const resolvedHeader =
@@ -94,11 +87,7 @@ const DetailPaneLayout: React.FC<DetailPaneLayoutProps> = memo(
             actions: onClose ? (
               <div className="flex shrink-0 items-center gap-px">
                 {header?.actions}
-                <DetailPaneCloseAction
-                  onClose={onClose}
-                  label={closeLabel}
-                  testId={closeTestId}
-                />
+                <DetailPaneCloseAction onClose={onClose} testId={closeTestId} />
               </div>
             ) : (
               header?.actions
@@ -119,8 +108,7 @@ const DetailPaneLayout: React.FC<DetailPaneLayoutProps> = memo(
         {resolvedHeader ? (
           <PanelHeader
             {...resolvedHeader}
-            borderBottom={headerBorderBottom}
-            background="default"
+            borderBottom
             height="detail"
             className={DETAIL_PANEL_TOKENS.headerPadding}
           />

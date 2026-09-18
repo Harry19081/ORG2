@@ -1,115 +1,40 @@
 /**
  * InternalHeader Component
  *
- * Reusable header for internal content areas (e.g. profile, detail panels).
- * Supports title, optional icon, right-side actions, and optional tabs.
- * When tabs are present, they are vertically centered with bottom padding only.
- *
- * Standard: no border, wide padding (px-6), solid panel background.
+ * Shared tab header for detail panels (settings pages, integrations
+ * categories, agent detail views). Renders a large simple `TabPill` inside
+ * the detail-panel header width, with optional right-side actions.
  */
 import React, { memo } from "react";
 
-import { HugeiconsIcon, type IconSvgElement } from "@src/icons";
-
-// ============================================
-// Tokens
-// ============================================
-
-const INTERNAL_HEADER_TOKENS = {
-  /** Font size for title text */
-  fontSize: 13,
-  /** Icon size for title icons */
-  iconSize: 14,
-  /** Standard: no border, px-6, solid panel background */
-  standard: {
-    borderBottom: false,
-    background: "default" as const,
-  },
-} as const;
-
-// ============================================
-// Types
-// ============================================
+import TabPill from "@src/components/TabPill";
+import type { TabPillProps } from "@src/components/TabPill/types";
+import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 
 interface InternalHeaderProps {
-  /** Title text */
-  title?: string;
+  /** Tab items rendered as a large simple TabPill. */
+  tabs: TabPillProps["tabs"];
 
-  /** Hugeicons icon data (size=14 applied automatically) */
-  icon?: IconSvgElement;
+  /** Key of the active tab. */
+  activeTab: string;
 
-  /** Custom icon element for non-glyph icons */
-  iconElement?: React.ReactNode;
+  /** Called with the clicked tab key. */
+  onTabChange: (tab: string) => void;
 
-  /** Right-side actions (buttons, etc.) */
+  /** Right-side actions (buttons, etc.) aligned after the tabs. */
   actions?: React.ReactNode;
-
-  /** Tabs (e.g. TabPill) — vertically centered with bottom padding only */
-  tabs?: React.ReactNode;
-
-  /** Additional className */
-  className?: string;
-
-  /** Skip horizontal padding (px-6). Use when the parent handles width constraints. */
-  noPadding?: boolean;
-
-  /**
-   * Use px-4 to match the scroll content below (DETAIL_PANEL_TOKENS.scrollContent).
-   * Prevents headers from touching the edge when the panel is narrow.
-   */
-  contentPadding?: boolean;
-
-  /** Use px-3 for tighter detail header rows. */
-  compactPadding?: boolean;
-
-  /** When true, draws a bottom border under the header block. */
-  borderBottom?: boolean;
-
-  /** Background style. Default: "default" (panel surface) */
-  background?: "default" | "transparent";
 
   /** Add top padding when no PanelHeader sits above this header. */
   noPanelHeader?: boolean;
-
-  dataTestId?: string;
 }
 
-// ============================================
-// Component
-// ============================================
-
 const InternalHeader: React.FC<InternalHeaderProps> = memo(
-  ({
-    title,
-    icon: Icon,
-    iconElement,
-    actions,
-    tabs,
-    className = "",
-    noPadding = false,
-    contentPadding = false,
-    compactPadding = false,
-    borderBottom = false,
-    background = "default",
-    noPanelHeader = false,
-    dataTestId,
-  }) => {
-    const paddingClass = compactPadding
-      ? "px-3"
-      : contentPadding
-        ? "px-4"
-        : noPadding
-          ? ""
-          : "px-6";
-    const borderClasses = borderBottom ? "border-b border-border-2" : "";
-    const bgClasses = background === "transparent" ? "" : "";
+  ({ tabs, activeTab, onTabChange, actions, noPanelHeader = false }) => {
     const topPadding = noPanelHeader ? "pt-4" : "";
-    const hasTitleRow = !!(title || iconElement || Icon);
 
     return (
       <div
-        className={`relative z-50 flex shrink-0 flex-col ${topPadding} ${paddingClass} ${borderClasses} ${bgClasses} ${className}`}
-        data-testid={dataTestId}
+        className={`relative z-50 flex shrink-0 flex-col ${topPadding} px-4 ${DETAIL_PANEL_TOKENS.headerWidth}`}
         style={
           {
             WebkitAppRegion: "no-drag",
@@ -117,50 +42,22 @@ const InternalHeader: React.FC<InternalHeaderProps> = memo(
           } as React.CSSProperties
         }
       >
-        {hasTitleRow && (
-          <div className="flex h-12 items-center gap-2">
-            {iconElement && (
-              <span className="shrink-0 text-text-2">{iconElement}</span>
-            )}
-            {!iconElement && Icon && (
-              <HugeiconsIcon
-                icon={Icon}
-                size={INTERNAL_HEADER_TOKENS.iconSize}
-                className="shrink-0 text-text-2"
-              />
-            )}
-            {title && (
-              <span
-                className="truncate font-medium text-text-1"
-                style={{ fontSize: INTERNAL_HEADER_TOKENS.fontSize }}
-              >
-                {title}
-              </span>
-            )}
-            <div className="min-w-0 flex-1" />
-            {actions && (
+        <div className="relative z-10 flex items-center pb-3">
+          <TabPill
+            tabs={tabs}
+            activeTab={activeTab}
+            onChange={onTabChange}
+            variant="simple"
+            fillWidth={false}
+            size="large"
+          />
+          {actions && (
+            <>
+              <div className="min-w-0 flex-1" />
               <div className="flex shrink-0 items-center gap-2">{actions}</div>
-            )}
-          </div>
-        )}
-        {tabs && (
-          <div className="relative z-10 flex items-center pb-3">
-            {tabs}
-            {!hasTitleRow && actions && (
-              <>
-                <div className="min-w-0 flex-1" />
-                <div className="flex shrink-0 items-center gap-2">
-                  {actions}
-                </div>
-              </>
-            )}
-          </div>
-        )}
-        {!hasTitleRow && !tabs && actions && (
-          <div className="flex items-center justify-end pb-3">
-            <div className="flex shrink-0 items-center gap-2">{actions}</div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
     );
   }

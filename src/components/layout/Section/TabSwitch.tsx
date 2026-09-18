@@ -2,7 +2,7 @@
  * SectionTabSwitch Component
  *
  * Reusable tab switcher for use inside SectionLayout pages.
- * Renders a tab switcher (TabPill variant="simple" fillWidth)
+ * Renders a sticky TabPill (variant="simple")
  * at the top of a section, switching between different content views.
  *
  * @example
@@ -29,34 +29,19 @@ export interface SectionTabSwitchProps {
   activeTab: string;
   /** Callback when tab changes */
   onChange: (key: string) => void;
-  /** Tab size: "small" for dense toolbars, "large" for 16px section-level switches. Default: "default" */
-  size?: "small" | "default" | "large";
-  /** Whether tabs stretch to fill available width. Default: false */
-  fillWidth?: boolean;
-  /** Additional className for the wrapper */
-  className?: string;
 }
 
 const SectionTabSwitch: React.FC<SectionTabSwitchProps> = memo(
-  ({
-    tabs,
-    activeTab,
-    onChange,
-    size = "default",
-    fillWidth = false,
-    className = "",
-  }) => {
+  ({ tabs, activeTab, onChange }) => {
     return (
-      <div
-        className={`sticky top-[47px] z-30 bg-bg-2 pb-1 pl-1 ${className}`.trim()}
-      >
+      <div className="sticky top-[47px] z-30 bg-bg-2 pb-1 pl-1">
         <TabPill
           tabs={tabs}
           activeTab={activeTab}
           onChange={onChange}
           variant="simple"
-          fillWidth={fillWidth}
-          size={size}
+          fillWidth={false}
+          size="default"
         />
       </div>
     );

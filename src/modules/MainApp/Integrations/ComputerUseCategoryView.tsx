@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import TabPill from "@src/components/TabPill";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
@@ -21,18 +20,9 @@ const ComputerUseCategoryView: React.FC = () => {
     <DetailPanelContainer>
       <InternalHeader
         noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={tabs}
-            activeTab="desktop"
-            onChange={() => {}}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
+        tabs={tabs}
+        activeTab="desktop"
+        onTabChange={() => {}}
       />
       <div className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
         <div

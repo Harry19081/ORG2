@@ -19,13 +19,6 @@ import {
   WORKSTATION_TRAIL_TITLE_BUTTON_CLASS,
 } from "../tokens/workstationTrailTokens";
 
-export {
-  WORKSTATION_TRAIL_SURFACE_CLASS,
-  WORKSTATION_TRAIL_WIDTH,
-  WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
-  FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
-} from "../tokens/workstationTrailTokens";
-
 export interface WorkstationTrailSurfaceProps extends HTMLAttributes<HTMLElement> {
   as?: "aside" | "div";
   children?: ReactNode;
@@ -166,7 +159,6 @@ export interface WorkstationTrailSectionProps {
   title: ReactNode;
   /** Control aligned to the right end of the label row (e.g. a picker trigger). */
   action?: ReactNode;
-  hideTitle?: boolean;
   dataTestId?: string;
   children?: ReactNode;
 }
@@ -179,14 +171,9 @@ export interface WorkstationTrailSectionProps {
 export const WorkstationTrailSection: FC<WorkstationTrailSectionProps> = ({
   title,
   action,
-  hideTitle = false,
   dataTestId,
   children,
 }) => {
-  const label = !hideTitle ? (
-    <h3 className={WORKSTATION_TRAIL_CONTENT.sectionLabel}>{title}</h3>
-  ) : null;
-
   return (
     <section
       data-testid={dataTestId}
@@ -196,7 +183,7 @@ export const WorkstationTrailSection: FC<WorkstationTrailSectionProps> = ({
           on the exact spot the trail's own collapse control occupies. Rendered
           unconditionally to keep every section label on one baseline. */}
       <div className="flex h-6 items-center justify-between gap-2 pr-[3px]">
-        {label}
+        <h3 className={WORKSTATION_TRAIL_CONTENT.sectionLabel}>{title}</h3>
         {action}
       </div>
       {children}

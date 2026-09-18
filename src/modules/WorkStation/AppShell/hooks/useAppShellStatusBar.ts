@@ -46,7 +46,6 @@ export function useAppShellStatusBar({
     const sharedPanelCallbacks = {
       onTogglePrimaryPanel: workStationPanels.togglePrimarySidebar,
       primaryPanelCollapsed,
-      layoutMode: workStationPanels.layoutMode,
     };
     setPerAppStatusBarCallbacks((prev) => ({
       ...prev,
@@ -68,6 +67,5 @@ export function useAppShellStatusBar({
     setPerAppStatusBarCallbacks,
     workStationPanels.togglePrimarySidebar,
     primaryPanelCollapsed,
-    workStationPanels.layoutMode,
   ]);
 }

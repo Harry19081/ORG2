@@ -11,7 +11,6 @@ import Input from "@src/components/Input";
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select/types";
 import Switch from "@src/components/Switch";
-import TabPill from "@src/components/TabPill";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
@@ -429,18 +428,9 @@ export const HousekeeperCategoryView: React.FC = () => {
     <DetailPanelContainer>
       <InternalHeader
         noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={tabs}
-            activeTab={HOUSEKEEPER_TAB}
-            onChange={() => undefined}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
+        tabs={tabs}
+        activeTab={HOUSEKEEPER_TAB}
+        onTabChange={() => undefined}
       />
       <ScrollFadeContainer
         className={`scroll-fade-at-top ${DETAIL_PANEL_TOKENS.scrollContentNoTop}`}

@@ -204,6 +204,9 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     const secondaryPosition = secondaryPanelConfig?.position ?? "right";
     const secondarySize = secondaryPanelConfig?.size ?? 0;
     const secondaryOnSizeChange = secondaryPanelConfig?.onSizeChange ?? noop;
+    // Every config carries its own bounds; these fallbacks only feed the
+    // always-called resize hooks when no secondary panel is mounted, where
+    // the resulting handlers are never attached.
     const secondaryMinSize = secondaryPanelConfig?.minSize ?? 100;
     const secondaryMaxSize = secondaryPanelConfig?.maxSize ?? 1200;
     const { handleMouseDown: handleSecondaryResize } = useResizeHandle(

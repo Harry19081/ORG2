@@ -14,9 +14,6 @@ const STORAGE_KEYS = [
   "devtools_collapsed",
   "bottom_collapsed",
   "bottom_height",
-  "title_bar_hidden",
-  "status_bar_hidden",
-  "follow_agent_highlight",
 ] as const;
 
 export type WorkStationStorageKey = (typeof STORAGE_KEYS)[number];

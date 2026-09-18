@@ -138,7 +138,7 @@ export const DETAIL_PANEL_TOKENS = {
   ...DETAIL_PANEL_WIDTH_TOKENS,
   /**
    * Bottom inset on scrollable wizard / settings-style bodies so the last block
-   * clears the footer (matches SETTINGS_MAIN_CONTENT_WRAPPER_CLASSES).
+   * clears the footer.
    */
   contentScrollBottom: "pb-6 pb-[25vh]",
 } as const;

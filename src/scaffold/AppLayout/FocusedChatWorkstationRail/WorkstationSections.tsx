@@ -22,6 +22,7 @@ import { WorkspaceContextRow } from "./WorkspaceContextRow";
 import { WorkstationCollapsedDiffStats } from "./WorkstationCollapsedDiffStats";
 import { WorkstationItemRow } from "./WorkstationItemRow";
 import type { WorkstationSectionsProps } from "./types";
+import { hasFocusedChatSessionEnvironment } from "./useWorkstationRailSections";
 
 export function WorkstationSections({
   collapseGroupLabel,
@@ -100,12 +101,7 @@ export function WorkstationSections({
               ))}
             {!groupCollapsed &&
               section.environment &&
-              (section.environment.repoName ||
-                section.environment.branchName ||
-                section.environment.worktreeBranchName ||
-                section.environment.workItem ||
-                section.environment.owner ||
-                section.environment.agentHarness) && (
+              hasFocusedChatSessionEnvironment(section.environment) && (
                 <>
                   {section.environment.owner && (
                     <OwnerIdentityRow

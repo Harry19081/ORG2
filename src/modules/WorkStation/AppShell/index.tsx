@@ -12,10 +12,6 @@ import WorkstationTabHeader from "@src/scaffold/WorkbenchChrome/WorkstationTabHe
 import { workstationActiveSessionIdAtom } from "@src/store/session";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
-import {
-  workStationFollowAgentHighlightEnabledAtom,
-  workStationStatusBarHiddenAtom,
-} from "@src/store/ui/workStationLayout/chromeAtoms";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
 
@@ -45,10 +41,6 @@ interface AppShellProps {
 
 const AppShell = React.memo(
   ({ isActive = true, chatPanelFocused = false }: AppShellProps) => {
-    const statusBarHidden = useAtomValue(workStationStatusBarHiddenAtom);
-    const followAgentHighlightEnabled = useAtomValue(
-      workStationFollowAgentHighlightEnabledAtom
-    );
     const primaryPanelCollapsed = useAtomValue(
       workStationPrimarySidebarCollapsedAtom
     );
@@ -66,7 +58,7 @@ const AppShell = React.memo(
     useWorkstationRouteEntry();
 
     const { isAgentStation, illuminateAgentStationChrome } =
-      useAppShellStationMode({ followAgentHighlightEnabled });
+      useAppShellStationMode();
 
     const agentStationCaptionVisible =
       isAgentStation &&
@@ -124,7 +116,6 @@ const AppShell = React.memo(
     useWorkspacePortAdvertisedUrls(isCodeMode && portsEnabled);
 
     const showStatusBar = shouldShowWorkStationStatusBar({
-      statusBarHidden,
       isAgentStation,
       activeTabType: activeWorkStationTab?.type,
     });
@@ -144,7 +135,7 @@ const AppShell = React.memo(
           />
         )}
         <AgentStationChromeFrame
-          enabled={followAgentHighlightEnabled && isAgentStation}
+          enabled={isAgentStation}
           illuminated={illuminateAgentStationChrome}
           captionVisible={agentStationCaptionVisible}
           hasSession={!!workstationActiveSessionId}

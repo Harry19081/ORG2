@@ -7,6 +7,7 @@ import { I18nextProvider } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { resolveAgentIcon } from "@src/config/agentIcons";
 import { DEFAULT_BUTTON_TOOLTIP_DELAY_MS } from "@src/config/tooltip";
 import common from "@src/i18n/locales/en/common.json";
 import navigation from "@src/i18n/locales/en/navigation.json";
@@ -32,6 +33,7 @@ import {
   terminalSessionsAtom,
 } from "@src/store/workstation/codeEditor/terminal";
 import { workstationLayoutAtom } from "@src/store/workstation/tabs";
+import { SDE_AGENT_ICON_ID } from "@src/util/session/sessionDispatch";
 
 import { FocusedChatWorkstationRail } from ".";
 import type {
@@ -182,8 +184,9 @@ describe.each(["wide rail", "compact menu"])(
                   compactMenuHost: menuHost,
                   conversationMinimapHostRef: () => {},
                   sessionContext,
-                  sources,
-                  subagents,
+                  sources: sources ?? [],
+                  subagentIcon: resolveAgentIcon(SDE_AGENT_ICON_ID),
+                  subagents: subagents ?? [],
                 })
               )
             )

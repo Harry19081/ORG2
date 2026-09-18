@@ -564,8 +564,6 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
   return (
     <DetailSplitLayout
       title={t("projects.newProject")}
-      borderlessHeader
-      hideHeader
       publishHeaderToWorkstation={publishHeaderToWorkstation}
       leftContent={
         <CreatorContentLayout

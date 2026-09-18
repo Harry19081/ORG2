@@ -168,22 +168,32 @@ for (const kind of ["column", "split"] as const) {
             defaultLeftWidth: 200,
             leftPanel: "left",
             rightPanel: "right",
-            onSplitChange: commit,
           });
     act(() => root.render(child));
     const handle = host.querySelector("[data-handle], [role=separator]")!;
     expect(handle).not.toBeNull();
+    // The split panel keeps its width internally; its committed width is the
+    // left panel's rendered width.
+    const leftPanel = host.firstElementChild?.firstElementChild as HTMLElement;
+    const splitWidth = () => leftPanel.style.width;
     send(handle, "mousedown");
     send(window, "mousemove", 30);
     if (reason === "mouseup") send(handle, "mouseup", 30, 0);
     else interrupt(reason);
     const count = commit.mock.calls.length;
+    const width = kind === "split" ? splitWidth() : "";
     send(window, "mousemove", 200);
     send(window, "mouseup", 200, 0);
     act(() => vi.advanceTimersByTime(30));
     expect(commit).toHaveBeenCalledTimes(count);
-    if (reason !== "unmount") {
+    if (kind === "split" && reason !== "unmount") {
+      expect(splitWidth()).toBe(width);
+      expect(width).toBe("230px");
+    }
+    if (kind === "column" && reason !== "unmount") {
       expect(commit).toHaveBeenLastCalledWith(230);
+    }
+    if (reason !== "unmount") {
       send(handle, "mousedown");
       send(window, "mouseup", 0, 0);
       expect(document.body.classList.contains("resize-active")).toBe(false);

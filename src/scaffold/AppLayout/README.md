@@ -22,9 +22,8 @@ import { AppLayout } from "@src/scaffold/AppLayout";
 <AppLayout
   sidebar={<MySidebar />}
   floatingSidebar={<MyFloatingSidebar />}
-  showChatPanel={true}
-  showTabBar={true}
-  contentPadding={false}
+  viewportWidth={viewportWidth}
+  chatPosition="right"
 >
   {children}
 </AppLayout>;
@@ -35,7 +34,7 @@ import { AppLayout } from "@src/scaffold/AppLayout";
 Two-panel layout with resizable left panel. Used for list/detail views like Settings, Inbox, Usage pages.
 
 ```tsx
-import { SplitViewLayout } from "@src/scaffold/layouts";
+import SplitViewLayout from "@src/scaffold/layouts/SplitViewLayout";
 
 <SplitViewLayout
   listContent={<ItemList />}
@@ -43,10 +42,6 @@ import { SplitViewLayout } from "@src/scaffold/layouts";
   listWidth={320}
 />;
 ```
-
-### MainContentArea
-
-Wrapper with CSS containment for performance isolation. Used internally by AppLayout.
 
 ### GlobalModals
 
@@ -69,7 +64,7 @@ AppShell (src/modules/index.tsx)
     ├── Sidebar slot (dynamic per route)
     ├── FloatingSidebar (hover container)
     ├── TabBar (conditional)
-    ├── MainContentArea
+    ├── Main content (CSS-contained)
     │   ├── Content (via Outlet)
     │   ├── ChatPanel (session/editor)
     │   └── GlobalChatPanel (Cmd+I)

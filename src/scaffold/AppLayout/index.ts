@@ -5,5 +5,3 @@
  */
 
 export { AppLayout } from "./AppLayout";
-export { GlobalModals } from "./GlobalModals";
-export { MainContentArea } from "./MainContentArea";

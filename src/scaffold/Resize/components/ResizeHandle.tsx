@@ -30,7 +30,6 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = memo(
     onContextMenu,
     isResizing = false,
     variant = "border",
-    noHover = false,
     noAccent = false,
     tooltipLabel,
     tooltipShortcut,
@@ -91,7 +90,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = memo(
       "inset-0",
       "transition-colors",
       "duration-150",
-      noHover ? restingBg : isResizing ? activeBg : `${restingBg} ${hoverBg}`,
+      isResizing ? activeBg : `${restingBg} ${hoverBg}`,
     ].join(" ");
 
     const hitAreaClasses = isVertical
@@ -102,7 +101,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = memo(
     // overflow-clipped pane can instead provide a zero-width sibling host;
     // that host moves in the same flex layout as the divider, keeping the
     // centered indicator synchronized without coordinate tracking.
-    const showIndicator = !noHover && !noAccent;
+    const showIndicator = !noAccent;
     const usesIndicatorHost = indicatorHost != null;
     const verticalIndicatorPosition =
       indicatorPlacement === "start"

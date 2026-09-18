@@ -17,7 +17,6 @@ interface ChatPanelShellProps {
   chatPanelOpacityStyle: ChatPanelShellStyle;
   chatWidth: number;
   chatWidthStyleValue: string | number;
-  embedded: boolean;
   focusedWorkstationRail?: React.ReactNode;
   /** The pane fills the app window; hosted tab content may use compact chrome. */
   fullScreen: boolean;
@@ -46,7 +45,6 @@ export function ChatPanelShell({
   chatPanelOpacityStyle,
   chatWidth,
   chatWidthStyleValue,
-  embedded,
   focusedWorkstationRail,
   fullScreen,
   hasTabBar,
@@ -77,8 +75,6 @@ export function ChatPanelShell({
       onMouseDown={onResizeMouseDown}
       tooltipLabel={resizeTooltipLabel}
       tooltipShortcut={resizeTooltipShortcut}
-      variant={embedded ? "border" : "transparent"}
-      noAccent={!embedded}
     />
   );
 
@@ -98,7 +94,7 @@ export function ChatPanelShell({
           : { width: chatWidthStyleValue }),
         minWidth:
           !useExternalWidth && chatWidth > 0 ? CHAT_MIN_WIDTH : undefined,
-        borderRadius: embedded ? 0 : "var(--radius-page)",
+        borderRadius: 0,
         contain: isDragging ? "strict" : undefined,
         willChange: isDragging ? "width" : undefined,
         ...chatPanelOpacityStyle,

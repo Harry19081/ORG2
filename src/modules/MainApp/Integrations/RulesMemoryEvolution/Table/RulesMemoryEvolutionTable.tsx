@@ -321,18 +321,9 @@ export const RulesMemoryEvolutionTable: React.FC<
     <DetailPanelContainer>
       <InternalHeader
         noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={tabs}
-            activeTab={activeTab}
-            onChange={(key) => setActiveTab(key as RulesMemoryEvolutionPageTab)}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={(key) => setActiveTab(key as RulesMemoryEvolutionPageTab)}
       />
       {activeTab === "memory" ? (
         <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>

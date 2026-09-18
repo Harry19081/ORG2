@@ -7,9 +7,7 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import TabPill from "@src/components/TabPill";
 import {
-  DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
   InternalHeader,
 } from "@src/components/layout/blocks";
@@ -112,18 +110,9 @@ export const ExternalSkillsetsCategoryView: React.FC<
       {!wizardOpen && (
         <InternalHeader
           noPanelHeader
-          contentPadding
-          className={DETAIL_PANEL_TOKENS.headerWidth}
-          tabs={
-            <TabPill
-              tabs={tabs}
-              activeTab={activeTab}
-              onChange={(key) => onTabChange(key as ExternalSkillsetsTab)}
-              variant="simple"
-              fillWidth={false}
-              size="large"
-            />
-          }
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={(key) => onTabChange(key as ExternalSkillsetsTab)}
         />
       )}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">

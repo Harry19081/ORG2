@@ -43,19 +43,6 @@
   }
 }
 
-.mobile-discovery-identity {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  gap: mobile.$space-3;
-  font-size: var(--mobile-type-secondary-size);
-}
-.mobile-discovery-identity > :last-child {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .mobile-discovery-scroll {
   flex: 1;
   min-height: 0;

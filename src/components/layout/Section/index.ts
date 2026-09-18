@@ -5,7 +5,7 @@
  * (settings, documentation, integrations, etc.)
  *
  * Hierarchy:
- *   <SectionHeading title="General" id="general">     page-level heading
+ *   <SectionHeading title="General">                  page-level heading
  *     <SectionContainer title="Layout">                bordered container + optional sub-title
  *       <SectionRow label="Theme">                     label + control pair
  *         <Select style={SECTION_CONTROL_STYLE} />
@@ -70,6 +70,4 @@ export {
   SECTION_ACTION_GAP_CLASSES,
   /** "flex flex-col gap-3" — wrapper gap between section containers */
   SECTION_GAP_CLASSES,
-  /** Shared icon/title/description/content hierarchy for content intros */
-  SECTION_INTRO_TOKENS,
 } from "./tokens";

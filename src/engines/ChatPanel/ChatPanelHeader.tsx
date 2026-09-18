@@ -75,7 +75,6 @@ interface ChatPanelHeaderProps {
   tokenUsageVisible: boolean;
   turnMetadataVisible: boolean;
   shouldOffsetHeaderForCollapsedSidebar: boolean;
-  showHeader: boolean;
   showSessionContent: boolean;
   /** Owner-side share entry gate (design §6.3): own session + org in scope. */
   showCloudShareSettings: boolean;
@@ -135,7 +134,6 @@ export function ChatPanelHeader({
   tokenUsageVisible,
   turnMetadataVisible,
   shouldOffsetHeaderForCollapsedSidebar,
-  showHeader,
   showSessionContent,
   showCloudShareSettings,
   showTranscriptActions,
@@ -168,7 +166,6 @@ export function ChatPanelHeader({
     ? rightEdge.reservedRight
     : undefined;
   const insetTransitionClassName = usePaneLayoutInsetTransition();
-  if (!showHeader) return null;
 
   const tuiModeLabel = tuiMode ? t("chat.tuiModeOn") : t("chat.tuiModeOff");
 

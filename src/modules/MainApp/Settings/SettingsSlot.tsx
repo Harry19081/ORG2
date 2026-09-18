@@ -32,7 +32,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import Button from "@src/components/Button";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import { Placeholder } from "@src/components/Placeholder";
-import TabPill, { type TabPillItem } from "@src/components/TabPill";
+import type { TabPillItem } from "@src/components/TabPill";
 import Tooltip from "@src/components/Tooltip";
 // AGENT_ORGS and MY_ROLE roots host larger surfaces that already exist
 // as full-page modules; the slot lazy-loads them on demand.
@@ -146,18 +146,9 @@ const SettingsSlotAppBody: React.FC = () => {
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <InternalHeader
             noPanelHeader
-            contentPadding
-            className={DETAIL_PANEL_TOKENS.headerWidth}
-            tabs={
-              <TabPill
-                tabs={tabs}
-                activeTab={activeTab}
-                onChange={handleTabChange}
-                variant="simple"
-                fillWidth={false}
-                size="large"
-              />
-            }
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
           />
           <ScrollFadeContainer
             className={`scroll-fade-at-top ${DETAIL_PANEL_TOKENS.scrollContentNoTop}`}

@@ -5,14 +5,6 @@ import {
 import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 
 /**
- * Width at which a maximized chat pane is wide enough to give the
- * conversation minimap a column of its own. Below it the pane is as tight as
- * a side pane, so the rail floats over the transcript there instead of
- * taking 36px the transcript cannot spare.
- */
-export const FOCUSED_CHAT_MINIMAP_COLUMN_CONTAINER_PX = 850;
-
-/**
  * Host for the conversation minimap inside the trail column.
  *
  * In-flow from 850px up, where the track reserves the rail's 36px (see
@@ -27,9 +19,9 @@ export const FOCUSED_CHAT_WORKSTATION_MINIMAP_HOST_CLASS =
 export function resolveFocusedChatWorkstationSectionOrder(
   hasOpenTabs: boolean,
   hasSessionEnvironment: boolean,
-  hasSubagents = false,
-  sessionEnvironmentKind?: "local" | "cloud",
-  hasSources = false
+  hasSubagents: boolean,
+  sessionEnvironmentKind: "local" | "cloud" | undefined,
+  hasSources: boolean
 ): Array<"session" | "workspace" | "subagents" | "sources" | "tabs"> {
   const environmentSections = hasSessionEnvironment
     ? sessionEnvironmentKind === "cloud"

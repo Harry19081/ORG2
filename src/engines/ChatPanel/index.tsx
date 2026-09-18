@@ -82,8 +82,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
   ({
     viewportWidth,
     useExternalWidth = false,
-    embedded = false,
-    active = true,
     position = "right",
     resizeIndicatorHost,
     sessionCreatorSlot: SessionCreatorSlot,
@@ -256,7 +254,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     }, [openSideChat]);
 
     const contentState = resolveChatPanelContentState({
-      active,
       currentSessionId: currentSessionId ?? null,
       surface,
     });
@@ -284,12 +281,11 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     });
 
     const showResizeHandle = !useExternalWidth;
-    const borderClasses =
-      embedded && !showResizeHandle
-        ? isLeftPosition
-          ? "border-r border-border-1"
-          : "border-l border-border-1"
-        : "";
+    const borderClasses = !showResizeHandle
+      ? isLeftPosition
+        ? "border-r border-border-1"
+        : "border-l border-border-1"
+      : "";
     const useFullScreenCreator =
       isChatFocus || useExternalWidth || chatWidth >= chatMaxWidth;
     const creatorVariant = useFullScreenCreator ? "fullScreen" : "default";
@@ -376,7 +372,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         shouldOffsetHeaderForCollapsedSidebar={
           shouldOffsetHeaderForCollapsedSidebar
         }
-        showHeader={contentState.showHeader || isStandaloneToolTabActive}
         showSessionContent={
           contentState.showSessionContent && !isStandaloneToolTabActive
         }
@@ -436,7 +431,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         emptyChatContent={emptyChatContent}
         paginationEnabled={paginationEnabled}
         position={position}
-        showPanelContent={contentState.showPanelContent}
         showSessionContent={contentState.showSessionContent}
         sessionViewMode={sessionView.mode}
         chromeTopInset={chromeTopInsetPx}
@@ -463,7 +457,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           chatPanelOpacityStyle={chatPanelOpacityStyle}
           chatWidth={chatWidth}
           chatWidthStyleValue={chatWidthStyleValue}
-          embedded={embedded}
           fullScreen={isChatFocus}
           focusedWorkstationRail={
             showFocusedWorkstationControls ? (

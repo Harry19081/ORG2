@@ -6,7 +6,17 @@
  */
 import { DETAIL_PANEL_TOKENS } from "@src/components/layout/blocks";
 
+import type { SplitViewLayoutProps } from "../SplitViewLayout";
+
 export const SUBPAGE_CONTENT_WRAPPER_CLASSES = `${DETAIL_PANEL_TOKENS.contentWidth} flex flex-col gap-10 py-6 pb-[25vh]`;
 
-/** Main App Settings scroll content: no top padding under the panel header; keeps bottom padding + scroll affordance. */
-export const SETTINGS_MAIN_CONTENT_WRAPPER_CLASSES = `${DETAIL_PANEL_TOKENS.contentWidth} flex flex-col gap-10 ${DETAIL_PANEL_TOKENS.contentScrollBottom}`;
+/** SplitViewLayout geometry shared by the Project Manager settings subpages. */
+export const SUBPAGE_SPLIT_VIEW_PRESET = {
+  className: "min-h-0 flex-1 overflow-hidden",
+  hideBreadcrumbWhenSidebarCollapsed: true,
+  mainContentClassName: "",
+  listPanelBackgroundClassName: "",
+  listWidth: 180,
+  minListWidth: 140,
+  maxListWidth: 240,
+} as const satisfies Partial<SplitViewLayoutProps>;

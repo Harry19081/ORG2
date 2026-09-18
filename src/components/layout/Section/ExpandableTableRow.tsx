@@ -11,7 +11,6 @@
  *     description="Allocation by subsystem"
  *     expanded={showBreakdown}
  *     onToggle={() => setShowBreakdown((v) => !v)}
- *     disabled={rows.length === 0}
  *   >
  *     <SettingsTable ... />
  *   </ExpandableTableRow>
@@ -28,7 +27,6 @@ export interface ExpandableTableRowProps {
   description?: string;
   expanded: boolean;
   onToggle: () => void;
-  disabled?: boolean;
   /** Content rendered in the indented block when expanded */
   children?: React.ReactNode;
   /** Extra controls rendered alongside the chevron button */
@@ -36,15 +34,7 @@ export interface ExpandableTableRowProps {
 }
 
 const ExpandableTableRow: React.FC<ExpandableTableRowProps> = memo(
-  ({
-    label,
-    description,
-    expanded,
-    onToggle,
-    disabled,
-    children,
-    extraControls,
-  }) => {
+  ({ label, description, expanded, onToggle, children, extraControls }) => {
     return (
       <>
         <SectionRow label={label} description={description}>
@@ -68,7 +58,6 @@ const ExpandableTableRow: React.FC<ExpandableTableRowProps> = memo(
                 )
               }
               iconOnly
-              disabled={disabled}
             />
           </div>
         </SectionRow>

@@ -15,8 +15,8 @@ export function WorkstationCollapsedDiffStats({
   );
   return (
     <DiffStatsBadge
-      additions={item.workingTreeRepo ? totals.additions : item.additions}
-      deletions={item.workingTreeRepo ? totals.deletions : item.deletions}
+      additions={totals.additions}
+      deletions={totals.deletions}
       variant="plain"
       size="sm"
       reserveValueWidth={false}

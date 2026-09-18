@@ -82,8 +82,6 @@ export function useBrowserLayoutState({
     currentSessionIndex: browser.currentSessionIndex,
     selectedElement: browser.selectedElement,
     handleToggleDevTools,
-    handlePrevSession: browser.handlePrevSession,
-    handleNextSession: browser.handleNextSession,
     clearSelection: browser.clearSelection,
     setAddToAgent,
     toastSuccess: Message.success,

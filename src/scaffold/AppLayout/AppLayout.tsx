@@ -2,7 +2,7 @@
  * AppLayout Component
  *
  * Consolidated shared layout for all Orgii pages.
- * Handles sidebar, content, and optional chat panel.
+ * Handles sidebar, content, and the docked chat panel slot.
  *
  * Chat and workbench content use the single Modern layout: flex siblings with
  * flat, edge-to-edge surfaces.
@@ -59,7 +59,6 @@ import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { isWindows } from "@src/util/platform/tauri";
 
 import { GlobalModals } from "./GlobalModals";
-import { MainContentArea } from "./MainContentArea";
 
 const SettingsSlot = React.lazy(
   () =>
@@ -122,6 +121,10 @@ function WorkbenchActionSystemScope({
   );
 }
 
+const MAIN_CONTENT_CONTAINMENT_STYLE: React.CSSProperties = {
+  contain: "layout style",
+};
+
 // ============================================
 // Types
 // ============================================
@@ -129,14 +132,11 @@ function WorkbenchActionSystemScope({
 export interface AppLayoutProps {
   /** Current window viewport width shared with the embedded Chat Panel. */
   viewportWidth: number | undefined;
-  /** Sidebar component to render (null = no sidebar) */
-  sidebar?: React.ReactNode;
+  /** Pinned sidebar component to render. */
+  sidebar: React.ReactNode;
 
   /** Floating sidebar (shown when hovering over collapsed sidebar area) */
-  floatingSidebar?: React.ReactNode;
-
-  /** Whether to show the built-in chat panel (default: false) */
-  showChatPanel?: boolean;
+  floatingSidebar: React.ReactNode;
 
   /** Chat panel position ("left" or "right"). */
   chatPosition?: ChatPanelPosition;
@@ -156,9 +156,6 @@ export interface AppLayoutProps {
    */
   chatPanelMode?: ChatPanelMode;
 
-  /** Session sidebar width reserved by the parent layout. */
-  sessionSidebarWidth?: number;
-
   /** Content to render in the main area */
   children: React.ReactNode;
 }
@@ -171,11 +168,9 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
   viewportWidth,
   sidebar,
   floatingSidebar,
-  showChatPanel = false,
   chatPosition = "right",
   chatPanelMaximized = false,
   chatPanelMode = "session",
-  sessionSidebarWidth: _sessionSidebarWidth = 0,
   children,
 }) => {
   const rawChatWidth = useAtomValue(chatWidthAtom);
@@ -194,16 +189,12 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
   const chatWidth = clampChatWidth(effectiveRawWidth, viewportWidth);
   const chatWidthStyleValue = chatWidth > 0 ? CHAT_WIDTH_STYLE_VALUE : 0;
   const isChatOnLeft = chatPosition === "left";
-  const isChatVisible = chatPanelMaximized || (showChatPanel && chatWidth > 0);
+  const isChatVisible = chatPanelMaximized || chatWidth > 0;
   // Settings doesn't have a "session" to render — when the slot is in
   // settings mode it must always be visible regardless of `chatWidth`
   // (otherwise an existing zero-width chat would hide the settings panel
   // too).
   const isSlotVisible = chatPanelMode === "settings" ? true : isChatVisible;
-  // Keep the chat mounted at zero width while the workstation route owns the
-  // slot. This lets close/open animate without keeping the heavy panel alive
-  // on unrelated routes.
-  const shouldMountSlot = isSettingsSlot || showChatPanel || chatPanelMaximized;
   const settingsSurfaceStyle = getPagePanelBackgroundStyle(
     backgroundConfig.pageOpacity
   );
@@ -269,8 +260,6 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
     ) : (
       <ChatPanel
         viewportWidth={viewportWidth}
-        embedded
-        active={showChatPanel}
         useExternalWidth={chatPanelMaximized}
         position={chatPosition}
         resizeIndicatorHost={resizeIndicatorHostElement}
@@ -278,7 +267,8 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
       />
     );
 
-  const chatSlot = shouldMountSlot ? (
+  // The slot stays mounted at zero width so close/open can animate.
+  const chatSlot = (
     <div
       key="chat-slot"
       ref={chatSlotRef}
@@ -297,19 +287,18 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
     >
       {slotInner}
     </div>
-  ) : null;
+  );
 
-  const resizeIndicatorHost =
-    shouldMountSlot && !chatPanelMaximized ? (
-      <div
-        key="chat-workstation-resize-indicator-host"
-        ref={setResizeIndicatorHostElement}
-        className="pointer-events-none relative z-80 w-0 flex-none self-stretch overflow-visible"
-        style={getResizeIndicatorHostStyle(chatPosition)}
-        data-chat-workstation-resize-indicator-host
-        aria-hidden
-      />
-    ) : null;
+  const resizeIndicatorHost = !chatPanelMaximized ? (
+    <div
+      key="chat-workstation-resize-indicator-host"
+      ref={setResizeIndicatorHostElement}
+      className="pointer-events-none relative z-80 w-0 flex-none self-stretch overflow-visible"
+      style={getResizeIndicatorHostStyle(chatPosition)}
+      data-chat-workstation-resize-indicator-host
+      aria-hidden
+    />
+  ) : null;
 
   // Shared content wrapped in providers
   const contentArea = (
@@ -372,26 +361,27 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
       {windowsHost && <WindowsTopBar />}
       <div className="flex min-h-0 min-w-0 flex-1">
         <HoverSidebar.Trigger />
-        {sidebar ? <PinnedSidebarChrome /> : null}
+        <PinnedSidebarChrome />
         <PinnedWorkbenchChrome />
         {sidebar}
 
-        {floatingSidebar && (
-          <HoverSidebar.Container>{floatingSidebar}</HoverSidebar.Container>
-        )}
+        <HoverSidebar.Container>{floatingSidebar}</HoverSidebar.Container>
 
         <div
           className={`flex min-h-0 min-w-0 flex-1 flex-col ${
             windowsHost ? "windows-main-page-underlay" : ""
           }`}
         >
-          <MainContentArea
-            className={`relative min-h-0 flex-1 ${
+          <div
+            className={`relative flex h-full min-h-0 flex-1 flex-col ${
               windowsHost ? "windows-main-page-surface" : ""
             }`}
+            // Containment keeps layout thrash from propagating during page
+            // transitions.
+            style={MAIN_CONTENT_CONTAINMENT_STYLE}
           >
             {contentArea}
-          </MainContentArea>
+          </div>
 
           <GlobalModals />
         </div>
