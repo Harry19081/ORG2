@@ -37,12 +37,6 @@ export interface ChatPanelProps {
   /** Whether to use external width management */
   useExternalWidth?: boolean;
   /**
-   * Whether the docked chat surface is active for the current station.
-   * When false, the panel shell may stay mounted for layout persistence,
-   * but it must not mount ChatView/SessionCreator or claim session sync.
-   */
-  active?: boolean;
-  /**
    * Position of the chat panel.
    * Affects drag handle position, border side, and header ordering.
    * @default "right"

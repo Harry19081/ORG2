@@ -82,7 +82,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
   ({
     viewportWidth,
     useExternalWidth = false,
-    active = true,
     position = "right",
     resizeIndicatorHost,
     sessionCreatorSlot: SessionCreatorSlot,
@@ -255,7 +254,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     }, [openSideChat]);
 
     const contentState = resolveChatPanelContentState({
-      active,
       currentSessionId: currentSessionId ?? null,
       surface,
     });
@@ -374,7 +372,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         shouldOffsetHeaderForCollapsedSidebar={
           shouldOffsetHeaderForCollapsedSidebar
         }
-        showHeader={contentState.showHeader || isStandaloneToolTabActive}
         showSessionContent={
           contentState.showSessionContent && !isStandaloneToolTabActive
         }
@@ -434,7 +431,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         emptyChatContent={emptyChatContent}
         paginationEnabled={paginationEnabled}
         position={position}
-        showPanelContent={contentState.showPanelContent}
         showSessionContent={contentState.showSessionContent}
         sessionViewMode={sessionView.mode}
         chromeTopInset={chromeTopInsetPx}

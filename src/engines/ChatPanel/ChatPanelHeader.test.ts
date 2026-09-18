@@ -109,7 +109,6 @@ function render({
         tokenUsageVisible: false,
         turnMetadataVisible: false,
         shouldOffsetHeaderForCollapsedSidebar,
-        showHeader: true,
         showSessionContent: true,
         showCloudShareSettings: false,
         t: ((key: string) => key) as unknown as TFunction<
