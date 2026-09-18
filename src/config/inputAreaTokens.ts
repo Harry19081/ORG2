@@ -119,6 +119,9 @@ export const INPUT_AREA_MENU_FRAME = {
   placement: "up",
 } as const;
 
+/** Vertical distance between a composer pill and the menu it opens. */
+export const INPUT_AREA_PILL_MENU_GAP = 6;
+
 // ==============================================
 // Padding Tokens
 // ==============================================

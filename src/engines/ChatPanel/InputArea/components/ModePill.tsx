@@ -29,6 +29,7 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import SelectorPill from "@src/components/SelectorPill";
+import { INPUT_AREA_PILL_MENU_GAP } from "@src/config/inputAreaTokens";
 import {
   AGENT_EXEC_MODES,
   type AgentExecMode,
@@ -156,7 +157,7 @@ const ModePill: React.FC<ModePillProps> = memo(
       panelRef,
       panelPosition,
     } = useDropdownEngine<HTMLButtonElement>({
-      gap: 6,
+      gap: INPUT_AREA_PILL_MENU_GAP,
       align: "left",
       placement,
     });
