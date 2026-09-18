@@ -64,7 +64,7 @@ const WorkspaceDashboardPanelView = lazy(
 
 /**
  * Sections that lay themselves out inside the full pane height instead of
- * flowing through the shared padded wrapper. That wrapper ends in a `pb-[50vh]`
+ * flowing through the shared padded wrapper. That wrapper ends in a `pb-[25vh]`
  * scroll affordance, which is right for long content but leaves a
  * placeholder-only section unable to fill — and centred in the top half.
  */

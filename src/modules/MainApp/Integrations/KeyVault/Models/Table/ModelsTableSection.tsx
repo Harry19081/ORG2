@@ -186,21 +186,15 @@ export default function ModelsTableSection({
           size="inline"
           htmlType="button"
           onClick={() => setHideOlder((prev) => !prev)}
-          className="gap-1.5 text-[13px] hover:text-primary-5"
+          icon={
+            <HugeiconsIcon
+              icon={hideOlder ? ArrowDown01Icon : ArrowUp01Icon}
+              data-icon={hideOlder ? "chevron-down" : "chevron-up"}
+              size={14}
+            />
+          }
+          className="text-[13px] hover:text-primary-5"
         >
-          {hideOlder ? (
-            <HugeiconsIcon
-              icon={ArrowDown01Icon}
-              data-icon="chevron-down"
-              size={14}
-            />
-          ) : (
-            <HugeiconsIcon
-              icon={ArrowUp01Icon}
-              data-icon="chevron-up"
-              size={14}
-            />
-          )}
           {hideOlder
             ? t("modelsTable.showMoreOlder")
             : t("modelsTable.showLessOlder")}

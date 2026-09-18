@@ -445,7 +445,7 @@ export default function BuilderProfilePanel() {
       <div
         // Same 932px track as the tab header above, so nothing steps in or
         // out of alignment as you scroll.
-        className={`${DETAIL_PANEL_TOKENS.headerWidth} ${SECTION_GAP_CLASSES} px-4 pt-2 pb-[50vh]`}
+        className={`${DETAIL_PANEL_TOKENS.headerWidth} ${SECTION_GAP_CLASSES} px-4 pt-2 pb-[25vh]`}
       >
         {profile.sessions === 0 || !builderType ? (
           <div
