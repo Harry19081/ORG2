@@ -26,6 +26,7 @@ afterEach(async () => {
 
 describe("PageNotice copy", () => {
   it("copies title, nested details and subtitle without triggering Retry", async () => {
+    vi.mocked(copyText).mockResolvedValue(undefined);
     const retry = vi.fn();
     root = createRoot(container);
     await act(async () =>

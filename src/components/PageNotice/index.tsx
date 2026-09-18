@@ -172,7 +172,7 @@ const PageNotice: React.FC<PageNoticeProps> = ({
   const { t } = useTranslation("common");
   const bodyRef = React.useRef<HTMLDivElement>(null);
   const subtitleRef = React.useRef<HTMLSpanElement>(null);
-  const handleCopy = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCopy = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     const text = [
       title,
@@ -182,12 +182,10 @@ const PageNotice: React.FC<PageNoticeProps> = ({
       .filter((part) => part?.trim())
       .join("\n\n");
     if (!text) return;
-    try {
-      await copyText(text);
-      Message.success(t("status.copied"));
-    } catch {
-      Message.error(t("status.copyFailed"));
-    }
+    copyText(text).then(
+      () => Message.success(t("status.copied")),
+      () => Message.error(t("status.copyFailed"))
+    );
   };
   const baseText = {
     title: `block font-medium ${titleClassName ?? "text-[13px] leading-[14px]"}`,
@@ -320,9 +318,7 @@ const PageNotice: React.FC<PageNoticeProps> = ({
               icon={<HugeiconsIcon icon={Copy01Icon} size={14} />}
               title={t("actions.copy")}
               aria-label={t("actions.copy")}
-              onClick={(event) => {
-                void handleCopy(event);
-              }}
+              onClick={handleCopy}
             />
             {action && <div className="shrink-0">{actionNode}</div>}
             {onClose && (
