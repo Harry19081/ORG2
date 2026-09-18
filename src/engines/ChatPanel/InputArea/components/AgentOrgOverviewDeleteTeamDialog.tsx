@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
+import PanelFooter from "@src/components/layout/blocks/PanelFooter";
 import Modal from "@src/scaffold/ModalSystem";
 
 interface AgentOrgOverviewDeleteTeamDialogProps {
@@ -40,22 +40,25 @@ const AgentOrgOverviewDeleteTeamDialog: React.FC<
       onCancel={onClose}
       bodyClassName="space-y-3 px-5 py-4"
       footer={
-        <div className="flex h-12 items-center justify-end gap-2 px-3">
-          <Button variant="tertiary" disabled={isDeleting} onClick={onClose}>
-            {t("common:actions.cancel")}
-          </Button>
-          <Button
-            variant="danger"
-            disabled={!deleteConfirmed || isDeleting}
-            loading={isDeleting}
-            onClick={() => void onConfirm()}
-            data-testid="agent-org-delete-confirm-button"
-          >
-            {t("planner.agentOrgOverview.deleteTeam", {
+        <PanelFooter
+          secondaryActions={[
+            {
+              label: t("common:actions.cancel"),
+              onClick: onClose,
+              disabled: isDeleting,
+            },
+          ]}
+          primaryAction={{
+            label: t("planner.agentOrgOverview.deleteTeam", {
               defaultValue: "Delete Team",
-            })}
-          </Button>
-        </div>
+            }),
+            onClick: () => void onConfirm(),
+            variant: "danger",
+            disabled: !deleteConfirmed || isDeleting,
+            loading: isDeleting,
+            dataTestId: "agent-org-delete-confirm-button",
+          }}
+        />
       }
     >
       <div
