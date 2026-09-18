@@ -17,7 +17,10 @@ import { mobileComposerDesktopScope } from "../components/composer/mobileCompose
 import type { MobileComposerDraftStore } from "../components/composer/mobileComposerDraftStore";
 import { loadScopedMobileConnectionConfig } from "../connection/mobileConnectionStorage";
 import type { MobileConnectionConfig } from "../connection/types";
-import { MobileConnectionAuthorizationError } from "../connection/types";
+import {
+  MobileConnectionAuthorizationError,
+  MobileConnectionTicketError,
+} from "../connection/types";
 import { MobileRemotePlatformProvider } from "../platform";
 import { createBrowserMobileRemotePlatform } from "../platform/browser";
 import {
@@ -2521,6 +2524,68 @@ describe("MobileRemoteProviders send lifecycle", () => {
       document.dispatchEvent(new Event("visibilitychange"));
     });
     expect(FakeWebSocket.instances).toHaveLength(1);
+  });
+
+  it("retains a classified ticket failure during automatic retry and clears it after initialize", async () => {
+    act(() => root.unmount());
+    root = createRoot(container);
+    latestContext = null;
+    FakeWebSocket.instances = [];
+    const prepared = deferred<string>();
+    const browser = createBrowserMobileRemotePlatform();
+    const prepareSocketUrl = vi
+      .fn()
+      .mockRejectedValueOnce(
+        new MobileConnectionTicketError("Invalid Relay connection ticket")
+      )
+      .mockReturnValueOnce(prepared.promise);
+    const platform = {
+      ...browser,
+      connection: { ...browser.connection, prepareSocketUrl },
+    };
+    vi.useFakeTimers();
+    try {
+      await act(async () =>
+        root.render(
+          React.createElement(
+            TestMobileRemotePlatformProvider,
+            { platform },
+            React.createElement(
+              TestMobileRemoteProviders,
+              {
+                authUserId: "user-a",
+                demoByDefault: false,
+                suppressInitialBootstrap: true,
+              },
+              React.createElement(Probe)
+            )
+          )
+        )
+      );
+      await act(async () => {
+        await expect(
+          latestContext!.connectLive({
+            wsUrl: "wss://relay.example/v1/mobile/ws",
+          })
+        ).rejects.toThrow();
+      });
+      expect(latestContext!.connection.error?.connectionIssue).toBe("ticket");
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1_500);
+      });
+      expect(prepareSocketUrl).toHaveBeenCalledTimes(2);
+      expect(latestContext!.connection.status).toBe("connecting");
+      expect(latestContext!.connection.error?.connectionIssue).toBe("ticket");
+      await act(async () => {
+        prepared.resolve("wss://relay.example/v1/mobile/ws?ticket=valid");
+        await vi.advanceTimersByTimeAsync(0);
+      });
+      expect(latestContext!.connection.status).toBe("connected");
+      expect(latestContext!.connection.error).toBeUndefined();
+      expect(FakeWebSocket.instances).toHaveLength(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("never opens a socket from a late ticket after disconnect or account switch", async () => {

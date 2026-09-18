@@ -254,6 +254,13 @@
   "permission": {
     "submitFailed": "Could not confirm your response. Check the connection and try again."
   },
+  "connectionFeedback": {
+    "title": "Unable to reach your computer",
+    "ticket": "Connection verification failed. Check your phone’s clock and use the latest app",
+    "authorization": "This device’s access is no longer valid. Pair again to reconnect",
+    "unavailable": "Check your network and make sure ORG2 is running on your computer",
+    "retrying": "Retrying automatically. You can also reconnect now"
+  },
   "connectionRecovery": {
     "retry": "Reconnect",
     "repair": "Pair again",

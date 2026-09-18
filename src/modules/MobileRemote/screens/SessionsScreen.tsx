@@ -19,6 +19,7 @@ import {
 import { useMobileRemote } from "../app";
 import { useMobileVisitedSessions } from "../app/useMobileReadStateSync";
 import { useMobileSessionSearch } from "../app/useMobileSessionSearch";
+import { MobileConnectionNotice } from "../components/MobileConnectionNotice";
 import { MobileTopBar } from "../components/MobileTopBar";
 import { PendingInboxList } from "../components/PendingInboxList";
 import { SessionDeviceTabs } from "../components/SessionDeviceTabs";
@@ -62,6 +63,7 @@ export function SessionsScreen({
   const { runtime } = useMobileRemotePlatform();
   const {
     connection,
+    retryConnection,
     rpc,
     pendingInbox,
     focusPermission,
@@ -325,18 +327,11 @@ export function SessionsScreen({
           </Button>
         </div>
       ) : null}
-      {connection.status === "connecting" ||
-      connection.status === "disconnected" ||
-      offline ? (
-        <p role="status" className="mobile-discovery-notice">
-          {t(
-            connection.status === "connecting" ||
-              connection.status === "disconnected"
-              ? "connection.reconnecting"
-              : "search.offline"
-          )}
-        </p>
-      ) : null}
+      <MobileConnectionNotice
+        connection={connection}
+        onRetry={retryConnection}
+        className="mobile-discovery-notice"
+      />
       <div
         ref={allList}
         onScroll={(event) => {

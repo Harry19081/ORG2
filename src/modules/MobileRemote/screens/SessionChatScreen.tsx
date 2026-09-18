@@ -15,6 +15,7 @@ import { mobileComposerDesktopScope } from "../components/composer/mobileCompose
 import { ChatTranscript } from "../components/transcript/ChatTranscript";
 import { MobileLoadingDots } from "../components/transcript/MobileTranscriptLoading";
 import { RoundNavigator } from "../components/transcript/RoundNavigator";
+import { mobileConnectionFailureKey } from "../connection/mobileConnectionFeedback";
 import type {
   MobileModelOption,
   MobileSendAttachment,
@@ -85,7 +86,9 @@ export function SessionChatScreen(props: SessionChatScreenProps) {
             {t("connectionRecovery.retry")}
           </MobileActionButton>
           {connection.error && (
-            <p role="alert">{t("connectionRecovery.retryFailed")}</p>
+            <p role="alert">
+              {t(mobileConnectionFailureKey(connection.error))}
+            </p>
           )}
         </div>
       </>
