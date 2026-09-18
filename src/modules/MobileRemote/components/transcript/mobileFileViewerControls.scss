@@ -46,10 +46,32 @@
   }
   &__files {
     display: flex;
+    align-items: center;
     gap: mobile.$space-1;
     overflow-x: auto;
-    padding-top: mobile.$space-1;
+    margin-inline: -#{mobile.$space-3};
+    padding: mobile.$space-1 mobile.$space-3;
+    border-bottom: 1px solid var(--color-border-1);
     overscroll-behavior-x: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  // Desktop TabPillSurface owns colors, radius, hover and active state.
+  // Only touch geometry and mobile typography differ on this surface.
+  &__tab {
+    max-width: 12rem;
+    min-height: mobile.$touch-target;
+    font-size: var(--mobile-type-caption-size);
+    line-height: var(--mobile-type-control-leading);
+    font-weight: var(--mobile-type-medium-weight);
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary-6);
+      outline-offset: -2px;
+    }
   }
   // Long translated actions can move below status instead of clipping on a
   // compact viewport or with enlarged text. Neither action loses its label.

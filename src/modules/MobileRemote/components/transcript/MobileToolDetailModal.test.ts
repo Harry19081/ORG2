@@ -263,7 +263,12 @@ describe("Mobile tool fullscreen preview", () => {
       '[data-mobile-file-target="src/b.ts"]'
     ) as HTMLButtonElement;
     await act(async () => target.click());
-    expect(target.getAttribute("aria-pressed")).toBe("true");
+    expect(target.getAttribute("role")).toBe("tab");
+    expect(target.getAttribute("aria-selected")).toBe("true");
+    expect(target.tabIndex).toBe(0);
+    expect(
+      document.querySelectorAll('[role="tab"][aria-selected="true"]')
+    ).toHaveLength(1);
     expect(document.querySelector("[data-mobile-open-file]")).toBeNull();
     expect(
       document.querySelector('[data-mobile-file-document="src/b.ts"]')

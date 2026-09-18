@@ -625,7 +625,7 @@ describe("Mobile document viewing lifecycle", () => {
     expect(
       document
         .querySelector('[data-mobile-file-target="a.ts"]')
-        ?.getAttribute("aria-pressed")
+        ?.getAttribute("aria-selected")
     ).toBe("true");
     expect((await editor()).state.doc.toString()).toBe("const a = 1;");
     expect(openDesktop).toHaveBeenCalledTimes(1);
