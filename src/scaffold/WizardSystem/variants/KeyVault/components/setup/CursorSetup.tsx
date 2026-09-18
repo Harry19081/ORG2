@@ -19,7 +19,7 @@ import {
   SectionRow,
 } from "@src/components/layout/Section";
 import { CursorSessionSetup } from "@src/features/SessionSetup";
-import { InternetIcon, KeyboardIcon, SearchAreaIcon } from "@src/icons";
+import { InputShortTextIcon, InternetIcon, SearchAreaIcon } from "@src/icons";
 import {
   SelectionGrid,
   type SelectionGridOption,
@@ -70,7 +70,7 @@ const CursorSetup: React.FC<CursorSetupProps> = ({
       {
         key: "enter_token",
         label: t("keyVault.enterToken"),
-        icon: KeyboardIcon,
+        icon: InputShortTextIcon,
       },
     ],
     [t]

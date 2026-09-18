@@ -136,7 +136,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
       : variantConfig.containerClass,
     !hasButton && variantConfig.containerHoverClass,
     disabled && "opacity-50 cursor-not-allowed",
-    compact && layout === "inline" && "h-9 px-2 py-0",
+    compact && layout === "inline" && "h-8 px-2 py-0",
     className
   );
 

@@ -235,7 +235,7 @@ const RoutineWizard: React.FC<RoutineWizardProps> = ({
     <>
       <Button
         variant="secondary"
-        size="small"
+        size="default"
         onClick={onCancel}
         data-testid="routine-wizard-cancel-button"
       >
@@ -243,7 +243,7 @@ const RoutineWizard: React.FC<RoutineWizardProps> = ({
       </Button>
       <Button
         variant="primary"
-        size="small"
+        size="default"
         disabled={!canSave}
         onClick={handleSave}
         data-testid="routine-wizard-save-button"

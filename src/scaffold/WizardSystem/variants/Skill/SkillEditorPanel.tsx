@@ -130,7 +130,7 @@ const SkillEditorPanel: React.FC<SkillEditorPanelProps> = ({
         actions={
           <Button
             variant="primary"
-            size="small"
+            size="default"
             onClick={handleSave}
             disabled={saving || !draft.name.trim()}
             loading={saving}

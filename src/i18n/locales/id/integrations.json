@@ -153,9 +153,7 @@
       "rejectedByAdmin": "Listing ini ditolak oleh administrator."
     },
     "apiKeyLabel": "API Key",
-    "apiKeyDesc": "Kunci rahasia yang digunakan untuk mengautentikasi permintaan ke API penyedia",
     "baseUrlLabel": "URL Dasar",
-    "baseUrlDesc": "URL endpoint API — ubah hanya jika menggunakan proxy, deployment kustom, atau server yang di-host sendiri",
     "apiProtocolLabel": "Protokol API",
     "apiProtocolDesc": "Pilih protokol wire untuk agen Rust bawaan",
     "officialUrl": "URL Resmi",
@@ -174,13 +172,11 @@
       "validateDesc": "Periksa endpoint jika sedang berjalan, atau simpan setelah menambahkan model secara manual"
     },
     "validate": "Validasi",
-    "validateDesc": "Validasi kunci sebelum melanjutkan",
     "validated": "Tervalidasi",
     "validationSuccessModels": "{{count}} model terdeteksi — konfigurasikan di langkah berikutnya",
     "validationSuccessNoModels": "Kunci tervalidasi — tidak ada model yang terdeteksi otomatis, tambahkan model secara manual di bawah",
     "accountName": "Nama Akun (Opsional)",
     "accountNameDesc": "Biarkan kosong untuk menggunakan {{provider}}, lalu {{provider}}-1, {{provider}}-2, dan seterusnya",
-    "selectorDesc": "Pilih layanan yang akan dihubungkan",
     "accountNamePlaceholder": "Otomatis: {{provider}}",
     "apiKeyPlaceholder": "Masukkan API key Anda",
     "extractPlaceholder": "Tempel kunci Anda (teks berantakan tidak masalah):\n\nContoh:\nKEY: {{key}}\n{{urlLine}}",

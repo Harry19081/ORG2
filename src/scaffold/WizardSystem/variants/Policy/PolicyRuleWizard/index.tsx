@@ -60,12 +60,12 @@ const PolicyRuleWizard: React.FC<PolicyRuleWizardProps> = ({
 
   const stepActions = (
     <>
-      <Button variant="secondary" size="small" onClick={onCancel}>
+      <Button variant="secondary" size="default" onClick={onCancel}>
         {t("common:actions.cancel")}
       </Button>
       <Button
         variant="primary"
-        size="small"
+        size="default"
         disabled={!canSaveMarkdown}
         onClick={handleSaveMarkdownRule}
       >

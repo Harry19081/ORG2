@@ -151,9 +151,7 @@
       "rejectedByAdmin": "Este anúncio foi rejeitado por um administrador."
     },
     "apiKeyLabel": "Chave de API",
-    "apiKeyDesc": "Chave secreta usada para autenticar requisições à API do provedor",
     "baseUrlLabel": "Base URL",
-    "baseUrlDesc": "URL do endpoint da API — altere apenas se estiver usando um proxy, deployment personalizado ou servidor auto-hospedado",
     "apiProtocolLabel": "Protocolo API",
     "apiProtocolDesc": "Escolha o protocolo de conexão para o agente Rust integrado",
     "officialUrl": "URL oficial",
@@ -172,13 +170,11 @@
       "validateDesc": "Teste o endpoint se estiver em execução, ou salve após adicionar modelos manualmente"
     },
     "validate": "Validar",
-    "validateDesc": "Valide as chaves antes de prosseguir",
     "validated": "Validado",
     "validationSuccessModels": "{{count}} modelos detectados — configure na próxima etapa",
     "validationSuccessNoModels": "Chave validada — nenhum modelo detectado automaticamente, adicione modelos manualmente abaixo",
     "accountName": "Nome da conta (opcional)",
     "accountNameDesc": "Deixe em branco para usar {{provider}}, depois {{provider}}-1, {{provider}}-2 e assim por diante",
-    "selectorDesc": "Escolha qual serviço conectar",
     "accountNamePlaceholder": "Auto: {{provider}}",
     "apiKeyPlaceholder": "Digite sua chave de API",
     "extractPlaceholder": "Cole suas chaves (texto desorganizado é aceito):\n\nExemplo:\nKEY: {{key}}\n{{urlLine}}",

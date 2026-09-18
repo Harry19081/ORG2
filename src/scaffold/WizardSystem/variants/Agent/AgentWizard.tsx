@@ -118,7 +118,7 @@ const AgentWizard: FC<AgentWizardProps> = ({ onSave, onCancel }) => {
           <>
             <Button
               variant="secondary"
-              size="small"
+              size="default"
               data-testid="agent-orgs-agent-wizard-cancel-button"
               onClick={onCancel}
             >
@@ -126,7 +126,7 @@ const AgentWizard: FC<AgentWizardProps> = ({ onSave, onCancel }) => {
             </Button>
             <Button
               variant="primary"
-              size="small"
+              size="default"
               disabled={!w.canCreate}
               data-testid="agent-orgs-agent-wizard-create-button"
               onClick={w.handleCreate}

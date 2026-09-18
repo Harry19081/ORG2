@@ -256,6 +256,7 @@ export { default as InboxIcon } from "@hugeicons/core-free-icons/InboxIcon";
 export { default as Infinity01Icon } from "@hugeicons/core-free-icons/Infinity01Icon";
 export { default as InformationCircleIcon } from "@hugeicons/core-free-icons/InformationCircleIcon";
 export { default as InputCursorTextIcon } from "@hugeicons/core-free-icons/InputCursorTextIcon";
+export { default as InputShortTextIcon } from "@hugeicons/core-free-icons/InputShortTextIcon";
 export { default as InternetIcon } from "@hugeicons/core-free-icons/InternetIcon";
 export { default as KanbanIcon } from "@hugeicons/core-free-icons/KanbanIcon";
 export { default as Key01Icon } from "@hugeicons/core-free-icons/Key01Icon";

@@ -151,9 +151,7 @@
       "rejectedByAdmin": "Ta oferta została odrzucona przez administratora."
     },
     "apiKeyLabel": "Klucz API",
-    "apiKeyDesc": "Tajny klucz używany do uwierzytelniania żądań do API dostawcy",
     "baseUrlLabel": "Base URL",
-    "baseUrlDesc": "URL punktu końcowego API — zmień tylko jeśli używasz proxy, własnego wdrożenia lub serwera hostowanego samodzielnie",
     "apiProtocolLabel": "Protokół API",
     "apiProtocolDesc": "Wybierz protokół połączenia dla wbudowanego agenta Rust",
     "officialUrl": "Oficjalny URL",
@@ -172,13 +170,11 @@
       "validateDesc": "Sprawdź endpoint, jeśli działa, albo zapisz po ręcznym dodaniu modeli"
     },
     "validate": "Waliduj",
-    "validateDesc": "Waliduj klucze przed kontynuowaniem",
     "validated": "Zwalidowano",
     "validationSuccessModels": "Wykryto {{count}} modeli — skonfiguruj w następnym kroku",
     "validationSuccessNoModels": "Klucz zwalidowano — żadne modele nie zostały automatycznie wykryte, dodaj modele ręcznie poniżej",
     "accountName": "Nazwa konta (opcjonalnie)",
     "accountNameDesc": "Pozostaw puste, aby użyć {{provider}}, następnie {{provider}}-1, {{provider}}-2 itd",
-    "selectorDesc": "Wybierz usługę do połączenia",
     "accountNamePlaceholder": "Auto: {{provider}}",
     "apiKeyPlaceholder": "Wprowadź swój klucz API",
     "extractPlaceholder": "Wklej swoje klucze (niesformatowany tekst jest OK):\n\nPrzykład:\nKEY: {{key}}\n{{urlLine}}",

@@ -20,6 +20,7 @@ import {
   WizardStepLayout,
 } from "@src/scaffold/WizardSystem/primitives";
 import type { SelectionGridOption } from "@src/scaffold/WizardSystem/primitives";
+import { AccountNameInfoIcon } from "@src/scaffold/WizardSystem/shared/AccountNameInfoIcon";
 
 import {
   PROJECT_ADAPTER_TYPES,
@@ -181,10 +182,12 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
   const accountNameContent = selectedType ? (
     <SectionContainer>
       <SectionRow
-        label={t("keyVault.accountName")}
-        description={t("keyVault.accountNameDesc", {
-          provider: accountNameBase,
-        })}
+        label={
+          <span className="inline-flex items-center gap-1">
+            {t("keyVault.accountName")}
+            <AccountNameInfoIcon provider={accountNameBase} />
+          </span>
+        }
       >
         <Input
           value={accountName}
@@ -232,8 +235,8 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
         <SectionContainer>
           <SectionRow
             label={t("connectionsTabs.connections")}
-            description={t("keyVault.selectorDesc")}
             layout={selectedType ? "horizontal" : "vertical"}
+            tallLabel
             required
           >
             {selectedType ? (

@@ -91,6 +91,15 @@ export const SECTION_LABEL_CLASSES =
 export const SECTION_LABEL_LIGHT_CLASSES =
   "text-[14px] font-normal leading-[22px] text-text-1";
 
+/**
+ * Single-line label typography with a 32px line height, matching input
+ * controls. Used only where TallSectionLabelsProvider is active (wizards)
+ * and only when the row has no description — a two-line row keeps the
+ * default 22px so it doesn't grow past the control's height.
+ */
+export const SECTION_LABEL_TALL_CLASSES =
+  "text-[14px] font-normal leading-[32px] text-text-1";
+
 /** Description text below labels */
 export const SECTION_DESCRIPTION_CLASSES = "mt-0.5 text-[12px] text-text-2";
 

@@ -153,9 +153,7 @@
       "rejectedByAdmin": "इस लिस्टिंग को एक व्यवस्थापक ने अस्वीकार कर दिया."
     },
     "apiKeyLabel": "API कुंजी",
-    "apiKeyDesc": "प्रदाता के API के अनुरोधों को प्रमाणित करने के लिए उपयोग की जाने वाली गुप्त कुंजी",
     "baseUrlLabel": "बेस URL",
-    "baseUrlDesc": "API एंडपॉइंट URL — इसे केवल तभी बदलें जब आप प्रॉक्सी, कस्टम डिप्लॉयमेंट या सेल्फ़-होस्टेड सर्वर का उपयोग कर रहे हों",
     "apiProtocolLabel": "API प्रोटोकॉल",
     "apiProtocolDesc": "बिल्ट-इन Rust एजेंट के लिए वायर प्रोटोकॉल चुनें",
     "officialUrl": "आधिकारिक URL",
@@ -174,13 +172,11 @@
       "validateDesc": "एंडपॉइंट चल रहा हो तो उसकी जाँच करें, या मॉडल मैन्युअल रूप से जोड़ने के बाद सहेजें"
     },
     "validate": "सत्यापित करें",
-    "validateDesc": "आगे बढ़ने से पहले कुंजियाँ सत्यापित करें",
     "validated": "सत्यापित",
     "validationSuccessModels": "{{count}} मॉडल मिले — अगले चरण में कॉन्फ़िगर करें",
     "validationSuccessNoModels": "कुंजी सत्यापित — कोई मॉडल स्वतः नहीं मिला, कृपया नीचे मॉडल मैन्युअल रूप से जोड़ें",
     "accountName": "खाते का नाम (वैकल्पिक)",
     "accountNameDesc": "{{provider}}, फिर {{provider}}-1, {{provider}}-2 आदि का उपयोग करने के लिए खाली छोड़ें",
-    "selectorDesc": "चुनें कि किस सेवा से कनेक्ट करना है",
     "accountNamePlaceholder": "स्वतः: {{provider}}",
     "apiKeyPlaceholder": "अपनी API कुंजी दर्ज करें",
     "extractPlaceholder": "अपनी कुंजियाँ पेस्ट करें (अव्यवस्थित टेक्स्ट भी चलेगा):\n\nउदाहरण:\nKEY: {{key}}\n{{urlLine}}",

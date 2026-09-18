@@ -16,9 +16,9 @@ import {
   SectionRow,
 } from "@src/components/layout/Section";
 import {
+  InputShortTextIcon,
   InternetIcon,
   Key02Icon,
-  KeyboardIcon,
   SearchAreaIcon,
 } from "@src/icons";
 import type { ChannelProbeResult } from "@src/modules/MainApp/Integrations/Connections/Channels/types";
@@ -134,7 +134,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
       {
         key: STORY_SYNC_AUTH_METHOD.PAT,
         label: t("keyVault.enterToken"),
-        icon: KeyboardIcon,
+        icon: InputShortTextIcon,
       },
     ],
     [t]
@@ -297,7 +297,7 @@ export const GitContent: React.FC<GitContentProps> = ({
       {
         key: STORY_SYNC_AUTH_METHOD.PAT,
         label: "PAT",
-        icon: KeyboardIcon,
+        icon: InputShortTextIcon,
       },
       {
         key: STORY_SYNC_AUTH_METHOD.SSH,

@@ -24,6 +24,7 @@ import {
 } from "@src/components/layout/Section";
 import { DETAIL_PANEL_TOKENS } from "@src/components/layout/blocks";
 import { SelectionGrid } from "@src/scaffold/WizardSystem/primitives";
+import { AccountNameInfoIcon } from "@src/scaffold/WizardSystem/shared/AccountNameInfoIcon";
 import { parseModelVariants } from "@src/util/modelVariants";
 
 import { useApiSetup } from "../hooks/useApiSetup";
@@ -191,37 +192,37 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
     t("wizard.pickProvider", "Provider");
 
   const accountNameSection = (
-    <SectionContainer>
-      <SectionRow
-        label={t("keyVault.accountName")}
-        description={t("keyVault.accountNameDesc", {
+    <SectionRow
+      label={
+        <span className="inline-flex items-center gap-1">
+          {t("keyVault.accountName")}
+          <AccountNameInfoIcon provider={accountNameBase} />
+        </span>
+      }
+    >
+      <Input
+        value={data.name}
+        onChange={(value) => {
+          onChange({ name: value });
+          if (nameError) setNameError(null);
+          if (nameTouched) setNameTouched(false);
+        }}
+        onBlur={() => {
+          if (trimmedName) setNameTouched(true);
+        }}
+        placeholder={t("keyVault.accountNamePlaceholder", {
           provider: accountNameBase,
         })}
-      >
-        <Input
-          value={data.name}
-          onChange={(value) => {
-            onChange({ name: value });
-            if (nameError) setNameError(null);
-            if (nameTouched) setNameTouched(false);
-          }}
-          onBlur={() => {
-            if (trimmedName) setNameTouched(true);
-          }}
-          placeholder={t("keyVault.accountNamePlaceholder", {
-            provider: accountNameBase,
-          })}
-          size="default"
-          style={SECTION_CONTROL_STYLE}
-          errorMessage={
-            nameTouched && isDuplicateName
-              ? t("keyVault.nameDuplicate")
-              : (nameError ?? undefined)
-          }
-          errorPlacement="left"
-        />
-      </SectionRow>
-    </SectionContainer>
+        size="default"
+        style={SECTION_CONTROL_STYLE}
+        errorMessage={
+          nameTouched && isDuplicateName
+            ? t("keyVault.nameDuplicate")
+            : (nameError ?? undefined)
+        }
+        errorPlacement="left"
+      />
+    </SectionRow>
   );
 
   const handleTestModel = useCallback(
@@ -273,14 +274,12 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
           {/* Provider, method, and region sections — hidden when browser is open */}
           {!hook.browserOpen && (
             <>
-              {accountNameSection}
-
               <SectionContainer>
                 {/* Provider selection */}
                 {selectedProviderKey ? (
                   <SectionRow
                     label={t("wizard.pickProvider", "Provider")}
-                    description={t("keyVault.selectorDesc")}
+                    tallLabel
                     required
                   >
                     <Select
@@ -297,8 +296,8 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
                 ) : (
                   <SectionRow
                     label={t("wizard.pickProvider", "Provider")}
-                    description={t("keyVault.selectorDesc")}
                     layout="vertical"
+                    tallLabel
                     required
                   >
                     {errors.agent_type && (
@@ -329,10 +328,13 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
                   </SectionRow>
                 )}
 
+                {selectedProviderKey && accountNameSection}
+
                 {selectedProviderKey && hasMultipleVariants && (
                   <SectionRow
                     label={t("wizard.selectVariant", "Connection method")}
                     layout={data.agent_type ? "horizontal" : "vertical"}
+                    tallLabel
                     required
                   >
                     {data.agent_type ? (
