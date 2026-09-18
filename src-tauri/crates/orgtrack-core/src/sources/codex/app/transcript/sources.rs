@@ -18,6 +18,10 @@ use super::super::CodexJsonlLine;
 use super::catalog::codex_lazy_turn_id;
 use super::messages::user_message_from_line;
 
+/// Stand-in for an image a UI row embeds as a data URL (no file path), so its
+/// transcript ref stays small; `load_codex_image_from_path` maps it back to
+/// the row's image at that position.
+pub(super) const INLINE_IMAGE_REF_PREFIX: &str = "codex-inline-image:";
 const LEGACY_USER_MESSAGE_NEEDLE: &[u8] = b"\"user_message\"";
 const PAGINATED_USER_MESSAGE_NEEDLE: &[u8] = b"\"UserMessage\"";
 /// Same ceiling the image resolver reads a user line with.
@@ -48,8 +52,15 @@ pub fn load_codex_user_source_messages_from_path(
         let images: Vec<String> = message
             .image_refs
             .iter()
-            .filter(|original| !original.starts_with("data:"))
-            .map(|original| transcript_image_ref(session_id, &turn_id, original))
+            .enumerate()
+            .map(|(position, original)| {
+                if original.starts_with("data:") {
+                    let inline = format!("{INLINE_IMAGE_REF_PREFIX}{position}");
+                    transcript_image_ref(session_id, &turn_id, &inline)
+                } else {
+                    transcript_image_ref(session_id, &turn_id, original)
+                }
+            })
             .collect();
         messages.extend(UserSourceMessage::new(turn_id, &message.text, images));
     })
@@ -145,6 +156,40 @@ mod tests {
         assert_eq!(
             super::super::load_codex_image_from_path(&path, &turn_id, "/tmp/shot.png").unwrap(),
             Some("data:image/png;base64,AAA".to_string())
+        );
+        std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
+    #[test]
+    fn keeps_path_less_inline_ui_images_as_small_stand_ins() {
+        // Codex Desktop embeds the bytes (`image` + data URL) when the pasted
+        // file has no usable path; the image is still a source.
+        let ui_record = r#"{"type":"event_msg","payload":{"type":"item_completed","item":{"type":"UserMessage","content":[{"type":"text","text":"preview these"},{"type":"image","image_url":"data:image/png;base64,INLINE"}]}}}"#.to_string();
+        let path = write_rollout("inline", &[ui_record]);
+
+        let messages = load_codex_user_source_messages_from_path("codexapp-x", &path).unwrap();
+        let turn_id = codex_lazy_turn_id(0);
+        let inline = format!("{INLINE_IMAGE_REF_PREFIX}0");
+        assert_eq!(
+            messages,
+            vec![UserSourceMessage {
+                id: turn_id.clone(),
+                text: String::new(),
+                images: vec![transcript_image_ref("codexapp-x", &turn_id, &inline)],
+            }]
+        );
+        assert_eq!(
+            super::super::load_codex_image_from_path(&path, &turn_id, &inline).unwrap(),
+            Some("data:image/png;base64,INLINE".to_string())
+        );
+        assert_eq!(
+            super::super::load_codex_image_from_path(
+                &path,
+                &turn_id,
+                &format!("{INLINE_IMAGE_REF_PREFIX}1")
+            )
+            .unwrap(),
+            None
         );
         std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
     }
