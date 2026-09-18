@@ -89,7 +89,6 @@ export const CUSTOMIZABLE_SHORTCUT_IDS = new Set([
   "git_open_diff",
   "git_discard",
   "reload_file",
-  "db_run_query",
   "file_menu_new_file",
   "file_menu_new_folder",
   "file_menu_duplicate",
