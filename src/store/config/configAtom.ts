@@ -8,6 +8,7 @@ import { atom } from "jotai";
 
 import { WORKSPACE_DEFAULT_REPO_LOCATION } from "@src/config/workspaceDefaultRepoPaths";
 import type { WorkspaceDefaultRepoLocation } from "@src/config/workspaceDefaultRepoPaths";
+import { createLogger } from "@src/hooks/logger";
 import {
   settingsAtom,
   updateSettingAtom,
@@ -113,6 +114,8 @@ export const chatAppearanceAtom = atom<ChatAppearanceSettings>((get) => {
 });
 chatAppearanceAtom.debugLabel = "chatAppearanceAtom";
 
+const chatAppearanceLog = createLogger("ChatAppearance");
+
 /** Persisted chat appearance atom - saves to settings.jsonc */
 export const chatAppearancePersistAtom = atom(
   (get) => get(chatAppearanceAtom),
@@ -126,6 +129,8 @@ export const chatAppearancePersistAtom = atom(
       "chat.typingEffectEnabled": merged.typingEffectEnabled,
       "chat.typingSpeed": merged.typingSpeed,
       "chat.sendOnEnter": merged.sendOnEnter,
+    }).catch((error: unknown) => {
+      chatAppearanceLog.warn("Failed to persist chat appearance:", error);
     });
   }
 );

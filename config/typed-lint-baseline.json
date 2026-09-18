@@ -9400,14 +9400,6 @@
     "count": 1
   },
   {
-    "key": "fe13347486567aafe31782e7a43034f63142388851640ceb324283cbfa44a0aa",
-    "file": "src/store/config/configAtom.ts",
-    "rule": "@typescript-eslint/no-floating-promises",
-    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
-    "source": "set(updateSettingsBatchAtom, { \"chat.fontSize\": merged.fontSize, \"chat.codeFontSize\": merged.codeFontSize, \"chat.lineHeight\": merged.lineHeight, \"chat.typingEffectEnabled\": merged.typingEffectEnabled, \"chat.typingSpeed\": merged.typingSpeed, \"chat.decryptEffectEnabled\": merged.decryptEffectEnabled, \"chat.sendOnEnter\": merged.sendOnEnter, });",
-    "count": 1
-  },
-  {
     "key": "70c5a37646ed7163004a361ab66d267e333a516fa081bdc0914ea4782a416119",
     "file": "src/store/platform/preventSleepAtom.ts",
     "rule": "@typescript-eslint/no-floating-promises",
