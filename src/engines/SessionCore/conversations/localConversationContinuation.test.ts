@@ -1,3 +1,5 @@
+import nativeFailedUser from "@/src-tauri/crates/orgtrack-core/src/sources/fixtures/codex_native_failed_user.json";
+import nativeTerminalError from "@/src-tauri/crates/orgtrack-core/src/sources/fixtures/codex_terminal_error.json";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -18,6 +20,9 @@ import {
 } from "./localConversationContinuation";
 import { loadLocalCanonicalConversationTimeline } from "./localConversationExecutionTail";
 import { candidateMatchesTarget } from "./localConversationExecutionTargets";
+import { projectNativeConversationItems } from "./nativeConversationProjection";
+import { nativeSourceEventId } from "./nativeSourceEventIdentity";
+import { retryLineageEvent } from "./queuedRetryLineage";
 
 const mocks = vi.hoisted(() => ({
   getAgentSession: vi.fn(),
@@ -63,6 +68,7 @@ vi.mock("@src/api/tauri/rpc", () => ({
       status: mocks.cliStatus,
     },
     sessionCore: {
+      cache: { loadEvents: vi.fn(async () => []) },
       turnIntents: {
         waitForTerminal: mocks.cliWaitForTurnTerminal,
         status: mocks.turnIntentStatus,
@@ -2021,6 +2027,129 @@ describe("local native conversation continuation", () => {
       "agentsession-existing"
     );
   });
+
+  it.each([false, true])(
+    "rejects superseded same-text Codex reuse (unexplained output: %s)",
+    async (unexplainedOutput) => {
+      const sessionId = "cliagent-superseded-root";
+      const prefix = [
+        event("a-user", "user", "Remember a marker", { sessionId }),
+        event("a-answer", "assistant", "READY", { sessionId }),
+        event("b-user", "user", "Recall the marker", { sessionId }),
+        event("b-answer", "assistant", "marker", { sessionId }),
+      ];
+      // Use the actual parser/normalizer contract: the old and retried prompt
+      // have identical provider-visible text but distinct durable identities.
+      const failed = {
+        ...event("unused", "user", "", { sessionId }),
+        ...nativeFailedUser.normalizedUser,
+        result: {
+          ...nativeFailedUser.normalizedUser.result,
+          turnIntentId: "old-c",
+        },
+      } as SessionEvent;
+      const diagnostic = {
+        ...event("unused", "assistant", "", { sessionId }),
+        ...nativeTerminalError.diagnostic,
+      } as SessionEvent;
+      const successful = {
+        ...failed,
+        id: "codex-successful-c",
+        sessionId: "cliagent-successful-child",
+        result: { ...failed.result, turnIntentId: "new-c" },
+      } as SessionEvent;
+      const answer = event("new-c-answer", "assistant", "marker", {
+        sessionId: successful.sessionId,
+        turnId: "new-c",
+      });
+      const lineage = retryLineageEvent(sessionId, {
+        version: 1,
+        queueMessageId: "queue-c",
+        superseded: [
+          {
+            sessionId,
+            turnIntentId: "old-c",
+            sourceEventIds: [nativeSourceEventId(failed)],
+          },
+        ],
+      });
+      const nativeAudit = [
+        ...prefix,
+        failed,
+        diagnostic,
+        ...(unexplainedOutput ? [answer] : []),
+      ];
+      const auditBefore = JSON.stringify(nativeAudit);
+      const timeline = [
+        ...prefix,
+        failed,
+        diagnostic,
+        lineage,
+        successful,
+        answer,
+      ];
+      mockCompatibleCliEpisode(sessionId, "codex", nativeAudit);
+
+      const continuation = continueLocalConversation({
+        root: {
+          authority: "local-session",
+          authorityScope: [],
+          conversationId: sessionId,
+        },
+        title: "Retry continuation",
+        timeline,
+        displayText: "Next independent message D",
+        target: codexTarget,
+        turnIntentId: "new-d",
+      });
+
+      if (unexplainedOutput) {
+        await expect(continuation).rejects.toThrow(
+          "differs from the canonical conversation"
+        );
+        expect(mocks.create).not.toHaveBeenCalled();
+        expect(mocks.materialize).not.toHaveBeenCalled();
+        expect(mocks.synchronize).not.toHaveBeenCalled();
+        expect(mocks.sendMessage).not.toHaveBeenCalled();
+        expect(JSON.stringify(nativeAudit)).toBe(auditBefore);
+        return;
+      }
+      await continuation;
+      expect(mocks.create).toHaveBeenCalledOnce();
+      expect(mocks.synchronize).not.toHaveBeenCalled();
+      expect(mocks.materialize).toHaveBeenCalledWith({
+        sessionId: "agentsession-child",
+        timeline,
+      });
+      const materialized = projectNativeConversationItems(
+        mocks.materialize.mock.calls[0][0].timeline
+      );
+      expect(
+        materialized
+          .filter((item) => item.kind === "message" && item.role === "user")
+          .map((item) => item.id)
+      ).toEqual([
+        nativeSourceEventId(prefix[0]),
+        nativeSourceEventId(prefix[2]),
+        nativeSourceEventId(successful),
+      ]);
+      expect(materialized).toContainEqual(
+        expect.objectContaining({
+          kind: "message",
+          role: "assistant",
+          id: nativeSourceEventId(answer),
+        })
+      );
+      expect(mocks.sendMessage).toHaveBeenCalledOnce();
+      expect(mocks.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sessionId: "agentsession-child",
+          turnIntentId: "new-d",
+        })
+      );
+      expect(JSON.stringify(nativeAudit)).toBe(auditBefore);
+    }
+  );
 
   it("shows the ordinary optimistic turn before synchronizing a reused episode", async () => {
     const order: string[] = [];

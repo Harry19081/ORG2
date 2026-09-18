@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import nativeFailureFixture from "@/src-tauri/crates/orgtrack-core/src/sources/fixtures/codex_native_failed_user.json";
 import { createStore } from "jotai/vanilla";
 import type { Store } from "jotai/vanilla/store";
 import { act, createElement, useEffect } from "react";
@@ -18,6 +19,8 @@ import type {
   QueuedConversationDispatch,
   QueuedConversationDispatchResolution,
 } from "@src/engines/SessionCore/conversations/queuedConversationContract";
+import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { appendQueuedUserEvents } from "@src/engines/SessionCore/derived/chatEvents";
 import {
   type QueuedMessage,
   messageQueueAtom,
@@ -27,8 +30,11 @@ import type { OptimizedChatItem } from "../../chatItemPipeline/types";
 import { useEditUserMessage } from "../useEditUserMessage";
 
 const {
+  askNativeDialogSpy,
   checkSnapshotChangesSpy,
   durableHydrationRows,
+  evictSessionSpy,
+  invokeTauriSpy,
   flushMessageQueueSpy,
   hydrateMessageQueueSpy,
   messageQueueHydrated,
@@ -44,8 +50,11 @@ const {
   storeSessionId,
   truncateBeforeIdSpy,
 } = vi.hoisted(() => ({
+  askNativeDialogSpy: vi.fn(async () => true),
   checkSnapshotChangesSpy: vi.fn(async () => false),
   durableHydrationRows: { current: [] as Array<Record<string, unknown>> },
+  evictSessionSpy: vi.fn(async () => undefined),
+  invokeTauriSpy: vi.fn(async () => 0),
   flushMessageQueueSpy: vi.fn(async () => undefined),
   hydrateMessageQueueSpy: vi.fn(async () => undefined),
   messageQueueHydrated: { current: true },
@@ -105,7 +114,15 @@ vi.mock(
 
 vi.mock("@src/engines/SessionCore", () => ({
   editTruncationTimestampAtom: {},
+  triggerSessionReloadAtom: { debugLabel: "triggerSessionReloadAtom" },
 }));
+
+vi.mock(
+  "@src/engines/SessionCore/conversations/localConversationExecutionTail",
+  () => ({
+    LOCAL_EXECUTION_TAIL_EVENT_PREFIX: "runlanded-",
+  })
+);
 
 vi.mock("@src/engines/SessionCore/control/optimisticTurnStatus", () => ({
   beginOptimisticTurn: vi.fn(),
@@ -126,7 +143,7 @@ vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
     updateById: updateByIdSpy,
     upsert: upsertSpy,
     truncateBeforeId: truncateBeforeIdSpy,
-    evictSession: vi.fn(async () => undefined),
+    evictSession: evictSessionSpy,
   },
 }));
 
@@ -165,8 +182,12 @@ vi.mock("@src/store/ui/todoAtom", () => ({
   clearTodosForSessionAtom: {},
 }));
 
+vi.mock("@src/util/dialogs/nativeDialog", () => ({
+  askNativeDialogSafely: askNativeDialogSpy,
+}));
+
 vi.mock("@src/util/platform/tauri/init", () => ({
-  invokeTauri: vi.fn(async () => 0),
+  invokeTauri: invokeTauriSpy,
 }));
 
 vi.mock("../../components/RevertConfirmDialog", () => ({
@@ -231,8 +252,12 @@ describe("useEditUserMessage resend projection", () => {
   });
 
   beforeEach(() => {
+    askNativeDialogSpy.mockReset();
+    askNativeDialogSpy.mockResolvedValue(true);
     checkSnapshotChangesSpy.mockClear();
     durableHydrationRows.current = [];
+    evictSessionSpy.mockClear();
+    invokeTauriSpy.mockClear();
     flushMessageQueueSpy.mockClear();
     hydrateMessageQueueSpy.mockClear();
     hydrateMessageQueueSpy.mockImplementation(async () => {
@@ -349,6 +374,7 @@ describe("useEditUserMessage resend projection", () => {
     await act(async () => {
       await editUserMessage?.(failed, "retry this exact request");
     });
+    expect(askNativeDialogSpy).not.toHaveBeenCalled();
 
     expect(submitUserIntentSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -991,7 +1017,7 @@ describe("useEditUserMessage resend projection", () => {
     }
   );
 
-  it("admits only one retry when a queue-only failed bubble is clicked twice", async () => {
+  it("admits only one retry when a restored native-history failure is clicked twice", async () => {
     const queueStore = createStore();
     realQueueStore.current = queueStore;
     storeSetSpy.mockImplementation(
@@ -1000,10 +1026,10 @@ describe("useEditUserMessage resend projection", () => {
     );
     const original: QueuedMessage = {
       id: "queue-double-click",
-      turnIntentId: "original-intent",
+      turnIntentId: nativeFailureFixture.user.result.turnIntentId,
       sessionId: "cliagent-restored-root",
-      content: "one retry",
-      displayContent: "one retry",
+      content: nativeFailureFixture.user.result.message.content,
+      displayContent: nativeFailureFixture.user.result.message.content,
       priority: "next",
       status: "queued",
       requiresExplicitDispatch: true,
@@ -1016,24 +1042,36 @@ describe("useEditUserMessage resend projection", () => {
           authorityScope: [],
           conversationId: "cliagent-restored-root",
         },
-        target: { cliAgentType: "claude_code", model: "claude-sonnet-5" },
+        target: { cliAgentType: "codex", model: "gpt-5.6-luna" },
       },
     };
     queueStore.set(messageQueueAtom, [original]);
     updateByIdSpy.mockResolvedValue(false);
+    const nativeEcho: SessionEvent = {
+      ...nativeFailureFixture.normalizedUser,
+      chunk_id: null,
+      sessionId: original.sessionId,
+      source: "user",
+      args: {},
+      displayVariant: "message",
+      activityStatus: "agent",
+      displayText: original.displayContent,
+      displayStatus: "completed",
+      createdAt: original.createdAt,
+    };
+    expect(nativeEcho.result.backendPersisted).toBeUndefined();
+    const [projectedFailure] = appendQueuedUserEvents(
+      [nativeEcho],
+      original.sessionId,
+      queueStore.get(messageQueueAtom)
+    );
+    expect(projectedFailure?.displayStatus).toBe("failed");
+    expect(queueStore.get(messageQueueAtom)).toEqual([original]);
+    expect(upsertSpy).not.toHaveBeenCalled();
+    expect(submitUserIntentSpy).not.toHaveBeenCalled();
     const failed = {
-      event: {
-        id: "queued-user-original-intent",
-        displayText: original.displayContent,
-        displayStatus: "failed",
-        result: {
-          syntheticUserInput: true,
-          deliveryStatus: "failed",
-          queueMessageId: original.id,
-          turnIntentId: original.turnIntentId,
-        },
-      },
-      chunk_id: "queued-user-original-intent",
+      event: projectedFailure,
+      chunk_id: projectedFailure?.id,
     } as unknown as OptimizedChatItem;
 
     await act(async () => {
@@ -1065,6 +1103,317 @@ describe("useEditUserMessage resend projection", () => {
     expect(flushMessageQueueSpy).toHaveBeenCalledOnce();
     expect(submitUserIntentSpy).not.toHaveBeenCalled();
     expect(removeByIdPrefixSpy).not.toHaveBeenCalled();
+  });
+
+  it("confirms appending a landed execution-tail row without rewinding or reusing its old identity", async () => {
+    surfaceSessionId.current = "cliagent-root";
+    storeSessionId.current = "cliagent-root";
+    const canonicalRetry = vi.fn().mockResolvedValue(true);
+    failedUserIntentRetryForTest = canonicalRetry;
+    resolveDispatchForTest = () => ({
+      action: "replace",
+      dispatch: {
+        kind: "canonical_conversation",
+        root: {
+          authority: "local-session",
+          authorityScope: [],
+          conversationId: "cliagent-root",
+        },
+        target: { cliAgentType: "claude_code", model: "claude-sonnet-5" },
+      },
+    });
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          onReady: (fn: EditUserMessageFn) => {
+            editUserMessage = fn;
+          },
+        })
+      )
+    );
+    // The child ran this turn; Claude Code answered "API Error: 502" as an
+    // agent row, so the queue row completed and the optimistic bubble was
+    // replaced by the landed child user row re-stamped onto the root.
+    const landed = {
+      event: {
+        id: "runlanded-child-user-1",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        source: "user",
+        functionName: "user_message",
+        uiCanonical: "",
+        displayText: "run the failing tail again",
+        displayStatus: "completed",
+        sessionId: "cliagent-root",
+        result: {
+          deliveryStatus: "completed",
+          turnIntentId: "turn-intent-landed",
+        },
+      },
+      chunk_id: "runlanded-child-user-1",
+    } as unknown as OptimizedChatItem;
+
+    await act(async () => {
+      await editUserMessage?.(landed, "run the failing tail again");
+    });
+
+    expect(canonicalRetry).toHaveBeenCalledOnce();
+    expect(canonicalRetry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayText: "run the failing tail again",
+        turnIntentId: expect.any(String),
+      })
+    );
+    expect(askNativeDialogSpy).toHaveBeenCalledWith(
+      "landedMessageEdit.body",
+      expect.objectContaining({ okLabel: "landedMessageEdit.sendNew" })
+    );
+    expect(canonicalRetry.mock.calls[0]?.[0].turnIntentId).not.toBe(
+      "turn-intent-landed"
+    );
+    expect(submitUserIntentSpy).not.toHaveBeenCalled();
+    expect(invokeTauriSpy).not.toHaveBeenCalledWith(
+      "cli_agent_truncate_after_chunk",
+      expect.anything()
+    );
+    expect(evictSessionSpy).not.toHaveBeenCalled();
+    expect(truncateBeforeIdSpy).not.toHaveBeenCalled();
+    expect(checkSnapshotChangesSpy).not.toHaveBeenCalled();
+    expect(removeByIdPrefixSpy).not.toHaveBeenCalled();
+  });
+
+  it("mints a fresh turn identity when a landed tail row is resent with edited text", async () => {
+    surfaceSessionId.current = "cliagent-root";
+    storeSessionId.current = "cliagent-root";
+    const canonicalRetry = vi.fn().mockResolvedValue(true);
+    failedUserIntentRetryForTest = canonicalRetry;
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          onReady: (fn: EditUserMessageFn) => {
+            editUserMessage = fn;
+          },
+        })
+      )
+    );
+    const landed = {
+      event: {
+        id: "runlanded-child-user-3",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        source: "user",
+        displayText: "the original text",
+        displayStatus: "completed",
+        sessionId: "cliagent-root",
+        result: {
+          deliveryStatus: "completed",
+          turnIntentId: "turn-intent-original",
+        },
+      },
+      chunk_id: "runlanded-child-user-3",
+    } as unknown as OptimizedChatItem;
+
+    await act(async () => {
+      await editUserMessage?.(landed, "different text now");
+    });
+
+    expect(canonicalRetry).toHaveBeenCalledOnce();
+    const [payload] = canonicalRetry.mock.calls[0] as [
+      { displayText: string; turnIntentId?: string },
+    ];
+    expect(payload.displayText).toBe("different text now");
+    // An edited resend is a NEW submission: reusing the old identity would
+    // collapse it into the turn it is meant to replace.
+    expect(payload.turnIntentId).toEqual(expect.any(String));
+    expect(payload.turnIntentId).not.toBe("turn-intent-original");
+    expect(invokeTauriSpy).not.toHaveBeenCalledWith(
+      "cli_agent_truncate_after_chunk",
+      expect.anything()
+    );
+    expect(truncateBeforeIdSpy).not.toHaveBeenCalled();
+  });
+
+  it("falls back to the direct dispatcher for a landed tail row when the router declines", async () => {
+    surfaceSessionId.current = "cliagent-root";
+    storeSessionId.current = "cliagent-root";
+    const canonicalRetry = vi.fn().mockResolvedValue(false);
+    failedUserIntentRetryForTest = canonicalRetry;
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          onReady: (fn: EditUserMessageFn) => {
+            editUserMessage = fn;
+          },
+        })
+      )
+    );
+    const landed = {
+      event: {
+        id: "runlanded-child-user-2",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        source: "user",
+        displayText: "try once more",
+        displayStatus: "completed",
+        result: { deliveryStatus: "completed" },
+      },
+      chunk_id: "runlanded-child-user-2",
+    } as unknown as OptimizedChatItem;
+
+    await act(async () => {
+      await editUserMessage?.(landed, "try once more");
+    });
+
+    expect(canonicalRetry).toHaveBeenCalledOnce();
+    expect(submitUserIntentSpy).toHaveBeenCalledOnce();
+    expect(submitUserIntentSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: "cliagent-root",
+        displayContent: "try once more",
+        source: "dispatch",
+      })
+    );
+    expect(invokeTauriSpy).not.toHaveBeenCalled();
+    expect(evictSessionSpy).not.toHaveBeenCalled();
+    expect(truncateBeforeIdSpy).not.toHaveBeenCalled();
+  });
+
+  it.each(["cancel", "dialog error", "surface switch", "unmount"])(
+    "does not submit or mutate an older successful child turn after %s",
+    async (outcome) => {
+      const canonicalRetry = vi.fn().mockResolvedValue(true);
+      failedUserIntentRetryForTest = canonicalRetry;
+      const landed = {
+        event: {
+          id: "runlanded-old-success",
+          source: "user",
+          displayText: "earlier successful prompt",
+          displayStatus: "completed",
+          result: { turnIntentId: "old-success-identity" },
+        },
+        chunk_id: "runlanded-old-success",
+      } as unknown as OptimizedChatItem;
+      let resolveDialog!: (confirmed: boolean) => void;
+      if (outcome === "cancel") {
+        askNativeDialogSpy.mockResolvedValue(false);
+      } else if (outcome === "dialog error") {
+        askNativeDialogSpy.mockRejectedValue(new Error("dialog unavailable"));
+      } else {
+        askNativeDialogSpy.mockImplementation(
+          () =>
+            new Promise<boolean>((resolve) => {
+              resolveDialog = resolve;
+            })
+        );
+      }
+      await act(async () => {
+        const pending = editUserMessage?.(landed, "edited earlier prompt");
+        if (outcome === "surface switch") {
+          storeSessionId.current = "cliagent-other";
+          resolveDialog(true);
+        } else if (outcome === "unmount") {
+          root.unmount();
+          resolveDialog(true);
+        }
+        await pending;
+      });
+      expect(askNativeDialogSpy).toHaveBeenCalledOnce();
+      expect(canonicalRetry).not.toHaveBeenCalled();
+      expect(submitUserIntentSpy).not.toHaveBeenCalled();
+      expect(invokeTauriSpy).not.toHaveBeenCalled();
+      expect(truncateBeforeIdSpy).not.toHaveBeenCalled();
+      expect(removeByIdPrefixSpy).not.toHaveBeenCalled();
+      expect(evictSessionSpy).not.toHaveBeenCalled();
+      expect(storeSetSpy).not.toHaveBeenCalled();
+    }
+  );
+
+  it("cancels an outstanding landed edit when the mounted surface changes", async () => {
+    surfaceSessionId.current = "cliagent-old-root";
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          onReady: (fn: EditUserMessageFn) => {
+            editUserMessage = fn;
+          },
+        })
+      )
+    );
+    const canonicalRetry = vi.fn().mockResolvedValue(true);
+    failedUserIntentRetryForTest = canonicalRetry;
+    let resolveDialog!: (confirmed: boolean) => void;
+    askNativeDialogSpy.mockImplementation(
+      () =>
+        new Promise<boolean>((resolve) => {
+          resolveDialog = resolve;
+        })
+    );
+    const landed = {
+      event: { id: "runlanded-old", displayText: "old text", source: "user" },
+      chunk_id: "runlanded-old",
+    } as unknown as OptimizedChatItem;
+    let pending: Promise<void> | undefined;
+    act(() => {
+      pending = editUserMessage?.(landed, "new text");
+    });
+    surfaceSessionId.current = "cliagent-new-root";
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          onReady: (fn: EditUserMessageFn) => {
+            editUserMessage = fn;
+          },
+        })
+      )
+    );
+    await act(async () => {
+      resolveDialog(true);
+      await pending;
+    });
+    expect(canonicalRetry).not.toHaveBeenCalled();
+    expect(submitUserIntentSpy).not.toHaveBeenCalled();
+    expect(invokeTauriSpy).not.toHaveBeenCalled();
+  });
+
+  it("reloads the rewound cli session after evicting it so the anchor is not left empty", async () => {
+    surfaceSessionId.current = "cliagent-plain";
+    storeSessionId.current = "cliagent-plain";
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          onReady: (fn: EditUserMessageFn) => {
+            editUserMessage = fn;
+          },
+        })
+      )
+    );
+
+    await act(async () => {
+      await editUserMessage?.(chatItem(), "edit an earlier native turn");
+    });
+
+    expect(invokeTauriSpy).toHaveBeenCalledWith(
+      "cli_agent_truncate_after_chunk",
+      expect.objectContaining({
+        sessionId: "cliagent-plain",
+        createdAt: "2026-01-01T00:00:00.000Z",
+      })
+    );
+    expect(evictSessionSpy).toHaveBeenCalledWith("cliagent-plain");
+    const evictOrder = evictSessionSpy.mock.invocationCallOrder[0] ?? 0;
+    const reloadCallIndex = storeSetSpy.mock.calls.findIndex(
+      ([atom]) =>
+        (atom as { debugLabel?: string }).debugLabel ===
+        "triggerSessionReloadAtom"
+    );
+    expect(reloadCallIndex).toBeGreaterThanOrEqual(0);
+    expect(storeSetSpy.mock.calls[reloadCallIndex]?.[1]).toBe("cliagent-plain");
+    const reloadOrder =
+      storeSetSpy.mock.invocationCallOrder[reloadCallIndex] ?? 0;
+    expect(reloadOrder).toBeGreaterThan(evictOrder);
+    expect(submitUserIntentSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: "cliagent-plain",
+        displayContent: "edit an earlier native turn",
+      })
+    );
   });
 
   it("retries against the mounted SideChat session instead of global active", async () => {

@@ -378,4 +378,59 @@ mod tests {
         assert_eq!(matching[0].usage["cache_write_1h_tokens"], 518);
         assert_eq!(matching[0].usage["cache_write_5m_tokens"], 0);
     }
+    #[tokio::test]
+    async fn responses_http_cache_usage_reaches_auxiliary_receipt_without_double_counting() {
+        use crate::providers::{openai_responses::OpenAIResponsesClient, traits::ProviderConfig};
+        use wiremock::{
+            matchers::{method, path},
+            Mock, MockServer, ResponseTemplate,
+        };
+        session_bridge::register_record_auxiliary_usage(capture);
+        crate::test_support::install_crypto_provider_for_tests();
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/responses"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "output": [{"type":"message", "content":[{"type":"output_text", "text":"ok"}]}],
+                "usage": {"input_tokens":4544, "output_tokens":265, "total_tokens":4809,
+                          "input_tokens_details":{"cached_tokens":3584}}
+            })))
+            .expect(1)
+            .mount(&server)
+            .await;
+        let client = OpenAIResponsesClient::new(
+            ProviderConfig {
+                api_key: "fixture-only".into(),
+                api_base: Some(server.uri()),
+                extra_headers: Default::default(),
+                is_azure: false,
+            },
+            "gpt-5.6-luna".into(),
+        );
+        let sid = format!("responses-cache-{}", uuid::Uuid::new_v4());
+        let wrapped =
+            AuxiliaryUsageProvider::owned(Arc::new(client), &sid, "workspace_memory", None);
+        let result = wrapped
+            .chat_with_options(
+                &[serde_json::json!({"role":"user", "content":"fixture"})],
+                None,
+                "gpt-5.6-luna",
+                128,
+                0.0,
+                ChatOptions {
+                    skip_cache_write: true,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(result.content.as_deref(), Some("ok"));
+        let rows = ROWS.get().unwrap().lock().unwrap();
+        let matching: Vec<_> = rows.iter().filter(|row| row.session_id == sid).collect();
+        assert_eq!(matching.len(), 1);
+        assert_eq!(matching[0].purpose, "workspace_memory");
+        assert_eq!(matching[0].usage[usage_key::PROMPT_TOKENS], 960);
+        assert_eq!(matching[0].usage[usage_key::CACHE_READ_TOKENS], 3584);
+        assert_eq!(matching[0].usage[usage_key::COMPLETION_TOKENS], 265);
+        assert_eq!(matching[0].usage[usage_key::TOTAL_TOKENS], 4809);
+    }
 }
