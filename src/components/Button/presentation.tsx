@@ -67,7 +67,7 @@ function defaultButtonAppearance(variant: ButtonVariant): ButtonAppearance {
  * selected or concatenated whole, never assembled from fragments.
  */
 const NEUTRAL_SOFT_SURFACE =
-  "btn:text-text-2 btn-hover:bg-button-hover btn-focus:bg-button-hover";
+  "btn:text-text-2 btn-hover:bg-fill-2 btn-focus:bg-fill-2";
 const NEUTRAL_SOFT_SURFACE_NO_DROP =
   "btn:text-text-2 btn-hover:bg-button-hover-no-drop btn-focus:bg-button-hover-no-drop";
 const NEUTRAL_HOVER_TEXT = "btn-hover:text-text-1 btn-focus:text-text-1";

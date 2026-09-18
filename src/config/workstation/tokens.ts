@@ -80,7 +80,7 @@ export const BUTTON_SIZE = {
  * src/components/Button/presentation.tsx (parity is tested).
  */
 const DEFAULT_BUTTON_VARIANT =
-  "text-text-2 enabled:hover:bg-button-hover enabled:hover:text-text-1 focus-visible:bg-button-hover focus-visible:text-text-1";
+  "text-text-2 enabled:hover:bg-fill-2 enabled:hover:text-text-1 focus-visible:bg-fill-2 focus-visible:text-text-1";
 
 export const BUTTON_VARIANT = {
   default: DEFAULT_BUTTON_VARIANT,
