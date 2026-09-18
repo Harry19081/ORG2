@@ -79,7 +79,7 @@ describe("startup static import graph", () => {
       // `features/CodeMirror/config/nonce.ts` or
       // `TerminalCore/components/TerminalInteractive/bufferCache.ts` are fine
       // to share).
-      /^(features\/CodeMirror\/(index\.ts|Editor\/|Diff\/|SqlEditor\/|shared\/languageExtensions\.ts|config\/extensions\.ts)|engines\/TerminalCore\/(components\/TerminalInteractive\/(index\.tsx|terminalSetup\.ts)|index\.tsx)|scaffold\/ModalSystem\/variants\/ContentView\/)/
+      /^(features\/CodeMirror\/(index\.ts|Editor\/|Diff\/|shared\/languageExtensions\.ts|config\/extensions\.ts)|engines\/TerminalCore\/(components\/TerminalInteractive\/(index\.tsx|terminalSetup\.ts)|index\.tsx)|scaffold\/ModalSystem\/variants\/ContentView\/)/
     );
     expect(
       forbidden.map((f) => graph.explain(f)),
