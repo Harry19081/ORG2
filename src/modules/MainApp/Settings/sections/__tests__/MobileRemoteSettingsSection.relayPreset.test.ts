@@ -332,6 +332,24 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     });
   });
 
+  it("keeps reconnect available while registration is pending", async () => {
+    mocks.cloudAuth = { userId: "cloud-user" };
+    mocks.settings.set("mobileRemote.enabled", true);
+    mocks.settings.set("mobileRemote.relayEnabled", true);
+    mocks.relayStatus = {
+      phase: "connecting",
+      message: null,
+      reconnectAttempt: 0,
+      connectedAtMs: null,
+    };
+    await renderSection();
+    expect(findButtonByLabel("mobileRemote.retryConnection").disabled).toBe(
+      false
+    );
+    await act(async () => clickLabel("mobileRemote.retryConnection"));
+    expect(mobileRemoteApi.notifyCloudAuthChanged).toHaveBeenCalledOnce();
+  });
+
   it("blocks duplicate activation while saving and allows retry after failure", async () => {
     mocks.settings.set("mobileRemote.enabled", false);
     let reject!: (error: Error) => void;

@@ -587,3 +587,60 @@ describe("shared service auth storage", () => {
     expect(mocks.synchronize.mock.calls).toEqual([[1]]);
   });
 });
+
+describe("relay durable publication independent of Market readiness", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    localStorage.clear();
+    mocks.disk.clear();
+    mocks.isTauri.mockReturnValue(true);
+    mocks.getIdentifier.mockResolvedValue("org2ai.org2");
+    mocks.reload.mockReset().mockResolvedValue(undefined);
+    mocks.save.mockReset().mockResolvedValue(undefined);
+    mocks.suspend.mockReset().mockResolvedValue(1);
+    mocks.synchronize.mockReset();
+    mocks.disk.set("__orgii_shared_auth_schema", 2);
+  });
+  it("publishes saved relay credentials while Market verification remains pending", async () => {
+    let release!: () => void;
+    mocks.synchronize.mockImplementation(
+      () =>
+        new Promise<null>((resolve) => {
+          release = () => resolve(null);
+        })
+    );
+    const auth = cloudAuth();
+    localStorage.setItem(CLOUD_KEY, auth);
+    const { awaitMirroredOrg2CloudAuth, awaitNativeCloudOwnerReady } =
+      await import("./sharedAuthStorage");
+    const notifyRelay = vi.fn();
+    const operation = awaitMirroredOrg2CloudAuth(auth).then(notifyRelay);
+    await vi.waitFor(() => expect(mocks.synchronize).toHaveBeenCalled());
+    expect(mocks.disk.get(CLOUD_KEY)).toBe(auth);
+    expect(mocks.save).toHaveBeenCalled();
+    await operation;
+    expect(notifyRelay).toHaveBeenCalledOnce();
+    const marketReady = vi.fn();
+    const market = awaitNativeCloudOwnerReady().then(marketReady);
+    await Promise.resolve();
+    expect(marketReady).not.toHaveBeenCalled();
+    release();
+    await market;
+    expect(marketReady).toHaveBeenCalledOnce();
+  });
+  it("publishes saved relay credentials when Market verification fails", async () => {
+    mocks.synchronize.mockRejectedValue(
+      new Error("market_cloud_verification_unavailable")
+    );
+    const auth = cloudAuth();
+    localStorage.setItem(CLOUD_KEY, auth);
+    const { awaitMirroredOrg2CloudAuth } = await import("./sharedAuthStorage");
+    const notifyRelay = vi.fn();
+    await awaitMirroredOrg2CloudAuth(auth)
+      .then(notifyRelay)
+      .catch(() => {});
+    expect(mocks.disk.get(CLOUD_KEY)).toBe(auth);
+    expect(mocks.save).toHaveBeenCalled();
+    expect(notifyRelay).toHaveBeenCalledOnce();
+  });
+});

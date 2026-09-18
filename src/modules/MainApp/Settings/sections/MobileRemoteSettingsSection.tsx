@@ -148,7 +148,9 @@ const MobileRemoteSettingsSection: React.FC = () => {
   };
   const relayNeedsRetry =
     !relayStatus ||
-    ["backoff", "config_error", "stopped"].includes(relayStatus.phase);
+    ["backoff", "config_error", "stopped", "connecting"].includes(
+      relayStatus.phase
+    );
 
   const handleRelayPresetChange = useCallback(
     (preset: MobileRemoteRelayPreset) => {
