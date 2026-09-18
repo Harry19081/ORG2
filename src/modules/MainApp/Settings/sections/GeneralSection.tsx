@@ -370,7 +370,6 @@ const GeneralTabBody: React.FC = () => {
         <SectionRow label={t("common:common.timezone")}>
           <Select {...timezoneSelectProps} />
         </SectionRow>
-        <HttpVersionSettingsBlock />
       </SectionContainer>
       <SectionContainer>
         <SectionRow
@@ -514,6 +513,7 @@ const GeneralTabBody: React.FC = () => {
       </SectionContainer>
 
       <SectionContainer>
+        <HttpVersionSettingsBlock />
         <SectionRow
           label={
             <span className="inline-flex items-center gap-1">
@@ -530,10 +530,7 @@ const GeneralTabBody: React.FC = () => {
             onCheckedChange={setDevModeEnabled}
           />
         </SectionRow>
-      </SectionContainer>
-
-      {devModeEnabled && (
-        <SectionContainer>
+        {devModeEnabled && (
           <PathCopyOpenRow
             label={t("general.settingsFile")}
             path={settingsFilePath}
@@ -546,10 +543,7 @@ const GeneralTabBody: React.FC = () => {
             copyTitle={t("common:actions.copy")}
             openTitle={t("storage.openFolder")}
           />
-        </SectionContainer>
-      )}
-
-      <SectionContainer>
+        )}
         <SectionRow label={t("general.license")}>
           <Button size="default" onClick={() => setLicenseModalVisible(true)}>
             {t("common:actions.view")}
