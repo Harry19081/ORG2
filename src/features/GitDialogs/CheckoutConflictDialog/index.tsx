@@ -9,10 +9,33 @@ import type {
   SwitchStrategy,
 } from "@src/api/http/git/branchSwitch";
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
+import FileTypeIcon from "@src/components/FileTypeIcon";
 import Modal from "@src/scaffold/ModalSystem";
 import SelectionGrid from "@src/scaffold/WizardSystem/primitives/SelectionGrid";
 
 export type CheckoutConflictResult = SwitchStrategy | "cancel";
+
+/** Fixed so long branch names and paths truncate instead of resizing the modal. */
+const DIALOG_WIDTH = "min(520px, calc(100vw - 32px))";
+
+/** File row matching the workstation trail: type icon, name, dimmed folder. */
+function FilePathRow({ path }: { path: string }) {
+  const slash = path.lastIndexOf("/");
+  const name = path.slice(slash + 1);
+  const folder = slash > 0 ? path.slice(0, slash) : "";
+  return (
+    <li className="flex h-6 min-w-0 items-center gap-1.5 text-xs" title={path}>
+      <FileTypeIcon
+        fileName={name}
+        size="small"
+        className="size-3.5 shrink-0"
+      />
+      <span className="max-w-full shrink-0 truncate text-text-1">{name}</span>
+      {folder && <span className="min-w-0 truncate text-text-3">{folder}</span>}
+    </li>
+  );
+}
 interface ViewProps {
   scope: SwitchScope;
   preparation?: SwitchPreparation;
@@ -23,7 +46,6 @@ interface ViewProps {
   onClose: () => void;
 }
 export function BranchSwitchDialogView({
-  scope,
   preparation,
   busy,
   result,
@@ -35,6 +57,7 @@ export function BranchSwitchDialogView({
   const [choice, setChoice] = useState<SwitchStrategy>(
     preparation?.default_strategy ?? "leave"
   );
+  const [filesOpen, setFilesOpen] = useState(false);
   const terminal = Boolean(result || error);
   const title =
     result?.outcome === "switched_with_conflicts"
@@ -48,7 +71,8 @@ export function BranchSwitchDialogView({
     <Modal
       visible
       title={title}
-      size="small"
+      size="medium"
+      width={DIALOG_WIDTH}
       maskClosable={false}
       closable={!busy}
       escToExit={!busy}
@@ -64,30 +88,31 @@ export function BranchSwitchDialogView({
       }
       okButtonProps={{ loading: busy, disabled: busy }}
       cancelButtonProps={{ disabled: busy }}
-      cancelText={t("actions.cancel", "Cancel")}
-      footer={
-        terminal ? (
-          <div className="flex justify-end gap-2">
-            <Button variant="primary" onClick={onClose}>
-              {t("actions.close", "Close")}
-            </Button>
-          </div>
-        ) : undefined
-      }
+      // Result states only acknowledge; the default footer drops Cancel.
+      cancelText={terminal ? "" : t("actions.cancel", "Cancel")}
     >
       <div className="flex min-w-0 flex-col gap-4">
-        {scope.repoPath && (
-          <p className="text-xs break-all text-text-3">{scope.repoPath}</p>
-        )}
         {preparation && (
-          <p className="text-sm break-words text-text-1">
-            {preparation.current_branch} → {preparation.target_branch}
+          <p className="flex min-w-0 items-center gap-1.5 text-sm text-text-1">
+            <span
+              className="min-w-0 truncate"
+              title={preparation.current_branch}
+            >
+              {preparation.current_branch}
+            </span>
+            <span className="shrink-0 text-text-3">→</span>
+            <span
+              className="min-w-0 truncate"
+              title={preparation.target_branch}
+            >
+              {preparation.target_branch}
+            </span>
           </p>
         )}
         {terminal ? (
           <div role="status" className="flex flex-col gap-2">
             {result && (
-              <p className="text-sm break-words text-text-1">
+              <p className="truncate text-sm text-text-1">
                 {t("git.branchSwitch.current", {
                   defaultValue: "Current branch: {{branch}}",
                   branch: result.current_branch,
@@ -98,32 +123,46 @@ export function BranchSwitchDialogView({
               {error || result?.message}
             </p>
             {result?.conflicts.length ? (
-              <ul className="list-inside list-disc text-xs text-text-2">
+              <ul className="max-h-48 min-w-0 overflow-auto">
                 {result.conflicts.map((file) => (
-                  <li key={file} className="break-all">
-                    {file}
-                  </li>
+                  <FilePathRow key={file} path={file} />
                 ))}
               </ul>
             ) : null}
           </div>
         ) : preparation ? (
           <>
-            <details className="text-xs text-text-3">
-              <summary>
+            <div className="min-w-0">
+              <Button
+                htmlType="button"
+                variant="tertiary"
+                appearance="ghost"
+                size="inline"
+                layout="custom"
+                className="group/files flex h-6 items-center gap-1 text-xs text-text-3 hover:text-text-2"
+                aria-expanded={filesOpen}
+                onClick={() => setFilesOpen((open) => !open)}
+              >
                 {t("git.branchSwitch.changedFiles", {
                   defaultValue: "{{count}} changed files",
                   count: preparation.changed_files.length,
                 })}
-              </summary>
-              <ul className="mt-2 max-h-48 overflow-auto">
-                {preparation.changed_files.map((file) => (
-                  <li key={file} className="break-all">
-                    {file}
-                  </li>
-                ))}
-              </ul>
-            </details>
+                <DisclosureChevron
+                  expanded={filesOpen}
+                  aria-hidden
+                  className="shrink-0 text-text-3 group-hover/files:text-text-2"
+                  size={14}
+                  strokeWidth={1.75}
+                />
+              </Button>
+              {filesOpen && (
+                <ul className="mt-1 max-h-48 min-w-0 overflow-auto">
+                  {preparation.changed_files.map((file) => (
+                    <FilePathRow key={file} path={file} />
+                  ))}
+                </ul>
+              )}
+            </div>
             <fieldset disabled={busy} className="min-w-0">
               <legend className="mb-3 text-sm text-text-1">
                 {t(

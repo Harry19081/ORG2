@@ -41,7 +41,8 @@ export async function performBranchSwitch(
     ref: branch,
     create,
     startPoint,
-    beforePrepare: () => ensureSwitchWorkspaceReady(scope),
+    beforePrepare: () =>
+      ensureSwitchWorkspaceReady(scope, { confirmActiveTask: true }),
     beforeExecute: async () => {
       const ready = await ensureSwitchWorkspaceReady(scope);
       if (!ready) dialog.dispose();
@@ -52,8 +53,20 @@ export async function performBranchSwitch(
     onComplete: async (result) => {
       publish(result.current_branch);
       await dialog.complete(result);
-      if (result.outcome === "switched" && result.message)
-        Message.success(result.message);
+      if (result.outcome === "switched") {
+        const switchedTo = i18n.t(
+          "common:git.branchSwitch.switchedTo",
+          "Switched to {{branch}}",
+          { branch: result.current_branch }
+        );
+        Message.spotlight({
+          ...(result.message
+            ? { title: switchedTo, content: result.message }
+            : { content: switchedTo }),
+          variant: "success",
+          duration: 2500,
+        });
+      }
     },
     onBlocked: async ({ message, worktreePath, currentBranch }) => {
       if (worktreePath) {
@@ -76,7 +89,10 @@ export async function performBranchSwitch(
           );
           if (!worktree)
             throw new Error(
-              "The worktree no longer exists. Refresh and try again"
+              i18n.t(
+                "common:git.branchSwitch.messages.worktree_missing",
+                "The worktree no longer exists. Refresh and try again"
+              )
             );
           store.set(setActiveWorktreeAtom, {
             repoId: scope.repoId,

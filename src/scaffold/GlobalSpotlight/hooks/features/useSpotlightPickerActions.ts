@@ -10,6 +10,7 @@ import { useCallback } from "react";
 
 import { gitApi, removeGitWorktree } from "@src/api/http/git";
 import type { GitWorktreeEntry } from "@src/api/http/git";
+import i18n from "@src/i18n";
 import { performBranchSwitch } from "@src/services/git/operations/performBranchSwitch";
 import type { Repo } from "@src/store/repo";
 import type { WorktreeLaunchSource } from "@src/store/session/worktreeLaunchSourceAtom";
@@ -192,7 +193,11 @@ export function useSpotlightPickerActions(
 
       if (!result.success) {
         const message =
-          result.error || `Failed to delete branch "${branchName}"`;
+          result.error ||
+          i18n.t("common:selectors.branch.messages.failedDelete", {
+            defaultValue: 'Failed to delete branch "{{branch}}"',
+            branch: branchName,
+          });
         if (!options?.silent) {
           showGitActionDialogSafely(message, "error");
         }

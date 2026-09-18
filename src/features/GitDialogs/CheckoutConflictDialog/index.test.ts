@@ -130,6 +130,11 @@ it("reports the actual branch and conflict paths", async () => {
   expect(document.body.textContent).toContain("Current branch: develop");
   expect(document.body.textContent).toContain("conflict.txt");
   expect(button("Close")).toBeTruthy();
+  expect(
+    [...document.querySelectorAll("button")].some(
+      (b) => b.textContent === "Cancel"
+    )
+  ).toBe(false);
 });
 it("cancel disposes the operation root and resolves once without a write", async () => {
   const controller = createBranchSwitchDialog(scope);
@@ -140,4 +145,20 @@ it("cancel disposes the operation root and resolves once without a write", async
   await act(async () => button("Cancel").click());
   expect(await choice!).toBe("cancel");
   expect(document.querySelector('[role="dialog"]')).toBeNull();
+});
+it("hides the repo path and reveals changed files behind a chevron toggle", async () => {
+  await render({
+    preparation: { ...preparation, changed_files: ["src/deep/file.txt"] },
+  });
+  expect(document.body.textContent).not.toContain("/repo");
+  const toggle = document.querySelector<HTMLButtonElement>(
+    "button[aria-expanded]"
+  )!;
+  expect(toggle.getAttribute("aria-expanded")).toBe("false");
+  expect(toggle.querySelector('[data-icon="chevron-right"]')).toBeTruthy();
+  expect(document.body.textContent).not.toContain("file.txt");
+  await act(async () => toggle.click());
+  expect(toggle.getAttribute("aria-expanded")).toBe("true");
+  const row = document.querySelector('li[title="src/deep/file.txt"]');
+  expect(row?.textContent).toBe("file.txtsrc/deep");
 });

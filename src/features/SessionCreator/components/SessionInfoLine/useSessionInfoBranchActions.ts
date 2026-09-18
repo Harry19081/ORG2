@@ -8,6 +8,7 @@
 import { useCallback } from "react";
 
 import { gitApi } from "@src/api/http/git";
+import i18n from "@src/i18n";
 import { performBranchSwitch } from "@src/services/git/operations/performBranchSwitch";
 import { REPO_KIND, type RepoKind } from "@src/store/repo/types";
 import { showGitActionDialogSafely } from "@src/util/dialogs/gitActionDialog";
@@ -91,7 +92,12 @@ export function useSessionInfoBranchActions({
       });
 
       if (!result.success) {
-        const message = result.error || `Failed to delete branch "${branch}"`;
+        const message =
+          result.error ||
+          i18n.t("common:selectors.branch.messages.failedDelete", {
+            defaultValue: 'Failed to delete branch "{{branch}}"',
+            branch: branch,
+          });
         if (!options?.silent) {
           showGitActionDialogSafely(message, "error");
         }

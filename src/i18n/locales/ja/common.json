@@ -1535,15 +1535,42 @@
       "bringDescription": "未コミットの変更を切り替え先のブランチに持ち込みます",
       "worktreeTitle": "このブランチは別のワークツリーで開かれています",
       "openWorktree": "ワークツリーを開く",
-      "activeTask": "タスクがこのワークツリーを使用しています",
-      "activeTaskDescription": "ブランチを切り替える前に、タスクの完了を待つか、明示的に停止するか、別のワークツリーを使用してください",
+      "activeTask": "このワークツリーでタスクが実行中です",
+      "activeTaskDescription": "今切り替えると、エージェントが作業中のファイルが変わります",
+      "switchAnyway": "切り替える",
+      "switchedTo": "{{branch}} に切り替えました",
       "saveTitle": "切り替える前にファイルを保存",
       "saveDescription": "開いているファイルに未保存の編集があります。変更の保存先を選ぶ前に保存してください",
       "saveContinue": "すべて保存して続行",
       "saveFailed": "すべてのファイルを保存できませんでした",
       "multipleBuffers": "このファイルは複数のエディターで編集されています。切り替える前にそれらのエディターで保存するか閉じてください",
       "editedWhileSaving": "保存中にファイルが編集されました。最新の変更を確認して、もう一度お試しください",
-      "savePreview": "ブランチを切り替える前に、表計算エディターで編集内容を保存または破棄してください"
+      "savePreview": "ブランチを切り替える前に、表計算エディターで編集内容を保存または破棄してください",
+      "messages": {
+        "detached_head": "切り替える前に現在のコミットからブランチを作成してください。デタッチされた作業へのアクセスを維持できます",
+        "unborn": "保存したブランチの変更を使用する前に、最初のコミットを作成してください",
+        "ignored_collision": "無視されているファイルが上書きされます。切り替える前に移動してください",
+        "worktree_branch_in_use": "このブランチはすでに別のワークツリーで開かれています",
+        "invalid_branch_name": "有効なブランチ名を選択してください",
+        "branch_exists": "そのブランチはすでに存在します",
+        "branch_not_found": "ブランチが見つからないか、あいまいです。ブランチを更新して、明示的なリモートブランチを選択してください",
+        "upstream_mismatch": "その名前のローカルブランチは別の上流を追跡しています。ローカルブランチを明示的に選択してください",
+        "operation_merge": "ブランチを切り替える前に、マージを完了するか中止してください",
+        "operation_rebase": "ブランチを切り替える前に、リベースを完了するか中止してください",
+        "operation_cherry_pick": "ブランチを切り替える前に、チェリーピックを完了するか中止してください",
+        "operation_revert": "ブランチを切り替える前に、リバートを完了するか中止してください",
+        "operation_other": "ブランチを切り替える前に、現在の Git 操作を完了してください",
+        "stale": "ダイアログが開いている間にファイルまたはブランチが変更されました。最新の変更を確認して、もう一度お試しください",
+        "save_failed": "変更の保存を完了できませんでした: {{detail}}。再試行する前に、ワークツリーと保存済みの変更を確認してください",
+        "changed_while_saving": "保存中にファイルが変更されました。チェックアウトは実行されていません。スナップショットは利用可能です",
+        "checkout_failed_restored": "チェックアウトに失敗しました。変更は復元されました: {{detail}}",
+        "checkout_failed_saved": "チェックアウトに失敗しました。変更は保存されています: {{detail}}",
+        "worktree_changed": "チェックアウト中にワークツリーが変更されました。元の変更は保存されています。復元する前に現在のファイルを確認してください",
+        "restore_conflicts": "{{branch}} に切り替えました。一部の変更は復元できませんでした: {{detail}}。元の変更は保存されています",
+        "saved_on_previous": "変更は以前のブランチに保存されました",
+        "brought": "変更はこのブランチに引き継がれました",
+        "worktree_missing": "ワークツリーが存在しません。更新してもう一度お試しください"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "{{count}} 件のブランチを削除しました",
         "deletedCount_other": "{{count}} 件のブランチを削除しました",
-        "failedDeleteList": "削除できませんでした: {{branches}}"
+        "failedDeleteList": "削除できませんでした: {{branches}}",
+        "failedDelete": "ブランチ「{{branch}}」を削除できませんでした",
+        "prNoHeadBranch": "プルリクエストに head ブランチがありません",
+        "readBranchesFailed": "ローカルブランチを読み込めませんでした",
+        "createPrBranchFailed": "PR ブランチを作成できませんでした",
+        "readRemotesFailed": "リポジトリのリモートを読み込めませんでした"
       },
       "labels": {
+        "defaultBranches": "デフォルトブランチ",
         "otherBranches": "その他のブランチ",
         "current": "現在",
         "recent": "最近",

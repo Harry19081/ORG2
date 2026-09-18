@@ -1535,15 +1535,42 @@
       "bringDescription": "Leve suas alterações não commitadas para a branch de destino",
       "worktreeTitle": "A branch está aberta em outra árvore de trabalho",
       "openWorktree": "Abrir árvore de trabalho",
-      "activeTask": "Uma tarefa está usando esta árvore de trabalho",
-      "activeTaskDescription": "Aguarde a conclusão da tarefa, pare-a explicitamente ou use outra árvore de trabalho antes de trocar de branch",
+      "activeTask": "Há uma tarefa em execução nesta worktree",
+      "activeTaskDescription": "Trocar agora altera os arquivos em que o agente está trabalhando",
+      "switchAnyway": "Trocar mesmo assim",
+      "switchedTo": "Alterado para {{branch}}",
       "saveTitle": "Salvar arquivos antes de trocar",
       "saveDescription": "Os arquivos abertos têm edições não salvas. Salve-os antes de escolher onde manter suas alterações",
       "saveContinue": "Salvar tudo e continuar",
       "saveFailed": "Não foi possível salvar todos os arquivos",
       "multipleBuffers": "Este arquivo tem edições em mais de um editor. Salve ou feche esses editores antes de trocar",
       "editedWhileSaving": "Os arquivos foram editados durante o salvamento. Revise as alterações mais recentes e tente novamente",
-      "savePreview": "Salve ou descarte as edições no editor de planilhas antes de trocar de branch"
+      "savePreview": "Salve ou descarte as edições no editor de planilhas antes de trocar de branch",
+      "messages": {
+        "detached_head": "Crie um branch a partir do commit atual antes de trocar, para que o trabalho desanexado continue acessível",
+        "unborn": "Crie o primeiro commit antes de usar as alterações de branch salvas",
+        "ignored_collision": "Um arquivo ignorado seria sobrescrito. Mova-o antes de trocar",
+        "worktree_branch_in_use": "Esta branch já está aberta em outra árvore de trabalho",
+        "invalid_branch_name": "Escolha um nome de branch válido",
+        "branch_exists": "Essa branch já existe",
+        "branch_not_found": "Branch não encontrada ou ambígua. Atualize as branches e selecione uma branch remota explícita",
+        "upstream_mismatch": "Uma branch local com esse nome rastreia um upstream diferente. Escolha a branch local explicitamente",
+        "operation_merge": "Termine ou cancele a mesclagem antes de trocar de branch",
+        "operation_rebase": "Termine ou cancele o rebase antes de trocar de branch",
+        "operation_cherry_pick": "Termine ou cancele o cherry-pick antes de trocar de branch",
+        "operation_revert": "Termine ou cancele o revert antes de trocar de branch",
+        "operation_other": "Termine a operação atual do Git antes de trocar de branch",
+        "stale": "Os arquivos ou branches mudaram enquanto a caixa de diálogo estava aberta. Revise as alterações mais recentes e tente novamente",
+        "save_failed": "Não foi possível terminar de salvar as alterações: {{detail}}. Revise a árvore de trabalho e as alterações salvas antes de tentar novamente",
+        "changed_while_saving": "Os arquivos mudaram durante o salvamento. O checkout não foi tentado; seu snapshot está disponível",
+        "checkout_failed_restored": "Falha no checkout; suas alterações foram restauradas: {{detail}}",
+        "checkout_failed_saved": "Falha no checkout. Suas alterações estão salvas: {{detail}}",
+        "worktree_changed": "A árvore de trabalho mudou durante o checkout. Suas alterações originais estão salvas; revise os arquivos atuais antes de restaurar",
+        "restore_conflicts": "Alterado para {{branch}}. Algumas alterações não puderam ser restauradas: {{detail}}. Suas alterações originais estão salvas",
+        "saved_on_previous": "Alterações salvas no branch anterior",
+        "brought": "Suas alterações acompanharam você até esta branch",
+        "worktree_missing": "A worktree não existe mais. Atualize e tente novamente"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "{{count}} branch excluído",
         "deletedCount_other": "{{count}} branches excluídos",
-        "failedDeleteList": "Falha ao excluir: {{branches}}"
+        "failedDeleteList": "Falha ao excluir: {{branches}}",
+        "failedDelete": "Não foi possível excluir o branch \"{{branch}}\"",
+        "prNoHeadBranch": "O pull request não tem branch head",
+        "readBranchesFailed": "Não foi possível ler os branches locais",
+        "createPrBranchFailed": "Não foi possível criar o branch do PR",
+        "readRemotesFailed": "Não foi possível ler os remotos do repositório"
       },
       "labels": {
+        "defaultBranches": "Branches padrão",
         "otherBranches": "Outros branches",
         "current": "Atual",
         "recent": "Recentes",

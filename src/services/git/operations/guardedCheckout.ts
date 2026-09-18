@@ -7,6 +7,8 @@ import {
   branchSwitchApi,
 } from "@src/api/http/git/branchSwitch";
 
+import { localizeBranchSwitchMessage } from "./branchSwitchMessages";
+
 export type CheckoutBlockedErrorType = Exclude<
   CheckoutErrorType,
   "uncommitted_changes"
@@ -68,6 +70,8 @@ export async function runGuardedCheckout(
       return { success: false, outcome: "cancelled", errorType: "none" };
     const prepared = await branchSwitchApi.prepare(scope, target);
     currentBranch = prepared.current_branch;
+    if (prepared.blocked)
+      prepared.blocked.message = localizeBranchSwitchMessage(prepared.blocked);
     if (prepared.same_branch)
       return {
         success: true,
@@ -119,6 +123,7 @@ export async function runGuardedCheckout(
       prepared.fingerprint,
       strategy
     );
+    result.message = localizeBranchSwitchMessage(result, result.current_branch);
     currentBranch = result.current_branch;
     await params.onComplete?.(result);
     const switched =

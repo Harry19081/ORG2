@@ -1535,15 +1535,42 @@
       "bringDescription": "Nimm deine nicht committeten Änderungen zum Ziel-Branch mit",
       "worktreeTitle": "Branch ist in einem anderen Worktree geöffnet",
       "openWorktree": "Worktree öffnen",
-      "activeTask": "Eine Aufgabe verwendet diesen Worktree",
-      "activeTaskDescription": "Warte, bis die Aufgabe abgeschlossen ist, beende sie ausdrücklich oder verwende vor dem Branch-Wechsel einen anderen Worktree",
+      "activeTask": "In diesem Worktree läuft eine Aufgabe",
+      "activeTaskDescription": "Ein Wechsel ändert jetzt die Dateien, an denen der Agent arbeitet",
+      "switchAnyway": "Trotzdem wechseln",
+      "switchedTo": "Zu {{branch}} gewechselt",
       "saveTitle": "Dateien vor dem Wechsel speichern",
       "saveDescription": "Geöffnete Dateien enthalten ungespeicherte Änderungen. Speichere sie, bevor du entscheidest, wo du die Änderungen behalten möchtest",
       "saveContinue": "Alles speichern und fortfahren",
       "saveFailed": "Nicht alle Dateien konnten gespeichert werden",
       "multipleBuffers": "Diese Datei wurde in mehreren Editoren bearbeitet. Speichere oder schließe diese Editoren vor dem Wechsel",
       "editedWhileSaving": "Dateien wurden während des Speicherns bearbeitet. Prüfe die neuesten Änderungen und versuche es erneut",
-      "savePreview": "Speichere oder verwirf Änderungen im Tabelleneditor, bevor du den Branch wechselst"
+      "savePreview": "Speichere oder verwirf Änderungen im Tabelleneditor, bevor du den Branch wechselst",
+      "messages": {
+        "detached_head": "Erstelle vor dem Wechseln einen Branch aus dem aktuellen Commit, damit die losgelöste Arbeit erreichbar bleibt",
+        "unborn": "Erstelle den ersten Commit, bevor du gespeicherte Branch-Änderungen verwendest",
+        "ignored_collision": "Eine ignorierte Datei würde überschrieben. Verschiebe sie aus dem Weg, bevor du wechselst",
+        "worktree_branch_in_use": "Dieser Branch ist bereits in einem anderen Worktree geöffnet",
+        "invalid_branch_name": "Wähle einen gültigen Branch-Namen",
+        "branch_exists": "Dieser Branch existiert bereits",
+        "branch_not_found": "Branch nicht gefunden oder mehrdeutig. Aktualisiere die Branches und wähle einen expliziten Remote-Branch",
+        "upstream_mismatch": "Ein lokaler Branch mit diesem Namen verfolgt einen anderen Upstream. Wähle den lokalen Branch explizit aus",
+        "operation_merge": "Beende oder brich den Merge ab, bevor du den Branch wechselst",
+        "operation_rebase": "Beende oder brich den Rebase ab, bevor du den Branch wechselst",
+        "operation_cherry_pick": "Beende oder brich den Cherry-Pick ab, bevor du den Branch wechselst",
+        "operation_revert": "Beende oder brich den Revert ab, bevor du den Branch wechselst",
+        "operation_other": "Beende die aktuelle Git-Operation, bevor du den Branch wechselst",
+        "stale": "Die Dateien oder Branches haben sich geändert, während der Dialog geöffnet war. Prüfe die neuesten Änderungen und versuche es erneut",
+        "save_failed": "Änderungen konnten nicht vollständig gespeichert werden: {{detail}}. Prüfe das Arbeitsverzeichnis und die gespeicherten Änderungen, bevor du es erneut versuchst",
+        "changed_while_saving": "Dateien haben sich beim Speichern geändert. Der Checkout wurde nicht versucht; dein Snapshot ist verfügbar",
+        "checkout_failed_restored": "Checkout fehlgeschlagen; deine Änderungen wurden wiederhergestellt: {{detail}}",
+        "checkout_failed_saved": "Checkout fehlgeschlagen. Deine Änderungen sind gespeichert: {{detail}}",
+        "worktree_changed": "Das Arbeitsverzeichnis hat sich während des Checkouts geändert. Deine ursprünglichen Änderungen sind gespeichert; prüfe die aktuellen Dateien, bevor du wiederherstellst",
+        "restore_conflicts": "Zu {{branch}} gewechselt. Einige Änderungen konnten nicht wiederhergestellt werden: {{detail}}. Deine ursprünglichen Änderungen sind gespeichert",
+        "saved_on_previous": "Änderungen auf dem vorherigen Branch gespeichert",
+        "brought": "Deine Änderungen sind dir zu diesem Branch gefolgt",
+        "worktree_missing": "Der Worktree existiert nicht mehr. Aktualisieren und erneut versuchen"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "{{count}} Branch gelöscht",
         "deletedCount_other": "{{count}} Branches gelöscht",
-        "failedDeleteList": "Löschen fehlgeschlagen: {{branches}}"
+        "failedDeleteList": "Löschen fehlgeschlagen: {{branches}}",
+        "failedDelete": "Branch „{{branch}}“ konnte nicht gelöscht werden",
+        "prNoHeadBranch": "Pull Request hat keinen Head-Branch",
+        "readBranchesFailed": "Lokale Branches konnten nicht gelesen werden",
+        "createPrBranchFailed": "PR-Branch konnte nicht erstellt werden",
+        "readRemotesFailed": "Remotes des Repositorys konnten nicht gelesen werden"
       },
       "labels": {
+        "defaultBranches": "Standard-Branches",
         "otherBranches": "Andere Branches",
         "current": "Aktuell",
         "recent": "Zuletzt verwendet",

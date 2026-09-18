@@ -7,30 +7,36 @@ import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 import { isWithinWorktree, switchEditors } from "./branchSwitchEditors";
 
 export async function ensureSwitchWorkspaceReady(
-  scope: SwitchScope
+  scope: SwitchScope,
+  { confirmActiveTask = false }: { confirmActiveTask?: boolean } = {}
 ): Promise<boolean> {
   if (!scope.repoPath) return true;
   const root = scope.repoPath;
-  const active = getInstrumentedStore()
-    .get(sessionsAtom)
-    .find(
-      (s) =>
-        ["running", "in_progress", "installing"].includes(s.status) &&
-        Boolean(s.worktreePath || s.repoPath) &&
-        isWithinWorktree(s.worktreePath || s.repoPath || "", root)
-    );
-  if (active) {
-    await branchSwitchQuestion(
-      i18n.t(
-        "common:git.branchSwitch.activeTask",
-        "A task is using this worktree"
-      ),
-      i18n.t(
-        "common:git.branchSwitch.activeTaskDescription",
-        "Wait for the task to finish, stop it explicitly, or use another worktree before switching branches"
-      )
-    );
-    return false;
+  // A running agent does not block the switch; warn once so it is a choice.
+  if (confirmActiveTask) {
+    const active = getInstrumentedStore()
+      .get(sessionsAtom)
+      .some(
+        (s) =>
+          ["running", "in_progress", "installing"].includes(s.status) &&
+          Boolean(s.worktreePath || s.repoPath) &&
+          isWithinWorktree(s.worktreePath || s.repoPath || "", root)
+      );
+    if (
+      active &&
+      !(await branchSwitchQuestion(
+        i18n.t(
+          "common:git.branchSwitch.activeTask",
+          "A task is running in this worktree"
+        ),
+        i18n.t(
+          "common:git.branchSwitch.activeTaskDescription",
+          "Switching now changes the files the agent is working on"
+        ),
+        i18n.t("common:git.branchSwitch.switchAnyway", "Switch anyway")
+      ))
+    )
+      return false;
   }
   // Structured file editors own save formats outside the text-buffer registry.
   // Their dirty tab flag is authoritative: require an explicit save in that editor.

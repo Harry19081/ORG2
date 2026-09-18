@@ -1535,15 +1535,42 @@
       "bringDescription": "Mang các thay đổi chưa commit sang nhánh đích",
       "worktreeTitle": "Nhánh đang mở trong cây làm việc khác",
       "openWorktree": "Mở cây làm việc",
-      "activeTask": "Một tác vụ đang dùng cây làm việc này",
-      "activeTaskDescription": "Chờ tác vụ hoàn tất, chủ động dừng tác vụ hoặc dùng cây làm việc khác trước khi chuyển nhánh",
+      "activeTask": "Có tác vụ đang chạy trong worktree này",
+      "activeTaskDescription": "Chuyển ngay bây giờ sẽ thay đổi các tệp mà tác tử đang xử lý",
+      "switchAnyway": "Vẫn chuyển",
+      "switchedTo": "Đã chuyển sang {{branch}}",
       "saveTitle": "Lưu tệp trước khi chuyển",
       "saveDescription": "Các tệp đang mở có nội dung chỉnh sửa chưa lưu. Hãy lưu trước khi chọn nơi giữ các thay đổi",
       "saveContinue": "Lưu tất cả và tiếp tục",
       "saveFailed": "Không thể lưu tất cả các tệp",
       "multipleBuffers": "Tệp này có nội dung chỉnh sửa trong nhiều trình soạn thảo. Hãy lưu hoặc đóng các trình soạn thảo đó trước khi chuyển",
       "editedWhileSaving": "Các tệp đã được chỉnh sửa trong khi lưu. Hãy kiểm tra các thay đổi mới nhất rồi thử lại",
-      "savePreview": "Lưu hoặc bỏ các chỉnh sửa trong trình chỉnh sửa bảng tính trước khi chuyển nhánh"
+      "savePreview": "Lưu hoặc bỏ các chỉnh sửa trong trình chỉnh sửa bảng tính trước khi chuyển nhánh",
+      "messages": {
+        "detached_head": "Tạo một nhánh từ commit hiện tại trước khi chuyển, để công việc tách rời vẫn có thể truy cập được",
+        "unborn": "Tạo commit đầu tiên trước khi sử dụng các thay đổi nhánh đã lưu",
+        "ignored_collision": "Một tệp bị bỏ qua sẽ bị ghi đè. Di chuyển tệp đó trước khi chuyển",
+        "worktree_branch_in_use": "Nhánh này đã được mở trong cây làm việc khác",
+        "invalid_branch_name": "Chọn một tên nhánh hợp lệ",
+        "branch_exists": "Nhánh đó đã tồn tại",
+        "branch_not_found": "Không tìm thấy nhánh hoặc nhánh không rõ ràng. Làm mới danh sách nhánh và chọn một nhánh từ xa cụ thể",
+        "upstream_mismatch": "Một nhánh cục bộ có tên đó đang theo dõi một upstream khác. Chọn nhánh cục bộ một cách rõ ràng",
+        "operation_merge": "Hoàn tất hoặc hủy hợp nhất trước khi chuyển nhánh",
+        "operation_rebase": "Hoàn tất hoặc hủy rebase trước khi chuyển nhánh",
+        "operation_cherry_pick": "Hoàn tất hoặc hủy cherry-pick trước khi chuyển nhánh",
+        "operation_revert": "Hoàn tất hoặc hủy revert trước khi chuyển nhánh",
+        "operation_other": "Hoàn tất thao tác Git hiện tại trước khi chuyển nhánh",
+        "stale": "Các tệp hoặc nhánh đã thay đổi trong khi hộp thoại đang mở. Xem lại các thay đổi mới nhất rồi thử lại",
+        "save_failed": "Không thể hoàn tất việc lưu thay đổi: {{detail}}. Xem lại cây làm việc và các thay đổi đã lưu trước khi thử lại",
+        "changed_while_saving": "Các tệp đã thay đổi trong khi lưu. Chưa thực hiện checkout; snapshot của bạn vẫn khả dụng",
+        "checkout_failed_restored": "Checkout không thành công; các thay đổi của bạn đã được khôi phục: {{detail}}",
+        "checkout_failed_saved": "Checkout không thành công. Các thay đổi của bạn đã được lưu: {{detail}}",
+        "worktree_changed": "Cây làm việc đã thay đổi trong khi checkout. Các thay đổi ban đầu của bạn đã được lưu; xem lại các tệp hiện tại trước khi khôi phục",
+        "restore_conflicts": "Đã chuyển sang {{branch}}. Một số thay đổi không thể khôi phục: {{detail}}. Các thay đổi ban đầu của bạn đã được lưu",
+        "saved_on_previous": "Các thay đổi đã được lưu trên nhánh trước đó",
+        "brought": "Các thay đổi của bạn đã theo bạn sang nhánh này",
+        "worktree_missing": "Worktree không còn tồn tại. Hãy làm mới và thử lại"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "Đã xóa {{count}} nhánh",
         "deletedCount_other": "Đã xóa {{count}} nhánh",
-        "failedDeleteList": "Không thể xóa: {{branches}}"
+        "failedDeleteList": "Không thể xóa: {{branches}}",
+        "failedDelete": "Không thể xóa nhánh \"{{branch}}\"",
+        "prNoHeadBranch": "Pull request không có nhánh head",
+        "readBranchesFailed": "Không thể đọc các nhánh cục bộ",
+        "createPrBranchFailed": "Không thể tạo nhánh PR",
+        "readRemotesFailed": "Không thể đọc remote của kho"
       },
       "labels": {
+        "defaultBranches": "Nhánh mặc định",
         "otherBranches": "Nhánh khác",
         "current": "Hiện tại",
         "recent": "Gần đây",
