@@ -217,7 +217,8 @@ export function MobileRemoteProviders({
         ...prev,
         status: "connecting",
         presence: "offline",
-        error: undefined,
+        // Preserve the last failure until initialize succeeds, so backoff and
+        // in-flight retries do not erase the user's explanation every attempt.
       }));
       try {
         await establishConnection(config, generation);

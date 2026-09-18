@@ -8,6 +8,9 @@ export type ConnectionStatus =
 
 export type DesktopPresence = "online" | "offline" | "unknown";
 
+/** Invalid admission data is distinct from a network failure in recovery UI. */
+export class MobileConnectionTicketError extends Error {}
+
 /** A policy denial needs a new user action, not an automatic network retry. */
 export class MobileConnectionAuthorizationError extends Error {}
 
@@ -44,6 +47,8 @@ export interface MobilePendingPermission {
 }
 
 export interface MobileRpcError {
+  /** Local connection classification, never inferred from server error text. */
+  connectionIssue?: "ticket" | "authorization";
   code: number;
   message: string;
 }

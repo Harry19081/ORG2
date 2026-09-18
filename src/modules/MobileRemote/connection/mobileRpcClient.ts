@@ -6,7 +6,11 @@ import type {
   JsonRpcRequest,
   MobileRpcError,
 } from "./types";
-import { isJsonRpcResponse } from "./types";
+import {
+  MobileConnectionAuthorizationError,
+  MobileConnectionTicketError,
+  isJsonRpcResponse,
+} from "./types";
 
 export type RpcNotificationHandler = (
   method: string,
@@ -179,6 +183,16 @@ export function createMobileRpcClient(
 }
 
 export function toMobileRpcError(error: unknown): MobileRpcError {
+  if (error instanceof MobileConnectionTicketError) {
+    return { code: -1, message: error.message, connectionIssue: "ticket" };
+  }
+  if (error instanceof MobileConnectionAuthorizationError) {
+    return {
+      code: -1,
+      message: error.message,
+      connectionIssue: "authorization",
+    };
+  }
   if (error instanceof Error) {
     return { code: -1, message: error.message };
   }

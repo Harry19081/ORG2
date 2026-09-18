@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 import { createLogger } from "@src/hooks/logger";
 
@@ -7,6 +8,7 @@ import { MobileAuthContext } from "./auth/MobileAuthContext";
 import { MobileShell } from "./components/MobileShell";
 import { MobileTabBar } from "./components/MobileTabBar";
 import { MobileProfileEntry } from "./components/profile/MobileProfileEntry";
+import { mobileConnectionFailureKey } from "./connection/mobileConnectionFeedback";
 import { useMobileRemoteCoordinator } from "./navigation/useMobileRemoteCoordinator";
 import { ConnectingLiveBridge } from "./screens/ConnectingLiveBridge";
 import { ConnectingScreen } from "./screens/ConnectingScreen";
@@ -48,6 +50,7 @@ function MobileRemoteRoutes({
     handleConnectionRetry,
     handleConnectionRepair,
   } = useMobileRemoteCoordinator(recoveredPairingIntent);
+  const { t } = useTranslation("mobileRemote");
   const { bootstrapPending, connectionConfig } = useMobileRemote();
 
   // Manual recovery owns the handshake; do not remount ConnectingLiveBridge
@@ -64,7 +67,7 @@ function MobileRemoteRoutes({
     return (
       <MobileShell>
         <ConnectionErrorScreen
-          message={connection.error?.message}
+          message={t(mobileConnectionFailureKey(connection.error))}
           onRetry={() => {
             void handleConnectionRetry().catch((error) =>
               logger.warn("Connection retry failed", error)

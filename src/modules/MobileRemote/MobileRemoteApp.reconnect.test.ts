@@ -165,7 +165,9 @@ describe("MobileRemoteApp paired-device recovery", () => {
     expect(container.querySelector(".mobile-discovery")).not.toBeNull();
     await act(async () => RelaySocket.instances.at(-1)!.close(1008));
     expect(container.querySelector(".mobile-discovery")).toBeNull();
-    expect(container.textContent).toContain("Device access was revoked");
+    expect(container.textContent).toContain(
+      "This device’s access is no longer valid"
+    );
     await act(async () => {
       await vi.advanceTimersByTimeAsync(60_000);
     });

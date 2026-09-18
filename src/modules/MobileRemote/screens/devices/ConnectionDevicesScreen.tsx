@@ -9,6 +9,7 @@ import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import { HugeiconsIcon, LaptopIcon, SmartPhone01Icon } from "@src/icons";
 
 import { useMobileRemote } from "../../app";
+import { MobileConnectionNotice } from "../../components/MobileConnectionNotice";
 import { MobileTopBar } from "../../components/MobileTopBar";
 import { derivePairedDesktopPresence } from "../../connection/mobilePairedDesktopPresence";
 import { resolvePermissionTierLabel } from "../../connection/mobilePermissionPresentation";
@@ -54,6 +55,7 @@ export function ConnectionDevicesScreen({
   const [switchError, setSwitchError] = React.useState<string | null>(null);
   const {
     connection,
+    retryConnection,
     pairedDesktops: pairedDesktopInventory,
     switchPairedDesktop,
   } = useMobileRemote();
@@ -70,6 +72,11 @@ export function ConnectionDevicesScreen({
         backAriaLabel={t("settings.back")}
       />
       <div className="mobile-flow-screen flex-1 px-4 py-4">
+        <MobileConnectionNotice
+          connection={connection}
+          onRetry={retryConnection}
+          className="mb-4"
+        />
         <div className="flex flex-col gap-5">
           <SectionContainer
             titleSlot={
