@@ -34,7 +34,7 @@ const SidebarHeaderNavButton: React.FC<SidebarHeaderNavButtonProps> = ({
   bold = true,
   tooltipLabel,
   tooltipShortcutId,
-  tooltipPosition = "bottom-start",
+  tooltipPosition = "bottom",
 }) => {
   const button = (
     // `text-left` overrides the native <button> UA `text-align: center`, which
