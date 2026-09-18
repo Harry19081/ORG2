@@ -18,6 +18,9 @@ const mocks = vi.hoisted(() => ({
   publish: vi.fn(),
   invoke: vi.fn(),
   mainWindow: true,
+  closeOtherTabs: vi.fn(),
+  showError: vi.fn(),
+  cloudSection: vi.fn(),
 }));
 const emptySet = new Set<string>();
 const emptyMap = new Map();
@@ -38,7 +41,9 @@ vi.mock("@src/util/platform/tauri/windowIdentity", () => ({
   getCurrentWindowLabel: () => "main",
 }));
 vi.mock("@src/hooks/logger", () => ({ createLogger: () => ({ warn: noop }) }));
-vi.mock("@src/components/Message", () => ({ default: { error: noop } }));
+vi.mock("@src/components/Message", () => ({
+  default: { error: mocks.showError },
+}));
 vi.mock("@src/hooks/navigation/useAppNavigate", () => ({
   useAppNavigate: () => noop,
 }));
@@ -116,7 +121,13 @@ vi.mock("../workstationSidebarData", () => ({
 }));
 vi.mock("./sessionEntryActions", () => ({ openNewChatFromSidebar: noop }));
 vi.mock("./sidebarConnector.chatPanelAtoms", () => ({
-  useWorkstationSidebarChatPanelAtoms: () => ({}),
+  useWorkstationSidebarChatPanelAtoms: () => ({
+    setStationMode: noop,
+    setStationChatVisible: noop,
+    resetChatPanelSessionSurface: noop,
+    openOrReplaceSessionInChatPanelTab: noop,
+    closeOtherThanActiveChatPanelTabs: mocks.closeOtherTabs,
+  }),
 }));
 vi.mock("./sidebarConnector.labels", () => ({
   buildWorkstationSidebarLabels: () => ({ untitledSession: "Untitled" }),
@@ -125,11 +136,14 @@ vi.mock("./useWorkspaceGroupActions", () => ({
   useWorkspaceGroupActions: () => undefined,
 }));
 vi.mock("./cloudSessionsSection", () => ({
-  useCloudSessionsSection: () => ({
-    cloudFlatListExcludedSessionIds: emptySet,
-    cloudLocalSessionIds: emptySet,
-    cloudMenuItems: emptyItems,
-  }),
+  useCloudSessionsSection: (options: unknown) => {
+    mocks.cloudSection(options);
+    return {
+      cloudFlatListExcludedSessionIds: emptySet,
+      cloudLocalSessionIds: emptySet,
+      cloudMenuItems: emptyItems,
+    };
+  },
 }));
 vi.mock("./sidebarMenuCollections", () => ({
   useSessionSidebarMenuItems: ({ menuItems }: { menuItems: unknown }) =>
@@ -205,6 +219,9 @@ const flush = async () =>
 beforeEach(() => {
   vi.useFakeTimers();
   mocks.mainWindow = true;
+  mocks.closeOtherTabs.mockReset().mockResolvedValue(undefined);
+  mocks.showError.mockReset();
+  mocks.cloudSection.mockClear();
   mocks.publish.mockReset().mockResolvedValue(true);
   mocks.invoke.mockReset().mockResolvedValue([]);
   store = createStore();
@@ -301,4 +318,20 @@ it("scope changes invalidate the previous application snapshot before replacemen
       .slice(-2)
       .map(([rows]) => rows.map(({ id }: { id: string }) => id))
   ).toEqual([[], ["other-org-session"]]);
+});
+
+it("reports a failed replace-all tab action without an unhandled rejection", async () => {
+  mocks.closeOtherTabs.mockRejectedValueOnce(new Error("Unable to close tabs"));
+  await render("session");
+  await act(async () => {
+    mocks.cloudSection.mock.lastCall![0].openSessionAtDestination(
+      "replace-all",
+      {
+        sessionId: "first",
+        title: "First",
+      }
+    );
+  });
+  expect(mocks.closeOtherTabs).toHaveBeenCalledOnce();
+  expect(mocks.showError).toHaveBeenCalledWith("Unable to close tabs");
 });

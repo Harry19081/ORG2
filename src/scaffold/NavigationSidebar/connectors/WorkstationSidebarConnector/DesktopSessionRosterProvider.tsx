@@ -193,7 +193,11 @@ function useDesktopSessionRosterState() {
           sessionName: options.title,
         });
         if (destination === "replace-all") {
-          void closeOtherThanActiveChatPanelTabs();
+          void closeOtherThanActiveChatPanelTabs().catch((error) => {
+            Message.error(
+              error instanceof Error ? error.message : String(error)
+            );
+          });
         }
         return;
       }
