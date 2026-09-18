@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  WORKSTATION_TRAIL_TERMINAL_WIDTH,
   WORKSTATION_TRAIL_TRACK_WIDTH_VARIABLE,
   WORKSTATION_TRAIL_WIDTH_VARIABLE,
   resolveTrailWidthVariables,
@@ -8,14 +9,26 @@ import {
 
 describe("fixed trail and resizable terminal column", () => {
   it("keeps the fixed trail inside the column inset", () => {
-    expect(resolveTrailWidthVariables()).toEqual({
+    expect(
+      resolveTrailWidthVariables({
+        collapsed: false,
+        terminalShown: false,
+        terminalWidth: WORKSTATION_TRAIL_TERMINAL_WIDTH,
+      })
+    ).toEqual({
       [WORKSTATION_TRAIL_WIDTH_VARIABLE]: "248px",
       [WORKSTATION_TRAIL_TRACK_WIDTH_VARIABLE]: "256px",
     });
   });
 
   it("widens only the column when opening the terminal", () => {
-    expect(resolveTrailWidthVariables({ terminalShown: true })).toEqual({
+    expect(
+      resolveTrailWidthVariables({
+        collapsed: false,
+        terminalShown: true,
+        terminalWidth: WORKSTATION_TRAIL_TERMINAL_WIDTH,
+      })
+    ).toEqual({
       [WORKSTATION_TRAIL_WIDTH_VARIABLE]: "248px",
       [WORKSTATION_TRAIL_TRACK_WIDTH_VARIABLE]: "408px",
     });
@@ -23,13 +36,21 @@ describe("fixed trail and resizable terminal column", () => {
 
   it("reserves the terminal's resized width without changing the trail", () => {
     expect(
-      resolveTrailWidthVariables({ terminalShown: true, terminalWidth: 610 })
+      resolveTrailWidthVariables({
+        collapsed: false,
+        terminalShown: true,
+        terminalWidth: 610,
+      })
     ).toEqual({
       [WORKSTATION_TRAIL_WIDTH_VARIABLE]: "248px",
       [WORKSTATION_TRAIL_TRACK_WIDTH_VARIABLE]: "618px",
     });
     expect(
-      resolveTrailWidthVariables({ terminalShown: true, terminalWidth: 220 })
+      resolveTrailWidthVariables({
+        collapsed: false,
+        terminalShown: true,
+        terminalWidth: 220,
+      })
     ).toEqual({
       [WORKSTATION_TRAIL_WIDTH_VARIABLE]: "248px",
       [WORKSTATION_TRAIL_TRACK_WIDTH_VARIABLE]: "256px",
@@ -38,7 +59,11 @@ describe("fixed trail and resizable terminal column", () => {
 
   it("releases the terminal's extra width when folded or hidden", () => {
     expect(
-      resolveTrailWidthVariables({ terminalShown: false, terminalWidth: 610 })
+      resolveTrailWidthVariables({
+        collapsed: false,
+        terminalShown: false,
+        terminalWidth: 610,
+      })
     ).toEqual({
       [WORKSTATION_TRAIL_WIDTH_VARIABLE]: "248px",
       [WORKSTATION_TRAIL_TRACK_WIDTH_VARIABLE]: "256px",

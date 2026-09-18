@@ -20,7 +20,6 @@ interface InlineExpandedSplitCardProps {
    * pane.
    */
   equalColumns?: boolean;
-  showSeparator?: boolean;
   wrapInCard?: boolean;
 }
 
@@ -30,10 +29,8 @@ const InlineExpandedSplitCard: React.FC<InlineExpandedSplitCardProps> = ({
   leftClassName,
   rightClassName = "",
   equalColumns = false,
-  showSeparator = true,
   wrapInCard = true,
 }) => {
-  const separatorClassName = showSeparator ? "border-r border-border-2" : "";
   const resolvedLeftClassName =
     leftClassName ?? (equalColumns ? "min-w-0 flex-1" : "w-[min(42%,280px)]");
   const leftPaneClassName = equalColumns
@@ -48,7 +45,7 @@ const InlineExpandedSplitCard: React.FC<InlineExpandedSplitCardProps> = ({
         className={`flex min-h-0 min-w-0 gap-4 ${INLINE_EXPANDED_SPLIT_SCROLL_MAX_HEIGHT}`}
       >
         <div
-          className={`${leftPaneClassName} ${INLINE_EXPANDED_SPLIT_SCROLL_MAX_HEIGHT} ${separatorClassName} ${resolvedLeftClassName}`}
+          className={`${leftPaneClassName} ${INLINE_EXPANDED_SPLIT_SCROLL_MAX_HEIGHT} border-r border-border-2 ${resolvedLeftClassName}`}
         >
           {left}
         </div>
@@ -72,9 +69,7 @@ const InlineExpandedSplitCard: React.FC<InlineExpandedSplitCardProps> = ({
     <div className="@container min-w-0">
       <div className="flex min-h-0 min-w-0 flex-col gap-3 @[520px]:max-h-[360px] @[520px]:flex-row @[520px]:gap-4">
         <div
-          className={`scrollbar-hide flex min-h-0 min-w-0 flex-col gap-0.5 overflow-y-auto overscroll-contain @[520px]:max-h-[360px] @[520px]:flex-1 @[520px]:pr-3 ${
-            showSeparator ? "@[520px]:border-r @[520px]:border-border-2" : ""
-          } ${leftClassName ?? ""}`}
+          className={`scrollbar-hide flex min-h-0 min-w-0 flex-col gap-0.5 overflow-y-auto overscroll-contain @[520px]:max-h-[360px] @[520px]:flex-1 @[520px]:border-r @[520px]:border-border-2 @[520px]:pr-3 ${leftClassName ?? ""}`}
         >
           {left}
         </div>

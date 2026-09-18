@@ -15,7 +15,6 @@ import SettingsTable, {
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
-import TabPill from "@src/components/TabPill";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
@@ -375,18 +374,9 @@ export const RoutinesTable: React.FC<RoutinesTableProps> = ({
     <DetailPanelContainer>
       <InternalHeader
         noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={tab}
-            activeTab="routines"
-            onChange={() => {}}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
+        tabs={tab}
+        activeTab="routines"
+        onTabChange={() => {}}
       />
       <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
         <div className={DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop}>

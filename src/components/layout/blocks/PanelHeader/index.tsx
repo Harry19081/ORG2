@@ -31,39 +31,20 @@
  * />
  * ```
  */
-import React, { createContext, memo, useContext } from "react";
+import React, { memo } from "react";
 
 import Button from "@src/components/Button";
 import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
-import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
 import {
   ArrowLeft02Icon,
   ArrowRight01Icon,
   HugeiconsIcon,
   type IconSvgElement,
   Refresh04Icon,
-  Search01Icon,
 } from "@src/icons";
 
 import { PANEL_HEADER_TOKENS } from "./tokens";
-
-/**
- * Surface background context for nested PanelHeader instances.
- *
- * Lets an ancestor override the default `bg-bg-2` chrome fill for every
- * descendant PanelHeader that does not explicitly set its own `background`
- * prop. Intended for cases where a host already paints a different surface
- * (e.g. the CodeMirror editor canvas used by Workstation content panels),
- * so the header should inherit that surface instead of drawing its own.
- *
- * An explicit `background` prop on a specific PanelHeader still wins.
- */
-type PanelHeaderSurface = "default" | "transparent" | "editorCanvas";
-
-const PanelHeaderSurfaceContext = createContext<PanelHeaderSurface | null>(
-  null
-);
 
 export { PANEL_HEADER_TOKENS } from "./tokens";
 
@@ -150,19 +131,6 @@ export interface PanelHeaderProps {
   /** Right-side actions (buttons, etc.) */
   actions?: React.ReactNode;
 
-  /**
-   * Search button click handler - shows a search icon button in actions.
-   * When clicked, typically opens the PageSearch spotlight selector.
-   */
-  onSearch?: () => void;
-
-  /**
-   * Active search query. When non-empty, overrides the title with the query
-   * text and replaces the icon with a Search icon. Pair with `onSearch` to
-   * let the user reopen the spotlight and refine the query.
-   */
-  searchQuery?: string;
-
   /** Custom children content (overrides title/breadcrumb) */
   children?: React.ReactNode;
 
@@ -172,33 +140,11 @@ export interface PanelHeaderProps {
   /** Additional className */
   className?: string;
 
-  /** Stable selector for focused layout and interaction tests. */
-  dataTestId?: string;
-
   /** When true, draws a bottom border under the header row (separator against content below). */
   borderBottom?: boolean;
 
-  /**
-   * Background style. Default is `bg-bg-2` (panel chrome). Use `transparent` when the parent
-   * already fills with the intended surface (e.g. editor canvas). `editorCanvas` paints the
-   * same as CodeMirror chrome when there is no solid parent behind the header row.
-   *
-   * When omitted, the header falls back to the nearest `PanelHeaderSurfaceProvider`
-   * above it (if any) before defaulting to `"default"`.
-   */
-  background?: PanelHeaderSurface;
-
-  /** Header variant - "list" uses px-3 padding; `borderBottom` is ignored (no border) */
-  variant?: "default" | "list";
-
   /** Height contract. Detail panes use the same 36px chrome as PR headers. */
   height?: "standard" | "detail";
-
-  /**
-   * Content rendered below the main header row (e.g. InternalHeader with tabs).
-   * When provided, no extra padding-top is needed on the scroll content below.
-   */
-  afterHeader?: React.ReactNode;
 }
 
 // ============================================
@@ -215,40 +161,16 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
     backLabel,
     breadcrumb,
     actions,
-    onSearch,
-    searchQuery,
     children,
     className = "",
     fontSize = PANEL_HEADER_TOKENS.fontSize,
-    dataTestId,
     borderBottom = false,
-    background,
-    variant = "default",
     height = "standard",
-    afterHeader,
   }) => {
-    // When searchQuery is active, override title/icon to show search state
-    const displayTitle = searchQuery ? searchQuery : title;
-    const displayIcon = searchQuery ? Search01Icon : icon;
-    const displayIconElement = searchQuery ? undefined : iconElement;
-    const isListVariant = variant === "list";
-    const paddingClass = isListVariant
-      ? "px-3"
-      : "px-[var(--modal-chrome-padding,1rem)]";
     const heightClass =
       height === "detail" ? DETAIL_PANEL_TOKENS.headerHeight : "h-10";
-    const baseClasses = `relative z-30 flex ${heightClass} shrink-0 items-center gap-2 ${paddingClass}`;
-    const borderClasses =
-      borderBottom && !isListVariant ? "border-b border-border-2" : "";
-    const contextSurface = useContext(PanelHeaderSurfaceContext);
-    const resolvedBackground: PanelHeaderSurface =
-      background ?? contextSurface ?? "default";
-    const bgClasses =
-      resolvedBackground === "transparent"
-        ? ""
-        : resolvedBackground === "editorCanvas"
-          ? EDITOR_TAB_CANVAS_BG_CLASS
-          : "bg-bg-2";
+    const baseClasses = `relative z-30 flex ${heightClass} shrink-0 items-center gap-2 px-[var(--modal-chrome-padding,1rem)]`;
+    const borderClasses = borderBottom ? "border-b border-border-2" : "";
 
     // Render custom content or default title/breadcrumb
     const renderContent = () => {
@@ -261,8 +183,8 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
       if (breadcrumb) {
         return (
           <>
-            {displayIconElement && (
-              <span className="shrink-0 text-text-2">{displayIconElement}</span>
+            {iconElement && (
+              <span className="shrink-0 text-text-2">{iconElement}</span>
             )}
             <span className="text-text-2" style={{ fontSize }}>
               {breadcrumb.parent}
@@ -288,29 +210,28 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
         );
       }
 
-      // Title mode (uses display* vars which respect searchQuery override)
-      const IconComponent = displayIcon;
+      // Title mode
       return (
         <>
-          {displayIconElement && (
-            <span className="shrink-0 text-text-2">{displayIconElement}</span>
+          {iconElement && (
+            <span className="shrink-0 text-text-2">{iconElement}</span>
           )}
-          {!displayIconElement && IconComponent && (
+          {!iconElement && icon && (
             <HugeiconsIcon
-              icon={IconComponent}
+              icon={icon}
               size={PANEL_HEADER_TOKENS.iconSize}
               className="shrink-0 text-text-2"
             />
           )}
-          {displayTitle && (
+          {title && (
             <span
               className="truncate font-medium text-text-1"
               style={{ fontSize }}
             >
-              {displayTitle}
+              {title}
             </span>
           )}
-          {!searchQuery && subtitle && (
+          {subtitle && (
             <>
               <span className="text-text-4">/</span>
               <span className="truncate text-text-2" style={{ fontSize }}>
@@ -322,11 +243,8 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
       );
     };
 
-    const headerRow = (
-      <div
-        className={`${baseClasses} ${borderClasses} ${bgClasses} ${className}`}
-        data-testid={dataTestId}
-      >
+    return (
+      <div className={`${baseClasses} ${borderClasses} bg-bg-2 ${className}`}>
         {/* Back button */}
         {onBack && (
           <Button
@@ -351,39 +269,11 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
         </div>
 
         {/* Right-side actions */}
-        {(actions || onSearch) && (
-          <div className="flex shrink-0 items-center gap-2">
-            {onSearch && (
-              <Button
-                {...PANEL_HEADER_TOKENS.actionButton}
-                icon={
-                  <HugeiconsIcon
-                    icon={Search01Icon}
-                    data-icon="search"
-                    size={PANEL_HEADER_TOKENS.buttonIconSize}
-                    strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
-                  />
-                }
-                onClick={onSearch}
-                title="Search pages"
-              />
-            )}
-            {actions}
-          </div>
+        {actions && (
+          <div className="flex shrink-0 items-center gap-2">{actions}</div>
         )}
       </div>
     );
-
-    if (afterHeader) {
-      return (
-        <div className="flex shrink-0 flex-col">
-          {headerRow}
-          {afterHeader}
-        </div>
-      );
-    }
-
-    return headerRow;
   }
 );
 

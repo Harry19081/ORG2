@@ -575,7 +575,6 @@ textarea,
     [role="tab"],
     [role="treeitem"],
     .kanban-task-card--interactive,
-    .kanban-task-card__impact-action,
     .cursor-pointer
   ):where(
     :not(:disabled):not([aria-busy="true"]):not([aria-disabled="true"]):not(
@@ -705,12 +704,6 @@ html[data-host-desktop="windows"] [data-windows-top-bar="true"] {
 
 // Ensure popup layers are not clipped by body's overflow: hidden
 
-// Override for header recently closed menu to ensure width is respected
-.header-recently-closed-menu {
-  width: 200px !important;
-  min-width: 200px !important;
-}
-
 .custom-scrollbar {
   @include scrollbar.scrollbar-unified;
 }
@@ -794,14 +787,6 @@ html[data-host-desktop="windows"] [data-windows-top-bar="true"] {
     0 4px 16px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-/* Generic hover shadow effect */
-.hover-shadow {
-  @apply transition-all duration-200;
-}
-
-.hover-shadow:hover {
-  @apply shadow-[0px_4px_10px_0px_rgba(0,0,0,0.10)];
-}
 /* ANSI color classes — values driven by CSS custom properties set in
    useEditorAppearanceStyles (synced with the terminal theme palette). */
 .ansi-black-fg {
@@ -878,44 +863,11 @@ html[data-host-desktop="windows"] [data-windows-top-bar="true"] {
   background-color: var(--ansi-white);
 }
 
-/* Simulator compact mode - hides sidebar and reduces padding for multi-task grid */
+/* Simulator compact mode - reduces padding for multi-task grid */
 .simulator-compact-mode {
-  /* Hide Messages sidebar in compact mode */
-  .messages-sidebar,
-  .simulator-sidebar {
-    display: none !important;
-  }
-
-  /* Hide IDE file sidebar in compact mode - show only file content */
-  .ide-file-sidebar {
-    display: none !important;
-  }
-
-  /* Hide IDE terminal panel in compact mode */
-  .ide-terminal-panel {
-    display: none !important;
-  }
-
   /* Make code panel take full width when sidebar is hidden */
   > div > div > div:last-child {
     width: 100% !important;
-  }
-
-  /* Reduce padding in content areas */
-  .message-viewer,
-  .simulator-content {
-    padding: 4px !important;
-  }
-
-  /* More compact message bubbles */
-  .message-bubble {
-    padding: 6px 10px !important;
-    margin: 2px 0 !important;
-  }
-
-  /* Reduce font size slightly */
-  .message-text {
-    font-size: 12px !important;
   }
 
   /* Make code viewer more compact */
@@ -923,54 +875,8 @@ html[data-host-desktop="windows"] [data-windows-top-bar="true"] {
     padding: 2px !important;
   }
 
-  /* Reduce min-height for IDE in compact mode */
-  .ide-main-container {
-    min-height: 150px !important;
-  }
-
   /* Ensure code panel takes full width when sidebar is hidden */
   .ide-code-panel {
     width: 100% !important;
-  }
-}
-
-/* Compact markdown styles for multi-task grid view */
-.compact-markdown {
-  .markdown-container {
-    font-size: 12px !important;
-
-    h1,
-    h2,
-    h3,
-    h4 {
-      margin-top: 0.5em !important;
-      margin-bottom: 0.25em !important;
-      font-size: 13px !important;
-    }
-
-    p {
-      margin-bottom: 0.5em !important;
-      line-height: 1.5 !important;
-    }
-
-    ul,
-    ol {
-      margin-bottom: 0.5em !important;
-      padding-left: 1.25em !important;
-    }
-
-    li {
-      margin-bottom: 0.15em !important;
-    }
-
-    pre,
-    code {
-      font-size: 11px !important;
-    }
-
-    pre {
-      padding: 0.5em !important;
-      margin: 0.5em 0 !important;
-    }
   }
 }

@@ -26,7 +26,7 @@ vi.mock("@src/icons", () => ({
 vi.mock("@src/modules/MainApp/Settings/sections/SecuritySection", () => ({
   default: () => createElement("div", { "data-testid": "security" }),
 }));
-vi.mock("@src/components/layout/blocks", () => ({
+vi.mock("@src/components/layout/blocks", async () => ({
   DETAIL_PANEL_TOKENS: {
     headerWidth: "",
     scrollContentNoTop: "",
@@ -36,8 +36,11 @@ vi.mock("@src/components/layout/blocks", () => ({
     createElement("div", null, children),
   InlineInfoCard: ({ children }: { children: React.ReactNode }) =>
     createElement("div", null, children),
-  InternalHeader: ({ tabs }: { tabs: React.ReactNode }) =>
-    createElement("header", null, tabs),
+  InternalHeader: (
+    await vi.importActual<
+      typeof import("@src/components/layout/blocks/InternalHeader")
+    >("@src/components/layout/blocks/InternalHeader")
+  ).default,
   ScrollPreservation: ({ children }: { children: React.ReactNode }) =>
     createElement("main", null, children),
 }));

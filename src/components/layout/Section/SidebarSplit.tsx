@@ -6,30 +6,15 @@ import Button from "@src/components/Button";
 export interface SectionSidebarSplitProps {
   sidebar: React.ReactNode;
   children: React.ReactNode;
-  className?: string;
-  sidebarClassName?: string;
-  contentClassName?: string;
 }
 
 export const SectionSidebarSplit: React.FC<SectionSidebarSplitProps> = memo(
-  ({ sidebar, children, className, sidebarClassName, contentClassName }) => (
-    <div
-      className={cn(
-        "grid min-h-[360px] grid-cols-1 @[720px]:grid-cols-[240px_minmax(0,1fr)]",
-        className
-      )}
-    >
-      <aside
-        className={cn(
-          "border-b border-border-1 p-2 @[720px]:border-r @[720px]:border-b-0",
-          sidebarClassName
-        )}
-      >
+  ({ sidebar, children }) => (
+    <div className="grid min-h-[360px] grid-cols-1 @[720px]:grid-cols-[240px_minmax(0,1fr)]">
+      <aside className="border-b border-border-1 p-2 @[720px]:border-r @[720px]:border-b-0">
         {sidebar}
       </aside>
-      <div className={cn("min-w-0 px-4 py-2", contentClassName)}>
-        {children}
-      </div>
+      <div className="min-w-0 px-4 py-2">{children}</div>
     </div>
   )
 );
@@ -38,13 +23,10 @@ SectionSidebarSplit.displayName = "SectionSidebarSplit";
 
 export interface SectionSidebarListProps {
   children: React.ReactNode;
-  className?: string;
 }
 
 export const SectionSidebarList: React.FC<SectionSidebarListProps> = memo(
-  ({ children, className }) => (
-    <div className={cn("flex flex-col gap-1", className)}>{children}</div>
-  )
+  ({ children }) => <div className="flex flex-col gap-1">{children}</div>
 );
 
 SectionSidebarList.displayName = "SectionSidebarList";

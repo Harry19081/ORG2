@@ -5,7 +5,7 @@ import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
 import ModelPropertiesDropdown from "@src/components/ModelPropertiesDropdown";
 import Tooltip from "@src/components/Tooltip";
-import { InlineOptionCard } from "@src/components/layout/blocks";
+import { InlineInfoCard } from "@src/components/layout/blocks";
 import { ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 import { INLINE_SPLIT_HEADER_ROW_CLASS } from "@src/modules/MainApp/Integrations/KeyVault/shared/InlineSplitRows";
 import type { ModelTableVariantInfo } from "@src/types/modelTable";
@@ -238,7 +238,7 @@ function pillSortKey(variant: ModelTableVariantInfo): number {
 interface ModelVariantInlineCardProps {
   variants: ModelTableVariantInfo[];
   forceModelList?: boolean;
-  /** Skip InlineOptionCard wrapper when already inside an InlineInfoCard. */
+  /** Skip the InlineInfoCard wrapper when already inside an InlineInfoCard. */
   embedded?: boolean;
   /**
    * Persisted default variant per base model (`base_model` → variant `model`).
@@ -281,7 +281,6 @@ export default function ModelVariantInlineCard({
 
   const gptGroup = isGptGroup(sortedVariants);
   const oSeriesGroup = isOSeriesGroup(sortedVariants);
-  const reasoningLevelGroup = gptGroup || oSeriesGroup;
   const composerGroup = isComposerGroup(sortedVariants);
   const speedOnlyGroup = isSpeedOnlyGroup(sortedVariants);
   const useSpeedEffort = composerGroup || speedOnlyGroup;
@@ -290,14 +289,6 @@ export default function ModelVariantInlineCard({
     : useSpeedEffort
       ? "speed"
       : "reasoning";
-
-  const sectionTitle = forceModelList
-    ? t("modelsTabs.models")
-    : useSpeedEffort
-      ? t("modelsTable.variantOptions")
-      : reasoningLevelGroup
-        ? t("modelsTable.reasoningLevel")
-        : t("modelsTable.effort");
 
   // Pills in the embedded grid are selectable — clicking one persists the
   // tapped variant as the new default for the canonical base model.
@@ -535,24 +526,18 @@ export default function ModelVariantInlineCard({
 
   const defaultVariantContent = renderDefaultVariantRow();
 
-  const sections = [
-    ...(defaultVariantContent
-      ? [
-          {
-            key: "selected-version",
-            title: t("modelsTable.selectedVersion"),
-            content: defaultVariantContent,
-            defaultOpen: true,
-          },
-        ]
-      : []),
-    {
-      key: "effort",
-      title: sectionTitle,
-      content: variantContent,
-      defaultOpen: true,
-    },
-  ];
-
-  return <InlineOptionCard hideSectionTitles sections={sections} />;
+  return (
+    <InlineInfoCard>
+      <div className="flex min-w-0 flex-col gap-3">
+        {defaultVariantContent ? <div>{defaultVariantContent}</div> : null}
+        <div
+          className={
+            defaultVariantContent ? "border-t border-border-2 pt-2" : undefined
+          }
+        >
+          {variantContent}
+        </div>
+      </div>
+    </InlineInfoCard>
+  );
 }

@@ -19,20 +19,13 @@ import { useTranslation } from "react-i18next";
 import { ArrowExpand01Icon, HugeiconsIcon } from "@src/icons";
 
 export interface NarrowPlaceholderProps {
-  /** Override default title */
-  title?: string;
-  /** Override default subtitle */
-  subtitle?: string;
   /** Additional class name — use this for visibility, e.g. "@[380px]:hidden" */
   className?: string;
 }
 
 const NarrowPlaceholder: React.FC<NarrowPlaceholderProps> = memo(
-  ({ title, subtitle, className = "" }) => {
+  ({ className = "" }) => {
     const { t } = useTranslation();
-
-    const resolvedTitle = title ?? t("status.panelTooNarrow");
-    const resolvedSubtitle = subtitle ?? t("status.panelTooNarrowSubtitle");
 
     return (
       <div
@@ -45,9 +38,11 @@ const NarrowPlaceholder: React.FC<NarrowPlaceholderProps> = memo(
           className="text-text-3"
         />
         <div className="text-[13px] font-medium text-text-2">
-          {resolvedTitle}
+          {t("status.panelTooNarrow")}
         </div>
-        <div className="text-[12px] text-text-3">{resolvedSubtitle}</div>
+        <div className="text-[12px] text-text-3">
+          {t("status.panelTooNarrowSubtitle")}
+        </div>
       </div>
     );
   }

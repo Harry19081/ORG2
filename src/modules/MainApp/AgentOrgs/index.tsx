@@ -12,7 +12,6 @@ import { useLocation } from "react-router-dom";
 
 import { rpc } from "@src/api/tauri/rpc";
 import { Message } from "@src/components/Message";
-import TabPill from "@src/components/TabPill";
 import {
   DETAIL_PANEL_TOKENS,
   InternalHeader,
@@ -297,18 +296,9 @@ const AgentOrgsPage: React.FC = () => {
     <div className="settings-page absolute inset-0 flex flex-col overflow-hidden">
       <InternalHeader
         noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={tabs}
-            activeTab={activeTableTab}
-            onChange={setActiveTableTab}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
+        tabs={tabs}
+        activeTab={activeTableTab}
+        onTabChange={setActiveTableTab}
       />
       <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
         <div className={DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop}>

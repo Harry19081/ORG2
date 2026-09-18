@@ -14,7 +14,6 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import TabPill from "@src/components/TabPill";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
@@ -292,18 +291,9 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
     <DetailPanelContainer>
       <InternalHeader
         noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={connectionsTabs}
-            activeTab={connectionsActiveTab}
-            onChange={setConnectionsActiveTab}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
+        tabs={connectionsTabs}
+        activeTab={connectionsActiveTab}
+        onTabChange={setConnectionsActiveTab}
       />
       <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
         <div className={DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop}>

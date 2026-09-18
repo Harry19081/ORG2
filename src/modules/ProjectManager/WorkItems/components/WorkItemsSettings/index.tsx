@@ -29,7 +29,10 @@ import {
   UserMultipleIcon,
 } from "@src/icons";
 import SplitViewLayout from "@src/scaffold/layouts/SplitViewLayout";
-import { SUBPAGE_CONTENT_WRAPPER_CLASSES } from "@src/scaffold/layouts/SubpageLayout/tokens";
+import {
+  SUBPAGE_CONTENT_WRAPPER_CLASSES,
+  SUBPAGE_SPLIT_VIEW_PRESET,
+} from "@src/scaffold/layouts/SubpageLayout/tokens";
 import type { Label, Person } from "@src/types/core/shared";
 
 import {
@@ -286,13 +289,7 @@ const WorkItemsSettings: React.FC<WorkItemsSettingsProps> = ({
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <SplitViewLayout
-        className="min-h-0 flex-1 overflow-hidden"
-        hideBreadcrumbWhenSidebarCollapsed={true}
-        mainContentClassName=""
-        listPanelBackgroundClassName=""
-        listWidth={180}
-        minListWidth={140}
-        maxListWidth={240}
+        {...SUBPAGE_SPLIT_VIEW_PRESET}
         listContent={
           <SettingsSidebar
             activeSection={activeSection}

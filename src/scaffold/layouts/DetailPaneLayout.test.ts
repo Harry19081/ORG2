@@ -88,7 +88,6 @@ describe("DetailPaneLayout", () => {
         DetailPaneLayout,
         {
           onClose: vi.fn(),
-          closeLabel: "Close detail",
           closeTestId: "close-detail",
         },
         createElement(DetailPanePlaceholder, { variant: "empty" })
@@ -96,7 +95,7 @@ describe("DetailPaneLayout", () => {
     );
 
     expect(markup).toContain('data-testid="close-detail"');
-    expect(markup).toContain('aria-label="Close detail"');
+    expect(markup).toContain('aria-label="actions.close"');
     expect(markup).toContain('data-icon="x"');
     expect(markup).toContain("border-b");
   });

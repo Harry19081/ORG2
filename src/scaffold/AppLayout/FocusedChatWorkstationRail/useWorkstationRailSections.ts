@@ -15,6 +15,24 @@ import type {
   FocusedChatSessionContext,
 } from "./types";
 
+/**
+ * Whether a section environment carries any identity worth rendering. Decides
+ * both whether the session section exists and whether a section renders its
+ * environment rows.
+ */
+export function hasFocusedChatSessionEnvironment(
+  environment: FocusedChatSessionContext | undefined
+): boolean {
+  return Boolean(
+    environment?.agentHarness ||
+    environment?.repoName ||
+    environment?.branchName ||
+    environment?.worktreeBranchName ||
+    environment?.workItem ||
+    environment?.owner
+  );
+}
+
 export function useWorkstationRailSections({
   environmentLabel,
   openTabItems,
@@ -40,14 +58,8 @@ export function useWorkstationRailSections({
   t: TFunction;
   workspaceSections: FocusedChatRailSection[];
 }) {
-  const hasSessionEnvironment = Boolean(
-    sessionContext?.agentHarness ||
-    sessionContext?.repoName ||
-    sessionContext?.branchName ||
-    sessionContext?.worktreeBranchName ||
-    sessionContext?.workItem ||
-    sessionContext?.owner
-  );
+  const hasSessionEnvironment =
+    hasFocusedChatSessionEnvironment(sessionContext);
   const sections = useMemo<FocusedChatRailSection[]>(() => {
     return resolveFocusedChatWorkstationSectionOrder(
       openTabItems.length > 0,

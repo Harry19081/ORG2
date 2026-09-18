@@ -40,11 +40,9 @@ export type FocusedChatRailItem = {
   /** Process termination stays distinct from closing a document or view. */
   onStop?: () => void;
   stopLabel?: string;
-  /** Working-tree +/- shown after the label (the Review row). */
-  additions?: number;
-  deletions?: number;
   /**
-   * Resolve live working-tree totals in the expanded row or folded heading.
+   * Working-tree +/- shown after the label (the Review row), resolved live
+   * in the expanded row or folded heading.
    * Both presentations share the per-repository numstat store.
    */
   workingTreeRepo?: {
@@ -89,9 +87,9 @@ export interface FocusedChatWorkstationRailProps {
   /** Active session scope moved out of the transcript's former context row. */
   sessionContext?: FocusedChatSessionContext;
   /** Images and links the user sent in the active session, newest first. */
-  sources?: FocusedChatRailSource[];
+  sources: FocusedChatRailSource[];
   /** The active session's spawned subagent sessions, newest first. */
-  subagents?: FocusedChatRailSubagent[];
+  subagents: FocusedChatRailSubagent[];
   /**
    * Mark shown on every subagent row. Resolved once from the PARENT session,
    * because a subagent runs on its parent's harness — so a Codex session's
@@ -100,7 +98,7 @@ export interface FocusedChatWorkstationRailProps {
    * fall back to a generic bot glyph for a child session that has not landed
    * in the session map yet.
    */
-  subagentIcon?: FocusedChatRailIcon;
+  subagentIcon: FocusedChatRailIcon;
   /** Height of overlaid chat chrome that the rail must remain below. */
   topInset?: number;
 }

@@ -30,6 +30,7 @@ import {
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
+  InternalHeader,
   PANEL_HEADER_TOKENS,
 } from "@src/components/layout/blocks";
 import { Cancel01Icon, Delete02Icon, HugeiconsIcon } from "@src/icons";
@@ -51,7 +52,6 @@ import AgentSkillsetsSection from "../config/skills/AgentSkillsetsSection";
 import { useAgentDefinitions } from "../hooks/useAgentDefinitions";
 import { agentOrgsActiveTabAtom } from "../store/agentOrgsActiveTabAtom";
 import type { AgentDefinition, SubAgentRef } from "../types";
-import AgentDetailHeader from "./AgentDetailHeader";
 
 /**
  * Caller-supplied extra tab. Used by `WingmanDetailView` to splice in
@@ -247,7 +247,8 @@ const CustomAgentDetailView: React.FC<CustomAgentDetailViewProps> = ({
 
   const headerElement = useMemo(
     () => (
-      <AgentDetailHeader
+      <InternalHeader
+        noPanelHeader
         tabs={tabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}

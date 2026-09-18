@@ -36,16 +36,11 @@ export function WorkstationItemRow({
   item: FocusedChatRailItem;
   onRequestClose?: () => void;
 }) {
-  const liveDiffTotals = useWorkingTreeDiffTotals(
+  // Rows without a working-tree repo resolve to 0/0 and show no badge.
+  const { additions, deletions } = useWorkingTreeDiffTotals(
     item.workingTreeRepo?.repoId,
     item.workingTreeRepo?.repoPath
   );
-  const additions = item.workingTreeRepo
-    ? liveDiffTotals.additions
-    : item.additions;
-  const deletions = item.workingTreeRepo
-    ? liveDiffTotals.deletions
-    : item.deletions;
 
   const runAction = (event: React.MouseEvent<HTMLButtonElement>) => {
     // A submenu trigger keeps its host menu open; the popup it anchors is
@@ -91,7 +86,7 @@ export function WorkstationItemRow({
           )}
         </span>
         <span className={WORKSTATION_TRAIL_ROW.label}>{item.label}</span>
-        {(additions ?? 0) > 0 || (deletions ?? 0) > 0 ? (
+        {additions > 0 || deletions > 0 ? (
           <DiffStatsBadge
             additions={additions}
             deletions={deletions}

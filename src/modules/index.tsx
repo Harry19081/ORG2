@@ -50,15 +50,13 @@ import {
 } from "@src/store/ui/chatPanel/widthAtoms";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 import {
-  DEFAULT_SIDEBAR_WIDTH,
   sidebarCollapsedAtom,
-  sidebarWidthAtom,
   updateSidebarViewportAtom,
 } from "@src/store/ui/sidebarAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
-import { useRouteLayoutType, useWorkspaceEvents } from "./hooks";
+import { useWorkspaceEvents } from "./hooks";
 import { useNarrowChatFocus } from "./useNarrowChatFocus";
 import { useOpenUrlInBrowser } from "./useOpenUrlInBrowser";
 import { useStationWindowBridge } from "./useStationWindowBridge";
@@ -164,9 +162,6 @@ const AppShell = () => {
     if (viewportWidth !== undefined) updateSidebarViewport(viewportWidth);
   }, [viewportWidth, updateSidebarViewport]);
   const stationChatVisibility = useAtomValue(stationChatVisibilityAtom);
-  const sidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
-  const sidebarWidth = useAtomValue(sidebarWidthAtom);
-  const routeLayoutType = useRouteLayoutType();
   const currentStationChatVisible =
     stationMode in stationChatVisibility
       ? stationChatVisibility[stationMode as keyof typeof stationChatVisibility]
@@ -332,7 +327,7 @@ const AppShell = () => {
   const shouldBridgeWorkStationPipeline =
     !isSettingsRoute && activeChatPanelTab?.type === "session";
 
-  useNarrowChatFocus({ enabled: true });
+  useNarrowChatFocus();
   useWorkStationPipelineBridge(shouldBridgeWorkStationPipeline);
   // Detached station windows mirror this window's remembered session and
   // hand the surface back when they close.
@@ -341,10 +336,6 @@ const AppShell = () => {
   const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
   // Settings always sits on the left; position atoms describe ChatPanel placement only.
   const chatPosition = isSettingsRoute ? "left" : chatPanelPosition;
-  const sessionSidebarWidth =
-    routeLayoutType === "session" && !sidebarCollapsed
-      ? sidebarWidth || DEFAULT_SIDEBAR_WIDTH
-      : 0;
 
   const effectiveChatFocus = useAtomValue(effectiveChatPanelMaximizedAtom);
 
@@ -364,11 +355,9 @@ const AppShell = () => {
           viewportWidth={viewportWidth}
           sidebar={<SidebarSelector />}
           floatingSidebar={<FloatingSidebar />}
-          showChatPanel
           chatPosition={chatPosition}
           chatPanelMaximized={effectiveChatFocus}
           chatPanelMode={chatPanelMode}
-          sessionSidebarWidth={sessionSidebarWidth}
         >
           <div className="relative h-full w-full min-w-0">
             <div

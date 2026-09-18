@@ -7,13 +7,11 @@ import {
   WorkstationTrailHeader,
   WorkstationTrailSurface,
 } from "@src/components/layout/blocks";
-import { resolveAgentIcon } from "@src/config/agentIcons";
 import {
   FOCUSED_CHAT_WORKSTATION_MINIMAP_HOST_CLASS,
   resolveFocusedChatWorkstationRailInsetStyle,
   resolveFocusedChatWorkstationRailTrackClass,
 } from "@src/engines/ChatPanel/focusedChatWorkstationLayout";
-import { SDE_AGENT_ICON_ID } from "@src/util/session/sessionDispatch";
 
 import { WorkstationCollapsedDiffStats } from "./WorkstationCollapsedDiffStats";
 import { WorkstationCollapsedRailItems } from "./WorkstationCollapsedRailItems";
@@ -26,10 +24,7 @@ import { WorkstationTrailHeaderActions } from "./WorkstationTrailHeaderActions";
 import { WorkstationTrailTerminal } from "./WorkstationTrailTerminal";
 import { getStoredRailCollapsed, persistRailCollapsed } from "./railStorage";
 import { resolveTrailWidthVariables } from "./trailWidth";
-import type {
-  FocusedChatRailSource,
-  FocusedChatWorkstationRailProps,
-} from "./types";
+import type { FocusedChatWorkstationRailProps } from "./types";
 import { useTrailPanelDimensions } from "./useTrailPanelDimensions";
 import { useWorkstationRailGitHub } from "./useWorkstationRailGitHub";
 import { useWorkstationRailSections } from "./useWorkstationRailSections";
@@ -46,23 +41,13 @@ export type {
   FocusedChatSessionContext,
 } from "./types";
 
-/**
- * Last-resort mark for a subagent row when the caller resolved nothing —
- * ORGII's own agent glyph, the runtime that spawns subagents natively. The
- * generic bot `resolveAgentIcon` falls back to says nothing about which
- * harness is running, which is the whole point of showing a mark here.
- */
-const SDE_AGENT_RAIL_ICON = resolveAgentIcon(SDE_AGENT_ICON_ID);
-
-const EMPTY_SOURCES: FocusedChatRailSource[] = [];
-
 export function FocusedChatWorkstationRail({
   compactMenuHost,
   conversationMinimapHostRef,
   sessionContext,
-  sources = EMPTY_SOURCES,
-  subagentIcon = SDE_AGENT_RAIL_ICON,
-  subagents = [],
+  sources,
+  subagentIcon,
+  subagents,
   topInset = 0,
 }: FocusedChatWorkstationRailProps) {
   const { t } = useTranslation();

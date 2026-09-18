@@ -4,8 +4,6 @@
  * Provides consistent sidebar structure for Workstation apps.
  */
 
-export { CollapsibleSection } from "./CollapsibleSection";
-
 export {
   PrimarySidebarLayoutWithSections,
   PrimarySidebarLayoutWithSections as PrimarySidebarLayout,

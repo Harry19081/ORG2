@@ -70,8 +70,6 @@ export interface PanelFooterAction extends Pick<
   label: string;
   onClick?: () => void;
   icon?: React.ReactNode;
-  iconPosition?: "left" | "right";
-  iconOnly?: boolean;
   title?: string;
   disabled?: boolean;
   loading?: boolean;
@@ -80,8 +78,6 @@ export interface PanelFooterAction extends Pick<
   /** Visual treatment. Omit to use the variant's default. */
   appearance?: ButtonAppearance;
   htmlType?: "button" | "submit";
-  href?: string;
-  target?: string;
   dataTestId?: string;
   /** Mark as the modal's primary action so it receives initial focus. */
   modalPrimary?: boolean;
@@ -113,16 +109,12 @@ const PrimaryActionButton: React.FC<{
     appearance={action.appearance}
     size={size}
     icon={action.icon}
-    iconPosition={action.iconPosition}
-    iconOnly={action.iconOnly}
     shortcut={action.shortcut}
     aria-keyshortcuts={action["aria-keyshortcuts"]}
     title={action.title}
     disabled={action.disabled}
     loading={action.loading}
     htmlType={action.htmlType}
-    href={action.href}
-    target={action.target}
     data-testid={action.dataTestId}
     data-modal-primary-action={action.modalPrimary || undefined}
     onClick={action.onClick}
@@ -157,16 +149,12 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
           appearance={action.appearance}
           size={secondaryButtonSize}
           icon={action.icon}
-          iconPosition={action.iconPosition}
-          iconOnly={action.iconOnly}
           shortcut={action.shortcut}
           aria-keyshortcuts={action["aria-keyshortcuts"]}
           title={action.title}
           disabled={action.disabled}
           loading={action.loading}
           htmlType={action.htmlType}
-          href={action.href}
-          target={action.target}
           data-testid={action.dataTestId}
           onClick={action.onClick}
         >

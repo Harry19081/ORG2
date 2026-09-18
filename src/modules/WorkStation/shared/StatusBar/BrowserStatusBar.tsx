@@ -28,24 +28,12 @@ import {
 } from "./StatusBarBase";
 
 export interface BrowserStatusBarProps {
-  /** Current page URL */
-  url: string;
-  /** Whether page is loading */
-  isLoading: boolean;
   /** Number of console errors */
   errorCount: number;
   /** Number of console warnings */
   warningCount: number;
-  /** Whether DevTools panel is open */
-  isDevToolsOpen: boolean;
   /** Toggle DevTools panel */
   onToggleDevTools: () => void;
-  /** Whether private browsing mode is active */
-  isPrivate?: boolean;
-  /** Number of browser sessions/tabs */
-  sessionCount: number;
-  /** Current session index (1-based) */
-  currentSessionIndex: number;
   /** True while an element is selected via the inspector. */
   hasSelectedElement?: boolean;
   /** Short label for the selected element (e.g. "div.hp_trivia_outer"). */
@@ -59,15 +47,9 @@ export interface BrowserStatusBarProps {
 
 const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
   ({
-    url: _url,
-    isLoading: _isLoading,
     errorCount,
     warningCount,
-    isDevToolsOpen: _isDevToolsOpen,
     onToggleDevTools,
-    isPrivate: _isPrivate = false,
-    sessionCount: _sessionCount,
-    currentSessionIndex: _currentSessionIndex,
     hasSelectedElement = false,
     selectedElementLabel,
     onSendSelectedElementToChat,

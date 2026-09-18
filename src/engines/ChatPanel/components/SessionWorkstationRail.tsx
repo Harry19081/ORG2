@@ -193,8 +193,10 @@ interface ConnectedSessionWorkstationRailProps extends Omit<
   SessionWorkstationRailProps,
   "session" | "sessionId"
 > {
-  context: ResolvedSessionWorkstationContext;
+  orgId: string | undefined;
   projectSlug: string;
+  /** Session scope shared with the unlinked rail; `workItem` is replaced. */
+  sessionContext: FocusedChatSessionContext;
   sources: FocusedChatRailSource[];
   subagentIcon: FocusedChatRailIcon;
   subagents: FocusedChatRailSubagent[];
@@ -205,19 +207,19 @@ const ConnectedSessionWorkstationRail: React.FC<
   ConnectedSessionWorkstationRailProps
 > = ({
   compactMenuHost,
-  context,
   conversationMinimapHostRef,
+  orgId,
   projectSlug,
+  sessionContext: baseSessionContext,
   sources,
   subagentIcon,
   subagents,
   topInset,
   workItemId,
 }) => {
-  const { t } = useTranslation();
   const openWorkItem = useSetAtom(openWorkItemInChatPanelTabAtom);
   const { resolved } = useChannelWorkItem({
-    orgId: context.orgId,
+    orgId,
     projectSlug,
     shortId: workItemId,
   });
@@ -234,26 +236,12 @@ const ConnectedSessionWorkstationRail: React.FC<
       projectId: resolved.projectId,
       projectSlug,
       projectName: resolved.projectName,
-      orgId: resolved.orgId ?? context.orgId,
+      orgId: resolved.orgId ?? orgId,
     });
-  }, [context.orgId, openWorkItem, projectSlug, resolved, workItemId]);
+  }, [orgId, openWorkItem, projectSlug, resolved, workItemId]);
 
   const sessionContext: FocusedChatSessionContext = {
-    agentHarness: context.agentHarness
-      ? {
-          icon: context.agentHarness.icon,
-          label: t("common:workstation.sessionAgent", {
-            name: context.agentHarness.name,
-          }),
-        }
-      : undefined,
-    branchName: context.branchName,
-    environmentKind: context.environmentKind,
-    owner: context.owner,
-    repoName: context.repoName,
-    repoPath: context.repoPath,
-    worktreeBranchName: context.worktreeBranchName,
-    worktreePath: context.worktreePath,
+    ...baseSessionContext,
     workItem: {
       label: workItemId,
       onClick: resolved ? handleOpen : undefined,
@@ -338,9 +326,10 @@ const SessionWorkstationRail: React.FC<SessionWorkstationRailProps> = ({
     return (
       <ConnectedSessionWorkstationRail
         compactMenuHost={compactMenuHost}
-        context={context}
         conversationMinimapHostRef={conversationMinimapHostRef}
+        orgId={context.orgId}
         projectSlug={context.projectSlug ?? ""}
+        sessionContext={baseSessionContext}
         sources={sources}
         subagentIcon={subagentIcon}
         subagents={subagents}

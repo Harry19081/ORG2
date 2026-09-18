@@ -62,29 +62,15 @@ const AgentWizard: FC<AgentWizardProps> = ({ onSave, onCancel }) => {
   const { t: tSettings } = useTranslation("settings");
   const w = useAgentWizard(onSave);
 
-  const headerTabs = useMemo(
-    () => (
-      <TabPill
-        tabs={w.tabs}
-        activeTab={w.activeTab}
-        onChange={w.setActiveTab}
-        variant="simple"
-        fillWidth={false}
-        size="large"
-      />
-    ),
-    [w.tabs, w.activeTab, w.setActiveTab]
-  );
-
   const afterHeader = useMemo(
     () => (
       <InternalHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={headerTabs}
+        tabs={w.tabs}
+        activeTab={w.activeTab}
+        onTabChange={w.setActiveTab}
       />
     ),
-    [headerTabs]
+    [w.tabs, w.activeTab, w.setActiveTab]
   );
 
   const soulEditorTabs = useMemo(

@@ -343,8 +343,6 @@ const CreateWorkItemView: React.FC<CreateWorkItemViewProps> = ({
   return (
     <DetailSplitLayout
       title={t("workItems.newWorkItem")}
-      borderlessHeader
-      hideHeader
       publishHeaderToWorkstation={publishHeaderToWorkstation}
       headerActions={
         <>
@@ -455,7 +453,6 @@ const CreateWorkItemView: React.FC<CreateWorkItemViewProps> = ({
           />
         ) : undefined
       }
-      resizableRightPanel={resolvedPropertiesOpen}
       footer={
         showFooter && inlineFields.showManualInputs && !renderAgentComposer ? (
           chatPanelFooter ? (

@@ -10,7 +10,6 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import TabPill from "@src/components/TabPill";
 import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
@@ -184,18 +183,9 @@ export const DatabasesTable: React.FC<DatabasesTableProps> = ({
     <DetailPanelContainer>
       <InternalHeader
         noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={tabs}
-            activeTab={activeTab}
-            onChange={setActiveTab}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
       <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
         <div className={DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop}>

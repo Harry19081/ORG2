@@ -4,12 +4,14 @@ import { useTranslation } from "react-i18next";
 import { DETAIL_FLOW_HEADER_TOKENS } from "@src/components/DetailFlowHeader";
 import SkeletonBar from "@src/components/Skeleton";
 import WorkstationTrailSurface, {
-  WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
-  WORKSTATION_TRAIL_WIDTH,
   WorkstationTrailBody,
   WorkstationTrailHeader,
   WorkstationTrailSection,
 } from "@src/components/layout/blocks/WorkstationTrailSurface";
+import {
+  WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
+  WORKSTATION_TRAIL_WIDTH,
+} from "@src/components/layout/tokens/workstationTrailTokens";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { WORKSTATION_TRAIL_CONTENT } from "@src/config/workstation/tokens";
 import {
