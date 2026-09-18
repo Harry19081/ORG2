@@ -5,9 +5,8 @@
  */
 import PageBreadcrumb from "@/src/components/layout/blocks/PageBreadcrumb";
 import { useAtomValue } from "jotai";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo } from "react";
 
-import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { ResizableSplitPanel } from "@src/scaffold/Resize";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 
@@ -52,26 +51,7 @@ const SplitViewLayout: React.FC<SplitViewLayoutProps> = ({
   hideBreadcrumbWhenSidebarCollapsed = false,
   showDivider = true,
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const isSidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
-
-  const toggleCollapse = useCallback(() => {
-    setIsCollapsed((prev) => !prev);
-  }, []);
-
-  // Listen for Cmd+B / Ctrl+B keyboard shortcut
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Cmd+B on Mac, Ctrl+B on Windows/Linux
-      if (matchesShortcut(event, "toggle_sidebar")) {
-        event.preventDefault();
-        toggleCollapse();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleCollapse]);
 
   const listPanel = (
     <div
@@ -95,33 +75,22 @@ const SplitViewLayout: React.FC<SplitViewLayoutProps> = ({
       className={`flex h-full min-h-0 w-full min-w-0 flex-col ${className}`}
       style={containStyle}
     >
-      {!isCollapsed ? (
-        <ResizableSplitPanel
-          defaultLeftWidth={listWidth}
-          minLeftWidth={minListWidth}
-          maxLeftWidth={maxListWidth}
-          leftPanel={listPanel}
-          rightPanel={
-            <div
-              className={`h-full min-w-0 overflow-hidden ${mainContentClassName}`}
-              style={containStyle}
-            >
-              {mainContent}
-            </div>
-          }
-          className="flex-1"
-          showDivider={showDivider}
-        />
-      ) : (
-        <div className="flex flex-1 overflow-hidden">
+      <ResizableSplitPanel
+        defaultLeftWidth={listWidth}
+        minLeftWidth={minListWidth}
+        maxLeftWidth={maxListWidth}
+        leftPanel={listPanel}
+        rightPanel={
           <div
-            className={`flex min-w-0 flex-1 flex-col overflow-hidden ${mainContentClassName}`}
-            style={{ contain: "inline-size layout style" }}
+            className={`h-full min-w-0 overflow-hidden ${mainContentClassName}`}
+            style={containStyle}
           >
             {mainContent}
           </div>
-        </div>
-      )}
+        }
+        className="flex-1"
+        showDivider={showDivider}
+      />
     </div>
   );
 };
