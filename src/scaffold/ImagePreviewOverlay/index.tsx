@@ -207,7 +207,7 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
           aria-label={t("imagePreview.dialogLabel")}
           width={960}
           className="h-[80dvh] min-w-0!"
-          bodyClassName="flex min-h-0 flex-1 items-center justify-center overflow-hidden! bg-fill-1 p-4"
+          bodyClassName="flex min-h-0 flex-1 items-center justify-center overflow-hidden! bg-fill-1 p-3"
           closable={false}
           headerActions={
             <>

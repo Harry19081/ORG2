@@ -34,7 +34,7 @@
     flex-shrink: 0;
     height: auto;
     min-height: 56px;
-    padding: 6px mobile.$space-4;
+    padding: 6px mobile.$space-3;
     border-bottom: 1px solid var(--color-border-2);
   }
 }
@@ -56,7 +56,7 @@
   > :first-child {
   align-items: flex-start;
   min-height: calc(#{mobile.$touch-target} + #{mobile.$space-4});
-  padding: mobile.$space-2 mobile.$space-4;
+  padding: mobile.$space-2 mobile.$space-3;
   border-bottom: 0;
   background: var(--mobile-file-surface);
 }
@@ -82,8 +82,8 @@
 .mobile-tool-preview__body {
   min-height: 0;
   overscroll-behavior: contain;
-  padding: mobile.$space-4 mobile.$space-4
-    calc(20px + env(safe-area-inset-bottom, 0px));
+  padding: mobile.$space-3 mobile.$space-3
+    calc(#{mobile.$space-3} + env(safe-area-inset-bottom, 0px));
 }
 
 .mobile-terminal-detail__frame,

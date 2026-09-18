@@ -46,9 +46,8 @@ export function MobileConfirmModal({
       closable={false}
       initialFocusRef={cancelRef}
       onClose={() => decide(false)}
-      bodyClassName="p-5"
       footer={
-        <div className="flex flex-wrap justify-end gap-2 px-5 py-4">
+        <div className="flex flex-wrap justify-end gap-2 p-3">
           <Button
             style={{
               fontSize: "var(--mobile-type-control-size)",

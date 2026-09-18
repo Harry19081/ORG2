@@ -38,7 +38,7 @@ const AgentOrgOverviewDeleteTeamDialog: React.FC<
       maskClosable={!isDeleting}
       closable={!isDeleting}
       onCancel={onClose}
-      bodyClassName="space-y-3 px-5 py-4"
+      bodyClassName="space-y-3 p-3"
       footer={
         <PanelFooter
           secondaryActions={[

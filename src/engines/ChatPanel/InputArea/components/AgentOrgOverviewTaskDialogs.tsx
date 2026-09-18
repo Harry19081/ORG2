@@ -50,7 +50,7 @@ export const AgentOrgOverviewTaskActionDialog: React.FC<
       maskClosable={!isMutatingTask}
       closable={!isMutatingTask}
       onCancel={() => !isMutatingTask && onClose()}
-      bodyClassName="space-y-3 px-5 py-4"
+      bodyClassName="space-y-3 p-3"
       footer={
         <PanelFooter
           secondaryActions={[
@@ -146,7 +146,7 @@ export const AgentOrgOverviewHandoffResolutionDialog: React.FC<
       maskClosable={!isMutatingTask}
       closable={!isMutatingTask}
       onCancel={() => !isMutatingTask && onClose()}
-      bodyClassName="space-y-3 px-5 py-4"
+      bodyClassName="space-y-3 p-3"
       footer={
         <PanelFooter
           secondaryActions={[
