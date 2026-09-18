@@ -39,6 +39,11 @@ interface UserMessageContentProps {
   text: string;
   /** Optional image URLs (data URLs or Tauri asset URLs) attached to this message */
   images?: string[];
+  /**
+   * Render `images` as a thumbnail row inside the content. When false the
+   * caller renders them elsewhere; `images` still feeds text normalization.
+   */
+  showImages?: boolean;
   /** Known @-mentions of this message, rendered as member pills. */
   mentions?: readonly UserMessageMention[];
 }
@@ -47,7 +52,7 @@ const TEXT_BASE_CLASS =
   "whitespace-pre-wrap wrap-break-word text-[14px] leading-relaxed text-text-1";
 
 const UserMessageContent: React.FC<UserMessageContentProps> = memo(
-  ({ text, images, mentions }) => {
+  ({ text, images, mentions, showImages = true }) => {
     const normalizedText = useMemo(
       () =>
         normalizeMarkdownReferencePills(normalizeUserMessageText(text, images)),
@@ -61,7 +66,7 @@ const UserMessageContent: React.FC<UserMessageContentProps> = memo(
       const parsed = parseNormalizedUserMessage(sessionProjection.text);
       return mentions?.length ? splitMentionSegments(parsed, mentions) : parsed;
     }, [mentions, sessionProjection.text]);
-    const hasImages = images && images.length > 0;
+    const hasImages = showImages && images && images.length > 0;
     const canvasSelectionJson = segments.find(
       (segment): segment is PillSegment =>
         segment.kind === "pill" &&
@@ -72,6 +77,9 @@ const UserMessageContent: React.FC<UserMessageContentProps> = memo(
     // Fast path: no pills and no images, render plain text
     const hasPills = segments.some((s) => s.kind !== "text");
     if (!hasPills && !hasImages && sessionProjection.references.length === 0) {
+      // Image-only turns carry an "(image)" placeholder; the caller renders
+      // the thumbnails, so there is no text to show.
+      if (sessionProjection.text === "(image)") return null;
       return <span className={TEXT_BASE_CLASS}>{sessionProjection.text}</span>;
     }
 

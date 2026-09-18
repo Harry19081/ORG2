@@ -11,7 +11,7 @@ import Modal from "@src/scaffold/ModalSystem";
 import { SignInFeatures } from "./SignInFeatures";
 import { org2CloudAuthAtom } from "./org2CloudAuthAtom";
 
-const AUTH_SUCCESS_CLOSE_DELAY_MS = 2000;
+const AUTH_SUCCESS_CLOSE_DELAY_MS = 30_000;
 
 type SignInStage = "ready" | "waiting" | "failure";
 
@@ -72,6 +72,9 @@ export function SignInModal({
     <Modal
       visible
       size="medium"
+      // State artwork is absolutely positioned, so it cannot size the dialog.
+      // Keep the initial carousel and all auth stages on the same media frame.
+      width={600}
       headerMedia={headerMedia}
       title={
         isSuccess

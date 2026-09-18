@@ -19,6 +19,7 @@ import {
 import Dropdown from "@src/components/Dropdown";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
+import { INPUT_AREA_PILL_MENU_GAP } from "@src/config/inputAreaTokens";
 import { Add01Icon, CleanIcon, HugeiconsIcon, Layout01Icon } from "@src/icons";
 
 import type { ScrollNavState } from "../../ChatHistory";
@@ -176,7 +177,8 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
             <Dropdown
               key={section.key}
               trigger="click"
-              position="top"
+              position="top-start"
+              gap={INPUT_AREA_PILL_MENU_GAP}
               avoidViewportOverflow
               getPopupContainer={() => document.body}
               droplist={droplist}
