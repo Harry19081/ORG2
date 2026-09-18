@@ -152,15 +152,21 @@ export const getComposerShellClassName = ({
   isDragOver,
   isEditMode,
   quietEditSurface,
+  glowVisible = true,
 }: {
   isDragOver: boolean;
   isEditMode: boolean;
   quietEditSurface: boolean;
+  glowVisible?: boolean;
 }): string | undefined => {
   if (isDragOver) {
     return INPUT_AREA.shellDragOverClasses;
   }
-  if (!isEditMode) return "composer-breathing";
+  if (!isEditMode) {
+    return glowVisible
+      ? "composer-breathing"
+      : "composer-breathing composer-glow-hidden";
+  }
   if (quietEditSurface) {
     return "border-warning-6! shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-warning-6)_15%,transparent)]!";
   }

@@ -24,7 +24,6 @@ import type { DropdownEnginePosition } from "@src/hooks/dropdown";
 import {
   AppWindowMacIcon,
   ArrowBigRightDashIcon,
-  CompassIcon,
   Copy01Icon,
   CursorInWindowIcon,
   DeliveryBox01Icon,
@@ -43,6 +42,7 @@ import {
 import { chatSendOnEnterAtom } from "@src/store/config/configAtom";
 import { sessionByIdAtom, upsertSession } from "@src/store/session";
 import { compactComposerInputAtom } from "@src/store/session/compactComposerInputAtom";
+import { composerGlowVisibleAtom } from "@src/store/session/composerGlowVisibleAtom";
 import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
 import { openSessionInNewWindowAtom } from "@src/store/session/sessionTabPlacementAtom";
 import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
@@ -155,6 +155,10 @@ export const SessionHeaderActionsMenu: React.FC<
   const [sendOnEnter, setSendOnEnter] = useAtom(chatSendOnEnterAtom);
   const showSkillsLabel = t("chat.startPage.showSkills");
   const compactInputLabel = t("chat.compactInput");
+  const [composerGlowVisible, setComposerGlowVisible] = useAtom(
+    composerGlowVisibleAtom
+  );
+  const composerGlowLabel = t("chat.composerGlow");
   const sendMethodLabel = t("chat.sendMethod");
 
   // Track this / Convert to Project (orgtrack/v1 §7.2). Self-contained:
@@ -631,6 +635,16 @@ export const SessionHeaderActionsMenu: React.FC<
                       dataTestId="session-menu-compact-input-toggle"
                     />
                   </div>
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">{composerGlowLabel}</span>
+                    <Switch
+                      checked={composerGlowVisible}
+                      onCheckedChange={setComposerGlowVisible}
+                      size="small"
+                      ariaLabel={composerGlowLabel}
+                      dataTestId="session-menu-composer-glow-toggle"
+                    />
+                  </div>
                 </ActionSubmenu>
               </>
             )}
@@ -638,7 +652,7 @@ export const SessionHeaderActionsMenu: React.FC<
               label={t("chat.navigation.title")}
               icon={
                 <HugeiconsIcon
-                  icon={CompassIcon}
+                  icon={AppWindowMacIcon}
                   size={DROPDOWN_ITEM.iconSize}
                   strokeWidth={1.75}
                 />

@@ -629,6 +629,7 @@
       "showQuickActions": "クイックアクションを表示",
       "showSkills": "ピン留めしたスキル",
       "showCliUpdate": "CLI の更新を表示",
+      "showSpotlight": "Spotlight を表示",
       "title": "何をしますか？",
       "back": "スタートページに戻る",
       "newSession": {
@@ -721,6 +722,7 @@
       "externalBrowser": "外部ブラウザ"
     },
     "compactInput": "コンパクト入力欄",
+    "composerGlow": "入力欄のグローを表示",
     "replay": {
       "follow": "フォロー"
     },

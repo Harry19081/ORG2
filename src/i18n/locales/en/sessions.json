@@ -630,6 +630,7 @@
       "showQuickActions": "Show quick actions",
       "showSkills": "Pinned skills",
       "showCliUpdate": "Show CLI update",
+      "showSpotlight": "Show Spotlight",
       "title": "What would you like to do?",
       "back": "Back to start page",
       "newSession": {
@@ -722,6 +723,7 @@
       "externalBrowser": "External browser"
     },
     "compactInput": "Compact input",
+    "composerGlow": "Show input glow",
     "replay": {
       "follow": "Follow"
     },

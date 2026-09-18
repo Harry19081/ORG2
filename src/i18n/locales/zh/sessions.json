@@ -630,6 +630,7 @@
       "showQuickActions": "显示快捷操作",
       "showSkills": "固定 Skills",
       "showCliUpdate": "显示 CLI 更新",
+      "showSpotlight": "显示 Spotlight",
       "title": "你想做什么？",
       "back": "返回起始页",
       "newSession": {
@@ -722,6 +723,7 @@
       "externalBrowser": "外部浏览器"
     },
     "compactInput": "紧凑输入框",
+    "composerGlow": "显示输入框光晕",
     "replay": {
       "follow": "跟随"
     },

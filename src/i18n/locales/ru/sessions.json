@@ -629,6 +629,7 @@
       "showQuickActions": "Показывать быстрые действия",
       "showSkills": "Закреплённые навыки",
       "showCliUpdate": "Показывать обновления CLI",
+      "showSpotlight": "Показывать Spotlight",
       "title": "Что вы хотите сделать?",
       "back": "Назад к стартовой странице",
       "newSession": {
@@ -721,6 +722,7 @@
       "externalBrowser": "Внешний браузер"
     },
     "compactInput": "Компактное поле ввода",
+    "composerGlow": "Показывать свечение поля ввода",
     "replay": {
       "follow": "Следовать"
     },

@@ -629,6 +629,7 @@
       "showQuickActions": "빠른 작업 표시",
       "showSkills": "고정된 스킬",
       "showCliUpdate": "CLI 업데이트 표시",
+      "showSpotlight": "Spotlight 표시",
       "title": "무엇을 할까요?",
       "back": "시작 페이지로 돌아가기",
       "newSession": {
@@ -721,6 +722,7 @@
       "externalBrowser": "외부 브라우저"
     },
     "compactInput": "컴팩트 입력창",
+    "composerGlow": "입력창 글로우 표시",
     "replay": {
       "follow": "팔로우"
     },

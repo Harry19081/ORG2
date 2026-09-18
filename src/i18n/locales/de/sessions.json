@@ -629,6 +629,7 @@
       "showQuickActions": "Schnellaktionen anzeigen",
       "showSkills": "Angeheftete Skills",
       "showCliUpdate": "CLI-Updates anzeigen",
+      "showSpotlight": "Spotlight anzeigen",
       "title": "Was möchtest du tun?",
       "back": "Zurück zur Startseite",
       "newSession": {
@@ -721,6 +722,7 @@
       "externalBrowser": "Externer Browser"
     },
     "compactInput": "Kompakte Eingabe",
+    "composerGlow": "Eingabe-Leuchten anzeigen",
     "replay": {
       "follow": "Folgen"
     },

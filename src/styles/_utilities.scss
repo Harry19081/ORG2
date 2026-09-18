@@ -265,6 +265,16 @@
   }
 }
 
+// User preference (composerGlowVisibleAtom): drop only the primary glow. The
+// neutral edge shadow on `::before` and the focus ring stay.
+.composer-glow-hidden.composer-bottom-glow,
+.composer-glow-hidden.composer-breathing,
+.composer-glow-hidden .composer-breathing {
+  &::after {
+    display: none;
+  }
+}
+
 .composer-focus-breathing-light {
   position: relative;
 
