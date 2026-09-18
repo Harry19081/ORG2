@@ -330,10 +330,6 @@
 
         .cm-mergeViewEditor {
           min-width: 0;
-
-          &:first-child {
-            border-right: 1px solid var(--color-border-2);
-          }
         }
 
         .cm-editor {
@@ -503,10 +499,12 @@
 }
 
 .codemirror-diff .cm-editor .cm-collapsedLines {
-  // Both halves paint an inset pseudo-element. Prevent merge theme defaults
-  // from painting a second, full-height background behind the right half.
+  // The gutter cell and the content row each paint an inset pseudo-element.
+  // Prevent merge theme defaults from painting a second, full-height
+  // background behind the content half.
   background: transparent !important;
   border-block: 0 !important;
+  // The one gap in the bar: between the expand button and the label.
   border-left: 2px solid var(--cm-editor-background);
 }
 
@@ -515,10 +513,11 @@
 }
 
 .codemirror-diff .cm-editor .cm-collapsedLines::after {
-  // The merge theme adds a 7px decorative margin; the divider owns this gap.
+  // The merge theme adds a 7px decorative margin; the bar owns this space.
   margin: 0;
 }
 
+// Hover paints the whole row, including both stacked arrows of a split row.
 .codemirror-diff
   .cm-editor
   .cm-changeGutter
@@ -526,27 +525,41 @@
   background-color: var(--color-fill-3);
 }
 
-.codemirror-diff .cm-editor .cm-changeGutter .cm-collapsedGutter--split::after {
-  background: linear-gradient(
-    to bottom,
-    var(--cm-collapse-top-fill, var(--color-fill-1)) 0 calc(50% - 1px),
-    var(--cm-editor-background) calc(50% - 1px) calc(50% + 1px),
-    var(--cm-collapse-bottom-fill, var(--color-fill-1)) calc(50% + 1px) 100%
-  );
-}
-
-.codemirror-diff .cm-collapsedRowHovered,
-.codemirror-diff .cm-collapsedRowHoverTop {
-  --cm-collapse-top-fill: var(--color-fill-3);
-}
-
-.codemirror-diff .cm-collapsedRowHovered,
-.codemirror-diff .cm-collapsedRowHoverBottom {
-  --cm-collapse-bottom-fill: var(--color-fill-3);
-}
-
 .codemirror-diff .cm-editor .cm-collapsedRowHovered .cm-collapseControl {
   color: var(--color-text-2);
+}
+
+// Split view shows one shared collapsed row across both panes: the left half
+// carries the arrows and label, the right half is a plain continuation of the
+// same bar (clicks there still expand both panes).
+.codemirror-diff--split .cm-editor.cm-merge-a .cm-collapsedLines {
+  width: 100%;
+  margin-right: 0;
+
+  &::after {
+    border-radius: 0;
+  }
+}
+
+.codemirror-diff--split .cm-editor.cm-merge-b {
+  .cm-collapsedLines {
+    // The right half has no button, so it continues the bar without a gap.
+    border-left: 0;
+    color: transparent;
+
+    &::before {
+      visibility: hidden;
+    }
+  }
+
+  .cm-collapseControl {
+    visibility: hidden;
+  }
+
+  .cm-changeGutter .cm-collapsedGutter::after {
+    left: 0;
+    border-radius: 0;
+  }
 }
 
 .codemirror-diff .cm-editor:not(:has(.cm-lineNumbers)) .cm-collapsedLines {

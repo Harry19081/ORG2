@@ -13,11 +13,13 @@ import {
   collapsedGutterBackground,
 } from "./collapsedGutter";
 import { diffLineNumbers } from "./diffLineNumbers";
+import { COLLAPSED_COMPACT_ROW_PX } from "./incrementalCollapse";
 
-const original = Array.from({ length: 100 }, (_, i) => `line ${i}`).join("\n");
+// Gaps with margin 3: top 72 lines, middle 118 (> 2 steps, split), bottom 46.
+const original = Array.from({ length: 250 }, (_, i) => `line ${i}`).join("\n");
 const modified = original
-  .replace("line 30\n", "changed 30\n")
-  .replace("line 80\n", "changed 80\n");
+  .replace("line 75\n", "changed 75\n")
+  .replace("line 200\n", "changed 200\n");
 const extensions = [
   collapsedGutterBackground,
   diffLineNumbers({ formatNumber: String }),
@@ -59,7 +61,7 @@ describe("collapsed gutter controls", () => {
     expect(getComputedStyle(rows[2]).height).toBe(COLLAPSED_COMPACT_ROW_HEIGHT);
   });
 
-  it.each([10, 20, 21, 40, 41])(
+  it.each([10, 50, 51, 100, 101])(
     "uses a single expand-all control for a short middle gap (%i lines)",
     async (lines) => {
       const doc = original
@@ -74,22 +76,22 @@ describe("collapsed gutter controls", () => {
       mounted.push(merge);
       for (const view of [merge.a, merge.b]) {
         const control = view.dom.querySelectorAll(".cm-collapseControl")[1];
-        expect(control.children).toHaveLength(lines <= 40 ? 1 : 2);
+        expect(control.children).toHaveLength(lines <= 100 ? 1 : 2);
         expect(
           control.parentElement?.classList.contains("cm-collapsedGutter--split")
-        ).toBe(lines > 40);
+        ).toBe(lines > 100);
         await vi.waitFor(() =>
           expect(
             view.dom
               .querySelectorAll(".cm-collapsedLines")[1]
               .classList.contains(COLLAPSED_SPLIT_ROW_CLASS)
-          ).toBe(lines > 40)
+          ).toBe(lines > 100)
         );
         expect(
           view.dom.querySelectorAll(".cm-collapsedLines")[1].textContent
         ).toBe(`${lines} unchanged lines`);
       }
-      if (lines > 40) return;
+      if (lines > 100) return;
       const button = merge.a.dom.querySelector<HTMLButtonElement>(
         ".cm-collapseArrow--all"
       )!;
@@ -135,23 +137,17 @@ describe("collapsed gutter controls", () => {
       buttons[0].parentElement?.classList.contains("cm-collapsedRowHovered")
     ).toBe(true);
     expect(rows[1].classList.contains("cm-collapsedRowHovered")).toBe(false);
-    const topArrow = buttons[1].querySelector(".cm-collapseArrow--down")!;
-    const bottomArrow = buttons[1].querySelector(".cm-collapseArrow--up")!;
-    topArrow.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
-    expect(
-      buttons[1].parentElement?.classList.contains("cm-collapsedRowHoverTop")
-    ).toBe(true);
-    expect(
-      buttons[1].parentElement?.classList.contains("cm-collapsedRowHoverBottom")
-    ).toBe(false);
-    expect(rows[1].classList.contains("cm-collapsedRowHovered")).toBe(false);
-    bottomArrow.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
-    expect(
-      buttons[1].parentElement?.classList.contains("cm-collapsedRowHoverTop")
-    ).toBe(false);
-    expect(
-      buttons[1].parentElement?.classList.contains("cm-collapsedRowHoverBottom")
-    ).toBe(true);
+    // Either stacked arrow highlights the whole row, not one half.
+    for (const direction of ["down", "up"]) {
+      buttons[1]
+        .querySelector(`.cm-collapseArrow--${direction}`)!
+        .dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+      expect(
+        buttons[1].parentElement?.classList.contains("cm-collapsedRowHovered")
+      ).toBe(true);
+      expect(rows[1].classList.contains("cm-collapsedRowHovered")).toBe(true);
+      expect(rows[0].classList.contains("cm-collapsedRowHovered")).toBe(false);
+    }
     rows[1].dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
     expect(
       buttons[1].parentElement?.classList.contains("cm-collapsedRowHovered")
@@ -205,6 +201,53 @@ describe("collapsed gutter controls", () => {
     expect(view.dom.querySelectorAll(".cm-collapseControl")).toHaveLength(2);
   });
 
+  it("highlights both halves of the shared split row from either pane", () => {
+    const merge = new MergeView({
+      parent: document.body,
+      a: { doc: original, extensions },
+      b: { doc: modified, extensions },
+      collapseUnchanged: { margin: 3, minSize: 10 },
+    });
+    mounted.push(merge);
+    const rows = (view: EditorView) =>
+      view.dom.querySelectorAll<HTMLElement>(".cm-collapsedLines");
+    rows(merge.b)[2].dispatchEvent(
+      new MouseEvent("mouseover", { bubbles: true })
+    );
+    for (const view of [merge.a, merge.b]) {
+      expect(
+        Array.from(rows(view), (row) =>
+          row.classList.contains("cm-collapsedRowHovered")
+        )
+      ).toEqual([false, false, true]);
+    }
+    rows(merge.a)[2].dispatchEvent(
+      new MouseEvent("mouseout", {
+        bubbles: true,
+        relatedTarget: document.body,
+      })
+    );
+    for (const view of [merge.a, merge.b]) {
+      expect(view.dom.querySelectorAll(".cm-collapsedRowHovered")).toHaveLength(
+        0
+      );
+    }
+  });
+
+  it("reports the fixed compact height for merge's own collapsed rows", () => {
+    const merge = new MergeView({
+      parent: document.body,
+      a: { doc: original, extensions },
+      b: { doc: modified, extensions },
+      collapseUnchanged: { margin: 3, minSize: 10 },
+    });
+    mounted.push(merge);
+    // A rebuild from the estimate (jsdom never measures) must match the row.
+    merge.b.dispatch({ changes: { from: 0, insert: "x" } });
+    const last = merge.b.viewportLineBlocks.at(-1)!;
+    expect(last.height).toBe(COLLAPSED_COMPACT_ROW_PX);
+  });
+
   it("keeps incremental split expansion synchronized", () => {
     const merge = new MergeView({
       parent: document.body,
@@ -220,10 +263,10 @@ describe("collapsed gutter controls", () => {
     controls[0].querySelector<HTMLButtonElement>(".cm-collapseArrow")!.click();
     expect(merge.a.dom.querySelectorAll(".cm-collapsedLines")).toHaveLength(3);
     expect(merge.a.dom.querySelector(".cm-collapsedLines")?.textContent).toBe(
-      "7 unchanged lines"
+      "22 unchanged lines"
     );
     expect(merge.b.dom.querySelector(".cm-collapsedLines")?.textContent).toBe(
-      "7 unchanged lines"
+      "22 unchanged lines"
     );
   });
 
