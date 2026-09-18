@@ -36,22 +36,22 @@ describe("SidebarHeaderNavButton", () => {
     expect(markup).toMatch(/^<button[^>]*\stext-left\s/);
   });
 
-  it("keeps the row full-width when a shortcut tooltip is attached", () => {
+  it("keeps the row full-width when a shortcut badge is attached", () => {
     const markup = renderToStaticMarkup(
       createElement(SidebarHeaderNavButton, {
         icon: ArrowLeft01Icon,
         label: "Settings",
         ariaLabel: "Close Settings",
-        tooltipLabel: "Close Settings",
-        tooltipShortcutId: "close_tab",
+        shortcutId: "close_tab",
         onClick: vi.fn(),
       })
     );
 
-    // Tooltip clones its child rather than wrapping it, so the row stays the
-    // top-level element and keeps owning the sidebar's full width.
+    // The shortcut renders inline (hover-revealed), not through a Tooltip
+    // wrapper, so the button stays the top-level element.
     expect(markup).toMatch(/^<button/);
     expect(markup).toContain("group mt-1 flex h-7 w-full");
     expect(markup).toContain('aria-label="Close Settings"');
+    expect(markup).toContain("group-hover:opacity-100");
   });
 });

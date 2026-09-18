@@ -2,11 +2,8 @@ import React from "react";
 
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
-import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
-import Tooltip, { type TooltipProps } from "@src/components/Tooltip";
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
 import type { IconSvgElement } from "@src/icons";
-
-import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "../config";
 
 interface SidebarHeaderNavButtonProps {
   icon: IconSvgElement;
@@ -15,14 +12,8 @@ interface SidebarHeaderNavButtonProps {
   ariaLabel?: string;
   className?: string;
   bold?: boolean;
-  /**
-   * Tooltip copy. The row already prints `label`, so this describes what the
-   * row does (e.g. "Close Settings") rather than repeating the destination.
-   */
-  tooltipLabel?: string;
-  /** Shortcut id whose keys render beside `tooltipLabel`. */
-  tooltipShortcutId?: string;
-  tooltipPosition?: TooltipProps["position"];
+  /** Shortcut id whose keys render as a hover-revealed pill, matching other sidebar rows. */
+  shortcutId?: string;
 }
 
 const SidebarHeaderNavButton: React.FC<SidebarHeaderNavButtonProps> = ({
@@ -32,11 +23,9 @@ const SidebarHeaderNavButton: React.FC<SidebarHeaderNavButtonProps> = ({
   ariaLabel,
   className = "",
   bold = true,
-  tooltipLabel,
-  tooltipShortcutId,
-  tooltipPosition = "bottom",
+  shortcutId,
 }) => {
-  const button = (
+  return (
     // `text-left` overrides the native <button> UA `text-align: center`, which
     // the flex-1 label column would otherwise inherit and center.
     <Button
@@ -62,28 +51,16 @@ const SidebarHeaderNavButton: React.FC<SidebarHeaderNavButtonProps> = ({
           </span>
         </span>
       </span>
+      {shortcutId && (
+        <span className="shrink-0 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100">
+          <KeyboardShortcut
+            shortcutId={shortcutId}
+            size="sm"
+            rendering="icons"
+          />
+        </span>
+      )}
     </Button>
-  );
-
-  if (!tooltipLabel) return button;
-
-  // Shares the dwell time of every other sidebar-chrome tooltip so hovering
-  // across the sidebar never mixes hover delays.
-  return (
-    <Tooltip
-      content={
-        <KeyboardShortcutTooltipContent
-          label={tooltipLabel}
-          shortcutId={tooltipShortcutId}
-        />
-      }
-      position={tooltipPosition}
-      mouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
-      framedPanel
-      smartPlacement
-    >
-      {button}
-    </Tooltip>
   );
 };
 
