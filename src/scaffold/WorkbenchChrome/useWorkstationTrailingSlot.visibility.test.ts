@@ -228,8 +228,8 @@ describe("useWorkstationTrailingSlot pane controls", () => {
         container.querySelector('[data-icon="message-circle"]')
       ).toBeNull();
       expect(
-        container.querySelector('button[title="chat.hideWorkstation"]')
-      ).toBeNull();
+        container.querySelectorAll('button[title="chat.hideWorkstation"]')
+      ).toHaveLength(1);
     }
   });
 
