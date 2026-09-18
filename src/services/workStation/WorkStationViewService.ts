@@ -42,6 +42,17 @@ function dispatchOpenCodeTab(tabId: string) {
   );
 }
 
+/**
+ * An open wizard (Add Account, Add Connection, etc.) owns the Settings slot
+ * and holds unsaved form state. Revealing the workstation would let the user
+ * wander off mid-flow, so Station-revealing actions refuse until it closes.
+ */
+async function isWizardOpen(): Promise<boolean> {
+  const { wizardBreadcrumbTitleAtom } =
+    await import("@src/store/ui/wizardBreadcrumbAtom");
+  return getStore().get(wizardBreadcrumbTitleAtom) !== null;
+}
+
 async function unmaximizeChatPanel(): Promise<void> {
   if (isStationWindow()) return;
   const { chatPanelMaximizedAtom } =
@@ -122,6 +133,7 @@ export const WorkStationViewService = {
   async toggleChatPanelMaximized(): Promise<boolean> {
     if (isStationWindow()) return false;
     if (!isWorkbenchRoute()) return false;
+    if (await isWizardOpen()) return false;
 
     const { toggleActiveChatPanelMaximizedAtom } =
       await import("@src/store/chatPanel/chatPanelLayoutAtoms");
@@ -132,6 +144,7 @@ export const WorkStationViewService = {
   async showWorkStation(): Promise<boolean> {
     if (isStationWindow()) return false;
     if (!isWorkbenchRoute()) return false;
+    if (await isWizardOpen()) return false;
 
     const [
       { activeChatPanelTabStationAvailableAtom },
@@ -193,6 +206,8 @@ export const WorkStationViewService = {
       return true;
     }
 
+    if (await isWizardOpen()) return false;
+
     const [
       { activeChatPanelTabStationAvailableAtom },
       { activeStationChatVisibleAtom },
@@ -202,6 +217,7 @@ export const WorkStationViewService = {
     ]);
 
     const store = getStore();
+
     if (
       isWorkbenchRoute() &&
       !store.get(activeChatPanelTabStationAvailableAtom)

@@ -8,6 +8,7 @@ import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { wizardBreadcrumbTitleAtom } from "@src/store/ui/wizardBreadcrumbAtom";
 import {
   createSourceControlTab,
   openTab,
@@ -109,6 +110,35 @@ describe("WorkStationViewService work-management tabs", () => {
       false
     );
     expect(store.get(stationModeAtom)).toBe("agent-station");
+  });
+
+  it("blocks every workstation-revealing action while a Settings wizard is open", async () => {
+    const store = getInstrumentedStore();
+    store.set(chatPanelTabsAtom, {
+      activeTabId: "chat",
+      tabs: [{ id: "chat", type: "session", title: "Session" }],
+    });
+    store.set(chatPanelMaximizedAtom, true);
+    store.set(wizardBreadcrumbTitleAtom, "Add Account");
+
+    expect(await WorkStationViewService.openStationMode("my-station")).toBe(
+      false
+    );
+    expect(await WorkStationViewService.showWorkStation()).toBe(false);
+    expect(await WorkStationViewService.toggleChatPanelMaximized()).toBe(false);
+    expect(store.get(chatPanelMaximizedAtom)).toBe(true);
+    expect(store.get(stationModeAtom)).toBe("agent-station");
+
+    expect(await WorkStationViewService.openStationMode("agent-station")).toBe(
+      false
+    );
+    expect(store.get(chatPanelMaximizedAtom)).toBe(true);
+
+    store.set(wizardBreadcrumbTitleAtom, null);
+    expect(await WorkStationViewService.openStationMode("my-station")).toBe(
+      true
+    );
+    expect(store.get(stationModeAtom)).toBe("my-station");
   });
 
   it("allows Station-opening actions again once a session tab is active", async () => {

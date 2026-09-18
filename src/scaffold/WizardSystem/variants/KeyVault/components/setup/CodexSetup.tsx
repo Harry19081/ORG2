@@ -11,7 +11,7 @@ import {
   SectionRow,
 } from "@src/components/layout/Section";
 import { CodexSessionSetup } from "@src/features/SessionSetup";
-import { KeyboardIcon, Login01Icon, SearchAreaIcon } from "@src/icons";
+import { InputShortTextIcon, Login01Icon, SearchAreaIcon } from "@src/icons";
 import {
   SelectionGrid,
   type SelectionGridOption,
@@ -53,7 +53,7 @@ const CodexSetup: React.FC<CodexSetupProps> = ({
       {
         key: "enter_token",
         label: t("keyVault.enterToken"),
-        icon: KeyboardIcon,
+        icon: InputShortTextIcon,
       },
     ],
     [t]

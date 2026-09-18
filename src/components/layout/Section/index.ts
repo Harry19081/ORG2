@@ -44,6 +44,8 @@ export {
   SectionSidebarSplit,
 } from "./SidebarSplit";
 
+export { TallSectionLabelsProvider } from "./TallLabelsContext";
+
 // ── Public tokens (for consumers) ───────────────────────
 export {
   /** Apply to <Select> / <Input> / <NumberInput> controls: { width: 280, maxWidth: "100%" } */

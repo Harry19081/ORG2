@@ -189,7 +189,7 @@ const WizardStepLayout: React.FC<WizardStepLayoutProps> = ({
             {onCancel && (
               <Button
                 variant="secondary"
-                size="small"
+                size="default"
                 onClick={onCancel}
                 data-testid={cancelTestId}
               >

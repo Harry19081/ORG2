@@ -9,6 +9,7 @@
  */
 import React, { memo, useId } from "react";
 
+import { useTallSectionLabels } from "./TallLabelsContext";
 import {
   SECTION_DESCRIPTION_CLASSES,
   SECTION_DESCRIPTION_COMPACT_CLASSES,
@@ -16,6 +17,7 @@ import {
   SECTION_LABEL_CLASSES,
   SECTION_LABEL_COMPACT_CLASSES,
   SECTION_LABEL_LIGHT_CLASSES,
+  SECTION_LABEL_TALL_CLASSES,
 } from "./tokens";
 
 export interface SectionRowProps {
@@ -34,6 +36,13 @@ export interface SectionRowProps {
    * always side-by-side 'inline' for compact label/value rows.
    */
   layout?: "horizontal" | "vertical" | "inline";
+  /**
+   * Force the 32px tall label (see TallSectionLabelsProvider) regardless of
+   * the automatic layout/description heuristic. Use on a row whose layout
+   * toggles between 'vertical' (a list/grid) and 'horizontal' (a select) for
+   * the same field, so the label stays the same size across both states.
+   */
+  tallLabel?: boolean;
   /** Use lighter font weight for label (legacy alias — default labels are already normal weight) */
   light?: boolean;
   /** Indent row for sub-settings (applies SECTION_INDENT_CLASSES) */
@@ -69,6 +78,7 @@ const SectionRow: React.FC<SectionRowProps> = memo(
     description,
     children,
     layout = "horizontal",
+    tallLabel,
     light = false,
     indent = false,
     showHeader = true,
@@ -89,11 +99,22 @@ const SectionRow: React.FC<SectionRowProps> = memo(
     const serializedSearchKeys = Array.isArray(settingsSearchKeys)
       ? settingsSearchKeys.join(" ")
       : settingsSearchKeys;
+    const tallLabels = useTallSectionLabels();
+    // Tall labels only make sense beside a side-by-side control (the label
+    // vertically centers against a 32px input/select). Vertical rows stack
+    // the label above full-width content, so they keep the default height
+    // unless the caller explicitly opts in via `tallLabel` (e.g. a row that
+    // toggles between a vertical list and a horizontal select for the same
+    // field, and wants a consistent label size across both states).
+    const useTallLabel =
+      tallLabel ?? (tallLabels && !description && layout === "horizontal");
     const labelClass = compact
       ? SECTION_LABEL_COMPACT_CLASSES
       : light
         ? SECTION_LABEL_LIGHT_CLASSES
-        : SECTION_LABEL_CLASSES;
+        : useTallLabel
+          ? SECTION_LABEL_TALL_CLASSES
+          : SECTION_LABEL_CLASSES;
 
     const descClass = compact
       ? SECTION_DESCRIPTION_COMPACT_CLASSES

@@ -153,13 +153,13 @@ const AddConnectionWizard: React.FC<AddConnectionWizardProps> = ({
     ) : undefined;
 
   const stepActions = saved ? (
-    <Button variant="primary" size="small" onClick={onCancel}>
+    <Button variant="primary" size="default" onClick={onCancel}>
       {t("common:actions.done", "Done")}
     </Button>
   ) : (
     <Button
       variant="primary"
-      size="small"
+      size="default"
       onClick={() => handleSave(onSave)}
       disabled={!isFormValid}
     >

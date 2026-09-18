@@ -74,6 +74,7 @@ import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom
 import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
+import { wizardBreadcrumbTitleAtom } from "@src/store/ui/wizardBreadcrumbAtom";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
 import SettingsBreadcrumb from "./SettingsBreadcrumb";
@@ -265,6 +266,9 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
   const settingsReturnPath = useAtomValue(settingsReturnPathAtom);
   const sidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
   const devModeEnabled = useAtomValue(devModeEnabledAtom);
+  // An open wizard holds unsaved form state; revealing the workstation from
+  // here would let the user wander off mid-flow, so the toggle is hidden.
+  const wizardOpen = useAtomValue(wizardBreadcrumbTitleAtom) !== null;
   const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
   const pageOpacityStyle = getPagePanelBackgroundStyle(
     backgroundConfig.pageOpacity
@@ -412,40 +416,42 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
           actions={
             <>
               <SettingsHeaderActions />
-              <Tooltip
-                content={maximizeTooltip}
-                position="bottom-end"
-                mouseEnterDelay={200}
-                framedPanel
-              >
-                <span className="inline-flex">
-                  <Button
-                    htmlType="button"
-                    variant="tertiary"
-                    size="small"
-                    iconOnly
-                    onClick={() => toggleMaximized()}
-                    aria-label={maximizeLabel}
-                    icon={
-                      maximized ? (
-                        <HugeiconsIcon
-                          icon={GalleryThumbnailsIcon}
-                          data-icon="gallery-thumbnails"
-                          size={14}
-                          strokeWidth={2}
-                        />
-                      ) : (
-                        <HugeiconsIcon
-                          icon={ArrowExpand01Icon}
-                          data-icon="maximize-2"
-                          size={14}
-                          strokeWidth={2}
-                        />
-                      )
-                    }
-                  />
-                </span>
-              </Tooltip>
+              {!wizardOpen && (
+                <Tooltip
+                  content={maximizeTooltip}
+                  position="bottom-end"
+                  mouseEnterDelay={200}
+                  framedPanel
+                >
+                  <span className="inline-flex">
+                    <Button
+                      htmlType="button"
+                      variant="tertiary"
+                      size="small"
+                      iconOnly
+                      onClick={() => toggleMaximized()}
+                      aria-label={maximizeLabel}
+                      icon={
+                        maximized ? (
+                          <HugeiconsIcon
+                            icon={GalleryThumbnailsIcon}
+                            data-icon="gallery-thumbnails"
+                            size={14}
+                            strokeWidth={2}
+                          />
+                        ) : (
+                          <HugeiconsIcon
+                            icon={ArrowExpand01Icon}
+                            data-icon="maximize-2"
+                            size={14}
+                            strokeWidth={2}
+                          />
+                        )
+                      }
+                    />
+                  </span>
+                </Tooltip>
+              )}
             </>
           }
         />
