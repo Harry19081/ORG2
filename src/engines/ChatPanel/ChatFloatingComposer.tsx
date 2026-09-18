@@ -16,7 +16,7 @@ import CollapsedInlineRow, {
 } from "./InputArea/components/CollapsedInlineRow";
 import type { FileChangeVisibleStats } from "./InputArea/components/CompactFileChanges";
 import QueueEditModeCard from "./InputArea/components/QueueEditModeCard";
-import type QueuedMessages from "./InputArea/components/QueuedMessages";
+import QueuedMessages from "./InputArea/components/QueuedMessages";
 import { createFileInlineSection } from "./InputArea/hooks/useComposerSections";
 import type { QueueEditInputAreaProps } from "./InputArea/hooks/useQueueEditMode";
 import type CreatePlanCard from "./blocks/CreatePlanCard";
@@ -59,14 +59,11 @@ interface ChatFloatingComposerProps {
   onQuestionDataChange: (hasData: boolean) => void;
   onPermissionDataChange: (hasData: boolean) => void;
   onModeSwitchDataChange: (hasData: boolean) => void;
-  queueExpanded: boolean;
   processExpanded: boolean;
   queuedMessages: Parameters<typeof QueuedMessages>[0]["messages"];
   onCancelQueuedMessage: Parameters<typeof QueuedMessages>[0]["onCancel"];
-  onClearQueuedMessages: Parameters<typeof QueuedMessages>[0]["onClear"];
   onSendQueuedMessageNow: Parameters<typeof QueuedMessages>[0]["onSendNow"];
   onReorderQueuedMessages: Parameters<typeof QueuedMessages>[0]["onReorder"];
-  onToggleQueue: () => void;
   onToggleProcess: () => void;
   onProcessVisibleCountChange: (count: number) => void;
   onFilesExpand: () => void;
@@ -116,14 +113,11 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     onQuestionDataChange,
     onPermissionDataChange,
     onModeSwitchDataChange,
-    queueExpanded,
     processExpanded,
     queuedMessages,
     onCancelQueuedMessage,
-    onClearQueuedMessages,
     onSendQueuedMessageNow,
     onReorderQueuedMessages,
-    onToggleQueue,
     onToggleProcess,
     onProcessVisibleCountChange,
     onFilesExpand,
@@ -227,13 +221,6 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
           <ComposerActivityTrackers
             sessionId={sessionId}
             inputAreaSessionId={inputAreaSessionId}
-            queueExpanded={queueExpanded}
-            queuedMessages={queuedMessages}
-            onCancelQueuedMessage={onCancelQueuedMessage}
-            onClearQueuedMessages={onClearQueuedMessages}
-            onSendQueuedMessageNow={onSendQueuedMessageNow}
-            onReorderQueuedMessages={onReorderQueuedMessages}
-            onToggleQueue={onToggleQueue}
             processExpanded={processExpanded}
             onToggleProcess={onToggleProcess}
             onProcessVisibleCountChange={onProcessVisibleCountChange}
@@ -268,6 +255,14 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
               ) : null
             }
             topRowTrailingContent={trailingScrollButton}
+            composerTray={
+              <QueuedMessages
+                messages={queuedMessages}
+                onCancel={onCancelQueuedMessage}
+                onSendNow={onSendQueuedMessageNow}
+                onReorder={onReorderQueuedMessages}
+              />
+            }
             statusBanners={
               <ComposerStatusBanners
                 sessionId={sessionId}

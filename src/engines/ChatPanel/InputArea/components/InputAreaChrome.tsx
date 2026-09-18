@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { ComposerInputRef } from "@src/components/ComposerInput";
+import { COMPOSER_STACK_INSET_PX_CLASS } from "@src/config/composerStackTokens";
 import { INPUT_AREA } from "@src/config/inputAreaTokens";
 import { ChatStatusSegmentedBar } from "@src/engines/ChatPanel/components/ChatStatusBanners";
 
@@ -36,7 +37,9 @@ export const InputAreaTopRows: React.FC<TopRowsProps> = ({
     <>
       {!isEditMode && !omitChatHeader && <ChatHeader />}
       {!isEditMode && (
-        <div className="relative z-10 flex min-w-0 items-center gap-1 px-0.5 pb-1.5">
+        <div
+          className={`relative z-10 flex min-w-0 items-center gap-1 pb-1.5 ${COMPOSER_STACK_INSET_PX_CLASS}`}
+        >
           <LazyPinnedActionsBar
             composerInputRef={composerInputRef}
             sessionId={sessionId}

@@ -59,14 +59,11 @@ export interface ChatViewComposerSectionProps {
   onQuestionDataChange: (hasData: boolean) => void;
   onPermissionDataChange: (hasData: boolean) => void;
   onModeSwitchDataChange: (hasData: boolean) => void;
-  queueExpanded: boolean;
   processExpanded: boolean;
   queuedMessages: import("@src/store/ui/messageQueueAtom").QueuedMessage[];
   onCancelQueuedMessage: (messageId: string) => void;
-  onClearQueuedMessages: () => void;
   onSendQueuedMessageNow: (messageId: string) => void;
   onReorderQueuedMessages: (fromIndex: number, toIndex: number) => void;
-  onToggleQueue: () => void;
   onToggleProcess: () => void;
   onProcessVisibleCountChange: (count: number) => void;
   onFilesExpand: () => void;
