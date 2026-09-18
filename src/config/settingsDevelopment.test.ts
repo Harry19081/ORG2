@@ -13,7 +13,11 @@ describe("development settings build boundary", () => {
       vi.resetModules();
       const { buildSettingsNavigationGroups } =
         await import("./settingsNavigation");
-      const { parseCoreSettingsItem } = await import("./mainAppPaths/settings");
+      const {
+        parseCoreSettingsItem,
+        parseSettingsSectionTab,
+        buildSettingsPath,
+      } = await import("./mainAppPaths/settings");
       const { getSettingsSectionById } = await import("./settingsUiManifest");
       for (const preference of [false, true]) {
         const items = buildSettingsNavigationGroups(
@@ -30,6 +34,23 @@ describe("development settings build boundary", () => {
       expect(
         parseCoreSettingsItem("/orgii/app/settings/app/development").section
       ).toBe(mode === "development" ? "development" : null);
+      const illustrationPath = buildSettingsPath({
+        section: "development",
+        tab: "illustrations",
+      });
+      expect(parseSettingsSectionTab(illustrationPath)).toEqual(
+        mode === "development"
+          ? { section: "development", tab: "illustrations" }
+          : { section: null, tab: null }
+      );
+      if (mode === "development") {
+        const { SECTION_TAB_META } =
+          await import("../modules/MainApp/Settings/config");
+        expect(SECTION_TAB_META.development?.map((tab) => tab.key)).toEqual([
+          "controls",
+          "illustrations",
+        ]);
+      }
     }
   );
 });

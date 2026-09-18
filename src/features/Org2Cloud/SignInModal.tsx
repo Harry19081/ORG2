@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import LoginFailureArtwork from "@src/assets/illustrations/login-failure.png";
 import LoginSuccessArtwork from "@src/assets/illustrations/login-success.png";
 import LoginWaitingArtwork from "@src/assets/illustrations/login-waiting.png";
+import Illustration from "@src/components/Illustration";
 import Modal from "@src/scaffold/ModalSystem";
 
 import { SignInFeatures } from "./SignInFeatures";
@@ -58,12 +59,10 @@ export function SignInModal({
           ["failure", LoginFailureArtwork],
         ] as const
       ).map(([imageStage, src]) => (
-        <img
+        <Illustration
           key={imageStage}
           src={src}
-          alt=""
-          aria-hidden
-          className={`absolute inset-0 h-full w-full object-cover ${displayStage === imageStage ? "visible" : "invisible"}`}
+          className={`absolute inset-0 h-full w-full object-contain ${displayStage === imageStage ? "visible" : "invisible"}`}
         />
       ))}
     </div>

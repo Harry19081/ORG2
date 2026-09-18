@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import updateImage from "@src/assets/illustrations/update.png";
+import Illustration from "@src/components/Illustration";
 import PanelFooter from "@src/components/layout/blocks/PanelFooter";
 import { createLogger } from "@src/hooks/logger";
 import Modal from "@src/scaffold/ModalSystem";
@@ -32,7 +33,9 @@ export function UpdateInstallPrompt({
           : t("update.installConfirmTitle")
       }
       size="medium"
-      image={{ src: updateImage, alt: "" }}
+      headerMedia={
+        <Illustration src={updateImage} className="liquid-modal-image" />
+      }
       closable={false}
       maskClosable={false}
       escToExit={false}

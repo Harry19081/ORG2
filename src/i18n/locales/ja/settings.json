@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "インターネット接続はオフです。詳細設定で有効にできます"
   },
   "development": {
+    "illustrations": "イラスト",
+    "illustrationsDesc": "テーマを変更せずに、すべてのイラストをライトとダークで比較",
     "updateAvailable": "アップデートあり",
     "updateAvailableDesc": "バージョン 99.0.0 の更新表示をアプリ全体に表示 — 更新操作はダイアログのプレビューのみ"
   },

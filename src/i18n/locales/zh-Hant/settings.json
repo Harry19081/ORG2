@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "網際網路連線已關閉，可在進階設定中開啟"
   },
   "development": {
+    "illustrations": "插畫預覽",
+    "illustrationsDesc": "同時預覽所有應用程式插畫的淺色和深色效果，無需更改應用程式主題",
     "updateAvailable": "有可用更新",
     "updateAvailableDesc": "在整個應用中顯示版本 99.0.0 的更新提示 — 更新操作僅預覽對話框"
   },

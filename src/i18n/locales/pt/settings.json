@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "As conexões pela internet estão desativadas. Ative-as nas configurações avançadas"
   },
   "development": {
+    "illustrations": "Ilustrações",
+    "illustrationsDesc": "Compare todas as ilustrações nos modos claro e escuro sem alterar o tema",
     "updateAvailable": "Atualização disponível",
     "updateAvailableDesc": "Mostrar indicadores de atualização em todo o aplicativo com a versão 99.0.0 — as ações apenas abrem a prévia"
   },

@@ -6,6 +6,7 @@ import LoginFailureArtwork from "@src/assets/illustrations/login-failure.png";
 import LoginSuccessArtwork from "@src/assets/illustrations/login-success.png";
 import LoginWaitingArtwork from "@src/assets/illustrations/login-waiting.png";
 import Button from "@src/components/Button";
+import Illustration from "@src/components/Illustration";
 import PageNotice from "@src/components/PageNotice";
 import { MOBILE_REMOTE_ROUTE, ROUTES } from "@src/config/routes";
 import { HOSTED_LOGIN_ENABLED, setAuthSkipped } from "@src/config/serviceAuth";
@@ -67,10 +68,9 @@ export const LoginLoadingState: React.FC<LoginLoadingStateProps> = ({
     >
       {error ? (
         <>
-          <img
+          <Illustration
             src={LoginFailureArtwork}
-            alt=""
-            className={`aspect-square rounded-lg object-cover ${LOGIN_COLUMN_WIDTH_CLASS}`}
+            className={`aspect-square rounded-lg object-contain ${LOGIN_COLUMN_WIDTH_CLASS}`}
           />
           <div className="flex flex-col items-center gap-2 text-center">
             <div className="text-lg font-medium text-red-500">
@@ -84,12 +84,11 @@ export const LoginLoadingState: React.FC<LoginLoadingStateProps> = ({
         </>
       ) : (
         <>
-          <img
+          <Illustration
             src={
               stage === "success" ? LoginSuccessArtwork : LoginWaitingArtwork
             }
-            alt=""
-            className={`aspect-square rounded-lg object-cover ${LOGIN_COLUMN_WIDTH_CLASS}`}
+            className={`aspect-square rounded-lg object-contain ${LOGIN_COLUMN_WIDTH_CLASS}`}
           />
           <div
             className="flex flex-col items-center gap-2 text-center"

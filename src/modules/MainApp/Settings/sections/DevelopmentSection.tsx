@@ -5,10 +5,18 @@ import Switch from "@src/components/Switch";
 import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import { mockAppUpdateEnabledAtom } from "@src/scaffold/AppUpdater/state";
 
-export default function DevelopmentSection() {
+import IllustrationPreview from "./IllustrationPreview";
+
+export default function DevelopmentSection({
+  activeTab,
+}: {
+  activeTab?: string;
+}) {
   const { t } = useTranslation("settings");
   const [enabled, setEnabled] = useAtom(mockAppUpdateEnabledAtom);
   if (process.env.NODE_ENV !== "development") return null;
+
+  if (activeTab === "illustrations") return <IllustrationPreview />;
 
   return (
     <SectionContainer>

@@ -1076,6 +1076,8 @@
     "role": "模型角色"
   },
   "development": {
+    "illustrations": "插画预览",
+    "illustrationsDesc": "同时预览所有应用插画的浅色和深色效果，无需更改应用主题",
     "updateAvailable": "有可用更新",
     "updateAvailableDesc": "在整个应用中显示版本 99.0.0 的更新提示 — 更新操作仅预览对话框"
   },

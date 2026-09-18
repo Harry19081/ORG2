@@ -1076,6 +1076,8 @@
     "role": "Peran"
   },
   "development": {
+    "illustrations": "Ilustrasi",
+    "illustrationsDesc": "Bandingkan semua ilustrasi aplikasi dalam mode terang dan gelap tanpa mengubah tema",
     "updateAvailable": "Pembaruan tersedia",
     "updateAvailableDesc": "Tampilkan indikator pembaruan di seluruh aplikasi menggunakan versi 99.0.0 — tindakan pembaruan hanya menampilkan pratinjau dialog"
   },
