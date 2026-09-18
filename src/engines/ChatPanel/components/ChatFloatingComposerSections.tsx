@@ -3,6 +3,7 @@ import React from "react";
 
 import Button from "@src/components/Button";
 import { PILL_CONTROL_IDLE_SURFACE_CLASS } from "@src/components/CompoundPill/config";
+import { COMPOSER_STACK_INSET_X_CLASS } from "@src/config/composerStackTokens";
 import {
   ChatRetryBanner,
   toChatRetryKind,
@@ -19,7 +20,6 @@ import AgentOrgInterventionPinBar from "../InputArea/components/AgentOrgInterven
 import CompactFileChanges, {
   type FileChangeVisibleStats,
 } from "../InputArea/components/CompactFileChanges";
-import QueuedMessages from "../InputArea/components/QueuedMessages";
 import CreatePlanCard from "../blocks/CreatePlanCard";
 import type {
   AgentOrgInterventionView,
@@ -89,20 +89,24 @@ export const ComposerInteractionCards: React.FC<
 }) => (
   <>
     {currentPlanApproval && shouldShowCurrentPlanSurface && (
-      <CreatePlanCard
-        key={`current-plan-${currentPlanApproval.planRevisionId ?? currentPlanApproval.toolCallId ?? currentPlanApproval.planPath}`}
-        content={currentPlanApproval.planContent}
-        title={currentPlanApproval.planTitle}
-        isStreaming={false}
-        toolCallId={currentPlanApproval.toolCallId}
-        planId={currentPlanApproval.planId}
-        planRevisionId={currentPlanApproval.planRevisionId}
-        sessionId={sessionId}
-        surface="current"
-        surfaceState={currentPlanSurfaceState}
-        collapsed={planCollapsed}
-        onCollapse={onPlanCollapse}
-      />
+      // The plan card uses the chat-history block shell; inset it here so it
+      // lines up with the rest of the composer stack.
+      <div className={COMPOSER_STACK_INSET_X_CLASS}>
+        <CreatePlanCard
+          key={`current-plan-${currentPlanApproval.planRevisionId ?? currentPlanApproval.toolCallId ?? currentPlanApproval.planPath}`}
+          content={currentPlanApproval.planContent}
+          title={currentPlanApproval.planTitle}
+          isStreaming={false}
+          toolCallId={currentPlanApproval.toolCallId}
+          planId={currentPlanApproval.planId}
+          planRevisionId={currentPlanApproval.planRevisionId}
+          sessionId={sessionId}
+          surface="current"
+          surfaceState={currentPlanSurfaceState}
+          collapsed={planCollapsed}
+          onCollapse={onPlanCollapse}
+        />
+      </div>
     )}
 
     <AskQuestionCard
@@ -129,13 +133,6 @@ export const ComposerInteractionCards: React.FC<
 interface ComposerActivityTrackersProps {
   sessionId: string;
   inputAreaSessionId: string;
-  queueExpanded: boolean;
-  queuedMessages: Parameters<typeof QueuedMessages>[0]["messages"];
-  onCancelQueuedMessage: Parameters<typeof QueuedMessages>[0]["onCancel"];
-  onClearQueuedMessages: Parameters<typeof QueuedMessages>[0]["onClear"];
-  onSendQueuedMessageNow: Parameters<typeof QueuedMessages>[0]["onSendNow"];
-  onReorderQueuedMessages: Parameters<typeof QueuedMessages>[0]["onReorder"];
-  onToggleQueue: () => void;
   processExpanded: boolean;
   onToggleProcess: () => void;
   onProcessVisibleCountChange: (count: number) => void;
@@ -145,19 +142,12 @@ interface ComposerActivityTrackersProps {
   onFileChangeStatsChange: (next: FileChangeVisibleStats) => void;
 }
 
-/** Queued messages, active processes (expanded or hidden tracker) and the file-change tracker. */
+/** Active processes (expanded or hidden tracker) and the file-change tracker. */
 export const ComposerActivityTrackers: React.FC<
   ComposerActivityTrackersProps
 > = ({
   sessionId,
   inputAreaSessionId,
-  queueExpanded,
-  queuedMessages,
-  onCancelQueuedMessage,
-  onClearQueuedMessages,
-  onSendQueuedMessageNow,
-  onReorderQueuedMessages,
-  onToggleQueue,
   processExpanded,
   onToggleProcess,
   onProcessVisibleCountChange,
@@ -166,16 +156,6 @@ export const ComposerActivityTrackers: React.FC<
   onFileChangeStatsChange,
 }) => (
   <>
-    {queueExpanded && (
-      <QueuedMessages
-        messages={queuedMessages}
-        onCancel={onCancelQueuedMessage}
-        onClear={onClearQueuedMessages}
-        onSendNow={onSendQueuedMessageNow}
-        onReorder={onReorderQueuedMessages}
-        onToggle={onToggleQueue}
-      />
-    )}
     {processExpanded && (
       <ActiveProcesses
         key={`process-expanded-${sessionId}`}

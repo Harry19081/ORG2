@@ -155,7 +155,7 @@ const PlanTodoPill: React.FC<PlanTodoPillProps> = memo(({ sessionId }) => {
         aria-expanded={isOpen}
         aria-controls={isOpen ? panelId : undefined}
         onClick={toggle}
-        className={`shrink-0 tabular-nums ${pillControlStateClass(isOpen)}`}
+        className={`shrink-0 tabular-nums ${pillControlStateClass(isOpen, "background", "border")}`}
       >
         {progressLabel}
       </Button>

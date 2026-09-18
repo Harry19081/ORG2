@@ -17,6 +17,8 @@ import Button from "@src/components/Button";
 import {
   CHAT_COMPOSER_STACK_BAR_INNER_PADDING_X_CLASS,
   CHAT_COMPOSER_STACK_BAR_SURFACE_BG_CLASS,
+  COMPOSER_STACK_CONTAINER_RADIUS_CLASS,
+  COMPOSER_STACK_INSET_X_CLASS,
   COMPOSER_STACK_ROW_ACTIONS,
   COMPOSER_STACK_ROW_BASE,
   COMPOSER_STACK_ROW_HOVER,
@@ -264,7 +266,7 @@ const ActiveProcesses: React.FC<ActiveProcessesProps> = memo(
 
     return (
       <div
-        className={`${CHAT_COMPOSER_STACK_BAR_SURFACE_BG_CLASS} overflow-hidden rounded-lg border border-solid border-border-2`}
+        className={`${CHAT_COMPOSER_STACK_BAR_SURFACE_BG_CLASS} ${COMPOSER_STACK_CONTAINER_RADIUS_CLASS} ${COMPOSER_STACK_INSET_X_CLASS} overflow-hidden border border-solid border-border-2`}
       >
         <ComposerStackHeader
           icon={

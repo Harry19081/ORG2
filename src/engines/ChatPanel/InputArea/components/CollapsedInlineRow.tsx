@@ -65,7 +65,7 @@ function renderSectionContent(section: InlineSection) {
 function getButtonClassName(section: InlineSection, menuOpen: boolean) {
   const primaryClassName =
     section.variant === "primary" ? "border-primary-5! text-primary-6!" : "";
-  return `${pillControlStateClass(section.active || menuOpen)} ${primaryClassName}`.trim();
+  return `${pillControlStateClass(section.active || menuOpen, "background", "border")} ${primaryClassName}`.trim();
 }
 
 const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(

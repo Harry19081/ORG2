@@ -14,6 +14,7 @@ import FileTypeIcon from "@src/components/FileTypeIcon";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
 import {
   CHAT_COMPOSER_STACK_BAR_INNER_PADDING_X_CLASS,
+  COMPOSER_STACK_CONTAINER_RADIUS_CLASS,
   COMPOSER_STACK_ROW_BASE,
   COMPOSER_STACK_ROW_HOVER,
 } from "@src/config/composerStackTokens";
@@ -261,7 +262,9 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
 
     return (
       <div className="px-3 pt-2" data-testid="turn-metadata-footer">
-        <div className="overflow-hidden rounded-lg border border-solid border-border-2">
+        <div
+          className={`${COMPOSER_STACK_CONTAINER_RADIUS_CLASS} overflow-hidden border border-solid border-border-2`}
+        >
           <div className="flex min-h-9 items-center justify-between gap-2 px-2.5 py-1">
             <div className="flex min-w-0 items-center gap-1.5">
               <Button
