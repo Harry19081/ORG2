@@ -4,7 +4,6 @@
 //! functions are not registered as Tauri IPC commands.
 //!
 //! Organized into submodules by responsibility:
-//! - `server`: LSP server lifecycle (start/stop/status/notifications)
 //! - `discovery`: Detect installed LSP servers
 //! - `cache`: Persistent cache for LSP server scan results
 //! - `package_manager`: Package manager detection and command generation
@@ -12,7 +11,6 @@
 
 mod cache;
 mod install;
-mod server;
 
 // Public modules for reuse in other LSP modules
 pub mod discovery;
@@ -28,4 +26,3 @@ pub type LspManagerState = Arc<Mutex<LspManager>>;
 
 pub use discovery::*;
 pub use install::*;
-pub use server::*;
