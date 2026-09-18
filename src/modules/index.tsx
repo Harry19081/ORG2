@@ -32,6 +32,7 @@ import { useGlobalBrowserWebviewLayering } from "@src/modules/WorkStation/Browse
 import { AppLayout } from "@src/scaffold/AppLayout";
 import { FloatingSidebar } from "@src/scaffold/AppLayout/sidebar/FloatingSidebar";
 import { SidebarSelector } from "@src/scaffold/AppLayout/sidebar/SidebarSelector";
+import { DesktopSessionRosterProvider } from "@src/scaffold/NavigationSidebar/connectors/WorkstationSidebarConnector/DesktopSessionRosterProvider";
 import { CODE_EDITOR_TOUR_EVENT } from "@src/scaffold/Tutorials/codeEditorTourConfig";
 import {
   GENERAL_LAYOUT_TOUR_EVENT,
@@ -350,56 +351,58 @@ const AppShell = () => {
 
   return (
     <BrowserProvider>
-      <BrowserEventBridge />
-      <Outlet />
-      <React.Suspense fallback={null}>
-        <SharedBrowserApp />
-      </React.Suspense>
-      <div
-        className="relative flex h-full"
-        data-guide-target={GUIDE_TARGETS.APP_ROOT}
-      >
-        {/* Main layout with sidebar, toolbar, content, and chat panel */}
-        <AppLayout
-          viewportWidth={viewportWidth}
-          sidebar={<SidebarSelector />}
-          floatingSidebar={<FloatingSidebar />}
-          showChatPanel
-          chatPosition={chatPosition}
-          chatPanelMaximized={effectiveChatFocus}
-          chatPanelMode={chatPanelMode}
-          sessionSidebarWidth={sessionSidebarWidth}
-        >
-          <div className="relative h-full w-full min-w-0">
-            <div
-              className="absolute inset-0 bg-workstation-bg"
-              data-guide-target={GUIDE_TARGETS.WORKSTATION}
-              data-tour-target={GENERAL_LAYOUT_TOUR_TARGETS.workstation}
-            >
-              <React.Suspense fallback={<WorkStationLoadingFallback />}>
-                <WorkStationPage
-                  isActive
-                  chatPanelFocused={effectiveChatFocus}
-                />
-              </React.Suspense>
-            </div>
-          </div>
-        </AppLayout>
+      <DesktopSessionRosterProvider>
+        <BrowserEventBridge />
+        <Outlet />
         <React.Suspense fallback={null}>
-          <GuideHighlightOverlay />
-          <OnboardingHost />
-          <GeneralLayoutTour
-            key={`general-layout-tour-${generalLayoutTourRunId}`}
-            open={generalLayoutTourOpen}
-            onClose={() => setGeneralLayoutTourOpen(false)}
-          />
-          <CodeEditorTour
-            key={`code-editor-tour-${codeEditorTourRunId}`}
-            open={codeEditorTourOpen}
-            onClose={() => setCodeEditorTourOpen(false)}
-          />
+          <SharedBrowserApp />
         </React.Suspense>
-      </div>
+        <div
+          className="relative flex h-full"
+          data-guide-target={GUIDE_TARGETS.APP_ROOT}
+        >
+          {/* Main layout with sidebar, toolbar, content, and chat panel */}
+          <AppLayout
+            viewportWidth={viewportWidth}
+            sidebar={<SidebarSelector />}
+            floatingSidebar={<FloatingSidebar />}
+            showChatPanel
+            chatPosition={chatPosition}
+            chatPanelMaximized={effectiveChatFocus}
+            chatPanelMode={chatPanelMode}
+            sessionSidebarWidth={sessionSidebarWidth}
+          >
+            <div className="relative h-full w-full min-w-0">
+              <div
+                className="absolute inset-0 bg-workstation-bg"
+                data-guide-target={GUIDE_TARGETS.WORKSTATION}
+                data-tour-target={GENERAL_LAYOUT_TOUR_TARGETS.workstation}
+              >
+                <React.Suspense fallback={<WorkStationLoadingFallback />}>
+                  <WorkStationPage
+                    isActive
+                    chatPanelFocused={effectiveChatFocus}
+                  />
+                </React.Suspense>
+              </div>
+            </div>
+          </AppLayout>
+          <React.Suspense fallback={null}>
+            <GuideHighlightOverlay />
+            <OnboardingHost />
+            <GeneralLayoutTour
+              key={`general-layout-tour-${generalLayoutTourRunId}`}
+              open={generalLayoutTourOpen}
+              onClose={() => setGeneralLayoutTourOpen(false)}
+            />
+            <CodeEditorTour
+              key={`code-editor-tour-${codeEditorTourRunId}`}
+              open={codeEditorTourOpen}
+              onClose={() => setCodeEditorTourOpen(false)}
+            />
+          </React.Suspense>
+        </div>
+      </DesktopSessionRosterProvider>
     </BrowserProvider>
   );
 };

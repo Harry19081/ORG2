@@ -72,6 +72,8 @@ export function MobileRemoteProviders({
     readStateSync,
     sessions,
     sessionsHasMore,
+    rosterPhase,
+    suspendSessionList,
     resetSessions,
     openingClient,
     openedSession,
@@ -135,6 +137,7 @@ export function MobileRemoteProviders({
   const releaseTransport = useCallback(
     (close: boolean) => {
       reconnect.invalidate();
+      suspendSessionList();
       preparationRef.current?.abort();
       preparationRef.current = null;
       // Invalidate every in-flight subscribe/refresh from the old socket before
@@ -154,6 +157,7 @@ export function MobileRemoteProviders({
     },
     [
       reconnect,
+      suspendSessionList,
       preparationRef,
       invalidateTranscriptRequests,
       unsubscribeRpcRef,
@@ -556,6 +560,7 @@ export function MobileRemoteProviders({
       bootstrapPending,
       connection,
       sessions,
+      rosterPhase,
       transcriptItems: transcriptView.items,
       transcriptPhase: transcriptView.phase,
       transcriptSessionId: transcript.sessionId,
@@ -607,6 +612,7 @@ export function MobileRemoteProviders({
       bootstrapPending,
       connection,
       sessions,
+      rosterPhase,
       transcriptView.items,
       transcriptView.phase,
       transcriptView.error,

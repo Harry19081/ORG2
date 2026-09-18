@@ -50,9 +50,20 @@ export function useMobileRpcNotifications(
           previous.presence !== "online" &&
           next.presence === "online"
         ) {
+          // Roster failures keep the authenticated transport and recover through
+          // the bounded list owner, independently of the online presence dot.
           const generation = generationRef.current;
-          void requestSessionList(client).catch(() => {
+          void requestSessionList(client).catch((error: unknown) => {
+            // A recreated relay actor can lose initialize state while keeping
+            // the phone socket. Only that authorization failure needs handshake
+            // recovery; ordinary roster failures stay with the list retry owner.
             if (
+              !(
+                error &&
+                typeof error === "object" &&
+                "code" in error &&
+                (error.code === -32001 || error.code === 401)
+              ) ||
               clientRef.current !== client ||
               generationRef.current !== generation ||
               connectionRef.current.presence !== "online"
@@ -60,8 +71,6 @@ export function useMobileRpcNotifications(
               return;
             const config = activeConfigRef.current;
             if (!config || config.pairingCode) return;
-            // A failed recovery must not leave an empty, apparently online UI.
-            // Reuse the bounded, visibility-aware reconnect owner.
             releaseTransport(true);
             setConnection((prev) => ({
               ...prev,
@@ -103,8 +112,8 @@ export function useMobileRpcNotifications(
         const client = clientRef.current;
         if (client) {
           // Keep the previous successful list visible during invalidation.
-          // A failed refresh is retried by the next change/reconnect/manual
-          // refresh; the generation guard prevents an older reply winning.
+          // The list owner exposes errors and retries; generation guards
+          // prevent an old desktop reply from winning.
           void requestSessionList(client).catch(() => undefined);
         }
       }
@@ -114,13 +123,13 @@ export function useMobileRpcNotifications(
       connectionRef,
       setConnection,
       clientRef,
-      generationRef,
       requestSessionList,
       activeSessionRef,
-      refreshSubscribedSession,
       activeConfigRef,
+      generationRef,
       releaseTransport,
       scheduleReconnectRef,
+      refreshSubscribedSession,
       receivePermissionEvent,
       receiveTerminal,
       receiveSnapshot,

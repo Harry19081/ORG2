@@ -117,6 +117,11 @@
     "unavailable": "Connect an updated desktop to view images"
   },
   "sessions": {
+    "loading": "Loading sessions…",
+    "refreshing": "Updating sessions…",
+    "loadFailed": "Could not load sessions",
+    "refreshFailed": "Could not update sessions. Showing the last loaded list",
+    "empty": "No sessions on this desktop yet",
     "all": "All sessions",
     "state": {
       "unknown": "Status awaiting sync",

@@ -836,7 +836,7 @@ describe("MobileRemoteProviders send lifecycle", () => {
     expect(FakeWebSocket.instances).toHaveLength(socketCount);
   });
 
-  it("retains rows and retries a failed presence recovery through the bounded reconnect owner", async () => {
+  it("retains rows and retries a failed presence recovery without closing its authenticated socket", async () => {
     vi.useFakeTimers();
     try {
       const original = mocks.call.getMockImplementation()!;
@@ -857,15 +857,281 @@ describe("MobileRemoteProviders send lifecycle", () => {
         mocks.notificationHandler!("relay/presence", { online: true })
       );
       expect(latestContext!.sessions).toEqual([row]);
-      expect(latestContext!.connection.presence).toBe("offline");
+      expect(latestContext!.connection.presence).toBe("online");
+      expect(latestContext!.rosterPhase).toBe("error");
       expect(FakeWebSocket.instances).toHaveLength(socketCount);
       await act(async () => vi.advanceTimersByTimeAsync(1500));
-      expect(FakeWebSocket.instances).toHaveLength(socketCount + 1);
+      expect(FakeWebSocket.instances).toHaveLength(socketCount);
+      expect(latestContext!.rosterPhase).toBe("ready");
       expect(latestContext!.connection.presence).toBe("online");
       expect(latestContext!.sessions).toEqual([row]);
       const calls = list.mock.calls.length;
       await act(async () => vi.advanceTimersByTimeAsync(60000));
       expect(list).toHaveBeenCalledTimes(calls);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("keeps a newly initialized socket online when its first roster read fails", async () => {
+    vi.useFakeTimers();
+    try {
+      const original = mocks.call.getMockImplementation()!;
+      const list = vi
+        .fn()
+        .mockRejectedValueOnce(new Error("temporary"))
+        .mockResolvedValue({ sessions: [] });
+      mocks.call.mockImplementation((method, params) =>
+        method === "session/list" ? list() : original(method, params)
+      );
+      await act(async () =>
+        latestContext!.connectLive({ wsUrl: "wss://new.example/ws" })
+      );
+      expect(latestContext!.connection.status).toBe("connected");
+      expect(latestContext!.rosterPhase).toBe("error");
+      const sockets = FakeWebSocket.instances.length;
+      await act(async () => vi.advanceTimersByTimeAsync(1000));
+      expect(FakeWebSocket.instances).toHaveLength(sockets);
+      expect(latestContext!.rosterPhase).toBe("ready");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("recovers an empty online roster after a failed list_changed notification", async () => {
+    vi.useFakeTimers();
+    try {
+      const original = mocks.call.getMockImplementation()!;
+      const list = vi
+        .fn()
+        .mockRejectedValueOnce(new Error("temporary"))
+        .mockResolvedValue({
+          sessions: [{ id: "fresh", name: "Fresh", status: "idle" }],
+        });
+      mocks.call.mockImplementation((method, params) =>
+        method === "session/list" ? list() : original(method, params)
+      );
+      const closes = mocks.close.mock.calls.length;
+      await act(async () =>
+        mocks.notificationHandler!("session/list_changed", {})
+      );
+      expect(latestContext!.rosterPhase).toBe("error");
+      expect(latestContext!.connection.presence).toBe("online");
+      expect(latestContext!.sessions).toEqual([]);
+      await act(async () => vi.advanceTimersByTimeAsync(1000));
+      expect(latestContext!.sessions.map((row) => row.id)).toEqual(["fresh"]);
+      expect(latestContext!.rosterPhase).toBe("ready");
+      expect(mocks.close).toHaveBeenCalledTimes(closes);
+      await act(async () => vi.advanceTimersByTimeAsync(60000));
+      expect(list).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("bounds list retries, preserves last good rows, and allows a manual retry", async () => {
+    vi.useFakeTimers();
+    try {
+      const original = mocks.call.getMockImplementation()!;
+      const row = { id: "retained", name: "Retained", status: "idle" };
+      const list = vi
+        .fn()
+        .mockResolvedValueOnce({ sessions: [row] })
+        .mockRejectedValue(new Error("temporary"));
+      mocks.call.mockImplementation((method, params) =>
+        method === "session/list" ? list() : original(method, params)
+      );
+      await act(async () => latestContext!.refreshSessions());
+      await act(async () =>
+        mocks.notificationHandler!("session/list_changed", {})
+      );
+      await act(async () => vi.advanceTimersByTimeAsync(60000));
+      expect(list).toHaveBeenCalledTimes(5);
+      expect(latestContext!.sessions).toEqual([row]);
+      expect(latestContext!.rosterPhase).toBe("error");
+      list.mockResolvedValue({ sessions: [] });
+      await act(async () => latestContext!.refreshSessions());
+      expect(latestContext!.rosterPhase).toBe("ready");
+      expect(latestContext!.sessions).toEqual([]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it.each([
+    Object.assign(new Error("Denied"), { code: -32002 }),
+    { invalid: true },
+  ])(
+    "does not automatically retry a permanent roster failure: %s",
+    async (error) => {
+      vi.useFakeTimers();
+      try {
+        const original = mocks.call.getMockImplementation()!;
+        const list = vi
+          .fn()
+          .mockImplementation(() =>
+            error instanceof Error
+              ? Promise.reject(error)
+              : Promise.resolve({ sessions: "invalid" })
+          );
+        mocks.call.mockImplementation((method, params) =>
+          method === "session/list" ? list() : original(method, params)
+        );
+        await act(async () =>
+          mocks.notificationHandler!("session/list_changed", {})
+        );
+        expect(latestContext!.rosterPhase).toBe("error");
+        await act(async () => vi.advanceTimersByTimeAsync(60000));
+        expect(list).toHaveBeenCalledTimes(1);
+      } finally {
+        vi.useRealTimers();
+      }
+    }
+  );
+
+  it.each([
+    undefined,
+    null,
+    {},
+    [],
+    { sessions: null },
+    { sessions: false },
+    { sessions: [], hasMore: "yes" },
+    { sessions: [], hasMore: true },
+    { sessions: [], hasMore: true, nextOffset: 0 },
+    { sessions: [], nextOffset: -1 },
+    { sessions: [], nextOffset: 0.5 },
+  ])(
+    "retains the last good roster for a malformed list response: %s",
+    async (response) => {
+      vi.useFakeTimers();
+      try {
+        const original = mocks.call.getMockImplementation()!;
+        const row = { id: "retained", name: "Retained", status: "idle" };
+        const list = vi
+          .fn()
+          .mockResolvedValueOnce({ sessions: [row] })
+          .mockResolvedValue(response);
+        mocks.call.mockImplementation((method, params) =>
+          method === "session/list" ? list() : original(method, params)
+        );
+        await act(async () => latestContext!.refreshSessions());
+        await act(async () =>
+          mocks.notificationHandler!("session/list_changed", {})
+        );
+        expect(latestContext!.sessions).toEqual([row]);
+        expect(latestContext!.rosterPhase).toBe("error");
+        await act(async () => vi.advanceTimersByTimeAsync(60000));
+        expect(list).toHaveBeenCalledTimes(2);
+        list.mockResolvedValue({ sessions: [], nextOffset: 0, hasMore: false });
+        await act(async () => latestContext!.refreshSessions());
+        expect(latestContext!.sessions).toEqual([]);
+        expect(latestContext!.rosterPhase).toBe("ready");
+      } finally {
+        vi.useRealTimers();
+      }
+    }
+  );
+
+  it("pauses failed list recovery while hidden and refreshes once on return", async () => {
+    vi.useFakeTimers();
+    let hidden = false;
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      get: () => hidden,
+    });
+    try {
+      const original = mocks.call.getMockImplementation()!;
+      const list = vi
+        .fn()
+        .mockRejectedValueOnce(new Error("temporary"))
+        .mockResolvedValue({ sessions: [] });
+      mocks.call.mockImplementation((method, params) =>
+        method === "session/list" ? list() : original(method, params)
+      );
+      await act(async () =>
+        mocks.notificationHandler!("session/list_changed", {})
+      );
+      hidden = true;
+      await act(async () =>
+        document.dispatchEvent(new Event("visibilitychange"))
+      );
+      await act(async () => vi.advanceTimersByTimeAsync(60000));
+      expect(list).toHaveBeenCalledTimes(1);
+      hidden = false;
+      await act(async () => {
+        document.dispatchEvent(new Event("visibilitychange"));
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      expect(list).toHaveBeenCalledTimes(2);
+      expect(latestContext!.rosterPhase).toBe("ready");
+      await act(async () => vi.advanceTimersByTimeAsync(60000));
+      expect(list).toHaveBeenCalledTimes(2);
+    } finally {
+      Reflect.deleteProperty(document, "hidden");
+      vi.useRealTimers();
+    }
+  });
+
+  it("discards a pending list retry on desktop switch and unmount", async () => {
+    vi.useFakeTimers();
+    try {
+      const original = mocks.call.getMockImplementation()!;
+      const list = vi
+        .fn()
+        .mockRejectedValueOnce(new Error("old desktop"))
+        .mockResolvedValue({
+          sessions: [{ id: "new", name: "New", status: "idle" }],
+        });
+      mocks.call.mockImplementation((method, params) =>
+        method === "session/list" ? list() : original(method, params)
+      );
+      await act(async () =>
+        mocks.notificationHandler!("session/list_changed", {})
+      );
+      await act(async () =>
+        latestContext!.connectLive({ wsUrl: "wss://new.example/ws" })
+      );
+      await act(async () => vi.advanceTimersByTimeAsync(60000));
+      expect(list).toHaveBeenCalledTimes(2);
+      expect(latestContext!.sessions.map((row) => row.id)).toEqual(["new"]);
+      list.mockRejectedValue(new Error("temporary"));
+      await act(async () =>
+        mocks.notificationHandler!("session/list_changed", {})
+      );
+      await act(async () => root.unmount());
+      await act(async () => vi.advanceTimersByTimeAsync(60000));
+      expect(list).toHaveBeenCalledTimes(3);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("re-initializes a recreated relay actor after an unauthorized presence recovery", async () => {
+    vi.useFakeTimers();
+    try {
+      const original = mocks.call.getMockImplementation()!;
+      const list = vi
+        .fn()
+        .mockRejectedValueOnce(
+          Object.assign(new Error("Initialize first"), { code: -32001 })
+        )
+        .mockResolvedValue({ sessions: [] });
+      mocks.call.mockImplementation((method, params) =>
+        method === "session/list" ? list() : original(method, params)
+      );
+      const sockets = FakeWebSocket.instances.length;
+      await act(async () =>
+        mocks.notificationHandler!("relay/presence", { online: false })
+      );
+      await act(async () =>
+        mocks.notificationHandler!("relay/presence", { online: true })
+      );
+      expect(latestContext!.connection.presence).toBe("offline");
+      await act(async () => vi.advanceTimersByTimeAsync(1500));
+      expect(FakeWebSocket.instances).toHaveLength(sockets + 1);
+      expect(latestContext!.connection.presence).toBe("online");
+      expect(latestContext!.rosterPhase).toBe("ready");
     } finally {
       vi.useRealTimers();
     }
@@ -897,6 +1163,7 @@ describe("MobileRemoteProviders send lifecycle", () => {
     await act(async () => oldRead.reject(new Error("Old actor closed")));
     expect(mocks.close).toHaveBeenCalledTimes(closes);
     expect(latestContext!.connection.presence).toBe("online");
+    expect(latestContext!.rosterPhase).toBe("ready");
     expect(latestContext!.sessions.map((row) => row.id)).toEqual([
       "new-desktop",
     ]);

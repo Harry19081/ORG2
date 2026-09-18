@@ -69,7 +69,10 @@ export function createMobileRpcClient(
       waiter.cleanup();
       if (parsed.error) {
         waiter.reject(
-          new Error(parsed.error.message || `RPC error ${parsed.error.code}`)
+          Object.assign(
+            new Error(parsed.error.message || `RPC error ${parsed.error.code}`),
+            { code: parsed.error.code }
+          )
         );
         return;
       }
