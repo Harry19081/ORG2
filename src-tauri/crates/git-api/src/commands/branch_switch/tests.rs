@@ -56,6 +56,7 @@ fn clean_switch_and_same_branch_do_not_create_snapshots() {
     let f = Fixture::new();
     let result = f.execute(Strategy::Leave);
     assert_eq!(result.outcome, Outcome::Switched);
+    assert_eq!(result.code, "");
     assert!(result.snapshot_id.is_none());
     assert_eq!(branch(&open(&f.0).unwrap()), "develop");
     assert_eq!(git(&f.0, &["stash", "list"]).unwrap(), "");
@@ -125,6 +126,7 @@ fn same_status_new_content_invalidates_preparation() {
     )
     .unwrap();
     assert_eq!(r.outcome, Outcome::Blocked);
+    assert_eq!(r.code, "stale");
     assert_eq!(
         fs::read_to_string(f.0.join("file.txt")).unwrap(),
         "second\n"
@@ -328,10 +330,9 @@ fn ongoing_merge_blocks_before_saving() {
     let repo = open(&f.0).unwrap();
     fs::write(repo.path().join("MERGE_HEAD"), head(&repo).unwrap()).unwrap();
     f.write("file.txt", "mine\n");
-    assert_eq!(
-        prepare(&f.0, &f.target()).unwrap().blocked.unwrap().code,
-        "operation_in_progress"
-    );
+    let block = prepare(&f.0, &f.target()).unwrap().blocked.unwrap();
+    assert_eq!(block.code, "operation_in_progress");
+    assert_eq!(block.detail.as_deref(), Some("merge"));
     assert_eq!(git(&f.0, &["stash", "list"]).unwrap(), "");
 }
 #[test]
@@ -402,4 +403,40 @@ fn directory_symlinks_are_saved_as_links_not_treated_as_nested_repositories() {
         git(&f.0, &["show", &format!("{oid}:link")]).unwrap(),
         ".git/objects"
     );
+}
+
+#[test]
+fn leave_reports_a_localizable_code() {
+    let f = Fixture::new();
+    f.write("file.txt", "mine\n");
+    let r = f.execute(Strategy::Leave);
+    assert_eq!(r.outcome, Outcome::Switched);
+    assert_eq!(r.code, "saved_on_previous");
+}
+#[test]
+fn diverged_upstream_blocks_with_its_own_code() {
+    let f = Fixture::new();
+    git(
+        &f.0,
+        &[
+            "remote",
+            "add",
+            "origin",
+            "https://example.invalid/repo.git",
+        ],
+    )
+    .unwrap();
+    git(&f.0, &["update-ref", "refs/remotes/origin/develop", "HEAD"]).unwrap();
+    let block = prepare(
+        &f.0,
+        &SwitchTarget {
+            branch: "origin/develop".into(),
+            create: false,
+            start_point: None,
+        },
+    )
+    .unwrap()
+    .blocked
+    .unwrap();
+    assert_eq!(block.code, "upstream_mismatch");
 }

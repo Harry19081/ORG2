@@ -1535,15 +1535,42 @@
       "bringDescription": "커밋하지 않은 변경 사항을 대상 브랜치로 가져갑니다",
       "worktreeTitle": "이 브랜치는 다른 작업 트리에서 열려 있습니다",
       "openWorktree": "작업 트리 열기",
-      "activeTask": "작업이 이 작업 트리를 사용 중입니다",
-      "activeTaskDescription": "브랜치를 전환하기 전에 작업이 끝날 때까지 기다리거나 직접 중지하거나 다른 작업 트리를 사용하세요",
+      "activeTask": "이 워크트리에서 작업이 실행 중입니다",
+      "activeTaskDescription": "지금 전환하면 에이전트가 작업 중인 파일이 바뀝니다",
+      "switchAnyway": "그래도 전환",
+      "switchedTo": "{{branch}}(으)로 전환됨",
       "saveTitle": "전환 전에 파일 저장",
       "saveDescription": "열린 파일에 저장하지 않은 편집 내용이 있습니다. 변경 사항을 어디에 보관할지 선택하기 전에 저장하세요",
       "saveContinue": "모두 저장하고 계속",
       "saveFailed": "모든 파일을 저장하지 못했습니다",
       "multipleBuffers": "이 파일은 여러 편집기에서 수정되었습니다. 전환 전에 해당 편집기에서 저장하거나 닫으세요",
       "editedWhileSaving": "저장하는 동안 파일이 수정되었습니다. 최신 변경 사항을 확인한 후 다시 시도하세요",
-      "savePreview": "브랜치를 전환하기 전에 스프레드시트 편집기에서 편집 내용을 저장하거나 버리세요"
+      "savePreview": "브랜치를 전환하기 전에 스프레드시트 편집기에서 편집 내용을 저장하거나 버리세요",
+      "messages": {
+        "detached_head": "전환하기 전에 현재 커밋에서 브랜치를 만들어 분리된 작업을 계속 참조할 수 있게 하세요",
+        "unborn": "저장된 브랜치 변경 사항을 사용하기 전에 첫 커밋을 만드세요",
+        "ignored_collision": "무시된 파일이 덮어써집니다. 전환하기 전에 다른 곳으로 옮기세요",
+        "worktree_branch_in_use": "이 브랜치는 이미 다른 작업 트리에서 열려 있습니다",
+        "invalid_branch_name": "유효한 브랜치 이름을 선택하세요",
+        "branch_exists": "해당 브랜치가 이미 존재합니다",
+        "branch_not_found": "브랜치를 찾을 수 없거나 모호합니다. 브랜치를 새로고침하고 명시적인 리모트 브랜치를 선택하세요",
+        "upstream_mismatch": "해당 이름의 로컬 브랜치가 다른 업스트림을 추적하고 있습니다. 로컬 브랜치를 명시적으로 선택하세요",
+        "operation_merge": "브랜치를 전환하기 전에 병합을 완료하거나 중단하세요",
+        "operation_rebase": "브랜치를 전환하기 전에 리베이스를 완료하거나 중단하세요",
+        "operation_cherry_pick": "브랜치를 전환하기 전에 체리픽을 완료하거나 중단하세요",
+        "operation_revert": "브랜치를 전환하기 전에 리버트를 완료하거나 중단하세요",
+        "operation_other": "브랜치를 전환하기 전에 현재 Git 작업을 완료하세요",
+        "stale": "대화상자가 열려 있는 동안 파일이나 브랜치가 변경되었습니다. 최신 변경 사항을 확인한 후 다시 시도하세요",
+        "save_failed": "변경 사항 저장을 완료하지 못했습니다: {{detail}}. 다시 시도하기 전에 작업 트리와 저장된 변경 사항을 확인하세요",
+        "changed_while_saving": "저장하는 동안 파일이 변경되었습니다. 체크아웃을 시도하지 않았습니다. 스냅샷을 사용할 수 있습니다",
+        "checkout_failed_restored": "체크아웃에 실패했습니다. 변경 사항이 복원되었습니다: {{detail}}",
+        "checkout_failed_saved": "체크아웃에 실패했습니다. 변경 사항이 저장되어 있습니다: {{detail}}",
+        "worktree_changed": "체크아웃 중에 작업 트리가 변경되었습니다. 원래 변경 사항은 저장되어 있습니다. 복원하기 전에 현재 파일을 확인하세요",
+        "restore_conflicts": "{{branch}}(으)로 전환되었습니다. 일부 변경 사항을 복원하지 못했습니다: {{detail}}. 원래 변경 사항은 저장되어 있습니다",
+        "saved_on_previous": "변경 사항이 이전 브랜치에 저장되었습니다",
+        "brought": "변경 사항이 이 브랜치까지 따라왔습니다",
+        "worktree_missing": "워크트리가 더 이상 없습니다. 새로고침 후 다시 시도하세요"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "브랜치 {{count}}개 삭제됨",
         "deletedCount_other": "브랜치 {{count}}개 삭제됨",
-        "failedDeleteList": "삭제 실패: {{branches}}"
+        "failedDeleteList": "삭제 실패: {{branches}}",
+        "failedDelete": "브랜치 \"{{branch}}\"을(를) 삭제하지 못했습니다",
+        "prNoHeadBranch": "Pull request에 head 브랜치가 없습니다",
+        "readBranchesFailed": "로컬 브랜치를 읽지 못했습니다",
+        "createPrBranchFailed": "PR 브랜치를 만들지 못했습니다",
+        "readRemotesFailed": "저장소 원격을 읽지 못했습니다"
       },
       "labels": {
+        "defaultBranches": "기본 브랜치",
         "otherBranches": "다른 브랜치",
         "current": "현재",
         "recent": "Recent",

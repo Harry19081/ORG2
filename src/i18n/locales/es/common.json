@@ -1535,15 +1535,42 @@
       "bringDescription": "Lleva tus cambios sin confirmar a la rama de destino",
       "worktreeTitle": "La rama está abierta en otro árbol de trabajo",
       "openWorktree": "Abrir árbol de trabajo",
-      "activeTask": "Una tarea está usando este árbol de trabajo",
-      "activeTaskDescription": "Espera a que termine la tarea, detenla explícitamente o usa otro árbol de trabajo antes de cambiar de rama",
+      "activeTask": "Hay una tarea en ejecución en este worktree",
+      "activeTaskDescription": "Cambiar ahora modifica los archivos con los que trabaja el agente",
+      "switchAnyway": "Cambiar de todos modos",
+      "switchedTo": "Cambiado a {{branch}}",
       "saveTitle": "Guardar archivos antes de cambiar",
       "saveDescription": "Los archivos abiertos tienen cambios sin guardar. Guárdalos antes de elegir dónde conservar tus cambios",
       "saveContinue": "Guardar todo y continuar",
       "saveFailed": "No se pudieron guardar todos los archivos",
       "multipleBuffers": "Este archivo tiene cambios en varios editores. Guarda o cierra esos editores antes de cambiar",
       "editedWhileSaving": "Se editaron archivos durante el guardado. Revisa los últimos cambios e inténtalo de nuevo",
-      "savePreview": "Guarda o descarta los cambios en el editor de hojas de cálculo antes de cambiar de rama"
+      "savePreview": "Guarda o descarta los cambios en el editor de hojas de cálculo antes de cambiar de rama",
+      "messages": {
+        "detached_head": "Crea una rama a partir del commit actual antes de cambiar, para que el trabajo con HEAD separada siga siendo accesible",
+        "unborn": "Crea el primer commit antes de usar los cambios de rama guardados",
+        "ignored_collision": "Se sobrescribiría un archivo ignorado. Muévelo antes de cambiar",
+        "worktree_branch_in_use": "Esta rama ya está abierta en otro árbol de trabajo",
+        "invalid_branch_name": "Elige un nombre de rama válido",
+        "branch_exists": "Esa rama ya existe",
+        "branch_not_found": "Rama no encontrada o ambigua. Actualiza las ramas y selecciona una rama remota explícita",
+        "upstream_mismatch": "Una rama local con ese nombre sigue un upstream diferente. Elige la rama local explícitamente",
+        "operation_merge": "Termina o cancela la fusión antes de cambiar de rama",
+        "operation_rebase": "Termina o cancela el rebase antes de cambiar de rama",
+        "operation_cherry_pick": "Termina o cancela el cherry-pick antes de cambiar de rama",
+        "operation_revert": "Termina o cancela el revert antes de cambiar de rama",
+        "operation_other": "Termina la operación de Git actual antes de cambiar de rama",
+        "stale": "Los archivos o las ramas cambiaron mientras el diálogo estaba abierto. Revisa los últimos cambios e inténtalo de nuevo",
+        "save_failed": "No se pudo terminar de guardar los cambios: {{detail}}. Revisa el árbol de trabajo y los cambios guardados antes de reintentar",
+        "changed_while_saving": "Los archivos cambiaron mientras se guardaban. No se intentó el checkout; tu snapshot está disponible",
+        "checkout_failed_restored": "Error en el checkout; tus cambios se restauraron: {{detail}}",
+        "checkout_failed_saved": "Error en el checkout. Tus cambios están guardados: {{detail}}",
+        "worktree_changed": "El árbol de trabajo cambió durante el checkout. Tus cambios originales están guardados; revisa los archivos actuales antes de restaurar",
+        "restore_conflicts": "Cambiado a {{branch}}. Algunos cambios no se pudieron restaurar: {{detail}}. Tus cambios originales están guardados",
+        "saved_on_previous": "Cambios guardados en la rama anterior",
+        "brought": "Tus cambios te siguieron a esta rama",
+        "worktree_missing": "El worktree ya no existe. Actualiza e inténtalo de nuevo"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "{{count}} rama eliminada",
         "deletedCount_other": "{{count}} ramas eliminadas",
-        "failedDeleteList": "No se pudo eliminar: {{branches}}"
+        "failedDeleteList": "No se pudo eliminar: {{branches}}",
+        "failedDelete": "No se pudo eliminar la rama \"{{branch}}\"",
+        "prNoHeadBranch": "La pull request no tiene rama head",
+        "readBranchesFailed": "No se pudieron leer las ramas locales",
+        "createPrBranchFailed": "No se pudo crear la rama de la PR",
+        "readRemotesFailed": "No se pudieron leer los remotos del repositorio"
       },
       "labels": {
+        "defaultBranches": "Ramas predeterminadas",
         "otherBranches": "Otras ramas",
         "current": "Actual",
         "recent": "Recientes",

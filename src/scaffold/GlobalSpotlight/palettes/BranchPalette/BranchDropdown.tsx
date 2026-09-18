@@ -184,12 +184,24 @@ export const BranchDropdown: React.FC<BranchDropdownProps> = ({
   const sections = useMemo(() => {
     const categorized = categorizeBranches(filteredBranches);
     const result: Array<{
-      key: "recent" | "worktrees" | "other";
+      key: "default" | "recent" | "worktrees" | "other";
       label: string | null;
       items: BranchItem[];
     }> = [];
+    if (categorized.default.length > 0) {
+      result.push({
+        key: "default",
+        label: t("selectors.branch.labels.defaultBranches"),
+        items: categorized.default,
+      });
+    }
     if (categorized.recent.length > 0) {
-      result.push({ key: "recent", label: null, items: categorized.recent });
+      // Recent needs a heading only when Default sits above it.
+      result.push({
+        key: "recent",
+        label: result.length > 0 ? t("selectors.branch.labels.recent") : null,
+        items: categorized.recent,
+      });
     }
     if (categorized.worktrees.length > 0) {
       result.push({
@@ -198,12 +210,11 @@ export const BranchDropdown: React.FC<BranchDropdownProps> = ({
         items: categorized.worktrees,
       });
     }
-    const tail = [...categorized.default, ...categorized.other];
-    if (tail.length > 0) {
+    if (categorized.other.length > 0) {
       result.push({
         key: "other",
         label: t("selectors.branch.labels.otherBranches"),
-        items: tail,
+        items: categorized.other,
       });
     }
     return result;

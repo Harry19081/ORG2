@@ -1535,15 +1535,42 @@
       "bringDescription": "Przenieś niezatwierdzone zmiany do gałęzi docelowej",
       "worktreeTitle": "Gałąź jest otwarta w innym drzewie roboczym",
       "openWorktree": "Otwórz drzewo robocze",
-      "activeTask": "Zadanie korzysta z tego drzewa roboczego",
-      "activeTaskDescription": "Przed przełączeniem gałęzi poczekaj na zakończenie zadania, zatrzymaj je samodzielnie lub użyj innego drzewa roboczego",
+      "activeTask": "W tym worktree działa zadanie",
+      "activeTaskDescription": "Przełączenie teraz zmieni pliki, nad którymi pracuje agent",
+      "switchAnyway": "Przełącz mimo to",
+      "switchedTo": "Przełączono na {{branch}}",
       "saveTitle": "Zapisz pliki przed przełączeniem",
       "saveDescription": "Otwarte pliki zawierają niezapisane zmiany. Zapisz je, zanim wybierzesz, gdzie zachować zmiany",
       "saveContinue": "Zapisz wszystko i kontynuuj",
       "saveFailed": "Nie udało się zapisać wszystkich plików",
       "multipleBuffers": "Ten plik ma zmiany w więcej niż jednym edytorze. Zapisz lub zamknij te edytory przed przełączeniem",
       "editedWhileSaving": "Pliki zostały zmienione podczas zapisywania. Sprawdź najnowsze zmiany i spróbuj ponownie",
-      "savePreview": "Zapisz lub odrzuć zmiany w edytorze arkuszy przed przełączeniem gałęzi"
+      "savePreview": "Zapisz lub odrzuć zmiany w edytorze arkuszy przed przełączeniem gałęzi",
+      "messages": {
+        "detached_head": "Utwórz gałąź z bieżącego commita przed przełączeniem, aby odłączona praca pozostała dostępna",
+        "unborn": "Utwórz pierwszy commit przed użyciem zapisanych zmian gałęzi",
+        "ignored_collision": "Ignorowany plik zostałby nadpisany. Przenieś go, zanim przełączysz",
+        "worktree_branch_in_use": "Ta gałąź jest już otwarta w innym drzewie roboczym",
+        "invalid_branch_name": "Wybierz prawidłową nazwę gałęzi",
+        "branch_exists": "Ta gałąź już istnieje",
+        "branch_not_found": "Nie znaleziono gałęzi lub jest niejednoznaczna. Odśwież gałęzie i wybierz jawnie gałąź zdalną",
+        "upstream_mismatch": "Lokalna gałąź o tej nazwie śledzi inny upstream. Wybierz gałąź lokalną jawnie",
+        "operation_merge": "Zakończ lub przerwij scalanie przed przełączeniem gałęzi",
+        "operation_rebase": "Zakończ lub przerwij rebase przed przełączeniem gałęzi",
+        "operation_cherry_pick": "Zakończ lub przerwij cherry-pick przed przełączeniem gałęzi",
+        "operation_revert": "Zakończ lub przerwij revert przed przełączeniem gałęzi",
+        "operation_other": "Zakończ bieżącą operację Git przed przełączeniem gałęzi",
+        "stale": "Pliki lub gałęzie zmieniły się, gdy okno dialogowe było otwarte. Sprawdź najnowsze zmiany i spróbuj ponownie",
+        "save_failed": "Nie udało się dokończyć zapisywania zmian: {{detail}}. Sprawdź drzewo robocze i zapisane zmiany przed ponowną próbą",
+        "changed_while_saving": "Pliki zmieniły się podczas zapisywania. Nie podjęto próby checkout; twój snapshot jest dostępny",
+        "checkout_failed_restored": "Checkout nie powiódł się; twoje zmiany zostały przywrócone: {{detail}}",
+        "checkout_failed_saved": "Checkout nie powiódł się. Twoje zmiany są zapisane: {{detail}}",
+        "worktree_changed": "Drzewo robocze zmieniło się podczas checkout. Twoje oryginalne zmiany są zapisane; sprawdź bieżące pliki przed przywróceniem",
+        "restore_conflicts": "Przełączono na {{branch}}. Niektórych zmian nie udało się przywrócić: {{detail}}. Twoje oryginalne zmiany są zapisane",
+        "saved_on_previous": "Zmiany zapisane na poprzedniej gałęzi",
+        "brought": "Twoje zmiany podążyły za tobą na tę gałąź",
+        "worktree_missing": "Worktree już nie istnieje. Odśwież i spróbuj ponownie"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "Usunięto {{count}} gałąź",
         "deletedCount_other": "Usunięto {{count}} gałęzi",
-        "failedDeleteList": "Nie udało się usunąć: {{branches}}"
+        "failedDeleteList": "Nie udało się usunąć: {{branches}}",
+        "failedDelete": "Nie udało się usunąć gałęzi „{{branch}}”",
+        "prNoHeadBranch": "Pull request nie ma gałęzi head",
+        "readBranchesFailed": "Nie udało się odczytać gałęzi lokalnych",
+        "createPrBranchFailed": "Nie udało się utworzyć gałęzi PR",
+        "readRemotesFailed": "Nie udało się odczytać zdalnych repozytorium"
       },
       "labels": {
+        "defaultBranches": "Gałęzie domyślne",
         "otherBranches": "Inne gałęzie",
         "current": "Bieżąca",
         "recent": "Ostatnie",

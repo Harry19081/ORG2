@@ -1535,15 +1535,42 @@
       "bringDescription": "Emportez vos modifications non commitées vers la branche de destination",
       "worktreeTitle": "La branche est ouverte dans un autre arbre de travail",
       "openWorktree": "Ouvrir l’arbre de travail",
-      "activeTask": "Une tâche utilise cet arbre de travail",
-      "activeTaskDescription": "Attendez la fin de la tâche, arrêtez-la explicitement ou utilisez un autre arbre de travail avant de changer de branche",
+      "activeTask": "Une tâche est en cours dans ce worktree",
+      "activeTaskDescription": "Changer maintenant modifie les fichiers sur lesquels l’agent travaille",
+      "switchAnyway": "Changer quand même",
+      "switchedTo": "Passé sur {{branch}}",
       "saveTitle": "Enregistrer les fichiers avant de changer",
       "saveDescription": "Des fichiers ouverts contiennent des modifications non enregistrées. Enregistrez-les avant de choisir où conserver vos modifications",
       "saveContinue": "Tout enregistrer et continuer",
       "saveFailed": "Impossible d’enregistrer tous les fichiers",
       "multipleBuffers": "Ce fichier a été modifié dans plusieurs éditeurs. Enregistrez ou fermez ces éditeurs avant de changer de branche",
       "editedWhileSaving": "Des fichiers ont été modifiés pendant l’enregistrement. Vérifiez les dernières modifications et réessayez",
-      "savePreview": "Enregistrez ou abandonnez les modifications dans le tableur avant de changer de branche"
+      "savePreview": "Enregistrez ou abandonnez les modifications dans le tableur avant de changer de branche",
+      "messages": {
+        "detached_head": "Crée une branche à partir du commit actuel avant de changer, afin que le travail en HEAD détachée reste accessible",
+        "unborn": "Crée le premier commit avant d'utiliser les modifications de branche enregistrées",
+        "ignored_collision": "Un fichier ignoré serait écrasé. Déplacez-le avant de changer",
+        "worktree_branch_in_use": "Cette branche est déjà ouverte dans un autre arbre de travail",
+        "invalid_branch_name": "Choisissez un nom de branche valide",
+        "branch_exists": "Cette branche existe déjà",
+        "branch_not_found": "Branche introuvable ou ambiguë. Actualisez les branches et sélectionnez une branche distante explicite",
+        "upstream_mismatch": "Une branche locale portant ce nom suit un upstream différent. Choisissez explicitement la branche locale",
+        "operation_merge": "Terminez ou annulez la fusion avant de changer de branche",
+        "operation_rebase": "Terminez ou annulez le rebase avant de changer de branche",
+        "operation_cherry_pick": "Terminez ou annulez le cherry-pick avant de changer de branche",
+        "operation_revert": "Terminez ou annulez le revert avant de changer de branche",
+        "operation_other": "Terminez l'opération Git en cours avant de changer de branche",
+        "stale": "Les fichiers ou les branches ont changé pendant que la boîte de dialogue était ouverte. Vérifiez les dernières modifications et réessayez",
+        "save_failed": "Impossible de terminer l'enregistrement des modifications : {{detail}}. Vérifiez le répertoire de travail et les modifications enregistrées avant de réessayer",
+        "changed_while_saving": "Des fichiers ont changé pendant l'enregistrement. Le checkout n'a pas été tenté ; votre snapshot est disponible",
+        "checkout_failed_restored": "Échec du checkout ; vos modifications ont été restaurées : {{detail}}",
+        "checkout_failed_saved": "Échec du checkout. Vos modifications sont enregistrées : {{detail}}",
+        "worktree_changed": "Le répertoire de travail a changé pendant le checkout. Vos modifications d'origine sont enregistrées ; vérifiez les fichiers actuels avant de restaurer",
+        "restore_conflicts": "Passé sur {{branch}}. Certaines modifications n'ont pas pu être restaurées : {{detail}}. Vos modifications d'origine sont enregistrées",
+        "saved_on_previous": "Modifications enregistrées sur la branche précédente",
+        "brought": "Vos modifications vous ont suivi sur cette branche",
+        "worktree_missing": "Le worktree n’existe plus. Actualisez et réessayez"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "{{count}} branche supprimée",
         "deletedCount_other": "{{count}} branches supprimées",
-        "failedDeleteList": "Échec de la suppression : {{branches}}"
+        "failedDeleteList": "Échec de la suppression : {{branches}}",
+        "failedDelete": "Impossible de supprimer la branche « {{branch}} »",
+        "prNoHeadBranch": "La pull request n’a pas de branche head",
+        "readBranchesFailed": "Impossible de lire les branches locales",
+        "createPrBranchFailed": "Impossible de créer la branche de la PR",
+        "readRemotesFailed": "Impossible de lire les remotes du dépôt"
       },
       "labels": {
+        "defaultBranches": "Branches par défaut",
         "otherBranches": "Autres branches",
         "current": "Actuelle",
         "recent": "Récentes",

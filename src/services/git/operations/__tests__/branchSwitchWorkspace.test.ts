@@ -53,18 +53,37 @@ beforeEach(() => {
   mocks.diffs = [];
   mocks.question.mockResolvedValue(true);
 });
-it("blocks a running task before asking to save", async () => {
+it("asks once before switching under a running task", async () => {
   mocks.sessions = [{ status: "running", repoPath: "/repo" }];
-  expect(await ensureSwitchWorkspaceReady(scope)).toBe(false);
-  expect(mocks.question).toHaveBeenCalledWith(
-    "A task is using this worktree",
-    expect.any(String)
+  expect(
+    await ensureSwitchWorkspaceReady(scope, { confirmActiveTask: true })
+  ).toBe(true);
+  expect(mocks.question).toHaveBeenCalledExactlyOnceWith(
+    "A task is running in this worktree",
+    expect.any(String),
+    "Switch anyway"
   );
+});
+it("cancelling the running-task warning stops the switch", async () => {
+  mocks.sessions = [{ status: "running", repoPath: "/repo" }];
+  mocks.question.mockResolvedValue(false);
+  mocks.cached = ["/repo/file"];
+  expect(
+    await ensureSwitchWorkspaceReady(scope, { confirmActiveTask: true })
+  ).toBe(false);
   expect(mocks.saveCached).not.toHaveBeenCalled();
 });
-it("does not block for a task in a sibling worktree", async () => {
-  mocks.sessions = [{ status: "running", repoPath: "/repo-other" }];
+it("does not repeat the running-task warning on later checks", async () => {
+  mocks.sessions = [{ status: "running", repoPath: "/repo" }];
   expect(await ensureSwitchWorkspaceReady(scope)).toBe(true);
+  expect(mocks.question).not.toHaveBeenCalled();
+});
+it("does not warn for a task in a sibling worktree", async () => {
+  mocks.sessions = [{ status: "running", repoPath: "/repo-other" }];
+  expect(
+    await ensureSwitchWorkspaceReady(scope, { confirmActiveTask: true })
+  ).toBe(true);
+  expect(mocks.question).not.toHaveBeenCalled();
 });
 it("awaits a mounted editor save before allowing checkout", async () => {
   let dirty = true;

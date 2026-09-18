@@ -1366,15 +1366,42 @@
       "bringDescription": "Move your uncommitted changes to the destination branch",
       "worktreeTitle": "Branch is open in another worktree",
       "openWorktree": "Open worktree",
-      "activeTask": "A task is using this worktree",
-      "activeTaskDescription": "Wait for the task to finish, stop it explicitly, or use another worktree before switching branches",
+      "activeTask": "A task is running in this worktree",
+      "activeTaskDescription": "Switching now changes the files the agent is working on",
+      "switchAnyway": "Switch anyway",
+      "switchedTo": "Switched to {{branch}}",
       "saveTitle": "Save files before switching",
       "saveDescription": "Open files have unsaved edits. Save them before choosing where to keep your changes",
       "saveContinue": "Save all and continue",
       "saveFailed": "Could not save all files",
       "multipleBuffers": "This file has edits in more than one editor. Save or close those editors before switching",
       "editedWhileSaving": "Files were edited while saving. Review the latest edits and try again",
-      "savePreview": "Save or discard edits in the spreadsheet editor before switching branches"
+      "savePreview": "Save or discard edits in the spreadsheet editor before switching branches",
+      "messages": {
+        "detached_head": "Create a branch from the current commit before switching, so detached work remains reachable",
+        "unborn": "Create the first commit before using saved branch changes",
+        "ignored_collision": "An ignored file would be overwritten. Move it out of the way before switching",
+        "worktree_branch_in_use": "This branch is already open in another worktree",
+        "invalid_branch_name": "Choose a valid branch name",
+        "branch_exists": "That branch already exists",
+        "branch_not_found": "Branch not found or ambiguous. Refresh branches and select an explicit remote branch",
+        "upstream_mismatch": "A local branch with that name tracks a different upstream. Choose the local branch explicitly",
+        "operation_merge": "Finish or abort the merge before switching branches",
+        "operation_rebase": "Finish or abort the rebase before switching branches",
+        "operation_cherry_pick": "Finish or abort the cherry-pick before switching branches",
+        "operation_revert": "Finish or abort the revert before switching branches",
+        "operation_other": "Finish the current Git operation before switching branches",
+        "stale": "The files or branches changed while the dialog was open. Review the latest changes and try again",
+        "save_failed": "Could not finish saving changes: {{detail}}. Review the working tree and saved changes before retrying",
+        "changed_while_saving": "Files changed while saving. Checkout was not attempted; your snapshot is available",
+        "checkout_failed_restored": "Checkout failed; your changes were restored: {{detail}}",
+        "checkout_failed_saved": "Checkout failed. Your changes are saved: {{detail}}",
+        "worktree_changed": "The worktree changed during checkout. Your original changes are saved; review the current files before restoring",
+        "restore_conflicts": "Switched to {{branch}}. Some changes could not be restored: {{detail}}. Your original changes are saved",
+        "saved_on_previous": "Changes saved on the previous branch",
+        "brought": "Your changes followed you to this branch",
+        "worktree_missing": "The worktree no longer exists. Refresh and try again"
+      }
     }
   },
   "selectors": {
@@ -1496,9 +1523,15 @@
       "messages": {
         "deletedCount_one": "Deleted {{count}} branch",
         "deletedCount_other": "Deleted {{count}} branches",
-        "failedDeleteList": "Failed to delete: {{branches}}"
+        "failedDeleteList": "Failed to delete: {{branches}}",
+        "failedDelete": "Failed to delete branch \"{{branch}}\"",
+        "prNoHeadBranch": "Pull request has no head branch",
+        "readBranchesFailed": "Could not read local branches",
+        "createPrBranchFailed": "Could not create PR branch",
+        "readRemotesFailed": "Could not read repository remotes"
       },
       "labels": {
+        "defaultBranches": "Default Branches",
         "otherBranches": "Other Branches",
         "current": "Current",
         "recent": "Recent",

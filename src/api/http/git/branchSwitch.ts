@@ -18,8 +18,10 @@ export interface SwitchPreparation {
   default_strategy: SwitchStrategy;
   same_branch: boolean;
   blocked: {
+    /** Stable localization key; `message` is the English fallback. */
     code: string;
     message: string;
+    detail?: string | null;
     worktree_path: string | null;
   } | null;
 }
@@ -30,7 +32,10 @@ export interface BranchSwitchResult {
     | "blocked"
     | "recovery_required";
   current_branch: string;
+  /** Stable localization key, empty for a plain switch. */
+  code?: string;
   message: string;
+  detail?: string | null;
   snapshot_id: string | null;
   conflicts: string[];
 }

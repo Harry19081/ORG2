@@ -60,27 +60,42 @@ pub fn head(repo: &Repository) -> Result<String, String> {
 }
 
 pub fn operation_block(repo: &Repository) -> Option<Blocked> {
-    let message = match repo.state() {
+    let (operation, message) = match repo.state() {
         RepositoryState::Clean => return None,
-        RepositoryState::Merge => "Finish or abort the merge before switching branches",
+        RepositoryState::Merge => (
+            "merge",
+            "Finish or abort the merge before switching branches",
+        ),
         RepositoryState::Rebase
         | RepositoryState::RebaseInteractive
-        | RepositoryState::RebaseMerge => "Finish or abort the rebase before switching branches",
-        RepositoryState::CherryPick | RepositoryState::CherryPickSequence => {
-            "Finish or abort the cherry-pick before switching branches"
-        }
-        RepositoryState::Revert | RepositoryState::RevertSequence => {
-            "Finish or abort the revert before switching branches"
-        }
-        _ => "Finish the current Git operation before switching branches",
+        | RepositoryState::RebaseMerge => (
+            "rebase",
+            "Finish or abort the rebase before switching branches",
+        ),
+        RepositoryState::CherryPick | RepositoryState::CherryPickSequence => (
+            "cherry_pick",
+            "Finish or abort the cherry-pick before switching branches",
+        ),
+        RepositoryState::Revert | RepositoryState::RevertSequence => (
+            "revert",
+            "Finish or abort the revert before switching branches",
+        ),
+        _ => (
+            "other",
+            "Finish the current Git operation before switching branches",
+        ),
     };
-    Some(blocked("operation_in_progress", message))
+    Some(Blocked {
+        detail: Some(operation.into()),
+        ..blocked("operation_in_progress", message)
+    })
 }
 
 pub fn blocked(code: &str, message: &str) -> Blocked {
     Blocked {
         code: code.into(),
         message: message.into(),
+        detail: None,
         worktree_path: None,
     }
 }

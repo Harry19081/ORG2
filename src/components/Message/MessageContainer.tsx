@@ -10,6 +10,10 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import {
+  SPOTLIGHT_TOP_OFFSET,
+  readSpotlightAnchorStyle,
+} from "@src/util/ui/spotlightAnchor";
 
 import {
   DEFAULT_DURATION,
@@ -239,14 +243,16 @@ const MessageContainer: FC<MessageContainerProps> = ({
 
   return (
     <div className="h-full w-full">
-      <div
-        data-message-placement="spotlight"
-        className="pointer-events-none absolute inset-x-0 top-2 flex justify-center px-4 max-[480px]:px-2"
-      >
-        <div className="flex w-full max-w-[680px] flex-col gap-2">
+      {/* Anchored like the Spotlight palette: over the content area, same width. */}
+      {messagesByPlacement("spotlight").length > 0 && (
+        <div
+          data-message-placement="spotlight"
+          className="pointer-events-none absolute flex -translate-x-1/2 flex-col gap-2"
+          style={{ top: SPOTLIGHT_TOP_OFFSET, ...readSpotlightAnchorStyle() }}
+        >
           {renderMessages("spotlight")}
         </div>
-      </div>
+      )}
       <div
         data-message-placement="bottom"
         className="pointer-events-none absolute right-4 bottom-4 flex w-auto max-w-[380px] flex-col-reverse items-end gap-2 max-[480px]:right-2 max-[480px]:bottom-2 max-[480px]:left-2 max-[480px]:max-w-full"

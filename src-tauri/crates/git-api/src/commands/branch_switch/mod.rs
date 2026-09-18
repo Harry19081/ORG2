@@ -14,10 +14,19 @@ struct Target {
     oid: String,
     tracking: Option<String>,
 }
-fn resolve(repo: &Repository, target: &SwitchTarget) -> Result<Target, String> {
+/// Raw Git failures while resolving; the UI shows the Git text itself.
+fn git_blocked(error: impl ToString) -> Blocked {
+    let detail = error.to_string();
+    Blocked {
+        detail: Some(detail.clone()),
+        ..blocked("git_error", &detail)
+    }
+}
+
+fn resolve(repo: &Repository, target: &SwitchTarget) -> Result<Target, Blocked> {
     // HEAD is the explicit "Checkout detached" action, never a branch name.
     if target.branch == "HEAD" && !target.create {
-        let oid = head(repo)?;
+        let oid = head(repo).map_err(git_blocked)?;
         return Ok(Target {
             local: format!("Detached at {}", &oid[..8]),
             oid,
@@ -27,17 +36,17 @@ fn resolve(repo: &Repository, target: &SwitchTarget) -> Result<Target, String> {
     if target.branch.starts_with('-')
         || !Reference::is_valid_name(&format!("refs/heads/{}", target.branch))
     {
-        return Err("Choose a valid branch name".into());
+        return Err(blocked("invalid_branch_name", "Choose a valid branch name"));
     }
     if target.create {
         if repo.find_branch(&target.branch, BranchType::Local).is_ok() {
-            return Err("That branch already exists".into());
+            return Err(blocked("branch_exists", "That branch already exists"));
         }
         let base = target.start_point.as_deref().unwrap_or("HEAD");
         let oid = repo
             .revparse_single(base)
             .and_then(|o| o.peel_to_commit())
-            .map_err(|e| e.to_string())?
+            .map_err(git_blocked)?
             .id()
             .to_string();
         return Ok(Target {
@@ -52,7 +61,7 @@ fn resolve(repo: &Repository, target: &SwitchTarget) -> Result<Target, String> {
             oid: b
                 .get()
                 .peel_to_commit()
-                .map_err(|e| e.to_string())?
+                .map_err(git_blocked)?
                 .id()
                 .to_string(),
             tracking: None,
@@ -63,7 +72,7 @@ fn resolve(repo: &Repository, target: &SwitchTarget) -> Result<Target, String> {
     } else {
         let matches = repo
             .branches(Some(BranchType::Remote))
-            .map_err(|e| e.to_string())?
+            .map_err(git_blocked)?
             .filter_map(|b| b.ok())
             .filter_map(|(b, _)| b.name().ok().flatten().map(str::to_owned))
             .filter(|n| {
@@ -72,13 +81,13 @@ fn resolve(repo: &Repository, target: &SwitchTarget) -> Result<Target, String> {
             })
             .collect::<Vec<_>>();
         if matches.len() != 1 {
-            return Err("Branch not found or ambiguous. Refresh branches and select an explicit remote branch".into());
+            return Err(blocked("branch_not_found", "Branch not found or ambiguous. Refresh branches and select an explicit remote branch"));
         }
         matches[0].clone()
     };
     let local = remote
         .split_once('/')
-        .ok_or("Invalid remote branch")?
+        .ok_or_else(|| blocked("branch_not_found", "Invalid remote branch"))?
         .1
         .to_owned();
     if let Ok(b) = repo.find_branch(&local, BranchType::Local) {
@@ -88,14 +97,14 @@ fn resolve(repo: &Repository, target: &SwitchTarget) -> Result<Target, String> {
             .as_deref()
             != Some(&remote)
         {
-            return Err("A local branch with that name tracks a different upstream. Choose the local branch explicitly".into());
+            return Err(blocked("upstream_mismatch", "A local branch with that name tracks a different upstream. Choose the local branch explicitly"));
         }
         return Ok(Target {
             local,
             oid: b
                 .get()
                 .peel_to_commit()
-                .map_err(|e| e.to_string())?
+                .map_err(git_blocked)?
                 .id()
                 .to_string(),
             tracking: None,
@@ -104,7 +113,7 @@ fn resolve(repo: &Repository, target: &SwitchTarget) -> Result<Target, String> {
     let oid = repo
         .find_branch(&remote, BranchType::Remote)
         .and_then(|b| b.get().peel_to_commit())
-        .map_err(|e| e.to_string())?
+        .map_err(git_blocked)?
         .id()
         .to_string();
     Ok(Target {
@@ -163,19 +172,18 @@ pub fn prepare(path: &Path, target: &SwitchTarget) -> Result<Preparation, String
                 if let Some(other) = item.lines().find_map(|l| l.strip_prefix("worktree ")) {
                     if std::fs::canonicalize(other).ok() != std::fs::canonicalize(root).ok() {
                         block = Some(Blocked {
-                            code: "worktree_branch_in_use".into(),
-                            message: "This branch is already open in another worktree".into(),
                             worktree_path: Some(other.into()),
+                            ..blocked(
+                                "worktree_branch_in_use",
+                                "This branch is already open in another worktree",
+                            )
                         });
                     }
                 }
             }
         }
     } else if block.is_none() {
-        block = Some(blocked(
-            "branch_not_found",
-            &resolved.as_ref().err().unwrap().to_string(),
-        ));
+        block = resolved.as_ref().err().cloned();
     }
     let default_strategy = if target.create
         && resolved
@@ -202,13 +210,17 @@ pub fn prepare(path: &Path, target: &SwitchTarget) -> Result<Preparation, String
 fn result(
     repo: &Repository,
     outcome: Outcome,
+    code: &str,
     message: String,
+    detail: Option<String>,
     snapshot: Option<&Snapshot>,
 ) -> SwitchResult {
     SwitchResult {
         outcome,
         current_branch: branch(repo),
+        code: code.into(),
         message,
+        detail,
         snapshot_id: snapshot.map(|s| s.id.clone()),
         conflicts: repo
             .index()
@@ -231,15 +243,29 @@ pub fn execute(path: &Path, request: ExecuteRequest) -> Result<SwitchResult, Str
     let _lock = lock(&repo)?;
     let preparation = prepare(path, &request.target)?;
     if preparation.same_branch {
-        return Ok(result(&repo, Outcome::Switched, String::new(), None));
+        return Ok(result(
+            &repo,
+            Outcome::Switched,
+            "",
+            String::new(),
+            None,
+            None,
+        ));
     }
     if let Some(block) = preparation.blocked {
-        return Ok(result(&repo, Outcome::Blocked, block.message, None));
+        return Ok(result(
+            &repo,
+            Outcome::Blocked,
+            &block.code,
+            block.message,
+            block.detail,
+            None,
+        ));
     }
     if preparation.fingerprint != request.fingerprint {
-        return Ok(result(&repo, Outcome::Blocked, "The files or branches changed while the dialog was open. Review the latest changes and try again".into(), None));
+        return Ok(result(&repo, Outcome::Blocked, "stale", "The files or branches changed while the dialog was open. Review the latest changes and try again".into(), None, None));
     }
-    let target = resolve(&repo, &request.target)?;
+    let target = resolve(&repo, &request.target).map_err(|b| b.message)?;
     let mut snapshot = None;
     if !preparation.changed_files.is_empty() {
         let mut s = Snapshot {
@@ -263,7 +289,7 @@ pub fn execute(path: &Path, request: ExecuteRequest) -> Result<SwitchResult, Str
             path,
             &["stash", "push", "--include-untracked", "-m", &message],
         ) {
-            return Ok(result(&repo, Outcome::RecoveryRequired, format!("Could not finish saving changes: {error}. Review the working tree and saved changes before retrying"), Some(&s)));
+            return Ok(result(&repo, Outcome::RecoveryRequired, "save_failed", format!("Could not finish saving changes: {error}. Review the working tree and saved changes before retrying"), Some(error), Some(&s)));
         }
         s = load(&repo, &s.id)?;
         let oid = s
@@ -281,7 +307,7 @@ pub fn execute(path: &Path, request: ExecuteRequest) -> Result<SwitchResult, Str
         save(&repo, &s)?;
         snapshot = Some(s);
         if !status(&repo)?.0.is_empty() {
-            return Ok(result(&repo, Outcome::RecoveryRequired, "Files changed while saving. Checkout was not attempted; your snapshot is available".into(), snapshot.as_ref()));
+            return Ok(result(&repo, Outcome::RecoveryRequired, "changed_while_saving", "Files changed while saving. Checkout was not attempted; your snapshot is available".into(), None, snapshot.as_ref()));
         }
     }
     if let Some(s) = snapshot.as_mut() {
@@ -322,7 +348,9 @@ pub fn execute(path: &Path, request: ExecuteRequest) -> Result<SwitchResult, Str
                     return Ok(result(
                         &repo,
                         Outcome::Blocked,
+                        "checkout_failed_restored",
                         format!("Checkout failed; your changes were restored: {error}"),
+                        Some(error),
                         Some(s),
                     ));
                 }
@@ -330,11 +358,20 @@ pub fn execute(path: &Path, request: ExecuteRequest) -> Result<SwitchResult, Str
             return Ok(result(
                 &repo,
                 Outcome::RecoveryRequired,
+                "checkout_failed_saved",
                 format!("Checkout failed. Your changes are saved: {error}"),
+                Some(error),
                 Some(s),
             ));
         }
-        return Ok(result(&repo, Outcome::Blocked, error, None));
+        return Ok(result(
+            &repo,
+            Outcome::Blocked,
+            "git_error",
+            error.clone(),
+            Some(error),
+            None,
+        ));
     }
     if let Some(s) = snapshot.as_mut() {
         if request.strategy == Strategy::Bring {
@@ -342,7 +379,7 @@ pub fn execute(path: &Path, request: ExecuteRequest) -> Result<SwitchResult, Str
                 || head(&repo).ok().as_deref() != Some(&target.oid)
                 || !status(&repo)?.0.is_empty()
             {
-                return Ok(result(&repo, Outcome::RecoveryRequired, "The worktree changed during checkout. Your original changes are saved; review the current files before restoring".into(), Some(s)));
+                return Ok(result(&repo, Outcome::RecoveryRequired, "worktree_changed", "The worktree changed during checkout. Your original changes are saved; review the current files before restoring".into(), None, Some(s)));
             }
             s.phase = SnapshotPhase::Applying;
             save(&repo, s)?;
@@ -357,7 +394,7 @@ pub fn execute(path: &Path, request: ExecuteRequest) -> Result<SwitchResult, Str
             ) {
                 s.phase = SnapshotPhase::NeedsResolution;
                 save(&repo, s)?;
-                return Ok(result(&repo, Outcome::SwitchedWithConflicts, format!("Switched to {}. Some changes could not be restored: {error}. Your original changes are saved", branch(&repo)), Some(s)));
+                return Ok(result(&repo, Outcome::SwitchedWithConflicts, "restore_conflicts", format!("Switched to {}. Some changes could not be restored: {error}. Your original changes are saved", branch(&repo)), Some(error), Some(s)));
             }
             s.phase = SnapshotPhase::Brought;
         } else {
@@ -365,18 +402,17 @@ pub fn execute(path: &Path, request: ExecuteRequest) -> Result<SwitchResult, Str
         }
         save(&repo, s)?;
     }
+    let (code, message) = match (&snapshot, &request.strategy) {
+        (None, _) => ("", ""),
+        (Some(_), Strategy::Leave) => ("saved_on_previous", "Changes saved on the previous branch"),
+        (Some(_), Strategy::Bring) => ("brought", "Your changes followed you to this branch"),
+    };
     Ok(result(
         &repo,
         Outcome::Switched,
-        if snapshot.is_some() {
-            if request.strategy == Strategy::Leave {
-                "Changes saved on the previous branch".into()
-            } else {
-                "Your changes followed you to this branch".into()
-            }
-        } else {
-            String::new()
-        },
+        code,
+        message.into(),
+        None,
         snapshot.as_ref(),
     ))
 }

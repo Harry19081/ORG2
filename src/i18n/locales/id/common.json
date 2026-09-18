@@ -1366,15 +1366,42 @@
       "bringDescription": "Pindahkan perubahan yang belum di-commit ke branch tujuan",
       "worktreeTitle": "Branch terbuka di worktree lain",
       "openWorktree": "Buka worktree",
-      "activeTask": "Sebuah tugas sedang menggunakan worktree ini",
-      "activeTaskDescription": "Tunggu hingga tugas selesai, hentikan secara eksplisit, atau gunakan worktree lain sebelum beralih branch",
+      "activeTask": "Ada tugas yang berjalan di worktree ini",
+      "activeTaskDescription": "Beralih sekarang akan mengubah file yang sedang dikerjakan agen",
+      "switchAnyway": "Tetap beralih",
+      "switchedTo": "Beralih ke {{branch}}",
       "saveTitle": "Simpan file sebelum beralih",
       "saveDescription": "File yang terbuka memiliki suntingan yang belum disimpan. Simpan sebelum memilih tempat menyimpan perubahan Anda",
       "saveContinue": "Simpan semua dan lanjutkan",
       "saveFailed": "Tidak dapat menyimpan semua file",
       "multipleBuffers": "File ini memiliki suntingan di lebih dari satu editor. Simpan atau tutup editor tersebut sebelum beralih",
       "editedWhileSaving": "File disunting saat sedang disimpan. Tinjau suntingan terbaru dan coba lagi",
-      "savePreview": "Simpan atau buang suntingan di editor spreadsheet sebelum beralih branch"
+      "savePreview": "Simpan atau buang suntingan di editor spreadsheet sebelum beralih branch",
+      "messages": {
+        "detached_head": "Buat branch dari commit saat ini sebelum beralih, agar pekerjaan detached tetap dapat dijangkau",
+        "unborn": "Buat commit pertama sebelum menggunakan perubahan branch yang disimpan",
+        "ignored_collision": "File yang diabaikan akan ditimpa. Pindahkan file tersebut sebelum beralih",
+        "worktree_branch_in_use": "Branch ini sudah terbuka di worktree lain",
+        "invalid_branch_name": "Pilih nama branch yang valid",
+        "branch_exists": "Branch tersebut sudah ada",
+        "branch_not_found": "Branch tidak ditemukan atau ambigu. Segarkan branch dan pilih branch remote secara eksplisit",
+        "upstream_mismatch": "Branch lokal dengan nama tersebut melacak upstream yang berbeda. Pilih branch lokal secara eksplisit",
+        "operation_merge": "Selesaikan atau batalkan merge sebelum beralih branch",
+        "operation_rebase": "Selesaikan atau batalkan rebase sebelum beralih branch",
+        "operation_cherry_pick": "Selesaikan atau batalkan cherry-pick sebelum beralih branch",
+        "operation_revert": "Selesaikan atau batalkan revert sebelum beralih branch",
+        "operation_other": "Selesaikan operasi Git saat ini sebelum beralih branch",
+        "stale": "File atau branch berubah selagi dialog terbuka. Tinjau perubahan terbaru dan coba lagi",
+        "save_failed": "Tidak dapat menyelesaikan penyimpanan perubahan: {{detail}}. Tinjau working tree dan perubahan yang disimpan sebelum mencoba lagi",
+        "changed_while_saving": "File berubah saat menyimpan. Checkout tidak dicoba; snapshot Anda tersedia",
+        "checkout_failed_restored": "Checkout gagal; perubahan Anda telah dipulihkan: {{detail}}",
+        "checkout_failed_saved": "Checkout gagal. Perubahan Anda disimpan: {{detail}}",
+        "worktree_changed": "Working tree berubah selama checkout. Perubahan asli Anda disimpan; tinjau file saat ini sebelum memulihkan",
+        "restore_conflicts": "Beralih ke {{branch}}. Beberapa perubahan tidak dapat dipulihkan: {{detail}}. Perubahan asli Anda disimpan",
+        "saved_on_previous": "Perubahan disimpan di branch sebelumnya",
+        "brought": "Perubahan Anda ikut ke branch ini",
+        "worktree_missing": "Worktree sudah tidak ada. Muat ulang dan coba lagi"
+      }
     }
   },
   "selectors": {
@@ -1496,9 +1523,15 @@
       "messages": {
         "deletedCount_one": "{{count}} branch dihapus",
         "deletedCount_other": "{{count}} branch dihapus",
-        "failedDeleteList": "Gagal menghapus: {{branches}}"
+        "failedDeleteList": "Gagal menghapus: {{branches}}",
+        "failedDelete": "Gagal menghapus cabang \"{{branch}}\"",
+        "prNoHeadBranch": "Pull request tidak memiliki cabang head",
+        "readBranchesFailed": "Tidak dapat membaca cabang lokal",
+        "createPrBranchFailed": "Tidak dapat membuat cabang PR",
+        "readRemotesFailed": "Tidak dapat membaca remote repositori"
       },
       "labels": {
+        "defaultBranches": "Cabang default",
         "otherBranches": "Branch Lainnya",
         "current": "Saat Ini",
         "recent": "Terbaru",

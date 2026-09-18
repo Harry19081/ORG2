@@ -1535,15 +1535,42 @@
       "bringDescription": "Commit edilmemiş değişikliklerinizi hedef dala taşıyın",
       "worktreeTitle": "Dal başka bir çalışma ağacında açık",
       "openWorktree": "Çalışma ağacını aç",
-      "activeTask": "Bir görev bu çalışma ağacını kullanıyor",
-      "activeTaskDescription": "Dal değiştirmeden önce görevin bitmesini bekleyin, görevi açıkça durdurun veya başka bir çalışma ağacı kullanın",
+      "activeTask": "Bu çalışma ağacında bir görev çalışıyor",
+      "activeTaskDescription": "Şimdi geçiş yapmak, ajanın üzerinde çalıştığı dosyaları değiştirir",
+      "switchAnyway": "Yine de geç",
+      "switchedTo": "{{branch}} dalına geçildi",
       "saveTitle": "Dal değiştirmeden önce dosyaları kaydet",
       "saveDescription": "Açık dosyalarda kaydedilmemiş düzenlemeler var. Değişikliklerinizi nerede tutacağınızı seçmeden önce bunları kaydedin",
       "saveContinue": "Tümünü kaydet ve devam et",
       "saveFailed": "Tüm dosyalar kaydedilemedi",
       "multipleBuffers": "Bu dosya birden fazla düzenleyicide değiştirildi. Dal değiştirmeden önce bu düzenleyicilerde kaydedin veya onları kapatın",
       "editedWhileSaving": "Kaydetme sırasında dosyalar düzenlendi. Son değişiklikleri gözden geçirip tekrar deneyin",
-      "savePreview": "Dal değiştirmeden önce hesap tablosu düzenleyicisindeki düzenlemeleri kaydedin veya atın"
+      "savePreview": "Dal değiştirmeden önce hesap tablosu düzenleyicisindeki düzenlemeleri kaydedin veya atın",
+      "messages": {
+        "detached_head": "Geçiş yapmadan önce geçerli commit'ten bir dal oluşturun, böylece ayrılmış çalışma erişilebilir kalır",
+        "unborn": "Kaydedilmiş dal değişikliklerini kullanmadan önce ilk commit'i oluşturun",
+        "ignored_collision": "Yoksayılan bir dosyanın üzerine yazılır. Geçiş yapmadan önce onu başka bir yere taşıyın",
+        "worktree_branch_in_use": "Bu dal zaten başka bir çalışma ağacında açık",
+        "invalid_branch_name": "Geçerli bir dal adı seçin",
+        "branch_exists": "Bu dal zaten var",
+        "branch_not_found": "Dal bulunamadı veya belirsiz. Dalları yenileyin ve açık bir uzak dal seçin",
+        "upstream_mismatch": "Bu ada sahip yerel bir dal farklı bir upstream'i izliyor. Yerel dalı açıkça seçin",
+        "operation_merge": "Dal değiştirmeden önce birleştirmeyi tamamlayın veya iptal edin",
+        "operation_rebase": "Dal değiştirmeden önce rebase'i tamamlayın veya iptal edin",
+        "operation_cherry_pick": "Dal değiştirmeden önce cherry-pick'i tamamlayın veya iptal edin",
+        "operation_revert": "Dal değiştirmeden önce revert'i tamamlayın veya iptal edin",
+        "operation_other": "Dal değiştirmeden önce geçerli Git işlemini tamamlayın",
+        "stale": "İletişim kutusu açıkken dosyalar veya dallar değişti. Son değişiklikleri gözden geçirip tekrar deneyin",
+        "save_failed": "Değişiklikler kaydedilemedi: {{detail}}. Yeniden denemeden önce çalışma ağacını ve kaydedilen değişiklikleri gözden geçirin",
+        "changed_while_saving": "Kaydetme sırasında dosyalar değişti. Checkout denenmedi; snapshot'ınız kullanılabilir",
+        "checkout_failed_restored": "Checkout başarısız oldu; değişiklikleriniz geri yüklendi: {{detail}}",
+        "checkout_failed_saved": "Checkout başarısız oldu. Değişiklikleriniz kaydedildi: {{detail}}",
+        "worktree_changed": "Checkout sırasında çalışma ağacı değişti. Orijinal değişiklikleriniz kaydedildi; geri yüklemeden önce güncel dosyaları gözden geçirin",
+        "restore_conflicts": "{{branch}} dalına geçildi. Bazı değişiklikler geri yüklenemedi: {{detail}}. Orijinal değişiklikleriniz kaydedildi",
+        "saved_on_previous": "Değişiklikler önceki dalda kaydedildi",
+        "brought": "Değişiklikleriniz sizinle bu dala kadar geldi",
+        "worktree_missing": "Çalışma ağacı artık yok. Yenileyip tekrar deneyin"
+      }
     }
   },
   "selectors": {
@@ -1665,9 +1692,15 @@
       "messages": {
         "deletedCount_one": "{{count}} branch silindi",
         "deletedCount_other": "{{count}} branch silindi",
-        "failedDeleteList": "Silinemedi: {{branches}}"
+        "failedDeleteList": "Silinemedi: {{branches}}",
+        "failedDelete": "\"{{branch}}\" dalı silinemedi",
+        "prNoHeadBranch": "Pull request'in head dalı yok",
+        "readBranchesFailed": "Yerel dallar okunamadı",
+        "createPrBranchFailed": "PR dalı oluşturulamadı",
+        "readRemotesFailed": "Deponun uzak kaynakları okunamadı"
       },
       "labels": {
+        "defaultBranches": "Varsayılan dallar",
         "otherBranches": "Diğer Branch'ler",
         "current": "Geçerli",
         "recent": "Son",

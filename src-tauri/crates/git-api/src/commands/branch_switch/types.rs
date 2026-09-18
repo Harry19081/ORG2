@@ -26,8 +26,12 @@ pub struct SwitchTarget {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Blocked {
+    /// Stable key the UI localizes; `message` is the English fallback.
     pub code: String,
     pub message: String,
+    /// Code-specific parameter: the Git operation kind or a raw Git error.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub detail: Option<String>,
     pub worktree_path: Option<String>,
 }
 
@@ -53,7 +57,13 @@ pub struct ExecuteRequest {
 pub struct SwitchResult {
     pub outcome: Outcome,
     pub current_branch: String,
+    /// Stable key the UI localizes (empty for a plain switch); `message` is
+    /// the English fallback.
+    #[serde(default)]
+    pub code: String,
     pub message: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub detail: Option<String>,
     pub snapshot_id: Option<String>,
     pub conflicts: Vec<String>,
 }

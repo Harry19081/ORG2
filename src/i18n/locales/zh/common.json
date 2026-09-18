@@ -1366,15 +1366,42 @@
       "bringDescription": "将未提交的更改带到目标分支",
       "worktreeTitle": "此分支已在另一个工作树中打开",
       "openWorktree": "打开工作树",
-      "activeTask": "有任务正在使用此工作树",
-      "activeTaskDescription": "切换分支前，请等待任务完成、主动停止任务，或使用另一个工作树",
+      "activeTask": "有任务正在此工作树中运行",
+      "activeTaskDescription": "现在切换会改变智能体正在处理的文件",
+      "switchAnyway": "仍然切换",
+      "switchedTo": "已切换到 {{branch}}",
       "saveTitle": "切换前保存文件",
       "saveDescription": "打开的文件有未保存的编辑。请先保存，再选择将更改保留在哪里",
       "saveContinue": "全部保存并继续",
       "saveFailed": "无法保存所有文件",
       "multipleBuffers": "此文件在多个编辑器中有更改。切换前请保存或关闭这些编辑器",
       "editedWhileSaving": "保存期间文件又被编辑。请检查最新更改后重试",
-      "savePreview": "切换分支前，请在表格编辑器中保存或放弃编辑"
+      "savePreview": "切换分支前，请在表格编辑器中保存或放弃编辑",
+      "messages": {
+        "detached_head": "切换前，请从当前提交创建一个分支，以便分离状态下的工作仍可访问",
+        "unborn": "使用已保存的分支更改前，请先创建首个提交",
+        "ignored_collision": "一个已忽略的文件将被覆盖。请在切换前将其移开",
+        "worktree_branch_in_use": "此分支已在另一个工作树中打开",
+        "invalid_branch_name": "请选择一个有效的分支名称",
+        "branch_exists": "该分支已存在",
+        "branch_not_found": "未找到该分支，或分支名称有歧义。请刷新分支列表并明确选择一个远程分支",
+        "upstream_mismatch": "同名的本地分支跟踪着不同的上游。请明确选择本地分支",
+        "operation_merge": "请先完成或中止合并，再切换分支",
+        "operation_rebase": "请先完成或中止变基，再切换分支",
+        "operation_cherry_pick": "请先完成或中止拣选，再切换分支",
+        "operation_revert": "请先完成或中止还原，再切换分支",
+        "operation_other": "请先完成当前的 Git 操作，再切换分支",
+        "stale": "对话框打开期间，文件或分支发生了变化。请查看最新更改后重试",
+        "save_failed": "未能完成更改的保存：{{detail}}。请在重试前检查工作区和已保存的更改",
+        "changed_while_saving": "保存期间文件发生了变化。未尝试检出；你的快照仍然可用",
+        "checkout_failed_restored": "检出失败；你的更改已恢复：{{detail}}",
+        "checkout_failed_saved": "检出失败。你的更改已保存：{{detail}}",
+        "worktree_changed": "检出过程中工作区发生了变化。你的原始更改已保存；请在恢复前查看当前文件",
+        "restore_conflicts": "已切换到 {{branch}}。部分更改未能恢复：{{detail}}。你的原始更改已保存",
+        "saved_on_previous": "更改已保存在之前的分支上",
+        "brought": "你的更改已随你带到此分支",
+        "worktree_missing": "该工作树已不存在。请刷新后重试"
+      }
     }
   },
   "selectors": {
@@ -1496,9 +1523,15 @@
       "messages": {
         "deletedCount_one": "已删除 {{count}} 个分支",
         "deletedCount_other": "已删除 {{count}} 个分支",
-        "failedDeleteList": "删除失败：{{branches}}"
+        "failedDeleteList": "删除失败：{{branches}}",
+        "failedDelete": "无法删除分支 “{{branch}}”",
+        "prNoHeadBranch": "Pull request 没有 head 分支",
+        "readBranchesFailed": "无法读取本地分支",
+        "createPrBranchFailed": "无法创建 PR 分支",
+        "readRemotesFailed": "无法读取仓库远程"
       },
       "labels": {
+        "defaultBranches": "默认分支",
         "otherBranches": "其他分支",
         "current": "当前",
         "recent": "最近",
