@@ -62,20 +62,10 @@ export default function UsageAuthorizationHost() {
       title={prompt.service.title}
       onClose={() => close(false)}
       width={500}
-      footer={
-        <div className="flex justify-end gap-2">
-          <Button onClick={() => close(false)}>
-            {t("managedUsage.cancel", "Cancel")}
-          </Button>
-          <Button
-            variant="primary"
-            disabled={!valid}
-            onClick={() => close(true)}
-          >
-            {t("managedUsage.authorize", "Enable package")}
-          </Button>
-        </div>
-      }
+      onOk={() => close(true)}
+      okText={t("managedUsage.authorize", "Enable package")}
+      okButtonProps={{ disabled: !valid }}
+      cancelText={t("managedUsage.cancel", "Cancel")}
     >
       <div className="space-y-4">
         {prompt.service.price_range_bps && (

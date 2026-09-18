@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { readAppLicense } from "@src/api/tauri/license";
-import Button from "@src/components/Button";
 import Modal from "@src/scaffold/ModalSystem";
 
 interface LicenseModalProps {
@@ -40,13 +39,9 @@ const LicenseModal: React.FC<LicenseModalProps> = ({ visible, onClose }) => {
       onClose={onClose}
       size="large"
       bodyClassName="min-h-0 p-0"
-      footer={
-        <div className="flex justify-end px-3 py-2">
-          <Button variant="primary" size="small" onClick={onClose}>
-            {t("common:actions.close")}
-          </Button>
-        </div>
-      }
+      onOk={onClose}
+      okText={t("common:actions.close")}
+      cancelText=""
     >
       <div className="allow-select-deep min-h-0 overflow-y-auto px-4 py-3">
         {loadError ? (

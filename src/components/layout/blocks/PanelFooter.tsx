@@ -83,6 +83,8 @@ export interface PanelFooterAction extends Pick<
   href?: string;
   target?: string;
   dataTestId?: string;
+  /** Mark as the modal's primary action so it receives initial focus. */
+  modalPrimary?: boolean;
 }
 
 export interface PanelFooterProps {
@@ -122,6 +124,7 @@ const PrimaryActionButton: React.FC<{
     href={action.href}
     target={action.target}
     data-testid={action.dataTestId}
+    data-modal-primary-action={action.modalPrimary || undefined}
     onClick={action.onClick}
   >
     {action.label}

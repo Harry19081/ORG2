@@ -1,8 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import updateImage from "@src/assets/illustrations/update.png";
-import Button from "@src/components/Button";
-import { PANEL_FOOTER_TOKENS } from "@src/components/layout/blocks/PanelFooter";
+import PanelFooter from "@src/components/layout/blocks/PanelFooter";
 import { createLogger } from "@src/hooks/logger";
 import Modal from "@src/scaffold/ModalSystem";
 
@@ -40,27 +39,22 @@ export function UpdateInstallPrompt({
       onCancel={onLater}
       onClose={onLater}
       footer={
-        <div className={PANEL_FOOTER_TOKENS.container}>
-          <div className="flex flex-1 items-center justify-end gap-2">
-            <Button variant="secondary" size="small" onClick={onLater}>
-              {t("common:actions.later")}
-            </Button>
-            <Button
-              variant="primary"
-              size="small"
-              onClick={() => {
-                Promise.resolve(onConfirm()).catch((error) => {
-                  log.error("Update confirmation failed", error);
-                });
-              }}
-              data-modal-primary-action
-            >
-              {separateInstall
-                ? t("update.installOfficial")
-                : t("update.installAndRestart")}
-            </Button>
-          </div>
-        </div>
+        <PanelFooter
+          secondaryActions={[
+            { label: t("common:actions.later"), onClick: onLater },
+          ]}
+          primaryAction={{
+            label: separateInstall
+              ? t("update.installOfficial")
+              : t("update.installAndRestart"),
+            onClick: () => {
+              Promise.resolve(onConfirm()).catch((error) => {
+                log.error("Update confirmation failed", error);
+              });
+            },
+            modalPrimary: true,
+          }}
+        />
       }
     >
       <p className="text-sm text-text-2">
