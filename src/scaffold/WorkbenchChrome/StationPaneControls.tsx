@@ -8,10 +8,10 @@ import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { createLogger } from "@src/hooks/logger";
 import {
-  AppWindowMacIcon,
   ArrowExpand01Icon,
   ArrowShrink02Icon,
   Cancel01Icon,
+  ChangeScreenModeIcon,
   HugeiconsIcon,
   LayoutAlignRightIcon,
   PanelRightIcon,
@@ -77,9 +77,9 @@ export function StationOpenInNewWindowButton({
       data-testid={testId}
     >
       <HugeiconsIcon
-        icon={AppWindowMacIcon}
-        data-icon="app-window-mac"
-        size={14}
+        icon={ChangeScreenModeIcon}
+        data-icon="change-screen-mode"
+        size={HEADER_ICON_SIZE.sm}
         strokeWidth={2}
       />
     </TabBarTrailingIconButton>
@@ -211,7 +211,7 @@ export function StationMaximizeChatButton({
   );
 }
 
-/** One restore action when chat is hidden; distinct pane actions when split. */
+/** Resize (expand or restore) plus close; close stays while the station is maximized. */
 export function StationPaneControls({
   chatVisible,
   chatPanelPosition,
@@ -234,14 +234,12 @@ export function StationPaneControls({
         onClick={onToggleChat}
         testId={visibilityTestId}
       />
-      {chatVisible && (
-        <StationMaximizeChatButton
-          chatPanelPosition={chatPanelPosition}
-          directionalHover={false}
-          onClick={onMaximizeChat}
-          testId={maximizeTestId}
-        />
-      )}
+      <StationMaximizeChatButton
+        chatPanelPosition={chatPanelPosition}
+        directionalHover={false}
+        onClick={onMaximizeChat}
+        testId={maximizeTestId}
+      />
     </>
   );
 }

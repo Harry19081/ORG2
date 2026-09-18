@@ -264,7 +264,7 @@ describe("PinnedWorkbenchChrome", () => {
     expect(group?.childElementCount).toBe(1);
   });
 
-  it("draws only the restore toggle, flush right, while the chat is hidden", () => {
+  it("keeps the restore toggle and the close action while the chat is hidden", () => {
     render();
     act(() => {
       store.set(activeStationChatVisibleAtom, "my-station", false);
@@ -272,8 +272,8 @@ describe("PinnedWorkbenchChrome", () => {
     });
 
     expect(query("pinned-workbench-chrome-chat-visibility")).not.toBeNull();
-    expect(query("pinned-workbench-chrome-maximize-chat")).toBeNull();
-    expect(query("pinned-workbench-chrome")?.childElementCount).toBe(1);
+    expect(query("pinned-workbench-chrome-maximize-chat")).not.toBeNull();
+    expect(query("pinned-workbench-chrome")?.childElementCount).toBe(2);
     expect(
       query("pinned-workbench-chrome-chat-visibility")?.querySelector(
         '[data-icon="arrow-shrink-02"]'
@@ -340,6 +340,6 @@ describe("PinnedWorkbenchChrome", () => {
         chatVisible: false,
         chatPanelMaximized: false,
       })
-    ).toBe(1);
+    ).toBe(2);
   });
 });
