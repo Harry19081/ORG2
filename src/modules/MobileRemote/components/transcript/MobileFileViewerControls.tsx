@@ -2,6 +2,8 @@ import React, { useId } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import FileTypeIcon from "@src/components/FileTypeIcon";
+import { TabPillSurface } from "@src/components/TabPill/TabPillSurface";
 import {
   Copy01Icon,
   HugeiconsIcon,
@@ -14,6 +16,7 @@ import "./mobileFileViewerControls.scss";
 import { useMobileCopyText } from "./useMobileCopyText";
 
 interface MobileFileViewerControlsProps {
+  fileTabsId: string;
   target: MobileFileTarget;
   targets: MobileFileTarget[];
   onSelect: (index: number) => void;
@@ -25,6 +28,7 @@ interface MobileFileViewerControlsProps {
 
 /** Local document controls; no transcript, connection or Desktop request ownership. */
 export function MobileFileViewerControls({
+  fileTabsId,
   target,
   targets,
   onSelect,
@@ -70,23 +74,62 @@ export function MobileFileViewerControls({
       {targets.length > 1 && (
         <div
           className="mobile-file-controls__files"
+          role="tablist"
+          aria-orientation="horizontal"
           aria-label={t("fileViewer.files")}
         >
           {targets.map((file) => (
-            <Button
+            <TabPillSurface
               key={`${file.targetIndex}:${file.filePath}`}
-              size="small"
-              style={actionStyle}
-              className="min-h-11 max-w-56 shrink-0"
-              appearance={
-                target.targetIndex === file.targetIndex ? "solid" : "ghost"
-              }
-              aria-pressed={target.targetIndex === file.targetIndex}
+              as="button"
+              isActive={target.targetIndex === file.targetIndex}
+              className="mobile-file-controls__tab"
+              role="tab"
+              id={`${fileTabsId}-tab-${file.targetIndex}`}
+              aria-controls={`${fileTabsId}-panel`}
+              aria-selected={target.targetIndex === file.targetIndex}
+              tabIndex={target.targetIndex === file.targetIndex ? 0 : -1}
+              title={file.filePath}
+              aria-label={file.filePath}
               onClick={() => onSelect(file.targetIndex)}
+              onFocus={(event) =>
+                event.currentTarget.scrollIntoView?.({
+                  block: "nearest",
+                  inline: "nearest",
+                })
+              }
+              onKeyDown={(event) => {
+                const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+                if (!keys.includes(event.key)) return;
+                event.preventDefault();
+                const position = targets.findIndex(
+                  (item) => item.targetIndex === file.targetIndex
+                );
+                const next =
+                  event.key === "Home"
+                    ? 0
+                    : event.key === "End"
+                      ? targets.length - 1
+                      : (position +
+                          (event.key === "ArrowRight" ? 1 : -1) +
+                          targets.length) %
+                        targets.length;
+                const nextFile = targets[next];
+                if (!nextFile) return;
+                onSelect(nextFile.targetIndex);
+                event.currentTarget.parentElement
+                  ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+                  [next]?.focus();
+              }}
               data-mobile-file-target={file.filePath}
             >
+              <FileTypeIcon
+                fileName={file.fileName}
+                size="small"
+                className="shrink-0"
+              />
               <span className="truncate">{file.fileName}</span>
-            </Button>
+            </TabPillSurface>
           ))}
         </div>
       )}
