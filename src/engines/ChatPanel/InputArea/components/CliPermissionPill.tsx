@@ -8,7 +8,7 @@ import { DropdownItem, DropdownPanel } from "@src/components/Dropdown/exports";
 import { DROPDOWN_WIDTHS } from "@src/components/Dropdown/tokens";
 import Message from "@src/components/Message";
 import SelectorPill from "@src/components/SelectorPill";
-import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
+import { INPUT_AREA_PILL_MENU_GAP } from "@src/config/inputAreaTokens";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { HugeiconsIcon, Shield01Icon } from "@src/icons";
@@ -28,7 +28,7 @@ export default function CliPermissionPill() {
   const [saving, setSaving] = useState(false);
   const generation = useRef(0);
   const dropdown = useDropdownEngine<HTMLButtonElement>({
-    gap: 6,
+    gap: INPUT_AREA_PILL_MENU_GAP,
     align: "left",
     placement: "top",
   });
@@ -96,7 +96,6 @@ export default function CliPermissionPill() {
           choices.find((c) => c.mode === selection.mode)?.label ??
           choices[0].label
         }
-        tooltipMouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
         tooltip={t(
           "chat.cliPermissions.nextTurn",
           "Permissions apply to the next turn"

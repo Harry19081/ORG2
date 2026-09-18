@@ -117,6 +117,11 @@
     "unavailable": "Connect an updated desktop to view images"
   },
   "sessions": {
+    "loading": "Loading sessions…",
+    "refreshing": "Updating sessions…",
+    "loadFailed": "Could not load sessions",
+    "refreshFailed": "Could not update sessions. Showing the last loaded list",
+    "empty": "No sessions on this desktop yet",
     "all": "All sessions",
     "state": {
       "unknown": "Status awaiting sync",
@@ -249,14 +254,19 @@
   "permission": {
     "submitFailed": "Could not confirm your response. Check the connection and try again."
   },
+  "connectionFeedback": {
+    "title": "Unable to reach your computer",
+    "ticket": "Connection verification failed. Check your phone’s clock and use the latest app",
+    "authorization": "This device’s access is no longer valid. Pair again to reconnect",
+    "unavailable": "Check your network and make sure ORG2 is running on your computer",
+    "retrying": "Retrying automatically. You can also reconnect now"
+  },
   "connectionRecovery": {
     "retry": "Reconnect",
     "repair": "Pair again",
     "retryFailed": "Could not reconnect. Try again.",
     "repairFailed": "Could not reset the connection. Try again."
   },
-  "offlineBanner": "Desktop is offline — messages cannot be sent",
-  "offlineBannerNamed": "{{desktopName}} is offline — messages cannot be sent",
   "composerOffline": "Your computer is offline. Reconnect to send messages",
   "composerReadOnly": "This conversation is currently view-only. Messages cannot be sent from your phone",
   "composerDeviceReadOnly": "This device has read-only access",

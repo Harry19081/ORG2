@@ -174,7 +174,8 @@ function normalizedCloudValue(value: string | null): string | null {
 
 function writeCloudAuth(
   value: string | null,
-  requireCurrentLocalValue = false
+  requireCurrentLocalValue = false,
+  completion: "native-ready" | "persisted" = "native-ready"
 ): Promise<void> {
   const currentMatches = () =>
     normalizedCloudValue(localValue(SHARED_ORG2_CLOUD_AUTH_STORAGE_KEY)) ===
@@ -234,7 +235,12 @@ function writeCloudAuth(
       if (generation === cloudWriteGeneration) cloudWriteNeedsRecovery = true;
       throw error;
     });
-  return trackNativeOwnerReady(ready);
+  const nativeReady = trackNativeOwnerReady(ready);
+  // Relay reads persisted credentials itself. Market verification must keep its
+  // own gate without delaying or rejecting a successful relay credential write.
+  return completion === "native-ready"
+    ? nativeReady
+    : persisted.then(() => undefined);
 }
 
 async function reloadStore(sharedStore: LazyStore): Promise<void> {
@@ -451,7 +457,7 @@ export async function awaitMirroredOrg2CloudAuth(
   serialized: string | null
 ): Promise<void> {
   if (!isTauri()) return;
-  await writeCloudAuth(serialized, true);
+  await writeCloudAuth(serialized, true, "persisted");
 }
 
 export const __SHARED_AUTH_STORAGE_INTERNALS = {

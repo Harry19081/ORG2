@@ -207,7 +207,11 @@ const ChannelMessageRow: React.FC<ChannelMessageRowProps> = ({
         className={`${grouped ? "absolute top-0 right-0 z-10 rounded-md bg-bg-1" : "ml-auto"} inline-flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-focus-within/channelmsg:opacity-100 group-hover/channelmsg:opacity-100`}
       >
         {canEdit ? (
-          <Tooltip content={t("cloud.channels.feed.edit")} framedPanel>
+          <Tooltip
+            kind="button"
+            content={t("cloud.channels.feed.edit")}
+            framedPanel
+          >
             <Button
               htmlType="button"
               variant="tertiary"
@@ -228,7 +232,11 @@ const ChannelMessageRow: React.FC<ChannelMessageRowProps> = ({
           </Tooltip>
         ) : null}
         {canDelete ? (
-          <Tooltip content={t("cloud.channels.feed.delete")} framedPanel>
+          <Tooltip
+            kind="button"
+            content={t("cloud.channels.feed.delete")}
+            framedPanel
+          >
             <Button
               htmlType="button"
               variant="tertiary"

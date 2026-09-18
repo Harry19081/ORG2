@@ -14,8 +14,21 @@ vi.mock("./BreadcrumbFileHeader", () => ({
   default: () => createElement("span", null, "file breadcrumb"),
 }));
 vi.mock("./FileHeaderMoreMenu", () => ({
-  FileHeaderMoreMenu: ({ onSearchClick }: { onSearchClick: () => void }) =>
-    createElement("button", { onClick: onSearchClick }, "file menu"),
+  FileHeaderMoreMenu: ({
+    onSearchClick,
+    showSidebarSettings,
+  }: {
+    onSearchClick: () => void;
+    showSidebarSettings: boolean;
+  }) =>
+    createElement(
+      "button",
+      {
+        onClick: onSearchClick,
+        "data-sidebar-settings": String(showSidebarSettings),
+      },
+      "file menu"
+    ),
 }));
 
 it("moves the live file menu into its host toolbar and releases it on unmount", () => {
@@ -53,6 +66,10 @@ it("moves the live file menu into its host toolbar and releases it on unmount", 
   try {
     render(toolbar);
     expect(container.textContent).toContain("file breadcrumb");
+    // The portaled menu is the workstation header's "…": it owns sidebar settings.
+    expect(toolbar.querySelector("button")!.dataset.sidebarSettings).toBe(
+      "true"
+    );
     expect(container.textContent).not.toContain("file menu");
     expect(
       container.querySelector('[aria-label="workstation.switchToUnifiedDiff"]')

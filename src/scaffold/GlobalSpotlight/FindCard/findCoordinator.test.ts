@@ -6,6 +6,7 @@ import { CURRENT_SHORTCUT_PLATFORM } from "@src/config/keyboard/shortcutBindings
 import {
   type FindScope,
   canSelectFindScope,
+  openFindTargetNear,
   registerFindTarget,
   selectFindScope,
   subscribeFind,
@@ -182,5 +183,22 @@ describe("consolidated Find cycle", () => {
     session.element.focus();
     cleanup.pop()!();
     expect(press(session.element).defaultPrevented).toBe(false);
+  });
+  it("opens the file target sharing a pane with a header anchor", () => {
+    const other = target("file"),
+      near = target("file");
+    const anchor = document.createElement("button");
+    near.element.parentElement!.append(anchor);
+    expect(openFindTargetNear(anchor, "file")).toBe(true);
+    expect(near.open).toHaveBeenCalledOnce();
+    expect(other.open).not.toHaveBeenCalled();
+    // A second request keeps the open card rather than closing it.
+    openFindTargetNear(anchor, "file");
+    expect(near.close).not.toHaveBeenCalled();
+  });
+  it("reports no target when every candidate is hidden", () => {
+    const file = target("file", false);
+    expect(openFindTargetNear(file.element, "file")).toBe(false);
+    expect(file.open).not.toHaveBeenCalled();
   });
 });

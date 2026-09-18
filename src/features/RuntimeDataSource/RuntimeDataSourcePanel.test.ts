@@ -17,7 +17,6 @@ import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import {
   org2CloudOrgsAtom,
   org2CloudOrgsLoadedAtom,
-  sidebarActiveCloudOrgIdAtom,
 } from "@src/features/Org2Cloud/org2CloudOrgsAtom";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import { runtimeNavigationIntentAtom } from "@src/store/ui/runtimeNavigationAtom";
@@ -220,7 +219,6 @@ describe("RuntimeDataSourcePanel", () => {
     store.set(org2CloudAuthAtom, null);
     store.set(org2CloudOrgsAtom, []);
     store.set(org2CloudOrgsLoadedAtom, true);
-    store.set(sidebarActiveCloudOrgIdAtom, null);
     store.set(runtimeNavigationIntentAtom, null);
     container = document.createElement("div");
     document.body.appendChild(container);

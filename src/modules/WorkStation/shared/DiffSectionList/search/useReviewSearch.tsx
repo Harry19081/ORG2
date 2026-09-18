@@ -252,7 +252,6 @@ export function useReviewSearch({
               <FindCard
                 scope="file"
                 targetName={t("actions.review")}
-                scopeControls={false}
                 statusText={
                   result.error
                     ? t("status.error")

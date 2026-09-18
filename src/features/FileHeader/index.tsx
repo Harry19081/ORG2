@@ -255,6 +255,9 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     const toolbar = useContext(FileHeaderToolbarContext);
     const hostOwnsControls = toolbar !== null;
     const toolbarTarget = toolbar === "host" ? null : toolbar;
+    // A menu portaled into the workstation toolbar is that header's "…", so it
+    // carries sidebar settings like every other workstation header menu.
+    const sidebarSettingsVisible = showSidebarSettings || !!toolbarTarget;
     const [moreMenuVisible, setMoreMenuVisible] = useState(false);
     const [reloadMenuCoolingDown, setReloadMenuCoolingDown] = useState(false);
     const reloadMenuCooldownTimerRef = useRef<ReturnType<
@@ -395,7 +398,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
       showHighlightActiveLineToggle ||
       showGitBlameToggle ||
       showMoreSettingsAction ||
-      showSidebarSettings;
+      sidebarSettingsVisible;
     const showPreviewButton = isMarkdownFile && onTogglePreview && !hasStats;
     const showAnyTabSwitch =
       showViewModeToggle || showCustomToggle || showPreviewButton;
@@ -452,7 +455,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         showHighlightActiveLineToggle={showHighlightActiveLineToggle}
         showGitBlameToggle={showGitBlameToggle}
         showMoreSettingsAction={showMoreSettingsAction}
-        showSidebarSettings={showSidebarSettings}
+        showSidebarSettings={sidebarSettingsVisible}
         lineNumbersEnabled={lineNumbersEnabled}
         wordWrapEnabled={wordWrapEnabled}
         minimapEnabled={minimapEnabled}

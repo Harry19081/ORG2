@@ -149,7 +149,7 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
                   />
                 }
                 position="top"
-                mouseEnterDelay={200}
+                kind="button"
                 framedPanel
               >
                 <Button

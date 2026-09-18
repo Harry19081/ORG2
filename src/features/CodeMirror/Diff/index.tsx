@@ -50,6 +50,7 @@ import { createCopyFileRefExtension } from "../shared/createCopyFileRefExtension
 import { getLanguageExtension } from "../shared/languageExtensions";
 import { collapsedGutterBackground } from "./collapsedGutter";
 import { diffLineNumbers } from "./diffLineNumbers";
+import { COLLAPSED_COMPACT_ROW_PX } from "./incrementalCollapse";
 import "./index.scss";
 import {
   type ReviewDiffSearch,
@@ -111,7 +112,10 @@ interface CodeMirrorDiffProps {
 // Shared merge theme override (stable reference — defined outside component)
 // ============================================
 
-export const COLLAPSED_COMPACT_ROW_HEIGHT = "calc(1lh + 4px)";
+// Single-button rows are a fixed height that the collapse widget reports as
+// its exact estimate (see COLLAPSED_COMPACT_ROW_PX); the split (two-button)
+// row stacks two arrow targets instead.
+export const COLLAPSED_COMPACT_ROW_HEIGHT = `${COLLAPSED_COMPACT_ROW_PX}px`;
 export const COLLAPSED_SPLIT_ROW_HEIGHT = "calc(2lh + 8px)";
 
 export const MERGE_THEME_OVERRIDE = EditorView.baseTheme({

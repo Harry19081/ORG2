@@ -20,6 +20,7 @@ import type { TranscriptItem } from "../lib/transcriptReducer";
 import type { MobileReadStateSync } from "./mobileReadStateSync";
 import { type MobilePendingInbox } from "./useMobilePendingInbox";
 import { type MobileSendStatus } from "./useMobileSend";
+import type { MobileRosterPhase } from "./useMobileSessionList";
 
 export interface MobileRemoteContextValue {
   readStateSync: MobileReadStateSync;
@@ -28,6 +29,7 @@ export interface MobileRemoteContextValue {
   bootstrapPending: boolean;
   connection: MobileConnectionState;
   sessions: MobileSessionRow[];
+  rosterPhase: MobileRosterPhase;
   transcriptItems: TranscriptItem[];
   transcriptPhase: TranscriptLoadPhase;
   transcriptSessionId: string | null;

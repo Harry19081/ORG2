@@ -55,12 +55,23 @@ describe("SignInModal", () => {
     const dialog = () => document.querySelector('[role="dialog"]');
     const originalDialog = dialog();
     const originalPanel = dialog()?.querySelector(".liquid-modal-content");
+    const expectStableFrame = () => {
+      const panel = dialog()?.querySelector<HTMLElement>(
+        ".liquid-modal-content"
+      );
+      expect(panel?.style.width).toBe("600px");
+      expect(
+        panel?.firstElementChild?.classList.contains("liquid-modal-image")
+      ).toBe(true);
+    };
+    expectStableFrame();
     const login = Array.from(dialog()!.querySelectorAll("button")).find(
       (button) => button.textContent === "cloud.signIn"
     )!;
     await act(async () => login.click());
 
     expect(onSignIn).toHaveBeenCalledOnce();
+    expectStableFrame();
     expect(dialog()).toBe(originalDialog);
     expect(dialog()?.querySelector(".liquid-modal-content")).toBe(
       originalPanel
@@ -87,6 +98,7 @@ describe("SignInModal", () => {
     });
 
     expect(dialog()?.textContent).toContain("auth:loading.success");
+    expectStableFrame();
     expect(dialog()).toBe(originalDialog);
     expect(dialog()?.querySelector(".liquid-modal-content")).toBe(
       originalPanel
@@ -96,7 +108,7 @@ describe("SignInModal", () => {
     ).toContain("login-success");
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(3000);
+      await vi.advanceTimersByTimeAsync(60_000);
     });
     expect(onClose).not.toHaveBeenCalled();
     act(() => {
@@ -104,7 +116,22 @@ describe("SignInModal", () => {
       document.dispatchEvent(new Event("visibilitychange"));
     });
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(1999);
+      await vi.advanceTimersByTimeAsync(10_000);
+    });
+    act(() => {
+      visibility.mockReturnValue("hidden");
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60_000);
+    });
+    expect(onClose).not.toHaveBeenCalled();
+    act(() => {
+      visibility.mockReturnValue("visible");
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(29_999);
     });
     expect(onClose).not.toHaveBeenCalled();
     await act(async () => {
@@ -144,40 +171,50 @@ describe("SignInModal", () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it("cancels the success close timer when the modal unmounts", async () => {
-    const onClose = vi.fn();
+  it.each(["unmount", "continue"])(
+    "cancels the success close timer after %s",
+    async (action) => {
+      const onClose = vi.fn(() => root.render(null));
 
-    await act(async () => {
-      root.render(
-        React.createElement(
-          Provider,
-          { store },
-          React.createElement(SignInModal, { onClose, onSignIn: vi.fn() })
-        )
-      );
-    });
-    const dialog = () => document.querySelector('[role="dialog"]');
-    const login = Array.from(dialog()!.querySelectorAll("button")).find(
-      (button) => button.textContent === "cloud.signIn"
-    )!;
-    await act(async () => {
-      login.click();
-      store.set(org2CloudAuthAtom, {
-        kind: "org2_cloud",
-        supabaseUrl: "https://cloud.example.test",
-        supabaseAnonKey: "test-anon-key",
-        userId: "user-1",
-        accessToken: "test-access-token",
-        refreshToken: "test-refresh-token",
-        expiresAt: 2_000_000_000,
+      await act(async () => {
+        root.render(
+          React.createElement(
+            Provider,
+            { store },
+            React.createElement(SignInModal, { onClose, onSignIn: vi.fn() })
+          )
+        );
       });
-    });
+      const dialog = () => document.querySelector('[role="dialog"]');
+      const login = Array.from(dialog()!.querySelectorAll("button")).find(
+        (button) => button.textContent === "cloud.signIn"
+      )!;
+      await act(async () => {
+        login.click();
+        store.set(org2CloudAuthAtom, {
+          kind: "org2_cloud",
+          supabaseUrl: "https://cloud.example.test",
+          supabaseAnonKey: "test-anon-key",
+          userId: "user-1",
+          accessToken: "test-access-token",
+          refreshToken: "test-refresh-token",
+          expiresAt: 2_000_000_000,
+        });
+      });
 
-    act(() => root.render(null));
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(2000);
-    });
+      if (action === "continue") {
+        const continueButton = Array.from(
+          dialog()!.querySelectorAll("button")
+        ).find((button) => button.textContent === "common:actions.continue")!;
+        await act(async () => continueButton.click());
+      } else {
+        act(() => root.render(null));
+      }
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(30_000);
+      });
 
-    expect(onClose).not.toHaveBeenCalled();
-  });
+      expect(onClose).toHaveBeenCalledTimes(action === "continue" ? 1 : 0);
+    }
+  );
 });

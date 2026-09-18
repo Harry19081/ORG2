@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -31,12 +31,14 @@ export default function MobileFileViewer({
   desktopAction?: MobileDesktopFileAction;
 }) {
   const { t } = useTranslation("mobileRemote");
+  const fileTabsId = useId();
   const [wrap, setWrap] = useState(true);
   const preview = mobileFilePreview(target, truncated);
   const source = preview.content;
   return (
     <div className="mobile-file-viewer flex h-full min-h-0 flex-col">
       <MobileFileViewerControls
+        fileTabsId={fileTabsId}
         target={target}
         targets={targets}
         onSelect={onSelect}
@@ -48,6 +50,14 @@ export default function MobileFileViewer({
       <div
         className="relative min-h-0 flex-1 overflow-hidden"
         data-mobile-file-document={target.filePath}
+        role={targets.length > 1 ? "tabpanel" : undefined}
+        id={`${fileTabsId}-panel`}
+        aria-labelledby={
+          targets.length > 1
+            ? `${fileTabsId}-tab-${target.targetIndex}`
+            : undefined
+        }
+        tabIndex={targets.length > 1 ? 0 : undefined}
       >
         {source === undefined ? (
           <Placeholder

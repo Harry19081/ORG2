@@ -150,6 +150,12 @@
     "selectedItemTransparency": "Transparência do item selecionado",
     "spotlightPlacement": "Posição do Spotlight",
     "spotlightDimBackground": "Escurecer o fundo",
+    "tooltips": "Dicas",
+    "buttonTooltipsEnabled": "Mostrar dicas dos botões",
+    "buttonTooltipsEnabledDesc": "Mostra o rótulo e o atalho de teclado ao passar o cursor sobre botões. As dicas dos ícones de informação sempre aparecem",
+    "buttonTooltipDelayMs": "Atraso das dicas",
+    "buttonTooltipDelayImmediate": "Imediatamente",
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
     "spotlightPlacementOptions": {
       "top": "Topo",
       "center": "Centro"

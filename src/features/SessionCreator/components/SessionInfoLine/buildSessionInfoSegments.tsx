@@ -8,7 +8,6 @@ import {
   RUNNING_LOCATIONS,
   type RunningLocation,
 } from "@src/config/sessionCreatorConfig";
-import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import {
   CodeXmlIcon,
   FolderClosedIcon,
@@ -141,7 +140,6 @@ export function buildSessionInfoSegments({
       ),
       tooltipFramed: true,
       tooltipPosition: "top",
-      tooltipMouseEnterDelay: COMPOSER_TOOLTIP_HOVER_DELAY,
       ariaLabel: t("selectors.sessionInfo.sourceAria"),
       disabled,
       onClick: handleRepoTriggerClick,
@@ -169,7 +167,6 @@ export function buildSessionInfoSegments({
       ),
       tooltipFramed: true,
       tooltipPosition: "top",
-      tooltipMouseEnterDelay: COMPOSER_TOOLTIP_HOVER_DELAY,
       ariaLabel: t("selectors.sessionInfo.locationAria"),
       disabled,
       buttonRef: locationTriggerRef,
@@ -208,7 +205,6 @@ export function buildSessionInfoSegments({
       ),
       tooltipFramed: true,
       tooltipPosition: "top",
-      tooltipMouseEnterDelay: COMPOSER_TOOLTIP_HOVER_DELAY,
       ariaLabel: t("selectors.sessionInfo.branchAria"),
       disabled: disabled || branchLoading,
       onClick: handleBranchTriggerClick,

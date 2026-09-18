@@ -7,7 +7,6 @@ import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut
 import RegionNoticeButton from "@src/components/RegionNoticeButton";
 import Tooltip from "@src/components/Tooltip";
 import { HeaderActionGroup } from "@src/components/WindowChrome/HeaderActionGroup";
-import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
 import { useCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
@@ -183,7 +182,7 @@ export function ChatPanelHeader({
               <KeyboardShortcutTooltipContent label={tuiModeLabel} noShortcut />
             }
             position="bottom-end"
-            mouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
+            kind="button"
             framedPanel
           >
             <span className="inline-flex">

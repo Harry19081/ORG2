@@ -97,7 +97,7 @@ export function InlineSplitSelectableRow({
         onKeyDown={(event) => event.stopPropagation()}
       >
         {switchTooltip ? (
-          <Tooltip content={switchTooltip} position="top">
+          <Tooltip kind="button" content={switchTooltip} position="top">
             <span className="inline-flex">{switchElement}</span>
           </Tooltip>
         ) : (

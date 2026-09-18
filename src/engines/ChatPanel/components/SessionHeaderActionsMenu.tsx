@@ -35,7 +35,7 @@ import {
   Link02Icon,
   MoreHorizontalIcon,
   Refresh04Icon,
-  Search01Icon,
+  SearchList01Icon,
   Share02Icon,
   ThirdBracketIcon,
 } from "@src/icons";
@@ -271,8 +271,8 @@ export const SessionHeaderActionsMenu: React.FC<
                 onClick={handleOpenSearch}
                 icon={
                   <HugeiconsIcon
-                    icon={Search01Icon}
-                    data-icon="search"
+                    icon={SearchList01Icon}
+                    data-icon="search-list-01"
                     size={DROPDOWN_ITEM.iconSize}
                     strokeWidth={1.75}
                   />

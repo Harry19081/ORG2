@@ -50,7 +50,6 @@ import {
 } from "@src/config/mainAppPaths";
 import { ROUTES } from "@src/config/routes";
 import { getSettingsSectionById } from "@src/config/settingsUiManifest";
-import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 // Reuse ChatPanel's resize wiring so the seam between the slot and the
 // workbench surface behaves identically across both slot occupants.
 import { useChatPanelResize } from "@src/engines/ChatPanel/hooks/useChatPanelResize";
@@ -367,8 +366,6 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
           breadcrumb={
             <>
               {sidebarCollapsed ? (
-                // Shares the sidebar-chrome dwell time so hovering between
-                // the header and the sidebar never mixes hover delays.
                 <Tooltip
                   content={
                     <KeyboardShortcutTooltipContent
@@ -379,7 +376,7 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
                     />
                   }
                   position="bottom-start"
-                  mouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
+                  kind="button"
                   framedPanel
                   smartPlacement
                 >
@@ -411,7 +408,7 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
                 <Tooltip
                   content={maximizeTooltip}
                   position="bottom-end"
-                  mouseEnterDelay={200}
+                  kind="button"
                   framedPanel
                 >
                   <span className="inline-flex">

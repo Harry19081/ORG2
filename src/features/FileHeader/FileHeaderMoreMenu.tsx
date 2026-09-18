@@ -245,7 +245,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
           <KeyboardShortcutTooltipContent label={t("common:actions.more")} />
         }
         position="bottom-end"
-        mouseEnterDelay={200}
+        kind="button"
         disabled={menuVisible}
         framedPanel
       >

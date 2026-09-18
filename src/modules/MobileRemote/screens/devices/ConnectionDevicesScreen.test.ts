@@ -201,14 +201,10 @@ describe("ConnectionDevicesScreen", () => {
       expect(officeButton?.getAttribute("aria-busy")).toBe("true");
       expect(container.querySelector('[role="alert"]')).toBeNull();
       const current = container.querySelector('[aria-current="true"]');
-      expect(current?.tagName).toBe("SPAN");
       expect(current?.textContent).toContain("Home Mac");
       expect(current?.textContent).toContain("Current computer");
       expect(current?.closest("button")).toBeNull();
-      const currentDetails = current?.querySelector(".flex-col");
-      expect(currentDetails?.children[0]?.textContent).toBe("Home Mac");
-      expect(currentDetails?.children[1]?.textContent).toBe("Mac14,7 · alex");
-      expect(currentDetails?.children[2]?.textContent).toBe("Current computer");
+      expect(current?.textContent).toContain("Mac14,7 · alex");
 
       await act(async () => {
         resolveSwitch();

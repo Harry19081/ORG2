@@ -95,7 +95,7 @@ export const FollowModeDropdown: React.FC = () => {
             : t("simulator.replay.trajectoryThisApp")
         }
         position="top"
-        mouseEnterDelay={200}
+        kind="button"
       >
         <Button
           variant="tertiary"

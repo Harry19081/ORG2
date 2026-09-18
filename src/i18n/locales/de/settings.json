@@ -150,6 +150,12 @@
     "selectedItemTransparency": "Transparenz ausgewählter Elemente",
     "spotlightPlacement": "Spotlight-Position",
     "spotlightDimBackground": "Hintergrund abdunkeln",
+    "tooltips": "Tooltips",
+    "buttonTooltipsEnabled": "Schaltflächen-Tooltips anzeigen",
+    "buttonTooltipsEnabledDesc": "Beim Überfahren von Schaltflächen Bezeichnung und Tastenkürzel anzeigen. Tooltips von Info-Symbolen werden immer angezeigt",
+    "buttonTooltipDelayMs": "Tooltip-Verzögerung",
+    "buttonTooltipDelayImmediate": "Sofort",
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
     "spotlightPlacementOptions": {
       "top": "Oben",
       "center": "Mitte"

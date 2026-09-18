@@ -231,6 +231,12 @@
     "selectedItemTransparency": "चयनित आइटम की पारदर्शिता",
     "spotlightPlacement": "स्पॉटलाइट की स्थिति",
     "spotlightDimBackground": "पृष्ठभूमि धुंधली करें",
+    "tooltips": "टूलटिप",
+    "buttonTooltipsEnabled": "बटन टूलटिप दिखाएँ",
+    "buttonTooltipsEnabledDesc": "बटन पर होवर करने पर नाम और कीबोर्ड शॉर्टकट दिखाएँ। जानकारी आइकन के टूलटिप हमेशा दिखते हैं",
+    "buttonTooltipDelayMs": "टूलटिप विलंब",
+    "buttonTooltipDelayImmediate": "तुरंत",
+    "buttonTooltipDelaySeconds": "{{seconds}} सेकंड",
     "spotlightPlacementOptions": {
       "top": "ऊपर",
       "center": "बीच में"

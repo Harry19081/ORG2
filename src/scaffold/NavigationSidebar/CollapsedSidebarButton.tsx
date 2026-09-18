@@ -16,8 +16,6 @@ import { HugeiconsIcon, LayoutAlignLeftIcon, PanelLeftIcon } from "@src/icons";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
-import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "./config";
-
 const CollapsedSidebarButtonComponent: React.FC = () => {
   const { t } = useTranslation("sessions");
   const collapsed = useAtomValue(sidebarCollapsedAtom);
@@ -56,7 +54,7 @@ const CollapsedSidebarButtonComponent: React.FC = () => {
       <Tooltip
         content={tooltipContent}
         position="bottom"
-        mouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
+        kind="button"
         framedPanel
       >
         <span className="inline-flex">
@@ -89,10 +87,7 @@ const CollapsedSidebarButtonComponent: React.FC = () => {
           />
         </span>
       </Tooltip>
-      <SessionHistoryNav
-        variant="chat"
-        tooltipMouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
-      />
+      <SessionHistoryNav variant="chat" />
     </div>
   );
 };
