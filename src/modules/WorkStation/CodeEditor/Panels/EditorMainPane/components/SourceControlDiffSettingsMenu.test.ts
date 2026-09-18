@@ -17,10 +17,32 @@ vi.mock("@src/features/FileHeader/FileHeaderMoreMenu", () => ({
   },
 }));
 
+const onRefresh = vi.fn();
+
 describe("SourceControlDiffSettingsMenu", () => {
   it("includes the shared sidebar settings submenu", () => {
-    renderToStaticMarkup(createElement(SourceControlDiffSettingsMenu));
+    renderToStaticMarkup(
+      createElement(SourceControlDiffSettingsMenu, { onRefresh })
+    );
 
     expect(capture.props?.showSidebarSettings).toBe(true);
+  });
+
+  it("offers review search", () => {
+    renderToStaticMarkup(
+      createElement(SourceControlDiffSettingsMenu, { onRefresh })
+    );
+
+    expect(capture.props?.showSearchAction).toBe(true);
+  });
+
+  it("refreshes the diff list and closes the menu", () => {
+    renderToStaticMarkup(
+      createElement(SourceControlDiffSettingsMenu, { onRefresh })
+    );
+
+    expect(capture.props?.showReloadButton).toBe(true);
+    capture.props?.onReloadClick();
+    expect(onRefresh).toHaveBeenCalledOnce();
   });
 });

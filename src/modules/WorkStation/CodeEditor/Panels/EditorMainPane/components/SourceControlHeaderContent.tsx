@@ -258,7 +258,10 @@ export const SourceControlHeaderContent: React.FC<
             className="flex shrink-0 items-center gap-px"
           />
         ) : (
-          <SourceControlDiffSettingsMenu />
+          <SourceControlDiffSettingsMenu
+            onRefresh={onRefresh}
+            refreshSpinClass={sourceControlRefreshSpinClass}
+          />
         )}
       </span>
     </div>
