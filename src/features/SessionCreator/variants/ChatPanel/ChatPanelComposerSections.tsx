@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import SelectorPill from "@src/components/SelectorPill";
 import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
+import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import type { usePinnedActionsVisibilityContextMenu } from "@src/engines/ChatPanel/InputArea/components/PinnedActionsBar/usePinnedActionsVisibilityContextMenu";
 import { HugeiconsIcon, ScreenRotationIcon } from "@src/icons";
 
@@ -148,6 +149,7 @@ export const ChatPanelComposerGroup: React.FC<ChatPanelComposerGroupProps> = ({
         size={spotlight ? "sm" : "md"}
         appearance={spotlight ? "default" : "bare"}
         tooltip={t("creator.switchAgent")}
+        tooltipMouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
         tooltipPosition="top"
         onClick={onCategoryPickerOpen}
         ariaLabel={heroContent.name}

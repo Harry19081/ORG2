@@ -16,6 +16,7 @@ import {
 } from "@src/components/Dropdown/tokens";
 import EffortSlider from "@src/components/ModelPropertiesDropdown/EffortSlider";
 import Tooltip from "@src/components/Tooltip";
+import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import {
   ArrowLeft01Icon,
@@ -179,7 +180,7 @@ export default function ModelSettingsMenu({
       content={t("sessions:creator.switchAgent")}
       position="top"
       framedPanel
-      mouseEnterDelay={200}
+      mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
     >
       <Button
         variant="tertiary"
@@ -419,7 +420,7 @@ export default function ModelSettingsMenu({
                         content={`${text("speed")}: ${speedLabel}`}
                         position="top"
                         framedPanel
-                        mouseEnterDelay={200}
+                        mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
                       >
                         <Button
                           htmlType="button"

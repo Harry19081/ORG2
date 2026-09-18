@@ -39,6 +39,7 @@ import {
   execModeForComposerSelection,
   resolveSessionAgentExecMode,
 } from "@src/config/sessionCreatorConfig";
+import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import {
@@ -252,6 +253,7 @@ const ModePill: React.FC<ModePillProps> = memo(
           }
           label={currentLabel}
           tooltip={t("creator.switchMode")}
+          tooltipMouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
           tooltipFramed
           tooltipPosition="top"
           active={isOpen}

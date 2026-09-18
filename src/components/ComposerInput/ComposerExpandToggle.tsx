@@ -5,6 +5,7 @@ import Button from "@src/components/Button";
 import { PILL_CONTROL_HOVER_CLASS } from "@src/components/CompoundPill/config";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
+import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import {
   ArrowExpand01Icon,
   ArrowShrink02Icon,
@@ -29,7 +30,11 @@ const ComposerExpandToggle: React.FC<ComposerExpandToggleProps> = memo(
       : t("common:tooltips.expandInput");
 
     return (
-      <Tooltip content={label} position="top" mouseEnterDelay={200}>
+      <Tooltip
+        content={label}
+        position="top"
+        mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
+      >
         <span className="inline-flex">
           <Button
             layout="custom"
