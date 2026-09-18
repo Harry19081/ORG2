@@ -196,6 +196,8 @@ interface ChatImageThumbnailRowProps {
   altPrefix?: string;
   /** Thumbnail size class forwarded to each item. */
   sizeClassName?: string;
+  /** Extra classes for the row container (e.g. `justify-end`). */
+  className?: string;
 }
 
 /**
@@ -203,7 +205,7 @@ interface ChatImageThumbnailRowProps {
  * callers can render unconditionally.
  */
 export const ChatImageThumbnailRow: React.FC<ChatImageThumbnailRowProps> = memo(
-  ({ images, altPrefix = "Attached image", sizeClassName }) => {
+  ({ images, altPrefix = "Attached image", sizeClassName, className }) => {
     const gallery = React.useMemo(
       () =>
         (images ?? []).map((src) => {
@@ -219,7 +221,7 @@ export const ChatImageThumbnailRow: React.FC<ChatImageThumbnailRowProps> = memo(
     );
     if (!images || images.length === 0) return null;
     return (
-      <div className="flex flex-wrap gap-1.5">
+      <div className={`flex flex-wrap gap-1.5 ${className ?? ""}`}>
         {images.map((ref, idx) => (
           <ChatImageThumbnail
             key={`${ref}-${idx}`}
