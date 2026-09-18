@@ -124,8 +124,11 @@ function getButtonStyleClasses(
   const base = (() => {
     switch (variant) {
       case "primary":
+        // The fill stops inside a transparent 1px border so its visible body
+        // matches the secondary outline's hairline-bordered box; a full-bleed
+        // fill reads taller than a secondary of the same height.
         if (appearance === "solid")
-          return "btn:border-0 btn:text-white btn:bg-primary-6";
+          return "btn:border btn:border-transparent btn:bg-clip-padding btn:text-white btn:bg-primary-6";
         if (appearance === "outline")
           return "btn:border btn:border-primary-6 btn:bg-transparent btn:text-primary-6";
         if (appearance === "dashed")
