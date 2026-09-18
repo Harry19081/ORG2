@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import InboxListDetailLayout from "./InboxListDetailLayout";
 
 describe("InboxListDetailLayout", () => {
-  it("owns the collapsible listener only while the split view is mounted", async () => {
+  it("switches between single and split modes without a window keydown listener", async () => {
     const actEnvironment = globalThis as typeof globalThis & {
       IS_REACT_ACT_ENVIRONMENT?: boolean;
     };
@@ -58,10 +58,9 @@ describe("InboxListDetailLayout", () => {
         container.querySelector('[data-compact-list-header="true"]')
       ).toBeNull();
       expect(container.textContent).toContain("Compact");
-      const keydownListener = add.mock.calls.find(
-        ([eventName]) => eventName === "keydown"
-      )?.[1];
-      expect(keydownListener).toBeTypeOf("function");
+      expect(
+        add.mock.calls.filter(([eventName]) => eventName === "keydown")
+      ).toHaveLength(0);
 
       await act(async () => root.render(renderLayout(false, true, true)));
       expect(
@@ -72,7 +71,9 @@ describe("InboxListDetailLayout", () => {
       expect(container.textContent).toContain("Controls");
 
       await act(async () => root.render(renderLayout(false)));
-      expect(remove).toHaveBeenCalledWith("keydown", keydownListener);
+      expect(
+        remove.mock.calls.filter(([eventName]) => eventName === "keydown")
+      ).toHaveLength(0);
     } finally {
       await act(async () => root.unmount());
       add.mockRestore();
