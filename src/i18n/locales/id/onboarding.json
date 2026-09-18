@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Orientasi & fitur baru",
-    "getStarted": "Mulai",
-    "newFeatures": "Fitur baru",
-    "branchesTitle": "Branch repositori",
-    "branchesDescription": "Beralih branch repositori langsung dari Spotlight"
+    "title": "Orientasi",
+    "getStarted": "Mulai"
   }
 }

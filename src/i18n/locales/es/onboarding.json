@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Primeros pasos y novedades",
-    "getStarted": "Primeros pasos",
-    "newFeatures": "Novedades",
-    "branchesTitle": "Ramas del repositorio",
-    "branchesDescription": "Cambia de rama del repositorio directamente desde Spotlight"
+    "title": "Primeros pasos",
+    "getStarted": "Primeros pasos"
   }
 }

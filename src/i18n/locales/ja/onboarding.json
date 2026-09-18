@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "使い方と新機能",
-    "getStarted": "はじめに",
-    "newFeatures": "新機能",
-    "branchesTitle": "リポジトリのブランチ",
-    "branchesDescription": "Spotlight からリポジトリのブランチを直接切り替えます"
+    "title": "使い方",
+    "getStarted": "はじめに"
   }
 }

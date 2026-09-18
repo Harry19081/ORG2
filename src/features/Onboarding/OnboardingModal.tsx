@@ -2,17 +2,11 @@ import React from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 
+import onboardingImage from "@src/assets/illustrations/onboarding.png";
 import ActionCard from "@src/components/ActionCard";
-import {
-  openCollabOrgSpotlight,
-  openSessionCreatorSpotlight,
-  openWorkingDirectorySpotlight,
-} from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import Modal from "@src/scaffold/ModalSystem";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import { TUTORIALS } from "@src/scaffold/Tutorials/tutorialRegistry";
-
-import { FEATURE_UPDATES } from "./featureUpdates";
 
 interface OnboardingModalProps {
   open: boolean;
@@ -24,7 +18,7 @@ export default function OnboardingModal({
   open,
   onClose,
 }: OnboardingModalProps) {
-  const { t } = useTranslation(["onboarding", "navigation", "common"]);
+  const { t } = useTranslation("onboarding");
   const runAction = (action: () => void) => {
     // Release the focus trap and native overlay before a card opens its destination.
     flushSync(onClose);
@@ -35,7 +29,8 @@ export default function OnboardingModal({
     <Modal
       visible={open}
       onCancel={onClose}
-      title={t("onboarding:discovery.title")}
+      title={t("discovery.title")}
+      image={{ src: onboardingImage, alt: "" }}
       footer={null}
       width={720}
       bodyClassName="p-4"
@@ -53,37 +48,15 @@ export default function OnboardingModal({
             id="onboarding-start-title"
             className="text-sm font-semibold text-text-1"
           >
-            {t("onboarding:discovery.getStarted")}
+            {t("discovery.getStarted")}
           </h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <ActionCard
-              title={t("navigation:sidebar.guide.startSession")}
-              onClick={() => runAction(openSessionCreatorSpotlight)}
-              showArrow
-              dataTestId="onboarding-start-session"
-            />
-            <ActionCard
-              title={t(
-                "common:selectors.spotlight.actions.switchWorkspace.label"
-              )}
-              onClick={() =>
-                runAction(() => openWorkingDirectorySpotlight("switch"))
-              }
-              showArrow
-              dataTestId="onboarding-working-directories"
-            />
-            <ActionCard
-              title={t("navigation:sidebar.guide.connectOrganization")}
-              onClick={() => runAction(() => openCollabOrgSpotlight())}
-              showArrow
-              dataTestId="onboarding-workspace"
-            />
             {TUTORIALS.map((tutorial) => (
               <ActionCard
                 key={tutorial.id}
-                title={t(`onboarding:${tutorial.titleKey}`)}
-                description={t(`onboarding:${tutorial.descriptionKey}`)}
-                badge={t(`onboarding:${tutorial.durationKey}`)}
+                title={t(tutorial.titleKey)}
+                description={t(tutorial.descriptionKey)}
+                badge={t(tutorial.durationKey)}
                 onClick={() =>
                   runAction(() =>
                     window.dispatchEvent(new CustomEvent(tutorial.eventName))
@@ -94,27 +67,6 @@ export default function OnboardingModal({
               />
             ))}
           </div>
-        </section>
-        <section
-          aria-labelledby="onboarding-features-title"
-          className="flex flex-col gap-3"
-        >
-          <h2
-            id="onboarding-features-title"
-            className="text-sm font-semibold text-text-1"
-          >
-            {t("onboarding:discovery.newFeatures")}
-          </h2>
-          {FEATURE_UPDATES.map((feature) => (
-            <ActionCard
-              key={feature.id}
-              title={t(`onboarding:${feature.titleKey}`)}
-              description={t(`onboarding:${feature.descriptionKey}`)}
-              onClick={() => runAction(feature.onOpen)}
-              showArrow
-              dataTestId={`onboarding-feature-${feature.id}`}
-            />
-          ))}
         </section>
       </div>
     </Modal>

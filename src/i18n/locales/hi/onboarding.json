@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "ऑनबोर्डिंग और नई सुविधाएँ",
-    "getStarted": "शुरू करें",
-    "newFeatures": "नई सुविधाएँ",
-    "branchesTitle": "रिपॉज़िटरी ब्रांच",
-    "branchesDescription": "स्पॉटलाइट से सीधे रिपॉज़िटरी ब्रांच बदलें"
+    "title": "ऑनबोर्डिंग",
+    "getStarted": "शुरू करें"
   }
 }

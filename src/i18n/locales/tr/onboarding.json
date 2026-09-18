@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "Başlangıç ve yeni özellikler",
-    "getStarted": "Başlarken",
-    "newFeatures": "Yeni özellikler",
-    "branchesTitle": "Depo dalları",
-    "branchesDescription": "Depo dallarını doğrudan Spotlight üzerinden değiştirin"
+    "title": "Başlangıç",
+    "getStarted": "Başlarken"
   }
 }

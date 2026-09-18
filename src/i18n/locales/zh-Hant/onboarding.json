@@ -64,10 +64,7 @@
     }
   },
   "discovery": {
-    "title": "新手入門與新功能",
-    "getStarted": "開始使用",
-    "newFeatures": "新功能",
-    "branchesTitle": "儲存庫分支",
-    "branchesDescription": "直接在 Spotlight 中切換儲存庫分支"
+    "title": "新手入門",
+    "getStarted": "開始使用"
   }
 }
