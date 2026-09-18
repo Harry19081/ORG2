@@ -150,12 +150,6 @@
     "selectedItemTransparency": "Transparence de l’élément sélectionné",
     "spotlightPlacement": "Position de Spotlight",
     "spotlightDimBackground": "Assombrir l’arrière-plan",
-    "tooltips": "Info-bulles",
-    "buttonTooltipsEnabled": "Afficher les info-bulles des boutons",
-    "buttonTooltipsEnabledDesc": "Affiche le libellé et le raccourci clavier au survol des boutons. Les info-bulles des icônes d'information s'affichent toujours",
-    "buttonTooltipDelayMs": "Délai des info-bulles",
-    "buttonTooltipDelayImmediate": "Immédiatement",
-    "buttonTooltipDelaySeconds": "{{seconds}} s",
     "spotlightPlacementOptions": {
       "top": "Haut",
       "center": "Milieu"
@@ -234,7 +228,13 @@
     "license": "Licence",
     "licenseTitle": "Licence ORG2",
     "licenseLoading": "Chargement de la licence…",
-    "licenseLoadFailed": "Impossible de charger la licence de l’application"
+    "licenseLoadFailed": "Impossible de charger la licence de l’application",
+    "tooltips": "Info-bulles",
+    "buttonTooltipsEnabled": "Afficher les info-bulles des boutons",
+    "buttonTooltipsEnabledDesc": "Affiche le libellé et le raccourci clavier au survol des boutons. Les info-bulles des icônes d'information s'affichent toujours",
+    "buttonTooltipDelayMs": "Délai des info-bulles",
+    "buttonTooltipDelayImmediate": "Immédiatement",
+    "buttonTooltipDelaySeconds": "{{seconds}} s"
   },
   "background": {
     "title": "Arrière-plan",
@@ -931,6 +931,8 @@
     "apply": "Utiliser cette connexion",
     "applied": "Configuration enregistrée : démarrez une nouvelle session de l’outil",
     "restore": "Rétablir la configuration d’origine",
+    "disconnect": "Déconnecter",
+    "overlayHelp": "Les paramètres de connexion sont stockés séparément dans {{path}}. « Ouvrir le terminal » lance Claude Code avec ces paramètres et l’historique existant. Les hooks de suivi des sessions sont gérés séparément",
     "restored": "Configuration d’origine rétablie : démarrez une nouvelle session de l’outil",
     "refresh": "Actualiser",
     "refreshed": "Connexions des outils actualisées",
@@ -947,6 +949,7 @@
     "desktopRestored": "Configuration précédente restaurée — quittez complètement Claude Desktop puis rouvrez-le",
     "advancedDescription": "Connexions API personnalisées et migration ponctuelle des identifiants",
     "marketApps": {
+      "isolatedStorage": "Cette application officielle utilise des paramètres et un stockage de conversations séparés. Votre application principale et la CLI conservent leurs paramètres. Les anciennes conversations ne sont pas importées automatiquement",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
@@ -960,11 +963,14 @@
       "opened": "Application ouverte",
       "disconnected": "La configuration précédente de l’application a été restaurée",
       "actionFailed": "Impossible de mettre à jour cette connexion",
+      "openFailed": "Impossible d’ouvrir cette application",
+      "restoreRequired": "Restaurez la configuration d’origine de cette application, puis sélectionnez vos forfaits et appliquez à nouveau la connexion",
       "workspaceNumber": "Service {{index}} sur {{count}}",
       "openTerminal": "Ouvrir le terminal",
       "terminalOpened": "Terminal ouvert",
       "provider": "ORG2 Market",
       "multiPackageHelp": "Sélectionnez jusqu’à 8 forfaits et un modèle par défaut pour changer de forfait dans l’application",
+      "auxiliaryBilling": "Les appels automatiques de Claude Code pour le titre, la mémoire et la compaction sont facturés au forfait par défaut ; seule la conversation suit le forfait choisi avec /model",
       "defaultModel": "Modèle par défaut",
       "packageLimit": "Sélectionnez jusqu’à 8 forfaits"
     }
@@ -1082,10 +1088,10 @@
     "relayDisabledHint": "Les connexions Internet sont désactivées. Activez-les dans les paramètres avancés"
   },
   "development": {
-    "illustrations": "Illustrations",
-    "illustrationsDesc": "Comparez toutes les illustrations en clair et en sombre sans changer de thème",
     "updateAvailable": "Mise à jour disponible",
-    "updateAvailableDesc": "Afficher les indicateurs de mise à jour dans toute l’application avec la version 99.0.0 — les actions ouvrent uniquement l’aperçu"
+    "updateAvailableDesc": "Afficher les indicateurs de mise à jour dans toute l’application avec la version 99.0.0 — les actions ouvrent uniquement l’aperçu",
+    "illustrations": "Illustrations",
+    "illustrationsDesc": "Comparez toutes les illustrations en clair et en sombre sans changer de thème"
   },
   "managedUsage": {
     "cancel": "Annuler",

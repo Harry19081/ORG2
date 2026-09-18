@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { rpc } from "@src/api/tauri/rpc";
+import { RpcError } from "@src/api/tauri/rpc/invoke";
 import type { ConnectionHarness } from "@src/api/tauri/rpc/schemas/agentOrgs";
 import Button from "@src/components/Button";
 import Message from "@src/components/Message";
@@ -166,9 +167,18 @@ export default function AppConnectionPage({
       Message.success({
         content: t("harnessConnections.marketApps.connected"),
       });
-    } catch {
+    } catch (error) {
+      // Allowlist the machine code; never display arbitrary native error text.
+      const restoreRequired =
+        error instanceof RpcError &&
+        error.command === "market_connection_configure_catalog" &&
+        error.cause === "native_app_restore_required";
       Message.error({
-        content: t("harnessConnections.marketApps.actionFailed"),
+        content: t(
+          restoreRequired
+            ? "harnessConnections.marketApps.restoreRequired"
+            : "harnessConnections.marketApps.actionFailed"
+        ),
       });
     } finally {
       owner?.dispose();
@@ -182,11 +192,21 @@ export default function AppConnectionPage({
     setBusy("open");
     let owner: ReturnType<typeof captureMarketOwner> | undefined;
     try {
-      const profile = appliedMarketProfiles[0];
-      if (!profile) throw new Error("market_identity_mismatch");
-      owner = captureMarketOwner(profile.connection.identity_user_id);
-      await openConfiguredMarketClient(target, selection, model);
-      owner.assertCurrent();
+      if (marketManaged) {
+        const profile = appliedMarketProfiles[0];
+        if (!profile) throw new Error("market_identity_mismatch");
+        owner = captureMarketOwner(profile.connection.identity_user_id);
+        await openConfiguredMarketClient(target, selection, model);
+        owner.assertCurrent();
+      } else if (target === "claude_code") {
+        await rpc.agentOrgs.connections.openClient({
+          agentName: target,
+          keyId: selection,
+          model,
+        });
+      } else {
+        throw new Error("unsupported_client");
+      }
       Message.success({
         content: t(
           target === "claude_code"
@@ -196,7 +216,7 @@ export default function AppConnectionPage({
       });
     } catch {
       Message.error({
-        content: t("harnessConnections.marketApps.actionFailed"),
+        content: t("harnessConnections.marketApps.openFailed"),
       });
     } finally {
       owner?.dispose();
@@ -239,11 +259,15 @@ export default function AppConnectionPage({
             ? (state.view?.configurationIssue ??
               state.view?.config.message ??
               t("harnessConnections.marketApps.unavailable"))
-            : marketManaged
-              ? t("harnessConnections.proxyHelp")
-              : configured
-                ? t("harnessConnections.applied")
-                : t("harnessConnections.marketApps.original");
+            : configured && state.view?.config.overlay
+              ? t("harnessConnections.overlayHelp", {
+                  path: state.view.config.targetFiles[0]?.targetPath ?? "",
+                })
+              : marketManaged
+                ? t("harnessConnections.proxyHelp")
+                : configured
+                  ? t("harnessConnections.applied")
+                  : t("harnessConnections.marketApps.original");
 
   return (
     <div className="flex flex-col gap-4" data-testid={`app-page-${target}`}>
@@ -266,6 +290,11 @@ export default function AppConnectionPage({
               </span>
             )}
             <span className={SECTION_DESCRIPTION_CLASSES}>{status}</span>
+            {state.view?.config.nativeApp && (
+              <span className={SECTION_DESCRIPTION_CLASSES}>
+                {t("harnessConnections.marketApps.isolatedStorage")}
+              </span>
+            )}
             {issue && <span className="text-sm text-warning-6">{issue}</span>}
           </div>
         </SectionRow>
@@ -283,14 +312,17 @@ export default function AppConnectionPage({
                 configured ? "common:actions.edit" : "common:actions.configure"
               )}
             </Button>
-            {marketManaged && (
+            {(marketManaged ||
+              (target === "claude_code" &&
+                configured &&
+                state.view?.config.overlay)) && (
               <Button
                 variant="secondary"
                 loading={busy === "open"}
                 disabled={
                   busy !== null ||
                   unavailable ||
-                  appliedMarketProfiles.length === 0
+                  (marketManaged && appliedMarketProfiles.length === 0)
                 }
                 onClick={() => void openClient()}
               >
@@ -313,7 +345,11 @@ export default function AppConnectionPage({
                 }
                 onClick={() => void restore()}
               >
-                {t("harnessConnections.restore")}
+                {t(
+                  state.view?.config.overlay
+                    ? "harnessConnections.disconnect"
+                    : "harnessConnections.restore"
+                )}
               </Button>
             )}
           </div>
@@ -388,6 +424,11 @@ export default function AppConnectionPage({
                 <p className={SECTION_DESCRIPTION_CLASSES}>
                   {t("harnessConnections.marketApps.multiPackageHelp")}
                 </p>
+                {target === "claude_code" && (
+                  <p className={SECTION_DESCRIPTION_CLASSES}>
+                    {t("harnessConnections.marketApps.auxiliaryBilling")}
+                  </p>
+                )}
                 {profilesLoading ? (
                   <p className={SECTION_DESCRIPTION_CLASSES}>
                     {t("harnessConnections.marketApps.loading")}

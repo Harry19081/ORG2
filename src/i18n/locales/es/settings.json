@@ -150,12 +150,6 @@
     "selectedItemTransparency": "Transparencia del elemento seleccionado",
     "spotlightPlacement": "Posición de Spotlight",
     "spotlightDimBackground": "Oscurecer el fondo",
-    "tooltips": "Información sobre herramientas",
-    "buttonTooltipsEnabled": "Mostrar información de los botones",
-    "buttonTooltipsEnabledDesc": "Muestra la etiqueta y el atajo de teclado al pasar sobre los botones. La información de los iconos de ayuda siempre se muestra",
-    "buttonTooltipDelayMs": "Retraso de la información",
-    "buttonTooltipDelayImmediate": "Inmediatamente",
-    "buttonTooltipDelaySeconds": "{{seconds}} s",
     "spotlightPlacementOptions": {
       "top": "Arriba",
       "center": "Centro"
@@ -234,7 +228,13 @@
     "license": "Licencia",
     "licenseTitle": "Licencia de ORG2",
     "licenseLoading": "Cargando licencia…",
-    "licenseLoadFailed": "No se puede cargar la licencia de la aplicación"
+    "licenseLoadFailed": "No se puede cargar la licencia de la aplicación",
+    "tooltips": "Información sobre herramientas",
+    "buttonTooltipsEnabled": "Mostrar información de los botones",
+    "buttonTooltipsEnabledDesc": "Muestra la etiqueta y el atajo de teclado al pasar sobre los botones. La información de los iconos de ayuda siempre se muestra",
+    "buttonTooltipDelayMs": "Retraso de la información",
+    "buttonTooltipDelayImmediate": "Inmediatamente",
+    "buttonTooltipDelaySeconds": "{{seconds}} s"
   },
   "background": {
     "title": "Fondo",
@@ -931,6 +931,8 @@
     "apply": "Usar esta conexión",
     "applied": "Configuración guardada: inicia una nueva sesión de la herramienta",
     "restore": "Restaurar configuración original",
+    "disconnect": "Desconectar",
+    "overlayHelp": "La configuración de conexión se guarda por separado en {{path}}. «Abrir terminal» inicia Claude Code con esta configuración y el historial existente. Los hooks de seguimiento de sesiones se controlan por separado",
     "restored": "Configuración original restaurada: inicia una nueva sesión de la herramienta",
     "refresh": "Actualizar",
     "refreshed": "Conexiones de herramientas actualizadas",
@@ -947,6 +949,7 @@
     "desktopRestored": "Configuración anterior restaurada — cierra Claude Desktop por completo y vuelve a abrirlo",
     "advancedDescription": "Conexiones API personalizadas y migración única de credenciales",
     "marketApps": {
+      "isolatedStorage": "Esta app oficial usa ajustes y almacenamiento de conversaciones independientes. Tu app principal y la CLI conservan sus ajustes. Las conversaciones anteriores no se importan automáticamente",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
@@ -960,11 +963,14 @@
       "opened": "Aplicación abierta",
       "disconnected": "Se restauró la configuración anterior de la aplicación",
       "actionFailed": "No se pudo actualizar esta conexión",
+      "openFailed": "No se pudo abrir esta aplicación",
+      "restoreRequired": "Restaura la configuración original de esta app, luego selecciona tus paquetes y vuelve a aplicar la conexión",
       "workspaceNumber": "Servicio {{index}} de {{count}}",
       "openTerminal": "Abrir terminal",
       "terminalOpened": "Terminal abierta",
       "provider": "ORG2 Market",
       "multiPackageHelp": "Selecciona hasta 8 paquetes y un modelo predeterminado para cambiar de paquete dentro de la app",
+      "auxiliaryBilling": "Las llamadas automáticas de Claude Code para título, memoria y compactación se facturan al paquete predeterminado; solo el chat sigue el paquete elegido con /model",
       "defaultModel": "Modelo predeterminado",
       "packageLimit": "Selecciona hasta 8 paquetes"
     }
@@ -1082,10 +1088,10 @@
     "relayDisabledHint": "Las conexiones por Internet están desactivadas. Actívalas en los ajustes avanzados"
   },
   "development": {
-    "illustrations": "Ilustraciones",
-    "illustrationsDesc": "Compara todas las ilustraciones en claro y oscuro sin cambiar el tema",
     "updateAvailable": "Actualización disponible",
-    "updateAvailableDesc": "Mostrar indicadores de actualización en toda la aplicación con la versión 99.0.0 — las acciones solo abren la vista previa"
+    "updateAvailableDesc": "Mostrar indicadores de actualización en toda la aplicación con la versión 99.0.0 — las acciones solo abren la vista previa",
+    "illustrations": "Ilustraciones",
+    "illustrationsDesc": "Compara todas las ilustraciones en claro y oscuro sin cambiar el tema"
   },
   "managedUsage": {
     "cancel": "Cancelar",

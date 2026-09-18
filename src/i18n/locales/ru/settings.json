@@ -150,12 +150,6 @@
     "selectedItemTransparency": "Прозрачность выбранного элемента",
     "spotlightPlacement": "Положение Spotlight",
     "spotlightDimBackground": "Затемнять фон",
-    "tooltips": "Подсказки",
-    "buttonTooltipsEnabled": "Показывать подсказки кнопок",
-    "buttonTooltipsEnabledDesc": "Показывать название и сочетание клавиш при наведении на кнопки. Подсказки информационных значков показываются всегда",
-    "buttonTooltipDelayMs": "Задержка подсказки",
-    "buttonTooltipDelayImmediate": "Сразу",
-    "buttonTooltipDelaySeconds": "{{seconds}} с",
     "spotlightPlacementOptions": {
       "top": "Сверху",
       "center": "По центру"
@@ -234,7 +228,13 @@
     "license": "Лицензия",
     "licenseTitle": "Лицензия ORG2",
     "licenseLoading": "Загрузка лицензии…",
-    "licenseLoadFailed": "Не удалось загрузить лицензию приложения"
+    "licenseLoadFailed": "Не удалось загрузить лицензию приложения",
+    "tooltips": "Подсказки",
+    "buttonTooltipsEnabled": "Показывать подсказки кнопок",
+    "buttonTooltipsEnabledDesc": "Показывать название и сочетание клавиш при наведении на кнопки. Подсказки информационных значков показываются всегда",
+    "buttonTooltipDelayMs": "Задержка подсказки",
+    "buttonTooltipDelayImmediate": "Сразу",
+    "buttonTooltipDelaySeconds": "{{seconds}} с"
   },
   "background": {
     "title": "Фон",
@@ -931,6 +931,8 @@
     "apply": "Использовать это подключение",
     "applied": "Настройки сохранены — начните новый сеанс инструмента",
     "restore": "Восстановить исходные настройки",
+    "disconnect": "Отключить",
+    "overlayHelp": "Настройки подключения хранятся отдельно в {{path}}. «Открыть терминал» запускает Claude Code с этими настройками и существующей историей бесед. Хуки отслеживания сеансов настраиваются отдельно",
     "restored": "Исходные настройки восстановлены — начните новый сеанс инструмента",
     "refresh": "Обновить",
     "refreshed": "Подключения инструментов обновлены",
@@ -947,6 +949,7 @@
     "desktopRestored": "Предыдущие настройки восстановлены — полностью закройте и снова откройте Claude Desktop",
     "advancedDescription": "Пользовательские API-подключения и одноразовый импорт учетных данных",
     "marketApps": {
+      "isolatedStorage": "Это официальное приложение использует отдельные настройки и хранилище разговоров. Настройки основного приложения и CLI сохраняются. Предыдущие разговоры не импортируются автоматически",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
@@ -960,11 +963,14 @@
       "opened": "Приложение открыто",
       "disconnected": "Предыдущая конфигурация приложения восстановлена",
       "actionFailed": "Не удалось обновить подключение приложения",
+      "openFailed": "Не удалось открыть это приложение",
+      "restoreRequired": "Восстановите исходные настройки приложения, затем выберите пакеты и снова примените подключение",
       "workspaceNumber": "Сервис {{index}} из {{count}}",
       "openTerminal": "Открыть терминал",
       "terminalOpened": "Терминал открыт",
       "provider": "ORG2 Market",
       "multiPackageHelp": "Выберите до 8 пакетов и модель по умолчанию, затем переключайте пакеты в приложении",
+      "auxiliaryBilling": "Автоматические вызовы Claude Code для заголовка, памяти и сжатия списываются с пакета по умолчанию; только сам чат следует пакету, выбранному через /model",
       "defaultModel": "Модель по умолчанию",
       "packageLimit": "Выберите до 8 пакетов"
     }
@@ -1082,10 +1088,10 @@
     "relayDisabledHint": "Подключения через интернет отключены. Включите их в дополнительных настройках"
   },
   "development": {
-    "illustrations": "Иллюстрации",
-    "illustrationsDesc": "Сравните все иллюстрации в светлом и тёмном режиме, не меняя тему",
     "updateAvailable": "Доступно обновление",
-    "updateAvailableDesc": "Показывать индикаторы обновления во всём приложении для версии 99.0.0 — действия открывают только предпросмотр"
+    "updateAvailableDesc": "Показывать индикаторы обновления во всём приложении для версии 99.0.0 — действия открывают только предпросмотр",
+    "illustrations": "Иллюстрации",
+    "illustrationsDesc": "Сравните все иллюстрации в светлом и тёмном режиме, не меняя тему"
   },
   "managedUsage": {
     "cancel": "Отмена",

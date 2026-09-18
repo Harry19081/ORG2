@@ -3,6 +3,7 @@ import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
+import { RpcError } from "@src/api/tauri/rpc/invoke";
 import Message from "@src/components/Message";
 import { signedInStore } from "@src/features/MarketConnect/identity.test-utils";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
@@ -16,12 +17,22 @@ vi.mock("./HarnessConnectionEditor", () => ({ default: () => null }));
 const configure = vi.fn();
 const restore = vi.fn();
 const open = vi.fn();
+const openLocal = vi.fn();
+let direct = false;
+vi.mock("@src/api/tauri/rpc", () => ({
+  rpc: {
+    agentOrgs: {
+      connections: { openClient: (...args: unknown[]) => openLocal(...args) },
+    },
+  },
+}));
 const reload = vi.fn();
 const refresh = vi.fn();
 const refreshProfiles = vi.fn();
 let profilesError: string | null = null;
 let connected = false;
 let conflict = false;
+let overlay = false;
 let installed = true;
 const identity = "11111111-1111-7111-8111-111111111111";
 const appliedSelection = (entitlementId: string) => {
@@ -124,11 +135,26 @@ vi.mock("./useHarnessConnection", () => ({
       installed,
       config: {
         supported: true,
-        mode: connected ? "orgii_managed" : "default",
+        mode: direct ? "direct" : connected ? "orgii_managed" : "default",
         conflict,
-        selectedKeyId: connected ? appliedSelection("ent_second") : null,
-        selectedModel: connected ? "claude-b" : null,
-        targetFiles: [],
+        overlay,
+        selectedKeyId: direct
+          ? "key-a"
+          : connected
+            ? appliedSelection("ent_second")
+            : null,
+        selectedModel: direct ? "model-a" : connected ? "claude-b" : null,
+        targetFiles: overlay
+          ? [
+              {
+                id: "settings",
+                targetPath:
+                  "/home/.orgii/cli-config-profiles/claude_code/overlay/settings.json",
+                overlay: true,
+                conflict: false,
+              },
+            ]
+          : [],
       },
       choices: [{ keyId: "key-a", name: "My API", models: ["model-a"] }],
     },
@@ -149,8 +175,11 @@ beforeEach(() => {
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   vi.clearAllMocks();
   connected = false;
+  direct = false;
+  openLocal.mockResolvedValue(null);
   profilesError = null;
   conflict = false;
+  overlay = false;
   installed = true;
   configure.mockResolvedValue({});
   restore.mockResolvedValue({});
@@ -274,6 +303,17 @@ it("restores only the selected target app", async () => {
   expect(restore).toHaveBeenCalledWith("codex");
 });
 
+it("describes the Claude Code overlay and offers disconnect instead of restore", async () => {
+  connected = true;
+  overlay = true;
+  await render("claude_code");
+  expect(container.textContent).toContain("harnessConnections.overlayHelp");
+  expect(container.textContent).not.toContain("harnessConnections.conflict");
+  expect(button("harnessConnections.restore")).toBeUndefined();
+  await act(async () => button("harnessConnections.disconnect").click());
+  expect(restore).toHaveBeenCalledWith("claude_code");
+});
+
 it("reports configuration conflicts without calling them unsupported versions", async () => {
   connected = true;
   conflict = true;
@@ -328,4 +368,62 @@ it("does not announce a stale native open after Cloud logout", async () => {
   });
   expect(Message.success).not.toHaveBeenCalled();
   expect(Message.error).toHaveBeenCalledOnce();
+  expect(Message.error).toHaveBeenCalledWith({
+    content: "harnessConnections.marketApps.openFailed",
+  });
+});
+
+it("opens a Direct Claude overlay without depending on a Market login or grant", async () => {
+  getInstrumentedStore().set(org2CloudAuthAtom, null);
+  direct = true;
+  overlay = true;
+  profilesError = "Market unavailable";
+  await render("claude_code");
+  const launch = button("harnessConnections.marketApps.openTerminal");
+  expect(launch.disabled).toBe(false);
+  await act(async () => launch.click());
+  expect(openLocal).toHaveBeenCalledWith({
+    agentName: "claude_code",
+    keyId: "key-a",
+    model: "model-a",
+  });
+  expect(open).not.toHaveBeenCalled();
+});
+
+it("blocks a Direct Claude launch when the overlay changed externally", async () => {
+  direct = true;
+  overlay = true;
+  conflict = true;
+  await render("claude_code");
+  const launch = button("harnessConnections.marketApps.openTerminal");
+  expect(launch.disabled).toBe(true);
+  await act(async () => launch.click());
+  expect(openLocal).not.toHaveBeenCalled();
+});
+
+it.each([
+  ["native_app_restore_required", "restoreRequired"],
+  ["native_app_restore_required secret-fixture", "actionFailed"],
+  ["backend failed with secret-fixture", "actionFailed"],
+])("shows safe migration guidance for native error %s", async (code, key) => {
+  connected = true;
+  configure.mockRejectedValueOnce(
+    new RpcError("market_connection_configure_catalog", code, code)
+  );
+  await render("claude_desktop");
+  await act(async () => button("common:actions.edit").click());
+  const provider = [...container.querySelectorAll("button")].find((item) =>
+    item.textContent?.startsWith("harnessConnections.marketApps.provider")
+  )!;
+  await act(async () => provider.click());
+  await act(async () => button("harnessConnections.apply").click());
+  expect(configure).toHaveBeenCalledOnce();
+  expect(Message.error).toHaveBeenCalledWith({
+    content: `harnessConnections.marketApps.${key}`,
+  });
+  expect(Message.success).not.toHaveBeenCalled();
+  // A rejected migration preserves the existing connection until explicit Restore.
+  expect(restore).not.toHaveBeenCalled();
+  expect(reload).not.toHaveBeenCalled();
+  expect(button("harnessConnections.restore").disabled).toBe(false);
 });

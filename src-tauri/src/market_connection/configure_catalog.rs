@@ -2,7 +2,7 @@
 //! mutation; commit native picker, proxy selection and backups together.
 use super::ConfigureCatalogRequest;
 use super::{
-    app_catalog::{alias, Catalog, CatalogModel},
+    app_catalog::{alias, picker_label, Catalog, CatalogModel},
     source, ConfiguredProfile,
 };
 use agent_cli::managed_config::model_catalog::{ModelCatalog, PickerModel};
@@ -65,7 +65,7 @@ pub(super) async fn configure(
         &agent,
         &default_model,
     )?;
-    crate::harness_connections::verify_installed_version(&agent).await?;
+    super::native_app_launch::verify_installed(&agent).await?;
     if agent == "claude_code" {
         use integrations::cli_binary_resolver::{
             probe_cli_binary_version, resolve_cli_binary_for_registry_name,
@@ -73,7 +73,12 @@ pub(super) async fn configure(
         let binary =
             resolve_cli_binary_for_registry_name(&agent).ok_or("Claude Code unavailable")?;
         let probe = probe_cli_binary_version(&binary).await;
-        let version = probe.version.ok_or("Claude Code version unavailable")?;
+        let version = probe.version.ok_or_else(|| match probe.error.as_deref() {
+            Some(error) if !error.is_empty() => {
+                format!("Claude Code version unavailable: {error}")
+            }
+            _ => "Claude Code version unavailable".to_string(),
+        })?;
         let parts = version
             .trim_start_matches('v')
             .split('.')
@@ -164,7 +169,14 @@ pub(super) async fn configure(
             } else {
                 None
             };
-            let label = format!("{} · {model}", entry.service_name);
+            let label = picker_label(
+                &entry.service_name,
+                model,
+                native_metadata
+                    .as_ref()
+                    .and_then(|entry| entry.get("display_name"))
+                    .and_then(serde_json::Value::as_str),
+            );
             picker.models.push(PickerModel {
                 id: id.clone(),
                 label: label.clone(),
@@ -186,6 +198,36 @@ pub(super) async fn configure(
             return Err("A selected Market package has no currently available models".into());
         }
     }
+    disambiguate_picker_labels(&mut catalog, &mut picker);
+    let selection = catalog.key()?;
+    // Validate all entries before requesting any credential or editing config.
+    let native_app = lease.native_app(&agent)?;
+    let status = if agent == "claude_desktop" {
+        crate::cli_managed_proxy::enable_dynamic_desktop(
+            selection.clone(),
+            catalog.default_model,
+            picker.models,
+            expected_hashes,
+            native_app,
+            lease.operation(),
+        )
+        .await?
+    } else {
+        crate::cli_managed_proxy::enable_dynamic_catalog(
+            agent,
+            selection.clone(),
+            catalog.default_model,
+            picker,
+            expected_hashes,
+            native_app,
+            lease.operation(),
+        )
+        .await?
+    };
+    Ok(ConfiguredProfile { status, selection })
+}
+
+fn disambiguate_picker_labels(catalog: &mut Catalog, picker: &mut ModelCatalog) {
     // Identical display names still need distinct native picker labels.
     let mut label_counts = std::collections::HashMap::new();
     for model in &catalog.models {
@@ -200,27 +242,102 @@ pub(super) async fn configure(
             picker_model.label = model.label.clone();
         }
     }
-    let selection = catalog.key()?;
-    // Validate all entries before requesting any credential or editing config.
-    let status = if agent == "claude_desktop" {
-        crate::cli_managed_proxy::enable_dynamic_desktop(
-            selection.clone(),
-            catalog.default_model,
-            catalog.models.into_iter().map(|model| model.id).collect(),
-            expected_hashes,
-            lease.operation(),
-        )
-        .await?
-    } else {
-        crate::cli_managed_proxy::enable_dynamic_catalog(
-            agent,
-            selection.clone(),
-            catalog.default_model,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn same_initials_catalog(session: &str, reverse: bool) -> (Catalog, ModelCatalog) {
+        let mut models: Vec<_> = [
+            ("pa_beginner", "Coding for beginner"),
+            ("pa_business", "Coding for business"),
+        ]
+        .into_iter()
+        .map(|(purchase, package)| {
+            let selection = source::Selection {
+                native_protocol: None,
+                metadata: market_connect::ConnectionMetadata {
+                    identity_user_id: "11111111-1111-4111-8111-111111111111".into(),
+                    workspace_id: "ws_anchor".into(),
+                    target: market_connect::Target::Org2,
+                },
+                workspace_id: "ws_purchases".into(),
+                entitlement_id: purchase.into(),
+                model: Some("gpt-5.6-luna".into()),
+                session_id: Some(session.into()),
+            };
+            CatalogModel {
+                id: alias(&selection).unwrap(),
+                label: picker_label(package, "gpt-5.6-luna", Some("GPT-5.6-Luna")),
+                selection: selection.key().unwrap(),
+            }
+        })
+        .collect();
+        let default_model = models[0].id.clone();
+        if reverse {
+            models.reverse();
+        }
+        let picker = ModelCatalog {
+            models: models
+                .iter()
+                .map(|model| PickerModel {
+                    id: model.id.clone(),
+                    label: model.label.clone(),
+                    native_metadata: None,
+                })
+                .collect(),
+        };
+        (
+            Catalog {
+                version: 1,
+                agent: "codex".into(),
+                default_model,
+                models,
+            },
             picker,
-            expected_hashes,
-            lease.operation(),
         )
-        .await?
-    };
-    Ok(ConfiguredProfile { status, selection })
+    }
+
+    #[test]
+    fn same_initials_same_model_labels_keep_purchase_routing_and_picker_in_sync() {
+        let mut baseline = std::collections::BTreeMap::new();
+        for (session, reverse) in [
+            ("22222222-2222-4222-8222-222222222222", false),
+            ("33333333-3333-4333-8333-333333333333", true),
+        ] {
+            let (mut catalog, mut picker) = same_initials_catalog(session, reverse);
+            assert_eq!(catalog.models[0].label, catalog.models[1].label);
+            assert_ne!(catalog.models[0].id, catalog.models[1].id);
+            let original: Vec<_> = catalog
+                .models
+                .iter()
+                .map(|model| (model.id.clone(), model.selection.clone()))
+                .collect();
+            let default_model = catalog.default_model.clone();
+
+            disambiguate_picker_labels(&mut catalog, &mut picker);
+
+            assert_ne!(catalog.models[0].label, catalog.models[1].label);
+            assert_eq!(catalog.default_model, default_model);
+            let restored = Catalog::parse(&catalog.key().unwrap(), "codex").unwrap();
+            for ((model, picker_model), (id, selection)) in
+                catalog.models.iter().zip(&picker.models).zip(&original)
+            {
+                assert_eq!((&model.id, &model.selection), (id, selection));
+                assert_eq!(picker_model.id, model.id);
+                assert_eq!(picker_model.label, model.label);
+                let route = restored.resolve(&model.id).unwrap();
+                assert_eq!(route.selection, model.selection);
+                assert_eq!(route.model, "gpt-5.6-luna");
+                let owner = source::Selection::parse(&route.selection, "codex").unwrap();
+                let identity = (model.id.clone(), model.label.clone());
+                if reverse {
+                    assert_eq!(baseline.get(&owner.entitlement_id), Some(&identity));
+                } else {
+                    baseline.insert(owner.entitlement_id, identity);
+                }
+            }
+        }
+    }
 }

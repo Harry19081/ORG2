@@ -147,8 +147,7 @@ impl MarketSource {
         ),
         String,
     > {
-        let lease = super::owner::require()?;
-        lease.matches(&metadata.identity_user_id)?;
+        let lease = super::owner::require_fresh(&metadata.identity_user_id).await?;
         let (guard, entry) = self.acquire(metadata).await?;
         lease.check()?;
         Ok((lease, guard, entry))

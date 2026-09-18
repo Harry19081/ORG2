@@ -12,17 +12,19 @@
 
 mod adapters;
 pub mod claude_models;
+mod codex_runtime;
 pub mod desktop;
 mod direct;
 mod dto;
 pub mod model_catalog;
 pub mod provider_profiles;
 mod target_lock;
-pub use direct::DirectConnection;
+pub use direct::{verify_claude_launch_connection, DirectConnection};
 mod file_io;
 mod generators;
 pub mod launch;
 mod manifest;
+pub mod native_app;
 mod operations;
 mod proxy;
 mod registry;
@@ -163,7 +165,48 @@ pub fn enable_orgii_managed_catalog(
         Some(model),
         false,
         None,
-        Some(catalog),
+        operations::AppOptions {
+            catalog: Some(catalog),
+            native_app: None,
+        },
+    )
+}
+
+/// Market official-App boundary. Generic CLI/Direct entry points never select
+/// this destination. An active legacy/native connection must be restored first.
+pub fn enable_native_app(
+    profile: &native_app::NativeAppProfile,
+    key: String,
+    provider: String,
+    model: String,
+    catalog: Option<&model_catalog::ModelCatalog>,
+    direct: Option<&DirectConnection>,
+    expected: &std::collections::BTreeMap<String, Option<String>>,
+) -> Result<CliConfigManagedStatus, String> {
+    let agent = profile.agent();
+    profile.validate(agent)?;
+    if agent == "claude_desktop"
+        && direct
+            .and_then(|value| value.desktop_helper.as_ref())
+            .is_none_or(|helper| helper.path != profile.helper())
+    {
+        return Err("Native App credential helper does not match its profile".into());
+    }
+    let _guard = config_operation_guard()?;
+    let _target_lock = target_lock::lock_app_targets(agent, Some(profile))?;
+    recover_pending_transaction_unlocked(agent)?;
+    verify_expected_targets(agent, Some(expected))?;
+    operations::apply_connection_unlocked(
+        agent,
+        Some(key),
+        Some(provider),
+        Some(model),
+        false,
+        direct,
+        operations::AppOptions {
+            catalog,
+            native_app: Some(profile),
+        },
     )
 }
 
@@ -227,6 +270,64 @@ pub fn restore_managed_configs_matching(
         }
     }
 
+    Ok(report)
+}
+
+/// Releases before the Claude Code overlay rewrote the user's own settings.json
+/// (with a default backup). On the first start after upgrading, restore such a
+/// file from its backup so the connection can be re-applied as an overlay. The
+/// restore is non-forcing: a file edited outside ORG2 since the last apply is
+/// left in place and reported; the existing conflict UI then covers it.
+pub fn migrate_native_overlay_targets() -> Result<CliConfigShutdownRestoreReport, String> {
+    let _guard = config_operation_guard()?;
+    let mut report = CliConfigShutdownRestoreReport::default();
+    for adapter in MANAGED_CONFIG_ADAPTERS {
+        let agent_name = adapter.agent_name;
+        if !adapter
+            .targets
+            .iter()
+            .any(|target| target.kind == registry::ManagedConfigTargetKind::Overlay)
+        {
+            continue;
+        }
+        let _target_lock = match target_lock::lock_targets(agent_name) {
+            Ok(lock) => lock,
+            Err(err) => {
+                report.failed_agents.push((agent_name.to_string(), err));
+                continue;
+            }
+        };
+        if let Err(err) = recover_pending_transaction_unlocked(agent_name) {
+            report.failed_agents.push((agent_name.to_string(), err));
+            continue;
+        }
+        let legacy = match (
+            read_manifest(agent_name),
+            manifest::agent_manifest_targets(agent_name),
+        ) {
+            (Ok(Some(manifest)), Ok(current)) => {
+                manifest.mode != CliConfigMode::Default
+                    && manifest.target_files.iter().any(|target| {
+                        registry::is_overlay_target(agent_name, &target.id)
+                            && !current
+                                .iter()
+                                .any(|c| c.id == target.id && c.target_path == target.target_path)
+                    })
+            }
+            (Ok(None), _) => false,
+            (Err(err), _) | (_, Err(err)) => {
+                report.failed_agents.push((agent_name.to_string(), err));
+                continue;
+            }
+        };
+        if !legacy {
+            continue;
+        }
+        match restore_agent_default_unlocked(agent_name, false) {
+            Ok(_) => report.restored_agents.push(agent_name.to_string()),
+            Err(err) => report.failed_agents.push((agent_name.to_string(), err)),
+        }
+    }
     Ok(report)
 }
 
@@ -328,7 +429,7 @@ fn enable_direct_inner(
         Some(connection.model.clone()),
         force,
         Some(&connection),
-        None,
+        operations::AppOptions::default(),
     )
 }
 

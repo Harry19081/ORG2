@@ -47,7 +47,10 @@ it("filters saved grants by current official owner and does no work signed out",
   expect(loaded.profiles.map((p) => p.connection.identity_user_id)).toEqual([
     USER_A,
   ]);
-  expect(mocks.loadEntries).toHaveBeenCalledExactlyOnceWith(connection(USER_A));
+  expect(mocks.loadEntries).toHaveBeenCalledExactlyOnceWith(
+    connection(USER_A),
+    store
+  );
   store.set(org2CloudAuthAtom, null);
   expect(
     (await loadCachedMarketExecutionProfiles(false, store)).profiles

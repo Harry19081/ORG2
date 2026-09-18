@@ -231,12 +231,6 @@
     "selectedItemTransparency": "选中项目透明度",
     "spotlightPlacement": "Spotlight 位置",
     "spotlightDimBackground": "背景变暗",
-    "tooltips": "提示",
-    "buttonTooltipsEnabled": "显示按钮提示",
-    "buttonTooltipsEnabledDesc": "悬停按钮时显示名称和快捷键。信息图标提示始终显示",
-    "buttonTooltipDelayMs": "提示延迟",
-    "buttonTooltipDelayImmediate": "立即",
-    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
     "spotlightPlacementOptions": {
       "top": "顶部",
       "center": "居中"
@@ -315,7 +309,13 @@
     "license": "许可证",
     "licenseTitle": "ORG2 许可证",
     "licenseLoading": "正在加载许可证…",
-    "licenseLoadFailed": "无法加载应用许可证"
+    "licenseLoadFailed": "无法加载应用许可证",
+    "tooltips": "提示",
+    "buttonTooltipsEnabled": "显示按钮提示",
+    "buttonTooltipsEnabledDesc": "悬停按钮时显示名称和快捷键。信息图标提示始终显示",
+    "buttonTooltipDelayMs": "提示延迟",
+    "buttonTooltipDelayImmediate": "立即",
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒"
   },
   "background": {
     "title": "背景",
@@ -1012,6 +1012,8 @@
     "apply": "使用此连接",
     "applied": "配置已保存，请新建工具会话以使用此配置",
     "restore": "恢复原始配置",
+    "disconnect": "断开",
+    "overlayHelp": "连接配置单独保存在 {{path}}。「打开终端」会使用这份配置启动 Claude Code，并保留已有对话历史。会话追踪 hooks 由独立设置控制",
     "restored": "原始配置已恢复，请新建工具会话",
     "refresh": "刷新",
     "refreshed": "工具连接已刷新",
@@ -1028,6 +1030,7 @@
     "desktopRestored": "已恢复之前的桌面配置，请完全退出并重新打开 Claude Desktop",
     "advancedDescription": "自定义 API 连接和一次性凭据迁移",
     "marketApps": {
+      "isolatedStorage": "此官方 App 使用独立配置和对话存储，不会更改主 App 或 CLI 的配置。旧对话不会自动导入",
       "workspaceHelp": "为当前 App 选择套餐和模型。各 App 独立保存选择，切换 ORG2 聊天来源不会修改 App。",
       "loading": "正在加载官方套餐…",
       "loadFailed": "无法加载官方套餐",
@@ -1041,11 +1044,14 @@
       "opened": "应用已打开",
       "disconnected": "已恢复应用之前的配置",
       "actionFailed": "无法更新此应用连接",
+      "openFailed": "无法打开此应用",
+      "restoreRequired": "请先恢复此应用的原始设置，然后重新选择套餐并应用连接",
       "workspaceNumber": "服务 {{index}} / {{count}}",
       "openTerminal": "打开终端",
       "terminalOpened": "已打开终端",
       "provider": "ORG2 Market",
       "multiPackageHelp": "可同时选择最多 8 个套餐和一个默认模型，连接后可在 App 内切换套餐",
+      "auxiliaryBilling": "Claude Code 自动生成标题、记忆和压缩上下文的调用计入默认套餐；只有对话本身跟随你用 /model 选择的套餐",
       "defaultModel": "默认模型",
       "packageLimit": "最多选择 8 个套餐"
     }
@@ -1082,10 +1088,10 @@
     "role": "模型角色"
   },
   "development": {
-    "illustrations": "插画预览",
-    "illustrationsDesc": "同时预览所有应用插画的浅色和深色效果，无需更改应用主题",
     "updateAvailable": "有可用更新",
-    "updateAvailableDesc": "在整个应用中显示版本 99.0.0 的更新提示 — 更新操作仅预览对话框"
+    "updateAvailableDesc": "在整个应用中显示版本 99.0.0 的更新提示 — 更新操作仅预览对话框",
+    "illustrations": "插画预览",
+    "illustrationsDesc": "同时预览所有应用插画的浅色和深色效果，无需更改应用主题"
   },
   "managedUsage": {
     "cancel": "取消",

@@ -1,8 +1,10 @@
 import { z } from "zod/v4";
 
-import { awaitNativeCloudOwnerReady } from "@src/api/http/auth/sharedAuthStorage";
 import { defineProcedure, typedInvoke } from "@src/api/tauri/rpc/invoke";
 import { CliConfigManagedStatusSchema } from "@src/api/tauri/rpc/schemas/agentOrgs";
+
+import { withFreshMarketOwner } from "./auth";
+import type { MarketStore } from "./identity";
 
 export const connectionSchema = z.object({
   identity_user_id: z.string().uuid(),
@@ -64,10 +66,8 @@ const moduleStatus = defineProcedure("market_connection_status")
     })
   )
   .build();
-export const loadConnections = async () => {
-  await awaitNativeCloudOwnerReady();
-  return typedInvoke(moduleStatus);
-};
+export const loadConnections = (store?: MarketStore) =>
+  withFreshMarketOwner(() => typedInvoke(moduleStatus), undefined, store);
 const input = z.object({
   identityUserId: z.string().uuid(),
   workspaceId: z.string(),
@@ -97,7 +97,12 @@ const args = (c: Connection) => ({
   workspaceId: c.workspace_id,
   target: c.target,
 });
-export const loadEntries = (c: Connection) => typedInvoke(options, args(c));
+export const loadEntries = (c: Connection, store?: MarketStore) =>
+  withFreshMarketOwner(
+    () => typedInvoke(options, args(c)),
+    c.identity_user_id,
+    store
+  );
 
 const activateService = defineProcedure("market_connection_activate_service")
   .input(
@@ -117,16 +122,20 @@ export const activateManagedService = (
   connection: Connection,
   service: ManagedService
 ) =>
-  typedInvoke(activateService, {
-    ...args(connection),
-    request: {
-      service_id: service.service_id,
-      expected_version_id: service.version_id,
-      expected_revision: service.access?.revision ?? null,
-      billing_mode: "wallet",
-      confirm_usage: true,
-    },
-  });
+  withFreshMarketOwner(
+    () =>
+      typedInvoke(activateService, {
+        ...args(connection),
+        request: {
+          service_id: service.service_id,
+          expected_version_id: service.version_id,
+          expected_revision: service.access?.revision ?? null,
+          billing_mode: "wallet",
+          confirm_usage: true,
+        },
+      }),
+    connection.identity_user_id
+  );
 
 const prepareSession = defineProcedure("market_connection_prepare_session")
   .input(
@@ -150,13 +159,17 @@ export const prepareSessionSource = (
   agent: "claude_code" | "codex" | "rust_agent",
   model: string
 ) =>
-  typedInvoke(prepareSession, {
-    ...args(c),
-    entitlementWorkspaceId,
-    entitlementId,
-    agent,
-    model,
-  });
+  withFreshMarketOwner(
+    () =>
+      typedInvoke(prepareSession, {
+        ...args(c),
+        entitlementWorkspaceId,
+        entitlementId,
+        agent,
+        model,
+      }),
+    c.identity_user_id
+  );
 
 const configureProfile = defineProcedure("market_connection_configure_profile")
   .input(
@@ -186,16 +199,20 @@ export const configureMarketProfile = (
   model: string,
   expectedHashes: Record<string, string | null>
 ) =>
-  typedInvoke(configureProfile, {
-    request: {
-      ...args(c),
-      entitlementWorkspaceId,
-      entitlementId,
-      agent,
-      model,
-      expectedHashes,
-    },
-  });
+  withFreshMarketOwner(
+    () =>
+      typedInvoke(configureProfile, {
+        request: {
+          ...args(c),
+          entitlementWorkspaceId,
+          entitlementId,
+          agent,
+          model,
+          expectedHashes,
+        },
+      }),
+    c.identity_user_id
+  );
 
 const configureCatalog = defineProcedure("market_connection_configure_catalog")
   .input(
@@ -238,16 +255,20 @@ export const configureMarketCatalog = (
   defaultModel: string,
   expectedHashes: Record<string, string | null>
 ) =>
-  typedInvoke(configureCatalog, {
-    request: {
-      packages: packages.map((profile) => ({
-        ...args(profile.connection),
-        entitlementWorkspaceId: profile.entitlementWorkspaceId,
-        entitlementId: profile.entitlementId,
-      })),
-      agent,
-      defaultPackage,
-      defaultModel,
-      expectedHashes,
-    },
-  });
+  withFreshMarketOwner(
+    () =>
+      typedInvoke(configureCatalog, {
+        request: {
+          packages: packages.map((profile) => ({
+            ...args(profile.connection),
+            entitlementWorkspaceId: profile.entitlementWorkspaceId,
+            entitlementId: profile.entitlementId,
+          })),
+          agent,
+          defaultPackage,
+          defaultModel,
+          expectedHashes,
+        },
+      }),
+    packages[0]?.connection.identity_user_id
+  );
