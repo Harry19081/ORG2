@@ -64,8 +64,8 @@ export const INFO_CARD_TOKENS = {
 export const DETAIL_PANEL_WIDTH_TOKENS = {
   contentMaxWidth: "max-w-[900px]",
   contentWidth: "mx-auto w-full max-w-[900px]",
-  contentWidthWithPadding: "mx-auto w-full max-w-[900px] py-4 pb-[50vh]",
-  contentWidthWithPaddingNoTop: "mx-auto w-full max-w-[900px] pb-6 pb-[50vh]",
+  contentWidthWithPadding: "mx-auto w-full max-w-[900px] py-4 pb-[25vh]",
+  contentWidthWithPaddingNoTop: "mx-auto w-full max-w-[900px] pb-6 pb-[25vh]",
   headerWidth: "mx-auto w-full max-w-[932px]",
 } as const;
 
@@ -78,8 +78,8 @@ export const DETAIL_PANEL_WIDTH_TOKENS = {
 export const CHAT_PANEL_WIDTH_TOKENS = {
   contentMaxWidth: "max-w-[800px]",
   contentWidth: "mx-auto w-full max-w-[800px]",
-  contentWidthWithPadding: "mx-auto w-full max-w-[800px] py-4 pb-[50vh]",
-  contentWidthWithPaddingNoTop: "mx-auto w-full max-w-[800px] pb-6 pb-[50vh]",
+  contentWidthWithPadding: "mx-auto w-full max-w-[800px] py-4 pb-[25vh]",
+  contentWidthWithPaddingNoTop: "mx-auto w-full max-w-[800px] pb-6 pb-[25vh]",
   headerWidth: "mx-auto w-full max-w-[832px]",
 } as const;
 
@@ -87,8 +87,8 @@ export const CHAT_PANEL_WIDTH_TOKENS = {
 export const ISSUE_PANEL_WIDTH_TOKENS = {
   contentMaxWidth: "max-w-[1200px]",
   contentWidth: "mx-auto w-full max-w-[1200px]",
-  contentWidthWithPadding: "mx-auto w-full max-w-[1200px] py-4 pb-[50vh]",
-  contentWidthWithPaddingNoTop: "mx-auto w-full max-w-[1200px] pb-6 pb-[50vh]",
+  contentWidthWithPadding: "mx-auto w-full max-w-[1200px] py-4 pb-[25vh]",
+  contentWidthWithPaddingNoTop: "mx-auto w-full max-w-[1200px] pb-6 pb-[25vh]",
   headerWidth: "mx-auto w-full max-w-[1232px]",
 } as const;
 
@@ -140,7 +140,7 @@ export const DETAIL_PANEL_TOKENS = {
    * Bottom inset on scrollable wizard / settings-style bodies so the last block
    * clears the footer (matches SETTINGS_MAIN_CONTENT_WRAPPER_CLASSES).
    */
-  contentScrollBottom: "pb-6 pb-[50vh]",
+  contentScrollBottom: "pb-6 pb-[25vh]",
 } as const;
 
 // ============================================

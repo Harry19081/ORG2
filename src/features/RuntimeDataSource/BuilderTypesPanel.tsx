@@ -123,7 +123,7 @@ export default function BuilderTypesPanel({ onBack }: BuilderTypesPanelProps) {
 
       <div className="@container scrollbar-hide min-h-0 flex-1 overflow-y-auto px-4">
         <div
-          className={`${DETAIL_PANEL_TOKENS.headerWidth} ${SECTION_GAP_CLASSES} pt-2 pb-[50vh]`}
+          className={`${DETAIL_PANEL_TOKENS.headerWidth} ${SECTION_GAP_CLASSES} pt-2 pb-[25vh]`}
         >
           <section aria-labelledby="builder-types-gallery-title">
             <h2
