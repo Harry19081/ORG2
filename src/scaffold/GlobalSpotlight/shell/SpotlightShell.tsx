@@ -17,7 +17,11 @@
  */
 import React, { useCallback, useMemo, useRef } from "react";
 
-import { SpotlightFooter, type SpotlightFooterActiveChip } from "../components";
+import {
+  SpotlightFooter,
+  type SpotlightFooterActiveChip,
+  SpotlightSettingsMenu,
+} from "../components";
 import { SPOTLIGHT_CONFIG } from "../constants";
 import { SpotlightShellChrome } from "./SpotlightShellChrome";
 import {
@@ -113,10 +117,14 @@ export const SpotlightShell: React.FC<SpotlightShellProps> = ({
           // `empty:hidden` keeps the hint row's gap from opening up when no
           // palette contributes an inline control.
           trailingSlot={
-            <div
-              ref={setInlineHostEl}
-              className="flex items-center empty:hidden"
-            />
+            <>
+              <div
+                ref={setInlineHostEl}
+                className="flex items-center empty:hidden"
+              />
+              {/* Placement + dim only apply to the floating overlay. */}
+              {asPortal && <SpotlightSettingsMenu />}
+            </>
           }
         />
         <div ref={setPillHostEl} className="flex items-center" />

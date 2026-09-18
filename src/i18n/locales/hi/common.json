@@ -1578,6 +1578,8 @@
       "selectWorktreeSource": "वर्कट्री ब्रांच या पुल रिक्वेस्ट चुनें"
     },
     "spotlightFooter": {
+      "settings": "Spotlight सेटिंग्स",
+      "unpinAll": "सभी को अनपिन करें",
       "navigate": "नेविगेट करें",
       "select": "चुनें",
       "switchColumn": "कॉलम बदलें",

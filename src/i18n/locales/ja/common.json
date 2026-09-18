@@ -1747,6 +1747,8 @@
       "selectWorktreeSource": "Worktree のブランチまたは pull request を選択"
     },
     "spotlightFooter": {
+      "settings": "Spotlight 設定",
+      "unpinAll": "すべての固定を解除",
       "navigate": "移動",
       "select": "選択",
       "switchColumn": "列を切り替え",

@@ -15,6 +15,7 @@ export {
 export type { SpotlightFooterActiveChip } from "./SpotlightFooter";
 
 export { SpotlightFooterToggle } from "./SpotlightFooterToggle";
+export { SpotlightSettingsMenu } from "./SpotlightSettingsMenu";
 
 export { SpotlightPinnedActionSection } from "./SpotlightPinnedActionSection";
 
