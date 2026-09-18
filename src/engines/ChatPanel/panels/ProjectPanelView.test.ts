@@ -93,7 +93,8 @@ function primitive(name: string) {
 }
 
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: mocks.t }) }));
-vi.mock("jotai", () => ({
+vi.mock("jotai", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("jotai")>()),
   useSetAtom: (atom: string) =>
     atom === "work-item" ? mocks.openWorkItem : mocks.openProject,
   useAtomValue: () => mocks.cloudOrgs,

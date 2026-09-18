@@ -231,12 +231,6 @@
     "selectedItemTransparency": "Transparansi item terpilih",
     "spotlightPlacement": "Posisi Spotlight",
     "spotlightDimBackground": "Redupkan latar belakang",
-    "tooltips": "Tooltip",
-    "buttonTooltipsEnabled": "Tampilkan tooltip tombol",
-    "buttonTooltipsEnabledDesc": "Tampilkan label dan pintasan keyboard saat kursor berada di atas tombol. Tooltip ikon info selalu ditampilkan",
-    "buttonTooltipDelayMs": "Jeda tooltip",
-    "buttonTooltipDelayImmediate": "Segera",
-    "buttonTooltipDelaySeconds": "{{seconds}} dtk",
     "spotlightPlacementOptions": {
       "top": "Atas",
       "center": "Tengah"
@@ -315,7 +309,13 @@
     "license": "Lisensi",
     "licenseTitle": "Lisensi ORG2",
     "licenseLoading": "Memuat lisensi…",
-    "licenseLoadFailed": "Tidak dapat memuat lisensi aplikasi"
+    "licenseLoadFailed": "Tidak dapat memuat lisensi aplikasi",
+    "tooltips": "Tooltip",
+    "buttonTooltipsEnabled": "Tampilkan tooltip tombol",
+    "buttonTooltipsEnabledDesc": "Tampilkan label dan pintasan keyboard saat kursor berada di atas tombol. Tooltip ikon info selalu ditampilkan",
+    "buttonTooltipDelayMs": "Jeda tooltip",
+    "buttonTooltipDelayImmediate": "Segera",
+    "buttonTooltipDelaySeconds": "{{seconds}} dtk"
   },
   "background": {
     "title": "Latar belakang",
@@ -1012,6 +1012,8 @@
     "apply": "Gunakan koneksi ini",
     "applied": "Konfigurasi disimpan — mulai sesi harness baru untuk menggunakannya",
     "restore": "Pulihkan pengaturan asli",
+    "disconnect": "Putuskan",
+    "overlayHelp": "Pengaturan koneksi disimpan terpisah di {{path}}. \"Buka terminal\" menjalankan Claude Code dengan pengaturan ini dan riwayat percakapan yang ada. Hook pelacakan sesi dikendalikan secara terpisah",
     "restored": "Pengaturan asli dipulihkan — mulai sesi harness baru",
     "refresh": "Segarkan",
     "refreshed": "Koneksi harness disegarkan",
@@ -1028,6 +1030,7 @@
     "desktopRestored": "Konfigurasi Desktop sebelumnya dipulihkan — keluar sepenuhnya lalu buka kembali Claude Desktop",
     "advancedDescription": "Koneksi API kustom dan migrasi kredensial satu kali",
     "marketApps": {
+      "isolatedStorage": "Aplikasi resmi ini memakai pengaturan dan penyimpanan percakapan terpisah. Pengaturan aplikasi utama dan CLI tetap dipertahankan. Percakapan lama tidak diimpor otomatis",
       "workspaceHelp": "Pilih paket dan model untuk aplikasi ini. Setiap aplikasi menyimpan pilihannya sendiri; mengubah sumber obrolan ORG2 tidak memperbarui aplikasi.",
       "loading": "Memuat paket resmi…",
       "loadFailed": "Paket resmi tidak dapat dimuat",
@@ -1041,11 +1044,14 @@
       "opened": "Aplikasi dibuka",
       "disconnected": "Pengaturan aplikasi sebelumnya telah dipulihkan",
       "actionFailed": "Tidak dapat memperbarui koneksi aplikasi ini",
+      "openFailed": "Tidak dapat membuka aplikasi ini",
+      "restoreRequired": "Pulihkan pengaturan asli aplikasi ini, lalu pilih paket Anda dan terapkan kembali koneksi",
       "workspaceNumber": "Layanan {{index}} dari {{count}}",
       "openTerminal": "Buka terminal",
       "terminalOpened": "Terminal dibuka",
       "provider": "ORG2 Market",
       "multiPackageHelp": "Pilih hingga 8 paket dan satu model default, lalu beralih paket di dalam aplikasi",
+      "auxiliaryBilling": "Panggilan otomatis Claude Code untuk judul, memori, dan pemadatan ditagihkan ke paket default; hanya obrolan itu sendiri yang mengikuti paket yang dipilih dengan /model",
       "defaultModel": "Model default",
       "packageLimit": "Pilih hingga 8 paket"
     }
@@ -1082,10 +1088,10 @@
     "role": "Peran"
   },
   "development": {
-    "illustrations": "Ilustrasi",
-    "illustrationsDesc": "Bandingkan semua ilustrasi aplikasi dalam mode terang dan gelap tanpa mengubah tema",
     "updateAvailable": "Pembaruan tersedia",
-    "updateAvailableDesc": "Tampilkan indikator pembaruan di seluruh aplikasi menggunakan versi 99.0.0 — tindakan pembaruan hanya menampilkan pratinjau dialog"
+    "updateAvailableDesc": "Tampilkan indikator pembaruan di seluruh aplikasi menggunakan versi 99.0.0 — tindakan pembaruan hanya menampilkan pratinjau dialog",
+    "illustrations": "Ilustrasi",
+    "illustrationsDesc": "Bandingkan semua ilustrasi aplikasi dalam mode terang dan gelap tanpa mengubah tema"
   },
   "managedUsage": {
     "cancel": "Batal",

@@ -150,12 +150,6 @@
     "selectedItemTransparency": "Seçili öğe şeffaflığı",
     "spotlightPlacement": "Spotlight konumu",
     "spotlightDimBackground": "Arka planı karart",
-    "tooltips": "İpuçları",
-    "buttonTooltipsEnabled": "Düğme ipuçlarını göster",
-    "buttonTooltipsEnabledDesc": "Düğmelerin üzerine gelindiğinde adı ve klavye kısayolunu gösterir. Bilgi simgesi ipuçları her zaman gösterilir",
-    "buttonTooltipDelayMs": "İpucu gecikmesi",
-    "buttonTooltipDelayImmediate": "Hemen",
-    "buttonTooltipDelaySeconds": "{{seconds}} sn",
     "spotlightPlacementOptions": {
       "top": "Üst",
       "center": "Orta"
@@ -234,7 +228,13 @@
     "license": "Lisans",
     "licenseTitle": "ORG2 lisansı",
     "licenseLoading": "Lisans yükleniyor…",
-    "licenseLoadFailed": "Uygulama lisansı yüklenemedi"
+    "licenseLoadFailed": "Uygulama lisansı yüklenemedi",
+    "tooltips": "İpuçları",
+    "buttonTooltipsEnabled": "Düğme ipuçlarını göster",
+    "buttonTooltipsEnabledDesc": "Düğmelerin üzerine gelindiğinde adı ve klavye kısayolunu gösterir. Bilgi simgesi ipuçları her zaman gösterilir",
+    "buttonTooltipDelayMs": "İpucu gecikmesi",
+    "buttonTooltipDelayImmediate": "Hemen",
+    "buttonTooltipDelaySeconds": "{{seconds}} sn"
   },
   "background": {
     "title": "Arka Plan",
@@ -931,6 +931,8 @@
     "apply": "Bu bağlantıyı kullan",
     "applied": "Yapılandırma kaydedildi — yeni bir araç oturumu başlatın",
     "restore": "Özgün kurulumu geri yükle",
+    "disconnect": "Bağlantıyı kes",
+    "overlayHelp": "Bağlantı ayarları {{path}} içinde ayrı saklanır. \"Terminali aç\", Claude Code’u bu ayarlarla ve mevcut konuşma geçmişiyle başlatır. Oturum izleme hook’ları ayrı kontrol edilir",
     "restored": "Özgün kurulum geri yüklendi — yeni bir araç oturumu başlatın",
     "refresh": "Yenile",
     "refreshed": "Araç bağlantıları yenilendi",
@@ -947,6 +949,7 @@
     "desktopRestored": "Önceki yapılandırma geri yüklendi — Claude Desktop’ı tamamen kapatıp yeniden açın",
     "advancedDescription": "Özel API bağlantıları ve tek seferlik kimlik bilgisi taşıma",
     "marketApps": {
+      "isolatedStorage": "Bu resmi uygulama ayrı ayarlar ve konuşma depolaması kullanır. Ana uygulamanız ve CLI ayarlarını korur. Önceki konuşmalar otomatik olarak içe aktarılmaz",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
@@ -960,11 +963,14 @@
       "opened": "Uygulama açıldı",
       "disconnected": "Uygulamanın önceki ayarı geri yüklendi",
       "actionFailed": "Bu uygulama bağlantısı güncellenemedi",
+      "openFailed": "Bu uygulama açılamadı",
+      "restoreRequired": "Önce bu uygulamanın özgün ayarlarını geri yükleyin, ardından paketlerinizi seçip bağlantıyı yeniden uygulayın",
       "workspaceNumber": "Hizmet {{index}} / {{count}}",
       "openTerminal": "Terminali aç",
       "terminalOpened": "Terminal açıldı",
       "provider": "ORG2 Market",
       "multiPackageHelp": "En fazla 8 paket ve varsayılan bir model seçin, ardından uygulama içinde paketler arasında geçiş yapın",
+      "auxiliaryBilling": "Claude Code'un otomatik başlık, bellek ve sıkıştırma çağrıları varsayılan pakete faturalanır; yalnızca sohbet /model ile seçtiğiniz paketi izler",
       "defaultModel": "Varsayılan model",
       "packageLimit": "En fazla 8 paket seçin"
     }
@@ -1082,10 +1088,10 @@
     "relayDisabledHint": "İnternet bağlantıları kapalı. Gelişmiş ayarlardan etkinleştirebilirsiniz"
   },
   "development": {
-    "illustrations": "Çizimler",
-    "illustrationsDesc": "Temanızı değiştirmeden tüm uygulama çizimlerini açık ve koyu modda karşılaştırın",
     "updateAvailable": "Güncelleme mevcut",
-    "updateAvailableDesc": "Uygulama genelinde 99.0.0 sürümü için güncelleme göstergelerini göster — güncelleme işlemleri yalnızca önizlemeyi açar"
+    "updateAvailableDesc": "Uygulama genelinde 99.0.0 sürümü için güncelleme göstergelerini göster — güncelleme işlemleri yalnızca önizlemeyi açar",
+    "illustrations": "Çizimler",
+    "illustrationsDesc": "Temanızı değiştirmeden tüm uygulama çizimlerini açık ve koyu modda karşılaştırın"
   },
   "managedUsage": {
     "cancel": "İptal",

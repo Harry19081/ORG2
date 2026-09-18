@@ -150,12 +150,6 @@
     "selectedItemTransparency": "選択項目の透明度",
     "spotlightPlacement": "Spotlight の位置",
     "spotlightDimBackground": "背景を暗くする",
-    "tooltips": "ツールチップ",
-    "buttonTooltipsEnabled": "ボタンのツールチップを表示",
-    "buttonTooltipsEnabledDesc": "ボタンにカーソルを合わせたときに名前とキーボードショートカットを表示します。情報アイコンのツールチップは常に表示されます",
-    "buttonTooltipDelayMs": "ツールチップの遅延",
-    "buttonTooltipDelayImmediate": "すぐに",
-    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
     "spotlightPlacementOptions": {
       "top": "上部",
       "center": "中央"
@@ -234,7 +228,13 @@
     "license": "ライセンス",
     "licenseTitle": "ORG2 のライセンス",
     "licenseLoading": "ライセンスを読み込み中…",
-    "licenseLoadFailed": "アプリのライセンスを読み込めません"
+    "licenseLoadFailed": "アプリのライセンスを読み込めません",
+    "tooltips": "ツールチップ",
+    "buttonTooltipsEnabled": "ボタンのツールチップを表示",
+    "buttonTooltipsEnabledDesc": "ボタンにカーソルを合わせたときに名前とキーボードショートカットを表示します。情報アイコンのツールチップは常に表示されます",
+    "buttonTooltipDelayMs": "ツールチップの遅延",
+    "buttonTooltipDelayImmediate": "すぐに",
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒"
   },
   "background": {
     "title": "背景",
@@ -931,6 +931,8 @@
     "apply": "この接続を使用",
     "applied": "設定を保存しました。新しいツールセッションを開始してください",
     "restore": "元の設定に戻す",
+    "disconnect": "接続解除",
+    "overlayHelp": "接続設定は {{path}} に別途保存されます。「ターミナルを開く」はこの設定と既存の会話履歴で Claude Code を起動します。セッション追跡フックは別の設定で管理されます",
     "restored": "元の設定に戻しました。新しいツールセッションを開始してください",
     "refresh": "更新",
     "refreshed": "ツールの接続を更新しました",
@@ -947,6 +949,7 @@
     "desktopRestored": "以前の設定を復元しました。Claude Desktop を完全に終了して再起動してください",
     "advancedDescription": "カスタム API 接続と一度限りの認証情報移行",
     "marketApps": {
+      "isolatedStorage": "この公式アプリは独立した設定と会話ストレージを使用します。メインアプリと CLI の設定は変更されません。以前の会話は自動でインポートされません",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
@@ -960,11 +963,14 @@
       "opened": "アプリを開きました",
       "disconnected": "以前のアプリ設定を復元しました",
       "actionFailed": "このアプリ接続を更新できませんでした",
+      "openFailed": "このアプリを開けませんでした",
+      "restoreRequired": "このアプリの元の設定を復元してから、パッケージを選び直して接続を適用してください",
       "workspaceNumber": "サービス {{index}} / {{count}}",
       "openTerminal": "ターミナルを開く",
       "terminalOpened": "ターミナルを開きました",
       "provider": "ORG2 Market",
       "multiPackageHelp": "最大 8 個のパッケージと既定のモデルを選択すると、アプリ内でパッケージを切り替えられます",
+      "auxiliaryBilling": "Claude Code のタイトル・メモリ・コンパクション自動呼び出しはデフォルトのパッケージに課金されます。/model で選んだパッケージに従うのはチャット本体のみです",
       "defaultModel": "既定のモデル",
       "packageLimit": "パッケージは最大 8 個まで選択できます"
     }
@@ -1082,10 +1088,10 @@
     "relayDisabledHint": "インターネット接続はオフです。詳細設定で有効にできます"
   },
   "development": {
-    "illustrations": "イラスト",
-    "illustrationsDesc": "テーマを変更せずに、すべてのイラストをライトとダークで比較",
     "updateAvailable": "アップデートあり",
-    "updateAvailableDesc": "バージョン 99.0.0 の更新表示をアプリ全体に表示 — 更新操作はダイアログのプレビューのみ"
+    "updateAvailableDesc": "バージョン 99.0.0 の更新表示をアプリ全体に表示 — 更新操作はダイアログのプレビューのみ",
+    "illustrations": "イラスト",
+    "illustrationsDesc": "テーマを変更せずに、すべてのイラストをライトとダークで比較"
   },
   "managedUsage": {
     "cancel": "キャンセル",

@@ -26,6 +26,61 @@ pub(super) struct Catalog {
     pub models: Vec<CatalogModel>,
 }
 
+/// A display label never participates in routing; the stable alias remains the ID.
+pub(super) fn picker_label(package: &str, model: &str, native_label: Option<&str>) -> String {
+    fn shortened(value: &str, limit: usize) -> String {
+        let value = value.trim();
+        if value.chars().count() <= limit {
+            value.into()
+        } else {
+            value
+                .chars()
+                .take(limit - 1)
+                .chain(std::iter::once('…'))
+                .collect()
+        }
+    }
+    let friendly = ["sonnet", "opus", "haiku", "fable"]
+        .into_iter()
+        .find_map(|family| {
+            let version = model.strip_prefix(&format!("claude-{family}-"))?;
+            let version = version.split("-20").next()?;
+            if version.is_empty()
+                || !version
+                    .bytes()
+                    .all(|b| b.is_ascii_digit() || b"-.".contains(&b))
+            {
+                return None;
+            }
+            let mut name = family.to_owned();
+            name[..1].make_ascii_uppercase();
+            Some(format!("{name} {}", version.replace('-', ".")))
+        });
+    let model_label = native_label
+        .filter(|label| !label.trim().is_empty())
+        .or(friendly.as_deref())
+        .unwrap_or(model);
+    // Native menus and composer chips have fixed widths. Spend that space on
+    // the model, whose trailing family name distinguishes e.g. Terra and Luna.
+    // Keep the complete package name in ORG2's connection selector.
+    let package = package.trim();
+    let package_label = if package.chars().count() <= 10 {
+        package.to_owned()
+    } else {
+        let initials: String = package
+            .split(|c: char| !c.is_alphanumeric())
+            .filter_map(|word| word.chars().next())
+            .flat_map(char::to_uppercase)
+            .collect();
+        if (2..=6).contains(&initials.chars().count()) {
+            initials
+        } else {
+            shortened(package, 7)
+        }
+    };
+    format!("{package_label} · {}", shortened(model_label, 64))
+}
+
 pub(super) fn alias(selection: &Selection) -> Result<String, String> {
     let model = selection.model.as_deref().ok_or("Market model missing")?;
     // Session IDs deliberately do not change the native picker ID on reapply.
@@ -242,6 +297,50 @@ mod tests {
             .is_err());
         assert!(Catalog::parse(&key, "claude_code").is_err());
     }
+    #[test]
+    fn picker_labels_are_readable_bounded_and_do_not_change_routing() {
+        assert_eq!(
+            picker_label("Coding for beginner", "claude-sonnet-5", None),
+            "CFB · Sonnet 5"
+        );
+        assert_eq!(
+            picker_label("Overlap", "claude-fable-5-1", None),
+            "Overlap · Fable 5.1"
+        );
+        assert_eq!(
+            picker_label("Codex package", "gpt-5.6-luna", Some("GPT-5.6 Luna")),
+            "CP · GPT-5.6 Luna"
+        );
+        assert_eq!(
+            picker_label("Codex diagnostics", "gpt-5.6-luna", Some("GPT-5.6-Luna")),
+            "CD · GPT-5.6-Luna"
+        );
+        assert_eq!(
+            picker_label(
+                "Coding for beginner",
+                "gpt-5.6-terra",
+                Some("GPT-5.6-Terra")
+            ),
+            "CFB · GPT-5.6-Terra"
+        );
+        assert_eq!(
+            picker_label("Custom", "unknown-model", None),
+            "Custom · unknown-model"
+        );
+        let long = picker_label(&"套餐😀".repeat(40), &"模😀".repeat(80), None);
+        assert!(long.len() < 512);
+        assert!(long.contains("… · "));
+        assert!(long.ends_with('…'));
+        // Existing v1 catalogs remain readable, and relabeling preserves the route.
+        let mut c = catalog();
+        let id = c.models[0].id.clone();
+        let selection = c.models[0].selection.clone();
+        c.models[0].label = picker_label("Renamed package", "gpt-shared", None);
+        let parsed = Catalog::parse(&c.key().unwrap(), "codex").unwrap();
+        assert_eq!(parsed.models[0].id, id);
+        assert_eq!(parsed.models[0].selection, selection);
+    }
+
     #[test]
     fn aliases_are_stable_across_sessions_and_do_not_contain_credentials() {
         assert_eq!(

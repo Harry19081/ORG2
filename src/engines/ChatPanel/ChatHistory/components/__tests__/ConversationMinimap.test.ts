@@ -149,6 +149,25 @@ describe("getConversationMarkerWidthClass", () => {
 });
 
 describe("hasConversationMinimapRail", () => {
+  it("counts logical turns without promoting a retry audit group to a turn", () => {
+    const headers = [{}, null, {}, {}, {}];
+    const counts = [1, 1, 1, 1, 1];
+    expect(
+      getNavigableConversationGroupIndices(headers, counts, [
+        {},
+        { retryAudit: true },
+        {},
+        {},
+        {},
+      ])
+    ).toEqual([0, 2, 3, 4]);
+    expect(getNavigableConversationGroupIndices(headers, counts)).toEqual([
+      0, 1, 2, 3, 4,
+    ]);
+    expect(
+      hasConversationMinimapRail([{}, null], [1, 1], [{}, { retryAudit: true }])
+    ).toBe(false);
+  });
   it("shows the rail once two rounds are navigable", () => {
     expect(hasConversationMinimapRail([{}, {}], [1, 1])).toBe(true);
   });

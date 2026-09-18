@@ -18,17 +18,17 @@ import type { CollabSessionAccessMode } from "@src/store/collaboration/types";
 
 import { ORG2_CLOUD_POSTGREST_SCHEMA, getCloudEndpoint } from "./config";
 import type { OrgRuntimeTelemetry } from "./memberRuntime/types";
-import {
-  ORG2_CLOUD_AUTH_STORAGE_KEY,
-  type Org2CloudAuthState,
-  org2CloudAuthIdentityKey,
-  parseStoredOrg2CloudAuth,
-} from "./org2CloudAuthAtom";
+import type { Org2CloudAuthState } from "./org2CloudAuthAtom";
 import {
   fetchWithTransportRetry,
   runCloudRequestWithTimeout,
 } from "./org2CloudFetchRetry";
 import { CLOUD_ORG_ROLES, type CloudOrgRole } from "./org2CloudOrgManagement";
+import {
+  persistedSessionKey,
+  readPersistedOrg2CloudAuth,
+  refreshScope,
+} from "./org2CloudRefreshScope";
 
 const log = createLogger("Org2CloudClient");
 
@@ -545,19 +545,6 @@ async function withCrossWindowRefreshLock<T>(
   }
 }
 
-/** The exact persisted auth payload the auth atom writes; `null` on any
- * parse/storage failure. */
-function readPersistedOrg2CloudAuth(): Org2CloudAuthState | null {
-  try {
-    if (typeof localStorage === "undefined") return null;
-    return parseStoredOrg2CloudAuth(
-      localStorage.getItem(ORG2_CLOUD_AUTH_STORAGE_KEY)
-    );
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Cross-window refresh short-circuit: while this realm waited on the refresh
  * mutex, another window may have already rotated the same session and
@@ -573,7 +560,7 @@ export function adoptPersistedSessionRotation(
   nowSeconds: number
 ): Org2CloudAuthState | null {
   if (!persisted) return null;
-  if (org2CloudAuthIdentityKey(persisted) !== org2CloudAuthIdentityKey(state)) {
+  if (refreshScope(persisted) !== refreshScope(state)) {
     return null;
   }
   if (!hasComfortablyFreshAccessToken(persisted, nowSeconds)) return null;
@@ -591,6 +578,57 @@ interface EnsureFreshSessionOutcome {
   permanentlyRejected: boolean;
 }
 
+// One in-flight slot, cleared on settlement; no retained token/result cache.
+// Sharing the whole lock wait prevents same-realm consumers from serially
+// exchanging the same rejected token after the transport flight has finished.
+let inFlightFreshSession:
+  | { key: string; promise: Promise<EnsureFreshSessionOutcome> }
+  | undefined;
+
+function refreshQueuedSession(
+  state: Org2CloudAuthState,
+  forceRefresh: boolean
+): Promise<EnsureFreshSessionOutcome> {
+  const before = readPersistedOrg2CloudAuth();
+  return withCrossWindowRefreshLock(async () => {
+    const persisted = readPersistedOrg2CloudAuth();
+    const adopted = adoptPersistedSessionRotation(
+      state,
+      persisted ?? null,
+      Date.now() / 1000
+    );
+    if (
+      adopted &&
+      (!forceRefresh || adopted.accessToken !== state.accessToken)
+    ) {
+      return { session: adopted, permanentlyRejected: false };
+    }
+    // A queued caller must not exchange its captured credential after another
+    // window signs out or replaces it. Absent storage on the first call and
+    // failed reads remain compatible with sign-in before initial persistence.
+    if (
+      !adopted &&
+      before !== undefined &&
+      persisted !== undefined &&
+      persistedSessionKey(before) !== persistedSessionKey(persisted)
+    ) {
+      return { session: null, permanentlyRejected: false };
+    }
+    // Forced refresh cannot reuse rejected access bytes, but must use a fresh
+    // same-owner refresh token if another window rotated it while we waited.
+    const refreshBase = adopted ?? state;
+    const attempt = await refreshSessionAttempt(refreshBase.refreshToken, {
+      supabaseUrl: refreshBase.supabaseUrl,
+      anonKey: refreshBase.supabaseAnonKey,
+      oauthClientId: refreshBase.oauthClientId,
+    });
+    return {
+      session: attempt.tokens ? { ...state, ...attempt.tokens } : null,
+      permanentlyRejected: attempt.permanentlyRejected,
+    };
+  });
+}
+
 /**
  * Return `state` unchanged while the access token is comfortably valid;
  * otherwise refresh and return the updated state. The CALLER persists the
@@ -598,7 +636,7 @@ interface EnsureFreshSessionOutcome {
  * refresh failed — the caller decides whether to sign the user out.
  *
  * The exchange itself runs under two serialization layers: the per-realm
- * `inFlightRefresh` single-flight, plus the cross-window Web Lock (with a
+ * session single-flight, plus the cross-window Web Lock (with a
  * persisted-rotation re-read after acquiring it, so a realm that lost the
  * race adopts the winner's tokens instead of burning the rotated one).
  */
@@ -612,45 +650,37 @@ export async function ensureFreshSession(
   ) {
     return state;
   }
-  const outcome = await withCrossWindowRefreshLock<EnsureFreshSessionOutcome>(
-    async () => {
-      const adopted = adoptPersistedSessionRotation(
-        state,
-        readPersistedOrg2CloudAuth(),
-        Date.now() / 1000
-      );
-      if (
-        adopted &&
-        (!options?.forceRefresh || adopted.accessToken !== state.accessToken)
-      ) {
-        return { session: adopted, permanentlyRejected: false };
-      }
-      // A provider can rotate its refresh token without changing the access
-      // token bytes. A forced exchange must use the latest same-owner token.
-      const refreshBase = adopted ?? state;
-      const attempt = await refreshSessionAttempt(refreshBase.refreshToken, {
-        supabaseUrl: refreshBase.supabaseUrl,
-        anonKey: refreshBase.supabaseAnonKey,
-        oauthClientId: refreshBase.oauthClientId,
-      });
-      const refreshed = attempt.tokens;
-      return {
-        session: refreshed
-          ? {
-              ...state,
-              accessToken: refreshed.accessToken,
-              refreshToken: refreshed.refreshToken,
-              expiresAt: refreshed.expiresAt,
-            }
-          : null,
-        permanentlyRejected: attempt.permanentlyRejected,
-      };
-    }
-  );
+  const forceRefresh = Boolean(options?.forceRefresh);
+  // A forced caller rejects a particular access token. It must not share an
+  // ordinary adoption flight or one that rejected different access bytes.
+  const key = JSON.stringify([
+    refreshScope(state),
+    state.refreshToken,
+    forceRefresh,
+    forceRefresh ? state.accessToken : null,
+  ]);
+  let flight = inFlightFreshSession;
+  if (flight?.key !== key) {
+    flight = { key, promise: refreshQueuedSession(state, forceRefresh) };
+    inFlightFreshSession = flight;
+  }
+  let outcome: EnsureFreshSessionOutcome;
+  try {
+    outcome = await flight.promise;
+  } finally {
+    if (inFlightFreshSession === flight) inFlightFreshSession = undefined;
+  }
   // Outside the locked region: a caller-supplied handler must not be able to
   // throw inside the lock callback (see withCrossWindowRefreshLock).
   if (!outcome.session && outcome.permanentlyRejected) {
     options?.onRefreshRejected?.();
   }
-  return outcome.session;
+  return outcome.session
+    ? {
+        ...state,
+        accessToken: outcome.session.accessToken,
+        refreshToken: outcome.session.refreshToken,
+        expiresAt: outcome.session.expiresAt,
+      }
+    : null;
 }

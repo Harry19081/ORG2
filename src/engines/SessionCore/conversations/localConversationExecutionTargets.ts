@@ -28,6 +28,7 @@ import {
   QueuedConversationRecoveryBlockedError,
   QueuedConversationRecoveryPendingError,
 } from "./queuedConversationContract";
+import { effectiveQueuedRetryEvents } from "./queuedRetryLineage";
 
 const log = createLogger("localConversationContinuation");
 
@@ -335,11 +336,14 @@ export async function findCompatibleExecution(
       const loaded = await loadAuthoritativeSessionEvents(candidate.sessionId);
       const events = loaded.events;
       const executionItems = projectNativeConversationItems(events);
+      const effectiveEvents = effectiveQueuedRetryEvents(events, timeline);
+      const containsSupersededPrompt = effectiveEvents.length !== events.length;
       // A newly-created child may legitimately be empty if the renderer died
       // between Session creation and native materialization. Empty is the
       // canonical zero-length prefix: synchronizeNativeConversation rebuilds
       // the provider transcript before sending the same durable turn intent.
       if (
+        !containsSupersededPrompt &&
         nativeConversationItemsAreProviderPortablePrefix(
           executionItems,
           canonicalItems
@@ -349,6 +353,20 @@ export async function findCompatibleExecution(
           sessionId: candidate.sessionId,
           events,
         };
+      }
+      if (
+        containsSupersededPrompt &&
+        nativeConversationItemsAreProviderPortablePrefix(
+          projectNativeConversationItems(effectiveEvents),
+          canonicalItems
+        )
+      ) {
+        // Check durable retry identity even when the raw text is a prefix:
+        // an old failed prompt can have exactly the retried prompt's text.
+        // Resuming it would append only the successful assistant and bind it
+        // to the superseded user. Leave that audit intact and use an episode
+        // without the superseded prompt (or materialize a fresh one).
+        continue;
       }
       // A compatible execution may contain unpublished partial/tool output.
       // Selecting an older UUID (or creating a fresh one) would silently omit

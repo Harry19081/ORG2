@@ -28,7 +28,18 @@ pub(super) fn read_manifest(agent_name: &str) -> Result<Option<CliConfigProfileM
     }
     let raw = std::fs::read_to_string(&path)
         .map_err(|err| format!("Failed to read {}: {err}", path.display()))?;
-    serde_json::from_str(&raw).map_err(|err| format!("Invalid {}: {err}", path.display()))
+    let manifest: CliConfigProfileManifest =
+        serde_json::from_str(&raw).map_err(|err| format!("Invalid {}: {err}", path.display()))?;
+    if let Some(profile) = &manifest.native_app {
+        profile.validate(agent_name)?;
+        if manifest.agent != agent_name {
+            return Err("Native App manifest agent mismatch".into());
+        }
+        for target in &manifest.target_files {
+            profile.validate_target(agent_name, &target.id, &target.target_path)?;
+        }
+    }
+    Ok(Some(manifest))
 }
 
 pub(super) fn manifest_bytes(manifest: &CliConfigProfileManifest) -> Result<Vec<u8>, String> {
@@ -77,8 +88,14 @@ pub(super) fn agent_manifest_targets(
         .targets
         .iter()
         .map(|target| {
-            let target_path =
-                crate::generic_config::resolve_config_path(agent_name, target.file_id)?;
+            let target_path = match target.kind {
+                super::registry::ManagedConfigTargetKind::Native => {
+                    crate::generic_config::resolve_config_path(agent_name, target.file_id)?
+                }
+                super::registry::ManagedConfigTargetKind::Overlay => {
+                    paths::cli_config_profile_overlay_dir(agent_name).join(target.profile_file_name)
+                }
+            };
             Ok(manifest_target(
                 agent_name,
                 target.file_id,
@@ -94,6 +111,20 @@ pub(super) fn agent_manifest_targets(
             "org2-model-catalog.json",
             &super::model_catalog::path()?,
         ));
+    }
+    Ok(targets)
+}
+
+pub(super) fn app_targets(
+    agent: &str,
+    profile: Option<&super::native_app::NativeAppProfile>,
+) -> Result<Vec<CliConfigTargetFileManifest>, String> {
+    let mut targets = agent_manifest_targets(agent)?;
+    if let Some(profile) = profile {
+        profile.validate(agent)?;
+        for target in &mut targets {
+            target.target_path = profile.target(&target.id)?.to_string_lossy().into_owned();
+        }
     }
     Ok(targets)
 }

@@ -211,6 +211,49 @@ mod tests {
     use std::{fs, io::Write};
 
     #[test]
+    fn failed_native_user_retry_fixture_matches_normalized_history_wire_shape() {
+        let sandbox = crate::test_utils::test_env::sandbox();
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../../crates/orgtrack-core/src/sources/fixtures/codex_native_failed_user.json"
+        ))
+        .unwrap();
+        let path = sandbox.path().join("native-failed-user.jsonl");
+        let rows = fixture["rollout"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join("\n");
+        fs::write(&path, format!("{rows}\n")).unwrap();
+        let expected = &fixture["normalizedUser"];
+        let full = orgtrack_core::sources::codex::app::load_codex_app_from_path("runner", &path)
+            .unwrap();
+        let preview = orgtrack_core::sources::codex::app::load_codex_app_initial_window_from_path(
+            "runner", &path, 1,
+        )
+        .unwrap();
+        for chunks in [full, preview.chunks] {
+            let events = normalize_history(chunks, "runner");
+            let users = events
+                .iter()
+                .filter(|event| event.source == core_types::session_event::EventSource::User)
+                .collect::<Vec<_>>();
+            assert_eq!(users.len(), 1);
+            let actual = serde_json::to_value(users[0]).unwrap();
+            // Preview has a byte-offset identity; the rendered fields must
+            // retain the exact same contract as full native history.
+            for (key, value) in expected.as_object().unwrap() {
+                if key != "id" {
+                    assert_eq!(&actual[key], value, "normalized {key}");
+                }
+            }
+            assert!(users[0].result.get("backendPersisted").is_none());
+            assert!(users[0].result.get("deliveryStatus").is_none());
+        }
+    }
+
+    #[test]
     fn managed_native_preview_is_bounded_and_old_bodies_remain_fetchable() {
         check_managed_native_history(128);
     }

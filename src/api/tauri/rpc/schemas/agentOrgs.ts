@@ -277,14 +277,24 @@ export const CliConfigTargetFileStatusSchema = z.object({
   lastAppliedHash: z.string().nullable().optional(),
   currentHash: z.string().nullable().optional(),
   conflict: z.boolean(),
+  overlay: z.boolean().optional(),
 });
 
 export const CliConfigManagedStatusSchema = z.object({
+  nativeApp: z
+    .object({
+      version: z.literal(1),
+      agent: z.enum(["codex", "claude_desktop"]),
+      scope: z.string(),
+    })
+    .nullable()
+    .optional(),
   agentName: z.string(),
   supported: z.boolean(),
   mode: CliConfigModeSchema,
   hasDefaultBackup: z.boolean(),
   conflict: z.boolean(),
+  overlay: z.boolean().optional(),
   selectedKeyId: z.string().nullable().optional(),
   selectedProvider: z.string().nullable().optional(),
   selectedModel: z.string().nullable().optional(),

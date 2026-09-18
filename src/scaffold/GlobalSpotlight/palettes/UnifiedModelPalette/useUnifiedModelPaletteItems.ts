@@ -229,6 +229,7 @@ export function useUnifiedModelPaletteItems({
       accountId: inferredAccount?.id ?? advancedConfig.selectedAccountId,
       accountName: advancedConfig.selectedSourceLabel ?? inferredAccount?.name,
       credentialSource: advancedConfig.credentialSource,
+      marketProfileId: advancedConfig.marketProfileId,
       modelType:
         advancedConfig.selectedSourceModelType ??
         advancedConfig.listingModelType ??

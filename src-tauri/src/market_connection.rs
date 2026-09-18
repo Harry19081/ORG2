@@ -8,9 +8,13 @@ mod configure_catalog;
 #[cfg(feature = "market-connect")]
 mod external_client;
 #[cfg(feature = "market-connect")]
+mod native_app_launch;
+#[cfg(feature = "market-connect")]
 mod native_provider;
 #[cfg(feature = "market-connect")]
 mod owner;
+#[cfg(feature = "market-connect")]
+mod owner_refresh;
 #[cfg(feature = "market-connect")]
 pub(crate) mod source;
 
@@ -49,6 +53,55 @@ pub async fn market_connection_sync_owner(epoch: Option<u64>) -> Result<(), Stri
     {
         let _ = epoch;
         Ok(())
+    }
+}
+
+// Only the main webview in this instance may claim the native-owned request.
+// Caller-provided user identities and tokens are intentionally not accepted.
+#[tauri::command]
+pub fn market_connection_refresh_pending(window: tauri::WebviewWindow) -> Option<String> {
+    if window.label() != "main" {
+        return None;
+    }
+    #[cfg(feature = "market-connect")]
+    {
+        owner_refresh::pending()
+    }
+    #[cfg(not(feature = "market-connect"))]
+    {
+        None
+    }
+}
+#[tauri::command]
+pub fn market_connection_refresh_claim(
+    window: tauri::WebviewWindow,
+    ticket: String,
+) -> Option<String> {
+    if window.label() != "main" {
+        return None;
+    }
+    #[cfg(feature = "market-connect")]
+    {
+        owner_refresh::claim(&ticket)
+    }
+    #[cfg(not(feature = "market-connect"))]
+    {
+        let _ = ticket;
+        None
+    }
+}
+#[tauri::command]
+pub fn market_connection_refresh_complete(window: tauri::WebviewWindow, ticket: String) {
+    if window.label() != "main" {
+        return;
+    }
+    #[cfg(feature = "market-connect")]
+    {
+        owner_refresh::complete(&ticket);
+    }
+    #[cfg(not(feature = "market-connect"))]
+    {
+        let _ = ticket;
     }
 }
 
@@ -177,7 +230,8 @@ pub async fn market_connection_activate_service(
             },
             request,
         )
-        .await?;
+        .await
+        .inspect_err(|error| tracing::warn!(error = %error, "[Market] activate_service failed"))?;
         serde_json::to_value(access).map_err(|_| "Invalid usage authorization".into())
     }
     #[cfg(not(feature = "market-connect"))]
@@ -256,7 +310,7 @@ pub async fn market_connection_configure_profile(
         validate_external_profile_request(&target, &agent, &model)?;
         let lease = owner::require()?;
         lease.matches(&identity_user_id)?;
-        crate::harness_connections::verify_installed_version(&agent).await?;
+        native_app_launch::verify_installed(&agent).await?;
         let selection = source::prepare_session(
             market_connect::ConnectionMetadata {
                 identity_user_id,
@@ -280,14 +334,18 @@ pub async fn market_connection_configure_profile(
             &model,
             now,
         )?;
+        let native_app = lease.native_app(&agent)?;
         let status = if agent == "claude_desktop" {
-            let models = entries
+            let entry = entries
                 .iter()
                 .find(|entry| {
                     entry.workspace_id == parsed.workspace_id
                         && entry.entitlement_id == parsed.entitlement_id
                 })
-                .and_then(|entry| entry.models_by_agent.get("claude"))
+                .ok_or("No Claude models available")?;
+            let models = entry
+                .models_by_agent
+                .get("claude")
                 .ok_or("No Claude models available")?
                 .iter()
                 .filter(|candidate| {
@@ -301,13 +359,20 @@ pub async fn market_connection_configure_profile(
                     )
                     .is_ok()
                 })
-                .cloned()
+                .map(
+                    |model| agent_cli::managed_config::model_catalog::PickerModel {
+                        id: model.clone(),
+                        label: app_catalog::picker_label(&entry.service_name, model, None),
+                        native_metadata: None,
+                    },
+                )
                 .collect();
             crate::cli_managed_proxy::enable_dynamic_desktop(
                 selection.clone(),
                 model,
                 models,
                 expected_hashes,
+                native_app,
                 lease.operation(),
             )
             .await?
@@ -317,6 +382,7 @@ pub async fn market_connection_configure_profile(
                 selection.clone(),
                 model,
                 expected_hashes,
+                native_app,
                 lease.operation(),
             )
             .await?
@@ -557,26 +623,33 @@ mod enabled {
         .await
         .map_err(|_| "market_connection_unavailable")?
     }
+    #[cfg(test)]
+    #[tokio::test]
+    async fn status_without_a_verified_owner_is_not_an_empty_success() {
+        assert_eq!(
+            status().await.err().as_deref(),
+            Some("market_cloud_sign_in_required")
+        );
+    }
+
     pub async fn status() -> Result<ModuleStatus, String> {
-        let lease = super::owner::require().ok();
+        let lease = super::owner::require()?;
         tokio::task::spawn_blocking(move || {
             let mut connections = Vec::new();
-            if let Some(lease) = lease {
-                for record in read_index()?
-                    .into_iter()
-                    .filter(|r| r.identity_user_id == lease.user())
-                {
-                    lease.check()?;
-                    let scope = app_paths::orgii_root().to_string_lossy().into_owned();
-                    let phase = if market_connect::Grant::load(&scope, &record).is_ok() {
-                        "authorization_saved"
-                    } else {
-                        "reauthorization_required"
-                    };
-                    connections.push(view(record, phase));
-                }
+            for record in read_index()?
+                .into_iter()
+                .filter(|r| r.identity_user_id == lease.user())
+            {
                 lease.check()?;
+                let scope = app_paths::orgii_root().to_string_lossy().into_owned();
+                let phase = if market_connect::Grant::load(&scope, &record).is_ok() {
+                    "authorization_saved"
+                } else {
+                    "reauthorization_required"
+                };
+                connections.push(view(record, phase));
             }
+            lease.check()?;
             Ok(ModuleStatus {
                 enabled: true,
                 app_scheme: market_connect::app_scheme()?.to_string(),
@@ -619,7 +692,12 @@ pub async fn market_connection_open_client(
 ) -> Result<(), String> {
     #[cfg(feature = "market-connect")]
     {
-        external_client::open(agent, selection, model).await
+        let agent_name = agent.clone();
+        external_client::open(agent, selection, model)
+            .await
+            .inspect_err(|error| {
+                tracing::warn!(agent = %agent_name, error = %error, "[Market] open_client failed")
+            })
     }
     #[cfg(not(feature = "market-connect"))]
     {
@@ -653,7 +731,12 @@ pub async fn market_connection_configure_catalog(
 ) -> Result<ConfiguredProfile, String> {
     #[cfg(feature = "market-connect")]
     {
-        configure_catalog::configure(request).await
+        let agent = request.agent.clone();
+        configure_catalog::configure(request)
+            .await
+            .inspect_err(|error| {
+                tracing::warn!(agent = %agent, error = %error, "[Market] configure_catalog failed")
+            })
     }
     #[cfg(not(feature = "market-connect"))]
     {

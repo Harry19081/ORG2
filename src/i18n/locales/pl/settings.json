@@ -150,12 +150,6 @@
     "selectedItemTransparency": "Przezroczystość wybranego elementu",
     "spotlightPlacement": "Pozycja Spotlight",
     "spotlightDimBackground": "Przyciemnij tło",
-    "tooltips": "Podpowiedzi",
-    "buttonTooltipsEnabled": "Pokazuj podpowiedzi przycisków",
-    "buttonTooltipsEnabledDesc": "Pokazuje nazwę i skrót klawiszowy po najechaniu na przycisk. Podpowiedzi ikon informacji są zawsze widoczne",
-    "buttonTooltipDelayMs": "Opóźnienie podpowiedzi",
-    "buttonTooltipDelayImmediate": "Natychmiast",
-    "buttonTooltipDelaySeconds": "{{seconds}} s",
     "spotlightPlacementOptions": {
       "top": "Góra",
       "center": "Środek"
@@ -234,7 +228,13 @@
     "license": "Licencja",
     "licenseTitle": "Licencja ORG2",
     "licenseLoading": "Wczytywanie licencji…",
-    "licenseLoadFailed": "Nie można wczytać licencji aplikacji"
+    "licenseLoadFailed": "Nie można wczytać licencji aplikacji",
+    "tooltips": "Podpowiedzi",
+    "buttonTooltipsEnabled": "Pokazuj podpowiedzi przycisków",
+    "buttonTooltipsEnabledDesc": "Pokazuje nazwę i skrót klawiszowy po najechaniu na przycisk. Podpowiedzi ikon informacji są zawsze widoczne",
+    "buttonTooltipDelayMs": "Opóźnienie podpowiedzi",
+    "buttonTooltipDelayImmediate": "Natychmiast",
+    "buttonTooltipDelaySeconds": "{{seconds}} s"
   },
   "background": {
     "title": "Tło",
@@ -931,6 +931,8 @@
     "apply": "Użyj tego połączenia",
     "applied": "Konfiguracja zapisana — rozpocznij nową sesję narzędzia",
     "restore": "Przywróć pierwotną konfigurację",
+    "disconnect": "Rozłącz",
+    "overlayHelp": "Ustawienia połączenia są zapisane osobno w {{path}}. „Otwórz terminal” uruchamia Claude Code z tymi ustawieniami i istniejącą historią rozmów. Hooki śledzenia sesji są sterowane osobno",
     "restored": "Pierwotna konfiguracja przywrócona — rozpocznij nową sesję narzędzia",
     "refresh": "Odśwież",
     "refreshed": "Odświeżono połączenia narzędzi",
@@ -947,6 +949,7 @@
     "desktopRestored": "Przywrócono poprzednią konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
     "advancedDescription": "Niestandardowe połączenia API i jednorazowy import poświadczeń",
     "marketApps": {
+      "isolatedStorage": "Ta oficjalna aplikacja używa osobnych ustawień i pamięci rozmów. Główna aplikacja i CLI zachowują swoje ustawienia. Wcześniejsze rozmowy nie są importowane automatycznie",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
@@ -960,11 +963,14 @@
       "opened": "Otwarto aplikację",
       "disconnected": "Przywrócono poprzednią konfigurację aplikacji",
       "actionFailed": "Nie udało się zaktualizować tego połączenia",
+      "openFailed": "Nie udało się otworzyć tej aplikacji",
+      "restoreRequired": "Przywróć oryginalne ustawienia tej aplikacji, następnie wybierz pakiety i ponownie zastosuj połączenie",
       "workspaceNumber": "Usługa {{index}} z {{count}}",
       "openTerminal": "Otwórz terminal",
       "terminalOpened": "Terminal otwarty",
       "provider": "ORG2 Market",
       "multiPackageHelp": "Wybierz do 8 pakietów i model domyślny, aby przełączać pakiety w aplikacji",
+      "auxiliaryBilling": "Automatyczne wywołania Claude Code dla tytułu, pamięci i kompaktowania są rozliczane w pakiecie domyślnym; tylko sam czat podąża za pakietem wybranym przez /model",
       "defaultModel": "Model domyślny",
       "packageLimit": "Wybierz do 8 pakietów"
     }
@@ -1082,10 +1088,10 @@
     "relayDisabledHint": "Połączenia przez internet są wyłączone. Włącz je w ustawieniach zaawansowanych"
   },
   "development": {
-    "illustrations": "Ilustracje",
-    "illustrationsDesc": "Porównaj wszystkie ilustracje w trybie jasnym i ciemnym bez zmiany motywu",
     "updateAvailable": "Dostępna aktualizacja",
-    "updateAvailableDesc": "Pokaż wskaźniki aktualizacji w całej aplikacji dla wersji 99.0.0 — akcje aktualizacji otwierają tylko podgląd"
+    "updateAvailableDesc": "Pokaż wskaźniki aktualizacji w całej aplikacji dla wersji 99.0.0 — akcje aktualizacji otwierają tylko podgląd",
+    "illustrations": "Ilustracje",
+    "illustrationsDesc": "Porównaj wszystkie ilustracje w trybie jasnym i ciemnym bez zmiany motywu"
   },
   "managedUsage": {
     "cancel": "Anuluj",

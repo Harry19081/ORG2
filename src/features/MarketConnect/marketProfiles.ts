@@ -322,7 +322,7 @@ export async function loadMarketExecutionProfilesWithDiagnostics(
     store
   );
   try {
-    const status = await loadConnections();
+    const status = await loadConnections(store);
     if (!scope.isCurrent()) return { profiles: [], errors: [] };
     const connections = status.connections.filter(
       (connection) =>
@@ -332,7 +332,7 @@ export async function loadMarketExecutionProfilesWithDiagnostics(
     );
     const results = await Promise.allSettled(
       connections.map(async (connection) =>
-        adaptMarketEntries(connection, await loadEntries(connection))
+        adaptMarketEntries(connection, await loadEntries(connection, store))
       )
     );
     if (!scope.isCurrent()) return { profiles: [], errors: [] };

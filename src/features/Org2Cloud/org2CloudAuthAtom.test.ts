@@ -140,9 +140,10 @@ describe("commitRefreshedAuth", () => {
     expect(store.get(org2CloudAuthAtom)).toBe(rotated);
   });
 
-  it("no-ops when ensureFreshSession returned the same object (token still valid)", () => {
+  it("checks current auth without a write when the token is still valid", () => {
     const store = createStore();
     store.set(org2CloudAuthAtom, VALID_STATE);
+    const setItem = vi.spyOn(localStorage, "setItem");
     let setterCalls = 0;
 
     commitRefreshedAuth(
@@ -154,8 +155,10 @@ describe("commitRefreshedAuth", () => {
       VALID_STATE
     );
 
-    expect(setterCalls).toBe(0);
+    expect(setterCalls).toBe(1);
+    expect(setItem).not.toHaveBeenCalled();
     expect(store.get(org2CloudAuthAtom)).toBe(VALID_STATE);
+    setItem.mockRestore();
   });
 
   it("does NOT resurrect a session the user signed out of mid-flight (CAS)", () => {

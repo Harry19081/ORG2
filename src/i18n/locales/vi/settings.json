@@ -150,12 +150,6 @@
     "selectedItemTransparency": "Độ trong suốt của mục đã chọn",
     "spotlightPlacement": "Vị trí Spotlight",
     "spotlightDimBackground": "Làm mờ nền",
-    "tooltips": "Chú giải",
-    "buttonTooltipsEnabled": "Hiện chú giải nút",
-    "buttonTooltipsEnabledDesc": "Hiện tên và phím tắt khi di chuột qua nút. Chú giải của biểu tượng thông tin luôn hiển thị",
-    "buttonTooltipDelayMs": "Độ trễ chú giải",
-    "buttonTooltipDelayImmediate": "Ngay lập tức",
-    "buttonTooltipDelaySeconds": "{{seconds}} giây",
     "spotlightPlacementOptions": {
       "top": "Trên cùng",
       "center": "Giữa"
@@ -234,7 +228,13 @@
     "license": "Giấy phép",
     "licenseTitle": "Giấy phép ORG2",
     "licenseLoading": "Đang tải giấy phép…",
-    "licenseLoadFailed": "Không thể tải giấy phép của ứng dụng"
+    "licenseLoadFailed": "Không thể tải giấy phép của ứng dụng",
+    "tooltips": "Chú giải",
+    "buttonTooltipsEnabled": "Hiện chú giải nút",
+    "buttonTooltipsEnabledDesc": "Hiện tên và phím tắt khi di chuột qua nút. Chú giải của biểu tượng thông tin luôn hiển thị",
+    "buttonTooltipDelayMs": "Độ trễ chú giải",
+    "buttonTooltipDelayImmediate": "Ngay lập tức",
+    "buttonTooltipDelaySeconds": "{{seconds}} giây"
   },
   "background": {
     "title": "Hình nền",
@@ -931,6 +931,8 @@
     "apply": "Dùng kết nối này",
     "applied": "Đã lưu cấu hình — hãy bắt đầu phiên công cụ mới",
     "restore": "Khôi phục thiết lập ban đầu",
+    "disconnect": "Ngắt kết nối",
+    "overlayHelp": "Cấu hình kết nối được lưu riêng tại {{path}}. \"Mở terminal\" khởi động Claude Code với cấu hình này và lịch sử hội thoại hiện có. Hook theo dõi phiên được điều khiển riêng",
     "restored": "Đã khôi phục thiết lập ban đầu — hãy bắt đầu phiên công cụ mới",
     "refresh": "Làm mới",
     "refreshed": "Đã làm mới kết nối công cụ",
@@ -947,6 +949,7 @@
     "desktopRestored": "Đã khôi phục cấu hình trước — thoát hoàn toàn rồi mở lại Claude Desktop",
     "advancedDescription": "Kết nối API tùy chỉnh và di chuyển thông tin xác thực một lần",
     "marketApps": {
+      "isolatedStorage": "Ứng dụng chính thức này dùng cài đặt và bộ nhớ hội thoại riêng. Ứng dụng chính và CLI giữ nguyên cài đặt. Các hội thoại cũ không được nhập tự động",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading official packages…",
       "loadFailed": "Official packages could not be loaded",
@@ -960,11 +963,14 @@
       "opened": "Đã mở ứng dụng",
       "disconnected": "Đã khôi phục cấu hình trước của ứng dụng",
       "actionFailed": "Không thể cập nhật kết nối ứng dụng này",
+      "openFailed": "Không thể mở ứng dụng này",
+      "restoreRequired": "Khôi phục thiết lập gốc của ứng dụng này, sau đó chọn các gói và áp dụng lại kết nối",
       "workspaceNumber": "Dịch vụ {{index}} / {{count}}",
       "openTerminal": "Mở terminal",
       "terminalOpened": "Đã mở terminal",
       "provider": "ORG2 Market",
       "multiPackageHelp": "Chọn tối đa 8 gói và một mô hình mặc định, sau đó chuyển gói trong ứng dụng",
+      "auxiliaryBilling": "Các lời gọi tự động của Claude Code cho tiêu đề, bộ nhớ và nén ngữ cảnh được tính vào gói mặc định; chỉ cuộc trò chuyện mới theo gói bạn chọn bằng /model",
       "defaultModel": "Mô hình mặc định",
       "packageLimit": "Chọn tối đa 8 gói"
     }
@@ -1082,10 +1088,10 @@
     "relayDisabledHint": "Kết nối qua internet đang tắt. Bạn có thể bật trong cài đặt nâng cao"
   },
   "development": {
-    "illustrations": "Hình minh họa",
-    "illustrationsDesc": "So sánh mọi hình minh họa ở chế độ sáng và tối mà không đổi giao diện",
     "updateAvailable": "Có bản cập nhật",
-    "updateAvailableDesc": "Hiện chỉ báo cập nhật trên toàn ứng dụng với phiên bản 99.0.0 — thao tác cập nhật chỉ mở bản xem trước"
+    "updateAvailableDesc": "Hiện chỉ báo cập nhật trên toàn ứng dụng với phiên bản 99.0.0 — thao tác cập nhật chỉ mở bản xem trước",
+    "illustrations": "Hình minh họa",
+    "illustrationsDesc": "So sánh mọi hình minh họa ở chế độ sáng và tối mà không đổi giao diện"
   },
   "managedUsage": {
     "cancel": "Hủy",

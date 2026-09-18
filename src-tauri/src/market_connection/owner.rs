@@ -26,13 +26,14 @@ struct Snapshot {
     expires_at: f64,
 }
 impl Snapshot {
-    fn identity(&self, now: f64) -> Option<Identity> {
+    // Structural identity is only a refresh binding, never authorization.
+    fn subject(&self) -> Option<Identity> {
         if self.kind != "org2_cloud"
             || self.supabase_url.trim().trim_end_matches('/') != OFFICIAL
             || uuid::Uuid::parse_str(&self.user_id).is_err()
             || self.access_token.len() > 16384
             || !self.expires_at.is_finite()
-            || self.expires_at <= now
+            || self.expires_at <= 0.0
         {
             return None;
         }
@@ -48,10 +49,15 @@ impl Snapshot {
         (claims.get("sub")?.as_str()? == self.user_id
             && claims.get("iss")?.as_str()? == format!("{OFFICIAL}/auth/v1")
             && exp.is_finite()
-            && exp > now)
+            && exp > 0.0)
             .then(|| Identity {
                 user: self.user_id.clone(),
             })
+    }
+
+    fn identity(&self, now: f64) -> Option<Identity> {
+        let subject = self.subject()?;
+        (self.effective_expiry()? > now).then_some(subject)
     }
 
     fn effective_expiry(&self) -> Option<f64> {
@@ -73,9 +79,24 @@ struct State {
     identity: Option<Identity>,
     validated: Option<[u8; 32]>,
     expires_at: f64,
+    // Retain the structural subject across expiry, separately from verified auth.
+    observed_owner: Option<Identity>,
+    owner_generation: u64,
 }
 impl State {
+    fn observe(&mut self, subject: Option<Identity>) -> bool {
+        if self.observed_owner == subject {
+            return false;
+        }
+        self.observed_owner = subject;
+        self.owner_generation += 1;
+        true
+    }
     fn suspend(&mut self) -> u64 {
+        self.owner_generation += 1;
+        self.retire()
+    }
+    fn retire(&mut self) -> u64 {
         self.epoch += 1;
         self.suspended = true;
         self.identity = None;
@@ -100,7 +121,7 @@ impl State {
         if self.suspended {
             return Ok(self.epoch);
         }
-        let epoch = self.suspend();
+        let epoch = self.retire();
         self.suspended = false;
         Ok(epoch)
     }
@@ -127,6 +148,10 @@ fn serial() -> &'static tokio::sync::Mutex<()> {
     SERIAL.get_or_init(Default::default)
 }
 fn changes() -> &'static tokio::sync::watch::Sender<u64> {
+    static CHANGES: OnceLock<tokio::sync::watch::Sender<u64>> = OnceLock::new();
+    CHANGES.get_or_init(|| tokio::sync::watch::channel(0).0)
+}
+fn refresh_changes() -> &'static tokio::sync::watch::Sender<u64> {
     static CHANGES: OnceLock<tokio::sync::watch::Sender<u64>> = OnceLock::new();
     CHANGES.get_or_init(|| tokio::sync::watch::channel(0).0)
 }
@@ -230,6 +255,18 @@ impl crate::dynamic_credentials::OperationAuthorization for Operation {
     }
 }
 impl Lease {
+    pub(super) fn native_app(
+        &self,
+        agent: &str,
+    ) -> Result<Option<agent_cli::managed_config::native_app::NativeAppProfile>, String> {
+        self.check()?;
+        if !matches!(agent, "codex" | "claude_desktop") {
+            return Ok(None);
+        }
+        agent_cli::managed_config::native_app::NativeAppProfile::new(agent, OFFICIAL, self.user())
+            .map(Some)
+    }
+
     pub(super) async fn operation(self) -> Result<Operation, String> {
         let barrier = super::source::operation_barrier(&self).await?;
         Ok(Operation {
@@ -265,7 +302,12 @@ pub(super) async fn suspend() -> Result<u64, String> {
     // A Keychain prompt can hold an old read operation. Acknowledge revocation
     // immediately so durable logout never waits for that OS interaction.
     // sync retires old work before it can restore an owner.
-    let epoch = state().lock().map_err(|_| REQUIRED)?.suspend();
+    let epoch = {
+        let mut s = state().lock().map_err(|_| REQUIRED)?;
+        let epoch = s.suspend();
+        refresh_changes().send_replace(s.owner_generation);
+        epoch
+    };
     changes().send_replace(epoch);
     Ok(epoch)
 }
@@ -295,14 +337,18 @@ async fn sync_current(epoch: Option<u64>) -> Result<(), String> {
     };
     let read = snapshot().await;
     let current = read.as_ref().ok().and_then(|v| v.as_ref());
+    let subject = current.and_then(Snapshot::subject);
     let identity = current.and_then(|v| v.identity(now()));
     let fingerprint = current
         .filter(|_| identity.is_some())
         .map(Snapshot::fingerprint);
     let changed = {
-        let s = state().lock().map_err(|_| REQUIRED)?;
+        let mut s = state().lock().map_err(|_| REQUIRED)?;
         if s.epoch != start_epoch || !s.permits_sync(epoch) {
             return Err(CHANGED.into());
+        }
+        if s.observe(subject) {
+            refresh_changes().send_replace(s.owner_generation);
         }
         s.suspended || s.identity != identity
     };
@@ -372,6 +418,88 @@ pub(super) fn require() -> Result<Lease, String> {
     })
 }
 
+/// Independent of the verified lease epoch: cold-start expiry may replace an
+/// unverified owner with the same verified subject, but never cross a logout.
+#[derive(Clone)]
+pub(super) struct RefreshBinding {
+    state: Arc<Mutex<State>>,
+    generation: u64,
+    user: String,
+}
+impl RefreshBinding {
+    pub(super) fn user(&self) -> &str {
+        &self.user
+    }
+    pub(super) fn check(&self) -> Result<(), String> {
+        let s = self.state.lock().map_err(|_| REQUIRED)?;
+        if s.suspended
+            || s.owner_generation != self.generation
+            || s.observed_owner.as_ref().map(|i| i.user.as_str()) != Some(&self.user)
+        {
+            return Err(CHANGED.into());
+        }
+        Ok(())
+    }
+    pub(super) async fn while_current<T>(
+        &self,
+        work: impl std::future::Future<Output = Result<T, String>>,
+    ) -> Result<T, String> {
+        let changes = refresh_changes().subscribe();
+        self.check()?;
+        let result = cancel_on_invalidation(changes, work).await?;
+        self.check()?;
+        Ok(result)
+    }
+}
+#[derive(Clone)]
+pub(super) struct RefreshStart {
+    state: Arc<Mutex<State>>,
+    generation: u64,
+    unobserved: bool,
+}
+pub(super) fn refresh_start() -> Result<RefreshStart, String> {
+    let s = state().lock().map_err(|_| REQUIRED)?;
+    if s.suspended {
+        return Err(CHANGED.into());
+    }
+    Ok(RefreshStart {
+        state: Arc::clone(state()),
+        generation: s.owner_generation,
+        unobserved: s.observed_owner.is_none(),
+    })
+}
+impl RefreshStart {
+    pub(super) fn binding(&self, user: &str) -> Result<RefreshBinding, String> {
+        let s = self.state.lock().map_err(|_| REQUIRED)?;
+        // The sole permitted generation change is first observing this exact
+        // cold-start owner. Any suspension or A→B→A adds another generation.
+        let expected = self.generation + u64::from(self.unobserved);
+        if s.suspended
+            || (s.owner_generation != self.generation && s.owner_generation != expected)
+            || s.observed_owner.as_ref().map(|i| i.user.as_str()) != Some(user)
+        {
+            return Err(CHANGED.into());
+        }
+        Ok(RefreshBinding {
+            state: Arc::clone(&self.state),
+            generation: s.owner_generation,
+            user: user.into(),
+        })
+    }
+}
+
+/// All dynamic credential consumers enter here before holding source barriers.
+/// The common case is an in-memory verified lease, with no disk/network work.
+pub(super) async fn require_fresh(user: &str) -> Result<Lease, String> {
+    if let Ok(lease) = require() {
+        lease.matches(user)?;
+        return Ok(lease);
+    }
+    let lease = super::owner_refresh::request(user).await?;
+    lease.matches(user)?;
+    Ok(lease)
+}
+
 #[cfg(test)]
 pub(super) fn test_lease(user: &str) -> (Lease, impl Fn() + Clone) {
     let identity = Identity { user: user.into() };
@@ -386,6 +514,23 @@ pub(super) fn test_lease(user: &str) -> (Lease, impl Fn() + Clone) {
         identity,
     };
     (lease, move || {
+        state.lock().unwrap().suspend();
+    })
+}
+
+#[cfg(test)]
+pub(super) fn test_refresh_context(user: &str) -> (RefreshStart, RefreshBinding, impl Fn()) {
+    let state = Arc::new(Mutex::new(State {
+        observed_owner: Some(Identity { user: user.into() }),
+        ..State::default()
+    }));
+    let start = RefreshStart {
+        state: Arc::clone(&state),
+        generation: 0,
+        unobserved: false,
+    };
+    let binding = start.binding(user).unwrap();
+    (start, binding, move || {
         state.lock().unwrap().suspend();
     })
 }
@@ -571,5 +716,83 @@ mod tests {
         state.invalidate_if_current(0);
         assert!(state.identity.is_some());
         assert!(state.validated.is_some());
+    }
+
+    #[test]
+    fn expired_snapshot_is_only_a_refresh_hint_and_cannot_authorize() {
+        let a = snapshot_fixture();
+        assert!(a.subject().is_some());
+        assert!(a.identity(2001.0).is_none());
+        let mut state = State::default();
+        assert!(state.observe(a.subject()));
+        assert!(state.commit_verified(0, &a, 2001.0).is_err());
+        assert!(state.identity.is_none());
+        let mut forged = snapshot_fixture();
+        forged.supabase_url = "https://attacker.example".into();
+        assert!(forged.subject().is_none());
+        forged = snapshot_fixture();
+        forged.access_token = token("22222222-2222-4222-8222-222222222222", OFFICIAL, 2000);
+        assert!(forged.subject().is_none());
+    }
+    #[test]
+    fn cold_expired_subject_can_become_verified_without_reviving_an_old_generation() {
+        let state = Arc::new(Mutex::new(State::default()));
+        let start = RefreshStart {
+            state: Arc::clone(&state),
+            generation: 0,
+            unobserved: true,
+        };
+        let snapshot = snapshot_fixture();
+        state.lock().unwrap().observe(snapshot.subject());
+        let binding = start.binding(&snapshot.user_id).unwrap();
+        let epoch = state.lock().unwrap().begin_replacement(0, None).unwrap();
+        state
+            .lock()
+            .unwrap()
+            .commit_verified(epoch, &snapshot, 1000.0)
+            .unwrap();
+        assert!(binding.check().is_ok());
+        assert_eq!(state.lock().unwrap().owner_generation, 1);
+        state.lock().unwrap().suspend();
+        assert!(binding.check().is_err());
+        assert!(start.binding(&snapshot.user_id).is_err());
+    }
+    #[test]
+    fn implicit_a_b_a_or_endpoint_round_trip_invalidates_refresh() {
+        let snapshot = snapshot_fixture();
+        let (start, binding, _) = test_refresh_context(&snapshot.user_id);
+        let mut state = start.state.lock().unwrap();
+        state.observe(Some(Identity {
+            user: "22222222-2222-4222-8222-222222222222".into(),
+        }));
+        state.observe(snapshot.subject());
+        drop(state);
+        assert!(binding.check().is_err());
+        assert!(start.binding(&snapshot.user_id).is_err());
+        let (start, binding, _) = test_refresh_context(&snapshot.user_id);
+        let mut state = start.state.lock().unwrap();
+        state.observe(None); // Custom endpoint or signed-out canonical snapshot.
+        state.observe(snapshot.subject());
+        drop(state);
+        assert!(binding.check().is_err());
+        assert!(start.binding(&snapshot.user_id).is_err());
+    }
+    #[test]
+    fn logout_before_cold_start_sync_cannot_use_first_observation_exception() {
+        let state = Arc::new(Mutex::new(State::default()));
+        let start = RefreshStart {
+            state: Arc::clone(&state),
+            generation: 0,
+            unobserved: true,
+        };
+        let snapshot = snapshot_fixture();
+        let epoch = state.lock().unwrap().suspend();
+        state.lock().unwrap().observe(snapshot.subject());
+        state
+            .lock()
+            .unwrap()
+            .commit_verified(epoch, &snapshot, 1000.0)
+            .unwrap();
+        assert!(start.binding(&snapshot.user_id).is_err());
     }
 }

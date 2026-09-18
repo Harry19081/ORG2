@@ -554,6 +554,20 @@ pub(super) fn parse_codex_app_bounded<'a>(
                     let mut error_chunk = ActivityChunk::new(session_id, "error", "error");
                     error_chunk.chunk_id = format!("codex-error-{sequence}");
                     error_chunk.created_at = created_at.clone();
+                    // A task terminal diagnostic is an execution receipt, not
+                    // assistant conversation content. Preserve its visible
+                    // error while carrying provenance to native replay/retry.
+                    if let Some(turn_id) =
+                        lifecycle_turn_id(&parsed.payload, active_task_turn_id.as_deref())
+                    {
+                        error_chunk.args = json!({
+                            "__orgiiNativeTerminalDiagnostic": {
+                                "provider": "codex",
+                                "event": "task_complete",
+                                "providerTurnId": turn_id,
+                            }
+                        });
+                    }
                     error_chunk.result = json!({
                         "error": error_message,
                         "observation": error_message,

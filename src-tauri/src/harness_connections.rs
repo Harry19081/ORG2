@@ -1,5 +1,7 @@
 //! Shared Settings/CLI-detail connection commands. No work starts on an idle timer.
 mod desktop;
+pub(crate) mod external_client;
+pub use external_client::*;
 mod probe;
 mod profiles;
 use agent_cli::managed_config::provider_profiles::ClaudeProviderProfile;
@@ -369,9 +371,14 @@ pub(crate) async fn verify_installed_version(agent: &str) -> Result<(), String> 
         return Err("Install this harness before configuring a connection".into());
     }
     let probe = probe_cli_binary_version(&binary).await;
-    let version = probe
-        .version
-        .ok_or("Cannot verify the installed harness version")?;
+    let version = probe.version.ok_or_else(|| {
+        // The launcher may not see interactive-shell PATH entries; the probe
+        // detail ("env: node: No such file or directory") tells the user why.
+        match probe.error.as_deref().filter(|error| !error.is_empty()) {
+            Some(error) => format!("Cannot verify the installed harness version: {error}"),
+            None => "Cannot verify the installed harness version".to_string(),
+        }
+    })?;
     let numbers = version
         .trim_start_matches('v')
         .split('.')
@@ -391,6 +398,11 @@ pub(crate) async fn verify_installed_version(agent: &str) -> Result<(), String> 
         ));
     }
     Ok(())
+}
+
+/// Verify the version of the exact Claude bundle selected by the isolated launcher.
+pub(crate) fn verify_claude_desktop_bundle_version(version: &str) -> Result<(), String> {
+    desktop::validate_version(version)
 }
 
 #[cfg(test)]

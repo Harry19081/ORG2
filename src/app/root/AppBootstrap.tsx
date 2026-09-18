@@ -44,6 +44,7 @@ import { RepoLoader } from "./services/RepoLoader";
 import { useAppDeferredInitialization } from "./useAppDeferredInitialization";
 import { useAppShellEffects } from "./useAppShellEffects";
 import { useFirstPaintSignal } from "./useFirstPaintSignal";
+import { useMarketCloudOwnerRefresh } from "./useMarketCloudOwnerRefresh";
 import { useMobileRelayCloudAuthSync } from "./useMobileRelayCloudAuthSync";
 import { useMobileRemoteDesktopActions } from "./useMobileRemoteDesktopActions";
 import { useMobileSessionReadStateSync } from "./useMobileSessionReadStateSync";
@@ -99,6 +100,7 @@ export const AppBootstrap: FC = () => {
   useMobileRemoteDesktopActions();
   useMobileSessionReadStateSync();
   useMobileRelayCloudAuthSync();
+  useMarketCloudOwnerRefresh();
   useDataSourceAutoScan(); // Keep external-history sources fresh on their cadence
   useAgentLiveStatusSync(); // Hook-driven live agent status → sidebar dots
 

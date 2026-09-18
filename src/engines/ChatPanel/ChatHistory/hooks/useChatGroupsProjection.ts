@@ -1,3 +1,4 @@
+import { isRetryAuditBoundary } from "@src/engines/SessionCore/conversations/retryAuditBoundary";
 import { isInternalLifecycleEvent } from "@src/engines/SessionCore/ingestion/visibilityFilters";
 
 import {
@@ -20,6 +21,8 @@ export interface UnloadedTurnMeta {
 }
 
 export interface ChatGroupMeta {
+  /** Structural failed-attempt audit, never a logical user turn. */
+  retryAudit?: true;
   turnId: string | null;
   /** Provider-exact model recorded on this turn's assistant LLM span. */
   assistantModelId?: string | null;
@@ -322,7 +325,10 @@ export function projectChatGroups(
   let current: ChatGroup = { header: null, items: [] };
 
   for (const item of optimizedChatHistory) {
-    if (isHeader(item) || isBoundary(item)) {
+    if (item.event && isRetryAuditBoundary(item.event)) {
+      if (current.header || current.items.length > 0) groups.push(current);
+      current = { header: null, items: [item] };
+    } else if (isHeader(item) || isBoundary(item)) {
       if (current.header || current.items.length > 0) groups.push(current);
       current = { header: item, items: [] };
     } else {
@@ -379,6 +385,9 @@ export function projectChatGroups(
         : 0;
 
     return {
+      ...(group.items[0]?.event && isRetryAuditBoundary(group.items[0].event)
+        ? { retryAudit: true as const }
+        : {}),
       turnId,
       assistantModelId: assistantModelIdForGroup(group),
       durationMs: unloadedTurn?.durationMs ?? durationMs,

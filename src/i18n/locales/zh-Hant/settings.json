@@ -150,12 +150,6 @@
     "selectedItemTransparency": "選取項目透明度",
     "spotlightPlacement": "Spotlight 位置",
     "spotlightDimBackground": "背景變暗",
-    "tooltips": "提示",
-    "buttonTooltipsEnabled": "顯示按鈕提示",
-    "buttonTooltipsEnabledDesc": "懸停按鈕時顯示名稱和快捷鍵。資訊圖示提示始終顯示",
-    "buttonTooltipDelayMs": "提示延遲",
-    "buttonTooltipDelayImmediate": "立即",
-    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
     "spotlightPlacementOptions": {
       "top": "頂部",
       "center": "置中"
@@ -234,7 +228,13 @@
     "license": "授權條款",
     "licenseTitle": "ORG2 授權條款",
     "licenseLoading": "正在載入授權條款…",
-    "licenseLoadFailed": "無法載入應用程式授權條款"
+    "licenseLoadFailed": "無法載入應用程式授權條款",
+    "tooltips": "提示",
+    "buttonTooltipsEnabled": "顯示按鈕提示",
+    "buttonTooltipsEnabledDesc": "懸停按鈕時顯示名稱和快捷鍵。資訊圖示提示始終顯示",
+    "buttonTooltipDelayMs": "提示延遲",
+    "buttonTooltipDelayImmediate": "立即",
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒"
   },
   "background": {
     "title": "背景",
@@ -931,6 +931,8 @@
     "apply": "使用此連線",
     "applied": "設定已儲存，請建立新的工具工作階段以使用此設定",
     "restore": "還原原始設定",
+    "disconnect": "斷開",
+    "overlayHelp": "連線設定單獨儲存在 {{path}}。「開啟終端機」會使用這份設定啟動 Claude Code，並保留既有對話歷史。工作階段追蹤 hooks 由獨立設定控制",
     "restored": "原始設定已還原，請建立新的工具工作階段",
     "refresh": "重新整理",
     "refreshed": "工具連線已重新整理",
@@ -947,6 +949,7 @@
     "desktopRestored": "已還原先前的桌面設定，請完全結束並重新開啟 Claude Desktop",
     "advancedDescription": "自訂 API 連線和一次性憑證遷移",
     "marketApps": {
+      "isolatedStorage": "此官方 App 使用獨立設定和對話儲存，不會變更主 App 或 CLI 的設定。舊對話不會自動匯入",
       "workspaceHelp": "为当前 App 选择套餐和模型。各 App 独立保存选择，切换 ORG2 聊天来源不会修改 App。",
       "loading": "正在加载官方套餐…",
       "loadFailed": "无法加载官方套餐",
@@ -960,11 +963,14 @@
       "opened": "應用程式已開啟",
       "disconnected": "已還原應用程式先前的設定",
       "actionFailed": "無法更新此應用程式連線",
+      "openFailed": "無法開啟此應用程式",
+      "restoreRequired": "請先還原此應用程式的原始設定，然後重新選擇方案並套用連線",
       "workspaceNumber": "服務 {{index}} / {{count}}",
       "openTerminal": "開啟終端機",
       "terminalOpened": "已開啟終端機",
       "provider": "ORG2 Market",
       "multiPackageHelp": "可同時選擇最多 8 個方案和一個預設模型，連線後可在 App 內切換方案",
+      "auxiliaryBilling": "Claude Code 自動產生標題、記憶和壓縮上下文的呼叫計入預設套餐；只有對話本身跟隨你用 /model 選擇的套餐",
       "defaultModel": "預設模型",
       "packageLimit": "最多選擇 8 個方案"
     }
@@ -1082,10 +1088,10 @@
     "relayDisabledHint": "網際網路連線已關閉，可在進階設定中開啟"
   },
   "development": {
-    "illustrations": "插畫預覽",
-    "illustrationsDesc": "同時預覽所有應用程式插畫的淺色和深色效果，無需更改應用程式主題",
     "updateAvailable": "有可用更新",
-    "updateAvailableDesc": "在整個應用中顯示版本 99.0.0 的更新提示 — 更新操作僅預覽對話框"
+    "updateAvailableDesc": "在整個應用中顯示版本 99.0.0 的更新提示 — 更新操作僅預覽對話框",
+    "illustrations": "插畫預覽",
+    "illustrationsDesc": "同時預覽所有應用程式插畫的淺色和深色效果，無需更改應用程式主題"
   },
   "managedUsage": {
     "cancel": "取消",

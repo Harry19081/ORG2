@@ -8,13 +8,13 @@ use serde_json::{json, Value};
 use std::{collections::BTreeMap, path::PathBuf};
 
 pub const TARGET: &str = "claude_desktop";
-const PROFILE_ID: &str = "01704638-8000-4000-8000-000000000002";
+pub(super) const PROFILE_ID: &str = "01704638-8000-4000-8000-000000000002";
 const MANAGED_DEPLOYMENT_MODE: &str = "3p";
 
 pub struct CredentialHelper {
     pub path: PathBuf,
     pub token: String,
-    pub models: Vec<String>,
+    pub models: Vec<super::model_catalog::PickerModel>,
 }
 
 pub fn credential_helper_path() -> PathBuf {
@@ -65,9 +65,12 @@ pub(super) fn targets() -> Result<Vec<(&'static str, String, PathBuf)>, String> 
 
 pub(super) fn owns_runtime_mode(target: &CliConfigTargetFileManifest) -> bool {
     target.id == "desktop"
-        && std::path::Path::new(&target.target_path)
+        && (std::path::Path::new(&target.target_path)
             == app_paths::external_history_data_local_dir()
                 .join("Claude-3p/claude_desktop_config.json")
+            || super::native_app::is_desktop_runtime_path(std::path::Path::new(
+                &target.target_path,
+            )))
 }
 
 fn runtime_object(bytes: &[u8]) -> Result<serde_json::Map<String, Value>, String> {
@@ -198,6 +201,20 @@ pub fn validate_model(model: &str) -> Result<(), String> {
     }
 }
 
+/// Expose the vendor's user-initiated import flow in isolated Market profiles.
+/// This does not enable automatic imports or read the primary App's history.
+/// https://claude.com/docs/third-party/claude-desktop/import
+pub(super) fn enable_history_import(contents: &mut BTreeMap<String, String>) -> Result<(), String> {
+    let mut profile = object(contents, "profile")?;
+    profile["claudeAiImport"] = json!({ "enabled": true });
+    contents.insert(
+        "profile".into(),
+        serde_json::to_string_pretty(&profile)
+            .map_err(|_| "Cannot serialize Desktop history import settings")?,
+    );
+    Ok(())
+}
+
 pub(super) fn generate(
     contents: &BTreeMap<String, String>,
     connection: &DirectConnection,
@@ -214,14 +231,23 @@ pub(super) fn generate(
             || !helper.path.is_absolute()
             || helper.models.is_empty()
             || helper.models.len() > 256
-            || !helper.models.contains(&connection.model)
+            || !helper
+                .models
+                .iter()
+                .any(|model| model.id == connection.model)
             || helper.token.len() != 64
             || !helper.token.bytes().all(|byte| byte.is_ascii_hexdigit())
         {
             return Err("Invalid Desktop credential helper configuration".into());
         }
         for model in &helper.models {
-            validate_model(model)?;
+            validate_model(&model.id)?;
+            if model.label.trim().is_empty()
+                || model.label.len() > 512
+                || model.label.chars().any(char::is_control)
+            {
+                return Err("Invalid Desktop model label".into());
+            }
         }
     } else if connection.proxy_token.is_some() {
         return Err("Desktop proxy token requires a credential helper".into());
@@ -288,13 +314,13 @@ pub(super) fn generate(
         );
         profile.insert("inferenceCredentialHelperTtlSec".into(), json!(60));
         let mut models = helper.models.clone();
-        models.sort_by_key(|model| model != &connection.model);
-        models.dedup();
+        models.sort_by_key(|model| model.id != connection.model);
+        models.dedup_by(|a, b| a.id == b.id);
         profile.insert(
             "inferenceModels".into(),
             json!(models
                 .into_iter()
-                .map(|name| json!({"name": name}))
+                .map(|model| json!({"name": model.id, "labelOverride": model.label}))
                 .collect::<Vec<_>>()),
         );
         let helper_contents = if cfg!(windows) {
