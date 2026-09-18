@@ -230,6 +230,7 @@
     "sidebarEdgeDepth": "Sidebar edge depth",
     "selectedItemTransparency": "Selected item transparency",
     "spotlightPlacement": "Spotlight position",
+    "spotlightDimBackground": "Dim background",
     "spotlightPlacementOptions": {
       "top": "Top",
       "center": "Middle"

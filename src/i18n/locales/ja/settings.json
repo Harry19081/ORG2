@@ -149,6 +149,7 @@
     "sidebarEdgeDepth": "サイドバー境界の奥行き",
     "selectedItemTransparency": "選択項目の透明度",
     "spotlightPlacement": "Spotlight の位置",
+    "spotlightDimBackground": "背景を暗くする",
     "spotlightPlacementOptions": {
       "top": "上部",
       "center": "中央"

@@ -230,6 +230,7 @@
     "sidebarEdgeDepth": "साइडबार किनारे की गहराई",
     "selectedItemTransparency": "चयनित आइटम की पारदर्शिता",
     "spotlightPlacement": "स्पॉटलाइट की स्थिति",
+    "spotlightDimBackground": "पृष्ठभूमि धुंधली करें",
     "spotlightPlacementOptions": {
       "top": "ऊपर",
       "center": "बीच में"

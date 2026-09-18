@@ -230,6 +230,7 @@
     "sidebarEdgeDepth": "侧边栏边缘层次",
     "selectedItemTransparency": "选中项目透明度",
     "spotlightPlacement": "Spotlight 位置",
+    "spotlightDimBackground": "背景变暗",
     "spotlightPlacementOptions": {
       "top": "顶部",
       "center": "居中"

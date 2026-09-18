@@ -52,6 +52,7 @@ const APPEARANCE_APP_KEYS = new Set<SettingsKey>([
   "general.usePointerCursors",
   "general.applicationUiFont",
   "general.spotlightPlacement",
+  "general.spotlightDimBackground",
   "layout.sidebarSelectedRowOpacity",
   "layout.sidebarEdgeDepthEnabled",
 ]);
@@ -174,6 +175,9 @@ const SETTINGS_SEARCH_UI_OVERRIDES: Partial<
   },
   "layout.sidebarEdgeDepthEnabled": {
     labelKey: "settings:general.sidebarEdgeDepth",
+  },
+  "general.spotlightDimBackground": {
+    labelKey: "settings:general.spotlightDimBackground",
   },
   "general.lightSkin": {
     aliasLabelKeys: ["settings:general.skin", "settings:general.skins"],

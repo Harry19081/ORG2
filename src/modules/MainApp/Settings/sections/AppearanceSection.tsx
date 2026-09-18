@@ -107,6 +107,9 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
   const [sidebarEdgeDepthEnabled, setSidebarEdgeDepthEnabled] = useSetting(
     "layout.sidebarEdgeDepthEnabled"
   );
+  const [spotlightDimBackground, setSpotlightDimBackground] = useSetting(
+    "general.spotlightDimBackground"
+  );
   const [usePointerCursors, setUsePointerCursors] = useSetting(
     "general.usePointerCursors"
   );
@@ -448,6 +451,15 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                   value: placement,
                 }))}
                 size="large"
+              />
+            </SectionRow>
+            <SectionRow
+              settingsSearchKeys="general.spotlightDimBackground"
+              label={t("general.spotlightDimBackground")}
+            >
+              <Switch
+                checked={spotlightDimBackground}
+                onCheckedChange={setSpotlightDimBackground}
               />
             </SectionRow>
           </SectionContainer>
