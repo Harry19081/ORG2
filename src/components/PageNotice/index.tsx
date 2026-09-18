@@ -320,7 +320,9 @@ const PageNotice: React.FC<PageNoticeProps> = ({
               icon={<HugeiconsIcon icon={Copy01Icon} size={14} />}
               title={t("actions.copy")}
               aria-label={t("actions.copy")}
-              onClick={handleCopy}
+              onClick={(event) => {
+                void handleCopy(event);
+              }}
             />
             {action && <div className="shrink-0">{actionNode}</div>}
             {onClose && (

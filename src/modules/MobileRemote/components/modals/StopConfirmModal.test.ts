@@ -32,7 +32,13 @@ describe("StopConfirmModal failure feedback", () => {
     expect(host.querySelector('[role="alert"]')?.textContent).toBe(
       "stopConfirm.failed"
     );
-    expect(host.querySelectorAll("button")).toHaveLength(2);
+    const buttons = Array.from(host.querySelectorAll("button"));
+    expect(buttons.map((button) => button.textContent).filter(Boolean)).toEqual(
+      ["stopConfirm.cancel", "stopConfirm.confirm"]
+    );
+    expect(
+      host.querySelector('[role="alert"] button[aria-label="actions.copy"]')
+    ).not.toBeNull();
     expect(host.querySelectorAll("button:disabled")).toHaveLength(0);
   });
   it("does not show an old error after dismissing the modal", () => {

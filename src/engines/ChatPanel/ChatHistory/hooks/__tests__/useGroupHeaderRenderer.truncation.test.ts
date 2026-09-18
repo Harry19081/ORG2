@@ -192,13 +192,15 @@ describe("continuous chat user-message previews", () => {
       )
     );
 
-    const retryButton = container.querySelector<HTMLButtonElement>(
-      '[data-testid="chat-message-delivery-failed"] button'
-    );
+    const retryButton = Array.from(
+      container.querySelectorAll<HTMLButtonElement>(
+        '[data-testid="chat-message-delivery-failed"] button'
+      )
+    ).find((button) => button.textContent === "Retry");
     const editButton = container.querySelector<HTMLButtonElement>(
       '[data-testid="chat-message-user-edit-button"]'
     );
-    expect(retryButton).not.toBeNull();
+    expect(retryButton).toBeDefined();
     expect(editButton).not.toBeNull();
     act(() => retryButton!.click());
     expect(retry).toHaveBeenCalledWith(
