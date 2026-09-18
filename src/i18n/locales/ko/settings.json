@@ -781,8 +781,6 @@
     "typingAnimationDesc": "Agent 메시지에 타자기 애니메이션 활성화",
     "typingSpeed": "타이핑 속도",
     "typingSpeedDesc": "문자당 밀리초 (1ms = 가장 빠름, 50ms = 가장 느림)",
-    "decryptEffect": "Decrypt 효과",
-    "decryptEffectDesc": "Agent 메시지에 Decrypt 애니메이션 활성화",
     "sendOnEnter": "메시지 보내기 단축키",
     "sendOnEnterDesc": "메시지를 보내는 단축키를 선택하세요. 다른 Enter 키 조합은 줄바꿈을 삽입합니다"
   },

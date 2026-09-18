@@ -80,8 +80,6 @@ export interface ChatAppearanceSettings {
   typingEffectEnabled: boolean;
   /** Typing speed in milliseconds per character */
   typingSpeed: number;
-  /** Enable decrypt text animation effect */
-  decryptEffectEnabled: boolean;
   /** Send messages with Enter instead of Ctrl/Cmd+Enter */
   sendOnEnter: boolean;
 }
@@ -92,7 +90,6 @@ export const DEFAULT_CHAT_APPEARANCE: ChatAppearanceSettings = {
   lineHeight: 1.6,
   typingEffectEnabled: true,
   typingSpeed: 5,
-  decryptEffectEnabled: false,
   sendOnEnter: false,
 };
 
@@ -110,9 +107,6 @@ export const chatAppearanceAtom = atom<ChatAppearanceSettings>((get) => {
       DEFAULT_CHAT_APPEARANCE.typingEffectEnabled,
     typingSpeed:
       settings["chat.typingSpeed"] ?? DEFAULT_CHAT_APPEARANCE.typingSpeed,
-    decryptEffectEnabled:
-      settings["chat.decryptEffectEnabled"] ??
-      DEFAULT_CHAT_APPEARANCE.decryptEffectEnabled,
     sendOnEnter:
       settings["chat.sendOnEnter"] ?? DEFAULT_CHAT_APPEARANCE.sendOnEnter,
   };
@@ -131,7 +125,6 @@ export const chatAppearancePersistAtom = atom(
       "chat.lineHeight": merged.lineHeight,
       "chat.typingEffectEnabled": merged.typingEffectEnabled,
       "chat.typingSpeed": merged.typingSpeed,
-      "chat.decryptEffectEnabled": merged.decryptEffectEnabled,
       "chat.sendOnEnter": merged.sendOnEnter,
     });
   }

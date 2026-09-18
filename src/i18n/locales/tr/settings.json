@@ -781,8 +781,6 @@
     "typingAnimationDesc": "Agent mesajları için daktilo animasyonunu etkinleştir",
     "typingSpeed": "Yazma Hızı",
     "typingSpeedDesc": "Karakter başına milisaniye (1ms = en hızlı, 50ms = en yavaş)",
-    "decryptEffect": "Decrypt Efekti",
-    "decryptEffectDesc": "Agent mesajları için Decrypt animasyonunu etkinleştir",
     "sendOnEnter": "Mesaj gönderme kısayolu",
     "sendOnEnterDesc": "Mesaj gönderen kısayolu seçin; diğer Enter kombinasyonları yeni satır ekler"
   },
