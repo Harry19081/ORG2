@@ -32,6 +32,8 @@ const state = vi.hoisted(() => ({
   pendingInbox: {} as MobilePendingInbox,
   rpc: null,
   sessionsHasMore: false,
+  rosterPhase: "ready",
+  refreshSessions: vi.fn(),
   loadMoreSessions: vi.fn(),
   focusPermission: vi.fn(),
   readStateSync: undefined as MobileReadStateSync | undefined,
@@ -96,6 +98,8 @@ describe("SessionsScreen feature transitions", () => {
       items: [],
       refresh: vi.fn(),
     };
+    state.rosterPhase = "ready";
+    state.refreshSessions.mockReset().mockResolvedValue(undefined);
     state.focusPermission.mockClear();
     state.readStateSync = undefined;
   });
@@ -106,6 +110,36 @@ describe("SessionsScreen feature transitions", () => {
     (
       globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }
     ).IS_REACT_ACT_ENVIRONMENT = false;
+  });
+
+  it("distinguishes online loading, empty, failure and retained rows with retry", async () => {
+    state.sessions = [];
+    state.rosterPhase = "loading";
+    await render();
+    expect(host.textContent).toContain("sessions.loading");
+    expect(host.textContent).not.toContain("sessions.empty");
+    state.rosterPhase = "ready";
+    await render();
+    expect(host.textContent).toContain("sessions.empty");
+    state.rosterPhase = "error";
+    await render();
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain(
+      "sessions.loadFailed"
+    );
+    await act(async () => button("sessions.retry").click());
+    expect(state.refreshSessions).toHaveBeenCalledTimes(1);
+    state.sessions = [{ id: "retained", name: "Retained", status: "idle" }];
+    await render();
+    expect(host.textContent).toContain("sessions.refreshFailed");
+    expect(host.textContent).toContain("Retained");
+    state.rosterPhase = "loading";
+    await render();
+    expect(host.textContent).toContain("sessions.refreshing");
+    expect(button("sessions.retry")).toBeUndefined();
+    state.rosterPhase = "ready";
+    await render();
+    expect(host.textContent).not.toContain("sessions.refreshing");
+    expect(host.textContent).not.toContain("sessions.empty");
   });
 
   it("shows unknown rather than zero before the global snapshot is complete", async () => {

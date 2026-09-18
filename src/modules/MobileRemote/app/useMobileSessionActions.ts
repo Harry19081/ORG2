@@ -37,7 +37,7 @@ export function useMobileSessionActions(state: MobileRemoteState) {
     const client = clientRef.current;
     if (!client || connection.presence !== "online") return;
     readStateSync.refresh();
-    await requestSessionList(client);
+    await requestSessionList(client, false, true);
   }, [
     connection.demoMode,
     connection.presence,

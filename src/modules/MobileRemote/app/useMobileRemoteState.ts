@@ -156,8 +156,18 @@ export function useMobileRemoteState({
     },
     [platform.runtime]
   );
-  const { sessions, sessionsHasMore, requestSessionList, resetSessions } =
-    useMobileSessionList(clientRef, prepareLegacySessionIdentities);
+  const {
+    sessions,
+    sessionsHasMore,
+    rosterPhase,
+    requestSessionList,
+    resetSessions,
+    suspendSessionList,
+  } = useMobileSessionList(
+    clientRef,
+    prepareLegacySessionIdentities,
+    platform.runtime
+  );
   const {
     openingClient,
     openedSession,
@@ -297,6 +307,8 @@ export function useMobileRemoteState({
     readStateSync,
     sessions,
     sessionsHasMore,
+    rosterPhase,
+    suspendSessionList,
     requestSessionList,
     resetSessions,
     openingClient,

@@ -9,6 +9,54 @@ import {
 import type { MobileRpcClient } from "../connection/mobileRpcClient";
 import { hasValidSessionPresentation } from "../connection/sessionDiscoveryContract";
 import type { MobileSessionRow } from "../connection/types";
+import type { MobileRemoteRuntimePort } from "../platform/types";
+
+export type MobileRosterPhase = "idle" | "loading" | "ready" | "error";
+const RETRY_DELAYS = [1000, 2000, 4000];
+class InvalidRosterError extends Error {}
+function canRetryRoster(error: unknown) {
+  if (error instanceof InvalidRosterError) return false;
+  // Protocol and permission failures need an explicit user retry after repair.
+  const code =
+    error && typeof error === "object" && "code" in error
+      ? error.code
+      : undefined;
+  return ![
+    -32600, -32601, -32602, -32001, -32002, -32003, -32005, 401, 403,
+  ].includes(code as number);
+}
+
+interface SessionListPage {
+  sessions: MobileSessionRow[];
+  nextOffset?: number;
+  hasMore?: boolean;
+}
+
+function isSessionListPage(
+  value: unknown,
+  offset: number
+): value is SessionListPage {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const page = value as Record<string, unknown>;
+  // Both desktop list sources always send sessions, including a genuine empty
+  // array. Missing data is a protocol failure, never an authoritative empty list.
+  if (
+    !Array.isArray(page.sessions) ||
+    !page.sessions.every(hasValidSessionPresentation)
+  )
+    return false;
+  if (page.hasMore !== undefined && typeof page.hasMore !== "boolean")
+    return false;
+  const next = page.nextOffset;
+  if (
+    next !== undefined &&
+    (!Number.isSafeInteger(next) || (next as number) < offset)
+  )
+    return false;
+  // Old peers may omit pagination altogether. A continuing page, however,
+  // must carry a cursor that advances, or the roster would be silently truncated.
+  return page.hasMore !== true || (typeof next === "number" && next > offset);
+}
 
 /** Owns roster pagination and invalidation, not the transport lifetime. */
 export function useMobileSessionList(
@@ -17,10 +65,19 @@ export function useMobileSessionList(
     client: MobileRpcClient,
     sessions: readonly MobileSessionRow[],
     isCurrent: () => boolean
-  ) => void | Promise<void>
+  ) => void | Promise<void>,
+  runtime?: MobileRemoteRuntimePort
 ) {
   const [sessions, setSessions] = useState<MobileSessionRow[]>([]);
   const [sessionsHasMore, setSessionsHasMore] = useState(false);
+  const [rosterPhase, setRosterPhase] = useState<MobileRosterPhase>("idle");
+  const retryTimerRef = useRef<number | null>(null);
+  const retryAttemptRef = useRef(0);
+  const clearRetry = useCallback(() => {
+    if (retryTimerRef.current !== null)
+      runtime?.clearTimeout(retryTimerRef.current);
+    retryTimerRef.current = null;
+  }, [runtime]);
   const sessionNextOffsetRef = useRef(0);
   const sessionListGenerationRef = useRef(0);
   const snapshotRevisionRef = useRef(0);
@@ -46,26 +103,19 @@ export function useMobileSessionList(
         ? sessionNextOffsetRef.current + 50
         : Math.max(50, sessionNextOffsetRef.current);
       let offset = append ? sessionNextOffsetRef.current : 0;
-      let list: {
-        sessions?: MobileSessionRow[];
-        nextOffset?: number;
-        hasMore?: boolean;
-      } = {};
+      let list: SessionListPage = { sessions: [] };
       const rows: MobileSessionRow[] = [];
       do {
-        list = await client.call<typeof list>("session/list", {
+        const response = await client.call<unknown>("session/list", {
           offset,
           limit: 200,
         });
         if (!isCurrent()) return;
-        if (
-          list.sessions &&
-          (!Array.isArray(list.sessions) ||
-            !list.sessions.every(hasValidSessionPresentation))
-        ) {
-          throw new Error("Invalid session presentation metadata");
+        if (!isSessionListPage(response, offset)) {
+          throw new InvalidRosterError("Invalid session list response");
         }
-        rows.push(...(list.sessions ?? []));
+        list = response;
+        rows.push(...list.sessions);
         const next = list.nextOffset;
         if (!Number.isSafeInteger(next) || next! <= offset) {
           list.hasMore = false;
@@ -83,6 +133,8 @@ export function useMobileSessionList(
       } catch {
         // Best-effort preparation never changes a valid roster response.
       }
+      retryAttemptRef.current = 0;
+      setRosterPhase("ready");
       sessionNextOffsetRef.current = offset;
       setSessionsHasMore(
         list.hasMore === true &&
@@ -103,7 +155,15 @@ export function useMobileSessionList(
   );
 
   const requestSessionList = useCallback(
-    (client: MobileRpcClient, append = false): Promise<void> => {
+    function request(
+      client: MobileRpcClient,
+      append = false,
+      restartRetry = false
+    ): Promise<void> {
+      if (clientRef.current !== client || runtime?.isHidden())
+        return Promise.resolve();
+      clearRetry();
+      if (restartRetry) retryAttemptRef.current = 0;
       // Every full refresh supersedes roster preparation started by the
       // preceding snapshot, including work whose list flight already ended.
       if (!append) snapshotRevisionRef.current += 1;
@@ -124,6 +184,7 @@ export function useMobileSessionList(
         append,
       };
       flightRef.current = flight;
+      setRosterPhase("loading");
       flight.promise = (async () => {
         try {
           while (
@@ -140,7 +201,36 @@ export function useMobileSessionList(
             } catch (error) {
               // A queued invalidation may recover a failed read. With no queued
               // work, propagate the failure to the manual refresh/load-more UI.
-              if (!flight.refresh && !flight.append) throw error;
+              if (!flight.refresh && !flight.append) {
+                if (
+                  flightRef.current === flight &&
+                  clientRef.current === client &&
+                  flight.generation === sessionListGenerationRef.current
+                ) {
+                  setRosterPhase("error");
+                  const delay = RETRY_DELAYS[retryAttemptRef.current];
+                  if (
+                    runtime &&
+                    !runtime.isHidden() &&
+                    delay !== undefined &&
+                    canRetryRoster(error)
+                  ) {
+                    retryAttemptRef.current += 1;
+                    retryTimerRef.current = runtime.setTimeout(() => {
+                      retryTimerRef.current = null;
+                      if (
+                        clientRef.current === client &&
+                        flight.generation ===
+                          sessionListGenerationRef.current &&
+                        !runtime.isHidden()
+                      ) {
+                        void request(client, appendPage).catch(() => undefined);
+                      }
+                    }, delay);
+                  }
+                }
+                throw error;
+              }
             }
           }
         } finally {
@@ -149,22 +239,33 @@ export function useMobileSessionList(
       })();
       return flight.promise;
     },
-    [clientRef, readPage]
+    [clientRef, readPage, runtime, clearRetry]
   );
-  useEffect(
-    () => () => {
-      sessionListGenerationRef.current += 1;
-      flightRef.current = null;
-    },
-    []
-  );
-
-  const resetSessions = useCallback((rows: MobileSessionRow[] = []) => {
+  // Release transport-owned work without erasing the same desktop's last good rows.
+  const suspendSessionList = useCallback(() => {
+    clearRetry();
     sessionListGenerationRef.current += 1;
     flightRef.current = null;
-    sessionNextOffsetRef.current = 0;
-    setSessionsHasMore(false);
-    setSessions(rows);
-  }, []);
-  return { sessions, sessionsHasMore, requestSessionList, resetSessions };
+  }, [clearRetry]);
+  useEffect(() => suspendSessionList, [suspendSessionList]);
+
+  const resetSessions = useCallback(
+    (rows?: MobileSessionRow[]) => {
+      suspendSessionList();
+      retryAttemptRef.current = 0;
+      sessionNextOffsetRef.current = 0;
+      setSessionsHasMore(false);
+      setSessions(rows ?? []);
+      setRosterPhase(rows ? "ready" : "idle");
+    },
+    [suspendSessionList]
+  );
+  return {
+    sessions,
+    sessionsHasMore,
+    rosterPhase,
+    requestSessionList,
+    resetSessions,
+    suspendSessionList,
+  };
 }

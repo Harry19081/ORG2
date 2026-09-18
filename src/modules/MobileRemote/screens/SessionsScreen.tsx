@@ -67,6 +67,8 @@ export function SessionsScreen({
     focusPermission,
     sessions,
     sessionsHasMore,
+    rosterPhase,
+    refreshSessions,
     loadMoreSessions,
     readStateSync,
     pairedDesktops = [],
@@ -344,6 +346,43 @@ export function SessionsScreen({
         hidden={!showAll}
         className={showAll ? "mobile-discovery-scroll" : "hidden"}
       >
+        {online &&
+        (rosterPhase === "error" ||
+          rosterPhase === "loading" ||
+          rosterPhase === "idle" ||
+          (rosterPhase === "ready" && sessions.length === 0)) ? (
+          <div
+            className="mobile-discovery-notice"
+            role={rosterPhase === "error" ? "alert" : "status"}
+          >
+            <p>
+              {t(
+                rosterPhase === "error"
+                  ? sessions.length
+                    ? "sessions.refreshFailed"
+                    : "sessions.loadFailed"
+                  : rosterPhase === "ready"
+                    ? "sessions.empty"
+                    : sessions.length
+                      ? "sessions.refreshing"
+                      : "sessions.loading"
+              )}
+            </p>
+            {rosterPhase === "error" ? (
+              <Button
+                variant="secondary"
+                appearance="soft"
+                size="large"
+                style={SEARCH_ACTION_STYLE}
+                onClick={() => {
+                  void refreshSessions().catch(() => undefined);
+                }}
+              >
+                {t("sessions.retry")}
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
         {groups.map((group) => (
           <React.Fragment key={group.id}>
             <div className="mobile-discovery-section-label break-words">

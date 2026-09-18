@@ -246,7 +246,10 @@ describe("createMobileRpcClient", () => {
         error: { code: 401, message: "Unauthorized" },
       })
     );
-    await expect(promise).rejects.toThrow("Unauthorized");
+    await expect(promise).rejects.toMatchObject({
+      message: "Unauthorized",
+      code: 401,
+    });
   });
 
   it("dispatches notifications without id", () => {

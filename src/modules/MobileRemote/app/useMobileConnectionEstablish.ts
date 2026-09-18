@@ -265,7 +265,12 @@ export function useMobileConnectionEstablish(
             subscriptionGeneration
           ).catch(() => undefined);
         };
-        await Promise.all([restoreActiveSession(), requestSessionList(client)]);
+        await Promise.all([
+          restoreActiveSession(),
+          // An authenticated socket is healthy even when its roster read fails.
+          // List state and bounded retries are owned by useMobileSessionList.
+          requestSessionList(client).catch(() => undefined),
+        ]);
       } catch (error) {
         intentionalClose = true;
         if (socketRef.current !== socket) throw new SupersededConnectionError();

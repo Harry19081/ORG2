@@ -1,10 +1,8 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-import Message from "@src/components/Message";
-import { ROUTES } from "@src/config/routes";
 import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
@@ -19,11 +17,9 @@ import {
   sessionLoadingAtom,
   sessionPaginationAtom,
   sessionsAtom,
-  visitedSessionsAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
 import {
-  clearSessionSidebarRevealAtom,
   sessionSidebarRevealRequestAtom,
   sidebarCollapsedAtom,
 } from "@src/store/ui/sidebarAtom";
@@ -32,14 +28,9 @@ import { SidebarBottomBar } from "../../blocks";
 import SidebarSettingsMenuButton from "../../blocks/SidebarSettingsMenuButton";
 import NavigationSidebar from "../../variants/NavigationSidebar";
 import SidebarAccountButton from "../SidebarAccountButton";
-import { sidebarCustomCollapsedAtom } from "../sections/collapsePreference";
-import { useSidebarSections } from "../sections/useSidebarSections";
-import type { SidebarTabDisposition } from "../sidebarTabNavigation";
-import { useSessionMenuItems } from "../useSessionMenuItems/index";
-import { DEFAULT_COLLAPSED_SECTION_IDS } from "../workstationSidebarData";
+import { useDesktopSessionRoster } from "./DesktopSessionRosterProvider";
 import { SessionSidebarViewSwitcher } from "./SessionSidebarViewSwitcher";
 import { SidebarDialogs } from "./SidebarDialogs";
-import { openNewChatFromSidebar } from "./sessionEntryActions";
 import { useWorkstationSidebarBottomActions } from "./sidebarConnector.bottomActions";
 import { useWorkstationSidebarChatPanelAtoms } from "./sidebarConnector.chatPanelAtoms";
 import { useWorkstationSidebarChrome } from "./sidebarConnector.chrome";
@@ -47,19 +38,15 @@ import { useWorkstationSidebarCloudMenuData } from "./sidebarConnector.cloudMenu
 import { buildWorkstationSidebarLabels } from "./sidebarConnector.labels";
 import { useWorkstationSidebarPinnedAndRevealData } from "./sidebarConnector.pinnedAndRevealData";
 import { useWorkstationSidebarRevealNavigationEffects } from "./sidebarConnector.revealNavigationEffects";
-import { useWorkstationSidebarRevealRequestState } from "./sidebarConnector.revealRequestState";
-import { useWorkstationSidebarScopeAndPagination } from "./sidebarConnector.scopeAndPagination";
 import { useWorkstationSidebarSectionPresentation } from "./sidebarConnector.sectionPresentation";
 import { useWorkstationSidebarSelectionAndCollapse } from "./sidebarConnector.selectionAndCollapse";
 import { useWorkstationSidebarSessionInteractionHandlers } from "./sidebarConnector.sessionInteractionHandlers";
 import { useSidebarSessionRefreshAction } from "./sidebarSessionRefresh";
 import type { SessionSidebarView } from "./types";
-import { useMobileSidebarSessions } from "./useMobileSidebarSessions";
 import { useSessionSidebarOrdering } from "./useSessionSidebarOrdering";
 import { useSessionSidebarRowActions } from "./useSessionSidebarRowActions";
 import { useSidebarStationNavigation } from "./useSidebarStationNavigation";
 import { useWorkItemsSidebarSurface } from "./useWorkItemsSidebarSurface";
-import { useWorkspaceGroupActions } from "./useWorkspaceGroupActions";
 
 export const WorkstationSidebarConnector: React.FC = () => {
   const { t } = useTranslation("navigation");
@@ -80,9 +67,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const sessionSidebarRevealRequest = useAtomValue(
     sessionSidebarRevealRequestAtom
   );
-  const clearSessionSidebarReveal = useSetAtom(clearSessionSidebarRevealAtom);
   const setSidebarCollapsed = useSetAtom(sidebarCollapsedAtom);
-  const visitedSessions = useAtomValue(visitedSessionsAtom);
   const sessionCreatorDrafts = useAtomValue(sessionCreatorDraftListAtom);
   const activeSessionCreatorDraftId = useAtomValue(
     activeSessionCreatorDraftIdAtom
@@ -127,22 +112,29 @@ export const WorkstationSidebarConnector: React.FC = () => {
     useState<SessionSidebarView>("sessions");
   const workItemsContentVisible = activeViewKey === "work-items";
 
+  const roster = useDesktopSessionRoster();
   const {
-    sortedSessions,
+    scope,
+    customSections,
+    setGroupVisibleCounts,
+    expandedSubagentParentIds,
+    setExpandedSubagentParentIds,
+    setSavedCustomCollapsed,
+    collapsedSectionIds,
+    setCollapsedSectionIds,
+    activeSessionSidebarRevealRequest,
+    projection,
+    cloudSection,
+  } = roster;
+  const {
     activeCloudOrgId,
     activeOrgId,
     activeProjectOrgId,
-    cloudSessionFilter,
-    cloudTaggedSessionIds,
-    handleCloudSessionFilterChange,
     manageableCloudOrg,
     manageableLocalOrg,
     orgSelectorLoading,
     orgSelectorOptions,
-    personalHiddenCloudTaggedIds,
-    sessionFilterOrgIds,
     setSelectedOrgId,
-    repoPathToName,
     groupByMode,
     setGroupByMode,
     groupVisibleCount,
@@ -156,35 +148,8 @@ export const WorkstationSidebarConnector: React.FC = () => {
     cloudSignedInAvatarUrl,
     cloudSignedInIdentity,
     handleCloudSignIn,
-  } = useWorkstationSidebarScopeAndPagination({ sessions });
-
-  const [groupVisibleCounts, setGroupVisibleCounts] = useState<
-    Map<string, number>
-  >(new Map());
-  const [expandedSubagentParentIds, setExpandedSubagentParentIds] = useState<
-    Set<string>
-  >(() => new Set());
-  const [savedCustomCollapsed, setSavedCustomCollapsed] = useAtom(
-    sidebarCustomCollapsedAtom
-  );
-  const [collapsedSectionIds, setCollapsedSectionIds] = useState<Set<string>>(
-    () => new Set([...DEFAULT_COLLAPSED_SECTION_IDS, ...savedCustomCollapsed])
-  );
-
-  const customSections = useSidebarSections(
-    activeViewKey === "sessions" && !activeCloudOrgId,
-    collapsedSectionIds
-  );
-
-  const { activeSessionSidebarRevealRequest, revealedSessionIds } =
-    useWorkstationSidebarRevealRequestState({
-      sessionSidebarRevealRequest,
-      activeSessionId,
-      clearSessionSidebarReveal,
-    });
-
+  } = scope;
   const {
-    untitledSession,
     newSessionLabel,
     pinFolderLabel,
     unpinFolderLabel,
@@ -195,103 +160,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     importGithubIssuesLabel,
     addOrgLabel,
     manageOrgLabel,
-    moreActionsLabel,
-    pinWorkspaceLabel,
-    unpinWorkspaceLabel,
-    hideWorkspaceLabel,
-    unhideWorkspaceLabel,
-    revealWorkspaceLabel,
-    workspaceUnavailableTitle,
-    workspaceUnavailableMessage,
   } = buildWorkstationSidebarLabels({ t, tProjects, tSessions, tCommon });
-
-  // Match the sidebar's "+ New session" flow while pre-seeding the workspace.
-  const openNewSessionFromSidebar = useCallback(() => {
-    openNewChatFromSidebar({
-      goToNewSession,
-      resetChatPanelSessionSurface,
-      openNewChatTab: () => openStartPageTab({ title: t("routes.launchpad") }),
-      setChatPanelCreateTarget,
-    });
-  }, [
-    goToNewSession,
-    resetChatPanelSessionSurface,
-    openStartPageTab,
-    setChatPanelCreateTarget,
-    t,
-  ]);
-
-  const workspaceGroupActions = useWorkspaceGroupActions({
-    createSessionLabel: newSessionLabel,
-    moreActionsLabel,
-    pinLabel: pinWorkspaceLabel,
-    unpinLabel: unpinWorkspaceLabel,
-    hideLabel: hideWorkspaceLabel,
-    unhideLabel: unhideWorkspaceLabel,
-    revealLabel: revealWorkspaceLabel,
-    unavailableTitle: workspaceUnavailableTitle,
-    unavailableMessage: workspaceUnavailableMessage,
-    openNewSession: openNewSessionFromSidebar,
-    setCollapsedSectionIds,
-  });
-
-  const openCloudSessionAtDestination = useCallback(
-    (
-      destination: SidebarTabDisposition | "my-station" | "new-window",
-      options: { sessionId: string; title: string }
-    ) => {
-      if (destination === "new-window") {
-        void openSessionInNewWindow(options).catch((error) => {
-          Message.error(error instanceof Error ? error.message : String(error));
-        });
-        return;
-      }
-
-      setStationMode("my-station");
-      setStationChatVisible("my-station", true);
-      if (location.pathname !== ROUTES.workStation.code.path) {
-        navigate(ROUTES.workStation.code.path);
-      }
-
-      if (destination === "new-tab") {
-        resetChatPanelSessionSurface();
-        openSessionInNewChatTab({
-          sessionId: options.sessionId,
-          sessionName: options.title,
-        });
-        return;
-      }
-
-      if (destination === "default" || destination === "replace-all") {
-        resetChatPanelSessionSurface();
-        openOrReplaceSessionInChatPanelTab({
-          sessionId: options.sessionId,
-          sessionName: options.title,
-        });
-        if (destination === "replace-all") {
-          void closeOtherThanActiveChatPanelTabs();
-        }
-        return;
-      }
-
-      openSessionInWorkstation({
-        sessionId: options.sessionId,
-        title: options.title,
-      });
-    },
-    [
-      location.pathname,
-      navigate,
-      resetChatPanelSessionSurface,
-      openSessionInNewChatTab,
-      openSessionInNewWindow,
-      openSessionInWorkstation,
-      openOrReplaceSessionInChatPanelTab,
-      closeOtherThanActiveChatPanelTabs,
-      setStationChatVisible,
-      setStationMode,
-    ]
-  );
 
   const {
     cloudMenuItems,
@@ -301,27 +170,11 @@ export const WorkstationSidebarConnector: React.FC = () => {
     handleCloudSessionItemClick,
     resetCloudTeamPagination,
     buildCloudRemoteItemMenuItems,
-    cloudMemberFilterDropdown,
     cloudRemoteRowMap,
     cloudRemoteViewerMap,
-    sessionListExcludedIds,
-    cloudScopedExtraSessionIds,
     cloudChannelsDialogs,
     localChannelsDialogs,
-  } = useWorkstationSidebarCloudMenuData({
-    activeCloudOrgId,
-    sessions,
-    cloudSessionFilter,
-    activeSessionId,
-    cloudMySessionsVisibleCount,
-    groupVisibleCount,
-    revealedCloudOrgId: activeSessionSidebarRevealRequest?.cloudOrgId,
-    revealedSidebarItemId: activeSessionSidebarRevealRequest?.sidebarItemId,
-    openSessionAtDestination: openCloudSessionAtDestination,
-    handleCloudSessionFilterChange,
-    personalHiddenCloudTaggedIds,
-    cloudTaggedSessionIds,
-  });
+  } = useWorkstationSidebarCloudMenuData({ activeCloudOrgId, cloudSection });
 
   const {
     menuItems,
@@ -329,24 +182,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     subagentParentIds,
     isLoadMoreId,
     getLoadMoreGroupId,
-  } = useSessionMenuItems({
-    customSections,
-    sortedSessions,
-    visitedSessions,
-    repoPathToName,
-    groupByMode,
-    untitledSession,
-    selectedOrgIds: sessionFilterOrgIds,
-    extraSessionIds: cloudScopedExtraSessionIds,
-    excludedSessionIds: sessionListExcludedIds,
-    includeExternal,
-    groupVisibleCounts,
-    defaultGroupVisibleCount: groupVisibleCount,
-    showAllLoadedGroupSessions: Boolean(activeCloudOrgId),
-    expandedSubagentParentIds,
-    revealedSessionIds,
-    workspaceGroupActions,
-  });
+  } = projection;
 
   const {
     rename,
@@ -462,14 +298,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     cloudSessionMenuItems,
     sessionSidebarMenuItems,
     cloudMySessionsVisibleCount,
-  });
-
-  useMobileSidebarSessions({
-    scope: activeOrgId,
-    loading: sessionsLoading || orgSelectorLoading,
-    items: sessionMenuItems,
-    sessionMap,
-    repoPathToName,
   });
 
   const workItems = useWorkItemsSidebarSurface({
@@ -683,12 +511,11 @@ export const WorkstationSidebarConnector: React.FC = () => {
             : undefined
         }
       />
-      {customSections.dialog}
       {ordering.insertionLine}
       <SidebarDialogs
         cloudChannelsDialogs={cloudChannelsDialogs}
         localChannelsDialogs={localChannelsDialogs}
-        cloudMemberFilterDropdown={cloudMemberFilterDropdown}
+        cloudMemberFilterDropdown={null}
         cloudShare={cloudShare}
         cloudSyncLevel={cloudSyncLevel}
         moveToOrg={moveToOrg}
