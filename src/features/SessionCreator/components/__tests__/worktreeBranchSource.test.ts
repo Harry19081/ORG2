@@ -296,6 +296,32 @@ describe("groupBranchOptions", () => {
     expect(new Set(allNames).size).toBe(allNames.length);
   });
 
+  it("keeps one entry per default name instead of every remote copy", () => {
+    const remote = (name: string) => option({ name, isRemote: true });
+    const groups = groupBranchOptions([
+      dated("develop", 3),
+      remote("origin/develop"),
+      remote("upstream/develop"),
+      remote("fork/develop"),
+      remote("fork/main"),
+      remote("origin/main"),
+    ]);
+    expect(groups[0].key).toBe("default");
+    expect(groups[0].options.map((o) => o.name)).toEqual([
+      "develop",
+      "origin/main",
+    ]);
+    const rest = groups.slice(1).flatMap((g) => g.options.map((o) => o.name));
+    expect(rest).toEqual(
+      expect.arrayContaining([
+        "origin/develop",
+        "upstream/develop",
+        "fork/develop",
+        "fork/main",
+      ])
+    );
+  });
+
   it("honors the API current flag when no current branch name is supplied", () => {
     const groups = groupBranchOptions([
       dated("main", 1),

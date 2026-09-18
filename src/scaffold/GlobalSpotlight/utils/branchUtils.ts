@@ -21,14 +21,48 @@ export function isDefaultBranchName(
   isRemote: boolean,
   defaultBranchNames: readonly string[] = DEFAULT_BRANCH_NAMES
 ): boolean {
-  const short = isRemote ? name.slice(name.indexOf("/") + 1) : name;
-  return defaultBranchNames.includes(short.toLowerCase());
+  return defaultBranchNames.includes(
+    shortBranchName(name, isRemote).toLowerCase()
+  );
+}
+
+function shortBranchName(name: string, isRemote: boolean): string {
+  return isRemote ? name.slice(name.indexOf("/") + 1) : name;
+}
+
+/**
+ * One entry per default branch name: the local branch, else a single remote
+ * copy (`origin` first, then the first remote alphabetically). Copies on other
+ * remotes (forks, upstream mirrors) are not defaults — they stay in the normal
+ * sections so a checkout with many remotes does not flood the pinned list.
+ */
+function pickDefaultBranches<T extends BranchItem>(
+  branches: readonly T[],
+  defaultBranchNames: readonly string[]
+): T[] {
+  const byName = new Map<string, T>();
+  const rank = (branch: T) =>
+    !branch.isRemote ? 0 : branch.name.startsWith("origin/") ? 1 : 2;
+  for (const branch of branches) {
+    if (!isDefaultBranchName(branch.name, branch.isRemote, defaultBranchNames))
+      continue;
+    const key = shortBranchName(branch.name, branch.isRemote).toLowerCase();
+    const held = byName.get(key);
+    if (
+      !held ||
+      rank(branch) < rank(held) ||
+      (rank(branch) === rank(held) && branch.name < held.name)
+    )
+      byName.set(key, branch);
+  }
+  return [...byName.values()];
 }
 
 /**
  * Categorize branches into Default, Recent (top 5), Worktrees, and Other.
- * - Default: Branches named "main", "master", "develop", "dev", local
- *   before remote — rendered as their own section pinned to the top
+ * - Default: One branch per "main"/"master"/"develop"/"dev" — the local
+ *   branch, else one remote copy (see `pickDefaultBranches`) — rendered as
+ *   their own section pinned to the top
  * - Recent: Top 5 most recently updated remaining branches (by commit date)
  * - Worktrees: Branches checked out in a secondary worktree (excluding
  *   Recent; the BranchItem must already carry `worktreePath`)
@@ -43,9 +77,7 @@ export function categorizeBranches<T extends BranchItem>(
 ): {
   [K in keyof CategorizedBranches]: T[];
 } {
-  const defaultBranches = branches.filter((branch) =>
-    isDefaultBranchName(branch.name, branch.isRemote, defaultBranchNames)
-  );
+  const defaultBranches = pickDefaultBranches(branches, defaultBranchNames);
   const defaultBranchSet = new Set(defaultBranches.map((b) => b.name));
   const rest = branches.filter((branch) => !defaultBranchSet.has(branch.name));
 
