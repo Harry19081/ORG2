@@ -2,14 +2,15 @@
  * SpotlightSettingsMenu
  *
  * "…" button at the end of the keyboard-hint pill. Opens a small menu with
- * Spotlight's own view preferences — placement, background dim — and a
- * "Unpin all" action that clears both pin lists (commands + directories).
+ * Spotlight's own view preferences — placement, background dim — and, for a
+ * surface that supports pinning, an "Unpin all" action that clears only that
+ * surface's pin list (`pinScope`).
  *
  * The menu portals to <body> at DROPDOWN_PANEL.zIndex, which sits above the
  * Spotlight container. ActionMenuSurface owns Escape (capture phase), so
  * Escape closes this menu without also closing Spotlight.
  */
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -29,15 +30,49 @@ import { useDropdownEngine } from "@src/hooks/dropdown";
 import { useSetting } from "@src/hooks/settings/useSettings";
 import { EllipsisIcon, HugeiconsIcon, PinOffIcon } from "@src/icons";
 import {
-  spotlightCommandPinsAtom,
-  spotlightDirectoryPinsAtom,
+  type SpotlightPinScope,
+  spotlightPinAtoms,
 } from "@src/store/ui/spotlightPinsAtom";
 import {
   type SpotlightPlacement,
   spotlightPlacementAtom,
 } from "@src/store/ui/uiAtom";
 
-export const SpotlightSettingsMenu: React.FC = () => {
+const UnpinAllItem: React.FC<{
+  scope: SpotlightPinScope;
+  onDone: () => void;
+}> = ({ scope, onDone }) => {
+  const { t } = useTranslation();
+  const atom = spotlightPinAtoms[scope];
+  const pinCount = useAtomValue(atom).length;
+  const setPins = useSetAtom(atom);
+  return (
+    <>
+      <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
+      <DropdownActionItem
+        icon={
+          <HugeiconsIcon
+            icon={PinOffIcon}
+            data-icon="pin-off"
+            size={DROPDOWN_ITEM.iconSize}
+          />
+        }
+        disabled={pinCount === 0}
+        onClick={() => {
+          setPins([]);
+          onDone();
+        }}
+      >
+        {t("selectors.spotlightFooter.unpinAll")}
+      </DropdownActionItem>
+    </>
+  );
+};
+
+export const SpotlightSettingsMenu: React.FC<{
+  /** Pin list owned by the open surface; omit when it has no pins. */
+  pinScope?: SpotlightPinScope;
+}> = ({ pinScope }) => {
   const { t } = useTranslation();
   const { t: tSettings } = useTranslation("settings");
   const [open, setOpen] = useState(false);
@@ -55,19 +90,9 @@ export const SpotlightSettingsMenu: React.FC = () => {
   const [dimBackground, setDimBackground] = useSetting(
     "general.spotlightDimBackground"
   );
-  const [commandPins, setCommandPins] = useAtom(spotlightCommandPinsAtom);
-  const [directoryPins, setDirectoryPins] = useAtom(spotlightDirectoryPinsAtom);
-  const hasPins = commandPins.length > 0 || directoryPins.length > 0;
-
   const label = t("selectors.spotlightFooter.settings");
   const placementLabel = tSettings("general.spotlightPlacement");
   const dimLabel = tSettings("general.spotlightDimBackground");
-
-  const handleUnpinAll = () => {
-    setCommandPins([]);
-    setDirectoryPins([]);
-    close();
-  };
 
   return (
     // Clicks must not reach the footer's refocus-input handler, which would
@@ -148,20 +173,7 @@ export const SpotlightSettingsMenu: React.FC = () => {
                 onCheckedChange={setDimBackground}
               />
             </div>
-            <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
-            <DropdownActionItem
-              icon={
-                <HugeiconsIcon
-                  icon={PinOffIcon}
-                  data-icon="pin-off"
-                  size={DROPDOWN_ITEM.iconSize}
-                />
-              }
-              disabled={!hasPins}
-              onClick={handleUnpinAll}
-            >
-              {t("selectors.spotlightFooter.unpinAll")}
-            </DropdownActionItem>
+            {pinScope && <UnpinAllItem scope={pinScope} onDone={close} />}
           </ActionMenuSurface>,
           document.body
         )}

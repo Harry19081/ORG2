@@ -477,6 +477,13 @@ const GlobalSpotlightInner: React.FC<
       onClose={closeModal}
       hasActiveAction={hasActiveAction}
       activeActionChip={activeActionChip}
+      pinScope={
+        layer.kind === "default"
+          ? "commands"
+          : layer.kind === "workspace"
+            ? "directories"
+            : undefined
+      }
       hideFooter={
         layer.kind === "agentControl" ||
         layer.kind === "sessionCreator" ||

@@ -5,8 +5,12 @@ import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  type SpotlightPinScope,
+  spotlightAgentPinsAtom,
   spotlightCommandPinsAtom,
   spotlightDirectoryPinsAtom,
+  spotlightModelPinsAtom,
+  spotlightPinAtoms,
 } from "@src/store/ui/spotlightPinsAtom";
 
 import { SpotlightSettingsMenu } from "./SpotlightSettingsMenu";
@@ -30,16 +34,24 @@ describe("SpotlightSettingsMenu", () => {
   let root: Root;
   let store: ReturnType<typeof createStore>;
 
-  const render = () =>
+  const render = (pinScope: SpotlightPinScope | null = "commands") =>
     act(() => {
       root.render(
         React.createElement(
           Provider,
           { store },
-          React.createElement(SpotlightSettingsMenu)
+          React.createElement(SpotlightSettingsMenu, {
+            pinScope: pinScope ?? undefined,
+          })
         )
       );
     });
+  const unpinAllItem = () =>
+    Array.from(
+      menu()!.querySelectorAll<HTMLButtonElement>("button, [role=menuitem]")
+    ).find((node) =>
+      node.textContent?.includes("selectors.spotlightFooter.unpinAll")
+    );
   const menu = () =>
     document.querySelector<HTMLElement>(
       '[data-testid="spotlight-settings-menu"]'
@@ -77,30 +89,53 @@ describe("SpotlightSettingsMenu", () => {
     expect(text).toContain("selectors.spotlightFooter.unpinAll");
   });
 
-  it("unpin all clears both command and directory pins", () => {
+  const seedAllPins = () => {
     store.set(spotlightCommandPinsAtom, ["cmd-a", "cmd-b"]);
     store.set(spotlightDirectoryPinsAtom, ["/repo"]);
-    render();
+    store.set(spotlightAgentPinsAtom, ["cli:codex"]);
+    store.set(spotlightModelPinsAtom, [
+      {
+        modelId: "gpt-6-astra-low",
+        sourceType: "own_key",
+        accountId: "key",
+        modelType: "codex",
+      },
+    ]);
+  };
+
+  const pinCounts = () =>
+    Object.fromEntries(
+      Object.entries(spotlightPinAtoms).map(([scope, atom]) => [
+        scope,
+        store.get(atom as typeof spotlightCommandPinsAtom).length,
+      ])
+    );
+
+  it.each(Object.keys(spotlightPinAtoms) as SpotlightPinScope[])(
+    "unpin all clears only the %s pins",
+    (scope) => {
+      seedAllPins();
+      const before = pinCounts();
+      render(scope);
+      openMenu();
+      act(() => unpinAllItem()!.click());
+      expect(pinCounts()).toEqual({ ...before, [scope]: 0 });
+      expect(menu()).toBeNull();
+    }
+  );
+
+  it("hides unpin all on a surface without pins", () => {
+    seedAllPins();
+    render(null);
     openMenu();
-    const unpin = Array.from(
-      menu()!.querySelectorAll<HTMLButtonElement>("button, [role=menuitem]")
-    ).find((node) =>
-      node.textContent?.includes("selectors.spotlightFooter.unpinAll")
-    )!;
-    act(() => unpin.click());
-    expect(store.get(spotlightCommandPinsAtom)).toEqual([]);
-    expect(store.get(spotlightDirectoryPinsAtom)).toEqual([]);
-    expect(menu()).toBeNull();
+    expect(unpinAllItem()).toBeUndefined();
   });
 
-  it("disables unpin all when nothing is pinned", () => {
-    render();
+  it("disables unpin all when only another surface has pins", () => {
+    store.set(spotlightDirectoryPinsAtom, ["/repo"]);
+    render("commands");
     openMenu();
-    const unpin = Array.from(
-      menu()!.querySelectorAll<HTMLElement>("button, [role=menuitem]")
-    ).find((node) =>
-      node.textContent?.includes("selectors.spotlightFooter.unpinAll")
-    )!;
+    const unpin = unpinAllItem()!;
     expect(
       unpin.hasAttribute("disabled") ||
         unpin.getAttribute("aria-disabled") === "true"

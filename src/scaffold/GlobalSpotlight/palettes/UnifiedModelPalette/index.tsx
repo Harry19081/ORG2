@@ -69,8 +69,10 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
     selectedModelId,
     selectedSourceIndex,
     setSelectedSourceIndex,
+    pinnedItems,
     recentItems,
     allModelItems,
+    pinnedHeader,
     recentHeader,
     allHeader,
     sourceItems,
@@ -144,6 +146,12 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
     return `${item.label} ${item.desc || ""} ${rightLabel} ${searchAlias}`;
   }, []);
 
+  const { filteredItems: filteredPinnedItems } = useFilteredItems({
+    items: pinnedItems,
+    searchQuery,
+    getSearchText,
+  });
+
   const { filteredItems: filteredRecentItems } = useFilteredItems({
     items: recentItems,
     searchQuery,
@@ -158,6 +166,10 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
 
   const filteredItems = useMemo<SpotlightItem[]>(() => {
     const out: SpotlightItem[] = [];
+    if (filteredPinnedItems.length > 0) {
+      out.push(pinnedHeader);
+      out.push(...filteredPinnedItems);
+    }
     if (filteredRecentItems.length > 0) {
       out.push(recentHeader);
       out.push(...filteredRecentItems);
@@ -168,9 +180,11 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
     }
     return out;
   }, [
+    filteredPinnedItems,
     filteredRecentItems,
     filteredAllModelItems,
     primaryItems.length,
+    pinnedHeader,
     recentHeader,
     allHeader,
   ]);
@@ -449,6 +463,7 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
       onClose={onClose}
       hasActiveAction={activeColumn !== "models"}
       activeActionChip={SPOTLIGHT_FOOTER_ACTIVE_CHIP.switchColumn}
+      pinScope="models"
     >
       <PaletteBody
         kernel={kernel}

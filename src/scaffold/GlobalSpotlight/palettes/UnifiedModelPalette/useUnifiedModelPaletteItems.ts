@@ -1,3 +1,4 @@
+import { useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
 
 import { KEY_SOURCE } from "@src/api/tauri/session";
@@ -10,9 +11,14 @@ import { isPairCompatible } from "@src/hooks/models/modelPairCompatibility";
 import { accountHasModel } from "@src/hooks/models/useModelAccountLookup";
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
 import { recentEntriesEquivalent } from "@src/store/session/recentModelEntriesAtom";
+import {
+  MAX_SPOTLIGHT_MODEL_PINS,
+  spotlightModelPinsAtom,
+} from "@src/store/ui/spotlightPinsAtom";
 import { resolveDefaultVariant } from "@src/util/defaultModelVariant";
 import { resolveModelVariantFields } from "@src/util/modelVariants";
 
+import { isModelPinned, toggleModelPin } from "../../pinning/modelPins";
 import type { SpotlightItem } from "../../types";
 import {
   buildKeyItems,
@@ -22,6 +28,7 @@ import {
 } from "./keyFirstItems";
 import {
   MODEL_SECTION,
+  type ModelSection,
   buildGroupByModel,
   buildSectionHeader,
   entryMatchesActiveConfig,
@@ -108,22 +115,20 @@ export function useUnifiedModelPaletteItems({
   modelAliasVersion,
   tCommon,
 }: UseUnifiedModelPaletteItemsParams) {
-  const compatibleRecentEntries = useMemo(
-    () =>
-      recentEntries.filter((entry) => {
-        if (entry.credentialSource?.startsWith("market:")) {
-          return Boolean(findMarketSourceForRecent(marketSources, entry));
-        }
-        return isPairCompatible(entry, {
-          accounts,
-          orgiiPoolEnabled,
-          orgiiModelSet,
-          orgiiCategoryIds,
-          cliAgentType,
-        });
-      }),
+  const isEntryCompatible = useCallback(
+    (entry: RecentModelEntry) => {
+      if (entry.credentialSource?.startsWith("market:")) {
+        return Boolean(findMarketSourceForRecent(marketSources, entry));
+      }
+      return isPairCompatible(entry, {
+        accounts,
+        orgiiPoolEnabled,
+        orgiiModelSet,
+        orgiiCategoryIds,
+        cliAgentType,
+      });
+    },
     [
-      recentEntries,
       accounts,
       orgiiPoolEnabled,
       orgiiModelSet,
@@ -131,6 +136,29 @@ export function useUnifiedModelPaletteItems({
       cliAgentType,
       marketSources,
     ]
+  );
+
+  const compatibleRecentEntries = useMemo(
+    () => recentEntries.filter(isEntryCompatible),
+    [recentEntries, isEntryCompatible]
+  );
+
+  const [modelPins, setModelPins] = useAtom(spotlightModelPinsAtom);
+  const compatiblePinnedEntries = useMemo(
+    () => modelPins.filter(isEntryCompatible),
+    [modelPins, isEntryCompatible]
+  );
+  const buildPinState = useCallback(
+    (entry: RecentModelEntry) => {
+      const pinned = isModelPinned(modelPins, entry);
+      return {
+        pinned,
+        disabled: !pinned && modelPins.length >= MAX_SPOTLIGHT_MODEL_PINS,
+        onToggle: () =>
+          setModelPins((previous) => toggleModelPin(previous, entry)),
+      };
+    },
+    [modelPins, setModelPins]
   );
 
   const persistDefaultVariantForAccount = useCallback(
@@ -228,26 +256,38 @@ export function useUnifiedModelPaletteItems({
       entries.push(entry);
     };
 
+    // Pinned selections render in their own section, never twice.
+    const tryAddUnpinned = (entry: RecentModelEntry) => {
+      if (!isModelPinned(compatiblePinnedEntries, entry)) tryAdd(entry);
+    };
+
     if (currentModelEntry) {
-      tryAdd(currentModelEntry);
+      tryAddUnpinned(currentModelEntry);
     }
     for (const entry of compatibleRecentEntries) {
-      tryAdd(entry);
       if (entries.length >= MAX_RECENT_ITEMS) break;
+      tryAddUnpinned(entry);
     }
     return entries;
-  }, [compatibleRecentEntries, currentModelEntry]);
+  }, [compatibleRecentEntries, compatiblePinnedEntries, currentModelEntry]);
 
-  const recentItems = useMemo((): SpotlightItem[] => {
-    return recentEntriesForDisplay.map((entry, index) => {
+  const buildQuickPickItem = useCallback(
+    (entry: RecentModelEntry, section: ModelSection, index: number) => {
       const isCurrentSelection = entryMatchesActiveConfig(
         entry,
         advancedConfig
       );
-      return buildModelSelectionSpotlightItem({
-        entry,
-        section: MODEL_SECTION.RECENT,
-        idPrefix: isCurrentSelection ? "recent-current" : `recent-${index}`,
+      // The active config may hold another variant of a stored entry.
+      const rowEntry =
+        isCurrentSelection && activeModelId
+          ? { ...entry, modelId: activeModelId }
+          : entry;
+      const item = buildModelSelectionSpotlightItem({
+        entry: rowEntry,
+        section,
+        idPrefix: isCurrentSelection
+          ? `${section}-current`
+          : `${section}-${index}`,
         isCurrentSelection,
         accounts,
         groupByModel,
@@ -256,17 +296,39 @@ export function useUnifiedModelPaletteItems({
         onReselectVariant: isCurrentSelection ? reselectVariant : undefined,
         modelAliasVersion,
       });
-    });
-  }, [
-    accounts,
-    advancedConfig,
-    groupByModel,
-    handleRecentSelect,
-    modelAliasVersion,
-    persistDefaultVariantForAccount,
-    recentEntriesForDisplay,
-    reselectVariant,
-  ]);
+      return {
+        ...item,
+        data: { ...item.data, pinState: buildPinState(rowEntry) },
+      };
+    },
+    [
+      accounts,
+      activeModelId,
+      advancedConfig,
+      buildPinState,
+      groupByModel,
+      handleRecentSelect,
+      modelAliasVersion,
+      persistDefaultVariantForAccount,
+      reselectVariant,
+    ]
+  );
+
+  const pinnedItems = useMemo(
+    (): SpotlightItem[] =>
+      compatiblePinnedEntries.map((entry, index) =>
+        buildQuickPickItem(entry, MODEL_SECTION.PINNED, index)
+      ),
+    [buildQuickPickItem, compatiblePinnedEntries]
+  );
+
+  const recentItems = useMemo(
+    (): SpotlightItem[] =>
+      recentEntriesForDisplay.map((entry, index) =>
+        buildQuickPickItem(entry, MODEL_SECTION.RECENT, index)
+      ),
+    [buildQuickPickItem, recentEntriesForDisplay]
+  );
 
   const resolveGroupLaunchModel = useCallback(
     (sortedVariants: string[]): string => {
@@ -469,6 +531,15 @@ export function useUnifiedModelPaletteItems({
     ]
   );
 
+  const pinnedHeader = useMemo(
+    () =>
+      buildSectionHeader(
+        MODEL_SECTION.PINNED,
+        tCommon("selectors.repo.sections.pinned")
+      ),
+    [tCommon]
+  );
+
   const recentHeader = useMemo(
     () =>
       buildSectionHeader(
@@ -513,8 +584,10 @@ export function useUnifiedModelPaletteItems({
     rawItems,
     sideMenuRawItems,
     sideMenuModelItems,
+    pinnedItems,
     recentItems,
     allModelItems,
+    pinnedHeader,
     recentHeader,
     allHeader,
     sourceItems,

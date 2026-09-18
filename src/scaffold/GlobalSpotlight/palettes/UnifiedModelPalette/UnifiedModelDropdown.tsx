@@ -147,6 +147,8 @@ export const UnifiedModelDropdown: React.FC<UnifiedModelDropdownProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const {
+    pinnedItems,
+    pinnedHeader,
     recentItems,
     recentHeader,
     allModelItems,
@@ -199,6 +201,11 @@ export const UnifiedModelDropdown: React.FC<UnifiedModelDropdownProps> = ({
     return `${item.label} ${item.desc || ""} ${rightLabel} ${searchAlias}`;
   }, []);
 
+  const { filteredItems: filteredPinnedItems } = useFilteredItems({
+    items: pinnedItems,
+    searchQuery,
+    getSearchText,
+  });
   const { filteredItems: filteredRecentItems } = useFilteredItems({
     items: recentItems,
     searchQuery,
@@ -211,6 +218,9 @@ export const UnifiedModelDropdown: React.FC<UnifiedModelDropdownProps> = ({
   });
   const filteredItems = useMemo((): SpotlightItem[] => {
     const items: SpotlightItem[] = [];
+    if (filteredPinnedItems.length > 0) {
+      items.push(pinnedHeader, ...filteredPinnedItems);
+    }
     if (filteredRecentItems.length > 0) {
       items.push(recentHeader, ...filteredRecentItems);
     }
@@ -218,7 +228,14 @@ export const UnifiedModelDropdown: React.FC<UnifiedModelDropdownProps> = ({
       items.push(allHeader, ...filteredAllModelItems);
     }
     return items;
-  }, [filteredRecentItems, recentHeader, filteredAllModelItems, allHeader]);
+  }, [
+    filteredPinnedItems,
+    pinnedHeader,
+    filteredRecentItems,
+    recentHeader,
+    filteredAllModelItems,
+    allHeader,
+  ]);
 
   useEffect(() => {
     if (!isOpen) return;

@@ -16,6 +16,7 @@ import {
 } from "@src/api/tauri/rpc/schemas/validation";
 import { KEY_SOURCE, type KeySource } from "@src/api/tauri/session/index";
 import { createZodJsonStorage } from "@src/util/core/storage/zodStorage";
+import { getModelVariantBaseModel } from "@src/util/modelVariants";
 
 const STORAGE_KEY = "orgii:recentModelEntries";
 const MAX_RECENT = 5;
@@ -33,7 +34,7 @@ export interface RecentModelEntry {
   cliModelDisplay?: string;
 }
 
-const RecentModelEntrySchema = z.object({
+export const RecentModelEntrySchema = z.object({
   modelId: z.string(),
   sourceType: z.enum([KEY_SOURCE.OWN, KEY_SOURCE.HOSTED]),
   accountId: z.string().optional(),
@@ -56,12 +57,20 @@ export const recentModelEntriesAtom = atomWithStorage<RecentModelEntry[]>(
   createZodJsonStorage(RecentModelEntriesSchema)
 );
 
-/** Whether two recent entries represent the same account + model selection. */
+/**
+ * Whether two recent entries represent the same account + model selection.
+ * Variants of one model family (effort/fast) are the same selection: the row
+ * renders the family and edits its variant in place.
+ */
 export function recentEntriesEquivalent(
   left: RecentModelEntry,
   right: RecentModelEntry
 ): boolean {
-  if (left.modelId !== right.modelId || left.sourceType !== right.sourceType) {
+  if (
+    getModelVariantBaseModel(left.modelId) !==
+      getModelVariantBaseModel(right.modelId) ||
+    left.sourceType !== right.sourceType
+  ) {
     return false;
   }
 

@@ -17,6 +17,8 @@
  */
 import React, { useCallback, useMemo, useRef } from "react";
 
+import type { SpotlightPinScope } from "@src/store/ui/spotlightPinsAtom";
+
 import {
   SpotlightFooter,
   type SpotlightFooterActiveChip,
@@ -48,6 +50,8 @@ interface SpotlightShellProps {
   activeActionChip?: SpotlightFooterActiveChip;
   /** Hide the keyboard-hints footer entirely (used by pure-input palettes). */
   hideFooter?: boolean;
+  /** Pin list the settings menu's "Unpin all" clears; omit when unpinnable. */
+  pinScope?: SpotlightPinScope;
   children: React.ReactNode;
 }
 
@@ -61,6 +65,7 @@ export const SpotlightShell: React.FC<SpotlightShellProps> = ({
   hasActiveAction = false,
   activeActionChip,
   hideFooter = false,
+  pinScope,
   children,
 }) => {
   // Tiny external stores so palette-level ShellFooterAction components can
@@ -123,7 +128,7 @@ export const SpotlightShell: React.FC<SpotlightShellProps> = ({
                 className="flex items-center empty:hidden"
               />
               {/* Placement + dim only apply to the floating overlay. */}
-              {asPortal && <SpotlightSettingsMenu />}
+              {asPortal && <SpotlightSettingsMenu pinScope={pinScope} />}
             </>
           }
         />

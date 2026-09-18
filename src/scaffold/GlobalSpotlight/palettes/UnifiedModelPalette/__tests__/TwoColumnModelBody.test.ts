@@ -99,4 +99,53 @@ describe("TwoColumnModelBody", () => {
       expect(vi.getTimerCount()).toBe(0);
     }
   );
+
+  it("renders Pinned above Recent, each under its own header", () => {
+    const header = (section: string): SpotlightItem => ({
+      id: `model-section:${section}`,
+      label: `${section}-label`,
+      type: "option",
+      data: { isHeader: true },
+    });
+    act(() =>
+      root.render(
+        createElement(TwoColumnModelBody, {
+          items: [
+            header("pinned"),
+            {
+              id: "pinned-model",
+              label: "Pinned model",
+              type: "action",
+              data: { modelSection: "pinned" },
+            },
+            header("recent"),
+            ...rows,
+          ],
+          selectedIndex: 1,
+          onItemSelect: vi.fn(),
+          onItemHover: vi.fn(),
+          searchQuery: "",
+          activeColumn: "models",
+          sourceItems: sources,
+          selectedSourceIndex: -1,
+          hasFocusedModel: true,
+          accountsLoading: false,
+          accountsError: null,
+          onRetryAccounts: vi.fn(),
+          onSourceSelect: vi.fn(),
+          onSourceHover: vi.fn(),
+        })
+      )
+    );
+    const text = container.textContent ?? "";
+    expect(text.indexOf("pinned-label")).toBeGreaterThanOrEqual(0);
+    expect(text.indexOf("pinned-label")).toBeLessThan(
+      text.indexOf("recent-label")
+    );
+    const ids = Array.from(
+      container.querySelectorAll("[data-spotlight-item-id]"),
+      (node) => node.getAttribute("data-spotlight-item-id")
+    );
+    expect(ids.slice(0, 3)).toEqual(["pinned-model", "recent-model", "model"]);
+  });
 });
