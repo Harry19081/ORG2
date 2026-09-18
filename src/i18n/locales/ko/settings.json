@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "인터넷 연결이 꺼져 있음. 고급 설정에서 켤 수 있음"
   },
   "development": {
+    "illustrations": "일러스트",
+    "illustrationsDesc": "테마를 변경하지 않고 모든 앱 일러스트를 밝은 모드와 어두운 모드로 비교",
     "updateAvailable": "업데이트 사용 가능",
     "updateAvailableDesc": "버전 99.0.0 업데이트 표시를 앱 전체에 표시 — 업데이트 작업은 대화 상자 미리 보기만 제공"
   },

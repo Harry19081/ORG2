@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "Kết nối qua internet đang tắt. Bạn có thể bật trong cài đặt nâng cao"
   },
   "development": {
+    "illustrations": "Hình minh họa",
+    "illustrationsDesc": "So sánh mọi hình minh họa ở chế độ sáng và tối mà không đổi giao diện",
     "updateAvailable": "Có bản cập nhật",
     "updateAvailableDesc": "Hiện chỉ báo cập nhật trên toàn ứng dụng với phiên bản 99.0.0 — thao tác cập nhật chỉ mở bản xem trước"
   },

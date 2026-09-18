@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "Les connexions Internet sont désactivées. Activez-les dans les paramètres avancés"
   },
   "development": {
+    "illustrations": "Illustrations",
+    "illustrationsDesc": "Comparez toutes les illustrations en clair et en sombre sans changer de thème",
     "updateAvailable": "Mise à jour disponible",
     "updateAvailableDesc": "Afficher les indicateurs de mise à jour dans toute l’application avec la version 99.0.0 — les actions ouvrent uniquement l’aperçu"
   },

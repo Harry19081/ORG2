@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "Internetverbindungen sind deaktiviert. Aktiviere sie in den erweiterten Einstellungen"
   },
   "development": {
+    "illustrations": "Illustrationen",
+    "illustrationsDesc": "Alle Illustrationen im hellen und dunklen Modus vergleichen, ohne das Design zu ändern",
     "updateAvailable": "Update verfügbar",
     "updateAvailableDesc": "Update-Anzeigen in der gesamten App mit Version 99.0.0 einblenden — Update-Aktionen öffnen nur die Vorschau"
   },

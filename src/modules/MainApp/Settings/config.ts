@@ -57,6 +57,10 @@ export interface SectionTabMeta {
 export const SECTION_TAB_META: Partial<
   Record<string, ReadonlyArray<SectionTabMeta>>
 > = {
+  development: [
+    { key: "controls", labelKey: "sections.development" },
+    { key: "illustrations", labelKey: "development.illustrations" },
+  ],
   [SECTION_IDS.GENERAL]: [
     { key: "general", labelKey: "general.tabGeneral" },
     { key: "notifications", labelKey: "sections.notifications" },

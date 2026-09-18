@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "Połączenia przez internet są wyłączone. Włącz je w ustawieniach zaawansowanych"
   },
   "development": {
+    "illustrations": "Ilustracje",
+    "illustrationsDesc": "Porównaj wszystkie ilustracje w trybie jasnym i ciemnym bez zmiany motywu",
     "updateAvailable": "Dostępna aktualizacja",
     "updateAvailableDesc": "Pokaż wskaźniki aktualizacji w całej aplikacji dla wersji 99.0.0 — akcje aktualizacji otwierają tylko podgląd"
   },

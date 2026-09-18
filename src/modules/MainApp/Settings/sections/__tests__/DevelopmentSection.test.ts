@@ -22,6 +22,54 @@ Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 afterEach(() => vi.unstubAllEnvs());
 
 describe("DevelopmentSection", () => {
+  it("opens all ten light/dark pairs and releases them when returning to controls", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    const node = document.createElement("div");
+    const root = createRoot(node);
+    const store = createStore();
+    const appTheme = document.documentElement.getAttribute("data-theme");
+    try {
+      await act(async () =>
+        root.render(
+          createElement(Provider, { store }, createElement(DevelopmentSection))
+        )
+      );
+      expect(node.querySelectorAll("img")).toHaveLength(0);
+      const selectTab = async (activeTab: string) => {
+        await act(async () =>
+          root.render(
+            createElement(
+              Provider,
+              { store },
+              createElement(DevelopmentSection, { activeTab })
+            )
+          )
+        );
+      };
+      expect(node.querySelector("[data-tab-key]")).toBeNull();
+      await selectTab("illustrations");
+      const images = Array.from(node.querySelectorAll("img"));
+      expect(images).toHaveLength(20);
+      expect(new Set(images.map((image) => image.src)).size).toBe(10);
+      for (const figure of node.querySelectorAll("figure")) {
+        const image = figure.querySelector("img")!;
+        expect(image.dataset.illustrationTheme).toBe(
+          figure.dataset.previewTheme
+        );
+        expect(image.alt).toBe("");
+        expect(image.getAttribute("loading")).toBe("lazy");
+      }
+      expect(document.documentElement.getAttribute("data-theme")).toBe(
+        appTheme
+      );
+      expect(store.get(mockAppUpdateEnabledAtom)).toBe(false);
+      await selectTab("controls");
+      expect(node.querySelectorAll("img")).toHaveLength(0);
+      expect(node.querySelector('[role="switch"]')).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
   it("toggles shared availability and keeps the switch on after leaving settings", async () => {
     vi.stubEnv("NODE_ENV", "development");
     const store = createStore();

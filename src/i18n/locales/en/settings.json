@@ -1076,6 +1076,8 @@
     "role": "Role"
   },
   "development": {
+    "illustrations": "Illustrations",
+    "illustrationsDesc": "Compare all app illustrations in light and dark without changing your theme",
     "updateAvailable": "Update available",
     "updateAvailableDesc": "Show update indicators across the app using version 99.0.0 — update actions only preview the dialog"
   },

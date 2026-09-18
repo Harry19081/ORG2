@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import onboardingImage from "@src/assets/illustrations/onboarding.png";
 import ActionCard from "@src/components/ActionCard";
+import Illustration from "@src/components/Illustration";
 import Modal from "@src/scaffold/ModalSystem";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import { TUTORIALS } from "@src/scaffold/Tutorials/tutorialRegistry";
@@ -30,7 +31,9 @@ export default function OnboardingModal({
       visible={open}
       onCancel={onClose}
       title={t("discovery.title")}
-      image={{ src: onboardingImage, alt: "" }}
+      headerMedia={
+        <Illustration src={onboardingImage} className="liquid-modal-image" />
+      }
       footer={null}
       width={720}
     >

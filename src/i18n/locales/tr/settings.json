@@ -1076,6 +1076,8 @@
     "relayDisabledHint": "İnternet bağlantıları kapalı. Gelişmiş ayarlardan etkinleştirebilirsiniz"
   },
   "development": {
+    "illustrations": "Çizimler",
+    "illustrationsDesc": "Temanızı değiştirmeden tüm uygulama çizimlerini açık ve koyu modda karşılaştırın",
     "updateAvailable": "Güncelleme mevcut",
     "updateAvailableDesc": "Uygulama genelinde 99.0.0 sürümü için güncelleme göstergelerini göster — güncelleme işlemleri yalnızca önizlemeyi açar"
   },
