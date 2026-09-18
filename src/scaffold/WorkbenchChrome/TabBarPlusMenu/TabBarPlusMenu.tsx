@@ -17,7 +17,6 @@ import {
 } from "@src/components/Dropdown/tokens";
 import { RecentTabsMenuSection } from "@src/components/RecentTabsMenuSection";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
-import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import {
@@ -114,7 +113,6 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
         <TabBarTrailingIconButton
           title={triggerLabel}
           shortcutId="new_tab"
-          tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
           tooltipDisabled={menuVisible}
           active={menuVisible}
           className="shrink-0"

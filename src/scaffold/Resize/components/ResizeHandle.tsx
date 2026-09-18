@@ -19,8 +19,6 @@ import Tooltip from "@src/components/Tooltip";
 
 import type { ResizeHandleProps } from "../types";
 
-const SHORTCUT_TOOLTIP_DELAY_MS = 1000;
-
 // ============================================
 // Component
 // ============================================
@@ -185,7 +183,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = memo(
           />
         }
         position={isVertical ? "right" : "bottom"}
-        mouseEnterDelay={SHORTCUT_TOOLTIP_DELAY_MS}
+        kind="button"
         framedPanel
         smartPlacement
         disabled={isResizing}

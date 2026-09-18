@@ -10,7 +10,6 @@ import {
   type IconSvgElement,
   ListTodoIcon,
 } from "@src/icons";
-import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "@src/scaffold/NavigationSidebar/config";
 
 import type { SessionSidebarView } from "./types";
 
@@ -87,7 +86,7 @@ export const SessionSidebarViewSwitcher: React.FC<SessionSidebarViewSwitcherProp
                 key={item.key}
                 content={item.label}
                 position="bottom"
-                mouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
+                kind="button"
                 showArrow={false}
               >
                 <Button

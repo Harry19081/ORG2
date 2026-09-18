@@ -184,7 +184,7 @@ export function FindCard({
     pressed,
     disabled,
   }: (typeof controls)[number]) => (
-    <ToolbarTooltip key={label} label={label} mouseEnterDelay={1000}>
+    <ToolbarTooltip key={label} label={label}>
       <Button
         variant="tertiary"
         className="aria-pressed:bg-surface-selected aria-pressed:text-primary-6"

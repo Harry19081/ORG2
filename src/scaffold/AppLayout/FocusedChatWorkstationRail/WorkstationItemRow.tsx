@@ -141,7 +141,7 @@ export function WorkstationItemRow({
           }
           position="left"
           framedPanel
-          mouseEnterDelay={200}
+          kind="button"
           smartPlacement
         >
           {action}

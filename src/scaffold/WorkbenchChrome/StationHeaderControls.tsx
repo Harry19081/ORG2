@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
-import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { usePinnedWorkbenchChromeVisible } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
@@ -39,7 +38,6 @@ export function StationHeaderControls({
       <TabBarTrailingIconButton
         title={t("panel.maximizeSettings")}
         shortcutId="maximize_chat"
-        tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
         onClick={handleToggleChatPanelMaximized}
       >
         <HugeiconsIcon

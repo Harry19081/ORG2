@@ -60,7 +60,7 @@ export const AgentControlSubmitButton: React.FC<
         />
       }
       position="top-end"
-      mouseEnterDelay={200}
+      kind="button"
       framedPanel
     >
       {button}

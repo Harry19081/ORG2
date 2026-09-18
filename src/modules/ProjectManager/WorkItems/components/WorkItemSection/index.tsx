@@ -142,7 +142,7 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
         <div className="flex-1" />
 
         {onAddItem && (
-          <Tooltip content={addTitle} position="top" mouseEnterDelay={300}>
+          <Tooltip content={addTitle} position="top" kind="button">
             <Button
               variant="tertiary"
               appearance="soft"

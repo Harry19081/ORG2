@@ -10,7 +10,6 @@ import React, { memo } from "react";
 
 import Button from "@src/components/Button";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
-import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "@src/scaffold/NavigationSidebar/config";
 
 /** Swap the tertiary button's hover fill for the sidebar's selected-row token. */
 export const SIDEBAR_CHROME_BUTTON_HOVER_CLASS =
@@ -24,7 +23,6 @@ export interface SidebarChromeIconButtonProps extends Omit<
   onClick?: () => void;
   shortcutId?: string;
   tooltipPosition?: "top" | "bottom" | "bottom-start" | "bottom-end";
-  tooltipMouseEnterDelay?: number;
   className?: string;
   children: React.ReactNode;
 }
@@ -36,7 +34,6 @@ export const SidebarChromeIconButton: React.FC<SidebarChromeIconButtonProps> =
       onClick,
       shortcutId,
       tooltipPosition = "bottom",
-      tooltipMouseEnterDelay = SIDEBAR_TOOLTIP_HOVER_DELAY,
       className = "",
       children,
       ...buttonProps
@@ -45,7 +42,6 @@ export const SidebarChromeIconButton: React.FC<SidebarChromeIconButtonProps> =
         label={title}
         shortcutId={shortcutId}
         position={tooltipPosition}
-        mouseEnterDelay={tooltipMouseEnterDelay}
       >
         <Button
           htmlType="button"

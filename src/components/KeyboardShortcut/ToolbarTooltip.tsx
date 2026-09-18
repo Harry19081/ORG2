@@ -10,7 +10,6 @@ export interface ToolbarTooltipProps {
   shortcut?: string;
   shortcutId?: string;
   position?: TooltipProps["position"];
-  mouseEnterDelay?: TooltipProps["mouseEnterDelay"];
   disabled?: boolean;
   children: ReactNode;
 }
@@ -21,7 +20,6 @@ export const ToolbarTooltip: React.FC<ToolbarTooltipProps> = memo(
     shortcut,
     shortcutId,
     position = "bottom",
-    mouseEnterDelay = 200,
     disabled = false,
     children,
   }) => {
@@ -37,7 +35,7 @@ export const ToolbarTooltip: React.FC<ToolbarTooltipProps> = memo(
           />
         }
         position={position}
-        mouseEnterDelay={mouseEnterDelay}
+        kind="button"
         framedPanel
         disabled={disabled}
         smartPlacement

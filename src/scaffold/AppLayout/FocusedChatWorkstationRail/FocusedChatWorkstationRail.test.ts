@@ -7,6 +7,7 @@ import { I18nextProvider } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { DEFAULT_BUTTON_TOOLTIP_DELAY_MS } from "@src/config/tooltip";
 import common from "@src/i18n/locales/en/common.json";
 import navigation from "@src/i18n/locales/en/navigation.json";
 import { createChatPanelTerminalAtom } from "@src/store/chatPanel/chatPanelTerminalAtom";
@@ -248,7 +249,7 @@ describe.each(["wide rail", "compact menu"])(
           act(() =>
             button.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }))
           );
-          act(() => vi.advanceTimersByTime(200));
+          act(() => vi.advanceTimersByTime(DEFAULT_BUTTON_TOOLTIP_DELAY_MS));
           act(() => vi.advanceTimersByTime(32));
 
           const tooltip = document.querySelector(".native-tooltip")!;
@@ -284,7 +285,7 @@ describe.each(["wide rail", "compact menu"])(
             .closest("button")!
             .click()
         );
-        act(() => vi.advanceTimersByTime(250));
+        act(() => vi.advanceTimersByTime(DEFAULT_BUTTON_TOOLTIP_DELAY_MS));
         expect(document.querySelector(".native-tooltip")).toBeNull();
       });
 

@@ -150,6 +150,12 @@
     "selectedItemTransparency": "Прозрачность выбранного элемента",
     "spotlightPlacement": "Положение Spotlight",
     "spotlightDimBackground": "Затемнять фон",
+    "tooltips": "Подсказки",
+    "buttonTooltipsEnabled": "Показывать подсказки кнопок",
+    "buttonTooltipsEnabledDesc": "Показывать название и сочетание клавиш при наведении на кнопки. Подсказки информационных значков показываются всегда",
+    "buttonTooltipDelayMs": "Задержка подсказки",
+    "buttonTooltipDelayImmediate": "Сразу",
+    "buttonTooltipDelaySeconds": "{{seconds}} с",
     "spotlightPlacementOptions": {
       "top": "Сверху",
       "center": "По центру"

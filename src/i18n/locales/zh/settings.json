@@ -231,6 +231,12 @@
     "selectedItemTransparency": "选中项目透明度",
     "spotlightPlacement": "Spotlight 位置",
     "spotlightDimBackground": "背景变暗",
+    "tooltips": "提示",
+    "buttonTooltipsEnabled": "显示按钮提示",
+    "buttonTooltipsEnabledDesc": "悬停按钮时显示名称和快捷键。信息图标提示始终显示",
+    "buttonTooltipDelayMs": "提示延迟",
+    "buttonTooltipDelayImmediate": "立即",
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
     "spotlightPlacementOptions": {
       "top": "顶部",
       "center": "居中"

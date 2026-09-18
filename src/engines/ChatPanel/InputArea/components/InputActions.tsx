@@ -25,7 +25,6 @@ import Message from "@src/components/Message";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
-import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import {
   ArrowUp02Icon,
   HugeiconsIcon,
@@ -276,7 +275,7 @@ const InputActions: React.FC<InputActionsProps> = memo(
       <Tooltip
         content={tooltipContent}
         position="top-end"
-        mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
+        kind="button"
         framedPanel={isSendLike}
       >
         {buttonNode}

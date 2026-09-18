@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { NoDragRegion } from "@src/components/WindowChrome";
 import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
-import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX } from "@src/config/workstation/tokens";
 import CaptionBar from "@src/engines/Simulator/components/CaptionBar";
 import type { CurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
@@ -142,7 +141,6 @@ const AgentStationTopHeaderComponent = ({
           <TabBarTrailingIconButton
             title={captionToggleLabel}
             shortcutId="toggle_captions"
-            tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
             active={captionEnabled}
             aria-pressed={captionEnabled}
             onClick={handleToggleCaption}

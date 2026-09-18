@@ -190,7 +190,7 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
         })}
         trailing={
           <>
-            <Tooltip content={sortLabel} position="top">
+            <Tooltip kind="button" content={sortLabel} position="top">
               <Button
                 variant="tertiary"
                 appearance="ghost"

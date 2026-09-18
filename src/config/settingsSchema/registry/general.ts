@@ -18,6 +18,7 @@ import {
   TECH_SAVVY_LEVELS,
 } from "@src/config/profile/userProfile";
 import type { SettingDefinition } from "@src/config/settingsSchema/types";
+import { DEFAULT_BUTTON_TOOLTIP_DELAY_MS } from "@src/config/tooltip";
 
 /**
  * Skins are declared per variant, so each picker only offers ids that actually
@@ -232,6 +233,26 @@ export const GENERAL_SETTINGS_REGISTRY = {
     default: true,
     description:
       "Dim and slightly blur the rest of the window while Spotlight is open",
+    category: "general",
+  },
+  "general.buttonTooltipsEnabled": {
+    schema: z.boolean(),
+    default: true,
+    description:
+      "Show the label and keyboard shortcut tooltip when hovering toolbar and icon buttons. Info-icon tooltips are unaffected.",
+    category: "general",
+  },
+  "general.buttonTooltipDelayMs": {
+    schema: z.union([
+      z.literal(0),
+      z.literal(250),
+      z.literal(500),
+      z.literal(750),
+      z.literal(1000),
+    ]),
+    default: DEFAULT_BUTTON_TOOLTIP_DELAY_MS,
+    description:
+      "Hover time in milliseconds before a button tooltip appears (0, 250, 500, 750 or 1000)",
     category: "general",
   },
   "layout.sidebarSelectedRowOpacity": {

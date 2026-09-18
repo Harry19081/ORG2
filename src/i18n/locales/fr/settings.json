@@ -150,6 +150,12 @@
     "selectedItemTransparency": "Transparence de l’élément sélectionné",
     "spotlightPlacement": "Position de Spotlight",
     "spotlightDimBackground": "Assombrir l’arrière-plan",
+    "tooltips": "Info-bulles",
+    "buttonTooltipsEnabled": "Afficher les info-bulles des boutons",
+    "buttonTooltipsEnabledDesc": "Affiche le libellé et le raccourci clavier au survol des boutons. Les info-bulles des icônes d'information s'affichent toujours",
+    "buttonTooltipDelayMs": "Délai des info-bulles",
+    "buttonTooltipDelayImmediate": "Immédiatement",
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
     "spotlightPlacementOptions": {
       "top": "Haut",
       "center": "Milieu"

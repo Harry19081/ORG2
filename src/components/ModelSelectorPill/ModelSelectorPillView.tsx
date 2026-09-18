@@ -23,7 +23,6 @@ import SelectorPill, {
   type SelectorPillPaddingX,
 } from "@src/components/SelectorPill";
 import Tooltip from "@src/components/Tooltip";
-import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import type { ModelEffortSegmentState } from "@src/hooks/models/useModelEffortSegment";
 import { AiSettingIcon, FlashIcon, HugeiconsIcon } from "@src/icons";
 import type { LastModelSelection } from "@src/store/session/creatorDefaultModelAtom";
@@ -188,7 +187,6 @@ const ModelSelectorPillView = forwardRef<
         ),
         tooltipFramed: true,
         tooltipFramedWide: true,
-        tooltipMouseEnterDelay: COMPOSER_TOOLTIP_HOVER_DELAY,
         ariaLabel: ariaLabel ?? defaultLabel,
         active,
         danger: !disabled && !hasModelSelection,
@@ -210,7 +208,6 @@ const ModelSelectorPillView = forwardRef<
         label: effortLabel,
         title: effortLabel,
         tooltip: effortAriaLabel,
-        tooltipMouseEnterDelay: COMPOSER_TOOLTIP_HOVER_DELAY,
         ariaLabel: effortAriaLabel,
         active: effortOpen,
         dataTestId: effortDataTestId,
@@ -233,7 +230,6 @@ const ModelSelectorPillView = forwardRef<
                 label={effortLabel}
                 title={effortLabel}
                 tooltip={effortAriaLabel}
-                tooltipMouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
                 active={buttonProps.active || ariaExpanded}
                 className={buttonProps.segmentClassName}
                 labelClassName="text-[11px] font-normal text-text-2"
@@ -352,7 +348,6 @@ const ModelSelectorPillView = forwardRef<
                 }
                 title={modelTitle}
                 tooltip={segments[0].tooltip}
-                tooltipMouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
                 tooltipFramed
                 tooltipFramedWide
                 active={active || open}

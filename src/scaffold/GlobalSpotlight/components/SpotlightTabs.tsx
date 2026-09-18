@@ -141,6 +141,7 @@ export function SpotlightTabs<T extends string>({
             );
             return option.tooltip ? (
               <Tooltip
+                kind="button"
                 key={option.value}
                 content={option.tooltip}
                 position="top"

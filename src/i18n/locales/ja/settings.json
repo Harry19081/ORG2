@@ -150,6 +150,12 @@
     "selectedItemTransparency": "選択項目の透明度",
     "spotlightPlacement": "Spotlight の位置",
     "spotlightDimBackground": "背景を暗くする",
+    "tooltips": "ツールチップ",
+    "buttonTooltipsEnabled": "ボタンのツールチップを表示",
+    "buttonTooltipsEnabledDesc": "ボタンにカーソルを合わせたときに名前とキーボードショートカットを表示します。情報アイコンのツールチップは常に表示されます",
+    "buttonTooltipDelayMs": "ツールチップの遅延",
+    "buttonTooltipDelayImmediate": "すぐに",
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
     "spotlightPlacementOptions": {
       "top": "上部",
       "center": "中央"

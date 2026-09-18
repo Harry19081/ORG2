@@ -20,7 +20,6 @@ import Dropdown from "@src/components/Dropdown";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_PILL_MENU_GAP } from "@src/config/inputAreaTokens";
-import { COMPOSER_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { Add01Icon, CleanIcon, HugeiconsIcon, Layout01Icon } from "@src/icons";
 
 import type { ScrollNavState } from "../../ChatHistory";
@@ -96,7 +95,7 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
                 />
               }
               position="top"
-              mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
+              kind="button"
               framedPanel
             >
               <Button
@@ -224,7 +223,7 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
               />
             }
             position="top"
-            mouseEnterDelay={COMPOSER_TOOLTIP_HOVER_DELAY}
+            kind="button"
             framedPanel
           >
             <span className="inline-flex">

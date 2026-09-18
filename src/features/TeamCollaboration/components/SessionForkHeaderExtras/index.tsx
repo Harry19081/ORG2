@@ -113,7 +113,7 @@ const SessionForkHeaderExtras: React.FC<SessionForkHeaderExtrasProps> = ({
             name: forkedFrom.ownerDisplayName,
           })}
           position="bottom-end"
-          mouseEnterDelay={200}
+          kind="button"
           framedPanel
         >
           {/* Tag owns the pill chrome; the wrapper button carries focus, testid
@@ -153,7 +153,7 @@ const SessionForkHeaderExtras: React.FC<SessionForkHeaderExtrasProps> = ({
         <Tooltip
           content={t("collaboration.forkImported.headerTooltip")}
           position="bottom-end"
-          mouseEnterDelay={200}
+          kind="button"
           framedPanel
         >
           <span className="inline-flex">

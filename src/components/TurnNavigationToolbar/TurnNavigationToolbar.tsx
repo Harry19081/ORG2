@@ -182,7 +182,7 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                     />
                   }
                   position="bottom-end"
-                  mouseEnterDelay={200}
+                  kind="button"
                   framedPanel
                 >
                   <span className="inline-flex">
@@ -220,7 +220,7 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                     />
                   }
                   position="bottom-end"
-                  mouseEnterDelay={200}
+                  kind="button"
                   framedPanel
                 >
                   <span className="inline-flex">
@@ -252,7 +252,7 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                     />
                   }
                   position="bottom-end"
-                  mouseEnterDelay={200}
+                  kind="button"
                   framedPanel={!isMobile}
                   disabled={isMobile}
                 >
@@ -284,7 +284,7 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                     />
                   }
                   position="bottom-end"
-                  mouseEnterDelay={200}
+                  kind="button"
                   framedPanel={!isMobile}
                   disabled={isMobile}
                 >
@@ -316,7 +316,7 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                     />
                   }
                   position="bottom-end"
-                  mouseEnterDelay={200}
+                  kind="button"
                   framedPanel={!isMobile}
                   disabled={isMobile}
                 >
