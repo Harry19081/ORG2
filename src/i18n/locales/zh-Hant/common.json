@@ -1747,6 +1747,8 @@
       "selectWorktreeSource": "選擇 Worktree 分支或 pull request"
     },
     "spotlightFooter": {
+      "settings": "Spotlight 設定",
+      "unpinAll": "取消全部釘選",
       "navigate": "導航",
       "select": "選擇",
       "switchColumn": "切換欄",

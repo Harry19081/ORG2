@@ -1747,6 +1747,8 @@
       "selectWorktreeSource": "Worktree-Branch oder Pull Request auswählen"
     },
     "spotlightFooter": {
+      "settings": "Spotlight-Einstellungen",
+      "unpinAll": "Alle lösen",
       "navigate": "Navigieren",
       "select": "Auswählen",
       "switchColumn": "Spalte wechseln",

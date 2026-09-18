@@ -378,7 +378,10 @@ const KEY_CAP_SIZES: Record<
   },
 };
 
-const KEY_CAP_STYLES: Record<KeyboardShortcutVariant, { kbd: string }> = {
+const KEY_CAP_STYLES: Record<
+  KeyboardShortcutVariant,
+  { kbd: string; cap?: string }
+> = {
   default: {
     kbd: "bg-fill-2 text-text-2",
   },
@@ -387,9 +390,13 @@ const KEY_CAP_STYLES: Record<KeyboardShortcutVariant, { kbd: string }> = {
   },
   // Used on the Spotlight footer hint strip — the surrounding surface
   // panel is already `fill-2`, so pills bump one shade up to `fill-3` to
-  // stay readable against it.
+  // stay readable against it. Its chips hold one glyph each, so they drop
+  // the chord-balancing asymmetric padding for true centering, and grow to
+  // 19px so the 13px glyph slot has an even 3px above and below (measured:
+  // every chip's ink sits within 0.25px of center on both axes).
   spotlightFooter: {
     kbd: "bg-fill-3 text-text-2",
+    cap: "h-[19px] px-[7px]",
   },
   prominent: {
     kbd: "bg-fill-2 font-medium text-text-2",
@@ -451,7 +458,7 @@ export const KeyboardShortcut = memo<KeyboardShortcutProps>(
                 <span className="mx-1 text-text-4">/</span>
               )}
               <kbd
-                className={`${KEY_CAP_BASE} ${capSize.cap} ${
+                className={`${KEY_CAP_BASE} ${cap.cap ?? capSize.cap} ${
                   isArrowPair ? "gap-0" : "gap-0.5"
                 } ${cap.kbd}`}
               >

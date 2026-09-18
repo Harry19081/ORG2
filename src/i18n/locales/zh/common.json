@@ -1578,6 +1578,8 @@
       "selectWorktreeSource": "选择 Worktree 分支或拉取请求"
     },
     "spotlightFooter": {
+      "settings": "Spotlight 设置",
+      "unpinAll": "取消全部固定",
       "navigate": "导航",
       "select": "选择",
       "switchColumn": "切换栏",

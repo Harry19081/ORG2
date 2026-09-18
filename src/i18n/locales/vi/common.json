@@ -1747,6 +1747,8 @@
       "selectWorktreeSource": "Chọn nhánh Worktree hoặc pull request"
     },
     "spotlightFooter": {
+      "settings": "Cài đặt Spotlight",
+      "unpinAll": "Bỏ ghim tất cả",
       "navigate": "Điều hướng",
       "select": "Chọn",
       "switchColumn": "Đổi cột",

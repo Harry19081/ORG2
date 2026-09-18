@@ -1747,6 +1747,8 @@
       "selectWorktreeSource": "Выберите ветку worktree или pull request"
     },
     "spotlightFooter": {
+      "settings": "Настройки Spotlight",
+      "unpinAll": "Открепить все",
       "navigate": "Навигация",
       "select": "Выбрать",
       "switchColumn": "Сменить колонку",

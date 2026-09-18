@@ -1578,6 +1578,8 @@
       "selectWorktreeSource": "Pilih branch worktree atau pull request"
     },
     "spotlightFooter": {
+      "settings": "Pengaturan Spotlight",
+      "unpinAll": "Lepas semua sematan",
       "navigate": "Navigasi",
       "select": "Pilih",
       "switchColumn": "Ganti kolom",

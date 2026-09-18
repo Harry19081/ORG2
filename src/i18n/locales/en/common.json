@@ -1578,6 +1578,8 @@
       "selectWorktreeSource": "Select worktree branch or pull request"
     },
     "spotlightFooter": {
+      "settings": "Spotlight settings",
+      "unpinAll": "Unpin all",
       "navigate": "Navigate",
       "select": "Select",
       "switchColumn": "Switch column",

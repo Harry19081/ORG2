@@ -1747,6 +1747,8 @@
       "selectWorktreeSource": "Worktree 브랜치 또는 pull request 선택"
     },
     "spotlightFooter": {
+      "settings": "Spotlight 설정",
+      "unpinAll": "모두 고정 해제",
       "navigate": "이동",
       "select": "선택",
       "switchColumn": "열 전환",
