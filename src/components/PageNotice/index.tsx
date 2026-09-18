@@ -14,18 +14,22 @@
  * When action is an object, PageNotice builds a secondary Button at 28px height.
  */
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { DROPDOWN_PANEL } from "@src/components/Dropdown/tokens";
+import Message from "@src/components/Message";
 import {
   Cancel01Icon,
   ChevronsDownUpIcon,
+  Copy01Icon,
   HugeiconsIcon,
   InformationCircleIcon,
   Tick01Icon,
   TriangleAlertIcon,
   UnfoldMoreIcon,
 } from "@src/icons";
+import { copyText } from "@src/util/data/clipboard";
 
 import "./index.css";
 
@@ -165,6 +169,26 @@ const PageNotice: React.FC<PageNoticeProps> = ({
   role,
   dataTestId,
 }) => {
+  const { t } = useTranslation("common");
+  const bodyRef = React.useRef<HTMLDivElement>(null);
+  const subtitleRef = React.useRef<HTMLSpanElement>(null);
+  const handleCopy = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    const text = [
+      title,
+      bodyRef.current?.innerText ?? bodyRef.current?.textContent,
+      subtitleRef.current?.innerText ?? subtitleRef.current?.textContent,
+    ]
+      .filter((part) => part?.trim())
+      .join("\n\n");
+    if (!text) return;
+    try {
+      await copyText(text);
+      Message.success(t("status.copied"));
+    } catch {
+      Message.error(t("status.copyFailed"));
+    }
+  };
   const baseText = {
     title: `block font-medium ${titleClassName ?? "text-[13px] leading-[14px]"}`,
     body: `font-normal ${bodyClassName ?? "text-[12px] leading-snug"}`,
@@ -254,6 +278,7 @@ const PageNotice: React.FC<PageNoticeProps> = ({
           showContent &&
           children && (
             <div
+              ref={bodyRef}
               className={`block ${isPill ? baseText.body : textClasses.body}`}
             >
               {children}
@@ -285,8 +310,18 @@ const PageNotice: React.FC<PageNoticeProps> = ({
         ) : (
           titleNode
         )}
-        {(action || onClose) && (
+        {(title || children || subtitle || action || onClose) && (
           <div className="flex shrink-0 items-center gap-px">
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="small"
+              iconOnly
+              icon={<HugeiconsIcon icon={Copy01Icon} size={14} />}
+              title={t("actions.copy")}
+              aria-label={t("actions.copy")}
+              onClick={handleCopy}
+            />
             {action && <div className="shrink-0">{actionNode}</div>}
             {onClose && (
               <Button
@@ -303,10 +338,14 @@ const PageNotice: React.FC<PageNoticeProps> = ({
         )}
       </div>
       {showContent && hasTitle && children && (
-        <div className={`mt-2 ${textClasses.body}`}>{children}</div>
+        <div ref={bodyRef} className={`mt-2 ${textClasses.body}`}>
+          {children}
+        </div>
       )}
       {showContent && subtitle && (
-        <span className={textClasses.subtitle}>{subtitle}</span>
+        <span ref={subtitleRef} className={textClasses.subtitle}>
+          {subtitle}
+        </span>
       )}
     </div>
   );
