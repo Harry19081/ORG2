@@ -189,7 +189,6 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
       <BaseStatusBar
         leftContent={leftContent}
         rightContent={rightContent}
-        roundedBottom={false}
         className={className}
       />
     );

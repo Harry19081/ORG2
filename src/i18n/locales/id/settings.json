@@ -202,8 +202,6 @@
     "usePointerCursorsDesc": "Ubah kursor menjadi penunjuk saat diarahkan ke elemen interaktif",
     "timezoneAuto": "Otomatis (Browser)",
     "timezoneSearchPlaceholder": "Cari kota terdekat",
-    "sendOnEnter": "Kirim pesan dengan",
-    "sendOnEnterDesc": "Pilih pintasan untuk mengirim pesan; kombinasi Enter lainnya menyisipkan baris baru",
     "language": "Bahasa",
     "languageSearchPlaceholder": "Cari bahasa...",
     "languageNames": {
@@ -296,6 +294,7 @@
       "monochrome": "Monokrom"
     },
     "translucentSidebar": "Sidebar transparan",
+    "sessionBranchTags": "Tag branch dan PR pada sesi",
     "skin": "Skin",
     "accent": "Aksen",
     "linkSkinVariants": "Tautkan terang dan gelap",
@@ -315,7 +314,8 @@
     "buttonTooltipsEnabledDesc": "Tampilkan label dan pintasan keyboard saat kursor berada di atas tombol. Tooltip ikon info selalu ditampilkan",
     "buttonTooltipDelayMs": "Jeda tooltip",
     "buttonTooltipDelayImmediate": "Segera",
-    "buttonTooltipDelaySeconds": "{{seconds}} dtk"
+    "buttonTooltipDelaySeconds": "{{seconds}} dtk",
+    "modelPickerStyle": "Pemilih model"
   },
   "background": {
     "title": "Latar belakang",
@@ -616,6 +616,10 @@
     "indentGuides": "Panduan indentasi",
     "treeIndentGuides": "Panduan indentasi pohon",
     "highlightActiveLine": "Sorot baris saat ini",
+    "diffViewMode": "Tampilan diff",
+    "gitBlame": "Git blame",
+    "splitDiffCenteredLineNumbers": "Nomor baris di tengah pada diff terpisah",
+    "splitDiffCenteredLineNumbersDesc": "Tampilkan kedua kolom nomor baris di antara dua panel, seperti GitHub, bukan di tepi kiri tiap panel.",
     "shellsOpenWith": "Shell dibuka di",
     "shellsOpenWithDesc": "Direktori kerja awal untuk terminal baru",
     "repoPath": "Path repo",
@@ -985,7 +989,10 @@
   "appearance": {
     "tabApp": "Aplikasi",
     "tabCodeEditor": "Editor Kode",
-    "tabChatPanel": "Panel Chat"
+    "tabChatPanel": "Panel Chat",
+    "chatHistory": "Riwayat chat",
+    "composer": "Kolom penulisan",
+    "newChatPage": "Halaman chat baru"
   },
   "harnessConnections": {
     "description": "Pilih koneksi yang digunakan setiap alat coding",

@@ -58,8 +58,6 @@ function liveDetailForSession(
   );
 }
 
-export { getLoadMoreGroupId, isLoadMoreId } from "./paginationHelpers";
-
 const SUBAGENT_SESSION_ID_SEGMENT = ":subagent:";
 
 const NO_SESSIONS: readonly Session[] = [];

@@ -21,9 +21,7 @@
   "sidebarSettings": {
     "title": "Боковая панель",
     "showSidebar": "Показывать боковую панель",
-    "location": "Расположение",
-    "showIndentLines": "Показывать линии отступов",
-    "colorSourceControlFiles": "Использовать цвета различий для файлов"
+    "colorSourceControlFiles": "Цвета различий для файлов"
   },
   "teamInbox": {
     "title": "Общий почтовый ящик команды",
@@ -489,7 +487,6 @@
     "nextPage": "Следующая страница",
     "lastPage": "Последняя страница",
     "selectPage": "Выбрать страницу",
-    "title": "Пагинация",
     "round": "Round {{current}}",
     "previousRound": "Предыдущий раунд",
     "nextRound": "Следующий раунд",
@@ -1932,7 +1929,7 @@
     "chatRight": "Чат справа",
     "sidebarPosition": "Боковая панель Workstation",
     "modelPickerStyle": "Селектор",
-    "paginateChatHistory": "Разбивать историю чата на страницы",
+    "paginateChatHistory": "Постраничная история чата",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Меню",
     "left": "Слева",

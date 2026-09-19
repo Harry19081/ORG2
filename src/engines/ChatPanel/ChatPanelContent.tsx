@@ -12,7 +12,6 @@ interface ChatPanelContentProps {
   emptyChatContent: React.ReactNode;
   displayMode: ChatHistoryDisplayMode;
   paginationEnabled: boolean;
-  position: "left" | "right";
   showSessionContent: boolean;
   /** Non-GUI surface for the active session; mounted only while one is on. */
   alternateSessionView?: React.ReactNode;
@@ -35,7 +34,6 @@ export function ChatPanelContent({
   emptyChatContent,
   displayMode,
   paginationEnabled,
-  position,
   showSessionContent,
   alternateSessionView,
   sessionViewMode = "gui",
@@ -59,7 +57,6 @@ export function ChatPanelContent({
               conversationTargetBinding={conversationTargetBinding}
               displayMode={displayMode}
               turnPaginationEnabled={paginationEnabled}
-              position={position}
               chromeTopInset={chromeTopInset}
             />
           </div>

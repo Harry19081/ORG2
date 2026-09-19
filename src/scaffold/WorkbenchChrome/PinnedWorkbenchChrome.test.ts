@@ -43,11 +43,13 @@ import {
 
 import { PinnedWorkbenchChrome } from "./PinnedWorkbenchChrome";
 
-const { isMacOSMock } = vi.hoisted(() => ({ isMacOSMock: vi.fn() }));
+const { hasMacWindowChromeMock } = vi.hoisted(() => ({
+  hasMacWindowChromeMock: vi.fn(),
+}));
 
-vi.mock("@src/util/platform/tauri", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@src/util/platform/tauri")>()),
-  isMacOS: isMacOSMock,
+vi.mock("@src/config/windowChromeRadius", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@src/config/windowChromeRadius")>()),
+  hasMacWindowChrome: hasMacWindowChromeMock,
 }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -79,7 +81,7 @@ describe("PinnedWorkbenchChrome", () => {
   });
 
   beforeEach(() => {
-    isMacOSMock.mockReturnValue(true);
+    hasMacWindowChromeMock.mockReturnValue(true);
     resetInstrumentedStore();
     localStorage.clear();
     store = createInstrumentedStore();
@@ -92,7 +94,7 @@ describe("PinnedWorkbenchChrome", () => {
     act(() => root.unmount());
     container.remove();
     resetInstrumentedStore();
-    isMacOSMock.mockReset();
+    hasMacWindowChromeMock.mockReset();
   });
 
   afterAll(() => {
@@ -133,11 +135,11 @@ describe("PinnedWorkbenchChrome", () => {
   }
 
   it("renders nothing off macOS or on the Settings route", () => {
-    isMacOSMock.mockReturnValue(false);
+    hasMacWindowChromeMock.mockReturnValue(false);
     render();
     expect(query("pinned-workbench-chrome")).toBeNull();
 
-    isMacOSMock.mockReturnValue(true);
+    hasMacWindowChromeMock.mockReturnValue(true);
     render(ROUTES.app.settings.path);
     expect(query("pinned-workbench-chrome")).toBeNull();
     expect(isPinnedWorkbenchChromePath(ROUTES.app.settings.path)).toBe(false);

@@ -121,8 +121,6 @@
     "usePointerCursorsDesc": "Etkileşimli öğelerin üzerine gelindiğinde imleci işaretçiye dönüştürür",
     "timezoneAuto": "Otomatik (Tarayıcı)",
     "timezoneSearchPlaceholder": "En yakın şehirleri ara",
-    "sendOnEnter": "Mesaj gönderme kısayolu",
-    "sendOnEnterDesc": "Mesaj gönderen kısayolu seçin; diğer Enter kombinasyonları yeni satır ekler",
     "language": "Dil",
     "languageSearchPlaceholder": "Dillerde ara...",
     "languageNames": {
@@ -221,6 +219,7 @@
       "light": "Açık kutucuk"
     },
     "translucentSidebar": "Yarı saydam kenar çubuğu",
+    "sessionBranchTags": "Oturumlarda dal ve PR etiketleri",
     "skin": "Skin",
     "accent": "Vurgu rengi",
     "linkSkinVariants": "Açık ve koyuyu bağla",
@@ -234,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Düğmelerin üzerine gelindiğinde adı ve klavye kısayolunu gösterir. Bilgi simgesi ipuçları her zaman gösterilir",
     "buttonTooltipDelayMs": "İpucu gecikmesi",
     "buttonTooltipDelayImmediate": "Hemen",
-    "buttonTooltipDelaySeconds": "{{seconds}} sn"
+    "buttonTooltipDelaySeconds": "{{seconds}} sn",
+    "modelPickerStyle": "Model seçici"
   },
   "background": {
     "title": "Arka Plan",
@@ -535,6 +535,10 @@
     "indentGuides": "Girinti kılavuzları",
     "treeIndentGuides": "Ağaç girinti kılavuzları",
     "highlightActiveLine": "Geçerli satırı vurgula",
+    "diffViewMode": "Fark görünümü",
+    "gitBlame": "Git blame",
+    "splitDiffCenteredLineNumbers": "Bölünmüş fark görünümünde ortalanmış satır numaraları",
+    "splitDiffCenteredLineNumbersDesc": "Her iki satır numarası sütununu, her panelin sol kenarı yerine GitHub'daki gibi iki panelin arasında gösterir.",
     "shellsOpenWith": "Kabuklar şununla açılır",
     "shellsOpenWithDesc": "Yeni terminaller için başlangıç çalışma dizini",
     "repoPath": "Depo yolu",
@@ -904,7 +908,10 @@
   "appearance": {
     "tabApp": "Uygulama",
     "tabCodeEditor": "Kod Düzenleyici",
-    "tabChatPanel": "Sohbet Paneli"
+    "tabChatPanel": "Sohbet Paneli",
+    "chatHistory": "Sohbet geçmişi",
+    "composer": "Yazma alanı",
+    "newChatPage": "Yeni sohbet sayfası"
   },
   "harnessConnections": {
     "description": "Her kodlama aracının kullanacağı bağlantıyı seçin",

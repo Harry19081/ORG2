@@ -234,6 +234,75 @@ describe("FileHeaderMoreMenu", () => {
     expect(document.querySelector('[role="menu"]')).toBeNull();
   });
 
+  it("shows a locked word wrap row as on and ignores clicks and keys", () => {
+    render({ wordWrapEnabled: false, wordWrapLocked: true });
+    const panel = openSettings();
+    const wrapSwitch = [
+      ...panel.querySelectorAll<HTMLButtonElement>('[role="switch"]'),
+    ].find(
+      (control) =>
+        control.getAttribute("aria-label") === "settings:editor.wordWrap"
+    )!;
+    const row = wrapSwitch.closest<HTMLElement>('[role="menuitemcheckbox"]')!;
+
+    expect(wrapSwitch.getAttribute("aria-checked")).toBe("true");
+    expect(wrapSwitch.disabled).toBe(true);
+    expect(row.getAttribute("aria-checked")).toBe("true");
+    expect(row.getAttribute("aria-disabled")).toBe("true");
+    expect(row.tabIndex).toBe(-1);
+
+    act(() => row.click());
+    act(() => wrapSwitch.click());
+    act(() =>
+      row.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+      )
+    );
+    expect(props.onWordWrapChange).not.toHaveBeenCalled();
+  });
+
+  it("keeps an unlocked word wrap row interactive", () => {
+    render({ wordWrapEnabled: false });
+    const panel = openSettings();
+    const wrapSwitch = [
+      ...panel.querySelectorAll<HTMLButtonElement>('[role="switch"]'),
+    ].find(
+      (control) =>
+        control.getAttribute("aria-label") === "settings:editor.wordWrap"
+    )!;
+    const row = wrapSwitch.closest<HTMLElement>('[role="menuitemcheckbox"]')!;
+
+    expect(row.getAttribute("aria-disabled")).toBe("false");
+    act(() => row.click());
+    expect(props.onWordWrapChange).toHaveBeenCalledWith(true);
+  });
+
+  it("offers centered split line numbers under the line number row only when shown", () => {
+    const onSplitCenteredLineNumbersChange = vi.fn();
+    const labels = (panel: HTMLElement) =>
+      [...panel.querySelectorAll('[role="switch"]')].map((control) =>
+        control.getAttribute("aria-label")
+      );
+    render({ onSplitCenteredLineNumbersChange });
+    expect(labels(openSettings())).not.toContain(
+      "settings:editor.splitDiffCenteredLineNumbers"
+    );
+
+    render({
+      onSplitCenteredLineNumbersChange,
+      showSplitCenteredLineNumbersToggle: true,
+    });
+    const panel = element("file-header-ui-settings-submenu-panel");
+    expect(labels(panel).slice(0, 2)).toEqual([
+      "settings:editor.lineNumbers",
+      "settings:editor.splitDiffCenteredLineNumbers",
+    ]);
+    const centered = panel.querySelectorAll<HTMLElement>('[role="switch"]')[1];
+    expect(centered.getAttribute("aria-checked")).toBe("false");
+    act(() => centered.click());
+    expect(onSplitCenteredLineNumbersChange).toHaveBeenCalledWith(true);
+  });
+
   it("renders sidebar settings only when requested and writes the shared sidebar state", () => {
     render();
     expect(
@@ -270,7 +339,7 @@ describe("FileHeaderMoreMenu", () => {
       )
     ).toEqual([
       "sidebarSettings.showSidebar",
-      "sidebarSettings.showIndentLines",
+      "editor.treeIndentGuides",
       "sidebarSettings.colorSourceControlFiles",
     ]);
 

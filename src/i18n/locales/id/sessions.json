@@ -632,20 +632,15 @@
       "repoBarPosition": "Bilah repo",
       "positionUp": "Atas",
       "positionDown": "Bawah",
-      "showQuickActions": "Tampilkan tindakan cepat",
+      "showQuickActions": "Tindakan cepat",
       "showSkills": "Skill yang disematkan",
-      "showCliUpdate": "Tampilkan pembaruan CLI",
-      "showSpotlight": "Tampilkan Spotlight",
-      "title": "Apa yang ingin Anda lakukan?",
-      "back": "Kembali ke halaman awal",
+      "showCliUpdate": "Pembaruan CLI",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "Sesi baru"
       },
       "newWorkItem": {
         "title": "Item kerja baru"
-      },
-      "setupRepo": {
-        "title": "Siapkan repo"
       },
       "addApiKey": {
         "title": "Tambahkan kunci API"
@@ -656,59 +651,27 @@
       "installLatestUpdate": {
         "title": "Instal pembaruan terbaru"
       },
-      "agents": {
-        "title": "Agen"
-      },
       "tabs": {
         "session": "Sesi",
         "workItem": "Item Kerja",
         "more": "Lainnya",
-        "work": "Kerja",
         "manage": "Kelola",
-        "heatmap": "Tren",
         "runtime": "Runtime"
       },
       "quota": {
         "empty": "Belum ada data kuota. Segarkan penggunaan dari Key Vault.",
         "refresh": "Segarkan",
-        "justNow": "Baru saja",
-        "minutesAgo": "{{count}} mnt lalu",
-        "hoursAgo": "{{count}} jam lalu",
         "metrics": {
           "fiveHour": "5 jam",
           "sevenDay": "7 hr",
           "auto": "Otomatis",
           "api": "API",
-          "session": "Sesi",
-          "weekly": "Mingguan",
           "monthly": "Bulanan"
         }
       },
-      "exploreRepos": {
-        "title": "Jelajahi repo"
-      },
       "hints": {
-        "skill": {
-          "before": "Gunakan",
-          "after": "untuk menautkan skill atau alat"
-        },
-        "ask": {
-          "before": "Gunakan",
-          "after": "untuk bertanya tentang codebase"
-        },
-        "plan": {
-          "before": "Gunakan",
-          "after": "untuk membuat rencana sebelum membangun"
-        },
-        "switch": {
-          "before": "Gunakan",
-          "after": "untuk berpindah bagian"
-        },
         "previous": "Petunjuk sebelumnya",
         "next": "Petunjuk berikutnya"
-      },
-      "manageIssues": {
-        "title": "Kelola issue"
       }
     },
     "defaultTitle": "Chat",
@@ -728,8 +691,8 @@
       "externalBrowser": "Browser eksternal"
     },
     "compactInput": "Input ringkas",
-    "composerGlow": "Tampilkan cahaya kolom input",
-    "separateEffortPill": "Pisahkan tombol Effort",
+    "composerGlow": "Cahaya kolom input",
+    "separateEffortPill": "Tombol Effort terpisah",
     "replay": {
       "follow": "Ikuti"
     },
@@ -755,15 +718,11 @@
       "modeSourceBundled": "Mode dimuat dari cadangan bawaan (probe Cursor belum berjalan).",
       "modeRefresh": "Segarkan mode"
     },
-    "hideSimulator": "Sembunyikan simulator",
-    "showSimulator": "Tampilkan simulator",
-    "fullScreenChat": "Fokus ke Panel Chat (Sembunyikan Workstation)",
     "maximizeChatPanel": "Maksimalkan Panel Chat",
     "showWorkstation": "Tampilkan Workstation",
     "workstationUnavailableForPage": "Workstation tidak tersedia di halaman ini",
     "hideWorkstation": "Sembunyikan Workstation",
     "restoreSplitView": "Tampilkan Workstation",
-    "shrinkToWorkstation": "Perkecil Panel Chat (Tampilkan Workstation)",
     "tuiModeOn": "Mode TUI (klik untuk menonaktifkan)",
     "tuiModeOff": "Aktifkan mode TUI",
     "tabs": {
@@ -971,22 +930,9 @@
       "showMore_one": "Tampilkan {{count}} lagi",
       "showMore_other": "Tampilkan {{count}} lagi"
     },
-    "manageIssues": {
-      "title": "Kelola issue",
-      "myWork": "Pekerjaan saya",
-      "allRepositories": "Semua repositori",
-      "newIssue": "Issue baru",
-      "tabs": {
-        "recent": "Terbaru",
-        "assigned": "Ditugaskan",
-        "byMe": "Oleh saya",
-        "mentioned": "Disebut"
-      }
-    },
     "readOnly": "Hanya-baca",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "Pencarian GitHub, mis. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "Buat issue GitHub",
         "issueTitlePlaceholder": "Judul issue",
@@ -996,28 +942,16 @@
         "addToChat": "Tambah",
         "repositoryLabel": "Repositori",
         "createIssueFailed": "Gagal membuat issue",
-        "sourceIssues": "Issue",
-        "sourcePrs": "PR",
         "stateOpen": "Terbuka",
         "stateClosed": "Ditutup",
-        "stateAll": "Semua status",
         "closeAsCompleted": "Tutup sebagai selesai",
         "closeAsNotPlanned": "Tutup sebagai tidak direncanakan",
         "statusUpdateFailed": "Gagal memperbarui status GitHub",
         "assignedToMe": "Ditugaskan kepada saya",
         "createdByMe": "Dibuat oleh saya",
-        "pullRequests": {
-          "reviewRequested": "Peninjauan diminta",
-          "authoredByMe": "Ditulis oleh saya",
-          "otherTodos": "To-do lainnya"
-        },
-        "filters": "Filter",
-        "openInGitHub": "Buka di GitHub",
         "assigneeUpdateNotApplied": "GitHub tidak menerapkan perubahan penerima tugas",
         "assigneeUpdateSuccess": "Penerima tugas diperbarui di GitHub",
-        "updateIssueFailed": "Gagal memperbarui issue GitHub",
-        "refreshIssues": "Segarkan issue",
-        "refreshPullRequests": "Segarkan pull request"
+        "updateIssueFailed": "Gagal memperbarui issue GitHub"
       }
     },
     "sessionViews": {

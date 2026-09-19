@@ -20,8 +20,6 @@ export interface ToolInlineCompactRow {
   key: string;
   label: React.ReactNode;
   value?: React.ReactNode;
-  /** Extra flex weight for the label column (default 1). */
-  labelFlex?: number;
 }
 
 type ToolInlineSectionLayout = "collapsible" | "tabs";
@@ -155,22 +153,19 @@ export const ToolInlineCompactRows: React.FC<ToolInlineCompactRowsProps> = ({
 
   return (
     <div className="flex flex-col gap-1">
-      {rows.map((row) => {
-        const labelFlex = row.labelFlex ?? 1;
-        return (
-          <div
-            key={row.key}
-            className="flex min-h-8 items-center justify-between gap-4 py-1 text-xs"
-          >
-            <div className="min-w-0" style={{ flex: `${labelFlex} 1 0%` }}>
-              {row.label}
-            </div>
-            {row.value != null && (
-              <div className="min-w-0 shrink-0">{row.value}</div>
-            )}
+      {rows.map((row) => (
+        <div
+          key={row.key}
+          className="flex min-h-8 items-center justify-between gap-4 py-1 text-xs"
+        >
+          <div className="min-w-0" style={{ flex: "1 1 0%" }}>
+            {row.label}
           </div>
-        );
-      })}
+          {row.value != null && (
+            <div className="min-w-0 shrink-0">{row.value}</div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };

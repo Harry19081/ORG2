@@ -41,7 +41,6 @@ const EMPTY_ORG_MEMBERS: ChatHistoryProps["agentOrgMembers"] = [];
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({
   surfaceBgClass = "bg-chat-pane",
-  chatPanelPosition = "right",
   agentOrgCurrentMemberName = null,
   agentOrgCurrentMemberId = null,
   agentOrgMembers = EMPTY_ORG_MEMBERS,
@@ -237,7 +236,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
           agentOrgMembers={agentOrgMembers}
           agentOrgOverviewPanel={agentOrgOverviewPanel}
           bottomInset={bottomInset}
-          chatPanelPosition={chatPanelPosition}
           displayMode={displayMode}
           emptyState={emptyState}
           groupChatEnabled={Boolean(groupChat?.enabled)}

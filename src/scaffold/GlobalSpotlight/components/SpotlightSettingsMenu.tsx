@@ -19,13 +19,19 @@ import Button from "@src/components/Button";
 import { ActionMenuSurface } from "@src/components/Dropdown/ActionMenuSurface";
 import DropdownActionItem from "@src/components/Dropdown/DropdownActionItem";
 import {
+  MenuSegmentedRow,
+  MenuSwitchRow,
+} from "@src/components/Dropdown/MenuControlRows";
+import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
   DROPDOWN_PANEL,
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
-import SegmentedTextPill from "@src/components/SegmentedTextPill";
-import Switch from "@src/components/Switch";
+import {
+  SPOTLIGHT_PLACEMENT_OPTIONS,
+  localizeMenuOptions,
+} from "@src/config/appearance/quickMenuOptions";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { useSetting } from "@src/hooks/settings/useSettings";
 import { EllipsisIcon, HugeiconsIcon, PinOffIcon } from "@src/icons";
@@ -91,8 +97,6 @@ export const SpotlightSettingsMenu: React.FC<{
     "general.spotlightDimBackground"
   );
   const label = t("selectors.spotlightFooter.settings");
-  const placementLabel = tSettings("general.spotlightPlacement");
-  const dimLabel = tSettings("general.spotlightDimBackground");
 
   return (
     // Clicks must not reach the footer's refocus-input handler, which would
@@ -141,36 +145,20 @@ export const SpotlightSettingsMenu: React.FC<{
               zIndex: DROPDOWN_PANEL.zIndex,
             }}
           >
-            <div className={DROPDOWN_CLASSES.menuControlItem}>
-              <span className="min-w-0 flex-1 truncate">{placementLabel}</span>
-              <SegmentedTextPill<SpotlightPlacement>
-                ariaLabel={placementLabel}
-                size="small"
-                value={placement}
-                options={[
-                  {
-                    value: "top",
-                    label: tSettings("general.spotlightPlacementOptions.top"),
-                  },
-                  {
-                    value: "center",
-                    label: tSettings(
-                      "general.spotlightPlacementOptions.center"
-                    ),
-                  },
-                ]}
-                onChange={setPlacement}
-              />
-            </div>
-            <div className={DROPDOWN_CLASSES.menuControlItem}>
-              <span className="min-w-0 flex-1 truncate">{dimLabel}</span>
-              <Switch
-                size="small"
-                ariaLabel={dimLabel}
-                checked={dimBackground}
-                onCheckedChange={setDimBackground}
-              />
-            </div>
+            <MenuSegmentedRow<SpotlightPlacement>
+              label={tSettings("general.spotlightPlacement")}
+              value={placement}
+              options={localizeMenuOptions(
+                SPOTLIGHT_PLACEMENT_OPTIONS,
+                tSettings
+              )}
+              onChange={setPlacement}
+            />
+            <MenuSwitchRow
+              label={tSettings("general.spotlightDimBackground")}
+              checked={dimBackground}
+              onCheckedChange={setDimBackground}
+            />
             {pinScope && <UnpinAllItem scope={pinScope} onDone={close} />}
           </ActionMenuSurface>,
           document.body

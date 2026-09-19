@@ -21,7 +21,6 @@ import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import {
   LAUNCHPAD_ACTION_IDS,
-  type WorkStationLaunchActionId,
   useWorkStationLaunchActions,
 } from "@src/modules/WorkStation/AppShell/useWorkStationLaunchActions";
 import { WorkstationTabIcon } from "@src/modules/WorkStation/shared/TabBar/components/WorkstationTabIcon";
@@ -36,18 +35,7 @@ import { TabBarPlusMenuItems } from "./TabBarPlusMenuItems";
 
 const WORKSTATION_NEW_TAB_EVENT = "workstation-new-tab";
 
-export type TabBarPlusMenuItem = WorkStationLaunchActionId;
-
-const DEFAULT_ITEMS: readonly TabBarPlusMenuItem[] = LAUNCHPAD_ACTION_IDS;
-
-export interface TabBarPlusMenuProps {
-  /** Menu items to render. Defaults to the full launcher palette. */
-  items?: readonly TabBarPlusMenuItem[];
-}
-
-const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
-  items = DEFAULT_ITEMS,
-}) => {
+const TabBarPlusMenuComponent: React.FC = () => {
   const { t } = useTranslation("navigation");
   const actions = useWorkStationLaunchActions();
   const [menuVisible, setMenuVisible] = useState(false);
@@ -62,9 +50,10 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
     return () => window.removeEventListener(WORKSTATION_NEW_TAB_EVENT, handler);
   }, []);
 
+  // The menu shows the full launcher palette.
   const visibleActions = useMemo(
-    () => actions.filter((action) => items.includes(action.id)),
-    [actions, items]
+    () => actions.filter((action) => LAUNCHPAD_ACTION_IDS.includes(action.id)),
+    [actions]
   );
   const visibleRecentTabs = useMemo(
     () => recentTabs.filter(shouldShowInRecentTabsMenu),

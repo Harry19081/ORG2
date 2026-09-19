@@ -21,9 +21,7 @@
   "sidebarSettings": {
     "title": "侧边栏设置",
     "showSidebar": "显示侧边栏",
-    "location": "位置",
-    "showIndentLines": "显示缩进线",
-    "colorSourceControlFiles": "使用差异颜色标记文件"
+    "colorSourceControlFiles": "文件差异着色"
   },
   "windowChrome": {
     "menus": {
@@ -320,7 +318,6 @@
     "nextPage": "下一页",
     "lastPage": "最后一页",
     "selectPage": "选择页码",
-    "title": "分页",
     "round": "第 {{current}} 轮",
     "previousRound": "上一轮",
     "nextRound": "下一轮",
@@ -1763,7 +1760,7 @@
     "chatRight": "右侧聊天",
     "sidebarPosition": "工作站侧边栏",
     "modelPickerStyle": "选择器样式",
-    "paginateChatHistory": "将聊天记录分页",
+    "paginateChatHistory": "聊天记录分页",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "菜单",
     "left": "左侧",

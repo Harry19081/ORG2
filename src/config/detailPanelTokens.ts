@@ -83,15 +83,6 @@ export const CHAT_PANEL_WIDTH_TOKENS = {
   headerWidth: "mx-auto w-full max-w-[832px]",
 } as const;
 
-/** Wide 1200px content / 1232px padded-shell width reserved for issue surfaces. */
-export const ISSUE_PANEL_WIDTH_TOKENS = {
-  contentMaxWidth: "max-w-[1200px]",
-  contentWidth: "mx-auto w-full max-w-[1200px]",
-  contentWidthWithPadding: "mx-auto w-full max-w-[1200px] py-4 pb-[25vh]",
-  contentWidthWithPaddingNoTop: "mx-auto w-full max-w-[1200px] pb-6 pb-[25vh]",
-  headerWidth: "mx-auto w-full max-w-[1232px]",
-} as const;
-
 export const DETAIL_PANEL_TOKENS = {
   /** Outer container */
   container: "flex h-full flex-col",

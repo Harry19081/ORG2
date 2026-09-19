@@ -19,22 +19,15 @@ export interface InfoCardRow {
 
 export interface InfoCardProps {
   rows: InfoCardRow[];
-  /** Extra content rendered above the card (e.g. badges) */
-  header?: React.ReactNode;
   className?: string;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({
-  rows,
-  header,
-  className = "",
-}) => {
+const InfoCard: React.FC<InfoCardProps> = ({ rows, className = "" }) => {
   const visibleRows = rows.filter((row) => !row.hidden);
-  if (visibleRows.length === 0 && !header) return null;
+  if (visibleRows.length === 0) return null;
 
   return (
     <div>
-      {header}
       <div className={`${INFO_CARD_TOKENS.container} ${className}`}>
         <div className={`grid ${INFO_CARD_TOKENS.rowGap}`}>
           {visibleRows.map((row) => (

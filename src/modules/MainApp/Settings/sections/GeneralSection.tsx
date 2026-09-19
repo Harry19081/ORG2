@@ -46,7 +46,6 @@ import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Select from "@src/components/Select";
-import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
 import { HintWithInfo } from "@src/components/layout/blocks/HintWithInfo";
 import type { TimezoneOption } from "@src/config/timezone";
@@ -70,7 +69,6 @@ import {
   checkForUpdatesManually,
 } from "@src/scaffold/AppUpdater/actions";
 import { useAppBuildProvenance } from "@src/scaffold/AppUpdater/state";
-import { chatAppearancePersistAtom } from "@src/store/config/configAtom";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { preventSleepWhileRunningAtom } from "@src/store/platform/preventSleepAtom";
 import {
@@ -152,9 +150,6 @@ const GeneralTabBody: React.FC = () => {
   const [myStationSharing, setMyStationSharing] = useAtom(myStationSharingAtom);
   const [licenseModalVisible, setLicenseModalVisible] = useState(false);
   const [timezone, setTimezone] = useAtom(timezoneAtom);
-  const [chatAppearance, updateChatAppearance] = useAtom(
-    chatAppearancePersistAtom
-  );
   const [languagePreference, setLanguagePreference] = useAtom(languageAtom);
   const [settingsFilePath, setSettingsFilePath] = useState(
     "~/.orgii/settings.jsonc"
@@ -393,20 +388,6 @@ const GeneralTabBody: React.FC = () => {
             ]}
             size="default"
             style={SECTION_CONTROL_STYLE}
-          />
-        </SectionRow>
-      </SectionContainer>
-      <SectionContainer>
-        <SectionRow
-          label={t("general.sendOnEnter")}
-          description={t("general.sendOnEnterDesc")}
-        >
-          <SendOnEnterPill
-            ariaLabel={t("general.sendOnEnter")}
-            sendOnEnter={chatAppearance.sendOnEnter}
-            onChange={(sendOnEnter) => {
-              updateChatAppearance({ sendOnEnter });
-            }}
           />
         </SectionRow>
       </SectionContainer>

@@ -16,14 +16,10 @@ import { useTranslation } from "react-i18next";
 import { Placeholder } from "@src/components/Placeholder";
 import { hasConflictMarkers } from "@src/features/CodeMirror";
 import type { FileHeaderProps } from "@src/features/FileHeader";
+import { useEditorDisplayToggles } from "@src/hooks/settings/useEditorDisplayToggles";
 import { FileHeader } from "@src/modules/WorkStation/shared";
 import { EditorService } from "@src/services/workStation/EditorService";
-import {
-  activeStatusBarCallbacksAtom,
-  editorHighlightActiveLineAtom,
-  editorLineNumbersAtom,
-  editorWordWrapAtom,
-} from "@src/store/ui";
+import { activeStatusBarCallbacksAtom } from "@src/store/ui";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 
 import { GitDiffBinaryPreview } from "./GitDiffBinaryPreview";
@@ -54,11 +50,7 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
   emptyState,
 }) => {
   const { t } = useTranslation();
-  const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
-  const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
-  const [highlightActiveLine, setHighlightActiveLine] = useAtom(
-    editorHighlightActiveLineAtom
-  );
+  const toggles = useEditorDisplayToggles();
   const { onOpenSettings } = useAtomValue(activeStatusBarCallbacksAtom);
 
   // ============================================
@@ -133,13 +125,6 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     EditorService.openGoToLinePanel();
   }, []);
 
-  const handleLineNumbersChange = useCallback(
-    (enabled: boolean) => {
-      setLineNumbers(enabled ? "on" : "off");
-    },
-    [setLineNumbers]
-  );
-
   // Loading spinner only when we have nothing else to show. Once a file
   // diff has been resolved we keep rendering it (and its FileHeader) even
   // if `loading` flicks back to true on the next git-status refresh —
@@ -193,12 +178,12 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     deletions: effectiveGitFile.deletions,
     onReload: onReload ? handleReload : undefined,
     relativePathToCopy: relativePath,
-    lineNumbersEnabled: lineNumbers !== "off",
-    onLineNumbersChange: handleLineNumbersChange,
-    wordWrapEnabled: wordWrap,
-    onWordWrapChange: setWordWrap,
-    highlightActiveLineEnabled: highlightActiveLine,
-    onHighlightActiveLineChange: setHighlightActiveLine,
+    lineNumbersEnabled: toggles.lineNumbersEnabled,
+    onLineNumbersChange: toggles.onLineNumbersChange,
+    wordWrapEnabled: toggles.wordWrapEnabled,
+    onWordWrapChange: toggles.onWordWrapChange,
+    highlightActiveLineEnabled: toggles.highlightActiveLineEnabled,
+    onHighlightActiveLineChange: toggles.onHighlightActiveLineChange,
     onMoreSettings: onOpenSettings,
     showSidebarSettings: publishHeaderToWorkstation,
     loading: loading || selfFetching,
@@ -212,8 +197,8 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     onViewModeChange: setViewMode,
     onSearchRequest: handleSearchRequest,
     onGoToLineRequest: handleGoToLineRequest,
-    onWordWrapChange:
-      viewMode === "split" && !fileHasConflicts ? undefined : setWordWrap,
+    // Split panes always wrap; keep the toggle visible but locked on.
+    wordWrapLocked: viewMode === "split" && !fileHasConflicts,
   };
 
   // Content still missing — either the self-fetch is in flight or the parent

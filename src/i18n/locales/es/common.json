@@ -21,9 +21,7 @@
   "sidebarSettings": {
     "title": "Barra lateral",
     "showSidebar": "Mostrar barra lateral",
-    "location": "Posición",
-    "showIndentLines": "Mostrar líneas de sangría",
-    "colorSourceControlFiles": "Usar colores de diferencias para archivos"
+    "colorSourceControlFiles": "Colores de diferencias en archivos"
   },
   "teamInbox": {
     "title": "Bandeja del equipo",
@@ -489,7 +487,6 @@
     "nextPage": "Página siguiente",
     "lastPage": "Última página",
     "selectPage": "Seleccionar página",
-    "title": "Paginación",
     "round": "Round {{current}}",
     "previousRound": "Ronda anterior",
     "nextRound": "Siguiente ronda",
@@ -1932,7 +1929,7 @@
     "chatRight": "Chat a la derecha",
     "sidebarPosition": "Barra lateral de Workstation",
     "modelPickerStyle": "Selector",
-    "paginateChatHistory": "Paginar historial del chat",
+    "paginateChatHistory": "Paginación del historial del chat",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menú",
     "left": "Izquierda",

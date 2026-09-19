@@ -2,7 +2,7 @@
  * Orgii Main Layout Component
  *
  * Orchestrates providers and delegates layout to AppLayout.
- * All layout logic consolidated in layouts/shared/AppLayout.tsx
+ * All layout logic consolidated in src/scaffold/AppLayout/AppLayout.tsx
  *
  * The router mounts this shell only for WorkStation and Settings routes.
  * WorkStation remains mounted while Settings occupies the chat-panel slot.
@@ -163,10 +163,7 @@ const AppShell = () => {
     if (viewportWidth !== undefined) updateSidebarViewport(viewportWidth);
   }, [viewportWidth, updateSidebarViewport]);
   const stationChatVisibility = useAtomValue(stationChatVisibilityAtom);
-  const currentStationChatVisible =
-    stationMode in stationChatVisibility
-      ? stationChatVisibility[stationMode as keyof typeof stationChatVisibility]
-      : false;
+  const currentStationChatVisible = stationChatVisibility[stationMode];
   const setChatWidth = useSetAtom(chatWidthAtom);
   const restoreChatWidth = useSetAtom(restoreChatWidthAtom);
   const setChatPanelMaximized = useSetAtom(chatPanelMaximizedAtom);
@@ -368,10 +365,7 @@ const AppShell = () => {
                 data-tour-target={GENERAL_LAYOUT_TOUR_TARGETS.workstation}
               >
                 <React.Suspense fallback={<WorkStationLoadingFallback />}>
-                  <WorkStationPage
-                    isActive
-                    chatPanelFocused={effectiveChatFocus}
-                  />
+                  <WorkStationPage chatPanelFocused={effectiveChatFocus} />
                 </React.Suspense>
               </div>
             </div>

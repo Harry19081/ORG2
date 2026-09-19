@@ -307,12 +307,6 @@
     }
   }
 
-  &.input-sidebar-surface {
-    .input-inner {
-      background: var(--sidebar-selected-row-bg);
-    }
-  }
-
   &.input-sidebar-search {
     // The inner keeps a 1px transparent border at rest, so 7px padding aligns
     // its content with the navigation rows' 8px inset in every state.

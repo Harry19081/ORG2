@@ -52,7 +52,10 @@ import {
 import { openOrFocusSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { activeChatPanelTabTypeAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { type Session, sessionMapAtom } from "@src/store/session";
-import { chatTurnPaginationEnabledAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import {
+  chatHistoryDisplayModeAtom,
+  chatTurnPaginationEnabledAtom,
+} from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import {
   chatVisibleAtom,
   restoreChatWidthAtom,
@@ -334,6 +337,7 @@ export const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
   isLive,
 }) => {
   const turnPaginationEnabled = useAtomValue(chatTurnPaginationEnabledAtom);
+  const displayMode = useAtomValue(chatHistoryDisplayModeAtom);
   const conversationTargetBinding = useConversationTargetBinding(sessionId);
   const { isDirectAgentOrgMember, executionBinding: composerExecutionBinding } =
     resolveAgentOrgComposerExecutionOwnership(
@@ -392,6 +396,7 @@ export const SideChatSessionBody: React.FC<SideChatSessionBodyProps> = ({
           <div className="min-h-0 flex-1 overflow-hidden">
             <ChatHistory
               surfaceBgClass="bg-bg-2"
+              displayMode={displayMode}
               turnPaginationEnabled={turnPaginationEnabled}
               planningIndicatorScope={{ sessionId, isLive }}
               onFailedUserIntentRetry={

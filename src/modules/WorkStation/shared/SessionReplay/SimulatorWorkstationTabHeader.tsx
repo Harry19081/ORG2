@@ -1,7 +1,7 @@
 /**
  * SimulatorWorkstationTabHeader
  *
- * Shared 40px global tab-header strip rendered immediately below the
+ * Shared 36px (`h-9`) global tab-header strip rendered immediately below the
  * {@link ReplayTabBar} in simulator replay views (Agent Station's Code
  * Editor, Browser, Database Manager, Project Manager, Communication).
  * Mirrors My Station's `WorkstationTabHeader` so the chrome shape stays

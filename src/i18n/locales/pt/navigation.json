@@ -74,12 +74,7 @@
       "manual": "Ordem manual"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "Gerenciar",
-      "core": "Núcleo",
-      "agent": "Agent",
-      "org": "Equipe",
-      "agentOrgs": "Agent e equipe"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "Sem agrupamento",
@@ -101,55 +96,23 @@
       "untitledSession": "Sessão Sem Título",
       "enterSessionName": "Digite o nome da sessão"
     },
-    "groups": {
-      "economy": "Economia",
-      "myServices": "Meus Serviços",
-      "osAgent": "OS Agent",
-      "draft": "Rascunho",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "Chave Hospedada",
-      "cloud": "Nuvem",
-      "openSource": "Código aberto",
-      "timeline": "Timeline"
-    },
     "actions": {
       "addNew": "Adicionar",
       "collapseAll": "Recolher tudo",
-      "markAllRead": "Marcar tudo como lido",
-      "toggleGroup": "Alternar seção"
+      "markAllRead": "Marcar tudo como lido"
     },
     "search": {
-      "folders": "Pesquisar no Workspace...",
-      "sessions": "Pesquisar sessões...",
-      "projects": "Pesquisar projetos...",
-      "colleagues": "Pesquisar colegas..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} Repo",
-      "repo_plural": "{{count}} Repos",
-      "multiRepoWorkspace": "{{count}} Workspace multi-Repo",
-      "multiRepoWorkspace_plural": "{{count}} Workspaces multi-Repo"
+      "sessions": "Pesquisar sessões..."
     },
     "bottomBar": {
       "settings": "Configurações",
-      "clockLabel": "Hora atual",
       "updateAvailable": "Baixar atualização v{{version}}"
     },
     "settingsMenu": {
       "appearance": "Aparência",
       "modifyAppearance": "Modificar aparência",
-      "language": "Idioma",
       "viewRam": "Ver RAM",
-      "tutorials": "Tutoriais",
       "openSettings": "Abrir configurações"
-    },
-    "empty": {
-      "noItems": "Nenhum item",
-      "noSessions": "Nenhuma sessão",
-      "noSessionsDesc": "Inicie uma nova sessão para começar",
-      "noResultsFor": "Nenhum resultado para \"{{query}}\"",
-      "noSearchResults": "Nenhum resultado encontrado"
     },
     "presence": {
       "tooltip": "Define a tua disponibilidade — os agentes adaptam-se a se estás ou não ao teclado.",
@@ -166,10 +129,6 @@
       "duration2h": "2 horas",
       "durationTomorrow": "Amanhã",
       "unknownRole": "Papel desconhecido"
-    },
-    "guide": {
-      "startSession": "Iniciar uma sessão",
-      "connectOrganization": "Conecte ou crie um espaço de trabalho"
     },
     "sections": {
       "section": "Seção",

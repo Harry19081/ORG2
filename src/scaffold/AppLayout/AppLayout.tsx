@@ -4,8 +4,8 @@
  * Consolidated shared layout for all Orgii pages.
  * Handles sidebar, content, and the docked chat panel slot.
  *
- * Chat and workbench content use the single Modern layout: flex siblings with
- * flat, edge-to-edge surfaces.
+ * Chat and workbench content are flex siblings with flat, edge-to-edge
+ * surfaces.
  *
  * Performance Architecture:
  * - Sidebar: DYNAMIC (changes per route via prop)
@@ -25,10 +25,14 @@ import {
   PANE_WIDTH_TRANSITION_CLASSES,
   getChatSlotLayoutStyle,
   getPagePanelBackgroundStyle,
-  getPrimaryPaneBackgroundStyle,
+  getPrimaryPaneBackgroundColor,
   getResizeIndicatorHostStyle,
   getWorkbenchLayoutStyle,
 } from "@src/components/layout/tokens/viewContainerTokens";
+import {
+  HOST_DESKTOP,
+  resolveHostDesktop,
+} from "@src/config/windowChromeRadius";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { DataProvider } from "@src/contexts/workspace/DataContext";
 import ChatPanel from "@src/engines/ChatPanel";
@@ -44,6 +48,10 @@ import { SessionCreatorChatPanel } from "@src/features/SessionCreator/variants";
 import type { SessionCreatorChatPanelProps } from "@src/features/SessionCreator/variants/ChatPanel";
 import { dispatchWebviewLayoutChanged } from "@src/hooks/platform/useInlineWebview/webviewLayoutEvents";
 import { useMacosPageBackdropSurface } from "@src/hooks/platform/useMacosPageBackdropSurface";
+import {
+  WorkbenchLeadingEdgeContext,
+  resolveWorkbenchTouchesLeadingEdge,
+} from "@src/hooks/ui/workbench/workbenchLeadingEdgeContext";
 import { ActionSystemProvider } from "@src/scaffold/ActionSystem";
 import { GlobalSpotlightPortal } from "@src/scaffold/GlobalSpotlight/GlobalSpotlightPortal";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
@@ -56,7 +64,6 @@ import {
 } from "@src/store/ui/chatPanel/widthAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
-import { isWindows } from "@src/util/platform/tauri";
 
 import { GlobalModals } from "./GlobalModals";
 
@@ -195,14 +202,18 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
   // (otherwise an existing zero-width chat would hide the settings panel
   // too).
   const isSlotVisible = chatPanelMode === "settings" ? true : isChatVisible;
+  const workbenchTouchesLeadingEdge = resolveWorkbenchTouchesLeadingEdge({
+    chatSlotMaximized: chatPanelMaximized,
+    chatSlotVisible: isSlotVisible,
+    chatSlotOnLeft: isChatOnLeft,
+  });
   const settingsSurfaceStyle = getPagePanelBackgroundStyle(
     backgroundConfig.pageOpacity
   );
-  const primaryPaneSurfaceStyle = getPrimaryPaneBackgroundStyle(
-    backgroundConfig.pageOpacity
-  );
   const paneUnderlayStyle: React.CSSProperties = {
-    backgroundColor: primaryPaneSurfaceStyle.backgroundColor,
+    backgroundColor: getPrimaryPaneBackgroundColor(
+      backgroundConfig.pageOpacity
+    ),
   };
   const paneTransitionClassName = isChatPanelDragging
     ? ""
@@ -254,7 +265,6 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
           maximized={chatPanelMaximized}
           position={chatPosition}
           resizeIndicatorHost={resizeIndicatorHostElement}
-          embedded
         />
       </React.Suspense>
     ) : (
@@ -333,9 +343,13 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
                 data-workbench-surface
                 onTransitionEnd={handlePaneTransitionEnd}
               >
-                <WorkbenchActionSystemScope>
-                  {children}
-                </WorkbenchActionSystemScope>
+                <WorkbenchLeadingEdgeContext.Provider
+                  value={workbenchTouchesLeadingEdge}
+                >
+                  <WorkbenchActionSystemScope>
+                    {children}
+                  </WorkbenchActionSystemScope>
+                </WorkbenchLeadingEdgeContext.Provider>
               </div>
               {!isChatOnLeft && resizeIndicatorHost}
               {!isChatOnLeft && chatSlot}
@@ -354,7 +368,8 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
     </DataProvider>
   );
 
-  const windowsHost = isWindows();
+  // Same host resolution as SidebarBase: browser mode is never a Windows host.
+  const windowsHost = resolveHostDesktop() === HOST_DESKTOP.WINDOWS;
 
   return (
     <div className="relative z-10 flex h-full min-w-0 flex-1 flex-col">

@@ -74,12 +74,7 @@
       "manual": "Thứ tự thủ công"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "Quản lý",
-      "core": "Lõi",
-      "agent": "Agent",
-      "org": "Nhóm",
-      "agentOrgs": "Agent và nhóm"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "Không nhóm",
@@ -101,55 +96,23 @@
       "untitledSession": "Session chưa đặt tên",
       "enterSessionName": "Nhập tên Session"
     },
-    "groups": {
-      "economy": "Kinh tế",
-      "myServices": "Dịch vụ của tôi",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "Hosted Key",
-      "cloud": "Cloud",
-      "openSource": "Mã nguồn mở",
-      "timeline": "Timeline"
-    },
     "actions": {
       "addNew": "Thêm mới",
       "collapseAll": "Thu gọn tất cả",
-      "markAllRead": "Đánh dấu tất cả đã đọc",
-      "toggleGroup": "Chuyển đổi phần"
+      "markAllRead": "Đánh dấu tất cả đã đọc"
     },
     "search": {
-      "folders": "Tìm kiếm Workspace...",
-      "sessions": "Tìm kiếm phiên...",
-      "projects": "Tìm kiếm dự án...",
-      "colleagues": "Tìm đồng nghiệp..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} Repo",
-      "multiRepoWorkspace": "{{count}} Workspace đa Repo",
-      "repo_plural": "{{count}} Repo",
-      "multiRepoWorkspace_plural": "{{count}} Workspace đa Repo"
+      "sessions": "Tìm kiếm phiên..."
     },
     "bottomBar": {
       "settings": "Cài đặt",
-      "clockLabel": "Thời gian hiện tại",
       "updateAvailable": "Tải bản cập nhật v{{version}}"
     },
     "settingsMenu": {
       "appearance": "Giao diện",
       "modifyAppearance": "Thay đổi giao diện",
-      "language": "Ngôn ngữ",
       "viewRam": "Xem RAM",
-      "tutorials": "Hướng dẫn",
       "openSettings": "Mở cài đặt"
-    },
-    "empty": {
-      "noItems": "Không có mục nào",
-      "noSessions": "Không có Session nào",
-      "noSessionsDesc": "Bắt đầu Session mới",
-      "noResultsFor": "Không có kết quả cho \"{{query}}\"",
-      "noSearchResults": "Không tìm thấy kết quả"
     },
     "presence": {
       "tooltip": "Đặt trạng thái — Agent sẽ điều chỉnh tùy bạn có ở bàn phím hay không.",
@@ -166,10 +129,6 @@
       "duration2h": "2 giờ",
       "durationTomorrow": "Ngày mai",
       "unknownRole": "Vai trò không xác định"
-    },
-    "guide": {
-      "startSession": "Bắt đầu phiên",
-      "connectOrganization": "Kết nối hoặc tạo không gian làm việc"
     },
     "sections": {
       "section": "Mục",

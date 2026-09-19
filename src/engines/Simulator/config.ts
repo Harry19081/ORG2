@@ -1,30 +1,8 @@
 /**
  * ActivitySimulator Configuration
  *
- * Configuration for the activity simulator grid layout and icons
+ * Configuration for the activity simulator grid layout
  */
-import {
-  Activity01Icon,
-  ArrowDown01Icon,
-  ArrowLeft02Icon,
-  ArrowRight02Icon,
-  Clock01Icon,
-  DashboardSquare01Icon,
-  DatabaseIcon,
-  FlashIcon,
-  Forward01Icon,
-  type IconSvgElement,
-  LayoutListIcon,
-  LockIcon,
-  MonitorIcon,
-  PauseIcon,
-  PlayIcon,
-  RewindIcon,
-  Search01Icon,
-  Settings01Icon,
-  SkipBackIcon,
-  SquareIcon,
-} from "@src/icons";
 import { SimulatorGridLayout } from "@src/store/ui/simulatorAtom";
 
 // Layout configuration
@@ -36,44 +14,6 @@ export interface LayoutConfig {
 
 // Re-export the type
 export type GridLayout = SimulatorGridLayout;
-
-// Icon configuration - hugeicons glyph data
-export const ICON_CONFIG: Record<string, IconSvgElement> = {
-  // Grid layout icons
-  grid1x1: LayoutListIcon,
-  grid1x2: LayoutListIcon,
-  grid2x1: LayoutListIcon,
-  grid2x2: DashboardSquare01Icon,
-  grid2x3: DashboardSquare01Icon,
-  // General icons
-  settings: Settings01Icon,
-  computer: MonitorIcon,
-  activity: Activity01Icon,
-  // Event switching icons
-  event: FlashIcon,
-  selector: Search01Icon,
-  cycle: ArrowRight02Icon,
-  search: Search01Icon,
-  dropdown: ArrowDown01Icon,
-  // Overview icons
-  overview: DashboardSquare01Icon,
-  // Browser navigation icons
-  browser: MonitorIcon,
-  lock: LockIcon,
-  back: ArrowLeft02Icon,
-  forward: ArrowRight02Icon,
-  // Replay control icons
-  play: PlayIcon,
-  pause: PauseIcon,
-  skipBack: SkipBackIcon,
-  skipForward: Forward01Icon,
-  rewind: RewindIcon,
-  fastForward: Forward01Icon,
-  time: Clock01Icon,
-  // Data source icons
-  live: SquareIcon,
-  mock: DatabaseIcon,
-};
 
 // Layout options configuration
 export const LAYOUT_OPTIONS: Record<SimulatorGridLayout, LayoutConfig> = {
@@ -102,11 +42,6 @@ export function calculateAutoLayout(taskCount: number): SimulatorGridLayout {
   return "3x4"; // Up to 12 tasks
 }
 
-// Default configuration
-
-// Note: Replay configuration is centralized in:
-// Shared config with @src/config/workspace/replayConfig.ts
-
 /**
  * Agent focus dot tokens — the pulsing blue dot that shows
  * where the agent is currently working.
@@ -121,21 +56,3 @@ export const AGENT_DOT_TOKENS = {
   containerSmall: "flex h-[4px] w-[4px] items-center justify-center",
   dotSmall: "h-[4px] w-[4px] animate-pulse rounded-full bg-primary-6",
 } as const;
-
-// Style configuration
-export const STYLE_CONFIG = {
-  headerHeight: "32px",
-  gridGap: "12px",
-  computerRadius: "12px",
-  browserHeaderHeight: "40px",
-};
-
-// Get total cells for a layout
-export const getLayoutCells = (layout: SimulatorGridLayout): number => {
-  const config = LAYOUT_OPTIONS[layout];
-  return config.rows * config.cols;
-};
-
-// Get grid icon for layout
-
-// Get icon for event type

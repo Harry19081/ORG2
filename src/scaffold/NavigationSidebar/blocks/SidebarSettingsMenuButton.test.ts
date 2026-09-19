@@ -459,8 +459,13 @@ describe("SidebarSettingsMenuButton", () => {
       "general.spotlightPlacement",
     ]);
     expect(
-      document.body.querySelector('[role="switch"]')?.getAttribute("aria-label")
-    ).toBe("layoutSettings.paginateChatHistory");
+      Array.from(document.body.querySelectorAll('[role="switch"]'), (control) =>
+        control.getAttribute("aria-label")
+      )
+    ).toEqual([
+      "general.spotlightDimBackground",
+      "layoutSettings.paginateChatHistory",
+    ]);
   });
 
   it("updates the shared Spotlight placement setting from Layout", async () => {

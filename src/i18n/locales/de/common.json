@@ -21,9 +21,7 @@
   "sidebarSettings": {
     "title": "Seitenleiste",
     "showSidebar": "Seitenleiste anzeigen",
-    "location": "Position",
-    "showIndentLines": "Einrückungslinien anzeigen",
-    "colorSourceControlFiles": "Diff-Farben für Dateien verwenden"
+    "colorSourceControlFiles": "Diff-Farben für Dateien"
   },
   "teamInbox": {
     "title": "Team-Posteingang",
@@ -489,7 +487,6 @@
     "nextPage": "Nächste Seite",
     "lastPage": "Letzte Seite",
     "selectPage": "Seite auswählen",
-    "title": "Seitennummerierung",
     "round": "Round {{current}}",
     "previousRound": "Vorherige Runde",
     "nextRound": "Nächste Runde",
@@ -1932,7 +1929,7 @@
     "chatRight": "Chat rechts",
     "sidebarPosition": "Workstation-Seitenleiste",
     "modelPickerStyle": "Auswahl",
-    "paginateChatHistory": "Chatverlauf paginieren",
+    "paginateChatHistory": "Paginierter Chatverlauf",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menü",
     "left": "Links",

@@ -21,9 +21,7 @@
   "sidebarSettings": {
     "title": "Cài đặt thanh bên",
     "showSidebar": "Hiện thanh bên",
-    "location": "Vị trí",
-    "showIndentLines": "Hiện đường thụt lề",
-    "colorSourceControlFiles": "Dùng màu khác biệt cho tệp"
+    "colorSourceControlFiles": "Màu khác biệt trên tệp"
   },
   "teamInbox": {
     "title": "Hộp thư nhóm",
@@ -489,7 +487,6 @@
     "nextPage": "Trang sau",
     "lastPage": "Trang cuối",
     "selectPage": "Chọn trang",
-    "title": "Phân trang",
     "round": "Round {{current}}",
     "previousRound": "Round trước",
     "nextRound": "Round tiếp theo",

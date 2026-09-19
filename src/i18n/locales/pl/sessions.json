@@ -631,20 +631,15 @@
       "repoBarPosition": "Pasek repozytorium",
       "positionUp": "Góra",
       "positionDown": "Dół",
-      "showQuickActions": "Pokaż szybkie akcje",
+      "showQuickActions": "Szybkie akcje",
       "showSkills": "Przypięte umiejętności",
-      "showCliUpdate": "Pokaż aktualizacje CLI",
-      "showSpotlight": "Pokaż Spotlight",
-      "title": "Co chcesz zrobić?",
-      "back": "Wróć do strony startowej",
+      "showCliUpdate": "Aktualizacje CLI",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "Nowa sesja"
       },
       "newWorkItem": {
         "title": "Nowy work item"
-      },
-      "setupRepo": {
-        "title": "Skonfiguruj Repo"
       },
       "addApiKey": {
         "title": "Dodaj API key"
@@ -655,59 +650,27 @@
       "installLatestUpdate": {
         "title": "Zainstaluj najnowszą aktualizację"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "Sesja",
         "workItem": "Element pracy",
         "more": "Więcej",
-        "work": "Praca",
         "manage": "Zarządzaj",
-        "heatmap": "Trendy",
         "runtime": "Czas wykonania"
       },
       "quota": {
         "empty": "Brak danych quota. Odśwież użycie w Key Vault.",
         "refresh": "Odśwież",
-        "justNow": "przed chwilą",
-        "minutesAgo": "{{count}} min temu",
-        "hoursAgo": "{{count}}g temu",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7d",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Tygodniowo",
           "monthly": "Miesięcznie"
         }
       },
-      "exploreRepos": {
-        "title": "Eksploruj Repos"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "Zarządzaj issues"
       }
     },
     "defaultTitle": "Czat",
@@ -727,7 +690,7 @@
       "externalBrowser": "Zewnętrzna przeglądarka"
     },
     "compactInput": "Kompaktowe pole wprowadzania",
-    "composerGlow": "Pokaż poświatę pola wpisywania",
+    "composerGlow": "Poświata pola wpisywania",
     "separateEffortPill": "Osobny przycisk Effort",
     "replay": {
       "follow": "Śledź"
@@ -754,15 +717,11 @@
       "modeSourceBundled": "Tryby wczytane z dołączonej kopii zapasowej (próbny Cursor jeszcze nie działa).",
       "modeRefresh": "Odśwież tryby"
     },
-    "hideSimulator": "Ukryj symulator",
-    "showSimulator": "Pokaż symulator",
-    "fullScreenChat": "Skup panel czatu (ukryj Workstation)",
     "maximizeChatPanel": "Maksymalizuj panel czatu",
     "showWorkstation": "Pokaż Workstation",
     "workstationUnavailableForPage": "Workstation jest niedostępny na tej stronie",
     "hideWorkstation": "Ukryj Workstation",
     "restoreSplitView": "Pokaż Workstation",
-    "shrinkToWorkstation": "Zmniejsz panel czatu (pokaż Workstation)",
     "tuiModeOn": "Tryb TUI (kliknij, aby wyłączyć)",
     "tuiModeOff": "Włącz tryb TUI",
     "tabs": {
@@ -966,22 +925,9 @@
       "showMore_one": "Pokaż jeszcze {{count}}",
       "showMore_other": "Pokaż jeszcze {{count}}"
     },
-    "manageIssues": {
-      "title": "Zarządzaj issues",
-      "myWork": "Moja praca",
-      "allRepositories": "Wszystkie repos",
-      "newIssue": "Nowa issue",
-      "tabs": {
-        "recent": "Ostatnie",
-        "assigned": "Przypisane",
-        "byMe": "Moje",
-        "mentioned": "Wspomniane"
-      }
-    },
     "readOnly": "Tylko do odczytu",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "Utwórz issue GitHub",
         "issueTitlePlaceholder": "Tytuł issue",
@@ -991,28 +937,16 @@
         "addToChat": "Add",
         "repositoryLabel": "Repozytorium",
         "createIssueFailed": "Nie udało się utworzyć issue",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "Wszystkie stany",
         "closeAsCompleted": "Zamknij jako ukończone",
         "closeAsNotPlanned": "Zamknij jako nieplanowane",
         "statusUpdateFailed": "Nie udało się zaktualizować statusu GitHub",
         "assignedToMe": "Przypisane do mnie",
         "createdByMe": "Utworzone przeze mnie",
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
-        "pullRequests": {
-          "reviewRequested": "Prośba o przegląd",
-          "authoredByMe": "Utworzone przeze mnie",
-          "otherTodos": "Pozostałe do zrobienia"
-        },
         "assigneeUpdateNotApplied": "GitHub nie zastosował zmiany osoby przypisanej",
         "assigneeUpdateSuccess": "Zaktualizowano osoby przypisane w GitHub",
-        "updateIssueFailed": "Nie udało się zaktualizować issue GitHub",
-        "refreshIssues": "Odśwież zgłoszenia",
-        "refreshPullRequests": "Odśwież pull requesty"
+        "updateIssueFailed": "Nie udało się zaktualizować issue GitHub"
       }
     },
     "sessionViews": {

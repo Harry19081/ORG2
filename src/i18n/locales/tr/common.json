@@ -21,9 +21,7 @@
   "sidebarSettings": {
     "title": "Kenar çubuğu ayarları",
     "showSidebar": "Kenar çubuğunu göster",
-    "location": "Konum",
-    "showIndentLines": "Girinti çizgilerini göster",
-    "colorSourceControlFiles": "Dosyalar için fark renklerini kullan"
+    "colorSourceControlFiles": "Dosyalarda fark renkleri"
   },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
@@ -489,7 +487,6 @@
     "nextPage": "Sonraki sayfa",
     "lastPage": "Son sayfa",
     "selectPage": "Sayfa seç",
-    "title": "Sayfalama",
     "round": "Round {{current}}",
     "previousRound": "Önceki round",
     "nextRound": "Sonraki round",
@@ -1932,7 +1929,7 @@
     "chatRight": "Sohbet sağda",
     "sidebarPosition": "Workstation kenar çubuğu",
     "modelPickerStyle": "Seçici",
-    "paginateChatHistory": "Sohbet geçmişini sayfalandır",
+    "paginateChatHistory": "Sohbet geçmişi sayfalama",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menü",
     "left": "Sol",

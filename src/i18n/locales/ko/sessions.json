@@ -631,20 +631,15 @@
       "repoBarPosition": "저장소 바",
       "positionUp": "위",
       "positionDown": "아래",
-      "showQuickActions": "빠른 작업 표시",
+      "showQuickActions": "빠른 작업",
       "showSkills": "고정된 스킬",
-      "showCliUpdate": "CLI 업데이트 표시",
-      "showSpotlight": "Spotlight 표시",
-      "title": "무엇을 할까요?",
-      "back": "시작 페이지로 돌아가기",
+      "showCliUpdate": "CLI 업데이트",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "새 세션"
       },
       "newWorkItem": {
         "title": "새 work item"
-      },
-      "setupRepo": {
-        "title": "Repo 설정"
       },
       "addApiKey": {
         "title": "API 키 추가"
@@ -655,59 +650,27 @@
       "installLatestUpdate": {
         "title": "최신 업데이트 설치"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "세션",
         "workItem": "작업 항목",
         "more": "더 보기",
-        "work": "작업",
         "manage": "관리",
-        "heatmap": "추세",
         "runtime": "런타임"
       },
       "quota": {
         "empty": "Quota 데이터가 아직 없습니다. Key Vault에서 사용량을 새로고침하세요.",
         "refresh": "새로고침",
-        "justNow": "방금",
-        "minutesAgo": "{{count}}분 전",
-        "hoursAgo": "{{count}}시간 전",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7d",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Weekly",
           "monthly": "Monthly"
         }
       },
-      "exploreRepos": {
-        "title": "Repos 탐색"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "Issues 관리"
       }
     },
     "defaultTitle": "채팅",
@@ -727,7 +690,7 @@
       "externalBrowser": "외부 브라우저"
     },
     "compactInput": "컴팩트 입력창",
-    "composerGlow": "입력창 글로우 표시",
+    "composerGlow": "입력창 글로우",
     "separateEffortPill": "Effort 버튼 분리",
     "replay": {
       "follow": "팔로우"
@@ -754,15 +717,11 @@
       "modeSourceBundled": "번들 폴백에서 모드를 로드했습니다 (Cursor 프로브가 아직 실행 중이 아님).",
       "modeRefresh": "모드 새로 고침"
     },
-    "hideSimulator": "시뮬레이터 숨기기",
-    "showSimulator": "시뮬레이터 표시",
-    "fullScreenChat": "Chat 패널 포커스 (Workstation 숨기기)",
     "maximizeChatPanel": "Chat 패널 최대화",
     "showWorkstation": "Workstation 표시",
     "workstationUnavailableForPage": "이 페이지에서는 Workstation을 사용할 수 없습니다",
     "hideWorkstation": "Workstation 숨기기",
     "restoreSplitView": "Workstation 표시",
-    "shrinkToWorkstation": "Chat 패널 축소 (Workstation 표시)",
     "tuiModeOn": "TUI 모드 (클릭하여 비활성화)",
     "tuiModeOff": "TUI 모드 활성화",
     "tabs": {
@@ -966,22 +925,9 @@
       "showMore_one": "{{count}}개 더 보기",
       "showMore_other": "{{count}}개 더 보기"
     },
-    "manageIssues": {
-      "title": "Issues 관리",
-      "myWork": "내 작업",
-      "allRepositories": "모든 Repos",
-      "newIssue": "새 Issue",
-      "tabs": {
-        "recent": "최근",
-        "assigned": "내게 할당됨",
-        "byMe": "내가 작성",
-        "mentioned": "멘션됨"
-      }
-    },
     "readOnly": "읽기 전용",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "GitHub issue 만들기",
         "issueTitlePlaceholder": "issue 제목",
@@ -991,28 +937,16 @@
         "addToChat": "Add",
         "repositoryLabel": "리포지토리",
         "createIssueFailed": "issue를 만들지 못했습니다",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "모든 상태",
         "closeAsCompleted": "완료로 닫기",
         "closeAsNotPlanned": "계획되지 않음으로 닫기",
         "statusUpdateFailed": "GitHub 상태를 업데이트하지 못했습니다",
         "assignedToMe": "나에게 할당됨",
         "createdByMe": "내가 생성함",
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
-        "pullRequests": {
-          "reviewRequested": "리뷰 요청됨",
-          "authoredByMe": "내가 작성",
-          "otherTodos": "기타 할 일"
-        },
         "assigneeUpdateNotApplied": "GitHub에서 담당자 변경을 적용하지 않았습니다",
         "assigneeUpdateSuccess": "GitHub에서 담당자를 업데이트했습니다",
-        "updateIssueFailed": "GitHub issue를 업데이트하지 못했습니다",
-        "refreshIssues": "이슈 새로고침",
-        "refreshPullRequests": "풀 리퀘스트 새로고침"
+        "updateIssueFailed": "GitHub issue를 업데이트하지 못했습니다"
       }
     },
     "sessionViews": {

@@ -121,8 +121,6 @@
     "usePointerCursorsDesc": "Đổi con trỏ sang dạng bàn tay khi di chuột qua các phần tử tương tác",
     "timezoneAuto": "Tự động (Trình duyệt)",
     "timezoneSearchPlaceholder": "Tìm kiếm thành phố gần nhất",
-    "sendOnEnter": "Gửi tin nhắn bằng",
-    "sendOnEnterDesc": "Chọn phím tắt dùng để gửi tin nhắn; các tổ hợp Enter khác sẽ chèn dòng mới",
     "language": "Ngôn ngữ",
     "languageSearchPlaceholder": "Tìm kiếm ngôn ngữ...",
     "languageNames": {
@@ -221,6 +219,7 @@
       "light": "Ô sáng"
     },
     "translucentSidebar": "Thanh bên trong mờ",
+    "sessionBranchTags": "Thẻ nhánh và PR trên phiên",
     "skin": "Skin",
     "accent": "Màu nhấn",
     "linkSkinVariants": "Liên kết sáng và tối",
@@ -234,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Hiện tên và phím tắt khi di chuột qua nút. Chú giải của biểu tượng thông tin luôn hiển thị",
     "buttonTooltipDelayMs": "Độ trễ chú giải",
     "buttonTooltipDelayImmediate": "Ngay lập tức",
-    "buttonTooltipDelaySeconds": "{{seconds}} giây"
+    "buttonTooltipDelaySeconds": "{{seconds}} giây",
+    "modelPickerStyle": "Bộ chọn mô hình"
   },
   "background": {
     "title": "Hình nền",
@@ -535,6 +535,10 @@
     "indentGuides": "Đường dẫn thụt lề",
     "treeIndentGuides": "Đường dẫn thụt lề cây",
     "highlightActiveLine": "Đánh dấu dòng hiện tại",
+    "diffViewMode": "Chế độ xem khác biệt",
+    "gitBlame": "Git blame",
+    "splitDiffCenteredLineNumbers": "Số dòng căn giữa trong diff chia đôi",
+    "splitDiffCenteredLineNumbersDesc": "Hiển thị cả hai cột số dòng ở giữa hai khung, giống GitHub, thay vì ở mép trái của mỗi khung.",
     "shellsOpenWith": "Shell mở với",
     "shellsOpenWithDesc": "Thư mục làm việc ban đầu cho terminal mới",
     "repoPath": "Đường dẫn kho",
@@ -904,7 +908,10 @@
   "appearance": {
     "tabApp": "Ứng dụng",
     "tabCodeEditor": "Trình soạn thảo mã",
-    "tabChatPanel": "Bảng trò chuyện"
+    "tabChatPanel": "Bảng trò chuyện",
+    "chatHistory": "Lịch sử trò chuyện",
+    "composer": "Khung soạn thảo",
+    "newChatPage": "Trang trò chuyện mới"
   },
   "harnessConnections": {
     "description": "Chọn kết nối cho từng công cụ lập trình",

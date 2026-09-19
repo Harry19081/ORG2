@@ -74,12 +74,7 @@
       "manual": "手動排序"
     },
     "tabs": {
-      "workstation": "工作站",
-      "manage": "管理",
-      "core": "核心",
-      "agent": "Agent",
-      "org": "團隊",
-      "agentOrgs": "Agent & 團隊"
+      "workstation": "工作站"
     },
     "groupBy": {
       "none": "不分組",
@@ -101,55 +96,23 @@
       "untitledSession": "未命名 Session",
       "enterSessionName": "輸入 Session 名稱"
     },
-    "groups": {
-      "economy": "經濟",
-      "myServices": "我的服務",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "託管密鑰",
-      "cloud": "Cloud",
-      "openSource": "開源倉庫",
-      "timeline": "時間線"
-    },
     "actions": {
       "addNew": "新建",
       "collapseAll": "全部摺疊",
-      "markAllRead": "全部標為已讀",
-      "toggleGroup": "切換分組"
+      "markAllRead": "全部標為已讀"
     },
     "search": {
-      "folders": "搜尋工作區...",
-      "sessions": "搜尋會話...",
-      "projects": "搜尋專案...",
-      "colleagues": "搜尋同事..."
-    },
-    "folderCounts": {
-      "repo": "{{count}}個倉庫",
-      "multiRepoWorkspace": "{{count}}個多倉庫工作區",
-      "repo_plural": "{{count}}個倉庫",
-      "multiRepoWorkspace_plural": "{{count}}個多倉庫工作區"
+      "sessions": "搜尋會話..."
     },
     "bottomBar": {
       "settings": "設定",
-      "clockLabel": "目前時間",
       "updateAvailable": "下載更新 v{{version}}"
     },
     "settingsMenu": {
       "appearance": "外觀",
       "modifyAppearance": "修改外觀",
-      "language": "語言",
       "viewRam": "查看 RAM",
-      "tutorials": "教學",
       "openSettings": "開啟設定"
-    },
-    "empty": {
-      "noItems": "暫無內容",
-      "noSessions": "暫無 Session",
-      "noSessionsDesc": "開始一個新 Session",
-      "noResultsFor": "未找到 \"{{query}}\" 的結果",
-      "noSearchResults": "未找到結果"
     },
     "presence": {
       "tooltip": "設定你的線上狀態 — Agent 會根據你是否在鍵盤前調整行為。",
@@ -166,10 +129,6 @@
       "duration2h": "2 小時",
       "durationTomorrow": "明天",
       "unknownRole": "未知角色"
-    },
-    "guide": {
-      "startSession": "建立第一個工作階段",
-      "connectOrganization": "連接或建立工作空間"
     },
     "sections": {
       "section": "分區",

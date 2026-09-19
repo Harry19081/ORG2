@@ -6,7 +6,7 @@
  * Includes control bar with actions for viewing all changes and split view.
  * Uses dnd-kit for drag and drop reordering.
  *
- * Shared by: CodeEditor, DatabaseManager, Browser
+ * Shared by: CodeEditor, Browser
  *
  * Tab strip uses bg-workstation-bg by default; tabs are 32px pills on the 40px row.
  * The tab row has no bottom divider.
@@ -75,13 +75,8 @@ import TabContextMenu from "./TabContextMenu";
 import { blurHeaderInputOnPointerDown } from "./blurHeaderInputOnPointerDown";
 import { SortableTab, TabBarControls } from "./components";
 import { WorkstationTabContent } from "./components/WorkstationTabContent";
-import { TAB_BAR_HEIGHT, TAB_STRIP_SECTION_RULE_CLASS } from "./config";
-import {
-  useAutoScrollToActive,
-  useTabDrag,
-  useTabGitInfoMap,
-  useTabLabelCollapse,
-} from "./hooks";
+import { TAB_BAR_HEIGHT } from "./config";
+import { useAutoScrollToActive, useTabDrag, useTabGitInfoMap } from "./hooks";
 
 // ============================================
 // Types
@@ -89,7 +84,7 @@ import {
 
 interface TabBarProps {
   /** Pane identifier for this tab bar */
-  paneId?: string;
+  paneId: string;
   /** List of open tabs */
   tabs: WorkStationTab[];
   /** Currently active tab id */
@@ -100,32 +95,23 @@ interface TabBarProps {
   onTabClose: (tabId: string) => void;
   /** Callback when tabs are reordered via drag and drop */
   onTabReorder?: (startIndex: number, endIndex: number) => void;
-  /** Opens a new tab (e.g. Browser); shows + in the right control section */
-  onNewTab?: () => void;
-  /** Optional keyboard shortcut displayed for the new-tab control. */
+  /**
+   * Unused since the tab bar's own new-tab button was removed (the `+` lives
+   * in the trailing slot). Kept only until WorkstationTabBar stops passing it.
+   */
   onNewTabShortcutId?: string;
   /** Callback to close all other tabs */
-  onCloseOtherTabs?: (tabId: string) => void;
+  onCloseOtherTabs: (tabId: string) => void;
   /** Callback to close all saved tabs */
-  onCloseSavedTabs?: () => void;
+  onCloseSavedTabs: () => void;
   /** Repository path for relative path calculation */
-  repoPath?: string;
+  repoPath: string;
   /** Optional leading element rendered before the scroll row (fixed; not scrolled with tabs). */
   leadingSlot?: React.ReactNode;
-  /**
-   * Optional prefix rendered inside the tab scroll row before sortable tabs (same scroll
-   * container). Use for surfaces that should visually read as one strip with tabs.
-   */
-  tabRowPrefix?: React.ReactNode;
   /** Optional trailing element rendered after control buttons (e.g., panel toggles) */
   trailingSlot?: React.ReactNode;
-  /** Optional tab-row surface override; defaults to bg-workstation-bg. */
-  surfaceClassName?: string;
-  /**
-   * When true, if the tab strip overflows horizontally, inactive tabs show icon only;
-   * the selected tab keeps its text label. Widen the strip to show all labels again.
-   */
-  collapseInactiveTabLabelsOnOverflow?: boolean;
+  /** Tab-row surface class. */
+  surfaceClassName: string;
   dataTourTarget?: string;
 }
 
@@ -134,7 +120,6 @@ type SortableTabListProps = {
   tabIds: string[];
   activeTabId: string | null;
   tabGitInfoMap: Map<string, GitFileInfo>;
-  hideInactiveTabLabels: boolean;
   onTabClick: (tabId: string) => void;
   onCloseClick: (event: React.MouseEvent, tabId: string) => void;
   onContextMenu: (event: React.MouseEvent, tab: WorkStationTab) => void;
@@ -146,7 +131,6 @@ const SortableTabList: React.FC<SortableTabListProps> = memo(
     tabIds,
     activeTabId,
     tabGitInfoMap,
-    hideInactiveTabLabels,
     onTabClick,
     onCloseClick,
     onContextMenu,
@@ -173,7 +157,6 @@ const SortableTabList: React.FC<SortableTabListProps> = memo(
                   onCloseClick={onCloseClick}
                   onContextMenu={onContextMenu}
                   gitInfo={tabGitInfoMap.get(tab.id)}
-                  hideLabel={hideInactiveTabLabels && tab.id !== activeTabId}
                 />
               </NoDragRegion>
               {next && (
@@ -200,22 +183,18 @@ SortableTabList.displayName = "SortableTabList";
 
 export const TabBar: React.FC<TabBarProps> = memo(
   ({
-    paneId = "primary",
+    paneId,
     tabs,
     activeTabId,
     onTabClick,
     onTabClose,
     onTabReorder,
-    onNewTab,
-    onNewTabShortcutId,
     onCloseOtherTabs,
     onCloseSavedTabs,
-    repoPath = "",
+    repoPath,
     leadingSlot,
-    tabRowPrefix,
     trailingSlot,
-    surfaceClassName = "bg-workstation-bg",
-    collapseInactiveTabLabelsOnOverflow = false,
+    surfaceClassName,
     dataTourTarget,
   }) => {
     const { t } = useTranslation();
@@ -300,13 +279,6 @@ export const TabBar: React.FC<TabBarProps> = memo(
       string | null
     >(null);
 
-    const hideInactiveTabLabels = useTabLabelCollapse({
-      enabled: collapseInactiveTabLabelsOnOverflow,
-      tabsDependency: tabs,
-      activeTabDependency: activeTabId,
-      containerRef: tabsContainerRef,
-    });
-
     const handleTabClick = useCallback(
       (tabId: string) => onTabClick(tabId),
       [onTabClick]
@@ -363,17 +335,14 @@ export const TabBar: React.FC<TabBarProps> = memo(
     const handleCloseRawTranscript = useCallback(() => {
       setRawTranscriptSessionId(null);
     }, []);
-    const noopTabAction = useCallback((_tabId: string) => {}, []);
-    const noopAction = useCallback(() => {}, []);
 
-    const hasTabStrip = (tabs && tabs.length > 0) || Boolean(tabRowPrefix);
     const hasTabs = tabs && tabs.length > 0;
     const tabIds = useMemo(
       () => (hasTabs ? tabs.map((tab) => tab.id) : []),
       [hasTabs, tabs]
     );
 
-    if (!hasTabStrip && !leadingSlot && !trailingSlot) {
+    if (!hasTabs && !leadingSlot && !trailingSlot) {
       return null;
     }
 
@@ -436,14 +405,6 @@ export const TabBar: React.FC<TabBarProps> = memo(
                 className="relative scrollbar-hide flex h-full max-w-full min-w-0 shrink items-center overflow-x-auto overflow-y-hidden"
                 style={{ scrollBehavior: "smooth" } as React.CSSProperties}
               >
-                {tabRowPrefix ? (
-                  <NoDragRegion className="flex h-full shrink-0 items-center gap-1">
-                    {tabRowPrefix}
-                  </NoDragRegion>
-                ) : null}
-                {tabRowPrefix && hasTabs ? (
-                  <span className={TAB_STRIP_SECTION_RULE_CLASS} aria-hidden />
-                ) : null}
                 {hasTabs ? (
                   <DndContext
                     sensors={sensors}
@@ -458,10 +419,6 @@ export const TabBar: React.FC<TabBarProps> = memo(
                       tabIds={tabIds}
                       activeTabId={activeTabId}
                       tabGitInfoMap={tabGitInfoMap}
-                      hideInactiveTabLabels={
-                        collapseInactiveTabLabelsOnOverflow &&
-                        hideInactiveTabLabels
-                      }
                       onTabClick={handleTabClick}
                       onCloseClick={handleCloseClick}
                       onContextMenu={handleContextMenu}
@@ -498,12 +455,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
             </div>
           </div>
 
-          <TabBarControls
-            hasTabs={hasTabs}
-            onNewTab={onNewTab}
-            onNewTabShortcutId={onNewTabShortcutId}
-            trailingSlot={trailingSlot}
-          />
+          <TabBarControls hasTabs={hasTabs} trailingSlot={trailingSlot} />
         </div>
 
         {contextMenu && (
@@ -513,8 +465,8 @@ export const TabBar: React.FC<TabBarProps> = memo(
             repoPath={repoPath}
             onClose={handleCloseContextMenu}
             onCloseTab={onTabClose}
-            onCloseOtherTabs={onCloseOtherTabs ?? noopTabAction}
-            onCloseSavedTabs={onCloseSavedTabs ?? noopAction}
+            onCloseOtherTabs={onCloseOtherTabs}
+            onCloseSavedTabs={onCloseSavedTabs}
             onMoveToChatPanel={
               (contextMenu.tab.type === "chat-session" &&
                 typeof contextMenu.tab.data.sessionId === "string" &&

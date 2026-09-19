@@ -21,9 +21,7 @@
   "sidebarSettings": {
     "title": "Sidebar settings",
     "showSidebar": "Show sidebar",
-    "location": "Location",
-    "showIndentLines": "Show indent lines",
-    "colorSourceControlFiles": "Use diff colors for files"
+    "colorSourceControlFiles": "Diff colors on files"
   },
   "windowChrome": {
     "menus": {
@@ -320,7 +318,6 @@
     "nextPage": "Next page",
     "lastPage": "Last page",
     "selectPage": "Select page",
-    "title": "Pagination",
     "round": "Round {{current}}",
     "previousRound": "Previous round",
     "nextRound": "Next round",
@@ -1763,7 +1760,7 @@
     "chatRight": "Chat Right",
     "sidebarPosition": "Workstation sidebar",
     "modelPickerStyle": "Picker",
-    "paginateChatHistory": "Paginate chat history",
+    "paginateChatHistory": "Chat history pagination",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Left",

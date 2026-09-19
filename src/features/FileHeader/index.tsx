@@ -5,7 +5,7 @@
  * Click on any path segment to see files/folders in that directory.
  * Uses an icon button for diff layout and TabPill for custom / preview toggles.
  *
- * Shared across WorkStation CodeEditor, DatabaseManager, and Simulator.
+ * Shared across WorkStation CodeEditor and Simulator.
  * When `repoPath` is omitted, breadcrumbs render as static path display
  * (no dropdown navigation).
  *
@@ -34,6 +34,7 @@ import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import TabPill from "@src/components/TabPill";
 import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { useEditorDisplayToggles } from "@src/hooks/settings/useEditorDisplayToggles";
 import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
   Cancel01Icon,
@@ -130,6 +131,8 @@ export interface FileHeaderProps {
   wordWrapEnabled?: boolean;
   /** Callback when editor word wrap changes. */
   onWordWrapChange?: (enabled: boolean) => void;
+  /** Wrapping is forced on (split diffs): show the toggle on and disabled. */
+  wordWrapLocked?: boolean;
   /** Current editor minimap state. */
   minimapEnabled?: boolean;
   /** Callback when editor minimap changes. */
@@ -222,6 +225,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     onLineNumbersChange,
     wordWrapEnabled = false,
     onWordWrapChange,
+    wordWrapLocked = false,
     minimapEnabled = false,
     onMinimapChange,
     highlightActiveLineEnabled = true,
@@ -259,6 +263,10 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     // carries sidebar settings like every other workstation header menu.
     const sidebarSettingsVisible = showSidebarSettings || !!toolbarTarget;
     const [moreMenuVisible, setMoreMenuVisible] = useState(false);
+    const {
+      splitCenteredLineNumbersEnabled: splitCenteredLineNumbers,
+      onSplitCenteredLineNumbersChange: setSplitCenteredLineNumbers,
+    } = useEditorDisplayToggles();
     const [reloadMenuCoolingDown, setReloadMenuCoolingDown] = useState(false);
     const reloadMenuCooldownTimerRef = useRef<ReturnType<
       typeof setTimeout
@@ -379,7 +387,10 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     const showCopyRelativePathAction = !!relativePathToCopy;
     const showRevealInFileManagerAction = !!onRevealInFileManager;
     const showLineNumbersToggle = !!onLineNumbersChange;
-    const showWordWrapToggle = !!onWordWrapChange;
+    // Every split diff header offers the number layout beside its number toggle.
+    const showSplitCenteredLineNumbersToggle =
+      showLineNumbersToggle && viewMode === "split";
+    const showWordWrapToggle = !!onWordWrapChange || wordWrapLocked;
     const showMinimapToggle = !!onMinimapChange;
     const showHighlightActiveLineToggle = !!onHighlightActiveLineChange;
     const showMoreSettingsAction = !!onMoreSettings;
@@ -450,6 +461,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         showCopyRelativePathAction={showCopyRelativePathAction}
         showRevealInFileManagerAction={showRevealInFileManagerAction}
         showLineNumbersToggle={showLineNumbersToggle}
+        showSplitCenteredLineNumbersToggle={showSplitCenteredLineNumbersToggle}
         showWordWrapToggle={showWordWrapToggle}
         showMinimapToggle={showMinimapToggle}
         showHighlightActiveLineToggle={showHighlightActiveLineToggle}
@@ -457,7 +469,9 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         showMoreSettingsAction={showMoreSettingsAction}
         showSidebarSettings={sidebarSettingsVisible}
         lineNumbersEnabled={lineNumbersEnabled}
+        splitCenteredLineNumbersEnabled={splitCenteredLineNumbers}
         wordWrapEnabled={wordWrapEnabled}
+        wordWrapLocked={wordWrapLocked}
         minimapEnabled={minimapEnabled}
         highlightActiveLineEnabled={highlightActiveLineEnabled}
         gitBlameEnabled={gitBlameEnabled}
@@ -475,6 +489,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         onRevealInFileManagerClick={handleRevealInFileManagerMenuClick}
         onReloadClick={handleReloadMenuClick}
         onLineNumbersChange={handleLineNumbersChange}
+        onSplitCenteredLineNumbersChange={setSplitCenteredLineNumbers}
         onWordWrapChange={handleWordWrapChange}
         onMinimapChange={handleMinimapChange}
         onHighlightActiveLineChange={handleHighlightActiveLineChange}
