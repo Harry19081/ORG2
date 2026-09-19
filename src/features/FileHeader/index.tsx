@@ -14,6 +14,7 @@
  *   - `FileHeaderMoreMenu`    → the trailing ellipsis dropdown menu.
  *   - `FileHeaderShell`       → inline vs teleport-to-workstation wrapper.
  */
+import { useAtom } from "jotai";
 import React, {
   memo,
   useCallback,
@@ -41,6 +42,7 @@ import {
   HugeiconsIcon,
   LinkSquare02Icon,
 } from "@src/icons";
+import { editorSplitDiffCenteredLineNumbersAtom } from "@src/store/ui/editorSettingsAtom";
 import type { DiffViewMode } from "@src/types/git/types";
 import { copyText } from "@src/util/data/clipboard";
 
@@ -130,6 +132,8 @@ export interface FileHeaderProps {
   wordWrapEnabled?: boolean;
   /** Callback when editor word wrap changes. */
   onWordWrapChange?: (enabled: boolean) => void;
+  /** Wrapping is forced on (split diffs): show the toggle on and disabled. */
+  wordWrapLocked?: boolean;
   /** Current editor minimap state. */
   minimapEnabled?: boolean;
   /** Callback when editor minimap changes. */
@@ -222,6 +226,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     onLineNumbersChange,
     wordWrapEnabled = false,
     onWordWrapChange,
+    wordWrapLocked = false,
     minimapEnabled = false,
     onMinimapChange,
     highlightActiveLineEnabled = true,
@@ -259,6 +264,9 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     // carries sidebar settings like every other workstation header menu.
     const sidebarSettingsVisible = showSidebarSettings || !!toolbarTarget;
     const [moreMenuVisible, setMoreMenuVisible] = useState(false);
+    const [splitCenteredLineNumbers, setSplitCenteredLineNumbers] = useAtom(
+      editorSplitDiffCenteredLineNumbersAtom
+    );
     const [reloadMenuCoolingDown, setReloadMenuCoolingDown] = useState(false);
     const reloadMenuCooldownTimerRef = useRef<ReturnType<
       typeof setTimeout
@@ -379,7 +387,10 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     const showCopyRelativePathAction = !!relativePathToCopy;
     const showRevealInFileManagerAction = !!onRevealInFileManager;
     const showLineNumbersToggle = !!onLineNumbersChange;
-    const showWordWrapToggle = !!onWordWrapChange;
+    // Every split diff header offers the number layout beside its number toggle.
+    const showSplitCenteredLineNumbersToggle =
+      showLineNumbersToggle && viewMode === "split";
+    const showWordWrapToggle = !!onWordWrapChange || wordWrapLocked;
     const showMinimapToggle = !!onMinimapChange;
     const showHighlightActiveLineToggle = !!onHighlightActiveLineChange;
     const showMoreSettingsAction = !!onMoreSettings;
@@ -450,6 +461,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         showCopyRelativePathAction={showCopyRelativePathAction}
         showRevealInFileManagerAction={showRevealInFileManagerAction}
         showLineNumbersToggle={showLineNumbersToggle}
+        showSplitCenteredLineNumbersToggle={showSplitCenteredLineNumbersToggle}
         showWordWrapToggle={showWordWrapToggle}
         showMinimapToggle={showMinimapToggle}
         showHighlightActiveLineToggle={showHighlightActiveLineToggle}
@@ -457,7 +469,9 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         showMoreSettingsAction={showMoreSettingsAction}
         showSidebarSettings={sidebarSettingsVisible}
         lineNumbersEnabled={lineNumbersEnabled}
+        splitCenteredLineNumbersEnabled={splitCenteredLineNumbers}
         wordWrapEnabled={wordWrapEnabled}
+        wordWrapLocked={wordWrapLocked}
         minimapEnabled={minimapEnabled}
         highlightActiveLineEnabled={highlightActiveLineEnabled}
         gitBlameEnabled={gitBlameEnabled}
@@ -475,6 +489,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
         onRevealInFileManagerClick={handleRevealInFileManagerMenuClick}
         onReloadClick={handleReloadMenuClick}
         onLineNumbersChange={handleLineNumbersChange}
+        onSplitCenteredLineNumbersChange={setSplitCenteredLineNumbers}
         onWordWrapChange={handleWordWrapChange}
         onMinimapChange={handleMinimapChange}
         onHighlightActiveLineChange={handleHighlightActiveLineChange}

@@ -34,6 +34,7 @@ import {
   editorLineNumbersAtom,
   editorShowMinimapAtom,
   editorShowTreeIndentGuidesAtom,
+  editorSplitDiffCenteredLineNumbersAtom,
   editorTabSizeAtom,
   editorWordWrapAtom,
 } from "@src/store/ui/editorSettingsAtom";
@@ -236,6 +237,8 @@ export const FeaturesSection: React.FC = () => {
   const [highlightActiveLine, setHighlightActiveLine] = useAtom(
     editorHighlightActiveLineAtom
   );
+  const [splitDiffCenteredLineNumbers, setSplitDiffCenteredLineNumbers] =
+    useAtom(editorSplitDiffCenteredLineNumbersAtom);
 
   const handleLineNumbersChange = useCallback(
     (value: string | number | (string | number)[]) => {
@@ -276,6 +279,17 @@ export const FeaturesSection: React.FC = () => {
           onChange={handleLineNumbersChange}
           options={lineNumbersOptions}
           style={SECTION_CONTROL_STYLE}
+        />
+      </SectionRow>
+
+      <SectionRow
+        settingsSearchKeys="editor.splitDiffCenteredLineNumbers"
+        label={t("editor.splitDiffCenteredLineNumbers")}
+        description={t("editor.splitDiffCenteredLineNumbersDesc")}
+      >
+        <Switch
+          checked={splitDiffCenteredLineNumbers}
+          onCheckedChange={setSplitDiffCenteredLineNumbers}
         />
       </SectionRow>
 

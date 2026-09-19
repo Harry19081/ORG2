@@ -535,6 +535,8 @@
     "indentGuides": "Guides d'indentation",
     "treeIndentGuides": "Guides d'indentation de l'arborescence",
     "highlightActiveLine": "Surlignage de la ligne courante",
+    "splitDiffCenteredLineNumbers": "Centrer les numéros de ligne en diff côte à côte",
+    "splitDiffCenteredLineNumbersDesc": "Affiche les deux colonnes de numéros de ligne entre les deux volets, comme sur GitHub, plutôt qu'au bord gauche de chaque volet.",
     "shellsOpenWith": "Le Shell s'ouvre avec",
     "shellsOpenWithDesc": "Répertoire de travail initial pour les nouveaux terminaux",
     "repoPath": "Chemin du dépôt",

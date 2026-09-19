@@ -62,6 +62,8 @@ export interface FileHeaderMoreMenuProps {
   showCopyRelativePathAction: boolean;
   showRevealInFileManagerAction: boolean;
   showLineNumbersToggle: boolean;
+  /** Split diffs only: both line-number columns between the panes. */
+  showSplitCenteredLineNumbersToggle?: boolean;
   showWordWrapToggle: boolean;
   showMinimapToggle: boolean;
   showHighlightActiveLineToggle: boolean;
@@ -72,7 +74,14 @@ export interface FileHeaderMoreMenuProps {
 
   // Toggle current values
   lineNumbersEnabled: boolean;
+  splitCenteredLineNumbersEnabled?: boolean;
   wordWrapEnabled: boolean;
+  /**
+   * The surface forces wrapping on (split diffs). The row stays visible,
+   * reads as on, and cannot be toggled, so the forced default is discoverable
+   * instead of the setting silently disappearing.
+   */
+  wordWrapLocked?: boolean;
   minimapEnabled: boolean;
   highlightActiveLineEnabled: boolean;
   gitBlameEnabled: boolean;
@@ -94,6 +103,7 @@ export interface FileHeaderMoreMenuProps {
   onRevealInFileManagerClick: () => void;
   onReloadClick: () => void;
   onLineNumbersChange: (enabled: boolean) => void;
+  onSplitCenteredLineNumbersChange?: (enabled: boolean) => void;
   onWordWrapChange: (enabled: boolean) => void;
   onMinimapChange: (enabled: boolean) => void;
   onHighlightActiveLineChange: (enabled: boolean) => void;
@@ -111,6 +121,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
   showCopyRelativePathAction,
   showRevealInFileManagerAction,
   showLineNumbersToggle,
+  showSplitCenteredLineNumbersToggle = false,
   showWordWrapToggle,
   showMinimapToggle,
   showHighlightActiveLineToggle,
@@ -118,7 +129,9 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
   showMoreSettingsAction,
   showSidebarSettings = false,
   lineNumbersEnabled,
+  splitCenteredLineNumbersEnabled = false,
   wordWrapEnabled,
+  wordWrapLocked = false,
   minimapEnabled,
   highlightActiveLineEnabled,
   gitBlameEnabled,
@@ -136,6 +149,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
   onRevealInFileManagerClick,
   onReloadClick,
   onLineNumbersChange,
+  onSplitCenteredLineNumbersChange,
   onWordWrapChange,
   onMinimapChange,
   onHighlightActiveLineChange,
@@ -189,18 +203,22 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
       label,
       checked,
       enabled,
+      disabled = false,
       onChange,
     }: {
       label: string;
       checked: boolean;
+      /** Whether the row is shown at all. */
       enabled: boolean;
+      /** Shown but not interactive. */
+      disabled?: boolean;
       onChange: (enabled: boolean) => void;
     }) => {
       if (!enabled) return null;
       const handleToggle = (event: React.MouseEvent | React.KeyboardEvent) => {
         event.preventDefault();
         event.stopPropagation();
-        if (!enabled) return;
+        if (disabled) return;
         onChange(!checked);
       };
 
@@ -208,10 +226,10 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
         <div
           role="menuitemcheckbox"
           aria-checked={checked}
-          aria-disabled={!enabled}
-          tabIndex={enabled ? 0 : -1}
+          aria-disabled={disabled}
+          tabIndex={disabled ? -1 : 0}
           className={`${DROPDOWN_CLASSES.menuControlItem} ${
-            enabled ? "cursor-pointer" : DROPDOWN_CLASSES.itemDisabled
+            disabled ? DROPDOWN_CLASSES.itemDisabled : "cursor-pointer"
           }`}
           onClick={handleToggle}
           onKeyDown={(event) => {
@@ -225,7 +243,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
             size="small"
             ariaLabel={label}
             checked={checked}
-            disabled={!enabled}
+            disabled={disabled}
             onCheckedChange={(nextChecked, event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -435,10 +453,19 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                   onChange: onLineNumbersChange,
                 })}
 
+                {onSplitCenteredLineNumbersChange &&
+                  renderToggleRow({
+                    label: t("settings:editor.splitDiffCenteredLineNumbers"),
+                    checked: splitCenteredLineNumbersEnabled,
+                    enabled: showSplitCenteredLineNumbersToggle,
+                    onChange: onSplitCenteredLineNumbersChange,
+                  })}
+
                 {renderToggleRow({
                   label: t("settings:editor.wordWrap"),
-                  checked: wordWrapEnabled,
+                  checked: wordWrapLocked || wordWrapEnabled,
                   enabled: showWordWrapToggle,
+                  disabled: wordWrapLocked,
                   onChange: onWordWrapChange,
                 })}
 
