@@ -183,15 +183,6 @@ export const HEADER_CLASSES = {
     "flex h-8 min-w-0 shrink-0 items-center justify-between overflow-hidden bg-transparent pl-3 pr-2",
 } as const;
 
-/**
- * Search tab row layout (used by Search editor + Extension tab search rows).
- * Keeps height/border/padding consistent across tabs.
- */
-export const SEARCH_TAB_ROW_CLASSES = {
-  /** Row container: fixed row height + horizontal layout + padding */
-  row: FILE_BAR_ROW_CLASSES,
-} as const;
-
 // ============================================
 // Typography Tokens
 // ============================================

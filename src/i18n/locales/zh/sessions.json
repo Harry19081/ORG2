@@ -636,16 +636,11 @@
       "showSkills": "固定 Skills",
       "showCliUpdate": "CLI 更新",
       "showSpotlight": "Spotlight",
-      "title": "你想做什么？",
-      "back": "返回起始页",
       "newSession": {
         "title": "新建会话"
       },
       "newWorkItem": {
         "title": "新建工作项"
-      },
-      "setupRepo": {
-        "title": "设置 Repo"
       },
       "addApiKey": {
         "title": "添加 API 密钥"
@@ -656,59 +651,27 @@
       "installLatestUpdate": {
         "title": "安装最新更新"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "会话",
         "workItem": "工作项",
         "more": "更多",
-        "work": "工作",
         "manage": "管理",
-        "heatmap": "趋势",
         "runtime": "运行时"
       },
       "quota": {
         "empty": "暂无配额数据。请在 Key Vault 中刷新用量。",
         "refresh": "刷新",
-        "justNow": "刚刚",
-        "minutesAgo": "{{count}}分钟前",
-        "hoursAgo": "{{count}}小时前",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7d",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Weekly",
           "monthly": "Monthly"
         }
       },
-      "exploreRepos": {
-        "title": "探索 Repos"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "管理 Issues"
       }
     },
     "defaultTitle": "Session",
@@ -755,15 +718,11 @@
       "modeSourceBundled": "模式加载自内置回退(Cursor 探针尚未运行)。",
       "modeRefresh": "刷新模式"
     },
-    "hideSimulator": "隐藏模拟器",
-    "showSimulator": "显示模拟器",
-    "fullScreenChat": "聚焦聊天面板（隐藏工作站）",
     "maximizeChatPanel": "最大化聊天面板",
     "showWorkstation": "显示工作站",
     "workstationUnavailableForPage": "此页面不支持使用工作站",
     "hideWorkstation": "隐藏工作站",
     "restoreSplitView": "显示工作站",
-    "shrinkToWorkstation": "缩小聊天面板（显示工作站）",
     "tuiModeOn": "TUI 模式（点击关闭）",
     "tuiModeOff": "启用 TUI 模式",
     "tabs": {
@@ -971,22 +930,9 @@
       "showMore_one": "显示其余 {{count}} 个",
       "showMore_other": "显示其余 {{count}} 个"
     },
-    "manageIssues": {
-      "title": "管理 Issues",
-      "myWork": "我的工作",
-      "allRepositories": "所有 Repos",
-      "newIssue": "新建 Issue",
-      "tabs": {
-        "recent": "最近",
-        "assigned": "分配给我",
-        "byMe": "由我创建",
-        "mentioned": "提及我"
-      }
-    },
     "readOnly": "只读",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "创建 GitHub issue",
         "issueTitlePlaceholder": "issue 标题",
@@ -996,28 +942,16 @@
         "addToChat": "Add",
         "repositoryLabel": "仓库",
         "createIssueFailed": "创建 issue 失败",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "所有状态",
         "closeAsCompleted": "以已完成关闭",
         "closeAsNotPlanned": "以不计划关闭",
         "statusUpdateFailed": "无法更新 GitHub 状态",
         "assignedToMe": "分配给我的",
         "createdByMe": "由我创建",
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
-        "pullRequests": {
-          "reviewRequested": "待我评审",
-          "authoredByMe": "由我创建",
-          "otherTodos": "其他待办"
-        },
         "assigneeUpdateNotApplied": "GitHub 未应用指派人变更",
         "assigneeUpdateSuccess": "已在 GitHub 上更新指派人",
-        "updateIssueFailed": "更新 GitHub issue 失败",
-        "refreshIssues": "刷新议题",
-        "refreshPullRequests": "刷新拉取请求"
+        "updateIssueFailed": "更新 GitHub issue 失败"
       }
     },
     "sessionViews": {

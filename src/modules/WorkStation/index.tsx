@@ -6,7 +6,7 @@
  * - Repository path validation
  * - Tab-driven Code Editor, Browser, and Project Manager surfaces
  *
- * ChatPanel is rendered by AppLayout using the single Modern layout.
+ * ChatPanel is rendered by AppLayout.
  */
 import React from "react";
 

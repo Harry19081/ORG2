@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "Ajouter nouveau",
       "collapseAll": "Tout réduire",
-      "markAllRead": "Tout marquer comme lu",
-      "toggleGroup": "Basculer la section"
+      "markAllRead": "Tout marquer comme lu"
     },
     "search": {
       "folders": "Rechercher dans l’espace de travail...",
@@ -143,13 +142,6 @@
       "viewRam": "Voir la RAM",
       "tutorials": "Tutoriels",
       "openSettings": "Ouvrir les paramètres"
-    },
-    "empty": {
-      "noItems": "Aucun élément",
-      "noSessions": "Aucune Session",
-      "noSessionsDesc": "Démarrez une nouvelle Session pour commencer",
-      "noResultsFor": "Aucun résultat pour \"{{query}}\"",
-      "noSearchResults": "Aucun résultat trouvé"
     },
     "presence": {
       "tooltip": "Définis ta disponibilité — les agents s'adapteront selon que tu es ou non au clavier.",

@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "Neu hinzufügen",
       "collapseAll": "Alle einklappen",
-      "markAllRead": "Alle als gelesen markieren",
-      "toggleGroup": "Abschnitt umschalten"
+      "markAllRead": "Alle als gelesen markieren"
     },
     "search": {
       "folders": "Workspace suchen...",
@@ -143,13 +142,6 @@
       "viewRam": "RAM anzeigen",
       "tutorials": "Tutorials",
       "openSettings": "Einstellungen öffnen"
-    },
-    "empty": {
-      "noItems": "Keine Elemente",
-      "noSessions": "Keine Session",
-      "noSessionsDesc": "Starten Sie eine neue Session",
-      "noResultsFor": "Keine Ergebnisse für \"{{query}}\"",
-      "noSearchResults": "Keine Ergebnisse gefunden"
     },
     "presence": {
       "tooltip": "Lege deinen Status fest — Agenten passen sich an, ob du an der Tastatur bist.",

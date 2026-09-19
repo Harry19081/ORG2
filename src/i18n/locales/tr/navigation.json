@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "Yeni Ekle",
       "collapseAll": "Tümünü daralt",
-      "markAllRead": "Tümünü okundu olarak işaretle",
-      "toggleGroup": "Bölümü aç/kapat"
+      "markAllRead": "Tümünü okundu olarak işaretle"
     },
     "search": {
       "folders": "Çalışma alanında ara...",
@@ -143,13 +142,6 @@
       "viewRam": "RAM’i görüntüle",
       "tutorials": "Eğitimler",
       "openSettings": "Ayarları aç"
-    },
-    "empty": {
-      "noItems": "Öğe yok",
-      "noSessions": "Session yok",
-      "noSessionsDesc": "Başlamak için yeni bir Session başlatın",
-      "noResultsFor": "\"{{query}}\" için sonuç bulunamadı",
-      "noSearchResults": "Sonuç bulunamadı"
     },
     "presence": {
       "tooltip": "Durumunu ayarla — Agent'lar klavyenin başında olup olmadığına göre davranır.",

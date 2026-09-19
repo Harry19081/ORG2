@@ -316,10 +316,9 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     );
 
     // Content
-    // Modern layout: the sidebar surface itself reaches the top window edge
-    // (no outer `pt-2`), so we move the 8px top breathing room inside via a
-    // spacer div. This keeps the header / icons at the same vertical position
-    // as the previous alternatives while letting the surface cover the full sidebar column.
+    // The sidebar surface itself reaches the top window edge (no outer
+    // `pt-2`), so the 8px top breathing room lives inside via a spacer div,
+    // letting the surface cover the full sidebar column.
     const content = (
       <>
         <div
@@ -334,7 +333,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
       </>
     );
 
-    // Modern layout: the sidebar is flush with the rounded window edge
+    // Docked sidebar: flush with the rounded window edge
     // (top-left + bottom-left curves match `--border-radius-window`). Avoid
     // a broad docked drop shadow because it traces the window corner. On
     // macOS, use a narrow inset edge shadow instead: it creates the vertical
@@ -345,8 +344,8 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     // a transient overlay. It should feel solid (so it's legible against
     // whatever's behind it) and should ignore the user's sidebarOpacity
     // setting. We paint `--color-bg-1` (the design-system solid raised
-    // surface) and keep the floating drop shadow regardless of the
-    // current layout mode so it visually detaches from the workspace.
+    // surface) and keep the floating drop shadow so it visually detaches
+    // from the workspace.
     const sidebarBoxShadow = shouldForceVisible
       ? "var(--sidebar-shadow)"
       : IS_MACOS_HOST && sidebarEdgeDepthEnabled
@@ -379,16 +378,14 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     };
 
     // Wrapped content
-    // Modern layout: sidebar is flush with the top/left/bottom window edge —
-    // no outer padding, no border radius on the right (it butts against the
-    // content panel). The top-left and bottom-left corners follow the window
-    // radius (`--border-radius-window`) so the sidebar surface aligns with
-    // the rounded window/body clip instead of leaving a sliver of the body
-    // Modern chrome keeps the sidebar flush against the rounded window edge.
-    // On macOS the native AbuttedSidebar material already defines the shared
+    // The sidebar is flush with the top/left/bottom window edge — no outer
+    // padding, no border radius on the right (it butts against the content
+    // panel). The top-left and bottom-left corners follow the window radius
+    // (`--border-radius-window`) so the surface aligns with the rounded
+    // window/body clip. On macOS the native AbuttedSidebar material already defines the shared
     // edge, while on Windows the rounded content surface owns it. Drawing a
     // separate separator on either platform creates a redundant vertical line.
-    const modernSurfaceStyle = {
+    const flushSurfaceStyle = {
       // The Windows header spans the full native top edge and owns both top
       // radii. Rounding the sidebar again below it creates a detached inner
       // curve; macOS has no HTML topbar, so its sidebar still owns this corner.
@@ -407,7 +404,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
           className="flex h-full flex-none flex-col overflow-hidden"
           style={{
             ...surfaceStyle,
-            ...modernSurfaceStyle,
+            ...flushSurfaceStyle,
             width: `${surfaceWidth}px`,
           }}
         >

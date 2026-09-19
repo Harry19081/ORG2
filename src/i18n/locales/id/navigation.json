@@ -138,8 +138,7 @@
     "actions": {
       "addNew": "Tambah Baru",
       "collapseAll": "Ciutkan Semua",
-      "markAllRead": "Tandai Semua Dibaca",
-      "toggleGroup": "Alihkan bagian"
+      "markAllRead": "Tandai Semua Dibaca"
     },
     "search": {
       "folders": "Cari Ruang Kerja...",
@@ -165,13 +164,6 @@
       "viewRam": "Lihat RAM",
       "tutorials": "Tutorial",
       "openSettings": "Buka Pengaturan"
-    },
-    "empty": {
-      "noItems": "Tidak ada item",
-      "noSessions": "Tidak ada sesi",
-      "noSessionsDesc": "Mulai sesi baru untuk memulai",
-      "noResultsFor": "Tidak ada hasil untuk \"{{query}}\"",
-      "noSearchResults": "Tidak ada hasil yang ditemukan"
     },
     "presence": {
       "tooltip": "Atur ketersediaan Anda — agen akan menyesuaikan apakah Anda sedang berada di depan keyboard.",

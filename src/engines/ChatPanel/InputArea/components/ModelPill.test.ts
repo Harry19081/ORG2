@@ -66,10 +66,6 @@ vi.mock("@src/store/session/cliSessionStatusAtom", async () => {
   const { atom } = await import("jotai");
   return { sessionRuntimeStatusAtom: atom("idle") };
 });
-vi.mock("@src/store/ui/chatPanelAtom", async () => {
-  const { atom } = await import("jotai");
-  return { modelPickerStyleAtom: atom("spotlight") };
-});
 vi.mock("@src/components/AnyIcon", () => ({ default: () => null }));
 vi.mock("@src/components/ModelIcon", () => ({ default: () => null }));
 vi.mock("@src/components/Message", () => ({

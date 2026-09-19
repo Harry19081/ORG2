@@ -635,16 +635,11 @@
       "showSkills": "ピン留めしたスキル",
       "showCliUpdate": "CLI の更新",
       "showSpotlight": "Spotlight",
-      "title": "何をしますか？",
-      "back": "スタートページに戻る",
       "newSession": {
         "title": "新しいセッション"
       },
       "newWorkItem": {
         "title": "新しい work item"
-      },
-      "setupRepo": {
-        "title": "Repo をセットアップ"
       },
       "addApiKey": {
         "title": "API キーを追加"
@@ -655,59 +650,27 @@
       "installLatestUpdate": {
         "title": "最新アップデートをインストール"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "セッション",
         "workItem": "作業項目",
         "more": "その他",
-        "work": "作業",
         "manage": "管理",
-        "heatmap": "トレンド",
         "runtime": "ランタイム"
       },
       "quota": {
         "empty": "Quota データはまだありません。Key Vault で使用量を更新してください。",
         "refresh": "更新",
-        "justNow": "たった今",
-        "minutesAgo": "{{count}}分前",
-        "hoursAgo": "{{count}}時間前",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7d",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Weekly",
           "monthly": "Monthly"
         }
       },
-      "exploreRepos": {
-        "title": "Repo を探索"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "Issues を管理"
       }
     },
     "defaultTitle": "チャット",
@@ -754,15 +717,11 @@
       "modeSourceBundled": "バンドルされたフォールバックからモードを読み込みました(Cursor プローブはまだ起動していません)。",
       "modeRefresh": "モードを更新"
     },
-    "hideSimulator": "シミュレーターを非表示",
-    "showSimulator": "シミュレーターを表示",
-    "fullScreenChat": "Chat パネルにフォーカス（Workstation を非表示）",
     "maximizeChatPanel": "Chat パネルを最大化",
     "showWorkstation": "Workstation を表示",
     "workstationUnavailableForPage": "このページでは Workstation を利用できません",
     "hideWorkstation": "Workstation を非表示",
     "restoreSplitView": "Workstation を表示",
-    "shrinkToWorkstation": "Chat パネルを縮小（Workstation を表示）",
     "tuiModeOn": "TUI モード（クリックで無効化）",
     "tuiModeOff": "TUI モードを有効にする",
     "tabs": {
@@ -966,22 +925,9 @@
       "showMore_one": "残り {{count}} 件を表示",
       "showMore_other": "残り {{count}} 件を表示"
     },
-    "manageIssues": {
-      "title": "Issues を管理",
-      "myWork": "自分の作業",
-      "allRepositories": "すべての Repos",
-      "newIssue": "新しい Issue",
-      "tabs": {
-        "recent": "最近",
-        "assigned": "自分に割り当て",
-        "byMe": "自分が作成",
-        "mentioned": "メンション"
-      }
-    },
     "readOnly": "読み取り専用",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "GitHub issue を作成",
         "issueTitlePlaceholder": "issue のタイトル",
@@ -991,28 +937,16 @@
         "addToChat": "Add",
         "repositoryLabel": "リポジトリ",
         "createIssueFailed": "issue を作成できませんでした",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "すべての状態",
         "closeAsCompleted": "完了として閉じる",
         "closeAsNotPlanned": "計画外として閉じる",
         "statusUpdateFailed": "GitHub のステータスを更新できませんでした",
         "assignedToMe": "自分に割り当て済み",
         "createdByMe": "自分が作成",
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
-        "pullRequests": {
-          "reviewRequested": "レビュー依頼",
-          "authoredByMe": "自分が作成",
-          "otherTodos": "その他の To-do"
-        },
         "assigneeUpdateNotApplied": "GitHub は担当者の変更を適用しませんでした",
         "assigneeUpdateSuccess": "GitHub で担当者を更新しました",
-        "updateIssueFailed": "GitHub issue を更新できませんでした",
-        "refreshIssues": "Issue を更新",
-        "refreshPullRequests": "プルリクエストを更新"
+        "updateIssueFailed": "GitHub issue を更新できませんでした"
       }
     },
     "sessionViews": {

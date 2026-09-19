@@ -636,16 +636,11 @@
       "showSkills": "Pinned skills",
       "showCliUpdate": "CLI update",
       "showSpotlight": "Spotlight",
-      "title": "What would you like to do?",
-      "back": "Back to start page",
       "newSession": {
         "title": "New session"
       },
       "newWorkItem": {
         "title": "New work item"
-      },
-      "setupRepo": {
-        "title": "Set up repo"
       },
       "addApiKey": {
         "title": "Add API key"
@@ -656,59 +651,27 @@
       "installLatestUpdate": {
         "title": "Install latest update"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "Session",
         "workItem": "Work Item",
         "more": "More",
-        "work": "Work",
         "manage": "Manage",
-        "heatmap": "Trends",
         "runtime": "Runtime"
       },
       "quota": {
         "empty": "No quota data yet. Refresh usage from Key Vault.",
         "refresh": "Refresh",
-        "justNow": "Just now",
-        "minutesAgo": "{{count}}m ago",
-        "hoursAgo": "{{count}}h ago",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7d",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Weekly",
           "monthly": "Monthly"
         }
       },
-      "exploreRepos": {
-        "title": "Explore repos"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "Manage issues"
       }
     },
     "defaultTitle": "Chat",
@@ -755,15 +718,11 @@
       "modeSourceBundled": "Modes loaded from bundled fallback (probe Cursor not yet running).",
       "modeRefresh": "Refresh modes"
     },
-    "hideSimulator": "Hide simulator",
-    "showSimulator": "Show simulator",
-    "fullScreenChat": "Focus Chat Panel (Hide Workstation)",
     "maximizeChatPanel": "Maximize Chat Panel",
     "showWorkstation": "Show Workstation",
     "workstationUnavailableForPage": "Workstation is not available on this page",
     "hideWorkstation": "Hide Workstation",
     "restoreSplitView": "Show Workstation",
-    "shrinkToWorkstation": "Shrink Chat Panel (Show Workstation)",
     "tuiModeOn": "TUI mode (click to disable)",
     "tuiModeOff": "Enable TUI mode",
     "tabs": {
@@ -971,22 +930,9 @@
       "showMore_one": "Show {{count}} more",
       "showMore_other": "Show {{count}} more"
     },
-    "manageIssues": {
-      "title": "Manage issues",
-      "myWork": "My work",
-      "allRepositories": "All repositories",
-      "newIssue": "New issue",
-      "tabs": {
-        "recent": "Recent",
-        "assigned": "Assigned",
-        "byMe": "By me",
-        "mentioned": "Mentioned"
-      }
-    },
     "readOnly": "Read-only",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "Create GitHub issue",
         "issueTitlePlaceholder": "Issue title",
@@ -996,28 +942,16 @@
         "addToChat": "Add",
         "repositoryLabel": "Repository",
         "createIssueFailed": "Failed to create issue",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "All states",
         "closeAsCompleted": "Close as completed",
         "closeAsNotPlanned": "Close as not planned",
         "statusUpdateFailed": "Failed to update GitHub status",
         "assignedToMe": "Assigned to me",
         "createdByMe": "Created by me",
-        "pullRequests": {
-          "reviewRequested": "Review requested",
-          "authoredByMe": "Authored by me",
-          "otherTodos": "Other todos"
-        },
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
         "assigneeUpdateNotApplied": "GitHub did not apply the assignee change",
         "assigneeUpdateSuccess": "Assignees updated on GitHub",
-        "updateIssueFailed": "Failed to update GitHub issue",
-        "refreshIssues": "Refresh issues",
-        "refreshPullRequests": "Refresh pull requests"
+        "updateIssueFailed": "Failed to update GitHub issue"
       }
     },
     "sessionViews": {

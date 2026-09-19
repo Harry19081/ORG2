@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "Добавить новое",
       "collapseAll": "Свернуть все",
-      "markAllRead": "Отметить все как прочитанные",
-      "toggleGroup": "Переключить раздел"
+      "markAllRead": "Отметить все как прочитанные"
     },
     "search": {
       "folders": "Искать в рабочей области...",
@@ -143,13 +142,6 @@
       "viewRam": "Показать RAM",
       "tutorials": "Обучение",
       "openSettings": "Открыть настройки"
-    },
-    "empty": {
-      "noItems": "Нет элементов",
-      "noSessions": "Нет Session",
-      "noSessionsDesc": "Начните новую Session",
-      "noResultsFor": "Нет результатов для \"{{query}}\"",
-      "noSearchResults": "Ничего не найдено"
     },
     "presence": {
       "tooltip": "Установи статус — агенты адаптируются к тому, у клавиатуры ли ты.",

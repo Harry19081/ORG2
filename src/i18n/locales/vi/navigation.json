@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "Thêm mới",
       "collapseAll": "Thu gọn tất cả",
-      "markAllRead": "Đánh dấu tất cả đã đọc",
-      "toggleGroup": "Chuyển đổi phần"
+      "markAllRead": "Đánh dấu tất cả đã đọc"
     },
     "search": {
       "folders": "Tìm kiếm Workspace...",
@@ -143,13 +142,6 @@
       "viewRam": "Xem RAM",
       "tutorials": "Hướng dẫn",
       "openSettings": "Mở cài đặt"
-    },
-    "empty": {
-      "noItems": "Không có mục nào",
-      "noSessions": "Không có Session nào",
-      "noSessionsDesc": "Bắt đầu Session mới",
-      "noResultsFor": "Không có kết quả cho \"{{query}}\"",
-      "noSearchResults": "Không tìm thấy kết quả"
     },
     "presence": {
       "tooltip": "Đặt trạng thái — Agent sẽ điều chỉnh tùy bạn có ở bàn phím hay không.",

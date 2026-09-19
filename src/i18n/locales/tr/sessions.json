@@ -635,16 +635,11 @@
       "showSkills": "Sabitlenmiş beceriler",
       "showCliUpdate": "CLI güncellemeleri",
       "showSpotlight": "Spotlight",
-      "title": "Ne yapmak istersiniz?",
-      "back": "Başlangıç sayfasına dön",
       "newSession": {
         "title": "Yeni oturum"
       },
       "newWorkItem": {
         "title": "Yeni work item"
-      },
-      "setupRepo": {
-        "title": "Repo kur"
       },
       "addApiKey": {
         "title": "API key ekle"
@@ -655,59 +650,27 @@
       "installLatestUpdate": {
         "title": "En son güncellemeyi yükle"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "Oturum",
         "workItem": "İş öğesi",
         "more": "Daha fazla",
-        "work": "Çalışma",
         "manage": "Yönet",
-        "heatmap": "Trendler",
         "runtime": "Çalışma zamanı"
       },
       "quota": {
         "empty": "Henüz quota verisi yok. Key Vault'tan kullanımı yenileyin.",
         "refresh": "Yenile",
-        "justNow": "az önce",
-        "minutesAgo": "{{count}} dk önce",
-        "hoursAgo": "{{count}}s önce",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7g",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Haftalık",
           "monthly": "Aylık"
         }
       },
-      "exploreRepos": {
-        "title": "Repos keşfet"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "Issues yönet"
       }
     },
     "defaultTitle": "Sohbet",
@@ -754,15 +717,11 @@
       "modeSourceBundled": "Modlar yerleşik yedekten yüklendi (Cursor sondası henüz çalışmıyor).",
       "modeRefresh": "Modları yenile"
     },
-    "hideSimulator": "Simülatörü gizle",
-    "showSimulator": "Simülatörü göster",
-    "fullScreenChat": "Chat paneline odaklan (Workstation'i gizle)",
     "maximizeChatPanel": "Chat panelini büyüt",
     "showWorkstation": "Workstation'i göster",
     "workstationUnavailableForPage": "Workstation bu sayfada kullanılamaz",
     "hideWorkstation": "Workstation'i gizle",
     "restoreSplitView": "Workstation'i göster",
-    "shrinkToWorkstation": "Chat panelini küçült (Workstation'i göster)",
     "tuiModeOn": "TUI modu (devre dışı bırakmak için tıklayın)",
     "tuiModeOff": "TUI modunu etkinleştir",
     "tabs": {
@@ -966,22 +925,9 @@
       "showMore_one": "{{count}} tane daha göster",
       "showMore_other": "{{count}} tane daha göster"
     },
-    "manageIssues": {
-      "title": "Issues yönet",
-      "myWork": "Çalışmalarım",
-      "allRepositories": "Tüm repos",
-      "newIssue": "Yeni issue",
-      "tabs": {
-        "recent": "Son",
-        "assigned": "Atananlar",
-        "byMe": "Benim tarafımdan",
-        "mentioned": "Bahsedilenler"
-      }
-    },
     "readOnly": "Salt okunur",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "GitHub issue oluştur",
         "issueTitlePlaceholder": "Issue başlığı",
@@ -991,28 +937,16 @@
         "addToChat": "Add",
         "repositoryLabel": "Depo",
         "createIssueFailed": "Issue oluşturulamadı",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "Tüm durumlar",
         "closeAsCompleted": "Tamamlandı olarak kapat",
         "closeAsNotPlanned": "Planlanmadı olarak kapat",
         "statusUpdateFailed": "GitHub durumu güncellenemedi",
         "assignedToMe": "Bana atananlar",
         "createdByMe": "Benim oluşturduklarım",
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
-        "pullRequests": {
-          "reviewRequested": "İnceleme istendi",
-          "authoredByMe": "Benim oluşturduklarım",
-          "otherTodos": "Diğer yapılacaklar"
-        },
         "assigneeUpdateNotApplied": "GitHub atanan kişi değişikliğini uygulamadı",
         "assigneeUpdateSuccess": "Atananlar GitHub'da güncellendi",
-        "updateIssueFailed": "GitHub issue güncellenemedi",
-        "refreshIssues": "Issue listesini yenile",
-        "refreshPullRequests": "Pull request listesini yenile"
+        "updateIssueFailed": "GitHub issue güncellenemedi"
       }
     },
     "sessionViews": {
