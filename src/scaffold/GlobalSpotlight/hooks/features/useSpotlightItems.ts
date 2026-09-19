@@ -49,7 +49,6 @@ import { workStationEditorSecondaryCollapsedAtom } from "@src/store/ui/workStati
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { workStationLayoutModeAtom } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
-import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import {
   workspaceActiveAtom,
   workspaceFoldersAtom,
@@ -146,13 +145,9 @@ export function useSpotlightItems(
   const workspaceFolders = useAtomValue(workspaceFoldersAtom);
   const workspaceActive = useAtomValue(workspaceActiveAtom);
   const isSidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
-  const fallbackWorkstationSidebarCollapsed = useAtomValue(
+  const isWorkstationSidebarCollapsed = useAtomValue(
     workStationPrimarySidebarCollapsedAtom
   );
-  const activeStatusBarCallbacks = useAtomValue(activeStatusBarCallbacksAtom);
-  const isWorkstationSidebarCollapsed =
-    activeStatusBarCallbacks.primaryPanelCollapsed ??
-    fallbackWorkstationSidebarCollapsed;
   const isBottomPanelCollapsed = useAtomValue(
     workStationEditorSecondaryCollapsedAtom
   );

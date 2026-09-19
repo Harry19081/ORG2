@@ -7,6 +7,7 @@ import {
   activeStatusBarCallbacksAtom,
   editorHighlightActiveLineAtom,
   editorLineNumbersAtom,
+  editorSplitDiffCenteredLineNumbersAtom,
   editorWordWrapAtom,
 } from "@src/store/ui";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
@@ -25,6 +26,9 @@ export function SourceControlDiffSettingsMenu({
   const [menuVisible, setMenuVisible] = useState(false);
   const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
   const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
+  const [splitCenteredLineNumbers, setSplitCenteredLineNumbers] = useAtom(
+    editorSplitDiffCenteredLineNumbersAtom
+  );
   const [highlightActiveLine, setHighlightActiveLine] = useAtom(
     editorHighlightActiveLineAtom
   );
@@ -42,14 +46,17 @@ export function SourceControlDiffSettingsMenu({
         showCopyRelativePathAction={false}
         showRevealInFileManagerAction={false}
         showLineNumbersToggle
-        showWordWrapToggle={viewMode !== "split"}
+        showSplitCenteredLineNumbersToggle={viewMode === "split"}
+        showWordWrapToggle
         showMinimapToggle={false}
         showHighlightActiveLineToggle
         showGitBlameToggle={false}
         showMoreSettingsAction={!!onOpenSettings}
         showSidebarSettings
         lineNumbersEnabled={lineNumbers !== "off"}
+        splitCenteredLineNumbersEnabled={splitCenteredLineNumbers}
         wordWrapEnabled={wordWrap}
+        wordWrapLocked={viewMode === "split"}
         minimapEnabled={false}
         highlightActiveLineEnabled={highlightActiveLine}
         gitBlameEnabled={false}
@@ -75,6 +82,7 @@ export function SourceControlDiffSettingsMenu({
         onLineNumbersChange={(enabled) =>
           setLineNumbers(enabled ? "on" : "off")
         }
+        onSplitCenteredLineNumbersChange={setSplitCenteredLineNumbers}
         onWordWrapChange={setWordWrap}
         onMinimapChange={noop}
         onHighlightActiveLineChange={setHighlightActiveLine}

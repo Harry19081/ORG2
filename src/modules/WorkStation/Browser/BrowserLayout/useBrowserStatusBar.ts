@@ -107,8 +107,6 @@ export function useBrowserStatusBar({
 
     setStatusBarCallbacks((prev) => ({
       ...prev,
-      onTogglePrimaryPanel: undefined,
-      primaryPanelCollapsed: undefined,
       onToggleDevTools: handleToggleDevTools,
       onSendSelectedElementToChat: handleSendSelectedElementToChat,
       onClearSelectedElement: () => {

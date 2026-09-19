@@ -8,8 +8,8 @@
  *   live on the right rail OR at the bottom row. Mounted once; CSS grid
  *   relocates it between the two slots without remounting the content.
  *
- * Apps that don't need a secondary panel (Chat, DatabaseManager,
- * ProjectManager, SessionReplay variants) simply omit
+ * Apps that don't need a secondary panel (Chat, ProjectManager,
+ * SessionReplay variants) simply omit
  * `secondaryPanelConfig`; the shell falls back to a flex layout with
  * just the primary sidebar + main content.
  */

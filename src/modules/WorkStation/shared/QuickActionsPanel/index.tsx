@@ -2,7 +2,7 @@
  * QuickActionsPanel Component
  *
  * A centered overlay panel displaying keyboard shortcuts and quick actions.
- * Shared UI component used across all work station (CodeEditor, Browser, DatabaseManager).
+ * Shared UI component used across all work station (CodeEditor, Browser).
  *
  * Features:
  * - Centered modal with backdrop

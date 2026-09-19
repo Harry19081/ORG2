@@ -22,8 +22,8 @@
     "title": "Barra lateral",
     "showSidebar": "Mostrar barra lateral",
     "location": "Posição",
-    "showIndentLines": "Mostrar linhas de recuo",
-    "colorSourceControlFiles": "Usar cores de diferenças nos arquivos"
+    "showIndentLines": "Linhas de recuo",
+    "colorSourceControlFiles": "Cores de diferenças nos arquivos"
   },
   "teamInbox": {
     "title": "Caixa de entrada da equipe",
@@ -1932,7 +1932,7 @@
     "chatRight": "Chat à direita",
     "sidebarPosition": "Barra lateral do Workstation",
     "modelPickerStyle": "Seletor",
-    "paginateChatHistory": "Paginar histórico do chat",
+    "paginateChatHistory": "Paginação do histórico do chat",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Esquerda",

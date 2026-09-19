@@ -9,6 +9,8 @@ export interface ToolbarTooltipProps {
   label: ReactNode;
   shortcut?: string;
   shortcutId?: string;
+  /** The action deliberately has no shortcut: show the label alone. */
+  noShortcut?: boolean;
   position?: TooltipProps["position"];
   disabled?: boolean;
   children: ReactNode;
@@ -19,6 +21,7 @@ export const ToolbarTooltip: React.FC<ToolbarTooltipProps> = memo(
     label,
     shortcut,
     shortcutId,
+    noShortcut = false,
     position = "bottom",
     disabled = false,
     children,
@@ -32,6 +35,7 @@ export const ToolbarTooltip: React.FC<ToolbarTooltipProps> = memo(
           <KeyboardShortcutTooltipContent
             label={label}
             shortcut={resolvedShortcut}
+            noShortcut={noShortcut}
           />
         }
         position={position}
