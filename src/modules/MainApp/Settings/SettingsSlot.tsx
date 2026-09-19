@@ -86,8 +86,6 @@ interface SettingsSlotProps {
   maximized: boolean;
   /** Which side of the workbench the slot sits on. */
   position: ChatPanelPosition;
-  /** True when hosted as a flex sibling (full/compact); false when inset. */
-  embedded: boolean;
   /** Unclipped boundary host for the centered resize indicator. */
   resizeIndicatorHost?: HTMLElement | null;
 }
@@ -244,7 +242,6 @@ function isAgentOrgsRoute(pathname: string): boolean {
 const SettingsSlot: React.FC<SettingsSlotProps> = ({
   maximized,
   position,
-  embedded,
   resizeIndicatorHost,
 }) => {
   const { t } = useTranslation("settings");
@@ -269,7 +266,6 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
   });
   const { isDragging, panelRef, handleMouseDown } = useChatPanelResize({
     useExternalWidth: maximized,
-    embedded,
     position,
   });
 
@@ -338,8 +334,7 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
                 : "end"
           }
           onMouseDown={handleMouseDown}
-          variant={embedded ? "border" : "transparent"}
-          noAccent={!embedded}
+          variant="border"
         />
       )}
       <div
@@ -347,10 +342,6 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
         className="relative flex h-full max-w-full min-w-0 flex-1 flex-col overflow-hidden"
         style={
           {
-            // Match ChatPanel: inset/comfort mode rounds the slot; full/
-            // compact mode hosts the slot edge-to-edge and the wrapper
-            // owns the radius.
-            borderRadius: embedded ? 0 : "var(--radius-page)",
             contain: isDragging ? "strict" : undefined,
             willChange: isDragging ? "width" : undefined,
             WebkitAppRegion: "no-drag",

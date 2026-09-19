@@ -254,7 +254,6 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
           maximized={chatPanelMaximized}
           position={chatPosition}
           resizeIndicatorHost={resizeIndicatorHostElement}
-          embedded
         />
       </React.Suspense>
     ) : (
