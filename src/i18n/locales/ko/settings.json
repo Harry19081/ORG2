@@ -535,6 +535,8 @@
     "indentGuides": "들여쓰기 가이드",
     "treeIndentGuides": "트리 들여쓰기 가이드",
     "highlightActiveLine": "현재 줄 강조",
+    "splitDiffCenteredLineNumbers": "분할 diff 줄 번호 가운데 정렬",
+    "splitDiffCenteredLineNumbersDesc": "두 줄 번호 열을 각 창의 왼쪽 가장자리 대신 GitHub처럼 두 창 사이에 표시합니다.",
     "shellsOpenWith": "Shell 열기 방식",
     "shellsOpenWithDesc": "새 터미널의 초기 작업 디렉토리",
     "repoPath": "저장소 경로",

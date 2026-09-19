@@ -1,7 +1,7 @@
 /**
  * WorkStation Shared Components
  *
- * Components shared across CodeEditor, DatabaseManager, and Browser.
+ * Components shared across CodeEditor and Browser.
  */
 
 // Layout shell

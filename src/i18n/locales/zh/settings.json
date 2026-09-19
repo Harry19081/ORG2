@@ -616,6 +616,8 @@
     "indentGuides": "缩进参考线",
     "treeIndentGuides": "树视图缩进参考线",
     "highlightActiveLine": "当前行高亮",
+    "splitDiffCenteredLineNumbers": "并排差异视图行号居中",
+    "splitDiffCenteredLineNumbersDesc": "将两列行号都显示在左右两栏之间（类似 GitHub），而不是各自显示在每栏左侧。",
     "shellsOpenWith": "Shell 打开方式",
     "shellsOpenWithDesc": "新终端的初始工作目录",
     "repoPath": "仓库路径",

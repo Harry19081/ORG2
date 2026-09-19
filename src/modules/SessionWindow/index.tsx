@@ -28,6 +28,7 @@ import { useParams } from "react-router-dom";
 
 import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
 import { hasMacWindowChrome } from "@src/config/windowChromeRadius";
+import { WINDOW_CHROME_TOKENS } from "@src/config/windowChromeTokens";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { DataProvider } from "@src/contexts/workspace/DataContext";
 import { useReloadSession } from "@src/engines/ChatPanel/ChatHistory/hooks/useReloadSession";
@@ -69,11 +70,6 @@ import { isHumanSession } from "@src/util/session/sessionDispatch";
 export function getSessionWindowPath(sessionId: string): string {
   return `/orgii/app/session/${encodeURIComponent(sessionId)}`;
 }
-
-/** Width reserved for the macOS overlay traffic lights (x=20 + 3 buttons),
- *  mirroring MACOS_TRAFFIC_LIGHTS_RESERVED_WIDTH in
- *  useCollapsedSidebarChromeOffset. */
-const MACOS_TRAFFIC_LIGHTS_INSET_PX = 84;
 
 /** The EventStore→Jotai and queue bridges this window needs from
  *  `GlobalSessionSync`, plus the native session-status monitor with
@@ -190,7 +186,7 @@ const SessionWindowContent: React.FC<{ sessionId: string }> = memo(
           style={{
             paddingLeft:
               hasMacWindowChrome() && !isFullscreen
-                ? MACOS_TRAFFIC_LIGHTS_INSET_PX
+                ? WINDOW_CHROME_TOKENS.macTrafficLightsLeadingInset
                 : 12,
             ...(windowsHost
               ? CHAT_PANEL_HEADER_NO_DRAG_STYLE
