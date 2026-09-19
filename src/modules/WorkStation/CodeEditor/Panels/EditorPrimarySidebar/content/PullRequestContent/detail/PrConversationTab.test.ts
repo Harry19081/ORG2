@@ -298,4 +298,68 @@ describe("PrConversationTab", () => {
         ?.getAttribute("data-value")
     ).toBe("Do not lose this review");
   });
+
+  it("collapses close-together label events from the PR's GitHub timeline", () => {
+    const markup = renderToStaticMarkup(
+      createElement(PrConversationTab, {
+        detail: null,
+        identity: {
+          number: 42,
+          title: "Show label activity",
+          url: "https://github.com/org/repo/pull/42",
+          status: "open",
+          headBranch: "feature/labels",
+        },
+        conversation: [],
+        reviews: [],
+        reviewComments: [],
+        timelineEvents: [
+          {
+            id: 1,
+            event: "labeled",
+            created_at: "2026-09-13T02:34:05Z",
+            actor: { login: "ShiboSheng", avatar_url: "" },
+            body: null,
+            html_url: null,
+            assignee: null,
+            label: { name: "bug", color: "d73a4a" },
+            milestone: null,
+            rename: null,
+            source: null,
+            commit_id: null,
+            lock_reason: null,
+          },
+          {
+            id: 2,
+            event: "labeled",
+            created_at: "2026-09-13T02:34:22Z",
+            actor: { login: "ShiboSheng", avatar_url: "" },
+            body: null,
+            html_url: null,
+            assignee: null,
+            label: { name: "UX", color: "8b2fc9" },
+            milestone: null,
+            rename: null,
+            source: null,
+            commit_id: null,
+            lock_reason: null,
+          },
+        ],
+        loading: false,
+        submittingComment: false,
+        submittingReview: false,
+        onAddComment: vi.fn().mockResolvedValue(undefined),
+        onSubmitReview: vi.fn().mockResolvedValue(undefined),
+      })
+    );
+    const container = document.createElement("div");
+    container.innerHTML = markup;
+
+    expect(container.querySelectorAll('[data-icon="tag-icon"]')).toHaveLength(
+      1
+    );
+    expect(container.textContent).toContain("bug");
+    expect(container.textContent).toContain("UX");
+    expect(container.textContent?.match(/ShiboSheng/g)?.length).toBe(1);
+  });
 });

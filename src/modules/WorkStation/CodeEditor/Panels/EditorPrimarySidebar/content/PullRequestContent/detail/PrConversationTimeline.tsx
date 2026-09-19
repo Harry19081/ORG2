@@ -21,6 +21,10 @@ import {
 } from "@src/icons";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 
+import {
+  IssueTimelineEventRow,
+  IssueTimelineLabelGroupRow,
+} from "../../IssuesContent/IssueTimelineEvent";
 import type { TimelineEntry } from "./types";
 
 interface PrAuthor {
@@ -236,6 +240,35 @@ export function PrConversationTimeline({
                     fadeFrom="from-chat-pane"
                   />
                 </TimelineCard>
+              </ConnectedTimelineItem>
+            );
+          }
+          if (entry.kind === "labelEvent") {
+            const { row } = entry;
+            if (row.kind === "labelGroup") {
+              const latest = row.items[row.items.length - 1];
+              return (
+                <ConnectedTimelineItem
+                  key={`lg-${row.event}-${latest.id ?? latest.created_at ?? index}`}
+                  isLast={isLast}
+                  trailLabel={`${row.actor?.login ?? "GitHub"} · ${row.event}`}
+                >
+                  <IssueTimelineLabelGroupRow
+                    event={row.event}
+                    actor={row.actor}
+                    items={row.items}
+                  />
+                </ConnectedTimelineItem>
+              );
+            }
+            const { item } = row;
+            return (
+              <ConnectedTimelineItem
+                key={`le-${item.id ?? item.created_at ?? index}`}
+                isLast={isLast}
+                trailLabel={`${item.actor?.login ?? "GitHub"} · ${item.event}`}
+              >
+                <IssueTimelineEventRow item={item} />
               </ConnectedTimelineItem>
             );
           }

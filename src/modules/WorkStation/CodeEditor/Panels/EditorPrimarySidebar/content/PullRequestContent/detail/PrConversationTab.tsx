@@ -14,6 +14,7 @@ import React from "react";
 
 import type {
   GitHubIssueComment,
+  GitHubIssueTimelineItem,
   GitHubPrReview,
   GitHubReviewComment,
   PrReviewEvent,
@@ -37,6 +38,7 @@ interface PrConversationTabProps {
   conversation: GitHubIssueComment[];
   reviews: GitHubPrReview[];
   reviewComments: GitHubReviewComment[];
+  timelineEvents?: GitHubIssueTimelineItem[];
   loading: boolean;
   submittingComment: boolean;
   submittingReview: boolean;
@@ -56,6 +58,7 @@ export const PrConversationTab: React.FC<PrConversationTabProps> = ({
   conversation,
   reviews,
   reviewComments,
+  timelineEvents,
   loading,
   submittingComment,
   submittingReview,
@@ -97,7 +100,8 @@ export const PrConversationTab: React.FC<PrConversationTabProps> = ({
   const { commentsByReview, timeline } = usePrConversationTimeline(
     conversation,
     reviews,
-    reviewComments
+    reviewComments,
+    timelineEvents
   );
 
   return (
