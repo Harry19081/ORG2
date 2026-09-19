@@ -7,10 +7,13 @@
  */
 import { atom } from "jotai";
 
+import { createLogger } from "@src/hooks/logger";
 import {
   settingsAtom,
   updateSettingAtom,
 } from "@src/store/settings/settingsAtom";
+
+const log = createLogger("EditorSettings");
 
 // ============================================
 // Editor Appearance Settings
@@ -261,6 +264,8 @@ export const editorSplitDiffCenteredLineNumbersAtom = atom(
     set(updateSettingAtom, {
       key: "editor.splitDiffCenteredLineNumbers",
       value,
+    }).catch((error: unknown) => {
+      log.warn("Failed to persist editor.splitDiffCenteredLineNumbers:", error);
     });
   }
 );
