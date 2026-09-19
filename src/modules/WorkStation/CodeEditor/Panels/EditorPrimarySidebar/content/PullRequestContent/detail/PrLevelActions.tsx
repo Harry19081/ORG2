@@ -96,8 +96,13 @@ const ACTION_TOOLTIP_KEYS: Record<string, string> = {
 
 function localizedActionLabel(t: TFunction, label: string): string {
   if (GIT_MERGE_METHOD_LABELS.has(label)) return label;
+  // These two verdicts are the merge-status headlines, so they share that
+  // wording instead of carrying a second translation of the same phrase.
   if (label === "Ready to merge") {
     return t("git.pr.mergeStatus.ableToMerge", label);
+  }
+  if (label === "Merge conflicts") {
+    return t("git.pr.mergeStatus.conflicts", label);
   }
   const key = ACTION_LABEL_KEYS[label];
   return key ? t(`git.pr.actions.${key}`, label) : label;
