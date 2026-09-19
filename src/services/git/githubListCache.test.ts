@@ -157,6 +157,7 @@ describe("global GitHub list cache", () => {
       commits: [],
       files: [],
       checks: null,
+      timeline: [],
     });
     vi.advanceTimersByTime(GITHUB_LIST_CACHE_TTL_MS - 60_000);
 
@@ -229,6 +230,7 @@ describe("global GitHub list cache", () => {
       commits: [],
       files: [],
       checks: null,
+      timeline: [],
     };
     const keys = Array.from(
       { length: 5 },

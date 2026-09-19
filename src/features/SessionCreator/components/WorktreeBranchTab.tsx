@@ -30,6 +30,7 @@ import type {
 } from "./worktreeBranchSource";
 
 const BRANCH_GROUP_LABEL_FALLBACK = {
+  defaultBranches: "Default Branches",
   recent: "Recent",
   worktrees: "Worktrees",
   otherBranches: "Other Branches",
@@ -111,7 +112,6 @@ export function WorktreeBranchTab({
           })}
         />
         <Button
-          variant="secondary"
           size="small"
           icon={
             <HugeiconsIcon

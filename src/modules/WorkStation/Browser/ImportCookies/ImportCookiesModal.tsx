@@ -32,6 +32,7 @@ import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import { InlineBanner } from "@src/components/InlineBanner";
 import SearchInput from "@src/components/SearchInput";
+import PanelFooter from "@src/components/layout/blocks/PanelFooter";
 import {
   ArrowRight01Icon,
   CheckmarkCircle01Icon,
@@ -44,7 +45,6 @@ import {
   Mail01Icon,
   Shield01Icon,
 } from "@src/icons";
-import PanelFooter from "@src/modules/shared/layouts/blocks/PanelFooter";
 import Modal from "@src/scaffold/ModalSystem";
 
 import {
@@ -120,8 +120,6 @@ const SourceRow = memo<{
   return (
     <Button
       layout="custom"
-      appearance="custom"
-      htmlType="button"
       onClick={() => onSelect(source.id)}
       className="flex w-full items-center gap-3 rounded-lg border border-border-1 bg-fill-1 px-3 py-2.5 text-left transition-colors hover:bg-fill-2"
     >
@@ -254,11 +252,7 @@ function SourcesStage({
             >
               {t("browserCookieImport.safari.openSettings")}
             </Button>
-            <Button
-              variant="secondary"
-              size="small"
-              onClick={controller.refreshSources}
-            >
+            <Button size="small" onClick={controller.refreshSources}>
               {t("browserCookieImport.safari.checkAgain")}
             </Button>
           </div>

@@ -8,16 +8,36 @@
  */
 import { PILL_DATA_ATTR } from "./utils";
 
-/** Place the caret at the end of the contenteditable host. */
-export function placeCaretAtEnd(host: HTMLElement): void {
-  host.focus();
-  const range = document.createRange();
-  range.selectNodeContents(host);
-  range.collapse(false);
+/** Move a caret atomically, without temporarily leaving the editor unselected. */
+function applyCaretRange(range: Range): void {
   const selection = window.getSelection();
   if (!selection) return;
-  selection.removeAllRanges();
-  selection.addRange(range);
+  // Always collapse, even when the selection already reports this node and
+  // offset. After a "\n" is inserted, WebKit reports the caret there while
+  // its visual position still has upstream affinity — the end of the previous
+  // line — so skipping the collapse left text typed after Enter landing on the
+  // line above. Re-collapsing to the same point resets it and is otherwise a
+  // no-op.
+  // removeAllRanges/addRange introduces an intermediate empty selection.
+  // collapse replaces the caret in one operation and preserves focus ownership.
+  selection.collapse(range.startContainer, range.startOffset);
+}
+
+/** Place the caret at the end of the contenteditable host. */
+export function placeCaretAtEnd(host: HTMLElement): void {
+  if (document.activeElement !== host) host.focus();
+  const range = document.createRange();
+  // Keep the caret in editable text after an atomic first pill. A host-level
+  // boundary can be normalized to the pill's leading edge by WebKit.
+  const lastChild = host.lastChild;
+  if (lastChild?.nodeType === Node.TEXT_NODE) {
+    range.setStart(lastChild, (lastChild.textContent ?? "").length);
+    range.collapse(true);
+  } else {
+    range.selectNodeContents(host);
+    range.collapse(false);
+  }
+  applyCaretRange(range);
 }
 
 /** Place the caret immediately after the given DOM node. */
@@ -35,10 +55,7 @@ export function placeCaretAfter(node: Node): void {
     }
   }
   range.collapse(true);
-  const selection = window.getSelection();
-  if (!selection) return;
-  selection.removeAllRanges();
-  selection.addRange(range);
+  applyCaretRange(range);
 }
 
 /**
@@ -174,7 +191,9 @@ export function placeCaretAtTextOffset(
 
 export function placeCaretAfterPill(pill: HTMLElement): void {
   const host = pill.closest<HTMLElement>('[contenteditable="true"]');
-  host?.focus({ preventScroll: true });
+  if (host && document.activeElement !== host) {
+    host.focus({ preventScroll: true });
+  }
 
   const range = document.createRange();
   const nextSibling = pill.nextSibling;
@@ -185,10 +204,7 @@ export function placeCaretAfterPill(pill: HTMLElement): void {
     range.setStartAfter(pill);
   }
   range.collapse(true);
-  const selection = window.getSelection();
-  if (!selection) return;
-  selection.removeAllRanges();
-  selection.addRange(range);
+  applyCaretRange(range);
 }
 
 export function placeCaretAtPoint(

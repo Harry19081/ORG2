@@ -37,10 +37,11 @@ import React, {
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
-import { useActionSystemOptional } from "@src/ActionSystem";
 import { TAB_PILL_DRAG_OVERLAY_CLASS } from "@src/components/TabPill/TabPillSurface";
 import { TAB_PAIR_SEPARATOR_SLOT_CLASS } from "@src/components/TabPill/config";
 import { NoDragRegion } from "@src/components/WindowChrome";
+import { useSessionTabDropTarget } from "@src/components/dnd/useSessionTabDropTarget";
+import { useTabInsertionIndicator } from "@src/components/dnd/useTabInsertionIndicator";
 import { TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX } from "@src/config/workstation/tokens";
 import SessionRawTranscriptDialog from "@src/engines/ChatPanel/components/SessionRawTranscriptDialog";
 import {
@@ -49,15 +50,9 @@ import {
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { requestTeamInboxSessionHandoffAtom } from "@src/modules/MainApp/TeamInbox/store";
-import { CHROME_INSET_TRANSITION_CLASSES } from "@src/modules/shared/layouts/viewContainerTokens";
+import { useActionSystemOptional } from "@src/scaffold/ActionSystem";
+import { usePaneLayoutInsetTransition } from "@src/scaffold/AppLayout/usePaneLayoutInsetTransition";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
-import {
-  SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS,
-  type SessionReferenceOpen,
-  type SessionTabTransfer,
-} from "@src/shared/dnd/sessionTabDrag";
-import { useSessionTabDropTarget } from "@src/shared/dnd/useSessionTabDropTarget";
-import { useTabInsertionIndicator } from "@src/shared/dnd/useTabInsertionIndicator";
 import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpen/integrations";
 import {
   canMoveWorkstationPrTabToChatPanel,
@@ -70,17 +65,18 @@ import {
 } from "@src/store/session/sessionTabPlacementAtom";
 import { tabScrollRevealAtom } from "@src/store/workstation/tabs";
 import type { WorkStationTab } from "@src/store/workstation/tabs";
+import {
+  SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS,
+  type SessionReferenceOpen,
+  type SessionTabTransfer,
+} from "@src/util/dnd/sessionTabDrag";
 
 import TabContextMenu from "./TabContextMenu";
+import { blurHeaderInputOnPointerDown } from "./blurHeaderInputOnPointerDown";
 import { SortableTab, TabBarControls } from "./components";
 import { WorkstationTabContent } from "./components/WorkstationTabContent";
-import { TAB_BAR_HEIGHT, TAB_STRIP_SECTION_RULE_CLASS } from "./config";
-import {
-  useAutoScrollToActive,
-  useTabDrag,
-  useTabGitInfoMap,
-  useTabLabelCollapse,
-} from "./hooks";
+import { TAB_BAR_HEIGHT } from "./config";
+import { useAutoScrollToActive, useTabDrag, useTabGitInfoMap } from "./hooks";
 
 // ============================================
 // Types
@@ -99,8 +95,6 @@ interface TabBarProps {
   onTabClose: (tabId: string) => void;
   /** Callback when tabs are reordered via drag and drop */
   onTabReorder?: (startIndex: number, endIndex: number) => void;
-  /** Callback when more-options button is clicked */
-  onMoreOptions?: () => void;
   /** Opens a new tab (e.g. Browser); shows + in the right control section */
   onNewTab?: () => void;
   /** Optional keyboard shortcut displayed for the new-tab control. */
@@ -113,20 +107,10 @@ interface TabBarProps {
   repoPath?: string;
   /** Optional leading element rendered before the scroll row (fixed; not scrolled with tabs). */
   leadingSlot?: React.ReactNode;
-  /**
-   * Optional prefix rendered inside the tab scroll row before sortable tabs (same scroll
-   * container). Use for surfaces that should visually read as one strip with tabs.
-   */
-  tabRowPrefix?: React.ReactNode;
   /** Optional trailing element rendered after control buttons (e.g., panel toggles) */
   trailingSlot?: React.ReactNode;
   /** Optional tab-row surface override; defaults to bg-workstation-bg. */
   surfaceClassName?: string;
-  /**
-   * When true, if the tab strip overflows horizontally, inactive tabs show icon only;
-   * the selected tab keeps its text label. Widen the strip to show all labels again.
-   */
-  collapseInactiveTabLabelsOnOverflow?: boolean;
   dataTourTarget?: string;
 }
 
@@ -135,7 +119,6 @@ type SortableTabListProps = {
   tabIds: string[];
   activeTabId: string | null;
   tabGitInfoMap: Map<string, GitFileInfo>;
-  hideInactiveTabLabels: boolean;
   onTabClick: (tabId: string) => void;
   onCloseClick: (event: React.MouseEvent, tabId: string) => void;
   onContextMenu: (event: React.MouseEvent, tab: WorkStationTab) => void;
@@ -147,7 +130,6 @@ const SortableTabList: React.FC<SortableTabListProps> = memo(
     tabIds,
     activeTabId,
     tabGitInfoMap,
-    hideInactiveTabLabels,
     onTabClick,
     onCloseClick,
     onContextMenu,
@@ -174,7 +156,6 @@ const SortableTabList: React.FC<SortableTabListProps> = memo(
                   onCloseClick={onCloseClick}
                   onContextMenu={onContextMenu}
                   gitInfo={tabGitInfoMap.get(tab.id)}
-                  hideLabel={hideInactiveTabLabels && tab.id !== activeTabId}
                 />
               </NoDragRegion>
               {next && (
@@ -207,17 +188,14 @@ export const TabBar: React.FC<TabBarProps> = memo(
     onTabClick,
     onTabClose,
     onTabReorder,
-    onMoreOptions,
     onNewTab,
     onNewTabShortcutId,
     onCloseOtherTabs,
     onCloseSavedTabs,
     repoPath = "",
     leadingSlot,
-    tabRowPrefix,
     trailingSlot,
     surfaceClassName = "bg-workstation-bg",
-    collapseInactiveTabLabelsOnOverflow = false,
     dataTourTarget,
   }) => {
     const { t } = useTranslation();
@@ -228,6 +206,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
     // macOS pins the right-edge collapse toggles in window space; make room
     // whenever the workstation is the pane touching that edge.
     const rightEdge = useWorkbenchRightEdgeReservation();
+    const insetTransitionClassName = usePaneLayoutInsetTransition();
 
     const scrollReveal = useAtomValue(tabScrollRevealAtom);
     const gitStatusMap = useAtomValue(gitFileStatusMapAtom);
@@ -301,13 +280,6 @@ export const TabBar: React.FC<TabBarProps> = memo(
       string | null
     >(null);
 
-    const hideInactiveTabLabels = useTabLabelCollapse({
-      enabled: collapseInactiveTabLabelsOnOverflow,
-      tabsDependency: tabs,
-      activeTabDependency: activeTabId,
-      containerRef: tabsContainerRef,
-    });
-
     const handleTabClick = useCallback(
       (tabId: string) => onTabClick(tabId),
       [onTabClick]
@@ -367,14 +339,13 @@ export const TabBar: React.FC<TabBarProps> = memo(
     const noopTabAction = useCallback((_tabId: string) => {}, []);
     const noopAction = useCallback(() => {}, []);
 
-    const hasTabStrip = (tabs && tabs.length > 0) || Boolean(tabRowPrefix);
     const hasTabs = tabs && tabs.length > 0;
     const tabIds = useMemo(
       () => (hasTabs ? tabs.map((tab) => tab.id) : []),
       [hasTabs, tabs]
     );
 
-    if (!hasTabStrip && !leadingSlot && !trailingSlot) {
+    if (!hasTabs && !leadingSlot && !trailingSlot) {
       return null;
     }
 
@@ -382,10 +353,11 @@ export const TabBar: React.FC<TabBarProps> = memo(
       <div
         ref={containerRef}
         data-pane-id={paneId}
+        onPointerDownCapture={blurHeaderInputOnPointerDown}
         data-session-tab-drop-target="workstation"
         data-tour-target={dataTourTarget}
         data-is-dragging={draggingTabId ? "true" : undefined}
-        className={`work-station-tab-bar relative flex shrink-0 overflow-hidden ${CHROME_INSET_TRANSITION_CLASSES} ${surfaceClassName}`}
+        className={`work-station-tab-bar relative box-border shrink-0 overflow-clip pt-2 ${insetTransitionClassName} ${surfaceClassName}`}
         data-tauri-drag-region
         style={
           {
@@ -404,104 +376,94 @@ export const TabBar: React.FC<TabBarProps> = memo(
           } as React.CSSProperties
         }
       >
-        <div className="mt-2 flex h-9 min-w-0 flex-1 items-center">
-          {shouldOffsetLeftChrome ? <CollapsedSidebarButton /> : null}
-          {leadingSlot ? (
-            <div
-              className="flex h-full shrink-0 items-stretch"
-              data-tauri-drag-region
-              style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-            >
-              {leadingSlot}
-            </div>
-          ) : null}
-
-          <div
-            ref={tabBandRef}
-            className="relative flex h-8 min-w-0 flex-1 items-center"
-          >
-            {isSessionDragOver ? (
+        {/* Keep the top inset as parent padding inside the fixed 44px height:
+            a child margin would collapse outside this non-flex container.
+            Only the tab strip consumes the flexible column. */}
+        <div className="grid h-9 min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center">
+          <div className="flex h-full min-w-0 items-center">
+            {shouldOffsetLeftChrome ? <CollapsedSidebarButton /> : null}
+            {leadingSlot ? (
               <div
-                // Fill the tab band and empty space, excluding header buttons.
-                className={`${SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS} inset-0`}
+                className="flex h-full shrink-0 items-stretch"
+                data-tauri-drag-region
+                style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
+              >
+                {leadingSlot}
+              </div>
+            ) : null}
+
+            <div
+              ref={tabBandRef}
+              className="relative flex h-8 min-w-0 flex-1 items-center"
+            >
+              {isSessionDragOver ? (
+                <div
+                  // Fill the tab band and empty space, excluding header buttons.
+                  className={`${SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS} inset-0`}
+                  aria-hidden
+                />
+              ) : null}
+              <div
+                ref={tabsContainerRef}
+                className="relative scrollbar-hide flex h-full max-w-full min-w-0 shrink items-center overflow-x-auto overflow-y-hidden"
+                style={{ scrollBehavior: "smooth" } as React.CSSProperties}
+              >
+                {hasTabs ? (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragStart={handleDragStart}
+                    onDragMove={handleDragMove}
+                    onDragEnd={handleDragEnd}
+                    onDragCancel={handleDragCancel}
+                  >
+                    <SortableTabList
+                      tabs={tabs}
+                      tabIds={tabIds}
+                      activeTabId={activeTabId}
+                      tabGitInfoMap={tabGitInfoMap}
+                      onTabClick={handleTabClick}
+                      onCloseClick={handleCloseClick}
+                      onContextMenu={handleContextMenu}
+                    />
+
+                    {createPortal(
+                      <DragOverlay dropAnimation={null}>
+                        {draggingTab && (
+                          <div
+                            className={`${TAB_PILL_DRAG_OVERLAY_CLASS} max-w-[240px]`}
+                            aria-hidden
+                            style={{ zIndex: 9999 }}
+                          >
+                            <WorkstationTabContent
+                              tab={draggingTab}
+                              isActive={draggingTab.id === activeTabId}
+                              gitInfo={tabGitInfoMap.get(draggingTab.id)}
+                            />
+                          </div>
+                        )}
+                      </DragOverlay>,
+                      document.body
+                    )}
+                  </DndContext>
+                ) : null}
+              </div>
+
+              <div
+                className="h-8 min-w-px flex-1"
+                data-tauri-drag-region
+                style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
                 aria-hidden
               />
-            ) : null}
-            <div
-              ref={tabsContainerRef}
-              className="relative scrollbar-hide flex h-full max-w-full min-w-0 shrink items-center overflow-x-auto overflow-y-hidden"
-              style={{ scrollBehavior: "smooth" } as React.CSSProperties}
-            >
-              {tabRowPrefix ? (
-                <NoDragRegion className="flex h-full shrink-0 items-center gap-1">
-                  {tabRowPrefix}
-                </NoDragRegion>
-              ) : null}
-              {tabRowPrefix && hasTabs ? (
-                <span className={TAB_STRIP_SECTION_RULE_CLASS} aria-hidden />
-              ) : null}
-              {hasTabs ? (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragStart={handleDragStart}
-                  onDragMove={handleDragMove}
-                  onDragEnd={handleDragEnd}
-                  onDragCancel={handleDragCancel}
-                >
-                  <SortableTabList
-                    tabs={tabs}
-                    tabIds={tabIds}
-                    activeTabId={activeTabId}
-                    tabGitInfoMap={tabGitInfoMap}
-                    hideInactiveTabLabels={
-                      collapseInactiveTabLabelsOnOverflow &&
-                      hideInactiveTabLabels
-                    }
-                    onTabClick={handleTabClick}
-                    onCloseClick={handleCloseClick}
-                    onContextMenu={handleContextMenu}
-                  />
-
-                  {createPortal(
-                    <DragOverlay dropAnimation={null}>
-                      {draggingTab && (
-                        <div
-                          className={`${TAB_PILL_DRAG_OVERLAY_CLASS} max-w-[240px]`}
-                          aria-hidden
-                          style={{ zIndex: 9999 }}
-                        >
-                          <WorkstationTabContent
-                            tab={draggingTab}
-                            isActive={draggingTab.id === activeTabId}
-                            gitInfo={tabGitInfoMap.get(draggingTab.id)}
-                          />
-                        </div>
-                      )}
-                    </DragOverlay>,
-                    document.body
-                  )}
-                </DndContext>
-              ) : null}
             </div>
-
-            <div
-              className="h-8 min-w-px flex-1"
-              data-tauri-drag-region
-              style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-              aria-hidden
-            />
           </div>
 
-          <NoDragRegion>
-            <TabBarControls
-              hasTabs={hasTabs}
-              onNewTab={onNewTab}
-              onNewTabShortcutId={onNewTabShortcutId}
-              onMoreOptions={onMoreOptions}
-              trailingSlot={trailingSlot}
-            />
-          </NoDragRegion>
+          <TabBarControls
+            hasTabs={hasTabs}
+            onNewTab={onNewTab}
+            onNewTabShortcutId={onNewTabShortcutId}
+            trailingSlot={trailingSlot}
+          />
         </div>
 
         {contextMenu && (

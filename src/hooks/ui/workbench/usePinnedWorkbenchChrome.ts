@@ -35,16 +35,17 @@ export const PINNED_WORKBENCH_CHROME_CENTER_TOP = 26;
 export type PinnedWorkbenchChromeSlots = 1 | 2;
 
 /**
- * How many slots the group draws: both toggles while the chat pane shows
- * beside the workstation, one otherwise. A missing slot is dropped outright
- * rather than held as a spacer — a spacer only punches a hole between the
- * surviving toggle and the host's own controls.
+ * How many slots the group draws: the station's resize + close toggles
+ * (split or station maximized), or the single chat focus toggle while the
+ * chat is maximized. A missing slot is dropped outright rather than held as
+ * a spacer — a spacer only punches a hole between the surviving toggle and
+ * the host's own controls.
  */
 export function resolvePinnedWorkbenchChromeSlots(options: {
   chatVisible: boolean;
   chatPanelMaximized: boolean;
 }): PinnedWorkbenchChromeSlots {
-  return options.chatVisible && !options.chatPanelMaximized ? 2 : 1;
+  return options.chatVisible && options.chatPanelMaximized ? 1 : 2;
 }
 
 /** Right padding a host needs so its own controls clear the pinned group. */

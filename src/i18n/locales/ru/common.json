@@ -18,6 +18,13 @@
     "file": "Поиск в файле",
     "named": "Поиск в {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Боковая панель",
+    "showSidebar": "Показывать боковую панель",
+    "location": "Расположение",
+    "showIndentLines": "Линии отступов",
+    "colorSourceControlFiles": "Цвета различий для файлов"
+  },
   "teamInbox": {
     "title": "Общий почтовый ящик команды",
     "listLabel": "Список общего почтового ящика команды",
@@ -371,7 +378,6 @@
     "restart": "Перезапустить",
     "switchToStation": "Переключиться на {{station}}",
     "discard": "Отменить",
-    "run": "Запустить",
     "clone": "Клонировать",
     "send": "Отправить",
     "sendMessageQueued": "Отправить (в очереди)",
@@ -403,11 +409,11 @@
     "switchMethod": "Сменить способ",
     "dismiss": "Отклонить",
     "clearSelection": "Очистить выбор",
-    "clearAll": "Очистить всё",
     "openOnGitHub": "Открыть на GitHub",
     "createPullRequest": "Создать pull request",
     "expandView": "Развернуть представление",
-    "restoreSplitView": "Восстановить разделённый вид"
+    "restoreSplitView": "Восстановить разделённый вид",
+    "overwrite": "Перезаписать"
   },
   "status": {
     "yes": "Да",
@@ -491,7 +497,7 @@
   },
   "optional": "необязательно",
   "common": {
-    "display": "Отображение",
+    "display": "Настройки интерфейса",
     "on": "Вкл",
     "off": "Выкл",
     "default": "По умолчанию",
@@ -560,7 +566,6 @@
     "globPatternsHint": "Glob-шаблоны, через запятую",
     "outline": "Структура",
     "timeline": "Хронология",
-    "indexing": "Индексация",
     "testExplorer": "Проводник тестов",
     "installed": "Установлено",
     "extensionViews": "Представления расширений",
@@ -678,7 +683,6 @@
     "explorer": "Проводник",
     "search": "Поиск",
     "sourceControl": "Управление версиями",
-    "sessions": "Сеансы",
     "myTabs": "Мои вкладки ({{count}})",
     "design": "Дизайн",
     "settings": "Настройки",
@@ -789,7 +793,6 @@
     "closePanel": "Закрыть панель",
     "showSidebar": "Показать боковую панель",
     "hideSidebar": "Скрыть боковую панель",
-    "moreOptions": "Больше опций",
     "zoomIn": "Увеличить",
     "zoomOut": "Уменьшить",
     "goBack": "Назад",
@@ -807,10 +810,9 @@
     "replaceAll": "Заменить всё (Ctrl+Alt+Enter)",
     "replaceAllLabel": "Заменить всё",
     "moreActions": "Дополнительные действия...",
-    "formatSql": "Форматировать SQL",
-    "queryHistory": "История запросов",
-    "executeQuery": "Выполнить запрос ({{shortcut}})",
     "startVoiceInput": "Начать голосовой ввод",
+    "expandInput": "Развернуть поле ввода",
+    "collapseInput": "Свернуть поле ввода",
     "cancelRecording": "Отменить запись",
     "stopAndTranscribe": "Остановить и транскрибировать",
     "htmlPreview": "HTML предпросмотр",
@@ -820,7 +822,6 @@
     "movePanelToRight": "Переместить панель вправо",
     "movePanelToBottom": "Переместить панель вниз",
     "domTree": "DOM дерево",
-    "closeSession": "Закрыть Session",
     "clearNetworkLogs": "Очистить сетевые журналы",
     "clearConsole": "Очистить консоль",
     "copyToClipboard": "Копировать в буфер обмена",
@@ -871,7 +872,6 @@
     "pleaseTryAgain": "Пожалуйста, попробуйте снова",
     "noFileOpen": "Откройте файл для начала редактирования",
     "selectFileToEdit": "Выберите файл в проводнике",
-    "noTabs": "Откройте вкладку, чтобы начать",
     "noTabsOpen": "Откройте элемент, чтобы начать",
     "selectItemToStart": "Выберите элемент на боковой панели",
     "noDatabaseConnected": "Нет подключённой базы данных",
@@ -953,7 +953,8 @@
     "selectSidebarStash": "Выберите один stash",
     "selectSidebarCommit": "Выберите один commit",
     "selectSidebarPullRequest": "Выберите один pull request",
-    "selectSidebarIssue": "Выберите один issue"
+    "selectSidebarIssue": "Выберите один issue",
+    "pressEnterToSearch": "Нажмите Enter для поиска"
   },
   "inbox": {
     "scrollToBottom": "Вниз",
@@ -982,7 +983,6 @@
     "notGitInitialized": "Git не инициализирован",
     "notGitInitializedTooltip": "В этом рабочем каталоге пока нет каталога .git.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
-    "scanningFiles": "Scanning files...",
     "branchTooltipSwitching": "Ветка: {{branch}} (переключение…)",
     "switchWorkspaceTooltip": "Сменить рабочий каталог",
     "switchWorktreeTooltip": "Сменить worktree",
@@ -993,12 +993,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Действия Git",
     "switchToSessionRepo": "Переключиться на {{name}}",
-    "embeddingProgress": "Embedding: обработано чанков — {{count}}",
-    "embeddingProgressWithPercent": "Embedding: обработано чанков — {{count}} ({{percent}}%)",
-    "embeddingShort": "Embedding {{percent}}%",
-    "embeddingLabel": "Embedding",
-    "indexingProgress": "Индексация: {{processed}}/{{total}} файлов ({{percent}}%)",
-    "indexingProgressWithFile": "Индексация: {{processed}}/{{total}} файлов ({{percent}}%)\nТекущий: {{file}}",
     "ports": {
       "workspaceSection": "Текущее рабочее пространство",
       "externalSection": "Внешние",
@@ -1051,8 +1045,8 @@
       "siteUnreachableTitle": "Не удаётся открыть сайт",
       "webviewHiddenTitle": "Веб-представление временно скрыто",
       "webviewHiddenBody": "Закройте меню или диалог, чтобы снова его показать.",
-      "embeddedFallbackTitle": "Этот сайт может не работать во встроенном браузере",
-      "embeddedFallbackBody": "Некоторые сайты блокируют или не отображают содержимое внутри WebView приложения. Если страница остаётся пустой, откройте её в системном браузере.",
+      "loadStalledTitle": "Страница не загрузилась до конца",
+      "loadStalledBody": "Встроенный браузер начал загружать этот адрес, но так и не завершил загрузку. Перезагрузите страницу или откройте её в системном браузере.",
       "currentUrl": "Текущий URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
@@ -1069,7 +1063,9 @@
         "skipped": "Пропущено",
         "passed": "Пройдено"
       }
-    }
+    },
+    "fileChangedOnDiskTitle": "Файл изменён на диске",
+    "fileChangedOnDiskBody": "Файл «{{name}}» изменился на диске после открытия. Перезаписать его вашей версией?"
   },
   "git": {
     "loading": "Загрузка статуса Git...",
@@ -1096,7 +1092,7 @@
       "createTokenButton": "Создать token",
       "openGitSettingsButton": "Открыть настройки",
       "configureInSettings": "Настройте Git в настройках",
-      "configureInSettingsDesc": "Добавьте доступ GitHub App, сохраните token или просканируйте локальные учетные данные в Настройки → Подключения, затем повторите эту операцию Git."
+      "configureInSettingsDesc": "Добавьте доступ GitHub App, сохраните token или просканируйте локальные учетные данные в Настройки → Подключения, затем повторите эту операцию Git"
     },
     "actions": {
       "publish": "Publish",
@@ -1134,7 +1130,12 @@
       "returnFromMiniTerminal": "Показать здесь",
       "resizeTerminal": "Изменить размер терминала",
       "terminalProcessCount_one": "{{count}} процесс",
-      "terminalProcessCount_other": "{{count}} процесса"
+      "terminalProcessCount_other": "{{count}} процесса",
+      "sources": "Источники",
+      "sourcesCount_one": "Источники: {{count}}",
+      "sourcesCount_other": "Источники: {{count}}",
+      "loadMoreSources": "Показать ещё (+{{count}})",
+      "sourceImage": "Изображение"
     },
     "pr": {
       "title": "Pull request",
@@ -1335,7 +1336,7 @@
       "cannotParseRepoName": "Не удалось определить имя репозитория из remote origin",
       "authRequired": {
         "title": "Подключить GitHub",
-        "description": "Перейдите в Настройки → Подключения, чтобы подключить учётную запись GitHub."
+        "description": "Перейдите в Настройки → Подключения, чтобы подключить учётную запись GitHub"
       },
       "navigationTrail": "Навигация по pull request",
       "failedToLoad": "Не удалось загрузить pull requests",
@@ -1505,15 +1506,66 @@
       "newIssueBodyPlaceholder": "Опишите issue (необязательно)…",
       "authRequired": {
         "title": "Подключить GitHub",
-        "description": "Перейдите в Настройки → Подключения, чтобы подключить учётную запись GitHub."
+        "description": "Перейдите в Настройки → Подключения, чтобы подключить учётную запись GitHub"
       },
       "reAuthRequired": "Требуется авторизация GitHub",
-      "reAuthDescription": "Срок действия вашего token GitHub истёк. Перейдите в Настройки → Подключения, чтобы переподключиться.",
+      "reAuthDescription": "Срок действия вашего token GitHub истёк. Перейдите в Настройки → Подключения, чтобы переподключиться",
       "goToSettings": "Перейти в настройки",
       "loadingTimeline": "Загрузка активности…",
       "label": "Issue",
       "linkedLoading": "Загрузка связанных элементов",
       "detailNavigation": "Навигация по issue"
+    },
+    "branchSwitch": {
+      "title": "Переключить ветку",
+      "conflictsTitle": "Изменения требуют внимания",
+      "blockedTitle": "Переключение ветки требует внимания",
+      "working": "Сохранение и переключение…",
+      "current": "Текущая ветка: {{branch}}",
+      "changedFiles": "Изменённых файлов: {{count}}",
+      "question": "Что вы хотите сделать с изменениями?",
+      "leave": "Оставить изменения в {{branch}}",
+      "leaveDescription": "Сохраните работу на потом и переключитесь с чистым рабочим деревом",
+      "bring": "Перенести изменения в {{branch}}",
+      "bringDescription": "Перенесите незакоммиченные изменения в целевую ветку",
+      "worktreeTitle": "Ветка открыта в другом рабочем дереве",
+      "openWorktree": "Открыть рабочее дерево",
+      "activeTask": "В этом рабочем дереве выполняется задача",
+      "activeTaskDescription": "Переключение сейчас изменит файлы, с которыми работает агент",
+      "switchAnyway": "Всё равно переключить",
+      "switchedTo": "Переключено на {{branch}}",
+      "saveTitle": "Сохранить файлы перед переключением",
+      "saveDescription": "В открытых файлах есть несохранённые правки. Сохраните их, прежде чем выбрать, где оставить изменения",
+      "saveContinue": "Сохранить всё и продолжить",
+      "saveFailed": "Не удалось сохранить все файлы",
+      "multipleBuffers": "Этот файл изменён в нескольких редакторах. Сохраните или закройте эти редакторы перед переключением",
+      "editedWhileSaving": "Файлы были изменены во время сохранения. Проверьте последние изменения и повторите попытку",
+      "savePreview": "Сохраните или отмените правки в редакторе таблиц перед переключением ветки",
+      "messages": {
+        "detached_head": "Создайте ветку из текущего коммита перед переключением, чтобы отсоединённая работа осталась доступной",
+        "unborn": "Создайте первый коммит перед использованием сохранённых изменений ветки",
+        "ignored_collision": "Игнорируемый файл будет перезаписан. Переместите его перед переключением",
+        "worktree_branch_in_use": "Эта ветка уже открыта в другом рабочем дереве",
+        "invalid_branch_name": "Выберите допустимое имя ветки",
+        "branch_exists": "Такая ветка уже существует",
+        "branch_not_found": "Ветка не найдена или неоднозначна. Обновите ветки и выберите явную удалённую ветку",
+        "upstream_mismatch": "Локальная ветка с этим именем отслеживает другой upstream. Выберите локальную ветку явно",
+        "operation_merge": "Завершите или прервите слияние перед переключением ветки",
+        "operation_rebase": "Завершите или прервите rebase перед переключением ветки",
+        "operation_cherry_pick": "Завершите или прервите cherry-pick перед переключением ветки",
+        "operation_revert": "Завершите или прервите revert перед переключением ветки",
+        "operation_other": "Завершите текущую операцию Git перед переключением ветки",
+        "stale": "Файлы или ветки изменились, пока диалог был открыт. Просмотрите последние изменения и повторите попытку",
+        "save_failed": "Не удалось завершить сохранение изменений: {{detail}}. Просмотрите рабочее дерево и сохранённые изменения перед повторной попыткой",
+        "changed_while_saving": "Файлы изменились во время сохранения. Checkout не выполнялся; ваш снимок доступен",
+        "checkout_failed_restored": "Checkout не удался; ваши изменения восстановлены: {{detail}}",
+        "checkout_failed_saved": "Checkout не удался. Ваши изменения сохранены: {{detail}}",
+        "worktree_changed": "Рабочее дерево изменилось во время checkout. Ваши исходные изменения сохранены; просмотрите текущие файлы перед восстановлением",
+        "restore_conflicts": "Переключено на {{branch}}. Некоторые изменения не удалось восстановить: {{detail}}. Ваши исходные изменения сохранены",
+        "saved_on_previous": "Изменения сохранены в предыдущей ветке",
+        "brought": "Ваши изменения перешли вместе с вами в эту ветку",
+        "worktree_missing": "Рабочее дерево больше не существует. Обновите и повторите попытку"
+      }
     }
   },
   "selectors": {
@@ -1568,7 +1620,6 @@
         "createWorkspace": "Создать новый рабочий каталог"
       },
       "sources": {
-        "cloningFromGitHub": "клонирование из GitHub",
         "cloningFromGitHubUrl": "клонирование по URL GitHub",
         "cloningFromMyGitHub": "клонирование из моего GitHub",
         "creatingWorkspace": "создание нового рабочего каталога",
@@ -1629,7 +1680,6 @@
         "createFrom": "Создать Branch из",
         "deleteBranch": "Удалить ветку",
         "refresh": "Обновить ветку",
-        "checkoutDetachedSuccess": "В состоянии detached HEAD на текущем коммите",
         "removeWorktree": "Удалить Worktree",
         "newWorktree": "Новый worktree...",
         "refreshPullRequests": "Обновить Pull requests"
@@ -1637,9 +1687,15 @@
       "messages": {
         "deletedCount_one": "Удалена {{count}} ветка",
         "deletedCount_other": "Удалено веток: {{count}}",
-        "failedDeleteList": "Не удалось удалить: {{branches}}"
+        "failedDeleteList": "Не удалось удалить: {{branches}}",
+        "failedDelete": "Не удалось удалить ветку «{{branch}}»",
+        "prNoHeadBranch": "У pull request нет head-ветки",
+        "readBranchesFailed": "Не удалось прочитать локальные ветки",
+        "createPrBranchFailed": "Не удалось создать ветку PR",
+        "readRemotesFailed": "Не удалось прочитать удалённые репозитории"
       },
       "labels": {
+        "defaultBranches": "Основные ветки",
         "otherBranches": "Другие ветки",
         "current": "Текущая",
         "recent": "Недавние",
@@ -1687,6 +1743,8 @@
       "selectWorktreeSource": "Выберите ветку worktree или pull request"
     },
     "spotlightFooter": {
+      "settings": "Настройки Spotlight",
+      "unpinAll": "Открепить все",
       "navigate": "Навигация",
       "select": "Выбрать",
       "switchColumn": "Сменить колонку",
@@ -1770,11 +1828,6 @@
         "integrations": "Agent и интеграции",
         "market": "Маркет",
         "actions": "Действия"
-      },
-      "paramLabels": {
-        "repo": "Репозиторий",
-        "folder": "Папка",
-        "branch": "Ветка"
       },
       "actions": {
         "showInFinder": {
@@ -1879,7 +1932,7 @@
     "chatRight": "Чат справа",
     "sidebarPosition": "Боковая панель Workstation",
     "modelPickerStyle": "Селектор",
-    "paginateChatHistory": "Разбивать историю чата на страницы",
+    "paginateChatHistory": "Постраничная история чата",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Меню",
     "left": "Слева",
@@ -2154,7 +2207,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "Выйти из ORG2?",
-    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORG2 позже.",
+    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORG2 позже",
     "cancel": "Отмена",
     "confirm": "Выйти"
   },
@@ -2184,7 +2237,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari хранит файлы cookie в папке, защищённой macOS. Разрешите ORG2 полный доступ к диску в системных настройках и повторите проверку.",
+      "explain": "Safari хранит файлы cookie в папке, защищённой macOS. Разрешите ORG2 полный доступ к диску в системных настройках и повторите проверку",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2209,7 +2262,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2218,7 +2271,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"
@@ -2246,22 +2299,6 @@
     "loadFailed": "Приложения недоступны — откройте снова, чтобы повторить",
     "openFailed": "Не удалось открыть документ",
     "saveFirst": "Сохраните или отмените изменения, прежде чем открывать в другом приложении"
-  },
-  "sqlEditor": {
-    "placeholder": "Введите SQL-запрос...",
-    "format": "Форматировать",
-    "runQueryToSeeResults": "Выполните запрос, чтобы увидеть результаты",
-    "executingQuery": "Выполнение запроса...",
-    "queryFailed": "Запрос не выполнен",
-    "queryCompleted": "Запрос выполнен",
-    "noResults": "Запрос не вернул результатов",
-    "rowCount_one": "{{count}} строка",
-    "rowCount_other": "{{count}} строк",
-    "press": "Нажмите",
-    "toRun": "для запуска",
-    "nullValue": "NULL",
-    "booleanTrue": "true",
-    "booleanFalse": "false"
   },
   "chatImage": {
     "maxReached": "Максимум {{max}} изображений",

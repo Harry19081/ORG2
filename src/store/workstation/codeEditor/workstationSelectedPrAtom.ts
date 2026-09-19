@@ -4,6 +4,7 @@ import { atomFamily } from "jotai-family";
 import type {
   GitHubChecksSummary,
   GitHubIssueComment,
+  GitHubIssueTimelineItem,
   GitHubPrReview,
   GitHubReviewComment,
   PrFile,
@@ -81,6 +82,8 @@ export interface WorkstationSelectedPrState {
   commits: Record<string, unknown>[];
   files: PrFile[];
   checks: GitHubChecksSummary | null;
+  /** The PR's GitHub issue-timeline (a PR is an issue in GitHub's REST API). */
+  timeline: GitHubIssueTimelineItem[];
   /** Initial load with no cached snapshot to paint from. */
   loading: boolean;
   /** Background revalidation over a cached snapshot. */
@@ -105,6 +108,7 @@ export const initialSelectedPrState: WorkstationSelectedPrState = {
   commits: [],
   files: [],
   checks: null,
+  timeline: [],
   loading: false,
   refreshing: false,
   error: null,

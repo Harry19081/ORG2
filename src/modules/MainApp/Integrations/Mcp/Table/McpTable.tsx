@@ -12,6 +12,10 @@ import SettingsTable, {
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
+import {
+  DETAIL_PANEL_TOKENS,
+  ScrollPreservation,
+} from "@src/components/layout/blocks";
 import type { CursorRepo } from "@src/hooks/policies";
 import {
   Add01Icon,
@@ -27,10 +31,6 @@ import type {
   McpServerStatus,
   McpToolDef,
 } from "@src/modules/MainApp/AgentOrgs/config/mcp/useMcpServers";
-import {
-  DETAIL_PANEL_TOKENS,
-  ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
 
 import { selectedRowClassName } from "../../Tables/shared";
 import type { DetailMode } from "../../types";
@@ -384,7 +384,6 @@ export const McpTable: React.FC<McpTableProps> = ({
               role="presentation"
             >
               <Button
-                variant="secondary"
                 size="small"
                 onClick={() => onSelect(server.name, "preview")}
               >
@@ -392,7 +391,6 @@ export const McpTable: React.FC<McpTableProps> = ({
               </Button>
               {onDelete ? (
                 <Button
-                  variant="secondary"
                   size="small"
                   icon={
                     <HugeiconsIcon
@@ -437,7 +435,6 @@ export const McpTable: React.FC<McpTableProps> = ({
                 >
                   <Button
                     variant="tertiary"
-                    appearance="soft"
                     size="mini"
                     iconOnly
                     icon={
@@ -475,8 +472,6 @@ export const McpTable: React.FC<McpTableProps> = ({
 
   const addMcpButton = (
     <Button
-      variant="secondary"
-      size="default"
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       onClick={() =>
         onAdd(activeScopeTab === "workspace" ? "workspace" : "global")

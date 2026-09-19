@@ -61,6 +61,7 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
     topRowPills,
     topRowTrailingContent,
     statusBanners,
+    composerTray,
     followUpSuggestions = [],
     onFollowUpSuggestionSent,
     composerShellRef,
@@ -187,6 +188,8 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
               onSelect={submitFollowUpSuggestion}
             />
           )}
+
+          {composerTray}
 
           <InputAreaComposerShell
             model={model}

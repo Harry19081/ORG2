@@ -26,14 +26,10 @@ import {
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import DisclosureChevron from "@src/components/DisclosureChevron";
 import { Placeholder } from "@src/components/Placeholder";
 import { createLogger } from "@src/hooks/logger";
-import {
-  ArrowDown01Icon,
-  ArrowRight01Icon,
-  HugeiconsIcon,
-  LinkSquare02Icon,
-} from "@src/icons";
+import { HugeiconsIcon, LinkSquare02Icon } from "@src/icons";
 import { HUMANTOOLS_TEXT_KEYS } from "@src/modules/WorkStation/shared";
 import { workStationSearchFocusSignalAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import {
@@ -307,7 +303,6 @@ export const SearchContent = forwardRef<
           {/* Left column - Chevron toggle (centered vertically) */}
           <Button
             variant="tertiary"
-            appearance="ghost"
             size="mini"
             aria-label={
               showReplace
@@ -315,21 +310,7 @@ export const SearchContent = forwardRef<
                 : t(HUMANTOOLS_TEXT_KEYS.search.expandReplace)
             }
             iconOnly
-            icon={
-              showReplace ? (
-                <HugeiconsIcon
-                  icon={ArrowDown01Icon}
-                  data-icon="chevron-down"
-                  size={14}
-                />
-              ) : (
-                <HugeiconsIcon
-                  icon={ArrowRight01Icon}
-                  data-icon="chevron-right"
-                  size={14}
-                />
-              )
-            }
+            icon={<DisclosureChevron expanded={showReplace} size={14} />}
             onClick={handleExpandToggle}
             className="self-center"
             title={
@@ -398,7 +379,6 @@ export const SearchContent = forwardRef<
               {results.length > 0 && !loading && !loadingMore && (
                 <Button
                   variant="tertiary"
-                  appearance="soft"
                   size="sidebar"
                   iconOnly
                   icon={

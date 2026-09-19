@@ -69,10 +69,10 @@ export interface SecondaryPanelConfig {
   onSizeChange?: (size: number) => void;
   /** Callback to close/collapse the panel */
   onClose?: () => void;
-  /** Minimum size */
-  minSize?: number;
-  /** Maximum size */
-  maxSize?: number;
+  /** Minimum size along the active axis */
+  minSize: number;
+  /** Maximum size along the active axis */
+  maxSize: number;
   /** Reset size for context menu */
   resetSize?: number;
 }
@@ -148,8 +148,8 @@ export function buildSecondaryPanelConfig(options: {
   size: number;
   onSizeChange?: (size: number) => void;
   onClose?: () => void;
-  minSize?: number;
-  maxSize?: number;
+  minSize: number;
+  maxSize: number;
   resetSize?: number;
 }): SecondaryPanelConfig {
   return {

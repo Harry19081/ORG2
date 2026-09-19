@@ -3,8 +3,6 @@
     "customCommandUpdated": "Custom command updated",
     "shellSettingUpdated": "Shell setting updated"
   },
-  "noSettingsFound": "No settings found for \"{{query}}\"",
-  "searchPlaceholder": "Search settings...",
   "panel": {
     "maximizeSettings": "Maximize Settings"
   },
@@ -18,7 +16,9 @@
     "storage": "Storage",
     "agentOrg": "Agent Team",
     "mobileRemote": "Mobile Remote",
-    "harnessConnections": "App connections"
+    "harnessConnections": "App connections",
+    "import": "Import",
+    "development": "Dev mode"
   },
   "coreSidebar": {
     "groups": {
@@ -56,10 +56,10 @@
   },
   "mobileRemote": {
     "enabled": "Mobile Remote",
-    "enabledDesc": "Let a paired phone drive agent sessions on this desktop over the same Wi‑Fi LAN or via the public relay",
+    "enabledDesc": "Use your phone to view and control sessions on this computer",
     "securityNotice": "Anyone on your network with the connection URL and token can control sessions when LAN exposure is on. Regenerate the token if you think it leaked",
-    "outdoorTitle": "Outdoor connection",
-    "outdoorDesc": "Connect the desktop outbound to a relay so your phone works over 4G, 5G, or another network",
+    "outdoorTitle": "Allow internet connections",
+    "outdoorDesc": "When off, phones cannot connect to this computer over the internet",
     "relayEnabled": "Connect to relay",
     "relayEnabledDesc": "No router configuration needed",
     "relayUrl": "Relay address",
@@ -68,7 +68,7 @@
     "relayPresetLocal": "Local",
     "relayPresetProduction": "Production",
     "cloudLoginTitle": "ORG2 Cloud login",
-    "cloudLoginDescSignedIn": "Signed in as {{identity}} — the relay uses this account for outdoor pairing",
+    "cloudLoginDescSignedIn": "Signed in as {{identity}}",
     "cloudLoginDescSignedOut": "Sign in to ORG2 Cloud before pairing through a relay",
     "relayStatusCloudLoginRequired": "Sign in to ORG2 Cloud in Settings → General, then refresh relay status",
     "relayStatusAuthFailedSignedIn": "Relay rejected the connection — sign out and sign in again under Settings → General",
@@ -79,7 +79,7 @@
     "relayStatus_disabled": "Disabled",
     "relayStatus_config_error": "Configuration error",
     "relayStatus_stopped": "Stopped",
-    "startOutdoorPairing": "Generate outdoor pairing code",
+    "startOutdoorPairing": "Generate pairing code",
     "fullAccess": "Allow actions",
     "fullAccessDesc": "When on, the phone can send messages, stop sessions, and answer permissions; when off it is view-only",
     "pairingExpires": "Pairing code expires in {{seconds}} seconds",
@@ -114,11 +114,11 @@
     "pairedDevicesDesc": "Phones authorized through the relay; access can be revoked at any time",
     "devicesLoadFailed": "Could not load paired devices",
     "noDevices": "No paired devices",
-    "noDevicesDesc": "Generate an outdoor pairing code, then scan or paste it in the Mobile Remote PWA",
+    "noDevicesDesc": "After adding a phone, you can access sessions on this computer",
     "deviceLabel": "Device",
     "deviceTier": "Tier",
-    "deviceTierFull": "Full access",
-    "deviceTierReadOnly": "Read-only",
+    "deviceTierFull": "Can control",
+    "deviceTierReadOnly": "View only",
     "deviceLastSeen": "Last seen",
     "devicePairedAt": "Paired {{time}}",
     "deviceLastSeenValue": "Last seen {{time}}",
@@ -130,7 +130,10 @@
     "hideAdvanced": "Hide",
     "restoreDefaultRelay": "Restore default address",
     "developerOptions": "Developer options",
-    "retryConnection": "Retry"
+    "retryConnection": "Retry",
+    "addPhone": "Add phone",
+    "pairingPermission": "Phone permissions",
+    "relayDisabledHint": "Internet connections are off. Enable them in advanced settings"
   },
   "myRoles": {
     "currentStatus": "My current status",
@@ -164,6 +167,10 @@
     }
   },
   "general": {
+    "myStationSharing": "Workstation sharing",
+    "myStationSharingDesc": "Share Workstation tabs and view state by working directory or keep them separate for each chat tab",
+    "myStationSharingDirectory": "Working directory",
+    "myStationSharingTab": "Chat tab",
     "login": "Login",
     "tabGeneral": "General",
     "tabSelfHosted": "Self-hosted",
@@ -195,8 +202,8 @@
     "usePointerCursorsDesc": "Change the cursor to a pointer when hovering over interactive elements",
     "timezoneAuto": "Auto (Browser)",
     "timezoneSearchPlaceholder": "Search closest cities",
-    "sendOnEnter": "Send messages with Enter",
-    "sendOnEnterDesc": "When enabled, Enter sends; Shift+Enter and Ctrl/Cmd+Enter insert a new line. When disabled, Ctrl/Cmd+Enter sends",
+    "sendOnEnter": "Send messages with",
+    "sendOnEnterDesc": "Choose the shortcut that sends a message; other Enter combinations insert a new line",
     "language": "Language",
     "languageSearchPlaceholder": "Search languages...",
     "languageNames": {
@@ -213,7 +220,9 @@
       "vi": "Vietnamese",
       "pt": "Portuguese",
       "pl": "Polish",
-      "zh-Hant": "Traditional Chinese"
+      "zh-Hant": "Traditional Chinese",
+      "hi": "Hindi",
+      "id": "Indonesian"
     },
     "layout": "Layout",
     "sidebar": "Sidebar",
@@ -221,6 +230,7 @@
     "sidebarEdgeDepth": "Sidebar edge depth",
     "selectedItemTransparency": "Selected item transparency",
     "spotlightPlacement": "Spotlight position",
+    "spotlightDimBackground": "Dim background",
     "spotlightPlacementOptions": {
       "top": "Top",
       "center": "Middle"
@@ -257,6 +267,8 @@
     "voiceInputPermissionOpenFailed": "Could not open System Settings",
     "preventSleep": "Prevent system sleep during sessions",
     "preventSleepDesc": "Keep your Mac or PC awake while any Agent session is actively working. Releases automatically when all sessions finish",
+    "highRefreshRate": "High refresh rate",
+    "highRefreshRateDesc": "Render at your display's full refresh rate, up to 120 Hz on ProMotion displays. Scrolling, resizing and animations look smoother but use more energy while they run",
     "devMode": "Developer Mode",
     "devModeDesc": "Enables the native Inspect Element context menu and browser DevTools. Intended for development and debugging only",
     "presenceGuidanceOnline": "Online — guidance for agents",
@@ -293,7 +305,17 @@
       "rainbow": "Rainbow",
       "dark": "Dark tile",
       "light": "Light tile"
-    }
+    },
+    "license": "License",
+    "licenseTitle": "ORG2 license",
+    "licenseLoading": "Loading license…",
+    "licenseLoadFailed": "Unable to load the application license",
+    "tooltips": "Tooltips",
+    "buttonTooltipsEnabled": "Show button tooltips",
+    "buttonTooltipsEnabledDesc": "Show the label and keyboard shortcut when hovering buttons. Info icon tooltips always show",
+    "buttonTooltipDelayMs": "Tooltip delay",
+    "buttonTooltipDelayImmediate": "Immediately",
+    "buttonTooltipDelaySeconds": "{{seconds}}s"
   },
   "background": {
     "title": "Background",
@@ -461,13 +483,13 @@
     "desktopConfig": {
       "title": "Desktop Safety",
       "hideBeforeAction": "Hide ORG2 during desktop control",
-      "hideBeforeActionHelper": "Hide the main ORG2 window while Peekaboo operates, and show the Wingman bar plus floating caption so the agent does not need to manage focus.",
+      "hideBeforeActionHelper": "Hide the main ORG2 window while Peekaboo operates, and show the Wingman bar plus floating caption so the agent does not need to manage focus",
       "antiDetection": "HID anti-automation hardening",
-      "antiDetectionHelper": "Make Peekaboo post real CGEvent (HID) input for clicks and keystrokes instead of pure Accessibility actions, so apps with anti-automation detection (e.g. WeChat) are less likely to block desktop control.",
+      "antiDetectionHelper": "Make Peekaboo post real CGEvent (HID) input for clicks and keystrokes instead of pure Accessibility actions, so apps with anti-automation detection (e.g. WeChat) are less likely to block desktop control",
       "humanInputProfile": "Human typing cadence",
-      "humanInputProfileHelper": "Apply a human-like timing profile to synthesized keystrokes. Disable to type at maximum speed.",
+      "humanInputProfileHelper": "Apply a human-like timing profile to synthesized keystrokes. Disable to type at maximum speed",
       "escapeAbort": "System Escape key aborts",
-      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded."
+      "escapeAbortHelper": "Treat a hardware Escape keydown as an abort signal for in-flight desktop automation. Our own synthesized Escape presses are always excluded"
     },
     "skillMissingBins": "Missing: {{bins}}",
     "skillMissingEnv": "Missing env: {{vars}}",
@@ -535,7 +557,6 @@
     "gitOperations": "Git Operations",
     "gitOperationsDesc": "Git pull, push, and sync notifications",
     "soundPreset": "Notification sound",
-    "soundPresetDesc": "Choose the sound played for audible notifications",
     "previewSound": "Preview",
     "soundPresets": {
       "classic": "Classic",
@@ -595,6 +616,8 @@
     "indentGuides": "Indent guides",
     "treeIndentGuides": "Tree indent guides",
     "highlightActiveLine": "Current line highlight",
+    "splitDiffCenteredLineNumbers": "Centered line numbers in split diff",
+    "splitDiffCenteredLineNumbersDesc": "Show both line-number columns between the two panes, as GitHub does, instead of at each pane's left edge.",
     "shellsOpenWith": "Shells open with",
     "shellsOpenWithDesc": "Initial working directory for new terminals",
     "repoPath": "Repo path",
@@ -629,7 +652,7 @@
       "title": "Git",
       "pullStrategy": "Pull strategy",
       "pullStrategyDesc": "How git pull integrates remote changes when syncing",
-      "pullStrategyHint": "Rebase (default): Replays your commits on top of remote. Creates linear history.\n\nMerge: Creates a merge commit when branches have diverged. Preserves full history.\n\nFast-forward only: Only allows pull when no merge is needed. Refuses if branches have diverged.",
+      "pullStrategyHint": "Rebase (default): Replays your commits on top of remote. Creates linear history.\n\nMerge: Creates a merge commit when branches have diverged. Preserves full history.\n\nFast-forward only: Only allows pull when no merge is needed. Refuses if branches have diverged",
       "strategyMerge": "Merge",
       "strategyRebase": "Rebase (default)",
       "strategyFfOnly": "Fast-forward only (strict)",
@@ -663,20 +686,44 @@
     "fontFamilyCustom": "Custom"
   },
   "update": {
+    "downloading": "Downloading update…",
+    "downloadingPercent": "Downloading update… {{percent}}%",
+    "preparingDownload": "Preparing download…",
+    "downloadBytes": "{{downloaded}} of {{total}}",
+    "downloadedBytes": "{{downloaded}} downloaded",
+    "downloadProgress": "Update download progress",
+    "inProgress": "in progress",
+    "openProgressLabel": "Update download {{progress}}. Open progress notice.",
+    "openProgress": "Open update download progress",
+    "available": "Update available",
+    "availableVersion": "Version {{version}} is ready to install.",
+    "updateNow": "Update now",
+    "checkFailed": "Update check failed",
+    "checking": "Checking for updates…",
+    "officialInstalled": "Official app installed",
+    "officialInstalledDesc": "{{version}} is installed at {{path}}. This local build is still running and unchanged",
+    "downloadFailed": "Update download failed",
+    "retryNow": "Retry now",
+    "downloadTimeout": "The download timed out. Check your network or proxy, then retry.",
+    "installUnavailable": "This local build cannot safely install a published release on this platform.",
+    "installing": "Installing update",
+    "preparingInstall": "Preparing v{{version}}…",
+    "installed": "Update installed",
+    "installFailed": "Update install failed",
+    "checked": "Checked for updates",
     "channel": "Update channel",
     "channelDesc": "Beta receives prerelease builds ahead of the stable release. Switching back to Stable never downgrades — it takes effect at the next stable release",
     "channelStable": "Stable",
     "channelBeta": "Beta",
     "detectUpdate": "Detect Update",
     "currentVersion": "Current Version",
-    "installConfirmTitle": "Update ready to install",
-    "installConfirmDesc": "Version {{version}} has been downloaded. Save any ongoing work before installing and restarting ORG2",
+    "installConfirmTitle": "Update ready",
+    "installConfirmDesc": "Version {{version}} is ready. Save your work before restarting",
     "installAndRestart": "Install and restart",
-    "installOfficialConfirmTitle": "Official app ready to install",
-    "installOfficialConfirmDesc": "Install official version {{version}} at /Applications/ORG2.app. This local build stays open and unchanged",
-    "installOfficial": "Install official app",
+    "installOfficialConfirmTitle": "Official release ready",
+    "installOfficialConfirmDesc": "Install {{version}} separately. This build stays open",
+    "installOfficial": "Install release",
     "localBuild": "Local",
-    "skipVersion": "Skip this version",
     "upToDate": "ORG2 is up to date.",
     "upToDateVersion": "ORG2 is up to date (v{{version}}).",
     "officialAlreadyInstalled": "Official ORG2 v{{version}} is already installed in /Applications.",
@@ -790,7 +837,7 @@
     "tableVersion": "Version",
     "tableStatus": "Status",
     "installSection": "Install",
-    "installHintNote": "Suggested install command for your platform. Most system dependencies require admin privileges, so we don't run them automatically — copy and paste into your terminal."
+    "installHintNote": "Suggested install command for your platform. Most system dependencies require admin privileges, so we don't run them automatically — copy and paste into your terminal"
   },
   "storage": {
     "dataDirectory": "Data Directory",
@@ -824,10 +871,8 @@
     "typingAnimationDesc": "Enable typewriter animation for Agent messages",
     "typingSpeed": "Typing Speed",
     "typingSpeedDesc": "Milliseconds per character (1ms = fastest, 50ms = slowest)",
-    "decryptEffect": "Typewriter Effect",
-    "decryptEffectDesc": "Reveal Agent messages character by character",
-    "sendOnEnter": "Send messages with Enter",
-    "sendOnEnterDesc": "When enabled, Enter sends; Shift+Enter and Ctrl/Cmd+Enter insert a new line. When disabled, Ctrl/Cmd+Enter sends"
+    "sendOnEnter": "Send messages with",
+    "sendOnEnterDesc": "Choose the shortcut that sends a message; other Enter combinations insert a new line"
   },
   "indexing": {
     "noWorkspaceMemories": "No workspace memories yet. They will appear after sessions extract information about this workspace.",
@@ -876,7 +921,7 @@
   "agentEvolution": {
     "enableForAgent": "Enable Evolution for {{agentName}}",
     "noAgentsTitle": "No agents available",
-    "noAgentsSubtitle": "Create or import an agent to configure Evolution."
+    "noAgentsSubtitle": "Create or import an agent to configure Evolution"
   },
   "org": {},
   "learningsBrowser": {
@@ -969,6 +1014,8 @@
     "apply": "Use this connection",
     "applied": "Configuration saved — start a new harness session to use it",
     "restore": "Restore original setup",
+    "disconnect": "Disconnect",
+    "overlayHelp": "Connection settings are stored separately in {{path}}. Open terminal starts Claude Code with these settings and its existing conversation history. Session tracking hooks are controlled separately",
     "restored": "Original setup restored — start a new harness session",
     "refresh": "Refresh",
     "refreshed": "Harness connections refreshed",
@@ -982,7 +1029,35 @@
     "authentication": "Authentication",
     "desktopScope": "Configures Claude Desktop separately from Claude Code CLI; fully quit and reopen Desktop after applying",
     "desktopApplied": "Desktop configuration saved — fully quit and reopen Claude Desktop",
-    "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop"
+    "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop",
+    "advancedDescription": "Custom API connections and one-time credential migration",
+    "marketApps": {
+      "isolatedStorage": "This official App uses separate settings and conversation storage. Your main App and CLI keep their settings. Earlier conversations are not imported automatically",
+      "isolatedClaudeStorage": "Code history is copied when opening this app; new messages stay here. Main App and CLI settings stay unchanged. Reopen Claude if imported conversations are not yet visible",
+      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
+      "loading": "Loading official packages…",
+      "loadFailed": "Official packages could not be loaded",
+      "nonePurchased": "No official packages are currently available",
+      "checking": "Checking app…",
+      "unavailable": "Unavailable for this installed version",
+      "notInstalled": "Not installed",
+      "original": "Using the app’s original setup",
+      "open": "Open app",
+      "connected": "The app now follows the current ORG2 workspace",
+      "opened": "App opened",
+      "disconnected": "The app’s previous setup was restored",
+      "actionFailed": "Could not update this app connection",
+      "openFailed": "Could not open this app",
+      "restoreRequired": "Restore the original setup for this app, then select your packages and apply the connection again",
+      "workspaceNumber": "Service {{index}} of {{count}}",
+      "openTerminal": "Open terminal",
+      "terminalOpened": "Terminal opened",
+      "provider": "ORG2 Market",
+      "multiPackageHelp": "Select up to 8 packages and a default model, then switch packages inside the app",
+      "auxiliaryBilling": "Claude Code's automatic title, memory and compaction calls are billed to the default package; only the chat itself follows the package you pick with /model",
+      "defaultModel": "Default model",
+      "packageLimit": "Select up to 8 packages"
+    }
   },
   "claudeProfiles": {
     "new": "New profile",
@@ -1014,5 +1089,22 @@
     "fetchDone": "Model list loaded; choose or enter an ID",
     "testDone": "Tool round trip and streaming passed; test evidence expires after 15 minutes",
     "role": "Role"
+  },
+  "development": {
+    "updateAvailable": "Update available",
+    "updateAvailableDesc": "Show update indicators across the app using version 99.0.0 — update actions only preview the dialog",
+    "illustrations": "Illustrations",
+    "illustrationsDesc": "Compare all app illustrations in light and dark without changing your theme"
+  },
+  "managedUsage": {
+    "cancel": "Cancel",
+    "authorize": "Enable package",
+    "rates": "Input / output per million tokens",
+    "wallet": "Open wallet",
+    "priceRange": "Package range: {{min}}%–{{max}}% of official pricing",
+    "rangeUnavailable": "Package price range unavailable. Refresh the catalog before enabling this package.",
+    "walletIncluded": "All included models use your wallet balance.",
+    "walletUnavailable": "Wallet billing is not available yet. Refresh after the service is updated.",
+    "walletConsent": "Enable every model in this package at the displayed price range. Actual usage is charged directly from your wallet balance; no separate package budget is required."
   }
 }

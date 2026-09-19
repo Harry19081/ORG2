@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 
 import { Placeholder } from "@src/components/Placeholder";
 import { hasConflictMarkers } from "@src/features/CodeMirror";
+import type { FileHeaderProps } from "@src/features/FileHeader";
 import { FileHeader } from "@src/modules/WorkStation/shared";
 import { EditorService } from "@src/services/workStation/EditorService";
 import {
@@ -171,19 +172,8 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     );
   }
 
-  // Content still missing — either the self-fetch is in flight or the parent
-  // is still hydrating `gitDiffState.filesByPath`. Show a loading spinner
-  // rather than fall through to the empty-content "file not found" branch.
-  if (effectiveGitFile.oldContent === undefined) {
-    return (
-      <Placeholder
-        variant="loading"
-        placement="detail-panel"
-        fillParentHeight
-      />
-    );
-  }
-
+  // Path-derived fields resolve from metadata alone, so the header can render
+  // before the diff body arrives.
   const {
     absoluteFilePath,
     isBinary,
@@ -194,35 +184,67 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     relativePath,
   } = resolveGitDiffPresentation(effectiveGitFile, repoPath);
 
+  const baseHeaderProps: FileHeaderProps = {
+    publishToHost: publishHeaderToWorkstation ? "code" : undefined,
+    leadingSlot: leadingHeaderSlot,
+    filePath: effectiveGitFile.path,
+    repoPath,
+    additions: effectiveGitFile.additions,
+    deletions: effectiveGitFile.deletions,
+    onReload: onReload ? handleReload : undefined,
+    relativePathToCopy: relativePath,
+    lineNumbersEnabled: lineNumbers !== "off",
+    onLineNumbersChange: handleLineNumbersChange,
+    wordWrapEnabled: wordWrap,
+    onWordWrapChange: setWordWrap,
+    highlightActiveLineEnabled: highlightActiveLine,
+    onHighlightActiveLineChange: setHighlightActiveLine,
+    onMoreSettings: onOpenSettings,
+    showSidebarSettings: publishHeaderToWorkstation,
+    loading: loading || selfFetching,
+    onFileSelect,
+    showOpenFileAction: !!onFileSelect,
+    onClose: onClose ? handleCloseFocus : undefined,
+  };
+  const textHeaderProps: FileHeaderProps = {
+    ...baseHeaderProps,
+    viewMode,
+    onViewModeChange: setViewMode,
+    onSearchRequest: handleSearchRequest,
+    onGoToLineRequest: handleGoToLineRequest,
+    // Split panes always wrap; keep the toggle visible but locked on.
+    wordWrapLocked: viewMode === "split" && !fileHasConflicts,
+  };
+
+  // Content still missing — either the self-fetch is in flight or the parent
+  // is still hydrating `gitDiffState.filesByPath`. Keep the header mounted
+  // (its breadcrumb and "…" menu are published into the workstation header)
+  // so switching files does not blink them, and show a spinner for the body
+  // rather than fall through to the empty-content "file not found" branch.
+  if (effectiveGitFile.oldContent === undefined) {
+    return (
+      <>
+        <FileHeader
+          {...(isBinary || isBinaryPreviewType
+            ? baseHeaderProps
+            : textHeaderProps)}
+        />
+        <Placeholder
+          variant="loading"
+          placement="detail-panel"
+          fillParentHeight
+        />
+      </>
+    );
+  }
+
   // Route all binary/previewable files through a single switch on previewType.
   // This covers both sentinel-tagged files and untracked/new files that never
   // get a sentinel (e.g. a newly added PNG in source control).
   if (isBinary || isBinaryPreviewType) {
     const isDeleted = effectiveGitFile.status === "deleted";
 
-    const fileHeader = (
-      <FileHeader
-        publishToHost={publishHeaderToWorkstation ? "code" : undefined}
-        leadingSlot={leadingHeaderSlot}
-        filePath={effectiveGitFile.path}
-        repoPath={repoPath}
-        additions={effectiveGitFile.additions}
-        deletions={effectiveGitFile.deletions}
-        onReload={onReload ? handleReload : undefined}
-        relativePathToCopy={relativePath}
-        lineNumbersEnabled={lineNumbers !== "off"}
-        onLineNumbersChange={handleLineNumbersChange}
-        wordWrapEnabled={wordWrap}
-        onWordWrapChange={setWordWrap}
-        highlightActiveLineEnabled={highlightActiveLine}
-        onHighlightActiveLineChange={setHighlightActiveLine}
-        onMoreSettings={onOpenSettings}
-        loading={loading || selfFetching}
-        onFileSelect={onFileSelect}
-        showOpenFileAction={!!onFileSelect}
-        onClose={onClose ? handleCloseFocus : undefined}
-      />
-    );
+    const fileHeader = <FileHeader {...baseHeaderProps} />;
 
     return (
       <GitDiffBinaryPreview
@@ -252,32 +274,10 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     <>
       {/* File header with view mode toggle */}
       <FileHeader
-        publishToHost={publishHeaderToWorkstation ? "code" : undefined}
-        leadingSlot={leadingHeaderSlot}
-        filePath={effectiveGitFile.path}
-        repoPath={repoPath}
-        additions={effectiveGitFile.additions}
-        deletions={effectiveGitFile.deletions}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onReload={onReload ? handleReload : undefined}
+        {...textHeaderProps}
         onSave={viewMode === "unified" ? handleSave : undefined}
         onDiscard={viewMode === "unified" ? handleDiscard : undefined}
-        onSearchRequest={handleSearchRequest}
-        onGoToLineRequest={handleGoToLineRequest}
-        relativePathToCopy={relativePath}
-        lineNumbersEnabled={lineNumbers !== "off"}
-        onLineNumbersChange={handleLineNumbersChange}
-        wordWrapEnabled={wordWrap}
-        onWordWrapChange={setWordWrap}
-        highlightActiveLineEnabled={highlightActiveLine}
-        onHighlightActiveLineChange={setHighlightActiveLine}
-        onMoreSettings={onOpenSettings}
-        loading={loading || selfFetching}
         hasUnsavedChanges={hasUnsavedChanges}
-        onFileSelect={onFileSelect}
-        showOpenFileAction={!!onFileSelect}
-        onClose={onClose ? handleCloseFocus : undefined}
       />
 
       {/* Content - Conflict Editor or Diff View */}

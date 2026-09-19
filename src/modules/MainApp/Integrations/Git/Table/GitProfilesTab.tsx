@@ -16,6 +16,15 @@ import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
 import Textarea from "@src/components/Textarea";
 import {
+  SECTION_ACTION_GAP_CLASSES,
+  SECTION_CONTROL_STYLE,
+  SectionContainer,
+  SectionRow,
+  SectionSidebarItem,
+  SectionSidebarList,
+  SectionSidebarSplit,
+} from "@src/components/layout/Section";
+import {
   Add01Icon,
   Copy01Icon,
   Delete02Icon,
@@ -24,15 +33,6 @@ import {
   Tick01Icon,
   UserCircleIcon,
 } from "@src/icons";
-import {
-  SECTION_ACTION_GAP_CLASSES,
-  SECTION_CONTROL_STYLE,
-  SectionContainer,
-  SectionRow,
-  SectionSidebarItem,
-  SectionSidebarList,
-  SectionSidebarSplit,
-} from "@src/modules/shared/layouts/SectionLayout";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 import {
@@ -381,7 +381,6 @@ const GitProfilesTab: React.FC<GitProfilesTabProps> = ({ connectedEmails }) => {
               <SectionRow showHeader={false}>
                 <div className="flex w-full flex-wrap items-center justify-between gap-2">
                   <Button
-                    variant="secondary"
                     size="small"
                     onClick={() => setShowRawConfig((visible) => !visible)}
                   >
@@ -406,7 +405,6 @@ const GitProfilesTab: React.FC<GitProfilesTabProps> = ({ connectedEmails }) => {
                     />
                     {state.profiles.length > 1 && (
                       <Button
-                        variant="secondary"
                         size="small"
                         icon={
                           <HugeiconsIcon

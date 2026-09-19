@@ -88,7 +88,8 @@ export function resolveHighlightedConversationMarkers(
 
 export function getNavigableConversationGroupIndices(
   groupHeaders: readonly unknown[],
-  groupCounts: readonly number[]
+  groupCounts: readonly number[],
+  groupMeta: readonly Pick<ChatGroupMeta, "retryAudit">[] = []
 ): number[] {
   const groupLength = Math.max(groupHeaders.length, groupCounts.length);
   return Array.from(
@@ -96,7 +97,8 @@ export function getNavigableConversationGroupIndices(
     (_, groupIndex) => groupIndex
   ).filter(
     (groupIndex) =>
-      groupHeaders[groupIndex] != null || (groupCounts[groupIndex] ?? 0) > 0
+      !groupMeta[groupIndex]?.retryAudit &&
+      (groupHeaders[groupIndex] != null || (groupCounts[groupIndex] ?? 0) > 0)
   );
 }
 
@@ -117,10 +119,12 @@ export const CONVERSATION_MINIMAP_FLUSH_CONTAINER_PX = 960;
 /** Whether the conversation has enough navigable rounds to show the rail. */
 export function hasConversationMinimapRail(
   groupHeaders: readonly unknown[],
-  groupCounts: readonly number[]
+  groupCounts: readonly number[],
+  groupMeta: readonly Pick<ChatGroupMeta, "retryAudit">[] = []
 ): boolean {
   return (
-    getNavigableConversationGroupIndices(groupHeaders, groupCounts).length >= 2
+    getNavigableConversationGroupIndices(groupHeaders, groupCounts, groupMeta)
+      .length >= 2
   );
 }
 
@@ -282,8 +286,13 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
     );
     const [isPointerOver, setIsPointerOver] = useState(false);
     const navigableGroupIndices = useMemo(
-      () => getNavigableConversationGroupIndices(groupHeaders, groupCounts),
-      [groupCounts, groupHeaders]
+      () =>
+        getNavigableConversationGroupIndices(
+          groupHeaders,
+          groupCounts,
+          groupMeta
+        ),
+      [groupCounts, groupHeaders, groupMeta]
     );
     const markerGroupIndices = useMemo(
       () => sampleConversationGroupIndices(navigableGroupIndices),
@@ -399,8 +408,6 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
             <div key={groupIndex} className={placementClasses.marker}>
               <Button
                 layout="custom"
-                appearance="custom"
-                htmlType="button"
                 aria-current={isActive ? "step" : undefined}
                 aria-describedby={
                   previewGroupIndex === groupIndex ? tooltipId : undefined

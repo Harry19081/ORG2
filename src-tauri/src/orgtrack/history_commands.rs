@@ -41,6 +41,7 @@ mod projection;
 mod provider_commands;
 mod provider_wrappers;
 mod scan;
+mod session_sources;
 
 pub use cursor::*;
 pub use imported_windows::*;
@@ -48,6 +49,7 @@ pub use projection::*;
 pub use provider_commands::*;
 pub use provider_wrappers::*;
 pub use scan::*;
+pub use session_sources::*;
 
 #[cfg(test)]
 mod tests {

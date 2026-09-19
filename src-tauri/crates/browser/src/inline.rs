@@ -28,6 +28,8 @@ use super::scripts::{
 #[cfg(debug_assertions)]
 use super::scripts::{CONSOLE_CAPTURE_SCRIPT, NETWORK_CAPTURE_SCRIPT};
 
+mod load_state;
+
 /// Global ref-count table: label → number of active React instances that have
 /// called `create_inline_webview` and not yet called `close_inline_webview`.
 static WEBVIEW_REF_COUNTS: OnceLock<Mutex<HashMap<String, u32>>> = OnceLock::new();
@@ -167,6 +169,7 @@ pub fn release_station_window_webview_state(window_label: &str) {
         .lock()
         .unwrap()
         .retain(|label, _| !label.ends_with(&suffix));
+    load_state::forget_where(|label| label.ends_with(&suffix));
     if let Ok(Some(active)) = super::internal_browser_state::get_active_internal_browser_state() {
         if active.label.ends_with(&suffix) {
             let _ = super::internal_browser_state::clear_active_internal_browser_state(
@@ -282,15 +285,27 @@ pub async fn create_inline_webview(
             Ok::<(), tauri::Error>(())
         }));
         return match result {
-            Ok(Ok(())) => Ok(()),
+            Ok(Ok(())) => {
+                // A reused view does not navigate again, so the owner that asked
+                // for it would never hear a load phase. Replay the last one.
+                load_state::replay(&app, &parent_window, &label);
+                Ok(())
+            }
             Ok(Err(e)) => Err(format!("Failed to reuse webview: {}", e)),
             Err(_) => Ok(()),
         };
     }
 
+    // A freshly built view has proven nothing; never let it inherit the phase of
+    // a previous view that carried the same label.
+    load_state::forget(&label);
+
     let label_for_closure = label.clone();
     let app_for_closure = app.clone();
     let parent_for_shortcuts = parent_window.clone();
+    let label_for_page_load = label.clone();
+    let app_for_page_load = app.clone();
+    let parent_for_page_load = parent_window.clone();
 
     // Build the webview with anti-bot detection, element inspector, page agent
     // (DOM automation), and new window handling. Console/network interception is
@@ -313,8 +328,16 @@ pub async fn create_inline_webview(
         .initialization_script(PAGE_AGENT_SCRIPT)
         .initialization_script(app_window::shortcut_preferences::initialization_script())
         .initialization_script(SHORTCUT_FORWARDING_SCRIPT)
-        .on_page_load(|webview, _| {
+        .on_page_load(move |webview, payload| {
             let _ = webview.eval(app_window::shortcut_preferences::initialization_script());
+
+            load_state::report(
+                &app_for_page_load,
+                &parent_for_page_load,
+                &label_for_page_load,
+                payload.url().as_str(),
+                load_state::phase_name(payload.event()),
+            );
         })
         .on_new_window(move |new_window_url, _cookies| {
             let url_str = new_window_url.to_string();
@@ -516,6 +539,7 @@ pub fn close_inline_webview(
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| webview.close()));
 
         clear_generation(&label);
+        load_state::forget(&label);
         match result {
             Ok(Ok(())) => Ok(()),
             Ok(Err(e)) => Err(format!("Failed to close: {}", e)),
@@ -529,6 +553,7 @@ pub fn close_inline_webview(
         }
     } else {
         clear_generation(&label);
+        load_state::forget(&label);
         Ok(()) // Webview already gone
     }
 }
@@ -629,6 +654,7 @@ pub fn close_inline_webviews_for_window(
         // Reset lifecycle state so the next create starts fresh.
         reset_ref(label);
         clear_generation(label);
+        load_state::forget(label);
 
         // Clone webview for catch_unwind (needs 'static lifetime)
         let webview_clone = webview.clone();

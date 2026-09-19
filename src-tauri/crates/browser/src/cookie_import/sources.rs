@@ -5,7 +5,9 @@
 //! Chromium) plus Firefox; on Windows and Linux, Firefox only — mirroring what
 //! can actually be decrypted per platform.
 
-use std::path::{Path, PathBuf};
+#[cfg(target_os = "macos")]
+use std::path::Path;
+use std::path::PathBuf;
 
 use super::{CookieSourceKind, SourceUnavailableReason};
 

@@ -4,7 +4,6 @@
  * Shared layout shell for Workstation apps providing consistent structure:
  * - CodeEditor (code editor) - EditorPrimarySidebar
  * - DatabaseManager (database browser) - DatabasePrimarySidebar
- * - Browser (web browser) - BrowserPrimarySidebar
  * - ProjectManager, Chat, SessionReplay variants
  *
  * Layout modes:
@@ -205,6 +204,9 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     const secondaryPosition = secondaryPanelConfig?.position ?? "right";
     const secondarySize = secondaryPanelConfig?.size ?? 0;
     const secondaryOnSizeChange = secondaryPanelConfig?.onSizeChange ?? noop;
+    // Every config carries its own bounds; these fallbacks only feed the
+    // always-called resize hooks when no secondary panel is mounted, where
+    // the resulting handlers are never attached.
     const secondaryMinSize = secondaryPanelConfig?.minSize ?? 100;
     const secondaryMaxSize = secondaryPanelConfig?.maxSize ?? 1200;
     const { handleMouseDown: handleSecondaryResize } = useResizeHandle(
@@ -278,7 +280,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     );
 
     // Secondary panel: single mount. Always rendered when the config is
-    // present; collapse/maximize are reflected via CSS classes on the
+    // present; collapse is reflected via CSS classes on the
     // grid container so React never has to remount the subtree.
     const secondaryPanelCollapsed =
       !secondaryPanelConfig ||

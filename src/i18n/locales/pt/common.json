@@ -18,6 +18,13 @@
     "file": "Pesquisar no arquivo",
     "named": "Pesquisar em {{name}}"
   },
+  "sidebarSettings": {
+    "title": "Barra lateral",
+    "showSidebar": "Mostrar barra lateral",
+    "location": "Posição",
+    "showIndentLines": "Linhas de recuo",
+    "colorSourceControlFiles": "Cores de diferenças nos arquivos"
+  },
   "teamInbox": {
     "title": "Caixa de entrada da equipe",
     "listLabel": "Lista da caixa de entrada da equipe",
@@ -372,7 +379,6 @@
     "restart": "Reiniciar",
     "switchToStation": "Alternar para {{station}}",
     "discard": "Descartar",
-    "run": "Executar",
     "clone": "Clonar",
     "send": "Enviar",
     "sendMessageQueued": "Enviar (na fila)",
@@ -403,11 +409,11 @@
     "switchMethod": "Alterar método",
     "dismiss": "Dispensar",
     "clearSelection": "Limpar seleção",
-    "clearAll": "Limpar tudo",
     "openOnGitHub": "Abrir no GitHub",
     "createPullRequest": "Criar pull request",
     "expandView": "Expandir visualização",
-    "restoreSplitView": "Restaurar visualização dividida"
+    "restoreSplitView": "Restaurar visualização dividida",
+    "overwrite": "Substituir"
   },
   "status": {
     "yes": "Sim",
@@ -491,7 +497,7 @@
   },
   "optional": "opcional",
   "common": {
-    "display": "Exibição",
+    "display": "Configurações da interface",
     "on": "Ligado",
     "off": "Desligado",
     "default": "Padrão",
@@ -560,7 +566,6 @@
     "globPatternsHint": "Padrões glob, separados por vírgula",
     "outline": "Estrutura",
     "timeline": "Linha do tempo",
-    "indexing": "Indexação",
     "testExplorer": "Explorador de testes",
     "installed": "Instalado",
     "extensionViews": "Visualizações de extensão",
@@ -678,7 +683,6 @@
     "explorer": "Explorador",
     "search": "Pesquisar",
     "sourceControl": "Controle de origem",
-    "sessions": "Sessões",
     "myTabs": "Minhas abas ({{count}})",
     "design": "Design",
     "settings": "Configurações",
@@ -789,7 +793,6 @@
     "closePanel": "Fechar painel",
     "showSidebar": "Mostrar barra lateral",
     "hideSidebar": "Ocultar barra lateral",
-    "moreOptions": "Mais opções",
     "zoomIn": "Aumentar zoom",
     "zoomOut": "Diminuir zoom",
     "goBack": "Voltar",
@@ -807,10 +810,9 @@
     "replaceAll": "Substituir tudo (Ctrl+Alt+Enter)",
     "replaceAllLabel": "Substituir tudo",
     "moreActions": "Mais ações...",
-    "formatSql": "Formatar SQL (prettify)",
-    "queryHistory": "Histórico de consultas",
-    "executeQuery": "Executar consulta ({{shortcut}})",
     "startVoiceInput": "Iniciar entrada por voz",
+    "expandInput": "Expandir a caixa de entrada",
+    "collapseInput": "Recolher a caixa de entrada",
     "cancelRecording": "Cancelar gravação",
     "stopAndTranscribe": "Parar e transcrever",
     "htmlPreview": "Pré-visualização HTML",
@@ -820,7 +822,6 @@
     "movePanelToRight": "Mover painel para a direita",
     "movePanelToBottom": "Mover painel para baixo",
     "domTree": "Árvore DOM",
-    "closeSession": "Fechar sessão",
     "clearNetworkLogs": "Limpar logs de rede",
     "clearConsole": "Limpar console",
     "copyToClipboard": "Copiar para a área de transferência",
@@ -871,7 +872,6 @@
     "pleaseTryAgain": "Tente novamente",
     "noFileOpen": "Abra um arquivo para começar a editar",
     "selectFileToEdit": "Escolha um arquivo no explorador",
-    "noTabs": "Abra uma aba para começar",
     "noTabsOpen": "Abra um item para começar",
     "selectItemToStart": "Escolha um item na barra lateral",
     "noDatabaseConnected": "Nenhum banco de dados conectado",
@@ -953,7 +953,8 @@
     "selectSidebarStash": "Selecione um stash",
     "selectSidebarCommit": "Selecione um commit",
     "selectSidebarPullRequest": "Selecione um pull request",
-    "selectSidebarIssue": "Selecione um issue"
+    "selectSidebarIssue": "Selecione um issue",
+    "pressEnterToSearch": "Pressione Enter para pesquisar"
   },
   "inbox": {
     "scrollToBottom": "Rolar até o fim",
@@ -982,7 +983,6 @@
     "notGitInitialized": "Git não inicializado",
     "notGitInitializedTooltip": "Este diretório de trabalho ainda não tem um diretório .git.",
     "publishBranchToOrigin": "Publicar branch \"{{branch}}\" na origin",
-    "scanningFiles": "Varrendo arquivos...",
     "branchTooltipSwitching": "Branch: {{branch}} (alternando...)",
     "switchWorkspaceTooltip": "Mudar diretório de trabalho",
     "switchWorktreeTooltip": "Mudar de worktree",
@@ -993,12 +993,6 @@
     "sessionAgent": "{{name}}",
     "gitActionsTooltip": "Ações do Git",
     "switchToSessionRepo": "Mudar para {{name}}",
-    "embeddingProgress": "Embedding: {{count}} chunks processados",
-    "embeddingProgressWithPercent": "Embedding: {{count}} chunks processados ({{percent}}%)",
-    "embeddingShort": "Embedding {{percent}}%",
-    "embeddingLabel": "Embedding",
-    "indexingProgress": "Indexando: {{processed}}/{{total}} arquivos ({{percent}}%)",
-    "indexingProgressWithFile": "Indexando: {{processed}}/{{total}} arquivos ({{percent}}%)\nAtual: {{file}}",
     "ports": {
       "workspaceSection": "Espaço de trabalho atual",
       "externalSection": "Externas",
@@ -1051,8 +1045,8 @@
       "siteUnreachableTitle": "Não é possível acessar este site",
       "webviewHiddenTitle": "Visualização web oculta temporariamente",
       "webviewHiddenBody": "Feche o menu ou a caixa de diálogo para exibi-la novamente.",
-      "embeddedFallbackTitle": "Este site pode não funcionar no navegador incorporado",
-      "embeddedFallbackBody": "Alguns sites bloqueiam ou não renderizam dentro de WebViews do app. Abra no navegador do sistema se a página continuar em branco.",
+      "loadStalledTitle": "Esta página não terminou de carregar",
+      "loadStalledBody": "O navegador incorporado começou a carregar este endereço, mas nunca concluiu. Recarregue a página ou abra-a no navegador do sistema.",
       "currentUrl": "URL atual"
     },
     "unsavedChangesTitle": "Alterações não salvas",
@@ -1069,7 +1063,9 @@
         "skipped": "Ignorado",
         "passed": "Aprovado"
       }
-    }
+    },
+    "fileChangedOnDiskTitle": "Ficheiro alterado no disco",
+    "fileChangedOnDiskBody": "\"{{name}}\" foi alterado no disco desde que o abriu. Substituir pela sua versão?"
   },
   "git": {
     "loading": "Carregando status do Git...",
@@ -1096,7 +1092,7 @@
       "createTokenButton": "Criar token",
       "openGitSettingsButton": "Abrir configurações",
       "configureInSettings": "Configure o Git nas configurações",
-      "configureInSettingsDesc": "Adicione acesso do GitHub App, salve um token ou escaneie credenciais locais em Configurações → Conexões e tente esta operação Git novamente."
+      "configureInSettingsDesc": "Adicione acesso do GitHub App, salve um token ou escaneie credenciais locais em Configurações → Conexões e tente esta operação Git novamente"
     },
     "actions": {
       "publish": "Publicar",
@@ -1134,7 +1130,12 @@
       "returnFromMiniTerminal": "Mostrar aqui",
       "resizeTerminal": "Redimensionar terminal",
       "terminalProcessCount_one": "{{count}} processo",
-      "terminalProcessCount_other": "{{count}} processos"
+      "terminalProcessCount_other": "{{count}} processos",
+      "sources": "Fontes",
+      "sourcesCount_one": "{{count}} fonte",
+      "sourcesCount_other": "{{count}} fontes",
+      "loadMoreSources": "Carregar mais (+{{count}})",
+      "sourceImage": "Imagem"
     },
     "pr": {
       "title": "Pull request",
@@ -1335,7 +1336,7 @@
       "cannotParseRepoName": "Não foi possível obter o nome do repositório a partir do remote origin",
       "authRequired": {
         "title": "Conectar GitHub",
-        "description": "Vá para Configurações → Conexões para conectar sua conta do GitHub."
+        "description": "Vá para Configurações → Conexões para conectar sua conta do GitHub"
       },
       "navigationTrail": "Navegação de pull requests",
       "failedToLoad": "Falha ao carregar pull requests",
@@ -1505,15 +1506,66 @@
       "newIssueBodyPlaceholder": "Descreva o issue (opcional)…",
       "authRequired": {
         "title": "Conectar GitHub",
-        "description": "Vá para Configurações → Conexões para conectar sua conta do GitHub."
+        "description": "Vá para Configurações → Conexões para conectar sua conta do GitHub"
       },
       "reAuthRequired": "Autorização do GitHub necessária",
-      "reAuthDescription": "Seu token do GitHub expirou. Vá para Configurações → Conexões para reconectar.",
+      "reAuthDescription": "Seu token do GitHub expirou. Vá para Configurações → Conexões para reconectar",
       "goToSettings": "Ir para Configurações",
       "loadingTimeline": "Carregando atividade…",
       "label": "Issue",
       "linkedLoading": "Carregando itens vinculados",
       "detailNavigation": "Navegação de issues"
+    },
+    "branchSwitch": {
+      "title": "Trocar de branch",
+      "conflictsTitle": "As alterações precisam de atenção",
+      "blockedTitle": "A troca de branch precisa de atenção",
+      "working": "Salvando e trocando…",
+      "current": "Branch atual: {{branch}}",
+      "changedFiles": "{{count}} arquivos alterados",
+      "question": "O que você deseja fazer com suas alterações?",
+      "leave": "Deixar alterações em {{branch}}",
+      "leaveDescription": "Salve seu trabalho para continuar depois e troque com uma árvore de trabalho limpa",
+      "bring": "Levar alterações para {{branch}}",
+      "bringDescription": "Leve suas alterações não commitadas para a branch de destino",
+      "worktreeTitle": "A branch está aberta em outra árvore de trabalho",
+      "openWorktree": "Abrir árvore de trabalho",
+      "activeTask": "Há uma tarefa em execução nesta worktree",
+      "activeTaskDescription": "Trocar agora altera os arquivos em que o agente está trabalhando",
+      "switchAnyway": "Trocar mesmo assim",
+      "switchedTo": "Alterado para {{branch}}",
+      "saveTitle": "Salvar arquivos antes de trocar",
+      "saveDescription": "Os arquivos abertos têm edições não salvas. Salve-os antes de escolher onde manter suas alterações",
+      "saveContinue": "Salvar tudo e continuar",
+      "saveFailed": "Não foi possível salvar todos os arquivos",
+      "multipleBuffers": "Este arquivo tem edições em mais de um editor. Salve ou feche esses editores antes de trocar",
+      "editedWhileSaving": "Os arquivos foram editados durante o salvamento. Revise as alterações mais recentes e tente novamente",
+      "savePreview": "Salve ou descarte as edições no editor de planilhas antes de trocar de branch",
+      "messages": {
+        "detached_head": "Crie um branch a partir do commit atual antes de trocar, para que o trabalho desanexado continue acessível",
+        "unborn": "Crie o primeiro commit antes de usar as alterações de branch salvas",
+        "ignored_collision": "Um arquivo ignorado seria sobrescrito. Mova-o antes de trocar",
+        "worktree_branch_in_use": "Esta branch já está aberta em outra árvore de trabalho",
+        "invalid_branch_name": "Escolha um nome de branch válido",
+        "branch_exists": "Essa branch já existe",
+        "branch_not_found": "Branch não encontrada ou ambígua. Atualize as branches e selecione uma branch remota explícita",
+        "upstream_mismatch": "Uma branch local com esse nome rastreia um upstream diferente. Escolha a branch local explicitamente",
+        "operation_merge": "Termine ou cancele a mesclagem antes de trocar de branch",
+        "operation_rebase": "Termine ou cancele o rebase antes de trocar de branch",
+        "operation_cherry_pick": "Termine ou cancele o cherry-pick antes de trocar de branch",
+        "operation_revert": "Termine ou cancele o revert antes de trocar de branch",
+        "operation_other": "Termine a operação atual do Git antes de trocar de branch",
+        "stale": "Os arquivos ou branches mudaram enquanto a caixa de diálogo estava aberta. Revise as alterações mais recentes e tente novamente",
+        "save_failed": "Não foi possível terminar de salvar as alterações: {{detail}}. Revise a árvore de trabalho e as alterações salvas antes de tentar novamente",
+        "changed_while_saving": "Os arquivos mudaram durante o salvamento. O checkout não foi tentado; seu snapshot está disponível",
+        "checkout_failed_restored": "Falha no checkout; suas alterações foram restauradas: {{detail}}",
+        "checkout_failed_saved": "Falha no checkout. Suas alterações estão salvas: {{detail}}",
+        "worktree_changed": "A árvore de trabalho mudou durante o checkout. Suas alterações originais estão salvas; revise os arquivos atuais antes de restaurar",
+        "restore_conflicts": "Alterado para {{branch}}. Algumas alterações não puderam ser restauradas: {{detail}}. Suas alterações originais estão salvas",
+        "saved_on_previous": "Alterações salvas no branch anterior",
+        "brought": "Suas alterações acompanharam você até esta branch",
+        "worktree_missing": "A worktree não existe mais. Atualize e tente novamente"
+      }
     }
   },
   "selectors": {
@@ -1568,7 +1620,6 @@
         "createWorkspace": "Criar novo diretório de trabalho"
       },
       "sources": {
-        "cloningFromGitHub": "clonando do GitHub",
         "cloningFromGitHubUrl": "clonar via URL do GitHub",
         "cloningFromMyGitHub": "clonar do meu GitHub",
         "creatingWorkspace": "criando novo diretório de trabalho",
@@ -1629,7 +1680,6 @@
         "createFrom": "Criar branch a partir de",
         "deleteBranch": "Excluir branch",
         "refresh": "Atualizar branch",
-        "checkoutDetachedSuccess": "Agora em estado HEAD detached no commit atual",
         "removeWorktree": "Remover Worktree",
         "newWorktree": "Novo worktree...",
         "refreshPullRequests": "Atualizar Pull requests"
@@ -1637,9 +1687,15 @@
       "messages": {
         "deletedCount_one": "{{count}} branch excluído",
         "deletedCount_other": "{{count}} branches excluídos",
-        "failedDeleteList": "Falha ao excluir: {{branches}}"
+        "failedDeleteList": "Falha ao excluir: {{branches}}",
+        "failedDelete": "Não foi possível excluir o branch \"{{branch}}\"",
+        "prNoHeadBranch": "O pull request não tem branch head",
+        "readBranchesFailed": "Não foi possível ler os branches locais",
+        "createPrBranchFailed": "Não foi possível criar o branch do PR",
+        "readRemotesFailed": "Não foi possível ler os remotos do repositório"
       },
       "labels": {
+        "defaultBranches": "Branches padrão",
         "otherBranches": "Outros branches",
         "current": "Atual",
         "recent": "Recentes",
@@ -1687,6 +1743,8 @@
       "selectWorktreeSource": "Selecionar branch ou pull request do worktree"
     },
     "spotlightFooter": {
+      "settings": "Configurações do Spotlight",
+      "unpinAll": "Desafixar tudo",
       "navigate": "Navegar",
       "select": "Selecionar",
       "switchColumn": "Trocar coluna",
@@ -1770,11 +1828,6 @@
         "integrations": "Agents e integrações",
         "market": "Market",
         "actions": "Ações"
-      },
-      "paramLabels": {
-        "repo": "Repo",
-        "folder": "Pasta",
-        "branch": "Branch"
       },
       "actions": {
         "showInFinder": {
@@ -1879,7 +1932,7 @@
     "chatRight": "Chat à direita",
     "sidebarPosition": "Barra lateral do Workstation",
     "modelPickerStyle": "Seletor",
-    "paginateChatHistory": "Paginar histórico do chat",
+    "paginateChatHistory": "Paginação do histórico do chat",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Esquerda",
@@ -2154,7 +2207,7 @@
   "globalToolbar": {},
   "quitConfirmation": {
     "title": "Sair do ORG2?",
-    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORG2 mais tarde.",
+    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORG2 mais tarde",
     "cancel": "Cancelar",
     "confirm": "Sair"
   },
@@ -2184,7 +2237,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "O Safari guarda os cookies em uma pasta protegida pelo macOS. Permita o ORG2 em Acesso Total ao Disco nos Ajustes do Sistema e verifique novamente.",
+      "explain": "O Safari guarda os cookies em uma pasta protegida pelo macOS. Permita o ORG2 em Acesso Total ao Disco nos Ajustes do Sistema e verifique novamente",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
@@ -2209,7 +2262,7 @@
     "doneSkipped_other": "{{count}} cookies were skipped",
     "empty": {
       "title": "No supported browsers found",
-      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from."
+      "body": "Install Chrome, Edge, Brave, or Firefox with saved logins to import from"
     },
     "category": {
       "banking": "Bank",
@@ -2218,7 +2271,7 @@
     },
     "errors": {
       "openSettingsFailed": "Couldn't open System Settings",
-      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow.",
+      "keychainDenied": "Keychain access was denied. Pick the profile again and choose Allow",
       "listFailed": "Couldn't find browsers to import from",
       "previewFailed": "Couldn't read cookies from that browser",
       "importFailed": "Couldn't import the selected cookies"
@@ -2246,22 +2299,6 @@
     "loadFailed": "Aplicativos indisponíveis — reabra para tentar novamente",
     "openFailed": "Não foi possível abrir o documento",
     "saveFirst": "Salve ou descarte as alterações antes de abrir em outro aplicativo"
-  },
-  "sqlEditor": {
-    "placeholder": "Digite a consulta SQL...",
-    "format": "Formatar",
-    "runQueryToSeeResults": "Execute uma consulta para ver os resultados",
-    "executingQuery": "Executando consulta...",
-    "queryFailed": "Falha na consulta",
-    "queryCompleted": "Consulta concluída",
-    "noResults": "A consulta não retornou resultados",
-    "rowCount_one": "{{count}} linha",
-    "rowCount_other": "{{count}} linhas",
-    "press": "Pressione",
-    "toRun": "para executar",
-    "nullValue": "NULL",
-    "booleanTrue": "true",
-    "booleanFalse": "false"
   },
   "chatImage": {
     "maxReached": "Máximo de {{max}} imagens permitidas",

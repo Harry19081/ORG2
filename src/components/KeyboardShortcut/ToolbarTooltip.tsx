@@ -9,8 +9,9 @@ export interface ToolbarTooltipProps {
   label: ReactNode;
   shortcut?: string;
   shortcutId?: string;
+  /** The action deliberately has no shortcut: show the label alone. */
+  noShortcut?: boolean;
   position?: TooltipProps["position"];
-  mouseEnterDelay?: TooltipProps["mouseEnterDelay"];
   disabled?: boolean;
   children: ReactNode;
 }
@@ -20,8 +21,8 @@ export const ToolbarTooltip: React.FC<ToolbarTooltipProps> = memo(
     label,
     shortcut,
     shortcutId,
+    noShortcut = false,
     position = "bottom",
-    mouseEnterDelay = 200,
     disabled = false,
     children,
   }) => {
@@ -34,10 +35,11 @@ export const ToolbarTooltip: React.FC<ToolbarTooltipProps> = memo(
           <KeyboardShortcutTooltipContent
             label={label}
             shortcut={resolvedShortcut}
+            noShortcut={noShortcut}
           />
         }
         position={position}
-        mouseEnterDelay={mouseEnterDelay}
+        kind="button"
         framedPanel
         disabled={disabled}
         smartPlacement

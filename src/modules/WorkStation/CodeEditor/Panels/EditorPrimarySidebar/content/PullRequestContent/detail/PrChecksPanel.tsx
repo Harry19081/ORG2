@@ -12,12 +12,12 @@ import { useTranslation } from "react-i18next";
 
 import type { GitHubChecksSummary } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
+import CiCheckStateIcon from "@src/components/CiCheckStateIcon";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
 } from "@src/components/Dropdown/tokens";
 import { ArrowUpRight01Icon, HugeiconsIcon, ListChecksIcon } from "@src/icons";
-import CiCheckStateIcon from "@src/modules/shared/components/CiCheckStateIcon";
 import {
   CI_CHECK_SECTION_ORDER,
   type CiCheckItem,
@@ -65,7 +65,6 @@ function PrCheckRow({ item, onOpenDetails }: PrCheckRowProps): React.ReactNode {
       {item.detailsUrl ? (
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           iconOnly
           icon={
@@ -75,7 +74,6 @@ function PrCheckRow({ item, onOpenDetails }: PrCheckRowProps): React.ReactNode {
               size={DROPDOWN_ITEM.iconSize}
             />
           }
-          htmlType="button"
           className="shrink-0"
           title={t("workstation.ci.viewDetails", "View check details")}
           aria-label={t("workstation.ci.viewDetails", "View check details")}

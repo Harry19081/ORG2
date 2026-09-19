@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { ORGII_ORCHESTRATOR } from "@src/assets/providers/types";
 import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   type SettingsTableColumn,
@@ -10,7 +11,6 @@ import SettingsTable, {
 import Switch from "@src/components/Switch";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Add01Icon,
   ArrowDown01Icon,
@@ -181,26 +181,18 @@ export default function ModelsTableSection({
     olderCount > 0 && !isSearching ? (
       <div className="flex justify-center border-t border-border-2 py-2.5">
         <Button
-          variant="primary"
-          appearance="ghost"
+          variant="ghost"
           size="inline"
-          htmlType="button"
           onClick={() => setHideOlder((prev) => !prev)}
-          className="gap-1.5 text-[13px] hover:text-primary-5"
+          icon={
+            <HugeiconsIcon
+              icon={hideOlder ? ArrowDown01Icon : ArrowUp01Icon}
+              data-icon={hideOlder ? "chevron-down" : "chevron-up"}
+              size={14}
+            />
+          }
+          className="text-[13px]"
         >
-          {hideOlder ? (
-            <HugeiconsIcon
-              icon={ArrowDown01Icon}
-              data-icon="chevron-down"
-              size={14}
-            />
-          ) : (
-            <HugeiconsIcon
-              icon={ArrowUp01Icon}
-              data-icon="chevron-up"
-              size={14}
-            />
-          )}
           {hideOlder
             ? t("modelsTable.showMoreOlder")
             : t("modelsTable.showLessOlder")}
@@ -342,8 +334,6 @@ export default function ModelsTableSection({
 
   const refreshModelsButton = onRefreshModels ? (
     <Button
-      variant="secondary"
-      size="default"
       icon={
         <HugeiconsIcon
           icon={Refresh04Icon}
@@ -363,8 +353,6 @@ export default function ModelsTableSection({
 
   const addProviderButton = (
     <Button
-      variant="secondary"
-      size="default"
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       iconOnly
       onClick={onAdd}

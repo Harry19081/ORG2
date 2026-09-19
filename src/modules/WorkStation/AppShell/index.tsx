@@ -1,28 +1,24 @@
 import { useAtomValue } from "jotai";
 import React from "react";
 
+import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
 import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
-import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
+import AgentStationChromeFrame from "@src/scaffold/WorkbenchChrome/AgentStationChromeFrame";
+import AgentStationTopHeader from "@src/scaffold/WorkbenchChrome/AgentStationTopHeader";
+import WorkstationTabBar from "@src/scaffold/WorkbenchChrome/WorkstationTabBar";
+import WorkstationTabHeader from "@src/scaffold/WorkbenchChrome/WorkstationTabHeader";
 import { workstationActiveSessionIdAtom } from "@src/store/session";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
-import {
-  workStationFollowAgentHighlightEnabledAtom,
-  workStationStatusBarHiddenAtom,
-} from "@src/store/ui/workStationLayout/chromeAtoms";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
 
 import { StatusBarRenderer } from "../shared/StatusBar/StatusBarRenderer";
 import { WorkspacePortScanner } from "../shared/StatusBar/WorkspacePortScanner";
 import { useWorkspacePortAdvertisedUrls } from "../shared/StatusBar/utils/useWorkspacePortAdvertisedUrls";
-import AgentStationChromeFrame from "./AgentStationChromeFrame";
-import AgentStationTopHeader from "./AgentStationTopHeader";
 import { AppShellContent } from "./AppShellContent";
-import WorkstationTabBar from "./WorkstationTabBar";
-import WorkstationTabHeader from "./WorkstationTabHeader";
 import { useAppShellActions } from "./hooks/useAppShellActions";
 import { useAppShellDerivedState } from "./hooks/useAppShellDerivedState";
 import { useAppShellDock } from "./hooks/useAppShellDock";
@@ -45,10 +41,6 @@ interface AppShellProps {
 
 const AppShell = React.memo(
   ({ isActive = true, chatPanelFocused = false }: AppShellProps) => {
-    const statusBarHidden = useAtomValue(workStationStatusBarHiddenAtom);
-    const followAgentHighlightEnabled = useAtomValue(
-      workStationFollowAgentHighlightEnabledAtom
-    );
     const primaryPanelCollapsed = useAtomValue(
       workStationPrimarySidebarCollapsedAtom
     );
@@ -66,7 +58,7 @@ const AppShell = React.memo(
     useWorkstationRouteEntry();
 
     const { isAgentStation, illuminateAgentStationChrome } =
-      useAppShellStationMode({ followAgentHighlightEnabled });
+      useAppShellStationMode();
 
     const agentStationCaptionVisible =
       isAgentStation &&
@@ -124,7 +116,6 @@ const AppShell = React.memo(
     useWorkspacePortAdvertisedUrls(isCodeMode && portsEnabled);
 
     const showStatusBar = shouldShowWorkStationStatusBar({
-      statusBarHidden,
       isAgentStation,
       activeTabType: activeWorkStationTab?.type,
     });
@@ -144,7 +135,7 @@ const AppShell = React.memo(
           />
         )}
         <AgentStationChromeFrame
-          enabled={followAgentHighlightEnabled && isAgentStation}
+          enabled={isAgentStation}
           illuminated={illuminateAgentStationChrome}
           captionVisible={agentStationCaptionVisible}
           hasSession={!!workstationActiveSessionId}

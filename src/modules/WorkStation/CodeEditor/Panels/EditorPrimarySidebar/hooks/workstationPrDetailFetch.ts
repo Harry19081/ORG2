@@ -13,6 +13,7 @@ import {
   getChecksLocal,
   getPRLocal,
   listIssueCommentsLocal,
+  listIssueTimelineLocal,
   listPRCommitsLocal,
   listPRFilesLocal,
   listPrReviewCommentsLocal,
@@ -48,15 +49,23 @@ export async function fetchPrDetailBundle(
   repoFullName: string,
   prNumber: number
 ): Promise<PrDetailBundle> {
-  const [detail, conversation, reviews, reviewComments, commits, files] =
-    await Promise.all([
-      getPRLocal(repoFullName, prNumber),
-      listIssueCommentsLocal(repoFullName, prNumber).catch(() => []),
-      listPrReviewsLocal(repoFullName, prNumber).catch(() => []),
-      listPrReviewCommentsLocal(repoFullName, prNumber).catch(() => []),
-      listPRCommitsLocal(repoFullName, prNumber).catch(() => []),
-      listPRFilesLocal(repoFullName, prNumber).catch(() => []),
-    ]);
+  const [
+    detail,
+    conversation,
+    reviews,
+    reviewComments,
+    commits,
+    files,
+    timeline,
+  ] = await Promise.all([
+    getPRLocal(repoFullName, prNumber),
+    listIssueCommentsLocal(repoFullName, prNumber).catch(() => []),
+    listPrReviewsLocal(repoFullName, prNumber).catch(() => []),
+    listPrReviewCommentsLocal(repoFullName, prNumber).catch(() => []),
+    listPRCommitsLocal(repoFullName, prNumber).catch(() => []),
+    listPRFilesLocal(repoFullName, prNumber).catch(() => []),
+    listIssueTimelineLocal(repoFullName, prNumber).catch(() => []),
+  ]);
 
   const headSha = readString(detail, ["head", "sha"]);
   const baseRef = readString(detail, ["base", "ref"]);
@@ -76,6 +85,7 @@ export async function fetchPrDetailBundle(
     commits,
     files,
     checks,
+    timeline,
   };
   return bundle;
 }

@@ -14,20 +14,19 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import TabPill from "@src/components/TabPill";
+import {
+  DETAIL_PANEL_TOKENS,
+  DetailPanelContainer,
+  InternalHeader,
+  ScrollPreservation,
+} from "@src/components/layout/blocks";
+import { InfoRow } from "@src/components/layout/blocks/InfoRow";
 import {
   Add01Icon,
   Delete02Icon,
   HugeiconsIcon,
   Refresh04Icon,
 } from "@src/icons";
-import {
-  DETAIL_PANEL_TOKENS,
-  DetailPanelContainer,
-  InternalHeader,
-  ScrollPreservation,
-} from "@src/modules/shared/layouts/blocks";
-import { InfoRow } from "@src/modules/shared/layouts/blocks/InfoRow";
 
 import {
   InlineCardBody,
@@ -261,7 +260,6 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
         renderCell: (row) => (
           <div className="flex h-full min-w-[44px] items-center justify-end gap-2">
             <Button
-              variant="secondary"
               size="small"
               icon={
                 <HugeiconsIcon
@@ -292,18 +290,9 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
     <DetailPanelContainer>
       <InternalHeader
         noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={connectionsTabs}
-            activeTab={connectionsActiveTab}
-            onChange={setConnectionsActiveTab}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
+        tabs={connectionsTabs}
+        activeTab={connectionsActiveTab}
+        onTabChange={setConnectionsActiveTab}
       />
       <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
         <div className={DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop}>
@@ -336,8 +325,6 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
                   rightContent: (
                     <>
                       <Button
-                        variant="secondary"
-                        size="default"
                         icon={
                           <HugeiconsIcon
                             icon={Refresh04Icon}
@@ -362,8 +349,6 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
                         data-testid="connections-refresh-button"
                       />
                       <Button
-                        variant="secondary"
-                        size="default"
                         icon={
                           <HugeiconsIcon
                             icon={Add01Icon}

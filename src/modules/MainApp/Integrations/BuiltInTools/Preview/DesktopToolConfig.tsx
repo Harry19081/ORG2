@@ -36,7 +36,14 @@ import {
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import Select from "@src/components/Select";
+import {
+  SECTION_CONTROL_STYLE,
+  SECTION_GAP_CLASSES,
+  SectionContainer,
+  SectionRow,
+} from "@src/components/layout/Section";
 import { buildAgentOrgsPath } from "@src/config/mainAppPaths";
 import {
   AGENT_BROWSER_PROVIDER,
@@ -44,7 +51,6 @@ import {
   type AgentBrowserProviderSetting,
 } from "@src/config/settingsSchema/registry/agentBrowser";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Download01Icon,
   HugeiconsIcon,
@@ -53,12 +59,6 @@ import {
   SquareArrowUpRight02Icon,
 } from "@src/icons";
 import { NAV_BUTTON_PROPS } from "@src/modules/MainApp/Settings/config";
-import {
-  SECTION_CONTROL_STYLE,
-  SECTION_GAP_CLASSES,
-  SectionContainer,
-  SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
 import {
   settingsAtom,
   updateSettingAtom,
@@ -335,7 +335,6 @@ const SidecarDownloadsConfig: React.FC = () => {
             <div className="flex items-center gap-2">
               {statusContent}
               <Button
-                size="default"
                 icon={
                   isInstalling ? (
                     <HugeiconsIcon
@@ -369,7 +368,6 @@ const SidecarDownloadsConfig: React.FC = () => {
         description={t("builtInTools.sidecarRefreshStatusDesc")}
       >
         <Button
-          size="default"
           icon={
             <HugeiconsIcon
               icon={Refresh04Icon}
@@ -563,7 +561,6 @@ const ComputerUseConfig: React.FC = () => {
           )}
         >
           <Button
-            size="default"
             icon={
               <HugeiconsIcon
                 icon={Refresh04Icon}
@@ -583,7 +580,6 @@ const ComputerUseConfig: React.FC = () => {
           description={t("osAgent.desktopSafetyDeepLinkDesc")}
         >
           <Button
-            size="default"
             icon={
               <HugeiconsIcon
                 icon={SquareArrowUpRight02Icon}

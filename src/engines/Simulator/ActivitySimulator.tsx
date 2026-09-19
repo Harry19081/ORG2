@@ -305,11 +305,10 @@ const ActivitySimulator: React.FC = memo(() => {
                   <MusicPlayerReplayBar />
                 </div>
               )}
-              <StationDockChrome autoHide={false}>
+              <StationDockChrome>
                 <DockReplayControl
                   activeApp={dockActiveApp}
                   currentWorkingApp={currentWorkingApp}
-                  showDock={showDock}
                   onAppClick={handleDockAppClick}
                   onAppContextMenu={handleDockAppContextMenu}
                 />

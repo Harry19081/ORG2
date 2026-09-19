@@ -82,8 +82,6 @@ export function useBrowserLayoutState({
     currentSessionIndex: browser.currentSessionIndex,
     selectedElement: browser.selectedElement,
     handleToggleDevTools,
-    handlePrevSession: browser.handlePrevSession,
-    handleNextSession: browser.handleNextSession,
     clearSelection: browser.clearSelection,
     setAddToAgent,
     toastSuccess: Message.success,
@@ -130,6 +128,7 @@ export function useBrowserLayoutState({
   // — Browser mode renders a single-item variant pinned to "New Browser
   // Tab". The bridge still wires ⌘W so the active tab can be closed.
   useWorkStationTabShortcutBridge({
+    host: "browser",
     enabled: isActive,
     onCloseActiveTab: handleWorkStationCloseActiveBrowserTab,
   });

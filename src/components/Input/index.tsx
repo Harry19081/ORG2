@@ -9,6 +9,7 @@
  * - Multiple sizes
  * - Prefix/suffix support
  * - Clear button
+ * - Inline confirm (check) / cancel (x) actions for edit-in-place fields
  * - Error states with optional single-line message
  *
  * @example
@@ -20,6 +21,8 @@
  * <Input prefix={<Search size={16} />} />
  * <Input errorMessage="Name already exists" />
  * <Input errorMessage="Name already exists" errorPlacement="left" />
+ * <Input value={draft} onChange={setDraft} onConfirm={save} onCancel={close} />
+ * <Input value={draft} savedValue={name} onConfirm={save} onCancel={reset} />
  * ```
  */
 import React, { forwardRef, useCallback, useState } from "react";
@@ -30,6 +33,7 @@ import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import { Cancel01Icon, HugeiconsIcon, ViewIcon, ViewOffIcon } from "@src/icons";
 import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
+import { InputEditActions } from "./InputEditActions";
 import "./index.scss";
 
 export interface InputProps extends Omit<
@@ -95,6 +99,48 @@ export interface InputProps extends Omit<
    * (e.g. reset related state in one place).
    */
   onClear?: () => void;
+
+  /**
+   * Shows a tertiary icon-only check button at the end of the field and makes
+   * Enter call it. Receives the current value, so uncontrolled fields need no
+   * ref to read it.
+   */
+  onConfirm?: (value: string) => void;
+
+  /**
+   * Shows a tertiary icon-only x button at the end of the field and makes
+   * Escape call it.
+   */
+  onCancel?: () => void;
+
+  /**
+   * The persisted value this field edits. When set, the check / x actions and
+   * their Enter / Escape bindings appear only while the current value differs
+   * from it, so an always-editable field stays clean until the user edits it.
+   * Omit it for explicit edit modes where the actions should always show.
+   */
+  savedValue?: string;
+
+  /** Disables the check button and its Enter binding. */
+  confirmDisabled?: boolean;
+
+  /**
+   * Shows a spinner on the check button while a confirm is in flight. Both
+   * actions are disabled until it clears.
+   */
+  confirmLoading?: boolean;
+
+  /**
+   * Accessible label and tooltip for the check button.
+   * @default "Save"
+   */
+  confirmLabel?: string;
+
+  /**
+   * Accessible label and tooltip for the x button.
+   * @default "Cancel"
+   */
+  cancelLabel?: string;
 
   /**
    * Prefix element (icon, text, etc.)
@@ -177,6 +223,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       readOnly = false,
       allowClear = false,
       onClear,
+      onConfirm,
+      onCancel,
+      savedValue,
+      confirmDisabled = false,
+      confirmLoading = false,
+      confirmLabel,
+      cancelLabel,
       prefix,
       suffix,
       maxLength,
@@ -207,6 +260,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const hasError = error || !!errorMessage;
     const isChromeless = appearance !== "default";
+    const hasEditActions =
+      (!!onConfirm || !!onCancel) &&
+      (savedValue === undefined || currentValue !== savedValue);
+    const confirmBlocked = disabled || confirmDisabled || confirmLoading;
+    const cancelBlocked = disabled || confirmLoading;
 
     const wrapperClasses = [
       "input-wrapper",
@@ -218,6 +276,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       appearance === "bare" && "input-field-bare",
       autoHeight && "input-auto-height",
       appearance === "ghost" && "input-field-ghost",
+      hasEditActions && "input-has-edit-actions",
       isDark && "input-dark",
       className,
     ]
@@ -281,12 +340,40 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const tauriSelectAll = useTauriSelectAllShortcut();
 
+    const handleConfirm = useCallback(() => {
+      onConfirm?.(currentValue);
+    }, [currentValue, onConfirm]);
+
     const handleKeyDown = useCallback(
       (event: React.KeyboardEvent<HTMLInputElement>) => {
         onKeyDown?.(event);
         tauriSelectAll(event);
+        if (
+          !hasEditActions ||
+          event.defaultPrevented ||
+          event.nativeEvent.isComposing ||
+          event.keyCode === 229
+        ) {
+          return;
+        }
+        if (event.key === "Enter" && onConfirm) {
+          event.preventDefault();
+          if (!confirmBlocked) onConfirm(currentValue);
+        } else if (event.key === "Escape" && onCancel) {
+          event.preventDefault();
+          if (!cancelBlocked) onCancel();
+        }
       },
-      [onKeyDown, tauriSelectAll]
+      [
+        cancelBlocked,
+        confirmBlocked,
+        currentValue,
+        hasEditActions,
+        onCancel,
+        onConfirm,
+        onKeyDown,
+        tauriSelectAll,
+      ]
     );
 
     const togglePasswordVisibility = useCallback(() => {
@@ -334,8 +421,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {showClearButton && (
             <Button
               layout="custom"
-              appearance="custom"
-              htmlType="button"
               className="input-clear"
               onClick={handleClear}
               tabIndex={-1}
@@ -347,8 +432,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {showPasswordToggle && (
             <Button
               layout="custom"
-              appearance="custom"
-              htmlType="button"
               className="input-password-toggle"
               onClick={togglePasswordVisibility}
               tabIndex={-1}
@@ -371,6 +454,19 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <span className="input-word-limit">
               {currentValue?.length || 0}/{maxLength}
             </span>
+          )}
+
+          {hasEditActions && (
+            <InputEditActions
+              size={size}
+              onConfirm={onConfirm ? handleConfirm : undefined}
+              onCancel={onCancel}
+              confirmDisabled={confirmBlocked}
+              confirmLoading={confirmLoading}
+              cancelDisabled={cancelBlocked}
+              confirmLabel={confirmLabel}
+              cancelLabel={cancelLabel}
+            />
           )}
         </div>
       </div>

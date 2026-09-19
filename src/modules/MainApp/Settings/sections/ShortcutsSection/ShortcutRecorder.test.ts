@@ -38,6 +38,7 @@ it("records, updates its badge, resets, cancels, and releases capture on unmount
     });
   }
   await act(async () => root.render(createElement(Harness)));
+  expect(node.querySelector('[data-icon="edit-shortcut"]')).not.toBeNull();
   const click = async (index: number) => {
     await act(async () => {
       node.querySelectorAll("button")[index].click();
@@ -65,6 +66,8 @@ it("records, updates its badge, resets, cancels, and releases capture on unmount
       "Ctrl+F6"
     );
     expect(node.textContent).toContain("F6");
+    expect(node.querySelector("kbd")?.className).toContain("h-6");
+    expect(node.querySelector('[data-icon="chevron-up"]')).not.toBeNull();
     await click(1);
     expect(getShortcutOverrides()).toEqual({});
     await click(0);

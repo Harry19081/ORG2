@@ -2,12 +2,12 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { buildCodexReauthPath } from "@src/config/mainAppPaths";
+import { AccountStatusIndicator } from "@src/features/KeyVault/AccountStatusIndicator";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
-import { AccountStatusIndicator } from "@src/modules/shared/keyVault/AccountStatusIndicator";
 
 import { InlineCardFooter } from "../../shared/InlineCardPrimitives";
 import {
@@ -73,7 +73,6 @@ export const AccountInlineActionsBar: React.FC<
       ) : null}
       {onRefresh ? (
         <Button
-          variant="secondary"
           size="small"
           onClick={handleRefreshClick}
           disabled={anyRefreshing}
@@ -92,7 +91,6 @@ export const AccountInlineActionsBar: React.FC<
       ) : null}
       {onRefreshModels ? (
         <Button
-          variant="secondary"
           size="small"
           onClick={handleRefreshModelsClick}
           disabled={anyRefreshing}
@@ -110,23 +108,21 @@ export const AccountInlineActionsBar: React.FC<
         </Button>
       ) : null}
       {showEdit ? (
-        <Button variant="secondary" size="small" onClick={onEdit}>
+        <Button size="small" onClick={onEdit}>
           {tCommon("actions.edit")}
         </Button>
       ) : null}
       {onDisconnect && account.hasLocalKey && account.isListed ? (
         <>
           <Button
-            variant="danger"
-            appearance="outline"
+            tone="danger"
             size="small"
             onClick={() => onDisconnect(account.id, "local")}
           >
             {t("keyVault.removeLocal")}
           </Button>
           <Button
-            variant="danger"
-            appearance="outline"
+            tone="danger"
             size="small"
             onClick={() => onDisconnect(account.id, "cloud")}
           >
@@ -136,8 +132,7 @@ export const AccountInlineActionsBar: React.FC<
       ) : null}
       {onDisconnect && !(account.hasLocalKey && account.isListed) ? (
         <Button
-          variant="danger"
-          appearance="outline"
+          tone="danger"
           size="small"
           onClick={() => onDisconnect(account.id)}
         >

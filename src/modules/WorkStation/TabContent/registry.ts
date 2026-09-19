@@ -95,10 +95,6 @@ const BrowserSessionEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/browserSession")),
 };
 
-const DevtoolsEntry: RendererEntry = {
-  Component: lazy(() => import("./renderers/devtools")),
-};
-
 // ============================================
 // Project Manager renderers
 // ============================================
@@ -129,10 +125,6 @@ const ProjectSettingsEntry: RendererEntry = {
 
 const ProjectOrgEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/projectOrg")),
-};
-
-const ProjectOrgSettingsEntry: RendererEntry = {
-  Component: lazy(() => import("./renderers/projectOrgSettings")),
 };
 
 const ProjectGitSyncReviewEntry: RendererEntry = {
@@ -190,7 +182,6 @@ export const REGISTRY: TabContentRegistry = {
 
   // Browser
   "browser-session": BrowserSessionEntry,
-  devtools: DevtoolsEntry,
 
   // Project Manager
   "project-dashboard": ProjectDashboardEntry,
@@ -199,7 +190,6 @@ export const REGISTRY: TabContentRegistry = {
   "project-linear-work-items": ProjectLinearWorkItemsEntry,
   "project-settings": ProjectSettingsEntry,
   "project-org": ProjectOrgEntry,
-  "project-org-settings": ProjectOrgSettingsEntry,
   "project-git-sync-review": ProjectGitSyncReviewEntry,
   "project-workitems": ProjectWorkitemsEntry,
   "workItem-detail": WorkItemDetailEntry,

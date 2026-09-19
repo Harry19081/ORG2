@@ -501,11 +501,20 @@ impl EventStore {
     // -------------------------------------------------------------------------
 
     pub(super) fn mark_changed(&mut self, id: impl Into<String>) {
-        self.changed_ids.insert(id.into());
+        let id = id.into();
+        // A retry control row changes historical prompt membership, including
+        // rows absent from this delta journal. Refresh the baseline atomically.
+        if id.starts_with("queued-retry-lineage:") {
+            self.last_full_snapshot_version = 0;
+        }
+        self.changed_ids.insert(id);
     }
 
     pub(super) fn mark_removed(&mut self, id: impl Into<String>) {
         let id = id.into();
+        if id.starts_with("queued-retry-lineage:") {
+            self.last_full_snapshot_version = 0;
+        }
         self.changed_ids.remove(&id);
         self.removed_ids.insert(id);
     }

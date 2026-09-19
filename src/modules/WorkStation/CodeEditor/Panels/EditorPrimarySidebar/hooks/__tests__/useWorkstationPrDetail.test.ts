@@ -50,6 +50,7 @@ const apiMocks = vi.hoisted(() => ({
   getGitRemotes: vi.fn(),
   getPRLocal: vi.fn(),
   listIssueCommentsLocal: vi.fn(),
+  listIssueTimelineLocal: vi.fn(),
   listPRCommitsLocal: vi.fn(),
   listPRFilesLocal: vi.fn(),
   listPrReviewCommentsLocal: vi.fn(),
@@ -75,6 +76,7 @@ vi.mock("@src/api/tauri/github", () => ({
   getChecksLocal: apiMocks.getChecksLocal,
   getPRLocal: apiMocks.getPRLocal,
   listIssueCommentsLocal: apiMocks.listIssueCommentsLocal,
+  listIssueTimelineLocal: apiMocks.listIssueTimelineLocal,
   listPRCommitsLocal: apiMocks.listPRCommitsLocal,
   listPRFilesLocal: apiMocks.listPRFilesLocal,
   listPrReviewCommentsLocal: apiMocks.listPrReviewCommentsLocal,
@@ -171,6 +173,7 @@ describe("useWorkstationPrDetail cache mutations", () => {
       base: { ref: "develop" },
     });
     apiMocks.listIssueCommentsLocal.mockResolvedValue([]);
+    apiMocks.listIssueTimelineLocal.mockResolvedValue([]);
     apiMocks.listPrReviewsLocal.mockResolvedValue([]);
     apiMocks.listPrReviewCommentsLocal.mockResolvedValue([]);
     apiMocks.listPRCommitsLocal.mockResolvedValue([]);

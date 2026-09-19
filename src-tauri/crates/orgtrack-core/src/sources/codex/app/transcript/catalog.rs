@@ -6,11 +6,15 @@ use memchr::{memchr_iter, memmem};
 use serde_json::Value;
 
 use crate::sources::imported_history;
+use crate::sources::imported_history::raw_json::{
+    line_might_contain_json_field, line_might_contain_json_string_field,
+};
 
 use super::super::CodexJsonlLine;
 use super::cache::{
-    bounded_codex_turn_preview, codex_turn_catalog_cache, CodexTranscriptSignature,
-    CodexTurnCatalogEntry, CODEX_INITIAL_TURN_LIMIT, CODEX_REVERSE_SCAN_MAX_LINE_BYTES,
+    bounded_codex_turn_preview, codex_turn_catalog_cache, CodexAgentPreview,
+    CodexTranscriptSignature, CodexTurnCatalogEntry, CODEX_INITIAL_TURN_LIMIT,
+    CODEX_REVERSE_SCAN_MAX_LINE_BYTES,
 };
 use super::messages::{content_text_from_payload, user_message_from_line};
 
@@ -178,7 +182,7 @@ fn observe_codex_catalog_line(
     entries: &mut Vec<CodexTurnCatalogEntry>,
     limit: usize,
     lines_since_boundary: &mut usize,
-    last_agent_preview: &mut Option<String>,
+    last_agent_preview: &mut Option<CodexAgentPreview>,
 ) {
     const AGENT_MESSAGE_NEEDLE: &[u8] = b"\"agent_message\"";
     const ASSISTANT_ROLE_NEEDLE: &[u8] = b"\"assistant\"";
@@ -194,11 +198,11 @@ fn observe_codex_catalog_line(
         && (memmem::find(line, AGENT_MESSAGE_NEEDLE).is_some()
             || memmem::find(line, ASSISTANT_ROLE_NEEDLE).is_some());
     if !may_contain_user && !may_contain_assistant {
-        *lines_since_boundary = lines_since_boundary.saturating_add(1);
+        count_codex_body_line(line, lines_since_boundary);
         return;
     }
     let Ok(parsed) = serde_json::from_slice::<CodexJsonlLine>(line) else {
-        *lines_since_boundary = lines_since_boundary.saturating_add(1);
+        count_codex_body_line(line, lines_since_boundary);
         return;
     };
     if may_contain_user {
@@ -243,7 +247,60 @@ fn observe_codex_catalog_line(
         };
         *last_agent_preview = message
             .filter(|message| !message.trim().is_empty())
-            .map(|message| bounded_codex_turn_preview(&message));
+            .map(|message| CodexAgentPreview::new(&message));
     }
-    *lines_since_boundary = lines_since_boundary.saturating_add(1);
+    count_codex_body_line(line, lines_since_boundary);
+}
+
+/// Count a non-header line toward its round's body-size surrogate only when
+/// the replay parser could render it, so a round the agent never answered
+/// reports zero instead of its lifecycle and settings rows.
+fn count_codex_body_line(line: &[u8], lines_since_boundary: &mut usize) {
+    if line_might_produce_codex_body(line) {
+        *lines_since_boundary = lines_since_boundary.saturating_add(1);
+    }
+}
+
+/// Raw prefilter for rollout lines `parse_codex_app_from_path_with_mode` can
+/// turn into body chunks: replies, reasoning with text, tool calls and their
+/// outputs, web searches, compaction markers, and failed task completions.
+/// User and developer message mirrors, `item_completed` projections, turn
+/// context, token counts and lifecycle rows never render. Conservative: a
+/// nested match only over-counts, it never hides a real body.
+fn line_might_produce_codex_body(line: &[u8]) -> bool {
+    const BODY_TYPES: &[&[u8]] = &[
+        b"agent_message",
+        b"function_call",
+        b"function_call_output",
+        b"custom_tool_call",
+        b"custom_tool_call_output",
+        b"web_search_call",
+        b"compacted",
+        b"context_compacted",
+        b"context_compaction",
+    ];
+    let has_type = |kind: &[u8]| line_might_contain_json_string_field(line, b"type", kind);
+    BODY_TYPES.iter().any(|kind| has_type(kind))
+        || (has_type(b"message")
+            && line_might_contain_json_string_field(line, b"role", b"assistant"))
+        || ((has_type(b"reasoning") || has_type(b"agent_reasoning"))
+            && codex_reasoning_might_have_text(line))
+        || (has_type(b"task_complete")
+            && line_might_contain_json_field(line, b"error", |index| {
+                line.get(index..)
+                    .is_some_and(|value| !value.starts_with(b"null"))
+            }))
+}
+
+/// Mirrors `reasoning_text_from_payload`: encrypted-only reasoning carries
+/// neither a string `content` nor a non-empty `summary` and renders nothing.
+fn codex_reasoning_might_have_text(line: &[u8]) -> bool {
+    line_might_contain_json_field(line, b"content", |index| line.get(index) == Some(&b'"'))
+        || line_might_contain_json_field(line, b"summary", |index| {
+            line.get(index) == Some(&b'[')
+                && line
+                    .get(index + 1..)
+                    .and_then(|rest| rest.iter().find(|byte| !byte.is_ascii_whitespace()))
+                    .is_some_and(|byte| *byte != b']')
+        })
 }

@@ -115,6 +115,12 @@ pub fn cli_config_profile_orgii_dir(agent_name: &str) -> PathBuf {
     cli_config_profile_agent_dir(agent_name).join("orgii")
 }
 
+/// ORG2-owned overlay config dir for agents that are never rewritten in place:
+/// the app is launched with this file layered over its own configuration.
+pub fn cli_config_profile_overlay_dir(agent_name: &str) -> PathBuf {
+    cli_config_profile_agent_dir(agent_name).join("overlay")
+}
+
 /// CLI config manager manifest path for one agent.
 pub fn cli_config_profile_manifest(agent_name: &str) -> PathBuf {
     cli_config_profile_agent_dir(agent_name).join("manifest.json")
@@ -138,4 +144,9 @@ pub fn tool_results_dir(session_id: &str) -> PathBuf {
 /// this root.
 pub fn agent_worktrees_root() -> PathBuf {
     orgii_root().join("agent-worktrees")
+}
+
+/// Session-scoped managed CLI homes. Native history outlives temporary config.
+pub fn managed_cli_launch_root() -> PathBuf {
+    orgii_root().join("managed-cli-launches")
 }

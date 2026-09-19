@@ -11,17 +11,17 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import PageNotice from "@src/components/PageNotice";
 import {
-  InternetIcon,
-  Key02Icon,
-  KeyboardIcon,
-  SearchAreaIcon,
-} from "@src/icons";
-import type { ChannelProbeResult } from "@src/modules/MainApp/Integrations/Connections/Channels/types";
-import {
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
+} from "@src/components/layout/Section";
+import {
+  InputShortTextIcon,
+  InternetIcon,
+  Key02Icon,
+  SearchAreaIcon,
+} from "@src/icons";
+import type { ChannelProbeResult } from "@src/modules/MainApp/Integrations/Connections/Channels/types";
 import {
   SelectionGrid,
   type SelectionGridOption,
@@ -71,9 +71,8 @@ export const ChannelContent: React.FC<ChannelContentProps> = ({
           required
         >
           <Button
-            variant={probeResult?.ok ? "success" : "primary"}
-            appearance={probeResult?.ok ? "outline" : undefined}
-            size="default"
+            variant={probeResult?.ok ? "secondary" : "primary"}
+            tone={probeResult?.ok ? "success" : undefined}
             loading={probing}
             disabled={!channelIsValid || probing}
             onClick={onProbe}
@@ -134,7 +133,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
       {
         key: STORY_SYNC_AUTH_METHOD.PAT,
         label: t("keyVault.enterToken"),
-        icon: KeyboardIcon,
+        icon: InputShortTextIcon,
       },
     ],
     [t]
@@ -225,7 +224,6 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
             ) : (
               <Button
                 variant="primary"
-                size="default"
                 loading={projectSubmitting}
                 disabled={isDuplicateName || projectSubmitting}
                 onClick={onProjectSubmit}
@@ -297,7 +295,7 @@ export const GitContent: React.FC<GitContentProps> = ({
       {
         key: STORY_SYNC_AUTH_METHOD.PAT,
         label: "PAT",
-        icon: KeyboardIcon,
+        icon: InputShortTextIcon,
       },
       {
         key: STORY_SYNC_AUTH_METHOD.SSH,
@@ -317,7 +315,7 @@ export const GitContent: React.FC<GitContentProps> = ({
           label={t("keyVault.setupMethod")}
           description={t(
             "gitConnections.methodPickerDesc",
-            "Pick how you want to authenticate to GitHub."
+            "Pick how you want to authenticate to GitHub"
           )}
           layout="vertical"
           required
@@ -353,7 +351,7 @@ export const GitContent: React.FC<GitContentProps> = ({
                 ? gitOAuthFlow.kind === OAUTH_FLOW_KIND.DEVICE
                   ? t(
                       "gitConnections.oauthDeviceDesc",
-                      "Open the verification URL and enter this code to authorize GitHub."
+                      "Open the verification URL and enter this code to authorize GitHub"
                     )
                   : t("projectConnections.oauthBrowserDesc")
                 : t("keyVault.signInDesc")
@@ -385,7 +383,6 @@ export const GitContent: React.FC<GitContentProps> = ({
             ) : (
               <Button
                 variant="primary"
-                size="default"
                 loading={gitSubmitting}
                 disabled={isDuplicateName || gitSubmitting}
                 onClick={onGitOAuthStart}
@@ -538,7 +535,7 @@ const GitScanPanel: React.FC<GitScanPanelProps> = ({
           <div className="text-[12px] text-text-2">
             {t(
               "gitConnections.scanningDesc",
-              "Looking for gh CLI tokens, credential helpers, and SSH keys on this machine."
+              "Looking for gh CLI tokens, credential helpers, and SSH keys on this machine"
             )}
           </div>
         </SectionRow>
@@ -560,7 +557,7 @@ const GitScanPanel: React.FC<GitScanPanelProps> = ({
           <div className="text-[12px] text-text-2">
             {t(
               "gitConnections.scanEmptyDesc",
-              "No gh CLI tokens, credential helpers, or SSH keys were found. Pick another method above."
+              "No gh CLI tokens, credential helpers, or SSH keys were found. Pick another method above"
             )}
           </div>
         </SectionRow>
@@ -574,7 +571,7 @@ const GitScanPanel: React.FC<GitScanPanelProps> = ({
         label={t("gitConnections.scanResults", "Detected credentials")}
         description={t(
           "gitConnections.scanResultsDesc",
-          "Pick one to import. We validate tokens against GitHub before saving."
+          "Pick one to import. We validate tokens against GitHub before saving"
         )}
         layout="vertical"
         required
@@ -629,7 +626,7 @@ const GitSshPanel: React.FC<GitSshPanelProps> = ({
         label={t("gitConnections.sshKeyPath", "SSH key path")}
         description={t(
           "gitConnections.sshKeyPathDesc",
-          "Absolute path to the private key (e.g. ~/.ssh/id_ed25519). The matching public key must already be registered on GitHub."
+          "Absolute path to the private key (e.g. ~/.ssh/id_ed25519). The matching public key must already be registered on GitHub"
         )}
         required
       >

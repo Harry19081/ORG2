@@ -4,17 +4,17 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import SaveableTextarea from "@src/components/SaveableTextarea";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
-import { Delete02Icon, HugeiconsIcon } from "@src/icons";
-import SaveableTextarea from "@src/modules/shared/components/SaveableTextarea";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
   SectionContainer,
   SectionRow,
-} from "@src/modules/shared/layouts/SectionLayout";
-import { HintWithInfo } from "@src/modules/shared/layouts/blocks";
+} from "@src/components/layout/Section";
+import { HintWithInfo } from "@src/components/layout/blocks";
+import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   ORGII_COAUTHOR_EMAIL,
   ORGII_COAUTHOR_NAME,
@@ -89,6 +89,9 @@ const GitPreferencesSection: React.FC = () => {
   );
   const [worktreeCleanupIntervalHours, setWorktreeCleanupIntervalHours] =
     useAtom(gitWorktreeCleanupIntervalHoursAtom);
+  const pullStrategyHints = tSettings("editor.git.pullStrategyHint").split(
+    /\n\s*\n/u
+  );
   const {
     proxyInfo,
     proxyHttpDraft,
@@ -111,7 +114,13 @@ const GitPreferencesSection: React.FC = () => {
         >
           <div className="flex items-center gap-2">
             <HintWithInfo
-              content={tSettings("editor.git.pullStrategyHint")}
+              content={
+                <div className="flex flex-col gap-2">
+                  {pullStrategyHints.map((hint) => (
+                    <span key={hint}>{hint}</span>
+                  ))}
+                </div>
+              }
               position="left"
             />
             <Select
@@ -284,7 +293,6 @@ const GitPreferencesSection: React.FC = () => {
           <SectionRow showHeader={false}>
             <Button
               variant="tertiary"
-              size="default"
               icon={
                 <HugeiconsIcon
                   icon={Delete02Icon}
@@ -307,16 +315,11 @@ const GitPreferencesSection: React.FC = () => {
           <SectionRow showHeader={false}>
             <div className="flex w-full justify-end">
               <div className={SECTION_ACTION_GAP_CLASSES}>
-                <Button
-                  size="default"
-                  onClick={handleProxyCancel}
-                  disabled={proxySaving}
-                >
+                <Button onClick={handleProxyCancel} disabled={proxySaving}>
                   {tCommon("actions.cancel")}
                 </Button>
                 <Button
                   variant="primary"
-                  size="default"
                   loading={proxySaving}
                   disabled={proxySaving}
                   onClick={handleProxySave}

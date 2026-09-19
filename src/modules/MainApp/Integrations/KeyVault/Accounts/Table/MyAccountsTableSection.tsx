@@ -4,6 +4,7 @@ import { CLI_AGENT } from "@src/api/types/keys";
 import { formatModelAgentType } from "@src/assets/providers";
 import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
@@ -12,8 +13,8 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
+import { KEY_VAULT_STATUS_DOT } from "@src/features/KeyVault/statusColors";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Add01Icon,
   Delete02Icon,
@@ -21,7 +22,6 @@ import {
   Pen01Icon,
   Refresh04Icon,
 } from "@src/icons";
-import { KEY_VAULT_STATUS_DOT } from "@src/modules/shared/keyVault/statusColors";
 import { groupModels } from "@src/util/modelGrouping";
 
 import { EnabledFractionText } from "../../../shared/EnabledFractionText";
@@ -276,7 +276,6 @@ export default function MyAccountsTableSection({
               />
               {showEdit ? (
                 <Button
-                  variant="secondary"
                   size="small"
                   icon={
                     <HugeiconsIcon
@@ -293,8 +292,7 @@ export default function MyAccountsTableSection({
               ) : null}
               {onDisconnectAccount ? (
                 <Button
-                  variant="danger"
-                  appearance="outline"
+                  tone="danger"
                   size="small"
                   icon={
                     <HugeiconsIcon
@@ -393,8 +391,6 @@ export default function MyAccountsTableSection({
 
   const refreshAccountsButton = onRefreshAccounts ? (
     <Button
-      variant="secondary"
-      size="default"
       icon={
         <HugeiconsIcon
           icon={Refresh04Icon}
@@ -414,8 +410,6 @@ export default function MyAccountsTableSection({
 
   const addKeyButton = (
     <Button
-      variant="secondary"
-      size="default"
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       iconOnly
       onClick={onAdd}

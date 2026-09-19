@@ -28,26 +28,35 @@ import {
   DeliveryBox01Icon,
   FolderOutputIcon,
   HugeiconsIcon,
-  InputCursorTextIcon,
   Layers01Icon,
   Link01Icon,
   Link02Icon,
   MoreHorizontalIcon,
   Refresh04Icon,
-  Search01Icon,
+  SearchList01Icon,
   Share02Icon,
   ThirdBracketIcon,
 } from "@src/icons";
 import { sessionByIdAtom, upsertSession } from "@src/store/session";
-import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
 import { openSessionInNewWindowAtom } from "@src/store/session/sessionTabPlacementAtom";
 import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import {
+  LINK_OPEN_TARGETS,
+  type LinkOpenTarget,
+  linkOpenTargetAtom,
+} from "@src/store/ui/linkOpenTargetAtom";
 import { isAgentSession } from "@src/util/session/sessionDispatch";
 
+import { SessionInputSettingsSubmenu } from "./SessionInputSettingsSubmenu";
 import { SessionOpenInAppMenuItem } from "./SessionOpenInAppMenuItem";
 
 const HEADER_ICON_SIZE = 14;
+
+const LINK_OPEN_TARGET_LABEL_KEYS = {
+  internal: "chat.navigation.internalBrowser",
+  external: "chat.navigation.externalBrowser",
+} as const satisfies Record<LinkOpenTarget, string>;
 
 export interface SessionHeaderActionsMenuProps {
   activeSessionExists: boolean;
@@ -128,13 +137,10 @@ export const SessionHeaderActionsMenu: React.FC<
   const moveToWorkstation = moveTarget === "workstation";
 
   const currentSession = useAtomValue(sessionByIdAtom(currentSessionId ?? ""));
-  const [pinnedActionsVisible, setPinnedActionsVisible] = useAtom(
-    pinnedActionsVisibleAtom
-  );
   const [collapseToolActivity, setCollapseToolActivity] = useAtom(
     collapseToolActivityAtom
   );
-  const showSkillsLabel = t("chat.startPage.showSkills");
+  const [linkOpenTarget, setLinkOpenTarget] = useAtom(linkOpenTargetAtom);
 
   // Track this / Convert to Project (orgtrack/v1 §7.2). Self-contained:
   // the backend command persists the switch + root WorkItem; only the
@@ -203,7 +209,6 @@ export const SessionHeaderActionsMenu: React.FC<
     <>
       <Button
         ref={headerActionsTriggerRef}
-        htmlType="button"
         variant="tertiary"
         size="small"
         iconOnly
@@ -246,8 +251,8 @@ export const SessionHeaderActionsMenu: React.FC<
                 onClick={handleOpenSearch}
                 icon={
                   <HugeiconsIcon
-                    icon={Search01Icon}
-                    data-icon="search"
+                    icon={SearchList01Icon}
+                    data-icon="search-list-01"
                     size={DROPDOWN_ITEM.iconSize}
                     strokeWidth={1.75}
                   />
@@ -491,9 +496,9 @@ export const SessionHeaderActionsMenu: React.FC<
               appOpenSessionId={appOpenSessionId}
               onCloseMenu={toggleHeaderActionsMenu}
             />
+            <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
             {showTranscriptActions && (
               <>
-                <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
                 <ActionSubmenu
                   label={t("common:common.display")}
                   icon={
@@ -569,30 +574,41 @@ export const SessionHeaderActionsMenu: React.FC<
                     />
                   </div>
                 </ActionSubmenu>
-                <ActionSubmenu
-                  label={t("chat.inputSettings")}
-                  icon={
-                    <HugeiconsIcon
-                      icon={InputCursorTextIcon}
-                      size={DROPDOWN_ITEM.iconSize}
-                      strokeWidth={1.75}
-                    />
-                  }
-                  dataTestId="session-input-settings-submenu"
-                >
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">{showSkillsLabel}</span>
-                    <Switch
-                      checked={pinnedActionsVisible}
-                      onCheckedChange={setPinnedActionsVisible}
-                      size="small"
-                      ariaLabel={showSkillsLabel}
-                      dataTestId="session-menu-show-skills-toggle"
-                    />
-                  </div>
-                </ActionSubmenu>
+                <SessionInputSettingsSubmenu />
               </>
             )}
+            <ActionSubmenu
+              label={t("chat.navigation.title")}
+              icon={
+                <HugeiconsIcon
+                  icon={AppWindowMacIcon}
+                  size={DROPDOWN_ITEM.iconSize}
+                  strokeWidth={1.75}
+                />
+              }
+              dataTestId="session-navigation-submenu"
+            >
+              <div className={DROPDOWN_CLASSES.sectionLabel}>
+                {t("chat.navigation.openLinksIn")}
+              </div>
+              {LINK_OPEN_TARGETS.map((target) => {
+                const selected = linkOpenTarget === target;
+                return (
+                  <DropdownItem
+                    key={target}
+                    role="menuitemradio"
+                    ariaChecked={selected}
+                    tabIndex={0}
+                    fullWidth
+                    selected={selected}
+                    onClick={() => setLinkOpenTarget(target)}
+                    dataTestId={`session-menu-link-target-${target}`}
+                  >
+                    {t(LINK_OPEN_TARGET_LABEL_KEYS[target])}
+                  </DropdownItem>
+                );
+              })}
+            </ActionSubmenu>
           </ActionMenuSurface>,
           document.body
         )}

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
 import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
@@ -10,12 +9,12 @@ import {
   type ManagedPrItem,
   getManagedPullRequestKey,
 } from "@src/modules/MainApp/WorkManagement/githubManagedItemModel";
-import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
-import SplitListFullscreenButton from "@src/modules/shared/layouts/SplitListFullscreenButton";
-import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
-import { normalizePrStatus } from "@src/shared/pr/prStatus";
+import InboxListDetailLayout from "@src/scaffold/layouts/InboxListDetailLayout";
+import SplitListFullscreenButton from "@src/scaffold/layouts/SplitListFullscreenButton";
+import SplitListHeader from "@src/scaffold/layouts/SplitListHeader";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import type { WorkItem } from "@src/types/core/workItem";
+import { normalizePrStatus } from "@src/util/git/pr/prStatus";
 
 import { useWorkManagementSplitHeader } from "../WorkManagement/workManagementSplitHeaderContext";
 import { TeamInboxList } from "./components";
@@ -172,12 +171,12 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
   const initialCombinedLoadPending =
     inboxInitialLoading || pullRequestsInitialLoading;
   const presentedItems = useMemo(
-    () => (initialCombinedLoadPending || itemsMode !== listMode ? [] : items),
-    [initialCombinedLoadPending, items, itemsMode, listMode]
+    () => (inboxInitialLoading || itemsMode !== listMode ? [] : items),
+    [inboxInitialLoading, items, itemsMode, listMode]
   );
   const presentedPullRequests = useMemo(
-    () => (initialCombinedLoadPending ? [] : pullRequests),
-    [initialCombinedLoadPending, pullRequests]
+    () => (pullRequestsInitialLoading ? [] : pullRequests),
+    [pullRequestsInitialLoading, pullRequests]
   );
   const mountedRef = useRef(true);
   useMountedCleanup(mountedRef);
@@ -209,7 +208,7 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
     () => countUnreadTeamInboxItemsByFilter(presentedItems),
     [presentedItems]
   );
-  const unreadCounts = initialCombinedLoadPending
+  const unreadCounts = inboxInitialLoading
     ? loadedUnreadCounts
     : (authoritativeUnreadCounts ?? loadedUnreadCounts);
   const selectedPullRequest = useMemo(
@@ -418,9 +417,10 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
     [dataSource, setItems, viewerMemberIds]
   );
 
-  const detailLoadState = initialCombinedLoadPending
-    ? { status: "loading" as const, message: null }
-    : loadState;
+  const detailLoadState =
+    initialCombinedLoadPending && !selectedItem && !selectedPullRequest
+      ? { status: "loading" as const, message: null }
+      : loadState;
   const detail = (
     <TeamInboxDetailPane
       t={t}
@@ -546,9 +546,6 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
           primary={
             <div className="flex min-w-0 flex-1 items-center gap-px">
               {surfaceDatasetControl}
-              {surfaceDatasetControl ? (
-                <HeaderSectionSeparator className="mx-0.5" />
-              ) : null}
               <div className="ml-auto flex min-w-0 items-center gap-px">
                 {listHeaderControls}
               </div>
@@ -596,6 +593,7 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
               loadState.status === "loading" ||
               (listMode === "active" && pullRequestsLoading)
             }
+            inboxLoading={inboxInitialLoading || loadState.status === "loading"}
             pullRequests={presentedPullRequests}
             pullRequestsLoading={pullRequestsLoading}
             pullRequestsError={pullRequestsError}

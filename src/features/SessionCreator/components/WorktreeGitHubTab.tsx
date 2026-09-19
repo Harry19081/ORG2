@@ -56,7 +56,6 @@ export function WorktreeGitHubTab({
           })}
         />
         <Button
-          variant="secondary"
           size="small"
           icon={
             <HugeiconsIcon

@@ -84,6 +84,14 @@ pub fn load_codex_image_from_path(
         serde_json::from_str(&line).map_err(|err| format!("Parse Codex image source: {err}"))?;
     let message = super::messages::user_message_from_line(&parsed)
         .ok_or_else(|| "Codex image turn no longer points to a user message".to_string())?;
+    if let Some(position) = original_ref.strip_prefix(super::sources::INLINE_IMAGE_REF_PREFIX) {
+        return Ok(position
+            .parse::<usize>()
+            .ok()
+            .and_then(|position| message.image_refs.get(position))
+            .filter(|image| image.starts_with("data:image/"))
+            .cloned());
+    }
     let index = message
         .image_refs
         .iter()

@@ -3,8 +3,8 @@ import React, { memo, useCallback, useMemo } from "react";
 
 import type { CommitDiffResult } from "@src/api/http/git/types";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
+import BreadcrumbFileHeader from "@src/features/FileHeader/BreadcrumbFileHeader";
 import { FileHeader } from "@src/modules/WorkStation/shared";
-import BreadcrumbFileHeader from "@src/modules/shared/components/FileHeader/BreadcrumbFileHeader";
 import {
   editorHighlightActiveLineAtom,
   editorLineNumbersAtom,
@@ -101,6 +101,7 @@ export const CommitTabHeader: React.FC<CommitTabHeaderProps> = memo(
         highlightActiveLineEnabled={highlightActiveLine}
         onHighlightActiveLineChange={setHighlightActiveLine}
         onMoreSettings={onOpenSettings}
+        showSidebarSettings={publishToWorkstationHeader}
         onClose={onClose}
         onOpenInNewTab={onOpenInNewTab}
         publishToHost={publishToWorkstationHeader ? "code" : undefined}
