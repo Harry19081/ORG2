@@ -171,3 +171,13 @@ describe("SplitButton", () => {
     expect(markup).toContain("width:20px");
   });
 });
+
+describe("SplitButton divider", () => {
+  it("draws an inset border-colored divider at the menu segment's leading edge", () => {
+    const markup = renderSplitButton("danger");
+    const menuButton = markup.slice(markup.lastIndexOf("<button"));
+    expect(menuButton).toMatch(
+      /<span[^>]*data-split-divider[^>]*class="[^"]*top-1\/4 bottom-1\/4 left-0 w-\[0\.5px\] bg-border-1"/
+    );
+  });
+});
