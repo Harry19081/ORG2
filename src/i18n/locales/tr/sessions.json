@@ -631,10 +631,10 @@
       "repoBarPosition": "Depo çubuğu",
       "positionUp": "Üst",
       "positionDown": "Alt",
-      "showQuickActions": "Hızlı eylemleri göster",
+      "showQuickActions": "Hızlı eylemler",
       "showSkills": "Sabitlenmiş beceriler",
-      "showCliUpdate": "CLI güncellemelerini göster",
-      "showSpotlight": "Spotlight'ı göster",
+      "showCliUpdate": "CLI güncellemeleri",
+      "showSpotlight": "Spotlight",
       "title": "Ne yapmak istersiniz?",
       "back": "Başlangıç sayfasına dön",
       "newSession": {
@@ -727,7 +727,7 @@
       "externalBrowser": "Harici tarayıcı"
     },
     "compactInput": "Kompakt giriş alanı",
-    "composerGlow": "Giriş parıltısını göster",
+    "composerGlow": "Giriş parıltısı",
     "separateEffortPill": "Effort ayrı düğmede",
     "replay": {
       "follow": "Takip et"

@@ -631,10 +631,10 @@
       "repoBarPosition": "Панель репозитория",
       "positionUp": "Сверху",
       "positionDown": "Снизу",
-      "showQuickActions": "Показывать быстрые действия",
+      "showQuickActions": "Быстрые действия",
       "showSkills": "Закреплённые навыки",
-      "showCliUpdate": "Показывать обновления CLI",
-      "showSpotlight": "Показывать Spotlight",
+      "showCliUpdate": "Обновления CLI",
+      "showSpotlight": "Spotlight",
       "title": "Что вы хотите сделать?",
       "back": "Назад к стартовой странице",
       "newSession": {
@@ -727,7 +727,7 @@
       "externalBrowser": "Внешний браузер"
     },
     "compactInput": "Компактное поле ввода",
-    "composerGlow": "Показывать свечение поля ввода",
+    "composerGlow": "Свечение поля ввода",
     "separateEffortPill": "Отдельная кнопка Effort",
     "replay": {
       "follow": "Следовать"

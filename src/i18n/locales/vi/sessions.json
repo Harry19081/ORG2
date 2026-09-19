@@ -631,10 +631,10 @@
       "repoBarPosition": "Thanh kho lưu trữ",
       "positionUp": "Trên",
       "positionDown": "Dưới",
-      "showQuickActions": "Hiển thị thao tác nhanh",
+      "showQuickActions": "Thao tác nhanh",
       "showSkills": "Kỹ năng đã ghim",
-      "showCliUpdate": "Hiển thị bản cập nhật CLI",
-      "showSpotlight": "Hiển thị Spotlight",
+      "showCliUpdate": "Bản cập nhật CLI",
+      "showSpotlight": "Spotlight",
       "title": "Bạn muốn làm gì?",
       "back": "Quay lại trang bắt đầu",
       "newSession": {
@@ -727,8 +727,8 @@
       "externalBrowser": "Trình duyệt bên ngoài"
     },
     "compactInput": "Ô nhập liệu thu gọn",
-    "composerGlow": "Hiển thị hiệu ứng phát sáng ô nhập",
-    "separateEffortPill": "Tách nút Effort",
+    "composerGlow": "Hiệu ứng phát sáng ô nhập",
+    "separateEffortPill": "Nút Effort riêng",
     "replay": {
       "follow": "Theo dõi"
     },

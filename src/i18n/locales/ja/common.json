@@ -22,8 +22,8 @@
     "title": "サイドバー設定",
     "showSidebar": "サイドバーを表示",
     "location": "位置",
-    "showIndentLines": "インデント線を表示",
-    "colorSourceControlFiles": "ファイルに差分色を使用"
+    "showIndentLines": "インデント線",
+    "colorSourceControlFiles": "ファイルの差分色"
   },
   "teamInbox": {
     "title": "チームの受信トレイ",
@@ -1932,7 +1932,7 @@
     "chatRight": "右チャット",
     "sidebarPosition": "Workstation サイドバー",
     "modelPickerStyle": "ピッカー",
-    "paginateChatHistory": "チャット履歴をページ分割",
+    "paginateChatHistory": "チャット履歴のページ分割",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "メニュー",
     "left": "左",
