@@ -64,10 +64,8 @@ export {
 // Floating bar (unsaved changes, review next, etc.)
 export { FloatingBar, UnsavedChangesBar } from "./UnsavedChangesBar";
 
-// Quick actions panel — types only. The component (framer-motion) is not
-// re-exported: nothing imports it through this barrel, and a value export
-// here would drag the animation stack into every barrel consumer.
-export type { QuickAction } from "./QuickActionsPanel";
+// Quick action item type (rendered by NoTabsPlaceholder)
+export type { QuickAction } from "./QuickActionsPanel/types";
 
 // No tabs placeholder (with quick actions)
 export { NoTabsPlaceholder } from "./NoTabsPlaceholder";

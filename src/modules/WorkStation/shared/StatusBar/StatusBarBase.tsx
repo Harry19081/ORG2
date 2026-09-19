@@ -31,8 +31,6 @@ import { STATUS_BAR_TOKENS, STATUS_BAR_TYPOGRAPHY } from "./statusBarTokens";
 export interface BaseStatusBarProps {
   /** Content for the left section */
   leftContent?: React.ReactNode;
-  /** Content for the center section (optional, absolute positioned) */
-  centerContent?: React.ReactNode;
   /** Content for the right section */
   rightContent?: React.ReactNode;
   /** Additional class name */
@@ -285,7 +283,7 @@ StatusBarDivider.displayName = "StatusBarDivider";
 // ============================================
 
 export const BaseStatusBar: React.FC<BaseStatusBarProps> = memo(
-  ({ leftContent, centerContent, rightContent, className }) => {
+  ({ leftContent, rightContent, className }) => {
     return (
       <div
         className={classNames(
@@ -300,11 +298,6 @@ export const BaseStatusBar: React.FC<BaseStatusBarProps> = memo(
       >
         {/* Left section */}
         <div className={STATUS_BAR_TOKENS.leftCluster}>{leftContent}</div>
-
-        {/* Center section (absolute positioned) */}
-        {centerContent && (
-          <div className={STATUS_BAR_TOKENS.centerCluster}>{centerContent}</div>
-        )}
 
         {/* Right section */}
         <div className={STATUS_BAR_TOKENS.rightCluster}>{rightContent}</div>

@@ -84,7 +84,7 @@ import { useAutoScrollToActive, useTabDrag, useTabGitInfoMap } from "./hooks";
 
 interface TabBarProps {
   /** Pane identifier for this tab bar */
-  paneId?: string;
+  paneId: string;
   /** List of open tabs */
   tabs: WorkStationTab[];
   /** Currently active tab id */
@@ -95,22 +95,23 @@ interface TabBarProps {
   onTabClose: (tabId: string) => void;
   /** Callback when tabs are reordered via drag and drop */
   onTabReorder?: (startIndex: number, endIndex: number) => void;
-  /** Opens a new tab (e.g. Browser); shows + in the right control section */
-  onNewTab?: () => void;
-  /** Optional keyboard shortcut displayed for the new-tab control. */
+  /**
+   * Unused since the tab bar's own new-tab button was removed (the `+` lives
+   * in the trailing slot). Kept only until WorkstationTabBar stops passing it.
+   */
   onNewTabShortcutId?: string;
   /** Callback to close all other tabs */
-  onCloseOtherTabs?: (tabId: string) => void;
+  onCloseOtherTabs: (tabId: string) => void;
   /** Callback to close all saved tabs */
-  onCloseSavedTabs?: () => void;
+  onCloseSavedTabs: () => void;
   /** Repository path for relative path calculation */
-  repoPath?: string;
+  repoPath: string;
   /** Optional leading element rendered before the scroll row (fixed; not scrolled with tabs). */
   leadingSlot?: React.ReactNode;
   /** Optional trailing element rendered after control buttons (e.g., panel toggles) */
   trailingSlot?: React.ReactNode;
-  /** Optional tab-row surface override; defaults to bg-workstation-bg. */
-  surfaceClassName?: string;
+  /** Tab-row surface class. */
+  surfaceClassName: string;
   dataTourTarget?: string;
 }
 
@@ -182,20 +183,18 @@ SortableTabList.displayName = "SortableTabList";
 
 export const TabBar: React.FC<TabBarProps> = memo(
   ({
-    paneId = "primary",
+    paneId,
     tabs,
     activeTabId,
     onTabClick,
     onTabClose,
     onTabReorder,
-    onNewTab,
-    onNewTabShortcutId,
     onCloseOtherTabs,
     onCloseSavedTabs,
-    repoPath = "",
+    repoPath,
     leadingSlot,
     trailingSlot,
-    surfaceClassName = "bg-workstation-bg",
+    surfaceClassName,
     dataTourTarget,
   }) => {
     const { t } = useTranslation();
@@ -336,8 +335,6 @@ export const TabBar: React.FC<TabBarProps> = memo(
     const handleCloseRawTranscript = useCallback(() => {
       setRawTranscriptSessionId(null);
     }, []);
-    const noopTabAction = useCallback((_tabId: string) => {}, []);
-    const noopAction = useCallback(() => {}, []);
 
     const hasTabs = tabs && tabs.length > 0;
     const tabIds = useMemo(
@@ -458,12 +455,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
             </div>
           </div>
 
-          <TabBarControls
-            hasTabs={hasTabs}
-            onNewTab={onNewTab}
-            onNewTabShortcutId={onNewTabShortcutId}
-            trailingSlot={trailingSlot}
-          />
+          <TabBarControls hasTabs={hasTabs} trailingSlot={trailingSlot} />
         </div>
 
         {contextMenu && (
@@ -473,8 +465,8 @@ export const TabBar: React.FC<TabBarProps> = memo(
             repoPath={repoPath}
             onClose={handleCloseContextMenu}
             onCloseTab={onTabClose}
-            onCloseOtherTabs={onCloseOtherTabs ?? noopTabAction}
-            onCloseSavedTabs={onCloseSavedTabs ?? noopAction}
+            onCloseOtherTabs={onCloseOtherTabs}
+            onCloseSavedTabs={onCloseSavedTabs}
             onMoveToChatPanel={
               (contextMenu.tab.type === "chat-session" &&
                 typeof contextMenu.tab.data.sessionId === "string" &&

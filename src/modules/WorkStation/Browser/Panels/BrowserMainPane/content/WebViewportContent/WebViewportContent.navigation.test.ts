@@ -28,7 +28,6 @@ it("keeps URL-entry back/forward behavior without timestamped recording", () => 
   };
   renderToStaticMarkup(
     createElement(WebViewport, {
-      hideTabBar: true,
       browserState: {
         sessions: [session],
         activeSessionId: "test",
