@@ -535,6 +535,8 @@
     "indentGuides": "インデントガイド",
     "treeIndentGuides": "ツリー インデントガイド",
     "highlightActiveLine": "現在行のハイライト",
+    "splitDiffCenteredLineNumbers": "分割差分で行番号を中央に表示",
+    "splitDiffCenteredLineNumbersDesc": "両方の行番号列を各ペインの左端ではなく、GitHub のように 2 つのペインの間に表示します。",
     "shellsOpenWith": "Shell の開き方",
     "shellsOpenWithDesc": "新しい Terminal の初期作業ディレクトリ",
     "repoPath": "リポジトリパス",

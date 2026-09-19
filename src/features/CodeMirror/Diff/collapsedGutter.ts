@@ -121,6 +121,19 @@ function collapsedRows(view: EditorView) {
   );
 }
 
+/**
+ * A two-arrow row offers three actions (step down, step up, expand all), so
+ * its arrows and its label highlight separately: the arrows by their own CSS
+ * hover, the label bar through the row class. This is the gutter area behind
+ * those arrows. The new pane of a split diff hides them, so its gutter is
+ * just more of the label bar.
+ */
+function isSplitArrowArea(view: EditorView, element: Element) {
+  const cell = element.closest(".cm-collapsedGutter--split");
+  if (!cell?.closest(".cm-gutters-before")) return false;
+  return mergeViewSiblings(view)?.b !== view;
+}
+
 /** Paint one editor's part of a collapsed row (gutter cells + content row). */
 function markCollapsedRow(view: EditorView, from: number | null) {
   for (const row of view.dom.querySelectorAll(`.${HOVER_CLASS}`)) {
@@ -128,19 +141,25 @@ function markCollapsedRow(view: EditorView, from: number | null) {
   }
   if (from === null) return;
   for (const row of view.dom.querySelectorAll(`.cm-collapsedAt-${from}`)) {
-    row.classList.add(HOVER_CLASS);
+    if (!isSplitArrowArea(view, row)) row.classList.add(HOVER_CLASS);
   }
   for (const row of collapsedRows(view)) {
     if (view.posAtDOM(row) === from) row.classList.add(HOVER_CLASS);
   }
 }
 
-/** Hovering any part of a collapsed row highlights the whole row. */
+/**
+ * Hovering a collapsed row highlights the whole row, except on two-arrow
+ * rows, where the arrows stay out of it (see isSplitArrowArea).
+ */
 function highlightCollapsedRow(view: EditorView, target: EventTarget | null) {
   const element =
     target instanceof Element && view.dom.contains(target) ? target : null;
   const content = element?.closest(".cm-collapsedLines");
-  const gutter = element?.closest(".cm-collapsedGutter");
+  const gutter =
+    element && !isSplitArrowArea(view, element)
+      ? element.closest(".cm-collapsedGutter")
+      : null;
   const positionClass =
     gutter &&
     Array.from(gutter.classList).find((name) =>

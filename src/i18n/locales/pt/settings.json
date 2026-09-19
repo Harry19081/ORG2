@@ -535,6 +535,8 @@
     "indentGuides": "Guias de indentação",
     "treeIndentGuides": "Guias de indentação em árvore",
     "highlightActiveLine": "Realce da linha atual",
+    "splitDiffCenteredLineNumbers": "Centralizar números de linha no diff dividido",
+    "splitDiffCenteredLineNumbersDesc": "Mostra as duas colunas de números de linha entre os dois painéis, como no GitHub, em vez de na borda esquerda de cada painel.",
     "shellsOpenWith": "Shells abrem em",
     "shellsOpenWithDesc": "Diretório de trabalho inicial para novos terminais",
     "repoPath": "Caminho do Repo",

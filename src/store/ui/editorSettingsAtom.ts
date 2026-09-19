@@ -252,6 +252,20 @@ export const editorHighlightActiveLineAtom = atom(
 );
 
 /**
+ * Split diffs: both line-number columns sit between the panes (GitHub style)
+ * instead of at each pane's left edge.
+ */
+export const editorSplitDiffCenteredLineNumbersAtom = atom(
+  (get) => get(settingsAtom)["editor.splitDiffCenteredLineNumbers"],
+  (_get, set, value: boolean) => {
+    set(updateSettingAtom, {
+      key: "editor.splitDiffCenteredLineNumbers",
+      value,
+    });
+  }
+);
+
+/**
  * Show inline git blame annotation on the current cursor line
  * (GitLens-style: author, time, commit summary)
  */

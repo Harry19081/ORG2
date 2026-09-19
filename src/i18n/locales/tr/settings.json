@@ -535,6 +535,8 @@
     "indentGuides": "Girinti kılavuzları",
     "treeIndentGuides": "Ağaç girinti kılavuzları",
     "highlightActiveLine": "Geçerli satırı vurgula",
+    "splitDiffCenteredLineNumbers": "Bölünmüş fark görünümünde satır numaralarını ortala",
+    "splitDiffCenteredLineNumbersDesc": "Her iki satır numarası sütununu, her panelin sol kenarı yerine GitHub'daki gibi iki panelin arasında gösterir.",
     "shellsOpenWith": "Kabuklar şununla açılır",
     "shellsOpenWithDesc": "Yeni terminaller için başlangıç çalışma dizini",
     "repoPath": "Depo yolu",

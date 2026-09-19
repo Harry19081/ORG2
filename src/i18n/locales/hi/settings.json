@@ -616,6 +616,8 @@
     "indentGuides": "इंडेंट गाइड",
     "treeIndentGuides": "ट्री इंडेंट गाइड",
     "highlightActiveLine": "वर्तमान पंक्ति हाइलाइट",
+    "splitDiffCenteredLineNumbers": "स्प्लिट diff में पंक्ति संख्याएँ बीच में रखें",
+    "splitDiffCenteredLineNumbersDesc": "दोनों पंक्ति-संख्या कॉलम को हर पैन के बाएँ किनारे के बजाय GitHub की तरह दोनों पैन के बीच दिखाएँ।",
     "shellsOpenWith": "शेल इसके साथ खुलते हैं",
     "shellsOpenWithDesc": "नए टर्मिनल के लिए प्रारंभिक वर्किंग डायरेक्टरी",
     "repoPath": "रिपॉज़िटरी पाथ",
