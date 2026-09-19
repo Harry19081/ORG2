@@ -417,7 +417,10 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
             {t("git.pr.actions.convertToDraft", "Convert to draft")}
           </Button>
         ) : null}
-        <span className="min-w-0 flex-1 text-[12px] leading-[18px] text-text-3">
+        {/* Sized to its full sentence and never shrunk, so a row too narrow
+            for it sends the whole hint under the buttons instead of
+            squeezing it into a wrapped column beside them. */}
+        <span className="max-w-full shrink-0 grow basis-auto text-[12px] leading-[18px] text-text-3">
           {localizedActionTooltip(t, presentation.tooltip)}
         </span>
       </section>
