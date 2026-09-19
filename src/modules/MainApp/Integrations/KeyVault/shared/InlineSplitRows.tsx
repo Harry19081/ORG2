@@ -125,7 +125,6 @@ export function InlineSplitAddKeyRow({
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       onClick={onClick}
       className="flex h-9 min-h-9 w-full cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs text-text-2 hover:bg-fill-1"
     >

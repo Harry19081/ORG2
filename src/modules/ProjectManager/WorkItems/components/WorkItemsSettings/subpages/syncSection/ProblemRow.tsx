@@ -271,8 +271,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
             {t("settings.sync.problems.retryButton")}
           </Button>
           <Button
-            variant="danger"
-            appearance="outline"
+            tone="danger"
             size="small"
             onClick={handleDiscardClick}
             loading={isDiscarding}
@@ -291,9 +290,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
       )}
       <Button
         variant="tertiary"
-        appearance="ghost"
         size="inline"
-        htmlType="button"
         onClick={() => setShowPayload((prev) => !prev)}
         className="gap-1 self-start text-[12px] hover:text-text-2"
       >

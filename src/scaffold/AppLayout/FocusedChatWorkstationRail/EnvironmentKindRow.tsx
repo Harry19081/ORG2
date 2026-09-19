@@ -79,7 +79,6 @@ export function EnvironmentKindRow({
               return (
                 <Button
                   key={option.id}
-                  htmlType="button"
                   variant="tertiary"
                   appearance="soft-no-drop"
                   size="small"

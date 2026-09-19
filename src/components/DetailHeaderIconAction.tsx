@@ -21,7 +21,6 @@ const DetailHeaderIconAction: React.FC<DetailHeaderIconActionProps> = ({
 }) => (
   <ToolbarTooltip label={label} position="bottom-end">
     <Button
-      htmlType="button"
       variant="tertiary"
       size="small"
       iconOnly

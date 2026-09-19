@@ -103,7 +103,6 @@ const TagsInput: React.FC<TagsInputProps> = ({
                   <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={11} />
                 }
                 style={{ width: 16, height: 16 }}
-                htmlType="button"
                 disabled={disabled}
                 onClick={() => handleRemove(tag)}
                 className="hover:bg-fill-2 hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-50"

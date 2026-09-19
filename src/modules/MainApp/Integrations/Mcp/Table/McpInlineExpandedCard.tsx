@@ -130,9 +130,7 @@ const McpInlineExpandedCard: React.FC<McpInlineExpandedCardProps> = ({
                     {hasMoreTools && !toolsExpanded && (
                       <Button
                         variant="tertiary"
-                        appearance="ghost"
                         size="inline"
-                        htmlType="button"
                         onClick={() => setToolsExpanded(true)}
                         className="mt-1 text-left text-[11px] hover:text-text-2"
                       >
@@ -142,9 +140,7 @@ const McpInlineExpandedCard: React.FC<McpInlineExpandedCardProps> = ({
                     {toolsExpanded && hasMoreTools && (
                       <Button
                         variant="tertiary"
-                        appearance="ghost"
                         size="inline"
-                        htmlType="button"
                         onClick={() => setToolsExpanded(false)}
                         className="mt-1 text-left text-[11px] hover:text-text-2"
                       >

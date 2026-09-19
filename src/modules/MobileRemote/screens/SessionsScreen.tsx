@@ -305,7 +305,6 @@ export function SessionsScreen({
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             ref={inboxButton}
             className="mobile-inbox-entry"
             onClick={() => setView("pending")}
@@ -365,7 +364,6 @@ export function SessionsScreen({
             </p>
             {rosterPhase === "error" ? (
               <Button
-                variant="secondary"
                 appearance="soft"
                 size="large"
                 style={SEARCH_ACTION_STYLE}

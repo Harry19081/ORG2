@@ -23,7 +23,6 @@ export default function UserActionButton({
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       className={`inline-flex h-[28px] cursor-pointer items-center rounded-full border border-solid border-border-2 px-3 py-2 transition-colors ${PILL_CONTROL_IDLE_SURFACE_CLASS}`}
       onClick={onClick}
     >

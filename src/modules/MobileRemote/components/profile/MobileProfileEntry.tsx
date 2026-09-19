@@ -44,9 +44,7 @@ function ProfileEntry({ variant }: { variant: "avatar" | "row" }) {
       {variant === "row" ? (
         <Button
           ref={trigger}
-          htmlType="button"
           variant="tertiary"
-          appearance="ghost"
           long
           className="mobile-profile-settings-entry"
           style={{
@@ -82,7 +80,6 @@ function ProfileEntry({ variant }: { variant: "avatar" | "row" }) {
           shape="circle"
           iconOnly
           ref={trigger}
-          htmlType="button"
           className="mobile-profile-trigger"
           style={{
             width: "var(--mobile-profile-trigger-size)",

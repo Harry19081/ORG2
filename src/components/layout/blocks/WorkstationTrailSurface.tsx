@@ -82,7 +82,6 @@ export const WorkstationTrailHeader: FC<WorkstationTrailHeaderProps> = ({
       onTitleToggle ? (
         <>
           <Button
-            htmlType="button"
             variant="tertiary"
             appearance="soft-no-drop"
             size="sidebar"

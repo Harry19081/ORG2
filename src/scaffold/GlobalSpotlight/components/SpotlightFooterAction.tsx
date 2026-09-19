@@ -22,7 +22,6 @@ export const SpotlightFooterAction: React.FC<SpotlightFooterActionProps> = ({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         onClick={onClick}
         className="flex h-full items-center gap-1.5 px-3 text-[11px] text-text-2 transition-colors hover:bg-fill-2 hover:text-text-1"
       >

@@ -303,7 +303,6 @@ export const SearchContent = forwardRef<
           {/* Left column - Chevron toggle (centered vertically) */}
           <Button
             variant="tertiary"
-            appearance="ghost"
             size="mini"
             aria-label={
               showReplace

@@ -123,8 +123,6 @@ const WorkspaceDefaultPathSection: React.FC = () => {
               className="min-w-0 flex-1"
             />
             <Button
-              variant="secondary"
-              size="default"
               iconOnly
               icon={
                 <HugeiconsIcon

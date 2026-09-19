@@ -205,7 +205,6 @@ const MobileRemotePairingFlow: React.FC<MobileRemotePairingFlowProps> = ({
             ) : null}
             <Button
               variant="tertiary"
-              appearance="ghost"
               disabled={state.phase === "confirming"}
               onClick={handleCancel}
             >

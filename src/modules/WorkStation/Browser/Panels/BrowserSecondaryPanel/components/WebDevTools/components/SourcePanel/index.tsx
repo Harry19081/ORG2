@@ -198,7 +198,7 @@ export const SourcePanel: React.FC<SourcePanelProps> = memo(
                     disabled={isSearching}
                     loading={isSearching}
                     long
-                    hoverIntent="primary"
+                    hoverTone="primary"
                     className="border-t border-border-1 bg-primary-6/10 text-primary-6 hover:bg-primary-6/20"
                   >
                     {isSearching

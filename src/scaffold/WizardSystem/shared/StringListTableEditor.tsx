@@ -72,8 +72,6 @@ export const StringListTableEditor: React.FC<StringListTableEditorProps> = ({
         width: SETTINGS_TABLE_COL.hug,
         renderCell: (row) => (
           <Button
-            variant="secondary"
-            size="default"
             icon={
               <HugeiconsIcon
                 icon={Delete02Icon}

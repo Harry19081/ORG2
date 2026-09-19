@@ -162,7 +162,6 @@ export function MobileFileViewerControls({
         >
           <Button
             appearance="soft"
-            htmlType="button"
             size="small"
             className="mobile-file-controls__action min-h-11"
             style={actionStyle}
@@ -185,9 +184,9 @@ export function MobileFileViewerControls({
           </Button>
           <Button
             appearance="soft"
-            htmlType="button"
             size="small"
-            variant={clipboard.state === "copied" ? "success" : "tertiary"}
+            variant="tertiary"
+            tone={clipboard.state === "copied" ? "success" : undefined}
             className="mobile-file-controls__action min-h-11"
             style={actionStyle}
             loading={clipboard.state === "pending"}

@@ -40,9 +40,13 @@ function contrastRatio(first: string, second: string): number {
 }
 
 describe("Button", () => {
-  it("uses GitHub purple for the merged variant", () => {
+  it("uses GitHub purple for the merged tone", () => {
     const markup = renderToStaticMarkup(
-      React.createElement(Button, { variant: "merged" }, "Merged")
+      React.createElement(
+        Button,
+        { variant: "primary", tone: "merged" },
+        "Merged"
+      )
     );
     expect(markup).toContain("bg-merged");
     expect(markup).toContain("text-merged-contrast");
@@ -177,8 +181,8 @@ describe("compact shared actions", () => {
     let clicks = 0;
     const props = {
       size: "sidebar" as const,
-      variant: "danger" as const,
-      appearance: "soft" as const,
+      variant: "tertiary" as const,
+      tone: "danger" as const,
       iconOnly: true,
       "aria-label": "Discard file",
       icon: React.createElement("svg"),
@@ -364,17 +368,16 @@ describe("Button hover intent", () => {
     ["tertiary", undefined, "btn-hover:bg-surface-hover"],
     ["tertiary", "soft", "btn-hover:bg-fill-2"],
     ["tertiary", "soft-no-drop", "btn-hover:bg-button-hover-no-drop"],
-    ["tertiary", "ghost", null],
     ["secondary", "solid", "btn-hover:bg-fill-3"],
   ])(
     "swaps the neutral hover text for the intent on %s/%s",
     (variant, appearance, hoverSurface) => {
       const neutral = classesOf({ variant, appearance });
-      const danger = classesOf({ variant, appearance, hoverIntent: "danger" });
+      const danger = classesOf({ variant, appearance, hoverTone: "danger" });
       const primary = classesOf({
         variant,
         appearance,
-        hoverIntent: "primary",
+        hoverTone: "primary",
       });
 
       for (const intent of [danger, primary]) {
@@ -398,7 +401,7 @@ describe("Button hover intent", () => {
   );
 
   it("keeps the neutral hover text when no intent is requested", () => {
-    for (const appearance of [undefined, "soft", "soft-no-drop", "ghost"]) {
+    for (const appearance of [undefined, "soft", "soft-no-drop"]) {
       expect(
         classesOf({ variant: "tertiary", appearance }).has(
           "btn-hover:text-text-1"
@@ -407,33 +410,63 @@ describe("Button hover intent", () => {
     }
   });
 
-  it("leaves semantic variants on their own palette", () => {
-    for (const variant of ["primary", "danger", "warning", "success"]) {
-      for (const appearance of ["solid", "soft", "ghost"]) {
-        expect(
-          classesOf({ variant, appearance, hoverIntent: "danger" })
-        ).toEqual(classesOf({ variant, appearance }));
+  it("leaves primaries and toned buttons on their own palette", () => {
+    for (const variant of ["primary", "secondary", "tertiary"]) {
+      for (const tone of [undefined, "danger", "warning", "success"]) {
+        if (!tone && variant !== "primary") continue;
+        for (const appearance of ["solid", "soft"]) {
+          expect(
+            classesOf({ variant, tone, appearance, hoverTone: "danger" })
+          ).toEqual(classesOf({ variant, tone, appearance }));
+        }
       }
     }
+  });
+
+  it("draws a tone per variant: filled primary, outlined secondary, tinted tertiary", () => {
+    const primary = classesOf({ variant: "primary", tone: "danger" });
+    expect(primary.has("btn:bg-danger-6")).toBe(true);
+    expect(primary.has("btn:text-white")).toBe(true);
+
+    const secondary = classesOf({ tone: "danger" });
+    expect(secondary.has("btn:border-border-2")).toBe(true);
+    expect(secondary.has("btn:text-danger-6")).toBe(true);
+
+    // A toned tertiary always takes the tinted soft surface.
+    for (const appearance of [undefined, "solid", "soft"]) {
+      const tertiary = classesOf({
+        variant: "tertiary",
+        tone: "danger",
+        appearance,
+      });
+      expect(tertiary.has("btn:text-danger-6")).toBe(true);
+      expect(tertiary.has("btn-hover:bg-danger-2")).toBe(true);
+    }
+    expect(
+      classesOf({
+        variant: "tertiary",
+        tone: "danger",
+        appearance: "soft-no-drop",
+      }).has("btn-hover:bg-danger-1")
+    ).toBe(true);
+  });
+
+  it("gives every tertiary a hover surface and a pressed state for toggles", () => {
+    const tertiary = classesOf({ variant: "tertiary" });
+    expect(tertiary.has("btn-hover:bg-surface-hover")).toBe(true);
+    expect(tertiary.has("btn-pressed:bg-surface-selected")).toBe(true);
+    expect(tertiary.has("btn-pressed:text-primary-6")).toBe(true);
   });
 });
 
 describe("Button default utilities sit below caller classes", () => {
-  const VARIANTS = [
-    "primary",
-    "secondary",
-    "tertiary",
-    "danger",
-    "warning",
-    "success",
-    "merged",
-  ] as const;
+  const VARIANTS = ["primary", "secondary", "tertiary"] as const;
+  const TONES = [undefined, "danger", "warning", "success", "merged"] as const;
   const APPEARANCES = [
     undefined,
     "solid",
     "outline",
     "dashed",
-    "ghost",
     "soft",
     "soft-no-drop",
   ] as const;
@@ -446,18 +479,25 @@ describe("Button default utilities sit below caller classes", () => {
 
   it("emits every own utility through a component-default variant", () => {
     for (const variant of VARIANTS) {
-      for (const appearance of APPEARANCES) {
-        for (const extra of [
-          {},
-          { disabled: true },
-          { hoverIntent: "danger" },
-        ]) {
-          const unlayered = classesOf({ variant, appearance, ...extra }).filter(
-            (name) =>
-              name !== "button" &&
-              !/^btn(-hover|-active|-focus|-pressed)?:/.test(name)
-          );
-          expect(unlayered, `${variant}/${appearance}`).toEqual([]);
+      for (const tone of TONES) {
+        for (const appearance of APPEARANCES) {
+          for (const extra of [
+            {},
+            { disabled: true },
+            { hoverTone: "danger" },
+          ]) {
+            const unlayered = classesOf({
+              variant,
+              tone,
+              appearance,
+              ...extra,
+            }).filter(
+              (name) =>
+                name !== "button" &&
+                !/^btn(-hover|-active|-focus|-pressed)?:/.test(name)
+            );
+            expect(unlayered, `${variant}/${tone}/${appearance}`).toEqual([]);
+          }
         }
       }
     }

@@ -290,11 +290,7 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
                   defaultValue: "Enabled",
                 })}
               />
-              <Button
-                variant="secondary"
-                size="small"
-                onClick={() => handleViewAgent(agent)}
-              >
+              <Button size="small" onClick={() => handleViewAgent(agent)}>
                 {tIntegrations("common:actions.view", { defaultValue: "View" })}
               </Button>
             </div>
@@ -381,8 +377,6 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
   const headerActions = (
     <div className="flex items-center gap-1">
       <Button
-        variant="secondary"
-        size="default"
         icon={
           <HugeiconsIcon
             icon={Refresh04Icon}
@@ -398,8 +392,6 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
       />
       {onAdd && (
         <Button
-          variant="secondary"
-          size="default"
           icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
           iconOnly
           aria-label={addButtonLabel}

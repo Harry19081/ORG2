@@ -194,7 +194,6 @@ export const CombinedDiffView: React.FC<{
       {earlierEditCount > 0 && !showEarlierEdits && (
         <div className="flex w-full justify-center py-1.5">
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             icon={

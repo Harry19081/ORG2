@@ -233,7 +233,6 @@ const StashItem: React.FC<StashItemProps> = memo(
             {/* Action buttons - visible on hover and keyboard focus */}
             <TreeRowActionGroup>
               <Button
-                htmlType="button"
                 size="sidebar"
                 variant="tertiary"
                 appearance="soft"
@@ -253,7 +252,6 @@ const StashItem: React.FC<StashItemProps> = memo(
                 }
               />
               <Button
-                htmlType="button"
                 size="sidebar"
                 variant="tertiary"
                 appearance="soft"
@@ -273,10 +271,9 @@ const StashItem: React.FC<StashItemProps> = memo(
                 }
               />
               <Button
-                htmlType="button"
                 size="sidebar"
-                variant="danger"
-                appearance="soft"
+                variant="tertiary"
+                tone="danger"
                 iconOnly
                 onClick={handleDrop}
                 disabled={isLoading}
@@ -409,7 +406,6 @@ export const StashContent: React.FC<StashContentProps> = memo(
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className="flex min-w-0 items-center gap-1.5 normal-case"
               onClick={header.onBack}
               aria-label={t("tabs.sourceControl")}

@@ -52,7 +52,6 @@ export function IssuePersonalFilterDropdown({
       onSelect={(value) => onSelect(Array.isArray(value) ? value : [value])}
     >
       <Button
-        htmlType="button"
         variant="tertiary"
         size="small"
         className={hasSelectedFilters ? "bg-fill-1! text-primary-6!" : ""}
@@ -192,7 +191,6 @@ export function ManagedIssueActionsCell({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         className={DROPDOWN_CLASSES.menuActionItem}
         onClick={() => {
           onOpenIssueInBrowser(issue);
@@ -207,9 +205,7 @@ export function ManagedIssueActionsCell({
   return (
     <div className="flex items-center justify-end gap-1.5">
       <Button
-        htmlType="button"
         variant="tertiary"
-        appearance="ghost"
         size="mini"
         icon={<HugeiconsIcon icon={Link02Icon} data-icon="link-2" size={12} />}
         onClick={() => onAddIssue(issue)}
@@ -227,9 +223,7 @@ export function ManagedIssueActionsCell({
         avoidViewportOverflow
       >
         <Button
-          htmlType="button"
           variant="tertiary"
-          appearance="ghost"
           size="mini"
           icon={
             <HugeiconsIcon
@@ -259,9 +253,7 @@ export function ManagedPrActionsCell({
   return (
     <div className="flex items-center justify-end gap-1.5">
       <Button
-        htmlType="button"
         variant="tertiary"
-        appearance="ghost"
         size="mini"
         icon={<HugeiconsIcon icon={Link02Icon} data-icon="link-2" size={12} />}
         onClick={() => onAddPr(pr)}

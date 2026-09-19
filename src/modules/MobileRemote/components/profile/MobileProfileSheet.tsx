@@ -191,8 +191,7 @@ function ProfileRow({
 }) {
   return (
     <Button
-      htmlType="button"
-      variant={danger ? "danger" : "secondary"}
+      tone={danger ? "danger" : undefined}
       // Compound menu row: CSS owns icon/label/trailing-action columns and touch geometry.
       layout="custom"
       appearance="custom"

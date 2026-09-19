@@ -147,7 +147,6 @@ export function QuestionCardShell({
           expanded && questions.length > 1 ? (
             <div className="flex items-center gap-0.5">
               <Button
-                htmlType="button"
                 onClick={handlePrevQuestion}
                 disabled={focusedQuestion === 0}
                 size="mini"
@@ -169,7 +168,6 @@ export function QuestionCardShell({
                 })}
               </span>
               <Button
-                htmlType="button"
                 onClick={handleNextQuestion}
                 disabled={focusedQuestion >= questions.length - 1}
                 size="mini"

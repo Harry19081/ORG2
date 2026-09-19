@@ -292,7 +292,6 @@ const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className="number-input-btn-side number-input-btn-left"
               onClick={decrement}
               disabled={disabled || isAtMin}
@@ -330,7 +329,6 @@ const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className="number-input-btn-side number-input-btn-right"
               onClick={increment}
               disabled={disabled || isAtMax}
@@ -373,7 +371,6 @@ const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className="number-input-btn number-input-btn-up"
               onClick={increment}
               disabled={disabled || isAtMax}
@@ -389,7 +386,6 @@ const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className="number-input-btn number-input-btn-down"
               onClick={decrement}
               disabled={disabled || isAtMin}

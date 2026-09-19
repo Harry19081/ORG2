@@ -70,7 +70,6 @@ export function WorkspaceContextRow({
     const styledTooltip = chevron && title ? title : undefined;
     const button = (
       <Button
-        htmlType="button"
         variant="tertiary"
         appearance="soft-no-drop"
         size="sidebar"

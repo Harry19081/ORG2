@@ -385,7 +385,6 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
             <SectionRow label="" showHeader={false}>
               <Button
                 variant="primary"
-                size="default"
                 disabled={!isFormValid}
                 onClick={handleLogin}
               >

@@ -54,7 +54,6 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         onClick={onSelect}
         className="flex min-w-0 flex-1 items-start gap-1.5 text-left"
       >
@@ -78,7 +77,6 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         onClick={onCompareToggle}
         title={t("canvasApp.compareToggle", "Compare")}
         className={[

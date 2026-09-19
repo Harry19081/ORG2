@@ -161,7 +161,6 @@ export const SourceControlHeaderContent: React.FC<
         {showReviewNavigation && (
           <>
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly
@@ -180,7 +179,6 @@ export const SourceControlHeaderContent: React.FC<
               }
             />
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly
@@ -204,7 +202,6 @@ export const SourceControlHeaderContent: React.FC<
         {showCollapseAll && (
           <>
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly
@@ -234,7 +231,6 @@ export const SourceControlHeaderContent: React.FC<
           t={t}
         />
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly

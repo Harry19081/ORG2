@@ -297,10 +297,12 @@ const GenericSetup: FC<AgentSetupProps> = ({
             >
               <Button
                 variant={
-                  isOAuthConfigured || isApiKeyDetected ? "success" : "primary"
+                  isOAuthConfigured || isApiKeyDetected
+                    ? "secondary"
+                    : "primary"
                 }
-                appearance={
-                  isOAuthConfigured || isApiKeyDetected ? "outline" : undefined
+                tone={
+                  isOAuthConfigured || isApiKeyDetected ? "success" : undefined
                 }
                 size="default"
                 loading={autoDetecting}
@@ -411,8 +413,8 @@ const GenericSetup: FC<AgentSetupProps> = ({
 
           <SectionRow label="" showHeader={false}>
             <Button
-              variant={keyValidated ? "success" : "primary"}
-              appearance={keyValidated ? "outline" : undefined}
+              variant={keyValidated ? "secondary" : "primary"}
+              tone={keyValidated ? "success" : undefined}
               size="default"
               loading={validatingKey}
               disabled={validatingKey || !data.raw_key_input}
@@ -453,7 +455,6 @@ const GenericSetup: FC<AgentSetupProps> = ({
               <div className="mt-2 flex justify-start">
                 <Button
                   variant="primary"
-                  size="default"
                   loading={extracting}
                   disabled={extracting || !rawExtractInput.trim()}
                   onClick={() => {

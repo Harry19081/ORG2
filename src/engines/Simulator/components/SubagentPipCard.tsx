@@ -477,7 +477,6 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
         {/* Banner header — task count + collapse toggle */}
         <div className="flex h-10 shrink-0 items-center gap-2 pr-2 pl-1.5">
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
@@ -529,7 +528,6 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
             {!isBannerCollapsed && pageCount > 1 && (
               <>
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly
@@ -546,7 +544,6 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
                   }
                 />
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly
@@ -565,7 +562,6 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
               </>
             )}
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly

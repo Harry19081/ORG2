@@ -87,7 +87,6 @@ export const TabPillSurface = React.forwardRef<
           layout="custom"
           appearance="custom"
           ref={ref as React.Ref<HTMLButtonElement>}
-          htmlType="button"
           className={surfaceClassName}
           onClick={handleClick as React.MouseEventHandler<HTMLButtonElement>}
           onMouseLeave={

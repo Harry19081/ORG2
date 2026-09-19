@@ -252,7 +252,6 @@ export default function WeeklyQuotaHistoryPanel() {
               {latest ? (
                 <div className="flex items-center justify-center gap-2 text-xs text-text-2">
                   <Button
-                    htmlType="button"
                     variant="tertiary"
                     size="small"
                     iconOnly
@@ -270,7 +269,6 @@ export default function WeeklyQuotaHistoryPanel() {
                     {formatDay(range.start)} – {formatDay(range.end)}
                   </span>
                   <Button
-                    htmlType="button"
                     variant="tertiary"
                     size="small"
                     iconOnly

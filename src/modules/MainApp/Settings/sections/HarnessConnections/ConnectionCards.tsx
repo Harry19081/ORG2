@@ -79,7 +79,7 @@ export default function ConnectionCards({
       </div>
       {onAdd && (
         <div>
-          <Button variant="secondary" disabled={disabled} onClick={onAdd}>
+          <Button disabled={disabled} onClick={onAdd}>
             {t("harnessConnections.add")}
           </Button>
         </div>

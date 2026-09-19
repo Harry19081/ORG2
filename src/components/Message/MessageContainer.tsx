@@ -153,11 +153,9 @@ const MessageItem = ({
           <div className="mt-2 flex justify-end gap-3">
             {cancel && (
               <Button
-                variant="primary"
-                appearance="ghost"
+                variant="tertiary"
                 size="inline"
-                htmlType="button"
-                className="text-xs leading-[1.2] font-medium hover:text-primary-5 hover:underline"
+                className="text-xs leading-[1.2] font-medium"
                 onClick={handleCancelAction}
               >
                 {cancel.label ?? t("actions.cancel")}
@@ -165,11 +163,9 @@ const MessageItem = ({
             )}
             {download && (
               <Button
-                variant="primary"
-                appearance="ghost"
+                variant="tertiary"
                 size="inline"
-                htmlType="button"
-                className="text-xs leading-[1.2] font-medium hover:text-primary-5 hover:underline"
+                className="text-xs leading-[1.2] font-medium"
                 onClick={handleDownload}
               >
                 {download.label ?? t("actions.download")}
@@ -177,11 +173,9 @@ const MessageItem = ({
             )}
             {action && (
               <Button
-                variant="primary"
-                appearance="ghost"
+                variant="tertiary"
                 size="inline"
-                htmlType="button"
-                className="text-xs leading-[1.2] font-semibold hover:text-primary-5 hover:underline"
+                className="text-xs leading-[1.2] font-semibold"
                 onClick={handlePrimaryAction}
               >
                 {action.label}

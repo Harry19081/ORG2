@@ -149,8 +149,8 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             }}
             title={GIT_LABELS.discardAllChanges}
             size="sidebar"
-            variant="danger"
-            appearance="soft"
+            variant="tertiary"
+            tone="danger"
             iconOnly
             icon={
               <HugeiconsIcon

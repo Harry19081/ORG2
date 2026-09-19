@@ -117,7 +117,6 @@ export const SpotlightInput: React.FC<SpotlightInputProps> = ({
             shape="round"
             iconOnly
             icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />}
-            htmlType="button"
             className="shrink-0 hover:bg-fill-2 hover:text-text-1"
             aria-label={t("common:tooltips.clearSearch")}
             onClick={handleResetSearch}

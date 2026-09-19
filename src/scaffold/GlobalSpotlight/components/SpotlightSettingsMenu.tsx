@@ -112,7 +112,6 @@ export const SpotlightSettingsMenu: React.FC<{
           icon={
             <HugeiconsIcon icon={EllipsisIcon} data-icon="ellipsis" size={14} />
           }
-          htmlType="button"
           onClick={toggle}
           aria-label={label}
           aria-haspopup="menu"

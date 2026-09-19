@@ -217,7 +217,6 @@ const MoveToOrgDialog: React.FC<MoveToOrgDialogProps> = ({
           <Button
             {...PANEL_HEADER_TOKENS.actionButton}
             aria-label={t("common:windowChrome.menus.help")}
-            htmlType="button"
             icon={
               <HugeiconsIcon
                 icon={InformationCircleIcon}

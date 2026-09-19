@@ -242,7 +242,6 @@ const PageNotice: React.FC<PageNoticeProps> = ({
     action &&
     (isActionConfig(action) ? (
       <Button
-        variant="secondary"
         size="small"
         href={action.href}
         target={action.href ? "_blank" : undefined}
@@ -298,7 +297,6 @@ const PageNotice: React.FC<PageNoticeProps> = ({
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             onClick={() => setExpanded((currentExpanded) => !currentExpanded)}
             aria-expanded={expanded}
             className="flex min-w-0 flex-1 items-center text-left"

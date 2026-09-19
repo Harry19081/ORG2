@@ -40,7 +40,6 @@ const FloatingExpandPill: React.FC<FloatingExpandPillProps> = ({
 
   return (
     <Button
-      variant="secondary"
       appearance="solid"
       size="mini"
       shape={showLabel ? "round" : "circle"}

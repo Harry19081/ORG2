@@ -44,7 +44,6 @@ const ComposerSubmitButton: React.FC<ComposerSubmitButtonProps> = memo(
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         aria-label={ariaLabel}
         aria-busy={busy || undefined}
         disabled={disabled}

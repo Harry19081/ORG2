@@ -288,7 +288,6 @@ function TeamRuntimeToday({
                   layout="custom"
                   appearance="custom"
                   key={member.userId}
-                  htmlType="button"
                   aria-pressed={selected}
                   onClick={() =>
                     onSelectMember(selected ? null : member.userId)
@@ -382,7 +381,6 @@ function TeamRuntimeToday({
                   layout="custom"
                   appearance="custom"
                   key={session.id}
-                  htmlType="button"
                   onClick={() => onOpenSession(session)}
                   className="flex w-full items-center gap-3 border-b border-border-1 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-fill-1"
                   data-testid={`team-runtime-recent-session-${session.id}`}

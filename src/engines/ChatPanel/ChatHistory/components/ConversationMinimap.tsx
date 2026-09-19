@@ -409,7 +409,6 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
               <Button
                 layout="custom"
                 appearance="custom"
-                htmlType="button"
                 aria-current={isActive ? "step" : undefined}
                 aria-describedby={
                   previewGroupIndex === groupIndex ? tooltipId : undefined

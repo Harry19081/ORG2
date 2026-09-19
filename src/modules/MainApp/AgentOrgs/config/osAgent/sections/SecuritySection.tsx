@@ -237,11 +237,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
           label={t("sharedAgentConfig.security.resetRiskRules")}
           description={t("sharedAgentConfig.security.resetRiskRulesDesc")}
         >
-          <Button
-            size="small"
-            variant="secondary"
-            onClick={handleResetRiskRules}
-          >
+          <Button size="small" onClick={handleResetRiskRules}>
             {t("sharedAgentConfig.security.resetRiskRules")}
           </Button>
         </SectionRow>

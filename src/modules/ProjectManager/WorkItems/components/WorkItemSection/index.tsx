@@ -155,7 +155,6 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
                   size={HEADER_ICON_SIZE.sm}
                 />
               }
-              htmlType="button"
               className={`mr-2 shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100`}
               aria-label={addTitle}
               onClick={(event) => {

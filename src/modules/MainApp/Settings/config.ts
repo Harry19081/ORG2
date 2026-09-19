@@ -83,8 +83,6 @@ export const SECTION_TAB_META: Partial<
 
 /** Shared props for buttons that navigate to another page (outside settings) */
 export const NAV_BUTTON_PROPS = {
-  variant: "secondary" as const,
-  size: "default" as const,
   icon: createElement(HugeiconsIcon, {
     icon: SquareArrowUpRight02Icon,
     size: 14,

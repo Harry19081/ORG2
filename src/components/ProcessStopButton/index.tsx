@@ -28,7 +28,8 @@ export function ProcessStopButton({
 }: ProcessStopButtonProps) {
   return (
     <Button
-      variant="danger"
+      variant="tertiary"
+      tone="danger"
       appearance={appearance}
       size={size === "sm" ? "sidebar" : size === "lg" ? "small" : "mini"}
       iconOnly
@@ -41,7 +42,6 @@ export function ProcessStopButton({
         />
       }
       {...props}
-      htmlType="button"
       aria-label={label}
       title={title}
       disabled={disabled}

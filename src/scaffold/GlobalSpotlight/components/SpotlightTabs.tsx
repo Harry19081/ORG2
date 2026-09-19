@@ -123,7 +123,6 @@ export function SpotlightTabs<T extends string>({
                 layout="custom"
                 appearance="custom"
                 key={option.value}
-                htmlType="button"
                 role="tab"
                 aria-selected={active}
                 aria-label={option.ariaLabel}

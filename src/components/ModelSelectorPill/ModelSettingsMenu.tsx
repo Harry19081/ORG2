@@ -422,7 +422,6 @@ export default function ModelSettingsMenu({
                         kind="button"
                       >
                         <Button
-                          htmlType="button"
                           variant="tertiary"
                           size="small"
                           className={`ml-auto shrink-0 rounded-lg ${PILL_CONTROL_HOVER_CLASS}`}

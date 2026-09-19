@@ -37,7 +37,6 @@ export const ChatPanelShareScreenButton: React.FC<
       appearance="dashed"
       size="mini"
       shape="round"
-      htmlType="button"
       className="gap-1.5 border-dashed text-[12px] hover:border-primary-4 hover:text-primary-6"
       onClick={onClick}
       icon={
@@ -179,10 +178,7 @@ export const ChatPanelComposerGroup: React.FC<ChatPanelComposerGroupProps> = ({
     <div className="rounded-xl bg-chat-container p-3">
       <Button
         variant="primary"
-        appearance="solid"
-        size="default"
         shape="round"
-        htmlType="button"
         onClick={onLaunch}
         disabled={!canLaunch || isLoading}
         className="w-full text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-40"

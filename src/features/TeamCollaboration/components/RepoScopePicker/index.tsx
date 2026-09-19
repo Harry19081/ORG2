@@ -137,7 +137,6 @@ export function RepoScopePicker({
               layout="custom"
               appearance="custom"
               key={repo.id}
-              htmlType="button"
               disabled={!selectable}
               onClick={() => {
                 if (typeof scopeKey === "string") handleToggle(scopeKey);

@@ -33,7 +33,6 @@ const ProbeSection: React.FC<ProbeSectionProps> = ({
         <Button
           variant="primary"
           appearance="outline"
-          size="default"
           disabled={probing}
           loading={probing}
           onClick={onProbe}

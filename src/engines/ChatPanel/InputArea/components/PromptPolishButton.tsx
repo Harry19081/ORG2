@@ -39,7 +39,6 @@ const PromptPolishButton: React.FC<PromptPolishButtonProps> = memo(
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         aria-label={tooltip}
         aria-pressed={control.isPolished}
         disabled={isDisabled}

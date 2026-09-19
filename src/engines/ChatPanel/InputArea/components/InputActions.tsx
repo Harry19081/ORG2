@@ -211,7 +211,6 @@ const InputActions: React.FC<InputActionsProps> = memo(
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         onClick={handleClick}
         disabled={disabled}
         className={`${baseClass} ${stateClass} leading-none`}

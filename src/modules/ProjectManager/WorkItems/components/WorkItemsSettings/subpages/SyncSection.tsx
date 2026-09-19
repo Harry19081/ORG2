@@ -104,8 +104,7 @@ const SyncSection: React.FC<SyncSectionProps> = ({ slug }) => {
             />
             {isAttached ? (
               <Button
-                variant="danger"
-                appearance="outline"
+                tone="danger"
                 size="small"
                 onClick={handleDetach}
                 loading={detaching}

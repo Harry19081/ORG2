@@ -88,7 +88,6 @@ export const ContextInfoPanelSummary: React.FC<
         <Button
           variant="tertiary"
           size="small"
-          shape="square"
           iconOnly
           aria-label={t("common:actions.refresh")}
           title={t("common:actions.refresh")}
@@ -100,7 +99,6 @@ export const ContextInfoPanelSummary: React.FC<
         <Button
           variant="tertiary"
           size="small"
-          shape="square"
           iconOnly
           onClick={close}
           aria-label={t("common:actions.close")}
@@ -227,7 +225,6 @@ export const ContextInfoManualCompactSection: React.FC<
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         onClick={() => setManualCompactOpen((open) => !open)}
         aria-expanded={manualCompactOpen}
         className="flex-1 self-stretch text-left text-[13px] font-semibold text-text-1"
@@ -237,7 +234,6 @@ export const ContextInfoManualCompactSection: React.FC<
       <Button
         variant="tertiary"
         size="small"
-        shape="square"
         iconOnly
         data-testid="context-info-manual-compact-toggle"
         onClick={() => setManualCompactOpen((open) => !open)}
@@ -272,7 +268,6 @@ export const ContextInfoManualCompactSection: React.FC<
         />
         <Button
           long
-          variant="secondary"
           size="small"
           className="mt-2"
           data-testid="context-info-manual-compact-button"

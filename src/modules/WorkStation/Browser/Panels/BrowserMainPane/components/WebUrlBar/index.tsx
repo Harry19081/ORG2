@@ -328,7 +328,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
         <div className="flex items-center gap-px">
           <ToolbarTooltip label={t("tooltips.goBack")}>
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly
@@ -346,7 +345,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
           </ToolbarTooltip>
           <ToolbarTooltip label={t("tooltips.goForward")}>
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly
@@ -364,7 +362,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
           </ToolbarTooltip>
           <ToolbarTooltip label={reloadControlLabel}>
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly
@@ -453,7 +450,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
                 )}
               >
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly
@@ -479,7 +475,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
             {onScreenshot && (
               <ToolbarTooltip label={t("tooltips.captureScreenshot")}>
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly
@@ -509,7 +504,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
             {onOpenNativeDevTools && (
               <ToolbarTooltip label={t("tooltips.openNativeDevTools")}>
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly
@@ -536,7 +530,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
                 }
               >
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly

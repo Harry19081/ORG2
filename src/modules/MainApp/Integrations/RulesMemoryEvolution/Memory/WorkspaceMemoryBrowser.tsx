@@ -173,7 +173,6 @@ const WorkspaceMemoryBrowser: React.FC = () => {
         align: "right",
         renderCell: (entry) => (
           <Button
-            variant="secondary"
             size="small"
             icon={
               <HugeiconsIcon

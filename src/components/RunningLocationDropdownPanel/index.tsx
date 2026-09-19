@@ -122,7 +122,6 @@ const LocationOption: React.FC<LocationOptionProps> = ({
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       {...interactionProps}
       disabled={disabled}
       className={`${DROPDOWN_CLASSES.item} ${

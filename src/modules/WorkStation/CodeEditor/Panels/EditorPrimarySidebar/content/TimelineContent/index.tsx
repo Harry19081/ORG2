@@ -270,7 +270,6 @@ export const TimelineContent: React.FC<TimelineContentProps> = memo(
                     appearance="soft-no-drop"
                     size="sidebar"
                     long
-                    htmlType="button"
                     disabled={fileSessionsLoadingMore}
                     data-testid="session-blame-load-more"
                     onClick={() => void loadMoreFileSessions()}
@@ -355,7 +354,6 @@ export const TimelineContent: React.FC<TimelineContentProps> = memo(
                   className={sessionRefreshSpinClass}
                 />
               }
-              htmlType="button"
               disabled={sessionHistoryLoading || !relativeFilePath}
               onClick={handleSessionRefresh}
               title={t("actions.refresh")}

@@ -187,7 +187,6 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
               )}
               <ToolbarTooltip label={t("tooltips.closeDevTools")}>
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly
@@ -260,7 +259,6 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                               size={HEADER_ICON_SIZE.md}
                             />
                           }
-                          htmlType="button"
                           onClick={collapseAll}
                           aria-label={t("tooltips.collapseAll")}
                         />
@@ -279,7 +277,6 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                               className={refreshTreeSpinClass}
                             />
                           }
-                          htmlType="button"
                           onClick={handleRefreshTreeClick}
                           aria-label={t("tooltips.refreshTree")}
                         />
@@ -372,7 +369,6 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                               />
                             )
                           }
-                          htmlType="button"
                           onClick={() => {
                             if (isAllCollapsed) {
                               setExpandAllKey((prev) => prev + 1);

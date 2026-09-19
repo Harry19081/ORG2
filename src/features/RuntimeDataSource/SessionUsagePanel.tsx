@@ -436,7 +436,6 @@ export default function SessionUsagePanel() {
         <Button
           layout="custom"
           appearance="custom"
-          htmlType="button"
           onClick={() => {
             setSession(null);
             setRoundModelFilter(undefined);

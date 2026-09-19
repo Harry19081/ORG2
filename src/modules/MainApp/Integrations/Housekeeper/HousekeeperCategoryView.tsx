@@ -197,7 +197,7 @@ export const HousekeeperCategoryView: React.FC = () => {
           description={formatDescription(t("housekeeper.description"))}
           align="start"
         >
-          <Button variant="secondary" onClick={openAddMiniCPMAccount}>
+          <Button onClick={openAddMiniCPMAccount}>
             {t("housekeeper.addModel")}
           </Button>
         </SectionRow>
@@ -364,7 +364,6 @@ export const HousekeeperCategoryView: React.FC = () => {
                 : t("housekeeper.health.status")}
             </StatusValue>
             <Button
-              variant="secondary"
               loading={health.status === "checking"}
               onClick={runHealthCheck}
             >
@@ -384,7 +383,6 @@ export const HousekeeperCategoryView: React.FC = () => {
                 : t("housekeeper.benchmark.status")}
             </StatusValue>
             <Button
-              variant="secondary"
               loading={benchmark.status === "running"}
               onClick={runTokenBenchmark}
             >

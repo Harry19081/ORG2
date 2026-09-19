@@ -121,7 +121,6 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
           toggle();
         }}
         title={addOrgLabel}
-        htmlType="button"
       />
       {isOpen &&
         isPositioned &&
@@ -146,7 +145,6 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               onClick={handleAddOrg}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -163,7 +161,6 @@ const OrgActionsDropdown: React.FC<OrgActionsDropdownProps> = ({
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               onClick={handleImportOrgs}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -252,7 +249,6 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
           toggle();
         }}
         title={createLabel}
-        htmlType="button"
       />
       {isOpen &&
         isPositioned &&
@@ -277,7 +273,6 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               onClick={handleCreateWorkItem}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -296,7 +291,6 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               onClick={handleCreateProject}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -315,7 +309,6 @@ const CreateActionsDropdown: React.FC<CreateActionsDropdownProps> = ({
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               onClick={handleImportGithubIssuesProject}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"

@@ -94,7 +94,6 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
         <Button
           layout="custom"
           appearance="custom"
-          htmlType="button"
           onClick={onAddContent}
           disabled={!onAddContent}
           className={[
@@ -134,7 +133,6 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             onClick={onCancel}
             className={`${INPUT_AREA_BUTTONS.iconButtonBase} ${PILL_CONTROL_HOVER_CLASS} cursor-pointer leading-none`}
             style={{ lineHeight: 0 }}
@@ -152,7 +150,6 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             onClick={onAccept}
             className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer bg-fill-3 leading-none`}
             style={{ lineHeight: 0 }}

@@ -343,7 +343,6 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
               layout="custom"
               appearance="custom"
               key={item.id}
-              htmlType="button"
               data-context-menu-item-id={item.id}
               data-testid={`context-menu-item-${item.id}`}
               className={`work-item-context-menu__item ${DROPDOWN_CLASSES.item} w-full justify-between border-none bg-transparent text-left ${DROPDOWN_CLASSES.itemHover} ${

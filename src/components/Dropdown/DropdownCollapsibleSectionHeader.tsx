@@ -21,7 +21,6 @@ const DropdownCollapsibleSectionHeader: React.FC<DropdownCollapsibleSectionHeade
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       className={classNames(
         DROPDOWN_CLASSES.sectionLabel,
         "flex w-full cursor-pointer items-center gap-1 text-left hover:text-text-2",

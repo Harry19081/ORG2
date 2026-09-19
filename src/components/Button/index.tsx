@@ -1,25 +1,27 @@
 /**
  * Button Component (Native Implementation)
  *
- * Two orthogonal axes describe a button's look:
+ * Three orthogonal axes describe a button's look:
  *
- *   variant     — importance / semantic role
- *                 "primary"   = call-to-action / brand color
- *                 "secondary" = regular action
- *                 "tertiary"  = supporting / inline action
- *                 "danger"    = destructive
- *                 "warning"   = caution-required
- *                 "success"   = positive confirmation
- *                 "merged"    = completed GitHub merge
+ *   variant     — importance
+ *                 "primary"   = call-to-action, filled
+ *                 "secondary" = regular action, outlined (default)
+ *                 "tertiary"  = supporting / inline action, transparent with
+ *                               a hover background
  *
- *   appearance  — visual treatment
+ *   tone        — semantic color on top of the variant
+ *                 "danger" | "warning" | "success" | "merged"
+ *                 (hoverTone colors a neutral button only while hovered)
+ *
+ *   appearance  — visual treatment override
  *                 "solid"   = filled background
  *                 "outline" = bordered, transparent fill
  *                 "dashed"  = dashed border (typically for add/upload)
- *                 "soft"    = neutral or semantic hover fill for compact actions
+ *                 "soft"    = neutral or toned hover fill for compact actions
  *                 "soft-no-drop" = neutral hover for a transparent button layer
- *                 "ghost"   = no border, no background — hover changes
- *                            only the text color
+ *
+ * A toggle is a tertiary with `aria-pressed`; the pressed state draws the
+ * selected fill and primary text.
  *
  * Button's own utilities are emitted in a nested cascade layer (the `btn:`
  * variant), so any class passed through `className` overrides them.
@@ -29,10 +31,12 @@
  * import Button from "@src/components/Button";
  *
  * <Button variant="primary">Submit</Button>
- * <Button variant="secondary" size="small">Cancel</Button>
- * <Button variant="danger" appearance="ghost">Remove</Button>
- * <Button variant="tertiary" appearance="ghost">Inline action</Button>
- * <Button variant="tertiary" appearance="soft" hoverIntent="danger" iconOnly icon={<Trash />} />
+ * <Button size="small">Cancel</Button>
+ * <Button variant="primary" tone="danger">Delete</Button>
+ * <Button variant="tertiary" tone="danger">Remove</Button>
+ * <Button variant="tertiary">Inline action</Button>
+ * <Button variant="tertiary" aria-pressed={on}>Aa</Button>
+ * <Button variant="tertiary" appearance="soft" hoverTone="danger" iconOnly icon={<Trash />} />
  * <Button loading>Loading...</Button>
  * <Button variant="primary" icon={<Plus size={14} />}>Add</Button>
  * ```
@@ -41,16 +45,18 @@ import React, { forwardRef } from "react";
 
 import {
   type ButtonAppearance,
-  type ButtonHoverIntent,
+  type ButtonHoverTone,
   type ButtonShape,
   type ButtonSize,
+  type ButtonTone,
   type ButtonVariant,
   useButtonPresentation,
 } from "./presentation";
 
 export type {
   ButtonAppearance,
-  ButtonHoverIntent,
+  ButtonHoverTone,
+  ButtonTone,
   ButtonVariant,
 } from "./presentation";
 
@@ -65,14 +71,21 @@ export interface ButtonProps extends Omit<
    */
   layout?: "default" | "custom";
   /**
-   * Importance / semantic role.
+   * Importance: primary, secondary or tertiary. Color comes from `tone`.
    * @default "secondary"
    */
   variant?: ButtonVariant;
 
   /**
+   * Semantic color on top of the variant (see {@link ButtonTone}): filled on a
+   * primary, tone text on a secondary outline, tone text with a tinted hover
+   * on a tertiary.
+   */
+  tone?: ButtonTone;
+
+  /**
    * Visual treatment.
-   * @default depends on variant — "solid" for primary/danger/warning/success,
+   * @default depends on variant — "solid" for primary,
    *          "outline" for secondary, "solid" for tertiary
    */
   appearance?: ButtonAppearance;
@@ -121,7 +134,7 @@ export interface ButtonProps extends Omit<
    * hand-written hover color classes. Semantic variants already carry a color
    * and ignore it.
    */
-  hoverIntent?: ButtonHoverIntent;
+  hoverTone?: ButtonHoverTone;
 
   /** Display-only shortcut hint; the caller owns keyboard handling. Hidden for icon-only buttons. */
   shortcut?: string;
@@ -158,6 +171,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     {
       layout = "default",
       variant = "secondary",
+      tone,
       appearance,
       size = "default",
       shape = "square",
@@ -167,7 +181,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       iconPosition = "left",
       iconOnly = false,
-      hoverIntent,
+      hoverTone,
       shortcut,
       centerLabel = false,
       long = false,
@@ -187,6 +201,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       useButtonPresentation({
         layout,
         variant,
+        tone,
         appearance,
         size,
         shape,
@@ -196,7 +211,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         icon,
         iconPosition,
         iconOnly,
-        hoverIntent,
+        hoverTone,
         shortcut,
         centerLabel,
         long,

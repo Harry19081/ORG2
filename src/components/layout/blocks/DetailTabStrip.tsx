@@ -59,7 +59,6 @@ export default function DetailTabStrip<Key extends string>({
             layout="custom"
             appearance="custom"
             key={tab.key}
-            htmlType="button"
             role="tab"
             id={`${idPrefix}-tab-${tab.key}`}
             aria-controls={`${idPrefix}-tabpanel-${tab.key}`}

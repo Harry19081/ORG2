@@ -222,8 +222,8 @@ const ApiKeyProviderSetup: React.FC<AgentSetupProps> = ({
       <SectionContainer>
         <SectionRow label={t("keyVault.validate", "Validate")} required>
           <Button
-            variant={keyValidated ? "success" : "primary"}
-            appearance={keyValidated ? "outline" : undefined}
+            variant={keyValidated ? "secondary" : "primary"}
+            tone={keyValidated ? "success" : undefined}
             size="default"
             loading={validatingKey}
             disabled={validatingKey || !data.raw_key_input}

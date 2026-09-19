@@ -126,7 +126,6 @@ const TeamMemberCard = memo(function TeamMemberCard({
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       onClick={() => onOpen(entry.userId)}
       data-testid={`team-member-card-${entry.userId}`}
       data-stale={stale ? "true" : "false"}

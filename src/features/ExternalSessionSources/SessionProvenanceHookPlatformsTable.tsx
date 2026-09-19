@@ -369,7 +369,6 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             className="flex max-w-full cursor-pointer items-center gap-1.5 text-left text-text-3 underline-offset-2 hover:underline focus-visible:underline focus-visible:ring-1 focus-visible:ring-primary-6 focus-visible:outline-none"
             title={row.status.configPath}
             aria-label={`${t(getFileManagerRevealLabelKey())}: ${row.status.configPath}`}
@@ -541,7 +540,6 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
                         {tildePath(row.status.configPath)}
                       </span>
                       <Button
-                        variant="secondary"
                         size="small"
                         onClick={() => void copyText(row.status!.configPath)}
                       >
@@ -550,7 +548,6 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
                         })}
                       </Button>
                       <Button
-                        variant="secondary"
                         size="small"
                         onClick={() =>
                           openFileInWorkStation(row.status!.configPath)

@@ -34,7 +34,6 @@ const ComposerExpandToggle: React.FC<ComposerExpandToggleProps> = memo(
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             aria-label={label}
             aria-expanded={expanded}
             data-testid="composer-expand-toggle"

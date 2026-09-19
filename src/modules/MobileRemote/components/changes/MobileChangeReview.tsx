@@ -109,7 +109,6 @@ function ReviewDropdown({
       >
         <Button
           variant="tertiary"
-          appearance="ghost"
           className="mobile-change-review__dropdown-trigger"
           aria-labelledby={`${labelId} ${valueId}`}
           aria-haspopup="listbox"
@@ -260,7 +259,6 @@ function ReviewPanel(
           {!full && (
             <Button
               iconOnly
-              appearance="ghost"
               variant="tertiary"
               className="mobile-change-review__icon mobile-change-review__expand-all"
               style={iconStyle}

@@ -153,13 +153,12 @@ const AddConnectionWizard: React.FC<AddConnectionWizardProps> = ({
     ) : undefined;
 
   const stepActions = saved ? (
-    <Button variant="primary" size="default" onClick={onCancel}>
+    <Button variant="primary" onClick={onCancel}>
       {t("common:actions.done", "Done")}
     </Button>
   ) : (
     <Button
       variant="primary"
-      size="default"
       onClick={() => handleSave(onSave)}
       disabled={!isFormValid}
     >
@@ -223,7 +222,7 @@ const AddConnectionWizard: React.FC<AddConnectionWizardProps> = ({
                     onChange={setFilePath}
                     placeholder="/path/to/database.sqlite"
                   />
-                  <Button variant="secondary" onClick={handleBrowseFile}>
+                  <Button onClick={handleBrowseFile}>
                     {t("common:actions.browse")}
                   </Button>
                 </div>
@@ -423,8 +422,8 @@ const AddConnectionWizard: React.FC<AddConnectionWizardProps> = ({
               required
             >
               <Button
-                variant={testStatus === "success" ? "success" : "primary"}
-                appearance={testStatus === "success" ? "outline" : undefined}
+                variant={testStatus === "success" ? "secondary" : "primary"}
+                tone={testStatus === "success" ? "success" : undefined}
                 size="default"
                 loading={testStatus === "testing"}
                 disabled={!isFormValid || testStatus === "testing"}

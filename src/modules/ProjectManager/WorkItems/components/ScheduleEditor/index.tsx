@@ -351,7 +351,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               icon={
                 <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />
               }
-              htmlType="button"
               aria-label={t("common:actions.clear")}
               onClick={() => onChange(null)}
               className="shrink-0 hover:bg-fill-3 hover:text-text-1"
@@ -370,7 +369,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               <Button
                 layout="custom"
                 appearance="custom"
-                htmlType="button"
                 className="flex h-8 w-full items-center gap-2 rounded-lg border border-border-2 bg-bg-2 px-2 text-left text-[12px] text-text-1 transition-colors outline-none hover:bg-fill-2 focus:border-primary-6"
                 onClick={() => setOneShotDateOpen((open) => !open)}
               >
@@ -467,11 +465,9 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
           <div>
             <Button
-              variant="primary"
-              appearance="ghost"
+              variant="tertiary"
               size="inline"
-              htmlType="button"
-              className="text-[11px] hover:underline"
+              className="text-[11px]"
               onClick={() => setShowCustomCron(!showCustomCron)}
             >
               {showCustomCron

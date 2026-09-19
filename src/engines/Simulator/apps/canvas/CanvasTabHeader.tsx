@@ -84,7 +84,6 @@ const CanvasTabHeader: React.FC<CanvasTabHeaderProps> = ({
             }
           >
             <Button
-              htmlType="button"
               variant="tertiary"
               size="mini"
               icon={
@@ -132,7 +131,6 @@ const CanvasTabHeader: React.FC<CanvasTabHeaderProps> = ({
         )}
         <ToolbarTooltip label={shareHint}>
           <Button
-            htmlType="button"
             variant="tertiary"
             size="mini"
             icon={

@@ -137,7 +137,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({
                 />
               )
             }
-            htmlType="button"
             onClick={handleToggleSize}
             className="hover:bg-fill-3 hover:text-text-2"
             title={
@@ -157,7 +156,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({
                 size={12}
               />
             }
-            htmlType="button"
             onClick={handleOpenExternal}
             className="hover:bg-fill-3 hover:text-text-2"
             title={t("codePreview.openExternal")}
@@ -169,7 +167,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({
             aria-label={t("codePreview.close")}
             iconOnly
             icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />}
-            htmlType="button"
             onClick={onClose}
             className="hover:bg-fill-3 hover:text-text-2"
             title={t("codePreview.close")}

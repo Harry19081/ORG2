@@ -87,7 +87,6 @@ const NonEmbeddedUrlNotice: React.FC<{ url: string }> = ({ url }) => {
           </div>
         </div>
         <Button
-          variant="secondary"
           size="small"
           onClick={() => openLink(url, { navigate: true })}
           icon={

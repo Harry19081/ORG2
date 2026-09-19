@@ -165,8 +165,8 @@ export function OAuthSessionSetupShell({
             required
           >
             <Button
-              variant={hasToken ? "success" : "primary"}
-              appearance={hasToken ? "outline" : "solid"}
+              variant={hasToken ? "secondary" : "primary"}
+              tone={hasToken ? "success" : undefined}
               size="default"
               loading={isSigningIn || isWebviewLoading}
               disabled={isSigningIn || isWebviewLoading}
@@ -273,7 +273,7 @@ export function OAuthSessionSetupShell({
                 <div className="mb-4 text-[12px] text-text-3">
                   {displayError}
                 </div>
-                <Button variant="primary" size="default" onClick={handleRetry}>
+                <Button variant="primary" onClick={handleRetry}>
                   {copy.retry}
                 </Button>
               </div>

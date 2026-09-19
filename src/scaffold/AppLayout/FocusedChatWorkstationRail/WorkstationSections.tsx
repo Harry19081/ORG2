@@ -64,7 +64,6 @@ export function WorkstationSections({
                 // always-visible chevron right after the label — matching the
                 // panel header's own title toggle.
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   appearance="soft-no-drop"
                   size="sidebar"

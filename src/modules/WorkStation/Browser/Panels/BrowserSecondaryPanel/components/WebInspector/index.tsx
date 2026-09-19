@@ -109,7 +109,6 @@ export const WebInspector: React.FC<WebInspectorProps> = memo(
                   size={16}
                 />
               }
-              htmlType="button"
               onClick={onToggleCollapse}
               aria-label={t("titleBar.showDevTools")}
             />

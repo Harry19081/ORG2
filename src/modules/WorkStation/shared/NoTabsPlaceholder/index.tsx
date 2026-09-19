@@ -101,7 +101,6 @@ const ActionItem = memo<ActionItemProps>(({ action, onClick }) => {
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       onClick={handleClick}
       disabled={action.disabled}
       className={`${SPOTLIGHT_CLASSES.itemRow} w-full text-left transition-colors ${

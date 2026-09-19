@@ -412,7 +412,6 @@ const ApiCallRow: React.FC<ApiCallRowProps> = ({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         className="flex h-full items-center justify-center text-text-3"
         aria-label={expanded ? "Collapse API call" : "Expand API call"}
         aria-expanded={expanded}
@@ -438,7 +437,6 @@ const ApiCallRow: React.FC<ApiCallRowProps> = ({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         className="block overflow-hidden px-2 text-left text-[11px] text-ellipsis whitespace-nowrap text-primary-6"
         onClick={onToggle}
         title={call.fullUrl}
@@ -489,7 +487,6 @@ const SortHeader: React.FC<SortHeaderProps> = ({
   <Button
     layout="custom"
     appearance="custom"
-    htmlType="button"
     className="flex h-full min-w-0 items-center gap-1 px-2 text-left text-[10px] font-semibold tracking-wide text-text-3 uppercase hover:text-text-1"
     onClick={() => onSort(column)}
   >

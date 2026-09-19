@@ -51,7 +51,6 @@ const ChatHeader = () => {
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className="ml-1 flex items-center gap-1 text-primary-5 hover:text-primary-7"
               title={t("chat.stopWingman")}
               onClick={() => {
@@ -94,7 +93,6 @@ const ChatHeader = () => {
 
               <Button
                 variant="tertiary"
-                appearance="ghost"
                 size="mini"
                 iconOnly
                 icon={

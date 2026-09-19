@@ -132,8 +132,8 @@ const CodexSetup: React.FC<CodexSetupProps> = ({
             required
           >
             <Button
-              variant={tokenDetected ? "success" : "primary"}
-              appearance={tokenDetected ? "outline" : undefined}
+              variant={tokenDetected ? "secondary" : "primary"}
+              tone={tokenDetected ? "success" : undefined}
               size="default"
               loading={detectingToken}
               disabled={detectingToken}
@@ -167,8 +167,8 @@ const CodexSetup: React.FC<CodexSetupProps> = ({
                 style={{ ...SECTION_CONTROL_STYLE, flex: 1 }}
               />
               <Button
-                variant={keyValidated ? "success" : "primary"}
-                appearance={keyValidated ? "outline" : undefined}
+                variant={keyValidated ? "secondary" : "primary"}
+                tone={keyValidated ? "success" : undefined}
                 size="default"
                 loading={validatingKey}
                 disabled={validatingKey}

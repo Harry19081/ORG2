@@ -239,9 +239,9 @@ const Modal: React.FC<ModalProps> = ({
     if (onOk) {
       const isLoading = okButtonProps?.loading ?? okLoading;
       const isDisabled = okButtonProps?.disabled;
-      const primaryVariant =
+      const primaryTone =
         !okButtonProps?.status || okButtonProps.status === "default"
-          ? "primary"
+          ? undefined
           : okButtonProps.status;
 
       return (
@@ -273,7 +273,8 @@ const Modal: React.FC<ModalProps> = ({
             },
             disabled: isDisabled || isLoading,
             loading: isLoading,
-            variant: primaryVariant,
+            variant: "primary",
+            tone: primaryTone,
             shortcut: okButtonProps?.shortcut,
             "aria-keyshortcuts": okButtonProps?.["aria-keyshortcuts"],
           }}
@@ -474,7 +475,6 @@ const Modal: React.FC<ModalProps> = ({
                         }
                         onClick={handleClose}
                         title="Close"
-                        htmlType="button"
                       />
                     ) : null}
                   </div>

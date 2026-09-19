@@ -94,7 +94,7 @@ const SpotlightModalHeader: React.FC<SpotlightModalHeaderProps> = ({
           iconOnly
           icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={18} />}
           onClick={onClose}
-          hoverIntent="danger"
+          hoverTone="danger"
           title={t("actions.close")}
         />
       </div>

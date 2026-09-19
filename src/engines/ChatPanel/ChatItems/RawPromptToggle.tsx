@@ -176,7 +176,6 @@ const RawPromptToggleComponent: React.FC<RawPromptToggleProps> = ({
           />
         }
         ref={buttonRef}
-        htmlType="button"
         data-testid="chat-message-raw-prompt-toggle"
         title={label}
         aria-label={label}

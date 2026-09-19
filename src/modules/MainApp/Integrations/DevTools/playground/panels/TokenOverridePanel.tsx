@@ -270,7 +270,6 @@ export function TokenOverridePanel({
           {hasOverrides && (
             <Button
               variant="tertiary"
-              appearance="ghost"
               size="mini"
               className="mt-1 w-full text-[12px] font-medium hover:bg-fill-4 hover:text-text-1"
               onClick={onReset}

@@ -327,7 +327,6 @@ const MetaStrip: React.FC<MetaStripProps> = memo(
                 size={14}
               />
             }
-            htmlType="button"
             onClick={handleOpenDevtools}
             aria-label="Inspect with DevTools"
             className="ml-auto shrink-0 hover:bg-fill-2 hover:text-text-2"

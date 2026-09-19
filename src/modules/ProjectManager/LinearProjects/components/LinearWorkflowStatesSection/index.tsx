@@ -170,9 +170,7 @@ const LinearWorkflowStatesSection: React.FC<
       <div className="flex justify-end gap-1">
         <Button
           variant="tertiary"
-          appearance="ghost"
           size="small"
-          htmlType="button"
           onClick={resetDraft}
           className="gap-1 text-xs hover:bg-fill-2"
           icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={13} />}
@@ -181,9 +179,7 @@ const LinearWorkflowStatesSection: React.FC<
         </Button>
         <Button
           variant="primary"
-          appearance="solid"
           size="small"
-          htmlType="button"
           onClick={mode === "create" ? handleSaveCreate : handleSaveEdit}
           disabled={!canSaveDraft || savingStateId !== null}
           className="gap-1 text-xs disabled:cursor-not-allowed disabled:opacity-50"
@@ -203,7 +199,6 @@ const LinearWorkflowStatesSection: React.FC<
         </span>
         <div className="flex items-center gap-1">
           <Button
-            htmlType="button"
             variant="tertiary"
             size="mini"
             iconOnly
@@ -225,7 +220,6 @@ const LinearWorkflowStatesSection: React.FC<
             aria-label={t("linearProjects.statusPanel.addStatus")}
             iconOnly
             icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
-            htmlType="button"
             onClick={startCreate}
             disabled={!team}
             className="hover:bg-fill-2 hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-50"
@@ -283,13 +277,13 @@ const LinearWorkflowStatesSection: React.FC<
                         size={12}
                       />
                     }
-                    htmlType="button"
                     onClick={() => startEdit(state)}
                     className="hidden group-hover:inline-flex hover:bg-fill-2 hover:text-text-1"
                     title={t("common:actions.edit")}
                   />
                   <Button
-                    variant="danger"
+                    variant="tertiary"
+                    tone="danger"
                     appearance="soft-no-drop"
                     size="mini"
                     aria-label={t("linearProjects.statusPanel.archiveStatus")}
@@ -301,7 +295,6 @@ const LinearWorkflowStatesSection: React.FC<
                         size={12}
                       />
                     }
-                    htmlType="button"
                     onClick={() => void onArchiveState(state.id)}
                     disabled={isSaving}
                     className="hover:text-danger-7 hidden group-hover:inline-flex hover:bg-danger-1 disabled:cursor-not-allowed disabled:opacity-50"

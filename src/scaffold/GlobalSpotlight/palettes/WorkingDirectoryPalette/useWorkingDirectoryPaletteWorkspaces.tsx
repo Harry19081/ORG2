@@ -374,7 +374,6 @@ export function useWorkingDirectoryPaletteWorkspaces({
             aria-label={t("actions.edit", "Edit")}
             iconOnly
             icon={<HugeiconsIcon icon={ICONS.editRepo} size={14} />}
-            htmlType="button"
             onClick={(e) => {
               e.stopPropagation();
               handleEditWorkspace(ws);
@@ -383,13 +382,12 @@ export function useWorkingDirectoryPaletteWorkspaces({
             title={t("actions.edit", "Edit")}
           />
           <Button
-            variant="danger"
-            appearance="soft"
+            variant="tertiary"
+            tone="danger"
             size="mini"
             aria-label={t("actions.delete", "Delete")}
             iconOnly
             icon={<HugeiconsIcon icon={ICONS.removeRepo} size={14} />}
-            htmlType="button"
             onClick={(e) => {
               e.stopPropagation();
               void handleDeleteWorkspace(ws);

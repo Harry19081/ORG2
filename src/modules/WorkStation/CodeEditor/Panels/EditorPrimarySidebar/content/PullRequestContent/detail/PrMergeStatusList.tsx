@@ -214,7 +214,6 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className={`${ROW_CLASS} transition-colors hover:bg-fill-1 hover:text-text-1`}
               aria-expanded={isOpen}
               aria-haspopup="dialog"

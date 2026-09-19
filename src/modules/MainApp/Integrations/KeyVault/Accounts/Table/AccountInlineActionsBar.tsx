@@ -73,7 +73,6 @@ export const AccountInlineActionsBar: React.FC<
       ) : null}
       {onRefresh ? (
         <Button
-          variant="secondary"
           size="small"
           onClick={handleRefreshClick}
           disabled={anyRefreshing}
@@ -92,7 +91,6 @@ export const AccountInlineActionsBar: React.FC<
       ) : null}
       {onRefreshModels ? (
         <Button
-          variant="secondary"
           size="small"
           onClick={handleRefreshModelsClick}
           disabled={anyRefreshing}
@@ -110,23 +108,21 @@ export const AccountInlineActionsBar: React.FC<
         </Button>
       ) : null}
       {showEdit ? (
-        <Button variant="secondary" size="small" onClick={onEdit}>
+        <Button size="small" onClick={onEdit}>
           {tCommon("actions.edit")}
         </Button>
       ) : null}
       {onDisconnect && account.hasLocalKey && account.isListed ? (
         <>
           <Button
-            variant="danger"
-            appearance="outline"
+            tone="danger"
             size="small"
             onClick={() => onDisconnect(account.id, "local")}
           >
             {t("keyVault.removeLocal")}
           </Button>
           <Button
-            variant="danger"
-            appearance="outline"
+            tone="danger"
             size="small"
             onClick={() => onDisconnect(account.id, "cloud")}
           >
@@ -136,8 +132,7 @@ export const AccountInlineActionsBar: React.FC<
       ) : null}
       {onDisconnect && !(account.hasLocalKey && account.isListed) ? (
         <Button
-          variant="danger"
-          appearance="outline"
+          tone="danger"
           size="small"
           onClick={() => onDisconnect(account.id)}
         >

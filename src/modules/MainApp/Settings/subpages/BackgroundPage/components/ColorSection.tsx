@@ -69,7 +69,6 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
               layout="custom"
               appearance="custom"
               key={preset.id}
-              htmlType="button"
               title={preset.description}
               className={`${SWATCH_BASE} ${isSelected ? SWATCH_SELECTED : SWATCH_IDLE}`}
               style={{ backgroundColor: `var(${preset.cssVar})` }}
@@ -87,7 +86,6 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
               <SharedButton
                 layout="custom"
                 appearance="custom"
-                htmlType="button"
                 title={hex}
                 className={`${SWATCH_BASE} ${isSelected ? SWATCH_SELECTED : SWATCH_IDLE}`}
                 style={{ backgroundColor: hex }}

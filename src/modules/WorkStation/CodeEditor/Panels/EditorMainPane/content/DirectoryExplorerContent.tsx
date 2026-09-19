@@ -215,7 +215,6 @@ const DirectoryExplorerContent: React.FC<DirectoryExplorerContentProps> = memo(
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             className="block w-full text-left"
             onClick={() => handleOpenItem(item)}
           >

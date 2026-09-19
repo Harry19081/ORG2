@@ -120,7 +120,6 @@ const PanelTabButton: React.FC<PanelTabButtonProps> = memo(
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         data-active={isActive ? "true" : "false"}
         onClick={handleClick}
         onMouseLeave={resetCursor}

@@ -88,7 +88,6 @@ const AvatarChip = memo(function AvatarChip({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         disabled={disabled}
         aria-pressed={variant === "selectable" ? selected : undefined}
         onClick={onClick}

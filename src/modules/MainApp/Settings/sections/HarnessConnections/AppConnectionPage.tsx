@@ -317,7 +317,6 @@ export default function AppConnectionPage({
                 configured &&
                 state.view?.config.overlay)) && (
               <Button
-                variant="secondary"
                 loading={busy === "open"}
                 disabled={
                   busy !== null ||
@@ -335,7 +334,6 @@ export default function AppConnectionPage({
             )}
             {configured && (
               <Button
-                variant="secondary"
                 loading={busy === "restore"}
                 disabled={
                   busy !== null ||
@@ -369,7 +367,6 @@ export default function AppConnectionPage({
             <SectionRow showHeader={false}>
               <Button
                 variant="tertiary"
-                appearance="ghost"
                 size="small"
                 onClick={() => setPicker("provider")}
               >

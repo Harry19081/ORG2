@@ -26,7 +26,6 @@ export const WorkManagementRefreshButton = memo(
     return (
       <ToolbarTooltip label={label}>
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly

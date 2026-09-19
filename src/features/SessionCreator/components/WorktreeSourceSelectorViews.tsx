@@ -88,7 +88,6 @@ function SelectorError({
     >
       <span>{message}</span>
       <Button
-        variant="secondary"
         size="small"
         icon={
           <HugeiconsIcon
@@ -274,7 +273,6 @@ function WorktreeSourceDropdownRow({
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       data-testid={`worktree-source-row-${item.id}`}
       {...keyboardProps}
       disabled={disabled}

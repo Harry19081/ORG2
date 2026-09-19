@@ -227,7 +227,6 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                   <Button
                     layout="custom"
                     appearance="custom"
-                    htmlType="button"
                     onClick={handleRefreshMenuClick}
                     className={DROPDOWN_CLASSES.menuActionItem}
                   >
@@ -253,7 +252,6 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                 disabled={moreMenuVisible}
               >
                 <Button
-                  htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly

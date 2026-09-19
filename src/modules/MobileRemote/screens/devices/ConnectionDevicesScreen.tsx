@@ -240,8 +240,7 @@ export function ConnectionDevicesScreen({
               className="mobile-connections__section-row"
             >
               <Button
-                variant="secondary"
-                appearance="ghost"
+                variant="tertiary"
                 size="large"
                 long
                 className="mobile-connections__add"

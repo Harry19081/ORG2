@@ -209,7 +209,6 @@ export const PresenceMenuItems: React.FC<PresenceMenuItemsProps> = ({
             layout="custom"
             appearance="custom"
             key={option}
-            htmlType="button"
             onClick={() => handleSelectMode(option)}
             className={DROPDOWN_CLASSES.menuActionItem}
           >
@@ -239,7 +238,6 @@ export const PresenceMenuItems: React.FC<PresenceMenuItemsProps> = ({
                 layout="custom"
                 appearance="custom"
                 key={role.id}
-                htmlType="button"
                 onClick={() => handleSelectMode(roleMode)}
                 className={DROPDOWN_CLASSES.menuActionItem}
               >
@@ -271,7 +269,6 @@ export const PresenceMenuItems: React.FC<PresenceMenuItemsProps> = ({
               layout="custom"
               appearance="custom"
               key={entry.id}
-              htmlType="button"
               onClick={() => handleSelectAwayDuration(entry.id)}
               className={DROPDOWN_CLASSES.menuActionItem}
             >

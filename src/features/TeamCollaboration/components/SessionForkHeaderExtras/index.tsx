@@ -122,7 +122,6 @@ const SessionForkHeaderExtras: React.FC<SessionForkHeaderExtrasProps> = ({
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             data-testid="session-forked-from-chip"
             className="mr-1 inline-flex cursor-pointer border-0 bg-transparent p-0"
             onClick={() => void handleOpenParent()}
@@ -158,7 +157,6 @@ const SessionForkHeaderExtras: React.FC<SessionForkHeaderExtrasProps> = ({
         >
           <span className="inline-flex">
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly

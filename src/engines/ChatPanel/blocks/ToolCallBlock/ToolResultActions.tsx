@@ -41,7 +41,6 @@ const ToolResultActions: React.FC<ToolResultActionsProps> = ({ source }) => {
           size={13}
         />
       }
-      htmlType="button"
       className={ICON_BUTTON_CLASSES}
       onClick={(event) => {
         event.stopPropagation();

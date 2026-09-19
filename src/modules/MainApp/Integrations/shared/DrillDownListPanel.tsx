@@ -73,7 +73,6 @@ const DrillDownListPanel: React.FC<DrillDownListPanelProps> = ({
               size={16}
             />
           }
-          htmlType="button"
           onClick={onBack}
           className="hover:bg-fill-2 hover:text-text-1"
         />
@@ -111,7 +110,6 @@ const DrillDownListPanel: React.FC<DrillDownListPanelProps> = ({
                   layout="custom"
                   appearance="custom"
                   key={item.id}
-                  htmlType="button"
                   onClick={() => onSelect(item.id)}
                   className={`flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[13px] transition-colors ${
                     isSelected

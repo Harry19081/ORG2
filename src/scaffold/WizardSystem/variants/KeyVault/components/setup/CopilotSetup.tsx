@@ -60,8 +60,8 @@ const CopilotSetup: React.FC<CopilotSetupProps> = ({
                 className="flex-1"
               />
               <Button
-                variant={keyValidated ? "success" : "primary"}
-                appearance={keyValidated ? "outline" : undefined}
+                variant={keyValidated ? "secondary" : "primary"}
+                tone={keyValidated ? "success" : undefined}
                 size="default"
                 loading={validatingKey}
                 disabled={validatingKey || !data.raw_key_input}

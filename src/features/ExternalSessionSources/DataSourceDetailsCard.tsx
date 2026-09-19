@@ -76,7 +76,6 @@ const DataSourceDetailsCard: React.FC<DataSourceDetailsCardProps> = ({
                     {tildePath(path)}
                   </span>
                   <Button
-                    variant="secondary"
                     size="small"
                     iconOnly
                     icon={
@@ -90,7 +89,6 @@ const DataSourceDetailsCard: React.FC<DataSourceDetailsCardProps> = ({
                     onClick={() => handleCopy(path)}
                   />
                   <Button
-                    variant="secondary"
                     size="small"
                     iconOnly
                     icon={

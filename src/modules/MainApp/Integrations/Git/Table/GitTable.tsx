@@ -205,7 +205,6 @@ export const GitTable: React.FC<GitTableProps> = ({
         renderCell: (row) => (
           <div className="flex h-full items-center justify-end gap-2">
             <Button
-              variant="secondary"
               size="small"
               icon={
                 <HugeiconsIcon

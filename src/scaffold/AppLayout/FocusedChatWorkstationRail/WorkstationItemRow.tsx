@@ -51,7 +51,6 @@ export function WorkstationItemRow({
 
   const action = (
     <Button
-      htmlType="button"
       variant="tertiary"
       appearance="soft-no-drop"
       size={compact ? "small" : "sidebar"}
@@ -146,8 +145,8 @@ export function WorkstationItemRow({
       )}
       {item.onStop ? (
         <Button
-          variant="danger"
-          appearance="soft"
+          variant="tertiary"
+          tone="danger"
           iconOnly
           icon={
             <HugeiconsIcon icon={StopCircleIcon} data-icon="stop" size={14} />

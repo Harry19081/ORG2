@@ -91,7 +91,6 @@ export function MobileAuthScreen({
                   action={
                     state.retryable ? (
                       <Button
-                        variant="secondary"
                         style={{
                           minHeight: "var(--mobile-touch-size)",
                           fontSize: "var(--mobile-type-control-size)",

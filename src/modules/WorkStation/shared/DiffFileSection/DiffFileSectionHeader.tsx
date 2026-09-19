@@ -67,7 +67,6 @@ export function DiffFileSectionHeader({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         className="absolute inset-0 w-full cursor-pointer focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset disabled:cursor-default"
         onClick={toggleExpanded}
         disabled={isDeleted}
@@ -157,7 +156,6 @@ export function DiffFileSectionHeader({
         <Button
           layout="custom"
           appearance="custom"
-          htmlType="button"
           className="pointer-events-auto flex shrink-0 cursor-pointer items-center gap-2 pr-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none aria-disabled:cursor-default"
           onClick={isDeleted ? undefined : toggleExpanded}
           aria-disabled={isDeleted || undefined}

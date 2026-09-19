@@ -105,7 +105,6 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               data-testid="turn-pagination-current-round"
               className={`${SELECT_TRIGGER_BASE} cursor-pointer ${SURFACE_TOKENS.hover} disabled:cursor-not-allowed disabled:opacity-50 ${
                 listOpen ? SURFACE_TOKENS.selected : ""
@@ -187,7 +186,6 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                 >
                   <span className="inline-flex">
                     <Button
-                      htmlType="button"
                       variant="tertiary"
                       size="small"
                       iconOnly
@@ -225,7 +223,6 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                 >
                   <span className="inline-flex">
                     <Button
-                      htmlType="button"
                       variant="tertiary"
                       size="small"
                       iconOnly
@@ -258,7 +255,6 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                 >
                   <span className="inline-flex">
                     <Button
-                      htmlType="button"
                       variant="tertiary"
                       size="small"
                       iconOnly
@@ -290,7 +286,6 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                 >
                   <span className="inline-flex">
                     <Button
-                      htmlType="button"
                       variant="tertiary"
                       size="small"
                       iconOnly
@@ -322,7 +317,6 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
                 >
                   <span className="inline-flex">
                     <Button
-                      htmlType="button"
                       variant="tertiary"
                       size="small"
                       iconOnly

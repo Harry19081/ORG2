@@ -73,7 +73,6 @@ const AccountListPanel: React.FC<AccountListPanelProps> = ({
                 size={16}
               />
             }
-            htmlType="button"
             onClick={onBack}
             className="hover:bg-fill-2 hover:text-text-1"
           />

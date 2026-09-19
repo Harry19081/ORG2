@@ -326,7 +326,6 @@ const WindowsTopBarComponent: React.FC = () => {
               layout="custom"
               appearance="custom"
               key={menuKey}
-              htmlType="button"
               className={MENU_BUTTON_CLASS}
               onClick={(event) => handleOpenMenu(menuKey, event)}
               aria-label={t("windowChrome.menus.aria", { label })}
@@ -346,7 +345,6 @@ const WindowsTopBarComponent: React.FC = () => {
         <Button
           layout="custom"
           appearance="custom"
-          htmlType="button"
           className={WINDOW_CONTROL_BUTTON_CLASS}
           onClick={handleMinimize}
           aria-label={t("windowChrome.controls.minimizeWindow")}
@@ -362,7 +360,6 @@ const WindowsTopBarComponent: React.FC = () => {
         <Button
           layout="custom"
           appearance="custom"
-          htmlType="button"
           className={WINDOW_CONTROL_BUTTON_CLASS}
           onClick={handleMaximize}
           aria-label={t("windowChrome.controls.maximizeRestoreWindow")}
@@ -378,7 +375,6 @@ const WindowsTopBarComponent: React.FC = () => {
         <Button
           layout="custom"
           appearance="custom"
-          htmlType="button"
           className={CLOSE_BUTTON_CLASS}
           onClick={handleClose}
           aria-label={t("windowChrome.controls.closeWindow")}

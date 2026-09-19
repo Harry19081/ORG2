@@ -359,7 +359,6 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
         layout="custom"
         appearance="custom"
         ref={ref}
-        htmlType="button"
         onClick={onClick}
         onMouseDown={onMouseDown}
         onMouseEnter={onMouseEnter}

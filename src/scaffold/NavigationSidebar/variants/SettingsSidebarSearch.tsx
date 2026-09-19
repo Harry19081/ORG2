@@ -215,7 +215,6 @@ export default function SettingsSidebarSearch({
             query ? (
               <Button
                 variant="tertiary"
-                appearance="ghost"
                 size="sidebar"
                 iconOnly
                 aria-label={t("common:tooltips.clearSearch")}

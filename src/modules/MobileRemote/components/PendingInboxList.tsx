@@ -61,7 +61,6 @@ export function PendingInboxList({
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             key={`${request.origin}:${request.sessionId}:${request.requestId}`}
             className="mobile-pending-card"
             disabled={!online}

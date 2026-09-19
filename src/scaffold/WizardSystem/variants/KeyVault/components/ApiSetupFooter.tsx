@@ -85,17 +85,11 @@ const ApiSetupFooter: React.FC<ApiSetupFooterProps> = ({
             )}
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="default"
-              onClick={onCancel}
-              data-testid="key-vault-wizard-cancel"
-            >
+            <Button onClick={onCancel} data-testid="key-vault-wizard-cancel">
               {t("common:actions.cancel")}
             </Button>
             <Button
               variant="primary"
-              size="default"
               disabled={!canProceed}
               loading={loading}
               onClick={onNext}

@@ -482,7 +482,6 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
             {data.pinState && !isDisabled && (
               <Button
                 variant="tertiary"
-                appearance="ghost"
                 size="sidebar"
                 iconOnly
                 aria-label={t(

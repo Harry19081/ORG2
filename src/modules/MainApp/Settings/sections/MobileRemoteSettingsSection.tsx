@@ -232,8 +232,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
               />
               {enabled && relayEnabled && cloudSignedIn && showRelayRecovery ? (
                 <Button
-                  variant="secondary"
-                  size="default"
                   iconOnly
                   icon={
                     <HugeiconsIcon
@@ -279,7 +277,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
                 </span>
               ) : (
                 <Button
-                  size="default"
                   onClick={() => {
                     void handleCloudSignIn().catch(() => undefined);
                   }}
@@ -371,14 +368,12 @@ const MobileRemoteSettingsSection: React.FC = () => {
               className={`${SECTION_ACTION_GAP_CLASSES} flex-wrap justify-end`}
             >
               <Button
-                variant="secondary"
                 size="small"
                 onClick={() => setRelayUrl(MOBILE_REMOTE_RELAY_PRODUCTION_URL)}
               >
                 {t("mobileRemote.restoreDefaultRelay")}
               </Button>
               <Button
-                variant="secondary"
                 size="small"
                 aria-expanded={developerOptions}
                 onClick={() => setDeveloperOptions(!developerOptions)}

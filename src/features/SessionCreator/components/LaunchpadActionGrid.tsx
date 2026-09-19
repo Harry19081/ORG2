@@ -65,7 +65,6 @@ export const LaunchpadActionCard = forwardRef<
         appearance="custom"
         {...buttonProps}
         ref={ref}
-        htmlType="button"
         className={`group flex min-h-[68px] w-full transform-gpu flex-col items-start justify-between rounded-xl border bg-transparent px-2.5 py-2 text-left shadow-xs transition-colors focus-visible:border-primary-6 focus-visible:outline-none ${ACTION_CARD_TONE_CLASS[action.tone]}`}
         onClick={action.onClick}
         data-testid={dataTestId ?? `chat-panel-start-page-${action.id}`}
@@ -88,7 +87,6 @@ export const LaunchpadActionCard = forwardRef<
       appearance="custom"
       {...buttonProps}
       ref={ref}
-      htmlType="button"
       className={`group inline-flex max-w-full min-w-0 transform-gpu items-center gap-1.5 rounded-full border px-3 py-1.5 text-left transition-colors focus-visible:border-primary-6 focus-visible:outline-none ${ACTION_TONE_CLASS[action.tone]}`}
       onClick={action.onClick}
       data-testid={dataTestId ?? `chat-panel-start-page-${action.id}`}

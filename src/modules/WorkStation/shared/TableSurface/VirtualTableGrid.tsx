@@ -398,7 +398,6 @@ export function VirtualTableGrid({
               layout="custom"
               appearance="custom"
               key={`header-${column.id}`}
-              htmlType="button"
               className={[
                 "table-surface__column-header",
                 onSortColumn ? "table-surface__column-header--sortable" : null,

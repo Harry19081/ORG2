@@ -41,6 +41,7 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
   (
     {
       variant = "secondary",
+      tone,
       appearance,
       size = "default",
       shape = "square",
@@ -79,6 +80,7 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
       buttonClassName,
     } = useButtonPresentation({
       variant,
+      tone,
       appearance,
       size,
       shape,
@@ -112,10 +114,14 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
           ? "group-hover/button-split:bg-surface-hover group-hover/button-split:text-text-1"
           : "";
 
+    // The menu segment mirrors the main segment's color: its tone when set,
+    // otherwise the variant.
+    const colorKey = tone ?? variant;
+
     const menuColorClass = (() => {
       if (highlightOpenMenu) return "text-primary-6";
       if (resolvedAppearance === "solid") {
-        switch (variant) {
+        switch (colorKey) {
           case "primary":
           case "danger":
           case "warning":
@@ -129,7 +135,7 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
             return "text-text-2 group-hover/button-split:text-text-1";
         }
       }
-      switch (variant) {
+      switch (colorKey) {
         case "primary":
           return "text-primary-6";
         case "danger":
@@ -155,7 +161,7 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
           : "enabled:hover:bg-button-hover focus-visible:bg-button-hover";
       }
       if (resolvedAppearance === "solid") {
-        switch (variant) {
+        switch (colorKey) {
           case "primary":
             return menuOpen
               ? "bg-primary-5 enabled:hover:bg-primary-5"
@@ -258,7 +264,6 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             disabled={isDisabled}
             aria-label={menuButtonLabel}
             aria-haspopup="menu"

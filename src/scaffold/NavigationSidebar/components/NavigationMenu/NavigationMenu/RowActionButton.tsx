@@ -31,7 +31,6 @@ export function NavigationMenuRowActionButton({
 
   return (
     <Button
-      htmlType="button"
       size="sidebar"
       variant="tertiary"
       appearance="soft"

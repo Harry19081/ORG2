@@ -33,7 +33,6 @@ const TurnNavigationRoundList: React.FC<TurnNavigationRoundListProps> = memo(
               layout="custom"
               appearance="custom"
               key={item.id}
-              htmlType="button"
               data-testid="turn-page-list-item"
               data-page-index={item.pageIndex}
               aria-current={isCurrent ? "true" : undefined}

@@ -83,7 +83,6 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
         <Button
           layout="custom"
           appearance="custom"
-          htmlType="button"
           onClick={onAddContent}
           onMouseDown={(e) => e.preventDefault()}
           className={[

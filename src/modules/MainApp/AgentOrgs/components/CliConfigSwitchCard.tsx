@@ -506,7 +506,8 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
           </Button>
           {status?.conflict && managedActive && (
             <Button
-              variant="warning"
+              variant="primary"
+              tone="warning"
               size="small"
               icon={
                 <HugeiconsIcon
@@ -524,7 +525,8 @@ const CliConfigSwitchCard: React.FC<CliConfigSwitchCardProps> = ({
           )}
           {status?.conflict && (
             <Button
-              variant="warning"
+              variant="primary"
+              tone="warning"
               size="small"
               icon={
                 <HugeiconsIcon

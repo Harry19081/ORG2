@@ -82,7 +82,6 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full border-none bg-transparent text-text-1`}
               onClick={handleManageOrg}
               data-testid="sidebar-org-manage"
@@ -99,7 +98,6 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
             <Button
               layout="custom"
               appearance="custom"
-              htmlType="button"
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full border-none bg-transparent text-text-1`}
               onClick={handleAddOrg}
               data-testid="sidebar-add-org"
@@ -117,7 +115,6 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
               <Button
                 layout="custom"
                 appearance="custom"
-                htmlType="button"
                 className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full border-none bg-transparent text-text-1`}
                 onClick={handleCloudSignIn}
                 data-testid="sidebar-cloud-sign-in"

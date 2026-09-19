@@ -138,8 +138,6 @@ const PlanTodoPill: React.FC<PlanTodoPillProps> = memo(({ sessionId }) => {
     <>
       <Button
         ref={triggerRef as React.Ref<HTMLButtonElement>}
-        variant="secondary"
-        appearance="outline"
         size="small"
         shape="round"
         icon={

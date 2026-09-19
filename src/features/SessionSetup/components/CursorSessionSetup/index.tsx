@@ -177,8 +177,8 @@ const CursorSessionSetup: React.FC<CursorSessionSetupProps> = ({
             >
               <div className="flex items-center gap-2">
                 <Button
-                  variant={sessionToken ? "success" : "primary"}
-                  appearance={sessionToken ? "outline" : "solid"}
+                  variant={sessionToken ? "secondary" : "primary"}
+                  tone={sessionToken ? "success" : undefined}
                   size="default"
                   onClick={openLoginBrowser}
                   disabled={Boolean(sessionToken)}
@@ -191,8 +191,6 @@ const CursorSessionSetup: React.FC<CursorSessionSetupProps> = ({
                 {sessionToken && (
                   <Button
                     variant="primary"
-                    appearance="solid"
-                    size="default"
                     onClick={openApiKeysPage}
                     className="h-8 min-h-8"
                   >
@@ -252,12 +250,7 @@ const CursorSessionSetup: React.FC<CursorSessionSetupProps> = ({
               </span>
             </div>
             {sessionToken && (
-              <Button
-                variant="secondary"
-                appearance="outline"
-                size="mini"
-                onClick={openApiKeysPage}
-              >
+              <Button size="mini" onClick={openApiKeysPage}>
                 {t("keyVault.openCursorApiKeys")}
               </Button>
             )}
@@ -294,8 +287,6 @@ const CursorSessionSetup: React.FC<CursorSessionSetupProps> = ({
                 <div className="mb-4 text-[12px] text-text-3">{error}</div>
                 <Button
                   variant="primary"
-                  appearance="solid"
-                  size="default"
                   onClick={startCapture}
                   className="text-sm font-medium text-text-white"
                 >

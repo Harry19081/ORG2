@@ -191,7 +191,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
             {/* Expand / collapse */}
             {onExpand && (
               <Button
-                htmlType="button"
                 variant="tertiary"
                 size="small"
                 iconOnly
@@ -258,7 +257,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
           >
             <Button
               variant="tertiary"
-              appearance="ghost"
               size="sidebar"
               iconOnly
               icon={
@@ -281,7 +279,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 )
               }
               style={{ width: 16, height: 16 }}
-              htmlType="button"
               onClick={controls.togglePlay}
               aria-label={
                 state.isPlaying
@@ -307,7 +304,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 />
               }
               style={{ width: 16, height: 16 }}
-              htmlType="button"
               onClick={controls.prev}
               disabled={replaySliderDisabled || currentIndex <= 0}
               aria-label={t("simulator.replay.previous", {
@@ -329,7 +325,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 />
               }
               style={{ width: 16, height: 16 }}
-              htmlType="button"
               onClick={controls.next}
               disabled={replaySliderDisabled || currentIndex >= eventCount - 1}
               aria-label={t("simulator.replay.next", {

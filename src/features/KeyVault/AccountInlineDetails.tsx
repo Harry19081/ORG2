@@ -348,7 +348,6 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
                   </span>
                   <Button
                     variant="tertiary"
-                    appearance="ghost"
                     size="mini"
                     iconOnly
                     icon={
@@ -366,7 +365,6 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
                         />
                       )
                     }
-                    htmlType="button"
                     onClick={handleCopyApiKey}
                     className={`transition-colors ${
                       apiKeyCopied

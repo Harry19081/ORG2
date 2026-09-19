@@ -228,7 +228,6 @@ export const SessionHeaderActionsMenu: React.FC<
     <>
       <Button
         ref={headerActionsTriggerRef}
-        htmlType="button"
         variant="tertiary"
         size="small"
         iconOnly

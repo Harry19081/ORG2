@@ -103,7 +103,6 @@ export default function UsageRoundsTable({
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             onClick={() => onSelectSession(record.sessionId)}
             title={t("usage.roundsTable.filterBySession")}
             className="flex items-center gap-1.5 truncate text-left text-text-1 hover:text-primary-6"

@@ -173,7 +173,6 @@ const TurnCollapsePinBar: React.FC<TurnCollapsePinBarProps> = memo(
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             data-testid="turn-collapse-toggle"
             aria-expanded={expanded}
             className={`flex h-full min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg border-0 bg-transparent px-2 text-left select-none focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${showReplayNavigate ? "pr-9" : ""}`}

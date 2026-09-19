@@ -103,8 +103,8 @@ export function UserChatItemToolbar({
           )}
           {isEditableDisplay && onRestoreCheckpoint && (
             <Button
-              variant="danger"
-              appearance="soft"
+              variant="tertiary"
+              tone="danger"
               size="mini"
               aria-label={t("chat.restoreCheckpoint", "Restore checkpoint")}
               iconOnly
@@ -116,7 +116,6 @@ export function UserChatItemToolbar({
                   strokeWidth={1.75}
                 />
               }
-              htmlType="button"
               data-testid="chat-message-restore-checkpoint"
               title={t("chat.restoreCheckpoint", "Restore checkpoint")}
               className={`${CHAT_BUBBLE_TOOLBAR_BUTTON_BASE_CLASS} text-text-3 hover:text-danger-6`}
@@ -140,7 +139,6 @@ export function UserChatItemToolbar({
                   strokeWidth={1.75}
                 />
               }
-              htmlType="button"
               data-testid="chat-message-user-edit-button"
               className={`${CHAT_BUBBLE_TOOLBAR_BUTTON_CLASS} text-text-3 hover:text-text-1`}
               onClick={(e) => {

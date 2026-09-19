@@ -160,7 +160,6 @@ export const DiaryCommitBucketDropdown: React.FC<
                   <Button
                     layout="custom"
                     appearance="custom"
-                    htmlType="button"
                     className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full min-w-0 justify-start text-left`}
                   >
                     <HugeiconsIcon

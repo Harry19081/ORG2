@@ -28,7 +28,6 @@ export function WorkstationCollapsedRailItems({
             position="left"
           >
             <Button
-              htmlType="button"
               size="small"
               variant="tertiary"
               appearance="soft-no-drop"

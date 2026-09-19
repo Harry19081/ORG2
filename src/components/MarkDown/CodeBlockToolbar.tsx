@@ -45,7 +45,6 @@ export function CodeBlockToolbar({
               strokeWidth={1.75}
             />
           }
-          htmlType="button"
           title={openLabel}
           aria-label={openLabel}
           className={`code-block-open-button ${buttonClass}`}
@@ -65,7 +64,6 @@ export function CodeBlockToolbar({
             strokeWidth={1.75}
           />
         }
-        htmlType="button"
         title={copyLabel}
         aria-label={copyLabel}
         aria-busy={pending || undefined}

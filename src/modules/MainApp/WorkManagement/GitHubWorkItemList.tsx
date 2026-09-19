@@ -37,7 +37,6 @@ export function GitHubWorkItemToolbarActions({
       {createAction ? (
         <ToolbarTooltip label={createAction.label}>
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             icon={

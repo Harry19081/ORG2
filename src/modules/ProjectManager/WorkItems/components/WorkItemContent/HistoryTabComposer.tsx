@@ -102,7 +102,6 @@ const HistoryTabComposer: React.FC<HistoryTabComposerProps> = ({
   const submitButton = (
     <Button
       variant={hasComment ? "primary" : isThread ? "tertiary" : "secondary"}
-      appearance={!hasComment && isThread ? "ghost" : undefined}
       shape="circle"
       size="small"
       iconOnly
@@ -143,7 +142,6 @@ const HistoryTabComposer: React.FC<HistoryTabComposerProps> = ({
             </span>
             <Button
               variant="tertiary"
-              appearance="ghost"
               size="mini"
               shape="circle"
               iconOnly

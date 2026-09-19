@@ -604,7 +604,6 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
 
                 {showInlineOpenFileAction && (
                   <Button
-                    htmlType="button"
                     variant="tertiary"
                     size="small"
                     iconOnly
@@ -624,7 +623,6 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
 
                 {onOpenInNewTab && (
                   <Button
-                    htmlType="button"
                     variant="tertiary"
                     size="small"
                     iconOnly
@@ -642,7 +640,6 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
                 )}
                 {showCloseAction && (
                   <Button
-                    htmlType="button"
                     variant="tertiary"
                     size="small"
                     iconOnly

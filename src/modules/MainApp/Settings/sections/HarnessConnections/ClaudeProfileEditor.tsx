@@ -91,7 +91,6 @@ export default function ClaudeProfileEditor({
               {t("claudeProfiles.new")}
             </Button>
             <Button
-              variant="secondary"
               disabled={
                 disabled ||
                 dirty ||
@@ -112,18 +111,10 @@ export default function ClaudeProfileEditor({
             >
               {t("claudeProfiles.copy")}
             </Button>
-            <Button
-              variant="secondary"
-              disabled={disabled || dirty}
-              onClick={onAdd}
-            >
+            <Button disabled={disabled || dirty} onClick={onAdd}>
               {t("harnessConnections.add")}
             </Button>
-            <Button
-              variant="secondary"
-              disabled={disabled}
-              onClick={() => void reload()}
-            >
+            <Button disabled={disabled} onClick={() => void reload()}>
               {t("harnessConnections.refresh")}
             </Button>
           </div>
@@ -293,7 +284,6 @@ export default function ClaudeProfileEditor({
                   {t("claudeProfiles.save")}
                 </Button>
                 <Button
-                  variant="secondary"
                   disabled={blocked || dirty || !valid}
                   loading={busy === "test"}
                   onClick={() => void act("test")}
@@ -307,15 +297,10 @@ export default function ClaudeProfileEditor({
                 >
                   {t("harnessConnections.apply")}
                 </Button>
-                <Button
-                  variant="secondary"
-                  disabled={disabled}
-                  onClick={() => edit(saved ?? null)}
-                >
+                <Button disabled={disabled} onClick={() => edit(saved ?? null)}>
                   {t("claudeProfiles.discard")}
                 </Button>
                 <Button
-                  variant="secondary"
                   disabled={
                     disabled || dirty || !saved || active?.id === draft.id
                   }
@@ -331,12 +316,9 @@ export default function ClaudeProfileEditor({
       <SectionRow showHeader={false}>
         <div className="flex flex-wrap gap-2">
           {(busy === "test" || busy === "fetch") && (
-            <Button variant="secondary" onClick={cancel}>
-              {t("harnessConnections.cancel")}
-            </Button>
+            <Button onClick={cancel}>{t("harnessConnections.cancel")}</Button>
           )}
           <Button
-            variant="secondary"
             disabled={
               disabled ||
               !view ||

@@ -76,7 +76,6 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
       >
         <ToolbarTooltip label={historyLabel}>
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
@@ -95,7 +94,6 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
         </ToolbarTooltip>
         <ToolbarTooltip label={prLabel}>
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
@@ -114,7 +112,6 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
         </ToolbarTooltip>
         <ToolbarTooltip label={issuesLabel}>
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly

@@ -102,7 +102,6 @@ export function SessionViewMenu({ value, onChange }: SessionViewMenuProps) {
         variant="tertiary"
         shape="circle"
         iconOnly
-        htmlType="button"
         className="mobile-chrome-icon-button"
         style={{
           width: "var(--mobile-touch-size)",

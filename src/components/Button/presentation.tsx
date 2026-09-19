@@ -6,18 +6,19 @@ import {
 } from "@src/components/KeyboardShortcut";
 import { HugeiconsIcon, Loading03Icon } from "@src/icons";
 
-export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "tertiary"
-  | "danger"
-  | "warning"
-  | "success"
-  | "merged";
+/** Importance: how much the action should stand out. */
+export type ButtonVariant = "primary" | "secondary" | "tertiary";
+
+/**
+ * Semantic color, applied at rest on top of any variant: a primary becomes a
+ * filled tone, a secondary a tone-text outline, a tertiary tone text with a
+ * tinted hover.
+ */
+export type ButtonTone = "danger" | "warning" | "success" | "merged";
 
 export type ButtonAppearance =
   /** A compound primitive already owns its token-backed surface. */
-  "custom" | "solid" | "outline" | "dashed" | "ghost" | "soft" | "soft-no-drop";
+  "custom" | "solid" | "outline" | "dashed" | "soft" | "soft-no-drop";
 export type ButtonSize =
   | "inline"
   | "sidebar"
@@ -27,7 +28,10 @@ export type ButtonSize =
   | "large";
 export type ButtonShape = "square" | "round" | "circle";
 /** Color a neutral button takes only while hovered, pressed or focused. */
-export type ButtonHoverIntent = "danger" | "primary";
+export type ButtonHoverTone = "danger" | "primary";
+
+/** Internal style key: a variant, or the tone that replaces its color. */
+type ButtonStyleKey = ButtonVariant | ButtonTone;
 
 const BUTTON_SIZE_CONFIG = {
   inline: { height: 20, padding: "0", fontSize: 12, iconSize: 12 },
@@ -39,18 +43,28 @@ const BUTTON_SIZE_CONFIG = {
 } as const;
 
 function defaultButtonAppearance(variant: ButtonVariant): ButtonAppearance {
-  switch (variant) {
-    case "primary":
-    case "danger":
-    case "warning":
-    case "success":
-    case "merged":
-      return "solid";
-    case "secondary":
-      return "outline";
-    case "tertiary":
-      return "solid";
+  return variant === "secondary" ? "outline" : "solid";
+}
+
+/**
+ * Resolve (variant, tone, appearance) to the style cell that draws it. A
+ * toned primary keeps its appearance (solid fill by default), a toned
+ * secondary its outline, and a toned tertiary always uses the tinted soft
+ * surface (soft-no-drop stays no-drop).
+ */
+function resolveStyleCell(
+  variant: ButtonVariant,
+  tone: ButtonTone | undefined,
+  appearance: ButtonAppearance
+): { key: ButtonStyleKey; appearance: ButtonAppearance } {
+  if (!tone || appearance === "custom") return { key: variant, appearance };
+  if (variant === "tertiary") {
+    return {
+      key: tone,
+      appearance: appearance === "soft-no-drop" ? "soft-no-drop" : "soft",
+    };
   }
+  return { key: tone, appearance };
 }
 
 /**
@@ -73,7 +87,7 @@ const NEUTRAL_SOFT_SURFACE_NO_DROP =
 const NEUTRAL_HOVER_TEXT = "btn-hover:text-text-1 btn-focus:text-text-1";
 
 /** Text colors a neutral button shows only while hovered, pressed or focused. */
-const HOVER_INTENT_TEXT = {
+const HOVER_TONE_TEXT = {
   danger:
     "btn-hover:text-danger-6 btn-active:text-danger-6 btn-focus:text-danger-6",
   primary:
@@ -96,18 +110,17 @@ const SEMANTIC_SOFT = {
 const FOCUS_RING_SHADOW =
   "btn-focus:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
 
-/** Default utilities for each (variant, appearance) cell. */
+/** Default utilities for each (style key, appearance) cell. */
 function getButtonStyleClasses(
-  variant: ButtonVariant,
+  variant: ButtonStyleKey,
   appearance: ButtonAppearance,
-  hoverIntent: ButtonHoverIntent | undefined
+  hoverTone: ButtonHoverTone | undefined
 ) {
   if (appearance === "custom") return "";
   const isNeutral = variant === "tertiary" || variant === "secondary";
-  // Semantic variants already carry their color, so only neutral ones take an
-  // intent. It replaces the neutral hover text instead of being layered on top.
-  const intentText =
-    isNeutral && hoverIntent ? HOVER_INTENT_TEXT[hoverIntent] : "";
+  // Toned buttons already carry their color, so only neutral ones take a
+  // hover tone. It replaces the neutral hover text instead of being layered.
+  const intentText = isNeutral && hoverTone ? HOVER_TONE_TEXT[hoverTone] : "";
   if (appearance === "soft" || appearance === "soft-no-drop") {
     const noDrop = appearance === "soft-no-drop";
     const colors = isNeutral
@@ -131,57 +144,43 @@ function getButtonStyleClasses(
           return "btn:border btn:border-transparent btn:bg-clip-padding btn:text-white btn:bg-primary-6";
         if (appearance === "outline")
           return "btn:border btn:border-primary-6 btn:bg-transparent btn:text-primary-6";
-        if (appearance === "dashed")
-          return "btn:border btn:border-dashed btn:border-primary-6/50 btn:bg-transparent btn:text-primary-6";
-        return "btn:border-0 btn:bg-transparent btn:text-primary-6";
+        return "btn:border btn:border-dashed btn:border-primary-6/50 btn:bg-transparent btn:text-primary-6";
       case "secondary":
         if (appearance === "solid")
           return "btn:border-0 btn:bg-fill-2 btn:text-text-1";
         if (appearance === "outline")
           return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-text-1";
-        if (appearance === "dashed")
-          return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-text-1";
-        return "btn:border-0 btn:bg-transparent btn:text-text-1";
+        return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-text-1";
       case "tertiary":
         if (appearance === "solid")
           return "btn:border-0 btn:bg-transparent btn:text-text-2";
         if (appearance === "outline")
           return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-text-2";
-        if (appearance === "dashed")
-          return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-text-2";
-        return "btn:border-0 btn:bg-transparent btn:text-text-2";
+        return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-text-2";
       case "danger":
         if (appearance === "solid")
           return "btn:border-0 btn:text-white btn:bg-danger-6";
         if (appearance === "outline")
           return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-danger-6";
-        if (appearance === "dashed")
-          return "btn:border btn:border-dashed btn:border-danger-6/50 btn:bg-transparent btn:text-danger-6";
-        return "btn:border-0 btn:bg-transparent btn:text-danger-6";
+        return "btn:border btn:border-dashed btn:border-danger-6/50 btn:bg-transparent btn:text-danger-6";
       case "warning":
         if (appearance === "solid")
           return "btn:border-0 btn:text-white btn:bg-warning-6";
         if (appearance === "outline")
           return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-warning-6";
-        if (appearance === "dashed")
-          return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-warning-6";
-        return "btn:border-0 btn:bg-transparent btn:text-warning-6";
+        return "btn:border btn:border-dashed btn:border-border-2 btn:bg-transparent btn:text-warning-6";
       case "success":
         if (appearance === "solid")
           return "btn:border-0 btn:text-white btn:bg-success-6";
         if (appearance === "outline")
           return "btn:border btn:border-border-2 btn:bg-bg-2 btn:text-success-6";
-        if (appearance === "dashed")
-          return "btn:border btn:border-dashed btn:border-success-6/50 btn:bg-transparent btn:text-success-6";
-        return "btn:border-0 btn:bg-transparent btn:text-success-6";
+        return "btn:border btn:border-dashed btn:border-success-6/50 btn:bg-transparent btn:text-success-6";
       case "merged":
         if (appearance === "solid")
           return "btn:border-0 btn:bg-merged btn:text-merged-contrast";
         if (appearance === "outline")
           return "btn:border btn:border-purple-6 btn:bg-transparent btn:text-purple-6";
-        if (appearance === "dashed")
-          return "btn:border btn:border-dashed btn:border-purple-6/50 btn:bg-transparent btn:text-purple-6";
-        return "btn:border-0 btn:bg-transparent btn:text-purple-6";
+        return "btn:border btn:border-dashed btn:border-purple-6/50 btn:bg-transparent btn:text-purple-6";
     }
   })();
 
@@ -201,30 +200,13 @@ function getButtonStyleClasses(
         case "secondary":
           return `btn-hover:bg-fill-3 ${intentText}`;
         case "tertiary":
-          return `${intentText || NEUTRAL_HOVER_TEXT} btn-hover:bg-surface-hover btn-active:bg-surface-selected btn-focus:outline-none ${FOCUS_RING_SHADOW}`;
+          return `${intentText || NEUTRAL_HOVER_TEXT} btn-hover:bg-surface-hover btn-active:bg-surface-selected btn-pressed:bg-surface-selected btn-pressed:text-primary-6 btn-focus:outline-none ${FOCUS_RING_SHADOW}`;
       }
     }
-    if (appearance === "outline" || appearance === "dashed") {
-      if (isNeutral) {
-        return `btn-hover:border-border-3 btn-focus:border-(--color-primary-6) ${FOCUS_RING_SHADOW} ${intentText}`;
-      }
-      return "";
-    }
-    switch (variant) {
-      case "primary":
-        return "btn-hover:text-primary-5";
-      case "danger":
-        return "btn-hover:text-danger-5";
-      case "warning":
-        return "btn-hover:text-warning-5";
-      case "success":
-        return "btn-hover:text-success-5";
-      case "merged":
-        return "btn-hover:text-purple-5";
-      case "secondary":
-      case "tertiary":
-        return intentText || "btn-hover:text-text-1";
-    }
+    // outline / dashed
+    return isNeutral
+      ? `btn-hover:border-border-3 btn-focus:border-(--color-primary-6) ${FOCUS_RING_SHADOW} ${intentText}`
+      : "";
   })();
 
   return [base, hover.trim()].filter(Boolean).join(" ");
@@ -233,6 +215,7 @@ function getButtonStyleClasses(
 interface ButtonPresentationOptions {
   layout?: "default" | "custom";
   variant: ButtonVariant;
+  tone?: ButtonTone;
   appearance?: ButtonAppearance;
   size: ButtonSize;
   shape: ButtonShape;
@@ -242,7 +225,7 @@ interface ButtonPresentationOptions {
   icon?: React.ReactNode | string;
   iconPosition: "left" | "right";
   iconOnly: boolean;
-  hoverIntent?: ButtonHoverIntent;
+  hoverTone?: ButtonHoverTone;
   shortcut?: string;
   centerLabel: boolean;
   long: boolean;
@@ -254,6 +237,7 @@ interface ButtonPresentationOptions {
 export function useButtonPresentation({
   layout = "default",
   variant,
+  tone,
   appearance,
   size,
   shape,
@@ -263,7 +247,7 @@ export function useButtonPresentation({
   icon,
   iconPosition,
   iconOnly,
-  hoverIntent,
+  hoverTone,
   shortcut,
   centerLabel,
   long,
@@ -274,6 +258,7 @@ export function useButtonPresentation({
   const sizeConfig = BUTTON_SIZE_CONFIG[size];
   const isDisabled = disabled || loading;
   const resolvedAppearance = appearance ?? defaultButtonAppearance(variant);
+  const styleCell = resolveStyleCell(variant, tone, resolvedAppearance);
 
   const borderRadius = useMemo(() => {
     if (shape === "circle") return "50%";
@@ -392,7 +377,7 @@ export function useButtonPresentation({
     layout === "custom" ? "" : "button",
     baseClasses,
     layout === "custom" && appearance === "custom" ? "" : disabledClasses,
-    getButtonStyleClasses(variant, resolvedAppearance, hoverIntent),
+    getButtonStyleClasses(styleCell.key, styleCell.appearance, hoverTone),
     className,
   ]
     .filter(Boolean)

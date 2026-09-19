@@ -426,7 +426,6 @@ const GeneralTabBody: React.FC = () => {
               {micPermissionStatus !== "granted" &&
                 micPermissionStatus !== "unsupported" && (
                   <Button
-                    size="default"
                     loading={micPermissionRequesting}
                     onClick={handleRequestMicPermission}
                   >
@@ -496,7 +495,6 @@ const GeneralTabBody: React.FC = () => {
                 : "—"}
             </span>
             <Button
-              size="default"
               onClick={checkForUpdatesManually}
               icon={
                 <HugeiconsIcon
@@ -545,7 +543,7 @@ const GeneralTabBody: React.FC = () => {
           />
         )}
         <SectionRow label={t("general.license")}>
-          <Button size="default" onClick={() => setLicenseModalVisible(true)}>
+          <Button onClick={() => setLicenseModalVisible(true)}>
             {t("common:actions.view")}
           </Button>
         </SectionRow>

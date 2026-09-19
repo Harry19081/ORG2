@@ -95,8 +95,6 @@ export const KvTableEditor: React.FC<KvTableEditorProps> = ({
         width: SETTINGS_TABLE_COL.hug,
         renderCell: (row) => (
           <Button
-            variant="secondary"
-            size="default"
             icon={
               <HugeiconsIcon
                 icon={Delete02Icon}

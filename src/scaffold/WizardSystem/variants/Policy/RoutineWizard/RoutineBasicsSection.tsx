@@ -352,11 +352,9 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
             )}
             <SectionRow label="" indent>
               <Button
-                variant="primary"
-                appearance="ghost"
+                variant="tertiary"
                 size="inline"
-                htmlType="button"
-                className="text-[11px] hover:underline"
+                className="text-[11px]"
                 onClick={() => {
                   // Entering builder mode discards an unparseable custom cron
                   // because the builder always emits valid expressions.
@@ -387,7 +385,6 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
         >
           <Button
             variant="tertiary"
-            appearance="ghost"
             size="small"
             icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={13} />}
             onClick={() =>
@@ -514,7 +511,6 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
                 ) : null}
                 <Button
                   variant="tertiary"
-                  appearance="ghost"
                   size="small"
                   iconOnly
                   icon={

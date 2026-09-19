@@ -293,7 +293,6 @@ const GitPreferencesSection: React.FC = () => {
           <SectionRow showHeader={false}>
             <Button
               variant="tertiary"
-              size="default"
               icon={
                 <HugeiconsIcon
                   icon={Delete02Icon}
@@ -316,16 +315,11 @@ const GitPreferencesSection: React.FC = () => {
           <SectionRow showHeader={false}>
             <div className="flex w-full justify-end">
               <div className={SECTION_ACTION_GAP_CLASSES}>
-                <Button
-                  size="default"
-                  onClick={handleProxyCancel}
-                  disabled={proxySaving}
-                >
+                <Button onClick={handleProxyCancel} disabled={proxySaving}>
                   {tCommon("actions.cancel")}
                 </Button>
                 <Button
                   variant="primary"
-                  size="default"
                   loading={proxySaving}
                   disabled={proxySaving}
                   onClick={handleProxySave}

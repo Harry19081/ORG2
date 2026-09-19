@@ -97,7 +97,6 @@ const SessionCreatorAgentHero = memo(
           layout="custom"
           appearance="custom"
           ref={ref}
-          htmlType="button"
           onClick={onClick}
           aria-expanded={active}
           data-testid="session-creator-agent-selector"

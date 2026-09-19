@@ -59,7 +59,6 @@ const SettingsFooterBackButton: React.FC<SettingsFooterBackButtonProps> = ({
   onClick,
 }) => (
   <Button
-    htmlType="button"
     variant="tertiary"
     size="small"
     iconOnly

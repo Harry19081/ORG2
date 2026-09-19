@@ -269,7 +269,6 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
             <div className="flex min-w-0 items-center gap-1.5">
               <Button
                 variant="tertiary"
-                appearance="ghost"
                 size="small"
                 iconOnly
                 style={{ width: 16 }}
@@ -311,7 +310,6 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
             {activeTab === "edits" && files.length > 0 && (
               <Button
                 variant="tertiary"
-                appearance="ghost"
                 size="small"
                 onClick={() => openDiff()}
                 className="chat-block-title shrink-0 text-text-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30"
@@ -337,7 +335,6 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                       layout="custom"
                       appearance="custom"
                       key={`commit-${artifact.sha ?? artifact.url}`}
-                      htmlType="button"
                       onClick={() => openCommit(artifact)}
                       disabled={!artifact.sha && !artifact.shortSha}
                       title={artifact.sha ?? artifact.url}
@@ -365,7 +362,6 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                       layout="custom"
                       appearance="custom"
                       key={`pr-${artifact.url ?? artifact.prNumber}`}
-                      htmlType="button"
                       onClick={() => openPullRequest(artifact)}
                       disabled={!artifact.url}
                       title={artifact.url}
@@ -442,7 +438,6 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                   <Button
                     layout="custom"
                     appearance="custom"
-                    htmlType="button"
                     onClick={() => setExpanded((previous) => !previous)}
                     className={`${STACK_ROW_BUTTON_CLASSES} text-text-3`}
                     data-testid="turn-metadata-expansion-toggle"

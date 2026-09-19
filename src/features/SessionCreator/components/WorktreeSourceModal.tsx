@@ -414,7 +414,6 @@ const WorktreeSourceModal: React.FC<WorktreeSourceModalProps> = ({
               layout="custom"
               appearance="custom"
               key={tab.id}
-              htmlType="button"
               role="tab"
               id={`worktree-source-tab-${tab.id}`}
               aria-selected={activeTab === tab.id}

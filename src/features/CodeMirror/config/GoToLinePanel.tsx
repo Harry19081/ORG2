@@ -107,7 +107,6 @@ const GoToLinePanel: React.FC<GoToLinePanelProps> = ({ view, onClose }) => {
                 size={HEADER_ICON_SIZE.sm}
               />
             }
-            htmlType="button"
             onClick={onClose}
             title={t("tooltips.closeEsc")}
           />

@@ -120,7 +120,6 @@ const AddSubAgentButton: React.FC<AddSubAgentButtonProps> = ({
     <div>
       <Button
         ref={triggerRef}
-        size="default"
         icon={
           <HugeiconsIcon
             icon={Add01Icon}
@@ -167,7 +166,6 @@ const AddSubAgentButton: React.FC<AddSubAgentButtonProps> = ({
                     layout="custom"
                     appearance="custom"
                     key={opt.value}
-                    htmlType="button"
                     data-testid={`agent-orgs-subagents-add-option-${opt.value}`}
                     className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
                     onClick={() => handleSelect(opt.value)}
@@ -377,8 +375,8 @@ const SubAgentsEditor: React.FC<SubAgentsEditorProps> = ({
                   />
                 }
                 iconOnly
-                appearance="ghost"
-                variant="danger"
+                variant="tertiary"
+                tone="danger"
                 size="small"
                 data-testid={`agent-orgs-subagents-remove-${ref.agentId}`}
                 onClick={() => handleRemove(ref.agentId)}

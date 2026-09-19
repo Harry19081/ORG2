@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import SplitButton from ".";
 
-type SplitVariant =
+type SplitColor =
   | "primary"
   | "secondary"
   | "danger"
@@ -12,12 +12,15 @@ type SplitVariant =
   | "success"
   | "merged";
 
-function renderSplitButton(variant: SplitVariant, menuOpen = false): string {
+/** Neutral colors are variants; semantic ones are a toned primary. */
+function renderSplitButton(color: SplitColor, menuOpen = false): string {
+  const neutral = color === "primary" || color === "secondary";
   return renderToStaticMarkup(
     React.createElement(
       SplitButton,
       {
-        variant,
+        variant: neutral ? color : "primary",
+        tone: neutral ? undefined : color,
         menu: React.createElement("div", { "data-testid": "menu" }),
         menuOpen,
         onMenuButtonClick: vi.fn(),

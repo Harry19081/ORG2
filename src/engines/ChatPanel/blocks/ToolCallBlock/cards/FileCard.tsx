@@ -67,7 +67,6 @@ const FileCard: React.FC<FileCardProps> = ({ card }) => {
             size={13}
           />
         }
-        htmlType="button"
         onClick={handleOpen}
         className="shrink-0 hover:bg-fill-4 hover:text-text-2"
         title={t("cards.openFile")}

@@ -110,7 +110,6 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         className="orgii-bottom-sheet-scrim"
         aria-label={closeLabel}
         tabIndex={-1}
@@ -134,7 +133,6 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
               <Button
                 layout="custom"
                 appearance="custom"
-                htmlType="button"
                 className="orgii-bottom-sheet-close"
                 aria-label={closeLabel}
                 onClick={onClose}

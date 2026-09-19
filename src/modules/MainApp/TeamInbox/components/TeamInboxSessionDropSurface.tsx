@@ -379,7 +379,6 @@ const TeamInboxSessionDropSurface: React.FC<
           </div>
           {currentOperation.status === "success" && onNavigate ? (
             <Button
-              variant="secondary"
               size="mini"
               icon={
                 <HugeiconsIcon
@@ -396,7 +395,6 @@ const TeamInboxSessionDropSurface: React.FC<
           ) : null}
           {currentOperation.status === "error" ? (
             <Button
-              variant="secondary"
               size="mini"
               icon={
                 <HugeiconsIcon
@@ -413,7 +411,6 @@ const TeamInboxSessionDropSurface: React.FC<
           ) : null}
           <Button
             variant="tertiary"
-            appearance="ghost"
             size="mini"
             iconOnly
             aria-label={t("teamInbox.drop.dismiss")}

@@ -24,7 +24,6 @@ export function MobileTopBar({
     >
       {onBack ? (
         <Button
-          htmlType="button"
           size="mini"
           variant="tertiary"
           shape="circle"

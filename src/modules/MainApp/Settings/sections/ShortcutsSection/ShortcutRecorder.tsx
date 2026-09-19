@@ -122,7 +122,7 @@ export default function ShortcutRecorder({
               : "opacity-0 group-focus-within/shortcut-row:opacity-100 group-hover/shortcut-row:opacity-100 focus-visible:opacity-100"
           }
           size="small"
-          appearance={recording ? "outline" : "ghost"}
+          variant={recording ? "secondary" : "tertiary"}
           iconOnly={!recording}
           icon={
             recording ? undefined : (
@@ -144,8 +144,8 @@ export default function ShortcutRecorder({
         </Button>
         {recording ? (
           <Button
+            variant="tertiary"
             size="small"
-            appearance="ghost"
             onClick={() => onRecord(null)}
           >
             {t("common:actions.cancel")}
@@ -153,8 +153,8 @@ export default function ShortcutRecorder({
         ) : (
           getOverride(id, platform) && (
             <Button
+              variant="tertiary"
               size="small"
-              appearance="ghost"
               className="opacity-0 group-focus-within/shortcut-row:opacity-100 group-hover/shortcut-row:opacity-100 focus-visible:opacity-100"
               onClick={() => {
                 try {

@@ -139,8 +139,8 @@ export default function MobileFileViewer({
             </p>
           )}
           <Button
+            variant="tertiary"
             size="small"
-            appearance="ghost"
             className="min-h-11"
             style={{ fontSize: "var(--mobile-type-control-size)" }}
             loading={desktopAction.state.phase === "opening"}

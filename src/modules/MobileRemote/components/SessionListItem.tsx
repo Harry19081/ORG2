@@ -79,7 +79,6 @@ export function SessionListItem({
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       data-testid="mobile-remote-session-row"
       className={`mobile-session-row flex w-full text-left ${compact ? "mobile-session-row--compact" : "min-h-16"}`}
       onClick={onSelect}

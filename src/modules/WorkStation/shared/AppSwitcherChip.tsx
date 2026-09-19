@@ -131,7 +131,6 @@ const AppSwitcherChipComponent: React.FC<AppSwitcherChipProps> = ({
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             className={innerInteractiveClass}
             onClick={hasDropdown ? toggle : onClick}
             title={label}

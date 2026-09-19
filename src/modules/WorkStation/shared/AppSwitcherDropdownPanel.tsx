@@ -77,7 +77,6 @@ const AppSwitcherDropdownPanelComponent: React.FC<
               layout="custom"
               appearance="custom"
               key={item.id}
-              htmlType="button"
               disabled={isDisabled}
               aria-disabled={isDisabled || undefined}
               data-tour-target={item.tourTarget}

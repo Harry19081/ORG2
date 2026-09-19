@@ -66,7 +66,6 @@ export function useWorkItemPanelHeader({
         !isGitHubSyncedProject ? (
           <ToolbarTooltip label={t("projects:workItems.deleteWorkItem")}>
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly
@@ -91,7 +90,6 @@ export function useWorkItemPanelHeader({
         ) : null}
         <ToolbarTooltip label={propertiesToggleLabel}>
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly

@@ -46,9 +46,7 @@ export function MobileComposerAttachmentButton({
         onChange={handleChange}
       />
       <Button
-        htmlType="button"
         variant="tertiary"
-        appearance="ghost"
         shape="circle"
         iconOnly
         className="mobile-composer-icon-action"

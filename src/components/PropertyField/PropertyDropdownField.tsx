@@ -193,7 +193,6 @@ export function PropertyDropdownField<T extends string>({
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       title={label}
       aria-label={label}
       aria-disabled={readonly || interactionDisabled}

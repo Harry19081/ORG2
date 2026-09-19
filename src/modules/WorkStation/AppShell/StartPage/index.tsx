@@ -56,7 +56,6 @@ const StartActionRow = memo<StartActionRowProps>(
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         onClick={onClick}
         className={`${SPOTLIGHT_CLASSES.itemRow} w-full text-left transition-colors ${SURFACE_TOKENS.hover} active:bg-fill-3`}
         style={{ height: SPOTLIGHT_TOKENS.itemHeight }}

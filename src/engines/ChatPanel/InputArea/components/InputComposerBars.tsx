@@ -185,7 +185,6 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
               size="mini"
               shape="circle"
               iconOnly
-              htmlType="button"
               icon={
                 <HugeiconsIcon
                   icon={Cancel01Icon}
@@ -202,7 +201,6 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
               appearance="soft"
               size="mini"
               shape="round"
-              htmlType="button"
               onClick={onEditSendNow}
             >
               {t("common:actions.sendNow")}
@@ -211,7 +209,6 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
               variant="primary"
               size="mini"
               shape="round"
-              htmlType="button"
               onClick={() => onSubmit()}
             >
               {t("common:actions.save")}
@@ -219,10 +216,10 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
           </div>
         ) : quietEditSurface ? (
           <Button
-            variant="warning"
+            variant="primary"
+            tone="warning"
             size="mini"
             shape="round"
-            htmlType="button"
             icon={
               <HugeiconsIcon
                 icon={RotateLeft01Icon}

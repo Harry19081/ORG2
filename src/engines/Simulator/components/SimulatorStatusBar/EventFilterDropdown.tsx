@@ -116,7 +116,6 @@ export const EventFilterDropdown: React.FC<EventFilterDropdownProps> = ({
         layout="custom"
         appearance="custom"
         ref={triggerRef as React.Ref<HTMLButtonElement>}
-        htmlType="button"
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();

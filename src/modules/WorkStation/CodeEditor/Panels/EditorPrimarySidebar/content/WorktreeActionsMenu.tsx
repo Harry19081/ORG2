@@ -63,7 +63,6 @@ export const WorktreeActionsMenu: React.FC<WorktreeActionsMenuProps> = memo(
             />
           }
           ref={triggerRef}
-          htmlType="button"
           data-state={isOpen ? "open" : "closed"}
           title={t("sourceControl.worktreeActions")}
           onClick={(event) => {
@@ -91,7 +90,6 @@ export const WorktreeActionsMenu: React.FC<WorktreeActionsMenuProps> = memo(
                 <Button
                   layout="custom"
                   appearance="custom"
-                  htmlType="button"
                   className={`${DROPDOWN_CLASSES.item} ${PRIMARY_SIDEBAR_HOVER.row} w-full text-danger-6`}
                   onClick={handleRemove}
                 >
@@ -161,7 +159,6 @@ export function WorktreeContextMenu({
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             className={`${DROPDOWN_CLASSES.item} ${PRIMARY_SIDEBAR_HOVER.row} w-full text-danger-6`}
             onClick={handleRemove}
           >

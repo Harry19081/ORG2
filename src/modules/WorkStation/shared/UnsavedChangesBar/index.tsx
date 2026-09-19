@@ -62,9 +62,7 @@ const FloatingBarUnsaved: React.FC<UnsavedChangesBarProps> = memo(
         </span>
         {onDiscard && (
           <Button
-            size="default"
             shape="circle"
-            htmlType="button"
             variant="tertiary"
             onClick={onDiscard}
             disabled={saving}
@@ -84,9 +82,7 @@ const FloatingBarUnsaved: React.FC<UnsavedChangesBarProps> = memo(
           />
         )}
         <Button
-          size="default"
           shape="circle"
-          htmlType="button"
           variant="primary"
           onClick={onSave}
           disabled={saving}

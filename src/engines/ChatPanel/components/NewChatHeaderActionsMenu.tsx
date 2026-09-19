@@ -88,7 +88,6 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
     <>
       <Button
         ref={triggerRef}
-        htmlType="button"
         variant="tertiary"
         size="small"
         iconOnly

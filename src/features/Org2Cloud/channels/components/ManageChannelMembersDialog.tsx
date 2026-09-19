@@ -339,8 +339,6 @@ const ManageChannelMembersDialog: React.FC<ManageChannelMembersDialogProps> = ({
                   ) : null}
                   {isSelf && channel?.visibility === "private" ? (
                     <Button
-                      htmlType="button"
-                      variant="secondary"
                       size="small"
                       disabled={mutating}
                       onClick={() => handleRemoveMember(member.userId)}
@@ -362,9 +360,7 @@ const ManageChannelMembersDialog: React.FC<ManageChannelMembersDialogProps> = ({
                       }}
                     >
                       <Button
-                        htmlType="button"
                         variant="tertiary"
-                        appearance="ghost"
                         size="small"
                         disabled={mutating}
                         icon={

@@ -336,7 +336,6 @@ export default function ModelVariantInlineCard({
           <Button
             layout="custom"
             appearance="custom"
-            htmlType="button"
             onClick={() => onPick?.(variant.model)}
             className={pillClass}
             aria-pressed={isSelected}
@@ -491,7 +490,6 @@ export default function ModelVariantInlineCard({
               layout="custom"
               appearance="custom"
               ref={ref}
-              htmlType="button"
               onClick={onClick}
               aria-expanded={ariaExpanded}
               aria-label="Edit default variant"

@@ -65,7 +65,6 @@ export function MobileConnectionNotice({
         action={
           onRetry ? (
             <Button
-              variant="secondary"
               appearance="soft"
               size="small"
               loading={busy}

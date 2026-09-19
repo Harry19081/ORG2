@@ -140,7 +140,6 @@ export const LaunchpadTile: React.FC<LaunchpadTileProps> = memo(
         <Button
           layout="custom"
           appearance="custom"
-          htmlType="button"
           onClick={onClick}
           className={LAUNCHPAD_TILE_CLASS}
           title={title ?? label}
@@ -171,7 +170,6 @@ export const LaunchpadAddTile: React.FC<LaunchpadAddTileProps> = memo(
     <Button
       layout="custom"
       appearance="custom"
-      htmlType="button"
       onClick={onCreate}
       className={LAUNCHPAD_TILE_CLASS}
       title={label}
@@ -210,7 +208,6 @@ export const LaunchpadWorkspaceCard: React.FC<LaunchpadWorkspaceCardProps> =
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         onClick={handleClick}
         className={LAUNCHPAD_TILE_CLASS}
         title={repo.path ?? label}

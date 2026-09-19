@@ -71,7 +71,6 @@ export const InlineBanner: React.FC<InlineBannerProps> = ({
             />
           }
           style={{ width: 16, height: 16 }}
-          htmlType="button"
           onClick={onDismiss}
           aria-label={t("actions.close", "Close")}
           title={t("actions.close", "Close")}

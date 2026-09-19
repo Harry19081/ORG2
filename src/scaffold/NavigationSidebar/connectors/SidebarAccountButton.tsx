@@ -23,7 +23,6 @@ const SidebarAccountButton: React.FC<SidebarAccountButtonProps> = React.memo(
       <Button
         layout="custom"
         appearance="custom"
-        htmlType="button"
         className={`flex h-7 min-w-0 flex-1 items-center rounded-lg border-none px-2 text-left focus-visible:ring-2 focus-visible:ring-primary-6/40 focus-visible:outline-none ${
           menuOpen
             ? "bg-sidebar-selected"

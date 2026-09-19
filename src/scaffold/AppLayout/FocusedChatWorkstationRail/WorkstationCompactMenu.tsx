@@ -69,7 +69,6 @@ export function WorkstationCompactMenu({
         }
       >
         <Button
-          htmlType="button"
           variant="tertiary"
           appearance="soft-no-drop"
           size="small"

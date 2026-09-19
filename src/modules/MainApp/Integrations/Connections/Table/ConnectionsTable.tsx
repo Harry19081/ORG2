@@ -260,7 +260,6 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
         renderCell: (row) => (
           <div className="flex h-full min-w-[44px] items-center justify-end gap-2">
             <Button
-              variant="secondary"
               size="small"
               icon={
                 <HugeiconsIcon
@@ -326,8 +325,6 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
                   rightContent: (
                     <>
                       <Button
-                        variant="secondary"
-                        size="default"
                         icon={
                           <HugeiconsIcon
                             icon={Refresh04Icon}
@@ -352,8 +349,6 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
                         data-testid="connections-refresh-button"
                       />
                       <Button
-                        variant="secondary"
-                        size="default"
                         icon={
                           <HugeiconsIcon
                             icon={Add01Icon}

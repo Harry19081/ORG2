@@ -194,7 +194,6 @@ const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
         layout="custom"
         appearance="custom"
         ref={ref}
-        htmlType="button"
         role="switch"
         aria-checked={currentChecked}
         aria-label={ariaLabel}
