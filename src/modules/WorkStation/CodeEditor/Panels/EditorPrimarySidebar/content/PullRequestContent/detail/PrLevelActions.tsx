@@ -19,18 +19,17 @@ import Dropdown from "@src/components/Dropdown";
 import { DropdownItem, DropdownPanel } from "@src/components/Dropdown/exports";
 import {
   DROPDOWN_CLASSES,
-  DROPDOWN_ITEM,
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import Message from "@src/components/Message";
 import SplitButton from "@src/components/SplitButton";
 import {
   CancelCircleIcon,
+  CheckmarkCircle01Icon,
   CircleDotIcon,
   GitMergeIcon,
   GitPullRequestClosedIcon,
   GitPullRequestDraftIcon,
-  GitPullRequestIcon,
   HugeiconsIcon,
 } from "@src/icons";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
@@ -229,14 +228,6 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
       <div className={DROPDOWN_CLASSES.itemsColumnPadded}>
         {presentation.status === "draft" ? (
           <DropdownItem
-            icon={
-              <HugeiconsIcon
-                icon={GitPullRequestIcon}
-                data-icon="git-pull-request"
-                size={DROPDOWN_ITEM.iconSize}
-                aria-hidden
-              />
-            }
             disabled={interactionDisabled}
             onClick={() => void changeDraftState(false)}
             dataTestId="pr-mark-ready-action"
@@ -247,14 +238,6 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
         {presentation.autoMergeAction ? (
           <>
             <DropdownItem
-              icon={
-                <HugeiconsIcon
-                  icon={GitMergeIcon}
-                  data-icon="git-merge"
-                  size={DROPDOWN_ITEM.iconSize}
-                  aria-hidden
-                />
-              }
               disabled={interactionDisabled}
               onClick={() => void toggleAutoMerge()}
               dataTestId="pr-auto-merge-action"
@@ -268,14 +251,6 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
           ? presentation.methods.map(({ method, label }) => (
               <DropdownItem
                 key={method}
-                icon={
-                  <HugeiconsIcon
-                    icon={GitMergeIcon}
-                    data-icon="git-merge"
-                    size={DROPDOWN_ITEM.iconSize}
-                    aria-hidden
-                  />
-                }
                 disabled={
                   interactionDisabled || !presentation.directMergeAvailable
                 }
@@ -340,6 +315,13 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
             <HugeiconsIcon
               icon={CancelCircleIcon}
               data-icon="xcircle"
+              size={14}
+              aria-hidden
+            />
+          ) : presentation.directMergeAvailable ? (
+            <HugeiconsIcon
+              icon={CheckmarkCircle01Icon}
+              data-icon="check-circle-2"
               size={14}
               aria-hidden
             />
