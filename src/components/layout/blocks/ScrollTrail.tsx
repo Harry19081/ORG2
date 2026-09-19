@@ -125,7 +125,6 @@ export interface ScrollTrailProps {
   ariaLabel: string;
   className?: string;
   alignment?: ScrollTrailAlignment;
-  maxMarkers?: number;
   placement?: ScrollTrailPlacement;
   testId?: string;
 }
@@ -149,7 +148,7 @@ function areMarkerListsEqual(
  * Compact semantic navigation for long detail surfaces.
  *
  * Target discovery is mutation-driven and scroll updates are coalesced to one
- * animation frame. The retained marker list is capped by `maxMarkers`.
+ * animation frame. The retained marker list is capped by `MAX_SCROLL_TRAIL_MARKERS`.
  */
 const ScrollTrail: React.FC<ScrollTrailProps> = ({
   scrollContainerRef,
@@ -157,7 +156,6 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
   ariaLabel,
   className = "",
   alignment = "center",
-  maxMarkers = MAX_SCROLL_TRAIL_MARKERS,
   placement = "overlay",
   testId,
 }) => {
@@ -213,7 +211,7 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
     // root is a stable top destination until semantic stops are available.
     const targets =
       discoveredTargets.length > 0 ? discoveredTargets : [content];
-    const sampledIndices = sampleScrollTrailIndices(targets.length, maxMarkers);
+    const sampledIndices = sampleScrollTrailIndices(targets.length);
     const nextMarkers = sampledIndices.map((targetIndex) => {
       const element = targets[targetIndex];
       return {
@@ -235,7 +233,7 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
     );
     setTargetCount(targets.length);
     scheduleActiveMarkerUpdate();
-  }, [ariaLabel, contentRef, maxMarkers, scheduleActiveMarkerUpdate, t]);
+  }, [ariaLabel, contentRef, scheduleActiveMarkerUpdate, t]);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
