@@ -10,7 +10,6 @@ import {
 import type {
   AppType,
   SimulatorEventFilterValue,
-  SubagentSession,
 } from "@src/contracts/simulator";
 import { STATION_MODES, type StationMode } from "@src/types/ui/workstation";
 import { withCoalescedWrites } from "@src/util/core/storage/coalescedStorageWrite";
@@ -37,37 +36,6 @@ const SIMULATOR_GRID_LAYOUTS = [
 
 export type SimulatorGridLayout = (typeof SIMULATOR_GRID_LAYOUTS)[number];
 
-const SimulatorGridLayoutSchema = z.enum(SIMULATOR_GRID_LAYOUTS);
-
-/**
- * Simulator grid layout setting
- */
-export const simulatorLayoutAtom = atomWithStorage<SimulatorGridLayout>(
-  "simulatorLayout",
-  "1x1",
-  createZodJsonStorage(SimulatorGridLayoutSchema)
-);
-simulatorLayoutAtom.debugLabel = "simulatorLayoutAtom";
-
-/**
- * Auto layout mode - automatically adjust grid based on task count
- */
-export const simulatorAutoLayoutAtom = atomWithStorage<boolean>(
-  "simulatorAutoLayout",
-  true
-);
-simulatorAutoLayoutAtom.debugLabel = "simulatorAutoLayoutAtom";
-
-/**
- * Simulator show dock setting
- */
-export const simulatorShowDockAtom = atomWithStorage<boolean>(
-  "simulatorShowDock",
-  true,
-  createZodJsonStorage(z.boolean())
-);
-simulatorShowDockAtom.debugLabel = "simulatorShowDockAtom";
-
 /**
  * Cell replay state for multi-task grid
  * Persists currentIndex for each threadId so state survives view switches
@@ -87,33 +55,6 @@ export const cellReplayStatesAtom = atom<
   Record<string, CellReplayPersistState>
 >({});
 cellReplayStatesAtom.debugLabel = "cellReplayStatesAtom";
-
-/**
- * Global replay control for multi-task grid
- * When triggered, all cells start/stop playing simultaneously
- */
-export interface GlobalReplayState {
-  /** Whether global playback is active */
-  isPlaying: boolean;
-  /** Timestamp when play was triggered (used to sync cells) */
-  triggerTime: number;
-  /** Playback speed multiplier */
-  speed: number;
-}
-export const globalReplayStateAtom = atom<GlobalReplayState>({
-  isPlaying: false,
-  triggerTime: 0,
-  speed: 1,
-});
-globalReplayStateAtom.debugLabel = "globalReplayStateAtom";
-
-/**
- * Simulator data source. Only `"real"` is currently produced — the atom is
- * kept (instead of inlined) so that future replay sources (mock fixtures,
- * recorded sessions, etc.) can plug in without rewiring every consumer.
- */
-export const simulatorDataSourceAtom = atom<"real">("real");
-simulatorDataSourceAtom.debugLabel = "simulatorDataSourceAtom";
 
 /**
  * Selected app type for free-switching in simulator.
@@ -233,18 +174,6 @@ export const simulatorPlaybackSpeedAtom =
     { getOnInit: true }
   );
 simulatorPlaybackSpeedAtom.debugLabel = "simulatorPlaybackSpeedAtom";
-
-/**
- * Auto-scroll setting for simulator replay.
- * When enabled, content auto-scrolls during playback.
- */
-export const simulatorAutoScrollAtom = atomWithStorage<boolean>(
-  "simulatorAutoScroll",
-  true,
-  createZodJsonStorage(z.boolean()),
-  { getOnInit: true }
-);
-simulatorAutoScrollAtom.debugLabel = "simulatorAutoScrollAtom";
 
 // ============================================
 // Station Mode — switches the right-side WorkStation surface between live
@@ -430,20 +359,3 @@ simulatorCaptionBarEnabledAtom.debugLabel = "simulatorCaptionBarEnabledAtom";
  */
 export const focusedSubagentCellAtom = atom<string | null>(null);
 focusedSubagentCellAtom.debugLabel = "focusedSubagentCellAtom";
-
-/**
- * Incremented whenever the user clicks the "locate" icon on a SubagentBlock.
- * ActivitySimulator watches this to re-open the subagent split pane if it
- * was previously dismissed by the user.
- */
-export const subagentPanelRevealRequestAtom = atom<number>(0);
-subagentPanelRevealRequestAtom.debugLabel = "subagentPanelRevealRequestAtom";
-
-/**
- * All child subagent sessions for the current parent session.
- * Written by ActivitySimulator from `allSubagentSessions` (DB-sourced),
- * read by SessionReplayMessages to inline SubagentChip rows in the chat
- * transcript. Uses SubagentSession directly — no separate type needed.
- */
-export const simulatorSubagentSessionsAtom = atom<SubagentSession[]>([]);
-simulatorSubagentSessionsAtom.debugLabel = "simulatorSubagentSessionsAtom";
