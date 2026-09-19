@@ -7,10 +7,13 @@
  */
 import { atom } from "jotai";
 
+import { createLogger } from "@src/hooks/logger";
 import {
   settingsAtom,
   updateSettingAtom,
 } from "@src/store/settings/settingsAtom";
+
+const log = createLogger("EditorSettings");
 
 // ============================================
 // Editor Appearance Settings
@@ -248,6 +251,22 @@ export const editorHighlightActiveLineAtom = atom(
   (get) => get(settingsAtom)["editor.highlightActiveLine"],
   (_get, set, value: boolean) => {
     set(updateSettingAtom, { key: "editor.highlightActiveLine", value });
+  }
+);
+
+/**
+ * Split diffs: both line-number columns sit between the panes (GitHub style)
+ * instead of at each pane's left edge.
+ */
+export const editorSplitDiffCenteredLineNumbersAtom = atom(
+  (get) => get(settingsAtom)["editor.splitDiffCenteredLineNumbers"],
+  (_get, set, value: boolean) => {
+    set(updateSettingAtom, {
+      key: "editor.splitDiffCenteredLineNumbers",
+      value,
+    }).catch((error: unknown) => {
+      log.warn("Failed to persist editor.splitDiffCenteredLineNumbers:", error);
+    });
   }
 );
 

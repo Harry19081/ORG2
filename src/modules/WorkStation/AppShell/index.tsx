@@ -12,7 +12,6 @@ import WorkstationTabHeader from "@src/scaffold/WorkbenchChrome/WorkstationTabHe
 import { workstationActiveSessionIdAtom } from "@src/store/session";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
-import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
 
 import { StatusBarRenderer } from "../shared/StatusBar/StatusBarRenderer";
@@ -41,9 +40,6 @@ interface AppShellProps {
 
 const AppShell = React.memo(
   ({ isActive = true, chatPanelFocused = false }: AppShellProps) => {
-    const primaryPanelCollapsed = useAtomValue(
-      workStationPrimarySidebarCollapsedAtom
-    );
     const captionEnabled = useAtomValue(simulatorCaptionBarEnabledAtom);
     const captionMessage = useCurrentTurnLastAgentMessage();
     const workstationActiveSessionId = useAtomValue(
@@ -92,10 +88,8 @@ const AppShell = React.memo(
     const showSettingsButton = (isCodeMode || isProjectMode) && !isAgentStation;
 
     useAppShellStatusBar({
-      primaryPanelCollapsed,
       showSettingsButton,
       handleOpenSettings,
-      workStationPanels,
     });
 
     // The Browser and Terminal status bars expose running servers. Keep the

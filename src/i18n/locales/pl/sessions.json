@@ -631,10 +631,10 @@
       "repoBarPosition": "Pasek repozytorium",
       "positionUp": "Góra",
       "positionDown": "Dół",
-      "showQuickActions": "Pokaż szybkie akcje",
+      "showQuickActions": "Szybkie akcje",
       "showSkills": "Przypięte umiejętności",
-      "showCliUpdate": "Pokaż aktualizacje CLI",
-      "showSpotlight": "Pokaż Spotlight",
+      "showCliUpdate": "Aktualizacje CLI",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "Nowa sesja"
       },
@@ -690,7 +690,7 @@
       "externalBrowser": "Zewnętrzna przeglądarka"
     },
     "compactInput": "Kompaktowe pole wprowadzania",
-    "composerGlow": "Pokaż poświatę pola wpisywania",
+    "composerGlow": "Poświata pola wpisywania",
     "separateEffortPill": "Osobny przycisk Effort",
     "replay": {
       "follow": "Śledź"

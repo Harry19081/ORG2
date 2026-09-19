@@ -2,7 +2,7 @@
  * Orgii Main Layout Component
  *
  * Orchestrates providers and delegates layout to AppLayout.
- * All layout logic consolidated in layouts/shared/AppLayout.tsx
+ * All layout logic consolidated in src/scaffold/AppLayout/AppLayout.tsx
  *
  * The router mounts this shell only for WorkStation and Settings routes.
  * WorkStation remains mounted while Settings occupies the chat-panel slot.

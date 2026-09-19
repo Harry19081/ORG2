@@ -42,9 +42,13 @@ vi.mock("@src/util/platform/tauri/windowIdentity", async (importOriginal) => ({
   isStationWindow: stationWindowMock,
 }));
 
+// A full macOS host: `resolveHostDesktop` checks Windows / Linux before macOS,
+// so mocking `isMacOS` alone still resolves to Linux on a Linux CI runner.
 vi.mock("@src/util/platform/tauri", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@src/util/platform/tauri")>()),
   isMacOS: () => true,
+  isLinux: () => false,
+  isWindows: () => false,
 }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),

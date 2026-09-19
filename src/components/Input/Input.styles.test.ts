@@ -177,7 +177,6 @@ describe("Input stylesheet cascade layers", () => {
 
   it.each([
     ".input-wrapper.input-pane-surface .input-inner",
-    ".input-wrapper.input-sidebar-surface .input-inner",
     ".input-wrapper.input-focused .input-inner",
     ".input-wrapper.input-field-ghost .input-inner, .input-wrapper.input-field-bare .input-inner",
   ])(

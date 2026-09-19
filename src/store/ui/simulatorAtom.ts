@@ -238,33 +238,10 @@ stationModeAtom.debugLabel = "stationModeAtom";
  * than the rail, so the sidebar defaults to CLOSED and one state is shared
  * across them.
  */
-export const simulatorReplaySidebarCollapsedAtom = atomWithStorage<boolean>(
+export const simulatorPrimarySidebarCollapsedAtom = atomWithStorage<boolean>(
   "simulatorReplaySidebarCollapsed",
   true,
   createZodJsonStorage(z.boolean())
-);
-simulatorReplaySidebarCollapsedAtom.debugLabel =
-  "simulatorReplaySidebarCollapsedAtom";
-
-/**
- * Router atom for simulator replay sidebar chrome.
- */
-export const simulatorPrimarySidebarCollapsedAtom = atom<
-  boolean,
-  [boolean | "toggle" | ((prev: boolean) => boolean)],
-  void
->(
-  (get) => get(simulatorReplaySidebarCollapsedAtom),
-  (get, set, next) => {
-    const prev = get(simulatorReplaySidebarCollapsedAtom);
-    const value =
-      next === "toggle"
-        ? !prev
-        : typeof next === "function"
-          ? next(prev)
-          : next;
-    set(simulatorReplaySidebarCollapsedAtom, value);
-  }
 );
 simulatorPrimarySidebarCollapsedAtom.debugLabel =
   "simulatorPrimarySidebarCollapsedAtom";
