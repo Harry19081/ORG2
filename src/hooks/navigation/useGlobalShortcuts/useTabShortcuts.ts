@@ -31,6 +31,10 @@ import {
   spotlightOpenAtom,
 } from "@src/store/ui/uiAtom";
 import { closeActiveWorkStationTabAtom } from "@src/store/workstation/tabRegistry";
+import {
+  CHAT_PANE_SURFACE_SELECTOR,
+  closeOpenDetailPane,
+} from "@src/util/dom/detailPaneClose";
 
 import { closeCurrentWindow } from "./closeCurrentWindow";
 
@@ -256,10 +260,15 @@ export function useTabShortcuts() {
   // hidden behind Settings. Once only Launchpads are left the active tab is
   // My Station's Launchpad, whose close closes My Station; with My Station
   // closed too, the chord closes the window like any other app would.
+  // A list/detail tab (Inbox, work items, pull requests) gives up its open
+  // detail first, as its "x" would; the next press closes the tab.
   const handleCloseCurrentTab = useCallback(() => {
     const pathname = window.location.pathname;
     if (AppViewService.closeSettings(pathname)) return true;
     if (!isWorkbenchPath(pathname)) return false;
+    if (closeOpenDetailPane({ outside: CHAT_PANE_SURFACE_SELECTOR })) {
+      return true;
+    }
     if (
       store.get(closeTabChordFallbackAtom) ===
       CLOSE_TAB_CHORD_FALLBACK.CLOSE_WINDOW

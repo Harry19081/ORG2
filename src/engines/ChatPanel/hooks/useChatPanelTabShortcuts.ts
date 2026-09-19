@@ -14,6 +14,7 @@ import {
 } from "@src/store/chatPanel/chatPanelTabNavigationAtoms";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { closeOpenDetailPane } from "@src/util/dom/detailPaneClose";
 
 import { resolveChatPanelShortcutOwnership } from "./chatPanelShortcutOwnership";
 
@@ -85,6 +86,12 @@ export function useChatPanelTabShortcuts({
       if (!isChatPanelMaximized && !paneOwnsShortcutsRef.current) return;
 
       if (matchesShortcut(event, "close_tab")) {
+        // A list/detail tab gives up its open detail first, as its "x" would.
+        if (closeOpenDetailPane({ within: containerRef?.current })) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
         // Closing the sole Launchpad only re-creates it. Leave the chord to
         // the app-wide handler, which closes My Station's Launchpad first and
         // the window once My Station is closed.
@@ -120,6 +127,7 @@ export function useChatPanelTabShortcuts({
     },
     [
       closeTab,
+      containerRef,
       goBack,
       goForward,
       isChatPanelMaximized,

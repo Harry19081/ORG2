@@ -12,6 +12,7 @@ import {
 import InboxListDetailLayout from "@src/scaffold/layouts/InboxListDetailLayout";
 import SplitListFullscreenButton from "@src/scaffold/layouts/SplitListFullscreenButton";
 import SplitListHeader from "@src/scaffold/layouts/SplitListHeader";
+import { DetailPaneShortcutCloseContext } from "@src/scaffold/layouts/detailPaneShortcutClose";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import type { WorkItem } from "@src/types/core/workItem";
 import { normalizePrStatus } from "@src/util/git/pr/prStatus";
@@ -325,6 +326,17 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
         focusRequest?.requestId ?? current.supersededFocusRequestId,
     }));
   }, [focusRequest?.requestId, setListFullscreen, updateViewState]);
+  // Close-tab chord: drop the selection but keep the split, so the right pane
+  // falls back to its placeholder instead of the list going full width.
+  const handleDeselectDetail = useCallback(() => {
+    updateViewState((current) => ({
+      ...current,
+      selectedItemId: null,
+      selectedPullRequestKey: null,
+      supersededFocusRequestId:
+        focusRequest?.requestId ?? current.supersededFocusRequestId,
+    }));
+  }, [focusRequest?.requestId, updateViewState]);
   const detailPaneOpen =
     focusRequestActive || viewState.detailPaneOpen !== false;
   const isListOnly = !detailPaneOpen || listFullscreen;
@@ -422,25 +434,27 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
       ? { status: "loading" as const, message: null }
       : loadState;
   const detail = (
-    <TeamInboxDetailPane
-      t={t}
-      dataSource={dataSource}
-      loadState={detailLoadState}
-      itemCount={presentedItems.length}
-      selectedItem={selectedItem}
-      selectedPullRequest={selectedPullRequest}
-      selectedPullRequestIdentity={selectedPullRequestIdentity}
-      onOpenPullRequestTab={onOpenPullRequestTab}
-      onNavigate={onNavigate}
-      onMarkRead={handleMarkRead}
-      onMarkUnread={handleMarkUnread}
-      onRefresh={handleRefresh}
-      onClose={handleCloseDetail}
-      onWorkItemUpdated={handleWorkItemUpdated}
-      archived={listMode === "archived"}
-      dispositionPendingKey={dispositionPendingKey}
-      onDisposition={handleDisposition}
-    />
+    <DetailPaneShortcutCloseContext.Provider value={handleDeselectDetail}>
+      <TeamInboxDetailPane
+        t={t}
+        dataSource={dataSource}
+        loadState={detailLoadState}
+        itemCount={presentedItems.length}
+        selectedItem={selectedItem}
+        selectedPullRequest={selectedPullRequest}
+        selectedPullRequestIdentity={selectedPullRequestIdentity}
+        onOpenPullRequestTab={onOpenPullRequestTab}
+        onNavigate={onNavigate}
+        onMarkRead={handleMarkRead}
+        onMarkUnread={handleMarkUnread}
+        onRefresh={handleRefresh}
+        onClose={handleCloseDetail}
+        onWorkItemUpdated={handleWorkItemUpdated}
+        archived={listMode === "archived"}
+        dispositionPendingKey={dispositionPendingKey}
+        onDisposition={handleDisposition}
+      />
+    </DetailPaneShortcutCloseContext.Provider>
   );
 
   const loadNotice =

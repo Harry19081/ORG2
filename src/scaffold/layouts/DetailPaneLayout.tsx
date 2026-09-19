@@ -1,4 +1,10 @@
-import React, { type ComponentProps, memo } from "react";
+import React, {
+  type ComponentProps,
+  memo,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 import DetailHeaderIconAction from "@src/components/DetailHeaderIconAction";
@@ -11,6 +17,12 @@ import {
 } from "@src/components/layout/blocks";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import {
+  DETAIL_PANE_CLOSE_ATTRIBUTE,
+  DETAIL_PANE_SHORTCUT_CLOSE_EVENT,
+} from "@src/util/dom/detailPaneClose";
+
+import { DetailPaneShortcutCloseContext } from "./detailPaneShortcutClose";
 
 export type DetailPaneHeaderProps = Omit<
   PanelHeaderProps,
@@ -38,25 +50,45 @@ export interface DetailPaneCloseActionProps {
   testId?: string;
 }
 
-/** One close action shared by detail headers and tab strips. */
+const CLOSE_ACTION_MARKER = { [DETAIL_PANE_CLOSE_ATTRIBUTE]: "" };
+
+/**
+ * One close action shared by detail headers and tab strips. The marker lets
+ * the close-tab chord dismiss the open detail before it closes the tab.
+ */
 export const DetailPaneCloseAction: React.FC<DetailPaneCloseActionProps> = memo(
   ({ onClose, testId }) => {
     const { t } = useTranslation("common");
+    const markerRef = useRef<HTMLSpanElement>(null);
+    const onShortcutClose = useContext(DetailPaneShortcutCloseContext);
+    const shortcutClose = onShortcutClose ?? onClose;
+    useEffect(() => {
+      const marker = markerRef.current;
+      if (!marker) return undefined;
+      marker.addEventListener(DETAIL_PANE_SHORTCUT_CLOSE_EVENT, shortcutClose);
+      return () =>
+        marker.removeEventListener(
+          DETAIL_PANE_SHORTCUT_CLOSE_EVENT,
+          shortcutClose
+        );
+    }, [shortcutClose]);
     return (
-      <DetailHeaderIconAction
-        label={t("actions.close")}
-        icon={
-          <HugeiconsIcon
-            icon={Cancel01Icon}
-            data-icon="x"
-            size={HEADER_ICON_SIZE.sm}
-            strokeWidth={1.75}
-            aria-hidden
-          />
-        }
-        onClick={onClose}
-        testId={testId}
-      />
+      <span ref={markerRef} className="contents" {...CLOSE_ACTION_MARKER}>
+        <DetailHeaderIconAction
+          label={t("actions.close")}
+          icon={
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              data-icon="x"
+              size={HEADER_ICON_SIZE.sm}
+              strokeWidth={1.75}
+              aria-hidden
+            />
+          }
+          onClick={onClose}
+          testId={testId}
+        />
+      </span>
     );
   }
 );
