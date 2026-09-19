@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import type {
   GitHubIssueTimelineItem,
   GitHubIssueTimelineSource,
+  GitHubIssueUser,
 } from "@src/api/tauri/github";
 import Tag from "@src/components/Tag";
 import { TYPOGRAPHY } from "@src/config/workstation/tokens";
@@ -620,6 +621,59 @@ export function IssueTimelineEventRow({
           <>
             <span className="mx-1">·</span>
             <ActivityTimestamp timestamp={item.created_at} />
+          </>
+        ) : null}
+      </>
+    </TimelineEventCard>
+  );
+}
+
+/**
+ * A run of `labeled`/`unlabeled` events from the same actor inside the same
+ * clock minute. GitHub's timeline emits one event per label even when they
+ * were all applied together, so this collapses that run into a single row.
+ */
+export function IssueTimelineLabelGroupRow({
+  event,
+  actor,
+  items,
+}: {
+  event: "labeled" | "unlabeled";
+  actor: GitHubIssueUser | null;
+  items: GitHubIssueTimelineItem[];
+}): React.ReactNode {
+  const { t } = useTranslation("common");
+  const actorName = actor?.login ?? "GitHub";
+  const latest = items[items.length - 1];
+
+  return (
+    <TimelineEventCard icon={<TimelineEventIcon event={event} />}>
+      <>
+        <span className="font-medium text-text-1">{actorName}</span>{" "}
+        {event === "labeled"
+          ? t("git.issues.activity.added", "added")
+          : t("git.issues.activity.removed", "removed")}{" "}
+        {items.map((item, index) => (
+          <React.Fragment key={item.id ?? `${item.label?.name}-${index}`}>
+            {index > 0 ? " " : ""}
+            {item.label ? (
+              <Tag
+                size="mini"
+                pill
+                className={`${TYPOGRAPHY.badge} px-1.5! py-px! align-middle text-[10px]! leading-3!`}
+                style={getLabelColorStyle(item.label.color)}
+              >
+                {item.label.name}
+              </Tag>
+            ) : (
+              t("git.issues.activity.label", "a label")
+            )}
+          </React.Fragment>
+        ))}
+        {latest.created_at ? (
+          <>
+            <span className="mx-1">·</span>
+            <ActivityTimestamp timestamp={latest.created_at} />
           </>
         ) : null}
       </>

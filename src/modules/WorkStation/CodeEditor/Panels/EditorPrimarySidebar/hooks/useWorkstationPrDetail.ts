@@ -141,6 +141,7 @@ export function useWorkstationPrDetail({
         commits: bundle.commits,
         files: bundle.files,
         checks: bundle.checks,
+        timeline: bundle.timeline,
         loading: false,
         refreshing: false,
         error: null,

@@ -86,6 +86,7 @@ export function PrDetailTabPanels({
             conversation={state.conversation}
             reviews={state.reviews}
             reviewComments={state.reviewComments}
+            timelineEvents={state.timeline}
             loading={state.loading}
             submittingComment={state.submittingComment}
             submittingReview={state.submittingReview}
