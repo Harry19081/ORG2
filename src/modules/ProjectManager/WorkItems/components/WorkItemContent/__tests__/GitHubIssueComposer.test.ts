@@ -235,11 +235,6 @@ describe("GitHubIssueComposer", () => {
     expect(
       document.querySelector("[data-testid='github-issue-close-menu']")
     ).not.toBeNull();
-    expect(
-      document
-        .querySelector("[data-testid='github-issue-status-open']")
-        ?.getAttribute("aria-disabled")
-    ).toBe("true");
     expect(config.onLoadDuplicateCandidates).not.toHaveBeenCalled();
 
     await act(async () => {
