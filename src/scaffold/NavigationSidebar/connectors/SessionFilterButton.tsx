@@ -26,8 +26,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
     groupByMode,
     groupVisibleCount,
     includeExternal,
-    groupByModes = GROUP_BY_MODES,
-    getGroupByLabel,
     onSelect,
     onSelectGroupVisibleCount,
     onToggleIncludeExternal,
@@ -87,8 +85,8 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
     });
 
     const resolveGroupByLabel = useCallback(
-      (mode: string) => getGroupByLabel?.(mode) ?? t(`sidebar.groupBy.${mode}`),
-      [getGroupByLabel, t]
+      (mode: string) => t(`sidebar.groupBy.${mode}`),
+      [t]
     );
 
     return (
@@ -159,7 +157,7 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
               submenuPanelRef={submenuPanelRef}
               activeSubmenu={activeSubmenu}
               submenuAnchor={submenuAnchor}
-              groupByModes={groupByModes}
+              groupByModes={GROUP_BY_MODES}
               groupByMode={groupByMode}
               sortMode={sortMode}
               setSortMode={setSortMode}
