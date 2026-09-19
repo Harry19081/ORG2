@@ -24,7 +24,10 @@ use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
 
-use git::{tokio_git_command, util::is_transient_error};
+use git::{
+    tokio_git_command,
+    util::{ensure_git_operand, is_transient_error},
+};
 
 use super::commit::append_orgii_coauthor_trailer;
 use super::remote::{contains_word, pull_strategy_args, should_set_upstream};
@@ -328,6 +331,15 @@ fn sse_response(stream: GitEventStream) -> Response {
         .into_response()
 }
 
+/// Error response for the first request value git would parse as an option
+/// (see `ensure_git_operand`), checked before the command is built.
+fn invalid_operand_response(operands: &[(Option<&str>, &str)]) -> Option<Response> {
+    operands.iter().find_map(|(value, field)| {
+        let error = ensure_git_operand((*value)?, field).err()?;
+        Some(stream_error_response(error, "invalid_argument"))
+    })
+}
+
 fn stream_error_response(error: String, error_type: &'static str) -> Response {
     let stream = futures::stream::once(async move {
         Ok(Event::default()
@@ -377,6 +389,12 @@ pub async fn push_stream(
     let repo_path = PathBuf::from(&query.path);
     let remote = query.remote.unwrap_or_else(|| "origin".to_string());
     let force = query.force.unwrap_or(false);
+    if let Some(response) = invalid_operand_response(&[
+        (Some(remote.as_str()), "remote"),
+        (query.branch.as_deref(), "branch"),
+    ]) {
+        return response;
+    }
 
     // Mirror push_to_remote: auto-detect a missing or renamed upstream instead
     // of trusting a client flag that defaults to false — without this, the
@@ -445,6 +463,12 @@ pub async fn pull_stream(
 ) -> Response {
     let repo_path = PathBuf::from(&query.path);
     let remote = query.remote.unwrap_or_else(|| "origin".to_string());
+    if let Some(response) = invalid_operand_response(&[
+        (Some(remote.as_str()), "remote"),
+        (query.branch.as_deref(), "branch"),
+    ]) {
+        return response;
+    }
 
     let mut cmd = match tokio_git_command() {
         Ok(command) => command,
@@ -486,6 +510,9 @@ pub async fn fetch_stream(
     let repo_path = PathBuf::from(&query.path);
     let remote = query.remote.unwrap_or_else(|| "origin".to_string());
     let prune = query.prune.unwrap_or(true);
+    if let Some(response) = invalid_operand_response(&[(Some(remote.as_str()), "remote")]) {
+        return response;
+    }
 
     let mut cmd = match tokio_git_command() {
         Ok(command) => command,
