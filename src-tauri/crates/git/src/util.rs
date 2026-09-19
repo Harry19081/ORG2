@@ -261,6 +261,18 @@ pub fn run_git_with_retry_friendly(
     run_git_with_retry(repo_path, args, max_retries).map_err(|e| user_friendly_error(&e, operation))
 }
 
+/// Reject a caller-supplied positional value (remote, branch, refspec, URL)
+/// that git would parse as an option. `Command` never goes through a shell, but
+/// a value such as `--upload-pack=<cmd>` in the remote slot still makes git run
+/// an arbitrary program, so every request value placed before the operands must
+/// pass this check.
+pub fn ensure_git_operand(value: &str, field: &str) -> Result<(), String> {
+    if value.starts_with('-') {
+        return Err(format!("Invalid {field}: must not start with '-'"));
+    }
+    Ok(())
+}
+
 /// Run git command with default retry count (5 retries) and user-friendly errors.
 /// Convenience wrapper for run_git_with_retry_friendly with standard retry count.
 pub fn run_git(repo_path: &Path, args: &[&str]) -> Result<Output, String> {
@@ -670,6 +682,31 @@ mod git_profile_tests {
         }
         for falsy in ["false", "no", "off", "0", ""] {
             assert!(!git_config_bool_is_true(falsy));
+        }
+    }
+}
+
+#[cfg(test)]
+mod git_operand_tests {
+    use super::ensure_git_operand;
+
+    #[test]
+    fn rejects_option_shaped_values() {
+        for value in ["--upload-pack=touch pwned", "--receive-pack=x", "-u", "-"] {
+            assert!(ensure_git_operand(value, "remote").is_err(), "{value}");
+        }
+    }
+
+    #[test]
+    fn accepts_ordinary_operands() {
+        for value in [
+            "origin",
+            "feature/x-y",
+            "HEAD",
+            "https://example.com/a.git",
+            "",
+        ] {
+            assert!(ensure_git_operand(value, "remote").is_ok(), "{value}");
         }
     }
 }

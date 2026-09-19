@@ -632,10 +632,10 @@
       "repoBarPosition": "仓库栏",
       "positionUp": "上方",
       "positionDown": "下方",
-      "showQuickActions": "显示快捷操作",
+      "showQuickActions": "快捷操作",
       "showSkills": "固定 Skills",
-      "showCliUpdate": "显示 CLI 更新",
-      "showSpotlight": "显示 Spotlight",
+      "showCliUpdate": "CLI 更新",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "新建会话"
       },
@@ -691,7 +691,7 @@
       "externalBrowser": "外部浏览器"
     },
     "compactInput": "紧凑输入框",
-    "composerGlow": "显示输入框光晕",
+    "composerGlow": "输入框光晕",
     "separateEffortPill": "独立 Effort 按钮",
     "replay": {
       "follow": "跟随"

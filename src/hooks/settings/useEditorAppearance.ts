@@ -26,6 +26,7 @@ import {
   editorShowIndentGuidesAtom,
   editorShowMinimapAtom,
   editorShowTreeIndentGuidesAtom,
+  editorSplitDiffCenteredLineNumbersAtom,
   editorTabSizeAtom,
   editorWordWrapAtom,
   resolvedCodeFontFamilyAtom,
@@ -50,6 +51,7 @@ export interface EditorAppearanceSettings {
   showIndentGuides: boolean;
   showTreeIndentGuides: boolean;
   highlightActiveLine: boolean;
+  splitDiffCenteredLineNumbers: boolean;
 }
 
 /**
@@ -67,6 +69,9 @@ export function useEditorAppearanceSettings(): EditorAppearanceSettings {
   const showIndentGuides = useAtomValue(editorShowIndentGuidesAtom);
   const showTreeIndentGuides = useAtomValue(editorShowTreeIndentGuidesAtom);
   const highlightActiveLine = useAtomValue(editorHighlightActiveLineAtom);
+  const splitDiffCenteredLineNumbers = useAtomValue(
+    editorSplitDiffCenteredLineNumbersAtom
+  );
 
   return {
     fontSize,
@@ -79,6 +84,7 @@ export function useEditorAppearanceSettings(): EditorAppearanceSettings {
     showIndentGuides,
     showTreeIndentGuides,
     highlightActiveLine,
+    splitDiffCenteredLineNumbers,
   };
 }
 

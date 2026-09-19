@@ -631,10 +631,10 @@
       "repoBarPosition": "Repo-Leiste",
       "positionUp": "Oben",
       "positionDown": "Unten",
-      "showQuickActions": "Schnellaktionen anzeigen",
+      "showQuickActions": "Schnellaktionen",
       "showSkills": "Angeheftete Skills",
-      "showCliUpdate": "CLI-Updates anzeigen",
-      "showSpotlight": "Spotlight anzeigen",
+      "showCliUpdate": "CLI-Updates",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "Neue Sitzung"
       },
@@ -690,7 +690,7 @@
       "externalBrowser": "Externer Browser"
     },
     "compactInput": "Kompakte Eingabe",
-    "composerGlow": "Eingabe-Leuchten anzeigen",
+    "composerGlow": "Eingabe-Leuchten",
     "separateEffortPill": "Effort als eigene Schaltfläche",
     "replay": {
       "follow": "Folgen"

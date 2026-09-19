@@ -535,6 +535,8 @@
     "indentGuides": "縮進參考線",
     "treeIndentGuides": "樹視圖縮進參考線",
     "highlightActiveLine": "目前行高亮",
+    "splitDiffCenteredLineNumbers": "並排差異檢視行號置中",
+    "splitDiffCenteredLineNumbersDesc": "將兩欄行號都顯示在左右兩欄之間（類似 GitHub），而不是各自顯示在每欄左側。",
     "shellsOpenWith": "Shell 打開方式",
     "shellsOpenWithDesc": "新終端的初始工作目錄",
     "repoPath": "倉庫路徑",
