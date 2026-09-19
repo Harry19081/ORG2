@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "Pengaturan bilah sisi",
     "showSidebar": "Tampilkan bilah sisi",
-    "colorSourceControlFiles": "Gunakan warna diff untuk file"
+    "colorSourceControlFiles": "Warna diff pada file"
   },
   "windowChrome": {
     "menus": {

@@ -12,6 +12,8 @@ import { useAtomValue } from "jotai";
 import { useLocation } from "react-router-dom";
 
 import { ROUTES, isWorkbenchPath } from "@src/config/routes";
+import { hasMacWindowChrome } from "@src/config/windowChromeRadius";
+import { WINDOW_CHROME_TOKENS } from "@src/config/windowChromeTokens";
 import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
@@ -20,7 +22,6 @@ import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { mainPaneHasRealTabsAtom } from "@src/store/workstation/tabHost";
 import type { StationMode } from "@src/types/ui/workstation";
-import { isMacOS } from "@src/util/platform/tauri";
 import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
 /** One 28px icon button. */
@@ -30,7 +31,8 @@ export const PINNED_WORKBENCH_CHROME_GAP = 1;
 /** Distance from the window's right edge, matching the tab bars' `pr-2`. */
 export const PINNED_WORKBENCH_CHROME_RIGHT_INSET = 8;
 /** Same vertical anchor as the left group. */
-export const PINNED_WORKBENCH_CHROME_CENTER_TOP = 26;
+export const PINNED_WORKBENCH_CHROME_CENTER_TOP =
+  WINDOW_CHROME_TOKENS.titleBarCenterTop;
 
 export type PinnedWorkbenchChromeSlots = 1 | 2;
 
@@ -93,15 +95,15 @@ export function shouldShowPinnedWorkbenchChrome({
 
 /**
  * Whether macOS owns side-pane chrome at the window level on this route.
- * Populated station headers use this to avoid restoring the same side-pane
- * actions after the fixed group is visually suppressed.
+ * Uses the same host resolution as the left `PinnedSidebarChrome`, so browser
+ * mode on a Mac draws neither group instead of only the right one.
  */
 export function usePinnedWorkbenchChromeAvailable(): boolean {
   const location = useLocation();
   // A detached station window has no chat pane, so there are no side-pane
   // toggles to pin — nothing to draw, nothing to reserve room for.
   return (
-    isMacOS() &&
+    hasMacWindowChrome() &&
     !isStationWindow() &&
     isPinnedWorkbenchChromePath(location.pathname)
   );

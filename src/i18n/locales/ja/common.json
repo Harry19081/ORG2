@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "サイドバー設定",
     "showSidebar": "サイドバーを表示",
-    "colorSourceControlFiles": "ファイルに差分色を使用"
+    "colorSourceControlFiles": "ファイルの差分色"
   },
   "teamInbox": {
     "title": "チームの受信トレイ",
@@ -1929,7 +1929,7 @@
     "chatRight": "右チャット",
     "sidebarPosition": "Workstation サイドバー",
     "modelPickerStyle": "ピッカー",
-    "paginateChatHistory": "チャット履歴をページ分割",
+    "paginateChatHistory": "チャット履歴のページ分割",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "メニュー",
     "left": "左",

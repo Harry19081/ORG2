@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "Barra lateral",
     "showSidebar": "Mostrar barra lateral",
-    "colorSourceControlFiles": "Usar colores de diferencias para archivos"
+    "colorSourceControlFiles": "Colores de diferencias en archivos"
   },
   "teamInbox": {
     "title": "Bandeja del equipo",
@@ -1929,7 +1929,7 @@
     "chatRight": "Chat a la derecha",
     "sidebarPosition": "Barra lateral de Workstation",
     "modelPickerStyle": "Selector",
-    "paginateChatHistory": "Paginar historial del chat",
+    "paginateChatHistory": "Paginación del historial del chat",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menú",
     "left": "Izquierda",

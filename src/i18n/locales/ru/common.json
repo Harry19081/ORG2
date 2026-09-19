@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "Боковая панель",
     "showSidebar": "Показывать боковую панель",
-    "colorSourceControlFiles": "Использовать цвета различий для файлов"
+    "colorSourceControlFiles": "Цвета различий для файлов"
   },
   "teamInbox": {
     "title": "Общий почтовый ящик команды",
@@ -1929,7 +1929,7 @@
     "chatRight": "Чат справа",
     "sidebarPosition": "Боковая панель Workstation",
     "modelPickerStyle": "Селектор",
-    "paginateChatHistory": "Разбивать историю чата на страницы",
+    "paginateChatHistory": "Постраничная история чата",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Меню",
     "left": "Слева",

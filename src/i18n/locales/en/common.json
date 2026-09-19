@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "Sidebar settings",
     "showSidebar": "Show sidebar",
-    "colorSourceControlFiles": "Use diff colors for files"
+    "colorSourceControlFiles": "Diff colors on files"
   },
   "windowChrome": {
     "menus": {
@@ -1760,7 +1760,7 @@
     "chatRight": "Chat Right",
     "sidebarPosition": "Workstation sidebar",
     "modelPickerStyle": "Picker",
-    "paginateChatHistory": "Paginate chat history",
+    "paginateChatHistory": "Chat history pagination",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Left",

@@ -407,3 +407,84 @@ async fn stage_endpoint_uses_literal_files_and_preserves_explicit_bulk_request()
         }
     }
 }
+
+#[cfg(unix)]
+#[tokio::test]
+async fn stream_handlers_reject_option_shaped_operands() {
+    use crate::commands::streaming::{
+        fetch_stream, pull_stream, push_stream, FetchStreamQuery, PullStreamQuery, PushStreamQuery,
+    };
+    use axum::extract::{Path, Query};
+    use axum::response::Response;
+
+    async fn body_text(response: Response) -> String {
+        let bytes = tokio::time::timeout(
+            std::time::Duration::from_secs(30),
+            axum::body::to_bytes(response.into_body(), usize::MAX),
+        )
+        .await
+        .expect("stream must terminate")
+        .expect("read body");
+        String::from_utf8_lossy(&bytes).into_owned()
+    }
+
+    // Local-path origin: an injected --upload-pack/--receive-pack would run.
+    let root = std::env::temp_dir().join(format!(
+        "orgii-operand-stream-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("system clock after epoch")
+            .as_nanos()
+    ));
+    let upstream = root.join("upstream");
+    let work = root.join("work");
+    git2::Repository::init(&upstream).expect("init upstream");
+    git2::Repository::init(&work)
+        .expect("init work repo")
+        .remote("origin", upstream.to_str().expect("utf8 path"))
+        .expect("add origin");
+    let marker = work.join("pwned");
+    let path = work.to_string_lossy().into_owned();
+    let payload = format!("--upload-pack=touch {}", marker.display());
+
+    let fetch = fetch_stream(
+        Path("repo".to_string()),
+        Query(FetchStreamQuery {
+            path: path.clone(),
+            remote: Some(payload.clone()),
+            prune: Some(false),
+            refspec: None,
+        }),
+    )
+    .await;
+    assert!(body_text(fetch).await.contains("invalid_argument"));
+
+    let pull = pull_stream(
+        Path("repo".to_string()),
+        Query(PullStreamQuery {
+            path: path.clone(),
+            remote: Some("origin".to_string()),
+            branch: Some(payload.clone()),
+            strategy: None,
+        }),
+    )
+    .await;
+    assert!(body_text(pull).await.contains("invalid_argument"));
+
+    let push = push_stream(
+        Path("repo".to_string()),
+        Query(PushStreamQuery {
+            path,
+            remote: Some(format!("--receive-pack=touch {}", marker.display())),
+            branch: None,
+            set_upstream: None,
+            force: None,
+        }),
+    )
+    .await;
+    assert!(body_text(push).await.contains("invalid_argument"));
+
+    assert!(!marker.exists(), "no injected program may run");
+    let _ = std::fs::remove_dir_all(&root);
+}

@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "侧边栏设置",
     "showSidebar": "显示侧边栏",
-    "colorSourceControlFiles": "使用差异颜色标记文件"
+    "colorSourceControlFiles": "文件差异着色"
   },
   "windowChrome": {
     "menus": {
@@ -1760,7 +1760,7 @@
     "chatRight": "右侧聊天",
     "sidebarPosition": "工作站侧边栏",
     "modelPickerStyle": "选择器样式",
-    "paginateChatHistory": "将聊天记录分页",
+    "paginateChatHistory": "聊天记录分页",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "菜单",
     "left": "左侧",

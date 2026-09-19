@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "Seitenleiste",
     "showSidebar": "Seitenleiste anzeigen",
-    "colorSourceControlFiles": "Diff-Farben für Dateien verwenden"
+    "colorSourceControlFiles": "Diff-Farben für Dateien"
   },
   "teamInbox": {
     "title": "Team-Posteingang",
@@ -1929,7 +1929,7 @@
     "chatRight": "Chat rechts",
     "sidebarPosition": "Workstation-Seitenleiste",
     "modelPickerStyle": "Auswahl",
-    "paginateChatHistory": "Chatverlauf paginieren",
+    "paginateChatHistory": "Paginierter Chatverlauf",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menü",
     "left": "Links",

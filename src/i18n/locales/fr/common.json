@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "Barre latérale",
     "showSidebar": "Afficher la barre latérale",
-    "colorSourceControlFiles": "Utiliser les couleurs de diff pour les fichiers"
+    "colorSourceControlFiles": "Couleurs de diff sur les fichiers"
   },
   "teamInbox": {
     "title": "Boîte de réception d’équipe",
@@ -1929,7 +1929,7 @@
     "chatRight": "Chat à droite",
     "sidebarPosition": "Barre latérale du Workstation",
     "modelPickerStyle": "Sélecteur",
-    "paginateChatHistory": "Paginer l’historique du chat",
+    "paginateChatHistory": "Pagination de l’historique du chat",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Gauche",

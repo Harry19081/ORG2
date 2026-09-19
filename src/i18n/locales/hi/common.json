@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "साइडबार सेटिंग्स",
     "showSidebar": "साइडबार दिखाएँ",
-    "colorSourceControlFiles": "फ़ाइलों के लिए डिफ़ रंगों का उपयोग करें"
+    "colorSourceControlFiles": "फ़ाइलों पर डिफ़ रंग"
   },
   "windowChrome": {
     "menus": {
@@ -1760,7 +1760,7 @@
     "chatRight": "चैट दाएँ",
     "sidebarPosition": "वर्कस्टेशन साइडबार",
     "modelPickerStyle": "पिकर",
-    "paginateChatHistory": "चैट इतिहास को पेजों में बाँटें",
+    "paginateChatHistory": "चैट इतिहास पेजिनेशन",
     "modelPickerSpotlight": "स्पॉटलाइट",
     "modelPickerMenu": "मेनू",
     "left": "बाएँ",

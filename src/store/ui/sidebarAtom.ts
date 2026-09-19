@@ -7,6 +7,8 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
+import { hoverSidebarOpenAtom } from "@src/store/ui/hoverSidebarAtom";
+
 // ============================================
 // Constants
 // ============================================
@@ -77,6 +79,10 @@ export const sidebarCollapsedAtom = atom(
       ? (get(sidebarNarrowOverrideAtom) ?? true)
       : get(sidebarCollapsedBaseAtom),
   (get, set, value: boolean) => {
+    // A docked sidebar replaces the hover preview. Expanding by shortcut or
+    // menu unmounts the preview without its mouse-leave, so clear it here or
+    // the next collapse would reopen the floating sidebar at once.
+    if (!value) set(hoverSidebarOpenAtom, false);
     if (get(sidebarNarrowAtom)) {
       set(sidebarNarrowOverrideAtom, value);
       return;

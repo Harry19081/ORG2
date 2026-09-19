@@ -631,10 +631,10 @@
       "repoBarPosition": "저장소 바",
       "positionUp": "위",
       "positionDown": "아래",
-      "showQuickActions": "빠른 작업 표시",
+      "showQuickActions": "빠른 작업",
       "showSkills": "고정된 스킬",
-      "showCliUpdate": "CLI 업데이트 표시",
-      "showSpotlight": "Spotlight 표시",
+      "showCliUpdate": "CLI 업데이트",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "새 세션"
       },
@@ -690,7 +690,7 @@
       "externalBrowser": "외부 브라우저"
     },
     "compactInput": "컴팩트 입력창",
-    "composerGlow": "입력창 글로우 표시",
+    "composerGlow": "입력창 글로우",
     "separateEffortPill": "Effort 버튼 분리",
     "replay": {
       "follow": "팔로우"

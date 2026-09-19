@@ -21,7 +21,7 @@
   "sidebarSettings": {
     "title": "側邊欄設定",
     "showSidebar": "顯示側邊欄",
-    "colorSourceControlFiles": "使用差異顏色標記檔案"
+    "colorSourceControlFiles": "檔案差異著色"
   },
   "teamInbox": {
     "title": "團隊收件匣",
@@ -1929,7 +1929,7 @@
     "chatRight": "右側聊天",
     "sidebarPosition": "工作站側邊欄",
     "modelPickerStyle": "選擇器樣式",
-    "paginateChatHistory": "將聊天記錄分頁",
+    "paginateChatHistory": "聊天記錄分頁",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "選單",
     "left": "左側",
