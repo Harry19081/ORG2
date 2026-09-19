@@ -390,6 +390,10 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
   );
 
   if (inMergeBox) {
+    const mergeBoxHint =
+      ACTION_TOOLTIP_KEYS[presentation.tooltip] === "merge"
+        ? null
+        : localizedActionTooltip(t, presentation.tooltip);
     return (
       <section
         className="flex w-full flex-wrap items-center gap-x-3 gap-y-2"
@@ -417,12 +421,15 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
             {t("git.pr.actions.convertToDraft", "Convert to draft")}
           </Button>
         ) : null}
-        {/* Sized to its full sentence and never shrunk, so a row too narrow
-            for it sends the whole hint under the buttons instead of
-            squeezing it into a wrapped column beside them. */}
-        <span className="max-w-full shrink-0 grow basis-auto text-[12px] leading-[18px] text-text-3">
-          {localizedActionTooltip(t, presentation.tooltip)}
-        </span>
+        {/* Only a state that needs explaining gets a hint; "merge this" beside
+            a green merge button says nothing. Sized to its full sentence and
+            never shrunk, so a row too narrow for it sends the whole hint under
+            the buttons instead of squeezing it into a wrapped column. */}
+        {mergeBoxHint ? (
+          <span className="max-w-full shrink-0 grow basis-auto text-[12px] leading-[18px] text-text-3">
+            {mergeBoxHint}
+          </span>
+        ) : null}
       </section>
     );
   }

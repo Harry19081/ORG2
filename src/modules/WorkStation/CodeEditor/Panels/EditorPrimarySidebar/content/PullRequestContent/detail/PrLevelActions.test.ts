@@ -62,6 +62,26 @@ describe("PrLevelActions merge label", () => {
     );
   }
 
+  function hint(detail: Record<string, unknown>): string {
+    mergeLabel(detail);
+    const actions = container.querySelector(
+      '[data-testid="pr-merge-box-actions"]'
+    );
+    return actions?.querySelector(":scope > span")?.textContent ?? "";
+  }
+
+  it("explains a blocked merge but says nothing beside a plain mergeable one", () => {
+    expect(
+      hint({ state: "open", mergeable: true, mergeable_state: "clean" })
+    ).toBe("");
+    expect(
+      hint({ state: "open", mergeable: false, mergeable_state: "dirty" })
+    ).toBe("[git.pr.actions.tooltips.resolveConflicts]");
+    expect(hint({ state: "open", draft: true })).toBe(
+      "[git.pr.actions.tooltips.markReady]"
+    );
+  });
+
   it.each([
     [
       "conflicts",
