@@ -12,22 +12,16 @@ import React from "react";
 interface InfoRowProps {
   label: string;
   value?: string;
-  /** Optional icon rendered before the label */
-  icon?: React.ReactNode;
   children?: React.ReactNode;
   /** "horizontal" (default) or "vertical" — vertical stacks label above content */
   layout?: "horizontal" | "vertical";
-  /** Show red asterisk after label to indicate required field */
-  required?: boolean;
 }
 
 export const InfoRow: React.FC<InfoRowProps> = ({
   label,
   value,
-  icon,
   children,
   layout = "horizontal",
-  required = false,
 }) => {
   const content = children ?? (
     <span
@@ -40,9 +34,7 @@ export const InfoRow: React.FC<InfoRowProps> = ({
 
   const labelBlock = (
     <span className="flex min-h-[24px] shrink-0 items-center gap-1.5 text-[12px] font-medium text-text-2">
-      {icon && <span className="shrink-0">{icon}</span>}
       {label}
-      {required && <span className="ml-0.5 text-danger-6">*</span>}
     </span>
   );
 
