@@ -946,7 +946,31 @@
         "createdByMe": "Von mir erstellt",
         "assigneeUpdateNotApplied": "GitHub hat die Änderung der Zuweisung nicht übernommen",
         "assigneeUpdateSuccess": "Zuweisungen auf GitHub aktualisiert",
-        "updateIssueFailed": "GitHub issue konnte nicht aktualisiert werden"
+        "updateIssueFailed": "GitHub issue konnte nicht aktualisiert werden",
+        "filters": {
+          "searchPlaceholder": "Filter durchsuchen",
+          "noMatches": "Keine passenden Filter",
+          "activeCount": "Aktive Filter: {{count}}",
+          "clear": "Filter löschen",
+          "reviewRequestedFromMe": "Review von mir angefordert",
+          "noAssignee": "Niemand zugewiesen",
+          "noLabel": "Kein Label",
+          "linkedPullRequest": "Mit verknüpftem Pull-Request",
+          "draft": "Entwurf",
+          "readyForReview": "Bereit zum Review",
+          "recentlyUpdated": "In den letzten 7 Tagen aktualisiert",
+          "stale": "Seit 30 Tagen nicht aktualisiert",
+          "facetAuthor": "Autor",
+          "facetAssignee": "Zugewiesen",
+          "facetLabel": "Label",
+          "facetMilestone": "Meilenstein",
+          "facetReviewRequested": "Review angefordert",
+          "facetBaseBranch": "Basis-Branch",
+          "facetCiStatus": "Checks",
+          "ciSuccess": "Erfolgreich",
+          "ciFailure": "Fehlgeschlagen",
+          "ciPending": "Ausstehend"
+        }
       }
     },
     "sessionViews": {

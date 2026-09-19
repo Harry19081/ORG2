@@ -946,7 +946,31 @@
         "createdByMe": "내가 생성함",
         "assigneeUpdateNotApplied": "GitHub에서 담당자 변경을 적용하지 않았습니다",
         "assigneeUpdateSuccess": "GitHub에서 담당자를 업데이트했습니다",
-        "updateIssueFailed": "GitHub issue를 업데이트하지 못했습니다"
+        "updateIssueFailed": "GitHub issue를 업데이트하지 못했습니다",
+        "filters": {
+          "searchPlaceholder": "필터 검색",
+          "noMatches": "일치하는 필터 없음",
+          "activeCount": "활성 필터: {{count}}",
+          "clear": "필터 지우기",
+          "reviewRequestedFromMe": "나에게 리뷰 요청됨",
+          "noAssignee": "담당자 없음",
+          "noLabel": "라벨 없음",
+          "linkedPullRequest": "연결된 풀 리퀘스트 있음",
+          "draft": "초안",
+          "readyForReview": "리뷰 준비 완료",
+          "recentlyUpdated": "최근 7일 내 업데이트",
+          "stale": "30일간 업데이트 없음",
+          "facetAuthor": "작성자",
+          "facetAssignee": "담당자",
+          "facetLabel": "라벨",
+          "facetMilestone": "마일스톤",
+          "facetReviewRequested": "리뷰 요청 대상",
+          "facetBaseBranch": "기준 브랜치",
+          "facetCiStatus": "검사",
+          "ciSuccess": "통과",
+          "ciFailure": "실패",
+          "ciPending": "대기 중"
+        }
       }
     },
     "sessionViews": {

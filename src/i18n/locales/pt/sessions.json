@@ -946,7 +946,31 @@
         "createdByMe": "Criados por mim",
         "assigneeUpdateNotApplied": "O GitHub não aplicou a alteração de responsável",
         "assigneeUpdateSuccess": "Responsáveis atualizados no GitHub",
-        "updateIssueFailed": "Falha ao atualizar a issue do GitHub"
+        "updateIssueFailed": "Falha ao atualizar a issue do GitHub",
+        "filters": {
+          "searchPlaceholder": "Pesquisar filtros",
+          "noMatches": "Nenhum filtro correspondente",
+          "activeCount": "Filtros ativos: {{count}}",
+          "clear": "Limpar filtros",
+          "reviewRequestedFromMe": "Revisão solicitada a mim",
+          "noAssignee": "Sem responsável",
+          "noLabel": "Sem etiqueta",
+          "linkedPullRequest": "Com pull request vinculado",
+          "draft": "Rascunho",
+          "readyForReview": "Pronto para revisão",
+          "recentlyUpdated": "Atualizado nos últimos 7 dias",
+          "stale": "Sem atualização há 30 dias",
+          "facetAuthor": "Autor",
+          "facetAssignee": "Responsável",
+          "facetLabel": "Etiqueta",
+          "facetMilestone": "Marco",
+          "facetReviewRequested": "Revisão solicitada",
+          "facetBaseBranch": "Branch base",
+          "facetCiStatus": "Verificações",
+          "ciSuccess": "Aprovadas",
+          "ciFailure": "Com falha",
+          "ciPending": "Pendentes"
+        }
       }
     },
     "sessionViews": {
