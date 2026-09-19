@@ -5,7 +5,7 @@
  * Click on any path segment to see files/folders in that directory.
  * Uses an icon button for diff layout and TabPill for custom / preview toggles.
  *
- * Shared across WorkStation CodeEditor, DatabaseManager, and Simulator.
+ * Shared across WorkStation CodeEditor and Simulator.
  * When `repoPath` is omitted, breadcrumbs render as static path display
  * (no dropdown navigation).
  *
