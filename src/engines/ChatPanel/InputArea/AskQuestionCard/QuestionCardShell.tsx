@@ -151,7 +151,6 @@ export function QuestionCardShell({
                 disabled={focusedQuestion === 0}
                 size="mini"
                 variant="tertiary"
-                appearance="soft"
                 iconOnly
                 icon={
                   <HugeiconsIcon
@@ -172,7 +171,6 @@ export function QuestionCardShell({
                 disabled={focusedQuestion >= questions.length - 1}
                 size="mini"
                 variant="tertiary"
-                appearance="soft"
                 iconOnly
                 icon={
                   <HugeiconsIcon

@@ -80,7 +80,6 @@ export function RowPropertyDropdown<T extends string>({
               return filtered.map((option) => (
                 <Button
                   layout="custom"
-                  appearance="custom"
                   key={option.value}
                   className={`w-full justify-between text-left ${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} ${
                     option.value === value ? DROPDOWN_CLASSES.itemSelected : ""

@@ -325,8 +325,8 @@ const McpServerDetailPanel: React.FC<McpServerDetailPanelProps> = ({
           {
             label: t("common:actions.delete"),
             onClick: () => onDelete(server.name, server.scope),
+            variant: "secondary",
             tone: "danger",
-            appearance: "outline",
           },
         ]}
       />

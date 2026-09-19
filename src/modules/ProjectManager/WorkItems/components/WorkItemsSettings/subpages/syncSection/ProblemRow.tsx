@@ -289,7 +289,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
         </div>
       )}
       <Button
-        variant="tertiary"
+        variant="ghost"
         size="inline"
         onClick={() => setShowPayload((prev) => !prev)}
         className="gap-1 self-start text-[12px] hover:text-text-2"

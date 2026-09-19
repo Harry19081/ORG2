@@ -32,18 +32,7 @@ export default function ConnectionCards({
         {choices.map((choice) => (
           <Button
             key={choice.keyId}
-            variant={
-              (
-                Array.isArray(selected)
-                  ? selected.includes(choice.keyId)
-                  : selected === choice.keyId
-              )
-                ? "primary"
-                : "secondary"
-            }
-            appearance="outline"
             disabled={disabled || Boolean(choice.reason)}
-            layout="custom"
             style={{ height: "auto" }}
             aria-pressed={
               Array.isArray(selected)
@@ -51,7 +40,7 @@ export default function ConnectionCards({
                 : selected === choice.keyId
             }
             onClick={() => onSelect(choice.keyId)}
-            className="min-w-0 justify-start p-3 text-left whitespace-normal"
+            className="min-w-0 justify-start p-3 text-left whitespace-normal aria-pressed:border-primary-6 aria-pressed:text-primary-6"
           >
             <span className="flex min-w-0 flex-col gap-1">
               <span className="truncate font-medium" title={choice.name}>

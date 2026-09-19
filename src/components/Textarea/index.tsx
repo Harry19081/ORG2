@@ -348,7 +348,6 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
               {showClearButton && (
                 <Button
                   layout="custom"
-                  appearance="custom"
                   className="textarea-clear"
                   onClick={handleClear}
                   tabIndex={-1}

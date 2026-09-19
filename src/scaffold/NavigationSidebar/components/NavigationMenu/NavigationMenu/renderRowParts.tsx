@@ -69,7 +69,6 @@ export function renderLeadingIcon({
             aria-pressed={action.active}
             size="sidebar"
             variant="tertiary"
-            appearance="soft"
             iconOnly
             icon={
               <AnyIcon

@@ -134,7 +134,6 @@ const CodexSetup: React.FC<CodexSetupProps> = ({
             <Button
               variant={tokenDetected ? "secondary" : "primary"}
               tone={tokenDetected ? "success" : undefined}
-              size="default"
               loading={detectingToken}
               disabled={detectingToken}
               onClick={onDetectToken}
@@ -169,7 +168,6 @@ const CodexSetup: React.FC<CodexSetupProps> = ({
               <Button
                 variant={keyValidated ? "secondary" : "primary"}
                 tone={keyValidated ? "success" : undefined}
-                size="default"
                 loading={validatingKey}
                 disabled={validatingKey}
                 onClick={handleValidateManualCredential}

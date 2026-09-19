@@ -269,7 +269,6 @@ const ForkSessionSetupForm: React.FC<ForkSessionSetupFormProps> = ({
                 return (
                   <Button
                     layout="custom"
-                    appearance="custom"
                     key={repo.id}
                     onClick={() => setWorkspaceRepoPath(repo.fs_uri ?? null)}
                     className={`flex flex-col px-3 py-2 text-left focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset ${

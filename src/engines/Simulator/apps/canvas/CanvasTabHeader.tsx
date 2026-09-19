@@ -118,7 +118,6 @@ const CanvasTabHeader: React.FC<CanvasTabHeaderProps> = ({
             title={t("canvasCard.reload", "Reload")}
             size="mini"
             variant="tertiary"
-            appearance="soft"
             iconOnly
             icon={
               <HugeiconsIcon

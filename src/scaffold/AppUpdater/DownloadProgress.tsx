@@ -90,7 +90,6 @@ export const DownloadProgressOrb: FC<DownloadProgressOrbProps> = ({
   return (
     <Button
       layout="custom"
-      appearance="custom"
       className={`app-update-download-orb ${
         progress.percent === null
           ? "app-update-download-orb--indeterminate"

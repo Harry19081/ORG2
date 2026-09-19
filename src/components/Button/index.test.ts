@@ -96,6 +96,28 @@ describe("Button", () => {
   });
 
   it.each(["orgii_main.css", "orgii_dark.css"])(
+    "keeps filled success button states readable in %s",
+    (themeFile) => {
+      const css = readFileSync(resolve("public", themeFile), "utf8");
+      const foreground = readThemeColor(css, "success-button-contrast");
+
+      // Rest and press hold body-text contrast. Hover matches GitHub's lighter
+      // merge-button hover (#2ea043 on dark), which clears the 3:1 UI minimum.
+      // success-6 itself (the light theme's resting fill) is 4.33:1.
+      for (const [token, minimum] of [
+        ["success-button-bg", 4.3],
+        ["success-button-active", 4.3],
+        ["success-button-hover", 3],
+      ] as const) {
+        expect(
+          contrastRatio(foreground, readThemeColor(css, token)),
+          `${themeFile} ${token}`
+        ).toBeGreaterThanOrEqual(minimum);
+      }
+    }
+  );
+
+  it.each(["orgii_main.css", "orgii_dark.css"])(
     "keeps merged button states readable in %s",
     (themeFile) => {
       const css = readFileSync(resolve("public", themeFile), "utf8");
@@ -127,7 +149,6 @@ describe("compact shared actions", () => {
       React.createElement(Button, {
         size: "sidebar",
         variant: "tertiary",
-        appearance: "soft",
         iconOnly: true,
         icon: React.createElement("svg", { "data-testid": "action-icon" }),
         "aria-label": "Stage file",
@@ -137,32 +158,9 @@ describe("compact shared actions", () => {
     expect(markup).toContain("width:20px");
     expect(markup).toContain("border-radius:var(--radius-sm)");
     expect(markup).toContain("action-icon");
-    expect(markup).toContain("btn-hover:bg-fill-2");
+    expect(markup).toContain("btn-hover:bg-surface-hover");
     expect(markup).not.toContain("bg-button-hover-no-drop");
     expect(markup).not.toContain("hover:bg-primary-3");
-  });
-
-  it("opts transparent controls into fill-2 without changing sidebar hover", () => {
-    const markup = renderToStaticMarkup(
-      React.createElement(Button, {
-        variant: "tertiary",
-        appearance: "soft-no-drop",
-        size: "mini",
-        iconOnly: true,
-        icon: React.createElement("svg"),
-      })
-    );
-    expect(markup).toContain("btn-hover:bg-button-hover-no-drop");
-    expect(markup).toContain("btn-focus:bg-button-hover-no-drop");
-    const theme = readFileSync(resolve("src/tailwind.css"), "utf8");
-    expect(theme).toContain(
-      "--color-button-hover-no-drop: var(--color-fill-2)"
-    );
-    for (const skin of ["orgii_main.css", "orgii_dark.css"]) {
-      expect(readFileSync(resolve("public", skin), "utf8")).toContain(
-        "--color-button-hover: var(--color-fill-3)"
-      );
-    }
   });
 
   it("keeps compact non-sidebar actions at 24px", () => {
@@ -201,16 +199,6 @@ describe("compact shared actions", () => {
       expect(button.classList.contains("btn:text-text-2")).toBe(false);
       expect(button.className).toContain("btn-hover:bg-danger-2");
       expect(button.className).toContain("btn-focus:bg-danger-2");
-      await act(async () =>
-        root.render(
-          React.createElement(Button, { ...props, appearance: "soft-no-drop" })
-        )
-      );
-      expect(button.classList.contains("btn:text-danger-6")).toBe(true);
-      expect(button.classList.contains("btn:text-text-2")).toBe(false);
-      expect(button.className).toContain("btn-hover:bg-danger-1");
-      expect(button.className).not.toContain("hover:bg-danger-2");
-      expect(button.className).not.toContain("bg-danger-3");
       await act(async () => button.click());
       expect(clicks).toBe(1);
       await act(async () =>
@@ -232,7 +220,6 @@ describe("compound button surfaces", () => {
         Button,
         {
           layout: "custom",
-          appearance: "custom",
           className: "menu-row",
           style: { height: 48, padding: "4px 12px" },
           role: "menuitem",
@@ -268,7 +255,6 @@ describe("compound button surfaces", () => {
     let clicks = 0;
     const props = {
       layout: "custom" as const,
-      appearance: "custom" as const,
       ref,
       role: "switch",
       "aria-checked": true,
@@ -365,20 +351,15 @@ describe("Button hover intent", () => {
   };
 
   it.each([
-    ["tertiary", undefined, "btn-hover:bg-surface-hover"],
-    ["tertiary", "soft", "btn-hover:bg-fill-2"],
-    ["tertiary", "soft-no-drop", "btn-hover:bg-button-hover-no-drop"],
-    ["secondary", "solid", "btn-hover:bg-fill-3"],
+    ["tertiary", "btn-hover:bg-surface-hover"],
+    ["ghost", null],
+    ["secondary", "btn-hover:border-border-3"],
   ])(
-    "swaps the neutral hover text for the intent on %s/%s",
-    (variant, appearance, hoverSurface) => {
-      const neutral = classesOf({ variant, appearance });
-      const danger = classesOf({ variant, appearance, hoverTone: "danger" });
-      const primary = classesOf({
-        variant,
-        appearance,
-        hoverTone: "primary",
-      });
+    "swaps the neutral hover text for the hover tone on %s",
+    (variant, hoverSurface) => {
+      const neutral = classesOf({ variant });
+      const danger = classesOf({ variant, hoverTone: "danger" });
+      const primary = classesOf({ variant, hoverTone: "primary" });
 
       for (const intent of [danger, primary]) {
         expect(intent.has("btn-hover:text-text-1")).toBe(false);
@@ -401,24 +382,18 @@ describe("Button hover intent", () => {
   );
 
   it("keeps the neutral hover text when no intent is requested", () => {
-    for (const appearance of [undefined, "soft", "soft-no-drop"]) {
-      expect(
-        classesOf({ variant: "tertiary", appearance }).has(
-          "btn-hover:text-text-1"
-        )
-      ).toBe(true);
+    for (const variant of ["tertiary", "ghost"]) {
+      expect(classesOf({ variant }).has("btn-hover:text-text-1")).toBe(true);
     }
   });
 
   it("leaves primaries and toned buttons on their own palette", () => {
-    for (const variant of ["primary", "secondary", "tertiary"]) {
+    for (const variant of ["primary", "secondary", "tertiary", "ghost"]) {
       for (const tone of [undefined, "danger", "warning", "success"]) {
         if (!tone && variant !== "primary") continue;
-        for (const appearance of ["solid", "soft"]) {
-          expect(
-            classesOf({ variant, tone, appearance, hoverTone: "danger" })
-          ).toEqual(classesOf({ variant, tone, appearance }));
-        }
+        expect(classesOf({ variant, tone, hoverTone: "danger" })).toEqual(
+          classesOf({ variant, tone })
+        );
       }
     }
   });
@@ -432,23 +407,15 @@ describe("Button hover intent", () => {
     expect(secondary.has("btn:border-border-2")).toBe(true);
     expect(secondary.has("btn:text-danger-6")).toBe(true);
 
-    // A toned tertiary always takes the tinted soft surface.
-    for (const appearance of [undefined, "solid", "soft"]) {
-      const tertiary = classesOf({
-        variant: "tertiary",
-        tone: "danger",
-        appearance,
-      });
-      expect(tertiary.has("btn:text-danger-6")).toBe(true);
-      expect(tertiary.has("btn-hover:bg-danger-2")).toBe(true);
-    }
-    expect(
-      classesOf({
-        variant: "tertiary",
-        tone: "danger",
-        appearance: "soft-no-drop",
-      }).has("btn-hover:bg-danger-1")
-    ).toBe(true);
+    const tertiary = classesOf({ variant: "tertiary", tone: "danger" });
+    expect(tertiary.has("btn:text-danger-6")).toBe(true);
+    expect(tertiary.has("btn-hover:bg-danger-2")).toBe(true);
+
+    // A toned ghost keeps the tone text and never draws a surface.
+    const ghost = classesOf({ variant: "ghost", tone: "danger" });
+    expect(ghost.has("btn:text-danger-6")).toBe(true);
+    expect(ghost.has("btn-hover:text-danger-5")).toBe(true);
+    expect([...ghost].some((name) => name.includes(":bg-danger"))).toBe(false);
   });
 
   it("gives every tertiary a hover surface and a pressed state for toggles", () => {
@@ -457,19 +424,21 @@ describe("Button hover intent", () => {
     expect(tertiary.has("btn-pressed:bg-surface-selected")).toBe(true);
     expect(tertiary.has("btn-pressed:text-primary-6")).toBe(true);
   });
+
+  it("keeps a ghost surface-free: hover changes only the text color", () => {
+    const ghost = classesOf({ variant: "ghost" });
+    expect(ghost.has("btn:bg-transparent")).toBe(true);
+    expect(ghost.has("btn-hover:text-text-1")).toBe(true);
+    expect(ghost.has("btn-pressed:text-primary-6")).toBe(true);
+    expect(
+      [...ghost].some((name) => /^btn-(hover|pressed|active):bg-/.test(name))
+    ).toBe(false);
+  });
 });
 
 describe("Button default utilities sit below caller classes", () => {
-  const VARIANTS = ["primary", "secondary", "tertiary"] as const;
+  const VARIANTS = ["primary", "secondary", "tertiary", "ghost"] as const;
   const TONES = [undefined, "danger", "warning", "success", "merged"] as const;
-  const APPEARANCES = [
-    undefined,
-    "solid",
-    "outline",
-    "dashed",
-    "soft",
-    "soft-no-drop",
-  ] as const;
   const classesOf = (props: Record<string, unknown>) => {
     const markup = renderToStaticMarkup(
       React.createElement(Button, props, "Label")
@@ -480,24 +449,13 @@ describe("Button default utilities sit below caller classes", () => {
   it("emits every own utility through a component-default variant", () => {
     for (const variant of VARIANTS) {
       for (const tone of TONES) {
-        for (const appearance of APPEARANCES) {
-          for (const extra of [
-            {},
-            { disabled: true },
-            { hoverTone: "danger" },
-          ]) {
-            const unlayered = classesOf({
-              variant,
-              tone,
-              appearance,
-              ...extra,
-            }).filter(
-              (name) =>
-                name !== "button" &&
-                !/^btn(-hover|-active|-focus|-pressed)?:/.test(name)
-            );
-            expect(unlayered, `${variant}/${tone}/${appearance}`).toEqual([]);
-          }
+        for (const extra of [{}, { disabled: true }, { hoverTone: "danger" }]) {
+          const unlayered = classesOf({ variant, tone, ...extra }).filter(
+            (name) =>
+              name !== "button" &&
+              !/^btn(-hover|-active|-focus|-pressed)?:/.test(name)
+          );
+          expect(unlayered, `${variant}/${tone}`).toEqual([]);
         }
       }
     }
@@ -521,15 +479,11 @@ describe("Button default utilities sit below caller classes", () => {
   });
 
   it.each([
-    ["tertiary", "soft", "default"],
-    ["tertiary", "soft-no-drop", "noDrop"],
-    ["primary", "soft", "primary"],
-    ["danger", "soft", "danger"],
-    ["danger", "soft-no-drop", "dangerNoDrop"],
-    ["success", "soft", "success"],
+    ["danger", "danger"],
+    ["success", "success"],
   ] as const)(
-    "keeps the %s/%s palette in sync with BUTTON_VARIANT.%s",
-    (variant, appearance, token) => {
+    "keeps the toned tertiary %s palette in sync with BUTTON_VARIANT.%s",
+    (tone, token) => {
       const TO_TAILWIND: Record<string, string> = {
         "btn:": "",
         "btn-hover:": "enabled:hover:",
@@ -538,7 +492,7 @@ describe("Button default utilities sit below caller classes", () => {
         "btn-pressed:": "aria-pressed:",
       };
       const unprefixed = new Set(
-        classesOf({ variant, appearance }).map((name) =>
+        classesOf({ variant: "tertiary", tone }).map((name) =>
           name.replace(
             /^btn(-hover|-active|-focus|-pressed)?:/,
             (prefix) => TO_TAILWIND[prefix] ?? prefix

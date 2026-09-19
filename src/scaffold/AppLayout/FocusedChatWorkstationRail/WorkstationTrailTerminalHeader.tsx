@@ -190,7 +190,6 @@ export function WorkstationTrailTerminalHeader({
             <Button
               key={tab.key}
               variant="tertiary"
-              appearance="soft-no-drop"
               size="sidebar"
               role="tab"
               id={`${panelId}-tab-${tab.key}`}

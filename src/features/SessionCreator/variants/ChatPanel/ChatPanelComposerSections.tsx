@@ -33,11 +33,9 @@ export const ChatPanelShareScreenButton: React.FC<
   const { t } = useTranslation(["sessions", "common"]);
   return (
     <Button
-      variant="tertiary"
-      appearance="dashed"
       size="mini"
       shape="round"
-      className="gap-1.5 border-dashed text-[12px] hover:border-primary-4 hover:text-primary-6"
+      className="gap-1.5 border-dashed bg-transparent text-[12px] text-text-2 hover:border-primary-4 hover:text-primary-6"
       onClick={onClick}
       icon={
         <HugeiconsIcon

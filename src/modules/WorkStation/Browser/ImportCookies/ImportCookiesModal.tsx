@@ -120,7 +120,6 @@ const SourceRow = memo<{
   return (
     <Button
       layout="custom"
-      appearance="custom"
       onClick={() => onSelect(source.id)}
       className="flex w-full items-center gap-3 rounded-lg border border-border-1 bg-fill-1 px-3 py-2.5 text-left transition-colors hover:bg-fill-2"
     >

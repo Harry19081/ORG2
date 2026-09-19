@@ -145,7 +145,6 @@ const WorkItemSection: React.FC<WorkItemSectionProps> = ({
           <Tooltip content={addTitle} position="top" kind="button">
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={

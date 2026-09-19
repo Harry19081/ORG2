@@ -56,7 +56,6 @@ const FileCard: React.FC<FileCardProps> = ({ card }) => {
 
       <Button
         variant="tertiary"
-        appearance="soft"
         size="mini"
         aria-label={t("cards.openFile")}
         iconOnly

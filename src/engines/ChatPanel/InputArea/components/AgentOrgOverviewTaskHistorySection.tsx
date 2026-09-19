@@ -75,7 +75,6 @@ const AgentOrgOverviewTaskHistorySection: React.FC<
             ).map((status) => (
               <Button
                 layout="custom"
-                appearance="custom"
                 key={status}
                 className={`rounded-full px-2 py-0.5 text-[10px] focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${historyStatus === status ? "bg-primary-6/10 text-primary-6" : "bg-bg-1 text-text-3"}`}
                 aria-pressed={historyStatus === status}

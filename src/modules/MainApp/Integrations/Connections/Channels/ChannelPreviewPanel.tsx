@@ -173,8 +173,8 @@ const ChannelPreviewPanel: React.FC<ChannelPreviewPanelProps> = ({
           {
             label: tIntegrations("common:actions.remove"),
             onClick: handleRemoveChannel,
+            variant: "secondary",
             tone: "danger",
-            appearance: "outline",
           },
         ]}
       />

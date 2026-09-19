@@ -162,7 +162,6 @@ const ZoomControls: React.FC<ZoomProps> = ({
     <>
       <Button
         variant="tertiary"
-        appearance="soft"
         size="sidebar"
         aria-pressed={fitMode}
         iconOnly
@@ -178,7 +177,6 @@ const ZoomControls: React.FC<ZoomProps> = ({
       />
       <Button
         variant="tertiary"
-        appearance="soft"
         size="sidebar"
         aria-pressed={!fitMode && zoom === 1}
         iconOnly
@@ -188,7 +186,6 @@ const ZoomControls: React.FC<ZoomProps> = ({
       <div className="mx-1 h-3 w-px bg-border-2" />
       <Button
         variant="tertiary"
-        appearance="soft"
         size="sidebar"
         iconOnly
         icon={
@@ -207,7 +204,6 @@ const ZoomControls: React.FC<ZoomProps> = ({
       </span>
       <Button
         variant="tertiary"
-        appearance="soft"
         size="sidebar"
         iconOnly
         icon={

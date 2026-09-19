@@ -88,7 +88,6 @@ const SpotlightModalHeader: React.FC<SpotlightModalHeaderProps> = ({
         )}
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           aria-label={t("actions.close")}
           iconOnly

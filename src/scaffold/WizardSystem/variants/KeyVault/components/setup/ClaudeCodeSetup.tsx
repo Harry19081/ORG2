@@ -99,7 +99,6 @@ const ClaudeCodeSetup: React.FC<ClaudeCodeSetupProps> = ({
             <Button
               variant={tokenDetected ? "secondary" : "primary"}
               tone={tokenDetected ? "success" : undefined}
-              size="default"
               loading={detectingToken}
               disabled={detectingToken}
               onClick={onDetectToken}

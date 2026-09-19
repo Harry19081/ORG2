@@ -164,7 +164,6 @@ const CursorPluginInlineExpandedCard: React.FC<
       {visibleSkills.map((skill) => (
         <Button
           layout="custom"
-          appearance="custom"
           key={skill.slug}
           onClick={() =>
             openFileInWorkStation(skill.skillPath, { defaultPreviewMode: true })
@@ -200,7 +199,6 @@ const CursorPluginInlineExpandedCard: React.FC<
       {!skillsExpanded && hiddenCount > 0 && (
         <Button
           layout="custom"
-          appearance="custom"
           onClick={() => setSkillsExpanded(true)}
           className="px-3 py-1.5 text-left text-[12px] text-text-3 hover:text-text-1"
         >
@@ -215,7 +213,6 @@ const CursorPluginInlineExpandedCard: React.FC<
       {plugin.hooks.map((hook) => (
         <Button
           layout="custom"
-          appearance="custom"
           key={hook.eventType}
           onClick={() =>
             openFileInWorkStation(hook.hookPath, { defaultPreviewMode: true })

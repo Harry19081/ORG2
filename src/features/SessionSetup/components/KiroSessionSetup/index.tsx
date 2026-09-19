@@ -262,7 +262,6 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
               title={t("common:actions.refresh")}
               size="mini"
               variant="tertiary"
-              appearance="soft"
               iconOnly
               icon={
                 <HugeiconsIcon
@@ -277,7 +276,6 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
               title={t("keyVault.kiroCloseBrowser")}
               size="mini"
               variant="tertiary"
-              appearance="soft"
               iconOnly
               icon={
                 <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
@@ -300,7 +298,6 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
                   title={t("keyVault.kiroCopyCode")}
                   size="mini"
                   variant="tertiary"
-                  appearance="soft"
                   iconOnly
                   icon={
                     <HugeiconsIcon

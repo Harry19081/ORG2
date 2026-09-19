@@ -45,7 +45,6 @@ const ScreenPickerModal: React.FC<ScreenPickerModalProps> = memo(
               return (
                 <Button
                   layout="custom"
-                  appearance="custom"
                   key={m.index}
                   onClick={() => onSelect(m.index)}
                   className="flex flex-col items-center gap-2 rounded border border-border-2 bg-fill-2 p-3 transition-colors hover:border-primary-5"

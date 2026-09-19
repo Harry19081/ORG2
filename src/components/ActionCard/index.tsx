@@ -310,7 +310,6 @@ const ActionCard: React.FC<ActionCardProps> = ({
   return (
     <Button
       layout="custom"
-      appearance="custom"
       className={cn(
         "w-full focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:ring-offset-2 focus-visible:outline-none",
         containerClass

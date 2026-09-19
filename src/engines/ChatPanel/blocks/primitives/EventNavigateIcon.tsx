@@ -56,8 +56,7 @@ const EventNavigateIcon: React.FC<EventNavigateIconProps> = memo(
 
     return (
       <Button
-        variant={variant === "footer-hover" ? "secondary" : "tertiary"}
-        appearance={variant === "footer-hover" ? "solid" : "soft-no-drop"}
+        variant="tertiary"
         size={variant === "footer-hover" ? "mini" : "sidebar"}
         shape={variant === "footer-hover" ? "circle" : "square"}
         style={{ width: undefined }}

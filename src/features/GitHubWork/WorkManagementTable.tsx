@@ -104,7 +104,6 @@ function SortableColumnLabel({
   return (
     <Button
       layout="custom"
-      appearance="custom"
       className="-my-2 inline-flex items-center gap-2 py-2 text-left"
       aria-label={label}
       aria-pressed={active}
@@ -197,7 +196,6 @@ export function WorkManagementTable({
             {row.onClick ? (
               <Button
                 layout="custom"
-                appearance="custom"
                 className={`block w-full truncate text-left font-semibold text-text-1 ${
                   row.titleLinkOnRowHover
                     ? "transition-colors group-hover/title:text-primary-6 group-hover/title:underline group-hover/title:underline-offset-2"

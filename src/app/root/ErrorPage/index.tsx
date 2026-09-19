@@ -233,7 +233,6 @@ const ErrorPageContent: React.FC<{ error?: unknown }> = ({ error }) => {
           <div className="flex items-center justify-center gap-3">
             <Button
               variant="primary"
-              size="default"
               shape="round"
               icon={
                 <HugeiconsIcon
@@ -247,8 +246,6 @@ const ErrorPageContent: React.FC<{ error?: unknown }> = ({ error }) => {
               {i18n.t("actions.restart")}
             </Button>
             <Button
-              variant="secondary"
-              size="default"
               shape="round"
               icon={
                 copied ? (

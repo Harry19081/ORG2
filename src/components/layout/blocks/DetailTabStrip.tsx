@@ -57,7 +57,6 @@ export default function DetailTabStrip<Key extends string>({
         return (
           <Button
             layout="custom"
-            appearance="custom"
             key={tab.key}
             role="tab"
             id={`${idPrefix}-tab-${tab.key}`}

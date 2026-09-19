@@ -136,7 +136,6 @@ export function MobileToolCall({
   return (
     <Button
       layout="custom"
-      appearance="custom"
       className="block w-full min-w-0 border-0 bg-transparent p-0 text-left focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
       aria-haspopup="dialog"
       aria-expanded={detailsOpen}

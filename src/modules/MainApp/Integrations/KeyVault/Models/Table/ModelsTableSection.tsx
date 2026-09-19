@@ -181,7 +181,7 @@ export default function ModelsTableSection({
     olderCount > 0 && !isSearching ? (
       <div className="flex justify-center border-t border-border-2 py-2.5">
         <Button
-          variant="tertiary"
+          variant="ghost"
           size="inline"
           onClick={() => setHideOlder((prev) => !prev)}
           icon={

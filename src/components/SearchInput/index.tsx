@@ -330,7 +330,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={onCaseSensitiveToggle}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -351,7 +350,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={onWholeWordToggle}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -372,7 +370,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={onRegexToggle}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -393,7 +390,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={onOnlyOpenFilesToggle}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -408,7 +404,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
             {onPrevious && (
               <Button
                 variant="tertiary"
-                appearance="soft"
                 size="sidebar"
                 aria-label={t("tooltips.previousMatch")}
                 iconOnly
@@ -426,7 +421,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
             {onNext && (
               <Button
                 variant="tertiary"
-                appearance="soft"
                 size="sidebar"
                 aria-label={t("tooltips.nextMatch")}
                 iconOnly
@@ -446,7 +440,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
         {onClose && (
           <Button
             variant="tertiary"
-            appearance="soft"
             size="sidebar"
             aria-label={t("tooltips.closeEsc")}
             iconOnly

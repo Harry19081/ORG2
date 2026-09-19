@@ -286,7 +286,6 @@ function TeamRuntimeToday({
               return (
                 <Button
                   layout="custom"
-                  appearance="custom"
                   key={member.userId}
                   aria-pressed={selected}
                   onClick={() =>
@@ -379,7 +378,6 @@ function TeamRuntimeToday({
               latestSessions.map((session) => (
                 <Button
                   layout="custom"
-                  appearance="custom"
                   key={session.id}
                   onClick={() => onOpenSession(session)}
                   className="flex w-full items-center gap-3 border-b border-border-1 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-fill-1"

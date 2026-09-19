@@ -27,7 +27,6 @@ export function MobileChangeFileHeader({
     <div className="mobile-change-review__file-heading">
       <Button
         layout="custom"
-        appearance="custom"
         className="mobile-change-review__file-toggle"
         disabled={full}
         aria-expanded={full ? undefined : expanded}

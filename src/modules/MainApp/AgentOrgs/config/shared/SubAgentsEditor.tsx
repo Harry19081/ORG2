@@ -164,7 +164,6 @@ const AddSubAgentButton: React.FC<AddSubAgentButtonProps> = ({
                 filtered.map((opt) => (
                   <Button
                     layout="custom"
-                    appearance="custom"
                     key={opt.value}
                     data-testid={`agent-orgs-subagents-add-option-${opt.value}`}
                     className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}

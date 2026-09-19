@@ -292,7 +292,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 user gets explicit feedback that they're at the boundary. */}
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={
@@ -313,7 +312,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
             />
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={

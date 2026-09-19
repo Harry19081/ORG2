@@ -369,7 +369,6 @@ export function useWorkingDirectoryPaletteWorkspaces({
         <div className="flex items-center gap-1">
           <Button
             variant="tertiary"
-            appearance="soft"
             size="mini"
             aria-label={t("actions.edit", "Edit")}
             iconOnly

@@ -30,13 +30,7 @@ const ProbeSection: React.FC<ProbeSectionProps> = ({
   return (
     <div className="flex flex-col gap-3">
       {!compact && (
-        <Button
-          variant="primary"
-          appearance="outline"
-          disabled={probing}
-          loading={probing}
-          onClick={onProbe}
-        >
+        <Button disabled={probing} loading={probing} onClick={onProbe}>
           {t("integrations.testConnection")}
         </Button>
       )}

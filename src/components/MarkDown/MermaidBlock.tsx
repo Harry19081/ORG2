@@ -562,7 +562,6 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
             rightContent={
               <Button
                 layout="custom"
-                appearance="custom"
                 className="mermaid-block__expand-btn"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -604,7 +603,6 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
                 <div className="flex items-center gap-1">
                   <Button
                     layout="custom"
-                    appearance="custom"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
                     onClick={zoomOut}
                     title="Zoom out"
@@ -620,7 +618,6 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
                   </span>
                   <Button
                     layout="custom"
-                    appearance="custom"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
                     onClick={zoomIn}
                     title="Zoom in"
@@ -634,7 +631,6 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
                   <div className="mx-1 h-4 w-px bg-white/20" />
                   <Button
                     layout="custom"
-                    appearance="custom"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
                     onClick={resetZoom}
                     title="Reset (100%)"
@@ -648,7 +644,6 @@ const MermaidBlock: React.FC<MermaidBlockProps> = memo(
                   <div className="mx-1 h-4 w-px bg-white/20" />
                   <Button
                     layout="custom"
-                    appearance="custom"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
                     onClick={toggleExpand}
                     title="Close"

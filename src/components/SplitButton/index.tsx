@@ -1,7 +1,11 @@
 import React, { forwardRef } from "react";
 
 import Button from "@src/components/Button";
-import type { ButtonProps } from "@src/components/Button";
+import type {
+  ButtonProps,
+  ButtonTone,
+  ButtonVariant,
+} from "@src/components/Button";
 import { useButtonPresentation } from "@src/components/Button/presentation";
 import { ArrowDown01Icon, HugeiconsIcon } from "@src/icons";
 
@@ -37,12 +41,35 @@ interface SplitButtonProps extends Omit<
   widthMode?: "fill" | "hug";
 }
 
+/**
+ * The surface each variant draws, in the terms the split coloring below was
+ * written for: a primary is filled, a secondary outlined, a tertiary the
+ * transparent no-drop surface (a toned tertiary the tinted soft one), and a
+ * ghost stays transparent.
+ */
+type SplitSurface = "solid" | "outline" | "soft" | "soft-no-drop" | "ghost";
+
+function splitSurface(
+  variant: ButtonVariant,
+  tone: ButtonTone | undefined
+): SplitSurface {
+  switch (variant) {
+    case "primary":
+      return "solid";
+    case "secondary":
+      return "outline";
+    case "tertiary":
+      return tone ? "soft" : "soft-no-drop";
+    case "ghost":
+      return "ghost";
+  }
+}
+
 const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
   (
     {
       variant = "secondary",
       tone,
-      appearance,
       size = "default",
       shape = "square",
       loading = false,
@@ -73,7 +100,6 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
     const {
       sizeConfig,
       isDisabled,
-      resolvedAppearance,
       borderRadius,
       buttonStyles,
       buttonContent,
@@ -81,7 +107,6 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
     } = useButtonPresentation({
       variant,
       tone,
-      appearance,
       size,
       shape,
       loading,
@@ -96,6 +121,11 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
       className,
       style,
     });
+
+    const resolvedAppearance = splitSurface(variant, tone);
+    // The menu segment mirrors the main segment's color: its tone when set,
+    // otherwise the variant.
+    const colorKey = tone ?? variant;
 
     const highlightOpenMenu =
       menuOpen &&
@@ -114,10 +144,6 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
           ? "group-hover/button-split:bg-surface-hover group-hover/button-split:text-text-1"
           : "";
 
-    // The menu segment mirrors the main segment's color: its tone when set,
-    // otherwise the variant.
-    const colorKey = tone ?? variant;
-
     const menuColorClass = (() => {
       if (highlightOpenMenu) return "text-primary-6";
       if (resolvedAppearance === "solid") {
@@ -132,6 +158,7 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
           case "secondary":
             return "text-text-1";
           case "tertiary":
+          case "ghost":
             return "text-text-2 group-hover/button-split:text-text-1";
         }
       }
@@ -149,6 +176,7 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
         case "secondary":
           return "text-text-1";
         case "tertiary":
+        case "ghost":
           return "text-text-2 group-hover/button-split:text-text-1";
       }
     })();
@@ -176,14 +204,15 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
               : "enabled:hover:bg-warning-5";
           case "success":
             return menuOpen
-              ? "bg-success-5 enabled:hover:bg-success-5"
-              : "enabled:hover:bg-success-5";
+              ? "bg-success-fill-hover enabled:hover:bg-success-fill-hover"
+              : "enabled:hover:bg-success-fill-hover";
           case "merged":
             return menuOpen
               ? "bg-merged-hover enabled:hover:bg-merged-hover"
               : "enabled:hover:bg-merged-hover";
           case "secondary":
           case "tertiary":
+          case "ghost":
             break;
         }
       }
@@ -221,7 +250,6 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
         >
           <Button
             layout="custom"
-            appearance="custom"
             ref={ref}
             htmlType={htmlType}
             disabled={isDisabled}
@@ -263,7 +291,6 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
 
           <Button
             layout="custom"
-            appearance="custom"
             disabled={isDisabled}
             aria-label={menuButtonLabel}
             aria-haspopup="menu"

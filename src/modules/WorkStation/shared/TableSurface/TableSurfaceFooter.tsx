@@ -35,7 +35,6 @@ export function TableSurfaceFooter({
       <div className="table-surface__pagination">
         <Button
           layout="custom"
-          appearance="custom"
           className="table-surface__pagination-button"
           disabled={pagination.page <= 1}
           onClick={() => pagination.onPageChange(pagination.page - 1)}
@@ -47,7 +46,6 @@ export function TableSurfaceFooter({
         </span>
         <Button
           layout="custom"
-          appearance="custom"
           className="table-surface__pagination-button"
           disabled={pagination.page >= totalPages}
           onClick={() => pagination.onPageChange(pagination.page + 1)}
@@ -63,7 +61,6 @@ export function TableSurfaceFooter({
   return (
     <Button
       layout="custom"
-      appearance="custom"
       className="table-surface__load-more-row"
       style={{
         width: viewportWidth,

@@ -412,7 +412,6 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
         return (
           <Button
             layout="custom"
-            appearance="custom"
             onClick={() =>
               openSession(row.sessionId, title || undefined, row.workspacePath)
             }

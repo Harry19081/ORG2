@@ -64,7 +64,6 @@ export const PickerOptionRow = forwardRef<HTMLDivElement, PickerOptionRowProps>(
           {...keyboardProps}
           onMouseEnter={undefined}
           layout="custom"
-          appearance="custom"
           disabled={disabled}
           role={role}
           data-testid={testId}

@@ -58,7 +58,6 @@ export const InlineBanner: React.FC<InlineBannerProps> = ({
       {onDismiss ? (
         <Button
           variant="tertiary"
-          appearance="soft-no-drop"
           size="sidebar"
           iconOnly
           icon={

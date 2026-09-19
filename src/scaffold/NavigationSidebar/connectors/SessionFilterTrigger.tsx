@@ -42,7 +42,6 @@ export function SessionFilterTrigger({
           }`}
           onClick={toggle}
           onMouseEnter={(event) => triggerIconAnimation(event.currentTarget)}
-          appearance="soft"
           iconOnly
           icon={
             <HoverAnimatedIcon

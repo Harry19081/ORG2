@@ -341,7 +341,6 @@ const WorkItemContextMenu: React.FC<WorkItemContextMenuProps> = ({
           return (
             <Button
               layout="custom"
-              appearance="custom"
               key={item.id}
               data-context-menu-item-id={item.id}
               data-testid={`context-menu-item-${item.id}`}

@@ -123,7 +123,7 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
           </span>
           {fire.sessionId && (
             <Button
-              variant="tertiary"
+              variant="ghost"
               size="inline"
               className="gap-1"
               onClick={(event) => {
@@ -150,7 +150,7 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
           )}
           {fire.workItemId && (
             <Button
-              variant="tertiary"
+              variant="ghost"
               size="inline"
               className="gap-1"
               onClick={(event) => {

@@ -165,7 +165,6 @@ const MarkdownTextareaToolbar: React.FC<MarkdownTextareaToolbarProps> = ({
       {actions.map(({ format, label, icon }) => (
         <Button
           layout="custom"
-          appearance="custom"
           key={format}
           className="toolbar-btn"
           title={label}

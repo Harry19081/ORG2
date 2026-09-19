@@ -132,7 +132,6 @@ const PortRow: React.FC<PortRowProps> = memo(
         <div className="flex shrink-0 items-center gap-0.5">
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
             size="mini"
             iconOnly
             title={t("workstation.ports.openInBrowser")}
@@ -152,7 +151,6 @@ const PortRow: React.FC<PortRowProps> = memo(
           />
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
             size="mini"
             iconOnly
             title={t("workstation.ports.copyAddress")}
@@ -172,7 +170,6 @@ const PortRow: React.FC<PortRowProps> = memo(
           />
           {canStop && (
             <ProcessStopButton
-              appearance="soft-no-drop"
               label={t("workstation.ports.stopProcess")}
               loading={stopping}
               onClick={() => onStop(port)}
@@ -451,7 +448,6 @@ export const PortsStatusMenu: React.FC = memo(() => {
             <div className={DROPDOWN_CLASSES.footerContainer}>
               <Button
                 layout="custom"
-                appearance="custom"
                 className={classNames(
                   DROPDOWN_CLASSES.menuActionItem,
                   "min-w-0 flex-1 disabled:cursor-default disabled:text-text-3"

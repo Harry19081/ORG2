@@ -257,7 +257,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         {showAddButton && (
           <Button
             variant="tertiary"
-            appearance="soft"
             size="sidebar"
             iconOnly
             icon={

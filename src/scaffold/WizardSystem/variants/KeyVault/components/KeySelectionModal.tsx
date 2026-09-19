@@ -81,7 +81,6 @@ const KeySelectionModal: React.FC<KeySelectionModalProps> = ({
           {keys.map((cred, index) => (
             <Button
               layout="custom"
-              appearance="custom"
               key={cred.id}
               onClick={() => cred.validated && onSelectIndex(index)}
               disabled={!cred.validated}

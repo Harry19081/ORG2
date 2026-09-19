@@ -34,7 +34,6 @@ export function CodeBlockToolbar({
       {onOpen && (
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           iconOnly
           icon={
@@ -53,7 +52,6 @@ export function CodeBlockToolbar({
       )}
       <Button
         variant="tertiary"
-        appearance="soft"
         size="mini"
         iconOnly
         icon={

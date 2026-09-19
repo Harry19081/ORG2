@@ -145,8 +145,8 @@ export const MultiSelectBar: React.FC<MultiSelectBarProps> = ({
         icon: (
           <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={14} />
         ),
+        variant: "secondary",
         tone: "danger",
-        appearance: "outline",
         disabled: deleting,
         loading: deleting,
       }}

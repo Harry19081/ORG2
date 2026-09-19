@@ -352,7 +352,7 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
             )}
             <SectionRow label="" indent>
               <Button
-                variant="tertiary"
+                variant="ghost"
                 size="inline"
                 className="text-[11px]"
                 onClick={() => {

@@ -192,7 +192,6 @@ const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
     return (
       <Button
         layout="custom"
-        appearance="custom"
         ref={ref}
         role="switch"
         aria-checked={currentChecked}

@@ -121,7 +121,6 @@ export function SpotlightTabs<T extends string>({
             const tab = (
               <Button
                 layout="custom"
-                appearance="custom"
                 key={option.value}
                 role="tab"
                 aria-selected={active}

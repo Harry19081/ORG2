@@ -197,7 +197,6 @@ export const ReplaceInput: React.FC<ReplaceInputProps> = memo(
         {onReplace && (
           <Button
             variant="tertiary"
-            appearance="soft"
             size="sidebar"
             aria-label={t("tooltips.replace")}
             iconOnly
@@ -218,7 +217,6 @@ export const ReplaceInput: React.FC<ReplaceInputProps> = memo(
         {onReplaceAll && (
           <Button
             variant="tertiary"
-            appearance="soft"
             size="sidebar"
             aria-label={t("tooltips.replaceAll")}
             iconOnly

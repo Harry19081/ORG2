@@ -159,7 +159,6 @@ export const VariantPill: React.FC<VariantPillProps> = ({
         return (
           <Button
             layout="custom"
-            appearance="custom"
             ref={ref}
             onClick={onClick}
             aria-expanded={ariaExpanded}

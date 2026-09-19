@@ -186,7 +186,6 @@ export const ProjectGitSyncReviewContent: React.FC<
               return (
                 <Button
                   layout="custom"
-                  appearance="custom"
                   key={conflict.id}
                   className={`flex w-full flex-col rounded-md px-2 py-2 text-left transition-colors ${
                     active

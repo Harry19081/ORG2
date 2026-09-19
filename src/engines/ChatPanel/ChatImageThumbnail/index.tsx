@@ -136,7 +136,6 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
       <>
         <Button
           layout="custom"
-          appearance="custom"
           disabled={!resolvedSrc}
           className={`group relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-2 bg-fill-1 text-text-3 ${resolvedSrc ? "cursor-pointer" : "cursor-default"} ${sizeClassName}`}
           onClick={handleClick}

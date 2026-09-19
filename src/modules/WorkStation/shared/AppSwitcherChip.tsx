@@ -130,7 +130,6 @@ const AppSwitcherChipComponent: React.FC<AppSwitcherChipProps> = ({
         {hasDropdown || isDirectClick ? (
           <Button
             layout="custom"
-            appearance="custom"
             className={innerInteractiveClass}
             onClick={hasDropdown ? toggle : onClick}
             title={label}

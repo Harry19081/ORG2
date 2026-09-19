@@ -190,7 +190,6 @@ export function ManagedIssueActionsCell({
     <div className={`${DROPDOWN_CLASSES.menuPanelBase} min-w-[180px]`}>
       <Button
         layout="custom"
-        appearance="custom"
         className={DROPDOWN_CLASSES.menuActionItem}
         onClick={() => {
           onOpenIssueInBrowser(issue);

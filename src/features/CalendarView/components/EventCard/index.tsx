@@ -77,7 +77,6 @@ const EventCard: React.FC<EventCardProps> = ({
       <SessionHoverCard sessionId={event.id} position="right-start">
         <Button
           layout="custom"
-          appearance="custom"
           onClick={handleClick}
           className={`group flex w-full items-center gap-1.5 rounded px-1.5 py-0.5 text-left text-xs transition-all hover:brightness-110 ${
             isSelected ? "ring-1 ring-primary-6" : ""
@@ -112,7 +111,6 @@ const EventCard: React.FC<EventCardProps> = ({
     <SessionHoverCard sessionId={event.id} position="right-start">
       <Button
         layout="custom"
-        appearance="custom"
         onClick={handleClick}
         className={`absolute overflow-hidden rounded text-left text-xs transition-all hover:brightness-110 ${
           isSelected ? "ring-1 ring-primary-6" : ""

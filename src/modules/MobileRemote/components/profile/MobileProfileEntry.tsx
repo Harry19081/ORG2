@@ -75,7 +75,6 @@ function ProfileEntry({ variant }: { variant: "avatar" | "row" }) {
         </Button>
       ) : (
         <Button
-          appearance="soft"
           variant="tertiary"
           shape="circle"
           iconOnly

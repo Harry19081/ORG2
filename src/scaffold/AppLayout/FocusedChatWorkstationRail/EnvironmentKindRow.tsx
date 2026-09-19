@@ -80,7 +80,6 @@ export function EnvironmentKindRow({
                 <Button
                   key={option.id}
                   variant="tertiary"
-                  appearance="soft-no-drop"
                   size="small"
                   disabled={option.disabled}
                   className={`${WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS} h-8! [&>span]:justify-between ${DROPDOWN_CLASSES.item} ${

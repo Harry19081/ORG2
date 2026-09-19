@@ -332,7 +332,6 @@ const GeneralLayoutTour: React.FC<GeneralLayoutTourProps> = ({
             </span>
             <Button
               variant="tertiary"
-              appearance="soft-no-drop"
               size="mini"
               shape="round"
               iconOnly

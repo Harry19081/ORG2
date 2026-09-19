@@ -76,7 +76,6 @@ const AgentSelect: React.FC<AgentSelectProps> = ({
           <DropdownFooter>
             <Button
               layout="custom"
-              appearance="custom"
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full justify-start`}
               onMouseDown={(event) => {
                 event.preventDefault();

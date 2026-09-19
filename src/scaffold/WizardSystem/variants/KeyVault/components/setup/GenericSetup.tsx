@@ -304,7 +304,6 @@ const GenericSetup: FC<AgentSetupProps> = ({
                 tone={
                   isOAuthConfigured || isApiKeyDetected ? "success" : undefined
                 }
-                size="default"
                 loading={autoDetecting}
                 disabled={autoDetecting}
                 onClick={() => onAutoDetect?.()}
@@ -415,7 +414,6 @@ const GenericSetup: FC<AgentSetupProps> = ({
             <Button
               variant={keyValidated ? "secondary" : "primary"}
               tone={keyValidated ? "success" : undefined}
-              size="default"
               loading={validatingKey}
               disabled={validatingKey || !data.raw_key_input}
               onClick={validateKey}

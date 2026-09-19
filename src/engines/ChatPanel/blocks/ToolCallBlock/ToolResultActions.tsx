@@ -31,7 +31,6 @@ const ToolResultActions: React.FC<ToolResultActionsProps> = ({ source }) => {
   return (
     <Button
       variant="tertiary"
-      appearance="soft"
       size="mini"
       iconOnly
       icon={

@@ -330,7 +330,6 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
           >
             <Button
               layout="custom"
-              appearance="custom"
               aria-current={isActive ? "step" : undefined}
               aria-describedby={
                 previewMarkerIndex === markerIndex ? tooltipId : undefined

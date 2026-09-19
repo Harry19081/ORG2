@@ -91,7 +91,6 @@ export function SidebarSectionHeader({
         {onToggle ? (
           <Button
             layout="custom"
-            appearance="custom"
             className="flex h-full min-w-0 flex-1 items-center gap-1.5 text-left"
             aria-expanded={expanded}
             data-testid={toggleTestId}

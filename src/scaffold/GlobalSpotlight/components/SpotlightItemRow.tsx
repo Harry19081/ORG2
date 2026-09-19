@@ -376,7 +376,6 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
             This compound row owns geometry; the shared Button owns activation semantics. */}
         <Button
           layout="custom"
-          appearance="custom"
           className="absolute inset-0 h-full w-full rounded-lg focus-visible:ring-1 focus-visible:ring-primary-6 focus-visible:outline-none"
           data-spotlight-row-action
           aria-label={item.label}

@@ -174,7 +174,7 @@ function ConsoleLogEntryRow({
 
         {truncated && (
           <Button
-            variant="tertiary"
+            variant="ghost"
             size="inline"
             className="mt-0.5 text-[10px] select-none"
             onClick={(event) => {
@@ -189,7 +189,7 @@ function ConsoleLogEntryRow({
         {entry.stack && (
           <div className="mt-1">
             <Button
-              variant="tertiary"
+              variant="ghost"
               size="inline"
               className="text-[10px] select-none"
               onClick={(event) => {
@@ -389,7 +389,6 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
           <ToolbarTooltip label={t("tooltips.clearConsole")}>
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={

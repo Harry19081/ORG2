@@ -61,7 +61,7 @@ export const PANEL_FOOTER_TOKENS = {
 
 export interface PanelFooterAction extends Pick<
   ButtonProps,
-  "shortcut" | "aria-keyshortcuts" | "variant" | "tone" | "appearance"
+  "shortcut" | "aria-keyshortcuts" | "variant" | "tone"
 > {
   label: string;
   onClick?: () => void;
@@ -99,7 +99,6 @@ const PrimaryActionButton: React.FC<{
   <Button
     variant={action.variant ?? "primary"}
     tone={action.tone}
-    appearance={action.appearance}
     size={size}
     icon={action.icon}
     shortcut={action.shortcut}
@@ -140,7 +139,6 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
           key={action.label}
           variant={action.variant ?? "secondary"}
           tone={action.tone}
-          appearance={action.appearance}
           size={secondaryButtonSize}
           icon={action.icon}
           shortcut={action.shortcut}

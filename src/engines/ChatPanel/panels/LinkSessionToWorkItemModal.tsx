@@ -218,7 +218,6 @@ const LinkSessionToWorkItemModal: React.FC<LinkSessionToWorkItemModalProps> = ({
                 return (
                   <Button
                     layout="custom"
-                    appearance="custom"
                     className="mb-2 flex w-full items-start justify-between gap-3 rounded-xl border border-solid border-border-1 bg-bg-1 px-3 py-2 text-left transition-colors hover:border-border-2 hover:bg-surface-hover disabled:cursor-wait disabled:opacity-60"
                     data-testid={`session-link-work-item-option-${option.item.shortId}`}
                     onClick={() => void handleLink(option)}

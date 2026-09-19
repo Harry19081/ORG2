@@ -49,7 +49,6 @@ export const WorktreeActionsMenu: React.FC<WorktreeActionsMenuProps> = memo(
       <>
         <Button
           variant="tertiary"
-          appearance="soft"
           size="sidebar"
           aria-pressed={isOpen}
           aria-label={t("sourceControl.worktreeActions")}
@@ -89,7 +88,6 @@ export const WorktreeActionsMenu: React.FC<WorktreeActionsMenuProps> = memo(
               <div className={DROPDOWN_CLASSES.itemsColumn}>
                 <Button
                   layout="custom"
-                  appearance="custom"
                   className={`${DROPDOWN_CLASSES.item} ${PRIMARY_SIDEBAR_HOVER.row} w-full text-danger-6`}
                   onClick={handleRemove}
                 >
@@ -158,7 +156,6 @@ export function WorktreeContextMenu({
         <div className={DROPDOWN_CLASSES.itemsColumn}>
           <Button
             layout="custom"
-            appearance="custom"
             className={`${DROPDOWN_CLASSES.item} ${PRIMARY_SIDEBAR_HOVER.row} w-full text-danger-6`}
             onClick={handleRemove}
           >

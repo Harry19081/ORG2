@@ -368,7 +368,6 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
         row.status?.configPath ? (
           <Button
             layout="custom"
-            appearance="custom"
             className="flex max-w-full cursor-pointer items-center gap-1.5 text-left text-text-3 underline-offset-2 hover:underline focus-visible:underline focus-visible:ring-1 focus-visible:ring-primary-6 focus-visible:outline-none"
             title={row.status.configPath}
             aria-label={`${t(getFileManagerRevealLabelKey())}: ${row.status.configPath}`}

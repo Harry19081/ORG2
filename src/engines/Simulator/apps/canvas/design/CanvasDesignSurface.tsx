@@ -436,7 +436,6 @@ const CanvasDesignSurface: React.FC<CanvasDesignSurfaceProps> = ({
                   onClick={inspector.clearSelection}
                   size="mini"
                   variant="tertiary"
-                  appearance="soft"
                   iconOnly
                   icon={
                     <HugeiconsIcon

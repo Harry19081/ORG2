@@ -21,7 +21,6 @@ export function TrailPanelResizeHandle({
   return (
     <Button
       variant="tertiary"
-      appearance="soft-no-drop"
       size="sidebar"
       iconOnly
       icon={

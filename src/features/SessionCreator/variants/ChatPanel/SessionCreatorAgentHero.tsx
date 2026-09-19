@@ -95,7 +95,6 @@ const SessionCreatorAgentHero = memo(
       return (
         <Button
           layout="custom"
-          appearance="custom"
           ref={ref}
           onClick={onClick}
           aria-expanded={active}

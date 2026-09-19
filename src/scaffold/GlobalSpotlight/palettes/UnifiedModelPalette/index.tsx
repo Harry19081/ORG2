@@ -407,7 +407,6 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
   const refreshModelsButton = (
     <Button
       variant="tertiary"
-      appearance="soft-no-drop"
       size="small"
       shape="round"
       iconOnly

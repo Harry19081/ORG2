@@ -75,7 +75,6 @@ const CopilotPinnedSection: React.FC<CopilotPinnedSectionProps> = ({
               <Button
                 variant={keyValidated ? "secondary" : "primary"}
                 tone={keyValidated ? "success" : undefined}
-                size="default"
                 loading={validatingKey}
                 disabled={validatingKey || !data.raw_key_input}
                 onClick={validateKey}

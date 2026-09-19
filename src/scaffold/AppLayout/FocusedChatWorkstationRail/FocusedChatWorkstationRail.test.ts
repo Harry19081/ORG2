@@ -321,12 +321,8 @@ describe.each(["wide rail", "compact menu"])(
             span.textContent === "Changes" && span.classList.contains("flex-1")
         );
         expect(changesLabel?.classList.contains("text-left")).toBe(true);
-        expect(changesRow.className).toContain(
-          "btn-hover:bg-button-hover-no-drop"
-        );
-        expect(titleButton().className).toContain(
-          "btn-hover:bg-button-hover-no-drop"
-        );
+        expect(changesRow.className).toContain("btn-hover:bg-surface-hover");
+        expect(titleButton().className).toContain("btn-hover:bg-surface-hover");
         expect(changesRow.closest("section")!.textContent).toMatch(/^Changes/);
         expect(headerRow().className).toContain("mb-1");
         expect(container.textContent).toContain("Changes");

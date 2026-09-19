@@ -104,7 +104,6 @@ const ForkCheckoutPickerDialog: React.FC = () => {
               return (
                 <Button
                   layout="custom"
-                  appearance="custom"
                   key={repo.id}
                   disabled={!selectable}
                   onClick={() => {

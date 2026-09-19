@@ -130,7 +130,6 @@ export const FollowModeDropdown: React.FC = () => {
             >
               <Button
                 layout="custom"
-                appearance="custom"
                 role="option"
                 aria-selected={isAllApps}
                 onClick={handleSelectAgent}
@@ -153,7 +152,6 @@ export const FollowModeDropdown: React.FC = () => {
               </Button>
               <Button
                 layout="custom"
-                appearance="custom"
                 role="option"
                 aria-selected={!isAllApps}
                 disabled={thisAppDisabled}

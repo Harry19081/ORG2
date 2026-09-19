@@ -116,7 +116,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({
         <div className="flex items-center gap-1">
           <Button
             variant="tertiary"
-            appearance="soft"
             size="mini"
             aria-label={
               isMaxHeight ? t("codePreview.shrink") : t("codePreview.expand")
@@ -145,7 +144,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({
           />
           <Button
             variant="tertiary"
-            appearance="soft"
             size="mini"
             aria-label={t("codePreview.openExternal")}
             iconOnly
@@ -162,7 +160,6 @@ const CodePreview: React.FC<CodePreviewProps> = ({
           />
           <Button
             variant="tertiary"
-            appearance="soft"
             size="mini"
             aria-label={t("codePreview.close")}
             iconOnly

@@ -272,7 +272,6 @@ function WorktreeSourceDropdownRow({
   return (
     <Button
       layout="custom"
-      appearance="custom"
       data-testid={`worktree-source-row-${item.id}`}
       {...keyboardProps}
       disabled={disabled}

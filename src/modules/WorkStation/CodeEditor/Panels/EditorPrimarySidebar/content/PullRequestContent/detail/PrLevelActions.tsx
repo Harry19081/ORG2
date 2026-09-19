@@ -327,11 +327,6 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
                 ? "merged"
                 : "success"
         }
-        appearance={
-          presentation.status === "draft" && !presentation.hasConflicts
-            ? "solid"
-            : undefined
-        }
         size="small"
         icon={
           presentation.status === "draft" ? (

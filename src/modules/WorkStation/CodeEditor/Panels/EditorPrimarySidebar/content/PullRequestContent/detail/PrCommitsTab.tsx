@@ -198,7 +198,6 @@ function PrCommitCard({
     <article className="group flex min-w-0 items-center overflow-hidden rounded-xl border border-border-1 bg-primary-container transition-colors hover:border-border-2">
       <Button
         layout="custom"
-        appearance="custom"
         className="min-w-0 flex-1 px-3 py-3 text-left"
         onClick={() => onSelect(commit)}
         title={commit.message || commit.summary}

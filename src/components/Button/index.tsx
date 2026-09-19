@@ -1,27 +1,22 @@
 /**
  * Button Component (Native Implementation)
  *
- * Three orthogonal axes describe a button's look:
+ * Two orthogonal axes describe a button's look:
  *
- *   variant     — importance
- *                 "primary"   = call-to-action, filled
- *                 "secondary" = regular action, outlined (default)
- *                 "tertiary"  = supporting / inline action, transparent with
- *                               a hover background
+ *   variant  — importance
+ *              "primary"   = call to action, filled
+ *              "secondary" = regular action, outlined (default)
+ *              "tertiary"  = supporting action, transparent with a hover
+ *                            background
+ *              "ghost"     = inline action, transparent; hover changes only
+ *                            the text / icon color
  *
- *   tone        — semantic color on top of the variant
- *                 "danger" | "warning" | "success" | "merged"
- *                 (hoverTone colors a neutral button only while hovered)
+ *   tone     — semantic color on top of the variant
+ *              "danger" | "warning" | "success" | "merged"
+ *              (hoverTone colors a neutral button only while hovered)
  *
- *   appearance  — visual treatment override
- *                 "solid"   = filled background
- *                 "outline" = bordered, transparent fill
- *                 "dashed"  = dashed border (typically for add/upload)
- *                 "soft"    = neutral or toned hover fill for compact actions
- *                 "soft-no-drop" = neutral hover for a transparent button layer
- *
- * A toggle is a tertiary with `aria-pressed`; the pressed state draws the
- * selected fill and primary text.
+ * A toggle is a tertiary or ghost with `aria-pressed`. `layout="custom"`
+ * hands both geometry and surface to the caller.
  *
  * Button's own utilities are emitted in a nested cascade layer (the `btn:`
  * variant), so any class passed through `className` overrides them.
@@ -33,18 +28,17 @@
  * <Button variant="primary">Submit</Button>
  * <Button size="small">Cancel</Button>
  * <Button variant="primary" tone="danger">Delete</Button>
- * <Button variant="tertiary" tone="danger">Remove</Button>
- * <Button variant="tertiary">Inline action</Button>
+ * <Button variant="tertiary" tone="danger" iconOnly icon={<Trash />} />
+ * <Button variant="tertiary">More</Button>
  * <Button variant="tertiary" aria-pressed={on}>Aa</Button>
- * <Button variant="tertiary" appearance="soft" hoverTone="danger" iconOnly icon={<Trash />} />
+ * <Button variant="ghost" size="inline">View all</Button>
+ * <Button variant="tertiary" hoverTone="danger" iconOnly icon={<Trash />} />
  * <Button loading>Loading...</Button>
- * <Button variant="primary" icon={<Plus size={14} />}>Add</Button>
  * ```
  */
 import React, { forwardRef } from "react";
 
 import {
-  type ButtonAppearance,
   type ButtonHoverTone,
   type ButtonShape,
   type ButtonSize,
@@ -54,7 +48,6 @@ import {
 } from "./presentation";
 
 export type {
-  ButtonAppearance,
   ButtonHoverTone,
   ButtonTone,
   ButtonVariant,
@@ -65,13 +58,14 @@ export interface ButtonProps extends Omit<
   "type"
 > {
   /**
-   * Preserve direct children and CSS-owned geometry for compound controls such
-   * as menu rows, switch tracks, tabs and selectable cards. Ordinary actions
-   * use the default layout with size, icon and iconOnly props.
+   * Preserve direct children, CSS-owned geometry and CSS-owned surface for
+   * compound controls such as menu rows, switch tracks, tabs and selectable
+   * cards: Button draws no size, color or disabled styling. Ordinary actions
+   * use the default layout with variant, size, icon and iconOnly props.
    */
   layout?: "default" | "custom";
   /**
-   * Importance: primary, secondary or tertiary. Color comes from `tone`.
+   * Importance: primary, secondary, tertiary or ghost. Color comes from `tone`.
    * @default "secondary"
    */
   variant?: ButtonVariant;
@@ -82,13 +76,6 @@ export interface ButtonProps extends Omit<
    * on a tertiary.
    */
   tone?: ButtonTone;
-
-  /**
-   * Visual treatment.
-   * @default depends on variant — "solid" for primary,
-   *          "outline" for secondary, "solid" for tertiary
-   */
-  appearance?: ButtonAppearance;
 
   /**
    * Button size; inline inherits surrounding typography without a fixed height;
@@ -172,7 +159,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       layout = "default",
       variant = "secondary",
       tone,
-      appearance,
       size = "default",
       shape = "square",
       loading = false,
@@ -202,7 +188,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         layout,
         variant,
         tone,
-        appearance,
         size,
         shape,
         loading,

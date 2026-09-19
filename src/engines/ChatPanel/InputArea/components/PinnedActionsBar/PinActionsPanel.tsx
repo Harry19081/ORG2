@@ -201,7 +201,6 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
         <div key={renderKey} className="relative">
           <Button
             layout="custom"
-            appearance="custom"
             className={`${DROPDOWN_CLASSES.menuControlItem} min-w-0 pr-9!`}
             {...keyboard.getItemProps(filteredItems.indexOf(item))}
           >
@@ -342,7 +341,6 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
           <div className={DROPDOWN_CLASSES.footerContainer}>
             <Button
               layout="custom"
-              appearance="custom"
               onClick={onUnpinAll}
               className={`${DROPDOWN_CLASSES.menuActionItem} min-w-0`}
               data-dropdown-keyboard-skip="true"

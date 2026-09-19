@@ -186,7 +186,6 @@ export function TokenOverridePanel({
         <div className="flex items-center gap-1">
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
             size="sidebar"
             aria-label={isMinimized ? "Expand" : "Minimize"}
             iconOnly
@@ -207,7 +206,6 @@ export function TokenOverridePanel({
           />
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
             size="sidebar"
             aria-label="Close"
             iconOnly

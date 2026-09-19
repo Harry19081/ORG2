@@ -104,7 +104,6 @@ const TurnNavigationToolbar: React.FC<TurnNavigationToolbarProps> = memo(
           <div className="relative min-w-0">
             <Button
               layout="custom"
-              appearance="custom"
               data-testid="turn-pagination-current-round"
               className={`${SELECT_TRIGGER_BASE} cursor-pointer ${SURFACE_TOKENS.hover} disabled:cursor-not-allowed disabled:opacity-50 ${
                 listOpen ? SURFACE_TOKENS.selected : ""

@@ -82,7 +82,7 @@ export const AgentOrgTaskDetailPanel: React.FC<
           ))}
           {annotationPages[task.id].hasMore && (
             <Button
-              variant="tertiary"
+              variant="ghost"
               size="inline"
               className="focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none disabled:opacity-40"
               disabled={annotationLoadingTaskId === task.id}

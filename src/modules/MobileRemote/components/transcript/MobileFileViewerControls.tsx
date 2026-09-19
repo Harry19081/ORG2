@@ -161,7 +161,6 @@ export function MobileFileViewerControls({
           data-mobile-file-toolbar
         >
           <Button
-            appearance="soft"
             size="small"
             className="mobile-file-controls__action min-h-11"
             style={actionStyle}
@@ -183,7 +182,6 @@ export function MobileFileViewerControls({
             {t("fileViewer.wrap")}
           </Button>
           <Button
-            appearance="soft"
             size="small"
             variant="tertiary"
             tone={clipboard.state === "copied" ? "success" : undefined}

@@ -150,7 +150,6 @@ export const DbPreviewView: React.FC<DbPreviewViewProps> = memo(
         </span>
         <Button
           variant="tertiary"
-          appearance="soft-no-drop"
           size="mini"
           iconOnly
           icon={

@@ -121,7 +121,6 @@ const SessionForkHeaderExtras: React.FC<SessionForkHeaderExtrasProps> = ({
               resolver may need to open an already materialized local copy. */}
           <Button
             layout="custom"
-            appearance="custom"
             data-testid="session-forked-from-chip"
             className="mr-1 inline-flex cursor-pointer border-0 bg-transparent p-0"
             onClick={() => void handleOpenParent()}

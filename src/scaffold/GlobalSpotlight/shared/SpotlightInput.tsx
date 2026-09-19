@@ -112,7 +112,6 @@ export const SpotlightInput: React.FC<SpotlightInputProps> = ({
         {value ? (
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
             size="small"
             shape="round"
             iconOnly

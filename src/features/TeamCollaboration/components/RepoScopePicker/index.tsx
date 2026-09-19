@@ -135,7 +135,6 @@ export function RepoScopePicker({
           return (
             <Button
               layout="custom"
-              appearance="custom"
               key={repo.id}
               disabled={!selectable}
               onClick={() => {

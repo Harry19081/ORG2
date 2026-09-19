@@ -267,7 +267,6 @@ export const TimelineContent: React.FC<TimelineContentProps> = memo(
                 <div className="px-4 py-1">
                   <Button
                     variant="tertiary"
-                    appearance="soft-no-drop"
                     size="sidebar"
                     long
                     disabled={fileSessionsLoadingMore}
@@ -343,7 +342,6 @@ export const TimelineContent: React.FC<TimelineContentProps> = memo(
           <SectionHeaderActions>
             <Button
               variant="tertiary"
-              appearance="soft-no-drop"
               size="sidebar"
               iconOnly
               icon={

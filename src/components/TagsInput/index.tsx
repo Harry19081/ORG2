@@ -95,7 +95,6 @@ const TagsInput: React.FC<TagsInputProps> = ({
               <span className="leading-none">{tag}</span>
               <Button
                 variant="tertiary"
-                appearance="soft-no-drop"
                 size="mini"
                 shape="round"
                 iconOnly

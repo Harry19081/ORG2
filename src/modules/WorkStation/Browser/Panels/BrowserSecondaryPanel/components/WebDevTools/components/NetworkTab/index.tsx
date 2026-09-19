@@ -158,7 +158,6 @@ export const NetworkTab: React.FC<NetworkTabProps> = memo(
           <ToolbarTooltip label={t("tooltips.clearNetworkLogs")}>
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={

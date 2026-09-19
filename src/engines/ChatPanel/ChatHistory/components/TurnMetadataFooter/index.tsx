@@ -333,7 +333,6 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                   commits.map((artifact) => (
                     <Button
                       layout="custom"
-                      appearance="custom"
                       key={`commit-${artifact.sha ?? artifact.url}`}
                       onClick={() => openCommit(artifact)}
                       disabled={!artifact.sha && !artifact.shortSha}
@@ -360,7 +359,6 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                   pullRequests.map((artifact) => (
                     <Button
                       layout="custom"
-                      appearance="custom"
                       key={`pr-${artifact.url ?? artifact.prNumber}`}
                       onClick={() => openPullRequest(artifact)}
                       disabled={!artifact.url}
@@ -437,7 +435,6 @@ const TurnMetadataFooter: React.FC<TurnMetadataFooterProps> = memo(
                 >
                   <Button
                     layout="custom"
-                    appearance="custom"
                     onClick={() => setExpanded((previous) => !previous)}
                     className={`${STACK_ROW_BUTTON_CLASSES} text-text-3`}
                     data-testid="turn-metadata-expansion-toggle"

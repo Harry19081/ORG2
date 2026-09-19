@@ -96,7 +96,6 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
       >
         <Button
           layout="custom"
-          appearance="custom"
           onClick={toggleOpen}
           aria-expanded={isOpen}
           data-testid={titleButtonTestId}

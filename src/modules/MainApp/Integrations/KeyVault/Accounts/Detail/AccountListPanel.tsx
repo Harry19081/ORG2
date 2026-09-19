@@ -63,7 +63,6 @@ const AccountListPanel: React.FC<AccountListPanelProps> = ({
         <div className="flex h-10 shrink-0 items-center gap-2 px-3">
           <SharedButton
             variant="tertiary"
-            appearance="soft-no-drop"
             size="mini"
             iconOnly
             icon={

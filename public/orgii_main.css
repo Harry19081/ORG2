@@ -193,6 +193,11 @@ body {
   --color-merged-button-hover: #6639ba;
   --color-merged-button-active: #553098;
   --color-merged-button-contrast: #ffffff;
+  /* Filled success buttons: success-6 at rest, darker on hover / press. */
+  --color-success-button-bg: #388a34;
+  --color-success-button-hover: #2f7d2b;
+  --color-success-button-active: #276e24;
+  --color-success-button-contrast: #ffffff;
   --color-danger-1: #ffeae8;
   --color-danger-2: #ffcdc7;
   --color-danger-3: #ffa499;

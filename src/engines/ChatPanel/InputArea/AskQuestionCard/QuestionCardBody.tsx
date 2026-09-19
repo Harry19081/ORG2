@@ -102,7 +102,6 @@ export function QuestionCardBody({
                     return (
                       <Button
                         layout="custom"
-                        appearance="custom"
                         key={optIdx}
                         onClick={() =>
                           onOptionClick(qIdx, optIdx, question.multiSelect)
@@ -147,7 +146,6 @@ export function QuestionCardBody({
                   >
                     <Button
                       layout="custom"
-                      appearance="custom"
                       onClick={() => {
                         onOptionClick(
                           qIdx,

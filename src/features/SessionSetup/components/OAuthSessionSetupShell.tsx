@@ -167,7 +167,6 @@ export function OAuthSessionSetupShell({
             <Button
               variant={hasToken ? "secondary" : "primary"}
               tone={hasToken ? "success" : undefined}
-              size="default"
               loading={isSigningIn || isWebviewLoading}
               disabled={isSigningIn || isWebviewLoading}
               onClick={() => setShowBrowser(true)}

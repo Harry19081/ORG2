@@ -413,7 +413,6 @@ export function BranchPullRequestPicker({
             return (
               <Button
                 layout="custom"
-                appearance="custom"
                 key={pr.number}
                 {...keyboard.getItemProps(index)}
                 disabled={selecting}
@@ -438,7 +437,6 @@ export function BranchPullRequestPicker({
         {pinnedActionItems.map((action, index) => (
           <Button
             layout="custom"
-            appearance="custom"
             key={action.id}
             {...keyboard.getItemProps(items.length + index)}
             disabled={action.data?.disabled}

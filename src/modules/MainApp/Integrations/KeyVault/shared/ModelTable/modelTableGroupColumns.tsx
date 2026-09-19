@@ -150,7 +150,6 @@ function renderPreferredVersionCell(
         renderTrigger={({ ref, onClick, ariaExpanded }) => (
           <Button
             layout="custom"
-            appearance="custom"
             ref={ref}
             onClick={onClick}
             aria-expanded={ariaExpanded}

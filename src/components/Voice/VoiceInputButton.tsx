@@ -90,7 +90,6 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
     const buttonNode = (
       <Button
         layout="custom"
-        appearance="custom"
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}

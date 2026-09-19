@@ -210,7 +210,6 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
           <>
             <Button
               layout="custom"
-              appearance="custom"
               ref={memberSwitcherTriggerRef}
               data-testid="agent-org-member-switcher-trigger"
               className={`${SELECT_TRIGGER_BASE} disabled:cursor-default ${
@@ -260,7 +259,6 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                       <>
                         <Button
                           layout="custom"
-                          appearance="custom"
                           role="menuitem"
                           data-testid="agent-org-group-chat-toggle"
                           className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} ${
@@ -311,7 +309,6 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                       return (
                         <Button
                           layout="custom"
-                          appearance="custom"
                           key={member.memberId}
                           role="menuitem"
                           data-testid={`agent-org-member-switcher-option-${member.memberId}`}

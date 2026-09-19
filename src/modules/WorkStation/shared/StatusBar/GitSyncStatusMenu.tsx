@@ -259,7 +259,6 @@ export const GitSyncStatusMenu: React.FC<GitSyncStatusMenuProps> = memo(
                       return (
                         <Button
                           layout="custom"
-                          appearance="custom"
                           key={action.key}
                           className={classNames(
                             DROPDOWN_CLASSES.menuActionItem,
@@ -284,7 +283,6 @@ export const GitSyncStatusMenu: React.FC<GitSyncStatusMenuProps> = memo(
                     {suggestedAction && (
                       <Button
                         layout="custom"
-                        appearance="custom"
                         className={classNames(
                           DROPDOWN_CLASSES.menuActionItem,
                           (isSyncBusy ||
@@ -311,7 +309,6 @@ export const GitSyncStatusMenu: React.FC<GitSyncStatusMenuProps> = memo(
                     <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
                     <Button
                       layout="custom"
-                      appearance="custom"
                       className={DROPDOWN_CLASSES.menuActionItem}
                       onClick={() => setShowAllActions(true)}
                       role="menuitem"

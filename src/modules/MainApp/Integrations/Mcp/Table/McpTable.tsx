@@ -435,7 +435,6 @@ export const McpTable: React.FC<McpTableProps> = ({
                 >
                   <Button
                     variant="tertiary"
-                    appearance="soft"
                     size="mini"
                     iconOnly
                     icon={

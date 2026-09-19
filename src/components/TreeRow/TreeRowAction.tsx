@@ -56,7 +56,6 @@ export const TreeRowAction: React.FC<TreeRowActionProps> = memo(
       <Button
         size="sidebar"
         variant="tertiary"
-        appearance="soft"
         tone={
           variant === "danger" || variant === "success" ? variant : undefined
         }

@@ -69,7 +69,6 @@ const FloatingBarUnsaved: React.FC<UnsavedChangesBarProps> = memo(
             className="shrink-0 text-text-2 hover:text-text-1"
             title={t("actions.discard")}
             aria-label={t("actions.discard")}
-            appearance="soft"
             iconOnly
             icon={
               <HugeiconsIcon

@@ -34,7 +34,6 @@ export function MobileTopBar({
             width: "var(--mobile-touch-size)",
             height: "var(--mobile-touch-size)",
           }}
-          appearance="soft"
           iconOnly
           icon={<HugeiconsIcon icon={ArrowLeft01Icon} size={22} />}
         />

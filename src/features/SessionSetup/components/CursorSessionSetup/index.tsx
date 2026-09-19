@@ -179,7 +179,6 @@ const CursorSessionSetup: React.FC<CursorSessionSetupProps> = ({
                 <Button
                   variant={sessionToken ? "secondary" : "primary"}
                   tone={sessionToken ? "success" : undefined}
-                  size="default"
                   onClick={openLoginBrowser}
                   disabled={Boolean(sessionToken)}
                   className="h-8 min-h-8"

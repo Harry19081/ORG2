@@ -123,8 +123,6 @@ const ButtonEl: React.FC<{ el: A2UIButton }> = ({ el }) => {
   const onAction = useA2UIAction();
   return (
     <Button
-      variant="primary"
-      appearance="outline"
       className="my-1"
       style={el.style ? cssTextToStyle(el.style) : undefined}
       onClick={() => {

@@ -41,7 +41,6 @@ const ReplayTurnBreakpoints: React.FC<ReplayTurnBreakpointsProps> = memo(
           >
             <Button
               layout="custom"
-              appearance="custom"
               data-testid="replay-turn-breakpoint"
               data-active={segment.isActive ? "true" : undefined}
               aria-current={segment.isActive ? "step" : undefined}

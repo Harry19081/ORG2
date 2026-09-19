@@ -217,6 +217,21 @@ export function deriveSkinTokens(
     : skillRamp[6];
   tokens["--color-merged-button-contrast"] = readableOn(mergedBase);
 
+  // Filled success buttons. On dark skins success-6 is a light text green, so
+  // the fill steps down the ramp to a saturated green; hover and press go one
+  // step darker, like the primary fill.
+  const successFill = isLight ? successRamp[5] : successRamp[3];
+  tokens["--color-success-button-bg"] = successFill;
+  tokens["--color-success-button-hover"] = isLight
+    ? successRamp[6]
+    : successRamp[2];
+  tokens["--color-success-button-active"] = isLight
+    ? successRamp[6]
+    : successRamp[2];
+  tokens["--color-success-button-contrast"] = readableOn(
+    parseHex(successFill) ?? ink
+  );
+
   assignSyntaxTokens(tokens, seed, fade);
 
   return tokens;

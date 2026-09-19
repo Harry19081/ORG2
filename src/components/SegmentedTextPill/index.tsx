@@ -76,7 +76,6 @@ export default function SegmentedTextPill<T extends string>({
         const button = (
           <Button
             layout="custom"
-            appearance="custom"
             key={option.value}
             className={`inline-flex items-center justify-center rounded-full py-0 transition-colors ${BUTTON_SIZE_CLASSES[size]} ${
               selected

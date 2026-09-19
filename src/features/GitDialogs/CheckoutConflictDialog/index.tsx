@@ -134,7 +134,7 @@ export function BranchSwitchDialogView({
           <>
             <div className="min-w-0">
               <Button
-                variant="tertiary"
+                variant="ghost"
                 size="inline"
                 layout="custom"
                 className="group/files flex h-6 items-center gap-1 text-xs text-text-3 hover:text-text-2"

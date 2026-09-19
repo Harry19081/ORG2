@@ -105,7 +105,6 @@ export const SpotlightSettingsMenu: React.FC<{
       <span ref={triggerRef} className="-my-1.5 -mr-3 inline-flex">
         <Button
           variant="tertiary"
-          appearance="soft-no-drop"
           size="small"
           shape="round"
           iconOnly

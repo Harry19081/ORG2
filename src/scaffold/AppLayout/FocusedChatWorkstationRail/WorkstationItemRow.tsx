@@ -52,7 +52,6 @@ export function WorkstationItemRow({
   const action = (
     <Button
       variant="tertiary"
-      appearance="soft-no-drop"
       size={compact ? "small" : "sidebar"}
       className={`${WORKSTATION_TRAIL_ROW.button} h-full! ${compact ? WORKSTATION_TRAIL_ROW.compact : WORKSTATION_TRAIL_ROW.wide} ${item.onClick ? "" : "cursor-default"}`}
       onClick={runAction}
@@ -174,7 +173,6 @@ export function WorkstationItemRow({
           }}
           aria-label={item.closeLabel}
           role={compact ? "menuitem" : undefined}
-          appearance="soft-no-drop"
           iconOnly
           icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />}
         />

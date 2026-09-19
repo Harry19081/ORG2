@@ -283,7 +283,7 @@ const ConflictRowComponent: React.FC<ConflictRowProps> = ({
         )}
       </div>
       <Button
-        variant="tertiary"
+        variant="ghost"
         size="inline"
         onClick={() => setShowDiff((prev) => !prev)}
         className="gap-1 self-start text-[12px] hover:text-text-2"

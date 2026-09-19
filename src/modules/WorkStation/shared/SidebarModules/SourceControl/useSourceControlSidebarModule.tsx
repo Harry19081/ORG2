@@ -222,7 +222,6 @@ export function useSourceControlSidebarModule({
   const sectionTitle = isAlternateMode ? (
     <Button
       layout="custom"
-      appearance="custom"
       className="flex min-w-0 items-center gap-1.5 normal-case"
       onClick={() => onFilterModeChange?.("uncommitted")}
       aria-label={t("tabs.sourceControl")}

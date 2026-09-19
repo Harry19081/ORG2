@@ -88,7 +88,6 @@ const GitHubIssueCloseButton: React.FC<GitHubIssueCloseButtonProps> = ({
     >
       <Button
         layout="custom"
-        appearance="custom"
         className={`${DROPDOWN_CLASSES.menuActionItem} rounded-none border-b border-border-2`}
         onClick={() => {
           setMenuLevel("actions");

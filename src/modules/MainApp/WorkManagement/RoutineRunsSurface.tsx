@@ -243,7 +243,6 @@ const RoutineRunDetailPane: React.FC<RoutineRunDetailPaneProps> = ({
                   <li key={item.shortId}>
                     <Button
                       layout="custom"
-                      appearance="custom"
                       className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12px] hover:bg-fill-1"
                       onClick={() => openWorkItem(item.shortId)}
                       data-testid={`routine-run-work-item-${item.shortId}`}

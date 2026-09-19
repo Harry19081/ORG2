@@ -70,7 +70,6 @@ export function WorkstationCompactMenu({
       >
         <Button
           variant="tertiary"
-          appearance="soft-no-drop"
           size="small"
           iconOnly
           className={menuOpen ? "bg-fill-1! text-primary-6!" : ""}

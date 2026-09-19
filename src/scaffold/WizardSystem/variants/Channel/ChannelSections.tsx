@@ -73,7 +73,6 @@ export const ChannelContent: React.FC<ChannelContentProps> = ({
           <Button
             variant={probeResult?.ok ? "secondary" : "primary"}
             tone={probeResult?.ok ? "success" : undefined}
-            size="default"
             loading={probing}
             disabled={!channelIsValid || probing}
             onClick={onProbe}

@@ -39,7 +39,6 @@ export function StickyTreeRow({
     <div className={`h-full px-1 ${SIDEBAR_ROW_GAP_CLASS} ${stickyBgClass}`}>
       <Button
         layout="custom"
-        appearance="custom"
         className={`${STICKY_ROW.rowBase} w-full text-left ${getSidebarRowSurface()}`}
         style={stickyRowPadding(depth)}
         onClick={onClick}

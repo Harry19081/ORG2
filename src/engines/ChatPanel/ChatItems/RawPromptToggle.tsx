@@ -163,7 +163,6 @@ const RawPromptToggleComponent: React.FC<RawPromptToggleProps> = ({
     <>
       <Button
         variant="tertiary"
-        appearance="soft"
         size="mini"
         aria-pressed={isOpen}
         iconOnly

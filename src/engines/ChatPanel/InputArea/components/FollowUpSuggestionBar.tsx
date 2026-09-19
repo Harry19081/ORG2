@@ -26,8 +26,7 @@ const FollowUpSuggestionBar: React.FC<FollowUpSuggestionBarProps> = memo(
         {suggestions.map((suggestion) => (
           <Button
             key={`${suggestion.label}\0${suggestion.prompt}`}
-            variant={suggestion.primary ? "primary" : "secondary"}
-            appearance="outline"
+            hoverTone={suggestion.primary ? "primary" : undefined}
             size="mini"
             shape="round"
             disabled={disabled}

@@ -25,7 +25,6 @@ export const MobileHeaderIconButton = forwardRef<
       ref={ref}
       iconOnly
       shape="circle"
-      appearance="soft"
       variant="tertiary"
       className={`mobile-header-icon-button ${className}`}
       style={{

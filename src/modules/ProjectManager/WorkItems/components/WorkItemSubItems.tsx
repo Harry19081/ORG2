@@ -472,7 +472,6 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
       {parent ? (
         <Button
           layout="custom"
-          appearance="custom"
           className={`group flex min-h-8 w-full cursor-pointer items-start gap-2 rounded-lg text-left transition-colors hover:bg-fill-1 disabled:cursor-default ${WORK_ITEM_THREAD_TOKENS.alignedRowPadding}`}
           onClick={() => onOpenWorkItem?.(parent)}
           disabled={!onOpenWorkItem}
@@ -522,7 +521,6 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
                 return (
                   <Button
                     layout="custom"
-                    appearance="custom"
                     key={child.frontmatter.short_id}
                     className={`group flex min-h-8 w-full cursor-pointer items-start gap-2 rounded-lg text-left transition-colors hover:bg-fill-1 disabled:cursor-default ${WORK_ITEM_THREAD_TOKENS.alignedRowPadding}`}
                     onClick={() => onOpenWorkItem?.(child)}

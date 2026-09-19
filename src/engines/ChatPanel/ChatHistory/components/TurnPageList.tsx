@@ -188,7 +188,6 @@ const TurnPageList: React.FC<TurnPageListProps> = memo(
                     >
                       <Button
                         layout="custom"
-                        appearance="custom"
                         data-testid="turn-page-list-item"
                         data-page-index={pageIndex}
                         className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left ${

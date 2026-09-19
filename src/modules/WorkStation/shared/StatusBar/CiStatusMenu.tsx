@@ -177,7 +177,6 @@ const CheckRow: React.FC<CheckRowProps> = memo(({ item, onOpenDetails }) => {
         {item.detailsUrl && (
           <Button
             variant="tertiary"
-            appearance="soft"
             size="mini"
             iconOnly
             icon={
@@ -364,7 +363,6 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
                 />
                 <Button
                   layout="custom"
-                  appearance="custom"
                   className="min-w-0 flex-1 truncate text-left text-text-1 hover:underline"
                   title={t("workstation.ci.openPullRequest")}
                   onClick={handleOpenPullRequest}
@@ -404,7 +402,6 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
               <div className={STATUS_BAR_TOKENS.menuFooterClass}>
                 <Button
                   layout="custom"
-                  appearance="custom"
                   className={classNames(
                     DROPDOWN_CLASSES.menuActionItem,
                     "min-w-0 flex-1 disabled:cursor-default disabled:text-text-3"

@@ -15,7 +15,6 @@ vi.mock("@src/components/Button", () => ({
   default: ({
     children,
     variant: _variant,
-    appearance: _appearance,
     iconOnly: _iconOnly,
     shape: _shape,
     htmlType: _htmlType,

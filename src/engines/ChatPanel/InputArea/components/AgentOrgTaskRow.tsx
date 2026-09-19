@@ -206,7 +206,7 @@ export const AgentOrgTaskRow: React.FC<AgentOrgTaskRowProps> = ({
       )}
       {terminal && currentSessionId && (
         <Button
-          variant="tertiary"
+          variant="ghost"
           size="inline"
           className="mt-2 gap-1 text-[10px] hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
           aria-expanded={expandedTaskId === task.id}

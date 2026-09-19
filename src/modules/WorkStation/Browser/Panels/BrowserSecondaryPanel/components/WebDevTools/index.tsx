@@ -249,7 +249,6 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                       <ToolbarTooltip label={t("tooltips.collapseAll")}>
                         <Button
                           variant="tertiary"
-                          appearance="soft"
                           size="sidebar"
                           iconOnly
                           icon={
@@ -266,7 +265,6 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                       <ToolbarTooltip label={t("tooltips.refreshTree")}>
                         <Button
                           variant="tertiary"
-                          appearance="soft"
                           size="sidebar"
                           iconOnly
                           icon={
@@ -351,7 +349,6 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                       >
                         <Button
                           variant="tertiary"
-                          appearance="soft"
                           size="sidebar"
                           iconOnly
                           icon={

@@ -215,7 +215,6 @@ const LinearWorkflowStatesSection: React.FC<
           />
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
             size="mini"
             aria-label={t("linearProjects.statusPanel.addStatus")}
             iconOnly
@@ -266,7 +265,6 @@ const LinearWorkflowStatesSection: React.FC<
                   </div>
                   <Button
                     variant="tertiary"
-                    appearance="soft-no-drop"
                     size="mini"
                     aria-label={t("common:actions.edit")}
                     iconOnly
@@ -284,7 +282,6 @@ const LinearWorkflowStatesSection: React.FC<
                   <Button
                     variant="tertiary"
                     tone="danger"
-                    appearance="soft-no-drop"
                     size="mini"
                     aria-label={t("linearProjects.statusPanel.archiveStatus")}
                     iconOnly

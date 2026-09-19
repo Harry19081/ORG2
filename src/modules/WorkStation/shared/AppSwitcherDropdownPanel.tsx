@@ -75,7 +75,6 @@ const AppSwitcherDropdownPanelComponent: React.FC<
           return (
             <Button
               layout="custom"
-              appearance="custom"
               key={item.id}
               disabled={isDisabled}
               aria-disabled={isDisabled || undefined}

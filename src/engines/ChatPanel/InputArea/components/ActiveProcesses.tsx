@@ -93,7 +93,6 @@ const ProcessRow: React.FC<ProcessRowProps> = memo(({ process, onStop }) => {
       <span className={COMPOSER_STACK_ROW_ACTIONS}>
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           icon={
             <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={12} />
@@ -153,7 +152,6 @@ const SubagentRow: React.FC<SubagentRowProps> = memo(({ job, now, onStop }) => {
       <span className={COMPOSER_STACK_ROW_ACTIONS}>
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           icon={
             <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={12} />

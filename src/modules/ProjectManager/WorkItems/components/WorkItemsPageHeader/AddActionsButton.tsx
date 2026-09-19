@@ -119,7 +119,6 @@ export function AddActionsButton({
           >
             <Button
               layout="custom"
-              appearance="custom"
               onClick={handleAddWorkItem}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"
@@ -138,7 +137,6 @@ export function AddActionsButton({
             </Button>
             <Button
               layout="custom"
-              appearance="custom"
               onClick={handleAddProject}
               className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left`}
               role="menuitem"

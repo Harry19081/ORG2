@@ -123,7 +123,6 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
           <span className={COMPOSER_STACK_ROW_ACTIONS}>
             <Button
               variant="tertiary"
-              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon icon={Pen01Icon} data-icon="pencil" size={12} />
@@ -134,7 +133,6 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
             />
             <Button
               variant="tertiary"
-              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon
@@ -150,7 +148,6 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
             />
             <Button
               variant="tertiary"
-              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon

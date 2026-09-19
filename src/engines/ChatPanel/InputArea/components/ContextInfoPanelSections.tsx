@@ -224,7 +224,6 @@ export const ContextInfoManualCompactSection: React.FC<
     <div className="flex items-center justify-between px-1 py-1">
       <Button
         layout="custom"
-        appearance="custom"
         onClick={() => setManualCompactOpen((open) => !open)}
         aria-expanded={manualCompactOpen}
         className="flex-1 self-stretch text-left text-[13px] font-semibold text-text-1"

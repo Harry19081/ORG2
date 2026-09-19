@@ -62,8 +62,6 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = memo(
             data-testid="chat-image-attachment-img"
           />
           <Button
-            variant="tertiary"
-            appearance="outline"
             hoverTone="danger"
             size="sidebar"
             shape="circle"

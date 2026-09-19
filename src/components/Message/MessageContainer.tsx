@@ -153,7 +153,7 @@ const MessageItem = ({
           <div className="mt-2 flex justify-end gap-3">
             {cancel && (
               <Button
-                variant="tertiary"
+                variant="ghost"
                 size="inline"
                 className="text-xs leading-[1.2] font-medium"
                 onClick={handleCancelAction}
@@ -163,7 +163,7 @@ const MessageItem = ({
             )}
             {download && (
               <Button
-                variant="tertiary"
+                variant="ghost"
                 size="inline"
                 className="text-xs leading-[1.2] font-medium"
                 onClick={handleDownload}
@@ -173,7 +173,7 @@ const MessageItem = ({
             )}
             {action && (
               <Button
-                variant="tertiary"
+                variant="ghost"
                 size="inline"
                 className="text-xs leading-[1.2] font-semibold"
                 onClick={handlePrimaryAction}
@@ -189,7 +189,6 @@ const MessageItem = ({
       {closable && (
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           iconOnly
           icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />}

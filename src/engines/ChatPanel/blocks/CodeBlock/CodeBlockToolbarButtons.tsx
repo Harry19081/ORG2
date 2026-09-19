@@ -39,7 +39,6 @@ export const CodeBlockHeaderActions: React.FC<CodeBlockHeaderActionsProps> = ({
     {shouldShowOpenButton && (
       <Button
         variant="tertiary"
-        appearance="soft"
         size="mini"
         iconOnly
         icon={
@@ -60,7 +59,6 @@ export const CodeBlockHeaderActions: React.FC<CodeBlockHeaderActionsProps> = ({
     {shouldShowCopyButton && (
       <Button
         variant="tertiary"
-        appearance="soft"
         size="mini"
         iconOnly
         icon={
@@ -94,7 +92,6 @@ export const CodeBlockHeaderActions: React.FC<CodeBlockHeaderActionsProps> = ({
     {isPreviewable && (
       <Button
         layout="custom"
-        appearance="custom"
         onClick={(e) => {
           e.stopPropagation();
           handleTogglePreview();
@@ -148,7 +145,6 @@ export const CodeBlockFloatingToolbar: React.FC<
       {shouldShowOpenButton && (
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           iconOnly
           icon={
@@ -168,7 +164,6 @@ export const CodeBlockFloatingToolbar: React.FC<
       {shouldShowCopyButton && (
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           iconOnly
           icon={

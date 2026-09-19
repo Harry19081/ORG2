@@ -99,7 +99,6 @@ const KiroSetup: React.FC<KiroSetupProps> = ({
               <Button
                 variant={tokenDetected ? "secondary" : "primary"}
                 tone={tokenDetected ? "success" : undefined}
-                size="default"
                 loading={detectingToken}
                 disabled={detectingToken}
                 onClick={onDetectToken}

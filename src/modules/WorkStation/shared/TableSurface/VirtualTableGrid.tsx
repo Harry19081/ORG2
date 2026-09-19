@@ -396,7 +396,6 @@ export function VirtualTableGrid({
           return (
             <Button
               layout="custom"
-              appearance="custom"
               key={`header-${column.id}`}
               className={[
                 "table-surface__column-header",

@@ -235,7 +235,6 @@ const MiniCPMStepExplanationPanel: React.FC<MiniCPMStepExplanationPanelProps> =
         {onClose ? (
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
             size="mini"
             iconOnly
             icon={

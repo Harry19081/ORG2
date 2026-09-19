@@ -41,8 +41,6 @@ const EditModeImageThumbnail: React.FC<{
         />
         {onRemove && (
           <Button
-            variant="tertiary"
-            appearance="outline"
             hoverTone="danger"
             size="sidebar"
             shape="circle"

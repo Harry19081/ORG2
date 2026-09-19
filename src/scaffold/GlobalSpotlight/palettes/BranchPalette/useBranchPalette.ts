@@ -202,7 +202,6 @@ export function useBranchPalette(options: UseBranchPaletteOptions) {
     (branch: { name: string }) =>
       createElement(Button, {
         variant: "tertiary",
-        appearance: "soft",
         size: "sidebar",
         iconOnly: true,
         icon: createElement(HugeiconsIcon, { icon: Delete02Icon, size: 14 }),

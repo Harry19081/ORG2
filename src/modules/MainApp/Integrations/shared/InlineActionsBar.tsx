@@ -36,10 +36,7 @@ import Button from "@src/components/Button";
 import type { ButtonProps } from "@src/components/Button";
 import { Delete02Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
 
-export interface InlineAction extends Pick<
-  ButtonProps,
-  "variant" | "tone" | "appearance"
-> {
+export interface InlineAction extends Pick<ButtonProps, "variant" | "tone"> {
   /** Stable key for React reconciliation + test ids. */
   key: string;
   label: React.ReactNode;
@@ -145,7 +142,6 @@ const InlineActionsBar: React.FC<InlineActionsBarProps> = ({
           size="small"
           variant={action.variant}
           tone={action.tone}
-          appearance={action.appearance}
           icon={action.icon}
           onClick={action.onClick}
           disabled={action.disabled}

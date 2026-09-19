@@ -151,7 +151,6 @@ export const MarkerTimelineRow: React.FC<MarkerTimelineRowProps> = ({
         const markerElement = width ? (
           <Button
             layout="custom"
-            appearance="custom"
             className="gantt-timeline__marker-segment"
             style={{ background: marker.color }}
             aria-label={marker.ariaLabel ?? marker.title}
@@ -165,7 +164,6 @@ export const MarkerTimelineRow: React.FC<MarkerTimelineRowProps> = ({
         ) : (
           <Button
             layout="custom"
-            appearance="custom"
             className="gantt-timeline__marker-dot"
             style={{ background: marker.color }}
             aria-label={marker.ariaLabel ?? marker.title}

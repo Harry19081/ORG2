@@ -167,8 +167,6 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
 
       {onRevalidate && models.length > 0 && (
         <Button
-          variant="primary"
-          appearance="outline"
           size="small"
           onClick={onRevalidate}
           loading={revalidating}

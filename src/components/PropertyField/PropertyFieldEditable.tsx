@@ -133,7 +133,6 @@ export const FieldRow: React.FC<FieldRowProps> = ({
       >
         <Button
           layout="custom"
-          appearance="custom"
           className={
             isWorkstationTrail
               ? `${WORKSTATION_TRAIL_CONTENT.rowContent} cursor-pointer border-none bg-transparent outline-none`
@@ -374,7 +373,6 @@ export const Option: React.FC<OptionProps> = ({
 }) => (
   <Button
     layout="custom"
-    appearance="custom"
     data-testid={dataTestId}
     className={[
       DROPDOWN_CLASSES.item,

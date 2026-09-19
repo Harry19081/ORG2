@@ -65,7 +65,6 @@ function PrCheckRow({ item, onOpenDetails }: PrCheckRowProps): React.ReactNode {
       {item.detailsUrl ? (
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           iconOnly
           icon={

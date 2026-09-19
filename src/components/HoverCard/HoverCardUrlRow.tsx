@@ -47,7 +47,6 @@ export const HoverCardUrlRow: React.FC<HoverCardUrlRowProps> = ({ url }) => {
     >
       <Button
         layout="custom"
-        appearance="custom"
         className={HOVER_CARD_LINK_ROW_CLASS_NAME}
         title={url}
         onClick={() => openLink(url)}

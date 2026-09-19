@@ -128,7 +128,6 @@ export function UserChatItemToolbar({
           {isEditableDisplay && (
             <Button
               variant="tertiary"
-              appearance="soft"
               size="mini"
               iconOnly
               icon={

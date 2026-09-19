@@ -421,7 +421,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {showClearButton && (
             <Button
               layout="custom"
-              appearance="custom"
               className="input-clear"
               onClick={handleClear}
               tabIndex={-1}
@@ -433,7 +432,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {showPasswordToggle && (
             <Button
               layout="custom"
-              appearance="custom"
               className="input-password-toggle"
               onClick={togglePasswordVisibility}
               tabIndex={-1}

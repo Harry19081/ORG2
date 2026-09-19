@@ -226,7 +226,6 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                 <div className={DROPDOWN_CLASSES.menuPanel}>
                   <Button
                     layout="custom"
-                    appearance="custom"
                     onClick={handleRefreshMenuClick}
                     className={DROPDOWN_CLASSES.menuActionItem}
                   >

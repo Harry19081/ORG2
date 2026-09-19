@@ -191,7 +191,6 @@ const ChatBubbleCopyButtonComponent: React.FC<ChatBubbleCopyButtonProps> = ({
     return (
       <Button
         variant="tertiary"
-        appearance="soft"
         size="mini"
         iconOnly
         icon={
@@ -218,7 +217,6 @@ const ChatBubbleCopyButtonComponent: React.FC<ChatBubbleCopyButtonProps> = ({
   return (
     <Button
       variant="tertiary"
-      appearance="soft-no-drop"
       size="mini"
       iconOnly
       icon={

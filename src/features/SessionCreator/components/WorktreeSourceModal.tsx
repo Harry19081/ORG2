@@ -412,7 +412,6 @@ const WorktreeSourceModal: React.FC<WorktreeSourceModalProps> = ({
           {tabs.map((tab) => (
             <Button
               layout="custom"
-              appearance="custom"
               key={tab.id}
               role="tab"
               id={`worktree-source-tab-${tab.id}`}

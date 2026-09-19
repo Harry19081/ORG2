@@ -98,7 +98,6 @@ export function SessionViewMenu({ value, onChange }: SessionViewMenuProps) {
       }}
     >
       <Button
-        appearance="soft"
         variant="tertiary"
         shape="circle"
         iconOnly

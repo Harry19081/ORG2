@@ -347,7 +347,6 @@ const CodeEditorTour: React.FC<CodeEditorTourProps> = ({ open, onClose }) => {
             </span>
             <Button
               variant="tertiary"
-              appearance="soft-no-drop"
               size="mini"
               shape="round"
               iconOnly

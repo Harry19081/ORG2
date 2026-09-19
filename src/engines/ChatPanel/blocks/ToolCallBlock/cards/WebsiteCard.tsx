@@ -89,7 +89,6 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ card }) => {
 
       <Button
         variant="tertiary"
-        appearance="soft-no-drop"
         size="sidebar"
         iconOnly
         icon={

@@ -115,7 +115,6 @@ export const SessionHoverCardRepoBranchRow: React.FC<
         (repoPath ? (
           <Button
             layout="custom"
-            appearance="custom"
             className={`${INLINE_LINK_CLASS_NAME} min-w-0 truncate text-left ${
               branchLabel ? "max-w-[calc(50%-6px)]" : "flex-1"
             }`}
@@ -204,7 +203,6 @@ export const SessionHoverCardStorageRow: React.FC<
         {underlyingSessionId ? (
           <Button
             layout="custom"
-            appearance="custom"
             className={`${PATH_ROW_CLASS_NAME} min-w-0 flex-1`}
             title={underlyingSessionId}
             aria-label={`${t("common:actions.copy")} ${t(
@@ -229,7 +227,6 @@ export const SessionHoverCardStorageRow: React.FC<
         ) : storageRowPath ? (
           <Button
             layout="custom"
-            appearance="custom"
             className={`${PATH_ROW_CLASS_NAME} min-w-0 flex-1`}
             title={`${revealLabel} · ${storageRowPath}`}
             aria-label={`${revealLabel} ${storageRowPath}`}

@@ -181,7 +181,6 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
           <div className="flex items-center gap-1">
             <Button
               variant="tertiary"
-              appearance="soft"
               size="mini"
               shape="circle"
               iconOnly
@@ -198,7 +197,6 @@ export const EditComposerBar: React.FC<EditComposerBarProps> = ({
             />
             <Button
               variant="tertiary"
-              appearance="soft"
               size="mini"
               shape="round"
               onClick={onEditSendNow}

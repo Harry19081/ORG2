@@ -235,7 +235,6 @@ const StashItem: React.FC<StashItemProps> = memo(
               <Button
                 size="sidebar"
                 variant="tertiary"
-                appearance="soft"
                 iconOnly
                 onClick={handleApply}
                 disabled={isLoading}
@@ -254,7 +253,6 @@ const StashItem: React.FC<StashItemProps> = memo(
               <Button
                 size="sidebar"
                 variant="tertiary"
-                appearance="soft"
                 iconOnly
                 onClick={handlePop}
                 disabled={isLoading}
@@ -405,7 +403,6 @@ export const StashContent: React.FC<StashContentProps> = memo(
           header ? (
             <Button
               layout="custom"
-              appearance="custom"
               className="flex min-w-0 items-center gap-1.5 normal-case"
               onClick={header.onBack}
               aria-label={t("tabs.sourceControl")}

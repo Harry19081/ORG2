@@ -345,7 +345,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           {schedule && (
             <Button
               variant="tertiary"
-              appearance="soft"
               size="mini"
               iconOnly
               icon={
@@ -368,7 +367,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <div className="relative">
               <Button
                 layout="custom"
-                appearance="custom"
                 className="flex h-8 w-full items-center gap-2 rounded-lg border border-border-2 bg-bg-2 px-2 text-left text-[12px] text-text-1 transition-colors outline-none hover:bg-fill-2 focus:border-primary-6"
                 onClick={() => setOneShotDateOpen((open) => !open)}
               >
@@ -465,7 +463,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
           <div>
             <Button
-              variant="tertiary"
+              variant="ghost"
               size="inline"
               className="text-[11px]"
               onClick={() => setShowCustomCron(!showCustomCron)}

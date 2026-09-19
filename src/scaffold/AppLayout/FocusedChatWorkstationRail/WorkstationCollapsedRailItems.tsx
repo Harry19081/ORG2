@@ -30,7 +30,6 @@ export function WorkstationCollapsedRailItems({
             <Button
               size="small"
               variant="tertiary"
-              appearance="soft-no-drop"
               iconOnly
               className="relative"
               onClick={item.onClick}

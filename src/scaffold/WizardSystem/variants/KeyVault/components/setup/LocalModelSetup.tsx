@@ -251,7 +251,6 @@ const LocalModelSetup: React.FC<AgentSetupProps> = ({
           <Button
             variant={keyValidated ? "secondary" : "primary"}
             tone={keyValidated ? "success" : undefined}
-            size="default"
             loading={validatingKey}
             disabled={validatingKey || !effectiveBaseUrl}
             onClick={validateKey}

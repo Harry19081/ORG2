@@ -359,7 +359,6 @@ const WorkItemRow: React.FC<WorkItemRowProps> = React.memo(
           {isInteractive ? (
             <Button
               layout="custom"
-              appearance="custom"
               className="min-w-0 flex-1 text-left"
               aria-label={workItem.name || t("workItems.untitledWorkItem")}
               onClick={(event) => {

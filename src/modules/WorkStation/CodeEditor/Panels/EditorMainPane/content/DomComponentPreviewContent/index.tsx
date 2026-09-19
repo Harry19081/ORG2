@@ -317,7 +317,6 @@ const MetaStrip: React.FC<MetaStripProps> = memo(
         <ToolbarTooltip label="Inspect with DevTools">
           <Button
             variant="tertiary"
-            appearance="soft-no-drop"
             size="mini"
             iconOnly
             icon={

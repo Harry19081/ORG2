@@ -66,7 +66,6 @@ export function DiffFileSectionHeader({
     >
       <Button
         layout="custom"
-        appearance="custom"
         className="absolute inset-0 w-full cursor-pointer focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset disabled:cursor-default"
         onClick={toggleExpanded}
         disabled={isDeleted}
@@ -122,7 +121,6 @@ export function DiffFileSectionHeader({
         <span className="-ml-2 flex w-0 shrink-0 items-center gap-px overflow-hidden opacity-0 group-focus-within/diff-header:ml-0 group-focus-within/diff-header:w-auto group-focus-within/diff-header:opacity-100 group-hover/diff-header:ml-0 group-hover/diff-header:w-auto group-hover/diff-header:opacity-100">
           <Button
             variant="tertiary"
-            appearance="soft"
             size="small"
             iconOnly
             className="pointer-events-auto shrink-0"
@@ -136,7 +134,6 @@ export function DiffFileSectionHeader({
           {canOpenFile && (
             <Button
               variant="tertiary"
-              appearance="soft"
               size="small"
               iconOnly
               className="pointer-events-auto shrink-0"
@@ -155,7 +152,6 @@ export function DiffFileSectionHeader({
         </span>
         <Button
           layout="custom"
-          appearance="custom"
           className="pointer-events-auto flex shrink-0 cursor-pointer items-center gap-2 pr-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none aria-disabled:cursor-default"
           onClick={isDeleted ? undefined : toggleExpanded}
           aria-disabled={isDeleted || undefined}

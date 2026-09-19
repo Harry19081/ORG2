@@ -121,7 +121,6 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
           {showAllOption && threads.length > 1 && (
             <Button
               layout="custom"
-              appearance="custom"
               onClick={() => handleThreadClick(null)}
               className={`flex items-center rounded-md px-2 py-1 text-[11px] transition-all duration-150 ${
                 selectedThreadId === null
@@ -151,7 +150,6 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
             return (
               <Button
                 layout="custom"
-                appearance="custom"
                 key={thread.threadId}
                 onClick={() => handleThreadClick(thread.threadId)}
                 className={`group flex items-center rounded-md px-2 py-1 text-[11px] transition-all duration-150 ${
@@ -194,7 +192,7 @@ const ThreadSelector: React.FC<ThreadSelectorProps> = memo(
               </span>
             </div>
             <Button
-              variant="tertiary"
+              variant="ghost"
               size="inline"
               onClick={() => handleThreadClick(null)}
               hoverTone="primary"

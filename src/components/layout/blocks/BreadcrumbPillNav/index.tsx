@@ -51,7 +51,6 @@ export const BreadcrumbPillNavTrigger = forwardRef<
     return (
       <Button
         layout="custom"
-        appearance="custom"
         ref={ref}
         disabled={disabled}
         className={classNames(

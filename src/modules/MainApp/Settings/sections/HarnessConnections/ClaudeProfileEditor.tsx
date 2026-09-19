@@ -136,12 +136,10 @@ export default function ClaudeProfileEditor({
             {view?.profiles?.map((profile) => (
               <Button
                 key={profile.id}
-                variant={draft?.id === profile.id ? "primary" : "secondary"}
-                appearance="outline"
                 disabled={disabled || dirty}
                 aria-pressed={draft?.id === profile.id}
                 style={{ height: "auto" }}
-                className="min-w-0 justify-start p-3 text-left"
+                className="min-w-0 justify-start p-3 text-left aria-pressed:border-primary-6 aria-pressed:text-primary-6"
                 onClick={() => edit(profile)}
               >
                 <span className="flex min-w-0 flex-col gap-1">

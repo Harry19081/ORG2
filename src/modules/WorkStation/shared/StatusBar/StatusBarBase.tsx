@@ -127,7 +127,6 @@ export const StatusBarButton = memo(
       return (
         <Button
           layout="custom"
-          appearance="custom"
           ref={ref}
           className={classNames(
             STATUS_BAR_TOKENS.button,
