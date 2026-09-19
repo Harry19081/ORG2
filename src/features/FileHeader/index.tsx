@@ -14,7 +14,6 @@
  *   - `FileHeaderMoreMenu`    → the trailing ellipsis dropdown menu.
  *   - `FileHeaderShell`       → inline vs teleport-to-workstation wrapper.
  */
-import { useAtom } from "jotai";
 import React, {
   memo,
   useCallback,
@@ -35,6 +34,7 @@ import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import TabPill from "@src/components/TabPill";
 import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { useEditorDisplayToggles } from "@src/hooks/settings/useEditorDisplayToggles";
 import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
   Cancel01Icon,
@@ -42,7 +42,6 @@ import {
   HugeiconsIcon,
   LinkSquare02Icon,
 } from "@src/icons";
-import { editorSplitDiffCenteredLineNumbersAtom } from "@src/store/ui/editorSettingsAtom";
 import type { DiffViewMode } from "@src/types/git/types";
 import { copyText } from "@src/util/data/clipboard";
 
@@ -264,9 +263,10 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     // carries sidebar settings like every other workstation header menu.
     const sidebarSettingsVisible = showSidebarSettings || !!toolbarTarget;
     const [moreMenuVisible, setMoreMenuVisible] = useState(false);
-    const [splitCenteredLineNumbers, setSplitCenteredLineNumbers] = useAtom(
-      editorSplitDiffCenteredLineNumbersAtom
-    );
+    const {
+      splitCenteredLineNumbersEnabled: splitCenteredLineNumbers,
+      onSplitCenteredLineNumbersChange: setSplitCenteredLineNumbers,
+    } = useEditorDisplayToggles();
     const [reloadMenuCoolingDown, setReloadMenuCoolingDown] = useState(false);
     const reloadMenuCooldownTimerRef = useRef<ReturnType<
       typeof setTimeout
