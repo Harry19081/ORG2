@@ -1,9 +1,21 @@
 // @vitest-environment jsdom
-import { type ReactNode, createElement } from "react";
+import { type ReactNode, act, createElement } from "react";
+import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import DetailPaneLayout, { DetailPanePlaceholder } from "./DetailPaneLayout";
+import {
+  DETAIL_PANE_CLOSE_ATTRIBUTE,
+  DETAIL_PANE_SHORTCUT_CLOSE_EVENT,
+} from "@src/util/dom/detailPaneClose";
+
+import DetailPaneLayout, {
+  DetailPaneCloseAction,
+  DetailPanePlaceholder,
+} from "./DetailPaneLayout";
+import { DetailPaneShortcutCloseContext } from "./detailPaneShortcutClose";
+
+Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
 vi.mock("@src/components/Placeholder", () => ({
   Placeholder: ({
@@ -96,7 +108,52 @@ describe("DetailPaneLayout", () => {
 
     expect(markup).toContain('data-testid="close-detail"');
     expect(markup).toContain('aria-label="actions.close"');
+    // The close-tab chord finds the open detail through this marker.
+    expect(markup).toMatch(/<span[^>]*data-detail-pane-close=""[^>]*><button/);
     expect(markup).toContain('data-icon="x"');
     expect(markup).toContain("border-b");
+  });
+});
+
+describe("DetailPaneCloseAction", () => {
+  async function mountCloseAction(onShortcutClose: (() => void) | null) {
+    const onClose = vi.fn();
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(
+        createElement(
+          DetailPaneShortcutCloseContext.Provider,
+          { value: onShortcutClose },
+          createElement(DetailPaneCloseAction, { onClose })
+        )
+      );
+    });
+    const sendShortcutClose = () =>
+      container
+        .querySelector(`[${DETAIL_PANE_CLOSE_ATTRIBUTE}]`)
+        ?.dispatchEvent(new CustomEvent(DETAIL_PANE_SHORTCUT_CLOSE_EVENT));
+    const unmount = async () => {
+      await act(async () => root.unmount());
+      container.remove();
+    };
+    return { onClose, sendShortcutClose, unmount };
+  }
+
+  it("closes like its x when the close-tab chord reaches it", async () => {
+    const harness = await mountCloseAction(null);
+    harness.sendShortcutClose();
+    expect(harness.onClose).toHaveBeenCalledTimes(1);
+    await harness.unmount();
+  });
+
+  it("lets the surface keep its split when the chord closes the detail", async () => {
+    const onShortcutClose = vi.fn();
+    const harness = await mountCloseAction(onShortcutClose);
+    harness.sendShortcutClose();
+    expect(onShortcutClose).toHaveBeenCalledTimes(1);
+    expect(harness.onClose).not.toHaveBeenCalled();
+    await harness.unmount();
   });
 });

@@ -19,6 +19,10 @@ import {
   getInstrumentedStore,
   resetInstrumentedStore,
 } from "@src/util/core/state/instrumentedStore";
+import {
+  DETAIL_PANE_CLOSE_ATTRIBUTE,
+  DETAIL_PANE_SHORTCUT_CLOSE_EVENT,
+} from "@src/util/dom/detailPaneClose";
 
 import { closeCurrentWindow } from "../closeCurrentWindow";
 import { useTabShortcuts } from "../useTabShortcuts";
@@ -128,6 +132,46 @@ it("still closes the active tab on a WorkStation URL", async () => {
   expect(navigationEvents).toEqual([]);
   expect(store.get(workstationLayoutAtom).mainPane.tabs).toEqual([]);
   expect(closeCurrentWindow).not.toHaveBeenCalled();
+
+  await harness.unmount();
+});
+
+it("closes a list/detail tab's open detail first, then the tab", async () => {
+  const store = getInstrumentedStore();
+  const listDetailTab = createProjectSettingsTab();
+  store.set(workstationLayoutAtom, {
+    mainPane: { tabs: [listDetailTab], activeTabId: listDetailTab.id },
+  });
+  window.history.replaceState({}, "", ROUTES.workStation.base.path);
+
+  // The detail header's "x", as `DetailPaneCloseAction` renders it; closing
+  // the detail swaps it for a placeholder, which carries no close action.
+  const marker = document.createElement("span");
+  marker.setAttribute(DETAIL_PANE_CLOSE_ATTRIBUTE, "");
+  const closeButton = document.createElement("button");
+  closeButton.checkVisibility = () => true;
+  const onCloseDetail = vi.fn(() => marker.remove());
+  marker.addEventListener(DETAIL_PANE_SHORTCUT_CLOSE_EVENT, onCloseDetail);
+  marker.append(closeButton);
+  document.body.append(marker);
+
+  const harness = await mountTabShortcuts();
+  let closed = false;
+  await act(async () => {
+    closed = harness.handleCloseCurrentTab();
+  });
+
+  expect(closed).toBe(true);
+  expect(onCloseDetail).toHaveBeenCalledTimes(1);
+  expect(store.get(workstationLayoutAtom).mainPane.tabs).toHaveLength(1);
+
+  await act(async () => {
+    closed = harness.handleCloseCurrentTab();
+  });
+
+  expect(closed).toBe(true);
+  expect(onCloseDetail).toHaveBeenCalledTimes(1);
+  expect(store.get(workstationLayoutAtom).mainPane.tabs).toEqual([]);
 
   await harness.unmount();
 });
