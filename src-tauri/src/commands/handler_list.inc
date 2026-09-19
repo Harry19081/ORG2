@@ -175,12 +175,10 @@ search::code::commands::search_code_regex,
 search::code::commands::search_code_streaming,
 search::code::commands::search_code_fast,
 search::code::commands::cancel_search,
-search::code::commands::clear_search_cache,
 search::code::commands::search_symbols,
 search::code::commands::get_file_symbols,
 search::code::commands::goto_definition,
 search::code::commands::find_references,
-search::code::commands::get_supported_languages,
 // Optional semantic search commands
 // Merkle tree commands
 search::merkle::commands::merkle_build_tree,
