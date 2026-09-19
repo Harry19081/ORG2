@@ -54,9 +54,7 @@ interface WorkStationShellProps {
   statusBar: React.ReactNode;
   /** Layout mode — determines whether the primary sidebar is on the left or right. */
   layoutMode?: "left" | "right";
-  /** Additional class name for the container */
-  className?: string;
-  /** Class name for the app (used for BEM styling) */
+  /** App class name added to the shell root (app-specific styling hook) */
   appClassName?: string;
 }
 
@@ -128,7 +126,6 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     content,
     statusBar,
     layoutMode = "left",
-    className,
     appClassName,
   }) => {
     const sidebarShortcut = useShortcutKeys("toggle_workstation_sidebar");
@@ -239,8 +236,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
           "work-station-shell__side-panel",
           !isLeftMode && "work-station-shell__side-panel--right",
           resolvedPrimarySidebar.collapsed &&
-            "work-station-shell__side-panel--collapsed",
-          appClassName && `${appClassName}__side-panel`
+            "work-station-shell__side-panel--collapsed"
         )}
         width={
           resolvedPrimarySidebar.collapsed ? 0 : resolvedPrimarySidebar.size
@@ -270,10 +266,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
 
     const contentPanelElement = (
       <ContentPanel
-        className={classNames(
-          "work-station-shell__content-panel",
-          appClassName && `${appClassName}__content-panel`
-        )}
+        className="work-station-shell__content-panel"
         content={content}
       />
     );
@@ -300,8 +293,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
               ? "work-station-shell__secondary-panel--right"
               : "work-station-shell__secondary-panel--left"),
           secondaryPanelCollapsed &&
-            "work-station-shell__secondary-panel--collapsed",
-          appClassName && `${appClassName}__secondary-panel`
+            "work-station-shell__secondary-panel--collapsed"
         )}
         position={secondaryPosition}
         size={secondarySize}
@@ -336,9 +328,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     const hasSecondary = !!secondaryPanelConfig;
 
     return (
-      <div
-        className={classNames("work-station-shell", appClassName, className)}
-      >
+      <div className={classNames("work-station-shell", appClassName)}>
         {hasSecondary ? (
           <div
             className={classNames(

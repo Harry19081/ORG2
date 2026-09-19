@@ -178,19 +178,11 @@ export {
 // Editor Cache (Per-Repo File Tab Caching)
 // ============================================
 export {
-  // Constants
-  MAX_EDITOR_CACHE_REPOS,
-  MAX_FILE_TABS_PER_REPO,
   // State atoms
   editorCacheAtom,
   activeEditorRepoAtom,
-  // Derived atoms
-  activeRepoCacheAtom,
-  editorCacheSizeAtom,
   // Action atoms
   saveRepoCacheAtom,
-  clearRepoCacheAtom,
-  clearAllEditorCacheAtom,
   disposeEditorCacheForSessionAtom,
   switchActiveRepoAtom,
 } from "./editorCache";

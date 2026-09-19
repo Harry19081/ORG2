@@ -19,10 +19,10 @@ import type { EditorCacheMap, EditorRepoCache, WorkStationTab } from "./types";
 import type { WorkstationWorkspaceId } from "./types";
 
 /** Maximum repos cached independently in each WorkStation workspace. */
-export const MAX_EDITOR_CACHE_REPOS = 5;
+const MAX_EDITOR_CACHE_REPOS = 5;
 
 /** Maximum file tabs cached for one workspace/repository pair. */
-export const MAX_FILE_TABS_PER_REPO = 20;
+const MAX_FILE_TABS_PER_REPO = 20;
 
 const STORAGE_KEY_CACHE = "orgii-v3-editor-cache-by-workspace";
 const STORAGE_KEY_ACTIVE_REPO = "orgii-v3-active-repo-by-workspace";
@@ -226,19 +226,6 @@ export const activeEditorRepoAtom = atom(
 );
 activeEditorRepoAtom.debugLabel = "activeEditorRepoAtom";
 
-export const activeRepoCacheAtom = atom((get) => {
-  const cache = get(editorCacheAtom);
-  const activeRepo = get(activeEditorRepoAtom);
-  return activeRepo ? cache[activeRepo] : undefined;
-});
-activeRepoCacheAtom.debugLabel = "activeRepoCacheAtom";
-
-/** Number of repos cached in the currently presented workspace. */
-export const editorCacheSizeAtom = atom(
-  (get) => Object.keys(get(editorCacheAtom)).length
-);
-editorCacheSizeAtom.debugLabel = "editorCacheSizeAtom";
-
 export const saveRepoCacheAtom = atom(
   null,
   (get, set, cacheEntry: EditorRepoCache) => {
@@ -265,19 +252,6 @@ export const saveRepoCacheAtom = atom(
   }
 );
 saveRepoCacheAtom.debugLabel = "saveRepoCacheAtom";
-
-export const clearRepoCacheAtom = atom(null, (get, set, repoPath: string) => {
-  const cache = { ...get(editorCacheAtom) };
-  delete cache[repoPath];
-  set(editorCacheAtom, cache);
-});
-clearRepoCacheAtom.debugLabel = "clearRepoCacheAtom";
-
-/** Clears every repo cache in the currently presented workspace only. */
-export const clearAllEditorCacheAtom = atom(null, (_get, set) => {
-  set(editorCacheAtom, {});
-});
-clearAllEditorCacheAtom.debugLabel = "clearAllEditorCacheAtom";
 
 /**
  * Drop a session workspace's editor cache (repo tab layouts) and its

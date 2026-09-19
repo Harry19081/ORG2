@@ -41,8 +41,6 @@ export const STATUS_BAR_TOKENS = {
   leftCluster: "flex h-full min-w-0 flex-1 items-center overflow-hidden",
   /** Right cluster (cursor / encoding / tools / etc.) */
   rightCluster: "flex h-full shrink-0 items-center",
-  /** Optional centered slot */
-  centerCluster: "absolute left-1/2 flex h-full -translate-x-1/2 items-center",
 
   /** Status-menu footer with breathing room after a trailing timestamp. */
   menuFooterClass: `${DROPDOWN_CLASSES.footerContainer} pr-2`,
