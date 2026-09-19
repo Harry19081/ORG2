@@ -121,8 +121,6 @@
     "usePointerCursorsDesc": "Zmieniaj kursor na wskazujący po najechaniu na elementy interaktywne",
     "timezoneAuto": "Auto (przeglądarka)",
     "timezoneSearchPlaceholder": "Szukaj najbliższych miast",
-    "sendOnEnter": "Wysyłaj wiadomości za pomocą",
-    "sendOnEnterDesc": "Wybierz skrót wysyłający wiadomość; pozostałe kombinacje z Enter wstawiają nową linię",
     "language": "Język",
     "languageSearchPlaceholder": "Szukaj języków...",
     "languageNames": {
@@ -221,6 +219,7 @@
       "light": "Jasny kafelek"
     },
     "translucentSidebar": "Półprzezroczysty pasek boczny",
+    "sessionBranchTags": "Tagi gałęzi i PR przy sesjach",
     "skin": "Skórka",
     "accent": "Akcent",
     "linkSkinVariants": "Powiąż jasny i ciemny",
@@ -234,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Pokazuje nazwę i skrót klawiszowy po najechaniu na przycisk. Podpowiedzi ikon informacji są zawsze widoczne",
     "buttonTooltipDelayMs": "Opóźnienie podpowiedzi",
     "buttonTooltipDelayImmediate": "Natychmiast",
-    "buttonTooltipDelaySeconds": "{{seconds}} s"
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
+    "modelPickerStyle": "Wybór modelu"
   },
   "background": {
     "title": "Tło",
@@ -535,6 +535,8 @@
     "indentGuides": "Linie wcięć",
     "treeIndentGuides": "Linie wcięć drzewa",
     "highlightActiveLine": "Podświetlanie bieżącego wiersza",
+    "diffViewMode": "Widok różnic",
+    "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Wyśrodkowane numery wierszy w podzielonym diffie",
     "splitDiffCenteredLineNumbersDesc": "Pokazuje obie kolumny numerów wierszy między panelami, jak w GitHubie, zamiast przy lewej krawędzi każdego panelu.",
     "shellsOpenWith": "Otwórz Shell w",
@@ -906,7 +908,10 @@
   "appearance": {
     "tabApp": "Aplikacja",
     "tabCodeEditor": "Edytor kodu",
-    "tabChatPanel": "Panel czatu"
+    "tabChatPanel": "Panel czatu",
+    "chatHistory": "Historia czatu",
+    "composer": "Pole wprowadzania",
+    "newChatPage": "Strona nowego czatu"
   },
   "harnessConnections": {
     "description": "Wybierz połączenie dla każdego narzędzia programistycznego",

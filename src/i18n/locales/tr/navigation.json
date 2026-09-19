@@ -74,12 +74,7 @@
       "manual": "Manuel sıra"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "Yönet",
-      "core": "Çekirdek",
-      "agent": "Agent",
-      "org": "Ekip",
-      "agentOrgs": "Agent ve ekip"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "Gruplama yok",
@@ -101,46 +96,22 @@
       "untitledSession": "Başlıksız Session",
       "enterSessionName": "Session adını girin"
     },
-    "groups": {
-      "economy": "Ekonomi",
-      "myServices": "Hizmetlerim",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "Hosted Key",
-      "cloud": "Cloud",
-      "openSource": "Açık Kaynak",
-      "timeline": "Timeline"
-    },
     "actions": {
       "addNew": "Yeni Ekle",
       "collapseAll": "Tümünü daralt",
       "markAllRead": "Tümünü okundu olarak işaretle"
     },
     "search": {
-      "folders": "Çalışma alanında ara...",
-      "sessions": "Oturum ara...",
-      "projects": "Projelerde ara...",
-      "colleagues": "Ekip arkadaşlarını ara..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} Repo",
-      "multiRepoWorkspace": "{{count}} çoklu repo Workspace",
-      "repo_plural": "{{count}} repo",
-      "multiRepoWorkspace_plural": "{{count}} çoklu repo Workspace"
+      "sessions": "Oturum ara..."
     },
     "bottomBar": {
       "settings": "Ayarlar",
-      "clockLabel": "Şu anki saat",
       "updateAvailable": "Güncelleme v{{version}} indir"
     },
     "settingsMenu": {
       "appearance": "Görünüm",
       "modifyAppearance": "Görünümü değiştir",
-      "language": "Dil",
       "viewRam": "RAM’i görüntüle",
-      "tutorials": "Eğitimler",
       "openSettings": "Ayarları aç"
     },
     "presence": {
@@ -158,10 +129,6 @@
       "duration2h": "2 saat",
       "durationTomorrow": "Yarın",
       "unknownRole": "Bilinmeyen rol"
-    },
-    "guide": {
-      "startSession": "Oturum başlat",
-      "connectOrganization": "Bir çalışma alanı bağlayın veya oluşturun"
     },
     "sections": {
       "section": "Bölüm",

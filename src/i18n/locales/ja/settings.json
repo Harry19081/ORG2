@@ -121,8 +121,6 @@
     "usePointerCursorsDesc": "インタラクティブな要素にカーソルを合わせたときにポインターへ変更します",
     "timezoneAuto": "自動（ブラウザ）",
     "timezoneSearchPlaceholder": "近くの都市を検索",
-    "sendOnEnter": "メッセージ送信キー",
-    "sendOnEnterDesc": "メッセージを送信するショートカットを選択します。その他の Enter キーの組み合わせは改行を挿入します",
     "language": "言語",
     "languageSearchPlaceholder": "言語を検索...",
     "languageNames": {
@@ -221,6 +219,7 @@
       "light": "ライトタイル"
     },
     "translucentSidebar": "半透明のサイドバー",
+    "sessionBranchTags": "セッションのブランチと PR タグ",
     "skin": "スキン",
     "accent": "アクセント",
     "linkSkinVariants": "ライトとダークを連動",
@@ -234,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "ボタンにカーソルを合わせたときに名前とキーボードショートカットを表示します。情報アイコンのツールチップは常に表示されます",
     "buttonTooltipDelayMs": "ツールチップの遅延",
     "buttonTooltipDelayImmediate": "すぐに",
-    "buttonTooltipDelaySeconds": "{{seconds}} 秒"
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
+    "modelPickerStyle": "モデルピッカー"
   },
   "background": {
     "title": "背景",
@@ -535,6 +535,8 @@
     "indentGuides": "インデントガイド",
     "treeIndentGuides": "ツリー インデントガイド",
     "highlightActiveLine": "現在行のハイライト",
+    "diffViewMode": "差分表示",
+    "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "分割差分の行番号中央揃え",
     "splitDiffCenteredLineNumbersDesc": "両方の行番号列を各ペインの左端ではなく、GitHub のように 2 つのペインの間に表示します。",
     "shellsOpenWith": "Shell の開き方",
@@ -906,7 +908,10 @@
   "appearance": {
     "tabApp": "アプリ",
     "tabCodeEditor": "コードエディタ",
-    "tabChatPanel": "チャットパネル"
+    "tabChatPanel": "チャットパネル",
+    "chatHistory": "チャット履歴",
+    "composer": "入力欄",
+    "newChatPage": "新規チャットページ"
   },
   "harnessConnections": {
     "description": "各コーディングツールで使う接続を選択",

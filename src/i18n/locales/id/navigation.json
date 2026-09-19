@@ -96,12 +96,7 @@
       "manual": "Urutan manual"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "Kelola",
-      "core": "Inti",
-      "agent": "Agen",
-      "org": "Tim",
-      "agentOrgs": "Agen & Tim"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "Tanpa pengelompokan",
@@ -123,46 +118,22 @@
       "untitledSession": "Sesi Tanpa Judul",
       "enterSessionName": "Masukkan nama sesi"
     },
-    "groups": {
-      "economy": "Ekonomi",
-      "myServices": "Layanan Saya",
-      "osAgent": "OS Agent",
-      "draft": "Draf",
-      "agent": "Agen Coding",
-      "cli": "Agen CLI",
-      "hostedKey": "Kunci Terhosting",
-      "cloud": "Cloud",
-      "openSource": "Open Source",
-      "timeline": "Linimasa"
-    },
     "actions": {
       "addNew": "Tambah Baru",
       "collapseAll": "Ciutkan Semua",
       "markAllRead": "Tandai Semua Dibaca"
     },
     "search": {
-      "folders": "Cari Ruang Kerja...",
-      "sessions": "Cari Sesi...",
-      "colleagues": "Cari rekan kerja...",
-      "projects": "Cari proyek..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} repo",
-      "repo_plural": "{{count}} repo",
-      "multiRepoWorkspace": "{{count}} Ruang Kerja Multi-Repo",
-      "multiRepoWorkspace_plural": "{{count}} Ruang Kerja Multi-Repo"
+      "sessions": "Cari Sesi..."
     },
     "bottomBar": {
       "settings": "Pengaturan",
-      "clockLabel": "Waktu saat ini",
       "updateAvailable": "Unduh pembaruan v{{version}}"
     },
     "settingsMenu": {
       "appearance": "Tampilan",
       "modifyAppearance": "Ubah tampilan",
-      "language": "Bahasa",
       "viewRam": "Lihat RAM",
-      "tutorials": "Tutorial",
       "openSettings": "Buka Pengaturan"
     },
     "presence": {
@@ -180,10 +151,6 @@
       "duration2h": "2 jam",
       "durationTomorrow": "Besok",
       "unknownRole": "Peran tidak dikenal"
-    },
-    "guide": {
-      "startSession": "Mulai sesi",
-      "connectOrganization": "Hubungkan atau buat ruang kerja"
     },
     "sections": {
       "section": "Bagian",

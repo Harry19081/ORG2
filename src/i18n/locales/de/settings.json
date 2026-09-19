@@ -121,8 +121,6 @@
     "usePointerCursorsDesc": "Den Cursor beim Bewegen über interaktive Elemente in einen Zeiger ändern",
     "timezoneAuto": "Automatisch (Browser)",
     "timezoneSearchPlaceholder": "Nächste Städte suchen",
-    "sendOnEnter": "Nachrichten senden mit",
-    "sendOnEnterDesc": "Wähle die Tastenkombination zum Senden einer Nachricht; andere Enter-Kombinationen fügen eine neue Zeile ein",
     "language": "Sprache",
     "languageSearchPlaceholder": "Sprachen suchen...",
     "languageNames": {
@@ -221,6 +219,7 @@
       "light": "Helle Kachel"
     },
     "translucentSidebar": "Transluzente Seitenleiste",
+    "sessionBranchTags": "Branch- und PR-Tags an Sitzungen",
     "skin": "Skin",
     "accent": "Akzent",
     "linkSkinVariants": "Hell und Dunkel koppeln",
@@ -234,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Beim Überfahren von Schaltflächen Bezeichnung und Tastenkürzel anzeigen. Tooltips von Info-Symbolen werden immer angezeigt",
     "buttonTooltipDelayMs": "Tooltip-Verzögerung",
     "buttonTooltipDelayImmediate": "Sofort",
-    "buttonTooltipDelaySeconds": "{{seconds}} s"
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
+    "modelPickerStyle": "Modellauswahl"
   },
   "background": {
     "title": "Hintergrund",
@@ -535,6 +535,8 @@
     "indentGuides": "Einrückungslinien",
     "treeIndentGuides": "Baum-Einrückungslinien",
     "highlightActiveLine": "Aktuelle Zeile hervorheben",
+    "diffViewMode": "Diff-Ansicht",
+    "gitBlame": "Git Blame",
     "splitDiffCenteredLineNumbers": "Zentrierte Zeilennummern in geteilter Diff-Ansicht",
     "splitDiffCenteredLineNumbersDesc": "Zeigt beide Zeilennummernspalten wie bei GitHub zwischen den beiden Bereichen statt am linken Rand jedes Bereichs.",
     "shellsOpenWith": "Shells öffnen mit",
@@ -906,7 +908,10 @@
   "appearance": {
     "tabApp": "App",
     "tabCodeEditor": "Code-Editor",
-    "tabChatPanel": "Chat-Panel"
+    "tabChatPanel": "Chat-Panel",
+    "chatHistory": "Chatverlauf",
+    "composer": "Eingabefeld",
+    "newChatPage": "Seite „Neuer Chat“"
   },
   "harnessConnections": {
     "description": "Verbindung für jedes Programmierwerkzeug auswählen",

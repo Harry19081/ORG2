@@ -13,11 +13,8 @@ import {
 } from "@src/components/layout/Section";
 import {
   DEFAULT_PAGE_OPACITY,
-  DEFAULT_SIDEBAR_OPACITY,
   MAX_PAGE_OPACITY,
-  MAX_SIDEBAR_OPACITY,
   MIN_PAGE_OPACITY,
-  MIN_SIDEBAR_OPACITY,
 } from "@src/store/ui/backgroundConfigAtom";
 
 import { ColorSection } from "./components/ColorSection";
@@ -35,7 +32,6 @@ export const BackgroundSettings: React.FC = () => {
     handleAddCustomPaletteHex,
     handleRemoveCustomPaletteHex,
     handlePageOpacityChange,
-    handleSidebarOpacityChange,
   } = useBackgroundSettings();
 
   return (
@@ -56,18 +52,6 @@ export const BackgroundSettings: React.FC = () => {
             max={MAX_PAGE_OPACITY}
             value={config.pageOpacity ?? DEFAULT_PAGE_OPACITY}
             onValueChange={handlePageOpacityChange}
-            noPadding
-          />
-        </div>
-      </SectionRow>
-
-      <SectionRow label={t("background.sidebarOpacity")}>
-        <div className="min-w-0" style={SECTION_CONTROL_STYLE}>
-          <Slider
-            min={MIN_SIDEBAR_OPACITY}
-            max={MAX_SIDEBAR_OPACITY}
-            value={config.sidebarOpacity ?? DEFAULT_SIDEBAR_OPACITY}
-            onValueChange={handleSidebarOpacityChange}
             noPadding
           />
         </div>

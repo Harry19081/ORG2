@@ -280,8 +280,7 @@ export const GENERAL_SETTINGS_REGISTRY = {
     },
   },
   "general.chatPanelPosition": {
-    // Edited in the sidebar layout menu, not a settings page.
-    settingsSearch: false,
+    // Settings → Appearance → App → Layout; also the sidebar layout menu.
     schema: z.enum(["left", "right"]),
     default: "left" as const,
     description: "Chat panel side shared by My Station and Agent Station",
@@ -292,8 +291,7 @@ export const GENERAL_SETTINGS_REGISTRY = {
     },
   },
   "general.chatTurnPaginationEnabled": {
-    // Edited in the sidebar layout menu, not a settings page.
-    settingsSearch: false,
+    // Settings → Appearance → Chat Panel → Chat history; also quick menus.
     schema: z.boolean(),
     default: false,
     description:
@@ -301,8 +299,7 @@ export const GENERAL_SETTINGS_REGISTRY = {
     category: "general",
   },
   "general.modelPickerStyle": {
-    // Edited in the sidebar layout menu, not a settings page.
-    settingsSearch: false,
+    // Settings → Appearance → App → Layout; also the sidebar layout menu.
     schema: z.enum(["spotlight", "dropdown"]),
     default: "spotlight" as const,
     description:

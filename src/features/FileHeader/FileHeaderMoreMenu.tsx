@@ -484,7 +484,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
                 })}
 
                 {renderToggleRow({
-                  label: "Git Blame",
+                  label: t("settings:editor.gitBlame"),
                   checked: gitBlameEnabled,
                   enabled: showGitBlameToggle,
                   onChange: onGitBlameChange,

@@ -57,6 +57,12 @@ const APPEARANCE_APP_KEYS = new Set<SettingsKey>([
   "general.buttonTooltipDelayMs",
   "layout.sidebarSelectedRowOpacity",
   "layout.sidebarEdgeDepthEnabled",
+  "general.chatPanelPosition",
+  "general.modelPickerStyle",
+]);
+
+const APPEARANCE_CHAT_PANEL_KEYS = new Set<SettingsKey>([
+  "general.chatTurnPaginationEnabled",
 ]);
 
 const MY_ROLE_KEYS = new Set<SettingsKey>([
@@ -201,6 +207,20 @@ const SETTINGS_SEARCH_UI_OVERRIDES: Partial<
     labelKey: "settings:editor.customFontName",
   },
   "editor.showMinimap": { labelKey: "settings:editor.minimap" },
+  "editor.showBlame": { labelKey: "settings:editor.gitBlame" },
+  "git.sourceControl.colorFileNames": {
+    labelKey: "common:sidebarSettings.colorSourceControlFiles",
+    owner: { navigationItemId: "appearance", tab: "code-editor" },
+  },
+  "general.chatPanelPosition": {
+    labelKey: "common:layoutSettings.chatPanelLocation",
+  },
+  "general.modelPickerStyle": {
+    labelKey: "common:layoutSettings.modelPickerStyle",
+  },
+  "general.chatTurnPaginationEnabled": {
+    labelKey: "common:layoutSettings.paginateChatHistory",
+  },
   "editor.showTreeIndentGuides": {
     labelKey: "settings:editor.treeIndentGuides",
   },
@@ -306,14 +326,10 @@ function resolveOwner(
   if (APPEARANCE_APP_KEYS.has(key)) {
     return { navigationItemId: "appearance", tab: "app" };
   }
-  if (
-    key.startsWith("background.") ||
-    key.startsWith("sidebar.") ||
-    key.startsWith("layout.")
-  ) {
+  if (key.startsWith("layout.")) {
     return { navigationItemId: "appearance", tab: "app" };
   }
-  if (key.startsWith("general.chat") || key === "general.modelPickerStyle") {
+  if (APPEARANCE_CHAT_PANEL_KEYS.has(key)) {
     return { navigationItemId: "appearance", tab: "chat-panel" };
   }
   if (MY_ROLE_KEYS.has(key)) return { navigationItemId: "myRoles" };

@@ -104,8 +104,7 @@ export const EDITOR_SETTINGS_REGISTRY = {
     category: "editor",
   },
   "editor.showBlame": {
-    // Toggled in the code viewer, not a settings page.
-    settingsSearch: false,
+    // Settings → Appearance → Code Editor; also the file header menu.
     schema: z.boolean(),
     default: false,
     description:

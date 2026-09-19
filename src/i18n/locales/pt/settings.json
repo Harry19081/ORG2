@@ -121,8 +121,6 @@
     "usePointerCursorsDesc": "Altera o cursor para um ponteiro ao passar sobre elementos interativos",
     "timezoneAuto": "Automático (Navegador)",
     "timezoneSearchPlaceholder": "Pesquisar cidades próximas",
-    "sendOnEnter": "Enviar mensagens com",
-    "sendOnEnterDesc": "Escolha o atalho que envia uma mensagem; as outras combinações com Enter inserem uma nova linha",
     "language": "Idioma",
     "languageSearchPlaceholder": "Pesquisar idiomas...",
     "languageNames": {
@@ -221,6 +219,7 @@
       "light": "Bloco claro"
     },
     "translucentSidebar": "Barra lateral translúcida",
+    "sessionBranchTags": "Tags de branch e PR nas sessões",
     "skin": "Skin",
     "accent": "Destaque",
     "linkSkinVariants": "Vincular claro e escuro",
@@ -234,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Mostra o rótulo e o atalho de teclado ao passar o cursor sobre botões. As dicas dos ícones de informação sempre aparecem",
     "buttonTooltipDelayMs": "Atraso das dicas",
     "buttonTooltipDelayImmediate": "Imediatamente",
-    "buttonTooltipDelaySeconds": "{{seconds}} s"
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
+    "modelPickerStyle": "Seletor de modelo"
   },
   "background": {
     "title": "Plano de fundo",
@@ -535,6 +535,8 @@
     "indentGuides": "Guias de indentação",
     "treeIndentGuides": "Guias de indentação em árvore",
     "highlightActiveLine": "Realce da linha atual",
+    "diffViewMode": "Visualização de diff",
+    "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Números de linha centralizados no diff dividido",
     "splitDiffCenteredLineNumbersDesc": "Mostra as duas colunas de números de linha entre os dois painéis, como no GitHub, em vez de na borda esquerda de cada painel.",
     "shellsOpenWith": "Shells abrem em",
@@ -906,7 +908,10 @@
   "appearance": {
     "tabApp": "App",
     "tabCodeEditor": "Editor de Código",
-    "tabChatPanel": "Painel de Chat"
+    "tabChatPanel": "Painel de Chat",
+    "chatHistory": "Histórico do chat",
+    "composer": "Compositor",
+    "newChatPage": "Página de novo chat"
   },
   "harnessConnections": {
     "description": "Escolha a conexão de cada ferramenta de programação",

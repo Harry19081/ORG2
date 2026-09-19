@@ -202,8 +202,6 @@
     "usePointerCursorsDesc": "悬停在交互元素上时将光标更改为指针",
     "timezoneAuto": "自动（浏览器）",
     "timezoneSearchPlaceholder": "搜索附近城市",
-    "sendOnEnter": "发送消息快捷键",
-    "sendOnEnterDesc": "选择发送消息的快捷键；其他 Enter 组合键用于换行",
     "language": "语言",
     "languageSearchPlaceholder": "搜索语言...",
     "languageNames": {
@@ -296,6 +294,7 @@
       "monochrome": "单色"
     },
     "translucentSidebar": "半透明侧边栏",
+    "sessionBranchTags": "会话上的分支和 PR 标签",
     "skin": "皮肤",
     "accent": "强调色",
     "linkSkinVariants": "统一浅色与深色",
@@ -315,7 +314,8 @@
     "buttonTooltipsEnabledDesc": "悬停按钮时显示名称和快捷键。信息图标提示始终显示",
     "buttonTooltipDelayMs": "提示延迟",
     "buttonTooltipDelayImmediate": "立即",
-    "buttonTooltipDelaySeconds": "{{seconds}} 秒"
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
+    "modelPickerStyle": "模型选择器"
   },
   "background": {
     "title": "背景",
@@ -616,6 +616,8 @@
     "indentGuides": "缩进参考线",
     "treeIndentGuides": "树视图缩进参考线",
     "highlightActiveLine": "当前行高亮",
+    "diffViewMode": "差异视图",
+    "gitBlame": "Git Blame",
     "splitDiffCenteredLineNumbers": "并排差异视图行号居中",
     "splitDiffCenteredLineNumbersDesc": "将两列行号都显示在左右两栏之间（类似 GitHub），而不是各自显示在每栏左侧。",
     "shellsOpenWith": "Shell 打开方式",
@@ -987,7 +989,10 @@
   "appearance": {
     "tabApp": "应用",
     "tabCodeEditor": "代码编辑器",
-    "tabChatPanel": "聊天面板"
+    "tabChatPanel": "聊天面板",
+    "chatHistory": "聊天记录",
+    "composer": "输入框",
+    "newChatPage": "新聊天页面"
   },
   "harnessConnections": {
     "description": "选择各编程工具使用的连接",
