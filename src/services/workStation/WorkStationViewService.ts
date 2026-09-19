@@ -278,22 +278,10 @@ export const WorkStationViewService = {
   async toggleWorkstationSidebar(): Promise<boolean> {
     if (!isWorkbenchRoute()) return false;
 
-    const [
-      { activeStatusBarCallbacksAtom },
-      { workStationPrimarySidebarCollapsedPersistAtom },
-    ] = await Promise.all([
-      import("@src/store/ui/workStationLayout/statusBarAtoms"),
-      import("@src/store/ui/workStationLayout/primarySidebarAtoms"),
-    ]);
+    const { workStationPrimarySidebarCollapsedPersistAtom } =
+      await import("@src/store/ui/workStationLayout/primarySidebarAtoms");
 
-    const store = getStore();
-    const callbacks = store.get(activeStatusBarCallbacksAtom);
-    if (callbacks.onTogglePrimaryPanel) {
-      callbacks.onTogglePrimaryPanel();
-      return true;
-    }
-
-    store.set(workStationPrimarySidebarCollapsedPersistAtom, "toggle");
+    getStore().set(workStationPrimarySidebarCollapsedPersistAtom, "toggle");
     return true;
   },
 

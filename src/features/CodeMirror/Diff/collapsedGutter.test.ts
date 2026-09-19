@@ -114,7 +114,7 @@ describe("collapsed gutter controls", () => {
     }
   );
 
-  it("highlights only the matching whole row from either half and removes listeners on close", () => {
+  it("highlights one-arrow rows whole, two-arrow rows part by part, and removes listeners on close", () => {
     const view = new EditorView({
       parent: document.body,
       doc: modified,
@@ -137,25 +137,35 @@ describe("collapsed gutter controls", () => {
       buttons[0].parentElement?.classList.contains("cm-collapsedRowHovered")
     ).toBe(true);
     expect(rows[1].classList.contains("cm-collapsedRowHovered")).toBe(false);
-    // Either stacked arrow highlights the whole row, not one half.
+    // A two-arrow row has three actions: each stacked arrow highlights alone
+    // (CSS :hover), so hovering one must not light the label or the row.
     for (const direction of ["down", "up"]) {
+      rows[1].dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
       buttons[1]
         .querySelector(`.cm-collapseArrow--${direction}`)!
         .dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
-      expect(
-        buttons[1].parentElement?.classList.contains("cm-collapsedRowHovered")
-      ).toBe(true);
-      expect(rows[1].classList.contains("cm-collapsedRowHovered")).toBe(true);
-      expect(rows[0].classList.contains("cm-collapsedRowHovered")).toBe(false);
+      expect(view.dom.querySelectorAll(".cm-collapsedRowHovered")).toHaveLength(
+        0
+      );
     }
+    // Its label lights the label bar only, never the arrows beside it.
     rows[1].dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+    expect(rows[1].classList.contains("cm-collapsedRowHovered")).toBe(true);
     expect(
       buttons[1].parentElement?.classList.contains("cm-collapsedRowHovered")
-    ).toBe(true);
+    ).toBe(false);
+    expect(
+      view.dom.querySelectorAll(".cm-gutters .cm-collapsedRowHovered")
+    ).toHaveLength(0);
     buttons[1].dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
-    expect(rows[0].classList.contains("cm-collapsedRowHovered")).toBe(false);
-    expect(rows[1].classList.contains("cm-collapsedRowHovered")).toBe(true);
-    buttons[1].dispatchEvent(
+    expect(view.dom.querySelectorAll(".cm-collapsedRowHovered")).toHaveLength(
+      0
+    );
+    // A one-arrow row still highlights as a whole from its arrow.
+    buttons[0].dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    expect(rows[0].classList.contains("cm-collapsedRowHovered")).toBe(true);
+    expect(rows[1].classList.contains("cm-collapsedRowHovered")).toBe(false);
+    buttons[0].dispatchEvent(
       new FocusEvent("focusout", {
         bubbles: true,
         relatedTarget: document.body,
@@ -221,6 +231,18 @@ describe("collapsed gutter controls", () => {
         )
       ).toEqual([false, false, true]);
     }
+    // Two-arrow row: the label bar lights across both panes, including the
+    // new pane's gutter, but never the arrows' gutter in the old pane.
+    rows(merge.b)[1].dispatchEvent(
+      new MouseEvent("mouseover", { bubbles: true })
+    );
+    const hoveredGutterCells = (view: EditorView) =>
+      view.dom.querySelectorAll(".cm-gutters .cm-collapsedRowHovered").length;
+    expect(rows(merge.a)[1].classList.contains("cm-collapsedRowHovered")).toBe(
+      true
+    );
+    expect(hoveredGutterCells(merge.a)).toBe(0);
+    expect(hoveredGutterCells(merge.b)).toBeGreaterThan(0);
     rows(merge.a)[2].dispatchEvent(
       new MouseEvent("mouseout", {
         bubbles: true,

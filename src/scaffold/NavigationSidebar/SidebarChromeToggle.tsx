@@ -7,8 +7,9 @@
  *
  * macOS draws it inside `PinnedSidebarChrome`, pinned in window space after
  * the traffic lights. Every other host draws it in flow at the head of the
- * sidebar's own chrome row, where the collapsed-sidebar hosts place the same
- * group, so it never moves between the two states there either.
+ * sidebar's own chrome row while open, and `CollapsedSidebarButton` draws it
+ * at the same spot in the leading host's row once collapsed, so it never
+ * moves between the two states there either.
  */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { memo, useCallback, useEffect, useRef } from "react";

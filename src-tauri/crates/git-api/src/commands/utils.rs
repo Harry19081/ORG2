@@ -10,7 +10,7 @@ use std::path::Path;
 
 // Re-export from shared git_util module
 pub use git::util::{
-    is_transient_error, operation_name_from_args, run_git, run_git_with_retry,
+    ensure_git_operand, is_transient_error, operation_name_from_args, run_git, run_git_with_retry,
     run_git_with_retry_friendly, user_friendly_error, DEFAULT_RETRIES,
 };
 

@@ -631,10 +631,10 @@
       "repoBarPosition": "Barra del repo",
       "positionUp": "Arriba",
       "positionDown": "Abajo",
-      "showQuickActions": "Mostrar acciones rápidas",
+      "showQuickActions": "Acciones rápidas",
       "showSkills": "Skills fijadas",
-      "showCliUpdate": "Mostrar actualizaciones de CLI",
-      "showSpotlight": "Mostrar Spotlight",
+      "showCliUpdate": "Actualizaciones de CLI",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "Nueva sesión"
       },
@@ -690,7 +690,7 @@
       "externalBrowser": "Navegador externo"
     },
     "compactInput": "Entrada compacta",
-    "composerGlow": "Mostrar brillo de la entrada",
+    "composerGlow": "Brillo de la entrada",
     "separateEffortPill": "Effort en botón aparte",
     "replay": {
       "follow": "Seguir"
