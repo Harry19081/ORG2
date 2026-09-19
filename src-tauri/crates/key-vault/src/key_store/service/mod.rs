@@ -10,6 +10,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+mod claude_cli_auth;
 mod claude_oauth;
 mod codex_cli_auth;
 mod codex_oauth;
@@ -78,6 +79,8 @@ impl KeyService {
     }
 }
 
+#[cfg(test)]
+pub(crate) use claude_cli_auth::ClaudeCliLoginSource;
 pub use token_sync::{CliOAuthTokenSync, CliOAuthTokenSyncOutcome};
 
 // ============================================

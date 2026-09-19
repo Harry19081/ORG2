@@ -2,38 +2,40 @@ import { describe, expect, it } from "vitest";
 
 import {
   ACCOUNT_SETUP_METHOD_METADATA_KEY,
-  codexReconnectSetupMethod,
+  reconnectSetupMethod,
   withRecordedSetupMethod,
 } from "./accountSetupMethod";
 
-describe("codexReconnectSetupMethod", () => {
+describe("reconnectSetupMethod", () => {
+  const recordedAs = (method: string) => ({
+    accountMetadata: { [ACCOUNT_SETUP_METHOD_METADATA_KEY]: method },
+  });
+
   it("reopens the method the account was added with", () => {
-    expect(
-      codexReconnectSetupMethod({
-        accountMetadata: { [ACCOUNT_SETUP_METHOD_METADATA_KEY]: "autodetect" },
-      })
-    ).toBe("autodetect");
-    expect(
-      codexReconnectSetupMethod({
-        accountMetadata: { [ACCOUNT_SETUP_METHOD_METADATA_KEY]: "enter_token" },
-      })
-    ).toBe("enter_token");
+    expect(reconnectSetupMethod("codex", recordedAs("autodetect"))).toBe(
+      "autodetect"
+    );
+    expect(reconnectSetupMethod("codex", recordedAs("enter_token"))).toBe(
+      "enter_token"
+    );
+    expect(reconnectSetupMethod("claude_code", recordedAs("autodetect"))).toBe(
+      "autodetect"
+    );
   });
 
   it("falls back to sign-in for accounts saved before the method was recorded", () => {
-    expect(codexReconnectSetupMethod(undefined)).toBe("signin");
-    expect(codexReconnectSetupMethod({})).toBe("signin");
+    expect(reconnectSetupMethod("codex", undefined)).toBe("signin");
+    expect(reconnectSetupMethod("claude_code", {})).toBe("signin");
     expect(
-      codexReconnectSetupMethod({ accountMetadata: { email: "a@b.c" } })
+      reconnectSetupMethod("codex", { accountMetadata: { email: "a@b.c" } })
     ).toBe("signin");
   });
 
-  it("ignores a recorded method Codex does not offer", () => {
-    expect(
-      codexReconnectSetupMethod({
-        accountMetadata: { [ACCOUNT_SETUP_METHOD_METADATA_KEY]: "guided" },
-      })
-    ).toBe("signin");
+  it("ignores a recorded method the agent does not offer", () => {
+    expect(reconnectSetupMethod("codex", recordedAs("guided"))).toBe("signin");
+    expect(reconnectSetupMethod("claude_code", recordedAs("enter_token"))).toBe(
+      "signin"
+    );
   });
 });
 

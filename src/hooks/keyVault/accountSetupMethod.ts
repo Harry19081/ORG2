@@ -6,30 +6,29 @@
  */
 export const ACCOUNT_SETUP_METHOD_METADATA_KEY = "setup_method";
 
-export const CODEX_SETUP_METHODS = [
-  "signin",
-  "autodetect",
-  "enter_token",
-] as const;
+/** Setup methods each reconnectable agent's wizard step offers, default first. */
+const RECONNECT_SETUP_METHODS = {
+  codex: ["signin", "autodetect", "enter_token"],
+  claude_code: ["signin", "autodetect"],
+} as const;
 
-export type CodexSetupMethod = (typeof CODEX_SETUP_METHODS)[number];
-
-const DEFAULT_CODEX_SETUP_METHOD: CodexSetupMethod = "signin";
-
-function isCodexSetupMethod(value: unknown): value is CodexSetupMethod {
-  return (CODEX_SETUP_METHODS as readonly unknown[]).includes(value);
-}
+export type ReconnectableAgent = keyof typeof RECONNECT_SETUP_METHODS;
 
 /**
- * The method a Codex reconnect opens on: the one the account was added with.
- * Accounts saved before the method was recorded fall back to sign-in.
+ * The method a reconnect opens on: the one the account was added with.
+ * Accounts saved before the method was recorded, or recorded with a method the
+ * agent does not offer, fall back to sign-in.
  */
-export function codexReconnectSetupMethod(
+export function reconnectSetupMethod(
+  agent: ReconnectableAgent,
   account: { accountMetadata?: Record<string, string> } | undefined
-): CodexSetupMethod {
+): string {
+  const methods: readonly string[] = RECONNECT_SETUP_METHODS[agent];
   const recorded =
     account?.accountMetadata?.[ACCOUNT_SETUP_METHOD_METADATA_KEY];
-  return isCodexSetupMethod(recorded) ? recorded : DEFAULT_CODEX_SETUP_METHOD;
+  return recorded !== undefined && methods.includes(recorded)
+    ? recorded
+    : methods[0];
 }
 
 /**
