@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "Sidebar settings",
     "showSidebar": "Show sidebar",
-    "location": "Location",
-    "showIndentLines": "Indent lines",
     "colorSourceControlFiles": "Diff colors on files"
   },
   "windowChrome": {
@@ -320,7 +318,6 @@
     "nextPage": "Next page",
     "lastPage": "Last page",
     "selectPage": "Select page",
-    "title": "Pagination",
     "round": "Round {{current}}",
     "previousRound": "Previous round",
     "nextRound": "Next round",

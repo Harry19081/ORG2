@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "Barra lateral",
     "showSidebar": "Mostrar barra lateral",
-    "location": "Posição",
-    "showIndentLines": "Linhas de recuo",
     "colorSourceControlFiles": "Cores de diferenças nos arquivos"
   },
   "teamInbox": {
@@ -489,7 +487,6 @@
     "nextPage": "Próxima página",
     "lastPage": "Última página",
     "selectPage": "Selecionar página",
-    "title": "Paginação",
     "round": "Round {{current}}",
     "previousRound": "Rodada anterior",
     "nextRound": "Próxima rodada",

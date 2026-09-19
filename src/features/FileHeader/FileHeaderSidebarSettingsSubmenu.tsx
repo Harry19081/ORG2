@@ -12,11 +12,17 @@ import { useTranslation } from "react-i18next";
 
 import { ActionSubmenu } from "@src/components/Dropdown/ActionMenuSurface";
 import {
+  MenuSegmentedRow,
+  MenuSwitchRow,
+} from "@src/components/Dropdown/MenuControlRows";
+import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
 } from "@src/components/Dropdown/tokens";
-import SegmentedTextPill from "@src/components/SegmentedTextPill";
-import Switch from "@src/components/Switch";
+import {
+  SIDE_POSITION_OPTIONS,
+  localizeMenuOptions,
+} from "@src/config/appearance/quickMenuOptions";
 import { usePrimarySidebarState } from "@src/hooks/tabHost/useWorkStationPanels";
 import { HugeiconsIcon, SidebarLeftIcon, SidebarRightIcon } from "@src/icons";
 import {
@@ -25,33 +31,9 @@ import {
 } from "@src/store/ui/editorSettingsAtom";
 import type { LayoutMode } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 
-function SwitchRow({
-  label,
-  checked,
-  onChange,
-  dataTestId,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  dataTestId: string;
-}) {
-  return (
-    <div className={DROPDOWN_CLASSES.menuControlItem}>
-      <span className="min-w-0 flex-1 truncate">{label}</span>
-      <Switch
-        checked={checked}
-        onCheckedChange={onChange}
-        size="small"
-        ariaLabel={label}
-        dataTestId={dataTestId}
-      />
-    </div>
-  );
-}
-
 export function FileHeaderSidebarSettingsSubmenu() {
   const { t } = useTranslation("common");
+  const { t: tSettings } = useTranslation("settings");
   const {
     layoutMode,
     setLayoutMode,
@@ -70,7 +52,6 @@ export function FileHeaderSidebarSettingsSubmenu() {
     },
     [setColorFileNames]
   );
-  const locationLabel = t("sidebarSettings.location");
 
   return (
     <ActionSubmenu
@@ -84,42 +65,35 @@ export function FileHeaderSidebarSettingsSubmenu() {
       }
       dataTestId="file-header-sidebar-settings-submenu"
     >
-      <SwitchRow
+      <MenuSwitchRow
         label={t("sidebarSettings.showSidebar")}
         checked={!primarySidebarCollapsed}
-        onChange={(visible) => setPrimarySidebarCollapsed(!visible)}
+        onCheckedChange={(visible) => setPrimarySidebarCollapsed(!visible)}
         dataTestId="file-header-sidebar-visible-toggle"
       />
-      <div className={DROPDOWN_CLASSES.menuControlItem}>
-        <span className="min-w-0 flex-1 truncate">{locationLabel}</span>
-        <SegmentedTextPill<LayoutMode>
-          size="small"
-          ariaLabel={locationLabel}
-          dataTestId="file-header-sidebar-location"
-          value={layoutMode}
-          options={[
-            { value: "left", label: t("layoutSettings.left") },
-            { value: "right", label: t("layoutSettings.right") },
-          ]}
-          onChange={setLayoutMode}
-        />
-      </div>
+      <MenuSegmentedRow<LayoutMode>
+        label={t("layoutSettings.sidebarPosition")}
+        dataTestId="file-header-sidebar-location"
+        value={layoutMode}
+        options={localizeMenuOptions(SIDE_POSITION_OPTIONS, t)}
+        onChange={setLayoutMode}
+      />
       <div
         role="separator"
         aria-hidden
         className={DROPDOWN_CLASSES.menuGroupSeparator}
         data-testid="file-header-sidebar-indent-lines-separator"
       />
-      <SwitchRow
-        label={t("sidebarSettings.showIndentLines")}
+      <MenuSwitchRow
+        label={tSettings("editor.treeIndentGuides")}
         checked={indentLinesEnabled}
-        onChange={setIndentLinesEnabled}
+        onCheckedChange={setIndentLinesEnabled}
         dataTestId="file-header-sidebar-indent-lines-toggle"
       />
-      <SwitchRow
+      <MenuSwitchRow
         label={t("sidebarSettings.colorSourceControlFiles")}
         checked={colorFileNames}
-        onChange={handleColorFileNamesChange}
+        onCheckedChange={handleColorFileNamesChange}
         dataTestId="file-header-sidebar-diff-colors-toggle"
       />
     </ActionSubmenu>

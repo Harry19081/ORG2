@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "サイドバー設定",
     "showSidebar": "サイドバーを表示",
-    "location": "位置",
-    "showIndentLines": "インデント線",
     "colorSourceControlFiles": "ファイルの差分色"
   },
   "teamInbox": {
@@ -489,7 +487,6 @@
     "nextPage": "次のページ",
     "lastPage": "最後のページ",
     "selectPage": "ページを選択",
-    "title": "ページネーション",
     "round": "Round {{current}}",
     "previousRound": "前のRound",
     "nextRound": "次のRound",

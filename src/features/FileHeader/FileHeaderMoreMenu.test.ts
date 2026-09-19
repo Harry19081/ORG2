@@ -339,7 +339,7 @@ describe("FileHeaderMoreMenu", () => {
       )
     ).toEqual([
       "sidebarSettings.showSidebar",
-      "sidebarSettings.showIndentLines",
+      "editor.treeIndentGuides",
       "sidebarSettings.colorSourceControlFiles",
     ]);
 
