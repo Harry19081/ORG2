@@ -6,7 +6,7 @@
  * Includes control bar with actions for viewing all changes and split view.
  * Uses dnd-kit for drag and drop reordering.
  *
- * Shared by: CodeEditor, DatabaseManager, Browser
+ * Shared by: CodeEditor, Browser
  *
  * Tab strip uses bg-workstation-bg by default; tabs are 32px pills on the 40px row.
  * The tab row has no bottom divider.
