@@ -535,6 +535,8 @@
     "indentGuides": "Einrückungslinien",
     "treeIndentGuides": "Baum-Einrückungslinien",
     "highlightActiveLine": "Aktuelle Zeile hervorheben",
+    "splitDiffCenteredLineNumbers": "Zentrierte Zeilennummern in geteilter Diff-Ansicht",
+    "splitDiffCenteredLineNumbersDesc": "Zeigt beide Zeilennummernspalten wie bei GitHub zwischen den beiden Bereichen statt am linken Rand jedes Bereichs.",
     "shellsOpenWith": "Shells öffnen mit",
     "shellsOpenWithDesc": "Anfangsverzeichnis für neue Terminals",
     "repoPath": "Repo-Pfad",

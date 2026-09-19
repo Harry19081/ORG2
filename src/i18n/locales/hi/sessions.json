@@ -632,10 +632,10 @@
       "repoBarPosition": "रिपॉज़िटरी बार",
       "positionUp": "ऊपर",
       "positionDown": "नीचे",
-      "showQuickActions": "त्वरित क्रियाएँ दिखाएँ",
+      "showQuickActions": "त्वरित क्रियाएँ",
       "showSkills": "पिन की गई स्किल",
-      "showCliUpdate": "CLI अपडेट दिखाएँ",
-      "showSpotlight": "Spotlight दिखाएँ",
+      "showCliUpdate": "CLI अपडेट",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "नया सत्र"
       },
@@ -691,7 +691,7 @@
       "externalBrowser": "बाहरी ब्राउज़र"
     },
     "compactInput": "कॉम्पैक्ट इनपुट",
-    "composerGlow": "इनपुट ग्लो दिखाएँ",
+    "composerGlow": "इनपुट ग्लो",
     "separateEffortPill": "Effort अलग बटन में",
     "replay": {
       "follow": "अनुसरण करें"
