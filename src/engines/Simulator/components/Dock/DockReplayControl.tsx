@@ -5,7 +5,8 @@
  * Provides navigation between different simulator tools and apps.
  * The dock appearance is consistent in both Live and Replay modes.
  *
- * Note: Replay bar is now handled by SimulatorContentArea component.
+ * Note: The replay bar is rendered separately (MusicPlayerReplayBar in
+ * ActivitySimulator).
  */
 import { type FC, Fragment, type MouseEvent, memo, useCallback } from "react";
 
