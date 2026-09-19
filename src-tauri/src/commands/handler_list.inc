@@ -241,16 +241,12 @@ orgtrack::orgtrack_delete_session_artifacts,
 orgtrack::orgtrack_get_source_tier_policy,
 orgtrack::orgtrack_get_extraction_memory_gate,
 orgtrack::orgtrack_get_session_edit_artifacts,
-orgtrack::orgtrack_get_session_diff_chunks,
 orgtrack::orgtrack_get_session_final_diffs,
 orgtrack::orgtrack_get_diff_replay_preview,
-orgtrack::orgtrack_get_session_commit_links,
 // Debug-only: WDIO Submissions-tab commit-link seeding (Err outside debug builds)
 orgtrack::debug_seed_commit_link,
 // Debug-only: WDIO Diff-tab-content final-diff seeding (Err outside debug builds)
 orgtrack::debug_seed_final_diff,
-orgtrack::orgtrack_get_session_checkpoints,
-orgtrack::orgtrack_get_checkpoint_file_states,
 // Per-round token usage
 session_persistence::get_session_token_usage_records,
 session_persistence::get_session_llm_usage_spans,
