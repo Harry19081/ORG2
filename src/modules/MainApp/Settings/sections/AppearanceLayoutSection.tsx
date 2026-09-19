@@ -62,10 +62,10 @@ export const AppearanceLayoutSection: React.FC = () => {
       </SectionRow>
       <SectionRow
         settingsSearchKeys="general.modelPickerStyle"
-        label={t("common:layoutSettings.modelPickerStyle")}
+        label={t("settings:general.modelPickerStyle")}
       >
         <SegmentedTextPill<ModelPickerStyle>
-          ariaLabel={t("common:layoutSettings.modelPickerStyle")}
+          ariaLabel={t("settings:general.modelPickerStyle")}
           value={modelPickerStyle}
           onChange={setModelPickerStyle}
           options={[

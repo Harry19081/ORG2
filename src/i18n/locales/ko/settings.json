@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "버튼에 마우스를 올리면 이름과 키보드 단축키를 표시합니다. 정보 아이콘 툴팁은 항상 표시됩니다",
     "buttonTooltipDelayMs": "툴팁 지연",
     "buttonTooltipDelayImmediate": "즉시",
-    "buttonTooltipDelaySeconds": "{{seconds}}초"
+    "buttonTooltipDelaySeconds": "{{seconds}}초",
+    "modelPickerStyle": "모델 선택기"
   },
   "background": {
     "title": "배경",

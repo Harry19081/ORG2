@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "懸停按鈕時顯示名稱和快捷鍵。資訊圖示提示始終顯示",
     "buttonTooltipDelayMs": "提示延遲",
     "buttonTooltipDelayImmediate": "立即",
-    "buttonTooltipDelaySeconds": "{{seconds}} 秒"
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
+    "modelPickerStyle": "模型選擇器"
   },
   "background": {
     "title": "背景",

@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Hiện tên và phím tắt khi di chuột qua nút. Chú giải của biểu tượng thông tin luôn hiển thị",
     "buttonTooltipDelayMs": "Độ trễ chú giải",
     "buttonTooltipDelayImmediate": "Ngay lập tức",
-    "buttonTooltipDelaySeconds": "{{seconds}} giây"
+    "buttonTooltipDelaySeconds": "{{seconds}} giây",
+    "modelPickerStyle": "Bộ chọn mô hình"
   },
   "background": {
     "title": "Hình nền",

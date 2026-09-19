@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Pokazuje nazwę i skrót klawiszowy po najechaniu na przycisk. Podpowiedzi ikon informacji są zawsze widoczne",
     "buttonTooltipDelayMs": "Opóźnienie podpowiedzi",
     "buttonTooltipDelayImmediate": "Natychmiast",
-    "buttonTooltipDelaySeconds": "{{seconds}} s"
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
+    "modelPickerStyle": "Wybór modelu"
   },
   "background": {
     "title": "Tło",

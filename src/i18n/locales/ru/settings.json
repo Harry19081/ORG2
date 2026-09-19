@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Показывать название и сочетание клавиш при наведении на кнопки. Подсказки информационных значков показываются всегда",
     "buttonTooltipDelayMs": "Задержка подсказки",
     "buttonTooltipDelayImmediate": "Сразу",
-    "buttonTooltipDelaySeconds": "{{seconds}} с"
+    "buttonTooltipDelaySeconds": "{{seconds}} с",
+    "modelPickerStyle": "Выбор модели"
   },
   "background": {
     "title": "Фон",

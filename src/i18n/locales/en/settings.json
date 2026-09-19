@@ -314,7 +314,8 @@
     "buttonTooltipsEnabledDesc": "Show the label and keyboard shortcut when hovering buttons. Info icon tooltips always show",
     "buttonTooltipDelayMs": "Tooltip delay",
     "buttonTooltipDelayImmediate": "Immediately",
-    "buttonTooltipDelaySeconds": "{{seconds}}s"
+    "buttonTooltipDelaySeconds": "{{seconds}}s",
+    "modelPickerStyle": "Model picker"
   },
   "background": {
     "title": "Background",

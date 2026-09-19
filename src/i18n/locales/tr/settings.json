@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Düğmelerin üzerine gelindiğinde adı ve klavye kısayolunu gösterir. Bilgi simgesi ipuçları her zaman gösterilir",
     "buttonTooltipDelayMs": "İpucu gecikmesi",
     "buttonTooltipDelayImmediate": "Hemen",
-    "buttonTooltipDelaySeconds": "{{seconds}} sn"
+    "buttonTooltipDelaySeconds": "{{seconds}} sn",
+    "modelPickerStyle": "Model seçici"
   },
   "background": {
     "title": "Arka Plan",

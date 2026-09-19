@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "ボタンにカーソルを合わせたときに名前とキーボードショートカットを表示します。情報アイコンのツールチップは常に表示されます",
     "buttonTooltipDelayMs": "ツールチップの遅延",
     "buttonTooltipDelayImmediate": "すぐに",
-    "buttonTooltipDelaySeconds": "{{seconds}} 秒"
+    "buttonTooltipDelaySeconds": "{{seconds}} 秒",
+    "modelPickerStyle": "モデルピッカー"
   },
   "background": {
     "title": "背景",

@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Affiche le libellé et le raccourci clavier au survol des boutons. Les info-bulles des icônes d'information s'affichent toujours",
     "buttonTooltipDelayMs": "Délai des info-bulles",
     "buttonTooltipDelayImmediate": "Immédiatement",
-    "buttonTooltipDelaySeconds": "{{seconds}} s"
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
+    "modelPickerStyle": "Sélecteur de modèle"
   },
   "background": {
     "title": "Arrière-plan",

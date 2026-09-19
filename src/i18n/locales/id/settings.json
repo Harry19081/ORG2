@@ -314,7 +314,8 @@
     "buttonTooltipsEnabledDesc": "Tampilkan label dan pintasan keyboard saat kursor berada di atas tombol. Tooltip ikon info selalu ditampilkan",
     "buttonTooltipDelayMs": "Jeda tooltip",
     "buttonTooltipDelayImmediate": "Segera",
-    "buttonTooltipDelaySeconds": "{{seconds}} dtk"
+    "buttonTooltipDelaySeconds": "{{seconds}} dtk",
+    "modelPickerStyle": "Pemilih model"
   },
   "background": {
     "title": "Latar belakang",

@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Muestra la etiqueta y el atajo de teclado al pasar sobre los botones. La información de los iconos de ayuda siempre se muestra",
     "buttonTooltipDelayMs": "Retraso de la información",
     "buttonTooltipDelayImmediate": "Inmediatamente",
-    "buttonTooltipDelaySeconds": "{{seconds}} s"
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
+    "modelPickerStyle": "Selector de modelo"
   },
   "background": {
     "title": "Fondo",

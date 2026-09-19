@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Mostra o rótulo e o atalho de teclado ao passar o cursor sobre botões. As dicas dos ícones de informação sempre aparecem",
     "buttonTooltipDelayMs": "Atraso das dicas",
     "buttonTooltipDelayImmediate": "Imediatamente",
-    "buttonTooltipDelaySeconds": "{{seconds}} s"
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
+    "modelPickerStyle": "Seletor de modelo"
   },
   "background": {
     "title": "Plano de fundo",

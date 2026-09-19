@@ -233,7 +233,8 @@
     "buttonTooltipsEnabledDesc": "Beim Überfahren von Schaltflächen Bezeichnung und Tastenkürzel anzeigen. Tooltips von Info-Symbolen werden immer angezeigt",
     "buttonTooltipDelayMs": "Tooltip-Verzögerung",
     "buttonTooltipDelayImmediate": "Sofort",
-    "buttonTooltipDelaySeconds": "{{seconds}} s"
+    "buttonTooltipDelaySeconds": "{{seconds}} s",
+    "modelPickerStyle": "Modellauswahl"
   },
   "background": {
     "title": "Hintergrund",
