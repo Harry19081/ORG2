@@ -277,3 +277,113 @@ fn activation_handoff_returns_result_without_waiting_on_itself() {
         "owner changed"
     );
 }
+
+/// A copy of this test binary that runs no tests and exits at once: the same
+/// executable `find` is asked about, entering and leaving the process table.
+fn short_lived_self() -> std::process::Child {
+    std::process::Command::new(std::env::current_exe().unwrap())
+        .args(["--exact", "no-such-test-short-lived-process-fixture"])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .unwrap()
+}
+
+#[test]
+fn unreadable_process_is_reinspected_until_decided() {
+    let identity = Identity {
+        pid: 7,
+        started: (1, 2),
+    };
+    let mut passes = vec![
+        Inspection::Decided(Some(identity.clone())),
+        Inspection::Unreadable("unreadable"),
+        Inspection::Unreadable("unreadable"),
+    ];
+    let settled = settle(5, std::time::Duration::ZERO, || Ok(passes.pop().unwrap()));
+    assert_eq!(settled.unwrap(), Some(identity));
+    assert!(passes.is_empty());
+
+    // A process that never becomes readable is never assumed unrelated.
+    let mut calls = 0;
+    let stuck = settle(3, std::time::Duration::ZERO, || {
+        calls += 1;
+        Ok(Inspection::Unreadable(
+            "Cannot inspect official App arguments",
+        ))
+    });
+    assert_eq!(stuck.unwrap_err(), "Cannot inspect official App arguments");
+    assert_eq!(calls, 4);
+
+    // Definite failures are not retried.
+    let mut calls = 0;
+    let failed = settle(3, std::time::Duration::ZERO, || {
+        calls += 1;
+        Err("Official App process changed during inspection".into())
+    });
+    assert!(failed.is_err());
+    assert_eq!(calls, 1);
+}
+
+#[test]
+fn a_held_zombie_of_the_target_executable_is_not_an_owner() {
+    let mut child = short_lived_self();
+    let pid = child.id() as i32;
+    // Unreaped until `wait`: the kernel keeps a zombie. It reports ESRCH to
+    // proc_pidinfo, so wait for that rather than a zombie status.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while info(pid).unwrap().is_some() {
+        assert!(std::time::Instant::now() < deadline, "fixture never exited");
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
+    assert!(exiting(pid).unwrap());
+    let found = find(
+        &std::env::current_exe().unwrap(),
+        Path::new("/not-an-org2-profile"),
+        "org2.fixture",
+    );
+    child.wait().unwrap();
+    assert_eq!(found.unwrap(), None);
+}
+
+#[test]
+fn processes_spawning_and_exiting_during_a_scan_do_not_fail_it() {
+    // Regression: children of the target executable caught mid-posix_spawn
+    // (no argv yet) or mid-exit made about 40% of scans fail with "Cannot
+    // inspect official App arguments", flaking sibling tests in CI.
+    let stop = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let spawners: Vec<_> = (0..2)
+        .map(|_| {
+            let stop = stop.clone();
+            std::thread::spawn(move || {
+                while !stop.load(std::sync::atomic::Ordering::Relaxed) {
+                    short_lived_self().wait().unwrap();
+                }
+            })
+        })
+        .collect();
+    let executable = std::env::current_exe().unwrap();
+    let started = std::time::Instant::now();
+    let mut failures = Vec::new();
+    let mut scans = 0;
+    while started.elapsed() < std::time::Duration::from_secs(3) {
+        scans += 1;
+        if let Err(error) = find(
+            &executable,
+            Path::new("/not-an-org2-profile"),
+            "org2.fixture",
+        ) {
+            failures.push(error);
+        }
+    }
+    stop.store(true, std::sync::atomic::Ordering::Relaxed);
+    for spawner in spawners {
+        spawner.join().unwrap();
+    }
+    assert!(
+        failures.is_empty(),
+        "{} of {scans} scans failed: {:?}",
+        failures.len(),
+        failures.first()
+    );
+}

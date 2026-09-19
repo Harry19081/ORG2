@@ -157,47 +157,115 @@ fn unrelated_without_executable(bytes: Option<&[u8]>, profile: &Path) -> Result<
     }
 }
 
+/// `PROC_FLAG_INEXIT` (Darwin sys/proc_info.h): the process is inside exit().
+const PROC_FLAG_INEXIT: u32 = 4;
+
+/// Gone, a zombie, or already inside exit(): it cannot keep owning a profile.
+/// The kernel reports zombies as ESRCH, which `info` already maps to `None`.
+fn exiting(pid: i32) -> Result<bool, String> {
+    Ok(match info(pid)? {
+        None => true,
+        Some(info) => info.pbi_status == libc::SZOMB || info.pbi_flags & PROC_FLAG_INEXIT != 0,
+    })
+}
+
+/// One inspection pass either decides or finds the process unreadable.
+enum Inspection {
+    Decided(Option<Identity>),
+    /// Kernel argv was unavailable while the process still looked alive. A
+    /// process mid-`posix_spawn` already reports its parent's executable but
+    /// has no argv yet, and one mid-exit loses argv before it is marked
+    /// exiting; both settle within milliseconds.
+    Unreadable(&'static str),
+}
+
+/// Bound on re-inspecting a process whose argv is momentarily unreadable.
+const UNREADABLE_RETRIES: u32 = 50;
+const UNREADABLE_RETRY_DELAY: std::time::Duration = std::time::Duration::from_millis(2);
+
+/// Re-inspect from scratch (path included, since an exec may land between
+/// passes) until the process is decided. One that stays unreadable is never
+/// assumed unrelated.
+fn settle(
+    retries: u32,
+    delay: std::time::Duration,
+    mut inspect: impl FnMut() -> Result<Inspection, String>,
+) -> Result<Option<Identity>, String> {
+    let mut attempt = 0;
+    loop {
+        match inspect()? {
+            Inspection::Decided(identity) => return Ok(identity),
+            Inspection::Unreadable(error) if attempt >= retries => return Err(error.into()),
+            Inspection::Unreadable(_) => {
+                attempt += 1;
+                std::thread::sleep(delay);
+            }
+        }
+    }
+}
+
 fn matches(
     pid: i32,
     executable: &Path,
     profile: &Path,
     vendor_candidate: bool,
 ) -> Result<Option<Identity>, String> {
+    settle(UNREADABLE_RETRIES, UNREADABLE_RETRY_DELAY, || {
+        inspect(pid, executable, profile, vendor_candidate)
+    })
+}
+
+fn inspect(
+    pid: i32,
+    executable: &Path,
+    profile: &Path,
+    vendor_candidate: bool,
+) -> Result<Inspection, String> {
     use std::os::unix::ffi::OsStrExt;
     let mut path = [0u8; 4096];
     let size = unsafe { libc::proc_pidpath(pid, path.as_mut_ptr().cast(), path.len() as u32) };
     if size <= 0 {
-        match info(pid) {
-            Ok(None) => return Ok(None),
-            Ok(Some(info)) if info.pbi_status == libc::SZOMB => return Ok(None),
-            _ => {}
+        if exiting(pid)? {
+            return Ok(Inspection::Decided(None));
         }
         // A live process whose executable was unlinked can lack a kernel
         // path (e.g. an updated CLI). Its kernel argv can still prove it does
         // not use this profile. Never infer unrelatedness from its name.
         if unrelated_without_executable(process_args(pid).ok().as_deref(), profile)? {
-            return Ok(None);
+            return Ok(Inspection::Decided(None));
         }
-        return Err("Cannot inspect a running process while checking the official App".into());
+        return Ok(Inspection::Unreadable(
+            "Cannot inspect a running process while checking the official App",
+        ));
     }
     let end = path.iter().position(|b| *b == 0).unwrap_or(path.len());
     let exact_executable = &path[..end] == executable.as_os_str().as_bytes();
     if !exact_executable && !vendor_candidate {
-        return Ok(None);
+        return Ok(Inspection::Decided(None));
     }
     let Some(before) = info(pid)? else {
-        return Ok(None);
+        return Ok(Inspection::Decided(None));
     };
     if before.pbi_uid != unsafe { libc::geteuid() } || before.pbi_status == libc::SZOMB {
-        return Ok(None);
+        return Ok(Inspection::Decided(None));
     }
-    let bytes = match process_args(pid) {
-        Ok(bytes) => bytes,
-        Err(_) if info(pid)?.is_none() => return Ok(None),
-        Err(error) => return Err(error),
+    const UNREADABLE: &str = "Cannot inspect official App arguments";
+    let Ok(bytes) = process_args(pid) else {
+        return Ok(if exiting(pid)? {
+            Inspection::Decided(None)
+        } else {
+            Inspection::Unreadable(UNREADABLE)
+        });
     };
-    if !owns_profile(&arguments(&bytes)?, profile)? {
-        return Ok(None);
+    let Ok(args) = arguments(&bytes) else {
+        return Ok(if exiting(pid)? {
+            Inspection::Decided(None)
+        } else {
+            Inspection::Unreadable(UNREADABLE)
+        });
+    };
+    if !owns_profile(&args, profile)? {
+        return Ok(Inspection::Decided(None));
     }
     if !exact_executable {
         return Err("Another installed version of the official App uses this Package profile; quit that App normally before opening the selected version".into());
@@ -207,14 +275,14 @@ fn matches(
         started: (before.pbi_start_tvsec, before.pbi_start_tvusec),
     };
     let Some(after) = info(pid)? else {
-        return Ok(None);
+        return Ok(Inspection::Decided(None));
     };
     if (after.pbi_start_tvsec, after.pbi_start_tvusec) != identity.started
         || after.pbi_uid != before.pbi_uid
     {
         return Err("Official App process changed during inspection".into());
     }
-    Ok(Some(identity))
+    Ok(Inspection::Decided(Some(identity)))
 }
 
 pub(super) fn find(
