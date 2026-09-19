@@ -164,10 +164,8 @@ export const WorkStationViewService = {
       store.set(chatPanelMaximizedAtom, false);
     }
     const mode = store.get(stationModeAtom);
-    if (mode === "my-station" || mode === "agent-station") {
-      const visibility = store.get(stationChatVisibilityAtom);
-      store.set(activeStationChatVisibleAtom, mode, !visibility[mode]);
-    }
+    const visibility = store.get(stationChatVisibilityAtom);
+    store.set(activeStationChatVisibleAtom, mode, !visibility[mode]);
     return true;
   },
 
@@ -188,11 +186,7 @@ export const WorkStationViewService = {
     const store = getStore();
     const { openWorkManagementChatPanelTabAtom } =
       await import("@src/store/chatPanel/chatPanelTabsAtom");
-    const currentMode = store.get(stationModeAtom);
-    const chatStationMode =
-      currentMode === "agent-station" ? "agent-station" : "my-station";
-    store.set(stationModeAtom, chatStationMode);
-    store.set(activeStationChatVisibleAtom, chatStationMode, true);
+    store.set(activeStationChatVisibleAtom, store.get(stationModeAtom), true);
     store.set(openWorkManagementChatPanelTabAtom, {});
     if (!isWorkStationRoute()) {
       dispatchNavigate(ROUTES.workStation.base.path);

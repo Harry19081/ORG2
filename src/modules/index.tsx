@@ -163,10 +163,7 @@ const AppShell = () => {
     if (viewportWidth !== undefined) updateSidebarViewport(viewportWidth);
   }, [viewportWidth, updateSidebarViewport]);
   const stationChatVisibility = useAtomValue(stationChatVisibilityAtom);
-  const currentStationChatVisible =
-    stationMode in stationChatVisibility
-      ? stationChatVisibility[stationMode as keyof typeof stationChatVisibility]
-      : false;
+  const currentStationChatVisible = stationChatVisibility[stationMode];
   const setChatWidth = useSetAtom(chatWidthAtom);
   const restoreChatWidth = useSetAtom(restoreChatWidthAtom);
   const setChatPanelMaximized = useSetAtom(chatPanelMaximizedAtom);
@@ -368,10 +365,7 @@ const AppShell = () => {
                 data-tour-target={GENERAL_LAYOUT_TOUR_TARGETS.workstation}
               >
                 <React.Suspense fallback={<WorkStationLoadingFallback />}>
-                  <WorkStationPage
-                    isActive
-                    chatPanelFocused={effectiveChatFocus}
-                  />
+                  <WorkStationPage chatPanelFocused={effectiveChatFocus} />
                 </React.Suspense>
               </div>
             </div>

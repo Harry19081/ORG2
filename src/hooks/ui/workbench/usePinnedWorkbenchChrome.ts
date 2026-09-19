@@ -134,11 +134,7 @@ export function useCurrentStationChatVisible(): boolean {
   const stationMode = useAtomValue(stationModeAtom);
   const stationChatVisibility = useAtomValue(stationChatVisibilityAtom);
   const chatWidth = useAtomValue(chatWidthAtom);
-  const visible =
-    stationMode in stationChatVisibility
-      ? stationChatVisibility[stationMode as keyof typeof stationChatVisibility]
-      : false;
-  return visible && chatWidth > 0;
+  return stationChatVisibility[stationMode] && chatWidth > 0;
 }
 
 export type WorkbenchRightEdgeOwner = "chat" | "workstation";

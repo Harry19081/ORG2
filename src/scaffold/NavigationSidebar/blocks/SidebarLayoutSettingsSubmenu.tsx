@@ -125,9 +125,7 @@ export const SidebarLayoutSettingsSubmenu: React.FC<SidebarLayoutSettingsSubmenu
 
     const handleChatPanelPositionChange = useCallback(
       (value: ChatPanelPosition) => {
-        if (stationMode === "my-station" || stationMode === "agent-station") {
-          setStationChatVisible(stationMode, true);
-        }
+        setStationChatVisible(stationMode, true);
         setChatPanelPosition(value);
       },
       [setChatPanelPosition, setStationChatVisible, stationMode]
