@@ -235,7 +235,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     handleOpenInNewTab,
     handleOpenInMyStation,
     handleOpenInNewWindow,
-    handleOpenLinkedWorkItemSession,
     handleToggleSubagentExpansion,
   } = useWorkstationSidebarSessionInteractionHandlers({
     handleCloudSessionItemClick,
@@ -304,7 +303,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     enabled: workItemsContentVisible,
     activeProjectOrgId,
     activateMyStationRouteForProjectTabContent,
-    handleOpenLinkedWorkItemSession,
   });
   const { selectedMenuItemId, handleSessionCollapsedSectionIdsChange } =
     useWorkstationSidebarSelectionAndCollapse({
@@ -383,7 +381,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     sessionMap,
     cloudRemoteRowMap,
     cloudRemoteViewerMap,
-    renderProjectsMenuItemWrapper: workItems.renderMenuItemWrapper,
     tSessions,
     setWorkManagementProjectsView,
     openWorkManagementTab,

@@ -42,7 +42,6 @@ type MenuPassThroughProps = Pick<
   | "selectedKeys"
   | "defaultOpenKeys"
   | "onMenuItemClick"
-  | "onSubmenuOpenChange"
   | "onMenuItemContextMenu"
   | "renderMenuItemWrapper"
 >;
@@ -63,7 +62,6 @@ export default function NavigationSidebarSection({
   selectedKeys,
   defaultOpenKeys,
   onMenuItemClick,
-  onSubmenuOpenChange,
   onMenuItemContextMenu,
   renderMenuItemWrapper,
 }: NavigationSidebarSectionProps) {
@@ -160,7 +158,6 @@ export default function NavigationSidebarSection({
           collapsed={false}
           defaultOpenKeys={defaultOpenKeys}
           onMenuItemClick={onMenuItemClick}
-          onSubmenuOpenChange={onSubmenuOpenChange}
           onMenuItemContextMenu={onMenuItemContextMenu}
           renderMenuItemWrapper={renderMenuItemWrapper}
         />
