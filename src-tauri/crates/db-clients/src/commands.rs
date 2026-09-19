@@ -731,11 +731,23 @@ mod row_boundary_tests {
             let values = db_sql_query(id.clone(),
                 r#"SELECT NULL AS nil, CAST(7 AS SIGNED) AS small_value, CAST(18446744073709551615 AS UNSIGNED) AS huge_value, 'hello' AS text_value, CAST('{"ok":true}' AS JSON) AS json_value"#.into()).await?;
             let empty = db_sql_query(id.clone(), "SELECT CAST(1 AS SIGNED) AS preserved_column WHERE FALSE".into()).await?;
-            let unsupported = db_sql_query(id.clone(), "SELECT DATE('2026-09-14') AS date_value".into()).await;
-            Ok::<_, String>((values, empty, unsupported))
+            let temporal = db_sql_query(id.clone(),
+                "SELECT DATE('2026-09-14') AS date_value, CAST('2026-09-14 12:34:56' AS DATETIME) AS datetime_value, CAST('-01:02:03' AS TIME) AS time_value, CAST(123.45 AS DECIMAL(10,2)) AS decimal_value, UNHEX('00AB') AS binary_value".into()).await?;
+            let unsupported = db_sql_query(id.clone(), "SELECT POINT(1, 1) AS point_value".into()).await;
+            Ok::<_, String>((values, empty, temporal, unsupported))
         }.await;
         db_sql_disconnect(id).await.unwrap();
-        let (values, empty, unsupported) = result.unwrap();
+        let (values, empty, temporal, unsupported) = result.unwrap();
+        assert_eq!(
+            temporal.rows,
+            vec![vec![
+                serde_json::json!("2026-09-14"),
+                serde_json::json!("2026-09-14 12:34:56"),
+                serde_json::json!("-01:02:03"),
+                serde_json::json!("123.45"),
+                serde_json::json!("0x00ab")
+            ]]
+        );
         assert_eq!(
             values.rows,
             vec![vec![
@@ -751,7 +763,7 @@ mod row_boundary_tests {
         assert!(unsupported
             .err()
             .unwrap()
-            .contains("Unsupported SQL type DATE"));
+            .contains("Unsupported SQL type GEOMETRY"));
     }
 }
 
@@ -815,8 +827,34 @@ mod session_metadata_tests {
                     .await
                     .is_err()
             );
+            let typed = db_sql_query(
+                id.clone(),
+                r#"SELECT 123.45::numeric AS n, DATE '2026-09-14' AS d, TIMESTAMPTZ '2026-09-14 12:00:00+00' AS ts, '00000000-0000-0000-0000-000000000001'::uuid AS u, '\x00ab'::bytea AS b"#.into(),
+            )
+            .await?;
+            assert_eq!(
+                typed.rows,
+                vec![vec![
+                    serde_json::json!("123.45"),
+                    serde_json::json!("2026-09-14"),
+                    serde_json::json!("2026-09-14T12:00:00Z"),
+                    serde_json::json!("00000000-0000-0000-0000-000000000001"),
+                    serde_json::json!("\\x00ab")
+                ]]
+            );
+            db_sql_execute(
+                id.clone(),
+                "CREATE TYPE pg_temp.row_contract_mood AS ENUM ('calm')".into(),
+            )
+            .await?;
+            let label = db_sql_query(
+                id.clone(),
+                "SELECT 'calm'::pg_temp.row_contract_mood AS mood".into(),
+            )
+            .await?;
+            assert_eq!(label.rows, vec![vec![serde_json::json!("calm")]]);
             assert!(
-                db_sql_query(id.clone(), "SELECT CURRENT_DATE AS unsupported".into())
+                db_sql_query(id.clone(), "SELECT '127.0.0.1'::inet AS unsupported".into())
                     .await
                     .is_err()
             );
@@ -880,7 +918,7 @@ mod session_metadata_tests {
                     .is_err()
             );
             assert!(
-                db_sql_query(id.clone(), "SELECT CURRENT_DATE AS unsupported".into())
+                db_sql_query(id.clone(), "SELECT POINT(1, 1) AS unsupported".into())
                     .await
                     .is_err()
             );
