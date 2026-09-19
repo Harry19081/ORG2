@@ -224,9 +224,6 @@ session_persistence::cache_get_stats,
 session_persistence::cache_truncate_after_event,
 session_persistence::cache_delete_event,
 session_persistence::cache_clear_session_history,
-// Lineage - Chat Session Impact Graph
-project_management::lineage::get_session_impact,
-project_management::lineage::get_provenance_session_ids,
 // Orgtrack - repo-shareable lineage
 orgtrack::orgtrack_initialize,
 orgtrack::orgtrack_sync_core_repo,
