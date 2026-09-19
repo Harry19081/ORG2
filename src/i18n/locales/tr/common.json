@@ -22,8 +22,8 @@
     "title": "Kenar çubuğu ayarları",
     "showSidebar": "Kenar çubuğunu göster",
     "location": "Konum",
-    "showIndentLines": "Girinti çizgilerini göster",
-    "colorSourceControlFiles": "Dosyalar için fark renklerini kullan"
+    "showIndentLines": "Girinti çizgileri",
+    "colorSourceControlFiles": "Dosyalarda fark renkleri"
   },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
@@ -1932,7 +1932,7 @@
     "chatRight": "Sohbet sağda",
     "sidebarPosition": "Workstation kenar çubuğu",
     "modelPickerStyle": "Seçici",
-    "paginateChatHistory": "Sohbet geçmişini sayfalandır",
+    "paginateChatHistory": "Sohbet geçmişi sayfalama",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menü",
     "left": "Sol",

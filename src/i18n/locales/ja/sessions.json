@@ -631,10 +631,10 @@
       "repoBarPosition": "リポジトリバー",
       "positionUp": "上",
       "positionDown": "下",
-      "showQuickActions": "クイックアクションを表示",
+      "showQuickActions": "クイックアクション",
       "showSkills": "ピン留めしたスキル",
-      "showCliUpdate": "CLI の更新を表示",
-      "showSpotlight": "Spotlight を表示",
+      "showCliUpdate": "CLI の更新",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "新しいセッション"
       },
@@ -690,8 +690,8 @@
       "externalBrowser": "外部ブラウザ"
     },
     "compactInput": "コンパクト入力欄",
-    "composerGlow": "入力欄のグローを表示",
-    "separateEffortPill": "Effort を別ボタンで表示",
+    "composerGlow": "入力欄のグロー",
+    "separateEffortPill": "独立した Effort ボタン",
     "replay": {
       "follow": "フォロー"
     },

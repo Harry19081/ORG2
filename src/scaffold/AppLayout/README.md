@@ -11,9 +11,7 @@ The main application shell used by all routes under `/orgii/*`. Provides:
 - Global application chrome
 - Dynamic sidebar slot
 - Floating sidebar (hover-triggered when collapsed)
-- Tab bar (conditionally shown)
 - Built-in chat panel (for session/editor views)
-- Global chat drawer (Cmd+I for other views)
 - Global modals
 
 ```tsx
@@ -45,7 +43,7 @@ import SplitViewLayout from "@src/scaffold/layouts/SplitViewLayout";
 
 ### GlobalModals
 
-Renders app-wide modals (Login, ComponentIssue). Used internally by AppLayout.
+Renders app-wide modals (ComponentIssue). Used internally by AppLayout.
 
 ## Pages NOT Using These Layouts
 
@@ -63,10 +61,8 @@ AppShell (src/modules/index.tsx)
     ├── HoverSidebar.Trigger
     ├── Sidebar slot (dynamic per route)
     ├── FloatingSidebar (hover container)
-    ├── TabBar (conditional)
     ├── Main content (CSS-contained)
     │   ├── Content (via Outlet)
-    │   ├── ChatPanel (session/editor)
-    │   └── GlobalChatPanel (Cmd+I)
+    │   └── ChatPanel (session/editor)
     └── GlobalModals
 ```

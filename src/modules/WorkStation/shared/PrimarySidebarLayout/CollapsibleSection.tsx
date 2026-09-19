@@ -5,7 +5,7 @@
  * Used to create multiple stacked sections (Files, Outline, etc.)
  * Uses grow for proportional space distribution.
  *
- * Shared by: CodeEditor, DatabaseManager, Browser
+ * Shared by: CodeEditor, Browser
  */
 import React, { memo, useCallback, useState } from "react";
 

@@ -48,8 +48,9 @@ import {
 } from "../config";
 import { createCopyFileRefExtension } from "../shared/createCopyFileRefExtension";
 import { getLanguageExtension } from "../shared/languageExtensions";
+import { activeChangedRowGutter } from "./activeChangedRow";
 import { collapsedGutterBackground } from "./collapsedGutter";
-import { diffLineNumbers } from "./diffLineNumbers";
+import { type DiffLineNumberSide, diffLineNumbers } from "./diffLineNumbers";
 import { COLLAPSED_COMPACT_ROW_PX } from "./incrementalCollapse";
 import "./index.scss";
 import {
@@ -283,7 +284,10 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
 
   // ── Stable base extensions (rebuilt only when theme/settings change) ─────
 
-  const buildBaseExtensions = (lineNumberStart = 1): Extension[] => {
+  const buildBaseExtensions = (
+    lineNumberStart = 1,
+    lineNumberSide: DiffLineNumberSide = "before"
+  ): Extension[] => {
     const lineNumberOffset = Math.max(1, lineNumberStart) - 1;
     const formatAbsoluteLineNumber = (lineNo: number) =>
       String(lineNo + lineNumberOffset);
@@ -297,7 +301,12 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
 
     if (showLineNumbers) {
       if (appearanceSettings.lineNumbers === "on") {
-        exts.push(diffLineNumbers({ formatNumber: formatAbsoluteLineNumber }));
+        exts.push(
+          diffLineNumbers({
+            formatNumber: formatAbsoluteLineNumber,
+            side: lineNumberSide,
+          })
+        );
       } else if (appearanceSettings.lineNumbers === "relative") {
         exts.push(
           diffLineNumbers({
@@ -309,6 +318,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
                 ? formatAbsoluteLineNumber(lineNo)
                 : String(Math.abs(lineNo - cursorLine));
             },
+            side: lineNumberSide,
           })
         );
       } else if (appearanceSettings.lineNumbers === "interval") {
@@ -320,6 +330,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
                 ? String(absoluteLineNo)
                 : "";
             },
+            side: lineNumberSide,
           })
         );
       }
@@ -328,6 +339,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     if (appearanceSettings.highlightActiveLine) {
       exts.push(highlightActiveLineGutter());
       exts.push(highlightActiveLine());
+      exts.push(activeChangedRowGutter);
     }
 
     exts.push(customFoldGutter());
@@ -484,8 +496,13 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     container.innerHTML = "";
 
     try {
+      // Centered numbers: the old pane's column moves to its trailing edge so
+      // both columns meet between the panes, as in GitHub's split diff.
       const oldPaneExts = [
-        ...buildBaseExtensions(oldStartLine),
+        ...buildBaseExtensions(
+          oldStartLine,
+          appearanceSettings.splitDiffCenteredLineNumbers ? "after" : "before"
+        ),
         MERGE_THEME_OVERRIDE,
         ...(autoHeight ? [AUTO_HEIGHT_THEME] : []),
       ];
@@ -556,6 +573,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     filePath,
     language,
     appearanceSettings.lineNumbers,
+    appearanceSettings.splitDiffCenteredLineNumbers,
     appearanceSettings.highlightActiveLine,
     effectiveWordWrap,
     appearanceSettings.tabSize,
@@ -623,7 +641,9 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
       ) : (
         <div
           ref={splitContainerRef}
-          className={`codemirror-diff codemirror-diff--split${noBottomPadding ? "codemirror-diff--no-bottom-padding" : ""}`}
+          // The separating space sits outside the expression: the formatter
+          // trims spaces inside class strings, which once fused these names.
+          className={`codemirror-diff codemirror-diff--split ${noBottomPadding ? "codemirror-diff--no-bottom-padding" : ""}`}
           spellCheck={false}
           style={visiblePaneStyle}
         />

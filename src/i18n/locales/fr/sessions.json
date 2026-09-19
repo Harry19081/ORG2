@@ -631,10 +631,10 @@
       "repoBarPosition": "Barre du dépôt",
       "positionUp": "Haut",
       "positionDown": "Bas",
-      "showQuickActions": "Afficher les actions rapides",
+      "showQuickActions": "Actions rapides",
       "showSkills": "Skills épinglées",
-      "showCliUpdate": "Afficher les mises à jour CLI",
-      "showSpotlight": "Afficher Spotlight",
+      "showCliUpdate": "Mises à jour CLI",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "Nouvelle session"
       },
@@ -690,7 +690,7 @@
       "externalBrowser": "Navigateur externe"
     },
     "compactInput": "Saisie compacte",
-    "composerGlow": "Afficher le halo de saisie",
+    "composerGlow": "Halo de saisie",
     "separateEffortPill": "Effort dans un bouton séparé",
     "replay": {
       "follow": "Suivre"

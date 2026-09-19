@@ -21,8 +21,6 @@
  *     `EditorMainPane`); recreating it per-tab breaks running terminals.
  * The provider MUST be mounted with the SAME instances the editor host already
  * holds — see `EditorMainPane/index.tsx`.
- *
- * See docs/workstation-unification/phase-2-host-hoist-plan.md (Phase 2.4).
  */
 import type { UseTerminalStateReturn } from "@/src/engines/TerminalCore/types";
 import { type ReactNode, createContext, useContext } from "react";

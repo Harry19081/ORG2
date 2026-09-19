@@ -212,8 +212,8 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     onViewModeChange: setViewMode,
     onSearchRequest: handleSearchRequest,
     onGoToLineRequest: handleGoToLineRequest,
-    onWordWrapChange:
-      viewMode === "split" && !fileHasConflicts ? undefined : setWordWrap,
+    // Split panes always wrap; keep the toggle visible but locked on.
+    wordWrapLocked: viewMode === "split" && !fileHasConflicts,
   };
 
   // Content still missing — either the self-fetch is in flight or the parent

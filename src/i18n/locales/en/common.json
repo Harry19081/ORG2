@@ -22,8 +22,8 @@
     "title": "Sidebar settings",
     "showSidebar": "Show sidebar",
     "location": "Location",
-    "showIndentLines": "Show indent lines",
-    "colorSourceControlFiles": "Use diff colors for files"
+    "showIndentLines": "Indent lines",
+    "colorSourceControlFiles": "Diff colors on files"
   },
   "windowChrome": {
     "menus": {
@@ -1763,7 +1763,7 @@
     "chatRight": "Chat Right",
     "sidebarPosition": "Workstation sidebar",
     "modelPickerStyle": "Picker",
-    "paginateChatHistory": "Paginate chat history",
+    "paginateChatHistory": "Chat history pagination",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Left",
