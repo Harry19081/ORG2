@@ -123,20 +123,6 @@ export const INPUT_AREA_MENU_FRAME = {
 export const INPUT_AREA_PILL_MENU_GAP = 6;
 
 // ==============================================
-// Padding Tokens
-// ==============================================
-
-/** Compact variant (chat panel embedded) */
-export const INPUT_AREA_PADDING_COMPACT = {
-  paddingX: 4,
-  paddingXClass: "px-1",
-  paddingTop: 12,
-  paddingBottom: 4,
-  gap: 4,
-  gapClass: "gap-1",
-} as const;
-
-// ==============================================
 // Toolbar / Button Tokens
 // ==============================================
 

@@ -56,7 +56,6 @@ interface ChatHistoryViewProps {
   agentOrgOverviewPanel?: React.ReactNode;
   bottomInset: number;
   chromeTopInset: number;
-  chatPanelPosition: "left" | "right";
   displayMode: ChatHistoryDisplayMode;
   emptyState: UseChatEmptyStateReturn;
   groupChatEnabled: boolean;
@@ -91,7 +90,6 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
   agentOrgOverviewPanel,
   bottomInset,
   chromeTopInset,
-  chatPanelPosition,
   displayMode,
   emptyState,
   groupChatEnabled,
@@ -431,7 +429,6 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                 groupMeta={displayGroupMeta}
                 groupCounts={displayGroupCounts}
                 flatItems={displayFlatItems}
-                chatPanelPosition={chatPanelPosition}
                 activeGroupIndex={activeGroupIndex}
                 visibleGroupIndices={visibleGroupIndices}
                 isAtBottom={historyState.atBottom}

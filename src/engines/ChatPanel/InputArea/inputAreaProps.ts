@@ -32,7 +32,6 @@ export interface InputAreaProps {
   onRemoveEditImage?: (index: number) => void;
   surfaceBg?: boolean;
   omitChatHeader?: boolean;
-  chatPanelPosition?: "left" | "right";
   sessionId?: string;
   /** Optional native execution episode for Stop/status; messages stay on sessionId. */
   controlSessionId?: string | null;

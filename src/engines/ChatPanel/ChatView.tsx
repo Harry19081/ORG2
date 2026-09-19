@@ -104,7 +104,6 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
     conversationTargetBinding,
     displayMode = "full",
     turnPaginationEnabled = true,
-    position = "right",
     surfaceBgClass = "bg-chat-pane",
     readOnly = false,
     secondary = false,
@@ -433,7 +432,6 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
         showMainComposer,
         composerRef: setMeasuredFloatingComposerRef,
         inputBoxRef,
-        chatPanelPosition: position,
         planCollapsed,
         onPlanCollapse: collapsePlan,
         questionCollapsed,
@@ -482,7 +480,6 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
         inputAreaSessionId,
         showMainComposer,
         setMeasuredFloatingComposerRef,
-        position,
         planCollapsed,
         collapsePlan,
         questionCollapsed,
@@ -589,7 +586,6 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
                     handleRetryGroupDelivery={handleRetryGroupDelivery}
                     agentMessageClampEligible={agentMessageClampEligible}
                     surfaceBgClass={surfaceBgClass}
-                    position={position}
                     currentAgentOrgMember={currentAgentOrgMember}
                     agentOrgRunView={agentOrgRunView}
                     agentOrgRunViewError={agentOrgRunViewError}
