@@ -18,6 +18,7 @@ import type {
 } from "@src/api/tauri/github";
 
 import { PrMergeBox, type PrMergeBoxProps } from "./PrMergeBox";
+import { PrChecksRefreshContext } from "./prChecksRefreshContext";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -215,6 +216,38 @@ describe("PrMergeBox", () => {
       "https://preview.example.com",
       "https://github.com/org/repo/runs/test",
     ]);
+  });
+
+  it("offers a CI re-poll on the checks section that does not fold the list", async () => {
+    const refreshChecks = vi.fn(() => Promise.resolve());
+    act(() => {
+      root.render(
+        createElement(
+          PrChecksRefreshContext.Provider,
+          { value: { refreshChecks, refreshing: false } },
+          createElement(PrMergeBox, {
+            detail: OPEN_CLEAN,
+            fallbackStatus: "open",
+            checks: checksOf([checkRun("test", "in_progress", null)]),
+            deployments: null,
+            reviews: [],
+            actions: null,
+          })
+        )
+      );
+    });
+    const refresh = find("pr-merge-box-checks-refresh");
+    // A sibling of the toggle, never nested inside it.
+    expect(find("pr-merge-box-checks-toggle")?.contains(refresh)).toBe(false);
+
+    await act(async () => {
+      refresh?.click();
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => resolve())
+      );
+    });
+    expect(refreshChecks).toHaveBeenCalledTimes(1);
+    expect(find("pr-merge-box-check-list")).not.toBeNull();
   });
 
   it("shows a conflict as its own section above the merge control", () => {

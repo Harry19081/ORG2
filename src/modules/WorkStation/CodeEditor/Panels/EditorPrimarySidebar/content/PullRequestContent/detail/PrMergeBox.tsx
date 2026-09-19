@@ -46,6 +46,8 @@ import { formatDuration } from "@src/util/time/formatDuration";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { openLink } from "@src/util/ui/openLink";
 
+import { PrChecksRefreshButton } from "./PrChecksRefreshButton";
+
 // Same shell as the conversation's own cards (`TimelineCard`), so the box reads
 // as the last entry of that column rather than a foreign widget.
 const CARD_CLASS =
@@ -318,33 +320,43 @@ function ChecksSection({
   const expanded = userExpanded ?? section.defaultExpanded;
   return (
     <div data-testid="pr-merge-box-checks">
-      <Button
-        layout="custom"
-        className={`${SECTION_CLASS} w-full text-left transition-colors hover:bg-fill-1`}
-        aria-expanded={expanded}
-        onClick={() => setUserExpanded(!expanded)}
-        data-testid="pr-merge-box-checks-toggle"
-      >
-        <CiCheckStateIcon
-          state={section.tone}
-          size={SECTION_ICON_SIZE}
-          className={SECTION_ICON_CLASS}
+      {/* The re-poll button is a sibling laid over the row, not a child of
+          the toggle: a button inside a button is invalid and would toggle. */}
+      <div className="relative">
+        <Button
+          layout="custom"
+          className={`${SECTION_CLASS} w-full text-left transition-colors hover:bg-fill-1`}
+          aria-expanded={expanded}
+          onClick={() => setUserExpanded(!expanded)}
+          data-testid="pr-merge-box-checks-toggle"
+        >
+          <CiCheckStateIcon
+            state={section.tone}
+            size={SECTION_ICON_SIZE}
+            className={SECTION_ICON_CLASS}
+          />
+          <SectionHeading
+            title={t(
+              `git.pr.mergeBox.${section.headline}`,
+              CHECKS_TITLES[section.headline]
+            )}
+            detail={checksDetail(t, section)}
+          />
+          {/* Room for the re-poll button that floats over this spot. */}
+          <span className="w-6 shrink-0" aria-hidden />
+          <DisclosureChevron
+            expanded={expanded}
+            size={14}
+            strokeWidth={1.9}
+            className="mt-[3px] shrink-0 text-text-3"
+            aria-hidden
+          />
+        </Button>
+        <PrChecksRefreshButton
+          className="absolute top-[7px] right-[34px]"
+          testId="pr-merge-box-checks-refresh"
         />
-        <SectionHeading
-          title={t(
-            `git.pr.mergeBox.${section.headline}`,
-            CHECKS_TITLES[section.headline]
-          )}
-          detail={checksDetail(t, section)}
-        />
-        <DisclosureChevron
-          expanded={expanded}
-          size={14}
-          strokeWidth={1.9}
-          className="mt-[3px] shrink-0 text-text-3"
-          aria-hidden
-        />
-      </Button>
+      </div>
       {expanded ? (
         <div
           className="scrollbar-hide max-h-64 overflow-y-auto border-t border-border-1 py-1"

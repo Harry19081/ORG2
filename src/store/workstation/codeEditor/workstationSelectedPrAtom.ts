@@ -91,6 +91,8 @@ export interface WorkstationSelectedPrState {
   loading: boolean;
   /** Background revalidation over a cached snapshot. */
   refreshing: boolean;
+  /** A checks-only re-poll (manual or scheduled) is in flight. */
+  refreshingChecks: boolean;
   error: string | null;
   submittingComment: boolean;
   submittingReview: boolean;
@@ -115,6 +117,7 @@ export const initialSelectedPrState: WorkstationSelectedPrState = {
   timeline: [],
   loading: false,
   refreshing: false,
+  refreshingChecks: false,
   error: null,
   submittingComment: false,
   submittingReview: false,

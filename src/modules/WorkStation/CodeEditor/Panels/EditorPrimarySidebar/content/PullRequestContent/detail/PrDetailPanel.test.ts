@@ -64,6 +64,7 @@ vi.mock("../../../hooks/useWorkstationPrDetail", () => ({
     submitReview: vi.fn(),
     replyInlineComment: vi.fn(),
     mergePullRequest: vi.fn(),
+    refreshChecks: vi.fn(() => Promise.resolve()),
     setPullRequestAutoMerge: vi.fn(),
     updatePullRequestDraft: vi.fn(),
     updatePullRequestState: vi.fn(),
