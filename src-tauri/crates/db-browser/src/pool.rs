@@ -11,6 +11,8 @@ static POOL: std::sync::LazyLock<Mutex<HashMap<String, Arc<Entry>>>> =
     std::sync::LazyLock::new(|| Mutex::new(HashMap::new()));
 
 struct Entry {
+    /// Label of the window whose webview opened this lease.
+    owner: String,
     connection: Mutex<Option<Connection>>,
     interrupt: OnceLock<rusqlite::InterruptHandle>,
     closed: AtomicBool,
@@ -25,9 +27,10 @@ impl Drop for Entry {
     }
 }
 
-pub fn open(path: &str) -> Result<String, String> {
+pub fn open(owner: &str, path: &str) -> Result<String, String> {
     let id = format!("db-lease:{}", NEXT_ID.fetch_add(1, Ordering::Relaxed));
     let entry = Arc::new(Entry {
+        owner: owner.to_string(),
         connection: Mutex::new(None),
         interrupt: OnceLock::new(),
         closed: AtomicBool::new(false),
@@ -75,6 +78,24 @@ pub fn close(connection_id: &str) {
     }
 }
 
+/// Close every lease opened from `owner` (a window label). A reloaded or
+/// destroyed webview never runs its JS `db_close`, and with capacity
+/// rejection instead of eviction its orphaned leases would otherwise hold
+/// slots until the process exits. Returns how many leases were closed.
+pub fn release_owner(owner: &str) -> usize {
+    let ids: Vec<String> = POOL
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .iter()
+        .filter(|(_, entry)| entry.owner == owner)
+        .map(|(id, _)| id.clone())
+        .collect();
+    for id in &ids {
+        close(id);
+    }
+    ids.len()
+}
+
 pub fn with<F, T>(connection_id: &str, func: F) -> Result<T, String>
 where
     F: FnOnce(&Connection) -> rusqlite::Result<T>,
@@ -99,6 +120,11 @@ where
 mod tests {
     use super::*;
     static TEST_LOCK: Mutex<()> = Mutex::new(());
+    const OWNER: &str = "db-browser-test-window";
+
+    fn open(path: &str) -> Result<String, String> {
+        super::open(OWNER, path)
+    }
 
     /// Create a real SQLite file the pool can open read-write.
     fn seeded_db(dir: &std::path::Path, name: &str) -> String {
@@ -146,6 +172,28 @@ mod tests {
         for id in leases {
             close(&id);
         }
+        close(&replacement);
+    }
+
+    #[test]
+    fn releasing_an_owner_closes_only_its_leases_and_frees_capacity() {
+        let _guard = TEST_LOCK.lock().unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let path = seeded_db(dir.path(), "owners.db");
+        let reloaded: Vec<_> = (0..MAX_CONNECTIONS - 1)
+            .map(|_| super::open("reloaded-window", &path).unwrap())
+            .collect();
+        let survivor = super::open("other-window", &path).unwrap();
+        assert!(open(&path).unwrap_err().contains("limit"));
+
+        assert_eq!(release_owner("reloaded-window"), MAX_CONNECTIONS - 1);
+        for id in &reloaded {
+            assert!(with(id, |_| Ok(())).is_err());
+        }
+        assert!(with(&survivor, |_| Ok(())).is_ok());
+        let replacement = open(&path).unwrap();
+        assert_eq!(release_owner("reloaded-window"), 0);
+        close(&survivor);
         close(&replacement);
     }
 

@@ -60,6 +60,7 @@ pub(crate) fn handle_window_close_and_destroy(
     // still attributed to a dead window.
     if let tauri::WindowEvent::Destroyed = _event {
         system_services::power::release_sleep_inhibitor_for_window_label(_window.label());
+        release_database_leases_for_window(_window.label());
         if app_window::is_station_window_label(_window.label()) {
             browser::inline::release_station_window_webview_state(_window.label());
         }
@@ -75,6 +76,24 @@ pub(crate) fn handle_window_close_and_destroy(
             }
         }
     }
+}
+
+/// Database leases are owned by the window whose webview opened them. A
+/// destroyed or reloaded webview never runs its JS disconnects, and the lease
+/// registries reject new opens at capacity rather than evicting live owners,
+/// so the orphans are released here.
+fn release_database_leases_for_window(label: &str) {
+    let sqlite = db_browser::release_owner(label);
+    if sqlite > 0 {
+        tracing::info!(label, count = sqlite, "[Database] Released SQLite leases");
+    }
+    let label = label.to_string();
+    tauri::async_runtime::spawn(async move {
+        let remote = db_clients::release_owner(&label).await;
+        if remote > 0 {
+            tracing::info!(label, count = remote, "[Database] Released SQL pool leases");
+        }
+    });
 }
 
 /// A detached station window (`app-window-station-<mode>`) going away is a
@@ -125,6 +144,13 @@ pub(crate) fn handle_page_load(
                 "[TauriPageLoad]"
             );
         }
+    }
+    // Only a window's own webview owns database leases; inline browser
+    // webviews navigating inside it must not release them.
+    if webview.label() == webview.window().label()
+        && matches!(payload.event(), PageLoadEvent::Started)
+    {
+        release_database_leases_for_window(webview.window().label());
     }
     if (webview.label() == "main" || app_window::is_station_window_label(webview.label()))
         && matches!(payload.event(), PageLoadEvent::Started)

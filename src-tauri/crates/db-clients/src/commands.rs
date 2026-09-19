@@ -22,8 +22,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(any(feature = "postgres", feature = "mysql"))]
 use sqlx::{Column, Executor, Row, Statement};
 
-static POOLS: LazyLock<Mutex<HashMap<String, Option<Arc<LeasePool>>>>> =
-    LazyLock::new(|| Mutex::new(HashMap::new()));
+static POOLS: LazyLock<Mutex<HashMap<String, Slot>>> = LazyLock::new(|| Mutex::new(HashMap::new()));
 
 const MAX_POOLS: usize = 20;
 
@@ -76,6 +75,12 @@ pub struct ColumnInfo {
 struct LeasePool {
     pool: PoolEntry,
 }
+/// A registry entry. `owner` is the label of the window whose webview opened
+/// the lease; `pool` is `None` while the connection is still being dialled.
+struct Slot {
+    owner: String,
+    pool: Option<Arc<LeasePool>>,
+}
 impl Drop for LeasePool {
     fn drop(&mut self) {
         LIVE_POOLS.fetch_sub(1, Ordering::AcqRel);
@@ -99,7 +104,7 @@ impl Drop for Reservation {
         }
     }
 }
-fn reserve() -> Result<Reservation, String> {
+fn reserve(owner: &str) -> Result<Reservation, String> {
     let mut pools = POOLS.lock().unwrap_or_else(|e| e.into_inner());
     if LIVE_POOLS.load(Ordering::Acquire) >= MAX_POOLS {
         return Err(format!(
@@ -108,7 +113,13 @@ fn reserve() -> Result<Reservation, String> {
     }
     let id = format!("sql-lease:{}", NEXT_LEASE.fetch_add(1, Ordering::Relaxed));
     LIVE_POOLS.fetch_add(1, Ordering::AcqRel);
-    pools.insert(id.clone(), None);
+    pools.insert(
+        id.clone(),
+        Slot {
+            owner: owner.to_string(),
+            pool: None,
+        },
+    );
     Ok(Reservation {
         id,
         committed: false,
@@ -119,8 +130,43 @@ fn get_pool(id: &str) -> Result<Arc<LeasePool>, String> {
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .get(id)
-        .and_then(Clone::clone)
+        .and_then(|slot| slot.pool.clone())
         .ok_or_else(|| format!("No connection found for: {id}"))
+}
+
+async fn close_pool(entry: Arc<LeasePool>) {
+    match &entry.pool {
+        #[cfg(feature = "postgres")]
+        PoolEntry::Postgres(pool) => pool.close().await,
+        #[cfg(feature = "mysql")]
+        PoolEntry::Mysql(pool) => pool.close().await,
+    }
+}
+
+/// Release every lease opened from `owner` (a window label). A reloaded or
+/// destroyed webview never runs its JS disconnects, and with capacity
+/// rejection instead of eviction its orphaned leases would otherwise hold
+/// slots until the process exits. Returns how many leases were released.
+pub async fn release_owner(owner: &str) -> usize {
+    let released: Vec<Option<Arc<LeasePool>>> = {
+        let mut pools = POOLS.lock().unwrap_or_else(|e| e.into_inner());
+        let ids: Vec<String> = pools
+            .iter()
+            .filter(|(_, slot)| slot.owner == owner)
+            .map(|(id, _)| id.clone())
+            .collect();
+        ids.iter()
+            .filter_map(|id| pools.remove(id))
+            .map(|slot| slot.pool)
+            .collect()
+    };
+    let count = released.len();
+    // A still-dialling reservation loses its slot here; its connect call
+    // notices on publication and closes the new pool itself.
+    for entry in released.into_iter().flatten() {
+        close_pool(entry).await;
+    }
+    count
 }
 
 // ============================================
@@ -129,19 +175,28 @@ fn get_pool(id: &str) -> Result<Arc<LeasePool>, String> {
 
 #[tauri::command]
 pub async fn db_sql_connect(
+    window: tauri::Window,
     connection_id: String,
     db_type: String,
     connection_string: String,
 ) -> Result<String, String> {
     let _ = connection_id; // Config identity is not a resource lease.
-    let mut reservation = reserve()?;
-    let entry = match db_type.as_str() {
+    connect_lease(window.label(), &db_type, &connection_string).await
+}
+
+async fn connect_lease(
+    owner: &str,
+    db_type: &str,
+    connection_string: &str,
+) -> Result<String, String> {
+    let mut reservation = reserve(owner)?;
+    let entry = match db_type {
         #[cfg(feature = "postgres")]
         "postgres" => {
             let pool = sqlx::postgres::PgPoolOptions::new()
                 .max_connections(5)
                 .acquire_timeout(Duration::from_secs(30))
-                .connect(&connection_string)
+                .connect(connection_string)
                 .await
                 .map_err(|err| format!("PostgreSQL connection failed: {err}"))?;
             sqlx::query("SELECT 1")
@@ -155,7 +210,7 @@ pub async fn db_sql_connect(
             let pool = sqlx::mysql::MySqlPoolOptions::new()
                 .max_connections(5)
                 .acquire_timeout(Duration::from_secs(30))
-                .connect(&connection_string)
+                .connect(connection_string)
                 .await
                 .map_err(|err| format!("MySQL connection failed: {err}"))?;
             sqlx::query("SELECT 1")
@@ -168,11 +223,20 @@ pub async fn db_sql_connect(
     };
 
     let id = reservation.id.clone();
-    POOLS
-        .lock()
-        .unwrap_or_else(|e| e.into_inner())
-        .insert(id.clone(), Some(Arc::new(LeasePool { pool: entry })));
+    let entry = Arc::new(LeasePool { pool: entry });
     reservation.committed = true;
+    let published = match POOLS.lock().unwrap_or_else(|e| e.into_inner()).get_mut(&id) {
+        Some(slot) => {
+            slot.pool = Some(entry.clone());
+            true
+        }
+        None => false,
+    };
+    if !published {
+        // The owning webview reloaded or closed while this pool was dialling.
+        close_pool(entry).await;
+        return Err("Database connection owner was released".into());
+    }
     Ok(id)
 }
 
@@ -182,14 +246,9 @@ pub async fn db_sql_disconnect(connection_id: String) -> Result<(), String> {
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .remove(&connection_id)
-        .flatten();
+        .and_then(|slot| slot.pool);
     if let Some(entry) = entry {
-        match &entry.pool {
-            #[cfg(feature = "postgres")]
-            PoolEntry::Postgres(pool) => pool.close().await,
-            #[cfg(feature = "mysql")]
-            PoolEntry::Mysql(pool) => pool.close().await,
-        }
+        close_pool(entry).await;
     }
     Ok(())
 }
@@ -464,6 +523,26 @@ pub async fn db_sql_get_table_schema(
 mod tests {
     use super::*;
     static TEST_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+    const OWNER: &str = "db-clients-test-window";
+
+    fn owned_by(owner: &str) -> usize {
+        POOLS
+            .lock()
+            .unwrap()
+            .values()
+            .filter(|slot| slot.owner == owner)
+            .count()
+    }
+
+    fn publish(reservation: &mut Reservation, entry: Arc<LeasePool>) {
+        POOLS
+            .lock()
+            .unwrap()
+            .get_mut(&reservation.id)
+            .expect("reserved slot")
+            .pool = Some(entry);
+        reservation.committed = true;
+    }
 
     /// Every command in this module resolves a pooled connection first, so a
     /// test only needs an id that was never connected.
@@ -483,11 +562,11 @@ mod tests {
     #[tokio::test]
     async fn reserved_capacity_is_bounded_and_failure_releases_it() {
         let _guard = TEST_LOCK.lock().await;
-        let mut held: Vec<_> = (0..MAX_POOLS).map(|_| reserve().unwrap()).collect();
-        assert!(reserve().is_err());
+        let mut held: Vec<_> = (0..MAX_POOLS).map(|_| reserve(OWNER).unwrap()).collect();
+        assert!(reserve(OWNER).is_err());
         assert_eq!(POOLS.lock().unwrap().len(), MAX_POOLS);
         drop(held.pop());
-        let retry = reserve().unwrap();
+        let retry = reserve(OWNER).unwrap();
         drop(held);
         drop(retry);
         assert_eq!(LIVE_POOLS.load(Ordering::Acquire), 0);
@@ -502,28 +581,67 @@ mod tests {
             .min_connections(0)
             .connect_lazy("postgres://fake:fake@db.invalid/fake")
             .unwrap();
-        let mut reservation = reserve().unwrap();
+        let mut reservation = reserve(OWNER).unwrap();
         let id = reservation.id.clone();
         let entry = Arc::new(LeasePool {
             pool: PoolEntry::Postgres(pool),
         });
-        POOLS
-            .lock()
-            .unwrap()
-            .insert(id.clone(), Some(entry.clone()));
-        reservation.committed = true;
+        publish(&mut reservation, entry.clone());
         let borrowed = get_pool(&id).unwrap();
-        let remaining: Vec<_> = (1..MAX_POOLS).map(|_| reserve().unwrap()).collect();
+        let remaining: Vec<_> = (1..MAX_POOLS).map(|_| reserve(OWNER).unwrap()).collect();
         db_sql_disconnect(id.clone()).await.unwrap();
         assert!(get_pool(&id).is_err());
-        assert!(reserve().is_err(), "in-flight resource still uses capacity");
+        assert!(
+            reserve(OWNER).is_err(),
+            "in-flight resource still uses capacity"
+        );
         drop(borrowed);
         drop(entry);
-        let next = reserve().unwrap();
+        let next = reserve(OWNER).unwrap();
         assert_ne!(next.id, id);
         drop(next);
         drop(remaining);
         assert_eq!(LIVE_POOLS.load(Ordering::Acquire), 0);
+    }
+
+    #[cfg(feature = "postgres")]
+    #[tokio::test]
+    async fn releasing_an_owner_frees_only_its_leases_and_capacity() {
+        let _guard = TEST_LOCK.lock().await;
+        let lazy_pool = || {
+            sqlx::postgres::PgPoolOptions::new()
+                .min_connections(0)
+                .connect_lazy("postgres://fake:fake@db.invalid/fake")
+                .unwrap()
+        };
+        let mut reloaded = reserve("reloaded-window").unwrap();
+        publish(
+            &mut reloaded,
+            Arc::new(LeasePool {
+                pool: PoolEntry::Postgres(lazy_pool()),
+            }),
+        );
+        // A connect still dialling when its webview reloads loses its slot too.
+        let dialling = reserve("reloaded-window").unwrap();
+        let mut survivor = reserve("other-window").unwrap();
+        publish(
+            &mut survivor,
+            Arc::new(LeasePool {
+                pool: PoolEntry::Postgres(lazy_pool()),
+            }),
+        );
+
+        assert_eq!(release_owner("reloaded-window").await, 2);
+        assert_eq!(owned_by("reloaded-window"), 0);
+        assert!(get_pool(&reloaded.id).is_err());
+        assert!(get_pool(&survivor.id).is_ok());
+        assert_eq!(LIVE_POOLS.load(Ordering::Acquire), 2, "dialling + survivor");
+        drop(dialling);
+        assert_eq!(LIVE_POOLS.load(Ordering::Acquire), 1);
+
+        db_sql_disconnect(survivor.id.clone()).await.unwrap();
+        assert_eq!(LIVE_POOLS.load(Ordering::Acquire), 0);
+        assert_eq!(release_owner("reloaded-window").await, 0);
     }
 
     // ---------- connection lifecycle ----------
@@ -531,35 +649,21 @@ mod tests {
     #[tokio::test]
     async fn connect_rejects_an_unknown_engine_without_dialling_out() {
         let _guard = TEST_LOCK.lock().await;
-        let err = db_sql_connect(
-            unconnected_id("engine"),
-            "sqlite".to_string(),
-            "sqlite:///tmp/whatever.db".to_string(),
-        )
-        .await
-        .unwrap_err();
+        let err = connect_lease(OWNER, "sqlite", "sqlite:///tmp/whatever.db")
+            .await
+            .unwrap_err();
 
         assert_eq!(err, "Unsupported db_type: sqlite");
         // A rejected engine must not leave a half-registered pool entry
         // behind for later commands to find.
-        assert!(POOLS
-            .lock()
-            .unwrap()
-            .get(&unconnected_id("engine"))
-            .is_none());
+        assert_eq!(owned_by(OWNER), 0);
     }
 
     #[tokio::test]
     async fn connect_engine_name_matching_is_exact_and_case_sensitive() {
         let _guard = TEST_LOCK.lock().await;
         for engine in ["Postgres", "POSTGRES", "postgresql", "MySQL", ""] {
-            let err = db_sql_connect(
-                unconnected_id("case"),
-                engine.to_string(),
-                "ignored".to_string(),
-            )
-            .await
-            .unwrap_err();
+            let err = connect_lease(OWNER, engine, "ignored").await.unwrap_err();
             assert_eq!(err, format!("Unsupported db_type: {engine}"));
         }
     }
@@ -708,8 +812,8 @@ mod row_boundary_tests {
     #[ignore = "requires ORGII_TEST_MYSQL_URL pointing to a disposable local MySQL server"]
     async fn mysql_same_config_owns_independent_leases() {
         let url = std::env::var("ORGII_TEST_MYSQL_URL").unwrap();
-        let first = db_sql_connect("same-config".into(), "mysql".into(), url.clone()).await.unwrap();
-        let second = db_sql_connect("same-config".into(), "mysql".into(), url).await.unwrap();
+        let first = connect_lease("same-config", "mysql", &url).await.unwrap();
+        let second = connect_lease("same-config", "mysql", &url).await.unwrap();
         assert_ne!(first, second);
         db_sql_disconnect(first.clone()).await.unwrap();
         let closed = db_sql_query(first, "SELECT 1".into()).await;
@@ -723,8 +827,7 @@ mod row_boundary_tests {
     #[ignore = "requires ORGII_TEST_MYSQL_URL pointing to a disposable local MySQL server"]
     async fn mysql_query_preserves_values_nulls_errors_and_empty_columns() {
         let url = std::env::var("ORGII_TEST_MYSQL_URL").expect("disposable MySQL URL");
-        let config_id = "row-contract-mysql-fixture".to_string();
-        let id = db_sql_connect(config_id, "mysql".into(), url)
+        let id = connect_lease("row-contract-mysql-fixture", "mysql", &url)
             .await
             .unwrap();
         let result = async {
@@ -800,10 +903,16 @@ mod session_metadata_tests {
             .await
             .unwrap();
         sqlx::query("CREATE TEMP TABLE row_contract AS SELECT 'Alice'::citext AS label, 7::int2 AS small_value").execute(&pool).await.unwrap();
-        let mut reservation = reserve().unwrap();
+        let mut reservation = reserve("session-metadata-fixture").unwrap();
         let id = reservation.id.clone();
         POOLS.lock().unwrap_or_else(|e| e.into_inner()).insert(
-            id.clone(), Some(Arc::new(LeasePool { pool: PoolEntry::Postgres(pool) })),
+            id.clone(),
+            Slot {
+                owner: "session-metadata-fixture".into(),
+                pool: Some(Arc::new(LeasePool {
+                    pool: PoolEntry::Postgres(pool),
+                })),
+            },
         );
         reservation.committed = true;
         let result = async {
@@ -890,10 +999,16 @@ mod session_metadata_tests {
             .await
             .unwrap();
         sqlx::query("CREATE TEMPORARY TABLE row_contract AS SELECT 'Alice' AS label, CAST(7 AS SIGNED) AS small_value").execute(&pool).await.unwrap();
-        let mut reservation = reserve().unwrap();
+        let mut reservation = reserve("session-metadata-fixture").unwrap();
         let id = reservation.id.clone();
         POOLS.lock().unwrap_or_else(|e| e.into_inner()).insert(
-            id.clone(), Some(Arc::new(LeasePool { pool: PoolEntry::Mysql(pool) })),
+            id.clone(),
+            Slot {
+                owner: "session-metadata-fixture".into(),
+                pool: Some(Arc::new(LeasePool {
+                    pool: PoolEntry::Mysql(pool),
+                })),
+            },
         );
         reservation.committed = true;
         let result = async {
