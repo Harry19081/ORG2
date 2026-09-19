@@ -535,7 +535,7 @@
     "indentGuides": "Linie wcięć",
     "treeIndentGuides": "Linie wcięć drzewa",
     "highlightActiveLine": "Podświetlanie bieżącego wiersza",
-    "splitDiffCenteredLineNumbers": "Wyśrodkuj numery wierszy w podzielonym diffie",
+    "splitDiffCenteredLineNumbers": "Wyśrodkowane numery wierszy w podzielonym diffie",
     "splitDiffCenteredLineNumbersDesc": "Pokazuje obie kolumny numerów wierszy między panelami, jak w GitHubie, zamiast przy lewej krawędzi każdego panelu.",
     "shellsOpenWith": "Otwórz Shell w",
     "shellsOpenWithDesc": "Początkowy katalog roboczy dla nowych terminali",

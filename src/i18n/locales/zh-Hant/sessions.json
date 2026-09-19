@@ -631,10 +631,10 @@
       "repoBarPosition": "倉庫列",
       "positionUp": "上方",
       "positionDown": "下方",
-      "showQuickActions": "顯示快捷操作",
+      "showQuickActions": "快捷操作",
       "showSkills": "釘選 Skills",
-      "showCliUpdate": "顯示 CLI 更新",
-      "showSpotlight": "顯示 Spotlight",
+      "showCliUpdate": "CLI 更新",
+      "showSpotlight": "Spotlight",
       "title": "你想做什麼？",
       "back": "返回起始頁",
       "newSession": {
@@ -727,7 +727,7 @@
       "externalBrowser": "外部瀏覽器"
     },
     "compactInput": "緊湊輸入框",
-    "composerGlow": "顯示輸入框光暈",
+    "composerGlow": "輸入框光暈",
     "separateEffortPill": "獨立 Effort 按鈕",
     "replay": {
       "follow": "跟隨"

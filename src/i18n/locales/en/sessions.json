@@ -632,10 +632,10 @@
       "repoBarPosition": "Repo bar",
       "positionUp": "Up",
       "positionDown": "Down",
-      "showQuickActions": "Show quick actions",
+      "showQuickActions": "Quick actions",
       "showSkills": "Pinned skills",
-      "showCliUpdate": "Show CLI update",
-      "showSpotlight": "Show Spotlight",
+      "showCliUpdate": "CLI update",
+      "showSpotlight": "Spotlight",
       "title": "What would you like to do?",
       "back": "Back to start page",
       "newSession": {
@@ -728,7 +728,7 @@
       "externalBrowser": "External browser"
     },
     "compactInput": "Compact input",
-    "composerGlow": "Show input glow",
+    "composerGlow": "Input glow",
     "separateEffortPill": "Separate effort pill",
     "replay": {
       "follow": "Follow"

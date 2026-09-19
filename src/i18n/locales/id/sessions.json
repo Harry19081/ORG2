@@ -632,10 +632,10 @@
       "repoBarPosition": "Bilah repo",
       "positionUp": "Atas",
       "positionDown": "Bawah",
-      "showQuickActions": "Tampilkan tindakan cepat",
+      "showQuickActions": "Tindakan cepat",
       "showSkills": "Skill yang disematkan",
-      "showCliUpdate": "Tampilkan pembaruan CLI",
-      "showSpotlight": "Tampilkan Spotlight",
+      "showCliUpdate": "Pembaruan CLI",
+      "showSpotlight": "Spotlight",
       "title": "Apa yang ingin Anda lakukan?",
       "back": "Kembali ke halaman awal",
       "newSession": {
@@ -728,8 +728,8 @@
       "externalBrowser": "Browser eksternal"
     },
     "compactInput": "Input ringkas",
-    "composerGlow": "Tampilkan cahaya kolom input",
-    "separateEffortPill": "Pisahkan tombol Effort",
+    "composerGlow": "Cahaya kolom input",
+    "separateEffortPill": "Tombol Effort terpisah",
     "replay": {
       "follow": "Ikuti"
     },
