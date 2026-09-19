@@ -880,7 +880,7 @@
     "chatHistoryReloadHint": "Session verileri yüklenmemiş olabilir",
     "chatHistoryAgentWorking": "Agent çalışıyor",
     "chatHistoryAgentWorkingHint": "İlk yanıtla mesajlar görünür; o zamana kadar araç çubuğu boşta görünebilir",
-    "pleaseSelect": "Lütfen seçin",
+    "pleaseSelect": "Seç",
     "noSessionsFound": "Session bulunamadı",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",

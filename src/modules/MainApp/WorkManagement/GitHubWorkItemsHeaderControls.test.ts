@@ -24,6 +24,21 @@ describe("GitHubWorkItemsHeaderControls", () => {
     expect(markup).not.toContain("All repositories");
   });
 
+  it("shows a loading placeholder instead of a selection prompt while repos load", () => {
+    const markup = renderToStaticMarkup(
+      createElement(GitHubWorkItemsRepositorySelect, {
+        repoOptions: [],
+        selectedRepo: "",
+        loading: true,
+        onRepoSelect: vi.fn(),
+      })
+    );
+
+    expect(markup).toContain("placeholders.loading");
+    expect(markup).not.toContain("placeholders.pleaseSelect");
+    expect(markup).toContain('data-icon="loader-2"');
+  });
+
   it("groups the state and personal filters together", () => {
     const markup = renderToStaticMarkup(
       createElement(GitHubWorkItemsFilterControls, {

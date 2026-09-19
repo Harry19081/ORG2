@@ -880,7 +880,7 @@
     "chatHistoryReloadHint": "Session 數據可能未加載",
     "chatHistoryAgentWorking": "Agent 運行中",
     "chatHistoryAgentWorkingHint": "首則回覆到達後會顯示訊息，此前工具列可能顯示閒置",
-    "pleaseSelect": "請選擇",
+    "pleaseSelect": "選擇",
     "noSessionsFound": "未找到 Session",
     "typeToSearchFiles": "輸入以搜索文件...",
     "selectFileToViewChanges": "選擇文件以查看變更",
