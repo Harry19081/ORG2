@@ -10,6 +10,7 @@ import {
   ActionSubmenu,
 } from "@src/components/Dropdown/ActionMenuSurface";
 import DropdownItem from "@src/components/Dropdown/DropdownItem";
+import { MenuSwitchRow } from "@src/components/Dropdown/MenuControlRows";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_ITEM,
@@ -17,9 +18,9 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import Message from "@src/components/Message";
-import Switch from "@src/components/Switch";
 import { useCopySessionReference } from "@src/features/Org2Cloud/useCopySessionReference";
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
+import { useSetting } from "@src/hooks/settings/useSettings";
 import {
   AppWindowMacIcon,
   ArrowBigRightDashIcon,
@@ -133,7 +134,12 @@ export const SessionHeaderActionsMenu: React.FC<
   toggleHeaderActionsMenu,
   triggerTestId,
 }) => {
-  const { t } = useTranslation(["sessions", "common", "navigation"]);
+  const { t } = useTranslation([
+    "sessions",
+    "common",
+    "navigation",
+    "settings",
+  ]);
   const moveToWorkstation = moveTarget === "workstation";
 
   const currentSession = useAtomValue(sessionByIdAtom(currentSessionId ?? ""));
@@ -141,6 +147,9 @@ export const SessionHeaderActionsMenu: React.FC<
     collapseToolActivityAtom
   );
   const [linkOpenTarget, setLinkOpenTarget] = useAtom(linkOpenTargetAtom);
+  const [typingEffectEnabled, setTypingEffectEnabled] = useSetting(
+    "chat.typingEffectEnabled"
+  );
 
   // Track this / Convert to Project (orgtrack/v1 §7.2). Self-contained:
   // the backend command persists the switch + root WorkItem; only the
@@ -510,69 +519,45 @@ export const SessionHeaderActionsMenu: React.FC<
                   }
                   dataTestId="session-ui-settings-submenu"
                 >
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">
-                      {t("common:pagination.title")}
-                    </span>
-                    <Switch
-                      checked={paginationEnabled}
-                      onCheckedChange={handlePaginationToggle}
-                      size="small"
-                      ariaLabel={t("common:pagination.title")}
-                    />
-                  </div>
+                  <MenuSwitchRow
+                    label={t("common:layoutSettings.paginateChatHistory")}
+                    checked={paginationEnabled}
+                    onCheckedChange={handlePaginationToggle}
+                  />
                   <div
                     role="separator"
                     className={DROPDOWN_CLASSES.menuGroupSeparator}
                   />
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">
-                      {t("chat.showTokenUsage")}
-                    </span>
-                    <Switch
-                      checked={tokenUsageVisible}
-                      onCheckedChange={handleTokenUsageVisibleToggle}
-                      size="small"
-                      ariaLabel={t("chat.showTokenUsage")}
-                    />
-                  </div>
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">
-                      {t("chat.showTurnMetadata")}
-                    </span>
-                    <Switch
-                      checked={turnMetadataVisible}
-                      onCheckedChange={handleTurnMetadataVisibleToggle}
-                      size="small"
-                      ariaLabel={t("chat.showTurnMetadata")}
-                      dataTestId="session-menu-turn-metadata-toggle"
-                    />
-                  </div>
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">
-                      {t("chat.showInlineDiffs")}
-                    </span>
-                    <Switch
-                      checked={displayMode === "full"}
-                      onCheckedChange={(checked) =>
-                        handleCompactDisplayModeToggle(!checked)
-                      }
-                      size="small"
-                      ariaLabel={t("chat.showInlineDiffs")}
-                    />
-                  </div>
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">
-                      {t("chat.collapseToolActivity")}
-                    </span>
-                    <Switch
-                      checked={collapseToolActivity}
-                      onCheckedChange={setCollapseToolActivity}
-                      size="small"
-                      ariaLabel={t("chat.collapseToolActivity")}
-                      dataTestId="session-menu-collapse-tool-activity-toggle"
-                    />
-                  </div>
+                  <MenuSwitchRow
+                    label={t("chat.showTokenUsage")}
+                    checked={tokenUsageVisible}
+                    onCheckedChange={handleTokenUsageVisibleToggle}
+                  />
+                  <MenuSwitchRow
+                    label={t("chat.showTurnMetadata")}
+                    checked={turnMetadataVisible}
+                    onCheckedChange={handleTurnMetadataVisibleToggle}
+                    dataTestId="session-menu-turn-metadata-toggle"
+                  />
+                  <MenuSwitchRow
+                    label={t("chat.showInlineDiffs")}
+                    checked={displayMode === "full"}
+                    onCheckedChange={(checked) =>
+                      handleCompactDisplayModeToggle(!checked)
+                    }
+                  />
+                  <MenuSwitchRow
+                    label={t("chat.collapseToolActivity")}
+                    checked={collapseToolActivity}
+                    onCheckedChange={setCollapseToolActivity}
+                    dataTestId="session-menu-collapse-tool-activity-toggle"
+                  />
+                  <MenuSwitchRow
+                    label={t("settings:agentSessions.typingAnimation")}
+                    checked={typingEffectEnabled}
+                    onCheckedChange={setTypingEffectEnabled}
+                    dataTestId="session-menu-typing-animation-toggle"
+                  />
                 </ActionSubmenu>
                 <SessionInputSettingsSubmenu />
               </>

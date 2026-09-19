@@ -4,54 +4,91 @@ import { useTranslation } from "react-i18next";
 
 import { ActionSubmenu } from "@src/components/Dropdown/ActionMenuSurface";
 import {
-  DROPDOWN_CLASSES,
-  DROPDOWN_ITEM,
-} from "@src/components/Dropdown/tokens";
+  MenuControlRow,
+  MenuSegmentedRow,
+  MenuSwitchRow,
+} from "@src/components/Dropdown/MenuControlRows";
+import { DROPDOWN_ITEM } from "@src/components/Dropdown/tokens";
 import SendOnEnterPill from "@src/components/SendOnEnterPill";
-import Switch from "@src/components/Switch";
 import { HugeiconsIcon, InputCursorTextIcon } from "@src/icons";
 import { chatSendOnEnterAtom } from "@src/store/config/configAtom";
 import { compactComposerInputAtom } from "@src/store/session/compactComposerInputAtom";
 import { composerGlowVisibleAtom } from "@src/store/session/composerGlowVisibleAtom";
+import { creatorRepoChromePositionAtom } from "@src/store/session/creatorRepoChromePositionAtom";
 import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
 import { separateEffortPillAtom } from "@src/store/session/separateEffortPillAtom";
 
-interface InputSettingSwitchProps {
-  label: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  dataTestId: string;
-}
+/**
+ * `session`: the session "…" menu. `launchpad`: the new-chat "…" menu, which
+ * adds the repo-bar position and omits Compact input (SessionCreator does not
+ * read that preference).
+ */
+export type SessionInputSettingsVariant = "session" | "launchpad";
 
-function InputSettingSwitch({
-  label,
-  checked,
-  onCheckedChange,
-  dataTestId,
-}: InputSettingSwitchProps) {
+const TEST_IDS = {
+  session: {
+    submenu: "session-input-settings-submenu",
+    sendOnEnter: "session-menu-send-on-enter",
+    showSkills: "session-menu-show-skills-toggle",
+    compactInput: "session-menu-compact-input-toggle",
+    composerGlow: "session-menu-composer-glow-toggle",
+    separateEffortPill: "session-menu-separate-effort-pill-toggle",
+  },
+  launchpad: {
+    submenu: "new-chat-input-settings-submenu",
+    sendOnEnter: "new-chat-send-on-enter",
+    showSkills: "new-chat-show-skills-toggle",
+    compactInput: undefined,
+    composerGlow: "new-chat-composer-glow-toggle",
+    separateEffortPill: "new-chat-separate-effort-pill-toggle",
+  },
+} as const satisfies Record<SessionInputSettingsVariant, unknown>;
+
+function RepoBarPositionRow(): React.ReactNode {
+  const { t } = useTranslation("sessions");
+  const [repoBarPosition, setRepoBarPosition] = useAtom(
+    creatorRepoChromePositionAtom
+  );
   return (
-    <div className={DROPDOWN_CLASSES.menuControlItem}>
-      <span className="flex-1 truncate">{label}</span>
-      <Switch
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        size="small"
-        ariaLabel={label}
-        dataTestId={dataTestId}
-      />
-    </div>
+    <MenuSegmentedRow
+      label={t("chat.startPage.repoBarPosition")}
+      dataTestId="new-chat-repo-bar-position"
+      value={repoBarPosition}
+      options={[
+        { value: "top", label: t("chat.startPage.positionUp") },
+        { value: "bottom", label: t("chat.startPage.positionDown") },
+      ]}
+      onChange={setRepoBarPosition}
+    />
   );
 }
 
-/** The session "…" menu's Input settings flyout: composer preferences only. */
-export function SessionInputSettingsSubmenu(): React.ReactNode {
+function CompactInputRow({ dataTestId }: { dataTestId: string }) {
   const { t } = useTranslation("sessions");
+  const [compactComposerInput, setCompactComposerInput] = useAtom(
+    compactComposerInputAtom
+  );
+  return (
+    <MenuSwitchRow
+      label={t("chat.compactInput")}
+      checked={compactComposerInput}
+      onCheckedChange={setCompactComposerInput}
+      dataTestId={dataTestId}
+    />
+  );
+}
+
+/** The Input settings flyout shared by the session and launchpad "…" menus. */
+export function SessionInputSettingsSubmenu({
+  variant = "session",
+}: {
+  variant?: SessionInputSettingsVariant;
+}): React.ReactNode {
+  const { t } = useTranslation("sessions");
+  const testIds = TEST_IDS[variant];
   const [sendOnEnter, setSendOnEnter] = useAtom(chatSendOnEnterAtom);
   const [pinnedActionsVisible, setPinnedActionsVisible] = useAtom(
     pinnedActionsVisibleAtom
-  );
-  const [compactComposerInput, setCompactComposerInput] = useAtom(
-    compactComposerInputAtom
   );
   const [composerGlowVisible, setComposerGlowVisible] = useAtom(
     composerGlowVisibleAtom
@@ -71,41 +108,38 @@ export function SessionInputSettingsSubmenu(): React.ReactNode {
           strokeWidth={1.75}
         />
       }
-      dataTestId="session-input-settings-submenu"
+      dataTestId={testIds.submenu}
     >
-      <div className={DROPDOWN_CLASSES.menuControlItem}>
-        <span className="flex-1 truncate">{sendMethodLabel}</span>
+      {variant === "launchpad" && <RepoBarPositionRow />}
+      <MenuControlRow label={sendMethodLabel}>
         <SendOnEnterPill
           size="small"
           ariaLabel={sendMethodLabel}
-          dataTestId="session-menu-send-on-enter"
+          dataTestId={testIds.sendOnEnter}
           sendOnEnter={sendOnEnter}
           onChange={setSendOnEnter}
         />
-      </div>
-      <InputSettingSwitch
+      </MenuControlRow>
+      <MenuSwitchRow
         label={t("chat.startPage.showSkills")}
         checked={pinnedActionsVisible}
         onCheckedChange={setPinnedActionsVisible}
-        dataTestId="session-menu-show-skills-toggle"
+        dataTestId={testIds.showSkills}
       />
-      <InputSettingSwitch
-        label={t("chat.compactInput")}
-        checked={compactComposerInput}
-        onCheckedChange={setCompactComposerInput}
-        dataTestId="session-menu-compact-input-toggle"
-      />
-      <InputSettingSwitch
+      {testIds.compactInput && (
+        <CompactInputRow dataTestId={testIds.compactInput} />
+      )}
+      <MenuSwitchRow
         label={t("chat.composerGlow")}
         checked={composerGlowVisible}
         onCheckedChange={setComposerGlowVisible}
-        dataTestId="session-menu-composer-glow-toggle"
+        dataTestId={testIds.composerGlow}
       />
-      <InputSettingSwitch
+      <MenuSwitchRow
         label={t("chat.separateEffortPill")}
         checked={separateEffortPill}
         onCheckedChange={setSeparateEffortPill}
-        dataTestId="session-menu-separate-effort-pill-toggle"
+        dataTestId={testIds.separateEffortPill}
       />
     </ActionSubmenu>
   );

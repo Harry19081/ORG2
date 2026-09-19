@@ -43,6 +43,8 @@ const mocks = vi.hoisted(() => ({
   setComposerGlowVisible: vi.fn(),
   sendOnEnter: false,
   setSendOnEnter: vi.fn(),
+  typingEffectEnabled: true,
+  setTypingEffectEnabled: vi.fn(),
 }));
 
 vi.mock("@src/api/tauri/externalHistory/appOpen", () => ({
@@ -76,6 +78,10 @@ vi.mock("jotai", async (importOriginal) => ({
               : [mocks.pinnedActionsVisible, mocks.setPinnedActionsVisible],
   useAtomValue: () => mocks.session,
   useSetAtom: () => mocks.openWindow,
+}));
+vi.mock("@src/hooks/settings/useSettings", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@src/hooks/settings/useSettings")>()),
+  useSetting: () => [mocks.typingEffectEnabled, mocks.setTypingEffectEnabled],
 }));
 vi.mock("@src/util/ui/theme/themeUtils", () => ({
   useCurrentTheme: () => "light",
@@ -445,11 +451,12 @@ describe("SessionHeaderActionsMenu", () => {
     expect(
       [...switches].map((control) => control.getAttribute("aria-label"))
     ).toEqual([
-      "common:pagination.title",
+      "common:layoutSettings.paginateChatHistory",
       "chat.showTokenUsage",
       "chat.showTurnMetadata",
       "chat.showInlineDiffs",
       "chat.collapseToolActivity",
+      "settings:agentSessions.typingAnimation",
     ]);
     expect(panel.children[1].getAttribute("role")).toBe("separator");
     expect(panel.children[1].className).toBe(
@@ -480,6 +487,11 @@ describe("SessionHeaderActionsMenu", () => {
     expect(props.handleCompactDisplayModeToggle).toHaveBeenCalledWith(true);
     expect(mocks.setCollapseToolActivity).toHaveBeenCalledWith(
       true,
+      expect.anything()
+    );
+    expect(switches[5].getAttribute("aria-checked")).toBe("true");
+    expect(mocks.setTypingEffectEnabled).toHaveBeenCalledWith(
+      false,
       expect.anything()
     );
     expect(props.toggleHeaderActionsMenu).not.toHaveBeenCalled();
