@@ -26,7 +26,6 @@ interface SimulatorSingleViewProps {
   mainContentAppType: AppType | null;
   displayContent: React.ReactNode;
   hideHeader?: boolean;
-  compactMode?: boolean;
 }
 
 export const SimulatorSingleView: React.FC<SimulatorSingleViewProps> = ({
@@ -34,7 +33,6 @@ export const SimulatorSingleView: React.FC<SimulatorSingleViewProps> = ({
   mainContentAppType,
   displayContent,
   hideHeader = false,
-  compactMode = false,
 }) => {
   const { t } = useTranslation("sessions");
   const { sessionId } = useSessionId();
@@ -51,7 +49,7 @@ export const SimulatorSingleView: React.FC<SimulatorSingleViewProps> = ({
 
   return (
     <div
-      className={`relative flex h-full w-full flex-col overflow-hidden ${showRounded ? "rounded-xl" : ""} bg-bg-2 ${compactMode ? "simulator-compact-mode" : ""}`}
+      className={`relative flex h-full w-full flex-col overflow-hidden ${showRounded ? "rounded-xl" : ""} bg-bg-2`}
     >
       <div className="relative min-h-0 flex-1 overflow-auto text-text-1">
         {showSessionPlaceholder ? (

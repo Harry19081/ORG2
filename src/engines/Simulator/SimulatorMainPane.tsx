@@ -56,7 +56,6 @@ const SimulatorContentAreaComponent: FC<SimulatorContentAreaProps> = ({
   onDockAppClick: _onDockAppClick,
   forceAppType = null,
   hideHeader = false,
-  compactMode = false,
 }) => {
   const { mainContentAppType, isBootingEvent, displayContent } =
     useSimulatorContent({
@@ -76,7 +75,6 @@ const SimulatorContentAreaComponent: FC<SimulatorContentAreaProps> = ({
           mainContentAppType={mainContentAppType}
           displayContent={displayContent}
           hideHeader={hideHeader}
-          compactMode={compactMode}
         />
       )}
 
@@ -108,7 +106,6 @@ const arePropsEqual = (
   if (prev.agentColor !== next.agentColor) return false;
   if (prev.forceAppType !== next.forceAppType) return false;
   if (prev.hideHeader !== next.hideHeader) return false;
-  if (prev.compactMode !== next.compactMode) return false;
   if (prev.events !== next.events) return false;
   if (prev.specs !== next.specs) return false;
 

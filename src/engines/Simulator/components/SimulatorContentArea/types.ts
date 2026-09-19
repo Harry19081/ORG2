@@ -12,5 +12,4 @@ export interface SimulatorContentAreaProps {
   onDockAppClick?: (appId: string) => void;
   forceAppType?: import("../../types/appTypes").AppType | null;
   hideHeader?: boolean;
-  compactMode?: boolean;
 }

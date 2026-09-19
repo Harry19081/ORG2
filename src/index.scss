@@ -862,21 +862,3 @@ html[data-host-desktop="windows"] [data-windows-top-bar="true"] {
 .ansi-white-bg {
   background-color: var(--ansi-white);
 }
-
-/* Simulator compact mode - reduces padding for multi-task grid */
-.simulator-compact-mode {
-  /* Make code panel take full width when sidebar is hidden */
-  > div > div > div:last-child {
-    width: 100% !important;
-  }
-
-  /* Make code viewer more compact */
-  .code-viewer-scroll-container {
-    padding: 2px !important;
-  }
-
-  /* Ensure code panel takes full width when sidebar is hidden */
-  .ide-code-panel {
-    width: 100% !important;
-  }
-}
