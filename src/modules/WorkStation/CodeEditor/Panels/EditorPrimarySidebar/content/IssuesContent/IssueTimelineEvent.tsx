@@ -629,9 +629,10 @@ export function IssueTimelineEventRow({
 }
 
 /**
- * A run of `labeled`/`unlabeled` events from the same actor inside the same
- * clock minute. GitHub's timeline emits one event per label even when they
- * were all applied together, so this collapses that run into a single row.
+ * A run of `labeled`/`unlabeled` events from the same actor, grouped by
+ * `groupIssueTimelineRows`. GitHub's timeline emits one event per label even
+ * when they were all applied together, so this collapses that run into a
+ * single row.
  */
 export function IssueTimelineLabelGroupRow({
   event,

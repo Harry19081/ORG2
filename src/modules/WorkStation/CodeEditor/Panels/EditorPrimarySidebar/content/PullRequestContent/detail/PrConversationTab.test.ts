@@ -299,7 +299,7 @@ describe("PrConversationTab", () => {
     ).toBe("Do not lose this review");
   });
 
-  it("collapses same-minute label events from the PR's GitHub timeline", () => {
+  it("collapses close-together label events from the PR's GitHub timeline", () => {
     const markup = renderToStaticMarkup(
       createElement(PrConversationTab, {
         detail: null,

@@ -13,6 +13,6 @@ export type WorkstationPrDetailController = ReturnType<
 export type TimelineEntry =
   | { kind: "comment"; at: string; comment: GitHubIssueComment }
   | { kind: "review"; at: string; review: GitHubPrReview }
-  /** A `labeled`/`unlabeled` entry (or same-minute group) from the PR's
+  /** A `labeled`/`unlabeled` entry (or grouped run) from the PR's
    * GitHub issue-timeline, interleaved with its comments and reviews. */
   | { kind: "labelEvent"; at: string; row: IssueTimelineRow };

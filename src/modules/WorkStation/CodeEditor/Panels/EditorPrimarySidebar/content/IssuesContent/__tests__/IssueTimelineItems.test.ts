@@ -64,7 +64,7 @@ describe("IssueTimelineItems", () => {
     expect(markup).not.toBe("");
   });
 
-  it("collapses same-minute same-actor label events into one row", () => {
+  it("collapses close-together same-actor label events into one row", () => {
     const markup = renderToStaticMarkup(
       React.createElement(IssueTimelineItems, {
         timeline: [

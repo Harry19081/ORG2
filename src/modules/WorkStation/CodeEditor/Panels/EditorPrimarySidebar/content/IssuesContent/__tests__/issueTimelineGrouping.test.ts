@@ -26,7 +26,7 @@ function timelineItem(
 }
 
 describe("groupIssueTimelineRows", () => {
-  it("collapses same-actor label events inside the same clock minute into one row", () => {
+  it("collapses same-actor label events within the grouping window into one row", () => {
     const items = [
       timelineItem({
         id: 1,
@@ -52,19 +52,62 @@ describe("groupIssueTimelineRows", () => {
     expect(rows[0].kind === "labelGroup" && rows[0].items).toHaveLength(3);
   });
 
-  it("keeps events from different minutes as separate rows", () => {
+  it("groups a run that crosses a clock-minute boundary within the window", () => {
+    // 2 seconds apart, but on either side of :35:00 — a minute-bucket
+    // comparison would wrongly split this into two rows.
     const items = [
-      timelineItem({ id: 1, created_at: "2026-09-13T02:34:05Z" }),
-      timelineItem({ id: 2, created_at: "2026-09-14T11:23:00Z" }),
+      timelineItem({ id: 1, created_at: "2026-09-13T02:34:59Z" }),
+      timelineItem({ id: 2, created_at: "2026-09-13T02:35:01Z" }),
     ];
 
     const rows = groupIssueTimelineRows(items);
 
-    expect(rows).toHaveLength(2);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].kind).toBe("labelGroup");
+  });
+
+  it("still groups at exactly the 2-minute boundary", () => {
+    const items = [
+      timelineItem({ id: 1, created_at: "2026-09-13T02:34:00Z" }),
+      timelineItem({ id: 2, created_at: "2026-09-13T02:36:00Z" }),
+    ];
+
+    const rows = groupIssueTimelineRows(items);
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].kind).toBe("labelGroup");
+  });
+
+  it("keeps events more than 2 minutes apart as separate rows", () => {
+    const items = [
+      timelineItem({ id: 1, created_at: "2026-09-13T02:34:00Z" }),
+      timelineItem({ id: 2, created_at: "2026-09-13T02:36:00.001Z" }),
+      timelineItem({ id: 3, created_at: "2026-09-14T11:23:00Z" }),
+    ];
+
+    const rows = groupIssueTimelineRows(items);
+
+    expect(rows).toHaveLength(3);
     expect(rows.every((row) => row.kind === "single")).toBe(true);
   });
 
-  it("keeps events from different actors in the same minute as separate rows", () => {
+  it("extends the window across a whole chain of sub-2-minute gaps", () => {
+    // Each gap is under 2 minutes, but the first and last events here are
+    // over 3 minutes apart — the window slides with the chain instead of
+    // being capped from the first event.
+    const items = [
+      timelineItem({ id: 1, created_at: "2026-09-13T02:00:00Z" }),
+      timelineItem({ id: 2, created_at: "2026-09-13T02:01:30Z" }),
+      timelineItem({ id: 3, created_at: "2026-09-13T02:03:00Z" }),
+    ];
+
+    const rows = groupIssueTimelineRows(items);
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].kind === "labelGroup" && rows[0].items).toHaveLength(3);
+  });
+
+  it("keeps events from different actors within the window as separate rows", () => {
     const items = [
       timelineItem({
         id: 1,
@@ -103,7 +146,7 @@ describe("groupIssueTimelineRows", () => {
     expect(rows.every((row) => row.kind === "single")).toBe(true);
   });
 
-  it("never groups non-label events, even from the same actor in the same minute", () => {
+  it("never groups non-label events, even from the same actor within the window", () => {
     const items = [
       timelineItem({
         id: 1,
