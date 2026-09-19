@@ -20,10 +20,7 @@ type ModelPickerStyle = "spotlight" | "dropdown";
 
 function showActiveStationChatIfNeeded(): void {
   const store = getInstrumentedStore();
-  const stationMode = store.get(stationModeAtom);
-  if (stationMode === "my-station" || stationMode === "agent-station") {
-    store.set(activeStationChatVisibleAtom, stationMode, true);
-  }
+  store.set(activeStationChatVisibleAtom, store.get(stationModeAtom), true);
 }
 
 function defineEmptyAction(

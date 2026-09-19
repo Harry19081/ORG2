@@ -93,6 +93,18 @@ export function getWorkbenchLayoutStyle(maximized: boolean): CSSProperties {
 }
 
 /**
+ * The primary-pane paint at the user's page opacity: a `color-mix` of
+ * `--color-primary-pane-bg`, collapsing to the solid token at 100% (always on
+ * macOS, where the native backdrop owns translucency).
+ */
+export function getPrimaryPaneBackgroundColor(
+  pageOpacity: number | undefined
+): string {
+  const opacity = IS_MACOS_HOST ? 100 : sanitizePageOpacity(pageOpacity);
+  return `color-mix(in srgb, var(--color-primary-pane-bg) ${opacity}%, transparent)`;
+}
+
+/**
  * Build the inline style for the page panel surface. Always emits a
  * `backgroundColor` (via `color-mix`) so callers can drop the redundant
  * `bg-bg-2` Tailwind class — there's a single source of truth for the
@@ -102,10 +114,7 @@ export function getWorkbenchLayoutStyle(maximized: boolean): CSSProperties {
 export function getPagePanelBackgroundStyle(
   pageOpacity: number | undefined
 ): CSSProperties {
-  const opacity = IS_MACOS_HOST ? 100 : sanitizePageOpacity(pageOpacity);
-  return {
-    backgroundColor: `color-mix(in srgb, var(--color-primary-pane-bg) ${opacity}%, transparent)`,
-  };
+  return { backgroundColor: getPrimaryPaneBackgroundColor(pageOpacity) };
 }
 
 /** Same as `getPagePanelBackgroundStyle` but for the sidebar surface. */
@@ -136,8 +145,7 @@ export function getSidebarSurfaceBackgroundStyle(
 export function getPrimaryPaneBackgroundStyle(
   pageOpacity: number | undefined
 ): CSSProperties {
-  const opacity = IS_MACOS_HOST ? 100 : sanitizePageOpacity(pageOpacity);
-  const primaryPaneMix = `color-mix(in srgb, var(--color-primary-pane-bg) ${opacity}%, transparent)`;
+  const primaryPaneMix = getPrimaryPaneBackgroundColor(pageOpacity);
   return {
     backgroundColor: primaryPaneMix,
     "--color-chat-pane": primaryPaneMix,

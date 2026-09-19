@@ -33,150 +33,144 @@ import { shouldShowWorkStationStatusBar } from "./statusBarVisibility";
 import { shouldEnableWorkspacePortScan } from "./workspacePortScanVisibility";
 
 interface AppShellProps {
-  /** Whether the routed WorkStation surface is currently visible */
-  isActive?: boolean;
   /** Whether the chat panel is taking over the WorkStation surface */
   chatPanelFocused?: boolean;
 }
 
-const AppShell = React.memo(
-  ({ isActive = true, chatPanelFocused = false }: AppShellProps) => {
-    const primaryPanelCollapsed = useAtomValue(
-      workStationPrimarySidebarCollapsedAtom
-    );
-    const captionEnabled = useAtomValue(simulatorCaptionBarEnabledAtom);
-    const captionMessage = useCurrentTurnLastAgentMessage();
-    const workstationActiveSessionId = useAtomValue(
-      workstationActiveSessionIdAtom
-    );
-    const activeWorkStationTab = useAtomValue(activeWorkStationTabAtom);
-    const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
-    const { repoPath, repoName, pathExists, lastSeenPath } = useAppShellRepo();
-    const { visitedModes } = useAppShellDock();
-    // Called for its side effects on the workstation base path (station mode /
-    // chat visibility / chat width); the content host follows the active tab.
-    useWorkstationRouteEntry();
+const AppShell = React.memo(({ chatPanelFocused = false }: AppShellProps) => {
+  const primaryPanelCollapsed = useAtomValue(
+    workStationPrimarySidebarCollapsedAtom
+  );
+  const captionEnabled = useAtomValue(simulatorCaptionBarEnabledAtom);
+  const captionMessage = useCurrentTurnLastAgentMessage();
+  const workstationActiveSessionId = useAtomValue(
+    workstationActiveSessionIdAtom
+  );
+  const activeWorkStationTab = useAtomValue(activeWorkStationTabAtom);
+  const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
+  const { repoPath, repoName, pathExists, lastSeenPath } = useAppShellRepo();
+  const { visitedModes } = useAppShellDock();
+  // Called for its side effects on the workstation base path (station mode /
+  // chat visibility / chat width); the content host follows the active tab.
+  useWorkstationRouteEntry();
 
-    const { isAgentStation, illuminateAgentStationChrome } =
-      useAppShellStationMode();
+  const { isAgentStation, illuminateAgentStationChrome } =
+    useAppShellStationMode();
 
-    const agentStationCaptionVisible =
-      isAgentStation &&
-      captionEnabled &&
-      !!captionMessage &&
-      !!workstationActiveSessionId;
+  const agentStationCaptionVisible =
+    isAgentStation &&
+    captionEnabled &&
+    !!captionMessage &&
+    !!workstationActiveSessionId;
 
-    // Keep a Launchpad tab as the pool's home base: seed it when empty, drop
-    // it once real tabs exist (regular WorkStation only — Agent Station has
-    // its own surface).
-    useLaunchpadTab(!isAgentStation);
+  // Keep a Launchpad tab as the pool's home base: seed it when empty, drop
+  // it once real tabs exist (regular WorkStation only — Agent Station has
+  // its own surface).
+  useLaunchpadTab(!isAgentStation);
 
-    // Closing the Terminal tab kills all running PTYs (VS Code-style).
-    useTerminalTabTeardown();
+  // Closing the Terminal tab kills all running PTYs (VS Code-style).
+  useTerminalTabTeardown();
 
-    const workStationPanels = useWorkStationPanels();
-    useAppShellSimulatorPanelSync({
-      isAgentStation,
-      layoutMode: workStationPanels.layoutMode,
-    });
+  const workStationPanels = useWorkStationPanels();
+  useAppShellSimulatorPanelSync({
+    isAgentStation,
+    layoutMode: workStationPanels.layoutMode,
+  });
 
-    const { handleSelectRepo, handleOpenSettings } = useAppShellActions();
+  const { handleSelectRepo, handleOpenSettings } = useAppShellActions();
 
-    const { activeHost, isCodeMode, isBrowserMode, isProjectMode } =
-      useAppShellDerivedState();
+  const { activeHost, isCodeMode, isBrowserMode, isProjectMode } =
+    useAppShellDerivedState();
 
-    const hasVisitedCode = visitedModes.has("code");
-    const hasVisitedBrowser = visitedModes.has("browser");
-    const hasVisitedProject = visitedModes.has("project");
+  const hasVisitedCode = visitedModes.has("code");
+  const hasVisitedBrowser = visitedModes.has("browser");
+  const hasVisitedProject = visitedModes.has("project");
 
-    const showSettingsButton = (isCodeMode || isProjectMode) && !isAgentStation;
+  const showSettingsButton = (isCodeMode || isProjectMode) && !isAgentStation;
 
-    useAppShellStatusBar({
-      primaryPanelCollapsed,
-      showSettingsButton,
-      handleOpenSettings,
-      workStationPanels,
-    });
+  useAppShellStatusBar({
+    primaryPanelCollapsed,
+    showSettingsButton,
+    handleOpenSettings,
+    workStationPanels,
+  });
 
-    // The Browser and Terminal status bars expose running servers. Keep the
-    // shared scanner off behind the Launchpad / chat takeover so its 60s
-    // safety scan is never active on an invisible surface.
-    const portsEnabled = shouldEnableWorkspacePortScan({
-      isCodeMode,
-      isBrowserMode,
-      isActive,
-      chatPanelFocused,
-      hasActiveTab: activeWorkStationTab != null,
-      isLaunchpad: activeWorkStationTab?.type === "start",
-      isAgentStation,
-    });
-    // PTY-output URL ingestion stays owned by the Code/Terminal host. Browser
-    // consumes the resulting shared scan state but does not add a second PTY
-    // subscription lifecycle.
-    useWorkspacePortAdvertisedUrls(isCodeMode && portsEnabled);
+  // The Browser and Terminal status bars expose running servers. Keep the
+  // shared scanner off behind the Launchpad / chat takeover so its 60s
+  // safety scan is never active on an invisible surface.
+  const portsEnabled = shouldEnableWorkspacePortScan({
+    isCodeMode,
+    isBrowserMode,
+    chatPanelFocused,
+    hasActiveTab: activeWorkStationTab != null,
+    isLaunchpad: activeWorkStationTab?.type === "start",
+    isAgentStation,
+  });
+  // PTY-output URL ingestion stays owned by the Code/Terminal host. Browser
+  // consumes the resulting shared scan state but does not add a second PTY
+  // subscription lifecycle.
+  useWorkspacePortAdvertisedUrls(isCodeMode && portsEnabled);
 
-    const showStatusBar = shouldShowWorkStationStatusBar({
-      isAgentStation,
-      activeTabType: activeWorkStationTab?.type,
-    });
-    const primaryPaneSurfaceStyle = React.useMemo(
-      () => getPrimaryPaneBackgroundStyle(backgroundConfig.pageOpacity),
-      [backgroundConfig.pageOpacity]
-    );
-    return (
-      <div
-        className="relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-workstation-bg"
-        style={isAgentStation ? undefined : primaryPaneSurfaceStyle}
-      >
-        {isAgentStation && (
-          <AgentStationTopHeader
-            captionMessage={captionMessage}
-            captionVisible={agentStationCaptionVisible}
-          />
-        )}
-        <AgentStationChromeFrame
-          enabled={isAgentStation}
-          illuminated={illuminateAgentStationChrome}
+  const showStatusBar = shouldShowWorkStationStatusBar({
+    isAgentStation,
+    activeTabType: activeWorkStationTab?.type,
+  });
+  const primaryPaneSurfaceStyle = React.useMemo(
+    () => getPrimaryPaneBackgroundStyle(backgroundConfig.pageOpacity),
+    [backgroundConfig.pageOpacity]
+  );
+  return (
+    <div
+      className="relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-workstation-bg"
+      style={isAgentStation ? undefined : primaryPaneSurfaceStyle}
+    >
+      {isAgentStation && (
+        <AgentStationTopHeader
+          captionMessage={captionMessage}
           captionVisible={agentStationCaptionVisible}
-          hasSession={!!workstationActiveSessionId}
-        >
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            {!isAgentStation && (
-              <div data-guide-target={GUIDE_TARGETS.WORKSTATION_TAB_BAR}>
-                <WorkstationTabBar host={activeHost} />
-              </div>
-            )}
-            {!isAgentStation && (
-              <div data-guide-target={GUIDE_TARGETS.WORKSTATION_TAB_HEADER}>
-                <WorkstationTabHeader />
-              </div>
-            )}
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-              <AppShellContent
-                repoPath={repoPath}
-                repoName={repoName}
-                pathExists={pathExists}
-                lastSeenPath={lastSeenPath}
-                isActive={isActive}
-                chatPanelFocused={chatPanelFocused}
-                isAgentStation={isAgentStation}
-                hasVisitedCode={hasVisitedCode}
-                hasVisitedBrowser={hasVisitedBrowser}
-                hasVisitedProject={hasVisitedProject}
-                isCodeMode={isCodeMode}
-                isBrowserMode={isBrowserMode}
-                isProjectMode={isProjectMode}
-                handleSelectRepo={handleSelectRepo}
-              />
+        />
+      )}
+      <AgentStationChromeFrame
+        enabled={isAgentStation}
+        illuminated={illuminateAgentStationChrome}
+        captionVisible={agentStationCaptionVisible}
+        hasSession={!!workstationActiveSessionId}
+      >
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          {!isAgentStation && (
+            <div data-guide-target={GUIDE_TARGETS.WORKSTATION_TAB_BAR}>
+              <WorkstationTabBar host={activeHost} />
             </div>
+          )}
+          {!isAgentStation && (
+            <div data-guide-target={GUIDE_TARGETS.WORKSTATION_TAB_HEADER}>
+              <WorkstationTabHeader />
+            </div>
+          )}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <AppShellContent
+              repoPath={repoPath}
+              repoName={repoName}
+              pathExists={pathExists}
+              lastSeenPath={lastSeenPath}
+              chatPanelFocused={chatPanelFocused}
+              isAgentStation={isAgentStation}
+              hasVisitedCode={hasVisitedCode}
+              hasVisitedBrowser={hasVisitedBrowser}
+              hasVisitedProject={hasVisitedProject}
+              isCodeMode={isCodeMode}
+              isBrowserMode={isBrowserMode}
+              isProjectMode={isProjectMode}
+              handleSelectRepo={handleSelectRepo}
+            />
           </div>
-          {portsEnabled && <WorkspacePortScanner enabled />}
-          {showStatusBar && <StatusBarRenderer />}
-        </AgentStationChromeFrame>
-      </div>
-    );
-  }
-);
+        </div>
+        {portsEnabled && <WorkspacePortScanner enabled />}
+        {showStatusBar && <StatusBarRenderer />}
+      </AgentStationChromeFrame>
+    </div>
+  );
+});
 
 AppShell.displayName = "AppShell";
 

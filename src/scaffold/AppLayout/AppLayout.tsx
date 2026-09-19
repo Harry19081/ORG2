@@ -25,7 +25,7 @@ import {
   PANE_WIDTH_TRANSITION_CLASSES,
   getChatSlotLayoutStyle,
   getPagePanelBackgroundStyle,
-  getPrimaryPaneBackgroundStyle,
+  getPrimaryPaneBackgroundColor,
   getResizeIndicatorHostStyle,
   getWorkbenchLayoutStyle,
 } from "@src/components/layout/tokens/viewContainerTokens";
@@ -198,11 +198,10 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
   const settingsSurfaceStyle = getPagePanelBackgroundStyle(
     backgroundConfig.pageOpacity
   );
-  const primaryPaneSurfaceStyle = getPrimaryPaneBackgroundStyle(
-    backgroundConfig.pageOpacity
-  );
   const paneUnderlayStyle: React.CSSProperties = {
-    backgroundColor: primaryPaneSurfaceStyle.backgroundColor,
+    backgroundColor: getPrimaryPaneBackgroundColor(
+      backgroundConfig.pageOpacity
+    ),
   };
   const paneTransitionClassName = isChatPanelDragging
     ? ""

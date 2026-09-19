@@ -46,7 +46,6 @@ interface AppShellContentProps {
   repoName: string;
   pathExists: boolean | null;
   lastSeenPath: string;
-  isActive: boolean;
   chatPanelFocused: boolean;
   isAgentStation: boolean;
   hasVisitedCode: boolean;
@@ -74,7 +73,6 @@ export function AppShellContent({
   repoName,
   pathExists,
   lastSeenPath,
-  isActive,
   chatPanelFocused,
   isAgentStation,
   hasVisitedCode,
@@ -233,7 +231,7 @@ export function AppShellContent({
                 <Browser
                   repoPath={repoPath}
                   repoName={repoName}
-                  isActive={isActive && !showStartPage && isBrowserMode}
+                  isActive={!showStartPage && isBrowserMode}
                 />
               </Suspense>
             </DetailPaneErrorBoundary>

@@ -33,7 +33,7 @@ import {
   type StationWindowSessionPayload,
   requestStationWindowSession,
 } from "@src/api/tauri/stationWindow";
-import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
+import { getPrimaryPaneBackgroundColor } from "@src/components/layout/tokens/viewContainerTokens";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { DataProvider } from "@src/contexts/workspace/DataContext";
 import { BrowserProvider } from "@src/contexts/workstation";
@@ -177,9 +177,9 @@ const StationWindowSurface: React.FC<{ stationMode: StationMode }> = memo(
     const setStationMode = useSetAtom(stationModeAtom);
     const paneSurfaceRef = useMacosPageBackdropSurface<HTMLDivElement>();
     const paneUnderlayStyle: React.CSSProperties = {
-      backgroundColor: getPrimaryPaneBackgroundStyle(
+      backgroundColor: getPrimaryPaneBackgroundColor(
         backgroundConfig.pageOpacity
-      ).backgroundColor,
+      ),
     };
 
     // Inside Tauri the window label seeds the local selection.
@@ -223,7 +223,7 @@ const StationWindowSurface: React.FC<{ stationMode: StationMode }> = memo(
               data-workbench-surface
             >
               <React.Suspense fallback={<WorkStationLoadingFallback />}>
-                <WorkStationPage isActive chatPanelFocused={false} />
+                <WorkStationPage chatPanelFocused={false} />
               </React.Suspense>
             </div>
           </div>
