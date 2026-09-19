@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import messages from "@src/i18n/locales/en/common.json";
 import sessionMessages from "@src/i18n/locales/en/sessions.json";
+import { separateEffortPillAtom } from "@src/store/session/separateEffortPillAtom";
 import { activeOverlayCountAtom } from "@src/store/ui/overlayLayerAtom";
 import { buildVariantEditOptions } from "@src/util/variantEditOptions";
 
@@ -509,5 +510,29 @@ describe("ModelSelectorPill combined settings", () => {
     expect(document.querySelector('[role="dialog"]')).toBeNull();
     expect(openModel).not.toHaveBeenCalled();
     expect(apply).not.toHaveBeenCalled();
+  });
+
+  it("splits model and effort into one group when the effort pill is separate", () => {
+    store.set(separateEffortPillAtom, true);
+    render();
+    expect(element("model-pill").textContent).toBe("GPT 5.6 Sol");
+    expect(element("effort-pill").textContent).toBe("Extra High");
+    expect(element("model-pill").parentElement).toBe(
+      element("effort-pill").parentElement
+    );
+    expect(element("effort-pill").className).toContain("px-2!");
+
+    click("model-pill");
+    expect(openModel).toHaveBeenCalledOnce();
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+
+    click("effort-pill");
+    act(() => vi.advanceTimersByTime(32));
+    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+    expect(element("effort-pill").getAttribute("aria-expanded")).toBe("true");
+    click("model-settings-fast-toggle");
+    expect(apply).toHaveBeenCalledWith("gpt-5.6-sol-xhigh-fast");
+    key("Escape");
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
   });
 });

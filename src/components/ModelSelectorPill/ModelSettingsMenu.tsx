@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
@@ -41,13 +41,6 @@ import type {
  */
 const COMPACT_ACTION_ICON_SIZE = 16;
 
-/**
- * Anchor gap. Wider than the 4px dropdown default because this panel opens
- * directly over the pill it edits, and the pill has to stay readable while
- * the slider is dragged.
- */
-const COMPACT_PANEL_ANCHOR_GAP = 10;
-
 export interface HarnessSwitchAction {
   label: string;
   icon?: React.ReactNode;
@@ -64,6 +57,8 @@ export interface ModelSettingsMenuProps {
   variantOptions: VariantEditOptions;
   onModelClick: () => void;
   onChange: (modelId: string) => void;
+  /** Reports open/close so a host segment can hold its active styling. */
+  onOpenChange?: (open: boolean) => void;
   /** Open the detailed Effort/Speed rows instead of the compact slider. */
   defaultAdvanced?: boolean;
   className?: string;
@@ -86,6 +81,7 @@ export default function ModelSettingsMenu({
   variantOptions,
   onModelClick,
   onChange,
+  onOpenChange,
   defaultAdvanced = false,
   className = "",
   renderTrigger,
@@ -105,11 +101,13 @@ export default function ModelSettingsMenu({
     anchorRef,
     align: "left",
     placement: "auto",
-    gap: COMPACT_PANEL_ANCHOR_GAP,
     captureKeyboardFocus: true,
     autoKeyboardNavigation: false,
     closeOnEsc: false,
   });
+  useEffect(() => {
+    onOpenChange?.(isOpen);
+  }, [isOpen, onOpenChange]);
   const selection = variantOptions.parseSelection(value);
   const levels = variantOptions.availableLevels;
   const effortLabel = selection.level

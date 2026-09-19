@@ -1,4 +1,5 @@
 /** Desktop adapter. Mobile consumers import ModelSelectorPillView directly. */
+import { useAtomValue } from "jotai";
 import React, { forwardRef, useMemo } from "react";
 
 import {
@@ -8,6 +9,7 @@ import {
   useModelPillLabel,
 } from "@src/hooks/models";
 import type { LastModelSelection } from "@src/store/session/creatorDefaultModelAtom";
+import { separateEffortPillAtom } from "@src/store/session/separateEffortPillAtom";
 
 import ModelSelectorPillView, {
   type ModelSelectorPillViewProps,
@@ -15,7 +17,7 @@ import ModelSelectorPillView, {
 
 interface ModelSelectorPillProps extends Omit<
   ModelSelectorPillViewProps,
-  "displaySelection" | "modelLabel" | "effortSegment"
+  "displaySelection" | "modelLabel" | "effortSegment" | "separateEffortPill"
 > {
   selection: LastModelSelection | null | undefined;
   onVariantApply?: (nextModelId: string) => void;
@@ -31,6 +33,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
       [accounts, selection, isActiveSession]
     );
     const modelLabel = useModelPillLabel(displaySelection, props.defaultLabel);
+    const separateEffortPill = useAtomValue(separateEffortPillAtom);
     const effortSegment = useModelEffortSegment({
       selection,
       isActiveSession,
@@ -43,6 +46,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
         displaySelection={displaySelection}
         modelLabel={modelLabel}
         effortSegment={effortSegment}
+        separateEffortPill={separateEffortPill}
       />
     );
   }

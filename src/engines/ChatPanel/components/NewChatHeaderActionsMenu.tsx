@@ -37,6 +37,7 @@ import {
   creatorRepoChromePositionAtom,
 } from "@src/store/session/creatorRepoChromePositionAtom";
 import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
+import { separateEffortPillAtom } from "@src/store/session/separateEffortPillAtom";
 
 export function NewChatHeaderActionsMenu(): React.ReactNode {
   const { t } = useTranslation(["sessions", "common"]);
@@ -61,6 +62,9 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
   const [composerGlowVisible, setComposerGlowVisible] = useAtom(
     composerGlowVisibleAtom
   );
+  const [separateEffortPill, setSeparateEffortPill] = useAtom(
+    separateEffortPillAtom
+  );
   const {
     isOpen,
     isPositioned,
@@ -83,6 +87,7 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
   const showSpotlightLabel = t("chat.startPage.showSpotlight");
   const sendMethodLabel = t("chat.sendMethod");
   const composerGlowLabel = t("chat.composerGlow");
+  const separateEffortPillLabel = t("chat.separateEffortPill");
 
   return (
     <>
@@ -261,6 +266,18 @@ export function NewChatHeaderActionsMenu(): React.ReactNode {
                   size="small"
                   ariaLabel={composerGlowLabel}
                   dataTestId="new-chat-composer-glow-toggle"
+                />
+              </div>
+              <div className={DROPDOWN_CLASSES.menuControlItem}>
+                <span className="min-w-0 flex-1 truncate">
+                  {separateEffortPillLabel}
+                </span>
+                <Switch
+                  checked={separateEffortPill}
+                  onCheckedChange={setSeparateEffortPill}
+                  size="small"
+                  ariaLabel={separateEffortPillLabel}
+                  dataTestId="new-chat-separate-effort-pill-toggle"
                 />
               </div>
             </ActionSubmenu>

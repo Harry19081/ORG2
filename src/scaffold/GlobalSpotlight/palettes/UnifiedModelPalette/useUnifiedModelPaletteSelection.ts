@@ -1,3 +1,4 @@
+import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -11,8 +12,13 @@ import {
 } from "@src/features/MarketConnect/marketProfiles";
 import type { AdvancedConfig } from "@src/features/SessionCreator/types";
 import type { KeyVaultAccount } from "@src/hooks/keyVault/types";
-import { accountHasModel } from "@src/hooks/models/useModelAccountLookup";
+import {
+  accountHasModel,
+  accountModelIds as listAccountModelIds,
+} from "@src/hooks/models/useModelAccountLookup";
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
+import { separateEffortPillAtom } from "@src/store/session/separateEffortPillAtom";
+import { carryModelEffort } from "@src/util/carryModelEffort";
 import { resolveDefaultVariant } from "@src/util/defaultModelVariant";
 import {
   parseModelVariant,
@@ -58,6 +64,17 @@ export function useUnifiedModelPaletteSelection({
 }: UseUnifiedModelPaletteSelectionParams) {
   const { t } = useTranslation("integrations");
   const marketSelectionPendingRef = useRef(false);
+  const separateEffortPill = useAtomValue(separateEffortPillAtom);
+  const currentModelId = advancedConfig.model;
+  // With the separate effort pill, a model pick keeps the current effort
+  // instead of the row's per-key default variant.
+  const withCurrentEffort = useCallback(
+    (modelId: string, candidateModelIds: readonly string[]) =>
+      separateEffortPill && modelId
+        ? carryModelEffort(currentModelId, modelId, candidateModelIds)
+        : modelId,
+    [currentModelId, separateEffortPill]
+  );
   const [activeColumn, setActiveColumn] = useState<ActiveColumn>("models");
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [selectedModelLabel, setSelectedModelLabel] = useState("");
@@ -111,7 +128,19 @@ export function useUnifiedModelPaletteSelection({
 
   const applySourceSelection = useCallback(
     (modelId: string, _modelLabel: string, source: SourceOption) => {
-      const resolvedModelId = modelId || advancedConfig.model || "";
+      const sourceAccount = source.accountId
+        ? accounts.find((account) => account.id === source.accountId)
+        : undefined;
+      const resolvedModelId = modelId
+        ? withCurrentEffort(
+            modelId,
+            sourceAccount
+              ? listAccountModelIds(sourceAccount).filter((candidate) =>
+                  accountHasModel(sourceAccount, candidate)
+                )
+              : []
+          )
+        : advancedConfig.model || "";
       onConfigChange({
         ...advancedConfig,
         keySource: KEY_SOURCE.OWN,
@@ -134,7 +163,15 @@ export function useUnifiedModelPaletteSelection({
       });
       if (closeOnSourceSelect) onClose();
     },
-    [advancedConfig, closeOnSourceSelect, onConfigChange, onClose, recordRecent]
+    [
+      accounts,
+      advancedConfig,
+      closeOnSourceSelect,
+      onConfigChange,
+      onClose,
+      recordRecent,
+      withCurrentEffort,
+    ]
   );
 
   const previewModel = useCallback(
@@ -204,10 +241,13 @@ export function useUnifiedModelPaletteSelection({
   const applyMarketSourceSelection = useCallback(
     (
       marketSource: NonNullable<SourceOption["marketSource"]>,
-      modelId: string,
-      options?: { close?: boolean }
+      pickedModelId: string,
+      options?: { close?: boolean; keepVariant?: boolean }
     ) => {
       if (marketSelectionPendingRef.current) return;
+      const modelId = options?.keepVariant
+        ? pickedModelId
+        : withCurrentEffort(pickedModelId, marketSource.modelIds);
       let owner: ReturnType<typeof captureMarketOwner>;
       try {
         owner = captureMarketOwner(
@@ -262,6 +302,7 @@ export function useUnifiedModelPaletteSelection({
       onConfigChange,
       recordRecent,
       t,
+      withCurrentEffort,
     ]
   );
 
@@ -322,9 +363,13 @@ export function useUnifiedModelPaletteSelection({
   // name+type), pushes the selection through `onConfigChange` +
   // `recordRecent`, and closes the palette unless `close: false` is passed
   // (the variant-edit case keeps the palette open so the user can keep
-  // tweaking after the properties dropdown closes itself).
+  // tweaking after the properties dropdown closes itself). `keepVariant`
+  // marks that in-place variant edit, which must not carry the old effort.
   const applyRecentEntry = useCallback(
-    (entry: RecentModelEntry, options?: { close?: boolean }) => {
+    (
+      entry: RecentModelEntry,
+      options?: { close?: boolean; keepVariant?: boolean }
+    ) => {
       if (entry.credentialSource?.startsWith("market:")) {
         const currentSource = findMarketSourceForRecent(marketSources, entry);
         if (!currentSource) {
@@ -333,6 +378,7 @@ export function useUnifiedModelPaletteSelection({
         }
         applyMarketSourceSelection(currentSource, entry.modelId, {
           close: options?.close !== false,
+          keepVariant: options?.keepVariant,
         });
         return;
       }
@@ -361,6 +407,14 @@ export function useUnifiedModelPaletteSelection({
 
       const reboundEntry: RecentModelEntry = {
         ...entry,
+        modelId: options?.keepVariant
+          ? entry.modelId
+          : withCurrentEffort(
+              entry.modelId,
+              listAccountModelIds(reboundAccount).filter((candidate) =>
+                accountHasModel(reboundAccount, candidate)
+              )
+            ),
         accountId: reboundAccount.id,
         accountName: reboundAccount.name,
         modelType: reboundAccount.modelType,
@@ -392,6 +446,7 @@ export function useUnifiedModelPaletteSelection({
       onClose,
       recordRecent,
       t,
+      withCurrentEffort,
     ]
   );
 
@@ -409,7 +464,10 @@ export function useUnifiedModelPaletteSelection({
     (entry: RecentModelEntry, nextModelId: string) => {
       const resolved = resolveVariantReselection(entry.modelId, nextModelId);
       if (!resolved) return;
-      applyRecentEntry({ ...entry, modelId: resolved }, { close: false });
+      applyRecentEntry(
+        { ...entry, modelId: resolved },
+        { close: false, keepVariant: true }
+      );
     },
     [applyRecentEntry]
   );

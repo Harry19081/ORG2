@@ -504,6 +504,7 @@ describe("SessionHeaderActionsMenu", () => {
       ["chat.startPage.showSkills", "false"],
       ["chat.compactInput", "false"],
       ["chat.composerGlow", "true"],
+      ["chat.separateEffortPill", "false"],
     ]);
     const sendPill = element("session-menu-send-on-enter");
     expect(sendPill.getAttribute("aria-label")).toBe("chat.sendMethod");

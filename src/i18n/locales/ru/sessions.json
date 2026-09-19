@@ -728,6 +728,7 @@
     },
     "compactInput": "Компактное поле ввода",
     "composerGlow": "Показывать свечение поля ввода",
+    "separateEffortPill": "Отдельная кнопка Effort",
     "replay": {
       "follow": "Следовать"
     },

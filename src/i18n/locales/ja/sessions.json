@@ -728,6 +728,7 @@
     },
     "compactInput": "コンパクト入力欄",
     "composerGlow": "入力欄のグローを表示",
+    "separateEffortPill": "Effort を別ボタンで表示",
     "replay": {
       "follow": "フォロー"
     },

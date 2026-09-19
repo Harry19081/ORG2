@@ -17,7 +17,6 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import Message from "@src/components/Message";
-import SendOnEnterPill from "@src/components/SendOnEnterPill";
 import Switch from "@src/components/Switch";
 import { useCopySessionReference } from "@src/features/Org2Cloud/useCopySessionReference";
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
@@ -29,7 +28,6 @@ import {
   DeliveryBox01Icon,
   FolderOutputIcon,
   HugeiconsIcon,
-  InputCursorTextIcon,
   Layers01Icon,
   Link01Icon,
   Link02Icon,
@@ -39,11 +37,7 @@ import {
   Share02Icon,
   ThirdBracketIcon,
 } from "@src/icons";
-import { chatSendOnEnterAtom } from "@src/store/config/configAtom";
 import { sessionByIdAtom, upsertSession } from "@src/store/session";
-import { compactComposerInputAtom } from "@src/store/session/compactComposerInputAtom";
-import { composerGlowVisibleAtom } from "@src/store/session/composerGlowVisibleAtom";
-import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
 import { openSessionInNewWindowAtom } from "@src/store/session/sessionTabPlacementAtom";
 import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
@@ -54,6 +48,7 @@ import {
 } from "@src/store/ui/linkOpenTargetAtom";
 import { isAgentSession } from "@src/util/session/sessionDispatch";
 
+import { SessionInputSettingsSubmenu } from "./SessionInputSettingsSubmenu";
 import { SessionOpenInAppMenuItem } from "./SessionOpenInAppMenuItem";
 
 const HEADER_ICON_SIZE = 14;
@@ -142,24 +137,10 @@ export const SessionHeaderActionsMenu: React.FC<
   const moveToWorkstation = moveTarget === "workstation";
 
   const currentSession = useAtomValue(sessionByIdAtom(currentSessionId ?? ""));
-  const [pinnedActionsVisible, setPinnedActionsVisible] = useAtom(
-    pinnedActionsVisibleAtom
-  );
   const [collapseToolActivity, setCollapseToolActivity] = useAtom(
     collapseToolActivityAtom
   );
   const [linkOpenTarget, setLinkOpenTarget] = useAtom(linkOpenTargetAtom);
-  const [compactComposerInput, setCompactComposerInput] = useAtom(
-    compactComposerInputAtom
-  );
-  const [sendOnEnter, setSendOnEnter] = useAtom(chatSendOnEnterAtom);
-  const showSkillsLabel = t("chat.startPage.showSkills");
-  const compactInputLabel = t("chat.compactInput");
-  const [composerGlowVisible, setComposerGlowVisible] = useAtom(
-    composerGlowVisibleAtom
-  );
-  const composerGlowLabel = t("chat.composerGlow");
-  const sendMethodLabel = t("chat.sendMethod");
 
   // Track this / Convert to Project (orgtrack/v1 §7.2). Self-contained:
   // the backend command persists the switch + root WorkItem; only the
@@ -594,58 +575,7 @@ export const SessionHeaderActionsMenu: React.FC<
                     />
                   </div>
                 </ActionSubmenu>
-                <ActionSubmenu
-                  label={t("chat.inputSettings")}
-                  icon={
-                    <HugeiconsIcon
-                      icon={InputCursorTextIcon}
-                      size={DROPDOWN_ITEM.iconSize}
-                      strokeWidth={1.75}
-                    />
-                  }
-                  dataTestId="session-input-settings-submenu"
-                >
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">{sendMethodLabel}</span>
-                    <SendOnEnterPill
-                      size="small"
-                      ariaLabel={sendMethodLabel}
-                      dataTestId="session-menu-send-on-enter"
-                      sendOnEnter={sendOnEnter}
-                      onChange={setSendOnEnter}
-                    />
-                  </div>
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">{showSkillsLabel}</span>
-                    <Switch
-                      checked={pinnedActionsVisible}
-                      onCheckedChange={setPinnedActionsVisible}
-                      size="small"
-                      ariaLabel={showSkillsLabel}
-                      dataTestId="session-menu-show-skills-toggle"
-                    />
-                  </div>
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">{compactInputLabel}</span>
-                    <Switch
-                      checked={compactComposerInput}
-                      onCheckedChange={setCompactComposerInput}
-                      size="small"
-                      ariaLabel={compactInputLabel}
-                      dataTestId="session-menu-compact-input-toggle"
-                    />
-                  </div>
-                  <div className={DROPDOWN_CLASSES.menuControlItem}>
-                    <span className="flex-1 truncate">{composerGlowLabel}</span>
-                    <Switch
-                      checked={composerGlowVisible}
-                      onCheckedChange={setComposerGlowVisible}
-                      size="small"
-                      ariaLabel={composerGlowLabel}
-                      dataTestId="session-menu-composer-glow-toggle"
-                    />
-                  </div>
-                </ActionSubmenu>
+                <SessionInputSettingsSubmenu />
               </>
             )}
             <ActionSubmenu

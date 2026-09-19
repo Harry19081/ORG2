@@ -145,6 +145,7 @@ describe("NewChatHeaderActionsMenu", () => {
       "new-chat-send-on-enter",
       "new-chat-show-skills-toggle",
       "new-chat-composer-glow-toggle",
+      "new-chat-separate-effort-pill-toggle",
     ]);
   });
 

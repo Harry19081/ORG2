@@ -45,6 +45,7 @@ import {
   MODEL_SECTION,
   useUnifiedModelPalette,
 } from "./useUnifiedModelPalette";
+import { VariantPillEditContext } from "./variantPillEditContext";
 
 export type { UnifiedModelPaletteProps } from "./types";
 
@@ -382,12 +383,35 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
   );
 
   // Hovering a left-column row returns keyboard ownership to that column.
+  // While a variant pill's Apply / Cancel popover is open, hovering other
+  // rows must not move the selection: that would swap the key column and
+  // unmount the row that owns the open popover.
+  const editingVariantPillsRef = useRef(new Set<string>());
+  const [variantEditing, setVariantEditing] = useState(false);
+  const handleVariantEditingChange = useCallback(
+    (pillId: string, open: boolean) => {
+      const editing = editingVariantPillsRef.current;
+      if (open) editing.add(pillId);
+      else editing.delete(pillId);
+      setVariantEditing(editing.size > 0);
+    },
+    []
+  );
+  const variantPillEditContext = useMemo(
+    () => ({
+      confirmChanges: true,
+      onEditingChange: handleVariantEditingChange,
+    }),
+    [handleVariantEditingChange]
+  );
+
   const handleItemHover = useCallback(
     (index: number) => {
+      if (variantEditing) return;
       kernel.setSelectedIndex(index);
       setActiveColumn("models");
     },
-    [kernel, setActiveColumn]
+    [kernel, setActiveColumn, variantEditing]
   );
 
   const handleItemSelect = useCallback(
@@ -451,6 +475,7 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
         source?.action?.();
       }}
       onSourceHover={(index) => {
+        if (variantEditing) return;
         setSelectedSourceIndex(index);
         setActiveColumn("sources");
       }}
@@ -465,14 +490,16 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
       activeActionChip={SPOTLIGHT_FOOTER_ACTIVE_CHIP.switchColumn}
       pinScope="models"
     >
-      <PaletteBody
-        kernel={kernel}
-        items={filteredItems}
-        path={[]}
-        placeholder={placeholderModel}
-        contentOverride={content}
-        inputTrailingSlot={refreshModelsButton}
-      />
+      <VariantPillEditContext.Provider value={variantPillEditContext}>
+        <PaletteBody
+          kernel={kernel}
+          items={filteredItems}
+          path={[]}
+          placeholder={placeholderModel}
+          contentOverride={content}
+          inputTrailingSlot={refreshModelsButton}
+        />
+      </VariantPillEditContext.Provider>
       <ShellFooterAction>{footerAction}</ShellFooterAction>
       {keyFirstToggle}
     </SpotlightShell>
