@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "Pengaturan bilah sisi",
     "showSidebar": "Tampilkan bilah sisi",
-    "location": "Lokasi",
-    "showIndentLines": "Tampilkan garis indentasi",
     "colorSourceControlFiles": "Gunakan warna diff untuk file"
   },
   "windowChrome": {
@@ -320,7 +318,6 @@
     "nextPage": "Halaman berikutnya",
     "lastPage": "Halaman terakhir",
     "selectPage": "Pilih halaman",
-    "title": "Penomoran halaman",
     "round": "Putaran {{current}}",
     "previousRound": "Putaran sebelumnya",
     "nextRound": "Putaran berikutnya",

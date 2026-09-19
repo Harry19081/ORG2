@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "साइडबार सेटिंग्स",
     "showSidebar": "साइडबार दिखाएँ",
-    "location": "स्थान",
-    "showIndentLines": "इंडेंट रेखाएँ दिखाएँ",
     "colorSourceControlFiles": "फ़ाइलों के लिए डिफ़ रंगों का उपयोग करें"
   },
   "windowChrome": {
@@ -320,7 +318,6 @@
     "nextPage": "अगला पृष्ठ",
     "lastPage": "अंतिम पृष्ठ",
     "selectPage": "पृष्ठ चुनें",
-    "title": "पृष्ठांकन",
     "round": "राउंड {{current}}",
     "previousRound": "पिछला राउंड",
     "nextRound": "अगला राउंड",

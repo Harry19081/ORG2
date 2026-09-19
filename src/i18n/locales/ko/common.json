@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "사이드바 설정",
     "showSidebar": "사이드바 표시",
-    "location": "위치",
-    "showIndentLines": "들여쓰기 선 표시",
     "colorSourceControlFiles": "파일에 변경 색상 사용"
   },
   "teamInbox": {
@@ -489,7 +487,6 @@
     "nextPage": "다음 페이지",
     "lastPage": "마지막 페이지",
     "selectPage": "페이지 선택",
-    "title": "페이지네이션",
     "round": "Round {{current}}",
     "previousRound": "이전 Round",
     "nextRound": "다음 Round",

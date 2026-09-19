@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "Kenar çubuğu ayarları",
     "showSidebar": "Kenar çubuğunu göster",
-    "location": "Konum",
-    "showIndentLines": "Girinti çizgilerini göster",
     "colorSourceControlFiles": "Dosyalar için fark renklerini kullan"
   },
   "teamInbox": {
@@ -489,7 +487,6 @@
     "nextPage": "Sonraki sayfa",
     "lastPage": "Son sayfa",
     "selectPage": "Sayfa seç",
-    "title": "Sayfalama",
     "round": "Round {{current}}",
     "previousRound": "Önceki round",
     "nextRound": "Sonraki round",

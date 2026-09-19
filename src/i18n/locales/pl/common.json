@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "Pasek boczny",
     "showSidebar": "Pokaż pasek boczny",
-    "location": "Położenie",
-    "showIndentLines": "Pokaż linie wcięć",
     "colorSourceControlFiles": "Użyj kolorów zmian dla plików"
   },
   "teamInbox": {
@@ -489,7 +487,6 @@
     "nextPage": "Następna strona",
     "lastPage": "Ostatnia strona",
     "selectPage": "Wybierz stronę",
-    "title": "Paginacja",
     "round": "Round {{current}}",
     "previousRound": "Poprzednia runda",
     "nextRound": "Następna runda",

@@ -21,8 +21,6 @@
   "sidebarSettings": {
     "title": "Боковая панель",
     "showSidebar": "Показывать боковую панель",
-    "location": "Расположение",
-    "showIndentLines": "Показывать линии отступов",
     "colorSourceControlFiles": "Использовать цвета различий для файлов"
   },
   "teamInbox": {
@@ -489,7 +487,6 @@
     "nextPage": "Следующая страница",
     "lastPage": "Последняя страница",
     "selectPage": "Выбрать страницу",
-    "title": "Пагинация",
     "round": "Round {{current}}",
     "previousRound": "Предыдущий раунд",
     "nextRound": "Следующий раунд",
