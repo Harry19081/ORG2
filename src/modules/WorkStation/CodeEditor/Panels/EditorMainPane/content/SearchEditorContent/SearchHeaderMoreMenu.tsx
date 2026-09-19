@@ -1,12 +1,8 @@
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import React, { useState } from "react";
 
 import { FileHeaderMoreMenu } from "@src/features/FileHeader/FileHeaderMoreMenu";
-import {
-  editorHighlightActiveLineAtom,
-  editorLineNumbersAtom,
-  editorWordWrapAtom,
-} from "@src/store/ui/editorSettingsAtom";
+import { useEditorDisplayToggles } from "@src/hooks/settings/useEditorDisplayToggles";
 import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 
 const noop = () => {};
@@ -19,9 +15,7 @@ export function SearchHeaderMoreMenu({
   loading: boolean;
 }) {
   const [visible, setVisible] = useState(false);
-  const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
-  const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
-  const [highlight, setHighlight] = useAtom(editorHighlightActiveLineAtom);
+  const toggles = useEditorDisplayToggles();
   const { onOpenSettings } = useAtomValue(activeStatusBarCallbacksAtom);
 
   return (
@@ -40,10 +34,10 @@ export function SearchHeaderMoreMenu({
       showGitBlameToggle={false}
       showMoreSettingsAction={Boolean(onOpenSettings)}
       showSidebarSettings
-      lineNumbersEnabled={lineNumbers !== "off"}
-      wordWrapEnabled={wordWrap}
+      lineNumbersEnabled={toggles.lineNumbersEnabled}
+      wordWrapEnabled={toggles.wordWrapEnabled}
       minimapEnabled={false}
-      highlightActiveLineEnabled={highlight}
+      highlightActiveLineEnabled={toggles.highlightActiveLineEnabled}
       gitBlameEnabled={false}
       loading={loading}
       hasUnsavedChanges={false}
@@ -61,10 +55,10 @@ export function SearchHeaderMoreMenu({
         setVisible(false);
         onRefresh();
       }}
-      onLineNumbersChange={(enabled) => setLineNumbers(enabled ? "on" : "off")}
-      onWordWrapChange={setWordWrap}
+      onLineNumbersChange={toggles.onLineNumbersChange}
+      onWordWrapChange={toggles.onWordWrapChange}
       onMinimapChange={noop}
-      onHighlightActiveLineChange={setHighlight}
+      onHighlightActiveLineChange={toggles.onHighlightActiveLineChange}
       onGitBlameChange={noop}
       onMoreSettingsClick={() => {
         setVisible(false);

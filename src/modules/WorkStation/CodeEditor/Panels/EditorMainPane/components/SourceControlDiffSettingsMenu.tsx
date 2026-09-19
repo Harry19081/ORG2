@@ -1,15 +1,10 @@
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import React, { useRef, useState } from "react";
 
 import { FileHeaderMoreMenu } from "@src/features/FileHeader/FileHeaderMoreMenu";
+import { useEditorDisplayToggles } from "@src/hooks/settings/useEditorDisplayToggles";
 import { openFindTargetNear } from "@src/scaffold/GlobalSpotlight/FindCard/findCoordinator";
-import {
-  activeStatusBarCallbacksAtom,
-  editorHighlightActiveLineAtom,
-  editorLineNumbersAtom,
-  editorSplitDiffCenteredLineNumbersAtom,
-  editorWordWrapAtom,
-} from "@src/store/ui";
+import { activeStatusBarCallbacksAtom } from "@src/store/ui";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 
 const noop = () => {};
@@ -24,14 +19,7 @@ export function SourceControlDiffSettingsMenu({
 }) {
   const viewMode = useAtomValue(diffViewModeAtom);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
-  const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
-  const [splitCenteredLineNumbers, setSplitCenteredLineNumbers] = useAtom(
-    editorSplitDiffCenteredLineNumbersAtom
-  );
-  const [highlightActiveLine, setHighlightActiveLine] = useAtom(
-    editorHighlightActiveLineAtom
-  );
+  const toggles = useEditorDisplayToggles();
   const { onOpenSettings } = useAtomValue(activeStatusBarCallbacksAtom);
   // The header sits outside the diff list; the anchor finds this pane's review search.
   const anchorRef = useRef<HTMLSpanElement>(null);
@@ -53,12 +41,14 @@ export function SourceControlDiffSettingsMenu({
         showGitBlameToggle={false}
         showMoreSettingsAction={!!onOpenSettings}
         showSidebarSettings
-        lineNumbersEnabled={lineNumbers !== "off"}
-        splitCenteredLineNumbersEnabled={splitCenteredLineNumbers}
-        wordWrapEnabled={wordWrap}
+        lineNumbersEnabled={toggles.lineNumbersEnabled}
+        splitCenteredLineNumbersEnabled={
+          toggles.splitCenteredLineNumbersEnabled
+        }
+        wordWrapEnabled={toggles.wordWrapEnabled}
         wordWrapLocked={viewMode === "split"}
         minimapEnabled={false}
-        highlightActiveLineEnabled={highlightActiveLine}
+        highlightActiveLineEnabled={toggles.highlightActiveLineEnabled}
         gitBlameEnabled={false}
         loading={false}
         hasUnsavedChanges={false}
@@ -79,13 +69,13 @@ export function SourceControlDiffSettingsMenu({
           setMenuVisible(false);
           onRefresh();
         }}
-        onLineNumbersChange={(enabled) =>
-          setLineNumbers(enabled ? "on" : "off")
+        onLineNumbersChange={toggles.onLineNumbersChange}
+        onSplitCenteredLineNumbersChange={
+          toggles.onSplitCenteredLineNumbersChange
         }
-        onSplitCenteredLineNumbersChange={setSplitCenteredLineNumbers}
-        onWordWrapChange={setWordWrap}
+        onWordWrapChange={toggles.onWordWrapChange}
         onMinimapChange={noop}
-        onHighlightActiveLineChange={setHighlightActiveLine}
+        onHighlightActiveLineChange={toggles.onHighlightActiveLineChange}
         onGitBlameChange={noop}
         onMoreSettingsClick={() => {
           onOpenSettings?.();

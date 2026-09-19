@@ -37,11 +37,18 @@ vi.mock("@src/store/ui", async () => {
     activeStationChatVisibleAtom: atom(false),
     activeStatusBarCallbacksAtom: atom({}),
     addToAgentAtom: atom(null),
-    editorHighlightActiveLineAtom: atom(false),
-    editorLineNumbersAtom: atom("on"),
-    editorWordWrapAtom: atom(false),
   };
 });
+vi.mock("@src/hooks/settings/useEditorDisplayToggles", () => ({
+  useEditorDisplayToggles: () => ({
+    lineNumbersEnabled: true,
+    onLineNumbersChange: vi.fn(),
+    wordWrapEnabled: false,
+    onWordWrapChange: vi.fn(),
+    highlightActiveLineEnabled: false,
+    onHighlightActiveLineChange: vi.fn(),
+  }),
+}));
 vi.mock("@src/store/workstation/codeEditor", async () => {
   const { atom } = await import("jotai");
   return { diffViewModeAtom: atom("unified") };
