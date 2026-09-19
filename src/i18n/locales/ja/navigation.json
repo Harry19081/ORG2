@@ -74,12 +74,7 @@
       "manual": "手動順"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "管理",
-      "core": "コア",
-      "agent": "Agent",
-      "org": "チーム",
-      "agentOrgs": "Agent & チーム"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "グループ化なし",
@@ -101,46 +96,22 @@
       "untitledSession": "無題のSession",
       "enterSessionName": "Session名を入力"
     },
-    "groups": {
-      "economy": "エコノミー",
-      "myServices": "マイサービス",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "Hosted Key",
-      "cloud": "Cloud",
-      "openSource": "オープンソース",
-      "timeline": "タイムライン"
-    },
     "actions": {
       "addNew": "新規追加",
       "collapseAll": "すべて折りたたむ",
       "markAllRead": "すべて既読にする"
     },
     "search": {
-      "folders": "ワークスペースを検索...",
-      "sessions": "セッションを検索...",
-      "projects": "プロジェクトを検索...",
-      "colleagues": "同僚を検索..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} Repo",
-      "multiRepoWorkspace": "{{count}} マルチ Repo Workspace",
-      "repo_plural": "{{count}} Repo",
-      "multiRepoWorkspace_plural": "{{count}} マルチ Repo Workspace"
+      "sessions": "セッションを検索..."
     },
     "bottomBar": {
       "settings": "設定",
-      "clockLabel": "現在時刻",
       "updateAvailable": "アップデート v{{version}} をダウンロード"
     },
     "settingsMenu": {
       "appearance": "外観",
       "modifyAppearance": "外観を変更",
-      "language": "言語",
       "viewRam": "RAM を表示",
-      "tutorials": "チュートリアル",
       "openSettings": "設定を開く"
     },
     "presence": {
@@ -158,10 +129,6 @@
       "duration2h": "2 時間",
       "durationTomorrow": "明日",
       "unknownRole": "不明なロール"
-    },
-    "guide": {
-      "startSession": "セッションを開始",
-      "connectOrganization": "ワークスペースを接続または作成"
     },
     "sections": {
       "section": "セクション",

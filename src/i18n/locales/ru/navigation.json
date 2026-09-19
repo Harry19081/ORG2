@@ -74,12 +74,7 @@
       "manual": "Вручную"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "Управление",
-      "core": "Ядро",
-      "agent": "Agent",
-      "org": "Команда",
-      "agentOrgs": "Agent и команда"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "Без группировки",
@@ -101,46 +96,22 @@
       "untitledSession": "Session без названия",
       "enterSessionName": "Введите название Session"
     },
-    "groups": {
-      "economy": "Экономика",
-      "myServices": "Мои услуги",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "Hosted Key",
-      "cloud": "Cloud",
-      "openSource": "Открытый код",
-      "timeline": "Таймлайн"
-    },
     "actions": {
       "addNew": "Добавить новое",
       "collapseAll": "Свернуть все",
       "markAllRead": "Отметить все как прочитанные"
     },
     "search": {
-      "folders": "Искать в рабочей области...",
-      "sessions": "Искать сессии...",
-      "projects": "Искать проекты...",
-      "colleagues": "Поиск коллег..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} репо",
-      "multiRepoWorkspace": "{{count}} мульти-Repo Workspace",
-      "repo_plural": "{{count}} репо",
-      "multiRepoWorkspace_plural": "{{count}} мульти-Repo Workspace"
+      "sessions": "Искать сессии..."
     },
     "bottomBar": {
       "settings": "Настройки",
-      "clockLabel": "Текущее время",
       "updateAvailable": "Скачать обновление v{{version}}"
     },
     "settingsMenu": {
       "appearance": "Внешний вид",
       "modifyAppearance": "Изменить оформление",
-      "language": "Язык",
       "viewRam": "Показать RAM",
-      "tutorials": "Обучение",
       "openSettings": "Открыть настройки"
     },
     "presence": {
@@ -158,10 +129,6 @@
       "duration2h": "2 часа",
       "durationTomorrow": "Завтра",
       "unknownRole": "Неизвестная роль"
-    },
-    "guide": {
-      "startSession": "Начать сессию",
-      "connectOrganization": "Подключить или создать рабочее пространство"
     },
     "sections": {
       "section": "Раздел",

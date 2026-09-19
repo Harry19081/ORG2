@@ -96,12 +96,7 @@
       "manual": "Manual order"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "Manage",
-      "core": "Core",
-      "agent": "Agent",
-      "org": "Team",
-      "agentOrgs": "Agent & Team"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "No grouping",
@@ -123,46 +118,22 @@
       "untitledSession": "Untitled Session",
       "enterSessionName": "Enter session name"
     },
-    "groups": {
-      "economy": "Economy",
-      "myServices": "My Services",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "Hosted Key",
-      "cloud": "Cloud",
-      "openSource": "Open Source",
-      "timeline": "Timeline"
-    },
     "actions": {
       "addNew": "Add New",
       "collapseAll": "Collapse All",
       "markAllRead": "Mark All Read"
     },
     "search": {
-      "folders": "Search Workspace...",
-      "sessions": "Search Sessions...",
-      "colleagues": "Search colleagues...",
-      "projects": "Search projects..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} repo",
-      "repo_plural": "{{count}} repos",
-      "multiRepoWorkspace": "{{count}} Multi-Repo Workspace",
-      "multiRepoWorkspace_plural": "{{count}} Multi-Repo Workspaces"
+      "sessions": "Search Sessions..."
     },
     "bottomBar": {
       "settings": "Settings",
-      "clockLabel": "Current time",
       "updateAvailable": "Download update v{{version}}"
     },
     "settingsMenu": {
       "appearance": "Appearance",
       "modifyAppearance": "Modify appearance",
-      "language": "Language",
       "viewRam": "View RAM",
-      "tutorials": "Tutorials",
       "openSettings": "Open Settings"
     },
     "presence": {
@@ -180,10 +151,6 @@
       "duration2h": "2 hours",
       "durationTomorrow": "Tomorrow",
       "unknownRole": "Unknown role"
-    },
-    "guide": {
-      "startSession": "Start a session",
-      "connectOrganization": "Connect or create a workspace"
     },
     "sections": {
       "section": "Section",

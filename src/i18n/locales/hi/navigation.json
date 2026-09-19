@@ -96,12 +96,7 @@
       "manual": "मैन्युअल क्रम"
     },
     "tabs": {
-      "workstation": "वर्कस्टेशन",
-      "manage": "प्रबंधित करें",
-      "core": "मुख्य",
-      "agent": "एजेंट",
-      "org": "टीम",
-      "agentOrgs": "एजेंट और टीम"
+      "workstation": "वर्कस्टेशन"
     },
     "groupBy": {
       "none": "कोई समूहीकरण नहीं",
@@ -123,46 +118,22 @@
       "untitledSession": "शीर्षकहीन सत्र",
       "enterSessionName": "सत्र का नाम दर्ज करें"
     },
-    "groups": {
-      "economy": "इकोनॉमी",
-      "myServices": "मेरी सेवाएँ",
-      "osAgent": "OS Agent",
-      "draft": "ड्राफ़्ट",
-      "agent": "कोडिंग एजेंट",
-      "cli": "CLI एजेंट",
-      "hostedKey": "होस्टेड कुंजी",
-      "cloud": "क्लाउड",
-      "openSource": "ओपन सोर्स",
-      "timeline": "टाइमलाइन"
-    },
     "actions": {
       "addNew": "नया जोड़ें",
       "collapseAll": "सभी संक्षिप्त करें",
       "markAllRead": "सभी को पढ़ा हुआ चिह्नित करें"
     },
     "search": {
-      "folders": "वर्कस्पेस खोजें...",
-      "sessions": "सत्र खोजें...",
-      "colleagues": "सहकर्मी खोजें...",
-      "projects": "प्रोजेक्ट खोजें..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} रिपॉज़िटरी",
-      "repo_plural": "{{count}} रिपॉज़िटरी",
-      "multiRepoWorkspace": "{{count}} मल्टी-रिपॉज़िटरी वर्कस्पेस",
-      "multiRepoWorkspace_plural": "{{count}} मल्टी-रिपॉज़िटरी वर्कस्पेस"
+      "sessions": "सत्र खोजें..."
     },
     "bottomBar": {
       "settings": "सेटिंग्स",
-      "clockLabel": "वर्तमान समय",
       "updateAvailable": "अपडेट v{{version}} डाउनलोड करें"
     },
     "settingsMenu": {
       "appearance": "रूप-रंग",
       "modifyAppearance": "रूप-रंग बदलें",
-      "language": "भाषा",
       "viewRam": "RAM देखें",
-      "tutorials": "ट्यूटोरियल",
       "openSettings": "सेटिंग्स खोलें"
     },
     "presence": {
@@ -180,10 +151,6 @@
       "duration2h": "2 घंटे",
       "durationTomorrow": "कल",
       "unknownRole": "अज्ञात भूमिका"
-    },
-    "guide": {
-      "startSession": "एक सत्र शुरू करें",
-      "connectOrganization": "वर्कस्पेस कनेक्ट करें या बनाएँ"
     },
     "sections": {
       "section": "अनुभाग",

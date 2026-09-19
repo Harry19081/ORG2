@@ -74,12 +74,7 @@
       "manual": "手动排序"
     },
     "tabs": {
-      "workstation": "工作站",
-      "manage": "管理",
-      "core": "核心",
-      "agent": "Agent",
-      "org": "团队",
-      "agentOrgs": "Agent & 团队"
+      "workstation": "工作站"
     },
     "groupBy": {
       "none": "不分组",
@@ -101,46 +96,22 @@
       "untitledSession": "未命名 Session",
       "enterSessionName": "输入 Session 名称"
     },
-    "groups": {
-      "economy": "经济",
-      "myServices": "我的服务",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "托管密钥",
-      "cloud": "Cloud",
-      "openSource": "开源仓库",
-      "timeline": "时间线"
-    },
     "actions": {
       "addNew": "新建",
       "collapseAll": "全部折叠",
       "markAllRead": "全部标为已读"
     },
     "search": {
-      "folders": "搜索工作区...",
-      "sessions": "搜索会话...",
-      "projects": "搜索项目...",
-      "colleagues": "搜索同事..."
-    },
-    "folderCounts": {
-      "repo": "{{count}}个仓库",
-      "multiRepoWorkspace": "{{count}}个多仓库工作区",
-      "repo_plural": "{{count}}个仓库",
-      "multiRepoWorkspace_plural": "{{count}}个多仓库工作区"
+      "sessions": "搜索会话..."
     },
     "bottomBar": {
       "settings": "设置",
-      "clockLabel": "当前时间",
       "updateAvailable": "下载更新 v{{version}}"
     },
     "settingsMenu": {
       "appearance": "外观",
       "modifyAppearance": "修改外观",
-      "language": "语言",
       "viewRam": "查看 RAM",
-      "tutorials": "教程",
       "openSettings": "打开设置"
     },
     "presence": {
@@ -158,10 +129,6 @@
       "duration2h": "2 小时",
       "durationTomorrow": "明天",
       "unknownRole": "未知角色"
-    },
-    "guide": {
-      "startSession": "创建第一个会话",
-      "connectOrganization": "连接或创建工作空间"
     },
     "sections": {
       "section": "分区",

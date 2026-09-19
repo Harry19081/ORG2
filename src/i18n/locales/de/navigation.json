@@ -74,12 +74,7 @@
       "manual": "Manuelle Reihenfolge"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "Verwalten",
-      "core": "Kern",
-      "agent": "Agent",
-      "org": "Team",
-      "agentOrgs": "Agent & Team"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "Keine Gruppierung",
@@ -101,46 +96,22 @@
       "untitledSession": "Unbenannte Session",
       "enterSessionName": "Sessionsname eingeben"
     },
-    "groups": {
-      "economy": "Wirtschaft",
-      "myServices": "Meine Dienste",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "Hosted Key",
-      "cloud": "Cloud",
-      "openSource": "Open Source",
-      "timeline": "Timeline"
-    },
     "actions": {
       "addNew": "Neu hinzufügen",
       "collapseAll": "Alle einklappen",
       "markAllRead": "Alle als gelesen markieren"
     },
     "search": {
-      "folders": "Workspace suchen...",
-      "sessions": "Sitzungen suchen...",
-      "projects": "Projekte suchen...",
-      "colleagues": "Kolleg:innen suchen..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} Repo",
-      "repo_plural": "{{count}} Repos",
-      "multiRepoWorkspace": "{{count}} Multi-Repo-Workspace",
-      "multiRepoWorkspace_plural": "{{count}} Multi-Repo-Workspaces"
+      "sessions": "Sitzungen suchen..."
     },
     "bottomBar": {
       "settings": "Einstellungen",
-      "clockLabel": "Aktuelle Uhrzeit",
       "updateAvailable": "Update v{{version}} herunterladen"
     },
     "settingsMenu": {
       "appearance": "Darstellung",
       "modifyAppearance": "Darstellung ändern",
-      "language": "Sprache",
       "viewRam": "RAM anzeigen",
-      "tutorials": "Tutorials",
       "openSettings": "Einstellungen öffnen"
     },
     "presence": {
@@ -158,10 +129,6 @@
       "duration2h": "2 Stunden",
       "durationTomorrow": "Morgen",
       "unknownRole": "Unbekannte Rolle"
-    },
-    "guide": {
-      "startSession": "Sitzung starten",
-      "connectOrganization": "Arbeitsbereich verbinden oder erstellen"
     },
     "sections": {
       "section": "Abschnitt",

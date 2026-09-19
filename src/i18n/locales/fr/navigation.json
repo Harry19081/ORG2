@@ -74,12 +74,7 @@
       "manual": "Ordre manuel"
     },
     "tabs": {
-      "workstation": "Workstation",
-      "manage": "Gérer",
-      "core": "Cœur",
-      "agent": "Agent",
-      "org": "Équipe",
-      "agentOrgs": "Agent et équipe"
+      "workstation": "Workstation"
     },
     "groupBy": {
       "none": "Sans regroupement",
@@ -101,46 +96,22 @@
       "untitledSession": "Session sans titre",
       "enterSessionName": "Entrez le nom de la Session"
     },
-    "groups": {
-      "economy": "Économie",
-      "myServices": "Mes services",
-      "osAgent": "OS Agent",
-      "draft": "Draft",
-      "agent": "Coding Agent",
-      "cli": "CLI Agent",
-      "hostedKey": "Hosted Key",
-      "cloud": "Cloud",
-      "openSource": "Open Source",
-      "timeline": "Timeline"
-    },
     "actions": {
       "addNew": "Ajouter nouveau",
       "collapseAll": "Tout réduire",
       "markAllRead": "Tout marquer comme lu"
     },
     "search": {
-      "folders": "Rechercher dans l’espace de travail...",
-      "sessions": "Rechercher des sessions...",
-      "projects": "Rechercher des projets...",
-      "colleagues": "Rechercher des collègues..."
-    },
-    "folderCounts": {
-      "repo": "{{count}} Repo",
-      "repo_plural": "{{count}} Repos",
-      "multiRepoWorkspace": "{{count}} Workspace multi-Repo",
-      "multiRepoWorkspace_plural": "{{count}} Workspaces multi-Repo"
+      "sessions": "Rechercher des sessions..."
     },
     "bottomBar": {
       "settings": "Paramètres",
-      "clockLabel": "Heure actuelle",
       "updateAvailable": "Télécharger la mise à jour v{{version}}"
     },
     "settingsMenu": {
       "appearance": "Apparence",
       "modifyAppearance": "Modifier l’apparence",
-      "language": "Langue",
       "viewRam": "Voir la RAM",
-      "tutorials": "Tutoriels",
       "openSettings": "Ouvrir les paramètres"
     },
     "presence": {
@@ -158,10 +129,6 @@
       "duration2h": "2 heures",
       "durationTomorrow": "Demain",
       "unknownRole": "Rôle inconnu"
-    },
-    "guide": {
-      "startSession": "Démarrer une session",
-      "connectOrganization": "Connecter ou créer un espace de travail"
     },
     "sections": {
       "section": "Section",
