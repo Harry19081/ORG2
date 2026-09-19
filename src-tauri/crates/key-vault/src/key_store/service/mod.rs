@@ -11,6 +11,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 mod claude_oauth;
+mod codex_cli_auth;
 mod codex_oauth;
 mod keys;
 mod oauth_health;

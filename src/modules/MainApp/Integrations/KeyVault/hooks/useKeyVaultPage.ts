@@ -29,6 +29,7 @@ import {
 } from "@src/config/mainAppPaths";
 import { parseSettingsSetupProvider } from "@src/config/settingsSetupActions";
 import { useKeyVault } from "@src/hooks/keyVault";
+import { codexReconnectSetupMethod } from "@src/hooks/keyVault/accountSetupMethod";
 import { requiresCodexReauthentication } from "@src/hooks/keyVault/codexReauthentication";
 import { createLogger } from "@src/hooks/logger";
 import { useWizardParam } from "@src/hooks/navigation";
@@ -447,7 +448,7 @@ export function useKeyVaultPage() {
     formInitialData: isCodexReauth
       ? {
           name: reauthAccount?.name ?? "",
-          setup_method: "signin",
+          setup_method: codexReconnectSetupMethod(reauthAccount),
         }
       : undefined,
     formExistingAccountNames: accounts
