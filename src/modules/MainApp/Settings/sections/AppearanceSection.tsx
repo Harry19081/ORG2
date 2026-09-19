@@ -41,9 +41,11 @@ import {
   backgroundConfigPersistAtom,
   sanitizeSidebarOpacity,
 } from "@src/store/ui/backgroundConfigAtom";
+import { sessionBranchTagsVisibleAtom } from "@src/store/ui/sidebarAtom";
 import type { SpotlightPlacement } from "@src/store/ui/uiAtom";
 
 import { AppIconPicker } from "./AppIconPicker";
+import { AppearanceLayoutSection } from "./AppearanceLayoutSection";
 import { ChatPanelAppearanceTab } from "./ChatPanelAppearanceTab";
 import {
   HIGH_REFRESH_RATE_SUPPORTED,
@@ -75,10 +77,7 @@ const SidebarOpacityRow: React.FC = () => {
   const [config, setConfig] = useAtom(backgroundConfigPersistAtom);
 
   return (
-    <SectionRow
-      settingsSearchKeys="background.sidebarOpacity"
-      label={t("background.sidebarOpacity")}
-    >
+    <SectionRow label={t("background.sidebarOpacity")}>
       <div className="min-w-0" style={SECTION_CONTROL_STYLE}>
         <Slider
           min={MIN_SIDEBAR_OPACITY}
@@ -165,6 +164,9 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
   );
   const [usePointerCursors, setUsePointerCursors] = useSetting(
     "general.usePointerCursors"
+  );
+  const [sessionBranchTagsVisible, setSessionBranchTagsVisible] = useAtom(
+    sessionBranchTagsVisibleAtom
   );
   const {
     uiScale,
@@ -448,6 +450,8 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
 
           <ButtonTooltipsSection />
 
+          <AppearanceLayoutSection />
+
           <SectionContainer title={t("general.sidebar")}>
             <SectionRow
               settingsSearchKeys="general.translucentSidebar"
@@ -490,6 +494,14 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                 />
               </SectionRow>
             )}
+            <SectionRow label={t("general.sessionBranchTags")}>
+              <Switch
+                checked={sessionBranchTagsVisible}
+                onCheckedChange={setSessionBranchTagsVisible}
+                ariaLabel={t("general.sessionBranchTags")}
+                dataTestId="session-branch-tags-switch"
+              />
+            </SectionRow>
           </SectionContainer>
 
           <SectionContainer title={t("general.spotlight")}>

@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 
 import Input from "@src/components/Input";
 import NumberInput from "@src/components/NumberInput";
+import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
 import {
@@ -32,13 +33,17 @@ import {
   editorHighlightActiveLineAtom,
   editorLineHeightAtom,
   editorLineNumbersAtom,
+  editorShowBlameAtom,
   editorShowMinimapAtom,
   editorShowTreeIndentGuidesAtom,
   editorSplitDiffCenteredLineNumbersAtom,
   editorTabSizeAtom,
   editorWordWrapAtom,
+  gitSourceControlColorFileNamesAtom,
 } from "@src/store/ui/editorSettingsAtom";
 import { terminalFontSizeAtom } from "@src/store/ui/uiAtom";
+import { diffViewModeAtom } from "@src/store/workstation/codeEditor/diffViewModeAtom";
+import type { DiffViewMode } from "@src/types/git/types";
 
 const CUSTOM_FONT_DEBOUNCE_MS = 3000;
 
@@ -239,6 +244,13 @@ export const FeaturesSection: React.FC = () => {
   );
   const [splitDiffCenteredLineNumbers, setSplitDiffCenteredLineNumbers] =
     useAtom(editorSplitDiffCenteredLineNumbersAtom);
+  // Same atoms as the file header / Source Control quick menus, so a change
+  // on either surface is reflected on the other immediately.
+  const [diffViewMode, setDiffViewMode] = useAtom(diffViewModeAtom);
+  const [showBlame, setShowBlame] = useAtom(editorShowBlameAtom);
+  const [colorFileNames, setColorFileNames] = useAtom(
+    gitSourceControlColorFileNamesAtom
+  );
 
   const handleLineNumbersChange = useCallback(
     (value: string | number | (string | number)[]) => {
@@ -282,6 +294,20 @@ export const FeaturesSection: React.FC = () => {
         />
       </SectionRow>
 
+      <SectionRow label={t("editor.diffViewMode")}>
+        <SegmentedTextPill<DiffViewMode>
+          ariaLabel={t("editor.diffViewMode")}
+          value={diffViewMode}
+          onChange={setDiffViewMode}
+          options={[
+            { value: "unified", label: t("common:workstation.unified") },
+            { value: "split", label: t("common:workstation.split") },
+          ]}
+          size="large"
+          dataTestId="diff-view-mode-select"
+        />
+      </SectionRow>
+
       <SectionRow
         settingsSearchKeys="editor.splitDiffCenteredLineNumbers"
         label={t("editor.splitDiffCenteredLineNumbers")}
@@ -321,6 +347,32 @@ export const FeaturesSection: React.FC = () => {
         <Switch
           checked={highlightActiveLine}
           onCheckedChange={setHighlightActiveLine}
+        />
+      </SectionRow>
+
+      <SectionRow
+        settingsSearchKeys="editor.showBlame"
+        label={t("editor.gitBlame")}
+      >
+        <Switch
+          checked={showBlame}
+          onCheckedChange={setShowBlame}
+          ariaLabel={t("editor.gitBlame")}
+          dataTestId="git-blame-switch"
+        />
+      </SectionRow>
+
+      <SectionRow
+        settingsSearchKeys="git.sourceControl.colorFileNames"
+        label={t("common:sidebarSettings.colorSourceControlFiles")}
+      >
+        <Switch
+          checked={colorFileNames}
+          onCheckedChange={(checked) => {
+            setColorFileNames(checked).catch(() => undefined);
+          }}
+          ariaLabel={t("common:sidebarSettings.colorSourceControlFiles")}
+          dataTestId="color-source-control-files-switch"
         />
       </SectionRow>
     </SectionContainer>

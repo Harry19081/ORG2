@@ -28,8 +28,7 @@ export const GIT_SETTINGS_REGISTRY = {
     category: "git",
   },
   "git.sourceControl.colorFileNames": {
-    // Toggled from the Source Control sidebar menu, not the settings page.
-    settingsSearch: false,
+    // Settings → Appearance → Code Editor; also the Source Control menu.
     schema: z.boolean(),
     default: false,
     description:

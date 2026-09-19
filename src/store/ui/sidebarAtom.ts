@@ -108,7 +108,7 @@ const storedSessionBranchTagsVisibleAtom = atomWithStorage<unknown>(
 
 /**
  * Whether session rows show branch/worktree and pull-request status tags.
- * Defaults to hidden until a settings control exposes this preference.
+ * Hidden by default; toggled from Settings → Appearance → App → Sidebar.
  */
 export const sessionBranchTagsVisibleAtom = atom(
   (get) => get(storedSessionBranchTagsVisibleAtom) === true,

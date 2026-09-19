@@ -54,12 +54,7 @@ const GENERAL_SECTION_KEYS: SettingsKey[] = [
   ),
   "network.httpVersion",
 ] as SettingsKey[];
-const APPEARANCE_SECTION_KEYS = keysByPrefixes([
-  "background.",
-  "sidebar.",
-  "layout.",
-  "chat.",
-]);
+const APPEARANCE_SECTION_KEYS = keysByPrefixes(["layout.", "chat."]);
 const EDITOR_SECTION_KEYS = keysByPrefixes([
   "editor.",
   "terminal.",

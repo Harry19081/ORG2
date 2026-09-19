@@ -121,8 +121,6 @@
     "usePointerCursorsDesc": "Transformer le curseur en pointeur au survol des éléments interactifs",
     "timezoneAuto": "Auto (navigateur)",
     "timezoneSearchPlaceholder": "Rechercher des villes proches",
-    "sendOnEnter": "Envoyer les messages avec",
-    "sendOnEnterDesc": "Choisissez le raccourci qui envoie un message ; les autres combinaisons avec Entrée insèrent une nouvelle ligne",
     "language": "Langue",
     "languageSearchPlaceholder": "Rechercher des langues...",
     "languageNames": {
@@ -221,6 +219,7 @@
       "light": "Tuile claire"
     },
     "translucentSidebar": "Barre latérale translucide",
+    "sessionBranchTags": "Étiquettes de branche et de PR sur les sessions",
     "skin": "Skin",
     "accent": "Accent",
     "linkSkinVariants": "Lier clair et sombre",
@@ -535,6 +534,8 @@
     "indentGuides": "Guides d'indentation",
     "treeIndentGuides": "Guides d'indentation de l'arborescence",
     "highlightActiveLine": "Surlignage de la ligne courante",
+    "diffViewMode": "Vue des différences",
+    "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Numéros de ligne centrés en diff côte à côte",
     "splitDiffCenteredLineNumbersDesc": "Affiche les deux colonnes de numéros de ligne entre les deux volets, comme sur GitHub, plutôt qu'au bord gauche de chaque volet.",
     "shellsOpenWith": "Le Shell s'ouvre avec",
@@ -906,7 +907,10 @@
   "appearance": {
     "tabApp": "Application",
     "tabCodeEditor": "Éditeur de code",
-    "tabChatPanel": "Panneau de chat"
+    "tabChatPanel": "Panneau de chat",
+    "chatHistory": "Historique du chat",
+    "composer": "Zone de saisie",
+    "newChatPage": "Page de nouveau chat"
   },
   "harnessConnections": {
     "description": "Choisissez la connexion de chaque outil de programmation",

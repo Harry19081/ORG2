@@ -121,8 +121,6 @@
     "usePointerCursorsDesc": "Менять курсор на указатель при наведении на интерактивные элементы",
     "timezoneAuto": "Авто (браузер)",
     "timezoneSearchPlaceholder": "Поиск ближайших городов",
-    "sendOnEnter": "Отправлять сообщения с помощью",
-    "sendOnEnterDesc": "Выберите сочетание клавиш для отправки сообщения; другие сочетания с Enter вставляют новую строку",
     "language": "Язык",
     "languageSearchPlaceholder": "Поиск языков...",
     "languageNames": {
@@ -221,6 +219,7 @@
       "light": "Светлая плитка"
     },
     "translucentSidebar": "Полупрозрачная боковая панель",
+    "sessionBranchTags": "Теги веток и PR у сессий",
     "skin": "Скин",
     "accent": "Акцент",
     "linkSkinVariants": "Связать светлый и тёмный",
@@ -535,6 +534,8 @@
     "indentGuides": "Направляющие отступов",
     "treeIndentGuides": "Направляющие отступов дерева",
     "highlightActiveLine": "Подсветка текущей строки",
+    "diffViewMode": "Вид различий",
+    "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Номера строк по центру в разделённом diff",
     "splitDiffCenteredLineNumbersDesc": "Показывать обе колонки номеров строк между панелями, как в GitHub, а не у левого края каждой панели.",
     "shellsOpenWith": "Shell открывается с",
@@ -906,7 +907,10 @@
   "appearance": {
     "tabApp": "Приложение",
     "tabCodeEditor": "Редактор кода",
-    "tabChatPanel": "Панель чата"
+    "tabChatPanel": "Панель чата",
+    "chatHistory": "История чата",
+    "composer": "Поле ввода",
+    "newChatPage": "Страница нового чата"
   },
   "harnessConnections": {
     "description": "Выберите подключение для каждого инструмента разработки",
