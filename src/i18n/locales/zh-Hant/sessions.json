@@ -635,16 +635,11 @@
       "showSkills": "釘選 Skills",
       "showCliUpdate": "顯示 CLI 更新",
       "showSpotlight": "顯示 Spotlight",
-      "title": "你想做什麼？",
-      "back": "返回起始頁",
       "newSession": {
         "title": "新建會話"
       },
       "newWorkItem": {
         "title": "新建工作項目"
-      },
-      "setupRepo": {
-        "title": "設定 Repo"
       },
       "addApiKey": {
         "title": "新增 API 金鑰"
@@ -655,59 +650,27 @@
       "installLatestUpdate": {
         "title": "安裝最新更新"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "工作階段",
         "workItem": "工作項目",
         "more": "更多",
-        "work": "工作",
         "manage": "管理",
-        "heatmap": "趨勢",
         "runtime": "執行階段"
       },
       "quota": {
         "empty": "暫無配額資料。請在 Key Vault 中重新整理用量。",
         "refresh": "重新整理",
-        "justNow": "剛剛",
-        "minutesAgo": "{{count}}分鐘前",
-        "hoursAgo": "{{count}}小時前",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7d",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Weekly",
           "monthly": "Monthly"
         }
       },
-      "exploreRepos": {
-        "title": "探索 Repos"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "管理 Issues"
       }
     },
     "defaultTitle": "Session",
@@ -754,15 +717,11 @@
       "modeSourceBundled": "模式加載自內置回退(Cursor 探針尚未運行)。",
       "modeRefresh": "重新整理模式"
     },
-    "hideSimulator": "隱藏模擬器",
-    "showSimulator": "顯示模擬器",
-    "fullScreenChat": "聚焦聊天面板（隱藏工作站）",
     "maximizeChatPanel": "最大化聊天面板",
     "showWorkstation": "顯示工作站",
     "workstationUnavailableForPage": "此頁面不支援使用工作站",
     "hideWorkstation": "隱藏工作站",
     "restoreSplitView": "顯示工作站",
-    "shrinkToWorkstation": "縮小聊天面板（顯示工作站）",
     "tuiModeOn": "TUI 模式（點擊關閉）",
     "tuiModeOff": "啟用 TUI 模式",
     "tabs": {
@@ -966,22 +925,9 @@
       "showMore_one": "顯示其餘 {{count}} 個",
       "showMore_other": "顯示其餘 {{count}} 個"
     },
-    "manageIssues": {
-      "title": "管理 Issues",
-      "myWork": "我的工作",
-      "allRepositories": "所有 Repos",
-      "newIssue": "新增 Issue",
-      "tabs": {
-        "recent": "最近",
-        "assigned": "指派給我",
-        "byMe": "由我建立",
-        "mentioned": "提及我"
-      }
-    },
     "readOnly": "唯讀",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "建立 GitHub issue",
         "issueTitlePlaceholder": "issue 標題",
@@ -991,28 +937,16 @@
         "addToChat": "Add",
         "repositoryLabel": "儲存庫",
         "createIssueFailed": "建立 issue 失敗",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "所有狀態",
         "closeAsCompleted": "以已完成關閉",
         "closeAsNotPlanned": "以不計畫關閉",
         "statusUpdateFailed": "無法更新 GitHub 狀態",
         "assignedToMe": "指派給我的",
         "createdByMe": "由我建立",
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
-        "pullRequests": {
-          "reviewRequested": "待我審查",
-          "authoredByMe": "由我建立",
-          "otherTodos": "其他待辦"
-        },
         "assigneeUpdateNotApplied": "GitHub 未套用指派人變更",
         "assigneeUpdateSuccess": "已在 GitHub 上更新指派人",
-        "updateIssueFailed": "更新 GitHub issue 失敗",
-        "refreshIssues": "重新整理議題",
-        "refreshPullRequests": "重新整理拉取請求"
+        "updateIssueFailed": "更新 GitHub issue 失敗"
       }
     },
     "sessionViews": {

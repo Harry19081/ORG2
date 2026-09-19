@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "新建",
       "collapseAll": "全部摺疊",
-      "markAllRead": "全部標為已讀",
-      "toggleGroup": "切換分組"
+      "markAllRead": "全部標為已讀"
     },
     "search": {
       "folders": "搜尋工作區...",
@@ -143,13 +142,6 @@
       "viewRam": "查看 RAM",
       "tutorials": "教學",
       "openSettings": "開啟設定"
-    },
-    "empty": {
-      "noItems": "暫無內容",
-      "noSessions": "暫無 Session",
-      "noSessionsDesc": "開始一個新 Session",
-      "noResultsFor": "未找到 \"{{query}}\" 的結果",
-      "noSearchResults": "未找到結果"
     },
     "presence": {
       "tooltip": "設定你的線上狀態 — Agent 會根據你是否在鍵盤前調整行為。",

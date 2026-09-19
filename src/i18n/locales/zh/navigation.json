@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "新建",
       "collapseAll": "全部折叠",
-      "markAllRead": "全部标为已读",
-      "toggleGroup": "切换分组"
+      "markAllRead": "全部标为已读"
     },
     "search": {
       "folders": "搜索工作区...",
@@ -143,13 +142,6 @@
       "viewRam": "查看 RAM",
       "tutorials": "教程",
       "openSettings": "打开设置"
-    },
-    "empty": {
-      "noItems": "暂无内容",
-      "noSessions": "暂无 Session",
-      "noSessionsDesc": "开始一个新 Session",
-      "noResultsFor": "未找到 \"{{query}}\" 的结果",
-      "noSearchResults": "未找到结果"
     },
     "presence": {
       "tooltip": "设置你的在线状态 — Agent 会根据你是否在键盘前调整行为。",

@@ -2,7 +2,7 @@
  * View Container Tokens
  *
  * Shared class strings and style helpers for view containers (WorkStation,
- * SessionWorkspace) and page panels (Settings, ShellFallback).
+ * SessionWorkspace) and page panels (Settings).
  */
 import type { CSSProperties } from "react";
 

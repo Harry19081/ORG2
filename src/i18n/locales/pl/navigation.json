@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "Dodaj nowy",
       "collapseAll": "Zwiń wszystko",
-      "markAllRead": "Oznacz wszystkie jako przeczytane",
-      "toggleGroup": "Przełącz sekcję"
+      "markAllRead": "Oznacz wszystkie jako przeczytane"
     },
     "search": {
       "folders": "Szukaj w Workspace...",
@@ -143,13 +142,6 @@
       "viewRam": "Pokaż RAM",
       "tutorials": "Samouczki",
       "openSettings": "Otwórz ustawienia"
-    },
-    "empty": {
-      "noItems": "Brak elementów",
-      "noSessions": "Brak sesji",
-      "noSessionsDesc": "Rozpocznij nową sesję, aby zacząć",
-      "noResultsFor": "Brak wyników dla \"{{query}}\"",
-      "noSearchResults": "Nie znaleziono wyników"
     },
     "presence": {
       "tooltip": "Ustaw swój status — agenci dostosują się do tego, czy jesteś przy klawiaturze.",

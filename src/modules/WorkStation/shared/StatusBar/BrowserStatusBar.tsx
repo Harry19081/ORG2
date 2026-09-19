@@ -151,7 +151,6 @@ const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
       <BaseStatusBar
         leftContent={leftContent}
         rightContent={rightContent}
-        roundedBottom={false}
         className={className}
       />
     );

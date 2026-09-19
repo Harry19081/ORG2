@@ -636,16 +636,11 @@
       "showSkills": "पिन की गई स्किल",
       "showCliUpdate": "CLI अपडेट दिखाएँ",
       "showSpotlight": "Spotlight दिखाएँ",
-      "title": "आप क्या करना चाहेंगे?",
-      "back": "प्रारंभ पृष्ठ पर वापस जाएँ",
       "newSession": {
         "title": "नया सत्र"
       },
       "newWorkItem": {
         "title": "नया कार्य आइटम"
-      },
-      "setupRepo": {
-        "title": "रिपॉज़िटरी सेट अप करें"
       },
       "addApiKey": {
         "title": "API कुंजी जोड़ें"
@@ -656,59 +651,27 @@
       "installLatestUpdate": {
         "title": "नवीनतम अपडेट इंस्टॉल करें"
       },
-      "agents": {
-        "title": "एजेंट"
-      },
       "tabs": {
         "session": "सत्र",
         "workItem": "कार्य आइटम",
         "more": "अधिक",
-        "work": "कार्य",
         "manage": "प्रबंधन",
-        "heatmap": "रुझान",
         "runtime": "रनटाइम"
       },
       "quota": {
         "empty": "अभी तक कोई कोटा डेटा नहीं। Key Vault से उपयोग रीफ़्रेश करें।",
         "refresh": "रीफ़्रेश करें",
-        "justNow": "अभी-अभी",
-        "minutesAgo": "{{count}} मि. पहले",
-        "hoursAgo": "{{count}} घं. पहले",
         "metrics": {
           "fiveHour": "5 घं.",
           "sevenDay": "7 दिन",
           "auto": "स्वतः",
           "api": "API",
-          "session": "सत्र",
-          "weekly": "साप्ताहिक",
           "monthly": "मासिक"
         }
       },
-      "exploreRepos": {
-        "title": "रिपॉज़िटरी एक्सप्लोर करें"
-      },
       "hints": {
-        "skill": {
-          "before": "स्किल या टूल लिंक करने के लिए",
-          "after": "का उपयोग करें"
-        },
-        "ask": {
-          "before": "कोडबेस के बारे में प्रश्न पूछने के लिए",
-          "after": "का उपयोग करें"
-        },
-        "plan": {
-          "before": "बनाने से पहले योजना बनाने के लिए",
-          "after": "का उपयोग करें"
-        },
-        "switch": {
-          "before": "अनुभाग बदलने के लिए",
-          "after": "का उपयोग करें"
-        },
         "previous": "पिछला संकेत",
         "next": "अगला संकेत"
-      },
-      "manageIssues": {
-        "title": "इश्यू प्रबंधित करें"
       }
     },
     "defaultTitle": "चैट",
@@ -755,15 +718,11 @@
       "modeSourceBundled": "मोड बंडल किए गए फ़ॉलबैक से लोड किए गए (प्रोब Cursor अभी नहीं चल रहा)।",
       "modeRefresh": "मोड रीफ़्रेश करें"
     },
-    "hideSimulator": "सिम्युलेटर छिपाएँ",
-    "showSimulator": "सिम्युलेटर दिखाएँ",
-    "fullScreenChat": "चैट पैनल पर फ़ोकस करें (वर्कस्टेशन छिपाएँ)",
     "maximizeChatPanel": "चैट पैनल अधिकतम करें",
     "showWorkstation": "वर्कस्टेशन दिखाएँ",
     "workstationUnavailableForPage": "इस पृष्ठ पर वर्कस्टेशन उपलब्ध नहीं है",
     "hideWorkstation": "वर्कस्टेशन छिपाएँ",
     "restoreSplitView": "वर्कस्टेशन दिखाएँ",
-    "shrinkToWorkstation": "चैट पैनल छोटा करें (वर्कस्टेशन दिखाएँ)",
     "tuiModeOn": "TUI मोड (अक्षम करने के लिए क्लिक करें)",
     "tuiModeOff": "TUI मोड सक्षम करें",
     "tabs": {
@@ -971,22 +930,9 @@
       "showMore_one": "{{count}} और दिखाएँ",
       "showMore_other": "{{count}} और दिखाएँ"
     },
-    "manageIssues": {
-      "title": "इश्यू प्रबंधित करें",
-      "myWork": "मेरा कार्य",
-      "allRepositories": "सभी रिपॉज़िटरी",
-      "newIssue": "नया इश्यू",
-      "tabs": {
-        "recent": "हाल के",
-        "assigned": "असाइन किए गए",
-        "byMe": "मेरे द्वारा",
-        "mentioned": "उल्लेखित"
-      }
-    },
     "readOnly": "केवल-पढ़ने योग्य",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub खोज, जैसे is:issue is:open label:bug",
         "createIssueTrigger": "इश्यू",
         "newIssueTitle": "GitHub इश्यू बनाएँ",
         "issueTitlePlaceholder": "इश्यू शीर्षक",
@@ -996,28 +942,16 @@
         "addToChat": "जोड़ें",
         "repositoryLabel": "रिपॉज़िटरी",
         "createIssueFailed": "इश्यू बनाने में विफल",
-        "sourceIssues": "इश्यू",
-        "sourcePrs": "PR",
         "stateOpen": "खुले",
         "stateClosed": "बंद",
-        "stateAll": "सभी स्थितियाँ",
         "closeAsCompleted": "पूर्ण के रूप में बंद करें",
         "closeAsNotPlanned": "नियोजित नहीं के रूप में बंद करें",
         "statusUpdateFailed": "GitHub स्थिति अपडेट करने में विफल",
         "assignedToMe": "मुझे असाइन किए गए",
         "createdByMe": "मेरे द्वारा बनाए गए",
-        "pullRequests": {
-          "reviewRequested": "समीक्षा अनुरोधित",
-          "authoredByMe": "मेरे द्वारा लिखे गए",
-          "otherTodos": "अन्य टू-डू"
-        },
-        "filters": "फ़िल्टर",
-        "openInGitHub": "GitHub में खोलें",
         "assigneeUpdateNotApplied": "GitHub ने असाइनी परिवर्तन लागू नहीं किया",
         "assigneeUpdateSuccess": "GitHub पर असाइनी अपडेट हो गए",
-        "updateIssueFailed": "GitHub इश्यू अपडेट करने में विफल",
-        "refreshIssues": "इश्यू रीफ़्रेश करें",
-        "refreshPullRequests": "पुल रिक्वेस्ट रीफ़्रेश करें"
+        "updateIssueFailed": "GitHub इश्यू अपडेट करने में विफल"
       }
     },
     "sessionViews": {

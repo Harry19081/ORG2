@@ -4,8 +4,8 @@
  * Consolidated shared layout for all Orgii pages.
  * Handles sidebar, content, and the docked chat panel slot.
  *
- * Chat and workbench content use the single Modern layout: flex siblings with
- * flat, edge-to-edge surfaces.
+ * Chat and workbench content are flex siblings with flat, edge-to-edge
+ * surfaces.
  *
  * Performance Architecture:
  * - Sidebar: DYNAMIC (changes per route via prop)

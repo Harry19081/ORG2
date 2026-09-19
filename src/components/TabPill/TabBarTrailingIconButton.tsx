@@ -13,7 +13,7 @@ export interface TabBarTrailingIconButtonProps extends Omit<
 > {
   title: string;
   onClick?: () => void;
-  /** Toggled / pressed appearance (`tabBarTrailingActive`) */
+  /** Toggled / pressed appearance */
   active?: boolean;
   shortcutId?: string;
   tooltipPosition?: "top" | "bottom" | "bottom-start" | "bottom-end";

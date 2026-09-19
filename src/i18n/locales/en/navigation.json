@@ -138,8 +138,7 @@
     "actions": {
       "addNew": "Add New",
       "collapseAll": "Collapse All",
-      "markAllRead": "Mark All Read",
-      "toggleGroup": "Toggle section"
+      "markAllRead": "Mark All Read"
     },
     "search": {
       "folders": "Search Workspace...",
@@ -165,13 +164,6 @@
       "viewRam": "View RAM",
       "tutorials": "Tutorials",
       "openSettings": "Open Settings"
-    },
-    "empty": {
-      "noItems": "No items",
-      "noSessions": "No sessions",
-      "noSessionsDesc": "Start a new session to begin",
-      "noResultsFor": "No results for \"{{query}}\"",
-      "noSearchResults": "No results found"
     },
     "presence": {
       "tooltip": "Set your availability — agents will adapt to whether you're at the keyboard.",

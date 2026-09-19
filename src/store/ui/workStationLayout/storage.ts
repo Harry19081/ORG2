@@ -3,17 +3,12 @@ import { scheduleCoalescedStorageWrite } from "@src/util/core/storage/coalescedS
 const WORK_STATION_PREFIX = "work_station_";
 
 const STORAGE_KEYS = [
-  "split_enabled",
-  "split_ratio",
   "layout_mode",
   "primary_sidebar_collapsed",
   "primary_sidebar_width",
-  "browser_primary_sidebar_collapsed",
   "browser_devtools_position",
-  "right_collapsed",
   "devtools_collapsed",
   "bottom_collapsed",
-  "bottom_height",
 ] as const;
 
 export type WorkStationStorageKey = (typeof STORAGE_KEYS)[number];

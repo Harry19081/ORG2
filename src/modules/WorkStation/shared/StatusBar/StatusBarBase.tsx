@@ -35,8 +35,6 @@ export interface BaseStatusBarProps {
   centerContent?: React.ReactNode;
   /** Content for the right section */
   rightContent?: React.ReactNode;
-  /** Whether to use rounded bottom corners (for simulator frame) */
-  roundedBottom?: boolean;
   /** Additional class name */
   className?: string;
 }
@@ -287,13 +285,7 @@ StatusBarDivider.displayName = "StatusBarDivider";
 // ============================================
 
 export const BaseStatusBar: React.FC<BaseStatusBarProps> = memo(
-  ({
-    leftContent,
-    centerContent,
-    rightContent,
-    roundedBottom = false,
-    className,
-  }) => {
+  ({ leftContent, centerContent, rightContent, className }) => {
     return (
       <div
         className={classNames(
@@ -301,12 +293,8 @@ export const BaseStatusBar: React.FC<BaseStatusBarProps> = memo(
           STATUS_BAR_TOKENS.heightClass,
           STATUS_BAR_TOKENS.typographyClass,
           STATUS_BAR_TOKENS.barPaddingClass,
-          // Top hairline = boundary with the content area above. The
-          // bottom hairline (boundary with the dock) is owned by
-          // `StationDockChrome` so every consumer renders the same line
-          // at the same DOM depth — see comment in StationDockChrome.
+          // Top hairline = boundary with the content area above.
           "border-t border-border-2 text-text-1",
-          roundedBottom && "rounded-b-page",
           className
         )}
       >

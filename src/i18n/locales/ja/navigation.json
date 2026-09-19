@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "新規追加",
       "collapseAll": "すべて折りたたむ",
-      "markAllRead": "すべて既読にする",
-      "toggleGroup": "セクションを切り替え"
+      "markAllRead": "すべて既読にする"
     },
     "search": {
       "folders": "ワークスペースを検索...",
@@ -143,13 +142,6 @@
       "viewRam": "RAM を表示",
       "tutorials": "チュートリアル",
       "openSettings": "設定を開く"
-    },
-    "empty": {
-      "noItems": "アイテムがありません",
-      "noSessions": "Sessionがありません",
-      "noSessionsDesc": "新しいSessionを開始してください",
-      "noResultsFor": "\"{{query}}\" の検索結果がありません",
-      "noSearchResults": "結果が見つかりません"
     },
     "presence": {
       "tooltip": "在席状態を設定 — Agent はあなたがキーボード前にいるかに応じて動作を調整します。",

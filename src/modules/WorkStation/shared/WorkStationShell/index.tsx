@@ -280,7 +280,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     );
 
     // Secondary panel: single mount. Always rendered when the config is
-    // present; collapse/maximize are reflected via CSS classes on the
+    // present; collapse is reflected via CSS classes on the
     // grid container so React never has to remount the subtree.
     const secondaryPanelCollapsed =
       !secondaryPanelConfig ||

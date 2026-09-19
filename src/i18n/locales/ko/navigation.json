@@ -116,8 +116,7 @@
     "actions": {
       "addNew": "새로 추가",
       "collapseAll": "모두 접기",
-      "markAllRead": "모두 읽음으로 표시",
-      "toggleGroup": "섹션 전환"
+      "markAllRead": "모두 읽음으로 표시"
     },
     "search": {
       "folders": "워크스페이스 검색...",
@@ -143,13 +142,6 @@
       "viewRam": "RAM 보기",
       "tutorials": "튜토리얼",
       "openSettings": "설정 열기"
-    },
-    "empty": {
-      "noItems": "항목 없음",
-      "noSessions": "Session 없음",
-      "noSessionsDesc": "새 Session을 시작하세요",
-      "noResultsFor": "\"{{query}}\"에 대한 결과 없음",
-      "noSearchResults": "결과를 찾을 수 없음"
     },
     "presence": {
       "tooltip": "상태를 설정 — Agent가 사용자가 키보드 앞에 있는지에 따라 행동을 조정합니다.",

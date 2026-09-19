@@ -25,8 +25,6 @@ const store = createInstrumentedStore();
 
 const panels = {
   togglePrimarySidebar: () => {},
-  toggleBottomPanel: () => {},
-  bottomPanelCollapsed: false,
 } as unknown as ReturnType<typeof useWorkStationPanels>;
 
 const handleOpenSettings = () => {};

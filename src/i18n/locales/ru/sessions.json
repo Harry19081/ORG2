@@ -635,16 +635,11 @@
       "showSkills": "Закреплённые навыки",
       "showCliUpdate": "Показывать обновления CLI",
       "showSpotlight": "Показывать Spotlight",
-      "title": "Что вы хотите сделать?",
-      "back": "Назад к стартовой странице",
       "newSession": {
         "title": "Новая сессия"
       },
       "newWorkItem": {
         "title": "Новый work item"
-      },
-      "setupRepo": {
-        "title": "Настроить Repo"
       },
       "addApiKey": {
         "title": "Добавить API key"
@@ -655,59 +650,27 @@
       "installLatestUpdate": {
         "title": "Установить последнее обновление"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "Сеанс",
         "workItem": "Рабочий элемент",
         "more": "Ещё",
-        "work": "Работа",
         "manage": "Управление",
-        "heatmap": "Тренды",
         "runtime": "Среда выполнения"
       },
       "quota": {
         "empty": "Данных о квоте пока нет. Обновите использование в Key Vault.",
         "refresh": "Обновить",
-        "justNow": "только что",
-        "minutesAgo": "{{count}} мин назад",
-        "hoursAgo": "{{count}}ч назад",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7d",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Weekly",
           "monthly": "Monthly"
         }
       },
-      "exploreRepos": {
-        "title": "Обзор Repos"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "Управлять issues"
       }
     },
     "defaultTitle": "Чат",
@@ -754,15 +717,11 @@
       "modeSourceBundled": "Режимы загружены из встроенного резерва (зонд Cursor ещё не запущен).",
       "modeRefresh": "Обновить режимы"
     },
-    "hideSimulator": "Скрыть симулятор",
-    "showSimulator": "Показать симулятор",
-    "fullScreenChat": "Фокус на панели чата (скрыть Workstation)",
     "maximizeChatPanel": "Развернуть панель чата",
     "showWorkstation": "Показать Workstation",
     "workstationUnavailableForPage": "Workstation недоступна на этой странице",
     "hideWorkstation": "Скрыть Workstation",
     "restoreSplitView": "Показать Workstation",
-    "shrinkToWorkstation": "Свернуть панель чата (показать Workstation)",
     "tuiModeOn": "Режим TUI (нажмите, чтобы отключить)",
     "tuiModeOff": "Включить режим TUI",
     "tabs": {
@@ -966,22 +925,9 @@
       "showMore_one": "Показать ещё {{count}}",
       "showMore_other": "Показать ещё {{count}}"
     },
-    "manageIssues": {
-      "title": "Управлять issues",
-      "myWork": "Моя работа",
-      "allRepositories": "Все repos",
-      "newIssue": "Новая issue",
-      "tabs": {
-        "recent": "Недавние",
-        "assigned": "Назначены мне",
-        "byMe": "Созданы мной",
-        "mentioned": "Упоминания"
-      }
-    },
     "readOnly": "Только чтение",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "Создать issue GitHub",
         "issueTitlePlaceholder": "Название issue",
@@ -991,28 +937,16 @@
         "addToChat": "Add",
         "repositoryLabel": "Репозиторий",
         "createIssueFailed": "Не удалось создать issue",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "Все состояния",
         "closeAsCompleted": "Закрыть как выполненную",
         "closeAsNotPlanned": "Закрыть как незапланированную",
         "statusUpdateFailed": "Не удалось обновить статус GitHub",
         "assignedToMe": "Назначенные мне",
         "createdByMe": "Созданные мной",
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
-        "pullRequests": {
-          "reviewRequested": "Запрошено ревью",
-          "authoredByMe": "Созданные мной",
-          "otherTodos": "Другие задачи"
-        },
         "assigneeUpdateNotApplied": "GitHub не применил изменение исполнителя",
         "assigneeUpdateSuccess": "Исполнители обновлены на GitHub",
-        "updateIssueFailed": "Не удалось обновить issue GitHub",
-        "refreshIssues": "Обновить задачи",
-        "refreshPullRequests": "Обновить пул-реквесты"
+        "updateIssueFailed": "Не удалось обновить issue GitHub"
       }
     },
     "sessionViews": {

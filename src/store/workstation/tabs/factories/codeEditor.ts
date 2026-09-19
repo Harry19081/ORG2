@@ -121,27 +121,6 @@ export function createStartTab(): WorkStationTab {
 // Git Diff Tabs
 // ============================================
 
-export interface GitDiffTabData {
-  filePath: string;
-  extension: string;
-  gitStatusLetter: string;
-  isTimeline?: boolean;
-  commitSha?: string;
-  shortSha?: string;
-  headShortSha?: string;
-  commitMessage?: string;
-  commitAuthor?: string;
-  commitTimestamp?: string;
-  /**
-   * Where the diff tab was opened from. Drives the smart-sidebar behavior:
-   * only `"source-control"` causes the host to swap its default sidebar for
-   * `DiffTabSidebar` while this tab is active. Other origins (chat link,
-   * spotlight, programmatic, etc.) leave the user's current sidebar viewMode
-   * untouched, matching VS Code / Cursor behavior.
-   */
-  origin?: "source-control" | "other";
-}
-
 export function createTimelineDiffTab(
   filePath: string,
   commitSha: string,
