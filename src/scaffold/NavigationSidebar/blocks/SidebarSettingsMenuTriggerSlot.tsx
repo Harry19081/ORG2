@@ -42,7 +42,6 @@ export function SidebarSettingsMenuTriggerSlot({
     >
       <div ref={triggerRef} className="inline-flex">
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly

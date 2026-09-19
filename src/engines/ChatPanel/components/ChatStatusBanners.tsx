@@ -193,7 +193,6 @@ export function GroupChatPausedBanner({
               variant="primary"
               shape="round"
               size="mini"
-              htmlType="button"
               data-testid={resumeButtonTestId}
               disabled={disabled}
               onClick={onResume}

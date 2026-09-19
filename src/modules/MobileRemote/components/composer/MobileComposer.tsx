@@ -309,7 +309,6 @@ export function MobileComposer({
         closeLabel={tCommon("actions.close", "Close")}
         footer={
           <Button
-            htmlType="button"
             variant="primary"
             className="min-h-11 w-full"
             style={{

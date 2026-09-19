@@ -30,7 +30,6 @@ const SidebarHeaderNavButton: React.FC<SidebarHeaderNavButtonProps> = ({
     // the flex-1 label column would otherwise inherit and center.
     <Button
       layout="custom"
-      appearance="custom"
       className={`group mt-1 flex h-7 w-full cursor-pointer items-center justify-between overflow-hidden rounded-lg px-2 text-left text-text-1 transition-colors duration-150 hover:bg-sidebar-selected ${className}`}
       onClick={onClick}
       tabIndex={0}

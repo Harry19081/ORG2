@@ -158,7 +158,6 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
                     const button = (
                       <Button
                         variant="tertiary"
-                        appearance="soft-no-drop"
                         size="sidebar"
                         iconOnly={!hasLabel}
                         icon={action.icon}

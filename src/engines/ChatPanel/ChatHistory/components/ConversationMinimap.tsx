@@ -408,8 +408,6 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
             <div key={groupIndex} className={placementClasses.marker}>
               <Button
                 layout="custom"
-                appearance="custom"
-                htmlType="button"
                 aria-current={isActive ? "step" : undefined}
                 aria-describedby={
                   previewGroupIndex === groupIndex ? tooltipId : undefined

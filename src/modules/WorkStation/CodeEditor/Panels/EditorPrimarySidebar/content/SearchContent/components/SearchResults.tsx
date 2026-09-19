@@ -202,7 +202,6 @@ const MatchLine: React.FC<MatchLineProps> = React.memo(({ node, onClick }) => {
     <div className={`${TREE_ROW_INSET_CLASS} ${SIDEBAR_ROW_GAP_CLASS}`}>
       <Button
         layout="custom"
-        appearance="custom"
         aria-pressed={isSelected}
         className={`flex h-7 w-full cursor-pointer items-center gap-1.5 text-left transition-colors ${getSidebarRowSurface({ selected: isSelected })}`}
         style={getTreeRowPadding(1)}

@@ -106,8 +106,7 @@ function MessageImage({
       {current?.phase === "ready" && current.url ? (
         <>
           <Button
-            variant="secondary"
-            appearance="ghost"
+            variant="tertiary"
             className="max-w-full"
             style={{ height: "auto", minHeight: 44, padding: 0 }}
             aria-label={label}
@@ -144,7 +143,6 @@ function MessageImage({
         </>
       ) : (
         <Button
-          variant="secondary"
           style={{ minHeight: 44 }}
           disabled={!loadImage || current?.phase === "loading"}
           onClick={() => {

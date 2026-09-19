@@ -363,8 +363,6 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
               </span>
             ) : null}
             <Button
-              htmlType="button"
-              size="default"
               variant="primary"
               disabled={status.running}
               loading={status.running}
@@ -560,9 +558,6 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
               </div>
             ) : null}
             <Button
-              htmlType="button"
-              size="default"
-              variant="secondary"
               disabled={visibleEntries.length === 0}
               data-testid="cloud-org-sync-logs-copy"
               onClick={handleCopy}
@@ -572,9 +567,6 @@ export function CloudOrgSyncSection({ t, status }: CloudOrgSyncSectionProps) {
                 : t("cloud.orgPanel.sync.logsCopy")}
             </Button>
             <Button
-              htmlType="button"
-              size="default"
-              variant="secondary"
               disabled={status.entries.length === 0}
               data-testid="cloud-org-sync-logs-clear"
               onClick={status.clearLog}

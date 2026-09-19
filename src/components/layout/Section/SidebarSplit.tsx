@@ -53,7 +53,6 @@ export const SectionSidebarItem: React.FC<SectionSidebarItemProps> = memo(
   }) => (
     <Button
       layout="custom"
-      appearance="custom"
       {...buttonProps}
       htmlType={type}
       aria-pressed={selected}

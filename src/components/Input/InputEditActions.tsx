@@ -72,7 +72,7 @@ export const InputEditActions: React.FC<InputEditActionsProps> = ({
             <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={iconSize} />
           }
           className="input-cancel"
-          hoverIntent="danger"
+          hoverTone="danger"
           style={ACTION_BUTTON_STYLE}
           tabIndex={-1}
           disabled={cancelDisabled}
@@ -95,7 +95,7 @@ export const InputEditActions: React.FC<InputEditActionsProps> = ({
             />
           }
           className="input-confirm"
-          hoverIntent="primary"
+          hoverTone="primary"
           style={ACTION_BUTTON_STYLE}
           tabIndex={-1}
           disabled={confirmDisabled}

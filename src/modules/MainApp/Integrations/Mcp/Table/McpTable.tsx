@@ -384,7 +384,6 @@ export const McpTable: React.FC<McpTableProps> = ({
               role="presentation"
             >
               <Button
-                variant="secondary"
                 size="small"
                 onClick={() => onSelect(server.name, "preview")}
               >
@@ -392,7 +391,6 @@ export const McpTable: React.FC<McpTableProps> = ({
               </Button>
               {onDelete ? (
                 <Button
-                  variant="secondary"
                   size="small"
                   icon={
                     <HugeiconsIcon
@@ -437,7 +435,6 @@ export const McpTable: React.FC<McpTableProps> = ({
                 >
                   <Button
                     variant="tertiary"
-                    appearance="soft"
                     size="mini"
                     iconOnly
                     icon={
@@ -475,8 +472,6 @@ export const McpTable: React.FC<McpTableProps> = ({
 
   const addMcpButton = (
     <Button
-      variant="secondary"
-      size="default"
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       onClick={() =>
         onAdd(activeScopeTab === "workspace" ? "workspace" : "global")

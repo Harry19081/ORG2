@@ -158,7 +158,6 @@ export const NetworkTab: React.FC<NetworkTabProps> = memo(
           <ToolbarTooltip label={t("tooltips.clearNetworkLogs")}>
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={
@@ -168,7 +167,6 @@ export const NetworkTab: React.FC<NetworkTabProps> = memo(
                   size={HEADER_ICON_SIZE.sm}
                 />
               }
-              htmlType="button"
               onClick={onClear}
               aria-label={t("tooltips.clearNetworkLogs")}
             />

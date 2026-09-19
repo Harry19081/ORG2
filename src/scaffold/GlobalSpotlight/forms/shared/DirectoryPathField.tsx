@@ -64,9 +64,6 @@ export function DirectoryPathField({
           }
         />
         <Button
-          variant="secondary"
-          appearance="outline"
-          size="default"
           disabled={disabled}
           iconOnly={!textAction}
           icon={

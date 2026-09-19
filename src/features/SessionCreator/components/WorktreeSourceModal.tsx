@@ -412,9 +412,7 @@ const WorktreeSourceModal: React.FC<WorktreeSourceModalProps> = ({
           {tabs.map((tab) => (
             <Button
               layout="custom"
-              appearance="custom"
               key={tab.id}
-              htmlType="button"
               role="tab"
               id={`worktree-source-tab-${tab.id}`}
               aria-selected={activeTab === tab.id}

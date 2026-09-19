@@ -100,7 +100,6 @@ const ChannelPanelHeader: React.FC<ChannelPanelHeaderProps> = ({
                 </span>
               )}
               <Button
-                htmlType="button"
                 variant="tertiary"
                 size="small"
                 iconOnly

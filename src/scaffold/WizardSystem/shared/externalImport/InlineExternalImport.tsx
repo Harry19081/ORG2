@@ -104,7 +104,6 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
     <SectionContainer>
       <SectionRow label={labels.title}>
         <Button
-          variant="secondary"
           icon={
             expanded ? (
               <HugeiconsIcon

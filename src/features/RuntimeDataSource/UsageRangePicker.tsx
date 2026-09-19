@@ -149,8 +149,8 @@ export default function UsageRangePicker({
                     )}
                     <div className="flex justify-end gap-2 border-t border-border-2 pt-3">
                       <Button
+                        variant="tertiary"
                         size="small"
-                        appearance="ghost"
                         onClick={() => {
                           setDraft(null);
                           setOpen(true);
@@ -192,7 +192,7 @@ export default function UsageRangePicker({
       </Dropdown>
       {custom && (
         <Button
-          appearance="ghost"
+          variant="tertiary"
           size="small"
           onClick={() => {
             setOpen(true);

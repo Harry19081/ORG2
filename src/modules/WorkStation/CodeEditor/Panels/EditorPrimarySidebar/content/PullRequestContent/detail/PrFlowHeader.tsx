@@ -129,7 +129,6 @@ export function PrFlowHeader({
         onClick={() => void copyHeadBranch()}
         data-testid="pr-flow-copy-branch"
         variant="tertiary"
-        appearance="soft"
         iconOnly
         icon={
           <HugeiconsIcon

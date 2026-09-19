@@ -354,7 +354,6 @@ const GitCommitDetailContent: React.FC<GitCommitDetailContentProps> = ({
             {fileListCollapsed && (
               <Button
                 layout="custom"
-                appearance="custom"
                 className="flex w-6 shrink-0 items-center justify-center border-r border-border-2 hover:bg-fill-1"
                 onClick={toggleFileList}
                 title={t("tooltips.showFileList")}

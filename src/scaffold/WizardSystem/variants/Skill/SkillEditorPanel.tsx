@@ -130,7 +130,6 @@ const SkillEditorPanel: React.FC<SkillEditorPanelProps> = ({
         actions={
           <Button
             variant="primary"
-            size="default"
             onClick={handleSave}
             disabled={saving || !draft.name.trim()}
             loading={saving}
@@ -366,7 +365,6 @@ const SkillEditorPanel: React.FC<SkillEditorPanelProps> = ({
               description={t("skillsHub.bundledFilesDesc")}
             >
               <Button
-                size="default"
                 icon={
                   <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />
                 }

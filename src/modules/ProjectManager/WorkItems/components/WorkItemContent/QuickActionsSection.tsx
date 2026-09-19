@@ -257,8 +257,6 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
           {actions.map((action) => (
             <Button
               key={action.id}
-              variant="secondary"
-              appearance="outline"
               size="small"
               icon={
                 <HugeiconsIcon icon={PlayIcon} data-icon="play" size={12} />
@@ -363,7 +361,6 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
                 </span>
                 <Button
                   variant="tertiary"
-                  appearance="ghost"
                   size="mini"
                   iconOnly
                   icon={
@@ -381,7 +378,6 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
                 />
                 <Button
                   variant="tertiary"
-                  appearance="ghost"
                   size="mini"
                   iconOnly
                   icon={

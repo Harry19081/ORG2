@@ -159,8 +159,6 @@ function ReviewThread({
               dataTestId={`pr-review-reply-mode-switch-${thread.rootId}`}
             />
             <Button
-              htmlType="button"
-              variant="secondary"
               size="mini"
               loading={submitting}
               disabled={!reply.trim() || submitting}
@@ -198,8 +196,6 @@ export const PrReviewThreadsPanel: React.FC<PrReviewThreadsPanelProps> = ({
     <div className="shrink-0 border-t border-border-1">
       <Button
         layout="custom"
-        appearance="custom"
-        htmlType="button"
         onClick={() => setExpanded((prev) => !prev)}
         className="flex w-full items-center gap-1.5 px-4 py-2 text-[12px] text-text-2 hover:bg-fill-1"
       >

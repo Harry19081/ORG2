@@ -144,6 +144,11 @@ describe("PageNotice", () => {
     expect(markup.indexOf('aria-label="Refresh"')).toBeLessThan(
       markup.indexOf('aria-label="Close"')
     );
-    expect(markup.split("btn-hover:bg-surface-hover").length - 1).toBe(2);
+    for (const label of ["Refresh", "Close"]) {
+      const tag = markup.match(
+        new RegExp(`<button[^>]*aria-label="${label}"[^>]*>`)
+      )?.[0];
+      expect(tag, label).toContain("btn-hover:bg-surface-hover");
+    }
   });
 });

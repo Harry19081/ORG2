@@ -184,8 +184,6 @@ export function RunGroupPanelView({
             </p>
             <div className="flex shrink-0 gap-2">
               <Button
-                variant="secondary"
-                appearance="outline"
                 size="small"
                 shape="round"
                 onClick={handleRunAgain}

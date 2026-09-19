@@ -101,7 +101,6 @@ export const TeamInboxListControls: React.FC<TeamInboxListControlsProps> = ({
           {activeFilterUnread > 0 && onMarkAllRead ? (
             <ToolbarTooltip label={t("inbox.markAllAsRead")}>
               <Button
-                htmlType="button"
                 variant="tertiary"
                 size="small"
                 icon={
@@ -160,7 +159,6 @@ export const TeamInboxListControls: React.FC<TeamInboxListControlsProps> = ({
               }}
             >
               <Button
-                htmlType="button"
                 variant="tertiary"
                 size="small"
                 icon={

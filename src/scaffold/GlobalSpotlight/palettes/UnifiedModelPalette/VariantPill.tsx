@@ -184,9 +184,7 @@ export const VariantPill: React.FC<VariantPillProps> = ({
         return (
           <Button
             layout="custom"
-            appearance="custom"
             ref={ref}
-            htmlType="button"
             onClick={onClick}
             aria-expanded={ariaExpanded}
             aria-label="Edit variant"

@@ -230,8 +230,6 @@ const CloneGitHubForm: React.FC<CloneGitHubFormProps> = ({
           left={
             groupedRepos.length === 0 && !filterText ? (
               <Button
-                variant="secondary"
-                size="default"
                 icon={
                   <HugeiconsIcon
                     icon={SquareArrowUpRight02Icon}

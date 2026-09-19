@@ -36,7 +36,6 @@ const SidebarUpdateButton: React.FC = React.memo(() => {
       <Button
         aria-label={label}
         variant="primary"
-        appearance="solid"
         size="small"
         iconOnly
         icon={

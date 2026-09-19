@@ -73,7 +73,6 @@ const AgentChatItemDefault: React.FC<AgentChatItemProps> = ({
               ) : (
                 <div>
                   <Button
-                    variant="secondary"
                     onClick={handleResultClick}
                     className="chat-text-sm mt-3 mb-1 h-[24px] rounded-[100px] py-[2px]"
                   >

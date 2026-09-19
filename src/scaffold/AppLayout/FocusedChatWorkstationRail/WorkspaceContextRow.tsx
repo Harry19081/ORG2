@@ -70,9 +70,7 @@ export function WorkspaceContextRow({
     const styledTooltip = chevron && title ? title : undefined;
     const button = (
       <Button
-        htmlType="button"
         variant="tertiary"
-        appearance="soft-no-drop"
         size="sidebar"
         className={`${rowClass} ${WORKSTATION_TRAIL_ROW.button} ${compact ? "h-8!" : "h-7!"} w-full text-left ${
           active ? "bg-fill-2" : ""

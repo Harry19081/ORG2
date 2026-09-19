@@ -138,7 +138,6 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
     <div className={`flex max-w-full items-center gap-1.5 ${className}`}>
       {/* Temporarily disabled: Turn into app */}
       <Button
-        variant="secondary"
         size="small"
         shape={shape}
         className="shrink-0"
@@ -162,7 +161,6 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
             })}
       </Button>
       <Button
-        variant="secondary"
         size="small"
         shape={shape}
         className="shrink-0"
@@ -187,7 +185,6 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
       </Button>
       {showDetails ? (
         <Button
-          variant="secondary"
           size="small"
           shape={shape}
           className="shrink-0"
@@ -209,7 +206,6 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
       ) : null}
       {showLocate ? (
         <Button
-          variant="secondary"
           size="small"
           shape={shape}
           className="shrink-0"
@@ -229,7 +225,6 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
       ) : null}
       {showRemove ? (
         <Button
-          variant="secondary"
           size="small"
           shape={shape}
           className="shrink-0"
@@ -245,7 +240,6 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
       ) : null}
       {showClose && onClear ? (
         <Button
-          variant="secondary"
           size="small"
           shape={shape}
           className="shrink-0"

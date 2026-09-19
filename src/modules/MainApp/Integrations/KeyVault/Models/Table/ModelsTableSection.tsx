@@ -181,10 +181,8 @@ export default function ModelsTableSection({
     olderCount > 0 && !isSearching ? (
       <div className="flex justify-center border-t border-border-2 py-2.5">
         <Button
-          variant="primary"
-          appearance="ghost"
+          variant="ghost"
           size="inline"
-          htmlType="button"
           onClick={() => setHideOlder((prev) => !prev)}
           icon={
             <HugeiconsIcon
@@ -193,7 +191,7 @@ export default function ModelsTableSection({
               size={14}
             />
           }
-          className="text-[13px] hover:text-primary-5"
+          className="text-[13px]"
         >
           {hideOlder
             ? t("modelsTable.showMoreOlder")
@@ -336,8 +334,6 @@ export default function ModelsTableSection({
 
   const refreshModelsButton = onRefreshModels ? (
     <Button
-      variant="secondary"
-      size="default"
       icon={
         <HugeiconsIcon
           icon={Refresh04Icon}
@@ -357,8 +353,6 @@ export default function ModelsTableSection({
 
   const addProviderButton = (
     <Button
-      variant="secondary"
-      size="default"
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       iconOnly
       onClick={onAdd}

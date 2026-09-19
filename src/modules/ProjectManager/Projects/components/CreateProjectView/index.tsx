@@ -542,7 +542,7 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
       submitButton={
         <>
           {layout === "spotlight" && onCancel && (
-            <Button variant="secondary" size="small" onClick={onCancel}>
+            <Button size="small" onClick={onCancel}>
               {t("common:actions.cancel")}
             </Button>
           )}

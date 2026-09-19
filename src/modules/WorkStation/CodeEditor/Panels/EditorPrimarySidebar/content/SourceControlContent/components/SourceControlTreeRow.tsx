@@ -149,8 +149,8 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             }}
             title={GIT_LABELS.discardAllChanges}
             size="sidebar"
-            variant="danger"
-            appearance="soft"
+            variant="tertiary"
+            tone="danger"
             iconOnly
             icon={
               <HugeiconsIcon
@@ -172,7 +172,6 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
               title={GIT_LABELS.stashAllChanges}
               size="sidebar"
               variant="tertiary"
-              appearance="soft"
               iconOnly
               icon={
                 <HugeiconsIcon
@@ -193,7 +192,6 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             title={GIT_LABELS.stageChanges}
             size="sidebar"
             variant="tertiary"
-            appearance="soft"
             iconOnly
             icon={
               <HugeiconsIcon
@@ -218,7 +216,6 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             title={`Unstage All Changes\n\nShortcut: ${SHORTCUTS.unstageAll}`}
             size="sidebar"
             variant="tertiary"
-            appearance="soft"
             iconOnly
             icon={
               <HugeiconsIcon
@@ -238,7 +235,6 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             title={GIT_LABELS.openStagedChanges}
             size="sidebar"
             variant="tertiary"
-            appearance="soft"
             iconOnly
             icon={
               <HugeiconsIcon

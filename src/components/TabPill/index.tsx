@@ -208,7 +208,6 @@ const TabPill: React.FC<TabPillProps> = ({
       return (
         <Button
           layout="custom"
-          appearance="custom"
           key={tab.key}
           ref={hasDropdown ? dropdownTriggerRef : undefined}
           data-active={isActive ? "true" : "false"}
@@ -266,7 +265,6 @@ const TabPill: React.FC<TabPillProps> = ({
     return (
       <Button
         layout="custom"
-        appearance="custom"
         key={tab.key}
         ref={hasDropdown ? dropdownTriggerRef : undefined}
         data-active={isActive ? "true" : "false"}

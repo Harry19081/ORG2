@@ -76,7 +76,6 @@ const ActionItem = memo<ActionItemProps>(({ action, onAction }) => {
   return (
     <Button
       layout="custom"
-      appearance="custom"
       onClick={handleClick}
       disabled={action.disabled}
       className={`flex w-full items-center justify-between px-4 py-2.5 transition-colors ${

@@ -218,9 +218,8 @@ export const OrgDangerZone: React.FC<{
               }}
             />
             <Button
-              htmlType="button"
-              size="default"
-              variant="danger"
+              variant="primary"
+              tone="danger"
               disabled={!canDelete || !isConfirmed || deleting}
               loading={deleting}
               data-testid="local-org-delete-confirm"

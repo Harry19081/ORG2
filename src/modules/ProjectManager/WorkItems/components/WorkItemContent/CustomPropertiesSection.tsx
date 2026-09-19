@@ -510,7 +510,6 @@ const CustomPropertiesSection: React.FC<CustomPropertiesSectionProps> = ({
                 {editable ? (
                   <Button
                     variant="tertiary"
-                    appearance="ghost"
                     size="mini"
                     shape="circle"
                     iconOnly

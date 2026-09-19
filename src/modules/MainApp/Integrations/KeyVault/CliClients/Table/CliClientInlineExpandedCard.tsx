@@ -133,7 +133,6 @@ const CliClientInlineExpandedCard = ({
         <InlineCardFooter>
           {onRefresh && (
             <Button
-              variant="secondary"
               size="small"
               icon={
                 <HugeiconsIcon
@@ -151,7 +150,6 @@ const CliClientInlineExpandedCard = ({
           )}
           {agent.docsUrl && (
             <Button
-              variant="secondary"
               size="small"
               icon={
                 <HugeiconsIcon
@@ -168,7 +166,6 @@ const CliClientInlineExpandedCard = ({
           )}
           {onAdd && (
             <Button
-              variant="secondary"
               size="small"
               icon={
                 <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />

@@ -62,7 +62,6 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
     <SectionContainer>
       <SectionRow label={title}>
         <Button
-          variant="secondary"
           icon={
             expanded ? (
               <HugeiconsIcon

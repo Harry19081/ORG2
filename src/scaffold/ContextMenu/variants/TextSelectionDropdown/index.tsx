@@ -137,7 +137,6 @@ const SessionSelectorPanel: React.FC<SessionSelectorPanelProps> = memo(
         <div className={DROPDOWN_CLASSES.panelHeaderRow}>
           <Button
             variant="tertiary"
-            appearance="soft"
             size="mini"
             iconOnly
             icon={

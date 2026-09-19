@@ -115,8 +115,6 @@ export const GitInitializationStatusMenu: React.FC<GitInitializationStatusMenuPr
               <div className={DROPDOWN_CLASSES.itemsColumn}>
                 <Button
                   layout="custom"
-                  appearance="custom"
-                  htmlType="button"
                   className={classNames(
                     DROPDOWN_CLASSES.menuActionItem,
                     actionPending && DROPDOWN_CLASSES.itemDisabled

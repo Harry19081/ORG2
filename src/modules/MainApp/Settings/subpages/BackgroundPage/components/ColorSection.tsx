@@ -67,9 +67,7 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
           return (
             <SharedButton
               layout="custom"
-              appearance="custom"
               key={preset.id}
-              htmlType="button"
               title={preset.description}
               className={`${SWATCH_BASE} ${isSelected ? SWATCH_SELECTED : SWATCH_IDLE}`}
               style={{ backgroundColor: `var(${preset.cssVar})` }}
@@ -86,18 +84,15 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
             <div key={hex} className="group relative shrink-0">
               <SharedButton
                 layout="custom"
-                appearance="custom"
-                htmlType="button"
                 title={hex}
                 className={`${SWATCH_BASE} ${isSelected ? SWATCH_SELECTED : SWATCH_IDLE}`}
                 style={{ backgroundColor: hex }}
                 onClick={() => onSelectCustomHex(hex)}
               />
               <Button
-                className="absolute -top-0.5 -right-0.5 z-10 opacity-0 shadow-xs transition-opacity group-hover:opacity-100"
+                className="absolute -top-0.5 -right-0.5 z-10 bg-fill-2 text-text-1 opacity-0 shadow-xs transition-opacity group-hover:opacity-100 hover:bg-fill-3"
                 style={{ width: 18, height: 18, minWidth: 18 }}
-                variant="secondary"
-                appearance="solid"
+                variant="tertiary"
                 size="mini"
                 shape="circle"
                 icon={

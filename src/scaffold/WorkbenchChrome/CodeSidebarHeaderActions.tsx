@@ -84,7 +84,6 @@ const CodeSidebarHeaderActionsComponent: React.FC = () => {
             shortcutId={shortcutId}
           >
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly

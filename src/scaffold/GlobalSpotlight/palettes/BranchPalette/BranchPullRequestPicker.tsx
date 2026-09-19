@@ -413,8 +413,6 @@ export function BranchPullRequestPicker({
             return (
               <Button
                 layout="custom"
-                appearance="custom"
-                htmlType="button"
                 key={pr.number}
                 {...keyboard.getItemProps(index)}
                 disabled={selecting}
@@ -439,9 +437,7 @@ export function BranchPullRequestPicker({
         {pinnedActionItems.map((action, index) => (
           <Button
             layout="custom"
-            appearance="custom"
             key={action.id}
-            htmlType="button"
             {...keyboard.getItemProps(items.length + index)}
             disabled={action.data?.disabled}
             className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full justify-start`}

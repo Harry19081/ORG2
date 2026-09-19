@@ -33,8 +33,6 @@ const ComposerExpandToggle: React.FC<ComposerExpandToggleProps> = memo(
         <span className="inline-flex">
           <Button
             layout="custom"
-            appearance="custom"
-            htmlType="button"
             aria-label={label}
             aria-expanded={expanded}
             data-testid="composer-expand-toggle"

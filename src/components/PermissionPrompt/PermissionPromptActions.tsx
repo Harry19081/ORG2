@@ -40,8 +40,7 @@ export function PermissionPromptActions({
           {t("chat.allow", "Allow")}
         </Button>
         <Button
-          variant="danger"
-          appearance="outline"
+          tone="danger"
           className="w-full"
           style={{
             fontSize: "var(--mobile-type-control-size, 13px)",
@@ -54,7 +53,6 @@ export function PermissionPromptActions({
         </Button>
         <Button
           variant="tertiary"
-          appearance="ghost"
           className="w-full"
           style={{
             fontSize: "var(--mobile-type-control-size, 13px)",
@@ -79,12 +77,7 @@ export function PermissionPromptActions({
       >
         {t("chat.deny", "Deny")}
       </Button>
-      <Button
-        variant="secondary"
-        size="mini"
-        onClick={onAlwaysAllow ?? noop}
-        disabled={disabled}
-      >
+      <Button size="mini" onClick={onAlwaysAllow ?? noop} disabled={disabled}>
         {t("chat.alwaysAllow", "Always Allow")}
       </Button>
       <Button

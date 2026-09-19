@@ -139,7 +139,8 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
         >
           {!showConfirm ? (
             <Button
-              variant="danger"
+              variant="primary"
+              tone="danger"
               size="small"
               onClick={() => setShowConfirm(true)}
               disabled={!onDeleteProject}
@@ -174,7 +175,8 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
               />
               <div className={SECTION_ACTION_GAP_CLASSES}>
                 <Button
-                  variant="danger"
+                  variant="primary"
+                  tone="danger"
                   size="small"
                   disabled={!isConfirmed}
                   loading={deleting}

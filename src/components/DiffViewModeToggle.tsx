@@ -96,7 +96,6 @@ export function DiffViewModeToggle({
   return (
     <ToolbarTooltip label={label}>
       <Button
-        htmlType="button"
         variant="tertiary"
         size="small"
         iconOnly

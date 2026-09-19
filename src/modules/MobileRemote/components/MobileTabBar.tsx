@@ -41,9 +41,7 @@ export function MobileTabBar({ active, onChange }: MobileTabBarProps) {
           return (
             <Button
               key={tab.id}
-              htmlType="button"
               variant="tertiary"
-              appearance="ghost"
               shape="round"
               className="mobile-tab-button"
               style={{

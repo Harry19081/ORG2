@@ -101,7 +101,6 @@ export function useProjectProperties(
     () => (
       <ToolbarTooltip label={propertiesToggleLabel}>
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly

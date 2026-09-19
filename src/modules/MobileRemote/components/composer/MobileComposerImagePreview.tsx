@@ -44,11 +44,9 @@ export const MobileComposerImagePreview = memo(
               decoding="async"
             />
             <Button
-              htmlType="button"
               iconOnly
               shape="circle"
               variant="tertiary"
-              appearance="ghost"
               style={{ padding: 0 }}
               onClick={handleRemove(image.id)}
               className="absolute -top-3 -right-3 min-h-11 min-w-11"

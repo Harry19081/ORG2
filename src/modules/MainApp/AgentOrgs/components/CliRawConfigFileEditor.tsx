@@ -210,14 +210,12 @@ const CliRawConfigFileEditor: React.FC<CliRawConfigFileEditorProps> = ({
           {activeTab === "edit" && (
             <>
               <Button
-                size="default"
                 onClick={handleReset}
                 data-testid="agent-orgs-cli-config-cancel-button"
               >
                 {t("common:actions.cancel")}
               </Button>
               <Button
-                size="default"
                 variant="primary"
                 onClick={handleSave}
                 disabled={!hasChanges || saveStatus === "saving"}

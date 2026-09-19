@@ -120,7 +120,6 @@ export function MobileChangeSummary({
         <Button
           long
           variant="tertiary"
-          appearance="ghost"
           className="mobile-change-review__heading"
           style={rowStyle}
           aria-haspopup="dialog"
@@ -132,7 +131,6 @@ export function MobileChangeSummary({
           <Button
             iconOnly
             variant="tertiary"
-            appearance="ghost"
             className="mobile-change-review__toggle"
             style={{
               width: "var(--mobile-change-touch-size)",
@@ -177,7 +175,6 @@ export function MobileChangeSummary({
           {online && error && (
             <Button
               variant="tertiary"
-              appearance="ghost"
               className="mobile-change-review__retry"
               style={{
                 height: "var(--mobile-change-touch-size)",
@@ -218,7 +215,6 @@ export function MobileChangeSummary({
               key={file.path}
               long
               variant="tertiary"
-              appearance="ghost"
               className="mobile-change-review__row"
               style={rowStyle}
               data-mobile-change-path={file.path}

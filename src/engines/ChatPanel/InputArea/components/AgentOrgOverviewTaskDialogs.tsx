@@ -70,8 +70,7 @@ export const AgentOrgOverviewTaskActionDialog: React.FC<
                     defaultValue: "Cancel Task",
                   }),
             onClick: () => void onConfirm(),
-            variant:
-              taskActionDialog?.action === "cancel" ? "danger" : "primary",
+            tone: taskActionDialog?.action === "cancel" ? "danger" : undefined,
             disabled:
               isMutatingTask ||
               (taskActionDialog?.action === "reassign" &&
@@ -170,10 +169,10 @@ export const AgentOrgOverviewHandoffResolutionDialog: React.FC<
                       defaultValue: "Abandon episode",
                     }),
             onClick: () => void onConfirm(),
-            variant:
+            tone:
               handoffResolutionDialog?.resolution === "abandon_episode"
                 ? "danger"
-                : "primary",
+                : undefined,
             disabled:
               isMutatingTask ||
               (handoffResolutionDialog?.resolution === "continue_replacement" &&

@@ -193,7 +193,6 @@ export function ConnectionDevicesScreen({
                       // Compound device row owns the identity/status layout and full-row hit target.
                       <Button
                         layout="custom"
-                        appearance="custom"
                         className="mobile-connections__row mobile-connections__switch"
                         disabled={switchingDesktopId !== null}
                         loading={switchingDesktopId === desktop.id}
@@ -240,8 +239,7 @@ export function ConnectionDevicesScreen({
               className="mobile-connections__section-row"
             >
               <Button
-                variant="secondary"
-                appearance="ghost"
+                variant="tertiary"
                 size="large"
                 long
                 className="mobile-connections__add"

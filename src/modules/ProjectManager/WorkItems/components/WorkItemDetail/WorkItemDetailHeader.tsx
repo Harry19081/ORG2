@@ -260,7 +260,6 @@ export function WorkItemDetailHeaderActions({
     <div className="flex shrink-0 items-center gap-px">
       <ToolbarTooltip label={t("common:actions.previous")}>
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly
@@ -278,7 +277,6 @@ export function WorkItemDetailHeaderActions({
       </ToolbarTooltip>
       <ToolbarTooltip label={t("common:actions.next")}>
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly
@@ -321,7 +319,6 @@ export function WorkItemDetailHeaderActions({
       {onDeleteWorkItem && (
         <ToolbarTooltip label={t("workItems.deleteWorkItem")}>
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
@@ -347,7 +344,6 @@ export function WorkItemDetailHeaderActions({
           }
         >
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly

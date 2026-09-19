@@ -54,8 +54,6 @@ export function MobileConfirmModal({
               lineHeight: "var(--mobile-type-control-leading)",
             }}
             ref={cancelRef}
-            htmlType="button"
-            variant="secondary"
             onClick={() => decide(false)}
           >
             {cancelLabel}
@@ -65,8 +63,8 @@ export function MobileConfirmModal({
               fontSize: "var(--mobile-type-control-size)",
               lineHeight: "var(--mobile-type-control-leading)",
             }}
-            htmlType="button"
-            variant={danger ? "danger" : "primary"}
+            variant="primary"
+            tone={danger ? "danger" : undefined}
             onClick={() => decide(true)}
           >
             {confirmLabel}

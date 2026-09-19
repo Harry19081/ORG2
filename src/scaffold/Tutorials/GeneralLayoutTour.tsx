@@ -332,14 +332,12 @@ const GeneralLayoutTour: React.FC<GeneralLayoutTourProps> = ({
             </span>
             <Button
               variant="tertiary"
-              appearance="soft-no-drop"
               size="mini"
               shape="round"
               iconOnly
               icon={
                 <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
               }
-              htmlType="button"
               className="hover:bg-fill-2 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:outline-none"
               aria-label={t("tutorials.chrome.close")}
               onClick={onClose}
@@ -408,8 +406,7 @@ const GeneralLayoutTour: React.FC<GeneralLayoutTourProps> = ({
           <div className="flex items-center justify-between gap-2">
             <Button
               size="mini"
-              variant="secondary"
-              appearance="ghost"
+              variant="tertiary"
               shape="circle"
               iconOnly
               icon={

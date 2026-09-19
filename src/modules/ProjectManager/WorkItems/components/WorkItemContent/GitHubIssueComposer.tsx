@@ -133,7 +133,6 @@ const GitHubIssueComposer: React.FC<GitHubIssueComposerProps> = ({
         }
         trailingActions={
           <Button
-            htmlType="button"
             variant="primary"
             size="small"
             shape="round"

@@ -213,8 +213,6 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
           <div key="checks" ref={triggerRef} className="w-full">
             <Button
               layout="custom"
-              appearance="custom"
-              htmlType="button"
               className={`${ROW_CLASS} transition-colors hover:bg-fill-1 hover:text-text-1`}
               aria-expanded={isOpen}
               aria-haspopup="dialog"

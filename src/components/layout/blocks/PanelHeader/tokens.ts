@@ -50,10 +50,11 @@ export const PANEL_HEADER_TOKENS = {
    */
   dangerButton: {
     variant: "tertiary" as const,
+    hoverTone: "danger" as const,
     size: "mini" as const,
     shape: "circle" as const,
     iconOnly: true as const,
-    className: "hover:bg-danger-1! hover:text-danger-6!",
+    className: "hover:bg-danger-1!",
   },
 
   /**

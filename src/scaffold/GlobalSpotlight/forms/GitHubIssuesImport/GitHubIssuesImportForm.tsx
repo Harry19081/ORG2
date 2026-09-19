@@ -310,7 +310,6 @@ const GitHubIssuesImportForm: React.FC<GitHubIssuesImportFormProps> = ({
                 label: t("common:actions.clear"),
                 onClick: handleClear,
                 disabled: saving,
-                htmlType: "button",
               },
             ]}
             primaryAction={{

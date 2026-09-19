@@ -192,18 +192,24 @@ body {
   --color-merged-button-hover: #bc8cff;
   --color-merged-button-active: #d8b9ff;
   --color-merged-button-contrast: #0d1117;
+  /* Filled success buttons: GitHub's merge green, lighter on hover. */
+  --color-success-button-bg: #238636;
+  --color-success-button-hover: #2ea043;
+  --color-success-button-active: #196c2e;
+  --color-success-button-contrast: #ffffff;
   --color-danger-1: #4d0000;
   --color-danger-2: #6f0f0f;
   --color-danger-3: #942020;
   --color-danger-4: #be3434;
   --color-danger-5: #dd4141;
   --color-danger-6: #f14c4c;
-  --color-success-1: #003d16;
-  --color-success-2: #04521f;
-  --color-success-3: #0f682b;
-  --color-success-4: #25873c;
-  --color-success-5: #55ae53;
-  --color-success-6: #89d185;
+  /* Success ramp follows GitHub Primer's dark greens (green-9 … green-3). */
+  --color-success-1: #04260f;
+  --color-success-2: #033a16;
+  --color-success-3: #0f5323;
+  --color-success-4: #196c2e;
+  --color-success-5: #238636;
+  --color-success-6: #3fb950;
   --color-warning-1: #fff7e8;
   --color-warning-2: #ffe4ba;
   --color-warning-3: #ffcf8b;

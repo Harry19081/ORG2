@@ -276,7 +276,6 @@ export default function MyAccountsTableSection({
               />
               {showEdit ? (
                 <Button
-                  variant="secondary"
                   size="small"
                   icon={
                     <HugeiconsIcon
@@ -293,8 +292,7 @@ export default function MyAccountsTableSection({
               ) : null}
               {onDisconnectAccount ? (
                 <Button
-                  variant="danger"
-                  appearance="outline"
+                  tone="danger"
                   size="small"
                   icon={
                     <HugeiconsIcon
@@ -393,8 +391,6 @@ export default function MyAccountsTableSection({
 
   const refreshAccountsButton = onRefreshAccounts ? (
     <Button
-      variant="secondary"
-      size="default"
       icon={
         <HugeiconsIcon
           icon={Refresh04Icon}
@@ -414,8 +410,6 @@ export default function MyAccountsTableSection({
 
   const addKeyButton = (
     <Button
-      variant="secondary"
-      size="default"
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       iconOnly
       onClick={onAdd}

@@ -322,7 +322,7 @@ const CreateWorkItemView: React.FC<CreateWorkItemViewProps> = ({
       submitButton={
         <>
           {layout === "spotlight" && (
-            <Button variant="secondary" size="small" onClick={onCancel}>
+            <Button size="small" onClick={onCancel}>
               {t("common:actions.cancel")}
             </Button>
           )}
@@ -376,7 +376,6 @@ const CreateWorkItemView: React.FC<CreateWorkItemViewProps> = ({
                     : t("workItems.showProperties")
                 }
                 aria-pressed={resolvedPropertiesOpen}
-                htmlType="button"
               />
             </ToolbarTooltip>
           ) : null}
@@ -395,7 +394,6 @@ const CreateWorkItemView: React.FC<CreateWorkItemViewProps> = ({
                 }
                 onClick={onCancel}
                 aria-label={t("common:actions.close")}
-                htmlType="button"
               />
             </ToolbarTooltip>
           ) : null}
@@ -458,7 +456,6 @@ const CreateWorkItemView: React.FC<CreateWorkItemViewProps> = ({
           chatPanelFooter ? (
             <>
               <Button
-                variant="secondary"
                 size="small"
                 onClick={inlineFields.resetDraftForCreateMore}
               >

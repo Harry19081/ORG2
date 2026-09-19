@@ -299,7 +299,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
           {showClearButton && value && (
             <Button
               variant="tertiary"
-              appearance="ghost"
               size="sidebar"
               aria-label={t("tooltips.clearSearch")}
               iconOnly
@@ -310,7 +309,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={handleClear}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -320,8 +318,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
 
           {onCaseSensitiveToggle && (
             <Button
-              variant={caseSensitive ? "primary" : "tertiary"}
-              appearance="ghost"
+              variant="tertiary"
               size="sidebar"
               aria-pressed={caseSensitive}
               aria-label={t("tooltips.matchCase")}
@@ -333,7 +330,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={onCaseSensitiveToggle}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -342,8 +338,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
           )}
           {onWholeWordToggle && (
             <Button
-              variant={wholeWord ? "primary" : "tertiary"}
-              appearance="ghost"
+              variant="tertiary"
               size="sidebar"
               aria-pressed={wholeWord}
               aria-label={t("tooltips.matchWholeWord")}
@@ -355,7 +350,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={onWholeWordToggle}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -364,8 +358,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
           )}
           {onRegexToggle && (
             <Button
-              variant={useRegex ? "primary" : "tertiary"}
-              appearance="ghost"
+              variant="tertiary"
               size="sidebar"
               aria-pressed={useRegex}
               aria-label={t("tooltips.useRegex")}
@@ -377,7 +370,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={onRegexToggle}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -386,8 +378,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
           )}
           {onOnlyOpenFilesToggle && (
             <Button
-              variant={onlyOpenFiles ? "primary" : "tertiary"}
-              appearance="ghost"
+              variant="tertiary"
               size="sidebar"
               aria-pressed={onlyOpenFiles}
               aria-label={t("tooltips.searchInOpenEditors")}
@@ -399,7 +390,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                   size={iconSize}
                 />
               }
-              htmlType="button"
               onClick={onOnlyOpenFilesToggle}
               className={`shrink-0 ${inlineButtonAlignClass}`}
               style={inlineButtonStyle}
@@ -414,7 +404,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
             {onPrevious && (
               <Button
                 variant="tertiary"
-                appearance="soft"
                 size="sidebar"
                 aria-label={t("tooltips.previousMatch")}
                 iconOnly
@@ -425,7 +414,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                     size={iconSize}
                   />
                 }
-                htmlType="button"
                 onClick={onPrevious}
                 title={t("tooltips.previousMatch")}
               />
@@ -433,7 +421,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
             {onNext && (
               <Button
                 variant="tertiary"
-                appearance="soft"
                 size="sidebar"
                 aria-label={t("tooltips.nextMatch")}
                 iconOnly
@@ -444,7 +431,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                     size={iconSize}
                   />
                 }
-                htmlType="button"
                 onClick={onNext}
                 title={t("tooltips.nextMatch")}
               />
@@ -454,7 +440,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
         {onClose && (
           <Button
             variant="tertiary"
-            appearance="soft"
             size="sidebar"
             aria-label={t("tooltips.closeEsc")}
             iconOnly
@@ -465,7 +450,6 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                 size={iconSize}
               />
             }
-            htmlType="button"
             onClick={onClose}
             title={t("tooltips.closeEsc")}
           />

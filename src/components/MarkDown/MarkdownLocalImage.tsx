@@ -218,7 +218,6 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
       return (
         <Button
           layout="custom"
-          appearance="custom"
           className="inline-flex max-w-full cursor-pointer items-center gap-1.5 rounded-md border border-border-2 bg-fill-1 px-2 py-1 align-middle text-xs text-text-2"
           title={source.path}
           tabIndex={0}

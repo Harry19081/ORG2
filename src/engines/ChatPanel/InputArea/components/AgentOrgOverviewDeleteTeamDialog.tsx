@@ -53,7 +53,7 @@ const AgentOrgOverviewDeleteTeamDialog: React.FC<
               defaultValue: "Delete Team",
             }),
             onClick: () => void onConfirm(),
-            variant: "danger",
+            tone: "danger",
             disabled: !deleteConfirmed || isDeleting,
             loading: isDeleting,
             dataTestId: "agent-org-delete-confirm-button",

@@ -129,7 +129,6 @@ const ProjectsPageHeader: React.FC<ProjectsPageHeaderProps> = ({
       {trailingControls}
       {onSearch && (
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly
@@ -153,7 +152,6 @@ const ProjectsPageHeader: React.FC<ProjectsPageHeaderProps> = ({
       <>
         {onCollapseAll && (
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
@@ -178,7 +176,6 @@ const ProjectsPageHeader: React.FC<ProjectsPageHeaderProps> = ({
         )}
         {onAddProject && (
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly

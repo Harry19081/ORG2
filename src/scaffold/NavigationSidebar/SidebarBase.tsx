@@ -261,7 +261,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
                 >
                   <span className="inline-flex">
                     <Button
-                      htmlType="button"
                       variant="tertiary"
                       size="small"
                       iconOnly

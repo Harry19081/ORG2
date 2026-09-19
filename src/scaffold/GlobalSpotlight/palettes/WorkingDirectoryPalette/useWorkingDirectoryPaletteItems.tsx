@@ -199,13 +199,12 @@ export function useWorkingDirectoryPaletteItems({
   const renderRepoTrashAction = useCallback(
     (repo: RepoItem): React.ReactNode => (
       <Button
-        variant="danger"
-        appearance="soft"
+        variant="tertiary"
+        tone="danger"
         size="mini"
         aria-label={t("actions.removeFromOrgii", "Remove from ORG2")}
         iconOnly
         icon={<HugeiconsIcon icon={ICONS.removeRepo} size={14} />}
-        htmlType="button"
         onClick={(e) => {
           e.stopPropagation();
           handleRemoveRepo(repo).catch((error: unknown) => {

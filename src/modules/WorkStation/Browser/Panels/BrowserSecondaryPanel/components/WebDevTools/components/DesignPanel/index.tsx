@@ -101,7 +101,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
     const renderLinkButton = (isLinked: boolean, onToggle: () => void) => (
       <Button
         variant="tertiary"
-        appearance="soft"
         size="sidebar"
         aria-pressed={!isLinked}
         aria-label={isLinked ? "Unlink values" : "Link values"}
@@ -281,7 +280,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
               headerActions={
                 <Button
                   variant="tertiary"
-                  appearance="soft"
                   size="sidebar"
                   aria-pressed={radiusExpanded}
                   aria-label={

@@ -381,7 +381,6 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
                   smartPlacement
                 >
                   <Button
-                    htmlType="button"
                     variant="tertiary"
                     size="small"
                     iconOnly
@@ -413,7 +412,6 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
                 >
                   <span className="inline-flex">
                     <Button
-                      htmlType="button"
                       variant="tertiary"
                       size="small"
                       iconOnly

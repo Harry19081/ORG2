@@ -169,8 +169,6 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
     ) : (
       <Button
         ref={triggerRef}
-        variant="secondary"
-        appearance="outline"
         size="small"
         shape="round"
         icon={
@@ -232,8 +230,6 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
               {currentWorkItemContext ? (
                 <Button
                   layout="custom"
-                  appearance="custom"
-                  htmlType="button"
                   className={DROPDOWN_CLASSES.menuActionItem}
                   role="menuitem"
                   onClick={handleRemoveWorkItem}
@@ -253,8 +249,6 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
               ) : null}
               <Button
                 layout="custom"
-                appearance="custom"
-                htmlType="button"
                 className={DROPDOWN_CLASSES.menuActionItem}
                 role="menuitem"
                 onClick={handleOpenPicker}

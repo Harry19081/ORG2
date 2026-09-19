@@ -65,7 +65,6 @@ function PrCheckRow({ item, onOpenDetails }: PrCheckRowProps): React.ReactNode {
       {item.detailsUrl ? (
         <Button
           variant="tertiary"
-          appearance="soft"
           size="mini"
           iconOnly
           icon={
@@ -75,7 +74,6 @@ function PrCheckRow({ item, onOpenDetails }: PrCheckRowProps): React.ReactNode {
               size={DROPDOWN_ITEM.iconSize}
             />
           }
-          htmlType="button"
           className="shrink-0"
           title={t("workstation.ci.viewDetails", "View check details")}
           aria-label={t("workstation.ci.viewDetails", "View check details")}

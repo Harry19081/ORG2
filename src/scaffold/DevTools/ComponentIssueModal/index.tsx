@@ -226,7 +226,6 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
             <div className="component-issue-modal-title">Component Issue</div>
             <Button
               layout="custom"
-              appearance="custom"
               className="component-issue-close-btn"
               onClick={onClose}
             >
@@ -253,7 +252,6 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
                 </span>
                 <Button
                   layout="custom"
-                  appearance="custom"
                   className="component-issue-nav-btn"
                   onClick={() => navigateMatch("prev")}
                   disabled={matchCount === 0}
@@ -263,7 +261,6 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
                 </Button>
                 <Button
                   layout="custom"
-                  appearance="custom"
                   className="component-issue-nav-btn"
                   onClick={() => navigateMatch("next")}
                   disabled={matchCount === 0}

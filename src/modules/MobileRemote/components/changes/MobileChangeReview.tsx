@@ -109,7 +109,6 @@ function ReviewDropdown({
       >
         <Button
           variant="tertiary"
-          appearance="ghost"
           className="mobile-change-review__dropdown-trigger"
           aria-labelledby={`${labelId} ${valueId}`}
           aria-haspopup="listbox"
@@ -260,7 +259,6 @@ function ReviewPanel(
           {!full && (
             <Button
               iconOnly
-              appearance="ghost"
               variant="tertiary"
               className="mobile-change-review__icon mobile-change-review__expand-all"
               style={iconStyle}
@@ -510,7 +508,6 @@ function FileReview(
             {props.full && (
               <Button
                 variant="tertiary"
-                appearance="soft"
                 className="mobile-change-review__version"
                 style={{
                   height: "var(--mobile-change-touch-size)",
@@ -526,10 +523,9 @@ function FileReview(
             )}
             <Button
               iconOnly
-              appearance="soft"
               className="mobile-change-review__icon mobile-change-review__wrap"
               style={iconStyle}
-              variant={wrap ? "primary" : "tertiary"}
+              variant="tertiary"
               aria-label={t("changeReview.wrap")}
               title={t("changeReview.wrap")}
               aria-pressed={wrap}
@@ -544,7 +540,6 @@ function FileReview(
             />
             <Button
               iconOnly
-              appearance="soft"
               variant="tertiary"
               className="mobile-change-review__icon"
               style={iconStyle}

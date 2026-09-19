@@ -174,11 +174,9 @@ function ConsoleLogEntryRow({
 
         {truncated && (
           <Button
-            variant="primary"
-            appearance="ghost"
+            variant="ghost"
             size="inline"
-            htmlType="button"
-            className="mt-0.5 text-[10px] underline decoration-primary-6/50 underline-offset-2 select-none hover:text-primary-5"
+            className="mt-0.5 text-[10px] select-none"
             onClick={(event) => {
               event.stopPropagation();
               onToggleMessage();
@@ -191,11 +189,9 @@ function ConsoleLogEntryRow({
         {entry.stack && (
           <div className="mt-1">
             <Button
-              variant="primary"
-              appearance="ghost"
+              variant="ghost"
               size="inline"
-              htmlType="button"
-              className="text-[10px] underline decoration-primary-6/50 underline-offset-2 select-none hover:text-primary-5"
+              className="text-[10px] select-none"
               onClick={(event) => {
                 event.stopPropagation();
                 onToggleStack();
@@ -393,7 +389,6 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
           <ToolbarTooltip label={t("tooltips.clearConsole")}>
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={
@@ -403,7 +398,6 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
                   size={HEADER_ICON_SIZE.sm}
                 />
               }
-              htmlType="button"
               onClick={handleClear}
               aria-label={t("tooltips.clearConsole")}
             />

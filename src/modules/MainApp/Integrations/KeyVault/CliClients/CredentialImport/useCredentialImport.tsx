@@ -340,8 +340,6 @@ export function useCredentialImport({
               {row.sourcePath ? (
                 <Button
                   layout="custom"
-                  appearance="custom"
-                  htmlType="button"
                   className="flex min-w-0 cursor-pointer items-center gap-1.5 text-left underline-offset-2 hover:underline focus-visible:underline focus-visible:ring-1 focus-visible:ring-primary-6 focus-visible:outline-none [&:focus-visible>svg]:opacity-100 [&:hover>svg]:opacity-100"
                   aria-label={`${t(getFileManagerRevealLabelKey())}: ${row.sourcePath}`}
                   onClick={(event) => {

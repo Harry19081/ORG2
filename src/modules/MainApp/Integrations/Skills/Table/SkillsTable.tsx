@@ -257,7 +257,6 @@ export const SkillsTable: React.FC<SkillsTableProps> = ({
               </div>
               {canShare ? (
                 <Button
-                  variant="secondary"
                   size="small"
                   icon={
                     <HugeiconsIcon
@@ -281,7 +280,6 @@ export const SkillsTable: React.FC<SkillsTableProps> = ({
               ) : null}
               {showRemove ? (
                 <Button
-                  variant="secondary"
                   size="small"
                   icon={
                     <HugeiconsIcon
@@ -341,8 +339,6 @@ export const SkillsTable: React.FC<SkillsTableProps> = ({
     <div className="flex items-center gap-2">
       {onRefreshSkills ? (
         <Button
-          variant="secondary"
-          size="default"
           icon={
             <HugeiconsIcon
               icon={Refresh04Icon}
@@ -360,8 +356,6 @@ export const SkillsTable: React.FC<SkillsTableProps> = ({
         />
       ) : null}
       <Button
-        variant="secondary"
-        size="default"
         icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
         onClick={onCreate}
         data-testid="integrations-skills-create-button"

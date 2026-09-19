@@ -86,8 +86,8 @@ const MarkdownRuleDetailView: React.FC<MarkdownRuleDetailViewProps> = ({
           {
             label: t("common:actions.delete"),
             onClick: onDelete,
-            variant: "danger",
-            appearance: "outline",
+            variant: "secondary",
+            tone: "danger",
           },
         ]}
       />

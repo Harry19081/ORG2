@@ -164,9 +164,7 @@ const GanttToolbar: React.FC<GanttToolbarProps> = ({
             />
             <Button
               variant="tertiary"
-              appearance="ghost"
               size="mini"
-              htmlType="button"
               className="min-w-12 text-[11px] font-medium transition-all hover:bg-fill-2 hover:text-text-1"
               onClick={onResetZoom}
               title={t("tooltips.resetZoom")}
@@ -231,9 +229,7 @@ const GanttToolbar: React.FC<GanttToolbarProps> = ({
         {/* Today */}
         <Button
           variant="tertiary"
-          appearance="ghost"
           size="mini"
-          htmlType="button"
           className="ml-1 text-xs transition-all hover:bg-fill-2 hover:text-text-1"
           onClick={onGoToToday}
           title={t("tooltips.goToToday")}

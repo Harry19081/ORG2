@@ -228,8 +228,6 @@ export function CloudInvitesCard({ t, management }: CloudInvitesCardProps) {
           <SectionRow showHeader={false}>
             <div className="flex w-full justify-end">
               <Button
-                htmlType="button"
-                size="default"
                 variant="primary"
                 disabled={creatingInvite}
                 loading={creatingInvite}
@@ -255,8 +253,6 @@ export function CloudInvitesCard({ t, management }: CloudInvitesCardProps) {
                   {latestCreatedInvite.inviteLink}
                 </div>
                 <Button
-                  htmlType="button"
-                  size="default"
                   variant="primary"
                   data-testid="cloud-org-invite-link-copy"
                   disabled={copyingInvite}
@@ -330,9 +326,6 @@ export function CloudInvitesCard({ t, management }: CloudInvitesCardProps) {
                       </span>
                       {active ? (
                         <Button
-                          htmlType="button"
-                          size="default"
-                          variant="secondary"
                           disabled={Boolean(revokingInviteId)}
                           loading={revokingInviteId === invite.inviteId}
                           data-testid={`cloud-org-invite-revoke-${invite.inviteId}`}
@@ -499,10 +492,7 @@ export function CloudMembersSection({
                 </span>
                 {!isOwner ? (
                   <Button
-                    htmlType="button"
-                    size="default"
-                    variant="danger"
-                    appearance="outline"
+                    tone="danger"
                     disabled={leavingOrg || confirmingLeave}
                     data-testid="cloud-org-leave"
                     onClick={() => setConfirmingLeave(true)}
@@ -520,9 +510,8 @@ export function CloudMembersSection({
               >
                 <div className={SECTION_ACTION_GAP_CLASSES}>
                   <Button
-                    htmlType="button"
-                    size="default"
-                    variant="danger"
+                    variant="primary"
+                    tone="danger"
                     disabled={leavingOrg}
                     loading={leavingOrg}
                     data-testid="cloud-org-leave-confirm"
@@ -531,9 +520,6 @@ export function CloudMembersSection({
                     {t("cloud.orgManagement.leave.confirm")}
                   </Button>
                   <Button
-                    htmlType="button"
-                    size="default"
-                    variant="secondary"
                     disabled={leavingOrg}
                     onClick={() => setConfirmingLeave(false)}
                   >
@@ -631,9 +617,6 @@ export function CloudMembersSection({
                             }}
                           />
                           <Button
-                            htmlType="button"
-                            size="default"
-                            variant="secondary"
                             disabled={targetIsOwner || Boolean(removingUserId)}
                             loading={removingUserId === member.userId}
                             data-testid={`cloud-org-member-remove-${member.userId}`}

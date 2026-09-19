@@ -137,8 +137,6 @@ const AgentTeamWizard: React.FC<AgentTeamWizardProps> = ({
         actions={
           <>
             <Button
-              variant="secondary"
-              size="default"
               data-testid="agent-orgs-org-wizard-cancel-button"
               onClick={onCancel}
             >
@@ -146,7 +144,6 @@ const AgentTeamWizard: React.FC<AgentTeamWizardProps> = ({
             </Button>
             <Button
               variant="primary"
-              size="default"
               disabled={!canSave}
               data-testid="agent-orgs-org-wizard-save-button"
               onClick={handleSave}

@@ -36,7 +36,6 @@ export const ExternalBrowserButton = memo(function ExternalBrowserButton({
   return (
     <ToolbarTooltip label={resolvedLabel} position="bottom-end">
       <Button
-        htmlType="button"
         variant="tertiary"
         size="small"
         iconOnly

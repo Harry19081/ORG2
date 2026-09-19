@@ -71,8 +71,8 @@ export function SignInFeatures() {
       </div>
       {([-1, 1] as const).map((direction) => (
         <Button
+          variant="tertiary"
           key={direction}
-          appearance="ghost"
           shape="circle"
           iconOnly
           aria-label={t(

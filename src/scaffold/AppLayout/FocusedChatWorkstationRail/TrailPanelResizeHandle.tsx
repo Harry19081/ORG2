@@ -20,9 +20,7 @@ export function TrailPanelResizeHandle({
   const handlers = useTrailPanelResize(options);
   return (
     <Button
-      htmlType="button"
       variant="tertiary"
-      appearance="soft-no-drop"
       size="sidebar"
       iconOnly
       icon={

@@ -119,9 +119,7 @@ export const LinkedSessionsList: React.FC<LinkedSessionsListProps> = ({
           session.status === "failed" && shortId ? (
             <Button
               variant="tertiary"
-              appearance="ghost"
               size="mini"
-              htmlType="button"
               className="gap-1 text-[11px] hover:bg-fill-2 hover:text-text-1"
               onClick={() => {
                 retryFailedLinkedSession({
