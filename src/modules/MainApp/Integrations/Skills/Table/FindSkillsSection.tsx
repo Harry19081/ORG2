@@ -22,7 +22,6 @@ const FindSkillsSection: React.FC<FindSkillsSectionProps> = ({ onPreview }) => {
     <SectionContainer>
       <SectionRow label={t("agentOrgs.findSkills.title")}>
         <Button
-          variant="secondary"
           icon={
             expanded ? (
               <HugeiconsIcon

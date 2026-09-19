@@ -168,7 +168,6 @@ export function InlineSplitNavRow({
   return (
     <Button
       layout="custom"
-      appearance="custom"
       disabled={disabled}
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled || undefined}

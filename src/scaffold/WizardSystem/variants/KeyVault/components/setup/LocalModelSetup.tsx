@@ -233,9 +233,6 @@ const LocalModelSetup: React.FC<AgentSetupProps> = ({
               className="min-w-0 flex-1"
             />
             <Button
-              variant="secondary"
-              appearance="outline"
-              size="default"
               icon={
                 <HugeiconsIcon icon={Tick01Icon} data-icon="check" size={14} />
               }
@@ -252,9 +249,8 @@ const LocalModelSetup: React.FC<AgentSetupProps> = ({
           required
         >
           <Button
-            variant={keyValidated ? "success" : "primary"}
-            appearance={keyValidated ? "outline" : undefined}
-            size="default"
+            variant={keyValidated ? "secondary" : "primary"}
+            tone={keyValidated ? "success" : undefined}
             loading={validatingKey}
             disabled={validatingKey || !effectiveBaseUrl}
             onClick={validateKey}

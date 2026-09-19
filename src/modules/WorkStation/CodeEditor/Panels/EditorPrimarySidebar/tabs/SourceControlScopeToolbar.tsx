@@ -171,9 +171,9 @@ function ScopePickerItem({
       </DropdownItem>
       {onRemove ? (
         <Button
-          htmlType="button"
           size="sidebar"
-          variant="danger"
+          variant="tertiary"
+          tone="danger"
           className={SCOPE_PICKER_REMOVE_BUTTON}
           title={removeLabel}
           aria-label={removeLabel}
@@ -182,7 +182,6 @@ function ScopePickerItem({
             event.stopPropagation();
             onRemove();
           }}
-          appearance="soft"
           iconOnly
           icon={
             <HugeiconsIcon

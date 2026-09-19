@@ -320,7 +320,6 @@ function DragTableInner<T extends { id: string }>({
         <div className="flex items-center py-2">
           <Button
             variant="tertiary"
-            size="default"
             icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
             onClick={onAdd}
             className={ADD_BUTTON_CLASS}

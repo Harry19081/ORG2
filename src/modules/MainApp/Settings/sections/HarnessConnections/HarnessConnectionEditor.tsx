@@ -299,11 +299,7 @@ export default function HarnessConnectionEditor({
         />
       </SectionRow>
       <SectionRow label={routingLabel}>
-        <Button
-          variant="secondary"
-          onClick={() => setAdvanced(!advanced)}
-          aria-expanded={advanced}
-        >
+        <Button onClick={() => setAdvanced(!advanced)} aria-expanded={advanced}>
           {t("harnessConnections.advanced")}
         </Button>
       </SectionRow>
@@ -328,7 +324,6 @@ export default function HarnessConnectionEditor({
         <div className={`${SECTION_ACTION_GAP_CLASSES} flex-wrap`}>
           <div className={SECTION_ACTION_GAP_CLASSES}>
             <Button
-              variant="secondary"
               disabled={blocked}
               loading={busy === "test"}
               onClick={() => void act("test")}
@@ -346,9 +341,7 @@ export default function HarnessConnectionEditor({
             />
           </div>
           {busy === "test" && (
-            <Button variant="secondary" onClick={cancel}>
-              {t("harnessConnections.cancel")}
-            </Button>
+            <Button onClick={cancel}>{t("harnessConnections.cancel")}</Button>
           )}
           <Button
             disabled={blocked || (Boolean(choice?.requiresTest) && !receipt)}
@@ -358,7 +351,6 @@ export default function HarnessConnectionEditor({
             {t("harnessConnections.apply")}
           </Button>
           <Button
-            variant="secondary"
             disabled={
               loading ||
               busy !== null ||
@@ -372,7 +364,6 @@ export default function HarnessConnectionEditor({
             {t("harnessConnections.restore")}
           </Button>
           <Button
-            variant="secondary"
             disabled={loading || busy !== null}
             loading={loading}
             onClick={() => void handleRefresh()}

@@ -90,7 +90,6 @@ export function SettingsTab({ onOpenDevices }: SettingsTabProps) {
               <SectionRow showHeader={false} className="mobile-settings__row">
                 <Button
                   layout="custom"
-                  appearance="custom"
                   className="mobile-settings__device-entry"
                   onClick={onOpenDevices}
                 >

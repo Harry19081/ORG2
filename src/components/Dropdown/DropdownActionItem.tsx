@@ -56,7 +56,6 @@ export function DropdownActionItem({
     <Button
       {...buttonProps}
       layout="custom"
-      appearance="custom"
       htmlType={buttonProps.htmlType ?? "button"}
       role={role}
       disabled={disabled}

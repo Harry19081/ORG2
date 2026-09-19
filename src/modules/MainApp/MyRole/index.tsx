@@ -620,8 +620,6 @@ const MyRolePage: React.FC = () => {
             )}
             <div className="flex pt-2">
               <Button
-                variant="secondary"
-                size="default"
                 icon={
                   <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />
                 }

@@ -53,7 +53,7 @@ const ORGII_DARK_SEED: SkinSeed = {
   accent: "#43aafd",
   contrast: 60,
   semanticColors: {
-    diffAdded: "#89d185",
+    diffAdded: "#3fb950",
     diffRemoved: "#f14c4c",
     skill: "#a371f7",
   },

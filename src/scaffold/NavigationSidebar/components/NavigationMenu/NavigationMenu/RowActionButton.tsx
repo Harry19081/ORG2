@@ -31,10 +31,8 @@ export function NavigationMenuRowActionButton({
 
   return (
     <Button
-      htmlType="button"
       size="sidebar"
       variant="tertiary"
-      appearance="soft"
       iconOnly
       aria-label={label}
       aria-pressed={active}

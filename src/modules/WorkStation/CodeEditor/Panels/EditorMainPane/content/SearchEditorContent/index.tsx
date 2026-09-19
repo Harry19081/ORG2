@@ -213,7 +213,6 @@ export const SearchEditorContent: React.FC<SearchEditorContentProps> = memo(
               className="aria-pressed:bg-surface-selected aria-pressed:text-primary-6"
               aria-expanded={showFilters}
               aria-pressed={showFilters}
-              shape="square"
               iconOnly
               icon={<AnyIcon icon={FilterIcon} size={14} strokeWidth={2} />}
               onClick={handleToggleFilters}

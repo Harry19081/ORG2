@@ -104,8 +104,6 @@ const GitHubIssueCloseButton: React.FC<GitHubIssueCloseButtonProps> = ({
     >
       <Button
         layout="custom"
-        appearance="custom"
-        htmlType="button"
         className={`${DROPDOWN_CLASSES.menuActionItem} rounded-none border-b border-border-2`}
         onClick={() => {
           setMenuLevel("actions");
@@ -261,10 +259,6 @@ const GitHubIssueCloseButton: React.FC<GitHubIssueCloseButtonProps> = ({
   if (interaction.issueState === "closed") {
     return (
       <Button
-        htmlType="button"
-        variant="secondary"
-        appearance="outline"
-        size="default"
         shape="round"
         icon={
           <HugeiconsIcon
@@ -287,10 +281,6 @@ const GitHubIssueCloseButton: React.FC<GitHubIssueCloseButtonProps> = ({
   return (
     <SplitButton
       ref={anchorRef}
-      htmlType="button"
-      variant="secondary"
-      appearance="outline"
-      size="default"
       shape="round"
       icon={
         <HugeiconsIcon

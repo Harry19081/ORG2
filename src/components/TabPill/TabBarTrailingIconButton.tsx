@@ -40,7 +40,6 @@ export const TabBarTrailingIconButton: React.FC<TabBarTrailingIconButtonProps> =
     }) => {
       const button = (
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly

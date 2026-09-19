@@ -44,7 +44,6 @@ export const SidebarChromeIconButton: React.FC<SidebarChromeIconButtonProps> =
         position={tooltipPosition}
       >
         <Button
-          htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly

@@ -110,12 +110,11 @@ const SaveableTextarea: React.FC<SaveableTextareaProps> = ({
       />
       <div className="flex items-center gap-2">
         {hasChanges && (
-          <Button size="default" onClick={handleCancel} disabled={saving}>
+          <Button onClick={handleCancel} disabled={saving}>
             {t("actions.cancel")}
           </Button>
         )}
         <Button
-          size="default"
           variant="primary"
           onClick={handleSave}
           disabled={!hasChanges || saving || exceedsWordLimit}

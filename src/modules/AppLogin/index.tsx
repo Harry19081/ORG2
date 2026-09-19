@@ -191,7 +191,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
               size="large"
               onClick={onSkip}
               className={LOGIN_ACTION_BUTTON_CLASS}
-              loading={false}
             >
               {t("login.startButton")}
             </Button>
@@ -264,7 +263,6 @@ const AuthenticatedForm: React.FC<AuthenticatedFormProps> = ({
           </Button>
 
           <Button
-            variant="secondary"
             size="large"
             onClick={onSwitchAccount}
             className={LOGIN_ACTION_BUTTON_CLASS}
@@ -275,7 +273,6 @@ const AuthenticatedForm: React.FC<AuthenticatedFormProps> = ({
                 className="h-5 w-5"
               />
             }
-            loading={false}
             loadingSpinIcon
           >
             {t("login.switchAccountButton")}

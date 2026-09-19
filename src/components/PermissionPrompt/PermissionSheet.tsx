@@ -157,7 +157,6 @@ export function PermissionSheet({
       {onDismiss ? (
         <Button
           variant="tertiary"
-          appearance="ghost"
           size="mini"
           style={{
             minHeight: "var(--modal-action-size, 24px)",
@@ -165,7 +164,6 @@ export function PermissionSheet({
             fontSize: "var(--mobile-type-caption-size, 12px)",
             lineHeight: "var(--mobile-type-caption-leading, 1.4)",
           }}
-          htmlType="button"
           className="mt-3 w-full text-center text-xs"
           onClick={onDismiss}
         >

@@ -164,9 +164,7 @@ const CursorPluginInlineExpandedCard: React.FC<
       {visibleSkills.map((skill) => (
         <Button
           layout="custom"
-          appearance="custom"
           key={skill.slug}
-          htmlType="button"
           onClick={() =>
             openFileInWorkStation(skill.skillPath, { defaultPreviewMode: true })
           }
@@ -201,8 +199,6 @@ const CursorPluginInlineExpandedCard: React.FC<
       {!skillsExpanded && hiddenCount > 0 && (
         <Button
           layout="custom"
-          appearance="custom"
-          htmlType="button"
           onClick={() => setSkillsExpanded(true)}
           className="px-3 py-1.5 text-left text-[12px] text-text-3 hover:text-text-1"
         >
@@ -217,9 +213,7 @@ const CursorPluginInlineExpandedCard: React.FC<
       {plugin.hooks.map((hook) => (
         <Button
           layout="custom"
-          appearance="custom"
           key={hook.eventType}
-          htmlType="button"
           onClick={() =>
             openFileInWorkStation(hook.hookPath, { defaultPreviewMode: true })
           }
@@ -276,8 +270,6 @@ const CursorPluginInlineExpandedCard: React.FC<
         {activeTab === PLUGIN_INLINE_TAB.MCP && hasMcp && (
           <InlineCardFooter>
             <Button
-              variant="secondary"
-              appearance="outline"
               size="mini"
               onClick={handleCopyMcp}
               className="gap-1.5 text-[12px] hover:bg-fill-3 hover:text-text-1"

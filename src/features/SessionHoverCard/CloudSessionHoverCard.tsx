@@ -251,8 +251,6 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
         <HoverCardMetadataRow icon={FingerPrintIcon} dataIcon="fingerprint">
           <Button
             layout="custom"
-            appearance="custom"
-            htmlType="button"
             className={SESSION_ID_BUTTON_CLASS_NAME}
             title={row.sourceSessionId}
             aria-label={`${t("common:actions.copy")} ${t(

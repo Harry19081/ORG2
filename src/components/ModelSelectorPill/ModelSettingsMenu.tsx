@@ -420,7 +420,6 @@ export default function ModelSettingsMenu({
                         kind="button"
                       >
                         <Button
-                          htmlType="button"
                           variant="tertiary"
                           size="small"
                           className={`ml-auto shrink-0 rounded-lg ${PILL_CONTROL_HOVER_CLASS}`}
@@ -431,7 +430,6 @@ export default function ModelSettingsMenu({
                           onClick={() =>
                             change({ ...selection, fast: !selection.fast })
                           }
-                          appearance="soft"
                           iconOnly
                           icon={
                             <HugeiconsIcon
@@ -453,7 +451,6 @@ export default function ModelSettingsMenu({
                 {showVariantControls && variantOptions.thinkingToggleable && (
                   <Button
                     variant="tertiary"
-                    appearance="soft"
                     size="small"
                     aria-pressed={selection.thinking}
                     style={{ fontSize: "var(--dropdown-font-size, 13px)" }}

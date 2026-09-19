@@ -271,8 +271,7 @@ const ConflictRowComponent: React.FC<ConflictRowProps> = ({
               {t("settings.sync.conflicts.actions.useRemote")}
             </Button>
             <Button
-              variant="danger"
-              appearance="outline"
+              tone="danger"
               size="small"
               onClick={() => onDismiss(row.id)}
               loading={busy?.kind === "dismiss"}
@@ -284,10 +283,8 @@ const ConflictRowComponent: React.FC<ConflictRowProps> = ({
         )}
       </div>
       <Button
-        variant="tertiary"
-        appearance="ghost"
+        variant="ghost"
         size="inline"
-        htmlType="button"
         onClick={() => setShowDiff((prev) => !prev)}
         className="gap-1 self-start text-[12px] hover:text-text-2"
       >

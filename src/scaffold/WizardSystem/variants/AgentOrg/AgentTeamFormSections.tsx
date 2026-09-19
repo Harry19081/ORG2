@@ -257,7 +257,6 @@ const AgentTeamFormSections: React.FC<AgentTeamFormSectionsProps> = ({
             description={t("agentOrgs.orgWizard.deleteOrgDesc")}
           >
             <Button
-              variant="secondary"
               size="small"
               onClick={() => {
                 Promise.resolve(onDelete()).catch((error: unknown) => {

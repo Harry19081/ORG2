@@ -122,12 +122,11 @@ export const WorktreePalette: React.FC<WorktreePaletteProps> = ({
   const renderWorktreeTrashAction = React.useCallback(
     (worktreePath: string, isRemoving: boolean): React.ReactNode => (
       <Button
-        variant="danger"
-        appearance="soft"
+        variant="tertiary"
+        tone="danger"
         size="mini"
         iconOnly
         icon={<HugeiconsIcon icon={ICONS.removeRepo} size={14} />}
-        htmlType="button"
         disabled={isRemoving}
         onClick={(event) => {
           event.stopPropagation();

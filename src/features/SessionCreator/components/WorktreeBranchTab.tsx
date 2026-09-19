@@ -112,7 +112,6 @@ export function WorktreeBranchTab({
           })}
         />
         <Button
-          variant="secondary"
           size="small"
           icon={
             <HugeiconsIcon

@@ -255,8 +255,6 @@ function renderRemoveButton(
 ): React.ReactNode {
   return (
     <Button
-      variant="secondary"
-      size="default"
       icon={
         <HugeiconsIcon
           icon={Delete02Icon}

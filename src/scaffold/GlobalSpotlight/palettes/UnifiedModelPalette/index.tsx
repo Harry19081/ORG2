@@ -431,7 +431,6 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
   const refreshModelsButton = (
     <Button
       variant="tertiary"
-      appearance="soft-no-drop"
       size="small"
       shape="round"
       iconOnly
@@ -443,7 +442,6 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
           className={refreshSpinClass}
         />
       }
-      htmlType="button"
       onClick={handleRefreshModelsClick}
       disabled={refreshingAllModels}
       aria-label={tCommonHook("actions.refresh")}

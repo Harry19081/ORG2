@@ -103,7 +103,6 @@ export default function NavigationSidebarSection({
               >
                 <Button
                   variant="tertiary"
-                  appearance="ghost"
                   size="sidebar"
                   iconOnly
                   aria-label={section.title ?? section.id}

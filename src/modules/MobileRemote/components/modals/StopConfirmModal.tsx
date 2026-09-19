@@ -56,7 +56,8 @@ export function StopConfirmModal({
               fontSize: "var(--mobile-type-control-size)",
               lineHeight: "var(--mobile-type-control-leading)",
             }}
-            variant="danger"
+            variant="primary"
+            tone="danger"
             onClick={handleConfirm}
             loading={confirming}
             data-modal-primary-action

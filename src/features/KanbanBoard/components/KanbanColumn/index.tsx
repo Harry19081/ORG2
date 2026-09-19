@@ -257,7 +257,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         {showAddButton && (
           <Button
             variant="tertiary"
-            appearance="soft"
             size="sidebar"
             iconOnly
             icon={
@@ -267,7 +266,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 size={HEADER_ICON_SIZE.sm}
               />
             }
-            htmlType="button"
             className={`kanban-column__add-btn`}
             onClick={handleAddTask}
           />

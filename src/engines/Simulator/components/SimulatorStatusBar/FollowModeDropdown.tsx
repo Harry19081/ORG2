@@ -99,18 +99,16 @@ export const FollowModeDropdown: React.FC = () => {
       >
         <Button
           variant="tertiary"
-          appearance="ghost"
           size="sidebar"
           shape="round"
           aria-pressed={isOpen}
           iconOnly
           icon={triggerIcon ? <AnyIcon icon={triggerIcon} size={14} /> : null}
           ref={triggerRef as React.Ref<HTMLButtonElement>}
-          htmlType="button"
           onClick={toggle}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
-          hoverIntent="primary"
+          hoverTone="primary"
           className={`flex h-5 w-5 shrink-0 transform-gpu items-center justify-center rounded-full ${
             isOpen
               ? "bg-fill-3 text-primary-6"
@@ -132,8 +130,6 @@ export const FollowModeDropdown: React.FC = () => {
             >
               <Button
                 layout="custom"
-                appearance="custom"
-                htmlType="button"
                 role="option"
                 aria-selected={isAllApps}
                 onClick={handleSelectAgent}
@@ -156,8 +152,6 @@ export const FollowModeDropdown: React.FC = () => {
               </Button>
               <Button
                 layout="custom"
-                appearance="custom"
-                htmlType="button"
                 role="option"
                 aria-selected={!isAllApps}
                 disabled={thisAppDisabled}

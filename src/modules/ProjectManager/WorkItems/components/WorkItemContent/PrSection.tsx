@@ -250,8 +250,6 @@ const PrSection: React.FC<PrSectionProps> = ({
             )}
           </div>
           <Button
-            variant="primary"
-            appearance="outline"
             size="small"
             icon={
               <HugeiconsIcon

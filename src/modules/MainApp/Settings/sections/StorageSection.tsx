@@ -386,8 +386,6 @@ const StorageSection: React.FC = () => {
           })}
         >
           <Button
-            variant="secondary"
-            size="default"
             icon={
               <HugeiconsIcon
                 icon={Delete02Icon}

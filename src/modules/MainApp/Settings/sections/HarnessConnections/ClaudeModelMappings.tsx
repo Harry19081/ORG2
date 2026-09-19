@@ -90,7 +90,6 @@ export default function ClaudeModelMappings({
             </span>
             <div className="flex flex-wrap gap-2">
               <Button
-                variant="secondary"
                 disabled={
                   disabled ||
                   !profile.models.roles[profile.models.defaultRole].model
@@ -115,7 +114,6 @@ export default function ClaudeModelMappings({
                 {t("claudeProfiles.useOne")}
               </Button>
               <Button
-                variant="secondary"
                 disabled={disabled || !profile.keyId || !profile.endpoint}
                 onClick={onFetch}
               >

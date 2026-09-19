@@ -82,9 +82,7 @@ export const WorkstationTrailHeader: FC<WorkstationTrailHeaderProps> = ({
       onTitleToggle ? (
         <>
           <Button
-            htmlType="button"
             variant="tertiary"
-            appearance="soft-no-drop"
             size="sidebar"
             className={`${WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS} ${WORKSTATION_TRAIL_TITLE_BUTTON_CLASS} group/trail-title h-full! min-w-0 flex-1 bg-transparent p-0! text-left`}
             onClick={onTitleToggle}
@@ -148,7 +146,6 @@ export const WorkstationTrailIconButton: FC<
     htmlType={type}
     size={size}
     variant="tertiary"
-    appearance="soft-no-drop"
     iconOnly
     icon={children}
     className={`text-text-1! ${className}`}

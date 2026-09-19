@@ -79,8 +79,6 @@ export function PrConversationComposer({
             trailingActions={
               <div className="flex items-center justify-end gap-1.5">
                 <Button
-                  htmlType="button"
-                  variant="secondary"
                   size="small"
                   shape="round"
                   disabled={submittingReview}
@@ -90,7 +88,6 @@ export function PrConversationComposer({
                   {t("git.pr.submitReview", "Submit review")}
                 </Button>
                 <Button
-                  htmlType="button"
                   variant="primary"
                   size="small"
                   shape="round"

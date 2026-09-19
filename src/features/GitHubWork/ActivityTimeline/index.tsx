@@ -43,7 +43,6 @@ export function ActivityHeaderActionButton({
   return (
     <Button
       variant="tertiary"
-      appearance="ghost"
       size="mini"
       iconOnly
       icon={icon}

@@ -288,22 +288,19 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
       data-testid="pr-level-actions"
     >
       <SplitButton
-        htmlType="button"
         variant={
+          presentation.hasConflicts || presentation.status === "draft"
+            ? "secondary"
+            : "primary"
+        }
+        tone={
           presentation.hasConflicts
             ? "danger"
             : presentation.status === "draft"
-              ? "secondary"
+              ? undefined
               : presentation.status === "merged"
                 ? "merged"
                 : "success"
-        }
-        appearance={
-          presentation.hasConflicts
-            ? "outline"
-            : presentation.status === "draft"
-              ? "solid"
-              : undefined
         }
         size="small"
         icon={
@@ -376,9 +373,6 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
 
       {presentation.status === "open" ? (
         <Button
-          htmlType="button"
-          variant="secondary"
-          appearance="outline"
           size="small"
           long
           centerLabel
@@ -400,9 +394,6 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
 
       {canChangeState ? (
         <Button
-          htmlType="button"
-          variant="secondary"
-          appearance="outline"
           size="small"
           long
           centerLabel

@@ -67,7 +67,6 @@ const MobileRemoteOutdoorPairingDetails: React.FC<
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <Button
-              variant="secondary"
               size="small"
               disabled={regenerating}
               onClick={() => void handleCopyPayload()}
@@ -76,7 +75,6 @@ const MobileRemoteOutdoorPairingDetails: React.FC<
             </Button>
             <Button
               variant="tertiary"
-              appearance="ghost"
               size="small"
               disabled={regenerating || confirming}
               loading={regenerating}

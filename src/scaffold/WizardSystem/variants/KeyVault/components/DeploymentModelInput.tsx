@@ -119,8 +119,8 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
                   {model}
                 </span>
                 <Button
-                  variant="danger"
-                  appearance="soft"
+                  variant="tertiary"
+                  tone="danger"
                   size="sidebar"
                   iconOnly
                   icon={
@@ -130,7 +130,6 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
                       size={HEADER_ICON_SIZE.sm}
                     />
                   }
-                  htmlType="button"
                   onClick={() => handleRemove(index)}
                   aria-label={`${t("common:actions.delete")} ${model}`}
                 />
@@ -149,7 +148,6 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
             />
           </div>
           <Button
-            variant="secondary"
             size="small"
             onClick={handleAdd}
             disabled={!draft.trim() || testing}
@@ -169,8 +167,6 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
 
       {onRevalidate && models.length > 0 && (
         <Button
-          variant="primary"
-          appearance="outline"
           size="small"
           onClick={onRevalidate}
           loading={revalidating}

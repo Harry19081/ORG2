@@ -42,7 +42,6 @@ export const LaunchpadAgentActionStrip: React.FC<LaunchpadAgentActionStripProps>
             })}
           </Button>
           <Button
-            variant="secondary"
             size="small"
             shape="round"
             className="shrink-0"

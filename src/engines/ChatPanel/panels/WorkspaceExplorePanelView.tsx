@@ -319,7 +319,6 @@ const WorkspaceExplorePanelView: React.FC = () => {
   const searchButton = (
     <Button
       layout="custom"
-      appearance="custom"
       htmlType="submit"
       disabled={!canSubmit}
       aria-label={t("explore.search", { defaultValue: "Search" })}

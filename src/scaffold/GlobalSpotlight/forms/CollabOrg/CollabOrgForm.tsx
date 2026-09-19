@@ -363,7 +363,6 @@ const CollabOrgForm: React.FC<CollabOrgFormProps> = ({
                 label: t("common:actions.clear"),
                 onClick: handleClear,
                 disabled: loading,
-                htmlType: "button",
               },
             ]}
             primaryAction={{

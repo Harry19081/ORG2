@@ -262,12 +262,10 @@ export function TableBody<T>({
                     {canExpand ? (
                       <Button
                         variant="tertiary"
-                        appearance="ghost"
                         size="sidebar"
                         iconOnly
                         icon={expandIcon}
                         style={{ width: 14, height: 14 }}
-                        htmlType="button"
                         className="table-expand-button shrink-0 hover:text-text-1"
                         onClick={(event) => {
                           event.stopPropagation();

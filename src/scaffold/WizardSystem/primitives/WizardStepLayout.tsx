@@ -187,12 +187,7 @@ const WizardStepLayout: React.FC<WizardStepLayoutProps> = ({
           </div>
           <div className="flex gap-2">
             {onCancel && (
-              <Button
-                variant="secondary"
-                size="default"
-                onClick={onCancel}
-                data-testid={cancelTestId}
-              >
+              <Button onClick={onCancel} data-testid={cancelTestId}>
                 {cancelLabel ?? t("common:actions.cancel")}
               </Button>
             )}

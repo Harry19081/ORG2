@@ -361,7 +361,6 @@ const WorkItemProperties: React.FC<WorkItemPropertiesProps> = ({
           )}
           {showMoreMenu && moreMenuItems.length > 0 && (
             <Button
-              variant="secondary"
               size="small"
               shape="circle"
               iconOnly

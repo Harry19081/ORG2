@@ -101,7 +101,6 @@ const CopyAllButton: React.FC<{ plugins: CursorPluginInfo[] }> = ({
     <div className="flex items-center px-4 py-2">
       <Button
         variant="tertiary"
-        appearance="ghost"
         size="mini"
         onClick={handleCopy}
         className="gap-1.5 text-[12px] hover:bg-fill-2 hover:text-text-1"

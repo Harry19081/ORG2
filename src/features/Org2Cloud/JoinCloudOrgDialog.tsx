@@ -141,12 +141,11 @@ const JoinCloudOrgDialog: React.FC = () => {
         ) : null}
 
         <div className="flex items-center justify-end gap-2">
-          <Button htmlType="button" variant="secondary" onClick={handleClose}>
+          <Button onClick={handleClose}>
             {t("cloud.orgManagement.join.cancel")}
           </Button>
           {signedIn ? (
             <Button
-              htmlType="button"
               variant="primary"
               loading={joining}
               disabled={joining || !pending}
@@ -157,7 +156,6 @@ const JoinCloudOrgDialog: React.FC = () => {
             </Button>
           ) : (
             <Button
-              htmlType="button"
               variant="primary"
               onClick={() => {
                 void openCloudSignIn().catch(() => undefined);

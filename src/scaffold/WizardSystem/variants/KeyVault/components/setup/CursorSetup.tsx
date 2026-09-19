@@ -211,9 +211,8 @@ const CursorSetup: React.FC<CursorSetupProps> = ({
               required
             >
               <Button
-                variant={tokenDetected ? "success" : "primary"}
-                appearance={tokenDetected ? "outline" : undefined}
-                size="default"
+                variant={tokenDetected ? "secondary" : "primary"}
+                tone={tokenDetected ? "success" : undefined}
                 loading={detectingToken}
                 disabled={detectingToken}
                 onClick={onDetectToken}

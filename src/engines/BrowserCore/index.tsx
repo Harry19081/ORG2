@@ -482,21 +482,14 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
                           strokeWidth={1.75}
                         />
                       }
-                      htmlType="button"
                       onClick={handleOpenExternal}
                     >
                       {t("previews.openInBrowser")}
                     </Button>
-                    <Button
-                      variant="secondary"
-                      size="small"
-                      htmlType="button"
-                      onClick={dismissLoadFailure}
-                    >
+                    <Button size="small" onClick={dismissLoadFailure}>
                       {t("actions.dismiss")}
                     </Button>
                     <Button
-                      variant="secondary"
                       size="small"
                       icon={
                         <HugeiconsIcon
@@ -506,7 +499,6 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
                           strokeWidth={1.75}
                         />
                       }
-                      htmlType="button"
                       onClick={() => {
                         if (!currentSession) return;
                         resetLoadFailure();
@@ -555,7 +547,6 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
                           strokeWidth={1.75}
                         />
                       }
-                      htmlType="button"
                       onClick={() => {
                         if (!currentSession) return;
                         updateSession(currentSession.id, {

@@ -146,7 +146,6 @@ function LinkedReferenceCard({
     >
       <Button
         variant="tertiary"
-        appearance="ghost"
         size="large"
         long
         disabled={!item.htmlUrl}

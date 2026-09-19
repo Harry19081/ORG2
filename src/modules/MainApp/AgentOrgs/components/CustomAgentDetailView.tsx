@@ -192,8 +192,8 @@ const CustomAgentDetailView: React.FC<CustomAgentDetailViewProps> = ({
       return (
         <div className="flex items-center gap-1">
           <Button
-            variant="danger"
-            appearance="solid"
+            variant="primary"
+            tone="danger"
             size="mini"
             shape="round"
             data-testid="agent-orgs-confirm-delete-agent-button"

@@ -105,7 +105,10 @@ describe("StationModePill", () => {
     expect(myStation?.classList.contains("btn:bg-primary-6")).toBe(true);
     expect(myStation?.classList.contains("btn:text-white")).toBe(true);
     expect(agentStation?.classList.contains("btn:bg-transparent")).toBe(true);
-    expect(agentStation?.classList.contains("btn:text-text-1")).toBe(true);
+    expect(agentStation?.classList.contains("btn:text-text-2")).toBe(true);
+    expect(agentStation?.classList.contains("btn-hover:bg-surface-hover")).toBe(
+      true
+    );
     expect(myStation?.style.height).toBe("24px");
     expect(myStation?.style.width).toBe("28px");
   });

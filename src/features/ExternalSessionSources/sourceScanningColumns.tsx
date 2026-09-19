@@ -172,7 +172,6 @@ export function buildSourceScanningColumns({
                 // frequency selector and a second menu action; its treatment
                 // uses the same secondary treatment as the toolbar refresh.
                 <SplitButton
-                  variant="secondary"
                   size="small"
                   iconOnly
                   menuSegmentWidth={22}
@@ -235,7 +234,6 @@ export function buildSourceScanningColumns({
                 />
               ) : (
                 <Button
-                  variant="secondary"
                   size="small"
                   iconOnly
                   loading={row.rescanning}

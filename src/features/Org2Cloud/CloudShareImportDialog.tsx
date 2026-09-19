@@ -424,7 +424,6 @@ const CloudShareImportDialog: React.FC = () => {
 
         <div className="flex items-center justify-end gap-2">
           <Button
-            htmlType="button"
             variant={
               resolveFailed && !canRetryResolve ? "primary" : "secondary"
             }
@@ -434,7 +433,6 @@ const CloudShareImportDialog: React.FC = () => {
           </Button>
           {canRetryResolve ? (
             <Button
-              htmlType="button"
               variant="primary"
               onClick={handleRetryResolve}
               data-testid="cloud-share-import-retry-resolve"
@@ -444,7 +442,6 @@ const CloudShareImportDialog: React.FC = () => {
           ) : null}
           {!auth ? (
             <Button
-              htmlType="button"
               variant="primary"
               onClick={() => {
                 void openCloudSignIn().catch(() => undefined);
@@ -455,7 +452,6 @@ const CloudShareImportDialog: React.FC = () => {
             </Button>
           ) : !resolveFailed ? (
             <Button
-              htmlType="button"
               variant="primary"
               loading={isImporting}
               disabled={!canImport}

@@ -286,9 +286,8 @@ const CopilotSessionSetup: React.FC<CopilotSessionSetupProps> = ({
             required
           >
             <Button
-              variant={isTokenValid ? "success" : "primary"}
-              appearance={isTokenValid ? "outline" : "solid"}
-              size="default"
+              variant={isTokenValid ? "secondary" : "primary"}
+              tone={isTokenValid ? "success" : undefined}
               onClick={() => setShowBrowser(true)}
               className="h-8 min-h-8"
             >

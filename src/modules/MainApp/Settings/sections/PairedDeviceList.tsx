@@ -77,8 +77,8 @@ const PairedDeviceList: React.FC<PairedDeviceListProps> = ({
               </p>
             </div>
             <Button
-              variant="danger"
-              appearance="ghost"
+              variant="tertiary"
+              tone="danger"
               size="small"
               className="shrink-0"
               onClick={() => onRevoke(device.deviceId)}

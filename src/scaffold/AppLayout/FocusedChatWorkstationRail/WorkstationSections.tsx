@@ -64,9 +64,7 @@ export function WorkstationSections({
                 // always-visible chevron right after the label — matching the
                 // panel header's own title toggle.
                 <Button
-                  htmlType="button"
                   variant="tertiary"
-                  appearance="soft-no-drop"
                   size="sidebar"
                   className={`${WORKSTATION_TRAIL_COMPOSITE_BUTTON_CLASS} ${WORKSTATION_TRAIL_TITLE_BUTTON_CLASS} group/section-toggle h-6! w-full bg-transparent p-0!`}
                   data-workstation-group-toggle={section.key}

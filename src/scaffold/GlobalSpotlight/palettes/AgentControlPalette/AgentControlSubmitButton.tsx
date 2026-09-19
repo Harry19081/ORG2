@@ -27,8 +27,6 @@ export const AgentControlSubmitButton: React.FC<
   const button = (
     <Button
       layout="custom"
-      appearance="custom"
-      htmlType="button"
       onClick={onSubmit}
       disabled={disabled}
       className={`flex ${INPUT_AREA_BUTTONS.iconButtonSizeClass} shrink-0 items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${

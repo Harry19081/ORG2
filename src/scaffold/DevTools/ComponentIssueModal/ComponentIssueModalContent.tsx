@@ -70,7 +70,6 @@ export function ComponentIssueDetailSection({
         {copyValue && (
           <Button
             layout="custom"
-            appearance="custom"
             className="component-issue-copy-btn"
             onClick={() => onCopyField(label, copyValue)}
             aria-label={`Copy ${label}`}
@@ -126,7 +125,6 @@ export function ComponentIssueSuggestions({
                 </span>
                 <Button
                   layout="custom"
-                  appearance="custom"
                   className="component-issue-suggestion-copy"
                   onClick={() => onCopyField("File path", suggestion.filePath)}
                   title="Copy file path"

@@ -57,7 +57,6 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
   const subscriptionControl = (
     <Button
       variant="tertiary"
-      appearance="ghost"
       size="mini"
       icon={
         isSubscribed ? (

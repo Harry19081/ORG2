@@ -30,11 +30,7 @@
 import React from "react";
 
 import Button from "@src/components/Button";
-import type {
-  ButtonAppearance,
-  ButtonProps,
-  ButtonVariant,
-} from "@src/components/Button";
+import type { ButtonProps } from "@src/components/Button";
 
 export const PANEL_FOOTER_TOKENS = {
   /** Footer height (px) */
@@ -65,7 +61,7 @@ export const PANEL_FOOTER_TOKENS = {
 
 export interface PanelFooterAction extends Pick<
   ButtonProps,
-  "shortcut" | "aria-keyshortcuts"
+  "shortcut" | "aria-keyshortcuts" | "variant" | "tone"
 > {
   label: string;
   onClick?: () => void;
@@ -73,10 +69,6 @@ export interface PanelFooterAction extends Pick<
   title?: string;
   disabled?: boolean;
   loading?: boolean;
-  /** Importance / semantic role. */
-  variant?: ButtonVariant;
-  /** Visual treatment. Omit to use the variant's default. */
-  appearance?: ButtonAppearance;
   htmlType?: "button" | "submit";
   dataTestId?: string;
   /** Mark as the modal's primary action so it receives initial focus. */
@@ -106,7 +98,7 @@ const PrimaryActionButton: React.FC<{
 }> = ({ action, size }) => (
   <Button
     variant={action.variant ?? "primary"}
-    appearance={action.appearance}
+    tone={action.tone}
     size={size}
     icon={action.icon}
     shortcut={action.shortcut}
@@ -146,7 +138,7 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
         <Button
           key={action.label}
           variant={action.variant ?? "secondary"}
-          appearance={action.appearance}
+          tone={action.tone}
           size={secondaryButtonSize}
           icon={action.icon}
           shortcut={action.shortcut}

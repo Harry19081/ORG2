@@ -84,7 +84,6 @@ export function MobileChangeReviewState({
           {(state === "error" || state === "refresh-error") && onRetry && (
             <Button
               variant="tertiary"
-              appearance="soft"
               className="mobile-change-state__retry"
               style={{
                 height: "var(--mobile-change-state-touch)",

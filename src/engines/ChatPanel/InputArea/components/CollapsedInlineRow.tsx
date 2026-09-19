@@ -99,8 +99,6 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
               framedPanel
             >
               <Button
-                variant="secondary"
-                appearance="outline"
                 size="small"
                 shape="round"
                 icon={
@@ -120,8 +118,6 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
               </Button>
             </Tooltip>
             <Button
-              variant="secondary"
-              appearance="outline"
               size="small"
               shape="round"
               icon={
@@ -148,8 +144,6 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
           const button = (
             <Button
               key={section.key}
-              variant="secondary"
-              appearance="outline"
               size="small"
               shape="round"
               icon={section.icon}
@@ -194,8 +188,6 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
 
         {canvasPreview && (
           <Button
-            variant="secondary"
-            appearance="outline"
             size="small"
             shape="round"
             icon={
@@ -228,8 +220,6 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
           >
             <span className="inline-flex">
               <Button
-                variant="secondary"
-                appearance="outline"
                 size="small"
                 shape="round"
                 onClick={scrollNav!.onFollowAgent}

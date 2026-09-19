@@ -96,7 +96,6 @@ export function WorkItemsHeaderActions({
       {onSearch && (
         <ToolbarTooltip label={t("common:actions.search")}>
           <Button
-            htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
@@ -126,7 +125,6 @@ export function WorkItemsHeaderActions({
           {showCollapseAll && (
             <ToolbarTooltip label={t("common:actions.collapseAll")}>
               <Button
-                htmlType="button"
                 variant="tertiary"
                 size="small"
                 iconOnly
@@ -162,7 +160,6 @@ export function WorkItemsHeaderActions({
           <HeaderSectionSeparator className="mx-0.5" />
           <ToolbarTooltip label={propertiesLabel}>
             <Button
-              htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly

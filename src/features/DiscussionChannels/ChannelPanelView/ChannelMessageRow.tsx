@@ -213,7 +213,6 @@ const ChannelMessageRow: React.FC<ChannelMessageRowProps> = ({
             framedPanel
           >
             <Button
-              htmlType="button"
               variant="tertiary"
               size="mini"
               iconOnly
@@ -238,7 +237,6 @@ const ChannelMessageRow: React.FC<ChannelMessageRowProps> = ({
             framedPanel
           >
             <Button
-              htmlType="button"
               variant="tertiary"
               size="mini"
               iconOnly
@@ -338,7 +336,6 @@ const ChannelMessageRow: React.FC<ChannelMessageRowProps> = ({
             />
             <div className="flex items-center justify-end gap-1.5">
               <Button
-                htmlType="button"
                 variant="tertiary"
                 size="mini"
                 icon={
@@ -355,7 +352,6 @@ const ChannelMessageRow: React.FC<ChannelMessageRowProps> = ({
                 {t("cloud.channels.cancel")}
               </Button>
               <Button
-                htmlType="button"
                 variant="primary"
                 size="mini"
                 disabled={draft.trim().length === 0}

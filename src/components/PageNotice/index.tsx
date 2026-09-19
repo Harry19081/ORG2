@@ -242,7 +242,6 @@ const PageNotice: React.FC<PageNoticeProps> = ({
     action &&
     (isActionConfig(action) ? (
       <Button
-        variant="secondary"
         size="small"
         href={action.href}
         target={action.href ? "_blank" : undefined}
@@ -297,8 +296,6 @@ const PageNotice: React.FC<PageNoticeProps> = ({
         {isPill ? (
           <Button
             layout="custom"
-            appearance="custom"
-            htmlType="button"
             onClick={() => setExpanded((currentExpanded) => !currentExpanded)}
             aria-expanded={expanded}
             className="flex min-w-0 flex-1 items-center text-left"
@@ -312,7 +309,6 @@ const PageNotice: React.FC<PageNoticeProps> = ({
           <div className="flex shrink-0 items-center gap-px">
             <Button
               variant="tertiary"
-              appearance="soft"
               size="small"
               iconOnly
               icon={<HugeiconsIcon icon={Copy01Icon} size={14} />}

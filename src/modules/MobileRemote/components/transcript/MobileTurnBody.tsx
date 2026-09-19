@@ -97,7 +97,6 @@ export function MobileTurnBody({
             <Button
               layout="custom"
               variant="tertiary"
-              appearance="ghost"
               className="mobile-turn-summary__toggle flex w-full items-center justify-between gap-2 text-left focus-visible:outline-2 focus-visible:outline-primary-6"
               aria-expanded={expanded}
               aria-controls={bodyId}

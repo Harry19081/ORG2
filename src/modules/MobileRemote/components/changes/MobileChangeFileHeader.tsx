@@ -27,8 +27,6 @@ export function MobileChangeFileHeader({
     <div className="mobile-change-review__file-heading">
       <Button
         layout="custom"
-        appearance="custom"
-        htmlType="button"
         className="mobile-change-review__file-toggle"
         disabled={full}
         aria-expanded={full ? undefined : expanded}
@@ -58,7 +56,6 @@ export function MobileChangeFileHeader({
         <Button
           iconOnly
           variant="tertiary"
-          appearance="ghost"
           className="mobile-change-review__open-file"
           style={{
             width: "var(--mobile-change-touch-size)",

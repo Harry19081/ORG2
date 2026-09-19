@@ -37,8 +37,6 @@ export const ComposerScrollToBottomButton: React.FC<
   ComposerScrollToBottomButtonProps
 > = ({ scrollNav, t }) => (
   <Button
-    variant="secondary"
-    appearance="outline"
     size="small"
     shape="round"
     icon={
@@ -211,11 +209,8 @@ export const GroupChatPendingMessagePill: React.FC<
         </span>
         <Button
           data-testid="agent-org-group-chat-retry"
-          variant="secondary"
-          appearance="outline"
           size="mini"
           shape="round"
-          htmlType="button"
           loading={groupChatPendingMessage.retrying}
           disabled={groupChatPendingMessage.retrying}
           onClick={() => void groupChatPendingMessage.onRetry()}

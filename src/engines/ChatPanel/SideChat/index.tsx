@@ -260,7 +260,6 @@ const SideChatWindow: React.FC<ChatPanelSideChatProps> = ({
             <div className="flex items-center gap-1.5">
               <Button
                 variant="tertiary"
-                appearance="soft"
                 size="sidebar"
                 iconOnly
                 icon={
@@ -276,7 +275,6 @@ const SideChatWindow: React.FC<ChatPanelSideChatProps> = ({
               />
               <Button
                 variant="tertiary"
-                appearance="soft"
                 size="sidebar"
                 aria-label={t("chat.newSession")}
                 iconOnly

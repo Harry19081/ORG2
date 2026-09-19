@@ -251,7 +251,6 @@ export const RulesMemoryEvolutionTable: React.FC<
               }
             />
             <Button
-              variant="secondary"
               size="small"
               icon={
                 <HugeiconsIcon icon={Pen01Icon} data-icon="pencil" size={14} />
@@ -263,8 +262,7 @@ export const RulesMemoryEvolutionTable: React.FC<
             />
             {onDeleteMarkdownRule ? (
               <Button
-                variant="danger"
-                appearance="outline"
+                tone="danger"
                 size="small"
                 icon={
                   <HugeiconsIcon
@@ -308,8 +306,6 @@ export const RulesMemoryEvolutionTable: React.FC<
 
   const addRuleButton = (
     <Button
-      variant="secondary"
-      size="default"
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       onClick={onAdd}
     >

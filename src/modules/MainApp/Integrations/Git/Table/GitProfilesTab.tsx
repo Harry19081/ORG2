@@ -381,7 +381,6 @@ const GitProfilesTab: React.FC<GitProfilesTabProps> = ({ connectedEmails }) => {
               <SectionRow showHeader={false}>
                 <div className="flex w-full flex-wrap items-center justify-between gap-2">
                   <Button
-                    variant="secondary"
                     size="small"
                     onClick={() => setShowRawConfig((visible) => !visible)}
                   >
@@ -406,7 +405,6 @@ const GitProfilesTab: React.FC<GitProfilesTabProps> = ({ connectedEmails }) => {
                     />
                     {state.profiles.length > 1 && (
                       <Button
-                        variant="secondary"
                         size="small"
                         icon={
                           <HugeiconsIcon

@@ -219,7 +219,6 @@ const WebhookDetailPane: React.FC<WebhookDetailPaneProps> = ({
           {status?.installed ? (
             <>
               <Button
-                variant="secondary"
                 size="small"
                 onClick={handleToggleEnabled}
                 disabled={busy || !status}

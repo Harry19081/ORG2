@@ -187,7 +187,6 @@ export function ChatPanelHeader({
           >
             <span className="inline-flex">
               <Button
-                htmlType="button"
                 variant="tertiary"
                 size="small"
                 iconOnly

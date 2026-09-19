@@ -106,6 +106,10 @@
   --color-merged-hover: var(--color-merged-button-hover);
   --color-merged-active: var(--color-merged-button-active);
   --color-merged-contrast: var(--color-merged-button-contrast);
+  --color-success-fill: var(--color-success-button-bg);
+  --color-success-fill-hover: var(--color-success-button-hover);
+  --color-success-fill-active: var(--color-success-button-active);
+  --color-success-fill-contrast: var(--color-success-button-contrast);
 
   --radius-page: var(--radius-page);
 

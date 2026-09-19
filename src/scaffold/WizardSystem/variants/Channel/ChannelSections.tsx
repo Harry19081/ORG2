@@ -71,9 +71,8 @@ export const ChannelContent: React.FC<ChannelContentProps> = ({
           required
         >
           <Button
-            variant={probeResult?.ok ? "success" : "primary"}
-            appearance={probeResult?.ok ? "outline" : undefined}
-            size="default"
+            variant={probeResult?.ok ? "secondary" : "primary"}
+            tone={probeResult?.ok ? "success" : undefined}
             loading={probing}
             disabled={!channelIsValid || probing}
             onClick={onProbe}
@@ -225,7 +224,6 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
             ) : (
               <Button
                 variant="primary"
-                size="default"
                 loading={projectSubmitting}
                 disabled={isDuplicateName || projectSubmitting}
                 onClick={onProjectSubmit}
@@ -385,7 +383,6 @@ export const GitContent: React.FC<GitContentProps> = ({
             ) : (
               <Button
                 variant="primary"
-                size="default"
                 loading={gitSubmitting}
                 disabled={isDuplicateName || gitSubmitting}
                 onClick={onGitOAuthStart}

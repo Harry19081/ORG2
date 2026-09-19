@@ -154,8 +154,6 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
               >
                 <Button
                   layout="custom"
-                  appearance="custom"
-                  htmlType="button"
                   data-testid="session-replay-free-browse"
                   aria-label={t("simulator.replay.freeBrowse")}
                   onClick={handleToggleToReplay}
@@ -174,7 +172,6 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
               {/* Prev / Play / Next — then speed, then follow controls. */}
               <Button
                 variant="tertiary"
-                appearance="ghost"
                 size="sidebar"
                 aria-label={t("simulator.replay.previousEvent")}
                 iconOnly
@@ -193,7 +190,6 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
               />
               <Button
                 layout="custom"
-                appearance="custom"
                 data-testid="session-replay-play-pause"
                 onClick={onPlayPause}
                 disabled={eventCount === 0}
@@ -218,7 +214,6 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
               </Button>
               <Button
                 variant="tertiary"
-                appearance="ghost"
                 size="sidebar"
                 aria-label={t("simulator.replay.nextEvent")}
                 iconOnly
@@ -251,8 +246,6 @@ export const SimulatorStatusBar: React.FC<SimulatorStatusBarProps> = memo(
               <div className="ml-1 h-4 w-px shrink-0 bg-border-2" />
               <Button
                 layout="custom"
-                appearance="custom"
-                htmlType="button"
                 onClick={handleToggleToFollow}
                 title={t("simulator.replay.follow")}
                 className={`${STATUS_BAR_TEXT_20} shrink-0 transform-gpu rounded-full px-2 font-medium text-text-2 ${SURFACE_TOKENS.hover} hover:text-primary-6`}

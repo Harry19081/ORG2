@@ -335,7 +335,6 @@ const SidecarDownloadsConfig: React.FC = () => {
             <div className="flex items-center gap-2">
               {statusContent}
               <Button
-                size="default"
                 icon={
                   isInstalling ? (
                     <HugeiconsIcon
@@ -369,7 +368,6 @@ const SidecarDownloadsConfig: React.FC = () => {
         description={t("builtInTools.sidecarRefreshStatusDesc")}
       >
         <Button
-          size="default"
           icon={
             <HugeiconsIcon
               icon={Refresh04Icon}
@@ -563,7 +561,6 @@ const ComputerUseConfig: React.FC = () => {
           )}
         >
           <Button
-            size="default"
             icon={
               <HugeiconsIcon
                 icon={Refresh04Icon}
@@ -583,7 +580,6 @@ const ComputerUseConfig: React.FC = () => {
           description={t("osAgent.desktopSafetyDeepLinkDesc")}
         >
           <Button
-            size="default"
             icon={
               <HugeiconsIcon
                 icon={SquareArrowUpRight02Icon}

@@ -111,9 +111,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
           ) : (
             <Button
               variant="primary"
-              appearance="solid"
               size="small"
-              htmlType="button"
               onClick={handleCreate}
               disabled={!onCreatePr}
               className="text-[12px] font-medium disabled:cursor-not-allowed disabled:opacity-50"

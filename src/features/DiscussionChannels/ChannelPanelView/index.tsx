@@ -481,7 +481,6 @@ const CloudChannelPanel: React.FC<CloudChannelPanelProps> = ({
               hasOlder ? (
                 <div className="flex justify-center pb-2">
                   <Button
-                    htmlType="button"
                     variant="tertiary"
                     size="mini"
                     loading={loadingOlder}

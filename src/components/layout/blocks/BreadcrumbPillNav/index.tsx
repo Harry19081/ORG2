@@ -51,9 +51,7 @@ export const BreadcrumbPillNavTrigger = forwardRef<
     return (
       <Button
         layout="custom"
-        appearance="custom"
         ref={ref}
-        htmlType="button"
         disabled={disabled}
         className={classNames(
           BREADCRUMB_PILL_NAV_TOKENS.triggerBase,

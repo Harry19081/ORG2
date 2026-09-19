@@ -241,7 +241,6 @@ export const SecretCaptureModal: FC = () => {
       left={
         <Button
           size="small"
-          variant="secondary"
           onClick={handlePasteFromClipboard}
           disabled={submitting}
         >

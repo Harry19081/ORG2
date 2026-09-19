@@ -320,7 +320,6 @@ export const DatabasesTable: React.FC<DatabasesTableProps> = ({
                             <InlineCardFooter>
                               {onProbe && (
                                 <Button
-                                  variant="secondary"
                                   size="small"
                                   onClick={() => {
                                     onSelect(row.id);
@@ -333,8 +332,7 @@ export const DatabasesTable: React.FC<DatabasesTableProps> = ({
                               )}
                               {onRemove && (
                                 <Button
-                                  variant="danger"
-                                  appearance="outline"
+                                  tone="danger"
                                   size="small"
                                   onClick={() => {
                                     onSelect(row.id);

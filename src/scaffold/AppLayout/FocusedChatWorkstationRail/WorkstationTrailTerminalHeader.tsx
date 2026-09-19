@@ -106,8 +106,8 @@ export function WorkstationTrailTerminalHeader({
         <>
           {!collapsed && activeTab ? (
             <Button
-              variant="danger"
-              appearance="soft"
+              variant="tertiary"
+              tone="danger"
               iconOnly
               icon={
                 <HugeiconsIcon
@@ -189,9 +189,7 @@ export function WorkstationTrailTerminalHeader({
           {tabs.map((tab) => (
             <Button
               key={tab.key}
-              htmlType="button"
               variant="tertiary"
-              appearance="soft-no-drop"
               size="sidebar"
               role="tab"
               id={`${panelId}-tab-${tab.key}`}

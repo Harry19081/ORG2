@@ -91,8 +91,6 @@ const McpAddWizard: React.FC<McpAddWizardProps> = ({
         actions={
           <>
             <Button
-              variant="secondary"
-              size="default"
               onClick={w.handleTest}
               disabled={!w.canSave || w.testing}
               loading={w.testing}
@@ -101,7 +99,6 @@ const McpAddWizard: React.FC<McpAddWizardProps> = ({
             </Button>
             <Button
               variant="primary"
-              size="default"
               onClick={w.handleSave}
               disabled={!w.canSave || w.saving}
               loading={w.saving}

@@ -176,7 +176,6 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
           />
           <div className="flex items-center justify-end gap-2">
             <Button
-              htmlType="button"
               variant="tertiary"
               size="mini"
               icon={

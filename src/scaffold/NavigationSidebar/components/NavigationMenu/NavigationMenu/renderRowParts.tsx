@@ -58,7 +58,6 @@ export function renderLeadingIcon({
             {icon}
           </span>
           <Button
-            htmlType="button"
             aria-label={action.label}
             title={action.label}
             className={`pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 opacity-0 duration-150 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100 focus:pointer-events-auto focus:opacity-100 focus:outline-none`}
@@ -70,7 +69,6 @@ export function renderLeadingIcon({
             aria-pressed={action.active}
             size="sidebar"
             variant="tertiary"
-            appearance="soft"
             iconOnly
             icon={
               <AnyIcon

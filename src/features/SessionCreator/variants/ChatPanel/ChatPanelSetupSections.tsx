@@ -96,8 +96,6 @@ export const ChatPanelSessionSetupActions: React.FC<
             {leadingActionSlot}
             {orgMembersPanelProps && (
               <Button
-                variant="secondary"
-                appearance="outline"
                 size="small"
                 shape="round"
                 icon={

@@ -105,14 +105,12 @@ export const SpotlightSettingsMenu: React.FC<{
       <span ref={triggerRef} className="-my-1.5 -mr-3 inline-flex">
         <Button
           variant="tertiary"
-          appearance="soft-no-drop"
           size="small"
           shape="round"
           iconOnly
           icon={
             <HugeiconsIcon icon={EllipsisIcon} data-icon="ellipsis" size={14} />
           }
-          htmlType="button"
           onClick={toggle}
           aria-label={label}
           aria-haspopup="menu"

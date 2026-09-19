@@ -118,7 +118,6 @@ export const Org2CloudLoginRows: React.FC = () => {
 
   const refreshDevAuthButton = process.env.NODE_ENV === "development" && (
     <Button
-      size="default"
       iconOnly
       icon={
         <HugeiconsIcon
@@ -162,7 +161,6 @@ export const Org2CloudLoginRows: React.FC = () => {
             <>
               {refreshDevAuthButton}
               <Button
-                size="default"
                 onClick={() => setShowSignOutConfirmation(true)}
                 data-testid="org2-cloud-sign-out"
               >
@@ -172,7 +170,6 @@ export const Org2CloudLoginRows: React.FC = () => {
           ) : (
             <>
               <Button
-                size="default"
                 onClick={() => setShowSignInModal(true)}
                 data-testid="org2-cloud-sign-in"
               >

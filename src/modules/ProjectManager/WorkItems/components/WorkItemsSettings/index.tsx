@@ -207,7 +207,6 @@ const SettingsSidebar: React.FC<{
           return (
             <Button
               layout="custom"
-              appearance="custom"
               key={section.id}
               className={`w-full text-left ${getListItemClasses(isActive, "wideGap")}`}
               onClick={() => onSectionClick(section.id)}

@@ -86,7 +86,6 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
         <div className="flex items-center gap-1.5 py-1.5">
           <Button
             layout="custom"
-            appearance="custom"
             onClick={handleToggle}
             className="flex flex-1 items-center gap-1.5 text-left"
           >

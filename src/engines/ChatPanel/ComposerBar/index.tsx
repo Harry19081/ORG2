@@ -82,8 +82,6 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
       hideAddButton || !onAddContent ? null : (
         <Button
           layout="custom"
-          appearance="custom"
-          htmlType="button"
           onClick={onAddContent}
           onMouseDown={(e) => e.preventDefault()}
           className={[

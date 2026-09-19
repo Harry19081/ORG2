@@ -149,7 +149,6 @@ const CloudEndpointCard: React.FC = () => {
           </SectionRow>
           <SectionRow label={t("cloud.customEndpoint.apply")} indent>
             <Button
-              size="default"
               onClick={handleApply}
               data-testid="org2-cloud-endpoint-apply"
             >

@@ -123,11 +123,9 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
           </span>
           {fire.sessionId && (
             <Button
-              variant="primary"
-              appearance="ghost"
+              variant="ghost"
               size="inline"
-              htmlType="button"
-              className="gap-1 hover:underline"
+              className="gap-1"
               onClick={(event) => {
                 event.stopPropagation();
                 void openResult({ sessionId: fire.sessionId }).catch(() =>
@@ -152,11 +150,9 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
           )}
           {fire.workItemId && (
             <Button
-              variant="primary"
-              appearance="ghost"
+              variant="ghost"
               size="inline"
-              htmlType="button"
-              className="gap-1 hover:underline"
+              className="gap-1"
               onClick={(event) => {
                 event.stopPropagation();
                 void openResult({

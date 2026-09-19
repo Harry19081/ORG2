@@ -41,13 +41,10 @@ const EditModeImageThumbnail: React.FC<{
         />
         {onRemove && (
           <Button
-            variant="tertiary"
-            appearance="outline"
-            hoverIntent="danger"
+            hoverTone="danger"
             size="sidebar"
             shape="circle"
             iconOnly
-            htmlType="button"
             onClick={handleRemove}
             className="absolute -top-1 -right-1 z-10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
             aria-label={`Remove ${alt}`}

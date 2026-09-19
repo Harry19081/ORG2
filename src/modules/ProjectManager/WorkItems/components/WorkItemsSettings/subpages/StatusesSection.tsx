@@ -282,7 +282,6 @@ const StatusesSection: React.FC<StatusesSectionProps> = ({
                 iconOnly
                 size="small"
                 variant="tertiary"
-                appearance="ghost"
                 onClick={() => void handleArchive(definition)}
                 aria-label={
                   definition.archivedAt != null

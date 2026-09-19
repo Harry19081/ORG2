@@ -122,9 +122,7 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
         {!isEditing && !isSending && (
           <span className={COMPOSER_STACK_ROW_ACTIONS}>
             <Button
-              htmlType="button"
               variant="tertiary"
-              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon icon={Pen01Icon} data-icon="pencil" size={12} />
@@ -134,9 +132,7 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
               title={t("common:actions.edit")}
             />
             <Button
-              htmlType="button"
               variant="tertiary"
-              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon
@@ -146,14 +142,12 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
                 />
               }
               iconOnly
-              hoverIntent="danger"
+              hoverTone="danger"
               onClick={() => onCancel(msg.id)}
               title={t("common:actions.delete")}
             />
             <Button
-              htmlType="button"
               variant="tertiary"
-              appearance="soft"
               size="mini"
               icon={
                 <HugeiconsIcon
@@ -163,7 +157,7 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
                 />
               }
               iconOnly
-              hoverIntent="primary"
+              hoverTone="primary"
               onClick={() => onSendNow(msg.id)}
               title={t("common:actions.sendNow")}
               data-testid="queued-message-send-now"

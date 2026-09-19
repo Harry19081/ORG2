@@ -243,7 +243,6 @@ const GuideHighlightOverlay: React.FC = () => {
               <Button
                 size="mini"
                 variant="tertiary"
-                appearance="ghost"
                 icon={
                   <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
                 }

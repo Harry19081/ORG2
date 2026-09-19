@@ -239,7 +239,6 @@ const NotificationsAdvancedBlocks: React.FC = () => {
                   />
                 </div>
                 <Button
-                  size="default"
                   iconOnly
                   icon={
                     <HugeiconsIcon icon={PlayIcon} data-icon="play" size={14} />
@@ -339,7 +338,6 @@ const NotificationsAdvancedBlocks: React.FC = () => {
       <SectionContainer>
         <SectionRow label={t("notifications.testNotification")}>
           <Button
-            size="default"
             onClick={handleTestNotification}
             loading={isTesting}
             disabled={isRequestingPermission}

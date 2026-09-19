@@ -231,7 +231,6 @@ function AddPropertyRow({ onAdd }: AddPropertyRowProps) {
         >
           <div className="flex w-full justify-end gap-2">
             <Button
-              variant="secondary"
               size="small"
               icon={
                 <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />

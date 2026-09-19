@@ -183,7 +183,6 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
     ) => (
       <Button
         {...PANEL_HEADER_TOKENS.actionButton}
-        htmlType="button"
         aria-label={label}
         title={label}
         onClick={onClick}
