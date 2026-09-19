@@ -41,7 +41,6 @@ import type {
 interface ChatFloatingComposerProps {
   composerRef: React.Ref<HTMLDivElement>;
   inputBoxRef?: React.Ref<HTMLDivElement>;
-  chatPanelPosition: "left" | "right";
   sessionId: string;
   inputAreaSessionId: string;
   controlSessionId?: string | null;
@@ -95,7 +94,6 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
   ({
     composerRef,
     inputBoxRef,
-    chatPanelPosition,
     sessionId,
     inputAreaSessionId,
     controlSessionId,
@@ -239,7 +237,6 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
 
           <InputArea
             omitChatHeader
-            chatPanelPosition={chatPanelPosition}
             sessionId={inputAreaSessionId}
             controlSessionId={controlSessionId}
             onSubmitOverride={onSubmitOverride}

@@ -47,7 +47,6 @@ export interface ChatViewComposerSectionProps {
   showMainComposer: boolean;
   composerRef: React.Ref<HTMLDivElement>;
   inputBoxRef?: React.Ref<HTMLDivElement>;
-  chatPanelPosition: "left" | "right";
   planCollapsed: boolean;
   onPlanCollapse: () => void;
   questionCollapsed: boolean;

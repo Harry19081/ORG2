@@ -430,7 +430,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         displayMode={displayMode}
         emptyChatContent={emptyChatContent}
         paginationEnabled={paginationEnabled}
-        position={position}
         showSessionContent={contentState.showSessionContent}
         sessionViewMode={sessionView.mode}
         chromeTopInset={chromeTopInsetPx}

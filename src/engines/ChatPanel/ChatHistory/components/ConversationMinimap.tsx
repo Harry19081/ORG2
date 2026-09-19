@@ -16,15 +16,12 @@ import { getTurnTimingLabels } from "../utils/turnTimingFormatting";
 
 export const MAX_CONVERSATION_MINIMAP_MARKERS = 20;
 
-export function getConversationPreviewPositionClass(
-  _chatPanelPosition: "left" | "right"
-): string {
-  // The minimap is always pinned to the chat body's right edge, so the hover
-  // preview must open left (into the chat) to stay inside the chat's
-  // `overflow-hidden` bounds. Opening outward — toward the pane edge or a
-  // neighboring panel — gets the preview clipped, regardless of dock side.
-  return "right-full mr-3 @[640px]/chatbody:mr-1";
-}
+// The minimap is always pinned to the chat body's right edge, so the hover
+// preview must open left (into the chat) to stay inside the chat's
+// `overflow-hidden` bounds. Opening outward — toward the pane edge or a
+// neighboring panel — gets the preview clipped, regardless of dock side.
+export const CONVERSATION_PREVIEW_POSITION_CLASS =
+  "right-full mr-3 @[640px]/chatbody:mr-1";
 
 export function sampleConversationGroupIndices(
   groupIndices: readonly number[],
@@ -253,7 +250,6 @@ interface ConversationMinimapProps {
   groupMeta: readonly ChatGroupMeta[];
   groupCounts: readonly number[];
   flatItems: readonly OptimizedChatItem[];
-  chatPanelPosition: "left" | "right";
   activeGroupIndex: number;
   visibleGroupIndices: readonly number[];
   isAtBottom: boolean;
@@ -268,7 +264,6 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
     groupMeta,
     groupCounts,
     flatItems,
-    chatPanelPosition,
     activeGroupIndex,
     visibleGroupIndices,
     isAtBottom,
@@ -371,8 +366,6 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
       showFloatingMinimap,
       inWorkstationRail,
     });
-    const previewPositionClass =
-      getConversationPreviewPositionClass(chatPanelPosition);
     if (markerGroupIndices.length < 2) return null;
 
     const minimap = (
@@ -442,7 +435,7 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
                 <div
                   id={tooltipId}
                   role="tooltip"
-                  className={`${DROPDOWN_CLASSES.panel} ${previewPositionClass} pointer-events-none absolute top-1/2 w-56 -translate-y-1/2 p-3 text-left @[640px]/chatbody:w-80`}
+                  className={`${DROPDOWN_CLASSES.panel} ${CONVERSATION_PREVIEW_POSITION_CLASS} pointer-events-none absolute top-1/2 w-56 -translate-y-1/2 p-3 text-left @[640px]/chatbody:w-80`}
                 >
                   <div className="truncate text-sm font-medium text-text-1">
                     {previewTitle || previewFallback}
