@@ -295,6 +295,33 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
       : presentation.label
   );
 
+  const mergeDropdown = (
+    <Dropdown
+      droplist={mergePanel}
+      trigger="click"
+      // The rail's button spans its column, so its menu hangs from the right
+      // edge; in the merge box the button sits at the left of a wide row, and
+      // a right-hung menu would spill out of the box to the left.
+      position={inMergeBox ? "bottom-start" : "bottom-end"}
+      popupVisible={mergeMenuVisible}
+      onVisibleChange={setMergeMenuVisible}
+      getPopupContainer={() => document.body}
+      avoidViewportOverflow
+    >
+      <div />
+    </Dropdown>
+  );
+  // The dropdown measures its own zero-width anchor, which the split button
+  // renders after its segments — i.e. at the right edge. Pinning the anchor to
+  // the button's bottom-left corner is what makes "start" mean the left edge.
+  const mergeMenu = inMergeBox ? (
+    <div className="absolute bottom-0 left-0" data-merge-menu-anchor>
+      {mergeDropdown}
+    </div>
+  ) : (
+    mergeDropdown
+  );
+
   const mergeButton = (
     <SplitButton
       variant={
@@ -353,18 +380,7 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
         .join(" ")}
       title={localizedActionTooltip(t, presentation.tooltip)}
       onClick={runPrimaryMergeAction}
-      menu={
-        <Dropdown
-          droplist={mergePanel}
-          trigger="click"
-          popupVisible={mergeMenuVisible}
-          onVisibleChange={setMergeMenuVisible}
-          getPopupContainer={() => document.body}
-          avoidViewportOverflow
-        >
-          <div />
-        </Dropdown>
-      }
+      menu={mergeMenu}
       onMenuButtonClick={(event) => {
         event.stopPropagation();
         setMergeMenuVisible((visible) => !visible);

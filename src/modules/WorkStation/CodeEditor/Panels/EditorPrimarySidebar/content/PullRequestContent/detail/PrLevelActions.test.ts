@@ -39,11 +39,14 @@ describe("PrLevelActions merge label", () => {
     container.remove();
   });
 
-  function mergeLabel(detail: Record<string, unknown>): string | null {
+  function mergeLabel(
+    detail: Record<string, unknown>,
+    layout: "rail" | "mergeBox" = "mergeBox"
+  ): string | null {
     act(() => {
       root.render(
         createElement(PrLevelActions, {
-          layout: "mergeBox",
+          layout,
           identity,
           detail,
           checks: null,
@@ -80,6 +83,32 @@ describe("PrLevelActions merge label", () => {
     expect(hint({ state: "open", draft: true })).toBe(
       "[git.pr.actions.tooltips.markReady]"
     );
+  });
+
+  function openMergeMenu(layout: "rail" | "mergeBox"): void {
+    mergeLabel(
+      { state: "open", mergeable: true, mergeable_state: "clean" },
+      layout
+    );
+    const testId =
+      layout === "mergeBox" ? "pr-merge-box-action" : "pr-merge-action";
+    const menuButton = container
+      .querySelector(`[data-testid="${testId}"]`)
+      ?.parentElement?.querySelectorAll("button")[1];
+    act(() => menuButton?.click());
+  }
+
+  it("hangs the merge menu from the button's left edge in the merge box", () => {
+    openMergeMenu("mergeBox");
+    const anchor = container.querySelector("[data-merge-menu-anchor]");
+    expect(anchor?.className).toContain("left-0");
+    expect(anchor?.querySelector(".dropdown-trigger-wrapper")).not.toBeNull();
+  });
+
+  it("keeps the rail's merge menu on the button's right edge", () => {
+    openMergeMenu("rail");
+    expect(container.querySelector("[data-merge-menu-anchor]")).toBeNull();
+    expect(container.querySelector(".dropdown-trigger-wrapper")).not.toBeNull();
   });
 
   it.each([
