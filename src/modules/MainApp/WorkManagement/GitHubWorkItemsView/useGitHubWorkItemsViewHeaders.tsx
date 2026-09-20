@@ -147,10 +147,11 @@ export function useGitHubWorkItemsViewHeaders({
       <GitHubWorkItemsRepositorySelect
         repoOptions={repoOptions}
         selectedRepo={effectiveSelectedRepo}
+        loading={loading && !effectiveSelectedRepo}
         onRepoSelect={onRepoSelect}
       />
     ),
-    [effectiveSelectedRepo, onRepoSelect, repoOptions]
+    [effectiveSelectedRepo, loading, onRepoSelect, repoOptions]
   );
   const headerTrailing = useMemo(
     () => (

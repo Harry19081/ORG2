@@ -880,7 +880,7 @@
     "chatHistoryReloadHint": "Dữ liệu Session có thể chưa được tải",
     "chatHistoryAgentWorking": "Agent đang chạy",
     "chatHistoryAgentWorkingHint": "Tin nhắn xuất hiện từ phản hồi đầu tiên; trước đó thanh công cụ có thể trông như đang rảnh",
-    "pleaseSelect": "Vui lòng chọn",
+    "pleaseSelect": "Chọn",
     "noSessionsFound": "Không tìm thấy Session nào",
     "typeToSearchFiles": "Nhập để tìm kiếm tệp...",
     "selectFileToViewChanges": "Chọn tệp để xem thay đổi",

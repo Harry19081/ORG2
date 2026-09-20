@@ -712,7 +712,7 @@
     "chatHistoryReloadHint": "Session data may not have loaded",
     "chatHistoryAgentWorking": "Agent is running",
     "chatHistoryAgentWorkingHint": "Messages appear with the first response; the toolbar may look idle until then",
-    "pleaseSelect": "Please select",
+    "pleaseSelect": "Select",
     "noSessionsFound": "No sessions found",
     "typeToSearchFiles": "Type to search files...",
     "selectFileToViewChanges": "Select a file to view changes",

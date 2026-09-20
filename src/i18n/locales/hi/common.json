@@ -712,7 +712,7 @@
     "chatHistoryReloadHint": "हो सकता है सत्र डेटा लोड न हुआ हो",
     "chatHistoryAgentWorking": "एजेंट चल रहा है",
     "chatHistoryAgentWorkingHint": "पहले जवाब के साथ संदेश दिखाई देंगे; तब तक टूलबार निष्क्रिय दिख सकता है",
-    "pleaseSelect": "कृपया चुनें",
+    "pleaseSelect": "चुनें",
     "noSessionsFound": "कोई सत्र नहीं मिला",
     "typeToSearchFiles": "फ़ाइलें खोजने के लिए टाइप करें...",
     "selectFileToViewChanges": "बदलाव देखने के लिए कोई फ़ाइल चुनें",

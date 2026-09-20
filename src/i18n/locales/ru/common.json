@@ -880,7 +880,7 @@
     "chatHistoryReloadHint": "Данные сессии могли не загрузиться",
     "chatHistoryAgentWorking": "Agent выполняется",
     "chatHistoryAgentWorkingHint": "Сообщения появятся с первым ответом; до этого панель может выглядеть неактивной",
-    "pleaseSelect": "Пожалуйста, выберите",
+    "pleaseSelect": "Выбрать",
     "noSessionsFound": "Session не найдены",
     "typeToSearchFiles": "Введите для поиска файлов...",
     "selectFileToViewChanges": "Выберите файл для просмотра изменений",

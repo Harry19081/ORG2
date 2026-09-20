@@ -880,7 +880,7 @@
     "chatHistoryReloadHint": "Session データが読み込まれていない可能性があります",
     "chatHistoryAgentWorking": "Agent 実行中",
     "chatHistoryAgentWorkingHint": "最初の応答でメッセージが表示されます。それまではツールバーがアイドル表示になる場合があります",
-    "pleaseSelect": "選択してください",
+    "pleaseSelect": "選択",
     "noSessionsFound": "Sessionが見つかりません",
     "typeToSearchFiles": "ファイルを検索するには入力...",
     "selectFileToViewChanges": "ファイルを選択して変更を表示",

@@ -712,7 +712,7 @@
     "chatHistoryReloadHint": "Session 数据可能未加载",
     "chatHistoryAgentWorking": "Agent 运行中",
     "chatHistoryAgentWorkingHint": "首条回复到达后会显示消息，此前工具栏可能显示空闲",
-    "pleaseSelect": "请选择",
+    "pleaseSelect": "选择",
     "noSessionsFound": "未找到 Session",
     "typeToSearchFiles": "输入以搜索文件...",
     "selectFileToViewChanges": "选择文件以查看变更",

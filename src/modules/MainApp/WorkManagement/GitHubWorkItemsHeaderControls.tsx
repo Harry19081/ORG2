@@ -99,6 +99,8 @@ export function GitHubWorkItemsSearchAndActions({
 interface GitHubWorkItemsRepositorySelectProps {
   repoOptions: RepoFilterOption[];
   selectedRepo: IssueRepoFilter;
+  /** True until the repository list has resolved a selection. */
+  loading?: boolean;
   onRepoSelect: (repo: IssueRepoFilter) => void;
 }
 
@@ -106,11 +108,13 @@ interface GitHubWorkItemsRepositorySelectProps {
 export function GitHubWorkItemsRepositorySelect({
   repoOptions,
   selectedRepo,
+  loading = false,
   onRepoSelect,
 }: GitHubWorkItemsRepositorySelectProps): ReactNode {
   return (
     <Select
       value={selectedRepo}
+      loading={loading}
       options={repoOptions.map((option) => ({
         value: option.key,
         label: compactRepositoryLabel(option.label),

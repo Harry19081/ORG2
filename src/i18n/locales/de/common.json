@@ -880,7 +880,7 @@
     "chatHistoryReloadHint": "Session-Daten wurden möglicherweise nicht geladen",
     "chatHistoryAgentWorking": "Agent läuft",
     "chatHistoryAgentWorkingHint": "Nachrichten erscheinen mit der ersten Antwort; bis dahin kann die Leiste inaktiv wirken",
-    "pleaseSelect": "Bitte auswählen",
+    "pleaseSelect": "Auswählen",
     "noSessionsFound": "Keine Session gefunden",
     "typeToSearchFiles": "Zum Suchen von Dateien eingeben...",
     "selectFileToViewChanges": "Wählen Sie eine Datei, um Änderungen anzuzeigen",

@@ -712,7 +712,7 @@
     "chatHistoryReloadHint": "Data sesi mungkin belum dimuat",
     "chatHistoryAgentWorking": "Agen sedang berjalan",
     "chatHistoryAgentWorkingHint": "Pesan akan muncul bersama respons pertama; toolbar mungkin tampak diam hingga saat itu",
-    "pleaseSelect": "Silakan pilih",
+    "pleaseSelect": "Pilih",
     "noSessionsFound": "Tidak ada sesi ditemukan",
     "typeToSearchFiles": "Ketik untuk mencari file...",
     "selectFileToViewChanges": "Pilih file untuk melihat perubahan",
