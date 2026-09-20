@@ -7,11 +7,13 @@
  * ones. Mirrors the built-in-browser "import cookies" affordance.
  *
  * A source that cannot be read yet (a browser macOS guards behind Full Disk
- * Access) keeps its row and carries the two ways out — open System Settings, and an icon-only
- * re-scan — in the row itself instead of a separate explanation block.
+ * Access) keeps its row, marked with the reason. Full Disk Access is one switch
+ * for all of them, so the way out is offered once, in the footer, however many
+ * rows are blocked.
  *
- * Footers are the design-system blocks: the source picker has none (a row
- * click advances, the header X closes); the checklist uses `PanelFooter` — the
+ * Footers are the design-system blocks: the source picker has none while every
+ * source is readable (a row click advances, the header X closes) and a
+ * `PanelFooter` with Check again / Open System Settings when any is blocked; the checklist uses `PanelFooter` — the
  * same block Modal renders by default — with Select all and the selection
  * summary in its `left` slot and Cancel / "Import N sites" on the right; the
  * summary uses Modal's own `onOk` / `okText` for a lone "Done".
@@ -116,9 +118,7 @@ const SOURCE_ROW_CLASS =
 const SourceRow = memo<{
   source: CookieImportSource;
   onSelect: (id: string) => void;
-  onOpenSettings: () => void;
-  onCheckAgain: () => void;
-}>(({ source, onSelect, onOpenSettings, onCheckAgain }) => {
+}>(({ source, onSelect }) => {
   const { t } = useTranslation();
   const blocked = source.unavailableReason !== null;
   const browserIcon = BROWSER_ICONS[source.browserId];
@@ -143,8 +143,8 @@ const SourceRow = memo<{
   );
 
   // A blocked source (a browser macOS will not let us read without Full Disk
-  // Access) has nothing to open, so it is not a button: it names the problem and offers the two ways out. The
-  // longer explanation waits behind a hover instead of taking its own block.
+  // Access) has nothing to open, so it is not a button: it names the problem,
+  // explains it on hover, and leaves the way out to the footer.
   if (blocked) {
     return (
       <div className={SOURCE_ROW_CLASS} data-testid="cookie-source-blocked">
@@ -163,26 +163,6 @@ const SourceRow = memo<{
             </span>
           </span>
         </Tooltip>
-        <div className="flex shrink-0 items-center gap-1">
-          <Button variant="primary" size="small" onClick={onOpenSettings}>
-            {t("browserCookieImport.safari.openSettings")}
-          </Button>
-          {/* No spin: a re-scan swaps the whole list for the scanning state. */}
-          <Button
-            size="small"
-            iconOnly
-            icon={
-              <HugeiconsIcon
-                icon={Refresh04Icon}
-                data-icon="refresh-cw"
-                size={14}
-              />
-            }
-            aria-label={t("browserCookieImport.safari.checkAgain")}
-            title={t("browserCookieImport.safari.checkAgain")}
-            onClick={onCheckAgain}
-          />
-        </div>
       </div>
     );
   }
@@ -286,8 +266,6 @@ function SourcesStage({
           key={source.id}
           source={source}
           onSelect={controller.selectSource}
-          onOpenSettings={controller.openFullDiskAccessSettings}
-          onCheckAgain={controller.refreshSources}
         />
       ))}
     </div>
@@ -409,6 +387,51 @@ function DoneStage({
   );
 }
 
+/** True while the picker shows at least one source macOS will not let us read. */
+function hasBlockedSource(controller: ImportCookiesController): boolean {
+  return (
+    controller.stage === "sources" &&
+    !controller.sourcesLoading &&
+    controller.sources.some((source) => source.unavailableReason !== null)
+  );
+}
+
+/**
+ * Picker footer while something is blocked: the one way out, offered once.
+ * Re-scan carries no spin because it swaps the whole list for the scanning state.
+ */
+function BlockedSourcesFooter({
+  controller,
+  t,
+}: {
+  controller: ImportCookiesController;
+  t: Translate;
+}) {
+  return (
+    <PanelFooter
+      secondaryActions={[
+        {
+          label: t("browserCookieImport.safari.checkAgain"),
+          icon: (
+            <HugeiconsIcon
+              icon={Refresh04Icon}
+              data-icon="refresh-cw"
+              size={14}
+            />
+          ),
+          onClick: controller.refreshSources,
+          dataTestId: "cookie-sources-check-again",
+        },
+      ]}
+      primaryAction={{
+        label: t("browserCookieImport.safari.openSettings"),
+        onClick: controller.openFullDiskAccessSettings,
+        dataTestId: "cookie-sources-open-settings",
+      }}
+    />
+  );
+}
+
 /** Checklist footer: Select all + summary on the left, Cancel / Import right. */
 function PreviewFooter({
   controller,
@@ -500,6 +523,8 @@ export const ImportCookiesModal: React.FC<ImportCookiesModalProps> = ({
       footer={
         stage === "preview" ? (
           <PreviewFooter controller={controller} onClose={onClose} t={t} />
+        ) : hasBlockedSource(controller) ? (
+          <BlockedSourcesFooter controller={controller} t={t} />
         ) : undefined
       }
       {...doneFooterProps}

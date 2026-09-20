@@ -81,65 +81,64 @@ it("prevents dismissal during import and restores closure after the request sett
   }
 });
 
-it("puts a blocked source's way out in its own row", () => {
+it("offers the way out once, in the footer, however many sources are blocked", () => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   state.importing = false;
   state.stage = "sources";
-  state.sources = [
-    {
-      id: "safari",
-      kind: "safari",
-      browserId: "safari",
-      browserLabel: "Safari",
+  const blocked = (id: string, kind: CookieImportSource["kind"]) =>
+    ({
+      id,
+      kind,
+      browserId: id,
+      browserLabel: id,
       profileLabel: null,
       unavailableReason: "needs_full_disk_access",
-    },
-    {
-      id: "chrome:Default",
-      kind: "chromium",
-      browserId: "chrome",
-      browserLabel: "Chrome",
-      profileLabel: "Default",
-      unavailableReason: null,
-    },
+    }) satisfies CookieImportSource;
+  const chrome: CookieImportSource = {
+    id: "chrome:Default",
+    kind: "chromium",
+    browserId: "chrome",
+    browserLabel: "Chrome",
+    profileLabel: "Default",
+    unavailableReason: null,
+  };
+  state.sources = [
+    blocked("safari", "safari"),
+    blocked("firefox", "firefox"),
+    chrome,
   ];
+
   const container = document.createElement("div");
   document.body.append(container);
   const root = createRoot(container);
-  try {
+  const render = () =>
     act(() =>
       root.render(createElement(ImportCookiesModal, { onClose: vi.fn() }))
     );
+  const byTestId = (id: string) =>
+    document.querySelectorAll<HTMLButtonElement>(`[data-testid="${id}"]`);
+  try {
+    render();
 
-    const blockedRow = document.querySelector<HTMLElement>(
-      '[data-testid="cookie-source-blocked"]'
-    )!;
-    expect(blockedRow.textContent).toContain("Safari");
-    expect(blockedRow.textContent).toContain(
-      "browserCookieImport.safari.needsFullDiskAccess"
-    );
-    // The row is not itself a button: there is no store to open yet.
-    expect(blockedRow.tagName).toBe("DIV");
+    // Blocked rows only name the problem: not buttons, and holding none.
+    const blockedRows = byTestId("cookie-source-blocked");
+    expect(blockedRows).toHaveLength(2);
+    for (const row of blockedRows) {
+      expect(row.tagName).toBe("DIV");
+      expect(row.querySelector("button")).toBeNull();
+      expect(row.textContent).toContain(
+        "browserCookieImport.safari.needsFullDiskAccess"
+      );
+    }
 
-    const rowButton = (label: string) =>
-      [...blockedRow.querySelectorAll<HTMLButtonElement>("button")].find(
-        (button) => button.textContent === label
-      )!;
-    act(() => rowButton("browserCookieImport.safari.openSettings").click());
+    // Full Disk Access is one switch, so its actions appear exactly once.
+    expect(byTestId("cookie-sources-open-settings")).toHaveLength(1);
+    expect(byTestId("cookie-sources-check-again")).toHaveLength(1);
+    act(() => byTestId("cookie-sources-open-settings")[0].click());
     expect(state.openFullDiskAccessSettings).toHaveBeenCalledOnce();
-    // Re-scan is an icon-only button, so its name lives in the label.
-    const checkAgain = blockedRow.querySelector<HTMLButtonElement>(
-      'button[aria-label="browserCookieImport.safari.checkAgain"]'
-    )!;
-    expect(checkAgain.textContent).toBe("");
-    act(() => checkAgain.click());
+    act(() => byTestId("cookie-sources-check-again")[0].click());
     expect(state.refreshSources).toHaveBeenCalledOnce();
     expect(state.selectSource).not.toHaveBeenCalled();
-
-    // The explanation no longer takes a block of its own below the list.
-    expect(document.body.textContent).not.toContain(
-      "browserCookieImport.safari.explain"
-    );
 
     // A readable source is still one click to its preview.
     const chromeRow = [
@@ -147,6 +146,12 @@ it("puts a blocked source's way out in its own row", () => {
     ].find((button) => button.textContent?.includes("Chrome"))!;
     act(() => chromeRow.click());
     expect(state.selectSource).toHaveBeenCalledWith("chrome:Default");
+
+    // Nothing blocked: the picker goes back to having no footer at all.
+    state.sources = [chrome];
+    render();
+    expect(byTestId("cookie-sources-open-settings")).toHaveLength(0);
+    expect(byTestId("cookie-sources-check-again")).toHaveLength(0);
   } finally {
     act(() => root.unmount());
     container.remove();
