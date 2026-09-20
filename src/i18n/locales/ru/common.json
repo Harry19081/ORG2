@@ -774,7 +774,7 @@
     "nextMatchLabel": "Следующее совпадение",
     "clearSearch": "Очистить поиск",
     "openFile": "Открыть файл",
-    "openNativeDevTools": "Открыть нативные DevTools браузера",
+    "openNativeDevTools": "Открыть DevTools",
     "captureScreenshot": "Скриншот",
     "enableInspectMode": "Исследовать элемент",
     "disableInspectMode": "Выйти из инспектора (Esc)",
@@ -1043,8 +1043,7 @@
       "webviewHiddenTitle": "Веб-представление временно скрыто",
       "webviewHiddenBody": "Закройте меню или диалог, чтобы снова его показать.",
       "loadStalledTitle": "Страница не загрузилась до конца",
-      "loadStalledBody": "Встроенный браузер начал загружать этот адрес, но так и не завершил загрузку. Перезагрузите страницу или откройте её в системном браузере.",
-      "currentUrl": "Текущий URL"
+      "copyUrl": "Копировать URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {

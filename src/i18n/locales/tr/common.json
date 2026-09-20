@@ -774,7 +774,7 @@
     "nextMatchLabel": "Sonraki eşleşme",
     "clearSearch": "Aramayı temizle",
     "openFile": "Dosyayı aç",
-    "openNativeDevTools": "Yerel tarayıcı DevTools'u aç",
+    "openNativeDevTools": "DevTools'u aç",
     "captureScreenshot": "Ekran görüntüsü",
     "enableInspectMode": "Öğeyi incele",
     "disableInspectMode": "İncelemeyi kapat (Esc)",
@@ -1043,8 +1043,7 @@
       "webviewHiddenTitle": "Web görünümü geçici olarak gizlendi",
       "webviewHiddenBody": "Yeniden göstermek için menüyü veya iletişim kutusunu kapatın.",
       "loadStalledTitle": "Bu sayfanın yüklenmesi tamamlanmadı",
-      "loadStalledBody": "Gömülü tarayıcı bu adresi yüklemeye başladı ama hiçbir zaman tamamlamadı. Sayfayı yeniden yükleyin veya sistem tarayıcınızda açın.",
-      "currentUrl": "Geçerli URL"
+      "copyUrl": "URL'yi kopyala"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {

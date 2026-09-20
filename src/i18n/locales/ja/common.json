@@ -774,7 +774,7 @@
     "nextMatchLabel": "次の一致",
     "clearSearch": "検索をクリア",
     "openFile": "ファイルを開く",
-    "openNativeDevTools": "ネイティブブラウザの開発者ツールを開く",
+    "openNativeDevTools": "開発者ツールを開く",
     "captureScreenshot": "スクリーンショット",
     "enableInspectMode": "要素を検証",
     "disableInspectMode": "検証を終了 (Esc)",
@@ -1043,8 +1043,7 @@
       "webviewHiddenTitle": "Web ビューを一時的に非表示",
       "webviewHiddenBody": "メニューまたはダイアログを閉じると再表示されます。",
       "loadStalledTitle": "このページの読み込みが完了しませんでした",
-      "loadStalledBody": "埋め込みブラウザはこのアドレスの読み込みを開始しましたが、完了しませんでした。再読み込みするか、システムブラウザで開いてください。",
-      "currentUrl": "現在の URL"
+      "copyUrl": "URLをコピー"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {

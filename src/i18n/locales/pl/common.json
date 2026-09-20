@@ -774,7 +774,7 @@
     "nextMatchLabel": "Następne dopasowanie",
     "clearSearch": "Wyczyść wyszukiwanie",
     "openFile": "Otwórz plik",
-    "openNativeDevTools": "Otwórz natywne DevTools przeglądarki",
+    "openNativeDevTools": "Otwórz DevTools",
     "captureScreenshot": "Zrzut ekranu",
     "enableInspectMode": "Inspekcja elementu",
     "disableInspectMode": "Zakończ inspekcję (Esc)",
@@ -1043,8 +1043,7 @@
       "webviewHiddenTitle": "Widok sieciowy tymczasowo ukryty",
       "webviewHiddenBody": "Zamknij menu lub okno dialogowe, aby wyświetlić go ponownie.",
       "loadStalledTitle": "Ta strona nie zakończyła ładowania",
-      "loadStalledBody": "Wbudowana przeglądarka zaczęła ładować ten adres, ale nigdy nie zakończyła. Odśwież stronę lub otwórz ją w przeglądarce systemowej.",
-      "currentUrl": "Bieżący URL"
+      "copyUrl": "Kopiuj URL"
     },
     "unsavedChangesTitle": "Niezapisane zmiany",
     "ci": {

@@ -16,6 +16,11 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@src/components/KeyboardShortcut/ToolbarTooltip", () => ({
   ToolbarTooltip: ({ children }: { children: React.ReactNode }) => children,
+  ToolbarTooltipPositionProvider: ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => children,
 }));
 
 describe("WebUrlBar", () => {

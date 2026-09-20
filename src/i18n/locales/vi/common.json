@@ -774,7 +774,7 @@
     "nextMatchLabel": "Kết quả tiếp theo",
     "clearSearch": "Xóa tìm kiếm",
     "openFile": "Mở tệp",
-    "openNativeDevTools": "Mở DevTools gốc của trình duyệt",
+    "openNativeDevTools": "Mở DevTools",
     "captureScreenshot": "Ảnh chụp màn hình",
     "enableInspectMode": "Kiểm tra phần tử",
     "disableInspectMode": "Thoát kiểm tra (Esc)",
@@ -1043,8 +1043,7 @@
       "webviewHiddenTitle": "Chế độ xem web tạm thời bị ẩn",
       "webviewHiddenBody": "Đóng menu hoặc hộp thoại để hiển thị lại.",
       "loadStalledTitle": "Trang này chưa tải xong",
-      "loadStalledBody": "Trình duyệt nhúng đã bắt đầu tải địa chỉ này nhưng chưa bao giờ hoàn tất. Hãy tải lại hoặc mở bằng trình duyệt hệ thống.",
-      "currentUrl": "URL hiện tại"
+      "copyUrl": "Sao chép URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {

@@ -30,10 +30,21 @@ import {
   Download01Icon,
   FolderOpenIcon,
   HugeiconsIcon,
+  MonitorIcon,
+  MoonIcon,
   MoreHorizontalIcon,
+  Sun01Icon,
 } from "@src/icons";
 import { isBrowserPageColorSchemeSupported } from "@src/modules/WorkStation/Browser/hooks/useBrowserPageColorSchemeSync";
 import { browserPageColorSchemeAtom } from "@src/store/workstation/browser/pageColorSchemeAtom";
+
+// Same glyphs as Settings → Appearance's mode pill, so "page theme" reads as
+// the page-level twin of the app theme.
+const PAGE_THEME_OPTIONS = [
+  { value: "auto", labelKey: "browser.menu.themeAuto", icon: MonitorIcon },
+  { value: "light", labelKey: "browser.menu.themeLight", icon: Sun01Icon },
+  { value: "dark", labelKey: "browser.menu.themeDark", icon: MoonIcon },
+] as const;
 
 export interface BrowserUrlBarMoreMenuProps {
   /** Capture the current page and save it to a file the user picks. */
@@ -140,11 +151,20 @@ export function BrowserUrlBarMoreMenu({
                 label={t("browser.menu.pageTheme")}
                 dataTestId="browser-page-theme"
                 value={pageColorScheme}
-                options={[
-                  { value: "auto", label: t("browser.menu.themeAuto") },
-                  { value: "light", label: t("browser.menu.themeLight") },
-                  { value: "dark", label: t("browser.menu.themeDark") },
-                ]}
+                options={PAGE_THEME_OPTIONS.map((option) => ({
+                  value: option.value,
+                  ariaLabel: t(option.labelKey),
+                  tooltip: t(option.labelKey),
+                  label: (
+                    <HugeiconsIcon
+                      icon={option.icon}
+                      data-icon={`theme-${option.value}`}
+                      size={14}
+                      strokeWidth={1.75}
+                      aria-hidden
+                    />
+                  ),
+                }))}
                 onChange={setPageColorScheme}
               />
             )}

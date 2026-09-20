@@ -605,7 +605,7 @@
     "nextMatchLabel": "अगला मिलान",
     "clearSearch": "खोज साफ़ करें",
     "openFile": "फ़ाइल खोलें",
-    "openNativeDevTools": "नेटिव ब्राउज़र DevTools खोलें",
+    "openNativeDevTools": "DevTools खोलें",
     "captureScreenshot": "स्क्रीनशॉट",
     "enableInspectMode": "एलिमेंट का निरीक्षण करें",
     "disableInspectMode": "इंस्पेक्टर से बाहर निकलें (Esc)",
@@ -886,8 +886,7 @@
       "tlsDevNote": "नोट: सर्टिफ़िकेट सत्यापन के कारण डेवलपमेंट मोड में कुछ HTTPS साइटें (जैसे GitHub) TLS त्रुटियाँ दिखा सकती हैं। HTTP साइटें या example.com जैसी सरल HTTPS साइटें आज़माएँ।",
       "siteUnreachableTitle": "इस साइट तक नहीं पहुँचा जा सकता",
       "loadStalledTitle": "यह पृष्ठ पूरी तरह लोड नहीं हुआ",
-      "loadStalledBody": "एम्बेडेड ब्राउज़र ने यह पता लोड करना शुरू किया, लेकिन पूरा नहीं कर सका। फिर से लोड करके देखें, या इसे अपने सिस्टम ब्राउज़र में खोलें।",
-      "currentUrl": "वर्तमान URL",
+      "copyUrl": "URL कॉपी करें",
       "webviewHiddenTitle": "Webview अस्थायी रूप से छिपा है",
       "webviewHiddenBody": "इसे फिर से दिखाने के लिए मेनू या डायलॉग बंद करें।"
     },

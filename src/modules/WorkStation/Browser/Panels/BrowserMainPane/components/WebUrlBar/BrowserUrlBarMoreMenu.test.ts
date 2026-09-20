@@ -152,7 +152,9 @@ describe("BrowserUrlBarMoreMenu", () => {
 
     const darkOption = [
       ...menuItem("browser-page-theme")!.querySelectorAll("button"),
-    ].find((button) => button.textContent === "browser.menu.themeDark");
+    ].find(
+      (button) => button.getAttribute("aria-label") === "browser.menu.themeDark"
+    );
     act(() => darkOption?.click());
 
     expect(store.get(browserPageColorSchemeAtom)).toBe("dark");

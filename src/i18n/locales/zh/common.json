@@ -605,7 +605,7 @@
     "nextMatchLabel": "下一个匹配",
     "clearSearch": "清除搜索",
     "openFile": "打开文件",
-    "openNativeDevTools": "打开原生浏览器开发者工具",
+    "openNativeDevTools": "打开开发者工具",
     "captureScreenshot": "截图",
     "enableInspectMode": "检查元素",
     "disableInspectMode": "退出检查 (Esc)",
@@ -886,8 +886,7 @@
       "tlsDevNote": "说明：部分 HTTPS 网站（如 GitHub）在开发模式下可能因证书校验出现 TLS 错误。请尝试 HTTP 或 example.com 等简单 HTTPS 站点。",
       "siteUnreachableTitle": "无法访问此网站",
       "loadStalledTitle": "此页面未加载完成",
-      "loadStalledBody": "内嵌浏览器已开始加载该地址，但始终未完成。可尝试重新加载，或用系统浏览器打开。",
-      "currentUrl": "当前 URL",
+      "copyUrl": "复制 URL",
       "webviewHiddenTitle": "网页视图已临时隐藏",
       "webviewHiddenBody": "关闭菜单或弹窗即可重新显示。"
     },
