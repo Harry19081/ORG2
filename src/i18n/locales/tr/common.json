@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "Ekran görüntüsü sohbete eklendi",
       "failed": "Ekran görüntüsü alınamadı: {{reason}}",
-      "noActivePage": "Yakalanacak aktif sayfa yok"
+      "noActivePage": "Yakalanacak aktif sayfa yok",
+      "saved": "Ekran görüntüsü kaydedildi",
+      "saveFailed": "Ekran görüntüsü kaydedilemedi: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Sayfa teması",
+      "themeAuto": "Otomatik",
+      "themeLight": "Açık",
+      "themeDark": "Koyu",
+      "saveScreenshot": "Ekran görüntüsünü kaydet...",
+      "openHtmlFile": "HTML dosyası aç..."
+    },
+    "openHtmlFile": {
+      "failed": "Dosya açılamadı: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Öğe ekle",

@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "스크린샷이 채팅에 첨부되었습니다",
       "failed": "스크린샷 실패: {{reason}}",
-      "noActivePage": "캡처할 활성 페이지가 없습니다"
+      "noActivePage": "캡처할 활성 페이지가 없습니다",
+      "saved": "스크린샷이 저장되었습니다",
+      "saveFailed": "스크린샷 저장 실패: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "페이지 테마",
+      "themeAuto": "자동",
+      "themeLight": "라이트",
+      "themeDark": "다크",
+      "saveScreenshot": "스크린샷 저장...",
+      "openHtmlFile": "HTML 파일 열기..."
+    },
+    "openHtmlFile": {
+      "failed": "파일 열기 실패: {{reason}}"
     },
     "selectedElement": {
       "addElement": "요소 추가",

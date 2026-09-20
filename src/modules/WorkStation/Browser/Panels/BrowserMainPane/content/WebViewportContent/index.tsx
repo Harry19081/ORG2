@@ -7,11 +7,16 @@
 import BrowserCore from "@/src/engines/BrowserCore";
 import type { BrowserState } from "@/src/engines/BrowserCore/types";
 import React, { memo, useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
+import Message from "@src/components/Message";
+import { createLogger } from "@src/hooks/logger";
 import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import { ImportCookiesModal } from "@src/modules/WorkStation/Browser/ImportCookies";
+import { pickLocalHtmlFile } from "@src/modules/WorkStation/Browser/shared/pickLocalHtmlFile";
 import { getBrowserSessionWebviewLabel } from "@src/util/platform/tauri/browserSessionLabel";
 
+import { useBrowserPageColorSchemeSync } from "../../../../hooks/useBrowserPageColorSchemeSync";
 import { useWebviewScreenshot } from "../../../../hooks/useWebviewScreenshot";
 import WebUrlBar from "../../components/WebUrlBar";
 import BrowserBlankTabPlaceholder from "./BrowserBlankTabPlaceholder";
@@ -53,6 +58,8 @@ interface WebViewportProps {
   manageWebviews?: boolean;
 }
 
+const log = createLogger("WebViewport");
+
 function hasActiveBrowserWebview(url?: string): boolean {
   const normalizedUrl = url?.trim().toLowerCase();
   return Boolean(normalizedUrl && !normalizedUrl.startsWith("about:blank"));
@@ -76,7 +83,10 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
     respectModalBlocking = true,
     manageWebviews = true,
   }) => {
+    const { t } = useTranslation();
     const { sessions, activeSessionId, updateSession } = browserState;
+
+    useBrowserPageColorSchemeSync();
 
     const activeSession = useMemo(
       () => sessions.find((session) => session.id === activeSessionId),
@@ -128,6 +138,20 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
       },
       [effectiveActiveSessionId, activeSession, updateSession]
     );
+
+    // Shared by the URL bar's "..." menu and the blank-tab placeholder.
+    const handleOpenHtmlFile = useCallback(async () => {
+      try {
+        const fileUrl = await pickLocalHtmlFile();
+        if (!fileUrl) return;
+        handleNavigate(fileUrl);
+      } catch (error) {
+        const reason =
+          error instanceof Error ? error.message : String(error ?? "unknown");
+        log.error("[WebViewport] open HTML file failed:", reason);
+        Message.error(t("browser.openHtmlFile.failed", { reason }));
+      }
+    }, [handleNavigate, t]);
 
     // Handle back navigation
     const handleBack = useCallback(() => {
@@ -181,11 +205,18 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
     const activeWebviewLabel = effectiveActiveSessionId
       ? getBrowserSessionWebviewLabel(effectiveActiveSessionId)
       : null;
-    const { triggerScreenshot, isCapturing } = useWebviewScreenshot({
-      webviewLabel: activeWebviewLabel,
-    });
+    const { triggerScreenshot, saveScreenshot, isCapturing } =
+      useWebviewScreenshot({
+        webviewLabel: activeWebviewLabel,
+      });
 
     const [importCookiesOpen, setImportCookiesOpen] = useState(false);
+    const openImportCookies = useCallback(() => setImportCookiesOpen(true), []);
+    // Importing carries persistent logins, so neither the URL bar menu nor the
+    // blank-tab placeholder offers it while browsing privately.
+    const handleImportCookies = activeSession?.incognito
+      ? undefined
+      : openImportCookies;
     const handleReloadAfterImport = useCallback(() => {
       if (effectiveActiveSessionId && activeSession?.url) {
         updateSession(effectiveActiveSessionId, { isLoading: true });
@@ -213,6 +244,9 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
             devToolsPaneCollapsed={devToolsPaneCollapsed}
             onScreenshot={activeSession.url ? triggerScreenshot : undefined}
             isCapturingScreenshot={isCapturing}
+            onSaveScreenshot={saveScreenshot}
+            onOpenHtmlFile={handleOpenHtmlFile}
+            onImportCookies={handleImportCookies}
             isInspectMode={isInspectMode}
             onToggleInspectMode={onToggleInspectMode}
             publishToHost={publishUrlBarToHost}
@@ -233,7 +267,8 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
                 <BrowserBlankTabPlaceholder
                   isIncognito={activeSession?.incognito}
                   onOpen={handleNavigate}
-                  onImportCookies={() => setImportCookiesOpen(true)}
+                  onOpenHtmlFile={handleOpenHtmlFile}
+                  onImportCookies={handleImportCookies}
                 />
               ) : undefined
             }

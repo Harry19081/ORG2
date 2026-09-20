@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "Đã đính kèm ảnh chụp vào chat",
       "failed": "Không chụp được: {{reason}}",
-      "noActivePage": "Không có trang đang hoạt động để chụp"
+      "noActivePage": "Không có trang đang hoạt động để chụp",
+      "saved": "Đã lưu ảnh chụp",
+      "saveFailed": "Không thể lưu ảnh chụp: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Giao diện trang",
+      "themeAuto": "Tự động",
+      "themeLight": "Sáng",
+      "themeDark": "Tối",
+      "saveScreenshot": "Lưu ảnh chụp...",
+      "openHtmlFile": "Mở tệp HTML..."
+    },
+    "openHtmlFile": {
+      "failed": "Không thể mở tệp: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Thêm phần tử",

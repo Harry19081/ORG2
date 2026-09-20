@@ -83,6 +83,8 @@ browser::automation::commands::browser_screenshot_get,
 browser::browser_inline_capture,
 // Browser commands - Inline webview z-order layering
 browser::browser_webviews_set_layer_for_all,
+// Browser commands - Page color scheme override (URL bar "..." menu)
+browser::browser_webviews_set_color_scheme,
 // Browser commands - Active internal browser target state
 browser::set_active_internal_browser_state,
 browser::clear_active_internal_browser_state,

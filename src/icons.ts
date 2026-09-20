@@ -156,6 +156,7 @@ export { default as ComputerSettingsIcon } from "@hugeicons/core-free-icons/Comp
 export { default as ComputerTerminal01Icon } from "@hugeicons/core-free-icons/ComputerTerminal01Icon";
 export { default as ComputerVideoIcon } from "@hugeicons/core-free-icons/ComputerVideoIcon";
 export { default as ContrastIcon } from "@hugeicons/core-free-icons/ContrastIcon";
+export { default as CookieIcon } from "@hugeicons/core-free-icons/CookieIcon";
 export { default as Copy01Icon } from "@hugeicons/core-free-icons/Copy01Icon";
 export { default as Copy02Icon } from "@hugeicons/core-free-icons/Copy02Icon";
 export { default as CopyPlusIcon } from "@hugeicons/core-free-icons/CopyPlusIcon";

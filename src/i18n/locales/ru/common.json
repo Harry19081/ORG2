@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "Снимок прикреплён к чату",
       "failed": "Не удалось сделать снимок: {{reason}}",
-      "noActivePage": "Нет активной страницы для снимка"
+      "noActivePage": "Нет активной страницы для снимка",
+      "saved": "Снимок сохранён",
+      "saveFailed": "Не удалось сохранить снимок: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Тема страницы",
+      "themeAuto": "Авто",
+      "themeLight": "Светлая",
+      "themeDark": "Тёмная",
+      "saveScreenshot": "Сохранить снимок...",
+      "openHtmlFile": "Открыть HTML-файл..."
+    },
+    "openHtmlFile": {
+      "failed": "Не удалось открыть файл: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Добавить элемент",
