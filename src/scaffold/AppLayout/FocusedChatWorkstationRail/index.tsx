@@ -87,11 +87,13 @@ export function FocusedChatWorkstationRail({
   });
 
   const {
+    closeSubagentsSubmenu,
     handleMenuVisibleChange: handleSubagentsMenuVisibleChange,
     openSubagentSession,
     subagentItems,
     subagentsSubmenuAnchor,
     subagentsSubmenuInsideRefs,
+    subagentsSubmenuMaxHeight,
     subagentsSubmenuPanelRef,
     subagentsSubmenuWidth,
   } = useWorkstationRailSubagents({ setMenuOpen, subagentIcon, subagents, t });
@@ -103,6 +105,7 @@ export function FocusedChatWorkstationRail({
     openSource,
     sourceItems,
     sourcesSubmenuAnchor,
+    sourcesSubmenuMaxHeight,
     sourcesSubmenuPanelRef,
     sourcesSubmenuWidth,
   } = useWorkstationRailSources({ setMenuOpen, sources, t });
@@ -270,6 +273,8 @@ export function FocusedChatWorkstationRail({
         <WorkstationSubagentsSubmenu
           anchor={subagentsSubmenuAnchor}
           icon={subagentIcon}
+          maxHeight={subagentsSubmenuMaxHeight}
+          onClose={closeSubagentsSubmenu}
           onOpenSubagent={openSubagentSession}
           panelRef={subagentsSubmenuPanelRef}
           subagents={subagents}
@@ -279,6 +284,8 @@ export function FocusedChatWorkstationRail({
       {sourcesSubmenuAnchor ? (
         <WorkstationSourcesSubmenu
           anchor={sourcesSubmenuAnchor}
+          maxHeight={sourcesSubmenuMaxHeight}
+          onClose={closeSourcesSubmenu}
           onOpenSource={openSource}
           panelRef={sourcesSubmenuPanelRef}
           sources={sources}

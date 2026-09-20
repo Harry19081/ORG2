@@ -38,6 +38,7 @@ export function useWorkstationRailSubagents({
   const {
     anchor: subagentsSubmenuAnchor,
     close: closeSubagentsSubmenu,
+    maxHeight: subagentsSubmenuMaxHeight,
     panelRef: subagentsSubmenuPanelRef,
     toggle: toggleSubagentsSubmenu,
     width: subagentsSubmenuWidth,
@@ -96,11 +97,13 @@ export function useWorkstationRailSubagents({
   );
 
   return {
+    closeSubagentsSubmenu,
     handleMenuVisibleChange,
     openSubagentSession,
     subagentItems,
     subagentsSubmenuAnchor,
     subagentsSubmenuInsideRefs,
+    subagentsSubmenuMaxHeight,
     subagentsSubmenuPanelRef,
     subagentsSubmenuWidth,
   };

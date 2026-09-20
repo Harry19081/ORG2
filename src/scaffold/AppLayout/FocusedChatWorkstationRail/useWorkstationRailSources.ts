@@ -46,6 +46,7 @@ export function useWorkstationRailSources({
   const {
     anchor: sourcesSubmenuAnchor,
     close: closeSourcesSubmenu,
+    maxHeight: sourcesSubmenuMaxHeight,
     panelRef: sourcesSubmenuPanelRef,
     toggle: toggleSourcesSubmenu,
     width: sourcesSubmenuWidth,
@@ -110,6 +111,7 @@ export function useWorkstationRailSources({
     openSource,
     sourceItems,
     sourcesSubmenuAnchor,
+    sourcesSubmenuMaxHeight,
     sourcesSubmenuPanelRef,
     sourcesSubmenuWidth,
   };
