@@ -405,7 +405,6 @@
     "link": "Vincular",
     "copyName": "Copiar nombre",
     "switchMethod": "Cambiar método",
-    "dismiss": "Ignorar",
     "clearSelection": "Borrar selección",
     "openOnGitHub": "Abrir en GitHub",
     "createPullRequest": "Crear pull request",
