@@ -6,7 +6,12 @@
  * handle ourselves is *programmatically* placing the caret — after
  * inserting a pill, after `setContent`, after `clear`, etc.
  */
-import { PILL_DATA_ATTR } from "./utils";
+import {
+  PILL_DATA_ATTR,
+  extractPlainText,
+  plainTextLength,
+  rawIndexAtPlainOffset,
+} from "./utils";
 
 /** Move a caret atomically, without temporarily leaving the editor unselected. */
 function applyCaretRange(range: Range): void {
@@ -113,6 +118,11 @@ function getCaretRangeFromPoint(x: number, y: number): Range | null {
   return null;
 }
 
+/**
+ * Place the caret at `targetOffset`, measured in plain-text coordinates — the
+ * same ones `caretTextOffset` and `extractPlainText` use, so an offset read
+ * from one can be handed to the other.
+ */
 export function placeCaretAtTextOffset(
   host: HTMLElement,
   targetOffset: number
@@ -129,29 +139,34 @@ export function placeCaretAtTextOffset(
   const visit = (node: Node): boolean => {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent ?? "";
-      if (remaining <= text.length) {
-        range.setStart(node, remaining);
+      const length = plainTextLength(text);
+      if (remaining <= length) {
+        range.setStart(node, rawIndexAtPlainOffset(text, remaining));
         range.collapse(true);
         return true;
       }
-      remaining -= text.length;
+      remaining -= length;
       return false;
     }
 
     if (node.nodeType !== Node.ELEMENT_NODE) return false;
     const element = node as HTMLElement;
     if (element.tagName === "BR") {
-      if (remaining <= 1) {
-        range.setStartAfter(element);
+      if (remaining <= 0) {
+        range.setStartBefore(element);
         range.collapse(true);
         return true;
       }
+      // The position after a line break is the start of whatever follows it,
+      // so keep walking: that lands the caret in the next line's text.
       remaining -= 1;
       return false;
     }
 
     if (element.getAttribute(PILL_DATA_ATTR) === "true") {
-      const textLength = (element.textContent ?? "").length;
+      // A pill counts as its full name. Its rendered label is truncated, and
+      // is empty until the portal paints, so it cannot be measured here.
+      const textLength = (element.getAttribute("data-file-name") ?? "").length;
       if (remaining <= 0) {
         range.setStartBefore(element);
         range.collapse(true);
@@ -195,11 +210,25 @@ export function placeCaretAfterPill(pill: HTMLElement): void {
     host.focus({ preventScroll: true });
   }
 
+  // Empty text nodes are left behind wherever a range split one; look past
+  // them for what really follows the pill.
+  let following: Node | null = pill.nextSibling;
+  while (
+    following?.nodeType === Node.TEXT_NODE &&
+    (following.textContent ?? "").length === 0 &&
+    following.nextSibling
+  ) {
+    following = following.nextSibling;
+  }
+
   const range = document.createRange();
-  const nextSibling = pill.nextSibling;
-  if (nextSibling?.nodeType === Node.TEXT_NODE) {
-    const text = nextSibling.textContent ?? "";
-    range.setStart(nextSibling, text.length);
+  if (following?.nodeType === Node.TEXT_NODE) {
+    const text = following.textContent ?? "";
+    // A run of spaces is the separator inserted along with the pill, and the
+    // caret belongs after it. Anything else is the user's own text: stay at
+    // its start, or a pill inserted mid-line throws the caret to the end of
+    // the line (and onto the next one when a line break follows).
+    range.setStart(following, /^ +$/.test(text) ? text.length : 0);
   } else {
     range.setStartAfter(pill);
   }
@@ -253,13 +282,21 @@ export function findPillAncestor(node: Node | null): HTMLElement | null {
 }
 
 /**
- * Compute the offset (in plain-text characters, with pills counted as their
- * display name) from the start of `host` to the given DOM point. Used to
- * detect whether `/` was typed at position 0.
+ * Offset of the given DOM point in plain-text coordinates: an index into
+ * `extractPlainText(host)`.
+ *
+ * Measured by serializing the content before the point with that same
+ * function, so the two cannot disagree. `Range.toString()` did: it counts a
+ * pill as its rendered label (truncated past ten characters), a `<br>` as
+ * nothing, and zero-width anchors as text. Offsets taken that way and then
+ * applied to the plain text searched mentions for the wrong query, and removed
+ * the wrong span — an earlier pill included — when one was picked.
  */
 export function caretTextOffset(host: HTMLElement, range: Range): number {
   const preRange = document.createRange();
   preRange.selectNodeContents(host);
   preRange.setEnd(range.startContainer, range.startOffset);
-  return preRange.toString().length;
+  const prefix = document.createElement("div");
+  prefix.appendChild(preRange.cloneContents());
+  return extractPlainText(prefix).length;
 }

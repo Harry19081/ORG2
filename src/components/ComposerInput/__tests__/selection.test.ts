@@ -2,10 +2,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  caretTextOffset,
   placeCaretAfter,
   placeCaretAfterPill,
   placeCaretAtEnd,
+  placeCaretAtTextOffset,
 } from "../selection";
+import { extractPlainText } from "../utils";
 
 describe("composer caret updates", () => {
   let host: HTMLDivElement;
@@ -81,5 +84,116 @@ describe("composer caret updates", () => {
     expect(document.activeElement).toBe(host);
     expect(window.getSelection()!.anchorNode).toBe(trailing);
     expect(window.getSelection()!.anchorOffset).toBe(1);
+  });
+});
+
+describe("caret after a pill", () => {
+  let host: HTMLDivElement;
+  let pill: HTMLSpanElement;
+  beforeEach(() => {
+    host = document.createElement("div");
+    host.setAttribute("contenteditable", "true");
+    host.tabIndex = 0;
+    pill = document.createElement("span");
+    pill.setAttribute("contenteditable", "false");
+    document.body.append(host);
+    host.focus();
+  });
+  afterEach(() => {
+    host.remove();
+    window.getSelection()?.removeAllRanges();
+  });
+
+  it("stays in front of the user's text instead of jumping to its end", () => {
+    const rest = document.createTextNode("world");
+    host.append(document.createTextNode("hello "), pill, rest);
+    placeCaretAfterPill(pill);
+    expect(window.getSelection()!.anchorNode).toBe(rest);
+    expect(window.getSelection()!.anchorOffset).toBe(0);
+  });
+
+  it("stays on the pill's line when a line break follows", () => {
+    const nextLine = document.createTextNode("\nsecond");
+    host.append(document.createTextNode("first"), pill, nextLine);
+    placeCaretAfterPill(pill);
+    expect(window.getSelection()!.anchorNode).toBe(nextLine);
+    expect(window.getSelection()!.anchorOffset).toBe(0);
+  });
+
+  it("looks past empty split-off nodes to the pill's separator", () => {
+    const separator = document.createTextNode(" ");
+    host.append(
+      document.createTextNode(""),
+      pill,
+      document.createTextNode(""),
+      separator,
+      document.createTextNode("world")
+    );
+    placeCaretAfterPill(pill);
+    expect(window.getSelection()!.anchorNode).toBe(separator);
+    expect(window.getSelection()!.anchorOffset).toBe(1);
+  });
+});
+
+describe("plain-text caret offsets", () => {
+  const ZERO_WIDTH_SPACE = String.fromCharCode(0x200b);
+  let host: HTMLDivElement;
+  let tail: Text;
+  beforeEach(() => {
+    host = document.createElement("div");
+    host.setAttribute("contenteditable", "true");
+    host.tabIndex = 0;
+    const pill = document.createElement("span");
+    pill.setAttribute("data-composer-pill", "true");
+    pill.setAttribute("data-file-name", "useEditorOperations.ts");
+    pill.setAttribute("contenteditable", "false");
+    // The rendered label is truncated; the name is what the text contains.
+    pill.textContent = "useEditorO....ts";
+    tail = document.createTextNode(`${ZERO_WIDTH_SPACE} see @ab`);
+    host.append(
+      document.createTextNode("one"),
+      document.createElement("br"),
+      pill,
+      tail
+    );
+    document.body.append(host);
+  });
+  afterEach(() => {
+    host.remove();
+    window.getSelection()?.removeAllRanges();
+  });
+
+  it("indexes into the editor's plain text", () => {
+    const range = document.createRange();
+    range.setStart(tail, tail.data.length);
+    range.collapse(true);
+    const text = extractPlainText(host);
+    expect(text).toBe("one\nuseEditorOperations.ts see @ab");
+    expect(caretTextOffset(host, range)).toBe(text.length);
+
+    range.setStart(tail, tail.data.indexOf("@"));
+    expect(text[caretTextOffset(host, range)]).toBe("@");
+  });
+
+  it("places the caret at the offset it reports", () => {
+    const text = extractPlainText(host);
+    placeCaretAtTextOffset(host, text.indexOf("@"));
+    const selection = window.getSelection()!;
+    expect(selection.anchorNode).toBe(tail);
+    expect(tail.data[selection.anchorOffset]).toBe("@");
+    expect(caretTextOffset(host, selection.getRangeAt(0))).toBe(
+      text.indexOf("@")
+    );
+  });
+
+  it("places the caret on the line after a <br>", () => {
+    host.replaceChildren(
+      document.createTextNode("one"),
+      document.createElement("br"),
+      document.createTextNode("two")
+    );
+    placeCaretAtTextOffset(host, "one\n".length);
+    expect(window.getSelection()!.anchorNode).toBe(host.lastChild);
+    expect(window.getSelection()!.anchorOffset).toBe(0);
   });
 });
