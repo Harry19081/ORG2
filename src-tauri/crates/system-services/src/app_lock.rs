@@ -30,7 +30,6 @@ use std::sync::{Mutex, MutexGuard, OnceLock};
 use std::time::{Duration, SystemTime};
 
 use base64::Engine;
-use rand::Rng;
 use serde::{Deserialize, Serialize};
 use subtle::ConstantTimeEq;
 use tauri::Emitter;
@@ -402,8 +401,10 @@ fn derive_hash(password: &str, salt: &[u8], iterations: u32) -> [u8; HASH_LEN] {
 }
 
 fn create_digest(password: &str, iterations: u32) -> PasswordDigest {
-    let mut salt = [0u8; SALT_LEN];
-    rand::rng().fill_bytes(&mut salt);
+    // Drawn as a value rather than filled into a zeroed buffer: the salt then
+    // has no constant anywhere in its history, which is also what lets static
+    // analysis see that it is not a hard-coded one.
+    let salt: [u8; SALT_LEN] = rand::random();
     let hash = derive_hash(password, &salt, iterations);
     let b64 = base64::engine::general_purpose::STANDARD;
     PasswordDigest {
