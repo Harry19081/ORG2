@@ -2,9 +2,8 @@ import { useCallback, useState } from "react";
 import { flushSync } from "react-dom";
 
 import type { AppearanceMode } from "@src/config/appearance/globalThemes";
+import { WIKI_OPEN_EVENT } from "@src/features/Wiki/wikiEvents";
 import type { UseAppNavigationReturn } from "@src/hooks/navigation/useAppNavigation";
-import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
-import { openLink } from "@src/util/ui/openLink";
 
 interface UseSidebarSettingsMenuActionsOptions {
   closeAll: () => void;
@@ -26,12 +25,7 @@ export function useSidebarSettingsMenuActions({
 
   const handleOpenWiki = useCallback(() => {
     flushSync(closeAll);
-    openLink("https://github.com/org2AI/ORG2/wiki", { navigate: true });
-  }, [closeAll]);
-
-  const handleOpenOnboarding = useCallback(() => {
-    flushSync(closeAll);
-    window.dispatchEvent(new CustomEvent(TUTORIALS_OPEN_EVENT));
+    window.dispatchEvent(new CustomEvent(WIKI_OPEN_EVENT));
   }, [closeAll]);
 
   const handleOpenSettings = useCallback(() => {
@@ -67,7 +61,6 @@ export function useSidebarSettingsMenuActions({
     setShowSignInModal,
     showSignOutConfirmation,
     setShowSignOutConfirmation,
-    handleOpenOnboarding,
     handleOpenSettings,
     handleModifyAppearance,
     handleSignIn,
