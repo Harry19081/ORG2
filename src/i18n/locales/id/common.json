@@ -2109,7 +2109,20 @@
     "screenshot": {
       "added": "Tangkapan layar dilampirkan ke chat",
       "failed": "Gagal mengambil tangkapan layar: {{reason}}",
-      "noActivePage": "Tidak ada halaman aktif untuk diambil"
+      "noActivePage": "Tidak ada halaman aktif untuk diambil",
+      "saved": "Tangkapan layar disimpan",
+      "saveFailed": "Gagal menyimpan tangkapan layar: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Tema halaman",
+      "themeAuto": "Otomatis",
+      "themeLight": "Terang",
+      "themeDark": "Gelap",
+      "saveScreenshot": "Simpan tangkapan layar...",
+      "openHtmlFile": "Buka file HTML..."
+    },
+    "openHtmlFile": {
+      "failed": "Gagal membuka file: {{reason}}"
     },
     "selectedElement": {
       "sentToChat": "Elemen dilampirkan ke chat",

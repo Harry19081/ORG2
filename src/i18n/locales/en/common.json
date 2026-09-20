@@ -2109,7 +2109,20 @@
     "screenshot": {
       "added": "Screenshot attached to chat",
       "failed": "Failed to capture screenshot: {{reason}}",
-      "noActivePage": "No active page to capture"
+      "noActivePage": "No active page to capture",
+      "saved": "Screenshot saved",
+      "saveFailed": "Failed to save screenshot: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Page theme",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "saveScreenshot": "Save screenshot...",
+      "openHtmlFile": "Open HTML file..."
+    },
+    "openHtmlFile": {
+      "failed": "Failed to open file: {{reason}}"
     },
     "selectedElement": {
       "sentToChat": "Element attached to chat",

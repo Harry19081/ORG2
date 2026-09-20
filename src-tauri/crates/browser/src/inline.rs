@@ -416,6 +416,12 @@ pub async fn create_inline_webview(
 
     ownership_observation.commit();
 
+    // Born with the user's page color scheme, so a forced light/dark page never
+    // paints the inherited scheme first. Setup/OAuth webviews keep the default.
+    if crate::color_scheme::is_browser_session_label(&label) {
+        crate::color_scheme::apply_preferred(&webview);
+    }
+
     debug!(
         label = %webview.label(),
         "browser::inline: successfully created webview (offscreen until frontend shows it)"

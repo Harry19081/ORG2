@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "截圖已添加到聊天",
       "failed": "截圖失敗：{{reason}}",
-      "noActivePage": "沒有可截取的活動頁面"
+      "noActivePage": "沒有可截取的活動頁面",
+      "saved": "截圖已儲存",
+      "saveFailed": "儲存截圖失敗：{{reason}}"
+    },
+    "menu": {
+      "pageTheme": "頁面主題",
+      "themeAuto": "自動",
+      "themeLight": "淺色",
+      "themeDark": "深色",
+      "saveScreenshot": "儲存截圖...",
+      "openHtmlFile": "開啟 HTML 檔案..."
+    },
+    "openHtmlFile": {
+      "failed": "開啟檔案失敗：{{reason}}"
     },
     "selectedElement": {
       "addElement": "添加元素",

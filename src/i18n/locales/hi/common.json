@@ -2109,7 +2109,20 @@
     "screenshot": {
       "added": "स्क्रीनशॉट चैट में जोड़ा गया",
       "failed": "स्क्रीनशॉट लेने में विफल: {{reason}}",
-      "noActivePage": "कैप्चर करने के लिए कोई सक्रिय पेज नहीं"
+      "noActivePage": "कैप्चर करने के लिए कोई सक्रिय पेज नहीं",
+      "saved": "स्क्रीनशॉट सहेजा गया",
+      "saveFailed": "स्क्रीनशॉट सहेजने में विफल: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "पेज थीम",
+      "themeAuto": "स्वचालित",
+      "themeLight": "लाइट",
+      "themeDark": "डार्क",
+      "saveScreenshot": "स्क्रीनशॉट सहेजें...",
+      "openHtmlFile": "HTML फ़ाइल खोलें..."
+    },
+    "openHtmlFile": {
+      "failed": "फ़ाइल खोलने में विफल: {{reason}}"
     },
     "selectedElement": {
       "sentToChat": "एलिमेंट चैट में जोड़ा गया",

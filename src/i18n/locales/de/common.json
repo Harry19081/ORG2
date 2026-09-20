@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "Screenshot zum Chat hinzugefügt",
       "failed": "Screenshot fehlgeschlagen: {{reason}}",
-      "noActivePage": "Keine aktive Seite zum Erfassen"
+      "noActivePage": "Keine aktive Seite zum Erfassen",
+      "saved": "Screenshot gespeichert",
+      "saveFailed": "Screenshot konnte nicht gespeichert werden: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Seitendesign",
+      "themeAuto": "Automatisch",
+      "themeLight": "Hell",
+      "themeDark": "Dunkel",
+      "saveScreenshot": "Screenshot speichern...",
+      "openHtmlFile": "HTML-Datei öffnen..."
+    },
+    "openHtmlFile": {
+      "failed": "Datei konnte nicht geöffnet werden: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Element hinzufügen",

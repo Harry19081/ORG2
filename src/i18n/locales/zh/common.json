@@ -2102,7 +2102,20 @@
     "screenshot": {
       "added": "截图已添加到聊天",
       "failed": "截图失败：{{reason}}",
-      "noActivePage": "没有可截取的活动页面"
+      "noActivePage": "没有可截取的活动页面",
+      "saved": "截图已保存",
+      "saveFailed": "保存截图失败：{{reason}}"
+    },
+    "menu": {
+      "pageTheme": "页面主题",
+      "themeAuto": "自动",
+      "themeLight": "浅色",
+      "themeDark": "深色",
+      "saveScreenshot": "保存截图...",
+      "openHtmlFile": "打开 HTML 文件..."
+    },
+    "openHtmlFile": {
+      "failed": "打开文件失败：{{reason}}"
     },
     "selectedElement": {
       "sentToChat": "元素已添加到聊天",

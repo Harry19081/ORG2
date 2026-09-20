@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "Zrzut ekranu dołączony do czatu",
       "failed": "Nie udało się przechwycić zrzutu ekranu: {{reason}}",
-      "noActivePage": "Brak aktywnej strony do przechwycenia"
+      "noActivePage": "Brak aktywnej strony do przechwycenia",
+      "saved": "Zapisano zrzut ekranu",
+      "saveFailed": "Nie udało się zapisać zrzutu ekranu: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Motyw strony",
+      "themeAuto": "Automatyczny",
+      "themeLight": "Jasny",
+      "themeDark": "Ciemny",
+      "saveScreenshot": "Zapisz zrzut ekranu...",
+      "openHtmlFile": "Otwórz plik HTML..."
+    },
+    "openHtmlFile": {
+      "failed": "Nie udało się otworzyć pliku: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Dodaj element",

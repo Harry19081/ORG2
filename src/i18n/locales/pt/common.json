@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "Captura de tela anexada ao chat",
       "failed": "Falha ao capturar a tela: {{reason}}",
-      "noActivePage": "Nenhuma página ativa para capturar"
+      "noActivePage": "Nenhuma página ativa para capturar",
+      "saved": "Captura de tela salva",
+      "saveFailed": "Falha ao salvar a captura de tela: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Tema da página",
+      "themeAuto": "Automático",
+      "themeLight": "Claro",
+      "themeDark": "Escuro",
+      "saveScreenshot": "Salvar captura de tela...",
+      "openHtmlFile": "Abrir arquivo HTML..."
+    },
+    "openHtmlFile": {
+      "failed": "Falha ao abrir o arquivo: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Adicionar elemento",

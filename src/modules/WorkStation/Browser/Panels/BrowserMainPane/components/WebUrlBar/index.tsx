@@ -7,6 +7,8 @@
  * - Back/Forward buttons
  * - Reload button
  * - Loading indicator
+ * - "..." menu: page color scheme, save screenshot, open a local HTML file,
+ *   import cookies, native DevTools
  */
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,7 +31,6 @@ import {
   ArrowRight02Icon,
   Camera01Icon,
   Cancel01Icon,
-  CodeXmlIcon,
   HugeiconsIcon,
   Loading03Icon,
   PenTool01Icon,
@@ -38,6 +39,9 @@ import {
 } from "@src/icons";
 import { BROWSER_URL_BAR_FOCUS_EVENT } from "@src/modules/WorkStation/Browser/shared/urlBarFocus";
 import { normalizeBrowserInput } from "@src/util/url/browserUrl";
+import { isLocalFileUrl } from "@src/util/url/localFileUrl";
+
+import { BrowserUrlBarMoreMenu } from "./BrowserUrlBarMoreMenu";
 
 // ============================================
 // Types
@@ -76,6 +80,12 @@ interface WebUrlBarProps {
   onScreenshot?: () => void;
   /** Whether a screenshot capture is currently in flight. */
   isCapturingScreenshot?: boolean;
+  /** Capture the current page and save it to a file the user picks. */
+  onSaveScreenshot?: () => void;
+  /** Pick a local HTML file and open it in this tab. */
+  onOpenHtmlFile?: () => void;
+  /** Open the "import cookies from your browser" flow. Hidden when omitted. */
+  onImportCookies?: () => void;
   /** Whether the element inspector is currently active. */
   isInspectMode?: boolean;
   /** Toggle the element inspector (hover/click to select DOM nodes). */
@@ -126,6 +136,9 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
     devToolsPaneCollapsed = false,
     onScreenshot,
     isCapturingScreenshot = false,
+    onSaveScreenshot,
+    onOpenHtmlFile,
+    onImportCookies,
     isInspectMode = false,
     onToggleInspectMode,
     publishToHost = "browser",
@@ -275,7 +288,12 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
 
     // Handle navigation
     const handleNavigate = useCallback(() => {
-      const normalizedUrl = normalizeBrowserInput(inputValue);
+      // A local page's address is already a complete URL; the web normalizer
+      // only knows http(s) and would turn it into a search query.
+      const typedUrl = inputValue.trim();
+      const normalizedUrl = isLocalFileUrl(typedUrl)
+        ? typedUrl
+        : normalizeBrowserInput(inputValue);
       if (!normalizedUrl) return;
 
       setInputValue(normalizedUrl);
@@ -439,7 +457,9 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
         {(onToggleInspectMode ||
           onScreenshot ||
           onOpenNativeDevTools ||
-          onToggleDevToolsPane) && (
+          onToggleDevToolsPane ||
+          onSaveScreenshot ||
+          onOpenHtmlFile) && (
           <div className="flex items-center gap-px">
             {onToggleInspectMode && (
               <ToolbarTooltip
@@ -501,26 +521,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
               </ToolbarTooltip>
             )}
 
-            {onOpenNativeDevTools && (
-              <ToolbarTooltip label={t("tooltips.openNativeDevTools")}>
-                <Button
-                  variant="tertiary"
-                  size="small"
-                  iconOnly
-                  onClick={onOpenNativeDevTools}
-                  disabled={!hasActiveWebview}
-                  aria-label={t("tooltips.openNativeDevTools")}
-                  icon={
-                    <HugeiconsIcon
-                      icon={CodeXmlIcon}
-                      data-icon="code"
-                      size={HEADER_ICON_SIZE.md}
-                    />
-                  }
-                />
-              </ToolbarTooltip>
-            )}
-
             {onToggleDevToolsPane && (
               <ToolbarTooltip
                 label={
@@ -554,6 +554,15 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
                 />
               </ToolbarTooltip>
             )}
+
+            <BrowserUrlBarMoreMenu
+              onSaveScreenshot={onSaveScreenshot}
+              canSaveScreenshot={hasActiveWebview && !isCapturingScreenshot}
+              onOpenHtmlFile={onOpenHtmlFile}
+              onImportCookies={onImportCookies}
+              onOpenNativeDevTools={onOpenNativeDevTools}
+              canOpenNativeDevTools={hasActiveWebview}
+            />
           </div>
         )}
       </div>

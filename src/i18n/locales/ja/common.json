@@ -2271,7 +2271,20 @@
     "screenshot": {
       "added": "スクリーンショットをチャットに添付しました",
       "failed": "スクリーンショットに失敗しました: {{reason}}",
-      "noActivePage": "キャプチャするアクティブなページがありません"
+      "noActivePage": "キャプチャするアクティブなページがありません",
+      "saved": "スクリーンショットを保存しました",
+      "saveFailed": "スクリーンショットの保存に失敗しました: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "ページのテーマ",
+      "themeAuto": "自動",
+      "themeLight": "ライト",
+      "themeDark": "ダーク",
+      "saveScreenshot": "スクリーンショットを保存...",
+      "openHtmlFile": "HTML ファイルを開く..."
+    },
+    "openHtmlFile": {
+      "failed": "ファイルを開けませんでした: {{reason}}"
     },
     "selectedElement": {
       "addElement": "要素を追加",
