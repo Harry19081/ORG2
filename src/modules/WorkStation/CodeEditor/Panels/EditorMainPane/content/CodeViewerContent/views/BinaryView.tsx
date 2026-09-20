@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
+import { LAZY_DETAIL_FALLBACK } from "@src/components/layout/blocks/LazyDetailFallback";
 import { FileHeader } from "@src/modules/WorkStation/shared";
 import { FileOperationsService } from "@src/services/file/FileOperationsService";
 import { isTauriDesktop } from "@src/util/platform/tauri";
@@ -36,10 +37,6 @@ const LazyXlsxPreview = React.lazy(
 );
 const LazyPptxPreview = React.lazy(
   () => import("../../FilePreviewContent/PptxPreview")
-);
-
-const LAZY_FALLBACK = (
-  <Placeholder variant="loading" placement="detail-panel" fillParentHeight />
 );
 
 export const BinaryView: React.FC<BinaryViewProps> = ({
@@ -132,7 +129,7 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
       return (
         <>
           <FileHeader {...headerProps} />
-          <Suspense fallback={LAZY_FALLBACK}>
+          <Suspense fallback={LAZY_DETAIL_FALLBACK}>
             <LazyDocxPreview filePath={selectedFile} className="flex-1" />
           </Suspense>
         </>
@@ -142,7 +139,7 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
       return (
         <>
           <FileHeader {...headerProps} />
-          <Suspense fallback={LAZY_FALLBACK}>
+          <Suspense fallback={LAZY_DETAIL_FALLBACK}>
             <LazyXlsxPreview
               filePath={selectedFile}
               className="flex-1"
@@ -158,7 +155,7 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
       return (
         <>
           <FileHeader {...headerProps} />
-          <Suspense fallback={LAZY_FALLBACK}>
+          <Suspense fallback={LAZY_DETAIL_FALLBACK}>
             <LazyPptxPreview filePath={selectedFile} className="flex-1" />
           </Suspense>
         </>
@@ -168,7 +165,7 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
       return (
         <>
           <FileHeader {...headerProps} />
-          <Suspense fallback={LAZY_FALLBACK}>
+          <Suspense fallback={LAZY_DETAIL_FALLBACK}>
             <LazyDbPreviewView filePath={selectedFile} />
           </Suspense>
         </>
