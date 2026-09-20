@@ -67,6 +67,7 @@ const SourceScanningSettings: React.FC = () => {
     rows,
     rescanningAll,
     configMap,
+    scanFailures,
     handleRescan,
     handleRescanAll,
     toggleEnabled,
@@ -136,6 +137,7 @@ const SourceScanningSettings: React.FC = () => {
   const columns = buildSourceScanningColumns({
     t,
     configMap,
+    scanFailures,
     sourceFrequencyOptions,
     openRescanMenu,
     setOpenRescanMenu,
