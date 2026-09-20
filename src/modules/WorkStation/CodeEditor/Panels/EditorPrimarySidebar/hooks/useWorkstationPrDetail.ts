@@ -25,6 +25,7 @@ import {
   setCachedPrDetail,
 } from "@src/services/git/githubListCache";
 import { parseGithubRepoFullName } from "@src/services/git/operations/createPullRequest";
+import { invalidatePullRequestHeadChecks } from "@src/services/git/pullRequestHeadChecks";
 import {
   type PrIdentity,
   initialSelectedPrState,
@@ -175,6 +176,13 @@ export function useWorkstationPrDetail({
       const key = prDetailKey(repoFullName, identity.number);
       const requestId = bumpRequestId(requestIdsRef.current, key);
       const isCurrent = () => requestIdsRef.current.get(key) === requestId;
+
+      // A reconcile follows a mutation and a forced load is an explicit
+      // refresh: either way, what any CI poller read before now is out of
+      // date for every surface sharing it, not just this panel.
+      if (opts?.reconcile || opts?.force) {
+        invalidatePullRequestHeadChecks(repoFullName, identity.number);
+      }
 
       if (opts?.reconcile) {
         setSelectedPr((prev) => ({ ...prev, refreshing: true }));

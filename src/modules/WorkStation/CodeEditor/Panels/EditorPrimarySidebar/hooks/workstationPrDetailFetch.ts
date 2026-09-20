@@ -25,6 +25,10 @@ import {
   type CachedPrDetail,
   prDetailKey,
 } from "@src/services/git/githubListCache";
+import {
+  primePullRequestHeadChecks,
+  pullRequestHeadChecksEpoch,
+} from "@src/services/git/pullRequestHeadChecks";
 
 export type PrDetailBundle = Omit<CachedPrDetail, "cachedAt">;
 
@@ -51,6 +55,7 @@ export async function fetchPrDetailBundle(
   repoFullName: string,
   prNumber: number
 ): Promise<PrDetailBundle> {
+  const headChecksEpoch = pullRequestHeadChecksEpoch(repoFullName, prNumber);
   const [
     detail,
     conversation,
@@ -82,6 +87,17 @@ export async function fetchPrDetailBundle(
       ? getDeploymentsLocal(repoFullName, headRef).catch(() => null)
       : Promise.resolve<GitHubDeploymentsSummary | null>(null),
   ]);
+
+  // This load just read what the CI pollers ask for; let their next scheduled
+  // poll take it instead of asking GitHub again.
+  if (detail && headSha && checks) {
+    primePullRequestHeadChecks(
+      repoFullName,
+      prNumber,
+      { detail, headSha, checks },
+      headChecksEpoch
+    );
+  }
 
   const bundle: PrDetailBundle = {
     detail,
