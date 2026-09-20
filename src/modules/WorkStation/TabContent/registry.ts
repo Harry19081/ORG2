@@ -43,12 +43,15 @@ const GitLogEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/gitLog")),
 };
 
+/**
+ * Commit detail and stash detail share ONE renderer: `GitCommitDetailContent`
+ * is stash-agnostic (it loads a diff by `commitSha`) and `createStashDetailTab`
+ * already normalizes the stash identity into `commitSha` / `shortSha` /
+ * `commitMessage`. The two tab types stay distinct because they differ in tab
+ * id strategy, title and icon — not in what they render.
+ */
 const GitCommitDetailEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/gitCommitDetail")),
-};
-
-const GitStashDetailEntry: RendererEntry = {
-  Component: lazy(() => import("./renderers/gitStashDetail")),
 };
 
 const TerminalContentEntry: RendererEntry = {
@@ -172,7 +175,7 @@ export const REGISTRY: TabContentRegistry = {
   "source-control": SourceControlEntry,
   "git-log": GitLogEntry,
   "git-commit-detail": GitCommitDetailEntry,
-  "git-stash-detail": GitStashDetailEntry,
+  "git-stash-detail": GitCommitDetailEntry,
   "terminal-content": TerminalContentEntry,
   "dom-component-preview": DomComponentPreviewEntry,
   terminal: TerminalEntry,
