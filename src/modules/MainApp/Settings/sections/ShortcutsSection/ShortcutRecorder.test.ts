@@ -81,3 +81,36 @@ it("records, updates its badge, resets, cancels, and releases capture on unmount
   }
   expect(isRecordingShortcut()).toBe(false);
 });
+
+it("hides its edit button until hover in a table, and shows it outright when asked", async () => {
+  const render = async (actions?: "hover" | "visible") => {
+    const node = document.createElement("div");
+    document.body.append(node);
+    const root = createRoot(node);
+    await act(async () =>
+      root.render(
+        createElement(ShortcutRecorder, {
+          id: "lock_app",
+          command: "Lock app",
+          platform: "mac",
+          recording: false,
+          onRecord: () => {},
+          actions,
+        })
+      )
+    );
+    const className = node.querySelector("button")?.className ?? "";
+    await act(async () => root.unmount());
+    node.remove();
+    return className;
+  };
+
+  // Default (Shortcuts table): revealed by the row's hover / focus group.
+  expect(await render()).toContain("group-hover/shortcut-row:opacity-100");
+
+  // A standalone settings row has no such group, so the button must not
+  // depend on one to be seen.
+  const visible = await render("visible");
+  expect(visible).not.toContain("opacity-0");
+  expect(visible).not.toContain("group-hover/shortcut-row");
+});

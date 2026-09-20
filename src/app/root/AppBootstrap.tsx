@@ -15,6 +15,7 @@ import { RouterProvider } from "react-router-dom";
 
 import { DeferredGitStatusProvider } from "@src/contexts/git";
 import { useDiagnosticsBootstrap } from "@src/diagnostics";
+import { AppLockGate } from "@src/features/AppLock/AppLockGate";
 import { useGlobalFlowTracker } from "@src/hooks/flowAwareness";
 import { useModelAliasRegistry } from "@src/hooks/models";
 import {
@@ -106,6 +107,7 @@ export const AppBootstrap: FC = () => {
 
   return (
     <DeferredGitStatusProvider>
+      <AppLockGate />
       <GlobalShortcuts />
       <AppGlobalRecovery />
       {E2EBootstrap && (

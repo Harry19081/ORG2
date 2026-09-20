@@ -166,6 +166,15 @@ system_services::app_menu::cancel_quit_confirmation,
 // Platform commands - Power management (prevent sleep while sessions run)
 system_services::power::system_power_acquire_sleep_inhibitor,
 system_services::power::system_power_release_sleep_inhibitor,
+// Platform commands - App lock (password lock screen while agents work)
+system_services::app_lock::app_lock_status,
+system_services::app_lock::app_lock_set_password,
+system_services::app_lock::app_lock_clear_password,
+system_services::app_lock::app_lock_set_hint,
+system_services::app_lock::app_lock_update_preferences,
+system_services::app_lock::app_lock_lock,
+system_services::app_lock::app_lock_unlock,
+system_services::app_lock::app_lock_report_activity,
 // File search commands
 search::file::search_files_fuzzy,
 search::file::index_project_files,

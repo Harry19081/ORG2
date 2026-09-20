@@ -31,7 +31,14 @@ export const SETTINGS_SECTIONS: readonly SettingsSectionSegment[] = [
 
 export const SETTINGS_SECTION_TABS = {
   development: ["controls", "illustrations"],
-  general: ["general", "notifications", "shortcuts", "storage", "self-hosted"],
+  general: [
+    "general",
+    "notifications",
+    "shortcuts",
+    "app-lock",
+    "storage",
+    "self-hosted",
+  ],
   appearance: ["app", "code-editor", "chat-panel"],
   editor: ["editor"],
   import: ["scanning", "hooks"],
