@@ -2147,7 +2147,10 @@
   "selectionMenu": {
     "addToChat": "Tambahkan ke Chat",
     "addThisFile": "Tambahkan file ini",
-    "addLines": "Tambahkan baris {{from}} – {{to}}"
+    "addLines": "Tambahkan baris {{from}} – {{to}}",
+    "replyToSelection": "Balas",
+    "clearQuotedSelection": "Hapus kutipan",
+    "pinSelection": "Sematkan"
   },
   "browser": {
     "screenshot": {

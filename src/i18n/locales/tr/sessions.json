@@ -1003,7 +1003,9 @@
     "sending": "Gönderiliyor…",
     "typeMessage": "Bir mesaj yazın…",
     "session": "Oturum",
-    "history": "Oturumlar"
+    "history": "Oturumlar",
+    "goToPinnedPassage": "Sabitlenen bölüme git: {{preview}}",
+    "unpinPassage": "Sabitlemeyi kaldır"
   },
   "tools": {
     "noResultsFound": "Sonuç bulunamadı",

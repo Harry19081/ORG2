@@ -2309,7 +2309,10 @@
   "selectionMenu": {
     "addToChat": "Добавить в чат",
     "addThisFile": "Добавить этот файл",
-    "addLines": "Добавить строки {{from}} – {{to}}"
+    "addLines": "Добавить строки {{from}} – {{to}}",
+    "replyToSelection": "Ответить",
+    "clearQuotedSelection": "Убрать цитату",
+    "pinSelection": "Закрепить"
   },
   "browser": {
     "screenshot": {

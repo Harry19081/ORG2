@@ -1003,7 +1003,9 @@
     "sending": "Envoi…",
     "typeMessage": "Écrivez un message…",
     "session": "Session",
-    "history": "Sessions"
+    "history": "Sessions",
+    "goToPinnedPassage": "Aller au passage épinglé : {{preview}}",
+    "unpinPassage": "Détacher"
   },
   "tools": {
     "noResultsFound": "Aucun résultat trouvé",

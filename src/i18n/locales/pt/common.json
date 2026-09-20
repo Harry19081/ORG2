@@ -2309,7 +2309,10 @@
   "selectionMenu": {
     "addToChat": "Adicionar ao chat",
     "addThisFile": "Adicionar este arquivo",
-    "addLines": "Adicionar linhas {{from}} – {{to}}"
+    "addLines": "Adicionar linhas {{from}} – {{to}}",
+    "replyToSelection": "Responder",
+    "clearQuotedSelection": "Remover a citação",
+    "pinSelection": "Fixar"
   },
   "browser": {
     "screenshot": {

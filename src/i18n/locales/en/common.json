@@ -2147,7 +2147,10 @@
   "selectionMenu": {
     "addToChat": "Add to Chat",
     "addThisFile": "Add this file",
-    "addLines": "Add line {{from}} – {{to}}"
+    "addLines": "Add line {{from}} – {{to}}",
+    "replyToSelection": "Reply",
+    "clearQuotedSelection": "Remove quoted selection",
+    "pinSelection": "Pin"
   },
   "browser": {
     "screenshot": {

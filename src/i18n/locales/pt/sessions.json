@@ -1003,7 +1003,9 @@
     "sending": "Enviando…",
     "typeMessage": "Digite uma mensagem…",
     "session": "Sessão",
-    "history": "Sessões"
+    "history": "Sessões",
+    "goToPinnedPassage": "Ir para o trecho fixado: {{preview}}",
+    "unpinPassage": "Desafixar"
   },
   "planning": {
     "agentTyping": "Agent está digitando...",

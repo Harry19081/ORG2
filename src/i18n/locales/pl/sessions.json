@@ -1003,7 +1003,9 @@
     "sending": "Wysyłanie…",
     "typeMessage": "Wpisz wiadomość…",
     "session": "Sesja",
-    "history": "Sesje"
+    "history": "Sesje",
+    "goToPinnedPassage": "Przejdź do przypiętego fragmentu: {{preview}}",
+    "unpinPassage": "Odepnij"
   },
   "planning": {
     "agentTyping": "Agent pisze...",

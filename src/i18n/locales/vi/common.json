@@ -2309,7 +2309,10 @@
   "selectionMenu": {
     "addToChat": "Thêm vào chat",
     "addThisFile": "Thêm tệp này",
-    "addLines": "Thêm dòng {{from}} – {{to}}"
+    "addLines": "Thêm dòng {{from}} – {{to}}",
+    "replyToSelection": "Trả lời",
+    "clearQuotedSelection": "Xoá trích dẫn",
+    "pinSelection": "Ghim"
   },
   "browser": {
     "screenshot": {

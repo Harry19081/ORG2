@@ -1003,7 +1003,9 @@
     "sending": "Wird gesendet…",
     "typeMessage": "Nachricht eingeben…",
     "session": "Session",
-    "history": "Sessions"
+    "history": "Sessions",
+    "goToPinnedPassage": "Zur angehefteten Passage: {{preview}}",
+    "unpinPassage": "Lösen"
   },
   "tools": {
     "noResultsFound": "Keine Ergebnisse gefunden",

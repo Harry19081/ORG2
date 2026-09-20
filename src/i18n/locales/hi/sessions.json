@@ -1003,7 +1003,9 @@
     "sending": "भेजा जा रहा है…",
     "typeMessage": "संदेश लिखें…",
     "session": "सत्र",
-    "history": "सत्र"
+    "history": "सत्र",
+    "goToPinnedPassage": "पिन किए गए अंश पर जाएँ: {{preview}}",
+    "unpinPassage": "पिन हटाएँ"
   },
   "planning": {
     "agentTyping": "एजेंट लिख रहा है...",

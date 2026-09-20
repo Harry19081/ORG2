@@ -2309,7 +2309,10 @@
   "selectionMenu": {
     "addToChat": "添加到對話",
     "addThisFile": "添加此文件",
-    "addLines": "添加第 {{from}} – {{to}} 行"
+    "addLines": "添加第 {{from}} – {{to}} 行",
+    "replyToSelection": "回覆",
+    "clearQuotedSelection": "移除引用內容",
+    "pinSelection": "釘選"
   },
   "browser": {
     "screenshot": {

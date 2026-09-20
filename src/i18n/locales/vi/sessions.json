@@ -1003,7 +1003,9 @@
     "sending": "Đang gửi…",
     "typeMessage": "Nhập tin nhắn…",
     "session": "Phiên",
-    "history": "Các phiên"
+    "history": "Các phiên",
+    "goToPinnedPassage": "Đi tới đoạn đã ghim: {{preview}}",
+    "unpinPassage": "Bỏ ghim"
   },
   "tools": {
     "noResultsFound": "Không tìm thấy kết quả",
