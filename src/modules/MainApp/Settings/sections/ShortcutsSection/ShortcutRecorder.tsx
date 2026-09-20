@@ -21,18 +21,30 @@ import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { useShortcutBindings } from "@src/config/keyboard/useShortcutBindings";
 import { HugeiconsIcon, PencilEdit02Icon } from "@src/icons";
 
+/**
+ * In the Shortcuts table the edit / reset buttons stay out of the way until
+ * the row is hovered or focused — a hundred pencils would be noise. A lone
+ * recorder in a settings row has no such crowd, so it can ask for them to be
+ * shown as ordinary, always-visible buttons.
+ */
+const HOVER_REVEAL_CLASSES =
+  "opacity-0 group-focus-within/shortcut-row:opacity-100 group-hover/shortcut-row:opacity-100 focus-visible:opacity-100";
+
 export default function ShortcutRecorder({
   id,
   command,
   platform,
   recording,
   onRecord,
+  actions = "hover",
 }: {
   id: string;
   command: string;
   platform: ShortcutPlatform;
   recording: boolean;
   onRecord: (id: string | null) => void;
+  /** `"visible"` keeps the edit / reset buttons on screen as secondary buttons. */
+  actions?: "hover" | "visible";
 }) {
   const { t } = useTranslation("settings");
   useShortcutBindings();
@@ -100,6 +112,7 @@ export default function ShortcutRecorder({
     };
   }, [recording, id, platform, t, onRecord]);
   const keys = getShortcutKeys(id, { platform });
+  const actionsVisible = actions === "visible";
   if (!canCustomizeShortcut(id))
     return (
       <KeyboardShortcut
@@ -117,12 +130,10 @@ export default function ShortcutRecorder({
         <Button
           ref={buttonRef}
           className={
-            recording
-              ? undefined
-              : "opacity-0 group-focus-within/shortcut-row:opacity-100 group-hover/shortcut-row:opacity-100 focus-visible:opacity-100"
+            recording || actionsVisible ? undefined : HOVER_REVEAL_CLASSES
           }
           size="small"
-          variant={recording ? "secondary" : "tertiary"}
+          variant={recording || actionsVisible ? "secondary" : "tertiary"}
           iconOnly={!recording}
           icon={
             recording ? undefined : (
@@ -153,9 +164,9 @@ export default function ShortcutRecorder({
         ) : (
           getOverride(id, platform) && (
             <Button
-              variant="tertiary"
+              variant={actionsVisible ? "secondary" : "tertiary"}
               size="small"
-              className="opacity-0 group-focus-within/shortcut-row:opacity-100 group-hover/shortcut-row:opacity-100 focus-visible:opacity-100"
+              className={actionsVisible ? undefined : HOVER_REVEAL_CLASSES}
               onClick={() => {
                 try {
                   resetShortcutBindings(platform, id);

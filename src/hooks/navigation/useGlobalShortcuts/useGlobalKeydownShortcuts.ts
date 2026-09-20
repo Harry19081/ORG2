@@ -6,6 +6,7 @@ import {
   matchesShortcut,
 } from "@src/config/keyboard/shortcutBindings";
 import { shortcutRegistry } from "@src/hooks/keyboard";
+import { AppViewService } from "@src/services/app";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { routeDebugModalOpenAtom } from "@src/store/ui/uiAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
@@ -213,6 +214,7 @@ export function useGlobalKeydownShortcuts(
         ["new_tab", () => shortcutRegistry.dispatch("new_tab")],
         ["new_tab_alt", () => shortcutRegistry.dispatch("new_tab_alt")],
         ["open_settings", handleOpenSettings],
+        ["lock_app", () => void AppViewService.lockApp()],
         [
           "agent_session_search",
           handleOpenAgentSessionSearch,
