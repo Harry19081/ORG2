@@ -1,8 +1,8 @@
 /**
  * DetachedHeadDialog
  *
- * Shown when user tries to commit while in detached HEAD state.
- * Warns that commits may be lost and offers to create a branch.
+ * Shown when the repository is in detached HEAD state and the user
+ * is about to do something that could lose commits.
  * Uses native Tauri system dialog.
  *
  * @example
@@ -10,16 +10,19 @@
  * import { DetachedHeadDialog } from "@src/features/GitDialogs";
  *
  * const result = await DetachedHeadDialog.open({
- *   commitHash: "abc1234",
+ *   commitHash: "a1b2c3d",
  * });
  *
  * if (result === "create_branch") {
- *   // Create a new branch (prompt for name separately)
+ *   // Create a branch at the current commit
  * } else if (result === "continue") {
- *   // Continue with detached HEAD
+ *   // Continue without a branch
  * }
  * ```
  */
+import i18n from "@src/i18n";
+
+import { openNativeChoiceDialog } from "../nativeChoiceDialog";
 
 // ============================================
 // Types
@@ -44,31 +47,24 @@ class DetachedHeadDialogManager {
   public async open(
     options: DetachedHeadOptions = {}
   ): Promise<DetachedHeadResult> {
-    const { message } = await import("@tauri-apps/plugin-dialog");
+    const shortHash = (options.commitHash || "HEAD").slice(0, 7);
 
-    const commitHash = options.commitHash || "HEAD";
-    const shortHash = commitHash.slice(0, 7);
-
-    const result = await message(
-      `You are in detached HEAD state at commit ${shortHash}.\n\nYou are not on any branch. Any commits you make may be lost if you checkout another branch without creating a new branch first.\n\n⚠️ Commits in detached HEAD state may be garbage collected.`,
-      {
-        title: "Detached HEAD State",
-        kind: "warning",
-        buttons: {
-          yes: "Create Branch",
-          no: "Continue Without Branch",
-          cancel: "Cancel",
+    return openNativeChoiceDialog({
+      title: i18n.t("common:git.dialogs.detachedHead.title"),
+      message: i18n.t("common:git.dialogs.detachedHead.body", { shortHash }),
+      choices: [
+        {
+          id: "create_branch",
+          label: i18n.t("common:git.dialogs.detachedHead.createBranch"),
         },
-      }
-    );
-
-    if (result === "Create Branch") {
-      return "create_branch";
-    } else if (result === "Continue Without Branch") {
-      return "continue";
-    } else {
-      return "cancel";
-    }
+        {
+          id: "continue",
+          label: i18n.t(
+            "common:git.dialogs.detachedHead.continueWithoutBranch"
+          ),
+        },
+      ],
+    });
   }
 }
 

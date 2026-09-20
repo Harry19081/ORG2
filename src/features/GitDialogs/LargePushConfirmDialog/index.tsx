@@ -19,6 +19,9 @@
  * }
  * ```
  */
+import i18n from "@src/i18n";
+
+import { openNativeChoiceDialog } from "../nativeChoiceDialog";
 
 // ============================================
 // Constants
@@ -49,31 +52,26 @@ class LargePushConfirmDialogManager {
    * @returns Promise that resolves with user's choice
    */
   public async open(options: LargePushOptions): Promise<LargePushResult> {
-    const { message } = await import("@tauri-apps/plugin-dialog");
-
     const {
       commitCount,
       branchName = "current branch",
       remoteName = "origin",
     } = options;
 
-    const result = await message(
-      `You are about to push ${commitCount} commits to ${remoteName}/${branchName}.\n\nThis is more than usual. Are you sure you want to continue?\n\n💡 Consider breaking large changes into smaller, more focused commits.`,
-      {
-        title: "Large Push Detected",
-        kind: "warning",
-        buttons: {
-          ok: "Push All Commits",
-          cancel: "Cancel",
+    return openNativeChoiceDialog({
+      title: i18n.t("common:git.dialogs.largePush.title"),
+      message: i18n.t("common:git.dialogs.largePush.body", {
+        commitCount,
+        remote: remoteName,
+        branch: branchName,
+      }),
+      choices: [
+        {
+          id: "push",
+          label: i18n.t("common:git.dialogs.largePush.confirm"),
         },
-      }
-    );
-
-    if (result === "Push All Commits") {
-      return "push";
-    } else {
-      return "cancel";
-    }
+      ],
+    });
   }
 }
 

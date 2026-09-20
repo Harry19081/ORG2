@@ -21,6 +21,9 @@
  * }
  * ```
  */
+import i18n from "@src/i18n";
+
+import { openNativeChoiceDialog } from "../nativeChoiceDialog";
 
 // ============================================
 // Types
@@ -46,35 +49,32 @@ class PullConflictDialogManager {
   public async open(
     options: PullConflictOptions = {}
   ): Promise<PullConflictResult> {
-    const { message } = await import("@tauri-apps/plugin-dialog");
-
-    const branchName = options.branchName || "current branch";
+    const branch = options.branchName || "main";
     const fileCount = options.conflictingFiles?.length || 0;
     const fileInfo =
       fileCount > 0
-        ? ` (${fileCount} file${fileCount !== 1 ? "s" : ""} affected)`
+        ? i18n.t("common:git.dialogs.pullConflict.fileInfo", {
+            count: fileCount,
+          })
         : "";
 
-    const result = await message(
-      `Your local changes would be overwritten by the incoming changes from "${branchName}".${fileInfo}\n\nChoose how to proceed:`,
-      {
-        title: "Can't Pull with Local Changes",
-        kind: "warning",
-        buttons: {
-          yes: "Stash & Pull",
-          no: "Discard & Pull",
-          cancel: "Cancel",
+    return openNativeChoiceDialog({
+      title: i18n.t("common:git.dialogs.pullConflict.title"),
+      message: i18n.t("common:git.dialogs.pullConflict.body", {
+        branch,
+        fileInfo,
+      }),
+      choices: [
+        {
+          id: "stash_pull",
+          label: i18n.t("common:git.dialogs.pullConflict.stashAndPull"),
         },
-      }
-    );
-
-    if (result === "Stash & Pull") {
-      return "stash_pull";
-    } else if (result === "Discard & Pull") {
-      return "discard_pull";
-    } else {
-      return "cancel";
-    }
+        {
+          id: "discard_pull",
+          label: i18n.t("common:git.dialogs.pullConflict.discardAndPull"),
+        },
+      ],
+    });
   }
 }
 

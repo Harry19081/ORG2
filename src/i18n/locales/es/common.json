@@ -1648,6 +1648,52 @@
         "brought": "Tus cambios te siguieron a esta rama",
         "worktree_missing": "El worktree ya no existe. Actualiza e inténtalo de nuevo"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Estado detached HEAD",
+        "body": "Estás en estado detached HEAD en el commit {{shortHash}}.\n\nNo estás en ninguna rama. Los commits que hagas pueden perderse si haces checkout de otra rama sin crear antes una rama nueva.\n\n⚠️ Los commits en estado detached HEAD pueden eliminarse por el recolector de basura.",
+        "createBranch": "Crear rama",
+        "continueWithoutBranch": "Continuar sin rama"
+      },
+      "largePush": {
+        "title": "Push grande detectado",
+        "body": "Vas a hacer push de {{commitCount}} commits a {{remote}}/{{branch}}.\n\nEsto es más de lo habitual. ¿Seguro que quieres continuar?\n\n💡 Considera dividir los cambios grandes en commits más pequeños y específicos.",
+        "confirm": "Hacer push de todos los commits"
+      },
+      "protectedBranch": {
+        "title": "Rama protegida",
+        "body": "La rama \"{{branch}}\" en {{remote}} está protegida y no se puede hacer push directamente a ella.\n\nLas ramas protegidas exigen que los cambios pasen por pull requests.",
+        "createPr": "Crear pull request"
+      },
+      "pullConflict": {
+        "title": "No se puede hacer pull con cambios locales",
+        "body": "Tus cambios locales se sobrescribirían con los cambios entrantes de \"{{branch}}\".{{fileInfo}}\n\nElige cómo continuar:",
+        "fileInfo_one": " ({{count}} archivo afectado)",
+        "fileInfo_other": " ({{count}} archivos afectados)",
+        "stashAndPull": "Stash y Pull",
+        "discardAndPull": "Descartar y Pull"
+      },
+      "pushRejected": {
+        "title": "Push rechazado",
+        "body": "No se puede hacer push a {{remote}}/{{branch}}.\n\nLa rama remota contiene commits que no tienes en local.{{behindInfo}}\n\n⚠️ El force push sobrescribirá permanentemente los cambios del remoto.",
+        "behindInfo_one": " ({{count}} commit por detrás)",
+        "behindInfo_other": " ({{count}} commits por detrás)",
+        "pullAndPush": "Pull y Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Conflicto de merge",
+        "titleRebase": "Conflicto de rebase",
+        "bodyMerge": "Se produjeron conflictos al hacer merge de \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Cancelar el merge lo abortará y restaurará tu rama.",
+        "bodyRebase": "Se produjeron conflictos al hacer rebase sobre \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Cancelar restaurará tu rama al estado que tenía antes del rebase.",
+        "progress": " (Paso {{current}} de {{total}})",
+        "files_one": "\n\n{{count}} archivo con conflictos.",
+        "files_other": "\n\n{{count}} archivos con conflictos.",
+        "resolve": "Resolver conflictos",
+        "abortMerge": "Cancelar merge",
+        "abortRebase": "Cancelar rebase"
+      }
     }
   },
   "selectors": {

@@ -1648,6 +1648,52 @@
         "brought": "Deine Änderungen sind dir zu diesem Branch gefolgt",
         "worktree_missing": "Der Worktree existiert nicht mehr. Aktualisieren und erneut versuchen"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Detached-HEAD-Zustand",
+        "body": "Du befindest dich im Detached-HEAD-Zustand beim Commit {{shortHash}}.\n\nDu bist auf keinem Branch. Commits, die du erstellst, können verloren gehen, wenn du einen anderen Branch auscheckst, ohne vorher einen neuen Branch zu erstellen.\n\n⚠️ Commits im Detached-HEAD-Zustand können von der Garbage Collection entfernt werden.",
+        "createBranch": "Branch erstellen",
+        "continueWithoutBranch": "Ohne Branch fortfahren"
+      },
+      "largePush": {
+        "title": "Großer Push erkannt",
+        "body": "Du bist dabei, {{commitCount}} Commits nach {{remote}}/{{branch}} zu pushen.\n\nDas ist mehr als üblich. Möchtest du wirklich fortfahren?\n\n💡 Erwäge, große Änderungen in kleinere, fokussiertere Commits aufzuteilen.",
+        "confirm": "Alle Commits pushen"
+      },
+      "protectedBranch": {
+        "title": "Geschützter Branch",
+        "body": "Der Branch \"{{branch}}\" auf {{remote}} ist geschützt und kann nicht direkt gepusht werden.\n\nBei geschützten Branches müssen Änderungen über Pull Requests laufen.",
+        "createPr": "Pull Request erstellen"
+      },
+      "pullConflict": {
+        "title": "Pull mit lokalen Änderungen nicht möglich",
+        "body": "Deine lokalen Änderungen würden durch die eingehenden Änderungen von \"{{branch}}\" überschrieben.{{fileInfo}}\n\nWähle, wie es weitergehen soll:",
+        "fileInfo_one": " ({{count}} Datei betroffen)",
+        "fileInfo_other": " ({{count}} Dateien betroffen)",
+        "stashAndPull": "Stash und Pull",
+        "discardAndPull": "Verwerfen und Pull"
+      },
+      "pushRejected": {
+        "title": "Push abgelehnt",
+        "body": "Push nach {{remote}}/{{branch}} nicht möglich.\n\nDer Remote-Branch enthält Commits, die du lokal nicht hast.{{behindInfo}}\n\n⚠️ Ein Force Push überschreibt die Änderungen auf dem Remote dauerhaft.",
+        "behindInfo_one": " ({{count}} Commit zurück)",
+        "behindInfo_other": " ({{count}} Commits zurück)",
+        "pullAndPush": "Pull und Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Merge-Konflikt",
+        "titleRebase": "Rebase-Konflikt",
+        "bodyMerge": "Beim Merge von \"{{branch}}\" sind Konflikte aufgetreten.{{progress}}{{files}}\n\n⚠️ Ein Abbruch bricht den Merge ab und stellt deinen Branch wieder her.",
+        "bodyRebase": "Beim Rebase auf \"{{branch}}\" sind Konflikte aufgetreten.{{progress}}{{files}}\n\n⚠️ Ein Abbruch stellt deinen Branch in dem Zustand wieder her, in dem er vor dem Rebase war.",
+        "progress": " (Schritt {{current}} von {{total}})",
+        "files_one": "\n\n{{count}} Datei mit Konflikten.",
+        "files_other": "\n\n{{count}} Dateien mit Konflikten.",
+        "resolve": "Konflikte lösen",
+        "abortMerge": "Merge abbrechen",
+        "abortRebase": "Rebase abbrechen"
+      }
     }
   },
   "selectors": {

@@ -1479,6 +1479,52 @@
         "brought": "आपके बदलाव इस ब्रांच तक आपके साथ आ गए",
         "worktree_missing": "वर्कट्री अब मौजूद नहीं है। रीफ़्रेश करके फिर कोशिश करें"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Detached HEAD स्थिति",
+        "body": "आप कमिट {{shortHash}} पर detached HEAD स्थिति में हैं।\n\nआप किसी ब्रांच पर नहीं हैं। यदि आप पहले नई ब्रांच बनाए बिना किसी दूसरी ब्रांच पर checkout करते हैं, तो आपके किए गए कमिट खो सकते हैं।\n\n⚠️ detached HEAD स्थिति के कमिट गार्बेज कलेक्ट हो सकते हैं।",
+        "createBranch": "ब्रांच बनाएँ",
+        "continueWithoutBranch": "बिना ब्रांच के जारी रखें"
+      },
+      "largePush": {
+        "title": "बड़ा push पाया गया",
+        "body": "आप {{remote}}/{{branch}} पर {{commitCount}} कमिट push करने वाले हैं।\n\nयह सामान्य से अधिक है। क्या आप वाकई जारी रखना चाहते हैं?\n\n💡 बड़े बदलावों को छोटे और अधिक केंद्रित कमिट में बाँटने पर विचार करें।",
+        "confirm": "सभी कमिट push करें"
+      },
+      "protectedBranch": {
+        "title": "सुरक्षित ब्रांच",
+        "body": "{{remote}} पर ब्रांच \"{{branch}}\" सुरक्षित है और उस पर सीधे push नहीं किया जा सकता।\n\nसुरक्षित ब्रांच में बदलाव pull request के ज़रिए ही जाने चाहिए।",
+        "createPr": "Pull Request बनाएँ"
+      },
+      "pullConflict": {
+        "title": "लोकल बदलावों के साथ pull नहीं किया जा सकता",
+        "body": "\"{{branch}}\" से आने वाले बदलाव आपके लोकल बदलावों को अधिलेखित कर देंगे।{{fileInfo}}\n\nचुनें कि आगे कैसे बढ़ना है:",
+        "fileInfo_one": " ({{count}} फ़ाइल प्रभावित)",
+        "fileInfo_other": " ({{count}} फ़ाइलें प्रभावित)",
+        "stashAndPull": "Stash करके pull करें",
+        "discardAndPull": "छोड़कर pull करें"
+      },
+      "pushRejected": {
+        "title": "Push अस्वीकृत",
+        "body": "{{remote}}/{{branch}} पर push नहीं किया जा सकता।\n\nरिमोट ब्रांच में ऐसे कमिट हैं जो आपके पास लोकल में नहीं हैं।{{behindInfo}}\n\n⚠️ Force push रिमोट के बदलावों को स्थायी रूप से अधिलेखित कर देगा।",
+        "behindInfo_one": " ({{count}} कमिट पीछे)",
+        "behindInfo_other": " ({{count}} कमिट पीछे)",
+        "pullAndPush": "Pull करके push करें",
+        "forcePush": "Force push"
+      },
+      "conflict": {
+        "titleMerge": "Merge विरोध",
+        "titleRebase": "Rebase विरोध",
+        "bodyMerge": "\"{{branch}}\" को merge करते समय विरोध हुए।{{progress}}{{files}}\n\n⚠️ रोकने पर merge रद्द हो जाएगा और आपकी ब्रांच पुनर्स्थापित हो जाएगी।",
+        "bodyRebase": "\"{{branch}}\" पर rebase करते समय विरोध हुए।{{progress}}{{files}}\n\n⚠️ रोकने पर आपकी ब्रांच rebase से पहले की स्थिति में पुनर्स्थापित हो जाएगी।",
+        "progress": " (चरण {{current}} / {{total}})",
+        "files_one": "\n\n{{count}} फ़ाइल में विरोध हैं।",
+        "files_other": "\n\n{{count}} फ़ाइलों में विरोध हैं।",
+        "resolve": "विरोध हल करें",
+        "abortMerge": "Merge रोकें",
+        "abortRebase": "Rebase रोकें"
+      }
     }
   },
   "selectors": {

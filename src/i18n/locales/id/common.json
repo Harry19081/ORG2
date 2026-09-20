@@ -1479,6 +1479,52 @@
         "brought": "Perubahan Anda ikut ke branch ini",
         "worktree_missing": "Worktree sudah tidak ada. Muat ulang dan coba lagi"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Status Detached HEAD",
+        "body": "Anda berada dalam status detached HEAD pada commit {{shortHash}}.\n\nAnda tidak berada di branch mana pun. Commit yang Anda buat bisa hilang jika Anda checkout ke branch lain tanpa membuat branch baru terlebih dahulu.\n\n⚠️ Commit dalam status detached HEAD bisa terkena garbage collection.",
+        "createBranch": "Buat Branch",
+        "continueWithoutBranch": "Lanjutkan Tanpa Branch"
+      },
+      "largePush": {
+        "title": "Push Besar Terdeteksi",
+        "body": "Anda akan melakukan push {{commitCount}} commit ke {{remote}}/{{branch}}.\n\nIni lebih banyak dari biasanya. Yakin ingin melanjutkan?\n\n💡 Pertimbangkan untuk memecah perubahan besar menjadi commit yang lebih kecil dan terfokus.",
+        "confirm": "Push Semua Commit"
+      },
+      "protectedBranch": {
+        "title": "Branch Terlindungi",
+        "body": "Branch \"{{branch}}\" di {{remote}} terlindungi dan tidak bisa di-push secara langsung.\n\nBranch terlindungi mengharuskan perubahan melalui pull request.",
+        "createPr": "Buat Pull Request"
+      },
+      "pullConflict": {
+        "title": "Tidak Bisa Pull dengan Perubahan Lokal",
+        "body": "Perubahan lokal Anda akan tertimpa oleh perubahan yang masuk dari \"{{branch}}\".{{fileInfo}}\n\nPilih cara melanjutkan:",
+        "fileInfo_one": " ({{count}} file terdampak)",
+        "fileInfo_other": " ({{count}} file terdampak)",
+        "stashAndPull": "Stash & Pull",
+        "discardAndPull": "Buang & Pull"
+      },
+      "pushRejected": {
+        "title": "Push Ditolak",
+        "body": "Tidak bisa push ke {{remote}}/{{branch}}.\n\nBranch remote berisi commit yang tidak Anda miliki secara lokal.{{behindInfo}}\n\n⚠️ Force push akan menimpa perubahan di remote secara permanen.",
+        "behindInfo_one": " (tertinggal {{count}} commit)",
+        "behindInfo_other": " (tertinggal {{count}} commit)",
+        "pullAndPush": "Pull & Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Konflik Merge",
+        "titleRebase": "Konflik Rebase",
+        "bodyMerge": "Terjadi konflik saat merge \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Membatalkan akan menghentikan merge dan memulihkan branch Anda.",
+        "bodyRebase": "Terjadi konflik saat rebase ke \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Membatalkan akan memulihkan branch Anda ke kondisi sebelum rebase.",
+        "progress": " (Langkah {{current}} dari {{total}})",
+        "files_one": "\n\n{{count}} file mengalami konflik.",
+        "files_other": "\n\n{{count}} file mengalami konflik.",
+        "resolve": "Selesaikan Konflik",
+        "abortMerge": "Batalkan Merge",
+        "abortRebase": "Batalkan Rebase"
+      }
     }
   },
   "selectors": {
