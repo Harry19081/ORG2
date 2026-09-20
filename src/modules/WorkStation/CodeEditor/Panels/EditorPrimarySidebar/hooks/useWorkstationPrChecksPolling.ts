@@ -24,12 +24,15 @@
  *    menu: fast while something can still change, bounded retries while CI has
  *    not registered, a five-minute safety refresh once everything reported.
  *    A new head commit or a manual refresh restarts the fast interval;
- *  - merged and closed pull requests are not polled.
+ *  - merged and closed pull requests are not polled;
+ *  - reads go through `pullRequestHeadChecks`, shared with the status bar and
+ *    any other panel on the same pull request: concurrent reads are one
+ *    request, and an answer anyone fetched is applied here and restarts this
+ *    timer, so N surfaces cost one request per interval, not N.
  */
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { getChecksLocal, getPRLocal } from "@src/api/tauri/github";
 import { createLogger } from "@src/hooks/logger";
 import { nextChecksPollDelayMs } from "@src/services/git/branchPullRequestStatus";
 import {
@@ -37,12 +40,16 @@ import {
   updateCachedPrDetail,
 } from "@src/services/git/githubListCache";
 import {
+  PULL_REQUEST_HEAD_CHECKS_REUSE_MS,
+  type PullRequestHeadChecks,
+  loadPullRequestHeadChecks,
+  subscribePullRequestHeadChecks,
+} from "@src/services/git/pullRequestHeadChecks";
+import {
   type PrIdentity,
   workstationSelectedPrAtomFamily,
 } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import { resolvePullRequestDetailStatus } from "@src/util/git/pr/prLevelActions";
-
-import { readString } from "./workstationPrDetailFetch";
 
 const logger = createLogger("WorkstationPrChecksPolling");
 
@@ -124,79 +131,107 @@ export function useWorkstationPrChecksPolling({
     };
   }, [pollKey]);
 
-  const runPoll = useCallback((): Promise<void> => {
-    const current = latestRef.current;
-    if (!repoFullName || !pollKey || !current.pr) return Promise.resolve();
-    if (inFlightRef.current) return inFlightRef.current;
+  // Names this panel in the answers it fetches, so it can tell its own from a
+  // neighbour's when they are published.
+  const sourceRef = useRef({});
 
-    const identity = current.pr;
-    const generation = generationRef.current;
-    const requestIdAtDispatch = requestIdsRef.current.get(pollKey);
-    const isCurrent = () =>
-      mountedRef.current && generationRef.current === generation;
-    const isSuperseded = () =>
-      requestIdsRef.current.get(pollKey) !== requestIdAtDispatch;
-
-    setSelectedPr((prev) => ({ ...prev, refreshingChecks: true }));
-
-    const poll = (async () => {
-      try {
-        const detail = await getPRLocal(repoFullName, identity.number);
-        if (!isCurrent() || isSuperseded()) return;
-
-        const shown = latestRef.current.state;
-        const headSha = readString(detail, ["head", "sha"]);
-        const statusMoved =
-          resolvePullRequestDetailStatus(detail, identity.status) !==
-          resolvePullRequestDetailStatus(shown.detail, identity.status);
-        if (!headSha || headSha !== shown.headSha || statusMoved) {
-          // Commits, files and the timeline moved with it — not a checks patch.
-          latestRef.current.reconcile(identity);
-          return;
-        }
-
-        const checks = await getChecksLocal(repoFullName, headSha);
-        if (!isCurrent() || isSuperseded()) return;
-
-        const keepDetail = latestRef.current.prActionPending;
-        setSelectedPr((prev) => ({
-          ...prev,
-          checks,
-          detail: keepDetail ? prev.detail : detail,
-        }));
-        updateCachedPrDetail(pollKey, () =>
-          keepDetail ? { checks } : { checks, detail }
-        );
-      } catch (error) {
-        // A failed poll keeps the last good verdict; the schedule retries.
-        logger.warn("checks poll failed", error);
-      } finally {
-        // Single flight per generation: an unchanged generation means the
-        // slot still holds this poll. A changed one already cleared it, and
-        // may have handed it to the next pull request's poll.
-        if (generationRef.current === generation) inFlightRef.current = null;
-        if (isCurrent()) {
-          setSelectedPr((prev) => ({ ...prev, refreshingChecks: false }));
-          setPollTick((tick) => tick + 1);
-        }
+  /** Land one answer — this panel's own or one another surface fetched. */
+  const applySnapshot = useCallback(
+    (identity: PrIdentity, key: string, snapshot: PullRequestHeadChecks) => {
+      const { detail, headSha, checks } = snapshot;
+      const shown = latestRef.current.state;
+      const statusMoved =
+        resolvePullRequestDetailStatus(detail, identity.status) !==
+        resolvePullRequestDetailStatus(shown.detail, identity.status);
+      if (!headSha || !checks || headSha !== shown.headSha || statusMoved) {
+        // Commits, files and the timeline moved with it — not a checks patch.
+        latestRef.current.reconcile(identity);
+        return;
       }
-    })();
-    inFlightRef.current = poll;
-    return poll;
-  }, [mountedRef, pollKey, repoFullName, requestIdsRef, setSelectedPr]);
+
+      const keepDetail = latestRef.current.prActionPending;
+      setSelectedPr((prev) => ({
+        ...prev,
+        checks,
+        detail: keepDetail ? prev.detail : detail,
+      }));
+      updateCachedPrDetail(key, () =>
+        keepDetail ? { checks } : { checks, detail }
+      );
+    },
+    [setSelectedPr]
+  );
+
+  const runPoll = useCallback(
+    (maxAgeMs: number): Promise<void> => {
+      const current = latestRef.current;
+      if (!repoFullName || !pollKey || !current.pr) return Promise.resolve();
+      if (inFlightRef.current) return inFlightRef.current;
+
+      const identity = current.pr;
+      const generation = generationRef.current;
+      const requestIdAtDispatch = requestIdsRef.current.get(pollKey);
+      const isCurrent = () =>
+        mountedRef.current && generationRef.current === generation;
+      const isSuperseded = () =>
+        requestIdsRef.current.get(pollKey) !== requestIdAtDispatch;
+
+      setSelectedPr((prev) => ({ ...prev, refreshingChecks: true }));
+
+      const poll = (async () => {
+        try {
+          // Shared with the status bar and any other panel on this pull
+          // request: whoever asks first fetches, the rest take that answer.
+          const snapshot = await loadPullRequestHeadChecks(
+            repoFullName,
+            identity.number,
+            { maxAgeMs, source: sourceRef.current }
+          );
+          if (!isCurrent() || isSuperseded()) return;
+          applySnapshot(identity, pollKey, snapshot);
+        } catch (error) {
+          // A failed poll keeps the last good verdict; the schedule retries.
+          logger.warn("checks poll failed", error);
+        } finally {
+          // Single flight per generation: an unchanged generation means the
+          // slot still holds this poll. A changed one already cleared it, and
+          // may have handed it to the next pull request's poll.
+          if (generationRef.current === generation) inFlightRef.current = null;
+          if (isCurrent()) {
+            setSelectedPr((prev) => ({ ...prev, refreshingChecks: false }));
+            setPollTick((tick) => tick + 1);
+          }
+        }
+      })();
+      inFlightRef.current = poll;
+      return poll;
+    },
+    [
+      applySnapshot,
+      mountedRef,
+      pollKey,
+      repoFullName,
+      requestIdsRef,
+      setSelectedPr,
+    ]
+  );
 
   // Timers and event listeners cannot await. `runPoll` settles its own
   // failures, so this handler only exists to leave no promise unobserved.
-  const startPoll = useCallback((): void => {
-    runPoll().catch((error: unknown) => {
-      logger.warn("checks poll failed", error);
-    });
-  }, [runPoll]);
+  const startPoll = useCallback(
+    (maxAgeMs: number): void => {
+      runPoll(maxAgeMs).catch((error: unknown) => {
+        logger.warn("checks poll failed", error);
+      });
+    },
+    [runPoll]
+  );
 
   /** Asking by hand is a signal of interest: back to the fast interval. */
   const refreshChecks = useCallback((): Promise<void> => {
     attemptRef.current = 0;
-    return runPoll();
+    // A click wants GitHub's answer, not one another surface fetched earlier.
+    return runPoll(0);
   }, [runPoll]);
 
   const status = resolvePullRequestDetailStatus(state.detail, pr?.status ?? "");
@@ -232,10 +267,33 @@ export function useWorkstationPrChecksPolling({
         return;
       }
       attemptRef.current += 1;
-      startPoll();
+      startPoll(PULL_REQUEST_HEAD_CHECKS_REUSE_MS);
     }, delay);
     return () => window.clearTimeout(timer);
   }, [checks, headSha, pollTick, pollable, startPoll, visibilityRef]);
+
+  // Another surface on this pull request — the status bar, a second panel —
+  // just fetched: take its answer now and restart this timer, rather than
+  // fetch the same thing again when this timer would have fired.
+  useEffect(() => {
+    if (!pollable || !repoFullName || prNumber === null || !pollKey) {
+      return undefined;
+    }
+    return subscribePullRequestHeadChecks((event) => {
+      if (
+        event.source === sourceRef.current ||
+        event.repoFullName !== repoFullName ||
+        event.prNumber !== prNumber
+      ) {
+        return;
+      }
+      const identity = latestRef.current.pr;
+      // A poll of this panel's own is in flight: it lands the same or newer.
+      if (!identity || !mountedRef.current || inFlightRef.current) return;
+      applySnapshot(identity, pollKey, event.snapshot);
+      setPollTick((tick) => tick + 1);
+    });
+  }, [applySnapshot, mountedRef, pollKey, pollable, prNumber, repoFullName]);
 
   useEffect(() => {
     if (!pollable || typeof document === "undefined") return undefined;
@@ -243,7 +301,7 @@ export function useWorkstationPrChecksPolling({
       if (isWindowHidden() || !dueWhileHiddenRef.current) return;
       dueWhileHiddenRef.current = false;
       attemptRef.current = 0;
-      startPoll();
+      startPoll(PULL_REQUEST_HEAD_CHECKS_REUSE_MS);
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () =>

@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  clearPullRequestHeadChecks,
+  invalidatePullRequestHeadChecks,
+  loadPullRequestHeadChecks,
+} from "@src/services/git/pullRequestHeadChecks";
+
 import { fetchPrDetailBundle } from "../workstationPrDetailFetch";
 
 const apiMocks = vi.hoisted(() => ({
@@ -31,6 +37,7 @@ const DEPLOYMENTS = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  clearPullRequestHeadChecks();
   for (const list of [
     apiMocks.listIssueCommentsLocal,
     apiMocks.listIssueTimelineLocal,
@@ -57,6 +64,32 @@ describe("fetchPrDetailBundle", () => {
     expect(apiMocks.getDeploymentsLocal).toHaveBeenCalledWith(REPO, "feat/box");
     expect(bundle.checks).toBe(CHECKS);
     expect(bundle.deployments).toBe(DEPLOYMENTS);
+  });
+
+  it("shares the head and checks it read with the CI pollers, unless the pull request changed meanwhile", async () => {
+    await fetchPrDetailBundle(REPO, 7);
+    const shared = await loadPullRequestHeadChecks(REPO, 7, {
+      maxAgeMs: 60_000,
+    });
+    expect(shared.checks).toBe(CHECKS);
+    expect(apiMocks.getPRLocal).toHaveBeenCalledTimes(1);
+
+    // A mutation lands while a second load is on the wire: what that load
+    // read may predate it, so it must not be offered as current.
+    clearPullRequestHeadChecks();
+    let release: (value: Record<string, unknown>) => void = () => {};
+    apiMocks.getPRLocal.mockReturnValueOnce(
+      new Promise((resolve) => {
+        release = resolve;
+      })
+    );
+    const loading = fetchPrDetailBundle(REPO, 7);
+    invalidatePullRequestHeadChecks(REPO, 7);
+    release({ head: { sha: "head-sha", ref: "feat/box" } });
+    await loading;
+
+    await loadPullRequestHeadChecks(REPO, 7, { maxAgeMs: 60_000 });
+    expect(apiMocks.getPRLocal).toHaveBeenCalledTimes(3);
   });
 
   it("loads the pull request even when deployments cannot be read", async () => {

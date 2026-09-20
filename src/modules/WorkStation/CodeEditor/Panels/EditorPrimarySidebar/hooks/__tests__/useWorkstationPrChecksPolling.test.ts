@@ -10,6 +10,10 @@ import {
   BRANCH_CI_SAFETY_POLL_MS,
 } from "@src/services/git/branchPullRequestStatus";
 import {
+  clearPullRequestHeadChecks,
+  loadPullRequestHeadChecks,
+} from "@src/services/git/pullRequestHeadChecks";
+import {
   type PrIdentity,
   initialSelectedPrState,
   workstationPrScopeKey,
@@ -141,6 +145,7 @@ describe("useWorkstationPrChecksPolling", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
+    clearPullRequestHeadChecks();
     apiMocks.getPRLocal.mockResolvedValue(OPEN_DETAIL);
     apiMocks.getChecksLocal.mockResolvedValue(checksOf("in_progress"));
     store = createStore();
@@ -311,9 +316,11 @@ describe("useWorkstationPrChecksPolling", () => {
     });
     await advance(BRANCH_CI_SAFETY_POLL_MS * 2);
 
+    // The shared reader finishes its request — other surfaces may be waiting
+    // on it — but this panel schedules nothing more and lands nothing.
     expect(vi.getTimerCount()).toBe(0);
     expect(apiMocks.getPRLocal).toHaveBeenCalledTimes(1);
-    expect(apiMocks.getChecksLocal).not.toHaveBeenCalled();
+    expect(shown().checks?.state).toBe("pending");
   });
 
   it("hands over to the full reconcile when the head commit moved", async () => {
@@ -321,12 +328,14 @@ describe("useWorkstationPrChecksPolling", () => {
       state: "open",
       head: { sha: "pushed-sha" },
     });
+    apiMocks.getChecksLocal.mockResolvedValue(checksOf("completed"));
     await render();
     await advance(BRANCH_CI_POLL_BASE_MS);
 
+    // The new head's checks are not patched onto the old head's panel.
     expect(props.reconcile).toHaveBeenCalledWith(PR);
-    expect(apiMocks.getChecksLocal).not.toHaveBeenCalled();
     expect(shown().headSha).toBe(HEAD);
+    expect(shown().checks?.state).toBe("pending");
   });
 
   it("drops its result when a full load started after it was dispatched", async () => {
@@ -364,6 +373,78 @@ describe("useWorkstationPrChecksPolling", () => {
       await props.apiRef.current?.refreshChecks();
     });
     expect(shown().detail).toMatchObject({ mergeable_state: "clean" });
+  });
+
+  it("asks GitHub once per interval when two panels show the same pull request", async () => {
+    // A second panel on the same pull request, with its own state (another
+    // repo id) and its own timer, started 4 s later.
+    const otherScope = workstationPrScopeKey(
+      "second-pane",
+      REPO_PATH,
+      PR.number
+    );
+    const otherAtom = workstationSelectedPrAtomFamily(otherScope);
+    store.set(otherAtom, {
+      ...initialSelectedPrState,
+      identity: PR,
+      detail: OPEN_DETAIL,
+      headSha: HEAD,
+      checks: checksOf("in_progress"),
+    });
+    function SecondPanel(): null {
+      useWorkstationPrChecksPolling({
+        repoFullName: REPO,
+        pr: PR,
+        scopeKey: otherScope,
+        mountedRef: props.mountedRef,
+        requestIdsRef: props.requestIdsRef,
+        prActionPending: false,
+        reconcile: props.reconcile,
+      });
+      return null;
+    }
+    const secondContainer = document.createElement("div");
+    const secondRoot = createRoot(secondContainer);
+
+    await render();
+    await advance(4_000);
+    await act(async () => {
+      secondRoot.render(
+        React.createElement(
+          Provider,
+          { store },
+          React.createElement(SecondPanel)
+        )
+      );
+    });
+
+    apiMocks.getChecksLocal.mockResolvedValue(checksOf("completed"));
+    // First panel fires at 15 s; the second would have fired at 19 s.
+    await advance(BRANCH_CI_POLL_BASE_MS);
+
+    expect(apiMocks.getPRLocal).toHaveBeenCalledTimes(1);
+    expect(shown().checks?.state).toBe("success");
+    expect(store.get(otherAtom).checks?.state).toBe("success");
+
+    act(() => secondRoot.unmount());
+  });
+
+  it("lands an answer the status bar fetched and restarts its own timer", async () => {
+    await render();
+    await advance(BRANCH_CI_POLL_BASE_MS - 1_000);
+
+    await act(async () => {
+      await loadPullRequestHeadChecks(REPO, PR.number, {
+        source: "status-bar",
+      });
+    });
+    expect(apiMocks.getPRLocal).toHaveBeenCalledTimes(1);
+
+    // Its own poll was 1 s away; it now waits a full interval from the answer.
+    await advance(BRANCH_CI_POLL_BASE_MS - 1);
+    expect(apiMocks.getPRLocal).toHaveBeenCalledTimes(1);
+    await advance(1);
+    expect(apiMocks.getPRLocal).toHaveBeenCalledTimes(2);
   });
 
   it("does not poll a merged pull request", async () => {
