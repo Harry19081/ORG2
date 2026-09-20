@@ -82,8 +82,11 @@ export interface UseWebviewScreenshotOptions {
 export interface UseWebviewScreenshotReturn {
   /** Capture the current webview and push it into the chat attachments atom. */
   triggerScreenshot: () => Promise<void>;
-  /** Capture the current webview and save the PNG where the user chooses. */
-  saveScreenshot: () => Promise<void>;
+  /**
+   * Capture the current webview and save the PNG where the user chooses.
+   * Fire-and-forget: it reports its own outcome, so it fits a click prop.
+   */
+  saveScreenshot: () => void;
   /** True while a capture is in flight. */
   isCapturing: boolean;
 }
@@ -119,7 +122,7 @@ export function useWebviewScreenshot(
     }
   }, [webviewLabel, isCapturing, handleImagePaste, t]);
 
-  const saveScreenshot = useCallback(async () => {
+  const runSaveScreenshot = useCallback(async () => {
     if (!webviewLabel) {
       Message.warning(t("browser.screenshot.noActivePage"));
       return;
@@ -148,6 +151,14 @@ export function useWebviewScreenshot(
       setIsCapturing(false);
     }
   }, [webviewLabel, isCapturing, t]);
+
+  // Failures are caught and reported inside `runSaveScreenshot`; this handler
+  // only covers a throw from that reporting itself.
+  const saveScreenshot = useCallback(() => {
+    runSaveScreenshot().catch((error: unknown) => {
+      log.error("[useWebviewScreenshot] save reporting failed:", error);
+    });
+  }, [runSaveScreenshot]);
 
   return { triggerScreenshot, saveScreenshot, isCapturing };
 }

@@ -139,18 +139,19 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
       [effectiveActiveSessionId, activeSession, updateSession]
     );
 
-    // Shared by the URL bar's "..." menu and the blank-tab placeholder.
-    const handleOpenHtmlFile = useCallback(async () => {
-      try {
-        const fileUrl = await pickLocalHtmlFile();
-        if (!fileUrl) return;
-        handleNavigate(fileUrl);
-      } catch (error) {
-        const reason =
-          error instanceof Error ? error.message : String(error ?? "unknown");
-        log.error("[WebViewport] open HTML file failed:", reason);
-        Message.error(t("browser.openHtmlFile.failed", { reason }));
-      }
+    // Shared by the URL bar's "..." menu and the blank-tab placeholder. Returns
+    // nothing: it is handed to click props, which must not receive a promise.
+    const handleOpenHtmlFile = useCallback(() => {
+      pickLocalHtmlFile()
+        .then((fileUrl) => {
+          if (fileUrl) handleNavigate(fileUrl);
+        })
+        .catch((error: unknown) => {
+          const reason =
+            error instanceof Error ? error.message : String(error ?? "unknown");
+          log.error("[WebViewport] open HTML file failed:", reason);
+          Message.error(t("browser.openHtmlFile.failed", { reason }));
+        });
     }, [handleNavigate, t]);
 
     // Handle back navigation
