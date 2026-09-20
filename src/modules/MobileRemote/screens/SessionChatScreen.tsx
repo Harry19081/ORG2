@@ -1,8 +1,10 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import { PermissionSheet } from "@src/components/PermissionPrompt";
 import { createLogger } from "@src/hooks/logger";
+import { HugeiconsIcon, StopCircleIcon } from "@src/icons";
 
 import { useMobileRemote } from "../app";
 import { useMobileSessionIdentity } from "../app/useMobileSessionIdentity";
@@ -27,6 +29,8 @@ export interface SessionChatScreenProps {
   sendCapability?: "native" | "external_codex" | "read_only";
   onBack?: () => void;
   onCanonicalSession?: (sessionId: string) => void;
+  /** Opens the M-15 stop confirmation; stopping never bypasses it. */
+  onOpenStopModal?: () => void;
 }
 
 export function SessionChatScreen(props: SessionChatScreenProps) {
@@ -109,6 +113,7 @@ function SessionChatContent({
   sessionName,
   sendCapability = "native",
   onBack,
+  onOpenStopModal,
 }: SessionChatScreenProps) {
   const { t } = useTranslation("mobileRemote");
   const {
@@ -329,7 +334,29 @@ function SessionChatContent({
 
   return (
     <>
-      <MobileTopBar title={sessionName} onBack={onBack} />
+      <MobileTopBar
+        title={sessionName}
+        onBack={onBack}
+        trailing={
+          <Button
+            htmlType="button"
+            size="mini"
+            variant="tertiary"
+            tone="danger"
+            shape="circle"
+            className="mobile-chrome-icon-button"
+            style={{
+              width: "var(--mobile-touch-size)",
+              height: "var(--mobile-touch-size)",
+            }}
+            aria-label={t("stopConfirm.confirm")}
+            onClick={onOpenStopModal}
+            disabled={!writable || !sendSupported}
+            iconOnly
+            icon={<HugeiconsIcon icon={StopCircleIcon} size={18} />}
+          />
+        }
+      />
       <div className="relative flex min-h-0 flex-1 flex-col bg-chat-container">
         <RoundNavigator
           rounds={transcriptRounds}
