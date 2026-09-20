@@ -2321,7 +2321,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "需要「完整磁碟取用權限」",
-      "explain": "Safari 將 Cookie 儲存在受 macOS 保護的資料夾中。請在系統設定的「完整磁碟存取權限」中允許 ORG2，然後重新檢查",
+      "explain": "{{browser}} 將 Cookie 儲存在受 macOS 保護的資料夾中。請在系統設定的「完整磁碟存取權限」中允許 ORG2，然後重新檢查",
       "openSettings": "打開系統設定",
       "checkAgain": "重新檢查"
     },

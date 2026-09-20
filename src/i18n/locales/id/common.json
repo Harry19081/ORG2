@@ -2339,7 +2339,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Memerlukan Akses Disk Penuh",
-      "explain": "Safari menyimpan cookie di folder yang dilindungi macOS. Izinkan ORG2 di Akses Disk Penuh pada Pengaturan Sistem, lalu periksa lagi",
+      "explain": "{{browser}} menyimpan cookie di folder yang dilindungi macOS. Izinkan ORG2 di Akses Disk Penuh pada Pengaturan Sistem, lalu periksa lagi",
       "openSettings": "Buka Pengaturan Sistem",
       "checkAgain": "Periksa lagi"
     },

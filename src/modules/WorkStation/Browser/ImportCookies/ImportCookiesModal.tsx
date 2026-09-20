@@ -6,6 +6,10 @@
  * cookies for (money / mail / SSO unchecked by default), and import the chosen
  * ones. Mirrors the built-in-browser "import cookies" affordance.
  *
+ * A source that cannot be read yet (a browser macOS guards behind Full Disk
+ * Access) keeps its row and carries the two ways out — open System Settings, and an icon-only
+ * re-scan — in the row itself instead of a separate explanation block.
+ *
  * Footers are the design-system blocks: the source picker has none (a row
  * click advances, the header X closes); the checklist uses `PanelFooter` — the
  * same block Modal renders by default — with Select all and the selection
@@ -32,17 +36,18 @@ import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import { InlineBanner } from "@src/components/InlineBanner";
 import SearchInput from "@src/components/SearchInput";
+import Tooltip from "@src/components/Tooltip";
 import PanelFooter from "@src/components/layout/blocks/PanelFooter";
 import {
   ArrowRight01Icon,
   CheckmarkCircle01Icon,
   HugeiconsIcon,
   type IconSvgElement,
-  InformationCircleIcon,
   InternetIcon,
   Key01Icon,
   Loading03Icon,
   Mail01Icon,
+  Refresh04Icon,
   Shield01Icon,
 } from "@src/icons";
 import Modal from "@src/scaffold/ModalSystem";
@@ -105,56 +110,102 @@ function Spinner() {
   );
 }
 
+const SOURCE_ROW_CLASS =
+  "flex w-full items-center gap-3 rounded-lg border border-border-1 bg-fill-1 px-3 py-2.5 text-left";
+
 const SourceRow = memo<{
   source: CookieImportSource;
   onSelect: (id: string) => void;
-}>(({ source, onSelect }) => {
+  onOpenSettings: () => void;
+  onCheckAgain: () => void;
+}>(({ source, onSelect, onOpenSettings, onCheckAgain }) => {
   const { t } = useTranslation();
   const blocked = source.unavailableReason !== null;
-  // A blocked source (Safari without Full Disk Access) explains itself on the
-  // second line and opens the hint instead of a preview.
-  const subtitle = blocked
-    ? t("browserCookieImport.safari.needsFullDiskAccess")
-    : source.profileLabel;
   const browserIcon = BROWSER_ICONS[source.browserId];
+
+  const icon = browserIcon ? (
+    <img
+      src={browserIcon}
+      width={18}
+      height={18}
+      className="size-[18px] shrink-0"
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+    />
+  ) : (
+    <HugeiconsIcon
+      icon={InternetIcon}
+      size={18}
+      className="shrink-0 text-text-2"
+      aria-hidden
+    />
+  );
+
+  // A blocked source (a browser macOS will not let us read without Full Disk
+  // Access) has nothing to open, so it is not a button: it names the problem and offers the two ways out. The
+  // longer explanation waits behind a hover instead of taking its own block.
+  if (blocked) {
+    return (
+      <div className={SOURCE_ROW_CLASS} data-testid="cookie-source-blocked">
+        {icon}
+        <Tooltip
+          content={t("browserCookieImport.safari.explain", {
+            browser: source.browserLabel,
+          })}
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm text-text-1">
+              {source.browserLabel}
+            </span>
+            <span className="block truncate text-xs text-warning-6">
+              {t("browserCookieImport.safari.needsFullDiskAccess")}
+            </span>
+          </span>
+        </Tooltip>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button variant="primary" size="small" onClick={onOpenSettings}>
+            {t("browserCookieImport.safari.openSettings")}
+          </Button>
+          {/* No spin: a re-scan swaps the whole list for the scanning state. */}
+          <Button
+            size="small"
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={Refresh04Icon}
+                data-icon="refresh-cw"
+                size={14}
+              />
+            }
+            aria-label={t("browserCookieImport.safari.checkAgain")}
+            title={t("browserCookieImport.safari.checkAgain")}
+            onClick={onCheckAgain}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Button
       layout="custom"
       onClick={() => onSelect(source.id)}
-      className="flex w-full items-center gap-3 rounded-lg border border-border-1 bg-fill-1 px-3 py-2.5 text-left transition-colors hover:bg-fill-2"
+      className={`${SOURCE_ROW_CLASS} transition-colors hover:bg-fill-2`}
     >
-      {browserIcon ? (
-        <img
-          src={browserIcon}
-          width={18}
-          height={18}
-          className="size-[18px] shrink-0"
-          alt=""
-          aria-hidden="true"
-          draggable={false}
-        />
-      ) : (
-        <HugeiconsIcon
-          icon={InternetIcon}
-          size={18}
-          className="shrink-0 text-text-2"
-          aria-hidden
-        />
-      )}
+      {icon}
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm text-text-1">
           {source.browserLabel}
         </span>
-        {subtitle ? (
-          <span
-            className={`block truncate text-xs ${blocked ? "text-warning-6" : "text-text-3"}`}
-          >
-            {subtitle}
+        {source.profileLabel ? (
+          <span className="block truncate text-xs text-text-3">
+            {source.profileLabel}
           </span>
         ) : null}
       </span>
       <HugeiconsIcon
-        icon={blocked ? InformationCircleIcon : ArrowRight01Icon}
+        icon={ArrowRight01Icon}
         size={16}
         className="shrink-0 text-text-3"
         aria-hidden
@@ -229,35 +280,16 @@ function SourcesStage({
     );
   }
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2">
-        {controller.sources.map((source) => (
-          <SourceRow
-            key={source.id}
-            source={source}
-            onSelect={controller.selectSource}
-          />
-        ))}
-      </div>
-      {controller.unavailableSource ? (
-        <div className="flex flex-col gap-2 rounded-lg bg-fill-1 px-3 py-2.5">
-          <p className="text-xs text-text-2">
-            {t("browserCookieImport.safari.explain")}
-          </p>
-          <div className="flex gap-2">
-            <Button
-              variant="primary"
-              size="small"
-              onClick={controller.openFullDiskAccessSettings}
-            >
-              {t("browserCookieImport.safari.openSettings")}
-            </Button>
-            <Button size="small" onClick={controller.refreshSources}>
-              {t("browserCookieImport.safari.checkAgain")}
-            </Button>
-          </div>
-        </div>
-      ) : null}
+    <div className="flex flex-col gap-2">
+      {controller.sources.map((source) => (
+        <SourceRow
+          key={source.id}
+          source={source}
+          onSelect={controller.selectSource}
+          onOpenSettings={controller.openFullDiskAccessSettings}
+          onCheckAgain={controller.refreshSources}
+        />
+      ))}
     </div>
   );
 }

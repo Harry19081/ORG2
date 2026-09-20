@@ -2321,7 +2321,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari는 macOS가 보호하는 폴더에 쿠키를 저장합니다. 시스템 설정의 전체 디스크 접근 권한에서 ORG2를 허용한 다음 다시 확인하세요",
+      "explain": "{{browser}}은(는) macOS가 보호하는 폴더에 쿠키를 저장합니다. 시스템 설정의 전체 디스크 접근 권한에서 ORG2를 허용한 다음 다시 확인하세요",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
