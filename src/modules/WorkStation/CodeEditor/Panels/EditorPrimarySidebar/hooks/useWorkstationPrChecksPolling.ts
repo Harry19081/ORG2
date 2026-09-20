@@ -185,6 +185,14 @@ export function useWorkstationPrChecksPolling({
     return poll;
   }, [mountedRef, pollKey, repoFullName, requestIdsRef, setSelectedPr]);
 
+  // Timers and event listeners cannot await. `runPoll` settles its own
+  // failures, so this handler only exists to leave no promise unobserved.
+  const startPoll = useCallback((): void => {
+    runPoll().catch((error: unknown) => {
+      logger.warn("checks poll failed", error);
+    });
+  }, [runPoll]);
+
   /** Asking by hand is a signal of interest: back to the fast interval. */
   const refreshChecks = useCallback((): Promise<void> => {
     attemptRef.current = 0;
@@ -224,10 +232,10 @@ export function useWorkstationPrChecksPolling({
         return;
       }
       attemptRef.current += 1;
-      void runPoll();
+      startPoll();
     }, delay);
     return () => window.clearTimeout(timer);
-  }, [checks, headSha, pollTick, pollable, runPoll, visibilityRef]);
+  }, [checks, headSha, pollTick, pollable, startPoll, visibilityRef]);
 
   useEffect(() => {
     if (!pollable || typeof document === "undefined") return undefined;
@@ -235,12 +243,12 @@ export function useWorkstationPrChecksPolling({
       if (isWindowHidden() || !dueWhileHiddenRef.current) return;
       dueWhileHiddenRef.current = false;
       attemptRef.current = 0;
-      void runPoll();
+      startPoll();
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () =>
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [pollable, runPoll]);
+  }, [pollable, startPoll]);
 
   return { refreshChecks };
 }
