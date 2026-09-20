@@ -946,7 +946,31 @@
         "createdByMe": "Utworzone przeze mnie",
         "assigneeUpdateNotApplied": "GitHub nie zastosował zmiany osoby przypisanej",
         "assigneeUpdateSuccess": "Zaktualizowano osoby przypisane w GitHub",
-        "updateIssueFailed": "Nie udało się zaktualizować issue GitHub"
+        "updateIssueFailed": "Nie udało się zaktualizować issue GitHub",
+        "filters": {
+          "searchPlaceholder": "Szukaj filtrów",
+          "noMatches": "Brak pasujących filtrów",
+          "activeCount": "Aktywne filtry: {{count}}",
+          "clear": "Wyczyść filtry",
+          "reviewRequestedFromMe": "Poproszono mnie o recenzję",
+          "noAssignee": "Brak przypisanej osoby",
+          "noLabel": "Brak etykiety",
+          "linkedPullRequest": "Z powiązanym pull requestem",
+          "draft": "Wersja robocza",
+          "readyForReview": "Gotowe do recenzji",
+          "recentlyUpdated": "Zaktualizowane w ciągu ostatnich 7 dni",
+          "stale": "Bez aktualizacji od 30 dni",
+          "facetAuthor": "Autor",
+          "facetAssignee": "Przypisana osoba",
+          "facetLabel": "Etykieta",
+          "facetMilestone": "Kamień milowy",
+          "facetReviewRequested": "Poproszono o recenzję",
+          "facetBaseBranch": "Gałąź bazowa",
+          "facetCiStatus": "Testy",
+          "ciSuccess": "Zaliczone",
+          "ciFailure": "Niezaliczone",
+          "ciPending": "Oczekujące"
+        }
       }
     },
     "sessionViews": {

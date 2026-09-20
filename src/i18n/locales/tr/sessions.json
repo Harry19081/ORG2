@@ -946,7 +946,31 @@
         "createdByMe": "Benim oluşturduklarım",
         "assigneeUpdateNotApplied": "GitHub atanan kişi değişikliğini uygulamadı",
         "assigneeUpdateSuccess": "Atananlar GitHub'da güncellendi",
-        "updateIssueFailed": "GitHub issue güncellenemedi"
+        "updateIssueFailed": "GitHub issue güncellenemedi",
+        "filters": {
+          "searchPlaceholder": "Filtrelerde ara",
+          "noMatches": "Eşleşen filtre yok",
+          "activeCount": "Etkin filtreler: {{count}}",
+          "clear": "Filtreleri temizle",
+          "reviewRequestedFromMe": "Benden inceleme istendi",
+          "noAssignee": "Atanan yok",
+          "noLabel": "Etiket yok",
+          "linkedPullRequest": "Bağlı pull request var",
+          "draft": "Taslak",
+          "readyForReview": "İncelemeye hazır",
+          "recentlyUpdated": "Son 7 günde güncellendi",
+          "stale": "30 gündür güncellenmedi",
+          "facetAuthor": "Yazar",
+          "facetAssignee": "Atanan",
+          "facetLabel": "Etiket",
+          "facetMilestone": "Kilometre taşı",
+          "facetReviewRequested": "İnceleme istenen",
+          "facetBaseBranch": "Temel dal",
+          "facetCiStatus": "Kontroller",
+          "ciSuccess": "Başarılı",
+          "ciFailure": "Başarısız",
+          "ciPending": "Bekliyor"
+        }
       }
     },
     "sessionViews": {

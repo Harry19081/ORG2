@@ -3,18 +3,13 @@ import React, { useCallback, useState } from "react";
 import type { GitHubIssueUser } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
-import {
-  DROPDOWN_CLASSES,
-  DROPDOWN_WIDTHS,
-} from "@src/components/Dropdown/tokens";
-import type { SelectOption } from "@src/components/Select";
+import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import {
   WorkManagementAssigneeCell,
   toggleWorkManagementAssigneeIds,
 } from "@src/features/GitHubWork/WorkManagementAssigneeCell";
 import {
   BubbleChatIcon,
-  FunnelIcon,
   GitPullRequestIcon,
   HugeiconsIcon,
   Link02Icon,
@@ -25,51 +20,6 @@ import {
   type ManagedIssueItem,
   type ManagedPrItem,
 } from "./githubManagedItemModel";
-
-export function IssuePersonalFilterDropdown({
-  options,
-  selectedFilters,
-  filterLabel,
-  onSelect,
-}: {
-  options: SelectOption[];
-  selectedFilters: string[];
-  filterLabel: string;
-  onSelect: (values: (string | number)[]) => void;
-}): React.ReactNode {
-  const hasSelectedFilters = selectedFilters.length > 0;
-  const accessibleLabel = hasSelectedFilters
-    ? `${filterLabel} (${selectedFilters.length})`
-    : filterLabel;
-
-  return (
-    <Dropdown
-      options={options}
-      value={selectedFilters}
-      mode="multiple"
-      position="bottom-end"
-      className={`${DROPDOWN_CLASSES.panelAnimated} ${DROPDOWN_WIDTHS.fileTreeClass}`}
-      onSelect={(value) => onSelect(Array.isArray(value) ? value : [value])}
-    >
-      <Button
-        variant="tertiary"
-        size="small"
-        className={hasSelectedFilters ? "bg-fill-1! text-primary-6!" : ""}
-        icon={
-          <HugeiconsIcon
-            icon={FunnelIcon}
-            data-icon="funnel"
-            size={14}
-            strokeWidth={1.8}
-          />
-        }
-        iconOnly
-        aria-label={accessibleLabel}
-        aria-pressed={hasSelectedFilters}
-      />
-    </Dropdown>
-  );
-}
 
 export function ManagedIssueContextMeta({
   issue,

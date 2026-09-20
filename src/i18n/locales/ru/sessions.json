@@ -946,7 +946,31 @@
         "createdByMe": "Созданные мной",
         "assigneeUpdateNotApplied": "GitHub не применил изменение исполнителя",
         "assigneeUpdateSuccess": "Исполнители обновлены на GitHub",
-        "updateIssueFailed": "Не удалось обновить issue GitHub"
+        "updateIssueFailed": "Не удалось обновить issue GitHub",
+        "filters": {
+          "searchPlaceholder": "Поиск фильтров",
+          "noMatches": "Нет подходящих фильтров",
+          "activeCount": "Активные фильтры: {{count}}",
+          "clear": "Сбросить фильтры",
+          "reviewRequestedFromMe": "Запрошено моё ревью",
+          "noAssignee": "Без исполнителя",
+          "noLabel": "Без меток",
+          "linkedPullRequest": "Есть связанный пул-реквест",
+          "draft": "Черновик",
+          "readyForReview": "Готов к ревью",
+          "recentlyUpdated": "Обновлено за последние 7 дней",
+          "stale": "Не обновлялось 30 дней",
+          "facetAuthor": "Автор",
+          "facetAssignee": "Исполнитель",
+          "facetLabel": "Метка",
+          "facetMilestone": "Веха",
+          "facetReviewRequested": "Запрошено ревью",
+          "facetBaseBranch": "Базовая ветка",
+          "facetCiStatus": "Проверки",
+          "ciSuccess": "Успешно",
+          "ciFailure": "С ошибками",
+          "ciPending": "Ожидание"
+        }
       }
     },
     "sessionViews": {
