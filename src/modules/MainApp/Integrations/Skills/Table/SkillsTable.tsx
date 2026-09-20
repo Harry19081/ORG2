@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
+import DeleteIconButton from "@src/components/Button/DeleteIconButton";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
@@ -16,13 +17,7 @@ import {
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { CursorRepo } from "@src/hooks/policies";
 import { getInstalledSkillIdentity } from "@src/hooks/skills/installedSkillsMerge";
-import {
-  Add01Icon,
-  Delete02Icon,
-  HugeiconsIcon,
-  Refresh04Icon,
-  Share02Icon,
-} from "@src/icons";
+import { Add01Icon, HugeiconsIcon, Share02Icon } from "@src/icons";
 import { SKILL_SOURCE } from "@src/types/extensions";
 import type { HubSkillDetail, InstalledSkill } from "@src/types/extensions";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
@@ -279,22 +274,12 @@ export const SkillsTable: React.FC<SkillsTableProps> = ({
                 />
               ) : null}
               {showRemove ? (
-                <Button
+                <DeleteIconButton
                   size="small"
-                  icon={
-                    <HugeiconsIcon
-                      icon={Delete02Icon}
-                      data-icon="trash-2"
-                      size={14}
-                      className="text-danger-6"
-                    />
-                  }
-                  iconOnly
-                  loading={uninstalling}
-                  disabled={!canRemove || uninstalling}
-                  aria-label={t("common:actions.remove")}
-                  title={t("common:actions.remove")}
-                  onClick={(event) => {
+                  deleting={uninstalling}
+                  disabled={!canRemove}
+                  label={t("common:actions.remove")}
+                  onDelete={(event) => {
                     event.stopPropagation();
                     if (canRemove) {
                       void handleUninstallSkill(skill);
@@ -332,27 +317,16 @@ export const SkillsTable: React.FC<SkillsTableProps> = ({
     }
   }, [onRefreshSkills, sourceFilter]);
 
-  const { spinClass: refreshSpinClass, handleClick: handleRefreshClick } =
-    useRefreshSpin(handleRefreshSkills, refreshingSkills || loading);
-
   const tableActions = (
     <div className="flex items-center gap-2">
       {onRefreshSkills ? (
-        <Button
-          icon={
-            <HugeiconsIcon
-              icon={Refresh04Icon}
-              data-icon="refresh-cw"
-              size={14}
-              className={refreshSpinClass}
-            />
-          }
+        <RefreshButton
+          variant="secondary"
           iconOnly
-          disabled={refreshingSkills || loading}
-          aria-label={t("common:actions.refresh")}
-          title={t("common:actions.refresh")}
-          onClick={handleRefreshClick}
-          data-testid="integrations-skills-refresh-button"
+          label={t("common:actions.refresh")}
+          refreshing={refreshingSkills || loading}
+          onRefresh={handleRefreshSkills}
+          dataTestId="integrations-skills-refresh-button"
         />
       ) : null}
       <Button

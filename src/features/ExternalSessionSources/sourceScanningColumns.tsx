@@ -8,7 +8,7 @@
 import type { TFunction } from "i18next";
 import React, { type Dispatch, type SetStateAction } from "react";
 
-import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import Dropdown from "@src/components/Dropdown";
 import Menu from "@src/components/Menu";
 import type { IconProvider } from "@src/components/ModelIcon";
@@ -233,19 +233,13 @@ export function buildSourceScanningColumns({
                   }
                 />
               ) : (
-                <Button
+                <RefreshButton
+                  variant="secondary"
                   size="small"
                   iconOnly
-                  loading={row.rescanning}
-                  icon={
-                    <HugeiconsIcon
-                      icon={Refresh04Icon}
-                      data-icon="refresh-cw"
-                      size={14}
-                    />
-                  }
-                  title={t("rescan")}
-                  onClick={() => void handleRescan(row)}
+                  label={t("rescan")}
+                  refreshing={row.rescanning}
+                  onRefresh={() => void handleRescan(row)}
                 />
               ))}
           </div>

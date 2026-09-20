@@ -18,9 +18,9 @@ import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
-import { REFRESH_ICON_TOKENS } from "@src/components/RefreshIcon/tokens";
 import { SignInModal } from "@src/features/Org2Cloud/SignInModal";
 import { importBundledOrg2CloudAuthForDev } from "@src/features/Org2Cloud/devBundledAuthImport";
 import {
@@ -35,7 +35,6 @@ import {
 import { resetOrgEntitlementCoordinator } from "@src/features/Org2Cloud/org2CloudEntitlementCoordinator";
 import { useOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
 import { createLogger } from "@src/hooks/logger";
-import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 
 import { SignOutConfirmationModal } from "./SignOutConfirmationModal";
 
@@ -117,22 +116,13 @@ export const Org2CloudLoginRows: React.FC = () => {
   }, [auth, isRefreshingDevAuth, setAuth, store, t]);
 
   const refreshDevAuthButton = process.env.NODE_ENV === "development" && (
-    <Button
+    <RefreshButton
+      variant="secondary"
       iconOnly
-      icon={
-        <HugeiconsIcon
-          icon={Refresh04Icon}
-          data-icon="refresh-cw"
-          size={14}
-          className={isRefreshingDevAuth ? REFRESH_ICON_TOKENS.spin : ""}
-        />
-      }
-      loading={isRefreshingDevAuth}
-      loadingSpinIcon
-      disabled={isRefreshingDevAuth}
-      aria-label={t("common:actions.refresh")}
-      onClick={handleRefreshDevAuth}
-      data-testid="org2-cloud-refresh-dev-auth"
+      label={t("common:actions.refresh")}
+      refreshing={isRefreshingDevAuth}
+      onRefresh={() => void handleRefreshDevAuth()}
+      dataTestId="org2-cloud-refresh-dev-auth"
     />
   );
 

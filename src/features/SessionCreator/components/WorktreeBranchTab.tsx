@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
-import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import SearchInput from "@src/components/SearchInput";
 import {
@@ -9,7 +9,6 @@ import {
   FolderClosedIcon,
   HugeiconsIcon,
   Loading03Icon,
-  Refresh04Icon,
   WorkflowCircle05Icon,
 } from "@src/icons";
 import type { WorktreeLaunchSource } from "@src/store/session/worktreeLaunchSourceAtom";
@@ -111,26 +110,16 @@ export function WorktreeBranchTab({
             defaultValue: "Search branches or enter a base ref",
           })}
         />
-        <Button
+        <RefreshButton
+          variant="secondary"
           size="small"
-          icon={
-            <HugeiconsIcon
-              icon={Refresh04Icon}
-              data-icon="refresh-cw"
-              size={14}
-              strokeWidth={1.8}
-              className={refreshing ? "animate-spin" : undefined}
-            />
-          }
           iconOnly
-          title={t("creator.worktreeSource.refreshBranches", {
+          label={t("creator.worktreeSource.refreshBranches", {
             defaultValue: "Refresh branch list",
           })}
-          aria-label={t("creator.worktreeSource.refreshBranches", {
-            defaultValue: "Refresh branch list",
-          })}
-          disabled={!repoPath || state === "loading" || refreshing}
-          onClick={onRefresh}
+          refreshing={refreshing}
+          disabled={!repoPath || state === "loading"}
+          onRefresh={onRefresh}
         />
       </div>
 
