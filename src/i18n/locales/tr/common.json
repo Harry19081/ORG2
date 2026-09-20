@@ -2334,7 +2334,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari, çerezleri macOS tarafından korunan bir klasörde tutar. Sistem Ayarları’ndaki Tam Disk Erişimi bölümünde ORG2’ye izin verin, ardından yeniden kontrol edin",
+      "explain": "{{browser}}, çerezleri macOS tarafından korunan bir klasörde tutar. Sistem Ayarları’ndaki Tam Disk Erişimi bölümünde ORG2’ye izin verin, ardından yeniden kontrol edin",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },

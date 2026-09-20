@@ -2352,7 +2352,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again",
+      "explain": "{{browser}} keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },

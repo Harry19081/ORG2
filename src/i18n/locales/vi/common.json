@@ -2334,7 +2334,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari lưu cookie trong thư mục được macOS bảo vệ. Cho phép ORG2 trong mục Truy cập toàn bộ ổ đĩa của Cài đặt hệ thống, rồi kiểm tra lại",
+      "explain": "{{browser}} lưu cookie trong thư mục được macOS bảo vệ. Cho phép ORG2 trong mục Truy cập toàn bộ ổ đĩa của Cài đặt hệ thống, rồi kiểm tra lại",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },
