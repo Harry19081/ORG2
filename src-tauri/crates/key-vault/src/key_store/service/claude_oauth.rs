@@ -201,7 +201,7 @@ impl KeyService {
             if let Some(login) =
                 adoptable_claude_cli_login(&key, rejected_access_token, source).await
             {
-                if let Some(adopted) = self.adopt_claude_cli_login(key_id, login)? {
+                if let Some(adopted) = self.adopt_claude_cli_login(&key, login)? {
                     return Ok(OAuthRefreshOutcome::AlreadyRotated(Box::new(adopted)));
                 }
             }
@@ -263,7 +263,7 @@ impl KeyService {
                     err
                 );
                 let message = format!("Claude Code OAuth refresh request failed: {}", err);
-                self.record_oauth_refresh_failure(key_id, &message)?;
+                self.record_oauth_refresh_failure_if_current(&key, &message)?;
                 return Err(message);
             }
         };
@@ -278,7 +278,7 @@ impl KeyService {
                     err
                 );
                 let message = format!("Claude Code OAuth refresh response read failed: {}", err);
-                self.record_oauth_refresh_failure(key_id, &message)?;
+                self.record_oauth_refresh_failure_if_current(&key, &message)?;
                 return Err(message);
             }
         };
@@ -311,13 +311,13 @@ impl KeyService {
                     if let Some(login) =
                         adoptable_claude_cli_login(&key, rejected_access_token, source).await
                     {
-                        if let Some(adopted) = self.adopt_claude_cli_login(key_id, login)? {
+                        if let Some(adopted) = self.adopt_claude_cli_login(&key, login)? {
                             return Ok(OAuthRefreshOutcome::AlreadyRotated(Box::new(adopted)));
                         }
                     }
                 }
             }
-            self.record_oauth_refresh_failure(key_id, &message)?;
+            self.record_oauth_refresh_failure_if_current(&key, &message)?;
             return Err(message);
         }
 
@@ -330,7 +330,7 @@ impl KeyService {
                     err
                 );
                 let message = format!("Claude Code OAuth refresh response parse failed: {}", err);
-                self.record_oauth_refresh_failure(key_id, &message)?;
+                self.record_oauth_refresh_failure_if_current(&key, &message)?;
                 return Err(message);
             }
         };
@@ -350,6 +350,9 @@ impl KeyService {
                 format!("Key disappeared while saving refreshed token: {}", key_id)
             })?;
 
+            if !entry.matches_oauth_snapshot(&key) {
+                return Ok(entry.clone());
+            }
             entry.session_token = Some(refreshed.access_token);
             if let Some(next_refresh_token) = refreshed.refresh_token {
                 entry.env_vars.insert(
@@ -368,8 +371,7 @@ impl KeyService {
                     expires_at.timestamp_millis().to_string(),
                 );
             }
-            Self::reset_oauth_refresh_failure_state(entry);
-            entry.enabled = true;
+            Self::complete_oauth_refresh(entry);
             entry.updated_at = Utc::now();
             store.updated_at = Utc::now();
             Ok::<ModelKey, String>(entry.clone())

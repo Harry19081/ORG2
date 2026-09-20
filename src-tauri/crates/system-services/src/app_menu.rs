@@ -511,6 +511,14 @@ pub fn setup_menu_events(app: &AppHandle) {
     app.on_menu_event(move |app, event| {
         let event_id = event.id().0.as_str();
 
+        // Menu accelerators are delivered natively, so the lock page cannot
+        // swallow them the way it swallows key events: without this, Cmd+N
+        // and friends would still drive the app behind it. Quitting stays
+        // available — a locked app relaunches locked.
+        if event_id != "app_quit" && crate::app_lock::is_locked() {
+            return;
+        }
+
         match event_id {
             "app_quit" => {
                 open_quit_confirmation(app);

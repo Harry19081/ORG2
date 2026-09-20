@@ -446,13 +446,15 @@ const ModelSelectorPillView = forwardRef<
                 tooltipFramedWide
                 active={active || open}
                 activeTone="neutral"
-                ariaExpanded={open}
+                // Before a model is picked the menu has nothing to edit, so
+                // the pill opens the model picker itself and owns no popup.
+                ariaExpanded={hasModelSelection ? open : undefined}
                 ariaLabel={`${ariaLabel ?? defaultLabel}: ${combinedLabel}${variant?.fast ? " · Fast" : ""}`}
                 dataTestId={dataTestId}
                 className={`shrink-0 ${triggerClassName ?? ""} ${className ?? ""}`}
                 leadingFlush={triggerLeadingFlush}
                 paddingX={paddingX}
-                onClick={openMenu}
+                onClick={hasModelSelection ? openMenu : onClick}
               />
             );
           }}

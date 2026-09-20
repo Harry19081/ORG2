@@ -45,6 +45,7 @@ export const CUSTOMIZABLE_SHORTCUT_IDS = new Set([
   "find",
   "find_replace",
   "quit_app",
+  "lock_app",
   "close_tab",
   "maximize_work_station",
   "open_my_station",

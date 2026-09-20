@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 
 import type { ModelType } from "@src/api/types/keys";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import ModelIcon from "@src/components/ModelIcon";
 import { Placeholder } from "@src/components/Placeholder";
-import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import type { SelectOption } from "@src/components/Select";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -20,7 +20,7 @@ import Tag from "@src/components/Tag";
 import type { AvailableAgent } from "@src/config/cliAgents";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { Add01Icon, HugeiconsIcon, Refresh04Icon } from "@src/icons";
+import { Add01Icon, HugeiconsIcon } from "@src/icons";
 import {
   cliAgentVisibilityOverridesAtom,
   isCliAgentEnabled,
@@ -88,11 +88,6 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
   const [readyFilter, setReadyFilter] = useState<ReadyFilter>(READY_FILTER.ALL);
   const cliVisibilityOverrides = useAtomValue(cliAgentVisibilityOverridesAtom);
   const setCliAgentEnabled = useSetAtom(setCliAgentEnabledAtom);
-  const { spinClass, handleClick: handleRefreshClick } = useRefreshSpin(
-    fetchAgents ?? (() => undefined),
-    loading
-  );
-
   const subscriptionsByAgent = useMemo(() => {
     const subscriptionMap = new Map<string, number>();
     for (const agent of agents) {
@@ -376,19 +371,12 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
 
   const headerActions = (
     <div className="flex items-center gap-1">
-      <Button
-        icon={
-          <HugeiconsIcon
-            icon={Refresh04Icon}
-            data-icon="refresh-cw"
-            size={14}
-            className={spinClass}
-          />
-        }
+      <RefreshButton
+        variant="secondary"
         iconOnly
-        aria-label={refreshButtonLabel}
-        title={refreshButtonLabel}
-        onClick={handleRefreshClick}
+        label={refreshButtonLabel}
+        refreshing={loading}
+        onRefresh={fetchAgents ?? (() => undefined)}
       />
       {onAdd && (
         <Button

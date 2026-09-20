@@ -249,6 +249,14 @@
     }
   }
 
+  // Pill: the curve eats into both ends, so text needs more room than the
+  // square field's 12px. After the sizes so it wins on equal specificity.
+  &.input-shape-round:not(.input-size-mini) {
+    .input-inner {
+      padding: 0 16px;
+    }
+  }
+
   // Hover state
   &:hover:not(.input-disabled):not(.input-readonly):not(.input-focused) {
     .input-inner {

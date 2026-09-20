@@ -228,7 +228,6 @@
     "later": "बाद में",
     "link": "लिंक करें",
     "copyName": "नाम कॉपी करें",
-    "dismiss": "ख़ारिज करें",
     "clearSelection": "चयन साफ़ करें",
     "expandView": "दृश्य विस्तृत करें",
     "restoreSplitView": "स्प्लिट दृश्य पुनर्स्थापित करें",
@@ -605,7 +604,7 @@
     "nextMatchLabel": "अगला मिलान",
     "clearSearch": "खोज साफ़ करें",
     "openFile": "फ़ाइल खोलें",
-    "openNativeDevTools": "नेटिव ब्राउज़र DevTools खोलें",
+    "openNativeDevTools": "DevTools खोलें",
     "captureScreenshot": "स्क्रीनशॉट",
     "enableInspectMode": "एलिमेंट का निरीक्षण करें",
     "disableInspectMode": "इंस्पेक्टर से बाहर निकलें (Esc)",
@@ -712,7 +711,7 @@
     "chatHistoryReloadHint": "हो सकता है सत्र डेटा लोड न हुआ हो",
     "chatHistoryAgentWorking": "एजेंट चल रहा है",
     "chatHistoryAgentWorkingHint": "पहले जवाब के साथ संदेश दिखाई देंगे; तब तक टूलबार निष्क्रिय दिख सकता है",
-    "pleaseSelect": "कृपया चुनें",
+    "pleaseSelect": "चुनें",
     "noSessionsFound": "कोई सत्र नहीं मिला",
     "typeToSearchFiles": "फ़ाइलें खोजने के लिए टाइप करें...",
     "selectFileToViewChanges": "बदलाव देखने के लिए कोई फ़ाइल चुनें",
@@ -886,8 +885,7 @@
       "tlsDevNote": "नोट: सर्टिफ़िकेट सत्यापन के कारण डेवलपमेंट मोड में कुछ HTTPS साइटें (जैसे GitHub) TLS त्रुटियाँ दिखा सकती हैं। HTTP साइटें या example.com जैसी सरल HTTPS साइटें आज़माएँ।",
       "siteUnreachableTitle": "इस साइट तक नहीं पहुँचा जा सकता",
       "loadStalledTitle": "यह पृष्ठ पूरी तरह लोड नहीं हुआ",
-      "loadStalledBody": "एम्बेडेड ब्राउज़र ने यह पता लोड करना शुरू किया, लेकिन पूरा नहीं कर सका। फिर से लोड करके देखें, या इसे अपने सिस्टम ब्राउज़र में खोलें।",
-      "currentUrl": "वर्तमान URL",
+      "copyUrl": "URL कॉपी करें",
       "webviewHiddenTitle": "Webview अस्थायी रूप से छिपा है",
       "webviewHiddenBody": "इसे फिर से दिखाने के लिए मेनू या डायलॉग बंद करें।"
     },
@@ -1134,6 +1132,93 @@
         "checkingConflicts": "विरोध जाँचे जा रहे हैं…",
         "autoMergeEnabled": "ऑटो-मर्ज सक्षम",
         "inMergeQueue": "मर्ज कतार में प्रतीक्षा में"
+      },
+      "mergeBox": {
+        "checksFailed": "कुछ चेक सफल नहीं रहे",
+        "checksPending": "कुछ चेक अभी पूरे नहीं हुए हैं",
+        "checksPassed": "सभी चेक पास हो गए हैं",
+        "checksSkipped": "सभी चेक छोड़ दिए गए",
+        "counts": {
+          "failing": "{{count}} विफल",
+          "inProgress": "{{count}} प्रगति में",
+          "skipped": "{{count}} छोड़े गए",
+          "successful": "{{count}} सफल",
+          "summary_one": "चेक: {{parts}}",
+          "summary_other": "चेक: {{parts}}"
+        },
+        "check": {
+          "queued": "कतार में",
+          "started": "{{time}} शुरू हुआ",
+          "successfulIn": "{{duration}} में सफल",
+          "failingAfter": "{{duration}} के बाद विफल",
+          "skipped": "छोड़ा गया",
+          "successful": "सफल",
+          "failing": "विफल"
+        },
+        "deployments": {
+          "label": "डिप्लॉयमेंट",
+          "none": "कोई डिप्लॉयमेंट नहीं",
+          "active_one": "{{count}} सक्रिय डिप्लॉयमेंट",
+          "active_other": "{{count}} सक्रिय डिप्लॉयमेंट",
+          "view": "डिप्लॉयमेंट देखें",
+          "notDeployed": "यह ब्रांच डिप्लॉय नहीं की गई है",
+          "deployed": "यह ब्रांच सफलतापूर्वक डिप्लॉय हो गई",
+          "deploying": "यह ब्रांच डिप्लॉय की जा रही है",
+          "deployFailed": "इस ब्रांच को डिप्लॉय करने में त्रुटि हुई",
+          "deployInactive": "यह ब्रांच अब डिप्लॉय नहीं है",
+          "state": {
+            "active": "सक्रिय",
+            "pending": "प्रगति में",
+            "failure": "विफल",
+            "inactive": "निष्क्रिय"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "बदलाव स्वीकृत",
+            "detail": "स्वीकृति देने वाली समीक्षा सबमिट की गई"
+          },
+          "reviewRequired": {
+            "title": "समीक्षा आवश्यक",
+            "detail": "मर्ज करने के लिए कम से कम एक स्वीकृति देने वाली समीक्षा आवश्यक है"
+          },
+          "reviewChangesRequested": {
+            "title": "बदलावों का अनुरोध किया गया",
+            "detail": "एक समीक्षक ने मर्ज से पहले बदलावों का अनुरोध किया है"
+          },
+          "noConflicts": {
+            "title": "base ब्रांच से कोई विरोध नहीं",
+            "detail": "मर्ज अपने-आप किया जा सकता है"
+          },
+          "hasConflicts": {
+            "title": "इस ब्रांच में विरोध हैं जिन्हें हल करना ज़रूरी है",
+            "detail": "head ब्रांच पर विरोध हल करें, फिर पुश करें"
+          },
+          "outOfDate": {
+            "title": "यह ब्रांच base ब्रांच की तुलना में पुरानी है",
+            "detail": "base ब्रांच के नवीनतम बदलाव इस ब्रांच में मर्ज करें"
+          },
+          "checkingConflicts": {
+            "title": "अपने-आप मर्ज हो सकने की जाँच हो रही है…",
+            "detail": "कृपया प्रतीक्षा करें, GitHub ब्रांच की स्थिति जाँच रहा है"
+          },
+          "autoMergeEnabled": {
+            "title": "ऑटो-मर्ज सक्षम",
+            "detail": "आवश्यकताएँ पूरी होते ही यह पुल रिक्वेस्ट मर्ज हो जाएगा"
+          },
+          "inMergeQueue": {
+            "title": "मर्ज कतार में प्रतीक्षा में",
+            "detail": "कतार में सबसे आगे पहुँचने पर GitHub इसे मर्ज कर देगा"
+          }
+        },
+        "merged": {
+          "title": "पुल रिक्वेस्ट सफलतापूर्वक मर्ज और बंद हो गया",
+          "detail": "head ब्रांच को सुरक्षित रूप से हटाया जा सकता है"
+        },
+        "closed": {
+          "title": "बिना मर्ज किए कमिट के साथ बंद",
+          "detail": "यह पुल रिक्वेस्ट बंद है। मर्ज करने के लिए इसे फिर से खोलें"
+        }
       },
       "commits": {
         "backToList": "सभी कमिट",
@@ -1393,6 +1478,52 @@
         "saved_on_previous": "बदलाव पिछली ब्रांच पर सहेजे गए",
         "brought": "आपके बदलाव इस ब्रांच तक आपके साथ आ गए",
         "worktree_missing": "वर्कट्री अब मौजूद नहीं है। रीफ़्रेश करके फिर कोशिश करें"
+      }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Detached HEAD स्थिति",
+        "body": "आप कमिट {{shortHash}} पर detached HEAD स्थिति में हैं।\n\nआप किसी ब्रांच पर नहीं हैं। यदि आप पहले नई ब्रांच बनाए बिना किसी दूसरी ब्रांच पर checkout करते हैं, तो आपके किए गए कमिट खो सकते हैं।\n\n⚠️ detached HEAD स्थिति के कमिट गार्बेज कलेक्ट हो सकते हैं।",
+        "createBranch": "ब्रांच बनाएँ",
+        "continueWithoutBranch": "बिना ब्रांच के जारी रखें"
+      },
+      "largePush": {
+        "title": "बड़ा push पाया गया",
+        "body": "आप {{remote}}/{{branch}} पर {{commitCount}} कमिट push करने वाले हैं।\n\nयह सामान्य से अधिक है। क्या आप वाकई जारी रखना चाहते हैं?\n\n💡 बड़े बदलावों को छोटे और अधिक केंद्रित कमिट में बाँटने पर विचार करें।",
+        "confirm": "सभी कमिट push करें"
+      },
+      "protectedBranch": {
+        "title": "सुरक्षित ब्रांच",
+        "body": "{{remote}} पर ब्रांच \"{{branch}}\" सुरक्षित है और उस पर सीधे push नहीं किया जा सकता।\n\nसुरक्षित ब्रांच में बदलाव pull request के ज़रिए ही जाने चाहिए।",
+        "createPr": "Pull Request बनाएँ"
+      },
+      "pullConflict": {
+        "title": "लोकल बदलावों के साथ pull नहीं किया जा सकता",
+        "body": "\"{{branch}}\" से आने वाले बदलाव आपके लोकल बदलावों को अधिलेखित कर देंगे।{{fileInfo}}\n\nचुनें कि आगे कैसे बढ़ना है:",
+        "fileInfo_one": " ({{count}} फ़ाइल प्रभावित)",
+        "fileInfo_other": " ({{count}} फ़ाइलें प्रभावित)",
+        "stashAndPull": "Stash करके pull करें",
+        "discardAndPull": "छोड़कर pull करें"
+      },
+      "pushRejected": {
+        "title": "Push अस्वीकृत",
+        "body": "{{remote}}/{{branch}} पर push नहीं किया जा सकता।\n\nरिमोट ब्रांच में ऐसे कमिट हैं जो आपके पास लोकल में नहीं हैं।{{behindInfo}}\n\n⚠️ Force push रिमोट के बदलावों को स्थायी रूप से अधिलेखित कर देगा।",
+        "behindInfo_one": " ({{count}} कमिट पीछे)",
+        "behindInfo_other": " ({{count}} कमिट पीछे)",
+        "pullAndPush": "Pull करके push करें",
+        "forcePush": "Force push"
+      },
+      "conflict": {
+        "titleMerge": "Merge विरोध",
+        "titleRebase": "Rebase विरोध",
+        "bodyMerge": "\"{{branch}}\" को merge करते समय विरोध हुए।{{progress}}{{files}}\n\n⚠️ रोकने पर merge रद्द हो जाएगा और आपकी ब्रांच पुनर्स्थापित हो जाएगी।",
+        "bodyRebase": "\"{{branch}}\" पर rebase करते समय विरोध हुए।{{progress}}{{files}}\n\n⚠️ रोकने पर आपकी ब्रांच rebase से पहले की स्थिति में पुनर्स्थापित हो जाएगी।",
+        "progress": " (चरण {{current}} / {{total}})",
+        "files_one": "\n\n{{count}} फ़ाइल में विरोध हैं।",
+        "files_other": "\n\n{{count}} फ़ाइलों में विरोध हैं।",
+        "resolve": "विरोध हल करें",
+        "abortMerge": "Merge रोकें",
+        "abortRebase": "Rebase रोकें"
       }
     }
   },
@@ -2016,13 +2147,29 @@
   "selectionMenu": {
     "addToChat": "चैट में जोड़ें",
     "addThisFile": "यह फ़ाइल जोड़ें",
-    "addLines": "पंक्ति {{from}} – {{to}} जोड़ें"
+    "addLines": "पंक्ति {{from}} – {{to}} जोड़ें",
+    "replyToSelection": "उत्तर दें",
+    "clearQuotedSelection": "उद्धरण हटाएँ",
+    "pinSelection": "पिन करें"
   },
   "browser": {
     "screenshot": {
       "added": "स्क्रीनशॉट चैट में जोड़ा गया",
       "failed": "स्क्रीनशॉट लेने में विफल: {{reason}}",
-      "noActivePage": "कैप्चर करने के लिए कोई सक्रिय पेज नहीं"
+      "noActivePage": "कैप्चर करने के लिए कोई सक्रिय पेज नहीं",
+      "saved": "स्क्रीनशॉट सहेजा गया",
+      "saveFailed": "स्क्रीनशॉट सहेजने में विफल: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "पेज थीम",
+      "themeAuto": "स्वचालित",
+      "themeLight": "लाइट",
+      "themeDark": "डार्क",
+      "saveScreenshot": "स्क्रीनशॉट सहेजें...",
+      "openHtmlFile": "HTML फ़ाइल खोलें..."
+    },
+    "openHtmlFile": {
+      "failed": "फ़ाइल खोलने में विफल: {{reason}}"
     },
     "selectedElement": {
       "sentToChat": "एलिमेंट चैट में जोड़ा गया",
@@ -2252,7 +2399,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "पूर्ण डिस्क एक्सेस आवश्यक है",
-      "explain": "Safari अपनी कुकीज़ एक ऐसे फ़ोल्डर में रखता है जिसे macOS सुरक्षित रखता है। सिस्टम सेटिंग्स में पूर्ण डिस्क एक्सेस के अंतर्गत ORG2 को अनुमति दें, फिर दोबारा जाँचें",
+      "explain": "{{browser}} अपनी कुकीज़ एक ऐसे फ़ोल्डर में रखता है जिसे macOS सुरक्षित रखता है। सिस्टम सेटिंग्स में पूर्ण डिस्क एक्सेस के अंतर्गत ORG2 को अनुमति दें, फिर दोबारा जाँचें",
       "openSettings": "सिस्टम सेटिंग्स खोलें",
       "checkAgain": "फिर से जाँचें"
     },

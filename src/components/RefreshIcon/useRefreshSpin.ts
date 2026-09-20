@@ -11,7 +11,11 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { createLogger } from "@src/hooks/logger";
+
 import { REFRESH_ICON_TOKENS } from "./tokens";
+
+const log = createLogger("RefreshSpin");
 
 const SPIN_DURATION_MS = 1200;
 const MAX_PERSISTED_SPIN_KEYS = 200;
@@ -34,7 +38,7 @@ function setPersistedOneShotUntil(key: string, oneShotUntil: number): void {
 }
 
 export function useRefreshSpin(
-  onRefresh: () => void,
+  onRefresh: () => void | Promise<void>,
   loading: boolean,
   persistenceKey?: string
 ): { spinClass: string | undefined; handleClick: () => void } {
@@ -76,7 +80,16 @@ export function useRefreshSpin(
     rafRef.current = requestAnimationFrame(() => {
       setOneShotUntil(Date.now() + SPIN_DURATION_MS);
       if (persistenceKey) forceRerender();
-      onRefresh();
+      // The spin is driven by `loading`, not by awaiting this call, so an
+      // async callback's promise would otherwise be dropped on the floor —
+      // and a rejection with it. Handle it here rather than asking every
+      // caller to wrap its own refresh.
+      const result = onRefresh();
+      if (result instanceof Promise) {
+        result.catch((error: unknown) => {
+          log.error("refresh callback rejected:", error);
+        });
+      }
       rafRef.current = null;
     });
   }, [loading, onRefresh, persistenceKey, setOneShotUntil, forceRerender]);

@@ -946,7 +946,31 @@
         "createdByMe": "Do tôi tạo",
         "assigneeUpdateNotApplied": "GitHub chưa áp dụng thay đổi người được giao",
         "assigneeUpdateSuccess": "Đã cập nhật người được giao trên GitHub",
-        "updateIssueFailed": "Không thể cập nhật GitHub issue"
+        "updateIssueFailed": "Không thể cập nhật GitHub issue",
+        "filters": {
+          "searchPlaceholder": "Tìm bộ lọc",
+          "noMatches": "Không có bộ lọc phù hợp",
+          "activeCount": "Bộ lọc đang bật: {{count}}",
+          "clear": "Xóa bộ lọc",
+          "reviewRequestedFromMe": "Yêu cầu tôi đánh giá",
+          "noAssignee": "Chưa có người phụ trách",
+          "noLabel": "Không có nhãn",
+          "linkedPullRequest": "Có pull request liên kết",
+          "draft": "Bản nháp",
+          "readyForReview": "Sẵn sàng đánh giá",
+          "recentlyUpdated": "Cập nhật trong 7 ngày qua",
+          "stale": "Không cập nhật trong 30 ngày",
+          "facetAuthor": "Tác giả",
+          "facetAssignee": "Người phụ trách",
+          "facetLabel": "Nhãn",
+          "facetMilestone": "Cột mốc",
+          "facetReviewRequested": "Được yêu cầu đánh giá",
+          "facetBaseBranch": "Nhánh gốc",
+          "facetCiStatus": "Kiểm tra",
+          "ciSuccess": "Đạt",
+          "ciFailure": "Thất bại",
+          "ciPending": "Đang chờ"
+        }
       }
     },
     "sessionViews": {
@@ -979,7 +1003,9 @@
     "sending": "Đang gửi…",
     "typeMessage": "Nhập tin nhắn…",
     "session": "Phiên",
-    "history": "Các phiên"
+    "history": "Các phiên",
+    "goToPinnedPassage": "Đi tới đoạn đã ghim: {{preview}}",
+    "unpinPassage": "Bỏ ghim"
   },
   "tools": {
     "noResultsFound": "Không tìm thấy kết quả",

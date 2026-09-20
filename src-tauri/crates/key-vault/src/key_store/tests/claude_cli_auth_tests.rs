@@ -100,7 +100,8 @@ fn counting_source(
     let source = ClaudeCliLoginSource::new(
         move || {
             counter.fetch_add(1, Ordering::SeqCst);
-            login.clone()
+            let login = login.clone();
+            async move { login }
         },
         profile_url,
     );
@@ -303,4 +304,77 @@ async fn an_expired_claude_cli_login_is_not_adopted() {
 
     assert_eq!(reads.load(Ordering::SeqCst), 2);
     assert!(!service.get_key_by_id(&key_id).unwrap().enabled);
+}
+
+#[tokio::test]
+async fn reconnect_during_local_read_must_not_be_overwritten() {
+    let (_dir, service, key_id) =
+        service_with(claude_oauth_key(Some(ACCOUNT_SETUP_METHOD_AUTODETECT)));
+    let service = Arc::new(service);
+    let writer = Arc::clone(&service);
+    let writer_id = key_id.clone();
+    let (profile_url, server) = serve_once("200 OK", profile_body("org-a"));
+    let source = ClaudeCliLoginSource::new(
+        move || {
+            let mut reconnected = writer.get_key_by_id(&writer_id).unwrap();
+            reconnected.session_token = Some("new-user-login".into());
+            reconnected
+                .env_vars
+                .insert(REFRESH_TOKEN_ENV.into(), "new-user-refresh".into());
+            reconnected
+                .account_metadata
+                .insert("email".into(), "new-user@example.invalid".into());
+            reconnected
+                .account_metadata
+                .insert(ACCOUNT_SETUP_METHOD_METADATA_KEY.into(), "signin".into());
+            writer.save_key(reconnected).unwrap();
+            async { Some(cli_login(Duration::hours(7))) }
+        },
+        profile_url,
+    );
+    service
+        .refresh_claude_code_oauth_key_with(
+            &key_id,
+            "vault-expired-access",
+            Some(&source),
+            Some(UNREACHABLE_URL.into()),
+        )
+        .await
+        .unwrap();
+    server.join().unwrap();
+    let saved = service.get_key_by_id(&key_id).unwrap();
+    assert_eq!(
+        saved.session_token.as_deref(),
+        Some("new-user-login"),
+        "stale recovery overwrote a reconnect"
+    );
+}
+
+#[tokio::test]
+async fn organization_alone_must_not_identify_a_user() {
+    let mut key = claude_oauth_key(Some(ACCOUNT_SETUP_METHOD_AUTODETECT));
+    key.account_metadata.remove("email");
+    let (_dir, service, key_id) = service_with(key);
+    let (profile_url, server) = serve_once(
+        "200 OK",
+        serde_json::json!({
+            "account": { "email": "another-user@example.invalid" },
+            "organization": { "uuid": "org-a" }
+        })
+        .to_string(),
+    );
+    let (source, _) = counting_source(Some(cli_login(Duration::hours(7))), profile_url);
+    let outcome = service
+        .refresh_claude_code_oauth_key_with(
+            &key_id,
+            "vault-expired-access",
+            Some(&source),
+            Some(UNREACHABLE_URL.into()),
+        )
+        .await;
+    server.join().unwrap();
+    assert!(
+        !matches!(outcome, Ok(OAuthRefreshOutcome::AlreadyRotated(_))),
+        "another user in the same org was adopted"
+    );
 }

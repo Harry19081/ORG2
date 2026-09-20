@@ -16,6 +16,8 @@
 //!   recorded as signed in through the vault.
 
 use std::collections::HashMap;
+use std::future::Future;
+use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -40,7 +42,8 @@ const LOCAL_LOGIN_READ_TIMEOUT: Duration = Duration::from_secs(20);
 /// Identity fields a scan or sign-in stores on the key, strongest first.
 const IDENTITY_FIELDS: [&str; 2] = ["organization_uuid", "email"];
 
-type LocalLoginReader = Arc<dyn Fn() -> Option<LocalClaudeCodeLogin> + Send + Sync>;
+type LoginFuture = Pin<Box<dyn Future<Output = Option<LocalClaudeCodeLogin>> + Send>>;
+type LocalLoginReader = Arc<dyn Fn() -> LoginFuture + Send + Sync>;
 
 /// Where the refresh path finds the Claude Code CLI's login and proves whose
 /// it is. Tests inject both.
@@ -51,12 +54,15 @@ pub(crate) struct ClaudeCliLoginSource {
 }
 
 impl ClaudeCliLoginSource {
-    pub(crate) fn new(
-        read_login: impl Fn() -> Option<LocalClaudeCodeLogin> + Send + Sync + 'static,
+    pub(crate) fn new<F>(
+        read_login: impl Fn() -> F + Send + Sync + 'static,
         profile_url: String,
-    ) -> Self {
+    ) -> Self
+    where
+        F: Future<Output = Option<LocalClaudeCodeLogin>> + Send + 'static,
+    {
         Self {
-            read_login: Arc::new(read_login),
+            read_login: Arc::new(move || Box::pin(read_login())),
             profile_url,
         }
     }
@@ -73,14 +79,8 @@ impl ClaudeCliLoginSource {
     }
 
     async fn read(&self) -> Option<LocalClaudeCodeLogin> {
-        let read_login = Arc::clone(&self.read_login);
-        let task = tokio::task::spawn_blocking(move || read_login());
-        match tokio::time::timeout(LOCAL_LOGIN_READ_TIMEOUT, task).await {
-            Ok(Ok(login)) => login,
-            Ok(Err(err)) => {
-                tracing::warn!("[key-vault] Claude Code local login read task failed: {err}");
-                None
-            }
+        match tokio::time::timeout(LOCAL_LOGIN_READ_TIMEOUT, (self.read_login)()).await {
+            Ok(login) => login,
             Err(_) => {
                 tracing::warn!("[key-vault] Claude Code local login read timed out");
                 None
@@ -114,6 +114,15 @@ pub(super) fn may_recover_from_claude_cli(key: &ModelKey) -> bool {
 /// Fails closed: every identity field the key stores must match, and the key
 /// must store at least one.
 fn same_claude_account(key: &ModelKey, candidate: &HashMap<String, String>) -> bool {
+    // Organization membership does not identify a user. Fail closed for old
+    // records without user identity instead of silently adopting a teammate.
+    if key
+        .account_metadata
+        .get("email")
+        .is_none_or(|email| email.trim().is_empty())
+    {
+        return false;
+    }
     let mut compared = false;
     for field in IDENTITY_FIELDS {
         let Some(expected) = key.account_metadata.get(field) else {
@@ -170,11 +179,15 @@ impl KeyService {
     /// as linked.
     pub(super) fn adopt_claude_cli_login(
         &self,
-        key_id: &str,
+        expected: &ModelKey,
         login: LocalClaudeCodeLogin,
     ) -> Result<Option<ModelKey>, String> {
+        let key_id = &expected.id;
         self.update_store(|store| {
             let entry = store.keys.get_mut(key_id)?;
+            if !entry.matches_oauth_snapshot(expected) {
+                return Some(entry.clone());
+            }
             entry.session_token = Some(login.access_token);
             if let Some(refresh_token) = login.refresh_token {
                 entry
@@ -196,8 +209,7 @@ impl KeyService {
                 ACCOUNT_SETUP_METHOD_METADATA_KEY.to_string(),
                 ACCOUNT_SETUP_METHOD_AUTODETECT.to_string(),
             );
-            Self::reset_oauth_refresh_failure_state(entry);
-            entry.enabled = true;
+            Self::complete_oauth_refresh(entry);
             entry.updated_at = Utc::now();
             store.updated_at = Utc::now();
             tracing::info!(

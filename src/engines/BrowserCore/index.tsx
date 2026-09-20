@@ -23,15 +23,16 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import { createLogger } from "@src/hooks/logger";
 import { useSustainedFlag } from "@src/hooks/ui/useSustainedFlag";
 import {
   CloudLoadingIcon,
+  Copy01Icon,
   HugeiconsIcon,
   MonitorIcon,
   Refresh04Icon,
-  SquareArrowUpRight02Icon,
 } from "@src/icons";
 import {
   webviewBlockedAtom,
@@ -43,8 +44,8 @@ import {
   browserWebviewLoadStateAtom,
   selectWebviewLoadState,
 } from "@src/store/workstation/browser/webviewLoadStateAtom";
+import { copyText } from "@src/util/data/clipboard";
 import { getBrowserSessionWebviewLabel } from "@src/util/platform/tauri/browserSessionLabel";
-import { openInSystemBrowser } from "@src/util/ui/openLink";
 
 import BrowserSessionWebview from "./BrowserSessionWebview";
 import { useWebviewLoadFailure } from "./hooks/useWebviewLoadFailure";
@@ -280,23 +281,20 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
     currentWebviewLabel
   );
 
-  const {
-    hasFailed: showLoadFailureNotice,
-    dismiss: dismissLoadFailure,
-    reset: resetLoadFailure,
-  } = useWebviewLoadFailure({
-    sessionId: currentSessionId,
-    url: isBlankBrowserUrl(currentUrl) ? undefined : currentUrl,
-    loadState: currentLoadState,
-    // Only a pane the user can actually see, with nothing else already
-    // explaining its emptiness, is eligible to be called a failed load.
-    isWatching:
-      canShowStatusOverlays &&
-      isWebviewAvailable &&
-      isTabReallyActive &&
-      !isWebviewParkedByOverlay &&
-      !displayError,
-  });
+  const { hasFailed: showLoadFailureNotice, reset: resetLoadFailure } =
+    useWebviewLoadFailure({
+      sessionId: currentSessionId,
+      url: isBlankBrowserUrl(currentUrl) ? undefined : currentUrl,
+      loadState: currentLoadState,
+      // Only a pane the user can actually see, with nothing else already
+      // explaining its emptiness, is eligible to be called a failed load.
+      isWatching:
+        canShowStatusOverlays &&
+        isWebviewAvailable &&
+        isTabReallyActive &&
+        !isWebviewParkedByOverlay &&
+        !displayError,
+    });
 
   // Delay showing the loading overlay by 500ms to avoid flash on fast loads
   const [isLoading, setIsLoading] = React.useState(false);
@@ -309,10 +307,12 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
     return () => clearTimeout(timer);
   }, [isLoadingRaw]);
 
-  const handleOpenExternal = useCallback(() => {
+  const handleCopyUrl = useCallback(() => {
     if (!currentUrl) return;
-    openInSystemBrowser(currentUrl);
-  }, [currentUrl]);
+    copyText(currentUrl)
+      .then(() => Message.success(t("status.copied")))
+      .catch(() => Message.error(t("status.copyFailed")));
+  }, [currentUrl, t]);
 
   return (
     <div
@@ -463,33 +463,9 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
                   <h3 className="mt-4">
                     {t("workstation.browserCore.loadStalledTitle")}
                   </h3>
-                  <p>{t("workstation.browserCore.loadStalledBody")}</p>
-                  <div className="allow-select browser-current-url">
-                    <span className="label">
-                      {t("workstation.browserCore.currentUrl")}
-                    </span>
-                    <span className="url">{currentUrl}</span>
-                  </div>
                   <div className="mt-6 flex justify-center gap-2">
                     <Button
                       variant="primary"
-                      size="small"
-                      icon={
-                        <HugeiconsIcon
-                          icon={SquareArrowUpRight02Icon}
-                          data-icon="square-arrow-out-up-right"
-                          size={14}
-                          strokeWidth={1.75}
-                        />
-                      }
-                      onClick={handleOpenExternal}
-                    >
-                      {t("previews.openInBrowser")}
-                    </Button>
-                    <Button size="small" onClick={dismissLoadFailure}>
-                      {t("actions.dismiss")}
-                    </Button>
-                    <Button
                       size="small"
                       icon={
                         <HugeiconsIcon
@@ -509,6 +485,20 @@ export const BrowserCore: React.FC<BrowserCoreProps> = ({
                       }}
                     >
                       {t("actions.reload")}
+                    </Button>
+                    <Button
+                      size="small"
+                      icon={
+                        <HugeiconsIcon
+                          icon={Copy01Icon}
+                          data-icon="copy"
+                          size={14}
+                          strokeWidth={1.75}
+                        />
+                      }
+                      onClick={handleCopyUrl}
+                    >
+                      {t("workstation.browserCore.copyUrl")}
                     </Button>
                   </div>
                 </div>

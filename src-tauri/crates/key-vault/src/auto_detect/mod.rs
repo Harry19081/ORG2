@@ -25,6 +25,7 @@ pub(crate) use claude::{
     fetch_claude_code_account_metadata_at, read_local_claude_code_login, LocalClaudeCodeLogin,
     LOCAL_CLAUDE_CODE_PROFILE_URL,
 };
+pub(crate) use helpers::local_codex_auth_path;
 pub use suggestions::{
     probe_credential_suggestions, resolve_generic_secret, resolves_via_detector,
     secret_fingerprint, CredentialSuggestion, SuggestionSourceKind,

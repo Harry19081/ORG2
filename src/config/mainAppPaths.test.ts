@@ -34,10 +34,20 @@ describe("General settings tabs", () => {
       "general",
       "notifications",
       "shortcuts",
+      "app-lock",
       "storage",
       "self-hosted",
     ]);
     expect(getDefaultSettingsSectionTab("general")).toBe("general");
+  });
+
+  it("routes App Lock as a General tab, not a section of its own", () => {
+    expect(
+      parseSettingsSectionTab("/orgii/app/settings/app/general/app-lock")
+    ).toEqual({ section: "general", tab: "app-lock" });
+    expect(
+      parseSettingsSectionTab("/orgii/app/settings/app/app-lock").section
+    ).toBeNull();
   });
 
   it("moves retired device tabs to General", () => {

@@ -21,7 +21,7 @@ import {
   org2CloudAuthAtom,
 } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import * as entitlementCoordinator from "@src/features/Org2Cloud/org2CloudEntitlementCoordinator";
-import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
+import { WIKI_OPEN_EVENT } from "@src/features/Wiki/wikiEvents";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { settingsAtom } from "@src/store/settings";
 
@@ -161,58 +161,40 @@ describe("SidebarSettingsMenuButton", () => {
   });
 
   it.each([false, true])(
-    "opens the official wiki with dev mode %s after closing the menu",
+    "opens the wiki dialog with dev mode %s after closing the menu",
     (devMode) => {
       act(() => store.set(devModeEnabledAtom, devMode));
-      const onOnboarding = vi.fn();
-      window.addEventListener(TUTORIALS_OPEN_EVENT, onOnboarding);
+      const onOpen = vi.fn(() =>
+        expect(mocks.closeDropdown).toHaveBeenCalledOnce()
+      );
+      window.addEventListener(WIKI_OPEN_EVENT, onOpen);
       try {
         const button = document.querySelector<HTMLButtonElement>(
           '[data-testid="sidebar-menu-wiki"]'
         );
         expect(button?.textContent).toBe("Wiki");
-        expect(button?.hasAttribute("aria-haspopup")).toBe(false);
-        expect(mocks.openLink).not.toHaveBeenCalled();
+        expect(button?.getAttribute("aria-haspopup")).toBe("dialog");
         act(() => button!.click());
-        expect(mocks.closeDropdown).toHaveBeenCalledOnce();
-        expect(mocks.openLink).toHaveBeenCalledExactlyOnceWith(
-          "https://github.com/org2AI/ORG2/wiki",
-          { navigate: true }
-        );
-        expect(mocks.closeDropdown.mock.invocationCallOrder[0]).toBeLessThan(
-          mocks.openLink.mock.invocationCallOrder[0]
-        );
-        expect(document.querySelector('[role="dialog"]')).toBeNull();
-        expect(onOnboarding).not.toHaveBeenCalled();
+        expect(onOpen).toHaveBeenCalledOnce();
+        expect(mocks.openLink).not.toHaveBeenCalled();
       } finally {
-        window.removeEventListener(TUTORIALS_OPEN_EVENT, onOnboarding);
+        window.removeEventListener(WIKI_OPEN_EVENT, onOpen);
       }
     }
   );
 
-  it("hides onboarding when dev mode is disabled", () => {
-    act(() => store.set(devModeEnabledAtom, false));
+  it("keeps Wiki as the only entry point into the dialog", () => {
+    act(() => store.set(devModeEnabledAtom, true));
     expect(
       document.querySelector('[data-testid="sidebar-menu-onboarding"]')
     ).toBeNull();
-  });
-
-  it("opens onboarding from the account menu after closing the dropdown", () => {
-    const onOpen = vi.fn(() =>
-      expect(mocks.closeDropdown).toHaveBeenCalledOnce()
-    );
-    window.addEventListener(TUTORIALS_OPEN_EVENT, onOpen);
-    try {
-      const button = document.querySelector<HTMLButtonElement>(
-        '[data-testid="sidebar-menu-onboarding"]'
-      );
-      expect(button?.textContent).toBe("discovery.title");
-      expect(button?.getAttribute("aria-haspopup")).toBe("dialog");
-      act(() => button!.click());
-      expect(onOpen).toHaveBeenCalledOnce();
-    } finally {
-      window.removeEventListener(TUTORIALS_OPEN_EVENT, onOpen);
-    }
+    expect(
+      Array.from(
+        document.querySelectorAll<HTMLButtonElement>(
+          '[data-testid="sidebar-menu-wiki"]'
+        )
+      )
+    ).toHaveLength(1);
   });
 
   it("uses the standard square button radius for its footer trigger", () => {

@@ -1,7 +1,7 @@
 /**
  * WorkstationRailSubmenu — the second-level panel a rail section's "load
- * more" row opens (Subagents, Sources): its open/close state, geometry, and
- * portaled panel shell.
+ * more" row opens (Subagents, Sources): its open/close state, geometry, the
+ * portaled panel shell, and the filter field long lists earn.
  *
  * The panel is portaled to `document.body`, so it escapes both the wide
  * trail's scroll container and the compact menu's overflow clipping. Unlike
@@ -11,18 +11,25 @@
  * opens leftward. Vertical fitting still goes through `clampSubmenuTop`. The
  * compact menu keeps itself open while the pointer is inside this panel via
  * the Dropdown `additionalInsideRefs` contract.
+ *
+ * The row list scrolls inside the panel rather than being clipped by it: a
+ * session with a dozen subagents overflowed the panel's max height with no
+ * way to reach the rows below the fold.
  */
-import type React from "react";
-import {
+import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { createPortal } from "react-dom";
 
-import { DropdownPanel } from "@src/components/Dropdown/exports";
+import {
+  DropdownPanel,
+  DropdownSearch,
+} from "@src/components/Dropdown/exports";
 import { subscribeToDropdownOutsideMouseDown } from "@src/components/Dropdown/outsideClick";
 import {
   type SubmenuAnchor,
@@ -41,8 +48,32 @@ import {
 export const WORKSTATION_SUBMENU_BOUNDS_ATTRIBUTE =
   "data-workstation-submenu-bounds";
 
+/** Tallest the panel grows before its rows scroll — the compact menu's cap. */
+export const WORKSTATION_SUBMENU_MAX_HEIGHT = 384;
+
+/**
+ * Row count from which the panel carries a filter field. Below it the list is
+ * shorter than one scroll page and the field is pure chrome.
+ */
+export const WORKSTATION_SUBMENU_SEARCH_MIN_ROWS = 8;
+
+/** Panel height cap: the shared maximum, bounded by the current viewport. */
+export function resolveWorkstationSubmenuMaxHeight(
+  viewportHeight: number
+): number {
+  return Math.max(
+    DROPDOWN_PANEL.minAvailableHeight,
+    Math.min(
+      WORKSTATION_SUBMENU_MAX_HEIGHT,
+      viewportHeight - DROPDOWN_PANEL.viewportPadding * 2
+    )
+  );
+}
+
 interface SubmenuState {
   anchor: SubmenuAnchor;
+  /** Height cap resolved when the panel opened; its rows scroll below it. */
+  maxHeight: number;
   /** Panel width — the parent list's own width, so both levels read as one. */
   width: number;
   triggerElement: HTMLElement;
@@ -92,6 +123,7 @@ export function useWorkstationRailSubmenu() {
             triggerRect.top - DROPDOWN_PANEL.padding
           ),
         },
+        maxHeight: resolveWorkstationSubmenuMaxHeight(window.innerHeight),
         width,
         triggerElement: trigger,
       };
@@ -131,24 +163,67 @@ export function useWorkstationRailSubmenu() {
   return {
     anchor: state?.anchor ?? null,
     close,
+    maxHeight: state?.maxHeight ?? WORKSTATION_SUBMENU_MAX_HEIGHT,
     panelRef,
     toggle,
     width: state?.width ?? DROPDOWN_WIDTHS.panelWidth,
   };
 }
 
+/**
+ * Substring filter over the panel's rows. The submenu unmounts on close, so
+ * the query resets with it — every open starts on the full list.
+ */
+export function useWorkstationRailSubmenuFilter<Row>(
+  rows: Row[],
+  toSearchText: (row: Row) => string
+): {
+  query: string;
+  rows: Row[];
+  setQuery: (query: string) => void;
+  showSearch: boolean;
+} {
+  const [query, setQuery] = useState("");
+  // Anchored to the unfiltered length: a field that disappears once the
+  // query narrows the list past the threshold would take the caret with it.
+  const showSearch = rows.length >= WORKSTATION_SUBMENU_SEARCH_MIN_ROWS;
+  const filtered = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    if (!showSearch || !normalized) return rows;
+    return rows.filter((row) =>
+      toSearchText(row).toLowerCase().includes(normalized)
+    );
+  }, [query, rows, showSearch, toSearchText]);
+
+  return { query, rows: filtered, setQuery, showSearch };
+}
+
 export function WorkstationRailSubmenuPanel({
   anchor,
   ariaLabel,
   children,
+  emptyLabel,
+  maxHeight,
+  onClose,
+  onSearchChange,
   panelRef,
+  searchValue,
+  showSearch,
   testId,
   width,
 }: {
   anchor: SubmenuAnchor;
   ariaLabel: string;
   children: React.ReactNode;
+  /** Shown in place of the rows when the filter matches nothing. */
+  emptyLabel: string;
+  /** Height cap; the row list scrolls under it. */
+  maxHeight: number;
+  onClose: () => void;
+  onSearchChange: (value: string) => void;
   panelRef: React.RefObject<HTMLDivElement | null>;
+  searchValue: string;
+  showSearch: boolean;
   testId: string;
   /** Same width as the list the panel opened from. */
   width: number;
@@ -156,14 +231,40 @@ export function WorkstationRailSubmenuPanel({
   return createPortal(
     <DropdownPanel
       ref={panelRef}
-      className="fixed"
+      className="fixed flex flex-col"
       width={width}
+      maxHeight={maxHeight}
       style={{ top: anchor.top, left: anchor.left }}
       role="menu"
       aria-label={ariaLabel}
       data-testid={testId}
+      // With the filter field focused, Escape has to reach this panel rather
+      // than only clearing the native search input.
+      onKeyDown={(event) => {
+        if (event.key !== "Escape") return;
+        event.stopPropagation();
+        onClose();
+      }}
     >
-      <div className={DROPDOWN_CLASSES.itemsColumnPadded}>{children}</div>
+      {showSearch ? (
+        <DropdownSearch
+          value={searchValue}
+          onChange={onSearchChange}
+          type="text"
+          ariaLabel={ariaLabel}
+          containerClassName="border-b border-solid border-border-2"
+          testId={`${testId}-search`}
+        />
+      ) : null}
+      <div
+        className={`${DROPDOWN_CLASSES.optionsContainerOverlay} min-h-0 flex-1`}
+      >
+        {React.Children.count(children) === 0 ? (
+          <div className={DROPDOWN_CLASSES.listMessage}>{emptyLabel}</div>
+        ) : (
+          children
+        )}
+      </div>
     </DropdownPanel>,
     document.body
   );

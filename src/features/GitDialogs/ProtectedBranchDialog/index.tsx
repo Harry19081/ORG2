@@ -18,6 +18,9 @@
  * }
  * ```
  */
+import i18n from "@src/i18n";
+
+import { openNativeChoiceDialog } from "../nativeChoiceDialog";
 
 // ============================================
 // Types
@@ -42,28 +45,19 @@ class ProtectedBranchDialogManager {
   public async open(
     options: ProtectedBranchOptions = {}
   ): Promise<ProtectedBranchResult> {
-    const { message } = await import("@tauri-apps/plugin-dialog");
-
-    const branchName = options.branchName || "main";
-    const remoteName = options.remoteName || "origin";
-
-    const result = await message(
-      `The branch "${branchName}" on ${remoteName} is protected and cannot be pushed to directly.\n\nProtected branches require changes to go through pull requests.`,
-      {
-        title: "Protected Branch",
-        kind: "warning",
-        buttons: {
-          ok: "Create Pull Request",
-          cancel: "Cancel",
+    return openNativeChoiceDialog({
+      title: i18n.t("common:git.dialogs.protectedBranch.title"),
+      message: i18n.t("common:git.dialogs.protectedBranch.body", {
+        branch: options.branchName || "main",
+        remote: options.remoteName || "origin",
+      }),
+      choices: [
+        {
+          id: "create_pr",
+          label: i18n.t("common:git.dialogs.protectedBranch.createPr"),
         },
-      }
-    );
-
-    if (result === "Create Pull Request") {
-      return "create_pr";
-    } else {
-      return "cancel";
-    }
+      ],
+    });
   }
 }
 

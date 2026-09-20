@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   type ExternalCliSourceProbe,
+  type ExternalHistoryScanResult,
   type ImportedHistorySourceId,
   externalCliSourceProbe,
   externalCliSourcesDetect,
@@ -16,12 +17,15 @@ import {
   externalHistoryRescanSources,
   fetchExternalSourceStats,
   fetchExternalSourceStatsBatch,
+  splitScanSourcesByOutcome,
 } from "@src/api/tauri/externalHistory";
 import { loadSessionRoster } from "@src/store/session";
 import {
   type DataSourceConfigMap,
   dataSourceConfigAtom,
+  dataSourceScanFailureAtom,
   getSourceConfig,
+  reduceDataSourceScanFailures,
 } from "@src/store/session/dataSourceConfigAtom";
 
 import { isImportableId } from "./sourceScanningHelpers";
@@ -31,6 +35,9 @@ export function useSourceScanningInventory() {
   const [rows, setRows] = useState<SourceRow[] | null>(null);
   const [rescanningAll, setRescanningAll] = useState(false);
   const [configMap, setConfigMap] = useAtom(dataSourceConfigAtom);
+  // Importer failures from every rescan surface, including the background
+  // scheduler, so a broken source reads as an error rather than "ready".
+  const [scanFailures, setScanFailures] = useAtom(dataSourceScanFailureAtom);
   const panelMountedRef = useRef(false);
 
   useEffect(() => {
@@ -174,16 +181,36 @@ export function useSourceScanningInventory() {
 
   // Manual incremental update by default; the split action can request a full
   // cache rebuild. Every pass also re-probes install/store state and stamps
-  // lastScannedAt.
+  // lastScannedAt — unless the importer itself failed, which is not a scan.
   const handleRescan = useCallback(
     async (row: SourceRow, clear = false) => {
       const sourceId = row.probe.sourceId;
       patchRow(sourceId, { rescanning: true, error: false });
+      let importerFailed = false;
       try {
         if (row.importable && isImportableId(sourceId)) {
-          const scanResult = await externalHistoryRescanSource(sourceId, {
-            clear,
-          });
+          let scanResult: ExternalHistoryScanResult;
+          try {
+            scanResult = await externalHistoryRescanSource(sourceId, {
+              clear,
+            });
+          } catch (error) {
+            importerFailed = true;
+            const message =
+              error instanceof Error ? error.message : String(error);
+            setScanFailures((previous) =>
+              reduceDataSourceScanFailures(
+                previous,
+                [],
+                [{ sourceId, error: message }],
+                Date.now()
+              )
+            );
+            throw error;
+          }
+          setScanFailures((previous) =>
+            reduceDataSourceScanFailures(previous, [sourceId], [], Date.now())
+          );
           if (!panelMountedRef.current) return;
           if (scanResult.changedSources.length > 0) {
             await loadSessionRoster({ forceRefresh: true });
@@ -197,10 +224,12 @@ export function useSourceScanningInventory() {
         patchRow(sourceId, { error: true });
       } finally {
         patchRow(sourceId, { rescanning: false });
-        updateConfig(sourceId, { lastScannedAt: Date.now() });
+        if (!importerFailed) {
+          updateConfig(sourceId, { lastScannedAt: Date.now() });
+        }
       }
     },
-    [loadStats, patchRow, reprobe, updateConfig]
+    [loadStats, patchRow, reprobe, setScanFailures, updateConfig]
   );
 
   const handleRescanAll = useCallback(async () => {
@@ -221,6 +250,16 @@ export function useSourceScanningInventory() {
       .map((r) => r.probe.sourceId as ImportedHistorySourceId);
     try {
       const scanResult = await externalHistoryRescanSources(importables);
+      // Recorded before the unmount bail-outs: the outcome is app-wide state
+      // the scheduler backs off on, not panel-local state.
+      const { succeeded, failed } = splitScanSourcesByOutcome(
+        importables,
+        scanResult
+      );
+      const scannedAt = Date.now();
+      setScanFailures((previous) =>
+        reduceDataSourceScanFailures(previous, succeeded, failed, scannedAt)
+      );
       if (!panelMountedRef.current) return;
       if (scanResult.changedSources.length > 0) {
         await loadSessionRoster({ forceRefresh: true });
@@ -246,11 +285,10 @@ export function useSourceScanningInventory() {
             return stats ? { ...row, stats, statsLoading: false } : row;
           }) ?? prev
       );
-      const now = Date.now();
       setConfigMap((prev) => {
         const next = { ...prev };
-        for (const s of importables) {
-          next[s] = { ...getSourceConfig(prev, s), lastScannedAt: now };
+        for (const s of succeeded) {
+          next[s] = { ...getSourceConfig(prev, s), lastScannedAt: scannedAt };
         }
         return next;
       });
@@ -264,7 +302,7 @@ export function useSourceScanningInventory() {
         setRescanningAll(false);
       }
     }
-  }, [rows, setConfigMap]);
+  }, [rows, setConfigMap, setScanFailures]);
 
   // Toggle a source on/off. Disabling clears it from the sidebar; enabling
   // loads it and stamps a scan.
@@ -291,6 +329,7 @@ export function useSourceScanningInventory() {
     rows,
     rescanningAll,
     configMap,
+    scanFailures,
     handleRescan,
     handleRescanAll,
     toggleEnabled,

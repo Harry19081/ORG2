@@ -951,7 +951,31 @@
         "createdByMe": "Created by me",
         "assigneeUpdateNotApplied": "GitHub did not apply the assignee change",
         "assigneeUpdateSuccess": "Assignees updated on GitHub",
-        "updateIssueFailed": "Failed to update GitHub issue"
+        "updateIssueFailed": "Failed to update GitHub issue",
+        "filters": {
+          "searchPlaceholder": "Search filters",
+          "noMatches": "No matching filters",
+          "activeCount": "Active filters: {{count}}",
+          "clear": "Clear filters",
+          "reviewRequestedFromMe": "Review requested from me",
+          "noAssignee": "No assignee",
+          "noLabel": "No label",
+          "linkedPullRequest": "Has a linked pull request",
+          "draft": "Draft",
+          "readyForReview": "Ready for review",
+          "recentlyUpdated": "Updated in the last 7 days",
+          "stale": "Not updated for 30 days",
+          "facetAuthor": "Author",
+          "facetAssignee": "Assignee",
+          "facetLabel": "Label",
+          "facetMilestone": "Milestone",
+          "facetReviewRequested": "Review requested",
+          "facetBaseBranch": "Base branch",
+          "facetCiStatus": "Checks",
+          "ciSuccess": "Passing",
+          "ciFailure": "Failing",
+          "ciPending": "Pending"
+        }
       }
     },
     "sessionViews": {
@@ -979,7 +1003,9 @@
     "sending": "Sending…",
     "typeMessage": "Type a message…",
     "session": "Session",
-    "history": "Sessions"
+    "history": "Sessions",
+    "goToPinnedPassage": "Go to pinned passage: {{preview}}",
+    "unpinPassage": "Unpin"
   },
   "planning": {
     "agentTyping": "Agent is typing...",

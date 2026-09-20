@@ -305,7 +305,7 @@ async fn vault_refresh_hands_rotated_tokens_back_to_the_codex_cli() {
     let leftovers: Vec<_> = std::fs::read_dir(cli_dir.path())
         .unwrap()
         .filter_map(|entry| entry.ok())
-        .filter(|entry| entry.file_name() != "auth.json")
+        .filter(|entry| entry.path().extension().is_some_and(|ext| ext == "tmp"))
         .collect();
     assert!(leftovers.is_empty(), "no temp file is left behind");
 }
@@ -344,4 +344,221 @@ async fn a_key_with_its_own_login_never_touches_the_codex_cli_file() {
         .account_metadata
         .contains_key(ACCOUNT_SETUP_METHOD_METADATA_KEY));
     assert_eq!(std::fs::read_to_string(&cli_auth).unwrap(), before);
+}
+
+#[tokio::test]
+async fn response_after_reconnect_cannot_replace_or_disable_the_new_login() {
+    for status in ["200 OK", "401 Unauthorized"] {
+        let key = codex_oauth_key("acct-a", "old-refresh");
+        let rejected = key.session_token.clone().unwrap();
+        let (_dir, service, key_id) = service_with(key);
+        let service = std::sync::Arc::new(service);
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let url = format!("http://{}/token", listener.local_addr().unwrap());
+        let server_service = service.clone();
+        let server_id = key_id.clone();
+        let _ = tokio_rustls::rustls::crypto::ring::default_provider().install_default();
+        let server = thread::spawn(move || {
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut buffer = [0; 8192];
+            let received = stream.read(&mut buffer).unwrap();
+            assert!(received > 0, "refresh request reached the fixture");
+            let mut reconnected = server_service.get_key_by_id(&server_id).unwrap();
+            reconnected.session_token = Some("new-user-access".into());
+            reconnected.env_vars.insert(
+                CODEX_REFRESH_TOKEN_ENV_KEY.into(),
+                "new-user-refresh".into(),
+            );
+            server_service.save_key(reconnected).unwrap();
+            let body = if status == "200 OK" {
+                r#"{"access_token":"old-user-rotated","refresh_token":"old-rotated-refresh"}"#
+            } else {
+                REUSED_BODY
+            };
+            write!(
+                stream,
+                "HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                body.len()
+            )
+            .unwrap();
+        });
+        let _ = service
+            .refresh_codex_oauth_key_with(&key_id, &rejected, None, Some(url))
+            .await;
+        server.join().unwrap();
+        let stored = service.get_key_by_id(&key_id).unwrap();
+        assert_eq!(stored.session_token.as_deref(), Some("new-user-access"));
+        assert_eq!(
+            stored.env_vars[CODEX_REFRESH_TOKEN_ENV_KEY],
+            "new-user-refresh"
+        );
+        assert!(stored.enabled);
+        assert_eq!(stored.oauth_refresh_failure_count, 0);
+        assert_eq!(stored.credential_generation, 1);
+    }
+}
+
+#[test]
+fn managed_codex_rotation_reaches_the_bound_source_and_preserves_a_new_local_login() {
+    use crate::key_store::CliOAuthTokenSync;
+    for source_changed in [false, true] {
+        let cli_dir = tempdir().unwrap();
+        let mut key = linked(codex_oauth_key("acct-a", "shared-refresh"));
+        let launched = key.session_token.clone().unwrap();
+        let path = write_cli_auth(&cli_dir, &launched, "shared-refresh");
+        key.codex_cli_auth_path = Some(path.clone());
+        let (_store, service, id) = service_with(key);
+        if source_changed {
+            write_cli_auth(&cli_dir, "local-new-login", "local-new-refresh");
+        }
+        let before = read_cli_auth(&path);
+        service
+            .sync_cli_oauth_tokens_for_generation(
+                &id,
+                ModelType::Codex,
+                0,
+                Some(&launched),
+                CliOAuthTokenSync {
+                    access_token: Some(jwt("acct-a", Duration::days(10), "managed")),
+                    refresh_token: Some("managed-refresh".into()),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(
+            service.get_key_by_id(&id).unwrap().env_vars[CODEX_REFRESH_TOKEN_ENV_KEY],
+            "managed-refresh"
+        );
+        if source_changed {
+            assert_eq!(read_cli_auth(&path), before);
+        } else {
+            assert_eq!(
+                read_cli_auth(&path)["tokens"]["refresh_token"],
+                "managed-refresh"
+            );
+        }
+        assert_eq!(
+            service.get_key_by_id(&id).unwrap().codex_cli_auth_path,
+            Some(path)
+        );
+    }
+}
+
+#[tokio::test]
+async fn failed_source_writeback_is_retried_on_next_use_without_another_exchange() {
+    let store = tempdir().unwrap();
+    let service = KeyService::new(Some(store.path().into()));
+    let source = tempdir().unwrap();
+    let mut key = linked(codex_oauth_key("acct-a", "r0"));
+    let auth_path = write_cli_auth(&source, key.session_token.as_deref().unwrap(), "r0");
+    key.codex_cli_auth_path = Some(auth_path.clone());
+    let key = service.save_key(key).unwrap();
+    let lock = std::fs::File::create(auth_path.with_extension("orgii.lock")).unwrap();
+    fs2::FileExt::try_lock_exclusive(&lock).unwrap();
+    let fresh = jwt("acct-a", Duration::hours(4), "rotated");
+    let (url, server) = serve_token_response(
+        "200 OK",
+        serde_json::json!({
+            "access_token": fresh, "refresh_token": "r1"
+        })
+        .to_string(),
+    );
+    service
+        .refresh_codex_oauth_key_with(
+            &key.id,
+            key.session_token.as_deref().unwrap(),
+            Some(&auth_path),
+            Some(url),
+        )
+        .await
+        .unwrap();
+    server.join().unwrap();
+    assert_eq!(read_cli_auth(&auth_path)["tokens"]["refresh_token"], "r0");
+    let saved = service.get_key_by_id(&key.id).unwrap();
+    assert!(saved.codex_pending_source_token_hash.is_some());
+    assert_eq!(saved.env_vars[CODEX_REFRESH_TOKEN_ENV_KEY], "r1");
+    drop(lock);
+    // Valid Vault token: ensure only retries the pending file write.
+    service.ensure_codex_oauth_key_fresh(&key.id).await.unwrap();
+    assert_eq!(read_cli_auth(&auth_path)["tokens"]["refresh_token"], "r1");
+    assert!(service
+        .get_key_by_id(&key.id)
+        .unwrap()
+        .codex_pending_source_token_hash
+        .is_none());
+}
+
+#[tokio::test]
+async fn duplicate_imports_share_one_refresh_exchange_and_adopt_the_writeback() {
+    let store = tempdir().unwrap();
+    let service = KeyService::new(Some(store.path().into()));
+    let source = tempdir().unwrap();
+    let mut first = linked(codex_oauth_key("acct-a", "r0"));
+    let path = write_cli_auth(&source, first.session_token.as_deref().unwrap(), "r0");
+    first.codex_cli_auth_path = Some(path.clone());
+    let first = service.save_key(first).unwrap();
+    let mut second = first.clone();
+    second.id = uuid::Uuid::new_v4().to_string();
+    let second = service.save_key(second).unwrap();
+    let (url, server) = serve_token_response(
+        "200 OK",
+        serde_json::json!({
+            "access_token": jwt("acct-a", Duration::hours(4), "rotated"), "refresh_token": "r1"
+        })
+        .to_string(),
+    );
+    let (a, b) = tokio::join!(
+        service.refresh_codex_oauth_key_with(
+            &first.id,
+            first.session_token.as_deref().unwrap(),
+            Some(&path),
+            Some(url.clone())
+        ),
+        service.refresh_codex_oauth_key_with(
+            &second.id,
+            second.session_token.as_deref().unwrap(),
+            Some(&path),
+            Some(url)
+        )
+    );
+    a.unwrap();
+    b.unwrap();
+    server.join().unwrap();
+    for id in [&first.id, &second.id] {
+        assert_eq!(
+            service.get_key_by_id(id).unwrap().env_vars[CODEX_REFRESH_TOKEN_ENV_KEY],
+            "r1"
+        );
+    }
+}
+
+#[tokio::test]
+async fn mixed_native_account_id_and_token_identity_is_not_adopted() {
+    let store = tempdir().unwrap();
+    let service = KeyService::new(Some(store.path().into()));
+    let source = tempdir().unwrap();
+    let key = service
+        .save_key(linked(codex_oauth_key("acct-a", "vault-refresh")))
+        .unwrap();
+    // Reproduces a native in-flight refresh completing after an account switch:
+    // file account_id says A, access token belongs to B.
+    let path = write_cli_auth(
+        &source,
+        &jwt("acct-b", Duration::hours(5), "other"),
+        "other-refresh",
+    );
+    let before = service.get_key_by_id(&key.id).unwrap();
+    let result = service
+        .refresh_codex_oauth_key_with(
+            &key.id,
+            key.session_token.as_deref().unwrap(),
+            Some(&path),
+            Some(UNREACHABLE_TOKEN_URL.into()),
+        )
+        .await;
+    assert!(result.is_err());
+    assert_eq!(
+        service.get_key_by_id(&key.id).unwrap().session_token,
+        before.session_token
+    );
 }

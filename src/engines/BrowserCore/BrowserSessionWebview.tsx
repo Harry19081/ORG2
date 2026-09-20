@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import type { BrowserSession } from "@src/engines/BrowserCore/types";
 import { createLogger } from "@src/hooks/logger";
 import { useInlineWebview } from "@src/hooks/platform/useInlineWebview";
+import type { WebviewHistoryDirection } from "@src/hooks/platform/useInlineWebview/types";
 import { sidebarWidthAtom } from "@src/store/ui/sidebarAtom";
 import {
   simulatorPrimarySidebarCollapsedAtom,
@@ -24,6 +25,8 @@ import {
   browserWebviewLoadStateAtom,
 } from "@src/store/workstation/browser/webviewLoadStateAtom";
 import { getBrowserSessionWebviewLabel } from "@src/util/platform/tauri/browserSessionLabel";
+
+import { type BrowserHistoryCursor, resolveHistoryStep } from "./historyStep";
 
 const log = createLogger("BrowserSessionWebview");
 
@@ -134,6 +137,7 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
 }) => {
   // Track previous isLoading to detect reload requests
   const prevIsLoadingRef = useRef(session.isLoading);
+  const prevUrlRef = useRef(session.url);
   const isReloadingRef = useRef(false);
   const activeInternalBrowserSyncRef = useRef<ActiveInternalBrowserSync | null>(
     null
@@ -175,6 +179,36 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
     ]
   );
 
+  // A Back/Forward step, remembered from the render that made it until the
+  // webview hook issues that navigation (a timer later, so after this effect).
+  const historyCursorRef = useRef<BrowserHistoryCursor>({
+    history: session.history,
+    index: session.historyIndex,
+  });
+  const pendingHistoryStepRef = useRef<{
+    url: string;
+    direction: WebviewHistoryDirection;
+  } | null>(null);
+
+  useEffect(() => {
+    const next = { history: session.history, index: session.historyIndex };
+    const direction = resolveHistoryStep(
+      historyCursorRef.current,
+      next,
+      session.url
+    );
+    historyCursorRef.current = next;
+    pendingHistoryStepRef.current = direction
+      ? { url: session.url, direction }
+      : null;
+  }, [session.history, session.historyIndex, session.url]);
+
+  const resolveHistoryDirection = useCallback((targetUrl: string) => {
+    const pending = pendingHistoryStepRef.current;
+    pendingHistoryStepRef.current = null;
+    return pending?.url === targetUrl ? pending.direction : null;
+  }, []);
+
   const webviewConfig = useMemo(() => {
     const shouldActivateWebview = hasNavigableUrl && isActive && isTabActive;
 
@@ -189,6 +223,10 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
       labelPrefix: webviewLabel,
       useExactLabel: true,
       incognito: session.incognito ?? false,
+      // The hook's default 100ms settle delay only postpones the first load:
+      // creation already retries until the container has a size, and the view
+      // is re-framed when it is shown.
+      createDelay: 0,
       debug: false,
       // Disable URL polling for inline browser sessions. Calling webview.url()
       // while WKWebView is loading can poison Tauri/wry's runtime mutex on
@@ -228,6 +266,7 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
       onNavigate: (url: string) => {
         handleSessionNavigation(url);
       },
+      resolveHistoryDirection,
       onNewWindow: (url: string) => {
         if (onNewTab) {
           onNewTab(url, session.incognito ?? false);
@@ -246,6 +285,7 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
     webviewLabel,
     onSessionUpdate,
     onNewTab,
+    resolveHistoryDirection,
     setWebviewLoadState,
   ]);
 
@@ -429,11 +469,17 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
     const wasLoading = prevIsLoadingRef.current;
     const isLoading = session.isLoading;
     prevIsLoadingRef.current = isLoading;
+    const urlChanged = prevUrlRef.current !== session.url;
+    prevUrlRef.current = session.url;
 
-    // Detect reload request: isLoading changed to true and webview already exists
+    // Detect reload request: isLoading changed to true and webview already
+    // exists. A URL that changed in the same update is a navigation the webview
+    // hook already issues; reloading as well would first refetch the page being
+    // left, only for that load to be cancelled a moment later.
     if (
       !wasLoading &&
       isLoading &&
+      !urlChanged &&
       isWebviewCreated &&
       !isReloadingRef.current
     ) {
@@ -452,6 +498,7 @@ const BrowserSessionWebview: React.FC<BrowserSessionWebviewProps> = ({
     }
   }, [
     session.isLoading,
+    session.url,
     session.id,
     isWebviewCreated,
     reload,

@@ -2,12 +2,11 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import { buildAccountReauthPath } from "@src/config/mainAppPaths";
 import { AccountStatusIndicator } from "@src/features/KeyVault/AccountStatusIndicator";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
-import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 
 import { InlineCardFooter } from "../../shared/InlineCardPrimitives";
 import {
@@ -42,13 +41,6 @@ export const AccountInlineActionsBar: React.FC<
   const { t: tCommon } = useTranslation();
   const navigate = useNavigate();
 
-  const { spinClass, handleClick: handleRefreshClick } = useRefreshSpin(
-    onRefresh ?? (() => {}),
-    refreshing
-  );
-  const { spinClass: modelSpinClass, handleClick: handleRefreshModelsClick } =
-    useRefreshSpin(onRefreshModels ?? (() => {}), refreshingModels);
-
   const showEdit = !account.listingId && account.hasLocalKey && onEdit;
   const reconnectAgent = reconnectableOAuthAgent(account);
   const anyRefreshing = areAccountRefreshActionsDisabled(
@@ -74,40 +66,24 @@ export const AccountInlineActionsBar: React.FC<
         </Button>
       ) : null}
       {onRefresh ? (
-        <Button
+        <RefreshButton
+          variant="secondary"
           size="small"
-          onClick={handleRefreshClick}
+          label={resolvedRefreshLabel}
+          refreshing={refreshing}
           disabled={anyRefreshing}
-          icon={
-            <HugeiconsIcon
-              icon={Refresh04Icon}
-              data-icon="refresh-cw"
-              size={14}
-              className={spinClass}
-            />
-          }
-          title={resolvedRefreshLabel}
-        >
-          {resolvedRefreshLabel}
-        </Button>
+          onRefresh={onRefresh ?? (() => {})}
+        />
       ) : null}
       {onRefreshModels ? (
-        <Button
+        <RefreshButton
+          variant="secondary"
           size="small"
-          onClick={handleRefreshModelsClick}
+          label={t("keyVault.refreshModels.button")}
+          refreshing={refreshingModels}
           disabled={anyRefreshing}
-          icon={
-            <HugeiconsIcon
-              icon={Refresh04Icon}
-              data-icon="refresh-cw"
-              size={14}
-              className={modelSpinClass}
-            />
-          }
-          title={t("keyVault.refreshModels.button")}
-        >
-          {t("keyVault.refreshModels.button")}
-        </Button>
+          onRefresh={onRefreshModels ?? (() => {})}
+        />
       ) : null}
       {showEdit ? (
         <Button size="small" onClick={onEdit}>

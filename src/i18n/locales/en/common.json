@@ -228,7 +228,6 @@
     "later": "Later",
     "link": "Link",
     "copyName": "Copy Name",
-    "dismiss": "Dismiss",
     "clearSelection": "Clear selection",
     "expandView": "Expand view",
     "restoreSplitView": "Restore split view",
@@ -605,7 +604,7 @@
     "nextMatchLabel": "Next Match",
     "clearSearch": "Clear search",
     "openFile": "Open File",
-    "openNativeDevTools": "Open native browser DevTools",
+    "openNativeDevTools": "Open DevTools",
     "captureScreenshot": "Screenshot",
     "enableInspectMode": "Inspect element",
     "disableInspectMode": "Exit inspector (Esc)",
@@ -712,7 +711,7 @@
     "chatHistoryReloadHint": "Session data may not have loaded",
     "chatHistoryAgentWorking": "Agent is running",
     "chatHistoryAgentWorkingHint": "Messages appear with the first response; the toolbar may look idle until then",
-    "pleaseSelect": "Please select",
+    "pleaseSelect": "Select",
     "noSessionsFound": "No sessions found",
     "typeToSearchFiles": "Type to search files...",
     "selectFileToViewChanges": "Select a file to view changes",
@@ -886,8 +885,7 @@
       "tlsDevNote": "Note: Some HTTPS sites (like GitHub) may show TLS errors in development mode due to certificate validation. Try HTTP sites or simple HTTPS sites like example.com.",
       "siteUnreachableTitle": "This site can't be reached",
       "loadStalledTitle": "This page didn't finish loading",
-      "loadStalledBody": "The embedded browser started loading this address but never finished. Try reloading, or open it in your system browser.",
-      "currentUrl": "Current URL",
+      "copyUrl": "Copy URL",
       "webviewHiddenTitle": "Webview temporarily hidden",
       "webviewHiddenBody": "Close the menu or dialog to show it again."
     },
@@ -1134,6 +1132,93 @@
         "checkingConflicts": "Checking for conflicts…",
         "autoMergeEnabled": "Auto-merge enabled",
         "inMergeQueue": "Waiting in the merge queue"
+      },
+      "mergeBox": {
+        "checksFailed": "Some checks were not successful",
+        "checksPending": "Some checks haven't completed yet",
+        "checksPassed": "All checks have passed",
+        "checksSkipped": "All checks were skipped",
+        "counts": {
+          "failing": "{{count}} failing",
+          "inProgress": "{{count}} in progress",
+          "skipped": "{{count}} skipped",
+          "successful": "{{count}} successful",
+          "summary_one": "{{parts}} check",
+          "summary_other": "{{parts}} checks"
+        },
+        "check": {
+          "queued": "Queued",
+          "started": "Started {{time}}",
+          "successfulIn": "Successful in {{duration}}",
+          "failingAfter": "Failing after {{duration}}",
+          "skipped": "Skipped",
+          "successful": "Successful",
+          "failing": "Failing"
+        },
+        "deployments": {
+          "label": "Deployments",
+          "none": "No deployments",
+          "active_one": "{{count}} active deployment",
+          "active_other": "{{count}} active deployments",
+          "view": "View deployment",
+          "notDeployed": "This branch has not been deployed",
+          "deployed": "This branch was successfully deployed",
+          "deploying": "This branch is being deployed",
+          "deployFailed": "This branch had an error being deployed",
+          "deployInactive": "This branch is no longer deployed",
+          "state": {
+            "active": "Active",
+            "pending": "In progress",
+            "failure": "Failed",
+            "inactive": "Inactive"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Changes approved",
+            "detail": "An approving review was submitted"
+          },
+          "reviewRequired": {
+            "title": "Review required",
+            "detail": "At least one approving review is required to merge"
+          },
+          "reviewChangesRequested": {
+            "title": "Changes requested",
+            "detail": "A reviewer requested changes before merging"
+          },
+          "noConflicts": {
+            "title": "No conflicts with the base branch",
+            "detail": "Merging can be performed automatically"
+          },
+          "hasConflicts": {
+            "title": "This branch has conflicts that must be resolved",
+            "detail": "Resolve the conflicts on the head branch, then push"
+          },
+          "outOfDate": {
+            "title": "This branch is out of date with the base branch",
+            "detail": "Merge the latest base branch changes into this branch"
+          },
+          "checkingConflicts": {
+            "title": "Checking for the ability to merge automatically…",
+            "detail": "Hang in there while GitHub checks the branch's status"
+          },
+          "autoMergeEnabled": {
+            "title": "Auto-merge enabled",
+            "detail": "This pull request merges once its requirements are met"
+          },
+          "inMergeQueue": {
+            "title": "Waiting in the merge queue",
+            "detail": "GitHub merges it when it reaches the front of the queue"
+          }
+        },
+        "merged": {
+          "title": "Pull request successfully merged and closed",
+          "detail": "The head branch can be safely deleted"
+        },
+        "closed": {
+          "title": "Closed with unmerged commits",
+          "detail": "This pull request is closed. Reopen it to merge"
+        }
       },
       "commits": {
         "backToList": "All commits",
@@ -1393,6 +1478,52 @@
         "saved_on_previous": "Changes saved on the previous branch",
         "brought": "Your changes followed you to this branch",
         "worktree_missing": "The worktree no longer exists. Refresh and try again"
+      }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Detached HEAD State",
+        "body": "You are in detached HEAD state at commit {{shortHash}}.\n\nYou are not on any branch. Any commits you make may be lost if you checkout another branch without creating a new branch first.\n\n⚠️ Commits in detached HEAD state may be garbage collected.",
+        "createBranch": "Create Branch",
+        "continueWithoutBranch": "Continue Without Branch"
+      },
+      "largePush": {
+        "title": "Large Push Detected",
+        "body": "You are about to push {{commitCount}} commits to {{remote}}/{{branch}}.\n\nThis is more than usual. Are you sure you want to continue?\n\n💡 Consider breaking large changes into smaller, more focused commits.",
+        "confirm": "Push All Commits"
+      },
+      "protectedBranch": {
+        "title": "Protected Branch",
+        "body": "The branch \"{{branch}}\" on {{remote}} is protected and cannot be pushed to directly.\n\nProtected branches require changes to go through pull requests.",
+        "createPr": "Create Pull Request"
+      },
+      "pullConflict": {
+        "title": "Can't Pull with Local Changes",
+        "body": "Your local changes would be overwritten by the incoming changes from \"{{branch}}\".{{fileInfo}}\n\nChoose how to proceed:",
+        "fileInfo_one": " ({{count}} file affected)",
+        "fileInfo_other": " ({{count}} files affected)",
+        "stashAndPull": "Stash & Pull",
+        "discardAndPull": "Discard & Pull"
+      },
+      "pushRejected": {
+        "title": "Push Rejected",
+        "body": "Can't push to {{remote}}/{{branch}}.\n\nThe remote branch contains commits that you don't have locally.{{behindInfo}}\n\n⚠️ Force push will overwrite remote changes permanently.",
+        "behindInfo_one": " ({{count}} commit behind)",
+        "behindInfo_other": " ({{count}} commits behind)",
+        "pullAndPush": "Pull & Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Merge Conflict",
+        "titleRebase": "Rebase Conflict",
+        "bodyMerge": "Conflicts occurred while merging \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Aborting will cancel the merge and restore your branch.",
+        "bodyRebase": "Conflicts occurred while rebasing onto \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Aborting will restore your branch to its state before rebasing.",
+        "progress": " (Step {{current}} of {{total}})",
+        "files_one": "\n\n{{count}} file with conflicts.",
+        "files_other": "\n\n{{count}} files with conflicts.",
+        "resolve": "Resolve Conflicts",
+        "abortMerge": "Abort Merge",
+        "abortRebase": "Abort Rebase"
       }
     }
   },
@@ -2016,13 +2147,29 @@
   "selectionMenu": {
     "addToChat": "Add to Chat",
     "addThisFile": "Add this file",
-    "addLines": "Add line {{from}} – {{to}}"
+    "addLines": "Add line {{from}} – {{to}}",
+    "replyToSelection": "Reply",
+    "clearQuotedSelection": "Remove quoted selection",
+    "pinSelection": "Pin"
   },
   "browser": {
     "screenshot": {
       "added": "Screenshot attached to chat",
       "failed": "Failed to capture screenshot: {{reason}}",
-      "noActivePage": "No active page to capture"
+      "noActivePage": "No active page to capture",
+      "saved": "Screenshot saved",
+      "saveFailed": "Failed to save screenshot: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Page theme",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "saveScreenshot": "Save screenshot...",
+      "openHtmlFile": "Open HTML file..."
+    },
+    "openHtmlFile": {
+      "failed": "Failed to open file: {{reason}}"
     },
     "selectedElement": {
       "sentToChat": "Element attached to chat",
@@ -2252,7 +2399,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again",
+      "explain": "{{browser}} keeps its cookies in a folder macOS protects. Allow ORG2 under Full Disk Access in System Settings, then check again",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },

@@ -13,6 +13,7 @@ import type { PromptPolishControl } from "@src/engines/ChatPanel/hooks/useInputA
 import type { UseVoiceInputResult } from "@src/hooks/voice";
 import { Cancel01Icon, HugeiconsIcon, RotateLeft01Icon } from "@src/icons";
 
+import ChatQuotePreview from "./ChatQuotePreview";
 import CiteCodePreview from "./CiteCodePreview";
 import ImageAttachmentPreview from "./ImageAttachmentPreview";
 import InputActions from "./InputActions";
@@ -277,6 +278,8 @@ interface NormalComposerContentProps extends SharedComposerBarProps {
   showAgentControls?: boolean;
   showImageAttachments?: boolean;
   autoFocus?: boolean;
+  /** Session whose quoted-reply chip renders above the editor. */
+  quoteSessionId?: string | null;
 }
 
 export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
@@ -334,6 +337,7 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
   showAgentControls = true,
   showImageAttachments = true,
   autoFocus = false,
+  quoteSessionId,
 }) => {
   const { t } = useTranslation("sessions");
   const contentRef = useRef<HTMLDivElement>(null);
@@ -346,6 +350,7 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
 
   return (
     <div ref={contentRef} className="flex min-h-0 w-full flex-col">
+      <ChatQuotePreview sessionId={quoteSessionId} />
       {showImageAttachments && (
         <ImageAttachmentPreview ownerId={dropTargetId} />
       )}

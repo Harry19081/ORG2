@@ -231,27 +231,8 @@ async fn read_claude_config(path: &std::path::PathBuf) -> Option<DetectedKey> {
 }
 
 async fn detect_claude_code_oauth() -> Option<DetectedKey> {
-    #[cfg(windows)]
-    // Credential Manager can require multiple bounded reads for Claude's
-    // chunked format, so keep all local credential I/O off the async executor.
-    let credentials_json = match tokio::task::spawn_blocking(read_local_claude_credentials).await {
-        Ok(credentials) => credentials?,
-        Err(err) => {
-            tracing::warn!(
-                error = %err,
-                "auto_detect::claude: local OAuth credential task failed; skipping"
-            );
-            return None;
-        }
-    };
-    #[cfg(not(windows))]
-    let credentials_json = read_local_claude_credentials()?;
-    let credentials = parse_claude_oauth_credentials(&credentials_json)?;
-    let access_token = credentials.access_token?.trim().to_string();
-    if access_token.is_empty() {
-        return None;
-    }
-
+    let credentials = read_local_claude_code_login().await?;
+    let access_token = credentials.access_token;
     let mut credential = create_detected_key("claude_code_oauth_local", "Anthropic", "oauth");
     credential.session_token = Some(access_token.clone());
 
@@ -263,8 +244,7 @@ async fn detect_claude_code_oauth() -> Option<DetectedKey> {
     {
         env_vars.insert(CLAUDE_CODE_REFRESH_TOKEN_ENV.to_string(), refresh_token);
     }
-    if let Some(expires_at) = credentials.expires_at {
-        let expires_at_millis = expires_at as i64;
+    if let Some(expires_at_millis) = credentials.expires_at_millis {
         env_vars.insert(
             CLAUDE_CODE_EXPIRES_AT_ENV.to_string(),
             expires_at_millis.to_string(),
@@ -279,7 +259,11 @@ async fn detect_claude_code_oauth() -> Option<DetectedKey> {
         credential.env_vars = Some(env_vars);
     }
 
-    let validation = validate_claude_code_oauth_token(&access_token, credentials.expires_at).await;
+    let validation = validate_claude_code_oauth_token(
+        &access_token,
+        credentials.expires_at_millis.map(|v| v as u64),
+    )
+    .await;
     credential.validated = Some(validation.0);
     credential.validation_message = validation.1;
     credential.available_models = validation.2;
@@ -306,9 +290,87 @@ pub(crate) struct LocalClaudeCodeLogin {
 
 pub(crate) const LOCAL_CLAUDE_CODE_PROFILE_URL: &str = CLAUDE_CODE_OAUTH_PROFILE_URL;
 
-/// Blocking: on macOS and Windows this goes through the OS credential store.
-pub(crate) fn read_local_claude_code_login() -> Option<LocalClaudeCodeLogin> {
-    parse_local_claude_code_login(&read_local_claude_credentials()?)
+/// Refresh-time reader. macOS prompts belong to a kill-on-drop child, so
+/// cancelling the surrounding timeout terminates the credential-store process.
+pub(crate) async fn read_local_claude_code_login() -> Option<LocalClaudeCodeLogin> {
+    use std::sync::{Arc, Weak};
+    use tokio::sync::{Mutex, OnceCell};
+    type Read = OnceCell<Option<LocalClaudeCodeLogin>>;
+    static IN_FLIGHT: Mutex<Weak<Read>> = Mutex::const_new(Weak::new());
+    let read = {
+        let mut current = IN_FLIGHT.lock().await;
+        match current.upgrade() {
+            Some(read) => read,
+            None => {
+                let read = Arc::new(Read::new());
+                *current = Arc::downgrade(&read);
+                read
+            }
+        }
+    };
+    tokio::time::timeout(
+        std::time::Duration::from_secs(20),
+        read.get_or_init(read_local_claude_code_login_once),
+    )
+    .await
+    .ok()
+    .cloned()
+    .flatten()
+}
+
+async fn read_local_claude_code_login_once() -> Option<LocalClaudeCodeLogin> {
+    #[cfg(target_os = "macos")]
+    {
+        let services = claude_keychain_service_candidates(&get_claude_keychain_config_dirs());
+        let account = claude_keychain_account();
+        for service in services {
+            if let Some(json) = read_keychain_password_async(&service, &account).await {
+                return parse_local_claude_code_login(&json);
+            }
+        }
+    }
+    #[cfg(windows)]
+    {
+        // CredReadW reads the local credential manager without an interactive
+        // prompt. Keep at most one outstanding native read, including after
+        // cancellation; the permit lives inside the blocking task.
+        static READ: tokio::sync::Semaphore = tokio::sync::Semaphore::const_new(1);
+        let permit = READ.acquire().await.ok()?;
+        let json = tokio::task::spawn_blocking(move || {
+            let _permit = permit;
+            read_claude_keychain_credentials()
+        })
+        .await
+        .ok()
+        .flatten();
+        if let Some(json) = json {
+            return parse_local_claude_code_login(&json);
+        }
+    }
+    for path in get_claude_credentials_paths() {
+        match tokio::fs::read_to_string(path).await {
+            Ok(json) if !json.trim().is_empty() => return parse_local_claude_code_login(&json),
+            _ => continue,
+        }
+    }
+    None
+}
+
+#[cfg(target_os = "macos")]
+async fn read_keychain_password_async(service: &str, account: &str) -> Option<String> {
+    let mut command = tokio::process::Command::new("security");
+    command.args(["find-generic-password", "-s", service, "-a", account, "-w"]);
+    credential_command_output(command).await
+}
+
+#[cfg(target_os = "macos")]
+async fn credential_command_output(mut command: tokio::process::Command) -> Option<String> {
+    let output = command.kill_on_drop(true).output().await.ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let password = String::from_utf8(output.stdout).ok()?.trim().to_string();
+    (!password.is_empty()).then_some(password)
 }
 
 pub(crate) fn parse_local_claude_code_login(
@@ -336,29 +398,6 @@ pub(crate) async fn fetch_claude_code_account_metadata_at(
     fetch_claude_code_oauth_profile_at(profile_url, access_token)
         .await
         .map(claude_code_account_metadata)
-}
-
-fn read_local_claude_credentials() -> Option<String> {
-    if let Some(credentials_json) = read_claude_keychain_credentials() {
-        return Some(credentials_json);
-    }
-
-    for path in get_claude_credentials_paths() {
-        match fs::read_to_string(&path) {
-            Ok(contents) if !contents.trim().is_empty() => return Some(contents),
-            Ok(_) => continue,
-            Err(err) if err.kind() == std::io::ErrorKind::NotFound => continue,
-            Err(err) => {
-                tracing::warn!(
-                    path = %path.display(),
-                    error = %err,
-                    "auto_detect::claude: local OAuth credentials read failed; skipping"
-                );
-            }
-        }
-    }
-
-    None
 }
 
 #[cfg(windows)]
@@ -587,26 +626,9 @@ fn claude_code_account_metadata(identity: ClaudeCodeAccountIdentity) -> HashMap<
     metadata
 }
 
-#[cfg(target_os = "macos")]
-fn read_claude_keychain_credentials() -> Option<String> {
-    let services = claude_keychain_service_candidates(&get_claude_keychain_config_dirs());
-    let account = claude_keychain_account();
-    for service in services {
-        if let Some(credentials) = read_macos_keychain_password(&service, &account) {
-            return Some(credentials);
-        }
-    }
-    None
-}
-
 #[cfg(windows)]
 fn read_claude_keychain_credentials() -> Option<String> {
     super::claude_windows::read_credentials()
-}
-
-#[cfg(not(any(target_os = "macos", windows)))]
-fn read_claude_keychain_credentials() -> Option<String> {
-    None
 }
 
 #[cfg(target_os = "macos")]
@@ -652,21 +674,42 @@ fn scoped_claude_keychain_service(config_dir: &Path) -> String {
         .collect()
 }
 
-#[cfg(target_os = "macos")]
-fn read_macos_keychain_password(service: &str, account: &str) -> Option<String> {
-    use std::process::Command;
-
-    let output = Command::new("security")
-        .args(["find-generic-password", "-s", service, "-a", account, "-w"])
-        .output()
-        .ok()?;
-    if !output.status.success() {
-        return None;
-    }
-    let password = String::from_utf8(output.stdout).ok()?.trim().to_string();
-    if password.is_empty() {
-        None
-    } else {
-        Some(password)
+#[cfg(all(test, target_os = "macos"))]
+mod credential_process_tests {
+    use super::*;
+    #[tokio::test]
+    async fn cancelled_read_terminates_the_credential_process() {
+        let dir = tempfile::tempdir().unwrap();
+        let pid_path = dir.path().join("pid");
+        let mut command = tokio::process::Command::new("/bin/sh");
+        command.args([
+            "-c",
+            "echo $$ > \"$1\"; exec /bin/sleep 30",
+            "credential-fixture",
+        ]);
+        command.arg(&pid_path);
+        let task = tokio::spawn(credential_command_output(command));
+        let pid = tokio::time::timeout(std::time::Duration::from_secs(5), async {
+            loop {
+                if let Ok(raw) = tokio::fs::read_to_string(&pid_path).await {
+                    if let Ok(pid) = raw.trim().parse::<i32>() {
+                        break pid;
+                    }
+                }
+                tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .expect("fixture started");
+        task.abort();
+        assert!(task.await.unwrap_err().is_cancelled());
+        tokio::time::timeout(std::time::Duration::from_secs(5), async {
+            // Signal 0 only probes the fixture; it never sends a signal.
+            while unsafe { libc::kill(pid, 0) } == 0 {
+                tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .expect("cancelled child reaped");
     }
 }

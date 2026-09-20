@@ -13,6 +13,7 @@
     "editorAndWorkspace": "Editör & Workspace",
     "appUpdate": "Uygulama Güncellemesi",
     "security": "Güvenlik",
+    "appLock": "Uygulama Kilidi",
     "storage": "Depolama",
     "agentOrg": "Agent Ekibi",
     "harnessConnections": "Uygulama bağlantıları",
@@ -53,6 +54,52 @@
     "customPatternsDesc": "Her satıra bir düzenli ifade. Herhangi bir eşleşme sır olarak kabul edilir. Geçersiz ifadeler yoksayılır",
     "customPatternsPlaceholder": "örn. MYCORP_[A-Z0-9]{20}",
     "invalidPatterns": "{{count}} desen geçersiz ve yoksayılacak: {{patterns}}"
+  },
+  "appLock": {
+    "password": "Parola kilidi",
+    "setPassword": "Parola belirle",
+    "changePassword": "Parolayı değiştir",
+    "removePassword": "Parolayı kaldır",
+    "currentPassword": "Geçerli parola",
+    "newPassword": "Yeni parola",
+    "confirmPassword": "Yeni parolayı onayla",
+    "passwordSet": "Parola belirlendi",
+    "passwordChanged": "Parola değiştirildi",
+    "passwordRemoved": "Parola kaldırıldı",
+    "lockNow": "Şimdi kilitle",
+    "lockNowDesc": "Parola girilene kadar tüm ORG2 pencerelerini kilitler",
+    "shortcut": "Kilitleme kısayolu",
+    "hint": "Parola ipucu",
+    "hintPlaceholder": "Kilit ekranında gösterilir",
+    "hintOptionalPlaceholder": "Parola ipucu (isteğe bağlı)",
+    "autoLock": "Otomatik kilitle",
+    "autoLockDesc": "ORG2'de bu süre boyunca klavye veya fare girişi olmazsa kilitle",
+    "autoLockNever": "Asla",
+    "autoLockMinutes": "{{count}} dk sonra",
+    "autoLockHour": "1 saat sonra",
+    "lockOnLaunch": "ORG2 başlarken kilitle",
+    "lockOnLaunchDesc": "Uygulama her açıldığında parolayı sor",
+    "scopeNote": "Kilit yalnızca ORG2 pencerelerini kapsar. Verilerinizi şifrelemez veya Mobile Remote'u duraklatmaz; dosyalarınıza erişebilen herkes kilidi kaldırabilir. Parolayı unutursanız ORG2'den çıkın ve ana dizininizdeki .orgii klasöründen app-lock.json dosyasını silin",
+    "errors": {
+      "tooShort": "En az {{count}} karakter kullanın",
+      "tooLong": "Bu parola çok uzun",
+      "mismatch": "Parolalar eşleşmiyor",
+      "incorrectCurrent": "Geçerli parola yanlış",
+      "throttled": "Çok fazla hatalı deneme. Daha sonra tekrar deneyin",
+      "generic": "Uygulama kilidi güncellenemedi",
+      "hintTooLong": "Bu ipucu çok uzun",
+      "hintRevealsPassword": "İpucu parolayı içeremez"
+    },
+    "screen": {
+      "title": "ORG2 kilitli",
+      "passwordPlaceholder": "Parola",
+      "incorrect": "Yanlış parola",
+      "failed": "Kilit açılamadı. Tekrar deneyin",
+      "throttled": "Çok fazla deneme. {{time}} sonra tekrar deneyin",
+      "working": "Hâlâ çalışan oturumlar: {{count}}",
+      "showHint": "İpucunu göster",
+      "hint": "İpucu: {{hint}}"
+    }
   },
   "myRoles": {
     "currentStatus": "Mevcut durumum",
@@ -207,7 +254,6 @@
       "codex": "Codex"
     },
     "iconStyle": "Simge stili",
-    "iconStyleDesc": "Tek renkli, dosya türü ve model simgelerinin doygunluğunu azaltarak logo yerine arayüz gibi görünmelerini sağlar",
     "iconStyleOptions": {
       "colorful": "Renkli",
       "monochrome": "Tek renkli"
@@ -538,7 +584,6 @@
     "diffViewMode": "Fark görünümü",
     "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Bölünmüş fark görünümünde ortalanmış satır numaraları",
-    "splitDiffCenteredLineNumbersDesc": "Her iki satır numarası sütununu, her panelin sol kenarı yerine GitHub'daki gibi iki panelin arasında gösterir.",
     "shellsOpenWith": "Kabuklar şununla açılır",
     "shellsOpenWithDesc": "Yeni terminaller için başlangıç çalışma dizini",
     "repoPath": "Depo yolu",

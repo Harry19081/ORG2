@@ -2,6 +2,7 @@ import type { TFunction } from "i18next";
 import React, { memo } from "react";
 
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import Textarea from "@src/components/Textarea";
 import { useHousekeeperConfig } from "@src/hooks/housekeeper";
 import {
@@ -9,7 +10,6 @@ import {
   Cancel01Icon,
   ChevronsDownUpIcon,
   HugeiconsIcon,
-  Refresh04Icon,
   UnfoldMoreIcon,
 } from "@src/icons";
 
@@ -85,16 +85,12 @@ export const ContextInfoPanelSummary: React.FC<
         {t("contextInfo.title")}
       </span>
       <div className="flex items-center gap-1">
-        <Button
-          variant="tertiary"
-          size="small"
+        <RefreshButton
           iconOnly
-          aria-label={t("common:actions.refresh")}
-          title={t("common:actions.refresh")}
-          loading={refreshing}
-          disabled={!sessionId || refreshing}
-          onClick={refresh}
-          icon={<HugeiconsIcon icon={Refresh04Icon} size={14} />}
+          label={t("common:actions.refresh")}
+          refreshing={refreshing}
+          disabled={!sessionId}
+          onRefresh={refresh}
         />
         <Button
           variant="tertiary"

@@ -168,6 +168,25 @@
     -webkit-user-select: none !important;
   }
 
+  // Event rows are chrome, not transcript text. The `.chat-block-header` reset
+  // at the top of this file is (0,2,0); the semantic allowlist above resolves
+  // to `.wp__chat__history .allow-select-deep :is(span, …)` = (0,2,1), and
+  // `ChatItemWrap` puts `.allow-select-deep` on every chat item — so drag
+  // selection used to paint block-header titles and summaries ("执行命令 5 个
+  // 命令", "运行命令 cd, grep, +2"). Re-assert the reset at (0,3,0) so headers
+  // stay inert while expanded bodies (pre/code/markdown) stay selectable.
+  .allow-select-deep .chat-block-header,
+  .allow-select-deep .chat-block-header * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+
+  .allow-select-deep .chat-block-header::selection,
+  .allow-select-deep .chat-block-header *::selection {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
   .chat-markdown-body
     :is(
       p,

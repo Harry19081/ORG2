@@ -405,7 +405,6 @@
     "link": "Połącz",
     "copyName": "Kopiuj nazwę",
     "switchMethod": "Zmień metodę",
-    "dismiss": "Odrzuć",
     "clearSelection": "Wyczyść zaznaczenie",
     "openOnGitHub": "Otwórz na GitHub",
     "createPullRequest": "Utwórz pull request",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "Następne dopasowanie",
     "clearSearch": "Wyczyść wyszukiwanie",
     "openFile": "Otwórz plik",
-    "openNativeDevTools": "Otwórz natywne DevTools przeglądarki",
+    "openNativeDevTools": "Otwórz DevTools",
     "captureScreenshot": "Zrzut ekranu",
     "enableInspectMode": "Inspekcja elementu",
     "disableInspectMode": "Zakończ inspekcję (Esc)",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "Widok sieciowy tymczasowo ukryty",
       "webviewHiddenBody": "Zamknij menu lub okno dialogowe, aby wyświetlić go ponownie.",
       "loadStalledTitle": "Ta strona nie zakończyła ładowania",
-      "loadStalledBody": "Wbudowana przeglądarka zaczęła ładować ten adres, ale nigdy nie zakończyła. Odśwież stronę lub otwórz ją w przeglądarce systemowej.",
-      "currentUrl": "Bieżący URL"
+      "copyUrl": "Kopiuj URL"
     },
     "unsavedChangesTitle": "Niezapisane zmiany",
     "ci": {
@@ -1215,6 +1213,93 @@
         "checkingConflicts": "Sprawdzanie konfliktów…",
         "autoMergeEnabled": "Automatyczne scalanie włączone",
         "inMergeQueue": "Oczekuje w kolejce scalania"
+      },
+      "mergeBox": {
+        "checksFailed": "Niektóre kontrole zakończyły się niepowodzeniem",
+        "checksPending": "Niektóre kontrole jeszcze się nie zakończyły",
+        "checksPassed": "Wszystkie kontrole zakończone pomyślnie",
+        "checksSkipped": "Wszystkie kontrole zostały pominięte",
+        "counts": {
+          "failing": "{{count}} z błędem",
+          "inProgress": "{{count}} w toku",
+          "skipped": "{{count}} pominięto",
+          "successful": "{{count}} pomyślnie",
+          "summary_one": "Kontrola: {{parts}}",
+          "summary_other": "Kontrole: {{parts}}"
+        },
+        "check": {
+          "queued": "W kolejce",
+          "started": "Rozpoczęto {{time}}",
+          "successfulIn": "Zakończono pomyślnie w {{duration}}",
+          "failingAfter": "Niepowodzenie po {{duration}}",
+          "skipped": "Pominięto",
+          "successful": "Powodzenie",
+          "failing": "Niepowodzenie"
+        },
+        "deployments": {
+          "label": "Wdrożenia",
+          "none": "Brak wdrożeń",
+          "active_one": "{{count}} aktywne wdrożenie",
+          "active_other": "Aktywne wdrożenia: {{count}}",
+          "view": "Zobacz wdrożenie",
+          "notDeployed": "Ta gałąź nie została wdrożona",
+          "deployed": "Ta gałąź została pomyślnie wdrożona",
+          "deploying": "Trwa wdrażanie tej gałęzi",
+          "deployFailed": "Podczas wdrażania tej gałęzi wystąpił błąd",
+          "deployInactive": "Ta gałąź nie jest już wdrożona",
+          "state": {
+            "active": "Aktywne",
+            "pending": "W toku",
+            "failure": "Niepowodzenie",
+            "inactive": "Nieaktywne"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Zmiany zatwierdzone",
+            "detail": "Przesłano zatwierdzającą recenzję"
+          },
+          "reviewRequired": {
+            "title": "Wymagana recenzja",
+            "detail": "Do scalenia wymagana jest co najmniej jedna zatwierdzająca recenzja"
+          },
+          "reviewChangesRequested": {
+            "title": "Zażądano zmian",
+            "detail": "Recenzent zażądał zmian przed scaleniem"
+          },
+          "noConflicts": {
+            "title": "Brak konfliktów z gałęzią bazową",
+            "detail": "Scalanie można wykonać automatycznie"
+          },
+          "hasConflicts": {
+            "title": "Ta gałąź ma konflikty, które trzeba rozwiązać",
+            "detail": "Rozwiąż konflikty w gałęzi źródłowej, a następnie wypchnij zmiany"
+          },
+          "outOfDate": {
+            "title": "Ta gałąź jest nieaktualna względem gałęzi bazowej",
+            "detail": "Scal najnowsze zmiany z gałęzi bazowej z tą gałęzią"
+          },
+          "checkingConflicts": {
+            "title": "Sprawdzanie możliwości automatycznego scalenia…",
+            "detail": "Poczekaj chwilę, GitHub sprawdza stan gałęzi"
+          },
+          "autoMergeEnabled": {
+            "title": "Automatyczne scalanie włączone",
+            "detail": "Ten pull request zostanie scalony po spełnieniu wymagań"
+          },
+          "inMergeQueue": {
+            "title": "Oczekuje w kolejce scalania",
+            "detail": "GitHub scali go, gdy znajdzie się na początku kolejki"
+          }
+        },
+        "merged": {
+          "title": "Pull request pomyślnie scalony i zamknięty",
+          "detail": "Gałąź źródłową można bezpiecznie usunąć"
+        },
+        "closed": {
+          "title": "Zamknięto z niescalonymi commitami",
+          "detail": "Ten pull request jest zamknięty. Otwórz go ponownie, aby scalić"
+        }
       },
       "commits": {
         "backToList": "Wszystkie commity",
@@ -1562,6 +1647,52 @@
         "saved_on_previous": "Zmiany zapisane na poprzedniej gałęzi",
         "brought": "Twoje zmiany podążyły za tobą na tę gałąź",
         "worktree_missing": "Worktree już nie istnieje. Odśwież i spróbuj ponownie"
+      }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Stan detached HEAD",
+        "body": "Jesteś w stanie detached HEAD na commicie {{shortHash}}.\n\nNie jesteś na żadnej gałęzi. Commity, które utworzysz, mogą zostać utracone, jeśli zrobisz checkout innej gałęzi bez wcześniejszego utworzenia nowej gałęzi.\n\n⚠️ Commity w stanie detached HEAD mogą zostać usunięte przez garbage collector.",
+        "createBranch": "Utwórz gałąź",
+        "continueWithoutBranch": "Kontynuuj bez gałęzi"
+      },
+      "largePush": {
+        "title": "Wykryto duży push",
+        "body": "Zamierzasz wykonać push {{commitCount}} commitów do {{remote}}/{{branch}}.\n\nTo więcej niż zwykle. Czy na pewno chcesz kontynuować?\n\n💡 Rozważ podzielenie dużych zmian na mniejsze, bardziej skupione commity.",
+        "confirm": "Push wszystkich commitów"
+      },
+      "protectedBranch": {
+        "title": "Gałąź chroniona",
+        "body": "Gałąź \"{{branch}}\" w {{remote}} jest chroniona i nie można wykonać push bezpośrednio do niej.\n\nW chronionych gałęziach zmiany muszą przechodzić przez pull requesty.",
+        "createPr": "Utwórz pull request"
+      },
+      "pullConflict": {
+        "title": "Nie można wykonać pull z lokalnymi zmianami",
+        "body": "Twoje lokalne zmiany zostałyby nadpisane przez zmiany przychodzące z \"{{branch}}\".{{fileInfo}}\n\nWybierz, jak kontynuować:",
+        "fileInfo_one": " (dotyczy {{count}} pliku)",
+        "fileInfo_other": " (dotyczy {{count}} plików)",
+        "stashAndPull": "Stash i Pull",
+        "discardAndPull": "Odrzuć i Pull"
+      },
+      "pushRejected": {
+        "title": "Push odrzucony",
+        "body": "Nie można wykonać push do {{remote}}/{{branch}}.\n\nZdalna gałąź zawiera commity, których nie masz lokalnie.{{behindInfo}}\n\n⚠️ Force push trwale nadpisze zmiany w zdalnym repozytorium.",
+        "behindInfo_one": " (brakuje {{count}} commita)",
+        "behindInfo_other": " (brakuje {{count}} commitów)",
+        "pullAndPush": "Pull i Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Konflikt merge",
+        "titleRebase": "Konflikt rebase",
+        "bodyMerge": "Podczas merge gałęzi \"{{branch}}\" wystąpiły konflikty.{{progress}}{{files}}\n\n⚠️ Przerwanie anuluje merge i przywróci twoją gałąź.",
+        "bodyRebase": "Podczas rebase na \"{{branch}}\" wystąpiły konflikty.{{progress}}{{files}}\n\n⚠️ Przerwanie przywróci twoją gałąź do stanu sprzed rebase.",
+        "progress": " (Krok {{current}} z {{total}})",
+        "files_one": "\n\nKonflikty w {{count}} pliku.",
+        "files_other": "\n\nKonflikty w {{count}} plikach.",
+        "resolve": "Rozwiąż konflikty",
+        "abortMerge": "Przerwij merge",
+        "abortRebase": "Przerwij rebase"
       }
     }
   },
@@ -2178,13 +2309,29 @@
   "selectionMenu": {
     "addToChat": "Dodaj do czatu",
     "addThisFile": "Dodaj ten plik",
-    "addLines": "Dodaj linię {{from}} – {{to}}"
+    "addLines": "Dodaj linię {{from}} – {{to}}",
+    "replyToSelection": "Odpowiedz",
+    "clearQuotedSelection": "Usuń cytat",
+    "pinSelection": "Przypnij"
   },
   "browser": {
     "screenshot": {
       "added": "Zrzut ekranu dołączony do czatu",
       "failed": "Nie udało się przechwycić zrzutu ekranu: {{reason}}",
-      "noActivePage": "Brak aktywnej strony do przechwycenia"
+      "noActivePage": "Brak aktywnej strony do przechwycenia",
+      "saved": "Zapisano zrzut ekranu",
+      "saveFailed": "Nie udało się zapisać zrzutu ekranu: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Motyw strony",
+      "themeAuto": "Automatyczny",
+      "themeLight": "Jasny",
+      "themeDark": "Ciemny",
+      "saveScreenshot": "Zapisz zrzut ekranu...",
+      "openHtmlFile": "Otwórz plik HTML..."
+    },
+    "openHtmlFile": {
+      "failed": "Nie udało się otworzyć pliku: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Dodaj element",
@@ -2234,7 +2381,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari przechowuje pliki cookie w folderze chronionym przez macOS. Zezwól ORG2 na pełny dostęp do dysku w Ustawieniach systemowych, a następnie sprawdź ponownie",
+      "explain": "{{browser}} przechowuje pliki cookie w folderze chronionym przez macOS. Zezwól ORG2 na pełny dostęp do dysku w Ustawieniach systemowych, a następnie sprawdź ponownie",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },

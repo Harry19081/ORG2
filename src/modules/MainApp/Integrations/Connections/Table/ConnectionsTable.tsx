@@ -6,6 +6,8 @@ import {
   type SyncConnection,
 } from "@src/api/http/integrations";
 import Button from "@src/components/Button";
+import DeleteIconButton from "@src/components/Button/DeleteIconButton";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import IntegrationIcon from "@src/components/IntegrationIcon";
 import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
@@ -21,12 +23,7 @@ import {
   ScrollPreservation,
 } from "@src/components/layout/blocks";
 import { InfoRow } from "@src/components/layout/blocks/InfoRow";
-import {
-  Add01Icon,
-  Delete02Icon,
-  HugeiconsIcon,
-  Refresh04Icon,
-} from "@src/icons";
+import { Add01Icon, HugeiconsIcon } from "@src/icons";
 
 import {
   InlineCardBody,
@@ -259,22 +256,11 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
         align: "right",
         renderCell: (row) => (
           <div className="flex h-full min-w-[44px] items-center justify-end gap-2">
-            <Button
+            <DeleteIconButton
               size="small"
-              icon={
-                <HugeiconsIcon
-                  icon={Delete02Icon}
-                  data-icon="trash-2"
-                  size={14}
-                  className="text-danger-6"
-                />
-              }
-              iconOnly
-              loading={removingRowId === row.id}
-              disabled={removingRowId === row.id}
-              aria-label={tCommon("actions.remove")}
-              title={tCommon("actions.remove")}
-              onClick={(event) => {
+              deleting={removingRowId === row.id}
+              label={tCommon("actions.remove")}
+              onDelete={(event) => {
                 event.stopPropagation();
                 void handleRemoveRow(row);
               }}
@@ -324,18 +310,12 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
                   searchPlaceholder: t("integrations.searchPlaceholder"),
                   rightContent: (
                     <>
-                      <Button
-                        icon={
-                          <HugeiconsIcon
-                            icon={Refresh04Icon}
-                            data-icon="refresh-cw"
-                            size={14}
-                            className={loading ? "animate-spin" : undefined}
-                          />
-                        }
+                      <RefreshButton
+                        variant="secondary"
                         iconOnly
-                        disabled={loading}
-                        onClick={() => {
+                        label={tCommon("actions.refresh")}
+                        refreshing={loading}
+                        onRefresh={() => {
                           void onRefresh().catch((error: unknown) => {
                             Message.error(
                               error instanceof Error
@@ -344,9 +324,7 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
                             );
                           });
                         }}
-                        aria-label={tCommon("actions.refresh")}
-                        title={tCommon("actions.refresh")}
-                        data-testid="connections-refresh-button"
+                        dataTestId="connections-refresh-button"
                       />
                       <Button
                         icon={
