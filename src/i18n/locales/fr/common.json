@@ -405,7 +405,6 @@
     "link": "Lier",
     "copyName": "Copier le nom",
     "switchMethod": "Changer de méthode",
-    "dismiss": "Ignorer",
     "clearSelection": "Effacer la sélection",
     "openOnGitHub": "Ouvrir sur GitHub",
     "createPullRequest": "Créer une pull request",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "Correspondance suivante",
     "clearSearch": "Effacer la recherche",
     "openFile": "Ouvrir le fichier",
-    "openNativeDevTools": "Ouvrir les DevTools natives du navigateur",
+    "openNativeDevTools": "Ouvrir les DevTools",
     "captureScreenshot": "Capture d’écran",
     "enableInspectMode": "Inspecter un élément",
     "disableInspectMode": "Quitter l'inspecteur (Échap)",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "Vue web temporairement masquée",
       "webviewHiddenBody": "Fermez le menu ou la boîte de dialogue pour l’afficher à nouveau.",
       "loadStalledTitle": "Cette page n’a pas fini de se charger",
-      "loadStalledBody": "Le navigateur intégré a commencé à charger cette adresse sans jamais terminer. Rechargez-la ou ouvrez-la dans votre navigateur système.",
-      "currentUrl": "URL actuelle"
+      "copyUrl": "Copier l’URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {

@@ -405,7 +405,6 @@
     "link": "Vincular",
     "copyName": "Copiar nombre",
     "switchMethod": "Cambiar método",
-    "dismiss": "Ignorar",
     "clearSelection": "Borrar selección",
     "openOnGitHub": "Abrir en GitHub",
     "createPullRequest": "Crear pull request",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "Siguiente coincidencia",
     "clearSearch": "Limpiar búsqueda",
     "openFile": "Abrir archivo",
-    "openNativeDevTools": "Abrir DevTools nativas del navegador",
+    "openNativeDevTools": "Abrir DevTools",
     "captureScreenshot": "Captura de pantalla",
     "enableInspectMode": "Inspeccionar elemento",
     "disableInspectMode": "Salir del inspector (Esc)",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "Vista web oculta temporalmente",
       "webviewHiddenBody": "Cierra el menú o el diálogo para volver a mostrarla.",
       "loadStalledTitle": "Esta página no terminó de cargarse",
-      "loadStalledBody": "El navegador integrado empezó a cargar esta dirección, pero nunca terminó. Vuelve a cargarla o ábrela en el navegador del sistema.",
-      "currentUrl": "URL actual"
+      "copyUrl": "Copiar URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {

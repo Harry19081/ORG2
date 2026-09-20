@@ -405,7 +405,6 @@
     "link": "연결",
     "copyName": "이름 복사",
     "switchMethod": "방법 전환",
-    "dismiss": "무시",
     "clearSelection": "선택 지우기",
     "openOnGitHub": "GitHub에서 열기",
     "createPullRequest": "Pull request 만들기",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "다음 일치",
     "clearSearch": "검색 지우기",
     "openFile": "파일 열기",
-    "openNativeDevTools": "네이티브 브라우저 개발자 도구 열기",
+    "openNativeDevTools": "개발자 도구 열기",
     "captureScreenshot": "스크린샷",
     "enableInspectMode": "요소 검사",
     "disableInspectMode": "검사 종료 (Esc)",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "웹뷰가 일시적으로 숨겨졌습니다",
       "webviewHiddenBody": "메뉴나 대화 상자를 닫으면 다시 표시됩니다.",
       "loadStalledTitle": "이 페이지의 로딩이 완료되지 않았습니다",
-      "loadStalledBody": "임베디드 브라우저가 이 주소를 불러오기 시작했지만 완료하지 못했습니다. 새로 고치거나 시스템 브라우저에서 열어 보세요.",
-      "currentUrl": "현재 URL"
+      "copyUrl": "URL 복사"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {

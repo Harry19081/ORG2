@@ -16,7 +16,10 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
 import Input from "@src/components/Input";
-import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import {
+  ToolbarTooltip,
+  ToolbarTooltipPositionProvider,
+} from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import {
   FILE_BAR_ROW_CLASSES,
   HEADER_ICON_SIZE,
@@ -446,7 +449,9 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
             onMouseMove={handleInputMouseMove}
             onMouseUp={handleInputMouseUp}
             placeholder={t("placeholders.enterUrlOrSearch")}
-            inputClassName="relative z-10 h-7 min-w-0 flex-1 border-none bg-transparent px-3 text-[14px] text-text-1 outline-none select-text placeholder:text-text-3"
+            // A shown address sits centered; focusing it (editing) or an empty
+            // bar with its placeholder keeps the usual left alignment.
+            inputClassName="relative z-10 h-7 min-w-0 flex-1 border-none bg-transparent px-3 text-[14px] text-text-1 outline-none select-text placeholder:text-text-3 [&:not(:focus):not(:placeholder-shown)]:text-center"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -568,14 +573,22 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
       </div>
     );
 
+    // The native webview sits right under this bar and paints over any
+    // tooltip that opens downward, so this toolbar's tooltips open upward.
+    const header = (
+      <ToolbarTooltipPositionProvider value="top">
+        {headerContent}
+      </ToolbarTooltipPositionProvider>
+    );
+
     usePublishWorkstationTabHeader({
       host: publishToHost,
-      content: headerContent,
+      content: header,
       enabled: publishEnabled && !inline,
     });
 
     if (inline) {
-      return <div className={FILE_BAR_ROW_CLASSES}>{headerContent}</div>;
+      return <div className={FILE_BAR_ROW_CLASSES}>{header}</div>;
     }
 
     return null;

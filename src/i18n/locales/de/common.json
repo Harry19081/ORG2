@@ -405,7 +405,6 @@
     "link": "Verknüpfen",
     "copyName": "Namen kopieren",
     "switchMethod": "Methode wechseln",
-    "dismiss": "Ignorieren",
     "clearSelection": "Auswahl löschen",
     "openOnGitHub": "Auf GitHub öffnen",
     "createPullRequest": "Pull Request erstellen",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "Nächster Treffer",
     "clearSearch": "Suche löschen",
     "openFile": "Datei öffnen",
-    "openNativeDevTools": "Native Browser-DevTools öffnen",
+    "openNativeDevTools": "DevTools öffnen",
     "captureScreenshot": "Screenshot",
     "enableInspectMode": "Element untersuchen",
     "disableInspectMode": "Inspektor verlassen (Esc)",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "Webview vorübergehend ausgeblendet",
       "webviewHiddenBody": "Menü oder Dialog schließen, um sie wieder anzuzeigen.",
       "loadStalledTitle": "Diese Seite wurde nicht fertig geladen",
-      "loadStalledBody": "Der eingebettete Browser hat begonnen, diese Adresse zu laden, aber nie abgeschlossen. Lade sie neu oder öffne sie im Systembrowser.",
-      "currentUrl": "Aktuelle URL"
+      "copyUrl": "URL kopieren"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {

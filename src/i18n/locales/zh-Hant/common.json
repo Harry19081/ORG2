@@ -407,7 +407,6 @@
     "link": "連結",
     "copyName": "複製名稱",
     "switchMethod": "切換方式",
-    "dismiss": "忽略",
     "clearSelection": "清除選擇",
     "expandView": "展開檢視",
     "restoreSplitView": "恢復分割檢視",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "下一個匹配",
     "clearSearch": "清除搜索",
     "openFile": "打開文件",
-    "openNativeDevTools": "打開原生瀏覽器開發者工具",
+    "openNativeDevTools": "打開開發者工具",
     "captureScreenshot": "截圖",
     "enableInspectMode": "檢查元素",
     "disableInspectMode": "退出檢查 (Esc)",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "網頁檢視已暫時隱藏",
       "webviewHiddenBody": "關閉選單或對話框即可重新顯示。",
       "loadStalledTitle": "此頁面未載入完成",
-      "loadStalledBody": "內嵌瀏覽器已開始載入該網址，但始終未完成。可嘗試重新載入，或改用系統瀏覽器開啟。",
-      "currentUrl": "目前 URL"
+      "copyUrl": "複製 URL"
     },
     "unsavedChangesTitle": "未保存的更改",
     "ci": {
