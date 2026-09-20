@@ -14,7 +14,11 @@ interface RefreshButtonProps {
    */
   size?: "small" | "default";
   iconOnly?: boolean;
-  onRefresh: () => void;
+  /**
+   * Async refreshes are fine: `useRefreshSpin` attaches a rejection handler,
+   * so callers pass their fetcher directly instead of wrapping it.
+   */
+  onRefresh: () => void | Promise<void>;
   refreshing: boolean;
   disabled?: boolean;
   dataTestId?: string;
