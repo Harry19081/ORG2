@@ -7,6 +7,7 @@ import { MobileRemoteProviders, useMobileRemote } from "./app";
 import { MobileAuthContext } from "./auth/MobileAuthContext";
 import { MobileShell } from "./components/MobileShell";
 import { MobileTabBar } from "./components/MobileTabBar";
+import { StopConfirmModal } from "./components/modals/StopConfirmModal";
 import { MobileProfileEntry } from "./components/profile/MobileProfileEntry";
 import { mobileConnectionFailureKey } from "./connection/mobileConnectionFeedback";
 import { useMobileRemoteCoordinator } from "./navigation/useMobileRemoteCoordinator";
@@ -40,6 +41,8 @@ function MobileRemoteRoutes({
     connection,
     nav,
     dispatch,
+    stopConfirming,
+    stopFailed,
     connectionRecovering,
     connectionRecoveryError,
     showTabBar,
@@ -47,6 +50,7 @@ function MobileRemoteRoutes({
     selectedSessionSendCapability,
     handleConnectingComplete,
     handleAcceptPairing,
+    handleConfirmStop,
     handleConnectionRetry,
     handleConnectionRepair,
   } = useMobileRemoteCoordinator(recoveredPairingIntent);
@@ -142,6 +146,14 @@ function MobileRemoteRoutes({
               sessionName={selectedSessionName}
               sendCapability={selectedSessionSendCapability}
               onBack={() => dispatch({ type: "back_from_chat" })}
+              onOpenStopModal={() => dispatch({ type: "open_stop_modal" })}
+            />
+            <StopConfirmModal
+              visible={nav.stopModalOpen}
+              confirming={stopConfirming}
+              failed={stopFailed}
+              onCancel={() => dispatch({ type: "close_stop_modal" })}
+              onConfirm={() => void handleConfirmStop().catch(() => undefined)}
             />
           </>
         );
