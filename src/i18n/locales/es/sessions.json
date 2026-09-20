@@ -1003,7 +1003,9 @@
     "sending": "Enviando…",
     "typeMessage": "Escribe un mensaje…",
     "session": "Sesión",
-    "history": "Sesiones"
+    "history": "Sesiones",
+    "goToPinnedPassage": "Ir al pasaje fijado: {{preview}}",
+    "unpinPassage": "Dejar de fijar"
   },
   "tools": {
     "noResultsFound": "No se encontraron resultados",

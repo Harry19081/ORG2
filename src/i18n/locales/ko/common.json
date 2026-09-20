@@ -2309,7 +2309,10 @@
   "selectionMenu": {
     "addToChat": "채팅에 추가",
     "addThisFile": "이 파일 추가",
-    "addLines": "{{from}} – {{to}} 줄 추가"
+    "addLines": "{{from}} – {{to}} 줄 추가",
+    "replyToSelection": "답장",
+    "clearQuotedSelection": "인용 제거",
+    "pinSelection": "고정"
   },
   "browser": {
     "screenshot": {

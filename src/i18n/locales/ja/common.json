@@ -2309,7 +2309,10 @@
   "selectionMenu": {
     "addToChat": "チャットに追加",
     "addThisFile": "このファイルを追加",
-    "addLines": "{{from}} – {{to}} 行を追加"
+    "addLines": "{{from}} – {{to}} 行を追加",
+    "replyToSelection": "返信",
+    "clearQuotedSelection": "引用を削除",
+    "pinSelection": "ピン留め"
   },
   "browser": {
     "screenshot": {

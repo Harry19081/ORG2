@@ -2147,7 +2147,10 @@
   "selectionMenu": {
     "addToChat": "चैट में जोड़ें",
     "addThisFile": "यह फ़ाइल जोड़ें",
-    "addLines": "पंक्ति {{from}} – {{to}} जोड़ें"
+    "addLines": "पंक्ति {{from}} – {{to}} जोड़ें",
+    "replyToSelection": "उत्तर दें",
+    "clearQuotedSelection": "उद्धरण हटाएँ",
+    "pinSelection": "पिन करें"
   },
   "browser": {
     "screenshot": {

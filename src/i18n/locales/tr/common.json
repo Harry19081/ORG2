@@ -2309,7 +2309,10 @@
   "selectionMenu": {
     "addToChat": "Sohbete ekle",
     "addThisFile": "Bu dosyayı ekle",
-    "addLines": "{{from}} – {{to}} satırlarını ekle"
+    "addLines": "{{from}} – {{to}} satırlarını ekle",
+    "replyToSelection": "Yanıtla",
+    "clearQuotedSelection": "Alıntıyı kaldır",
+    "pinSelection": "Sabitle"
   },
   "browser": {
     "screenshot": {

@@ -1003,7 +1003,9 @@
     "sending": "Отправка…",
     "typeMessage": "Введите сообщение…",
     "session": "Сессия",
-    "history": "Сессии"
+    "history": "Сессии",
+    "goToPinnedPassage": "Перейти к закреплённому фрагменту: {{preview}}",
+    "unpinPassage": "Открепить"
   },
   "tools": {
     "noResultsFound": "Результатов не найдено",

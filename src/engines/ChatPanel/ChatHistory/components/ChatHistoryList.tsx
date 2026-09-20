@@ -45,6 +45,7 @@ import { useChatHistoryListActiveGroupReporter } from "./ChatHistoryListActiveGr
 import { sameChatHistoryListProps } from "./ChatHistoryListEquality";
 import {
   EMPTY_ROW_GROUP_META,
+  buildChatGroupFallbackIds,
   buildChatGroupRenderKeys,
   buildRowGroupMeta,
   isScrolledToContentBottom,
@@ -149,14 +150,10 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = memo(
         return group;
       });
     }, [effectiveGroupCounts]);
-    const groupFallbackIds = useMemo(() => {
-      let startFlatIndex = 0;
-      return effectiveGroupCounts.map((groupItemCount) => {
-        const firstItem = flatItems[startFlatIndex];
-        startFlatIndex += groupItemCount;
-        return firstItem?.event?.id ?? firstItem?.chunk_id ?? null;
-      });
-    }, [effectiveGroupCounts, flatItems]);
+    const groupFallbackIds = useMemo(
+      () => buildChatGroupFallbackIds(flatItems, effectiveGroupCounts),
+      [effectiveGroupCounts, flatItems]
+    );
     const groupRenderKeys = useMemo(
       () => buildChatGroupRenderKeys(turnIds, groupFallbackIds),
       [groupFallbackIds, turnIds]

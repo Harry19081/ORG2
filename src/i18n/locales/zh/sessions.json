@@ -1003,7 +1003,9 @@
     "sending": "正在发送…",
     "typeMessage": "输入消息…",
     "session": "会话",
-    "history": "会话"
+    "history": "会话",
+    "goToPinnedPassage": "跳转到固定段落：{{preview}}",
+    "unpinPassage": "取消固定"
   },
   "tools": {
     "noResultsFound": "未找到结果",

@@ -1003,7 +1003,9 @@
     "sending": "Sending…",
     "typeMessage": "Type a message…",
     "session": "Session",
-    "history": "Sessions"
+    "history": "Sessions",
+    "goToPinnedPassage": "Go to pinned passage: {{preview}}",
+    "unpinPassage": "Unpin"
   },
   "planning": {
     "agentTyping": "Agent is typing...",
