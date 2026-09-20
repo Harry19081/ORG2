@@ -153,12 +153,19 @@ pub(crate) fn handle_page_load(
             );
         }
     }
-    // Only a window's own webview owns database leases; inline browser
-    // webviews navigating inside it must not release them.
+    // Only a window's own webview owns database leases and the window's
+    // sleep-inhibitor hold; inline browser webviews navigating inside it must
+    // not release them.
     if webview.label() == webview.window().label()
         && matches!(payload.event(), PageLoadEvent::Started)
     {
         release_database_leases_for_window(webview.window().label());
+        // A reload discards the page without running React cleanup, so the
+        // old page's hold would outlive it. The new page starts believing it
+        // holds nothing and re-acquires only if a session is still working —
+        // if the last one finished across the reload, nothing would ever
+        // release the hold and the machine would stay awake until quit.
+        system_services::power::release_sleep_inhibitor_for_window_label(webview.window().label());
     }
     if (webview.label() == "main" || app_window::is_station_window_label(webview.label()))
         && matches!(payload.event(), PageLoadEvent::Started)
