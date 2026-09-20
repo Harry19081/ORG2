@@ -3830,6 +3830,7 @@ dependencies = [
  "core_types",
  "csv",
  "dirs",
+ "fs2",
  "insta",
  "integrations",
  "libc",

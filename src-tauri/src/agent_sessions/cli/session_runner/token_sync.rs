@@ -50,6 +50,7 @@ pub(super) fn sync_codex_cli_auth_to_key_vault(
                 access_token,
                 refresh_token,
                 id_token,
+                expires_at: None,
             },
         )
         .map_err(|err| format!("Failed to save refreshed Codex CLI tokens: {err}"))?;
