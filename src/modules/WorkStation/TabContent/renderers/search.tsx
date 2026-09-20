@@ -7,52 +7,42 @@
  * `TabContentRenderer`'s `case "search"` (including its `handleSearchResultClick`
  * line-aware navigation).
  */
-import React, { Suspense, memo, useCallback } from "react";
+import { useCallback } from "react";
 
-import { Placeholder } from "@src/components/Placeholder";
 import { useEditorHostContext } from "@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/context/editorHostContext";
 import type { SearchOptions as StoreSearchOptions } from "@src/store/workstation/codeEditor/search";
 
-import type { UnifiedTabContentProps } from "../types";
+import { createLazyTabRenderer } from "./createLazyTabRenderer";
 
-const SearchEditorContent = React.lazy(
-  () =>
-    import("@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/SearchEditorContent")
-);
+const SearchTabRenderer = createLazyTabRenderer({
+  displayName: "SearchTabRenderer",
+  load: () =>
+    import("@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/SearchEditorContent"),
+  useProps: ({ tab }) => {
+    const { repoPath, onFileSelect, onFileSelectWithLine } =
+      useEditorHostContext();
 
-const LazyFallback = () => (
-  <Placeholder variant="loading" placement="detail-panel" fillParentHeight />
-);
+    const handleSearchResultClick = useCallback(
+      (filePath: string, line: number, _column?: number) => {
+        if (line > 0 && onFileSelectWithLine) {
+          onFileSelectWithLine(filePath, line);
+        } else {
+          onFileSelect(filePath);
+        }
+      },
+      [onFileSelect, onFileSelectWithLine]
+    );
 
-const SearchTabRenderer: React.FC<UnifiedTabContentProps> = memo(({ tab }) => {
-  const { repoPath, onFileSelect, onFileSelectWithLine } =
-    useEditorHostContext();
-
-  const handleSearchResultClick = useCallback(
-    (filePath: string, line: number, _column?: number) => {
-      if (line > 0 && onFileSelectWithLine) {
-        onFileSelectWithLine(filePath, line);
-      } else {
-        onFileSelect(filePath);
-      }
-    },
-    [onFileSelect, onFileSelectWithLine]
-  );
-
-  return (
-    <Suspense fallback={<LazyFallback />}>
-      <SearchEditorContent
-        key={tab.id}
-        sessionScopeId={tab.id}
-        repoPath={repoPath}
-        initialQuery={String(tab.data.initialQuery || "")}
-        initialOptions={tab.data.initialOptions as StoreSearchOptions}
-        onResultClick={handleSearchResultClick}
-      />
-    </Suspense>
-  );
+    return {
+      sessionScopeId: tab.id,
+      repoPath,
+      initialQuery: String(tab.data.initialQuery || ""),
+      initialOptions: tab.data.initialOptions as StoreSearchOptions,
+      onResultClick: handleSearchResultClick,
+    };
+  },
+  // One search surface per tab; remount if the tab identity changes.
+  getKey: ({ tab }) => tab.id,
 });
-
-SearchTabRenderer.displayName = "SearchTabRenderer";
 
 export default SearchTabRenderer;

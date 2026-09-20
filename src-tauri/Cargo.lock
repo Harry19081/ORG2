@@ -3818,6 +3818,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "junction"
+version = "1.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8cfc352a66ba903c23239ef51e809508b6fc2b0f90e3476ac7a9ff47e863ae95"
+dependencies = [
+ "scopeguard",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "key_vault"
 version = "0.1.0"
 dependencies = [
@@ -3830,6 +3840,7 @@ dependencies = [
  "core_types",
  "csv",
  "dirs",
+ "fs2",
  "insta",
  "integrations",
  "libc",
@@ -5087,6 +5098,7 @@ dependencies = [
  "inbox",
  "insta",
  "integrations",
+ "junction",
  "key_vault",
  "libc",
  "log",
@@ -6862,6 +6874,7 @@ dependencies = [
  "app_paths",
  "app_utils",
  "blake3",
+ "globset",
  "grep-regex",
  "grep-searcher",
  "ignore",
@@ -7907,6 +7920,7 @@ dependencies = [
  "app_paths",
  "app_platform",
  "app_window",
+ "base64 0.22.1",
  "chrono",
  "core-foundation 0.10.1",
  "dispatch2",
@@ -7918,11 +7932,16 @@ dependencies = [
  "objc2-app-kit",
  "objc2-foundation",
  "open",
+ "pbkdf2",
+ "rand 0.10.2",
  "reqwest 0.13.4",
  "serde",
  "serde_json",
+ "sha2",
+ "subtle",
  "tauri",
  "tauri-plugin-notification",
+ "tempfile",
  "tokio",
  "tracing",
  "url",

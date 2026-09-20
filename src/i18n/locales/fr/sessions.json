@@ -946,7 +946,31 @@
         "createdByMe": "Créés par moi",
         "assigneeUpdateNotApplied": "GitHub n’a pas appliqué le changement de responsable",
         "assigneeUpdateSuccess": "Responsables mis à jour sur GitHub",
-        "updateIssueFailed": "Échec de la mise à jour de l’issue GitHub"
+        "updateIssueFailed": "Échec de la mise à jour de l’issue GitHub",
+        "filters": {
+          "searchPlaceholder": "Rechercher des filtres",
+          "noMatches": "Aucun filtre correspondant",
+          "activeCount": "Filtres actifs : {{count}}",
+          "clear": "Effacer les filtres",
+          "reviewRequestedFromMe": "Revue demandée à moi",
+          "noAssignee": "Aucun responsable",
+          "noLabel": "Aucune étiquette",
+          "linkedPullRequest": "Avec une pull request liée",
+          "draft": "Brouillon",
+          "readyForReview": "Prête pour la revue",
+          "recentlyUpdated": "Mis à jour ces 7 derniers jours",
+          "stale": "Sans mise à jour depuis 30 jours",
+          "facetAuthor": "Auteur",
+          "facetAssignee": "Responsable",
+          "facetLabel": "Étiquette",
+          "facetMilestone": "Jalon",
+          "facetReviewRequested": "Revue demandée",
+          "facetBaseBranch": "Branche de base",
+          "facetCiStatus": "Vérifications",
+          "ciSuccess": "Réussies",
+          "ciFailure": "Échouées",
+          "ciPending": "En attente"
+        }
       }
     },
     "sessionViews": {
@@ -979,7 +1003,9 @@
     "sending": "Envoi…",
     "typeMessage": "Écrivez un message…",
     "session": "Session",
-    "history": "Sessions"
+    "history": "Sessions",
+    "goToPinnedPassage": "Aller au passage épinglé : {{preview}}",
+    "unpinPassage": "Détacher"
   },
   "tools": {
     "noResultsFound": "Aucun résultat trouvé",

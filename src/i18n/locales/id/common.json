@@ -228,7 +228,6 @@
     "later": "Nanti",
     "link": "Tautkan",
     "copyName": "Salin Nama",
-    "dismiss": "Tutup",
     "clearSelection": "Hapus pilihan",
     "expandView": "Luaskan tampilan",
     "restoreSplitView": "Pulihkan tampilan terpisah",
@@ -605,7 +604,7 @@
     "nextMatchLabel": "Kecocokan Berikutnya",
     "clearSearch": "Hapus pencarian",
     "openFile": "Buka File",
-    "openNativeDevTools": "Buka DevTools browser native",
+    "openNativeDevTools": "Buka DevTools",
     "captureScreenshot": "Tangkapan layar",
     "enableInspectMode": "Periksa elemen",
     "disableInspectMode": "Keluar dari inspektor (Esc)",
@@ -712,7 +711,7 @@
     "chatHistoryReloadHint": "Data sesi mungkin belum dimuat",
     "chatHistoryAgentWorking": "Agen sedang berjalan",
     "chatHistoryAgentWorkingHint": "Pesan akan muncul bersama respons pertama; toolbar mungkin tampak diam hingga saat itu",
-    "pleaseSelect": "Silakan pilih",
+    "pleaseSelect": "Pilih",
     "noSessionsFound": "Tidak ada sesi ditemukan",
     "typeToSearchFiles": "Ketik untuk mencari file...",
     "selectFileToViewChanges": "Pilih file untuk melihat perubahan",
@@ -886,8 +885,7 @@
       "tlsDevNote": "Catatan: Beberapa situs HTTPS (seperti GitHub) mungkin menampilkan kesalahan TLS dalam mode pengembangan karena validasi sertifikat. Coba situs HTTP atau situs HTTPS sederhana seperti example.com.",
       "siteUnreachableTitle": "Situs ini tidak dapat dijangkau",
       "loadStalledTitle": "Halaman ini tidak selesai dimuat",
-      "loadStalledBody": "Browser tersemat mulai memuat alamat ini tetapi tidak pernah selesai. Coba muat ulang, atau buka di browser sistem Anda.",
-      "currentUrl": "URL Saat Ini",
+      "copyUrl": "Salin URL",
       "webviewHiddenTitle": "Webview disembunyikan sementara",
       "webviewHiddenBody": "Tutup menu atau dialog untuk menampilkannya lagi."
     },
@@ -1134,6 +1132,93 @@
         "checkingConflicts": "Memeriksa konflik…",
         "autoMergeEnabled": "Merge otomatis diaktifkan",
         "inMergeQueue": "Menunggu dalam antrean merge"
+      },
+      "mergeBox": {
+        "checksFailed": "Beberapa pemeriksaan tidak berhasil",
+        "checksPending": "Beberapa pemeriksaan belum selesai",
+        "checksPassed": "Semua pemeriksaan telah lulus",
+        "checksSkipped": "Semua pemeriksaan dilewati",
+        "counts": {
+          "failing": "{{count}} gagal",
+          "inProgress": "{{count}} sedang berlangsung",
+          "skipped": "{{count}} dilewati",
+          "successful": "{{count}} berhasil",
+          "summary_one": "Pemeriksaan: {{parts}}",
+          "summary_other": "Pemeriksaan: {{parts}}"
+        },
+        "check": {
+          "queued": "Dalam antrean",
+          "started": "Dimulai {{time}}",
+          "successfulIn": "Berhasil dalam {{duration}}",
+          "failingAfter": "Gagal setelah {{duration}}",
+          "skipped": "Dilewati",
+          "successful": "Berhasil",
+          "failing": "Gagal"
+        },
+        "deployments": {
+          "label": "Deployment",
+          "none": "Tidak ada deployment",
+          "active_one": "{{count}} deployment aktif",
+          "active_other": "{{count}} deployment aktif",
+          "view": "Lihat deployment",
+          "notDeployed": "Branch ini belum di-deploy",
+          "deployed": "Branch ini berhasil di-deploy",
+          "deploying": "Branch ini sedang di-deploy",
+          "deployFailed": "Terjadi kesalahan saat men-deploy branch ini",
+          "deployInactive": "Branch ini tidak lagi di-deploy",
+          "state": {
+            "active": "Aktif",
+            "pending": "Sedang berlangsung",
+            "failure": "Gagal",
+            "inactive": "Tidak aktif"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Perubahan disetujui",
+            "detail": "Tinjauan yang menyetujui telah dikirim"
+          },
+          "reviewRequired": {
+            "title": "Tinjauan diperlukan",
+            "detail": "Diperlukan setidaknya satu tinjauan yang menyetujui untuk melakukan merge"
+          },
+          "reviewChangesRequested": {
+            "title": "Perubahan diminta",
+            "detail": "Seorang peninjau meminta perubahan sebelum merge"
+          },
+          "noConflicts": {
+            "title": "Tidak ada konflik dengan branch basis",
+            "detail": "Merge dapat dilakukan secara otomatis"
+          },
+          "hasConflicts": {
+            "title": "Branch ini memiliki konflik yang harus diselesaikan",
+            "detail": "Selesaikan konflik di branch head, lalu push"
+          },
+          "outOfDate": {
+            "title": "Branch ini tertinggal dari branch basis",
+            "detail": "Merge perubahan terbaru dari branch basis ke branch ini"
+          },
+          "checkingConflicts": {
+            "title": "Memeriksa kemungkinan merge otomatis…",
+            "detail": "Mohon tunggu sementara GitHub memeriksa status branch"
+          },
+          "autoMergeEnabled": {
+            "title": "Merge otomatis diaktifkan",
+            "detail": "Pull request ini akan di-merge setelah persyaratannya terpenuhi"
+          },
+          "inMergeQueue": {
+            "title": "Menunggu dalam antrean merge",
+            "detail": "GitHub akan melakukan merge saat mencapai urutan terdepan antrean"
+          }
+        },
+        "merged": {
+          "title": "Pull request berhasil di-merge dan ditutup",
+          "detail": "Branch head dapat dihapus dengan aman"
+        },
+        "closed": {
+          "title": "Ditutup dengan commit yang belum di-merge",
+          "detail": "Pull request ini ditutup. Buka kembali untuk melakukan merge"
+        }
       },
       "commits": {
         "backToList": "Semua commit",
@@ -1393,6 +1478,52 @@
         "saved_on_previous": "Perubahan disimpan di branch sebelumnya",
         "brought": "Perubahan Anda ikut ke branch ini",
         "worktree_missing": "Worktree sudah tidak ada. Muat ulang dan coba lagi"
+      }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Status Detached HEAD",
+        "body": "Anda berada dalam status detached HEAD pada commit {{shortHash}}.\n\nAnda tidak berada di branch mana pun. Commit yang Anda buat bisa hilang jika Anda checkout ke branch lain tanpa membuat branch baru terlebih dahulu.\n\n⚠️ Commit dalam status detached HEAD bisa terkena garbage collection.",
+        "createBranch": "Buat Branch",
+        "continueWithoutBranch": "Lanjutkan Tanpa Branch"
+      },
+      "largePush": {
+        "title": "Push Besar Terdeteksi",
+        "body": "Anda akan melakukan push {{commitCount}} commit ke {{remote}}/{{branch}}.\n\nIni lebih banyak dari biasanya. Yakin ingin melanjutkan?\n\n💡 Pertimbangkan untuk memecah perubahan besar menjadi commit yang lebih kecil dan terfokus.",
+        "confirm": "Push Semua Commit"
+      },
+      "protectedBranch": {
+        "title": "Branch Terlindungi",
+        "body": "Branch \"{{branch}}\" di {{remote}} terlindungi dan tidak bisa di-push secara langsung.\n\nBranch terlindungi mengharuskan perubahan melalui pull request.",
+        "createPr": "Buat Pull Request"
+      },
+      "pullConflict": {
+        "title": "Tidak Bisa Pull dengan Perubahan Lokal",
+        "body": "Perubahan lokal Anda akan tertimpa oleh perubahan yang masuk dari \"{{branch}}\".{{fileInfo}}\n\nPilih cara melanjutkan:",
+        "fileInfo_one": " ({{count}} file terdampak)",
+        "fileInfo_other": " ({{count}} file terdampak)",
+        "stashAndPull": "Stash & Pull",
+        "discardAndPull": "Buang & Pull"
+      },
+      "pushRejected": {
+        "title": "Push Ditolak",
+        "body": "Tidak bisa push ke {{remote}}/{{branch}}.\n\nBranch remote berisi commit yang tidak Anda miliki secara lokal.{{behindInfo}}\n\n⚠️ Force push akan menimpa perubahan di remote secara permanen.",
+        "behindInfo_one": " (tertinggal {{count}} commit)",
+        "behindInfo_other": " (tertinggal {{count}} commit)",
+        "pullAndPush": "Pull & Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Konflik Merge",
+        "titleRebase": "Konflik Rebase",
+        "bodyMerge": "Terjadi konflik saat merge \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Membatalkan akan menghentikan merge dan memulihkan branch Anda.",
+        "bodyRebase": "Terjadi konflik saat rebase ke \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Membatalkan akan memulihkan branch Anda ke kondisi sebelum rebase.",
+        "progress": " (Langkah {{current}} dari {{total}})",
+        "files_one": "\n\n{{count}} file mengalami konflik.",
+        "files_other": "\n\n{{count}} file mengalami konflik.",
+        "resolve": "Selesaikan Konflik",
+        "abortMerge": "Batalkan Merge",
+        "abortRebase": "Batalkan Rebase"
       }
     }
   },
@@ -2016,13 +2147,29 @@
   "selectionMenu": {
     "addToChat": "Tambahkan ke Chat",
     "addThisFile": "Tambahkan file ini",
-    "addLines": "Tambahkan baris {{from}} – {{to}}"
+    "addLines": "Tambahkan baris {{from}} – {{to}}",
+    "replyToSelection": "Balas",
+    "clearQuotedSelection": "Hapus kutipan",
+    "pinSelection": "Sematkan"
   },
   "browser": {
     "screenshot": {
       "added": "Tangkapan layar dilampirkan ke chat",
       "failed": "Gagal mengambil tangkapan layar: {{reason}}",
-      "noActivePage": "Tidak ada halaman aktif untuk diambil"
+      "noActivePage": "Tidak ada halaman aktif untuk diambil",
+      "saved": "Tangkapan layar disimpan",
+      "saveFailed": "Gagal menyimpan tangkapan layar: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Tema halaman",
+      "themeAuto": "Otomatis",
+      "themeLight": "Terang",
+      "themeDark": "Gelap",
+      "saveScreenshot": "Simpan tangkapan layar...",
+      "openHtmlFile": "Buka file HTML..."
+    },
+    "openHtmlFile": {
+      "failed": "Gagal membuka file: {{reason}}"
     },
     "selectedElement": {
       "sentToChat": "Elemen dilampirkan ke chat",
@@ -2252,7 +2399,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Memerlukan Akses Disk Penuh",
-      "explain": "Safari menyimpan cookie di folder yang dilindungi macOS. Izinkan ORG2 di Akses Disk Penuh pada Pengaturan Sistem, lalu periksa lagi",
+      "explain": "{{browser}} menyimpan cookie di folder yang dilindungi macOS. Izinkan ORG2 di Akses Disk Penuh pada Pengaturan Sistem, lalu periksa lagi",
       "openSettings": "Buka Pengaturan Sistem",
       "checkAgain": "Periksa lagi"
     },

@@ -81,11 +81,9 @@ const GuideHighlightOverlay = React.lazy(
     )
 );
 
-const OnboardingHost = React.lazy(
+const WikiHost = React.lazy(
   () =>
-    import(
-      /* webpackChunkName: "tutorials" */ "@src/features/Onboarding/OnboardingHost"
-    )
+    import(/* webpackChunkName: "tutorials" */ "@src/features/Wiki/WikiHost")
 );
 
 const GeneralLayoutTour = React.lazy(
@@ -372,7 +370,7 @@ const AppShell = () => {
           </AppLayout>
           <React.Suspense fallback={null}>
             <GuideHighlightOverlay />
-            <OnboardingHost />
+            <WikiHost />
             <GeneralLayoutTour
               key={`general-layout-tour-${generalLayoutTourRunId}`}
               open={generalLayoutTourOpen}

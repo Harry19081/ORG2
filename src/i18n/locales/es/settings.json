@@ -13,6 +13,7 @@
     "editorAndWorkspace": "Editor & Workspace",
     "appUpdate": "Actualización",
     "security": "Seguridad",
+    "appLock": "Bloqueo de la app",
     "storage": "Almacenamiento",
     "agentOrg": "Equipo Agent",
     "harnessConnections": "Conexiones de aplicaciones",
@@ -53,6 +54,52 @@
     "customPatternsDesc": "Una expresión regular por línea. Cualquier coincidencia se trata como un secreto. Las expresiones no válidas se ignoran",
     "customPatternsPlaceholder": "p. ej. MYCORP_[A-Z0-9]{20}",
     "invalidPatterns": "{{count}} patrón(es) no son válidos y se ignorarán: {{patterns}}"
+  },
+  "appLock": {
+    "password": "Bloqueo con contraseña",
+    "setPassword": "Definir contraseña",
+    "changePassword": "Cambiar contraseña",
+    "removePassword": "Quitar contraseña",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar nueva contraseña",
+    "passwordSet": "Contraseña definida",
+    "passwordChanged": "Contraseña cambiada",
+    "passwordRemoved": "Contraseña eliminada",
+    "lockNow": "Bloquear ahora",
+    "lockNowDesc": "Bloquea todas las ventanas de ORG2 hasta que se introduzca la contraseña",
+    "shortcut": "Atajo para bloquear",
+    "hint": "Pista de la contraseña",
+    "hintPlaceholder": "Se muestra en la pantalla de bloqueo",
+    "hintOptionalPlaceholder": "Pista de la contraseña (opcional)",
+    "autoLock": "Bloquear automáticamente",
+    "autoLockDesc": "Bloquear tras este tiempo sin actividad de teclado o ratón en ORG2",
+    "autoLockNever": "Nunca",
+    "autoLockMinutes": "Tras {{count}} min",
+    "autoLockHour": "Tras 1 hora",
+    "lockOnLaunch": "Bloquear al iniciar ORG2",
+    "lockOnLaunchDesc": "Pedir la contraseña cada vez que se abra la app",
+    "scopeNote": "El bloqueo solo cubre las ventanas de ORG2. No cifra tus datos ni pausa Mobile Remote, y cualquiera con acceso a tus archivos puede quitarlo. Si olvidas la contraseña, cierra ORG2 y elimina app-lock.json de la carpeta .orgii de tu directorio personal",
+    "errors": {
+      "tooShort": "Usa al menos {{count}} caracteres",
+      "tooLong": "Esa contraseña es demasiado larga",
+      "mismatch": "Las contraseñas no coinciden",
+      "incorrectCurrent": "La contraseña actual es incorrecta",
+      "throttled": "Demasiados intentos incorrectos. Inténtalo más tarde",
+      "generic": "No se pudo actualizar el bloqueo de la app",
+      "hintTooLong": "Esa pista es demasiado larga",
+      "hintRevealsPassword": "La pista no puede contener la contraseña"
+    },
+    "screen": {
+      "title": "ORG2 está bloqueado",
+      "passwordPlaceholder": "Contraseña",
+      "incorrect": "Contraseña incorrecta",
+      "failed": "No se pudo desbloquear. Inténtalo de nuevo",
+      "throttled": "Demasiados intentos. Inténtalo de nuevo en {{time}}",
+      "working": "Sesiones que siguen trabajando: {{count}}",
+      "showHint": "Mostrar pista",
+      "hint": "Pista: {{hint}}"
+    }
   },
   "myRoles": {
     "currentStatus": "Mi estado actual",
@@ -207,7 +254,6 @@
       "codex": "Codex"
     },
     "iconStyle": "Estilo de iconos",
-    "iconStyleDesc": "Monocromo desatura los iconos de tipos de archivo y de modelos para que se lean como interfaz, no como logotipos",
     "iconStyleOptions": {
       "colorful": "A color",
       "monochrome": "Monocromo"
@@ -538,7 +584,6 @@
     "diffViewMode": "Vista de diferencias",
     "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Números de línea centrados en diff dividido",
-    "splitDiffCenteredLineNumbersDesc": "Muestra ambas columnas de números de línea entre los dos paneles, como en GitHub, en lugar de en el borde izquierdo de cada panel.",
     "shellsOpenWith": "Los shells abren con",
     "shellsOpenWithDesc": "Directorio de trabajo inicial para nuevas terminales",
     "repoPath": "Ruta del repo",

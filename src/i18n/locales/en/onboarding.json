@@ -64,7 +64,6 @@
     }
   },
   "discovery": {
-    "title": "Onboarding",
     "getStarted": "Get started"
   }
 }

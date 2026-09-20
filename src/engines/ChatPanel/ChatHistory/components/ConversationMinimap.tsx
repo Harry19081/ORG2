@@ -1,4 +1,13 @@
-import React, { memo, useContext, useId, useMemo, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
@@ -6,7 +15,9 @@ import Button from "@src/components/Button";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { normalizeUserMessageText } from "@src/engines/ChatPanel/ChatItems/normalizeUserMessageText";
 import { stripExpandedPillContent } from "@src/engines/ChatPanel/InputArea/utils/pillContentParser";
+import type { PinnedMinimapMark } from "@src/engines/ChatPanel/chatSelections/pinnedMinimapMarks";
 import { FocusedChatWorkstationMinimapPortalContext } from "@src/engines/ChatPanel/focusedChatWorkstationMinimapPortal";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 
 import { isAssistantMessageEvent } from "../chatItemPipeline/dedup";
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
@@ -146,6 +157,26 @@ const MINIMAP_FLOATING_NAV_CLASS =
   "pointer-events-auto absolute right-3 top-1/2 z-40 -translate-y-1/2 flex-col overflow-visible rounded-xl border border-border-2/60 bg-bg-1/90 px-1 py-2 shadow-lg backdrop-blur-xs transition-opacity motion-reduce:transition-none";
 const MINIMAP_FLOATING_MARKER_CLASS =
   "relative flex h-3 w-2 shrink-0 items-center justify-end";
+/**
+ * Pinned marks sit above the turn ticks, separated by a hairline. They are
+ * solid where a turn tick is faint: a turn is sampled scenery, a pin is
+ * something the reader put there by hand.
+ */
+const MINIMAP_PIN_MARKER_CLASS =
+  "h-[3px] w-3 shrink-0 rounded-full transition-colors duration-150 motion-reduce:transition-none";
+const MINIMAP_PIN_DIVIDER_CLASS = "my-1 h-px w-3 shrink-0 bg-border-2/80";
+
+/**
+ * The pin card is interactive — it carries the unpin control — so the
+ * pointer has to be able to reach it. The wrapper owns the gap between the
+ * rail and the card as padding, turning what would be a dead strip into a
+ * hover bridge, and a short grace period covers a pointer that leaves the
+ * rail on its way across.
+ */
+const MINIMAP_PIN_PREVIEW_BRIDGE_CLASS =
+  "absolute top-1/2 right-full -translate-y-1/2 pr-3 pl-2 @[640px]/chatbody:pr-1";
+const PIN_PREVIEW_CLOSE_DELAY_MS = 180;
+
 const MINIMAP_FLOATING_MARKER_BUTTON_CLASS =
   "group flex h-3 w-2 cursor-pointer items-center justify-end border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30";
 
@@ -256,7 +287,12 @@ interface ConversationMinimapProps {
   isScrolling: boolean;
   labelVariant?: "agent" | "agents";
   onNavigate: (groupIndex: number) => void;
+  /** Passages pinned in this session, in transcript order. */
+  pinnedMarks?: readonly PinnedMinimapMark[];
+  onPinnedRemove?: (id: string) => void;
 }
+
+const EMPTY_PINNED_MARKS: readonly PinnedMinimapMark[] = [];
 
 const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
   ({
@@ -270,9 +306,12 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
     isScrolling,
     labelVariant = "agent",
     onNavigate,
+    pinnedMarks = EMPTY_PINNED_MARKS,
+    onPinnedRemove,
   }) => {
     const { t } = useTranslation();
     const tooltipId = useId();
+    const pinTooltipId = useId();
     const workstationRailHost = useContext(
       FocusedChatWorkstationMinimapPortalContext
     );
@@ -280,6 +319,30 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
       null
     );
     const [isPointerOver, setIsPointerOver] = useState(false);
+    const [previewPinId, setPreviewPinId] = useState<string | null>(null);
+    const pinPreviewCloseTimerRef = useRef<ReturnType<
+      typeof setTimeout
+    > | null>(null);
+    const cancelPinPreviewClose = useCallback(() => {
+      if (pinPreviewCloseTimerRef.current === null) return;
+      clearTimeout(pinPreviewCloseTimerRef.current);
+      pinPreviewCloseTimerRef.current = null;
+    }, []);
+    const openPinPreview = useCallback(
+      (pinId: string) => {
+        cancelPinPreviewClose();
+        setPreviewPinId(pinId);
+      },
+      [cancelPinPreviewClose]
+    );
+    const schedulePinPreviewClose = useCallback(() => {
+      cancelPinPreviewClose();
+      pinPreviewCloseTimerRef.current = setTimeout(() => {
+        pinPreviewCloseTimerRef.current = null;
+        setPreviewPinId(null);
+      }, PIN_PREVIEW_CLOSE_DELAY_MS);
+    }, [cancelPinPreviewClose]);
+    useEffect(() => cancelPinPreviewClose, [cancelPinPreviewClose]);
     const navigableGroupIndices = useMemo(
       () =>
         getNavigableConversationGroupIndices(
@@ -358,7 +421,10 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
           })
         : "";
     const showFloatingMinimap =
-      isScrolling || isPointerOver || previewGroupIndex !== null;
+      isScrolling ||
+      isPointerOver ||
+      previewGroupIndex !== null ||
+      previewPinId !== null;
     const inWorkstationRail = workstationRailHost !== null;
     const placementClasses =
       getConversationMinimapPlacementClasses(inWorkstationRail);
@@ -366,7 +432,9 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
       showFloatingMinimap,
       inWorkstationRail,
     });
-    if (markerGroupIndices.length < 2) return null;
+    // A pinned passage keeps the rail up even in a conversation too short to
+    // be worth navigating; the marks are the reason it is there.
+    if (markerGroupIndices.length < 2 && pinnedMarks.length === 0) return null;
 
     const minimap = (
       <nav
@@ -379,6 +447,7 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
         onMouseLeave={() => {
           setIsPointerOver(false);
           setPreviewGroupIndex(null);
+          schedulePinPreviewClose();
         }}
         onBlur={(event) => {
           if (
@@ -388,6 +457,90 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
           }
         }}
       >
+        {pinnedMarks.map((mark) => (
+          <div key={mark.id} className={placementClasses.marker}>
+            <Button
+              layout="custom"
+              aria-describedby={
+                previewPinId === mark.id ? pinTooltipId : undefined
+              }
+              aria-label={t("sessions:chat.goToPinnedPassage", {
+                defaultValue: "Go to pinned passage: {{preview}}",
+                preview: mark.label,
+              })}
+              className={placementClasses.markerButton}
+              onClick={() => {
+                if (mark.groupIndex === null) return;
+                onNavigate(mark.groupIndex);
+              }}
+              onMouseEnter={() => openPinPreview(mark.id)}
+              onFocus={() => openPinPreview(mark.id)}
+            >
+              {/* A mark whose turn is outside the rendered projection cannot
+                  navigate, so it reads as present but inert rather than
+                  disappearing from the rail. */}
+              <span
+                className={`${MINIMAP_PIN_MARKER_CLASS} ${
+                  mark.groupIndex === null ? "bg-text-3/60" : "bg-text-1"
+                }`}
+              />
+            </Button>
+
+            {previewPinId === mark.id && (
+              <div
+                className={MINIMAP_PIN_PREVIEW_BRIDGE_CLASS}
+                onMouseEnter={cancelPinPreviewClose}
+                onMouseLeave={schedulePinPreviewClose}
+              >
+                <div
+                  id={pinTooltipId}
+                  role="tooltip"
+                  className={`${DROPDOWN_CLASSES.panel} w-56 p-3 text-left @[640px]/chatbody:w-80`}
+                >
+                  <div className="flex items-start gap-2">
+                    <span
+                      aria-hidden
+                      className="w-0.5 shrink-0 self-stretch rounded-full bg-border-3"
+                    />
+                    <div className="line-clamp-4 min-w-0 flex-1 text-sm leading-5 text-text-2">
+                      {mark.text}
+                    </div>
+                    {onPinnedRemove && (
+                      <Button
+                        hoverTone="danger"
+                        size="mini"
+                        shape="circle"
+                        iconOnly
+                        className="-mt-1 -mr-1 shrink-0"
+                        aria-label={t("sessions:chat.unpinPassage", {
+                          defaultValue: "Unpin",
+                        })}
+                        onClick={() => {
+                          cancelPinPreviewClose();
+                          setPreviewPinId(null);
+                          onPinnedRemove(mark.id);
+                        }}
+                        icon={
+                          <HugeiconsIcon
+                            icon={Cancel01Icon}
+                            data-icon="x"
+                            size={12}
+                            strokeWidth={2}
+                          />
+                        }
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+
+        {pinnedMarks.length > 0 && markerGroupIndices.length > 0 && (
+          <span aria-hidden className={MINIMAP_PIN_DIVIDER_CLASS} />
+        )}
+
         {markerGroupIndices.map((groupIndex, markerIndex) => {
           const turnPosition = navigableGroupIndices.indexOf(groupIndex) + 1;
           const prompt = getUserPreview(groupHeaders[groupIndex]);

@@ -61,6 +61,17 @@ pub fn codex_cli_profile_dir(account_id: &str) -> PathBuf {
     codex_cli_profile_root().join(sanitize_path_segment(account_id))
 }
 
+/// A reconnect gets a separate auth.json; history remains account-scoped.
+pub fn codex_cli_profile_dir_for_generation(account_id: &str, generation: u64) -> PathBuf {
+    let root = codex_cli_profile_dir(account_id);
+    if generation == 0 {
+        root
+    } else {
+        root.join("credential-generations")
+            .join(generation.to_string())
+    }
+}
+
 /// Session-scoped Codex CLI profile root for hosted-key sessions.
 pub fn codex_hosted_cli_profile_root() -> PathBuf {
     orgii_root().join("codex-hosted-cli-profiles")
@@ -79,6 +90,19 @@ pub fn kiro_cli_profile_root() -> PathBuf {
 /// Account-scoped Kiro CLI HOME dir.
 pub fn kiro_cli_profile_dir(account_id: &str) -> PathBuf {
     kiro_cli_profile_root().join(sanitize_path_segment(account_id))
+}
+
+/// OAuth generations have distinct auth databases: an old running CLI must
+/// never write credentials into a newly reconnected login. Generation zero
+/// retains the pre-existing profile and its conversation history.
+pub fn kiro_cli_profile_dir_for_generation(account_id: &str, generation: u64) -> PathBuf {
+    let root = kiro_cli_profile_dir(account_id);
+    if generation == 0 {
+        root
+    } else {
+        root.join("credential-generations")
+            .join(generation.to_string())
+    }
 }
 
 /// Account-scoped OpenCode CLI profile root: `~/.orgii/opencode-cli-profiles/`.

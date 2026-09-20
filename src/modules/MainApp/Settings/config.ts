@@ -65,6 +65,7 @@ export const SECTION_TAB_META: Partial<
     { key: "general", labelKey: "general.tabGeneral" },
     { key: "notifications", labelKey: "sections.notifications" },
     { key: "shortcuts", labelKey: "shortcuts.title" },
+    { key: "app-lock", labelKey: "sections.appLock" },
     { key: "storage", labelKey: "sections.storage" },
     { key: "self-hosted", labelKey: "general.tabSelfHosted" },
   ],

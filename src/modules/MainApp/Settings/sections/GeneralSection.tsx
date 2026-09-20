@@ -1,11 +1,12 @@
 /**
  * General Settings Section
  *
- * Hosts five tabs:
+ * Hosts six tabs:
  *   - `general` — ORG2 login, language/date, input, app behavior, update,
  *     settings file
  *   - `notifications` — master toggle + advanced blocks (lazy)
  *   - `shortcuts` — keyboard shortcuts viewer (lazy)
+ *   - `app-lock` — password lock screen (lazy)
  *   - `storage` — disk usage and cleanup
  *   - `self-hosted` — custom ORG2 Cloud backend endpoint
  *
@@ -93,6 +94,7 @@ export const GENERAL_TAB_KEYS = {
   GENERAL: "general",
   NOTIFICATIONS: "notifications",
   SHORTCUTS: "shortcuts",
+  APP_LOCK: "app-lock",
   STORAGE: "storage",
   SELF_HOSTED: "self-hosted",
 } as const;
@@ -100,6 +102,7 @@ export const GENERAL_TAB_KEYS = {
 const StorageTab = lazy(() => import("./StorageSection"));
 const NotificationsTab = lazy(() => import("./NotificationsTab"));
 const ShortcutsTab = lazy(() => import("./ShortcutsSection"));
+const AppLockTab = lazy(() => import("./AppLockSection"));
 
 interface GeneralSectionProps {
   activeTab?: string;
@@ -124,6 +127,16 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
         fallback={<Placeholder variant="loading" placement="detail-panel" />}
       >
         <ShortcutsTab />
+      </Suspense>
+    );
+  }
+
+  if (activeTab === GENERAL_TAB_KEYS.APP_LOCK) {
+    return (
+      <Suspense
+        fallback={<Placeholder variant="loading" placement="detail-panel" />}
+      >
+        <AppLockTab />
       </Suspense>
     );
   }

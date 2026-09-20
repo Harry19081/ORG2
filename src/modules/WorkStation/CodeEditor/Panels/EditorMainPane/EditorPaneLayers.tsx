@@ -8,7 +8,7 @@
  */
 import React, { Suspense } from "react";
 
-import { Placeholder } from "@src/components/Placeholder";
+import LazyDetailFallback from "@src/components/layout/blocks/LazyDetailFallback";
 import { FileHeaderToolbarContext } from "@src/features/FileHeader/FileHeaderToolbarContext";
 import UnifiedTabContent from "@src/modules/WorkStation/TabContent/UnifiedTabContent";
 import {
@@ -35,11 +35,6 @@ const CodeViewerContent = React.lazy(
 );
 const SourceControlMainPane = React.lazy(
   () => import("./content/SourceControlMainPane")
-);
-
-/** Lightweight fallback shown while lazy chunks load */
-const LazyFallback = () => (
-  <Placeholder variant="loading" placement="detail-panel" fillParentHeight />
 );
 
 type EditorPaneLayersProps = EditorPaneLayersState &
@@ -137,7 +132,7 @@ export function EditorPaneLayers({
             // read-only editor. `showAppPlaceholder` already covers
             // `hasNoTabs`; this guards the rare tabs-exist-but-activeTab-null
             // window so we don't render a blank pane.
-            <Suspense fallback={<LazyFallback />}>
+            <Suspense fallback={<LazyDetailFallback />}>
               <CodeViewerContent
                 selectedFile={null}
                 fileContent=""
@@ -188,7 +183,7 @@ export function EditorPaneLayers({
           }`}
           aria-hidden={!sourceControlPaneVisible}
         >
-          <Suspense fallback={<LazyFallback />}>
+          <Suspense fallback={<LazyDetailFallback />}>
             <FileHeaderToolbarContext.Provider
               value={
                 sourceControlPaneVisible

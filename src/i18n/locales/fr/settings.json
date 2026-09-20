@@ -13,6 +13,7 @@
     "editorAndWorkspace": "Éditeur & Workspace",
     "appUpdate": "Mise à jour",
     "security": "Sécurité",
+    "appLock": "Verrouillage de l'app",
     "storage": "Stockage",
     "agentOrg": "Équipe Agent",
     "harnessConnections": "Connexions des applications",
@@ -53,6 +54,52 @@
     "customPatternsDesc": "Une expression régulière par ligne. Toute correspondance est considérée comme un secret. Les expressions invalides sont ignorées",
     "customPatternsPlaceholder": "ex. MYCORP_[A-Z0-9]{20}",
     "invalidPatterns": "{{count}} motif(s) invalide(s) seront ignorés : {{patterns}}"
+  },
+  "appLock": {
+    "password": "Verrouillage par mot de passe",
+    "setPassword": "Définir un mot de passe",
+    "changePassword": "Changer le mot de passe",
+    "removePassword": "Supprimer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le nouveau mot de passe",
+    "passwordSet": "Mot de passe défini",
+    "passwordChanged": "Mot de passe modifié",
+    "passwordRemoved": "Mot de passe supprimé",
+    "lockNow": "Verrouiller maintenant",
+    "lockNowDesc": "Verrouille toutes les fenêtres d'ORG2 jusqu'à la saisie du mot de passe",
+    "shortcut": "Raccourci de verrouillage",
+    "hint": "Indice du mot de passe",
+    "hintPlaceholder": "Affiché sur l'écran de verrouillage",
+    "hintOptionalPlaceholder": "Indice du mot de passe (facultatif)",
+    "autoLock": "Verrouiller automatiquement",
+    "autoLockDesc": "Verrouiller après ce délai sans saisie au clavier ou à la souris dans ORG2",
+    "autoLockNever": "Jamais",
+    "autoLockMinutes": "Après {{count}} min",
+    "autoLockHour": "Après 1 heure",
+    "lockOnLaunch": "Verrouiller au démarrage d'ORG2",
+    "lockOnLaunchDesc": "Demander le mot de passe à chaque ouverture de l'app",
+    "scopeNote": "Le verrouillage ne couvre que les fenêtres d'ORG2. Il ne chiffre pas vos données et ne met pas Mobile Remote en pause, et toute personne ayant accès à vos fichiers peut le supprimer. Si vous oubliez le mot de passe, quittez ORG2 et supprimez app-lock.json du dossier .orgii de votre répertoire personnel",
+    "errors": {
+      "tooShort": "Utilisez au moins {{count}} caractères",
+      "tooLong": "Ce mot de passe est trop long",
+      "mismatch": "Les mots de passe ne correspondent pas",
+      "incorrectCurrent": "Le mot de passe actuel est incorrect",
+      "throttled": "Trop de tentatives incorrectes. Réessayez plus tard",
+      "generic": "Impossible de mettre à jour le verrouillage de l'app",
+      "hintTooLong": "Cet indice est trop long",
+      "hintRevealsPassword": "L'indice ne peut pas contenir le mot de passe"
+    },
+    "screen": {
+      "title": "ORG2 est verrouillé",
+      "passwordPlaceholder": "Mot de passe",
+      "incorrect": "Mot de passe incorrect",
+      "failed": "Déverrouillage impossible. Réessayez",
+      "throttled": "Trop de tentatives. Réessayez dans {{time}}",
+      "working": "Sessions encore en cours : {{count}}",
+      "showHint": "Afficher l'indice",
+      "hint": "Indice : {{hint}}"
+    }
   },
   "myRoles": {
     "currentStatus": "Mon statut actuel",
@@ -207,7 +254,6 @@
       "codex": "Codex"
     },
     "iconStyle": "Style des icônes",
-    "iconStyleDesc": "Monochrome désature les icônes de type de fichier et de modèle pour qu’elles se lisent comme de l’interface, pas comme des logos",
     "iconStyleOptions": {
       "colorful": "Colorées",
       "monochrome": "Monochrome"
@@ -538,7 +584,6 @@
     "diffViewMode": "Vue des différences",
     "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Numéros de ligne centrés en diff côte à côte",
-    "splitDiffCenteredLineNumbersDesc": "Affiche les deux colonnes de numéros de ligne entre les deux volets, comme sur GitHub, plutôt qu'au bord gauche de chaque volet.",
     "shellsOpenWith": "Le Shell s'ouvre avec",
     "shellsOpenWithDesc": "Répertoire de travail initial pour les nouveaux terminaux",
     "repoPath": "Chemin du dépôt",

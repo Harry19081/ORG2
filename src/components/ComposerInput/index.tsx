@@ -310,10 +310,15 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
     const handleCut = useMemo(
       () =>
         createCutHandler({
+          markHistoryBoundary: ops.markHistoryBoundary,
           reconcilePillsFromDom: ops.reconcilePillsFromDom,
-          onAfterCut: handleInput,
+          // The handler cancels the native cut, so the browser never sends
+          // its `deleteByCut` input. Report it as one, so a cut that empties
+          // the editor settles it the way deleting everything does.
+          onAfterCut: () =>
+            handleInput(new InputEvent("input", { inputType: "deleteByCut" })),
         }),
-      [ops.reconcilePillsFromDom, handleInput]
+      [ops.markHistoryBoundary, ops.reconcilePillsFromDom, handleInput]
     );
 
     // Wrap `insertNewline` so a bare-Enter / Shift+Enter newline still
@@ -381,6 +386,7 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
             return host ? extractPlainText(host) : "";
           },
           insertNewline: insertNewlineAndNotify,
+          markHistoryBoundary: ops.markHistoryBoundary,
           undo: undoAndNotify,
           redo: redoAndNotify,
           requireCmdEnter,
@@ -389,6 +395,7 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
       [
         hostRef,
         insertNewlineAndNotify,
+        ops.markHistoryBoundary,
         redoAndNotify,
         requireCmdEnter,
         setAtMentionState,

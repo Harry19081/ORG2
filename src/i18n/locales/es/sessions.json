@@ -946,7 +946,31 @@
         "createdByMe": "Creados por mí",
         "assigneeUpdateNotApplied": "GitHub no aplicó el cambio de asignados",
         "assigneeUpdateSuccess": "Asignados actualizados en GitHub",
-        "updateIssueFailed": "No se pudo actualizar el issue de GitHub"
+        "updateIssueFailed": "No se pudo actualizar el issue de GitHub",
+        "filters": {
+          "searchPlaceholder": "Buscar filtros",
+          "noMatches": "No hay filtros coincidentes",
+          "activeCount": "Filtros activos: {{count}}",
+          "clear": "Borrar filtros",
+          "reviewRequestedFromMe": "Revisión solicitada a mí",
+          "noAssignee": "Sin responsable",
+          "noLabel": "Sin etiqueta",
+          "linkedPullRequest": "Con pull request vinculada",
+          "draft": "Borrador",
+          "readyForReview": "Lista para revisión",
+          "recentlyUpdated": "Actualizado en los últimos 7 días",
+          "stale": "Sin actualizar en 30 días",
+          "facetAuthor": "Autor",
+          "facetAssignee": "Responsable",
+          "facetLabel": "Etiqueta",
+          "facetMilestone": "Hito",
+          "facetReviewRequested": "Revisión solicitada",
+          "facetBaseBranch": "Rama base",
+          "facetCiStatus": "Comprobaciones",
+          "ciSuccess": "Correctas",
+          "ciFailure": "Fallidas",
+          "ciPending": "Pendientes"
+        }
       }
     },
     "sessionViews": {
@@ -979,7 +1003,9 @@
     "sending": "Enviando…",
     "typeMessage": "Escribe un mensaje…",
     "session": "Sesión",
-    "history": "Sesiones"
+    "history": "Sesiones",
+    "goToPinnedPassage": "Ir al pasaje fijado: {{preview}}",
+    "unpinPassage": "Dejar de fijar"
   },
   "tools": {
     "noResultsFound": "No se encontraron resultados",

@@ -16,7 +16,6 @@ import {
   Layout01Icon,
   Login02Icon,
   Logout02Icon,
-  RocketIcon,
   Settings01Icon,
 } from "@src/icons";
 
@@ -83,6 +82,7 @@ export function SidebarSettingsMenuLeadingItems({
         onMouseEnter={() => setActiveSubmenu(null)}
         onFocus={() => setActiveSubmenu(null)}
         onClick={handleOpenWiki}
+        aria-haspopup="dialog"
         data-testid="sidebar-menu-wiki"
       >
         Wiki
@@ -199,49 +199,26 @@ export function SidebarSettingsMenuSubmenuTriggers({
 
 interface SidebarSettingsMenuTrailingItemsProps {
   signedIn: boolean;
-  devModeEnabled: boolean;
   onSignIn?: () => void;
   openSettingsShortcut: string;
   setActiveSubmenu: SetActiveSubmenu;
-  handleOpenOnboarding: () => void;
   handleOpenSettings: () => void;
   handleSignIn: () => void;
 }
 
-/** Onboarding (dev mode only), Open settings, and Sign in (signed out, with `onSignIn`). */
+/** Open settings, and Sign in (signed out, with `onSignIn`). */
 export function SidebarSettingsMenuTrailingItems({
   signedIn,
-  devModeEnabled,
   onSignIn,
   openSettingsShortcut,
   setActiveSubmenu,
-  handleOpenOnboarding,
   handleOpenSettings,
   handleSignIn,
 }: SidebarSettingsMenuTrailingItemsProps): React.ReactElement {
   const { t } = useTranslation("navigation");
-  const { t: tOnboarding } = useTranslation("onboarding");
 
   return (
     <>
-      {devModeEnabled && (
-        <DropdownActionItem
-          icon={
-            <HugeiconsIcon
-              icon={RocketIcon}
-              size={DROPDOWN_ITEM.iconSize}
-              className={MENU_ICON_CLASS_NAME}
-            />
-          }
-          onMouseEnter={() => setActiveSubmenu(null)}
-          onFocus={() => setActiveSubmenu(null)}
-          onClick={handleOpenOnboarding}
-          aria-haspopup="dialog"
-          data-testid="sidebar-menu-onboarding"
-        >
-          {tOnboarding("discovery.title")}
-        </DropdownActionItem>
-      )}
       <DropdownActionItem
         icon={
           <HugeiconsIcon

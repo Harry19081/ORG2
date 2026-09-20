@@ -10,6 +10,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import DeleteIconButton from "@src/components/Button/DeleteIconButton";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import Select from "@src/components/Select";
@@ -27,7 +28,6 @@ import {
 import {
   Add01Icon,
   Copy01Icon,
-  Delete02Icon,
   HugeiconsIcon,
   Refresh04Icon,
   Tick01Icon,
@@ -404,20 +404,12 @@ const GitProfilesTab: React.FC<GitProfilesTabProps> = ({ connectedEmails }) => {
                       onClick={handleDuplicate}
                     />
                     {state.profiles.length > 1 && (
-                      <Button
+                      <DeleteIconButton
                         size="small"
-                        icon={
-                          <HugeiconsIcon
-                            icon={Delete02Icon}
-                            data-icon="trash-2"
-                            size={14}
-                            className="text-danger-6"
-                          />
-                        }
-                        onClick={() => void handleDelete()}
-                      >
-                        {tCommon("actions.delete")}
-                      </Button>
+                        iconOnly={false}
+                        label={tCommon("actions.delete")}
+                        onDelete={() => void handleDelete()}
+                      />
                     )}
                     <Button
                       variant="primary"

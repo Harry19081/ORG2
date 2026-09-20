@@ -13,6 +13,7 @@
     "editorAndWorkspace": "Editor & Workspace",
     "appUpdate": "Atualização do App",
     "security": "Segurança",
+    "appLock": "Bloqueio do app",
     "storage": "Armazenamento",
     "agentOrg": "Equipe Agent",
     "harnessConnections": "Conexões de aplicativos",
@@ -53,6 +54,52 @@
     "customPatternsDesc": "Uma expressão regular por linha. Qualquer correspondência é tratada como um segredo. Expressões inválidas são ignoradas",
     "customPatternsPlaceholder": "ex.: MYCORP_[A-Z0-9]{20}",
     "invalidPatterns": "{{count}} padrão(ões) são inválidos e serão ignorados: {{patterns}}"
+  },
+  "appLock": {
+    "password": "Bloqueio por senha",
+    "setPassword": "Definir senha",
+    "changePassword": "Alterar senha",
+    "removePassword": "Remover senha",
+    "currentPassword": "Senha atual",
+    "newPassword": "Nova senha",
+    "confirmPassword": "Confirmar nova senha",
+    "passwordSet": "Senha definida",
+    "passwordChanged": "Senha alterada",
+    "passwordRemoved": "Senha removida",
+    "lockNow": "Bloquear agora",
+    "lockNowDesc": "Bloqueia todas as janelas do ORG2 até que a senha seja digitada",
+    "shortcut": "Atalho para bloquear",
+    "hint": "Dica da senha",
+    "hintPlaceholder": "Exibida na tela de bloqueio",
+    "hintOptionalPlaceholder": "Dica da senha (opcional)",
+    "autoLock": "Bloquear automaticamente",
+    "autoLockDesc": "Bloquear após este tempo sem uso de teclado ou mouse no ORG2",
+    "autoLockNever": "Nunca",
+    "autoLockMinutes": "Após {{count}} min",
+    "autoLockHour": "Após 1 hora",
+    "lockOnLaunch": "Bloquear ao iniciar o ORG2",
+    "lockOnLaunchDesc": "Pedir a senha sempre que o app for aberto",
+    "scopeNote": "O bloqueio cobre apenas as janelas do ORG2. Ele não criptografa seus dados nem pausa o Mobile Remote, e qualquer pessoa com acesso aos seus arquivos pode removê-lo. Se esquecer a senha, encerre o ORG2 e exclua app-lock.json da pasta .orgii no seu diretório pessoal",
+    "errors": {
+      "tooShort": "Use pelo menos {{count}} caracteres",
+      "tooLong": "Essa senha é longa demais",
+      "mismatch": "As senhas não coincidem",
+      "incorrectCurrent": "A senha atual está incorreta",
+      "throttled": "Muitas tentativas incorretas. Tente novamente mais tarde",
+      "generic": "Não foi possível atualizar o bloqueio do app",
+      "hintTooLong": "Essa dica é longa demais",
+      "hintRevealsPassword": "A dica não pode conter a senha"
+    },
+    "screen": {
+      "title": "O ORG2 está bloqueado",
+      "passwordPlaceholder": "Senha",
+      "incorrect": "Senha incorreta",
+      "failed": "Não foi possível desbloquear. Tente novamente",
+      "throttled": "Muitas tentativas. Tente novamente em {{time}}",
+      "working": "Sessões ainda trabalhando: {{count}}",
+      "showHint": "Mostrar dica",
+      "hint": "Dica: {{hint}}"
+    }
   },
   "myRoles": {
     "currentStatus": "Meu status atual",
@@ -207,7 +254,6 @@
       "codex": "Codex"
     },
     "iconStyle": "Estilo dos ícones",
-    "iconStyleDesc": "Monocromático dessatura os ícones de tipo de arquivo e de modelo para que pareçam interface, não logotipos",
     "iconStyleOptions": {
       "colorful": "Colorido",
       "monochrome": "Monocromático"
@@ -538,7 +584,6 @@
     "diffViewMode": "Visualização de diff",
     "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Números de linha centralizados no diff dividido",
-    "splitDiffCenteredLineNumbersDesc": "Mostra as duas colunas de números de linha entre os dois painéis, como no GitHub, em vez de na borda esquerda de cada painel.",
     "shellsOpenWith": "Shells abrem em",
     "shellsOpenWithDesc": "Diretório de trabalho inicial para novos terminais",
     "repoPath": "Caminho do Repo",

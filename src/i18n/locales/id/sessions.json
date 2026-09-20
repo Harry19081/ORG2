@@ -951,7 +951,31 @@
         "createdByMe": "Dibuat oleh saya",
         "assigneeUpdateNotApplied": "GitHub tidak menerapkan perubahan penerima tugas",
         "assigneeUpdateSuccess": "Penerima tugas diperbarui di GitHub",
-        "updateIssueFailed": "Gagal memperbarui issue GitHub"
+        "updateIssueFailed": "Gagal memperbarui issue GitHub",
+        "filters": {
+          "searchPlaceholder": "Cari filter",
+          "noMatches": "Tidak ada filter yang cocok",
+          "activeCount": "Filter aktif: {{count}}",
+          "clear": "Hapus filter",
+          "reviewRequestedFromMe": "Tinjauan diminta dari saya",
+          "noAssignee": "Tanpa penanggung jawab",
+          "noLabel": "Tanpa label",
+          "linkedPullRequest": "Memiliki pull request tertaut",
+          "draft": "Draf",
+          "readyForReview": "Siap ditinjau",
+          "recentlyUpdated": "Diperbarui dalam 7 hari terakhir",
+          "stale": "Tidak diperbarui selama 30 hari",
+          "facetAuthor": "Penulis",
+          "facetAssignee": "Penanggung jawab",
+          "facetLabel": "Label",
+          "facetMilestone": "Milestone",
+          "facetReviewRequested": "Tinjauan diminta",
+          "facetBaseBranch": "Branch dasar",
+          "facetCiStatus": "Pemeriksaan",
+          "ciSuccess": "Lulus",
+          "ciFailure": "Gagal",
+          "ciPending": "Menunggu"
+        }
       }
     },
     "sessionViews": {
@@ -979,7 +1003,9 @@
     "sending": "Mengirim…",
     "typeMessage": "Ketik pesan…",
     "session": "Sesi",
-    "history": "Sesi"
+    "history": "Sesi",
+    "goToPinnedPassage": "Buka bagian yang disematkan: {{preview}}",
+    "unpinPassage": "Lepas sematan"
   },
   "planning": {
     "agentTyping": "Agen sedang mengetik...",

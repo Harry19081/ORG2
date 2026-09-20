@@ -59,3 +59,8 @@ export { default as PanelFooter, PANEL_FOOTER_TOKENS } from "./PanelFooter";
 export { default as ListPanelScrollArea } from "./ListPanelScrollArea";
 
 export { default as LoadingBar } from "./LoadingBar";
+
+export {
+  default as LazyDetailFallback,
+  LAZY_DETAIL_FALLBACK,
+} from "./LazyDetailFallback";

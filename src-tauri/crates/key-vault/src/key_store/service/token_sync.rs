@@ -110,6 +110,12 @@ fn apply_codex_shaped_tokens(
     tokens: CliOAuthTokenSync,
 ) -> Option<bool> {
     let refresh_token = non_blank(tokens.refresh_token);
+    if *model_type == ModelType::Codex
+        && refresh_token.is_none()
+        && tokens.access_token.as_deref() != entry.session_token.as_deref()
+    {
+        return None;
+    }
     let refresh_key = match model_type {
         ModelType::Codex => Some(CODEX_REFRESH_TOKEN_ENV_KEY),
         _ => None,
@@ -202,7 +208,10 @@ fn apply_kiro_tokens(entry: &mut ModelKey, tokens: CliOAuthTokenSync) -> Result<
 }
 
 /// When CLI-held tokens may replace the vault's.
+#[derive(Clone, Copy)]
 enum CliTokenSyncGuard<'a> {
+    Generation(u64, Option<&'a str>),
+    GenerationIfNewer(u64),
     /// Post-run sync-back: accepted when the vault still holds the access token
     /// the run was launched with, or the CLI's token is provably newer.
     LaunchedWith(Option<&'a str>),
@@ -251,19 +260,23 @@ fn cli_tokens_are_newer(
     else {
         return false;
     };
-    let (Some(vault_expiry), Some(cli_expiry)) = (
-        KeyService::jwt_expires_at(vault_access_token),
-        KeyService::jwt_expires_at(cli_access_token),
+    codex_access_token_is_newer(cli_access_token, vault_access_token)
+}
+
+/// Compare expiry and account identity within an already-established profile lineage.
+/// Expiry ordering alone does not prove that unrelated logins share a grant.
+pub fn codex_access_token_is_newer(candidate: &str, current: &str) -> bool {
+    let (Some(current_expiry), Some(candidate_expiry)) = (
+        KeyService::jwt_expires_at(current),
+        KeyService::jwt_expires_at(candidate),
     ) else {
         return false;
     };
-    if cli_expiry <= vault_expiry {
-        return false;
-    }
-    matches!(
-        (codex_account_id(vault_access_token), codex_account_id(cli_access_token)),
-        (Some(vault_account), Some(cli_account)) if vault_account == cli_account
-    )
+    candidate_expiry > current_expiry
+        && matches!(
+            (codex_account_id(current), codex_account_id(candidate)),
+            (Some(a), Some(b)) if a == b
+        )
 }
 
 impl KeyService {
@@ -283,6 +296,24 @@ impl KeyService {
         )
     }
 
+    /// Sync a profile owned by one explicit login generation. Rotation keeps
+    /// that generation, while reauthentication invalidates all old writers.
+    pub fn sync_cli_oauth_tokens_for_generation(
+        &self,
+        key_id: &str,
+        model_type: ModelType,
+        generation: u64,
+        launched_access_token: Option<&str>,
+        tokens: CliOAuthTokenSync,
+    ) -> Result<CliOAuthTokenSyncOutcome, String> {
+        self.sync_cli_oauth_tokens(
+            key_id,
+            model_type,
+            CliTokenSyncGuard::Generation(generation, launched_access_token),
+            tokens,
+        )
+    }
+
     /// Pre-launch reconciliation: take over the profile's tokens only when they
     /// are provably newer than the vault's, so seeding the profile never
     /// replaces a rotated token with the spent one the vault still holds.
@@ -295,6 +326,21 @@ impl KeyService {
         self.sync_cli_oauth_tokens(key_id, model_type, CliTokenSyncGuard::OnlyIfNewer, tokens)
     }
 
+    pub fn sync_cli_oauth_tokens_if_newer_for_generation(
+        &self,
+        key_id: &str,
+        model_type: ModelType,
+        generation: u64,
+        tokens: CliOAuthTokenSync,
+    ) -> Result<CliOAuthTokenSyncOutcome, String> {
+        self.sync_cli_oauth_tokens(
+            key_id,
+            model_type,
+            CliTokenSyncGuard::GenerationIfNewer(generation),
+            tokens,
+        )
+    }
+
     fn sync_cli_oauth_tokens(
         &self,
         key_id: &str,
@@ -302,46 +348,78 @@ impl KeyService {
         guard: CliTokenSyncGuard<'_>,
         tokens: CliOAuthTokenSync,
     ) -> Result<CliOAuthTokenSyncOutcome, String> {
-        self.update_store(|store| {
-            let Some(entry) = store.keys.get_mut(key_id) else {
-                return Ok(CliOAuthTokenSyncOutcome::NotApplicable);
-            };
-            if entry.model_type != model_type || entry.auth_method != AuthMethod::Oauth {
-                return Ok(CliOAuthTokenSyncOutcome::NotApplicable);
-            }
-
-            if let Some(current) = vault_access_token(entry, &model_type)? {
-                let unchanged_since_launch = match guard {
-                    CliTokenSyncGuard::LaunchedWith(launched) => launched
-                        .filter(|token| !token.trim().is_empty())
-                        .is_none_or(|launched| launched == current),
-                    CliTokenSyncGuard::OnlyIfNewer => false,
+        let mut source_writeback = None;
+        let outcome =
+            self.update_store(|store| -> Result<CliOAuthTokenSyncOutcome, String> {
+                let Some(entry) = store.keys.get_mut(key_id) else {
+                    return Ok(CliOAuthTokenSyncOutcome::NotApplicable);
                 };
-                if !unchanged_since_launch && !cli_tokens_are_newer(&model_type, &current, &tokens)
-                {
-                    return Ok(CliOAuthTokenSyncOutcome::SkippedNewerKeyVaultToken);
+                if entry.model_type != model_type || entry.auth_method != AuthMethod::Oauth {
+                    return Ok(CliOAuthTokenSyncOutcome::NotApplicable);
                 }
-            }
 
-            let changed = match model_type {
-                ModelType::Kiro => apply_kiro_tokens(entry, tokens)?,
-                _ => match apply_codex_shaped_tokens(entry, &model_type, tokens) {
-                    Some(changed) => changed,
-                    None => return Ok(CliOAuthTokenSyncOutcome::NotApplicable),
-                },
-            };
-            if changed {
-                // Refresh-failure bookkeeping (and its auto-disable) only
-                // exists for the providers KeyService refreshes itself. For
-                // the rest, fresh tokens must not undo a manual disable.
-                if entry.is_refreshable_native_oauth() {
-                    Self::reset_oauth_refresh_failure_state(entry);
-                    entry.enabled = true;
+                if let CliTokenSyncGuard::Generation(generation, _)
+                | CliTokenSyncGuard::GenerationIfNewer(generation) = guard
+                {
+                    if entry.credential_generation != generation {
+                        return Ok(CliOAuthTokenSyncOutcome::SkippedNewerKeyVaultToken);
+                    }
                 }
-                entry.updated_at = Utc::now();
-                store.updated_at = Utc::now();
+                if let Some(current) = vault_access_token(entry, &model_type)? {
+                    let unchanged_since_launch = match guard {
+                        CliTokenSyncGuard::LaunchedWith(launched)
+                        | CliTokenSyncGuard::Generation(_, launched) => launched
+                            .filter(|token| !token.trim().is_empty())
+                            .is_none_or(|launched| launched == current),
+                        CliTokenSyncGuard::OnlyIfNewer
+                        | CliTokenSyncGuard::GenerationIfNewer(_) => false,
+                    };
+                    if !unchanged_since_launch
+                        && !cli_tokens_are_newer(&model_type, &current, &tokens)
+                    {
+                        return Ok(CliOAuthTokenSyncOutcome::SkippedNewerKeyVaultToken);
+                    }
+                }
+
+                let source = if model_type == ModelType::Codex {
+                    entry
+                        .codex_cli_auth_path
+                        .clone()
+                        .zip(entry.env_vars.get(CODEX_REFRESH_TOKEN_ENV_KEY).cloned())
+                } else {
+                    None
+                };
+                let changed = match model_type {
+                    ModelType::Kiro => apply_kiro_tokens(entry, tokens)?,
+                    _ => match apply_codex_shaped_tokens(entry, &model_type, tokens) {
+                        Some(changed) => changed,
+                        None => return Ok(CliOAuthTokenSyncOutcome::NotApplicable),
+                    },
+                };
+                if changed {
+                    // Refresh-failure bookkeeping (and its auto-disable) only
+                    // exists for the providers KeyService refreshes itself. For
+                    // the rest, fresh tokens must not undo a manual disable.
+                    if entry.is_refreshable_native_oauth() {
+                        Self::complete_oauth_refresh(entry);
+                    }
+                    if let Some((path, spent)) = source {
+                        if entry.codex_pending_source_token_hash.is_none() {
+                            entry.codex_pending_source_token_hash =
+                                Some(super::codex_cli_auth::source_token_hash(&spent));
+                        }
+                        source_writeback = Some((path, spent, entry.clone()));
+                    }
+                    entry.updated_at = Utc::now();
+                    store.updated_at = Utc::now();
+                }
+                Ok(CliOAuthTokenSyncOutcome::Updated(Box::new(entry.clone())))
+            })??;
+        if let Some((path, spent, rotated)) = source_writeback {
+            if let Err(err) = self.write_back_codex_source_if_current(&path, &spent, &rotated) {
+                tracing::warn!(key_id, error = %err, "Managed Codex token source writeback failed");
             }
-            Ok(CliOAuthTokenSyncOutcome::Updated(Box::new(entry.clone())))
-        })?
+        }
+        Ok(outcome)
     }
 }

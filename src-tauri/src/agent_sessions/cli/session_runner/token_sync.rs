@@ -50,20 +50,23 @@ fn read_codex_cli_profile_tokens(auth_path: &Path) -> Result<Option<CliOAuthToke
 
 pub(super) fn sync_codex_cli_auth_to_key_vault(
     account_id: Option<&str>,
+    generation: Option<u64>,
+    profile_home: &Path,
     launched_access_token: Option<&str>,
 ) -> Result<(), String> {
-    let Some(account_id) = account_id else {
+    let (Some(account_id), Some(generation)) = (account_id, generation) else {
         return Ok(());
     };
-    let auth_path = app_paths::codex_cli_profile_dir(account_id).join("auth.json");
+    let auth_path = profile_home.join("auth.json");
     let Some(tokens) = read_codex_cli_profile_tokens(&auth_path)? else {
         return Ok(());
     };
 
     let outcome = KEY_SERVICE
-        .sync_cli_oauth_tokens_if_current(
+        .sync_cli_oauth_tokens_for_generation(
             account_id,
             ModelType::Codex,
+            generation,
             launched_access_token,
             tokens,
         )
@@ -81,10 +84,15 @@ pub(super) fn sync_codex_cli_auth_to_key_vault(
 /// sync-back, or a sibling session whose sync-back was refused. Seeding first
 /// would replace the CLI's rotated refresh token with the spent one.
 pub(super) fn reconcile_codex_cli_profile_before_launch(account_id: &str) -> Result<(), String> {
+    let key = KEY_SERVICE
+        .get_key_by_id(account_id)
+        .ok_or("Account was removed before reconcile")?;
     reconcile_codex_cli_profile_with(
         &KEY_SERVICE,
-        &app_paths::codex_cli_profile_dir(account_id).join("auth.json"),
+        &app_paths::codex_cli_profile_dir_for_generation(account_id, key.credential_generation)
+            .join("auth.json"),
         account_id,
+        key.credential_generation,
     )
 }
 
@@ -92,12 +100,18 @@ fn reconcile_codex_cli_profile_with(
     service: &KeyService,
     auth_path: &Path,
     account_id: &str,
+    generation: u64,
 ) -> Result<(), String> {
     let Some(tokens) = read_codex_cli_profile_tokens(auth_path)? else {
         return Ok(());
     };
     let outcome = service
-        .sync_cli_oauth_tokens_if_newer(account_id, ModelType::Codex, tokens)
+        .sync_cli_oauth_tokens_if_newer_for_generation(
+            account_id,
+            ModelType::Codex,
+            generation,
+            tokens,
+        )
         .map_err(|err| format!("Failed to reconcile Codex CLI profile tokens: {err}"))?;
     if matches!(outcome, CliOAuthTokenSyncOutcome::Updated(_)) {
         tracing::info!(
@@ -112,6 +126,8 @@ fn reconcile_codex_cli_profile_with(
 /// the only live ones and must replace the copy the vault launched it with.
 pub(super) fn sync_kiro_cli_auth_to_key_vault(
     account_id: Option<&str>,
+    profile_home: &Path,
+    generation: u64,
     launched_access_token: Option<&str>,
 ) -> Result<(), String> {
     let Some(account_id) = account_id else {
@@ -119,8 +135,9 @@ pub(super) fn sync_kiro_cli_auth_to_key_vault(
     };
     let outcome = sync_profile_tokens_to_key_vault(
         &KEY_SERVICE,
-        &app_paths::kiro_cli_profile_dir(account_id),
+        profile_home,
         account_id,
+        generation,
         launched_access_token,
     )?;
     if matches!(
@@ -193,7 +210,7 @@ mod tests {
         let profile_access = codex_access_token("acct-a", Duration::days(9));
         let auth_path = write_profile_auth(&profile_dir, &profile_access);
 
-        reconcile_codex_cli_profile_with(&service, &auth_path, &key_id).unwrap();
+        reconcile_codex_cli_profile_with(&service, &auth_path, &key_id, 0).unwrap();
 
         let stored = service.get_key_by_id(&key_id).unwrap();
         assert_eq!(
@@ -216,7 +233,7 @@ mod tests {
             &codex_access_token("acct-a", Duration::days(2)),
         );
 
-        reconcile_codex_cli_profile_with(&service, &auth_path, &key_id).unwrap();
+        reconcile_codex_cli_profile_with(&service, &auth_path, &key_id, 0).unwrap();
 
         let stored = service.get_key_by_id(&key_id).unwrap();
         assert_eq!(stored.session_token.as_deref(), Some(vault_access.as_str()));
@@ -232,8 +249,13 @@ mod tests {
         let (_store_dir, service, key_id) = vault_with_codex_key(&vault_access);
         let profile_dir = tempfile::tempdir().unwrap();
 
-        reconcile_codex_cli_profile_with(&service, &profile_dir.path().join("auth.json"), &key_id)
-            .unwrap();
+        reconcile_codex_cli_profile_with(
+            &service,
+            &profile_dir.path().join("auth.json"),
+            &key_id,
+            0,
+        )
+        .unwrap();
 
         assert_eq!(
             service

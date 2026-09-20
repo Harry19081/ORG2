@@ -951,7 +951,31 @@
         "createdByMe": "由我创建",
         "assigneeUpdateNotApplied": "GitHub 未应用指派人变更",
         "assigneeUpdateSuccess": "已在 GitHub 上更新指派人",
-        "updateIssueFailed": "更新 GitHub issue 失败"
+        "updateIssueFailed": "更新 GitHub issue 失败",
+        "filters": {
+          "searchPlaceholder": "搜索筛选条件",
+          "noMatches": "没有匹配的筛选条件",
+          "activeCount": "已启用筛选：{{count}}",
+          "clear": "清除筛选",
+          "reviewRequestedFromMe": "请求我审查",
+          "noAssignee": "无负责人",
+          "noLabel": "无标签",
+          "linkedPullRequest": "已关联拉取请求",
+          "draft": "草稿",
+          "readyForReview": "可供审查",
+          "recentlyUpdated": "最近 7 天内更新",
+          "stale": "30 天未更新",
+          "facetAuthor": "作者",
+          "facetAssignee": "负责人",
+          "facetLabel": "标签",
+          "facetMilestone": "里程碑",
+          "facetReviewRequested": "请求审查",
+          "facetBaseBranch": "目标分支",
+          "facetCiStatus": "检查",
+          "ciSuccess": "通过",
+          "ciFailure": "失败",
+          "ciPending": "进行中"
+        }
       }
     },
     "sessionViews": {
@@ -979,7 +1003,9 @@
     "sending": "正在发送…",
     "typeMessage": "输入消息…",
     "session": "会话",
-    "history": "会话"
+    "history": "会话",
+    "goToPinnedPassage": "跳转到固定段落：{{preview}}",
+    "unpinPassage": "取消固定"
   },
   "tools": {
     "noResultsFound": "未找到结果",

@@ -474,7 +474,7 @@ describe("ModelSelectorPill combined settings", () => {
     click("model-settings-fast-toggle");
     expect(apply).toHaveBeenCalledWith("composer-2.5-fast");
   });
-  it("opens the compact menu before any model has been selected", () => {
+  it("opens the model picker directly before any model has been selected", () => {
     act(() =>
       root.render(
         React.createElement(
@@ -485,16 +485,21 @@ describe("ModelSelectorPill combined settings", () => {
             defaultLabel: "Select model",
             active: false,
             onClick: openModel,
+            harnessSwitch: { label: "Codex", onClick: vi.fn() },
             dataTestId: "model-pill",
           })
         )
       )
     );
+    // The pill owns no popup in this state, so it must not advertise one.
+    expect(element("model-pill").hasAttribute("aria-expanded")).toBe(false);
     openCompact();
-    expect(openModel).not.toHaveBeenCalled();
-    expect(document.querySelector('[role="slider"]')).toBeNull();
-    click("model-settings-switch-model");
     expect(openModel).toHaveBeenCalledOnce();
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(
+      document.querySelector('[data-testid="model-settings-switch-model"]')
+    ).toBeNull();
+    expect(store.get(activeOverlayCountAtom)).toBe(0);
   });
 
   it("shows the current harness and dismisses the compact menu before switching", () => {

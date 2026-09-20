@@ -454,7 +454,12 @@ describe("BrowserCore load-failure notice", () => {
     await view.advance(GRACE);
 
     expect(view.html()).toContain("workstation.browserCore.loadStalledTitle");
-    expect(view.html()).toContain(LOADED_URL);
+    // Title plus two actions: the URL already sits in the URL bar above.
+    expect(view.html()).toContain("actions.reload");
+    expect(view.html()).toContain("workstation.browserCore.copyUrl");
+    expect(view.html()).not.toContain(LOADED_URL);
+    expect(view.html()).not.toContain("previews.openInBrowser");
+    expect(view.html()).not.toContain("actions.dismiss");
   });
 
   it("reports a webview that never reported any phase at all", async () => {

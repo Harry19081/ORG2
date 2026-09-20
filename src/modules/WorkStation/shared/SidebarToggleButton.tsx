@@ -58,6 +58,8 @@ export interface SidebarToggleButtonProps {
   stableAlignmentIcon?: boolean;
   /** Tooltip placement. Defaults to the standard bottom command tooltip. */
   tooltipPosition?: TooltipProps["position"];
+  /** Never flip the tooltip to the other side (see ToolbarTooltip `pinned`). */
+  tooltipPinned?: boolean;
   /** Keep the button visible for layout consistency, but make it inactive. */
   disabled?: boolean;
   /**
@@ -76,6 +78,7 @@ const SidebarToggleButtonComponent: React.FC<SidebarToggleButtonProps> = ({
   iconSize = HEADER_ICON_SIZE.md,
   stableAlignmentIcon = false,
   tooltipPosition = "bottom",
+  tooltipPinned = false,
   disabled = false,
   showShortcut = true,
 }) => {
@@ -94,6 +97,7 @@ const SidebarToggleButtonComponent: React.FC<SidebarToggleButtonProps> = ({
       label={label}
       shortcut={shortcut}
       position={tooltipPosition}
+      pinned={tooltipPinned}
     >
       <span className="inline-flex">
         <Button
@@ -179,6 +183,8 @@ const WorkStationSidebarToggleButtonComponent: React.FC<
       position={position}
       iconSize={iconSize}
       tooltipPosition={activeApp === "browser" ? "top" : "bottom"}
+      // Below the Browser tab's bar is a native webview that covers tooltips.
+      tooltipPinned={activeApp === "browser"}
       disabled={disabled}
     />
   );

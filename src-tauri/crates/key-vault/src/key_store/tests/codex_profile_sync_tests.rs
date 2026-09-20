@@ -219,3 +219,79 @@ fn opaque_kiro_tokens_never_qualify_as_provably_newer() {
         CliOAuthTokenSyncOutcome::SkippedNewerKeyVaultToken
     ));
 }
+
+#[test]
+fn prelaunch_reconcile_preserves_manual_disable() {
+    let old = access_token("acct-a", Duration::days(1));
+    let (_dir, service, key_id) = vault_holding(&old);
+    let mut disabled = service.get_key_by_id(&key_id).unwrap();
+    disabled.enabled = false;
+    service.save_key(disabled).unwrap();
+    service
+        .sync_cli_oauth_tokens_if_newer(
+            &key_id,
+            ModelType::Codex,
+            cli_tokens(&access_token("acct-a", Duration::days(9))),
+        )
+        .unwrap();
+    assert!(
+        !service.get_key_by_id(&key_id).unwrap().enabled,
+        "prelaunch reconcile silently reenabled manually disabled key"
+    );
+}
+
+#[test]
+fn generation_reconcile_rejects_a_profile_read_before_reconnect() {
+    let temp = tempfile::tempdir().unwrap();
+    let service = KeyService::new(Some(temp.path().into()));
+    let mut key = ModelKey::new(ModelType::Codex);
+    key.auth_method = AuthMethod::Oauth;
+    key.session_token = Some("old-login".into());
+    let old = service.save_key(key).unwrap();
+    let mut replacement = old.clone();
+    replacement.session_token = Some("new-login".into());
+    let current = service.save_key(replacement).unwrap();
+    let result = service
+        .sync_cli_oauth_tokens_if_newer_for_generation(
+            &old.id,
+            ModelType::Codex,
+            old.credential_generation,
+            CliOAuthTokenSync {
+                access_token: Some("late-old-profile".into()),
+                refresh_token: Some("late-old-refresh".into()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    assert!(matches!(
+        result,
+        CliOAuthTokenSyncOutcome::SkippedNewerKeyVaultToken
+    ));
+    assert_eq!(
+        service.get_key_by_id(&old.id).unwrap().session_token,
+        current.session_token
+    );
+}
+
+#[test]
+fn access_only_profile_must_not_be_stitched_to_the_vault_refresh_token() {
+    let access = access_token("acct-a", Duration::hours(1));
+    let (_dir, service, id) = vault_holding(&access);
+    let before = service.get_key_by_id(&id).unwrap();
+    let result = service
+        .sync_cli_oauth_tokens_for_generation(
+            &id,
+            ModelType::Codex,
+            0,
+            Some(&access),
+            CliOAuthTokenSync {
+                access_token: Some(access_token("acct-a", Duration::hours(5))),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    assert!(matches!(result, CliOAuthTokenSyncOutcome::NotApplicable));
+    let after = service.get_key_by_id(&id).unwrap();
+    assert_eq!(before.session_token, after.session_token);
+    assert_eq!(before.env_vars, after.env_vars);
+}

@@ -62,6 +62,12 @@ export interface InputProps extends Omit<
   size?: "mini" | "small" | "default" | "large";
 
   /**
+   * Corner treatment. `round` is a pill, matching `<Button shape="round">`.
+   * @default 'square'
+   */
+  shape?: "square" | "round";
+
+  /**
    * Input status/error state
    */
   error?: boolean;
@@ -216,6 +222,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       defaultValue,
       onChange,
       size = "default",
+      shape = "square",
       error = false,
       errorMessage,
       errorPlacement = "bottom",
@@ -269,6 +276,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const wrapperClasses = [
       "input-wrapper",
       `input-size-${size}`,
+      shape === "round" && "input-shape-round",
       hasError && "input-error",
       disabled && "input-disabled",
       isFocused && "input-focused",
@@ -284,9 +292,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       .join(" ");
 
     const inputClasses = ["input", inputClassName].filter(Boolean).join(" ");
+    // The border and focus ring are drawn on `.input-inner`, so its radius is
+    // the field's shape.
     const inputInnerClassName = isChromeless
       ? "input-inner"
-      : "input-inner rounded-lg bg-bg-2";
+      : `input-inner ${shape === "round" ? "rounded-full" : "rounded-lg"} bg-bg-2`;
 
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {

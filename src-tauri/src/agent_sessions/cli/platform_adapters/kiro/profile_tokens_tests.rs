@@ -143,19 +143,15 @@ fn seed_keeps_tokens_kiro_cli_rotated_while_the_vault_is_unchanged() {
 }
 
 #[test]
-fn seed_overwrites_the_profile_once_the_vault_changes() {
-    // Re-scan / re-sign-in: the vault is the newer side even though the
-    // profile also moved since the last seed.
+fn initialized_generation_never_reseeds_from_a_different_launch_snapshot() {
+    // A delayed snapshot must not overwrite initialized CLI-owned tokens.
     let profile = tempfile::tempdir().unwrap();
     setup_own_key_home(profile.path(), &oauth_env("aoa-1", "aor-1")).unwrap();
     kiro_cli_rotates(profile.path(), "aoa-2", "aor-2");
 
     setup_own_key_home(profile.path(), &oauth_env("aoa-relogin", "aor-relogin")).unwrap();
 
-    assert_eq!(
-        profile_pair(profile.path()),
-        pair("aoa-relogin", "aor-relogin")
-    );
+    assert_eq!(profile_pair(profile.path()), pair("aoa-2", "aor-2"));
 }
 
 #[test]
@@ -197,6 +193,7 @@ fn sync_back_stores_rotated_tokens_so_the_next_launch_seeds_live_ones() {
         &service,
         profile.path(),
         &key_id,
+        0,
         launched.get("KIRO_ACCESS_TOKEN").map(String::as_str),
     )
     .unwrap();
@@ -228,10 +225,11 @@ fn sync_back_skipped_behind_a_sibling_session_is_healed_by_the_next_launch() {
     setup_own_key_home(profile.path(), &launched).unwrap();
 
     kiro_cli_rotates(profile.path(), "aoa-2", "aor-2");
-    sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, Some("aoa-1")).unwrap();
+    sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, 0, Some("aoa-1")).unwrap();
     kiro_cli_rotates(profile.path(), "aoa-3", "aor-3");
     let second =
-        sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, Some("aoa-1")).unwrap();
+        sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, 0, Some("aoa-1"))
+            .unwrap();
     assert!(matches!(
         second,
         Some(CliOAuthTokenSyncOutcome::SkippedNewerKeyVaultToken)
@@ -246,6 +244,7 @@ fn sync_back_skipped_behind_a_sibling_session_is_healed_by_the_next_launch() {
         &service,
         profile.path(),
         &key_id,
+        0,
         next_launch.get("KIRO_ACCESS_TOKEN").map(String::as_str),
     )
     .unwrap();
@@ -269,7 +268,8 @@ fn sync_back_yields_to_a_vault_token_changed_during_the_run() {
     service.save_key(relogin).unwrap();
 
     let outcome =
-        sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, Some("aoa-1")).unwrap();
+        sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, 0, Some("aoa-1"))
+            .unwrap();
     assert!(matches!(
         outcome,
         Some(CliOAuthTokenSyncOutcome::SkippedNewerKeyVaultToken)
@@ -277,11 +277,13 @@ fn sync_back_yields_to_a_vault_token_changed_during_the_run() {
 
     let next_launch = launch_env(&service, &key_id);
     assert_eq!(next_launch["KIRO_REFRESH_TOKEN"], "aor-relogin");
-    setup_own_key_home(profile.path(), &next_launch).unwrap();
+    let reconnected_profile = tempfile::tempdir().unwrap();
+    setup_own_key_home(reconnected_profile.path(), &next_launch).unwrap();
     assert_eq!(
-        profile_pair(profile.path()),
+        profile_pair(reconnected_profile.path()),
         pair("aoa-relogin", "aor-relogin")
     );
+    assert_eq!(profile_pair(profile.path()), pair("aoa-2", "aor-2"));
 }
 
 #[test]
@@ -292,7 +294,8 @@ fn sync_back_without_a_profile_store_is_a_silent_no_op() {
     let before = service.get_key_by_id(&key_id).unwrap();
 
     let outcome =
-        sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, Some("aoa-1")).unwrap();
+        sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, 0, Some("aoa-1"))
+            .unwrap();
 
     assert!(outcome.is_none());
     let after = service.get_key_by_id(&key_id).unwrap();
@@ -312,10 +315,93 @@ fn sync_back_never_writes_seed_placeholders_into_the_vault() {
     let launched = launch_env(&service, &key_id);
     setup_own_key_home(profile.path(), &launched).unwrap();
 
-    sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, Some("aoa-only")).unwrap();
+    sync_profile_tokens_to_key_vault(&service, profile.path(), &key_id, 0, Some("aoa-only"))
+        .unwrap();
 
     let stored = service.get_key_by_id(&key_id).unwrap();
     assert_eq!(stored.session_token.as_deref(), Some("aoa-only"));
     assert!(!stored.env_vars.contains_key("KIRO_REFRESH_TOKEN"));
     assert!(!stored.env_vars.contains_key("KIRO_EXPIRES_AT"));
+}
+
+#[test]
+fn delayed_launch_snapshot_cannot_undo_a_sibling_sync() {
+    let (_vault, service) = vault_service();
+    let id = save_scanned_kiro_key(&service, "a1", "r1");
+    let profile = tempfile::tempdir().unwrap();
+    let delayed_env = launch_env(&service, &id);
+    setup_own_key_home(profile.path(), &delayed_env).unwrap();
+    kiro_cli_rotates(profile.path(), "a2", "r2");
+    sync_profile_tokens_to_key_vault(&service, profile.path(), &id, 0, Some("a1")).unwrap();
+    setup_own_key_home(profile.path(), &delayed_env).unwrap();
+    assert_eq!(profile_pair(profile.path()), pair("a2", "r2"));
+    assert_eq!(launch_env(&service, &id)["KIRO_REFRESH_TOKEN"], "r2");
+}
+
+#[test]
+fn old_child_cannot_write_into_a_reconnected_generations_profile_or_vault() {
+    let (_vault, service) = vault_service();
+    let id = save_scanned_kiro_key(&service, "old-access", "old-refresh");
+    let root = tempfile::tempdir().unwrap();
+    let old_key = service.get_key_by_id(&id).unwrap();
+    let old_home = root.path().join(old_key.credential_generation.to_string());
+    setup_own_key_home(
+        &old_home,
+        &KeyService::env_for_key(&ModelType::Kiro, &old_key),
+    )
+    .unwrap();
+    let mut new_key = old_key.clone();
+    new_key.session_token = Some(
+        serde_json::json!({
+            "access_token": "new-access", "refresh_token": "new-refresh",
+            "client_id": "new-client", "client_secret": "new-secret"
+        })
+        .to_string(),
+    );
+    let new_key = service.save_key(new_key).unwrap();
+    assert_ne!(new_key.credential_generation, old_key.credential_generation);
+    assert_ne!(
+        app_paths::kiro_cli_profile_dir_for_generation(&id, new_key.credential_generation),
+        app_paths::kiro_cli_profile_dir_for_generation(&id, old_key.credential_generation)
+    );
+    let new_home = root.path().join(new_key.credential_generation.to_string());
+    setup_own_key_home(
+        &new_home,
+        &KeyService::env_for_key(&ModelType::Kiro, &new_key),
+    )
+    .unwrap();
+    kiro_cli_rotates(&old_home, "old-rotated", "old-rotated-refresh");
+    let outcome = sync_profile_tokens_to_key_vault(
+        &service,
+        &old_home,
+        &id,
+        old_key.credential_generation,
+        Some("old-access"),
+    )
+    .unwrap();
+    assert!(matches!(
+        outcome,
+        Some(CliOAuthTokenSyncOutcome::SkippedNewerKeyVaultToken)
+    ));
+    sync_profile_tokens_to_key_vault(
+        &service,
+        &new_home,
+        &id,
+        new_key.credential_generation,
+        Some("new-access"),
+    )
+    .unwrap();
+    let current = launch_env(&service, &id);
+    assert_eq!(current["KIRO_ACCESS_TOKEN"], "new-access");
+    assert_eq!(current["KIRO_CLIENT_ID"], "new-client");
+    assert_eq!(profile_pair(&new_home), pair("new-access", "new-refresh"));
+}
+
+#[test]
+fn unreadable_initialized_profile_is_never_reseeded_with_a_spent_snapshot() {
+    let home = tempfile::tempdir().unwrap();
+    setup_own_key_home(home.path(), &oauth_env("a1", "r1")).unwrap();
+    write_profile_token_record(home.path(), "{malformed");
+    setup_own_key_home(home.path(), &oauth_env("a1", "r1")).unwrap();
+    assert!(read_profile_tokens(home.path()).is_none());
 }

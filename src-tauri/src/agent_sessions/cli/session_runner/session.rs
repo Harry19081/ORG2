@@ -512,6 +512,9 @@ pub(crate) async fn run_session_with_ide_context(
         .as_deref()
         .and_then(|id| key_vault::key_store::KEY_SERVICE.get_key_by_id(id));
     if session.key_source == KeySource::OwnKey {
+        if session.account_id.is_none() {
+            selected_key = KEY_SERVICE.get_key(&agent, None);
+        }
         if let Some(account_id) = session.account_id.as_deref() {
             selected_key = match agent {
                 ModelType::Codex => {
@@ -766,7 +769,14 @@ pub(crate) async fn run_session_with_ide_context(
                     .ok_or("Managed Codex home missing")?,
             )
         } else {
-            super::env_setup::codex_home_for_session(&session, account_id, &session_id)?
+            super::env_setup::codex_home_for_session(
+                &session,
+                account_id,
+                &session_id,
+                selected_key
+                    .as_ref()
+                    .map_or(0, |key| key.credential_generation),
+            )?
         };
         session_mcp
             .write_codex_mcp_profile(&codex_home)
@@ -866,7 +876,10 @@ pub(crate) async fn run_session_with_ide_context(
             .ok_or_else(|| "proxy_url is required for market key sessions".to_string())?;
         KeyService::get_proxy_env_for_agent(&agent, proxy_token, proxy_url)
     } else {
-        KEY_SERVICE.get_env_for_agent(&agent, account_id)
+        selected_key
+            .as_ref()
+            .map(|key| KeyService::env_for_key(&agent, key))
+            .unwrap_or_default()
     };
 
     apply_claude_cross_type_session_model(
@@ -925,15 +938,36 @@ pub(crate) async fn run_session_with_ide_context(
     }
 
     if managed_execution.is_none() {
-        super::env_setup::configure_agent_profile(
-            &agent,
-            &session,
-            account_id,
-            selected_key.as_ref(),
-            &session_id,
-            cli_resume_id.as_deref(),
-            &mut env_vars,
-        )?;
+        let profile_agent = agent.clone();
+        let profile_session = session.clone();
+        let profile_key = selected_key.clone();
+        let profile_session_id = session_id.clone();
+        let profile_resume_id = cli_resume_id.clone();
+        env_vars = tokio::task::spawn_blocking(move || {
+            if let Some(key) = profile_key
+                .as_ref()
+                .filter(|_| profile_session.key_source == KeySource::OwnKey)
+            {
+                let current = KEY_SERVICE
+                    .get_key_by_id(&key.id)
+                    .ok_or_else(|| "Account was removed before launch".to_string())?;
+                if !current.enabled || !current.matches_oauth_snapshot(key) {
+                    return Err("Account changed before launch; retry this turn".to_string());
+                }
+            }
+            super::env_setup::configure_agent_profile(
+                &profile_agent,
+                &profile_session,
+                profile_session.account_id.as_deref(),
+                profile_key.as_ref(),
+                &profile_session_id,
+                profile_resume_id.as_deref(),
+                &mut env_vars,
+            )?;
+            Ok::<_, String>(env_vars)
+        })
+        .await
+        .map_err(|err| format!("Profile setup task failed: {err}"))??;
     }
 
     super::env_setup::apply_system_proxy_passthrough(&mut env_vars);
@@ -1340,6 +1374,7 @@ pub(crate) async fn run_session_with_ide_context(
         &session,
         &agent,
         oauth_retry_eligible,
+        selected_key.clone(),
         &env_vars,
         run_started_at,
         needs_mitm,

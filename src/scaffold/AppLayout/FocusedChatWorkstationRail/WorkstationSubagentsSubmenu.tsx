@@ -1,7 +1,7 @@
 /**
  * WorkstationSubagentsSubmenu — second-level panel listing every subagent of
  * the active session, opened from the Subagents section's "load more" row.
- * Geometry and the panel shell live in `WorkstationRailSubmenu`.
+ * Geometry, scrolling and the filter field live in `WorkstationRailSubmenu`.
  */
 import type React from "react";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,10 @@ import type { SubmenuAnchor } from "@src/components/Dropdown/submenuLayout";
 import { DROPDOWN_ITEM } from "@src/components/Dropdown/tokens";
 
 import { RailItemStatus } from "./RailItemStatus";
-import { WorkstationRailSubmenuPanel } from "./WorkstationRailSubmenu";
+import {
+  WorkstationRailSubmenuPanel,
+  useWorkstationRailSubmenuFilter,
+} from "./WorkstationRailSubmenu";
 import type {
   FocusedChatRailIcon,
   FocusedChatRailItem,
@@ -49,9 +52,16 @@ export function resolveSubagentRowStatus(
   };
 }
 
+/** A subagent is found by its task title and by its agent name. */
+function subagentSearchText(subagent: FocusedChatRailSubagent): string {
+  return `${subagent.description ?? ""} ${subagent.name}`;
+}
+
 export function WorkstationSubagentsSubmenu({
   anchor,
   icon,
+  maxHeight,
+  onClose,
   onOpenSubagent,
   panelRef,
   subagents,
@@ -60,6 +70,9 @@ export function WorkstationSubagentsSubmenu({
   anchor: SubmenuAnchor;
   /** Parent session's harness mark — the same one the preview rows carry. */
   icon: FocusedChatRailIcon;
+  /** Height cap; the rows scroll under it. */
+  maxHeight: number;
+  onClose: () => void;
   onOpenSubagent: (sessionId: string) => void;
   panelRef: React.RefObject<HTMLDivElement | null>;
   subagents: FocusedChatRailSubagent[];
@@ -67,16 +80,26 @@ export function WorkstationSubagentsSubmenu({
   width: number;
 }) {
   const { t } = useTranslation();
+  const { query, rows, setQuery, showSearch } = useWorkstationRailSubmenuFilter(
+    subagents,
+    subagentSearchText
+  );
 
   return (
     <WorkstationRailSubmenuPanel
       anchor={anchor}
       ariaLabel={t("common:git.rail.subagents")}
+      emptyLabel={t("common:status.noResults")}
+      maxHeight={maxHeight}
+      onClose={onClose}
+      onSearchChange={setQuery}
       panelRef={panelRef}
+      searchValue={query}
+      showSearch={showSearch}
       testId="workstation-trail-subagents-submenu"
       width={width}
     >
-      {subagents.map((subagent) => {
+      {rows.map((subagent) => {
         const label = subagent.description || subagent.name;
         return (
           <DropdownItem

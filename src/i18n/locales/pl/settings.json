@@ -13,6 +13,7 @@
     "editorAndWorkspace": "Edytor & Workspace",
     "appUpdate": "Aktualizacja aplikacji",
     "security": "Bezpieczeństwo",
+    "appLock": "Blokada aplikacji",
     "storage": "Pamięć masowa",
     "agentOrg": "Zespół Agent",
     "harnessConnections": "Połączenia aplikacji",
@@ -53,6 +54,52 @@
     "customPatternsDesc": "Jedno wyrażenie regularne na wiersz. Każde dopasowanie jest traktowane jako sekret. Nieprawidłowe wyrażenia są ignorowane",
     "customPatternsPlaceholder": "np. MYCORP_[A-Z0-9]{20}",
     "invalidPatterns": "{{count}} wzorzec(ów) jest nieprawidłowych i zostanie zignorowanych: {{patterns}}"
+  },
+  "appLock": {
+    "password": "Blokada hasłem",
+    "setPassword": "Ustaw hasło",
+    "changePassword": "Zmień hasło",
+    "removePassword": "Usuń hasło",
+    "currentPassword": "Obecne hasło",
+    "newPassword": "Nowe hasło",
+    "confirmPassword": "Potwierdź nowe hasło",
+    "passwordSet": "Hasło ustawione",
+    "passwordChanged": "Hasło zmienione",
+    "passwordRemoved": "Hasło usunięte",
+    "lockNow": "Zablokuj teraz",
+    "lockNowDesc": "Blokuje wszystkie okna ORG2 do czasu wpisania hasła",
+    "shortcut": "Skrót blokady",
+    "hint": "Podpowiedź do hasła",
+    "hintPlaceholder": "Wyświetlana na ekranie blokady",
+    "hintOptionalPlaceholder": "Podpowiedź do hasła (opcjonalnie)",
+    "autoLock": "Blokuj automatycznie",
+    "autoLockDesc": "Blokuj po takim czasie bez użycia klawiatury lub myszy w ORG2",
+    "autoLockNever": "Nigdy",
+    "autoLockMinutes": "Po {{count}} min",
+    "autoLockHour": "Po 1 godzinie",
+    "lockOnLaunch": "Blokuj przy uruchomieniu ORG2",
+    "lockOnLaunchDesc": "Pytaj o hasło przy każdym otwarciu aplikacji",
+    "scopeNote": "Blokada obejmuje tylko okna ORG2. Nie szyfruje danych ani nie wstrzymuje Mobile Remote, a każdy, kto ma dostęp do Twoich plików, może ją usunąć. Jeśli zapomnisz hasła, zamknij ORG2 i usuń plik app-lock.json z folderu .orgii w katalogu domowym",
+    "errors": {
+      "tooShort": "Użyj co najmniej {{count}} znaków",
+      "tooLong": "To hasło jest za długie",
+      "mismatch": "Hasła nie są zgodne",
+      "incorrectCurrent": "Obecne hasło jest nieprawidłowe",
+      "throttled": "Zbyt wiele błędnych prób. Spróbuj ponownie później",
+      "generic": "Nie udało się zaktualizować blokady aplikacji",
+      "hintTooLong": "Ta podpowiedź jest za długa",
+      "hintRevealsPassword": "Podpowiedź nie może zawierać hasła"
+    },
+    "screen": {
+      "title": "ORG2 jest zablokowany",
+      "passwordPlaceholder": "Hasło",
+      "incorrect": "Nieprawidłowe hasło",
+      "failed": "Nie udało się odblokować. Spróbuj ponownie",
+      "throttled": "Zbyt wiele prób. Spróbuj ponownie za {{time}}",
+      "working": "Sesje nadal pracujące: {{count}}",
+      "showHint": "Pokaż podpowiedź",
+      "hint": "Podpowiedź: {{hint}}"
+    }
   },
   "myRoles": {
     "currentStatus": "Mój obecny status",
@@ -207,7 +254,6 @@
       "codex": "Codex"
     },
     "iconStyle": "Styl ikon",
-    "iconStyleDesc": "Monochromatyczny odbarwia ikony typów plików i modeli, aby wyglądały jak elementy interfejsu, a nie logotypy",
     "iconStyleOptions": {
       "colorful": "Kolorowe",
       "monochrome": "Monochromatyczne"
@@ -538,7 +584,6 @@
     "diffViewMode": "Widok różnic",
     "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Wyśrodkowane numery wierszy w podzielonym diffie",
-    "splitDiffCenteredLineNumbersDesc": "Pokazuje obie kolumny numerów wierszy między panelami, jak w GitHubie, zamiast przy lewej krawędzi każdego panelu.",
     "shellsOpenWith": "Otwórz Shell w",
     "shellsOpenWithDesc": "Początkowy katalog roboczy dla nowych terminali",
     "repoPath": "Ścieżka Repo",

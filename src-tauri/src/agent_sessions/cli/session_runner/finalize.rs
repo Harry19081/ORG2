@@ -13,7 +13,7 @@ use std::sync::Arc;
 
 use tokio::sync::Mutex;
 
-use key_vault::key_store::{ModelType, KEY_SERVICE};
+use key_vault::key_store::{ModelKey, ModelType, KEY_SERVICE};
 
 use super::super::parsers::{canonicalize_cli_error_message, is_codex_fallback_metadata_notice};
 use super::super::persistence::{self, CodeSession};
@@ -275,6 +275,7 @@ pub(super) async fn finalize_session_run(
     session: &CodeSession,
     agent: &ModelType,
     oauth_retry_eligible: bool,
+    credential_snapshot: Option<ModelKey>,
     env_vars: &std::collections::HashMap<String, String>,
     run_started_at: chrono::DateTime<chrono::Utc>,
     needs_mitm: bool,
@@ -297,6 +298,9 @@ pub(super) async fn finalize_session_run(
     let session_id = session.session_id.as_str();
     let account_id = session.account_id.as_deref();
 
+    let credential_generation = credential_snapshot
+        .as_ref()
+        .map(|key| key.credential_generation);
     let setup_is_codex_oauth = *agent == ModelType::Codex && oauth_retry_eligible;
     let setup_access_token = env_vars.get("OPENAI_API_KEY").cloned();
     // Own-key Kiro OAuth runs inside the account-scoped profile that
@@ -308,37 +312,37 @@ pub(super) async fn finalize_session_run(
         } else {
             None
         };
+    let setup_kiro_home = env_vars.get("HOME").map(std::path::PathBuf::from);
+    let setup_codex_home = env_vars.get("CODEX_HOME").map(std::path::PathBuf::from);
     let setup_account_id = account_id.map(str::to_string);
     let setup_session_id = session_id.to_string();
     let setup_cli_session_id = cli_session_id_out.clone();
     let _ = tokio::task::spawn_blocking(move || {
-        if setup_kiro_access_token.is_some() {
+        if let (Some(access_token), Some(home), Some(generation)) = (
+            setup_kiro_access_token.as_deref(),
+            setup_kiro_home.as_deref(),
+            credential_generation,
+        ) {
             if let Err(err) = sync_kiro_cli_auth_to_key_vault(
                 setup_account_id.as_deref(),
-                setup_kiro_access_token.as_deref(),
+                home,
+                generation,
+                Some(access_token),
             ) {
                 tracing::warn!("[CodeSession] Failed to sync Kiro CLI auth tokens: {}", err);
             }
         }
-        if setup_is_codex_oauth {
+        if let Some(home) = setup_codex_home.as_deref().filter(|_| setup_is_codex_oauth) {
             if let Err(err) = sync_codex_cli_auth_to_key_vault(
                 setup_account_id.as_deref(),
+                credential_generation,
+                home,
                 setup_access_token.as_deref(),
             ) {
                 tracing::warn!(
                     "[CodeSession] Failed to sync Codex CLI auth tokens: {}",
                     err
                 );
-            }
-            if exit_code == 0 {
-                if let Some(account_id) = setup_account_id.as_deref() {
-                    if let Err(err) = KEY_SERVICE.reset_oauth_refresh_failures(account_id) {
-                        tracing::warn!(
-                            "[CodeSession] Failed to reset Codex OAuth refresh failures: {}",
-                            err
-                        );
-                    }
-                }
             }
         }
         if let Some(cli_session_id) = setup_cli_session_id.as_deref() {
@@ -455,15 +459,14 @@ pub(super) async fn finalize_session_run(
     let persist_session_id = session_id.to_string();
     let persist_error_message = error_message.clone();
     let persist_turn_intent_id = turn_intent_id.map(str::to_string);
-    let persist_account_id = account_id.map(str::to_string);
     let persist_result = tokio::task::spawn_blocking(move || {
         if should_record_oauth_failure {
-            if let (Some(account_id), Some(error_message)) = (
-                persist_account_id.as_deref(),
+            if let (Some(snapshot), Some(error_message)) = (
+                credential_snapshot.as_ref(),
                 persist_error_message.as_deref(),
             ) {
                 if let Err(err) =
-                    KEY_SERVICE.record_oauth_refresh_failure(account_id, error_message)
+                    KEY_SERVICE.record_oauth_refresh_failure_if_current(snapshot, error_message)
                 {
                     tracing::warn!(
                         "[CodeSession] Failed to record Codex OAuth refresh failure: {}",
