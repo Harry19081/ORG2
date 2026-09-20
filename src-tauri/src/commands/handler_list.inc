@@ -46,6 +46,7 @@ browser::close_inline_webview,
 browser::close_all_inline_webviews,
 browser::hide_all_inline_webviews,
 browser::navigate_inline_webview,
+browser::inline::history_traversal::traverse_inline_webview_history,
 browser::reload_inline_webview,
 // Browser commands - Logging & Cookies
 browser::get_webview_console_logs,

@@ -28,6 +28,7 @@ use super::scripts::{
 #[cfg(debug_assertions)]
 use super::scripts::{CONSOLE_CAPTURE_SCRIPT, NETWORK_CAPTURE_SCRIPT};
 
+pub mod history_traversal;
 mod load_state;
 
 /// Global ref-count table: label → number of active React instances that have
@@ -264,23 +265,20 @@ pub async fn create_inline_webview(
             visible = should_show,
             "browser::inline: reusing existing webview"
         );
-        let (target_x, target_y, target_width, target_height) = if should_show {
-            (x, y, width, height)
-        } else {
-            (
-                OFFSCREEN_POSITION,
-                OFFSCREEN_POSITION,
-                OFFSCREEN_MIN_SIZE,
-                OFFSCREEN_MIN_SIZE,
-            )
-        };
-        let pos = tauri::Position::Logical(tauri::LogicalPosition::new(target_x, target_y));
-        let size = tauri::Size::Logical(tauri::LogicalSize::new(target_width, target_height));
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            existing.set_position(pos)?;
-            existing.set_size(size)?;
             if should_show {
+                existing
+                    .set_position(tauri::Position::Logical(tauri::LogicalPosition::new(x, y)))?;
+                existing.set_size(tauri::Size::Logical(tauri::LogicalSize::new(width, height)))?;
                 existing.show()?;
+            } else {
+                // Park by position only. Shrinking a live page to 1x1 makes it
+                // lay out against a 1px viewport now and again at full size
+                // when the tab is shown.
+                existing.set_position(tauri::Position::Logical(tauri::LogicalPosition::new(
+                    OFFSCREEN_POSITION,
+                    OFFSCREEN_POSITION,
+                )))?;
             }
             Ok::<(), tauri::Error>(())
         }));
