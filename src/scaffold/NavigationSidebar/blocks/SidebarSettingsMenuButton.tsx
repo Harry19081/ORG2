@@ -77,7 +77,6 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
     setShowSignInModal,
     showSignOutConfirmation,
     setShowSignOutConfirmation,
-    handleOpenOnboarding,
     handleOpenSettings,
     handleModifyAppearance,
     handleSignIn,
@@ -127,11 +126,9 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
               <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
               <SidebarSettingsMenuTrailingItems
                 signedIn={signedIn}
-                devModeEnabled={devModeEnabled}
                 onSignIn={onSignIn}
                 openSettingsShortcut={openSettingsShortcut}
                 setActiveSubmenu={setActiveSubmenu}
-                handleOpenOnboarding={handleOpenOnboarding}
                 handleOpenSettings={handleOpenSettings}
                 handleSignIn={handleSignIn}
               />
