@@ -4,6 +4,9 @@
 //! the AppKit half can be compiled into a scratch binary and run against a real
 //! `WKWebView`, which `cargo test` (off the main thread) cannot do.
 
+// The matching rule only has a caller on macOS (and in tests); gate it so other
+// targets do not carry it as dead code.
+#[cfg(any(target_os = "macos", test))]
 use url::Url;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -25,16 +28,19 @@ impl HistoryDirection {
 /// The URLs one back-forward item answers to: where the load ended up, and what
 /// was first requested (they differ after a redirect, and the chrome's history
 /// holds the requested one).
+#[cfg(any(target_os = "macos", test))]
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct ItemUrls {
     pub url: Option<String>,
     pub initial_url: Option<String>,
 }
 
+#[cfg(any(target_os = "macos", test))]
 fn canonical(raw: &str) -> Option<String> {
     Url::parse(raw).ok().map(String::from)
 }
 
+#[cfg(any(target_os = "macos", test))]
 pub fn is_same_page(item: &ItemUrls, target: &Url) -> bool {
     [item.url.as_deref(), item.initial_url.as_deref()]
         .into_iter()
