@@ -3,6 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import DeleteIconButton from "@src/components/Button/DeleteIconButton";
 import Input from "@src/components/Input";
 import SaveableTextarea from "@src/components/SaveableTextarea";
 import Select from "@src/components/Select";
@@ -14,7 +15,6 @@ import {
   SectionRow,
 } from "@src/components/layout/Section";
 import { HintWithInfo } from "@src/components/layout/blocks";
-import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 import {
   ORGII_COAUTHOR_EMAIL,
   ORGII_COAUTHOR_NAME,
@@ -291,23 +291,14 @@ const GitPreferencesSection: React.FC = () => {
 
         {(proxyInfo?.http_proxy || proxyInfo?.https_proxy) && !proxyDirty && (
           <SectionRow showHeader={false}>
-            <Button
+            <DeleteIconButton
               variant="tertiary"
-              icon={
-                <HugeiconsIcon
-                  icon={Delete02Icon}
-                  data-icon="trash-2"
-                  size={14}
-                  className="text-danger-6"
-                />
-              }
-              onClick={handleProxyClear}
-              loading={proxySaving}
-              disabled={proxySaving}
+              iconOnly={false}
+              label={tSettings("monitor.gitProxyClear")}
+              onDelete={handleProxyClear}
+              deleting={proxySaving}
               className="self-start"
-            >
-              {tSettings("monitor.gitProxyClear")}
-            </Button>
+            />
           </SectionRow>
         )}
 

@@ -34,9 +34,9 @@ import {
   listSidecarStatus,
 } from "@src/api/tauri/sidecars";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import Input from "@src/components/Input";
 import { Placeholder } from "@src/components/Placeholder";
-import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import Select from "@src/components/Select";
 import {
   SECTION_CONTROL_STYLE,
@@ -55,7 +55,6 @@ import {
   Download01Icon,
   HugeiconsIcon,
   Loading03Icon,
-  Refresh04Icon,
   SquareArrowUpRight02Icon,
 } from "@src/icons";
 import { NAV_BUTTON_PROPS } from "@src/modules/MainApp/Settings/config";
@@ -278,11 +277,6 @@ const SidecarDownloadsConfig: React.FC = () => {
     }
   }, []);
 
-  const { spinClass, handleClick: handleRefreshClick } = useRefreshSpin(
-    refreshStatuses,
-    loading
-  );
-
   const statusMap = useMemo(() => {
     if (!statuses) return new Map<OptionalSidecar, SidecarStatus>();
     return new Map(statuses.map((status) => [status.sidecar, status]));
@@ -367,20 +361,13 @@ const SidecarDownloadsConfig: React.FC = () => {
         label={t("builtInTools.sidecarRefreshStatus")}
         description={t("builtInTools.sidecarRefreshStatusDesc")}
       >
-        <Button
-          icon={
-            <HugeiconsIcon
-              icon={Refresh04Icon}
-              data-icon="refresh-cw"
-              size={14}
-              className={spinClass}
-            />
-          }
-          onClick={handleRefreshClick}
+        <RefreshButton
+          variant="secondary"
+          label={t("builtInTools.sidecarRefreshStatus")}
+          refreshing={loading}
           disabled={installing !== null}
-        >
-          {t("builtInTools.sidecarRefreshStatus")}
-        </Button>
+          onRefresh={refreshStatuses}
+        />
       </SectionRow>
 
       {error && (
@@ -457,9 +444,6 @@ const ComputerUseConfig: React.FC = () => {
       cancelled = true;
     };
   }, [isMac]);
-
-  const { spinClass: permsSpinClass, handleClick: handlePermsClick } =
-    useRefreshSpin(fetchPermissions, checkingPerms);
 
   const permMap = useMemo(() => {
     if (!permissions) return null;
@@ -560,19 +544,12 @@ const ComputerUseConfig: React.FC = () => {
             "Re-query the OS if you just toggled a permission in System Settings"
           )}
         >
-          <Button
-            icon={
-              <HugeiconsIcon
-                icon={Refresh04Icon}
-                data-icon="refresh-cw"
-                size={14}
-                className={permsSpinClass}
-              />
-            }
-            onClick={handlePermsClick}
-          >
-            {t("osAgent.desktopRecheckPermissions")}
-          </Button>
+          <RefreshButton
+            variant="secondary"
+            label={t("osAgent.desktopRecheckPermissions")}
+            refreshing={checkingPerms}
+            onRefresh={fetchPermissions}
+          />
         </SectionRow>
 
         <SectionRow
