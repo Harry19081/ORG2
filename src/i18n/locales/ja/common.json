@@ -1648,6 +1648,52 @@
         "brought": "変更はこのブランチに引き継がれました",
         "worktree_missing": "ワークツリーが存在しません。更新してもう一度お試しください"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Detached HEAD 状態",
+        "body": "コミット {{shortHash}} で detached HEAD 状態になっています。\n\nどのブランチにもいません。先に新しいブランチを作成せずに別のブランチへ checkout すると、行ったコミットが失われる可能性があります。\n\n⚠️ detached HEAD 状態のコミットはガベージコレクションされることがあります。",
+        "createBranch": "ブランチを作成",
+        "continueWithoutBranch": "ブランチを作成せずに続行"
+      },
+      "largePush": {
+        "title": "大量の push を検出しました",
+        "body": "{{remote}}/{{branch}} に {{commitCount}} 件のコミットを push しようとしています。\n\n通常より多い数です。続行してもよろしいですか？\n\n💡 大きな変更は、より小さく目的が明確なコミットに分けることを検討してください。",
+        "confirm": "すべてのコミットを push"
+      },
+      "protectedBranch": {
+        "title": "保護されたブランチ",
+        "body": "{{remote}} のブランチ「{{branch}}」は保護されているため、直接 push できません。\n\n保護されたブランチでは、変更を pull request 経由で取り込む必要があります。",
+        "createPr": "Pull Request を作成"
+      },
+      "pullConflict": {
+        "title": "ローカルの変更があるため pull できません",
+        "body": "「{{branch}}」から取り込む変更によって、ローカルの変更が上書きされます。{{fileInfo}}\n\n進め方を選択してください：",
+        "fileInfo_one": " (影響するファイル {{count}} 件)",
+        "fileInfo_other": " (影響するファイル {{count}} 件)",
+        "stashAndPull": "Stash して pull",
+        "discardAndPull": "破棄して pull"
+      },
+      "pushRejected": {
+        "title": "Push が拒否されました",
+        "body": "{{remote}}/{{branch}} に push できません。\n\nリモートブランチには、ローカルにないコミットが含まれています。{{behindInfo}}\n\n⚠️ Force push はリモートの変更を完全に上書きします。",
+        "behindInfo_one": " ({{count}} 件のコミット分遅れています)",
+        "behindInfo_other": " ({{count}} 件のコミット分遅れています)",
+        "pullAndPush": "Pull してから push",
+        "forcePush": "Force push"
+      },
+      "conflict": {
+        "titleMerge": "Merge の競合",
+        "titleRebase": "Rebase の競合",
+        "bodyMerge": "「{{branch}}」を merge 中に競合が発生しました。{{progress}}{{files}}\n\n⚠️ 中止すると merge はキャンセルされ、ブランチが元に戻ります。",
+        "bodyRebase": "「{{branch}}」へ rebase 中に競合が発生しました。{{progress}}{{files}}\n\n⚠️ 中止すると、ブランチは rebase 前の状態に戻ります。",
+        "progress": " ({{total}} ステップ中 {{current}} ステップ目)",
+        "files_one": "\n\n{{count}} 件のファイルに競合があります。",
+        "files_other": "\n\n{{count}} 件のファイルに競合があります。",
+        "resolve": "競合を解決",
+        "abortMerge": "Merge を中止",
+        "abortRebase": "Rebase を中止"
+      }
     }
   },
   "selectors": {

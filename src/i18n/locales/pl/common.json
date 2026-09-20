@@ -1648,6 +1648,52 @@
         "brought": "Twoje zmiany podążyły za tobą na tę gałąź",
         "worktree_missing": "Worktree już nie istnieje. Odśwież i spróbuj ponownie"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Stan detached HEAD",
+        "body": "Jesteś w stanie detached HEAD na commicie {{shortHash}}.\n\nNie jesteś na żadnej gałęzi. Commity, które utworzysz, mogą zostać utracone, jeśli zrobisz checkout innej gałęzi bez wcześniejszego utworzenia nowej gałęzi.\n\n⚠️ Commity w stanie detached HEAD mogą zostać usunięte przez garbage collector.",
+        "createBranch": "Utwórz gałąź",
+        "continueWithoutBranch": "Kontynuuj bez gałęzi"
+      },
+      "largePush": {
+        "title": "Wykryto duży push",
+        "body": "Zamierzasz wykonać push {{commitCount}} commitów do {{remote}}/{{branch}}.\n\nTo więcej niż zwykle. Czy na pewno chcesz kontynuować?\n\n💡 Rozważ podzielenie dużych zmian na mniejsze, bardziej skupione commity.",
+        "confirm": "Push wszystkich commitów"
+      },
+      "protectedBranch": {
+        "title": "Gałąź chroniona",
+        "body": "Gałąź \"{{branch}}\" w {{remote}} jest chroniona i nie można wykonać push bezpośrednio do niej.\n\nW chronionych gałęziach zmiany muszą przechodzić przez pull requesty.",
+        "createPr": "Utwórz pull request"
+      },
+      "pullConflict": {
+        "title": "Nie można wykonać pull z lokalnymi zmianami",
+        "body": "Twoje lokalne zmiany zostałyby nadpisane przez zmiany przychodzące z \"{{branch}}\".{{fileInfo}}\n\nWybierz, jak kontynuować:",
+        "fileInfo_one": " (dotyczy {{count}} pliku)",
+        "fileInfo_other": " (dotyczy {{count}} plików)",
+        "stashAndPull": "Stash i Pull",
+        "discardAndPull": "Odrzuć i Pull"
+      },
+      "pushRejected": {
+        "title": "Push odrzucony",
+        "body": "Nie można wykonać push do {{remote}}/{{branch}}.\n\nZdalna gałąź zawiera commity, których nie masz lokalnie.{{behindInfo}}\n\n⚠️ Force push trwale nadpisze zmiany w zdalnym repozytorium.",
+        "behindInfo_one": " (brakuje {{count}} commita)",
+        "behindInfo_other": " (brakuje {{count}} commitów)",
+        "pullAndPush": "Pull i Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Konflikt merge",
+        "titleRebase": "Konflikt rebase",
+        "bodyMerge": "Podczas merge gałęzi \"{{branch}}\" wystąpiły konflikty.{{progress}}{{files}}\n\n⚠️ Przerwanie anuluje merge i przywróci twoją gałąź.",
+        "bodyRebase": "Podczas rebase na \"{{branch}}\" wystąpiły konflikty.{{progress}}{{files}}\n\n⚠️ Przerwanie przywróci twoją gałąź do stanu sprzed rebase.",
+        "progress": " (Krok {{current}} z {{total}})",
+        "files_one": "\n\nKonflikty w {{count}} pliku.",
+        "files_other": "\n\nKonflikty w {{count}} plikach.",
+        "resolve": "Rozwiąż konflikty",
+        "abortMerge": "Przerwij merge",
+        "abortRebase": "Przerwij rebase"
+      }
     }
   },
   "selectors": {

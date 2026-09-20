@@ -1648,6 +1648,52 @@
         "brought": "Suas alterações acompanharam você até esta branch",
         "worktree_missing": "A worktree não existe mais. Atualize e tente novamente"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Estado detached HEAD",
+        "body": "Você está em estado detached HEAD no commit {{shortHash}}.\n\nVocê não está em nenhuma branch. Os commits que você fizer podem ser perdidos se você fizer checkout de outra branch sem criar uma nova branch antes.\n\n⚠️ Commits em estado detached HEAD podem ser removidos pelo coletor de lixo.",
+        "createBranch": "Criar branch",
+        "continueWithoutBranch": "Continuar sem branch"
+      },
+      "largePush": {
+        "title": "Push grande detectado",
+        "body": "Você está prestes a fazer push de {{commitCount}} commits para {{remote}}/{{branch}}.\n\nIsso é mais do que o normal. Tem certeza de que deseja continuar?\n\n💡 Considere dividir alterações grandes em commits menores e mais focados.",
+        "confirm": "Fazer push de todos os commits"
+      },
+      "protectedBranch": {
+        "title": "Branch protegida",
+        "body": "A branch \"{{branch}}\" no {{remote}} está protegida e não é possível fazer push diretamente para ela.\n\nBranches protegidas exigem que as alterações passem por pull requests.",
+        "createPr": "Criar pull request"
+      },
+      "pullConflict": {
+        "title": "Não é possível fazer pull com alterações locais",
+        "body": "Suas alterações locais seriam sobrescritas pelas alterações recebidas de \"{{branch}}\".{{fileInfo}}\n\nEscolha como prosseguir:",
+        "fileInfo_one": " ({{count}} arquivo afetado)",
+        "fileInfo_other": " ({{count}} arquivos afetados)",
+        "stashAndPull": "Stash e Pull",
+        "discardAndPull": "Descartar e Pull"
+      },
+      "pushRejected": {
+        "title": "Push rejeitado",
+        "body": "Não é possível fazer push para {{remote}}/{{branch}}.\n\nA branch remota contém commits que você não tem localmente.{{behindInfo}}\n\n⚠️ O force push sobrescreverá permanentemente as alterações do remote.",
+        "behindInfo_one": " ({{count}} commit atrás)",
+        "behindInfo_other": " ({{count}} commits atrás)",
+        "pullAndPush": "Pull e Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Conflito de merge",
+        "titleRebase": "Conflito de rebase",
+        "bodyMerge": "Ocorreram conflitos ao fazer merge de \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Cancelar vai abortar o merge e restaurar sua branch.",
+        "bodyRebase": "Ocorreram conflitos ao fazer rebase sobre \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Cancelar restaurará sua branch ao estado anterior ao rebase.",
+        "progress": " (Etapa {{current}} de {{total}})",
+        "files_one": "\n\n{{count}} arquivo com conflitos.",
+        "files_other": "\n\n{{count}} arquivos com conflitos.",
+        "resolve": "Resolver conflitos",
+        "abortMerge": "Cancelar merge",
+        "abortRebase": "Cancelar rebase"
+      }
     }
   },
   "selectors": {

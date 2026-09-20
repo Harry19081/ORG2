@@ -1479,6 +1479,52 @@
         "brought": "Your changes followed you to this branch",
         "worktree_missing": "The worktree no longer exists. Refresh and try again"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Detached HEAD State",
+        "body": "You are in detached HEAD state at commit {{shortHash}}.\n\nYou are not on any branch. Any commits you make may be lost if you checkout another branch without creating a new branch first.\n\n⚠️ Commits in detached HEAD state may be garbage collected.",
+        "createBranch": "Create Branch",
+        "continueWithoutBranch": "Continue Without Branch"
+      },
+      "largePush": {
+        "title": "Large Push Detected",
+        "body": "You are about to push {{commitCount}} commits to {{remote}}/{{branch}}.\n\nThis is more than usual. Are you sure you want to continue?\n\n💡 Consider breaking large changes into smaller, more focused commits.",
+        "confirm": "Push All Commits"
+      },
+      "protectedBranch": {
+        "title": "Protected Branch",
+        "body": "The branch \"{{branch}}\" on {{remote}} is protected and cannot be pushed to directly.\n\nProtected branches require changes to go through pull requests.",
+        "createPr": "Create Pull Request"
+      },
+      "pullConflict": {
+        "title": "Can't Pull with Local Changes",
+        "body": "Your local changes would be overwritten by the incoming changes from \"{{branch}}\".{{fileInfo}}\n\nChoose how to proceed:",
+        "fileInfo_one": " ({{count}} file affected)",
+        "fileInfo_other": " ({{count}} files affected)",
+        "stashAndPull": "Stash & Pull",
+        "discardAndPull": "Discard & Pull"
+      },
+      "pushRejected": {
+        "title": "Push Rejected",
+        "body": "Can't push to {{remote}}/{{branch}}.\n\nThe remote branch contains commits that you don't have locally.{{behindInfo}}\n\n⚠️ Force push will overwrite remote changes permanently.",
+        "behindInfo_one": " ({{count}} commit behind)",
+        "behindInfo_other": " ({{count}} commits behind)",
+        "pullAndPush": "Pull & Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Merge Conflict",
+        "titleRebase": "Rebase Conflict",
+        "bodyMerge": "Conflicts occurred while merging \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Aborting will cancel the merge and restore your branch.",
+        "bodyRebase": "Conflicts occurred while rebasing onto \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Aborting will restore your branch to its state before rebasing.",
+        "progress": " (Step {{current}} of {{total}})",
+        "files_one": "\n\n{{count}} file with conflicts.",
+        "files_other": "\n\n{{count}} files with conflicts.",
+        "resolve": "Resolve Conflicts",
+        "abortMerge": "Abort Merge",
+        "abortRebase": "Abort Rebase"
+      }
     }
   },
   "selectors": {

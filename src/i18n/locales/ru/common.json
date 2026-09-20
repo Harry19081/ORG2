@@ -1648,6 +1648,52 @@
         "brought": "Ваши изменения перешли вместе с вами в эту ветку",
         "worktree_missing": "Рабочее дерево больше не существует. Обновите и повторите попытку"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Состояние detached HEAD",
+        "body": "Вы находитесь в состоянии detached HEAD на коммите {{shortHash}}.\n\nВы не находитесь ни на одной ветке. Создаваемые коммиты могут быть потеряны, если вы выполните checkout другой ветки, не создав сначала новую ветку.\n\n⚠️ Коммиты в состоянии detached HEAD могут быть удалены сборщиком мусора.",
+        "createBranch": "Создать ветку",
+        "continueWithoutBranch": "Продолжить без ветки"
+      },
+      "largePush": {
+        "title": "Обнаружен большой push",
+        "body": "Вы собираетесь выполнить push {{commitCount}} коммитов в {{remote}}/{{branch}}.\n\nЭто больше, чем обычно. Вы уверены, что хотите продолжить?\n\n💡 Попробуйте разбить большие изменения на более мелкие и сфокусированные коммиты.",
+        "confirm": "Push всех коммитов"
+      },
+      "protectedBranch": {
+        "title": "Защищённая ветка",
+        "body": "Ветка \"{{branch}}\" в {{remote}} защищена, и push в неё напрямую невозможен.\n\nВ защищённых ветках изменения должны проходить через pull request.",
+        "createPr": "Создать pull request"
+      },
+      "pullConflict": {
+        "title": "Pull невозможен при локальных изменениях",
+        "body": "Ваши локальные изменения будут перезаписаны входящими изменениями из \"{{branch}}\".{{fileInfo}}\n\nВыберите, как продолжить:",
+        "fileInfo_one": " (затронут {{count}} файл)",
+        "fileInfo_other": " (затронуто файлов: {{count}})",
+        "stashAndPull": "Stash и Pull",
+        "discardAndPull": "Отбросить и Pull"
+      },
+      "pushRejected": {
+        "title": "Push отклонён",
+        "body": "Не удаётся выполнить push в {{remote}}/{{branch}}.\n\nУдалённая ветка содержит коммиты, которых нет локально.{{behindInfo}}\n\n⚠️ Force push безвозвратно перезапишет изменения в удалённом репозитории.",
+        "behindInfo_one": " (позади на {{count}} коммит)",
+        "behindInfo_other": " (позади коммитов: {{count}})",
+        "pullAndPush": "Pull и Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Конфликт merge",
+        "titleRebase": "Конфликт rebase",
+        "bodyMerge": "При merge ветки \"{{branch}}\" возникли конфликты.{{progress}}{{files}}\n\n⚠️ Прерывание отменит merge и восстановит вашу ветку.",
+        "bodyRebase": "При rebase на \"{{branch}}\" возникли конфликты.{{progress}}{{files}}\n\n⚠️ Прерывание восстановит вашу ветку в состояние до rebase.",
+        "progress": " (Шаг {{current}} из {{total}})",
+        "files_one": "\n\nКонфликты в {{count}} файле.",
+        "files_other": "\n\nКонфликты в файлах: {{count}}.",
+        "resolve": "Решить конфликты",
+        "abortMerge": "Прервать merge",
+        "abortRebase": "Прервать rebase"
+      }
     }
   },
   "selectors": {

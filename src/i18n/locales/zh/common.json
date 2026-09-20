@@ -1479,6 +1479,52 @@
         "brought": "你的更改已随你带到此分支",
         "worktree_missing": "该工作树已不存在。请刷新后重试"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Detached HEAD 状态",
+        "body": "你当前处于 detached HEAD 状态，位于提交 {{shortHash}}。\n\n你不在任何分支上。如果不先创建新分支就 checkout 到其他分支，你所做的提交可能会丢失。\n\n⚠️ detached HEAD 状态下的提交可能会被垃圾回收。",
+        "createBranch": "创建分支",
+        "continueWithoutBranch": "不创建分支继续"
+      },
+      "largePush": {
+        "title": "检测到大量 push",
+        "body": "你即将向 {{remote}}/{{branch}} push {{commitCount}} 个提交。\n\n这比平时多。确定要继续吗？\n\n💡 建议将大的更改拆分成更小、更聚焦的提交。",
+        "confirm": "Push 全部提交"
+      },
+      "protectedBranch": {
+        "title": "受保护的分支",
+        "body": "{{remote}} 上的分支 “{{branch}}” 受保护，无法直接 push。\n\n受保护的分支要求更改通过 pull request 合入。",
+        "createPr": "创建 Pull Request"
+      },
+      "pullConflict": {
+        "title": "有本地更改，无法 pull",
+        "body": "来自 “{{branch}}” 的传入更改会覆盖你的本地更改。{{fileInfo}}\n\n请选择如何继续：",
+        "fileInfo_one": " (影响 {{count}} 个文件)",
+        "fileInfo_other": " (影响 {{count}} 个文件)",
+        "stashAndPull": "Stash 后 pull",
+        "discardAndPull": "丢弃更改后 pull"
+      },
+      "pushRejected": {
+        "title": "Push 被拒绝",
+        "body": "无法 push 到 {{remote}}/{{branch}}。\n\n远端分支包含你本地没有的提交。{{behindInfo}}\n\n⚠️ 强制 push 会永久覆盖远端的更改。",
+        "behindInfo_one": " (落后 {{count}} 个提交)",
+        "behindInfo_other": " (落后 {{count}} 个提交)",
+        "pullAndPush": "先 pull 再 push",
+        "forcePush": "强制 push"
+      },
+      "conflict": {
+        "titleMerge": "Merge 冲突",
+        "titleRebase": "Rebase 冲突",
+        "bodyMerge": "Merge “{{branch}}” 时发生冲突。{{progress}}{{files}}\n\n⚠️ 中止会取消此次 merge 并恢复你的分支。",
+        "bodyRebase": "Rebase 到 “{{branch}}” 时发生冲突。{{progress}}{{files}}\n\n⚠️ 中止会将你的分支恢复到 rebase 之前的状态。",
+        "progress": " (第 {{current}} 步，共 {{total}} 步)",
+        "files_one": "\n\n{{count}} 个文件存在冲突。",
+        "files_other": "\n\n{{count}} 个文件存在冲突。",
+        "resolve": "解决冲突",
+        "abortMerge": "中止 Merge",
+        "abortRebase": "中止 Rebase"
+      }
     }
   },
   "selectors": {

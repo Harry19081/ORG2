@@ -1648,6 +1648,52 @@
         "brought": "Các thay đổi của bạn đã theo bạn sang nhánh này",
         "worktree_missing": "Worktree không còn tồn tại. Hãy làm mới và thử lại"
       }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Trạng thái detached HEAD",
+        "body": "Bạn đang ở trạng thái detached HEAD tại commit {{shortHash}}.\n\nBạn không ở trên nhánh nào. Các commit bạn tạo có thể bị mất nếu bạn checkout sang nhánh khác mà chưa tạo nhánh mới trước.\n\n⚠️ Các commit ở trạng thái detached HEAD có thể bị garbage collection thu hồi.",
+        "createBranch": "Tạo nhánh",
+        "continueWithoutBranch": "Tiếp tục không tạo nhánh"
+      },
+      "largePush": {
+        "title": "Phát hiện push lớn",
+        "body": "Bạn sắp push {{commitCount}} commit lên {{remote}}/{{branch}}.\n\nSố lượng này nhiều hơn bình thường. Bạn có chắc muốn tiếp tục không?\n\n💡 Hãy cân nhắc chia các thay đổi lớn thành những commit nhỏ và tập trung hơn.",
+        "confirm": "Push tất cả commit"
+      },
+      "protectedBranch": {
+        "title": "Nhánh được bảo vệ",
+        "body": "Nhánh \"{{branch}}\" trên {{remote}} được bảo vệ và không thể push trực tiếp.\n\nNhánh được bảo vệ yêu cầu các thay đổi phải đi qua pull request.",
+        "createPr": "Tạo Pull Request"
+      },
+      "pullConflict": {
+        "title": "Không thể pull khi có thay đổi cục bộ",
+        "body": "Các thay đổi cục bộ của bạn sẽ bị ghi đè bởi các thay đổi đến từ \"{{branch}}\".{{fileInfo}}\n\nChọn cách tiếp tục:",
+        "fileInfo_one": " (ảnh hưởng {{count}} tệp)",
+        "fileInfo_other": " (ảnh hưởng {{count}} tệp)",
+        "stashAndPull": "Stash rồi pull",
+        "discardAndPull": "Loại bỏ rồi pull"
+      },
+      "pushRejected": {
+        "title": "Push bị từ chối",
+        "body": "Không thể push lên {{remote}}/{{branch}}.\n\nNhánh trên remote chứa các commit mà bạn chưa có ở máy.{{behindInfo}}\n\n⚠️ Force push sẽ ghi đè vĩnh viễn các thay đổi trên remote.",
+        "behindInfo_one": " (chậm hơn {{count}} commit)",
+        "behindInfo_other": " (chậm hơn {{count}} commit)",
+        "pullAndPush": "Pull rồi push",
+        "forcePush": "Force push"
+      },
+      "conflict": {
+        "titleMerge": "Xung đột merge",
+        "titleRebase": "Xung đột rebase",
+        "bodyMerge": "Đã xảy ra xung đột khi merge \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Hủy bỏ sẽ dừng merge và khôi phục nhánh của bạn.",
+        "bodyRebase": "Đã xảy ra xung đột khi rebase lên \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Hủy bỏ sẽ khôi phục nhánh của bạn về trạng thái trước khi rebase.",
+        "progress": " (Bước {{current}}/{{total}})",
+        "files_one": "\n\n{{count}} tệp có xung đột.",
+        "files_other": "\n\n{{count}} tệp có xung đột.",
+        "resolve": "Giải quyết xung đột",
+        "abortMerge": "Hủy merge",
+        "abortRebase": "Hủy rebase"
+      }
     }
   },
   "selectors": {
