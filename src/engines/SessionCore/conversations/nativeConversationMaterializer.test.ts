@@ -906,3 +906,31 @@ describe("native conversation materialization", () => {
     );
   });
 });
+
+describe("structured tool names and arguments", () => {
+  it("keeps tools whose names contain thinking or reasoning", () => {
+    for (const name of [
+      "mcp__sequentialthinking__sequentialthinking",
+      "inspect_reasoning",
+    ]) {
+      const event = {
+        ...tool(),
+        functionName: name,
+        args: { input: { query: "hello" }, options: { limit: 3 } },
+        result: { output: "ok" },
+      };
+      const items = projectNativeConversationItems([event]);
+      expect(items).toHaveLength(2);
+      expect(items[0]).toMatchObject({
+        kind: "tool_call",
+        name,
+        arguments: JSON.stringify(event.args),
+      });
+      expect(items[1]).toMatchObject({
+        kind: "tool_result",
+        name,
+        output: "ok",
+      });
+    }
+  });
+});

@@ -549,7 +549,8 @@ mod tests {
                 images TEXT,
                 compact_from_sequence INTEGER,
                 compact_tokens_before INTEGER,
-                compact_tokens_after INTEGER
+                compact_tokens_after INTEGER,
+                tool_is_error INTEGER NOT NULL DEFAULT 0
              );",
         )
         .expect("create agent_messages table");

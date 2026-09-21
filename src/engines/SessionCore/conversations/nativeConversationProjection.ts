@@ -80,6 +80,8 @@ function transferableToolArgs(event: SessionEvent): Record<string, unknown> {
 }
 
 function isPrivateProviderEvent(event: SessionEvent): boolean {
+  // A structured tool invocation is domain history, regardless of its name.
+  if (isToolEvent(event)) return false;
   const action = event.actionType.toLowerCase();
   const fn = event.functionName.toLowerCase();
   return (
