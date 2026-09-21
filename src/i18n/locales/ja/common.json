@@ -323,6 +323,8 @@
     "apply": "適用",
     "reset": "リセット",
     "resetFilters": "フィルターをリセット",
+    "cardView": "カードビュー",
+    "listView": "リストビュー",
     "search": "検索",
     "add": "追加",
     "remove": "削除",

@@ -35,6 +35,24 @@ async function mount(
   return root.container;
 }
 
+async function mountWithCardView(
+  filters: SettingsTableSelectFilter[],
+  onEnabledChange: (enabled: boolean) => void
+): Promise<HTMLElement> {
+  const root = createSmokeRoot();
+  roots.push(root);
+  await root.render(
+    React.createElement(SettingsTable<Row>, {
+      columns: [{ key: "id", label: "Id", renderCell: (row: Row) => row.id }],
+      rows: [{ id: "a" }],
+      getRowKey: (row: Row) => row.id,
+      selectFilters: filters,
+      cardView: { enabled: false, onEnabledChange },
+    })
+  );
+  return root.container;
+}
+
 function resetButton(container: HTMLElement): HTMLElement | null {
   return container.querySelector<HTMLElement>(
     "[data-testid='settings-table-reset-filters']"
@@ -108,6 +126,42 @@ describe("SettingsTable filter row", () => {
     expect(onChange).toHaveBeenCalledTimes(2);
     expect(onChange).toHaveBeenCalledWith("provider", "all");
     expect(onChange).toHaveBeenCalledWith("status", "all");
+  });
+
+  it("offers the card-view toggle only when a table can switch modes", async () => {
+    const { filters } = buildFilters({ provider: "all", status: "all" });
+
+    const withoutToggle = await mount(filters);
+    expect(
+      withoutToggle.querySelector("[data-testid='settings-table-view-toggle']")
+    ).toBeNull();
+
+    const onEnabledChange = vi.fn();
+    const withToggle = await mountWithCardView(filters, onEnabledChange);
+    const toggle = withToggle.querySelector<HTMLElement>(
+      "[data-testid='settings-table-view-toggle']"
+    );
+    expect(toggle).not.toBeNull();
+
+    toggle!.click();
+    expect(onEnabledChange).toHaveBeenCalledWith(true);
+  });
+
+  it("grows a toolbar for the toggle when the table has none", async () => {
+    const root = createSmokeRoot();
+    roots.push(root);
+    await root.render(
+      React.createElement(SettingsTable<Row>, {
+        columns: [{ key: "id", label: "Id", renderCell: (row: Row) => row.id }],
+        rows: [{ id: "a" }],
+        getRowKey: (row: Row) => row.id,
+        cardView: { enabled: true, onEnabledChange: vi.fn() },
+      })
+    );
+
+    expect(
+      root.container.querySelector("[data-testid='settings-table-view-toggle']")
+    ).not.toBeNull();
   });
 
   it("keeps option icons in the dropdown, not on the closed trigger", async () => {

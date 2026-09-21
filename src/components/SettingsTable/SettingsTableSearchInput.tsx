@@ -1,12 +1,14 @@
 /**
  * The search field shared by SettingsTable's two toolbar layouts (the stacked
  * `SearchSortBar` and the inline toolbar), so both get the same prefix icon,
- * clear affordance, and optional keyboard shortcut.
+ * clear affordance, and keyboard shortcut.
  *
- * Opting a table into `searchShortcut` binds ⌘F / Ctrl+F (or the id you pass)
- * to focusing this field, and shows the key hint inside the field while it is
- * empty and unfocused — the hint gets out of the way the moment it has served
- * its purpose, and never collides with the clear button.
+ * ⌘F / Ctrl+F focuses the field by default — every searchable settings table
+ * answers the same chord, arbitrated by `useSearchShortcut` so only the
+ * foreground field responds. The key hint shows inside the field while it is
+ * empty and unfocused: it gets out of the way the moment it has served its
+ * purpose, and never collides with the clear button. Pass
+ * `searchShortcut={false}` to opt a table out.
  */
 import React, { useId, useRef, useState } from "react";
 
@@ -18,8 +20,7 @@ import {
 } from "@src/hooks/keyboard/useSearchShortcut";
 import { HugeiconsIcon, Search01Icon } from "@src/icons";
 
-/** Opt-in keyboard shortcut for a table's search field. `true` takes the
- *  defaults: ⌘F / Ctrl+F, with the key hint shown inside the field. */
+/** A table's search shortcut. On by default; `false` opts out. */
 export type SettingsTableSearchShortcut =
   | boolean
   | {
@@ -27,9 +28,6 @@ export type SettingsTableSearchShortcut =
       shortcutId?: string;
       /** Keep the binding but drop the inline key hint. */
       hideHint?: boolean;
-      /** Limits the binding to keystrokes inside this subtree — pass it when
-       *  more than one searchable list can be on screen at once. */
-      scopeRef?: React.RefObject<HTMLElement | null>;
     };
 
 export interface SettingsTableSearchInputProps {
@@ -58,14 +56,10 @@ export function SettingsTableSearchInput({
   const hintId = useId();
 
   const config = typeof shortcut === "object" ? shortcut : {};
-  const shortcutEnabled = shortcut === true || typeof shortcut === "object";
+  const shortcutEnabled = shortcut !== false;
   const shortcutId = config.shortcutId ?? DEFAULT_SEARCH_SHORTCUT_ID;
 
-  useSearchShortcut(inputRef, {
-    shortcutId,
-    enabled: shortcutEnabled,
-    scopeRef: config.scopeRef,
-  });
+  useSearchShortcut(inputRef, { shortcutId, enabled: shortcutEnabled });
 
   const showHint =
     shortcutEnabled && !config.hideHint && !focused && value.length === 0;

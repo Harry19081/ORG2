@@ -323,6 +323,8 @@
     "apply": "적용",
     "reset": "초기화",
     "resetFilters": "필터 초기화",
+    "cardView": "카드 보기",
+    "listView": "목록 보기",
     "search": "검색",
     "add": "추가",
     "remove": "제거",

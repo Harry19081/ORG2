@@ -145,6 +145,8 @@
     "apply": "Apply",
     "reset": "Reset",
     "resetFilters": "Reset filters",
+    "cardView": "Card view",
+    "listView": "List view",
     "search": "Search",
     "add": "Add",
     "remove": "Remove",

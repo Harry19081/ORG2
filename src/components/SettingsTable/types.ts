@@ -88,4 +88,8 @@ export interface SettingsTableCardViewConfig<RowData> {
   renderCard?: (rowData: RowData) => ReactNode;
   /** Extra classes applied to every card. */
   cardClassName?: string | ((rowData: RowData, index: number) => string);
+  /** When set, SettingsTable renders the list/card toggle in its own toolbar
+   *  and calls this with the mode the user picked, so adopting the card view
+   *  costs one prop rather than a hand-built button per table. */
+  onEnabledChange?: (enabled: boolean) => void;
 }

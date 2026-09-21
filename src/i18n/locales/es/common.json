@@ -323,6 +323,8 @@
     "apply": "Aplicar",
     "reset": "Restablecer",
     "resetFilters": "Restablecer filtros",
+    "cardView": "Vista de tarjetas",
+    "listView": "Vista de lista",
     "search": "Buscar",
     "add": "Agregar",
     "remove": "Quitar",

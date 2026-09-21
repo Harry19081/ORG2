@@ -602,8 +602,6 @@
     "searchPlaceholder": "モデルを検索...",
     "flatView": "リスト表示",
     "groupView": "グループ表示",
-    "cardView": "カードビュー",
-    "listView": "リストビュー",
     "showMoreOlder": "さらに表示",
     "showLessOlder": "折りたたむ",
     "scopeSelectCurrentModels": "最新のみ",

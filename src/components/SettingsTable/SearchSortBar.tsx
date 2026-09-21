@@ -34,9 +34,13 @@ export interface SearchSortBarProps {
   sortWidthClassName?: string;
   leftContent?: React.ReactNode;
   rightContent?: React.ReactNode;
+  /** Rendered immediately before {@link rightContent}. SettingsTable uses it
+   *  for controls it owns (the card-view toggle) so a consumer's own
+   *  `rightContent` stays untouched. */
+  leadingRightContent?: React.ReactNode;
   allowSearchClear?: boolean;
-  /** Opt in to a keyboard shortcut that focuses the search field, with its key
-   *  hint shown inside the field. `true` binds ⌘F / Ctrl+F. */
+  /** ⌘F / Ctrl+F focuses this field and shows its key hint. On by default;
+   *  pass `false` to opt out, or an object to change the binding. */
   searchShortcut?: SettingsTableSearchShortcut;
   /** Tab pills rendered inline with searchCountText (pills left, count right) */
   tabPills?: React.ReactNode;
@@ -59,6 +63,7 @@ const SearchSortBar: React.FC<SearchSortBarProps> = ({
   sortWidthClassName = "w-[180px]",
   leftContent,
   rightContent,
+  leadingRightContent,
   allowSearchClear = true,
   searchShortcut,
   tabPills,
@@ -77,7 +82,7 @@ const SearchSortBar: React.FC<SearchSortBarProps> = ({
     searchPlaceholder !== undefined &&
     typeof onSearchChange === "function";
 
-  const effectiveRightContent =
+  const consumerRightContent =
     rightContent ??
     (filterConfig ? (
       <Button
@@ -94,6 +99,14 @@ const SearchSortBar: React.FC<SearchSortBarProps> = ({
         title={filterConfig.title ?? t("actions.filter")}
       />
     ) : undefined);
+
+  const effectiveRightContent =
+    leadingRightContent || consumerRightContent ? (
+      <div className="flex shrink-0 items-center gap-1.5">
+        {leadingRightContent}
+        {consumerRightContent}
+      </div>
+    ) : undefined;
 
   const effectiveTabPills = filterConfig?.expanded
     ? filterConfig.pills

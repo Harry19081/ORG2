@@ -602,8 +602,6 @@
     "searchPlaceholder": "Search models...",
     "flatView": "Flat view",
     "groupView": "Group view",
-    "cardView": "Card view",
-    "listView": "List view",
     "showMoreOlder": "Show more",
     "showLessOlder": "Show less",
     "scopeSelectCurrentModels": "Latest only",

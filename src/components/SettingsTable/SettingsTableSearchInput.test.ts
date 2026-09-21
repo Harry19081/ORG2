@@ -23,6 +23,14 @@ async function mount(
       ...props,
     })
   );
+  // jsdom gives every element a zero-size box, so the shortcut registry would
+  // never consider the field painted; report it the way a real layout would.
+  const input = root.container.querySelector("input");
+  if (input) {
+    input.getClientRects = (() => [
+      { width: 100, height: 20 },
+    ]) as unknown as HTMLInputElement["getClientRects"];
+  }
   return root.container;
 }
 
@@ -35,20 +43,30 @@ afterEach(async () => {
 });
 
 describe("SettingsTableSearchInput", () => {
-  it("shows no key hint until a table opts into the shortcut", async () => {
-    expect(hint(await mount())).toBeNull();
+  it("shows the key hint by default — every settings table answers the chord", async () => {
+    expect(hint(await mount())?.textContent).toContain("F");
   });
 
-  it("shows the key hint inside an empty, unfocused field", async () => {
-    const container = await mount({ shortcut: true });
-    expect(hint(container)?.textContent).toContain("F");
+  it("opts a table out entirely on request", async () => {
+    const container = await mount({ shortcut: false });
+    expect(hint(container)).toBeNull();
+
+    container.querySelector("input")!.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "f",
+        code: "KeyF",
+        ctrlKey: true,
+        bubbles: true,
+      })
+    );
+    expect(document.activeElement).not.toBe(container.querySelector("input"));
   });
 
   it("gets the hint out of the way once the field is in use", async () => {
     // Typed-in value: the clear button owns that end of the field.
-    expect(hint(await mount({ shortcut: true, value: "gpt" }))).toBeNull();
+    expect(hint(await mount({ value: "gpt" }))).toBeNull();
 
-    const container = await mount({ shortcut: true });
+    const container = await mount();
     const input = container.querySelector("input")!;
     input.focus();
     input.dispatchEvent(new FocusEvent("focus", { bubbles: true }));
