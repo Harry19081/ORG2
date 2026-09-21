@@ -30,6 +30,7 @@ import {
   getIntegrationsGroupRowKey,
   groupSomeEnabled,
   sortIntegrationsModelGroups,
+  unanimousGroupAgentType,
 } from "./integrationsModelGroups";
 import { INTEGRATIONS_MODELS_TABLE_COL_WIDTH } from "./integrationsModelsTableWidths";
 import { MAX_SOURCE_ICONS, dedupeSourceTypes } from "./modelsTableUtils";
@@ -225,12 +226,20 @@ export default function ModelsTableSection({
           }
 
           const primaryModel = group.models[0]?.model;
+          // Routing-tier ids ("default") name no brand on their own, so the
+          // owning agent has to come along or the row falls back to the
+          // neutral placeholder while the key row beneath it shows a mark.
+          const primaryModelAgent = unanimousGroupAgentType(group.models);
 
           return (
             <div className="flex w-full min-w-0 items-center gap-2">
               <div className="flex min-w-0 flex-1 items-center gap-2">
                 {primaryModel ? (
-                  <ModelIcon modelName={primaryModel} size="small" />
+                  <ModelIcon
+                    modelName={primaryModel}
+                    agentType={primaryModelAgent}
+                    size="small"
+                  />
                 ) : null}
                 <span className="inline-flex min-w-0 items-center gap-1.5">
                   <span

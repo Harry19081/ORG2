@@ -4,6 +4,7 @@ import {
   MODEL_GROUP_SORT_MODE,
   getDefaultEnabledModels,
   getModelFamily,
+  groupLabelForAgent,
   groupModels,
   isLegacyGroup,
   sortModelGroups,
@@ -106,6 +107,35 @@ describe("modelGrouping current thresholds", () => {
     expect(getModelFamily("default")).toBe("Cursor");
     expect(getModelFamily("auto")).toBe("Cursor");
     expect(getModelFamily("premium")).toBe("Cursor");
+  });
+
+  it("names Cursor's routing tiers when the owning key is Cursor", () => {
+    const groups = groupModels(["default", "auto", "premium"], "cursor_cli");
+    const byLabel = new Map(groups.map((group) => [group.label, group]));
+
+    expect(byLabel.get("Auto (Cursor picks)")?.models).toEqual(["default"]);
+    expect(byLabel.get("Auto")?.models).toEqual(["auto"]);
+    expect(byLabel.get("Premium")?.models).toEqual(["premium"]);
+  });
+
+  it("leaves tier labels alone for non-Cursor owners", () => {
+    const groups = groupModels(["default"], "claude_code");
+
+    expect(groups[0].label).toBe("Default");
+  });
+
+  it("relabels a tier group once the owner is known", () => {
+    const [group] = groupModels(["default"]);
+
+    expect(groupLabelForAgent(group, "cursor_cli")).toBe("Auto (Cursor picks)");
+    expect(groupLabelForAgent(group, "claude_code")).toBe("Default");
+    expect(groupLabelForAgent(group)).toBe("Default");
+  });
+
+  it("never relabels a group that is not a routing tier", () => {
+    const [group] = groupModels(["composer-2.5"]);
+
+    expect(groupLabelForAgent(group, "cursor_cli")).toBe(group.label);
   });
 
   it("groups cursor-hosted grok variants by family", () => {

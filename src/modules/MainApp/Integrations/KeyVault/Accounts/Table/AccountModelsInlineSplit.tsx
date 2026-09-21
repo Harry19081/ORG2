@@ -281,7 +281,7 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
       return (
         <InlineSplitDefaultVersionHeaderRow
           label={t("modelsTable.keyDefaultVersionOnly", {
-            model: formatModelNameFull(model),
+            model: formatModelNameFull(model, account.modelType),
           })}
           pillLabel={t("modelsTable.variantDefault")}
         />
@@ -301,6 +301,7 @@ const AccountModelsInlineSplit: React.FC<AccountModelsInlineSplitProps> = ({
       />
     );
   }, [
+    account.modelType,
     defaultVariantByBaseModel,
     handleChangeDefaultVariant,
     onUpdateAccountDefaultVariant,

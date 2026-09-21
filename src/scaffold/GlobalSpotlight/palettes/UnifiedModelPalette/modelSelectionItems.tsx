@@ -65,10 +65,13 @@ export function buildModelSelectionSpotlightItem({
     ? accounts.find((account) => account.id === entry.accountId)
     : undefined;
   const family = groupByModel.get(entry.modelId) ?? [entry.modelId];
+  // The recent entry records which agent ran it — the hint a routing-tier id
+  // needs before it can be named.
+  const entryAgentType = entry.cliAgentType ?? entry.modelType;
   const concreteModelDisplay =
     getModelAliasDisplayName(entry.modelId) ??
-    formatModelNameFull(entry.modelId);
-  const groupedModel = groupModels([...family])[0];
+    formatModelNameFull(entry.modelId, entryAgentType);
+  const groupedModel = groupModels([...family], entryAgentType)[0];
   const modelDisplay =
     groupedModel && groupedModel.label !== "Other"
       ? groupedModel.label
@@ -223,13 +226,15 @@ export function buildAllModelItems({
       const info = accountLookup.get(modelId);
       if (!info) continue;
       const aliasDisplayName = getModelAliasDisplayName(modelId);
-      const displayLabel = aliasDisplayName ?? formatModelNameFull(modelId);
 
       // Only an unambiguous owner can act as the agent hint: "default" means
       // Cursor's tier on a Cursor key and "whatever the CLI picks" elsewhere,
-      // so a model exposed by several agents gets no hint at all.
+      // so a model exposed by several agents gets no hint at all. The label
+      // needs it for the same reason the mark does.
       const soleAgentType =
         info.agentTypes.length === 1 ? info.agentTypes[0] : undefined;
+      const displayLabel =
+        aliasDisplayName ?? formatModelNameFull(modelId, soleAgentType);
 
       const ModelItemIcon = () => (
         <ModelIcon modelName={modelId} agentType={soleAgentType} size={14} />

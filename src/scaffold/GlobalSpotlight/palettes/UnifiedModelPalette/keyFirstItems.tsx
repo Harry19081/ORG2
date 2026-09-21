@@ -146,7 +146,8 @@ export function buildMarketProfileModelItems(options: {
   source: MarketProfileSource;
   onCommit: (source: MarketProfileSource, modelId: string) => void;
 }): SpotlightItem[] {
-  return groupModels(options.source.modelIds).flatMap((group) => {
+  const groups = groupModels(options.source.modelIds, options.source.modelType);
+  return groups.flatMap((group) => {
     const variants = [...group.models].sort(compareModelsByVersion);
     const modelId = variants[0];
     if (!modelId) return [];
@@ -159,9 +160,17 @@ export function buildMarketProfileModelItems(options: {
       modelId;
     const launchModel =
       resolveDefaultVariant(baseModel, variantInfos, undefined) ?? modelId;
-    const ModelItemIcon = () => <ModelIcon modelName={modelId} size={14} />;
+    const ModelItemIcon = () => (
+      <ModelIcon
+        modelName={modelId}
+        agentType={options.source.modelType}
+        size={14}
+      />
+    );
     const displayLabel =
-      group.label === "Other" ? formatModelNameFull(modelId) : group.label;
+      group.label === "Other"
+        ? formatModelNameFull(modelId, options.source.modelType)
+        : group.label;
     return [
       withModelRowAttributes({
         id: `market-model:${options.source.id}:${modelId}`,
@@ -222,8 +231,10 @@ export function buildKeyModelItems({
   const items: SpotlightItem[] = [];
   const literalModels = account.modelType === "custom_api";
   const groups = literalModels
-    ? enabledAccountModelIds(account).flatMap((model) => groupModels([model]))
-    : groupModels(enabledAccountModelIds(account));
+    ? enabledAccountModelIds(account).flatMap((model) =>
+        groupModels([model], account.modelType)
+      )
+    : groupModels(enabledAccountModelIds(account), account.modelType);
 
   for (const group of groups) {
     const sortedVariants = [...group.models].sort(compareModelsByVersion);
@@ -264,7 +275,8 @@ export function buildKeyModelItems({
     );
     const displayLabel = hasMultipleVariants
       ? group.label
-      : (aliasDisplayName ?? formatModelNameFull(representative));
+      : (aliasDisplayName ??
+        formatModelNameFull(representative, account.modelType));
 
     const labelContent =
       !hasMultipleVariants && aliasDisplayName ? (
