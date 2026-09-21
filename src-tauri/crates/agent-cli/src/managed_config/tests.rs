@@ -1355,3 +1355,30 @@ fn managed_launch_preserves_codex_trust_across_token_rotation() {
         b"retained"
     );
 }
+
+#[test]
+fn history_preview_status_does_not_repair_legacy_default_manifest() {
+    let _env_lock = TEST_ENV_LOCK.get_or_init(|| Mutex::new(())).lock().unwrap();
+    let temp = tempfile::tempdir().unwrap();
+    let _home = OrgiiHomeGuard::set(&temp.path().join("orgii-home"));
+    let mut manifest = test_manifest(CODEX_AGENT, Vec::new());
+    manifest.mode = CliConfigMode::Default;
+    manifest.selected_key_id = Some("legacy-selection".into());
+    manifest.proxy_token = Some("test-token".into());
+    write_manifest(&manifest).unwrap();
+    let path = super::manifest::manifest_path(CODEX_AGENT);
+    let before = std::fs::read(&path).unwrap();
+    let status = super::operations::status_read_only(CODEX_AGENT).unwrap();
+    assert_eq!(status.mode, CliConfigMode::Default);
+    assert!(status.selected_key_id.is_none());
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    let profile = super::native_app::NativeAppProfile::new(
+        "codex",
+        "https://example.invalid",
+        "preview-owner",
+    )
+    .unwrap();
+    assert!(super::native_app::with_existing_profile(&profile, false, |_| Ok(())).is_err());
+    assert_eq!(std::fs::read(path).unwrap(), before);
+    assert!(!profile.root().exists());
+}

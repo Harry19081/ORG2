@@ -135,7 +135,10 @@ pub(super) fn complete(ticket: &str) {
 }
 
 pub(super) async fn request(user: &str) -> Outcome {
-    let (flight, start) = registry().acquire(user, owner::refresh_start()?)?;
+    request_started(user, owner::refresh_start()?).await
+}
+pub(super) async fn request_started(user: &str, start: owner::RefreshStart) -> Outcome {
+    let (flight, start) = registry().acquire(user, start)?;
     let mut result = flight.result.subscribe();
     if start {
         // One bounded worker survives a single consumer disconnect, allowing

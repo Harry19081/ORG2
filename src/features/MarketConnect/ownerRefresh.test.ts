@@ -3,11 +3,15 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 
 import { USER_A, USER_B, authFor, signedInStore } from "./identity.test-utils";
-import { handleMarketOwnerRefresh } from "./ownerRefresh";
+import {
+  handleMarketOwnerRefresh,
+  installMarketOwnerRecovery,
+} from "./ownerRefresh";
 
 const mocks = vi.hoisted(() => ({
   invoke: vi.fn(),
   ready: vi.fn(),
+  hydrate: vi.fn(),
   fetch: vi.fn(),
 }));
 vi.mock("@tauri-apps/api/core", async (original) => ({
@@ -17,6 +21,7 @@ vi.mock("@tauri-apps/api/core", async (original) => ({
 vi.mock("@src/api/http/auth/sharedAuthStorage", async (original) => ({
   ...(await original<typeof import("@src/api/http/auth/sharedAuthStorage")>()),
   awaitNativeCloudOwnerReady: mocks.ready,
+  synchronizeSharedServiceAuthStorage: mocks.hydrate,
 }));
 const TICKET = "11111111-2222-4333-8444-555555555555";
 const response = () =>
@@ -32,6 +37,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.stubGlobal("fetch", mocks.fetch);
   mocks.ready.mockResolvedValue(undefined);
+  mocks.hydrate.mockResolvedValue(undefined);
   mocks.invoke.mockImplementation(async (command) =>
     command === "market_connection_refresh_claim" ? USER_A : null
   );
@@ -136,23 +142,23 @@ it("disposes a timed-out owner's subscription and keeps repeated tickets bounded
       "market_cloud_refresh_unavailable"
     );
     await vi.advanceTimersByTimeAsync(0);
-    expect(subscriptions).toBe(1);
+    expect(subscriptions).toBe(2);
     expect(mocks.ready).toHaveBeenCalledOnce();
     await vi.advanceTimersByTimeAsync(30_000);
     await failed;
-    expect(subscriptions).toBe(0);
+    expect(subscriptions).toBe(1);
     expect(vi.getTimerCount()).toBe(0);
     // Native may create another request after its deadline; JS must not attach
     // any further subscriptions or promise waiters to the blocked refresh.
     for (let i = 0; i < 10; i++) await handleMarketOwnerRefresh(TICKET, store);
-    expect(subscribe).toHaveBeenCalledOnce();
+    expect(subscribe).toHaveBeenCalledTimes(2);
     expect(mocks.ready).toHaveBeenCalledOnce();
-    expect(subscriptions).toBe(0);
+    expect(subscriptions).toBe(1);
     finish();
     await vi.advanceTimersByTimeAsync(0);
     await handleMarketOwnerRefresh(TICKET, store);
     expect(mocks.ready).toHaveBeenCalledTimes(2);
-    expect(subscribe).toHaveBeenCalledTimes(2);
+    expect(subscribe).toHaveBeenCalledTimes(4);
     expect(subscriptions).toBe(0);
     expect(vi.getTimerCount()).toBe(0);
   } finally {
@@ -184,4 +190,121 @@ it("an aborted bridge releases its guard immediately and never executes late wor
   finish();
   await rejected;
   expect(work).not.toHaveBeenCalled();
+});
+
+it("retains failed expiry demand without polling and recovers on online once", async () => {
+  vi.useFakeTimers();
+  const target = new EventTarget();
+  vi.stubGlobal("window", target);
+  const store = signedInStore();
+  store.set(org2CloudAuthAtom, { ...authFor(), expiresAt: 0 });
+  mocks.fetch.mockRejectedValueOnce(new Error("offline"));
+  try {
+    await expect(handleMarketOwnerRefresh(TICKET, store)).rejects.toThrow();
+    await vi.advanceTimersByTimeAsync(3_600_000);
+    expect(mocks.fetch).toHaveBeenCalledOnce();
+    expect(vi.getTimerCount()).toBe(0);
+    mocks.fetch.mockResolvedValue(response());
+    for (let i = 0; i < 20; i++) target.dispatchEvent(new Event("online"));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(mocks.fetch).toHaveBeenCalledTimes(2);
+    expect(store.get(org2CloudAuthAtom)?.accessToken).toBe("rotated");
+    target.dispatchEvent(new Event("focus"));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(mocks.fetch).toHaveBeenCalledTimes(2);
+    expect(vi.getTimerCount()).toBe(0);
+  } finally {
+    store.set(org2CloudAuthAtom, null);
+    vi.useRealTimers();
+  }
+});
+
+it("failed expiry recovery cannot survive logout or an A→B→A round trip", async () => {
+  const target = new EventTarget();
+  vi.stubGlobal("window", target);
+  const store = signedInStore();
+  store.set(org2CloudAuthAtom, { ...authFor(), expiresAt: 0 });
+  mocks.fetch.mockRejectedValue(new Error("offline"));
+  await expect(handleMarketOwnerRefresh(TICKET, store)).rejects.toThrow();
+  store.set(org2CloudAuthAtom, authFor(USER_B));
+  store.set(org2CloudAuthAtom, authFor());
+  target.dispatchEvent(new Event("focus"));
+  target.dispatchEvent(new Event("online"));
+  await Promise.resolve();
+  expect(mocks.fetch).toHaveBeenCalledOnce();
+});
+
+it("focus hydration racing native expiry shares one refresh and removes wake listeners", async () => {
+  const target = new EventTarget();
+  vi.stubGlobal("window", target);
+  const store = signedInStore();
+  store.set(org2CloudAuthAtom, { ...authFor(), expiresAt: 0 });
+  let finish!: (value: Response) => void;
+  mocks.fetch.mockImplementation(
+    () =>
+      new Promise<Response>((done) => {
+        finish = done;
+      })
+  );
+  const dispose = installMarketOwnerRecovery(store);
+  try {
+    target.dispatchEvent(new Event("focus"));
+    await vi.waitFor(() => expect(mocks.fetch).toHaveBeenCalledOnce());
+    await handleMarketOwnerRefresh(TICKET, store);
+    for (let i = 0; i < 10; i++) target.dispatchEvent(new Event("online"));
+    expect(mocks.fetch).toHaveBeenCalledOnce();
+    finish(response());
+    await vi.waitFor(() =>
+      expect(store.get(org2CloudAuthAtom)?.accessToken).toBe("rotated")
+    );
+  } finally {
+    dispose();
+  }
+  const calls = mocks.hydrate.mock.calls.length;
+  target.dispatchEvent(new Event("focus"));
+  expect(mocks.hydrate).toHaveBeenCalledTimes(calls);
+});
+
+it("focus recovery rejects a logout round trip while hydration is pending", async () => {
+  const target = new EventTarget();
+  vi.stubGlobal("window", target);
+  const store = signedInStore();
+  store.set(org2CloudAuthAtom, { ...authFor(), expiresAt: 0 });
+  let finish!: () => void;
+  mocks.hydrate.mockImplementationOnce(
+    () =>
+      new Promise<void>((done) => {
+        finish = done;
+      })
+  );
+  const dispose = installMarketOwnerRecovery(store);
+  target.dispatchEvent(new Event("focus"));
+  store.set(org2CloudAuthAtom, null);
+  store.set(org2CloudAuthAtom, { ...authFor(), expiresAt: 0 });
+  finish();
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(mocks.fetch).not.toHaveBeenCalled();
+  dispose();
+});
+
+it("sleep-expired focus failure recovers on online without an expiry ticket", async () => {
+  const target = new EventTarget();
+  vi.stubGlobal("window", target);
+  const store = signedInStore();
+  store.set(org2CloudAuthAtom, { ...authFor(), expiresAt: 0 });
+  mocks.fetch.mockRejectedValueOnce(new Error("offline"));
+  const dispose = installMarketOwnerRecovery(store);
+  try {
+    target.dispatchEvent(new Event("focus"));
+    await vi.waitFor(() => expect(mocks.fetch).toHaveBeenCalledOnce());
+    mocks.fetch.mockResolvedValue(response());
+    target.dispatchEvent(new Event("online"));
+    await vi.waitFor(() =>
+      expect(store.get(org2CloudAuthAtom)?.accessToken).toBe("rotated")
+    );
+    expect(mocks.fetch).toHaveBeenCalledTimes(2);
+  } finally {
+    dispose();
+  }
 });

@@ -4,6 +4,7 @@ import { useMarketCloudOwnerRefresh } from "../useMarketCloudOwnerRefresh";
 
 const mocks = vi.hoisted(() => ({
   invoke: vi.fn(),
+  recovery: vi.fn(),
   listen: vi.fn(),
   handle: vi.fn(),
   isTauri: vi.fn(),
@@ -14,9 +15,11 @@ vi.mock("@tauri-apps/api/core", () => ({
   invoke: mocks.invoke,
   isTauri: mocks.isTauri,
 }));
+vi.mock("react", () => ({ useEffect: (effect: () => unknown) => effect() }));
 vi.mock("jotai", () => ({ useStore: () => mocks.store }));
 vi.mock("@src/features/MarketConnect/ownerRefresh", () => ({
   handleMarketOwnerRefresh: mocks.handle,
+  installMarketOwnerRecovery: mocks.recovery,
 }));
 vi.mock("@src/hooks/platform/useTauriListen", () => ({
   useTauriListen: mocks.listen,
@@ -34,6 +37,7 @@ it("installs one main-window demand listener and recovers an early ticket once a
   mocks.invoke.mockResolvedValue("native-ticket");
   useMarketCloudOwnerRefresh();
   expect(mocks.listen).toHaveBeenCalledOnce();
+  expect(mocks.recovery).toHaveBeenCalledExactlyOnceWith(mocks.store);
   const [event, handler, options] = mocks.listen.mock.calls[0];
   expect(event).toBe("market-cloud-owner-refresh-needed");
   expect(options.enabled).toBe(true);
@@ -56,4 +60,5 @@ it("does not subscribe another window or a browser-only surface", () => {
   mocks.isTauri.mockReturnValue(false);
   useMarketCloudOwnerRefresh();
   expect(mocks.listen.mock.calls[1][2].enabled).toBe(false);
+  expect(mocks.recovery).not.toHaveBeenCalled();
 });

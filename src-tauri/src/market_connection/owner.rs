@@ -255,6 +255,36 @@ impl crate::dynamic_credentials::OperationAuthorization for Operation {
     }
 }
 impl Lease {
+    #[cfg(target_os = "macos")]
+    pub(super) fn same_epoch(&self, other: &Self) -> bool {
+        self.epoch == other.epoch && self.identity == other.identity
+    }
+    #[cfg(target_os = "macos")]
+    pub(super) fn remaining(&self) -> Option<std::time::Duration> {
+        self.check().ok()?;
+        let seconds = self.state.lock().ok()?.expires_at - now();
+        (seconds > 0.0)
+            .then(|| std::time::Duration::try_from_secs_f64(seconds).ok())
+            .flatten()
+    }
+    /// Capture expiry and generation atomically: logout cannot rebind a demand.
+    #[cfg(target_os = "macos")]
+    pub(super) fn expiry_refresh(&self) -> Option<RefreshStart> {
+        self.expiry_refresh_at(now())
+    }
+    #[cfg(target_os = "macos")]
+    fn expiry_refresh_at(&self, at: f64) -> Option<RefreshStart> {
+        let s = self.state.lock().ok()?;
+        (!s.suspended
+            && s.epoch == self.epoch
+            && s.identity.as_ref() == Some(&self.identity)
+            && s.expires_at <= at)
+            .then(|| RefreshStart {
+                state: Arc::clone(&self.state),
+                generation: s.owner_generation,
+                unobserved: false,
+            })
+    }
     pub(super) fn native_app(
         &self,
         agent: &str,
@@ -309,12 +339,19 @@ pub(super) async fn suspend() -> Result<u64, String> {
         epoch
     };
     changes().send_replace(epoch);
+    super::stop_history_sync();
     Ok(epoch)
 }
 
 pub(super) async fn sync(epoch: Option<u64>) -> Result<(), String> {
     let _serial = serial().lock().await;
-    cancel_on_invalidation(changes().subscribe(), sync_current(epoch)).await
+    let result = cancel_on_invalidation(changes().subscribe(), sync_current(epoch)).await;
+    if result.is_ok() {
+        super::start_history_sync();
+    } else {
+        super::stop_history_sync();
+    }
+    result
 }
 async fn cancel_on_invalidation<T>(
     mut changes: tokio::sync::watch::Receiver<u64>,
@@ -353,6 +390,7 @@ async fn sync_current(epoch: Option<u64>) -> Result<(), String> {
         s.suspended || s.identity != identity
     };
     let commit_epoch = if changed {
+        super::stop_history_sync();
         // Every explicit suspension retires old work, including signed-out sync.
         // Also detect a storage owner change if frontend notification was lost.
         let e = {
@@ -794,5 +832,19 @@ mod tests {
             .commit_verified(epoch, &snapshot, 1000.0)
             .unwrap();
         assert!(start.binding(&snapshot.user_id).is_err());
+    }
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn expiry_demand_is_clock_bound_and_never_recovers_a_replaced_owner() {
+        let (lease, invalidate) = test_lease("owner-a");
+        lease.state.lock().unwrap().expires_at = 100.0;
+        assert!(lease.expiry_refresh_at(99.0).is_none());
+        assert!(lease.expiry_refresh_at(100.0).is_some());
+        lease.state.lock().unwrap().expires_at = 200.0;
+        assert!(lease.expiry_refresh_at(100.0).is_none());
+        let demand = lease.expiry_refresh_at(200.0).unwrap();
+        invalidate();
+        assert!(demand.binding("owner-a").is_err());
+        assert!(lease.expiry_refresh_at(300.0).is_none());
     }
 }

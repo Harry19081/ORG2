@@ -30,6 +30,17 @@ fn clear_connection_metadata(manifest: &mut CliConfigProfileManifest) {
 }
 
 pub(super) fn status_for_unlocked(agent_name: &str) -> Result<CliConfigManagedStatus, String> {
+    status_impl(agent_name, true)
+}
+
+pub(super) fn status_read_only(agent_name: &str) -> Result<CliConfigManagedStatus, String> {
+    status_impl(agent_name, false)
+}
+
+fn status_impl(
+    agent_name: &str,
+    repair_legacy_metadata: bool,
+) -> Result<CliConfigManagedStatus, String> {
     if !supported_agent(agent_name) {
         return Ok(CliConfigManagedStatus {
             native_app: None,
@@ -64,7 +75,9 @@ pub(super) fn status_for_unlocked(agent_name: &str) -> Result<CliConfigManagedSt
             // authorization token on disk.
             clear_connection_metadata(value);
             value.updated_at = now_stamp();
-            write_manifest(value)?;
+            if repair_legacy_metadata {
+                write_manifest(value)?;
+            }
         }
     }
     let fallback_targets = super::manifest::app_targets(

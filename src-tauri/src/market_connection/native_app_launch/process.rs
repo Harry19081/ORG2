@@ -2,7 +2,7 @@
 use std::path::{Path, PathBuf};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(super) struct Identity {
+pub(crate) struct Identity {
     pub pid: i32,
     pub started: (u64, u64),
 }
@@ -443,6 +443,117 @@ pub(super) fn activate(
             Ok(())
         },
     )
+}
+
+/// One bounded snapshot; no retries, signal, launch, or timer. All official
+/// Claude writers are conservatively excluded because a CLI may override its
+/// configuration root in an environment variable that must not be logged.
+pub(super) fn claude_writers_closed() -> Result<(), &'static str> {
+    if claude_writer_identities()?.is_empty() {
+        Ok(())
+    } else {
+        Err("busy")
+    }
+}
+pub(crate) fn writer_identity_current(identity: &Identity) -> Result<bool, &'static str> {
+    Ok(info(identity.pid)
+        .map_err(|_| "writer_unknown")?
+        .is_some_and(|info| {
+            info.pbi_uid == unsafe { libc::geteuid() }
+                && (info.pbi_start_tvsec, info.pbi_start_tvusec) == identity.started
+                && info.pbi_status != libc::SZOMB
+                && info.pbi_flags & PROC_FLAG_INEXIT == 0
+        }))
+}
+pub(crate) fn claude_writer_identities() -> Result<Vec<Identity>, &'static str> {
+    let apps = objc2_app_kit::NSRunningApplication::runningApplicationsWithBundleIdentifier(
+        &objc2_foundation::NSString::from_str("com.anthropic.claudefordesktop"),
+    );
+    let app_pids: Vec<_> = apps.iter().map(|app| app.processIdentifier()).collect();
+    let mut writers = Vec::new();
+    const PROC_UID_ONLY: u32 = 4;
+    let mut pids = vec![0i32; 65536];
+    let capacity = std::mem::size_of_val(pids.as_slice());
+    let bytes = unsafe {
+        libc::proc_listpids(
+            PROC_UID_ONLY,
+            libc::geteuid(),
+            pids.as_mut_ptr().cast(),
+            capacity as i32,
+        )
+    };
+    if bytes <= 0
+        || bytes as usize >= capacity
+        || !(bytes as usize).is_multiple_of(std::mem::size_of::<i32>())
+    {
+        return Err("writer_unknown");
+    }
+    pids.truncate(bytes as usize / std::mem::size_of::<i32>());
+    for pid in pids.into_iter().filter(|pid| *pid > 0) {
+        let Some(before) = info(pid).map_err(|_| "writer_unknown")? else {
+            continue;
+        };
+        if before.pbi_status == libc::SZOMB || before.pbi_flags & PROC_FLAG_INEXIT != 0 {
+            continue;
+        }
+        let mut path = [0u8; 4096];
+        let len = unsafe { libc::proc_pidpath(pid, path.as_mut_ptr().cast(), path.len() as u32) };
+        if len <= 0 {
+            return Err("writer_unknown");
+        }
+        let end = path
+            .iter()
+            .position(|value| *value == 0)
+            .unwrap_or(path.len());
+        let executable = std::str::from_utf8(&path[..end]).map_err(|_| "writer_unknown")?;
+        let name = Path::new(executable)
+            .file_name()
+            .and_then(|value| value.to_str())
+            .ok_or("writer_unknown")?;
+        let mut writer = app_pids.contains(&pid) || claude_executable(executable);
+        if matches!(name, "node" | "nodejs" | "bun" | "deno") {
+            let bytes = process_args(pid).map_err(|_| "writer_unknown")?;
+            let args = arguments(&bytes).map_err(|_| "writer_unknown")?;
+            if args
+                .iter()
+                .any(|arg| std::str::from_utf8(arg).is_ok_and(claude_executable))
+            {
+                writer = true;
+            }
+        }
+        let Some(after) = info(pid).map_err(|_| "writer_unknown")? else {
+            continue;
+        };
+        if (before.pbi_start_tvsec, before.pbi_start_tvusec)
+            != (after.pbi_start_tvsec, after.pbi_start_tvusec)
+            || before.pbi_uid != after.pbi_uid
+        {
+            return Err("writer_unknown");
+        }
+        if writer {
+            if writers.len() >= 512 {
+                return Err("writer_unknown");
+            }
+            writers.push(Identity {
+                pid,
+                started: (after.pbi_start_tvsec, after.pbi_start_tvusec),
+            });
+        }
+    }
+    Ok(writers)
+}
+fn claude_executable(path: &str) -> bool {
+    // Installed browser native messaging host only writes its bridge socket/log;
+    // it is not Desktop or a CLI writer. Keep scanning every other process and
+    // all child CLI entrypoints, including other Helpers and copied app bundles.
+    if path == "/Applications/Claude.app/Contents/Helpers/chrome-native-host" {
+        return false;
+    }
+    matches!(
+        Path::new(path).file_name().and_then(|value| value.to_str()),
+        Some("claude" | "claude.exe" | "Claude")
+    ) || path.contains("/@anthropic-ai/claude-code/")
+        || path.contains("/Claude.app/Contents/")
 }
 
 #[cfg(test)]

@@ -5,7 +5,7 @@ mod account_home;
 #[cfg(target_os = "macos")]
 mod lifecycle;
 #[cfg(target_os = "macos")]
-mod process;
+pub(super) mod process;
 use agent_cli::managed_config::native_app::NativeAppProfile;
 use std::path::{Path, PathBuf};
 #[cfg(any(target_os = "macos", test))]
@@ -266,6 +266,14 @@ pub(super) fn open(
         Err("Opening official Apps is not available on this platform yet".into())
     }
 }
+
+#[cfg(target_os = "macos")]
+pub(super) fn claude_history_writers_closed() -> Result<(), &'static str> {
+    process::claude_writers_closed()
+}
+
+#[cfg(target_os = "macos")]
+pub(super) use process::{claude_writer_identities, writer_identity_current};
 
 #[cfg(test)]
 mod tests {

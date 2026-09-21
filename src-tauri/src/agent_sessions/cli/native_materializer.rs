@@ -40,6 +40,8 @@ use super::parsers::codex_app_server as codex_native_catalog;
 use super::persistence;
 
 #[cfg(any(all(target_os = "macos", feature = "market-connect"), test))]
+pub(crate) mod claude_history_handoff;
+#[cfg(any(all(target_os = "macos", feature = "market-connect"), test))]
 pub(crate) mod isolated_claude_history;
 mod storage;
 use storage::NativeStorageOwner;
