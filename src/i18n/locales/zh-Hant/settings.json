@@ -1027,6 +1027,33 @@
       "auxiliaryBilling": "Claude Code 自動產生標題、記憶和壓縮上下文的呼叫計入預設套餐；只有對話本身跟隨你用 /model 選擇的套餐",
       "defaultModel": "預設模型",
       "packageLimit": "最多選擇 8 個方案"
+    },
+    "claudeHistory": {
+      "title": "同步 Claude 歷史",
+      "help": "先預覽已有對話，再選擇一條同步相容的對話正文和已完成工具結果。不會轉移來源環境、專案指令或權限。同步前請退出 Claude Desktop 和 Claude Code；衝突或暫不支援的歷史會保持不變",
+      "preview": "列出對話",
+      "choose": "選擇一條對話",
+      "inspect": "檢查所選對話",
+      "sync": "同步選中對話",
+      "empty": "目前設定中沒有相符的對話",
+      "status": {
+        "unchecked": "請選擇對話並先檢查相容性",
+        "ready": "相容的續聊內容可以同步",
+        "clean": "已經是最新歷史",
+        "synced_to_primary": "已更新主設定的對話",
+        "synced_to_package": "已更新套餐設定的對話",
+        "conflict": "兩邊歷史均已變更或不再相符，未覆寫任何內容",
+        "incomplete": "對話中還有未完成的訊息或工具呼叫",
+        "unsupported": "此歷史含有暫時無法安全同步的記錄格式",
+        "busy": "請退出 Claude Desktop 和 Claude Code 後重試",
+        "writer_unknown": "無法確認 Claude 已停止，未做任何修改",
+        "changed": "檢查期間檔案發生變更，請重新預覽",
+        "scope_changed": "帳號或設定已變更，請重新預覽",
+        "limit": "歷史超出本次操作的安全限制",
+        "failed": "無法同步此對話",
+        "recovery_ready": "可以安全恢復上次中斷的同步"
+      },
+      "count": "共 {{total}} 個對話，{{ready}} 個已檢查且可同步"
     }
   },
   "claudeProfiles": {

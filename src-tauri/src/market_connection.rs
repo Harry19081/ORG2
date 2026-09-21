@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "market-connect")]
 mod app_catalog;
 #[cfg(feature = "market-connect")]
+mod claude_history;
+#[cfg(feature = "market-connect")]
 mod configure_catalog;
 #[cfg(feature = "market-connect")]
 mod external_client;
@@ -742,5 +744,23 @@ pub async fn market_connection_configure_catalog(
     {
         let _ = request;
         Err("market_module_disabled".into())
+    }
+}
+
+/// Preview is read-only; a selected UUID explicitly requests one handoff.
+#[tauri::command(rename_all = "camelCase")]
+pub async fn market_connection_claude_history(
+    selected: Option<String>,
+    mode: crate::agent_sessions::cli::native_materializer::claude_history_handoff::Mode,
+) -> serde_json::Value {
+    #[cfg(feature = "market-connect")]
+    {
+        serde_json::to_value(claude_history::inspect_or_sync(selected, mode).await)
+            .unwrap_or_else(|_| serde_json::json!({"status": "failed", "items": []}))
+    }
+    #[cfg(not(feature = "market-connect"))]
+    {
+        let _ = (selected, mode);
+        serde_json::json!({"status": "unsupported", "items": []})
     }
 }

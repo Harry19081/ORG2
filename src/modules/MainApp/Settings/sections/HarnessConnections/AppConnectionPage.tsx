@@ -26,6 +26,7 @@ import {
 } from "@src/features/MarketConnect/marketProfiles";
 import { profilesForAppliedMarketSelection } from "@src/features/MarketConnect/marketSelection";
 
+import ClaudeHistorySync from "./ClaudeHistorySync";
 import ClaudeProfileEditor from "./ClaudeProfileEditor";
 import ConnectionCards from "./ConnectionCards";
 import HarnessConnectionEditor from "./HarnessConnectionEditor";
@@ -357,6 +358,19 @@ export default function AppConnectionPage({
           </div>
         </SectionRow>
       </SectionContainer>
+
+      {target === "claude_desktop" &&
+        marketManaged &&
+        state.view?.config.nativeApp &&
+        appliedMarketProfiles[0] && (
+          <ClaudeHistorySync
+            key={appliedMarketProfiles[0].connection.identity_user_id}
+            identityUserId={
+              appliedMarketProfiles[0].connection.identity_user_id
+            }
+            disabled={busy !== null || unavailable}
+          />
+        )}
 
       {picker !== "closed" && (
         <SectionContainer

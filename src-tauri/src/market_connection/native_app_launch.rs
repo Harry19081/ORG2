@@ -423,3 +423,14 @@ mod tests {
         }
     }
 }
+
+pub(super) fn claude_history_writers_closed() -> Result<(), &'static str> {
+    #[cfg(target_os = "macos")]
+    {
+        process::claude_writers_closed()
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        Err("writer_unknown")
+    }
+}

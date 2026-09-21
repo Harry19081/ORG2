@@ -1108,6 +1108,33 @@
       "auxiliaryBilling": "Claude Code's automatic title, memory and compaction calls are billed to the default package; only the chat itself follows the package you pick with /model",
       "defaultModel": "Default model",
       "packageLimit": "Select up to 8 packages"
+    },
+    "claudeHistory": {
+      "title": "Sync Claude history",
+      "help": "Preview existing conversations, then select one to sync compatible message text and completed tool results. Source environment, project instructions and permissions are not transferred. Quit Claude Desktop and Claude Code before syncing; unsupported or conflicting histories stay unchanged",
+      "preview": "List conversations",
+      "choose": "Select a conversation",
+      "inspect": "Inspect selected conversation",
+      "sync": "Sync selected conversation",
+      "empty": "No matching conversations in the current profiles",
+      "status": {
+        "unchecked": "Select a conversation and inspect it before syncing",
+        "ready": "Compatible continuation is ready to sync",
+        "clean": "Already up to date",
+        "synced_to_primary": "Updated the primary conversation",
+        "synced_to_package": "Updated the package conversation",
+        "conflict": "Both histories changed or no longer match. Nothing was overwritten",
+        "incomplete": "The conversation has an unfinished message or tool call",
+        "unsupported": "This history contains a record format that cannot safely be synced yet",
+        "busy": "Quit Claude Desktop and Claude Code, then try again",
+        "writer_unknown": "Could not confirm that Claude has stopped. Nothing was changed",
+        "changed": "The files changed during inspection. Preview again",
+        "scope_changed": "The account or profile changed. Preview again",
+        "limit": "The history exceeds this operation’s safety limits",
+        "failed": "Could not sync this conversation",
+        "recovery_ready": "An interrupted sync can be safely resumed"
+      },
+      "count": "{{ready}} ready to sync out of {{total}} listed conversations"
     }
   },
   "claudeProfiles": {

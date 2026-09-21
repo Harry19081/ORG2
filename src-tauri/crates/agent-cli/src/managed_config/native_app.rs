@@ -208,5 +208,30 @@ pub fn with_launch<T>(
     launch()
 }
 
+/// Read-only ownership inspection does not recover transactions, create a
+/// profile, or alter account configuration. History callers can optionally
+/// hold the existing configuration locks while committing their own files.
+pub fn with_existing_profile<T>(
+    profile: &NativeAppProfile,
+    lock_targets: bool,
+    action: impl FnOnce(&dyn Fn() -> Result<(), String>) -> Result<T, String>,
+) -> Result<T, String> {
+    let _guard = super::CONFIG_OPERATION_LOCK
+        .get_or_init(|| std::sync::Mutex::new(()))
+        .try_lock()
+        .map_err(|_| "Native App configuration is busy")?;
+    let _locks = if lock_targets {
+        super::target_lock::lock_app_targets(profile.agent(), Some(profile))?
+    } else {
+        Vec::new()
+    };
+    let check = || {
+        let status = super::operations::status_read_only(profile.agent())?;
+        profile.validate_launch(&status)
+    };
+    check()?;
+    action(&check)
+}
+
 #[cfg(test)]
 mod tests;

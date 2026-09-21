@@ -387,3 +387,27 @@ fn processes_spawning_and_exiting_during_a_scan_do_not_fail_it() {
         failures.first()
     );
 }
+
+#[test]
+fn history_writer_detection_recognizes_native_and_script_entrypoints() {
+    for path in [
+        "/opt/bin/claude",
+        "/Applications/Claude.app/Contents/Helpers/other-helper",
+        "/tmp/Claude.app/Contents/Helpers/chrome-native-host",
+        "/opt/bin/claude.exe",
+        "/Applications/Claude.app/Contents/MacOS/Claude",
+        "/opt/lib/node_modules/@anthropic-ai/claude-code/cli.js",
+    ] {
+        assert!(claude_executable(path));
+    }
+    for path in [
+        "/opt/bin/node",
+        "/Applications/Claude.app/Contents/Helpers/chrome-native-host",
+        "/opt/bin/claude-notes",
+        "/work/Claude-history.txt",
+        "/opt/bin/codex",
+    ] {
+        assert!(!claude_executable(path));
+    }
+    assert!(arguments(&[0, 0, 0, 0]).is_err());
+}
