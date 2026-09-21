@@ -1,6 +1,6 @@
 # SessionsScreen UI audit
 
-Scope: user-requested removal of the mobile pending-inbox entry and its secondary list. The user explicitly requested removing this surface; this is not a filter for malformed upstream data. The pending-snapshot loading failure is not fixed by this change.
+Scope: user-requested removal of the mobile pending-inbox entry and its secondary list, including its unused English/Chinese translations. The user explicitly requested removing this surface; this is not a filter for malformed upstream data. The pending-snapshot loading failure is not fixed by this change.
 
 | Line                       | Element                            | Verdict          | Reason                                                                                                                                                                                                                                                                      | Suggested change |
 | -------------------------- | ---------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
@@ -41,6 +41,7 @@ Executed on the isolated branch based on develop `58898f47d`:
 - Prettier check on the two changed TS files and stylesheet: passed.
 - TypeScript AST inspection of changed production controls: zero raw buttons, native button creation, or clickable div/span bypasses.
 - `git diff --check`: passed.
+- `node scripts/quality/i18n-keys/check.mjs`: passed after removing nine newly unused inbox keys from both locales. Retained `inbox.truncated`, which the conversation permission detail still uses. The first CI run caught these leftover keys; the follow-up commit removes them.
 
 Earlier manual verification used the same production removal in the running iPhone 17 Pro / iOS 26.5 simulator: pending entry absent, desktop online, session list and search visible after relaunch. That screenshot contains real session titles and a device name, so it is not published in this PR. A sanitized before/after screenshot and dark-appearance check are not included. No new color or surface treatment is added.
 
