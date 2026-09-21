@@ -323,6 +323,8 @@
     "apply": "Appliquer",
     "reset": "Réinitialiser",
     "resetFilters": "Réinitialiser les filtres",
+    "cardView": "Vue en cartes",
+    "listView": "Vue en liste",
     "search": "Rechercher",
     "add": "Ajouter",
     "remove": "Retirer",

@@ -6,7 +6,13 @@ import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
 import Table, { type TableColumn } from "@src/components/Table";
 import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
-import { FilterIcon, FilterResetIcon, HugeiconsIcon } from "@src/icons";
+import {
+  DashboardSquare01Icon,
+  FilterIcon,
+  FilterResetIcon,
+  HugeiconsIcon,
+  LayoutListIcon,
+} from "@src/icons";
 
 import SearchSortBar, { type SearchSortBarProps } from "./SearchSortBar";
 import { SettingsTableAddFooter } from "./SettingsTableAddFooter";
@@ -142,6 +148,36 @@ export interface SettingsTableProps<RowData> {
   rootClassName?: string;
 }
 
+/** The toolbar's list/card switch. Shows the mode it switches *to*, matching
+ *  the flat/group toggle the model table already uses. */
+function CardViewToggle<RowData>({
+  cardView,
+}: {
+  cardView?: SettingsTableCardViewConfig<RowData>;
+}) {
+  const { t } = useTranslation();
+  if (!cardView?.onEnabledChange) return null;
+
+  const showingCards = cardView.enabled;
+  const label = showingCards ? t("actions.listView") : t("actions.cardView");
+  return (
+    <Button
+      iconOnly
+      onClick={() => cardView.onEnabledChange?.(!showingCards)}
+      icon={
+        <HugeiconsIcon
+          icon={showingCards ? LayoutListIcon : DashboardSquare01Icon}
+          data-icon={showingCards ? "layout-list" : "dashboard-square"}
+          size={14}
+        />
+      }
+      aria-label={label}
+      title={label}
+      data-testid="settings-table-view-toggle"
+    />
+  );
+}
+
 /** Long option lists get a search box; short fixed ones read faster without. */
 function filterIsSearchable(filter: SettingsTableSelectFilter): boolean {
   return (
@@ -191,14 +227,16 @@ function ResetFiltersButton({
   );
 }
 
-function SettingsTableToolbar({
+function SettingsTableToolbar<RowData>({
   searchBar,
   selectFilters,
   selectFiltersExtra,
+  cardView,
 }: {
   searchBar?: SearchSortBarProps;
   selectFilters?: SettingsTableSelectFilter[];
   selectFiltersExtra?: ReactNode;
+  cardView?: SettingsTableCardViewConfig<RowData>;
 }) {
   const { t } = useTranslation();
 
@@ -239,7 +277,8 @@ function SettingsTableToolbar({
     !!filterButton ||
     !!showSort ||
     !!hasInlineSearch ||
-    !!searchBar?.rightContent;
+    !!searchBar?.rightContent ||
+    !!cardView?.onEnabledChange;
 
   return (
     <div className="flex min-w-0 flex-col gap-2 pt-2 pb-2 @[640px]:flex-row @[640px]:items-center">
@@ -313,6 +352,7 @@ function SettingsTableToolbar({
               />
             </div>
           ) : null}
+          <CardViewToggle cardView={cardView} />
           {searchBar?.rightContent ? (
             <div className="flex shrink-0 items-center gap-2">
               {searchBar.rightContent}
@@ -546,14 +586,21 @@ export default function SettingsTable<RowData>({
             className={`${stickyBordered ? "settings-table-sticky-surface -mx-px border-x border-t border-border-1" : ""} border-b border-border-1 px-4 ${surfaceVariant !== "transparent" ? "rounded-t-xl" : ""} ${surfaceClassName} ${searchHeaderClassName}`.trim()}
           >
             {inlineHeaderToolbar ? (
-              <SettingsTableToolbar
+              <SettingsTableToolbar<RowData>
                 searchBar={searchBar}
                 selectFilters={selectFilters}
                 selectFiltersExtra={selectFiltersExtra}
+                cardView={cardView}
               />
             ) : (
               <>
-                {searchBar && <SearchSortBar {...searchBar} noPadding />}
+                {searchBar && (
+                  <SearchSortBar
+                    {...searchBar}
+                    noPadding
+                    leadingRightContent={<CardViewToggle cardView={cardView} />}
+                  />
+                )}
                 {hasSelectFilterRow && (
                   <SelectFilterRow
                     filters={selectFilters ?? []}

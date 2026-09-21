@@ -16,9 +16,7 @@ import {
   Add01Icon,
   ArrowDown01Icon,
   ArrowUp01Icon,
-  DashboardSquare01Icon,
   HugeiconsIcon,
-  LayoutListIcon,
 } from "@src/icons";
 import GroupRowEraTag from "@src/modules/MainApp/Integrations/KeyVault/shared/ModelTable/GroupRowEraTag";
 
@@ -352,31 +350,6 @@ export default function ModelsTableSection({
     />
   ) : null;
 
-  const viewToggleButton = (
-    <Button
-      iconOnly
-      onClick={() => setViewMode((prev) => (prev === "card" ? "list" : "card"))}
-      icon={
-        <HugeiconsIcon
-          icon={viewMode === "card" ? LayoutListIcon : DashboardSquare01Icon}
-          data-icon={viewMode === "card" ? "layout-list" : "dashboard-square"}
-          size={14}
-        />
-      }
-      aria-label={
-        viewMode === "card"
-          ? t("modelsTable.listView")
-          : t("modelsTable.cardView")
-      }
-      title={
-        viewMode === "card"
-          ? t("modelsTable.listView")
-          : t("modelsTable.cardView")
-      }
-      data-testid="key-vault-models-view-toggle"
-    />
-  );
-
   // The model name is the card heading, the enable switch its trailing action,
   // and "enabled sources" the one field worth a label.
   const cardView = useMemo<
@@ -384,6 +357,7 @@ export default function ModelsTableSection({
   >(
     () => ({
       enabled: viewMode === "card",
+      onEnabledChange: (enabled) => setViewMode(enabled ? "card" : "list"),
       titleColumnKey: "model",
       actionColumnKeys: ["status"],
       fieldLayout: "inline",
@@ -423,7 +397,6 @@ export default function ModelsTableSection({
         searchShortcut: true,
         rightContent: (
           <>
-            {viewToggleButton}
             {refreshModelsButton}
             {addProviderButton}
           </>
