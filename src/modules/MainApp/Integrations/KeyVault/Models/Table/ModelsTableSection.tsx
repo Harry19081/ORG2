@@ -394,7 +394,6 @@ export default function ModelsTableSection({
         onSearchChange: setModelsSearchQuery,
         searchPlaceholder: t("modelsTable.searchPlaceholder"),
         allowSearchClear: true,
-        searchShortcut: true,
         rightContent: (
           <>
             {refreshModelsButton}

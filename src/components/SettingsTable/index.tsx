@@ -369,11 +369,13 @@ function SelectFilterRow({
   extra,
   hasSearchBarAbove,
   resetLabel,
+  trailing,
 }: {
   filters: SettingsTableSelectFilter[];
   extra?: ReactNode;
   hasSearchBarAbove: boolean;
   resetLabel: string;
+  trailing?: ReactNode;
 }) {
   return (
     <div
@@ -402,6 +404,11 @@ function SelectFilterRow({
         <ResetFiltersButton filters={filters} label={resetLabel} />
         {extra ? (
           <div className="flex shrink-0 items-center">{extra}</div>
+        ) : null}
+        {trailing ? (
+          <div className="ml-auto flex shrink-0 items-center pl-2">
+            {trailing}
+          </div>
         ) : null}
       </div>
     </div>
@@ -453,7 +460,8 @@ export default function SettingsTable<RowData>({
   const searchRef = useRef<HTMLDivElement>(null);
   const hasSelectFilterRow =
     (!!selectFilters && selectFilters.length > 0) || !!selectFiltersExtra;
-  const hasSearchBar = !!searchBar || hasSelectFilterRow;
+  const hasViewToggle = !!cardView?.onEnabledChange;
+  const hasSearchBar = !!searchBar || hasSelectFilterRow || hasViewToggle;
   const searchHeight = useElementDimensions(searchRef, {
     dimension: "height",
     deps: [hasSearchBar],
@@ -535,7 +543,7 @@ export default function SettingsTable<RowData>({
     };
   }, [needsPagination, paginationFooter, pageSizeOptions]);
 
-  const hasHeader = !!searchBar || hasSelectFilterRow;
+  const hasHeader = !!searchBar || hasSelectFilterRow || hasViewToggle;
   const surfaceClassName =
     surfaceVariant === "transparent"
       ? "settings-table-root-transparent"
@@ -601,12 +609,24 @@ export default function SettingsTable<RowData>({
                     leadingRightContent={<CardViewToggle cardView={cardView} />}
                   />
                 )}
+                {!searchBar && !hasSelectFilterRow && hasViewToggle && (
+                  <div className="flex justify-end py-2">
+                    <CardViewToggle cardView={cardView} />
+                  </div>
+                )}
                 {hasSelectFilterRow && (
                   <SelectFilterRow
                     filters={selectFilters ?? []}
                     extra={selectFiltersExtra}
                     hasSearchBarAbove={!!searchBar}
                     resetLabel={t("actions.resetFilters")}
+                    // Without a search bar the filter row is the only toolbar
+                    // the table has, so the view toggle lands there instead.
+                    trailing={
+                      searchBar ? undefined : (
+                        <CardViewToggle cardView={cardView} />
+                      )
+                    }
                   />
                 )}
               </>

@@ -415,7 +415,6 @@ export default function MyAccountsTableSection({
         onSearchChange,
         searchPlaceholder: t("keyVault.searchPlaceholder"),
         allowSearchClear: true,
-        searchShortcut: true,
         rightContent: (
           <>
             {refreshAccountsButton}

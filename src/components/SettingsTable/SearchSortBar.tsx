@@ -39,8 +39,8 @@ export interface SearchSortBarProps {
    *  `rightContent` stays untouched. */
   leadingRightContent?: React.ReactNode;
   allowSearchClear?: boolean;
-  /** Opt in to a keyboard shortcut that focuses the search field, with its key
-   *  hint shown inside the field. `true` binds ⌘F / Ctrl+F. */
+  /** ⌘F / Ctrl+F focuses this field and shows its key hint. On by default;
+   *  pass `false` to opt out, or an object to change the binding. */
   searchShortcut?: SettingsTableSearchShortcut;
   /** Tab pills rendered inline with searchCountText (pills left, count right) */
   tabPills?: React.ReactNode;

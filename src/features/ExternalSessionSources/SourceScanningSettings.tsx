@@ -29,7 +29,9 @@ import { useTranslation } from "react-i18next";
 
 import RefreshButton from "@src/components/Button/RefreshButton";
 import Select from "@src/components/Select";
-import SettingsTable from "@src/components/SettingsTable";
+import SettingsTable, {
+  type SettingsTableCardViewConfig,
+} from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
 import {
@@ -77,6 +79,7 @@ const SourceScanningSettings: React.FC = () => {
   const [openRescanMenu, setOpenRescanMenu] = useState<string | null>(null);
   const [tab, setTab] = useState<DataSourceTab>("all");
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  const [cardView, setCardView] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [globalFrequency, setGlobalFrequency] = useAtom(
     dataSourceGlobalFrequencyAtom
@@ -146,6 +149,21 @@ const SourceScanningSettings: React.FC = () => {
     handleRescan,
   });
 
+  // The source name heads the card; the session/subagent counts become its
+  // labelled fields. The enable switch, frequency select and rescan split
+  // button stay together in one cluster — too wide for the heading's right
+  // edge, so they keep their own row under the counts.
+  const cardViewConfig = useMemo<SettingsTableCardViewConfig<SourceRow>>(
+    () => ({
+      enabled: cardView,
+      onEnabledChange: setCardView,
+      titleColumnKey: "source",
+      fieldLayout: "inline",
+      minCardWidth: 340,
+    }),
+    [cardView]
+  );
+
   return (
     <div className={SECTION_GAP_CLASSES} data-testid="source-scanning-settings">
       {importableCount > 0 && (
@@ -202,6 +220,7 @@ const SourceScanningSettings: React.FC = () => {
       )}
 
       <SettingsTable<SourceRow>
+        cardView={cardViewConfig}
         columns={columns}
         rows={searchedRows}
         getRowKey={(row) => row.probe.sourceId}
