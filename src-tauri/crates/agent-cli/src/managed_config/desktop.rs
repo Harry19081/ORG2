@@ -222,11 +222,12 @@ pub(super) fn generate(
 ) -> Result<BTreeMap<String, String>, String> {
     if let Some(profile) = &connection.profile {
         profile.validate()?;
-    } else {
+    } else if connection.desktop_helper.is_none() {
         validate_model(&connection.model)?;
     }
     if let Some(helper) = &connection.desktop_helper {
-        if !connection.api_key.is_empty()
+        if connection.profile.is_some()
+            || !connection.api_key.is_empty()
             || connection.proxy_token.as_deref() != Some(helper.token.as_str())
             || !helper.path.is_absolute()
             || helper.models.is_empty()
@@ -241,7 +242,18 @@ pub(super) fn generate(
             return Err("Invalid Desktop credential helper configuration".into());
         }
         for model in &helper.models {
-            validate_model(&model.id)?;
+            // Dynamic catalogs are validated against live source capabilities
+            // before reaching this writer. Their aliases can name GPT through
+            // the Messages gateway; direct account IDs keep the Claude guard.
+            if model.id.is_empty()
+                || model.id.len() > 256
+                || !model
+                    .id
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || b"-._/".contains(&byte))
+            {
+                return Err("Invalid Desktop catalog model ID".into());
+            }
             if model.label.trim().is_empty()
                 || model.label.len() > 512
                 || model.label.chars().any(char::is_control)

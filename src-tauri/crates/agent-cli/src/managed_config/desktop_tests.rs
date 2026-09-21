@@ -407,3 +407,64 @@ fn disconnect_restores_matching_direct_profile_but_preserves_new_selection() {
         restore_if_selected_matching(desktop::TARGET, |key| Ok(key == "desktop-key")).unwrap();
     assert_eq!(restored.mode, CliConfigMode::Default);
 }
+
+#[test]
+fn desktop_dynamic_catalog_accepts_gpt_alias_without_relaxing_direct_accounts() {
+    let mut value = connection();
+    let gpt = "gpt-6-astra-org2-11111111111111111111";
+    value.model = gpt.into();
+    assert!(
+        direct::generate_direct_configs(desktop::TARGET, &BTreeMap::new(), &value, None)
+            .unwrap_err()
+            .contains("full Claude")
+    );
+
+    let token = "ab".repeat(32);
+    value.api_key.clear();
+    value.desktop_auth_scheme = Some("bearer".into());
+    value.base_url = proxy::claude_desktop_proxy_base_url(&proxy::managed_proxy_url(), &token);
+    value.proxy_token = Some(token.clone());
+    value.desktop_helper = Some(desktop::CredentialHelper {
+        path: std::env::temp_dir().join("org2-test-desktop-helper"),
+        token,
+        models: vec![
+            model_catalog::PickerModel {
+                id: "claude-fable-5-1-org2-11111111111111111111".into(),
+                label: "AC · Fable 5.1".into(),
+                native_metadata: None,
+            },
+            model_catalog::PickerModel {
+                id: gpt.into(),
+                label: "AC · GPT 6 Astra".into(),
+                native_metadata: None,
+            },
+        ],
+    });
+    let generated =
+        direct::generate_direct_configs(desktop::TARGET, &BTreeMap::new(), &value, None).unwrap();
+    let profile: serde_json::Value = serde_json::from_str(&generated["profile"]).unwrap();
+    assert_eq!(profile["inferenceModels"][0]["name"], gpt);
+    assert_eq!(
+        profile["inferenceModels"][0]["labelOverride"],
+        "AC · GPT 6 Astra"
+    );
+    assert_eq!(profile["inferenceModels"].as_array().unwrap().len(), 2);
+    assert_eq!(profile["inferenceCredentialKind"], "helper-script");
+    assert!(profile.get("inferenceGatewayApiKey").is_none());
+
+    for invalid in [String::new(), "gpt-model\nextra".into(), "x".repeat(257)] {
+        value.desktop_helper.as_mut().unwrap().models[0].id = invalid;
+        assert_eq!(
+            direct::generate_direct_configs(desktop::TARGET, &BTreeMap::new(), &value, None)
+                .unwrap_err(),
+            "Invalid Desktop catalog model ID"
+        );
+    }
+    value.desktop_helper.as_mut().unwrap().models[0].id = "claude-fable-5-1".into();
+    value.proxy_token = Some("cd".repeat(32));
+    assert_eq!(
+        direct::generate_direct_configs(desktop::TARGET, &BTreeMap::new(), &value, None)
+            .unwrap_err(),
+        "Invalid Desktop credential helper configuration"
+    );
+}
