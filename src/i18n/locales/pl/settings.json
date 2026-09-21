@@ -1019,6 +1019,7 @@
       "actionFailed": "Nie udało się zaktualizować tego połączenia",
       "openFailed": "Nie udało się otworzyć tej aplikacji",
       "restoreRequired": "Przywróć oryginalne ustawienia tej aplikacji, następnie wybierz pakiety i ponownie zastosuj połączenie",
+      "versionUnverified": "Ta wersja aplikacji komputerowej nie została zweryfikowana pod kątem izolowanych połączeń w tej wersji ORG2. Zaktualizuj ORG2 i spróbuj ponownie",
       "workspaceNumber": "Usługa {{index}} z {{count}}",
       "openTerminal": "Otwórz terminal",
       "terminalOpened": "Terminal otwarty",

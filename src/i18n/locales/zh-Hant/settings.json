@@ -1019,6 +1019,7 @@
       "actionFailed": "無法更新此應用程式連線",
       "openFailed": "無法開啟此應用程式",
       "restoreRequired": "請先還原此應用程式的原始設定，然後重新選擇方案並套用連線",
+      "versionUnverified": "目前 ORG2 版本尚未驗證此桌面應用程式版本的獨立連線相容性，請更新 ORG2 後重試",
       "workspaceNumber": "服務 {{index}} / {{count}}",
       "openTerminal": "開啟終端機",
       "terminalOpened": "已開啟終端機",

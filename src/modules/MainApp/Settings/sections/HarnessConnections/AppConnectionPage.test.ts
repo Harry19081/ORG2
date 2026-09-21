@@ -403,6 +403,8 @@ it("blocks a Direct Claude launch when the overlay changed externally", async ()
 
 it.each([
   ["native_app_restore_required", "restoreRequired"],
+  ["native_app_version_unverified", "versionUnverified"],
+  ["native_app_version_unverified secret-fixture", "actionFailed"],
   ["native_app_restore_required secret-fixture", "actionFailed"],
   ["backend failed with secret-fixture", "actionFailed"],
 ])("shows safe migration guidance for native error %s", async (code, key) => {

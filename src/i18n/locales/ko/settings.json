@@ -1019,6 +1019,7 @@
       "actionFailed": "이 앱 연결을 업데이트할 수 없습니다",
       "openFailed": "이 앱을 열 수 없습니다",
       "restoreRequired": "먼저 이 앱의 원래 설정을 복원한 다음 패키지를 선택하고 연결을 다시 적용하세요",
+      "versionUnverified": "현재 ORG2 빌드에서는 이 데스크톱 앱 버전의 격리된 연결 호환성이 검증되지 않았습니다. ORG2를 업데이트하고 다시 시도하세요",
       "workspaceNumber": "서비스 {{index}} / {{count}}",
       "openTerminal": "터미널 열기",
       "terminalOpened": "터미널을 열었습니다",

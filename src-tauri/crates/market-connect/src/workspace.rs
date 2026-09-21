@@ -80,6 +80,26 @@ fn id(value: &str) -> bool {
             .bytes()
             .all(|c| c.is_ascii_alphanumeric() || c == b'_' || c == b'-')
 }
+// Provider wire protocol is independent of the clients the gateway supports.
+// Older servers keep their old capabilities; new support is opt-in per model.
+fn managed_models_by_agent(
+    service: &crate::ManagedService,
+) -> std::collections::BTreeMap<String, Vec<String>> {
+    [("claude", "claude_code"), ("codex", "codex")]
+        .into_iter()
+        .map(|(agent, client)| {
+            (
+                agent.to_string(),
+                service
+                    .models
+                    .iter()
+                    .filter(|m| m.clients.iter().any(|c| c == client))
+                    .map(|m| m.model.clone())
+                    .collect(),
+            )
+        })
+        .collect()
+}
 impl Connection {
     pub async fn entitlements(self: &Arc<Self>) -> Result<Vec<WorkspaceEntitlement>, &'static str> {
         let metadata = self.metadata();
@@ -89,26 +109,7 @@ impl Connection {
                 .await?
                 .into_iter()
                 .map(|service| {
-                    let by_agent = std::collections::BTreeMap::from([
-                        (
-                            "claude".to_string(),
-                            service
-                                .models
-                                .iter()
-                                .filter(|m| m.protocol == "anthropic_messages")
-                                .map(|m| m.model.clone())
-                                .collect(),
-                        ),
-                        (
-                            "codex".to_string(),
-                            service
-                                .models
-                                .iter()
-                                .filter(|m| m.protocol == "openai_responses")
-                                .map(|m| m.model.clone())
-                                .collect(),
-                        ),
-                    ]);
+                    let by_agent = managed_models_by_agent(&service);
                     WorkspaceEntitlement {
                         workspace_id: service
                             .access
@@ -217,6 +218,28 @@ impl Connection {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn managed_clients_are_not_inferred_from_provider_protocol() {
+        let mut service: crate::ManagedService = serde_json::from_value(serde_json::json!({
+            "service_id": "pkg_test", "title": "Test", "version_id": "pv_test",
+            "requires_confirmation": false, "models": [{
+                "model": "gpt-test", "protocol": "openai_responses",
+                "clients": ["org2", "codex"], "pricing": {}, "availability": "available"
+            }], "access": null
+        }))
+        .unwrap();
+        assert!(managed_models_by_agent(&service)["claude"].is_empty());
+        assert_eq!(managed_models_by_agent(&service)["codex"], vec!["gpt-test"]);
+        service.models[0].clients.push("claude_code".into());
+        assert_eq!(
+            managed_models_by_agent(&service)["claude"],
+            vec!["gpt-test"]
+        );
+        service.models[0].clients = vec!["org2".into()];
+        assert!(managed_models_by_agent(&service)
+            .values()
+            .all(Vec::is_empty));
+    }
     #[test]
     fn forwarding_credentials_cannot_change_workspace_entitlement_or_origin() {
         let mut c = WorkspaceCredential {

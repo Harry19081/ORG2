@@ -1019,6 +1019,7 @@
       "actionFailed": "No se pudo actualizar esta conexión",
       "openFailed": "No se pudo abrir esta aplicación",
       "restoreRequired": "Restaura la configuración original de esta app, luego selecciona tus paquetes y vuelve a aplicar la conexión",
+      "versionUnverified": "Esta versión de la app de escritorio no se ha verificado para conexiones aisladas con esta versión de ORG2. Actualiza ORG2 e inténtalo de nuevo",
       "workspaceNumber": "Servicio {{index}} de {{count}}",
       "openTerminal": "Abrir terminal",
       "terminalOpened": "Terminal abierta",

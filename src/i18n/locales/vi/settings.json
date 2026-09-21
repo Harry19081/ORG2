@@ -1019,6 +1019,7 @@
       "actionFailed": "Không thể cập nhật kết nối ứng dụng này",
       "openFailed": "Không thể mở ứng dụng này",
       "restoreRequired": "Khôi phục thiết lập gốc của ứng dụng này, sau đó chọn các gói và áp dụng lại kết nối",
+      "versionUnverified": "Phiên bản ứng dụng máy tính này chưa được xác minh cho kết nối biệt lập trong bản ORG2 này. Hãy cập nhật ORG2 rồi thử lại",
       "workspaceNumber": "Dịch vụ {{index}} / {{count}}",
       "openTerminal": "Mở terminal",
       "terminalOpened": "Đã mở terminal",

@@ -1019,6 +1019,7 @@
       "actionFailed": "Bu uygulama bağlantısı güncellenemedi",
       "openFailed": "Bu uygulama açılamadı",
       "restoreRequired": "Önce bu uygulamanın özgün ayarlarını geri yükleyin, ardından paketlerinizi seçip bağlantıyı yeniden uygulayın",
+      "versionUnverified": "Bu masaüstü uygulaması sürümü, bu ORG2 derlemesinde yalıtılmış bağlantılar için doğrulanmadı. ORG2’yi güncelleyip tekrar deneyin",
       "workspaceNumber": "Hizmet {{index}} / {{count}}",
       "openTerminal": "Terminali aç",
       "terminalOpened": "Terminal açıldı",

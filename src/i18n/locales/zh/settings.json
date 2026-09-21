@@ -1100,6 +1100,7 @@
       "actionFailed": "无法更新此应用连接",
       "openFailed": "无法打开此应用",
       "restoreRequired": "请先恢复此应用的原始设置，然后重新选择套餐并应用连接",
+      "versionUnverified": "当前 ORG2 版本尚未验证此桌面应用版本的独立连接兼容性，请更新 ORG2 后重试",
       "workspaceNumber": "服务 {{index}} / {{count}}",
       "openTerminal": "打开终端",
       "terminalOpened": "已打开终端",

@@ -171,3 +171,35 @@ it("does not configure a native catalog when logout happens during client status
   expect(authorize).not.toHaveBeenCalled();
   expect(configure).not.toHaveBeenCalled();
 });
+
+it("uses advertised Claude compatibility for GPT without guessing from protocol", () => {
+  const profile: MarketExecutionProfile = {
+    ...profiles[0],
+    modelsByAgent: { claude_code: ["gpt-cross"], codex: ["gpt-cross"] },
+    managed: {
+      service_id: "pkg_first",
+      title: "First",
+      version_id: "pv_first",
+      requires_confirmation: false,
+      access: null,
+      models: [
+        {
+          model: "gpt-cross",
+          protocol: "openai_responses",
+          clients: ["org2", "codex", "claude_code", "claude_desktop"],
+          availability: "available",
+          pricing: {},
+        },
+      ],
+    },
+  };
+  expect(modelsForExternalTarget(profile, "claude_code")).toEqual([
+    "gpt-cross",
+  ]);
+  expect(modelsForExternalTarget(profile, "claude_desktop")).toEqual([
+    "gpt-cross",
+  ]);
+  profile.managed!.models[0].clients = ["org2", "codex"];
+  expect(modelsForExternalTarget(profile, "claude_code")).toEqual([]);
+  expect(modelsForExternalTarget(profile, "claude_desktop")).toEqual([]);
+});

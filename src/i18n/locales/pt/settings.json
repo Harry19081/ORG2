@@ -1019,6 +1019,7 @@
       "actionFailed": "Não foi possível atualizar esta conexão",
       "openFailed": "Não foi possível abrir este aplicativo",
       "restoreRequired": "Restaure a configuração original deste app, depois selecione seus pacotes e aplique a conexão novamente",
+      "versionUnverified": "Esta versão do app de desktop ainda não foi verificada para conexões isoladas nesta versão do ORG2. Atualize o ORG2 e tente novamente",
       "workspaceNumber": "Serviço {{index}} de {{count}}",
       "openTerminal": "Abrir terminal",
       "terminalOpened": "Terminal aberto",

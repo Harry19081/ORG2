@@ -169,15 +169,18 @@ export default function AppConnectionPage({
       });
     } catch (error) {
       // Allowlist the machine code; never display arbitrary native error text.
-      const restoreRequired =
+      const code =
         error instanceof RpcError &&
-        error.command === "market_connection_configure_catalog" &&
-        error.cause === "native_app_restore_required";
+        error.command === "market_connection_configure_catalog"
+          ? error.cause
+          : null;
       Message.error({
         content: t(
-          restoreRequired
+          code === "native_app_restore_required"
             ? "harnessConnections.marketApps.restoreRequired"
-            : "harnessConnections.marketApps.actionFailed"
+            : code === "native_app_version_unverified"
+              ? "harnessConnections.marketApps.versionUnverified"
+              : "harnessConnections.marketApps.actionFailed"
         ),
       });
     } finally {
