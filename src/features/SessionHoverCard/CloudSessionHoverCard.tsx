@@ -179,7 +179,6 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
             <div className="truncate text-text-2">
               {t("navigation:cloud.sidebar.forkedFrom", {
                 name: row.forkedFrom.ownerDisplayName,
-                defaultValue: "forked from @{{name}}",
               })}
             </div>
           </HoverCardMetadataRow>

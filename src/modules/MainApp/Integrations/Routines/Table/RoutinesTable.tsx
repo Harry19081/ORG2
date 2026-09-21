@@ -129,11 +129,7 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
               onClick={(event) => {
                 event.stopPropagation();
                 void openResult({ sessionId: fire.sessionId }).catch(() =>
-                  Message.error(
-                    t("routineFields.openSessionError", {
-                      defaultValue: "Could not open the session",
-                    })
-                  )
+                  Message.error(t("routineFields.openSessionError"))
                 );
               }}
               icon={
@@ -159,11 +155,7 @@ const RoutineFireHistory: React.FC<{ routine: RoutineDefinition }> = ({
                   workItemId: fire.workItemId,
                   projectSlug: getRoutineProjectSlug(routine),
                 }).catch(() =>
-                  Message.error(
-                    t("routineFields.openWorkItemError", {
-                      defaultValue: "Could not open the Work Item",
-                    })
-                  )
+                  Message.error(t("routineFields.openWorkItemError"))
                 );
               }}
               icon={

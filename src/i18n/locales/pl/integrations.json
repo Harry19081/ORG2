@@ -7,13 +7,13 @@
   "keyVault": {
     "title": "Modele i CLI",
     "overview": {},
-    "searchPlaceholder": "Szukaj kont...",
+    "searchPlaceholder": "Szukaj kluczy...",
     "inlineCard": {
       "tabStatus": "Status",
       "tabModels": "Modele"
     },
-    "noAccountsFound": "Nie znaleziono kont",
-    "addAccount": "Dodaj konto",
+    "noKeysFound": "Nie znaleziono kluczy",
+    "addKey": "Dodaj klucz",
     "addCliAgent": "Dodaj Agent",
     "removeLocal": "Usuń lokalne",
     "unlist": "Wycofaj z listy",
@@ -24,7 +24,7 @@
       "refreshError": "Nie udało się odświeżyć {{name}}: {{error}}",
       "localRemoved": "{{name}} usunięto",
       "deleteError": "Nie udało się usunąć {{name}}",
-      "refreshPartial": "Modele odświeżone: +{{added}} / -{{removed}}, ale wystąpił błąd dla {{failed}} z {{total}} kont",
+      "refreshPartial": "Modele odświeżone: +{{added}} / -{{removed}}, ale wystąpił błąd dla {{failed}} z {{total}} kluczy",
       "refreshedNoChange": "Modele odświeżone: bez zmian",
       "refreshedDelta": "Modele odświeżone: dodano {{added}}, usunięto {{removed}}"
     },
@@ -89,8 +89,8 @@
       "keyValidationFailed": "Walidacja klucza nie powiodła się"
     },
     "edit": {
-      "title": "Edytuj konto",
-      "apiChangeHint": "Aby zaktualizować klucz API, klucze lub ustawienia dostawcy, usuń to konto i dodaj nowe",
+      "title": "Edytuj klucz",
+      "apiChangeHint": "Aby zaktualizować API Key lub ustawienia dostawcy, usuń ten klucz i dodaj nowy",
       "saved": "Zapisano zmiany"
     },
     "quota": {
@@ -160,7 +160,7 @@
     "customBaseUrlNoteBody": "Twój klucz API i dane żądań są wysyłane do wprowadzonego URL. Używaj niestandardowych URL tylko dla zaufanych proxy, własnych wdrożeń lub kontrolowanych przez Ciebie endpointów",
     "localModel": {
       "title": "Cookbook modeli lokalnych",
-      "description": "Wybierz preset lokalnego runtime, potwierdź endpoint zgodny z OpenAI, dodaj jeden lub więcej ID modeli i zapisz to konto, aby używać modeli lokalnych w Chat",
+      "description": "Wybierz preset lokalnego runtime, potwierdź endpoint zgodny z OpenAI, dodaj jeden lub więcej ID modeli i zapisz ten klucz, aby używać modeli lokalnych w Chat",
       "baseUrlDesc": "Lokalny endpoint zgodny z OpenAI. Najpierw uruchom runtime, potem zweryfikuj lub zapisz",
       "apiKeyDesc": "Większość lokalnych runtime przyjmuje dowolną niepustą wartość. Zostaw placeholder, chyba że serwer wymaga klucza",
       "quickModelsLabel": "Modele Cookbook",
@@ -173,14 +173,14 @@
     "validated": "Zwalidowano",
     "validationSuccessModels": "Wykryto {{count}} modeli — skonfiguruj w następnym kroku",
     "validationSuccessNoModels": "Klucz zwalidowano — żadne modele nie zostały automatycznie wykryte, dodaj modele ręcznie poniżej",
-    "accountName": "Nazwa konta (opcjonalnie)",
-    "accountNameDesc": "Pozostaw puste, aby użyć {{provider}}, następnie {{provider}}-1, {{provider}}-2 itd",
-    "accountNamePlaceholder": "Auto: {{provider}}",
+    "keyName": "Nazwa klucza (opcjonalnie)",
+    "keyNameDesc": "Pozostaw puste, aby użyć {{provider}}, następnie {{provider}}-1, {{provider}}-2 itd",
+    "keyNamePlaceholder": "Auto: {{provider}}",
     "apiKeyPlaceholder": "Wprowadź swój klucz API",
     "extractPlaceholder": "Wklej swoje klucze (niesformatowany tekst jest OK):\n\nPrzykład:\nKEY: {{key}}\n{{urlLine}}",
     "descriptionOptional": "Opis (opcjonalnie)",
     "descriptionPlaceholder": "Wprowadź opis",
-    "nameDuplicate": "Konto o tej nazwie już istnieje",
+    "nameDuplicate": "Klucz o tej nazwie już istnieje",
     "stepLabel": "Krok {{current}}/{{total}}",
     "noValidTokenFound": "Nie znaleziono prawidłowego Token w kluczu",
     "couldNotDetectKeys": "Nie udało się wykryć kluczy. Upewnij się, że CLI jest zainstalowany i jesteś zalogowany.",
@@ -241,7 +241,7 @@
     "claudeCodeSignInDesc": "Zaloguj się do Claude Code we wbudowanej przeglądarce. ORG2 przechwyci authorization code i zapisze OAuth Token lokalnie",
     "claudeCodeReadyToSignIn": "Gotowe do logowania w Claude Code",
     "claudeCodeSignedIn": "Claude Code połączony",
-    "claudeCodeOAuthHint": "Zapisuje konto claude_code OAuth dla Rust agents używających anthropic_native",
+    "claudeCodeOAuthHint": "Zapisuje klucz claude_code OAuth dla Rust agents używających anthropic_native",
     "claudeCodeBrowserHint": "Dokończ autoryzację Claude Code we wbudowanej przeglądarce",
     "claudeCodeSignInErrorHint": "Zamknij przeglądarkę i spróbuj zalogować się ponownie. Nie zapisano żadnego Token",
     "connectedViaChatGpt": "Połączono przez logowanie ChatGPT Plus/Pro",
@@ -311,14 +311,14 @@
     "signInWithCodex": "Zaloguj przez Codex",
     "codexReadyToSignIn": "Gotowe do logowania w Codex",
     "codexSignedIn": "Codex połączony",
-    "codexOAuthHint": "To zapisuje konto OAuth codex do dostępu do backendu ChatGPT Codex",
+    "codexOAuthHint": "To zapisuje klucz OAuth codex do dostępu do backendu ChatGPT Codex",
     "codexBrowserHint": "Dokończ autoryzację Codex w osadzonej przeglądarce",
     "codexSignInErrorHint": "Zamknij przeglądarkę i spróbuj zalogować się ponownie. Nie zapisano żadnego Token",
     "codexAutodetectTitle": "Wykryj sesję Codex",
     "codexAutodetectDesc": "Odczytuje ~/.codex/auth.json i OPENAI_API_KEY z lokalnego środowiska",
-    "codexCredentialLabel": "Dane Codex",
-    "codexCredentialDesc": "Wklej Codex OAuth access token albo OpenAI API key",
-    "codexCredentialPlaceholder": "eyJ... albo sk-...",
+    "codexKeyLabel": "Klucz Codex",
+    "codexKeyDesc": "Wklej Codex OAuth access token albo OpenAI API key",
+    "codexKeyPlaceholder": "eyJ... albo sk-...",
     "codexDetectErrorHint": "Zaloguj się przez osadzoną przeglądarkę albo ręcznie wklej OpenAI API key",
     "codexValidationErrorHint": "Sprawdź, czy token lub API key są prawidłowe, i spróbuj ponownie",
     "claudeCodeAutodetectTitle": "Wykryj sesję Claude Code",
@@ -329,8 +329,8 @@
       "failed": "Ten obszar roboczy Market jest niedostępny. Otwórz ponownie Market, aby odświeżyć autoryzację."
     },
     "revalidate": "Zweryfikuj ponownie",
-    "confirmRemoveActiveSessions_one": "{{count}} aktywna sesja nadal używa tego konta i zakończy się błędem w następnej turze:",
-    "confirmRemoveActiveSessions_other": "{{count}} aktywnych sesji nadal używa tego konta i zakończy się błędem w następnej turze:"
+    "confirmRemoveActiveSessions_one": "{{count}} aktywna sesja nadal używa tego klucza i zakończy się błędem w następnej turze:",
+    "confirmRemoveActiveSessions_other": "{{count}} aktywnych sesji nadal używa tego klucza i zakończy się błędem w następnej turze:"
   },
   "integrations": {
     "searchPlaceholder": "Szukaj połączeń...",
@@ -345,7 +345,9 @@
     "connecting": "Łączenie",
     "reconnecting": "Ponowne łączenie",
     "connectionError": "Błąd połączenia",
-    "accountNameDuplicate": "Konto o tej nazwie już istnieje",
+    "connectionName": "Nazwa połączenia (opcjonalnie)",
+    "connectionNamePlaceholder": "Auto: {{provider}}",
+    "connectionNameDuplicate": "Połączenie o tej nazwie już istnieje",
     "probeSuccess": "Połączenie udane",
     "probeFailed": "Połączenie nieudane",
     "verified": "Zweryfikowano"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "Bot ORG2"
   },
   "modelsTabs": {
-    "myAccounts": "Moje klucze",
+    "myKeys": "Moje klucze",
     "models": "Modele",
     "comingSoon": "Wkrótce",
     "installedClis": "Klienci CLI",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "Sortowanie: A–Z"
   },
   "modelPreview": {
-    "noSources": "Brak kont z tym modelem"
+    "noSources": "Brak kluczy z tym modelem"
   },
   "cliPreview": {
     "clientSection": "Klient",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Nie udało się aktywować profilu Git"
   },
   "credentialImport": {
-    "title": "Importuj poświadczenia z innych aplikacji",
-    "itemColumn": "Poświadczenie",
+    "title": "Importuj klucze i subskrypcje z innych aplikacji",
+    "itemColumn": "Klucz",
     "sourceColumn": "Znaleziono w",
-    "empty": "Nie znaleziono poświadczeń do zaimportowania. Sprawdzono zmienne środowiskowe, profile powłoki, ustawienia Claude Code, profile cc-switch oraz magazyny logowania Claude Code, Codex, Cursor, GitHub CLI, Kiro i OpenCode.",
-    "allImported": "Wszystkie wykryte poświadczenia zostały już zaimportowane",
+    "empty": "Nie znaleziono kluczy ani subskrypcji do zaimportowania. Sprawdzono zmienne środowiskowe, profile powłoki, ustawienia Claude Code, profile cc-switch oraz magazyny logowania Claude Code, Codex, Cursor, GitHub CLI, Kiro i OpenCode.",
+    "allImported": "Wszystkie wykryte klucze i subskrypcje zostały już zaimportowane",
     "authMethod": {
       "api_key": "Klucz API",
       "oauth": "Token logowania"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Import nie powiódł się: {{message}}",
-    "partialFailure": "Nie udało się zaimportować niektórych poświadczeń:",
-    "importSucceeded": "Zapisano w Kontach: {{names}}. Zaimportowane dane logowania są teraz dostępne jako połączenia wielokrotnego użytku."
+    "partialFailure": "Nie udało się zaimportować niektórych kluczy:",
+    "importSucceeded": "Zapisano w Moje klucze: {{names}}. Zaimportowane klucze są teraz dostępne jako połączenia wielokrotnego użytku."
   },
   "skills": {
     "shareToOrg": "Udostępnij organizacji",

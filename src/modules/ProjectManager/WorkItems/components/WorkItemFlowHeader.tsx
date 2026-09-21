@@ -45,20 +45,15 @@ export default function WorkItemFlowHeader({
         avatarUrl: workItem.createdBy?.avatar ?? "",
       }}
       unknownActorLabel={t("workItems.activity.system")}
-      ariaLabel={t("workItems.detailSummary", {
-        defaultValue: "Work Item summary",
-      })}
+      ariaLabel={t("workItems.detailSummary")}
       testIdPrefix="work-item-flow"
     >
-      <span>
-        {t("workItems.activity.openedWorkItem", "opened this work item")}
-      </span>
+      <span>{t("workItems.activity.openedWorkItem")}</span>
       <ActivityTimestamp timestamp={workItem.created_time} />
       <span aria-hidden>·</span>
       <span>
         {t("common:git.issues.commentCount", {
           count: workItem.comments?.length ?? 0,
-          defaultValue: "{{count}} comment",
           defaultValue_other: "{{count}} comments",
         })}
       </span>

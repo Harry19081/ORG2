@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "檔案差異著色"
   },
   "teamInbox": {
-    "title": "團隊收件匣",
     "listLabel": "團隊收件匣清單",
     "itemsLabel": "團隊收件匣項目",
     "unreadCount": "{{count}} 則未讀",
-    "allRead": "已全部閱讀",
     "loadMore": "載入更多",
     "filters": {
       "mentions": "提及",
@@ -70,7 +68,6 @@
         "subtitle": "你封存的項目會顯示在這裡。"
       }
     },
-    "loading": "正在載入團隊收件匣…",
     "drop": {
       "title": "拖曳到這裡以建立工作項目",
       "subtitle": "先確認工作階段快照，再建立或交接工作項目。",
@@ -539,7 +536,7 @@
     "accounts": "賬戶",
     "enabled": "已啓用",
     "disabled": "已禁用",
-    "keys": "Keys",
+    "keys": "密鑰",
     "model": "模型",
     "name": "名稱",
     "provider": "提供商",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "輸入網址以開始",
       "privateBrowsingEmptyTitle": "隱私瀏覽：輸入網址以開始",
       "simulatorBrowserNotice": "此瀏覽器僅用於會話回放。持久瀏覽請使用主應用中的瀏覽器（工具 → 瀏覽器）。",
-      "tlsDevNote": "說明：部分 HTTPS 網站（如 GitHub）在開發模式下可能因證書校驗出現 TLS 錯誤。請嘗試 HTTP 或 example.com 等簡單 HTTPS 站點。",
       "siteUnreachableTitle": "無法訪問此網站",
       "webviewHiddenTitle": "網頁檢視已暫時隱藏",
       "webviewHiddenBody": "關閉選單或對話框即可重新顯示。",
@@ -1712,11 +1708,11 @@
       "noResults": "沒有相符的模型",
       "chooseModel": "選擇模型",
       "chooseKey": "選擇金鑰",
-      "noCompatibleAccounts": "無相容金鑰",
+      "noCompatibleKeys": "無相容密鑰",
       "chooseModelHint": "使用鍵盤導覽，或用滑鼠點擊模型",
       "chooseKeyHint": "使用鍵盤導覽，或用滑鼠點擊金鑰",
       "noModelsForKey": "此金鑰未啟用任何模型",
-      "selectAccount": "選擇帳號"
+      "selectKey": "選擇密鑰"
     },
     "modelProperties": {
       "effort": "Effort",
@@ -1885,7 +1881,7 @@
       "showBranchInfo": "顯示分支資訊",
       "compatibleKeys": "相容",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "密鑰",
       "incompatible": "不兼容",
       "manageModels": "管理模型",
       "manageKeys": "管理密鑰",

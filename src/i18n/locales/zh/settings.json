@@ -1041,7 +1041,6 @@
     "newChatPage": "新聊天页面"
   },
   "harnessConnections": {
-    "description": "选择各编程工具使用的连接",
     "current": "当前配置的连接",
     "scope": "适用于本机 CLI 默认配置；项目设置和运行中的会话可能覆盖此配置",
     "original": "原始配置",

@@ -114,9 +114,7 @@ export const EffortSlider: React.FC<EffortSliderProps> = ({
 
   const levelLabel = formatReasoningLevel(selectedLevel);
   const isUltra = selectedLevel === MODEL_REASONING_LEVEL.ULTRA;
-  const effortLabel = t("selectors.modelProperties.effort", {
-    defaultValue: "Effort",
-  });
+  const effortLabel = t("selectors.modelProperties.effort");
 
   return (
     <div className="py-1">

@@ -162,7 +162,7 @@ const CliRawConfigFileEditor: React.FC<CliRawConfigFileEditorProps> = ({
           )}
           {saveStatus === "saved" && (
             <span className="text-xs text-success-6">
-              {t("common:status.saved", "Saved")}
+              {t("common:status.saved")}
             </span>
           )}
           {errorMessage && (

@@ -219,7 +219,7 @@ export const TwoColumnModelBody: React.FC<TwoColumnModelBodyProps> = ({
   const rightEmptyTitle = hasFocusedModel
     ? keyFirst
       ? t("selectors.modelSelector.noModelsForKey")
-      : t("selectors.modelSelector.noCompatibleAccounts")
+      : t("selectors.modelSelector.noCompatibleKeys")
     : keyFirst
       ? t("selectors.modelSelector.chooseKeyHint")
       : t("selectors.modelSelector.chooseModelHint");

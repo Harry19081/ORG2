@@ -12,16 +12,15 @@ import {
   vi,
 } from "vitest";
 
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 import { MODEL_REASONING_LEVEL } from "@src/util/modelVariants";
 import { buildVariantEditOptions } from "@src/util/variantEditOptions";
 
 import { EffortSlider } from "./EffortSlider";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (_key: string, options: { defaultValue: string }) =>
-      options.defaultValue,
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 const LEVELS = [

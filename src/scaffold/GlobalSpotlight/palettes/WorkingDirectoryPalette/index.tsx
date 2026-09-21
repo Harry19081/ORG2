@@ -317,7 +317,7 @@ export const WorkingDirectoryPalette: React.FC<
   const showPathToggle = addMenuKind ? null : (
     <ShellFooterAction placement="inline">
       <SpotlightFooterToggle
-        label={t("selectors.spotlightFooter.showPath", "Show path")}
+        label={t("selectors.spotlightFooter.showPath")}
         checked={showPath}
         onCheckedChange={setShowPath}
       />

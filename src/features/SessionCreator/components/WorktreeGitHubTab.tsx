@@ -48,20 +48,14 @@ export function WorktreeGitHubTab({
           onChange={onQueryChange}
           showClearButton
           className="min-w-0 flex-1"
-          placeholder={t("creator.worktreeSource.githubSearch", {
-            defaultValue: "Search GitHub PRs and issues",
-          })}
-          ariaLabel={t("creator.worktreeSource.githubSearchAria", {
-            defaultValue: "Search GitHub PRs and issues",
-          })}
+          placeholder={t("creator.worktreeSource.githubSearch")}
+          ariaLabel={t("creator.worktreeSource.githubSearchAria")}
         />
         <RefreshButton
           variant="secondary"
           size="small"
           iconOnly
-          label={t("creator.worktreeSource.refreshGithub", {
-            defaultValue: "Refresh GitHub list",
-          })}
+          label={t("creator.worktreeSource.refreshGithub")}
           refreshing={refreshing}
           disabled={!repoPath || state === "loading"}
           onRefresh={onRefresh}
@@ -84,24 +78,17 @@ export function WorktreeGitHubTab({
             aria-live="assertive"
             className="flex h-[180px] items-center justify-center px-4 text-center text-[13px] text-text-3"
           >
-            {error ||
-              t("creator.worktreeSource.githubError", {
-                defaultValue: "GitHub items could not be loaded.",
-              })}
+            {error || t("creator.worktreeSource.githubError")}
           </div>
         )}
         {state === "empty" && (
           <div className="flex h-[180px] items-center justify-center px-4 text-center text-[13px] text-text-3">
-            {t("creator.worktreeSource.githubEmpty", {
-              defaultValue: "No open GitHub PRs or issues.",
-            })}
+            {t("creator.worktreeSource.githubEmpty")}
           </div>
         )}
         {state === "ready" && items.length === 0 && (
           <div className="flex h-[180px] items-center justify-center px-4 text-center text-[13px] text-text-3">
-            {t("creator.worktreeSource.githubNoMatches", {
-              defaultValue: "No matches.",
-            })}
+            {t("creator.worktreeSource.githubNoMatches")}
           </div>
         )}
         {state === "ready" && items.length > 0 && (

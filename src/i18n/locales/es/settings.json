@@ -960,7 +960,6 @@
     "newChatPage": "Página de nuevo chat"
   },
   "harnessConnections": {
-    "description": "Elige la conexión de cada herramienta de programación",
     "current": "Conexión configurada",
     "scope": "Se aplica al valor predeterminado de la CLI de este equipo; los ajustes del proyecto y las sesiones activas pueden prevalecer",
     "original": "Configuración original",

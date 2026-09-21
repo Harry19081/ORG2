@@ -179,9 +179,7 @@ export function useWorkItemPanelHeader({
             onChange={handleDetailTabChange}
             variant="header"
             idPrefix="chat-panel-work-item-detail"
-            ariaLabel={t("projects:workItems.detailNavigation", {
-              defaultValue: "Work Item navigation",
-            })}
+            ariaLabel={t("projects:workItems.detailNavigation")}
           />
         }
       />

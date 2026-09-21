@@ -220,7 +220,6 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
           element.getAttribute(SCROLL_TRAIL_LABEL_ATTRIBUTE) ||
           (element === content ? ariaLabel : "") ||
           t("navigation.section", {
-            defaultValue: "Section {{current}}",
             current: targetIndex + 1,
           }),
         targetIndex,
@@ -333,8 +332,6 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
                 previewMarkerIndex === markerIndex ? tooltipId : undefined
               }
               aria-label={t("navigation.goToSection", {
-                defaultValue:
-                  "Go to {{label}}, section {{current}} of {{total}}",
                 label: marker.label,
                 current: marker.targetIndex + 1,
                 total: targetCount,
@@ -364,7 +361,6 @@ const ScrollTrail: React.FC<ScrollTrailProps> = ({
                 </div>
                 <div className="mt-1 text-xs text-text-3 tabular-nums">
                   {t("navigation.sectionPosition", {
-                    defaultValue: "Section {{current}} of {{total}}",
                     current: marker.targetIndex + 1,
                     total: targetCount,
                   })}

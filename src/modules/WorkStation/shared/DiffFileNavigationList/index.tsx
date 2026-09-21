@@ -130,11 +130,7 @@ function DiffFileNavigationListInner<TFile extends DiffFileSectionData>({
 }: DiffFileNavigationListProps<TFile>) {
   const { t } = useTranslation("sessions");
   const resolvedEmptyTitle =
-    emptyTitle ??
-    t(
-      "simulator.replay.diffApp.emptyForFilter",
-      "No diffs match this filter yet"
-    );
+    emptyTitle ?? t("simulator.replay.diffApp.emptyForFilter");
 
   const flattenedNodes = useMemo(() => items.map(buildTreeNode), [items]);
   const buildDragPillPayload = useCallback(

@@ -371,9 +371,7 @@ const WorkItemDetail: React.FC<WorkItemDetailProps> = ({
             onChange={handleTabChange}
             variant="header"
             idPrefix="work-item-detail"
-            ariaLabel={t("workItems.detailNavigation", {
-              defaultValue: "Work Item navigation",
-            })}
+            ariaLabel={t("workItems.detailNavigation")}
           />
         }
       />

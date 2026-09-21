@@ -7,13 +7,13 @@
   "keyVault": {
     "title": "Modelos e CLIs",
     "overview": {},
-    "searchPlaceholder": "Buscar contas...",
+    "searchPlaceholder": "Buscar chaves...",
     "inlineCard": {
       "tabStatus": "Status",
       "tabModels": "Modelos"
     },
-    "noAccountsFound": "Nenhuma conta encontrada",
-    "addAccount": "Adicionar conta",
+    "noKeysFound": "Nenhuma chave encontrada",
+    "addKey": "Adicionar chave",
     "addCliAgent": "Adicionar Agent",
     "removeLocal": "Remover local",
     "unlist": "Remover anúncio",
@@ -24,7 +24,7 @@
       "refreshError": "Falha ao atualizar {{name}}: {{error}}",
       "localRemoved": "{{name}} removido",
       "deleteError": "Falha ao excluir {{name}}",
-      "refreshPartial": "Modelos atualizados: +{{added}} / -{{removed}}, mas {{failed}} de {{total}} contas falharam",
+      "refreshPartial": "Modelos atualizados: +{{added}} / -{{removed}}, mas {{failed}} de {{total}} chaves falharam",
       "refreshedNoChange": "Modelos atualizados: sem alterações",
       "refreshedDelta": "Modelos atualizados: {{added}} adicionados, {{removed}} removidos"
     },
@@ -89,8 +89,8 @@
       "keyValidationFailed": "Falha na validação da chave"
     },
     "edit": {
-      "title": "Editar conta",
-      "apiChangeHint": "Para atualizar sua chave de API, chaves ou configurações do provedor, remova esta conta e adicione uma nova",
+      "title": "Editar chave",
+      "apiChangeHint": "Para atualizar sua API Key ou as configurações do provedor, remova esta chave e adicione uma nova",
       "saved": "Alterações salvas"
     },
     "quota": {
@@ -160,7 +160,7 @@
     "customBaseUrlNoteBody": "Sua chave de API e os dados da solicitação são enviados para a URL que você inserir. Use URLs personalizadas apenas para proxies confiáveis, deployments auto-hospedados ou endpoints que você controla",
     "localModel": {
       "title": "Cookbook de modelos locais",
-      "description": "Escolha um preset de runtime local, confirme o endpoint compatível com OpenAI, adicione um ou mais IDs de modelo e salve esta conta para usar modelos locais no Chat",
+      "description": "Escolha um preset de runtime local, confirme o endpoint compatível com OpenAI, adicione um ou mais IDs de modelo e salve esta chave para usar modelos locais no Chat",
       "baseUrlDesc": "Endpoint local compatível com OpenAI. Inicie o runtime antes de validar ou salvar",
       "apiKeyDesc": "A maioria dos runtimes locais aceita qualquer valor não vazio. Mantenha o placeholder, a menos que seu servidor exija uma chave",
       "quickModelsLabel": "Modelos Cookbook",
@@ -173,14 +173,14 @@
     "validated": "Validado",
     "validationSuccessModels": "{{count}} modelos detectados — configure na próxima etapa",
     "validationSuccessNoModels": "Chave validada — nenhum modelo detectado automaticamente, adicione modelos manualmente abaixo",
-    "accountName": "Nome da conta (opcional)",
-    "accountNameDesc": "Deixe em branco para usar {{provider}}, depois {{provider}}-1, {{provider}}-2 e assim por diante",
-    "accountNamePlaceholder": "Auto: {{provider}}",
+    "keyName": "Nome da chave (opcional)",
+    "keyNameDesc": "Deixe em branco para usar {{provider}}, depois {{provider}}-1, {{provider}}-2 e assim por diante",
+    "keyNamePlaceholder": "Auto: {{provider}}",
     "apiKeyPlaceholder": "Digite sua chave de API",
     "extractPlaceholder": "Cole suas chaves (texto desorganizado é aceito):\n\nExemplo:\nKEY: {{key}}\n{{urlLine}}",
     "descriptionOptional": "Descrição (Opcional)",
     "descriptionPlaceholder": "Digite a descrição",
-    "nameDuplicate": "Já existe uma conta com este nome",
+    "nameDuplicate": "Já existe uma chave com este nome",
     "stepLabel": "Etapa {{current}}/{{total}}",
     "noValidTokenFound": "Nenhum Token válido encontrado na chave",
     "couldNotDetectKeys": "Não foi possível detectar as chaves. Verifique se o CLI está instalado e se você fez login.",
@@ -241,7 +241,7 @@
     "claudeCodeSignInDesc": "Faça login no Claude Code no navegador integrado. O ORG2 capturará o authorization code e salvará o OAuth Token localmente",
     "claudeCodeReadyToSignIn": "Pronto para entrar no Claude Code",
     "claudeCodeSignedIn": "Claude Code conectado",
-    "claudeCodeOAuthHint": "Isso salva uma conta claude_code OAuth para Rust agents usando anthropic_native",
+    "claudeCodeOAuthHint": "Isso salva uma chave OAuth claude_code para Rust agents usando anthropic_native",
     "claudeCodeBrowserHint": "Conclua a autorização do Claude Code no navegador integrado",
     "claudeCodeSignInErrorHint": "Feche o navegador e tente entrar novamente. Nenhum Token foi salvo",
     "connectedViaChatGpt": "Conectado via login do ChatGPT Plus/Pro",
@@ -311,14 +311,14 @@
     "signInWithCodex": "Entrar com Codex",
     "codexReadyToSignIn": "Pronto para entrar no Codex",
     "codexSignedIn": "Codex conectado",
-    "codexOAuthHint": "Isso salva uma conta OAuth codex para acesso ao backend ChatGPT Codex",
+    "codexOAuthHint": "Isso salva uma chave OAuth codex para acesso ao backend ChatGPT Codex",
     "codexBrowserHint": "Conclua a autorização do Codex no navegador incorporado",
     "codexSignInErrorHint": "Feche o navegador e tente entrar novamente. Nenhum Token foi salvo",
     "codexAutodetectTitle": "Detectar sessão do Codex",
     "codexAutodetectDesc": "Lê ~/.codex/auth.json e OPENAI_API_KEY do ambiente local",
-    "codexCredentialLabel": "Credencial do Codex",
-    "codexCredentialDesc": "Cole um access token OAuth do Codex ou uma API key da OpenAI",
-    "codexCredentialPlaceholder": "eyJ... ou sk-...",
+    "codexKeyLabel": "Chave do Codex",
+    "codexKeyDesc": "Cole um access token OAuth do Codex ou uma API key da OpenAI",
+    "codexKeyPlaceholder": "eyJ... ou sk-...",
     "codexDetectErrorHint": "Entre pelo navegador incorporado ou cole manualmente uma API key da OpenAI",
     "codexValidationErrorHint": "Verifique se o token ou a API key é válido e tente novamente",
     "claudeCodeAutodetectTitle": "Detectar sessão do Claude Code",
@@ -329,8 +329,8 @@
       "failed": "Este workspace do Market não está disponível. Abra o Market novamente para atualizar a autorização."
     },
     "revalidate": "Revalidar",
-    "confirmRemoveActiveSessions_one": "{{count}} sessão ativa ainda usa esta conta e falhará no próximo turno:",
-    "confirmRemoveActiveSessions_other": "{{count}} sessões ativas ainda usam esta conta e falharão no próximo turno:"
+    "confirmRemoveActiveSessions_one": "{{count}} sessão ativa ainda usa esta chave e falhará no próximo turno:",
+    "confirmRemoveActiveSessions_other": "{{count}} sessões ativas ainda usam esta chave e falharão no próximo turno:"
   },
   "integrations": {
     "searchPlaceholder": "Buscar conexões...",
@@ -345,7 +345,9 @@
     "connecting": "Conectando",
     "reconnecting": "Reconectando",
     "connectionError": "Erro de conexão",
-    "accountNameDuplicate": "Já existe uma conta com este nome",
+    "connectionName": "Nome da conexão (opcional)",
+    "connectionNamePlaceholder": "Auto: {{provider}}",
+    "connectionNameDuplicate": "Já existe uma conexão com este nome",
     "probeSuccess": "Conexão bem-sucedida",
     "probeFailed": "Falha na conexão",
     "verified": "Verificada"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "Bot do ORG2"
   },
   "modelsTabs": {
-    "myAccounts": "Minhas chaves",
+    "myKeys": "Minhas chaves",
     "models": "Modelos",
     "comingSoon": "Em breve",
     "installedClis": "Clientes CLI",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "Ordem: A–Z"
   },
   "modelPreview": {
-    "noSources": "Nenhuma conta com este modelo"
+    "noSources": "Nenhuma chave com este modelo"
   },
   "cliPreview": {
     "clientSection": "Cliente",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Falha ao ativar o perfil Git"
   },
   "credentialImport": {
-    "title": "Importar credenciais de outros apps",
-    "itemColumn": "Credencial",
+    "title": "Importar chaves e assinaturas de outros apps",
+    "itemColumn": "Chave",
     "sourceColumn": "Encontrada em",
-    "empty": "Nenhuma credencial encontrada para importar. Foram verificados variáveis de ambiente, perfis de shell, configurações do Claude Code, perfis do cc-switch e os armazenamentos de login do Claude Code, Codex, Cursor, GitHub CLI, Kiro e OpenCode.",
-    "allImported": "Todas as credenciais detectadas já foram importadas",
+    "empty": "Nenhuma chave ou assinatura encontrada para importar. Foram verificados variáveis de ambiente, perfis de shell, configurações do Claude Code, perfis do cc-switch e os armazenamentos de login do Claude Code, Codex, Cursor, GitHub CLI, Kiro e OpenCode.",
+    "allImported": "Todas as chaves e assinaturas detectadas já foram importadas",
     "authMethod": {
       "api_key": "Chave de API",
       "oauth": "Token de login"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Falha na importação: {{message}}",
-    "partialFailure": "Algumas credenciais não puderam ser importadas:",
-    "importSucceeded": "Guardado em Contas: {{names}}. As credenciais importadas agora estão disponíveis como conexões reutilizáveis."
+    "partialFailure": "Algumas chaves não puderam ser importadas:",
+    "importSucceeded": "Guardado em Minhas chaves: {{names}}. As chaves importadas agora estão disponíveis como conexões reutilizáveis."
   },
   "skills": {
     "shareToOrg": "Compartilhar com a organização",

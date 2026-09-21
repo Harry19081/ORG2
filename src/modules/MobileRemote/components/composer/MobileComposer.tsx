@@ -73,7 +73,6 @@ export function MobileComposer({
           : {
               ...current,
               submitError: t("chat.draftTooLong", {
-                defaultValue: "Draft is too long (maximum {{max}} characters)",
                 max: MOBILE_DRAFT_TEXT_LIMIT,
               }),
             };
@@ -105,17 +104,13 @@ export function MobileComposer({
         setVoiceError(resolveVoicePermissionErrorMessage(tVoice));
         setVoicePermissionSheetOpen(true);
       } else if (err.code === "unsupported") {
-        setVoiceError(
-          tVoice("voiceErrorUnsupported", "Voice input is not supported here.")
-        );
+        setVoiceError(tVoice("voiceErrorUnsupported"));
       } else if (err.code === "audio-capture") {
-        setVoiceError(tVoice("voiceErrorAudio", "No microphone detected."));
+        setVoiceError(tVoice("voiceErrorAudio"));
       } else if (err.code === "no-speech" || err.code === "aborted") {
         return;
       } else {
-        setVoiceError(
-          tVoice("voiceErrorGeneric", "Voice input failed. Please try again.")
-        );
+        setVoiceError(tVoice("voiceErrorGeneric"));
       }
     },
     [tVoice]
@@ -161,9 +156,7 @@ export function MobileComposer({
       draftHandle.updateIfCurrent(entry, (current) => ({
         ...current,
         submitError:
-          error instanceof Error
-            ? error.message
-            : t("chat.sendFailed", "Message could not be sent"),
+          error instanceof Error ? error.message : t("chat.sendFailed"),
       }));
     } finally {
       draftHandle.updateIfCurrent(entry, (current) => ({
@@ -184,9 +177,7 @@ export function MobileComposer({
   const hasSendableContent = trimmedDraft.length > 0 || attachments.hasImages;
   const submitDisabled =
     disabled || submitting || voice.isRecording || attachments.processing;
-  const sendLabel = submitting
-    ? t("chat.sending", "Sending…")
-    : t("chat.send", "Send");
+  const sendLabel = submitting ? t("chat.sending") : t("chat.send");
   const footerMessage = disabled ? disabledReason : visibleStatus;
   const footerTone = disabled ? "neutral" : visibleStatusTone;
   const showVoiceUi = voice.isRecording;
@@ -241,7 +232,7 @@ export function MobileComposer({
                   value={draft}
                   maxLength={MOBILE_DRAFT_TEXT_LIMIT}
                   onChange={(value) => setDraft(value)}
-                  placeholder={t("chat.typeMessage", "Type a message…")}
+                  placeholder={t("chat.typeMessage")}
                   autoSize={{ minRows: 1, maxRows: 4 }}
                   rows={1}
                   resize="none"
@@ -304,9 +295,9 @@ export function MobileComposer({
       <BottomSheet
         open={voicePermissionSheetOpen}
         onClose={() => setVoicePermissionSheetOpen(false)}
-        title={tVoice("voicePermissionSheetTitle", "Microphone access needed")}
+        title={tVoice("voicePermissionSheetTitle")}
         showCloseButton
-        closeLabel={tCommon("actions.close", "Close")}
+        closeLabel={tCommon("actions.close")}
         footer={
           <Button
             variant="primary"
@@ -320,7 +311,7 @@ export function MobileComposer({
               handleVoiceStart();
             }}
           >
-            {tVoice("voicePermissionSheetRetry", "Try again")}
+            {tVoice("voicePermissionSheetRetry")}
           </Button>
         }
       >

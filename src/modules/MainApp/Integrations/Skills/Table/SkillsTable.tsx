@@ -261,12 +261,8 @@ export const SkillsTable: React.FC<SkillsTableProps> = ({
                     />
                   }
                   iconOnly
-                  aria-label={t("skills.shareToOrg", {
-                    defaultValue: "Share to organization",
-                  })}
-                  title={t("skills.shareToOrg", {
-                    defaultValue: "Share to organization",
-                  })}
+                  aria-label={t("skills.shareToOrg")}
+                  title={t("skills.shareToOrg")}
                   onClick={(event) => {
                     event.stopPropagation();
                     setShareTarget(skill);

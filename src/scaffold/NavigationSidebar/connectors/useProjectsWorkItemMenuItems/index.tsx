@@ -80,7 +80,7 @@ export function useProjectsWorkItemMenuItems({
             orgNameById.get(orgId) ||
             (orgId === STORY_PERSONAL_ORG_FILTER_ID
               ? t("projects:orgs.personalOrg")
-              : t("navigation:labels.org", "Org"));
+              : t("navigation:labels.org"));
           const projectEntry: SidebarProject = {
             projectData: project,
             projectSyncAdapterId: syncStatus?.adapter_id ?? null,

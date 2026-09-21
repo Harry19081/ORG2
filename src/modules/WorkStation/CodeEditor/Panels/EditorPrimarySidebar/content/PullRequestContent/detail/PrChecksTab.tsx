@@ -60,7 +60,7 @@ function CheckRow({
         <a
           {...linkAnchorProps(detailsUrl, { navigate: true })}
           className="shrink-0 text-text-3 hover:text-text-1"
-          title={t("git.pr.details", "Details")}
+          title={t("git.pr.details")}
         >
           <HugeiconsIcon
             icon={SquareArrowUpRight02Icon}
@@ -104,11 +104,8 @@ export const PrChecksTab: React.FC<PrChecksTabProps> = ({
       <Placeholder
         variant="empty"
         placement="sidebar"
-        title={t("git.pr.checks.none", "No checks reported")}
-        subtitle={t(
-          "git.pr.checks.noneHint",
-          "No CI checks or statuses ran on this pull request's head commit."
-        )}
+        title={t("git.pr.checks.none")}
+        subtitle={t("git.pr.checks.noneHint")}
         fillParentHeight
       />
     );
@@ -117,10 +114,10 @@ export const PrChecksTab: React.FC<PrChecksTabProps> = ({
   const overall = (checks?.state ?? "pending") as CiCheckState;
   const summaryLabel =
     overall === "success"
-      ? t("git.pr.checks.allPassed", "All checks passed")
+      ? t("git.pr.checks.allPassed")
       : overall === "failure"
-        ? t("git.pr.checks.someFailed", "Some checks failed")
-        : t("git.pr.checks.pending", "Checks in progress");
+        ? t("git.pr.checks.someFailed")
+        : t("git.pr.checks.pending");
 
   return (
     <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto">

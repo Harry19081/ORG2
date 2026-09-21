@@ -31,8 +31,7 @@ interface SessionReadOnlyBarProps {
 const SessionReadOnlyBar: React.FC<SessionReadOnlyBarProps> = memo(
   ({ pills, label }) => {
     const { t } = useTranslation("sessions");
-    const badgeLabel =
-      label ?? t("chat.readOnly", { defaultValue: "Read-only" });
+    const badgeLabel = label ?? t("chat.readOnly");
 
     return (
       <ComposerShell variant="embedded">

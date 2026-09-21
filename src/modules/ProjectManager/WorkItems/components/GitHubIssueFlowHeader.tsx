@@ -51,21 +51,18 @@ export function GitHubIssueFlowHeader({
               aria-hidden
             />
           )}
-          {isOpen
-            ? t("git.issues.status.open", "Open")
-            : t("git.issues.status.closed", "Closed")}
+          {isOpen ? t("git.issues.status.open") : t("git.issues.status.closed")}
         </span>
       }
       actor={{ login: issue.user.login, avatarUrl: issue.user.avatar_url }}
-      unknownActorLabel={t("git.pr.unknownAuthor", "Unknown")}
+      unknownActorLabel={t("git.pr.unknownAuthor")}
     >
-      <span>{t("git.issues.activity.opened", "opened this issue")}</span>
+      <span>{t("git.issues.activity.opened")}</span>
       <ActivityTimestamp timestamp={issue.created_at} />
       <span aria-hidden>·</span>
       <span>
         {t("git.issues.commentCount", {
           count: issue.comments,
-          defaultValue: "{{count}} comment",
           defaultValue_other: "{{count}} comments",
         })}
       </span>

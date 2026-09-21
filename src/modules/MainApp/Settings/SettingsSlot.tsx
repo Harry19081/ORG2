@@ -302,8 +302,8 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
   // describes the actual occupant of the slot. Shortcut IDs match the
   // chat panel exactly so the displayed keys stay in lockstep.
   const maximizeLabel = maximized
-    ? t("sessions:chat.restoreSplitView", { defaultValue: "Show Workstation" })
-    : t("panel.maximizeSettings", { defaultValue: "Maximize Settings" });
+    ? t("sessions:chat.restoreSplitView")
+    : t("panel.maximizeSettings");
   const maximizeShortcut = useShortcutKeys(
     maximized ? "maximize_work_station" : "maximize_chat"
   );

@@ -1,5 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
 
+import { testTranslate } from "@src/test/i18nTestTranslate";
+
 import { registerBranchSwitchEditor } from "../branchSwitchEditors";
 import { ensureSwitchWorkspaceReady } from "../branchSwitchWorkspace";
 
@@ -16,7 +18,9 @@ vi.mock("@src/features/GitDialogs/BranchSwitchQuestion", () => ({
   branchSwitchQuestion: mocks.question,
 }));
 vi.mock("@src/i18n", () => ({
-  default: { t: (_key: string, fallback: string) => fallback },
+  default: {
+    t: (...args: Parameters<typeof testTranslate>) => testTranslate(...args),
+  },
 }));
 vi.mock("@src/store/workstation/tabs/atoms", () => ({
   workstationTabsStateAtom: "tabs",

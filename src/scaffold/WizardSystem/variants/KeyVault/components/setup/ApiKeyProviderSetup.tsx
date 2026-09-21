@@ -220,7 +220,7 @@ const ApiKeyProviderSetup: React.FC<AgentSetupProps> = ({
       </SectionContainer>
 
       <SectionContainer>
-        <SectionRow label={t("keyVault.validate", "Validate")} required>
+        <SectionRow label={t("keyVault.validate")} required>
           <Button
             variant={keyValidated ? "secondary" : "primary"}
             tone={keyValidated ? "success" : undefined}
@@ -230,8 +230,8 @@ const ApiKeyProviderSetup: React.FC<AgentSetupProps> = ({
             className="h-8 min-h-8"
           >
             {keyValidated
-              ? `✓ ${t("keyVault.validated", "Validated")}`
-              : t("keyVault.validate", "Validate")}
+              ? `✓ ${t("keyVault.validated")}`
+              : t("keyVault.validate")}
           </Button>
         </SectionRow>
       </SectionContainer>

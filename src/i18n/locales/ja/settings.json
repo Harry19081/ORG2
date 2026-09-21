@@ -960,7 +960,6 @@
     "newChatPage": "新規チャットページ"
   },
   "harnessConnections": {
-    "description": "各コーディングツールで使う接続を選択",
     "current": "設定中の接続",
     "scope": "この端末の CLI の既定設定に適用されます。プロジェクト設定や実行中のセッションが優先される場合があります",
     "original": "元の設定",

@@ -129,8 +129,7 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
     : generatedWorkspaceName;
 
   const handleSubmit = useCallback(() => {
-    const name =
-      effectiveName || t("workspaceForm.defaultName", "Working Directory");
+    const name = effectiveName || t("workspaceForm.defaultName");
     const selectedRepoIds = orderedRepos
       .filter((repo) => selectedIds.has(repo.id))
       .map((repo) => repo.id);
@@ -151,9 +150,7 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
       <SpotlightModalHeader
         icon={ICONS.workspace}
         title={
-          isEditing
-            ? t("workspaceForm.editTitle", "Edit Working Directory")
-            : t("workspaceForm.title", "Create Multi-repo Working Directory")
+          isEditing ? t("workspaceForm.editTitle") : t("workspaceForm.title")
         }
         badge="WORKING DIRECTORY"
         badgeColor="green"
@@ -170,16 +167,12 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
       <SpotlightFormShell>
         <SpotlightFormBody>
           <SpotlightFormField
-            label={t("workspaceForm.workspaceName", "Working Directory Name")}
+            label={t("workspaceForm.workspaceName")}
             className="mb-3"
           >
             <Input
               placeholder={
-                effectiveName ||
-                t(
-                  "workspaceForm.workspaceNamePlaceholder",
-                  "My Working Directory"
-                )
+                effectiveName || t("workspaceForm.workspaceNamePlaceholder")
               }
               value={displayedWorkspaceName}
               onChange={(name) => {
@@ -202,10 +195,7 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
           <div className="mb-3">
             <Input
               type="search"
-              placeholder={t(
-                "workspaceForm.filterPlaceholder",
-                "Filter repos..."
-              )}
+              placeholder={t("workspaceForm.filterPlaceholder")}
               value={repoSearchQuery}
               onChange={setRepoSearchQuery}
               allowClear
@@ -222,10 +212,7 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
           </div>
 
           <div className="mb-1 text-[12px] font-medium text-text-3">
-            {t(
-              "workspaceForm.selectRepos",
-              "Select repos for working directory"
-            )}
+            {t("workspaceForm.selectRepos")}
             {selectedIds.size > 0 && (
               <span className="ml-1 text-primary-6">({selectedIds.size})</span>
             )}
@@ -280,7 +267,7 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
                               data-icon="check"
                               size={10}
                             />
-                            {t("workspaceForm.current", "current")}
+                            {t("workspaceForm.current")}
                           </span>
                         )}
                       </div>
@@ -299,8 +286,8 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
                   variant={repoSearchQuery.trim() ? "no-results" : "empty"}
                   title={
                     repoSearchQuery.trim()
-                      ? t("workspaceForm.noReposFound", "No repos match filter")
-                      : t("workspaceForm.noRepos", "No repos available")
+                      ? t("workspaceForm.noReposFound")
+                      : t("workspaceForm.noRepos")
                   }
                 />
               </div>
@@ -314,14 +301,10 @@ const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({
           busy={loading}
           submit={{
             label: loading
-              ? `${
-                  isEditing
-                    ? t("actions.save", "Save")
-                    : t("actions.create", "Create")
-                }...`
+              ? `${isEditing ? t("actions.save") : t("actions.create")}...`
               : isEditing
-                ? t("actions.save", "Save")
-                : t("actions.create", "Create"),
+                ? t("actions.save")
+                : t("actions.create"),
             onClick: handleSubmit,
             disabled: isSubmitDisabled,
           }}

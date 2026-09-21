@@ -838,7 +838,6 @@
         "errorChannelMissing": "This channel is no longer available",
         "errorMessageMissing": "That message is no longer available",
         "loadError": "Couldn't load messages",
-        "loadingMessages": "Loading messages…",
         "loadOlder": "Load earlier messages",
         "unknownAuthor": "Teammate"
       }

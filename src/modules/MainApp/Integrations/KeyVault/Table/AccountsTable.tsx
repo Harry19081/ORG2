@@ -471,8 +471,8 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
 
   const tabs = useMemo(() => {
     return [
-      { key: "models", label: t("modelsTabs.models", "Models") },
-      { key: "my-accounts", label: t("modelsTabs.myAccounts", "My Keys") },
+      { key: "models", label: t("modelsTabs.models") },
+      { key: "my-accounts", label: t("modelsTabs.myKeys") },
     ];
   }, [t]);
 

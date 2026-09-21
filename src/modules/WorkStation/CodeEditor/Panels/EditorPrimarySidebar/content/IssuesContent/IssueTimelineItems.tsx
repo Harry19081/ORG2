@@ -58,14 +58,10 @@ export function IssueTimelineItems({
       <ConnectedTimelineItem
         isLast
         trailLabel={
-          navigationEnabled
-            ? t("git.issues.loadingTimeline", "Loading activity…")
-            : undefined
+          navigationEnabled ? t("git.issues.loadingTimeline") : undefined
         }
       >
-        <TimelineLoadingSkeleton
-          label={t("git.issues.loadingTimeline", "Loading activity…")}
-        />
+        <TimelineLoadingSkeleton label={t("git.issues.loadingTimeline")} />
       </ConnectedTimelineItem>
     );
   }
@@ -141,11 +137,8 @@ export function IssueTimelineItems({
               actor={actorName}
               action={
                 isSessionAttachment
-                  ? t(
-                      "git.issues.activity.appendedSession",
-                      "appended a session"
-                    )
-                  : t("git.issues.activity.commented", "commented")
+                  ? t("git.issues.activity.appendedSession")
+                  : t("git.issues.activity.commented")
               }
               timestamp={item.created_at}
             />

@@ -243,12 +243,11 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
   const stageOptions = useMemo<SelectOption[]>(
     () => [
       {
-        label: t("workItems.subItems.noStage", { defaultValue: "No stage" }),
+        label: t("workItems.subItems.noStage"),
         value: "none",
       },
       ...getSubItemStageNumbers(children).map((stage) => ({
         label: t("workItems.subItems.stage", {
-          defaultValue: "Stage {{stage}}",
           stage,
         }),
         value: stage,
@@ -315,16 +314,12 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
 
   const statusLabel = (state: SubItemVisualState): string => {
     if (state === "completed") {
-      return t("workItems.subItems.completedStatus", {
-        defaultValue: "Completed",
-      });
+      return t("workItems.subItems.completedStatus");
     }
     if (state === "cancelled") {
-      return t("workItems.subItems.cancelledStatus", {
-        defaultValue: "Cancelled",
-      });
+      return t("workItems.subItems.cancelledStatus");
     }
-    return t("workItems.subItems.openStatus", { defaultValue: "Open" });
+    return t("workItems.subItems.openStatus");
   };
 
   const composer = adding ? (
@@ -341,9 +336,7 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
             dropdownWidthMode="auto"
             className="w-full"
             selectorClassName="font-normal"
-            ariaLabel={t("workItems.subItems.stagePicker", {
-              defaultValue: "Sub-item stage",
-            })}
+            ariaLabel={t("workItems.subItems.stagePicker")}
             dataTestId="work-item-sub-item-stage-select"
             onChange={(value) => {
               if (Array.isArray(value)) return;
@@ -355,9 +348,7 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
           autoFocus
           value={draftTitle}
           disabled={creating}
-          placeholder={t("workItems.subItems.titlePlaceholder", {
-            defaultValue: "Add a sub-item title",
-          })}
+          placeholder={t("workItems.subItems.titlePlaceholder")}
           size="small"
           appearance="ghost"
           className="min-w-0 flex-1"
@@ -415,9 +406,7 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
       </div>
       {createError ? (
         <p className="mt-1.5 text-[11px] text-danger-6" role="status">
-          {t("workItems.subItems.createError", {
-            defaultValue: "Could not create the sub-item. Try again.",
-          })}
+          {t("workItems.subItems.createError")}
         </p>
       ) : null}
     </div>
@@ -443,7 +432,6 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
         progress.total > 0 ? (
           <span className="text-[11px] text-text-4 tabular-nums">
             {t("workItems.subItems.progress", {
-              defaultValue: "{{completed}} of {{total}} completed",
               completed: progress.completed,
               total: progress.total,
             })}
@@ -460,9 +448,7 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
               aria-hidden
             />
           }
-          label={t("workItems.subItems.add", {
-            defaultValue: "Add sub-item",
-          })}
+          label={t("workItems.subItems.add")}
           disabled={adding}
           onClick={() => setAdding(true)}
           data-testid="work-item-sub-item-add"
@@ -508,12 +494,9 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
                 <div className="px-0 pt-2 pb-1 text-[10px] font-normal tracking-wide text-text-4 uppercase">
                   {group.stage !== undefined
                     ? t("workItems.subItems.stage", {
-                        defaultValue: "Stage {{stage}}",
                         stage: group.stage,
                       })
-                    : t("workItems.subItems.noStage", {
-                        defaultValue: "No stage",
-                      })}
+                    : t("workItems.subItems.noStage")}
                 </div>
               ) : null}
               {group.items.map((child) => {
@@ -561,9 +544,7 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
       ) : (
         <div className={WORK_ITEM_THREAD_TOKENS.emptyActionRow}>
           <span className="min-w-0 flex-1 truncate text-[12px] text-text-3">
-            {t("workItems.subItems.addFirst", {
-              defaultValue: "Add the first sub-item",
-            })}
+            {t("workItems.subItems.addFirst")}
           </span>
           <ActivityHeaderActionButton
             icon={
@@ -574,9 +555,7 @@ const WorkItemSubItems: React.FC<WorkItemSubItemsProps> = ({
                 aria-hidden
               />
             }
-            label={t("workItems.subItems.addFirst", {
-              defaultValue: "Add the first sub-item",
-            })}
+            label={t("workItems.subItems.addFirst")}
             onClick={() => setAdding(true)}
             data-testid="work-item-sub-items-empty-add"
           />

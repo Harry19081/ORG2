@@ -154,7 +154,7 @@ const AddConnectionWizard: React.FC<AddConnectionWizardProps> = ({
 
   const stepActions = saved ? (
     <Button variant="primary" onClick={onCancel}>
-      {t("common:actions.done", "Done")}
+      {t("common:actions.done")}
     </Button>
   ) : (
     <Button

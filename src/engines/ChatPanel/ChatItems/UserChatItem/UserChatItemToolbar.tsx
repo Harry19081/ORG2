@@ -106,7 +106,7 @@ export function UserChatItemToolbar({
               variant="tertiary"
               tone="danger"
               size="mini"
-              aria-label={t("chat.restoreCheckpoint", "Restore checkpoint")}
+              aria-label={t("chat.restoreCheckpoint")}
               iconOnly
               icon={
                 <HugeiconsIcon
@@ -117,7 +117,7 @@ export function UserChatItemToolbar({
                 />
               }
               data-testid="chat-message-restore-checkpoint"
-              title={t("chat.restoreCheckpoint", "Restore checkpoint")}
+              title={t("chat.restoreCheckpoint")}
               className={`${CHAT_BUBBLE_TOOLBAR_BUTTON_BASE_CLASS} text-text-3 hover:text-danger-6`}
               onClick={(e) => {
                 e.stopPropagation();

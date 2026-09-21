@@ -152,9 +152,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
     // Verbatim labels: coordinator → "Coordinator", everyone else →
     // their stored member name. No `agentOrgRoles.*` localisation —
     // role names are product identifiers, not UI copy.
-    const groupChatLabel = t("sessions:groupChat.triggerLabel", {
-      defaultValue: "Group chat",
-    });
+    const groupChatLabel = t("sessions:groupChat.triggerLabel");
     const currentAgentNameLabel = groupChatViewActive
       ? groupChatLabel
       : currentAgentOrgMember?.isCoordinator
@@ -298,9 +296,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                             { count: member.queuedUserDirectedCount }
                           )
                         : hasNoTasksAndNoInbox
-                          ? t("sessions:planner.agentOrgMemberStatus.noTasks", {
-                              defaultValue: "No tasks",
-                            })
+                          ? t("sessions:planner.agentOrgMemberStatus.noTasks")
                           : runtimeStatus
                             ? runtimeStatusLabelKey
                               ? t(`sessions:${runtimeStatusLabelKey}`)

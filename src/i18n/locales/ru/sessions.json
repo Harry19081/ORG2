@@ -1892,7 +1892,6 @@
     "contextMenu": {
       "filesAndFolders": "Файлы и папки",
       "workItems": "Рабочие элементы",
-      "back": "Назад",
       "recent": "Недавние",
       "showMore": "Показать ещё: {{remaining}}",
       "session": "Сессия"

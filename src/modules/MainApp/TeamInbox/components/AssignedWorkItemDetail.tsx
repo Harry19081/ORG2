@@ -466,9 +466,7 @@ const AssignedWorkItemDetail: React.FC<AssignedWorkItemDetailProps> = ({
           }
           variant="header"
           idPrefix="team-inbox-work-item-detail"
-          ariaLabel={t("projects:workItems.detailNavigation", {
-            defaultValue: "Work Item navigation",
-          })}
+          ariaLabel={t("projects:workItems.detailNavigation")}
         />
       }
       unread={item.readAt === null}

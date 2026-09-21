@@ -838,7 +838,6 @@
         "errorChannelMissing": "Saluran ini tidak lagi tersedia",
         "errorMessageMissing": "Pesan itu tidak lagi tersedia",
         "loadError": "Tidak dapat memuat pesan",
-        "loadingMessages": "Memuat pesan…",
         "loadOlder": "Muat pesan sebelumnya",
         "unknownAuthor": "Rekan tim"
       }

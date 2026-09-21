@@ -25,15 +25,9 @@ export async function ensureSwitchWorkspaceReady(
     if (
       active &&
       !(await branchSwitchQuestion(
-        i18n.t(
-          "common:git.branchSwitch.activeTask",
-          "A task is running in this worktree"
-        ),
-        i18n.t(
-          "common:git.branchSwitch.activeTaskDescription",
-          "Switching now changes the files the agent is working on"
-        ),
-        i18n.t("common:git.branchSwitch.switchAnyway", "Switch anyway")
+        i18n.t("common:git.branchSwitch.activeTask"),
+        i18n.t("common:git.branchSwitch.activeTaskDescription"),
+        i18n.t("common:git.branchSwitch.switchAnyway")
       ))
     )
       return false;
@@ -62,14 +56,8 @@ export async function ensureSwitchWorkspaceReady(
     });
   if (dirtyPreview) {
     await branchSwitchQuestion(
-      i18n.t(
-        "common:git.branchSwitch.saveTitle",
-        "Save files before switching"
-      ),
-      i18n.t(
-        "common:git.branchSwitch.savePreview",
-        "Save or discard edits in the spreadsheet editor before switching branches"
-      )
+      i18n.t("common:git.branchSwitch.saveTitle"),
+      i18n.t("common:git.branchSwitch.savePreview")
     );
     return false;
   }
@@ -89,22 +77,16 @@ export async function ensureSwitchWorkspaceReady(
   const paths = [...dirty.map((e) => e.path), ...cached, ...diffs];
   if (new Set(paths).size !== paths.length) {
     await branchSwitchQuestion(
-      i18n.t("common:git.branchSwitch.saveFailed", "Could not save all files"),
-      i18n.t(
-        "common:git.branchSwitch.multipleBuffers",
-        "This file has edits in more than one editor. Save or close those editors before switching"
-      )
+      i18n.t("common:git.branchSwitch.saveFailed"),
+      i18n.t("common:git.branchSwitch.multipleBuffers")
     );
     return false;
   }
   if (!paths.length) return true;
   const accepted = await branchSwitchQuestion(
-    i18n.t("common:git.branchSwitch.saveTitle", "Save files before switching"),
-    i18n.t(
-      "common:git.branchSwitch.saveDescription",
-      "Open files have unsaved edits. Save them before choosing where to keep your changes"
-    ),
-    i18n.t("common:git.branchSwitch.saveContinue", "Save all and continue")
+    i18n.t("common:git.branchSwitch.saveTitle"),
+    i18n.t("common:git.branchSwitch.saveDescription"),
+    i18n.t("common:git.branchSwitch.saveContinue")
   );
   if (!accepted) return false;
   try {
@@ -116,16 +98,11 @@ export async function ensureSwitchWorkspaceReady(
       getDirtyCachedPaths().some((p) => isWithinWorktree(p, root)) ||
       getGitDiffDraftPaths().some((p) => isWithinWorktree(p, root))
     )
-      throw new Error(
-        i18n.t(
-          "common:git.branchSwitch.editedWhileSaving",
-          "Files were edited while saving. Review the latest edits and try again"
-        )
-      );
+      throw new Error(i18n.t("common:git.branchSwitch.editedWhileSaving"));
     return true;
   } catch (error) {
     await branchSwitchQuestion(
-      i18n.t("common:git.branchSwitch.saveFailed", "Could not save all files"),
+      i18n.t("common:git.branchSwitch.saveFailed"),
       String(error)
     );
     return false;

@@ -66,25 +66,15 @@ export function PermissionSheet({
   const viewModel = resolvePermissionPromptViewModel({
     tool: request.toolName,
     args: request.toolArgs,
-    permissionPromptLabel: t(
-      "chat.permissionPrompt",
-      "Your permission is needed"
-    ),
-    commandConfirmTitle: t(
-      "chat.commandConfirmTitle",
-      "Command Requires Approval"
-    ),
+    permissionPromptLabel: t("chat.permissionPrompt"),
+    commandConfirmTitle: t("chat.commandConfirmTitle"),
   });
 
   const footerNote =
     desktopName &&
-    t(
-      "chat.remoteExecutionNotice",
-      "This action will run on {{desktopName}}.",
-      {
-        desktopName,
-      }
-    );
+    t("chat.remoteExecutionNotice", {
+      desktopName,
+    });
 
   const badge =
     queueDepth > 1 ? (
@@ -167,7 +157,7 @@ export function PermissionSheet({
           className="mt-3 w-full text-center text-xs"
           onClick={onDismiss}
         >
-          {t("chat.permissionDismiss", "Dismiss on this device")}
+          {t("chat.permissionDismiss")}
         </Button>
       ) : null}
     </BottomSheet>

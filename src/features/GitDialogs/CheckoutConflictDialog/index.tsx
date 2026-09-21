@@ -61,12 +61,12 @@ export function BranchSwitchDialogView({
   const terminal = Boolean(result || error);
   const title =
     result?.outcome === "switched_with_conflicts"
-      ? t("git.branchSwitch.conflictsTitle", "Changes need attention")
+      ? t("git.branchSwitch.conflictsTitle")
       : error ||
           result?.outcome === "blocked" ||
           result?.outcome === "recovery_required"
-        ? t("git.branchSwitch.blockedTitle", "Branch switch needs attention")
-        : t("git.branchSwitch.title", "Switch branch");
+        ? t("git.branchSwitch.blockedTitle")
+        : t("git.branchSwitch.title");
   return (
     <Modal
       visible
@@ -81,15 +81,15 @@ export function BranchSwitchDialogView({
       onOk={terminal ? onClose : () => onChoice(choice)}
       okText={
         terminal
-          ? t("actions.close", "Close")
+          ? t("actions.close")
           : busy
-            ? t("git.branchSwitch.working", "Saving and switching…")
-            : t("git.branchSwitch.title", "Switch branch")
+            ? t("git.branchSwitch.working")
+            : t("git.branchSwitch.title")
       }
       okButtonProps={{ loading: busy, disabled: busy }}
       cancelButtonProps={{ disabled: busy }}
       // Result states only acknowledge; the default footer drops Cancel.
-      cancelText={terminal ? "" : t("actions.cancel", "Cancel")}
+      cancelText={terminal ? "" : t("actions.cancel")}
     >
       <div className="flex min-w-0 flex-col gap-4">
         {preparation && (
@@ -114,7 +114,6 @@ export function BranchSwitchDialogView({
             {result && (
               <p className="truncate text-sm text-text-1">
                 {t("git.branchSwitch.current", {
-                  defaultValue: "Current branch: {{branch}}",
                   branch: result.current_branch,
                 })}
               </p>
@@ -142,7 +141,6 @@ export function BranchSwitchDialogView({
                 onClick={() => setFilesOpen((open) => !open)}
               >
                 {t("git.branchSwitch.changedFiles", {
-                  defaultValue: "{{count}} changed files",
                   count: preparation.changed_files.length,
                 })}
                 <DisclosureChevron
@@ -163,10 +161,7 @@ export function BranchSwitchDialogView({
             </div>
             <fieldset disabled={busy} className="min-w-0">
               <legend className="mb-3 text-sm text-text-1">
-                {t(
-                  "git.branchSwitch.question",
-                  "What would you like to do with your changes?"
-                )}
+                {t("git.branchSwitch.question")}
               </legend>
               <SelectionGrid
                 vertical
@@ -175,25 +170,17 @@ export function BranchSwitchDialogView({
                   {
                     key: "leave",
                     label: t("git.branchSwitch.leave", {
-                      defaultValue: "Leave changes on {{branch}}",
                       branch: preparation.current_branch,
                     }),
-                    description: t(
-                      "git.branchSwitch.leaveDescription",
-                      "Save your work for later and switch with a clean working tree"
-                    ),
+                    description: t("git.branchSwitch.leaveDescription"),
                     disabled: busy,
                   },
                   {
                     key: "bring",
                     label: t("git.branchSwitch.bring", {
-                      defaultValue: "Bring changes to {{branch}}",
                       branch: preparation.target_branch,
                     }),
-                    description: t(
-                      "git.branchSwitch.bringDescription",
-                      "Move your uncommitted changes to the destination branch"
-                    ),
+                    description: t("git.branchSwitch.bringDescription"),
                     disabled: busy,
                   },
                 ]}
@@ -204,7 +191,7 @@ export function BranchSwitchDialogView({
           </>
         ) : (
           <p role="status" className="text-sm text-text-2">
-            {t("git.branchSwitch.working", "Saving and switching…")}
+            {t("git.branchSwitch.working")}
           </p>
         )}
       </div>

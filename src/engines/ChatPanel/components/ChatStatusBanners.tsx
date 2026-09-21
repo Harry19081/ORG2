@@ -175,13 +175,8 @@ export function GroupChatPausedBanner({
           className: "flex-1",
           content: (
             <ChatStatusTwoLineContent
-              title={t("groupChat.pausedBanner.title", {
-                defaultValue: "Formal work is paused",
-              })}
-              description={t("groupChat.pausedBanner.body", {
-                defaultValue:
-                  "Resume for Coordinator work. You can still @Member for a side quest.",
-              })}
+              title={t("groupChat.pausedBanner.title")}
+              description={t("groupChat.pausedBanner.body")}
             />
           ),
         },
@@ -205,9 +200,7 @@ export function GroupChatPausedBanner({
                 />
               }
             >
-              {t("groupChat.pausedBanner.resume", {
-                defaultValue: "Resume",
-              })}
+              {t("groupChat.pausedBanner.resume")}
             </Button>
           ),
         },

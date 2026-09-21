@@ -486,7 +486,7 @@ export const ModelPropertiesDropdown: React.FC<
               data-testid="model-properties-cancel"
               onClick={closeDiscarding}
             >
-              {t("common:actions.cancel", { defaultValue: "Cancel" })}
+              {t("common:actions.cancel")}
             </Button>
             <Button
               size="small"
@@ -494,7 +494,7 @@ export const ModelPropertiesDropdown: React.FC<
               data-testid="model-properties-apply"
               onClick={handleApply}
             >
-              {t("common:actions.apply", { defaultValue: "Apply" })}
+              {t("common:actions.apply")}
             </Button>
           </div>
         </>

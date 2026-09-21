@@ -885,7 +885,6 @@
       "enterUrlToStart": "शुरू करने के लिए URL दर्ज करें",
       "privateBrowsingEmptyTitle": "निजी ब्राउज़िंग: शुरू करने के लिए URL दर्ज करें",
       "simulatorBrowserNotice": "यह ब्राउज़र केवल सत्र रीप्ले के लिए है। स्थायी ब्राउज़िंग के लिए मुख्य ऐप का ब्राउज़र उपयोग करें (टूल → ब्राउज़र)।",
-      "tlsDevNote": "नोट: सर्टिफ़िकेट सत्यापन के कारण डेवलपमेंट मोड में कुछ HTTPS साइटें (जैसे GitHub) TLS त्रुटियाँ दिखा सकती हैं। HTTP साइटें या example.com जैसी सरल HTTPS साइटें आज़माएँ।",
       "siteUnreachableTitle": "इस साइट तक नहीं पहुँचा जा सकता",
       "loadStalledTitle": "यह पृष्ठ पूरी तरह लोड नहीं हुआ",
       "copyUrl": "URL कॉपी करें",
@@ -1540,11 +1539,11 @@
       "noResults": "कोई मेल खाता मॉडल नहीं",
       "chooseModel": "मॉडल चुनें",
       "chooseKey": "की चुनें",
-      "noCompatibleAccounts": "कोई संगत की नहीं",
+      "noCompatibleKeys": "कोई संगत कुंजी नहीं",
       "chooseModelHint": "नेविगेट करने के लिए कीबोर्ड का उपयोग करें, या माउस से किसी मॉडल पर क्लिक करें",
       "chooseKeyHint": "नेविगेट करने के लिए कीबोर्ड का उपयोग करें, या माउस से किसी की पर क्लिक करें",
       "noModelsForKey": "इस की के लिए कोई मॉडल सक्षम नहीं है",
-      "selectAccount": "खाता चुनें"
+      "selectKey": "कुंजी चुनें"
     },
     "modelProperties": {
       "effort": "प्रयास",
@@ -1716,7 +1715,7 @@
       "showBranchInfo": "ब्रांच जानकारी दिखाएँ",
       "compatibleKeys": "संगत",
       "planSupport": "प्लान",
-      "byokSupport": "की",
+      "byokSupport": "कुंजियाँ",
       "incompatible": "असंगत",
       "manageModels": "मॉडल प्रबंधित करें",
       "manageKeys": "की प्रबंधित करें",
@@ -2201,11 +2200,9 @@
     "taskFailedPrivateBody": "एक कार्य विफल रहा। विवरण के लिए ORG2 खोलें।"
   },
   "teamInbox": {
-    "title": "टीम इनबॉक्स",
     "listLabel": "टीम इनबॉक्स सूची",
     "itemsLabel": "टीम इनबॉक्स आइटम",
     "unreadCount": "{{count}} अपठित",
-    "allRead": "सब कुछ पढ़ लिया गया",
     "loadMore": "और लोड करें",
     "filters": {
       "mentions": "उल्लेख",
@@ -2254,7 +2251,6 @@
         "subtitle": "आपके द्वारा संग्रहीत आइटम यहाँ दिखाई देंगे।"
       }
     },
-    "loading": "टीम इनबॉक्स लोड हो रहा है…",
     "drop": {
       "title": "कार्य आइटम बनाने के लिए यहाँ छोड़ें",
       "subtitle": "सत्र स्नैपशॉट की समीक्षा करें, फिर कार्य आइटम बनाएँ या हैंड ऑफ़ करें।",

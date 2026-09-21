@@ -960,7 +960,6 @@
     "newChatPage": "Trang trò chuyện mới"
   },
   "harnessConnections": {
-    "description": "Chọn kết nối cho từng công cụ lập trình",
     "current": "Kết nối đã cấu hình",
     "scope": "Áp dụng cho mặc định CLI trên máy này; cài đặt dự án và phiên đang chạy có thể được ưu tiên",
     "original": "Thiết lập ban đầu",

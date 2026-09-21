@@ -363,7 +363,7 @@ const GitHistoryContentInner: React.FC<GitHistoryContentInnerProps> = ({
         <Placeholder
           variant="empty"
           placement="sidebar"
-          title={t("placeholders.noResults", "No results")}
+          title={t("placeholders.noResults")}
           fillParentHeight
         />
       ) : (

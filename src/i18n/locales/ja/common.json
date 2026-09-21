@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "ファイルの差分色"
   },
   "teamInbox": {
-    "title": "チームの受信トレイ",
     "listLabel": "チーム受信トレイの一覧",
     "itemsLabel": "チーム受信トレイの項目",
     "unreadCount": "未読 {{count}} 件",
-    "allRead": "すべて確認済み",
     "loadMore": "さらに読み込む",
     "filters": {
       "mentions": "メンション",
@@ -70,7 +68,6 @@
         "subtitle": "アーカイブした項目がここに表示されます。"
       }
     },
-    "loading": "チーム受信トレイを読み込んでいます…",
     "drop": {
       "title": "ここにドロップして作業項目を作成",
       "subtitle": "セッションのスナップショットを確認してから、作業項目を作成または引き継いでください。",
@@ -539,7 +536,7 @@
     "accounts": "アカウント",
     "enabled": "有効",
     "disabled": "無効",
-    "keys": "Keys",
+    "keys": "キー",
     "model": "モデル",
     "name": "名前",
     "provider": "プロバイダー",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "URL を入力して開始",
       "privateBrowsingEmptyTitle": "プライベートブラウジング: URL を入力して開始",
       "simulatorBrowserNotice": "このブラウザはセッション再生専用です。継続的な閲覧はメインアプリのブラウザ（ツール → ブラウザ）を使用してください。",
-      "tlsDevNote": "注: GitHub など一部の HTTPS サイトは開発モードで証明書検証により TLS エラーが出ることがあります。HTTP や example.com などのシンプルな HTTPS を試してください。",
       "siteUnreachableTitle": "このサイトにアクセスできません",
       "webviewHiddenTitle": "Web ビューを一時的に非表示",
       "webviewHiddenBody": "メニューまたはダイアログを閉じると再表示されます。",
@@ -1712,11 +1708,11 @@
       "noResults": "一致するモデルがありません",
       "chooseModel": "モデルを選択",
       "chooseKey": "キーを選択",
-      "noCompatibleAccounts": "互換性のあるキーがありません",
+      "noCompatibleKeys": "互換性のあるキーがありません",
       "chooseModelHint": "キーボードで移動するか、マウスでモデルをクリックしてください",
       "chooseKeyHint": "キーボードで移動するか、マウスでキーをクリックしてください",
       "noModelsForKey": "このキーで有効なモデルはありません",
-      "selectAccount": "アカウントを選択"
+      "selectKey": "キーを選択"
     },
     "modelProperties": {
       "effort": "Effort",
@@ -1885,7 +1881,7 @@
       "showBranchInfo": "ブランチ情報を表示",
       "compatibleKeys": "互換性あり",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "キー",
       "incompatible": "非対応",
       "manageModels": "モデルを管理",
       "manageKeys": "キーを管理",

@@ -134,9 +134,7 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
 
   const solveMode = mode === "solve";
   const triggerLabel = solveMode
-    ? t("sessions:creator.solveWorkItem", {
-        defaultValue: "Solve Work Item",
-      })
+    ? t("sessions:creator.solveWorkItem")
     : t("projects:workItems.addWorkItem");
   const showDropdown =
     presentation === "button" &&

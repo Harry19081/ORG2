@@ -329,9 +329,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
   const columns: SettingsTableColumn<PlatformRow>[] = [
     {
       key: "source",
-      label: t("agentOrgs.sessionProvenance.col.source", {
-        defaultValue: "Tool",
-      }),
+      label: t("agentOrgs.sessionProvenance.col.source"),
       renderCell: (row) => {
         const statusTag = statusTagFor(row);
         return (
@@ -361,9 +359,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
     },
     {
       key: "config",
-      label: t("agentOrgs.sessionProvenance.col.config", {
-        defaultValue: "Config",
-      }),
+      label: t("agentOrgs.sessionProvenance.col.config"),
       renderCell: (row) =>
         row.status?.configPath ? (
           <Button
@@ -408,8 +404,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
             disabled={row.loading || !masterEnabled}
             loading={row.pending}
             ariaLabel={`${row.label} — ${t(
-              "agentOrgs.sessionProvenance.capture",
-              { defaultValue: "Capture file interactions" }
+              "agentOrgs.sessionProvenance.capture"
             )}`}
             dataTestId={`session-provenance-hook-switch-${row.id}`}
             onCheckedChange={(enabled) => void handleChange(row.id, enabled)}
@@ -425,27 +420,18 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
       const status = row.status;
       if (status && status.desiredEnabled && !status.enabled) {
         return t("agentOrgs.sessionProvenance.installDrift", {
-          defaultValue:
-            "The saved preference and installed hook differ. Toggle capture to repair the managed hook. Config: {{path}}",
           path: status.configPath,
         });
       }
       if (status?.activationState === "awaiting_verification") {
-        return t("agentOrgs.sessionProvenance.codexApproval.description", {
-          defaultValue:
-            "Waiting for Codex to approve and execute the current ORG2 hooks.",
-        });
+        return t("agentOrgs.sessionProvenance.codexApproval.description");
       }
       if (status?.activationState === "active" && status.lastActivatedAt) {
         return t("agentOrgs.sessionProvenance.codexApproval.verified", {
-          defaultValue: "Verified by a real Codex hook signal {{time}}.",
           time: formatRelativeElapsedShort(new Date(status.lastActivatedAt)),
         });
       }
-      return t("agentOrgs.sessionProvenance.description", {
-        defaultValue:
-          "Records file reads and writes as metadata. Prompts, tool output, and file contents are not stored.",
-      });
+      return t("agentOrgs.sessionProvenance.description");
     },
     [t]
   );
@@ -454,40 +440,26 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
     <div className={SECTION_GAP_CLASSES}>
       <SectionContainer>
         <SectionRow
-          label={t("agentOrgs.sessionProvenance.masterToggle", {
-            defaultValue: "Provenance hooks",
-          })}
-          description={t("agentOrgs.sessionProvenance.masterToggleDesc", {
-            defaultValue:
-              "When off, all managed hooks are uninstalled and no signals are captured",
-          })}
+          label={t("agentOrgs.sessionProvenance.masterToggle")}
+          description={t("agentOrgs.sessionProvenance.masterToggleDesc")}
         >
           <Switch
             checked={masterEnabled}
             loading={masterPending}
             onCheckedChange={(enabled) => void handleMasterChange(enabled)}
-            ariaLabel={t("agentOrgs.sessionProvenance.masterToggle", {
-              defaultValue: "Provenance hooks",
-            })}
+            ariaLabel={t("agentOrgs.sessionProvenance.masterToggle")}
           />
         </SectionRow>
         <SectionRow
-          label={t("agentOrgs.sessionProvenance.liveStatusToggle", {
-            defaultValue: "Live agent status",
-          })}
-          description={t("agentOrgs.sessionProvenance.liveStatusToggleDesc", {
-            defaultValue:
-              "Shows when running CLI agents are working or waiting. Off keeps provenance capture on.",
-          })}
+          label={t("agentOrgs.sessionProvenance.liveStatusToggle")}
+          description={t("agentOrgs.sessionProvenance.liveStatusToggleDesc")}
         >
           <Switch
             checked={liveStatusEnabled}
             loading={liveStatusPending}
             disabled={!masterEnabled}
             onCheckedChange={(enabled) => void handleLiveStatusChange(enabled)}
-            ariaLabel={t("agentOrgs.sessionProvenance.liveStatusToggle", {
-              defaultValue: "Live agent status",
-            })}
+            ariaLabel={t("agentOrgs.sessionProvenance.liveStatusToggle")}
           />
         </SectionRow>
       </SectionContainer>
@@ -526,9 +498,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
               <div className={`grid ${INFO_CARD_TOKENS.rowGap}`}>
                 <div className="flex items-start justify-between gap-3">
                   <span className={`${INFO_CARD_TOKENS.label} pt-1`}>
-                    {t("agentOrgs.sessionProvenance.col.config", {
-                      defaultValue: "Config",
-                    })}
+                    {t("agentOrgs.sessionProvenance.col.config")}
                   </span>
                   {row.status?.configPath ? (
                     <div className="flex min-w-0 items-center gap-1.5">
@@ -542,9 +512,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
                         size="small"
                         onClick={() => void copyText(row.status!.configPath)}
                       >
-                        {t("agentOrgs.sessionProvenance.copyPath", {
-                          defaultValue: "Copy",
-                        })}
+                        {t("agentOrgs.sessionProvenance.copyPath")}
                       </Button>
                       <Button
                         size="small"
@@ -568,8 +536,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
                       type="warning"
                       dataTestId="session-provenance-codex-approval"
                       title={t(
-                        "agentOrgs.sessionProvenance.codexApproval.title",
-                        { defaultValue: "Verify ORG2 hooks in Codex" }
+                        "agentOrgs.sessionProvenance.codexApproval.title"
                       )}
                       action={
                         <span data-testid="session-provenance-review-codex-hooks">
@@ -587,21 +554,14 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
                             onClick={() => void handleReviewCodexHooks()}
                           >
                             {t(
-                              "agentOrgs.sessionProvenance.codexApproval.review",
-                              {
-                                defaultValue: "Review in Codex",
-                              }
+                              "agentOrgs.sessionProvenance.codexApproval.review"
                             )}
                           </Button>
                         </span>
                       }
                     >
                       {t(
-                        "agentOrgs.sessionProvenance.codexApproval.instructions",
-                        {
-                          defaultValue:
-                            "Open Codex, review the ORG2 hooks, then choose Trust all and continue. The SessionStart hook verifies activation automatically when the session starts.",
-                        }
+                        "agentOrgs.sessionProvenance.codexApproval.instructions"
                       )}
                     </PageNotice>
                   )}

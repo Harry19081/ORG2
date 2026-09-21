@@ -500,7 +500,7 @@ const ComputerUseConfig: React.FC = () => {
           } else if (fetchError !== null) {
             statusContent = (
               <span className="text-xs whitespace-nowrap text-danger-6">
-                {t("osAgent.desktopPermissionsUnavailable", "Unavailable")}
+                {t("osAgent.desktopPermissionsUnavailable")}
               </span>
             );
           } else if (granted === true) {
@@ -539,10 +539,7 @@ const ComputerUseConfig: React.FC = () => {
 
         <SectionRow
           label={t("osAgent.desktopRecheckPermissions")}
-          description={t(
-            "osAgent.desktopRecheckPermissionsDesc",
-            "Re-query the OS if you just toggled a permission in System Settings"
-          )}
+          description={t("osAgent.desktopRecheckPermissionsDesc")}
         >
           <RefreshButton
             variant="secondary"

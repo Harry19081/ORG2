@@ -4792,11 +4792,11 @@
     "count": 1
   },
   {
-    "key": "84e6ca0f36505713f3a2a7672e11d8e6bd9b1fe695dfc79f6271033a1a358ef5",
+    "key": "4b919fb67e74804c64f37a9405a2ddb5e0c0eb70b03c9a2802273d006acc855b",
     "file": "src/modules/MainApp/WorkManagement/RoutineWebhooksPanel.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
-    "source": "void runAction(async () => { await projectApi.replayRoutineWebhookDelivery(deliveryId); Message.success( t(\"webhooks.replayQueued\", { defaultValue: \"Delivery replayed\" }) ); loadDeliveries(); });",
+    "source": "void runAction(async () => { await projectApi.replayRoutineWebhookDelivery(deliveryId); Message.success(t(\"webhooks.replayQueued\")); loadDeliveries(); });",
     "count": 1
   },
   {
@@ -9872,11 +9872,11 @@
     "count": 1
   },
   {
-    "key": "19e978fd5f691ba5e60073afd06fb5ece9146a2a0b4df9a10425b30a58b78380",
+    "key": "8445cb3e4abcab76687cd8346cbad654626d4c9ed230d4f219cfd280d8fd258c",
     "file": "src/test/vitest.setup.ts",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
-    "source": "i18next.init({ showSupportNotice: false, lng: \"en\", fallbackLng: \"en\", ns: [\"sessions\"], defaultNS: \"sessions\", resources: { en: { sessions: enSessions, }, }, interpolation: { escapeValue: false }, });",
+    "source": "i18next.init({ showSupportNotice: false, lng: \"en\", fallbackLng: \"en\", // Every shipped namespace, not just `sessions`: product code no longer // passes a literal default to `t()`, so an unregistered namespace would // surface as a raw key instead of the copy a test asserts on. ns: Object.keys(EN_RESOURCES), defaultNS: \"sessions\", resources: { en: EN_RESOURCES }, interpolation: { escapeValue: false }, });",
     "count": 1
   },
   {

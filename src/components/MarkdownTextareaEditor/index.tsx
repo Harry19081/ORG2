@@ -307,16 +307,13 @@ const MarkdownTextareaEditor = forwardRef<
             className="min-h-0 overflow-y-auto px-2 py-2"
             style={{ minHeight, maxHeight }}
             role="region"
-            aria-label={t("common:common.preview", "Preview")}
+            aria-label={t("common:common.preview")}
             data-testid={dataTestId ? `${dataTestId}-preview` : undefined}
             data-markdown-preview
           >
             <MarkdownContent
               body={value}
-              emptyText={t(
-                "common:common.nothingToPreview",
-                "Nothing to preview"
-              )}
+              emptyText={t("common:common.nothingToPreview")}
               clamped={false}
             />
           </div>

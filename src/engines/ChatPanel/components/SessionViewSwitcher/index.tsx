@@ -116,8 +116,8 @@ export const SessionRawToolbarActions: React.FC<SessionRawToolbarActionsProps> =
     const { isRaw, transcript } = view;
     if (!isRaw) return null;
 
-    const refreshLabel = t("common:actions.refresh", "Refresh");
-    const copyLabel = t("common:actions.copy", "Copy");
+    const refreshLabel = t("common:actions.refresh");
+    const copyLabel = t("common:actions.copy");
 
     return (
       <>

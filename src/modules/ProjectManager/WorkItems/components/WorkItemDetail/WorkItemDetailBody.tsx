@@ -154,9 +154,7 @@ export function WorkItemDetailBody({
             >
               <DetailPaneErrorBoundary
                 key={`${displayWorkItem.session_id}:conversation`}
-                label={t("workItems.detail.conversation", {
-                  defaultValue: "Conversation",
-                })}
+                label={t("workItems.detail.conversation")}
                 onRetry={onRefreshWorkItem}
               >
                 <WorkItemContent
@@ -195,9 +193,7 @@ export function WorkItemDetailBody({
             >
               <DetailPaneErrorBoundary
                 key={`${displayWorkItem.session_id}:linked`}
-                label={t("workItems.detail.linked", {
-                  defaultValue: "Linked",
-                })}
+                label={t("workItems.detail.linked")}
               >
                 <LazyGitHubLinkedReferences
                   references={linkedReferences}

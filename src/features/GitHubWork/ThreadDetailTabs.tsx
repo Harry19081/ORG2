@@ -40,14 +40,12 @@ export default function ThreadDetailTabs({
   return (
     <DetailTabStrip<ThreadDetailTab>
       activeTab={activeTab}
-      ariaLabel={
-        ariaLabel ?? t("git.issues.detailNavigation", "Issue navigation")
-      }
+      ariaLabel={ariaLabel ?? t("git.issues.detailNavigation")}
       idPrefix={idPrefix}
       tabs={[
         {
           key: "conversation",
-          label: t("git.pr.tabs.conversation", "Conversation"),
+          label: t("git.pr.tabs.conversation"),
           icon: (
             <HugeiconsIcon
               icon={MessageMultiple01Icon}
@@ -62,7 +60,7 @@ export default function ThreadDetailTabs({
         },
         {
           key: "linked",
-          label: t("git.issues.tabs.relatedItems", "Related items"),
+          label: t("git.issues.tabs.relatedItems"),
           icon: (
             <HugeiconsIcon
               icon={Link02Icon}

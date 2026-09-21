@@ -147,7 +147,7 @@ export const PrDetailPanel: React.FC<PrDetailPanelProps> = ({
     useDismissibleMessage(state.error);
 
   const baseBranch =
-    state.baseRef ?? identity.baseBranch ?? t("git.pr.baseBranch", "base");
+    state.baseRef ?? identity.baseBranch ?? t("git.pr.baseBranch");
 
   const tabs =
     tabsPlacement === "panel" ? (

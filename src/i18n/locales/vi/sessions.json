@@ -1892,7 +1892,6 @@
     "contextMenu": {
       "filesAndFolders": "Tệp và thư mục",
       "workItems": "Hạng mục công việc",
-      "back": "Quay lại",
       "recent": "Gần đây",
       "showMore": "Hiển thị thêm {{remaining}}",
       "session": "Phiên"

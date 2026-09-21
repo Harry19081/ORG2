@@ -7,23 +7,23 @@
   "keyVault": {
     "title": "Modelle & CLIs",
     "overview": {},
-    "searchPlaceholder": "Konten durchsuchen...",
+    "searchPlaceholder": "Schlüssel durchsuchen...",
     "inlineCard": {
       "tabStatus": "Status",
       "tabModels": "Modelle"
     },
-    "noAccountsFound": "Keine Konten gefunden",
-    "addAccount": "Konto hinzufügen",
+    "noKeysFound": "Keine Schlüssel gefunden",
+    "addKey": "Schlüssel hinzufügen",
     "removeLocal": "Lokal entfernen",
     "unlist": "Entfernen",
     "confirmRemoveTitle": "\"{{name}}\" entfernen?",
-    "confirmRemoveMessage": "Die lokalen Anmeldedaten werden entfernt. Diese Aktion kann nicht rückgängig gemacht werden",
+    "confirmRemoveMessage": "Der lokal gespeicherte Schlüssel wird entfernt. Diese Aktion kann nicht rückgängig gemacht werden",
     "toasts": {
       "refreshed": "{{name}} erfolgreich aktualisiert",
       "refreshError": "{{name}} konnte nicht aktualisiert werden: {{error}}",
       "localRemoved": "{{name}} entfernt",
       "deleteError": "{{name}} konnte nicht gelöscht werden",
-      "refreshPartial": "Modelle aktualisiert: +{{added}} / -{{removed}}, aber bei {{failed}} von {{total}} Konten ist ein Fehler aufgetreten",
+      "refreshPartial": "Modelle aktualisiert: +{{added}} / -{{removed}}, aber bei {{failed}} von {{total}} Schlüsseln ist ein Fehler aufgetreten",
       "refreshedNoChange": "Modelle aktualisiert: keine Änderungen",
       "refreshedDelta": "Modelle aktualisiert: {{added}} hinzugefügt, {{removed}} entfernt"
     },
@@ -88,8 +88,8 @@
       "keyValidationFailed": "Validierung der Anmeldedaten fehlgeschlagen"
     },
     "edit": {
-      "title": "Konto bearbeiten",
-      "apiChangeHint": "Um Ihren API Key, Anmeldedaten oder Anbietereinstellungen zu aktualisieren, löschen Sie dieses Konto und erstellen Sie ein neues",
+      "title": "Schlüssel bearbeiten",
+      "apiChangeHint": "Um Ihren API Key oder die Anbietereinstellungen zu aktualisieren, löschen Sie diesen Schlüssel und fügen Sie einen neuen hinzu",
       "saved": "Änderungen gespeichert"
     },
     "quota": {
@@ -159,7 +159,7 @@
     "customBaseUrlNoteBody": "Ihr API-Schlüssel und Anfragedaten werden an die von Ihnen eingegebene URL gesendet. Verwenden Sie benutzerdefinierte URLs nur für vertrauenswürdige Proxys, selbst gehostete Bereitstellungen oder von Ihnen kontrollierte Endpunkte",
     "localModel": {
       "title": "Lokales Modell-Cookbook",
-      "description": "Wählen Sie ein lokales Runtime-Preset, bestätigen Sie den OpenAI-kompatiblen Endpoint, fügen Sie ein oder mehrere Modell-IDs hinzu und speichern Sie dieses Konto, um lokale Modelle in Chat zu verwenden",
+      "description": "Wählen Sie ein lokales Runtime-Preset, bestätigen Sie den OpenAI-kompatiblen Endpoint, fügen Sie ein oder mehrere Modell-IDs hinzu und speichern Sie diesen Schlüssel, um lokale Modelle in Chat zu verwenden",
       "baseUrlDesc": "OpenAI-kompatibler lokaler Endpoint. Starten Sie die Runtime, bevor Sie validieren oder speichern",
       "apiKeyDesc": "Die meisten lokalen Runtimes akzeptieren jeden nicht leeren Wert. Behalten Sie den Platzhalter, sofern Ihr Server keinen Schlüssel erzwingt",
       "quickModelsLabel": "Cookbook-Modelle",
@@ -173,12 +173,12 @@
     "validationSuccessModels": "{{count}} Modelle erkannt — im nächsten Schritt konfigurieren",
     "validationSuccessNoModels": "Key validiert — keine Modelle automatisch erkannt, bitte Modelle unten manuell hinzufügen",
     "addCliAgent": "Agent hinzufügen",
-    "accountName": "Kontoname (optional)",
-    "accountNameDesc": "Leer lassen, um {{provider}}, dann {{provider}}-1, {{provider}}-2 usw. zu verwenden",
-    "accountNamePlaceholder": "Auto: {{provider}}",
+    "keyName": "Schlüsselname (optional)",
+    "keyNameDesc": "Leer lassen, um {{provider}}, dann {{provider}}-1, {{provider}}-2 usw. zu verwenden",
+    "keyNamePlaceholder": "Auto: {{provider}}",
     "descriptionOptional": "Beschreibung (optional)",
     "descriptionPlaceholder": "Beschreibung eingeben",
-    "nameDuplicate": "Ein Konto mit diesem Namen existiert bereits",
+    "nameDuplicate": "Ein Schlüssel mit diesem Namen existiert bereits",
     "stepLabel": "Schritt {{current}}/{{total}}",
     "noValidTokenFound": "Kein gültiger Token in den Anmeldedaten gefunden",
     "couldNotDetectKeys": "Anmeldedaten konnten nicht erkannt werden. Stellen Sie sicher, dass die CLI installiert ist und Sie eingeloggt sind.",
@@ -241,7 +241,7 @@
     "claudeCodeSignInDesc": "Melden Sie sich im integrierten Browser bei Claude Code an. ORG2 erfasst den authorization code und speichert den OAuth Token lokal",
     "claudeCodeReadyToSignIn": "Bereit zur Anmeldung bei Claude Code",
     "claudeCodeSignedIn": "Claude Code verbunden",
-    "claudeCodeOAuthHint": "Dies speichert ein claude_code OAuth-Konto für Rust agents mit anthropic_native",
+    "claudeCodeOAuthHint": "Dies speichert einen claude_code OAuth-Schlüssel für Rust agents mit anthropic_native",
     "claudeCodeBrowserHint": "Schließen Sie die Claude Code-Autorisierung im integrierten Browser ab",
     "claudeCodeSignInErrorHint": "Schließen Sie den Browser und versuchen Sie die Anmeldung erneut. Es wurde kein Token gespeichert",
     "connectedViaChatGpt": "Verbunden über ChatGPT Plus/Pro",
@@ -311,14 +311,14 @@
     "signInWithCodex": "Mit Codex anmelden",
     "codexReadyToSignIn": "Bereit zur Codex-Anmeldung",
     "codexSignedIn": "Codex verbunden",
-    "codexOAuthHint": "Dies speichert ein codex OAuth-Konto für den Zugriff auf das ChatGPT Codex Backend",
+    "codexOAuthHint": "Dies speichert einen codex OAuth-Schlüssel für den Zugriff auf das ChatGPT Codex Backend",
     "codexBrowserHint": "Schließe die Codex-Autorisierung im eingebetteten Browser ab",
     "codexSignInErrorHint": "Schließe den Browser und versuche die Anmeldung erneut. Es wurde kein Token gespeichert",
     "codexAutodetectTitle": "Codex-Sitzung erkennen",
     "codexAutodetectDesc": "Liest ~/.codex/auth.json und OPENAI_API_KEY aus deiner lokalen Umgebung",
-    "codexCredentialLabel": "Codex-Zugangsdaten",
-    "codexCredentialDesc": "Füge ein Codex OAuth access token oder einen OpenAI API key ein",
-    "codexCredentialPlaceholder": "eyJ... oder sk-...",
+    "codexKeyLabel": "Codex-Schlüssel",
+    "codexKeyDesc": "Füge ein Codex OAuth access token oder einen OpenAI API key ein",
+    "codexKeyPlaceholder": "eyJ... oder sk-...",
     "codexDetectErrorHint": "Melde dich mit dem eingebetteten Browser an oder füge manuell einen OpenAI API key ein",
     "codexValidationErrorHint": "Prüfe, ob token oder API key gültig ist, und versuche es erneut",
     "claudeCodeAutodetectTitle": "Claude Code-Sitzung erkennen",
@@ -329,8 +329,8 @@
       "failed": "Dieser Market-Arbeitsbereich ist nicht verfügbar. Öffne Market erneut, um die Autorisierung zu aktualisieren."
     },
     "revalidate": "Erneut validieren",
-    "confirmRemoveActiveSessions_one": "{{count}} aktive Sitzung verwendet dieses Konto noch und wird in ihrer nächsten Runde fehlschlagen:",
-    "confirmRemoveActiveSessions_other": "{{count}} aktive Sitzungen verwenden dieses Konto noch und werden in ihrer nächsten Runde fehlschlagen:"
+    "confirmRemoveActiveSessions_one": "{{count}} aktive Sitzung verwendet diesen Schlüssel noch und wird in ihrer nächsten Runde fehlschlagen:",
+    "confirmRemoveActiveSessions_other": "{{count}} aktive Sitzungen verwenden diesen Schlüssel noch und werden in ihrer nächsten Runde fehlschlagen:"
   },
   "integrations": {
     "searchPlaceholder": "Verbindungen suchen...",
@@ -345,7 +345,9 @@
     "connecting": "Verbindung wird hergestellt",
     "reconnecting": "Erneut verbinden",
     "connectionError": "Verbindungsfehler",
-    "accountNameDuplicate": "Ein Konto mit diesem Namen existiert bereits",
+    "connectionName": "Verbindungsname (optional)",
+    "connectionNamePlaceholder": "Auto: {{provider}}",
+    "connectionNameDuplicate": "Eine Verbindung mit diesem Namen existiert bereits",
     "probeSuccess": "Verbindung erfolgreich",
     "probeFailed": "Verbindung fehlgeschlagen",
     "verified": "Verifiziert"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "ORG2-Bot"
   },
   "modelsTabs": {
-    "myAccounts": "Meine Keys",
+    "myKeys": "Meine Schlüssel",
     "models": "Modelle",
     "comingSoon": "Demnächst",
     "installedClis": "CLI-Clients",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "Sortierung: A–Z"
   },
   "modelPreview": {
-    "noSources": "Keine Konten mit diesem Modell"
+    "noSources": "Keine Schlüssel mit diesem Modell"
   },
   "cliPreview": {
     "clientSection": "Client",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Git-Profil konnte nicht aktiviert werden"
   },
   "credentialImport": {
-    "title": "Zugangsdaten aus anderen Apps importieren",
-    "itemColumn": "Zugangsdaten",
+    "title": "Schlüssel & Abonnements aus anderen Apps importieren",
+    "itemColumn": "Schlüssel",
     "sourceColumn": "Gefunden in",
-    "empty": "Keine Zugangsdaten zum Importieren gefunden. Geprüft wurden Umgebungsvariablen, Shell-Profile, Claude Code-Einstellungen, cc-switch-Profile sowie die Anmeldespeicher von Claude Code, Codex, Cursor, GitHub CLI, Kiro und OpenCode.",
-    "allImported": "Alle erkannten Zugangsdaten wurden bereits importiert",
+    "empty": "Keine Schlüssel oder Abonnements zum Importieren gefunden. Geprüft wurden Umgebungsvariablen, Shell-Profile, Claude Code-Einstellungen, cc-switch-Profile sowie die Anmeldespeicher von Claude Code, Codex, Cursor, GitHub CLI, Kiro und OpenCode.",
+    "allImported": "Alle erkannten Schlüssel und Abonnements wurden bereits importiert",
     "authMethod": {
       "api_key": "API Key",
       "oauth": "Anmelde-Token"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Import fehlgeschlagen: {{message}}",
-    "partialFailure": "Einige Zugangsdaten konnten nicht importiert werden:",
-    "importSucceeded": "Unter „Konten“ gespeichert: {{names}}. Die importierten Anmeldedaten sind jetzt als wiederverwendbare Verbindungen verfügbar."
+    "partialFailure": "Einige Schlüssel konnten nicht importiert werden:",
+    "importSucceeded": "Unter „Meine Schlüssel“ gespeichert: {{names}}. Die importierten Schlüssel sind jetzt als wiederverwendbare Verbindungen verfügbar."
   },
   "skills": {
     "shareToOrg": "Mit Organisation teilen",

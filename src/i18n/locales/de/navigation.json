@@ -783,7 +783,6 @@
         "errorChannelMissing": "Dieser Channel ist nicht mehr verfügbar",
         "errorMessageMissing": "Diese Nachricht ist nicht mehr verfügbar",
         "loadError": "Nachrichten konnten nicht geladen werden",
-        "loadingMessages": "Nachrichten werden geladen…",
         "loadOlder": "Ältere Nachrichten laden",
         "unknownAuthor": "Teammitglied"
       }

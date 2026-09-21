@@ -60,7 +60,7 @@ interface UseWorkstationSidebarChromeParams {
   handleProjectsMenuItemClick: MenuItemRoutingParams["handleProjectsMenuItemClick"];
   handleOpenInNewTab: MenuItemRoutingParams["handleOpenInNewTab"];
   closeOtherThanActiveChatPanelTabs: MenuItemRoutingParams["closeOtherThanActiveChatPanelTabs"];
-  tCommon: (key: string, defaultValue?: string) => string;
+  tCommon: (key: string) => string;
 }
 
 export function useWorkstationSidebarChrome({
@@ -153,7 +153,7 @@ export function useWorkstationSidebarChrome({
     sessionMap,
     fallback: handleMenuItemContextMenu,
     onOpenInNewTab: handleSessionMenuItemOpenInNewTab,
-    openInNewTabLabel: tCommon("actions.openInNewTab", "Open in New Tab"),
+    openInNewTabLabel: tCommon("actions.openInNewTab"),
   });
   const resolvedRenderMenuItemWrapper =
     activeViewKey === "work-items"

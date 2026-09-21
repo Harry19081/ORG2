@@ -210,9 +210,7 @@ const GitHubWorkItemsSurface: React.FC<GitHubWorkItemsSurfaceProps> = ({
       updateIssueMap,
       updatePrMap,
       setListError,
-      updateErrorMessage: t("chat.panels.manageIssues.statusUpdateFailed", {
-        defaultValue: "Failed to update GitHub status",
-      }),
+      updateErrorMessage: t("chat.panels.manageIssues.statusUpdateFailed"),
       permissionErrorMessage,
     });
   const {
@@ -223,18 +221,11 @@ const GitHubWorkItemsSurface: React.FC<GitHubWorkItemsSurfaceProps> = ({
     repoSources,
     updateIssueMap,
     setListError,
-    updateErrorMessage: t("chat.panels.manageIssues.updateIssueFailed", {
-      defaultValue: "Failed to update GitHub issue",
-    }),
+    updateErrorMessage: t("chat.panels.manageIssues.updateIssueFailed"),
     updateNotAppliedMessage: t(
-      "chat.panels.manageIssues.assigneeUpdateNotApplied",
-      {
-        defaultValue: "GitHub did not apply the assignee change",
-      }
+      "chat.panels.manageIssues.assigneeUpdateNotApplied"
     ),
-    updateSuccessMessage: t("chat.panels.manageIssues.assigneeUpdateSuccess", {
-      defaultValue: "Assignees updated on GitHub",
-    }),
+    updateSuccessMessage: t("chat.panels.manageIssues.assigneeUpdateSuccess"),
     permissionErrorMessage,
   });
   const handleIssueAssigneesChange = useCallback(

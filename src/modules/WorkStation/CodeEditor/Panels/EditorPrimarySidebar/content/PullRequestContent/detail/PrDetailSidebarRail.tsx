@@ -67,7 +67,7 @@ export function PrDetailSidebarRail({
       <ScrollTrail
         scrollContainerRef={trailScrollContainerRef}
         contentRef={trailContentRef}
-        ariaLabel={t("git.pr.navigationTrail", "Pull request navigation")}
+        ariaLabel={t("git.pr.navigationTrail")}
         alignment="start"
         placement="rail"
         testId="pr-detail-navigation-trail"

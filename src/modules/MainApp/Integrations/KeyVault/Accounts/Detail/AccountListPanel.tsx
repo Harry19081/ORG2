@@ -76,7 +76,7 @@ const AccountListPanel: React.FC<AccountListPanelProps> = ({
             className="hover:bg-fill-2 hover:text-text-1"
           />
           <span className="text-[13px] font-medium text-text-1">
-            {title ?? t("modelsTabs.myAccounts")}
+            {title ?? t("modelsTabs.myKeys")}
           </span>
         </div>
       )}
@@ -108,7 +108,7 @@ const AccountListPanel: React.FC<AccountListPanelProps> = ({
           !error.includes("not found") ? (
           <Placeholder variant="error" subtitle={error} />
         ) : filteredAccounts.length === 0 ? (
-          <Placeholder variant="empty" title={t("keyVault.noAccountsFound")} />
+          <Placeholder variant="empty" title={t("keyVault.noKeysFound")} />
         ) : (
           <div className="flex flex-col gap-1 pb-2">
             {filteredAccounts.map((account) => (
@@ -133,7 +133,7 @@ const AccountListPanel: React.FC<AccountListPanelProps> = ({
           onClick={onAddAccount}
           data-testid="key-vault-add-account-button"
         >
-          {t("keyVault.addAccount")}
+          {t("keyVault.addKey")}
         </Button>
       </div>
     </div>

@@ -1,13 +1,19 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { CircleDotIcon, HugeiconsIcon } from "@src/icons";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import {
   WORK_MANAGEMENT_TITLE_COLUMN_MAX_WIDTH,
   WorkManagementTable,
 } from "./WorkManagementTable";
+
+vi.mock("react-i18next", () => ({
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
+}));
 
 describe("WorkManagementTable", () => {
   const rows = Array.from({ length: 26 }, (_, index) => ({

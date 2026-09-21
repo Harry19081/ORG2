@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "Colores de diferencias en archivos"
   },
   "teamInbox": {
-    "title": "Bandeja del equipo",
     "listLabel": "Lista de la bandeja del equipo",
     "itemsLabel": "Elementos de la bandeja del equipo",
     "unreadCount": "{{count}} sin leer",
-    "allRead": "Todo al día",
     "loadMore": "Cargar más",
     "filters": {
       "mentions": "Menciones",
@@ -70,7 +68,6 @@
         "subtitle": "Los elementos que archives aparecerán aquí."
       }
     },
-    "loading": "Cargando la bandeja del equipo…",
     "drop": {
       "title": "Suelta aquí para crear un elemento de trabajo",
       "subtitle": "Revisa la instantánea de la sesión y luego crea o transfiere el elemento de trabajo.",
@@ -539,7 +536,7 @@
     "accounts": "Cuentas",
     "enabled": "Habilitado",
     "disabled": "Deshabilitado",
-    "keys": "Keys",
+    "keys": "Claves",
     "model": "Modelo",
     "name": "Nombre",
     "provider": "Proveedor",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "Introduce una URL para empezar",
       "privateBrowsingEmptyTitle": "Navegación privada: Introduce una URL para empezar",
       "simulatorBrowserNotice": "Este navegador es solo para reproducción de sesión. Para navegar de forma persistente, usa el navegador de la app principal (Herramientas → Navegador).",
-      "tlsDevNote": "Nota: algunos sitios HTTPS (como GitHub) pueden mostrar errores TLS en modo desarrollo por la validación del certificado. Prueba sitios HTTP o HTTPS sencillos como example.com.",
       "siteUnreachableTitle": "No se puede acceder a este sitio",
       "webviewHiddenTitle": "Vista web oculta temporalmente",
       "webviewHiddenBody": "Cierra el menú o el diálogo para volver a mostrarla.",
@@ -1712,11 +1708,11 @@
       "noResults": "No hay modelos coincidentes",
       "chooseModel": "Elige un modelo",
       "chooseKey": "Elige una clave",
-      "noCompatibleAccounts": "Sin claves compatibles",
+      "noCompatibleKeys": "Sin claves compatibles",
       "chooseModelHint": "Usa el teclado para navegar o haz clic en un modelo con el mouse",
       "chooseKeyHint": "Usa el teclado para navegar o haz clic en una clave con el mouse",
       "noModelsForKey": "No hay modelos habilitados para esta clave",
-      "selectAccount": "Seleccionar una cuenta"
+      "selectKey": "Seleccionar una clave"
     },
     "modelProperties": {
       "effort": "Esfuerzo",
@@ -1885,7 +1881,7 @@
       "showBranchInfo": "Mostrar información de rama",
       "compatibleKeys": "Compatible",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "Claves",
       "incompatible": "Incompatible",
       "manageModels": "Gestionar modelos",
       "manageKeys": "Gestionar claves",

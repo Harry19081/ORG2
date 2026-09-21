@@ -960,7 +960,6 @@
     "newChatPage": "Strona nowego czatu"
   },
   "harnessConnections": {
-    "description": "Wybierz połączenie dla każdego narzędzia programistycznego",
     "current": "Skonfigurowane połączenie",
     "scope": "Dotyczy domyślnej konfiguracji CLI na tym urządzeniu; ustawienia projektu i aktywne sesje mogą mieć pierwszeństwo",
     "original": "Pierwotna konfiguracja",

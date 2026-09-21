@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "Diff-Farben für Dateien"
   },
   "teamInbox": {
-    "title": "Team-Posteingang",
     "listLabel": "Liste des Team-Posteingangs",
     "itemsLabel": "Einträge im Team-Posteingang",
     "unreadCount": "{{count}} ungelesen",
-    "allRead": "Alles gelesen",
     "loadMore": "Mehr laden",
     "filters": {
       "mentions": "Erwähnungen",
@@ -70,7 +68,6 @@
         "subtitle": "Elemente, die du archivierst, erscheinen hier."
       }
     },
-    "loading": "Team-Posteingang wird geladen…",
     "drop": {
       "title": "Zum Erstellen eines Arbeitselements hier ablegen",
       "subtitle": "Prüfe den Sitzungs-Schnappschuss und erstelle oder übergib dann das Arbeitselement.",
@@ -539,7 +536,7 @@
     "accounts": "Konten",
     "enabled": "Aktiviert",
     "disabled": "Deaktiviert",
-    "keys": "Keys",
+    "keys": "Schlüssel",
     "model": "Modell",
     "name": "Name",
     "provider": "Anbieter",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "Geben Sie eine URL ein, um zu starten",
       "privateBrowsingEmptyTitle": "Privates Surfen: Geben Sie eine URL ein, um zu starten",
       "simulatorBrowserNotice": "Dieser Browser dient nur der Session-Wiedergabe. Für dauerhaftes Surfen nutzen Sie den Browser in der Haupt-App (Tools → Browser).",
-      "tlsDevNote": "Hinweis: Einige HTTPS-Seiten (z. B. GitHub) können im Entwicklungsmodus TLS-Fehler wegen der Zertifikatsprüfung anzeigen. Versuchen Sie HTTP-Seiten oder einfache HTTPS-Seiten wie example.com.",
       "siteUnreachableTitle": "Diese Seite ist nicht erreichbar",
       "webviewHiddenTitle": "Webview vorübergehend ausgeblendet",
       "webviewHiddenBody": "Menü oder Dialog schließen, um sie wieder anzuzeigen.",
@@ -1712,11 +1708,11 @@
       "noResults": "Keine passenden Modelle",
       "chooseModel": "Modell auswählen",
       "chooseKey": "Schlüssel auswählen",
-      "noCompatibleAccounts": "Keine kompatiblen Schlüssel",
+      "noCompatibleKeys": "Keine kompatiblen Schlüssel",
       "chooseModelHint": "Navigiere mit der Tastatur oder klicke mit der Maus auf ein Modell",
       "chooseKeyHint": "Navigiere mit der Tastatur oder klicke mit der Maus auf einen Schlüssel",
       "noModelsForKey": "Für diesen Schlüssel sind keine Modelle aktiviert",
-      "selectAccount": "Konto auswählen"
+      "selectKey": "Schlüssel auswählen"
     },
     "modelProperties": {
       "effort": "Aufwand",
@@ -1885,7 +1881,7 @@
       "showBranchInfo": "Branch-Infos anzeigen",
       "compatibleKeys": "Kompatibel",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "Schlüssel",
       "incompatible": "Inkompatibel",
       "manageModels": "Modelle verwalten",
       "manageKeys": "Schlüssel verwalten",

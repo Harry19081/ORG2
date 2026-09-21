@@ -194,16 +194,13 @@ const UnloadedTurnBubbleContent: React.FC<UnloadedTurnBubbleContentProps> = ({
     {
       ns: "sessions",
       subject: rawAgentName,
-      defaultValue: "{{subject}}'s message is loading…",
     }
   );
   const loadingBody = t("simulator.replay.messages.unloadedTurn.loadingBody", {
     ns: "sessions",
-    defaultValue: "Loading message…",
   });
   const retryBody = t("simulator.replay.messages.unloadedTurn.retryBody", {
     ns: "sessions",
-    defaultValue: "Message didn't load — tap to retry",
   });
 
   return (

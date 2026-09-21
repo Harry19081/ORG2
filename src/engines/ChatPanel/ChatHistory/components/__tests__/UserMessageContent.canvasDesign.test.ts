@@ -9,9 +9,17 @@ import {
   describe,
   expect,
   it,
+  vi,
 } from "vitest";
 
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
+
 import UserMessageContent from "../UserMessageContent";
+
+vi.mock("react-i18next", () => ({
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
+}));
 
 describe("UserMessageContent Canvas Design preview", () => {
   let container: HTMLDivElement;

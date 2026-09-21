@@ -280,9 +280,7 @@ export function buildManagedIssueTableRow({
     },
     {
       value: "closed_completed",
-      label: t("chat.panels.manageIssues.closeAsCompleted", {
-        defaultValue: "Close as completed",
-      }),
+      label: t("chat.panels.manageIssues.closeAsCompleted"),
       icon: (
         <HugeiconsIcon
           icon={CheckmarkCircle01Icon}
@@ -295,9 +293,7 @@ export function buildManagedIssueTableRow({
     },
     {
       value: "closed_not_planned",
-      label: t("chat.panels.manageIssues.closeAsNotPlanned", {
-        defaultValue: "Close as not planned",
-      }),
+      label: t("chat.panels.manageIssues.closeAsNotPlanned"),
       icon: (
         <HugeiconsIcon
           icon={CircleSlashIcon}

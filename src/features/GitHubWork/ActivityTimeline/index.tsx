@@ -109,9 +109,7 @@ export function ActivityTimestamp({
   const displayLabel =
     label ??
     formatSmartDateTime(timestamp, {
-      yesterdayLabel: t("relativeDate.yesterday", {
-        defaultValue: "Yesterday",
-      }),
+      yesterdayLabel: t("relativeDate.yesterday"),
       locale: toIntlLocaleTag(i18n?.resolvedLanguage),
     });
   return (

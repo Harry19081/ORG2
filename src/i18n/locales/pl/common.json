@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "Kolory zmian na plikach"
   },
   "teamInbox": {
-    "title": "Skrzynka zespołu",
     "listLabel": "Lista skrzynki zespołu",
     "itemsLabel": "Elementy skrzynki zespołu",
     "unreadCount": "Nieprzeczytane: {{count}}",
-    "allRead": "Wszystko przeczytane",
     "loadMore": "Wczytaj więcej",
     "filters": {
       "mentions": "Wzmianki",
@@ -70,7 +68,6 @@
         "subtitle": "Zarchiwizowane elementy pojawią się tutaj."
       }
     },
-    "loading": "Wczytywanie skrzynki zespołu…",
     "drop": {
       "title": "Upuść tutaj, aby utworzyć element pracy",
       "subtitle": "Sprawdź migawkę sesji, a następnie utwórz lub przekaż element pracy.",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "Wprowadź URL, aby rozpocząć",
       "privateBrowsingEmptyTitle": "Przeglądanie prywatne: Wprowadź URL, aby rozpocząć",
       "simulatorBrowserNotice": "Ta przeglądarka służy tylko do odtwarzania sesji. Do trwałego przeglądania użyj przeglądarki w aplikacji głównej (Narzędzia → Przeglądarka).",
-      "tlsDevNote": "Uwaga: Niektóre strony HTTPS (jak GitHub) mogą wyświetlać błędy TLS w trybie deweloperskim z powodu weryfikacji certyfikatu. Spróbuj witryn HTTP lub prostych HTTPS, takich jak example.com.",
       "siteUnreachableTitle": "Nie można dotrzeć do tej witryny",
       "webviewHiddenTitle": "Widok sieciowy tymczasowo ukryty",
       "webviewHiddenBody": "Zamknij menu lub okno dialogowe, aby wyświetlić go ponownie.",
@@ -1709,11 +1705,11 @@
       "noResults": "Brak pasujących modeli",
       "chooseModel": "Wybierz model",
       "chooseKey": "Wybierz klucz",
-      "noCompatibleAccounts": "Brak zgodnych kluczy",
+      "noCompatibleKeys": "Brak zgodnych kluczy",
       "chooseModelHint": "Użyj klawiatury do nawigacji albo kliknij model myszą",
       "chooseKeyHint": "Użyj klawiatury do nawigacji albo kliknij klucz myszą",
       "noModelsForKey": "Brak włączonych modeli dla tego klucza",
-      "selectAccount": "Wybierz konto"
+      "selectKey": "Wybierz klucz"
     },
     "modelProperties": {
       "effort": "Wysiłek",

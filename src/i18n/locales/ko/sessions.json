@@ -1892,7 +1892,6 @@
     "contextMenu": {
       "filesAndFolders": "파일 및 폴더",
       "workItems": "작업 항목",
-      "back": "뒤로",
       "recent": "최근 항목",
       "showMore": "{{remaining}}개 더 보기",
       "session": "세션"

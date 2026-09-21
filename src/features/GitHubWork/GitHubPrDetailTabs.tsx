@@ -32,25 +32,25 @@ export default function GitHubPrDetailTabs({
   const tabs = [
     {
       key: "conversation" as const,
-      label: t("git.pr.tabs.conversation", "Conversation"),
+      label: t("git.pr.tabs.conversation"),
       icon: MessageMultiple01Icon,
       iconName: "messages-square",
     },
     {
       key: "commits" as const,
-      label: t("git.pr.tabs.commits", "Commits"),
+      label: t("git.pr.tabs.commits"),
       icon: GitCommitHorizontalIcon,
       iconName: "git-commit-horizontal",
     },
     {
       key: "checks" as const,
-      label: t("git.pr.tabs.checks", "Checks"),
+      label: t("git.pr.tabs.checks"),
       icon: ListChecksIcon,
       iconName: "list-checks",
     },
     {
       key: "changes" as const,
-      label: t("git.pr.changes.title", "Files changed"),
+      label: t("git.pr.changes.title"),
       icon: FileDiffIcon,
       iconName: "file-diff",
     },
@@ -59,7 +59,7 @@ export default function GitHubPrDetailTabs({
   return (
     <DetailTabStrip<PrDetailTab>
       activeTab={activeTab}
-      ariaLabel={t("git.pr.summary.label", "Pull request summary")}
+      ariaLabel={t("git.pr.summary.label")}
       idPrefix="pr-detail"
       tabs={tabs.map((tab) => ({
         ...tab,

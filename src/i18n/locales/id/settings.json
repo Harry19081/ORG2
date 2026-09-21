@@ -1041,7 +1041,6 @@
     "newChatPage": "Halaman chat baru"
   },
   "harnessConnections": {
-    "description": "Pilih koneksi yang digunakan setiap alat coding",
     "current": "Koneksi yang dikonfigurasi",
     "scope": "Berlaku untuk default CLI di mesin ini; pengaturan proyek dan sesi yang sedang berjalan dapat menimpanya",
     "original": "Pengaturan asli",

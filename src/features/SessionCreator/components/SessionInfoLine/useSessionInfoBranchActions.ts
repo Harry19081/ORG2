@@ -95,7 +95,6 @@ export function useSessionInfoBranchActions({
         const message =
           result.error ||
           i18n.t("common:selectors.branch.messages.failedDelete", {
-            defaultValue: 'Failed to delete branch "{{branch}}"',
             branch: branch,
           });
         if (!options?.silent) {

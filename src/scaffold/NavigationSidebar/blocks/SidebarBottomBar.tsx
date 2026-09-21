@@ -314,12 +314,10 @@ export const PresenceMenuButton: React.FC<PresenceMenuButtonProps> = ({
     : CUSTOM_ROLE_COLOR_CLASS;
   const modeLabel = isBuiltInPresenceMode(mode)
     ? t(PRESENCE_LABEL_KEY[variant][mode])
-    : (activeCustomRole?.label ??
-      t("sidebar.presence.unknownRole", { defaultValue: "Unknown role" }));
+    : (activeCustomRole?.label ?? t("sidebar.presence.unknownRole"));
   const ariaLabel = isBuiltInPresenceMode(mode)
     ? t(PRESENCE_LABEL_KEY.concise[mode])
-    : (activeCustomRole?.label ??
-      t("sidebar.presence.unknownRole", { defaultValue: "Unknown role" }));
+    : (activeCustomRole?.label ?? t("sidebar.presence.unknownRole"));
 
   const backLabel = useMemo(() => {
     if (mode !== USER_PRESENCE_MODE.AWAY || !presence.backAtMs) return null;

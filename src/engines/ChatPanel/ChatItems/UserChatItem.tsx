@@ -312,7 +312,7 @@ const UserChatItem = ({
           action={
             retryDelivery
               ? {
-                  label: t("common:actions.retry", "Retry"),
+                  label: t("common:actions.retry"),
                   onClick: retryDelivery,
                 }
               : undefined

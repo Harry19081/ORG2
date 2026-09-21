@@ -195,7 +195,6 @@ export function useSpotlightPickerActions(
         const message =
           result.error ||
           i18n.t("common:selectors.branch.messages.failedDelete", {
-            defaultValue: 'Failed to delete branch "{{branch}}"',
             branch: branchName,
           });
         if (!options?.silent) {

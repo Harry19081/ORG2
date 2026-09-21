@@ -4,21 +4,13 @@ import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 import type { SwitchPreparation } from "@src/api/http/git/branchSwitch";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import { BranchSwitchDialogView, createBranchSwitchDialog } from "./index";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: string | Record<string, unknown>) => {
-      const value =
-        typeof options === "string"
-          ? options
-          : String(options?.defaultValue || key);
-      return value.replace(/{{(\w+)}}/g, (_, name) =>
-        String(typeof options === "object" ? options[name] : name)
-      );
-    },
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 let container: HTMLDivElement;
 let root: Root;

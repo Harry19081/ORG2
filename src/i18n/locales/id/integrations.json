@@ -7,25 +7,25 @@
   "keyVault": {
     "title": "Model & CLI",
     "overview": {},
-    "searchPlaceholder": "Cari akun...",
+    "searchPlaceholder": "Cari kunci...",
     "inlineCard": {
       "tabStatus": "Status",
       "tabModels": "Model"
     },
-    "noAccountsFound": "Tidak ada akun yang ditemukan",
-    "addAccount": "Tambah Akun",
+    "noKeysFound": "Tidak ada kunci yang ditemukan",
+    "addKey": "Tambah Kunci",
     "addCliAgent": "Tambah Agen",
     "removeLocal": "Hapus Lokal",
     "unlist": "Batalkan Pencantuman",
     "confirmRemoveTitle": "Hapus \"{{name}}\"?",
     "confirmRemoveMessage": "Tindakan ini akan menghapus kunci yang tersimpan secara lokal. Tindakan ini tidak dapat dibatalkan",
-    "confirmRemoveActiveSessions_one": "{{count}} sesi aktif masih menggunakan akun ini dan akan gagal pada giliran berikutnya:",
-    "confirmRemoveActiveSessions_other": "{{count}} sesi aktif masih menggunakan akun ini dan akan gagal pada giliran berikutnya:",
+    "confirmRemoveActiveSessions_one": "{{count}} sesi aktif masih menggunakan kunci ini dan akan gagal pada giliran berikutnya:",
+    "confirmRemoveActiveSessions_other": "{{count}} sesi aktif masih menggunakan kunci ini dan akan gagal pada giliran berikutnya:",
     "toasts": {
       "refreshed": "{{name}} berhasil disegarkan",
       "refreshedDelta": "Model disegarkan: +{{added}} ditambahkan, -{{removed}} dihapus",
       "refreshedNoChange": "Model disegarkan: tidak ada perubahan",
-      "refreshPartial": "Model disegarkan: +{{added}} / -{{removed}}, tetapi {{failed}} dari {{total}} akun gagal",
+      "refreshPartial": "Model disegarkan: +{{added}} / -{{removed}}, tetapi {{failed}} dari {{total}} kunci gagal",
       "refreshError": "Gagal menyegarkan {{name}}: {{error}}",
       "localRemoved": "{{name}} dihapus",
       "deleteError": "Gagal menghapus {{name}}"
@@ -91,8 +91,8 @@
       "keyValidationFailed": "Validasi kunci gagal"
     },
     "edit": {
-      "title": "Edit Akun",
-      "apiChangeHint": "Untuk memperbarui API key, kunci, atau pengaturan penyedia, hapus akun ini lalu tambahkan akun baru",
+      "title": "Edit Kunci",
+      "apiChangeHint": "Untuk memperbarui API Key atau pengaturan penyedia, hapus kunci ini lalu tambahkan yang baru",
       "saved": "Perubahan disimpan"
     },
     "quota": {
@@ -162,7 +162,7 @@
     "customBaseUrlNoteBody": "API key dan data permintaan Anda dikirim ke URL apa pun yang Anda masukkan. Gunakan URL kustom hanya untuk proxy tepercaya, deployment yang di-host sendiri, atau endpoint yang Anda kendalikan",
     "localModel": {
       "title": "Panduan model lokal",
-      "description": "Pilih preset runtime lokal, konfirmasi endpoint yang kompatibel dengan OpenAI, tambahkan satu atau beberapa ID model, lalu simpan akun ini untuk menggunakan model lokal di Chat",
+      "description": "Pilih preset runtime lokal, konfirmasi endpoint yang kompatibel dengan OpenAI, tambahkan satu atau beberapa ID model, lalu simpan kunci ini untuk menggunakan model lokal di Chat",
       "baseUrlDesc": "Endpoint lokal yang kompatibel dengan OpenAI. Jalankan runtime Anda terlebih dahulu, lalu validasi atau simpan",
       "apiKeyDesc": "Sebagian besar runtime lokal menerima nilai apa pun yang tidak kosong. Biarkan placeholder kecuali server Anda mewajibkan kunci",
       "quickModelsLabel": "Model panduan",
@@ -175,14 +175,14 @@
     "validated": "Tervalidasi",
     "validationSuccessModels": "{{count}} model terdeteksi — konfigurasikan di langkah berikutnya",
     "validationSuccessNoModels": "Kunci tervalidasi — tidak ada model yang terdeteksi otomatis, tambahkan model secara manual di bawah",
-    "accountName": "Nama Akun (Opsional)",
-    "accountNameDesc": "Biarkan kosong untuk menggunakan {{provider}}, lalu {{provider}}-1, {{provider}}-2, dan seterusnya",
-    "accountNamePlaceholder": "Otomatis: {{provider}}",
+    "keyName": "Nama Kunci (Opsional)",
+    "keyNameDesc": "Biarkan kosong untuk menggunakan {{provider}}, lalu {{provider}}-1, {{provider}}-2, dan seterusnya",
+    "keyNamePlaceholder": "Otomatis: {{provider}}",
     "apiKeyPlaceholder": "Masukkan API key Anda",
     "extractPlaceholder": "Tempel kunci Anda (teks berantakan tidak masalah):\n\nContoh:\nKEY: {{key}}\n{{urlLine}}",
     "descriptionOptional": "Deskripsi (Opsional)",
     "descriptionPlaceholder": "Masukkan deskripsi",
-    "nameDuplicate": "Akun dengan nama ini sudah ada",
+    "nameDuplicate": "Kunci dengan nama ini sudah ada",
     "stepLabel": "Langkah {{current}}/{{total}}",
     "noValidTokenFound": "Tidak ada token valid yang ditemukan dalam kunci",
     "couldNotDetectKeys": "Tidak dapat mendeteksi kunci. Pastikan CLI sudah terinstal dan Anda sudah masuk.",
@@ -243,7 +243,7 @@
     "claudeCodeSignInDesc": "Masuk ke Claude Code di browser tersemat. ORG2 akan mengambil kode otorisasi dan menyimpan token OAuth secara lokal",
     "claudeCodeReadyToSignIn": "Siap masuk ke Claude Code",
     "claudeCodeSignedIn": "Claude Code terhubung",
-    "claudeCodeOAuthHint": "Ini menyimpan akun OAuth claude_code untuk agen Rust yang menggunakan anthropic_native",
+    "claudeCodeOAuthHint": "Ini menyimpan kunci OAuth claude_code untuk agen Rust yang menggunakan anthropic_native",
     "claudeCodeBrowserHint": "Selesaikan otorisasi Claude Code di browser tersemat",
     "claudeCodeSignInErrorHint": "Tutup browser dan coba masuk lagi. Tidak ada token yang disimpan",
     "connectedViaChatGpt": "Terhubung melalui login ChatGPT Plus/Pro",
@@ -313,14 +313,14 @@
     "signInWithCodex": "Masuk dengan Codex",
     "codexReadyToSignIn": "Siap masuk ke Codex",
     "codexSignedIn": "Codex terhubung",
-    "codexOAuthHint": "Ini menyimpan akun OAuth codex untuk akses backend ChatGPT Codex",
+    "codexOAuthHint": "Ini menyimpan kunci OAuth codex untuk akses backend ChatGPT Codex",
     "codexBrowserHint": "Selesaikan otorisasi Codex di browser tersemat",
     "codexSignInErrorHint": "Tutup browser dan coba masuk lagi. Tidak ada token yang disimpan",
     "codexAutodetectTitle": "Deteksi sesi Codex",
     "codexAutodetectDesc": "Membaca ~/.codex/auth.json dan OPENAI_API_KEY dari lingkungan lokal Anda",
-    "codexCredentialLabel": "Kredensial Codex",
-    "codexCredentialDesc": "Tempel token akses OAuth Codex atau API key OpenAI",
-    "codexCredentialPlaceholder": "eyJ... atau sk-...",
+    "codexKeyLabel": "Kunci Codex",
+    "codexKeyDesc": "Tempel token akses OAuth Codex atau API key OpenAI",
+    "codexKeyPlaceholder": "eyJ... atau sk-...",
     "codexDetectErrorHint": "Masuk dengan browser tersemat, atau tempel API key OpenAI secara manual",
     "codexValidationErrorHint": "Periksa apakah token atau API key valid, lalu coba lagi",
     "claudeCodeAutodetectTitle": "Deteksi sesi Claude Code",
@@ -345,7 +345,9 @@
     "connecting": "Menghubungkan",
     "reconnecting": "Menghubungkan ulang",
     "connectionError": "Kesalahan Koneksi",
-    "accountNameDuplicate": "Akun dengan nama ini sudah ada",
+    "connectionName": "Nama Koneksi (Opsional)",
+    "connectionNamePlaceholder": "Otomatis: {{provider}}",
+    "connectionNameDuplicate": "Koneksi dengan nama ini sudah ada",
     "probeSuccess": "Koneksi berhasil",
     "probeFailed": "Koneksi gagal",
     "verified": "Terverifikasi"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "Bot ORG2"
   },
   "modelsTabs": {
-    "myAccounts": "Kunci Saya",
+    "myKeys": "Kunci Saya",
     "models": "Model",
     "comingSoon": "Segera hadir",
     "installedClis": "Klien CLI",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "Urutkan: A–Z"
   },
   "modelPreview": {
-    "noSources": "Tidak ada akun dengan model ini"
+    "noSources": "Tidak ada kunci dengan model ini"
   },
   "cliPreview": {
     "clientSection": "Klien",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Gagal mengaktifkan profil Git"
   },
   "credentialImport": {
-    "title": "Impor kredensial dari aplikasi lain",
-    "itemColumn": "Kredensial",
+    "title": "Impor kunci dan langganan dari aplikasi lain",
+    "itemColumn": "Kunci",
     "sourceColumn": "Ditemukan di",
-    "empty": "Tidak ada kredensial yang ditemukan untuk diimpor. Telah memeriksa variabel lingkungan, profil shell, pengaturan Claude Code, profil cc-switch, serta penyimpanan login Claude Code, Codex, Cursor, GitHub CLI, Kiro, dan OpenCode.",
-    "allImported": "Semua kredensial yang terdeteksi sudah diimpor",
+    "empty": "Tidak ada kunci atau langganan yang ditemukan untuk diimpor. Telah memeriksa variabel lingkungan, profil shell, pengaturan Claude Code, profil cc-switch, serta penyimpanan login Claude Code, Codex, Cursor, GitHub CLI, Kiro, dan OpenCode.",
+    "allImported": "Semua kunci dan langganan yang terdeteksi sudah diimpor",
     "authMethod": {
       "api_key": "Kunci API",
       "oauth": "Token login"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Impor gagal: {{message}}",
-    "partialFailure": "Beberapa kredensial tidak dapat diimpor:",
-    "importSucceeded": "Disimpan ke Akun: {{names}}. Kredensial yang diimpor kini tersedia sebagai koneksi yang dapat digunakan kembali."
+    "partialFailure": "Beberapa kunci tidak dapat diimpor:",
+    "importSucceeded": "Disimpan ke Kunci Saya: {{names}}. Kunci yang diimpor kini tersedia sebagai koneksi yang dapat digunakan kembali."
   },
   "skills": {
     "shareToOrg": "Bagikan ke organisasi",

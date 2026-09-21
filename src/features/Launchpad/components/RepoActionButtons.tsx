@@ -79,22 +79,14 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
 
   const handleLocateInFinder = useCallback(async () => {
     if (!repoPath) {
-      Message.warning(
-        t("common:errors.noLocalPath", {
-          defaultValue: "No local path available",
-        })
-      );
+      Message.warning(t("common:errors.noLocalPath"));
       return;
     }
     try {
       await openPath(repoPath);
     } catch (error) {
       logger.error("opening repo in file manager failed:", error);
-      Message.error(
-        t("common:errors.openInFinderFailed", {
-          defaultValue: "Failed to open in Finder",
-        })
-      );
+      Message.error(t("common:errors.openInFinderFailed"));
     }
   }, [repoPath, t]);
 
@@ -113,19 +105,13 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
       }
       onClear?.();
       await forceRefreshRepos();
-      Message.success(
-        t("navigation:launchpad.actions.removeSuccess", {
-          defaultValue: "Linkage to ORG2 removed",
-        })
-      );
+      Message.success(t("navigation:launchpad.actions.removeSuccess"));
     } catch (error) {
       logger.error("removing repo failed:", error);
       Message.error(
         error instanceof Error
           ? error.message
-          : t("navigation:launchpad.actions.removeFailed", {
-              defaultValue: "Failed to remove linkage to ORG2",
-            })
+          : t("navigation:launchpad.actions.removeFailed")
       );
     }
   }, [repo.id, repoLabel, onClear, forceRefreshRepos, t]);
@@ -149,16 +135,12 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
           />
         }
         onClick={handleSwitch}
-        title={t("navigation:launchpad.actions.switchToRepo", {
-          defaultValue: "Open",
-        })}
+        title={t("navigation:launchpad.actions.switchToRepo")}
         {...secondaryButtonProps}
       >
         {iconOnlySecondary
           ? undefined
-          : t("navigation:launchpad.actions.switchToRepo", {
-              defaultValue: "Open",
-            })}
+          : t("navigation:launchpad.actions.switchToRepo")}
       </Button>
       <Button
         size="small"
@@ -172,16 +154,12 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
           />
         }
         onClick={handleStartSession}
-        title={t("navigation:launchpad.actions.startSession", {
-          defaultValue: "Start session",
-        })}
+        title={t("navigation:launchpad.actions.startSession")}
         {...secondaryButtonProps}
       >
         {iconOnlySecondary
           ? undefined
-          : t("navigation:launchpad.actions.startSession", {
-              defaultValue: "Start session",
-            })}
+          : t("navigation:launchpad.actions.startSession")}
       </Button>
       {showDetails ? (
         <Button
@@ -192,16 +170,12 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
             <HugeiconsIcon icon={ExpandIcon} data-icon="expand" size={14} />
           }
           onClick={handleOpenDetails}
-          title={t("navigation:launchpad.actions.openDetails", {
-            defaultValue: "Show details",
-          })}
+          title={t("navigation:launchpad.actions.openDetails")}
           {...secondaryButtonProps}
         >
           {iconOnlySecondary
             ? undefined
-            : t("navigation:launchpad.actions.openDetails", {
-                defaultValue: "Show details",
-              })}
+            : t("navigation:launchpad.actions.openDetails")}
         </Button>
       ) : null}
       {showLocate ? (
@@ -233,9 +207,7 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
             <HugeiconsIcon icon={Delete02Icon} data-icon="trash-2" size={14} />
           }
           onClick={handleRemove}
-          title={t("navigation:launchpad.actions.remove", {
-            defaultValue: "Remove from ORG2",
-          })}
+          title={t("navigation:launchpad.actions.remove")}
         />
       ) : null}
       {showClose && onClear ? (
@@ -246,7 +218,7 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
           iconOnly
           icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />}
           onClick={onClear}
-          title={t("common:actions.close", { defaultValue: "Close" })}
+          title={t("common:actions.close")}
         />
       ) : null}
     </div>

@@ -90,7 +90,7 @@ export const DatabasesTable: React.FC<DatabasesTableProps> = ({
 
   const tabs = useMemo(
     () => [
-      { key: "databases", label: t("databases.title", "Databases") },
+      { key: "databases", label: t("databases.title") },
       {
         key: "db-clients",
         label: t("settings:dependencies.categoryDatabase"),

@@ -29,7 +29,7 @@ export function ConnectionErrorScreen({
         titleClassName="mobile-type-heading"
         subtitleClassName="mobile-type-secondary"
         variant="error"
-        title={t("connectionFailed", { defaultValue: "Connection failed" })}
+        title={t("connectionFailed")}
         subtitle={message}
       />
       {actionError ? (
@@ -44,7 +44,7 @@ export function ConnectionErrorScreen({
           onClick={onRetry}
           disabled={busy}
         >
-          {t("connectionRecovery.retry", { defaultValue: "Reconnect" })}
+          {t("connectionRecovery.retry")}
         </MobileActionButton>
       ) : null}
       {onRepair ? (
@@ -54,7 +54,7 @@ export function ConnectionErrorScreen({
           onClick={onRepair}
           disabled={busy}
         >
-          {t("connectionRecovery.repair", { defaultValue: "Pair again" })}
+          {t("connectionRecovery.repair")}
         </MobileActionButton>
       ) : null}
     </div>

@@ -1911,7 +1911,6 @@
     "contextMenu": {
       "filesAndFolders": "Pliki i foldery",
       "workItems": "Elementy pracy",
-      "back": "Wstecz",
       "recent": "Ostatnie",
       "showMore": "Pokaż jeszcze {{remaining}}",
       "session": "Sesja"

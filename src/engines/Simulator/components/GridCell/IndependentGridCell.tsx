@@ -282,8 +282,8 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
               onClick={controls.togglePlay}
               aria-label={
                 state.isPlaying
-                  ? t("simulator.replay.pause", { defaultValue: "Pause" })
-                  : t("simulator.replay.play", { defaultValue: "Play" })
+                  ? t("simulator.replay.pause")
+                  : t("simulator.replay.play")
               }
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1`}
             />
@@ -305,9 +305,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
               style={{ width: 16, height: 16 }}
               onClick={controls.prev}
               disabled={replaySliderDisabled || currentIndex <= 0}
-              aria-label={t("simulator.replay.previous", {
-                defaultValue: "Previous event",
-              })}
+              aria-label={t("simulator.replay.previous")}
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
             />
             <Button
@@ -325,9 +323,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
               style={{ width: 16, height: 16 }}
               onClick={controls.next}
               disabled={replaySliderDisabled || currentIndex >= eventCount - 1}
-              aria-label={t("simulator.replay.next", {
-                defaultValue: "Next event",
-              })}
+              aria-label={t("simulator.replay.next")}
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
             />
             <div className="min-w-0 flex-1 px-1">
@@ -338,9 +334,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 onValueCommit={handleSliderValueCommit}
                 isFollowMode={state.mode === "follow" && !isScrubbing}
                 disabled={replaySliderDisabled}
-                ariaLabel={t("simulator.replay.scrub", {
-                  defaultValue: "Replay scrub bar",
-                })}
+                ariaLabel={t("simulator.replay.scrub")}
               />
             </div>
           </div>

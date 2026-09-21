@@ -370,7 +370,7 @@
     "accounts": "账户",
     "enabled": "已启用",
     "disabled": "已禁用",
-    "keys": "Keys",
+    "keys": "密钥",
     "model": "模型",
     "name": "名称",
     "provider": "提供商",
@@ -885,7 +885,6 @@
       "enterUrlToStart": "输入网址以开始",
       "privateBrowsingEmptyTitle": "隐私浏览：输入网址以开始",
       "simulatorBrowserNotice": "此浏览器仅用于会话回放。持久浏览请使用主应用中的浏览器（工具 → 浏览器）。",
-      "tlsDevNote": "说明：部分 HTTPS 网站（如 GitHub）在开发模式下可能因证书校验出现 TLS 错误。请尝试 HTTP 或 example.com 等简单 HTTPS 站点。",
       "siteUnreachableTitle": "无法访问此网站",
       "loadStalledTitle": "此页面未加载完成",
       "copyUrl": "复制 URL",
@@ -1543,11 +1542,11 @@
       "noResults": "没有匹配的模型",
       "chooseModel": "选择模型",
       "chooseKey": "选择密钥",
-      "noCompatibleAccounts": "无兼容密钥",
+      "noCompatibleKeys": "无兼容密钥",
       "chooseModelHint": "使用键盘导航，或用鼠标点击模型",
       "chooseKeyHint": "使用键盘导航，或用鼠标点击密钥",
       "noModelsForKey": "该密钥未启用任何模型",
-      "selectAccount": "选择账号"
+      "selectKey": "选择密钥"
     },
     "modelProperties": {
       "effort": "Effort",
@@ -1716,7 +1715,7 @@
       "showBranchInfo": "显示分支信息",
       "compatibleKeys": "兼容",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "密钥",
       "incompatible": "不兼容",
       "manageModels": "管理模型",
       "manageKeys": "管理密钥",
@@ -2194,11 +2193,9 @@
     "taskFailedPrivateBody": "任务失败。请打开 ORG2 查看详情。"
   },
   "teamInbox": {
-    "title": "团队收件箱",
     "listLabel": "团队收件箱列表",
     "itemsLabel": "团队收件箱事项",
     "unreadCount": "{{count}} 条未读",
-    "allRead": "已全部阅读",
     "loadMore": "加载更多",
     "filters": {
       "mentions": "提及",
@@ -2247,7 +2244,6 @@
         "subtitle": "你归档的事项会显示在这里。"
       }
     },
-    "loading": "正在加载团队收件箱…",
     "drop": {
       "title": "拖到这里创建工作项",
       "subtitle": "先确认会话摘要，再创建或交接工作项。",

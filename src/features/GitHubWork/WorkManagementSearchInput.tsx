@@ -29,8 +29,7 @@ export const WorkManagementSearchInput = memo(
   }: WorkManagementSearchInputProps) => {
     const { t } = useTranslation("common");
     const clear = useCallback(() => onChange(""), [onChange]);
-    const resolvedPlaceholder =
-      placeholder ?? `${t("actions.search", { defaultValue: "Search" })}...`;
+    const resolvedPlaceholder = placeholder ?? `${t("actions.search")}...`;
     const fillsAvailableWidth = placement === "list" || fillWidth;
 
     return (

@@ -198,7 +198,7 @@ export const PrChangesTab: React.FC<PrChangesTabProps> = ({
       <Placeholder
         variant="empty"
         placement="sidebar"
-        title={t("git.pr.changes.noFiles", "No file changes")}
+        title={t("git.pr.changes.noFiles")}
         fillParentHeight
       />
     );
@@ -285,10 +285,7 @@ export const PrChangesTab: React.FC<PrChangesTabProps> = ({
                   <Placeholder
                     variant="empty"
                     placement="sidebar"
-                    title={t(
-                      "git.pr.changes.tooLarge",
-                      "File too large to diff"
-                    )}
+                    title={t("git.pr.changes.tooLarge")}
                     subtitle={selectedFile.filename}
                     fillParentHeight
                   />

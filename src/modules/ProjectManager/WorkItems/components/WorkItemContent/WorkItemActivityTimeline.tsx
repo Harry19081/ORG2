@@ -326,9 +326,7 @@ function formatActivityTimestamp(
   language: string | undefined
 ): string {
   return formatSmartDateTime(timestamp, {
-    yesterdayLabel: t("common:relativeDate.yesterday", {
-      defaultValue: "Yesterday",
-    }),
+    yesterdayLabel: t("common:relativeDate.yesterday"),
     locale: toIntlLocaleTag(language),
   });
 }

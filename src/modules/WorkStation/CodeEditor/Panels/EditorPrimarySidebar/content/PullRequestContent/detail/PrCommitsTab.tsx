@@ -202,7 +202,6 @@ function PrCommitCard({
         onClick={() => onSelect(commit)}
         title={commit.message || commit.summary}
         aria-label={t("git.pr.commits.viewCommit", {
-          defaultValue: "View commit {{sha}}: {{summary}}",
           sha: commit.short_sha,
           summary: commit.summary,
         })}
@@ -222,7 +221,7 @@ function PrCommitCard({
             src={commit.actor.avatarUrl}
           />
           <span className="font-medium text-text-2">{commit.actor.login}</span>
-          <span>{t("git.pr.commits.committed", "committed")}</span>
+          <span>{t("git.pr.commits.committed")}</span>
           {commit.author.date ? (
             <time
               dateTime={commit.author.date}
@@ -248,7 +247,7 @@ function PrCommitCard({
                   strokeWidth={1.9}
                   aria-hidden
                 />
-                {t("git.pr.commits.verified", "Verified")}
+                {t("git.pr.commits.verified")}
               </span>
             </>
           ) : null}
@@ -277,11 +276,7 @@ function PrCommitCard({
               />
             )
           }
-          label={
-            copied
-              ? t("status.copied")
-              : t("git.pr.commits.copySha", "Copy commit SHA")
-          }
+          label={copied ? t("status.copied") : t("git.pr.commits.copySha")}
           onClick={(event) => {
             event.stopPropagation();
             handleCopy();
@@ -296,7 +291,7 @@ function PrCommitCard({
               strokeWidth={1.75}
             />
           }
-          label={t("git.pr.commits.viewDetails", "View commit details")}
+          label={t("git.pr.commits.viewDetails")}
           onClick={(event) => {
             event.stopPropagation();
             onSelect(commit);
@@ -349,8 +344,8 @@ export const PrCommitsTab: React.FC<PrCommitsTabProps> = ({
     },
     [controlledSelectedCommitSha, onSelectedCommitShaChange]
   );
-  const unknownAuthor = t("git.pr.unknownAuthor", "Unknown");
-  const unknownDate = t("git.pr.commits.unknownDate", "Unknown date");
+  const unknownAuthor = t("git.pr.unknownAuthor");
+  const unknownDate = t("git.pr.commits.unknownDate");
 
   const rows = useMemo(
     () =>
@@ -393,7 +388,7 @@ export const PrCommitsTab: React.FC<PrCommitsTabProps> = ({
             }
             onClick={() => updateSelectedCommitSha(null)}
           >
-            {t("git.pr.commits.backToList", "All commits")}
+            {t("git.pr.commits.backToList")}
           </Button>
           <span
             className="min-w-0 flex-1 truncate text-[12px] text-text-2"
@@ -435,7 +430,7 @@ export const PrCommitsTab: React.FC<PrCommitsTabProps> = ({
       <Placeholder
         variant="empty"
         placement="sidebar"
-        title={t("git.pr.commits.none", "No commits")}
+        title={t("git.pr.commits.none")}
         fillParentHeight
       />
     );
@@ -460,7 +455,6 @@ export const PrCommitsTab: React.FC<PrCommitsTabProps> = ({
               </span>
               <span>
                 {t("git.pr.commits.onDate", {
-                  defaultValue: "Commits on {{date}}",
                   date: group.dateLabel,
                 })}
               </span>

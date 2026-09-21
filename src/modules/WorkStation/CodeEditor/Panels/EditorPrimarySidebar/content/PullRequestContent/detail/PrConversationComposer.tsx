@@ -58,7 +58,7 @@ export function PrConversationComposer({
       >
         <section
           data-testid="pr-comment-composer"
-          aria-label={t("git.pr.commentPlaceholder", "Leave a comment…")}
+          aria-label={t("git.pr.commentPlaceholder")}
           className="flex flex-col gap-1.5"
         >
           <ComposerSurface
@@ -85,7 +85,7 @@ export function PrConversationComposer({
                   onClick={() => setReviewModalVisible(true)}
                   data-testid="pr-submit-review"
                 >
-                  {t("git.pr.submitReview", "Submit review")}
+                  {t("git.pr.submitReview")}
                 </Button>
                 <Button
                   variant="primary"
@@ -95,7 +95,7 @@ export function PrConversationComposer({
                   disabled={!draft.trim() || submittingComment}
                   onClick={() => void handleComment()}
                 >
-                  {t("git.pr.comment", "Comment")}
+                  {t("git.pr.comment")}
                 </Button>
               </div>
             }
@@ -104,7 +104,7 @@ export function PrConversationComposer({
               ref={editorRef}
               value={draft}
               onChange={updateDraft}
-              placeholder={t("git.pr.commentPlaceholder", "Leave a comment…")}
+              placeholder={t("git.pr.commentPlaceholder")}
               minHeight={64}
               minRows={2}
               maxHeight={500}

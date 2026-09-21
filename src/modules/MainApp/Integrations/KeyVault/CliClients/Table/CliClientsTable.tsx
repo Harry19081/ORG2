@@ -237,9 +237,7 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
         key: "enabled",
         label: (
           <span className="sr-only">
-            {tIntegrations("common:labels.status", {
-              defaultValue: "Status",
-            })}
+            {tIntegrations("common:labels.status")}
           </span>
         ),
         width: SETTINGS_TABLE_COL.hug,
@@ -281,12 +279,10 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
                 onCheckedChange={(nextEnabled) =>
                   handleEnabledChange(agent, nextEnabled)
                 }
-                ariaLabel={tIntegrations("common:labels.enabled", {
-                  defaultValue: "Enabled",
-                })}
+                ariaLabel={tIntegrations("common:labels.enabled")}
               />
               <Button size="small" onClick={() => handleViewAgent(agent)}>
-                {tIntegrations("common:actions.view", { defaultValue: "View" })}
+                {tIntegrations("common:actions.view")}
               </Button>
             </div>
           );
@@ -362,12 +358,8 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
     return rows;
   }, [agents, searchQuery, installFilter, readyFilter, subscriptionsByAgent]);
 
-  const addButtonLabel = tIntegrations("common:actions.add", {
-    defaultValue: "Add",
-  });
-  const refreshButtonLabel = tIntegrations("common:actions.refresh", {
-    defaultValue: "Refresh",
-  });
+  const addButtonLabel = tIntegrations("common:actions.add");
+  const refreshButtonLabel = tIntegrations("common:actions.refresh");
 
   const headerActions = (
     <div className="flex items-center gap-1">

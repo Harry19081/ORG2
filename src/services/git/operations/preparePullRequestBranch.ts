@@ -36,12 +36,7 @@ export async function preparePullRequestBranch({
     typeof headRepo?.full_name === "string" &&
     headRepo.full_name.toLowerCase() === repoFullName.toLowerCase();
   if (typeof head?.ref !== "string" || !head.ref.trim()) {
-    throw new Error(
-      i18n.t(
-        "common:selectors.branch.messages.prNoHeadBranch",
-        "Pull request has no head branch"
-      )
-    );
+    throw new Error(i18n.t("common:selectors.branch.messages.prNoHeadBranch"));
   }
   // Fork names can collide with unrelated branches on the base repository.
   const branchName = sameRepo ? head.ref : `pr/${prNumber}`;
@@ -53,10 +48,7 @@ export async function preparePullRequestBranch({
   if (!isActive()) return null;
   if (!branches)
     throw new Error(
-      i18n.t(
-        "common:selectors.branch.messages.readBranchesFailed",
-        "Could not read local branches"
-      )
+      i18n.t("common:selectors.branch.messages.readBranchesFailed")
     );
   if (
     branches.branches.some(
@@ -84,10 +76,7 @@ export async function preparePullRequestBranch({
   if (!result.success)
     throw new Error(
       result.error ||
-        i18n.t(
-          "common:selectors.branch.messages.createPrBranchFailed",
-          "Could not create PR branch"
-        )
+        i18n.t("common:selectors.branch.messages.createPrBranchFailed")
     );
   return isActive() ? branchName : null;
 }

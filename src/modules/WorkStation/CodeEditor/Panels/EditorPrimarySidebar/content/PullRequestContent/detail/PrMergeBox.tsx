@@ -102,32 +102,27 @@ function checksDetail(t: TFunction, section: PrMergeBoxChecksSection): string {
     counts.failure > 0
       ? t("git.pr.mergeBox.counts.failing", {
           count: counts.failure,
-          defaultValue: "{{count}} failing",
         })
       : null,
     counts.pending > 0
       ? t("git.pr.mergeBox.counts.inProgress", {
           count: counts.pending,
-          defaultValue: "{{count}} in progress",
         })
       : null,
     counts.neutral > 0
       ? t("git.pr.mergeBox.counts.skipped", {
           count: counts.neutral,
-          defaultValue: "{{count}} skipped",
         })
       : null,
     counts.success > 0
       ? t("git.pr.mergeBox.counts.successful", {
           count: counts.success,
-          defaultValue: "{{count}} successful",
         })
       : null,
   ].filter((part): part is string => part !== null);
   return t("git.pr.mergeBox.counts.summary", {
     count: counts.total,
     parts: parts.join(", "),
-    defaultValue: "{{parts}} check",
     defaultValue_other: "{{parts}} checks",
   });
 }
@@ -138,27 +133,24 @@ function checkStatusLine(t: TFunction, item: CiCheckItem): string {
     timing.durationMs === undefined ? "" : formatDuration(timing.durationMs);
   const status =
     timing.kind === "queued"
-      ? t("git.pr.mergeBox.check.queued", "Queued")
+      ? t("git.pr.mergeBox.check.queued")
       : timing.kind === "started"
         ? t("git.pr.mergeBox.check.started", {
             time: formatRelativeTime(timing.startedAt, "long"),
-            defaultValue: "Started {{time}}",
           })
         : timing.kind === "successfulIn"
           ? t("git.pr.mergeBox.check.successfulIn", {
               duration,
-              defaultValue: "Successful in {{duration}}",
             })
           : timing.kind === "failingAfter"
             ? t("git.pr.mergeBox.check.failingAfter", {
                 duration,
-                defaultValue: "Failing after {{duration}}",
               })
             : timing.kind === "skipped"
-              ? t("git.pr.mergeBox.check.skipped", "Skipped")
+              ? t("git.pr.mergeBox.check.skipped")
               : item.state === "success"
-                ? t("git.pr.mergeBox.check.successful", "Successful")
-                : t("git.pr.mergeBox.check.failing", "Failing");
+                ? t("git.pr.mergeBox.check.successful")
+                : t("git.pr.mergeBox.check.failing");
   return item.description ? `${status} — ${item.description}` : status;
 }
 
@@ -214,12 +206,12 @@ function DeploymentRow({
   const { deployment, state, tone } = entry;
   const stateLabel =
     state === "active"
-      ? t("git.pr.mergeBox.deployments.state.active", "Active")
+      ? t("git.pr.mergeBox.deployments.state.active")
       : state === "pending"
-        ? t("git.pr.mergeBox.deployments.state.pending", "In progress")
+        ? t("git.pr.mergeBox.deployments.state.pending")
         : state === "failure"
-          ? t("git.pr.mergeBox.deployments.state.failure", "Failed")
-          : t("git.pr.mergeBox.deployments.state.inactive", "Inactive");
+          ? t("git.pr.mergeBox.deployments.state.failure")
+          : t("git.pr.mergeBox.deployments.state.inactive");
   const url = deployment.environment_url ?? deployment.log_url;
   return (
     <div className={LIST_ROW_CLASS} data-testid="pr-merge-box-deployment">
@@ -233,10 +225,7 @@ function DeploymentRow({
           : stateLabel}
       </span>
       {url ? (
-        <DetailsLink
-          label={t("git.pr.mergeBox.deployments.view", "View deployment")}
-          url={url}
-        />
+        <DetailsLink label={t("git.pr.mergeBox.deployments.view")} url={url} />
       ) : null}
     </div>
   );
@@ -261,16 +250,15 @@ function DeploymentsCard({
   const { t } = useTranslation("common");
   const detail =
     section.deployments.length === 0
-      ? t("git.pr.mergeBox.deployments.none", "No deployments")
+      ? t("git.pr.mergeBox.deployments.none")
       : t("git.pr.mergeBox.deployments.active", {
           count: section.activeCount,
-          defaultValue: "{{count}} active deployment",
           defaultValue_other: "{{count}} active deployments",
         });
   return (
     <section
       className={CARD_CLASS}
-      aria-label={t("git.pr.mergeBox.deployments.label", "Deployments")}
+      aria-label={t("git.pr.mergeBox.deployments.label")}
       data-testid="pr-merge-box-deployments"
     >
       <div className={SECTION_CLASS}>
@@ -381,7 +369,7 @@ function ChecksSection({
               </span>
               {item.detailsUrl ? (
                 <DetailsLink
-                  label={t("workstation.ci.viewDetails", "View check details")}
+                  label={t("workstation.ci.viewDetails")}
                   url={item.detailsUrl}
                 />
               ) : null}
@@ -478,7 +466,7 @@ export const PrMergeBox: React.FC<PrMergeBoxProps> = ({
 
       <section
         className={`${CARD_CLASS} divide-y divide-border-1`}
-        aria-label={t("git.pr.mergeStatus.label", "Merge status")}
+        aria-label={t("git.pr.mergeStatus.label")}
         data-testid="pr-merge-box-status"
       >
         {closedKind ? (

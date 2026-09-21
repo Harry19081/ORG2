@@ -244,7 +244,7 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
             compactHintVisible
               ? t("input.compactArgHint")
               : canvasHintVisible
-                ? t("input.canvasArgHint", "what to build")
+                ? t("input.canvasArgHint")
                 : undefined
           }
           currentInputEmpty={currentInputEmpty}

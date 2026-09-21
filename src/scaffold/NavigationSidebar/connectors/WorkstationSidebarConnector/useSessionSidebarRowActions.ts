@@ -118,9 +118,9 @@ export function useSessionSidebarRowActions({
       // use the regular session action decoration.
       sessionMenuItems: decorateSessionRowActions(sessionSidebarMenuItems),
       mySessionsLabel: t("cloud.sidebar.mySessions"),
-      pinnedLabel: tCommon("sessions:chat.historyPinned", "Pinned"),
+      pinnedLabel: tCommon("sessions:chat.historyPinned"),
       mySessionsVisibleCount: cloudMySessionsVisibleCount,
-      loadMoreLabel: tCommon("common:actions.loadMore", "Load more"),
+      loadMoreLabel: tCommon("common:actions.loadMore"),
     });
     return scoped;
   }, [

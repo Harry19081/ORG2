@@ -39,7 +39,7 @@ export function resolveVariantLabel(
 ): string {
   if (!provider) return variant.label;
   if (variant.mode === "api_key") {
-    return t("wizard.variantApiKey", "API Key");
+    return t("wizard.variantApiKey");
   }
   return variant.label;
 }

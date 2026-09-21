@@ -7,23 +7,23 @@
   "keyVault": {
     "title": "모델 & CLI",
     "overview": {},
-    "searchPlaceholder": "계정 검색...",
+    "searchPlaceholder": "키 검색...",
     "inlineCard": {
       "tabStatus": "상태",
       "tabModels": "모델"
     },
-    "noAccountsFound": "계정을 찾을 수 없습니다",
-    "addAccount": "계정 추가",
+    "noKeysFound": "키를 찾을 수 없습니다",
+    "addKey": "키 추가",
     "removeLocal": "로컬 제거",
     "unlist": "목록에서 제거",
     "confirmRemoveTitle": "\"{{name}}\"을(를) 제거하시겠습니까?",
-    "confirmRemoveMessage": "로컬 자격 증명이 제거됩니다. 이 작업은 되돌릴 수 없습니다",
+    "confirmRemoveMessage": "로컬에 저장된 키가 제거됩니다. 이 작업은 되돌릴 수 없습니다",
     "toasts": {
       "refreshed": "{{name}} 새로고침 완료",
       "refreshError": "{{name}} 새로고침 실패: {{error}}",
       "localRemoved": "{{name}} 제거됨",
       "deleteError": "{{name}} 삭제 실패",
-      "refreshPartial": "모델 새로고침 완료: {{added}}개 추가, {{removed}}개 제거. 단, {{total}}개 계정 중 {{failed}}개 실패",
+      "refreshPartial": "모델 새로고침 완료: {{added}}개 추가, {{removed}}개 제거. 단, 키 {{total}}개 중 {{failed}}개 실패",
       "refreshedNoChange": "모델 새로고침 완료: 변경 사항 없음",
       "refreshedDelta": "모델 새로고침 완료: {{added}}개 추가, {{removed}}개 제거"
     },
@@ -88,8 +88,8 @@
       "keyValidationFailed": "자격 증명 검증 실패"
     },
     "edit": {
-      "title": "계정 편집",
-      "apiChangeHint": "API Key, 자격 증명 또는 공급자 설정을 업데이트하려면 이 계정을 삭제하고 새로 추가하세요",
+      "title": "키 편집",
+      "apiChangeHint": "API Key 또는 공급자 설정을 업데이트하려면 이 키를 삭제하고 새로 추가하세요",
       "saved": "변경 사항 저장됨"
     },
     "quota": {
@@ -159,7 +159,7 @@
     "customBaseUrlNoteBody": "API 키와 요청 데이터는 입력한 URL로 전송됩니다. 사용자 지정 URL은 신뢰할 수 있는 프록시, 자체 호스팅 배포 또는 직접 제어하는 엔드포인트에만 사용하세요",
     "localModel": {
       "title": "로컬 모델 Cookbook",
-      "description": "로컬 런타임 preset을 선택하고 OpenAI 호환 endpoint를 확인한 뒤 하나 이상의 model ID를 추가하고 저장하면 Chat에서 로컬 모델을 사용할 수 있습니다",
+      "description": "로컬 런타임 preset을 선택하고 OpenAI 호환 endpoint를 확인한 뒤 하나 이상의 model ID를 추가하고 이 키를 저장하면 Chat에서 로컬 모델을 사용할 수 있습니다",
       "baseUrlDesc": "OpenAI 호환 로컬 endpoint입니다. 먼저 런타임을 시작한 뒤 검증하거나 저장하세요",
       "apiKeyDesc": "대부분의 로컬 런타임은 비어 있지 않은 값을 허용합니다. 서버가 키를 요구하지 않으면 placeholder를 유지하세요",
       "quickModelsLabel": "Cookbook 모델",
@@ -173,12 +173,12 @@
     "validationSuccessModels": "{{count}}개 모델 감지됨 — 다음 단계에서 구성",
     "validationSuccessNoModels": "Key 검증 완료 — 모델이 자동 감지되지 않았습니다. 아래에서 수동으로 추가하세요",
     "addCliAgent": "Agent 추가",
-    "accountName": "계정 이름(선택 사항)",
-    "accountNameDesc": "비워 두면 {{provider}}를 사용하고, 이후 {{provider}}-1, {{provider}}-2 순서로 사용합니다",
-    "accountNamePlaceholder": "자동: {{provider}}",
+    "keyName": "키 이름(선택 사항)",
+    "keyNameDesc": "비워 두면 {{provider}}를 사용하고, 이후 {{provider}}-1, {{provider}}-2 순서로 사용합니다",
+    "keyNamePlaceholder": "자동: {{provider}}",
     "descriptionOptional": "설명 (선택)",
     "descriptionPlaceholder": "설명 입력",
-    "nameDuplicate": "이 이름의 계정이 이미 존재합니다",
+    "nameDuplicate": "이 이름의 키가 이미 존재합니다",
     "stepLabel": "단계 {{current}}/{{total}}",
     "noValidTokenFound": "자격 증명에서 유효한 Token을 찾을 수 없습니다",
     "couldNotDetectKeys": "자격 증명을 감지할 수 없습니다. CLI가 설치되어 있고 로그인되어 있는지 확인하세요.",
@@ -241,7 +241,7 @@
     "claudeCodeSignInDesc": "내장 브라우저에서 Claude Code에 로그인하세요. ORG2가 authorization code를 캡처하고 OAuth Token을 로컬에 저장합니다",
     "claudeCodeReadyToSignIn": "Claude Code에 로그인할 준비가 되었습니다",
     "claudeCodeSignedIn": "Claude Code 연결됨",
-    "claudeCodeOAuthHint": "anthropic_native를 사용하는 Rust agents용 claude_code OAuth 계정을 저장합니다",
+    "claudeCodeOAuthHint": "anthropic_native를 사용하는 Rust agents용 claude_code OAuth 키를 저장합니다",
     "claudeCodeBrowserHint": "내장 브라우저에서 Claude Code 승인을 완료하세요",
     "claudeCodeSignInErrorHint": "브라우저를 닫고 다시 로그인하세요. Token은 저장되지 않았습니다",
     "connectedViaChatGpt": "ChatGPT Plus/Pro 로그인으로 연결됨",
@@ -311,14 +311,14 @@
     "signInWithCodex": "Codex로 로그인",
     "codexReadyToSignIn": "Codex에 로그인할 준비 완료",
     "codexSignedIn": "Codex 연결됨",
-    "codexOAuthHint": "ChatGPT Codex 백엔드 접근을 위한 codex OAuth 계정을 저장합니다",
+    "codexOAuthHint": "ChatGPT Codex 백엔드 접근을 위한 codex OAuth 키를 저장합니다",
     "codexBrowserHint": "내장 브라우저에서 Codex 인증을 완료하세요",
     "codexSignInErrorHint": "브라우저를 닫고 다시 로그인하세요. Token이 저장되지 않았습니다",
     "codexAutodetectTitle": "Codex 세션 감지",
     "codexAutodetectDesc": "로컬 환경에서 ~/.codex/auth.json 및 OPENAI_API_KEY를 읽습니다",
-    "codexCredentialLabel": "Codex 자격 증명",
-    "codexCredentialDesc": "Codex OAuth access token 또는 OpenAI API key를 붙여넣으세요",
-    "codexCredentialPlaceholder": "eyJ... 또는 sk-...",
+    "codexKeyLabel": "Codex 키",
+    "codexKeyDesc": "Codex OAuth access token 또는 OpenAI API key를 붙여넣으세요",
+    "codexKeyPlaceholder": "eyJ... 또는 sk-...",
     "codexDetectErrorHint": "Sign in with the embedded browser, or paste an OpenAI API key manually",
     "codexValidationErrorHint": "Check that the token or API key is valid and try again",
     "claudeCodeAutodetectTitle": "Detect Claude Code session",
@@ -329,8 +329,8 @@
       "failed": "이 Market 워크스페이스를 사용할 수 없습니다. Market을 다시 열어 인증을 갱신하세요."
     },
     "revalidate": "재검증",
-    "confirmRemoveActiveSessions_one": "활성 세션 {{count}}개가 아직 이 계정을 사용 중이며 다음 턴에서 실패합니다:",
-    "confirmRemoveActiveSessions_other": "활성 세션 {{count}}개가 아직 이 계정을 사용 중이며 다음 턴에서 실패합니다:"
+    "confirmRemoveActiveSessions_one": "활성 세션 {{count}}개가 아직 이 키를 사용 중이며 다음 턴에서 실패합니다:",
+    "confirmRemoveActiveSessions_other": "활성 세션 {{count}}개가 아직 이 키를 사용 중이며 다음 턴에서 실패합니다:"
   },
   "integrations": {
     "searchPlaceholder": "연결 검색...",
@@ -345,7 +345,9 @@
     "connecting": "연결 중",
     "reconnecting": "재연결 중",
     "connectionError": "연결 오류",
-    "accountNameDuplicate": "같은 이름의 계정이 이미 존재합니다",
+    "connectionName": "연결 이름(선택 사항)",
+    "connectionNamePlaceholder": "자동: {{provider}}",
+    "connectionNameDuplicate": "같은 이름의 연결이 이미 존재합니다",
     "probeSuccess": "연결 성공",
     "probeFailed": "연결 실패",
     "verified": "검증됨"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "ORG2 봇"
   },
   "modelsTabs": {
-    "myAccounts": "내 Keys",
+    "myKeys": "내 키",
     "models": "모델",
     "comingSoon": "곧 출시",
     "installedClis": "CLI 클라이언트",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "정렬: A–Z"
   },
   "modelPreview": {
-    "noSources": "이 모델이 있는 계정이 없습니다"
+    "noSources": "이 모델이 있는 키가 없습니다"
   },
   "cliPreview": {
     "clientSection": "클라이언트",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Git 프로필을 활성화하지 못했습니다"
   },
   "credentialImport": {
-    "title": "다른 앱에서 자격 증명 가져오기",
-    "itemColumn": "자격 증명",
+    "title": "다른 앱에서 키와 구독 가져오기",
+    "itemColumn": "키",
     "sourceColumn": "발견 위치",
-    "empty": "가져올 자격 증명을 찾지 못했습니다. 환경 변수, 셸 프로필, Claude Code 설정, cc-switch 프로필, 그리고 Claude Code, Codex, Cursor, GitHub CLI, Kiro, OpenCode의 로그인 저장소를 확인했습니다.",
-    "allImported": "감지된 자격 증명은 모두 이미 가져왔습니다",
+    "empty": "가져올 키나 구독을 찾지 못했습니다. 환경 변수, 셸 프로필, Claude Code 설정, cc-switch 프로필, 그리고 Claude Code, Codex, Cursor, GitHub CLI, Kiro, OpenCode의 로그인 저장소를 확인했습니다.",
+    "allImported": "감지된 키와 구독은 모두 이미 가져왔습니다",
     "authMethod": {
       "api_key": "API 키",
       "oauth": "로그인 token"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "가져오기 실패: {{message}}",
-    "partialFailure": "일부 자격 증명을 가져오지 못했습니다:",
-    "importSucceeded": "계정에 저장됨: {{names}}. 가져온 자격 증명을 재사용 가능한 연결로 사용할 수 있습니다."
+    "partialFailure": "일부 키를 가져오지 못했습니다:",
+    "importSucceeded": "내 키에 저장됨: {{names}}. 가져온 키를 재사용 가능한 연결로 사용할 수 있습니다."
   },
   "skills": {
     "shareToOrg": "조직에 공유",

@@ -164,12 +164,8 @@ export function useWorkItemsSurfaceControls({
                     showSearch
                     appearance="ghost"
                     size="small"
-                    placeholder={t("workItems.table.groupByProperty", {
-                      defaultValue: "Group by property",
-                    })}
-                    ariaLabel={t("workItems.table.groupByProperty", {
-                      defaultValue: "Group by property",
-                    })}
+                    placeholder={t("workItems.table.groupByProperty")}
+                    ariaLabel={t("workItems.table.groupByProperty")}
                     dataTestId="work-items-kanban-property-group"
                   />
                 )}

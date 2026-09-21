@@ -7,23 +7,23 @@
   "keyVault": {
     "title": "Модели & CLI",
     "overview": {},
-    "searchPlaceholder": "Поиск аккаунтов...",
+    "searchPlaceholder": "Поиск ключей...",
     "inlineCard": {
       "tabStatus": "Статус",
       "tabModels": "Модели"
     },
-    "noAccountsFound": "Аккаунты не найдены",
-    "addAccount": "Добавить аккаунт",
+    "noKeysFound": "Ключи не найдены",
+    "addKey": "Добавить ключ",
     "removeLocal": "Удалить локальный",
     "unlist": "Снять с публикации",
     "confirmRemoveTitle": "Удалить \"{{name}}\"?",
-    "confirmRemoveMessage": "Локальные учётные данные будут удалены. Это действие нельзя отменить",
+    "confirmRemoveMessage": "Локально сохранённый ключ будет удалён. Это действие нельзя отменить",
     "toasts": {
       "refreshed": "{{name}} успешно обновлён",
       "refreshError": "Не удалось обновить {{name}}: {{error}}",
       "localRemoved": "{{name}} удалён",
       "deleteError": "Не удалось удалить {{name}}",
-      "refreshPartial": "Модели обновлены: +{{added}} / -{{removed}}, но произошла ошибка для {{failed}} из {{total}} аккаунтов",
+      "refreshPartial": "Модели обновлены: +{{added}} / -{{removed}}, но произошла ошибка для {{failed}} из {{total}} ключей",
       "refreshedNoChange": "Модели обновлены: без изменений",
       "refreshedDelta": "Модели обновлены: добавлено {{added}}, удалено {{removed}}"
     },
@@ -88,8 +88,8 @@
       "keyValidationFailed": "Проверка учётных данных не пройдена"
     },
     "edit": {
-      "title": "Редактировать аккаунт",
-      "apiChangeHint": "Чтобы обновить API Key, учётные данные или настройки провайдера, удалите этот аккаунт и добавьте новый",
+      "title": "Редактировать ключ",
+      "apiChangeHint": "Чтобы обновить API Key или настройки провайдера, удалите этот ключ и добавьте новый",
       "saved": "Изменения сохранены"
     },
     "quota": {
@@ -159,7 +159,7 @@
     "customBaseUrlNoteBody": "Ваш API-ключ и данные запросов отправляются на указанный вами URL. Используйте пользовательские URL только для доверенных прокси, собственных развёртываний или контролируемых вами эндпоинтов",
     "localModel": {
       "title": "Cookbook локальных моделей",
-      "description": "Выберите пресет локального runtime, подтвердите OpenAI-совместимый endpoint, добавьте один или несколько ID моделей и сохраните этот аккаунт, чтобы использовать локальные модели в Chat",
+      "description": "Выберите пресет локального runtime, подтвердите OpenAI-совместимый endpoint, добавьте один или несколько ID моделей и сохраните этот ключ, чтобы использовать локальные модели в Chat",
       "baseUrlDesc": "OpenAI-совместимый локальный endpoint. Сначала запустите runtime, затем выполните проверку или сохранение",
       "apiKeyDesc": "Большинство локальных runtime принимают любое непустое значение. Оставьте placeholder, если сервер не требует ключ",
       "quickModelsLabel": "Cookbook модели",
@@ -173,12 +173,12 @@
     "validationSuccessModels": "Обнаружено {{count}} моделей — настройте на следующем шаге",
     "validationSuccessNoModels": "Key подтверждён — модели не обнаружены автоматически, добавьте их вручную ниже",
     "addCliAgent": "Добавить Agent",
-    "accountName": "Имя аккаунта (необязательно)",
-    "accountNameDesc": "Оставьте пустым, чтобы использовать {{provider}}, затем {{provider}}-1, {{provider}}-2 и так далее",
-    "accountNamePlaceholder": "Авто: {{provider}}",
+    "keyName": "Имя ключа (необязательно)",
+    "keyNameDesc": "Оставьте пустым, чтобы использовать {{provider}}, затем {{provider}}-1, {{provider}}-2 и так далее",
+    "keyNamePlaceholder": "Авто: {{provider}}",
     "descriptionOptional": "Описание (необязательно)",
     "descriptionPlaceholder": "Введите описание",
-    "nameDuplicate": "Аккаунт с таким именем уже существует",
+    "nameDuplicate": "Ключ с таким именем уже существует",
     "stepLabel": "Шаг {{current}}/{{total}}",
     "noValidTokenFound": "В учётных данных не найден действительный Token",
     "couldNotDetectKeys": "Не удалось обнаружить учётные данные. Убедитесь, что CLI установлен и вы вошли в систему.",
@@ -241,7 +241,7 @@
     "claudeCodeSignInDesc": "Войдите в Claude Code во встроенном браузере. ORG2 получит authorization code и сохранит OAuth Token локально",
     "claudeCodeReadyToSignIn": "Готово к входу в Claude Code",
     "claudeCodeSignedIn": "Claude Code подключен",
-    "claudeCodeOAuthHint": "Это сохранит учетную запись claude_code OAuth для Rust agents, использующих anthropic_native",
+    "claudeCodeOAuthHint": "Это сохранит ключ claude_code OAuth для Rust agents, использующих anthropic_native",
     "claudeCodeBrowserHint": "Завершите авторизацию Claude Code во встроенном браузере",
     "claudeCodeSignInErrorHint": "Закройте браузер и попробуйте войти снова. Token не был сохранен",
     "connectedViaChatGpt": "Подключено через ChatGPT Plus/Pro",
@@ -311,14 +311,14 @@
     "signInWithCodex": "Войти через Codex",
     "codexReadyToSignIn": "Готово ко входу в Codex",
     "codexSignedIn": "Codex подключен",
-    "codexOAuthHint": "Это сохранит учетную запись OAuth codex для доступа к backend ChatGPT Codex",
+    "codexOAuthHint": "Это сохранит ключ OAuth codex для доступа к backend ChatGPT Codex",
     "codexBrowserHint": "Завершите авторизацию Codex во встроенном браузере",
     "codexSignInErrorHint": "Закройте браузер и попробуйте войти снова. Token не был сохранен",
     "codexAutodetectTitle": "Обнаружить сессию Codex",
     "codexAutodetectDesc": "Читает ~/.codex/auth.json и OPENAI_API_KEY из локального окружения",
-    "codexCredentialLabel": "Данные Codex",
-    "codexCredentialDesc": "Вставьте OAuth access token Codex или API key OpenAI",
-    "codexCredentialPlaceholder": "eyJ... или sk-...",
+    "codexKeyLabel": "Ключ Codex",
+    "codexKeyDesc": "Вставьте OAuth access token Codex или API key OpenAI",
+    "codexKeyPlaceholder": "eyJ... или sk-...",
     "codexDetectErrorHint": "Войдите через встроенный браузер или вручную вставьте API key OpenAI",
     "codexValidationErrorHint": "Проверьте, что token или API key действительны, и повторите попытку",
     "claudeCodeAutodetectTitle": "Обнаружить сессию Claude Code",
@@ -329,8 +329,8 @@
       "failed": "Это рабочее пространство Market недоступно. Снова откройте Market, чтобы обновить авторизацию."
     },
     "revalidate": "Перепроверить",
-    "confirmRemoveActiveSessions_one": "{{count}} активная сессия всё ещё использует этот аккаунт и завершится ошибкой на следующем ходе:",
-    "confirmRemoveActiveSessions_other": "{{count}} активных сессий всё ещё используют этот аккаунт и завершатся ошибкой на следующем ходе:"
+    "confirmRemoveActiveSessions_one": "{{count}} активная сессия всё ещё использует этот ключ и завершится ошибкой на следующем ходе:",
+    "confirmRemoveActiveSessions_other": "{{count}} активных сессий всё ещё используют этот ключ и завершатся ошибкой на следующем ходе:"
   },
   "integrations": {
     "searchPlaceholder": "Поиск подключений...",
@@ -345,7 +345,9 @@
     "connecting": "Подключение",
     "reconnecting": "Переподключение",
     "connectionError": "Ошибка подключения",
-    "accountNameDuplicate": "Аккаунт с таким именем уже существует",
+    "connectionName": "Имя подключения (необязательно)",
+    "connectionNamePlaceholder": "Авто: {{provider}}",
+    "connectionNameDuplicate": "Подключение с таким именем уже существует",
     "probeSuccess": "Подключение успешно",
     "probeFailed": "Подключение не удалось",
     "verified": "Проверено"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "Бот ORG2"
   },
   "modelsTabs": {
-    "myAccounts": "Мои Keys",
+    "myKeys": "Мои ключи",
     "models": "Модели",
     "comingSoon": "Скоро",
     "installedClis": "CLI-клиенты",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "Сортировка: A–Z"
   },
   "modelPreview": {
-    "noSources": "Нет аккаунтов с этой моделью"
+    "noSources": "Нет ключей с этой моделью"
   },
   "cliPreview": {
     "clientSection": "Клиент",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Не удалось активировать профиль Git"
   },
   "credentialImport": {
-    "title": "Импорт учётных данных из других приложений",
-    "itemColumn": "Учётные данные",
+    "title": "Импорт ключей и подписок из других приложений",
+    "itemColumn": "Ключ",
     "sourceColumn": "Найдено в",
-    "empty": "Учётные данные для импорта не найдены. Проверены переменные окружения, профили shell, настройки Claude Code, профили cc-switch и хранилища входа Claude Code, Codex, Cursor, GitHub CLI, Kiro и OpenCode.",
-    "allImported": "Все обнаруженные учётные данные уже импортированы",
+    "empty": "Ключи и подписки для импорта не найдены. Проверены переменные окружения, профили shell, настройки Claude Code, профили cc-switch и хранилища входа Claude Code, Codex, Cursor, GitHub CLI, Kiro и OpenCode.",
+    "allImported": "Все обнаруженные ключи и подписки уже импортированы",
     "authMethod": {
       "api_key": "API-ключ",
       "oauth": "Token входа"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Ошибка импорта: {{message}}",
-    "partialFailure": "Некоторые учётные данные не удалось импортировать:",
-    "importSucceeded": "Сохранено в разделе «Учётные записи»: {{names}}. Импортированные учётные данные теперь доступны как повторно используемые подключения."
+    "partialFailure": "Некоторые ключи не удалось импортировать:",
+    "importSucceeded": "Сохранено в разделе «Мои ключи»: {{names}}. Импортированные ключи теперь доступны как повторно используемые подключения."
   },
   "skills": {
     "shareToOrg": "Поделиться с организацией",

@@ -115,9 +115,7 @@ export const WorkItemThreadLowerSection: React.FC<
       {(workItem.linkedSessions?.length ?? 0) > 0 || workItem.originSession ? (
         <ScrollTrailTarget
           enabled={isThread}
-          label={t("workItems.linkedSessions.title", {
-            defaultValue: "Sessions",
-          })}
+          label={t("workItems.linkedSessions.title")}
         >
           <LinkedSessionsList
             sessions={workItem.linkedSessions ?? []}
@@ -131,10 +129,7 @@ export const WorkItemThreadLowerSection: React.FC<
         </ScrollTrailTarget>
       ) : null}
       {sectionPolicy.showInlineOutput ? (
-        <ScrollTrailTarget
-          enabled={isThread}
-          label={t("common:labels.output", { defaultValue: "Output" })}
-        >
+        <ScrollTrailTarget enabled={isThread} label={t("common:labels.output")}>
           {outputContent}
         </ScrollTrailTarget>
       ) : null}

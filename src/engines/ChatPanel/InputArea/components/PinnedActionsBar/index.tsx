@@ -401,7 +401,7 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
             label={
               action.category === "action" &&
               action.name === SLASH_ACTIONS.CANVAS
-                ? t("input.newCanvasAction", "New Canvas")
+                ? t("input.newCanvasAction")
                 : undefined
             }
             onClick={handlePillClick}

@@ -21,19 +21,19 @@ export const MarkdownEditorModeSwitch: React.FC<
 
   return (
     <SegmentedTextPill
-      ariaLabel={t("creator.mode", "Editor mode")}
+      ariaLabel={t("creator.mode")}
       className={className}
       dataTestId={dataTestId}
       value={mode}
       options={[
         {
           value: "write",
-          label: t("common:actions.write", "Write"),
+          label: t("common:actions.write"),
           disabled,
         },
         {
           value: "preview",
-          label: t("common:common.preview", "Preview"),
+          label: t("common:common.preview"),
           disabled,
         },
       ]}

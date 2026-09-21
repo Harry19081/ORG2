@@ -535,9 +535,7 @@ export function collectAccountQuotaCards(
       metrics.unshift({
         kind: "value",
         key: "balance",
-        label: tIntegrations("keyVault.quota.balance", {
-          defaultValue: "Balance",
-        }),
+        label: tIntegrations("keyVault.quota.balance"),
         value: balanceValue,
       });
     }

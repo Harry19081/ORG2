@@ -323,12 +323,8 @@ export const SessionHeaderActionsMenu: React.FC<
                     }
                   >
                     {moveToWorkstation
-                      ? t("chat.moveToWorkstation", {
-                          defaultValue: "Move to My Station",
-                        })
-                      : t("chat.moveToChatPanel", {
-                          defaultValue: "Move to Chat Panel",
-                        })}
+                      ? t("chat.moveToWorkstation")
+                      : t("chat.moveToChatPanel")}
                   </DropdownItem>
                 )}
                 {showOpenInNewWindow && (

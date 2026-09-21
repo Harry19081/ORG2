@@ -960,7 +960,6 @@
     "newChatPage": "新聊天頁面"
   },
   "harnessConnections": {
-    "description": "選擇各程式開發工具使用的連線",
     "current": "目前設定的連線",
     "scope": "適用於本機 CLI 預設設定；專案設定和執行中的工作階段可能覆蓋此設定",
     "original": "原始設定",

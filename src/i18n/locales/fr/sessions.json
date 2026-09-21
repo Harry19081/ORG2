@@ -1892,7 +1892,6 @@
     "contextMenu": {
       "filesAndFolders": "Fichiers et dossiers",
       "workItems": "Éléments de travail",
-      "back": "Retour",
       "recent": "Récents",
       "showMore": "Afficher {{remaining}} de plus",
       "session": "Session"

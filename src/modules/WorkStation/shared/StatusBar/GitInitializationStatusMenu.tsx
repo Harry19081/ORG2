@@ -57,10 +57,7 @@ export const GitInitializationStatusMenu: React.FC<GitInitializationStatusMenuPr
     const label = actionPending
       ? t("sourceControl.initializingGit")
       : t("workstation.notGitInitialized");
-    const tooltip = t(
-      "workstation.notGitInitializedTooltip",
-      "This working directory does not have a .git directory yet."
-    );
+    const tooltip = t("workstation.notGitInitializedTooltip");
     const tooltipLabel = actionPending
       ? t("sourceControl.initializingGit")
       : tooltip;

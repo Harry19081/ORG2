@@ -151,18 +151,15 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
   const merge = async (method: PullRequestMergeMethod): Promise<void> => {
     setMergeMenuVisible(false);
     const confirmed = await confirmDestructiveAction({
-      title: t("git.pr.actions.confirmMergeTitle", "Merge pull request?"),
-      message: t(
-        "git.pr.actions.confirmMergeMessage",
-        "GitHub will merge the current pull request head into the base branch."
-      ),
-      okLabel: t("git.pr.actions.merge", "Merge"),
-      cancelLabel: t("actions.cancel", "Cancel"),
+      title: t("git.pr.actions.confirmMergeTitle"),
+      message: t("git.pr.actions.confirmMergeMessage"),
+      okLabel: t("git.pr.actions.merge"),
+      cancelLabel: t("actions.cancel"),
     });
     if (!confirmed) return;
     await reportPrAction(
       () => onMerge(method),
-      t("git.pr.actions.mergeSuccess", "Pull request merged")
+      t("git.pr.actions.mergeSuccess")
     );
   };
 
@@ -174,12 +171,12 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
     await reportPrAction(
       () => onSetAutoMerge(enabled, presentation.defaultMethod),
       action.label === "Merge when ready"
-        ? t("git.pr.actions.mergeRequested", "Merge requested")
+        ? t("git.pr.actions.mergeRequested")
         : action.label === "Remove from merge queue"
-          ? t("git.pr.actions.removedFromQueue", "Removed from merge queue")
+          ? t("git.pr.actions.removedFromQueue")
           : enabled
-            ? t("git.pr.actions.autoMergeEnabled", "Auto-merge enabled")
-            : t("git.pr.actions.autoMergeDisabled", "Auto-merge disabled")
+            ? t("git.pr.actions.autoMergeEnabled")
+            : t("git.pr.actions.autoMergeDisabled")
     );
   };
 
@@ -203,38 +200,29 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
     await reportPrAction(
       () => onDraftChange(draft),
       draft
-        ? t(
-            "git.pr.actions.convertedToDraft",
-            "Pull request converted to draft"
-          )
-        : t(
-            "git.pr.actions.markedReady",
-            "Pull request marked ready for review"
-          )
+        ? t("git.pr.actions.convertedToDraft")
+        : t("git.pr.actions.markedReady")
     );
   };
 
   const nextState = presentation.status === "closed" ? "open" : "closed";
   const canChangeState = presentation.status !== "merged";
-  const closeLabel = t("actions.close", "Close");
+  const closeLabel = t("actions.close");
   const changeState = async (): Promise<void> => {
     if (nextState === "closed") {
       const confirmed = await confirmDestructiveAction({
-        title: t("git.pr.actions.confirmCloseTitle", "Close pull request?"),
-        message: t(
-          "git.pr.actions.confirmCloseMessage",
-          "The pull request will remain available and can be reopened later."
-        ),
+        title: t("git.pr.actions.confirmCloseTitle"),
+        message: t("git.pr.actions.confirmCloseMessage"),
         okLabel: closeLabel,
-        cancelLabel: t("actions.cancel", "Cancel"),
+        cancelLabel: t("actions.cancel"),
       });
       if (!confirmed) return;
     }
     await reportPrAction(
       () => onStateChange(nextState),
       nextState === "closed"
-        ? t("git.pr.actions.closeSuccess", "Pull request closed")
-        : t("git.pr.actions.reopenSuccess", "Pull request reopened")
+        ? t("git.pr.actions.closeSuccess")
+        : t("git.pr.actions.reopenSuccess")
     );
   };
   const mergePanel = (
@@ -246,7 +234,7 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
             onClick={() => void changeDraftState(false)}
             dataTestId="pr-mark-ready-action"
           >
-            {t("git.pr.actions.markReady", "Mark ready for review")}
+            {t("git.pr.actions.markReady")}
           </DropdownItem>
         ) : null}
         {presentation.autoMergeAction ? (
@@ -413,7 +401,7 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
     return (
       <section
         className="flex w-full flex-wrap items-center gap-x-3 gap-y-2"
-        aria-label={t("git.pr.actions.label", "Pull request actions")}
+        aria-label={t("git.pr.actions.label")}
         data-testid="pr-merge-box-actions"
       >
         <div className="shrink-0">{mergeButton}</div>
@@ -434,7 +422,7 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
             onClick={() => void changeDraftState(true)}
             data-testid="pr-convert-to-draft-action"
           >
-            {t("git.pr.actions.convertToDraft", "Convert to draft")}
+            {t("git.pr.actions.convertToDraft")}
           </Button>
         ) : null}
         {/* Only a state that needs explaining gets a hint; "merge this" beside
@@ -453,7 +441,7 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
   return (
     <section
       className="flex w-full flex-col gap-2"
-      aria-label={t("git.pr.actions.label", "Pull request actions")}
+      aria-label={t("git.pr.actions.label")}
       data-testid="pr-level-actions"
     >
       {mergeButton}
@@ -484,9 +472,7 @@ export const PrLevelActions: React.FC<PrLevelActionsProps> = ({
           onClick={() => void changeState()}
           data-testid="pr-state-action"
         >
-          {nextState === "closed"
-            ? closeLabel
-            : t("git.pr.actions.reopen", "Reopen pull request")}
+          {nextState === "closed" ? closeLabel : t("git.pr.actions.reopen")}
         </Button>
       ) : null}
     </section>

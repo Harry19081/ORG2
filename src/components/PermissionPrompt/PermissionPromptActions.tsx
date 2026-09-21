@@ -37,7 +37,7 @@ export function PermissionPromptActions({
           onClick={onAllow ?? noop}
           disabled={disabled}
         >
-          {t("chat.allow", "Allow")}
+          {t("chat.allow")}
         </Button>
         <Button
           tone="danger"
@@ -49,7 +49,7 @@ export function PermissionPromptActions({
           onClick={onDeny ?? noop}
           disabled={disabled}
         >
-          {t("chat.deny", "Deny")}
+          {t("chat.deny")}
         </Button>
         <Button
           variant="tertiary"
@@ -61,7 +61,7 @@ export function PermissionPromptActions({
           onClick={onAlwaysAllow ?? noop}
           disabled={disabled}
         >
-          {t("chat.alwaysAllow", "Always Allow")}
+          {t("chat.alwaysAllow")}
         </Button>
       </div>
     );
@@ -75,10 +75,10 @@ export function PermissionPromptActions({
         onClick={onDeny ?? noop}
         disabled={disabled}
       >
-        {t("chat.deny", "Deny")}
+        {t("chat.deny")}
       </Button>
       <Button size="mini" onClick={onAlwaysAllow ?? noop} disabled={disabled}>
-        {t("chat.alwaysAllow", "Always Allow")}
+        {t("chat.alwaysAllow")}
       </Button>
       <Button
         variant="primary"
@@ -86,7 +86,7 @@ export function PermissionPromptActions({
         onClick={onAllow ?? noop}
         disabled={disabled}
       >
-        {t("chat.allow", "Allow")}
+        {t("chat.allow")}
       </Button>
     </div>
   );

@@ -193,9 +193,9 @@ const AgentStatusTrail: React.FC<AgentStatusTrailProps> = ({
   const activityText =
     planningCount > 0
       ? planningMode === "compacting"
-        ? t("planning.compacting", "Compacting context...")
+        ? t("planning.compacting")
         : planningMode === "agentTyping"
-          ? t("planning.agentTyping", "Agent is typing...")
+          ? t("planning.agentTyping")
           : pickPlanningVariant(
               t("planning.nextStepVariants", { returnObjects: true }),
               planningVariantIndex,

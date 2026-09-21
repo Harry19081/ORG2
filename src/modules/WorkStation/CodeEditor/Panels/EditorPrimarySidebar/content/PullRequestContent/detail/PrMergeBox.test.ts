@@ -16,26 +16,14 @@ import type {
   GitHubChecksSummary,
   GitHubDeploymentsSummary,
 } from "@src/api/tauri/github";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import { PrMergeBox, type PrMergeBoxProps } from "./PrMergeBox";
 import { PrChecksRefreshContext } from "./prChecksRefreshContext";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, fallback?: string | Record<string, unknown>) => {
-      if (typeof fallback === "string") return fallback;
-      if (!fallback) return key;
-      const count = fallback.count as number | undefined;
-      const template =
-        count === 1
-          ? (fallback.defaultValue as string)
-          : ((fallback.defaultValue_other ?? fallback.defaultValue) as string);
-      if (typeof template !== "string") return key;
-      return template.replace(/\{\{(\w+)\}\}/g, (_match, name: string) =>
-        String(fallback[name] ?? "")
-      );
-    },
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 vi.mock("@src/util/time/formatRelativeTime", () => ({

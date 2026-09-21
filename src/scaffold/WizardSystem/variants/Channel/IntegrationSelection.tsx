@@ -176,7 +176,7 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
 
   const accountNameError =
     accountNameTouched && isDuplicateName
-      ? t("integrations.accountNameDuplicate")
+      ? t("integrations.connectionNameDuplicate")
       : errors.name;
 
   const accountNameContent = selectedType ? (
@@ -184,7 +184,7 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
       <SectionRow
         label={
           <span className="inline-flex items-center gap-1">
-            {t("keyVault.accountName")}
+            {t("integrations.connectionName")}
             <AccountNameInfoIcon provider={accountNameBase} />
           </span>
         }
@@ -198,7 +198,7 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
           onBlur={() => {
             if (accountName.trim()) setAccountNameTouched(true);
           }}
-          placeholder={t("keyVault.accountNamePlaceholder", {
+          placeholder={t("integrations.connectionNamePlaceholder", {
             provider: accountNameBase,
           })}
           autoComplete="off"

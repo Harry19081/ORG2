@@ -171,20 +171,20 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
             icon: filterIcon("pr"),
             label: (
               <span className="whitespace-nowrap">
-                {t("common:labels.pullRequest", "Pull request")}
+                {t("common:labels.pullRequest")}
               </span>
             ),
-            triggerLabel: t("common:labels.pullRequest", "Pull request"),
+            triggerLabel: t("common:labels.pullRequest"),
           },
           {
             value: "issues",
             icon: filterIcon("issues"),
             label: (
               <span className="whitespace-nowrap">
-                {t("common:labels.issues", "Issues")}
+                {t("common:labels.issues")}
               </span>
             ),
-            triggerLabel: t("common:labels.issues", "Issues"),
+            triggerLabel: t("common:labels.issues"),
           },
         ];
       }, [getCountLabel, getModeCount, hideStageFilters, t]);
@@ -235,9 +235,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                       size={HEADER_ICON_SIZE.sm}
                       className={refreshSpinClass}
                     />
-                    <span>
-                      {t("controlTower.diff.refresh", "Refresh Git status")}
-                    </span>
+                    <span>{t("controlTower.diff.refresh")}</span>
                   </Button>
                 </div>
               }

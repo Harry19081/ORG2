@@ -90,8 +90,8 @@ export function DiffViewModeToggle({
   const nextMode = viewMode === "split" ? "unified" : "split";
   const label =
     nextMode === "unified"
-      ? t("workstation.switchToUnifiedDiff", "Switch to unified diff")
-      : t("workstation.switchToSplitDiff", "Switch to split diff");
+      ? t("workstation.switchToUnifiedDiff")
+      : t("workstation.switchToSplitDiff");
 
   return (
     <ToolbarTooltip label={label}>

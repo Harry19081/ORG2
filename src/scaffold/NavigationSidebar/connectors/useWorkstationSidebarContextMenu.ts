@@ -59,7 +59,7 @@ interface UseWorkstationSidebarContextMenuParams {
   buildCloudRemoteItemMenuItems?: (
     item: NavigationMenuItem
   ) => NativeMenuItemOptions[];
-  tCommon: (key: string, defaultValue?: string) => string;
+  tCommon: (key: string) => string;
 }
 
 export function useWorkstationSidebarContextMenu({
@@ -100,7 +100,7 @@ export function useWorkstationSidebarContextMenu({
         if (!draftId) return [];
         return [
           {
-            text: tCommon("actions.openInNewTab", "Open in New Tab"),
+            text: tCommon("actions.openInNewTab"),
             action: () => handleOpenDraftInNewTab(item),
           },
           {
@@ -121,24 +121,21 @@ export function useWorkstationSidebarContextMenu({
       if (session?.parentSessionId || item.id.includes(":subagent:")) return [];
 
       const openInNewTabItem: NativeMenuItemOptions = {
-        text: tCommon("actions.openInNewTab", "Open in New Tab"),
+        text: tCommon("actions.openInNewTab"),
         action: () => handleOpenInNewTab(item.id),
       };
       const openInNewWindowItem: NativeMenuItemOptions = {
-        text: tCommon("actions.openInNewWindow", "Open in New Window"),
+        text: tCommon("actions.openInNewWindow"),
         action: () => handleOpenInNewWindow(item.id),
       };
       const openInMyStationItem: NativeMenuItemOptions = {
-        text: tCommon(
-          "sessions:controlTower.sidebar.openInMyStation",
-          "Open in My Station"
-        ),
+        text: tCommon("sessions:controlTower.sidebar.openInMyStation"),
         action: () => handleOpenInMyStation(item.id),
       };
       const pinItem: NativeMenuItemOptions = {
         text: session?.pinned
-          ? tCommon("sessions:chat.unpinSession", "Unpin")
-          : tCommon("sessions:chat.pinSession", "Pin"),
+          ? tCommon("sessions:chat.unpinSession")
+          : tCommon("sessions:chat.pinSession"),
         action: () => handleTogglePin(item.id),
       };
 
@@ -171,7 +168,7 @@ export function useWorkstationSidebarContextMenu({
       ];
       if (!isHumanSession(item.id)) {
         primaryItems.push({
-          text: tCommon("sessions:chat.exportAsMarkdown", "Export as Markdown"),
+          text: tCommon("sessions:chat.exportAsMarkdown"),
           action: () => handleExportMarkdown(item.id),
         });
       }

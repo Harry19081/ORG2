@@ -14,15 +14,14 @@ import {
 } from "vitest";
 
 import { activeOverlayCountAtom } from "@src/store/ui/overlayLayerAtom";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 import { buildVariantEditOptions } from "@src/util/variantEditOptions";
 
 import ModelPropertiesDropdown from ".";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (_key: string, options: { defaultValue: string }) =>
-      options.defaultValue,
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 const MODELS = ["low", "medium", "high", "xhigh", "max", "ultra"].flatMap(
