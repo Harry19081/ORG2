@@ -2,7 +2,7 @@
 //! mutation; commit native picker, proxy selection and backups together.
 use super::ConfigureCatalogRequest;
 use super::{
-    app_catalog::{alias, picker_label, Catalog, CatalogModel},
+    app_catalog::{alias_for_agent, picker_label, Catalog, CatalogModel},
     source, ConfiguredProfile,
 };
 use agent_cli::managed_config::model_catalog::{ModelCatalog, PickerModel};
@@ -161,7 +161,7 @@ pub(super) async fn configure(
                 model: Some(model.clone()),
                 session_id: Some(session_id.clone()),
             };
-            let id = alias(&selection)?;
+            let id = alias_for_agent(&selection, &agent)?;
             let native_metadata = if let Some(metadata) = &metadata {
                 Some(metadata.get("models").and_then(serde_json::Value::as_array)
                     .and_then(|models| models.iter().find(|entry| entry.get("slug").and_then(serde_json::Value::as_str) == Some(model)))
@@ -268,7 +268,7 @@ mod tests {
                 session_id: Some(session.into()),
             };
             CatalogModel {
-                id: alias(&selection).unwrap(),
+                id: alias_for_agent(&selection, "codex").unwrap(),
                 label: picker_label(package, "gpt-5.6-luna", Some("GPT-5.6-Luna")),
                 selection: selection.key().unwrap(),
             }

@@ -98,6 +98,36 @@ pub(super) fn alias(selection: &Selection) -> Result<String, String> {
     Ok(id)
 }
 
+/// Desktop's gateway route-name validator does not accept GPT provider IDs.
+/// Only the transport alias changes: labels, authorization and wire models stay
+/// attached to the real selection. Keep existing Claude aliases stable.
+pub(super) fn alias_for_agent(selection: &Selection, agent: &str) -> Result<String, String> {
+    let model = selection.model.as_deref().ok_or("Market model missing")?;
+    let legacy = alias(selection)?;
+    if agent != "claude_desktop" || model.starts_with("claude-") {
+        return Ok(legacy);
+    }
+    let owner = serde_json::to_vec(&(
+        "org2-desktop-gateway-route-v1",
+        &selection.metadata,
+        &selection.workspace_id,
+        &selection.entitlement_id,
+        model,
+    ))
+    .map_err(|_| "Invalid Market identity")?;
+    Ok(desktop_route_id(&Sha256::digest(owner)))
+}
+
+fn desktop_route_id(digest: &[u8]) -> String {
+    // Decimal bytes preserve the existing 80-bit collision bound without
+    // accidentally spelling provider names (e.g. "abab") in a hex suffix.
+    let suffix: String = digest[..10]
+        .iter()
+        .map(|byte| format!("{byte:03}"))
+        .collect();
+    format!("claude-org2-route-{suffix}")
+}
+
 impl Catalog {
     pub fn key(&self) -> Result<String, String> {
         let key = format!(
@@ -132,7 +162,8 @@ impl Catalog {
         let mut identity = None;
         for model in &catalog.models {
             let selection = Selection::parse(&model.selection, agent)?;
-            if model.id != alias(&selection)?
+            // Read canonical legacy catalogs for restoration and existing helpers.
+            if (model.id != alias_for_agent(&selection, agent)? && model.id != alias(&selection)?)
                 || !ids.insert(&model.id)
                 || model.label.trim().is_empty()
                 || model.label.len() > 512
@@ -269,6 +300,88 @@ mod tests {
             models,
         }
     }
+    // Observed gateway route predicate in Claude Desktop's installed build
+    // c38127e27202ddc1c8c187102f7798a93b1b8ede (2026-09-21). This fixture
+    // verifies compatibility only; it is not a claim of native GPT support.
+    fn desktop_accepts_gateway_route(model: &str) -> bool {
+        let blocked = regex::Regex::new(
+            r"ark-code|astron|command-r|deepseek|doubao|gemini|gemma|glm|gpt|grok|hermes|hy3|kimi|lfm|\bling\b|llama|longcat|mimo|minimax|mistral|mixtral|moonshot|nemotron|openai|phi-|qianfan|qwen|tc-code|\bunic\b|yi-|stepfun|step-3|seed-|bytedance|hunyuan|granite|amazon\.nova|nova-|devstral|ministral|ernie|codex|arcee|trinity|abab|phi\d|\bk2\.|\bm2\.|jamba|arctic|solar|mercury|zamba|kat-coder|\bds-|dpsk",
+        ).unwrap();
+        let model = model.to_lowercase();
+        !blocked.is_match(&model)
+            && [
+                "claude",
+                "sonnet",
+                "opus",
+                "haiku",
+                "fable",
+                "mythos",
+                "anthropic",
+            ]
+            .iter()
+            .any(|family| model.contains(family))
+    }
+
+    #[test]
+    fn desktop_gateway_alias_preserves_real_model_purchase_and_legacy_catalogs() {
+        let blocked_hex_digest = [0xab; 32];
+        assert!(!desktop_accepts_gateway_route(
+            "claude-org2-route-abababababababababab"
+        ));
+        assert!(desktop_accepts_gateway_route(&desktop_route_id(
+            &blocked_hex_digest
+        )));
+        assert!(desktop_route_id(&blocked_hex_digest)
+            .strip_prefix("claude-org2-route-")
+            .unwrap()
+            .bytes()
+            .all(|b| b.is_ascii_digit()));
+        let mut c = catalog();
+        c.agent = "claude_desktop".into();
+        // Legacy saved GPT catalogs remain decodable for Restore.
+        assert!(Catalog::parse(&c.key().unwrap(), "claude_desktop").is_ok());
+        for entry in &mut c.models {
+            let selection = Selection::parse(&entry.selection, "claude_desktop").unwrap();
+            let old = alias(&selection).unwrap();
+            assert!(!desktop_accepts_gateway_route(&old));
+            assert!(!desktop_accepts_gateway_route(&format!("claude-{old}")));
+            entry.id = alias_for_agent(&selection, "claude_desktop").unwrap();
+            assert!(desktop_accepts_gateway_route(&entry.id));
+            assert!(entry.label.contains(selection.model.as_deref().unwrap()));
+            let mut rotated = Selection::parse(&entry.selection, "claude_desktop").unwrap();
+            rotated.session_id = Some(uuid::Uuid::new_v4().to_string());
+            assert_eq!(
+                entry.id,
+                alias_for_agent(&rotated, "claude_desktop").unwrap()
+            );
+            assert_eq!(alias_for_agent(&selection, "codex").unwrap(), old);
+        }
+        c.default_model = c.models[0].id.clone();
+        let key = c.key().unwrap();
+        let parsed = Catalog::parse(&key, "claude_desktop").unwrap();
+        assert_ne!(parsed.models[0].id, parsed.models[1].id);
+        assert_ne!(parsed.models[0].id, parsed.models[2].id);
+        for entry in &parsed.models {
+            let route = AppSource
+                .request_selection(&key, "claude_desktop", &entry.id)
+                .unwrap()
+                .unwrap();
+            assert_eq!(route.selection, entry.selection);
+            let selection = Selection::parse(&route.selection, "claude_desktop").unwrap();
+            assert_eq!(Some(route.model.as_str()), selection.model.as_deref());
+        }
+        // An alias cannot be rebound to another authorized purchase.
+        c.models[0].selection = c.models[1].selection.clone();
+        assert!(c.key().is_err());
+        let fable = entry("pa_first", "claude-fable-5-1");
+        let selection = Selection::parse(&fable.selection, "claude_desktop").unwrap();
+        assert_eq!(
+            alias_for_agent(&selection, "claude_desktop").unwrap(),
+            fable.id
+        );
+        assert!(desktop_accepts_gateway_route(&fable.id));
+    }
+
     #[test]
     fn overlapping_models_route_to_the_selected_purchase_and_wire_model() {
         let catalog = catalog();
