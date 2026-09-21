@@ -1019,6 +1019,7 @@
       "actionFailed": "このアプリ接続を更新できませんでした",
       "openFailed": "このアプリを開けませんでした",
       "restoreRequired": "このアプリの元の設定を復元してから、パッケージを選び直して接続を適用してください",
+      "versionUnverified": "この ORG2 ビルドでは、このデスクトップアプリのバージョンで分離接続が動作するか未検証です。ORG2 を更新して再試行してください",
       "workspaceNumber": "サービス {{index}} / {{count}}",
       "openTerminal": "ターミナルを開く",
       "terminalOpened": "ターミナルを開きました",

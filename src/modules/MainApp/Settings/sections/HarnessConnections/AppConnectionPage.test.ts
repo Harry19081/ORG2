@@ -23,6 +23,9 @@ vi.mock("@src/api/tauri/rpc", () => ({
   rpc: {
     agentOrgs: {
       connections: { openClient: (...args: unknown[]) => openLocal(...args) },
+      managedConfig: {
+        restoreDefault: (...args: unknown[]) => restore(...args),
+      },
     },
   },
 }));
@@ -303,6 +306,64 @@ it("restores only the selected target app", async () => {
   expect(restore).toHaveBeenCalledWith("codex");
 });
 
+it("explains an external edit detected during restore and refreshes its conflict state", async () => {
+  connected = true;
+  restore.mockImplementationOnce(async () => {
+    conflict = true;
+    throw new RpcError(
+      "cli_config_restore_default",
+      "restore failed",
+      "Current CLI config was modified outside ORG2. Force restore to overwrite it."
+    );
+  });
+  await render("claude_desktop");
+  await act(async () => button("harnessConnections.restore").click());
+
+  expect(Message.error).toHaveBeenCalledWith({
+    content: "harnessConnections.conflict",
+  });
+  expect(refresh).toHaveBeenCalledOnce();
+  expect(reload).toHaveBeenCalledOnce();
+  expect(button("harnessConnections.restore").disabled).toBe(true);
+  expect(restore).toHaveBeenCalledExactlyOnceWith("claude_desktop");
+  expect(Message.success).not.toHaveBeenCalled();
+});
+
+it.each([
+  new RpcError("cli_config_restore_default", "restore failed", "private-token"),
+  new RpcError(
+    "cli_config_restore_default",
+    "restore failed",
+    "Current CLI config was modified outside ORG2. Force restore to overwrite it. private-token"
+  ),
+  new RpcError(
+    "other_command",
+    "restore failed",
+    "Current CLI config was modified outside ORG2. Force restore to overwrite it."
+  ),
+])(
+  "keeps unexpected restore failures private and never forces a retry (%#)",
+  async (error) => {
+    direct = true;
+    restore.mockRejectedValueOnce(error);
+    await render("claude_desktop");
+    await act(async () => button("harnessConnections.restore").click());
+
+    expect(Message.error).toHaveBeenCalledWith({
+      content: "harnessConnections.marketApps.actionFailed",
+    });
+    expect(JSON.stringify(vi.mocked(Message.error).mock.calls)).not.toContain(
+      "private-token"
+    );
+    expect(restore).toHaveBeenCalledExactlyOnceWith({
+      agentName: "claude_desktop",
+      force: false,
+    });
+    expect(reload).toHaveBeenCalledOnce();
+    expect(Message.success).not.toHaveBeenCalled();
+  }
+);
+
 it("describes the Claude Code overlay and offers disconnect instead of restore", async () => {
   connected = true;
   overlay = true;
@@ -403,6 +464,8 @@ it("blocks a Direct Claude launch when the overlay changed externally", async ()
 
 it.each([
   ["native_app_restore_required", "restoreRequired"],
+  ["native_app_version_unverified", "versionUnverified"],
+  ["native_app_version_unverified secret-fixture", "actionFailed"],
   ["native_app_restore_required secret-fixture", "actionFailed"],
   ["backend failed with secret-fixture", "actionFailed"],
 ])("shows safe migration guidance for native error %s", async (code, key) => {

@@ -169,15 +169,18 @@ export default function AppConnectionPage({
       });
     } catch (error) {
       // Allowlist the machine code; never display arbitrary native error text.
-      const restoreRequired =
+      const code =
         error instanceof RpcError &&
-        error.command === "market_connection_configure_catalog" &&
-        error.cause === "native_app_restore_required";
+        error.command === "market_connection_configure_catalog"
+          ? error.cause
+          : null;
       Message.error({
         content: t(
-          restoreRequired
+          code === "native_app_restore_required"
             ? "harnessConnections.marketApps.restoreRequired"
-            : "harnessConnections.marketApps.actionFailed"
+            : code === "native_app_version_unverified"
+              ? "harnessConnections.marketApps.versionUnverified"
+              : "harnessConnections.marketApps.actionFailed"
         ),
       });
     } finally {
@@ -238,10 +241,21 @@ export default function AppConnectionPage({
       Message.success({
         content: t("harnessConnections.marketApps.disconnected"),
       });
-    } catch {
+    } catch (error) {
+      // Match only this command's known conflict; native errors may contain secrets.
+      const configurationChanged =
+        error instanceof RpcError &&
+        error.command === "cli_config_restore_default" &&
+        error.cause ===
+          "Current CLI config was modified outside ORG2. Force restore to overwrite it.";
       Message.error({
-        content: t("harnessConnections.marketApps.actionFailed"),
+        content: t(
+          configurationChanged
+            ? "harnessConnections.conflict"
+            : "harnessConnections.marketApps.actionFailed"
+        ),
       });
+      await refresh();
     } finally {
       setBusy(null);
     }

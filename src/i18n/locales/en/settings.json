@@ -1100,6 +1100,7 @@
       "actionFailed": "Could not update this app connection",
       "openFailed": "Could not open this app",
       "restoreRequired": "Restore the original setup for this app, then select your packages and apply the connection again",
+      "versionUnverified": "This desktop app version has not been verified for isolated connections by this ORG2 build. Update ORG2 and try again",
       "workspaceNumber": "Service {{index}} of {{count}}",
       "openTerminal": "Open terminal",
       "terminalOpened": "Terminal opened",

@@ -1100,6 +1100,7 @@
       "actionFailed": "Tidak dapat memperbarui koneksi aplikasi ini",
       "openFailed": "Tidak dapat membuka aplikasi ini",
       "restoreRequired": "Pulihkan pengaturan asli aplikasi ini, lalu pilih paket Anda dan terapkan kembali koneksi",
+      "versionUnverified": "Versi aplikasi desktop ini belum diverifikasi untuk koneksi terisolasi pada versi ORG2 ini. Perbarui ORG2 dan coba lagi",
       "workspaceNumber": "Layanan {{index}} dari {{count}}",
       "openTerminal": "Buka terminal",
       "terminalOpened": "Terminal dibuka",

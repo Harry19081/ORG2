@@ -99,10 +99,23 @@ impl Selection {
         Ok(selection)
     }
 }
+// Reuse only a recently fetched, native-verified picker snapshot while selecting
+// a model. This is not an authorization cache: token issuance and each gateway
+// request still enforce current access, terms, wallet and provider availability.
+struct CatalogSnapshot {
+    entries: Vec<market_connect::WorkspaceEntitlement>,
+    fetched_at: std::time::Instant,
+}
+impl CatalogSnapshot {
+    fn fresh(&self, now: std::time::Instant) -> bool {
+        now.saturating_duration_since(self.fetched_at) < std::time::Duration::from_secs(30)
+    }
+}
 #[derive(Default)]
 struct ConnectionState {
     connection: Option<Arc<Connection>>,
     credentials: HashMap<String, WorkspaceCredential>,
+    catalog: Option<CatalogSnapshot>,
 }
 #[derive(Default)]
 struct State {
@@ -160,6 +173,46 @@ impl MarketSource {
     }
 }
 impl ConnectionState {
+    async fn catalog<F, Fut>(
+        &mut self,
+        lease: &super::owner::Lease,
+        reuse_recent: bool,
+        fetch: F,
+    ) -> Result<Vec<market_connect::WorkspaceEntitlement>, String>
+    where
+        F: FnOnce() -> Fut,
+        Fut:
+            std::future::Future<Output = Result<Vec<market_connect::WorkspaceEntitlement>, String>>,
+    {
+        let started = std::time::Instant::now();
+        lease.check()?;
+        if reuse_recent {
+            if let Some(snapshot) = &self.catalog {
+                if snapshot.fresh(std::time::Instant::now()) {
+                    let entries = snapshot.entries.clone();
+                    tracing::debug!(
+                        "[Market] catalog cache_hit=true elapsed_us={}",
+                        started.elapsed().as_micros()
+                    );
+                    return Ok(entries);
+                }
+            }
+        }
+        // A failed refresh must not leave an older successful catalog eligible.
+        self.catalog = None;
+        let entries = fetch().await?;
+        lease.check()?;
+        self.catalog = Some(CatalogSnapshot {
+            entries: entries.clone(),
+            fetched_at: std::time::Instant::now(),
+        });
+        tracing::debug!(
+            "[Market] catalog cache_hit=false elapsed_us={}",
+            started.elapsed().as_micros()
+        );
+        Ok(entries)
+    }
+
     async fn authorized_credential<F, Fut>(
         &mut self,
         lease: &super::owner::Lease,
@@ -366,6 +419,13 @@ pub(super) async fn retire_for_reauthorization() -> tokio::sync::OwnedRwLockWrit
 pub(super) async fn options(
     metadata: ConnectionMetadata,
 ) -> Result<Vec<market_connect::WorkspaceEntitlement>, String> {
+    load_options(metadata, false).await
+}
+
+async fn load_options(
+    metadata: ConnectionMetadata,
+    reuse_recent: bool,
+) -> Result<Vec<market_connect::WorkspaceEntitlement>, String> {
     if metadata.target != market_connect::Target::Org2 {
         return Err("Market workspace requires ORG2 authorization".into());
     }
@@ -373,11 +433,19 @@ pub(super) async fn options(
     tokio::spawn(async move {
         let (lease, _authorization, entry) = source.authorized_acquire(&metadata).await?;
         let mut state = entry.lock().await;
-        let connection = state.restore(metadata).await?;
         lease.check()?;
-        let entries = connection.entitlements().await.map_err(String::from)?;
-        lease.check()?;
-        Ok(entries)
+        let connection = match state.restore(metadata).await {
+            Ok(connection) => connection,
+            Err(error) => {
+                state.catalog = None;
+                return Err(error);
+            }
+        };
+        state
+            .catalog(&lease, reuse_recent, || async {
+                connection.entitlements().await.map_err(String::from)
+            })
+            .await
     })
     .await
     .map_err(|_| "Market workspace request failed")?
@@ -393,6 +461,7 @@ pub(super) async fn activate(
     let source = instance();
     let (lease, _authorization, entry) = source.authorized_acquire(&metadata).await?;
     let mut state = entry.lock().await;
+    state.catalog = None;
     let connection = state.restore(metadata).await?;
     lease.check()?;
     let result = connection
@@ -425,7 +494,7 @@ pub(super) async fn prepare_session(
         session_id: Some(uuid::Uuid::new_v4().to_string()),
         native_protocol: None,
     };
-    let entries = options(selection.metadata.clone()).await?;
+    let entries = load_options(selection.metadata.clone(), true).await?;
     if agent == "rust_agent" {
         if agent_core::providers::thinking_mode::parse_model_variant(&model).base_model != model {
             return Err("Package catalog must provide a canonical native wire model".into());
@@ -544,6 +613,195 @@ pub(crate) fn protocol_base_url(workspace_root: &str, agent: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn picker_snapshot_has_a_fixed_thirty_second_lifetime() {
+        let now = std::time::Instant::now();
+        let snapshot = CatalogSnapshot {
+            entries: Vec::new(),
+            fetched_at: now,
+        };
+        assert!(snapshot.fresh(now));
+        assert!(snapshot.fresh(now + std::time::Duration::from_secs(29)));
+        assert!(!snapshot.fresh(now + std::time::Duration::from_secs(30)));
+        assert!(!snapshot.fresh(now + std::time::Duration::from_secs(300)));
+    }
+    struct CatalogHttpFixture {
+        url: String,
+        calls: Arc<std::sync::atomic::AtomicUsize>,
+        fail: Arc<std::sync::atomic::AtomicBool>,
+        server: tokio::task::JoinHandle<()>,
+    }
+    impl CatalogHttpFixture {
+        async fn start() -> Self {
+            use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+            let _ = tokio_rustls::rustls::crypto::ring::default_provider().install_default();
+            let calls = Arc::new(AtomicUsize::new(0));
+            let fail = Arc::new(AtomicBool::new(false));
+            let observed = Arc::clone(&calls);
+            let failing = Arc::clone(&fail);
+            let router = axum::Router::new().route(
+                "/catalog",
+                axum::routing::get(move || {
+                    let observed = Arc::clone(&observed);
+                    let failing = Arc::clone(&failing);
+                    async move {
+                        observed.fetch_add(1, Ordering::SeqCst);
+                        // Represent the catalog RTT without depending on production.
+                        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+                        if failing.load(Ordering::SeqCst) {
+                            (axum::http::StatusCode::SERVICE_UNAVAILABLE, "unavailable")
+                        } else {
+                            (axum::http::StatusCode::OK, "[]")
+                        }
+                    }
+                }),
+            );
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let url = format!("http://{}/catalog", listener.local_addr().unwrap());
+            let server = tokio::spawn(async move {
+                axum::serve(listener, router).await.unwrap();
+            });
+            Self {
+                url,
+                calls,
+                fail,
+                server,
+            }
+        }
+        async fn fetch(&self) -> Result<Vec<market_connect::WorkspaceEntitlement>, String> {
+            reqwest::Client::new()
+                .get(&self.url)
+                .send()
+                .await
+                .map_err(|e| e.to_string())?
+                .error_for_status()
+                .map_err(|e| e.to_string())?
+                .json()
+                .await
+                .map_err(|e| e.to_string())
+        }
+        fn calls(&self) -> usize {
+            self.calls.load(std::sync::atomic::Ordering::SeqCst)
+        }
+    }
+    impl Drop for CatalogHttpFixture {
+        fn drop(&mut self) {
+            self.server.abort();
+        }
+    }
+
+    #[tokio::test]
+    async fn picker_reuses_one_http_catalog_but_refresh_failure_never_reuses_stale_data() {
+        let server = CatalogHttpFixture::start().await;
+        let (lease, _) = super::super::owner::test_lease(&selection().metadata.identity_user_id);
+        let state = tokio::sync::Mutex::new(ConnectionState::default());
+        let read = || async {
+            state
+                .lock()
+                .await
+                .catalog(&lease, true, || server.fetch())
+                .await
+                .unwrap()
+        };
+        // Same lock as production: concurrent selections share the successful fetch.
+        tokio::join!(read(), read(), read());
+        assert_eq!(server.calls(), 1);
+        let mut state = state.lock().await;
+        state
+            .catalog(&lease, false, || server.fetch())
+            .await
+            .unwrap();
+        assert_eq!(
+            server.calls(),
+            2,
+            "explicit catalog refresh still reaches the server"
+        );
+        server.fail.store(true, std::sync::atomic::Ordering::SeqCst);
+        assert!(state
+            .catalog(&lease, false, || server.fetch())
+            .await
+            .is_err());
+        assert!(state.catalog.is_none());
+        assert!(state
+            .catalog(&lease, true, || server.fetch())
+            .await
+            .is_err());
+        assert_eq!(
+            server.calls(),
+            4,
+            "failed refresh cannot revive a warm snapshot"
+        );
+        server
+            .fail
+            .store(false, std::sync::atomic::Ordering::SeqCst);
+        state
+            .catalog(&lease, true, || server.fetch())
+            .await
+            .unwrap();
+        state.catalog.as_mut().unwrap().fetched_at -= std::time::Duration::from_secs(30);
+        state
+            .catalog(&lease, true, || server.fetch())
+            .await
+            .unwrap();
+        assert_eq!(server.calls(), 6, "expired snapshots cause a fresh request");
+    }
+
+    #[tokio::test]
+    async fn logout_denies_catalog_cache_and_discards_a_late_fetch() {
+        let (lease, logout) =
+            super::super::owner::test_lease(&selection().metadata.identity_user_id);
+        let mut state = ConnectionState::default();
+        state
+            .catalog(&lease, false, || async { Ok(Vec::new()) })
+            .await
+            .unwrap();
+        logout();
+        assert!(state
+            .catalog(&lease, true, || async {
+                panic!("signed-out selections cannot fetch")
+            })
+            .await
+            .is_err());
+        let (lease, logout) =
+            super::super::owner::test_lease(&selection().metadata.identity_user_id);
+        assert!(state
+            .catalog(&lease, false, || async {
+                logout();
+                Ok(Vec::new())
+            })
+            .await
+            .is_err());
+        assert!(
+            state.catalog.is_none(),
+            "a response after logout is never published"
+        );
+    }
+
+    #[tokio::test]
+    async fn catalog_snapshots_are_scoped_to_owner_and_retired_on_reauthorization() {
+        let source = MarketSource::default();
+        let metadata = selection().metadata;
+        let (lease, _) = super::super::owner::test_lease(&metadata.identity_user_id);
+        let (active, original) = source.acquire(&metadata).await.unwrap();
+        original
+            .lock()
+            .await
+            .catalog(&lease, false, || async { Ok(Vec::new()) })
+            .await
+            .unwrap();
+        let mut other = metadata.clone();
+        other.identity_user_id = "22222222-2222-4222-8222-222222222222".into();
+        let (other_active, different_owner) = source.acquire(&other).await.unwrap();
+        assert!(!Arc::ptr_eq(&original, &different_owner));
+        assert!(different_owner.lock().await.catalog.is_none());
+        drop(active);
+        drop(other_active);
+        drop(source.retire().await);
+        let (_active, restored) = source.acquire(&metadata).await.unwrap();
+        assert!(!Arc::ptr_eq(&original, &restored));
+        assert!(restored.lock().await.catalog.is_none());
+    }
+
     #[test]
     fn legacy_selection_keeps_its_original_workspace() {
         let mut wire = serde_json::to_value(selection()).unwrap();

@@ -21,7 +21,7 @@ fn bundle_id(agent: &str) -> Result<&'static str, String> {
 // Desktop versions are independent of the Codex CLI version axis. Isolation
 // uses vendor implementation flags verified against this installed release;
 // unknown releases require a new source/runtime capability audit.
-const CODEX_ISOLATION_RELEASE: &str = "26.908.70816";
+const CODEX_ISOLATION_RELEASES: &[&str] = &["26.908.70816", "26.915.31945"];
 fn validate_bundle(agent: &str, path: &Path) -> Result<(), String> {
     let value = plist::Value::from_file(path.join("Contents/Info.plist"))
         .map_err(|_| "Cannot read the selected official App version")?;
@@ -42,8 +42,12 @@ fn validate_bundle(agent: &str, path: &Path) -> Result<(), String> {
     if agent == "claude_desktop" {
         return crate::harness_connections::verify_claude_desktop_bundle_version(version);
     }
-    if version != CODEX_ISOLATION_RELEASE {
-        return Err(format!("Codex Desktop {version} has not been verified for isolated Market profiles; supported desktop release: {CODEX_ISOLATION_RELEASE}"));
+    if !CODEX_ISOLATION_RELEASES.contains(&version) {
+        tracing::warn!(
+            version,
+            "Codex Desktop version is not verified for isolated Market profiles"
+        );
+        return Err("native_app_version_unverified".into());
     }
     Ok(())
 }
@@ -344,14 +348,36 @@ mod tests {
         assert!(start.elapsed() < std::time::Duration::from_secs(2));
     }
     #[test]
+    fn verified_codex_releases_preserve_the_bundle_identity_gate() {
+        let root = tempfile::tempdir().unwrap();
+        for version in CODEX_ISOLATION_RELEASES {
+            let path = fixture_bundle(root.path(), "Codex.app", "codex", version);
+            assert!(validate_bundle("codex", &path).is_ok());
+            // A matching version alone must never authorize another vendor bundle.
+            fixture_bundle(root.path(), "Codex.app", "claude_desktop", version);
+            assert_eq!(
+                validate_bundle("codex", &path).unwrap_err(),
+                "Official App bundle identity changed"
+            );
+        }
+        for version in ["", "26.915.31946", "27.0.0", "26.915.31945-preview"] {
+            let path = fixture_bundle(root.path(), "Codex.app", "codex", version);
+            assert_eq!(
+                validate_bundle("codex", &path).unwrap_err(),
+                "native_app_version_unverified"
+            );
+        }
+    }
+    #[test]
     fn selected_bundle_itself_must_have_verified_version() {
         let root = tempfile::tempdir().unwrap();
         let old = fixture_bundle(root.path(), "A.app", "codex", "0.99.0");
-        fixture_bundle(root.path(), "Z.app", "codex", CODEX_ISOLATION_RELEASE);
+        fixture_bundle(root.path(), "Z.app", "codex", CODEX_ISOLATION_RELEASES[0]);
         // Cannot validate a supported second candidate then launch the first.
-        assert!(installed_bundle_in("codex", &[root.path().into()])
-            .unwrap_err()
-            .contains("0.99.0"));
+        assert_eq!(
+            installed_bundle_in("codex", &[root.path().into()]).unwrap_err(),
+            "native_app_version_unverified"
+        );
         std::fs::remove_dir_all(old).unwrap();
         let selected = installed_bundle_in("codex", &[root.path().into()]).unwrap();
         assert_eq!(selected.file_name().unwrap(), "Z.app");
