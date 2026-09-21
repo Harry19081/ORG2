@@ -118,9 +118,6 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
   // Navigation
   // ============================================
 
-  const [nameError, setNameError] = useState<string | null>(null);
-  const [nameTouched, setNameTouched] = useState(false);
-
   const existingNameSet = useMemo(
     () =>
       new Set(
@@ -129,17 +126,15 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
     [existingAccountNames]
   );
 
-  // Live duplicate detection — re-evaluated on every keystroke.
+  // Live duplicate detection — re-evaluated on every keystroke. A duplicate
+  // disables Done, so its error must show whenever it holds, not only after
+  // the input blurs: the name can also arrive without the field being focused.
   const trimmedName = data.name.trim();
   const isDuplicateName =
     trimmedName !== "" && existingNameSet.has(trimmedName.toLowerCase());
 
   const handleNext = () => {
-    if (isDuplicateName) {
-      setNameTouched(true);
-      setNameError(t("keyVault.nameDuplicate"));
-      return;
-    }
+    if (isDuplicateName) return;
 
     if (!data.agent_type) {
       setErrors({
@@ -202,24 +197,13 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
     >
       <Input
         value={data.name}
-        onChange={(value) => {
-          onChange({ name: value });
-          if (nameError) setNameError(null);
-          if (nameTouched) setNameTouched(false);
-        }}
-        onBlur={() => {
-          if (trimmedName) setNameTouched(true);
-        }}
+        onChange={(value) => onChange({ name: value })}
         placeholder={t("keyVault.accountNamePlaceholder", {
           provider: accountNameBase,
         })}
         size="default"
         style={SECTION_CONTROL_STYLE}
-        errorMessage={
-          nameTouched && isDuplicateName
-            ? t("keyVault.nameDuplicate")
-            : (nameError ?? undefined)
-        }
+        errorMessage={isDuplicateName ? t("keyVault.nameDuplicate") : undefined}
         errorPlacement="left"
       />
     </SectionRow>
