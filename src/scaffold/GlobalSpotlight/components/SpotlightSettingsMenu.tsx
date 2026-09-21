@@ -2,9 +2,9 @@
  * SpotlightSettingsMenu
  *
  * "…" button at the end of the keyboard-hint pill. Opens a small menu with
- * Spotlight's own view preferences — placement, background dim — and, for a
- * surface that supports pinning, an "Unpin all" action that clears only that
- * surface's pin list (`pinScope`).
+ * Spotlight's own view preferences — placement, background dim, hover detail
+ * card — and, for a surface that supports pinning, an "Unpin all" action that
+ * clears only that surface's pin list (`pinScope`).
  *
  * The menu portals to <body> at DROPDOWN_PANEL.zIndex, which sits above the
  * Spotlight container. ActionMenuSurface owns Escape (capture phase), so
@@ -96,6 +96,7 @@ export const SpotlightSettingsMenu: React.FC<{
   const [dimBackground, setDimBackground] = useSetting(
     "general.spotlightDimBackground"
   );
+  const [detailCard, setDetailCard] = useSetting("general.spotlightDetailCard");
   const label = t("selectors.spotlightFooter.settings");
 
   return (
@@ -158,6 +159,11 @@ export const SpotlightSettingsMenu: React.FC<{
               label={tSettings("general.spotlightDimBackground")}
               checked={dimBackground}
               onCheckedChange={setDimBackground}
+            />
+            <MenuSwitchRow
+              label={tSettings("general.spotlightDetailCard")}
+              checked={detailCard}
+              onCheckedChange={setDetailCard}
             />
             {pinScope && <UnpinAllItem scope={pinScope} onDone={close} />}
           </ActionMenuSurface>,

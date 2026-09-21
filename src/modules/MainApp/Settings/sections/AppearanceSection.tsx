@@ -174,6 +174,9 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
   const [spotlightDimBackground, setSpotlightDimBackground] = useSetting(
     "general.spotlightDimBackground"
   );
+  const [spotlightDetailCard, setSpotlightDetailCard] = useSetting(
+    "general.spotlightDetailCard"
+  );
   const [usePointerCursors, setUsePointerCursors] = useSetting(
     "general.usePointerCursors"
   );
@@ -547,6 +550,15 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
               <Switch
                 checked={spotlightDimBackground}
                 onCheckedChange={setSpotlightDimBackground}
+              />
+            </SectionRow>
+            <SectionRow
+              settingsSearchKeys="general.spotlightDetailCard"
+              label={t("general.spotlightDetailCard")}
+            >
+              <Switch
+                checked={spotlightDetailCard}
+                onCheckedChange={setSpotlightDetailCard}
               />
             </SectionRow>
           </SectionContainer>

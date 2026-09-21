@@ -195,6 +195,7 @@
     "selectedItemTransparency": "Прозрачность выбранного элемента",
     "spotlightPlacement": "Положение Spotlight",
     "spotlightDimBackground": "Затемнять фон",
+    "spotlightDetailCard": "Карточка сведений при наведении",
     "spotlightPlacementOptions": {
       "top": "Сверху",
       "center": "По центру"

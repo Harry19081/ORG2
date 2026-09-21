@@ -478,6 +478,16 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
                 <HighlightText text={item.label} query={searchQuery} />
               </span>
             )}
+            {data.inlineTag && (
+              <span className="shrink-0 text-[10px] text-text-3">
+                {data.inlineTag}
+              </span>
+            )}
+            {showSecondaryStatus && !data.statusContent && data.tagLabel && (
+              <span className="shrink-0 text-[10px] text-text-3">
+                {data.tagLabel}
+              </span>
+            )}
             {data.pinState && !isDisabled && (
               <Button
                 variant="tertiary"
@@ -512,16 +522,6 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
                   data.pinState?.onToggle();
                 }}
               />
-            )}
-            {data.inlineTag && (
-              <span className="shrink-0 text-[10px] text-text-3">
-                {data.inlineTag}
-              </span>
-            )}
-            {showSecondaryStatus && !data.statusContent && data.tagLabel && (
-              <span className="shrink-0 text-[10px] text-text-3">
-                {data.tagLabel}
-              </span>
             )}
           </div>
           {item.desc && (

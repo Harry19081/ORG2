@@ -195,6 +195,7 @@
     "selectedItemTransparency": "Độ trong suốt của mục đã chọn",
     "spotlightPlacement": "Vị trí Spotlight",
     "spotlightDimBackground": "Làm mờ nền",
+    "spotlightDetailCard": "Thẻ chi tiết khi di chuột",
     "spotlightPlacementOptions": {
       "top": "Trên cùng",
       "center": "Giữa"

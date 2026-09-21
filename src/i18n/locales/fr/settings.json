@@ -195,6 +195,7 @@
     "selectedItemTransparency": "Transparence de l’élément sélectionné",
     "spotlightPlacement": "Position de Spotlight",
     "spotlightDimBackground": "Assombrir l’arrière-plan",
+    "spotlightDetailCard": "Fiche de détails au survol",
     "spotlightPlacementOptions": {
       "top": "Haut",
       "center": "Milieu"

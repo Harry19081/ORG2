@@ -276,6 +276,7 @@
     "selectedItemTransparency": "Transparansi item terpilih",
     "spotlightPlacement": "Posisi Spotlight",
     "spotlightDimBackground": "Redupkan latar belakang",
+    "spotlightDetailCard": "Kartu detail saat hover",
     "spotlightPlacementOptions": {
       "top": "Atas",
       "center": "Tengah"

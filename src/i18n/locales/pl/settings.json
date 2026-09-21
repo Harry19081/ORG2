@@ -195,6 +195,7 @@
     "selectedItemTransparency": "Przezroczystość wybranego elementu",
     "spotlightPlacement": "Pozycja Spotlight",
     "spotlightDimBackground": "Przyciemnij tło",
+    "spotlightDetailCard": "Karta szczegółów po najechaniu",
     "spotlightPlacementOptions": {
       "top": "Góra",
       "center": "Środek"

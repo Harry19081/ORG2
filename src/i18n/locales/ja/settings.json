@@ -195,6 +195,7 @@
     "selectedItemTransparency": "選択項目の透明度",
     "spotlightPlacement": "Spotlight の位置",
     "spotlightDimBackground": "背景を暗くする",
+    "spotlightDetailCard": "ホバー詳細カード",
     "spotlightPlacementOptions": {
       "top": "上部",
       "center": "中央"
