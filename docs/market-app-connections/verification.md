@@ -212,3 +212,14 @@ retroactively explain the earlier two changes.
 This evidence does not establish bidirectional history synchronization. New
 messages remain in the isolated history. That separate implementation is not
 included in this PR. No ORG2 installer has been published.
+
+## Integration with latest develop
+
+The branch was rebased without conflicts onto `77989525e6` after the native
+acceptance above, retaining the colleague's settings card/filter UI and Cursor
+model labels. `git diff f1efec1cd3070125bd0405c873d5318b94e25f14 HEAD -- src-tauri`
+was empty: the tested native runtime is unchanged. The newer frontend passed
+101 tests across the four Market connection suites plus model-name, model-tier,
+settings-card and settings-filter suites. `pnpm build` passed in 31.7 seconds.
+The screenshots document the tested pre-integration frontend; the updated
+frontend has not been installed into a new native acceptance bundle.
