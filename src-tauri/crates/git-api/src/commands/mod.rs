@@ -23,7 +23,6 @@ pub mod remote;
 pub mod staging;
 pub mod stash;
 pub mod streaming;
-pub mod tasks;
 pub mod utils;
 
 // Re-export all public functions for convenience
