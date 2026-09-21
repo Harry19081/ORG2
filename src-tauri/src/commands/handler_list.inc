@@ -381,6 +381,7 @@ git::repos::server_delete_workspace,
 // IDE detection & opening
 integrations::external_ide::server_detect_ides,
 // Session event channel commands (Tauri IPC Channels)
+api::local_auth::ide_server_token,
 api::websocket_handler::subscribe_session_events,
 api::websocket_handler::unsubscribe_session_events,
 // Mobile Remote relay administration
