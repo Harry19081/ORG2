@@ -1,4 +1,5 @@
 import type { ModelType } from "@src/api/types/keys";
+import { isTierModelName } from "@src/util/modelTiers";
 
 import type { IconProvider } from "./iconProviders";
 import { MODEL_TYPE_TO_ICON } from "./modelTypeIcons";
@@ -10,8 +11,11 @@ import { MODEL_TYPE_TO_ICON } from "./modelTypeIcons";
  * picks". Claiming them for Cursor unconditionally painted the Cursor cube on
  * unrelated agents' rows, so they resolve to a brand only when the agent hint
  * is Cursor itself.
+ *
+ * The name set itself lives in `@src/util/modelTiers` — shared with the label
+ * resolvers so a tier never reads as a model in one surface and a routing
+ * choice in another.
  */
-const GENERIC_TIER_MODEL_NAMES = new Set(["auto", "default", "premium"]);
 
 /**
  * True for model ids that name a routing tier rather than a model. Such a name
@@ -19,7 +23,7 @@ const GENERIC_TIER_MODEL_NAMES = new Set(["auto", "default", "premium"]);
  * that would claim the session runs a specific model.
  */
 export function isGenericTierModelName(modelName: string): boolean {
-  return GENERIC_TIER_MODEL_NAMES.has(modelName.toLowerCase());
+  return isTierModelName(modelName);
 }
 
 /**
@@ -34,7 +38,7 @@ export function getIconProviderFromModelName(
   const lower = modelName.toLowerCase();
 
   // Routing tiers only name a brand when the agent behind them is Cursor.
-  if (GENERIC_TIER_MODEL_NAMES.has(lower)) {
+  if (isTierModelName(lower)) {
     const hinted = agentType
       ? (MODEL_TYPE_TO_ICON[agentType as ModelType] as IconProvider | undefined)
       : undefined;
