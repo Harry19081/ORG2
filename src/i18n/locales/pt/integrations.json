@@ -602,6 +602,8 @@
     "searchPlaceholder": "Buscar modelos...",
     "flatView": "Visualização plana",
     "groupView": "Visualização em grupos",
+    "cardView": "Visualização em cartões",
+    "listView": "Visualização em lista",
     "showMoreOlder": "Mostrar mais",
     "showLessOlder": "Mostrar menos",
     "scopeSelectCurrentModels": "Apenas os mais recentes",

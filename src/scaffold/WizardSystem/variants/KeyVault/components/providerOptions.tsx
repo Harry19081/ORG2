@@ -10,6 +10,7 @@ import React from "react";
 import ModelIcon from "@src/components/ModelIcon";
 import { type IconProvider } from "@src/components/ModelIcon/config";
 import type { SelectOption } from "@src/components/Select";
+import { renderAllFilterIcon } from "@src/components/SettingsTable/filterIcons";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import { Calendar01Icon, CogIcon, HugeiconsIcon, Key02Icon } from "@src/icons";
 import type { SelectionGridOption } from "@src/scaffold/WizardSystem/primitives";
@@ -209,25 +210,21 @@ export function buildBrandProviderFilterOptions(
       providerA.label.localeCompare(providerB.label)
     );
 
+  // The brand mark goes in the option's own `icon` slot rather than baked into
+  // its label, so the dropdown rows carry it while the closed trigger stays a
+  // plain label (SettingsTable renders filters with `showTriggerIcon={false}`).
   return [
     {
       value: "all",
       label: t("keyVault.filterAllProviders"),
+      icon: renderAllFilterIcon(16),
     },
-    ...providers.map((provider) => {
-      const labelNode = (
-        <span className="flex items-center gap-2">
-          {providerIconNode(provider, 16)}
-          {provider.label}
-        </span>
-      );
-      return {
-        value: provider.key,
-        label: labelNode,
-        triggerLabel: labelNode,
-        extra: { searchText: provider.label },
-      };
-    }),
+    ...providers.map((provider) => ({
+      value: provider.key,
+      label: provider.label,
+      icon: providerIconNode(provider, 16),
+      extra: { searchText: provider.label },
+    })),
   ];
 }
 

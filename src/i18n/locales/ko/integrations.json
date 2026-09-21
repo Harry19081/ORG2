@@ -602,6 +602,8 @@
     "searchPlaceholder": "모델 검색...",
     "flatView": "목록 보기",
     "groupView": "그룹 보기",
+    "cardView": "카드 보기",
+    "listView": "목록 보기",
     "showMoreOlder": "더 보기",
     "showLessOlder": "접기",
     "scopeSelectCurrentModels": "최신만",

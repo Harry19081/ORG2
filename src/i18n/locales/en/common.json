@@ -144,6 +144,7 @@
     "confirm": "Confirm",
     "apply": "Apply",
     "reset": "Reset",
+    "resetFilters": "Reset filters",
     "search": "Search",
     "add": "Add",
     "remove": "Remove",

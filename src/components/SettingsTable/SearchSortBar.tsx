@@ -3,10 +3,15 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import Input, { type InputProps } from "@src/components/Input";
+import type { InputProps } from "@src/components/Input";
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
-import { FilterIcon, HugeiconsIcon, Search01Icon } from "@src/icons";
+import { FilterIcon, HugeiconsIcon } from "@src/icons";
+
+import {
+  SettingsTableSearchInput,
+  type SettingsTableSearchShortcut,
+} from "./SettingsTableSearchInput";
 
 export interface SearchSortBarFilterConfig {
   pills: React.ReactNode;
@@ -30,6 +35,9 @@ export interface SearchSortBarProps {
   leftContent?: React.ReactNode;
   rightContent?: React.ReactNode;
   allowSearchClear?: boolean;
+  /** Opt in to a keyboard shortcut that focuses the search field, with its key
+   *  hint shown inside the field. `true` binds ⌘F / Ctrl+F. */
+  searchShortcut?: SettingsTableSearchShortcut;
   /** Tab pills rendered inline with searchCountText (pills left, count right) */
   tabPills?: React.ReactNode;
   /** Filter button + collapsible pills. When provided, renders Filter button and pills when expanded. */
@@ -52,6 +60,7 @@ const SearchSortBar: React.FC<SearchSortBarProps> = ({
   leftContent,
   rightContent,
   allowSearchClear = true,
+  searchShortcut,
   tabPills,
   filterConfig,
   noPadding = false,
@@ -102,24 +111,14 @@ const SearchSortBar: React.FC<SearchSortBarProps> = ({
             {leftContent}
             {hasSearchInput && (
               <div className="min-w-0 flex-1">
-                <Input
-                  className="w-full min-w-0"
-                  type="search"
+                <SettingsTableSearchInput
                   size={searchInputSize}
                   value={searchValue}
                   placeholder={searchPlaceholder}
-                  prefix={
-                    <HugeiconsIcon
-                      icon={Search01Icon}
-                      data-icon="search"
-                      size={14}
-                      className="text-text-3"
-                      aria-hidden
-                    />
-                  }
-                  onChange={(value) => onSearchChange(value)}
+                  onChange={onSearchChange}
                   allowClear={allowSearchClear}
                   onClear={onSearchClear}
+                  shortcut={searchShortcut}
                 />
               </div>
             )}

@@ -47,7 +47,9 @@ const INTERACTIVE_TABLE_TARGET_SELECTOR = [
   ".dropdown-trigger-wrapper",
 ].join(", ");
 
-function isInteractiveTableTarget(target: EventTarget | null): boolean {
+/** Shared with SettingsTable's card grid so both presentations ignore clicks
+ *  that land on a control inside the row. */
+export function isInteractiveTableTarget(target: EventTarget | null): boolean {
   return target instanceof Element
     ? target.closest(INTERACTIVE_TABLE_TARGET_SELECTOR) !== null
     : false;

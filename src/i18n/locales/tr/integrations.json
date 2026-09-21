@@ -602,6 +602,8 @@
     "searchPlaceholder": "Modelleri ara...",
     "flatView": "Liste görünümü",
     "groupView": "Grup görünümü",
+    "cardView": "Kart görünümü",
+    "listView": "Liste görünümü",
     "showMoreOlder": "Daha fazla göster",
     "showLessOlder": "Daha az göster",
     "scopeSelectCurrentModels": "Yalnızca en son",
