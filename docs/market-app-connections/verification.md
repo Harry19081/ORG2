@@ -46,9 +46,10 @@ behavior. Relevant source SHA-256 values:
 
 ## Limits and lifecycle
 
-Claude Desktop's GPT menu and real inference through the new capability catalog
-have not been verified. The Cloud bridge has separate protocol, provider and
-billing acceptance. Neither result substitutes for native desktop acceptance.
+Claude Desktop's final-build GPT menu, real inference, context and receipt
+verification are recorded in the follow-up below. The earlier combined build
+described in this section did not establish those results. Cloud acceptance
+and native acceptance remain separate evidence.
 The integration acceptance build combined the fixes at commit `aff4fd0` (native
 binary SHA-256 prefix `332c077`). Keychain access initially blocked cold package
 loading; a process sample identified `enabled::status →
@@ -150,17 +151,64 @@ The native debug bundle built successfully; its binary SHA-256 is
 It reuses the frontend output already built and verified at `7bdc48a225` because
 this follow-up changes only Rust catalog generation and validation.
 
-The replacement build launched, but loading official packages subsequently
-failed while awaiting system credential access. A three-second process sample
-on this final binary located the wait at `enabled::status →
-keyring::Entry::get_password → SecKeychainFindGenericPassword → Security decrypt`.
-This was before Apply and inference; it is not a gateway request failure.
-System Keychain authorization remains outstanding. Rebuilding an ad-hoc signed
-acceptance binary can require another authorization, so a previous build's
-successful authorization does not establish this build's acceptance.
+The replacement build initially waited on macOS credential access. A process
+sample located the wait at `enabled::status → keyring::Entry::get_password →
+SecKeychainFindGenericPassword → Security decrypt`. After the user authorized
+this binary, the actual **Use this connection** action succeeded with Advanced
+Coding / GPT selected. Rebuilding an ad-hoc signed binary can require a new
+system authorization; this is separate from gateway inference.
 
-Final native GPT menu/inference/context, billing correlation and Restore
-acceptance remain pending. Configuration and predicate regression tests do not
-prove a completed Desktop model call. The existing Codex screenshot documents
-its earlier acceptance only; there is no final GPT menu screenshot to present
-while this system authorization prevents reaching it.
+## Final-build Desktop acceptance, 2026-09-21
+
+The official Desktop gateway window displayed `AC · gpt-6-astra` and retained
+its imported Code history. In the existing synthetic acceptance conversation:
+
+- The initial model selection happened during session initialization; the first
+  completed response actually used Fable. A preceding GPT request was cancelled
+  without a debit or remaining hold. This first response is **not GPT evidence**.
+- Once the session was ready, the official **Switch model** confirmation selected
+  GPT and reported restarting its CLI to apply the change. The next response
+  correctly recalled `SILVER-PINE-739` from the preceding Fable message.
+- The resulting transcript and production receipt independently identify
+  `gpt-6-astra`: 57,853 input tokens and 11 output tokens. The buyer debit was
+  $0.434310, exactly once, with no remaining hold. Private accounting evidence
+  retains the request correlation; no supplier economics are published here.
+- The visible wait before that response was several minutes. Desktop submitted
+  the message at 16:17:57 UTC, the CLI wrote its user record at 16:20:51 UTC,
+  and the answer followed at 16:21:09 UTC. The approximately 18-second execution
+  interval does not represent the user's total wait. Production database
+  connection timeouts occurred in the same window; root-cause investigation
+  continues. Credential helper calls were only 9–44 ms.
+- Normal Quit removed the old isolated process. Reopening through ORG2 loaded
+  the GPT choice and both new messages. A post-restart GPT response again
+  recalled the marker: 187 new input tokens, 57,728 cached input tokens and
+  11 output tokens, buyer debit $0.045111 and no remaining hold. A separate
+  request following that reply is under source investigation; it is not yet
+  classified as a title request or duplicate inference.
+- With the isolated app normally quit, **Restore original setup** displayed
+  **Original setup** and confirmed the previous setup was restored. All six
+  primary configuration/authentication file baselines matched immediately
+  before and after Restore. The managed profile, catalog and credential helper
+  were removed; the saved manifest returned to default mode. Launching the main
+  app afterward showed the original Max account and Fable 5.1 model, without a
+  gateway footer or a new login prompt. No inference was sent from the main app.
+- An automation-driven attempt to foreground the already-running isolated app
+  returned an activation error. The process and its messages were retained;
+  logs show the caller was inactive. After focusing ORG2 with a window click,
+  a subsequent Open app action completed without an error. No new activation
+  rejection was logged. This distinguishes the automation foreground condition
+  from the successful cold launch; it is not a claim of an activation code fix.
+
+![Official Desktop GPT recalling the previous model's marker](desktop-gpt-context.png)
+
+![Restored original setup](claude-restored.png)
+
+Primary-profile comparison across this interval found four monitored files
+unchanged (including a credential file remaining absent) and two hashes changed.
+The user also used the main app between snapshots; hash-only evidence cannot
+attribute those changes. The immediate Restore comparison did match all six files; this does not
+retroactively explain the earlier two changes.
+
+This evidence does not establish bidirectional history synchronization. New
+messages remain in the isolated history. That separate implementation is not
+included in this PR. No ORG2 installer has been published.
