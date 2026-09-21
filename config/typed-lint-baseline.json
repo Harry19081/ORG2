@@ -376,8 +376,8 @@
     "count": 1
   },
   {
-    "key": "46cbc10c52ee26eee4448af796fe4df1207d6e73d6d2dd14b22ca7677c59f911",
-    "file": "src/engines/ChatPanel/ChatHistory/index.tsx",
+    "key": "2f234ceb505ce8f56c821a82dad6752ccf1c163b6f204a75f6770ae2d2ce0b7e",
+    "file": "src/engines/ChatPanel/ChatHistory/ChatHistory.tsx",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "void loadEventComponent(\"canvas_inline\");",

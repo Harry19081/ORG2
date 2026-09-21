@@ -14,7 +14,9 @@ and transcript rendering code. The same entry is used by Simulator's
 SubagentChatPane. The public entry now owns one module-scope React.lazy import
 and a local Suspense boundary using the existing ChatLoadingBlock. The previous
 renderer is moved byte-for-byte to ChatHistory.tsx. No caller, provider, stored
-state, subscription implementation or budget threshold changes.
+state, subscription implementation or budget threshold changes. The existing
+typed-lint finding for the moved renderer follows its new path; its rule,
+expression and allowed count remain unchanged.
 
 ## Acceptance and measurement
 
@@ -77,6 +79,8 @@ All commands ran in the isolated branch based on develop:
 - `pnpm typecheck:fast`: passed.
 - `pnpm exec eslint src/engines/ChatPanel/ChatHistory/index.tsx src/engines/ChatPanel/ChatHistory/ChatHistory.tsx src/engines/ChatPanel/ChatHistory/lazyBoundary.test.ts --max-warnings 0`: passed.
 - `pnpm exec oxlint -c src/.oxlintrc.json --max-warnings 0 src/engines/ChatPanel/ChatHistory/index.tsx src/engines/ChatPanel/ChatHistory/ChatHistory.tsx src/engines/ChatPanel/ChatHistory/lazyBoundary.test.ts`: passed.
+- `NODE_OPTIONS=--max-old-space-size=6144 pnpm check:typed-lint`: passed with 1,055 existing findings and zero new or increased findings after relocating the unchanged renderer finding.
+- `pnpm test:typed-lint`: all 6 tests passed.
 - `git diff --check`: passed.
 - Compared the moved renderer against the original Git blob: byte-identical.
 
