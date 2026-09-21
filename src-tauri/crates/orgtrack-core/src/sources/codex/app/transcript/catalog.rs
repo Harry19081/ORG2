@@ -104,6 +104,7 @@ fn find_codex_user_offsets_in_range(
     let mut entries = Vec::with_capacity(limit.min(CODEX_INITIAL_TURN_LIMIT));
     let mut lines_since_boundary = 0usize;
     let mut last_agent_preview = None;
+    let mut output_images = Vec::new();
 
     while cursor > after_inclusive && entries.len() < limit {
         let block_start = cursor
@@ -136,6 +137,7 @@ fn find_codex_user_offsets_in_range(
                     limit,
                     &mut lines_since_boundary,
                     &mut last_agent_preview,
+                    &mut output_images,
                 );
             } else {
                 skipped_boundary_fragment = true;
@@ -160,6 +162,7 @@ fn find_codex_user_offsets_in_range(
                     limit,
                     &mut lines_since_boundary,
                     &mut last_agent_preview,
+                    &mut output_images,
                 );
             }
         } else if discarding_oversized_line {
@@ -183,6 +186,7 @@ fn observe_codex_catalog_line(
     limit: usize,
     lines_since_boundary: &mut usize,
     last_agent_preview: &mut Option<CodexAgentPreview>,
+    output_images: &mut Vec<super::output_images::CatalogOutputImage>,
 ) {
     const AGENT_MESSAGE_NEEDLE: &[u8] = b"\"agent_message\"";
     const ASSISTANT_ROLE_NEEDLE: &[u8] = b"\"assistant\"";
@@ -197,6 +201,29 @@ fn observe_codex_catalog_line(
     let may_contain_assistant = last_agent_preview.is_none()
         && (memmem::find(line, AGENT_MESSAGE_NEEDLE).is_some()
             || memmem::find(line, ASSISTANT_ROLE_NEEDLE).is_some());
+    if output_images.len() < 64
+        && (memmem::find(line, b"image_url").is_some()
+            || memmem::find(line, b"image_generation_call").is_some())
+    {
+        let mut images = super::output_images::catalog_output_images(line, byte_offset);
+        let mut remaining = 2048usize.saturating_sub(
+            output_images
+                .iter()
+                .map(|image| image.retained_bytes())
+                .sum(),
+        );
+        images.retain(|image| {
+            let cost = image.retained_bytes();
+            if cost > remaining {
+                return false;
+            }
+            remaining -= cost;
+            true
+        });
+        // Rows arrive newest first, but preserve image order within each row.
+        images.append(output_images);
+        *output_images = images;
+    }
     if !may_contain_user && !may_contain_assistant {
         count_codex_body_line(line, lines_since_boundary);
         return;
@@ -214,6 +241,7 @@ fn observe_codex_catalog_line(
                 .unwrap_or_else(|| chrono::Utc::now().to_rfc3339());
             entries.push(CodexTurnCatalogEntry {
                 byte_offset,
+                output_images: std::mem::take(output_images),
                 image_refs: imported_history::images::bounded_image_refs(
                     message.image_refs.iter().map(String::as_str),
                 ),
@@ -275,6 +303,7 @@ fn line_might_produce_codex_body(line: &[u8]) -> bool {
         b"custom_tool_call",
         b"custom_tool_call_output",
         b"web_search_call",
+        b"image_generation_call",
         b"compacted",
         b"context_compacted",
         b"context_compaction",

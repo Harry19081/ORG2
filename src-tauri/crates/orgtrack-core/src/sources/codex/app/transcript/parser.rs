@@ -196,7 +196,7 @@ pub(super) fn parse_codex_app_bounded<'a>(
         if trimmed.is_empty() {
             continue;
         }
-        let parsed: CodexJsonlLine = match serde_json::from_str(trimmed) {
+        let mut parsed: CodexJsonlLine = match serde_json::from_str(trimmed) {
             Ok(parsed) => parsed,
             Err(_) => {
                 pending_compacted_mirror = None;
@@ -204,6 +204,11 @@ pub(super) fn parse_codex_app_bounded<'a>(
                 continue;
             }
         };
+        super::output_images::reference_output_images(
+            session_id,
+            line_start_offset,
+            &mut parsed.payload,
+        );
         let created_at = parsed
             .timestamp
             .as_deref()
@@ -458,6 +463,21 @@ pub(super) fn parse_codex_app_bounded<'a>(
                         &created_at,
                         &text,
                     ));
+                    sequence += 1;
+                }
+            }
+            "image_generation_call" => {
+                if let Some(image) = parsed
+                    .payload
+                    .get("result")
+                    .and_then(Value::as_str)
+                    .filter(|s| !s.is_empty())
+                {
+                    let mut chunk = ActivityChunk::new(session_id, "tool_call", "image_generation");
+                    chunk.chunk_id = format!("codex-image-{sequence}");
+                    chunk.created_at = created_at.clone();
+                    chunk.result = json!({"images": [image], "success": true});
+                    collector.current.push(chunk);
                     sequence += 1;
                 }
             }

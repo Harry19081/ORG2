@@ -9,6 +9,7 @@ import {
 import { isAgentErrorEvent } from "../chatItemPipeline/classifiers";
 import { isAssistantMessageEvent } from "../chatItemPipeline/dedup";
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
+import { turnOutputImages } from "./turnOutputImages";
 
 export interface UnloadedTurnMeta {
   turnId: string;
@@ -543,6 +544,18 @@ export function projectChatGroups(
       keptIndexSet.has(index) ? null : keptFlatIndex
     );
     runningFlatIdx += kept.length;
+  }
+
+  // Gallery ownership is independent of the activity/text collapse policy.
+  // Attach it to the final surviving row so virtualization and search indices
+  // remain unchanged, including image-only turns with a structural row.
+  for (let index = 0; index < groups.length; index++) {
+    const images = turnOutputImages(groups[index].items);
+    const surviving = survivingPerGroup[index];
+    if (images.length && surviving.length) {
+      const last = surviving.length - 1;
+      surviving[last] = { ...surviving[last], outputImages: images };
+    }
   }
 
   const flatItems = survivingPerGroup.flat();

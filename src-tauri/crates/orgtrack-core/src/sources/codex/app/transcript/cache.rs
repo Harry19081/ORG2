@@ -42,6 +42,7 @@ impl CodexAgentPreview {
 pub(super) struct CodexTurnCatalogEntry {
     /// Small path/URL references only; embedded bytes belong to loaded turns.
     pub(super) image_refs: Vec<String>,
+    pub(super) output_images: Vec<super::output_images::CatalogOutputImage>,
     pub(super) byte_offset: u64,
     pub(super) started_at: String,
     pub(super) user_preview: String,

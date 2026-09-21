@@ -814,6 +814,36 @@ impl CodexAppServerEventParser {
                 Self::stamp_tool_call_identity(&mut chunk, call_id);
                 vec![chunk]
             }
+            "imageGeneration" => {
+                if !completed {
+                    return vec![];
+                }
+                let result = item
+                    .get("result")
+                    .and_then(Value::as_str)
+                    .filter(|s| !s.is_empty());
+                let image = result
+                    .map(|data| {
+                        if data.starts_with("data:image/") {
+                            data.to_string()
+                        } else {
+                            format!("data:image/png;base64,{data}")
+                        }
+                    })
+                    .or_else(|| {
+                        item.get("savedPath")
+                            .and_then(Value::as_str)
+                            .map(str::to_owned)
+                    });
+                let Some(image) = image else {
+                    return vec![];
+                };
+                let mut chunk =
+                    ActivityChunk::new(&self.session_id, "tool_call", "image_generation");
+                chunk.result = serde_json::json!({"images": [image], "success": true});
+                Self::stamp_tool_call_identity(&mut chunk, call_id);
+                vec![chunk]
+            }
             "mcp_tool_call" => {
                 if !completed {
                     return vec![];

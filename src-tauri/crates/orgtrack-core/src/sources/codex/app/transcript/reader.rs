@@ -306,6 +306,11 @@ fn load_codex_turn_at(
                     &previous_summary,
                     Some(turn_id.to_string()),
                     previous_entry.last_agent_preview.as_ref(),
+                    &previous_entry
+                        .output_images
+                        .iter()
+                        .map(|image| image.reference(session_id))
+                        .collect::<Vec<_>>(),
                 ));
                 remembered_offsets.push(CodexTurnOffset {
                     turn_id: previous_summary.turn_id,
@@ -338,13 +343,14 @@ pub(crate) fn load_codex_app_cloud_turn_from_path(
         return Err(format!("Invalid Codex cloud turn id: {turn_id}"));
     };
     let start_offset = codex_cloud_turn_start_offset(path, user_offset)?;
-    let (chunks, _, _) = parse_codex_app_from_path_with_mode(
+    let (mut chunks, _, _) = parse_codex_app_from_path_with_mode(
         session_id,
         path,
         CodexTranscriptCollectionMode::FirstTurn,
         start_offset,
         start_sequence,
     )?;
+    super::output_images::materialize_output_images(path, &mut chunks)?;
     Ok(chunks)
 }
 
@@ -410,6 +416,11 @@ fn load_codex_app_initial_tail_window(
             &summary,
             next_turn_id,
             entry.last_agent_preview.as_ref(),
+            &entry
+                .output_images
+                .iter()
+                .map(|image| image.reference(session_id))
+                .collect::<Vec<_>>(),
         ));
         turns.push(summary);
     }

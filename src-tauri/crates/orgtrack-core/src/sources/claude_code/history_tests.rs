@@ -2248,3 +2248,30 @@ fn resending_first_claude_message_updates_the_same_cached_session() {
     }
     std::fs::remove_dir_all(temp_dir).unwrap();
 }
+
+#[test]
+fn tool_result_images_survive_claude_replay() {
+    let path = std::env::temp_dir().join(format!(
+        "orgii-claude-output-image-{}.jsonl",
+        std::process::id()
+    ));
+    let rows = [
+        serde_json::json!({"type":"user","message":{"role":"user","content":"draw an avatar"}}),
+        serde_json::json!({"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"draw","name":"mcp__images__generate","input":{}}]}}),
+        serde_json::json!({"type":"user","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"draw","content":[{"type":"image","source":{"type":"base64","media_type":"image/png","data":"AVATAR"}}]}]}}),
+    ];
+    std::fs::write(
+        &path,
+        rows.iter()
+            .map(Value::to_string)
+            .collect::<Vec<_>>()
+            .join("\n")
+            + "\n",
+    )
+    .unwrap();
+    let chunks = load_claude_code_history_from_path("claude-images", &path).unwrap();
+    assert!(chunks
+        .iter()
+        .any(|c| c.result["images"][0] == "data:image/png;base64,AVATAR"));
+    std::fs::remove_file(path).unwrap();
+}

@@ -1451,3 +1451,26 @@ fn proxy_capability_is_redacted_before_error_chunks_and_turn_state() {
     assert!(serialized.contains("/cli/codex/secret_*******/v1/responses"));
     assert!(!p.turn_error().unwrap().contains(&token));
 }
+
+#[test]
+fn completed_image_generation_preserves_output() {
+    let mut p = parser();
+    let chunks = notif(
+        &mut p,
+        "item/completed",
+        json!({"item": {
+            "type":"imageGeneration", "id":"image-1", "status":"completed", "result":"AVATAR"
+        }}),
+    );
+    assert_eq!(chunks.len(), 1);
+    assert_eq!(
+        chunks[0].result["images"][0],
+        "data:image/png;base64,AVATAR"
+    );
+    assert!(notif(
+        &mut p,
+        "item/started",
+        json!({"item": {"type":"imageGeneration","id":"image-2","result":""}})
+    )
+    .is_empty());
+}
