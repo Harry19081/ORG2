@@ -198,6 +198,7 @@ export { default as FileSymlinkIcon } from "@hugeicons/core-free-icons/FileSymli
 export { default as Files01Icon } from "@hugeicons/core-free-icons/Files01Icon";
 export { default as FilterIcon } from "@hugeicons/core-free-icons/FilterIcon";
 export { default as FilterMailIcon } from "@hugeicons/core-free-icons/FilterMailIcon";
+export { default as FilterResetIcon } from "@hugeicons/core-free-icons/FilterResetIcon";
 export { default as FingerPrintIcon } from "@hugeicons/core-free-icons/FingerPrintIcon";
 export { default as FireIcon } from "@hugeicons/core-free-icons/FireIcon";
 export { default as FirstBracketIcon } from "@hugeicons/core-free-icons/FirstBracketIcon";

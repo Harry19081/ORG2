@@ -602,6 +602,8 @@
     "searchPlaceholder": "Поиск моделей...",
     "flatView": "Список",
     "groupView": "Группы",
+    "cardView": "Карточки",
+    "listView": "Список",
     "showMoreOlder": "Показать ещё",
     "showLessOlder": "Свернуть",
     "scopeSelectCurrentModels": "Только новейшие",

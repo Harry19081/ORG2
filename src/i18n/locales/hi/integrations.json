@@ -602,6 +602,8 @@
     "searchPlaceholder": "मॉडल खोजें...",
     "flatView": "फ़्लैट व्यू",
     "groupView": "ग्रुप व्यू",
+    "cardView": "कार्ड दृश्य",
+    "listView": "सूची दृश्य",
     "showMoreOlder": "और दिखाएँ",
     "showLessOlder": "कम दिखाएँ",
     "scopeSelectCurrentModels": "केवल नवीनतम",

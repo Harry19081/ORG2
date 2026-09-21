@@ -602,6 +602,8 @@
     "searchPlaceholder": "搜索模型...",
     "flatView": "列表視圖",
     "groupView": "分組視圖",
+    "cardView": "卡片檢視",
+    "listView": "清單檢視",
     "showMoreOlder": "顯示更多",
     "showLessOlder": "收起",
     "scopeSelectCurrentModels": "僅最新",

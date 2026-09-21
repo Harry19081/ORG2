@@ -6,6 +6,7 @@ import RefreshButton from "@src/components/Button/RefreshButton";
 import ModelIcon from "@src/components/ModelIcon";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
+  type SettingsTableCardViewConfig,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
@@ -15,7 +16,9 @@ import {
   Add01Icon,
   ArrowDown01Icon,
   ArrowUp01Icon,
+  DashboardSquare01Icon,
   HugeiconsIcon,
+  LayoutListIcon,
 } from "@src/icons";
 import GroupRowEraTag from "@src/modules/MainApp/Integrations/KeyVault/shared/ModelTable/GroupRowEraTag";
 
@@ -127,6 +130,7 @@ export default function ModelsTableSection({
   t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   const [expandedGroupKeys, setExpandedGroupKeys] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<"list" | "card">("card");
 
   const {
     modelsSearchQuery,
@@ -339,6 +343,46 @@ export default function ModelsTableSection({
     />
   ) : null;
 
+  const viewToggleButton = (
+    <Button
+      iconOnly
+      onClick={() => setViewMode((prev) => (prev === "card" ? "list" : "card"))}
+      icon={
+        <HugeiconsIcon
+          icon={viewMode === "card" ? LayoutListIcon : DashboardSquare01Icon}
+          data-icon={viewMode === "card" ? "layout-list" : "dashboard-square"}
+          size={14}
+        />
+      }
+      aria-label={
+        viewMode === "card"
+          ? t("modelsTable.listView")
+          : t("modelsTable.cardView")
+      }
+      title={
+        viewMode === "card"
+          ? t("modelsTable.listView")
+          : t("modelsTable.cardView")
+      }
+      data-testid="key-vault-models-view-toggle"
+    />
+  );
+
+  // The model name is the card heading, the enable switch its trailing action,
+  // and "enabled sources" the one field worth a label.
+  const cardView = useMemo<
+    SettingsTableCardViewConfig<IntegrationsModelGroupRow>
+  >(
+    () => ({
+      enabled: viewMode === "card",
+      titleColumnKey: "model",
+      actionColumnKeys: ["status"],
+      fieldLayout: "inline",
+      minCardWidth: 280,
+    }),
+    [viewMode]
+  );
+
   const addProviderButton = (
     <Button
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
@@ -359,6 +403,7 @@ export default function ModelsTableSection({
       rows={groupRows}
       getRowKey={getIntegrationsGroupRowKey}
       expandable={expandable}
+      cardView={cardView}
       headerHeight="tall"
       className="table-expanded-no-hover table-settings-expanded-compact"
       searchBar={{
@@ -366,8 +411,10 @@ export default function ModelsTableSection({
         onSearchChange: setModelsSearchQuery,
         searchPlaceholder: t("modelsTable.searchPlaceholder"),
         allowSearchClear: true,
+        searchShortcut: true,
         rightContent: (
           <>
+            {viewToggleButton}
             {refreshModelsButton}
             {addProviderButton}
           </>

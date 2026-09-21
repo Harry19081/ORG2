@@ -602,6 +602,8 @@
     "searchPlaceholder": "Tìm kiếm mô hình...",
     "flatView": "Dạng danh sách",
     "groupView": "Dạng nhóm",
+    "cardView": "Dạng thẻ",
+    "listView": "Dạng danh sách",
     "showMoreOlder": "Xem thêm",
     "showLessOlder": "Thu gọn",
     "scopeSelectCurrentModels": "Chỉ mới nhất",
