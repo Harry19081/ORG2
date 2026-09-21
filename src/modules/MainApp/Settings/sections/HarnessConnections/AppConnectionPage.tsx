@@ -241,10 +241,21 @@ export default function AppConnectionPage({
       Message.success({
         content: t("harnessConnections.marketApps.disconnected"),
       });
-    } catch {
+    } catch (error) {
+      // Match only this command's known conflict; native errors may contain secrets.
+      const configurationChanged =
+        error instanceof RpcError &&
+        error.command === "cli_config_restore_default" &&
+        error.cause ===
+          "Current CLI config was modified outside ORG2. Force restore to overwrite it.";
       Message.error({
-        content: t("harnessConnections.marketApps.actionFailed"),
+        content: t(
+          configurationChanged
+            ? "harnessConnections.conflict"
+            : "harnessConnections.marketApps.actionFailed"
+        ),
       });
+      await refresh();
     } finally {
       setBusy(null);
     }

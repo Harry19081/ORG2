@@ -223,3 +223,38 @@ was empty: the tested native runtime is unchanged. The newer frontend passed
 settings-card and settings-filter suites. `pnpm build` passed in 31.7 seconds.
 The screenshots document the tested pre-integration frontend; the updated
 frontend has not been installed into a new native acceptance bundle.
+
+## Isolated diagnostic follow-up
+
+A separate, temporary loopback observer forwarded the same production-backed
+gateway requests after the original acceptance. It recorded request metadata
+and usage, without storing prompts or credentials. One new GUI message received
+the expected GPT response. Accounting identified three actual inference calls:
+the reply ($0.299370), an initial title request ($0.007005), and its fallback
+($0.008730), for a total buyer debit of $0.315105. Each settled once with no
+remaining hold. Official Desktop logs show that the initial title request hit
+its approximately 15-second client timeout; the server nevertheless completed
+it, and Desktop then made a separate fallback request. These were two model
+executions, not duplicate ledger postings. This does not identify the purpose
+of the earlier post-restart request.
+
+Desktop also emitted 27 token-count HTTP attempts, including retries: ten
+succeeded, seven returned 503, eight 429 and two 409. All ten successful counts
+had zero charges and no ledger postings. The first burst contained 16 concurrent
+counts; some successful counts took 55–61 seconds. The exact causes of the two
+409 responses were not captured. No pending request or hold remained afterward.
+The observed backend contention remains a separate performance issue.
+
+The observer was stopped and its configuration removed. The official settings
+editor also reserialized defaults, so the initial Restore safely rejected the
+changed profile. After preserving that diagnostic copy and restoring the exact
+pre-diagnostic managed profile, normal Restore succeeded. All six primary
+configuration/authentication files matched their immediate baselines. This
+cleanup is distinct from the unmodified Restore acceptance above.
+
+The connection page now recognizes only the known native Restore-conflict
+error and displays its existing translated conflict explanation, refreshing
+the state without forcing an overwrite. Unknown errors remain generic so their
+contents cannot expose credentials. The focused component suite passed all
+19 tests, including conflict refresh and unrecognized-error privacy cases;
+native visual verification of this final frontend change remains pending.
