@@ -2461,5 +2461,11 @@
     "sessionJsonFile": "Phiên ORG2 dạng JSON",
     "skillsSource": "Kỹ năng ORG2",
     "gitServiceUnavailable": "Không thể kết nối với dịch vụ Git cục bộ. Hãy thử lại sau khi ứng dụng khởi động xong hoặc khởi động lại ORG2 nếu sự cố vẫn tiếp diễn."
+  },
+  "imageActions": {
+    "addToChat": "Thêm vào cuộc trò chuyện",
+    "added": "Đã thêm vào cuộc trò chuyện",
+    "failed": "Không thể hoàn tất thao tác với ảnh",
+    "downloadCopy": "Tải bản sao"
   }
 }

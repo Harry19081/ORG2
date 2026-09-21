@@ -2461,5 +2461,11 @@
     "sessionJsonFile": "ORG2 セッション JSON",
     "skillsSource": "ORG2 スキル",
     "gitServiceUnavailable": "ローカル Git サービスに接続できません。アプリの起動完了後に再試行してください。問題が続く場合は ORG2 を再起動してください。"
+  },
+  "imageActions": {
+    "addToChat": "チャットに追加",
+    "added": "チャットに追加しました",
+    "failed": "画像の操作に失敗しました",
+    "downloadCopy": "コピーをダウンロード"
   }
 }

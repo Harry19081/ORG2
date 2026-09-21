@@ -2461,5 +2461,11 @@
     "sessionJsonFile": "ORG2 세션 JSON",
     "skillsSource": "ORG2 스킬",
     "gitServiceUnavailable": "로컬 Git 서비스에 연결할 수 없습니다. 앱 시작이 완료되면 다시 시도하세요. 문제가 계속되면 ORG2를 다시 시작하세요."
+  },
+  "imageActions": {
+    "addToChat": "채팅에 추가",
+    "added": "채팅에 추가됨",
+    "failed": "이미지 작업을 완료하지 못했습니다",
+    "downloadCopy": "사본 다운로드"
   }
 }

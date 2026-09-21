@@ -18,6 +18,8 @@ import React, { memo, useCallback, useEffect, useState } from "react";
 
 import { readTranscriptImage } from "@src/api/tauri/externalHistory/sources/codexApp/images";
 import Button from "@src/components/Button";
+import { localImagePath } from "@src/components/ImageActions/imageOperations";
+import { useImageActions } from "@src/components/ImageActions/useImageActions";
 import { createLogger } from "@src/hooks/logger";
 import { HugeiconsIcon, Image01Icon, ImageNotFound01Icon } from "@src/icons";
 import ImagePreviewOverlay from "@src/scaffold/ImagePreviewOverlay";
@@ -123,6 +125,11 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
     // which guarantees the resolved source always starts fresh.
     const { src: resolvedSrc, failed: loadFailed } =
       useResolvedImageSrc(imageRef);
+    const imageActions = useImageActions({
+      src: resolvedSrc ?? "",
+      localPath: localImagePath(imageRef),
+      fileName: gallery?.[galleryIndex ?? 0]?.fileName,
+    });
 
     // Stop propagation so the parent chat row (which may own a click
     // handler for edit-mode in the main chat panel or jump-to-message in
@@ -147,6 +154,9 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
           disabled={!resolvedSrc}
           className={`group relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-2 bg-fill-1 text-text-3 ${resolvedSrc ? "cursor-pointer" : "cursor-default"} ${sizeClassName}`}
           onClick={handleClick}
+          aria-busy={imageActions.busy}
+          onContextMenu={imageActions.onContextMenu}
+          onKeyDown={imageActions.onKeyDown}
           tabIndex={resolvedSrc ? 0 : -1}
           aria-label={alt}
           data-image-state={
@@ -184,6 +194,7 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
         {showOverlay && resolvedSrc && (
           <ImagePreviewOverlay
             dataUrl={resolvedSrc}
+            originalRef={imageRef}
             onClose={handleClose}
             images={gallery}
             initialIndex={galleryIndex}

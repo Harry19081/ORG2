@@ -2462,5 +2462,11 @@
     "sessionJsonFile": "ORG2 Session JSON",
     "skillsSource": "ORG2 Skills",
     "gitServiceUnavailable": "Unable to reach the local Git service. Please try again after the app finishes starting, or restart ORG2 if this keeps happening."
+  },
+  "imageActions": {
+    "addToChat": "Add to chat",
+    "added": "Added to chat",
+    "failed": "Could not complete the image action",
+    "downloadCopy": "Download copy"
   }
 }

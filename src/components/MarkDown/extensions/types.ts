@@ -43,6 +43,7 @@ export interface MarkdownCanvasCardProps {
 export interface MarkdownImageOverlayProps {
   dataUrl: string;
   fileName?: string;
+  originalRef?: string;
   onClose: () => void;
 }
 

@@ -8,6 +8,7 @@ import { useAtom } from "jotai";
 import React, { memo, useCallback, useState } from "react";
 
 import Button from "@src/components/Button";
+import { useImageActions } from "@src/components/ImageActions/useImageActions";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import ImagePreviewOverlay from "@src/scaffold/ImagePreviewOverlay";
 import {
@@ -27,6 +28,14 @@ interface ImageThumbnailProps {
 const ImageThumbnail: React.FC<ImageThumbnailProps> = memo(
   ({ image, onRemove }) => {
     const [showOverlay, setShowOverlay] = useState(false);
+    const imageActions = useImageActions(
+      {
+        src: image.dataUrl,
+        fileName: image.fileName,
+        localPath: image.localPath,
+      },
+      { allowAdd: false }
+    );
 
     const handleRemove = useCallback(
       (e: React.MouseEvent) => {
@@ -48,19 +57,29 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = memo(
       <>
         <div
           className="group relative inline-flex h-12 w-12 shrink-0 cursor-pointer rounded-md border border-border-2 bg-fill-1 transition-[border-color] duration-200 ease-in-out hover:border-border-3"
-          onClick={handleClick}
           data-testid="chat-image-attachment-thumbnail"
           data-image-file-name={image.fileName}
         >
-          <img
-            src={image.dataUrl}
-            alt={image.fileName}
-            className="h-full w-full rounded-[inherit] object-cover"
-            draggable={false}
-            loading="lazy"
-            decoding="async"
-            data-testid="chat-image-attachment-img"
-          />
+          {/* Thumbnail geometry is caller-owned; remove remains a sibling action. */}
+          <Button
+            layout="custom"
+            className="h-full w-full rounded-[inherit]"
+            onClick={handleClick}
+            aria-label={image.fileName}
+            aria-busy={imageActions.busy}
+            onContextMenu={imageActions.onContextMenu}
+            onKeyDown={imageActions.onKeyDown}
+          >
+            <img
+              src={image.dataUrl}
+              alt={image.fileName}
+              className="h-full w-full rounded-[inherit] object-cover"
+              draggable={false}
+              loading="lazy"
+              decoding="async"
+              data-testid="chat-image-attachment-img"
+            />
+          </Button>
           <Button
             hoverTone="danger"
             size="sidebar"
@@ -82,7 +101,9 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = memo(
         </div>
         {showOverlay && (
           <ImagePreviewOverlay
+            allowAddToChat={false}
             dataUrl={image.dataUrl}
+            originalRef={image.localPath}
             fileName={image.fileName}
             onClose={handleCloseOverlay}
           />
