@@ -18,7 +18,9 @@ import {
   formatQuotaResetHint,
   getGroupedUsageItemsForDisplay,
   getQuotaUsageLabel as getSharedQuotaUsageLabel,
+  resolveAccountQuotaBalanceValue,
   resolveAccountUsageItems,
+  resolveKnownRemainingPercent,
   resolveQuotaPlanLabel,
 } from "@src/hooks/keyVault/accountQuotaDisplay";
 import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
@@ -111,16 +113,25 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
 
     const quotaInfo = account.quotaInfo;
     const planLabel = resolveQuotaPlanLabel(account, t);
+    const isUnlimited = quotaInfo.is_unlimited === true;
+    // Balance-only providers report -1 (unknown): no overall meter for them.
     const remainingPercent = hasTotalPercentUsed(quotaInfo)
       ? 100 - quotaInfo.total_percent_used
-      : (quotaInfo.remaining_percentage ?? 0);
+      : resolveKnownRemainingPercent(quotaInfo.remaining_percentage);
+    const overallMeter =
+      isUnlimited || remainingPercent !== null
+        ? {
+            remainingPercent: remainingPercent ?? 100,
+            barBgClass: getQuotaBgColorClass(remainingPercent ?? 100),
+            textColorClass: getQuotaTextColorClass(remainingPercent ?? 100),
+            isUnlimited,
+          }
+        : null;
 
     return {
       planLabel,
-      remainingPercent,
-      barBgClass: getQuotaBgColorClass(remainingPercent),
-      textColorClass: getQuotaTextColorClass(remainingPercent),
-      isUnlimited: quotaInfo.is_unlimited === true,
+      balanceValue: resolveAccountQuotaBalanceValue(quotaInfo),
+      overallMeter,
     };
   }, [account, showQuota, t]);
 
@@ -184,6 +195,12 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
       ) : null}
       {quotaSummary ? (
         <>
+          {quotaSummary.balanceValue ? (
+            <InfoRow
+              label={t("keyVault.quota.balance")}
+              value={quotaSummary.balanceValue}
+            />
+          ) : null}
           {quotaUsageItems.length > 0 ? (
             quotaUsageItems.map((item) => {
               const remainingPercent = item.remaining_percentage;
@@ -222,33 +239,35 @@ export const AccountInlineDetails: React.FC<AccountInlineDetailsProps> = ({
                 </InfoRow>
               );
             })
-          ) : (
+          ) : quotaSummary.overallMeter ? (
             <InfoRow label={t("keyVault.quota.quotaUsage")}>
               <div className="flex min-w-0 items-center gap-2">
                 <div className="h-1.5 w-20 shrink-0 overflow-hidden rounded-full bg-fill-3">
                   <div
-                    className={`h-full rounded-full transition-all ${quotaSummary.barBgClass}`}
+                    className={`h-full rounded-full transition-all ${quotaSummary.overallMeter.barBgClass}`}
                     style={{
                       width: `${
-                        quotaSummary.isUnlimited
+                        quotaSummary.overallMeter.isUnlimited
                           ? 100
-                          : quotaSummary.remainingPercent
+                          : quotaSummary.overallMeter.remainingPercent
                       }%`,
                     }}
                   />
                 </div>
                 <span
-                  className={`shrink-0 text-[12px] ${quotaSummary.textColorClass}`}
+                  className={`shrink-0 text-[12px] ${quotaSummary.overallMeter.textColorClass}`}
                 >
-                  {quotaSummary.isUnlimited
+                  {quotaSummary.overallMeter.isUnlimited
                     ? "∞"
                     : t("keyVault.quota.percentLeft", {
-                        percent: Math.round(quotaSummary.remainingPercent),
+                        percent: Math.round(
+                          quotaSummary.overallMeter.remainingPercent
+                        ),
                       })}
                 </span>
               </div>
             </InfoRow>
-          )}
+          ) : null}
         </>
       ) : null}
     </>

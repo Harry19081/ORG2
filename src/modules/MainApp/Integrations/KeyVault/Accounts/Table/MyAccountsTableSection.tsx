@@ -13,7 +13,7 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
-import { KEY_VAULT_STATUS_DOT } from "@src/features/KeyVault/statusColors";
+import { AccountStatusDot } from "@src/features/KeyVault/AccountStatusDot";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import { Add01Icon, Delete02Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
 import { groupModels } from "@src/util/modelGrouping";
@@ -191,9 +191,7 @@ export default function MyAccountsTableSection({
           <span
             className={`${SETTINGS_TABLE_CELL.primary} inline-flex items-center gap-1.5 font-bold`}
           >
-            <span
-              className={`inline-block h-2 w-2 shrink-0 rounded-full ${KEY_VAULT_STATUS_DOT[account.status] ?? "bg-fill-3"}`}
-            />
+            <AccountStatusDot account={account} />
             {formatAccountDisplayName(account)}
           </span>
         ),
