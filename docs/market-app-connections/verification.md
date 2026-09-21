@@ -22,7 +22,9 @@ requests continue to enforce access, terms, funds and availability.
 
 ## Executed verification
 
-The following checks ran on this branch before its final integration rebase:
+The following historical checks ran before the latest integration rebase.
+Updated checks after rebasing onto `cc26b4729a` are recorded in the gateway
+routing follow-up below:
 
 - `pnpm test src/features/MarketConnect/externalAppBridge.test.ts src/features/MarketConnect/nativeModelSelection.test.ts src/modules/MainApp/Settings/sections/HarnessConnections/AppConnectionPage.test.ts`: 25 tests passed.
 - `pnpm typecheck:fast`: passed.
@@ -104,3 +106,61 @@ Rollback uses the prior native build; this change has no schema migration or
 new persistent profile format. Rolling back the companion Cloud capability
 advertisement causes native validation to hide or reject unsupported models.
 No installer was published and no production service was deployed by this PR.
+
+## Claude Desktop gateway model routing follow-up
+
+Native acceptance exposed two separate configuration failures. ORG2's direct
+account model-family guard rejected a trusted helper catalog before writing it.
+After allowing capability-validated helper catalogs, the installed Desktop
+rejected GPT-bearing gateway route names while retaining the Claude entry.
+
+The final writer validates helper token ownership, catalog membership and route
+syntax separately from direct-account provider constraints. Desktop catalogs
+now assign non-Claude models an opaque gateway route bound to the real model,
+identity, authorization workspace and purchased entitlement. The first 80 bits
+of the digest use fixed-width decimal bytes: a hexadecimal suffix can randomly
+contain `abab`, which the observed Desktop provider-name predicate rejects.
+Labels continue to show the real GPT model, and request selection, authorization
+and accounting use the unchanged real model and purchase. This is ORG2 gateway
+compatibility, not a claim of official native GPT support. No vendor executable,
+policy or authorization setting was modified.
+
+Existing Claude/Fable aliases and canonical saved catalogs remain readable;
+reapplying a GPT Desktop connection writes the new route. Existing Claude aliases
+retain their previous naming behavior, including the vendor's rare hexadecimal
+name-filter edge case. A later vendor validator change can require revalidation.
+Restoring a saved profile remains independent of route naming. For rollback,
+restore or reapply a prior supported model before returning to an older build.
+
+Source `f1efec1cd3070125bd0405c873d5318b94e25f14` passed 82
+`cargo test --manifest-path src-tauri/Cargo.toml -p org2 --lib market_connection:: -- --nocapture` tests, including
+an observed vendor-predicate fixture, legacy catalog parsing, multiple purchases
+sharing a model, immutable real-model routing and alias rebinding rejection.
+After rebasing onto `develop` commit `cc26b4729a`, the following frontend
+command passed all 45 tests in four files:
+
+`pnpm test src/features/MarketConnect/externalAppBridge.test.ts src/features/MarketConnect/nativeModelSelection.test.ts src/features/MarketConnect/marketProfiles.cache.test.ts src/modules/MainApp/Settings/sections/HarnessConnections/AppConnectionPage.test.ts`
+
+`pnpm build` also passed on that rebased frontend. Subsequent commits only
+changed Rust catalog generation and validation, so the frontend output is
+unchanged. Normal Husky hooks ran lint-staged and
+`cargo clippy --lib -p org2` successfully.
+The native debug bundle built successfully; its binary SHA-256 is
+`bce6517cb53021cd41321f8c954d00b541e0aedeaaf3e5f0d0d8f3fde07f1ebd`.
+It reuses the frontend output already built and verified at `7bdc48a225` because
+this follow-up changes only Rust catalog generation and validation.
+
+The replacement build launched, but loading official packages subsequently
+failed while awaiting system credential access. A three-second process sample
+on this final binary located the wait at `enabled::status →
+keyring::Entry::get_password → SecKeychainFindGenericPassword → Security decrypt`.
+This was before Apply and inference; it is not a gateway request failure.
+System Keychain authorization remains outstanding. Rebuilding an ad-hoc signed
+acceptance binary can require another authorization, so a previous build's
+successful authorization does not establish this build's acceptance.
+
+Final native GPT menu/inference/context, billing correlation and Restore
+acceptance remain pending. Configuration and predicate regression tests do not
+prove a completed Desktop model call. The existing Codex screenshot documents
+its earlier acceptance only; there is no final GPT menu screenshot to present
+while this system authorization prevents reaching it.
