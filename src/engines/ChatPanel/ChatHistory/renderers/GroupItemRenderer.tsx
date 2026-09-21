@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
 
+import OutputImageGallery from "../../ChatItems/OutputImageGallery";
 import {
   AgentTurnContext,
   type AgentTurnContextValue,
@@ -151,6 +152,7 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
     const turnContext = useMemo<AgentTurnContextValue>(
       () => ({
         sessionId: event?.sessionId,
+        outputImagesAtEnd: true,
         turnId,
         isLastGroup,
         isLastItemInGroup,
@@ -259,6 +261,15 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
             <NewEventDivider label={newEventDividerLabel as string} />
           )}
           {renderedItem}
+          {/* Projection owns gallery placement; a status footer may follow it. */}
+          {chatItem?.outputImages?.length ? (
+            <ChatItemWrap variant="text">
+              <OutputImageGallery
+                key={turnId ?? chatItem.chunk_id}
+                images={chatItem.outputImages}
+              />
+            </ChatItemWrap>
+          ) : null}
           {isLastItemInGroup &&
             renderedItem !== null &&
             !groupChat?.enabled &&

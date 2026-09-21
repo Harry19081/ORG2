@@ -103,12 +103,20 @@ interface ChatImageThumbnailProps {
   alt: string;
   /** Thumbnail size class (default `h-10 w-10`). */
   sizeClassName?: string;
+  imageFit?: "cover" | "contain";
   gallery?: { src: string; fileName?: string }[];
   galleryIndex?: number;
 }
 
 export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
-  ({ imageRef, alt, sizeClassName = "h-10 w-10", gallery, galleryIndex }) => {
+  ({
+    imageRef,
+    alt,
+    sizeClassName = "h-10 w-10",
+    imageFit = "cover",
+    gallery,
+    galleryIndex,
+  }) => {
     const [showOverlay, setShowOverlay] = useState(false);
     // Browser URLs are loaded lazily by the image element, without JS byte copies.
     // The parent keys items by ref so a ref change remounts this component,
@@ -149,7 +157,7 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
             <img
               src={resolvedSrc}
               alt={alt}
-              className="h-full w-full object-cover"
+              className={`h-full w-full ${imageFit === "contain" ? "object-contain" : "object-cover"}`}
               draggable={false}
               loading="lazy"
               decoding="async"

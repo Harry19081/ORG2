@@ -1,7 +1,7 @@
 pub mod cache;
 pub mod client_origin;
 pub mod context_usage;
-pub(crate) mod images;
+pub mod images;
 pub mod managed_mirror;
 pub mod managed_roots;
 pub mod metadata;

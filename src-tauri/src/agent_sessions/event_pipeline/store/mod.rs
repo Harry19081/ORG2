@@ -123,6 +123,16 @@ fn is_shell_event(event: &SessionEvent) -> bool {
         || event.shell_replay.is_some()
 }
 
+/// Replay owns terminal text, but generated images remain independently
+/// addressable media. Retain them in place instead of cloning image payloads.
+fn retain_shell_image_result(result: &mut serde_json::Value) {
+    if let Some(fields) = result.as_object_mut() {
+        fields.retain(|key, _| key == "images");
+    } else {
+        *result = serde_json::json!({});
+    }
+}
+
 pub(super) fn sanitize_live_shell_event(event: &mut SessionEvent) {
     // A display alias such as `run_shell` is not proof that a durable replay
     // exists. External CLI providers share the alias but enter through a
@@ -135,7 +145,7 @@ pub(super) fn sanitize_live_shell_event(event: &mut SessionEvent) {
     if let serde_json::Value::Object(args) = &mut event.args {
         args.remove("streamOutput");
     }
-    event.result = serde_json::json!({});
+    retain_shell_image_result(&mut event.result);
     if let Some(core_types::extracted::ExtractedData::Shell(shell)) = event.extracted.as_mut() {
         shell.output = None;
         shell.stream_output = None;
@@ -160,7 +170,7 @@ fn bound_unbacked_live_shell_event(event: &mut SessionEvent) {
     if event.display_status
         == crate::agent_sessions::event_pipeline::types::EventDisplayStatus::Running
     {
-        event.result = serde_json::json!({});
+        retain_shell_image_result(&mut event.result);
         if let serde_json::Value::Object(args) = &mut event.args {
             args.insert(
                 "streamOutput".to_string(),

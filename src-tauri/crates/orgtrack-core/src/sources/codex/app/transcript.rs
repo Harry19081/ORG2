@@ -5,6 +5,7 @@ mod catalog;
 mod collector;
 mod image_prefix;
 mod messages;
+mod output_images;
 mod parser;
 mod reader;
 mod sources;

@@ -221,6 +221,24 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
                                 &call,
                                 &output,
                             );
+                            let images = message
+                                .content
+                                .as_array()
+                                .into_iter()
+                                .flatten()
+                                .filter(|part| {
+                                    part.get("tool_use_id").and_then(Value::as_str)
+                                        == Some(&call_id)
+                                })
+                                .flat_map(|part| {
+                                    imported_history::images::content_image_refs(
+                                        part.get("content"),
+                                    )
+                                })
+                                .collect::<Vec<_>>();
+                            if !images.is_empty() {
+                                chunk.result["images"] = json!(images);
+                            }
                             if is_error {
                                 chunk.result["success"] = Value::Bool(false);
                                 chunk.result["status"] = Value::String("failed".to_string());

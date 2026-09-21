@@ -68,6 +68,9 @@ pub fn load_codex_image_from_path(
     original_ref: &str,
 ) -> Result<Option<String>, String> {
     use std::io::{BufRead, BufReader};
+    if turn_id.starts_with(super::output_images::OUTPUT_IMAGE_PREFIX) {
+        return super::output_images::load_output_image(path, turn_id, original_ref);
+    }
     let offset = super::catalog::codex_lazy_turn_offset(turn_id)
         .ok_or_else(|| "Invalid Codex image turn id".to_string())?;
     let mut file = File::open(path).map_err(|err| format!("Open Codex image source: {err}"))?;

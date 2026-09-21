@@ -985,3 +985,64 @@ describe("projectChatGroups — grouped tool rows carry their event weight", () 
     ).toBe(true);
   });
 });
+
+it.each([true, false])(
+  "places the complete image gallery after all text, collapsed=%s",
+  (collapsed) => {
+    const user = userItem("make images");
+    user.event!.result = { images: ["/input.png"] };
+    const first = toolItem();
+    first.event!.result = { images: ["/first.png"] };
+    const second = toolItem();
+    second.event!.result = { images: ["/second.png", "/first.png"] };
+    const answer = assistantItem("Final answer");
+    const nextUser = userItem("Next turn");
+    const projected = projectChatGroups(
+      [
+        user,
+        first,
+        assistantItem("Commentary"),
+        second,
+        answer,
+        nextUser,
+        assistantItem("Next answer"),
+      ],
+      { allTurnsCollapsed: collapsed, tailTurnPhase: "complete" }
+    );
+    const firstTurn = projected.flatItems.slice(0, projected.groupCounts[0]);
+    expect(firstTurn.at(-1)?.event?.id).toBe(answer.event!.id);
+    expect(firstTurn.at(-1)?.outputImages).toEqual([
+      "/first.png",
+      "/second.png",
+    ]);
+    expect(firstTurn.filter((item) => item.outputImages)).toHaveLength(1);
+    expect(projected.flatItems.at(-1)?.outputImages).toBeUndefined();
+  }
+);
+
+it("keeps an image-only turn visible after collapse", () => {
+  const image = toolItem();
+  image.event!.result = { images: ["/only.png"] };
+  const projected = projectChatGroups([userItem("draw"), image], {
+    tailTurnPhase: "complete",
+    allTurnsCollapsed: true,
+  });
+  expect(projected.flatItems).toHaveLength(1);
+  expect(projected.flatItems[0].outputImages).toEqual(["/only.png"]);
+});
+
+it("shows output references from an unloaded turn preview without its tool body", () => {
+  const preview = assistantItem("Final answer");
+  preview.event!.args = { turnPreviewOnly: true };
+  preview.event!.result = {
+    images: ["orgii-transcript-image:reference"],
+    unloadedTurn: { turnId: "historical", bodyEventCount: 3 },
+  };
+  const projected = projectChatGroups(
+    [userItem("draw"), preview, userItem("continue"), assistantItem("next")],
+    { allTurnsCollapsed: true, tailTurnPhase: "complete" }
+  );
+  expect(
+    projected.flatItems.slice(0, projected.groupCounts[0]).at(-1)?.outputImages
+  ).toEqual(["orgii-transcript-image:reference"]);
+});
