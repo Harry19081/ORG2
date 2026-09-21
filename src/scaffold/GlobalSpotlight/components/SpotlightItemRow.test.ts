@@ -121,6 +121,26 @@ describe("SpotlightItemRow selectionState prop", () => {
     ).toBe("sessions:chat.unpinSession");
   });
 
+  it("keeps the pin toggle after every inline text on the label line", () => {
+    render({
+      item: {
+        ...props.item,
+        data: {
+          inlineTag: "ACP",
+          isSelector: true,
+          tagLabel: "Unavailable",
+          pinState: { pinned: false, onToggle: vi.fn() },
+        },
+      },
+    });
+    const button = container.querySelector<HTMLButtonElement>(
+      'button[aria-pressed="false"]'
+    )!;
+    expect(button).not.toBeNull();
+    expect(button.nextElementSibling).toBeNull();
+    expect(button.previousElementSibling?.textContent).toBe("ACP");
+  });
+
   it("uses a native activation control without nesting interactive controls", () => {
     render({
       selectionState: { checked: false, onToggle: vi.fn() },

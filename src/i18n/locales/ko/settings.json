@@ -195,6 +195,7 @@
     "selectedItemTransparency": "선택한 항목 투명도",
     "spotlightPlacement": "Spotlight 위치",
     "spotlightDimBackground": "배경 어둡게",
+    "spotlightDetailCard": "호버 상세 카드",
     "spotlightPlacementOptions": {
       "top": "상단",
       "center": "중앙"

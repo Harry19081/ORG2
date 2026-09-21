@@ -6,6 +6,7 @@ import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
 import HoverCardBase from "@src/components/HoverCard/HoverCardBase";
 import { createLogger } from "@src/hooks/logger";
+import { useSettingValue } from "@src/hooks/settings/useSettings";
 import { FolderClosedIcon, FolderOpenIcon } from "@src/icons";
 
 import { ICONS } from "../config";
@@ -60,7 +61,11 @@ function DetailLine({
 /** Shared across palettes. Details use already-loaded row metadata only. */
 export function SpotlightDetailPane({ item, children }: Props) {
   const { t } = useTranslation();
+  // One switch owns every palette's hover card, so turning it off in the
+  // Spotlight menu leaves the rows themselves untouched.
+  const detailCardEnabled = useSettingValue("general.spotlightDetailCard");
   const data = item.data;
+  if (!detailCardEnabled) return children;
   if (data?.isHeader || data?.disabled) return children;
   const isBranch = item.type === "branch" || data?.isRef === true;
   if (isBranch) return children;

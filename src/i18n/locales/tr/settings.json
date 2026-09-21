@@ -195,6 +195,7 @@
     "selectedItemTransparency": "Seçili öğe şeffaflığı",
     "spotlightPlacement": "Spotlight konumu",
     "spotlightDimBackground": "Arka planı karart",
+    "spotlightDetailCard": "Üzerine gelince ayrıntı kartı",
     "spotlightPlacementOptions": {
       "top": "Üst",
       "center": "Orta"

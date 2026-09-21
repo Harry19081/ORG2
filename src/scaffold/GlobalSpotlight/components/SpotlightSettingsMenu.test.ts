@@ -15,14 +15,17 @@ import {
 
 import { SpotlightSettingsMenu } from "./SpotlightSettingsMenu";
 
-const mocks = vi.hoisted(() => ({ setDim: vi.fn() }));
+const mocks = vi.hoisted(() => ({ setSetting: vi.fn() }));
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
 vi.mock("@src/hooks/settings/useSettings", () => ({
-  useSetting: () => [true, mocks.setDim],
+  useSetting: (key: string) => [
+    true,
+    (value: unknown) => mocks.setSetting(key, value),
+  ],
 }));
 
 (
@@ -76,17 +79,31 @@ describe("SpotlightSettingsMenu", () => {
   afterEach(() => {
     act(() => root.unmount());
     container.remove();
-    mocks.setDim.mockReset();
+    mocks.setSetting.mockReset();
   });
 
-  it("opens the menu with placement, dim and unpin controls", () => {
+  it("opens the menu with placement, dim, detail card and unpin controls", () => {
     render();
     expect(menu()).toBeNull();
     openMenu();
     const text = menu()?.textContent ?? "";
     expect(text).toContain("general.spotlightPlacement");
     expect(text).toContain("general.spotlightDimBackground");
+    expect(text).toContain("general.spotlightDetailCard");
     expect(text).toContain("selectors.spotlightFooter.unpinAll");
+  });
+
+  it("writes the hover-card switch to its own setting key", () => {
+    render();
+    openMenu();
+    const toggle = menu()!.querySelector<HTMLElement>(
+      '[aria-label="general.spotlightDetailCard"]'
+    )!;
+    act(() => toggle.click());
+    expect(mocks.setSetting).toHaveBeenCalledExactlyOnceWith(
+      "general.spotlightDetailCard",
+      false
+    );
   });
 
   const seedAllPins = () => {

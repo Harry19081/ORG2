@@ -276,6 +276,7 @@
     "selectedItemTransparency": "Selected item transparency",
     "spotlightPlacement": "Spotlight position",
     "spotlightDimBackground": "Dim background",
+    "spotlightDetailCard": "Hover detail card",
     "spotlightPlacementOptions": {
       "top": "Top",
       "center": "Middle"

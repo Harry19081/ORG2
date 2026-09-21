@@ -195,6 +195,7 @@
     "selectedItemTransparency": "Transparencia del elemento seleccionado",
     "spotlightPlacement": "Posición de Spotlight",
     "spotlightDimBackground": "Oscurecer el fondo",
+    "spotlightDetailCard": "Tarjeta de detalles al pasar el cursor",
     "spotlightPlacementOptions": {
       "top": "Arriba",
       "center": "Centro"

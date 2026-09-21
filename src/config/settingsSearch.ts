@@ -53,6 +53,7 @@ const APPEARANCE_APP_KEYS = new Set<SettingsKey>([
   "general.applicationUiFont",
   "general.spotlightPlacement",
   "general.spotlightDimBackground",
+  "general.spotlightDetailCard",
   "general.buttonTooltipsEnabled",
   "general.buttonTooltipDelayMs",
   "layout.sidebarSelectedRowOpacity",
@@ -186,6 +187,9 @@ const SETTINGS_SEARCH_UI_OVERRIDES: Partial<
   },
   "general.spotlightDimBackground": {
     labelKey: "settings:general.spotlightDimBackground",
+  },
+  "general.spotlightDetailCard": {
+    labelKey: "settings:general.spotlightDetailCard",
   },
   "general.lightSkin": {
     aliasLabelKeys: ["settings:general.skin", "settings:general.skins"],

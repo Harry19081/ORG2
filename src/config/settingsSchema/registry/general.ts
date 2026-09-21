@@ -235,6 +235,13 @@ export const GENERAL_SETTINGS_REGISTRY = {
       "Dim and slightly blur the rest of the window while Spotlight is open",
     category: "general",
   },
+  "general.spotlightDetailCard": {
+    schema: z.boolean(),
+    default: true,
+    description:
+      "Show the hover detail card next to a Spotlight row (path, description, current-selection state)",
+    category: "general",
+  },
   "general.buttonTooltipsEnabled": {
     schema: z.boolean(),
     default: true,
