@@ -8,6 +8,7 @@ use std::sync::RwLock;
 static EPOCH: AtomicU64 = AtomicU64::new(0);
 
 use lru::LruCache;
+#[cfg(test)]
 use tracing::info;
 
 use super::types::CodeSearchResult;
@@ -123,8 +124,8 @@ pub(super) fn cache_result(
     }
 }
 
-/// Clear the search cache (called when files change).
-#[tauri::command]
+/// Clear the search cache (called from crate tests when files change).
+#[cfg(test)]
 pub fn clear_search_cache() {
     let mut cache = SEARCH_CACHE.write().unwrap();
     EPOCH.fetch_add(1, Ordering::AcqRel);
