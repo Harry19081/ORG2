@@ -221,8 +221,8 @@ model labels. `git diff f1efec1cd3070125bd0405c873d5318b94e25f14 HEAD -- src-tau
 was empty: the tested native runtime is unchanged. The newer frontend passed
 101 tests across the four Market connection suites plus model-name, model-tier,
 settings-card and settings-filter suites. `pnpm build` passed in 31.7 seconds.
-The screenshots document the tested pre-integration frontend; the updated
-frontend has not been installed into a new native acceptance bundle.
+The screenshots above document that earlier frontend. A subsequent current
+build and its separately scoped verification are recorded below.
 
 ## Isolated diagnostic follow-up
 
@@ -257,4 +257,33 @@ error and displays its existing translated conflict explanation, refreshing
 the state without forcing an overwrite. Unknown errors remain generic so their
 contents cannot expose credentials. The focused component suite passed all
 19 tests, including conflict refresh and unrecognized-error privacy cases;
-native visual verification of this final frontend change remains pending.
+native visual verification also passed as recorded below.
+
+## Final UI integration and Restore conflict acceptance
+
+Rebased without conflicts onto `develop` `400f7f652c`, retaining the new settings
+search/table controls. The final runtime source is
+`a0df9336d0fcf12f491d1aef83a9e32513691990`; locally signed debug binary SHA-256:
+`4acc32cf6daa0037e247c0a504e37197660a920db5a469d696aac019f999c4b2`.
+No installer was published.
+
+- `pnpm test src/modules/MainApp/Settings/sections/HarnessConnections src/features/MarketConnect src/components/SettingsTable src/scaffold/NavigationSidebar/variants/SettingsSearchDropdown src/config/settingsSearch.test.ts`: **212 passed in 25 files**.
+- `pnpm test src/hooks/keyboard/__tests__/useSearchShortcut.test.ts src/features/ExternalSessionSources/SourceScanningSettings.test.ts`: **6 passed in 2 files**.
+- `pnpm build`: passed in 25.0 seconds. The incremental native debug bundle and
+  local signature verification also passed.
+- Actual native UI opened App connections, loaded the production Advanced Coding
+  package, selected `gpt-6-astra`, and completed **Use this connection**.
+- With Claude closed, the test appended JSON whitespace to the isolated managed
+  profile, retaining a private copy of its original bytes. **Restore** rejected
+  the external change, showed the localized explanation, and disabled launch and
+  restore. A byte comparison proved the attempted Restore preserved the edit.
+- After restoring only those exact original test-profile bytes (no manifest
+  modification), switching the app tab re-read the configuration; normal
+  **Restore original setup** succeeded. All six primary configuration/authentication
+  hashes matched the immediate baseline.
+
+![Final native Restore conflict state](restore-conflict.png)
+
+This final UI check does not repeat the earlier production inference, nor prove
+Codex official UI inference, eliminate server preflight contention, or implement
+bidirectional history writeback. Those boundaries remain as described above.
