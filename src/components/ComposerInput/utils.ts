@@ -185,6 +185,37 @@ export function pillDataAttributes(
 }
 
 /**
+ * Zero-width space. `insertNewline` parks one at the end of the editor to
+ * anchor the caret on an empty last row; it is never part of the text.
+ */
+const ZERO_WIDTH_SPACE = String.fromCharCode(0x200b);
+
+/**
+ * Length of `text` in plain-text coordinates — the offsets `extractPlainText`
+ * produces, where zero-width anchors do not count.
+ */
+export function plainTextLength(text: string): number {
+  return text.length - (text.split(ZERO_WIDTH_SPACE).length - 1);
+}
+
+/**
+ * Index into the raw `text` that a plain-text offset points at, stepping over
+ * the zero-width anchors plain-text coordinates leave out.
+ */
+export function rawIndexAtPlainOffset(
+  text: string,
+  plainOffset: number
+): number {
+  let remaining = Math.max(0, plainOffset);
+  let index = 0;
+  while (index < text.length && remaining > 0) {
+    if (text[index] !== ZERO_WIDTH_SPACE) remaining -= 1;
+    index += 1;
+  }
+  return index;
+}
+
+/**
  * Shared DOM walker for the editor contenteditable host. Handles text nodes,
  * block boundaries (`<br>`, `<div>`, `<p>`), and pill nodes. When a pill is
  * encountered, `onPill` is called and its return value is appended instead of

@@ -509,6 +509,113 @@ describe.each(["wide rail", "compact menu"])(
       ).toBeNull();
     });
 
+    it("scrolls and filters the subagent submenu once the list is long", async () => {
+      const subagents: FocusedChatRailSubagent[] = Array.from(
+        { length: 12 },
+        (_, index) => ({
+          sessionId: `parent:subagent:${index}`,
+          name: index === 11 ? "Sweep" : "Explore",
+          description: index === 11 ? "Unify icon buttons" : `Task ${index}`,
+          status: "completed",
+        })
+      );
+      await mount(subagents);
+
+      const host = view === "wide rail" ? container : menuHost;
+      act(() =>
+        host
+          .querySelector<HTMLButtonElement>(
+            '[data-workstation-group-toggle="subagents"]'
+          )!
+          .click()
+      );
+      act(() =>
+        [...host.querySelectorAll("section")]
+          .find((section) => section.textContent?.includes("Subagents"))!
+          .querySelector<HTMLButtonElement>('[aria-haspopup="menu"]')!
+          .click()
+      );
+
+      const submenu = document.querySelector<HTMLElement>(
+        '[data-testid="workstation-trail-subagents-submenu"]'
+      )!;
+      // The rows scroll under the panel's cap instead of being clipped by it.
+      expect(submenu.style.maxHeight).toBe("384px");
+      const rowList =
+        submenu.querySelector<HTMLElement>('[role="menuitem"]')!.parentElement!;
+      expect(rowList.className).toContain("overflow-y-auto");
+      expect(submenu.querySelectorAll('[role="menuitem"]')).toHaveLength(12);
+
+      const search = submenu.querySelector<HTMLInputElement>(
+        '[data-testid="workstation-trail-subagents-submenu-search"] input'
+      )!;
+      const type = (value: string) =>
+        act(() => {
+          Object.getOwnPropertyDescriptor(
+            HTMLInputElement.prototype,
+            "value"
+          )?.set?.call(search, value);
+          search.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+
+      // The task title matches, and so does the agent name behind it.
+      type("unify");
+      expect(submenu.querySelectorAll('[role="menuitem"]')).toHaveLength(1);
+      expect(submenu.textContent).toContain("Unify icon buttons");
+      type("sweep");
+      expect(submenu.querySelectorAll('[role="menuitem"]')).toHaveLength(1);
+
+      type("nothing here");
+      expect(submenu.querySelectorAll('[role="menuitem"]')).toHaveLength(0);
+      expect(submenu.textContent).toContain("No results");
+
+      // Escape closes the panel from inside the filter field.
+      act(() =>
+        search.dispatchEvent(
+          new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+        )
+      );
+      expect(
+        document.querySelector(
+          '[data-testid="workstation-trail-subagents-submenu"]'
+        )
+      ).toBeNull();
+    });
+
+    it("leaves the short subagent submenu without a filter field", async () => {
+      const subagents: FocusedChatRailSubagent[] = Array.from(
+        { length: 6 },
+        (_, index) => ({
+          sessionId: `parent:subagent:${index}`,
+          name: "Explore",
+          description: `Task ${index}`,
+          status: "completed",
+        })
+      );
+      await mount(subagents);
+
+      const host = view === "wide rail" ? container : menuHost;
+      act(() =>
+        host
+          .querySelector<HTMLButtonElement>(
+            '[data-workstation-group-toggle="subagents"]'
+          )!
+          .click()
+      );
+      act(() =>
+        [...host.querySelectorAll("section")]
+          .find((section) => section.textContent?.includes("Subagents"))!
+          .querySelector<HTMLButtonElement>('[aria-haspopup="menu"]')!
+          .click()
+      );
+
+      expect(
+        document.querySelector(
+          '[data-testid="workstation-trail-subagents-submenu-search"]'
+        )
+      ).toBeNull();
+    });
+
     it("folds sources by default and opens links in the Browser and images in the viewer", async () => {
       openLinkMocks.openInBrowserApp.mockClear();
       const image = (index: number): FocusedChatRailSource => ({

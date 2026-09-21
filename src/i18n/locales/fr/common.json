@@ -405,7 +405,6 @@
     "link": "Lier",
     "copyName": "Copier le nom",
     "switchMethod": "Changer de méthode",
-    "dismiss": "Ignorer",
     "clearSelection": "Effacer la sélection",
     "openOnGitHub": "Ouvrir sur GitHub",
     "createPullRequest": "Créer une pull request",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "Correspondance suivante",
     "clearSearch": "Effacer la recherche",
     "openFile": "Ouvrir le fichier",
-    "openNativeDevTools": "Ouvrir les DevTools natives du navigateur",
+    "openNativeDevTools": "Ouvrir les DevTools",
     "captureScreenshot": "Capture d’écran",
     "enableInspectMode": "Inspecter un élément",
     "disableInspectMode": "Quitter l'inspecteur (Échap)",
@@ -880,7 +879,7 @@
     "chatHistoryReloadHint": "Les données de la session n'ont peut-être pas été chargées",
     "chatHistoryAgentWorking": "L'Agent est en cours d'exécution",
     "chatHistoryAgentWorkingHint": "Les messages apparaissent avec la première réponse ; jusque-là, la barre peut sembler inactive",
-    "pleaseSelect": "Veuillez sélectionner",
+    "pleaseSelect": "Sélectionner",
     "noSessionsFound": "Aucune Session trouvée",
     "typeToSearchFiles": "Tapez pour rechercher des fichiers...",
     "selectFileToViewChanges": "Sélectionnez un fichier pour voir les modifications",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "Vue web temporairement masquée",
       "webviewHiddenBody": "Fermez le menu ou la boîte de dialogue pour l’afficher à nouveau.",
       "loadStalledTitle": "Cette page n’a pas fini de se charger",
-      "loadStalledBody": "Le navigateur intégré a commencé à charger cette adresse sans jamais terminer. Rechargez-la ou ouvrez-la dans votre navigateur système.",
-      "currentUrl": "URL actuelle"
+      "copyUrl": "Copier l’URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {
@@ -1215,6 +1213,93 @@
         "checkingConflicts": "Recherche de conflits…",
         "autoMergeEnabled": "Fusion automatique activée",
         "inMergeQueue": "En attente dans la file de fusion"
+      },
+      "mergeBox": {
+        "checksFailed": "Certaines vérifications ont échoué",
+        "checksPending": "Certaines vérifications ne sont pas encore terminées",
+        "checksPassed": "Toutes les vérifications ont réussi",
+        "checksSkipped": "Toutes les vérifications ont été ignorées",
+        "counts": {
+          "failing": "{{count}} en échec",
+          "inProgress": "{{count}} en cours",
+          "skipped": "{{count}} ignorées",
+          "successful": "{{count}} réussies",
+          "summary_one": "Vérification : {{parts}}",
+          "summary_other": "Vérifications : {{parts}}"
+        },
+        "check": {
+          "queued": "En file d'attente",
+          "started": "Démarrée {{time}}",
+          "successfulIn": "Réussie en {{duration}}",
+          "failingAfter": "En échec après {{duration}}",
+          "skipped": "Ignorée",
+          "successful": "Réussie",
+          "failing": "En échec"
+        },
+        "deployments": {
+          "label": "Déploiements",
+          "none": "Aucun déploiement",
+          "active_one": "{{count}} déploiement actif",
+          "active_other": "{{count}} déploiements actifs",
+          "view": "Voir le déploiement",
+          "notDeployed": "Cette branche n'a pas été déployée",
+          "deployed": "Cette branche a été déployée avec succès",
+          "deploying": "Cette branche est en cours de déploiement",
+          "deployFailed": "Une erreur s'est produite lors du déploiement de cette branche",
+          "deployInactive": "Cette branche n'est plus déployée",
+          "state": {
+            "active": "Actif",
+            "pending": "En cours",
+            "failure": "Échec",
+            "inactive": "Inactif"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Modifications approuvées",
+            "detail": "Une revue d'approbation a été soumise"
+          },
+          "reviewRequired": {
+            "title": "Revue requise",
+            "detail": "Au moins une revue d'approbation est requise pour fusionner"
+          },
+          "reviewChangesRequested": {
+            "title": "Modifications demandées",
+            "detail": "Un relecteur a demandé des modifications avant la fusion"
+          },
+          "noConflicts": {
+            "title": "Aucun conflit avec la branche de base",
+            "detail": "La fusion peut être effectuée automatiquement"
+          },
+          "hasConflicts": {
+            "title": "Cette branche présente des conflits à résoudre",
+            "detail": "Résolvez les conflits sur la branche de tête, puis poussez"
+          },
+          "outOfDate": {
+            "title": "Cette branche est en retard sur la branche de base",
+            "detail": "Fusionnez les dernières modifications de la branche de base dans cette branche"
+          },
+          "checkingConflicts": {
+            "title": "Vérification de la possibilité de fusion automatique…",
+            "detail": "Patientez pendant que GitHub vérifie l'état de la branche"
+          },
+          "autoMergeEnabled": {
+            "title": "Fusion automatique activée",
+            "detail": "Cette pull request sera fusionnée une fois ses exigences satisfaites"
+          },
+          "inMergeQueue": {
+            "title": "En attente dans la file de fusion",
+            "detail": "GitHub la fusionnera lorsqu'elle arrivera en tête de la file"
+          }
+        },
+        "merged": {
+          "title": "Pull request fusionnée et fermée avec succès",
+          "detail": "La branche de tête peut être supprimée en toute sécurité"
+        },
+        "closed": {
+          "title": "Fermée avec des commits non fusionnés",
+          "detail": "Cette pull request est fermée. Rouvrez-la pour fusionner"
+        }
       },
       "commits": {
         "backToList": "Tous les commits",
@@ -1562,6 +1647,52 @@
         "saved_on_previous": "Modifications enregistrées sur la branche précédente",
         "brought": "Vos modifications vous ont suivi sur cette branche",
         "worktree_missing": "Le worktree n’existe plus. Actualisez et réessayez"
+      }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "État detached HEAD",
+        "body": "Vous êtes en état detached HEAD sur le commit {{shortHash}}.\n\nVous n’êtes sur aucune branche. Les commits que vous créez risquent d’être perdus si vous faites un checkout vers une autre branche sans créer d’abord une nouvelle branche.\n\n⚠️ Les commits en état detached HEAD peuvent être supprimés par le garbage collector.",
+        "createBranch": "Créer une branche",
+        "continueWithoutBranch": "Continuer sans branche"
+      },
+      "largePush": {
+        "title": "Push volumineux détecté",
+        "body": "Vous êtes sur le point de faire un push de {{commitCount}} commits vers {{remote}}/{{branch}}.\n\nC’est plus que d’habitude. Voulez-vous vraiment continuer ?\n\n💡 Envisagez de découper les changements volumineux en commits plus petits et mieux ciblés.",
+        "confirm": "Push de tous les commits"
+      },
+      "protectedBranch": {
+        "title": "Branche protégée",
+        "body": "La branche \"{{branch}}\" sur {{remote}} est protégée : il est impossible d’y faire un push directement.\n\nLes branches protégées imposent que les modifications passent par des pull requests.",
+        "createPr": "Créer une pull request"
+      },
+      "pullConflict": {
+        "title": "Pull impossible avec des modifications locales",
+        "body": "Vos modifications locales seraient écrasées par les modifications entrantes de \"{{branch}}\".{{fileInfo}}\n\nChoisissez comment procéder :",
+        "fileInfo_one": " ({{count}} fichier concerné)",
+        "fileInfo_other": " ({{count}} fichiers concernés)",
+        "stashAndPull": "Stash et Pull",
+        "discardAndPull": "Abandonner et Pull"
+      },
+      "pushRejected": {
+        "title": "Push rejeté",
+        "body": "Impossible de faire un push vers {{remote}}/{{branch}}.\n\nLa branche distante contient des commits que vous n’avez pas en local.{{behindInfo}}\n\n⚠️ Un force push écrasera définitivement les modifications distantes.",
+        "behindInfo_one": " ({{count}} commit de retard)",
+        "behindInfo_other": " ({{count}} commits de retard)",
+        "pullAndPush": "Pull et Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Conflit de merge",
+        "titleRebase": "Conflit de rebase",
+        "bodyMerge": "Des conflits sont survenus lors du merge de \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ L’abandon annulera le merge et restaurera votre branche.",
+        "bodyRebase": "Des conflits sont survenus lors du rebase sur \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ L’abandon restaurera votre branche dans l’état où elle était avant le rebase.",
+        "progress": " (Étape {{current}} sur {{total}})",
+        "files_one": "\n\n{{count}} fichier en conflit.",
+        "files_other": "\n\n{{count}} fichiers en conflit.",
+        "resolve": "Résoudre les conflits",
+        "abortMerge": "Annuler le merge",
+        "abortRebase": "Annuler le rebase"
       }
     }
   },
@@ -2178,13 +2309,29 @@
   "selectionMenu": {
     "addToChat": "Ajouter au chat",
     "addThisFile": "Ajouter ce fichier",
-    "addLines": "Ajouter lignes {{from}} – {{to}}"
+    "addLines": "Ajouter lignes {{from}} – {{to}}",
+    "replyToSelection": "Répondre",
+    "clearQuotedSelection": "Supprimer la citation",
+    "pinSelection": "Épingler"
   },
   "browser": {
     "screenshot": {
       "added": "Capture d'écran ajoutée au chat",
       "failed": "Échec de la capture : {{reason}}",
-      "noActivePage": "Aucune page active à capturer"
+      "noActivePage": "Aucune page active à capturer",
+      "saved": "Capture d'écran enregistrée",
+      "saveFailed": "Échec de l'enregistrement de la capture d'écran : {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Thème de la page",
+      "themeAuto": "Automatique",
+      "themeLight": "Clair",
+      "themeDark": "Sombre",
+      "saveScreenshot": "Enregistrer la capture d'écran...",
+      "openHtmlFile": "Ouvrir un fichier HTML..."
+    },
+    "openHtmlFile": {
+      "failed": "Échec de l'ouverture du fichier : {{reason}}"
     },
     "selectedElement": {
       "addElement": "Ajouter l’élément",
@@ -2234,7 +2381,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari conserve ses cookies dans un dossier protégé par macOS. Autorisez ORG2 dans Accès complet au disque dans les Réglages Système, puis vérifiez à nouveau",
+      "explain": "{{browser}} conserve ses cookies dans un dossier protégé par macOS. Autorisez ORG2 dans Accès complet au disque dans les Réglages Système, puis vérifiez à nouveau",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },

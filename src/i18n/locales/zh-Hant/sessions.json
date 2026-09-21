@@ -946,7 +946,31 @@
         "createdByMe": "由我建立",
         "assigneeUpdateNotApplied": "GitHub 未套用指派人變更",
         "assigneeUpdateSuccess": "已在 GitHub 上更新指派人",
-        "updateIssueFailed": "更新 GitHub issue 失敗"
+        "updateIssueFailed": "更新 GitHub issue 失敗",
+        "filters": {
+          "searchPlaceholder": "搜尋篩選條件",
+          "noMatches": "沒有符合的篩選條件",
+          "activeCount": "已啟用篩選：{{count}}",
+          "clear": "清除篩選",
+          "reviewRequestedFromMe": "請求我審查",
+          "noAssignee": "無負責人",
+          "noLabel": "無標籤",
+          "linkedPullRequest": "已連結拉取請求",
+          "draft": "草稿",
+          "readyForReview": "可供審查",
+          "recentlyUpdated": "最近 7 天內更新",
+          "stale": "30 天未更新",
+          "facetAuthor": "作者",
+          "facetAssignee": "負責人",
+          "facetLabel": "標籤",
+          "facetMilestone": "里程碑",
+          "facetReviewRequested": "請求審查",
+          "facetBaseBranch": "目標分支",
+          "facetCiStatus": "檢查",
+          "ciSuccess": "通過",
+          "ciFailure": "失敗",
+          "ciPending": "進行中"
+        }
       }
     },
     "sessionViews": {
@@ -979,7 +1003,9 @@
     "sending": "正在傳送…",
     "typeMessage": "輸入訊息…",
     "session": "工作階段",
-    "history": "工作階段"
+    "history": "工作階段",
+    "goToPinnedPassage": "跳至釘選段落：{{preview}}",
+    "unpinPassage": "取消釘選"
   },
   "tools": {
     "noResultsFound": "未找到結果",

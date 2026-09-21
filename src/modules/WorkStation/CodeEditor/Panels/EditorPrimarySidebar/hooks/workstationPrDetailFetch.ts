@@ -10,7 +10,9 @@
  */
 import {
   type GitHubChecksSummary,
+  type GitHubDeploymentsSummary,
   getChecksLocal,
+  getDeploymentsLocal,
   getPRLocal,
   listIssueCommentsLocal,
   listIssueTimelineLocal,
@@ -23,6 +25,10 @@ import {
   type CachedPrDetail,
   prDetailKey,
 } from "@src/services/git/githubListCache";
+import {
+  primePullRequestHeadChecks,
+  pullRequestHeadChecksEpoch,
+} from "@src/services/git/pullRequestHeadChecks";
 
 export type PrDetailBundle = Omit<CachedPrDetail, "cachedAt">;
 
@@ -49,6 +55,7 @@ export async function fetchPrDetailBundle(
   repoFullName: string,
   prNumber: number
 ): Promise<PrDetailBundle> {
+  const headChecksEpoch = pullRequestHeadChecksEpoch(repoFullName, prNumber);
   const [
     detail,
     conversation,
@@ -70,9 +77,26 @@ export async function fetchPrDetailBundle(
   const headSha = readString(detail, ["head", "sha"]);
   const baseRef = readString(detail, ["base", "ref"]);
 
-  let checks: GitHubChecksSummary | null = null;
-  if (headSha) {
-    checks = await getChecksLocal(repoFullName, headSha).catch(() => null);
+  // Deployments are recorded against the head branch, checks against its tip.
+  const headRef = readString(detail, ["head", "ref"]);
+  const [checks, deployments] = await Promise.all([
+    headSha
+      ? getChecksLocal(repoFullName, headSha).catch(() => null)
+      : Promise.resolve<GitHubChecksSummary | null>(null),
+    headRef
+      ? getDeploymentsLocal(repoFullName, headRef).catch(() => null)
+      : Promise.resolve<GitHubDeploymentsSummary | null>(null),
+  ]);
+
+  // This load just read what the CI pollers ask for; let their next scheduled
+  // poll take it instead of asking GitHub again.
+  if (detail && headSha && checks) {
+    primePullRequestHeadChecks(
+      repoFullName,
+      prNumber,
+      { detail, headSha, checks },
+      headChecksEpoch
+    );
   }
 
   const bundle: PrDetailBundle = {
@@ -85,6 +109,7 @@ export async function fetchPrDetailBundle(
     commits,
     files,
     checks,
+    deployments,
     timeline,
   };
   return bundle;

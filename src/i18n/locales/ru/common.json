@@ -405,7 +405,6 @@
     "link": "Связать",
     "copyName": "Копировать имя",
     "switchMethod": "Сменить способ",
-    "dismiss": "Отклонить",
     "clearSelection": "Очистить выбор",
     "openOnGitHub": "Открыть на GitHub",
     "createPullRequest": "Создать pull request",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "Следующее совпадение",
     "clearSearch": "Очистить поиск",
     "openFile": "Открыть файл",
-    "openNativeDevTools": "Открыть нативные DevTools браузера",
+    "openNativeDevTools": "Открыть DevTools",
     "captureScreenshot": "Скриншот",
     "enableInspectMode": "Исследовать элемент",
     "disableInspectMode": "Выйти из инспектора (Esc)",
@@ -880,7 +879,7 @@
     "chatHistoryReloadHint": "Данные сессии могли не загрузиться",
     "chatHistoryAgentWorking": "Agent выполняется",
     "chatHistoryAgentWorkingHint": "Сообщения появятся с первым ответом; до этого панель может выглядеть неактивной",
-    "pleaseSelect": "Пожалуйста, выберите",
+    "pleaseSelect": "Выбрать",
     "noSessionsFound": "Session не найдены",
     "typeToSearchFiles": "Введите для поиска файлов...",
     "selectFileToViewChanges": "Выберите файл для просмотра изменений",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "Веб-представление временно скрыто",
       "webviewHiddenBody": "Закройте меню или диалог, чтобы снова его показать.",
       "loadStalledTitle": "Страница не загрузилась до конца",
-      "loadStalledBody": "Встроенный браузер начал загружать этот адрес, но так и не завершил загрузку. Перезагрузите страницу или откройте её в системном браузере.",
-      "currentUrl": "Текущий URL"
+      "copyUrl": "Копировать URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {
@@ -1215,6 +1213,93 @@
         "checkingConflicts": "Проверка конфликтов…",
         "autoMergeEnabled": "Автоматическое слияние включено",
         "inMergeQueue": "Ожидает в очереди слияния"
+      },
+      "mergeBox": {
+        "checksFailed": "Некоторые проверки не пройдены",
+        "checksPending": "Некоторые проверки ещё не завершены",
+        "checksPassed": "Все проверки пройдены",
+        "checksSkipped": "Все проверки пропущены",
+        "counts": {
+          "failing": "{{count}} не пройдено",
+          "inProgress": "{{count}} выполняется",
+          "skipped": "{{count}} пропущено",
+          "successful": "{{count}} успешно",
+          "summary_one": "Проверки: {{parts}}",
+          "summary_other": "Проверки: {{parts}}"
+        },
+        "check": {
+          "queued": "В очереди",
+          "started": "Запущено {{time}}",
+          "successfulIn": "Успешно за {{duration}}",
+          "failingAfter": "Не пройдено через {{duration}}",
+          "skipped": "Пропущено",
+          "successful": "Успешно",
+          "failing": "Не пройдено"
+        },
+        "deployments": {
+          "label": "Развёртывания",
+          "none": "Нет развёртываний",
+          "active_one": "{{count}} активное развёртывание",
+          "active_other": "Активных развёртываний: {{count}}",
+          "view": "Открыть развёртывание",
+          "notDeployed": "Эта ветка не развёрнута",
+          "deployed": "Эта ветка успешно развёрнута",
+          "deploying": "Эта ветка развёртывается",
+          "deployFailed": "При развёртывании этой ветки произошла ошибка",
+          "deployInactive": "Эта ветка больше не развёрнута",
+          "state": {
+            "active": "Активно",
+            "pending": "Выполняется",
+            "failure": "Ошибка",
+            "inactive": "Неактивно"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Изменения одобрены",
+            "detail": "Отправлено одобряющее ревью"
+          },
+          "reviewRequired": {
+            "title": "Требуется ревью",
+            "detail": "Для слияния требуется хотя бы одно одобряющее ревью"
+          },
+          "reviewChangesRequested": {
+            "title": "Запрошены изменения",
+            "detail": "Ревьюер запросил изменения перед слиянием"
+          },
+          "noConflicts": {
+            "title": "Нет конфликтов с базовой веткой",
+            "detail": "Слияние можно выполнить автоматически"
+          },
+          "hasConflicts": {
+            "title": "В этой ветке есть конфликты, которые нужно разрешить",
+            "detail": "Разрешите конфликты в исходной ветке и отправьте изменения"
+          },
+          "outOfDate": {
+            "title": "Эта ветка отстаёт от базовой ветки",
+            "detail": "Выполните слияние последних изменений базовой ветки в эту ветку"
+          },
+          "checkingConflicts": {
+            "title": "Проверка возможности автоматического слияния…",
+            "detail": "Подождите, пока GitHub проверяет состояние ветки"
+          },
+          "autoMergeEnabled": {
+            "title": "Автоматическое слияние включено",
+            "detail": "Этот пул-реквест будет объединён, когда будут выполнены все требования"
+          },
+          "inMergeQueue": {
+            "title": "Ожидает в очереди слияния",
+            "detail": "GitHub выполнит слияние, когда он окажется в начале очереди"
+          }
+        },
+        "merged": {
+          "title": "Пул-реквест успешно объединён и закрыт",
+          "detail": "Исходную ветку можно безопасно удалить"
+        },
+        "closed": {
+          "title": "Закрыт с необъединёнными коммитами",
+          "detail": "Этот пул-реквест закрыт. Откройте его снова, чтобы выполнить слияние"
+        }
       },
       "commits": {
         "backToList": "Все коммиты",
@@ -1562,6 +1647,52 @@
         "saved_on_previous": "Изменения сохранены в предыдущей ветке",
         "brought": "Ваши изменения перешли вместе с вами в эту ветку",
         "worktree_missing": "Рабочее дерево больше не существует. Обновите и повторите попытку"
+      }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Состояние detached HEAD",
+        "body": "Вы находитесь в состоянии detached HEAD на коммите {{shortHash}}.\n\nВы не находитесь ни на одной ветке. Создаваемые коммиты могут быть потеряны, если вы выполните checkout другой ветки, не создав сначала новую ветку.\n\n⚠️ Коммиты в состоянии detached HEAD могут быть удалены сборщиком мусора.",
+        "createBranch": "Создать ветку",
+        "continueWithoutBranch": "Продолжить без ветки"
+      },
+      "largePush": {
+        "title": "Обнаружен большой push",
+        "body": "Вы собираетесь выполнить push {{commitCount}} коммитов в {{remote}}/{{branch}}.\n\nЭто больше, чем обычно. Вы уверены, что хотите продолжить?\n\n💡 Попробуйте разбить большие изменения на более мелкие и сфокусированные коммиты.",
+        "confirm": "Push всех коммитов"
+      },
+      "protectedBranch": {
+        "title": "Защищённая ветка",
+        "body": "Ветка \"{{branch}}\" в {{remote}} защищена, и push в неё напрямую невозможен.\n\nВ защищённых ветках изменения должны проходить через pull request.",
+        "createPr": "Создать pull request"
+      },
+      "pullConflict": {
+        "title": "Pull невозможен при локальных изменениях",
+        "body": "Ваши локальные изменения будут перезаписаны входящими изменениями из \"{{branch}}\".{{fileInfo}}\n\nВыберите, как продолжить:",
+        "fileInfo_one": " (затронут {{count}} файл)",
+        "fileInfo_other": " (затронуто файлов: {{count}})",
+        "stashAndPull": "Stash и Pull",
+        "discardAndPull": "Отбросить и Pull"
+      },
+      "pushRejected": {
+        "title": "Push отклонён",
+        "body": "Не удаётся выполнить push в {{remote}}/{{branch}}.\n\nУдалённая ветка содержит коммиты, которых нет локально.{{behindInfo}}\n\n⚠️ Force push безвозвратно перезапишет изменения в удалённом репозитории.",
+        "behindInfo_one": " (позади на {{count}} коммит)",
+        "behindInfo_other": " (позади коммитов: {{count}})",
+        "pullAndPush": "Pull и Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Конфликт merge",
+        "titleRebase": "Конфликт rebase",
+        "bodyMerge": "При merge ветки \"{{branch}}\" возникли конфликты.{{progress}}{{files}}\n\n⚠️ Прерывание отменит merge и восстановит вашу ветку.",
+        "bodyRebase": "При rebase на \"{{branch}}\" возникли конфликты.{{progress}}{{files}}\n\n⚠️ Прерывание восстановит вашу ветку в состояние до rebase.",
+        "progress": " (Шаг {{current}} из {{total}})",
+        "files_one": "\n\nКонфликты в {{count}} файле.",
+        "files_other": "\n\nКонфликты в файлах: {{count}}.",
+        "resolve": "Решить конфликты",
+        "abortMerge": "Прервать merge",
+        "abortRebase": "Прервать rebase"
       }
     }
   },
@@ -2178,13 +2309,29 @@
   "selectionMenu": {
     "addToChat": "Добавить в чат",
     "addThisFile": "Добавить этот файл",
-    "addLines": "Добавить строки {{from}} – {{to}}"
+    "addLines": "Добавить строки {{from}} – {{to}}",
+    "replyToSelection": "Ответить",
+    "clearQuotedSelection": "Убрать цитату",
+    "pinSelection": "Закрепить"
   },
   "browser": {
     "screenshot": {
       "added": "Снимок прикреплён к чату",
       "failed": "Не удалось сделать снимок: {{reason}}",
-      "noActivePage": "Нет активной страницы для снимка"
+      "noActivePage": "Нет активной страницы для снимка",
+      "saved": "Снимок сохранён",
+      "saveFailed": "Не удалось сохранить снимок: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Тема страницы",
+      "themeAuto": "Авто",
+      "themeLight": "Светлая",
+      "themeDark": "Тёмная",
+      "saveScreenshot": "Сохранить снимок...",
+      "openHtmlFile": "Открыть HTML-файл..."
+    },
+    "openHtmlFile": {
+      "failed": "Не удалось открыть файл: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Добавить элемент",
@@ -2234,7 +2381,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari хранит файлы cookie в папке, защищённой macOS. Разрешите ORG2 полный доступ к диску в системных настройках и повторите проверку",
+      "explain": "{{browser}} хранит файлы cookie в папке, защищённой macOS. Разрешите ORG2 полный доступ к диску в системных настройках и повторите проверку",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },

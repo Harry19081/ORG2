@@ -8,8 +8,17 @@ import Button from ".";
 interface RefreshButtonProps {
   label: string;
   variant?: "secondary" | "tertiary";
+  /**
+   * Override the height the variant implies (secondary 32px, tertiary 28px),
+   * for toolbars and inline row actions that sit on a 28px rhythm.
+   */
+  size?: "small" | "default";
   iconOnly?: boolean;
-  onRefresh: () => void;
+  /**
+   * Async refreshes are fine: `useRefreshSpin` attaches a rejection handler,
+   * so callers pass their fetcher directly instead of wrapping it.
+   */
+  onRefresh: () => void | Promise<void>;
   refreshing: boolean;
   disabled?: boolean;
   dataTestId?: string;
@@ -24,6 +33,7 @@ export default function RefreshButton({
   label,
   iconOnly = false,
   variant = "tertiary",
+  size,
   onRefresh,
   refreshing,
   disabled = false,
@@ -36,7 +46,7 @@ export default function RefreshButton({
       htmlType="button"
       variant={variant}
       iconOnly={iconOnly}
-      size={variant === "secondary" ? "default" : "small"}
+      size={size ?? (variant === "secondary" ? "default" : "small")}
       disabled={disabled || refreshing}
       aria-label={label}
       title={label}

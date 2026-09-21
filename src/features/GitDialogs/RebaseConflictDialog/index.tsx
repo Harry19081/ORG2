@@ -23,6 +23,9 @@
  * }
  * ```
  */
+import i18n from "@src/i18n";
+
+import { openNativeChoiceDialog } from "../nativeChoiceDialog";
 
 // ============================================
 // Types
@@ -51,49 +54,49 @@ class RebaseConflictDialogManager {
   public async open(
     options: RebaseConflictOptions = {}
   ): Promise<RebaseConflictResult> {
-    const { message } = await import("@tauri-apps/plugin-dialog");
-
-    const targetBranch = options.targetBranch || "main";
-    const operationType = options.operationType || "rebase";
-    const isMerge = operationType === "merge";
+    const isMerge = (options.operationType || "rebase") === "merge";
     const hasProgress =
       options.currentStep !== undefined && options.totalSteps !== undefined;
-    const progressInfo = hasProgress
-      ? ` (Step ${options.currentStep} of ${options.totalSteps})`
+    const progress = hasProgress
+      ? i18n.t("common:git.dialogs.conflict.progress", {
+          current: options.currentStep,
+          total: options.totalSteps,
+        })
       : "";
     const fileCount = options.conflictingFiles?.length || 0;
-    const fileInfo =
+    const files =
       fileCount > 0
-        ? `\n\n${fileCount} file${fileCount !== 1 ? "s" : ""} with conflicts.`
+        ? i18n.t("common:git.dialogs.conflict.files", { count: fileCount })
         : "";
 
-    const title = isMerge ? "Merge Conflict" : "Rebase Conflict";
-    const actionText = isMerge ? "merging" : "rebasing onto";
-    const abortLabel = isMerge ? "Abort Merge" : "Abort Rebase";
-    const warningText = isMerge
-      ? "Aborting will cancel the merge and restore your branch."
-      : "Aborting will restore your branch to its state before rebasing.";
-
-    const result = await message(
-      `Conflicts occurred while ${actionText} "${targetBranch}".${progressInfo}${fileInfo}\n\n⚠️ ${warningText}`,
-      {
-        title,
-        kind: "error",
-        buttons: {
-          yes: "Resolve Conflicts",
-          no: abortLabel,
-          cancel: "Cancel",
+    return openNativeChoiceDialog({
+      title: i18n.t(
+        isMerge
+          ? "common:git.dialogs.conflict.titleMerge"
+          : "common:git.dialogs.conflict.titleRebase"
+      ),
+      message: i18n.t(
+        isMerge
+          ? "common:git.dialogs.conflict.bodyMerge"
+          : "common:git.dialogs.conflict.bodyRebase",
+        { branch: options.targetBranch || "main", progress, files }
+      ),
+      kind: "error",
+      choices: [
+        {
+          id: "resolve",
+          label: i18n.t("common:git.dialogs.conflict.resolve"),
         },
-      }
-    );
-
-    if (result === "Resolve Conflicts") {
-      return "resolve";
-    } else if (result === abortLabel) {
-      return "abort";
-    } else {
-      return "cancel";
-    }
+        {
+          id: "abort",
+          label: i18n.t(
+            isMerge
+              ? "common:git.dialogs.conflict.abortMerge"
+              : "common:git.dialogs.conflict.abortRebase"
+          ),
+        },
+      ],
+    });
   }
 }
 

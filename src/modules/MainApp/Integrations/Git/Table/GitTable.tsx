@@ -7,7 +7,7 @@ import {
   type SyncConnection,
   syncConnectionsApi,
 } from "@src/api/http/integrations/syncConnections";
-import Button from "@src/components/Button";
+import DeleteIconButton from "@src/components/Button/DeleteIconButton";
 import IntegrationIcon from "@src/components/IntegrationIcon";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -23,7 +23,6 @@ import {
 } from "@src/components/layout/blocks";
 import { InfoRow } from "@src/components/layout/blocks/InfoRow";
 import { createLogger } from "@src/hooks/logger";
-import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 import {
@@ -204,22 +203,11 @@ export const GitTable: React.FC<GitTableProps> = ({
         align: "right",
         renderCell: (row) => (
           <div className="flex h-full items-center justify-end gap-2">
-            <Button
+            <DeleteIconButton
               size="small"
-              icon={
-                <HugeiconsIcon
-                  icon={Delete02Icon}
-                  data-icon="trash-2"
-                  size={14}
-                  className="text-danger-6"
-                />
-              }
-              iconOnly
-              loading={removingRowId === row.id}
-              disabled={removingRowId === row.id}
-              aria-label={tCommon("actions.remove")}
-              title={tCommon("actions.remove")}
-              onClick={(event) => {
+              deleting={removingRowId === row.id}
+              label={tCommon("actions.remove")}
+              onDelete={(event) => {
                 event.stopPropagation();
                 void handleRemoveRow(row);
               }}

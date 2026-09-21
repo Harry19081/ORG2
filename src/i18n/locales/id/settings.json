@@ -13,6 +13,7 @@
     "editorAndWorkspace": "Editor & Ruang Kerja",
     "appUpdate": "Pembaruan Aplikasi",
     "security": "Keamanan",
+    "appLock": "Kunci Aplikasi",
     "storage": "Penyimpanan",
     "agentOrg": "Tim Agen",
     "mobileRemote": "Remote Seluler",
@@ -53,6 +54,52 @@
     "customPatternsDesc": "Satu ekspresi reguler per baris. Setiap kecocokan diperlakukan sebagai rahasia. Ekspresi yang tidak valid diabaikan",
     "customPatternsPlaceholder": "mis. MYCORP_[A-Z0-9]{20}",
     "invalidPatterns": "{{count}} pola tidak valid dan akan diabaikan: {{patterns}}"
+  },
+  "appLock": {
+    "password": "Kunci kata sandi",
+    "setPassword": "Atur kata sandi",
+    "changePassword": "Ubah kata sandi",
+    "removePassword": "Hapus kata sandi",
+    "currentPassword": "Kata sandi saat ini",
+    "newPassword": "Kata sandi baru",
+    "confirmPassword": "Konfirmasi kata sandi baru",
+    "passwordSet": "Kata sandi diatur",
+    "passwordChanged": "Kata sandi diubah",
+    "passwordRemoved": "Kata sandi dihapus",
+    "lockNow": "Kunci sekarang",
+    "lockNowDesc": "Kunci semua jendela ORG2 sampai kata sandi dimasukkan",
+    "shortcut": "Pintasan kunci",
+    "hint": "Petunjuk kata sandi",
+    "hintPlaceholder": "Ditampilkan di layar kunci",
+    "hintOptionalPlaceholder": "Petunjuk kata sandi (opsional)",
+    "autoLock": "Kunci otomatis",
+    "autoLockDesc": "Kunci setelah selama ini tidak ada input keyboard atau mouse di ORG2",
+    "autoLockNever": "Tidak pernah",
+    "autoLockMinutes": "Setelah {{count}} mnt",
+    "autoLockHour": "Setelah 1 jam",
+    "lockOnLaunch": "Kunci saat ORG2 dimulai",
+    "lockOnLaunchDesc": "Minta kata sandi setiap kali aplikasi dibuka",
+    "scopeNote": "Kunci hanya mencakup jendela ORG2. Kunci ini tidak mengenkripsi data Anda atau menjeda Mobile Remote, dan siapa pun yang memiliki akses ke file Anda dapat menghapusnya. Jika lupa kata sandi, keluar dari ORG2 lalu hapus app-lock.json dari folder .orgii di direktori home Anda",
+    "errors": {
+      "tooShort": "Gunakan minimal {{count}} karakter",
+      "tooLong": "Kata sandi itu terlalu panjang",
+      "mismatch": "Kata sandi tidak cocok",
+      "incorrectCurrent": "Kata sandi saat ini salah",
+      "throttled": "Terlalu banyak percobaan yang salah. Coba lagi nanti",
+      "generic": "Tidak dapat memperbarui kunci aplikasi",
+      "hintTooLong": "Petunjuk itu terlalu panjang",
+      "hintRevealsPassword": "Petunjuk tidak boleh berisi kata sandi"
+    },
+    "screen": {
+      "title": "ORG2 terkunci",
+      "passwordPlaceholder": "Kata sandi",
+      "incorrect": "Kata sandi salah",
+      "failed": "Tidak dapat membuka kunci. Coba lagi",
+      "throttled": "Terlalu banyak percobaan. Coba lagi dalam {{time}}",
+      "working": "Sesi yang masih bekerja: {{count}}",
+      "showHint": "Tampilkan petunjuk",
+      "hint": "Petunjuk: {{hint}}"
+    }
   },
   "mobileRemote": {
     "enabled": "Remote Seluler",
@@ -288,7 +335,6 @@
       "codex": "Codex"
     },
     "iconStyle": "Gaya ikon",
-    "iconStyleDesc": "Monokrom menghilangkan warna ikon jenis file dan model sehingga tampak sebagai bagian antarmuka, bukan sebagai logo",
     "iconStyleOptions": {
       "colorful": "Berwarna",
       "monochrome": "Monokrom"
@@ -619,7 +665,6 @@
     "diffViewMode": "Tampilan diff",
     "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Nomor baris di tengah pada diff terpisah",
-    "splitDiffCenteredLineNumbersDesc": "Tampilkan kedua kolom nomor baris di antara dua panel, seperti GitHub, bukan di tepi kiri tiap panel.",
     "shellsOpenWith": "Shell dibuka di",
     "shellsOpenWithDesc": "Direktori kerja awal untuk terminal baru",
     "repoPath": "Path repo",

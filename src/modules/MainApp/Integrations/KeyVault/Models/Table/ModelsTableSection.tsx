@@ -2,8 +2,8 @@ import { useCallback, useMemo, useState } from "react";
 
 import { ORGII_ORCHESTRATOR } from "@src/assets/providers/types";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import ModelIcon from "@src/components/ModelIcon";
-import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   type SettingsTableColumn,
@@ -16,7 +16,6 @@ import {
   ArrowDown01Icon,
   ArrowUp01Icon,
   HugeiconsIcon,
-  Refresh04Icon,
 } from "@src/icons";
 import GroupRowEraTag from "@src/modules/MainApp/Integrations/KeyVault/shared/ModelTable/GroupRowEraTag";
 
@@ -327,27 +326,16 @@ export default function ModelsTableSection({
     [expandedGroupKeys, renderExpandedGroupCard]
   );
 
-  const { spinClass: refreshSpinClass, handleClick: handleRefreshModelsClick } =
-    useRefreshSpin(() => {
-      void onRefreshModels?.();
-    }, refreshingAllModels ?? false);
-
   const refreshModelsButton = onRefreshModels ? (
-    <Button
-      icon={
-        <HugeiconsIcon
-          icon={Refresh04Icon}
-          data-icon="refresh-cw"
-          size={14}
-          className={refreshSpinClass}
-        />
-      }
+    <RefreshButton
+      variant="secondary"
       iconOnly
-      onClick={handleRefreshModelsClick}
-      disabled={refreshingAllModels}
-      aria-label={t("keyVault.refreshModels.button")}
-      title={t("keyVault.refreshModels.button")}
-      data-testid="key-vault-models-refresh-button"
+      label={t("keyVault.refreshModels.button")}
+      refreshing={refreshingAllModels ?? false}
+      onRefresh={() => {
+        void onRefreshModels?.();
+      }}
+      dataTestId="key-vault-models-refresh-button"
     />
   ) : null;
 

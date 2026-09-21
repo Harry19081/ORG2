@@ -55,6 +55,11 @@ vi.mock("./navigation/useMobileRemoteCoordinator", async () => {
         nav,
         dispatch,
         showTabBar: !nav.selectedSessionId,
+        // Stop state is part of the hook's contract; this suite renders the
+        // chat route, so keep the shape honest even though it stubs the modal.
+        stopConfirming: false,
+        stopFailed: false,
+        handleConfirmStop: () => Promise.resolve(),
       };
     },
   };

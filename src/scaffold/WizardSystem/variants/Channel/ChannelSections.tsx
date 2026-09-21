@@ -27,7 +27,7 @@ import {
   type SelectionGridOption,
 } from "@src/scaffold/WizardSystem/primitives";
 
-import { CHANNEL_FORMS } from "./SetupForms";
+import { ChannelSetupForm } from "./SetupForms";
 import type { ProjectSyncAuthMethod } from "./channelWizardTypes";
 import type { GitScanCandidate } from "./useChannelWizardState";
 
@@ -55,15 +55,16 @@ export const ChannelContent: React.FC<ChannelContentProps> = ({
   onDismissProbeError,
 }) => {
   const { t } = useTranslation("integrations");
-  const ChannelForm = selectedType ? CHANNEL_FORMS[selectedType] : null;
 
   if (!selectedType) return null;
 
   return (
     <>
-      {ChannelForm && (
-        <ChannelForm config={channelConfig} onChange={onConfigChange} />
-      )}
+      <ChannelSetupForm
+        channelType={selectedType}
+        config={channelConfig}
+        onChange={onConfigChange}
+      />
       <SectionContainer>
         <SectionRow
           label={t("integrations.testConnection")}

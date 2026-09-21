@@ -115,6 +115,7 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
     showVoiceUi,
     modelPill,
     modePill,
+    sessionId,
   } = model;
 
   return (
@@ -228,6 +229,7 @@ export const InputAreaComposerShell: React.FC<InputAreaComposerShellProps> = ({
           onInterrupt={interruptSession}
           onResume={resumeSession}
           isCursorIde={isCursorIde}
+          quoteSessionId={sessionId}
           showVoiceUi={showVoiceUi}
           voice={voice}
           currentRepoPath={currentRepoPath}

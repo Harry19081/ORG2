@@ -16,10 +16,10 @@ import { useTranslation } from "react-i18next";
 
 import type { LinkedEmail, MemberEntry } from "@src/api/http/project";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import DisclosureChevron from "@src/components/DisclosureChevron";
 import Input from "@src/components/Input";
 import PersonAvatar from "@src/components/PersonAvatar";
-import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_DESCRIPTION_CLASSES,
@@ -34,7 +34,6 @@ import {
   HugeiconsIcon,
   MinusSignIcon,
   Pen01Icon,
-  Refresh04Icon,
   UserAdd01Icon,
 } from "@src/icons";
 import { ClaimIdentityModal } from "@src/modules/ProjectManager/shared/components";
@@ -326,9 +325,6 @@ const RepoMembersSection: React.FC<RepoMembersSectionProps> = ({
     onSyncMembers().finally(() => setSyncing(false));
   }, [onSyncMembers]);
 
-  const { spinClass: syncSpinClass, handleClick: handleSyncClick } =
-    useRefreshSpin(handleSyncMembers, syncing);
-
   const memberDescription = useCallback(
     (member: MemberEntry) => {
       const parts: string[] = [];
@@ -351,18 +347,12 @@ const RepoMembersSection: React.FC<RepoMembersSectionProps> = ({
         >
           <div className={SECTION_ACTION_GAP_CLASSES}>
             {onSyncMembers && (
-              <Button
-                icon={
-                  <HugeiconsIcon
-                    icon={Refresh04Icon}
-                    data-icon="refresh-cw"
-                    size={14}
-                    className={syncSpinClass}
-                  />
-                }
+              <RefreshButton
+                variant="secondary"
                 iconOnly
-                disabled={syncing}
-                onClick={handleSyncClick}
+                label={t("common:actions.refresh")}
+                refreshing={syncing}
+                onRefresh={handleSyncMembers}
               />
             )}
             <Button

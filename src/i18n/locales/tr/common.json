@@ -405,7 +405,6 @@
     "link": "Bağla",
     "copyName": "Adı Kopyala",
     "switchMethod": "Yöntemi değiştir",
-    "dismiss": "Yoksay",
     "clearSelection": "Seçimi temizle",
     "openOnGitHub": "GitHub'da aç",
     "createPullRequest": "Pull request oluştur",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "Sonraki eşleşme",
     "clearSearch": "Aramayı temizle",
     "openFile": "Dosyayı aç",
-    "openNativeDevTools": "Yerel tarayıcı DevTools'u aç",
+    "openNativeDevTools": "DevTools'u aç",
     "captureScreenshot": "Ekran görüntüsü",
     "enableInspectMode": "Öğeyi incele",
     "disableInspectMode": "İncelemeyi kapat (Esc)",
@@ -880,7 +879,7 @@
     "chatHistoryReloadHint": "Session verileri yüklenmemiş olabilir",
     "chatHistoryAgentWorking": "Agent çalışıyor",
     "chatHistoryAgentWorkingHint": "İlk yanıtla mesajlar görünür; o zamana kadar araç çubuğu boşta görünebilir",
-    "pleaseSelect": "Lütfen seçin",
+    "pleaseSelect": "Seç",
     "noSessionsFound": "Session bulunamadı",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "Web görünümü geçici olarak gizlendi",
       "webviewHiddenBody": "Yeniden göstermek için menüyü veya iletişim kutusunu kapatın.",
       "loadStalledTitle": "Bu sayfanın yüklenmesi tamamlanmadı",
-      "loadStalledBody": "Gömülü tarayıcı bu adresi yüklemeye başladı ama hiçbir zaman tamamlamadı. Sayfayı yeniden yükleyin veya sistem tarayıcınızda açın.",
-      "currentUrl": "Geçerli URL"
+      "copyUrl": "URL'yi kopyala"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {
@@ -1215,6 +1213,93 @@
         "checkingConflicts": "Çakışmalar kontrol ediliyor…",
         "autoMergeEnabled": "Otomatik birleştirme etkin",
         "inMergeQueue": "Birleştirme kuyruğunda bekliyor"
+      },
+      "mergeBox": {
+        "checksFailed": "Bazı kontroller başarılı olmadı",
+        "checksPending": "Bazı kontroller henüz tamamlanmadı",
+        "checksPassed": "Tüm kontroller başarılı",
+        "checksSkipped": "Tüm kontroller atlandı",
+        "counts": {
+          "failing": "{{count}} başarısız",
+          "inProgress": "{{count}} devam ediyor",
+          "skipped": "{{count}} atlandı",
+          "successful": "{{count}} başarılı",
+          "summary_one": "Kontrol: {{parts}}",
+          "summary_other": "Kontroller: {{parts}}"
+        },
+        "check": {
+          "queued": "Kuyrukta",
+          "started": "{{time}} başladı",
+          "successfulIn": "{{duration}} içinde başarılı",
+          "failingAfter": "{{duration}} sonra başarısız",
+          "skipped": "Atlandı",
+          "successful": "Başarılı",
+          "failing": "Başarısız"
+        },
+        "deployments": {
+          "label": "Dağıtımlar",
+          "none": "Dağıtım yok",
+          "active_one": "{{count}} etkin dağıtım",
+          "active_other": "{{count}} etkin dağıtım",
+          "view": "Dağıtımı görüntüle",
+          "notDeployed": "Bu dal dağıtılmadı",
+          "deployed": "Bu dal başarıyla dağıtıldı",
+          "deploying": "Bu dal dağıtılıyor",
+          "deployFailed": "Bu dal dağıtılırken bir hata oluştu",
+          "deployInactive": "Bu dal artık dağıtımda değil",
+          "state": {
+            "active": "Etkin",
+            "pending": "Devam ediyor",
+            "failure": "Başarısız",
+            "inactive": "Etkin değil"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Değişiklikler onaylandı",
+            "detail": "Onaylayan bir inceleme gönderildi"
+          },
+          "reviewRequired": {
+            "title": "İnceleme gerekli",
+            "detail": "Birleştirmek için en az bir onaylayan inceleme gerekli"
+          },
+          "reviewChangesRequested": {
+            "title": "Değişiklik istendi",
+            "detail": "Bir inceleyici birleştirmeden önce değişiklik istedi"
+          },
+          "noConflicts": {
+            "title": "Temel dal ile çakışma yok",
+            "detail": "Birleştirme otomatik olarak yapılabilir"
+          },
+          "hasConflicts": {
+            "title": "Bu dalda çözülmesi gereken çakışmalar var",
+            "detail": "Çakışmaları kaynak dalda çözün, ardından gönderin"
+          },
+          "outOfDate": {
+            "title": "Bu dal temel dala göre güncel değil",
+            "detail": "Temel daldaki en son değişiklikleri bu dala birleştirin"
+          },
+          "checkingConflicts": {
+            "title": "Otomatik birleştirilebilirlik kontrol ediliyor…",
+            "detail": "GitHub dalın durumunu kontrol ederken lütfen bekleyin"
+          },
+          "autoMergeEnabled": {
+            "title": "Otomatik birleştirme etkin",
+            "detail": "Bu pull request, gereksinimleri karşılandığında birleştirilir"
+          },
+          "inMergeQueue": {
+            "title": "Birleştirme kuyruğunda bekliyor",
+            "detail": "Kuyruğun başına geldiğinde GitHub onu birleştirir"
+          }
+        },
+        "merged": {
+          "title": "Pull request başarıyla birleştirildi ve kapatıldı",
+          "detail": "Kaynak dal güvenle silinebilir"
+        },
+        "closed": {
+          "title": "Birleştirilmemiş commit'lerle kapatıldı",
+          "detail": "Bu pull request kapalı. Birleştirmek için yeniden açın"
+        }
       },
       "commits": {
         "backToList": "Tüm commitler",
@@ -1562,6 +1647,52 @@
         "saved_on_previous": "Değişiklikler önceki dalda kaydedildi",
         "brought": "Değişiklikleriniz sizinle bu dala kadar geldi",
         "worktree_missing": "Çalışma ağacı artık yok. Yenileyip tekrar deneyin"
+      }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Detached HEAD durumu",
+        "body": "{{shortHash}} commit'inde detached HEAD durumundasınız.\n\nHerhangi bir dalda değilsiniz. Önce yeni bir dal oluşturmadan başka bir dala checkout yaparsanız, oluşturduğunuz commit'ler kaybolabilir.\n\n⚠️ Detached HEAD durumundaki commit'ler çöp toplayıcı tarafından silinebilir.",
+        "createBranch": "Dal oluştur",
+        "continueWithoutBranch": "Dal olmadan devam et"
+      },
+      "largePush": {
+        "title": "Büyük push algılandı",
+        "body": "{{remote}}/{{branch}} hedefine {{commitCount}} commit push etmek üzeresiniz.\n\nBu her zamankinden fazla. Devam etmek istediğinizden emin misiniz?\n\n💡 Büyük değişiklikleri daha küçük ve daha odaklı commit'lere bölmeyi düşünün.",
+        "confirm": "Tüm commit'leri push et"
+      },
+      "protectedBranch": {
+        "title": "Korumalı dal",
+        "body": "{{remote}} üzerindeki \"{{branch}}\" dalı korumalıdır ve doğrudan push yapılamaz.\n\nKorumalı dallarda değişikliklerin pull request üzerinden geçmesi gerekir.",
+        "createPr": "Pull request oluştur"
+      },
+      "pullConflict": {
+        "title": "Yerel değişikliklerle pull yapılamıyor",
+        "body": "\"{{branch}}\" dalından gelen değişiklikler yerel değişikliklerinizin üzerine yazacak.{{fileInfo}}\n\nNasıl devam edeceğinizi seçin:",
+        "fileInfo_one": " ({{count}} dosya etkileniyor)",
+        "fileInfo_other": " ({{count}} dosya etkileniyor)",
+        "stashAndPull": "Stash ve Pull",
+        "discardAndPull": "Değişiklikleri at ve Pull"
+      },
+      "pushRejected": {
+        "title": "Push reddedildi",
+        "body": "{{remote}}/{{branch}} hedefine push yapılamıyor.\n\nUzak dal, yerelde bulunmayan commit'ler içeriyor.{{behindInfo}}\n\n⚠️ Force push, uzaktaki değişikliklerin üzerine kalıcı olarak yazar.",
+        "behindInfo_one": " ({{count}} commit geride)",
+        "behindInfo_other": " ({{count}} commit geride)",
+        "pullAndPush": "Pull ve Push",
+        "forcePush": "Force Push"
+      },
+      "conflict": {
+        "titleMerge": "Merge çakışması",
+        "titleRebase": "Rebase çakışması",
+        "bodyMerge": "\"{{branch}}\" dalı merge edilirken çakışmalar oluştu.{{progress}}{{files}}\n\n⚠️ İptal etmek merge işlemini geri alır ve dalınızı eski haline getirir.",
+        "bodyRebase": "\"{{branch}}\" üzerine rebase yapılırken çakışmalar oluştu.{{progress}}{{files}}\n\n⚠️ İptal etmek dalınızı rebase öncesindeki durumuna geri döndürür.",
+        "progress": " (Adım {{current}}/{{total}})",
+        "files_one": "\n\n{{count}} dosyada çakışma var.",
+        "files_other": "\n\n{{count}} dosyada çakışma var.",
+        "resolve": "Çakışmaları çöz",
+        "abortMerge": "Merge'i iptal et",
+        "abortRebase": "Rebase'i iptal et"
       }
     }
   },
@@ -2178,13 +2309,29 @@
   "selectionMenu": {
     "addToChat": "Sohbete ekle",
     "addThisFile": "Bu dosyayı ekle",
-    "addLines": "{{from}} – {{to}} satırlarını ekle"
+    "addLines": "{{from}} – {{to}} satırlarını ekle",
+    "replyToSelection": "Yanıtla",
+    "clearQuotedSelection": "Alıntıyı kaldır",
+    "pinSelection": "Sabitle"
   },
   "browser": {
     "screenshot": {
       "added": "Ekran görüntüsü sohbete eklendi",
       "failed": "Ekran görüntüsü alınamadı: {{reason}}",
-      "noActivePage": "Yakalanacak aktif sayfa yok"
+      "noActivePage": "Yakalanacak aktif sayfa yok",
+      "saved": "Ekran görüntüsü kaydedildi",
+      "saveFailed": "Ekran görüntüsü kaydedilemedi: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Sayfa teması",
+      "themeAuto": "Otomatik",
+      "themeLight": "Açık",
+      "themeDark": "Koyu",
+      "saveScreenshot": "Ekran görüntüsünü kaydet...",
+      "openHtmlFile": "HTML dosyası aç..."
+    },
+    "openHtmlFile": {
+      "failed": "Dosya açılamadı: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Öğe ekle",
@@ -2234,7 +2381,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari, çerezleri macOS tarafından korunan bir klasörde tutar. Sistem Ayarları’ndaki Tam Disk Erişimi bölümünde ORG2’ye izin verin, ardından yeniden kontrol edin",
+      "explain": "{{browser}}, çerezleri macOS tarafından korunan bir klasörde tutar. Sistem Ayarları’ndaki Tam Disk Erişimi bölümünde ORG2’ye izin verin, ardından yeniden kontrol edin",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },

@@ -13,6 +13,7 @@
     "editorAndWorkspace": "Editor & Workspace",
     "appUpdate": "Cập nhật ứng dụng",
     "security": "Bảo mật",
+    "appLock": "Khóa ứng dụng",
     "storage": "Lưu trữ",
     "agentOrg": "Nhóm Agent",
     "harnessConnections": "Kết nối ứng dụng",
@@ -53,6 +54,52 @@
     "customPatternsDesc": "Mỗi dòng một biểu thức chính quy. Mọi kết quả khớp đều được coi là thông tin bí mật. Các biểu thức không hợp lệ sẽ bị bỏ qua",
     "customPatternsPlaceholder": "ví dụ: MYCORP_[A-Z0-9]{20}",
     "invalidPatterns": "{{count}} mẫu không hợp lệ và sẽ bị bỏ qua: {{patterns}}"
+  },
+  "appLock": {
+    "password": "Khóa bằng mật khẩu",
+    "setPassword": "Đặt mật khẩu",
+    "changePassword": "Đổi mật khẩu",
+    "removePassword": "Xóa mật khẩu",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu mới",
+    "passwordSet": "Đã đặt mật khẩu",
+    "passwordChanged": "Đã đổi mật khẩu",
+    "passwordRemoved": "Đã xóa mật khẩu",
+    "lockNow": "Khóa ngay",
+    "lockNowDesc": "Khóa mọi cửa sổ ORG2 cho đến khi nhập mật khẩu",
+    "shortcut": "Phím tắt khóa",
+    "hint": "Gợi ý mật khẩu",
+    "hintPlaceholder": "Hiển thị trên màn hình khóa",
+    "hintOptionalPlaceholder": "Gợi ý mật khẩu (không bắt buộc)",
+    "autoLock": "Tự động khóa",
+    "autoLockDesc": "Khóa sau khoảng thời gian này không có thao tác bàn phím hoặc chuột trong ORG2",
+    "autoLockNever": "Không bao giờ",
+    "autoLockMinutes": "Sau {{count}} phút",
+    "autoLockHour": "Sau 1 giờ",
+    "lockOnLaunch": "Khóa khi ORG2 khởi động",
+    "lockOnLaunchDesc": "Yêu cầu mật khẩu mỗi lần mở ứng dụng",
+    "scopeNote": "Khóa chỉ áp dụng cho các cửa sổ của ORG2. Khóa không mã hóa dữ liệu của bạn hay tạm dừng Mobile Remote, và bất kỳ ai truy cập được tệp của bạn đều có thể gỡ bỏ. Nếu quên mật khẩu, hãy thoát ORG2 và xóa app-lock.json khỏi thư mục .orgii trong thư mục chính của bạn",
+    "errors": {
+      "tooShort": "Dùng ít nhất {{count}} ký tự",
+      "tooLong": "Mật khẩu đó quá dài",
+      "mismatch": "Mật khẩu không khớp",
+      "incorrectCurrent": "Mật khẩu hiện tại không đúng",
+      "throttled": "Quá nhiều lần nhập sai. Hãy thử lại sau",
+      "generic": "Không thể cập nhật khóa ứng dụng",
+      "hintTooLong": "Gợi ý đó quá dài",
+      "hintRevealsPassword": "Gợi ý không được chứa mật khẩu"
+    },
+    "screen": {
+      "title": "ORG2 đã bị khóa",
+      "passwordPlaceholder": "Mật khẩu",
+      "incorrect": "Mật khẩu không đúng",
+      "failed": "Không thể mở khóa. Hãy thử lại",
+      "throttled": "Quá nhiều lần thử. Hãy thử lại sau {{time}}",
+      "working": "Phiên vẫn đang làm việc: {{count}}",
+      "showHint": "Hiện gợi ý",
+      "hint": "Gợi ý: {{hint}}"
+    }
   },
   "myRoles": {
     "currentStatus": "Trạng thái hiện tại của tôi",
@@ -207,7 +254,6 @@
       "codex": "Codex"
     },
     "iconStyle": "Kiểu biểu tượng",
-    "iconStyleDesc": "Đơn sắc làm giảm bão hòa các biểu tượng loại tệp và mô hình để chúng trông như giao diện, không phải logo",
     "iconStyleOptions": {
       "colorful": "Nhiều màu",
       "monochrome": "Đơn sắc"
@@ -538,7 +584,6 @@
     "diffViewMode": "Chế độ xem khác biệt",
     "gitBlame": "Git blame",
     "splitDiffCenteredLineNumbers": "Số dòng căn giữa trong diff chia đôi",
-    "splitDiffCenteredLineNumbersDesc": "Hiển thị cả hai cột số dòng ở giữa hai khung, giống GitHub, thay vì ở mép trái của mỗi khung.",
     "shellsOpenWith": "Shell mở với",
     "shellsOpenWithDesc": "Thư mục làm việc ban đầu cho terminal mới",
     "repoPath": "Đường dẫn kho",

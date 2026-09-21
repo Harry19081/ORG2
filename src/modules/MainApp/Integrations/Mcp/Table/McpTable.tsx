@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import type { McpConfigScope } from "@src/api/tauri/rpc/schemas/mcp";
 import Button from "@src/components/Button";
+import DeleteIconButton from "@src/components/Button/DeleteIconButton";
 import Checkbox from "@src/components/Checkbox";
 import Dropdown from "@src/components/Dropdown";
 import Menu from "@src/components/Menu";
@@ -19,7 +20,6 @@ import {
 import type { CursorRepo } from "@src/hooks/policies";
 import {
   Add01Icon,
-  Delete02Icon,
   HugeiconsIcon,
   MoreHorizontalIcon,
   PowerServiceIcon,
@@ -390,22 +390,11 @@ export const McpTable: React.FC<McpTableProps> = ({
                 {t("common:actions.view")}
               </Button>
               {onDelete ? (
-                <Button
+                <DeleteIconButton
                   size="small"
-                  icon={
-                    <HugeiconsIcon
-                      icon={Delete02Icon}
-                      data-icon="trash-2"
-                      size={14}
-                      className="text-danger-6"
-                    />
-                  }
-                  iconOnly
-                  loading={deleting}
-                  disabled={deleting}
-                  aria-label={t("common:actions.remove")}
-                  title={t("common:actions.remove")}
-                  onClick={() => {
+                  deleting={deleting}
+                  label={t("common:actions.remove")}
+                  onDelete={() => {
                     void handleDeleteServer(server);
                   }}
                 />

@@ -317,6 +317,11 @@ const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
             }}
             onClick={onMenuButtonClick}
           >
+            <span
+              aria-hidden
+              data-split-divider
+              className="pointer-events-none absolute top-1/4 bottom-1/4 left-0 w-[0.5px] bg-border-1"
+            />
             <HugeiconsIcon
               icon={ArrowDown01Icon}
               data-icon="chevron-down"

@@ -951,7 +951,31 @@
         "createdByMe": "मेरे द्वारा बनाए गए",
         "assigneeUpdateNotApplied": "GitHub ने असाइनी परिवर्तन लागू नहीं किया",
         "assigneeUpdateSuccess": "GitHub पर असाइनी अपडेट हो गए",
-        "updateIssueFailed": "GitHub इश्यू अपडेट करने में विफल"
+        "updateIssueFailed": "GitHub इश्यू अपडेट करने में विफल",
+        "filters": {
+          "searchPlaceholder": "फ़िल्टर खोजें",
+          "noMatches": "कोई मेल खाता फ़िल्टर नहीं",
+          "activeCount": "सक्रिय फ़िल्टर: {{count}}",
+          "clear": "फ़िल्टर साफ़ करें",
+          "reviewRequestedFromMe": "मुझसे समीक्षा का अनुरोध",
+          "noAssignee": "कोई असाइनी नहीं",
+          "noLabel": "कोई लेबल नहीं",
+          "linkedPullRequest": "लिंक किया गया पुल रिक्वेस्ट है",
+          "draft": "ड्राफ़्ट",
+          "readyForReview": "समीक्षा के लिए तैयार",
+          "recentlyUpdated": "पिछले 7 दिनों में अपडेट किया गया",
+          "stale": "30 दिनों से अपडेट नहीं",
+          "facetAuthor": "लेखक",
+          "facetAssignee": "असाइनी",
+          "facetLabel": "लेबल",
+          "facetMilestone": "माइलस्टोन",
+          "facetReviewRequested": "समीक्षा का अनुरोध",
+          "facetBaseBranch": "बेस ब्रांच",
+          "facetCiStatus": "जाँचें",
+          "ciSuccess": "सफल",
+          "ciFailure": "विफल",
+          "ciPending": "लंबित"
+        }
       }
     },
     "sessionViews": {
@@ -979,7 +1003,9 @@
     "sending": "भेजा जा रहा है…",
     "typeMessage": "संदेश लिखें…",
     "session": "सत्र",
-    "history": "सत्र"
+    "history": "सत्र",
+    "goToPinnedPassage": "पिन किए गए अंश पर जाएँ: {{preview}}",
+    "unpinPassage": "पिन हटाएँ"
   },
   "planning": {
     "agentTyping": "एजेंट लिख रहा है...",

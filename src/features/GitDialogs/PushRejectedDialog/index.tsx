@@ -21,6 +21,9 @@
  * }
  * ```
  */
+import i18n from "@src/i18n";
+
+import { openNativeChoiceDialog } from "../nativeChoiceDialog";
 
 // ============================================
 // Types
@@ -46,35 +49,33 @@ class PushRejectedDialogManager {
   public async open(
     options: PushRejectedOptions = {}
   ): Promise<PushRejectedResult> {
-    const { message } = await import("@tauri-apps/plugin-dialog");
-
-    const branchName = options.branchName || "current branch";
-    const remoteName = options.remoteName || "origin";
+    const branch = options.branchName || "current branch";
+    const remote = options.remoteName || "origin";
     const behindInfo =
       options.behindCount && options.behindCount > 0
-        ? ` (${options.behindCount} commit${options.behindCount !== 1 ? "s" : ""} behind)`
+        ? i18n.t("common:git.dialogs.pushRejected.behindInfo", {
+            count: options.behindCount,
+          })
         : "";
 
-    const result = await message(
-      `Can't push to ${remoteName}/${branchName}.\n\nThe remote branch contains commits that you don't have locally.${behindInfo}\n\n⚠️ Force push will overwrite remote changes permanently.`,
-      {
-        title: "Push Rejected",
-        kind: "warning",
-        buttons: {
-          yes: "Pull & Push",
-          no: "Force Push",
-          cancel: "Cancel",
+    return openNativeChoiceDialog({
+      title: i18n.t("common:git.dialogs.pushRejected.title"),
+      message: i18n.t("common:git.dialogs.pushRejected.body", {
+        remote,
+        branch,
+        behindInfo,
+      }),
+      choices: [
+        {
+          id: "pull_push",
+          label: i18n.t("common:git.dialogs.pushRejected.pullAndPush"),
         },
-      }
-    );
-
-    if (result === "Pull & Push") {
-      return "pull_push";
-    } else if (result === "Force Push") {
-      return "force";
-    } else {
-      return "cancel";
-    }
+        {
+          id: "force",
+          label: i18n.t("common:git.dialogs.pushRejected.forcePush"),
+        },
+      ],
+    });
   }
 }
 

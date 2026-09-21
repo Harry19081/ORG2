@@ -405,7 +405,6 @@
     "link": "Liên kết",
     "copyName": "Sao chép tên",
     "switchMethod": "Đổi phương thức",
-    "dismiss": "Bỏ qua",
     "clearSelection": "Xóa lựa chọn",
     "openOnGitHub": "Mở trên GitHub",
     "createPullRequest": "Tạo pull request",
@@ -774,7 +773,7 @@
     "nextMatchLabel": "Kết quả tiếp theo",
     "clearSearch": "Xóa tìm kiếm",
     "openFile": "Mở tệp",
-    "openNativeDevTools": "Mở DevTools gốc của trình duyệt",
+    "openNativeDevTools": "Mở DevTools",
     "captureScreenshot": "Ảnh chụp màn hình",
     "enableInspectMode": "Kiểm tra phần tử",
     "disableInspectMode": "Thoát kiểm tra (Esc)",
@@ -880,7 +879,7 @@
     "chatHistoryReloadHint": "Dữ liệu Session có thể chưa được tải",
     "chatHistoryAgentWorking": "Agent đang chạy",
     "chatHistoryAgentWorkingHint": "Tin nhắn xuất hiện từ phản hồi đầu tiên; trước đó thanh công cụ có thể trông như đang rảnh",
-    "pleaseSelect": "Vui lòng chọn",
+    "pleaseSelect": "Chọn",
     "noSessionsFound": "Không tìm thấy Session nào",
     "typeToSearchFiles": "Nhập để tìm kiếm tệp...",
     "selectFileToViewChanges": "Chọn tệp để xem thay đổi",
@@ -1043,8 +1042,7 @@
       "webviewHiddenTitle": "Chế độ xem web tạm thời bị ẩn",
       "webviewHiddenBody": "Đóng menu hoặc hộp thoại để hiển thị lại.",
       "loadStalledTitle": "Trang này chưa tải xong",
-      "loadStalledBody": "Trình duyệt nhúng đã bắt đầu tải địa chỉ này nhưng chưa bao giờ hoàn tất. Hãy tải lại hoặc mở bằng trình duyệt hệ thống.",
-      "currentUrl": "URL hiện tại"
+      "copyUrl": "Sao chép URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
     "ci": {
@@ -1215,6 +1213,93 @@
         "checkingConflicts": "Đang kiểm tra xung đột…",
         "autoMergeEnabled": "Đã bật tự động hợp nhất",
         "inMergeQueue": "Đang chờ trong hàng đợi hợp nhất"
+      },
+      "mergeBox": {
+        "checksFailed": "Một số kiểm tra không thành công",
+        "checksPending": "Một số kiểm tra chưa hoàn tất",
+        "checksPassed": "Tất cả kiểm tra đều đạt",
+        "checksSkipped": "Tất cả kiểm tra đã bị bỏ qua",
+        "counts": {
+          "failing": "{{count}} thất bại",
+          "inProgress": "{{count}} đang chạy",
+          "skipped": "{{count}} đã bỏ qua",
+          "successful": "{{count}} thành công",
+          "summary_one": "Kiểm tra: {{parts}}",
+          "summary_other": "Kiểm tra: {{parts}}"
+        },
+        "check": {
+          "queued": "Đang xếp hàng",
+          "started": "Bắt đầu {{time}}",
+          "successfulIn": "Thành công sau {{duration}}",
+          "failingAfter": "Thất bại sau {{duration}}",
+          "skipped": "Đã bỏ qua",
+          "successful": "Thành công",
+          "failing": "Thất bại"
+        },
+        "deployments": {
+          "label": "Triển khai",
+          "none": "Không có bản triển khai nào",
+          "active_one": "{{count}} bản triển khai đang hoạt động",
+          "active_other": "{{count}} bản triển khai đang hoạt động",
+          "view": "Xem bản triển khai",
+          "notDeployed": "Nhánh này chưa được triển khai",
+          "deployed": "Nhánh này đã được triển khai thành công",
+          "deploying": "Nhánh này đang được triển khai",
+          "deployFailed": "Đã xảy ra lỗi khi triển khai nhánh này",
+          "deployInactive": "Nhánh này không còn được triển khai",
+          "state": {
+            "active": "Đang hoạt động",
+            "pending": "Đang tiến hành",
+            "failure": "Thất bại",
+            "inactive": "Không hoạt động"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Thay đổi đã được phê duyệt",
+            "detail": "Một đánh giá phê duyệt đã được gửi"
+          },
+          "reviewRequired": {
+            "title": "Cần đánh giá",
+            "detail": "Cần ít nhất một đánh giá phê duyệt để hợp nhất"
+          },
+          "reviewChangesRequested": {
+            "title": "Đã yêu cầu thay đổi",
+            "detail": "Một người đánh giá đã yêu cầu thay đổi trước khi hợp nhất"
+          },
+          "noConflicts": {
+            "title": "Không có xung đột với nhánh cơ sở",
+            "detail": "Có thể hợp nhất tự động"
+          },
+          "hasConflicts": {
+            "title": "Nhánh này có xung đột cần được giải quyết",
+            "detail": "Giải quyết xung đột trên nhánh nguồn, sau đó push"
+          },
+          "outOfDate": {
+            "title": "Nhánh này cũ hơn nhánh cơ sở",
+            "detail": "Hợp nhất các thay đổi mới nhất của nhánh cơ sở vào nhánh này"
+          },
+          "checkingConflicts": {
+            "title": "Đang kiểm tra khả năng hợp nhất tự động…",
+            "detail": "Vui lòng chờ trong khi GitHub kiểm tra trạng thái nhánh"
+          },
+          "autoMergeEnabled": {
+            "title": "Đã bật tự động hợp nhất",
+            "detail": "Pull request này sẽ được hợp nhất khi đáp ứng đủ yêu cầu"
+          },
+          "inMergeQueue": {
+            "title": "Đang chờ trong hàng đợi hợp nhất",
+            "detail": "GitHub sẽ hợp nhất khi nó lên đầu hàng đợi"
+          }
+        },
+        "merged": {
+          "title": "Pull request đã được hợp nhất và đóng thành công",
+          "detail": "Có thể xóa nhánh nguồn một cách an toàn"
+        },
+        "closed": {
+          "title": "Đã đóng với các commit chưa hợp nhất",
+          "detail": "Pull request này đã đóng. Mở lại để hợp nhất"
+        }
       },
       "commits": {
         "backToList": "Tất cả commit",
@@ -1562,6 +1647,52 @@
         "saved_on_previous": "Các thay đổi đã được lưu trên nhánh trước đó",
         "brought": "Các thay đổi của bạn đã theo bạn sang nhánh này",
         "worktree_missing": "Worktree không còn tồn tại. Hãy làm mới và thử lại"
+      }
+    },
+    "dialogs": {
+      "detachedHead": {
+        "title": "Trạng thái detached HEAD",
+        "body": "Bạn đang ở trạng thái detached HEAD tại commit {{shortHash}}.\n\nBạn không ở trên nhánh nào. Các commit bạn tạo có thể bị mất nếu bạn checkout sang nhánh khác mà chưa tạo nhánh mới trước.\n\n⚠️ Các commit ở trạng thái detached HEAD có thể bị garbage collection thu hồi.",
+        "createBranch": "Tạo nhánh",
+        "continueWithoutBranch": "Tiếp tục không tạo nhánh"
+      },
+      "largePush": {
+        "title": "Phát hiện push lớn",
+        "body": "Bạn sắp push {{commitCount}} commit lên {{remote}}/{{branch}}.\n\nSố lượng này nhiều hơn bình thường. Bạn có chắc muốn tiếp tục không?\n\n💡 Hãy cân nhắc chia các thay đổi lớn thành những commit nhỏ và tập trung hơn.",
+        "confirm": "Push tất cả commit"
+      },
+      "protectedBranch": {
+        "title": "Nhánh được bảo vệ",
+        "body": "Nhánh \"{{branch}}\" trên {{remote}} được bảo vệ và không thể push trực tiếp.\n\nNhánh được bảo vệ yêu cầu các thay đổi phải đi qua pull request.",
+        "createPr": "Tạo Pull Request"
+      },
+      "pullConflict": {
+        "title": "Không thể pull khi có thay đổi cục bộ",
+        "body": "Các thay đổi cục bộ của bạn sẽ bị ghi đè bởi các thay đổi đến từ \"{{branch}}\".{{fileInfo}}\n\nChọn cách tiếp tục:",
+        "fileInfo_one": " (ảnh hưởng {{count}} tệp)",
+        "fileInfo_other": " (ảnh hưởng {{count}} tệp)",
+        "stashAndPull": "Stash rồi pull",
+        "discardAndPull": "Loại bỏ rồi pull"
+      },
+      "pushRejected": {
+        "title": "Push bị từ chối",
+        "body": "Không thể push lên {{remote}}/{{branch}}.\n\nNhánh trên remote chứa các commit mà bạn chưa có ở máy.{{behindInfo}}\n\n⚠️ Force push sẽ ghi đè vĩnh viễn các thay đổi trên remote.",
+        "behindInfo_one": " (chậm hơn {{count}} commit)",
+        "behindInfo_other": " (chậm hơn {{count}} commit)",
+        "pullAndPush": "Pull rồi push",
+        "forcePush": "Force push"
+      },
+      "conflict": {
+        "titleMerge": "Xung đột merge",
+        "titleRebase": "Xung đột rebase",
+        "bodyMerge": "Đã xảy ra xung đột khi merge \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Hủy bỏ sẽ dừng merge và khôi phục nhánh của bạn.",
+        "bodyRebase": "Đã xảy ra xung đột khi rebase lên \"{{branch}}\".{{progress}}{{files}}\n\n⚠️ Hủy bỏ sẽ khôi phục nhánh của bạn về trạng thái trước khi rebase.",
+        "progress": " (Bước {{current}}/{{total}})",
+        "files_one": "\n\n{{count}} tệp có xung đột.",
+        "files_other": "\n\n{{count}} tệp có xung đột.",
+        "resolve": "Giải quyết xung đột",
+        "abortMerge": "Hủy merge",
+        "abortRebase": "Hủy rebase"
       }
     }
   },
@@ -2178,13 +2309,29 @@
   "selectionMenu": {
     "addToChat": "Thêm vào chat",
     "addThisFile": "Thêm tệp này",
-    "addLines": "Thêm dòng {{from}} – {{to}}"
+    "addLines": "Thêm dòng {{from}} – {{to}}",
+    "replyToSelection": "Trả lời",
+    "clearQuotedSelection": "Xoá trích dẫn",
+    "pinSelection": "Ghim"
   },
   "browser": {
     "screenshot": {
       "added": "Đã đính kèm ảnh chụp vào chat",
       "failed": "Không chụp được: {{reason}}",
-      "noActivePage": "Không có trang đang hoạt động để chụp"
+      "noActivePage": "Không có trang đang hoạt động để chụp",
+      "saved": "Đã lưu ảnh chụp",
+      "saveFailed": "Không thể lưu ảnh chụp: {{reason}}"
+    },
+    "menu": {
+      "pageTheme": "Giao diện trang",
+      "themeAuto": "Tự động",
+      "themeLight": "Sáng",
+      "themeDark": "Tối",
+      "saveScreenshot": "Lưu ảnh chụp...",
+      "openHtmlFile": "Mở tệp HTML..."
+    },
+    "openHtmlFile": {
+      "failed": "Không thể mở tệp: {{reason}}"
     },
     "selectedElement": {
       "addElement": "Thêm phần tử",
@@ -2234,7 +2381,7 @@
   "browserCookieImport": {
     "safari": {
       "needsFullDiskAccess": "Needs Full Disk Access",
-      "explain": "Safari lưu cookie trong thư mục được macOS bảo vệ. Cho phép ORG2 trong mục Truy cập toàn bộ ổ đĩa của Cài đặt hệ thống, rồi kiểm tra lại",
+      "explain": "{{browser}} lưu cookie trong thư mục được macOS bảo vệ. Cho phép ORG2 trong mục Truy cập toàn bộ ổ đĩa của Cài đặt hệ thống, rồi kiểm tra lại",
       "openSettings": "Open System Settings",
       "checkAgain": "Check again"
     },

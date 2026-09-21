@@ -178,6 +178,7 @@ tauri-build = { version = "2.5.6", features = [] }
 cc = "1.0"
 
 [dependencies]
+fs2 = "0.4" # Profile/source coordination and macOS singleton admission
 async-trait = "0.1"
 market-connect = { path = "crates/market-connect", optional = true }
 serde_json = "1.0"
@@ -524,6 +525,7 @@ webdriver = ["dep:tauri-plugin-webdriver-automation", "agent_core/webdriver"]
 tauri-plugin-single-instance = { version = "2.0.0", features = ["deep-link"] }
 
 [target.'cfg(windows)'.dependencies]
+junction = "1" # Share native history without requiring symlink privileges
 windows = { version = "0.61", features = [
   "Win32_Foundation",
   "Win32_Graphics_Dwm",
@@ -531,7 +533,6 @@ windows = { version = "0.61", features = [
 ] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
-fs2 = "0.4" # OS-backed lifetime lock for pre-bootstrap singleton admission
 socket2 = "0.6" # Bounded local IPC connect before the async runtime exists
 objc2 = { workspace = true }
 objc2-foundation = { workspace = true }

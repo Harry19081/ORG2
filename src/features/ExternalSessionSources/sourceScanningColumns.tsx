@@ -8,7 +8,7 @@
 import type { TFunction } from "i18next";
 import React, { type Dispatch, type SetStateAction } from "react";
 
-import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import Dropdown from "@src/components/Dropdown";
 import Menu from "@src/components/Menu";
 import type { IconProvider } from "@src/components/ModelIcon";
@@ -24,6 +24,7 @@ import Tag from "@src/components/Tag";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
   type DataSourceConfigMap,
+  type DataSourceScanFailure,
   type SourceFrequency,
   getSourceConfig,
 } from "@src/store/session/dataSourceConfigAtom";
@@ -36,6 +37,8 @@ import type { SourceRow } from "./sourceScanningTypes";
 export interface SourceScanningColumnsParams {
   t: TFunction<"sessions">;
   configMap: DataSourceConfigMap;
+  /** Sources whose last importer run failed, from any rescan surface. */
+  scanFailures: Record<string, DataSourceScanFailure>;
   sourceFrequencyOptions: { value: SourceFrequency; label: string }[];
   openRescanMenu: string | null;
   setOpenRescanMenu: Dispatch<SetStateAction<string | null>>;
@@ -50,6 +53,7 @@ export interface SourceScanningColumnsParams {
 export function buildSourceScanningColumns({
   t,
   configMap,
+  scanFailures,
   sourceFrequencyOptions,
   openRescanMenu,
   setOpenRescanMenu,
@@ -65,16 +69,27 @@ export function buildSourceScanningColumns({
       renderCell: (row) => {
         const cfg = getSourceConfig(configMap, row.probe.sourceId);
         const disabled = row.importable && !cfg.enabled;
-        const statusTag = statusTagFor(row, disabled);
+        // A source can hold cached sessions from before it broke; its failed
+        // importer must not read as "ready".
+        const scanFailure = scanFailures[row.probe.sourceId];
+        const statusTag = statusTagFor(
+          scanFailure ? { ...row, error: true } : row,
+          disabled
+        );
         return (
           <span className={`${SETTINGS_TABLE_CELL.primaryIcon} min-w-0`}>
             <span className="shrink-0 text-text-2">
               <SourceIcon iconId={row.probe.iconId as IconProvider} />
             </span>
             <span className="truncate">{row.probe.displayName}</span>
-            <Tag size="mini" color={statusTag.color} pill className="shrink-0">
-              {t(`status.${statusTag.labelKey}`)}
-            </Tag>
+            <span
+              className="inline-flex shrink-0"
+              title={disabled ? undefined : scanFailure?.error}
+            >
+              <Tag size="mini" color={statusTag.color} pill>
+                {t(`status.${statusTag.labelKey}`)}
+              </Tag>
+            </span>
           </span>
         );
       },
@@ -233,19 +248,13 @@ export function buildSourceScanningColumns({
                   }
                 />
               ) : (
-                <Button
+                <RefreshButton
+                  variant="secondary"
                   size="small"
                   iconOnly
-                  loading={row.rescanning}
-                  icon={
-                    <HugeiconsIcon
-                      icon={Refresh04Icon}
-                      data-icon="refresh-cw"
-                      size={14}
-                    />
-                  }
-                  title={t("rescan")}
-                  onClick={() => void handleRescan(row)}
+                  label={t("rescan")}
+                  refreshing={row.rescanning}
+                  onRefresh={() => void handleRescan(row)}
                 />
               ))}
           </div>
