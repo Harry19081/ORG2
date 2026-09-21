@@ -8,6 +8,7 @@ use std::sync::RwLock;
 static EPOCH: AtomicU64 = AtomicU64::new(0);
 
 use lru::LruCache;
+#[cfg(test)]
 use tracing::info;
 
 use super::types::CodeSearchResult;
