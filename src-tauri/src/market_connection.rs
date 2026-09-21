@@ -3,8 +3,10 @@
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "market-connect")]
 mod app_catalog;
-#[cfg(feature = "market-connect")]
+#[cfg(all(feature = "market-connect", target_os = "macos"))]
 mod claude_history;
+#[cfg(all(feature = "market-connect", target_os = "macos"))]
+mod claude_history_writers;
 #[cfg(feature = "market-connect")]
 mod configure_catalog;
 #[cfg(feature = "market-connect")]
@@ -30,6 +32,19 @@ pub(crate) fn register_source() -> Result<(), String> {
         crate::dynamic_credentials::register(std::sync::Arc::new(app_catalog::AppSource))?;
     }
     Ok(())
+}
+
+pub(crate) fn stop_history_sync() {
+    #[cfg(all(feature = "market-connect", target_os = "macos"))]
+    claude_history::stop();
+}
+
+#[cfg(feature = "market-connect")]
+fn start_history_sync() {
+    #[cfg(all(feature = "market-connect", target_os = "macos"))]
+    if let Ok(lease) = owner::require() {
+        claude_history::ensure_started(lease);
+    }
 }
 
 /// Invalidate before the frontend's durable Cloud auth transition.
@@ -389,6 +404,7 @@ pub async fn market_connection_configure_profile(
             )
             .await?
         };
+        start_history_sync();
         Ok(ConfiguredProfile { status, selection })
     }
     #[cfg(not(feature = "market-connect"))]
@@ -736,6 +752,7 @@ pub async fn market_connection_configure_catalog(
         let agent = request.agent.clone();
         configure_catalog::configure(request)
             .await
+            .inspect(|_| start_history_sync())
             .inspect_err(|error| {
                 tracing::warn!(agent = %agent, error = %error, "[Market] configure_catalog failed")
             })
@@ -744,23 +761,5 @@ pub async fn market_connection_configure_catalog(
     {
         let _ = request;
         Err("market_module_disabled".into())
-    }
-}
-
-/// Preview is read-only; a selected UUID explicitly requests one handoff.
-#[tauri::command(rename_all = "camelCase")]
-pub async fn market_connection_claude_history(
-    selected: Option<String>,
-    mode: crate::agent_sessions::cli::native_materializer::claude_history_handoff::Mode,
-) -> serde_json::Value {
-    #[cfg(feature = "market-connect")]
-    {
-        serde_json::to_value(claude_history::inspect_or_sync(selected, mode).await)
-            .unwrap_or_else(|_| serde_json::json!({"status": "failed", "items": []}))
-    }
-    #[cfg(not(feature = "market-connect"))]
-    {
-        let _ = (selected, mode);
-        serde_json::json!({"status": "unsupported", "items": []})
     }
 }

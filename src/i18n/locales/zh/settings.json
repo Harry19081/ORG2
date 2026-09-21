@@ -1084,7 +1084,7 @@
     "advancedDescription": "自定义 API 连接和一次性凭据迁移",
     "marketApps": {
       "isolatedStorage": "此官方 App 使用独立配置和对话存储，不会更改主 App 或 CLI 的配置。旧对话不会自动导入",
-      "isolatedClaudeStorage": "打开此 App 时复制 Code 历史，新消息保存在此独立 App 内，主 App 和 CLI 配置不变；若导入的对话尚未显示，请退出并重开 Claude",
+      "isolatedClaudeStorage": "退出 Claude Desktop 和 Claude Code 后，兼容的对话会自动同步",
       "workspaceHelp": "为当前 App 选择套餐和模型。各 App 独立保存选择，切换 ORG2 聊天来源不会修改 App。",
       "loading": "正在加载官方套餐…",
       "loadFailed": "无法加载官方套餐",
@@ -1108,33 +1108,6 @@
       "auxiliaryBilling": "Claude Code 自动生成标题、记忆和压缩上下文的调用计入默认套餐；只有对话本身跟随你用 /model 选择的套餐",
       "defaultModel": "默认模型",
       "packageLimit": "最多选择 8 个套餐"
-    },
-    "claudeHistory": {
-      "title": "同步 Claude 历史",
-      "help": "先预览已有对话，再选择一条同步兼容的对话正文和已完成工具结果。不会转移源环境、项目指令或权限。同步前请退出 Claude Desktop 和 Claude Code；冲突或暂不支持的历史会保持不变",
-      "preview": "列出会话",
-      "choose": "选择一条对话",
-      "inspect": "检查所选会话",
-      "sync": "同步选中对话",
-      "empty": "当前配置中没有相匹配的对话",
-      "status": {
-        "unchecked": "请选择会话并先检查兼容性",
-        "ready": "兼容的续聊内容可以同步",
-        "clean": "已经是最新历史",
-        "synced_to_primary": "已更新主配置的对话",
-        "synced_to_package": "已更新套餐配置的对话",
-        "conflict": "两边历史均已变化或不再匹配，未覆盖任何内容",
-        "incomplete": "对话中还有未完成的消息或工具调用",
-        "unsupported": "此历史含有暂时无法安全同步的记录格式",
-        "busy": "请退出 Claude Desktop 和 Claude Code 后重试",
-        "writer_unknown": "无法确认 Claude 已停止，未做任何修改",
-        "changed": "检查期间文件发生变化，请重新预览",
-        "scope_changed": "账号或配置已变化，请重新预览",
-        "limit": "历史超出本次操作的安全限制",
-        "failed": "无法同步此对话",
-        "recovery_ready": "可以安全恢复上次中断的同步"
-      },
-      "count": "共 {{total}} 个会话，{{ready}} 个已检查且可同步"
     }
   },
   "claudeProfiles": {

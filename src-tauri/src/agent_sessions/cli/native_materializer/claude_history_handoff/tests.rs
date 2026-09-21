@@ -104,9 +104,11 @@ fn local_controls_are_not_replayed_or_mistaken_for_new_branches() {
     fs::write(&pair.package, append(base, line(row))).unwrap();
     assert_eq!(pair.run(), Ok(Status::SyncedToPrimary));
     let output = fs::read(&pair.primary).unwrap();
-    assert!(!String::from_utf8(output.clone())
-        .unwrap()
-        .contains("bypassPermissions"));
+    assert!(
+        !String::from_utf8(output.clone())
+            .unwrap()
+            .contains("bypassPermissions")
+    );
     assert_eq!(output.iter().filter(|b| **b == b'\n').count(), 3);
     assert_eq!(pair.run(), Ok(Status::Clean));
 }
@@ -374,13 +376,15 @@ fn runtime_attachment_can_exist_in_baseline_but_cannot_be_exported() {
         records::project(&base, &control, SESSION, &Budget::new()),
         Err(Status::Unsupported)
     );
-    assert!(records::project(
-        &existing,
-        &message(THIRD, Some(SECOND)),
-        SESSION,
-        &Budget::new()
-    )
-    .is_ok());
+    assert!(
+        records::project(
+            &existing,
+            &message(THIRD, Some(SECOND)),
+            SESSION,
+            &Budget::new()
+        )
+        .is_ok()
+    );
 }
 
 #[test]
@@ -766,13 +770,15 @@ fn pending_unknown_duplicate_and_wrong_role_tool_records_are_refused() {
     duplicate["message"]["content"] =
         json!([{"type":"tool_use","id":"one","name":"Read","input":{}}]);
     let pending = append(base.clone(), line(duplicate));
-    assert!(records::project(
-        &pending,
-        &message(THIRD, Some(SECOND)),
-        SESSION,
-        &Budget::new()
-    )
-    .is_err());
+    assert!(
+        records::project(
+            &pending,
+            &message(THIRD, Some(SECOND)),
+            SESSION,
+            &Budget::new()
+        )
+        .is_err()
+    );
 }
 #[test]
 fn target_snapshot_witness_binds_entire_current_file_and_session() {
@@ -1157,7 +1163,9 @@ fn real_conversation_projection_uses_production_scope_and_repeats_without_writes
     assert_eq!(messages(&updated), messages(&b));
     assert_eq!(fs::read(primary_path).unwrap(), a);
     assert_eq!(fs::read(package_path).unwrap(), b);
-    eprintln!("production scoped real-copy projection: ready, synced, clean; all message UUIDs/payloads retained");
+    eprintln!(
+        "production scoped real-copy projection: ready, synced, clean; all message UUIDs/payloads retained"
+    );
 }
 
 #[test]
@@ -1374,4 +1382,517 @@ fn real_roster_preview_reaches_selected_continuation_within_budget() {
     );
     assert_eq!(inspected.items.len(), 1);
     assert_eq!(inspected.items[0].status, Status::Ready);
+}
+
+impl CatalogFixture {
+    fn new_package_session(&self) -> PathBuf {
+        let catalog = self
+            .roots
+            .official
+            .join(FIRST)
+            .join(SECOND)
+            .join(format!("{SESSION}.json"));
+        fs::remove_file(catalog).unwrap();
+        let primary = self.transcript(&self.roots.primary, SESSION);
+        fs::remove_file(primary).unwrap();
+        self.roots
+            .official
+            .join(FIRST)
+            .join(SECOND)
+            .join(format!("local_{SESSION}.json"))
+    }
+    fn automatic(
+        &self,
+        dirty: Option<&HashSet<String>>,
+        guard: impl Fn() -> Result<(), Status>,
+    ) -> Report {
+        automatic::run_at_automatic(
+            &self.profile,
+            "test-owner",
+            dirty,
+            guard,
+            || Ok(()),
+            &self.roots,
+        )
+    }
+}
+
+#[test]
+fn automatic_registers_new_conversation_last_and_is_idempotent() {
+    let fixture = CatalogFixture::new();
+    let catalog = fixture.new_package_session();
+    let dirty = HashSet::from([SESSION.to_owned()]);
+    let local = fixture
+        .roots
+        .isolated
+        .join(FIRST)
+        .join(SECOND)
+        .join(format!("{SESSION}.json"));
+    let mut row: Value = serde_json::from_slice(&fs::read(&local).unwrap()).unwrap();
+    row["permissionMode"] = json!("bypassPermissions");
+    row["cuAllowedApps"] = json!(["Finder"]);
+    fs::write(&local, serde_json::to_vec(&row).unwrap()).unwrap();
+    let first = fixture.automatic(Some(&dirty), || Ok(()));
+    assert_eq!(first.status, Status::Clean);
+    assert_eq!(first.items[0].status, Status::SyncedToPrimary);
+    let published: Value = serde_json::from_slice(&fs::read(&catalog).unwrap()).unwrap();
+    assert_eq!(published["permissionMode"], "default");
+    assert!(published.get("cuAllowedApps").is_none());
+    assert_eq!(published["alwaysAllowedReasons"], json!([]));
+    let bytes = fs::read(fixture.transcript(&fixture.roots.primary, SESSION)).unwrap();
+    assert_eq!(
+        fixture.automatic(Some(&dirty), || Ok(())).status,
+        Status::Clean
+    );
+    assert_eq!(
+        fs::read(fixture.transcript(&fixture.roots.primary, SESSION)).unwrap(),
+        bytes
+    );
+}
+
+#[test]
+fn automatic_rejects_ambiguous_org_archived_duplicate_unknown_and_existing_transcript() {
+    for scenario in ["org", "archived", "duplicate", "unknown", "transcript"] {
+        let fixture = CatalogFixture::new();
+        let catalog = fixture.new_package_session();
+        let local = fixture
+            .roots
+            .isolated
+            .join(FIRST)
+            .join(SECOND)
+            .join(format!("{SESSION}.json"));
+        let source = fs::read(&local).unwrap();
+        match scenario {
+            "org" => fs::create_dir(fixture.roots.official.join(FIRST).join(THIRD)).unwrap(),
+            "archived" => {
+                let mut row: Value = serde_json::from_slice(&source).unwrap();
+                row["isArchived"] = json!(true);
+                fs::write(&catalog, serde_json::to_vec(&row).unwrap()).unwrap();
+            }
+            "duplicate" => {
+                fs::write(local.with_file_name("duplicate.json"), &source).unwrap();
+            }
+            "unknown" => {
+                let mut row: Value = serde_json::from_slice(&source).unwrap();
+                row["unknownAuthority"] = json!(true);
+                fs::write(&local, serde_json::to_vec(&row).unwrap()).unwrap();
+            }
+            "transcript" => fs::write(
+                fixture.transcript(&fixture.roots.primary, SESSION),
+                b"do not replace",
+            )
+            .unwrap(),
+            _ => unreachable!(),
+        }
+        let report = fixture.automatic(Some(&HashSet::from([SESSION.to_owned()])), || Ok(()));
+        assert!(
+            matches!(report.status, Status::Conflict | Status::Unsupported),
+            "{scenario}: {:?}",
+            report.status
+        );
+        if scenario != "archived" {
+            assert!(!catalog.exists(), "{scenario}");
+        }
+    }
+}
+
+#[test]
+fn automatic_dirty_filter_never_parses_unrelated_transcript_and_empty_is_idle() {
+    let fixture = CatalogFixture::new();
+    fixture.new_package_session();
+    fs::write(
+        fixture.transcript(&fixture.roots.package, THIRD),
+        b"unknown or unfinished",
+    )
+    .unwrap();
+    assert_eq!(
+        fixture.automatic(Some(&HashSet::new()), || Ok(())).status,
+        Status::Clean
+    );
+    assert_eq!(
+        fixture
+            .automatic(Some(&HashSet::from([SESSION.to_owned()])), || Ok(()))
+            .status,
+        Status::Clean
+    );
+}
+
+#[test]
+fn automatic_owner_change_after_transcript_publish_recovers_before_catalog() {
+    let fixture = CatalogFixture::new();
+    let catalog = fixture.new_package_session();
+    let primary = fixture.transcript(&fixture.roots.primary, SESSION);
+    let dirty = HashSet::from([SESSION.to_owned()]);
+    let failed = fixture.automatic(Some(&dirty), || {
+        if primary.exists() {
+            Err(Status::ScopeChanged)
+        } else {
+            Ok(())
+        }
+    });
+    assert_eq!(failed.status, Status::ScopeChanged);
+    assert!(primary.exists());
+    assert!(!catalog.exists());
+    assert_eq!(
+        fixture.automatic(Some(&dirty), || Ok(())).status,
+        Status::Clean
+    );
+    assert!(catalog.exists());
+}
+
+#[test]
+fn new_conversation_projection_strips_runtime_and_keeps_audited_root() {
+    let fixture = CatalogFixture::new();
+    fixture.new_package_session();
+    let runtime = json!({"type":"attachment", "uuid":THIRD, "parentUuid":null, "sessionId":SESSION,"cwd":fixture.cwd,
+        "attachment":{"type":"prompt_snapshot","systemPrompt":"local instructions", "tools":[], "cliPrefix":[]}});
+    let user = json!({"type":"user", "uuid":FIRST, "parentUuid":THIRD, "sessionId":SESSION,"cwd":fixture.cwd,
+        "permissionMode":"bypassPermissions", "message":{"role":"user","content":"hello"}});
+    fs::write(
+        fixture.transcript(&fixture.roots.package, SESSION),
+        append(line(runtime), line(user)),
+    )
+    .unwrap();
+    let report = fixture.automatic(Some(&HashSet::from([SESSION.to_owned()])), || Ok(()));
+    assert_eq!(report.status, Status::Clean);
+    let bytes = fs::read(fixture.transcript(&fixture.roots.primary, SESSION)).unwrap();
+    let text = String::from_utf8(bytes).unwrap();
+    assert!(!text.contains("local instructions"));
+    assert!(!text.contains("bypassPermissions"));
+    assert_eq!(
+        fixture
+            .automatic(Some(&HashSet::from([SESSION.to_owned()])), || Ok(()))
+            .status,
+        Status::Clean
+    );
+}
+
+#[test]
+fn automatic_registration_never_overwrites_an_interrupted_result_that_changed() {
+    let fixture = CatalogFixture::new();
+    let catalog = fixture.new_package_session();
+    let primary = fixture.transcript(&fixture.roots.primary, SESSION);
+    let dirty = HashSet::from([SESSION.to_owned()]);
+    assert_eq!(
+        fixture
+            .automatic(Some(&dirty), || if primary.exists() {
+                Err(Status::ScopeChanged)
+            } else {
+                Ok(())
+            })
+            .status,
+        Status::ScopeChanged
+    );
+    fs::write(&primary, b"external edit must survive").unwrap();
+    assert_eq!(
+        fixture.automatic(Some(&dirty), || Ok(())).status,
+        Status::Conflict
+    );
+    assert_eq!(fs::read(&primary).unwrap(), b"external edit must survive");
+    assert!(!catalog.exists());
+}
+
+#[test]
+fn automatic_rejects_archived_uuid_in_inactive_account_and_busy_writer() {
+    let fixture = CatalogFixture::new();
+    let catalog = fixture.new_package_session();
+    let inactive = fixture.roots.official.join(THIRD).join(SECOND);
+    fs::create_dir_all(&inactive).unwrap();
+    let local = fixture
+        .roots
+        .isolated
+        .join(FIRST)
+        .join(SECOND)
+        .join(format!("{SESSION}.json"));
+    let mut row: Value = serde_json::from_slice(&fs::read(local).unwrap()).unwrap();
+    row["isArchived"] = json!(true);
+    fs::write(
+        inactive.join("archived.json"),
+        serde_json::to_vec(&row).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        fixture
+            .automatic(Some(&HashSet::from([SESSION.to_owned()])), || Ok(()))
+            .status,
+        Status::Conflict
+    );
+    assert!(!catalog.exists());
+    let blocked = automatic::run_at_automatic(
+        &fixture.profile,
+        "test-owner",
+        None,
+        || Ok(()),
+        || Err(Status::Busy),
+        &fixture.roots,
+    );
+    assert_eq!(blocked.status, Status::Busy);
+    assert!(!fixture.transcript(&fixture.roots.primary, SESSION).exists());
+}
+
+#[test]
+fn automatic_account_switch_after_publication_keeps_catalog_unpublished() {
+    let fixture = CatalogFixture::new();
+    let catalog = fixture.new_package_session();
+    let primary = fixture.transcript(&fixture.roots.primary, SESSION);
+    let report = fixture.automatic(Some(&HashSet::from([SESSION.to_owned()])), || {
+        if primary.exists() {
+            fs::write(
+                fixture.roots.official.parent().unwrap().join("config.json"),
+                json!({"lastKnownAccountUuid":THIRD}).to_string(),
+            )
+            .unwrap();
+        }
+        Ok(())
+    });
+    assert_eq!(report.status, Status::ScopeChanged);
+    assert!(!catalog.exists());
+}
+
+#[test]
+fn automatic_new_conversation_reuses_same_baseline_for_both_continuations() {
+    let fixture = CatalogFixture::new();
+    fixture.new_package_session();
+    let dirty = HashSet::from([SESSION.to_owned()]);
+    assert_eq!(
+        fixture.automatic(Some(&dirty), || Ok(())).status,
+        Status::Clean
+    );
+    let primary = fixture.transcript(&fixture.roots.primary, SESSION);
+    let package = fixture.transcript(&fixture.roots.package, SESSION);
+    let continuation = json!({"type":"user","uuid":THIRD,"parentUuid":SECOND,"sessionId":SESSION,"cwd":fixture.cwd,"message":{"role":"user","content":"forward"}});
+    fs::write(
+        &package,
+        append(fs::read(&package).unwrap(), line(continuation)),
+    )
+    .unwrap();
+    let forward = fixture.automatic(Some(&dirty), || Ok(()));
+    assert_eq!(forward.status, Status::Clean);
+    assert_eq!(forward.items[0].status, Status::SyncedToPrimary);
+    let next = json!({"type":"user","uuid":SESSION,"parentUuid":THIRD,"sessionId":SESSION,"cwd":fixture.cwd,"message":{"role":"user","content":"back"}});
+    fs::write(&primary, append(fs::read(&primary).unwrap(), line(next))).unwrap();
+    let backward = fixture.automatic(Some(&dirty), || Ok(()));
+    assert_eq!(backward.status, Status::Clean);
+    assert_eq!(backward.items[0].status, Status::SyncedToPackage);
+    assert_eq!(
+        fixture.automatic(Some(&dirty), || Ok(())).status,
+        Status::Clean
+    );
+    let baselines = fs::read_dir(&fixture.roots.state)
+        .unwrap()
+        .filter_map(Result::ok)
+        .filter(|entry| {
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+            name.ends_with(".json")
+                && !name.ends_with(".register.json")
+                && !name.ends_with(".pending.json")
+        })
+        .count();
+    assert_eq!(baselines, 1);
+}
+
+#[test]
+fn unknown_new_session_does_not_block_paired_continuation_or_vendor_manifests() {
+    let fixture = CatalogFixture::new();
+    let target = fixture.new_package_session();
+    let local = fixture
+        .roots
+        .isolated
+        .join(FIRST)
+        .join(SECOND)
+        .join(format!("{SESSION}.json"));
+    let mut source: Value = serde_json::from_slice(&fs::read(&local).unwrap()).unwrap();
+    source["unknownFutureControl"] = json!(true);
+    fs::write(local, serde_json::to_vec(&source).unwrap()).unwrap();
+    for root in [&fixture.roots.official, &fixture.roots.isolated] {
+        fs::write(
+            root.join(FIRST).join(SECOND).join("scheduled-tasks.json"),
+            b"[]",
+        )
+        .unwrap();
+        fs::create_dir(root.join(FIRST).join(SECOND).join("backlog")).unwrap();
+    }
+    let report = fixture.automatic(None, || Ok(()));
+    assert_eq!(report.status, Status::Unsupported);
+    assert!(
+        report
+            .items
+            .iter()
+            .any(|item| item.session_id == SESSION && item.status == Status::Unsupported)
+    );
+    assert!(
+        report
+            .items
+            .iter()
+            .any(|item| item.session_id == THIRD && item.status == Status::SyncedToPrimary)
+    );
+    assert!(!target.exists());
+}
+
+#[test]
+fn observed_3p_runtime_metadata_keys_are_recognized_but_never_registered() {
+    let fixture = CatalogFixture::new();
+    let catalog = fixture.new_package_session();
+    let local = fixture
+        .roots
+        .isolated
+        .join(FIRST)
+        .join(SECOND)
+        .join(format!("{SESSION}.json"));
+    let mut row: Value = serde_json::from_slice(&fs::read(&local).unwrap()).unwrap();
+    // Keys observed in the real 3P catalog; fixture values are synthetic.
+    let discarded = [
+        "cliBinaryPin",
+        "enabledMcpTools",
+        "lastSpawnRootDetected",
+        "latestUserFrameAt",
+        "promptAppendSnapshot",
+        "remoteControlAutoEligible",
+        "reportFindingsCard",
+        "spawnSeed",
+        "titleTurn",
+        "toolSurfaceSnapshot",
+    ];
+    for key in discarded {
+        row[key] = json!({"fixture":"must stay local"});
+    }
+    fs::write(local, serde_json::to_vec(&row).unwrap()).unwrap();
+    assert_eq!(
+        fixture
+            .automatic(Some(&HashSet::from([SESSION.to_owned()])), || Ok(()))
+            .status,
+        Status::Clean
+    );
+    let output: Value = serde_json::from_slice(&fs::read(catalog).unwrap()).unwrap();
+    for key in discarded {
+        assert!(output.get(key).is_none(), "{key}");
+    }
+}
+
+#[test]
+fn new_conversation_discards_audited_agent_listing_without_exporting_agent_context() {
+    let fixture = CatalogFixture::new();
+    fixture.new_package_session();
+    let user = json!({"type":"user","uuid":FIRST,"parentUuid":null,"sessionId":SESSION,"cwd":fixture.cwd,
+        "message":{"role":"user","content":"hello"}});
+    let listing = json!({"type":"attachment","uuid":THIRD,"parentUuid":FIRST,"sessionId":SESSION,"cwd":fixture.cwd,
+        "attachment":{"type":"agent_listing_delta","addedTypes":["local-agent"],"addedLines":["private-agent-instructions"],
+        "removedTypes":[],"isInitial":true,"showConcurrencyNote":false}});
+    let assistant = json!({"type":"assistant","uuid":SECOND,"parentUuid":THIRD,"sessionId":SESSION,"cwd":fixture.cwd,
+        "message":{"role":"assistant","content":[{"type":"text","text":"hello back"}]}});
+    let bytes = append(
+        append(line(user.clone()), line(listing.clone())),
+        line(assistant.clone()),
+    );
+    fs::write(fixture.transcript(&fixture.roots.package, SESSION), &bytes).unwrap();
+    let report = fixture.automatic(None, || Ok(()));
+    assert_eq!(report.status, Status::Clean);
+    let output = fs::read(fixture.transcript(&fixture.roots.primary, SESSION)).unwrap();
+    let projected = records::rows(&output, &Budget::new()).unwrap();
+    assert!(!String::from_utf8_lossy(&output).contains("private-agent-instructions"));
+    assert!(!projected.iter().any(|r| r["type"] == "attachment"));
+    assert_eq!(
+        projected.iter().find(|r| r["uuid"] == SECOND).unwrap()["parentUuid"],
+        FIRST
+    );
+    assert_eq!(fixture.automatic(None, || Ok(())).status, Status::Clean);
+    let mut unknown = listing;
+    unknown["attachment"]["permissionOverride"] = json!(true);
+    let bad = append(append(line(user), line(unknown)), line(assistant));
+    assert!(matches!(
+        records::project_conversation(&[], &bad, &[], SESSION, &Budget::new()),
+        Err(Status::Unsupported)
+    ));
+}
+
+#[test]
+fn automatic_registration_preserves_deliberate_title_provenance() {
+    for (source, expected) in [
+        ("user", "user"),
+        ("tool", "tool"),
+        ("auto", "auto"),
+        ("future-source", "auto"),
+    ] {
+        let fixture = CatalogFixture::new();
+        let target = fixture.new_package_session();
+        let local = fixture
+            .roots
+            .isolated
+            .join(FIRST)
+            .join(SECOND)
+            .join(format!("{SESSION}.json"));
+        let mut row: Value = serde_json::from_slice(&fs::read(&local).unwrap()).unwrap();
+        row["titleSource"] = json!(source);
+        fs::write(&local, serde_json::to_vec(&row).unwrap()).unwrap();
+        assert_eq!(fixture.automatic(None, || Ok(())).status, Status::Clean);
+        let registered: Value = serde_json::from_slice(&fs::read(target).unwrap()).unwrap();
+        assert_eq!(registered["titleSource"], expected);
+        // Official updateSession protects user/tool titles from auto generation.
+        assert_eq!(
+            matches!(registered["titleSource"].as_str(), Some("user" | "tool")),
+            matches!(source, "user" | "tool")
+        );
+    }
+}
+
+#[test]
+fn automatic_return_discards_advisor_metadata_and_accepts_only_empty_transformations() {
+    let fixture = CatalogFixture::new();
+    fixture.new_package_session();
+    assert_eq!(fixture.automatic(None, || Ok(())).status, Status::Clean);
+    let primary = fixture.transcript(&fixture.roots.primary, SESSION);
+    let original = fs::read(&primary).unwrap();
+    let rows = records::rows(&original, &Budget::new()).unwrap();
+    let parent = rows.iter().rev().find(|r| r["uuid"].is_string()).unwrap()["uuid"].clone();
+    let user = json!({"type":"user","uuid":THIRD,"parentUuid":parent,"sessionId":SESSION,"cwd":fixture.cwd,
+        "message":{"role":"user","content":"return question"}});
+    let assistant = json!({"type":"assistant","uuid":"55555555-5555-4555-8555-555555555555","parentUuid":THIRD,"sessionId":SESSION,"cwd":fixture.cwd,
+        "advisorModel":"local-advisor","message":{"role":"assistant","content":[{"type":"text","text":"return answer"}],"input_transformations":[]}});
+    fs::write(
+        &primary,
+        append(
+            append(original, line(user.clone())),
+            line(assistant.clone()),
+        ),
+    )
+    .unwrap();
+    assert_eq!(fixture.automatic(None, || Ok(())).status, Status::Clean);
+    let target = fs::read(fixture.transcript(&fixture.roots.package, SESSION)).unwrap();
+    let records = records::rows(&target, &Budget::new()).unwrap();
+    let result = records
+        .iter()
+        .find(|r| r["uuid"] == assistant["uuid"])
+        .unwrap();
+    assert_eq!(result["message"], assistant["message"]);
+    assert!(result.get("advisorModel").is_none());
+    assert_eq!(fixture.automatic(None, || Ok(())).status, Status::Clean);
+    let mut root = user;
+    root["parentUuid"] = Value::Null;
+    for invalid in [json!(null), json!(12), json!({"model":"local"})] {
+        let mut bad = assistant.clone();
+        bad["advisorModel"] = invalid;
+        assert!(matches!(
+            records::project_conversation(
+                &[],
+                &append(line(root.clone()), line(bad)),
+                &[],
+                SESSION,
+                &Budget::new()
+            ),
+            Err(Status::Unsupported)
+        ));
+    }
+    let mut bad = assistant;
+    bad["message"]["input_transformations"] = json!([{"type":"unknown"}]);
+    assert!(matches!(
+        records::project_conversation(
+            &[],
+            &append(line(root), line(bad)),
+            &[],
+            SESSION,
+            &Budget::new()
+        ),
+        Err(Status::Unsupported)
+    ));
 }

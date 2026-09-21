@@ -5,7 +5,7 @@ mod account_home;
 #[cfg(target_os = "macos")]
 mod lifecycle;
 #[cfg(target_os = "macos")]
-mod process;
+pub(super) mod process;
 use agent_cli::managed_config::native_app::NativeAppProfile;
 use std::path::{Path, PathBuf};
 #[cfg(any(target_os = "macos", test))]
@@ -263,6 +263,20 @@ pub(super) fn open(
     }
 }
 
+pub(super) fn claude_history_writers_closed() -> Result<(), &'static str> {
+    #[cfg(target_os = "macos")]
+    {
+        process::claude_writers_closed()
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        Err("writer_unknown")
+    }
+}
+
+#[cfg(target_os = "macos")]
+pub(super) use process::{claude_writer_identities, writer_identity_current};
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -421,16 +435,5 @@ mod tests {
             }
             assert!(command.get_envs().all(|(_, value)| value.is_none()));
         }
-    }
-}
-
-pub(super) fn claude_history_writers_closed() -> Result<(), &'static str> {
-    #[cfg(target_os = "macos")]
-    {
-        process::claude_writers_closed()
-    }
-    #[cfg(not(target_os = "macos"))]
-    {
-        Err("writer_unknown")
     }
 }

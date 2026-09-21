@@ -1,5 +1,6 @@
 //! Explicit offline handoff of existing Claude Desktop conversations. No watcher,
 //! vendor index writes, new-session import, credential or configuration copying.
+mod automatic;
 mod records;
 mod storage;
 #[cfg(test)]
@@ -35,6 +36,8 @@ pub enum Mode {
     Inspect,
     Sync,
 }
+
+pub(crate) use automatic::{run_automatic, watch_roots};
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -89,6 +92,7 @@ impl Budget {
 /// The caller checks the current owner and that all Claude writers have quit.
 /// These checks are repeated at each commit. They are a controlled-handoff
 /// contract, not a claim that third-party processes honor ORG2's advisory lock.
+#[cfg(test)]
 pub(crate) fn run(
     profile: &NativeAppProfile,
     owner: &str,
@@ -128,6 +132,7 @@ struct Roots {
     package: PathBuf,
     state: PathBuf,
 }
+#[cfg(test)]
 fn run_at(
     profile: &NativeAppProfile,
     owner: &str,
@@ -136,6 +141,29 @@ fn run_at(
     check_owner: impl Fn() -> Result<(), Status>,
     check_writers: impl Fn() -> Result<(), Status>,
     roots: &Roots,
+) -> Report {
+    run_filtered_at(
+        profile,
+        owner,
+        selected,
+        mode,
+        check_owner,
+        check_writers,
+        roots,
+        None,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn run_filtered_at(
+    profile: &NativeAppProfile,
+    owner: &str,
+    selected: Option<&str>,
+    mode: Mode,
+    check_owner: impl Fn() -> Result<(), Status>,
+    check_writers: impl Fn() -> Result<(), Status>,
+    roots: &Roots,
+    dirty_ids: Option<&HashSet<String>>,
 ) -> Report {
     let mut report = Report {
         status: Status::Clean,
@@ -150,9 +178,9 @@ fn run_at(
             .validate("claude_desktop")
             .map_err(|_| Status::Changed)?;
         let official = &roots.official;
-        let account = active_account(&official)?;
+        let account = active_account(official)?;
         let isolated = &roots.isolated;
-        let local_account = active_account(&isolated)?;
+        let local_account = active_account(isolated)?;
         let project = local_project(&isolated.join(&local_account))?;
         let root = &roots.state;
         storage::safe(root.parent().ok_or(Status::Changed)?, root)?;
@@ -200,9 +228,9 @@ fn run_at(
                     continue;
                 };
                 if Uuid::parse_str(id).is_err()
-                    || !desktop_id
+                    || desktop_id
                         .strip_prefix("local_")
-                        .is_some_and(|v| Uuid::parse_str(v).is_ok())
+                        .is_none_or(|v| Uuid::parse_str(v).is_err())
                 {
                     continue;
                 }
@@ -213,6 +241,9 @@ fn run_at(
                 else {
                     continue;
                 };
+                if dirty_ids.is_some_and(|ids| !ids.contains(id)) {
+                    continue;
+                }
                 if selected.is_some_and(|selected| selected != id) {
                     continue;
                 }
@@ -246,23 +277,22 @@ fn run_at(
             let status = if mode == Mode::List {
                 Status::Unchecked
             } else {
-                let scope = serde_json::to_string(&(
+                let scope = pair_scope(
                     profile,
                     owner,
                     &account,
                     &local_account,
-                    id,
-                    cwd,
-                    desktop_id,
-                ))
-                .map_err(|_| Status::Failed)?;
+                    &row,
+                    &path,
+                    &local_path,
+                )?;
                 let recheck = || {
                     check_owner()?;
                     profile
                         .validate("claude_desktop")
                         .map_err(|_| Status::ScopeChanged)?;
-                    if active_account(&official)? != account
-                        || active_account(&isolated)? != local_account
+                    if active_account(official)? != account
+                        || active_account(isolated)? != local_account
                         || local_project(&isolated.join(&local_account))? != project
                     {
                         return Err(Status::ScopeChanged);
@@ -285,11 +315,11 @@ fn run_at(
                     }
                 };
                 storage::reconcile_scoped(
-                    &primary_root,
+                    primary_root,
                     &primary,
-                    &package_root,
+                    package_root,
                     &package,
-                    &root,
+                    root,
                     id,
                     &budget,
                     &recheck,
@@ -369,6 +399,7 @@ fn active_account(root: &Path) -> Result<String, Status> {
 fn local_project(account: &Path) -> Result<PathBuf, Status> {
     let mut count = CLAUDE_DESKTOP_PROJECT_SCAN_LIMIT;
     let budget = Budget::new();
+    let mut selected = None;
     for marker in bounded_directory_paths(account, &mut count) {
         if !marker
             .file_name()
@@ -387,9 +418,35 @@ fn local_project(account: &Path) -> Result<PathBuf, Status> {
         Uuid::parse_str(id).map_err(|_| Status::Unsupported)?;
         let project = account.join(id);
         storage::safe(account, &project)?;
-        if project.is_dir() {
-            return Ok(project);
+        if project.is_dir() && selected.replace(project).is_some() {
+            return Err(Status::Unsupported);
         }
     }
-    Err(Status::Unsupported)
+    if count == 0 {
+        return Err(Status::Limit);
+    }
+    selected.ok_or(Status::Unsupported)
+}
+
+fn pair_scope(
+    profile: &NativeAppProfile,
+    owner: &str,
+    account: &str,
+    local_account: &str,
+    row: &Value,
+    primary_catalog: &Path,
+    local_catalog: &Path,
+) -> Result<String, Status> {
+    serde_json::to_string(&(
+        profile,
+        owner,
+        account,
+        local_account,
+        row["cliSessionId"].as_str().ok_or(Status::Unsupported)?,
+        row["cwd"].as_str().ok_or(Status::Unsupported)?,
+        row["sessionId"].as_str().ok_or(Status::Unsupported)?,
+        primary_catalog.parent(),
+        local_catalog.parent(),
+    ))
+    .map_err(|_| Status::Failed)
 }

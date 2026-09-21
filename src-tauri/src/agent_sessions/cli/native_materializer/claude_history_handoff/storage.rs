@@ -1,5 +1,5 @@
 use super::super::write_file_atomically;
-use super::{records, Budget, Status};
+use super::{Budget, Status, records};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::{
@@ -94,11 +94,11 @@ fn read(path: &Path, max: u64, budget: &Budget) -> Result<Vec<u8>, Status> {
         options.custom_flags(libc::O_NOFOLLOW);
     }
     let mut file = options.open(path).map_err(|_| Status::Changed)?;
-    let opened = file.metadata().map_err(|_| Status::Changed)?;
+    let _opened = file.metadata().map_err(|_| Status::Changed)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
-        if before.ino() != opened.ino() || before.dev() != opened.dev() {
+        if before.ino() != _opened.ino() || before.dev() != _opened.dev() {
             return Err(Status::Changed);
         }
     }
@@ -167,7 +167,7 @@ fn load<T: serde::de::DeserializeOwned>(path: &Path, budget: &Budget) -> Result<
 }
 
 /// Same stable adjacent lock as materialization, but never block the worker.
-fn try_lock(path: &Path) -> Result<fs::File, Status> {
+pub(super) fn try_lock(path: &Path) -> Result<fs::File, Status> {
     let lock = path.with_file_name(format!(
         ".{}.orgii.lock",
         path.file_name()
@@ -175,7 +175,15 @@ fn try_lock(path: &Path) -> Result<fs::File, Status> {
             .to_str()
             .ok_or(Status::Changed)?
     ));
-    safe(path.parent().ok_or(Status::Changed)?, &lock)?;
+    try_lock_file(&lock)
+}
+
+pub(super) fn try_catalog_lock(directory: &Path) -> Result<fs::File, Status> {
+    try_lock_file(&directory.join(".orgii-sessions-index.lock"))
+}
+
+fn try_lock_file(lock: &Path) -> Result<fs::File, Status> {
+    safe(lock.parent().ok_or(Status::Changed)?, lock)?;
     let mut options = fs::OpenOptions::new();
     options.read(true).write(true).create(true).truncate(false);
     #[cfg(unix)]
@@ -183,7 +191,7 @@ fn try_lock(path: &Path) -> Result<fs::File, Status> {
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600).custom_flags(libc::O_NOFOLLOW);
     }
-    let file = options.open(&lock).map_err(|_| Status::Changed)?;
+    let file = options.open(lock).map_err(|_| Status::Changed)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
@@ -200,7 +208,7 @@ fn try_lock(path: &Path) -> Result<fs::File, Status> {
     {
         use std::os::unix::fs::MetadataExt;
         let opened = file.metadata().map_err(|_| Status::Changed)?;
-        let current_path = fs::symlink_metadata(&lock).map_err(|_| Status::Changed)?;
+        let current_path = fs::symlink_metadata(lock).map_err(|_| Status::Changed)?;
         if !current_path.is_file()
             || current_path.ino() != opened.ino()
             || current_path.dev() != opened.dev()
@@ -678,7 +686,19 @@ fn verify_ledger(baseline: &Baseline, a: &[u8], b: &[u8], budget: &Budget) -> Re
             if !matches!(source_row["type"].as_str(), Some("user" | "assistant")) {
                 return Err(Status::Conflict);
             }
-            expected["parentUuid"] = basis_row["uuid"].clone();
+            if projection.basis_uuid == projection.uuid {
+                let target_bytes = if entry.to_primary { a } else { b };
+                let first = records::rows(target_bytes, budget)?
+                    .into_iter()
+                    .find(|row| row["uuid"].is_string())
+                    .ok_or(Status::Conflict)?;
+                if first["uuid"] != projection.uuid || first["type"] != "user" {
+                    return Err(Status::Conflict);
+                }
+                expected["parentUuid"] = serde_json::Value::Null;
+            } else {
+                expected["parentUuid"] = basis_row["uuid"].clone();
+            }
             expected
                 .as_object_mut()
                 .ok_or(Status::Conflict)?
@@ -687,6 +707,10 @@ fn verify_ledger(baseline: &Baseline, a: &[u8], b: &[u8], budget: &Budget) -> Re
                 .as_object_mut()
                 .ok_or(Status::Conflict)?
                 .remove("toolUseResult");
+            expected
+                .as_object_mut()
+                .ok_or(Status::Conflict)?
+                .remove("advisorModel");
         } else {
             if source_row["attachment"]["type"] != "prompt_snapshot"
                 || target_row["attachment"] != basis_row["attachment"]
@@ -705,7 +729,7 @@ fn verify_ledger(baseline: &Baseline, a: &[u8], b: &[u8], budget: &Budget) -> Re
                 let mut a = row.clone();
                 let mut b = other.clone();
                 // This already-audited local permission field is never replayed.
-                for field in ["permissionMode", "toolUseResult"] {
+                for field in ["permissionMode", "toolUseResult", "advisorModel"] {
                     a.as_object_mut().ok_or(Status::Conflict)?.remove(field);
                     b.as_object_mut().ok_or(Status::Conflict)?.remove(field);
                 }
@@ -715,5 +739,163 @@ fn verify_ledger(baseline: &Baseline, a: &[u8], b: &[u8], budget: &Budget) -> Re
             }
         }
     }
+    Ok(())
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Registration {
+    version: u8,
+    catalog: Fingerprint,
+    next: Baseline,
+}
+
+fn create(path: &Path, bytes: &[u8]) -> Result<bool, Status> {
+    safe(path.parent().ok_or(Status::Changed)?, path)?;
+    super::super::create_file_atomically(path, "Claude conversation registration", |file| {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            file.set_permissions(fs::Permissions::from_mode(0o600))
+                .map_err(|e| e.to_string())?;
+        }
+        file.write_all(bytes).map_err(|e| e.to_string())
+    })
+    .map_err(|_| Status::Failed)
+}
+
+/// Publish a new conversation only. An existing transcript is accepted solely
+/// as the exact result of this scope's pending create journal, never adopted.
+#[allow(clippy::too_many_arguments)]
+pub(super) fn register_new(
+    primary_root: &Path,
+    primary: &Path,
+    package_root: &Path,
+    package: &Path,
+    state_root: &Path,
+    catalog: &Path,
+    catalog_row: &serde_json::Value,
+    session: &str,
+    budget: &Budget,
+    guard: &impl Fn() -> Result<(), Status>,
+    scope: Scope<'_>,
+) -> Result<(), Status> {
+    budget.check()?;
+    guard()?;
+    safe(primary_root, primary)?;
+    safe(package_root, package)?;
+    safe(state_root, state_root)?;
+    safe(catalog.parent().ok_or(Status::Changed)?, catalog)?;
+    // This only creates transcript parents inside the already authenticated
+    // native home. No Claude identity, org, config or trust file is created.
+    fs::create_dir_all(primary.parent().ok_or(Status::Changed)?).map_err(|_| Status::Failed)?;
+    let _primary_lock = try_lock(primary)?;
+    let _package_lock = try_lock(package)?;
+    let _catalog_lock = try_lock(catalog)?;
+    let source = read(package, MAX_FILE, budget)?;
+    records::validate(&source, session, budget)?;
+    for record in records::rows(&source, budget)? {
+        if record["uuid"].is_string() && record["cwd"].as_str().map(Path::new) != Some(scope.cwd) {
+            return Err(Status::Unsupported);
+        }
+    }
+    let projected = records::project_conversation(&[], &source, &[], session, budget)?;
+    records::validate(&projected.bytes, session, budget)?;
+    let binding = format!(
+        "{:x}",
+        Sha256::digest(
+            serde_json::to_vec(&(primary, package, session, Some(scope.binding)))
+                .map_err(|_| Status::Failed)?
+        )
+    );
+    let state = state_root.join(format!("{binding}.json"));
+    let pending_path = state_root.join(format!("{binding}.register.json"));
+    let backup = state_root.join(format!("{binding}.register.backup.jsonl"));
+    let metadata = serde_json::to_vec(catalog_row).map_err(|_| Status::Unsupported)?;
+    let next = Baseline {
+        version: 2,
+        binding: binding.clone(),
+        primary: Fingerprint::of(&projected.bytes),
+        package: Fingerprint::of(&source),
+        generation: 0,
+        ledger: projected
+            .ledger
+            .into_iter()
+            .map(|projection| LedgerEntry {
+                to_primary: true,
+                projection,
+            })
+            .collect(),
+    };
+    verify_ledger(&next, &projected.bytes, &source, budget)?;
+    let prior = load::<Registration>(&pending_path, budget)?;
+    if let Some(prior) = &prior {
+        if prior.version != 1
+            || prior.catalog != Fingerprint::of(&metadata)
+            || prior.next.binding != binding
+            || prior.next.primary != next.primary
+            || prior.next.package != next.package
+        {
+            return Err(Status::Conflict);
+        }
+        if read(&backup, MAX_FILE, budget)? != projected.bytes {
+            return Err(Status::Conflict);
+        }
+    } else {
+        if primary.try_exists().map_err(|_| Status::Failed)?
+            || catalog.try_exists().map_err(|_| Status::Failed)?
+            || state.try_exists().map_err(|_| Status::Failed)?
+        {
+            return Err(Status::Conflict);
+        }
+        guard()?;
+        fs::create_dir_all(state_root).map_err(|_| Status::Failed)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(state_root, fs::Permissions::from_mode(0o700))
+                .map_err(|_| Status::Failed)?;
+        }
+        // Retain only the safe projection, never the package runtime context.
+        write(&backup, &projected.bytes)?;
+        save(
+            &pending_path,
+            &Registration {
+                version: 1,
+                catalog: Fingerprint::of(&metadata),
+                next: next.clone(),
+            },
+        )?;
+    }
+    guard()?;
+    if read(package, MAX_FILE, budget)? != source {
+        return Err(Status::Changed);
+    }
+    if !create(primary, &projected.bytes)?
+        && (prior.is_none() || read(primary, MAX_FILE, budget)? != projected.bytes)
+    {
+        return Err(Status::Conflict);
+    }
+    guard()?;
+    if read(primary, MAX_FILE, budget)? != projected.bytes
+        || read(package, MAX_FILE, budget)? != source
+    {
+        return Err(Status::Changed);
+    }
+    save(&state, &next)?;
+    guard()?;
+    // Discovery is the final publication. Never expose a missing transcript.
+    if !create(catalog, &metadata)?
+        && (prior.is_none()
+            || read(
+                catalog,
+                super::super::CLAUDE_DESKTOP_METADATA_MAX_BYTES,
+                budget,
+            )? != metadata)
+    {
+        return Err(Status::Conflict);
+    }
+    guard()?;
+    fs::remove_file(&pending_path).map_err(|_| Status::Failed)?;
     Ok(())
 }

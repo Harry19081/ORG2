@@ -394,6 +394,7 @@ async fn perform_bounded_shutdown(app_handle: &tauri::AppHandle) {
 }
 
 fn run_pre_database_shutdown(app_handle: &tauri::AppHandle) {
+    crate::market_connection::stop_history_sync();
     match agent_cli::managed_config::restore_managed_configs_for_shutdown() {
         Ok(report) => {
             if !report.restored_agents.is_empty() {

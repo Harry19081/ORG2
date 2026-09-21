@@ -2,7 +2,7 @@
 use std::path::{Path, PathBuf};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(super) struct Identity {
+pub(crate) struct Identity {
     pub pid: i32,
     pub started: (u64, u64),
 }
@@ -445,20 +445,32 @@ pub(super) fn activate(
     )
 }
 
-#[cfg(test)]
-#[path = "process_tests.rs"]
-mod tests;
-
 /// One bounded snapshot; no retries, signal, launch, or timer. All official
 /// Claude writers are conservatively excluded because a CLI may override its
 /// configuration root in an environment variable that must not be logged.
 pub(super) fn claude_writers_closed() -> Result<(), &'static str> {
+    if claude_writer_identities()?.is_empty() {
+        Ok(())
+    } else {
+        Err("busy")
+    }
+}
+pub(crate) fn writer_identity_current(identity: &Identity) -> Result<bool, &'static str> {
+    Ok(info(identity.pid)
+        .map_err(|_| "writer_unknown")?
+        .is_some_and(|info| {
+            info.pbi_uid == unsafe { libc::geteuid() }
+                && (info.pbi_start_tvsec, info.pbi_start_tvusec) == identity.started
+                && info.pbi_status != libc::SZOMB
+                && info.pbi_flags & PROC_FLAG_INEXIT == 0
+        }))
+}
+pub(crate) fn claude_writer_identities() -> Result<Vec<Identity>, &'static str> {
     let apps = objc2_app_kit::NSRunningApplication::runningApplicationsWithBundleIdentifier(
         &objc2_foundation::NSString::from_str("com.anthropic.claudefordesktop"),
     );
-    if !apps.is_empty() {
-        return Err("busy");
-    }
+    let app_pids: Vec<_> = apps.iter().map(|app| app.processIdentifier()).collect();
+    let mut writers = Vec::new();
     const PROC_UID_ONLY: u32 = 4;
     let mut pids = vec![0i32; 65536];
     let capacity = std::mem::size_of_val(pids.as_slice());
@@ -498,9 +510,7 @@ pub(super) fn claude_writers_closed() -> Result<(), &'static str> {
             .file_name()
             .and_then(|value| value.to_str())
             .ok_or("writer_unknown")?;
-        if claude_executable(executable) {
-            return Err("busy");
-        }
+        let mut writer = app_pids.contains(&pid) || claude_executable(executable);
         if matches!(name, "node" | "nodejs" | "bun" | "deno") {
             let bytes = process_args(pid).map_err(|_| "writer_unknown")?;
             let args = arguments(&bytes).map_err(|_| "writer_unknown")?;
@@ -508,7 +518,7 @@ pub(super) fn claude_writers_closed() -> Result<(), &'static str> {
                 .iter()
                 .any(|arg| std::str::from_utf8(arg).is_ok_and(claude_executable))
             {
-                return Err("busy");
+                writer = true;
             }
         }
         let Some(after) = info(pid).map_err(|_| "writer_unknown")? else {
@@ -516,11 +526,21 @@ pub(super) fn claude_writers_closed() -> Result<(), &'static str> {
         };
         if (before.pbi_start_tvsec, before.pbi_start_tvusec)
             != (after.pbi_start_tvsec, after.pbi_start_tvusec)
+            || before.pbi_uid != after.pbi_uid
         {
             return Err("writer_unknown");
         }
+        if writer {
+            if writers.len() >= 512 {
+                return Err("writer_unknown");
+            }
+            writers.push(Identity {
+                pid,
+                started: (after.pbi_start_tvsec, after.pbi_start_tvusec),
+            });
+        }
     }
-    Ok(())
+    Ok(writers)
 }
 fn claude_executable(path: &str) -> bool {
     // Installed browser native messaging host only writes its bridge socket/log;
@@ -535,3 +555,7 @@ fn claude_executable(path: &str) -> bool {
     ) || path.contains("/@anthropic-ai/claude-code/")
         || path.contains("/Claude.app/Contents/")
 }
+
+#[cfg(test)]
+#[path = "process_tests.rs"]
+mod tests;

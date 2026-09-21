@@ -180,11 +180,20 @@ impl Chain {
                         "apiBlockIndex",
                         "effort",
                         "perTurnEffort",
+                        "advisorModel",
                         "error",
                         "isApiErrorMessage",
                         "requestId",
                     ],
                 )?;
+                // The observed assistant advisorModel is optional string provenance,
+                // not a message block or permission/tool instruction.
+                if row
+                    .get("advisorModel")
+                    .is_some_and(|v| kind != "assistant" || !v.is_string())
+                {
+                    return Err(Status::Unsupported);
+                }
                 if row["message"]["role"].as_str() != Some(kind) {
                     return Err(Status::Unsupported);
                 }
@@ -203,12 +212,19 @@ impl Chain {
                         "context_management",
                         "diagnostics",
                         "stop_details",
+                        "input_transformations",
                     ],
                 )?;
                 for key in ["container", "context_management", "stop_details"] {
                     if row["message"].get(key).is_some_and(|v| !v.is_null()) {
                         return Err(Status::Unsupported);
                     }
+                }
+                if row["message"]
+                    .get("input_transformations")
+                    .is_some_and(|v| !v.as_array().is_some_and(Vec::is_empty))
+                {
+                    return Err(Status::Unsupported);
                 }
                 let content = &row["message"]["content"];
                 if let Some(blocks) = content.as_array() {
@@ -481,6 +497,7 @@ pub(super) fn project_with_snapshot(
             }
             row.as_object_mut().unwrap().remove("permissionMode");
             row.as_object_mut().unwrap().remove("toolUseResult");
+            row.as_object_mut().unwrap().remove("advisorModel");
             let encoded = serde_json::to_vec(&row).map_err(|_| Status::Unsupported)?;
             // A small source record can expand to a large target snapshot.
             // Bound expansion during projection, not after allocating it all.
@@ -510,18 +527,22 @@ pub(super) fn project_conversation(
     budget: &Budget,
 ) -> Result<Projected, Status> {
     let mut source = Chain::default();
-    for row in rows(prefix, budget)? {
-        source.accept(&row, session, true)?;
+    if !prefix.is_empty() {
+        for row in rows(prefix, budget)? {
+            source.accept(&row, session, true)?;
+        }
     }
     if !source.pending_tools.is_empty() {
         return Err(Status::Incomplete);
     }
     let mut target = Chain::default();
     let mut target_rows = std::collections::HashMap::new();
-    for row in rows(destination, budget)? {
-        target.accept(&row, session, true)?;
-        if let Some(id) = row["uuid"].as_str() {
-            target_rows.insert(id.to_owned(), row);
+    if !destination.is_empty() {
+        for row in rows(destination, budget)? {
+            target.accept(&row, session, true)?;
+            if let Some(id) = row["uuid"].as_str() {
+                target_rows.insert(id.to_owned(), row);
+            }
         }
     }
     if !target.pending_tools.is_empty() {
@@ -562,8 +583,10 @@ pub(super) fn project_conversation(
             continue;
         }
         if kind == "attachment" {
-            // These exact schemas have native offline resume evidence. Other
-            // runtime families remain unsupported even if old baselines use them.
+            // Audited runtime schemas are omitted, never exported. Agent listing
+            // deltas were observed in a normal Desktop-created conversation;
+            // their closed fields describe local agent availability, not messages.
+            // Unknown families remain unsupported even if old baselines use them.
             if !matches!(
                 row["attachment"]["type"].as_str(),
                 Some(
@@ -579,6 +602,7 @@ pub(super) fn project_conversation(
                         | "remote_session_change"
                         | "prompt_snapshot"
                         | "deferred_tools_delta"
+                        | "agent_listing_delta"
                 )
             ) {
                 return Err(Status::Unsupported);
@@ -625,14 +649,16 @@ pub(super) fn project_conversation(
             }
         }
         let original = row.clone();
-        let basis = target
-            .leaf
-            .as_ref()
-            .and_then(|id| target_rows.get(id))
-            .ok_or(Status::Conflict)?;
-        row["parentUuid"] = basis["uuid"].clone();
+        let basis = target.leaf.as_ref().and_then(|id| target_rows.get(id));
+        // A new destination has no runtime prefix. Only a user message can
+        // root its conversation; the source chain was still fully validated.
+        if basis.is_none() && kind != "user" {
+            return Err(Status::Conflict);
+        }
+        row["parentUuid"] = basis.map_or(Value::Null, |row| row["uuid"].clone());
         row.as_object_mut().unwrap().remove("permissionMode");
         row.as_object_mut().unwrap().remove("toolUseResult");
+        row.as_object_mut().unwrap().remove("advisorModel");
         if original != row {
             if ledger.len() >= 128 {
                 return Err(Status::Limit);
@@ -642,11 +668,13 @@ pub(super) fn project_conversation(
                 uuid: row["uuid"].as_str().ok_or(Status::Unsupported)?.to_owned(),
                 source_hash: digest(&original)?,
                 target_hash: digest(&row)?,
-                basis_uuid: basis["uuid"]
+                // A self-basis declares the unique root projection. The
+                // ledger verifier requires it to be the first target user.
+                basis_uuid: basis.unwrap_or(&row)["uuid"]
                     .as_str()
                     .ok_or(Status::Unsupported)?
                     .to_owned(),
-                basis_hash: digest(basis)?,
+                basis_hash: digest(basis.unwrap_or(&row))?,
             });
         }
         target.accept(&row, session, false)?;
