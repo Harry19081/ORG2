@@ -44,6 +44,10 @@ import {
   spotlightPlacementAtom,
 } from "@src/store/ui/uiAtom";
 
+/** The trigger is a round button inside the footer pill, so the shared 4px
+ *  trigger gap reads as the panel touching the pill. */
+const MENU_TRIGGER_GAP = 8;
+
 const UnpinAllItem: React.FC<{
   scope: SpotlightPinScope;
   onDone: () => void;
@@ -88,6 +92,7 @@ export const SpotlightSettingsMenu: React.FC<{
       onOpenChange: setOpen,
       placement: "auto",
       align: "right",
+      gap: MENU_TRIGGER_GAP,
       autoKeyboardNavigation: false,
       closeOnEsc: false,
     });
