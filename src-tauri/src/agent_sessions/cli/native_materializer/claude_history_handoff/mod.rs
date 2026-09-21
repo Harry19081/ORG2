@@ -37,6 +37,7 @@ pub enum Mode {
     Sync,
 }
 
+#[cfg(all(target_os = "macos", feature = "market-connect"))]
 pub(crate) use automatic::{run_automatic, watch_roots};
 
 #[derive(Serialize)]

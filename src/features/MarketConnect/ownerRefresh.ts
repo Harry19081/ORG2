@@ -129,7 +129,7 @@ export function installMarketOwnerRecovery(store: MarketStore): () => void {
     }
   };
   const onWake = () => {
-    void recover();
+    void recover().catch(() => {});
   };
   window.addEventListener("focus", onWake);
   window.addEventListener("online", onWake);

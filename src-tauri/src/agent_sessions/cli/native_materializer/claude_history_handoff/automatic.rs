@@ -1,6 +1,7 @@
 //! Bounded, writer-free handoff. Never selects an arbitrary account or org.
 use super::*;
 
+#[cfg(all(target_os = "macos", feature = "market-connect"))]
 pub(crate) fn watch_roots(profile: &NativeAppProfile) -> Vec<PathBuf> {
     let official = claude_desktop_sessions_root();
     let mut roots = vec![
@@ -16,6 +17,7 @@ pub(crate) fn watch_roots(profile: &NativeAppProfile) -> Vec<PathBuf> {
     roots
 }
 
+#[cfg(all(target_os = "macos", feature = "market-connect"))]
 pub(crate) fn run_automatic(
     profile: &NativeAppProfile,
     owner: &str,
