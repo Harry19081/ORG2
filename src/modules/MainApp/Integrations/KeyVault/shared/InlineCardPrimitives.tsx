@@ -46,9 +46,10 @@ export function InlineCardTabs<TabKey extends string>({
       tabs={tabs}
       activeTab={activeTab}
       onChange={(tab) => onChange(tab as TabKey)}
-      variant="simple"
+      variant="pill"
+      appearance="ghost"
       fillWidth={false}
-      size="default"
+      size="mini"
     />
   );
 }

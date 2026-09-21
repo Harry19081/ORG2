@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import StatusDot from "@src/components/StatusDot";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 
-import { KEY_VAULT_STATUS_DOT } from "./statusColors";
+import { KEY_VAULT_STATUS_DOT, getAccountStatusLabel } from "./statusColors";
 
 interface AccountStatusIndicatorProps {
   account: KeyVaultAccount;
@@ -14,14 +14,7 @@ export function AccountStatusIndicator({
   account,
 }: AccountStatusIndicatorProps): React.ReactElement {
   const { t } = useTranslation("integrations");
-  const statusLabel =
-    {
-      ready: t("status.ready"),
-      needs_setup: t("status.needsSetup"),
-      error: t("status.error"),
-      expired: t("status.expired"),
-      pending_approval: t("status.pendingApproval"),
-    }[account.status] ?? account.status;
+  const statusLabel = getAccountStatusLabel(account.status, t);
 
   return (
     <StatusDot
