@@ -128,3 +128,7 @@ Removed the redundant renderer flag condition. Gallery ownership remains exclusi
 ## PR integration verification
 
 Applied this change cleanly to the latest fetched `origin/develop` in an isolated worktree. Typecheck, ESLint across changed TypeScript files, and `git diff --check` passed. The focused frontend suite (gallery, output extraction, projection, renderer, status trail, and latest ChatHistory lazy boundary) passed 84 tests. The orgtrack core suite passed 709 tests with 11 optional/acceptance tests ignored. No unrelated working-tree edits, local fixture exports, generated media, or personal filesystem paths are included.
+
+## Data privacy and memory isolation
+
+See [Generated images: data privacy and isolation](../generated-image-data-privacy.md) for the reciprocal private-data access requirements, explicit sharing boundaries, personal-memory separation, verified gallery safeguards, and outstanding cross-user tests. Source identity validation and per-turn grouping are not substitutes for user authorization. The gallery adds no memory extraction, but the broader agent-scoped learning system has not been verified here to exclude another user's private data.
