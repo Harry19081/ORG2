@@ -15,6 +15,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
+import { useImageActions } from "@src/components/ImageActions/useImageActions";
 import { HugeiconsIcon, Image01Icon, ImageNotFound01Icon } from "@src/icons";
 import {
   releaseImageUrl,
@@ -166,6 +167,16 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
       };
     }, [localIsImage, source, sourceKey, shared]);
 
+    const actionLocalPath =
+      source.kind === "local" && localIsImage
+        ? `${source.homeRelative ? "~/" : ""}${source.path}`
+        : undefined;
+    const imageActions = useImageActions({
+      src: source.kind === "remote" ? source.src : (asyncSrc ?? ""),
+      localPath: actionLocalPath,
+      fileName:
+        source.kind === "local" ? source.path.split(/[\\/]/).pop() : undefined,
+    });
     const ImageOverlay = markdownExtensions().ImageOverlay;
     const handleImageClick = useCallback(
       (event: React.MouseEvent) => {
@@ -210,7 +221,25 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
     }
 
     if (source.kind === "remote") {
-      return <img src={source.src} alt={alt ?? ""} loading="lazy" />;
+      return (
+        <>
+          {/* Custom layout preserves the markdown image's intrinsic geometry. */}
+          <Button
+            layout="custom"
+            className="max-w-full"
+            aria-label={alt || source.src}
+            onClick={handleImageClick}
+            aria-busy={imageActions.busy}
+            onContextMenu={imageActions.onContextMenu}
+            onKeyDown={imageActions.onKeyDown}
+          >
+            <img src={source.src} alt={alt ?? ""} loading="lazy" />
+          </Button>
+          {showOverlay && ImageOverlay && (
+            <ImageOverlay dataUrl={source.src} onClose={handleClose} />
+          )}
+        </>
+      );
     }
 
     if (!localIsImage || failed) {
@@ -260,16 +289,27 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
 
     return (
       <>
-        <img
-          src={asyncSrc}
-          alt={alt ?? ""}
-          title={source.path}
-          className="cursor-zoom-in"
+        {/* Custom layout preserves the markdown image's intrinsic geometry. */}
+        <Button
+          layout="custom"
+          className="max-w-full"
+          aria-label={imageLabel(alt, source.path)}
           onClick={handleImageClick}
-          draggable={false}
-        />
+          aria-busy={imageActions.busy}
+          onContextMenu={imageActions.onContextMenu}
+          onKeyDown={imageActions.onKeyDown}
+        >
+          <img
+            src={asyncSrc}
+            alt={alt ?? ""}
+            title={source.path}
+            className="cursor-zoom-in"
+            draggable={false}
+          />
+        </Button>
         {showOverlay && ImageOverlay && (
           <ImageOverlay
+            originalRef={actionLocalPath}
             dataUrl={asyncSrc}
             fileName={imageLabel(alt, source.path)}
             onClose={handleClose}

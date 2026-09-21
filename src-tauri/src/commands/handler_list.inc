@@ -348,6 +348,7 @@ key_vault::update_key_health,
 key_vault::get_env_for_agent,
 key_vault::get_all_keys_for_agent,
 key_vault::clipboard_write_text,
+key_vault::clipboard_write_image,
 // Auto-detection commands
 key_vault::auto_detect_key,
 key_vault::list_credential_suggestions,

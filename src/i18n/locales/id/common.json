@@ -2462,5 +2462,11 @@
     "sessionJsonFile": "JSON Sesi ORG2",
     "skillsSource": "Skill ORG2",
     "gitServiceUnavailable": "Tidak dapat menjangkau layanan Git lokal. Coba lagi setelah aplikasi selesai dimulai, atau mulai ulang ORG2 jika masalah ini terus terjadi."
+  },
+  "imageActions": {
+    "addToChat": "Tambahkan ke obrolan",
+    "added": "Ditambahkan ke obrolan",
+    "failed": "Tindakan gambar tidak dapat diselesaikan",
+    "downloadCopy": "Unduh salinan"
   }
 }

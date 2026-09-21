@@ -2461,5 +2461,11 @@
     "sessionJsonFile": "ORG2-Sitzung als JSON",
     "skillsSource": "ORG2-Skills",
     "gitServiceUnavailable": "Der lokale Git-Dienst ist nicht erreichbar. Versuche es nach dem Start der App erneut, oder starte ORG2 neu, wenn das Problem weiterhin besteht."
+  },
+  "imageActions": {
+    "addToChat": "Zum Chat hinzufügen",
+    "added": "Zum Chat hinzugefügt",
+    "failed": "Bildaktion konnte nicht abgeschlossen werden",
+    "downloadCopy": "Kopie herunterladen"
   }
 }

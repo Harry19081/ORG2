@@ -2461,5 +2461,11 @@
     "sessionJsonFile": "ORG2 oturumu JSON",
     "skillsSource": "ORG2 becerileri",
     "gitServiceUnavailable": "Yerel Git hizmetine ulaşılamıyor. Uygulama başlatıldıktan sonra tekrar deneyin veya sorun sürerse ORG2’yi yeniden başlatın."
+  },
+  "imageActions": {
+    "addToChat": "Sohbete ekle",
+    "added": "Sohbete eklendi",
+    "failed": "Görsel işlemi tamamlanamadı",
+    "downloadCopy": "Kopyasını indir"
   }
 }

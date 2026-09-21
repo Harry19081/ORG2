@@ -8,7 +8,8 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import Message from "@src/components/Message";
+import { localImagePath } from "@src/components/ImageActions/imageOperations";
+import { useImageActions } from "@src/components/ImageActions/useImageActions";
 import Slider from "@src/components/Slider";
 import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader";
 import {
@@ -32,6 +33,8 @@ import { useImagePinchZoom } from "./useImagePinchZoom";
 
 interface ImagePreviewOverlayProps {
   dataUrl: string;
+  originalRef?: string;
+  allowAddToChat?: boolean;
   /** Same-message attachments; only the selected image is resolved. */
   images?: { src: string; fileName?: string }[];
   initialIndex?: number;
@@ -46,9 +49,38 @@ interface ImagePreviewOverlayProps {
 // Component
 // ============================================
 
+const PreviewAction = ({
+  label,
+  icon,
+  onClick,
+  disabled = false,
+}: {
+  label: string;
+  icon: typeof Copy01Icon;
+  onClick: () => void;
+  disabled?: boolean;
+}) => (
+  <Button
+    {...PANEL_HEADER_TOKENS.actionButton}
+    aria-label={label}
+    title={label}
+    onClick={onClick}
+    disabled={disabled}
+    icon={
+      <HugeiconsIcon
+        icon={icon}
+        size={PANEL_HEADER_TOKENS.buttonIconSize}
+        strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
+      />
+    }
+  />
+);
+
 const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
   ({
     dataUrl,
+    originalRef,
+    allowAddToChat = true,
     fileName,
     onClose,
     showCopyButton = true,
@@ -64,19 +96,31 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
     const [index, setIndex] = useState(initialIndex);
     const [loaded, setLoaded] = useState<{
       index: number;
+      original: string;
       src: string;
       failed?: boolean;
     } | null>(null);
     const currentSrc =
       index === initialIndex
         ? dataUrl
-        : loaded?.index === index
+        : loaded?.index === index && loaded.original === images?.[index]?.src
           ? loaded.src
           : "";
     const [failedSrc, setFailedSrc] = useState<string | null>(null);
     const currentName = images?.[index]?.fileName ?? fileName;
+    const imageActions = useImageActions(
+      {
+        src: failedSrc === currentSrc ? "" : currentSrc,
+        fileName: currentName,
+        localPath: localImagePath(images?.[index]?.src ?? originalRef),
+      },
+      { allowAdd: allowAddToChat, allowCopy: showCopyButton, onAdded: onClose }
+    );
     const count = images?.length ?? 1;
-    const failed = loaded?.index === index && loaded.failed;
+    const failed =
+      loaded?.index === index &&
+      loaded.original === images?.[index]?.src &&
+      loaded.failed;
     useImagePinchZoom(
       viewportRef,
       currentSrc && failedSrc !== currentSrc ? currentSrc : null,
@@ -88,7 +132,6 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
       if (index === initialIndex || !images || !resolveImage) return;
       let cancelled = false;
       let ownedUrl: string | null = null;
-      setLoaded(null);
       const original = images[index].src;
       void resolveImage(original).then(
         (src) => {
@@ -97,10 +140,10 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
             return;
           }
           ownedUrl = src !== original ? src : null;
-          setLoaded({ index, src });
+          setLoaded({ index, original, src });
         },
         () => {
-          if (!cancelled) setLoaded({ index, src: "", failed: true });
+          if (!cancelled) setLoaded({ index, original, src: "", failed: true });
         }
       );
       return () => {
@@ -134,67 +177,9 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
       }
     };
 
-    const handleCopy = useCallback(async () => {
-      try {
-        const image = imageRef.current;
-        if (!image?.complete || !image.naturalWidth || !image.naturalHeight) {
-          throw new Error("Preview image is not ready");
-        }
-        const canvas = document.createElement("canvas");
-        canvas.width = image.naturalWidth;
-        canvas.height = image.naturalHeight;
-        const context = canvas.getContext("2d");
-        if (!context) throw new Error("Image conversion is unavailable");
-        context.drawImage(image, 0, 0);
-        // PNG is the portable clipboard image format. Pass its promise directly
-        // so clipboard.write runs within the click gesture, including on WebKit.
-        const png = new Promise<Blob>((resolve, reject) => {
-          canvas.toBlob((blob) => {
-            canvas.width = canvas.height = 0;
-            if (blob) resolve(blob);
-            else reject(new Error("Image conversion failed"));
-          }, "image/png");
-        });
-        // Also observe conversion failures if the clipboard API rejects early.
-        void png.catch(() => {});
-        await navigator.clipboard.write([
-          new ClipboardItem({ "image/png": png }),
-        ]);
-        Message.success(t("imagePreview.copiedToClipboard"));
-      } catch {
-        Message.error(t("errors.failedToCopy"));
-      }
-    }, [t]);
-
-    const handleDownload = useCallback(() => {
-      const link = document.createElement("a");
-      link.href = currentSrc;
-      link.download = currentName || "image.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }, [currentSrc, currentName]);
-
-    const action = (
-      label: string,
-      icon: typeof Copy01Icon,
-      onClick: () => void,
-      disabled = false
-    ) => (
-      <Button
-        {...PANEL_HEADER_TOKENS.actionButton}
-        aria-label={label}
-        title={label}
-        onClick={onClick}
-        disabled={disabled}
-        icon={
-          <HugeiconsIcon
-            icon={icon}
-            size={PANEL_HEADER_TOKENS.buttonIconSize}
-            strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
-          />
-        }
-      />
+    const handleCopy = useCallback(
+      () => imageActions.copy(imageRef.current),
+      [imageActions]
     );
 
     return (
@@ -210,24 +195,34 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
           closable={false}
           headerActions={
             <>
-              {showCopyButton &&
-                action(
-                  t("imagePreview.copyImage"),
-                  Copy01Icon,
-                  () => {
-                    handleCopy().catch(() => {
-                      Message.error(t("errors.failedToCopy"));
-                    });
-                  },
-                  !currentSrc || failedSrc === currentSrc
-                )}
-              {action(
-                t("imagePreview.downloadImage"),
-                Download01Icon,
-                handleDownload,
-                !currentSrc || failedSrc === currentSrc
+              {imageActions.busy && (
+                <span role="status" className="text-xs text-text-3">
+                  {t("actions.loading")}
+                </span>
               )}
-              {action(t("imagePreview.closePreview"), Cancel01Icon, onClose)}
+              {showCopyButton && (
+                <PreviewAction
+                  label={t("imagePreview.copyImage")}
+                  icon={Copy01Icon}
+                  onClick={handleCopy}
+                  disabled={
+                    imageActions.busy || !currentSrc || failedSrc === currentSrc
+                  }
+                />
+              )}
+              <PreviewAction
+                label={t("imagePreview.downloadImage")}
+                icon={Download01Icon}
+                onClick={imageActions.download}
+                disabled={
+                  imageActions.busy || !currentSrc || failedSrc === currentSrc
+                }
+              />
+              <PreviewAction
+                label={t("imagePreview.closePreview")}
+                icon={Cancel01Icon}
+                onClick={onClose}
+              />
             </>
           }
           footer={
@@ -235,36 +230,38 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
               <div className="flex max-w-full flex-wrap items-center justify-center gap-1 rounded-full border border-border-2 bg-bg-2 px-2 py-1 shadow-sm">
                 {count > 1 && (
                   <>
-                    {action(
-                      t("actions.previous"),
-                      ArrowLeft01Icon,
-                      () => navigate(index - 1),
-                      index === 0
-                    )}
+                    <PreviewAction
+                      label={t("actions.previous")}
+                      icon={ArrowLeft01Icon}
+                      onClick={() => navigate(index - 1)}
+                      disabled={index === 0}
+                    />
                     <span
                       className="px-1 text-xs text-text-3 tabular-nums"
                       role="status"
                     >
                       {index + 1} / {count}
                     </span>
-                    {action(
-                      t("actions.next"),
-                      ArrowRight01Icon,
-                      () => navigate(index + 1),
-                      index === count - 1
-                    )}
+                    <PreviewAction
+                      label={t("actions.next")}
+                      icon={ArrowRight01Icon}
+                      onClick={() => navigate(index + 1)}
+                      disabled={index === count - 1}
+                    />
                     <span
                       className="mx-1 h-4 w-px bg-border-2"
                       aria-hidden="true"
                     />
                   </>
                 )}
-                {action(
-                  t("tooltips.zoomOut"),
-                  MinusSignIcon,
-                  () => setZoom((value) => Math.max(25, value - 25)),
-                  zoom === 25 || !currentSrc || failedSrc === currentSrc
-                )}
+                <PreviewAction
+                  label={t("tooltips.zoomOut")}
+                  icon={MinusSignIcon}
+                  onClick={() => setZoom((value) => Math.max(25, value - 25))}
+                  disabled={
+                    zoom === 25 || !currentSrc || failedSrc === currentSrc
+                  }
+                />
                 <Slider
                   min={25}
                   max={400}
@@ -280,12 +277,14 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
                   noPadding
                   handleBordered
                 />
-                {action(
-                  t("tooltips.zoomIn"),
-                  Add01Icon,
-                  () => setZoom((value) => Math.min(400, value + 25)),
-                  zoom === 400 || !currentSrc || failedSrc === currentSrc
-                )}
+                <PreviewAction
+                  label={t("tooltips.zoomIn")}
+                  icon={Add01Icon}
+                  onClick={() => setZoom((value) => Math.min(400, value + 25))}
+                  disabled={
+                    zoom === 400 || !currentSrc || failedSrc === currentSrc
+                  }
+                />
                 <Button
                   size="small"
                   variant="tertiary"
@@ -312,6 +311,9 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
             <div
               ref={viewportRef}
               className="h-full min-h-0 w-full overflow-auto"
+              onContextMenu={imageActions.onContextMenu}
+              onKeyDown={imageActions.onKeyDown}
+              tabIndex={0}
               data-image-viewport
             >
               <div

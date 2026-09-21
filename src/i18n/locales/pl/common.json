@@ -2461,5 +2461,11 @@
     "sessionJsonFile": "Sesja ORG2 w formacie JSON",
     "skillsSource": "Umiejętności ORG2",
     "gitServiceUnavailable": "Nie można połączyć się z lokalną usługą Git. Spróbuj ponownie po uruchomieniu aplikacji lub uruchom ORG2 ponownie, jeśli problem się powtarza."
+  },
+  "imageActions": {
+    "addToChat": "Dodaj do czatu",
+    "added": "Dodano do czatu",
+    "failed": "Nie udało się wykonać operacji na obrazie",
+    "downloadCopy": "Pobierz kopię"
   }
 }

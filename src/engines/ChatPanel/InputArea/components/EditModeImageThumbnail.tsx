@@ -4,6 +4,7 @@
 import React, { memo, useCallback, useState } from "react";
 
 import Button from "@src/components/Button";
+import { useImageActions } from "@src/components/ImageActions/useImageActions";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import ImagePreviewOverlay from "@src/scaffold/ImagePreviewOverlay";
 
@@ -13,6 +14,10 @@ const EditModeImageThumbnail: React.FC<{
   onRemove?: () => void;
 }> = memo(({ dataUrl, alt, onRemove }) => {
   const [showOverlay, setShowOverlay] = useState(false);
+  const imageActions = useImageActions(
+    { src: dataUrl, fileName: alt },
+    { allowAdd: false }
+  );
 
   const handleClick = useCallback(() => setShowOverlay(true), []);
   const handleClose = useCallback(() => setShowOverlay(false), []);
@@ -28,17 +33,27 @@ const EditModeImageThumbnail: React.FC<{
     <>
       <div
         className="group relative inline-flex h-12 w-12 shrink-0 cursor-pointer rounded-md border border-border-2 bg-fill-1 transition-[border-color] duration-200 ease-in-out hover:border-border-3"
-        onClick={handleClick}
         data-testid="edit-mode-image-thumbnail"
       >
-        <img
-          src={dataUrl}
-          alt={alt}
-          className="h-full w-full rounded-[inherit] object-cover"
-          draggable={false}
-          loading="lazy"
-          decoding="async"
-        />
+        {/* Thumbnail geometry is caller-owned; remove remains a sibling action. */}
+        <Button
+          layout="custom"
+          className="h-full w-full rounded-[inherit]"
+          onClick={handleClick}
+          aria-label={alt}
+          aria-busy={imageActions.busy}
+          onContextMenu={imageActions.onContextMenu}
+          onKeyDown={imageActions.onKeyDown}
+        >
+          <img
+            src={dataUrl}
+            alt={alt}
+            className="h-full w-full rounded-[inherit] object-cover"
+            draggable={false}
+            loading="lazy"
+            decoding="async"
+          />
+        </Button>
         {onRemove && (
           <Button
             hoverTone="danger"
@@ -61,7 +76,11 @@ const EditModeImageThumbnail: React.FC<{
         )}
       </div>
       {showOverlay && (
-        <ImagePreviewOverlay dataUrl={dataUrl} onClose={handleClose} />
+        <ImagePreviewOverlay
+          allowAddToChat={false}
+          dataUrl={dataUrl}
+          onClose={handleClose}
+        />
       )}
     </>
   );

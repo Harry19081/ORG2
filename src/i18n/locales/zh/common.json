@@ -2461,5 +2461,11 @@
     "sessionJsonFile": "ORG2 会话 JSON",
     "skillsSource": "ORG2 技能",
     "gitServiceUnavailable": "无法连接本地 Git 服务。请等待应用启动完成后重试；如果问题持续出现，请重启 ORG2。"
+  },
+  "imageActions": {
+    "addToChat": "添加到聊天",
+    "added": "已添加到聊天",
+    "failed": "图片操作失败，请重试",
+    "downloadCopy": "下载副本"
   }
 }

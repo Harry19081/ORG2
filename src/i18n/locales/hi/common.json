@@ -2462,5 +2462,11 @@
     "sessionJsonFile": "ORG2 सत्र JSON",
     "skillsSource": "ORG2 स्किल",
     "gitServiceUnavailable": "लोकल Git सेवा तक नहीं पहुँचा जा सका। कृपया ऐप के शुरू होने के बाद फिर से प्रयास करें, या यह बार-बार होने पर ORG2 को पुनः आरंभ करें।"
+  },
+  "imageActions": {
+    "addToChat": "चैट में जोड़ें",
+    "added": "चैट में जोड़ा गया",
+    "failed": "छवि पर कार्रवाई पूरी नहीं हो सकी",
+    "downloadCopy": "कॉपी डाउनलोड करें"
   }
 }

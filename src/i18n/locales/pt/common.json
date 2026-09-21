@@ -2461,5 +2461,11 @@
     "sessionJsonFile": "Sessão do ORG2 em JSON",
     "skillsSource": "Habilidades do ORG2",
     "gitServiceUnavailable": "Não foi possível acessar o serviço Git local. Tente novamente após a inicialização do aplicativo ou reinicie o ORG2 se o problema persistir."
+  },
+  "imageActions": {
+    "addToChat": "Adicionar ao chat",
+    "added": "Adicionada ao chat",
+    "failed": "Não foi possível concluir a ação na imagem",
+    "downloadCopy": "Baixar cópia"
   }
 }
