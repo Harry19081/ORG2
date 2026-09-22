@@ -1,9 +1,9 @@
 /**
  * Builds one `NavigationMenuItem` row for a Team Sessions fork thread
  * (`cloudSessionsSection.tsx`): icon/title/relative-time, the unresolved
- * comments badge, live-viewer chips, and the row's hover actions (Fork,
- * pin, and the canonical Team Conversation menu). Split out because it is the single
- * largest piece of that section's row-construction logic.
+ * comments badge, live-viewer chips, and the row's hover actions (pin and the
+ * canonical Team Conversation menu). Split out because it is the single largest
+ * piece of that section's row-construction logic.
  */
 import type { TFunction } from "i18next";
 import { useAtomValue } from "jotai";
@@ -33,6 +33,7 @@ import {
 import type { Org2CloudPresenceEntry } from "@src/features/Org2Cloud/org2CloudPresenceAtom";
 import { viewersForSession } from "@src/features/Org2Cloud/org2CloudPresenceAtom";
 import { useCloudSessionDownloadProgressEntry } from "@src/features/Org2Cloud/useCloudSessionDownloadSurface";
+import { createLogger } from "@src/hooks/logger";
 import {
   GitForkIcon,
   HugeiconsIcon,
@@ -47,6 +48,8 @@ import { type SidebarMenuItem } from "@src/scaffold/NavigationSidebar/menus/type
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { resolveSessionDisplayMetadata } from "@src/util/session/sessionDisplayMetadata";
 import { formatCompactAge } from "@src/util/time/formatRelativeTime";
+
+const log = createLogger("CloudSessionSidebarRow");
 
 const RowBusyIndicator: React.FC<{
   t: TFunction;
@@ -293,6 +296,8 @@ export function useCloudSessionRowItemBuilder({
               void popupSidebarMenu(event, {
                 source: "cloud-session-row",
                 buildItems: () => buildNativeMenuItems(row),
+              }).catch((error) => {
+                log.warn("cloud session row menu failed to open:", error);
               });
             },
           },
