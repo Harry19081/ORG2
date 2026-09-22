@@ -232,6 +232,24 @@ fn run_dispatcher(
         }
     }
 }
+/// Claude Desktop release line whose local Gateway identity (`ant-did` = the
+/// base64 installation UUID under `claude-code-sessions/`) and placeholder
+/// organization were audited for seeding history before the first launch.
+/// Patch releases keep that namespace: 2.2553.1 was audited and 2.2553.13 was
+/// confirmed on a vendor-created profile. A new minor line retains vendor
+/// discovery until it is audited.
+pub(crate) const CLAUDE_DESKTOP_HISTORY_LINE: &str = "2.2553";
+
+pub(crate) fn claude_desktop_prepares_history(version: &str) -> bool {
+    let mut parts = version.trim().split('.');
+    let (Some(major), Some(minor), Some(patch)) = (parts.next(), parts.next(), parts.next()) else {
+        return false;
+    };
+    parts.next().is_none()
+        && format!("{major}.{minor}") == CLAUDE_DESKTOP_HISTORY_LINE
+        && patch.parse::<u32>().is_ok_and(|patch| patch >= 1)
+}
+
 pub(super) fn open(
     agent: &str,
     profile: &NativeAppProfile,
@@ -241,8 +259,8 @@ pub(super) fn open(
     {
         let bundle = installed_bundle(agent)?;
         profile.prepare_launch_directories()?;
-        // Only this audited release's local namespace may be prepared before
-        // launch. Other compatible Desktop releases retain vendor discovery.
+        // Only the audited release line's local namespace may be prepared
+        // before launch. Other compatible Desktop releases retain vendor discovery.
         let can_prepare_history = agent == "claude_desktop"
             && plist::Value::from_file(bundle.join("Contents/Info.plist"))
                 .ok()
@@ -252,8 +270,7 @@ pub(super) fn open(
                         .as_string()
                         .map(str::to_owned)
                 })
-                .as_deref()
-                == Some("2.2553.1");
+                .is_some_and(|version| claude_desktop_prepares_history(&version));
         let history_ready = if can_prepare_history {
             crate::agent_sessions::cli::native_materializer::isolated_claude_history::prepare_before_launch(profile)?;
             true
@@ -298,6 +315,26 @@ pub(super) use process::{claude_writer_identities, writer_identity_current};
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn only_the_audited_claude_desktop_line_prepares_history_before_launch() {
+        for version in ["2.2553.1", "2.2553.13", " 2.2553.99 "] {
+            assert!(super::claude_desktop_prepares_history(version), "{version}");
+        }
+        for version in [
+            "2.2553.0",
+            "2.2553",
+            "2.2554.1",
+            "2.7032.0",
+            "1.2553.1",
+            "2.2553.1.2",
+            "x.y.z",
+        ] {
+            assert!(
+                !super::claude_desktop_prepares_history(version),
+                "{version}"
+            );
+        }
+    }
     use super::*;
     #[cfg(target_os = "macos")]
     pub(super) struct FixtureChild(pub(super) std::process::Child);
