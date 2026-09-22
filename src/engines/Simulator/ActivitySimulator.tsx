@@ -209,6 +209,7 @@ const ActivitySimulator: React.FC = memo(() => {
 
   // ── Render ─────────────────────────────────────────────────────────────
   const gridProps = {
+    sessionId,
     layout,
     currentEvent: displayEvent,
     events: filteredEvents,

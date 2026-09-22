@@ -10,6 +10,7 @@ import type { SessionEvent } from "@src/engines/SessionCore";
 import type { CellReplayPersistState } from "@src/store/ui/simulatorAtom";
 
 export interface UseCellPlaybackOptions {
+  enabled: boolean;
   events: SessionEvent[];
   autoPlayInterval: number;
   isPlaying: boolean;
@@ -21,9 +22,11 @@ export interface UseCellPlaybackOptions {
 }
 
 /**
- * Runs the auto-play timer (independent mode only).
+ * Runs the auto-play timer (independent mode only), while the cell is playing
+ * and the document is visible.
  */
 export function useCellPlayback({
+  enabled,
   events,
   autoPlayInterval,
   isPlaying,
@@ -37,8 +40,16 @@ export function useCellPlayback({
 
   // Auto-play timer — only in independent mode
   useEffect(() => {
-    if (isSyncMode) return;
-    if (isPlaying && events.length > 0) {
+    if (!enabled || isSyncMode || !isPlaying || events.length === 0) return;
+    const stopTimer = () => {
+      if (timerRef.current !== null) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+    const updateVisibility = () => {
+      stopTimer();
+      if (document.visibilityState === "hidden") return;
       timerRef.current = setInterval(() => {
         setCurrentIndexLocal((prev) => {
           const nextIndex = prev + 1;
@@ -51,15 +62,15 @@ export function useCellPlayback({
           return nextIndex;
         });
       }, autoPlayInterval / playbackSpeed);
-    }
-
+    };
+    updateVisibility();
+    document.addEventListener("visibilitychange", updateVisibility);
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+      stopTimer();
+      document.removeEventListener("visibilitychange", updateVisibility);
     };
   }, [
+    enabled,
     isPlaying,
     isSyncMode,
     events.length,
