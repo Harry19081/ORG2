@@ -15,7 +15,6 @@ import {
   closeProjectOrgChatPanelTabsAtom,
   closeSessionChatPanelTabsAtom,
   closeWorkItemChatPanelTabAtom,
-  openExploreInChatPanelTabAtom,
   openGitHubIssueInChatPanelTabAtom,
   openGitHubPrInChatPanelTabAtom,
   openOrFocusChatPanelStartPageTabAtom,
@@ -75,6 +74,8 @@ import {
   resetInstrumentedStore,
 } from "@src/util/core/state/instrumentedStore";
 
+import { createExploreTab } from "../chatPanelTabFactories";
+import { appendAndActivateChatPanelTabAtom } from "../chatPanelTabPresentationAtoms";
 import {
   createChatPanelTerminalAtom,
   terminalSessionsAtom,
@@ -126,7 +127,6 @@ async function loadChatPanelTabAtoms() {
     kanbanSelectedTaskIdAtom,
     openOrganizationInChatPanelTabAtom,
     openCreateTargetInChatPanelStartPageAtom,
-    openExploreInChatPanelTabAtom,
     openGitHubIssueInChatPanelTabAtom,
     openGitHubPrInChatPanelTabAtom,
     openWorkManagementChatPanelTabAtom,
@@ -1004,7 +1004,6 @@ describe("openWorkManagementChatPanelTabAtom", () => {
       activeChatPanelSurfaceAtom,
       CHAT_PANEL_SURFACE_KIND,
       chatPanelStartPageOpenAtom,
-      openExploreInChatPanelTabAtom,
       openWorkManagementChatPanelTabAtom,
       openOrFocusChatPanelStartPageTabAtom,
       store,
@@ -1016,7 +1015,7 @@ describe("openWorkManagementChatPanelTabAtom", () => {
       section: WORK_MANAGEMENT_SECTION.PROJECTS,
     });
     store.set(openOrFocusChatPanelStartPageTabAtom, {});
-    store.set(openExploreInChatPanelTabAtom);
+    store.set(appendAndActivateChatPanelTabAtom, { tab: createExploreTab() });
 
     // Mirrors ChatPanel's layout reconciliation after the active tab changes.
     store.set(syncActiveChatPanelTabStateAtom);

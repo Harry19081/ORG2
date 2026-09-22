@@ -1,5 +1,5 @@
 /**
- * Start-page (Launchpad) and Explore tab open atoms.
+ * Start-page (Launchpad) tab open atoms.
  */
 import { atom } from "jotai";
 
@@ -11,7 +11,7 @@ import {
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
 
-import { createExploreTab, createLaunchpadTab } from "../chatPanelTabFactories";
+import { createLaunchpadTab } from "../chatPanelTabFactories";
 import { openOrFocusChatPanelTab } from "./openOrFocus";
 
 interface OpenOrFocusStartPageTabOptions {
@@ -61,12 +61,3 @@ export const openCreateTargetInChatPanelStartPageAtom = atom(
 );
 openCreateTargetInChatPanelStartPageAtom.debugLabel =
   "openCreateTargetInChatPanelStartPage";
-
-/** Open or focus the singleton Explore tab. */
-export const openExploreInChatPanelTabAtom = atom(null, (get, set) =>
-  openOrFocusChatPanelTab(get, set, {
-    isMatch: (tab) => tab.type === "explore",
-    create: () => createExploreTab(),
-  })
-);
-openExploreInChatPanelTabAtom.debugLabel = "openExploreInChatPanelTab";

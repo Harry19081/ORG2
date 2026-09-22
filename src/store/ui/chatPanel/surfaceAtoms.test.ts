@@ -2,13 +2,16 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { resolveChatPanelContentState } from "@src/engines/ChatPanel/hooks/chatPanelContentState";
 import {
+  createExploreTab,
+  createWorkspaceTab,
+} from "@src/store/chatPanel/chatPanelTabFactories";
+import { appendAndActivateChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabPresentationAtoms";
+import {
   openCreateTargetInChatPanelStartPageAtom,
-  openExploreInChatPanelTabAtom,
   openOrganizationInChatPanelTabAtom,
   openProjectInChatPanelTabAtom,
   openSessionInNewChatTabAtom,
   openWorkItemInChatPanelTabAtom,
-  openWorkspaceOverviewInChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { CHAT_PANEL_SURFACE_KIND as KIND } from "@src/types/ui/chatPanel";
 import {
@@ -61,7 +64,7 @@ const projectOrg = {
   orgScope: "project_org",
 } as const;
 
-/** One entry point per surface kind, each expressed as a tab open. */
+/** Surface fixtures use live openers or persisted-tab shapes for dormant kinds. */
 const destinations: { kind: string; open: (store: Store) => void }[] = [
   {
     kind: KIND.SESSION,
@@ -99,12 +102,15 @@ const destinations: { kind: string; open: (store: Store) => void }[] = [
   },
   {
     kind: KIND.WORKSPACE_EXPLORE,
-    open: (store) => store.set(openExploreInChatPanelTabAtom),
+    open: (store) =>
+      store.set(appendAndActivateChatPanelTabAtom, { tab: createExploreTab() }),
   },
   {
     kind: KIND.WORKSPACE_OVERVIEW,
     open: (store) =>
-      store.set(openWorkspaceOverviewInChatPanelTabAtom, { workspace }),
+      store.set(appendAndActivateChatPanelTabAtom, {
+        tab: createWorkspaceTab({ workspace }),
+      }),
   },
   {
     kind: KIND.CLOUD_ORG,
@@ -163,7 +169,9 @@ describe("tab-derived chat-panel surface", () => {
 
   it("carries the tab payload on the surface", () => {
     const store = createInstrumentedStore();
-    store.set(openWorkspaceOverviewInChatPanelTabAtom, { workspace });
+    store.set(appendAndActivateChatPanelTabAtom, {
+      tab: createWorkspaceTab({ workspace }),
+    });
     expect(store.get(activeChatPanelSurfaceAtom)).toEqual({
       kind: KIND.WORKSPACE_OVERVIEW,
       workspace,
@@ -232,13 +240,20 @@ describe("tab-derived chat-panel surface", () => {
       chatPanelWorkspaceOverviewTabAtom,
       WORKSPACE_OVERVIEW_TAB.DETAILS
     );
-    store.set(openWorkspaceOverviewInChatPanelTabAtom, { workspace });
+    store.set(appendAndActivateChatPanelTabAtom, {
+      tab: createWorkspaceTab({ workspace }),
+    });
     expect(store.get(activeChatPanelSurfaceAtom)).toMatchObject({
       tab: WORKSPACE_OVERVIEW_TAB.DETAILS,
     });
-    store.set(openWorkspaceOverviewInChatPanelTabAtom, {
-      workspace: { kind: "repo", id: "r2", name: "Repo 2" },
-      tab: WORKSPACE_OVERVIEW_TAB.OVERVIEW,
+    store.set(
+      chatPanelWorkspaceOverviewTabAtom,
+      WORKSPACE_OVERVIEW_TAB.OVERVIEW
+    );
+    store.set(appendAndActivateChatPanelTabAtom, {
+      tab: createWorkspaceTab({
+        workspace: { kind: "repo", id: "r2", name: "Repo 2" },
+      }),
     });
     expect(store.get(chatPanelWorkspaceOverviewTabAtom)).toBe(
       WORKSPACE_OVERVIEW_TAB.OVERVIEW
@@ -247,7 +262,7 @@ describe("tab-derived chat-panel surface", () => {
       chatPanelWorkspaceOverviewTabAtom,
       WORKSPACE_OVERVIEW_TAB.DETAILS
     );
-    store.set(openExploreInChatPanelTabAtom);
+    store.set(appendAndActivateChatPanelTabAtom, { tab: createExploreTab() });
     expect(store.get(chatPanelWorkspaceOverviewTabAtom)).toBe(
       WORKSPACE_OVERVIEW_TAB.OVERVIEW
     );

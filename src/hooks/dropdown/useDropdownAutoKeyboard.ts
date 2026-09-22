@@ -330,5 +330,3 @@ export function useDropdownAutoKeyboard({
     };
   }, [enabled, isOpen, move, commit, onClose]);
 }
-
-export default useDropdownAutoKeyboard;

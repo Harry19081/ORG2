@@ -78,5 +78,3 @@ export function useElementDimensions(
 
   return size;
 }
-
-export default useElementDimensions;

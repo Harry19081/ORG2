@@ -423,5 +423,3 @@ export function useGitOperations(
     isAnyLoading,
   };
 }
-
-export default useGitOperations;

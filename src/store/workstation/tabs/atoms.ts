@@ -18,7 +18,6 @@ import {
   openTab as openTabMutation,
   reorderTabs as reorderTabsMutation,
   switchTab as switchTabMutation,
-  updateTabData as updateTabDataMutation,
 } from "./tabMutations";
 import {
   type PanelState,
@@ -297,14 +296,6 @@ export const disposeWorkstationWorkspaceAtom = atom(
 );
 disposeWorkstationWorkspaceAtom.debugLabel = "disposeWorkstationWorkspaceAtom";
 
-export const workstationWorkspaceStateAtom = atom((get) =>
-  workspaceFor(
-    get(workstationTabsStateAtom),
-    get(presentedWorkstationWorkspaceKeyAtom)
-  )
-);
-workstationWorkspaceStateAtom.debugLabel = "workstationWorkspaceStateAtom";
-
 export interface ScopedWorkstationTabRequest {
   workspace: WorkstationWorkspaceKey;
   tab: WorkStationTab;
@@ -499,28 +490,6 @@ export const focusWorkstationTabAtom = atom(
   }
 );
 focusWorkstationTabAtom.debugLabel = "focusWorkstationTabAtom";
-
-export const updateWorkstationTabDataAtom = atom(
-  null,
-  (
-    get,
-    set,
-    request: {
-      workspace: WorkstationWorkspaceKey;
-      tabId: string;
-      data: Partial<Record<string, unknown>>;
-    }
-  ) => {
-    const state = get(workstationTabsStateAtom);
-    setAndPersist(
-      set,
-      updateScopedPanel(state, request.workspace, (panel) =>
-        updateTabDataMutation(panel, request.tabId, request.data)
-      )
-    );
-  }
-);
-updateWorkstationTabDataAtom.debugLabel = "updateWorkstationTabDataAtom";
 
 export const reorderWorkstationTabsAtom = atom(
   null,
