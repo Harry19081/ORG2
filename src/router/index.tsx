@@ -1,5 +1,5 @@
 import { registerAppActions } from "@/src/scaffold/ActionSystem/registerAppActions";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
 
 import ErrorPage from "@src/app/root/ErrorPage";
@@ -21,6 +21,18 @@ import {
 import { RouteDebugModal } from "@src/scaffold/ModalSystem/variants/RouteDebug";
 
 import { AuthGuard, AuthRedirect } from "./guards";
+
+// Dev builds only, behind a dynamic import so the panel and its controls stay
+// out of the release bundle and out of the startup graph.
+const DevMockScenariosModal =
+  process.env.NODE_ENV === "development"
+    ? lazy(
+        () =>
+          import(
+            /* webpackChunkName: "dev-mock-scenarios" */ "@src/scaffold/ModalSystem/variants/DevMockScenarios"
+          )
+      )
+    : null;
 
 // Root layout for global services and modals.
 const RootLayout = () => {
@@ -61,6 +73,11 @@ const RootLayout = () => {
   return (
     <>
       <RouteDebugModal />
+      {DevMockScenariosModal && (
+        <Suspense fallback={null}>
+          <DevMockScenariosModal />
+        </Suspense>
+      )}
       <ConnectionHost />
       {/* AuthGuard wraps Outlet - if not authenticated, redirects to login */}
       <AuthGuard>

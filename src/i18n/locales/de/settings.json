@@ -1143,9 +1143,23 @@
   },
   "development": {
     "updateAvailable": "Update verfügbar",
-    "updateAvailableDesc": "Update-Anzeigen in der gesamten App mit Version 99.0.0 einblenden — Update-Aktionen öffnen nur die Vorschau",
+    "updateAvailableDesc": "Version 99.0.0 vortäuschen; Aktionen zeigen nur den Dialog",
     "illustrations": "Illustrationen",
-    "illustrationsDesc": "Alle Illustrationen im hellen und dunklen Modus vergleichen, ohne das Design zu ändern"
+    "illustrationsDesc": "Alle Illustrationen im hellen und dunklen Modus vergleichen, ohne das Design zu ändern",
+    "emptyStates": "Leere Zustände",
+    "mockPanelTitle": "Dev-Mock-Panel",
+    "mockPanelReset": "Alle zurücksetzen",
+    "mockPanelDone": "Fertig",
+    "scenario": {
+      "newUser": "Neuer Benutzer",
+      "newUserDesc": "Neuinstallation: keine Schlüssel, kein Ordner, kein Verlauf",
+      "noKeys": "Keine Schlüssel",
+      "noKeysDesc": "Konten und Modelle ausblenden, um Schlüssel-Hinweise zu zeigen",
+      "noWorkingDirectories": "Keine Arbeitsverzeichnisse",
+      "noWorkingDirectoriesDesc": "Repos und Ordner ausblenden, um „Ordner öffnen“ zu zeigen",
+      "noSessions": "Keine Sitzungen",
+      "noSessionsDesc": "Verlauf ausblenden, um Seitenleiste und Chat leer zu zeigen"
+    }
   },
   "managedUsage": {
     "cancel": "Abbrechen",

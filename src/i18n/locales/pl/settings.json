@@ -1143,9 +1143,23 @@
   },
   "development": {
     "updateAvailable": "Dostępna aktualizacja",
-    "updateAvailableDesc": "Pokaż wskaźniki aktualizacji w całej aplikacji dla wersji 99.0.0 — akcje aktualizacji otwierają tylko podgląd",
+    "updateAvailableDesc": "Udawaj wersję 99.0.0; akcje tylko pokazują okno dialogowe",
     "illustrations": "Ilustracje",
-    "illustrationsDesc": "Porównaj wszystkie ilustracje w trybie jasnym i ciemnym bez zmiany motywu"
+    "illustrationsDesc": "Porównaj wszystkie ilustracje w trybie jasnym i ciemnym bez zmiany motywu",
+    "emptyStates": "Stany puste",
+    "mockPanelTitle": "Panel makiet deweloperskich",
+    "mockPanelReset": "Zresetuj wszystko",
+    "mockPanelDone": "Gotowe",
+    "scenario": {
+      "newUser": "Nowy użytkownik",
+      "newUserDesc": "Nowa instalacja: brak kluczy, katalogu roboczego i historii",
+      "noKeys": "Brak kluczy",
+      "noKeysDesc": "Ukryj konta i modele, aby zobaczyć komunikaty o kluczu",
+      "noWorkingDirectories": "Brak katalogów roboczych",
+      "noWorkingDirectoriesDesc": "Ukryj repozytoria i foldery, aby zobaczyć „otwórz folder”",
+      "noSessions": "Brak sesji",
+      "noSessionsDesc": "Ukryj historię, aby zobaczyć stany pierwszego uruchomienia"
+    }
   },
   "managedUsage": {
     "cancel": "Anuluj",

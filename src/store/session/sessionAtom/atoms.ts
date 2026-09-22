@@ -3,8 +3,9 @@
  *
  * Core and derived Jotai atoms for session state.
  */
-import { type Atom, atom } from "jotai";
+import { type Atom, type SetStateAction, atom } from "jotai";
 
+import { activeDevMockScenariosAtom } from "@src/store/dev/mockScenarios";
 import { createStableWeakLruCache } from "@src/util/core/state/stableWeakLruCache";
 
 import { loadPersistedSessions } from "./persistence";
@@ -14,11 +15,38 @@ import type { Session } from "./types";
 // Core Atoms
 // ============================================
 
+const NO_SESSIONS: Session[] = [];
+
 // Hydrated synchronously from localStorage so the sidebar renders the
 // previous list on cold start without waiting for a network round-trip.
 // `loadSessions()` swaps in fresh data shortly after — see
 // `loaders.ts`.
-export const sessionsAtom = atom<Session[]>(loadPersistedSessions());
+const sessionListAtom = atom<Session[]>(loadPersistedSessions());
+sessionListAtom.debugLabel = "sessionListAtom";
+
+/**
+ * The session list every surface renders.
+ *
+ * The `noSessions` dev mock scenario masks reads to an empty list so the
+ * first-launch empty states can be inspected without deleting history. Writes
+ * — including the functional merges the loaders use — always resolve against
+ * the real list, and `persistSessions` refuses to serialise while the mask is
+ * on, so nothing masked reaches localStorage.
+ * See `@src/store/dev/mockScenarios`.
+ */
+export const sessionsAtom = atom(
+  (get): Session[] =>
+    get(activeDevMockScenariosAtom).noSessions
+      ? NO_SESSIONS
+      : get(sessionListAtom),
+  (get, set, update: SetStateAction<Session[]>) => {
+    const previous = get(sessionListAtom);
+    set(
+      sessionListAtom,
+      typeof update === "function" ? update(previous) : update
+    );
+  }
+);
 sessionsAtom.debugLabel = "sessionsAtom";
 
 export const sessionLoadingAtom = atom<boolean>(false);

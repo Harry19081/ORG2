@@ -1143,9 +1143,23 @@
   },
   "development": {
     "updateAvailable": "Update available",
-    "updateAvailableDesc": "Show update indicators across the app using version 99.0.0 — update actions only preview the dialog",
+    "updateAvailableDesc": "Fake version 99.0.0 app-wide; update actions only preview the dialog",
     "illustrations": "Illustrations",
-    "illustrationsDesc": "Compare all app illustrations in light and dark without changing your theme"
+    "illustrationsDesc": "Compare all app illustrations in light and dark without changing your theme",
+    "emptyStates": "Empty states",
+    "mockPanelTitle": "Dev mock panel",
+    "mockPanelReset": "Reset all",
+    "mockPanelDone": "Done",
+    "scenario": {
+      "newUser": "New user",
+      "newUserDesc": "Fresh install: no keys, no working directory, no session history",
+      "noKeys": "No keys",
+      "noKeysDesc": "Hide stored accounts and models to reach key-setup prompts",
+      "noWorkingDirectories": "No working directories",
+      "noWorkingDirectoriesDesc": "Hide repos and workspace folders to reach “open a folder” states",
+      "noSessions": "No sessions",
+      "noSessionsDesc": "Hide session history to reach first-launch sidebar and chat states"
+    }
   },
   "managedUsage": {
     "cancel": "Cancel",

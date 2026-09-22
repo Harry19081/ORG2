@@ -1143,9 +1143,23 @@
   },
   "development": {
     "updateAvailable": "Có bản cập nhật",
-    "updateAvailableDesc": "Hiện chỉ báo cập nhật trên toàn ứng dụng với phiên bản 99.0.0 — thao tác cập nhật chỉ mở bản xem trước",
+    "updateAvailableDesc": "Giả lập phiên bản 99.0.0; thao tác chỉ xem trước hộp thoại",
     "illustrations": "Hình minh họa",
-    "illustrationsDesc": "So sánh mọi hình minh họa ở chế độ sáng và tối mà không đổi giao diện"
+    "illustrationsDesc": "So sánh mọi hình minh họa ở chế độ sáng và tối mà không đổi giao diện",
+    "emptyStates": "Trạng thái trống",
+    "mockPanelTitle": "Bảng mô phỏng cho nhà phát triển",
+    "mockPanelReset": "Đặt lại tất cả",
+    "mockPanelDone": "Xong",
+    "scenario": {
+      "newUser": "Người dùng mới",
+      "newUserDesc": "Cài đặt mới: không khóa, không thư mục, không lịch sử",
+      "noKeys": "Không có khóa",
+      "noKeysDesc": "Ẩn tài khoản và mô hình để thấy lời nhắc thiết lập khóa",
+      "noWorkingDirectories": "Không có thư mục làm việc",
+      "noWorkingDirectoriesDesc": "Ẩn kho lưu trữ và thư mục để thấy trạng thái “mở thư mục”",
+      "noSessions": "Không có phiên",
+      "noSessionsDesc": "Ẩn lịch sử phiên để thấy trạng thái khởi chạy lần đầu"
+    }
   },
   "managedUsage": {
     "cancel": "Hủy",

@@ -8,6 +8,7 @@ import {
   availableAppUpdateAtom,
   mockAppUpdateEnabledAtom,
 } from "@src/scaffold/AppUpdater/state";
+import { resetDevMockScenariosForTest } from "@src/store/dev/mockScenarios";
 
 import DevelopmentSection from "../DevelopmentSection";
 
@@ -19,7 +20,10 @@ vi.mock("@src/components/layout/Section", () => ({
   SectionRow: ({ children }: { children: ReactNode }) => children,
 }));
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => {
+  resetDevMockScenariosForTest();
+  vi.unstubAllEnvs();
+});
 
 describe("DevelopmentSection", () => {
   it("opens all ten light/dark pairs and releases them when returning to controls", async () => {

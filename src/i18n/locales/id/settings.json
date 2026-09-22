@@ -1143,9 +1143,23 @@
   },
   "development": {
     "updateAvailable": "Pembaruan tersedia",
-    "updateAvailableDesc": "Tampilkan indikator pembaruan di seluruh aplikasi menggunakan versi 99.0.0 — tindakan pembaruan hanya menampilkan pratinjau dialog",
+    "updateAvailableDesc": "Palsukan versi 99.0.0; tindakan hanya mempratinjau dialog",
     "illustrations": "Ilustrasi",
-    "illustrationsDesc": "Bandingkan semua ilustrasi aplikasi dalam mode terang dan gelap tanpa mengubah tema"
+    "illustrationsDesc": "Bandingkan semua ilustrasi aplikasi dalam mode terang dan gelap tanpa mengubah tema",
+    "emptyStates": "Status kosong",
+    "mockPanelTitle": "Panel tiruan pengembang",
+    "mockPanelReset": "Setel ulang semua",
+    "mockPanelDone": "Selesai",
+    "scenario": {
+      "newUser": "Pengguna baru",
+      "newUserDesc": "Instalasi baru: tanpa kunci, direktori kerja, dan riwayat",
+      "noKeys": "Tanpa kunci",
+      "noKeysDesc": "Sembunyikan akun dan model untuk melihat petunjuk kunci",
+      "noWorkingDirectories": "Tanpa direktori kerja",
+      "noWorkingDirectoriesDesc": "Sembunyikan repo dan folder untuk melihat “buka folder”",
+      "noSessions": "Tanpa sesi",
+      "noSessionsDesc": "Sembunyikan riwayat untuk melihat status peluncuran pertama"
+    }
   },
   "managedUsage": {
     "cancel": "Batal",

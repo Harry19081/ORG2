@@ -1143,9 +1143,23 @@
   },
   "development": {
     "updateAvailable": "업데이트 사용 가능",
-    "updateAvailableDesc": "버전 99.0.0 업데이트 표시를 앱 전체에 표시 — 업데이트 작업은 대화 상자 미리 보기만 제공",
+    "updateAvailableDesc": "전체를 99.0.0 버전으로 위장, 동작은 대화상자만 미리보기",
     "illustrations": "일러스트",
-    "illustrationsDesc": "테마를 변경하지 않고 모든 앱 일러스트를 밝은 모드와 어두운 모드로 비교"
+    "illustrationsDesc": "테마를 변경하지 않고 모든 앱 일러스트를 밝은 모드와 어두운 모드로 비교",
+    "emptyStates": "빈 상태",
+    "mockPanelTitle": "개발 모의 패널",
+    "mockPanelReset": "모두 초기화",
+    "mockPanelDone": "완료",
+    "scenario": {
+      "newUser": "신규 사용자",
+      "newUserDesc": "새로 설치한 상태: 키, 작업 디렉터리, 기록 모두 없음",
+      "noKeys": "키 없음",
+      "noKeysDesc": "저장된 계정과 모델을 숨겨 키 설정 안내를 표시",
+      "noWorkingDirectories": "작업 디렉터리 없음",
+      "noWorkingDirectoriesDesc": "저장소와 작업 영역 폴더를 숨겨 '폴더 열기' 상태를 표시",
+      "noSessions": "세션 없음",
+      "noSessionsDesc": "세션 기록을 숨겨 첫 실행의 빈 상태를 표시"
+    }
   },
   "managedUsage": {
     "cancel": "취소",

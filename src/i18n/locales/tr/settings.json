@@ -1143,9 +1143,23 @@
   },
   "development": {
     "updateAvailable": "Güncelleme mevcut",
-    "updateAvailableDesc": "Uygulama genelinde 99.0.0 sürümü için güncelleme göstergelerini göster — güncelleme işlemleri yalnızca önizlemeyi açar",
+    "updateAvailableDesc": "Sürümü 99.0.0 göster; eylemler yalnızca iletişim kutusunu açar",
     "illustrations": "Çizimler",
-    "illustrationsDesc": "Temanızı değiştirmeden tüm uygulama çizimlerini açık ve koyu modda karşılaştırın"
+    "illustrationsDesc": "Temanızı değiştirmeden tüm uygulama çizimlerini açık ve koyu modda karşılaştırın",
+    "emptyStates": "Boş durumlar",
+    "mockPanelTitle": "Geliştirici sahte durum paneli",
+    "mockPanelReset": "Tümünü sıfırla",
+    "mockPanelDone": "Bitti",
+    "scenario": {
+      "newUser": "Yeni kullanıcı",
+      "newUserDesc": "Yeni kurulum: anahtar, çalışma dizini ve geçmiş yok",
+      "noKeys": "Anahtar yok",
+      "noKeysDesc": "Hesapları ve modelleri gizleyip anahtar uyarılarını göster",
+      "noWorkingDirectories": "Çalışma dizini yok",
+      "noWorkingDirectoriesDesc": "Depoları ve klasörleri gizleyip “klasör aç” durumunu göster",
+      "noSessions": "Oturum yok",
+      "noSessionsDesc": "Geçmişi gizleyip ilk açılış boş durumlarını göster"
+    }
   },
   "managedUsage": {
     "cancel": "İptal",

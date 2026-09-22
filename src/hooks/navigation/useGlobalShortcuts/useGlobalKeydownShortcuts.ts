@@ -7,6 +7,7 @@ import {
 } from "@src/config/keyboard/shortcutBindings";
 import { shortcutRegistry } from "@src/hooks/keyboard";
 import { AppViewService } from "@src/services/app";
+import { devMockScenariosModalOpenAtom } from "@src/store/dev/mockScenarios";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { routeDebugModalOpenAtom } from "@src/store/ui/uiAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
@@ -258,6 +259,17 @@ export function useGlobalKeydownShortcuts(
           "toggle_spotlight",
           () => shortcutRegistry.dispatch("toggle_spotlight"),
           spotlightOpenRef.current || !editable,
+        ],
+        [
+          // Dev builds only. The catalog entry is dev-gated too, so
+          // `matchesShortcut` can never resolve this id in a release build.
+          "open_dev_mock_scenarios",
+          () =>
+            getInstrumentedStore().set(
+              devMockScenariosModalOpenAtom,
+              (prev) => !prev
+            ),
+          process.env.NODE_ENV === "development",
         ],
         ["search_files", handleOpenCodeEditorSearchSidebar],
         ["window_close", closeCurrentWindow],
