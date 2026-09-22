@@ -100,7 +100,8 @@ pub fn ensure_tables_with(conn: &Connection) -> SqliteResult<()> {
             -- after the compaction. NULL on ordinary rows and on boundaries
             -- persisted before these columns existed.
             compact_tokens_before INTEGER,
-            compact_tokens_after INTEGER
+            compact_tokens_after INTEGER,
+            tool_is_error INTEGER NOT NULL DEFAULT 0
         );
         CREATE INDEX IF NOT EXISTS idx_am_session
             ON agent_messages(session_id, sequence);
@@ -137,6 +138,10 @@ pub fn ensure_tables_with(conn: &Connection) -> SqliteResult<()> {
     )?;
 
     try_migrate(conn, "ALTER TABLE agent_messages ADD COLUMN images TEXT");
+    try_migrate(
+        conn,
+        "ALTER TABLE agent_messages ADD COLUMN tool_is_error INTEGER NOT NULL DEFAULT 0",
+    );
     try_migrate(
         conn,
         "ALTER TABLE agent_messages ADD COLUMN compact_from_sequence INTEGER",

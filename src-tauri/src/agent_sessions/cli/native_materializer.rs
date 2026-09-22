@@ -229,7 +229,7 @@ fn authoritative_native_items(session_id: &str) -> Result<Vec<NativeConversation
             .ok_or_else(|| format!("provider-native transcript {native_id} was not found"))?;
         native_items_from_provider_path(session_id, &provider, &path)
     } else {
-        let history = agent_core::session::persistence::load_llm_history(session_id)
+        let history = agent_core::session::persistence::load_native_history(session_id)
             .map_err(|error| format!("load native Agent transcript {session_id}: {error}"))?;
         Ok(native_items_from_agent_history(&history))
     }
@@ -517,7 +517,8 @@ fn native_agent_seeds(
                 name,
                 output,
                 created_at,
-                ..
+                is_error,
+                interrupted,
             } => MaterializedHistorySeed {
                 id: native_agent_row_id(target_session_id, id, None),
                 created_at: created_at.clone(),
@@ -525,6 +526,7 @@ fn native_agent_seeds(
                     call_id: call_id.clone(),
                     name: name.clone(),
                     output: output.clone(),
+                    is_error: *is_error || *interrupted,
                 },
             },
             NativeConversationItem::ContextSummary {
@@ -534,10 +536,8 @@ fn native_agent_seeds(
             } => MaterializedHistorySeed {
                 id: native_agent_row_id(target_session_id, id, None),
                 created_at: created_at.clone(),
-                content: MaterializedHistoryContent::Message {
-                    role: MaterializedHistoryRole::User,
-                    text: summary.clone(),
-                    images: Vec::new(),
+                content: MaterializedHistoryContent::ContextSummary {
+                    summary: summary.clone(),
                 },
             },
         })
@@ -3847,6 +3847,97 @@ mod tests {
     }
 
     #[test]
+    fn codex_custom_exec_history_remains_a_canonical_prefix() {
+        use crate::agent_sessions::event_pipeline::ingestion::{
+            normalizer::normalize_chunk, types::RawActivityChunk,
+        };
+
+        let sandbox = test_env::sandbox();
+        let path = sandbox.path().join("custom-exec.jsonl");
+        let input = "text(ALL_TOOLS.map(x => x.name))\n";
+        let records = [
+            json!({"type":"response_item", "timestamp":"2026-09-14T00:00:00Z", "payload": {
+                "type":"custom_tool_call", "name":"exec", "call_id":"call_discovery", "input":input
+            }}),
+            json!({"type":"response_item", "timestamp":"2026-09-14T00:00:01Z", "payload": {
+                "type":"custom_tool_call_output", "call_id":"call_discovery", "output":"available tools"
+            }}),
+        ];
+        atomic_jsonl(&path, &records).unwrap();
+        let original = fs::read(&path).unwrap();
+        let chunks =
+            orgtrack_core::sources::codex::app::load_codex_app_from_path("exec-history", &path)
+                .unwrap();
+        assert_eq!(chunks.len(), 1);
+        let event = normalize_chunk(
+            &RawActivityChunk {
+                chunk_id: Some(chunks[0].chunk_id.clone()),
+                function: Some(chunks[0].function.clone()),
+                action_type: Some(chunks[0].action_type.clone()),
+                args: Some(chunks[0].args.clone()),
+                result: Some(chunks[0].result.clone()),
+                ..Default::default()
+            },
+            "exec-history",
+        );
+        // The frontend materializer serializes these exact canonical fields.
+        assert_eq!(event.args, json!({"input": input}));
+        let canonical = vec![
+            tool_call(
+                "call_discovery",
+                &event.function_name,
+                &event.args.to_string(),
+            ),
+            tool_result(
+                "call_discovery",
+                &event.function_name,
+                "available tools",
+                false,
+                false,
+            ),
+        ];
+        for _ in 0..2 {
+            let native = native_items_from_provider_path("exec-history", "codex", &path).unwrap();
+            assert!(provider_portable_append_suffix(&native, &canonical)
+                .unwrap()
+                .is_empty());
+            let mut divergent = canonical.clone();
+            if let NativeConversationItem::ToolCall { arguments, .. } = &mut divergent[0] {
+                *arguments = json!({"input":"different script"}).to_string();
+            }
+            assert!(provider_portable_append_suffix(&native, &divergent).is_err());
+        }
+        assert_eq!(fs::read(&path).unwrap(), original);
+
+        let mut continued = canonical.clone();
+        continued.push(NativeConversationItem::Message {
+            id: "orgii_evt_0123456789abcdef0123456789abcdef".into(),
+            role: "user".into(),
+            text: "continue".into(),
+            images: Vec::new(),
+            created_at: "2026-09-14T00:00:02Z".into(),
+            turn_id: None,
+        });
+        let native = native_items_from_provider_path("exec-history", "codex", &path).unwrap();
+        let suffix = provider_portable_append_suffix(&native, &continued).unwrap();
+        assert_eq!(suffix, continued[2..]);
+        let appended: Vec<_> = codex_response_items(&suffix)
+            .into_iter()
+            .map(|payload| {
+                json!({
+                    "type":"response_item", "timestamp":"2026-09-14T00:00:02Z", "payload":payload
+                })
+            })
+            .collect();
+        append_suffix_atomically(&path, &serialize_jsonl(&appended).unwrap()).unwrap();
+        let resumed = native_items_from_provider_path("exec-history", "codex", &path).unwrap();
+        assert!(provider_portable_append_suffix(&resumed, &continued)
+            .unwrap()
+            .is_empty());
+        assert!(fs::read(&path).unwrap().starts_with(&original));
+    }
+
+    #[test]
     fn failed_codex_tool_output_round_trips_as_a_failed_tool() {
         let sandbox = test_env::sandbox();
         let path = sandbox.path().join("rollout-failed-tool.jsonl");
@@ -5793,5 +5884,180 @@ mod tests {
             (0, 0),
             "a completed startup repair is idempotent"
         );
+    }
+
+    #[test]
+    fn agent_materialization_preserves_images_errors_and_summary() {
+        let _sandbox = crate::test_utils::test_env::sandbox();
+        let image1 = NativeConversationItem::Message {
+            id: "image1".into(),
+            role: "user".into(),
+            text: "first".into(),
+            images: vec!["data:image/png;base64,QUJD".into()],
+            created_at: "2026-09-14T00:00:00Z".into(),
+            turn_id: None,
+        };
+        let mut image2 = image1.clone();
+        if let NativeConversationItem::Message { id, text, .. } = &mut image2 {
+            *id = "image2".into();
+            *text = "second".into();
+        }
+        let cases = vec![
+            ("agent_images", vec![image1, image2]),
+            (
+                "agent_error",
+                vec![
+                    NativeConversationItem::ToolCall {
+                        id: "c".into(),
+                        call_id: "call_a".into(),
+                        name: "read_file".into(),
+                        arguments: "{}".into(),
+                        created_at: "2026-09-14T00:00:00Z".into(),
+                    },
+                    NativeConversationItem::ToolResult {
+                        id: "r".into(),
+                        call_id: "call_a".into(),
+                        name: "read_file".into(),
+                        output: "missing file".into(),
+                        is_error: true,
+                        interrupted: false,
+                        created_at: "2026-09-14T00:00:01Z".into(),
+                    },
+                ],
+            ),
+            (
+                "agent_summary",
+                vec![NativeConversationItem::ContextSummary {
+                    id: "summary1".into(),
+                    summary: "Earlier work summary".into(),
+                    created_at: "2026-09-14T00:00:00Z".into(),
+                }],
+            ),
+        ];
+        for (sid, items) in cases {
+            database::db::get_connection().unwrap().execute(
+            "INSERT INTO agent_sessions (session_id,name,session_type,status,created_at,updated_at) VALUES (?1,'Audit','agent','running',datetime('now'),datetime('now'))", [sid]).unwrap();
+            materialize_native_agent(sid, &items).unwrap();
+            let restored = authoritative_native_items(sid).unwrap();
+            assert!(provider_portable_append_suffix(&restored, &items)
+                .unwrap()
+                .is_empty());
+            materialize_native_agent(sid, &items).expect("exact retry is idempotent");
+            let mut divergent = items.clone();
+            match &mut divergent[0] {
+                NativeConversationItem::Message { text, .. } => text.push_str(" changed"),
+                NativeConversationItem::ContextSummary { summary, .. } => {
+                    summary.push_str(" changed")
+                }
+                NativeConversationItem::ToolCall { arguments, .. } => {
+                    *arguments = "{\"different\":true}".into()
+                }
+                _ => unreachable!(),
+            }
+            assert!(materialize_native_agent(sid, &divergent).is_err());
+            assert!(provider_portable_append_suffix(
+                &authoritative_native_items(sid).unwrap(),
+                &items
+            )
+            .unwrap()
+            .is_empty());
+            if sid == "agent_error" {
+                let mut wrong_status = items.clone();
+                if let NativeConversationItem::ToolResult { is_error, .. } = &mut wrong_status[1] {
+                    *is_error = false;
+                }
+                assert!(materialize_native_agent(sid, &wrong_status).is_err());
+                assert!(authoritative_append_suffix(sid, &items).unwrap().is_empty());
+            }
+            let model_history = agent_core::session::persistence::load_llm_history(sid).unwrap();
+            if sid == "agent_images" {
+                assert!(
+                    model_history[0]["content"].is_string(),
+                    "model request still trims old images"
+                );
+                assert!(model_history[1]["content"].is_array());
+            }
+            if sid == "agent_summary" {
+                assert_eq!(model_history[0]["role"], "user");
+            }
+            let mut continued = items.clone();
+            continued.push(message("next", "user", "continue"));
+            let suffix = authoritative_append_suffix(sid, &continued).unwrap();
+            agent_core::session::persistence::append_session_with_materialized_history(
+                sid,
+                &native_agent_seeds(sid, &suffix),
+            )
+            .unwrap();
+            assert!(authoritative_append_suffix(sid, &continued)
+                .unwrap()
+                .is_empty());
+        }
+    }
+
+    #[test]
+    fn provider_records_preserve_business_arguments_and_call_identity() {
+        use crate::agent_sessions::event_pipeline::ingestion::{
+            ingest_raw_chunks_with_prompt_resolver, types::RawActivityChunk,
+        };
+        let sandbox = test_env::sandbox();
+        let args = json!({"input":{"query":"hello"},"options":{"limit":3},"call_id":"target_job"});
+        for provider in ["codex", "claude_code"] {
+            let path = sandbox
+                .path()
+                .join(format!("{provider}-argument-contract.jsonl"));
+            let mut records = Vec::new();
+            for id in ["provider_a", "provider_b"] {
+                if provider == "codex" {
+                    records.push(json!({"type":"response_item","timestamp":"2026-09-14T00:00:00Z","payload":{"type":"function_call","name":"mcp__thinking_tool","call_id":id,"arguments":args.to_string()}}));
+                    records.push(json!({"type":"response_item","timestamp":"2026-09-14T00:00:01Z","payload":{"type":"function_call_output","call_id":id,"output":"ok"}}));
+                } else {
+                    records.push(json!({"type":"assistant","uuid":format!("{id}-call"),"timestamp":"2026-09-14T00:00:00Z","message":{"role":"assistant","content":[{"type":"tool_use","id":id,"name":"mcp__thinking_tool","input":args}]}}));
+                    records.push(json!({"type":"user","uuid":format!("{id}-result"),"timestamp":"2026-09-14T00:00:01Z","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":id,"content":"ok"}]}}));
+                }
+            }
+            atomic_jsonl(&path, &records).unwrap();
+            let original = fs::read(&path).unwrap();
+            let chunks = if provider == "codex" {
+                orgtrack_core::sources::codex::app::load_codex_app_from_path(
+                    "argument-contract",
+                    &path,
+                )
+                .unwrap()
+            } else {
+                orgtrack_core::sources::claude_code::history::load_claude_code_history_from_path(
+                    "argument-contract",
+                    &path,
+                )
+                .unwrap()
+            };
+            let raw: Vec<_> = chunks
+                .iter()
+                .map(|c| RawActivityChunk {
+                    chunk_id: Some(c.chunk_id.clone()),
+                    function: Some(c.function.clone()),
+                    action_type: Some(c.action_type.clone()),
+                    args: Some(c.args.clone()),
+                    result: Some(c.result.clone()),
+                    created_at: Some(c.created_at.clone()),
+                    ..Default::default()
+                })
+                .collect();
+            let events =
+                ingest_raw_chunks_with_prompt_resolver(&raw, "argument-contract", |_| None).events;
+            assert_eq!(events.len(), 2);
+            let native =
+                native_items_from_provider_path("argument-contract", provider, &path).unwrap();
+            let mut canonical = Vec::new();
+            for (event, id) in events.iter().zip(["provider_a", "provider_b"]) {
+                assert_eq!(event.args, args);
+                assert_eq!(event.call_id.as_deref(), Some(id));
+                canonical.push(tool_call(id, &event.function_name, &event.args.to_string()));
+                canonical.push(tool_result(id, &event.function_name, "ok", false, false));
+            }
+            assert!(provider_portable_append_suffix(&native, &canonical)
+                .unwrap()
+                .is_empty());
+            assert_eq!(fs::read(&path).unwrap(), original);
+        }
     }
 }
