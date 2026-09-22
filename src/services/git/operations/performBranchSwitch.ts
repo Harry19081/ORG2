@@ -54,11 +54,9 @@ export async function performBranchSwitch(
       publish(result.current_branch);
       await dialog.complete(result);
       if (result.outcome === "switched") {
-        const switchedTo = i18n.t(
-          "common:git.branchSwitch.switchedTo",
-          "Switched to {{branch}}",
-          { branch: result.current_branch }
-        );
+        const switchedTo = i18n.t("common:git.branchSwitch.switchedTo", {
+          branch: result.current_branch,
+        });
         Message.spotlight({
           ...(result.message
             ? { title: switchedTo, content: result.message }
@@ -72,12 +70,9 @@ export async function performBranchSwitch(
       if (worktreePath) {
         dialog.dispose();
         const open = await branchSwitchQuestion(
-          i18n.t(
-            "common:git.branchSwitch.worktreeTitle",
-            "Branch is open in another worktree"
-          ),
+          i18n.t("common:git.branchSwitch.worktreeTitle"),
           `${message}\n${worktreePath}`,
-          i18n.t("common:git.branchSwitch.openWorktree", "Open worktree")
+          i18n.t("common:git.branchSwitch.openWorktree")
         );
         if (open) {
           const worktrees = await getGitWorktrees({
@@ -89,10 +84,7 @@ export async function performBranchSwitch(
           );
           if (!worktree)
             throw new Error(
-              i18n.t(
-                "common:git.branchSwitch.messages.worktree_missing",
-                "The worktree no longer exists. Refresh and try again"
-              )
+              i18n.t("common:git.branchSwitch.messages.worktree_missing")
             );
           store.set(setActiveWorktreeAtom, {
             repoId: scope.repoId,
@@ -103,11 +95,7 @@ export async function performBranchSwitch(
         }
       } else
         await dialog.blocked(
-          message ||
-            i18n.t(
-              "common:git.branchSwitch.blockedTitle",
-              "Branch switch needs attention"
-            ),
+          message || i18n.t("common:git.branchSwitch.blockedTitle"),
           currentBranch
         );
     },

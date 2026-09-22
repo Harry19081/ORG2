@@ -154,18 +154,14 @@ export function useAddWorkingDirectoryFlow(
         createWorkspace: t("selectors.repo.addOptions.createWorkspace"),
         cloneFromGitHubUrl: t("selectors.repo.addOptions.cloneFromGitHubUrl"),
         cloneFromMyGitHub: t("selectors.repo.addOptions.cloneFromMyGitHub"),
-        createMultiRepoWorkspace: t(
-          "workspaceForm.createWorkspace",
-          "Create Multi-repo Working Directory"
-        ),
+        createMultiRepoWorkspace: t("workspaceForm.createWorkspace"),
       },
       sources: {
         creatingWorkspace: t("selectors.repo.sources.creatingWorkspace"),
         cloningFromGitHubUrl: t("selectors.repo.sources.cloningFromGitHubUrl"),
         cloningFromMyGitHub: t("selectors.repo.sources.cloningFromMyGitHub"),
         creatingMultiRepoWorkspace: t(
-          "selectors.repo.sources.creatingMultiRepoWorkspace",
-          "composing workspace"
+          "selectors.repo.sources.creatingMultiRepoWorkspace"
         ),
       },
       actionPath: {

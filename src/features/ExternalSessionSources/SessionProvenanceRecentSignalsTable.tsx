@@ -174,16 +174,11 @@ const SignalDiffCard: React.FC<{
     <InlineInfoCard dataTestId="session-provenance-signal-diff">
       {state.status === "loading" ? (
         <p className="text-[12px] text-text-3">
-          {t("agentOrgs.sessionProvenance.signals.diffLoading", {
-            defaultValue: "Loading patch…",
-          })}
+          {t("agentOrgs.sessionProvenance.signals.diffLoading")}
         </p>
       ) : state.status === "empty" ? (
         <p className="text-[12px] leading-relaxed text-text-3">
-          {t("agentOrgs.sessionProvenance.signals.diffEmpty", {
-            defaultValue:
-              "No patch captured. Provenance records file changes as metadata; a diff appears only once this session's edits are imported.",
-          })}
+          {t("agentOrgs.sessionProvenance.signals.diffEmpty")}
         </p>
       ) : (
         <div className="max-h-[360px] overflow-auto">
@@ -305,9 +300,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
   const columns: SettingsTableColumn<SessionProvenanceRecentSignal>[] = [
     {
       key: "source",
-      label: t("agentOrgs.sessionProvenance.signals.col.source", {
-        defaultValue: "Tool",
-      }),
+      label: t("agentOrgs.sessionProvenance.signals.col.source"),
       width: SETTINGS_TABLE_COL.valueLg,
       renderCell: (row) => {
         const meta = sourceMeta(row.source);
@@ -323,9 +316,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
     },
     {
       key: "action",
-      label: t("agentOrgs.sessionProvenance.signals.col.action", {
-        defaultValue: "Action",
-      }),
+      label: t("agentOrgs.sessionProvenance.signals.col.action"),
       width: SETTINGS_TABLE_COL.valueMd,
       renderCell: (row) => (
         <Tag size="mini" color={ACTION_TAG_COLOR[row.action] ?? "default"} pill>
@@ -337,9 +328,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
     },
     {
       key: "when",
-      label: t("agentOrgs.sessionProvenance.signals.col.when", {
-        defaultValue: "When",
-      }),
+      label: t("agentOrgs.sessionProvenance.signals.col.when"),
       width: SETTINGS_TABLE_COL.valueMd,
       sorter: (a, b) => a.occurredAt.localeCompare(b.occurredAt),
       renderCell: (row) => (
@@ -350,9 +339,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
     },
     {
       key: "workspace",
-      label: t("agentOrgs.sessionProvenance.signals.col.workspace", {
-        defaultValue: "Workspace",
-      }),
+      label: t("agentOrgs.sessionProvenance.signals.col.workspace"),
       width: `${WORKSPACE_COL_MAX_PX}px`,
       renderCell: (row) => {
         const full = tildePath(row.workspacePath);
@@ -369,9 +356,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
     },
     {
       key: "file",
-      label: t("agentOrgs.sessionProvenance.signals.col.file", {
-        defaultValue: "File",
-      }),
+      label: t("agentOrgs.sessionProvenance.signals.col.file"),
       width: `${PATH_COL_MAX_PX}px`,
       renderCell: (row) => {
         const display = middleTruncatePath(row.filePath, 42);
@@ -399,9 +384,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
     },
     {
       key: "session",
-      label: t("agentOrgs.sessionProvenance.signals.col.session", {
-        defaultValue: "Session",
-      }),
+      label: t("agentOrgs.sessionProvenance.signals.col.session"),
       width: `${PATH_COL_MAX_PX}px`,
       renderCell: (row) => {
         const title = row.sessionTitle?.trim();
@@ -417,7 +400,6 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
             }
             title={row.sessionId}
             aria-label={t("agentOrgs.sessionProvenance.signals.openSession", {
-              defaultValue: "Open session {{session}}",
               session: label,
             })}
             style={{ maxWidth: PATH_COL_MAX_PX }}
@@ -446,9 +428,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
           .includes(term)
       : true
   );
-  const title = t("agentOrgs.sessionProvenance.signals.title", {
-    defaultValue: "Recent signals",
-  });
+  const title = t("agentOrgs.sessionProvenance.signals.title");
 
   return (
     <div
@@ -488,18 +468,12 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
           }}
           emptyTitle={
             term
-              ? t("agentOrgs.sessionProvenance.signals.noResults", {
-                  defaultValue: "No matching signals",
-                })
-              : t("agentOrgs.sessionProvenance.signals.empty", {
-                  defaultValue: "No hook signals received yet.",
-                })
+              ? t("agentOrgs.sessionProvenance.signals.noResults")
+              : t("agentOrgs.sessionProvenance.signals.empty")
           }
           searchBar={{
             searchValue: searchQuery,
-            searchPlaceholder: t("agentOrgs.sessionProvenance.signals.search", {
-              defaultValue: "Search signals",
-            }),
+            searchPlaceholder: t("agentOrgs.sessionProvenance.signals.search"),
             onSearchChange: setSearchQuery,
             onSearchClear: () => setSearchQuery(""),
             searchInputSize: "default",
@@ -507,9 +481,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
               <RefreshButton
                 iconOnly
                 variant="secondary"
-                label={t("agentOrgs.sessionProvenance.signals.refresh", {
-                  defaultValue: "Refresh",
-                })}
+                label={t("agentOrgs.sessionProvenance.signals.refresh")}
                 onRefresh={() => void load()}
                 refreshing={refreshing}
                 dataTestId="session-provenance-recent-signals-refresh"

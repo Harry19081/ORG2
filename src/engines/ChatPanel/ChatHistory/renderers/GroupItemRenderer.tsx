@@ -108,9 +108,7 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
     const inboxTranscriptLabel = useMemo(() => {
       if (!event || simpleMessage) return null;
       if (!isAgentOrgInboxTranscriptEvent(event)) return null;
-      return t("groupChat.inboxTranscript.readMessages", {
-        defaultValue: "Coordinator read messages sent by other agents",
-      });
+      return t("groupChat.inboxTranscript.readMessages");
     }, [event, simpleMessage, t]);
 
     const usesGroupChatMessageBubble = simpleMessage !== null;

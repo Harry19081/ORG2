@@ -45,9 +45,7 @@ export const MultiSelectBar: React.FC<MultiSelectBarProps> = ({
     ...(onSetStatus
       ? [
           {
-            label: t("workItems.batchStatus.title", {
-              defaultValue: "Set status",
-            }),
+            label: t("workItems.batchStatus.title"),
             onClick: onSetStatus,
           },
         ]
@@ -55,9 +53,7 @@ export const MultiSelectBar: React.FC<MultiSelectBarProps> = ({
     ...(onSetPriority
       ? [
           {
-            label: t("workItems.batchPriority.title", {
-              defaultValue: "Set priority",
-            }),
+            label: t("workItems.batchPriority.title"),
             onClick: onSetPriority,
           },
         ]
@@ -65,9 +61,7 @@ export const MultiSelectBar: React.FC<MultiSelectBarProps> = ({
     ...(onSetAssignee
       ? [
           {
-            label: t("workItems.batchAssignee.title", {
-              defaultValue: "Set assignee",
-            }),
+            label: t("workItems.batchAssignee.title"),
             onClick: onSetAssignee,
           },
         ]
@@ -75,9 +69,7 @@ export const MultiSelectBar: React.FC<MultiSelectBarProps> = ({
     ...(onSetProperty
       ? [
           {
-            label: t("workItems.batchProperty.title", {
-              defaultValue: "Set property",
-            }),
+            label: t("workItems.batchProperty.title"),
             onClick: onSetProperty,
           },
         ]

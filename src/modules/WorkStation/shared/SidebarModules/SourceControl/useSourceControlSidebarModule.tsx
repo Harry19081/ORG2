@@ -214,9 +214,9 @@ export function useSourceControlSidebarModule({
   const sectionLabel = isHistoryMode
     ? t("common:labels.gitHistory")
     : isPrMode
-      ? t("common:labels.pullRequest", "Pull request")
+      ? t("common:labels.pullRequest")
       : isIssuesMode
-        ? t("common:git.issues.title", "Issues")
+        ? t("common:git.issues.title")
         : t("tabs.sourceControl");
   const isAlternateMode = isPrMode || isHistoryMode || isIssuesMode;
   const sectionTitle = isAlternateMode ? (

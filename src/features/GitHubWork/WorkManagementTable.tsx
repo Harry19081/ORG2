@@ -140,12 +140,8 @@ export function WorkManagementTable({
   const hasCiStatus = rows.some((row) => row.ciStatus !== undefined);
   const hasSelection = rows.some((row) => row.selection !== undefined);
   const columns = useMemo<SettingsTableColumn<WorkManagementTableRow>[]>(() => {
-    const idLabel = t("workManagementTable.columns.id", {
-      defaultValue: "ID",
-    });
-    const updatedLabel = t("workManagementTable.columns.updated", {
-      defaultValue: "Updated",
-    });
+    const idLabel = t("workManagementTable.columns.id");
+    const updatedLabel = t("workManagementTable.columns.updated");
     const controlledSort = sort && onSortChange;
     const tableColumns: SettingsTableColumn<WorkManagementTableRow>[] = [
       {
@@ -184,9 +180,7 @@ export function WorkManagementTable({
       },
       {
         key: "title",
-        label: t("workManagementTable.columns.titleContext", {
-          defaultValue: "Title / Context",
-        }),
+        label: t("workManagementTable.columns.titleContext"),
         width: `${WORK_MANAGEMENT_TITLE_COLUMN_MAX_WIDTH}px`,
         renderCell: (row) => (
           <div
@@ -280,9 +274,7 @@ export function WorkManagementTable({
     if (hasAssignees) {
       tableColumns.push({
         key: "assignee",
-        label: t("workManagementTable.columns.assignee", {
-          defaultValue: "Assignee",
-        }),
+        label: t("workManagementTable.columns.assignee"),
         width: SETTINGS_TABLE_COL.hug,
         align: "left",
         renderCell: (row) => (
@@ -292,9 +284,7 @@ export function WorkManagementTable({
     }
     tableColumns.push({
       key: "status",
-      label: t("workManagementTable.columns.status", {
-        defaultValue: "Status",
-      }),
+      label: t("workManagementTable.columns.status"),
       width: SETTINGS_TABLE_COL.valueLg,
       renderCell: (row) =>
         row.statusSelect ? (

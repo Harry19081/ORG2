@@ -77,7 +77,7 @@ export function useSourceControlIssuesSection({
             className={issuesRefreshSpinClass}
           />
         ),
-        tooltip: t("common:actions.refresh", "Refresh"),
+        tooltip: t("common:actions.refresh"),
         onClick: handleIssuesRefreshClick,
       },
       {

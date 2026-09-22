@@ -160,7 +160,7 @@ export const AllSessionsSearchPalette: React.FC<
         ? buildAllSessionsSearchItems({
             hits,
             sessionMap,
-            fallbackSessionLabel: t("chat.session", "Session"),
+            fallbackSessionLabel: t("chat.session"),
             onNavigate: handleNavigate,
           })
         : [],
@@ -204,8 +204,7 @@ export const AllSessionsSearchPalette: React.FC<
         type: "action",
         id: "search-all-sessions",
         label: t(
-          "common:selectors.spotlight.actions.searchAllSessions.pillLabel",
-          "Search All Sessions"
+          "common:selectors.spotlight.actions.searchAllSessions.pillLabel"
         ),
         icon: ALL_SESSIONS_SEARCH_ICON,
         color: "primary",
@@ -219,8 +218,7 @@ export const AllSessionsSearchPalette: React.FC<
       kernel={kernel}
       items={items}
       placeholder={t(
-        "common:selectors.spotlight.actions.searchAllSessions.placeholder",
-        "Search across all sessions..."
+        "common:selectors.spotlight.actions.searchAllSessions.placeholder"
       )}
       path={path}
       onRemoveSegment={handleGoBack}

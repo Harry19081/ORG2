@@ -74,7 +74,7 @@ const RevertConfirmDialog: React.FC = () => {
   return (
     <Modal
       visible={state.visible}
-      title={t("revertConfirm.title", "Unsaved file changes")}
+      title={t("revertConfirm.title")}
       onClose={handleCancel}
       maskClosable={false}
       escToExit
@@ -83,18 +83,18 @@ const RevertConfirmDialog: React.FC = () => {
         <PanelFooter
           secondaryActions={[
             {
-              label: t("common:actions.cancel", "Cancel"),
+              label: t("common:actions.cancel"),
               onClick: handleCancel,
               dataTestId: "rewind-file-changes-cancel",
             },
             {
-              label: t("revertConfirm.keepChanges", "Keep changes"),
+              label: t("revertConfirm.keepChanges"),
               onClick: handleKeep,
               dataTestId: "rewind-file-changes-keep",
             },
           ]}
           primaryAction={{
-            label: t("revertConfirm.revertChanges", "Revert changes"),
+            label: t("revertConfirm.revertChanges"),
             onClick: handleRevert,
             dataTestId: "rewind-file-changes-revert",
           }}
@@ -102,10 +102,7 @@ const RevertConfirmDialog: React.FC = () => {
       }
     >
       <div className="text-token-secondary text-sm">
-        {t(
-          "revertConfirm.body",
-          "The agent made file changes since this message. What would you like to do with those changes?"
-        )}
+        {t("revertConfirm.body")}
       </div>
     </Modal>
   );

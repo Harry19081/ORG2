@@ -116,12 +116,7 @@ const WorkItemDescriptionSection: React.FC<WorkItemDescriptionSectionProps> = ({
           (!githubTimelineLoading && githubTimeline.length === 0)
         }
         trailLabel={
-          isThread
-            ? workItem.name ||
-              t("common:labels.description", {
-                defaultValue: "Description",
-              })
-            : undefined
+          isThread ? workItem.name || t("common:labels.description") : undefined
         }
       >
         <TimelineCard

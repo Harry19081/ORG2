@@ -345,7 +345,7 @@ export function SourceControlScopeToolbar({
         ) : null}
         {!showMainScope && filteredWorktrees.length === 0 ? (
           <div className={DROPDOWN_CLASSES.listMessage}>
-            {t("placeholders.noResults", "No results")}
+            {t("placeholders.noResults")}
           </div>
         ) : null}
       </div>

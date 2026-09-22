@@ -58,17 +58,17 @@ export default function CliPermissionPill() {
   if (!supported || !sessionId || selection?.sessionId !== sessionId)
     return null;
   const choices: { mode: PermissionMode; label: string }[] = [
-    { mode: "manual", label: t("chat.cliPermissions.ask", "Ask for approval") },
+    { mode: "manual", label: t("chat.cliPermissions.ask") },
     {
       mode: "auto_edit",
       label:
         session?.cliAgentType === "codex"
-          ? t("chat.cliPermissions.workspace", "Workspace access")
-          : t("chat.cliPermissions.edit", "Allow edits"),
+          ? t("chat.cliPermissions.workspace")
+          : t("chat.cliPermissions.edit"),
     },
     {
       mode: "full_permission",
-      label: t("chat.cliPermissions.full", "Full access"),
+      label: t("chat.cliPermissions.full"),
     },
   ];
   const choose = async (mode: PermissionMode) => {
@@ -96,10 +96,7 @@ export default function CliPermissionPill() {
           choices.find((c) => c.mode === selection.mode)?.label ??
           choices[0].label
         }
-        tooltip={t(
-          "chat.cliPermissions.nextTurn",
-          "Permissions apply to the next turn"
-        )}
+        tooltip={t("chat.cliPermissions.nextTurn")}
         onClick={dropdown.toggle}
         active={dropdown.isOpen}
         dataTestId="cli-permission-pill"

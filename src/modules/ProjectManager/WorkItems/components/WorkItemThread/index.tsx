@@ -82,9 +82,7 @@ export const WorkItemThreadLayout: React.FC<WorkItemThreadLayoutProps> = ({
         scrollContainerRef={scrollContainerRef}
         contentRef={contentRef}
         alignment={navigationTrailHost ? "start" : "center"}
-        ariaLabel={t("projects:workItems.navigationTrail", {
-          defaultValue: "Work item navigation",
-        })}
+        ariaLabel={t("projects:workItems.navigationTrail")}
         placement="rail"
         testId="work-item-thread-navigation-trail"
       />

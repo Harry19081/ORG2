@@ -19,6 +19,7 @@ import {
   workstationPrScopeKey,
   workstationSelectedPrAtomFamily,
 } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
+import { testTranslate, useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import { PrDetailPanel, PrDetailTabs } from "./PrDetailPanel";
 import { formatPrFilesCount } from "./prFilesDisplay";
@@ -30,27 +31,8 @@ const childProps = vi.hoisted(() => ({
 }));
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, fallback?: string | Record<string, unknown>) => {
-      const localizedMergeMethod: Record<string, string> = {
-        "git.pr.actions.merge": "Localized merge",
-        "git.pr.actions.squash": "Localized squash and merge",
-        "git.pr.actions.rebase": "Localized rebase and merge",
-      };
-      if (localizedMergeMethod[key]) return localizedMergeMethod[key];
-      if (key === "git.pr.actions.resolveConflicts") {
-        return "Localized conflict label";
-      }
-      if (typeof fallback === "string") return fallback;
-      if (typeof fallback?.defaultValue !== "string") return key;
-      const count = Number(fallback.count ?? 0);
-      const template =
-        count === 1 || typeof fallback.defaultValue_other !== "string"
-          ? fallback.defaultValue
-          : fallback.defaultValue_other;
-      return template.replace("{{count}}", String(count));
-    },
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 vi.mock("@src/components/IntegrationIcon", () => ({
@@ -764,14 +746,18 @@ describe("PrDetailPanel tabs", () => {
 
     expect(tabList?.className).toContain("border-b");
     const externalLink = tabList?.querySelector(
-      'button[aria-label="Open in external browser"]'
+      `button[aria-label="${testTranslate(
+        "common:previews.openInExternalBrowser"
+      )}"]`
     );
     expect(externalLink?.getAttribute("type")).toBe("button");
     expect(externalLink?.getAttribute("style")).toContain("height: 28px");
     expect(externalLink?.querySelector('[data-icon="chrome"]')).not.toBeNull();
     expect(
       container.querySelectorAll(
-        'button[aria-label="Open in external browser"]'
+        `button[aria-label="${testTranslate(
+          "common:previews.openInExternalBrowser"
+        )}"]`
       )
     ).toHaveLength(1);
     expect(tabList?.textContent).not.toContain("Use compact PR metadata");
@@ -789,7 +775,9 @@ describe("PrDetailPanel tabs", () => {
     const flowStatus = flowHeader?.querySelector(
       "[data-testid='pr-flow-status']"
     );
-    expect(flowStatus?.textContent).toContain("merged");
+    expect(flowStatus?.textContent).toContain(
+      testTranslate("common:git.pr.status.merged")
+    );
     expect(flowStatus?.querySelector('[data-icon="git-merge"]')).not.toBeNull();
     expect(flowStatus?.firstElementChild?.className).toContain("bg-purple-1");
     expect(flowStatus?.firstElementChild?.className).toContain("text-purple-6");

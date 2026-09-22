@@ -42,10 +42,7 @@ const AgentOrgOverviewHandoffCard: React.FC<
           strokeWidth={2}
         />
         {resolutionApplicationFailed
-          ? t("planner.agentOrgTasks.handoffDecisionFailed", {
-              defaultValue:
-                "The accepted decision needs another cleanup attempt",
-            })
+          ? t("planner.agentOrgTasks.handoffDecisionFailed")
           : applyingResolution
             ? t("planner.agentOrgTasks.handoffApplyingDecision", {
                 decision: t(
@@ -57,23 +54,16 @@ const AgentOrgOverviewHandoffCard: React.FC<
                         : "abandonEpisode"
                   }`
                 ),
-                defaultValue: "Applying {{decision}}",
               })
             : resolvable
-              ? t("planner.agentOrgTasks.handoffNeedsDecision", {
-                  defaultValue: "Task handoff needs your decision",
-                })
-              : t("planner.agentOrgTasks.handoffStopping", {
-                  defaultValue: "Stopping the previous execution",
-                })}
+              ? t("planner.agentOrgTasks.handoffNeedsDecision")
+              : t("planner.agentOrgTasks.handoffStopping")}
       </div>
       <div className="break-all text-text-3">
         {t("planner.agentOrgTasks.handoffEvidence", {
           owner: receipt.oldOwnerMemberId,
           state: receipt.state,
           count: receipt.localEffectCount,
-          defaultValue:
-            "Previous owner: {{owner}} · {{state}} · local writers: {{count}}",
         })}
       </div>
       {resolutionApplicationFailed && canManageTasks && (
@@ -92,9 +82,7 @@ const AgentOrgOverviewHandoffCard: React.FC<
             }
             data-testid="agent-org-handoff-retry-decision-button"
           >
-            {t("planner.agentOrgTasks.retryHandoffDecision", {
-              defaultValue: "Retry decision",
-            })}
+            {t("planner.agentOrgTasks.retryHandoffDecision")}
           </Button>
           {requestedResolution !== "continue_replacement" && (
             <Button
@@ -108,9 +96,7 @@ const AgentOrgOverviewHandoffCard: React.FC<
               }
               data-testid="agent-org-handoff-continue-button"
             >
-              {t("planner.agentOrgTasks.continueReplacement", {
-                defaultValue: "Continue replacement",
-              })}
+              {t("planner.agentOrgTasks.continueReplacement")}
             </Button>
           )}
           {requestedResolution !== "keep_stopped" && (
@@ -125,9 +111,7 @@ const AgentOrgOverviewHandoffCard: React.FC<
               }
               data-testid="agent-org-handoff-keep-stopped-button"
             >
-              {t("planner.agentOrgTasks.keepStopped", {
-                defaultValue: "Keep stopped",
-              })}
+              {t("planner.agentOrgTasks.keepStopped")}
             </Button>
           )}
           {requestedResolution !== "abandon_episode" && (
@@ -143,9 +127,7 @@ const AgentOrgOverviewHandoffCard: React.FC<
               }
               data-testid="agent-org-handoff-abandon-button"
             >
-              {t("planner.agentOrgTasks.abandonEpisode", {
-                defaultValue: "Abandon episode",
-              })}
+              {t("planner.agentOrgTasks.abandonEpisode")}
             </Button>
           )}
         </div>
@@ -163,9 +145,7 @@ const AgentOrgOverviewHandoffCard: React.FC<
             }
             data-testid="agent-org-handoff-continue-button"
           >
-            {t("planner.agentOrgTasks.continueReplacement", {
-              defaultValue: "Continue replacement",
-            })}
+            {t("planner.agentOrgTasks.continueReplacement")}
           </Button>
           <Button
             size="mini"
@@ -178,9 +158,7 @@ const AgentOrgOverviewHandoffCard: React.FC<
             }
             data-testid="agent-org-handoff-keep-stopped-button"
           >
-            {t("planner.agentOrgTasks.keepStopped", {
-              defaultValue: "Keep stopped",
-            })}
+            {t("planner.agentOrgTasks.keepStopped")}
           </Button>
           <Button
             size="mini"
@@ -194,9 +172,7 @@ const AgentOrgOverviewHandoffCard: React.FC<
             }
             data-testid="agent-org-handoff-abandon-button"
           >
-            {t("planner.agentOrgTasks.abandonEpisode", {
-              defaultValue: "Abandon episode",
-            })}
+            {t("planner.agentOrgTasks.abandonEpisode")}
           </Button>
         </div>
       )}

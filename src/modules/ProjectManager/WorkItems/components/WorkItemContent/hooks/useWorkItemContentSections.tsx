@@ -151,9 +151,7 @@ export function useWorkItemContentSections({
   const customPropertiesSection = !isGitHubWorkItem ? (
     <ScrollTrailTarget
       enabled={isThread}
-      label={t("workItems.properties.title", {
-        defaultValue: "Custom properties",
-      })}
+      label={t("workItems.properties.title")}
     >
       <CustomPropertiesSection
         projectSlug={projectSlug}

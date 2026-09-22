@@ -293,8 +293,7 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
                 <OverviewSectionToggle
                   expanded={planHistoryExpanded}
                   label={t(
-                    "planner.agentOrgOverview.planApproval.historyTitle",
-                    { defaultValue: "Plan history" }
+                    "planner.agentOrgOverview.planApproval.historyTitle"
                   )}
                   count={planRevisions.length}
                   onToggle={() =>

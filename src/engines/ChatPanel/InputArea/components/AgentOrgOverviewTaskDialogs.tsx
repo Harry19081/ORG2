@@ -38,12 +38,8 @@ export const AgentOrgOverviewTaskActionDialog: React.FC<
       visible={taskActionDialog !== null}
       title={
         taskActionDialog?.action === "reassign"
-          ? t("planner.agentOrgTasks.reassignTitle", {
-              defaultValue: "Reassign this Task?",
-            })
-          : t("planner.agentOrgTasks.cancelTitle", {
-              defaultValue: "Cancel this Task?",
-            })
+          ? t("planner.agentOrgTasks.reassignTitle")
+          : t("planner.agentOrgTasks.cancelTitle")
       }
       className="agent-org-overview-owned-overlay"
       width={420}
@@ -63,12 +59,8 @@ export const AgentOrgOverviewTaskActionDialog: React.FC<
           primaryAction={{
             label:
               taskActionDialog?.action === "reassign"
-                ? t("planner.agentOrgTasks.reassign", {
-                    defaultValue: "Reassign",
-                  })
-                : t("planner.agentOrgTasks.cancelTask", {
-                    defaultValue: "Cancel Task",
-                  }),
+                ? t("planner.agentOrgTasks.reassign")
+                : t("planner.agentOrgTasks.cancelTask"),
             onClick: () => void onConfirm(),
             tone: taskActionDialog?.action === "cancel" ? "danger" : undefined,
             disabled:
@@ -83,22 +75,12 @@ export const AgentOrgOverviewTaskActionDialog: React.FC<
     >
       <div className="text-[12px] leading-5 text-text-2">
         {taskActionDialog?.action === "reassign"
-          ? t("planner.agentOrgTasks.reassignWarning", {
-              defaultValue:
-                "The current execution must stop before the replacement can start.",
-            })
-          : t("planner.agentOrgTasks.cancelWarning", {
-              defaultValue:
-                "This removes the Task from this delivery scope. Any current execution will stop; dependent Tasks require an explicit follow-up decision.",
-            })}
+          ? t("planner.agentOrgTasks.reassignWarning")
+          : t("planner.agentOrgTasks.cancelWarning")}
       </div>
       {taskActionDialog?.action === "reassign" && (
         <div className="space-y-1 text-[11px] text-text-2">
-          <div>
-            {t("planner.agentOrgTasks.replacementOwner", {
-              defaultValue: "Replacement owner",
-            })}
-          </div>
+          <div>{t("planner.agentOrgTasks.replacementOwner")}</div>
           <Select
             value={selectedReplacementOwner}
             disabled={isMutatingTask}
@@ -113,9 +95,7 @@ export const AgentOrgOverviewTaskActionDialog: React.FC<
             panelZIndex={10010}
             placement="auto"
             dataTestId="agent-org-task-reassign-owner-select"
-            ariaLabel={t("planner.agentOrgTasks.replacementOwner", {
-              defaultValue: "Replacement owner",
-            })}
+            ariaLabel={t("planner.agentOrgTasks.replacementOwner")}
           />
         </div>
       )}
@@ -137,9 +117,7 @@ export const AgentOrgOverviewHandoffResolutionDialog: React.FC<
   return (
     <Modal
       visible={handoffResolutionDialog !== null}
-      title={t("planner.agentOrgTasks.resolveHandoffTitle", {
-        defaultValue: "Resolve Task handoff?",
-      })}
+      title={t("planner.agentOrgTasks.resolveHandoffTitle")}
       className="agent-org-overview-owned-overlay"
       width={440}
       maskClosable={!isMutatingTask}
@@ -158,16 +136,10 @@ export const AgentOrgOverviewHandoffResolutionDialog: React.FC<
           primaryAction={{
             label:
               handoffResolutionDialog?.resolution === "continue_replacement"
-                ? t("planner.agentOrgTasks.continueReplacement", {
-                    defaultValue: "Continue replacement",
-                  })
+                ? t("planner.agentOrgTasks.continueReplacement")
                 : handoffResolutionDialog?.resolution === "keep_stopped"
-                  ? t("planner.agentOrgTasks.keepStopped", {
-                      defaultValue: "Keep stopped",
-                    })
-                  : t("planner.agentOrgTasks.abandonEpisode", {
-                      defaultValue: "Abandon episode",
-                    }),
+                  ? t("planner.agentOrgTasks.keepStopped")
+                  : t("planner.agentOrgTasks.abandonEpisode"),
             onClick: () => void onConfirm(),
             tone:
               handoffResolutionDialog?.resolution === "abandon_episode"
@@ -188,19 +160,10 @@ export const AgentOrgOverviewHandoffResolutionDialog: React.FC<
         role="alert"
       >
         {handoffResolutionDialog?.resolution === "continue_replacement"
-          ? t("planner.agentOrgTasks.continueWarning", {
-              defaultValue:
-                "Continue only after local execution and processes are stopped. Any unknown external result is accepted by this decision.",
-            })
+          ? t("planner.agentOrgTasks.continueWarning")
           : handoffResolutionDialog?.resolution === "keep_stopped"
-            ? t("planner.agentOrgTasks.keepStoppedWarning", {
-                defaultValue:
-                  "The replacement will be cancelled. The old Task will not restart, and sibling Tasks continue.",
-              })
-            : t("planner.agentOrgTasks.abandonWarning", {
-                defaultValue:
-                  "Every open Task in this episode will stop and the Team outcome will be Cancelled.",
-              })}
+            ? t("planner.agentOrgTasks.keepStoppedWarning")
+            : t("planner.agentOrgTasks.abandonWarning")}
       </div>
     </Modal>
   );

@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "Couleurs de diff sur les fichiers"
   },
   "teamInbox": {
-    "title": "Boîte de réception d’équipe",
     "listLabel": "Liste de la boîte de réception d’équipe",
     "itemsLabel": "Éléments de la boîte de réception d’équipe",
     "unreadCount": "{{count}} non lu(s)",
-    "allRead": "Tout est à jour",
     "loadMore": "Charger plus",
     "filters": {
       "mentions": "Mentions",
@@ -70,7 +68,6 @@
         "subtitle": "Les éléments que vous archivez apparaîtront ici."
       }
     },
-    "loading": "Chargement de la boîte de réception d’équipe…",
     "drop": {
       "title": "Déposer ici pour créer un élément de travail",
       "subtitle": "Vérifiez l’aperçu de la session, puis créez ou transférez l’élément de travail.",
@@ -539,7 +536,7 @@
     "accounts": "Comptes",
     "enabled": "Activé",
     "disabled": "Désactivé",
-    "keys": "Keys",
+    "keys": "Clés",
     "model": "Modèle",
     "name": "Nom",
     "provider": "Fournisseur",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "Saisissez une URL pour commencer",
       "privateBrowsingEmptyTitle": "Navigation privée : Saisissez une URL pour commencer",
       "simulatorBrowserNotice": "Ce navigateur sert uniquement à la relecture de session. Pour une navigation persistante, utilisez le navigateur de l’app principale (Outils → Navigateur).",
-      "tlsDevNote": "Remarque : certains sites HTTPS (comme GitHub) peuvent afficher des erreurs TLS en mode développement à cause de la validation des certificats. Essayez des sites HTTP ou des HTTPS simples comme example.com.",
       "siteUnreachableTitle": "Impossible d’accéder à ce site",
       "webviewHiddenTitle": "Vue web temporairement masquée",
       "webviewHiddenBody": "Fermez le menu ou la boîte de dialogue pour l’afficher à nouveau.",
@@ -1712,11 +1708,11 @@
       "noResults": "Aucun modèle correspondant",
       "chooseModel": "Choisir un modèle",
       "chooseKey": "Choisir une clé",
-      "noCompatibleAccounts": "Aucune clé compatible",
+      "noCompatibleKeys": "Aucune clé compatible",
       "chooseModelHint": "Utilisez le clavier pour naviguer ou cliquez sur un modèle avec la souris",
       "chooseKeyHint": "Utilisez le clavier pour naviguer ou cliquez sur une clé avec la souris",
       "noModelsForKey": "Aucun modèle activé pour cette clé",
-      "selectAccount": "Sélectionner un compte"
+      "selectKey": "Sélectionner une clé"
     },
     "modelProperties": {
       "effort": "Effort",
@@ -1885,7 +1881,7 @@
       "showBranchInfo": "Afficher les infos de branche",
       "compatibleKeys": "Compatible",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "Clés",
       "incompatible": "Incompatible",
       "manageModels": "Gérer les modèles",
       "manageKeys": "Gérer les clés",

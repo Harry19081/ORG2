@@ -210,11 +210,8 @@ export function useSpotlightItems(
         )
       );
   }, [isGeneralSearch, resolvedSessionSearchInput.reference, sessions]);
-  const fallbackSessionLabel = t("navigation:routes.session", "Session");
-  const cloudSessionLabel = t(
-    "navigation:cloud.sessionRef.chipLabel",
-    "Team session"
-  );
+  const fallbackSessionLabel = t("navigation:routes.session");
+  const cloudSessionLabel = t("navigation:cloud.sessionRef.chipLabel");
   const getSessionText = useCallback(
     (session: Session) => getSessionSearchText(session, fallbackSessionLabel),
     [fallbackSessionLabel]

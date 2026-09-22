@@ -37,9 +37,7 @@ export const LaunchpadAgentActionStrip: React.FC<LaunchpadAgentActionStripProps>
             icon={<HugeiconsIcon icon={PlayIcon} data-icon="play" size={14} />}
             onClick={agent.onLaunch}
           >
-            {t("navigation:launchpad.actions.startSession", {
-              defaultValue: "Start session",
-            })}
+            {t("navigation:launchpad.actions.startSession")}
           </Button>
           <Button
             size="small"
@@ -50,9 +48,7 @@ export const LaunchpadAgentActionStrip: React.FC<LaunchpadAgentActionStripProps>
             }
             onClick={agent.onOpenDetails}
           >
-            {t("navigation:launchpad.actions.openDetails", {
-              defaultValue: "Open details",
-            })}
+            {t("navigation:launchpad.actions.openDetails")}
           </Button>
         </div>
       </div>

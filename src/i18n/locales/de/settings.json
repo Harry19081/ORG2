@@ -960,7 +960,6 @@
     "newChatPage": "Seite „Neuer Chat“"
   },
   "harnessConnections": {
-    "description": "Verbindung für jedes Programmierwerkzeug auswählen",
     "current": "Konfigurierte Verbindung",
     "scope": "Gilt als CLI-Standard auf diesem Gerät; Projekteinstellungen und laufende Sitzungen können Vorrang haben",
     "original": "Ursprüngliche Einrichtung",

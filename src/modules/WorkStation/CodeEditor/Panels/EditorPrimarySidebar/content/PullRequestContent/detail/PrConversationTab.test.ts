@@ -4,12 +4,13 @@ import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
+
 import { PrConversationTab } from "./PrConversationTab";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (_key: string, fallback?: string) => fallback ?? _key,
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 vi.mock("@src/features/Org2Cloud/useSessionReferenceDropTarget", () => ({

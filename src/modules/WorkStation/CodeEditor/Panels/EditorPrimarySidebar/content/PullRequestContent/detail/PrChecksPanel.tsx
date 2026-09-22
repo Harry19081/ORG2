@@ -77,8 +77,8 @@ function PrCheckRow({ item, onOpenDetails }: PrCheckRowProps): React.ReactNode {
             />
           }
           className="shrink-0"
-          title={t("workstation.ci.viewDetails", "View check details")}
-          aria-label={t("workstation.ci.viewDetails", "View check details")}
+          title={t("workstation.ci.viewDetails")}
+          aria-label={t("workstation.ci.viewDetails")}
           onClick={(event) => {
             event.stopPropagation();
             onOpenDetails(item.detailsUrl as string);
@@ -113,12 +113,12 @@ export function PrChecksPanel({
   const sectionLabel = (state: CiCheckState, count: number): string => {
     const label =
       state === "failure"
-        ? t("workstation.ci.sections.failed", "Failed")
+        ? t("workstation.ci.sections.failed")
         : state === "pending"
-          ? t("workstation.ci.sections.running", "Running")
+          ? t("workstation.ci.sections.running")
           : state === "neutral"
-            ? t("workstation.ci.sections.skipped", "Skipped")
-            : t("workstation.ci.sections.passed", "Passed");
+            ? t("workstation.ci.sections.skipped")
+            : t("workstation.ci.sections.passed");
     return `${label} · ${count}`;
   };
 
@@ -138,7 +138,7 @@ export function PrChecksPanel({
           aria-hidden
         />
         <span className="min-w-0 flex-1 truncate text-text-1">
-          {t("git.pr.tabs.checks", "Checks")}
+          {t("git.pr.tabs.checks")}
         </span>
         {counts.total > 0 ? (
           <span className="shrink-0 text-text-3 tabular-nums">
@@ -154,7 +154,7 @@ export function PrChecksPanel({
       <div className={DROPDOWN_CLASSES.optionsContainerBelowHeader}>
         {sections.length === 0 ? (
           <div className={DROPDOWN_CLASSES.listMessage}>
-            {t("git.pr.checks.none", "No checks reported")}
+            {t("git.pr.checks.none")}
           </div>
         ) : (
           sections.map((section) => (

@@ -95,9 +95,7 @@ export const AgentOrgTaskRow: React.FC<AgentOrgTaskRowProps> = ({
             className={`${TASK_STATUS_CHIP_BASE} bg-warning-6/10 text-warning-6`}
             data-testid="agent-org-task-awaiting-approval-chip"
           >
-            {t("planner.agentOrgTasks.statusAwaitingApproval", {
-              defaultValue: "Awaiting approval",
-            })}
+            {t("planner.agentOrgTasks.statusAwaitingApproval")}
           </span>
         ) : null}
         <div className="min-w-0 flex-1">
@@ -178,9 +176,7 @@ export const AgentOrgTaskRow: React.FC<AgentOrgTaskRowProps> = ({
               onClick={() => onTaskAction?.(task, "reassign")}
               data-testid="agent-org-task-reassign-button"
             >
-              {t("planner.agentOrgTasks.reassign", {
-                defaultValue: "Reassign",
-              })}
+              {t("planner.agentOrgTasks.reassign")}
             </Button>
           )}
           <Button
@@ -198,9 +194,7 @@ export const AgentOrgTaskRow: React.FC<AgentOrgTaskRowProps> = ({
             onClick={() => onTaskAction?.(task, "cancel")}
             data-testid="agent-org-task-cancel-button"
           >
-            {t("planner.agentOrgTasks.cancelTask", {
-              defaultValue: "Cancel",
-            })}
+            {t("planner.agentOrgTasks.cancelTask")}
           </Button>
         </div>
       )}

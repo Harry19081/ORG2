@@ -116,11 +116,8 @@ export function UserChatItemBubble({
             />
             <span className="chat-block-title font-medium text-text-1">
               {planApprovedEdited
-                ? t(
-                    "chat.planApprovedEditedLabel",
-                    "Implementing approved plan (edited)"
-                  )
-                : t("chat.planApprovedLabel", "Implementing approved plan")}
+                ? t("chat.planApprovedEditedLabel")
+                : t("chat.planApprovedLabel")}
             </span>
           </div>
         ) : (

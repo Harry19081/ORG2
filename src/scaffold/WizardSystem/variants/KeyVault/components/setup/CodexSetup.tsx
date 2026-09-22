@@ -151,16 +151,16 @@ const CodexSetup: React.FC<CodexSetupProps> = ({
       {selectedMethod === "enter_token" && (
         <SectionContainer>
           <SectionRow
-            label={t("keyVault.codexCredentialLabel")}
+            label={t("keyVault.codexKeyLabel")}
             layout="vertical"
-            description={t("keyVault.codexCredentialDesc")}
+            description={t("keyVault.codexKeyDesc")}
             required
           >
             <div className="flex w-full gap-2">
               <Input
                 value={data.oauth_session_token || data.raw_key_input}
                 onChange={handleCredentialChange}
-                placeholder={t("keyVault.codexCredentialPlaceholder")}
+                placeholder={t("keyVault.codexKeyPlaceholder")}
                 size="default"
                 type="password"
                 style={{ ...SECTION_CONTROL_STYLE, flex: 1 }}

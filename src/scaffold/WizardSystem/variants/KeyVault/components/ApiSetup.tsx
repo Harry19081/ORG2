@@ -139,7 +139,7 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
     if (!data.agent_type) {
       setErrors({
         agent_type: t("keyVault.providerRequired", {
-          label: t("wizard.pickProvider", "Provider"),
+          label: t("wizard.pickProvider"),
         }),
       });
       return;
@@ -182,15 +182,13 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
       data.agent_type === "custom_api");
 
   const accountNameBase =
-    selectedProvider?.label ||
-    data.agent_type ||
-    t("wizard.pickProvider", "Provider");
+    selectedProvider?.label || data.agent_type || t("wizard.pickProvider");
 
   const accountNameSection = (
     <SectionRow
       label={
         <span className="inline-flex items-center gap-1">
-          {t("keyVault.accountName")}
+          {t("keyVault.keyName")}
           <AccountNameInfoIcon provider={accountNameBase} />
         </span>
       }
@@ -198,7 +196,7 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
       <Input
         value={data.name}
         onChange={(value) => onChange({ name: value })}
-        placeholder={t("keyVault.accountNamePlaceholder", {
+        placeholder={t("keyVault.keyNamePlaceholder", {
           provider: accountNameBase,
         })}
         size="default"
@@ -262,7 +260,7 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
                 {/* Provider selection */}
                 {selectedProviderKey ? (
                   <SectionRow
-                    label={t("wizard.pickProvider", "Provider")}
+                    label={t("wizard.pickProvider")}
                     tallLabel
                     required
                   >
@@ -279,7 +277,7 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
                   </SectionRow>
                 ) : (
                   <SectionRow
-                    label={t("wizard.pickProvider", "Provider")}
+                    label={t("wizard.pickProvider")}
                     layout="vertical"
                     tallLabel
                     required
@@ -292,13 +290,10 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
                         <div key={group.group} className="space-y-2">
                           <div className="text-[12px] font-medium text-text-2">
                             {group.group === "mostUsed"
-                              ? t(
-                                  "keyVault.providerGroups.mostUsed",
-                                  "Most used"
-                                )
+                              ? t("keyVault.providerGroups.mostUsed")
                               : group.group === "cloud"
-                                ? t("keyVault.providerGroups.cloud", "Cloud")
-                                : t("keyVault.providerGroups.local", "Local")}
+                                ? t("keyVault.providerGroups.cloud")
+                                : t("keyVault.providerGroups.local")}
                           </div>
                           <SelectionGrid
                             options={group.options}
@@ -316,7 +311,7 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
 
                 {selectedProviderKey && hasMultipleVariants && (
                   <SectionRow
-                    label={t("wizard.selectVariant", "Connection method")}
+                    label={t("wizard.selectVariant")}
                     layout={data.agent_type ? "horizontal" : "vertical"}
                     tallLabel
                     required

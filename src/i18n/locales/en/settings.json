@@ -1041,7 +1041,6 @@
     "newChatPage": "New chat page"
   },
   "harnessConnections": {
-    "description": "Choose which connection each coding tool uses",
     "current": "Configured connection",
     "scope": "Applies to this machine’s CLI default; project settings and running sessions may override it",
     "original": "Original setup",

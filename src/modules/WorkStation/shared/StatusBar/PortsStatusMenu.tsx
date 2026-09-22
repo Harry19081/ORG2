@@ -324,13 +324,13 @@ export const PortsStatusMenu: React.FC = memo(() => {
   return (
     <div ref={triggerRef} className="flex h-full">
       <StatusBarTooltip
-        label={t("workstation.ports.viewPortsTooltip", "View used ports")}
+        label={t("workstation.ports.viewPortsTooltip")}
         disabled={isOpen}
       >
         <StatusBarButton
           onClick={handleToggle}
           active={isOpen}
-          ariaLabel={t("workstation.ports.viewPortsTooltip", "View used ports")}
+          ariaLabel={t("workstation.ports.viewPortsTooltip")}
           className="gap-1.5"
           dataTestId="status-bar-ports"
         >

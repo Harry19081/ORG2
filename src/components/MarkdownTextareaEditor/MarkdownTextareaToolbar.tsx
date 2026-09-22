@@ -158,7 +158,7 @@ const MarkdownTextareaToolbar: React.FC<MarkdownTextareaToolbarProps> = ({
     <div
       className={`markdown-formatting-toolbar ${COMPACT_TOOLBAR_CLASS}`}
       role="toolbar"
-      aria-label={t("creator.toolbar.formatting", "Text formatting")}
+      aria-label={t("creator.toolbar.formatting")}
       data-testid={dataTestId ? `${dataTestId}-toolbar` : undefined}
       onMouseDown={(event) => event.preventDefault()}
     >

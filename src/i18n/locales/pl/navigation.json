@@ -783,7 +783,6 @@
         "errorChannelMissing": "Ten kanał nie jest już dostępny",
         "errorMessageMissing": "Ta wiadomość nie jest już dostępna",
         "loadError": "Nie udało się wczytać wiadomości",
-        "loadingMessages": "Wczytywanie wiadomości…",
         "loadOlder": "Wczytaj wcześniejsze wiadomości",
         "unknownAuthor": "Członek zespołu"
       }

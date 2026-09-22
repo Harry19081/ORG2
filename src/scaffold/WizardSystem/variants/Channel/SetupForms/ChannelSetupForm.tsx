@@ -35,10 +35,7 @@ const EmailSetupForm: React.FC<ChannelFormProps> = ({ config, onChange }) => {
 
   return (
     <SectionContainer>
-      <SectionRow
-        label={t("channels.emailProtocol", "Protocol")}
-        layout="vertical"
-      >
+      <SectionRow label={t("channels.emailProtocol")} layout="vertical">
         <SelectionGrid
           options={EMAIL_METHODS}
           selected={method}

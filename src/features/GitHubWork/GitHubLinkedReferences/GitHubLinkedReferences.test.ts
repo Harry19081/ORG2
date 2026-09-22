@@ -4,6 +4,8 @@ import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
+
 const mocks = vi.hoisted(() => ({
   getIssueLocal: vi.fn(),
   loadGitHubDetailAuthScope: vi.fn(async () => "github.com:connection:user"),
@@ -19,10 +21,8 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, fallback?: string | Record<string, unknown>) =>
-      typeof fallback === "string" ? fallback : key,
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 vi.mock("@src/api/tauri/github", async (importOriginal) => {

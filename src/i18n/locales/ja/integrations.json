@@ -7,23 +7,23 @@
   "keyVault": {
     "title": "モデル & CLI",
     "overview": {},
-    "searchPlaceholder": "アカウントを検索...",
+    "searchPlaceholder": "キーを検索...",
     "inlineCard": {
       "tabStatus": "ステータス",
       "tabModels": "モデル"
     },
-    "noAccountsFound": "アカウントが見つかりません",
-    "addAccount": "アカウントを追加",
+    "noKeysFound": "キーが見つかりません",
+    "addKey": "キーを追加",
     "removeLocal": "ローカルを削除",
     "unlist": "リストから削除",
     "confirmRemoveTitle": "\"{{name}}\" を削除しますか？",
-    "confirmRemoveMessage": "ローカル認証情報が削除されます。この操作は元に戻せません",
+    "confirmRemoveMessage": "ローカルに保存されたキーが削除されます。この操作は元に戻せません",
     "toasts": {
       "refreshed": "{{name}} の更新が完了しました",
       "refreshError": "{{name}} の更新に失敗しました: {{error}}",
       "localRemoved": "{{name}} を削除しました",
       "deleteError": "{{name}} の削除に失敗しました",
-      "refreshPartial": "モデルを更新しました：{{added}} 件追加、{{removed}} 件削除。ただし {{total}} アカウント中 {{failed}} 件で失敗しました",
+      "refreshPartial": "モデルを更新しました：{{added}} 件追加、{{removed}} 件削除。ただし {{total}} 件のキー中 {{failed}} 件で失敗しました",
       "refreshedNoChange": "モデルを更新しました：変更なし",
       "refreshedDelta": "モデルを更新しました：{{added}} 件追加、{{removed}} 件削除"
     },
@@ -88,8 +88,8 @@
       "keyValidationFailed": "認証情報の検証に失敗"
     },
     "edit": {
-      "title": "アカウントを編集",
-      "apiChangeHint": "API Key、認証情報、またはプロバイダー設定を更新するには、このアカウントを削除して新しく追加してください",
+      "title": "キーを編集",
+      "apiChangeHint": "API Key またはプロバイダー設定を更新するには、このキーを削除して新しく追加してください",
       "saved": "変更を保存しました"
     },
     "quota": {
@@ -159,7 +159,7 @@
     "customBaseUrlNoteBody": "API キーとリクエストデータは入力した URL に送信されます。カスタム URL は信頼できるプロキシ、セルフホストデプロイ、または管理下のエンドポイントにのみ使用してください",
     "localModel": {
       "title": "ローカルモデル Cookbook",
-      "description": "ローカルランタイムのプリセットを選び、OpenAI 互換エンドポイントを確認し、1 つ以上のモデル ID を追加して保存すると、Chat でローカルモデルを使えます",
+      "description": "ローカルランタイムのプリセットを選び、OpenAI 互換エンドポイントを確認し、1 つ以上のモデル ID を追加してこのキーを保存すると、Chat でローカルモデルを使えます",
       "baseUrlDesc": "OpenAI 互換のローカルエンドポイント。先にランタイムを起動してから検証または保存してください",
       "apiKeyDesc": "ほとんどのローカルランタイムは任意の非空値を受け付けます。サーバーがキーを要求しない限り、プレースホルダーのままで構いません",
       "quickModelsLabel": "Cookbook モデル",
@@ -173,12 +173,12 @@
     "validationSuccessModels": "{{count}} 個のモデルを検出 — 次のステップで設定",
     "validationSuccessNoModels": "Key 検証成功 — モデルが自動検出されませんでした。以下から手動で追加してください",
     "addCliAgent": "Agent を追加",
-    "accountName": "アカウント名（任意）",
-    "accountNameDesc": "空欄にすると {{provider}}、次に {{provider}}-1、{{provider}}-2 のように使用します",
-    "accountNamePlaceholder": "自動: {{provider}}",
+    "keyName": "キー名（任意）",
+    "keyNameDesc": "空欄にすると {{provider}}、次に {{provider}}-1、{{provider}}-2 のように使用します",
+    "keyNamePlaceholder": "自動: {{provider}}",
     "descriptionOptional": "説明（任意）",
     "descriptionPlaceholder": "説明を入力",
-    "nameDuplicate": "この名前のアカウントは既に存在します",
+    "nameDuplicate": "この名前のキーは既に存在します",
     "stepLabel": "ステップ {{current}}/{{total}}",
     "noValidTokenFound": "有効な Token が認証情報内に見つかりません",
     "couldNotDetectKeys": "憑証を検出できませんでした。CLI がインストールされ、ログインしていることを確認してください。",
@@ -241,7 +241,7 @@
     "claudeCodeSignInDesc": "内蔵ブラウザで Claude Code にサインインします。ORG2 が authorization code を取得し、OAuth Token をローカルに保存します",
     "claudeCodeReadyToSignIn": "Claude Code にサインインする準備ができました",
     "claudeCodeSignedIn": "Claude Code 接続済み",
-    "claudeCodeOAuthHint": "anthropic_native を使用する Rust agents 向けに claude_code OAuth アカウントを保存します",
+    "claudeCodeOAuthHint": "anthropic_native を使用する Rust agents 向けに claude_code OAuth キーを保存します",
     "claudeCodeBrowserHint": "内蔵ブラウザで Claude Code の認可を完了してください",
     "claudeCodeSignInErrorHint": "ブラウザを閉じてもう一度サインインしてください。Token は保存されていません",
     "connectedViaChatGpt": "ChatGPT Plus/Pro ログインで接続済み",
@@ -311,14 +311,14 @@
     "signInWithCodex": "Codex でサインイン",
     "codexReadyToSignIn": "Codex にサインインする準備ができました",
     "codexSignedIn": "Codex に接続済み",
-    "codexOAuthHint": "ChatGPT Codex バックエンドにアクセスするための codex OAuth アカウントを保存します",
+    "codexOAuthHint": "ChatGPT Codex バックエンドにアクセスするための codex OAuth キーを保存します",
     "codexBrowserHint": "内蔵ブラウザで Codex の認可を完了してください",
     "codexSignInErrorHint": "ブラウザを閉じてもう一度サインインしてください。Token は保存されませんでした",
     "codexAutodetectTitle": "Codex セッションを検出",
     "codexAutodetectDesc": "ローカル環境から ~/.codex/auth.json と OPENAI_API_KEY を読み取ります",
-    "codexCredentialLabel": "Codex 認証情報",
-    "codexCredentialDesc": "Codex OAuth access token または OpenAI API key を貼り付けます",
-    "codexCredentialPlaceholder": "eyJ... または sk-...",
+    "codexKeyLabel": "Codex キー",
+    "codexKeyDesc": "Codex OAuth access token または OpenAI API key を貼り付けます",
+    "codexKeyPlaceholder": "eyJ... または sk-...",
     "codexDetectErrorHint": "内蔵ブラウザでサインインするか、OpenAI API key を手動で貼り付けてください",
     "codexValidationErrorHint": "token または API key が有効か確認して、もう一度お試しください",
     "claudeCodeAutodetectTitle": "Claude Code セッションを検出",
@@ -329,8 +329,8 @@
       "failed": "この Market ワークスペースは利用できません。Market をもう一度開いて認証を更新してください。"
     },
     "revalidate": "再検証",
-    "confirmRemoveActiveSessions_one": "{{count}} 件のアクティブなセッションがまだこのアカウントを使用しており、次のターンで失敗します:",
-    "confirmRemoveActiveSessions_other": "{{count}} 件のアクティブなセッションがまだこのアカウントを使用しており、次のターンで失敗します:"
+    "confirmRemoveActiveSessions_one": "{{count}} 件のアクティブなセッションがまだこのキーを使用しており、次のターンで失敗します:",
+    "confirmRemoveActiveSessions_other": "{{count}} 件のアクティブなセッションがまだこのキーを使用しており、次のターンで失敗します:"
   },
   "integrations": {
     "searchPlaceholder": "接続を検索...",
@@ -345,7 +345,9 @@
     "connecting": "接続中",
     "reconnecting": "再接続中",
     "connectionError": "接続エラー",
-    "accountNameDuplicate": "同じ名前のアカウントが既に存在します",
+    "connectionName": "接続名（任意）",
+    "connectionNamePlaceholder": "自動: {{provider}}",
+    "connectionNameDuplicate": "同じ名前の接続が既に存在します",
     "probeSuccess": "接続成功",
     "probeFailed": "接続失敗",
     "verified": "検証済み"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "ORG2 ボット"
   },
   "modelsTabs": {
-    "myAccounts": "マイ Keys",
+    "myKeys": "マイキー",
     "models": "モデル",
     "comingSoon": "近日公開",
     "installedClis": "CLI クライアント",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "並べ替え：A–Z"
   },
   "modelPreview": {
-    "noSources": "このモデルを持つアカウントがありません"
+    "noSources": "このモデルを持つキーがありません"
   },
   "cliPreview": {
     "clientSection": "クライアント",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Git プロファイルを有効化できませんでした"
   },
   "credentialImport": {
-    "title": "他のアプリから認証情報をインポート",
-    "itemColumn": "認証情報",
+    "title": "他のアプリからキーとサブスクリプションをインポート",
+    "itemColumn": "キー",
     "sourceColumn": "検出元",
-    "empty": "インポートできる認証情報が見つかりませんでした。環境変数、シェルプロファイル、Claude Code の設定、cc-switch プロファイル、および Claude Code、Codex、Cursor、GitHub CLI、Kiro、OpenCode のログインストアを確認しました。",
-    "allImported": "検出された認証情報はすべてインポート済みです",
+    "empty": "インポートできるキーまたはサブスクリプションが見つかりませんでした。環境変数、シェルプロファイル、Claude Code の設定、cc-switch プロファイル、および Claude Code、Codex、Cursor、GitHub CLI、Kiro、OpenCode のログインストアを確認しました。",
+    "allImported": "検出されたキーとサブスクリプションはすべてインポート済みです",
     "authMethod": {
       "api_key": "API キー",
       "oauth": "ログイントークン"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "インポートに失敗しました: {{message}}",
-    "partialFailure": "一部の認証情報をインポートできませんでした:",
-    "importSucceeded": "アカウントに保存しました：{{names}}。インポートした認証情報は再利用可能な接続として使用できます。"
+    "partialFailure": "一部のキーをインポートできませんでした:",
+    "importSucceeded": "マイキーに保存しました：{{names}}。インポートしたキーは再利用可能な接続として使用できます。"
   },
   "skills": {
     "shareToOrg": "組織に共有",

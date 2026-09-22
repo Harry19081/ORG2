@@ -1892,7 +1892,6 @@
     "contextMenu": {
       "filesAndFolders": "ファイルとフォルダー",
       "workItems": "作業項目",
-      "back": "戻る",
       "recent": "最近使用した項目",
       "showMore": "あと{{remaining}}件を表示",
       "session": "セッション"

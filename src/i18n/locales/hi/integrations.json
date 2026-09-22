@@ -7,25 +7,25 @@
   "keyVault": {
     "title": "मॉडल और CLI",
     "overview": {},
-    "searchPlaceholder": "खाते खोजें...",
+    "searchPlaceholder": "कुंजियाँ खोजें...",
     "inlineCard": {
       "tabStatus": "स्थिति",
       "tabModels": "मॉडल"
     },
-    "noAccountsFound": "कोई खाता नहीं मिला",
-    "addAccount": "खाता जोड़ें",
+    "noKeysFound": "कोई कुंजी नहीं मिली",
+    "addKey": "कुंजी जोड़ें",
     "addCliAgent": "एजेंट जोड़ें",
     "removeLocal": "लोकल हटाएँ",
     "unlist": "सूची से हटाएँ",
     "confirmRemoveTitle": "\"{{name}}\" हटाएँ?",
-    "confirmRemoveMessage": "इससे लोकल रूप से सहेजी गई की हट जाएगी। यह कार्रवाई पूर्ववत नहीं की जा सकती",
-    "confirmRemoveActiveSessions_one": "{{count}} सक्रिय सत्र अभी भी इस खाते का उपयोग करता है और अपने अगले टर्न में विफल हो जाएगा:",
-    "confirmRemoveActiveSessions_other": "{{count}} सक्रिय सत्र अभी भी इस खाते का उपयोग करते हैं और अपने अगले टर्न में विफल हो जाएँगे:",
+    "confirmRemoveMessage": "इससे लोकल रूप से सहेजी गई कुंजी हट जाएगी। यह कार्रवाई पूर्ववत नहीं की जा सकती",
+    "confirmRemoveActiveSessions_one": "{{count}} सक्रिय सत्र अभी भी इस कुंजी का उपयोग करता है और अपने अगले टर्न में विफल हो जाएगा:",
+    "confirmRemoveActiveSessions_other": "{{count}} सक्रिय सत्र अभी भी इस कुंजी का उपयोग करते हैं और अपने अगले टर्न में विफल हो जाएँगे:",
     "toasts": {
       "refreshed": "{{name}} सफलतापूर्वक रीफ़्रेश किया गया",
       "refreshedDelta": "मॉडल रीफ़्रेश किए गए: +{{added}} जोड़े गए, -{{removed}} हटाए गए",
       "refreshedNoChange": "मॉडल रीफ़्रेश किए गए: कोई बदलाव नहीं",
-      "refreshPartial": "मॉडल रीफ़्रेश किए गए: +{{added}} / -{{removed}}, लेकिन {{total}} में से {{failed}} खाते विफल रहे",
+      "refreshPartial": "मॉडल रीफ़्रेश किए गए: +{{added}} / -{{removed}}, लेकिन {{total}} में से {{failed}} कुंजियाँ विफल रहीं",
       "refreshError": "{{name}} रीफ़्रेश करने में विफल: {{error}}",
       "localRemoved": "{{name}} हटाया गया",
       "deleteError": "{{name}} हटाने में विफल"
@@ -91,8 +91,8 @@
       "keyValidationFailed": "की सत्यापन विफल"
     },
     "edit": {
-      "title": "खाता संपादित करें",
-      "apiChangeHint": "अपनी API की, की या प्रदाता सेटिंग्स अपडेट करने के लिए, यह खाता हटाएँ और नया खाता जोड़ें",
+      "title": "कुंजी संपादित करें",
+      "apiChangeHint": "अपनी API Key या प्रदाता सेटिंग्स अपडेट करने के लिए, यह कुंजी हटाएँ और नई कुंजी जोड़ें",
       "saved": "बदलाव सहेजे गए"
     },
     "quota": {
@@ -162,7 +162,7 @@
     "customBaseUrlNoteBody": "आपकी API कुंजी और अनुरोध डेटा उसी URL पर भेजे जाते हैं जो आप दर्ज करते हैं. कस्टम URL का उपयोग केवल विश्वसनीय प्रॉक्सी, सेल्फ़-होस्टेड डिप्लॉयमेंट या आपके नियंत्रण वाले एंडपॉइंट के लिए करें",
     "localModel": {
       "title": "लोकल मॉडल कुकबुक",
-      "description": "एक लोकल रनटाइम प्रीसेट चुनें, उसके OpenAI-संगत एंडपॉइंट की पुष्टि करें, एक या अधिक मॉडल ID जोड़ें, फिर Chat में लोकल मॉडल उपयोग करने के लिए यह खाता सहेजें",
+      "description": "एक लोकल रनटाइम प्रीसेट चुनें, उसके OpenAI-संगत एंडपॉइंट की पुष्टि करें, एक या अधिक मॉडल ID जोड़ें, फिर Chat में लोकल मॉडल उपयोग करने के लिए यह कुंजी सहेजें",
       "baseUrlDesc": "OpenAI-संगत लोकल एंडपॉइंट. पहले अपना रनटाइम शुरू करें, फिर सत्यापित करें या सहेजें",
       "apiKeyDesc": "अधिकांश लोकल रनटाइम कोई भी गैर-रिक्त मान स्वीकार करते हैं. जब तक आपका सर्वर कुंजी अनिवार्य न करे, प्लेसहोल्डर रहने दें",
       "quickModelsLabel": "कुकबुक मॉडल",
@@ -175,14 +175,14 @@
     "validated": "सत्यापित",
     "validationSuccessModels": "{{count}} मॉडल मिले — अगले चरण में कॉन्फ़िगर करें",
     "validationSuccessNoModels": "कुंजी सत्यापित — कोई मॉडल स्वतः नहीं मिला, कृपया नीचे मॉडल मैन्युअल रूप से जोड़ें",
-    "accountName": "खाते का नाम (वैकल्पिक)",
-    "accountNameDesc": "{{provider}}, फिर {{provider}}-1, {{provider}}-2 आदि का उपयोग करने के लिए खाली छोड़ें",
-    "accountNamePlaceholder": "स्वतः: {{provider}}",
+    "keyName": "कुंजी का नाम (वैकल्पिक)",
+    "keyNameDesc": "{{provider}}, फिर {{provider}}-1, {{provider}}-2 आदि का उपयोग करने के लिए खाली छोड़ें",
+    "keyNamePlaceholder": "स्वतः: {{provider}}",
     "apiKeyPlaceholder": "अपनी API कुंजी दर्ज करें",
     "extractPlaceholder": "अपनी कुंजियाँ पेस्ट करें (अव्यवस्थित टेक्स्ट भी चलेगा):\n\nउदाहरण:\nKEY: {{key}}\n{{urlLine}}",
     "descriptionOptional": "विवरण (वैकल्पिक)",
     "descriptionPlaceholder": "विवरण दर्ज करें",
-    "nameDuplicate": "इस नाम का खाता पहले से मौजूद है",
+    "nameDuplicate": "इस नाम की कुंजी पहले से मौजूद है",
     "stepLabel": "चरण {{current}}/{{total}}",
     "noValidTokenFound": "कुंजी में कोई मान्य टोकन नहीं मिला",
     "couldNotDetectKeys": "कुंजियों का पता नहीं लगाया जा सका. सुनिश्चित करें कि CLI इंस्टॉल है और आप लॉग इन हैं.",
@@ -243,7 +243,7 @@
     "claudeCodeSignInDesc": "एम्बेडेड ब्राउज़र में Claude Code में साइन इन करें. ORG2 प्राधिकरण कोड प्राप्त करेगा और OAuth टोकन को लोकल रूप से संग्रहीत करेगा",
     "claudeCodeReadyToSignIn": "Claude Code में साइन इन के लिए तैयार",
     "claudeCodeSignedIn": "Claude Code कनेक्ट हो गया",
-    "claudeCodeOAuthHint": "यह anthropic_native का उपयोग करने वाले Rust एजेंट के लिए एक claude_code OAuth खाता सहेजता है",
+    "claudeCodeOAuthHint": "यह anthropic_native का उपयोग करने वाले Rust एजेंट के लिए एक claude_code OAuth कुंजी सहेजता है",
     "claudeCodeBrowserHint": "एम्बेडेड ब्राउज़र में Claude Code प्राधिकरण पूरा करें",
     "claudeCodeSignInErrorHint": "ब्राउज़र बंद करें और फिर से साइन इन करने का प्रयास करें. कोई टोकन सहेजा नहीं गया",
     "connectedViaChatGpt": "ChatGPT Plus/Pro लॉगिन के माध्यम से कनेक्ट है",
@@ -313,14 +313,14 @@
     "signInWithCodex": "Codex से साइन इन करें",
     "codexReadyToSignIn": "Codex में साइन इन के लिए तैयार",
     "codexSignedIn": "Codex कनेक्ट हो गया",
-    "codexOAuthHint": "यह ChatGPT Codex बैकएंड एक्सेस के लिए एक codex OAuth खाता सहेजता है",
+    "codexOAuthHint": "यह ChatGPT Codex बैकएंड एक्सेस के लिए एक codex OAuth कुंजी सहेजता है",
     "codexBrowserHint": "एम्बेडेड ब्राउज़र में Codex प्राधिकरण पूरा करें",
     "codexSignInErrorHint": "ब्राउज़र बंद करें और फिर से साइन इन करने का प्रयास करें. कोई टोकन सहेजा नहीं गया",
     "codexAutodetectTitle": "Codex सत्र का पता लगाएँ",
     "codexAutodetectDesc": "आपके लोकल एनवायरनमेंट से ~/.codex/auth.json और OPENAI_API_KEY पढ़ता है",
-    "codexCredentialLabel": "Codex क्रेडेंशियल",
-    "codexCredentialDesc": "Codex OAuth एक्सेस टोकन या OpenAI API कुंजी पेस्ट करें",
-    "codexCredentialPlaceholder": "eyJ... या sk-...",
+    "codexKeyLabel": "Codex कुंजी",
+    "codexKeyDesc": "Codex OAuth एक्सेस टोकन या OpenAI API कुंजी पेस्ट करें",
+    "codexKeyPlaceholder": "eyJ... या sk-...",
     "codexDetectErrorHint": "एम्बेडेड ब्राउज़र से साइन इन करें, या OpenAI API कुंजी मैन्युअल रूप से पेस्ट करें",
     "codexValidationErrorHint": "जाँचें कि टोकन या API कुंजी मान्य है और फिर से प्रयास करें",
     "claudeCodeAutodetectTitle": "Claude Code सत्र का पता लगाएँ",
@@ -345,7 +345,9 @@
     "connecting": "कनेक्ट हो रहा है",
     "reconnecting": "फिर से कनेक्ट हो रहा है",
     "connectionError": "कनेक्शन त्रुटि",
-    "accountNameDuplicate": "इस नाम का खाता पहले से मौजूद है",
+    "connectionName": "कनेक्शन का नाम (वैकल्पिक)",
+    "connectionNamePlaceholder": "स्वतः: {{provider}}",
+    "connectionNameDuplicate": "इस नाम का कनेक्शन पहले से मौजूद है",
     "probeSuccess": "कनेक्शन सफल",
     "probeFailed": "कनेक्शन विफल",
     "verified": "सत्यापित"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "ORG2 बॉट"
   },
   "modelsTabs": {
-    "myAccounts": "मेरी कुंजियाँ",
+    "myKeys": "मेरी कुंजियाँ",
     "models": "मॉडल",
     "comingSoon": "जल्द आ रहा है",
     "installedClis": "CLI क्लाइंट",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "क्रम: A–Z"
   },
   "modelPreview": {
-    "noSources": "इस मॉडल वाला कोई खाता नहीं"
+    "noSources": "इस मॉडल वाली कोई कुंजी नहीं"
   },
   "cliPreview": {
     "clientSection": "क्लाइंट",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Git प्रोफ़ाइल सक्रिय करने में विफल"
   },
   "credentialImport": {
-    "title": "अन्य ऐप्स से क्रेडेंशियल आयात करें",
-    "itemColumn": "क्रेडेंशियल",
+    "title": "अन्य ऐप्स से कुंजियाँ और सदस्यताएँ आयात करें",
+    "itemColumn": "कुंजी",
     "sourceColumn": "कहाँ मिला",
-    "empty": "आयात करने के लिए कोई क्रेडेंशियल नहीं मिला। एनवायरनमेंट वेरिएबल, शेल प्रोफ़ाइल, Claude Code सेटिंग्स, cc-switch प्रोफ़ाइल और Claude Code, Codex, Cursor, GitHub CLI, Kiro तथा OpenCode के लॉगिन स्टोर जाँचे गए।",
-    "allImported": "सभी पहचाने गए क्रेडेंशियल पहले ही आयात किए जा चुके हैं",
+    "empty": "आयात करने के लिए कोई कुंजी या सदस्यता नहीं मिली। एनवायरनमेंट वेरिएबल, शेल प्रोफ़ाइल, Claude Code सेटिंग्स, cc-switch प्रोफ़ाइल और Claude Code, Codex, Cursor, GitHub CLI, Kiro तथा OpenCode के लॉगिन स्टोर जाँचे गए।",
+    "allImported": "पहचानी गई सभी कुंजियाँ और सदस्यताएँ पहले ही आयात की जा चुकी हैं",
     "authMethod": {
       "api_key": "API कुंजी",
       "oauth": "लॉगिन टोकन"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "आयात विफल: {{message}}",
-    "partialFailure": "कुछ क्रेडेंशियल आयात नहीं किए जा सके:",
-    "importSucceeded": "खातों में सहेजा गया: {{names}}। आयात किए गए क्रेडेंशियल अब दोबारा इस्तेमाल किए जा सकने वाले कनेक्शन के रूप में उपलब्ध हैं।"
+    "partialFailure": "कुछ कुंजियाँ आयात नहीं की जा सकीं:",
+    "importSucceeded": "मेरी कुंजियाँ में सहेजा गया: {{names}}। आयात की गई कुंजियाँ अब दोबारा इस्तेमाल किए जा सकने वाले कनेक्शन के रूप में उपलब्ध हैं।"
   },
   "skills": {
     "shareToOrg": "संगठन के साथ साझा करें",

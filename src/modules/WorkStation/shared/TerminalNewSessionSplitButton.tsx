@@ -63,7 +63,7 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
     [closeShellPicker, onNewTerminal]
   );
 
-  const terminalTitle = t("controlTower.sidebar.newTerminal", "New Terminal");
+  const terminalTitle = t("controlTower.sidebar.newTerminal");
   const hasProfilePicker = shellProfiles.length > 1;
 
   const shellPickerMenu = useMemo(() => {
@@ -95,7 +95,7 @@ const TerminalNewSessionSplitButtonComponent: React.FC<
                 <span className="flex-1 truncate">{profile.name}</span>
                 {profile.isDefault && (
                   <span className="text-xs text-text-3">
-                    {t("common:common.default", "Default")}
+                    {t("common:common.default")}
                   </span>
                 )}
               </Button>

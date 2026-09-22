@@ -3,6 +3,10 @@ import { describe, expect, it } from "vitest";
 
 import en from "@src/i18n/locales/en/integrations.json";
 import zh from "@src/i18n/locales/zh/integrations.json";
+import {
+  type TestTranslateOptions,
+  testTranslate,
+} from "@src/test/i18nTestTranslate";
 
 import {
   collectAccountQuotaCards,
@@ -14,8 +18,8 @@ import {
 } from "./accountQuotaDisplay";
 import type { KeyVaultAccount } from "./types";
 
-const translate = ((key: string, options?: { defaultValue?: string }) =>
-  options?.defaultValue ?? key) as TFunction;
+const translate = ((key: string, options?: TestTranslateOptions) =>
+  testTranslate(`integrations:${key}`, options)) as TFunction;
 
 const chineseTranslations: Record<string, string> = {
   "keyVault.quota.balance": "余额",
@@ -68,7 +72,7 @@ describe("collectAccountQuotaCards", () => {
       translate
     );
 
-    expect(card.accountPlan).toBe("Pay As You Go");
+    expect(card.accountPlan).toBe("Pay as you go");
     expect(card.metrics).toHaveLength(1);
     expect(card.metrics[0]).toMatchObject({
       kind: "value",

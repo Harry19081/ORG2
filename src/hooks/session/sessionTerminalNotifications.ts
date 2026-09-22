@@ -66,9 +66,7 @@ export function deliverSessionTerminalNotification(
           closable: true,
           // The copy says "open the Session" — give it an actual door.
           action: {
-            label: t("notifications.openSessionAction", {
-              defaultValue: "Open Session",
-            }),
+            label: t("notifications.openSessionAction"),
             onClick: () => {
               void Promise.all([
                 import("@src/util/core/state/instrumentedStore"),

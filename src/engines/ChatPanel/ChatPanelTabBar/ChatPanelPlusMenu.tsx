@@ -201,7 +201,7 @@ export function ChatPanelPlusMenu(
   const recentTabs = useAtomValue(recentChatPanelTabsAtom);
   const openRecentTab = useSetAtom(openRecentChatPanelTabAtom);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
-  const plusLabel = t("chat.tabs.newTab", "New tab");
+  const plusLabel = t("chat.tabs.newTab");
 
   return (
     <Dropdown

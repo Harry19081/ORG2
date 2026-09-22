@@ -63,16 +63,14 @@ export default function UsageAuthorizationHost() {
       onClose={() => close(false)}
       width={500}
       onOk={() => close(true)}
-      okText={t("managedUsage.authorize", "Enable package")}
+      okText={t("managedUsage.authorize")}
       okButtonProps={{ disabled: !valid }}
-      cancelText={t("managedUsage.cancel", "Cancel")}
+      cancelText={t("managedUsage.cancel")}
     >
       <div className="space-y-4">
         {prompt.service.price_range_bps && (
           <p className="font-medium text-text-2">
             {t("managedUsage.priceRange", {
-              defaultValue:
-                "Package range: {{min}}%–{{max}}% of official pricing",
               min: prompt.service.price_range_bps.min / 100,
               max: prompt.service.price_range_bps.max / 100,
             })}
@@ -80,17 +78,11 @@ export default function UsageAuthorizationHost() {
         )}
         {!prompt.service.price_range_bps && (
           <p role="alert" className="text-sm text-text-3">
-            {t(
-              "managedUsage.rangeUnavailable",
-              "Package price range unavailable. Refresh the catalog before enabling this package."
-            )}
+            {t("managedUsage.rangeUnavailable")}
           </p>
         )}
         <p className="text-sm text-text-2">
-          {t(
-            "managedUsage.walletIncluded",
-            "All models in this package are included and use your wallet balance."
-          )}
+          {t("managedUsage.walletIncluded")}
         </p>
         <div className="max-h-64 space-y-3 overflow-y-auto">
           {prompt.service.models.map((model) => (
@@ -98,8 +90,8 @@ export default function UsageAuthorizationHost() {
               <p className="font-medium">{model.model}</p>
               {model.pricing_range && (
                 <p className="text-sm text-text-2">
-                  {t("managedUsage.rates", "Input / output per million tokens")}
-                  : {price(model.pricing_range.min, "input_per_mtok_usd6")}–
+                  {t("managedUsage.rates")}:{" "}
+                  {price(model.pricing_range.min, "input_per_mtok_usd6")}–
                   {price(model.pricing_range.max, "input_per_mtok_usd6")} /{" "}
                   {price(model.pricing_range.min, "output_per_mtok_usd6")}–
                   {price(model.pricing_range.max, "output_per_mtok_usd6")}
@@ -108,24 +100,16 @@ export default function UsageAuthorizationHost() {
             </div>
           ))}
         </div>
-        <p className="text-sm text-text-3">
-          {t(
-            "managedUsage.walletConsent",
-            "Enable every model in this package at the displayed price range. Actual usage is charged directly from your wallet balance; no separate package budget is required."
-          )}
-        </p>
+        <p className="text-sm text-text-3">{t("managedUsage.walletConsent")}</p>
         {!prompt.service.wallet_billing_supported && (
           <p role="alert" className="text-sm text-text-3">
-            {t(
-              "managedUsage.walletUnavailable",
-              "Wallet billing is not available yet. Refresh after the service is updated."
-            )}
+            {t("managedUsage.walletUnavailable")}
           </p>
         )}
         <Button
           onClick={() => void openUrl(marketConsoleUrl("/buyer/billing"))}
         >
-          {t("managedUsage.wallet", "Open wallet")}
+          {t("managedUsage.wallet")}
         </Button>
       </div>
     </Modal>

@@ -144,7 +144,7 @@ export function PermissionCardBody({
               onClick={onDeny ?? noop}
               disabled={disabled}
             >
-              {t("chat.deny", "Deny")}
+              {t("chat.deny")}
             </Button>
             {showAlwaysAllow && (
               <Button
@@ -152,7 +152,7 @@ export function PermissionCardBody({
                 onClick={onAlwaysAllow ?? noop}
                 disabled={disabled}
               >
-                {t("chat.alwaysAllow", "Always Allow")}
+                {t("chat.alwaysAllow")}
               </Button>
             )}
             <Button
@@ -161,7 +161,7 @@ export function PermissionCardBody({
               onClick={onAllow ?? noop}
               disabled={disabled}
             >
-              {t("chat.allow", "Allow")}
+              {t("chat.allow")}
             </Button>
           </div>
         </>

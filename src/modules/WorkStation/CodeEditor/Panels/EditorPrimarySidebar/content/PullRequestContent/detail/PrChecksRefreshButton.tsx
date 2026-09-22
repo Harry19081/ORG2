@@ -38,8 +38,8 @@ export function PrChecksRefreshButton({
   if (!refresh) return null;
 
   const label = refreshing
-    ? t("workstation.ci.refreshing", "Refreshing…")
-    : t("workstation.ci.refresh", "Refresh checks");
+    ? t("workstation.ci.refreshing")
+    : t("workstation.ci.refresh");
   return (
     <Button
       htmlType="button"

@@ -81,7 +81,7 @@ export function useSourceControlPrSection({
             className={prRefreshSpinClass}
           />
         ),
-        tooltip: t("common:actions.refresh", "Refresh"),
+        tooltip: t("common:actions.refresh"),
         onClick: handlePrRefreshClick,
       },
     ],

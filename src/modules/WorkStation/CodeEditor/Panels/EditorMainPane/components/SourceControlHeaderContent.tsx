@@ -151,10 +151,7 @@ export const SourceControlHeaderContent: React.FC<
         {showIssueHeader && (
           <ExternalBrowserButton
             href={selectedIssue.html_url}
-            label={t(
-              "common:previews.openInExternalBrowser",
-              "Open in external browser"
-            )}
+            label={t("common:previews.openInExternalBrowser")}
             className="shrink-0"
             onClick={(e) => e.stopPropagation()}
           />

@@ -177,7 +177,7 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
   return (
     <section
       className="flex w-full flex-col gap-0.5"
-      aria-label={t("git.pr.mergeStatus.label", "Merge status")}
+      aria-label={t("git.pr.mergeStatus.label")}
       data-testid="pr-merge-status"
     >
       <div className={ROW_CLASS} data-testid="pr-merge-status-headline">
@@ -216,7 +216,7 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
               className={`${ROW_CLASS} transition-colors hover:bg-fill-1 hover:text-text-1`}
               aria-expanded={isOpen}
               aria-haspopup="dialog"
-              title={t("git.pr.mergeStatus.viewChecks", "View all checks")}
+              title={t("git.pr.mergeStatus.viewChecks")}
               onClick={toggle}
               data-testid="pr-merge-status-checks"
             >
@@ -258,7 +258,7 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
               maxHeight: panelPosition.maxHeight,
             }}
             role="dialog"
-            aria-label={t("git.pr.tabs.checks", "Checks")}
+            aria-label={t("git.pr.tabs.checks")}
             data-testid="pr-merge-status-checks-panel"
           >
             <PrChecksPanel checks={checks} onOpenDetails={handleOpenDetails} />

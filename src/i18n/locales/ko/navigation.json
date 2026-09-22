@@ -783,7 +783,6 @@
         "errorChannelMissing": "이 채널은 더 이상 사용할 수 없습니다",
         "errorMessageMissing": "이 메시지는 더 이상 사용할 수 없습니다",
         "loadError": "메시지를 불러오지 못했습니다",
-        "loadingMessages": "메시지를 불러오는 중…",
         "loadOlder": "이전 메시지 불러오기",
         "unknownAuthor": "팀원"
       }

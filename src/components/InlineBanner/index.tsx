@@ -71,8 +71,8 @@ export const InlineBanner: React.FC<InlineBannerProps> = ({
           }
           style={{ width: 16, height: 16 }}
           onClick={onDismiss}
-          aria-label={t("actions.close", "Close")}
-          title={t("actions.close", "Close")}
+          aria-label={t("actions.close")}
+          title={t("actions.close")}
           data-testid={dataTestId ? `${dataTestId}-dismiss` : undefined}
           className="mt-px -mr-1 shrink-0 hover:bg-fill-2"
         />

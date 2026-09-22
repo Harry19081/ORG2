@@ -438,10 +438,7 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
 
     const minimap = (
       <nav
-        aria-label={t(
-          "sessions:chat.conversationNavigator",
-          "Conversation navigator"
-        )}
+        aria-label={t("sessions:chat.conversationNavigator")}
         className={`${visibilityClass} ${placementClasses.nav}`}
         onMouseEnter={() => setIsPointerOver(true)}
         onMouseLeave={() => {
@@ -465,7 +462,6 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
                 previewPinId === mark.id ? pinTooltipId : undefined
               }
               aria-label={t("sessions:chat.goToPinnedPassage", {
-                defaultValue: "Go to pinned passage: {{preview}}",
                 preview: mark.label,
               })}
               className={placementClasses.markerButton}
@@ -512,9 +508,7 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
                         shape="circle"
                         iconOnly
                         className="-mt-1 -mr-1 shrink-0"
-                        aria-label={t("sessions:chat.unpinPassage", {
-                          defaultValue: "Unpin",
-                        })}
+                        aria-label={t("sessions:chat.unpinPassage")}
                         onClick={() => {
                           cancelPinPreviewClose();
                           setPreviewPinId(null);
@@ -559,8 +553,6 @@ const ConversationMinimap: React.FC<ConversationMinimapProps> = memo(
                   previewGroupIndex === groupIndex ? tooltipId : undefined
                 }
                 aria-label={t("sessions:chat.goToConversationTurn", {
-                  defaultValue:
-                    "Go to turn {{current}} of {{total}}: {{preview}}",
                   current: turnPosition,
                   total: navigableGroupIndices.length,
                   preview:

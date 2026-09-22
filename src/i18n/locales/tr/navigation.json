@@ -783,7 +783,6 @@
         "errorChannelMissing": "Bu kanal artık kullanılamıyor",
         "errorMessageMissing": "Bu mesaj artık kullanılamıyor",
         "loadError": "Mesajlar yüklenemedi",
-        "loadingMessages": "Mesajlar yükleniyor…",
         "loadOlder": "Önceki mesajları yükle",
         "unknownAuthor": "Takım arkadaşı"
       }

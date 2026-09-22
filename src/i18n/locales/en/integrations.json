@@ -7,25 +7,25 @@
   "keyVault": {
     "title": "Models & CLIs",
     "overview": {},
-    "searchPlaceholder": "Search accounts...",
+    "searchPlaceholder": "Search keys...",
     "inlineCard": {
       "tabStatus": "Status",
       "tabModels": "Models"
     },
-    "noAccountsFound": "No accounts found",
-    "addAccount": "Add Account",
+    "noKeysFound": "No keys found",
+    "addKey": "Add Key",
     "addCliAgent": "Add Agent",
     "removeLocal": "Remove Local",
     "unlist": "Unlist",
     "confirmRemoveTitle": "Remove \"{{name}}\"?",
     "confirmRemoveMessage": "This will remove the locally saved key. This action cannot be undone",
-    "confirmRemoveActiveSessions_one": "{{count}} active session still uses this account and will fail on its next turn:",
-    "confirmRemoveActiveSessions_other": "{{count}} active sessions still use this account and will fail on their next turn:",
+    "confirmRemoveActiveSessions_one": "{{count}} active session still uses this key and will fail on its next turn:",
+    "confirmRemoveActiveSessions_other": "{{count}} active sessions still use this key and will fail on their next turn:",
     "toasts": {
       "refreshed": "{{name}} refreshed successfully",
       "refreshedDelta": "Models refreshed: +{{added}} added, -{{removed}} removed",
       "refreshedNoChange": "Models refreshed: no changes",
-      "refreshPartial": "Models refreshed: +{{added}} / -{{removed}}, but {{failed}} of {{total}} accounts failed",
+      "refreshPartial": "Models refreshed: +{{added}} / -{{removed}}, but {{failed}} of {{total}} keys failed",
       "refreshError": "Failed to refresh {{name}}: {{error}}",
       "localRemoved": "{{name}} removed",
       "deleteError": "Failed to delete {{name}}"
@@ -91,8 +91,8 @@
       "keyValidationFailed": "Key validation failed"
     },
     "edit": {
-      "title": "Edit Account",
-      "apiChangeHint": "To update your API key, keys, or provider settings, remove this account and add a new one",
+      "title": "Edit Key",
+      "apiChangeHint": "To update your API key or provider settings, remove this key and add a new one",
       "saved": "Changes saved"
     },
     "quota": {
@@ -162,7 +162,7 @@
     "customBaseUrlNoteBody": "Your API key and request data are sent to whatever URL you enter. Use custom URLs only for trusted proxies, self-hosted deployments, or endpoints you control",
     "localModel": {
       "title": "Local model cookbook",
-      "description": "Pick a local runtime preset, confirm its OpenAI-compatible endpoint, add one or more model IDs, then save this account to use local models in Chat",
+      "description": "Pick a local runtime preset, confirm its OpenAI-compatible endpoint, add one or more model IDs, then save this key to use local models in Chat",
       "baseUrlDesc": "OpenAI-compatible local endpoint. Start your runtime first, then validate or save",
       "apiKeyDesc": "Most local runtimes accept any non-empty value. Keep the placeholder unless your server enforces a key",
       "quickModelsLabel": "Cookbook models",
@@ -175,14 +175,14 @@
     "validated": "Validated",
     "validationSuccessModels": "{{count}} models detected — configure in next step",
     "validationSuccessNoModels": "Key validated — no models auto-detected, please add models manually below",
-    "accountName": "Account Name (Optional)",
-    "accountNameDesc": "Leave blank to use {{provider}}, then {{provider}}-1, {{provider}}-2, and so on",
-    "accountNamePlaceholder": "Auto: {{provider}}",
+    "keyName": "Key Name (Optional)",
+    "keyNameDesc": "Leave blank to use {{provider}}, then {{provider}}-1, {{provider}}-2, and so on",
+    "keyNamePlaceholder": "Auto: {{provider}}",
     "apiKeyPlaceholder": "Enter your API key",
     "extractPlaceholder": "Paste your keys (messy text is OK):\n\nExample:\nKEY: {{key}}\n{{urlLine}}",
     "descriptionOptional": "Description (Optional)",
     "descriptionPlaceholder": "Enter description",
-    "nameDuplicate": "An account with this name already exists",
+    "nameDuplicate": "A key with this name already exists",
     "stepLabel": "Step {{current}}/{{total}}",
     "noValidTokenFound": "No valid token found in key",
     "couldNotDetectKeys": "Could not detect keys. Make sure the CLI is installed and you're logged in.",
@@ -243,7 +243,7 @@
     "claudeCodeSignInDesc": "Sign in to Claude Code in the embedded browser. ORG2 will capture the authorization code and store the OAuth token locally",
     "claudeCodeReadyToSignIn": "Ready to sign in to Claude Code",
     "claudeCodeSignedIn": "Claude Code connected",
-    "claudeCodeOAuthHint": "This saves a claude_code OAuth account for Rust agents using anthropic_native",
+    "claudeCodeOAuthHint": "This saves a claude_code OAuth key for Rust agents using anthropic_native",
     "claudeCodeBrowserHint": "Complete Claude Code authorization in the embedded browser",
     "claudeCodeSignInErrorHint": "Close the browser and try signing in again. No token was saved",
     "connectedViaChatGpt": "Connected via ChatGPT Plus/Pro login",
@@ -313,14 +313,14 @@
     "signInWithCodex": "Sign in with Codex",
     "codexReadyToSignIn": "Ready to sign in to Codex",
     "codexSignedIn": "Codex connected",
-    "codexOAuthHint": "This saves a codex OAuth account for ChatGPT Codex backend access",
+    "codexOAuthHint": "This saves a codex OAuth key for ChatGPT Codex backend access",
     "codexBrowserHint": "Complete Codex authorization in the embedded browser",
     "codexSignInErrorHint": "Close the browser and try signing in again. No token was saved",
     "codexAutodetectTitle": "Detect Codex session",
     "codexAutodetectDesc": "Reads ~/.codex/auth.json and OPENAI_API_KEY from your local environment",
-    "codexCredentialLabel": "Codex Credential",
-    "codexCredentialDesc": "Paste a Codex OAuth access token or an OpenAI API key",
-    "codexCredentialPlaceholder": "eyJ... or sk-...",
+    "codexKeyLabel": "Codex Key",
+    "codexKeyDesc": "Paste a Codex OAuth access token or an OpenAI API key",
+    "codexKeyPlaceholder": "eyJ... or sk-...",
     "codexDetectErrorHint": "Sign in with the embedded browser, or paste an OpenAI API key manually",
     "codexValidationErrorHint": "Check that the token or API key is valid and try again",
     "claudeCodeAutodetectTitle": "Detect Claude Code session",
@@ -345,7 +345,9 @@
     "connecting": "Connecting",
     "reconnecting": "Reconnecting",
     "connectionError": "Connection Error",
-    "accountNameDuplicate": "An account with this name already exists",
+    "connectionName": "Connection Name (Optional)",
+    "connectionNamePlaceholder": "Auto: {{provider}}",
+    "connectionNameDuplicate": "A connection with this name already exists",
     "probeSuccess": "Connection successful",
     "probeFailed": "Connection failed",
     "verified": "Verified"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "ORG2 Bot"
   },
   "modelsTabs": {
-    "myAccounts": "My Keys",
+    "myKeys": "My Keys",
     "models": "Models",
     "comingSoon": "Coming soon",
     "installedClis": "CLI Clients",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "Sort: A–Z"
   },
   "modelPreview": {
-    "noSources": "No accounts with this model"
+    "noSources": "No keys with this model"
   },
   "cliPreview": {
     "clientSection": "Client",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Failed to activate the Git profile"
   },
   "credentialImport": {
-    "title": "Import credentials from other apps",
-    "itemColumn": "Credential",
+    "title": "Import keys & subscriptions from other apps",
+    "itemColumn": "Key",
     "sourceColumn": "Found in",
-    "empty": "No credentials found to import. Looked at environment variables, shell profiles, Claude Code settings, cc-switch profiles, and the login stores of Claude Code, Codex, Cursor, GitHub CLI, Kiro, and OpenCode.",
-    "allImported": "All detected credentials have already been imported",
+    "empty": "No keys or subscriptions found to import. Looked at environment variables, shell profiles, Claude Code settings, cc-switch profiles, and the login stores of Claude Code, Codex, Cursor, GitHub CLI, Kiro, and OpenCode.",
+    "allImported": "All detected keys and subscriptions have already been imported",
     "authMethod": {
       "api_key": "API key",
       "oauth": "Login token"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Import failed: {{message}}",
-    "partialFailure": "Some credentials could not be imported:",
-    "importSucceeded": "Saved to Accounts: {{names}}. Imported credentials are now available as reusable connections."
+    "partialFailure": "Some keys could not be imported:",
+    "importSucceeded": "Saved to My Keys: {{names}}. Imported keys are now available as reusable connections."
   },
   "skills": {
     "shareToOrg": "Share to organization",

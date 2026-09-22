@@ -53,11 +53,8 @@ export const UserBubbleContent: React.FC<{
             />
             <span className="text-[13px] font-medium text-text-1">
               {planApprovedEdited
-                ? t(
-                    "chat.planApprovedEditedLabel",
-                    "Implementing approved plan (edited)"
-                  )
-                : t("chat.planApprovedLabel", "Implementing approved plan")}
+                ? t("chat.planApprovedEditedLabel")
+                : t("chat.planApprovedLabel")}
             </span>
           </div>
         </div>

@@ -202,11 +202,7 @@ export const GroupChatPendingMessagePill: React.FC<
     {groupChatPendingMessage.retryError ? (
       <>
         <span className="h-1.5 w-1.5 rounded-full bg-warning-6" />
-        <span>
-          {t("groupChat.userMessageOutcomeUnknown", {
-            defaultValue: "Delivery outcome unknown. Retry with the same IDs.",
-          })}
-        </span>
+        <span>{t("groupChat.userMessageOutcomeUnknown")}</span>
         <Button
           data-testid="agent-org-group-chat-retry"
           size="mini"
@@ -215,7 +211,7 @@ export const GroupChatPendingMessagePill: React.FC<
           disabled={groupChatPendingMessage.retrying}
           onClick={() => void groupChatPendingMessage.onRetry()}
         >
-          {t("common:actions.retry", { defaultValue: "Retry" })}
+          {t("common:actions.retry")}
         </Button>
       </>
     ) : (
@@ -224,7 +220,6 @@ export const GroupChatPendingMessagePill: React.FC<
         <span>
           {t("groupChat.userMessagePending", {
             member: groupChatPendingMessage.targetMemberName,
-            defaultValue: "{{member}} is picking up your message",
           })}
         </span>
       </>

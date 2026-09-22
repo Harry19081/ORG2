@@ -244,7 +244,7 @@ const LocalModelSetup: React.FC<AgentSetupProps> = ({
         </SectionRow>
 
         <SectionRow
-          label={t("keyVault.validate", "Validate")}
+          label={t("keyVault.validate")}
           description={t("keyVault.localModel.validateDesc")}
           required
         >
@@ -257,8 +257,8 @@ const LocalModelSetup: React.FC<AgentSetupProps> = ({
             className="h-8 min-h-8"
           >
             {keyValidated
-              ? `✓ ${t("keyVault.validated", "Validated")}`
-              : t("keyVault.validate", "Validate")}
+              ? `✓ ${t("keyVault.validated")}`
+              : t("keyVault.validate")}
           </Button>
         </SectionRow>
       </SectionContainer>

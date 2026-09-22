@@ -130,7 +130,7 @@ const RoutineRunsList: React.FC<RoutineRunsListProps> = ({
 
   return (
     <CompactListPanel
-      ariaLabel={t("kanban.sidebar.runs", { defaultValue: "Runs" })}
+      ariaLabel={t("kanban.sidebar.runs")}
       entries={entries}
       selectedEntryKey={selectedRunId}
       loading={loading}
@@ -181,11 +181,7 @@ const RoutineRunDetailPane: React.FC<RoutineRunDetailPaneProps> = ({
         workItemId,
         projectSlug: run.scopeId,
       }).catch(() =>
-        Message.error(
-          t("sessions:kanban.openRoutineWorkItemError", {
-            defaultValue: "Could not open the Work Item",
-          })
-        )
+        Message.error(t("sessions:kanban.openRoutineWorkItemError"))
       );
     },
     [openResult, run, t]
@@ -308,10 +304,8 @@ const RoutineRunsSurface: React.FC = () => {
     content: publishedHeader,
   });
 
-  const runsLabel = t("kanban.sidebar.runs", { defaultValue: "Runs" });
-  const refreshLabel = t("common:actions.refresh", {
-    defaultValue: "Refresh",
-  });
+  const runsLabel = t("kanban.sidebar.runs");
+  const refreshLabel = t("common:actions.refresh");
   const visibleRuns = useMemo(
     () => (runs ? searchRoutineRuns(runs, searchQuery) : []),
     [runs, searchQuery]
@@ -336,7 +330,7 @@ const RoutineRunsSurface: React.FC = () => {
     { key: "runs", label: runsLabel },
     {
       key: "webhooks",
-      label: t("webhooks.title", { defaultValue: "Webhooks" }),
+      label: t("webhooks.title"),
     },
   ];
   const datasetTabs = (
@@ -427,7 +421,7 @@ const RoutineRunsSurface: React.FC = () => {
     <Placeholder
       variant="empty"
       placement="sidebar"
-      title={t("kanban.runsEmpty", { defaultValue: "No routine runs yet" })}
+      title={t("kanban.runsEmpty")}
       fillParentHeight
     />
   ) : (

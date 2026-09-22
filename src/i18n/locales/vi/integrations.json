@@ -7,23 +7,23 @@
   "keyVault": {
     "title": "Mô hình & CLI",
     "overview": {},
-    "searchPlaceholder": "Tìm kiếm tài khoản...",
+    "searchPlaceholder": "Tìm kiếm khóa...",
     "inlineCard": {
       "tabStatus": "Trạng thái",
       "tabModels": "Mô hình"
     },
-    "noAccountsFound": "Không tìm thấy tài khoản",
-    "addAccount": "Thêm tài khoản",
+    "noKeysFound": "Không tìm thấy khóa",
+    "addKey": "Thêm khóa",
     "removeLocal": "Xóa cục bộ",
     "unlist": "Hủy niêm yết",
     "confirmRemoveTitle": "Xóa \"{{name}}\"?",
-    "confirmRemoveMessage": "Thông tin xác thực cục bộ sẽ bị xóa. Hành động này không thể hoàn tác",
+    "confirmRemoveMessage": "Khóa đã lưu cục bộ sẽ bị xóa. Hành động này không thể hoàn tác",
     "toasts": {
       "refreshed": "{{name}} đã làm mới thành công",
       "refreshError": "Không thể làm mới {{name}}: {{error}}",
       "localRemoved": "{{name}} đã xóa",
       "deleteError": "Không thể xóa {{name}}",
-      "refreshPartial": "Đã làm mới mô hình: +{{added}} / -{{removed}}, nhưng {{failed}} trên {{total}} tài khoản bị lỗi",
+      "refreshPartial": "Đã làm mới mô hình: +{{added}} / -{{removed}}, nhưng {{failed}} trên {{total}} khóa bị lỗi",
       "refreshedNoChange": "Đã làm mới mô hình: không có thay đổi",
       "refreshedDelta": "Đã làm mới mô hình: thêm {{added}}, xóa {{removed}}"
     },
@@ -88,8 +88,8 @@
       "keyValidationFailed": "Xác minh thông tin xác thực thất bại"
     },
     "edit": {
-      "title": "Chỉnh sửa tài khoản",
-      "apiChangeHint": "Để cập nhật API Key, thông tin xác thực hoặc cài đặt nhà cung cấp, hãy xóa tài khoản này và thêm mới",
+      "title": "Chỉnh sửa khóa",
+      "apiChangeHint": "Để cập nhật API Key hoặc cài đặt nhà cung cấp, hãy xóa khóa này và thêm khóa mới",
       "saved": "Đã lưu thay đổi"
     },
     "quota": {
@@ -159,7 +159,7 @@
     "customBaseUrlNoteBody": "API key và dữ liệu yêu cầu được gửi đến URL bạn nhập. Chỉ dùng URL tùy chỉnh cho proxy đáng tin cậy, triển khai tự lưu trữ hoặc điểm cuối bạn kiểm soát",
     "localModel": {
       "title": "Cookbook mô hình cục bộ",
-      "description": "Chọn preset runtime cục bộ, xác nhận endpoint tương thích OpenAI, thêm một hoặc nhiều ID mô hình rồi lưu tài khoản này để dùng mô hình cục bộ trong Chat",
+      "description": "Chọn preset runtime cục bộ, xác nhận endpoint tương thích OpenAI, thêm một hoặc nhiều ID mô hình rồi lưu khóa này để dùng mô hình cục bộ trong Chat",
       "baseUrlDesc": "Endpoint cục bộ tương thích OpenAI. Hãy khởi động runtime trước khi xác thực hoặc lưu",
       "apiKeyDesc": "Hầu hết runtime cục bộ chấp nhận mọi giá trị không rỗng. Giữ placeholder trừ khi máy chủ yêu cầu key",
       "quickModelsLabel": "Mô hình Cookbook",
@@ -173,12 +173,12 @@
     "validationSuccessModels": "Phát hiện {{count}} mô hình — cấu hình ở bước tiếp theo",
     "validationSuccessNoModels": "Key đã xác thực — không tự động phát hiện model, vui lòng thêm model thủ công bên dưới",
     "addCliAgent": "Thêm Agent",
-    "accountName": "Tên tài khoản (tùy chọn)",
-    "accountNameDesc": "Để trống để dùng {{provider}}, sau đó {{provider}}-1, {{provider}}-2, v.v",
-    "accountNamePlaceholder": "Tự động: {{provider}}",
+    "keyName": "Tên khóa (tùy chọn)",
+    "keyNameDesc": "Để trống để dùng {{provider}}, sau đó {{provider}}-1, {{provider}}-2, v.v",
+    "keyNamePlaceholder": "Tự động: {{provider}}",
     "descriptionOptional": "Mô tả (tùy chọn)",
     "descriptionPlaceholder": "Nhập mô tả",
-    "nameDuplicate": "Đã tồn tại tài khoản với tên này",
+    "nameDuplicate": "Đã tồn tại khóa với tên này",
     "stepLabel": "Bước {{current}}/{{total}}",
     "noValidTokenFound": "Không tìm thấy token hợp lệ trong thông tin xác thực",
     "couldNotDetectKeys": "Không thể phát hiện thông tin xác thực. Đảm bảo CLI đã cài đặt và bạn đã đăng nhập.",
@@ -241,7 +241,7 @@
     "claudeCodeSignInDesc": "Đăng nhập Claude Code trong trình duyệt tích hợp. ORG2 sẽ lấy authorization code và lưu OAuth Token cục bộ",
     "claudeCodeReadyToSignIn": "Sẵn sàng đăng nhập Claude Code",
     "claudeCodeSignedIn": "Claude Code đã kết nối",
-    "claudeCodeOAuthHint": "Thao tác này lưu tài khoản claude_code OAuth cho Rust agents dùng anthropic_native",
+    "claudeCodeOAuthHint": "Thao tác này lưu khóa claude_code OAuth cho Rust agents dùng anthropic_native",
     "claudeCodeBrowserHint": "Hoàn tất ủy quyền Claude Code trong trình duyệt tích hợp",
     "claudeCodeSignInErrorHint": "Đóng trình duyệt và thử đăng nhập lại. Chưa lưu Token nào",
     "connectedViaChatGpt": "Đã kết nối qua ChatGPT Plus/Pro",
@@ -311,14 +311,14 @@
     "signInWithCodex": "Đăng nhập bằng Codex",
     "codexReadyToSignIn": "Sẵn sàng đăng nhập Codex",
     "codexSignedIn": "Codex đã kết nối",
-    "codexOAuthHint": "Thao tác này lưu tài khoản OAuth codex để truy cập backend ChatGPT Codex",
+    "codexOAuthHint": "Thao tác này lưu khóa OAuth codex để truy cập backend ChatGPT Codex",
     "codexBrowserHint": "Hoàn tất ủy quyền Codex trong trình duyệt nhúng",
     "codexSignInErrorHint": "Đóng trình duyệt và thử đăng nhập lại. Chưa lưu Token nào",
     "codexAutodetectTitle": "Phát hiện phiên Codex",
     "codexAutodetectDesc": "Đọc ~/.codex/auth.json và OPENAI_API_KEY từ môi trường cục bộ",
-    "codexCredentialLabel": "Thông tin Codex",
-    "codexCredentialDesc": "Dán Codex OAuth access token hoặc OpenAI API key",
-    "codexCredentialPlaceholder": "eyJ... hoặc sk-...",
+    "codexKeyLabel": "Khóa Codex",
+    "codexKeyDesc": "Dán Codex OAuth access token hoặc OpenAI API key",
+    "codexKeyPlaceholder": "eyJ... hoặc sk-...",
     "codexDetectErrorHint": "Đăng nhập bằng trình duyệt nhúng hoặc dán thủ công OpenAI API key",
     "codexValidationErrorHint": "Kiểm tra token hoặc API key có hợp lệ không rồi thử lại",
     "claudeCodeAutodetectTitle": "Phát hiện phiên Claude Code",
@@ -329,8 +329,8 @@
       "failed": "Workspace Market này hiện không khả dụng. Hãy mở lại Market để làm mới quyền truy cập."
     },
     "revalidate": "Xác thực lại",
-    "confirmRemoveActiveSessions_one": "{{count}} phiên đang hoạt động vẫn dùng tài khoản này và sẽ thất bại ở lượt tiếp theo:",
-    "confirmRemoveActiveSessions_other": "{{count}} phiên đang hoạt động vẫn dùng tài khoản này và sẽ thất bại ở lượt tiếp theo:"
+    "confirmRemoveActiveSessions_one": "{{count}} phiên đang hoạt động vẫn dùng khóa này và sẽ thất bại ở lượt tiếp theo:",
+    "confirmRemoveActiveSessions_other": "{{count}} phiên đang hoạt động vẫn dùng khóa này và sẽ thất bại ở lượt tiếp theo:"
   },
   "integrations": {
     "searchPlaceholder": "Tìm kiếm kết nối...",
@@ -345,7 +345,9 @@
     "connecting": "Đang kết nối",
     "reconnecting": "Đang kết nối lại",
     "connectionError": "Lỗi kết nối",
-    "accountNameDuplicate": "Tài khoản với tên này đã tồn tại",
+    "connectionName": "Tên kết nối (tùy chọn)",
+    "connectionNamePlaceholder": "Tự động: {{provider}}",
+    "connectionNameDuplicate": "Kết nối với tên này đã tồn tại",
     "probeSuccess": "Kết nối thành công",
     "probeFailed": "Kết nối thất bại",
     "verified": "Đã xác minh"
@@ -583,7 +585,7 @@
     "matrixDeviceNamePlaceholder": "Bot ORG2"
   },
   "modelsTabs": {
-    "myAccounts": "Keys của tôi",
+    "myKeys": "Khóa của tôi",
     "models": "Mô hình",
     "comingSoon": "Sắp ra mắt",
     "installedClis": "CLI Clients",
@@ -633,7 +635,7 @@
     "sortAlphabetical": "Sắp xếp: A–Z"
   },
   "modelPreview": {
-    "noSources": "Không có tài khoản nào có mô hình này"
+    "noSources": "Không có khóa nào có mô hình này"
   },
   "cliPreview": {
     "clientSection": "Máy khách",
@@ -1631,11 +1633,11 @@
     "applyFailed": "Không thể kích hoạt hồ sơ Git"
   },
   "credentialImport": {
-    "title": "Nhập thông tin xác thực từ ứng dụng khác",
-    "itemColumn": "Thông tin xác thực",
+    "title": "Nhập khóa và gói đăng ký từ ứng dụng khác",
+    "itemColumn": "Khóa",
     "sourceColumn": "Tìm thấy trong",
-    "empty": "Không tìm thấy thông tin xác thực nào để nhập. Đã kiểm tra biến môi trường, shell profile, cài đặt Claude Code, hồ sơ cc-switch và kho đăng nhập của Claude Code, Codex, Cursor, GitHub CLI, Kiro và OpenCode.",
-    "allImported": "Tất cả thông tin xác thực đã phát hiện đều đã được nhập",
+    "empty": "Không tìm thấy khóa hoặc gói đăng ký nào để nhập. Đã kiểm tra biến môi trường, shell profile, cài đặt Claude Code, hồ sơ cc-switch và kho đăng nhập của Claude Code, Codex, Cursor, GitHub CLI, Kiro và OpenCode.",
+    "allImported": "Tất cả khóa và gói đăng ký đã phát hiện đều đã được nhập",
     "authMethod": {
       "api_key": "API key",
       "oauth": "Token đăng nhập"
@@ -1650,8 +1652,8 @@
       "cc_switch": "cc-switch"
     },
     "applyFailed": "Nhập thất bại: {{message}}",
-    "partialFailure": "Một số thông tin xác thực không thể nhập:",
-    "importSucceeded": "Đã lưu vào Tài khoản: {{names}}. Thông tin xác thực đã nhập hiện có thể dùng làm kết nối có thể tái sử dụng."
+    "partialFailure": "Một số khóa không thể nhập:",
+    "importSucceeded": "Đã lưu vào Khóa của tôi: {{names}}. Các khóa đã nhập hiện có thể dùng làm kết nối có thể tái sử dụng."
   },
   "skills": {
     "shareToOrg": "Chia sẻ với tổ chức",

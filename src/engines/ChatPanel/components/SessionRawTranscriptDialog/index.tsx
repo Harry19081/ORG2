@@ -28,9 +28,7 @@ const SessionRawTranscriptDialog: React.FC<SessionRawTranscriptDialogProps> =
     return (
       <Modal
         visible={visible}
-        title={t("chat.rawTranscript.title", {
-          defaultValue: "Raw session transcript",
-        })}
+        title={t("chat.rawTranscript.title")}
         onClose={onClose}
         width="min(960px, 92vw)"
         bodyClassName="flex min-h-0 flex-col p-0"
@@ -39,7 +37,7 @@ const SessionRawTranscriptDialog: React.FC<SessionRawTranscriptDialogProps> =
           <PanelFooter
             secondaryActions={[
               {
-                label: t("common:actions.refresh", "Refresh"),
+                label: t("common:actions.refresh"),
                 icon: (
                   <HugeiconsIcon
                     icon={Refresh04Icon}
@@ -53,7 +51,7 @@ const SessionRawTranscriptDialog: React.FC<SessionRawTranscriptDialogProps> =
                 onClick: () => void transcript.loadTranscript(),
               },
               {
-                label: t("common:actions.copy", "Copy"),
+                label: t("common:actions.copy"),
                 icon: (
                   <HugeiconsIcon
                     icon={ClipboardIcon}
@@ -67,7 +65,7 @@ const SessionRawTranscriptDialog: React.FC<SessionRawTranscriptDialogProps> =
               },
             ]}
             primaryAction={{
-              label: t("common:actions.close", "Close"),
+              label: t("common:actions.close"),
               onClick: onClose,
             }}
           />

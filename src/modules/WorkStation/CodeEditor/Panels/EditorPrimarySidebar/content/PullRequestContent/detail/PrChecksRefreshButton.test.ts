@@ -4,6 +4,7 @@ import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { REFRESH_ICON_TOKENS } from "@src/components/RefreshIcon/tokens";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import { PrChecksRefreshButton } from "./PrChecksRefreshButton";
 import {
@@ -12,7 +13,8 @@ import {
 } from "./prChecksRefreshContext";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (_key: string, fallback: string) => fallback }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });

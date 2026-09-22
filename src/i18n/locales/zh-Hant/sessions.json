@@ -1893,7 +1893,6 @@
       "filesAndFolders": "檔案與資料夾",
       "session": "會話",
       "workItems": "工作項目",
-      "back": "返回",
       "recent": "最近使用",
       "showMore": "再顯示 {{remaining}} 項"
     },

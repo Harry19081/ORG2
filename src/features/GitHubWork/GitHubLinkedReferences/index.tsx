@@ -121,19 +121,17 @@ function LinkedReferenceCard({
   const { t } = useTranslation("common");
   const typeLabel =
     item.kind === "pr"
-      ? t("git.pr.label", "Pull request")
+      ? t("git.pr.label")
       : item.kind === "issue"
-        ? t("git.issues.label", "Issue")
-        : t("git.issues.relatedItems.reference", "GitHub reference");
+        ? t("git.issues.label")
+        : t("git.issues.relatedItems.reference");
   const stateLabel = item.state
     ? t(`git.issues.status.${item.state}`, item.state)
     : null;
   const metadata = [
     showRepo ? item.repoFullName : null,
     typeLabel,
-    !item.state && item.error
-      ? t("git.issues.relatedItems.unavailable", "Details unavailable")
-      : null,
+    !item.state && item.error ? t("git.issues.relatedItems.unavailable") : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -276,11 +274,8 @@ const GitHubLinkedReferences: React.FC<GitHubLinkedReferencesProps> = ({
         variant="empty"
         placement="detail-panel"
         fillParentHeight
-        title={t("git.issues.relatedItems.emptyTitle", "No related items")}
-        subtitle={t(
-          "git.issues.relatedItems.emptyDescription",
-          "GitHub issues and pull requests mentioned in this conversation will appear here."
-        )}
+        title={t("git.issues.relatedItems.emptyTitle")}
+        subtitle={t("git.issues.relatedItems.emptyDescription")}
       />
     );
   }
@@ -295,10 +290,7 @@ const GitHubLinkedReferences: React.FC<GitHubLinkedReferencesProps> = ({
       >
         {!currentState ? (
           <TimelineLoadingSkeleton
-            label={t(
-              "git.issues.relatedItems.loading",
-              "Loading related items"
-            )}
+            label={t("git.issues.relatedItems.loading")}
           />
         ) : (
           <>
@@ -308,13 +300,12 @@ const GitHubLinkedReferences: React.FC<GitHubLinkedReferencesProps> = ({
                 role="status"
                 dataTestId="github-linked-references-unresolved-alert"
                 action={{
-                  label: t("actions.retry", "Retry"),
+                  label: t("actions.retry"),
                   onClick: () => setRetryGeneration((current) => current + 1),
                 }}
               >
                 {t("git.issues.relatedItems.unavailableCount", {
                   count: unresolved,
-                  defaultValue: "{{count}} related item could not be resolved",
                   defaultValue_other:
                     "{{count}} related items could not be resolved",
                 })}
@@ -335,7 +326,6 @@ const GitHubLinkedReferences: React.FC<GitHubLinkedReferencesProps> = ({
                   <span className="shrink-0">
                     {t("git.issues.relatedItems.count", {
                       count: currentState.items.length,
-                      defaultValue: "{{count}} related item",
                       defaultValue_other: "{{count}} related items",
                     })}
                   </span>

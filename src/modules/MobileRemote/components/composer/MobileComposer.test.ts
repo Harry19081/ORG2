@@ -10,6 +10,7 @@ import {
 } from "@src/config/composerStackTokens";
 import { MobileRemotePlatformProvider } from "@src/modules/MobileRemote/platform";
 import { createBrowserMobileRemotePlatform } from "@src/modules/MobileRemote/platform/browser";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import { MobileComposer } from "./MobileComposer";
 
@@ -18,9 +19,8 @@ vi.mock("@src/components/ModelIcon", () => ({
 }));
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback ?? key,
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 const voiceTest = vi.hoisted(() => ({

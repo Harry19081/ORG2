@@ -90,10 +90,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
         <div className="flex flex-col gap-3 border-b border-border-2 p-3">
           <div>
             <p className={`${TYPOGRAPHY.secondary} text-text-2`}>
-              {t(
-                "labels.noPullRequestForBranch",
-                "There is no pull request for this branch yet"
-              )}
+              {t("labels.noPullRequestForBranch")}
             </p>
           </div>
           {prCreating ? (
@@ -106,7 +103,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
                 size={SPINNER_TOKENS.default}
                 className="animate-spin text-text-3"
               />
-              <span>{t("labels.creatingPullRequest", "Creating…")}</span>
+              <span>{t("labels.creatingPullRequest")}</span>
             </div>
           ) : (
             <Button
@@ -116,7 +113,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
               disabled={!onCreatePr}
               className="text-[12px] font-medium disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {t("actions.createPullRequest", "Create pull request")}
+              {t("actions.createPullRequest")}
             </Button>
           )}
           {localCreateError && (

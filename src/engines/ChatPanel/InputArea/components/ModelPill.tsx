@@ -479,9 +479,7 @@ const ModelPillComponent: React.FC = () => {
         disabledTooltip={
           conversationBinding?.readiness === "loading"
             ? t("common:actions.loading")
-            : t("sessions:creator.selectAgentFirst", {
-                defaultValue: "Select agent first",
-              })
+            : t("sessions:creator.selectAgentFirst")
         }
       />
     </div>

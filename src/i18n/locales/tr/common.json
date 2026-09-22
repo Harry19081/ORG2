@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "Dosyalarda fark renkleri"
   },
   "teamInbox": {
-    "title": "Ekip Gelen Kutusu",
     "listLabel": "Ekip Gelen Kutusu listesi",
     "itemsLabel": "Ekip Gelen Kutusu öğeleri",
     "unreadCount": "{{count}} okunmadı",
-    "allRead": "Hepsi okundu",
     "loadMore": "Daha fazla yükle",
     "filters": {
       "mentions": "Bahsedilenler",
@@ -70,7 +68,6 @@
         "subtitle": "Arşivlediğiniz öğeler burada görünecek."
       }
     },
-    "loading": "Ekip Gelen Kutusu yükleniyor…",
     "drop": {
       "title": "İş öğesi oluşturmak için buraya bırakın",
       "subtitle": "Önce oturum anlık görüntüsünü inceleyin, ardından iş öğesini oluşturun veya devredin.",
@@ -539,7 +536,7 @@
     "accounts": "Hesaplar",
     "enabled": "Etkin",
     "disabled": "Devre dışı",
-    "keys": "Keys",
+    "keys": "Anahtarlar",
     "model": "Model",
     "name": "Ad",
     "provider": "Sağlayıcı",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "Başlamak için bir URL girin",
       "privateBrowsingEmptyTitle": "Gizli gezinti: Başlamak için bir URL girin",
       "simulatorBrowserNotice": "Bu tarayıcı yalnızca oturum tekrarı içindir. Kalıcı gezinti için ana uygulamadaki tarayıcıyı kullanın (Araçlar → Tarayıcı).",
-      "tlsDevNote": "Not: Bazı HTTPS siteleri (ör. GitHub) geliştirme modunda sertifika doğrulaması nedeniyle TLS hatası verebilir. HTTP veya example.com gibi basit HTTPS siteleri deneyin.",
       "siteUnreachableTitle": "Bu siteye ulaşılamıyor",
       "webviewHiddenTitle": "Web görünümü geçici olarak gizlendi",
       "webviewHiddenBody": "Yeniden göstermek için menüyü veya iletişim kutusunu kapatın.",
@@ -1712,11 +1708,11 @@
       "noResults": "Eşleşen model yok",
       "chooseModel": "Bir model seçin",
       "chooseKey": "Bir anahtar seçin",
-      "noCompatibleAccounts": "Uyumlu anahtar yok",
+      "noCompatibleKeys": "Uyumlu anahtar yok",
       "chooseModelHint": "Gezinmek için klavyeyi kullanın veya fareyle bir modele tıklayın",
       "chooseKeyHint": "Gezinmek için klavyeyi kullanın veya fareyle bir anahtara tıklayın",
       "noModelsForKey": "Bu anahtar için etkin model yok",
-      "selectAccount": "Hesap seç"
+      "selectKey": "Anahtar seç"
     },
     "modelProperties": {
       "effort": "Çaba",
@@ -1885,7 +1881,7 @@
       "showBranchInfo": "Dal bilgilerini göster",
       "compatibleKeys": "Uyumlu",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "Anahtarlar",
       "incompatible": "Uyumsuz",
       "manageModels": "Modelleri yönet",
       "manageKeys": "Anahtarları yönet",

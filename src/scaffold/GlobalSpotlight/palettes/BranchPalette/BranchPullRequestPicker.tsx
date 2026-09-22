@@ -325,7 +325,7 @@ export function BranchPullRequestPicker({
 
   const branchInfoToggle = (
     <SpotlightFooterToggle
-      label={t("selectors.spotlightFooter.showBranchInfo", "Show branch info")}
+      label={t("selectors.spotlightFooter.showBranchInfo")}
       checked={showBranchInfo}
       onCheckedChange={setShowBranchInfo}
     />

@@ -1,8 +1,9 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { WORKSTATION_TRAIL_WIDTH } from "@src/components/layout/tokens/workstationTrailTokens";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import GitHubDetailSkeleton from ".";
 
@@ -39,6 +40,11 @@ describe.each(["issue", "pr"] as const)(
     });
   }
 );
+
+vi.mock("react-i18next", () => ({
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
+}));
 
 describe("GitHubDetailSkeleton PR tabs", () => {
   it("shows actual tab labels and placeholders only for their counts", () => {

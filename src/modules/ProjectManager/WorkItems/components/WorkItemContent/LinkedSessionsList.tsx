@@ -156,13 +156,9 @@ export const LinkedSessionsList: React.FC<LinkedSessionsListProps> = ({
     return [
       {
         id: originSession.session_id,
-        title: t("workItems.sessions.originTitle", {
-          defaultValue: "Creation session",
-        }),
+        title: t("workItems.sessions.originTitle"),
         description: originSession.session_id,
-        statusLabel: t("workItems.sessions.originStatus", {
-          defaultValue: "Created this item",
-        }),
+        statusLabel: t("workItems.sessions.originStatus"),
         statusColor: "var(--color-primary-6)",
         agentIcon: renderSessionAgentIcon(
           originSession.session_type,
@@ -216,7 +212,6 @@ export const LinkedSessionsList: React.FC<LinkedSessionsListProps> = ({
         >
           <span>
             {t("workItems.sessions.runsCount", {
-              defaultValue: "{{count}} runs",
               count: sessions.length,
             })}
           </span>

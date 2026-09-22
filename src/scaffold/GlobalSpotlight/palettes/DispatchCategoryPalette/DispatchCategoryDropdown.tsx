@@ -70,7 +70,7 @@ const AvailableKeyCount: React.FC<{ keys: KeyVaultAccount[] }> = ({ keys }) => {
       ))}
     </div>
   ) : (
-    <span>{t("selectors.modelSelector.noCompatibleAccounts")}</span>
+    <span>{t("selectors.modelSelector.noCompatibleKeys")}</span>
   );
 
   return (

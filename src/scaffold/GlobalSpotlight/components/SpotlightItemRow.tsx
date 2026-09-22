@@ -315,8 +315,8 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         void showSpotlightContextMenu({
           name: copyName,
           path: copyPath,
-          copyNameLabel: t("actions.copyName", "Copy Name"),
-          copyPathLabel: t("actions.copyPath", "Copy Path"),
+          copyNameLabel: t("actions.copyName"),
+          copyPathLabel: t("actions.copyPath"),
           revealLabel: t(getFileManagerRevealLabelKey()),
         }).catch((error: unknown) => {
           log.error("Failed to show context menu:", error);

@@ -559,7 +559,7 @@ export const UnifiedModelDropdown: React.FC<UnifiedModelDropdownProps> = ({
           onMouseDown={(event) => event.stopPropagation()}
         >
           <div className={DROPDOWN_CLASSES.sectionLabel}>
-            {tCommon("selectors.modelSelector.selectAccount")}
+            {tCommon("selectors.modelSelector.selectKey")}
           </div>
           <div
             className="scrollbar-overlay flex flex-col overflow-y-auto"

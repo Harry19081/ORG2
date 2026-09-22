@@ -371,8 +371,8 @@ export default function ModelsTableSection({
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       iconOnly
       onClick={onAdd}
-      aria-label={t("keyVault.addAccount")}
-      title={t("keyVault.addAccount")}
+      aria-label={t("keyVault.addKey")}
+      title={t("keyVault.addKey")}
       data-testid="key-vault-models-add-provider-button"
     />
   );

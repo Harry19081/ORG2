@@ -109,12 +109,8 @@ const AgentOrgOverviewHeaderActions: React.FC<
           size="mini"
           iconOnly
           disabled={isArchiving || isTogglingPause}
-          aria-label={t("planner.agentOrgOverview.archiveRun", {
-            defaultValue: "Archive Team",
-          })}
-          title={t("planner.agentOrgOverview.archiveRun", {
-            defaultValue: "Archive Team",
-          })}
+          aria-label={t("planner.agentOrgOverview.archiveRun")}
+          title={t("planner.agentOrgOverview.archiveRun")}
           onClick={() => void onArchiveRun()}
           data-testid="agent-org-overview-archive-button"
           icon={

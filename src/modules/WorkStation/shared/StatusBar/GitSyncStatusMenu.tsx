@@ -153,7 +153,7 @@ export const GitSyncStatusMenu: React.FC<GitSyncStatusMenuProps> = memo(
       return actions.find((action) => action.key === "fetch");
     }, [actions, aheadCount, behindCount, needsPublish]);
 
-    const gitActionsLabel = t("workstation.gitActionsTooltip", "Git actions");
+    const gitActionsLabel = t("workstation.gitActionsTooltip");
 
     return (
       <div ref={triggerRef} className="flex h-full">

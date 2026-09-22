@@ -98,10 +98,7 @@ export function useBranchPullRequests(repoId: string, repoPath: string) {
         if (!active()) return;
         if (!remotes)
           throw new Error(
-            i18n.t(
-              "common:selectors.branch.messages.readRemotesFailed",
-              "Could not read repository remotes"
-            )
+            i18n.t("common:selectors.branch.messages.readRemotesFailed")
           );
         const githubRemotes = remotes.remotes.filter((remote) =>
           resolveGithubRepoFullName([remote.url])

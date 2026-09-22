@@ -65,8 +65,8 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
   const prActive = filterMode === "pr";
   const issuesActive = filterMode === "issues";
   const historyLabel = t("labels.gitHistory");
-  const prLabel = t("labels.pullRequest", "Pull request");
-  const issuesLabel = t("labels.issues", "Issues");
+  const prLabel = t("labels.pullRequest");
+  const issuesLabel = t("labels.issues");
 
   return (
     <>

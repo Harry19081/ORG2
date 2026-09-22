@@ -28,9 +28,7 @@ const AgentOrgOverviewDeleteTeamDialog: React.FC<
   return (
     <Modal
       visible={visible}
-      title={t("planner.agentOrgOverview.deleteTitle", {
-        defaultValue: "Permanently delete this Team?",
-      })}
+      title={t("planner.agentOrgOverview.deleteTitle")}
       // Modal portals to document.body; keep it inside Overview's
       // document-level outside-click boundary for real pointer events.
       className="agent-org-overview-owned-overlay"
@@ -49,9 +47,7 @@ const AgentOrgOverviewDeleteTeamDialog: React.FC<
             },
           ]}
           primaryAction={{
-            label: t("planner.agentOrgOverview.deleteTeam", {
-              defaultValue: "Delete Team",
-            }),
+            label: t("planner.agentOrgOverview.deleteTeam"),
             onClick: () => void onConfirm(),
             tone: "danger",
             disabled: !deleteConfirmed || isDeleting,
@@ -65,19 +61,14 @@ const AgentOrgOverviewDeleteTeamDialog: React.FC<
         className="border-error-6/25 bg-error-6/5 rounded-md border px-3 py-2 text-[12px] leading-5 text-text-2"
         role="alert"
       >
-        {t("planner.agentOrgOverview.deleteWarning", {
-          defaultValue:
-            "This permanently deletes every Team session and its history. This action cannot be undone.",
-        })}
+        {t("planner.agentOrgOverview.deleteWarning")}
       </div>
       <Checkbox
         checked={deleteConfirmed}
         disabled={isDeleting}
         onCheckedChange={onDeleteConfirmedChange}
       >
-        {t("planner.agentOrgOverview.deleteAcknowledge", {
-          defaultValue: "I understand this deletion is permanent.",
-        })}
+        {t("planner.agentOrgOverview.deleteAcknowledge")}
       </Checkbox>
     </Modal>
   );

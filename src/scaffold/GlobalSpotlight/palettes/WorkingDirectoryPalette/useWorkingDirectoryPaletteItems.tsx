@@ -108,7 +108,7 @@ export function useWorkingDirectoryPaletteItems({
       const confirmed = await confirmDestructiveAction({
         title: t("confirmation.removeTitle", { name: repo.name }),
         message: t("confirmation.removeMessage"),
-        okLabel: t("actions.removeFromOrgii", "Remove from ORG2"),
+        okLabel: t("actions.removeFromOrgii"),
         cancelLabel: t("actions.cancel"),
       });
       if (!confirmed) return;
@@ -122,17 +122,12 @@ export function useWorkingDirectoryPaletteItems({
           next.delete(repo.id);
           return next;
         });
-        Message.success(
-          t("selectors.spotlight.toast.repoRemoved", "Linkage to ORG2 removed")
-        );
+        Message.success(t("selectors.spotlight.toast.repoRemoved"));
       } catch (error) {
         Message.error(
           error instanceof Error
             ? error.message
-            : t(
-                "selectors.spotlight.toast.repoRemoveFailed",
-                "Failed to remove linkage to ORG2"
-              )
+            : t("selectors.spotlight.toast.repoRemoveFailed")
         );
       }
     },
@@ -202,7 +197,7 @@ export function useWorkingDirectoryPaletteItems({
         variant="tertiary"
         tone="danger"
         size="mini"
-        aria-label={t("actions.removeFromOrgii", "Remove from ORG2")}
+        aria-label={t("actions.removeFromOrgii")}
         iconOnly
         icon={<HugeiconsIcon icon={ICONS.removeRepo} size={14} />}
         onClick={(e) => {
@@ -211,7 +206,7 @@ export function useWorkingDirectoryPaletteItems({
             log.warn("failed to remove repo", { error, repoId: repo.id });
           });
         }}
-        title={t("actions.removeFromOrgii", "Remove from ORG2")}
+        title={t("actions.removeFromOrgii")}
       />
     ),
     [handleRemoveRepo, t]

@@ -783,7 +783,6 @@
         "errorChannelMissing": "Этот канал больше недоступен",
         "errorMessageMissing": "Это сообщение больше недоступно",
         "loadError": "Не удалось загрузить сообщения",
-        "loadingMessages": "Загрузка сообщений…",
         "loadOlder": "Загрузить предыдущие сообщения",
         "unknownAuthor": "Участник команды"
       }

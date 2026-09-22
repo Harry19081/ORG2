@@ -783,7 +783,6 @@
         "errorChannelMissing": "Kênh này không còn khả dụng",
         "errorMessageMissing": "Tin nhắn này không còn khả dụng",
         "loadError": "Không thể tải tin nhắn",
-        "loadingMessages": "Đang tải tin nhắn…",
         "loadOlder": "Tải tin nhắn cũ hơn",
         "unknownAuthor": "Thành viên nhóm"
       }

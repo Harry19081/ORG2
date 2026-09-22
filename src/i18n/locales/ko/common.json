@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "파일 변경 색상"
   },
   "teamInbox": {
-    "title": "팀 수신함",
     "listLabel": "팀 수신함 목록",
     "itemsLabel": "팀 수신함 항목",
     "unreadCount": "읽지 않음 {{count}}건",
-    "allRead": "모두 확인했습니다",
     "loadMore": "더 불러오기",
     "filters": {
       "mentions": "멘션",
@@ -70,7 +68,6 @@
         "subtitle": "보관한 항목이 여기에 표시됩니다."
       }
     },
-    "loading": "팀 수신함을 불러오는 중…",
     "drop": {
       "title": "여기로 끌어다 놓아 작업 항목 만들기",
       "subtitle": "세션 스냅샷을 확인한 다음 작업 항목을 만들거나 인계하세요.",
@@ -539,7 +536,7 @@
     "accounts": "계정",
     "enabled": "활성화",
     "disabled": "비활성화",
-    "keys": "Keys",
+    "keys": "키",
     "model": "모델",
     "name": "이름",
     "provider": "제공업체",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "URL을 입력하여 시작",
       "privateBrowsingEmptyTitle": "프라이빗 브라우징: URL을 입력하여 시작",
       "simulatorBrowserNotice": "이 브라우저는 세션 재생 전용입니다. 지속적인 탐색은 메인 앱의 브라우저(도구 → 브라우저)를 사용하세요.",
-      "tlsDevNote": "참고: GitHub 등 일부 HTTPS 사이트는 개발 모드에서 인증서 검증으로 TLS 오류가 날 수 있습니다. HTTP 또는 example.com 같은 단순 HTTPS를 시도하세요.",
       "siteUnreachableTitle": "사이트에 연결할 수 없음",
       "webviewHiddenTitle": "웹뷰가 일시적으로 숨겨졌습니다",
       "webviewHiddenBody": "메뉴나 대화 상자를 닫으면 다시 표시됩니다.",
@@ -1712,11 +1708,11 @@
       "noResults": "일치하는 모델 없음",
       "chooseModel": "모델 선택",
       "chooseKey": "키 선택",
-      "noCompatibleAccounts": "호환되는 키 없음",
+      "noCompatibleKeys": "호환되는 키 없음",
       "chooseModelHint": "키보드로 이동하거나 마우스로 모델을 클릭하세요",
       "chooseKeyHint": "키보드로 이동하거나 마우스로 키를 클릭하세요",
       "noModelsForKey": "이 키에 활성화된 모델이 없습니다",
-      "selectAccount": "계정 선택"
+      "selectKey": "키 선택"
     },
     "modelProperties": {
       "effort": "Effort",
@@ -1885,7 +1881,7 @@
       "showBranchInfo": "브랜치 정보 표시",
       "compatibleKeys": "호환",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "키",
       "incompatible": "비호환",
       "manageModels": "모델 관리",
       "manageKeys": "키 관리",

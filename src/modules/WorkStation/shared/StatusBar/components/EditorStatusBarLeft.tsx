@@ -107,18 +107,10 @@ export const EditorStatusBarLeft: React.FC<EditorStatusBarLeftProps> = ({
 }) => (
   <>
     {repoName ? (
-      <StatusBarTooltip
-        label={t(
-          "workstation.switchWorkspaceTooltip",
-          "Switch working directory"
-        )}
-      >
+      <StatusBarTooltip label={t("workstation.switchWorkspaceTooltip")}>
         <StatusBarButton
           onClick={onRepoClick}
-          ariaLabel={t(
-            "workstation.switchWorkspaceTooltip",
-            "Switch working directory"
-          )}
+          ariaLabel={t("workstation.switchWorkspaceTooltip")}
           className="max-w-48 min-w-0"
           dataTestId="status-bar-repo-name"
         >
@@ -168,12 +160,10 @@ export const EditorStatusBarLeft: React.FC<EditorStatusBarLeftProps> = ({
     )}
 
     {showGitControls && branchName && (
-      <StatusBarTooltip
-        label={t("workstation.switchWorktreeTooltip", "Switch worktree")}
-      >
+      <StatusBarTooltip label={t("workstation.switchWorktreeTooltip")}>
         <StatusBarButton
           onClick={onWorktreeClick}
-          ariaLabel={t("workstation.switchWorktreeTooltip", "Switch worktree")}
+          ariaLabel={t("workstation.switchWorktreeTooltip")}
           className="max-w-56 min-w-0"
           dataTestId="status-bar-worktree"
         >
@@ -201,7 +191,7 @@ export const EditorStatusBarLeft: React.FC<EditorStatusBarLeftProps> = ({
             ? t("workstation.branchTooltipSwitching", {
                 branch: branchName,
               })
-            : t("workstation.switchBranchTooltip", "Switch branch")
+            : t("workstation.switchBranchTooltip")
         }
       >
         <StatusBarButton
@@ -213,7 +203,7 @@ export const EditorStatusBarLeft: React.FC<EditorStatusBarLeftProps> = ({
               ? t("workstation.branchTooltipSwitching", {
                   branch: branchName,
                 })
-              : t("workstation.switchBranchTooltip", "Switch branch")
+              : t("workstation.switchBranchTooltip")
           }
         >
           {checkoutLoading ? (

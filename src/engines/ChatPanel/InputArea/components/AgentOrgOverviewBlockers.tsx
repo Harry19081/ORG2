@@ -26,9 +26,7 @@ const AgentOrgOverviewBlockers: React.FC<AgentOrgOverviewBlockersProps> = ({
           size={11}
           strokeWidth={2}
         />
-        {t("planner.agentOrgOverview.blockersTitle", {
-          defaultValue: "What is still blocking completion",
-        })}
+        {t("planner.agentOrgOverview.blockersTitle")}
       </div>
       {blockers.map((blocker) => (
         <div
@@ -47,10 +45,7 @@ const AgentOrgOverviewBlockers: React.FC<AgentOrgOverviewBlockersProps> = ({
         >
           <span className="min-w-0 flex-1">
             <span className="block truncate">
-              {blocker.display ||
-                t("planner.agentOrgOverview.unknownBlocker", {
-                  defaultValue: "Unknown system blocker",
-                })}
+              {blocker.display || t("planner.agentOrgOverview.unknownBlocker")}
             </span>
             <span
               className="block truncate text-[9px] text-text-3"

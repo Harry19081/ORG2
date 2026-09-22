@@ -24,11 +24,9 @@
     "colorSourceControlFiles": "Màu khác biệt trên tệp"
   },
   "teamInbox": {
-    "title": "Hộp thư nhóm",
     "listLabel": "Danh sách hộp thư nhóm",
     "itemsLabel": "Mục trong hộp thư nhóm",
     "unreadCount": "{{count}} chưa đọc",
-    "allRead": "Đã xem hết",
     "loadMore": "Tải thêm",
     "filters": {
       "mentions": "Được nhắc đến",
@@ -70,7 +68,6 @@
         "subtitle": "Các mục bạn lưu trữ sẽ xuất hiện ở đây."
       }
     },
-    "loading": "Đang tải hộp thư nhóm…",
     "drop": {
       "title": "Thả vào đây để tạo mục công việc",
       "subtitle": "Xem lại ảnh chụp phiên làm việc, sau đó tạo hoặc bàn giao mục công việc.",
@@ -539,7 +536,7 @@
     "accounts": "Tài khoản",
     "enabled": "Đã bật",
     "disabled": "Đã tắt",
-    "keys": "Keys",
+    "keys": "Khóa",
     "model": "Mô hình",
     "name": "Tên",
     "provider": "Nhà cung cấp",
@@ -1040,7 +1037,6 @@
       "enterUrlToStart": "Nhập URL để bắt đầu",
       "privateBrowsingEmptyTitle": "Duyệt web riêng tư: Nhập URL để bắt đầu",
       "simulatorBrowserNotice": "Trình duyệt này chỉ để phát lại phiên. Để duyệt lâu dài, hãy dùng trình duyệt trong ứng dụng chính (Công cụ → Trình duyệt).",
-      "tlsDevNote": "Lưu ý: Một số trang HTTPS (như GitHub) có thể báo lỗi TLS ở chế độ phát triển do xác thực chứng chỉ. Hãy thử HTTP hoặc HTTPS đơn giản như example.com.",
       "siteUnreachableTitle": "Không thể truy cập trang web này",
       "webviewHiddenTitle": "Chế độ xem web tạm thời bị ẩn",
       "webviewHiddenBody": "Đóng menu hoặc hộp thoại để hiển thị lại.",
@@ -1712,11 +1708,11 @@
       "noResults": "Không có mô hình phù hợp",
       "chooseModel": "Chọn một mô hình",
       "chooseKey": "Chọn một khóa",
-      "noCompatibleAccounts": "Không có khóa tương thích",
+      "noCompatibleKeys": "Không có khóa tương thích",
       "chooseModelHint": "Dùng bàn phím để điều hướng hoặc dùng chuột nhấp vào một mô hình",
       "chooseKeyHint": "Dùng bàn phím để điều hướng hoặc dùng chuột nhấp vào một khóa",
       "noModelsForKey": "Khóa này chưa bật mô hình nào",
-      "selectAccount": "Chọn tài khoản"
+      "selectKey": "Chọn khóa"
     },
     "modelProperties": {
       "effort": "Effort",
@@ -1885,7 +1881,7 @@
       "showBranchInfo": "Hiện thông tin nhánh",
       "compatibleKeys": "Tương thích",
       "planSupport": "Plan",
-      "byokSupport": "Keys",
+      "byokSupport": "Khóa",
       "incompatible": "Không tương thích",
       "manageModels": "Quản lý mô hình",
       "manageKeys": "Quản lý khóa",

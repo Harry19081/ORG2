@@ -211,9 +211,7 @@ export const TimelineContent: React.FC<TimelineContentProps> = memo(
             title={
               isGitTimeline
                 ? t("placeholders.noGitHistory")
-                : t("placeholders.noSessionHistory", {
-                    defaultValue: "No session history",
-                  })
+                : t("placeholders.noSessionHistory")
             }
             subtitle={
               isGitTimeline

@@ -838,7 +838,6 @@
         "errorChannelMissing": "यह चैनल अब उपलब्ध नहीं है",
         "errorMessageMissing": "यह संदेश अब उपलब्ध नहीं है",
         "loadError": "संदेश लोड नहीं हो सके",
-        "loadingMessages": "संदेश लोड हो रहे हैं…",
         "loadOlder": "पुराने संदेश लोड करें",
         "unknownAuthor": "टीम सदस्य"
       }

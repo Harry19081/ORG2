@@ -344,16 +344,14 @@ const ForkSessionSetupForm: React.FC<ForkSessionSetupFormProps> = ({
         </div>
 
         <div className="flex justify-end gap-2">
-          <Button onClick={cancel}>
-            {t("common:actions.cancel", { defaultValue: "Cancel" })}
-          </Button>
+          <Button onClick={cancel}>{t("common:actions.cancel")}</Button>
           <Button
             variant="primary"
             onClick={submit}
             disabled={!canContinue}
             data-testid="fork-session-setup-submit"
           >
-            {t("common:actions.confirm", { defaultValue: "Continue" })}
+            {t("common:actions.confirm")}
           </Button>
         </div>
       </div>

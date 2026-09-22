@@ -184,8 +184,7 @@ export const DispatchCategoryPalette: React.FC<
 
   // When the caller pre-selects a target (e.g. an org member row), surface
   const path = useMemo<PathSegment[]>(() => {
-    const label =
-      titleLabel ?? tCommon("filters.searchAgentOrOrg", "Select Agent");
+    const label = titleLabel ?? tCommon("filters.searchAgentOrOrg");
     return [
       {
         type: "action",

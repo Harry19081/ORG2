@@ -783,7 +783,6 @@
         "errorChannelMissing": "このチャンネルは利用できなくなりました",
         "errorMessageMissing": "このメッセージは利用できなくなりました",
         "loadError": "メッセージを読み込めませんでした",
-        "loadingMessages": "メッセージを読み込み中…",
         "loadOlder": "以前のメッセージを読み込む",
         "unknownAuthor": "メンバー"
       }

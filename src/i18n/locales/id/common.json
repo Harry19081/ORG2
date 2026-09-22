@@ -885,7 +885,6 @@
       "enterUrlToStart": "Masukkan URL untuk memulai",
       "privateBrowsingEmptyTitle": "Penjelajahan Pribadi: Masukkan URL untuk memulai",
       "simulatorBrowserNotice": "Browser ini hanya untuk pemutaran ulang sesi. Untuk penjelajahan persisten, gunakan Browser di Aplikasi Utama (Alat → Browser).",
-      "tlsDevNote": "Catatan: Beberapa situs HTTPS (seperti GitHub) mungkin menampilkan kesalahan TLS dalam mode pengembangan karena validasi sertifikat. Coba situs HTTP atau situs HTTPS sederhana seperti example.com.",
       "siteUnreachableTitle": "Situs ini tidak dapat dijangkau",
       "loadStalledTitle": "Halaman ini tidak selesai dimuat",
       "copyUrl": "Salin URL",
@@ -1540,11 +1539,11 @@
       "noResults": "Tidak ada model yang cocok",
       "chooseModel": "Pilih model",
       "chooseKey": "Pilih kunci",
-      "noCompatibleAccounts": "Tidak ada kunci yang kompatibel",
+      "noCompatibleKeys": "Tidak ada kunci yang kompatibel",
       "chooseModelHint": "Gunakan keyboard untuk bernavigasi, atau klik model dengan mouse",
       "chooseKeyHint": "Gunakan keyboard untuk bernavigasi, atau klik kunci dengan mouse",
       "noModelsForKey": "Tidak ada model yang diaktifkan untuk kunci ini",
-      "selectAccount": "Pilih akun"
+      "selectKey": "Pilih kunci"
     },
     "modelProperties": {
       "effort": "Upaya",
@@ -2201,11 +2200,9 @@
     "taskFailedPrivateBody": "Sebuah tugas gagal. Buka ORG2 untuk detailnya."
   },
   "teamInbox": {
-    "title": "Kotak Masuk Tim",
     "listLabel": "Daftar Kotak Masuk Tim",
     "itemsLabel": "Item Kotak Masuk Tim",
     "unreadCount": "{{count}} belum dibaca",
-    "allRead": "Semua sudah dibaca",
     "loadMore": "Muat lebih banyak",
     "filters": {
       "mentions": "Sebutan",
@@ -2254,7 +2251,6 @@
         "subtitle": "Item yang Anda arsipkan akan muncul di sini."
       }
     },
-    "loading": "Memuat Kotak Masuk Tim…",
     "drop": {
       "title": "Lepas untuk membuat Item Kerja",
       "subtitle": "Tinjau snapshot Sesi, lalu buat atau serahkan Item Kerja.",

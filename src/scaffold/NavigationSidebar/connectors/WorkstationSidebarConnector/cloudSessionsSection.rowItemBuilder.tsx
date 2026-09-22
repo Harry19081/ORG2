@@ -290,8 +290,8 @@ export function useCloudSessionRowItemBuilder({
           {
             icon: isPinned ? PinOffIcon : PinIcon,
             label: isPinned
-              ? tCommon("sessions:chat.unpinSession", "Unpin")
-              : tCommon("sessions:chat.pinSession", "Pin"),
+              ? tCommon("sessions:chat.unpinSession")
+              : tCommon("sessions:chat.pinSession"),
             onClick: () => toggleRemoteSessionPin(row.orgId, row.id),
           },
           {

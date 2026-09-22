@@ -21,9 +21,7 @@ export default function LazyGitHubLinkedReferences(
           <div
             className={`${DETAIL_PANEL_TOKENS.headerWidth} ${DETAIL_PANEL_TOKENS.threadContentPadding} w-full`}
           >
-            <TimelineLoadingSkeleton
-              label={t("git.issues.linkedLoading", "Loading linked items")}
-            />
+            <TimelineLoadingSkeleton label={t("git.issues.linkedLoading")} />
           </div>
         </div>
       }

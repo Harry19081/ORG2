@@ -103,20 +103,14 @@ export function WorktreeBranchTab({
           onChange={onQueryChange}
           showClearButton
           className="min-w-0 flex-1"
-          placeholder={t("creator.worktreeSource.branchSearch", {
-            defaultValue: "Search branches or enter a ref",
-          })}
-          ariaLabel={t("creator.worktreeSource.branchSearchAria", {
-            defaultValue: "Search branches or enter a base ref",
-          })}
+          placeholder={t("creator.worktreeSource.branchSearch")}
+          ariaLabel={t("creator.worktreeSource.branchSearchAria")}
         />
         <RefreshButton
           variant="secondary"
           size="small"
           iconOnly
-          label={t("creator.worktreeSource.refreshBranches", {
-            defaultValue: "Refresh branch list",
-          })}
+          label={t("creator.worktreeSource.refreshBranches")}
           refreshing={refreshing}
           disabled={!repoPath || state === "loading"}
           onRefresh={onRefresh}
@@ -140,30 +134,19 @@ export function WorktreeBranchTab({
             aria-live="assertive"
             className="flex h-[180px] flex-col items-center justify-center gap-2 px-4 text-center text-[13px] text-text-3"
           >
-            <span>
-              {error ||
-                t("creator.worktreeSource.branchError", {
-                  defaultValue: "Branches could not be loaded.",
-                })}
-            </span>
+            <span>{error || t("creator.worktreeSource.branchError")}</span>
             {customRefRow}
           </div>
         )}
         {state === "empty" && (
           <div className="flex h-[180px] flex-col items-center justify-center gap-2 px-4 text-center text-[13px] text-text-3">
-            <span>
-              {t("creator.worktreeSource.branchEmpty", {
-                defaultValue: "No branches found in this repository.",
-              })}
-            </span>
+            <span>{t("creator.worktreeSource.branchEmpty")}</span>
             {customRefRow}
           </div>
         )}
         {state === "ready" && groups.length === 0 && !offerCustomRef && (
           <div className="flex h-[180px] items-center justify-center px-4 text-center text-[13px] text-text-3">
-            {t("creator.worktreeSource.branchNoMatches", {
-              defaultValue: "No matching branches.",
-            })}
+            {t("creator.worktreeSource.branchNoMatches")}
           </div>
         )}
         {state === "ready" && (groups.length > 0 || offerCustomRef) && (

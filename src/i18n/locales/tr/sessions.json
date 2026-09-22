@@ -1892,7 +1892,6 @@
     "contextMenu": {
       "filesAndFolders": "Dosyalar ve Klasörler",
       "workItems": "İş Öğeleri",
-      "back": "Geri",
       "recent": "Son Kullanılanlar",
       "showMore": "{{remaining}} tane daha göster",
       "session": "Oturum"

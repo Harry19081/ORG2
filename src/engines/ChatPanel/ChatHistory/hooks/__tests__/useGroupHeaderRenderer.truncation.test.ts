@@ -7,6 +7,7 @@ import {
   makeChatItem,
   makeSessionEvent,
 } from "@src/engines/SessionCore/rendering/props/__tests__/fixtures";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import { useGroupHeaderRenderer } from "../useGroupHeaderRenderer";
 
@@ -49,6 +50,11 @@ function Header({
   });
   return renderHeader(0);
 }
+
+vi.mock("react-i18next", () => ({
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
+}));
 
 describe("continuous chat user-message previews", () => {
   let container: HTMLDivElement;

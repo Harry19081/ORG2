@@ -34,9 +34,9 @@ export function branchSwitchQuestion(
           onClose={() => finish(false)}
           onCancel={() => finish(false)}
           onOk={() => finish(Boolean(okLabel))}
-          okText={okLabel || t("actions.close", "Close")}
+          okText={okLabel || t("actions.close")}
           // A notice without its own action has one acknowledgement button.
-          cancelText={okLabel ? t("actions.cancel", "Cancel") : ""}
+          cancelText={okLabel ? t("actions.cancel") : ""}
         >
           <p className="text-sm break-words whitespace-pre-wrap text-text-2">
             {message}

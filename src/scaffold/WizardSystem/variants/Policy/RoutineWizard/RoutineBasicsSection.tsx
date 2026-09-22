@@ -73,16 +73,12 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
       },
       {
         value: "PROVIDER_EVENT",
-        label: t("routineFields.activationProviderEvent", {
-          defaultValue: "Provider event",
-        }),
+        label: t("routineFields.activationProviderEvent"),
         dataTestId: "routine-wizard-trigger-option-provider_event",
       },
       {
         value: "MANUAL",
-        label: t("routineFields.activationManual", {
-          defaultValue: "Manual",
-        }),
+        label: t("routineFields.activationManual"),
         dataTestId: "routine-wizard-trigger-option-manual",
       },
     ],
@@ -195,17 +191,11 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
         {draft.triggerKind === "MANUAL" ? null : draft.triggerKind ===
           "PROVIDER_EVENT" ? (
           <>
-            <SectionRow
-              label={t("routineFields.provider", { defaultValue: "Provider" })}
-              required
-              indent
-            >
+            <SectionRow label={t("routineFields.provider")} required indent>
               <Input
                 value={draft.provider}
                 onChange={(value) => updateDraft("provider", value)}
-                placeholder={t("routineFields.providerPlaceholder", {
-                  defaultValue: "github",
-                })}
+                placeholder={t("routineFields.providerPlaceholder")}
                 size="default"
                 style={SECTION_CONTROL_STYLE}
                 autoComplete="off"
@@ -214,17 +204,11 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
                 data-testid="routine-wizard-provider-input"
               />
             </SectionRow>
-            <SectionRow
-              label={t("routineFields.eventKind", { defaultValue: "Event" })}
-              required
-              indent
-            >
+            <SectionRow label={t("routineFields.eventKind")} required indent>
               <Input
                 value={draft.eventKind}
                 onChange={(value) => updateDraft("eventKind", value)}
-                placeholder={t("routineFields.eventKindPlaceholder", {
-                  defaultValue: "pull_request",
-                })}
+                placeholder={t("routineFields.eventKindPlaceholder")}
                 size="default"
                 style={SECTION_CONTROL_STYLE}
                 autoComplete="off"
@@ -378,11 +362,7 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
       </SectionContainer>
 
       <SectionContainer>
-        <SectionRow
-          label={t("routineFields.extraActivations", {
-            defaultValue: "Additional activations",
-          })}
-        >
+        <SectionRow label={t("routineFields.extraActivations")}>
           <Button
             variant="tertiary"
             size="small"
@@ -398,7 +378,7 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
             }
             data-testid="routine-wizard-add-activation"
           >
-            {t("common:actions.add", { defaultValue: "Add" })}
+            {t("common:actions.add")}
           </Button>
         </SectionRow>
         {draft.extraActivations.map((activation) => {
@@ -420,27 +400,19 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
                   options={[
                     {
                       value: "schedule",
-                      label: t("routineFields.activationSchedule", {
-                        defaultValue: "Schedule",
-                      }),
+                      label: t("routineFields.activationSchedule"),
                     },
                     {
                       value: "one_time",
-                      label: t("routineFields.activationOneTime", {
-                        defaultValue: "One time",
-                      }),
+                      label: t("routineFields.activationOneTime"),
                     },
                     {
                       value: "provider_event",
-                      label: t("routineFields.activationProviderEvent", {
-                        defaultValue: "Provider event",
-                      }),
+                      label: t("routineFields.activationProviderEvent"),
                     },
                     {
                       value: "manual",
-                      label: t("routineFields.activationManual", {
-                        defaultValue: "Manual",
-                      }),
+                      label: t("routineFields.activationManual"),
                     },
                   ]}
                   onChange={(value) =>
@@ -487,9 +459,7 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
                     <Input
                       value={activation.provider}
                       onChange={(value) => patchActivation({ provider: value })}
-                      placeholder={t("routineFields.providerPlaceholder", {
-                        defaultValue: "github",
-                      })}
+                      placeholder={t("routineFields.providerPlaceholder")}
                       size="small"
                       autoComplete="off"
                       spellCheck={false}
@@ -500,9 +470,7 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
                       onChange={(value) =>
                         patchActivation({ eventKind: value })
                       }
-                      placeholder={t("routineFields.eventKindPlaceholder", {
-                        defaultValue: "pull_request",
-                      })}
+                      placeholder={t("routineFields.eventKindPlaceholder")}
                       size="small"
                       autoComplete="off"
                       spellCheck={false}
@@ -528,9 +496,7 @@ const RoutineBasicsSection: React.FC<RoutineBasicsSectionProps> = ({
                       ),
                     }))
                   }
-                  aria-label={t("common:actions.remove", {
-                    defaultValue: "Remove",
-                  })}
+                  aria-label={t("common:actions.remove")}
                   data-testid={`routine-wizard-activation-remove-${activation.key}`}
                 />
               </div>

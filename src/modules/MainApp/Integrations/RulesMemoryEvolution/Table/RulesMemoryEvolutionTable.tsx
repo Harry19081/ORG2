@@ -293,9 +293,9 @@ export const RulesMemoryEvolutionTable: React.FC<
 
   const tabs = useMemo<TabPillItem[]>(
     () => [
-      { key: "rules", label: t("rulesTabs.rules", "Rules") },
-      { key: "memory", label: t("rulesTabs.memory", "Memory") },
-      { key: "evolution", label: t("rulesTabs.evolution", "Evolution") },
+      { key: "rules", label: t("rulesTabs.rules") },
+      { key: "memory", label: t("rulesTabs.memory") },
+      { key: "evolution", label: t("rulesTabs.evolution") },
       {
         key: "security",
         label: tSettings("sections.security"),

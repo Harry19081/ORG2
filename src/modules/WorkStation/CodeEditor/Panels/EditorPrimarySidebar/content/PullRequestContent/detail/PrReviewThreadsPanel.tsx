@@ -142,7 +142,7 @@ function ReviewThread({
           <MarkdownTextareaEditor
             value={reply}
             onChange={(markdown) => setReply(markdown)}
-            placeholder={t("git.pr.replyPlaceholder", "Reply…")}
+            placeholder={t("git.pr.replyPlaceholder")}
             minHeight={56}
             maxHeight={144}
             appearance="outlined"
@@ -164,7 +164,7 @@ function ReviewThread({
               disabled={!reply.trim() || submitting}
               onClick={() => void handleReply()}
             >
-              {t("git.pr.reply", "Reply")}
+              {t("git.pr.reply")}
             </Button>
           </div>
         </div>
@@ -207,9 +207,7 @@ export const PrReviewThreadsPanel: React.FC<PrReviewThreadsPanelProps> = ({
           strokeWidth={1.9}
           className="text-text-3"
         />
-        <span className="font-medium">
-          {t("git.pr.reviewThreads", "Review comments")}
-        </span>
+        <span className="font-medium">{t("git.pr.reviewThreads")}</span>
         <span className="rounded-full bg-fill-2 px-1.5 text-[10px] text-text-3 tabular-nums">
           {threads.length}
         </span>

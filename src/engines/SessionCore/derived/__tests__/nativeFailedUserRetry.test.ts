@@ -13,6 +13,7 @@ import {
   type QueuedMessage,
   messageQueueAtom,
 } from "@src/store/ui/messageQueueAtom";
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import {
   chatEventsForSessionAtomFamily,
@@ -20,9 +21,8 @@ import {
 } from "../sessionScopedChatEvents";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback ?? key,
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 const sessionId = "cliagent-native-retry-fixture";

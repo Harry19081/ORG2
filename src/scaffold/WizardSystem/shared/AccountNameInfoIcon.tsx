@@ -10,7 +10,7 @@ export function AccountNameInfoIcon({ provider }: { provider: string }) {
     <Tooltip
       content={
         <div className="max-w-[280px]">
-          {t("keyVault.accountNameDesc", { provider })}
+          {t("keyVault.keyNameDesc", { provider })}
         </div>
       }
       position="top"

@@ -113,8 +113,8 @@ const HistoryTabComposer: React.FC<HistoryTabComposerProps> = ({
           aria-hidden
         />
       }
-      title={t("workItems.activity.submitComment", "Submit comment")}
-      aria-label={t("workItems.activity.submitComment", "Submit comment")}
+      title={t("workItems.activity.submitComment")}
+      aria-label={t("workItems.activity.submitComment")}
       onClick={onCommentSubmit}
       disabled={!hasComment || isSubmittingComment}
       loading={isSubmittingComment}
@@ -136,9 +136,7 @@ const HistoryTabComposer: React.FC<HistoryTabComposerProps> = ({
             data-testid="work-item-discussion-reply-context"
           >
             <span className="truncate">
-              {t("workItems.activity.replyingInThread", {
-                defaultValue: "Replying in thread",
-              })}
+              {t("workItems.activity.replyingInThread")}
             </span>
             <Button
               variant="tertiary"
@@ -153,12 +151,8 @@ const HistoryTabComposer: React.FC<HistoryTabComposerProps> = ({
                   aria-hidden
                 />
               }
-              aria-label={t("workItems.activity.cancelReply", {
-                defaultValue: "Cancel reply",
-              })}
-              title={t("workItems.activity.cancelReply", {
-                defaultValue: "Cancel reply",
-              })}
+              aria-label={t("workItems.activity.cancelReply")}
+              title={t("workItems.activity.cancelReply")}
               onClick={() => onReplyToComment?.(null)}
             />
           </div>

@@ -783,7 +783,6 @@
         "errorChannelMissing": "此頻道已無法使用",
         "errorMessageMissing": "該訊息已無法使用",
         "loadError": "訊息載入失敗",
-        "loadingMessages": "正在載入訊息…",
         "loadOlder": "載入較早的訊息",
         "unknownAuthor": "團隊成員"
       }

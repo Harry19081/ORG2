@@ -885,7 +885,6 @@
       "enterUrlToStart": "Enter a URL to get started",
       "privateBrowsingEmptyTitle": "Private Browsing: Enter a URL to get started",
       "simulatorBrowserNotice": "This browser is for session replay only. For persistent browsing, use the Browser in Main App (Tools → Browser).",
-      "tlsDevNote": "Note: Some HTTPS sites (like GitHub) may show TLS errors in development mode due to certificate validation. Try HTTP sites or simple HTTPS sites like example.com.",
       "siteUnreachableTitle": "This site can't be reached",
       "loadStalledTitle": "This page didn't finish loading",
       "copyUrl": "Copy URL",
@@ -1540,11 +1539,11 @@
       "noResults": "No matching models",
       "chooseModel": "Choose a model",
       "chooseKey": "Choose a key",
-      "noCompatibleAccounts": "No compatible keys",
+      "noCompatibleKeys": "No compatible keys",
       "chooseModelHint": "Use the keyboard to navigate, or click a model with the mouse",
       "chooseKeyHint": "Use the keyboard to navigate, or click a key with the mouse",
       "noModelsForKey": "No models enabled for this key",
-      "selectAccount": "Select an account"
+      "selectKey": "Select a key"
     },
     "modelProperties": {
       "effort": "Effort",
@@ -2201,11 +2200,9 @@
     "taskFailedPrivateBody": "A task failed. Open ORG2 for details."
   },
   "teamInbox": {
-    "title": "Team Inbox",
     "listLabel": "Team Inbox list",
     "itemsLabel": "Team Inbox items",
     "unreadCount": "{{count}} unread",
-    "allRead": "All caught up",
     "loadMore": "Load more",
     "filters": {
       "mentions": "Mentions",
@@ -2254,7 +2251,6 @@
         "subtitle": "Items you archive will appear here."
       }
     },
-    "loading": "Loading Team Inbox…",
     "drop": {
       "title": "Drop to create a Work Item",
       "subtitle": "Review the Session snapshot, then create or hand off the Work Item.",

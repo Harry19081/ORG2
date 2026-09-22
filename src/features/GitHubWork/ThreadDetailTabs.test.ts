@@ -2,12 +2,13 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
+
 import ThreadDetailTabs from "./ThreadDetailTabs";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (_key: string, fallback: string) => fallback,
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 describe("ThreadDetailTabs", () => {

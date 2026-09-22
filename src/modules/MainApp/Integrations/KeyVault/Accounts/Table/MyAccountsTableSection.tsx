@@ -392,8 +392,8 @@ export default function MyAccountsTableSection({
       icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       iconOnly
       onClick={onAdd}
-      aria-label={t("keyVault.addAccount")}
-      title={t("keyVault.addAccount")}
+      aria-label={t("keyVault.addKey")}
+      title={t("keyVault.addKey")}
       data-testid="key-vault-add-account-button"
     />
   );
@@ -422,9 +422,9 @@ export default function MyAccountsTableSection({
           </>
         ),
       }}
-      emptyTitle={t("keyVault.noAccountsFound")}
+      emptyTitle={t("keyVault.noKeysFound")}
       emptyAction={{
-        label: t("keyVault.addAccount"),
+        label: t("keyVault.addKey"),
         onClick: onAdd,
       }}
     />

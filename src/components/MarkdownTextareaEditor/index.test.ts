@@ -12,13 +12,14 @@ import {
   vi,
 } from "vitest";
 
+import { useTestTranslation } from "@src/test/i18nTestTranslate";
+
 import MarkdownTextareaEditor from ".";
 import type { MarkdownTextareaEditorRef } from ".";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback ?? key,
-  }),
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
 }));
 
 vi.mock("@src/components/MarkDown", () => ({

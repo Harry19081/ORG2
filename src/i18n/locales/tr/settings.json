@@ -960,7 +960,6 @@
     "newChatPage": "Yeni sohbet sayfası"
   },
   "harnessConnections": {
-    "description": "Her kodlama aracının kullanacağı bağlantıyı seçin",
     "current": "Yapılandırılmış bağlantı",
     "scope": "Bu cihazın CLI varsayılanına uygulanır; proje ayarları ve çalışan oturumlar öncelikli olabilir",
     "original": "Özgün kurulum",

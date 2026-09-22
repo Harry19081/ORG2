@@ -7,6 +7,7 @@ import { GitForkIcon, MoreHorizontalIcon } from "@src/icons";
 import { NavigationMenuParentRow } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/NavigationMenu/NavigationMenuRow";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
+import { testTranslate, useTestTranslation } from "@src/test/i18nTestTranslate";
 
 import {
   buildCloudSessionThreads,
@@ -78,6 +79,11 @@ function fork(
     ...overrides,
   });
 }
+
+vi.mock("react-i18next", () => ({
+  useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
+    useTestTranslation(...args),
+}));
 
 describe("buildCloudSessionThreads", () => {
   it("groups descendants flat under the root, sorted by lastActivityAt desc", () => {
@@ -506,7 +512,7 @@ describe("cloud teammate hover card", () => {
     expect(
       markup.indexOf('data-testid="session-hover-workspace"')
     ).toBeLessThan(markup.indexOf('data-testid="session-hover-branch"'));
-    expect(markup).toContain("sessions:history.detail.internal");
+    expect(markup).toContain(testTranslate("sessions:history.detail.internal"));
     // Owner agent/model row (pushed with the metadata since 2026-07-11).
     expect(markup).toContain(
       'text-text-1"><i data-agent-icon="stub" data-size="13"'
@@ -536,7 +542,7 @@ describe("cloud teammate hover card", () => {
       })
     );
 
-    expect(markup).toContain("sessions:history.detail.external");
+    expect(markup).toContain(testTranslate("sessions:history.detail.external"));
     expect(markup).toContain("Codex App");
     expect(markup).not.toContain("External session");
   });
@@ -549,11 +555,15 @@ describe("cloud teammate hover card", () => {
       })
     );
 
-    expect(markup).toContain("sessions:history.detail.sessionId");
+    expect(markup).toContain(
+      testTranslate("sessions:history.detail.sessionId")
+    );
     expect(markup).toContain(`title="${sessionId}"`);
     expect(markup).toContain("agentses…56789abc");
     expect(markup).toContain(
-      'aria-label="common:actions.copy sessions:history.detail.sessionId"'
+      `aria-label="${testTranslate("common:actions.copy")} ${testTranslate(
+        "sessions:history.detail.sessionId"
+      )}"`
     );
   });
 });

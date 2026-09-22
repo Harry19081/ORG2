@@ -319,7 +319,7 @@ export function useSessionMenuItems({
       const label = loading
         ? tCommon("sessions:chat.loading")
         : state.phase === "error"
-          ? tCommon("common:actions.retry", "Retry")
+          ? tCommon("common:actions.retry")
           : tCommon("common:actions.loadMore");
       return loadMoreRow(category, loading, label);
     },
@@ -332,7 +332,7 @@ export function useSessionMenuItems({
     const label = state.loading
       ? tCommon("sessions:chat.loading")
       : state.error
-        ? tCommon("common:actions.retry", "Retry")
+        ? tCommon("common:actions.retry")
         : tCommon("common:actions.loadMore");
     return [unifiedLoadMoreRow(state, label)];
   }, [pagination, tCommon]);
@@ -381,15 +381,15 @@ export function useSessionMenuItems({
 
   const dateGroupLabels: Record<DateGroupKey, string> = useMemo(
     () => ({
-      today: tCommon("sessions:chat.historyToday", "Today"),
-      yesterday: tCommon("sessions:chat.historyYesterday", "Yesterday"),
-      thisWeek: tCommon("sessions:chat.historyThisWeek", "This Week"),
-      older: tCommon("sessions:chat.historyOlder", "Older"),
+      today: tCommon("sessions:chat.historyToday"),
+      yesterday: tCommon("sessions:chat.historyYesterday"),
+      thisWeek: tCommon("sessions:chat.historyThisWeek"),
+      older: tCommon("sessions:chat.historyOlder"),
     }),
     [tCommon]
   );
 
-  const pinnedLabel = tCommon("sessions:chat.historyPinned", "Pinned");
+  const pinnedLabel = tCommon("sessions:chat.historyPinned");
 
   const customHeaders = customSections?.headers;
   const customMembership = customSections?.membership;
@@ -472,10 +472,7 @@ export function useSessionMenuItems({
     ]
   );
 
-  const noWorkspaceLabel = tCommon(
-    "sessions:chat.historyNoWorkspace",
-    "No Workspace"
-  );
+  const noWorkspaceLabel = tCommon("sessions:chat.historyNoWorkspace");
 
   const byWorkspaceMenuItems = useMemo<NavigationMenuItem[]>(
     () =>
@@ -503,9 +500,7 @@ export function useSessionMenuItems({
       case "none": {
         const items: NavigationMenuItem[] = [];
         const hiddenPinned = appendPinnedSessions(items, false);
-        items.push(
-          separator("sessions", tCommon("sessions:chat.history", "Sessions"))
-        );
+        items.push(separator("sessions", tCommon("sessions:chat.history")));
         const hidden = appendGroupSessions(items, "sessions", unpinnedSessions);
         if (!hidden && !hiddenPinned) appendTrailingLoadMoreItems(items);
         return items;

@@ -324,15 +324,10 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
             </div>
           )}
           {renderSection(
-            t("creator.slashMenu.workspaceSkills", {
-              defaultValue: "Workspace Skills",
-            }),
+            t("creator.slashMenu.workspaceSkills"),
             workspaceSkillItems
           )}
-          {renderSection(
-            t("creator.slashMenu.userSkills", { defaultValue: "User Skills" }),
-            userSkillItems
-          )}
+          {renderSection(t("creator.slashMenu.userSkills"), userSkillItems)}
           {nonSkillItems.map(renderItem)}
         </div>
 

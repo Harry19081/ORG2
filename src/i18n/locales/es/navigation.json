@@ -783,7 +783,6 @@
         "errorChannelMissing": "Este canal ya no está disponible",
         "errorMessageMissing": "Ese mensaje ya no está disponible",
         "loadError": "No se pudieron cargar los mensajes",
-        "loadingMessages": "Cargando mensajes…",
         "loadOlder": "Cargar mensajes anteriores",
         "unknownAuthor": "Compañero de equipo"
       }

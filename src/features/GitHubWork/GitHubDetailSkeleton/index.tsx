@@ -146,15 +146,15 @@ const GitHubDetailSkeleton: React.FC<GitHubDetailSkeletonProps> = memo(
     const sidebarSections =
       kind === "pr"
         ? [
-            t("git.pr.sidebar.reviewers", "Reviewers"),
-            t("git.pr.sidebar.assignees", "Assignees"),
-            t("git.pr.sidebar.labels", "Labels"),
-            t("git.pr.sidebar.actions", "Actions"),
+            t("git.pr.sidebar.reviewers"),
+            t("git.pr.sidebar.assignees"),
+            t("git.pr.sidebar.labels"),
+            t("git.pr.sidebar.actions"),
           ]
         : [
-            t("projects:workItems.contextMenu.status", "Status"),
-            t("projects:workItems.properties.labels", "Labels"),
-            t("projects:workItems.properties.assignment", "Assignment"),
+            t("projects:workItems.contextMenu.status"),
+            t("projects:workItems.properties.labels"),
+            t("projects:workItems.properties.assignment"),
           ];
 
     const sidebar = (
@@ -172,10 +172,7 @@ const GitHubDetailSkeleton: React.FC<GitHubDetailSkeletonProps> = memo(
         <WorkstationTrailSurface className="flex self-start">
           {kind === "issue" ? (
             <WorkstationTrailHeader
-              title={t(
-                "projects:workItems.properties.title",
-                "Work Item Properties"
-              )}
+              title={t("projects:workItems.properties.title")}
             />
           ) : null}
           <WorkstationTrailBody
@@ -245,8 +242,8 @@ const GitHubDetailSkeleton: React.FC<GitHubDetailSkeletonProps> = memo(
               number={number}
               loadingLabel={
                 kind === "pr"
-                  ? t("git.pr.loadingConversation", "Loading…")
-                  : t("git.issues.loadingTimeline", "Loading activity…")
+                  ? t("git.pr.loadingConversation")
+                  : t("git.issues.loadingTimeline")
               }
               showFlowHeader={showFlowHeader}
               inlineProperties={inlineRail ? sidebar : undefined}
