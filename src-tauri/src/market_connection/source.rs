@@ -610,6 +610,17 @@ pub(crate) fn protocol_base_url(workspace_root: &str, agent: &str) -> String {
     }
 }
 
+#[async_trait::async_trait]
+impl super::native_admission::CapacitySource for MarketSource {
+    async fn buyer_capacity(&self, metadata: &ConnectionMetadata) -> Result<usize, String> {
+        let (lease, _authorization, entry) = self.authorized_acquire(metadata).await?;
+        let connection = entry.lock().await.restore(metadata.clone()).await?;
+        let capacity = connection.buyer_concurrency().await.map_err(String::from)?;
+        lease.check()?;
+        Ok(capacity)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

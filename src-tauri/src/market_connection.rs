@@ -16,6 +16,8 @@ mod native_app_launch;
 #[cfg(feature = "market-connect")]
 mod native_provider;
 #[cfg(feature = "market-connect")]
+mod native_admission;
+#[cfg(feature = "market-connect")]
 mod owner;
 #[cfg(feature = "market-connect")]
 mod owner_refresh;

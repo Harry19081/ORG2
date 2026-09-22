@@ -1,5 +1,6 @@
 //! ORG2 Market enrollment protocol. No Tauri, UI, KeyVault, billing or config
 //! writer dependency. The desktop host owns secure storage and client adapters.
+mod buyer_protection;
 mod services;
 pub use services::{ActivateService, ManagedAccess, ManagedModel, ManagedService};
 mod client;
