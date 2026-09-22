@@ -211,6 +211,35 @@
       "description": "关于你",
       "descriptionHelp": "简短描述你的背景、兴趣以及偏好的工作方式",
       "descriptionPlaceholder": "向 Agent 介绍一下你自己…"
+    },
+    "custom": {
+      "title": "自定义状态",
+      "description": "为内置三种状态覆盖不到的场景添加一个状态，例如“深度工作”“结对编程”或“值班”",
+      "add": "添加自定义状态",
+      "defaultLabel": "自定义状态",
+      "nameLabel": "名称",
+      "namePlaceholder": "状态名称",
+      "iconLabel": "图标",
+      "iconSearchPlaceholder": "搜索图标",
+      "guidancePlaceholder": "该状态生效时，Agent 应如何调整行为？",
+      "stanceLabel": "行为姿态",
+      "stanceDesc": "该状态生效时，Agent 如何处理需要阻塞等待的决定",
+      "stanceInteractive": "交互 — 随时问我",
+      "stanceDeferAndBatch": "延后并批量 — 先干活，稍后再问",
+      "stanceAutonomous": "自主 — 从不等我",
+      "deleteTitle": "删除状态？",
+      "deleteMessage": "「{{name}}」将被移除。此操作无法撤销。",
+      "deleteConfirm": "删除",
+      "deleteCancel": "取消"
+    },
+    "reset": {
+      "label": "重置状态设置",
+      "description": "将在线、隐身和离开的指令与时长恢复为默认值。自定义状态会保留",
+      "button": "恢复默认值",
+      "confirmTitle": "重置状态设置？",
+      "confirmMessage": "在线、隐身和离开的指令与时长将恢复为默认值。你的自定义状态会保留。",
+      "confirmCancel": "取消",
+      "done": "状态设置已恢复为默认值"
     }
   },
   "general": {

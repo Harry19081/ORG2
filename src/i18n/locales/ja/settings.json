@@ -130,6 +130,35 @@
       "description": "あなたについて",
       "descriptionHelp": "経歴、興味、好みの働き方の簡単な説明",
       "descriptionPlaceholder": "Agent に自己紹介してください…"
+    },
+    "custom": {
+      "title": "カスタムステータス",
+      "description": "組み込みの3つでは表せない状態を追加します（例:「集中作業」「ペアプロ」「オンコール」）",
+      "add": "カスタムステータスを追加",
+      "defaultLabel": "カスタムステータス",
+      "nameLabel": "名前",
+      "namePlaceholder": "ステータス名",
+      "iconLabel": "アイコン",
+      "iconSearchPlaceholder": "アイコンを検索",
+      "guidancePlaceholder": "このステータスのとき、エージェントはどう振る舞うべきですか？",
+      "stanceLabel": "行動の姿勢",
+      "stanceDesc": "このステータスのとき、エージェントが待ちの発生する判断をどう扱うか",
+      "stanceInteractive": "対話的 — 自由に質問してよい",
+      "stanceDeferAndBatch": "後回しでまとめる — まず作業し、あとで質問",
+      "stanceAutonomous": "自律 — 私を待たない",
+      "deleteTitle": "ステータスを削除しますか？",
+      "deleteMessage": "「{{name}}」を削除します。この操作は元に戻せません。",
+      "deleteConfirm": "削除",
+      "deleteCancel": "キャンセル"
+    },
+    "reset": {
+      "label": "ステータス設定をリセット",
+      "description": "オンライン・不可視・離席の指示とタイミングを既定値に戻します。カスタムステータスは保持されます",
+      "button": "既定値に戻す",
+      "confirmTitle": "ステータス設定をリセットしますか？",
+      "confirmMessage": "オンライン・不可視・離席の指示とタイミングが既定値に戻ります。カスタムステータスは保持されます。",
+      "confirmCancel": "キャンセル",
+      "done": "ステータス設定を既定値に戻しました"
     }
   },
   "general": {

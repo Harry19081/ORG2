@@ -130,6 +130,35 @@
       "description": "關於你",
       "descriptionHelp": "簡短描述你的背景、興趣以及偏好的工作方式",
       "descriptionPlaceholder": "向 Agent 介紹一下你自己…"
+    },
+    "custom": {
+      "title": "自訂狀態",
+      "description": "為內建三種狀態涵蓋不到的情境新增一個狀態，例如「深度工作」「結對程式設計」或「待命」",
+      "add": "新增自訂狀態",
+      "defaultLabel": "自訂狀態",
+      "nameLabel": "名稱",
+      "namePlaceholder": "狀態名稱",
+      "iconLabel": "圖示",
+      "iconSearchPlaceholder": "搜尋圖示",
+      "guidancePlaceholder": "該狀態生效時，Agent 應如何調整行為？",
+      "stanceLabel": "行為姿態",
+      "stanceDesc": "該狀態生效時，Agent 如何處理需要阻塞等待的決定",
+      "stanceInteractive": "互動 — 隨時問我",
+      "stanceDeferAndBatch": "延後並批次 — 先做事，稍後再問",
+      "stanceAutonomous": "自主 — 從不等我",
+      "deleteTitle": "刪除狀態？",
+      "deleteMessage": "「{{name}}」將被移除。此操作無法復原。",
+      "deleteConfirm": "刪除",
+      "deleteCancel": "取消"
+    },
+    "reset": {
+      "label": "重設狀態設定",
+      "description": "將上線、隱身和離開的指示與時間恢復為預設值。自訂狀態會保留",
+      "button": "恢復預設值",
+      "confirmTitle": "重設狀態設定？",
+      "confirmMessage": "上線、隱身和離開的指示與時間將恢復為預設值。你的自訂狀態會保留。",
+      "confirmCancel": "取消",
+      "done": "狀態設定已恢復為預設值"
     }
   },
   "general": {

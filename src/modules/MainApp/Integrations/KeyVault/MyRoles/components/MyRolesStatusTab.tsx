@@ -32,6 +32,8 @@ import {
   PRESENCE_GUIDANCE_DEFAULT_VALUES,
   type PresenceGuidanceKey,
 } from "../myRolesConstants";
+import { MyRolesCustomStatusesSection } from "./MyRolesCustomStatusesSection";
+import { MyRolesResetSection } from "./MyRolesResetSection";
 
 export const MyRolesStatusTab: React.FC = () => {
   const { t } = useTranslation(["settings", "navigation"]);
@@ -357,6 +359,10 @@ export const MyRolesStatusTab: React.FC = () => {
           t("navigation:sidebar.presence.away")
         )}
       </SectionContainer>
+
+      <MyRolesCustomStatusesSection />
+
+      <MyRolesResetSection />
     </div>
   );
 };

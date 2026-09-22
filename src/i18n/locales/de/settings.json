@@ -130,6 +130,35 @@
       "description": "Über dich",
       "descriptionHelp": "Eine kurze Beschreibung deines Hintergrunds, deiner Interessen und deiner Arbeitsweise",
       "descriptionPlaceholder": "Erzähl dem Agent von dir…"
+    },
+    "custom": {
+      "title": "Eigene Status",
+      "description": "Lege einen Status für eine Haltung an, die die drei integrierten nicht abdecken – etwa „Fokusarbeit“, „Pair Programming“ oder „Rufbereitschaft“",
+      "add": "Eigenen Status hinzufügen",
+      "defaultLabel": "Eigener Status",
+      "nameLabel": "Name",
+      "namePlaceholder": "Statusname",
+      "iconLabel": "Symbol",
+      "iconSearchPlaceholder": "Symbole suchen",
+      "guidancePlaceholder": "Wie soll der Agent sein Verhalten anpassen, wenn dieser Status aktiv ist?",
+      "stanceLabel": "Verhaltenshaltung",
+      "stanceDesc": "Wie der Agent blockierende Entscheidungen behandelt, während dieser Status aktiv ist",
+      "stanceInteractive": "Interaktiv — jederzeit nachfragen",
+      "stanceDeferAndBatch": "Aufschieben & bündeln — erst arbeiten, später fragen",
+      "stanceAutonomous": "Autonom — nie auf mich warten",
+      "deleteTitle": "Status löschen?",
+      "deleteMessage": "\"{{name}}\" wird entfernt. Dies kann nicht rückgängig gemacht werden.",
+      "deleteConfirm": "Löschen",
+      "deleteCancel": "Abbrechen"
+    },
+    "reset": {
+      "label": "Statuseinstellungen zurücksetzen",
+      "description": "Setzt Anweisungen und Zeiten für Online, Unsichtbar und Abwesend auf die Standardwerte zurück. Eigene Status bleiben erhalten",
+      "button": "Auf Standard zurücksetzen",
+      "confirmTitle": "Statuseinstellungen zurücksetzen?",
+      "confirmMessage": "Anweisungen und Zeiten für Online, Unsichtbar und Abwesend werden auf die Standardwerte zurückgesetzt. Deine eigenen Status bleiben erhalten.",
+      "confirmCancel": "Abbrechen",
+      "done": "Statuseinstellungen auf Standard zurückgesetzt"
     }
   },
   "general": {

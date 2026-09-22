@@ -130,6 +130,35 @@
       "description": "O tobie",
       "descriptionHelp": "Krótki opis twojego doświadczenia, zainteresowań i sposobu pracy",
       "descriptionPlaceholder": "Opowiedz Agentowi o sobie…"
+    },
+    "custom": {
+      "title": "Własne statusy",
+      "description": "Dodaj status dla sytuacji, której nie obejmują trzy wbudowane — na przykład „Praca w skupieniu”, „Programowanie w parze” lub „Dyżur”",
+      "add": "Dodaj własny status",
+      "defaultLabel": "Własny status",
+      "nameLabel": "Nazwa",
+      "namePlaceholder": "Nazwa statusu",
+      "iconLabel": "Ikona",
+      "iconSearchPlaceholder": "Szukaj ikon",
+      "guidancePlaceholder": "Jak agent ma dostosować swoje zachowanie, gdy ten status jest aktywny?",
+      "stanceLabel": "Postawa zachowania",
+      "stanceDesc": "Jak agent traktuje decyzje blokujące, gdy ten status jest aktywny",
+      "stanceInteractive": "Interaktywnie — pytaj mnie swobodnie",
+      "stanceDeferAndBatch": "Odłóż i grupuj — najpierw pracuj, pytaj później",
+      "stanceAutonomous": "Autonomicznie — nigdy nie czekaj na mnie",
+      "deleteTitle": "Usunąć status?",
+      "deleteMessage": "„{{name}}” zostanie usunięta. Tej operacji nie można cofnąć.",
+      "deleteConfirm": "Usuń",
+      "deleteCancel": "Anuluj"
+    },
+    "reset": {
+      "label": "Przywróć ustawienia statusów",
+      "description": "Przywraca wskazówki i czasy dla statusów Dostępny, Niewidoczny i Zaraz wracam do wartości domyślnych. Własne statusy pozostają bez zmian",
+      "button": "Przywróć wartości domyślne",
+      "confirmTitle": "Przywrócić ustawienia statusów?",
+      "confirmMessage": "Wskazówki i czasy dla statusów Dostępny, Niewidoczny i Zaraz wracam wrócą do wartości domyślnych. Twoje własne statusy zostaną zachowane.",
+      "confirmCancel": "Anuluj",
+      "done": "Przywrócono domyślne ustawienia statusów"
     }
   },
   "general": {
