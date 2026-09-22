@@ -1,4 +1,28 @@
 {
+  "gitLabels": {
+    "contains": "Enthält Dateien: {{status}}",
+    "staged": "{{status}} (vorgemerkt)",
+    "additions": "Hinzugefügte Zeilen",
+    "deletions": "Gelöschte Zeilen",
+    "M": "Geändert",
+    "U": "Nicht versioniert",
+    "A": "Hinzugefügt",
+    "D": "Gelöscht",
+    "R": "Umbenannt",
+    "C": "Konflikt",
+    "I": "Ignoriert",
+    "?": "Unbekannter Status"
+  },
+  "findScope": {
+    "session": "In Sitzung suchen",
+    "file": "In Datei suchen",
+    "named": "In {{name}} suchen"
+  },
+  "sidebarSettings": {
+    "title": "Seitenleiste",
+    "showSidebar": "Seitenleiste anzeigen",
+    "colorSourceControlFiles": "Diff-Farben für Dateien"
+  },
   "teamInbox": {
     "listLabel": "Liste des Team-Posteingangs",
     "itemsLabel": "Einträge im Team-Posteingang",
@@ -295,6 +319,9 @@
     "confirm": "Bestätigen",
     "apply": "Anwenden",
     "reset": "Zurücksetzen",
+    "resetFilters": "Filter zurücksetzen",
+    "cardView": "Kartenansicht",
+    "listView": "Listenansicht",
     "search": "Suchen",
     "add": "Hinzufügen",
     "remove": "Entfernen",
@@ -338,6 +365,12 @@
     "closeOthers": "Andere schließen",
     "closeSaved": "Gespeicherte schließen",
     "openInNewWindow": "In neuem Fenster öffnen",
+    "exportAndSync": "Exportieren & synchronisieren",
+    "export": "Exportieren",
+    "openIn": "Öffnen in",
+    "openTargetNewTab": "Neuer Tab",
+    "openTargetNewWindow": "Neues Fenster",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "In neuem Tab öffnen",
     "confirmDelete": "Löschen bestätigen",
     "confirmDeleteTitle": "\"{{name}}\" löschen?",
@@ -383,12 +416,6 @@
     "createPullRequest": "Pull Request erstellen",
     "expandView": "Ansicht erweitern",
     "restoreSplitView": "Geteilte Ansicht wiederherstellen",
-    "resetFilters": "Filter zurücksetzen",
-    "cardView": "Kartenansicht",
-    "listView": "Listenansicht",
-    "exportAndSync": "Exportieren & synchronisieren",
-    "export": "Exportieren",
-    "openIn": "Öffnen in",
     "overwrite": "Überschreiben"
   },
   "status": {
@@ -446,6 +473,7 @@
     "diagnosticsInitializing": "Diagnosequellen werden gestartet...",
     "diagnosticSourceIssues": "Probleme mit Diagnosequellen",
     "copied": "Kopiert",
+    "copiedFilePath": "Dateipfad kopiert",
     "copyFailed": "Kopieren fehlgeschlagen",
     "searching": "Suche...",
     "noResults": "Keine Ergebnisse",
@@ -453,8 +481,7 @@
     "scanningFileExtensions": "Dateierweiterungen werden gescannt…",
     "testing": "Testen...",
     "empty": "Leer",
-    "launching": "Wird gestartet...",
-    "copiedFilePath": "Dateipfad kopiert"
+    "launching": "Wird gestartet..."
   },
   "pagination": {
     "totalItems": "{{count}} Einträge",
@@ -472,6 +499,7 @@
   },
   "optional": "optional",
   "common": {
+    "display": "Oberflächeneinstellungen",
     "on": "Ein",
     "off": "Aus",
     "default": "Standard",
@@ -505,10 +533,12 @@
     "error": "Fehler",
     "pid": "PID",
     "shell": "Shell",
-    "source": "Quelle",
-    "display": "Oberflächeneinstellungen"
+    "source": "Quelle"
   },
   "labels": {
+    "stashesCount": "{{count}} Stashes",
+    "stashesCount_one": "{{count}} Stash",
+    "stashesCount_other": "{{count}} Stashes",
     "accounts": "Konten",
     "enabled": "Aktiviert",
     "disabled": "Deaktiviert",
@@ -553,6 +583,9 @@
     "pullRequest": "Pull Request",
     "operationLog": "Operationsprotokoll",
     "gitDashboard": "Dashboard",
+    "changedFilesCount": "{{fileCount}} geänderte Dateien",
+    "changedFilesCount_one": "{{fileCount}} geänderte Datei",
+    "changedFilesCount_other": "{{fileCount}} geänderte Dateien",
     "colorTokens": "Farb-Token",
     "terminalInfo": "Terminal-Info",
     "fileCount_one": "{{count}} Datei",
@@ -644,13 +677,7 @@
     "issueComments_other": "{{count}} Kommentare",
     "tokens": "Tokens",
     "actions": "Aktionen",
-    "all": "Alle",
-    "stashesCount": "{{count}} Stashes",
-    "stashesCount_one": "{{count}} Stash",
-    "stashesCount_other": "{{count}} Stashes",
-    "changedFilesCount": "{{fileCount}} geänderte Dateien",
-    "changedFilesCount_one": "{{fileCount}} geänderte Datei",
-    "changedFilesCount_other": "{{fileCount}} geänderte Dateien"
+    "all": "Alle"
   },
   "searchModes": {},
   "tabs": {
@@ -686,6 +713,7 @@
     "reconnectCodex": "Erneut verbinden",
     "technicalDetails": "Technische Details",
     "failedToCopy": "Kopieren fehlgeschlagen",
+    "failedToCopyFilePath": "Dateipfad konnte nicht kopiert werden",
     "api": {
       "messages": {
         "signIn": "Bitte melden Sie sich erneut an."
@@ -695,8 +723,7 @@
     "unknownError": "Unbekannter Fehler aufgetreten",
     "componentLoadingFailed": "Komponente konnte nicht geladen werden",
     "noLocalPath": "Kein lokaler Pfad verfügbar",
-    "openInFinderFailed": "Konnte nicht im Finder geöffnet werden",
-    "failedToCopyFilePath": "Dateipfad konnte nicht kopiert werden"
+    "openInFinderFailed": "Konnte nicht im Finder geöffnet werden"
   },
   "confirmation": {
     "delete": "Sind Sie sicher, dass Sie dies löschen möchten?",
@@ -747,7 +774,9 @@
     "previous": "Vorherige",
     "next": "Nächste",
     "previousMatch": "Vorheriger Treffer (Shift+Enter)",
+    "previousMatchLabel": "Vorheriger Treffer",
     "nextMatch": "Nächster Treffer (Enter)",
+    "nextMatchLabel": "Nächster Treffer",
     "clearSearch": "Suche löschen",
     "openFile": "Datei öffnen",
     "openNativeDevTools": "DevTools öffnen",
@@ -772,13 +801,20 @@
     "goForward": "Vorwärts",
     "goToToday": "Zu heute gehen",
     "matchCase": "Groß-/Kleinschreibung (Alt+C)",
+    "matchCaseLabel": "Groß-/Kleinschreibung",
     "matchWholeWord": "Ganzes Wort (Alt+W)",
+    "matchWholeWordLabel": "Ganzes Wort",
     "useRegex": "Regulären Ausdruck verwenden (Alt+R)",
+    "useRegexLabel": "Regulären Ausdruck verwenden",
     "searchInOpenEditors": "Nur in geöffneten Editoren suchen",
     "replace": "Ersetzen (Ctrl+Shift+1)",
+    "replaceLabel": "Ersetzen",
     "replaceAll": "Alle ersetzen (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Alle ersetzen",
     "moreActions": "Weitere Aktionen...",
     "startVoiceInput": "Spracheingabe starten",
+    "expandInput": "Eingabefeld vergrößern",
+    "collapseInput": "Eingabefeld verkleinern",
     "cancelRecording": "Aufnahme abbrechen",
     "stopAndTranscribe": "Stoppen und transkribieren",
     "htmlPreview": "HTML-Vorschau",
@@ -798,16 +834,7 @@
     "scrollToItem": "Zu {{name}} scrollen",
     "containsStatusFiles": "Enthält {{status}}-Dateien",
     "showFileList": "Dateiliste anzeigen",
-    "copyValueRightClickForPath": "Klicken zum Kopieren des Werts, Rechtsklick für den Pfad",
-    "previousMatchLabel": "Vorheriger Treffer",
-    "nextMatchLabel": "Nächster Treffer",
-    "matchCaseLabel": "Groß-/Kleinschreibung",
-    "matchWholeWordLabel": "Ganzes Wort",
-    "useRegexLabel": "Regulären Ausdruck verwenden",
-    "replaceLabel": "Ersetzen",
-    "replaceAllLabel": "Alle ersetzen",
-    "expandInput": "Eingabefeld vergrößern",
-    "collapseInput": "Eingabefeld verkleinern"
+    "copyValueRightClickForPath": "Klicken zum Kopieren des Werts, Rechtsklick für den Pfad"
   },
   "placeholders": {
     "enterFileName": "Dateinamen eingeben",
@@ -862,6 +889,7 @@
     "noSessionsFound": "Keine Session gefunden",
     "typeToSearchFiles": "Zum Suchen von Dateien eingeben...",
     "selectFileToViewChanges": "Wählen Sie eine Datei, um Änderungen anzuzeigen",
+    "selectSidebarFileToViewChanges": "Eine Datei auswählen",
     "failedToLoadHistory": "Verlauf konnte nicht geladen werden",
     "noGitHistory": "Kein Git-Verlauf verfügbar",
     "noCommitHistory": "Keine Commits gefunden",
@@ -924,7 +952,6 @@
     "noData": "Keine Daten",
     "noResults": "Keine Ergebnisse",
     "noSessionHistory": "Kein Sitzungsverlauf",
-    "selectSidebarFileToViewChanges": "Eine Datei auswählen",
     "selectSidebarStash": "Einen stash auswählen",
     "selectSidebarCommit": "Einen commit auswählen",
     "selectSidebarPullRequest": "Einen pull request auswählen",
@@ -951,6 +978,8 @@
     "chromeWindowOpen": "Chrome-Fenster ist geöffnet — direkt interagieren, dann zum Agent zurückkehren",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "Zur einheitlichen Diff-Ansicht wechseln",
+    "switchToSplitDiff": "Zur geteilten Diff-Ansicht wechseln",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git nicht initialisiert",
@@ -989,6 +1018,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Zur Graphansicht wechseln",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1034,9 +1064,6 @@
         "passed": "Bestanden"
       }
     },
-    "switchToUnifiedDiff": "Zur einheitlichen Diff-Ansicht wechseln",
-    "switchToSplitDiff": "Zur geteilten Diff-Ansicht wechseln",
-    "switchToGraphView": "Zur Graphansicht wechseln",
     "fileChangedOnDiskTitle": "Datei auf der Festplatte geändert",
     "fileChangedOnDiskBody": "„{{name}}“ wurde seit dem Öffnen auf der Festplatte geändert. Mit Ihrer Version überschreiben?"
   },
@@ -1192,6 +1219,93 @@
         "autoMergeEnabled": "Automatisches Zusammenführen aktiviert",
         "inMergeQueue": "Wartet in der Merge-Warteschlange"
       },
+      "mergeBox": {
+        "checksFailed": "Einige Checks waren nicht erfolgreich",
+        "checksPending": "Einige Checks sind noch nicht abgeschlossen",
+        "checksPassed": "Alle Checks bestanden",
+        "checksSkipped": "Alle Checks wurden übersprungen",
+        "counts": {
+          "failing": "{{count}} fehlgeschlagen",
+          "inProgress": "{{count}} laufend",
+          "skipped": "{{count}} übersprungen",
+          "successful": "{{count}} erfolgreich",
+          "summary_one": "Check: {{parts}}",
+          "summary_other": "Checks: {{parts}}"
+        },
+        "check": {
+          "queued": "In Warteschlange",
+          "started": "Gestartet {{time}}",
+          "successfulIn": "Erfolgreich in {{duration}}",
+          "failingAfter": "Fehlgeschlagen nach {{duration}}",
+          "skipped": "Übersprungen",
+          "successful": "Erfolgreich",
+          "failing": "Fehlgeschlagen"
+        },
+        "deployments": {
+          "label": "Deployments",
+          "none": "Keine Deployments",
+          "active_one": "{{count}} aktives Deployment",
+          "active_other": "{{count}} aktive Deployments",
+          "view": "Deployment anzeigen",
+          "notDeployed": "Dieser Branch wurde nicht bereitgestellt",
+          "deployed": "Dieser Branch wurde erfolgreich bereitgestellt",
+          "deploying": "Dieser Branch wird gerade bereitgestellt",
+          "deployFailed": "Beim Bereitstellen dieses Branch ist ein Fehler aufgetreten",
+          "deployInactive": "Dieser Branch ist nicht mehr bereitgestellt",
+          "state": {
+            "active": "Aktiv",
+            "pending": "Läuft",
+            "failure": "Fehlgeschlagen",
+            "inactive": "Inaktiv"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Änderungen genehmigt",
+            "detail": "Ein genehmigendes Review wurde eingereicht"
+          },
+          "reviewRequired": {
+            "title": "Review erforderlich",
+            "detail": "Zum Zusammenführen ist mindestens ein genehmigendes Review erforderlich"
+          },
+          "reviewChangesRequested": {
+            "title": "Änderungen angefordert",
+            "detail": "Ein Reviewer hat vor dem Zusammenführen Änderungen angefordert"
+          },
+          "noConflicts": {
+            "title": "Keine Konflikte mit dem Basis-Branch",
+            "detail": "Das Zusammenführen kann automatisch erfolgen"
+          },
+          "hasConflicts": {
+            "title": "Dieser Branch hat Konflikte, die gelöst werden müssen",
+            "detail": "Konflikte im Head-Branch lösen, dann pushen"
+          },
+          "outOfDate": {
+            "title": "Dieser Branch ist nicht auf dem Stand des Basis-Branch",
+            "detail": "Die neuesten Änderungen des Basis-Branch in diesen Branch zusammenführen"
+          },
+          "checkingConflicts": {
+            "title": "Automatische Zusammenführbarkeit wird geprüft…",
+            "detail": "Einen Moment, GitHub prüft den Status des Branch"
+          },
+          "autoMergeEnabled": {
+            "title": "Automatisches Zusammenführen aktiviert",
+            "detail": "Dieser Pull Request wird zusammengeführt, sobald die Anforderungen erfüllt sind"
+          },
+          "inMergeQueue": {
+            "title": "Wartet in der Merge-Warteschlange",
+            "detail": "GitHub führt ihn zusammen, sobald er an der Spitze der Warteschlange ist"
+          }
+        },
+        "merged": {
+          "title": "Pull Request erfolgreich zusammengeführt und geschlossen",
+          "detail": "Der Head-Branch kann sicher gelöscht werden"
+        },
+        "closed": {
+          "title": "Mit nicht zusammengeführten Commits geschlossen",
+          "detail": "Dieser Pull Request ist geschlossen. Zum Zusammenführen erneut öffnen"
+        }
+      },
       "commits": {
         "backToList": "Alle Commits",
         "none": "Keine Commits",
@@ -1313,94 +1427,7 @@
       },
       "navigationTrail": "Pull-Request-Navigation",
       "failedToLoad": "Pull Requests konnten nicht geladen werden",
-      "label": "Pull Request",
-      "mergeBox": {
-        "checksFailed": "Einige Checks waren nicht erfolgreich",
-        "checksPending": "Einige Checks sind noch nicht abgeschlossen",
-        "checksPassed": "Alle Checks bestanden",
-        "checksSkipped": "Alle Checks wurden übersprungen",
-        "counts": {
-          "failing": "{{count}} fehlgeschlagen",
-          "inProgress": "{{count}} laufend",
-          "skipped": "{{count}} übersprungen",
-          "successful": "{{count}} erfolgreich",
-          "summary_one": "Check: {{parts}}",
-          "summary_other": "Checks: {{parts}}"
-        },
-        "check": {
-          "queued": "In Warteschlange",
-          "started": "Gestartet {{time}}",
-          "successfulIn": "Erfolgreich in {{duration}}",
-          "failingAfter": "Fehlgeschlagen nach {{duration}}",
-          "skipped": "Übersprungen",
-          "successful": "Erfolgreich",
-          "failing": "Fehlgeschlagen"
-        },
-        "deployments": {
-          "label": "Deployments",
-          "none": "Keine Deployments",
-          "active_one": "{{count}} aktives Deployment",
-          "active_other": "{{count}} aktive Deployments",
-          "view": "Deployment anzeigen",
-          "notDeployed": "Dieser Branch wurde nicht bereitgestellt",
-          "deployed": "Dieser Branch wurde erfolgreich bereitgestellt",
-          "deploying": "Dieser Branch wird gerade bereitgestellt",
-          "deployFailed": "Beim Bereitstellen dieses Branch ist ein Fehler aufgetreten",
-          "deployInactive": "Dieser Branch ist nicht mehr bereitgestellt",
-          "state": {
-            "active": "Aktiv",
-            "pending": "Läuft",
-            "failure": "Fehlgeschlagen",
-            "inactive": "Inaktiv"
-          }
-        },
-        "conditions": {
-          "reviewApproved": {
-            "title": "Änderungen genehmigt",
-            "detail": "Ein genehmigendes Review wurde eingereicht"
-          },
-          "reviewRequired": {
-            "title": "Review erforderlich",
-            "detail": "Zum Zusammenführen ist mindestens ein genehmigendes Review erforderlich"
-          },
-          "reviewChangesRequested": {
-            "title": "Änderungen angefordert",
-            "detail": "Ein Reviewer hat vor dem Zusammenführen Änderungen angefordert"
-          },
-          "noConflicts": {
-            "title": "Keine Konflikte mit dem Basis-Branch",
-            "detail": "Das Zusammenführen kann automatisch erfolgen"
-          },
-          "hasConflicts": {
-            "title": "Dieser Branch hat Konflikte, die gelöst werden müssen",
-            "detail": "Konflikte im Head-Branch lösen, dann pushen"
-          },
-          "outOfDate": {
-            "title": "Dieser Branch ist nicht auf dem Stand des Basis-Branch",
-            "detail": "Die neuesten Änderungen des Basis-Branch in diesen Branch zusammenführen"
-          },
-          "checkingConflicts": {
-            "title": "Automatische Zusammenführbarkeit wird geprüft…",
-            "detail": "Einen Moment, GitHub prüft den Status des Branch"
-          },
-          "autoMergeEnabled": {
-            "title": "Automatisches Zusammenführen aktiviert",
-            "detail": "Dieser Pull Request wird zusammengeführt, sobald die Anforderungen erfüllt sind"
-          },
-          "inMergeQueue": {
-            "title": "Wartet in der Merge-Warteschlange",
-            "detail": "GitHub führt ihn zusammen, sobald er an der Spitze der Warteschlange ist"
-          }
-        },
-        "merged": {
-          "title": "Pull Request erfolgreich zusammengeführt und geschlossen",
-          "detail": "Der Head-Branch kann sicher gelöscht werden"
-        },
-        "closed": {
-          "title": "Mit nicht zusammengeführten Commits geschlossen",
-          "detail": "Dieser Pull Request ist geschlossen. Zum Zusammenführen erneut öffnen"
-        }
-      }
+      "label": "Pull Request"
     },
     "messages": {
       "pushSuccess": "Push erfolgreich",
@@ -1687,10 +1714,10 @@
       "noResults": "Keine passenden Modelle",
       "chooseModel": "Modell auswählen",
       "chooseKey": "Schlüssel auswählen",
+      "noCompatibleKeys": "Keine kompatiblen Schlüssel",
       "chooseModelHint": "Navigiere mit der Tastatur oder klicke mit der Maus auf ein Modell",
       "chooseKeyHint": "Navigiere mit der Tastatur oder klicke mit der Maus auf einen Schlüssel",
       "noModelsForKey": "Für diesen Schlüssel sind keine Modelle aktiviert",
-      "noCompatibleKeys": "Keine kompatiblen Schlüssel",
       "selectKey": "Schlüssel auswählen",
       "sourceScope": {
         "label": "Modellquellen",
@@ -1810,6 +1837,7 @@
         "readRemotesFailed": "Remotes des Repositorys konnten nicht gelesen werden"
       },
       "labels": {
+        "defaultBranches": "Standard-Branches",
         "otherBranches": "Andere Branches",
         "current": "Aktuell",
         "recent": "Zuletzt verwendet",
@@ -1824,8 +1852,7 @@
         "prSearchScope": "Suche in {{count}} geladenen Pull requests",
         "prLimit": "Bis zu {{count}} offene PRs werden angezeigt",
         "noPullRequests": "Keine passenden Pull requests",
-        "mainWorktree": "Haupt",
-        "defaultBranches": "Standard-Branches"
+        "mainWorktree": "Haupt"
       },
       "placeholders": {
         "add": "neuer Branch-Name...",
@@ -1858,6 +1885,8 @@
       "selectWorktreeSource": "Worktree-Branch oder Pull Request auswählen"
     },
     "spotlightFooter": {
+      "settings": "Spotlight-Einstellungen",
+      "unpinAll": "Alle lösen",
       "navigate": "Navigieren",
       "select": "Auswählen",
       "switchColumn": "Spalte wechseln",
@@ -1871,9 +1900,7 @@
       "incompatible": "Inkompatibel",
       "manageModels": "Modelle verwalten",
       "manageKeys": "Schlüssel verwalten",
-      "manageAgents": "Agents verwalten",
-      "settings": "Spotlight-Einstellungen",
-      "unpinAll": "Alle lösen"
+      "manageAgents": "Agents verwalten"
     },
     "editorSpotlight": {
       "searchPlaceholder": "Befehle suchen...",
@@ -2043,6 +2070,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Chat-Panel",
+    "chatSplitRatio": "Anteil des Chat-Panels",
+    "chatSplitRatioHint": "Wird sofort nach der Auswahl angewendet; ein späteres Ziehen der Trennlinie hat weiterhin Vorrang.",
     "chatLeft": "Chat links",
     "chatRight": "Chat rechts",
     "sidebarPosition": "Workstation-Seitenleiste",
@@ -2072,9 +2101,7 @@
     "ramHydratedEvents": "Hydrated Ereignisse",
     "ramTurnBodies": "Lazy-Verlaufsladevorgänge",
     "ramFileTrees": "Dateibäume",
-    "ramCodeMirrors": "Datei-Rendering",
-    "chatSplitRatio": "Anteil des Chat-Panels",
-    "chatSplitRatioHint": "Wird sofort nach der Auswahl angewendet; ein späteres Ziehen der Trennlinie hat weiterhin Vorrang."
+    "ramCodeMirrors": "Datei-Rendering"
   },
   "spotlightActions": {
     "enableChatPagination": "Chat-Paginierung einschalten",
@@ -2085,6 +2112,8 @@
     "moveWorkstationSidebarRight": "Workstation-Seitenleiste nach rechts verschieben",
     "openMyStation": "Zu My Station wechseln",
     "openAgentStation": "Zu Agent Station wechseln",
+    "openMyStationInNewWindow": "My Station in neuem Fenster öffnen",
+    "openAgentStationInNewWindow": "Agent Station in neuem Fenster öffnen",
     "openKanban": "Zu Kanban wechseln",
     "changeLanguage": "Sprache ändern",
     "changeTheme": "Theme ändern",
@@ -2092,9 +2121,7 @@
     "searchThemes": "Themes suchen...",
     "searchSkins": "Skins suchen...",
     "detectUpdate": "Nach Updates suchen",
-    "recentlyUsed": "Zuletzt verwendet",
-    "openMyStationInNewWindow": "My Station in neuem Fenster öffnen",
-    "openAgentStationInNewWindow": "Agent Station in neuem Fenster öffnen"
+    "recentlyUsed": "Zuletzt verwendet"
   },
   "commands": {
     "showBottomPanel": "Unteres Panel anzeigen",
@@ -2117,6 +2144,20 @@
     "title": "Sitzungen"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "Änderungen anzeigen",
+      "openFileInNewTab": "Datei in neuem Tab öffnen",
+      "stageChanges": "Änderungen vormerken",
+      "unstageChanges": "Vormerkung aufheben",
+      "discardChanges": "Änderungen verwerfen",
+      "markResolved": "Als gelöst markieren (vormerken)",
+      "acceptCurrent": "Aktuelle Änderungen übernehmen (unsere)",
+      "acceptIncoming": "Eingehende Änderungen übernehmen (deren)",
+      "stageChangesCount": "Änderungen vormerken ({{count}})",
+      "unstageChangesCount": "Vormerkung aufheben ({{count}})",
+      "discardChangesCount": "Änderungen verwerfen ({{count}})",
+      "markResolvedCount": "Als gelöst markieren ({{count}})"
+    },
     "notGitInitialized": "Git nicht initialisiert",
     "notGitInitializedSubtitle": "Initialisiere Git, um Änderungen zu verfolgen, Commits zu erstellen und Branch-Werkzeuge in diesem Arbeitsverzeichnis zu nutzen.",
     "initializeGit": "Git initialisieren",
@@ -2145,20 +2186,6 @@
       "main": "Haupt-Checkout",
       "worktrees": "Worktrees",
       "switchScopeActive": "Bereich der Quellcodeverwaltung wechseln: {{repo}}, {{branch}}"
-    },
-    "fileMenu": {
-      "viewChanges": "Änderungen anzeigen",
-      "openFileInNewTab": "Datei in neuem Tab öffnen",
-      "stageChanges": "Änderungen vormerken",
-      "unstageChanges": "Vormerkung aufheben",
-      "discardChanges": "Änderungen verwerfen",
-      "markResolved": "Als gelöst markieren (vormerken)",
-      "acceptCurrent": "Aktuelle Änderungen übernehmen (unsere)",
-      "acceptIncoming": "Eingehende Änderungen übernehmen (deren)",
-      "stageChangesCount": "Änderungen vormerken ({{count}})",
-      "unstageChangesCount": "Vormerkung aufheben ({{count}})",
-      "discardChangesCount": "Änderungen verwerfen ({{count}})",
-      "markResolvedCount": "Als gelöst markieren ({{count}})"
     }
   },
   "contextInfo": {
@@ -2312,10 +2339,6 @@
       "saved": "Screenshot gespeichert",
       "saveFailed": "Screenshot konnte nicht gespeichert werden: {{reason}}"
     },
-    "selectedElement": {
-      "addElement": "Element hinzufügen",
-      "sentToChat": "Element zum Chat hinzugefügt"
-    },
     "menu": {
       "pageTheme": "Seitendesign",
       "themeAuto": "Automatisch",
@@ -2326,6 +2349,10 @@
     },
     "openHtmlFile": {
       "failed": "Datei konnte nicht geöffnet werden: {{reason}}"
+    },
+    "selectedElement": {
+      "addElement": "Element hinzufügen",
+      "sentToChat": "Element zum Chat hinzugefügt"
     }
   },
   "controlTower": {
@@ -2442,30 +2469,6 @@
     "goToSection": "Zu {{label}} gehen, Abschnitt {{current}} von {{total}}",
     "section": "Abschnitt {{current}}",
     "sectionPosition": "Abschnitt {{current}} von {{total}}"
-  },
-  "gitLabels": {
-    "contains": "Enthält Dateien: {{status}}",
-    "staged": "{{status}} (vorgemerkt)",
-    "additions": "Hinzugefügte Zeilen",
-    "deletions": "Gelöschte Zeilen",
-    "M": "Geändert",
-    "U": "Nicht versioniert",
-    "A": "Hinzugefügt",
-    "D": "Gelöscht",
-    "R": "Umbenannt",
-    "C": "Konflikt",
-    "I": "Ignoriert",
-    "?": "Unbekannter Status"
-  },
-  "findScope": {
-    "session": "In Sitzung suchen",
-    "file": "In Datei suchen",
-    "named": "In {{name}} suchen"
-  },
-  "sidebarSettings": {
-    "title": "Seitenleiste",
-    "showSidebar": "Seitenleiste anzeigen",
-    "colorSourceControlFiles": "Diff-Farben für Dateien"
   },
   "appMessages": {
     "testNotificationBody": "Dies ist eine Testbenachrichtigung von ORG2",

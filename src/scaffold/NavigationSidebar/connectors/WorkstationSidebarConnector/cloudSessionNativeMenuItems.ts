@@ -1,6 +1,7 @@
 import {
   AppWindowMacIcon,
   ArrowBigRightDashIcon,
+  ChangeScreenModeIcon,
   Copy01Icon,
   CursorInWindowIcon,
   Delete02Icon,
@@ -58,7 +59,7 @@ export function buildCloudSessionNativeMenuItems({
         },
         {
           text: labels.openInNewWindow,
-          icon: AppWindowMacIcon,
+          icon: ChangeScreenModeIcon,
           action: onOpenInNewWindow,
         },
         {

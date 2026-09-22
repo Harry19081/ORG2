@@ -1,4 +1,28 @@
 {
+  "gitLabels": {
+    "contains": "Содержит файлы: {{status}}",
+    "staged": "{{status}} (в индексе)",
+    "additions": "Добавленные строки",
+    "deletions": "Удалённые строки",
+    "M": "Изменён",
+    "U": "Не отслеживается",
+    "A": "Добавлен",
+    "D": "Удалён",
+    "R": "Переименован",
+    "C": "Конфликт",
+    "I": "Игнорируется",
+    "?": "Неизвестный статус"
+  },
+  "findScope": {
+    "session": "Поиск в сеансе",
+    "file": "Поиск в файле",
+    "named": "Поиск в {{name}}"
+  },
+  "sidebarSettings": {
+    "title": "Боковая панель",
+    "showSidebar": "Показывать боковую панель",
+    "colorSourceControlFiles": "Цвета различий для файлов"
+  },
   "teamInbox": {
     "listLabel": "Список общего почтового ящика команды",
     "itemsLabel": "Элементы общего почтового ящика команды",
@@ -295,6 +319,9 @@
     "confirm": "Подтвердить",
     "apply": "Применить",
     "reset": "Сбросить",
+    "resetFilters": "Сбросить фильтры",
+    "cardView": "Карточки",
+    "listView": "Список",
     "search": "Поиск",
     "add": "Добавить",
     "remove": "Удалить",
@@ -338,6 +365,12 @@
     "closeOthers": "Закрыть другие",
     "closeSaved": "Закрыть сохранённые",
     "openInNewWindow": "Открыть в новом окне",
+    "exportAndSync": "Экспорт и синхронизация",
+    "export": "Экспорт",
+    "openIn": "Открыть в",
+    "openTargetNewTab": "Новая вкладка",
+    "openTargetNewWindow": "Новое окно",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "Открыть в новой вкладке",
     "confirmDelete": "Подтвердить удаление",
     "confirmDeleteTitle": "Удалить «{{name}}»?",
@@ -383,12 +416,6 @@
     "createPullRequest": "Создать pull request",
     "expandView": "Развернуть представление",
     "restoreSplitView": "Восстановить разделённый вид",
-    "resetFilters": "Сбросить фильтры",
-    "cardView": "Карточки",
-    "listView": "Список",
-    "exportAndSync": "Экспорт и синхронизация",
-    "export": "Экспорт",
-    "openIn": "Открыть в",
     "overwrite": "Перезаписать"
   },
   "status": {
@@ -446,6 +473,7 @@
     "diagnosticsInitializing": "Запуск источников диагностики...",
     "diagnosticSourceIssues": "Проблемы источников диагностики",
     "copied": "Скопировано",
+    "copiedFilePath": "Путь к файлу скопирован",
     "copyFailed": "Не удалось скопировать",
     "searching": "Поиск...",
     "noResults": "Нет результатов",
@@ -453,8 +481,7 @@
     "scanningFileExtensions": "Сканирование расширений файлов…",
     "testing": "Тестирование...",
     "empty": "Пусто",
-    "launching": "Запуск...",
-    "copiedFilePath": "Путь к файлу скопирован"
+    "launching": "Запуск..."
   },
   "pagination": {
     "totalItems": "{{count}} записей",
@@ -472,6 +499,7 @@
   },
   "optional": "необязательно",
   "common": {
+    "display": "Настройки интерфейса",
     "on": "Вкл",
     "off": "Выкл",
     "default": "По умолчанию",
@@ -505,10 +533,12 @@
     "error": "Ошибка",
     "pid": "PID",
     "shell": "Shell",
-    "source": "Источник",
-    "display": "Настройки интерфейса"
+    "source": "Источник"
   },
   "labels": {
+    "stashesCount": "Стеши: {{count}}",
+    "stashesCount_one": "Стеши: {{count}}",
+    "stashesCount_other": "Стеши: {{count}}",
     "accounts": "Аккаунты",
     "enabled": "Включено",
     "disabled": "Отключено",
@@ -553,6 +583,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Журнал операций",
     "gitDashboard": "Панель",
+    "changedFilesCount": "Изменено файлов: {{fileCount}}",
+    "changedFilesCount_one": "{{fileCount}} изменённый файл",
+    "changedFilesCount_other": "Изменено файлов: {{fileCount}}",
     "colorTokens": "Цветовые Token",
     "terminalInfo": "Информация о терминале",
     "fileCount_one": "{{count}} файл",
@@ -644,13 +677,7 @@
     "issueComments_other": "{{count}} комментария",
     "tokens": "Токены",
     "actions": "Действия",
-    "all": "Все",
-    "stashesCount": "Стеши: {{count}}",
-    "stashesCount_one": "Стеши: {{count}}",
-    "stashesCount_other": "Стеши: {{count}}",
-    "changedFilesCount": "Изменено файлов: {{fileCount}}",
-    "changedFilesCount_one": "{{fileCount}} изменённый файл",
-    "changedFilesCount_other": "Изменено файлов: {{fileCount}}"
+    "all": "Все"
   },
   "searchModes": {},
   "tabs": {
@@ -686,6 +713,7 @@
     "reconnectCodex": "Повторно подключить",
     "technicalDetails": "Технические сведения",
     "failedToCopy": "Не удалось скопировать",
+    "failedToCopyFilePath": "Не удалось скопировать путь к файлу",
     "api": {
       "messages": {
         "signIn": "Войдите снова."
@@ -695,8 +723,7 @@
     "unknownError": "Произошла неизвестная ошибка",
     "componentLoadingFailed": "Не удалось загрузить компонент",
     "noLocalPath": "Локальный путь недоступен",
-    "openInFinderFailed": "Не удалось открыть в Finder",
-    "failedToCopyFilePath": "Не удалось скопировать путь к файлу"
+    "openInFinderFailed": "Не удалось открыть в Finder"
   },
   "confirmation": {
     "delete": "Вы уверены, что хотите удалить это?",
@@ -747,7 +774,9 @@
     "previous": "Предыдущий",
     "next": "Следующий",
     "previousMatch": "Предыдущее совпадение (Shift+Enter)",
+    "previousMatchLabel": "Предыдущее совпадение",
     "nextMatch": "Следующее совпадение (Enter)",
+    "nextMatchLabel": "Следующее совпадение",
     "clearSearch": "Очистить поиск",
     "openFile": "Открыть файл",
     "openNativeDevTools": "Открыть DevTools",
@@ -772,13 +801,20 @@
     "goForward": "Вперёд",
     "goToToday": "Перейти к сегодня",
     "matchCase": "Учитывать регистр (Alt+C)",
+    "matchCaseLabel": "Учитывать регистр",
     "matchWholeWord": "Слово целиком (Alt+W)",
+    "matchWholeWordLabel": "Слово целиком",
     "useRegex": "Использовать регулярное выражение (Alt+R)",
+    "useRegexLabel": "Использовать регулярное выражение",
     "searchInOpenEditors": "Искать только в открытых редакторах",
     "replace": "Заменить (Ctrl+Shift+1)",
+    "replaceLabel": "Заменить",
     "replaceAll": "Заменить всё (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Заменить всё",
     "moreActions": "Дополнительные действия...",
     "startVoiceInput": "Начать голосовой ввод",
+    "expandInput": "Развернуть поле ввода",
+    "collapseInput": "Свернуть поле ввода",
     "cancelRecording": "Отменить запись",
     "stopAndTranscribe": "Остановить и транскрибировать",
     "htmlPreview": "HTML предпросмотр",
@@ -798,16 +834,7 @@
     "scrollToItem": "Прокрутить к {{name}}",
     "containsStatusFiles": "Содержит файлы со статусом {{status}}",
     "showFileList": "Показать список файлов",
-    "copyValueRightClickForPath": "Нажмите, чтобы скопировать значение, правый клик — путь",
-    "previousMatchLabel": "Предыдущее совпадение",
-    "nextMatchLabel": "Следующее совпадение",
-    "matchCaseLabel": "Учитывать регистр",
-    "matchWholeWordLabel": "Слово целиком",
-    "useRegexLabel": "Использовать регулярное выражение",
-    "replaceLabel": "Заменить",
-    "replaceAllLabel": "Заменить всё",
-    "expandInput": "Развернуть поле ввода",
-    "collapseInput": "Свернуть поле ввода"
+    "copyValueRightClickForPath": "Нажмите, чтобы скопировать значение, правый клик — путь"
   },
   "placeholders": {
     "enterFileName": "Введите имя файла",
@@ -862,6 +889,7 @@
     "noSessionsFound": "Session не найдены",
     "typeToSearchFiles": "Введите для поиска файлов...",
     "selectFileToViewChanges": "Выберите файл для просмотра изменений",
+    "selectSidebarFileToViewChanges": "Выберите один файл",
     "failedToLoadHistory": "Не удалось загрузить историю",
     "noGitHistory": "История Git недоступна",
     "noCommitHistory": "Коммиты не найдены",
@@ -924,7 +952,6 @@
     "noData": "Нет данных",
     "noResults": "Нет результатов",
     "noSessionHistory": "Нет истории сессий",
-    "selectSidebarFileToViewChanges": "Выберите один файл",
     "selectSidebarStash": "Выберите один stash",
     "selectSidebarCommit": "Выберите один commit",
     "selectSidebarPullRequest": "Выберите один pull request",
@@ -951,6 +978,8 @@
     "chromeWindowOpen": "Окно Chrome открыто — взаимодействуйте напрямую, затем вернитесь к Agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "Переключить на единый diff",
+    "switchToSplitDiff": "Переключить на разделённый diff",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git не инициализирован",
@@ -989,6 +1018,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Переключить на граф",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1034,9 +1064,6 @@
         "passed": "Пройдено"
       }
     },
-    "switchToUnifiedDiff": "Переключить на единый diff",
-    "switchToSplitDiff": "Переключить на разделённый diff",
-    "switchToGraphView": "Переключить на граф",
     "fileChangedOnDiskTitle": "Файл изменён на диске",
     "fileChangedOnDiskBody": "Файл «{{name}}» изменился на диске после открытия. Перезаписать его вашей версией?"
   },
@@ -1192,6 +1219,93 @@
         "autoMergeEnabled": "Автоматическое слияние включено",
         "inMergeQueue": "Ожидает в очереди слияния"
       },
+      "mergeBox": {
+        "checksFailed": "Некоторые проверки не пройдены",
+        "checksPending": "Некоторые проверки ещё не завершены",
+        "checksPassed": "Все проверки пройдены",
+        "checksSkipped": "Все проверки пропущены",
+        "counts": {
+          "failing": "{{count}} не пройдено",
+          "inProgress": "{{count}} выполняется",
+          "skipped": "{{count}} пропущено",
+          "successful": "{{count}} успешно",
+          "summary_one": "Проверки: {{parts}}",
+          "summary_other": "Проверки: {{parts}}"
+        },
+        "check": {
+          "queued": "В очереди",
+          "started": "Запущено {{time}}",
+          "successfulIn": "Успешно за {{duration}}",
+          "failingAfter": "Не пройдено через {{duration}}",
+          "skipped": "Пропущено",
+          "successful": "Успешно",
+          "failing": "Не пройдено"
+        },
+        "deployments": {
+          "label": "Развёртывания",
+          "none": "Нет развёртываний",
+          "active_one": "{{count}} активное развёртывание",
+          "active_other": "Активных развёртываний: {{count}}",
+          "view": "Открыть развёртывание",
+          "notDeployed": "Эта ветка не развёрнута",
+          "deployed": "Эта ветка успешно развёрнута",
+          "deploying": "Эта ветка развёртывается",
+          "deployFailed": "При развёртывании этой ветки произошла ошибка",
+          "deployInactive": "Эта ветка больше не развёрнута",
+          "state": {
+            "active": "Активно",
+            "pending": "Выполняется",
+            "failure": "Ошибка",
+            "inactive": "Неактивно"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Изменения одобрены",
+            "detail": "Отправлено одобряющее ревью"
+          },
+          "reviewRequired": {
+            "title": "Требуется ревью",
+            "detail": "Для слияния требуется хотя бы одно одобряющее ревью"
+          },
+          "reviewChangesRequested": {
+            "title": "Запрошены изменения",
+            "detail": "Ревьюер запросил изменения перед слиянием"
+          },
+          "noConflicts": {
+            "title": "Нет конфликтов с базовой веткой",
+            "detail": "Слияние можно выполнить автоматически"
+          },
+          "hasConflicts": {
+            "title": "В этой ветке есть конфликты, которые нужно разрешить",
+            "detail": "Разрешите конфликты в исходной ветке и отправьте изменения"
+          },
+          "outOfDate": {
+            "title": "Эта ветка отстаёт от базовой ветки",
+            "detail": "Выполните слияние последних изменений базовой ветки в эту ветку"
+          },
+          "checkingConflicts": {
+            "title": "Проверка возможности автоматического слияния…",
+            "detail": "Подождите, пока GitHub проверяет состояние ветки"
+          },
+          "autoMergeEnabled": {
+            "title": "Автоматическое слияние включено",
+            "detail": "Этот пул-реквест будет объединён, когда будут выполнены все требования"
+          },
+          "inMergeQueue": {
+            "title": "Ожидает в очереди слияния",
+            "detail": "GitHub выполнит слияние, когда он окажется в начале очереди"
+          }
+        },
+        "merged": {
+          "title": "Пул-реквест успешно объединён и закрыт",
+          "detail": "Исходную ветку можно безопасно удалить"
+        },
+        "closed": {
+          "title": "Закрыт с необъединёнными коммитами",
+          "detail": "Этот пул-реквест закрыт. Откройте его снова, чтобы выполнить слияние"
+        }
+      },
       "commits": {
         "backToList": "Все коммиты",
         "none": "Нет коммитов",
@@ -1313,94 +1427,7 @@
       },
       "navigationTrail": "Навигация по pull request",
       "failedToLoad": "Не удалось загрузить pull requests",
-      "label": "Pull request",
-      "mergeBox": {
-        "checksFailed": "Некоторые проверки не пройдены",
-        "checksPending": "Некоторые проверки ещё не завершены",
-        "checksPassed": "Все проверки пройдены",
-        "checksSkipped": "Все проверки пропущены",
-        "counts": {
-          "failing": "{{count}} не пройдено",
-          "inProgress": "{{count}} выполняется",
-          "skipped": "{{count}} пропущено",
-          "successful": "{{count}} успешно",
-          "summary_one": "Проверки: {{parts}}",
-          "summary_other": "Проверки: {{parts}}"
-        },
-        "check": {
-          "queued": "В очереди",
-          "started": "Запущено {{time}}",
-          "successfulIn": "Успешно за {{duration}}",
-          "failingAfter": "Не пройдено через {{duration}}",
-          "skipped": "Пропущено",
-          "successful": "Успешно",
-          "failing": "Не пройдено"
-        },
-        "deployments": {
-          "label": "Развёртывания",
-          "none": "Нет развёртываний",
-          "active_one": "{{count}} активное развёртывание",
-          "active_other": "Активных развёртываний: {{count}}",
-          "view": "Открыть развёртывание",
-          "notDeployed": "Эта ветка не развёрнута",
-          "deployed": "Эта ветка успешно развёрнута",
-          "deploying": "Эта ветка развёртывается",
-          "deployFailed": "При развёртывании этой ветки произошла ошибка",
-          "deployInactive": "Эта ветка больше не развёрнута",
-          "state": {
-            "active": "Активно",
-            "pending": "Выполняется",
-            "failure": "Ошибка",
-            "inactive": "Неактивно"
-          }
-        },
-        "conditions": {
-          "reviewApproved": {
-            "title": "Изменения одобрены",
-            "detail": "Отправлено одобряющее ревью"
-          },
-          "reviewRequired": {
-            "title": "Требуется ревью",
-            "detail": "Для слияния требуется хотя бы одно одобряющее ревью"
-          },
-          "reviewChangesRequested": {
-            "title": "Запрошены изменения",
-            "detail": "Ревьюер запросил изменения перед слиянием"
-          },
-          "noConflicts": {
-            "title": "Нет конфликтов с базовой веткой",
-            "detail": "Слияние можно выполнить автоматически"
-          },
-          "hasConflicts": {
-            "title": "В этой ветке есть конфликты, которые нужно разрешить",
-            "detail": "Разрешите конфликты в исходной ветке и отправьте изменения"
-          },
-          "outOfDate": {
-            "title": "Эта ветка отстаёт от базовой ветки",
-            "detail": "Выполните слияние последних изменений базовой ветки в эту ветку"
-          },
-          "checkingConflicts": {
-            "title": "Проверка возможности автоматического слияния…",
-            "detail": "Подождите, пока GitHub проверяет состояние ветки"
-          },
-          "autoMergeEnabled": {
-            "title": "Автоматическое слияние включено",
-            "detail": "Этот пул-реквест будет объединён, когда будут выполнены все требования"
-          },
-          "inMergeQueue": {
-            "title": "Ожидает в очереди слияния",
-            "detail": "GitHub выполнит слияние, когда он окажется в начале очереди"
-          }
-        },
-        "merged": {
-          "title": "Пул-реквест успешно объединён и закрыт",
-          "detail": "Исходную ветку можно безопасно удалить"
-        },
-        "closed": {
-          "title": "Закрыт с необъединёнными коммитами",
-          "detail": "Этот пул-реквест закрыт. Откройте его снова, чтобы выполнить слияние"
-        }
-      }
+      "label": "Pull request"
     },
     "messages": {
       "pushSuccess": "Push выполнен успешно",
@@ -1687,10 +1714,10 @@
       "noResults": "Нет подходящих моделей",
       "chooseModel": "Выберите модель",
       "chooseKey": "Выберите ключ",
+      "noCompatibleKeys": "Нет совместимых ключей",
       "chooseModelHint": "Используйте клавиатуру для навигации или щелкните модель мышью",
       "chooseKeyHint": "Используйте клавиатуру для навигации или щелкните ключ мышью",
       "noModelsForKey": "Для этого ключа нет включённых моделей",
-      "noCompatibleKeys": "Нет совместимых ключей",
       "selectKey": "Выберите ключ",
       "sourceScope": {
         "label": "Источники моделей",
@@ -1810,6 +1837,7 @@
         "readRemotesFailed": "Не удалось прочитать удалённые репозитории"
       },
       "labels": {
+        "defaultBranches": "Основные ветки",
         "otherBranches": "Другие ветки",
         "current": "Текущая",
         "recent": "Недавние",
@@ -1824,8 +1852,7 @@
         "prSearchScope": "Поиск среди {{count}} загруженных Pull requests",
         "prLimit": "Показано до {{count}} открытых PR",
         "noPullRequests": "Нет подходящих Pull requests",
-        "mainWorktree": "Основной",
-        "defaultBranches": "Основные ветки"
+        "mainWorktree": "Основной"
       },
       "placeholders": {
         "add": "имя новой ветки...",
@@ -1858,6 +1885,8 @@
       "selectWorktreeSource": "Выберите ветку worktree или pull request"
     },
     "spotlightFooter": {
+      "settings": "Настройки Spotlight",
+      "unpinAll": "Открепить все",
       "navigate": "Навигация",
       "select": "Выбрать",
       "switchColumn": "Сменить колонку",
@@ -1871,9 +1900,7 @@
       "incompatible": "Несовместимые",
       "manageModels": "Управление моделями",
       "manageKeys": "Управление ключами",
-      "manageAgents": "Управление Agents",
-      "settings": "Настройки Spotlight",
-      "unpinAll": "Открепить все"
+      "manageAgents": "Управление Agents"
     },
     "editorSpotlight": {
       "searchPlaceholder": "Поиск команд...",
@@ -2043,6 +2070,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Панель чата",
+    "chatSplitRatio": "Доля панели чата",
+    "chatSplitRatioHint": "Применяется сразу после выбора; перетаскивание разделителя после этого всё равно имеет приоритет.",
     "chatLeft": "Чат слева",
     "chatRight": "Чат справа",
     "sidebarPosition": "Боковая панель Workstation",
@@ -2072,9 +2101,7 @@
     "ramHydratedEvents": "Hydrated события",
     "ramTurnBodies": "Lazy-загрузки истории",
     "ramFileTrees": "Деревья файлов",
-    "ramCodeMirrors": "File rendering",
-    "chatSplitRatio": "Доля панели чата",
-    "chatSplitRatioHint": "Применяется сразу после выбора; перетаскивание разделителя после этого всё равно имеет приоритет."
+    "ramCodeMirrors": "File rendering"
   },
   "spotlightActions": {
     "enableChatPagination": "Включить пагинацию чата",
@@ -2085,6 +2112,8 @@
     "moveWorkstationSidebarRight": "Переместить боковую панель Workstation вправо",
     "openMyStation": "Перейти в My Station",
     "openAgentStation": "Перейти в Agent Station",
+    "openMyStationInNewWindow": "Открыть My Station в новом окне",
+    "openAgentStationInNewWindow": "Открыть Agent Station в новом окне",
     "openKanban": "Перейти в Kanban",
     "changeLanguage": "Изменить язык",
     "changeTheme": "Изменить тему",
@@ -2092,9 +2121,7 @@
     "searchThemes": "Поиск тем...",
     "searchSkins": "Поиск вариантов оформления...",
     "detectUpdate": "Проверить обновления",
-    "recentlyUsed": "Недавно использованные",
-    "openMyStationInNewWindow": "Открыть My Station в новом окне",
-    "openAgentStationInNewWindow": "Открыть Agent Station в новом окне"
+    "recentlyUsed": "Недавно использованные"
   },
   "commands": {
     "showBottomPanel": "Показать нижнюю панель",
@@ -2117,6 +2144,20 @@
     "title": "Сессии"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "Показать изменения",
+      "openFileInNewTab": "Открыть файл в новой вкладке",
+      "stageChanges": "Индексировать изменения",
+      "unstageChanges": "Убрать изменения из индекса",
+      "discardChanges": "Отменить изменения",
+      "markResolved": "Отметить как решённое (индексировать)",
+      "acceptCurrent": "Принять текущие изменения (наши)",
+      "acceptIncoming": "Принять входящие изменения (их)",
+      "stageChangesCount": "Индексировать изменения ({{count}})",
+      "unstageChangesCount": "Убрать изменения из индекса ({{count}})",
+      "discardChangesCount": "Отменить изменения ({{count}})",
+      "markResolvedCount": "Отметить как решённое ({{count}})"
+    },
     "notGitInitialized": "Git не инициализирован",
     "notGitInitializedSubtitle": "Инициализируйте Git, чтобы отслеживать изменения, создавать коммиты и использовать инструменты веток в этом рабочем каталоге.",
     "initializeGit": "Инициализировать Git",
@@ -2145,20 +2186,6 @@
       "main": "Основной checkout",
       "worktrees": "Worktree",
       "switchScopeActive": "Сменить область Source Control: {{repo}}, {{branch}}"
-    },
-    "fileMenu": {
-      "viewChanges": "Показать изменения",
-      "openFileInNewTab": "Открыть файл в новой вкладке",
-      "stageChanges": "Индексировать изменения",
-      "unstageChanges": "Убрать изменения из индекса",
-      "discardChanges": "Отменить изменения",
-      "markResolved": "Отметить как решённое (индексировать)",
-      "acceptCurrent": "Принять текущие изменения (наши)",
-      "acceptIncoming": "Принять входящие изменения (их)",
-      "stageChangesCount": "Индексировать изменения ({{count}})",
-      "unstageChangesCount": "Убрать изменения из индекса ({{count}})",
-      "discardChangesCount": "Отменить изменения ({{count}})",
-      "markResolvedCount": "Отметить как решённое ({{count}})"
     }
   },
   "contextInfo": {
@@ -2312,10 +2339,6 @@
       "saved": "Снимок сохранён",
       "saveFailed": "Не удалось сохранить снимок: {{reason}}"
     },
-    "selectedElement": {
-      "addElement": "Добавить элемент",
-      "sentToChat": "Элемент прикреплён к чату"
-    },
     "menu": {
       "pageTheme": "Тема страницы",
       "themeAuto": "Авто",
@@ -2326,6 +2349,10 @@
     },
     "openHtmlFile": {
       "failed": "Не удалось открыть файл: {{reason}}"
+    },
+    "selectedElement": {
+      "addElement": "Добавить элемент",
+      "sentToChat": "Элемент прикреплён к чату"
     }
   },
   "controlTower": {
@@ -2442,30 +2469,6 @@
     "goToSection": "Перейти к {{label}}, раздел {{current}} из {{total}}",
     "section": "Раздел {{current}}",
     "sectionPosition": "Раздел {{current}} из {{total}}"
-  },
-  "gitLabels": {
-    "contains": "Содержит файлы: {{status}}",
-    "staged": "{{status}} (в индексе)",
-    "additions": "Добавленные строки",
-    "deletions": "Удалённые строки",
-    "M": "Изменён",
-    "U": "Не отслеживается",
-    "A": "Добавлен",
-    "D": "Удалён",
-    "R": "Переименован",
-    "C": "Конфликт",
-    "I": "Игнорируется",
-    "?": "Неизвестный статус"
-  },
-  "findScope": {
-    "session": "Поиск в сеансе",
-    "file": "Поиск в файле",
-    "named": "Поиск в {{name}}"
-  },
-  "sidebarSettings": {
-    "title": "Боковая панель",
-    "showSidebar": "Показывать боковую панель",
-    "colorSourceControlFiles": "Цвета различий для файлов"
   },
   "appMessages": {
     "testNotificationBody": "Это тестовое уведомление от ORG2",

@@ -80,7 +80,6 @@ export function useCloudSessionsSection({
 }: UseCloudSessionsSectionParams): UseCloudSessionsSectionResult {
   const { t } = useTranslation("navigation");
   const { t: tCommon } = useTranslation("common");
-  const { t: tSessions } = useTranslation("sessions");
   const store = useStore();
   const { rows, state, fetchedAt, documentVisible, refresh } =
     useCloudOrgRemoteSessions(orgId);
@@ -238,7 +237,6 @@ export function useCloudSessionsSection({
   } = useCloudRemoteSessionMenuItems({
     t,
     tCommon,
-    tSessions,
     openTeamSessionAtDestination,
     runFork,
     hideRemoteSession,

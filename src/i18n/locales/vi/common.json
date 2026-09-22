@@ -1,4 +1,28 @@
 {
+  "gitLabels": {
+    "contains": "Chứa tệp: {{status}}",
+    "staged": "{{status}} (đã đưa vào vùng chờ)",
+    "additions": "Dòng đã thêm",
+    "deletions": "Dòng đã xóa",
+    "M": "Đã sửa đổi",
+    "U": "Chưa được theo dõi",
+    "A": "Đã thêm",
+    "D": "Đã xóa",
+    "R": "Đã đổi tên",
+    "C": "Xung đột",
+    "I": "Đã bỏ qua",
+    "?": "Trạng thái không xác định"
+  },
+  "findScope": {
+    "session": "Tìm trong phiên",
+    "file": "Tìm trong tệp",
+    "named": "Tìm trong {{name}}"
+  },
+  "sidebarSettings": {
+    "title": "Cài đặt thanh bên",
+    "showSidebar": "Hiện thanh bên",
+    "colorSourceControlFiles": "Màu khác biệt trên tệp"
+  },
   "teamInbox": {
     "listLabel": "Danh sách hộp thư nhóm",
     "itemsLabel": "Mục trong hộp thư nhóm",
@@ -295,6 +319,9 @@
     "confirm": "Xác nhận",
     "apply": "Áp dụng",
     "reset": "Đặt lại",
+    "resetFilters": "Đặt lại bộ lọc",
+    "cardView": "Dạng thẻ",
+    "listView": "Dạng danh sách",
     "search": "Tìm kiếm",
     "add": "Thêm",
     "remove": "Xóa",
@@ -338,6 +365,12 @@
     "closeOthers": "Đóng các tab khác",
     "closeSaved": "Đóng các tab đã lưu",
     "openInNewWindow": "Mở trong cửa sổ mới",
+    "exportAndSync": "Xuất và đồng bộ",
+    "export": "Xuất",
+    "openIn": "Mở trong",
+    "openTargetNewTab": "Tab mới",
+    "openTargetNewWindow": "Cửa sổ mới",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "Mở trong tab mới",
     "confirmDelete": "Xác nhận xóa",
     "confirmDeleteTitle": "Xóa \"{{name}}\"?",
@@ -383,12 +416,6 @@
     "createPullRequest": "Tạo pull request",
     "expandView": "Mở rộng chế độ xem",
     "restoreSplitView": "Khôi phục chế độ xem chia đôi",
-    "resetFilters": "Đặt lại bộ lọc",
-    "cardView": "Dạng thẻ",
-    "listView": "Dạng danh sách",
-    "exportAndSync": "Xuất và đồng bộ",
-    "export": "Xuất",
-    "openIn": "Mở trong",
     "overwrite": "Ghi đè"
   },
   "status": {
@@ -446,6 +473,7 @@
     "diagnosticsInitializing": "Đang khởi động nguồn chẩn đoán...",
     "diagnosticSourceIssues": "Vấn đề với nguồn chẩn đoán",
     "copied": "Đã sao chép",
+    "copiedFilePath": "Đã sao chép đường dẫn tệp",
     "copyFailed": "Sao chép thất bại",
     "searching": "Đang tìm kiếm...",
     "noResults": "Không có kết quả",
@@ -453,8 +481,7 @@
     "scanningFileExtensions": "Đang quét phần mở rộng tệp…",
     "testing": "Đang kiểm tra...",
     "empty": "Trống",
-    "launching": "Đang khởi chạy...",
-    "copiedFilePath": "Đã sao chép đường dẫn tệp"
+    "launching": "Đang khởi chạy..."
   },
   "pagination": {
     "totalItems": "{{count}} mục",
@@ -472,6 +499,7 @@
   },
   "optional": "tùy chọn",
   "common": {
+    "display": "Cài đặt giao diện",
     "on": "Bật",
     "off": "Tắt",
     "default": "Mặc định",
@@ -505,10 +533,12 @@
     "error": "Lỗi",
     "pid": "PID",
     "shell": "Shell",
-    "source": "Nguồn",
-    "display": "Cài đặt giao diện"
+    "source": "Nguồn"
   },
   "labels": {
+    "stashesCount": "{{count}} stash",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stash",
     "accounts": "Tài khoản",
     "enabled": "Đã bật",
     "disabled": "Đã tắt",
@@ -553,6 +583,9 @@
     "pullRequest": "Pull request",
     "operationLog": "Nhật ký thao tác",
     "gitDashboard": "Bảng điều khiển",
+    "changedFilesCount": "{{fileCount}} tệp đã thay đổi",
+    "changedFilesCount_one": "{{fileCount}} tệp đã thay đổi",
+    "changedFilesCount_other": "{{fileCount}} tệp đã thay đổi",
     "colorTokens": "Token màu",
     "terminalInfo": "Thông tin Terminal",
     "fileCount_one": "{{count}} tệp",
@@ -644,13 +677,7 @@
     "issueComments_other": "{{count}} bình luận",
     "tokens": "Token",
     "actions": "Thao tác",
-    "all": "Tất cả",
-    "stashesCount": "{{count}} stash",
-    "stashesCount_one": "{{count}} stash",
-    "stashesCount_other": "{{count}} stash",
-    "changedFilesCount": "{{fileCount}} tệp đã thay đổi",
-    "changedFilesCount_one": "{{fileCount}} tệp đã thay đổi",
-    "changedFilesCount_other": "{{fileCount}} tệp đã thay đổi"
+    "all": "Tất cả"
   },
   "searchModes": {},
   "tabs": {
@@ -686,6 +713,7 @@
     "reconnectCodex": "Kết nối lại",
     "technicalDetails": "Chi tiết kỹ thuật",
     "failedToCopy": "Sao chép thất bại",
+    "failedToCopyFilePath": "Không thể sao chép đường dẫn tệp",
     "api": {
       "messages": {
         "signIn": "Vui lòng đăng nhập lại."
@@ -695,8 +723,7 @@
     "unknownError": "Đã xảy ra lỗi không xác định",
     "componentLoadingFailed": "Không thể tải thành phần",
     "noLocalPath": "Không có đường dẫn cục bộ",
-    "openInFinderFailed": "Không thể mở trong Finder",
-    "failedToCopyFilePath": "Không thể sao chép đường dẫn tệp"
+    "openInFinderFailed": "Không thể mở trong Finder"
   },
   "confirmation": {
     "delete": "Bạn có chắc muốn xóa không?",
@@ -747,7 +774,9 @@
     "previous": "Trước",
     "next": "Tiếp theo",
     "previousMatch": "Kết quả trước (Shift+Enter)",
+    "previousMatchLabel": "Kết quả trước",
     "nextMatch": "Kết quả tiếp theo (Enter)",
+    "nextMatchLabel": "Kết quả tiếp theo",
     "clearSearch": "Xóa tìm kiếm",
     "openFile": "Mở tệp",
     "openNativeDevTools": "Mở DevTools",
@@ -772,13 +801,20 @@
     "goForward": "Tiến tới",
     "goToToday": "Đi đến hôm nay",
     "matchCase": "Phân biệt chữ hoa/thường (Alt+C)",
+    "matchCaseLabel": "Phân biệt chữ hoa/thường",
     "matchWholeWord": "Khớp toàn bộ từ (Alt+W)",
+    "matchWholeWordLabel": "Khớp toàn bộ từ",
     "useRegex": "Sử dụng biểu thức chính quy (Alt+R)",
+    "useRegexLabel": "Sử dụng biểu thức chính quy",
     "searchInOpenEditors": "Chỉ tìm trong trình soạn thảo đang mở",
     "replace": "Thay thế (Ctrl+Shift+1)",
+    "replaceLabel": "Thay thế",
     "replaceAll": "Thay thế tất cả (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Thay thế tất cả",
     "moreActions": "Thao tác khác...",
     "startVoiceInput": "Bắt đầu nhập bằng giọng nói",
+    "expandInput": "Mở rộng ô nhập",
+    "collapseInput": "Thu gọn ô nhập",
     "cancelRecording": "Hủy ghi âm",
     "stopAndTranscribe": "Dừng và chuyển thành văn bản",
     "htmlPreview": "Xem trước HTML",
@@ -798,16 +834,7 @@
     "scrollToItem": "Cuộn đến {{name}}",
     "containsStatusFiles": "Chứa các tệp {{status}}",
     "showFileList": "Hiện danh sách tệp",
-    "copyValueRightClickForPath": "Nhấp để sao chép giá trị, nhấp chuột phải để sao chép đường dẫn",
-    "previousMatchLabel": "Kết quả trước",
-    "nextMatchLabel": "Kết quả tiếp theo",
-    "matchCaseLabel": "Phân biệt chữ hoa/thường",
-    "matchWholeWordLabel": "Khớp toàn bộ từ",
-    "useRegexLabel": "Sử dụng biểu thức chính quy",
-    "replaceLabel": "Thay thế",
-    "replaceAllLabel": "Thay thế tất cả",
-    "expandInput": "Mở rộng ô nhập",
-    "collapseInput": "Thu gọn ô nhập"
+    "copyValueRightClickForPath": "Nhấp để sao chép giá trị, nhấp chuột phải để sao chép đường dẫn"
   },
   "placeholders": {
     "enterFileName": "Nhập tên tệp",
@@ -862,6 +889,7 @@
     "noSessionsFound": "Không tìm thấy Session nào",
     "typeToSearchFiles": "Nhập để tìm kiếm tệp...",
     "selectFileToViewChanges": "Chọn tệp để xem thay đổi",
+    "selectSidebarFileToViewChanges": "Chọn một tệp",
     "failedToLoadHistory": "Không thể tải lịch sử",
     "noGitHistory": "Không có lịch sử Git",
     "noCommitHistory": "Không tìm thấy commit",
@@ -924,7 +952,6 @@
     "noData": "Không có dữ liệu",
     "noResults": "Không có kết quả",
     "noSessionHistory": "Không có lịch sử phiên",
-    "selectSidebarFileToViewChanges": "Chọn một tệp",
     "selectSidebarStash": "Chọn một stash",
     "selectSidebarCommit": "Chọn một commit",
     "selectSidebarPullRequest": "Chọn một pull request",
@@ -951,6 +978,8 @@
     "chromeWindowOpen": "Cửa sổ Chrome đang mở — tương tác trực tiếp, sau đó quay lại Agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "Chuyển sang diff hợp nhất",
+    "switchToSplitDiff": "Chuyển sang diff chia đôi",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git chưa được khởi tạo",
@@ -989,6 +1018,7 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
+    "switchToGraphView": "Chuyển sang chế độ xem đồ thị",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1034,9 +1064,6 @@
         "passed": "Đã đạt"
       }
     },
-    "switchToUnifiedDiff": "Chuyển sang diff hợp nhất",
-    "switchToSplitDiff": "Chuyển sang diff chia đôi",
-    "switchToGraphView": "Chuyển sang chế độ xem đồ thị",
     "fileChangedOnDiskTitle": "Tệp đã thay đổi trên đĩa",
     "fileChangedOnDiskBody": "\"{{name}}\" đã thay đổi trên đĩa kể từ khi bạn mở. Ghi đè bằng phiên bản của bạn?"
   },
@@ -1192,6 +1219,93 @@
         "autoMergeEnabled": "Đã bật tự động hợp nhất",
         "inMergeQueue": "Đang chờ trong hàng đợi hợp nhất"
       },
+      "mergeBox": {
+        "checksFailed": "Một số kiểm tra không thành công",
+        "checksPending": "Một số kiểm tra chưa hoàn tất",
+        "checksPassed": "Tất cả kiểm tra đều đạt",
+        "checksSkipped": "Tất cả kiểm tra đã bị bỏ qua",
+        "counts": {
+          "failing": "{{count}} thất bại",
+          "inProgress": "{{count}} đang chạy",
+          "skipped": "{{count}} đã bỏ qua",
+          "successful": "{{count}} thành công",
+          "summary_one": "Kiểm tra: {{parts}}",
+          "summary_other": "Kiểm tra: {{parts}}"
+        },
+        "check": {
+          "queued": "Đang xếp hàng",
+          "started": "Bắt đầu {{time}}",
+          "successfulIn": "Thành công sau {{duration}}",
+          "failingAfter": "Thất bại sau {{duration}}",
+          "skipped": "Đã bỏ qua",
+          "successful": "Thành công",
+          "failing": "Thất bại"
+        },
+        "deployments": {
+          "label": "Triển khai",
+          "none": "Không có bản triển khai nào",
+          "active_one": "{{count}} bản triển khai đang hoạt động",
+          "active_other": "{{count}} bản triển khai đang hoạt động",
+          "view": "Xem bản triển khai",
+          "notDeployed": "Nhánh này chưa được triển khai",
+          "deployed": "Nhánh này đã được triển khai thành công",
+          "deploying": "Nhánh này đang được triển khai",
+          "deployFailed": "Đã xảy ra lỗi khi triển khai nhánh này",
+          "deployInactive": "Nhánh này không còn được triển khai",
+          "state": {
+            "active": "Đang hoạt động",
+            "pending": "Đang tiến hành",
+            "failure": "Thất bại",
+            "inactive": "Không hoạt động"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Thay đổi đã được phê duyệt",
+            "detail": "Một đánh giá phê duyệt đã được gửi"
+          },
+          "reviewRequired": {
+            "title": "Cần đánh giá",
+            "detail": "Cần ít nhất một đánh giá phê duyệt để hợp nhất"
+          },
+          "reviewChangesRequested": {
+            "title": "Đã yêu cầu thay đổi",
+            "detail": "Một người đánh giá đã yêu cầu thay đổi trước khi hợp nhất"
+          },
+          "noConflicts": {
+            "title": "Không có xung đột với nhánh cơ sở",
+            "detail": "Có thể hợp nhất tự động"
+          },
+          "hasConflicts": {
+            "title": "Nhánh này có xung đột cần được giải quyết",
+            "detail": "Giải quyết xung đột trên nhánh nguồn, sau đó push"
+          },
+          "outOfDate": {
+            "title": "Nhánh này cũ hơn nhánh cơ sở",
+            "detail": "Hợp nhất các thay đổi mới nhất của nhánh cơ sở vào nhánh này"
+          },
+          "checkingConflicts": {
+            "title": "Đang kiểm tra khả năng hợp nhất tự động…",
+            "detail": "Vui lòng chờ trong khi GitHub kiểm tra trạng thái nhánh"
+          },
+          "autoMergeEnabled": {
+            "title": "Đã bật tự động hợp nhất",
+            "detail": "Pull request này sẽ được hợp nhất khi đáp ứng đủ yêu cầu"
+          },
+          "inMergeQueue": {
+            "title": "Đang chờ trong hàng đợi hợp nhất",
+            "detail": "GitHub sẽ hợp nhất khi nó lên đầu hàng đợi"
+          }
+        },
+        "merged": {
+          "title": "Pull request đã được hợp nhất và đóng thành công",
+          "detail": "Có thể xóa nhánh nguồn một cách an toàn"
+        },
+        "closed": {
+          "title": "Đã đóng với các commit chưa hợp nhất",
+          "detail": "Pull request này đã đóng. Mở lại để hợp nhất"
+        }
+      },
       "commits": {
         "backToList": "Tất cả commit",
         "none": "Không có commit",
@@ -1313,94 +1427,7 @@
       },
       "navigationTrail": "Điều hướng pull request",
       "failedToLoad": "Không thể tải pull request",
-      "label": "Pull request",
-      "mergeBox": {
-        "checksFailed": "Một số kiểm tra không thành công",
-        "checksPending": "Một số kiểm tra chưa hoàn tất",
-        "checksPassed": "Tất cả kiểm tra đều đạt",
-        "checksSkipped": "Tất cả kiểm tra đã bị bỏ qua",
-        "counts": {
-          "failing": "{{count}} thất bại",
-          "inProgress": "{{count}} đang chạy",
-          "skipped": "{{count}} đã bỏ qua",
-          "successful": "{{count}} thành công",
-          "summary_one": "Kiểm tra: {{parts}}",
-          "summary_other": "Kiểm tra: {{parts}}"
-        },
-        "check": {
-          "queued": "Đang xếp hàng",
-          "started": "Bắt đầu {{time}}",
-          "successfulIn": "Thành công sau {{duration}}",
-          "failingAfter": "Thất bại sau {{duration}}",
-          "skipped": "Đã bỏ qua",
-          "successful": "Thành công",
-          "failing": "Thất bại"
-        },
-        "deployments": {
-          "label": "Triển khai",
-          "none": "Không có bản triển khai nào",
-          "active_one": "{{count}} bản triển khai đang hoạt động",
-          "active_other": "{{count}} bản triển khai đang hoạt động",
-          "view": "Xem bản triển khai",
-          "notDeployed": "Nhánh này chưa được triển khai",
-          "deployed": "Nhánh này đã được triển khai thành công",
-          "deploying": "Nhánh này đang được triển khai",
-          "deployFailed": "Đã xảy ra lỗi khi triển khai nhánh này",
-          "deployInactive": "Nhánh này không còn được triển khai",
-          "state": {
-            "active": "Đang hoạt động",
-            "pending": "Đang tiến hành",
-            "failure": "Thất bại",
-            "inactive": "Không hoạt động"
-          }
-        },
-        "conditions": {
-          "reviewApproved": {
-            "title": "Thay đổi đã được phê duyệt",
-            "detail": "Một đánh giá phê duyệt đã được gửi"
-          },
-          "reviewRequired": {
-            "title": "Cần đánh giá",
-            "detail": "Cần ít nhất một đánh giá phê duyệt để hợp nhất"
-          },
-          "reviewChangesRequested": {
-            "title": "Đã yêu cầu thay đổi",
-            "detail": "Một người đánh giá đã yêu cầu thay đổi trước khi hợp nhất"
-          },
-          "noConflicts": {
-            "title": "Không có xung đột với nhánh cơ sở",
-            "detail": "Có thể hợp nhất tự động"
-          },
-          "hasConflicts": {
-            "title": "Nhánh này có xung đột cần được giải quyết",
-            "detail": "Giải quyết xung đột trên nhánh nguồn, sau đó push"
-          },
-          "outOfDate": {
-            "title": "Nhánh này cũ hơn nhánh cơ sở",
-            "detail": "Hợp nhất các thay đổi mới nhất của nhánh cơ sở vào nhánh này"
-          },
-          "checkingConflicts": {
-            "title": "Đang kiểm tra khả năng hợp nhất tự động…",
-            "detail": "Vui lòng chờ trong khi GitHub kiểm tra trạng thái nhánh"
-          },
-          "autoMergeEnabled": {
-            "title": "Đã bật tự động hợp nhất",
-            "detail": "Pull request này sẽ được hợp nhất khi đáp ứng đủ yêu cầu"
-          },
-          "inMergeQueue": {
-            "title": "Đang chờ trong hàng đợi hợp nhất",
-            "detail": "GitHub sẽ hợp nhất khi nó lên đầu hàng đợi"
-          }
-        },
-        "merged": {
-          "title": "Pull request đã được hợp nhất và đóng thành công",
-          "detail": "Có thể xóa nhánh nguồn một cách an toàn"
-        },
-        "closed": {
-          "title": "Đã đóng với các commit chưa hợp nhất",
-          "detail": "Pull request này đã đóng. Mở lại để hợp nhất"
-        }
-      }
+      "label": "Pull request"
     },
     "messages": {
       "pushSuccess": "Push thành công",
@@ -1687,10 +1714,10 @@
       "noResults": "Không có mô hình phù hợp",
       "chooseModel": "Chọn một mô hình",
       "chooseKey": "Chọn một khóa",
+      "noCompatibleKeys": "Không có khóa tương thích",
       "chooseModelHint": "Dùng bàn phím để điều hướng hoặc dùng chuột nhấp vào một mô hình",
       "chooseKeyHint": "Dùng bàn phím để điều hướng hoặc dùng chuột nhấp vào một khóa",
       "noModelsForKey": "Khóa này chưa bật mô hình nào",
-      "noCompatibleKeys": "Không có khóa tương thích",
       "selectKey": "Chọn khóa",
       "sourceScope": {
         "label": "Nguồn mô hình",
@@ -1810,6 +1837,7 @@
         "readRemotesFailed": "Không thể đọc remote của kho"
       },
       "labels": {
+        "defaultBranches": "Nhánh mặc định",
         "otherBranches": "Nhánh khác",
         "current": "Hiện tại",
         "recent": "Gần đây",
@@ -1824,8 +1852,7 @@
         "prSearchScope": "Tìm trong {{count}} Pull requests đã tải",
         "prLimit": "Hiển thị tối đa {{count}} PR đang mở",
         "noPullRequests": "Không có Pull requests phù hợp",
-        "mainWorktree": "Chính",
-        "defaultBranches": "Nhánh mặc định"
+        "mainWorktree": "Chính"
       },
       "placeholders": {
         "add": "tên nhánh mới...",
@@ -1858,6 +1885,8 @@
       "selectWorktreeSource": "Chọn nhánh Worktree hoặc pull request"
     },
     "spotlightFooter": {
+      "settings": "Cài đặt Spotlight",
+      "unpinAll": "Bỏ ghim tất cả",
       "navigate": "Điều hướng",
       "select": "Chọn",
       "switchColumn": "Đổi cột",
@@ -1871,9 +1900,7 @@
       "incompatible": "Không tương thích",
       "manageModels": "Quản lý mô hình",
       "manageKeys": "Quản lý khóa",
-      "manageAgents": "Quản lý Agents",
-      "settings": "Cài đặt Spotlight",
-      "unpinAll": "Bỏ ghim tất cả"
+      "manageAgents": "Quản lý Agents"
     },
     "editorSpotlight": {
       "searchPlaceholder": "Tìm lệnh...",
@@ -2043,6 +2070,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Bảng chat",
+    "chatSplitRatio": "Tỷ lệ bảng chat",
+    "chatSplitRatioHint": "Áp dụng ngay khi bạn chọn; kéo thanh chia sau đó vẫn được ưu tiên.",
     "chatLeft": "Chat trái",
     "chatRight": "Chat phải",
     "sidebarPosition": "Thanh bên Workstation",
@@ -2072,9 +2101,7 @@
     "ramHydratedEvents": "Sự kiện hydrated",
     "ramTurnBodies": "Tải lazy lịch sử",
     "ramFileTrees": "Cây tệp",
-    "ramCodeMirrors": "File rendering",
-    "chatSplitRatio": "Tỷ lệ bảng chat",
-    "chatSplitRatioHint": "Áp dụng ngay khi bạn chọn; kéo thanh chia sau đó vẫn được ưu tiên."
+    "ramCodeMirrors": "File rendering"
   },
   "spotlightActions": {
     "enableChatPagination": "Bật phân trang chat",
@@ -2085,6 +2112,8 @@
     "moveWorkstationSidebarRight": "Chuyển thanh bên Workstation sang phải",
     "openMyStation": "Đi tới My Station",
     "openAgentStation": "Đi tới Agent Station",
+    "openMyStationInNewWindow": "Mở My Station trong cửa sổ mới",
+    "openAgentStationInNewWindow": "Mở Agent Station trong cửa sổ mới",
     "openKanban": "Đi tới Kanban",
     "changeLanguage": "Thay đổi ngôn ngữ",
     "changeTheme": "Thay đổi giao diện",
@@ -2092,9 +2121,7 @@
     "searchThemes": "Tìm kiếm giao diện...",
     "searchSkins": "Tìm kiếm phong cách...",
     "detectUpdate": "Kiểm tra cập nhật",
-    "recentlyUsed": "Đã dùng gần đây",
-    "openMyStationInNewWindow": "Mở My Station trong cửa sổ mới",
-    "openAgentStationInNewWindow": "Mở Agent Station trong cửa sổ mới"
+    "recentlyUsed": "Đã dùng gần đây"
   },
   "commands": {
     "showBottomPanel": "Hiện bảng dưới",
@@ -2117,6 +2144,20 @@
     "title": "Phiên"
   },
   "sourceControl": {
+    "fileMenu": {
+      "viewChanges": "Xem thay đổi",
+      "openFileInNewTab": "Mở tệp trong thẻ mới",
+      "stageChanges": "Đưa thay đổi vào vùng chờ",
+      "unstageChanges": "Bỏ thay đổi khỏi vùng chờ",
+      "discardChanges": "Loại bỏ thay đổi",
+      "markResolved": "Đánh dấu đã giải quyết (đưa vào vùng chờ)",
+      "acceptCurrent": "Chấp nhận thay đổi hiện tại (của chúng ta)",
+      "acceptIncoming": "Chấp nhận thay đổi đến (của họ)",
+      "stageChangesCount": "Đưa thay đổi vào vùng chờ ({{count}})",
+      "unstageChangesCount": "Bỏ thay đổi khỏi vùng chờ ({{count}})",
+      "discardChangesCount": "Loại bỏ thay đổi ({{count}})",
+      "markResolvedCount": "Đánh dấu đã giải quyết ({{count}})"
+    },
     "notGitInitialized": "Git chưa được khởi tạo",
     "notGitInitializedSubtitle": "Khởi tạo Git để theo dõi thay đổi, tạo commit và dùng công cụ branch trong thư mục làm việc này.",
     "initializeGit": "Khởi tạo Git",
@@ -2145,20 +2186,6 @@
       "main": "Checkout chính",
       "worktrees": "Worktrees",
       "switchScopeActive": "Chuyển phạm vi quản lý mã nguồn: {{repo}}, {{branch}}"
-    },
-    "fileMenu": {
-      "viewChanges": "Xem thay đổi",
-      "openFileInNewTab": "Mở tệp trong thẻ mới",
-      "stageChanges": "Đưa thay đổi vào vùng chờ",
-      "unstageChanges": "Bỏ thay đổi khỏi vùng chờ",
-      "discardChanges": "Loại bỏ thay đổi",
-      "markResolved": "Đánh dấu đã giải quyết (đưa vào vùng chờ)",
-      "acceptCurrent": "Chấp nhận thay đổi hiện tại (của chúng ta)",
-      "acceptIncoming": "Chấp nhận thay đổi đến (của họ)",
-      "stageChangesCount": "Đưa thay đổi vào vùng chờ ({{count}})",
-      "unstageChangesCount": "Bỏ thay đổi khỏi vùng chờ ({{count}})",
-      "discardChangesCount": "Loại bỏ thay đổi ({{count}})",
-      "markResolvedCount": "Đánh dấu đã giải quyết ({{count}})"
     }
   },
   "contextInfo": {
@@ -2312,10 +2339,6 @@
       "saved": "Đã lưu ảnh chụp",
       "saveFailed": "Không thể lưu ảnh chụp: {{reason}}"
     },
-    "selectedElement": {
-      "addElement": "Thêm phần tử",
-      "sentToChat": "Đã đính phần tử vào chat"
-    },
     "menu": {
       "pageTheme": "Giao diện trang",
       "themeAuto": "Tự động",
@@ -2326,6 +2349,10 @@
     },
     "openHtmlFile": {
       "failed": "Không thể mở tệp: {{reason}}"
+    },
+    "selectedElement": {
+      "addElement": "Thêm phần tử",
+      "sentToChat": "Đã đính phần tử vào chat"
     }
   },
   "controlTower": {
@@ -2442,30 +2469,6 @@
     "goToSection": "Đi tới {{label}}, phần {{current}} trên {{total}}",
     "section": "Phần {{current}}",
     "sectionPosition": "Phần {{current}} trên {{total}}"
-  },
-  "gitLabels": {
-    "contains": "Chứa tệp: {{status}}",
-    "staged": "{{status}} (đã đưa vào vùng chờ)",
-    "additions": "Dòng đã thêm",
-    "deletions": "Dòng đã xóa",
-    "M": "Đã sửa đổi",
-    "U": "Chưa được theo dõi",
-    "A": "Đã thêm",
-    "D": "Đã xóa",
-    "R": "Đã đổi tên",
-    "C": "Xung đột",
-    "I": "Đã bỏ qua",
-    "?": "Trạng thái không xác định"
-  },
-  "findScope": {
-    "session": "Tìm trong phiên",
-    "file": "Tìm trong tệp",
-    "named": "Tìm trong {{name}}"
-  },
-  "sidebarSettings": {
-    "title": "Cài đặt thanh bên",
-    "showSidebar": "Hiện thanh bên",
-    "colorSourceControlFiles": "Màu khác biệt trên tệp"
   },
   "appMessages": {
     "testNotificationBody": "Đây là thông báo thử nghiệm từ ORG2",

@@ -9,8 +9,8 @@ import {
   DROPDOWN_PANEL,
 } from "@src/components/Dropdown/tokens";
 import {
-  AppWindowMacIcon,
   ArrowUpRight01Icon,
+  ChangeScreenModeIcon,
   Copy01Icon,
   CursorInWindowIcon,
   ThirdBracketIcon,
@@ -227,12 +227,12 @@ afterEach(() => {
 });
 
 describe("SessionHeaderActionsMenu", () => {
-  it("uses the cursor-in-window glyph for Move to and the Mac window glyph for New Window", () => {
+  it("uses the cursor-in-window glyph for Move to and the screen-mode glyph for New Window", () => {
     render();
     click("session-move-submenu");
     for (const [testId, icon] of [
       ["session-move-submenu", CursorInWindowIcon],
-      ["open-session-in-new-window", AppWindowMacIcon],
+      ["open-session-in-new-window", ChangeScreenModeIcon],
     ] as const) {
       const paths = element(testId).firstElementChild!.querySelectorAll("path");
       expect(Array.from(paths, (path) => path.getAttribute("d"))).toEqual(
