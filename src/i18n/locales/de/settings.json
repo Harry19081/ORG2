@@ -1145,7 +1145,22 @@
     "updateAvailable": "Update verfügbar",
     "updateAvailableDesc": "Update-Anzeigen in der gesamten App mit Version 99.0.0 einblenden — Update-Aktionen öffnen nur die Vorschau",
     "illustrations": "Illustrationen",
-    "illustrationsDesc": "Alle Illustrationen im hellen und dunklen Modus vergleichen, ohne das Design zu ändern"
+    "illustrationsDesc": "Alle Illustrationen im hellen und dunklen Modus vergleichen, ohne das Design zu ändern",
+    "emptyStates": "Leere Zustände",
+    "mockPanelTitle": "Dev-Mock-Panel",
+    "mockPanelSubtitle": "Simulierte App-Zustände zum Prüfen der Oberfläche, ohne etwas auf der Festplatte zu ändern. Nur für diese Sitzung — beim Neuladen werden alle Schalter zurückgesetzt.",
+    "mockPanelReset": "Alle zurücksetzen",
+    "mockPanelDone": "Fertig",
+    "scenario": {
+      "newUser": "Neuer Benutzer",
+      "newUserDesc": "Die App genau wie nach einer Neuinstallation anzeigen: keine Schlüssel, kein Arbeitsverzeichnis, kein Sitzungsverlauf",
+      "noKeys": "Keine Schlüssel",
+      "noKeysDesc": "Alle gespeicherten Konten und Modelle ausblenden, damit Schlüssel-Einrichtungshinweise und leere Modellauswahlen erscheinen",
+      "noWorkingDirectories": "Keine Arbeitsverzeichnisse",
+      "noWorkingDirectoriesDesc": "Alle Repositories und Arbeitsbereichsordner ausblenden, damit die „Ordner öffnen“-Leerzustände erscheinen",
+      "noSessions": "Keine Sitzungen",
+      "noSessionsDesc": "Den Sitzungsverlauf ausblenden, damit die Leerzustände von Seitenleiste und Chat beim ersten Start erscheinen"
+    }
   },
   "managedUsage": {
     "cancel": "Abbrechen",

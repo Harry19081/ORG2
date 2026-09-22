@@ -1145,7 +1145,22 @@
     "updateAvailable": "有可用更新",
     "updateAvailableDesc": "在整個應用中顯示版本 99.0.0 的更新提示 — 更新操作僅預覽對話框",
     "illustrations": "插畫預覽",
-    "illustrationsDesc": "同時預覽所有應用程式插畫的淺色和深色效果，無需更改應用程式主題"
+    "illustrationsDesc": "同時預覽所有應用程式插畫的淺色和深色效果，無需更改應用程式主題",
+    "emptyStates": "空狀態",
+    "mockPanelTitle": "開發模擬面板",
+    "mockPanelSubtitle": "模擬應用程式狀態以檢查介面，不會變更磁碟上的任何資料。僅本次工作階段有效——重新載入後所有開關都會重設。",
+    "mockPanelReset": "全部重設",
+    "mockPanelDone": "完成",
+    "scenario": {
+      "newUser": "新使用者",
+      "newUserDesc": "以全新安裝的狀態顯示應用程式：沒有金鑰、沒有工作目錄、沒有工作階段記錄",
+      "noKeys": "無金鑰",
+      "noKeysDesc": "隱藏所有已儲存的帳號與模型，以查看金鑰設定提示和空的模型選擇器",
+      "noWorkingDirectories": "無工作目錄",
+      "noWorkingDirectoriesDesc": "隱藏所有存放庫與工作區資料夾，以查看「開啟資料夾」空狀態",
+      "noSessions": "無工作階段",
+      "noSessionsDesc": "隱藏工作階段記錄，以查看首次啟動時的側邊欄與聊天空狀態"
+    }
   },
   "managedUsage": {
     "cancel": "取消",

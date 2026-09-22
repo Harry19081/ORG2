@@ -1145,7 +1145,22 @@
     "updateAvailable": "Update available",
     "updateAvailableDesc": "Show update indicators across the app using version 99.0.0 — update actions only preview the dialog",
     "illustrations": "Illustrations",
-    "illustrationsDesc": "Compare all app illustrations in light and dark without changing your theme"
+    "illustrationsDesc": "Compare all app illustrations in light and dark without changing your theme",
+    "emptyStates": "Empty states",
+    "mockPanelTitle": "Dev mock panel",
+    "mockPanelSubtitle": "Fake app states for checking UI without changing anything on disk. Session-only — every switch resets on reload.",
+    "mockPanelReset": "Reset all",
+    "mockPanelDone": "Done",
+    "scenario": {
+      "newUser": "New user",
+      "newUserDesc": "Show the app exactly as a fresh install: no keys, no working directory, no session history",
+      "noKeys": "No keys",
+      "noKeysDesc": "Hide every stored account and model so key-setup prompts and empty model pickers appear",
+      "noWorkingDirectories": "No working directories",
+      "noWorkingDirectoriesDesc": "Hide every repo and workspace folder so the “open a folder” empty states appear",
+      "noSessions": "No sessions",
+      "noSessionsDesc": "Hide session history so the first-launch sidebar and chat empty states appear"
+    }
   },
   "managedUsage": {
     "cancel": "Cancel",

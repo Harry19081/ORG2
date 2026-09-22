@@ -1145,7 +1145,22 @@
     "updateAvailable": "Pembaruan tersedia",
     "updateAvailableDesc": "Tampilkan indikator pembaruan di seluruh aplikasi menggunakan versi 99.0.0 — tindakan pembaruan hanya menampilkan pratinjau dialog",
     "illustrations": "Ilustrasi",
-    "illustrationsDesc": "Bandingkan semua ilustrasi aplikasi dalam mode terang dan gelap tanpa mengubah tema"
+    "illustrationsDesc": "Bandingkan semua ilustrasi aplikasi dalam mode terang dan gelap tanpa mengubah tema",
+    "emptyStates": "Status kosong",
+    "mockPanelTitle": "Panel tiruan pengembang",
+    "mockPanelSubtitle": "Status aplikasi tiruan untuk memeriksa antarmuka tanpa mengubah apa pun di disk. Hanya untuk sesi ini — semua sakelar disetel ulang saat dimuat ulang.",
+    "mockPanelReset": "Setel ulang semua",
+    "mockPanelDone": "Selesai",
+    "scenario": {
+      "newUser": "Pengguna baru",
+      "newUserDesc": "Tampilkan aplikasi persis seperti instalasi baru: tanpa kunci, tanpa direktori kerja, tanpa riwayat sesi",
+      "noKeys": "Tanpa kunci",
+      "noKeysDesc": "Sembunyikan semua akun dan model tersimpan agar petunjuk penyiapan kunci dan pemilih model kosong muncul",
+      "noWorkingDirectories": "Tanpa direktori kerja",
+      "noWorkingDirectoriesDesc": "Sembunyikan semua repositori dan folder ruang kerja agar status kosong “buka folder” muncul",
+      "noSessions": "Tanpa sesi",
+      "noSessionsDesc": "Sembunyikan riwayat sesi agar status kosong bilah sisi dan obrolan saat peluncuran pertama muncul"
+    }
   },
   "managedUsage": {
     "cancel": "Batal",

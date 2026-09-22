@@ -1145,7 +1145,22 @@
     "updateAvailable": "Mise à jour disponible",
     "updateAvailableDesc": "Afficher les indicateurs de mise à jour dans toute l’application avec la version 99.0.0 — les actions ouvrent uniquement l’aperçu",
     "illustrations": "Illustrations",
-    "illustrationsDesc": "Comparez toutes les illustrations en clair et en sombre sans changer de thème"
+    "illustrationsDesc": "Comparez toutes les illustrations en clair et en sombre sans changer de thème",
+    "emptyStates": "États vides",
+    "mockPanelTitle": "Panneau de simulation dev",
+    "mockPanelSubtitle": "États simulés pour vérifier l'interface sans rien modifier sur le disque. Valable pour cette session uniquement : tous les interrupteurs se réinitialisent au rechargement.",
+    "mockPanelReset": "Tout réinitialiser",
+    "mockPanelDone": "Terminé",
+    "scenario": {
+      "newUser": "Nouvel utilisateur",
+      "newUserDesc": "Afficher l'application comme après une installation neuve : aucune clé, aucun répertoire de travail, aucun historique de sessions",
+      "noKeys": "Aucune clé",
+      "noKeysDesc": "Masquer tous les comptes et modèles enregistrés pour faire apparaître les invites de configuration de clé et les sélecteurs de modèle vides",
+      "noWorkingDirectories": "Aucun répertoire de travail",
+      "noWorkingDirectoriesDesc": "Masquer tous les dépôts et dossiers d'espace de travail pour faire apparaître les états vides « ouvrir un dossier »",
+      "noSessions": "Aucune session",
+      "noSessionsDesc": "Masquer l'historique des sessions pour faire apparaître les états vides de la barre latérale et du chat au premier lancement"
+    }
   },
   "managedUsage": {
     "cancel": "Annuler",

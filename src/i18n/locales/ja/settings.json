@@ -1145,7 +1145,22 @@
     "updateAvailable": "アップデートあり",
     "updateAvailableDesc": "バージョン 99.0.0 の更新表示をアプリ全体に表示 — 更新操作はダイアログのプレビューのみ",
     "illustrations": "イラスト",
-    "illustrationsDesc": "テーマを変更せずに、すべてのイラストをライトとダークで比較"
+    "illustrationsDesc": "テーマを変更せずに、すべてのイラストをライトとダークで比較",
+    "emptyStates": "空の状態",
+    "mockPanelTitle": "開発モックパネル",
+    "mockPanelSubtitle": "ディスク上のデータを変更せずに UI を確認するための疑似状態です。セッション限定で、再読み込みするとすべてのスイッチがリセットされます。",
+    "mockPanelReset": "すべてリセット",
+    "mockPanelDone": "完了",
+    "scenario": {
+      "newUser": "新規ユーザー",
+      "newUserDesc": "新規インストール直後の状態で表示します：キーなし、作業ディレクトリなし、セッション履歴なし",
+      "noKeys": "キーなし",
+      "noKeysDesc": "保存済みのアカウントとモデルをすべて隠し、キー設定の案内と空のモデルピッカーを表示します",
+      "noWorkingDirectories": "作業ディレクトリなし",
+      "noWorkingDirectoriesDesc": "リポジトリとワークスペースフォルダーをすべて隠し、「フォルダーを開く」の空状態を表示します",
+      "noSessions": "セッションなし",
+      "noSessionsDesc": "セッション履歴を隠し、初回起動時のサイドバーとチャットの空状態を表示します"
+    }
   },
   "managedUsage": {
     "cancel": "キャンセル",

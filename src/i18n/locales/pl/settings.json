@@ -1145,7 +1145,22 @@
     "updateAvailable": "Dostępna aktualizacja",
     "updateAvailableDesc": "Pokaż wskaźniki aktualizacji w całej aplikacji dla wersji 99.0.0 — akcje aktualizacji otwierają tylko podgląd",
     "illustrations": "Ilustracje",
-    "illustrationsDesc": "Porównaj wszystkie ilustracje w trybie jasnym i ciemnym bez zmiany motywu"
+    "illustrationsDesc": "Porównaj wszystkie ilustracje w trybie jasnym i ciemnym bez zmiany motywu",
+    "emptyStates": "Stany puste",
+    "mockPanelTitle": "Panel makiet deweloperskich",
+    "mockPanelSubtitle": "Symulowane stany aplikacji do sprawdzania interfejsu bez zmian na dysku. Tylko na tę sesję — po przeładowaniu wszystkie przełączniki wracają do stanu wyjściowego.",
+    "mockPanelReset": "Zresetuj wszystko",
+    "mockPanelDone": "Gotowe",
+    "scenario": {
+      "newUser": "Nowy użytkownik",
+      "newUserDesc": "Pokaż aplikację dokładnie jak po nowej instalacji: bez kluczy, bez katalogu roboczego, bez historii sesji",
+      "noKeys": "Brak kluczy",
+      "noKeysDesc": "Ukryj wszystkie zapisane konta i modele, aby zobaczyć komunikaty konfiguracji klucza i puste listy modeli",
+      "noWorkingDirectories": "Brak katalogów roboczych",
+      "noWorkingDirectoriesDesc": "Ukryj wszystkie repozytoria i foldery obszaru roboczego, aby zobaczyć stany puste „otwórz folder”",
+      "noSessions": "Brak sesji",
+      "noSessionsDesc": "Ukryj historię sesji, aby zobaczyć stany puste paska bocznego i czatu przy pierwszym uruchomieniu"
+    }
   },
   "managedUsage": {
     "cancel": "Anuluj",
