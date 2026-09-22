@@ -191,8 +191,6 @@ Verwenden Sie das integrierte Rust-Harness von ORG2 oder starten Sie diese unter
 
 ## Download
 
-Aktuelle Build-Version: v2.0.7 (2026-09-22)
-
 Laden Sie die neueste ORG2-Desktop-App mit einem Klick herunter:
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

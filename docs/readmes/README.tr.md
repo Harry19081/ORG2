@@ -103,8 +103,6 @@ ORG2'nin yerleşik Rust harness'ını kullanın veya desteklenen coding-agent CL
 
 ## İndir
 
-Güncel build sürümü: v2.0.7 (2026-09-22)
-
 En yeni ORG2 desktop app'i tek tıklamayla indirin:
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

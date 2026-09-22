@@ -103,8 +103,6 @@ Sử dụng Rust harness tích hợp của ORG2 hoặc khởi chạy các CLI co
 
 ## Tải xuống
 
-Phiên bản build hiện tại: v2.0.7 (2026-09-22)
-
 Tải ứng dụng desktop ORG2 mới nhất chỉ với một lần nhấp:
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

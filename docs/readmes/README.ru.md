@@ -103,8 +103,6 @@ ORG-2 — это место, где ваша команда запускает �
 
 ## Скачать
 
-Текущая версия сборки: v2.0.7 (2026-09-22)
-
 Скачайте последнюю desktop app ORG2 одним нажатием:
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

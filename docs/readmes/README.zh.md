@@ -103,8 +103,6 @@ ORG-2 就是你的团队运行编程 Agent 的地方——内置原生 Rust harn
 
 ## 下载
 
-当前 build 版本：v2.0.7 (2026-09-22)
-
 一键下载最新 ORG2 桌面应用：
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

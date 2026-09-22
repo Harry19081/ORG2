@@ -6,9 +6,9 @@ import { SUPPORTED_LANGUAGES } from "./index";
 
 /**
  * Adding a locale to SUPPORTED_LANGUAGES ships a translated UI but does not
- * ship the translated README, and marking a release only rewrites the English
- * one. Both gaps are invisible in review, so they are asserted here: the
- * README set is the public face of every locale the app claims to support.
+ * ship the translated README, and changes to the English one do not reach the
+ * translations. Both gaps are invisible in review, so they are asserted here:
+ * the README set is the public face of every locale the app claims to support.
  */
 
 /** Display name shown in the language switcher, per locale. */
@@ -29,6 +29,11 @@ const SWITCHER_LABELS: Record<string, string> = {
   id: "Bahasa Indonesia",
   pl: "Polski",
 };
+
+/** Every locale whose README lives under docs/readmes/. */
+const TRANSLATED_LANGUAGES = SUPPORTED_LANGUAGES.filter(
+  (locale) => locale !== "en"
+);
 
 const repoPath = (...segments: string[]) => resolve(process.cwd(), ...segments);
 
@@ -87,13 +92,20 @@ describe("README coverage for supported locales", () => {
     }
   );
 
-  it.each(SUPPORTED_LANGUAGES)(
-    "states the current build version in the %s README",
+  it("states the current build version in the English README", () => {
+    const version = readReadme("en").match(
+      /v(\d+\.\d+\.\d+) \(\d{4}-\d{2}-\d{2}\)/
+    );
+    expect(version?.[1], "build version line").toBe(packageVersion());
+  });
+
+  // Only the English README is versioned, so marking a release stays a
+  // one-file edit. A version copied into a translation would go stale the
+  // next time it is bumped, which is exactly how these files drifted before.
+  it.each(TRANSLATED_LANGUAGES)(
+    "leaves versioning to the English README in %s",
     (locale) => {
-      const version = readReadme(locale).match(
-        /v(\d+\.\d+\.\d+) \(\d{4}-\d{2}-\d{2}\)/
-      );
-      expect(version?.[1], "build version line").toBe(packageVersion());
+      expect(readReadme(locale)).not.toMatch(/v\d+\.\d+\.\d+/);
     }
   );
 

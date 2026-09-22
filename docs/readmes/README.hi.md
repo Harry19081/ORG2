@@ -103,8 +103,6 @@ ORG2 का अंतर्निहित Rust harness इस्तेमाल
 
 ## डाउनलोड
 
-मौजूदा build वर्शन: v2.0.7 (2026-09-22)
-
 नवीनतम ORG2 डेस्कटॉप ऐप एक क्लिक में डाउनलोड करें:
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

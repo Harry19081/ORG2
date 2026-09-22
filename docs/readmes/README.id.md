@@ -103,8 +103,6 @@ Gunakan Rust harness bawaan ORG2, atau jalankan CLI coding-agent berikut yang di
 
 ## Unduh
 
-Versi build saat ini: v2.0.7 (2026-09-22)
-
 Unduh aplikasi desktop ORG2 terbaru dengan satu klik:
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

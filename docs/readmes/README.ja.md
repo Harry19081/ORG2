@@ -103,8 +103,6 @@ ORG2 の組み込み Rust ハーネスを使うか、デスクトップアプリ
 
 ## ダウンロード
 
-現在のビルドバージョン：v2.0.7 (2026-09-22)
-
 最新の ORG2 デスクトップアプリをワンクリックでダウンロードできます：
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

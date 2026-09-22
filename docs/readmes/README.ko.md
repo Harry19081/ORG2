@@ -103,8 +103,6 @@ ORG2의 내장 Rust 하네스를 사용하거나 데스크톱 앱에서 지원�
 
 ## 다운로드
 
-현재 빌드 버전: v2.0.7 (2026-09-22)
-
 최신 ORG2 데스크톱 앱을 한 번에 다운로드하세요:
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)

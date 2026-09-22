@@ -103,8 +103,6 @@ Use o harness Rust integrado do ORG2 ou inicie estas CLIs de coding Agents compa
 
 ## Download
 
-Versão atual do build: v2.0.7 (2026-09-22)
-
 Baixe o app desktop ORG2 mais recente com um clique:
 
 - [macOS Apple Silicon](https://github.com/org2AI/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg)
