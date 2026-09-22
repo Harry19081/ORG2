@@ -82,5 +82,44 @@ describe.each(["development", "production"])(
         sessionId: "agent-review",
       });
     });
+
+    // `ask_user_questions` rejects these at the writer now, so this covers a
+    // batch that went pending before that gate: status recovery must still
+    // report the request instead of failing the whole read.
+    it("still reports a batch whose elements are partly malformed", async () => {
+      vi.stubEnv("NODE_ENV", mode);
+      invokeMock.mockImplementation(async (command) =>
+        command === "agent_get_session"
+          ? {
+              sessionId: "agent-review",
+              status: "running",
+              createdAt: "2026-09-14",
+              updatedAt: "2026-09-14",
+            }
+          : {
+              pendingQuestions: [
+                {
+                  requestId: "request-1",
+                  sessionId: "agent-review",
+                  questions: [
+                    { header: "no question key" },
+                    { question: "   " },
+                    { question: "Which branch?" },
+                  ],
+                  toolCallId: null,
+                  autoResolveAt: null,
+                },
+              ],
+            }
+      );
+      await expect(
+        SessionService.getStatus({ sessionId: "agent-review" })
+      ).resolves.toMatchObject({
+        status: "waiting_for_user",
+        pendingQuestions: [
+          { questionId: "request-1", questionText: "Which branch?" },
+        ],
+      });
+    });
   }
 );

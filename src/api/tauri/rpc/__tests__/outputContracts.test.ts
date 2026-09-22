@@ -323,6 +323,71 @@ describe.each(["development", "production"])(
         await expect(result).resolves.toEqual(expected);
       }
     );
+    // A CLI transcript's tool `input` is passed through verbatim by the
+    // parsers and stored as unconstrained JSON, so a non-object `args` must
+    // decode rather than fail the whole `cli_agent_chunks` read — the only
+    // consumer is the cloud session-share push.
+    it.each([
+      ["null", null, {}],
+      ["a bare string", "ls -la", { content: "ls -la", observation: "ls -la" }],
+      ["an array", [1, 2], { value: [1, 2] }],
+    ])(
+      "decodes a persisted chunk whose args is %s",
+      async (_label, args, expected) => {
+        vi.stubEnv("NODE_ENV", mode);
+        invokeMock.mockResolvedValue([
+          {
+            chunk_id: "c1",
+            session_id: "review",
+            action_type: "tool_call",
+            function: "Bash",
+            args,
+            result: {},
+            created_at: "2026-09-22T00:00:00Z",
+          },
+        ]);
+        await expect(
+          rpc.cli.chunks({ sessionId: "review" })
+        ).resolves.toMatchObject([{ chunk_id: "c1", args: expected }]);
+      }
+    );
+
+    // `ask_user_questions` now rejects these at the writer; decoding stays
+    // tolerant so a batch already pending cannot break session-status recovery,
+    // which the live `agent:question_request` channel renders without checking.
+    it("decodes a pending batch whose question element is malformed", async () => {
+      vi.stubEnv("NODE_ENV", mode);
+      invokeMock.mockResolvedValue({
+        pendingQuestions: [
+          {
+            requestId: "q1",
+            sessionId: "review",
+            questions: [
+              "bare string",
+              { header: "no question key" },
+              { question: "Real?" },
+            ],
+            toolCallId: null,
+            autoResolveAt: null,
+          },
+        ],
+      });
+      await expect(
+        rpc.agentSession.getPendingQuestions({ sessionId: "review" })
+      ).resolves.toMatchObject({
+        pendingQuestions: [
+          {
+            requestId: "q1",
+            questions: [
+              { question: "bare string" },
+              { header: "no question key" },
+              { question: "Real?" },
+            ],
+          },
+        ],
+      });
+    });
+
     it("continues rejecting malformed values after null normalization", async () => {
       vi.stubEnv("NODE_ENV", mode);
       invokeMock.mockResolvedValue([

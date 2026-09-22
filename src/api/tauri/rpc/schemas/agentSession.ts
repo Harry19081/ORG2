@@ -297,12 +297,31 @@ export const ModeSwitchResponseInput = z.object({
   targetMode: z.string().optional(),
 });
 
+// QuestionManager stores the model-supplied `questions` value verbatim, so a
+// single element the model mangled must not fail the whole batch: this response
+// is the recovery path a re-mounted UI reads, and the live
+// `agent:question_request` channel renders the same payload without validating
+// it. `ask_user_questions` now rejects elements without a non-empty string
+// `question` at the writer, so this tolerance is defense-in-depth for batches
+// already pending, not the fix.
+function normalizePendingQuestion(value: unknown): Record<string, unknown> {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return typeof value === "string" ? { question: value } : {};
+}
+
+const PendingQuestionSchema = z.preprocess(
+  normalizePendingQuestion,
+  z.object({ question: z.string().optional() }).catchall(z.unknown())
+);
+
 // QuestionManager stores request batches, not timestamped individual questions.
 // Keep tool-owned question metadata (options, headers, etc.) intact.
 export const PendingQuestionBatchSchema = z.object({
   requestId: z.string(),
   sessionId: z.string(),
-  questions: z.array(z.object({ question: z.string() }).catchall(z.unknown())),
+  questions: z.array(PendingQuestionSchema),
   toolCallId: OptionalWireStringSchema,
   autoResolveAt: z.number().nullable().optional(),
 });

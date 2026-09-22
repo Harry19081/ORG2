@@ -242,7 +242,8 @@ export const SessionService = {
           // Responses address the batch request ID, not an individual question.
           questionId: batch.requestId,
           questionText: batch.questions
-            .map(({ question }) => question)
+            .map(({ question }) => question?.trim())
+            .filter((question): question is string => Boolean(question))
             .join("\n"),
         }));
 
