@@ -34,17 +34,11 @@ import type { DetailMode } from "../../types";
 import MyAccountsTableSection from "../Accounts/Table/MyAccountsTableSection";
 import InlineCredentialImport from "../CliClients/CredentialImport/InlineCredentialImport";
 import ModelsTableSection from "../Models/Table/ModelsTableSection";
-import {
-  type DefaultVariantOverrides,
-  applyDefaultVariantOverrides,
-  defaultVariantOverridesSettled,
-} from "./defaultVariantOverrides";
+import { applyDefaultVariantOverrides } from "./defaultVariantOverrides";
+import { useDefaultVariantSaves } from "./useDefaultVariantSaves";
 
 const ALL_FILTER = "all";
 const MODEL_SAVE_DEBOUNCE_MS = 120;
-// A variant pick is one click on a pill, slider or speed toggle. Bursts are
-// common (drag the slider, then flip Fast), so they coalesce into one write.
-const VARIANT_SAVE_DEBOUNCE_MS = 300;
 
 const KEY_TYPE_FILTER = {
   ALL: "all",
@@ -368,95 +362,9 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
     [accounts, queueModelSave]
   );
 
-  const [optimisticDefaultVariants, setOptimisticDefaultVariants] = useState<
-    Map<string, DefaultVariantOverrides>
-  >(new Map());
-  const optimisticDefaultVariantsRef = useRef<
-    Map<string, DefaultVariantOverrides>
-  >(new Map());
-  const variantSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
-  const variantSaveQueueRef = useRef<Set<string>>(new Set());
-
-  const flushVariantSaveQueue = useCallback(() => {
-    if (variantSaveTimerRef.current) {
-      clearTimeout(variantSaveTimerRef.current);
-      variantSaveTimerRef.current = null;
-    }
-
-    const queued = [...variantSaveQueueRef.current];
-    if (queued.length === 0) return;
-    variantSaveQueueRef.current = new Set();
-
-    const accountById = new Map(
-      accounts.map((account) => [account.id, account])
-    );
-    void Promise.all(
-      queued.map((accountId) => {
-        const account = accountById.get(accountId);
-        const overrides = optimisticDefaultVariantsRef.current.get(accountId);
-        if (!account || !overrides) return Promise.resolve(undefined);
-        return saveKey({
-          id: account.id,
-          agent_type: account.modelType,
-          default_variants: applyDefaultVariantOverrides(
-            account.defaultVariants,
-            overrides
-          ),
-        });
-      })
-    )
-      .then((savedKeys) => {
-        for (const saved of savedKeys) {
-          if (saved) upsertSharedLocalKey(saved);
-        }
-      })
-      .catch(() => {
-        const empty = new Map<string, DefaultVariantOverrides>();
-        optimisticDefaultVariantsRef.current = empty;
-        setOptimisticDefaultVariants(empty);
-        // The write failed, so the store is the only trustworthy source left.
-        void onRefresh?.();
-      });
-  }, [accounts, onRefresh]);
-
-  const flushVariantSaveQueueRef = useRef(flushVariantSaveQueue);
-  useEffect(() => {
-    flushVariantSaveQueueRef.current = flushVariantSaveQueue;
-  }, [flushVariantSaveQueue]);
-
-  useEffect(
-    () => () => {
-      if (variantSaveTimerRef.current) {
-        clearTimeout(variantSaveTimerRef.current);
-        variantSaveTimerRef.current = null;
-      }
-      flushVariantSaveQueueRef.current();
-    },
-    []
-  );
-
-  const handleUpdateAccountDefaultVariant = useCallback(
-    (accountId: string, baseModel: string, model: string) => {
-      // Render the pick immediately; the write follows once the clicks stop.
-      const next = new Map(optimisticDefaultVariantsRef.current);
-      const forAccount = new Map(next.get(accountId) ?? []);
-      forAccount.set(baseModel, model);
-      next.set(accountId, forAccount);
-      optimisticDefaultVariantsRef.current = next;
-      setOptimisticDefaultVariants(next);
-
-      variantSaveQueueRef.current.add(accountId);
-      if (variantSaveTimerRef.current) {
-        clearTimeout(variantSaveTimerRef.current);
-      }
-      variantSaveTimerRef.current = setTimeout(() => {
-        flushVariantSaveQueueRef.current();
-      }, VARIANT_SAVE_DEBOUNCE_MS);
-    },
-    []
-  );
+  const { optimisticDefaultVariants, updateDefaultVariant } =
+    useDefaultVariantSaves({ accounts, onRefresh });
+  const handleUpdateAccountDefaultVariant = updateDefaultVariant;
 
   const [optimisticToggles, setOptimisticToggles] = useState<
     Map<string, boolean>
@@ -508,27 +416,6 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
     );
     return filtered.map((account) => adjustedById.get(account.id) ?? account);
   }, [filtered, modelAdjustedAccounts]);
-
-  useEffect(() => {
-    if (optimisticDefaultVariants.size === 0) return;
-    // Drop a pick once the stored key says the same thing, so the rendered
-    // account goes back to being the store's own record.
-    setOptimisticDefaultVariants((prev) => {
-      const next = new Map(prev);
-      for (const account of accounts) {
-        const overrides = next.get(account.id);
-        if (!overrides) continue;
-        if (
-          defaultVariantOverridesSettled(account.defaultVariants, overrides)
-        ) {
-          next.delete(account.id);
-        }
-      }
-      if (next.size === prev.size) return prev;
-      optimisticDefaultVariantsRef.current = next;
-      return next;
-    });
-  }, [accounts, optimisticDefaultVariants]);
 
   useEffect(() => {
     if (optimisticModelEnabledByAccount.size === 0) return;
