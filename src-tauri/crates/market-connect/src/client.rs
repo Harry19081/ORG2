@@ -311,8 +311,16 @@ impl Connection {
         path: &str,
         body: Option<serde_json::Value>,
     ) -> Result<Vec<u8>, &'static str> {
+        self.market_request_at(control_origin()?, path, body).await
+    }
+    async fn market_request_at(
+        self: &Arc<Self>,
+        origin: &str,
+        path: &str,
+        body: Option<serde_json::Value>,
+    ) -> Result<Vec<u8>, &'static str> {
         let access = self.access().await?;
-        let url = format!("{}{path}", control_origin()?);
+        let url = format!("{origin}{path}");
         let request = match body {
             Some(body) => self.transport.post(url).json(&body),
             None => self.transport.get(url),
@@ -348,6 +356,30 @@ impl Connection {
         )
         .await
     }
+    /// Optional capability reads are not evidence that the grant is revoked:
+    /// older daemons may reject a native scope at a console-only endpoint.
+    /// Keep access() renewal and validation, but never invalidate on this GET.
+    pub(crate) async fn buyer_protection_hint(self: &Arc<Self>) -> Result<Vec<u8>, &'static str> {
+        self.buyer_protection_hint_at(control_origin()?).await
+    }
+    async fn buyer_protection_hint_at(
+        self: &Arc<Self>,
+        origin: &str,
+    ) -> Result<Vec<u8>, &'static str> {
+        let access = self.access().await?;
+        let response = self
+            .transport
+            .get(format!("{origin}/v1/console/buyer-protection"))
+            .bearer_auth(access.bearer())
+            .send()
+            .await
+            .map_err(|_| "market_buyer_protection_unavailable")?;
+        if !response.status().is_success() {
+            return Err("market_buyer_protection_unavailable");
+        }
+        bounded_response_limit(response, 16384).await
+    }
+
     /// Called only after the host's conflict-aware configuration restoration.
     pub async fn disconnect(&self) -> Result<(), &'static str> {
         // Never hold the in-process mutex while waiting for the file lock:
@@ -411,8 +443,18 @@ pub(crate) fn valid_identity(value: &str) -> bool {
         && matches!(b[14], b'1'..=b'8')
         && matches!(b[19], b'8' | b'9' | b'a' | b'A' | b'b' | b'B')
 }
+#[cfg(all(test, any(target_os = "macos", windows)))]
+fn test_store() -> &'static std::sync::Mutex<std::collections::HashMap<String, String>> {
+    static STORE: std::sync::OnceLock<std::sync::Mutex<std::collections::HashMap<String, String>>> =
+        std::sync::OnceLock::new();
+    STORE.get_or_init(Default::default)
+}
 #[cfg(any(target_os = "macos", windows))]
 fn platform_load(account: &str) -> Result<String, &'static str> {
+    #[cfg(test)]
+    if let Some(raw) = test_store().lock().unwrap().get(account) {
+        return Ok(raw.clone());
+    }
     if let Some(path) = local_credential_path(account) {
         return std::fs::read_to_string(path).map_err(|_| "credential_store_read_failed");
     }
@@ -478,6 +520,11 @@ fn local_credential_path(account: &str) -> Option<std::path::PathBuf> {
 }
 #[cfg(any(target_os = "macos", windows))]
 fn platform_store(account: &str, raw: &str) -> Result<(), &'static str> {
+    #[cfg(test)]
+    if let Some(stored) = test_store().lock().unwrap().get_mut(account) {
+        *stored = raw.to_owned();
+        return Ok(());
+    }
     if let Some(path) = local_credential_path(account) {
         let parent = path.parent().ok_or("credential_store_unavailable")?;
         std::fs::create_dir_all(parent).map_err(|_| "credential_store_unavailable")?;
@@ -830,6 +877,93 @@ pub(crate) mod tests {
             transport: reqwest::Client::new(),
         }
     }
+    #[cfg(any(target_os = "macos", windows))]
+    #[tokio::test]
+    async fn unsupported_hint_preserves_stored_grant_and_authoritative_401_still_retires_it() {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        for status in [401, 404, 503] {
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let origin = format!("http://{}", listener.local_addr().unwrap());
+            let server = tokio::spawn(async move {
+                for (path, code, body) in [
+                    (
+                        "/v1/console/buyer-protection",
+                        status,
+                        r#"{"error":"invalid_market_session","code":"malformed"}"#,
+                    ),
+                    ("/v1/market/packages", 200, r#"{"services":[]}"#),
+                    (
+                        "/v1/market/packages",
+                        401,
+                        r#"{"error":"invalid_market_session"}"#,
+                    ),
+                ] {
+                    let (mut socket, _) = listener.accept().await.unwrap();
+                    let mut request = Vec::new();
+                    loop {
+                        let mut buf = [0; 1024];
+                        let n = socket.read(&mut buf).await.unwrap();
+                        assert!(n > 0);
+                        request.extend_from_slice(&buf[..n]);
+                        if request.windows(4).any(|x| x == b"\r\n\r\n") {
+                            break;
+                        }
+                    }
+                    let request = String::from_utf8(request).unwrap();
+                    assert!(request.starts_with(&format!("GET {path} HTTP/1.1")));
+                    assert!(request
+                        .to_lowercase()
+                        .contains("authorization: bearer og2ms.v1."));
+                    socket.write_all(format!("HTTP/1.1 {code} Test\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len()).as_bytes()).await.unwrap();
+                }
+            });
+            let mut connection = connection_fixture();
+            let root = std::env::temp_dir().join(format!(
+                "market-hint-{}-{}",
+                std::process::id(),
+                rand::random::<u64>()
+            ));
+            std::fs::create_dir(&root).unwrap();
+            connection.instance = root.to_string_lossy().into_owned();
+            let mut grant = current_fixture();
+            grant.expires_at = chrono::Utc::now().timestamp_millis() + 600000;
+            let account = store_account(&connection.instance, &grant.metadata());
+            let original = serde_json::to_string(&grant).unwrap();
+            test_store()
+                .lock()
+                .unwrap()
+                .insert(account.clone(), original.clone());
+            let connection = Arc::new(connection);
+            assert_eq!(
+                connection.buyer_protection_hint_at(&origin).await,
+                Err("market_buyer_protection_unavailable")
+            );
+            assert!(platform_load(&account).unwrap() == original);
+            assert_eq!(
+                connection
+                    .market_request_at(&origin, "/v1/market/packages", None)
+                    .await
+                    .unwrap(),
+                br#"{"services":[]}"#
+            );
+            assert!(platform_load(&account).unwrap() == original);
+            assert_eq!(
+                connection
+                    .market_request_at(&origin, "/v1/market/packages", None)
+                    .await,
+                Err("market_reauthorization_required")
+            );
+            assert_eq!(
+                serde_json::from_str::<serde_json::Value>(&platform_load(&account).unwrap())
+                    .unwrap(),
+                serde_json::json!({"reauthorization_required":true})
+            );
+            server.await.unwrap();
+            test_store().lock().unwrap().remove(&account);
+            std::fs::remove_dir_all(root).unwrap();
+        }
+    }
+
     #[tokio::test]
     async fn concurrent_consumers_share_rotation_and_cached_access() {
         use std::sync::atomic::{AtomicUsize, Ordering};

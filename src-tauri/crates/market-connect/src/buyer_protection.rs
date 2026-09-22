@@ -21,11 +21,7 @@ fn decode(bytes: &[u8]) -> Result<usize, &'static str> {
 }
 impl Connection {
     pub async fn buyer_concurrency(self: &Arc<Self>) -> Result<usize, &'static str> {
-        decode(
-            &self
-                .market_request("/v1/console/buyer-protection", None)
-                .await?,
-        )
+        decode(&self.buyer_protection_hint().await?)
     }
 }
 #[cfg(test)]
