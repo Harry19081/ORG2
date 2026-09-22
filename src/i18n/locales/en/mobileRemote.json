@@ -73,16 +73,7 @@
     "next": "Next results"
   },
   "inbox": {
-    "backToSessions": "Back to sessions",
-    "title": "Needs attention",
-    "syncing": "Syncing",
-    "unavailable": "Unavailable",
-    "error": "Could not update pending requests",
-    "offline": "Showing last known requests. Reconnect to open and handle them",
-    "incomplete": "Only some requests are shown. View all requests on your computer",
-    "empty": "No pending permission requests",
-    "truncated": "Request details are shortened. View and handle the full request on your computer",
-    "open": "Open request"
+    "truncated": "Request details are shortened. View and handle the full request on your computer"
   },
   "profile": {
     "title": "Profile",

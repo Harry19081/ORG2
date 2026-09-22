@@ -73,16 +73,7 @@
     "next": "下一页结果"
   },
   "inbox": {
-    "backToSessions": "返回会话",
-    "title": "待处理",
-    "syncing": "同步中",
-    "unavailable": "暂不可用",
-    "error": "待处理请求更新失败",
-    "offline": "保留上次已知请求，重新连接后才能打开和处理",
-    "incomplete": "当前仅显示部分请求，请在电脑上查看全部请求",
-    "empty": "暂无待批准的权限请求",
-    "truncated": "请求详情已缩略，请在电脑上查看完整内容并处理",
-    "open": "打开请求"
+    "truncated": "请求详情已缩略，请在电脑上查看完整内容并处理"
   },
   "profile": {
     "title": "个人资料",

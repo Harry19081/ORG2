@@ -35,7 +35,6 @@ const state = vi.hoisted(() => ({
   rosterPhase: "ready",
   refreshSessions: vi.fn(),
   loadMoreSessions: vi.fn(),
-  focusPermission: vi.fn(),
   readStateSync: undefined as MobileReadStateSync | undefined,
 }));
 vi.mock("../app", () => ({ useMobileRemote: () => state }));
@@ -100,7 +99,6 @@ describe("SessionsScreen feature transitions", () => {
     };
     state.rosterPhase = "ready";
     state.refreshSessions.mockReset().mockResolvedValue(undefined);
-    state.focusPermission.mockClear();
     state.readStateSync = undefined;
   });
   afterEach(async () => {
@@ -144,8 +142,7 @@ describe("SessionsScreen feature transitions", () => {
 
   it("shows unknown rather than zero before the global snapshot is complete", async () => {
     await render();
-    expect(button("inbox.title").textContent).toContain("inbox.syncing");
-    expect(button("inbox.title").textContent).not.toMatch(/·\s*0/);
+    expect(button("inbox.title")).toBeUndefined();
     expect(
       host.querySelector(
         '[data-testid="mobile-remote-session-row"] [aria-label="sessions.state.unknown"]'
@@ -157,7 +154,6 @@ describe("SessionsScreen feature transitions", () => {
       complete: true,
     };
     await render();
-    // The compact inbox entry disappears only after a complete, empty snapshot.
     expect(button("inbox.title")).toBeUndefined();
     expect(
       host.querySelector(
@@ -240,6 +236,7 @@ describe("SessionsScreen feature transitions", () => {
       ],
     };
     await render();
+    expect(button("inbox.title")).toBeUndefined();
     const row = host.querySelector(
       '[data-testid="mobile-remote-session-row"]'
     )!;
@@ -255,45 +252,17 @@ describe("SessionsScreen feature transitions", () => {
     ).not.toBeNull();
   });
 
-  it("keeps pending items readable offline but disables navigation and explains reconnect", async () => {
-    state.pendingInbox = {
-      ...state.pendingInbox,
-      phase: "ready",
-      complete: true,
-      items: [
-        {
-          kind: "permission",
-          origin: "rust_agent",
-          sessionId: "session-a",
-          requestId: "request-a",
-          toolName: "shell",
-          toolArgs: { command: "pwd" },
-          createdAtMs: 1000,
-        },
-      ],
-    };
-    await render();
-    await act(async () => button("inbox.title").click());
-    expect(button("inbox.open").disabled).toBe(false);
-    await act(async () => button("inbox.open").click());
-    expect(select).toHaveBeenCalledWith("session-a");
-    expect(state.focusPermission).toHaveBeenCalledWith("request-a");
-    select.mockClear();
-    state.connection = { ...state.connection, presence: "offline" };
-    await render();
-    expect(host.textContent).toContain("inbox.offline");
-    expect(button("inbox.open").disabled).toBe(true);
-    await act(async () => button("inbox.open").click());
-    expect(select).not.toHaveBeenCalled();
-    expect(host.textContent).toContain("pwd");
-  });
-
-  it("returns focus to the remounted inbox entry after cancelling the pending list", async () => {
-    await render();
-    await act(async () => button("inbox.title").click());
-    await act(async () => button("inbox.backToSessions").click());
-    expect(document.activeElement).toBe(button("inbox.title"));
-  });
+  it.each(["syncing", "error", "ready", "unsupported"] as const)(
+    "omits the pending inbox entry in the %s state while sessions remain accessible",
+    async (phase) => {
+      state.pendingInbox = { ...state.pendingInbox, phase };
+      await render();
+      expect(button("inbox.title")).toBeUndefined();
+      expect(host.querySelector("h1")?.textContent).toBe("tabs.sessions");
+      await act(async () => button("Session A").click());
+      expect(select).toHaveBeenCalledWith("session-a");
+    }
+  );
 
   it("keeps one page heading and returns to the original search trigger on Escape", async () => {
     await render();

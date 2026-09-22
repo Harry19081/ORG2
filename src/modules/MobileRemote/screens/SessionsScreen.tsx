@@ -8,20 +8,13 @@ import Input from "@src/components/Input";
 import InlineAlert from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import { createLogger } from "@src/hooks/logger";
-import {
-  ArrowRight01Icon,
-  Cancel01Icon,
-  HugeiconsIcon,
-  Notification01Icon,
-  Search01Icon,
-} from "@src/icons";
+import { Cancel01Icon, HugeiconsIcon, Search01Icon } from "@src/icons";
 
 import { useMobileRemote } from "../app";
 import { useMobileVisitedSessions } from "../app/useMobileReadStateSync";
 import { useMobileSessionSearch } from "../app/useMobileSessionSearch";
 import { MobileConnectionNotice } from "../components/MobileConnectionNotice";
 import { MobileTopBar } from "../components/MobileTopBar";
-import { PendingInboxList } from "../components/PendingInboxList";
 import { SessionDeviceTabs } from "../components/SessionDeviceTabs";
 import { SessionListItem } from "../components/SessionListItem";
 import { SessionViewMenu } from "../components/SessionViewMenu";
@@ -66,7 +59,6 @@ export function SessionsScreen({
     retryConnection,
     rpc,
     pendingInbox,
-    focusPermission,
     sessions,
     sessionsHasMore,
     rosterPhase,
@@ -109,7 +101,7 @@ export function SessionsScreen({
   const offline = connection.presence === "offline";
   const online =
     connection.status === "connected" && connection.presence === "online";
-  const [view, setView] = useState<"all" | "search" | "pending">("all");
+  const [view, setView] = useState<"all" | "search">("all");
   const [query, setQuery] = useState("");
   const [composing, setComposing] = useState(false);
   const [visible, setVisible] = useState(() => !runtime.isHidden());
@@ -147,16 +139,15 @@ export function SessionsScreen({
     connection.capabilities?.sessionSearch,
   ]);
   const searchButton = useRef<HTMLButtonElement>(null);
-  const inboxButton = useRef<HTMLButtonElement>(null);
   const searchInput = useRef<HTMLInputElement>(null);
   const allList = useRef<HTMLDivElement>(null);
   const searchList = useRef<HTMLDivElement>(null);
   const scrollPositions = useRef({ all: 0, search: 0 });
   const showResults = view === "search" && !!query.trim();
-  const showAll = view !== "pending" && !showResults;
+  const showAll = !showResults;
   useEffect(() => {
     readStateSync?.watch(
-      active && visible && view !== "pending"
+      active && visible
         ? (showResults ? search.sessions : sessions).map((row) => row.id)
         : []
     );
@@ -218,13 +209,12 @@ export function SessionsScreen({
     />
   );
   const closeSecondary = () => {
-    const target = view === "search" ? searchButton : inboxButton;
     flushSync(() => setView("all"));
     search.cancel();
     setQuery("");
     setComposing(false);
     scrollPositions.current.search = 0;
-    target.current?.focus();
+    searchButton.current?.focus();
   };
 
   // Retain only controller state while in chat; do not render hidden rows.
@@ -246,22 +236,9 @@ export function SessionsScreen({
       }}
     >
       <MobileTopBar
-        title={t(view === "pending" ? "inbox.title" : "tabs.sessions")}
+        title={t("tabs.sessions")}
         leading={profileAction}
-        trailing={
-          view === "pending" ? (
-            <Button
-              variant="tertiary"
-              className="mobile-discovery-cancel"
-              style={SEARCH_ACTION_STYLE}
-              onClick={closeSecondary}
-            >
-              {t("inbox.backToSessions")}
-            </Button>
-          ) : (
-            <SessionViewMenu value={groupBy} onChange={setGroupBy} />
-          )
-        }
+        trailing={<SessionViewMenu value={groupBy} onChange={setGroupBy} />}
       />
       <SessionDeviceTabs
         items={deviceItems}
@@ -292,38 +269,6 @@ export function SessionsScreen({
         <p role="alert" className="mobile-discovery-notice">
           {t("devices.switchFailed")}
         </p>
-      ) : null}
-      {view === "all" &&
-      pendingInbox &&
-      pendingInbox.phase !== "unsupported" &&
-      !(
-        pendingInbox.phase === "ready" &&
-        pendingInbox.complete &&
-        pendingInbox.items.length === 0
-      ) ? (
-        <div className="mobile-discovery-inbox-entry">
-          <Button
-            layout="custom"
-            ref={inboxButton}
-            className="mobile-inbox-entry"
-            onClick={() => setView("pending")}
-          >
-            <HugeiconsIcon icon={Notification01Icon} size={20} aria-hidden />
-            <span className="mobile-inbox-entry__label">
-              {t("inbox.title")}
-            </span>
-            <span className="mobile-inbox-entry__count">
-              {pendingInbox.phase === "ready" && pendingInbox.complete
-                ? pendingInbox.items.length
-                : t(
-                    pendingInbox.phase === "error"
-                      ? "inbox.unavailable"
-                      : "inbox.syncing"
-                  )}
-            </span>
-            <HugeiconsIcon icon={ArrowRight01Icon} size={18} aria-hidden />
-          </Button>
-        </div>
       ) : null}
       <MobileConnectionNotice
         connection={connection}
@@ -420,18 +365,6 @@ export function SessionsScreen({
           </Button>
         ) : null}
       </div>
-      {view === "pending" && pendingInbox ? (
-        <div className="mobile-discovery-scroll">
-          <PendingInboxList
-            inbox={pendingInbox}
-            onFocusPermission={focusPermission}
-            sessions={sessions}
-            desktopName={connection.desktopName ?? "Desktop"}
-            online={online}
-            onSelectSession={onSelectSession}
-          />
-        </div>
-      ) : null}
       {showResults && connection.capabilities?.sessionSearch === true ? (
         <div
           ref={searchList}
