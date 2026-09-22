@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "Tampilkan bilah pesan agen",
-    "noActiveSession": "Tidak ada sesi aktif",
     "tabs": {
       "kanban": "Kanban"
     },

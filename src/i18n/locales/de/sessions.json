@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "Agent-Nachrichtenleiste anzeigen",
-    "noActiveSession": "Keine aktive Sitzung",
     "tabs": {
       "kanban": "Kanban"
     },

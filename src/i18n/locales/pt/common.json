@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "Ocultar barra lateral",
     "searchFiles": "Pesquisar arquivos",
     "switchWorkspace": "Mudar / adicionar diretório de trabalho",
-    "newTab": "Nova aba"
+    "newTab": "Nova aba",
+    "searchSessions": "Buscar sessões"
   },
   "gitDashboard": {
     "author": "Autor",

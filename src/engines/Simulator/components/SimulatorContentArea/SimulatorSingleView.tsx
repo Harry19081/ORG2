@@ -16,6 +16,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
+import { createAgentStationQuickActions } from "@src/engines/Simulator/emptyStateActions";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import { NoTabsPlaceholder } from "@src/modules/WorkStation/shared";
 
@@ -30,7 +31,7 @@ export const SimulatorSingleView: React.FC<SimulatorSingleViewProps> = ({
   mainContentAppType,
   displayContent,
 }) => {
-  const { t } = useTranslation("sessions");
+  const { t: tCommon } = useTranslation("common");
   const { sessionId } = useSessionId();
   const hasSession = Boolean(sessionId);
 
@@ -46,7 +47,7 @@ export const SimulatorSingleView: React.FC<SimulatorSingleViewProps> = ({
         {showSessionPlaceholder ? (
           <NoTabsPlaceholder
             icon="simulator"
-            caption={t("simulator.noActiveSession")}
+            actions={createAgentStationQuickActions({ t: tCommon })}
           />
         ) : showEmptyTabsPlaceholder ? (
           <NoTabsPlaceholder icon="simulator" />

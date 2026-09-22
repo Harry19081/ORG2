@@ -1949,7 +1949,8 @@
     "hidePrimarySidebar": "Sembunyikan Sidebar",
     "searchFiles": "Cari File",
     "switchWorkspace": "Ganti / Tambahkan Direktori Kerja",
-    "newTab": "Tab Baru"
+    "newTab": "Tab Baru",
+    "searchSessions": "Cari Sesi"
   },
   "gitDashboard": {
     "author": "Penulis",

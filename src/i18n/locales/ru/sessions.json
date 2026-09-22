@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "Показать панель сообщений Agent",
-    "noActiveSession": "Нет активной сессии",
     "tabs": {
       "kanban": "Канбан"
     },

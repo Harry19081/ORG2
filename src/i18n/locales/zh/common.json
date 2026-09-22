@@ -1949,7 +1949,8 @@
     "hidePrimarySidebar": "隐藏侧边栏",
     "searchFiles": "搜索文件",
     "switchWorkspace": "切换 / 添加工作目录",
-    "newTab": "新建标签页"
+    "newTab": "新建标签页",
+    "searchSessions": "搜索会话"
   },
   "gitDashboard": {
     "author": "作者",

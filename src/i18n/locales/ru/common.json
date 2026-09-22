@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "Скрыть боковую панель",
     "searchFiles": "Поиск файлов",
     "switchWorkspace": "Сменить / добавить рабочий каталог",
-    "newTab": "Новая вкладка"
+    "newTab": "Новая вкладка",
+    "searchSessions": "Поиск сессий"
   },
   "gitDashboard": {
     "author": "Автор",

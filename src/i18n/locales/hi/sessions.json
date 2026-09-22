@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "एजेंट संदेश बार दिखाएँ",
-    "noActiveSession": "कोई सक्रिय सत्र नहीं",
     "tabs": {
       "kanban": "कानबान"
     },

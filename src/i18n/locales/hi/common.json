@@ -1949,7 +1949,8 @@
     "hidePrimarySidebar": "साइडबार छिपाएँ",
     "searchFiles": "फ़ाइलें खोजें",
     "switchWorkspace": "वर्किंग डायरेक्टरी बदलें / जोड़ें",
-    "newTab": "नया टैब"
+    "newTab": "नया टैब",
+    "searchSessions": "सेशन खोजें"
   },
   "gitDashboard": {
     "author": "लेखक",

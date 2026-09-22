@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "사이드바 숨기기",
     "searchFiles": "파일 검색",
     "switchWorkspace": "작업 디렉터리 전환 / 추가",
-    "newTab": "새 탭"
+    "newTab": "새 탭",
+    "searchSessions": "세션 검색"
   },
   "gitDashboard": {
     "author": "작성자",
