@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "同时预览所有应用插画的浅色和深色效果，无需更改应用主题",
     "emptyStates": "空状态",
     "mockPanelTitle": "开发模拟面板",
-    "mockPanelSubtitle": "模拟应用状态以检查界面，不会改动磁盘上的任何数据。仅本次会话有效——重新加载后所有开关都会重置。",
     "mockPanelReset": "全部重置",
     "mockPanelDone": "完成",
     "scenario": {

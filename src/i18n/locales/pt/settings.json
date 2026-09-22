@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "Compare todas as ilustrações nos modos claro e escuro sem alterar o tema",
     "emptyStates": "Estados vazios",
     "mockPanelTitle": "Painel de simulação de desenvolvimento",
-    "mockPanelSubtitle": "Estados simulados para verificar a interface sem alterar nada no disco. Apenas para esta sessão: todos os interruptores são repostos ao recarregar.",
     "mockPanelReset": "Repor tudo",
     "mockPanelDone": "Concluído",
     "scenario": {

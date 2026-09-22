@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "テーマを変更せずに、すべてのイラストをライトとダークで比較",
     "emptyStates": "空の状態",
     "mockPanelTitle": "開発モックパネル",
-    "mockPanelSubtitle": "ディスク上のデータを変更せずに UI を確認するための疑似状態です。セッション限定で、再読み込みするとすべてのスイッチがリセットされます。",
     "mockPanelReset": "すべてリセット",
     "mockPanelDone": "完了",
     "scenario": {

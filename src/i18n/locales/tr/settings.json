@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "Temanızı değiştirmeden tüm uygulama çizimlerini açık ve koyu modda karşılaştırın",
     "emptyStates": "Boş durumlar",
     "mockPanelTitle": "Geliştirici sahte durum paneli",
-    "mockPanelSubtitle": "Diskte hiçbir şeyi değiştirmeden arayüzü kontrol etmek için sahte uygulama durumları. Yalnızca bu oturum için — yeniden yüklendiğinde tüm anahtarlar sıfırlanır.",
     "mockPanelReset": "Tümünü sıfırla",
     "mockPanelDone": "Bitti",
     "scenario": {

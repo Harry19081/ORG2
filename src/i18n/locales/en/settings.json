@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "Compare all app illustrations in light and dark without changing your theme",
     "emptyStates": "Empty states",
     "mockPanelTitle": "Dev mock panel",
-    "mockPanelSubtitle": "Fake app states for checking UI without changing anything on disk. Session-only — every switch resets on reload.",
     "mockPanelReset": "Reset all",
     "mockPanelDone": "Done",
     "scenario": {

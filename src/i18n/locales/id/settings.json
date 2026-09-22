@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "Bandingkan semua ilustrasi aplikasi dalam mode terang dan gelap tanpa mengubah tema",
     "emptyStates": "Status kosong",
     "mockPanelTitle": "Panel tiruan pengembang",
-    "mockPanelSubtitle": "Status aplikasi tiruan untuk memeriksa antarmuka tanpa mengubah apa pun di disk. Hanya untuk sesi ini — semua sakelar disetel ulang saat dimuat ulang.",
     "mockPanelReset": "Setel ulang semua",
     "mockPanelDone": "Selesai",
     "scenario": {

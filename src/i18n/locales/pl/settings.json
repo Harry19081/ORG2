@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "Porównaj wszystkie ilustracje w trybie jasnym i ciemnym bez zmiany motywu",
     "emptyStates": "Stany puste",
     "mockPanelTitle": "Panel makiet deweloperskich",
-    "mockPanelSubtitle": "Symulowane stany aplikacji do sprawdzania interfejsu bez zmian na dysku. Tylko na tę sesję — po przeładowaniu wszystkie przełączniki wracają do stanu wyjściowego.",
     "mockPanelReset": "Zresetuj wszystko",
     "mockPanelDone": "Gotowe",
     "scenario": {

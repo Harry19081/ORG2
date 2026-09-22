@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "So sánh mọi hình minh họa ở chế độ sáng và tối mà không đổi giao diện",
     "emptyStates": "Trạng thái trống",
     "mockPanelTitle": "Bảng mô phỏng cho nhà phát triển",
-    "mockPanelSubtitle": "Trạng thái ứng dụng giả lập để kiểm tra giao diện mà không thay đổi gì trên đĩa. Chỉ trong phiên này — mọi công tắc sẽ đặt lại khi tải lại.",
     "mockPanelReset": "Đặt lại tất cả",
     "mockPanelDone": "Xong",
     "scenario": {

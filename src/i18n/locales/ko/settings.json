@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "테마를 변경하지 않고 모든 앱 일러스트를 밝은 모드와 어두운 모드로 비교",
     "emptyStates": "빈 상태",
     "mockPanelTitle": "개발 모의 패널",
-    "mockPanelSubtitle": "디스크의 데이터를 바꾸지 않고 UI를 확인하기 위한 가상 상태입니다. 세션 한정이며, 새로 고치면 모든 스위치가 초기화됩니다.",
     "mockPanelReset": "모두 초기화",
     "mockPanelDone": "완료",
     "scenario": {

@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "Comparez toutes les illustrations en clair et en sombre sans changer de thème",
     "emptyStates": "États vides",
     "mockPanelTitle": "Panneau de simulation dev",
-    "mockPanelSubtitle": "États simulés pour vérifier l'interface sans rien modifier sur le disque. Valable pour cette session uniquement : tous les interrupteurs se réinitialisent au rechargement.",
     "mockPanelReset": "Tout réinitialiser",
     "mockPanelDone": "Terminé",
     "scenario": {

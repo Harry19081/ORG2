@@ -66,9 +66,6 @@ export const DevMockScenariosModal = () => {
         />
       }
     >
-      <p className="pb-2 text-sm text-text-2">
-        {t("development.mockPanelSubtitle")}
-      </p>
       <DevMockScenarioControls />
     </Modal>
   );

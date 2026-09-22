@@ -1148,7 +1148,6 @@
     "illustrationsDesc": "同時預覽所有應用程式插畫的淺色和深色效果，無需更改應用程式主題",
     "emptyStates": "空狀態",
     "mockPanelTitle": "開發模擬面板",
-    "mockPanelSubtitle": "模擬應用程式狀態以檢查介面，不會變更磁碟上的任何資料。僅本次工作階段有效——重新載入後所有開關都會重設。",
     "mockPanelReset": "全部重設",
     "mockPanelDone": "完成",
     "scenario": {
