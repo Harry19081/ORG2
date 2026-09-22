@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "Ukryj pasek boczny",
     "searchFiles": "Szukaj plików",
     "switchWorkspace": "Zmień / dodaj katalog roboczy",
-    "newTab": "Nowa karta"
+    "newTab": "Nowa karta",
+    "searchSessions": "Szukaj sesji"
   },
   "gitDashboard": {
     "author": "Autor",

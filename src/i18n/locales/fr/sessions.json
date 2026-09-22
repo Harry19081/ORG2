@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "Afficher la barre de message de l'agent",
-    "noActiveSession": "Aucune session active",
     "tabs": {
       "kanban": "Kanban"
     },

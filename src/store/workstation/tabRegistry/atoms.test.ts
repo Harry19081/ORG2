@@ -243,6 +243,32 @@ describe("live shared-resource close semantics", () => {
     expect(store.get(workstationTabsStateAtom).shared.tabs).toEqual([]);
   });
 
+  it("closes the Agent Station instead of a My Station tab nobody can see", () => {
+    const store = createStore();
+    const browser = createBrowserSessionTab("browser-1", "Example");
+    store.set(workstationLayoutAtom, {
+      mainPane: { tabs: [browser], activeTabId: browser.id },
+    });
+    store.set(stationModeAtom, "agent-station");
+    store.set(chatPanelMaximizedAtom, false);
+
+    expect(store.set(closeActiveWorkStationTabAtom)).toBe(true);
+
+    expect(store.get(chatPanelMaximizedAtom)).toBe(true);
+    expect(store.get(workstationLayoutAtom).mainPane.tabs).toEqual([browser]);
+  });
+
+  it("leaves a closed Agent Station to the window-closing fallback", () => {
+    const store = createStore();
+    store.set(workstationLayoutAtom, {
+      mainPane: { tabs: [createStartTab()], activeTabId: null },
+    });
+    store.set(stationModeAtom, "agent-station");
+    store.set(chatPanelMaximizedAtom, true);
+
+    expect(store.set(closeActiveWorkStationTabAtom)).toBe(false);
+  });
+
   it("batch-closes live resources once while retaining hidden lightweight shared tabs", () => {
     const store = createStore();
     const browserA = createBrowserSessionTab("browser-1", "One");

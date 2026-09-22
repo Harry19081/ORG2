@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "Ẩn thanh bên",
     "searchFiles": "Tìm kiếm tệp",
     "switchWorkspace": "Chuyển / thêm thư mục làm việc",
-    "newTab": "Tab mới"
+    "newTab": "Tab mới",
+    "searchSessions": "Tìm phiên"
   },
   "gitDashboard": {
     "author": "Tác giả",

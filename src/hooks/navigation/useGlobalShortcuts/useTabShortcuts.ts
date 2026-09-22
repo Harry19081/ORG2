@@ -258,8 +258,9 @@ export function useTabShortcuts() {
   // the chord closes — before this, the settings pathname passed
   // `isWorkbenchPath` and the chord silently closed the WorkStation tab
   // hidden behind Settings. Once only Launchpads are left the active tab is
-  // My Station's Launchpad, whose close closes My Station; with My Station
-  // closed too, the chord closes the window like any other app would.
+  // My Station's Launchpad, whose close closes My Station; the Agent Station
+  // owns no tabs, so it closes on the first press. With the Station closed
+  // too, the chord closes the window like any other app would.
   // A list/detail tab (Inbox, work items, pull requests) gives up its open
   // detail first, as its "x" would; the next press closes the tab.
   const handleCloseCurrentTab = useCallback(() => {

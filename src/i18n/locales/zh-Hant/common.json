@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "隱藏側邊欄",
     "searchFiles": "搜索文件",
     "switchWorkspace": "切換 / 新增工作目錄",
-    "newTab": "新建標籤頁"
+    "newTab": "新建標籤頁",
+    "searchSessions": "搜尋會話"
   },
   "gitDashboard": {
     "author": "作者",

@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "Kenar çubuğunu gizle",
     "searchFiles": "Dosya ara",
     "switchWorkspace": "Çalışma dizinini değiştir / ekle",
-    "newTab": "Yeni sekme"
+    "newTab": "Yeni sekme",
+    "searchSessions": "Oturum Ara"
   },
   "gitDashboard": {
     "author": "Yazar",

@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "Agent 메시지 표시줄 표시",
-    "noActiveSession": "활성 세션 없음",
     "tabs": {
       "kanban": "칸반"
     },

@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "显示 Agent 消息浮窗",
-    "noActiveSession": "无活动 Agent 会话",
     "tabs": {
       "kanban": "看板"
     },

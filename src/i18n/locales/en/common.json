@@ -1949,7 +1949,8 @@
     "hidePrimarySidebar": "Hide Sidebar",
     "searchFiles": "Search Files",
     "switchWorkspace": "Switch / Add Working Directory",
-    "newTab": "New Tab"
+    "newTab": "New Tab",
+    "searchSessions": "Search Sessions"
   },
   "gitDashboard": {
     "author": "Author",

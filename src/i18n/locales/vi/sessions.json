@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "Hiện thanh tin nhắn Agent",
-    "noActiveSession": "Không có phiên hoạt động",
     "tabs": {
       "kanban": "Kanban"
     },

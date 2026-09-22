@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "Seitenleiste ausblenden",
     "searchFiles": "Dateien suchen",
     "switchWorkspace": "Arbeitsverzeichnis wechseln / hinzufügen",
-    "newTab": "Neuer Tab"
+    "newTab": "Neuer Tab",
+    "searchSessions": "Sitzungen suchen"
   },
   "gitDashboard": {
     "author": "Autor",

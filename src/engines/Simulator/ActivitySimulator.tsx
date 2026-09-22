@@ -17,9 +17,9 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
 import { replayModeAtom } from "@src/engines/SessionCore";
 import type { ReplayMode } from "@src/engines/SessionCore/core/types";
+import { NoTabsPlaceholder } from "@src/modules/WorkStation/shared";
 import { chatVisibleAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   bumpSimulatorDiffRefreshNonceAtom,
@@ -44,13 +44,14 @@ import MiniCPMStepExplanationPanel from "./components/MiniCPMStepExplanationPane
 import MusicPlayerReplayBar from "./components/MusicPlayerReplayBar";
 import SimulatorFloatingInput from "./components/SimulatorFloatingInput";
 import { SubagentPipCard } from "./components/SubagentPipCard";
+import { createAgentStationQuickActions } from "./emptyStateActions";
 import { useSimulatorDisplayState } from "./hooks/useSimulatorDisplayState";
 import { useSimulatorSession } from "./hooks/useSimulatorSession";
 import { useSimulatorSubagents } from "./hooks/useSimulatorSubagents";
 import { AppType } from "./types/appTypes";
 
 const ActivitySimulator: React.FC = memo(() => {
-  const { t } = useTranslation("sessions");
+  const { t: tCommon } = useTranslation("common");
   // ── Atoms (same set as original ActivitySimulator) ─────────────────────
   const workStationLayoutMode = useAtomValue(workStationLayoutModeAtom);
   const chatVisible = useAtomValue(chatVisibleAtom);
@@ -241,13 +242,10 @@ const ActivitySimulator: React.FC = memo(() => {
 
   if (!hasSession) {
     return (
-      <div
-        className={`flex h-full w-full items-center justify-center p-4 ${EDITOR_TAB_CANVAS_BG_CLASS}`}
-      >
-        <span className="text-sm text-text-3">
-          {t("simulator.noActiveSession")}
-        </span>
-      </div>
+      <NoTabsPlaceholder
+        icon="simulator"
+        actions={createAgentStationQuickActions({ t: tCommon })}
+      />
     );
   }
 

@@ -93,8 +93,8 @@ export function useChatPanelTabShortcuts({
           return;
         }
         // Closing the sole Launchpad only re-creates it. Leave the chord to
-        // the app-wide handler, which closes My Station's Launchpad first and
-        // the window once My Station is closed.
+        // the app-wide handler, which closes the visible Station first and the
+        // window once the Station is closed.
         if (store.get(closeTabChordFallbackAtom)) return;
         const active = tabsRef.current.tabs.find(
           (tab) => tab.id === tabsRef.current.activeTabId

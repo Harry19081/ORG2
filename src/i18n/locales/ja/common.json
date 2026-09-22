@@ -2115,7 +2115,8 @@
     "hidePrimarySidebar": "サイドバーを非表示",
     "searchFiles": "ファイルを検索",
     "switchWorkspace": "作業ディレクトリを切り替え / 追加",
-    "newTab": "新規タブ"
+    "newTab": "新規タブ",
+    "searchSessions": "セッションを検索"
   },
   "gitDashboard": {
     "author": "作成者",

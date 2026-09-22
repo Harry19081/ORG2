@@ -322,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "Agent メッセージバーを表示",
-    "noActiveSession": "アクティブなセッションがありません",
     "tabs": {
       "kanban": "カンバン"
     },
