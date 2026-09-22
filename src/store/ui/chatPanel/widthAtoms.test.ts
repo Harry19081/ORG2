@@ -20,9 +20,10 @@ afterEach(() => {
   localStorage.clear();
 });
 
-// innerWidth 1200 → 1116 available (minus the 64px rail and 20px gutter).
-// The 1/3 default asks for 372, below MIN_WIDTH, so at this viewport it seeds
-// the 420 floor; the 2/3 ceiling clamps anything wider to 744.
+// No measured split area in these tests, so the estimate applies: innerWidth
+// 1200 − 240 assumed sidebar − 20 gutter = 940 shared. The 1/3 default asks
+// for 313, below MIN_WIDTH, so it seeds the 420 floor; the 2/3 ceiling clamps
+// anything wider to 626, and 1/2 lands on 470.
 const SEEDED_FROM_DEFAULT_RATIO = 420;
 
 describe("chat width initialization", () => {
@@ -30,7 +31,7 @@ describe("chat width initialization", () => {
     [null, SEEDED_FROM_DEFAULT_RATIO],
     ["480", 480],
     ["0", 0],
-    ["900", 744],
+    ["900", 626],
     ["100", 420],
     ["invalid-json", SEEDED_FROM_DEFAULT_RATIO],
   ])(
@@ -96,9 +97,9 @@ describe("chat width initialization", () => {
       await import("@src/engines/ChatPanel/config");
     const store = createStore();
     store.set(adoptDefaultChatWidthAtom, getChatWidthForRatio("two-thirds"));
-    expect(store.get(chatWidthAtom)).toBe(744);
+    expect(store.get(chatWidthAtom)).toBe(626);
     vi.advanceTimersByTime(300);
-    expect(localStorage.getItem("globalChatWidth")).toBe("744");
+    expect(localStorage.getItem("globalChatWidth")).toBe("626");
   });
 
   it("stores a preset picked while the pane is hidden as the restore width", async () => {
@@ -112,7 +113,7 @@ describe("chat width initialization", () => {
     // The pane stays collapsed — the preset only changes what it reopens at.
     expect(store.get(chatWidthAtom)).toBe(0);
     store.set(restoreChatWidthAtom);
-    expect(store.get(chatWidthAtom)).toBe(558);
+    expect(store.get(chatWidthAtom)).toBe(470);
   });
 
   it("coalesces repeated resize persistence without adding startup timers", async () => {
