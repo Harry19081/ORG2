@@ -1,7 +1,7 @@
 //! Canonical resolver for the Cursor app's own on-disk storage locations.
 //!
-//! Single source of truth for where the Cursor IDE / CLI keep their data
-//! (ORGII only ever reads these locations):
+//! Where the Cursor IDE / CLI keep their data (ORGII only ever reads these
+//! locations):
 //!
 //! - **IDE user data** hangs off the platform config root — macOS
 //!   `~/Library/Application Support/Cursor/`, Linux `$XDG_CONFIG_HOME/Cursor/`
@@ -13,14 +13,26 @@
 //! crate root (`cursor_config_dir`, `cursor_cli_profile_dir`, ...), which
 //! resolve ORGII-owned directories under `~/.orgii/`.
 //!
-//! ## Identity isolation
+//! ## Which home a resolver anchors to
 //!
-//! Every resolver honors the `ORGII_EXTERNAL_HISTORY_HOME` override exactly
-//! like the crate root's `external_history_*` family: when the override is
-//! set, paths resolve deterministically beneath the override home and the real
-//! user's `$HOME` / `$XDG_CONFIG_HOME` / `%APPDATA%` environment is never
-//! consulted, so a secondary dev profile cannot discover the primary user's
-//! Cursor state.
+//! Two families, mirroring the crate root's `home_dir()` /
+//! `external_history_home_dir()` split:
+//!
+//! - [`state_db_path`] and [`plugins_cache_dir`] anchor to the **real user's**
+//!   home. They answer "where is the Cursor this person installed", which is
+//!   what a settings surface reading Cursor's own configuration wants.
+//! - [`external_history_state_db_path`] and
+//!   [`external_history_conversation_index_db_path`] honor the
+//!   `ORGII_EXTERNAL_HISTORY_HOME` override. When it is set they resolve
+//!   deterministically beneath the override home and the real user's `$HOME` /
+//!   `$XDG_CONFIG_HOME` / `%APPDATA%` is never consulted, so a secondary dev
+//!   profile cannot discover — and then publish under a different cloud
+//!   identity — the primary user's Cursor history.
+//!
+//! Pick by what the caller does with the path, not by convenience: the override
+//! exists to stop *history ingestion* crossing identities, so a read that is
+//! never published (plugin metadata, CLI config) belongs in the real-user
+//! family alongside `agent_cli`'s `~/.cursor/cli-config.json` resolver.
 //!
 //! ## Unavailability
 //!
@@ -28,14 +40,23 @@
 //! return [`CursorPathsUnavailable`] instead of fabricating a path. Callers
 //! decide how to degrade — for read-only discovery this is equivalent to
 //! "Cursor is not installed".
+//!
+//! ## Scope
+//!
+//! This module owns the resolvers its two consumers (`orgtrack_core` history
+//! ingestion, `agent_cli` plugin listing) use. Equivalent hand-rolled copies of
+//! the same platform matrix still exist in `git-api`'s `cursor_chat`,
+//! `agent-core`'s `cursor_native::auth`, `key-vault`'s `auto_detect::cursor`
+//! and the CLI usage tracker; all four want the real-user family above and are
+//! follow-up sweep candidates, not part of this module's current contract.
 
 use std::path::{Path, PathBuf};
 
 /// No home / platform-config root exists to anchor Cursor storage paths.
 ///
-/// Practically: `ORGII_EXTERNAL_HISTORY_HOME` is unset, `dirs::home_dir()`
-/// failed, and (on Linux/Windows) `$XDG_CONFIG_HOME` / `%APPDATA%` are unset
-/// or unusable.
+/// Practically: `ORGII_EXTERNAL_HISTORY_HOME` is unset or irrelevant,
+/// `dirs::home_dir()` failed, and (on Linux/Windows) `$XDG_CONFIG_HOME` /
+/// `%APPDATA%` are unset or unusable.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CursorPathsUnavailable;
 
@@ -49,36 +70,46 @@ impl std::fmt::Display for CursorPathsUnavailable {
 
 impl std::error::Error for CursorPathsUnavailable {}
 
-// ── Public API (process environment + current platform) ──
+// ── Public API: the real user's Cursor installation ──
 
-/// Cursor IDE's `User/globalStorage` directory for the current platform.
+/// Cursor's global key-value store for the signed-in user:
+/// `<globalStorage>/state.vscdb`.
 ///
-/// Does not check existence — callers join a filename and test that.
-pub fn global_storage_dir() -> Result<PathBuf, CursorPathsUnavailable> {
-    CursorEnv::from_process().global_storage_dir(current_platform())
-}
-
-/// Cursor's global key-value store: `<globalStorage>/state.vscdb`.
-///
-/// Does not check existence.
+/// Ignores `ORGII_EXTERNAL_HISTORY_HOME` — see the module docs. Does not check
+/// existence; callers test that themselves.
 pub fn state_db_path() -> Result<PathBuf, CursorPathsUnavailable> {
-    CursorEnv::from_process().state_db_path(current_platform())
-}
-
-/// Cursor's conversation index (newer builds), stored next to `state.vscdb`:
-/// `<globalStorage>/conversation-search.db`.
-///
-/// Does not check existence — older Cursor builds predate this file.
-pub fn conversation_index_db_path() -> Result<PathBuf, CursorPathsUnavailable> {
-    CursorEnv::from_process().conversation_index_db_path(current_platform())
+    let platform = current_platform();
+    CursorEnv::real_user(platform).state_db_path(platform)
 }
 
 /// Cursor's marketplace plugin cache: `~/.cursor/plugins/cache/cursor-public/`.
 ///
-/// Layout: one `{slug}/{hash}/` directory per downloaded plugin. Does not
-/// check existence.
+/// Layout: one `{slug}/{hash}/` directory per downloaded plugin. Ignores
+/// `ORGII_EXTERNAL_HISTORY_HOME` so it stays consistent with `agent_cli`'s
+/// `~/.cursor/cli-config.json` resolver. Does not check existence.
 pub fn plugins_cache_dir() -> Result<PathBuf, CursorPathsUnavailable> {
-    CursorEnv::from_process().plugins_cache_dir()
+    CursorEnv::real_user(current_platform()).plugins_cache_dir()
+}
+
+// ── Public API: external-history discovery (identity-isolated) ──
+
+/// `state.vscdb` for external-history ingestion, honoring
+/// `ORGII_EXTERNAL_HISTORY_HOME`.
+///
+/// Does not check existence.
+pub fn external_history_state_db_path() -> Result<PathBuf, CursorPathsUnavailable> {
+    let platform = current_platform();
+    CursorEnv::external_history(platform).state_db_path(platform)
+}
+
+/// Cursor's conversation index (newer builds), stored next to `state.vscdb`:
+/// `<globalStorage>/conversation-search.db`. Honors
+/// `ORGII_EXTERNAL_HISTORY_HOME`.
+///
+/// Does not check existence — older Cursor builds predate this file.
+pub fn external_history_conversation_index_db_path() -> Result<PathBuf, CursorPathsUnavailable> {
+    let platform = current_platform();
+    CursorEnv::external_history(platform).conversation_index_db_path(platform)
 }
 
 // ── Pure resolver core ──
@@ -106,12 +137,13 @@ fn current_platform() -> Platform {
 /// Environment inputs that determine Cursor storage roots.
 ///
 /// Production snapshots the process environment once per resolution
-/// ([`CursorEnv::from_process`]); tests construct values directly to cover the
-/// whole platform matrix. Fields hold already-validated values — env-string
-/// filtering lives in [`parse_env_path`].
+/// ([`CursorEnv::real_user`] / [`CursorEnv::external_history`]); tests
+/// construct values directly to cover the whole platform matrix. Fields hold
+/// already-validated values — env-string filtering lives in [`parse_env_path`].
 #[derive(Debug, Clone, Default)]
 struct CursorEnv {
-    /// `ORGII_EXTERNAL_HISTORY_HOME` identity-isolation override.
+    /// `ORGII_EXTERNAL_HISTORY_HOME` identity-isolation override. Always `None`
+    /// for the real-user family, which must not be redirected by it.
     external_history_home: Option<PathBuf>,
     /// Real user home directory (`dirs::home_dir()`).
     home: Option<PathBuf>,
@@ -122,12 +154,23 @@ struct CursorEnv {
 }
 
 impl CursorEnv {
-    fn from_process() -> Self {
+    /// Snapshot anchored to the signed-in user's home, never the isolation
+    /// override.
+    fn real_user(platform: Platform) -> Self {
+        Self {
+            external_history_home: None,
+            home: dirs::home_dir(),
+            xdg_config_home: env_path(platform, "XDG_CONFIG_HOME"),
+            appdata: env_path(platform, "APPDATA"),
+        }
+    }
+
+    /// Snapshot for external-history discovery: the isolation override when
+    /// set, otherwise identical to [`CursorEnv::real_user`].
+    fn external_history(platform: Platform) -> Self {
         Self {
             external_history_home: crate::external_history_home_override(),
-            home: dirs::home_dir(),
-            xdg_config_home: env_path("XDG_CONFIG_HOME"),
-            appdata: env_path("APPDATA"),
+            ..Self::real_user(platform)
         }
     }
 
@@ -205,26 +248,49 @@ fn default_config_root_under(platform: Platform, home: &Path) -> PathBuf {
     }
 }
 
-fn env_path(var: &str) -> Option<PathBuf> {
-    parse_env_path(&std::env::var(var).ok()?)
+fn env_path(platform: Platform, var: &str) -> Option<PathBuf> {
+    parse_env_path(platform, &std::env::var(var).ok()?)
 }
 
 /// Filter for env-provided directory values: trimmed, non-empty, absolute.
 /// (The XDG base-dir spec requires relative `XDG_*` values to be ignored;
 /// the same guard keeps a malformed `%APPDATA%` from producing a relative
 /// storage root.)
-fn parse_env_path(value: &str) -> Option<PathBuf> {
+fn parse_env_path(platform: Platform, value: &str) -> Option<PathBuf> {
     let trimmed = value.trim();
     if trimmed.is_empty() {
         return None;
     }
-    let path = PathBuf::from(trimmed);
-    path.is_absolute().then_some(path)
+    is_absolute_for(platform, trimmed).then(|| PathBuf::from(trimmed))
+}
+
+/// Whether an env-provided directory value is absolute *for `platform`*.
+///
+/// `Path::is_absolute` answers for the host, so it cannot judge a Windows
+/// `%APPDATA%` on the unix hosts that run this suite — CI executes
+/// `cargo test` on macOS only, and the Windows job is compile-only. Deciding
+/// from `platform` keeps the rule under test on every host. The result matches
+/// `std`'s definition: rooted on unix; drive-qualified or UNC/verbatim on
+/// Windows, where a bare `/foo` and a drive-relative `C:foo` are both relative.
+fn is_absolute_for(platform: Platform, value: &str) -> bool {
+    match platform {
+        Platform::MacOs | Platform::Linux => value.starts_with('/'),
+        Platform::Windows => {
+            if value.starts_with(r"\\") {
+                return true;
+            }
+            let mut chars = value.chars();
+            matches!(chars.next(), Some(drive) if drive.is_ascii_alphabetic())
+                && chars.next() == Some(':')
+                && matches!(chars.next(), Some('\\') | Some('/'))
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_env::{env_lock, EnvVarGuard};
 
     // Fixture paths use `/` separators (host-native on the unix CI/dev hosts
     // this suite runs on) even for the Windows rows: `Path` equality compares
@@ -341,6 +407,78 @@ mod tests {
         assert!(env.plugins_cache_dir().is_ok());
     }
 
+    /// The real-user family must stay anchored to `$HOME` even while the
+    /// isolation override is set, so `agent_cli`'s plugin cache keeps pointing
+    /// at the same `~/.cursor` its `cli-config.json` resolver reads.
+    #[test]
+    fn real_user_snapshot_ignores_the_isolation_override() {
+        let _lock = env_lock();
+        let _isolation = EnvVarGuard::set("ORGII_EXTERNAL_HISTORY_HOME", "/tmp/orgii-instance2");
+
+        let real_user = CursorEnv::real_user(Platform::MacOs);
+        assert_eq!(real_user.external_history_home, None);
+
+        let isolated = CursorEnv::external_history(Platform::MacOs);
+        assert_eq!(
+            isolated.external_history_home,
+            Some(PathBuf::from("/tmp/orgii-instance2")),
+        );
+        // Same real home underneath — only the override field differs.
+        assert_eq!(real_user.home, isolated.home);
+    }
+
+    /// The invariant the split exists to protect: with the override set, the
+    /// plugin cache still lands under the real `$HOME` that
+    /// `agent_cli::cursor::commands` reads `~/.cursor/cli-config.json` from,
+    /// while history ingestion follows the override.
+    #[test]
+    fn public_api_splits_the_two_homes_under_isolation() {
+        let _lock = env_lock();
+        let isolated_home = "/tmp/orgii-instance2";
+        let _isolation = EnvVarGuard::set("ORGII_EXTERNAL_HISTORY_HOME", isolated_home);
+
+        let Some(real_home) = dirs::home_dir() else {
+            // No home on this host: every resolver reports unavailable and
+            // there is nothing to compare.
+            assert_eq!(plugins_cache_dir(), Err(CursorPathsUnavailable));
+            return;
+        };
+
+        let cache = plugins_cache_dir().expect("real home resolves");
+        assert!(
+            cache.starts_with(&real_home),
+            "plugin cache {} escaped the real home",
+            cache.display(),
+        );
+        assert!(!cache.starts_with(isolated_home));
+
+        assert!(state_db_path()
+            .expect("real home resolves")
+            .starts_with(&real_home));
+
+        for isolated in [
+            external_history_state_db_path().unwrap(),
+            external_history_conversation_index_db_path().unwrap(),
+        ] {
+            assert!(
+                isolated.starts_with(isolated_home),
+                "history path {} ignored the isolation override",
+                isolated.display(),
+            );
+        }
+    }
+
+    #[test]
+    fn external_history_snapshot_matches_real_user_without_the_override() {
+        let _lock = env_lock();
+        let _isolation = EnvVarGuard::unset("ORGII_EXTERNAL_HISTORY_HOME");
+
+        assert_eq!(
+            CursorEnv::external_history(Platform::Linux).external_history_home,
+            None,
+        );
+    }
+
     // ── Typed unavailability ──
 
     #[test]
@@ -400,13 +538,76 @@ mod tests {
     // ── Env-value filtering ──
 
     #[test]
-    fn parse_env_path_filters_blank_and_relative_values() {
-        assert_eq!(parse_env_path(""), None);
-        assert_eq!(parse_env_path("   "), None);
-        assert_eq!(parse_env_path("relative/config"), None);
-        assert_eq!(
-            parse_env_path("  /abs/config  "),
-            Some(PathBuf::from("/abs/config")),
-        );
+    fn parse_env_path_filters_blank_values_on_every_platform() {
+        for platform in ALL_PLATFORMS {
+            assert_eq!(parse_env_path(platform, ""), None);
+            assert_eq!(parse_env_path(platform, "   "), None);
+        }
+    }
+
+    #[test]
+    fn parse_env_path_keeps_absolute_unix_values_and_trims_them() {
+        for platform in [Platform::MacOs, Platform::Linux] {
+            assert_eq!(parse_env_path(platform, "relative/config"), None);
+            assert_eq!(
+                parse_env_path(platform, "  /abs/config  "),
+                Some(PathBuf::from("/abs/config")),
+            );
+        }
+    }
+
+    /// Runs on unix hosts too: absoluteness is decided from `Platform`, not
+    /// from the host's `Path::is_absolute`.
+    #[test]
+    fn parse_env_path_applies_windows_absoluteness_rules() {
+        let windows_absolute = [
+            r"C:\Users\dev\AppData\Roaming",
+            "C:/Users/dev/AppData/Roaming",
+            r"\\server\share\Roaming",
+            r"\\?\D:\Roaming",
+        ];
+        for value in windows_absolute {
+            assert_eq!(
+                parse_env_path(Platform::Windows, value),
+                Some(PathBuf::from(value)),
+                "expected {value} to be absolute on Windows",
+            );
+        }
+
+        let windows_relative = [
+            "relative/config",
+            r"C:relative\config", // drive-relative, not rooted
+            "/unix/style/root",   // rooted but has no drive prefix
+            "1:/not/a/drive",
+        ];
+        for value in windows_relative {
+            assert_eq!(
+                parse_env_path(Platform::Windows, value),
+                None,
+                "expected {value} to be rejected on Windows",
+            );
+        }
+    }
+
+    /// Guards the hand-rolled Windows rule against `std`, on the one host where
+    /// `Path::is_absolute` actually speaks Windows.
+    #[cfg(windows)]
+    #[test]
+    fn windows_absoluteness_matches_std_on_windows_hosts() {
+        for value in [
+            r"C:\Users\dev",
+            "C:/Users/dev",
+            r"\\server\share",
+            r"\\?\D:\Roaming",
+            r"C:relative",
+            "/unix/style/root",
+            "relative/config",
+        ] {
+            assert_eq!(
+                is_absolute_for(Platform::Windows, value),
+                Path::new(value).is_absolute(),
+                "disagreed with std::path on {value}",
+            );
+        }
     }
 }

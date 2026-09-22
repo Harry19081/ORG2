@@ -319,9 +319,12 @@ fn read_hooks(plugin_dir: &Path) -> Vec<CursorPluginHook> {
 /// Never returns an error for the "not installed" state — that is a valid
 /// condition for users who don't have Cursor.
 pub fn list_installed_plugins() -> Result<Vec<CursorPluginInfo>, String> {
-    // Storage paths come from the canonical platform-aware resolver. A typed
-    // unavailability (no resolvable home/config root) degrades to the same
-    // "Cursor not installed" empty state — never a fabricated path.
+    // Storage paths come from the canonical platform-aware resolver, using
+    // its real-user family: this lists the Cursor the person installed, and
+    // must stay anchored to the same `$HOME` as `cursor::commands`'
+    // `~/.cursor/cli-config.json`. A typed unavailability (no resolvable
+    // home/config root) degrades to the same "Cursor not installed" empty
+    // state — never a fabricated path.
     let db_path = match app_paths::cursor::state_db_path() {
         Ok(path) => path,
         Err(err) => {

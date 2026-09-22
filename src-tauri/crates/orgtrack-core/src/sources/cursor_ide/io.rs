@@ -35,7 +35,7 @@ pub(super) fn open_cursor_db() -> Option<Connection> {
 /// `None` when the storage root is unavailable (no resolvable home dir) or
 /// the file does not exist yet — both mean "no Cursor history to import".
 pub(super) fn cursor_db_path() -> Option<PathBuf> {
-    let path = app_paths::cursor::state_db_path().ok()?;
+    let path = app_paths::cursor::external_history_state_db_path().ok()?;
     path.exists().then_some(path)
 }
 
@@ -44,7 +44,7 @@ pub(super) fn cursor_db_path() -> Option<PathBuf> {
 /// next to `state.vscdb`. Lets discovery avoid scanning the multi-GB `state.vscdb`.
 /// `None` on older Cursor builds that predate it.
 pub(super) fn cursor_conversation_index_path() -> Option<PathBuf> {
-    let path = app_paths::cursor::conversation_index_db_path().ok()?;
+    let path = app_paths::cursor::external_history_conversation_index_db_path().ok()?;
     path.exists().then_some(path)
 }
 

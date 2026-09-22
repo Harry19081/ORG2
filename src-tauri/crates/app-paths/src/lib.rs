@@ -25,6 +25,9 @@ mod shell_path;
 mod system_git;
 mod temp;
 
+#[cfg(test)]
+mod test_env;
+
 pub use cli_homes::*;
 pub use data_root::*;
 pub use home::*;
