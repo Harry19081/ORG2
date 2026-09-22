@@ -213,5 +213,3 @@ export function makeStatusBarCallbacksAtom(app: StatusBarAppType) {
 /** Pre-built per-app callback atoms — import the one matching your module. */
 export const browserStatusBarCallbacksAtom =
   makeStatusBarCallbacksAtom("browser");
-export const projectStatusBarCallbacksAtom =
-  makeStatusBarCallbacksAtom("project");

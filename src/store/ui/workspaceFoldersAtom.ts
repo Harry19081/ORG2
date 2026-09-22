@@ -5,8 +5,8 @@
  * Syncs with selectedRepoIdAtom so that the primary folder acts as the
  * selected repo where legacy single-repo flows still need one.
  *
- * Workspaces are DB-backed presets (savedWorkspacesAtom) that can be
- * activated/deactivated. The runtime folder list (workspaceFoldersAtom)
+ * Workspaces are DB-backed presets (`savedWorkspacesAtom`) that can be
+ * activated/deactivated. The runtime folder list (`workspaceFoldersAtom`)
  * is loaded from the active workspace.
  */
 import { type SetStateAction, atom } from "jotai";
@@ -107,15 +107,6 @@ export const isMultiRootWorkspaceAtom = atom<boolean>((get) => {
 isMultiRootWorkspaceAtom.debugLabel = "isMultiRootWorkspaceAtom";
 
 /**
- * Whether any saved workspace presets exist in the DB.
- * Used by the palette to show workspace rows even when not active.
- */
-export const hasWorkspaceAtom = atom<boolean>((get) => {
-  return get(savedWorkspacesAtom).length > 0;
-});
-hasWorkspaceAtom.debugLabel = "hasWorkspaceAtom";
-
-/**
  * Path to the .orgii-workspace config file (null if untitled/unsaved).
  */
 export const workspaceConfigPathAtom = atom<string | null>(null);
@@ -142,13 +133,6 @@ export const activeFolderIdAtom = atomWithStorage<string | null>(
   { getOnInit: true }
 );
 activeFolderIdAtom.debugLabel = "activeFolderIdAtom";
-
-/**
- * Whether the workspace has been modified since last save.
- * Set to true whenever folders change; cleared by saveWorkspaceAs / loadWorkspace.
- */
-export const workspaceIsDirtyAtom = atom<boolean>(false);
-workspaceIsDirtyAtom.debugLabel = "workspaceIsDirtyAtom";
 
 // ============================================
 // Derived Atoms
@@ -194,30 +178,6 @@ export const addWorkspaceFolderAtom = atom(
 addWorkspaceFolderAtom.debugLabel = "addWorkspaceFolderAtom";
 
 /**
- * Remove a folder from the workspace by id.
- * If the primary folder is removed, the next folder becomes primary.
- */
-export const removeWorkspaceFolderAtom = atom(
-  null,
-  (get, set, folderId: string) => {
-    const folders = get(workspaceFolderStorageAtom);
-    const removedFolder = folders.find((folder) => folder.id === folderId);
-    if (!removedFolder) return;
-
-    let remaining = folders.filter((folder) => folder.id !== folderId);
-
-    if (removedFolder.isPrimary && remaining.length > 0) {
-      remaining = remaining.map((folder, index) =>
-        index === 0 ? { ...folder, isPrimary: true } : folder
-      );
-    }
-
-    set(workspaceFolderStorageAtom, remaining);
-  }
-);
-removeWorkspaceFolderAtom.debugLabel = "removeWorkspaceFolderAtom";
-
-/**
  * Replace all workspace folders and optionally set the active workspace ID.
  * Used when activating a workspace from DB or resetting to single-root.
  */
@@ -231,65 +191,3 @@ export const setWorkspaceFoldersAtom = atom(
   }
 );
 setWorkspaceFoldersAtom.debugLabel = "setWorkspaceFoldersAtom";
-
-/**
- * Mark a folder as primary (used as default workspace_path for agents/LSP/search).
- * The previous primary loses its flag. Order is not changed — use
- * reorderFoldersAtom to move the primary to the top.
- */
-export const setPrimaryFolderAtom = atom(null, (get, set, folderId: string) => {
-  const folders = get(workspaceFolderStorageAtom);
-  if (!folders.some((folder) => folder.id === folderId)) return;
-  const updated = folders.map((folder) => ({
-    ...folder,
-    isPrimary: folder.id === folderId,
-  }));
-  set(workspaceFolderStorageAtom, updated);
-  set(workspaceIsDirtyAtom, true);
-});
-setPrimaryFolderAtom.debugLabel = "setPrimaryFolderAtom";
-
-/**
- * Reorder workspace folders. Accepts the new ordered array of folder IDs.
- * Missing IDs are appended in their original order; unknown IDs are ignored.
- */
-export const reorderFoldersAtom = atom(
-  null,
-  (get, set, orderedIds: string[]) => {
-    const folders = get(workspaceFolderStorageAtom);
-    const byId = new Map(folders.map((folder) => [folder.id, folder]));
-    const reordered: WorkspaceFolder[] = [];
-    for (const id of orderedIds) {
-      const folder = byId.get(id);
-      if (folder) {
-        reordered.push(folder);
-        byId.delete(id);
-      }
-    }
-    for (const folder of byId.values()) {
-      reordered.push(folder);
-    }
-    set(workspaceFolderStorageAtom, reordered);
-    set(workspaceIsDirtyAtom, true);
-  }
-);
-reorderFoldersAtom.debugLabel = "reorderFoldersAtom";
-
-/**
- * Rename a workspace folder (display name only — path is unchanged).
- */
-export const renameFolderAtom = atom(
-  null,
-  (get, set, payload: { folderId: string; name: string }) => {
-    const folders = get(workspaceFolderStorageAtom);
-    if (!folders.some((folder) => folder.id === payload.folderId)) return;
-    const updated = folders.map((folder) =>
-      folder.id === payload.folderId
-        ? { ...folder, name: payload.name }
-        : folder
-    );
-    set(workspaceFolderStorageAtom, updated);
-    set(workspaceIsDirtyAtom, true);
-  }
-);
-renameFolderAtom.debugLabel = "renameFolderAtom";

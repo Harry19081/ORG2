@@ -51,13 +51,12 @@ import {
 import { useScrollPreservation, useStickyScroll } from "./hooks";
 import type { TreeNodeBase, VirtualizedStickyTreeProps } from "./types";
 
-// Re-export types and hooks for external consumers
+// Re-export types and tokens for external consumers.
 export type {
   FlattenedTreeNode,
   StickyScrollNode,
   TreeNodeBase,
 } from "./types";
-export { useStickyScroll, useScrollPreservation } from "./hooks";
 export { STICKY_ROW, CHEVRON_SIZE, stickyRowPadding } from "./tokens";
 
 /**

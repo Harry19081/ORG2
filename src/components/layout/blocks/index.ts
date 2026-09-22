@@ -38,7 +38,7 @@ export { default as ScrollTrail, ScrollTrailTarget } from "./ScrollTrail";
 export { default as InfoCard } from "./InfoCard";
 
 export { default as InlineInfoCard } from "./InlineInfoCard";
-export { InlineSurfaceProvider, useInlineSurface } from "./inlineSurface";
+export { InlineSurfaceProvider } from "./inlineSurface";
 export type { InlineSurface } from "./inlineSurface";
 export {
   default as ToolInlineInfoCard,

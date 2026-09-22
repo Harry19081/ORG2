@@ -8,9 +8,6 @@ import {
   type ChatPanelSelectedOrganization,
   type ChatPanelSelectedProject,
   type ChatPanelSelectedWorkItem,
-  type ChatPanelSelectedWorkspace,
-  type WorkspaceOverviewTab,
-  chatPanelWorkspaceOverviewTabAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
 import {
   WORK_MANAGEMENT_SECTION,
@@ -22,7 +19,6 @@ import {
   createProjectTab,
   createWorkItemTab,
   createWorkManagementTab,
-  createWorkspaceTab,
   getChatPanelWorkItemTabKey,
 } from "../chatPanelTabFactories";
 import {
@@ -95,42 +91,6 @@ export const openWorkManagementChatPanelTabAtom = atom(
 );
 openWorkManagementChatPanelTabAtom.debugLabel =
   "openWorkManagementChatPanelTab";
-
-interface OpenWorkspaceOverviewTabOptions {
-  workspace: ChatPanelSelectedWorkspace;
-  /** Overview sub-tab to land on (e.g. Details). Preserves current when omitted. */
-  tab?: WorkspaceOverviewTab;
-}
-
-/**
- * Open — or focus, if already open — a dedicated chat-panel tab for a
- * workspace's overview / detail page. Each workspace gets its own pill titled
- * with the workspace name (not "Launchpad"); re-opening the same workspace
- * focuses the existing tab instead of stacking duplicates. The overview
- * surface renders from the tab payload.
- */
-export const openWorkspaceOverviewInChatPanelTabAtom = atom(
-  null,
-  (get, set, options: OpenWorkspaceOverviewTabOptions) => {
-    const { workspace, tab: overviewTab } = options;
-    // Seed the requested sub-tab before activation: the navigate that runs on
-    // activation passes no explicit tab, so it preserves this value.
-    if (overviewTab) {
-      set(chatPanelWorkspaceOverviewTabAtom, overviewTab);
-    }
-
-    return openOrFocusChatPanelTab(get, set, {
-      isMatch: (tab) =>
-        tab.type === "workspace" &&
-        tab.workspace?.kind === workspace.kind &&
-        tab.workspace?.id === workspace.id,
-      refresh: (tab) => ({ ...tab, title: workspace.name, workspace }),
-      create: () => createWorkspaceTab({ workspace }),
-    });
-  }
-);
-openWorkspaceOverviewInChatPanelTabAtom.debugLabel =
-  "openWorkspaceOverviewInChatPanelTab";
 
 interface OpenOrganizationManagementTabOptions {
   organization: ChatPanelSelectedOrganization;

@@ -406,5 +406,3 @@ export function useServiceAuth(): UseServiceAuthReturn {
     refreshToken,
   };
 }
-
-export default useServiceAuth;

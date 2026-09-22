@@ -216,5 +216,3 @@ export function useResizeHandle(
 
   return { handleMouseDown, isResizing };
 }
-
-export default useResizeHandle;

@@ -75,7 +75,6 @@ export {
   writeSessionCommentsEntry,
 } from "./org2CloudSessionCommentsAtom.commentTransforms";
 export { SessionCommentDeliveryError } from "./org2CloudSessionCommentsAtom.types";
-export { useCloudFreshAccessToken } from "./org2CloudSessionCommentsAtom.freshToken";
 
 export const org2CloudSessionCommentsAtom = atom<
   Record<string, CloudSessionCommentsEntry>

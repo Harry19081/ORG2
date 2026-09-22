@@ -274,14 +274,6 @@ export const enqueueMessageAtom = atom(
 );
 enqueueMessageAtom.debugLabel = "enqueueMessageAtom";
 
-export const dequeueMessageAtom = atom(null, (get, set, messageId: string) => {
-  if (get(messageQueueHandoffIdsAtom).has(messageId)) return;
-  set(messageQueueAtom, (prev) =>
-    prev.filter((msg) => msg.id !== messageId || msg.status !== "queued")
-  );
-});
-dequeueMessageAtom.debugLabel = "dequeueMessageAtom";
-
 /**
  * Send Now: promote a parked message to an explicit "now" dispatch. The
  * queue dispatcher interrupts the active turn (timeline boundary) if needed
@@ -359,33 +351,6 @@ export const parkSessionQueuedMessagesAfterStopAtom = atom(
 );
 parkSessionQueuedMessagesAfterStopAtom.debugLabel =
   "parkSessionQueuedMessagesAfterStopAtom";
-
-export const clearSessionQueueAtom = atom(
-  null,
-  (get, set, sessionId: string) => {
-    const current = get(messageQueueAtom);
-    const conversationKeys = new Set(
-      current.flatMap((message) =>
-        message.sessionId === sessionId && message.conversationDispatch
-          ? [conversationRootKey(message.conversationDispatch.root)]
-          : []
-      )
-    );
-    set(messageQueueAtom, (prev) =>
-      prev.filter(
-        (msg) =>
-          get(messageQueueHandoffIdsAtom).has(msg.id) ||
-          msg.status !== "queued" ||
-          (msg.sessionId !== sessionId &&
-            (msg.conversationDispatch === undefined ||
-              !conversationKeys.has(
-                conversationRootKey(msg.conversationDispatch.root)
-              )))
-      )
-    );
-  }
-);
-clearSessionQueueAtom.debugLabel = "clearSessionQueueAtom";
 
 /** Remove an exact visible queue projection without touching other Sessions. */
 export const clearQueuedMessagesAtom = atom(

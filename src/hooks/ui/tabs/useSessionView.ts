@@ -122,5 +122,3 @@ export function useSessionView(): UseSessionViewReturn {
     ]
   );
 }
-
-export default useSessionView;

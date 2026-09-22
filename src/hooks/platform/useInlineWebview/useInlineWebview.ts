@@ -170,5 +170,3 @@ export function useInlineWebview(
     webview: null,
   };
 }
-
-export default useInlineWebview;

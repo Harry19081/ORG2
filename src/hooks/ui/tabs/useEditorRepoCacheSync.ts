@@ -62,5 +62,3 @@ export function useEditorRepoCacheSync(): void {
     switchRepo(repoPath);
   }, [repoPath, switchRepo]);
 }
-
-export default useEditorRepoCacheSync;

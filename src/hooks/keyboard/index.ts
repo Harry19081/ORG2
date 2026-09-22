@@ -12,12 +12,6 @@ export { useListNavigation } from "./useListNavigation";
 
 export { useKeyboardSave } from "./useKeyboardSave";
 
-export {
-  DEFAULT_SEARCH_SHORTCUT_ID,
-  useSearchShortcut,
-} from "./useSearchShortcut";
-export type { UseSearchShortcutOptions } from "./useSearchShortcut";
-
 export { useTauriSelectAllShortcut } from "./useTauriSelectAllShortcut";
 
 export { useKeyboardMouseMode } from "./useKeyboardMouseMode";
@@ -27,12 +21,3 @@ export { useKeyboardMouseMode } from "./useKeyboardMouseMode";
 // ============================================
 
 export { shortcutRegistry } from "@src/config/keyboard/ShortcutRegistry";
-
-// ============================================
-// Shortcut Display (centralized lookup)
-// ============================================
-
-export {
-  getShortcutKeys,
-  getShortcutAccelerator,
-} from "@src/config/keyboard/shortcutDisplay";

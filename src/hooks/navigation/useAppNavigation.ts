@@ -229,5 +229,3 @@ export function useAppNavigation(): UseAppNavigationReturn {
     goToNewSession,
   };
 }
-
-export default useAppNavigation;

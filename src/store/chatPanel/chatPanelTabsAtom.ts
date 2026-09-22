@@ -41,7 +41,6 @@ export {
 } from "./chatPanelTabOpen/session";
 export {
   openCreateTargetInChatPanelStartPageAtom,
-  openExploreInChatPanelTabAtom,
   openOrFocusChatPanelStartPageTabAtom,
 } from "./chatPanelTabOpen/startPage";
 export {
@@ -49,7 +48,6 @@ export {
   openWorkManagementChatPanelTabAtom,
   openProjectInChatPanelTabAtom,
   openWorkItemInChatPanelTabAtom,
-  openWorkspaceOverviewInChatPanelTabAtom,
 } from "./chatPanelTabOpen/workManagement";
 export { createTerminalTab } from "./chatPanelTabFactories";
 export {

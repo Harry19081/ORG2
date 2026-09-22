@@ -67,14 +67,7 @@ export {
   buildCloudCommentRetryCasSteps,
   cloudCommentRetryAttemptKey,
 } from "./SessionCommentsContext.retry";
-export {
-  buildCloudCommentSourceEventIdMap,
-  sessionCommentPresentEventIdsAtom,
-} from "./SessionCommentsContext.presentEventIds";
-export {
-  useSessionCommentMentionableMembers,
-  useSessionCommentViewer,
-} from "./SessionCommentsContext.viewer";
+export { buildCloudCommentSourceEventIdMap } from "./SessionCommentsContext.presentEventIds";
 
 export type { CommentAnchorEventIdentity };
 

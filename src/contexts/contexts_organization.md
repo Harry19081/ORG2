@@ -49,7 +49,7 @@ consumers import the file directly.
 ### Direct imports (recommended)
 
 ```typescript
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { useChatContext } from "@src/contexts/workspace/ChatContext";
 import { useBrowserContext } from "@src/contexts/workstation";
 ```
