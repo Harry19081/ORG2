@@ -22,7 +22,7 @@ import {
   resetDevMockScenariosAtom,
 } from "@src/store/dev/mockScenarios";
 
-export const DevMockScenariosModal = () => {
+const DevMockScenariosModal = () => {
   const { t } = useTranslation("settings");
   const open = useAtomValue(devMockScenariosModalOpenAtom);
   const active = useAtomValue(activeDevMockScenariosAtom);
@@ -71,7 +71,7 @@ export const DevMockScenariosModal = () => {
         />
       }
     >
-      <DevMockScenarioControls compact />
+      <DevMockScenarioControls />
     </Modal>
   );
 };

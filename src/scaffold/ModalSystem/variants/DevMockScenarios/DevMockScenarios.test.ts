@@ -60,7 +60,7 @@ describe("DevMockScenariosModal", () => {
     expect(document.querySelectorAll('[role="switch"]')).toHaveLength(5);
   });
 
-  it("renders wide and compact so a description fits on one line", () => {
+  it("stays wide enough to keep a description on one line", () => {
     const content = document.querySelector<HTMLElement>(
       ".liquid-modal-content"
     );
@@ -69,8 +69,21 @@ describe("DevMockScenariosModal", () => {
     // the text and every description wraps, so the dialog must stay wide.
     expect(content?.classList.contains("modal-large")).toBe(true);
     expect(content?.style.width).toBe("700px");
-    // SectionRow's compact mode: 12px label, 11px description, py-1.5.
-    expect(document.querySelector(".text-\\[11px\\]")).not.toBeNull();
+  });
+
+  it("keeps the row density Settings uses", () => {
+    // 12px descriptions, not SectionRow's 11px compact mode — the modal and
+    // the Settings section render the same component at the same size.
+    // Scoped to the rows: the footer's Esc pill is legitimately 11px.
+    const descriptions = Array.from(
+      document.querySelectorAll("[data-settings-search-description]")
+    );
+
+    expect(descriptions).toHaveLength(5);
+    for (const description of descriptions) {
+      expect(description.className).toContain("text-[12px]");
+      expect(description.className).not.toContain("text-[11px]");
+    }
   });
 
   it("turns every scenario off from the footer", () => {
