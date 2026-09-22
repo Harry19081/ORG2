@@ -9,10 +9,11 @@
  * activated/deactivated. The runtime folder list (workspaceFoldersAtom)
  * is loaded from the active workspace.
  */
-import { atom } from "jotai";
+import { type SetStateAction, atom } from "jotai";
 import { atomWithStorage, createJSONStorage } from "jotai/utils";
 
 import type { WorkspaceRecord } from "@src/api/tauri/workspace";
+import { activeDevMockScenariosAtom } from "@src/store/dev/mockScenarios";
 import type { WorkspaceFolder } from "@src/types/workspace";
 import { getWindowId } from "@src/util/core/state/windowId";
 
@@ -24,15 +25,42 @@ function getWindowScopedKey(baseKey: string): string {
   return `${baseKey}:${getWindowId()}`;
 }
 
+const NO_WORKSPACE_FOLDERS: WorkspaceFolder[] = [];
+
 /**
  * Ordered list of workspace folder roots.
  * Persisted in sessionStorage (window-scoped) so each window has its own workspace.
  */
-export const workspaceFoldersAtom = atomWithStorage<WorkspaceFolder[]>(
+const workspaceFolderStorageAtom = atomWithStorage<WorkspaceFolder[]>(
   getWindowScopedKey("workspaceFolders"),
   [],
   createJSONStorage(() => sessionStorage),
   { getOnInit: true }
+);
+workspaceFolderStorageAtom.debugLabel = "workspaceFolderStorageAtom";
+
+/**
+ * Read view of the folder roots.
+ *
+ * The `noWorkingDirectories` dev mock scenario masks this to an empty list so
+ * the "no folder open" empty states can be inspected without closing the real
+ * workspace. Only the read is masked: the action atoms below resolve their
+ * next value from `workspaceFolderStorageAtom`, so a mocked view can never
+ * truncate the real list in sessionStorage.
+ * See `@src/store/dev/mockScenarios`.
+ */
+export const workspaceFoldersAtom = atom(
+  (get): WorkspaceFolder[] =>
+    get(activeDevMockScenariosAtom).noWorkingDirectories
+      ? NO_WORKSPACE_FOLDERS
+      : get(workspaceFolderStorageAtom),
+  (get, set, update: SetStateAction<WorkspaceFolder[]>) => {
+    const previous = get(workspaceFolderStorageAtom);
+    set(
+      workspaceFolderStorageAtom,
+      typeof update === "function" ? update(previous) : update
+    );
+  }
 );
 workspaceFoldersAtom.debugLabel = "workspaceFoldersAtom";
 
@@ -137,7 +165,7 @@ workspaceIsDirtyAtom.debugLabel = "workspaceIsDirtyAtom";
 export const addWorkspaceFolderAtom = atom(
   null,
   (get, set, payload: { path: string; name?: string }) => {
-    const folders = get(workspaceFoldersAtom);
+    const folders = get(workspaceFolderStorageAtom);
     const stripped = payload.path.startsWith("file://")
       ? payload.path.replace("file://", "")
       : payload.path;
@@ -160,7 +188,7 @@ export const addWorkspaceFolderAtom = atom(
     };
 
     const updated = [...folders, newFolder];
-    set(workspaceFoldersAtom, updated);
+    set(workspaceFolderStorageAtom, updated);
   }
 );
 addWorkspaceFolderAtom.debugLabel = "addWorkspaceFolderAtom";
@@ -172,7 +200,7 @@ addWorkspaceFolderAtom.debugLabel = "addWorkspaceFolderAtom";
 export const removeWorkspaceFolderAtom = atom(
   null,
   (get, set, folderId: string) => {
-    const folders = get(workspaceFoldersAtom);
+    const folders = get(workspaceFolderStorageAtom);
     const removedFolder = folders.find((folder) => folder.id === folderId);
     if (!removedFolder) return;
 
@@ -184,7 +212,7 @@ export const removeWorkspaceFolderAtom = atom(
       );
     }
 
-    set(workspaceFoldersAtom, remaining);
+    set(workspaceFolderStorageAtom, remaining);
   }
 );
 removeWorkspaceFolderAtom.debugLabel = "removeWorkspaceFolderAtom";
@@ -196,7 +224,7 @@ removeWorkspaceFolderAtom.debugLabel = "removeWorkspaceFolderAtom";
 export const setWorkspaceFoldersAtom = atom(
   null,
   (_get, set, folders: WorkspaceFolder[], workspaceId?: string | null) => {
-    set(workspaceFoldersAtom, folders);
+    set(workspaceFolderStorageAtom, folders);
     if (workspaceId !== undefined) {
       set(activeWorkspaceIdAtom, workspaceId);
     }
@@ -210,13 +238,13 @@ setWorkspaceFoldersAtom.debugLabel = "setWorkspaceFoldersAtom";
  * reorderFoldersAtom to move the primary to the top.
  */
 export const setPrimaryFolderAtom = atom(null, (get, set, folderId: string) => {
-  const folders = get(workspaceFoldersAtom);
+  const folders = get(workspaceFolderStorageAtom);
   if (!folders.some((folder) => folder.id === folderId)) return;
   const updated = folders.map((folder) => ({
     ...folder,
     isPrimary: folder.id === folderId,
   }));
-  set(workspaceFoldersAtom, updated);
+  set(workspaceFolderStorageAtom, updated);
   set(workspaceIsDirtyAtom, true);
 });
 setPrimaryFolderAtom.debugLabel = "setPrimaryFolderAtom";
@@ -228,7 +256,7 @@ setPrimaryFolderAtom.debugLabel = "setPrimaryFolderAtom";
 export const reorderFoldersAtom = atom(
   null,
   (get, set, orderedIds: string[]) => {
-    const folders = get(workspaceFoldersAtom);
+    const folders = get(workspaceFolderStorageAtom);
     const byId = new Map(folders.map((folder) => [folder.id, folder]));
     const reordered: WorkspaceFolder[] = [];
     for (const id of orderedIds) {
@@ -241,7 +269,7 @@ export const reorderFoldersAtom = atom(
     for (const folder of byId.values()) {
       reordered.push(folder);
     }
-    set(workspaceFoldersAtom, reordered);
+    set(workspaceFolderStorageAtom, reordered);
     set(workspaceIsDirtyAtom, true);
   }
 );
@@ -253,14 +281,14 @@ reorderFoldersAtom.debugLabel = "reorderFoldersAtom";
 export const renameFolderAtom = atom(
   null,
   (get, set, payload: { folderId: string; name: string }) => {
-    const folders = get(workspaceFoldersAtom);
+    const folders = get(workspaceFolderStorageAtom);
     if (!folders.some((folder) => folder.id === payload.folderId)) return;
     const updated = folders.map((folder) =>
       folder.id === payload.folderId
         ? { ...folder, name: payload.name }
         : folder
     );
-    set(workspaceFoldersAtom, updated);
+    set(workspaceFolderStorageAtom, updated);
     set(workspaceIsDirtyAtom, true);
   }
 );

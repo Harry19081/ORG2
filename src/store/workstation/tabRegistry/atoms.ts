@@ -10,7 +10,7 @@
 import { type Getter, type Setter, atom } from "jotai";
 
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
-import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { STATION_MODE, stationModeAtom } from "@src/store/ui/simulatorAtom";
 
 import {
   type PanelState,
@@ -123,8 +123,18 @@ closeTabAtom.debugLabel = "closeTabAtom";
 /**
  * Close the currently active tab. Returns `true` when a tab was closed,
  * `false` otherwise (e.g. when there is no active tab).
+ *
+ * The Agent Station shows none of these tabs — it owns no tab bar of its own —
+ * so while it is the visible Station the chord closes the Station itself, the
+ * way closing My Station's sole Launchpad does. Without this it reached past
+ * the Agent Station and closed a My Station tab nobody could see.
  */
 export const closeActiveWorkStationTabAtom = atom(null, (get, set) => {
+  if (get(stationModeAtom) === STATION_MODE.AGENT_STATION) {
+    if (get(chatPanelMaximizedAtom)) return false;
+    set(chatPanelMaximizedAtom, true);
+    return true;
+  }
   const layout = get(workstationLayoutAtom);
   if (!layout) return false;
   const { activeTabId, tabs } = layout.mainPane;

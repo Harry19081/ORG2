@@ -2,9 +2,10 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { getPrimaryPaneBackgroundStyle } from "@src/components/layout/tokens/viewContainerTokens";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
-  CHAT_WIDTH_CSS_VAR,
+  CHAT_WIDTH_STYLE_VALUE,
   clampChatWidth,
   getChatMaxWidth,
 } from "@src/engines/ChatPanel/config";
@@ -12,18 +13,17 @@ import { ConversationParticipantsChip } from "@src/features/Org2Cloud/SessionCon
 import SessionViewersIndicator from "@src/features/Org2Cloud/SessionViewersIndicator";
 import SessionForkHeaderExtras from "@src/features/TeamCollaboration/components/SessionForkHeaderExtras";
 import { useShouldOffsetChatPanelHeader } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
-import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
-import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
+import {
+  effectiveChatPanelMaximizedAtom,
+  toggleActiveChatPanelMaximizedAtom,
+} from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import {
   openRuntimeInChatPanelTabAtom,
   syncActiveChatPanelTabStateAtom,
-  toggleActiveChatPanelMaximizedAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
-import {
-  isChatPanelTabStationAvailable,
-  isStandaloneChatPanelToolTab,
-} from "@src/store/chatPanel/chatPanelTabsModel";
+import { isStandaloneChatPanelToolTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import { chatPanelTabCountAtom } from "@src/store/chatPanel/chatPanelTabsState";
+import { creatorLaunchpadSearchVisibleAtom } from "@src/store/session/creatorLaunchpadSearchVisibleAtom";
 import {
   type SessionContinuation,
   retargetChatPanelSessionTabAtom,
@@ -48,6 +48,7 @@ import {
   ChatPanelTabBar,
   useChatPanelTabShortcuts,
 } from "./ChatPanelTabBar";
+import { ChatSplitRatioPicker } from "./components/ChatSplitRatioPicker";
 import { NewChatHeaderActionsMenu } from "./components/NewChatHeaderActionsMenu";
 import { SessionSwipeIndicator } from "./components/SessionSwipeIndicator";
 // Parked with its header button below.
@@ -82,13 +83,17 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
   ({
     viewportWidth,
     useExternalWidth = false,
-    embedded = false,
-    active = true,
     position = "right",
     resizeIndicatorHost,
     sessionCreatorSlot: SessionCreatorSlot,
   }) => {
     const maximizeShortcut = useShortcutKeys("maximize_chat");
+    // The divider hint doubles as a split-preset popover: the boundary the
+    // presets move is the one the user is already pointing at.
+    const renderResizeTooltipExtra = useCallback(
+      (close: () => void) => <ChatSplitRatioPicker onPicked={close} />,
+      []
+    );
     const { t } = useTranslation([
       "sessions",
       "common",
@@ -113,6 +118,9 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     });
 
     const startPageOpen = useAtomValue(chatPanelStartPageOpenAtom);
+    const launchpadSearchVisible = useAtomValue(
+      creatorLaunchpadSearchVisibleAtom
+    );
     const selectedCloudOrg = useAtomValue(chatPanelSelectedCloudOrgAtom);
     const surface = useAtomValue(activeChatPanelSurfaceAtom);
     const syncActiveTabState = useSetAtom(syncActiveChatPanelTabStateAtom);
@@ -129,7 +137,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     useChatPanelAccessReconciliation(selectedCloudOrg);
 
     const chatWidthStyleValue =
-      chatWidth > 0 ? `var(${CHAT_WIDTH_CSS_VAR})` : chatWidth;
+      chatWidth > 0 ? CHAT_WIDTH_STYLE_VALUE : chatWidth;
     const { isDragging, panelRef, handleMouseDown } = useChatPanelResize({
       useExternalWidth,
       position,
@@ -174,7 +182,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     });
     const tabCount = useAtomValue(chatPanelTabCountAtom);
     const isStandaloneToolTabActive = isStandaloneChatPanelToolTab(activeTab);
-    const stationAvailable = isChatPanelTabStationAvailable(activeTab);
     const isChatFocus = useAtomValue(effectiveChatPanelMaximizedAtom);
     const [focusedWorkstationMenuHost, setFocusedWorkstationMenuHost] =
       useState<HTMLSpanElement | null>(null);
@@ -254,7 +261,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     }, [openSideChat]);
 
     const contentState = resolveChatPanelContentState({
-      active,
       currentSessionId: currentSessionId ?? null,
       surface,
     });
@@ -282,12 +288,11 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     });
 
     const showResizeHandle = !useExternalWidth;
-    const borderClasses =
-      embedded && !showResizeHandle
-        ? isLeftPosition
-          ? "border-r border-border-1"
-          : "border-l border-border-1"
-        : "";
+    const borderClasses = !showResizeHandle
+      ? isLeftPosition
+        ? "border-r border-border-1"
+        : "border-l border-border-1"
+      : "";
     const useFullScreenCreator =
       isChatFocus || useExternalWidth || chatWidth >= chatMaxWidth;
     const creatorVariant = useFullScreenCreator ? "fullScreen" : "default";
@@ -374,8 +379,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         shouldOffsetHeaderForCollapsedSidebar={
           shouldOffsetHeaderForCollapsedSidebar
         }
-        stationAvailable={stationAvailable}
-        showHeader={contentState.showHeader || isStandaloneToolTabActive}
         showSessionContent={
           contentState.showSessionContent && !isStandaloneToolTabActive
         }
@@ -387,7 +390,10 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         tabStrip={tabStrip}
         tabStripPlus={tabStripPlus}
         showLaunchpadSearch={
-          useFullScreenCreator && startPageOpen && !isStandaloneToolTabActive
+          useFullScreenCreator &&
+          startPageOpen &&
+          launchpadSearchVisible &&
+          !isStandaloneToolTabActive
         }
         tabRowCollapsed={tabRowCollapsed}
         sessionHeaderExtras={
@@ -431,8 +437,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         displayMode={displayMode}
         emptyChatContent={emptyChatContent}
         paginationEnabled={paginationEnabled}
-        position={position}
-        showPanelContent={contentState.showPanelContent}
         showSessionContent={contentState.showSessionContent}
         sessionViewMode={sessionView.mode}
         chromeTopInset={chromeTopInsetPx}
@@ -459,7 +463,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           chatPanelOpacityStyle={chatPanelOpacityStyle}
           chatWidth={chatWidth}
           chatWidthStyleValue={chatWidthStyleValue}
-          embedded={embedded}
+          fullScreen={isChatFocus}
           focusedWorkstationRail={
             showFocusedWorkstationControls ? (
               <SessionWorkstationRail
@@ -480,6 +484,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           panelRef={panelRef}
           panelOverlay={<SessionSwipeIndicator {...swipeIndicator} />}
           resizeIndicatorHost={resizeIndicatorHost}
+          renderResizeTooltipExtra={renderResizeTooltipExtra}
           resizeTooltipLabel={t("chat.hideWorkstation")}
           resizeTooltipShortcut={maximizeShortcut}
           sessionModals={sessionModals}
