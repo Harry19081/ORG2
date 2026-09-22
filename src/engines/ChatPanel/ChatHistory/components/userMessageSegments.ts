@@ -206,45 +206,61 @@ export function normalizeMarkdownReferencePills(text: string): string {
 
       const label = rawLabel.trim();
       const destination = rawDestination.trim().replace(/^<|>$/g, "");
+      // Markdown's opening bracket separates a link from adjacent prose.
+      // Replacing it with `label [type:path]` removes that boundary; the pill
+      // grammar then absorbs the preceding word/sentence into the label.
+      // Keep the normalized label a separate token at this producing boundary.
+      const withLabelBoundary = (reference: string) =>
+        offset > 0 && !/\s/.test(text[offset - 1])
+          ? ` ${reference}`
+          : reference;
 
       if (parseSharedSessionFileReference(destination)) {
-        return `${label} [file:${destination}]`;
+        return withLabelBoundary(`${label} [file:${destination}]`);
       }
       const githubReference = parseGitHubPillUrl(destination);
       if (githubReference) {
-        return serializePillNode({
-          filePath: githubReference.url,
-          fileName: githubReference.displayName,
-          iconType: githubReference.iconType,
-        });
+        return withLabelBoundary(
+          serializePillNode({
+            filePath: githubReference.url,
+            fileName: githubReference.displayName,
+            iconType: githubReference.iconType,
+          })
+        );
       }
 
       const httpReference = parseHttpUrlPill(destination);
       if (httpReference) {
-        return serializePillNode({
-          filePath: httpReference.url,
-          fileName: httpReference.displayName,
-          iconType: "link",
-        });
+        return withLabelBoundary(
+          serializePillNode({
+            filePath: httpReference.url,
+            fileName: httpReference.displayName,
+            iconType: "link",
+          })
+        );
       }
 
       const filePath = filePathFromMarkdownDestination(destination);
       if (filePath) {
         const isFolder = filePath.endsWith("/") || filePath.endsWith("\\");
-        return serializePillNode({
-          filePath,
-          fileName: label,
-          iconType: isFolder ? "folder" : "file",
-        });
+        return withLabelBoundary(
+          serializePillNode({
+            filePath,
+            fileName: label,
+            iconType: isFolder ? "folder" : "file",
+          })
+        );
       }
 
       const pillType = nativeSchemePillType(destination);
       if (pillType) {
-        return serializePillNode({
-          filePath: destination,
-          fileName: label,
-          iconType: pillType,
-        });
+        return withLabelBoundary(
+          serializePillNode({
+            filePath: destination,
+            fileName: label,
+            iconType: pillType,
+          })
+        );
       }
 
       return match;
