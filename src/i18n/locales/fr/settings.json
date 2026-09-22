@@ -130,6 +130,35 @@
       "description": "À propos de vous",
       "descriptionHelp": "Une courte description de votre parcours, vos centres d'intérêt et votre façon de travailler",
       "descriptionPlaceholder": "Parlez de vous à l'agent…"
+    },
+    "custom": {
+      "title": "Statuts personnalisés",
+      "description": "Ajoutez un statut pour une posture que les trois statuts intégrés ne couvrent pas — par exemple « Travail en profondeur », « Binôme » ou « Astreinte »",
+      "add": "Ajouter un statut personnalisé",
+      "defaultLabel": "Statut personnalisé",
+      "nameLabel": "Nom",
+      "namePlaceholder": "Nom du statut",
+      "iconLabel": "Icône",
+      "iconSearchPlaceholder": "Rechercher des icônes",
+      "guidancePlaceholder": "Comment l'agent doit-il adapter son comportement quand ce statut est actif ?",
+      "stanceLabel": "Posture de comportement",
+      "stanceDesc": "Comment l'agent traite les décisions bloquantes quand ce statut est actif",
+      "stanceInteractive": "Interactif — me demander librement",
+      "stanceDeferAndBatch": "Différer et regrouper — travailler d’abord, demander ensuite",
+      "stanceAutonomous": "Autonome — ne jamais m’attendre",
+      "deleteTitle": "Supprimer le statut ?",
+      "deleteMessage": "« {{name}} » sera supprimé. Cette action est irréversible.",
+      "deleteConfirm": "Supprimer",
+      "deleteCancel": "Annuler"
+    },
+    "reset": {
+      "label": "Réinitialiser les réglages de statut",
+      "description": "Rétablit les consignes et les délais de En ligne, Invisible et Absent à leurs valeurs par défaut. Les statuts personnalisés sont conservés",
+      "button": "Rétablir les valeurs par défaut",
+      "confirmTitle": "Réinitialiser les réglages de statut ?",
+      "confirmMessage": "Les consignes et les délais de En ligne, Invisible et Absent reviendront à leurs valeurs par défaut. Vos statuts personnalisés sont conservés.",
+      "confirmCancel": "Annuler",
+      "done": "Réglages de statut rétablis aux valeurs par défaut"
     }
   },
   "general": {

@@ -4,6 +4,8 @@
  * Shared tab identifiers and presence-guidance defaults for the My Roles
  * section.
  */
+import type { SettingsKey, SettingsObject } from "@src/config/settingsSchema";
+import { SETTINGS_REGISTRY } from "@src/config/settingsSchema/registry";
 import { CircleIcon, HatGlassesIcon, MoonIcon } from "@src/icons";
 import { USER_PRESENCE_MODE } from "@src/types/userPresence";
 
@@ -69,3 +71,31 @@ export const BUILT_IN_STATUS_OPTIONS = [
     colorClass: "text-warning-6",
   },
 ] as const;
+
+/**
+ * Every schema-backed setting the Status tab exposes as an editable
+ * control: the three built-in guidance strings plus the four by-presence
+ * policy records. "Reset to defaults" restores exactly this set.
+ */
+export const PRESENCE_SETTING_KEYS = [
+  "general.presenceGuidanceOnline",
+  "general.presenceGuidanceInvisible",
+  "general.presenceGuidanceAway",
+  "agent.sde.questionAutoSkipTimeoutByPresence",
+  "agent.sde.planAutoApproveTimeoutByPresence",
+  "agent.sde.goalMaxTurnsByPresence",
+  "agent.sde.modeSwitchAutoPlanByPresence",
+] as const satisfies readonly SettingsKey[];
+
+/**
+ * The shipped default for each presence setting, read from the registry
+ * rather than restated here, so "Reset to defaults" cannot drift from the
+ * value a fresh install starts with.
+ */
+export function buildPresenceSettingDefaults(): Partial<SettingsObject> {
+  const defaults: Record<string, unknown> = {};
+  for (const key of PRESENCE_SETTING_KEYS) {
+    defaults[key] = SETTINGS_REGISTRY[key].default;
+  }
+  return defaults as Partial<SettingsObject>;
+}

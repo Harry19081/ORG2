@@ -130,6 +130,35 @@
       "description": "Hakkınızda",
       "descriptionHelp": "Geçmişiniz, ilgi alanlarınız ve çalışma tarzınız hakkında kısa bir açıklama",
       "descriptionPlaceholder": "Agent'a kendinizden bahsedin…"
+    },
+    "custom": {
+      "title": "Özel durumlar",
+      "description": "Yerleşik üç durumun kapsamadığı bir hâl için durum ekleyin — örneğin \"Derin çalışma\", \"Eşli programlama\" veya \"Nöbette\"",
+      "add": "Özel durum ekle",
+      "defaultLabel": "Özel durum",
+      "nameLabel": "Ad",
+      "namePlaceholder": "Durum adı",
+      "iconLabel": "Simge",
+      "iconSearchPlaceholder": "Simge ara",
+      "guidancePlaceholder": "Bu durum etkinken aracı davranışını nasıl uyarlamalı?",
+      "stanceLabel": "Davranış duruşu",
+      "stanceDesc": "Bu durum etkinken aracının engelleyici kararları nasıl ele alacağı",
+      "stanceInteractive": "Etkileşimli — bana serbestçe sor",
+      "stanceDeferAndBatch": "Ertele ve topla — önce çalış, sonra sor",
+      "stanceAutonomous": "Özerk — beni asla bekleme",
+      "deleteTitle": "Durum silinsin mi?",
+      "deleteMessage": "\"{{name}}\" kaldırılacak. Bu işlem geri alınamaz.",
+      "deleteConfirm": "Sil",
+      "deleteCancel": "İptal"
+    },
+    "reset": {
+      "label": "Durum ayarlarını sıfırla",
+      "description": "Çevrimiçi, Görünmez ve Uzakta durumlarının yönergelerini ve sürelerini varsayılan değerlere döndürür. Özel durumlar korunur",
+      "button": "Varsayılanlara sıfırla",
+      "confirmTitle": "Durum ayarları sıfırlansın mı?",
+      "confirmMessage": "Çevrimiçi, Görünmez ve Uzakta durumlarının yönergeleri ve süreleri varsayılan değerlere dönecek. Özel durumlarınız korunur.",
+      "confirmCancel": "İptal",
+      "done": "Durum ayarları varsayılanlara döndürüldü"
     }
   },
   "general": {

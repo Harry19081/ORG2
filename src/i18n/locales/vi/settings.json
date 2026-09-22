@@ -130,6 +130,35 @@
       "description": "Về bạn",
       "descriptionHelp": "Mô tả ngắn về xuất thân, sở thích và cách bạn thích làm việc",
       "descriptionPlaceholder": "Kể cho Agent biết về bạn…"
+    },
+    "custom": {
+      "title": "Trạng thái tùy chỉnh",
+      "description": "Thêm một trạng thái cho tình huống mà ba trạng thái có sẵn không bao quát — ví dụ \"Làm việc tập trung\", \"Lập trình cặp\" hoặc \"Trực ca\"",
+      "add": "Thêm trạng thái tùy chỉnh",
+      "defaultLabel": "Trạng thái tùy chỉnh",
+      "nameLabel": "Tên",
+      "namePlaceholder": "Tên trạng thái",
+      "iconLabel": "Biểu tượng",
+      "iconSearchPlaceholder": "Tìm biểu tượng",
+      "guidancePlaceholder": "Khi trạng thái này đang bật, tác nhân nên điều chỉnh hành vi thế nào?",
+      "stanceLabel": "Tư thế hành vi",
+      "stanceDesc": "Cách tác nhân xử lý các quyết định phải chờ khi trạng thái này đang bật",
+      "stanceInteractive": "Tương tác — cứ thoải mái hỏi tôi",
+      "stanceDeferAndBatch": "Hoãn & gộp — làm trước, hỏi sau",
+      "stanceAutonomous": "Tự chủ — không bao giờ chờ tôi",
+      "deleteTitle": "Xóa trạng thái?",
+      "deleteMessage": "\"{{name}}\" sẽ bị xóa. Thao tác này không thể hoàn tác.",
+      "deleteConfirm": "Xóa",
+      "deleteCancel": "Hủy"
+    },
+    "reset": {
+      "label": "Đặt lại cài đặt trạng thái",
+      "description": "Khôi phục hướng dẫn và thời gian của Trực tuyến, Ẩn và Vắng mặt về giá trị mặc định. Các trạng thái tùy chỉnh được giữ nguyên",
+      "button": "Khôi phục mặc định",
+      "confirmTitle": "Đặt lại cài đặt trạng thái?",
+      "confirmMessage": "Hướng dẫn và thời gian của Trực tuyến, Ẩn và Vắng mặt sẽ trở về giá trị mặc định. Các trạng thái tùy chỉnh của bạn được giữ nguyên.",
+      "confirmCancel": "Hủy",
+      "done": "Đã khôi phục cài đặt trạng thái về mặc định"
     }
   },
   "general": {

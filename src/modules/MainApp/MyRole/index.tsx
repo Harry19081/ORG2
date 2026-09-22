@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
+import IconPicker, { type IconPickerOption } from "@src/components/IconPicker";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import NumberInput from "@src/components/NumberInput";
@@ -162,20 +163,13 @@ const MyRolePage: React.FC = () => {
     [setCustomRoles, t]
   );
 
-  const iconOptions = useMemo(
+  // Ids are plain English words, so they double as the picker's search text.
+  const iconOptions = useMemo<IconPickerOption[]>(
     () =>
-      CUSTOM_ROLE_ICON_IDS.map((id) => {
-        const icon = resolveCustomRoleIcon(id);
-        return {
-          value: id,
-          label: (
-            <span className="inline-flex items-center gap-2">
-              <AnyIcon icon={icon} size={14} />
-              <span className="capitalize">{id}</span>
-            </span>
-          ),
-        };
-      }),
+      CUSTOM_ROLE_ICON_IDS.map((id) => ({
+        id,
+        icon: resolveCustomRoleIcon(id),
+      })),
     []
   );
 
@@ -488,15 +482,15 @@ const MyRolePage: React.FC = () => {
                           style={SECTION_CONTROL_STYLE}
                           placeholder={t("myRole.roleNamePlaceholder")}
                         />
-                        <Select
+                        <IconPicker
                           value={role.iconId}
-                          onChange={(value) =>
+                          options={iconOptions}
+                          onChange={(iconId) =>
                             handleRoleChange(role.id, {
-                              iconId: value as CustomRoleIconId,
+                              iconId: iconId as CustomRoleIconId,
                             })
                           }
-                          options={iconOptions}
-                          style={{ width: 180 }}
+                          ariaLabel={t("myRole.roleNameLabel")}
                         />
                         <Button
                           variant="tertiary"

@@ -211,6 +211,35 @@
       "description": "About you",
       "descriptionHelp": "A short description of your background, interests, and how you like to work",
       "descriptionPlaceholder": "Tell the agent about yourself…"
+    },
+    "custom": {
+      "title": "Custom statuses",
+      "description": "Add a status for a stance the built-in three don't cover — for example \"Deep work\", \"Pairing\", or \"On call\"",
+      "add": "Add custom status",
+      "defaultLabel": "Custom status",
+      "nameLabel": "Name",
+      "namePlaceholder": "Status name",
+      "iconLabel": "Icon",
+      "iconSearchPlaceholder": "Search icons",
+      "guidancePlaceholder": "How should the agent adapt its behavior when this status is active?",
+      "stanceLabel": "Behavior stance",
+      "stanceDesc": "How the agent treats blocking decisions while this status is active",
+      "stanceInteractive": "Interactive — ask me freely",
+      "stanceDeferAndBatch": "Defer & batch — work first, ask later",
+      "stanceAutonomous": "Autonomous — never wait for me",
+      "deleteTitle": "Delete status?",
+      "deleteMessage": "\"{{name}}\" will be removed. This cannot be undone.",
+      "deleteConfirm": "Delete",
+      "deleteCancel": "Cancel"
+    },
+    "reset": {
+      "label": "Reset status settings",
+      "description": "Restore the guidance and timing of Online, Invisible and Away to their default values. Custom statuses are kept",
+      "button": "Reset to defaults",
+      "confirmTitle": "Reset status settings?",
+      "confirmMessage": "Guidance and timing for Online, Invisible and Away will return to their default values. Your custom statuses are kept.",
+      "confirmCancel": "Cancel",
+      "done": "Status settings restored to defaults"
     }
   },
   "general": {

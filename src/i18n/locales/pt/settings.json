@@ -130,6 +130,35 @@
       "description": "Sobre você",
       "descriptionHelp": "Uma breve descrição da sua experiência, interesses e como gosta de trabalhar",
       "descriptionPlaceholder": "Conte ao agente sobre você…"
+    },
+    "custom": {
+      "title": "Estados personalizados",
+      "description": "Adicione um estado para uma postura que os três integrados não cobrem — por exemplo, «Trabalho focado», «Programação em par» ou «De plantão»",
+      "add": "Adicionar estado personalizado",
+      "defaultLabel": "Estado personalizado",
+      "nameLabel": "Nome",
+      "namePlaceholder": "Nome do estado",
+      "iconLabel": "Ícone",
+      "iconSearchPlaceholder": "Pesquisar ícones",
+      "guidancePlaceholder": "Como o agente deve adaptar o seu comportamento quando este estado está ativo?",
+      "stanceLabel": "Postura de comportamento",
+      "stanceDesc": "Como o agente trata decisões bloqueantes enquanto este estado está ativo",
+      "stanceInteractive": "Interativo — perguntar à vontade",
+      "stanceDeferAndBatch": "Adiar e agrupar — trabalhar primeiro, perguntar depois",
+      "stanceAutonomous": "Autônomo — nunca esperar por mim",
+      "deleteTitle": "Excluir estado?",
+      "deleteMessage": "\"{{name}}\" será removida. Isso não pode ser desfeito.",
+      "deleteConfirm": "Excluir",
+      "deleteCancel": "Cancelar"
+    },
+    "reset": {
+      "label": "Repor as definições de estado",
+      "description": "Repõe as instruções e os tempos de Online, Invisível e Ausente nos valores predefinidos. Os estados personalizados são mantidos",
+      "button": "Repor predefinições",
+      "confirmTitle": "Repor as definições de estado?",
+      "confirmMessage": "As instruções e os tempos de Online, Invisível e Ausente voltam aos valores predefinidos. Os seus estados personalizados são mantidos.",
+      "confirmCancel": "Cancelar",
+      "done": "Definições de estado repostas nos valores predefinidos"
     }
   },
   "general": {
