@@ -1,7 +1,8 @@
 /**
  * IPC contract exercised through the production registry initializer.
  * The fixture is serialized from Rust's static_tool_list + get_all_cli_aliases;
- * Rust's tool_registry_wire_contract test rejects drift from this fixture.
+ * Rust's rust_tool_registry_matches_shared_frontend_contract test rejects drift
+ * from this fixture.
  * Dynamic MCP tools are intentionally outside the static registry contract.
  */
 import { readFileSync } from "node:fs";

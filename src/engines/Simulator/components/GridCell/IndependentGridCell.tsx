@@ -25,12 +25,15 @@ import {
   ArrowExpand01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
-  ArrowShrink01Icon,
+  ArrowShrink02Icon,
   HugeiconsIcon,
   PauseIcon,
   PlayIcon,
 } from "@src/icons";
-import { focusedSubagentCellAtom } from "@src/store/ui/simulatorAtom";
+import {
+  cellReplayKey,
+  focusedSubagentCellAtom,
+} from "@src/store/ui/simulatorAtom";
 
 import { useCellReplayState } from "../../hooks/useCellReplayState";
 import type { GridCellProps } from "../../types/gridTypes";
@@ -40,6 +43,7 @@ import { SubagentChatPane } from "./SubagentChatPane";
 import { SubagentPinnedPreviewPopover } from "./SubagentPinnedPreviewPopover";
 
 const IndependentGridCellComponent: React.FC<GridCellProps> = ({
+  sessionId,
   historyLoad,
   index,
   color: _color,
@@ -68,7 +72,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
   // Persist replay overrides under a stable, session-scoped key when
   // available. Falling back to `cell-${index}` would conflate two different
   // sessions occupying the same grid slot across rerenders.
-  const cellId = threadId ?? `cell-${index}`;
+  const cellId = cellReplayKey(sessionId, threadId ?? `cell-${index}`);
 
   const { state, controls } = useCellReplayState({
     events: mergedEvents,
@@ -191,7 +195,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
             {/* Expand / collapse */}
             {onExpand && (
               <Button
-                htmlType="button"
                 variant="tertiary"
                 size="small"
                 iconOnly
@@ -209,7 +212,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
               >
                 {isExpanded ? (
                   <HugeiconsIcon
-                    icon={ArrowShrink01Icon}
+                    icon={ArrowShrink02Icon}
                     data-icon="minimize-2"
                     size={12}
                     strokeWidth={2}
@@ -258,7 +261,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
           >
             <Button
               variant="tertiary"
-              appearance="ghost"
               size="sidebar"
               iconOnly
               icon={
@@ -281,12 +283,11 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 )
               }
               style={{ width: 16, height: 16 }}
-              htmlType="button"
               onClick={controls.togglePlay}
               aria-label={
                 state.isPlaying
-                  ? t("simulator.replay.pause", { defaultValue: "Pause" })
-                  : t("simulator.replay.play", { defaultValue: "Play" })
+                  ? t("simulator.replay.pause")
+                  : t("simulator.replay.play")
               }
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1`}
             />
@@ -295,7 +296,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 user gets explicit feedback that they're at the boundary. */}
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={
@@ -307,17 +307,13 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 />
               }
               style={{ width: 16, height: 16 }}
-              htmlType="button"
               onClick={controls.prev}
               disabled={replaySliderDisabled || currentIndex <= 0}
-              aria-label={t("simulator.replay.previous", {
-                defaultValue: "Previous event",
-              })}
+              aria-label={t("simulator.replay.previous")}
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
             />
             <Button
               variant="tertiary"
-              appearance="soft"
               size="sidebar"
               iconOnly
               icon={
@@ -329,12 +325,9 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 />
               }
               style={{ width: 16, height: 16 }}
-              htmlType="button"
               onClick={controls.next}
               disabled={replaySliderDisabled || currentIndex >= eventCount - 1}
-              aria-label={t("simulator.replay.next", {
-                defaultValue: "Next event",
-              })}
+              aria-label={t("simulator.replay.next")}
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
             />
             <div className="min-w-0 flex-1 px-1">
@@ -345,9 +338,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 onValueCommit={handleSliderValueCommit}
                 isFollowMode={state.mode === "follow" && !isScrubbing}
                 disabled={replaySliderDisabled}
-                ariaLabel={t("simulator.replay.scrub", {
-                  defaultValue: "Replay scrub bar",
-                })}
+                ariaLabel={t("simulator.replay.scrub")}
               />
             </div>
           </div>
@@ -361,6 +352,7 @@ const areGridCellPropsEqual = (
   prev: GridCellProps,
   next: GridCellProps
 ): boolean => {
+  if (prev.sessionId !== next.sessionId) return false;
   if (prev.index !== next.index) return false;
   if (prev.threadId !== next.threadId) return false;
   if (prev.title !== next.title) return false;
@@ -376,7 +368,15 @@ const areGridCellPropsEqual = (
 };
 
 const IndependentGridCell = memo<GridCellProps>(
-  IndependentGridCellComponent,
+  (props) => (
+    <IndependentGridCellComponent
+      key={cellReplayKey(
+        props.sessionId,
+        props.threadId ?? `cell-${props.index}`
+      )}
+      {...props}
+    />
+  ),
   areGridCellPropsEqual
 );
 IndependentGridCell.displayName = "IndependentGridCell";

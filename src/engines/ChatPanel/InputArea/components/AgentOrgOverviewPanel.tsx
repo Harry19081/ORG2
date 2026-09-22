@@ -6,13 +6,12 @@ import {
   AGENT_ORG_TASK_STATUS,
   type AgentOrgRunView,
 } from "@src/api/tauri/agent";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { HierarchyCircle01Icon, HugeiconsIcon } from "@src/icons";
 import { activeSessionIdAtom } from "@src/store/session";
 
 import AgentOrgFinalSummaryCard from "./AgentOrgFinalSummaryCard";
 import AgentOrgOverviewArchivedSections from "./AgentOrgOverviewArchivedSections";
-import AgentOrgOverviewBlockers from "./AgentOrgOverviewBlockers";
 import AgentOrgOverviewCurrentWorkSection from "./AgentOrgOverviewCurrentWorkSection";
 import AgentOrgOverviewDeleteTeamDialog from "./AgentOrgOverviewDeleteTeamDialog";
 import AgentOrgOverviewHeaderActions from "./AgentOrgOverviewHeaderActions";
@@ -276,10 +275,6 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
               pendingMessages={pendingMessages}
             />
 
-            {view.blockers.length > 0 && (
-              <AgentOrgOverviewBlockers blockers={view.blockers} />
-            )}
-
             {view.finalSummary?.status === "failed" ? (
               <AgentOrgFinalSummaryCard
                 receipt={view.finalSummary}
@@ -293,8 +288,7 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
                 <OverviewSectionToggle
                   expanded={planHistoryExpanded}
                   label={t(
-                    "planner.agentOrgOverview.planApproval.historyTitle",
-                    { defaultValue: "Plan history" }
+                    "planner.agentOrgOverview.planApproval.historyTitle"
                   )}
                   count={planRevisions.length}
                   onToggle={() =>

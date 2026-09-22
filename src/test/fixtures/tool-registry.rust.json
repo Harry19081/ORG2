@@ -3659,7 +3659,7 @@
       "description_detail": "Applies one tagged graph-admin or Owner-lifecycle operation; mixed authority fields and terminal rewrites are rejected.",
       "displayBehavior": "wait_for_result",
       "hidden": true,
-      "icon_id": "clipboard-pen",
+      "icon_id": "calendar-sync",
       "labelDone": "tools.taskUpdateDone",
       "labelFailed": "tools.taskUpdateFailed",
       "labelRunning": "tools.taskUpdateRunning",

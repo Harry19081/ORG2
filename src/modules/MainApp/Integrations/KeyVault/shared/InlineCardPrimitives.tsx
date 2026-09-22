@@ -4,8 +4,8 @@ import React from "react";
 import Button from "@src/components/Button";
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
-import InlineExpandedSplitCard from "@src/modules/shared/layouts/blocks/InlineExpandedSplitCard";
-import InlineInfoCard from "@src/modules/shared/layouts/blocks/InlineInfoCard";
+import InlineExpandedSplitCard from "@src/components/layout/blocks/InlineExpandedSplitCard";
+import InlineInfoCard from "@src/components/layout/blocks/InlineInfoCard";
 
 interface InlineCardShellProps {
   children: React.ReactNode;
@@ -30,6 +30,28 @@ export function InlineCardShell({
   );
 }
 
+/**
+ * Single-column list for a table's expanded row. Matches the scroll region of
+ * {@link InlineCardSplit} so a long list scrolls in place instead of
+ * stretching the table row. `wrapInCard` draws the card surface; leave it off
+ * where the list already sits inside a panel, so the two do not nest.
+ */
+export function InlineCardScrollList({
+  children,
+  wrapInCard = true,
+}: {
+  children: React.ReactNode;
+  wrapInCard?: boolean;
+}) {
+  const list = (
+    <div className="scrollbar-hide flex max-h-[360px] min-w-0 flex-col gap-0.5 overflow-y-auto overscroll-contain">
+      {children}
+    </div>
+  );
+  if (!wrapInCard) return list;
+  return <InlineInfoCard>{list}</InlineInfoCard>;
+}
+
 interface InlineCardTabsProps<TabKey extends string> {
   tabs: TabPillItem[];
   activeTab: TabKey;
@@ -46,9 +68,10 @@ export function InlineCardTabs<TabKey extends string>({
       tabs={tabs}
       activeTab={activeTab}
       onChange={(tab) => onChange(tab as TabKey)}
-      variant="simple"
+      variant="pill"
+      appearance="ghost"
       fillWidth={false}
-      size="default"
+      size="mini"
     />
   );
 }
@@ -168,7 +191,6 @@ export function InlineSplitNavRow({
   return (
     <Button
       layout="custom"
-      appearance="custom"
       disabled={disabled}
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled || undefined}
