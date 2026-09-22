@@ -22,7 +22,8 @@ export interface UseCellPlaybackOptions {
 }
 
 /**
- * Runs the auto-play timer while the cell is playing and the document is visible.
+ * Runs the auto-play timer (independent mode only), while the cell is playing
+ * and the document is visible.
  */
 export function useCellPlayback({
   enabled,

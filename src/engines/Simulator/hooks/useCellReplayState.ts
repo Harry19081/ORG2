@@ -43,10 +43,7 @@ import {
   useState,
 } from "react";
 
-import {
-  simulatorAutoScrollAtom,
-  simulatorPlaybackSpeedAtom,
-} from "@src/store/ui/simulatorAtom";
+import { simulatorPlaybackSpeedAtom } from "@src/store/ui/simulatorAtom";
 
 import { findIndexAtTime } from "../utils/findIndexAtTime";
 import type {
@@ -185,8 +182,6 @@ export function useCellReplayState(
     setIsPlayingLocal,
     patchCellState,
   });
-
-  const autoScroll = useAtomValue(simulatorAutoScrollAtom);
 
   // ── Follow-mode tailing ───────────────────────────────────────────────
   // The ONLY place new events advance the cursor. Gated by mode AND scrub
@@ -390,7 +385,6 @@ export function useCellReplayState(
       currentEvent,
       totalEvents: events.length,
       progress,
-      autoScroll,
       mode,
       isDetached,
     }),
@@ -402,7 +396,6 @@ export function useCellReplayState(
       currentEvent,
       events.length,
       progress,
-      autoScroll,
       mode,
       isDetached,
     ]

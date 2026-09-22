@@ -76,7 +76,7 @@ describe("TurnMetadataFooter PR row", () => {
     await dispatch(() => row?.click());
 
     expect(events).toHaveLength(1);
-    expect(events[0].detail).toEqual({ url: PR_URL, navigate: true });
+    expect(events[0].detail).toEqual({ url: PR_URL });
 
     await root.unmount();
   });

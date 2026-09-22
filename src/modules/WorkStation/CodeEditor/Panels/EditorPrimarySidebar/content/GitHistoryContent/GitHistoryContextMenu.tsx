@@ -314,7 +314,7 @@ export default function GitHistoryContextMenu(
                         );
                         return;
                       }
-                      openLink(commitUrl, { navigate: true });
+                      openLink(commitUrl);
                     })
                     .catch((error: unknown) => {
                       log.error(

@@ -51,7 +51,7 @@ const CanvasPreviewTabRenderer: React.FC<UnifiedTabContentProps> = memo(
     const handleOpenExternal = useCallback(() => {
       if (!payload) return;
       if (payload.mode === "url" && payload.url) {
-        openLink(payload.url, { navigate: true });
+        openLink(payload.url);
         return;
       }
       const srcDoc = buildExternalSrcDoc(payload.mode, payload.content);
@@ -109,7 +109,6 @@ const CanvasPreviewTabRenderer: React.FC<UnifiedTabContentProps> = memo(
               aria-label={t("previews.openInBrowser")}
               size="mini"
               variant="tertiary"
-              appearance="soft"
               iconOnly
               icon={
                 <HugeiconsIcon
@@ -125,7 +124,6 @@ const CanvasPreviewTabRenderer: React.FC<UnifiedTabContentProps> = memo(
               aria-label={t("previews.closeCanvas")}
               size="mini"
               variant="tertiary"
-              appearance="soft"
               iconOnly
               icon={
                 <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />

@@ -235,18 +235,12 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
         {
           type: "item",
           text: t("windowChrome.items.documentation"),
-          action: () =>
-            openLink("https://github.com/YORG-AI/ORGII/wiki", {
-              navigate: true,
-            }),
+          action: () => openLink("https://github.com/org2AI/ORG2/wiki"),
         },
         {
           type: "item",
           text: t("windowChrome.items.reportIssue"),
-          action: () =>
-            openLink("https://github.com/YORG-AI/ORGII/issues", {
-              navigate: true,
-            }),
+          action: () => openLink("https://github.com/org2AI/ORG2/issues"),
         },
       ];
   }
@@ -324,9 +318,7 @@ const WindowsTopBarComponent: React.FC = () => {
           return (
             <Button
               layout="custom"
-              appearance="custom"
               key={menuKey}
-              htmlType="button"
               className={MENU_BUTTON_CLASS}
               onClick={(event) => handleOpenMenu(menuKey, event)}
               aria-label={t("windowChrome.menus.aria", { label })}
@@ -345,8 +337,6 @@ const WindowsTopBarComponent: React.FC = () => {
       >
         <Button
           layout="custom"
-          appearance="custom"
-          htmlType="button"
           className={WINDOW_CONTROL_BUTTON_CLASS}
           onClick={handleMinimize}
           aria-label={t("windowChrome.controls.minimizeWindow")}
@@ -361,8 +351,6 @@ const WindowsTopBarComponent: React.FC = () => {
         </Button>
         <Button
           layout="custom"
-          appearance="custom"
-          htmlType="button"
           className={WINDOW_CONTROL_BUTTON_CLASS}
           onClick={handleMaximize}
           aria-label={t("windowChrome.controls.maximizeRestoreWindow")}
@@ -377,8 +365,6 @@ const WindowsTopBarComponent: React.FC = () => {
         </Button>
         <Button
           layout="custom"
-          appearance="custom"
-          htmlType="button"
           className={CLOSE_BUTTON_CLASS}
           onClick={handleClose}
           aria-label={t("windowChrome.controls.closeWindow")}

@@ -10,9 +10,10 @@
  * - lastUsedRepoAtom provides global fallback for new windows
  * - All git operations use Rust backend (Python backend removed)
  */
-import { atom } from "jotai";
+import { type Getter, type SetStateAction, atom } from "jotai";
 import { atomWithStorage, createJSONStorage } from "jotai/utils";
 
+import { activeDevMockScenariosAtom } from "@src/store/dev/mockScenarios";
 import { getWindowId } from "@src/util/core/state/windowId";
 
 import { REPO_STORAGE_KEYS } from "./storage";
@@ -22,8 +23,34 @@ import type { Branch, BranchCacheEntry, CachedRepo, Repo } from "./types";
 // Core Atoms
 // ============================================
 
-/** Core repo list */
-export const reposAtom = atom<Repo[]>([]);
+const NO_REPOS: Repo[] = [];
+const NO_CACHED_REPOS: CachedRepo[] = [];
+
+/** True while the `noWorkingDirectories` dev mock scenario is masking repos. */
+function workingDirectoriesMasked(get: Getter): boolean {
+  return get(activeDevMockScenariosAtom).noWorkingDirectories;
+}
+
+const repoListAtom = atom<Repo[]>([]);
+repoListAtom.debugLabel = "repoListAtom";
+
+/**
+ * Core repo list.
+ *
+ * Reads are masked to an empty list by the `noWorkingDirectories` dev mock
+ * scenario so the "no working directory" empty states can be inspected
+ * without detaching real folders. Writes — including functional updates —
+ * always resolve against the real list, so the mask is purely cosmetic and
+ * reversible. See `@src/store/dev/mockScenarios`.
+ */
+export const reposAtom = atom(
+  (get): Repo[] =>
+    workingDirectoriesMasked(get) ? NO_REPOS : get(repoListAtom),
+  (get, set, update: SetStateAction<Repo[]>) => {
+    const previous = get(repoListAtom);
+    set(repoListAtom, typeof update === "function" ? update(previous) : update);
+  }
+);
 reposAtom.debugLabel = "reposAtom";
 
 /** Valid repo IDs (for validation before API calls) */
@@ -130,11 +157,31 @@ selectedBranchAtom.debugLabel = "selectedBranchAtom";
  *
  * Used as a fallback in GitStatusModal and other components.
  */
-export const cachedReposAtom = atomWithStorage<CachedRepo[]>(
+const cachedRepoStorageAtom = atomWithStorage<CachedRepo[]>(
   REPO_STORAGE_KEYS.cachedRepos,
   [],
   createJSONStorage(() => localStorage),
   { getOnInit: true }
+);
+cachedRepoStorageAtom.debugLabel = "cachedRepoStorageAtom";
+
+/**
+ * Masked the same way as {@link reposAtom}: without this, `selectedRepoAtom`
+ * would still resolve a repo from the cache and the empty state would never
+ * appear. Writes reach localStorage unmasked.
+ */
+export const cachedReposAtom = atom(
+  (get): CachedRepo[] =>
+    workingDirectoriesMasked(get)
+      ? NO_CACHED_REPOS
+      : get(cachedRepoStorageAtom),
+  (get, set, update: SetStateAction<CachedRepo[]>) => {
+    const previous = get(cachedRepoStorageAtom);
+    set(
+      cachedRepoStorageAtom,
+      typeof update === "function" ? update(previous) : update
+    );
+  }
 );
 cachedReposAtom.debugLabel = "cachedReposAtom";
 

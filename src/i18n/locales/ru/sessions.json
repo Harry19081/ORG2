@@ -1,4 +1,9 @@
 {
+  "landedMessageEdit": {
+    "title": "Отправить как новое сообщение?",
+    "body": "Это сообщение относится к сеансу выполнения. Его редактирование здесь не позволяет откатить разговор. Отправить этот текст новым сообщением в конце? Существующие сообщения и изменения файлов будут сохранены.",
+    "sendNew": "Отправить новое сообщение"
+  },
   "tray": {
     "markAllRead": "Отметить всё как прочитанное",
     "showKanban": "Показать Канбан",
@@ -88,8 +93,7 @@
       "openFolder": "Открыть папку",
       "tabs": {
         "all": "Все",
-        "apps": "Приложения",
-        "clis": "CLI"
+        "apps": "Приложения"
       },
       "views": {
         "scanning": "Сканирование",
@@ -174,7 +178,8 @@
           "output": "Вывод",
           "cache": "Чтение из кэша",
           "cost": "Стоимость",
-          "filterBySession": "Фильтровать по этому сеансу"
+          "filterBySession": "Фильтровать по этому сеансу",
+          "purpose": "Назначение"
         },
         "pricing": {
           "input": "Ввод",
@@ -199,7 +204,17 @@
           "title": "Данных об использовании пока нет",
           "subtitle": "Запустите или просканируйте сеансы разработки, и здесь появится использование токенов."
         },
-        "loadError": "Не удалось загрузить данные об использовании"
+        "loadError": "Не удалось загрузить данные об использовании",
+        "purposes": {
+          "main": "Основной ответ",
+          "session_title": "Название сессии",
+          "session_memory": "Память сессии",
+          "workspace_memory": "Память рабочего пространства",
+          "auto_dream": "Консолидация памяти",
+          "skill_prefetch": "Выбор навыков",
+          "memory_prefetch": "Поиск в памяти",
+          "compaction": "Сжатие контекста"
+        }
       },
       "sessions_one": "{{count}} сессия",
       "sessions_other": "{{count}} сессии",
@@ -307,7 +322,6 @@
   },
   "simulator": {
     "captionBarToggleTooltip": "Показать панель сообщений Agent",
-    "noActiveSession": "Нет активной сессии",
     "tabs": {
       "kanban": "Канбан"
     },
@@ -507,8 +521,7 @@
     },
     "titleBar": {
       "showSidebar": "Показать боковую панель",
-      "hideSidebar": "Скрыть боковую панель",
-      "showBottomPanel": "Показать нижнюю панель"
+      "hideSidebar": "Скрыть боковую панель"
     },
     "multiTask": {
       "monitoringProgress": "Отслеживание прогресса {{count}} subagents",
@@ -579,6 +592,7 @@
     "voicePermissionSheetTitle": "Требуется доступ к микрофону"
   },
   "chat": {
+    "draftTooLong": "Черновик слишком длинный (максимум {{max}} символов)",
     "cliPermissions": {
       "ask": "Запрашивать разрешение",
       "workspace": "Доступ к рабочей области",
@@ -613,23 +627,18 @@
       "inputPosition": "Ввод",
       "positionBottom": "Внизу",
       "positionMiddle": "По центру",
-      "trailPosition": "Панель контекста",
+      "repoBarPosition": "Панель репозитория",
       "positionUp": "Сверху",
       "positionDown": "Снизу",
-      "uiControls": "Элементы интерфейса",
-      "showQuickActions": "Показывать быстрые действия",
+      "showQuickActions": "Быстрые действия",
       "showSkills": "Закреплённые навыки",
-      "showCliUpdate": "Показывать обновления CLI",
-      "title": "Что вы хотите сделать?",
-      "back": "Назад к стартовой странице",
+      "showCliUpdate": "Обновления CLI",
+      "showSpotlight": "Spotlight",
       "newSession": {
         "title": "Новая сессия"
       },
       "newWorkItem": {
         "title": "Новый work item"
-      },
-      "setupRepo": {
-        "title": "Настроить Repo"
       },
       "addApiKey": {
         "title": "Добавить API key"
@@ -640,59 +649,27 @@
       "installLatestUpdate": {
         "title": "Установить последнее обновление"
       },
-      "agents": {
-        "title": "Agents"
-      },
       "tabs": {
         "session": "Сеанс",
         "workItem": "Рабочий элемент",
         "more": "Ещё",
-        "work": "Работа",
         "manage": "Управление",
-        "heatmap": "Тренды",
         "runtime": "Среда выполнения"
       },
       "quota": {
         "empty": "Данных о квоте пока нет. Обновите использование в Key Vault.",
         "refresh": "Обновить",
-        "justNow": "только что",
-        "minutesAgo": "{{count}} мин назад",
-        "hoursAgo": "{{count}}ч назад",
         "metrics": {
           "fiveHour": "5h",
           "sevenDay": "7d",
           "auto": "Auto",
           "api": "API",
-          "session": "Session",
-          "weekly": "Weekly",
           "monthly": "Monthly"
         }
       },
-      "exploreRepos": {
-        "title": "Обзор Repos"
-      },
       "hints": {
-        "skill": {
-          "before": "Use",
-          "after": "to link a skill or tool"
-        },
-        "ask": {
-          "before": "Use",
-          "after": "to ask questions about the codebase"
-        },
-        "plan": {
-          "before": "Use",
-          "after": "to plan before building"
-        },
-        "switch": {
-          "before": "Use",
-          "after": "to switch sections"
-        },
         "previous": "Previous hint",
         "next": "Next hint"
-      },
-      "manageIssues": {
-        "title": "Управлять issues"
       }
     },
     "defaultTitle": "Чат",
@@ -704,6 +681,7 @@
     "performActions_other": "Выполнить {{count}} действий",
     "showInlineDiffs": "Встроенные различия",
     "inputSettings": "Настройки ввода",
+    "sendMethod": "Отправка",
     "navigation": {
       "title": "Навигация",
       "openLinksIn": "Открывать ссылки в",
@@ -711,6 +689,8 @@
       "externalBrowser": "Внешний браузер"
     },
     "compactInput": "Компактное поле ввода",
+    "composerGlow": "Свечение поля ввода",
+    "separateEffortPill": "Отдельная кнопка Effort",
     "replay": {
       "follow": "Следовать"
     },
@@ -736,15 +716,11 @@
       "modeSourceBundled": "Режимы загружены из встроенного резерва (зонд Cursor ещё не запущен).",
       "modeRefresh": "Обновить режимы"
     },
-    "hideSimulator": "Скрыть симулятор",
-    "showSimulator": "Показать симулятор",
-    "fullScreenChat": "Фокус на панели чата (скрыть Workstation)",
     "maximizeChatPanel": "Развернуть панель чата",
     "showWorkstation": "Показать Workstation",
     "workstationUnavailableForPage": "Workstation недоступна на этой странице",
     "hideWorkstation": "Скрыть Workstation",
     "restoreSplitView": "Показать Workstation",
-    "shrinkToWorkstation": "Свернуть панель чата (показать Workstation)",
     "tuiModeOn": "Режим TUI (нажмите, чтобы отключить)",
     "tuiModeOff": "Включить режим TUI",
     "tabs": {
@@ -896,10 +872,10 @@
       "exportJson": "Экспорт JSON",
       "importAction": "Импортировать Session",
       "exportDescription": "Экспортируйте активную Session как переносимый JSON-снимок",
-      "importDescription": "Импортируйте JSON-снимок Session в боковую панель.",
+      "importDescription": "Импортируйте JSON-снимок Session в боковую панель",
       "jsonSnapshotNote": "Импортированные Sessions являются снимками только для чтения и сохраняют исходную историю событий",
       "chooseJson": "Выбрать JSON-файл",
-      "chooseJsonHint": "Выберите файл экспорта .orgii-session.json.",
+      "chooseJsonHint": "Выберите файл экспорта .orgii-session.json",
       "loadingPreview": "Подсчет событий Session…",
       "noActiveSession": "Активная Session не выбрана.",
       "importedName": "Импортированная Session: {{name}}",
@@ -948,22 +924,9 @@
       "showMore_one": "Показать ещё {{count}}",
       "showMore_other": "Показать ещё {{count}}"
     },
-    "manageIssues": {
-      "title": "Управлять issues",
-      "myWork": "Моя работа",
-      "allRepositories": "Все repos",
-      "newIssue": "Новая issue",
-      "tabs": {
-        "recent": "Недавние",
-        "assigned": "Назначены мне",
-        "byMe": "Созданы мной",
-        "mentioned": "Упоминания"
-      }
-    },
     "readOnly": "Только чтение",
     "panels": {
       "manageIssues": {
-        "searchPlaceholder": "GitHub search, e.g. is:issue is:open label:bug",
         "createIssueTrigger": "Issue",
         "newIssueTitle": "Создать issue GitHub",
         "issueTitlePlaceholder": "Название issue",
@@ -973,28 +936,40 @@
         "addToChat": "Add",
         "repositoryLabel": "Репозиторий",
         "createIssueFailed": "Не удалось создать issue",
-        "sourceIssues": "Issues",
-        "sourcePrs": "PRs",
         "stateOpen": "Open",
         "stateClosed": "Closed",
-        "stateAll": "Все состояния",
         "closeAsCompleted": "Закрыть как выполненную",
         "closeAsNotPlanned": "Закрыть как незапланированную",
         "statusUpdateFailed": "Не удалось обновить статус GitHub",
         "assignedToMe": "Назначенные мне",
         "createdByMe": "Созданные мной",
-        "filters": "Filters",
-        "openInGitHub": "Open in GitHub",
-        "pullRequests": {
-          "reviewRequested": "Запрошено ревью",
-          "authoredByMe": "Созданные мной",
-          "otherTodos": "Другие задачи"
-        },
         "assigneeUpdateNotApplied": "GitHub не применил изменение исполнителя",
         "assigneeUpdateSuccess": "Исполнители обновлены на GitHub",
         "updateIssueFailed": "Не удалось обновить issue GitHub",
-        "refreshIssues": "Обновить задачи",
-        "refreshPullRequests": "Обновить пул-реквесты"
+        "filters": {
+          "searchPlaceholder": "Поиск фильтров",
+          "noMatches": "Нет подходящих фильтров",
+          "activeCount": "Активные фильтры: {{count}}",
+          "clear": "Сбросить фильтры",
+          "reviewRequestedFromMe": "Запрошено моё ревью",
+          "noAssignee": "Без исполнителя",
+          "noLabel": "Без меток",
+          "linkedPullRequest": "Есть связанный пул-реквест",
+          "draft": "Черновик",
+          "readyForReview": "Готов к ревью",
+          "recentlyUpdated": "Обновлено за последние 7 дней",
+          "stale": "Не обновлялось 30 дней",
+          "facetAuthor": "Автор",
+          "facetAssignee": "Исполнитель",
+          "facetLabel": "Метка",
+          "facetMilestone": "Веха",
+          "facetReviewRequested": "Запрошено ревью",
+          "facetBaseBranch": "Базовая ветка",
+          "facetCiStatus": "Проверки",
+          "ciSuccess": "Успешно",
+          "ciFailure": "С ошибками",
+          "ciPending": "Ожидание"
+        }
       }
     },
     "sessionViews": {
@@ -1027,7 +1002,9 @@
     "sending": "Отправка…",
     "typeMessage": "Введите сообщение…",
     "session": "Сессия",
-    "history": "Сессии"
+    "history": "Сессии",
+    "goToPinnedPassage": "Перейти к закреплённому фрагменту: {{preview}}",
+    "unpinPassage": "Открепить"
   },
   "tools": {
     "noResultsFound": "Результатов не найдено",
@@ -1124,6 +1101,7 @@
     "terminalWaitRunning": "Ожидание завершения терминала",
     "runShellFailed": "Ошибка выполнения команды",
     "runCommands": "Выполнить команды",
+    "waitBackgroundTasks": "Ожидать фоновые задачи",
     "terminalSummary": {
       "command_one": "{{count}} команда",
       "command_other": "{{count}} команды",
@@ -1134,6 +1112,10 @@
       "check_one": "{{count}} проверка",
       "check_other": "{{count}} проверки",
       "separator": ", "
+    },
+    "waitSummary": {
+      "count_one": "{{count}} раз",
+      "count_other": "{{count}} раз"
     },
     "inspectTerminalsRunning": "Проверка терминалов",
     "inspectTerminalsDone": "Терминалы проверены",
@@ -1903,13 +1885,12 @@
     "start": "Начать",
     "missingGit": {
       "title": "Git отсутствует",
-      "body": "Git не установлен или не найден. Попросите ADE Manager или SDE Agent установить Git на этот компьютер, затем перезапустите ORG2."
+      "body": "Git не установлен или не найден. Попросите ADE Manager или SDE Agent установить Git на этот компьютер, затем перезапустите ORG2"
     },
     "model": "Модель",
     "contextMenu": {
       "filesAndFolders": "Файлы и папки",
       "workItems": "Рабочие элементы",
-      "back": "Назад",
       "recent": "Недавние",
       "showMore": "Показать ещё: {{remaining}}",
       "session": "Сессия"
@@ -1967,9 +1948,9 @@
       "formatting": "Форматирование текста"
     },
     "regionNoticeTitle": "Возможные региональные ограничения",
-    "regionNoticeBodyProvider": "Вы находитесь в {{location}}. Некоторые модели могут быть недоступны в вашем регионе.",
-    "regionNoticeBodySanctions": "Вы находитесь в {{location}}. GitHub, npm, Docker Hub и похожие сервисы могут быть недоступны.",
-    "regionNoticeBodyBoth": "Вы находитесь в {{location}}. Некоторые модели и сервисы вроде GitHub, npm и Docker Hub могут быть недоступны из-за региональной политики и торговых ограничений.",
+    "regionNoticeBodyProvider": "Вы находитесь в {{location}}. Некоторые модели могут быть недоступны в вашем регионе",
+    "regionNoticeBodySanctions": "Вы находитесь в {{location}}. GitHub, npm, Docker Hub и похожие сервисы могут быть недоступны",
+    "regionNoticeBodyBoth": "Вы находитесь в {{location}}. Некоторые модели и сервисы вроде GitHub, npm и Docker Hub могут быть недоступны из-за региональной политики и торговых ограничений",
     "selectAgent": "Выберите агент",
     "placeholderDefault": "Введите сообщение, @ чтобы добавить файлы, / чтобы использовать skills",
     "wingmanPlaceholder": "Опишите вашу миссию — за чем должен следить Wingman?",
@@ -2097,7 +2078,7 @@
         "cancelled": "Отменено",
         "failed": "Ошибка"
       },
-      "title": "Обзор Команды Agent",
+      "title": "Обзор команды",
       "summary": "{{active}} активны · {{pending}} требуют обработки",
       "loadFailed": "Не удалось загрузить обзор команды",
       "tasks": "Задачи",
@@ -2118,7 +2099,7 @@
       "archiveTeardownRetained": "Команда архивирована, но не удалось освободить {{count}} среду. Удаление по-прежнему заблокировано.",
       "archiveTeardownQuiesced": "Команда архивирована и полностью остановлена. Теперь доступно окончательное удаление.",
       "dangerZone": "Опасная зона",
-      "deleteDescription": "Окончательно удалить эту команду, все ее сеансы и историю.",
+      "deleteDescription": "Окончательно удалить эту команду, все ее сеансы и историю",
       "deleteTeam": "Удалить команду",
       "deleteTitle": "Окончательно удалить эту команду?",
       "deleteWarning": "Все сеансы и история команды будут удалены навсегда. Это действие нельзя отменить.",
@@ -2172,9 +2153,7 @@
       "activeMembers": "Активные участники",
       "inFlightTurns": "Выполняемые ходы",
       "openTasks": "Открытые задачи",
-      "blockingInbox": "Блокирующие входящие сообщения",
-      "blockersTitle": "Что ещё мешает завершению",
-      "unknownBlocker": "Неизвестная системная блокировка"
+      "blockingInbox": "Блокирующие входящие сообщения"
     },
     "agentOrgIntervention": {
       "directTitle": "Прямая работа с {{member}}",
@@ -2339,7 +2318,6 @@
     },
     "triggerLabel": "Групповой чат",
     "userMessageOutcomeUnknown": "Результат доставки неизвестен. Повторите исходную доставку.",
-    "coordinatorLabel": "Координатор",
     "youLabel": "Вы",
     "retry": "Повторить",
     "memberCount_one": "{{count}} участник",

@@ -12,9 +12,9 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { Placeholder } from "@src/components/Placeholder";
+import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
 import { useInlineWebview } from "@src/hooks/platform/useInlineWebview";
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   HugeiconsIcon,
   Refresh04Icon,
@@ -77,7 +77,7 @@ const UrlPreviewContent: React.FC<UrlPreviewContentProps> = memo(
     );
 
     const handleOpenInBrowser = useCallback(() => {
-      openLink(url, { navigate: true });
+      openLink(url);
     }, [url]);
 
     // Extract hostname for display

@@ -50,24 +50,15 @@ afterEach(() => {
 });
 
 describe("openLink with the workstation Browser chosen", () => {
-  it("brings the Browser into view for GitHub pull-request links", () => {
+  it("hands every link to the Browser, whatever kind of address it is", () => {
     openLink("https://github.com/org2AI/ORG2/pull/851");
-
-    expect(browserRequests).toEqual([
-      { url: "https://github.com/org2AI/ORG2/pull/851", navigate: true },
-    ]);
-    expect(mocks.openUrl).not.toHaveBeenCalled();
-  });
-
-  it("keeps other links in a background tab unless the caller asks to show it", () => {
     openLink("https://github.com/org2AI/ORG2/issues/851");
     openLink("https://example.com/docs");
-    openLink("https://example.com/details", { navigate: true });
 
-    expect(browserRequests.map((detail) => detail.navigate)).toEqual([
-      false,
-      false,
-      true,
+    expect(browserRequests).toEqual([
+      { url: "https://github.com/org2AI/ORG2/pull/851" },
+      { url: "https://github.com/org2AI/ORG2/issues/851" },
+      { url: "https://example.com/docs" },
     ]);
     expect(mocks.openUrl).not.toHaveBeenCalled();
   });
@@ -97,7 +88,7 @@ describe("openLink with the system browser chosen", () => {
     chooseLinkTarget("external");
 
     openLink("https://github.com/org2AI/ORG2/pull/851");
-    openLink("https://example.com/docs", { navigate: true });
+    openLink("https://example.com/docs");
 
     expect(browserRequests).toEqual([]);
     expect(mocks.openUrl.mock.calls).toEqual([
@@ -127,9 +118,7 @@ describe("controls that name their destination", () => {
 
     openInBrowserApp("https://example.com/docs");
 
-    expect(browserRequests).toEqual([
-      { url: "https://example.com/docs", navigate: true },
-    ]);
+    expect(browserRequests).toEqual([{ url: "https://example.com/docs" }]);
     expect(mocks.openUrl).not.toHaveBeenCalled();
   });
 
@@ -172,9 +161,7 @@ describe("openInSystemBrowser", () => {
 describe("linkAnchorProps", () => {
   it("keeps the address on the anchor and opens it as a link on click", () => {
     const anchor = document.createElement("a");
-    const props = linkAnchorProps("https://example.com/docs", {
-      navigate: true,
-    });
+    const props = linkAnchorProps("https://example.com/docs");
     anchor.href = props.href;
     anchor.addEventListener("click", props.onClick);
     document.body.appendChild(anchor);
@@ -185,8 +172,6 @@ describe("linkAnchorProps", () => {
 
     expect(props.href).toBe("https://example.com/docs");
     expect(click.defaultPrevented).toBe(true);
-    expect(browserRequests).toEqual([
-      { url: "https://example.com/docs", navigate: true },
-    ]);
+    expect(browserRequests).toEqual([{ url: "https://example.com/docs" }]);
   });
 });
