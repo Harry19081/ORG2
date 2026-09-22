@@ -118,6 +118,8 @@ export function ChatViewHistorySurface({
             onRefresh={refreshAgentOrgRunView}
           />
         }
+        overviewScopeKey={sessionId}
+        surfaceBgClass={surfaceBgClass}
         bottomInset={historyBottomInset}
         viewportSessionKey={`agent-org-group:${agentOrgRunView.context.runId}`}
         onScrollNavChange={handleScrollNavChange}
