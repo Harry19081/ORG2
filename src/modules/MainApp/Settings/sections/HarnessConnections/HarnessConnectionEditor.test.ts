@@ -137,7 +137,6 @@ async function mount() {
     root.render(
       createElement(HarnessConnectionEditor, {
         agentName: "codex",
-        onAdd: vi.fn(),
       })
     )
   );
@@ -232,11 +231,9 @@ describe("HarnessConnectionEditor", () => {
           null,
           createElement(HarnessConnectionEditor, {
             agentName: "codex",
-            onAdd: vi.fn(),
           }),
           createElement(HarnessConnectionEditor, {
             agentName: "codex",
-            onAdd: vi.fn(),
           })
         )
       )

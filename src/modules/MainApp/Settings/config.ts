@@ -26,6 +26,7 @@ export const SECTION_IDS = {
   EDITOR: "editor",
   SECURITY: "security",
   MOBILE_REMOTE: "mobile-remote",
+  HARNESS_CONNECTIONS: "harness-connections",
   IMPORT: "import",
 } as const;
 
@@ -75,6 +76,15 @@ export const SECTION_TAB_META: Partial<
     { key: "chat-panel", labelKey: "appearance.tabChatPanel" },
   ],
   [SECTION_IDS.EDITOR]: [{ key: "editor", labelKey: "editor.tabEditor" }],
+  // One tab per connectable app; the bodies are independent per app.
+  [SECTION_IDS.HARNESS_CONNECTIONS]: [
+    { key: "claude-code", labelKey: "harnessConnections.apps.claudeCode" },
+    {
+      key: "claude-desktop",
+      labelKey: "harnessConnections.apps.claudeDesktop",
+    },
+    { key: "codex", labelKey: "harnessConnections.apps.codex" },
+  ],
   // Same labels as Runtime's Scanning / Hooks tabs, which render the same bodies.
   [SECTION_IDS.IMPORT]: [
     { key: "scanning", labelKey: "sessions:kanban.dataSource.views.scanning" },

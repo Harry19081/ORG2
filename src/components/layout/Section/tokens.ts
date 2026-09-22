@@ -46,9 +46,16 @@ export const SECTION_GAP_CLASSES = "flex flex-col gap-3";
 // Container Tokens
 // ============================================
 
+/**
+ * Hairlines between consecutive SectionRows. The rule only reaches direct
+ * children, so any wrapper that hosts rows itself — the sidebar split's
+ * content pane, for instance — has to carry this too.
+ */
+export const SECTION_ROW_SEPARATOR_CLASSES =
+  "[&>.section-layout-row:not(:last-child)]:after:absolute [&>.section-layout-row:not(:last-child)]:after:bottom-0 [&>.section-layout-row:not(:last-child)]:after:inset-x-0 [&>.section-layout-row:not(:last-child)]:after:h-px [&>.section-layout-row:not(:last-child)]:after:bg-border-1 [&>.section-layout-row:not(:last-child)]:after:content-['']";
+
 /** Base classes for the section container (rounded, container-query root, inset row separators) */
-export const SECTION_CONTAINER_BASE_CLASSES =
-  "w-full rounded-xl @container [&>.section-layout-row:not(:last-child)]:after:absolute [&>.section-layout-row:not(:last-child)]:after:bottom-0 [&>.section-layout-row:not(:last-child)]:after:inset-x-0 [&>.section-layout-row:not(:last-child)]:after:h-px [&>.section-layout-row:not(:last-child)]:after:bg-border-1 [&>.section-layout-row:not(:last-child)]:after:content-['']";
+export const SECTION_CONTAINER_BASE_CLASSES = `w-full rounded-xl @container ${SECTION_ROW_SEPARATOR_CLASSES}`;
 
 export const SECTION_CONTAINER_CLASSES = `${SECTION_CONTAINER_BASE_CLASSES} border border-border-1 bg-primary-container`;
 

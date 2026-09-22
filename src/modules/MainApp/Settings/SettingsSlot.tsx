@@ -80,6 +80,7 @@ import SettingsBreadcrumb from "./SettingsBreadcrumb";
 import SettingsHeaderActions from "./components/SettingsHeaderActions";
 import { APP_SECTIONS, SECTION_IDS, SECTION_TAB_META } from "./config";
 import SettingsSectionRenderer from "./renderer/SettingsSectionRenderer";
+import { settingsSectionTabLockAtom } from "./settingsSectionTabLockAtom";
 
 interface SettingsSlotProps {
   /** Maximized = edge-to-edge; disables the resize handle. */
@@ -121,13 +122,19 @@ const SettingsSlotAppBody: React.FC = () => {
     return def ? t(def.headingTitleKey) : "";
   }, [activeSection, t]);
 
+  const tabsLocked = useAtomValue(settingsSectionTabLockAtom);
   const tabs = useMemo<TabPillItem[]>(() => {
     const meta = SECTION_TAB_META[activeSection];
     if (meta) {
-      return meta.map(({ key, labelKey }) => ({ key, label: t(labelKey) }));
+      return meta.map(({ key, labelKey }) => ({
+        key,
+        label: t(labelKey),
+        // A section with unsaved edits owns the tab bar until it is settled.
+        disabled: tabsLocked && key !== activeTab,
+      }));
     }
     return [{ key: activeSection, label: sectionTitle }];
-  }, [activeSection, sectionTitle, t]);
+  }, [activeSection, activeTab, sectionTitle, t, tabsLocked]);
 
   const handleTabChange = useCallback(
     (key: string) => {

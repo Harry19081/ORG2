@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { rpc } from "@src/api/tauri/rpc";
 import Button from "@src/components/Button";
 import Message from "@src/components/Message";
+import ModelIcon from "@src/components/ModelIcon";
 import Select from "@src/components/Select";
 import {
   SECTION_ACTION_GAP_CLASSES,
@@ -12,12 +13,11 @@ import {
   SECTION_VALUE_SMALL_MUTED_CLASSES,
   SECTION_VALUE_SMALL_SECONDARY_CLASSES,
   SECTION_VALUE_TEXT_CLASSES,
-  SectionContainer,
   SectionRow,
 } from "@src/components/layout/Section";
 import { HintWithInfo } from "@src/components/layout/blocks/HintWithInfo";
+import { SelectionGrid } from "@src/scaffold/WizardSystem/primitives";
 
-import ConnectionCards from "./ConnectionCards";
 import {
   refreshHarnessConnections,
   useHarnessConnection,
@@ -25,10 +25,8 @@ import {
 
 export default function HarnessConnectionEditor({
   agentName,
-  onAdd,
 }: {
   agentName: "claude_code" | "codex";
-  onAdd: () => void;
 }) {
   const { t } = useTranslation("settings");
   const { view, error, loading, reload } = useHarnessConnection(agentName);
@@ -40,7 +38,6 @@ export default function HarnessConnectionEditor({
   const routing =
     routingOverride ??
     (view?.config.mode === "orgii_managed" ? "orgii_managed" : "direct");
-  const [advanced, setAdvanced] = useState(false);
   const [busy, setBusy] = useState<"test" | "apply" | "restore" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<string | null>(null);
@@ -201,10 +198,7 @@ export default function HarnessConnectionEditor({
       ? t("harnessConnections.testRequired")
       : null);
   return (
-    <SectionContainer
-      title={agentName === "codex" ? "Codex" : "Claude Code CLI"}
-      dataTestId={`harness-connection-${agentName}`}
-    >
+    <>
       {(view?.configurationIssue || view?.config.message) && (
         <SectionRow showHeader={false}>
           <p role="alert" className={SECTION_DESCRIPTION_CLASSES}>
@@ -224,7 +218,7 @@ export default function HarnessConnectionEditor({
         </span>
       </SectionRow>
       {view && !view.installed && (
-        <SectionRow showHeader={false} className="py-2">
+        <SectionRow showHeader={false}>
           <p role="status" className={SECTION_DESCRIPTION_CLASSES}>
             <span className="text-warning-6">
               {t("harnessConnections.notInstalled")}
@@ -233,7 +227,7 @@ export default function HarnessConnectionEditor({
         </SectionRow>
       )}
       {view?.config.conflict && (
-        <SectionRow showHeader={false} className="py-2">
+        <SectionRow showHeader={false}>
           <p role="alert" className={SECTION_DESCRIPTION_CLASSES}>
             <span className="text-warning-6">
               {t("harnessConnections.conflict")}
@@ -242,23 +236,30 @@ export default function HarnessConnectionEditor({
         </SectionRow>
       )}
       {error && (
-        <SectionRow showHeader={false} className="py-2">
+        <SectionRow showHeader={false}>
           <p role="alert" className={SECTION_DESCRIPTION_CLASSES}>
             <span className="text-danger-6">{error}</span>
           </p>
         </SectionRow>
       )}
-      <SectionRow label={connectionLabel}>
-        <ConnectionCards
-          choices={view?.choices ?? []}
-          selected={selectedKey}
-          active={
-            view?.config.mode !== "default"
-              ? (view?.config.selectedKeyId ?? null)
-              : null
-          }
-          disabled={loading || busy !== null}
-          onAdd={onAdd}
+      <SectionRow label={connectionLabel} layout="vertical">
+        <SelectionGrid
+          options={(view?.choices ?? []).map((item) => ({
+            key: item.keyId,
+            label: item.name,
+            iconElement: (
+              <ModelIcon modelName={item.models[0] ?? item.name} size="small" />
+            ),
+            badge:
+              view?.config.mode !== "default" &&
+              view?.config.selectedKeyId === item.keyId
+                ? t("harnessConnections.current")
+                : undefined,
+            tooltip: item.reason ?? undefined,
+            disabled: loading || busy !== null || Boolean(item.reason),
+          }))}
+          selected={selectedKey || null}
+          cardVariant="subtle"
           onSelect={(value) => {
             setKeyId(value);
             setModel(null);
@@ -268,14 +269,14 @@ export default function HarnessConnectionEditor({
         />
       </SectionRow>
       {choice?.reason && (
-        <SectionRow showHeader={false} className="py-2">
+        <SectionRow showHeader={false}>
           <p role="alert" className={SECTION_DESCRIPTION_CLASSES}>
             <span className="text-warning-6">{choice.reason}</span>
           </p>
         </SectionRow>
       )}
       {!loading && view?.choices.length === 0 && (
-        <SectionRow showHeader={false} className="py-2">
+        <SectionRow showHeader={false}>
           <p className={SECTION_VALUE_SMALL_MUTED_CLASSES}>
             {t("harnessConnections.empty")}
           </p>
@@ -299,28 +300,21 @@ export default function HarnessConnectionEditor({
         />
       </SectionRow>
       <SectionRow label={routingLabel}>
-        <Button onClick={() => setAdvanced(!advanced)} aria-expanded={advanced}>
-          {t("harnessConnections.advanced")}
-        </Button>
+        <Select
+          ariaLabel={t("harnessConnections.routing")}
+          value={routing}
+          disabled={busy !== null}
+          style={SECTION_CONTROL_STYLE}
+          options={[
+            { value: "direct", label: t("harnessConnections.direct") },
+            { value: "orgii_managed", label: t("harnessConnections.proxy") },
+          ]}
+          onChange={(value) =>
+            setRouting(value === "direct" ? "direct" : "orgii_managed")
+          }
+        />
       </SectionRow>
-      {advanced && (
-        <SectionRow label={t("harnessConnections.routing")}>
-          <Select
-            ariaLabel={t("harnessConnections.routing")}
-            value={routing}
-            disabled={busy !== null}
-            style={SECTION_CONTROL_STYLE}
-            options={[
-              { value: "direct", label: t("harnessConnections.direct") },
-              { value: "orgii_managed", label: t("harnessConnections.proxy") },
-            ]}
-            onChange={(value) =>
-              setRouting(value === "direct" ? "direct" : "orgii_managed")
-            }
-          />
-        </SectionRow>
-      )}
-      <SectionRow showHeader={false} className="py-2">
+      <SectionRow showHeader={false}>
         <div className={`${SECTION_ACTION_GAP_CLASSES} flex-wrap`}>
           <div className={SECTION_ACTION_GAP_CLASSES}>
             <Button
@@ -373,7 +367,7 @@ export default function HarnessConnectionEditor({
         </div>
       </SectionRow>
       {statusMessage && (
-        <SectionRow showHeader={false} className="py-2">
+        <SectionRow showHeader={false}>
           <p
             role="status"
             aria-live="polite"
@@ -383,6 +377,6 @@ export default function HarnessConnectionEditor({
           </p>
         </SectionRow>
       )}
-    </SectionContainer>
+    </>
   );
 }

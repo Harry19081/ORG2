@@ -4,16 +4,16 @@ import { useTranslation } from "react-i18next";
 import type { ClaudeProviderProfile } from "@src/api/tauri/rpc/schemas/agentOrgs";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import ModelIcon from "@src/components/ModelIcon";
 import Select from "@src/components/Select";
 import {
+  SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
   SECTION_DESCRIPTION_CLASSES,
-  SectionContainer,
   SectionRow,
 } from "@src/components/layout/Section";
 
 import ClaudeModelMappings from "./ClaudeModelMappings";
-import ConnectionChoiceCard from "./ConnectionChoiceCard";
 import {
   newClaudeProfile,
   useClaudeProfileEditor,
@@ -21,19 +21,28 @@ import {
 
 export default function ClaudeProfileEditor({
   target,
-  onAdd,
+  profileId,
   onDirtyChange,
+  onDraftCopied,
+  onDiscarded,
 }: {
   target: ClaudeProviderProfile["target"];
-  onAdd: () => void;
+  /** The saved connection to edit, or null for an unsaved new one. */
+  profileId: string | null;
   onDirtyChange?: (dirty: boolean) => void;
+  /** A copy becomes a new unsaved connection; the parent moves its selection. */
+  onDraftCopied?: () => void;
+  /**
+   * Discarding an unsaved *new* connection leaves nothing to edit — without
+   * this the editor would just build another blank draft and never close.
+   */
+  onDiscarded?: () => void;
 }) {
   const { t } = useTranslation("settings");
   const {
     view,
     loading,
     error,
-    reload,
     draft,
     edit,
     busy,
@@ -49,6 +58,23 @@ export default function ClaudeProfileEditor({
     onDirtyChange?.(dirty);
     return () => onDirtyChange?.(false);
   }, [dirty, onDirtyChange]);
+  const profile = profileId
+    ? (view?.profiles?.find((item) => item.id === profileId) ?? null)
+    : null;
+  useEffect(() => {
+    // The list above owns the selection; mirror it into the draft. A new
+    // connection starts from the first usable vault key.
+    if (profile) {
+      // Never clobber unsaved work — a copy replaces the draft in place and
+      // must survive until the list moves to the new connection.
+      if (draft?.id !== profile.id && !dirty) edit(profile);
+      return;
+    }
+    // Wait for the view: a draft built before the vault keys arrive would keep
+    // an empty credential and model set that nothing rebuilds.
+    if (!profileId && !draft && view)
+      edit(newClaudeProfile(target, t("claudeProfiles.newName"), view));
+  }, [dirty, draft, edit, profile, profileId, t, target, view]);
   const active = view?.appliedProfile;
   const disabled = busy !== null || loading;
   const choice = view?.choices.find((c) => c.keyId === draft?.keyId);
@@ -67,39 +93,28 @@ export default function ClaudeProfileEditor({
     Object.values(draft.models.roles).every((m) => m.model.trim())
   );
   return (
-    <SectionContainer
-      title={target === "claude_code" ? "Claude Code CLI" : "Claude Desktop"}
-      dataTestId={`harness-connection-${target}`}
-    >
-      <SectionRow showHeader={false}>
-        <div className="flex w-full flex-col gap-3">
-          <p className={SECTION_DESCRIPTION_CLASSES}>
-            {t(
-              target === "claude_desktop"
-                ? "harnessConnections.desktopScope"
-                : "harnessConnections.scope"
-            )}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              disabled={disabled || dirty}
-              onClick={() =>
-                edit(
-                  newClaudeProfile(target, t("claudeProfiles.newName"), view)
-                )
-              }
-            >
-              {t("claudeProfiles.new")}
-            </Button>
+    <>
+      {profileId && (
+        <SectionRow
+          label={t("harnessConnections.connection")}
+          description={t(
+            target === "claude_desktop"
+              ? "harnessConnections.desktopScope"
+              : "harnessConnections.scope"
+          )}
+        >
+          <div className={`${SECTION_ACTION_GAP_CLASSES} flex-wrap`}>
             <Button
               disabled={
                 disabled ||
-                dirty ||
+                // An unsaved *new* connection has nothing to lose: copying just
+                // replaces it. Unsaved edits to a saved one still block.
+                (dirty && Boolean(saved)) ||
                 view?.config.mode === "default" ||
                 !view?.config.selectedKeyId ||
                 view.config.conflict
               }
-              onClick={() =>
+              onClick={() => {
                 edit(
                   newClaudeProfile(
                     target,
@@ -107,62 +122,15 @@ export default function ClaudeProfileEditor({
                     view,
                     true
                   )
-                )
-              }
+                );
+                onDraftCopied?.();
+              }}
             >
               {t("claudeProfiles.copy")}
             </Button>
-            <Button disabled={disabled || dirty} onClick={onAdd}>
-              {t("harnessConnections.add")}
-            </Button>
-            <Button disabled={disabled} onClick={() => void reload()}>
-              {t("harnessConnections.refresh")}
-            </Button>
           </div>
-          <p className={SECTION_DESCRIPTION_CLASSES}>
-            {t("harnessConnections.current")}:{" "}
-            {active?.name ??
-              (view?.config.mode === "default"
-                ? t("harnessConnections.original")
-                : (view?.choices.find(
-                    (c) => c.keyId === view.config.selectedKeyId
-                  )?.name ?? t("harnessConnections.loading")))}
-          </p>
-          {!loading && !view?.profiles?.length && (
-            <p className={SECTION_DESCRIPTION_CLASSES}>
-              {t("claudeProfiles.empty")}
-            </p>
-          )}
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {view?.profiles?.map((profile) => (
-              <ConnectionChoiceCard
-                key={profile.id}
-                disabled={disabled || dirty}
-                aria-pressed={draft?.id === profile.id}
-                onClick={() => edit(profile)}
-              >
-                <span className="flex min-w-0 flex-col gap-1">
-                  <span className="flex flex-wrap items-center gap-2">
-                    <span className="truncate font-medium">{profile.name}</span>
-                    {active?.id === profile.id && (
-                      <span className="text-xs text-primary-6">
-                        {t(
-                          active.revision === profile.revision
-                            ? "claudeProfiles.active"
-                            : "claudeProfiles.updatePending"
-                        )}
-                      </span>
-                    )}
-                  </span>
-                  <span className="truncate text-xs text-text-2">
-                    {profile.endpoint}
-                  </span>
-                </span>
-              </ConnectionChoiceCard>
-            ))}
-          </div>
-        </div>
-      </SectionRow>
+        </SectionRow>
+      )}
       {(error ||
         view?.configurationIssue ||
         view?.config.message ||
@@ -209,6 +177,11 @@ export default function ClaudeProfileEditor({
               options={(view?.choices ?? []).map((c) => ({
                 value: c.keyId,
                 label: c.name,
+                // Brand the key the way every other provider list does; the
+                // first model it serves identifies the provider best.
+                icon: (
+                  <ModelIcon modelName={c.models[0] ?? c.name} size="small" />
+                ),
                 disabled: Boolean(c.reason),
               }))}
               onChange={(value) => {
@@ -263,76 +236,74 @@ export default function ClaudeProfileEditor({
             onChange={edit}
             onFetch={() => void act("fetch")}
           />
+          {/* Footer: the state of the draft on the left, its actions on the
+              right, fenced off from the fields above. */}
           <SectionRow showHeader={false}>
-            <div className="flex w-full flex-col gap-3">
-              <p className={SECTION_DESCRIPTION_CLASSES}>
-                {t("claudeProfiles.activationHelp")}
-              </p>
-              {dirty && (
+            <div className="flex w-full flex-wrap items-center justify-between gap-2">
+              {dirty ? (
                 <p role="status" className={SECTION_DESCRIPTION_CLASSES}>
                   {t("claudeProfiles.unsaved")}
                 </p>
+              ) : (
+                <span />
               )}
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Testing, applying and deleting need something saved to
+                    act on, so a new connection shows none of them. */}
+                {saved && (
+                  <>
+                    <Button
+                      disabled={blocked || dirty || !valid}
+                      loading={busy === "test"}
+                      onClick={() => void act("test")}
+                    >
+                      {t("claudeProfiles.test")}
+                    </Button>
+                    <Button
+                      disabled={blocked || dirty || !valid || !receipt}
+                      loading={busy === "apply"}
+                      onClick={() => void act("apply")}
+                    >
+                      {t("harnessConnections.apply")}
+                    </Button>
+                  </>
+                )}
+                {saved && active?.id !== draft.id && (
+                  <Button
+                    disabled={disabled || dirty}
+                    onClick={() => void act("delete")}
+                  >
+                    {t("claudeProfiles.delete")}
+                  </Button>
+                )}
+                {dirty && (
+                  <Button
+                    disabled={disabled}
+                    onClick={() => {
+                      edit(saved ?? null);
+                      if (!saved) onDiscarded?.();
+                    }}
+                  >
+                    {t("claudeProfiles.discard")}
+                  </Button>
+                )}
                 <Button
+                  variant="primary"
                   disabled={disabled || !dirty || !valid}
                   onClick={() => void act("save")}
                 >
                   {t("claudeProfiles.save")}
-                </Button>
-                <Button
-                  disabled={blocked || dirty || !valid}
-                  loading={busy === "test"}
-                  onClick={() => void act("test")}
-                >
-                  {t("claudeProfiles.test")}
-                </Button>
-                <Button
-                  disabled={blocked || dirty || !valid || !receipt}
-                  loading={busy === "apply"}
-                  onClick={() => void act("apply")}
-                >
-                  {t("harnessConnections.apply")}
-                </Button>
-                <Button disabled={disabled} onClick={() => edit(saved ?? null)}>
-                  {t("claudeProfiles.discard")}
-                </Button>
-                <Button
-                  disabled={
-                    disabled || dirty || !saved || active?.id === draft.id
-                  }
-                  onClick={() => void act("delete")}
-                >
-                  {t("claudeProfiles.delete")}
                 </Button>
               </div>
             </div>
           </SectionRow>
         </>
       )}
-      <SectionRow showHeader={false}>
-        <div className="flex flex-wrap gap-2">
-          {(busy === "test" || busy === "fetch") && (
-            <Button onClick={cancel}>{t("harnessConnections.cancel")}</Button>
-          )}
-          <Button
-            disabled={
-              disabled ||
-              !view ||
-              view.config.mode === "default" ||
-              view.config.conflict ||
-              Boolean(view.configurationIssue)
-            }
-            onClick={() => void act("restore")}
-          >
-            {t(
-              view?.config.overlay
-                ? "harnessConnections.disconnect"
-                : "harnessConnections.restore"
-            )}
-          </Button>
-        </div>
-      </SectionRow>
+      {(busy === "test" || busy === "fetch") && (
+        <SectionRow showHeader={false}>
+          <Button onClick={cancel}>{t("harnessConnections.cancel")}</Button>
+        </SectionRow>
+      )}
       {message && (
         <SectionRow showHeader={false}>
           <p
@@ -344,6 +315,6 @@ export default function ClaudeProfileEditor({
           </p>
         </SectionRow>
       )}
-    </SectionContainer>
+    </>
   );
 }
