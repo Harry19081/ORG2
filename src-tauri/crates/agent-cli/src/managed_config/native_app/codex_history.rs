@@ -29,6 +29,10 @@ pub struct Report {
     pub busy: usize,
     pub conflicts: usize,
     pub more: bool,
+    /// Conversations currently shared between the two homes (journal pairs).
+    pub shared: usize,
+    /// Interrupted publications still awaiting recovery (journal pending).
+    pub pending: usize,
 }
 /// A conversation that cannot be shared is re-evaluated on every pass, but the
 /// operator is told once per distinct reason, and again only after it healed.
@@ -329,6 +333,38 @@ pub fn reconcile_with_models(
     reconcile_changes(profile, ids, native_defaults, None, check)
 }
 
+const FORMAT_SAMPLE_ROLLOUTS: usize = 30;
+const FORMAT_SAMPLE_TAIL_BYTES: u64 = 2 * 1024 * 1024;
+
+/// Data-driven compatibility gate for the native release currently writing the
+/// primary home: the audited SQLite schema (checked by every store access) and
+/// the settings-event shape our continuation binding relies on. Returns how
+/// many native settings events were compared; zero means no native sample was
+/// available and only the schema gate applied.
+pub fn format_gate(primary: &Path) -> Result<usize, String> {
+    let rows = store::list_threads(primary, None)?;
+    format_gate_for(primary, rows.iter())
+}
+
+fn format_gate_for<'a>(
+    primary: &Path,
+    rows: impl Iterator<Item = &'a ThreadRecord>,
+) -> Result<usize, String> {
+    let mut recent = rows.filter(|row| !row.archived()).collect::<Vec<_>>();
+    recent.sort_by_key(|row| std::cmp::Reverse(row.updated_at()));
+    let mut events = Vec::new();
+    for row in recent.into_iter().take(FORMAT_SAMPLE_ROLLOUTS) {
+        if files::relative_rollout(primary, &row.rollout_path).is_err() {
+            continue;
+        }
+        events.extend(files::settings_events_in_tail(
+            &row.rollout_path,
+            FORMAT_SAMPLE_TAIL_BYTES,
+        )?);
+    }
+    routing::native_shape_gate(events.iter())
+}
+
 /// `changed_files = Some(ids)` is for reliable filesystem invalidations:
 /// metadata-only events still inspect the catalog, but do not stat unchanged
 /// known rollouts. Startup and watcher rescan must pass `None`.
@@ -428,6 +464,11 @@ fn reconcile_at_with_models(
         .into_iter()
         .map(|v| (v.id.clone(), v))
         .collect::<BTreeMap<_, _>>();
+    // A rescan is where a native release change first becomes visible; targeted
+    // passes only follow files the gate already admitted.
+    if changed_files.is_none() && !explicit_selection {
+        format_gate_for(primary, left.values())?;
+    }
     let right = store::list_threads(package, ids)?
         .into_iter()
         .map(|v| (v.id.clone(), v))
@@ -573,6 +614,8 @@ fn reconcile_at_with_models(
     // Retry dependencies only after actual progress; a busy parent is woken by
     // its native writer-lock event, never by a periodic retry.
     report.more |= dependencies > 0 && report.copied > 0;
+    report.shared = ledger.pairs.len();
+    report.pending = ledger.pending.len();
     Ok(report)
 }
 
@@ -889,6 +932,45 @@ fn prepare_copy(
     ))
 }
 
+/// The native app finished an interrupted publication for us when every file we
+/// placed is still exactly our published copy and its projection frontier sits
+/// at the end of that copy. Anything the native app appended since is real
+/// divergence and stays a conflict.
+fn natively_completed(
+    target_home: &Path,
+    pending: &Pending,
+    existing: Option<&ThreadRecord>,
+    destination: &Path,
+) -> Result<bool, String> {
+    let Some(existing) = existing else {
+        return Ok(false);
+    };
+    if existing.rollout_path != destination {
+        return Ok(false);
+    }
+    for entry in &pending.files {
+        if !entry.destination.exists()
+            || !files::stamp(&entry.destination)?.published_from(&entry.after)
+        {
+            return Ok(false);
+        }
+    }
+    let rollout_id = destination
+        .file_stem()
+        .and_then(|v| v.to_str())
+        .and_then(|v| v.get(v.len().checked_sub(36)?..))
+        .filter(|v| files::valid_id(v))
+        .ok_or("Unsupported Codex rollout identity")?
+        .to_owned();
+    let length = i64::try_from(files::stamp(destination)?.len)
+        .map_err(|_| "Codex rollout exceeds native SQLite range")?;
+    Ok(
+        store::checkpoints(target_home, std::slice::from_ref(&rollout_id))?
+            .first()
+            .is_some_and(|checkpoint| checkpoint.next_byte_offset == Some(length)),
+    )
+}
+
 fn finish(
     primary: &Path,
     package: &Path,
@@ -981,12 +1063,21 @@ fn finish(
     }
     let existing = store::list_threads(target_home, Some(std::slice::from_ref(&pending.id)))?.pop();
     let expected = existing.as_ref().map(|v| v.metadata_hash.as_str());
+    let destination = target_home.join(&pending.source.path);
+    let mut native_completed = false;
     if expected != pending.target.as_ref().map(|v| v.metadata.as_str())
         && expected != Some(source.metadata_hash.as_str())
     {
-        return Err("Codex destination metadata changed during pending handoff".into());
+        // A publication interrupted between rename and SQL leaves our file in
+        // place. If the native app then opened the conversation, it projected
+        // exactly that file and rewrote the row's own metadata. That is not
+        // divergence: keep its projection and only bind the route.
+        native_completed =
+            natively_completed(target_home, &pending, existing.as_ref(), &destination)?;
+        if !native_completed {
+            return Err("Codex destination metadata changed during pending handoff".into());
+        }
     }
-    let destination = target_home.join(&pending.source.path);
     for entry in &pending.files {
         check()?;
         let relative = entry
@@ -1062,15 +1153,19 @@ fn finish(
     if config_stamp(target_home)? != pending.route_config {
         return Err("Codex destination route changed before history publication".into());
     }
-    let target = prepared.apply(
-        target_home,
-        &destination,
-        &imported,
-        &pending.provider,
-        &pending.model,
-        expected,
-        check,
-    )?;
+    let target = if native_completed {
+        store::set_route(target_home, &pending.id, &pending.provider, &pending.model)?
+    } else {
+        prepared.apply(
+            target_home,
+            &destination,
+            &imported,
+            &pending.provider,
+            &pending.model,
+            expected,
+            check,
+        )?
+    };
     check()?;
     // Archive/revert moves the current pointer. Retain the old artifact as an
     // immutable ancestor when its rollout id differs; otherwise remove the

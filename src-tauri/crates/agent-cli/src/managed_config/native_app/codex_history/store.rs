@@ -366,6 +366,37 @@ fn read_checkpoint(
 
 /// Inspect existing immutable ancestors without requiring a matching thread
 /// catalog row. A skipped ancestor must already project its frozen byte range.
+/// Bind an already listed, already projected target conversation to the
+/// destination route without touching its projections: the native app did the
+/// projection itself after our rename, so its rows are authoritative.
+pub(super) fn set_route(
+    home: &Path,
+    id: &str,
+    provider: &str,
+    model: &str,
+) -> Result<ThreadRecord, String> {
+    validate_id(id)?;
+    if provider.is_empty() || provider.len() > 256 || model.is_empty() || model.len() > 512 {
+        return Err("Invalid target Codex history route".into());
+    }
+    let mut connection = open(home, true, true)?;
+    let transaction = connection
+        .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+        .map_err(db_error)?;
+    validate_schema(&transaction, "main")?;
+    validate_schema(&transaction, "history")?;
+    transaction
+        .execute(
+            "UPDATE threads SET model_provider=?1, model=?2 WHERE id=?3",
+            rusqlite::params![provider, model, id],
+        )
+        .map_err(db_error)?;
+    let record = read_record(&transaction, id)?
+        .ok_or_else(|| "Codex history route target is missing".to_string())?;
+    transaction.commit().map_err(db_error)?;
+    Ok(record)
+}
+
 pub(super) fn checkpoints(
     home: &Path,
     rollout_ids: &[String],

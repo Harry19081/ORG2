@@ -1003,6 +1003,12 @@
     "marketApps": {
       "isolatedStorage": "Tus 50 conversaciones más recientes se sincronizan automáticamente. Si una conversación ya está abierta en Codex, cierra y vuelve a abrir Codex para recibir sus últimos mensajes. Los ajustes de la app y de la CLI se mantienen separados",
       "isolatedClaudeStorage": "Tus 50 conversaciones más recientes se sincronizan automáticamente cuando Claude Desktop y Claude Code se cierran",
+      "historySync": {
+        "active": "Sincronización del historial activa · {{shared}} conversaciones compartidas",
+        "attention": "Sincronización del historial activa · {{shared}} compartidas · {{conflicts}} requieren atención",
+        "paused": "Sincronización del historial en pausa: {{reason}}",
+        "idle": "Sincronización del historial inactiva"
+      },
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Cargando paquetes de ORG2 Market…",
       "loadFailed": "No se pudieron cargar los paquetes de ORG2 Market",

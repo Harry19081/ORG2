@@ -446,6 +446,17 @@ export const HarnessConnectionViewSchema = z.object({
   version: z.string().nullable().optional(),
   configurationIssue: z.string().nullable().optional(),
   desktopOptions: DesktopConnectionOptionsSchema.nullable().optional(),
+  historySync: z
+    .object({
+      state: z.enum(["idle", "active", "paused"]),
+      reason: z.string().nullable(),
+      nativeVersion: z.string().nullable(),
+      shared: z.number(),
+      conflicts: z.number(),
+      pending: z.number(),
+    })
+    .nullable()
+    .optional(),
   installed: z.boolean(),
   config: CliConfigManagedStatusSchema,
   choices: z.array(

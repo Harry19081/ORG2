@@ -26,21 +26,19 @@ const CODEX_ISOLATION_RELEASES: &[&str] = &["26.908.70816", "26.915.31945"];
 /// state-only lists, paginated history uses the four versioned projection tables,
 /// and settings events bind resume without rewriting immutable fork prefixes.
 #[cfg(target_os = "macos")]
-pub(super) async fn verify_codex_history() -> Result<(), String> {
+pub(super) async fn verify_codex_history() -> Result<String, String> {
     tokio::task::spawn_blocking(|| {
         let bundle = installed_bundle("codex")?;
         let info = plist::Value::from_file(bundle.join("Contents/Info.plist"))
             .map_err(|_| "Cannot inspect Codex history capability")?;
-        let version = info
-            .as_dictionary()
+        // Compatibility is decided by the data the release actually writes
+        // (schema and settings-event gates in the engine), not by this number;
+        // it is reported so a paused handoff names the release it saw.
+        info.as_dictionary()
             .and_then(|v| v.get("CFBundleShortVersionString"))
-            .and_then(plist::Value::as_string);
-        if version != Some("26.915.31945") {
-            return Err(
-                "This Codex release has not been verified for automatic shared history".into(),
-            );
-        }
-        Ok(())
+            .and_then(plist::Value::as_string)
+            .map(str::to_owned)
+            .ok_or_else(|| "Cannot read the Codex Desktop version".to_string())
     })
     .await
     .map_err(|_| "Codex history capability lookup failed")?

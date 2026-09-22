@@ -130,6 +130,23 @@ export default function AppConnectionPage({
     state.view?.configurationIssue ??
     state.view?.config.message ??
     null;
+  const historySync = target === "codex" ? state.view?.historySync : null;
+  const historySyncText = historySync
+    ? historySync.state === "paused"
+      ? t("harnessConnections.marketApps.historySync.paused", {
+          reason: historySync.reason ?? "",
+        })
+      : historySync.state === "active"
+        ? historySync.conflicts > 0
+          ? t("harnessConnections.marketApps.historySync.attention", {
+              shared: historySync.shared,
+              conflicts: historySync.conflicts,
+            })
+          : t("harnessConnections.marketApps.historySync.active", {
+              shared: historySync.shared,
+            })
+        : t("harnessConnections.marketApps.historySync.idle")
+    : null;
   const unavailable = Boolean(
     !state.view?.installed ||
     !state.view?.config.supported ||
@@ -311,6 +328,18 @@ export default function AppConnectionPage({
                     ? "harnessConnections.marketApps.isolatedClaudeStorage"
                     : "harnessConnections.marketApps.isolatedStorage"
                 )}
+              </span>
+            )}
+            {state.view?.config.nativeApp && historySyncText && (
+              <span
+                className={
+                  historySync?.state === "paused"
+                    ? "text-sm text-warning-6"
+                    : SECTION_DESCRIPTION_CLASSES
+                }
+                data-testid="codex-history-sync-status"
+              >
+                {historySyncText}
               </span>
             )}
             {issue && <span className="text-sm text-warning-6">{issue}</span>}

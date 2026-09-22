@@ -8,7 +8,7 @@ mod claude_history;
 #[cfg(all(feature = "market-connect", target_os = "macos"))]
 mod claude_history_writers;
 #[cfg(all(feature = "market-connect", target_os = "macos"))]
-mod codex_history;
+pub(crate) mod codex_history;
 #[cfg(feature = "market-connect")]
 mod configure_catalog;
 #[cfg(feature = "market-connect")]
@@ -42,6 +42,18 @@ pub(crate) fn register_source() -> Result<(), String> {
 fn history_serial() -> &'static tokio::sync::Mutex<()> {
     static SERIAL: std::sync::OnceLock<tokio::sync::Mutex<()>> = std::sync::OnceLock::new();
     SERIAL.get_or_init(Default::default)
+}
+
+/// Settings reads the automatic Codex history state through the connection view.
+pub(crate) fn codex_history_status() -> Option<codex_history::HistorySyncView> {
+    #[cfg(all(feature = "market-connect", target_os = "macos"))]
+    {
+        Some(codex_history::status())
+    }
+    #[cfg(not(all(feature = "market-connect", target_os = "macos")))]
+    {
+        None
+    }
 }
 
 pub(crate) fn stop_history_sync() {

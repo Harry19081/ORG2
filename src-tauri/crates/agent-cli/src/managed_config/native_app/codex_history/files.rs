@@ -157,6 +157,45 @@ pub(super) fn tail(path: &Path) -> Result<Value, String> {
     serde_json::from_slice(&content[offset..]).map_err(|_| "Invalid Codex rollout tail".into())
 }
 
+/// Complete `thread_settings_applied` records within the last `budget` bytes
+/// of a rollout, oldest first. A partial first line and any other record
+/// types are skipped; nothing here is trusted beyond being JSON.
+pub(super) fn settings_events_in_tail(path: &Path, budget: u64) -> Result<Vec<Value>, String> {
+    regular_path(path, false)?;
+    let mut file = File::open(path).map_err(|_| "Cannot open Codex rollout")?;
+    let len = file
+        .metadata()
+        .map_err(|_| "Cannot inspect Codex rollout")?
+        .len();
+    let start = len.saturating_sub(budget);
+    file.seek(SeekFrom::Start(start))
+        .map_err(|_| "Cannot seek Codex rollout")?;
+    let mut bytes = Vec::new();
+    file.take(budget)
+        .read_to_end(&mut bytes)
+        .map_err(|_| "Cannot read Codex rollout tail")?;
+    let mut events = Vec::new();
+    let mut lines = bytes.split(|b| *b == b'\n');
+    if start != 0 {
+        lines.next();
+    }
+    for line in lines {
+        if line.len() > MAX_RECORD || !line.contains(&b'"') {
+            continue;
+        }
+        if !line.windows(23).any(|w| w == b"thread_settings_applied") {
+            continue;
+        }
+        if let Ok(value) = serde_json::from_slice::<Value>(line) {
+            if value["type"] == "event_msg" && value["payload"]["type"] == "thread_settings_applied"
+            {
+                events.push(value);
+            }
+        }
+    }
+    Ok(events)
+}
+
 /// Interoperate with Codex's own cross-process lock protocol. Holding only
 /// ORG2's lock would not protect a native GUI with a loaded thread.
 pub(super) struct WriterLock {

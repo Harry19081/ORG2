@@ -89,6 +89,61 @@ struct Handle {
     service: Arc<Service>,
     task: tokio::task::JoinHandle<()>,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum HistorySyncState {
+    /// No owner, or the profile is not the managed Market connection.
+    Idle,
+    /// Observing and reconciling.
+    Active,
+    /// The native release or its data failed a compatibility gate; nothing is
+    /// written until the next configuration change or app start.
+    Paused,
+}
+
+/// What Settings shows for automatic Codex history. Derived from the last
+/// observer outcome, never from a timer.
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct HistorySyncView {
+    pub state: HistorySyncState,
+    pub reason: Option<String>,
+    pub native_version: Option<String>,
+    pub shared: usize,
+    pub conflicts: usize,
+    pub pending: usize,
+}
+
+fn status_slot() -> &'static Mutex<HistorySyncView> {
+    static VALUE: OnceLock<Mutex<HistorySyncView>> = OnceLock::new();
+    VALUE.get_or_init(|| {
+        Mutex::new(HistorySyncView {
+            state: HistorySyncState::Idle,
+            reason: None,
+            native_version: None,
+            shared: 0,
+            conflicts: 0,
+            pending: 0,
+        })
+    })
+}
+
+pub(crate) fn status() -> HistorySyncView {
+    status_slot()
+        .lock()
+        .unwrap_or_else(|v| v.into_inner())
+        .clone()
+}
+
+fn publish(update: impl FnOnce(&mut HistorySyncView)) {
+    let mut view = status_slot().lock().unwrap_or_else(|v| v.into_inner());
+    let before = view.clone();
+    update(&mut view);
+    if *view != before {
+        tracing::info!(state = ?view.state, reason = ?view.reason, shared = view.shared, conflicts = view.conflicts, pending = view.pending, "Codex automatic history state");
+    }
+}
 fn slot() -> &'static Mutex<Option<Handle>> {
     static VALUE: OnceLock<Mutex<Option<Handle>>> = OnceLock::new();
     VALUE.get_or_init(Default::default)
@@ -158,11 +213,19 @@ pub(super) fn stop() {
     if let Some(handle) = slot().lock().unwrap_or_else(|v| v.into_inner()).take() {
         handle.service.cancel.cancel();
     }
+    publish(|view| {
+        view.state = HistorySyncState::Idle;
+        view.reason = None;
+    });
 }
 pub(super) async fn before_open(lease: owner::Lease) -> Result<(), String> {
     if let Err(reason) = super::native_app_launch::verify_codex_history().await {
         lease.check()?;
         tracing::warn!(%reason, "Codex automatic history is unavailable for this native release");
+        publish(|view| {
+            view.state = HistorySyncState::Paused;
+            view.reason = Some(reason.clone());
+        });
         return Ok(());
     }
     ensure_started(lease.clone());
@@ -179,10 +242,19 @@ pub(super) async fn before_open(lease: owner::Lease) -> Result<(), String> {
         .lock()
         .unwrap_or_else(|v| v.into_inner()) = None;
     let result = match reconcile(service.clone(), None).await {
-        Ok(report) => report,
+        Ok(report) => {
+            publish(|view| record(view, &report));
+            report
+        }
         Err(reason) => {
             service.check()?;
             tracing::warn!(%reason, "Codex history preserved; native launch can continue");
+            if !transient(&reason) {
+                publish(|view| {
+                    view.state = HistorySyncState::Paused;
+                    view.reason = Some(reason.clone());
+                });
+            }
             return Ok(());
         }
     };
@@ -431,9 +503,27 @@ fn transient(error: &str) -> bool {
     error.ends_with("busy") || error.ends_with("already synchronizing")
 }
 
+fn record(view: &mut HistorySyncView, report: &codex_history::Report) {
+    view.state = HistorySyncState::Active;
+    view.reason = None;
+    view.shared = report.shared;
+    view.conflicts = report.conflicts;
+    view.pending = report.pending;
+}
+
 async fn run(service: Arc<Service>) {
     let result = async {
-        super::native_app_launch::verify_codex_history().await?;
+        let native_version = match super::native_app_launch::verify_codex_history().await {
+            Ok(version) => version,
+            Err(reason) => {
+                publish(|view| {
+                    view.state = HistorySyncState::Paused;
+                    view.reason = Some(reason.clone());
+                });
+                return Err(reason);
+            }
+        };
+        publish(|view| view.native_version = Some(native_version));
         let profile = service.lease.native_app("codex")?.ok_or("Missing Codex history profile")?;
         // The user's native home is observed only while this profile is the
         // managed Market connection. Restore/reconfigure can happen within one
@@ -459,6 +549,10 @@ async fn run(service: Arc<Service>) {
                 }
                 if !managed {
                     watcher = None;
+                    publish(|view| {
+                        view.state = HistorySyncState::Idle;
+                        view.reason = None;
+                    });
                 } else {
                     let resubscribed = watcher.is_none();
                     if resubscribed {
@@ -472,6 +566,7 @@ async fn run(service: Arc<Service>) {
                                 conflicts = report.conflicts;
                                 tracing::warn!(conflicts, "Codex history has preserved divergent or unavailable conversations");
                             }
+                            publish(|view| record(view, &report));
                             if report.more {
                                 service.dirty.lock().unwrap_or_else(|v| v.into_inner()).all();
                             }
@@ -479,7 +574,13 @@ async fn run(service: Arc<Service>) {
                         Err(error) if transient(&error) => {
                             service.dirty.lock().unwrap_or_else(|v| v.into_inner()).restore(taken);
                         }
-                        Err(error) => tracing::warn!(reason = %error, "Codex automatic history handoff paused until its next invalidation"),
+                        Err(error) => {
+                            tracing::warn!(reason = %error, "Codex automatic history handoff paused until its next invalidation");
+                            publish(|view| {
+                                view.state = HistorySyncState::Paused;
+                                view.reason = Some(error.clone());
+                            });
+                        }
                     }
                     // Register newly created native directories. Comparing the root
                     // set avoids replacing subscriptions for every token append.
