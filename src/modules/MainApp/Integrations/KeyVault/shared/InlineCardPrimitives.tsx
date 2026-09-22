@@ -30,6 +30,28 @@ export function InlineCardShell({
   );
 }
 
+/**
+ * Single-column list for a table's expanded row. Matches the scroll region of
+ * {@link InlineCardSplit} so a long list scrolls in place instead of
+ * stretching the table row. `wrapInCard` draws the card surface; leave it off
+ * where the list already sits inside a panel, so the two do not nest.
+ */
+export function InlineCardScrollList({
+  children,
+  wrapInCard = true,
+}: {
+  children: React.ReactNode;
+  wrapInCard?: boolean;
+}) {
+  const list = (
+    <div className="scrollbar-hide flex max-h-[360px] min-w-0 flex-col gap-0.5 overflow-y-auto overscroll-contain">
+      {children}
+    </div>
+  );
+  if (!wrapInCard) return list;
+  return <InlineInfoCard>{list}</InlineInfoCard>;
+}
+
 interface InlineCardTabsProps<TabKey extends string> {
   tabs: TabPillItem[];
   activeTab: TabKey;

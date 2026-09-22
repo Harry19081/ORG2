@@ -19,6 +19,7 @@ import {
 } from "@src/components/layout/blocks";
 import type { AvailableAgent } from "@src/config/cliAgents";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
+import { upsertSharedLocalKey } from "@src/hooks/keyVault/sharedLocalKeyStore";
 import {
   accountMatchesBrandFilter,
   buildBrandProviderFilterOptions,
@@ -33,9 +34,17 @@ import type { DetailMode } from "../../types";
 import MyAccountsTableSection from "../Accounts/Table/MyAccountsTableSection";
 import InlineCredentialImport from "../CliClients/CredentialImport/InlineCredentialImport";
 import ModelsTableSection from "../Models/Table/ModelsTableSection";
+import {
+  type DefaultVariantOverrides,
+  applyDefaultVariantOverrides,
+  defaultVariantOverridesSettled,
+} from "./defaultVariantOverrides";
 
 const ALL_FILTER = "all";
 const MODEL_SAVE_DEBOUNCE_MS = 120;
+// A variant pick is one click on a pill, slider or speed toggle. Bursts are
+// common (drag the slider, then flip Fast), so they coalesce into one write.
+const VARIANT_SAVE_DEBOUNCE_MS = 300;
 
 const KEY_TYPE_FILTER = {
   ALL: "all",
@@ -244,7 +253,7 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
     void Promise.all(
       [...queued.entries()].map(([accountId, enabledModels]) => {
         const account = accountById.get(accountId);
-        if (!account) return Promise.resolve();
+        if (!account) return Promise.resolve(undefined);
         return saveKey({
           id: account.id,
           agent_type: account.modelType,
@@ -253,11 +262,20 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
         });
       })
     )
-      .then(() => onRefresh?.())
+      // `saveKey` answers with the stored record, so publishing it is enough
+      // to settle the optimistic overlay. Re-listing every key would flip the
+      // page back to its loading state for a round trip that tells us nothing
+      // new.
+      .then((savedKeys) => {
+        for (const saved of savedKeys) {
+          if (saved) upsertSharedLocalKey(saved);
+        }
+      })
       .catch(() => {
         const empty = new Map<string, Set<string>>();
         optimisticModelEnabledByAccountRef.current = empty;
         setOptimisticModelEnabledByAccount(empty);
+        // The write failed, so the store is the only trustworthy source left.
         void onRefresh?.();
       });
   }, [accounts, onRefresh]);
@@ -350,25 +368,94 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
     [accounts, queueModelSave]
   );
 
+  const [optimisticDefaultVariants, setOptimisticDefaultVariants] = useState<
+    Map<string, DefaultVariantOverrides>
+  >(new Map());
+  const optimisticDefaultVariantsRef = useRef<
+    Map<string, DefaultVariantOverrides>
+  >(new Map());
+  const variantSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const variantSaveQueueRef = useRef<Set<string>>(new Set());
+
+  const flushVariantSaveQueue = useCallback(() => {
+    if (variantSaveTimerRef.current) {
+      clearTimeout(variantSaveTimerRef.current);
+      variantSaveTimerRef.current = null;
+    }
+
+    const queued = [...variantSaveQueueRef.current];
+    if (queued.length === 0) return;
+    variantSaveQueueRef.current = new Set();
+
+    const accountById = new Map(
+      accounts.map((account) => [account.id, account])
+    );
+    void Promise.all(
+      queued.map((accountId) => {
+        const account = accountById.get(accountId);
+        const overrides = optimisticDefaultVariantsRef.current.get(accountId);
+        if (!account || !overrides) return Promise.resolve(undefined);
+        return saveKey({
+          id: account.id,
+          agent_type: account.modelType,
+          default_variants: applyDefaultVariantOverrides(
+            account.defaultVariants,
+            overrides
+          ),
+        });
+      })
+    )
+      .then((savedKeys) => {
+        for (const saved of savedKeys) {
+          if (saved) upsertSharedLocalKey(saved);
+        }
+      })
+      .catch(() => {
+        const empty = new Map<string, DefaultVariantOverrides>();
+        optimisticDefaultVariantsRef.current = empty;
+        setOptimisticDefaultVariants(empty);
+        // The write failed, so the store is the only trustworthy source left.
+        void onRefresh?.();
+      });
+  }, [accounts, onRefresh]);
+
+  const flushVariantSaveQueueRef = useRef(flushVariantSaveQueue);
+  useEffect(() => {
+    flushVariantSaveQueueRef.current = flushVariantSaveQueue;
+  }, [flushVariantSaveQueue]);
+
+  useEffect(
+    () => () => {
+      if (variantSaveTimerRef.current) {
+        clearTimeout(variantSaveTimerRef.current);
+        variantSaveTimerRef.current = null;
+      }
+      flushVariantSaveQueueRef.current();
+    },
+    []
+  );
+
   const handleUpdateAccountDefaultVariant = useCallback(
     (accountId: string, baseModel: string, model: string) => {
-      const account = accounts.find((entry) => entry.id === accountId);
-      if (!account) return;
+      // Render the pick immediately; the write follows once the clicks stop.
+      const next = new Map(optimisticDefaultVariantsRef.current);
+      const forAccount = new Map(next.get(accountId) ?? []);
+      forAccount.set(baseModel, model);
+      next.set(accountId, forAccount);
+      optimisticDefaultVariantsRef.current = next;
+      setOptimisticDefaultVariants(next);
 
-      const nextDefaults = (account.defaultVariants ?? []).filter(
-        (variant) => variant.base_model !== baseModel
-      );
-      nextDefaults.push({ base_model: baseModel, model });
-
-      void saveKey({
-        id: account.id,
-        agent_type: account.modelType,
-        default_variants: nextDefaults,
-      })
-        .then(() => onRefresh?.())
-        .catch(() => onRefresh?.());
+      variantSaveQueueRef.current.add(accountId);
+      if (variantSaveTimerRef.current) {
+        clearTimeout(variantSaveTimerRef.current);
+      }
+      variantSaveTimerRef.current = setTimeout(() => {
+        flushVariantSaveQueueRef.current();
+      }, VARIANT_SAVE_DEBOUNCE_MS);
     },
-    [accounts, onRefresh]
+    []
   );
 
   const [optimisticToggles, setOptimisticToggles] = useState<
@@ -379,11 +466,15 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
   const modelAdjustedAccounts = useMemo(() => {
     const hasModelOptimistic = optimisticModelEnabledByAccount.size > 0;
     const hasAccountOptimistic = optimisticToggles.size > 0;
-    if (!hasModelOptimistic && !hasAccountOptimistic) return accounts;
+    const hasVariantOptimistic = optimisticDefaultVariants.size > 0;
+    if (!hasModelOptimistic && !hasAccountOptimistic && !hasVariantOptimistic) {
+      return accounts;
+    }
 
     return accounts.map((account) => {
       const optimisticModels = optimisticModelEnabledByAccount.get(account.id);
       const optimisticAccountEnabled = optimisticToggles.get(account.id);
+      const optimisticVariants = optimisticDefaultVariants.get(account.id);
       let nextAccount = account;
 
       if (optimisticModels) {
@@ -392,10 +483,24 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
       if (optimisticAccountEnabled !== undefined) {
         nextAccount = { ...nextAccount, enabled: optimisticAccountEnabled };
       }
+      if (optimisticVariants && optimisticVariants.size > 0) {
+        nextAccount = {
+          ...nextAccount,
+          defaultVariants: applyDefaultVariantOverrides(
+            account.defaultVariants,
+            optimisticVariants
+          ),
+        };
+      }
 
       return nextAccount;
     });
-  }, [accounts, optimisticModelEnabledByAccount, optimisticToggles]);
+  }, [
+    accounts,
+    optimisticDefaultVariants,
+    optimisticModelEnabledByAccount,
+    optimisticToggles,
+  ]);
 
   const filteredAdjustedAccounts = useMemo(() => {
     const adjustedById = new Map(
@@ -403,6 +508,27 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
     );
     return filtered.map((account) => adjustedById.get(account.id) ?? account);
   }, [filtered, modelAdjustedAccounts]);
+
+  useEffect(() => {
+    if (optimisticDefaultVariants.size === 0) return;
+    // Drop a pick once the stored key says the same thing, so the rendered
+    // account goes back to being the store's own record.
+    setOptimisticDefaultVariants((prev) => {
+      const next = new Map(prev);
+      for (const account of accounts) {
+        const overrides = next.get(account.id);
+        if (!overrides) continue;
+        if (
+          defaultVariantOverridesSettled(account.defaultVariants, overrides)
+        ) {
+          next.delete(account.id);
+        }
+      }
+      if (next.size === prev.size) return prev;
+      optimisticDefaultVariantsRef.current = next;
+      return next;
+    });
+  }, [accounts, optimisticDefaultVariants]);
 
   useEffect(() => {
     if (optimisticModelEnabledByAccount.size === 0) return;
@@ -445,7 +571,7 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
         agent_type: account.modelType,
         enabled: nowEnabled,
       })
-        .then(() => onRefresh?.())
+        .then((saved) => upsertSharedLocalKey(saved))
         .catch(() => {
           // Roll back the optimistic toggle to the original server value so
           // the switch does not stay permanently stuck in the wrong position.
@@ -457,7 +583,7 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
           pendingIds.current.delete(account.id);
         });
     },
-    [onRefresh]
+    []
   );
 
   const isAccountEnabled = useCallback(
