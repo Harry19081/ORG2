@@ -1143,7 +1143,7 @@
   },
   "development": {
     "updateAvailable": "Mise à jour disponible",
-    "updateAvailableDesc": "Afficher les indicateurs de mise à jour dans toute l’application avec la version 99.0.0 — les actions ouvrent uniquement l’aperçu",
+    "updateAvailableDesc": "Simuler la version 99.0.0 ; les actions ouvrent le dialogue",
     "illustrations": "Illustrations",
     "illustrationsDesc": "Comparez toutes les illustrations en clair et en sombre sans changer de thème",
     "emptyStates": "États vides",
@@ -1152,13 +1152,13 @@
     "mockPanelDone": "Terminé",
     "scenario": {
       "newUser": "Nouvel utilisateur",
-      "newUserDesc": "Afficher l'application comme après une installation neuve : aucune clé, aucun répertoire de travail, aucun historique de sessions",
+      "newUserDesc": "Installation neuve : aucune clé, aucun dossier, aucun historique",
       "noKeys": "Aucune clé",
-      "noKeysDesc": "Masquer tous les comptes et modèles enregistrés pour faire apparaître les invites de configuration de clé et les sélecteurs de modèle vides",
+      "noKeysDesc": "Masquer comptes et modèles pour voir les invites de clé",
       "noWorkingDirectories": "Aucun répertoire de travail",
-      "noWorkingDirectoriesDesc": "Masquer tous les dépôts et dossiers d'espace de travail pour faire apparaître les états vides « ouvrir un dossier »",
+      "noWorkingDirectoriesDesc": "Masquer dépôts et dossiers pour voir « ouvrir un dossier »",
       "noSessions": "Aucune session",
-      "noSessionsDesc": "Masquer l'historique des sessions pour faire apparaître les états vides de la barre latérale et du chat au premier lancement"
+      "noSessionsDesc": "Masquer l'historique pour voir les états de premier lancement"
     }
   },
   "managedUsage": {

@@ -1143,7 +1143,7 @@
   },
   "development": {
     "updateAvailable": "有可用更新",
-    "updateAvailableDesc": "在整个应用中显示版本 99.0.0 的更新提示 — 更新操作仅预览对话框",
+    "updateAvailableDesc": "全局伪装为 99.0.0 版本；更新操作仅预览对话框",
     "illustrations": "插画预览",
     "illustrationsDesc": "同时预览所有应用插画的浅色和深色效果，无需更改应用主题",
     "emptyStates": "空状态",
@@ -1152,13 +1152,13 @@
     "mockPanelDone": "完成",
     "scenario": {
       "newUser": "新用户",
-      "newUserDesc": "按全新安装的状态显示应用：没有密钥、没有工作目录、没有会话记录",
+      "newUserDesc": "全新安装：没有密钥、没有工作目录、没有会话记录",
       "noKeys": "无密钥",
-      "noKeysDesc": "隐藏所有已保存的账号和模型，以查看密钥设置提示和空的模型选择器",
+      "noKeysDesc": "隐藏已保存的账号和模型，以查看密钥设置提示",
       "noWorkingDirectories": "无工作目录",
-      "noWorkingDirectoriesDesc": "隐藏所有仓库和工作区文件夹，以查看「打开文件夹」空状态",
+      "noWorkingDirectoriesDesc": "隐藏仓库和工作区文件夹，以查看「打开文件夹」状态",
       "noSessions": "无会话",
-      "noSessionsDesc": "隐藏会话记录，以查看首次启动时的侧边栏和聊天空状态"
+      "noSessionsDesc": "隐藏会话记录，以查看首次启动的空状态"
     }
   },
   "managedUsage": {

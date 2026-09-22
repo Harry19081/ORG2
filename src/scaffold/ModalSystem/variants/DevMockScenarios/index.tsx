@@ -38,7 +38,12 @@ export const DevMockScenariosModal = () => {
   return (
     <Modal
       visible={open}
-      size="medium"
+      // Each row pairs a description with a switch. Below ~480px of row
+      // width SectionRow stacks the switch under the text and every
+      // description wraps; `large` floors the dialog at 600px and 700 is
+      // where the longest description clears the switch on one line.
+      size="large"
+      width={700}
       title={t("development.mockPanelTitle")}
       onClose={handleClose}
       // Reset is the footer's own action, not the dialog's cancel path —
@@ -66,7 +71,7 @@ export const DevMockScenariosModal = () => {
         />
       }
     >
-      <DevMockScenarioControls />
+      <DevMockScenarioControls compact />
     </Modal>
   );
 };

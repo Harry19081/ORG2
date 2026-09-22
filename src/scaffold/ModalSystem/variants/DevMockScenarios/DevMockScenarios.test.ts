@@ -60,6 +60,19 @@ describe("DevMockScenariosModal", () => {
     expect(document.querySelectorAll('[role="switch"]')).toHaveLength(5);
   });
 
+  it("renders wide and compact so a description fits on one line", () => {
+    const content = document.querySelector<HTMLElement>(
+      ".liquid-modal-content"
+    );
+
+    // Below SectionRow's @[480px] container query the switch stacks under
+    // the text and every description wraps, so the dialog must stay wide.
+    expect(content?.classList.contains("modal-large")).toBe(true);
+    expect(content?.style.width).toBe("700px");
+    // SectionRow's compact mode: 12px label, 11px description, py-1.5.
+    expect(document.querySelector(".text-\\[11px\\]")).not.toBeNull();
+  });
+
   it("turns every scenario off from the footer", () => {
     act(() => {
       store.set(devMockScenariosAtom, { id: "newUser", enabled: true });

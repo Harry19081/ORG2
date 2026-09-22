@@ -1143,7 +1143,7 @@
   },
   "development": {
     "updateAvailable": "Güncelleme mevcut",
-    "updateAvailableDesc": "Uygulama genelinde 99.0.0 sürümü için güncelleme göstergelerini göster — güncelleme işlemleri yalnızca önizlemeyi açar",
+    "updateAvailableDesc": "Sürümü 99.0.0 göster; eylemler yalnızca iletişim kutusunu açar",
     "illustrations": "Çizimler",
     "illustrationsDesc": "Temanızı değiştirmeden tüm uygulama çizimlerini açık ve koyu modda karşılaştırın",
     "emptyStates": "Boş durumlar",
@@ -1152,13 +1152,13 @@
     "mockPanelDone": "Bitti",
     "scenario": {
       "newUser": "Yeni kullanıcı",
-      "newUserDesc": "Uygulamayı yeni kurulmuş gibi göster: anahtar yok, çalışma dizini yok, oturum geçmişi yok",
+      "newUserDesc": "Yeni kurulum: anahtar, çalışma dizini ve geçmiş yok",
       "noKeys": "Anahtar yok",
-      "noKeysDesc": "Kayıtlı tüm hesapları ve modelleri gizleyerek anahtar kurulum uyarılarını ve boş model seçicileri göster",
+      "noKeysDesc": "Hesapları ve modelleri gizleyip anahtar uyarılarını göster",
       "noWorkingDirectories": "Çalışma dizini yok",
-      "noWorkingDirectoriesDesc": "Tüm depoları ve çalışma alanı klasörlerini gizleyerek “klasör aç” boş durumlarını göster",
+      "noWorkingDirectoriesDesc": "Depoları ve klasörleri gizleyip “klasör aç” durumunu göster",
       "noSessions": "Oturum yok",
-      "noSessionsDesc": "Oturum geçmişini gizleyerek ilk açılıştaki kenar çubuğu ve sohbet boş durumlarını göster"
+      "noSessionsDesc": "Geçmişi gizleyip ilk açılış boş durumlarını göster"
     }
   },
   "managedUsage": {

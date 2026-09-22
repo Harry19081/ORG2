@@ -1143,7 +1143,7 @@
   },
   "development": {
     "updateAvailable": "Update available",
-    "updateAvailableDesc": "Show update indicators across the app using version 99.0.0 — update actions only preview the dialog",
+    "updateAvailableDesc": "Fake version 99.0.0 app-wide; update actions only preview the dialog",
     "illustrations": "Illustrations",
     "illustrationsDesc": "Compare all app illustrations in light and dark without changing your theme",
     "emptyStates": "Empty states",
@@ -1152,13 +1152,13 @@
     "mockPanelDone": "Done",
     "scenario": {
       "newUser": "New user",
-      "newUserDesc": "Show the app exactly as a fresh install: no keys, no working directory, no session history",
+      "newUserDesc": "Fresh install: no keys, no working directory, no session history",
       "noKeys": "No keys",
-      "noKeysDesc": "Hide every stored account and model so key-setup prompts and empty model pickers appear",
+      "noKeysDesc": "Hide stored accounts and models to reach key-setup prompts",
       "noWorkingDirectories": "No working directories",
-      "noWorkingDirectoriesDesc": "Hide every repo and workspace folder so the “open a folder” empty states appear",
+      "noWorkingDirectoriesDesc": "Hide repos and workspace folders to reach “open a folder” states",
       "noSessions": "No sessions",
-      "noSessionsDesc": "Hide session history so the first-launch sidebar and chat empty states appear"
+      "noSessionsDesc": "Hide session history to reach first-launch sidebar and chat states"
     }
   },
   "managedUsage": {

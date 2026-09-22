@@ -1143,7 +1143,7 @@
   },
   "development": {
     "updateAvailable": "アップデートあり",
-    "updateAvailableDesc": "バージョン 99.0.0 の更新表示をアプリ全体に表示 — 更新操作はダイアログのプレビューのみ",
+    "updateAvailableDesc": "全体をバージョン 99.0.0 に偽装。操作はダイアログ確認のみ",
     "illustrations": "イラスト",
     "illustrationsDesc": "テーマを変更せずに、すべてのイラストをライトとダークで比較",
     "emptyStates": "空の状態",
@@ -1152,13 +1152,13 @@
     "mockPanelDone": "完了",
     "scenario": {
       "newUser": "新規ユーザー",
-      "newUserDesc": "新規インストール直後の状態で表示します：キーなし、作業ディレクトリなし、セッション履歴なし",
+      "newUserDesc": "新規インストール相当：キーも作業ディレクトリも履歴もなし",
       "noKeys": "キーなし",
-      "noKeysDesc": "保存済みのアカウントとモデルをすべて隠し、キー設定の案内と空のモデルピッカーを表示します",
+      "noKeysDesc": "保存済みのアカウントとモデルを隠し、キー設定の案内を表示",
       "noWorkingDirectories": "作業ディレクトリなし",
-      "noWorkingDirectoriesDesc": "リポジトリとワークスペースフォルダーをすべて隠し、「フォルダーを開く」の空状態を表示します",
+      "noWorkingDirectoriesDesc": "リポジトリとフォルダーを隠し、「フォルダーを開く」を表示",
       "noSessions": "セッションなし",
-      "noSessionsDesc": "セッション履歴を隠し、初回起動時のサイドバーとチャットの空状態を表示します"
+      "noSessionsDesc": "セッション履歴を隠し、初回起動の空状態を表示"
     }
   },
   "managedUsage": {

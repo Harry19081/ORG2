@@ -1143,7 +1143,7 @@
   },
   "development": {
     "updateAvailable": "Actualización disponible",
-    "updateAvailableDesc": "Mostrar indicadores de actualización en toda la aplicación con la versión 99.0.0 — las acciones solo abren la vista previa",
+    "updateAvailableDesc": "Simular la versión 99.0.0; las acciones solo abren el diálogo",
     "illustrations": "Ilustraciones",
     "illustrationsDesc": "Compara todas las ilustraciones en claro y oscuro sin cambiar el tema",
     "emptyStates": "Estados vacíos",
@@ -1152,13 +1152,13 @@
     "mockPanelDone": "Listo",
     "scenario": {
       "newUser": "Usuario nuevo",
-      "newUserDesc": "Mostrar la aplicación tal como tras una instalación nueva: sin claves, sin directorio de trabajo, sin historial de sesiones",
+      "newUserDesc": "Instalación nueva: sin claves, sin directorio, sin historial",
       "noKeys": "Sin claves",
-      "noKeysDesc": "Ocultar todas las cuentas y modelos guardados para que aparezcan los avisos de configuración de clave y los selectores de modelo vacíos",
+      "noKeysDesc": "Ocultar cuentas y modelos para ver los avisos de clave",
       "noWorkingDirectories": "Sin directorios de trabajo",
-      "noWorkingDirectoriesDesc": "Ocultar todos los repositorios y carpetas del espacio de trabajo para que aparezcan los estados vacíos de «abrir una carpeta»",
+      "noWorkingDirectoriesDesc": "Ocultar repos y carpetas para ver «abrir una carpeta»",
       "noSessions": "Sin sesiones",
-      "noSessionsDesc": "Ocultar el historial de sesiones para que aparezcan los estados vacíos de la barra lateral y el chat en el primer inicio"
+      "noSessionsDesc": "Ocultar el historial para ver los estados de primer inicio"
     }
   },
   "managedUsage": {

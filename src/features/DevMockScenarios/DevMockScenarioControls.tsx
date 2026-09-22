@@ -23,13 +23,23 @@ const IMPLIED_BY_NEW_USER: ReadonlySet<DevMockScenarioId> = new Set(
   NEW_USER_IMPLIED_SCENARIO_IDS
 );
 
-function UpdateAvailableRow() {
+export interface DevMockScenarioControlsProps {
+  /**
+   * Tighten the rows to 12px labels and 11px descriptions. The modal uses it
+   * so a description stays on one line; the Settings page keeps the default
+   * density it shares with every other section.
+   */
+  compact?: boolean;
+}
+
+function UpdateAvailableRow({ compact }: DevMockScenarioControlsProps) {
   const { t } = useTranslation("settings");
   const [enabled, setEnabled] = useAtom(mockAppUpdateEnabledAtom);
 
   return (
     <SectionContainer>
       <SectionRow
+        compact={compact}
         label={t("development.updateAvailable")}
         description={t("development.updateAvailableDesc")}
       >
@@ -43,7 +53,7 @@ function UpdateAvailableRow() {
   );
 }
 
-function EmptyStateScenarioRows() {
+function EmptyStateScenarioRows({ compact }: DevMockScenarioControlsProps) {
   const { t } = useTranslation("settings");
   const [selection, setScenario] = useAtom(devMockScenariosAtom);
   const active = useAtomValue(activeDevMockScenariosAtom);
@@ -59,6 +69,7 @@ function EmptyStateScenarioRows() {
         return (
           <SectionRow
             key={id}
+            compact={compact}
             indent={implied}
             label={label}
             description={t(`development.scenario.${id}Desc`)}
@@ -76,11 +87,13 @@ function EmptyStateScenarioRows() {
   );
 }
 
-export default function DevMockScenarioControls() {
+export default function DevMockScenarioControls({
+  compact,
+}: DevMockScenarioControlsProps = {}) {
   return (
     <>
-      <UpdateAvailableRow />
-      <EmptyStateScenarioRows />
+      <UpdateAvailableRow compact={compact} />
+      <EmptyStateScenarioRows compact={compact} />
     </>
   );
 }
