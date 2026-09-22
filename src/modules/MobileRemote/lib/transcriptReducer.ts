@@ -22,6 +22,8 @@ export interface TranscriptItem {
   toolCanonical?: string;
   toolStatus?: string;
   toolSummary?: string;
+  /** Bounded args.title; presentation decides whether it describes the call. */
+  toolArgumentTitle?: string;
   toolData?: MobileToolData;
   toolDataTruncated?: boolean;
   toolFilePath?: string;
@@ -51,6 +53,7 @@ export interface SnapshotUpsertEvent {
   args?: Record<string, unknown>;
   result?: Record<string, unknown>;
   toolSummary?: string;
+  toolArgumentTitle?: string;
   toolData?: MobileToolData;
   toolDataTruncated?: boolean;
   filePath?: string;
@@ -209,6 +212,7 @@ export function reduceTranscriptFromUpserts(
         toolCanonical: event.uiCanonical,
         toolStatus: event.displayStatus,
         toolSummary: event.toolSummary,
+        toolArgumentTitle: stringField(event.toolArgumentTitle) || undefined,
         toolData: event.toolData,
         toolDataTruncated: event.toolDataTruncated,
         toolFilePath: event.filePath,

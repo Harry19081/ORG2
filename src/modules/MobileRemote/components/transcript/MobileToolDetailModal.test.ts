@@ -71,6 +71,21 @@ describe("Mobile tool fullscreen preview", () => {
     return trigger;
   }
 
+  it("uses the projected JS call title for the detail dialog's accessible name", async () => {
+    await open({
+      id: "js-detail",
+      kind: "tool",
+      text: "js",
+      toolName: "js",
+      toolArgumentTitle: "Inspect window",
+      toolSummary: "Inspect window",
+      toolData: { kind: "unknown" },
+    });
+    expect(
+      document.querySelector('[role="dialog"]')?.getAttribute("aria-label")
+    ).toBe("Inspect window");
+  });
+
   it("opens an edge-to-edge named dialog and Escape restores the mounted conversation", async () => {
     const trigger = await open();
     expect(

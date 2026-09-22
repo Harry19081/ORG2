@@ -31,6 +31,80 @@ function renderFallbackEvent(
 }
 
 describe("FallbackAdapter generic tool rendering", () => {
+  it.each(["js", "cua_repl.js", "mcp__cua_repl.js", "mcp__cua_repl__js"])(
+    "uses the call title for %s in the collapsed header",
+    (functionName) => {
+      const markup = renderToStaticMarkup(
+        createElement(RecipeRenderer, {
+          event_id: "event-cua-title",
+          functionName,
+          uiCanonical: "tool_call",
+          action_type: "tool_call",
+          args: {
+            __orgiiSourceEventId: "source-cua-title",
+            code: "await app.getAXStateAndScreenshot();",
+            title: "  确认闪连当前模式和节点  ",
+          },
+          result: { observation: "Window details" },
+          status: "completed",
+        })
+      );
+
+      expect(markup).toContain(">确认闪连当前模式和节点</");
+      expect(markup).not.toContain(">Js</");
+      expect(markup).not.toContain("await app.getAXStateAndScreenshot()");
+    }
+  );
+
+  it.each(["running", "failed", "completed"] as const)(
+    "keeps the JS call title when %s",
+    (status) => {
+      const markup = renderToStaticMarkup(
+        createElement(RecipeRenderer, {
+          event_id: "event-cua-state",
+          functionName: "js",
+          action_type: "tool_call",
+          args: { title: "Inspect window", code: "await app.getState()" },
+          status,
+        })
+      );
+
+      expect(markup).toContain(">Inspect window</");
+    }
+  );
+
+  it.each([undefined, "", "   ", 42, { text: "Invalid title" }])(
+    "falls back to the tool name for an unusable JS title: %j",
+    (title) => {
+      const markup = renderToStaticMarkup(
+        createElement(RecipeRenderer, {
+          event_id: "event-cua-fallback",
+          functionName: "js",
+          action_type: "tool_call",
+          args: { title },
+          status: "completed",
+        })
+      );
+
+      expect(markup).toContain(">Js</");
+    }
+  );
+
+  it("does not use other tools' domain title as the header", () => {
+    const markup = renderToStaticMarkup(
+      createElement(RecipeRenderer, {
+        event_id: "event-domain-title",
+        functionName: "create_document",
+        action_type: "tool_call",
+        args: { title: "Document title" },
+        status: "completed",
+      })
+    );
+
+    expect(markup).toContain(">Create Document</");
+    expect(markup).not.toContain("Document title");
+  });
+
   it("collapses uncategorized events by default", () => {
     const markup = renderFallbackEvent({ observation: "output details" });
 

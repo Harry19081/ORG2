@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { formatToolName } from "@src/util/ui/rendering/formatToolName";
+import { getToolCallTitle } from "@src/util/ui/rendering/toolCallTitle";
 
 import type { TranscriptItem } from "../../lib/transcriptReducer";
 import { mobileFileTargets } from "./mobileFileTool";
@@ -23,10 +24,16 @@ export function useMobileToolPresentation(item: TranscriptItem) {
   const lifecycle = normalizeMobileToolLifecycle(item.toolStatus);
   const labelKey = toolLabelKey(item);
   const rawName = resolveMobileToolIconName(item);
-  const title = labelKey
-    ? t(`transcript.tools.labels.${labelKey}`)
-    : formatToolName(rawName);
-  const summary = mobileToolSummary(item);
+  const callTitle = getToolCallTitle(item.toolName || rawName, {
+    title: item.toolArgumentTitle,
+  });
+  const title =
+    callTitle ||
+    (labelKey
+      ? t(`transcript.tools.labels.${labelKey}`)
+      : formatToolName(rawName));
+  const toolSummary = mobileToolSummary(item);
+  const summary = callTitle === toolSummary ? "" : toolSummary;
   const detailSummary = mobileToolDetailSummary(item);
   const output = outputFromToolData(item.toolData);
   const shellDetail = mobileShellDetail(item);
@@ -48,6 +55,7 @@ export function useMobileToolPresentation(item: TranscriptItem) {
     rawName,
     action: stringValue(record(item.toolData)?.action) || undefined,
     title,
+    callTitle,
     summary,
     detailSummary,
     output,
