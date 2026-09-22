@@ -41,6 +41,7 @@ export function MobileToolCall({
     lifecycle,
     rawName,
     title,
+    callTitle,
     summary,
     hasDetails,
     statusLabel,
@@ -103,6 +104,8 @@ export function MobileToolCall({
         />
         <EventBlockHeaderTitle
           isLoading={isLoading}
+          truncate={Boolean(callTitle)}
+          title={callTitle}
           className={isFailed ? "text-text-3" : undefined}
         >
           {title}

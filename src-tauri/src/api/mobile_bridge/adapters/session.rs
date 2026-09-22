@@ -1342,6 +1342,18 @@ fn attach_mobile_tool_projection(
     mobile_event["toolData"] = tool_data;
     mobile_event["toolDataTruncated"] = Value::Bool(tool_data_truncated);
 
+    // Preserve the argument's meaning separately from the mixed-purpose
+    // summary. Clients decide whether this tool uses title as a call label.
+    if let Some(title) = args
+        .and_then(|args| args.get("title"))
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|title| !title.is_empty())
+    {
+        mobile_event["toolArgumentTitle"] =
+            Value::String(truncate_mobile_text(title, MAX_MOBILE_TOOL_SUMMARY_BYTES));
+    }
+
     let summary = mobile_tool_summary(
         file_path,
         command,
@@ -2855,6 +2867,56 @@ mod tests {
             .collect();
         eprintln!("Authoritative round image counts: {counts:?}");
         assert!(counts.iter().any(|count| *count > 0));
+    }
+
+    #[test]
+    fn mobile_tool_title_projection_preserves_argument_semantics_in_both_entry_points() {
+        for status in ["running", "completed", "failed"] {
+            let event = json!({
+                "id": "js-title", "sessionId": "session", "createdAt": "2026-09-22T00:00:00Z",
+                "functionName": "js", "uiCanonical": "tool_call", "actionType": "tool_call",
+                "args": {"title": "  Inspect window  ", "url": "https://example.com", "code": "private code"},
+                "result": {}, "source": "assistant", "displayText": "",
+                "displayStatus": status, "displayVariant": "tool_call", "activityStatus": "agent"
+            });
+            let typed: SessionEvent = serde_json::from_value(event.clone()).unwrap();
+            let (live, _) = mobile_event_from_wire(&event).unwrap();
+            let (history, _) = mobile_event_from_session(&typed).unwrap();
+            for projected in [live, history] {
+                // A summary may contain a URL instead of title. They must stay separate.
+                assert_eq!(projected["toolArgumentTitle"], "Inspect window");
+                assert_eq!(projected["toolSummary"], "https://example.com");
+                let wire = serde_json::to_string(&projected).unwrap();
+                assert!(!wire.contains("private code"));
+                assert!(projected.get("args").is_none());
+            }
+        }
+    }
+
+    #[test]
+    fn mobile_tool_title_projection_omits_invalid_titles_and_bounds_utf8() {
+        for title in [
+            Value::Null,
+            json!(""),
+            json!("   "),
+            json!(42),
+            json!({"text": "bad"}),
+            json!("界".repeat(1_000)),
+        ] {
+            let event = json!({
+                "id": "title-bounds", "functionName": "js", "actionType": "tool_call",
+                "source": "assistant", "displayVariant": "tool_call",
+                "args": {"title": title},
+            });
+            let (projected, _) = mobile_event_from_wire(&event).unwrap();
+            if title.as_str().is_some_and(|value| !value.trim().is_empty()) {
+                let value = projected["toolArgumentTitle"].as_str().unwrap();
+                assert!(value.len() <= MAX_MOBILE_TOOL_SUMMARY_BYTES + "\n…".len());
+                assert!(value.ends_with('…'));
+            } else {
+                assert!(projected.get("toolArgumentTitle").is_none());
+            }
+        }
     }
 
     #[test]

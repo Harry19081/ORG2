@@ -23,6 +23,7 @@ import {
 } from "@src/icons";
 import { formatToolArg } from "@src/util/ui/rendering/formatToolName";
 import { getToolDisplayLabelFromRegistry } from "@src/util/ui/rendering/registryToolLabel";
+import { getToolCallTitle } from "@src/util/ui/rendering/toolCallTitle";
 
 import { PrimarySidebarLayoutWithSections } from "../../shared";
 import type { PrimarySidebarTab } from "../../shared/PrimarySidebarLayout/PrimarySidebarLayoutWithSections";
@@ -244,6 +245,7 @@ const FileSidebarComponent: React.FC<FileSidebarProps> = ({
   const toolItems: FileTreeInput[] = useMemo(
     () =>
       toolOperations.map((op) => {
+        const callTitle = getToolCallTitle(op.toolName, op.event?.args);
         const label = getToolDisplayLabelFromRegistry(
           resolveToolName(op.toolName)
         );
@@ -254,7 +256,7 @@ const FileSidebarComponent: React.FC<FileSidebarProps> = ({
         return {
           id: op.eventId,
           filePath: encodeURIComponent(op.eventId),
-          fileName: arg ? `${label} · ${arg}` : label,
+          fileName: callTitle || (arg ? `${label} · ${arg}` : label),
           icon: sidebarToolIcon(op.toolName),
         };
       }),

@@ -9,6 +9,10 @@ import { _resetToolRegistry } from "@src/engines/SessionCore/rendering/registry/
 import { BookOpen02Icon, Search01Icon, Wrench01Icon } from "@src/icons";
 
 import type { TranscriptItem } from "../../lib/transcriptReducer";
+import {
+  createInitialTranscriptState,
+  reduceTranscriptFromUpserts,
+} from "../../lib/transcriptReducer";
 import { MobileToolCall } from "./MobileToolCall";
 import {
   mobileToolSummary,
@@ -63,6 +67,68 @@ describe("resolveMobileToolIconName", () => {
 });
 
 describe("MobileToolCall", () => {
+  it.each(["running", "completed", "failed"])(
+    "promotes JS title without repeating it when %s",
+    (status) => {
+      const title = "确认闪连当前模式和节点";
+      const state = reduceTranscriptFromUpserts(
+        createInitialTranscriptState(),
+        [
+          {
+            id: "js-title",
+            functionName: "js",
+            uiCanonical: "tool_call",
+            actionType: "tool_call",
+            displayStatus: status,
+            toolArgumentTitle: title,
+            toolSummary: title,
+            toolData: { kind: "unknown" },
+          },
+        ]
+      );
+      const markup = renderToStaticMarkup(
+        React.createElement(MobileToolCall, { item: state.items[0] })
+      );
+      expect(markup).toContain(`title="${title}"`);
+      expect(markup).toContain(`>${title}</span>`);
+      expect(markup).not.toContain(">Js</span>");
+      expect(markup.split(`>${title}</span>`)).toHaveLength(2);
+      expect(markup).toContain("min-w-0 flex-initial truncate");
+    }
+  );
+
+  it("retains old-server summaries without assuming they are call titles", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(MobileToolCall, {
+        item: {
+          id: "legacy-js",
+          kind: "tool",
+          text: "js",
+          toolName: "js",
+          toolSummary: "https://example.com",
+        },
+      })
+    );
+    expect(markup).toContain(">Js</span>");
+    expect(markup).toContain("https://example.com");
+  });
+
+  it("does not promote a business title from the same wire field", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(MobileToolCall, {
+        item: {
+          id: "document",
+          kind: "tool",
+          text: "create_document",
+          toolName: "create_document",
+          toolArgumentTitle: "Report",
+        },
+      })
+    );
+    expect(markup).toContain(">Create Document</span>");
+    expect(markup).not.toContain(">Report</span>");
+  });
+
   it("keeps tool target and current status in its accessible name across updates", async () => {
     const host = document.createElement("div");
     document.body.append(host);
