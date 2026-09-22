@@ -125,7 +125,7 @@ export const NavigationMenuParentRow = React.forwardRef<
         tabIndex={item.disabled ? -1 : 0}
         aria-expanded={isOpen}
         aria-disabled={item.disabled || undefined}
-        className={`group/parent flex h-7 items-center ${
+        className={`group/parent flex h-7 items-center data-[sidebar-menu-open=true]:bg-sidebar-selected ${
           item.disclosureFollowsLabel ? "justify-start" : "justify-between"
         } rounded-lg transition-colors duration-150 ${
           isChild ? "pr-2 pl-5" : "px-2"

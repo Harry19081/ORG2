@@ -16,15 +16,20 @@ import type {
 import { toFrontendSession } from "@src/api/tauri/session";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
+import { ArrowDown01Icon, ArrowUp01Icon, FolderClosedIcon } from "@src/icons";
+import {
+  Delete02Icon,
+  FolderAddIcon,
+  FolderOutputIcon,
+  PencilEdit02Icon,
+} from "@src/icons";
 import { MoreHorizontalIcon } from "@src/icons";
 import Modal from "@src/scaffold/ModalSystem";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
+import { popupSidebarMenu } from "@src/scaffold/NavigationSidebar/menus/SidebarMenu";
+import { type SidebarMenuItem } from "@src/scaffold/NavigationSidebar/menus/types";
 import { sessionsAtom, upsertSession } from "@src/store/session";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
-import {
-  type NativeMenuItemOptions,
-  popupNativeMenu,
-} from "@src/util/platform/tauri/nativeMenuPopup";
 
 import { sectionGroupId } from "./projection";
 
@@ -269,14 +274,16 @@ export function useSidebarSections(
     []
   );
   const menuForSession = useCallback(
-    (sessionId: string): NativeMenuItemOptions[] =>
+    (sessionId: string): SidebarMenuItem[] =>
       enabled
         ? [
             {
               text: t("sidebar.sections.section"),
+              icon: FolderOutputIcon,
               items: [
                 ...snapshot.sections.map((section) => ({
                   text: section.name,
+                  icon: FolderClosedIcon,
                   checked: membership.get(sessionId) === section.id,
                   action: () => {
                     void mutate({
@@ -288,6 +295,7 @@ export function useSidebarSections(
                 })),
                 {
                   text: t("sidebar.sections.remove"),
+                  icon: Delete02Icon,
                   enabled: membership.has(sessionId),
                   action: () => {
                     void mutate({
@@ -300,6 +308,7 @@ export function useSidebarSections(
                 { item: "Separator" as const },
                 {
                   text: t("sidebar.sections.create"),
+                  icon: FolderAddIcon,
                   action: () => openCreate(sessionId),
                 },
               ],
@@ -320,12 +329,13 @@ export function useSidebarSections(
             {
               icon: MoreHorizontalIcon,
               label: t("sidebar.sections.manage"),
-              onClick: () => {
-                void popupNativeMenu({
+              onClick: (event) => {
+                void popupSidebarMenu(event, {
                   source: "sidebar-section",
                   buildItems: () => [
                     {
                       text: t("sidebar.sections.rename"),
+                      icon: PencilEdit02Icon,
                       action: () =>
                         setDialog({
                           id: section.id,
@@ -334,6 +344,7 @@ export function useSidebarSections(
                         }),
                     },
                     ...([-1, 1] as const).map((direction) => ({
+                      icon: direction < 0 ? ArrowUp01Icon : ArrowDown01Icon,
                       text:
                         direction < 0
                           ? t("sidebar.sections.up")
@@ -353,6 +364,7 @@ export function useSidebarSections(
                     { item: "Separator" },
                     {
                       text: t("sidebar.sections.delete"),
+                      icon: Delete02Icon,
                       action: () => {
                         void mutate({ kind: "delete", id: section.id }).catch(
                           report

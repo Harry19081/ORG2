@@ -123,6 +123,10 @@ export const DROPDOWN_ITEM = {
   gap: 8,
   gapClass: "gap-2",
 
+  /** Minimum space between a settings-row label and its trailing control. */
+  controlGap: 24,
+  controlGapClass: "gap-6",
+
   /** Icon size */
   iconSize: 13,
   iconSizeClass: "h-[13px] w-[13px]",
@@ -304,6 +308,12 @@ export const DROPDOWN_CLASSES = {
     "text-text-1",
   ].join(" "),
 
+  /** Destructive actions retain semantic color across pointer and keyboard states. */
+  itemDanger: "text-danger-6!",
+  itemDangerHover: "hover:bg-danger-1! focus-visible:bg-danger-1!",
+  itemDangerActive: "bg-danger-1!",
+  itemDangerIcon: "text-danger-6",
+
   /** Item hover state */
   itemHover: DROPDOWN_ITEM.hoverBgClass,
 
@@ -397,7 +407,7 @@ export const DROPDOWN_CLASSES = {
     "justify-between",
     "whitespace-nowrap",
     "text-left",
-    DROPDOWN_ITEM.gapClass,
+    DROPDOWN_ITEM.controlGapClass,
     DROPDOWN_ITEM.paddingXClass,
     DROPDOWN_ITEM.heightClass,
     DROPDOWN_ITEM.minHeightClass,

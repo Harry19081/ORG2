@@ -47,8 +47,8 @@ vi.mock("@src/components/Button", () => ({ default: () => null }));
 vi.mock("@src/components/Input", () => ({ default: () => null }));
 vi.mock("@src/scaffold/ModalSystem", () => ({ default: () => null }));
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: mocks.t }) }));
-vi.mock("@src/util/platform/tauri/nativeMenuPopup", () => ({
-  popupNativeMenu: vi.fn(),
+vi.mock("@src/scaffold/NavigationSidebar/menus/SidebarMenu", () => ({
+  popupSidebarMenu: vi.fn(),
 }));
 
 (

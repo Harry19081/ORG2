@@ -38,11 +38,11 @@ export function NavigationMenuRowAccessorySlot({
   const persistentHoverClasses = !hasHoverReplacement
     ? ""
     : parentHoverGroup
-      ? "group-hover/parent:pointer-events-none group-focus-within/parent:pointer-events-none group-hover/parent:opacity-0 group-focus-within/parent:opacity-0"
-      : "group-hover:pointer-events-none group-focus-within:pointer-events-none group-hover:opacity-0 group-focus-within:opacity-0";
+      ? "group-data-[sidebar-menu-open=true]/parent:pointer-events-none group-data-[sidebar-menu-open=true]/parent:opacity-0 group-hover/parent:pointer-events-none group-focus-within/parent:pointer-events-none group-hover/parent:opacity-0 group-focus-within/parent:opacity-0"
+      : "group-data-[sidebar-menu-open=true]:pointer-events-none group-data-[sidebar-menu-open=true]:opacity-0 group-hover:pointer-events-none group-focus-within:pointer-events-none group-hover:opacity-0 group-focus-within:opacity-0";
   const revealedHoverClasses = parentHoverGroup
-    ? "group-hover/parent:pointer-events-auto group-focus-within/parent:pointer-events-auto group-hover/parent:max-w-44 group-focus-within/parent:max-w-44 group-hover/parent:opacity-100 group-focus-within/parent:opacity-100"
-    : "group-hover:pointer-events-auto group-focus-within:pointer-events-auto group-hover:max-w-44 group-focus-within:max-w-44 group-hover:opacity-100 group-focus-within:opacity-100";
+    ? "group-data-[sidebar-menu-open=true]/parent:pointer-events-auto group-data-[sidebar-menu-open=true]/parent:max-w-44 group-data-[sidebar-menu-open=true]/parent:opacity-100 group-hover/parent:pointer-events-auto group-focus-within/parent:pointer-events-auto group-hover/parent:max-w-44 group-focus-within/parent:max-w-44 group-hover/parent:opacity-100 group-focus-within/parent:opacity-100"
+    : "group-data-[sidebar-menu-open=true]:pointer-events-auto group-data-[sidebar-menu-open=true]:max-w-44 group-data-[sidebar-menu-open=true]:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto group-hover:max-w-44 group-focus-within:max-w-44 group-hover:opacity-100 group-focus-within:opacity-100";
   // A 20px action in the 28px row has 4px of visible vertical inset. Pull the
   // action layer 4px into the row's px-2 padding so its right inset matches.
   const actionInsetClass = actionContent ? "-mr-1" : "";

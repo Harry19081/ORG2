@@ -36,9 +36,12 @@ export function NavigationMenuRowActionButton({
       iconOnly
       aria-label={label}
       aria-pressed={active}
+      data-sidebar-menu-trigger={
+        RowActionIcon === MoreHorizontalIcon || undefined
+      }
       title={label}
       data-testid={dataTestId}
-      className="focus:outline-none focus-visible:bg-sidebar-selected! enabled:hover:bg-sidebar-selected! aria-pressed:bg-sidebar-selected!"
+      className="focus:outline-none focus-visible:bg-sidebar-selected! enabled:hover:bg-sidebar-selected! aria-pressed:bg-sidebar-selected! data-[sidebar-menu-open=true]:bg-sidebar-selected!"
       style={{ borderRadius: ROW_ACTION_RADIUS_PX }}
       onClick={(event) => {
         event.preventDefault();

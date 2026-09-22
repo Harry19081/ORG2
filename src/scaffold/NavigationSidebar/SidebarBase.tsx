@@ -29,13 +29,16 @@ import { useCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollap
 import { useSidebarState } from "@src/hooks/ui/sidebar/useSidebarState";
 import { Add01Icon } from "@src/icons";
 import { SIDEBAR_CHROME_BUTTON_HOVER_CLASS } from "@src/scaffold/NavigationSidebar/components/SidebarChromeIconButton";
+import {
+  SidebarMenuHost,
+  popupSidebarMenu,
+} from "@src/scaffold/NavigationSidebar/menus/SidebarMenu";
 import { VerticalResizeHandle } from "@src/scaffold/Resize";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import {
   DEFAULT_SIDEBAR_WIDTH,
   MIN_SIDEBAR_WIDTH,
 } from "@src/store/ui/sidebarAtom";
-import { popupNativeMenu } from "@src/util/platform/tauri/nativeMenuPopup";
 
 import { SidebarChromeToggle } from "./SidebarChromeToggle";
 import { SIDEBAR_STYLE } from "./config";
@@ -126,7 +129,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
         const isAlreadyDefault = sidebarWidth === DEFAULT_SIDEBAR_WIDTH;
         const isAlreadyMin = sidebarWidth <= MIN_SIDEBAR_WIDTH;
 
-        void popupNativeMenu({
+        void popupSidebarMenu(event, {
           source: "navigation-sidebar",
           buildItems: () => {
             const t = i18next.t.bind(i18next);
@@ -425,6 +428,9 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
         onContextMenu={handleResizeContextMenu}
       >
         {wrappedContent}
+        {(!isCollapsed || shouldForceVisible) && (
+          <SidebarMenuHost sidebarRef={sidebarContainerRef} />
+        )}
         {(!isCollapsed || shouldForceVisible) && renderResizeHandle()}
       </div>
     );
