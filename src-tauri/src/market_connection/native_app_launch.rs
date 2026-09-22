@@ -232,12 +232,7 @@ fn run_dispatcher(
         }
     }
 }
-/// Claude Desktop release line whose local Gateway identity (`ant-did` = the
-/// base64 installation UUID under `claude-code-sessions/`) and placeholder
-/// organization were audited for seeding history before the first launch.
-/// Patch releases keep that namespace: 2.2553.1 was audited and 2.2553.13 was
-/// confirmed on a vendor-created profile. A new minor line retains vendor
-/// discovery until it is audited.
+
 pub(crate) const CLAUDE_DESKTOP_HISTORY_LINE: &str = "2.2553";
 
 pub(crate) fn claude_desktop_prepares_history(version: &str) -> bool {
