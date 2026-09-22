@@ -122,7 +122,11 @@ def gate_bounds():
     gate = GATE_SOURCE.read_text()
     bounds = {int(m.group(1)): tuple(int(x) for x in m.group(2).split(", "))
               for m in re.finditer(r"(\d) => numbers\.as_slice\(\) >= \[(\d+, \d+, \d+)\]", gate)}
-    pin = re.search(r'== Some\("(\d+\.\d+\.\d+)"\)', PIN_SOURCE.read_text())
+    launch = PIN_SOURCE.read_text()
+    # Either the audited release line (`CLAUDE_DESKTOP_HISTORY_LINE`) or the
+    # older exact-release pin; whichever the checkout carries.
+    pin = re.search(r'CLAUDE_DESKTOP_HISTORY_LINE: &str = "(\d+\.\d+)"', launch) or re.search(
+        r'== Some\("(\d+\.\d+\.\d+)"\)', launch)
     if not bounds or not pin:
         raise SystemExit("could not read the Claude Desktop gate/pin from the sources")
     return bounds, pin.group(1)
@@ -162,7 +166,8 @@ def main():
             numbers = tuple(int(x) for x in desktop["version"].split("."))
             desktop["connectionGate"] = "supported" if numbers[0] in bounds and numbers >= bounds[numbers[0]] else "unsupported"
             desktop["historyPreparePin"] = pin
-            desktop["historyPreparePinMatches"] = desktop["version"] == pin
+            desktop["historyPreparePinMatches"] = (
+                desktop["version"] == pin or desktop["version"].startswith(pin + "."))
             summary["desktop"] = desktop
             if desktop["bundleId"] != "com.anthropic.claudefordesktop":
                 raise SystemExit(f"unexpected bundle identifier {desktop['bundleId']}")
