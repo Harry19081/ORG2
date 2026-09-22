@@ -11,7 +11,7 @@ export interface InlineInfoCardProps {
 }
 
 const CARD_CLASS =
-  "relative max-w-full min-w-0 overflow-hidden rounded-lg border border-border-2 bg-bg-2 px-4 py-2 contain-[inline-size]";
+  "relative max-w-full min-w-0 overflow-hidden rounded-lg border border-border-2 bg-bg-2 px-3 py-2 contain-[inline-size]";
 
 const InlineInfoCard: React.FC<InlineInfoCardProps> = ({
   children,

@@ -32,6 +32,15 @@ export function getSharedLocalKeys(): KeyInfo[] {
   return visibleKeys();
 }
 
+/**
+ * `true` once the shared list has been loaded at least once this session.
+ * Consumers use it to tell a first load (which may show a loading state)
+ * from a revalidation (which must keep the current rows on screen).
+ */
+export function areSharedLocalKeysLoaded(): boolean {
+  return sharedKeysLoaded;
+}
+
 export function subscribeSharedLocalKeys(
   listener: SharedLocalKeysListener
 ): () => void {

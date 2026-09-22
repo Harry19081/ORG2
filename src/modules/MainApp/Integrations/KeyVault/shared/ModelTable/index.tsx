@@ -416,7 +416,7 @@ const ModelTable: React.FC<ModelTableProps> = ({
   const isFlat = viewMode === "flat";
 
   const unifiedFooter = unifiedMode ? (
-    <div className="flex flex-col gap-2 px-4 py-2">
+    <div className="flex flex-col gap-2 p-2">
       {testError && (
         <PageNotice type="danger" onClose={() => setTestError(null)}>
           {testError}

@@ -310,13 +310,11 @@ export default function ModelsTableSection({
         onUpdateAccountDefaultVariant={onUpdateAccountDefaultVariant}
         onToggleAccount={onToggleAccount}
         isAccountEnabled={isAccountEnabled}
-        onAddKey={onAdd}
       />
     ),
     [
       accounts,
       isAccountEnabled,
-      onAdd,
       onToggleAccount,
       onToggleModel,
       onUpdateAccountDefaultVariant,
