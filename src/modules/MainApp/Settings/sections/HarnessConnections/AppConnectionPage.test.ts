@@ -37,6 +37,15 @@ let connected = false;
 let conflict = false;
 let overlay = false;
 let installed = true;
+let nativeApp = false;
+let historySync: {
+  state: "idle" | "active" | "paused";
+  reason: string | null;
+  nativeVersion: string | null;
+  shared: number;
+  conflicts: number;
+  pending: number;
+} | null = null;
 const identity = "11111111-1111-7111-8111-111111111111";
 const appliedSelection = (entitlementId: string) => {
   const encoded = btoa(
@@ -59,7 +68,7 @@ const appliedSelection = (entitlementId: string) => {
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, values?: Record<string, string | number>) =>
-      values ? `${key}:${values.index}:${values.count}` : key,
+      values ? `${key}:${Object.values(values).join(":")}` : key,
   }),
 }));
 vi.mock("jotai", async (importOriginal) => ({
@@ -147,6 +156,9 @@ vi.mock("./useHarnessConnection", () => ({
             ? appliedSelection("ent_second")
             : null,
         selectedModel: direct ? "model-a" : connected ? "claude-b" : null,
+        nativeApp: nativeApp
+          ? { version: 1, agent: "codex", scope: "scope" }
+          : null,
         targetFiles: overlay
           ? [
               {
@@ -160,6 +172,7 @@ vi.mock("./useHarnessConnection", () => ({
           : [],
       },
       choices: [{ keyId: "key-a", name: "My API", models: ["model-a"] }],
+      historySync,
     },
     loading: false,
     error: null,
@@ -184,6 +197,8 @@ beforeEach(() => {
   conflict = false;
   overlay = false;
   installed = true;
+  nativeApp = false;
+  historySync = null;
   configure.mockResolvedValue({});
   restore.mockResolvedValue({});
   open.mockResolvedValue({});
@@ -489,4 +504,54 @@ it.each([
   expect(restore).not.toHaveBeenCalled();
   expect(reload).not.toHaveBeenCalled();
   expect(button("harnessConnections.restore").disabled).toBe(false);
+});
+
+it("shows the automatic Codex history state under a managed native connection", async () => {
+  connected = true;
+  nativeApp = true;
+  historySync = {
+    state: "active",
+    reason: null,
+    nativeVersion: "26.915.31945",
+    shared: 49,
+    conflicts: 2,
+    pending: 0,
+  };
+  await render("codex");
+  const status = () =>
+    container.querySelector('[data-testid="codex-history-sync-status"]');
+  expect(status()?.textContent).toBe(
+    "harnessConnections.marketApps.historySync.attention:49:2"
+  );
+  expect(status()?.className).not.toContain("text-warning-6");
+
+  historySync = {
+    state: "paused",
+    reason: "Native Codex settings events no longer carry `permission_profile`",
+    nativeVersion: "26.930.1",
+    shared: 49,
+    conflicts: 0,
+    pending: 0,
+  };
+  await render("codex");
+  expect(status()?.textContent).toBe(
+    "harnessConnections.marketApps.historySync.paused:Native Codex settings events no longer carry `permission_profile`"
+  );
+  expect(status()?.className).toContain("text-warning-6");
+
+  historySync = {
+    state: "idle",
+    reason: null,
+    nativeVersion: null,
+    shared: 0,
+    conflicts: 0,
+    pending: 0,
+  };
+  await render("codex");
+  expect(status()?.textContent).toBe(
+    "harnessConnections.marketApps.historySync.idle"
+  );
+
+  await render("claude_desktop");
+  expect(status()).toBeNull();
 });

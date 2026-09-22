@@ -1084,6 +1084,12 @@
     "marketApps": {
       "isolatedStorage": "50 percakapan terbaru Anda disinkronkan secara otomatis. Jika sebuah percakapan sudah terbuka di Codex, tutup dan buka kembali Codex untuk menerima pesan terbarunya. Pengaturan aplikasi dan CLI tetap terpisah",
       "isolatedClaudeStorage": "50 percakapan terbaru Anda disinkronkan secara otomatis setelah Claude Desktop dan Claude Code ditutup",
+      "historySync": {
+        "active": "Sinkronisasi riwayat aktif · {{shared}} percakapan dibagikan",
+        "attention": "Sinkronisasi riwayat aktif · {{shared}} dibagikan · {{conflicts}} perlu perhatian",
+        "paused": "Sinkronisasi riwayat dijeda: {{reason}}",
+        "idle": "Sinkronisasi riwayat tidak aktif"
+      },
       "workspaceHelp": "Pilih paket dan model untuk aplikasi ini. Setiap aplikasi menyimpan pilihannya sendiri; mengubah sumber obrolan ORG2 tidak memperbarui aplikasi.",
       "loading": "Memuat paket ORG2 Market…",
       "loadFailed": "Paket ORG2 Market tidak dapat dimuat",

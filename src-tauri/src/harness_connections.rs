@@ -47,6 +47,8 @@ pub struct HarnessConnectionView {
     version: Option<String>,
     configuration_issue: Option<String>,
     desktop_options: Option<DesktopConnectionOptions>,
+    #[cfg(all(feature = "market-connect", target_os = "macos"))]
+    history_sync: Option<crate::market_connection::codex_history::HistorySyncView>,
     profiles: Vec<ClaudeProviderProfile>,
     applied_profile: Option<ClaudeProviderProfile>,
     choices: Vec<ConnectionChoice>,
@@ -164,6 +166,10 @@ pub async fn harness_connection_status(
         version,
         configuration_issue: configuration_issue.or(policy_issue),
         desktop_options,
+        #[cfg(all(feature = "market-connect", target_os = "macos"))]
+        history_sync: (target == ConnectionTarget::Codex)
+            .then(crate::market_connection::codex_history_status)
+            .flatten(),
     })
 }
 

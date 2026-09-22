@@ -6,11 +6,20 @@ Only the user's `RECENT_CONVERSATIONS` (50) most recently updated, unarchived pr
 
 ## Supported boundary
 
-The adapter is audited against Codex Desktop **26.915.31945**, bundled Codex **0.155.0-alpha.9.2**, `state_5.sqlite` and `thread_history_1.sqlite`. Native schema, unknown columns/tables/triggers and file representations fail closed. The current local GUI uses the state-only catalog. Generic CLI file-backed provider-filtered listing and other desktop versions are not claimed supported.
+The adapter was audited against Codex Desktop **26.915.31945**, bundled Codex **0.155.0-alpha.9.2**, `state_5.sqlite` and `thread_history_1.sqlite`. Compatibility with the release currently installed is decided by the data it writes, not by its version number:
+
+- the schema gate (`store/schema.rs`) requires the audited tables, columns, types, foreign keys, triggers and migration checksums exactly; anything unknown fails closed on every store access;
+- the settings-shape gate (`routing::native_shape_gate`, run on every rescan) reads the `thread_settings_applied` events the native app itself wrote into the most recent primary rollouts and requires every field our continuation binding emits to still be present with the same value type and the same payload envelope. Events that carry only our own minimal field set are not samples; with no native sample the schema gate alone applies.
+
+A failed gate pauses the handoff and is shown in Settings with its reason and the Codex Desktop version that was seen. The current local GUI uses the state-only catalog. Generic CLI file-backed provider-filtered listing is not claimed supported.
 
 Native JSONL bytes, immutable rollout IDs, fork byte cutoffs, and all four history projection tables are retained. Continuation gets an appended native settings event for the destination's own provider/model. Existing destination permissions and grouping stay local; newly imported conversations get read-only, on-request permissions. Neither credentials, account settings, plugins, nor native control-plane tables are copied.
 
 The destination writer locks must be available. A loaded source may be read only when all selected turns are completed, the projection frontier exactly matches the raw file, and fresh metadata/checkpoints/file stamps still agree after staging. Otherwise it is deferred. A loaded native conversation can retain its writer lock after its turn ends. The audited GUI normally unloads inactive owners only after its own inactivity policy (up to three hours, with earlier eviction above ten inactive owners), not immediately when selecting another conversation. The handoff therefore does **not** promise live refresh of a conversation still loaded in the destination native process. Never bypass this lock to make a GUI test appear to pass. Actual native unload or process exit releases the boundary.
+
+## Status
+
+Settings → App connections → Codex shows the observer state under the connection: active with the number of shared conversations (and how many need attention), idle while the profile is not the managed connection, or paused with the gate reason. The state comes from the last observer outcome and is never polled.
 
 ## Lifecycle and resource limits
 
@@ -28,7 +37,7 @@ The destination writer locks must be available. A loaded source may be read only
 
 Each thread has an independent pending journal. A private, immutable SQLite snapshot contains only that thread's metadata and selected lineage projections. Destination writer locks remain held from prepare through publication. Available source locks are held too; a loaded source instead requires the strict completed-snapshot checks described above. Files are staged privately, fsynced, journaled, then published; replaced target rollouts are backed up outside native discovery. Directory entries are flushed before the journal can depend on them.
 
-Recovery uses the saved snapshot rather than rereading a source that may have continued, moved or disappeared. It recognizes its own already-published inode after rename, revalidates skipped ancestors and destination configuration, and can replay SQL publication before committing the new baseline. Snapshot cleanup follows the committed journal. A divergent destination remains a per-thread conflict; other threads continue.
+Recovery uses the saved snapshot rather than rereading a source that may have continued, moved or disappeared. It recognizes its own already-published inode after rename, revalidates skipped ancestors and destination configuration, and can replay SQL publication before committing the new baseline. When the native app opened the conversation between the rename and the SQL step, it projected exactly the file we placed and rewrote the row's own metadata; recovery accepts that (every placed file is still our published copy and the native projection frontier sits at its end), keeps the native projection and only binds the route. Anything the native app appended since is real divergence and stays a per-thread conflict. Snapshot cleanup follows the committed journal; other threads continue.
 
 There is no last-writer-wins merge and no resurrection of previously shared deleted data. Simultaneous edits, changed destination configuration, or changed frozen dependencies preserve the originals and pending recovery material. Operator recovery must inspect the specific journal and backup; do not delete a pending journal or restore a whole profile over newer native work.
 

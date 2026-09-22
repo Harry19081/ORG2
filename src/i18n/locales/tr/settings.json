@@ -1003,6 +1003,12 @@
     "marketApps": {
       "isolatedStorage": "En son 50 sohbetiniz otomatik olarak eşitlenir. Bir sohbet Codex'te zaten açıksa, en son mesajları almak için Codex'i kapatıp yeniden açın. Uygulama ve CLI ayarları ayrı kalır",
       "isolatedClaudeStorage": "Claude Desktop ve Claude Code kapatıldıktan sonra en son 50 sohbetiniz otomatik olarak eşitlenir",
+      "historySync": {
+        "active": "Geçmiş eşitleme etkin · {{shared}} sohbet paylaşıldı",
+        "attention": "Geçmiş eşitleme etkin · {{shared}} paylaşıldı · {{conflicts}} ilgi gerektiriyor",
+        "paused": "Geçmiş eşitleme duraklatıldı: {{reason}}",
+        "idle": "Geçmiş eşitleme boşta"
+      },
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "ORG2 Market paketleri yükleniyor…",
       "loadFailed": "ORG2 Market paketleri yüklenemedi",

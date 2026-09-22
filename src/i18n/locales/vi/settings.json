@@ -1003,6 +1003,12 @@
     "marketApps": {
       "isolatedStorage": "50 cuộc trò chuyện gần đây nhất của bạn sẽ tự động đồng bộ. Nếu một cuộc trò chuyện đang mở trong Codex, hãy thoát và mở lại Codex để nhận tin nhắn mới nhất. Cài đặt của ứng dụng và CLI vẫn tách biệt",
       "isolatedClaudeStorage": "50 cuộc trò chuyện gần đây nhất của bạn sẽ tự động đồng bộ sau khi Claude Desktop và Claude Code thoát",
+      "historySync": {
+        "active": "Đồng bộ lịch sử đang hoạt động · đã chia sẻ {{shared}} cuộc trò chuyện",
+        "attention": "Đồng bộ lịch sử đang hoạt động · đã chia sẻ {{shared}} · {{conflicts}} cần chú ý",
+        "paused": "Đồng bộ lịch sử đã tạm dừng: {{reason}}",
+        "idle": "Đồng bộ lịch sử đang rảnh"
+      },
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Đang tải gói ORG2 Market…",
       "loadFailed": "Không thể tải gói ORG2 Market",

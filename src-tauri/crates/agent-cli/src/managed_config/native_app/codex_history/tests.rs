@@ -848,3 +848,169 @@ fn only_recent_primary_conversations_start_crossing_but_shared_and_fork_bases_ke
         )
         .unwrap());
 }
+
+#[test]
+fn recovery_accepts_a_target_the_native_app_projected_after_our_rename() {
+    let fixture = Fixture::new();
+    fixture.seed();
+    let injected = Cell::new(false);
+    assert!(fixture
+        .run(|| {
+            if fixture.rollout(true).exists() && !fixture.row_visible() {
+                injected.set(true);
+            }
+            if injected.get() {
+                Err("injected before SQL".into())
+            } else {
+                Ok(())
+            }
+        })
+        .is_err());
+    assert!(injected.get());
+    let published = fs::read(fixture.rollout(true)).unwrap();
+    // The native app opened the conversation before recovery: it listed the
+    // file we placed with its own metadata and projected it to the end.
+    store::fixture_seed(&fixture.package, THREAD, THREAD);
+    Connection::open(fixture.package.join("thread_history_1.sqlite"))
+        .unwrap()
+        .execute(
+            "UPDATE thread_history_projection_state SET next_rollout_byte_offset=?1,next_rollout_ordinal=11 WHERE thread_id=?2",
+            rusqlite::params![published.len() as i64, THREAD],
+        )
+        .unwrap();
+    Connection::open(fixture.package.join("state_5.sqlite"))
+        .unwrap()
+        .execute(
+            "UPDATE threads SET updated_at=42, tokens_used=7, model_provider='openai', model='resumed-elsewhere' WHERE id=?1",
+            [THREAD],
+        )
+        .unwrap();
+    let recovered = fixture.run(|| Ok(())).unwrap();
+    assert_eq!(
+        (recovered.copied, recovered.busy, recovered.conflicts),
+        (1, 0, 0)
+    );
+    assert_eq!(fs::read(fixture.rollout(true)).unwrap(), published);
+    let (provider, model, updated_at): (String, String, i64) =
+        Connection::open(fixture.package.join("state_5.sqlite"))
+            .unwrap()
+            .query_row(
+                "SELECT model_provider,model,updated_at FROM threads WHERE id=?1",
+                [THREAD],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            )
+            .unwrap();
+    assert_eq!(
+        (provider.as_str(), model.as_str(), updated_at),
+        ("orgii", "market-model", 42)
+    );
+    let ledger = read_ledger(&fixture.journal).unwrap();
+    assert!(ledger.pending.is_empty());
+    assert!(ledger.pairs.contains_key(THREAD));
+    let repeat = fixture.run(|| Ok(())).unwrap();
+    assert_eq!((repeat.copied, repeat.conflicts), (0, 0));
+}
+
+#[test]
+fn recovery_still_refuses_a_target_the_native_app_continued() {
+    let fixture = Fixture::new();
+    fixture.seed();
+    let injected = Cell::new(false);
+    assert!(fixture
+        .run(|| {
+            if fixture.rollout(true).exists() && !fixture.row_visible() {
+                injected.set(true);
+            }
+            if injected.get() {
+                Err("injected before SQL".into())
+            } else {
+                Ok(())
+            }
+        })
+        .is_err());
+    store::fixture_seed(&fixture.package, THREAD, THREAD);
+    files::append(
+        &fixture.rollout(true),
+        &json!({"ordinal":20,"type":"event_msg","payload":{"type":"task_complete","turn_id":"native"}}),
+    )
+    .unwrap();
+    let continued = fs::read(fixture.rollout(true)).unwrap();
+    Connection::open(fixture.package.join("thread_history_1.sqlite"))
+        .unwrap()
+        .execute(
+            "UPDATE thread_history_projection_state SET next_rollout_byte_offset=?1,next_rollout_ordinal=21 WHERE thread_id=?2",
+            rusqlite::params![continued.len() as i64, THREAD],
+        )
+        .unwrap();
+    Connection::open(fixture.package.join("state_5.sqlite"))
+        .unwrap()
+        .execute("UPDATE threads SET updated_at=43 WHERE id=?1", [THREAD])
+        .unwrap();
+    let refused = fixture.run(|| Ok(())).unwrap();
+    assert_eq!((refused.copied, refused.conflicts), (0, 1));
+    assert_eq!(fs::read(fixture.rollout(true)).unwrap(), continued);
+    assert!(read_ledger(&fixture.journal)
+        .unwrap()
+        .pending
+        .contains_key(THREAD));
+}
+
+fn native_settings_line(permission_key: &str) -> Vec<u8> {
+    let mut settings = json!({
+        "model":"gpt","model_provider_id":"openai","approval_policy":"on-request",
+        "approvals_reviewer":"user","cwd":"/test","collaboration_mode":{"mode":"default"},
+        "personality":"pragmatic","reasoning_effort":"low","service_tier":"default"
+    });
+    settings[permission_key] = json!({"type":"managed"});
+    let mut line = serde_json::to_vec(&json!({"ordinal":9,"type":"event_msg","payload":{
+        "type":"thread_settings_applied","thread_id":THREAD,"thread_settings":settings}}))
+    .unwrap();
+    line.push(b'\n');
+    line
+}
+
+#[test]
+fn format_gate_admits_native_settings_events_and_refuses_a_renamed_field() {
+    let fixture = Fixture::new();
+    let original = fixture.seed();
+    assert_eq!(format_gate(&fixture.primary).unwrap(), 0);
+    let mut file = fs::OpenOptions::new()
+        .append(true)
+        .open(fixture.rollout(false))
+        .unwrap();
+    file.write_all(&native_settings_line("permission_profile")).unwrap();
+    drop(file);
+    let bytes = fs::read(fixture.rollout(false)).unwrap();
+    Connection::open(fixture.primary.join("thread_history_1.sqlite"))
+        .unwrap()
+        .execute(
+            "UPDATE thread_history_projection_state SET next_rollout_byte_offset=?1",
+            [bytes.len() as i64],
+        )
+        .unwrap();
+    assert_eq!(format_gate(&fixture.primary).unwrap(), 1);
+    let report = fixture.run(|| Ok(())).unwrap();
+    assert_eq!((report.copied, report.conflicts, report.shared, report.pending), (1, 0, 1, 0));
+    fs::write(fixture.rollout(false), &original).unwrap();
+    let mut file = fs::OpenOptions::new()
+        .append(true)
+        .open(fixture.rollout(false))
+        .unwrap();
+    file.write_all(&native_settings_line("permissions")).unwrap();
+    drop(file);
+    let error = format_gate(&fixture.primary).unwrap_err();
+    assert!(error.contains("permission_profile"), "{error}");
+    assert_eq!(fixture.run(|| Ok(())).unwrap_err(), error);
+    // Targeted passes never re-run the gate; they only follow admitted files.
+    let targeted = reconcile_at_with_models(
+        &fixture.primary,
+        &fixture.package,
+        &fixture.journal,
+        None,
+        ["", ""],
+        Some(&[]),
+        || Ok(()),
+    )
+    .unwrap();
+    assert_eq!(targeted.copied, 0);
+}

@@ -1003,6 +1003,12 @@
     "marketApps": {
       "isolatedStorage": "直近 50 件の会話が自動的に同期されます。Codex で開いたままの会話は、最新メッセージを受け取るために Codex を終了して再起動してください。アプリと CLI の設定は個別に保持されます",
       "isolatedClaudeStorage": "Claude Desktop と Claude Code を終了すると、直近 50 件の会話が自動的に同期されます",
+      "historySync": {
+        "active": "履歴同期は動作中 · {{shared}} 件の会話を共有",
+        "attention": "履歴同期は動作中 · {{shared}} 件を共有 · {{conflicts}} 件に対応が必要",
+        "paused": "履歴同期は一時停止中: {{reason}}",
+        "idle": "履歴同期は待機中"
+      },
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "ORG2 Market のパッケージを読み込んでいます…",
       "loadFailed": "ORG2 Market のパッケージを読み込めませんでした",
