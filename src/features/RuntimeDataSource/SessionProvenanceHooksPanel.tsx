@@ -20,7 +20,7 @@ const SessionProvenanceHooksPanel: React.FC = () => {
     >
       <RuntimeSectionHeader
         title={t("agentOrgs.sessionProvenance.title")}
-        className="-mx-4 bg-chat-pane px-4 pt-2 pb-1"
+        className="-mx-4 bg-chat-pane px-4"
         dataTestId="session-provenance-hooks-title"
       />
       <SessionProvenanceHooksSettings />

@@ -153,6 +153,8 @@ describe("SettingsTableCardGrid", () => {
   });
 
   it("sizes the grid by auto-fill minimum width or a fixed column count", () => {
+    // Unmeasured (server render): auto-fill, since there is no laid-out grid
+    // for a derived count to disagree with yet.
     expect(renderGrid({ enabled: true, minCardWidth: 280 })).toContain(
       "repeat(auto-fill, minmax(280px, 1fr))"
     );
@@ -161,8 +163,84 @@ describe("SettingsTableCardGrid", () => {
     );
   });
 
+  it("declares the tracks from the same count that slices the rows", async () => {
+    // jsdom never lays out, so stand in for a measured 900px grid.
+    const clientWidth = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      "clientWidth"
+    );
+    Object.defineProperty(HTMLElement.prototype, "clientWidth", {
+      configurable: true,
+      get: () => 900,
+    });
+    const root = createSmokeRoot();
+    const rows: Row[] = ["a", "b", "c", "d", "e"].map((id) => ({
+      id,
+      name: `Row ${id}`,
+      sources: "1/1",
+    }));
+
+    try {
+      await root.render(
+        React.createElement(SettingsTableCardGrid<Row>, {
+          cardView: {
+            enabled: true,
+            titleColumnKey: "model",
+            minCardWidth: 280,
+          },
+          columns: COLUMNS,
+          rows,
+          getRowKey: (row: Row) => row.id,
+          expandLabels: EXPAND_LABELS,
+          expandable: {
+            rowExpandable: () => true,
+            expandedRowRender: (row: Row) =>
+              React.createElement("div", null, `detail-${row.id}`),
+            expandedRowKeys: ["a"],
+            onExpandedRowsChange: vi.fn(),
+          },
+        })
+      );
+
+      const grid = root.container.querySelector<HTMLElement>(".grid");
+      // 900px at a 280px minimum and an 8px gap is three tracks — declared
+      // explicitly, so CSS cannot pack a different number than the count that
+      // decides where the detail panel goes.
+      expect(grid?.style.gridTemplateColumns).toBe("repeat(3, minmax(0, 1fr))");
+      // The measured element carries no padding of its own, so its clientWidth
+      // is the width CSS lays tracks in.
+      expect(grid?.className).not.toContain("p-4");
+      expect(grid?.parentElement?.className).toContain("p-4");
+
+      // The first row's expanded detail lands after that row's LAST card, so
+      // the two cards beside it keep their places instead of being pushed to
+      // the next line.
+      const children = Array.from(grid?.children ?? []);
+      const detailIndex = children.findIndex((child) =>
+        child.classList.contains("settings-table-card-detail")
+      );
+      expect(detailIndex).toBe(3);
+      expect(children[0].textContent).toContain("Row a");
+      expect(children[1].textContent).toContain("Row b");
+      expect(children[2].textContent).toContain("Row c");
+      expect(children[detailIndex].textContent).toContain("detail-a");
+    } finally {
+      await root.unmount();
+      if (clientWidth) {
+        Object.defineProperty(
+          HTMLElement.prototype,
+          "clientWidth",
+          clientWidth
+        );
+      } else {
+        Reflect.deleteProperty(HTMLElement.prototype, "clientWidth");
+      }
+    }
+  });
+
   it("derives the grid's column count the way auto-fill does", () => {
-    // repeat(auto-fill, minmax(280px, 1fr)) with an 8px gap.
+    // repeat(auto-fill, minmax(280px, 1fr)) with an 8px gap, measured on the
+    // grid's content width.
     expect(resolveCardColumnCount(0, 280)).toBe(1);
     expect(resolveCardColumnCount(560, 280)).toBe(1);
     expect(resolveCardColumnCount(568, 280)).toBe(2);

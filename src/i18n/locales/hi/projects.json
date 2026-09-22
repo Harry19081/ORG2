@@ -72,6 +72,11 @@
     "personalOrg": "मेरा वर्कस्पेस",
     "linearOrg": "Linear वर्कस्पेस",
     "noLinearOrgs": "अभी कोई कनेक्ट किया गया वर्कस्पेस नहीं",
+    "scopeSwitch": "वर्कस्पेस स्कोप",
+    "scope": {
+      "local": "लोकल",
+      "cloud": "क्लाउड"
+    },
     "sources": {
       "local": "स्थानीय",
       "cloud": "क्लाउड"

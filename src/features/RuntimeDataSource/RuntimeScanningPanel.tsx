@@ -19,7 +19,7 @@ const RuntimeScanningPanel: React.FC = () => {
     <div className={SECTION_GAP_CLASSES} data-testid="runtime-scanning-panel">
       <RuntimeSectionHeader
         title={t("views.scanning")}
-        className="-mx-4 bg-chat-pane px-4 pt-2 pb-1"
+        className="-mx-4 bg-chat-pane px-4"
         dataTestId="runtime-scanning-title"
       />
       <SourceScanningSettings />

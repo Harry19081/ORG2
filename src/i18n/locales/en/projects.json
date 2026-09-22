@@ -72,6 +72,11 @@
     "personalOrg": "My workspace",
     "linearOrg": "Linear Workspace",
     "noLinearOrgs": "No connected workspaces yet",
+    "scopeSwitch": "Workspace scope",
+    "scope": {
+      "local": "Local",
+      "cloud": "Cloud"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"

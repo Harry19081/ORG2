@@ -72,6 +72,11 @@
     "personalOrg": "Моё рабочее пространство",
     "linearOrg": "Рабочее пространство Linear",
     "noLinearOrgs": "Подключенных рабочих пространств пока нет",
+    "scopeSwitch": "Область рабочего пространства",
+    "scope": {
+      "local": "Локально",
+      "cloud": "Облако"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"

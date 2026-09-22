@@ -31,6 +31,7 @@ import { useOpenCloudSessionReference } from "@src/features/Org2Cloud/useOpenClo
 import { useOrg2CloudSignIn } from "@src/features/Org2Cloud/useOrg2CloudSignIn";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 
+import { RUNTIME_SECTION_HEADER_HEIGHT } from "./RuntimeSectionHeader";
 import TeamMemberCard, {
   type AgentCatalog,
   type AgentCatalogEntry,
@@ -345,7 +346,9 @@ export default function TeamRuntimePanel({
                       className="flex flex-col gap-3"
                       data-testid={`team-runtime-${activity}-today`}
                     >
-                      <div className="flex min-h-9 items-center justify-between gap-3">
+                      <div
+                        className={`${RUNTIME_SECTION_HEADER_HEIGHT} flex shrink-0 items-center justify-between gap-3`}
+                      >
                         <h4 className={SECTION_SUBHEADING_CLASSES}>
                           {t(`overview.${activity}Today`)}
                         </h4>
@@ -408,7 +411,7 @@ export default function TeamRuntimePanel({
         (view === "today" || view === "members")
       ) ? (
         <div
-          className="flex min-h-9 items-center justify-end"
+          className={`${RUNTIME_SECTION_HEADER_HEIGHT} flex shrink-0 items-center justify-end`}
           data-testid="team-runtime-controls"
         >
           <RefreshButton

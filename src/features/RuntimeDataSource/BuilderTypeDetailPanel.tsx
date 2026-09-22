@@ -18,6 +18,10 @@ const FAMILY_BADGE_CLASS: Record<BuilderTypeDefinition["family"], string> = {
 
 const removeTerminalPeriod = (text: string) => text.replace(/[.。]\s*$/, "");
 
+/** One size for every builder-type dialog, so navigating never resizes it. */
+export const BUILDER_TYPE_MODAL_WIDTH = 960;
+export const BUILDER_TYPE_MODAL_MIN_BODY = "min-h-[360px]";
+
 function PreferenceCard({ letter }: { letter: BuilderTypeLetter }) {
   const { t } = useTranslation("builderProfile");
 
@@ -46,6 +50,13 @@ export interface BuilderTypeDetailContentProps {
   eager?: boolean;
   muted?: boolean;
   codeTestId?: string;
+  /**
+   * Draw the card surface around the content. On a page the content is one
+   * block among several and needs its own container; in a modal the modal
+   * already is the surface, and a second border and fill inside it read as a
+   * card floating in a card.
+   */
+  framed?: boolean;
 }
 
 export function BuilderTypeDetailContent({
@@ -53,12 +64,13 @@ export function BuilderTypeDetailContent({
   eager,
   muted,
   codeTestId,
+  framed = true,
 }: BuilderTypeDetailContentProps) {
   const { t } = useTranslation("builderProfile");
 
   return (
     <section
-      className={DETAIL_PANEL_TOKENS.primaryContainer}
+      className={framed ? DETAIL_PANEL_TOKENS.primaryContainer : undefined}
       aria-labelledby="builder-type-detail-title"
       data-testid="builder-type-detail"
     >
@@ -100,7 +112,7 @@ export function BuilderTypeDetailContent({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 @[480px]:grid-cols-2">
+          <div className="grid auto-rows-fr grid-cols-1 gap-2 @[480px]:grid-cols-2">
             {type.letters.map((letter) => (
               <PreferenceCard key={letter} letter={letter} />
             ))}
@@ -130,12 +142,16 @@ export default function BuilderTypeDetailModal({
     <Modal
       visible
       title={`${type.code} · ${type.name}`}
-      width={960}
+      width={BUILDER_TYPE_MODAL_WIDTH}
       onCancel={onClose}
       bodyClassName="p-3 @container"
     >
       <div
-        className="flex items-center gap-2"
+        // Stepping through types must not resize the dialog under the cursor:
+        // the arrows stay put and only the content inside changes. The floor
+        // is the tallest layout the shortest type produces, so a wordier one
+        // grows a line rather than every other one shrinking.
+        className={`flex items-center gap-2 ${BUILDER_TYPE_MODAL_MIN_BODY}`}
         data-testid="builder-type-detail-modal"
       >
         <Button
@@ -154,7 +170,7 @@ export default function BuilderTypeDetailModal({
           aria-label={t("common:actions.previous")}
         />
         <div className="min-w-0 flex-1">
-          <BuilderTypeDetailContent type={type} eager />
+          <BuilderTypeDetailContent type={type} eager framed={false} />
         </div>
         <Button
           {...PANEL_HEADER_TOKENS.actionButton}

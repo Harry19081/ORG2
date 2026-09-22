@@ -29,6 +29,7 @@ import { HugeiconsIcon, Message02Icon } from "@src/icons";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
+import { RUNTIME_SECTION_HEADER_HEIGHT } from "./RuntimeSectionHeader";
 import {
   aggregateMemberRecentUsageTrends,
   buildOrgRuntimeTodaySnapshot,
@@ -170,7 +171,7 @@ function TeamRuntimeToday({
   return (
     <div className="flex flex-col gap-5" data-testid="team-runtime-today">
       <div
-        className="sticky top-0 z-20 flex min-h-9 flex-wrap items-center justify-between gap-3 bg-chat-pane"
+        className={`sticky top-0 z-20 ${RUNTIME_SECTION_HEADER_HEIGHT} flex shrink-0 items-center justify-between gap-3 bg-chat-pane`}
         data-testid="team-runtime-title-row"
       >
         <h3 className={SECTION_SUBHEADING_CLASSES}>{t("overview.today")}</h3>
@@ -190,7 +191,7 @@ function TeamRuntimeToday({
                 showSearch
                 dropdownMinWidth={240}
                 dropdownWidthMode="min-match"
-                className="w-48"
+                className="w-48 min-w-0"
                 dataTestId="team-runtime-person-select"
               />
             ) : null}

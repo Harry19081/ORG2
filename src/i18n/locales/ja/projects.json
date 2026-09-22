@@ -72,6 +72,11 @@
     "personalOrg": "マイワークスペース",
     "linearOrg": "Linear ワークスペース",
     "noLinearOrgs": "接続済みのワークスペースはまだありません",
+    "scopeSwitch": "ワークスペースの範囲",
+    "scope": {
+      "local": "ローカル",
+      "cloud": "クラウド"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"

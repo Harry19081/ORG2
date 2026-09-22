@@ -488,7 +488,6 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
         rows={visibleRows}
         getRowKey={(row) => row.id}
         headerHeight="tall"
-        inlineHeaderToolbar
         className="table-expanded-no-hover table-settings-expanded-compact"
         hover
         loading={initialLoading && rows.every((row) => !row.status)}
@@ -498,7 +497,6 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
           searchPlaceholder: tCommon("common.searchPlaceholder"),
           onSearchChange: setSearchQuery,
           onSearchClear: () => setSearchQuery(""),
-          searchInputSize: "default",
           rightContent: (
             <RefreshButton
               iconOnly

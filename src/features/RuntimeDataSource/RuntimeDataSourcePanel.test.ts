@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { getDefaultStore } from "jotai";
+import { type PrimitiveAtom, getDefaultStore } from "jotai";
 import { act, createElement } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import {
@@ -17,11 +17,18 @@ import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import {
   org2CloudOrgsAtom,
   org2CloudOrgsLoadedAtom,
+  sidebarActiveCloudOrgIdAtom,
 } from "@src/features/Org2Cloud/org2CloudOrgsAtom";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import { runtimeNavigationIntentAtom } from "@src/store/ui/runtimeNavigationAtom";
 
 import RuntimeDataSourcePanel from ".";
+
+// Read-only in production — derived from the sidebar's selection — but this
+// file mocks the module with a primitive atom so a test can pin the sidebar's
+// active cloud organization before the panel mounts.
+const sidebarCloudOrgIdAtom =
+  sidebarActiveCloudOrgIdAtom as unknown as PrimitiveAtom<string | null>;
 
 const lifecycle = vi.hoisted(() => ({
   usageUnmounted: vi.fn(),
@@ -159,6 +166,16 @@ describe("RuntimeDataSourcePanel", () => {
   let container: HTMLDivElement;
   let root: Root;
 
+  const CLOUD_AUTH = {
+    kind: "org2_cloud" as const,
+    supabaseUrl: "https://cloud.example",
+    supabaseAnonKey: "anon",
+    userId: "me",
+    accessToken: "token",
+    refreshToken: "refresh",
+    expiresAt: Math.floor(Date.now() / 1000) + 3600,
+  };
+
   // Waits until the lazy section that the last update requested is on
   // screen and the section it replaced has run its cleanup.
   //
@@ -206,6 +223,7 @@ describe("RuntimeDataSourcePanel", () => {
     store.set(org2CloudAuthAtom, null);
     store.set(org2CloudOrgsAtom, []);
     store.set(org2CloudOrgsLoadedAtom, true);
+    store.set(sidebarCloudOrgIdAtom, null);
     store.set(runtimeNavigationIntentAtom, null);
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -226,6 +244,19 @@ describe("RuntimeDataSourcePanel", () => {
     Reflect.deleteProperty(reactActEnvironment, "IS_REACT_ACT_ENVIRONMENT");
     vi.unstubAllGlobals();
   });
+
+  // Scope is a local | cloud segmented switch; the organization selector next
+  // to it appears only when the active scope has more than one organization.
+  const selectCloudScope = async () => {
+    const segments = container.querySelectorAll<HTMLButtonElement>(
+      '[data-testid="runtime-scope-picker-scope"] button'
+    );
+    expect(segments).toHaveLength(2);
+    await act(async () => {
+      segments[1]?.click();
+    });
+    await settleLazySections();
+  };
 
   const selectSection = async (testId: string) => {
     const button = container.querySelector<HTMLButtonElement>(
@@ -294,30 +325,18 @@ describe("RuntimeDataSourcePanel", () => {
 
   it("switches from Personal tabs to the selected organization's Today and Members tabs", async () => {
     await act(async () => {
-      store.set(org2CloudAuthAtom, {
-        kind: "org2_cloud",
-        supabaseUrl: "https://cloud.example",
-        supabaseAnonKey: "anon",
-        userId: "me",
-        accessToken: "token",
-        refreshToken: "refresh",
-        expiresAt: Math.floor(Date.now() / 1000) + 3600,
-      });
+      store.set(org2CloudAuthAtom, CLOUD_AUTH);
       store.set(org2CloudOrgsAtom, [
         { orgId: "org-1", name: "Example Team", role: "member" },
       ]);
     });
 
-    const scopePicker = container.querySelector<HTMLSelectElement>(
-      '[data-testid="runtime-scope-picker"]'
-    );
-    expect(scopePicker).not.toBeNull();
-    await act(async () => {
-      if (!scopePicker) return;
-      scopePicker.value = "cloud:org-1";
-      scopePicker.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-    await settleLazySections();
+    // One cloud organization: the switch alone carries the scope, so no
+    // organization selector is rendered next to it.
+    expect(
+      container.querySelector('[data-testid="runtime-scope-picker"]')
+    ).toBeNull();
+    await selectCloudScope();
 
     expect(
       container.querySelector('[data-testid="data-source-view-usage"]')
@@ -353,17 +372,70 @@ describe("RuntimeDataSourcePanel", () => {
     ).toBe("org-1");
   });
 
+  it("opens on the local scope even when the sidebar is filtered to a cloud organization", async () => {
+    await act(async () => {
+      store.set(org2CloudAuthAtom, CLOUD_AUTH);
+      store.set(org2CloudOrgsAtom, [
+        { orgId: "org-1", name: "Example Team", role: "member" },
+      ]);
+      store.set(sidebarCloudOrgIdAtom, "org-1");
+    });
+    await act(async () => {
+      root.unmount();
+      root = createRoot(container);
+      root.render(createElement(RuntimeDataSourcePanel));
+    });
+    await settleLazySections();
+
+    expect(
+      container.querySelector('[data-testid="runtime-section-usage"]')
+    ).not.toBeNull();
+    expect(
+      container.querySelector('[data-testid="runtime-section-organization"]')
+    ).toBeNull();
+    const segments = container.querySelectorAll<HTMLButtonElement>(
+      '[data-testid="runtime-scope-picker-scope"] button'
+    );
+    expect(segments[0]?.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("offers an organization selector beside the switch once the cloud scope holds more than one organization", async () => {
+    await act(async () => {
+      store.set(org2CloudAuthAtom, CLOUD_AUTH);
+      store.set(org2CloudOrgsAtom, [
+        { orgId: "org-1", name: "Example Team", role: "member" },
+        { orgId: "org-2", name: "Second Team", role: "member" },
+      ]);
+    });
+    await selectCloudScope();
+
+    const scopePicker = container.querySelector<HTMLSelectElement>(
+      '[data-testid="runtime-scope-picker"]'
+    );
+    expect(scopePicker).not.toBeNull();
+    expect(
+      Array.from(scopePicker?.querySelectorAll("option") ?? []).map(
+        (option) => option.value
+      )
+    ).toEqual(["cloud:org-1", "cloud:org-2"]);
+
+    await act(async () => {
+      if (!scopePicker) return;
+      scopePicker.value = "cloud:org-2";
+      scopePicker.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    await settleLazySections();
+
+    expect(
+      container
+        .querySelector('[data-testid="runtime-section-organization"]')
+        ?.getAttribute("data-org-id")
+    ).toBe("org-2");
+  });
+
   it("consumes a guide intent and opens the requested organization's Members view", async () => {
     await act(async () => {
-      store.set(org2CloudAuthAtom, {
-        kind: "org2_cloud",
-        supabaseUrl: "https://cloud.example",
-        supabaseAnonKey: "anon",
-        userId: "me",
-        accessToken: "token",
-        refreshToken: "refresh",
-        expiresAt: Math.floor(Date.now() / 1000) + 3600,
-      });
+      store.set(org2CloudAuthAtom, CLOUD_AUTH);
       store.set(org2CloudOrgsAtom, [
         { orgId: "org-1", name: "Example Team", role: "member" },
       ]);
@@ -425,28 +497,12 @@ describe("RuntimeDataSourcePanel", () => {
 
   it("consumes a scanning intent and returns from an organization scope to the personal Scanning tab", async () => {
     await act(async () => {
-      store.set(org2CloudAuthAtom, {
-        kind: "org2_cloud",
-        supabaseUrl: "https://cloud.example",
-        supabaseAnonKey: "anon",
-        userId: "me",
-        accessToken: "token",
-        refreshToken: "refresh",
-        expiresAt: Math.floor(Date.now() / 1000) + 3600,
-      });
+      store.set(org2CloudAuthAtom, CLOUD_AUTH);
       store.set(org2CloudOrgsAtom, [
         { orgId: "org-1", name: "Example Team", role: "member" },
       ]);
     });
-    const scopePicker = container.querySelector<HTMLSelectElement>(
-      '[data-testid="runtime-scope-picker"]'
-    );
-    await act(async () => {
-      if (!scopePicker) return;
-      scopePicker.value = "cloud:org-1";
-      scopePicker.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-    await settleLazySections();
+    await selectCloudScope();
     expect(
       container.querySelector('[data-testid="runtime-section-organization"]')
     ).not.toBeNull();

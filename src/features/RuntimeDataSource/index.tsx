@@ -11,26 +11,21 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import OrganizationScopeHeader from "@src/components/OrganizationScopeHeader";
+import OrganizationScopeHeader, {
+  type OrganizationScopeOption,
+} from "@src/components/OrganizationScopeHeader";
 import OrganizationTabSwitch from "@src/components/OrganizationTabSwitch";
 import { Placeholder } from "@src/components/Placeholder";
-import type { SelectOption } from "@src/components/Select";
 import type { TabPillItem } from "@src/components/TabPill";
-import { SECTION_GAP_CLASSES } from "@src/components/layout/Section";
-import {
-  DETAIL_PANEL_TOKENS,
-  ScrollPreservation,
-} from "@src/components/layout/blocks";
+import { ScrollPreservation } from "@src/components/layout/blocks";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import {
   buildCloudOrgSelectorValue,
   org2CloudOrgsAtom,
   org2CloudOrgsLoadedAtom,
   parseCloudOrgSelectorValue,
-  sidebarActiveCloudOrgIdAtom,
 } from "@src/features/Org2Cloud/org2CloudOrgsAtom";
 import { buildOrgSelectorEntries } from "@src/features/Organizations/orgSelectorEntries";
-import { CloudIcon, HugeiconsIcon, LaptopIcon } from "@src/icons";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
 import {
@@ -38,6 +33,8 @@ import {
   type RuntimePersonalView,
   runtimeNavigationIntentAtom,
 } from "@src/store/ui/runtimeNavigationAtom";
+
+import { RUNTIME_PAGE_SCROLL, RuntimePageBody } from "./RuntimePageLayout";
 
 // The section unions live with the navigation intent so a deep-link target and
 // the tab it selects cannot drift apart.
@@ -175,7 +172,6 @@ const RuntimeDataSourcePanel: React.FC = () => {
   const auth = useAtomValue(org2CloudAuthAtom);
   const cloudOrgs = useAtomValue(org2CloudOrgsAtom);
   const cloudOrgsLoaded = useAtomValue(org2CloudOrgsLoadedAtom);
-  const sidebarCloudOrgId = useAtomValue(sidebarActiveCloudOrgIdAtom);
   const runtimeNavigationIntent = useAtomValue(runtimeNavigationIntentAtom);
   const consumeRuntimeNavigationIntent = useAtomCallback(
     useCallback((get, set, requestId: number) => {
@@ -185,11 +181,10 @@ const RuntimeDataSourcePanel: React.FC = () => {
       return current;
     }, [])
   );
-  const [scopeValue, setScopeValue] = useState(() =>
-    sidebarCloudOrgId
-      ? buildCloudOrgSelectorValue(sidebarCloudOrgId)
-      : DEFAULT_SESSION_ORG_ID
-  );
+  // Runtime opens on the local scope. A cloud org is reached through the
+  // header's scope switch or an explicit navigation intent, never inherited
+  // from whichever cloud org the sidebar happens to be filtered to.
+  const [scopeValue, setScopeValue] = useState<string>(DEFAULT_SESSION_ORG_ID);
   const [personalView, setPersonalView] =
     useState<PersonalRuntimeSection>("usage");
   const [organizationView, setOrganizationView] =
@@ -250,7 +245,7 @@ const RuntimeDataSourcePanel: React.FC = () => {
     ? organizationView
     : personalView;
 
-  const scopeOptions = useMemo<SelectOption[]>(() => {
+  const scopeOptions = useMemo<OrganizationScopeOption[]>(() => {
     const entries = buildOrgSelectorEntries({
       personalOrgId: DEFAULT_SESSION_ORG_ID,
       personalLabel: tProjects("orgs.personalOrg"),
@@ -261,22 +256,7 @@ const RuntimeDataSourcePanel: React.FC = () => {
     return entries.map((entry) => ({
       value: entry.value,
       label: entry.label,
-      icon:
-        entry.kind === "cloud" ? (
-          <HugeiconsIcon
-            icon={CloudIcon}
-            data-icon="cloud"
-            size={13}
-            strokeWidth={2}
-          />
-        ) : (
-          <HugeiconsIcon
-            icon={LaptopIcon}
-            data-icon="laptop"
-            size={13}
-            strokeWidth={2}
-          />
-        ),
+      scope: entry.kind === "cloud" ? ("cloud" as const) : ("local" as const),
       dataTestId: `runtime-scope-${entry.kind}-${entry.value}`,
     }));
   }, [cloudOrgs, tProjects]);
@@ -321,7 +301,7 @@ const RuntimeDataSourcePanel: React.FC = () => {
         className={
           SELF_MANAGED.has(panelView)
             ? "scrollbar-hide min-h-0 flex-1 overflow-hidden"
-            : "@container scrollbar-hide min-h-0 flex-1 overflow-y-auto px-4"
+            : RUNTIME_PAGE_SCROLL
         }
       >
         {SELF_MANAGED.has(panelView) ? (
@@ -332,16 +312,14 @@ const RuntimeDataSourcePanel: React.FC = () => {
             />
           </Suspense>
         ) : (
-          <div
-            className={`${DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop} ${SECTION_GAP_CLASSES}`}
-          >
+          <RuntimePageBody>
             <Suspense key={effectiveScopeValue} fallback={loadingFallback}>
               <RuntimeSectionContent
                 activeView={panelView}
                 orgId={selectedCloudOrgId}
               />
             </Suspense>
-          </div>
+          </RuntimePageBody>
         )}
       </ScrollPreservation>
     </div>

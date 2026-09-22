@@ -48,6 +48,7 @@ import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
 import AxisMeter from "./AxisMeter";
 import BuilderTypeAvatar from "./BuilderTypeAvatar";
+import { RUNTIME_SECTION_HEADER_HEIGHT } from "./RuntimeSectionHeader";
 import { type AgentCatalog } from "./TeamMemberCard";
 import UsageStatCards from "./UsageStatCards";
 import { getBuilderType } from "./builderTypes";
@@ -217,7 +218,7 @@ export default function TeamMemberDetail({
   return (
     <div className="flex flex-col gap-4" data-testid="team-member-detail">
       <div
-        className="flex min-h-9 items-center justify-between gap-2"
+        className={`${RUNTIME_SECTION_HEADER_HEIGHT} flex shrink-0 items-center justify-between gap-2`}
         data-testid="team-member-detail-header"
       >
         <Button

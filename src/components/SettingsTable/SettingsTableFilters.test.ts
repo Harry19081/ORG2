@@ -187,6 +187,34 @@ describe("SettingsTable filter row", () => {
     expect(container.querySelector("[data-icon='openai']")).toBeNull();
   });
 
+  it("drops the inline toolbar's left column when it holds nothing", async () => {
+    const root = createSmokeRoot();
+    roots.push(root);
+    await root.render(
+      React.createElement(SettingsTable<Row>, {
+        columns: [{ key: "id", label: "Id", renderCell: (row: Row) => row.id }],
+        rows: [{ id: "a" }],
+        getRowKey: (row: Row) => row.id,
+        inlineHeaderToolbar: true,
+        searchBar: {
+          searchValue: "",
+          searchPlaceholder: "Search",
+          onSearchChange: vi.fn(),
+        },
+      })
+    );
+
+    // With nothing to its left, a search-only toolbar must not carry an empty
+    // column and its gap — that pushes the field off the table's gutter and
+    // out of line with the rows underneath.
+    const toolbar = root.container.querySelector<HTMLElement>(
+      ".settings-table-sticky-toolbar [class*='flex-col']"
+    );
+    expect(toolbar).not.toBeNull();
+    expect(toolbar?.children).toHaveLength(1);
+    expect(toolbar?.firstElementChild?.className).toContain("justify-end");
+  });
+
   it("gives filter dropdowns room for provider names and their icons", async () => {
     const { filters } = buildFilters({ provider: "all", status: "all" });
     const container = await mount(filters);

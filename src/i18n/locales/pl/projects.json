@@ -72,6 +72,11 @@
     "personalOrg": "Mój obszar roboczy",
     "linearOrg": "Obszar roboczy Linear",
     "noLinearOrgs": "Brak połączonych obszarów roboczych",
+    "scopeSwitch": "Zakres przestrzeni roboczej",
+    "scope": {
+      "local": "Lokalna",
+      "cloud": "Cloud"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"

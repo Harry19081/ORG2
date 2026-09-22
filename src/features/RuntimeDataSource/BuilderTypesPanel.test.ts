@@ -4,6 +4,8 @@ import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import BuilderTypesPanel from "./BuilderTypesPanel";
+import { RUNTIME_PAGE_TRACK } from "./RuntimePageLayout";
+import { RUNTIME_SECTION_HEADER_HEIGHT } from "./RuntimeSectionHeader";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -107,5 +109,36 @@ describe("BuilderTypesPanel", () => {
     expect(back?.textContent).toBe("");
     expect(back?.getAttribute("aria-label")).toBe("common:actions.back");
     expect(back?.className).toContain("text-text-2");
+  });
+
+  it("puts the gallery body on the same track as its header", () => {
+    // The gallery used to centre on the bare 932px shell while its header sat
+    // on the 900px content measure, so the cards ran 32px wider than every
+    // other Runtime page.
+    const header = container.querySelector<HTMLElement>(
+      '[data-testid="builder-types-back"]'
+    )?.parentElement;
+    const body = container
+      .querySelector<HTMLElement>('[data-testid="builder-types-gallery"]')
+      ?.closest<HTMLElement>(".max-w-\\[932px\\]");
+
+    expect(header?.className).toContain(RUNTIME_PAGE_TRACK);
+    expect(body).not.toBeNull();
+    expect(body?.className).toContain(RUNTIME_PAGE_TRACK);
+    // The gutters live on that track, never on the scroll region around it.
+    expect(body?.parentElement?.className).not.toMatch(/\bpx-\d/);
+  });
+
+  it("opens straight into the avatars, on the shared header height", () => {
+    // The panel header names the surface; the gallery repeats neither that
+    // title nor a hint above the grid.
+    expect(container.textContent).not.toContain("types.galleryTitle");
+    expect(container.textContent).not.toContain("types.galleryHint");
+
+    const header = container.querySelector<HTMLElement>(
+      '[data-testid="builder-types-back"]'
+    )?.parentElement;
+    expect(header?.className).toContain(RUNTIME_SECTION_HEADER_HEIGHT);
+    expect(header?.className).not.toContain("min-h-10");
   });
 });

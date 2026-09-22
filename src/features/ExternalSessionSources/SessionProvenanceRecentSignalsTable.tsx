@@ -450,7 +450,6 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
             `${row.source}:${row.sessionId}:${row.filePath}:${row.action}:${row.occurredAt}:${row.captureMethod}`
           }
           headerHeight="tall"
-          inlineHeaderToolbar
           hover
           loading={signals === null}
           // SettingsTable's built-in pagination snapshots and restores its
@@ -476,7 +475,6 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
             searchPlaceholder: t("agentOrgs.sessionProvenance.signals.search"),
             onSearchChange: setSearchQuery,
             onSearchClear: () => setSearchQuery(""),
-            searchInputSize: "default",
             rightContent: (
               <RefreshButton
                 iconOnly

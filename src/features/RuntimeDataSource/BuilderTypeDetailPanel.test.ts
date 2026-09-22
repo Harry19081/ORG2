@@ -3,7 +3,10 @@ import { act, createElement } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import BuilderTypeDetailModal from "./BuilderTypeDetailPanel";
+import BuilderTypeDetailModal, {
+  BUILDER_TYPE_MODAL_MIN_BODY,
+  BUILDER_TYPE_MODAL_WIDTH,
+} from "./BuilderTypeDetailPanel";
 import { getBuilderType } from "./builderTypes";
 
 vi.mock("react-i18next", () => ({
@@ -95,5 +98,39 @@ describe("BuilderTypeDetailModal", () => {
         ?.click()
     );
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("draws no card chrome inside the dialog and keeps one dialog size", () => {
+    const type = getBuilderType("MDFS");
+    expect(type).toBeDefined();
+
+    act(() =>
+      root.render(
+        createElement(BuilderTypeDetailModal, {
+          type: type!,
+          onClose: vi.fn(),
+          onPrevious: vi.fn(),
+          onNext: vi.fn(),
+        })
+      )
+    );
+
+    // The dialog is the surface; the content adds no second border or fill.
+    const detail = document.body.querySelector<HTMLElement>(
+      '[data-testid="builder-type-detail"]'
+    );
+    expect(detail?.className ?? "").not.toMatch(
+      /\bborder\b|\brounded|\bbg-|\bp-\d/
+    );
+
+    // Stepping through types keeps the dialog the same size.
+    const body = document.body.querySelector<HTMLElement>(
+      '[data-testid="builder-type-detail-modal"]'
+    );
+    expect(body?.className).toContain(BUILDER_TYPE_MODAL_MIN_BODY);
+    expect(
+      document.body.querySelector<HTMLElement>(".liquid-modal-content")?.style
+        .width
+    ).toBe(`${BUILDER_TYPE_MODAL_WIDTH}px`);
   });
 });
