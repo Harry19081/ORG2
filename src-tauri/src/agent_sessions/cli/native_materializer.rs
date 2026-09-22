@@ -1613,6 +1613,11 @@ pub(crate) enum ClaudeDesktopBackfill {
     InsertBudget(usize),
     /// Only this many of the most recently active, unarchived rows, whichever
     /// pass runs. Older conversations never start crossing on their own.
+    /// Constructed by the macOS Market import; other targets only backfill.
+    #[cfg_attr(
+        not(any(all(target_os = "macos", feature = "market-connect"), test)),
+        allow(dead_code)
+    )]
     Recent(usize),
 }
 
