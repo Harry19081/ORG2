@@ -130,21 +130,6 @@
       "description": "O tobie",
       "descriptionHelp": "Krótki opis twojego doświadczenia, zainteresowań i sposobu pracy",
       "descriptionPlaceholder": "Opowiedz Agentowi o sobie…"
-    },
-    "custom": {
-      "title": "Własne statusy",
-      "description": "Dodaj status dla sytuacji, której nie obejmują trzy wbudowane — na przykład „Praca w skupieniu”, „Programowanie w parze” lub „Dyżur”",
-      "add": "Dodaj własny status",
-      "iconLabel": "Ikona"
-    },
-    "reset": {
-      "label": "Przywróć ustawienia statusów",
-      "description": "Przywraca wskazówki i czasy dla statusów Dostępny, Niewidoczny i Zaraz wracam do wartości domyślnych. Własne statusy pozostają bez zmian",
-      "button": "Przywróć wartości domyślne",
-      "confirmTitle": "Przywrócić ustawienia statusów?",
-      "confirmMessage": "Wskazówki i czasy dla statusów Dostępny, Niewidoczny i Zaraz wracam wrócą do wartości domyślnych. Twoje własne statusy zostaną zachowane.",
-      "confirmCancel": "Anuluj",
-      "done": "Przywrócono domyślne ustawienia statusów"
     }
   },
   "general": {

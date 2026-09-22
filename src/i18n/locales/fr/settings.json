@@ -130,21 +130,6 @@
       "description": "À propos de vous",
       "descriptionHelp": "Une courte description de votre parcours, vos centres d'intérêt et votre façon de travailler",
       "descriptionPlaceholder": "Parlez de vous à l'agent…"
-    },
-    "custom": {
-      "title": "Statuts personnalisés",
-      "description": "Ajoutez un statut pour une posture que les trois statuts intégrés ne couvrent pas — par exemple « Travail en profondeur », « Binôme » ou « Astreinte »",
-      "add": "Ajouter un statut personnalisé",
-      "iconLabel": "Icône"
-    },
-    "reset": {
-      "label": "Réinitialiser les réglages de statut",
-      "description": "Rétablit les consignes et les délais de En ligne, Invisible et Absent à leurs valeurs par défaut. Les statuts personnalisés sont conservés",
-      "button": "Rétablir les valeurs par défaut",
-      "confirmTitle": "Réinitialiser les réglages de statut ?",
-      "confirmMessage": "Les consignes et les délais de En ligne, Invisible et Absent reviendront à leurs valeurs par défaut. Vos statuts personnalisés sont conservés.",
-      "confirmCancel": "Annuler",
-      "done": "Réglages de statut rétablis aux valeurs par défaut"
     }
   },
   "general": {

@@ -211,21 +211,6 @@
       "description": "Tentang Anda",
       "descriptionHelp": "Deskripsi singkat tentang latar belakang, minat, dan cara kerja Anda",
       "descriptionPlaceholder": "Ceritakan tentang diri Anda kepada agen…"
-    },
-    "custom": {
-      "title": "Status khusus",
-      "description": "Tambahkan status untuk situasi yang tidak tercakup oleh tiga status bawaan — misalnya \"Kerja fokus\", \"Pemrograman berpasangan\", atau \"Siaga\"",
-      "add": "Tambah status khusus",
-      "iconLabel": "Ikon"
-    },
-    "reset": {
-      "label": "Setel ulang pengaturan status",
-      "description": "Mengembalikan panduan dan waktu untuk Online, Tak terlihat, dan Pergi ke nilai bawaan. Status khusus tetap dipertahankan",
-      "button": "Setel ulang ke bawaan",
-      "confirmTitle": "Setel ulang pengaturan status?",
-      "confirmMessage": "Panduan dan waktu untuk Online, Tak terlihat, dan Pergi akan kembali ke nilai bawaan. Status khusus Anda tetap dipertahankan.",
-      "confirmCancel": "Batal",
-      "done": "Pengaturan status dikembalikan ke nilai bawaan"
     }
   },
   "general": {

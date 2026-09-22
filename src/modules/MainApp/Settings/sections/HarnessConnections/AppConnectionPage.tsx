@@ -32,6 +32,7 @@ import {
   useMarketExecutionProfiles,
 } from "@src/features/MarketConnect/marketProfiles";
 import { profilesForAppliedMarketSelection } from "@src/features/MarketConnect/marketSelection";
+import { createLogger } from "@src/hooks/logger";
 import { HugeiconsIcon, Link01Icon, Store01Icon } from "@src/icons";
 import { SelectionGrid } from "@src/scaffold/WizardSystem/primitives";
 
@@ -48,6 +49,8 @@ import {
  * rather than the absence of one, so the applied provider is always visible.
  * A custom connection is addressed as `profile:<id>`; "new" is an unsaved one.
  */
+const log = createLogger("AppConnectionPage");
+
 type Provider = "default" | "market" | "accounts" | "new" | `profile:${string}`;
 
 const PROFILE_PREFIX = "profile:";
@@ -157,6 +160,16 @@ export default function AppConnectionPage({
     state.view?.configurationIssue
   );
 
+  /**
+   * Both actions report their own failures through Message and settle before
+   * returning, so nothing here awaits them — but a floating promise would
+   * swallow a rejection, so the handler logs instead.
+   */
+  const runAction = (action: () => Promise<void>) => {
+    action().catch((error: unknown) => {
+      log.error("connection action failed:", error);
+    });
+  };
   const refresh = async () => {
     refreshHarnessConnections();
     await state.reload();
@@ -405,7 +418,7 @@ export default function AppConnectionPage({
                 // nothing else selected. Everything else is applied by the
                 // "use this connection" switch once it is ready.
                 selectProvider(next);
-                if (next === "default" && configured) void restore();
+                if (next === "default" && configured) runAction(restore);
               }}
             />
             {(marketManaged ||
@@ -487,8 +500,9 @@ export default function AppConnectionPage({
               onCheckedChange={(on) => {
                 // Switching a provider on applies it; switching the applied one
                 // off hands the app back its own configuration.
-                if (!on || picker === "default") void restore();
-                else void connectMarket();
+                runAction(
+                  !on || picker === "default" ? restore : connectMarket
+                );
               }}
             />
           </SectionRow>

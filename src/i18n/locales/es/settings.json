@@ -130,21 +130,6 @@
       "description": "Sobre ti",
       "descriptionHelp": "Una breve descripción de tu experiencia, intereses y forma de trabajar",
       "descriptionPlaceholder": "Cuéntale al agente sobre ti…"
-    },
-    "custom": {
-      "title": "Estados personalizados",
-      "description": "Añade un estado para una postura que los tres integrados no cubran, por ejemplo «Trabajo profundo», «Programación en pareja» o «De guardia»",
-      "add": "Añadir estado personalizado",
-      "iconLabel": "Icono"
-    },
-    "reset": {
-      "label": "Restablecer los ajustes de estado",
-      "description": "Devuelve las instrucciones y los tiempos de En línea, Invisible y Ausente a sus valores predeterminados. Los estados personalizados se conservan",
-      "button": "Restablecer valores predeterminados",
-      "confirmTitle": "¿Restablecer los ajustes de estado?",
-      "confirmMessage": "Las instrucciones y los tiempos de En línea, Invisible y Ausente volverán a sus valores predeterminados. Tus estados personalizados se conservan.",
-      "confirmCancel": "Cancelar",
-      "done": "Ajustes de estado restablecidos a los valores predeterminados"
     }
   },
   "general": {

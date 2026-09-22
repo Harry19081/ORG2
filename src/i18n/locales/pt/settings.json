@@ -130,21 +130,6 @@
       "description": "Sobre você",
       "descriptionHelp": "Uma breve descrição da sua experiência, interesses e como gosta de trabalhar",
       "descriptionPlaceholder": "Conte ao agente sobre você…"
-    },
-    "custom": {
-      "title": "Estados personalizados",
-      "description": "Adicione um estado para uma postura que os três integrados não cobrem — por exemplo, «Trabalho focado», «Programação em par» ou «De plantão»",
-      "add": "Adicionar estado personalizado",
-      "iconLabel": "Ícone"
-    },
-    "reset": {
-      "label": "Repor as definições de estado",
-      "description": "Repõe as instruções e os tempos de Online, Invisível e Ausente nos valores predefinidos. Os estados personalizados são mantidos",
-      "button": "Repor predefinições",
-      "confirmTitle": "Repor as definições de estado?",
-      "confirmMessage": "As instruções e os tempos de Online, Invisível e Ausente voltam aos valores predefinidos. Os seus estados personalizados são mantidos.",
-      "confirmCancel": "Cancelar",
-      "done": "Definições de estado repostas nos valores predefinidos"
     }
   },
   "general": {

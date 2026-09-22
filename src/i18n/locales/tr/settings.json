@@ -130,21 +130,6 @@
       "description": "Hakkınızda",
       "descriptionHelp": "Geçmişiniz, ilgi alanlarınız ve çalışma tarzınız hakkında kısa bir açıklama",
       "descriptionPlaceholder": "Agent'a kendinizden bahsedin…"
-    },
-    "custom": {
-      "title": "Özel durumlar",
-      "description": "Yerleşik üç durumun kapsamadığı bir hâl için durum ekleyin — örneğin \"Derin çalışma\", \"Eşli programlama\" veya \"Nöbette\"",
-      "add": "Özel durum ekle",
-      "iconLabel": "Simge"
-    },
-    "reset": {
-      "label": "Durum ayarlarını sıfırla",
-      "description": "Çevrimiçi, Görünmez ve Uzakta durumlarının yönergelerini ve sürelerini varsayılan değerlere döndürür. Özel durumlar korunur",
-      "button": "Varsayılanlara sıfırla",
-      "confirmTitle": "Durum ayarları sıfırlansın mı?",
-      "confirmMessage": "Çevrimiçi, Görünmez ve Uzakta durumlarının yönergeleri ve süreleri varsayılan değerlere dönecek. Özel durumlarınız korunur.",
-      "confirmCancel": "İptal",
-      "done": "Durum ayarları varsayılanlara döndürüldü"
     }
   },
   "general": {

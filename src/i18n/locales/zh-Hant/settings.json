@@ -130,21 +130,6 @@
       "description": "關於你",
       "descriptionHelp": "簡短描述你的背景、興趣以及偏好的工作方式",
       "descriptionPlaceholder": "向 Agent 介紹一下你自己…"
-    },
-    "custom": {
-      "title": "自訂狀態",
-      "description": "為內建三種狀態涵蓋不到的情境新增一個狀態，例如「深度工作」「結對程式設計」或「待命」",
-      "add": "新增自訂狀態",
-      "iconLabel": "圖示"
-    },
-    "reset": {
-      "label": "重設狀態設定",
-      "description": "將上線、隱身和離開的指示與時間恢復為預設值。自訂狀態會保留",
-      "button": "恢復預設值",
-      "confirmTitle": "重設狀態設定？",
-      "confirmMessage": "上線、隱身和離開的指示與時間將恢復為預設值。你的自訂狀態會保留。",
-      "confirmCancel": "取消",
-      "done": "狀態設定已恢復為預設值"
     }
   },
   "general": {
