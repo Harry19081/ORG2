@@ -2,10 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  MenuSegmentedRow,
-  MenuSwitchRow,
-} from "@src/components/Dropdown/MenuControlRows";
+import { MenuSegmentedRow } from "@src/components/Dropdown/MenuControlRows";
 import {
   DROPDOWN_CLASSES,
   DROPDOWN_WIDTHS,
@@ -15,12 +12,16 @@ import {
   SPOTLIGHT_PLACEMENT_OPTIONS,
   localizeMenuOptions,
 } from "@src/config/appearance/quickMenuOptions";
-import { useSetting } from "@src/hooks/settings/useSettings";
+import {
+  CHAT_SPLIT_RATIO_LABELS,
+  CHAT_SPLIT_RATIO_VALUES,
+  type ChatSplitRatio,
+} from "@src/engines/ChatPanel/config";
 import {
   type ModelPickerStyle,
-  chatTurnPaginationEnabledAtom,
   modelPickerStyleAtom,
 } from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import { chatSplitRatioAtom } from "@src/store/ui/chatPanel/splitRatioAtoms";
 import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
@@ -46,6 +47,11 @@ interface SidebarLayoutSettingsSubmenuProps {
 type ChatPanelPosition = "left" | "right";
 type WorkstationSidebarPosition = "left" | "right";
 
+const chatSplitRatioOptions = CHAT_SPLIT_RATIO_VALUES.map((value) => ({
+  value,
+  label: CHAT_SPLIT_RATIO_LABELS[value],
+}));
+
 export const SidebarLayoutSettingsSubmenu: React.FC<SidebarLayoutSettingsSubmenuProps> =
   React.memo(({ panelRef, position, onPointerDown, onMouseDown }) => {
     const { t } = useTranslation("common");
@@ -60,14 +66,9 @@ export const SidebarLayoutSettingsSubmenu: React.FC<SidebarLayoutSettingsSubmenu
     const [chatPanelPosition, setChatPanelPosition] = useAtom(
       chatPanelPositionAtom
     );
+    const [chatSplitRatio, setChatSplitRatio] = useAtom(chatSplitRatioAtom);
     const [modelPickerStyle, setModelPickerStyle] =
       useAtom(modelPickerStyleAtom);
-    const [chatTurnPaginationEnabled, setChatTurnPaginationEnabled] = useAtom(
-      chatTurnPaginationEnabledAtom
-    );
-    const [spotlightDimBackground, setSpotlightDimBackground] = useSetting(
-      "general.spotlightDimBackground"
-    );
     const chatPositionOptions = localizeMenuOptions(SIDE_POSITION_OPTIONS, t);
     const spotlightPlacementOptions = localizeMenuOptions(
       SPOTLIGHT_PLACEMENT_OPTIONS,
@@ -101,6 +102,12 @@ export const SidebarLayoutSettingsSubmenu: React.FC<SidebarLayoutSettingsSubmenu
             options={chatPositionOptions}
             onChange={handleChatPanelPositionChange}
           />
+          <MenuSegmentedRow<ChatSplitRatio>
+            label={t("layoutSettings.chatSplitRatio")}
+            value={chatSplitRatio}
+            options={chatSplitRatioOptions}
+            onChange={setChatSplitRatio}
+          />
           <MenuSegmentedRow<WorkstationSidebarPosition>
             label={t("layoutSettings.sidebarPosition")}
             value={layoutMode}
@@ -118,20 +125,6 @@ export const SidebarLayoutSettingsSubmenu: React.FC<SidebarLayoutSettingsSubmenu
             value={spotlightPlacement}
             options={spotlightPlacementOptions}
             onChange={setSpotlightPlacement}
-          />
-          <MenuSwitchRow
-            label={tSettings("general.spotlightDimBackground")}
-            checked={spotlightDimBackground}
-            onCheckedChange={setSpotlightDimBackground}
-          />
-          <div
-            className={DROPDOWN_CLASSES.menuGroupSeparator}
-            data-testid="sidebar-layout-pagination-separator"
-          />
-          <MenuSwitchRow
-            label={t("layoutSettings.paginateChatHistory")}
-            checked={chatTurnPaginationEnabled}
-            onCheckedChange={setChatTurnPaginationEnabled}
           />
         </div>
       </div>

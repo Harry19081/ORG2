@@ -1889,6 +1889,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "聊天面板",
+    "chatSplitRatio": "聊天面板占比",
+    "chatSplitRatioHint": "选择后立即生效；之后拖动分隔条仍以拖动结果为准。",
     "chatLeft": "左侧聊天",
     "chatRight": "右侧聊天",
     "sidebarPosition": "工作站侧边栏",

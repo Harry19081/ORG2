@@ -1889,6 +1889,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Chat panel",
+    "chatSplitRatio": "Chat pane share",
+    "chatSplitRatioHint": "Applied as soon as you pick it; dragging the divider afterwards still wins.",
     "chatLeft": "Chat Left",
     "chatRight": "Chat Right",
     "sidebarPosition": "Workstation sidebar",

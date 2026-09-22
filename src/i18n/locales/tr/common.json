@@ -2055,6 +2055,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Sohbet paneli",
+    "chatSplitRatio": "Sohbet paneli oranı",
+    "chatSplitRatioHint": "Seçtiğiniz anda uygulanır; sonrasında ayırıcıyı sürüklemek yine de öncelikli olur.",
     "chatLeft": "Sohbet solda",
     "chatRight": "Sohbet sağda",
     "sidebarPosition": "Workstation kenar çubuğu",

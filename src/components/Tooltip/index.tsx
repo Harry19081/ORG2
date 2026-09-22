@@ -198,6 +198,15 @@ export interface TooltipProps {
    * @default false
    */
   smartPlacement?: boolean;
+
+  /**
+   * Let the pointer reach the tooltip panel, so it can host controls the user
+   * clicks. Hover tooltips are inert by default (`pointer-events: none`) —
+   * without this the panel's own enter/leave handlers never fire and moving
+   * toward it dismisses it. `trigger="click"` implies this.
+   * @default false
+   */
+  interactive?: boolean;
 }
 
 const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
@@ -224,6 +233,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       framedPanel = false,
       framedPanelWide = false,
       smartPlacement = false,
+      interactive = false,
     },
     _ref
   ) => {
@@ -541,7 +551,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       `native-tooltip-${position}`,
       `native-tooltip-${color}`,
       effectiveOpen && positionReady && "native-tooltip-visible",
-      trigger === "click" && "native-tooltip-interactive",
+      (trigger === "click" || interactive) && "native-tooltip-interactive",
       panelStyle && "native-tooltip-panel",
       usesFramedSurface && "native-tooltip-framed-panel",
       framedPanelWide && "native-tooltip-framed-panel-wide",

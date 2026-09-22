@@ -2055,6 +2055,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Painel de chat",
+    "chatSplitRatio": "Proporção do painel de chat",
+    "chatSplitRatioHint": "Aplicada assim que você escolhe; arrastar o divisor depois continua prevalecendo.",
     "chatLeft": "Chat à esquerda",
     "chatRight": "Chat à direita",
     "sidebarPosition": "Barra lateral do Workstation",

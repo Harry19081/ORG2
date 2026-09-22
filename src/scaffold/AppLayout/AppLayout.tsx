@@ -66,6 +66,7 @@ import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPosi
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import { GlobalModals } from "./GlobalModals";
+import { useChatSplitAreaWidth } from "./useChatSplitAreaWidth";
 
 const SettingsSlot = React.lazy(
   () =>
@@ -370,6 +371,9 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
 
   // Same host resolution as SidebarBase: browser mode is never a Windows host.
   const windowsHost = resolveHostDesktop() === HOST_DESKTOP.WINDOWS;
+  // The station and the chat pane split this element; the split-ratio presets
+  // are fractions of its width, not of the window.
+  const chatSplitAreaRef = useChatSplitAreaWidth();
 
   return (
     <div className="relative z-10 flex h-full min-w-0 flex-1 flex-col">
@@ -383,6 +387,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
         <HoverSidebar.Container>{floatingSidebar}</HoverSidebar.Container>
 
         <div
+          ref={chatSplitAreaRef}
           className={`flex min-h-0 min-w-0 flex-1 flex-col ${
             windowsHost ? "windows-main-page-underlay" : ""
           }`}

@@ -1,6 +1,10 @@
 /** Preview figures for the app Layout settings rows. */
 import React from "react";
 
+import {
+  CHAT_SPLIT_RATIOS,
+  type ChatSplitRatio,
+} from "@src/engines/ChatPanel/config";
 import type { ModelPickerStyle } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import type { LayoutMode } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
@@ -87,6 +91,35 @@ export const ChatPanelPositionFigure: React.FC<{
         y2={HEIGHT - 1}
       />
       <EditorColumn x={position === "left" ? CHAT_W : 0} w={WIDTH - CHAT_W} />
+    </Frame>
+  );
+};
+
+/**
+ * The split preset, drawn at the chosen ratio: the chat pane on the left (the
+ * default side) and the station's editor rows filling the rest.
+ */
+export const ChatSplitRatioFigure: React.FC<{ ratio: ChatSplitRatio }> = ({
+  ratio,
+}) => {
+  const chatW = Math.round(WIDTH * CHAT_SPLIT_RATIOS[ratio]);
+  return (
+    <Frame>
+      <Area
+        x={2}
+        y={2}
+        w={chatW - 4}
+        h={HEIGHT - 4}
+        rx={3}
+        className={EMPHASIS}
+        opacity={0.1}
+      />
+      <TextBar x={chatW - 26} y={13} w={20} className="text-text-3" />
+      <TextBar x={6} y={23} w={chatW - 16} />
+      <TextBar x={6} y={29} w={chatW - 24} />
+      <TextBar x={chatW - 30} y={39} w={24} className="text-text-3" />
+      <VLine x={chatW} y1={1} y2={HEIGHT - 1} />
+      <EditorColumn x={chatW} w={WIDTH - chatW} />
     </Frame>
   );
 };

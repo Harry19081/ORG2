@@ -126,4 +126,66 @@ describe("ResizeHandle indicator", () => {
       document.body.querySelector(".native-tooltip-content-inner")?.textContent
     ).toContain("Hide Sidebar");
   });
+
+  it("leaves the plain hint inert so it cannot swallow pointer events", () => {
+    vi.useFakeTimers();
+    act(() => {
+      root.render(
+        React.createElement(ResizeHandle, {
+          axis: "x",
+          onMouseDown: () => undefined,
+          tooltipLabel: "Hide Sidebar",
+        })
+      );
+    });
+
+    const handle = container.querySelector<HTMLElement>('[role="separator"]');
+    act(() => {
+      handle!.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+      vi.advanceTimersByTime(DEFAULT_BUTTON_TOOLTIP_DELAY_MS);
+    });
+
+    expect(
+      document.body.querySelector(".native-tooltip")?.className
+    ).not.toContain("native-tooltip-interactive");
+  });
+
+  it("makes the hint a reachable popover when it hosts controls", () => {
+    vi.useFakeTimers();
+    act(() => {
+      root.render(
+        React.createElement(ResizeHandle, {
+          axis: "x",
+          onMouseDown: () => undefined,
+          tooltipLabel: "Hide Sidebar",
+          renderTooltipExtra: (close: () => void) =>
+            React.createElement(
+              "button",
+              { onClick: close, type: "button" },
+              "Half"
+            ),
+        })
+      );
+    });
+
+    const handle = container.querySelector<HTMLElement>('[role="separator"]');
+    act(() => {
+      handle!.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+      vi.advanceTimersByTime(DEFAULT_BUTTON_TOOLTIP_DELAY_MS);
+    });
+
+    const panel = document.body.querySelector<HTMLElement>(".native-tooltip");
+    expect(panel?.className).toContain("native-tooltip-interactive");
+    const inner = document.body.querySelector(".native-tooltip-content-inner");
+    expect(inner?.textContent).toContain("Hide Sidebar");
+    expect(inner?.textContent).toContain("Half");
+
+    // Acting on a hosted control slides the divider away from the cursor, so
+    // the popover must dismiss itself rather than linger beside a moved edge.
+    const pick = inner?.querySelector("button");
+    act(() => {
+      pick?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(document.body.querySelector(".native-tooltip")).toBeNull();
+  });
 });

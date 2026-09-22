@@ -5,7 +5,13 @@ import { useTranslation } from "react-i18next";
 import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import { SectionContainer, SectionRow } from "@src/components/layout/Section";
 import {
+  CHAT_SPLIT_RATIO_LABELS,
+  CHAT_SPLIT_RATIO_VALUES,
+  type ChatSplitRatio,
+} from "@src/engines/ChatPanel/config";
+import {
   ChatPanelPositionFigure,
+  ChatSplitRatioFigure,
   ModelPickerStyleFigure,
   SidebarPositionFigure,
 } from "@src/modules/MainApp/Settings/previews/layoutPreviews";
@@ -19,6 +25,7 @@ import {
   type ModelPickerStyle,
   modelPickerStyleAtom,
 } from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import { chatSplitRatioAtom } from "@src/store/ui/chatPanel/splitRatioAtoms";
 import {
   type ChatPanelPosition,
   chatPanelPositionAtom,
@@ -37,6 +44,14 @@ const renderSidebarPosition = (position: LayoutMode) => (
 const renderModelPickerStyle = (style: ModelPickerStyle) => (
   <ModelPickerStyleFigure style={style} />
 );
+const renderChatSplitRatio = (ratio: ChatSplitRatio) => (
+  <ChatSplitRatioFigure ratio={ratio} />
+);
+
+const chatSplitRatioOptions = CHAT_SPLIT_RATIO_VALUES.map((value) => ({
+  value,
+  label: CHAT_SPLIT_RATIO_LABELS[value],
+}));
 
 /**
  * App-level layout preferences. Each row binds the same atom as the sidebar
@@ -51,6 +66,7 @@ export const AppearanceLayoutSection: React.FC = () => {
     workStationLayoutModePersistAtom
   );
   const [modelPickerStyle, setModelPickerStyle] = useAtom(modelPickerStyleAtom);
+  const [chatSplitRatio, setChatSplitRatio] = useAtom(chatSplitRatioAtom);
   const sideOptions = [
     { value: "left", label: t("common:layoutSettings.left") },
     { value: "right", label: t("common:layoutSettings.right") },
@@ -88,6 +104,35 @@ export const AppearanceLayoutSection: React.FC = () => {
           options={withOptionPreviews(sideOptions, renderChatPanelPosition)}
           size="large"
           dataTestId="chat-panel-position-select"
+        />
+      </SectionRow>
+      <SectionRow
+        settingsSearchKeys="general.chatPaneSplitRatio"
+        label={
+          <LabelWithPreview
+            label={t("common:layoutSettings.chatSplitRatio")}
+            preview={
+              <PreviewGrid
+                items={previewItems(
+                  chatSplitRatioOptions,
+                  renderChatSplitRatio
+                )}
+              />
+            }
+          />
+        }
+        description={t("common:layoutSettings.chatSplitRatioHint")}
+      >
+        <SegmentedTextPill<ChatSplitRatio>
+          ariaLabel={t("common:layoutSettings.chatSplitRatio")}
+          value={chatSplitRatio}
+          onChange={setChatSplitRatio}
+          options={withOptionPreviews(
+            chatSplitRatioOptions,
+            renderChatSplitRatio
+          )}
+          size="large"
+          dataTestId="chat-split-ratio-select"
         />
       </SectionRow>
       <SectionRow
