@@ -1543,7 +1543,16 @@
       "chooseModelHint": "Gunakan keyboard untuk bernavigasi, atau klik model dengan mouse",
       "chooseKeyHint": "Gunakan keyboard untuk bernavigasi, atau klik kunci dengan mouse",
       "noModelsForKey": "Tidak ada model yang diaktifkan untuk kunci ini",
-      "selectKey": "Pilih kunci"
+      "selectKey": "Pilih kunci",
+      "sourceScope": {
+        "label": "Sumber model",
+        "keys": "Kunci saya"
+      },
+      "marketEmpty": {
+        "title": "Belum ada paket ORG2 Market",
+        "subtitle": "Beli satu di {{host}} untuk menjalankan model tanpa menambahkan kunci API sendiri.",
+        "action": "Buka ORG2 Market"
+      }
     },
     "modelProperties": {
       "effort": "Upaya",

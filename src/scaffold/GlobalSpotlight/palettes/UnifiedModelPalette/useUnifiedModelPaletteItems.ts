@@ -11,6 +11,7 @@ import { isPairCompatible } from "@src/hooks/models/modelPairCompatibility";
 import { accountHasModel } from "@src/hooks/models/useModelAccountLookup";
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
 import { recentEntriesEquivalent } from "@src/store/session/recentModelEntriesAtom";
+import type { ModelSourceScope } from "@src/store/ui/spotlightModelSourceScopeAtom";
 import {
   MAX_SPOTLIGHT_MODEL_PINS,
   spotlightModelPinsAtom,
@@ -38,6 +39,7 @@ import {
   buildAllModelItems,
   buildModelSelectionSpotlightItem,
 } from "./modelSelectionItems";
+import { scopeIncludesMarket } from "./modelSourceScope";
 import { buildSourceItems } from "./sourceItems";
 import type { SourceOption } from "./types";
 import type { UnifiedModelPaletteData } from "./useUnifiedModelPaletteData";
@@ -46,10 +48,19 @@ interface UseUnifiedModelPaletteItemsParams {
   advancedConfig: AdvancedConfig;
   accounts: KeyVaultAccount[];
   marketSources: MarketProfileSource[];
+  /**
+   * The scoped subset the Step 1 / Step 2 columns list. Pinned and Recent
+   * rows keep using the unscoped lists above, so narrowing the browse
+   * columns never hides a quick pick (see `modelSourceScope.ts`).
+   */
+  listingAccounts: KeyVaultAccount[];
+  listingMarketSources: MarketProfileSource[];
+  sourceScope?: ModelSourceScope;
   marketProfilesLoading: boolean;
   marketProfilesError: string | null;
   refreshMarketProfiles: () => Promise<void>;
   accountLookup: UnifiedModelPaletteData["accountLookup"];
+  fullModelLookup: UnifiedModelPaletteData["fullModelLookup"];
   orgiiModelSet: UnifiedModelPaletteData["orgiiModelSet"];
   orgiiCategoryIds: UnifiedModelPaletteData["orgiiCategoryIds"];
   orgiiPoolEnabled: boolean;
@@ -89,10 +100,14 @@ export function useUnifiedModelPaletteItems({
   advancedConfig,
   accounts,
   marketSources,
+  listingAccounts,
+  listingMarketSources,
+  sourceScope,
   marketProfilesLoading,
   marketProfilesError,
   refreshMarketProfiles,
   accountLookup,
+  fullModelLookup,
   orgiiModelSet,
   orgiiCategoryIds,
   orgiiPoolEnabled,
@@ -180,9 +195,11 @@ export function useUnifiedModelPaletteItems({
     [accounts, saveKey]
   );
 
+  // Quick-pick rows group variants over every reachable model, not just the
+  // ones the active source scope lists.
   const groupByModel = useMemo(
-    () => buildGroupByModel(accountLookup.keys()),
-    [accountLookup]
+    () => buildGroupByModel(fullModelLookup.keys()),
+    [fullModelLookup]
   );
 
   const activeModelId = getActiveModelId(advancedConfig);
@@ -366,16 +383,16 @@ export function useUnifiedModelPaletteItems({
     (): SpotlightItem[] =>
       buildAllModelItems({
         accountLookup,
-        accounts,
-        marketSources,
+        accounts: listingAccounts,
+        marketSources: listingMarketSources,
         handleModelSelect,
         modelAliasVersion,
         resolveGroupLaunchModel,
       }),
     [
       accountLookup,
-      accounts,
-      marketSources,
+      listingAccounts,
+      listingMarketSources,
       handleModelSelect,
       modelAliasVersion,
       resolveGroupLaunchModel,
@@ -386,22 +403,59 @@ export function useUnifiedModelPaletteItems({
     (): SpotlightItem[] =>
       buildAllModelItems({
         accountLookup,
-        accounts,
-        marketSources,
+        accounts: listingAccounts,
+        marketSources: listingMarketSources,
         handleModelSelect: handleModelPreview ?? handleModelSelect,
         modelAliasVersion,
         resolveGroupLaunchModel,
       }),
     [
       accountLookup,
-      accounts,
-      marketSources,
+      listingAccounts,
+      listingMarketSources,
       handleModelPreview,
       handleModelSelect,
       modelAliasVersion,
       resolveGroupLaunchModel,
     ]
   );
+
+  // Market's own loading / error row, shown in whichever column lists sources.
+  // Suppressed while the scope excludes Market: the user asked not to see it.
+  const marketStatusItems = useMemo((): SpotlightItem[] => {
+    if (!scopeIncludesMarket(sourceScope)) return [];
+    if (marketProfilesLoading) {
+      return [
+        {
+          id: "market-profiles:loading",
+          label: tCommon("integrations:marketConnection.loadingPurchases"),
+          icon: "",
+          type: "action",
+          action: () => {},
+          data: { testId: "market-profiles-loading" },
+        },
+      ];
+    }
+    if (marketProfilesError) {
+      return [
+        {
+          id: "market-profiles:error",
+          label: tCommon("integrations:marketConnection.purchasesFailed"),
+          icon: "",
+          type: "action",
+          action: () => void refreshMarketProfiles(),
+          data: { testId: "market-profiles-error" },
+        },
+      ];
+    }
+    return [];
+  }, [
+    marketProfilesError,
+    marketProfilesLoading,
+    refreshMarketProfiles,
+    sourceScope,
+    tCommon,
+  ]);
 
   const sourceItems = useMemo((): SpotlightItem[] => {
     const items = buildSourceItems({
@@ -412,25 +466,7 @@ export function useUnifiedModelPaletteItems({
       accounts,
       persistDefaultVariantForAccount,
     });
-    if (marketProfilesLoading) {
-      items.push({
-        id: "market-profiles:loading",
-        label: tCommon("integrations:marketConnection.loadingPurchases"),
-        icon: "",
-        type: "action",
-        action: () => {},
-        data: { testId: "market-profiles-loading" },
-      });
-    } else if (marketProfilesError) {
-      items.push({
-        id: "market-profiles:error",
-        label: tCommon("integrations:marketConnection.purchasesFailed"),
-        icon: "",
-        type: "action",
-        action: () => void refreshMarketProfiles(),
-        data: { testId: "market-profiles-error" },
-      });
-    }
+    items.push(...marketStatusItems);
     return items;
   }, [
     sourceOptions,
@@ -439,10 +475,7 @@ export function useUnifiedModelPaletteItems({
     handleSourceSelect,
     accounts,
     persistDefaultVariantForAccount,
-    marketProfilesLoading,
-    marketProfilesError,
-    refreshMarketProfiles,
-    tCommon,
+    marketStatusItems,
   ]);
 
   // ── Key-first mode ────────────────────────────────────────────────────
@@ -450,63 +483,47 @@ export function useUnifiedModelPaletteItems({
   const keyItems = useMemo((): SpotlightItem[] => {
     const items: SpotlightItem[] = [
       ...buildKeyItems({
-        accounts,
+        accounts: listingAccounts,
         isCliAgent,
         onSelectKey: handleKeySelect,
         onCommit: handleKeyModelSelect,
       }),
       ...buildMarketProfileItems({
-        sources: marketSources,
+        sources: listingMarketSources,
         onSelect: handleKeySelect,
         marketLabel: tCommon("integrations:marketConnection.title"),
       }),
     ];
-    if (marketProfilesLoading) {
-      items.push({
-        id: "market-profiles:loading",
-        label: tCommon("integrations:marketConnection.loadingPurchases"),
-        icon: "",
-        type: "action",
-        action: () => {},
-        data: { testId: "market-profiles-loading" },
-      });
-    } else if (marketProfilesError) {
-      items.push({
-        id: "market-profiles:error",
-        label: tCommon("integrations:marketConnection.purchasesFailed"),
-        icon: "",
-        type: "action",
-        action: () => void refreshMarketProfiles(),
-        data: { testId: "market-profiles-error" },
-      });
-    }
+    items.push(...marketStatusItems);
     return items;
   }, [
-    accounts,
+    listingAccounts,
     isCliAgent,
     handleKeySelect,
     handleKeyModelSelect,
-    marketSources,
-    marketProfilesLoading,
-    marketProfilesError,
-    refreshMarketProfiles,
+    listingMarketSources,
+    marketStatusItems,
     tCommon,
   ]);
 
+  // Resolved against the scoped lists: Step 2 must never expand a row the
+  // active scope removed from Step 1.
   const selectedKeyAccount = useMemo(
     () =>
       selectedKeyAccountId
-        ? accounts.find((account) => account.id === selectedKeyAccountId)
+        ? listingAccounts.find((account) => account.id === selectedKeyAccountId)
         : undefined,
-    [accounts, selectedKeyAccountId]
+    [listingAccounts, selectedKeyAccountId]
   );
 
   const selectedMarketSource = useMemo(
     () =>
       selectedKeyAccountId
-        ? marketSources.find((source) => source.id === selectedKeyAccountId)
+        ? listingMarketSources.find(
+            (source) => source.id === selectedKeyAccountId
+          )
         : undefined,
-    [marketSources, selectedKeyAccountId]
+    [listingMarketSources, selectedKeyAccountId]
   );
 
   const keyModelItems = useMemo(

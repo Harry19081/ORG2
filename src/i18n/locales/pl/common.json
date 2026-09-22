@@ -1709,7 +1709,16 @@
       "chooseModelHint": "Użyj klawiatury do nawigacji albo kliknij model myszą",
       "chooseKeyHint": "Użyj klawiatury do nawigacji albo kliknij klucz myszą",
       "noModelsForKey": "Brak włączonych modeli dla tego klucza",
-      "selectKey": "Wybierz klucz"
+      "selectKey": "Wybierz klucz",
+      "sourceScope": {
+        "label": "Źródła modeli",
+        "keys": "Moje klucze"
+      },
+      "marketEmpty": {
+        "title": "Brak pakietów ORG2 Market",
+        "subtitle": "Kup go na {{host}}, aby korzystać z modeli bez własnego klucza API.",
+        "action": "Otwórz ORG2 Market"
+      }
     },
     "modelProperties": {
       "effort": "Wysiłek",

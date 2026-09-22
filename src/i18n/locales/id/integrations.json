@@ -1663,10 +1663,10 @@
     "shareOrgPlaceholder": "Organisasi"
   },
   "marketConnection": {
-    "loadingPurchases": "Memuat paket resmi…",
-    "purchasesFailed": "Tidak dapat memuat paket resmi. Coba lagi.",
-    "failed": "Tidak dapat terhubung ke Market. Silakan coba lagi.",
-    "title": "Paket resmi",
+    "loadingPurchases": "Memuat paket ORG2 Market…",
+    "purchasesFailed": "Tidak dapat memuat paket ORG2 Market. Coba lagi.",
+    "failed": "Tidak dapat terhubung ke ORG2 Market. Silakan coba lagi.",
+    "title": "ORG2 Market",
     "launchFailed": "Tidak dapat mengaktifkan paket yang dipilih. Segarkan katalog dan periksa saldo dompet serta otorisasi penggunaan."
   }
 }

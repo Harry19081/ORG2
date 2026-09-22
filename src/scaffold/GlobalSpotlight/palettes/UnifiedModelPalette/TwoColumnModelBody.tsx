@@ -8,6 +8,10 @@
  *   │ Choose model (left)  │ Choose key (right)    │
  *   └──────────────────────┴──────────────────────┘
  *
+ * With `marketPurchaseHint` the left column carries a Market purchase prompt
+ * instead of an empty state — the Market scope is selectable before anything
+ * has been bought.
+ *
  * With `keyFirst` the two lower columns swap roles: keys on the left,
  * the focused key's models on the right. The data flow is unchanged —
  * `items` still drives the left column and `sourceItems` the right one.
@@ -50,6 +54,13 @@ interface TwoColumnModelBodyProps {
   selectedSourceIndex: number;
   /** Whether a model (or key, in key-first mode) row owns the left cursor. */
   hasFocusedModel: boolean;
+  /**
+   * Set while the Market scope is selected and the user owns no package: the
+   * left column then prompts them to buy one instead of reporting emptiness.
+   * `host` is the Market console's own hostname, so a dev override still
+   * names the site the button opens.
+   */
+  marketPurchaseHint?: { host: string; onOpenMarket: () => void };
   /** Whether the Key Vault account list is currently loading. */
   accountsLoading: boolean;
   /** Key Vault account-list load error. */
@@ -61,6 +72,8 @@ interface TwoColumnModelBodyProps {
 }
 
 // ============ CONSTANTS ============
+
+export const MARKET_PURCHASE_HINT_TEST_ID = "model-market-purchase-hint";
 
 const COLUMN_HEIGHT = 260;
 const RECENT_MAX_HEIGHT = 220;
@@ -154,6 +167,7 @@ export const TwoColumnModelBody: React.FC<TwoColumnModelBodyProps> = ({
   sourceItems,
   selectedSourceIndex,
   hasFocusedModel,
+  marketPurchaseHint,
   accountsLoading,
   accountsError,
   onRetryAccounts,
@@ -278,29 +292,47 @@ export const TwoColumnModelBody: React.FC<TwoColumnModelBodyProps> = ({
               className="flex items-center justify-center"
               style={{ height: COLUMN_HEIGHT }}
             >
-              <Placeholder
-                variant={
-                  searchQuery.trim()
-                    ? "no-results"
-                    : accountsLoading
-                      ? "loading"
-                      : accountsError
-                        ? "error"
-                        : "empty"
-                }
-                title={
-                  searchQuery.trim()
-                    ? t("common:common.noResults")
-                    : accountsLoading
-                      ? t("placeholders.loading")
-                      : accountsError
-                        ? t("placeholders.failedToLoad")
-                        : t("placeholders.noItemsAvailable")
-                }
-                subtitle={accountsError ?? undefined}
-                onRetry={accountsError ? onRetryAccounts : undefined}
-                placement="sidebar"
-              />
+              {marketPurchaseHint ? (
+                // Nothing to list and nothing to search: the only useful next
+                // step is buying a package, so say that instead of "empty".
+                <Placeholder
+                  variant="empty"
+                  placement="sidebar"
+                  title={t("selectors.modelSelector.marketEmpty.title")}
+                  subtitle={t("selectors.modelSelector.marketEmpty.subtitle", {
+                    host: marketPurchaseHint.host,
+                  })}
+                  action={{
+                    label: t("selectors.modelSelector.marketEmpty.action"),
+                    onClick: marketPurchaseHint.onOpenMarket,
+                    dataTestId: MARKET_PURCHASE_HINT_TEST_ID,
+                  }}
+                />
+              ) : (
+                <Placeholder
+                  variant={
+                    searchQuery.trim()
+                      ? "no-results"
+                      : accountsLoading
+                        ? "loading"
+                        : accountsError
+                          ? "error"
+                          : "empty"
+                  }
+                  title={
+                    searchQuery.trim()
+                      ? t("common:common.noResults")
+                      : accountsLoading
+                        ? t("placeholders.loading")
+                        : accountsError
+                          ? t("placeholders.failedToLoad")
+                          : t("placeholders.noItemsAvailable")
+                  }
+                  subtitle={accountsError ?? undefined}
+                  onRetry={accountsError ? onRetryAccounts : undefined}
+                  placement="sidebar"
+                />
+              )}
             </div>
           )}
         </div>
@@ -319,11 +351,15 @@ export const TwoColumnModelBody: React.FC<TwoColumnModelBodyProps> = ({
               className="flex items-center justify-center px-4"
               style={{ height: COLUMN_HEIGHT }}
             >
-              <Placeholder
-                variant="empty"
-                title={rightEmptyTitle}
-                placement="sidebar"
-              />
+              {/* No navigation hint while the left column is asking the user
+                  to buy a package: there is nothing there to navigate. */}
+              {!marketPurchaseHint && (
+                <Placeholder
+                  variant="empty"
+                  title={rightEmptyTitle}
+                  placement="sidebar"
+                />
+              )}
             </div>
           ) : (
             <div

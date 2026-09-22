@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { useModelAliasRegistryVersion } from "@src/hooks/models/modelAliasRegistry";
+import type { ModelSourceScope } from "@src/store/ui/spotlightModelSourceScopeAtom";
 
 import type { UnifiedModelPaletteProps } from "./types";
 import { useUnifiedModelPaletteData } from "./useUnifiedModelPaletteData";
@@ -17,6 +18,7 @@ export function useUnifiedModelPalette({
   dispatchCategoryOverride,
   cliAgentTypeOverride,
   keyFirst = false,
+  sourceScope,
   closeOnSourceSelect = true,
 }: Pick<
   UnifiedModelPaletteProps,
@@ -33,6 +35,12 @@ export function useUnifiedModelPalette({
    * model-first.
    */
   keyFirst?: boolean;
+  /**
+   * Which kind of credential the two browse columns list. Only the spotlight
+   * palette exposes the switch; the dropdown variant omits it and keeps
+   * listing both kinds.
+   */
+  sourceScope?: ModelSourceScope;
   /** Keep an anchored dropdown open after committing its second-level source. */
   closeOnSourceSelect?: boolean;
 }) {
@@ -42,7 +50,11 @@ export function useUnifiedModelPalette({
   const {
     accounts,
     accountLookup,
+    fullModelLookup,
     marketSources,
+    listingAccounts,
+    listingMarketSources,
+    hasMarketSources,
     marketProfilesLoading,
     marketProfilesError,
     refreshMarketProfiles,
@@ -62,6 +74,7 @@ export function useUnifiedModelPalette({
     isOpen,
     dispatchCategoryOverride,
     cliAgentTypeOverride,
+    sourceScope,
   });
 
   const isCliAgent = dispatchCategory === "cli_agent";
@@ -93,6 +106,9 @@ export function useUnifiedModelPalette({
     accountLookupSize: accountLookup.size,
     accounts,
     marketSources,
+    listingAccounts,
+    listingMarketSources,
+    sourceScope,
     advancedConfig,
     onConfigChange,
     onClose,
@@ -117,10 +133,14 @@ export function useUnifiedModelPalette({
     advancedConfig,
     accounts,
     marketSources,
+    listingAccounts,
+    listingMarketSources,
+    sourceScope,
     marketProfilesLoading,
     marketProfilesError,
     refreshMarketProfiles,
     accountLookup,
+    fullModelLookup,
     orgiiModelSet,
     orgiiCategoryIds,
     orgiiPoolEnabled,
@@ -171,6 +191,8 @@ export function useUnifiedModelPalette({
     accountsError,
     refreshAllModels,
     refreshingAllModels,
+    hasMarketSources,
+    marketProfilesLoading,
     tCommon,
   };
 }

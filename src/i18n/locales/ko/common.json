@@ -1712,7 +1712,16 @@
       "chooseModelHint": "키보드로 이동하거나 마우스로 모델을 클릭하세요",
       "chooseKeyHint": "키보드로 이동하거나 마우스로 키를 클릭하세요",
       "noModelsForKey": "이 키에 활성화된 모델이 없습니다",
-      "selectKey": "키 선택"
+      "selectKey": "키 선택",
+      "sourceScope": {
+        "label": "모델 소스",
+        "keys": "내 키"
+      },
+      "marketEmpty": {
+        "title": "아직 ORG2 Market 패키지가 없습니다",
+        "subtitle": "{{host}}에서 구매하면 자체 API 키 없이 모델을 사용할 수 있습니다.",
+        "action": "ORG2 Market 열기"
+      }
     },
     "modelProperties": {
       "effort": "Effort",

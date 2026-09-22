@@ -1712,7 +1712,16 @@
       "chooseModelHint": "Usa el teclado para navegar o haz clic en un modelo con el mouse",
       "chooseKeyHint": "Usa el teclado para navegar o haz clic en una clave con el mouse",
       "noModelsForKey": "No hay modelos habilitados para esta clave",
-      "selectKey": "Seleccionar una clave"
+      "selectKey": "Seleccionar una clave",
+      "sourceScope": {
+        "label": "Fuentes de modelos",
+        "keys": "Mis claves"
+      },
+      "marketEmpty": {
+        "title": "Aún no hay paquetes de ORG2 Market",
+        "subtitle": "Compra uno en {{host}} para usar modelos sin añadir tu propia clave de API.",
+        "action": "Abrir ORG2 Market"
+      }
     },
     "modelProperties": {
       "effort": "Esfuerzo",

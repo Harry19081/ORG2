@@ -1712,7 +1712,16 @@
       "chooseModelHint": "Dùng bàn phím để điều hướng hoặc dùng chuột nhấp vào một mô hình",
       "chooseKeyHint": "Dùng bàn phím để điều hướng hoặc dùng chuột nhấp vào một khóa",
       "noModelsForKey": "Khóa này chưa bật mô hình nào",
-      "selectKey": "Chọn khóa"
+      "selectKey": "Chọn khóa",
+      "sourceScope": {
+        "label": "Nguồn mô hình",
+        "keys": "Khóa của tôi"
+      },
+      "marketEmpty": {
+        "title": "Chưa có gói ORG2 Market nào",
+        "subtitle": "Mua một gói tại {{host}} để dùng mô hình mà không cần thêm khóa API của bạn.",
+        "action": "Mở ORG2 Market"
+      }
     },
     "modelProperties": {
       "effort": "Effort",

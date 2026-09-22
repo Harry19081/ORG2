@@ -1663,10 +1663,10 @@
     "shareOrgPlaceholder": "संगठन"
   },
   "marketConnection": {
-    "loadingPurchases": "आधिकारिक पैकेज लोड हो रहे हैं…",
-    "purchasesFailed": "आधिकारिक पैकेज लोड नहीं हो सके। फिर से कोशिश करें।",
-    "failed": "Market से कनेक्ट नहीं हो सका। कृपया फिर से कोशिश करें।",
-    "title": "आधिकारिक पैकेज",
+    "loadingPurchases": "ORG2 Market पैकेज लोड हो रहे हैं…",
+    "purchasesFailed": "ORG2 Market पैकेज लोड नहीं हो सके। फिर से कोशिश करें।",
+    "failed": "ORG2 Market से कनेक्ट नहीं हो सका। कृपया फिर से कोशिश करें।",
+    "title": "ORG2 Market",
     "launchFailed": "चुना गया पैकेज सक्षम नहीं हो सका। कैटलॉग रीफ़्रेश करें और वॉलेट में राशि तथा उपयोग की अनुमति जाँचें।"
   }
 }

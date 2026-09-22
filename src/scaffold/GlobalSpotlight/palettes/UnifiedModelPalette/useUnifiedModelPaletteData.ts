@@ -41,8 +41,32 @@ import {
   recentModelEntriesAtom,
   recordRecentEntry,
 } from "@src/store/session/recentModelEntriesAtom";
+import type { ModelSourceScope } from "@src/store/ui/spotlightModelSourceScopeAtom";
 
 import { refreshModelAccounts } from "./modelAccountRefresh";
+import { scopeListingSources } from "./modelSourceScope";
+
+/** Model id → the keys and Market packages that serve it. */
+function buildModelLookup(
+  accounts: KeyVaultAccount[],
+  marketSources: MarketProfileSource[]
+): ReturnType<typeof buildAccountLookup> {
+  const lookup = buildAccountLookup(accounts);
+  for (const source of marketSources) {
+    for (const modelId of source.modelIds) {
+      const existing = lookup.get(modelId);
+      if (existing) {
+        existing.totalKeys += 1;
+        if (!existing.agentTypes.includes(source.modelType)) {
+          existing.agentTypes.push(source.modelType);
+        }
+      } else {
+        lookup.set(modelId, { totalKeys: 1, agentTypes: [source.modelType] });
+      }
+    }
+  }
+  return lookup;
+}
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
@@ -59,12 +83,30 @@ interface UseUnifiedModelPaletteDataOptions {
    * Paired with `dispatchCategoryOverride`.
    */
   cliAgentTypeOverride?: CliAgentType;
+  /**
+   * Which kind of credential the browse columns list. Omitted by the
+   * anchored dropdown variant, which carries no switch and so keeps
+   * listing both kinds.
+   */
+  sourceScope?: ModelSourceScope;
 }
 
 export interface UnifiedModelPaletteData {
   accounts: KeyVaultAccount[];
   accountLookup: ReturnType<typeof buildAccountLookup>;
+  /** Unscoped counterpart of {@link accountLookup}, for Recent/Pinned rows. */
+  fullModelLookup: ReturnType<typeof buildAccountLookup>;
   marketSources: MarketProfileSource[];
+  /**
+   * The subset of {@link accounts} / {@link marketSources} the Step 1 and
+   * Step 2 columns may list under the active scope. Pinned and Recent rows —
+   * and every apply path behind them — keep using the unscoped lists, so a
+   * browse filter never strands a quick pick it cannot launch.
+   */
+  listingAccounts: KeyVaultAccount[];
+  listingMarketSources: MarketProfileSource[];
+  /** Whether the account has any Market package at all, scope aside. */
+  hasMarketSources: boolean;
   marketProfilesLoading: boolean;
   marketProfilesError: string | null;
   refreshMarketProfiles: () => Promise<void>;
@@ -101,6 +143,7 @@ export function useUnifiedModelPaletteData({
   isOpen,
   dispatchCategoryOverride,
   cliAgentTypeOverride,
+  sourceScope,
 }: UseUnifiedModelPaletteDataOptions): UnifiedModelPaletteData {
   const creatorDispatchCategory = useAtomValue(dispatchCategoryAtom);
   const creatorCliAgentType = useAtomValue(cliAgentTypeAtom);
@@ -151,26 +194,26 @@ export function useUnifiedModelPaletteData({
   const { orgiiCategories, orgiiModelSet, orgiiCategoryIds } =
     useOrgiiPoolCategories();
 
-  const accountLookup = useMemo(() => {
-    const lookup = buildAccountLookup(accounts);
-    for (const source of marketSources) {
-      for (const modelId of source.modelIds) {
-        const existing = lookup.get(modelId);
-        if (existing) {
-          existing.totalKeys += 1;
-          if (!existing.agentTypes.includes(source.modelType)) {
-            existing.agentTypes.push(source.modelType);
-          }
-        } else {
-          lookup.set(modelId, {
-            totalKeys: 1,
-            agentTypes: [source.modelType],
-          });
-        }
-      }
-    }
-    return lookup;
-  }, [accounts, marketSources]);
+  const hasMarketSources = marketSources.length > 0;
+  const { accounts: listingAccounts, marketSources: listingMarketSources } =
+    useMemo(
+      () => scopeListingSources(accounts, marketSources, sourceScope),
+      [accounts, marketSources, sourceScope]
+    );
+
+  const accountLookup = useMemo(
+    () => buildModelLookup(listingAccounts, listingMarketSources),
+    [listingAccounts, listingMarketSources]
+  );
+
+  // Every model the user can reach, scope aside. Recent and Pinned rows group
+  // their variants through this one so narrowing the browse columns cannot
+  // strip a quick pick's effort pill.
+  const fullModelLookup = useMemo(
+    () =>
+      sourceScope ? buildModelLookup(accounts, marketSources) : accountLookup,
+    [accountLookup, accounts, marketSources, sourceScope]
+  );
 
   const recentEntries = useAtomValue(recentModelEntriesAtom);
   const setRecentEntries = useSetAtom(recentModelEntriesAtom);
@@ -209,7 +252,11 @@ export function useUnifiedModelPaletteData({
   return {
     accounts,
     accountLookup,
+    fullModelLookup,
     marketSources,
+    listingAccounts,
+    listingMarketSources,
+    hasMarketSources,
     marketProfilesLoading,
     marketProfilesError,
     refreshMarketProfiles,

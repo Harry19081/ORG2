@@ -1712,7 +1712,16 @@
       "chooseModelHint": "Gezinmek için klavyeyi kullanın veya fareyle bir modele tıklayın",
       "chooseKeyHint": "Gezinmek için klavyeyi kullanın veya fareyle bir anahtara tıklayın",
       "noModelsForKey": "Bu anahtar için etkin model yok",
-      "selectKey": "Anahtar seç"
+      "selectKey": "Anahtar seç",
+      "sourceScope": {
+        "label": "Model kaynakları",
+        "keys": "Anahtarlarım"
+      },
+      "marketEmpty": {
+        "title": "Henüz ORG2 Market paketi yok",
+        "subtitle": "Kendi API anahtarınızı eklemeden model çalıştırmak için {{host}} üzerinden bir tane satın alın.",
+        "action": "ORG2 Market'i aç"
+      }
     },
     "modelProperties": {
       "effort": "Çaba",

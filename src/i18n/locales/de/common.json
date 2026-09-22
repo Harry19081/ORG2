@@ -1712,7 +1712,16 @@
       "chooseModelHint": "Navigiere mit der Tastatur oder klicke mit der Maus auf ein Modell",
       "chooseKeyHint": "Navigiere mit der Tastatur oder klicke mit der Maus auf einen Schlüssel",
       "noModelsForKey": "Für diesen Schlüssel sind keine Modelle aktiviert",
-      "selectKey": "Schlüssel auswählen"
+      "selectKey": "Schlüssel auswählen",
+      "sourceScope": {
+        "label": "Modellquellen",
+        "keys": "Meine Schlüssel"
+      },
+      "marketEmpty": {
+        "title": "Noch keine ORG2 Market-Pakete",
+        "subtitle": "Kaufe eines auf {{host}}, um Modelle ohne eigenen API-Schlüssel zu nutzen.",
+        "action": "ORG2 Market öffnen"
+      }
     },
     "modelProperties": {
       "effort": "Aufwand",

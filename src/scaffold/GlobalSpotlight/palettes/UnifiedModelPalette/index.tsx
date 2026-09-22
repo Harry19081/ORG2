@@ -7,6 +7,11 @@
  * (`spotlightModelKeyFirstAtom`) flips the columns to Keys (left) |
  * Models (right).
  *
+ * The icon switch leading the search row (`spotlightModelSourceScopeAtom`)
+ * picks which kind of credential those two columns list — Key Vault keys or
+ * Market packages, never both. Pinned and Recent stay whole under either
+ * scope, and picking Market with nothing bought prompts the user to buy one.
+ *
  * Keyboard: the left column is driven by the shared selector kernel.
  * Enter / ArrowRight / Tab on a model row hands focus to the right column;
  * Tab / ArrowLeft / Escape returns focus to the left column.
@@ -24,11 +29,18 @@ import React, {
 
 import Button from "@src/components/Button";
 import { useRefreshSpin } from "@src/components/RefreshIcon/useRefreshSpin";
+import { marketConsoleUrl } from "@src/features/MarketConnect/urlPolicy";
 import { useFilteredItems } from "@src/hooks/search";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { agentNameAtom } from "@src/store/session/creatorStateAtom";
 import { spotlightModelKeyFirstAtom } from "@src/store/ui/spotlightModelKeyFirstAtom";
+import {
+  MODEL_SOURCE_SCOPE,
+  type ModelSourceScope,
+  spotlightModelSourceScopeAtom,
+} from "@src/store/ui/spotlightModelSourceScopeAtom";
+import { openLink } from "@src/util/ui/openLink";
 
 import {
   ManageKeysFooterAction,
@@ -38,6 +50,7 @@ import {
 } from "../../components";
 import { PaletteBody, ShellFooterAction, SpotlightShell } from "../../shell";
 import type { SpotlightItem } from "../../types";
+import { ModelSourceScopeSwitch } from "./ModelSourceScopeSwitch";
 import { TwoColumnModelBody } from "./TwoColumnModelBody";
 import { advancePaletteSearchState } from "./searchState";
 import type { UnifiedModelPaletteProps } from "./types";
@@ -63,6 +76,7 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
   const creatorAgentName = useAtomValue(agentNameAtom);
   const agentName = agentNameOverride ?? creatorAgentName;
   const [keyFirst, setKeyFirst] = useAtom(spotlightModelKeyFirstAtom);
+  const [sourceScope, setSourceScope] = useAtom(spotlightModelSourceScopeAtom);
 
   const {
     activeColumn,
@@ -87,6 +101,8 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
     accountsError,
     refreshAllModels,
     refreshingAllModels,
+    hasMarketSources,
+    marketProfilesLoading,
     tCommon: tCommonHook,
   } = useUnifiedModelPalette({
     isOpen,
@@ -96,6 +112,7 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
     dispatchCategoryOverride,
     cliAgentTypeOverride,
     keyFirst,
+    sourceScope,
   });
 
   // ============ COLUMN ORIENTATION ============
@@ -428,6 +445,32 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
       void refreshAllModels();
     }, refreshingAllModels);
 
+  // Clicking a segment pulls focus out of the search input; hand it straight
+  // back so the arrow keys keep driving the rebuilt columns.
+  const handleSourceScopeChange = useCallback(
+    (scope: ModelSourceScope) => {
+      setSourceScope(scope);
+      focusModelInput();
+    },
+    [focusModelInput, setSourceScope]
+  );
+
+  // The Market scope stays selectable with nothing bought. Once the catalog
+  // has actually reported back, an empty one means "buy a package", which is
+  // what the left column offers in place of its empty state.
+  const marketScopeOnly = sourceScope === MODEL_SOURCE_SCOPE.MARKET;
+  const marketUrl = marketConsoleUrl("/");
+  const marketPurchaseHint = useMemo(
+    () =>
+      marketScopeOnly && !hasMarketSources && !marketProfilesLoading
+        ? {
+            host: new URL(marketUrl).host,
+            onOpenMarket: () => openLink(marketUrl),
+          }
+        : undefined,
+    [hasMarketSources, marketProfilesLoading, marketScopeOnly, marketUrl]
+  );
+
   const refreshModelsButton = (
     <Button
       variant="tertiary"
@@ -451,6 +494,16 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
     />
   );
 
+  // The search row's leading slot — the same position the GUI / TUI launch
+  // pill holds in the composer's info line. It takes over the magnifier's
+  // spot, which the placeholder text already makes redundant.
+  const inputLeadingSlot = (
+    <ModelSourceScopeSwitch
+      value={sourceScope}
+      onChange={handleSourceScopeChange}
+    />
+  );
+
   const content = (
     <TwoColumnModelBody
       items={filteredItems}
@@ -463,7 +516,14 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
       sourceItems={secondaryItems}
       selectedSourceIndex={selectedSourceIndex}
       hasFocusedModel={hasFocusedPrimary}
-      accountsLoading={accountsLoading || refreshingAllModels}
+      marketPurchaseHint={marketPurchaseHint}
+      // Under the Market scope the catalog is the whole list, so its load is
+      // the column's load; elsewhere it fills in behind what is already shown.
+      accountsLoading={
+        accountsLoading ||
+        refreshingAllModels ||
+        (marketScopeOnly && marketProfilesLoading)
+      }
       accountsError={accountsError}
       onRetryAccounts={() => {
         void refreshAllModels();
@@ -495,6 +555,7 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
           path={[]}
           placeholder={placeholderModel}
           contentOverride={content}
+          inputLeadingSlot={inputLeadingSlot}
           inputTrailingSlot={refreshModelsButton}
         />
       </VariantPillEditContext.Provider>

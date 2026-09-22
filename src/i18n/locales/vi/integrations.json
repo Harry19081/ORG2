@@ -1663,10 +1663,10 @@
     "shareOrgPlaceholder": "Tổ chức"
   },
   "marketConnection": {
-    "loadingPurchases": "Loading official packages…",
-    "purchasesFailed": "Could not load official packages. Try again.",
-    "failed": "Không thể kết nối với Market. Vui lòng thử lại.",
-    "title": "Official packages",
+    "loadingPurchases": "Đang tải gói ORG2 Market…",
+    "purchasesFailed": "Không thể tải gói ORG2 Market. Vui lòng thử lại.",
+    "failed": "Không thể kết nối với ORG2 Market. Vui lòng thử lại.",
+    "title": "ORG2 Market",
     "launchFailed": "Could not enable the selected package. Refresh the catalog and check wallet funds and usage authorization."
   }
 }
