@@ -9,7 +9,13 @@ export const ActivityChunkSchema = z.object({
   session_id: z.string().optional(),
   action_type: z.string(),
   function: z.string(),
-  args: UnknownRecordSchema,
+  // Rust `ActivityChunk.args` is an unconstrained `serde_json::Value` read back
+  // from `code_session_chunks.args_json`, and the CLI parsers pass an unknown
+  // tool's `input` through verbatim — nothing enforces that it is an object.
+  // `result` already normalizes any JSON shape; `args` must too, or a single
+  // odd row fails the whole `cli_agent_chunks` read now that output schemas
+  // decode in production.
+  args: JsonRecordFromAnySchema,
   result: JsonRecordFromAnySchema,
   created_at: z.string(),
   thread_id: z.string().optional(),
