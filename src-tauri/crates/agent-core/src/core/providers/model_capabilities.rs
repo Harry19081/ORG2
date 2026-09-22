@@ -134,6 +134,18 @@ struct FamilyRule {
 /// 3. Nothing else. Tests pin that no other module does substring checks.
 const FAMILY_RULES: &[FamilyRule] = &[
     // ── Anthropic ──
+    // https://platform.claude.com/docs/en/models/opus-5-5/overview
+    FamilyRule {
+        pattern: "claude-opus-5-5",
+        context_window: 1_000_000,
+        thinking: ThinkingSupport::AlwaysOn,
+    },
+    // https://platform.claude.com/docs/en/models/opus-5/overview
+    FamilyRule {
+        pattern: "claude-opus-5",
+        context_window: 1_000_000,
+        thinking: ThinkingSupport::Optional,
+    },
     // claude-fable-5: thinks by default in non-streaming responses
     // (2026-06-12 incident: thinking-only side-query responses broke
     // compaction + session-memory extraction).
@@ -255,6 +267,16 @@ const FAMILY_RULES: &[FamilyRule] = &[
         thinking: ThinkingSupport::AlwaysOn,
     },
     FamilyRule {
+        pattern: "gpt-6-sol",
+        context_window: 1_050_000,
+        thinking: ThinkingSupport::AlwaysOn,
+    },
+    FamilyRule {
+        pattern: "gpt-6-luna",
+        context_window: 1_050_000,
+        thinking: ThinkingSupport::AlwaysOn,
+    },
+    FamilyRule {
         pattern: "gpt-5.6",
         context_window: 1_050_000,
         thinking: ThinkingSupport::AlwaysOn,
@@ -262,6 +284,33 @@ const FAMILY_RULES: &[FamilyRule] = &[
     FamilyRule {
         pattern: "gpt-5.5",
         context_window: 1_050_000,
+        thinking: ThinkingSupport::AlwaysOn,
+    },
+    // https://developers.openai.com/api/docs/models/gpt-5.4
+    // Mini/nano and earlier Codex releases retain a 400K window.
+    FamilyRule {
+        pattern: "gpt-5.4-mini",
+        context_window: 400_000,
+        thinking: ThinkingSupport::AlwaysOn,
+    },
+    FamilyRule {
+        pattern: "gpt-5.4-nano",
+        context_window: 400_000,
+        thinking: ThinkingSupport::AlwaysOn,
+    },
+    FamilyRule {
+        pattern: "gpt-5.4",
+        context_window: 1_050_000,
+        thinking: ThinkingSupport::AlwaysOn,
+    },
+    FamilyRule {
+        pattern: "gpt-5.3-codex",
+        context_window: 400_000,
+        thinking: ThinkingSupport::AlwaysOn,
+    },
+    FamilyRule {
+        pattern: "gpt-5.2",
+        context_window: 400_000,
         thinking: ThinkingSupport::AlwaysOn,
     },
     FamilyRule {
@@ -727,6 +776,8 @@ const FAMILY_TABLE: &[(&str, ModelFamily)] = &[
     ("claude", ModelFamily::Anthropic),
     ("glm", ModelFamily::Zhipu),
     ("gpt-6-astra", ModelFamily::OpenAi),
+    ("gpt-6-sol", ModelFamily::OpenAi),
+    ("gpt-6-luna", ModelFamily::OpenAi),
     ("gpt-5", ModelFamily::OpenAi),
     ("o1", ModelFamily::OpenAi),
     ("o3", ModelFamily::OpenAi),

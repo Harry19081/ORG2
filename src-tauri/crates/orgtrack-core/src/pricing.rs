@@ -382,15 +382,19 @@ mod tests {
     #[test]
     fn current_published_rates_resolve_without_stale_family_defaults() {
         // Independent expected values from the provider sources recorded in
-        // docs/model-pricing-2026-09-14.md, in input/output/write/read order.
+        // docs/model-pricing-2026-09-14.md, plus current provider model pages
+        // for the 2026-09-23 additions, in input/output/write/read order.
         let cases = [
             ("gpt-6-astra", [10.0, 50.0, 12.5, 1.0]),
+            ("gpt-6-sol", [2.0, 10.0, 2.5, 0.2]),
+            ("gpt-6-luna", [0.1, 0.5, 0.125, 0.01]),
             ("gpt-5.6-sol", [4.0, 20.0, 5.0, 0.4]),
             ("gpt-5.6", [4.0, 20.0, 5.0, 0.4]),
             ("gpt-5.6-terra", [2.0, 12.0, 2.5, 0.2]),
             ("gpt-5.6-luna", [0.2, 1.2, 0.25, 0.02]),
             ("gpt-5.5-pro", [30.0, 180.0, 30.0, 30.0]),
             ("claude-fable-5-1", [10.0, 50.0, 12.5, 0.25]),
+            ("claude-opus-5-5", [4.0, 20.0, 5.0, 0.2]),
             ("claude-mythos-5-1", [10.0, 50.0, 12.5, 0.25]),
             ("claude-mythos-5", [10.0, 50.0, 12.5, 1.0]),
             ("claude-sonnet-5", [2.0, 10.0, 2.5, 0.2]),

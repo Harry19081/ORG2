@@ -556,6 +556,36 @@ fn codex_gpt_5_6_exposes_max_and_limits_ultra_to_sol_and_terra() {
 }
 
 #[test]
+fn codex_gpt_6_catalog_includes_sol_and_luna_without_terra() {
+    use crate::commands::crud::KeyInfo;
+    use crate::key_store::{AuthMethod, ModelKey, ModelType};
+    use crate::model_catalog::{CODEX_OAUTH_DEFAULT_ENABLED_MODELS, CODEX_OAUTH_MODELS};
+
+    assert!(CODEX_OAUTH_MODELS.contains(&"gpt-6-sol"));
+    assert!(CODEX_OAUTH_MODELS.contains(&"gpt-6-luna"));
+    assert!(!CODEX_OAUTH_MODELS.contains(&"gpt-6-terra"));
+    assert!(CODEX_OAUTH_DEFAULT_ENABLED_MODELS.contains(&"gpt-6-sol"));
+    assert!(CODEX_OAUTH_DEFAULT_ENABLED_MODELS.contains(&"gpt-6-luna"));
+
+    let mut key = ModelKey::new(ModelType::Codex);
+    key.auth_method = AuthMethod::Oauth;
+    key.session_token = Some("access-token".to_string());
+    key.available_models = vec!["gpt-6-sol".into(), "gpt-6-luna".into()];
+    let info = KeyInfo::from(key);
+    for (base, has_ultra) in [("gpt-6-sol", true), ("gpt-6-luna", false)] {
+        assert!(info.model_variants.iter().any(|variant| {
+            variant.model == format!("{base}-max") && variant.reasoning.as_deref() == Some("max")
+        }));
+        assert_eq!(
+            info.model_variants
+                .iter()
+                .any(|variant| variant.model == format!("{base}-ultra")),
+            has_ultra
+        );
+    }
+}
+
+#[test]
 fn live_codex_catalog_preserves_capabilities_and_completes_builtin_models() {
     use crate::commands::crud::CODEX_OAUTH_MODELS;
     use crate::commands::validate::{resolved_oauth_catalog, OAuthModelCatalogSource};
@@ -603,6 +633,8 @@ fn live_codex_catalog_preserves_capabilities_and_completes_builtin_models() {
         vec![
             "account-visible-model",
             "gpt-6-astra",
+            "gpt-6-sol",
+            "gpt-6-luna",
             "gpt-5.6-sol",
             "gpt-5.6-terra",
             "gpt-5.6-luna",
@@ -673,21 +705,23 @@ fn claude_opus_5_fallback_exposes_effort_variants() {
     let mut key = ModelKey::new(ModelType::ClaudeCode);
     key.auth_method = AuthMethod::Oauth;
     key.session_token = Some("access-token".to_string());
-    key.available_models = vec!["claude-opus-5".to_string()];
+    key.available_models = vec!["claude-opus-5".to_string(), "claude-opus-5-5".to_string()];
 
     let info = KeyInfo::from(key);
-    let variants: Vec<_> = info
-        .model_variants
-        .iter()
-        .filter(|variant| variant.base_model == "claude-opus-5")
-        .collect();
-    assert_eq!(variants.len(), 5);
-    assert!(variants
-        .iter()
-        .any(|variant| variant.model == "claude-opus-5-max"));
-    assert!(info.default_variants.iter().any(|variant| {
-        variant.base_model == "claude-opus-5" && variant.model == "claude-opus-5-high"
-    }));
+    for base in ["claude-opus-5", "claude-opus-5-5"] {
+        let variants: Vec<_> = info
+            .model_variants
+            .iter()
+            .filter(|variant| variant.base_model == base)
+            .collect();
+        assert_eq!(variants.len(), 5);
+        assert!(variants
+            .iter()
+            .any(|variant| variant.model == format!("{base}-max")));
+        assert!(info.default_variants.iter().any(|variant| {
+            variant.base_model == base && variant.model == format!("{base}-high")
+        }));
+    }
 }
 
 #[test]
