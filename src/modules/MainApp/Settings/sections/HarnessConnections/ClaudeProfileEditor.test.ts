@@ -69,6 +69,11 @@ vi.mock("@src/components/Select", () => ({
 let container: HTMLDivElement;
 let root: Root;
 let view: HarnessConnectionView;
+function maybeButton(label: string) {
+  return [...container.querySelectorAll("button")].find(
+    (b) => b.textContent === label
+  );
+}
 function button(label: string) {
   const found = [...container.querySelectorAll("button")].find(
     (b) => b.textContent === label
@@ -92,13 +97,17 @@ async function input(label: string, value: string) {
     element.dispatchEvent(new Event("input", { bubbles: true }));
   });
 }
-async function mount(target: ClaudeProviderProfile["target"] = "claude_code") {
+async function mount(
+  target: ClaudeProviderProfile["target"] = "claude_code",
+  profileId: string | null = null
+) {
   await act(async () =>
-    root.render(createElement(ClaudeProfileEditor, { target, onAdd: vi.fn() }))
+    root.render(createElement(ClaudeProfileEditor, { target, profileId }))
   );
 }
+// With no profileId the editor opens a new draft on mount; saving is the only
+// step left. The list that chooses a profile lives in AppConnectionPage.
 async function createAndSave() {
-  await click("claudeProfiles.new");
   await click("claudeProfiles.save");
 }
 beforeEach(() => {
@@ -157,7 +166,6 @@ afterEach(async () => {
 describe("ClaudeProfileEditor", () => {
   it("renders mapping rows and saves without applying, then requires tests for activation", async () => {
     await mount();
-    await click("claudeProfiles.new");
     expect(
       container.querySelector(
         'input[aria-label="Subagent claudeProfiles.requestModel"]'
@@ -165,7 +173,8 @@ describe("ClaudeProfileEditor", () => {
     ).not.toBeNull();
     await input("Opus claudeProfiles.requestModel", "vendor/opus");
     await input("Opus claudeProfiles.displayName", "Visible Opus");
-    expect(button("harnessConnections.apply").disabled).toBe(true);
+    // Nothing is saved yet, so there is nothing to test or apply.
+    expect(maybeButton("harnessConnections.apply")).toBeUndefined();
     await click("claudeProfiles.save");
     expect(mocks.apply).not.toHaveBeenCalled();
     expect(
@@ -198,7 +207,6 @@ describe("ClaudeProfileEditor", () => {
   });
   it("uses one model for all roles and keeps Subagent labels absent", async () => {
     await mount();
-    await click("claudeProfiles.new");
     await input("Sonnet claudeProfiles.requestModel", "one-model");
     await click("claudeProfiles.useOne");
     await click("claudeProfiles.save");
@@ -222,7 +230,6 @@ describe("ClaudeProfileEditor", () => {
   it("keeps manual model entry usable when discovery fails", async () => {
     mocks.fetchModels.mockRejectedValue(new Error("Discovery unavailable"));
     await mount();
-    await click("claudeProfiles.new");
     await click("claudeProfiles.fetchModels");
     expect(container.textContent).toContain("Discovery unavailable");
     await input("Sonnet claudeProfiles.requestModel", "manual/model");
@@ -249,22 +256,31 @@ describe("ClaudeProfileEditor", () => {
     await act(async () => complete("late-receipt"));
     expect(mocks.apply).not.toHaveBeenCalled();
   });
-  it("marks saved updates pending without relabeling the applied revision", async () => {
-    const first = {
+  it("loads the connection the list selected into the form", async () => {
+    const saved = {
       ...newClaudeProfile("claude_code", "Profile", view),
       revision: 1,
     };
-    view.profiles = [{ ...first, revision: 2 }];
-    view.appliedProfile = first;
+    view.profiles = [saved];
     view.config.mode = "direct";
-    await mount();
-    expect(container.textContent).toContain("claudeProfiles.updatePending");
+    await mount("claude_code", saved.id);
+    expect(
+      container.querySelector<HTMLInputElement>(
+        'input[aria-label="claudeProfiles.name"]'
+      )?.value
+    ).toBe("Profile");
   });
   it("copies an existing connection without activating it", async () => {
+    const source = {
+      ...newClaudeProfile("claude_code", "Profile", view),
+      revision: 1,
+    };
+    view.profiles = [source];
     view.config.mode = "direct";
     view.config.selectedKeyId = "key";
     view.config.selectedModel = "old-model";
-    await mount();
+    // Copy acts on a saved connection, so the list has to be on one.
+    await mount("claude_code", source.id);
     await click("claudeProfiles.copy");
     expect(
       container.querySelector<HTMLInputElement>(

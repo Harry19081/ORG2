@@ -5,13 +5,20 @@ import { rpc } from "@src/api/tauri/rpc";
 import { RpcError } from "@src/api/tauri/rpc/invoke";
 import type { ConnectionHarness } from "@src/api/tauri/rpc/schemas/agentOrgs";
 import Button from "@src/components/Button";
+import RefreshButton from "@src/components/Button/RefreshButton";
 import Message from "@src/components/Message";
+import ModelIcon from "@src/components/ModelIcon";
 import Select from "@src/components/Select";
+import Switch from "@src/components/Switch";
 import {
+  SECTION_ACTION_GAP_CLASSES,
+  SECTION_CONTROL_STYLE,
   SECTION_DESCRIPTION_CLASSES,
   SectionContainer,
+  SectionProfileSwitcher,
   SectionRow,
 } from "@src/components/layout/Section";
+import { HintWithInfo } from "@src/components/layout/blocks/HintWithInfo";
 import {
   configureExternalMarketCatalog,
   isMarketManagedView,
@@ -25,16 +32,28 @@ import {
   useMarketExecutionProfiles,
 } from "@src/features/MarketConnect/marketProfiles";
 import { profilesForAppliedMarketSelection } from "@src/features/MarketConnect/marketSelection";
+import { createLogger } from "@src/hooks/logger";
+import { HugeiconsIcon, Link01Icon, Store01Icon } from "@src/icons";
+import { SelectionGrid } from "@src/scaffold/WizardSystem/primitives";
 
 import ClaudeProfileEditor from "./ClaudeProfileEditor";
-import ConnectionCards from "./ConnectionCards";
 import HarnessConnectionEditor from "./HarnessConnectionEditor";
 import {
   refreshHarnessConnections,
   useHarnessConnection,
 } from "./useHarnessConnection";
 
-type PickerStep = "closed" | "provider" | "market" | "accounts";
+/**
+ * Where this app's requests go, as one flat list: the app's own configuration,
+ * ORG2 Market, and each saved custom connection. "default" is a real choice
+ * rather than the absence of one, so the applied provider is always visible.
+ * A custom connection is addressed as `profile:<id>`; "new" is an unsaved one.
+ */
+const log = createLogger("AppConnectionPage");
+
+type Provider = "default" | "market" | "accounts" | "new" | `profile:${string}`;
+
+const PROFILE_PREFIX = "profile:";
 
 function profileLabel(
   profile: MarketExecutionProfile,
@@ -51,11 +70,9 @@ function profileLabel(
 
 export default function AppConnectionPage({
   target,
-  onConfigureAccounts,
   onDirtyChange,
 }: {
   target: ConnectionHarness;
-  onConfigureAccounts: () => void;
   onDirtyChange?: (dirty: boolean) => void;
 }) {
   const { t } = useTranslation("settings");
@@ -66,7 +83,10 @@ export default function AppConnectionPage({
     refresh: refreshProfiles,
   } = useMarketExecutionProfiles({ enabled: true });
   const state = useHarnessConnection(target);
-  const [picker, setPicker] = useState<PickerStep>("closed");
+  const [chosenProvider, setChosenProvider] = useState<Provider | null>(null);
+  // An unsaved connection owns the list: selecting another provider would
+  // overwrite the draft, so the other options stay disabled until it settles.
+  const [editorDirty, setEditorDirty] = useState(false);
   const [busy, setBusy] = useState<"connect" | "open" | "restore" | null>(null);
 
   const [choosingProfiles, setChoosingProfiles] = useState<string[]>([]);
@@ -86,6 +106,18 @@ export default function AppConnectionPage({
   const configured = Boolean(
     state.view && state.view.config.mode !== "default"
   );
+  const connectionProfiles = state.view?.profiles ?? [];
+  const appliedProfileId = state.view?.appliedProfile?.id ?? null;
+  const appliedProvider: Provider = marketManaged
+    ? "market"
+    : appliedProfileId
+      ? `${PROFILE_PREFIX}${appliedProfileId}`
+      : configured
+        ? "accounts"
+        : "default";
+  // An explicit pick wins until it is applied; then the applied one takes over.
+  const picker = chosenProvider ?? appliedProvider;
+  const lockedTo = (provider: Provider) => editorDirty && provider !== picker;
   const accountName =
     state.view?.choices.find(
       (choice) => choice.keyId === state.view?.config.selectedKeyId
@@ -115,16 +147,6 @@ export default function AppConnectionPage({
   )
     ? choosingModel
     : (modelOptions[0]?.value ?? "");
-  const currentName = marketManaged
-    ? (activeMarketName ??
-      t(
-        profilesLoading
-          ? "harnessConnections.marketApps.loading"
-          : profilesError
-            ? "harnessConnections.marketApps.loadFailed"
-            : "harnessConnections.missingKey"
-      ))
-    : (accountName ?? t("harnessConnections.original"));
   const issue =
     state.error ??
     state.view?.configurationIssue ??
@@ -155,6 +177,16 @@ export default function AppConnectionPage({
     state.view?.configurationIssue
   );
 
+  /**
+   * Both actions report their own failures through Message and settle before
+   * returning, so nothing here awaits them — but a floating promise would
+   * swallow a rejection, so the handler logs instead.
+   */
+  const runAction = (action: () => Promise<void>) => {
+    action().catch((error: unknown) => {
+      log.error("connection action failed:", error);
+    });
+  };
   const refresh = async () => {
     refreshHarnessConnections();
     await state.reload();
@@ -178,7 +210,7 @@ export default function AppConnectionPage({
         defaultModel
       );
       owner.assertCurrent();
-      setPicker("closed");
+      setChosenProvider(null);
       await refresh();
       owner.assertCurrent();
       Message.success({
@@ -245,6 +277,7 @@ export default function AppConnectionPage({
   };
   const restore = async () => {
     setBusy("restore");
+    setChosenProvider(null);
     try {
       if (marketManaged) {
         await restoreExternalMarketTarget(target);
@@ -300,65 +333,111 @@ export default function AppConnectionPage({
                   ? t("harnessConnections.applied")
                   : t("harnessConnections.marketApps.original");
 
+  const providerItems = [
+    {
+      id: "default",
+      label: t("harnessConnections.original"),
+      // The app's own setup wears the app's own icon.
+      leading: <ModelIcon agentType={target} size="small" />,
+      disabled: lockedTo("default"),
+      dataTestId: "app-provider-default",
+    },
+    {
+      id: "market",
+      // Name the applied packages here; nothing else in this list can.
+      label:
+        appliedProvider === "market" && activeMarketName
+          ? `${t("harnessConnections.marketApps.provider")} · ${activeMarketName}`
+          : t("harnessConnections.marketApps.provider"),
+      leading: <HugeiconsIcon icon={Store01Icon} data-icon="store" size={16} />,
+      disabled: lockedTo("market"),
+      dataTestId: "app-provider-market",
+    },
+    ...(target === "codex"
+      ? [
+          {
+            id: "accounts",
+            label:
+              appliedProvider === "accounts" && accountName
+                ? `${t("harnessConnections.connection")} · ${accountName}`
+                : t("harnessConnections.connection"),
+            leading: (
+              <HugeiconsIcon icon={Link01Icon} data-icon="link" size={16} />
+            ),
+            disabled: lockedTo("accounts"),
+            dataTestId: "app-provider-accounts",
+          },
+        ]
+      : connectionProfiles.map((profile) => {
+          const id = `${PROFILE_PREFIX}${profile.id}`;
+          return {
+            id,
+            label: profile.name,
+            leading: (
+              <HugeiconsIcon icon={Link01Icon} data-icon="link" size={16} />
+            ),
+            // Applied, but with saved edits not yet applied, is its own state —
+            // the check alone would hide that.
+            badge:
+              appliedProfileId === profile.id &&
+              state.view?.appliedProfile?.revision !== profile.revision
+                ? t("claudeProfiles.updatePending")
+                : undefined,
+            disabled: lockedTo(id as Provider),
+            dataTestId: `app-provider-${profile.id}`,
+          };
+        })),
+  ];
+  // An unsaved new connection has no row of its own yet; give it one so the
+  // list still shows where you are.
+  if (picker === "new")
+    providerItems.push({
+      id: "new",
+      label: t("claudeProfiles.newName"),
+      leading: <HugeiconsIcon icon={Link01Icon} data-icon="link" size={16} />,
+      disabled: false,
+      dataTestId: "app-provider-new",
+    });
+
+  const selectProvider = (provider: Provider) => {
+    if (provider === "market")
+      setChoosingProfiles(appliedMarketProfiles.map((profile) => profile.id));
+    setChosenProvider(provider);
+  };
+
   return (
-    <div className="flex flex-col gap-4" data-testid={`app-page-${target}`}>
-      <SectionContainer title={t("harnessConnections.current")}>
-        <SectionRow showHeader={false}>
-          <div className="flex w-full flex-col gap-1">
-            <span
-              className="truncate text-base font-medium text-text-1"
-              title={currentName}
-            >
-              {currentName}
-            </span>
-            {configured && (
-              <span className="text-xs text-text-2">
-                {t(
-                  marketManaged
-                    ? "harnessConnections.marketApps.provider"
-                    : "harnessConnections.connection"
-                )}
-              </span>
-            )}
-            <span className={SECTION_DESCRIPTION_CLASSES}>{status}</span>
-            {state.view?.config.nativeApp && (
-              <span className={SECTION_DESCRIPTION_CLASSES}>
-                {t(
-                  target === "claude_desktop"
-                    ? "harnessConnections.marketApps.isolatedClaudeStorage"
-                    : "harnessConnections.marketApps.isolatedStorage"
-                )}
-              </span>
-            )}
-            {state.view?.config.nativeApp && historySyncText && (
-              <span
-                className={
-                  historySync?.state === "paused"
-                    ? "text-sm text-warning-6"
-                    : SECTION_DESCRIPTION_CLASSES
-                }
-                data-testid="codex-history-sync-status"
-              >
-                {historySyncText}
-              </span>
-            )}
-            {issue && <span className="text-sm text-warning-6">{issue}</span>}
-          </div>
-        </SectionRow>
-        <SectionRow showHeader={false}>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              disabled={busy !== null || state.loading}
-              onClick={() =>
-                setPicker((value) =>
-                  value === "closed" ? "provider" : "closed"
-                )
-              }
-            >
-              {t(
-                configured ? "common:actions.edit" : "common:actions.configure"
-              )}
-            </Button>
+    <div className="flex flex-col gap-4">
+      {/* What the app runs on right now, and the picker for what to set up
+          next. Picking here only moves the selection below — applying stays
+          the explicit action in each provider's own form. */}
+      <SectionContainer>
+        <SectionRow
+          label={t("harnessConnections.current")}
+          description={status}
+        >
+          <div className={`${SECTION_ACTION_GAP_CLASSES} flex-wrap`}>
+            {/* Bound to what is applied, never to the sidebar: browsing the
+                list on the left must not make this claim the app moved. */}
+            <Select
+              ariaLabel={t("common:labels.provider")}
+              value={appliedProvider}
+              disabled={editorDirty || state.loading || busy !== null}
+              style={SECTION_CONTROL_STYLE}
+              options={providerItems.map((item) => ({
+                value: item.id,
+                label: item.label,
+                icon: item.leading,
+              }))}
+              onChange={(value) => {
+                const next = String(value) as Provider;
+                // Preview it either way; hand back the app's own setup right
+                // away, since that is the one switch this row can throw with
+                // nothing else selected. Everything else is applied by the
+                // "use this connection" switch once it is ready.
+                selectProvider(next);
+                if (next === "default" && configured) runAction(restore);
+              }}
+            />
             {(marketManaged ||
               (target === "claude_code" &&
                 configured &&
@@ -400,176 +479,211 @@ export default function AppConnectionPage({
           </div>
         </SectionRow>
       </SectionContainer>
-
-      {picker !== "closed" && (
-        <SectionContainer
-          title={t(
-            picker === "provider"
-              ? "common:labels.provider"
-              : "harnessConnections.connection"
-          )}
-          dataTestId="connection-picker"
-        >
-          {picker !== "provider" && (
-            <SectionRow showHeader={false}>
-              <Button
-                variant="tertiary"
-                size="small"
-                onClick={() => setPicker("provider")}
-              >
-                {t("common:actions.back")}
-              </Button>
-            </SectionRow>
-          )}
-          {picker === "provider" && (
-            <SectionRow showHeader={false}>
-              <ConnectionCards
-                choices={[
-                  {
-                    keyId: "market",
-                    name: t("harnessConnections.marketApps.provider"),
-                    models: [],
-                    endpoint: null,
-                    requiresTest: false,
-                    reason: null,
-                  },
-                  {
-                    keyId: "accounts",
-                    name: t("harnessConnections.connection"),
-                    models: [],
-                    endpoint: null,
-                    requiresTest: false,
-                    reason: null,
-                  },
-                ]}
-                selected=""
-                active={null}
-                disabled={busy !== null}
-                description={(id) =>
-                  t(
-                    id === "market"
-                      ? "harnessConnections.marketApps.workspaceHelp"
-                      : "harnessConnections.empty"
+      <SectionProfileSwitcher
+        dataTestId={`app-page-${target}`}
+        items={providerItems}
+        selectedId={picker}
+        onSelect={(id) => selectProvider(id as Provider)}
+        add={
+          target === "codex"
+            ? undefined
+            : {
+                label: t("claudeProfiles.new"),
+                disabled: lockedTo("new"),
+                onClick: () => setChosenProvider("new"),
+                dataTestId: "app-provider-add",
+              }
+        }
+        refresh={{
+          label: t("harnessConnections.refresh"),
+          onRefresh: refresh,
+          refreshing: state.loading,
+          dataTestId: "app-provider-refresh",
+        }}
+      >
+        {(picker === "default" || picker === "market") && (
+          <SectionRow label={t("harnessConnections.apply")}>
+            <Switch
+              ariaLabel={t("harnessConnections.apply")}
+              checked={picker === appliedProvider}
+              disabled={
+                busy !== null ||
+                state.loading ||
+                Boolean(state.view?.config.conflict) ||
+                (picker === "default"
+                  ? !configured
+                  : unavailable || !chosenValue || !selectedProfiles.length)
+              }
+              onCheckedChange={(on) => {
+                // Switching a provider on applies it; switching the applied one
+                // off hands the app back its own configuration.
+                runAction(
+                  !on || picker === "default" ? restore : connectMarket
+                );
+              }}
+            />
+          </SectionRow>
+        )}
+        {state.view?.config.nativeApp && (
+          <SectionRow showHeader={false}>
+            <p className={SECTION_DESCRIPTION_CLASSES}>
+              {t(
+                target === "claude_desktop"
+                  ? "harnessConnections.marketApps.isolatedClaudeStorage"
+                  : "harnessConnections.marketApps.isolatedStorage"
+              )}
+            </p>
+          </SectionRow>
+        )}
+        {state.view?.config.nativeApp && historySyncText && (
+          <SectionRow showHeader={false}>
+            <p
+              className={
+                historySync?.state === "paused"
+                  ? "text-sm text-warning-6"
+                  : SECTION_DESCRIPTION_CLASSES
+              }
+              data-testid="codex-history-sync-status"
+            >
+              {historySyncText}
+            </p>
+          </SectionRow>
+        )}
+        {issue && (
+          <SectionRow showHeader={false}>
+            <p role="alert" className="text-sm text-warning-6">
+              {issue}
+            </p>
+          </SectionRow>
+        )}
+        {picker === "market" && (
+          <SectionRow
+            label={
+              <span className="flex w-full items-center justify-between gap-2">
+                <span className="flex items-center gap-1">
+                  {t("harnessConnections.connection")}
+                  {target === "claude_code" && (
+                    <HintWithInfo
+                      content={t(
+                        "harnessConnections.marketApps.auxiliaryBilling"
+                      )}
+                      position="right"
+                    />
+                  )}
+                </span>
+                <RefreshButton
+                  iconOnly
+                  variant="secondary"
+                  label={t("harnessConnections.refresh")}
+                  onRefresh={refreshProfiles}
+                  refreshing={profilesLoading}
+                  dataTestId="market-packages-refresh"
+                />
+              </span>
+            }
+            description={t("harnessConnections.marketApps.multiPackageHelp")}
+            layout="vertical"
+          >
+            {profilesLoading ? (
+              <p className={SECTION_DESCRIPTION_CLASSES}>
+                {t("harnessConnections.marketApps.loading")}
+              </p>
+            ) : profilesError ? (
+              <p className="text-sm text-warning-6">
+                {t("harnessConnections.marketApps.loadFailed")}
+              </p>
+            ) : marketProfiles.length === 0 ? (
+              <p className={SECTION_DESCRIPTION_CLASSES}>
+                {t("harnessConnections.marketApps.nonePurchased")}
+              </p>
+            ) : (
+              <SelectionGrid
+                multiSelect
+                options={marketProfiles.map((profile) => {
+                  const overLimit =
+                    choosingProfiles.length >= 8 &&
+                    !choosingProfiles.includes(profile.id);
+                  return {
+                    key: profile.id,
+                    label: profileLabel(
+                      profile,
+                      marketProfiles,
+                      (index, count) =>
+                        t("harnessConnections.marketApps.workspaceNumber", {
+                          index,
+                          count,
+                        })
+                    ),
+                    badge: appliedMarketProfiles.some(
+                      (applied) => applied.id === profile.id
+                    )
+                      ? t("harnessConnections.current")
+                      : undefined,
+                    tooltip: overLimit
+                      ? t("harnessConnections.marketApps.packageLimit")
+                      : undefined,
+                    disabled: busy !== null || unavailable || overLimit,
+                  };
+                })}
+                selected={new Set(choosingProfiles)}
+                cardVariant="subtle"
+                onToggle={(id) =>
+                  setChoosingProfiles((selected) =>
+                    selected.includes(id)
+                      ? selected.filter((entry) => entry !== id)
+                      : selected.length < 8
+                        ? [...selected, id]
+                        : selected
                   )
                 }
-                onSelect={(id) => {
-                  if (id === "market")
-                    setChoosingProfiles(
-                      appliedMarketProfiles.map((profile) => profile.id)
-                    );
-                  setPicker(id === "market" ? "market" : "accounts");
-                }}
+              />
+            )}
+          </SectionRow>
+        )}
+        {picker === "market" && selectedProfiles.length > 0 && (
+          <>
+            <SectionRow label={t("harnessConnections.marketApps.defaultModel")}>
+              <Select
+                value={chosenValue}
+                onChange={(value) => setChoosingModel(String(value))}
+                options={modelOptions}
+                style={SECTION_CONTROL_STYLE}
+                ariaLabel={t("harnessConnections.marketApps.defaultModel")}
               />
             </SectionRow>
-          )}
-          {picker === "market" && (
             <SectionRow showHeader={false}>
-              <div className="flex w-full flex-col gap-2">
-                <p className={SECTION_DESCRIPTION_CLASSES}>
-                  {t("harnessConnections.marketApps.multiPackageHelp")}
-                </p>
-                {target === "claude_code" && (
-                  <p className={SECTION_DESCRIPTION_CLASSES}>
-                    {t("harnessConnections.marketApps.auxiliaryBilling")}
-                  </p>
-                )}
-                {profilesLoading ? (
-                  <p className={SECTION_DESCRIPTION_CLASSES}>
-                    {t("harnessConnections.marketApps.loading")}
-                  </p>
-                ) : profilesError ? (
-                  <div className="flex flex-col items-start gap-2">
-                    <p className="text-sm text-warning-6">
-                      {t("harnessConnections.marketApps.loadFailed")}
-                    </p>
-                    <Button onClick={() => void refreshProfiles()}>
-                      {t("harnessConnections.refresh")}
-                    </Button>
-                  </div>
-                ) : marketProfiles.length === 0 ? (
-                  <p className={SECTION_DESCRIPTION_CLASSES}>
-                    {t("harnessConnections.marketApps.nonePurchased")}
-                  </p>
-                ) : (
-                  <ConnectionCards
-                    choices={marketProfiles.map((profile) => ({
-                      keyId: profile.id,
-                      name: profileLabel(
-                        profile,
-                        marketProfiles,
-                        (index, count) =>
-                          t("harnessConnections.marketApps.workspaceNumber", {
-                            index,
-                            count,
-                          })
-                      ),
-                      models: modelsForExternalTarget(profile, target),
-                      endpoint: null,
-                      requiresTest: false,
-                      reason:
-                        choosingProfiles.length >= 8 &&
-                        !choosingProfiles.includes(profile.id)
-                          ? t("harnessConnections.marketApps.packageLimit")
-                          : null,
-                    }))}
-                    selected={choosingProfiles}
-                    active={appliedMarketProfiles.map((profile) => profile.id)}
-                    disabled={busy !== null || unavailable}
-                    description={(id) =>
-                      `${modelsForExternalTarget(marketProfiles.find((profile) => profile.id === id)!, target).length} · ${t("harnessConnections.model")}`
-                    }
-                    onSelect={(id) =>
-                      setChoosingProfiles((selected) =>
-                        selected.includes(id)
-                          ? selected.filter((entry) => entry !== id)
-                          : selected.length < 8
-                            ? [...selected, id]
-                            : selected
-                      )
-                    }
-                  />
-                )}
-              </div>
+              <Button
+                loading={busy === "connect"}
+                disabled={!chosenValue || busy !== null || unavailable}
+                onClick={() => void connectMarket()}
+              >
+                {t("harnessConnections.apply")}
+              </Button>
             </SectionRow>
+          </>
+        )}
+        {/* Codex has no saved profiles, so its editor stays a set of rows in
+            this card; the Claude profiles bring their own switcher container
+            below. */}
+        {picker === "accounts" && target === "codex" && (
+          <HarnessConnectionEditor agentName={target} />
+        )}
+        {target !== "codex" &&
+          (picker === "new" || picker.startsWith(PROFILE_PREFIX)) && (
+            <ClaudeProfileEditor
+              target={target}
+              profileId={
+                picker === "new" ? null : picker.slice(PROFILE_PREFIX.length)
+              }
+              onDiscarded={() => setChosenProvider(null)}
+              onDirtyChange={(dirty) => {
+                setEditorDirty(dirty);
+                onDirtyChange?.(dirty);
+              }}
+              onDraftCopied={() => setChosenProvider("new")}
+            />
           )}
-          {picker === "market" && selectedProfiles.length > 0 && (
-            <SectionRow showHeader={false}>
-              <div className="flex flex-wrap items-center gap-3">
-                <Select
-                  value={chosenValue}
-                  onChange={(value) => setChoosingModel(String(value))}
-                  options={modelOptions}
-                  ariaLabel={t("harnessConnections.marketApps.defaultModel")}
-                />
-                <Button
-                  disabled={!chosenValue || busy !== null || unavailable}
-                  onClick={() => void connectMarket()}
-                >
-                  {t("harnessConnections.apply")}
-                </Button>
-              </div>
-            </SectionRow>
-          )}
-          {picker === "accounts" && (
-            <SectionRow showHeader={false}>
-              <div className="flex w-full flex-col gap-2">
-                {target === "codex" ? (
-                  <HarnessConnectionEditor
-                    agentName={target}
-                    onAdd={onConfigureAccounts}
-                  />
-                ) : (
-                  <ClaudeProfileEditor
-                    target={target}
-                    onDirtyChange={onDirtyChange}
-                    onAdd={onConfigureAccounts}
-                  />
-                )}
-              </div>
-            </SectionRow>
-          )}
-        </SectionContainer>
-      )}
+      </SectionProfileSwitcher>
     </div>
   );
 }

@@ -1075,7 +1075,6 @@
     "original": "原始配置",
     "missingKey": "所选密钥已不存在",
     "connection": "连接",
-    "add": "添加连接",
     "empty": "添加 API 密钥或从其他工具导入连接",
     "model": "模型",
     "routing": "连接方式",
@@ -1083,7 +1082,6 @@
     "proxy": "通过 ORG2",
     "directHelp": "关闭 ORG2 后仍可使用",
     "proxyHelp": "需要保持 ORG2 运行",
-    "advanced": "高级",
     "test": "测试连接",
     "testHelp": "向所选服务商发送两个小型请求，检查工具调用和流式响应；可能产生使用费用",
     "testPassed": "工具调用往返和流式响应测试通过；测试凭证在 15 分钟后过期",
@@ -1103,23 +1101,19 @@
     "conflict": "配置已在 ORG2 外部更改。应用或恢复前请检查这些更改；系统不会覆盖它们",
     "credentialsNote": "直连模式会将凭据写入访问受限的 CLI 配置文件；删除密钥库中的密钥不会撤销已导出的凭据",
     "notInstalled": "请先安装此工具，再测试或应用连接",
-    "appSelector": "应用",
+    "apps": {
+      "claudeCode": "Claude Code CLI",
+      "claudeDesktop": "Claude Desktop",
+      "codex": "Codex"
+    },
     "endpoint": "API 端点",
     "authentication": "认证方式",
     "desktopScope": "单独配置 Claude Desktop，不影响 Claude Code CLI；应用后需完全退出并重新打开桌面应用",
     "desktopApplied": "桌面配置已保存，请完全退出并重新打开 Claude Desktop",
     "desktopRestored": "已恢复之前的桌面配置，请完全退出并重新打开 Claude Desktop",
-    "advancedDescription": "自定义 API 连接和一次性凭据迁移",
     "marketApps": {
       "isolatedStorage": "最近 50 条对话会自动同步。已在 Codex 中打开的对话，请退出并重新打开 Codex 以接收最新消息。主 App 和 CLI 的配置保持独立",
       "isolatedClaudeStorage": "退出 Claude Desktop 和 Claude Code 后，最近 50 条对话会自动同步",
-      "historySync": {
-        "active": "历史同步运行中 · 已共享 {{shared}} 条对话",
-        "attention": "历史同步运行中 · 已共享 {{shared}} 条 · {{conflicts}} 条需要处理",
-        "paused": "历史同步已暂停：{{reason}}",
-        "idle": "历史同步空闲"
-      },
-      "workspaceHelp": "为当前 App 选择套餐和模型。各 App 独立保存选择，切换 ORG2 聊天来源不会修改 App。",
       "loading": "正在加载 ORG2 Market 套餐…",
       "loadFailed": "无法加载 ORG2 Market 套餐",
       "nonePurchased": "暂时没有可用的 ORG2 Market 套餐",
@@ -1142,7 +1136,13 @@
       "multiPackageHelp": "可同时选择最多 8 个套餐和一个默认模型，连接后可在 App 内切换套餐",
       "auxiliaryBilling": "Claude Code 自动生成标题、记忆和压缩上下文的调用计入默认套餐；只有对话本身跟随你用 /model 选择的套餐",
       "defaultModel": "默认模型",
-      "packageLimit": "最多选择 8 个套餐"
+      "packageLimit": "最多选择 8 个套餐",
+      "historySync": {
+        "active": "历史同步运行中 · 已共享 {{shared}} 条对话",
+        "attention": "历史同步运行中 · 已共享 {{shared}} 条 · {{conflicts}} 条需要处理",
+        "paused": "历史同步已暂停：{{reason}}",
+        "idle": "历史同步空闲"
+      }
     }
   },
   "claudeProfiles": {
@@ -1150,7 +1150,6 @@
     "newName": "新提供商",
     "copy": "复制当前连接",
     "copyName": "当前连接的副本",
-    "empty": "保存提供商配置，自定义此应用的端点和模型",
     "name": "配置名称",
     "credential": "API 密钥",
     "defaultRole": "默认模型角色",
@@ -1161,15 +1160,12 @@
     "requestModel": "实际请求模型 ID",
     "noLabel": "不显示在模型菜单中",
     "inherit": "继承主模型",
-    "active": "使用中",
     "updatePending": "已保存，待应用",
     "unsaved": "有未保存的更改，请保存或放弃后切换配置",
     "save": "保存配置",
     "test": "测试所有模型",
     "discard": "放弃更改",
     "delete": "删除配置",
-    "mappingHelp": "显示名称仅影响模型菜单，实际请求使用模型 ID。仅在提供商支持时启用 1M，此选项不会增加上下文上限",
-    "activationHelp": "先保存，再测试每个不同模型并应用。测试会发送合成的工具调用和流式请求，可能产生费用。应用时会将密钥写入原生应用配置，之后请重启应用",
     "saveDone": "配置已保存",
     "deleteDone": "配置已删除",
     "fetchDone": "模型列表已加载，可选择或手动输入 ID",

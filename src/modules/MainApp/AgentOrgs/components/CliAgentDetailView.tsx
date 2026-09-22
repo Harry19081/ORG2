@@ -376,10 +376,7 @@ const CliAgentDetailView: React.FC<CliAgentDetailViewProps> = ({
           </SectionContainer>
 
           {agent.name === "claude_code" || agent.name === "codex" ? (
-            <HarnessConnectionEditor
-              agentName={agent.name}
-              onAdd={openCredentialInIntegrations}
-            />
+            <HarnessConnectionEditor agentName={agent.name} />
           ) : (
             <CliConfigSwitchCard
               agent={agent}

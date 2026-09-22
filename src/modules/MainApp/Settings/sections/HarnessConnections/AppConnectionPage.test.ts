@@ -214,12 +214,7 @@ afterEach(async () => {
 
 async function render(target: "claude_code" | "claude_desktop" | "codex") {
   await act(async () =>
-    root.render(
-      createElement(AppConnectionPage, {
-        target,
-        onConfigureAccounts: vi.fn(),
-      })
-    )
+    root.render(createElement(AppConnectionPage, { target }))
   );
 }
 
@@ -231,8 +226,10 @@ function button(text: string) {
 
 it("selects provider first and keeps duplicate purchases as separate private connections", async () => {
   await render("claude_code");
-  await act(async () => button("common:actions.configure").click());
-  expect(container.textContent).toContain("harnessConnections.connection");
+  // The provider list is always on screen: the app's own setup, ORG2 Market
+  // and — with no saved connections yet — the entry that starts one.
+  expect(container.textContent).toContain("harnessConnections.original");
+  expect(container.textContent).toContain("claudeProfiles.new");
   expect(container.textContent).not.toContain("Same service");
 
   const marketProvider = [...container.querySelectorAll("button")].find(
@@ -301,12 +298,7 @@ it("opens Claude Code in a terminal and Desktop as an app", async () => {
   );
 
   await act(async () =>
-    root.render(
-      createElement(AppConnectionPage, {
-        target: "claude_desktop",
-        onConfigureAccounts: vi.fn(),
-      })
-    )
+    root.render(createElement(AppConnectionPage, { target: "claude_desktop" }))
   );
   expect(container.textContent).toContain("harnessConnections.marketApps.open");
   expect(container.textContent).not.toContain(
@@ -415,12 +407,19 @@ it("offers a reload after a purchase lookup failure instead of claiming a missin
   connected = true;
   profilesError = "temporary_failure";
   await render("claude_code");
-  await act(async () => button("common:actions.edit").click());
   const provider = [...container.querySelectorAll("button")].find((item) =>
     item.textContent?.startsWith("harnessConnections.marketApps.provider")
   )!;
   await act(async () => provider.click());
-  await act(async () => button("harnessConnections.refresh").click());
+  // Icon-only reload: the accessible name is the only text it carries, and
+  // RefreshButton defers the callback by one frame to restart its spin.
+  const reload = container.querySelector<HTMLButtonElement>(
+    '[data-testid="market-packages-refresh"]'
+  )!;
+  await act(async () => {
+    reload.click();
+    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+  });
   expect(refreshProfiles).toHaveBeenCalledOnce();
 });
 
@@ -489,7 +488,6 @@ it.each([
     new RpcError("market_connection_configure_catalog", code, code)
   );
   await render("claude_desktop");
-  await act(async () => button("common:actions.edit").click());
   const provider = [...container.querySelectorAll("button")].find((item) =>
     item.textContent?.startsWith("harnessConnections.marketApps.provider")
   )!;

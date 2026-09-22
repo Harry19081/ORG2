@@ -41,6 +41,7 @@ export const SETTINGS_SECTION_TABS = {
   ],
   appearance: ["app", "code-editor", "chat-panel"],
   editor: ["editor"],
+  "harness-connections": ["claude-code", "claude-desktop", "codex"],
   import: ["scanning", "hooks"],
 } as const satisfies Partial<Record<SettingsSectionSegment, readonly string[]>>;
 

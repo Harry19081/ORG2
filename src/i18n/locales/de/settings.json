@@ -994,7 +994,6 @@
     "original": "Ursprüngliche Einrichtung",
     "missingKey": "Ausgewählter Schlüssel fehlt",
     "connection": "Verbindung",
-    "add": "Verbindung hinzufügen",
     "empty": "API-Schlüssel hinzufügen oder Verbindung aus einem anderen Tool importieren",
     "model": "Modell",
     "routing": "Verbindungsweg",
@@ -1002,7 +1001,6 @@
     "proxy": "Über ORG2",
     "directHelp": "Funktioniert auch bei geschlossenem ORG2",
     "proxyHelp": "ORG2 muss geöffnet bleiben",
-    "advanced": "Erweitert",
     "test": "Verbindung testen",
     "testHelp": "Sendet zwei kleine Anfragen an den Anbieter, um Werkzeugaufrufe und Streaming zu prüfen; es können Gebühren anfallen",
     "testPassed": "Werkzeugaufruf mit Rückgabe und Streaming erfolgreich; Testergebnis gilt 15 Minuten",
@@ -1022,23 +1020,19 @@
     "conflict": "Konfiguration außerhalb von ORG2 geändert. Änderungen vor dem Anwenden oder Wiederherstellen prüfen; sie werden nicht überschrieben",
     "credentialsNote": "Der Direktmodus schreibt Zugangsdaten in die CLI-Konfiguration mit eingeschränktem Dateizugriff; das Löschen eines Tresorschlüssels widerruft die exportierten Zugangsdaten nicht",
     "notInstalled": "Dieses Werkzeug vor dem Testen oder Anwenden einer Verbindung installieren",
-    "appSelector": "App",
+    "apps": {
+      "claudeCode": "Claude Code CLI",
+      "claudeDesktop": "Claude Desktop",
+      "codex": "Codex"
+    },
     "endpoint": "API-Endpunkt",
     "authentication": "Authentifizierung",
     "desktopScope": "Konfiguriert Claude Desktop getrennt von Claude Code CLI; Desktop nach dem Anwenden vollständig beenden und neu öffnen",
     "desktopApplied": "Desktop-Konfiguration gespeichert — Claude Desktop vollständig beenden und neu öffnen",
     "desktopRestored": "Vorherige Desktop-Konfiguration wiederhergestellt — Claude Desktop vollständig beenden und neu öffnen",
-    "advancedDescription": "Benutzerdefinierte API-Verbindungen und einmaliger Zugangsdatenimport",
     "marketApps": {
       "isolatedStorage": "Deine 50 neuesten Unterhaltungen werden automatisch synchronisiert. Ist eine Unterhaltung in Codex bereits geöffnet, beende Codex und öffne es erneut, um die neuesten Nachrichten zu erhalten. App- und CLI-Einstellungen bleiben getrennt",
       "isolatedClaudeStorage": "Deine 50 neuesten Unterhaltungen werden automatisch synchronisiert, sobald Claude Desktop und Claude Code beendet sind",
-      "historySync": {
-        "active": "Verlaufssynchronisierung aktiv · {{shared}} Unterhaltungen geteilt",
-        "attention": "Verlaufssynchronisierung aktiv · {{shared}} geteilt · {{conflicts}} benötigen Aufmerksamkeit",
-        "paused": "Verlaufssynchronisierung pausiert: {{reason}}",
-        "idle": "Verlaufssynchronisierung inaktiv"
-      },
-      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "ORG2 Market-Pakete werden geladen…",
       "loadFailed": "ORG2 Market-Pakete konnten nicht geladen werden",
       "nonePurchased": "Derzeit sind keine ORG2 Market-Pakete verfügbar",
@@ -1061,7 +1055,13 @@
       "multiPackageHelp": "Wähle bis zu 8 Pakete und ein Standardmodell, um Pakete in der App zu wechseln",
       "auxiliaryBilling": "Automatische Titel-, Memory- und Komprimierungsaufrufe von Claude Code werden dem Standardpaket berechnet; nur der Chat selbst folgt dem mit /model gewählten Paket",
       "defaultModel": "Standardmodell",
-      "packageLimit": "Wähle bis zu 8 Pakete"
+      "packageLimit": "Wähle bis zu 8 Pakete",
+      "historySync": {
+        "active": "Verlaufssynchronisierung aktiv · {{shared}} Unterhaltungen geteilt",
+        "attention": "Verlaufssynchronisierung aktiv · {{shared}} geteilt · {{conflicts}} benötigen Aufmerksamkeit",
+        "paused": "Verlaufssynchronisierung pausiert: {{reason}}",
+        "idle": "Verlaufssynchronisierung inaktiv"
+      }
     }
   },
   "claudeProfiles": {
@@ -1069,7 +1069,6 @@
     "newName": "Neuer Anbieter",
     "copy": "Aktuelle Verbindung kopieren",
     "copyName": "Kopie der aktuellen Verbindung",
-    "empty": "Ein Anbieterprofil speichert Endpunkt und Modelle für diese App",
     "name": "Profilname",
     "credential": "API-Schlüssel",
     "defaultRole": "Standard-Modellrolle",
@@ -1080,15 +1079,12 @@
     "requestModel": "Modell-ID der Anfrage",
     "noLabel": "Nicht im Modellmenü sichtbar",
     "inherit": "Hauptmodell übernehmen",
-    "active": "Aktiv",
     "updatePending": "Gespeicherte Änderungen ausstehend",
     "unsaved": "Ungespeicherte Änderungen vor dem Profilwechsel speichern oder verwerfen",
     "save": "Profil speichern",
     "test": "Alle Modelle testen",
     "discard": "Änderungen verwerfen",
     "delete": "Profil löschen",
-    "mappingHelp": "Anzeigenamen gelten nur im Modellmenü; Anfragen verwenden die Modell-ID. 1M nur bei Unterstützung aktivieren — es erhöht kein Kontextlimit",
-    "activationHelp": "Erst speichern, dann jedes unterschiedliche Modell testen und anwenden. Synthetische Tool- und Streaming-Anfragen können Kosten verursachen. Beim Anwenden werden Schlüssel in die App-Konfiguration geschrieben; danach die App neu starten",
     "saveDone": "Profil gespeichert",
     "deleteDone": "Profil gelöscht",
     "fetchDone": "Modellliste geladen; ID auswählen oder eingeben",

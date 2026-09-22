@@ -994,7 +994,6 @@
     "original": "Configuración original",
     "missingKey": "Falta la clave seleccionada",
     "connection": "Conexión",
-    "add": "Añadir conexión",
     "empty": "Añade una clave API o importa una conexión desde otra herramienta",
     "model": "Modelo",
     "routing": "Ruta de conexión",
@@ -1002,7 +1001,6 @@
     "proxy": "Mediante ORG2",
     "directHelp": "Funciona con ORG2 cerrado",
     "proxyHelp": "Requiere mantener ORG2 abierto",
-    "advanced": "Avanzado",
     "test": "Probar conexión",
     "testHelp": "Envía dos solicitudes pequeñas al proveedor para comprobar herramientas y streaming; pueden aplicarse cargos",
     "testPassed": "Llamada de herramienta con respuesta y streaming verificados; el resultado caduca en 15 minutos",
@@ -1022,23 +1020,19 @@
     "conflict": "La configuración cambió fuera de ORG2. Revisa los cambios antes de aplicar o restaurar; no se sobrescribirán",
     "credentialsNote": "El modo directo escribe credenciales en la configuración de la CLI con acceso restringido; eliminar una clave del almacén no revoca la credencial exportada",
     "notInstalled": "Instala esta herramienta antes de probar o aplicar una conexión",
-    "appSelector": "Aplicación",
+    "apps": {
+      "claudeCode": "Claude Code CLI",
+      "claudeDesktop": "Claude Desktop",
+      "codex": "Codex"
+    },
     "endpoint": "Endpoint de API",
     "authentication": "Autenticación",
     "desktopScope": "Configura Claude Desktop por separado de Claude Code CLI; cierra Desktop por completo y vuelve a abrirlo después de aplicar",
     "desktopApplied": "Configuración guardada — cierra Claude Desktop por completo y vuelve a abrirlo",
     "desktopRestored": "Configuración anterior restaurada — cierra Claude Desktop por completo y vuelve a abrirlo",
-    "advancedDescription": "Conexiones API personalizadas y migración única de credenciales",
     "marketApps": {
       "isolatedStorage": "Tus 50 conversaciones más recientes se sincronizan automáticamente. Si una conversación ya está abierta en Codex, cierra y vuelve a abrir Codex para recibir sus últimos mensajes. Los ajustes de la app y de la CLI se mantienen separados",
       "isolatedClaudeStorage": "Tus 50 conversaciones más recientes se sincronizan automáticamente cuando Claude Desktop y Claude Code se cierran",
-      "historySync": {
-        "active": "Sincronización del historial activa · {{shared}} conversaciones compartidas",
-        "attention": "Sincronización del historial activa · {{shared}} compartidas · {{conflicts}} requieren atención",
-        "paused": "Sincronización del historial en pausa: {{reason}}",
-        "idle": "Sincronización del historial inactiva"
-      },
-      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Cargando paquetes de ORG2 Market…",
       "loadFailed": "No se pudieron cargar los paquetes de ORG2 Market",
       "nonePurchased": "Actualmente no hay paquetes de ORG2 Market disponibles",
@@ -1061,7 +1055,13 @@
       "multiPackageHelp": "Selecciona hasta 8 paquetes y un modelo predeterminado para cambiar de paquete dentro de la app",
       "auxiliaryBilling": "Las llamadas automáticas de Claude Code para título, memoria y compactación se facturan al paquete predeterminado; solo el chat sigue el paquete elegido con /model",
       "defaultModel": "Modelo predeterminado",
-      "packageLimit": "Selecciona hasta 8 paquetes"
+      "packageLimit": "Selecciona hasta 8 paquetes",
+      "historySync": {
+        "active": "Sincronización del historial activa · {{shared}} conversaciones compartidas",
+        "attention": "Sincronización del historial activa · {{shared}} compartidas · {{conflicts}} requieren atención",
+        "paused": "Sincronización del historial en pausa: {{reason}}",
+        "idle": "Sincronización del historial inactiva"
+      }
     }
   },
   "claudeProfiles": {
@@ -1069,7 +1069,6 @@
     "newName": "Nuevo proveedor",
     "copy": "Copiar conexión actual",
     "copyName": "Copia de la conexión actual",
-    "empty": "Guarda un perfil para personalizar el endpoint y los modelos de esta aplicación",
     "name": "Nombre del perfil",
     "credential": "Clave API",
     "defaultRole": "Rol de modelo predeterminado",
@@ -1080,15 +1079,12 @@
     "requestModel": "ID del modelo de solicitud",
     "noLabel": "No aparece en el selector",
     "inherit": "Heredar el modelo principal",
-    "active": "Activo",
     "updatePending": "Cambios guardados pendientes",
     "unsaved": "Guarda o descarta los cambios antes de cambiar de perfil",
     "save": "Guardar perfil",
     "test": "Probar todos los modelos",
     "discard": "Descartar cambios",
     "delete": "Eliminar perfil",
-    "mappingHelp": "Los nombres solo afectan al selector; las solicitudes usan los ID. Activa 1M solo si el proveedor lo admite; no amplía el límite de contexto",
-    "activationHelp": "Guarda, prueba cada modelo distinto y aplica. Las pruebas de herramientas y streaming pueden generar cargos. Al aplicar se escriben las claves en la configuración nativa; reinicia la aplicación después",
     "saveDone": "Perfil guardado",
     "deleteDone": "Perfil eliminado",
     "fetchDone": "Lista cargada; selecciona o escribe un ID",

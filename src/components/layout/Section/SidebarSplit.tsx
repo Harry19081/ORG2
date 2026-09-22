@@ -3,6 +3,8 @@ import React, { memo } from "react";
 
 import Button from "@src/components/Button";
 
+import { SECTION_ROW_SEPARATOR_CLASSES } from "./tokens";
+
 export interface SectionSidebarSplitProps {
   sidebar: React.ReactNode;
   children: React.ReactNode;
@@ -14,7 +16,12 @@ export const SectionSidebarSplit: React.FC<SectionSidebarSplitProps> = memo(
       <aside className="border-b border-border-1 p-2 @[720px]:border-r @[720px]:border-b-0">
         {sidebar}
       </aside>
-      <div className="min-w-0 px-4 py-2">{children}</div>
+      {/* Hosts SectionRows directly, so it carries the separator rule the
+          container would otherwise provide. No top padding: the first row
+          starts flush with the sidebar's first item. */}
+      <div className={`min-w-0 px-4 pb-2 ${SECTION_ROW_SEPARATOR_CLASSES}`}>
+        {children}
+      </div>
     </div>
   )
 );
@@ -57,10 +64,19 @@ export const SectionSidebarItem: React.FC<SectionSidebarItemProps> = memo(
       htmlType={type}
       aria-pressed={selected}
       className={cn(
-        "flex min-h-9 w-full min-w-0 items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors",
+        // The selected row carries the Input's focused treatment — primary
+        // border plus its 2px ring. Unselected rows stay borderless and only
+        // tint on hover; the transparent border keeps the height steady.
+        // Only the width is unconditional: two border-color utilities on one
+        // element are ordered by Tailwind's sort, not by this string, so the
+        // colour has to live in exactly one branch.
+        "flex h-9 w-full min-w-0 items-center gap-2 rounded-md border px-3 text-left text-sm transition-colors",
         selected
-          ? "bg-bg-2 text-text-1"
-          : "text-text-2 hover:bg-fill-2 hover:text-text-1",
+          ? // The exact ring Input, Select and Button's own focus state draw.
+            // Tailwind's `ring-*` composes through a different custom property
+            // than Button's `shadow-[…]`, so reuse the declaration verbatim.
+            "border-primary-6 bg-bg-2 text-text-1 shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]"
+          : "border-transparent text-text-2 hover:bg-fill-2 hover:text-text-1",
         "disabled:pointer-events-none disabled:opacity-50",
         className
       )}

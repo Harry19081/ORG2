@@ -994,7 +994,6 @@
     "original": "Thiết lập ban đầu",
     "missingKey": "Không tìm thấy khóa đã chọn",
     "connection": "Kết nối",
-    "add": "Thêm kết nối",
     "empty": "Thêm khóa API hoặc nhập kết nối từ công cụ khác",
     "model": "Mô hình",
     "routing": "Đường kết nối",
@@ -1002,7 +1001,6 @@
     "proxy": "Qua ORG2",
     "directHelp": "Hoạt động khi ORG2 đóng",
     "proxyHelp": "Cần giữ ORG2 mở",
-    "advanced": "Nâng cao",
     "test": "Kiểm tra kết nối",
     "testHelp": "Gửi hai yêu cầu nhỏ đến nhà cung cấp để kiểm tra công cụ và truyền luồng; có thể phát sinh phí sử dụng",
     "testPassed": "Đã xác minh lượt gọi công cụ, kết quả trả về và truyền luồng; kết quả kiểm tra hết hạn sau 15 phút",
@@ -1022,23 +1020,19 @@
     "conflict": "Cấu hình đã thay đổi bên ngoài ORG2. Xem lại thay đổi trước khi áp dụng hoặc khôi phục; chúng sẽ không bị ghi đè",
     "credentialsNote": "Chế độ trực tiếp ghi thông tin xác thực vào cấu hình CLI với quyền truy cập hạn chế; xóa khóa trong kho không thu hồi thông tin xác thực đã xuất",
     "notInstalled": "Cài đặt công cụ này trước khi kiểm tra hoặc áp dụng kết nối",
-    "appSelector": "Ứng dụng",
+    "apps": {
+      "claudeCode": "Claude Code CLI",
+      "claudeDesktop": "Claude Desktop",
+      "codex": "Codex"
+    },
     "endpoint": "Điểm cuối API",
     "authentication": "Xác thực",
     "desktopScope": "Cấu hình Claude Desktop riêng với Claude Code CLI; thoát hoàn toàn rồi mở lại Desktop sau khi áp dụng",
     "desktopApplied": "Đã lưu cấu hình — thoát hoàn toàn rồi mở lại Claude Desktop",
     "desktopRestored": "Đã khôi phục cấu hình trước — thoát hoàn toàn rồi mở lại Claude Desktop",
-    "advancedDescription": "Kết nối API tùy chỉnh và di chuyển thông tin xác thực một lần",
     "marketApps": {
       "isolatedStorage": "50 cuộc trò chuyện gần đây nhất của bạn sẽ tự động đồng bộ. Nếu một cuộc trò chuyện đang mở trong Codex, hãy thoát và mở lại Codex để nhận tin nhắn mới nhất. Cài đặt của ứng dụng và CLI vẫn tách biệt",
       "isolatedClaudeStorage": "50 cuộc trò chuyện gần đây nhất của bạn sẽ tự động đồng bộ sau khi Claude Desktop và Claude Code thoát",
-      "historySync": {
-        "active": "Đồng bộ lịch sử đang hoạt động · đã chia sẻ {{shared}} cuộc trò chuyện",
-        "attention": "Đồng bộ lịch sử đang hoạt động · đã chia sẻ {{shared}} · {{conflicts}} cần chú ý",
-        "paused": "Đồng bộ lịch sử đã tạm dừng: {{reason}}",
-        "idle": "Đồng bộ lịch sử đang rảnh"
-      },
-      "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Đang tải gói ORG2 Market…",
       "loadFailed": "Không thể tải gói ORG2 Market",
       "nonePurchased": "Hiện chưa có gói ORG2 Market nào",
@@ -1061,7 +1055,13 @@
       "multiPackageHelp": "Chọn tối đa 8 gói và một mô hình mặc định, sau đó chuyển gói trong ứng dụng",
       "auxiliaryBilling": "Các lời gọi tự động của Claude Code cho tiêu đề, bộ nhớ và nén ngữ cảnh được tính vào gói mặc định; chỉ cuộc trò chuyện mới theo gói bạn chọn bằng /model",
       "defaultModel": "Mô hình mặc định",
-      "packageLimit": "Chọn tối đa 8 gói"
+      "packageLimit": "Chọn tối đa 8 gói",
+      "historySync": {
+        "active": "Đồng bộ lịch sử đang hoạt động · đã chia sẻ {{shared}} cuộc trò chuyện",
+        "attention": "Đồng bộ lịch sử đang hoạt động · đã chia sẻ {{shared}} · {{conflicts}} cần chú ý",
+        "paused": "Đồng bộ lịch sử đã tạm dừng: {{reason}}",
+        "idle": "Đồng bộ lịch sử đang rảnh"
+      }
     }
   },
   "claudeProfiles": {
@@ -1069,7 +1069,6 @@
     "newName": "Nhà cung cấp mới",
     "copy": "Sao chép kết nối hiện tại",
     "copyName": "Bản sao kết nối hiện tại",
-    "empty": "Lưu hồ sơ để tùy chỉnh endpoint và mô hình cho ứng dụng này",
     "name": "Tên hồ sơ",
     "credential": "Khóa API",
     "defaultRole": "Vai trò mô hình mặc định",
@@ -1080,15 +1079,12 @@
     "requestModel": "ID mô hình yêu cầu",
     "noLabel": "Không hiển thị trong bộ chọn mô hình",
     "inherit": "Kế thừa mô hình chính",
-    "active": "Đang dùng",
     "updatePending": "Thay đổi đã lưu chờ áp dụng",
     "unsaved": "Lưu hoặc bỏ thay đổi trước khi chuyển hồ sơ",
     "save": "Lưu hồ sơ",
     "test": "Kiểm tra mọi mô hình",
     "discard": "Bỏ thay đổi",
     "delete": "Xóa hồ sơ",
-    "mappingHelp": "Tên chỉ ảnh hưởng bộ chọn; yêu cầu dùng ID mô hình. Chỉ bật 1M khi nhà cung cấp hỗ trợ; tùy chọn này không tăng giới hạn ngữ cảnh",
-    "activationHelp": "Lưu, kiểm tra từng mô hình khác nhau rồi áp dụng. Yêu cầu công cụ và truyền luồng tổng hợp có thể phát sinh phí. Khóa được ghi vào cấu hình ứng dụng khi áp dụng; hãy khởi động lại ứng dụng sau đó",
     "saveDone": "Đã lưu hồ sơ",
     "deleteDone": "Đã xóa hồ sơ",
     "fetchDone": "Đã tải danh sách; chọn hoặc nhập ID",

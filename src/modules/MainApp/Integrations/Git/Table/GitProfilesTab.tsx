@@ -20,19 +20,10 @@ import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
   SectionContainer,
+  SectionProfileSwitcher,
   SectionRow,
-  SectionSidebarItem,
-  SectionSidebarList,
-  SectionSidebarSplit,
 } from "@src/components/layout/Section";
-import {
-  Add01Icon,
-  Copy01Icon,
-  HugeiconsIcon,
-  Refresh04Icon,
-  Tick01Icon,
-  UserCircleIcon,
-} from "@src/icons";
+import { Copy01Icon, HugeiconsIcon, UserCircleIcon } from "@src/icons";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 import {
@@ -263,173 +254,133 @@ const GitProfilesTab: React.FC<GitProfilesTabProps> = ({ connectedEmails }) => {
 
   return (
     <div data-testid="settings-git-profiles-tab">
-      <SectionContainer className="p-0!">
-        <SectionSidebarSplit
-          sidebar={
-            <SectionSidebarList>
-              {state.profiles.map((profile) => {
-                const active = state.activeProfileId === profile.id;
-                const selected = selectedProfileId === profile.id;
-                return (
-                  <SectionSidebarItem
-                    key={profile.id}
-                    selected={selected}
-                    leading={
-                      <HugeiconsIcon
-                        icon={UserCircleIcon}
-                        data-icon="user-round"
-                        size={16}
-                      />
-                    }
-                    trailing={
-                      active ? (
-                        <HugeiconsIcon
-                          icon={Tick01Icon}
-                          data-icon="check"
-                          size={15}
-                          className="text-success-6"
-                          aria-label={t("gitProfiles.active")}
-                        />
-                      ) : null
-                    }
-                    onClick={() => setSelectedProfileId(profile.id)}
-                    data-testid={`settings-git-profile-${profile.id}`}
-                  >
-                    <span className="block truncate font-medium">
-                      {profile.label}
-                    </span>
-                  </SectionSidebarItem>
-                );
-              })}
-              <SectionSidebarItem
-                leading={
-                  <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />
+      <SectionProfileSwitcher
+        items={state.profiles.map((profile) => ({
+          id: profile.id,
+          label: profile.label,
+          active: state.activeProfileId === profile.id,
+          leading: (
+            <HugeiconsIcon
+              icon={UserCircleIcon}
+              data-icon="user-round"
+              size={16}
+            />
+          ),
+          dataTestId: `settings-git-profile-${profile.id}`,
+        }))}
+        selectedId={selectedProfileId}
+        onSelect={setSelectedProfileId}
+        activeLabel={t("gitProfiles.active")}
+        add={{
+          label: t("gitProfiles.add"),
+          onClick: handleAdd,
+          dataTestId: "settings-git-profile-add",
+        }}
+        refresh={{
+          label: t("gitProfiles.refresh"),
+          onRefresh: handleRefresh,
+          refreshing: loading,
+          dataTestId: "settings-git-profile-refresh",
+        }}
+      >
+        {selectedProfile ? (
+          <>
+            <SectionRow label={t("gitProfiles.profileName")} required>
+              <Input
+                value={selectedProfile.label}
+                onChange={(label) => updateSelectedProfile({ label })}
+                style={SECTION_CONTROL_STYLE}
+                data-testid="settings-git-profile-label"
+              />
+            </SectionRow>
+            <SectionRow label={t("gitProfiles.authorName")} required>
+              <Input
+                value={selectedProfile.name}
+                onChange={(name) => updateSelectedProfile({ name })}
+                style={SECTION_CONTROL_STYLE}
+                data-testid="settings-git-profile-author-name"
+              />
+            </SectionRow>
+            <SectionRow label={t("gitProfiles.email")} required>
+              <Select
+                value={selectedProfile.email}
+                onChange={(email) =>
+                  updateSelectedProfile({ email: String(email) })
                 }
-                onClick={handleAdd}
-                data-testid="settings-git-profile-add"
-              >
-                {t("gitProfiles.add")}
-              </SectionSidebarItem>
-              <SectionSidebarItem
-                leading={
-                  <HugeiconsIcon
-                    icon={Refresh04Icon}
-                    data-icon="refresh-cw"
-                    size={14}
-                    className={loading ? "animate-spin" : undefined}
-                  />
+                options={emailOptions}
+                showSearch
+                placeholder={t("gitProfiles.selectEmail")}
+                style={SECTION_CONTROL_STYLE}
+                dataTestId="settings-git-profile-email"
+              />
+            </SectionRow>
+            <SectionRow label={t("gitProfiles.signingKey")}>
+              <Input
+                value={selectedProfile.signingKey}
+                onChange={(signingKey) => updateSelectedProfile({ signingKey })}
+                placeholder={t("gitProfiles.signingKeyPlaceholder")}
+                style={SECTION_CONTROL_STYLE}
+              />
+            </SectionRow>
+            <SectionRow label={t("gitProfiles.signCommits")}>
+              <Switch
+                checked={selectedProfile.signCommits}
+                onCheckedChange={(signCommits) =>
+                  updateSelectedProfile({ signCommits })
                 }
-                disabled={loading}
-                onClick={() => void handleRefresh()}
-                title={t("gitProfiles.refresh")}
-                data-testid="settings-git-profile-refresh"
-              >
-                {t("gitProfiles.refresh")}
-              </SectionSidebarItem>
-            </SectionSidebarList>
-          }
-        >
-          {selectedProfile ? (
-            <>
-              <SectionRow label={t("gitProfiles.profileName")} required>
-                <Input
-                  value={selectedProfile.label}
-                  onChange={(label) => updateSelectedProfile({ label })}
-                  style={SECTION_CONTROL_STYLE}
-                  data-testid="settings-git-profile-label"
-                />
-              </SectionRow>
-              <SectionRow label={t("gitProfiles.authorName")} required>
-                <Input
-                  value={selectedProfile.name}
-                  onChange={(name) => updateSelectedProfile({ name })}
-                  style={SECTION_CONTROL_STYLE}
-                  data-testid="settings-git-profile-author-name"
-                />
-              </SectionRow>
-              <SectionRow label={t("gitProfiles.email")} required>
-                <Select
-                  value={selectedProfile.email}
-                  onChange={(email) =>
-                    updateSelectedProfile({ email: String(email) })
-                  }
-                  options={emailOptions}
-                  showSearch
-                  placeholder={t("gitProfiles.selectEmail")}
-                  style={SECTION_CONTROL_STYLE}
-                  dataTestId="settings-git-profile-email"
-                />
-              </SectionRow>
-              <SectionRow label={t("gitProfiles.signingKey")}>
-                <Input
-                  value={selectedProfile.signingKey}
-                  onChange={(signingKey) =>
-                    updateSelectedProfile({ signingKey })
-                  }
-                  placeholder={t("gitProfiles.signingKeyPlaceholder")}
-                  style={SECTION_CONTROL_STYLE}
-                />
-              </SectionRow>
-              <SectionRow label={t("gitProfiles.signCommits")}>
-                <Switch
-                  checked={selectedProfile.signCommits}
-                  onCheckedChange={(signCommits) =>
-                    updateSelectedProfile({ signCommits })
-                  }
-                />
-              </SectionRow>
-              <SectionRow showHeader={false}>
-                <div className="flex w-full flex-wrap items-center justify-between gap-2">
+              />
+            </SectionRow>
+            <SectionRow showHeader={false}>
+              <div className="flex w-full flex-wrap items-center justify-between gap-2">
+                <Button
+                  size="small"
+                  onClick={() => setShowRawConfig((visible) => !visible)}
+                >
+                  {showRawConfig
+                    ? t("gitProfiles.hideRaw")
+                    : t("gitProfiles.editRaw")}
+                </Button>
+                <div className={SECTION_ACTION_GAP_CLASSES}>
                   <Button
                     size="small"
-                    onClick={() => setShowRawConfig((visible) => !visible)}
-                  >
-                    {showRawConfig
-                      ? t("gitProfiles.hideRaw")
-                      : t("gitProfiles.editRaw")}
-                  </Button>
-                  <div className={SECTION_ACTION_GAP_CLASSES}>
-                    <Button
-                      size="small"
-                      iconOnly
-                      aria-label={tCommon("actions.duplicate")}
-                      title={tCommon("actions.duplicate")}
-                      icon={
-                        <HugeiconsIcon
-                          icon={Copy01Icon}
-                          data-icon="copy"
-                          size={14}
-                        />
-                      }
-                      onClick={handleDuplicate}
-                    />
-                    {state.profiles.length > 1 && (
-                      <DeleteIconButton
-                        size="small"
-                        iconOnly={false}
-                        label={tCommon("actions.delete")}
-                        onDelete={() => void handleDelete()}
+                    iconOnly
+                    aria-label={tCommon("actions.duplicate")}
+                    title={tCommon("actions.duplicate")}
+                    icon={
+                      <HugeiconsIcon
+                        icon={Copy01Icon}
+                        data-icon="copy"
+                        size={14}
                       />
-                    )}
-                    <Button
-                      variant="primary"
+                    }
+                    onClick={handleDuplicate}
+                  />
+                  {state.profiles.length > 1 && (
+                    <DeleteIconButton
                       size="small"
-                      loading={applying}
-                      disabled={applying}
-                      onClick={() => void handleApply()}
-                      data-testid="settings-git-profile-activate"
-                    >
-                      {state.activeProfileId === selectedProfile.id
-                        ? t("gitProfiles.active")
-                        : t("gitProfiles.activate")}
-                    </Button>
-                  </div>
+                      iconOnly={false}
+                      label={tCommon("actions.delete")}
+                      onDelete={() => void handleDelete()}
+                    />
+                  )}
+                  <Button
+                    variant="primary"
+                    size="small"
+                    loading={applying}
+                    disabled={applying}
+                    onClick={() => void handleApply()}
+                    data-testid="settings-git-profile-activate"
+                  >
+                    {state.activeProfileId === selectedProfile.id
+                      ? t("gitProfiles.active")
+                      : t("gitProfiles.activate")}
+                  </Button>
                 </div>
-              </SectionRow>
-            </>
-          ) : null}
-        </SectionSidebarSplit>
-      </SectionContainer>
+              </div>
+            </SectionRow>
+          </>
+        ) : null}
+      </SectionProfileSwitcher>
 
       {showRawConfig && selectedProfile && (
         <SectionContainer title={t("gitProfiles.rawTitle")}>

@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useCallback, useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type {
@@ -9,9 +9,13 @@ import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
+import SettingsTable, {
+  SETTINGS_TABLE_COL,
+  type SettingsTableColumn,
+} from "@src/components/SettingsTable";
 import {
+  SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
-  SECTION_DESCRIPTION_CLASSES,
   SectionRow,
 } from "@src/components/layout/Section";
 
@@ -43,21 +47,98 @@ export default function ClaudeModelMappings({
     profile.target === "claude_code"
       ? [...MAIN_ROLES, "subagent"]
       : [...MAIN_ROLES];
-  const update = (
-    role: ClaudeRole,
-    value: Partial<ClaudeProviderProfile["models"]["roles"]["sonnet"]>
-  ) => {
-    const entry = {
-      model: "",
-      displayName: "",
-      context1m: false,
-      ...profile.models.roles[role],
-      ...value,
-    };
-    const next = { ...profile.models.roles, [role]: entry };
-    if (role === "subagent" && !entry.model) delete next.subagent;
-    onChange({ ...profile, models: { ...profile.models, roles: next } });
-  };
+  const update = useCallback(
+    (
+      role: ClaudeRole,
+      value: Partial<ClaudeProviderProfile["models"]["roles"]["sonnet"]>
+    ) => {
+      const entry = {
+        model: "",
+        displayName: "",
+        context1m: false,
+        ...profile.models.roles[role],
+        ...value,
+      };
+      const next = { ...profile.models.roles, [role]: entry };
+      if (role === "subagent" && !entry.model) delete next.subagent;
+      onChange({ ...profile, models: { ...profile.models, roles: next } });
+    },
+    [onChange, profile]
+  );
+  const columns = useMemo<SettingsTableColumn<ClaudeRole>[]>(
+    () => [
+      {
+        key: "role",
+        label: t("claudeProfiles.role"),
+        width: SETTINGS_TABLE_COL.valueMd,
+        renderCell: (role) => (
+          <span className="text-sm font-medium text-text-2">
+            {LABELS[role]}
+          </span>
+        ),
+      },
+      {
+        key: "displayName",
+        label: t("claudeProfiles.displayName"),
+        width: SETTINGS_TABLE_COL.fill,
+        renderCell: (role) => (
+          <Input
+            aria-label={`${LABELS[role]} ${t("claudeProfiles.displayName")}`}
+            value={profile.models.roles[role]?.displayName ?? ""}
+            placeholder={t(
+              role === "subagent"
+                ? "claudeProfiles.noLabel"
+                : "claudeProfiles.displayName"
+            )}
+            disabled={disabled || role === "subagent"}
+            maxLength={120}
+            size="default"
+            className="w-full"
+            onChange={(displayName) => update(role, { displayName })}
+          />
+        ),
+      },
+      {
+        key: "model",
+        label: t("claudeProfiles.requestModel"),
+        width: SETTINGS_TABLE_COL.fill,
+        renderCell: (role) => (
+          <Input
+            aria-label={`${LABELS[role]} ${t("claudeProfiles.requestModel")}`}
+            value={profile.models.roles[role]?.model ?? ""}
+            list={listId}
+            placeholder={t(
+              role === "subagent"
+                ? "claudeProfiles.inherit"
+                : "claudeProfiles.requestModel"
+            )}
+            disabled={disabled}
+            maxLength={256}
+            size="default"
+            className="w-full"
+            onChange={(model) => update(role, { model })}
+          />
+        ),
+      },
+      {
+        key: "context1m",
+        label: "1M",
+        width: SETTINGS_TABLE_COL.hug,
+        align: "center",
+        // Haiku has no 1M context tier, so the cell stays empty for that role.
+        renderCell: (role) =>
+          role === "haiku" ? null : (
+            <Checkbox
+              ariaLabel={`${LABELS[role]} 1M`}
+              disabled={disabled || !profile.models.roles[role]?.model}
+              checked={profile.models.roles[role]?.context1m ?? false}
+              onCheckedChange={(context1m) => update(role, { context1m })}
+            />
+          ),
+      },
+    ],
+    [disabled, listId, profile, t, update]
+  );
   return (
     <>
       <SectionRow label={t("claudeProfiles.defaultRole")}>
@@ -82,13 +163,11 @@ export default function ClaudeModelMappings({
           }}
         />
       </SectionRow>
-      <SectionRow showHeader={false}>
-        <div className="@container flex w-full min-w-0 flex-col gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-sm font-medium text-text-1">
-              {t("claudeProfiles.mapping")}
-            </span>
-            <div className="flex flex-wrap gap-2">
+      <SectionRow
+        label={
+          <span className="flex w-full items-center justify-between gap-2">
+            {t("claudeProfiles.mapping")}
+            <span className={`${SECTION_ACTION_GAP_CLASSES} flex-wrap`}>
               <Button
                 disabled={
                   disabled ||
@@ -119,81 +198,25 @@ export default function ClaudeModelMappings({
               >
                 {t("claudeProfiles.fetchModels")}
               </Button>
-            </div>
-          </div>
-          <p className={SECTION_DESCRIPTION_CLASSES}>
-            {t("claudeProfiles.mappingHelp")}
-          </p>
-          <datalist id={listId}>
-            {models.map((model) => (
-              <option key={model} value={model} />
-            ))}
-          </datalist>
-          <div
-            className="flex flex-col gap-3"
-            role="group"
-            aria-label={t("claudeProfiles.mapping")}
-          >
-            <div
-              className="hidden gap-2 px-3 text-xs text-text-3 @[800px]:grid @[800px]:grid-cols-[6rem_1fr_1fr_5rem]"
-              aria-hidden="true"
-            >
-              <span>{t("claudeProfiles.role")}</span>
-              <span>{t("claudeProfiles.displayName")}</span>
-              <span>{t("claudeProfiles.requestModel")}</span>
-              <span>1M</span>
-            </div>
-            {roles.map((role) => {
-              const entry = profile.models.roles[role];
-              return (
-                <div
-                  key={role}
-                  className="grid grid-cols-1 items-start gap-2 rounded-lg border border-border-2 p-3 @[600px]:grid-cols-2 @[800px]:grid-cols-[6rem_1fr_1fr_5rem]"
-                >
-                  <div className="flex h-8 items-center text-sm font-medium text-text-2">
-                    {LABELS[role]}
-                  </div>
-                  <Input
-                    aria-label={`${LABELS[role]} ${t("claudeProfiles.displayName")}`}
-                    value={entry?.displayName ?? ""}
-                    placeholder={t(
-                      role === "subagent"
-                        ? "claudeProfiles.noLabel"
-                        : "claudeProfiles.displayName"
-                    )}
-                    disabled={disabled || role === "subagent"}
-                    maxLength={120}
-                    onChange={(displayName) => update(role, { displayName })}
-                  />
-                  <Input
-                    aria-label={`${LABELS[role]} ${t("claudeProfiles.requestModel")}`}
-                    value={entry?.model ?? ""}
-                    list={listId}
-                    placeholder={t(
-                      role === "subagent"
-                        ? "claudeProfiles.inherit"
-                        : "claudeProfiles.requestModel"
-                    )}
-                    disabled={disabled}
-                    maxLength={256}
-                    onChange={(model) => update(role, { model })}
-                  />
-                  {role !== "haiku" && (
-                    <Checkbox
-                      disabled={disabled || !entry?.model}
-                      checked={entry?.context1m ?? false}
-                      onCheckedChange={(context1m) =>
-                        update(role, { context1m })
-                      }
-                    >
-                      <span className="sr-only">{LABELS[role]} </span>1M
-                    </Checkbox>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+            </span>
+          </span>
+        }
+        layout="vertical"
+      >
+        <datalist id={listId}>
+          {models.map((model) => (
+            <option key={model} value={model} />
+          ))}
+        </datalist>
+        {/* The rule sits under the heading and its actions, fencing off the
+            table itself rather than the whole block. */}
+        <SettingsTable<ClaudeRole>
+          columns={columns}
+          rows={roles}
+          getRowKey={(role) => role}
+          dense
+          noPx
+        />
       </SectionRow>
     </>
   );

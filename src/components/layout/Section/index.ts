@@ -32,6 +32,12 @@ export { default as SectionContainer } from "./Container";
 
 export { default as SectionRow } from "./Row";
 
+export { default as SectionProfileSwitcher } from "./ProfileSwitcher";
+export type {
+  SectionProfileSwitcherItem,
+  SectionProfileSwitcherProps,
+} from "./ProfileSwitcher";
+
 export { default as SectionTabSwitch } from "./TabSwitch";
 
 export { default as ExpandableTableRow } from "./ExpandableTableRow";
@@ -70,4 +76,6 @@ export {
   SECTION_ACTION_GAP_CLASSES,
   /** "flex flex-col gap-3" — wrapper gap between section containers */
   SECTION_GAP_CLASSES,
+  /** Hairlines between consecutive SectionRows in a custom row host */
+  SECTION_ROW_SEPARATOR_CLASSES,
 } from "./tokens";
