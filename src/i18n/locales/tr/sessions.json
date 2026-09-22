@@ -1002,6 +1002,7 @@
     "typeMessage": "Bir mesaj yazın…",
     "session": "Oturum",
     "history": "Oturumlar",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Sabitlenen bölüme git: {{preview}}",
     "unpinPassage": "Sabitlemeyi kaldır"
   },
