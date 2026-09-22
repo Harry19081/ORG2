@@ -115,7 +115,19 @@ describe("closeTabChordFallbackAtom", () => {
   }
 
   it("closes My Station's Launchpad before the window", () => {
-    expect(seed({})).toBe(CLOSE_TAB_CHORD_FALLBACK.CLOSE_MY_STATION);
+    expect(seed({})).toBe(CLOSE_TAB_CHORD_FALLBACK.CLOSE_STATION);
+  });
+
+  it("closes the Agent Station, which never holds a tab of its own", () => {
+    expect(seed({ stationMode: "agent-station" })).toBe(
+      CLOSE_TAB_CHORD_FALLBACK.CLOSE_STATION
+    );
+    expect(
+      seed({
+        stationMode: "agent-station",
+        workstation: [createProjectSettingsTab()],
+      })
+    ).toBe(CLOSE_TAB_CHORD_FALLBACK.CLOSE_STATION);
   });
 
   it("closes the window once My Station is closed too", () => {
@@ -138,13 +150,14 @@ describe("closeTabChordFallbackAtom", () => {
   it("keeps the chord as it was while an open station has more than a Launchpad", () => {
     expect(seed({ workstation: [createProjectSettingsTab()] })).toBeNull();
     expect(seed({ workstation: [] })).toBeNull();
-    expect(seed({ stationMode: "agent-station" })).toBeNull();
   });
 
-  it("closes a detached My Station window from its lone Launchpad", () => {
+  it("closes a detached Station window that has nothing left to close", () => {
     stationWindowMock.mockReturnValue(true);
     expect(seed({})).toBe(CLOSE_TAB_CHORD_FALLBACK.CLOSE_WINDOW);
     expect(seed({ workstation: [createProjectSettingsTab()] })).toBeNull();
-    expect(seed({ stationMode: "agent-station" })).toBeNull();
+    expect(seed({ stationMode: "agent-station" })).toBe(
+      CLOSE_TAB_CHORD_FALLBACK.CLOSE_WINDOW
+    );
   });
 });

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { openAgentSessionSearchSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 
-import { createAgentStationQuickActions } from "./emptyStateActions";
+import { createAgentStationQuickActions } from "../emptyStateActions";
 
 vi.mock("@src/scaffold/GlobalSpotlight/openSpotlight", () => ({
   openAgentSessionSearchSpotlight: vi.fn(),

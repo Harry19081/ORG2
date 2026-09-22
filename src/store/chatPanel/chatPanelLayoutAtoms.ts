@@ -4,7 +4,7 @@ import {
   chatPanelMaximizedAtom,
   toggleChatPanelMaximizedAtom,
 } from "@src/store/ui/chatPanel/surfaceAtoms";
-import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { STATION_MODE, stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { workstationLayoutAtom } from "@src/store/workstation/tabs";
 import { isStationWindow } from "@src/util/platform/tauri/windowIdentity";
 
@@ -43,7 +43,7 @@ toggleActiveChatPanelMaximizedAtom.debugLabel =
   "toggleActiveChatPanelMaximized";
 
 export const CLOSE_TAB_CHORD_FALLBACK = {
-  CLOSE_MY_STATION: "close-my-station",
+  CLOSE_STATION: "close-station",
   CLOSE_WINDOW: "close-window",
 } as const;
 export type CloseTabChordFallback =
@@ -54,22 +54,25 @@ export type CloseTabChordFallback =
  * its Launchpad — closing that only re-creates it — or null while the chat
  * pane still has a tab of its own to close.
  *
- * My Station closes first: while it shows nothing but its Launchpad, the
- * chord closes that Launchpad, which closes My Station. Only once the
- * WorkStation is closed (the chat pane fills the slot) does the chord close
- * the window. A detached My Station window cannot close My Station without
- * closing itself, so its lone Launchpad closes the window directly. A visible
- * Agent Station or real WorkStation tab leaves the chord as it was.
+ * The visible Station closes first: while My Station shows nothing but its
+ * Launchpad, the chord closes that Launchpad, which closes My Station. The
+ * Agent Station owns no tabs at all, so it is always in that state — the
+ * chord closes it straight away rather than reaching past it for a My Station
+ * tab nobody can see. Only once the Station is closed (the chat pane fills the
+ * slot) does the chord close the window. A detached Station window cannot
+ * close its Station without closing itself, so it closes the window directly.
+ * A real WorkStation tab leaves the chord as it was.
  */
 export const closeTabChordFallbackAtom = atom<CloseTabChordFallback | null>(
   (get) => {
     const workstationTabs = get(workstationLayoutAtom).mainPane.tabs;
-    const myStationHoldsOnlyLaunchpad =
-      get(stationModeAtom) === "my-station" &&
-      workstationTabs.length > 0 &&
-      workstationTabs.every((tab) => tab.type === "start");
+    const agentStation = get(stationModeAtom) === STATION_MODE.AGENT_STATION;
+    const stationHoldsNothingToClose =
+      agentStation ||
+      (workstationTabs.length > 0 &&
+        workstationTabs.every((tab) => tab.type === "start"));
     if (isStationWindow()) {
-      return myStationHoldsOnlyLaunchpad
+      return stationHoldsNothingToClose
         ? CLOSE_TAB_CHORD_FALLBACK.CLOSE_WINDOW
         : null;
     }
@@ -81,8 +84,8 @@ export const closeTabChordFallbackAtom = atom<CloseTabChordFallback | null>(
     if (get(chatPanelMaximizedAtom)) {
       return CLOSE_TAB_CHORD_FALLBACK.CLOSE_WINDOW;
     }
-    return myStationHoldsOnlyLaunchpad
-      ? CLOSE_TAB_CHORD_FALLBACK.CLOSE_MY_STATION
+    return stationHoldsNothingToClose
+      ? CLOSE_TAB_CHORD_FALLBACK.CLOSE_STATION
       : null;
   }
 );
