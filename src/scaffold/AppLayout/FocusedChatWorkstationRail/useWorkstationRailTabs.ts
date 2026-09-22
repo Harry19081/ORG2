@@ -10,11 +10,8 @@ import { useCallback, useMemo } from "react";
 import { ROUTES } from "@src/config/routes";
 import { getTerminalDisplayTitle } from "@src/engines/TerminalCore/types";
 import { createLogger } from "@src/hooks/logger";
-import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
 import { useCloseTabWithGuard } from "@src/hooks/tabHost/useCloseTabWithGuard";
 import { File01Icon, InternetIcon, SquareTerminalIcon } from "@src/icons";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
-import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   closeTerminalSessionAtom,
   initializedTerminalIdsAtom,
@@ -30,6 +27,7 @@ import {
   tabRegistryAtom,
 } from "@src/store/workstation/tabRegistry";
 import type { WorkStationTab } from "@src/store/workstation/tabs/types";
+import { revealMyStation } from "@src/util/ui/revealMyStation";
 import { isChatPanelTerminalId } from "@src/util/ui/terminal/chatPanelSessionId";
 import { isAgentPtySessionId } from "@src/util/ui/terminal/ptySessionId";
 
@@ -64,7 +62,6 @@ export function useWorkstationRailTabs({
   showMiniTerminal: (sessionId: string | null) => void;
   t: TFunction;
 }) {
-  const navigate = useNavigate();
   const tabEntries = useAtomValue(tabRegistryAtom);
   const terminalSessions = useAtomValue(terminalSessionsAtom);
   const initializedTerminalIds = useAtomValue(initializedTerminalIdsAtom);
@@ -74,8 +71,6 @@ export function useWorkstationRailTabs({
     clearTerminalTargetReferencesAtom
   );
   const closeTerminalSession = useSetAtom(closeTerminalSessionAtom);
-  const setStationMode = useSetAtom(stationModeAtom);
-  const setChatPanelMaximized = useSetAtom(chatPanelMaximizedAtom);
 
   const visibleTabs = useMemo(
     () => tabEntries.filter(({ tab }) => !tab.hideWhenOthersExist),
@@ -86,14 +81,9 @@ export function useWorkstationRailTabs({
     [visibleTabs]
   );
 
-  const openWorkstationHost = useCallback(
-    (host: WorkstationTabHost) => {
-      setStationMode("my-station");
-      setChatPanelMaximized(false);
-      navigate(WORKSTATION_HOST_ROUTES[host]);
-    },
-    [navigate, setChatPanelMaximized, setStationMode]
-  );
+  const openWorkstationHost = useCallback((host: WorkstationTabHost) => {
+    revealMyStation({ path: WORKSTATION_HOST_ROUTES[host] });
+  }, []);
 
   const openWorkstationTab = useCallback(
     (tab: WorkStationTab) => {

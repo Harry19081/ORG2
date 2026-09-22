@@ -166,7 +166,7 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
 
   const handleOpenDetails = useCallback(
     (url: string) => {
-      openLink(url, { navigate: true });
+      openLink(url);
       close();
     },
     [close]

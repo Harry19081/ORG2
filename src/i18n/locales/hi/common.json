@@ -2179,9 +2179,7 @@
     "selectedElement": {
       "sentToChat": "एलिमेंट चैट में जोड़ा गया",
       "addElement": "एलिमेंट जोड़ें"
-    },
-    "openedInBrowser": "ब्राउज़र में खोला गया",
-    "goToBrowser": "ब्राउज़र पर जाएँ"
+    }
   },
   "controlTower": {
     "sidebar": {

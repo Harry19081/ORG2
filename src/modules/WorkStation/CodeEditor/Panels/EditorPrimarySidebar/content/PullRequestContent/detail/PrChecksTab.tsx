@@ -58,7 +58,7 @@ function CheckRow({
       ) : null}
       {detailsUrl ? (
         <a
-          {...linkAnchorProps(detailsUrl, { navigate: true })}
+          {...linkAnchorProps(detailsUrl)}
           className="shrink-0 text-text-3 hover:text-text-1"
           title={t("git.pr.details")}
         >

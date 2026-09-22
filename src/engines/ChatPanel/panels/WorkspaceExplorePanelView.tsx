@@ -246,7 +246,7 @@ const WorkspaceExplorePanelView: React.FC = () => {
   );
 
   const handleOpen = useCallback((repo: SearchRepo) => {
-    openLink(repo.html_url, { navigate: true });
+    openLink(repo.html_url);
   }, []);
 
   const handleClone = useCallback(

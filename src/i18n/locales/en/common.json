@@ -2179,9 +2179,7 @@
     "selectedElement": {
       "sentToChat": "Element attached to chat",
       "addElement": "Add element"
-    },
-    "openedInBrowser": "Opened in Browser",
-    "goToBrowser": "Go to Browser"
+    }
   },
   "controlTower": {
     "sidebar": {

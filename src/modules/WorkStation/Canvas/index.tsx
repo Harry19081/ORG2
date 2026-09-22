@@ -205,7 +205,7 @@ function CanvasApp(props: SimulatorAppProps) {
         <div className="flex items-center gap-1">
           {state.mode === "url" && state.url && (
             <Button
-              onClick={() => openLink(state.url!, { navigate: true })}
+              onClick={() => openLink(state.url!)}
               title={t("simulator.replay.canvas.tooltipOpenInBrowser")}
               aria-label={t("simulator.replay.canvas.tooltipOpenInBrowser")}
               size="mini"

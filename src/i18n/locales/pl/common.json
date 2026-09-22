@@ -2338,9 +2338,7 @@
     "selectedElement": {
       "addElement": "Dodaj element",
       "sentToChat": "Element dołączony do czatu"
-    },
-    "openedInBrowser": "Otwarto w przeglądarce",
-    "goToBrowser": "Przejdź do przeglądarki"
+    }
   },
   "controlTower": {
     "sidebar": {

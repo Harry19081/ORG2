@@ -2338,9 +2338,7 @@
     "selectedElement": {
       "addElement": "Добавить элемент",
       "sentToChat": "Элемент прикреплён к чату"
-    },
-    "openedInBrowser": "Открыто в браузере",
-    "goToBrowser": "Перейти к браузеру"
+    }
   },
   "controlTower": {
     "sidebar": {

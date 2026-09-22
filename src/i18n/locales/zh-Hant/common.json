@@ -2338,9 +2338,7 @@
     "selectedElement": {
       "addElement": "添加元素",
       "sentToChat": "元素已添加到聊天"
-    },
-    "openedInBrowser": "已在瀏覽器中開啟",
-    "goToBrowser": "前往瀏覽器"
+    }
   },
   "controlTower": {
     "sidebar": {

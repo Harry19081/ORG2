@@ -159,7 +159,7 @@ const CliClientInlineExpandedCard = ({
                 />
               }
               iconPosition="right"
-              onClick={() => openLink(agent.docsUrl!, { navigate: true })}
+              onClick={() => openLink(agent.docsUrl!)}
             >
               {t("cliPreview.docs")}
             </Button>

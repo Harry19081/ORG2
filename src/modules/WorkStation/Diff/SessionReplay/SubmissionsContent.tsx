@@ -88,7 +88,7 @@ const PullRequestSubmissionRow: React.FC<{
         )}
         {pullRequest.url && (
           <a
-            {...linkAnchorProps(pullRequest.url, { navigate: true })}
+            {...linkAnchorProps(pullRequest.url)}
             className={`${HEADER_BUTTON.action} ml-auto`}
             aria-label={t("actions.openOnGitHub")}
             title={t("actions.openOnGitHub")}

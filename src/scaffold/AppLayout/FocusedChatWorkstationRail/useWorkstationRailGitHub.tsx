@@ -120,7 +120,7 @@ export function useWorkstationRailGitHub({
               label: t("common:git.actions.compareBranch"),
               icon: GitHubRailIcon,
               external: true,
-              onClick: () => openLink(branchCompareUrl, { navigate: true }),
+              onClick: () => openLink(branchCompareUrl),
             },
           ]
         : []),

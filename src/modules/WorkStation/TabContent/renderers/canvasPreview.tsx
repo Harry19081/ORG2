@@ -51,7 +51,7 @@ const CanvasPreviewTabRenderer: React.FC<UnifiedTabContentProps> = memo(
     const handleOpenExternal = useCallback(() => {
       if (!payload) return;
       if (payload.mode === "url" && payload.url) {
-        openLink(payload.url, { navigate: true });
+        openLink(payload.url);
         return;
       }
       const srcDoc = buildExternalSrcDoc(payload.mode, payload.content);

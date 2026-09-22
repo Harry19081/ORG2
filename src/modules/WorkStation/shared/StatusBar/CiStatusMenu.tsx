@@ -195,7 +195,7 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
 
     const handleOpenDetails = useCallback(
       (url: string) => {
-        openLink(url, { navigate: true });
+        openLink(url);
         close();
       },
       [close]

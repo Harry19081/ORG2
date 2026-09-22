@@ -2338,9 +2338,7 @@
     "selectedElement": {
       "addElement": "Öğe ekle",
       "sentToChat": "Öğe sohbete eklendi"
-    },
-    "openedInBrowser": "Tarayıcıda açıldı",
-    "goToBrowser": "Tarayıcıya git"
+    }
   },
   "controlTower": {
     "sidebar": {
