@@ -1082,7 +1082,7 @@
     "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop",
     "advancedDescription": "Custom API connections and one-time credential migration",
     "marketApps": {
-      "isolatedStorage": "This official App uses separate settings and conversation storage. Your main App and CLI keep their settings. Earlier conversations are not imported automatically",
+      "isolatedStorage": "Compatible conversations sync automatically. If a conversation is already open in Codex, quit and reopen Codex to receive its latest messages. App and CLI settings stay separate",
       "isolatedClaudeStorage": "Compatible conversations sync automatically after Claude Desktop and Claude Code quit",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Loading ORG2 Market packages…",

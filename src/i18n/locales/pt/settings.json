@@ -1001,7 +1001,7 @@
     "desktopRestored": "Configuração anterior restaurada — encerre completamente e reabra o Claude Desktop",
     "advancedDescription": "Conexões de API personalizadas e migração única de credenciais",
     "marketApps": {
-      "isolatedStorage": "Este app oficial usa configurações e armazenamento de conversas separados. Seu app principal e a CLI mantêm as configurações. Conversas anteriores não são importadas automaticamente",
+      "isolatedStorage": "As conversas compatíveis sincronizam automaticamente. Se uma conversa já estiver aberta no Codex, feche e reabra o Codex para receber as mensagens mais recentes. As configurações do app e da CLI permanecem separadas",
       "isolatedClaudeStorage": "As conversas compatíveis sincronizam após fechar Claude Desktop e Claude Code",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Carregando pacotes do ORG2 Market…",

@@ -1001,7 +1001,7 @@
     "desktopRestored": "Đã khôi phục cấu hình trước — thoát hoàn toàn rồi mở lại Claude Desktop",
     "advancedDescription": "Kết nối API tùy chỉnh và di chuyển thông tin xác thực một lần",
     "marketApps": {
-      "isolatedStorage": "Ứng dụng chính thức này dùng cài đặt và bộ nhớ hội thoại riêng. Ứng dụng chính và CLI giữ nguyên cài đặt. Các hội thoại cũ không được nhập tự động",
+      "isolatedStorage": "Các cuộc trò chuyện tương thích tự động đồng bộ. Nếu cuộc trò chuyện đã mở trong Codex, hãy thoát rồi mở lại Codex để nhận tin nhắn mới nhất. Cài đặt ứng dụng và CLI vẫn tách biệt",
       "isolatedClaudeStorage": "Các cuộc trò chuyện tương thích tự đồng bộ sau khi thoát Claude Desktop và Claude Code",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Đang tải gói ORG2 Market…",

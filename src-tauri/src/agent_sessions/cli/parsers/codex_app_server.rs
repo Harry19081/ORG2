@@ -73,11 +73,15 @@ use super::types::{CliAgentType, TokenUsage};
 use crate::agent_sessions::cli::session_runner::launch_profiles::CliPermissionMode;
 
 mod catalog;
+#[cfg(all(feature = "market-connect", target_os = "macos"))]
+mod history_bootstrap;
 mod slash;
 pub(crate) use catalog::{
     archive_thread, ensure_project, native_codex_app_server_command, register_thread,
     synchronize_thread, CatalogProfile,
 };
+#[cfg(all(feature = "market-connect", target_os = "macos"))]
+pub(crate) use history_bootstrap::prepare_history_store;
 
 /// How long to keep draining after `turn/interrupt` before giving up on a
 /// graceful `turn/completed`.
