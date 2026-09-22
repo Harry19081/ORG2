@@ -39,10 +39,10 @@ impl QuestionToolContext {
 /// invariant belongs here rather than in the readers.
 fn validate_question_elements(questions: &[Value]) -> Result<(), ToolError> {
     let invalid = questions.iter().enumerate().find(|(_, question)| {
-        !question
+        question
             .get("question")
             .and_then(Value::as_str)
-            .is_some_and(|text| !text.trim().is_empty())
+            .is_none_or(|text| text.trim().is_empty())
     });
 
     let Some((index, invalid)) = invalid else {

@@ -153,7 +153,7 @@ export function useWorkstationSidebarChrome({
     sessionMap,
     fallback: handleMenuItemContextMenu,
     onOpenInNewTab: handleSessionMenuItemOpenInNewTab,
-    openInNewTabLabel: tCommon("actions.openInNewTab"),
+    openInNewTabLabel: tCommon("actions.openTargetNewTab"),
     openInLabel: tCommon("actions.openIn"),
   });
   const resolvedRenderMenuItemWrapper =

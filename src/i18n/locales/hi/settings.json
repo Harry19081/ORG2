@@ -1083,8 +1083,8 @@
     "desktopApplied": "Desktop कॉन्फ़िगरेशन सहेजा गया — Claude Desktop को पूरी तरह बंद करके फिर से खोलें",
     "desktopRestored": "पिछला Desktop कॉन्फ़िगरेशन पुनर्स्थापित किया गया — Claude Desktop को पूरी तरह बंद करके फिर से खोलें",
     "marketApps": {
-      "isolatedStorage": "यह आधिकारिक ऐप अलग सेटिंग और बातचीत का स्टोरेज इस्तेमाल करता है। आपके मुख्य ऐप और CLI की सेटिंग बनी रहती हैं। पिछली बातचीत अपने आप आयात नहीं होती",
-      "isolatedClaudeStorage": "Claude Desktop और Claude Code बंद होने के बाद संगत बातचीत अपने आप सिंक होती है",
+      "isolatedStorage": "आपकी हाल की 50 बातचीत अपने आप सिंक होती हैं। यदि कोई बातचीत Codex में पहले से खुली है, तो नवीनतम संदेश पाने के लिए Codex बंद करके फिर से खोलें। ऐप और CLI की सेटिंग अलग रहती हैं",
+      "isolatedClaudeStorage": "Claude Desktop और Claude Code बंद होने के बाद आपकी हाल की 50 बातचीत अपने आप सिंक होती हैं",
       "loading": "ORG2 Market पैकेज लोड हो रहे हैं…",
       "loadFailed": "ORG2 Market पैकेज लोड नहीं हो सके",
       "nonePurchased": "अभी कोई ORG2 Market पैकेज उपलब्ध नहीं है",
@@ -1107,7 +1107,13 @@
       "multiPackageHelp": "अधिकतम 8 पैकेज और एक डिफ़ॉल्ट मॉडल चुनें, फिर ऐप के भीतर पैकेज बदलें",
       "auxiliaryBilling": "Claude Code के स्वचालित शीर्षक, मेमोरी और संपीड़न कॉल डिफ़ॉल्ट पैकेज पर बिल होते हैं; केवल चैट ही /model से चुने गए पैकेज का अनुसरण करती है",
       "defaultModel": "डिफ़ॉल्ट मॉडल",
-      "packageLimit": "अधिकतम 8 पैकेज चुनें"
+      "packageLimit": "अधिकतम 8 पैकेज चुनें",
+      "historySync": {
+        "active": "इतिहास सिंक सक्रिय · {{shared}} बातचीत साझा",
+        "attention": "इतिहास सिंक सक्रिय · {{shared}} साझा · {{conflicts}} पर ध्यान आवश्यक",
+        "paused": "इतिहास सिंक रुका हुआ: {{reason}}",
+        "idle": "इतिहास सिंक निष्क्रिय"
+      }
     }
   },
   "claudeProfiles": {

@@ -146,10 +146,6 @@ fn current() -> &'static Mutex<Option<Handle>> {
     static CURRENT: OnceLock<Mutex<Option<Handle>>> = OnceLock::new();
     CURRENT.get_or_init(Default::default)
 }
-fn serial() -> &'static tokio::sync::Mutex<()> {
-    static SERIAL: OnceLock<tokio::sync::Mutex<()>> = OnceLock::new();
-    SERIAL.get_or_init(Default::default)
-}
 impl Service {
     fn accepts_wake(&self, lease: &owner::Lease) -> bool {
         !self.retiring.load(Ordering::Acquire)
@@ -330,7 +326,7 @@ fn install_watcher(
 }
 
 async fn reconcile(service: Arc<Service>, ids: Option<HashSet<String>>) -> Report {
-    let _serial = serial().lock().await;
+    let _serial = super::history_serial().lock().await;
     let result = async {
         if !service.valid() {
             return Err(Status::ScopeChanged);

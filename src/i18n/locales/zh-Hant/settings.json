@@ -1002,8 +1002,8 @@
     "desktopApplied": "桌面設定已儲存，請完全結束並重新開啟 Claude Desktop",
     "desktopRestored": "已還原先前的桌面設定，請完全結束並重新開啟 Claude Desktop",
     "marketApps": {
-      "isolatedStorage": "此官方 App 使用獨立設定和對話儲存，不會變更主 App 或 CLI 的設定。舊對話不會自動匯入",
-      "isolatedClaudeStorage": "退出 Claude Desktop 和 Claude Code 後，相容的對話會自動同步",
+      "isolatedStorage": "最近 50 則對話會自動同步。已在 Codex 中開啟的對話，請結束並重新開啟 Codex 以接收最新訊息。主 App 與 CLI 的設定保持獨立",
+      "isolatedClaudeStorage": "結束 Claude Desktop 與 Claude Code 後，最近 50 則對話會自動同步",
       "loading": "正在載入 ORG2 Market 套餐…",
       "loadFailed": "無法載入 ORG2 Market 套餐",
       "nonePurchased": "目前沒有可用的 ORG2 Market 套餐",
@@ -1026,7 +1026,13 @@
       "multiPackageHelp": "可同時選擇最多 8 個方案和一個預設模型，連線後可在 App 內切換方案",
       "auxiliaryBilling": "Claude Code 自動產生標題、記憶和壓縮上下文的呼叫計入預設套餐；只有對話本身跟隨你用 /model 選擇的套餐",
       "defaultModel": "預設模型",
-      "packageLimit": "最多選擇 8 個方案"
+      "packageLimit": "最多選擇 8 個方案",
+      "historySync": {
+        "active": "歷史同步執行中 · 已共享 {{shared}} 則對話",
+        "attention": "歷史同步執行中 · 已共享 {{shared}} 則 · {{conflicts}} 則需要處理",
+        "paused": "歷史同步已暫停：{{reason}}",
+        "idle": "歷史同步閒置"
+      }
     }
   },
   "claudeProfiles": {

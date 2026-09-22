@@ -1002,8 +1002,8 @@
     "desktopApplied": "Zapisano konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
     "desktopRestored": "Przywrócono poprzednią konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
     "marketApps": {
-      "isolatedStorage": "Ta oficjalna aplikacja używa osobnych ustawień i pamięci rozmów. Główna aplikacja i CLI zachowują swoje ustawienia. Wcześniejsze rozmowy nie są importowane automatycznie",
-      "isolatedClaudeStorage": "Zgodne rozmowy synchronizują się po zamknięciu Claude Desktop i Claude Code",
+      "isolatedStorage": "Twoje 50 najnowszych rozmów synchronizuje się automatycznie. Jeśli rozmowa jest już otwarta w Codex, zamknij i ponownie otwórz Codex, aby odebrać najnowsze wiadomości. Ustawienia aplikacji i CLI pozostają osobne",
+      "isolatedClaudeStorage": "Twoje 50 najnowszych rozmów synchronizuje się automatycznie po zamknięciu Claude Desktop i Claude Code",
       "loading": "Ładowanie pakietów ORG2 Market…",
       "loadFailed": "Nie udało się załadować pakietów ORG2 Market",
       "nonePurchased": "Obecnie nie ma dostępnych pakietów ORG2 Market",
@@ -1026,7 +1026,13 @@
       "multiPackageHelp": "Wybierz do 8 pakietów i model domyślny, aby przełączać pakiety w aplikacji",
       "auxiliaryBilling": "Automatyczne wywołania Claude Code dla tytułu, pamięci i kompaktowania są rozliczane w pakiecie domyślnym; tylko sam czat podąża za pakietem wybranym przez /model",
       "defaultModel": "Model domyślny",
-      "packageLimit": "Wybierz do 8 pakietów"
+      "packageLimit": "Wybierz do 8 pakietów",
+      "historySync": {
+        "active": "Synchronizacja historii aktywna · udostępnionych rozmów: {{shared}}",
+        "attention": "Synchronizacja historii aktywna · udostępnionych: {{shared}} · wymagających uwagi: {{conflicts}}",
+        "paused": "Synchronizacja historii wstrzymana: {{reason}}",
+        "idle": "Synchronizacja historii nieaktywna"
+      }
     }
   },
   "claudeProfiles": {

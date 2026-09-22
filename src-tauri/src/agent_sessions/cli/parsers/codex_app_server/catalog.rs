@@ -54,7 +54,7 @@ pub(crate) struct CodexCatalogEntry {
     pub cwd: PathBuf,
     pub model_provider: String,
 }
-fn with_rpc<T>(
+pub(super) fn with_rpc<T>(
     codex_home: &Path,
     cwd: &Path,
     operation: impl FnOnce(
@@ -73,7 +73,7 @@ fn with_rpc<T>(
     operation(&runtime, &mut client)
 }
 
-fn request(
+pub(super) fn request(
     runtime: &tokio::runtime::Runtime,
     client: &mut super::CodexAppServerRpcClient,
     method: &str,

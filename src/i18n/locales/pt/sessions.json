@@ -1002,6 +1002,7 @@
     "typeMessage": "Digite uma mensagem…",
     "session": "Sessão",
     "history": "Sessões",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Ir para o trecho fixado: {{preview}}",
     "unpinPassage": "Desafixar"
   },

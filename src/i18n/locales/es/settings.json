@@ -1002,8 +1002,8 @@
     "desktopApplied": "Configuración guardada — cierra Claude Desktop por completo y vuelve a abrirlo",
     "desktopRestored": "Configuración anterior restaurada — cierra Claude Desktop por completo y vuelve a abrirlo",
     "marketApps": {
-      "isolatedStorage": "Esta app oficial usa ajustes y almacenamiento de conversaciones independientes. Tu app principal y la CLI conservan sus ajustes. Las conversaciones anteriores no se importan automáticamente",
-      "isolatedClaudeStorage": "Las conversaciones compatibles se sincronizan al cerrar Claude Desktop y Claude Code",
+      "isolatedStorage": "Tus 50 conversaciones más recientes se sincronizan automáticamente. Si una conversación ya está abierta en Codex, cierra y vuelve a abrir Codex para recibir sus últimos mensajes. Los ajustes de la app y de la CLI se mantienen separados",
+      "isolatedClaudeStorage": "Tus 50 conversaciones más recientes se sincronizan automáticamente cuando Claude Desktop y Claude Code se cierran",
       "loading": "Cargando paquetes de ORG2 Market…",
       "loadFailed": "No se pudieron cargar los paquetes de ORG2 Market",
       "nonePurchased": "Actualmente no hay paquetes de ORG2 Market disponibles",
@@ -1026,7 +1026,13 @@
       "multiPackageHelp": "Selecciona hasta 8 paquetes y un modelo predeterminado para cambiar de paquete dentro de la app",
       "auxiliaryBilling": "Las llamadas automáticas de Claude Code para título, memoria y compactación se facturan al paquete predeterminado; solo el chat sigue el paquete elegido con /model",
       "defaultModel": "Modelo predeterminado",
-      "packageLimit": "Selecciona hasta 8 paquetes"
+      "packageLimit": "Selecciona hasta 8 paquetes",
+      "historySync": {
+        "active": "Sincronización del historial activa · {{shared}} conversaciones compartidas",
+        "attention": "Sincronización del historial activa · {{shared}} compartidas · {{conflicts}} requieren atención",
+        "paused": "Sincronización del historial en pausa: {{reason}}",
+        "idle": "Sincronización del historial inactiva"
+      }
     }
   },
   "claudeProfiles": {

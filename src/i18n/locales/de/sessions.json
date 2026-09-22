@@ -1002,6 +1002,7 @@
     "typeMessage": "Nachricht eingeben…",
     "session": "Session",
     "history": "Sessions",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Zur angehefteten Passage: {{preview}}",
     "unpinPassage": "Lösen"
   },

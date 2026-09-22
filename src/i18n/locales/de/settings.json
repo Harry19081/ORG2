@@ -1002,8 +1002,8 @@
     "desktopApplied": "Desktop-Konfiguration gespeichert — Claude Desktop vollständig beenden und neu öffnen",
     "desktopRestored": "Vorherige Desktop-Konfiguration wiederhergestellt — Claude Desktop vollständig beenden und neu öffnen",
     "marketApps": {
-      "isolatedStorage": "Diese offizielle App verwendet separate Einstellungen und einen eigenen Gesprächsspeicher. Die Einstellungen Ihrer Haupt-App und CLI bleiben erhalten. Frühere Gespräche werden nicht automatisch importiert",
-      "isolatedClaudeStorage": "Kompatible Gespräche werden nach dem Beenden von Claude Desktop und Claude Code automatisch synchronisiert",
+      "isolatedStorage": "Deine 50 neuesten Unterhaltungen werden automatisch synchronisiert. Ist eine Unterhaltung in Codex bereits geöffnet, beende Codex und öffne es erneut, um die neuesten Nachrichten zu erhalten. App- und CLI-Einstellungen bleiben getrennt",
+      "isolatedClaudeStorage": "Deine 50 neuesten Unterhaltungen werden automatisch synchronisiert, sobald Claude Desktop und Claude Code beendet sind",
       "loading": "ORG2 Market-Pakete werden geladen…",
       "loadFailed": "ORG2 Market-Pakete konnten nicht geladen werden",
       "nonePurchased": "Derzeit sind keine ORG2 Market-Pakete verfügbar",
@@ -1026,7 +1026,13 @@
       "multiPackageHelp": "Wähle bis zu 8 Pakete und ein Standardmodell, um Pakete in der App zu wechseln",
       "auxiliaryBilling": "Automatische Titel-, Memory- und Komprimierungsaufrufe von Claude Code werden dem Standardpaket berechnet; nur der Chat selbst folgt dem mit /model gewählten Paket",
       "defaultModel": "Standardmodell",
-      "packageLimit": "Wähle bis zu 8 Pakete"
+      "packageLimit": "Wähle bis zu 8 Pakete",
+      "historySync": {
+        "active": "Verlaufssynchronisierung aktiv · {{shared}} Unterhaltungen geteilt",
+        "attention": "Verlaufssynchronisierung aktiv · {{shared}} geteilt · {{conflicts}} benötigen Aufmerksamkeit",
+        "paused": "Verlaufssynchronisierung pausiert: {{reason}}",
+        "idle": "Verlaufssynchronisierung inaktiv"
+      }
     }
   },
   "claudeProfiles": {

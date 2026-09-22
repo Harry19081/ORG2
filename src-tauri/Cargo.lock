@@ -38,6 +38,7 @@ dependencies = [
  "chrono",
  "fs2",
  "json5",
+ "libc",
  "rand 0.10.2",
  "rusqlite",
  "serde",

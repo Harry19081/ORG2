@@ -8,38 +8,24 @@ import RegionNoticeButton from "@src/components/RegionNoticeButton";
 import Tooltip from "@src/components/Tooltip";
 import { HeaderActionGroup } from "@src/components/WindowChrome/HeaderActionGroup";
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
-import { useCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import {
   ComputerVideoIcon,
   HugeiconsIcon,
   SquareTerminalIcon,
 } from "@src/icons";
-import { usePaneLayoutInsetTransition } from "@src/scaffold/AppLayout/usePaneLayoutInsetTransition";
-import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { ChatPaneFocusButton } from "@src/scaffold/WorkbenchChrome/StationPaneControls";
 import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
-import { isWindows } from "@src/util/platform/tauri";
 
 import { LaunchpadSearchTrigger } from "./LaunchpadSearchTrigger";
 import { SessionHeaderActionsMenu } from "./components/SessionHeaderActionsMenu";
 import {
-  CHAT_PANEL_HEADER_DRAG_STYLE,
   CHAT_PANEL_HEADER_NO_DRAG_STYLE,
-  CHAT_PANEL_HEADER_RIGHT_PADDING_CLASS,
   ChatPanelCollapsedTabHeading,
-  ChatPanelPublishedHeader,
   chatPanelHeaderSlotsAtom,
 } from "./header";
-import {
-  CHAT_PANEL_COLLAPSED_HEADER_HEIGHT_PX,
-  CHAT_PANEL_HEADER_STACK_HEIGHT_PX,
-  CHAT_PANEL_HEADER_SURFACE_CLASS,
-  CHAT_PANEL_HEADER_TOP_PADDING_PX,
-  CHAT_PANEL_TAB_HEADER_HEIGHT_PX,
-  shouldStartHeaderDragFromTarget,
-} from "./header/chatPanelHeaderLayout";
+import { ChatPanelChrome } from "./header/ChatPanelChrome";
 import type { ChatPanelRegionNotice } from "./types";
 
 const CHAT_PANEL_HEADER_ICON_SIZE = 14;
@@ -152,7 +138,6 @@ export function ChatPanelHeader({
   showLaunchpadSearch = false,
 }: ChatPanelHeaderProps): React.ReactNode {
   const publishedHeaderSlots = useAtomValue(chatPanelHeaderSlotsAtom);
-  const windowsHost = isWindows();
   // macOS pins the maximize-chat / show-workstation toggle at the window's
   // right edge (`PinnedWorkbenchChrome`). Only while the chat pane is the
   // one touching that edge does the pinned copy sit in this header's corner:
@@ -160,12 +145,10 @@ export function ChatPanelHeader({
   // chat on the left the pinned group is over the workstation, so the
   // header keeps its own toggle right of "+" exactly as before.
   const rightEdge = useWorkbenchRightEdgeReservation();
-  const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
   const pinnedChromeInThisHeader = rightEdge.owner === "chat";
   const trailingInsetPx = pinnedChromeInThisHeader
     ? rightEdge.reservedRight
     : undefined;
-  const insetTransitionClassName = usePaneLayoutInsetTransition();
 
   const tuiModeLabel = tuiMode ? t("chat.tuiModeOn") : t("chat.tuiModeOff");
 
@@ -327,136 +310,18 @@ export function ChatPanelHeader({
         }
       : null;
 
-  const collapsedSidebarChrome = shouldOffsetHeaderForCollapsedSidebar ? (
-    <div
-      className="z-50"
-      style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}
-      data-testid="chat-panel-collapsed-sidebar-chrome"
-    >
-      <CollapsedSidebarButton />
-    </div>
-  ) : null;
-
-  // Whichever row sits at the pane's top edge owns the window-edge gap, the
-  // collapsed-sidebar button, and the inset that keeps the host window's own
-  // controls clear of the content — the tab row's job until it folds away.
-  // Padding the wrapper rather than the row keeps the row's 36px content band
-  // intact, and makes it the positioning context the sidebar button centers in.
-  // The window API is pulled in on interaction so it stays out of the boot graph.
-  const handleCollapsedHeaderMouseDown = (
-    event: React.MouseEvent<HTMLDivElement>
-  ) => {
-    if (windowsHost || event.button !== 0) return;
-    if (!shouldStartHeaderDragFromTarget(event.target as Element | null)) {
-      return;
-    }
-    const maximize = event.detail === 2;
-    event.preventDefault();
-    void import("@src/util/platform/ipcRenderer").then(
-      ({ maxWindow, startWindowDrag }) =>
-        maximize ? maxWindow() : startWindowDrag()
-    );
-  };
-
-  const publishedHeaderRow = tabRowCollapsed ? (
-    <div
-      className="workspace-header header-tab-group @container/launchpad-header relative z-40 flex shrink-0 flex-col"
-      data-testid="chat-panel-collapsed-header"
-      data-tauri-drag-region={windowsHost ? undefined : true}
-      onMouseDown={handleCollapsedHeaderMouseDown}
-      style={
-        {
-          paddingTop: CHAT_PANEL_HEADER_TOP_PADDING_PX,
-          ...(windowsHost
-            ? CHAT_PANEL_HEADER_NO_DRAG_STYLE
-            : CHAT_PANEL_HEADER_DRAG_STYLE),
-        } as React.CSSProperties
-      }
-    >
-      {collapsedSidebarChrome}
-      {launchpadSearch}
-      <ChatPanelPublishedHeader
-        slots={effectivePublishedHeaderSlots}
-        windowsHost={windowsHost}
-        trailingInsetPx={trailingInsetPx}
-        leadingInsetPx={
-          shouldOffsetHeaderForCollapsedSidebar
-            ? collapsedSidebarChromeOffset
-            : undefined
-        }
-        insetTransitionClassName={insetTransitionClassName}
-      />
-    </div>
-  ) : (
-    <ChatPanelPublishedHeader
-      slots={effectivePublishedHeaderSlots}
-      windowsHost={windowsHost}
-    />
-  );
-
   return (
-    <>
-      <div
-        className={`pointer-events-none absolute top-0 right-0 left-0 z-30 ${CHAT_PANEL_HEADER_SURFACE_CLASS}`}
-        data-testid="chat-panel-header-surface"
-        aria-hidden
-        style={{
-          height: tabRowCollapsed
-            ? CHAT_PANEL_COLLAPSED_HEADER_HEIGHT_PX
-            : effectivePublishedHeaderSlots
-              ? CHAT_PANEL_HEADER_STACK_HEIGHT_PX
-              : CHAT_PANEL_TAB_HEADER_HEIGHT_PX,
-        }}
-      />
-      {/* pl-1 (4px) + separator slot (5px) + pill px-2.5 (10px) = 19px, so the
-          first tab's icon lines up with the published header's icon below
-          (HEADER_CONTENT_LEFT_PADDING_CLASS 15px + breadcrumb px-1 4px). */}
-      {tabRowCollapsed ? null : (
-        <div
-          className={`workspace-header header-tab-group @container/launchpad-header z-40 grid h-11 min-h-11 grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 pt-2 pl-1 ${CHAT_PANEL_HEADER_RIGHT_PADDING_CLASS} ${insetTransitionClassName} ${
-            overlayPublishedHeader
-              ? "absolute top-0 right-0 left-0"
-              : "relative shrink-0"
-          }`}
-          data-testid="chat-panel-header"
-          data-tauri-drag-region={windowsHost ? undefined : true}
-          style={
-            {
-              paddingLeft: shouldOffsetHeaderForCollapsedSidebar
-                ? collapsedSidebarChromeOffset
-                : undefined,
-              paddingRight: trailingInsetPx,
-              ...(windowsHost
-                ? CHAT_PANEL_HEADER_NO_DRAG_STYLE
-                : CHAT_PANEL_HEADER_DRAG_STYLE),
-            } as React.CSSProperties
-          }
-        >
-          <div className="flex h-9 min-w-0 items-center">
-            {collapsedSidebarChrome}
-            {showLaunchpadSearch ? (
-              <div className="flex min-w-0 flex-1 @[48rem]/launchpad-header:max-w-[30%]">
-                {tabStrip}
-              </div>
-            ) : (
-              tabStrip
-            )}
-          </div>
-          {renderTabControls(false)}
-          {launchpadSearch}
-        </div>
-      )}
-      {overlayPublishedHeader && effectivePublishedHeaderSlots ? (
-        <div
-          className={`absolute right-0 left-0 z-40 ${
-            tabRowCollapsed ? "top-0" : "top-11"
-          }`}
-        >
-          {publishedHeaderRow}
-        </div>
-      ) : (
-        publishedHeaderRow
-      )}
-    </>
+    <ChatPanelChrome
+      tabStrip={tabStrip}
+      toolbar={renderTabControls(false)}
+      centerContent={launchpadSearch}
+      publishedHeaderSlots={effectivePublishedHeaderSlots}
+      overlayPublishedHeader={overlayPublishedHeader}
+      shouldOffsetHeaderForCollapsedSidebar={
+        shouldOffsetHeaderForCollapsedSidebar
+      }
+      tabRowCollapsed={tabRowCollapsed}
+      trailingInsetPx={trailingInsetPx}
+    />
   );
 }

@@ -1002,8 +1002,8 @@
     "desktopApplied": "設定を保存しました。Claude Desktop を完全に終了して再起動してください",
     "desktopRestored": "以前の設定を復元しました。Claude Desktop を完全に終了して再起動してください",
     "marketApps": {
-      "isolatedStorage": "この公式アプリは独立した設定と会話ストレージを使用します。メインアプリと CLI の設定は変更されません。以前の会話は自動でインポートされません",
-      "isolatedClaudeStorage": "Claude Desktop と Claude Code の終了後、対応する会話を自動同期します",
+      "isolatedStorage": "直近 50 件の会話が自動的に同期されます。Codex で開いたままの会話は、最新メッセージを受け取るために Codex を終了して再起動してください。アプリと CLI の設定は個別に保持されます",
+      "isolatedClaudeStorage": "Claude Desktop と Claude Code を終了すると、直近 50 件の会話が自動的に同期されます",
       "loading": "ORG2 Market のパッケージを読み込んでいます…",
       "loadFailed": "ORG2 Market のパッケージを読み込めませんでした",
       "nonePurchased": "現在利用できる ORG2 Market のパッケージはありません",
@@ -1026,7 +1026,13 @@
       "multiPackageHelp": "最大 8 個のパッケージと既定のモデルを選択すると、アプリ内でパッケージを切り替えられます",
       "auxiliaryBilling": "Claude Code のタイトル・メモリ・コンパクション自動呼び出しはデフォルトのパッケージに課金されます。/model で選んだパッケージに従うのはチャット本体のみです",
       "defaultModel": "既定のモデル",
-      "packageLimit": "パッケージは最大 8 個まで選択できます"
+      "packageLimit": "パッケージは最大 8 個まで選択できます",
+      "historySync": {
+        "active": "履歴同期は動作中 · {{shared}} 件の会話を共有",
+        "attention": "履歴同期は動作中 · {{shared}} 件を共有 · {{conflicts}} 件に対応が必要",
+        "paused": "履歴同期は一時停止中: {{reason}}",
+        "idle": "履歴同期は待機中"
+      }
     }
   },
   "claudeProfiles": {

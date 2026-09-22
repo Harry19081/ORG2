@@ -7,11 +7,9 @@ import { useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ViewportLayoutMutationProvider } from "@src/components/ViewportLayoutMutationContext";
+import { useSessionTranscriptPlatform } from "@src/engines/ChatPanel/runtime/sessionTranscriptPlatform";
 import { loadEventComponent } from "@src/engines/SessionCore/rendering/registry/events";
-import { isSessionActiveAtom } from "@src/store/session/cliSessionStatusAtom";
-import { cursorIdeTurnSummariesAtomFamily } from "@src/store/session/cursorIdeTurnSummariesAtom";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom";
-import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
 import { ParentAgentSenderProvider } from "../ChatItems/ParentAgentSenderContext";
 import { resolveParentAgentSenderSessionId } from "../ChatItems/parentAgentSender";
@@ -31,7 +29,6 @@ import {
   useChatNavigationController,
   useChatSearch,
   useChatViewportController,
-  useReloadSession,
 } from "./hooks";
 import "./index.scss";
 
@@ -70,15 +67,11 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   planningIndicatorScope = null,
 }) => {
   const activeId = useChatSessionId() ?? null;
-  const rawCursorIdeTurnSummaries = useAtomValue(
-    cursorIdeTurnSummariesAtomFamily(activeId ?? "")
-  );
-  const activeSession = useAtomValue(sessionByIdAtom(activeId ?? ""));
-  const isCursorIde = activeId ? isCursorIdeSession(activeId) : false;
-  const cursorIdeTurnSummaries = isCursorIde ? rawCursorIdeTurnSummaries : [];
-  const handleReloadSession = useReloadSession(activeId);
-  const historyState = useChatHistoryState();
-  const isAgentWorking = useAtomValue(isSessionActiveAtom);
+  const platform = useSessionTranscriptPlatform(activeId);
+  const activeSession = platform.session;
+  const cursorIdeTurnSummaries = platform.cursorIdeTurnSummaries;
+  const handleReloadSession = platform.onReload;
+  const historyState = useChatHistoryState({ platform });
   const groupChat = useGroupChatContext();
   const isAgentOrgMemberSession = useMemo(
     () =>
@@ -90,12 +83,13 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     [agentOrgCurrentMemberId, agentOrgMembers]
   );
   useEffect(() => {
+    if (!platform.capabilities.canvasInline) return;
     // Canvas payloads can reach the WorkStation as soon as the tool call is
     // stored. Warm the chat renderer while the user is still waiting for the
     // agent so the persisted canvas event can take over without a Suspense
     // placeholder between the live and historical render paths.
     void loadEventComponent("canvas_inline");
-  }, []);
+  }, [platform.capabilities.canvasInline]);
 
   const [planningIndicatorCount, setPlanningIndicatorCount] = useState<0 | 1>(
     0
@@ -118,7 +112,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     groupChat,
     hideGroupUserMessage,
     isAgentOrgMemberSession,
-    isAgentWorking,
+    isAgentWorking: platform.isAgentWorking,
     planningIndicatorCount,
     sessionStatus: activeSession?.status,
     sessionLoadStatus: historyState.sessionLoadStatus,
@@ -167,7 +161,10 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     onExplicitNavigation: viewport.detachForNavigation,
   });
   const emptyState = useChatEmptyState({
-    activeSessionId: activeId,
+    isAgentWorking: platform.isAgentWorking,
+    isPendingCancel: platform.isPendingCancel,
+    isRolledBack: platform.isRolledBack,
+    isHydrating: platform.isHydrating,
     sessionLoadStatus: historyState.sessionLoadStatus,
     optimizedLen: historyState.chatHistory.length,
   });
@@ -259,6 +256,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
           search={search}
           surfaceBgClass={surfaceBgClass}
           turnPaginationEnabled={turnPaginationEnabled}
+          turnMetadataEnabled={platform.capabilities.turnMetadata}
           viewport={viewport}
         />
       </ViewportLayoutMutationProvider>

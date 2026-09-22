@@ -45,6 +45,10 @@ pub async fn open(agent: String, key: String, model: String) -> Result<(), Strin
     if agent == "claude_desktop" {
         super::claude_history::before_open(lease.clone()).await;
     }
+    #[cfg(target_os = "macos")]
+    if agent == "codex" {
+        super::codex_history::before_open(lease.clone()).await?;
+    }
     let barrier = super::source::operation_barrier(&lease).await?;
     // A saved isolated profile can outlive the process that applied it. Its
     // configuration is still valid after restart, but the listener is not.

@@ -1002,8 +1002,8 @@
     "desktopApplied": "Yapılandırma kaydedildi — Claude Desktop’ı tamamen kapatıp yeniden açın",
     "desktopRestored": "Önceki yapılandırma geri yüklendi — Claude Desktop’ı tamamen kapatıp yeniden açın",
     "marketApps": {
-      "isolatedStorage": "Bu resmi uygulama ayrı ayarlar ve konuşma depolaması kullanır. Ana uygulamanız ve CLI ayarlarını korur. Önceki konuşmalar otomatik olarak içe aktarılmaz",
-      "isolatedClaudeStorage": "Uyumlu konuşmalar Claude Desktop ve Claude Code kapatıldıktan sonra otomatik eşitlenir",
+      "isolatedStorage": "En son 50 sohbetiniz otomatik olarak eşitlenir. Bir sohbet Codex'te zaten açıksa, en son mesajları almak için Codex'i kapatıp yeniden açın. Uygulama ve CLI ayarları ayrı kalır",
+      "isolatedClaudeStorage": "Claude Desktop ve Claude Code kapatıldıktan sonra en son 50 sohbetiniz otomatik olarak eşitlenir",
       "loading": "ORG2 Market paketleri yükleniyor…",
       "loadFailed": "ORG2 Market paketleri yüklenemedi",
       "nonePurchased": "Şu anda kullanılabilir ORG2 Market paketi yok",
@@ -1026,7 +1026,13 @@
       "multiPackageHelp": "En fazla 8 paket ve varsayılan bir model seçin, ardından uygulama içinde paketler arasında geçiş yapın",
       "auxiliaryBilling": "Claude Code'un otomatik başlık, bellek ve sıkıştırma çağrıları varsayılan pakete faturalanır; yalnızca sohbet /model ile seçtiğiniz paketi izler",
       "defaultModel": "Varsayılan model",
-      "packageLimit": "En fazla 8 paket seçin"
+      "packageLimit": "En fazla 8 paket seçin",
+      "historySync": {
+        "active": "Geçmiş eşitleme etkin · {{shared}} sohbet paylaşıldı",
+        "attention": "Geçmiş eşitleme etkin · {{shared}} paylaşıldı · {{conflicts}} ilgi gerektiriyor",
+        "paused": "Geçmiş eşitleme duraklatıldı: {{reason}}",
+        "idle": "Geçmiş eşitleme boşta"
+      }
     }
   },
   "claudeProfiles": {

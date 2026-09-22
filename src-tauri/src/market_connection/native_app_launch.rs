@@ -22,6 +22,27 @@ fn bundle_id(agent: &str) -> Result<&'static str, String> {
 // uses vendor implementation flags verified against this installed release;
 // unknown releases require a new source/runtime capability audit.
 const CODEX_ISOLATION_RELEASES: &[&str] = &["26.908.70816", "26.915.31945"];
+/// Audited together with codex-cli 0.155.0-alpha.9.2: local GUI catalogs use
+/// state-only lists, paginated history uses the four versioned projection tables,
+/// and settings events bind resume without rewriting immutable fork prefixes.
+#[cfg(target_os = "macos")]
+pub(super) async fn verify_codex_history() -> Result<String, String> {
+    tokio::task::spawn_blocking(|| {
+        let bundle = installed_bundle("codex")?;
+        let info = plist::Value::from_file(bundle.join("Contents/Info.plist"))
+            .map_err(|_| "Cannot inspect Codex history capability")?;
+        // Compatibility is decided by the data the release actually writes
+        // (schema and settings-event gates in the engine), not by this number;
+        // it is reported so a paused handoff names the release it saw.
+        info.as_dictionary()
+            .and_then(|v| v.get("CFBundleShortVersionString"))
+            .and_then(plist::Value::as_string)
+            .map(str::to_owned)
+            .ok_or_else(|| "Cannot read the Codex Desktop version".to_string())
+    })
+    .await
+    .map_err(|_| "Codex history capability lookup failed")?
+}
 fn validate_bundle(agent: &str, path: &Path) -> Result<(), String> {
     let value = plist::Value::from_file(path.join("Contents/Info.plist"))
         .map_err(|_| "Cannot read the selected official App version")?;

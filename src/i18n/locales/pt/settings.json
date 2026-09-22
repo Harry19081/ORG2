@@ -1002,8 +1002,8 @@
     "desktopApplied": "Configuração salva — encerre completamente e reabra o Claude Desktop",
     "desktopRestored": "Configuração anterior restaurada — encerre completamente e reabra o Claude Desktop",
     "marketApps": {
-      "isolatedStorage": "Este app oficial usa configurações e armazenamento de conversas separados. Seu app principal e a CLI mantêm as configurações. Conversas anteriores não são importadas automaticamente",
-      "isolatedClaudeStorage": "As conversas compatíveis sincronizam após fechar Claude Desktop e Claude Code",
+      "isolatedStorage": "Suas 50 conversas mais recentes são sincronizadas automaticamente. Se uma conversa já estiver aberta no Codex, feche e reabra o Codex para receber as mensagens mais recentes. As configurações do app e da CLI permanecem separadas",
+      "isolatedClaudeStorage": "Suas 50 conversas mais recentes são sincronizadas automaticamente depois que o Claude Desktop e o Claude Code são fechados",
       "loading": "Carregando pacotes do ORG2 Market…",
       "loadFailed": "Não foi possível carregar os pacotes do ORG2 Market",
       "nonePurchased": "No momento não há pacotes do ORG2 Market disponíveis",
@@ -1026,7 +1026,13 @@
       "multiPackageHelp": "Selecione até 8 pacotes e um modelo padrão para alternar entre pacotes no aplicativo",
       "auxiliaryBilling": "As chamadas automáticas do Claude Code para título, memória e compactação são cobradas do pacote padrão; só o chat em si segue o pacote escolhido com /model",
       "defaultModel": "Modelo padrão",
-      "packageLimit": "Selecione até 8 pacotes"
+      "packageLimit": "Selecione até 8 pacotes",
+      "historySync": {
+        "active": "Sincronização do histórico ativa · {{shared}} conversas compartilhadas",
+        "attention": "Sincronização do histórico ativa · {{shared}} compartilhadas · {{conflicts}} precisam de atenção",
+        "paused": "Sincronização do histórico pausada: {{reason}}",
+        "idle": "Sincronização do histórico inativa"
+      }
     }
   },
   "claudeProfiles": {

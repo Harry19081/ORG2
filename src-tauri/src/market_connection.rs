@@ -7,6 +7,8 @@ mod app_catalog;
 mod claude_history;
 #[cfg(all(feature = "market-connect", target_os = "macos"))]
 mod claude_history_writers;
+#[cfg(all(feature = "market-connect", target_os = "macos"))]
+pub(crate) mod codex_history;
 #[cfg(feature = "market-connect")]
 mod configure_catalog;
 #[cfg(feature = "market-connect")]
@@ -34,17 +36,42 @@ pub(crate) fn register_source() -> Result<(), String> {
     Ok(())
 }
 
+/// Both native handoffs use the same managed-configuration lock. Queue their
+/// event-driven work here so login cannot make one silently miss its first pass.
+#[cfg(all(feature = "market-connect", target_os = "macos"))]
+fn history_serial() -> &'static tokio::sync::Mutex<()> {
+    static SERIAL: std::sync::OnceLock<tokio::sync::Mutex<()>> = std::sync::OnceLock::new();
+    SERIAL.get_or_init(Default::default)
+}
+
+/// Settings reads the automatic Codex history state through the connection view.
+#[cfg(all(feature = "market-connect", target_os = "macos"))]
+pub(crate) fn codex_history_status() -> Option<codex_history::HistorySyncView> {
+    Some(codex_history::status())
+}
+
 pub(crate) fn stop_history_sync() {
     #[cfg(all(feature = "market-connect", target_os = "macos"))]
-    claude_history::stop();
+    {
+        claude_history::stop();
+        codex_history::stop();
+    }
 }
 
 #[cfg(feature = "market-connect")]
 fn start_history_sync() {
     #[cfg(all(feature = "market-connect", target_os = "macos"))]
     if let Ok(lease) = owner::require() {
-        claude_history::ensure_started(lease);
+        claude_history::ensure_started(lease.clone());
+        codex_history::ensure_started(lease);
     }
+}
+
+#[cfg(feature = "market-connect")]
+fn configured_history_sync() {
+    start_history_sync();
+    #[cfg(target_os = "macos")]
+    codex_history::configuration_applied();
 }
 
 /// Invalidate before the frontend's durable Cloud auth transition.
@@ -404,7 +431,7 @@ pub async fn market_connection_configure_profile(
             )
             .await?
         };
-        start_history_sync();
+        configured_history_sync();
         Ok(ConfiguredProfile { status, selection })
     }
     #[cfg(not(feature = "market-connect"))]
@@ -752,7 +779,7 @@ pub async fn market_connection_configure_catalog(
         let agent = request.agent.clone();
         configure_catalog::configure(request)
             .await
-            .inspect(|_| start_history_sync())
+            .inspect(|_| configured_history_sync())
             .inspect_err(|error| {
                 tracing::warn!(agent = %agent, error = %error, "[Market] configure_catalog failed")
             })

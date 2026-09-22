@@ -1002,6 +1002,7 @@
     "typeMessage": "Введите сообщение…",
     "session": "Сессия",
     "history": "Сессии",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Перейти к закреплённому фрагменту: {{preview}}",
     "unpinPassage": "Открепить"
   },

@@ -1083,8 +1083,8 @@
     "desktopApplied": "Desktop configuration saved — fully quit and reopen Claude Desktop",
     "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop",
     "marketApps": {
-      "isolatedStorage": "This official App uses separate settings and conversation storage. Your main App and CLI keep their settings. Earlier conversations are not imported automatically",
-      "isolatedClaudeStorage": "Compatible conversations sync automatically after Claude Desktop and Claude Code quit",
+      "isolatedStorage": "Your 50 most recent conversations sync automatically. If a conversation is already open in Codex, quit and reopen Codex to receive its latest messages. App and CLI settings stay separate",
+      "isolatedClaudeStorage": "Your 50 most recent conversations sync automatically after Claude Desktop and Claude Code quit",
       "loading": "Loading ORG2 Market packages…",
       "loadFailed": "ORG2 Market packages could not be loaded",
       "nonePurchased": "No ORG2 Market packages are currently available",
@@ -1107,7 +1107,13 @@
       "multiPackageHelp": "Select up to 8 packages and a default model, then switch packages inside the app",
       "auxiliaryBilling": "Claude Code's automatic title, memory and compaction calls are billed to the default package; only the chat itself follows the package you pick with /model",
       "defaultModel": "Default model",
-      "packageLimit": "Select up to 8 packages"
+      "packageLimit": "Select up to 8 packages",
+      "historySync": {
+        "active": "History sync active · {{shared}} conversations shared",
+        "attention": "History sync active · {{shared}} shared · {{conflicts}} need attention",
+        "paused": "History sync paused: {{reason}}",
+        "idle": "History sync idle"
+      }
     }
   },
   "claudeProfiles": {

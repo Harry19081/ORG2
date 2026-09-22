@@ -1003,7 +1003,8 @@
     "session": "Sesi",
     "history": "Sesi",
     "goToPinnedPassage": "Buka bagian yang disematkan: {{preview}}",
-    "unpinPassage": "Lepas sematan"
+    "unpinPassage": "Lepas sematan",
+    "agentFallback": "Agent"
   },
   "planning": {
     "agentTyping": "Agen sedang mengetik...",

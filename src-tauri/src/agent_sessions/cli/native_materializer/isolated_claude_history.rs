@@ -1,7 +1,7 @@
 //! Import Code history into one Market App profile. Only missing transcripts
 //! and discovery rows cross the boundary; credentials/settings never do.
 use super::*;
-use agent_cli::managed_config::native_app::NativeAppProfile;
+use agent_cli::managed_config::native_app::{NativeAppProfile, RECENT_CONVERSATIONS};
 use base64::engine::general_purpose::STANDARD;
 use std::io::Write;
 use std::time::{Duration, Instant};
@@ -183,93 +183,100 @@ fn import_into(
     mut remaining: u64,
     deadline: Instant,
 ) -> Result<usize, String> {
-    // Reuse the standard catalog's active-account selection, grant stripping,
-    // insertion cap and create-if-absent writer. Drop the old model selection:
-    // the package's configured default must own the first resumed request.
-    backfill_claude_desktop_catalog_into(official, project, false, |cwd, id| {
-        if Instant::now() >= deadline {
-            return Ok(false);
-        }
-        let relative = PathBuf::from("projects")
-            .join(sanitize_claude_project_name(cwd))
-            .join(format!("{id}.jsonl"));
-        let source = source_home.join(&relative);
-        let target = target_home.join(relative);
-        if safe_path(source_home, &source).is_err() {
-            return Ok(false);
-        }
-        safe_path(target_home, &target)?;
-        // Existing content belongs to Desktop, even if an earlier import
-        // crashed before publishing its discovery row. Never replace it.
-        if let Ok(m) = fs::symlink_metadata(&target) {
-            return Ok(m.is_file());
-        }
-        let mut options = fs::OpenOptions::new();
-        options.read(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.custom_flags(libc::O_NOFOLLOW);
-        }
-        let mut source_file = match options.open(&source) {
-            Ok(file) => file,
-            Err(_) => return Ok(false),
-        };
-        let before = source_file.metadata().map_err(|e| e.to_string())?;
-        if !before.is_file()
-            || before.len() == 0
-            || before.len() > MAX_TRANSCRIPT_BYTES.min(remaining)
-        {
-            return Ok(false);
-        }
-        // Reserve the budget even if a concurrent provider write invalidates
-        // this snapshot; retries may not turn the byte cap into unbounded I/O.
-        remaining -= before.len();
-        let mut unstable = false;
-        let copied = create_file_atomically(&target, "isolated Claude history", |out| {
+    // Reuse the standard catalog's active-account selection, grant stripping
+    // and create-if-absent writer, but only for the newest conversations. Drop
+    // the old model selection: the package's configured default must own the
+    // first resumed request.
+    backfill_claude_desktop_catalog_into(
+        official,
+        project,
+        false,
+        ClaudeDesktopBackfill::Recent(RECENT_CONVERSATIONS),
+        |cwd, id| {
+            if Instant::now() >= deadline {
+                return Ok(false);
+            }
+            let relative = PathBuf::from("projects")
+                .join(sanitize_claude_project_name(cwd))
+                .join(format!("{id}.jsonl"));
+            let source = source_home.join(&relative);
+            let target = target_home.join(relative);
+            if safe_path(source_home, &source).is_err() {
+                return Ok(false);
+            }
+            safe_path(target_home, &target)?;
+            // Existing content belongs to Desktop, even if an earlier import
+            // crashed before publishing its discovery row. Never replace it.
+            if let Ok(m) = fs::symlink_metadata(&target) {
+                return Ok(m.is_file());
+            }
+            let mut options = fs::OpenOptions::new();
+            options.read(true);
             #[cfg(unix)]
             {
-                use std::os::unix::fs::PermissionsExt;
-                out.set_permissions(fs::Permissions::from_mode(0o600))
-                    .map_err(|e| e.to_string())?;
+                use std::os::unix::fs::OpenOptionsExt;
+                options.custom_flags(libc::O_NOFOLLOW);
             }
-            let mut buffer = [0_u8; 64 * 1024];
-            let mut left = before.len();
-            let mut last = 0;
-            while left > 0 {
-                if Instant::now() >= deadline {
-                    unstable = true;
-                    return Err("Claude history snapshot exceeded its time budget".into());
+            let mut source_file = match options.open(&source) {
+                Ok(file) => file,
+                Err(_) => return Ok(false),
+            };
+            let before = source_file.metadata().map_err(|e| e.to_string())?;
+            if !before.is_file()
+                || before.len() == 0
+                || before.len() > MAX_TRANSCRIPT_BYTES.min(remaining)
+            {
+                return Ok(false);
+            }
+            // Reserve the budget even if a concurrent provider write invalidates
+            // this snapshot; retries may not turn the byte cap into unbounded I/O.
+            remaining -= before.len();
+            let mut unstable = false;
+            let copied = create_file_atomically(&target, "isolated Claude history", |out| {
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::PermissionsExt;
+                    out.set_permissions(fs::Permissions::from_mode(0o600))
+                        .map_err(|e| e.to_string())?;
                 }
-                let amount = (left as usize).min(buffer.len());
-                let n = source_file
-                    .read(&mut buffer[..amount])
-                    .map_err(|e| e.to_string())?;
-                if n == 0 {
+                let mut buffer = [0_u8; 64 * 1024];
+                let mut left = before.len();
+                let mut last = 0;
+                while left > 0 {
+                    if Instant::now() >= deadline {
+                        unstable = true;
+                        return Err("Claude history snapshot exceeded its time budget".into());
+                    }
+                    let amount = (left as usize).min(buffer.len());
+                    let n = source_file
+                        .read(&mut buffer[..amount])
+                        .map_err(|e| e.to_string())?;
+                    if n == 0 {
+                        unstable = true;
+                        return Err("Claude history changed during import".into());
+                    }
+                    out.write_all(&buffer[..n]).map_err(|e| e.to_string())?;
+                    last = buffer[n - 1];
+                    left -= n as u64;
+                }
+                let after = source_file.metadata().map_err(|e| e.to_string())?;
+                if last != b'\n'
+                    || before.len() != after.len()
+                    || before.modified().ok() != after.modified().ok()
+                {
                     unstable = true;
                     return Err("Claude history changed during import".into());
                 }
-                out.write_all(&buffer[..n]).map_err(|e| e.to_string())?;
-                last = buffer[n - 1];
-                left -= n as u64;
+                Ok(())
+            });
+            if unstable {
+                return Ok(false);
             }
-            let after = source_file.metadata().map_err(|e| e.to_string())?;
-            if last != b'\n'
-                || before.len() != after.len()
-                || before.modified().ok() != after.modified().ok()
-            {
-                unstable = true;
-                return Err("Claude history changed during import".into());
-            }
-            Ok(())
-        });
-        if unstable {
-            return Ok(false);
-        }
-        copied?;
-        safe_path(target_home, &target)?;
-        Ok(fs::symlink_metadata(&target).is_ok_and(|m| m.is_file()))
-    })
+            copied?;
+            safe_path(target_home, &target)?;
+            Ok(fs::symlink_metadata(&target).is_ok_and(|m| m.is_file()))
+        },
+    )
 }
 
 #[cfg(test)]

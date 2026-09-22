@@ -1002,6 +1002,7 @@
     "typeMessage": "Wpisz wiadomość…",
     "session": "Sesja",
     "history": "Sesje",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Przejdź do przypiętego fragmentu: {{preview}}",
     "unpinPassage": "Odepnij"
   },

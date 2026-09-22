@@ -1,0 +1,165 @@
+{
+  "date": "2026-09-21",
+  "scope": "Disposable native profiles and loopback model endpoints, plus one real managed Codex Desktop GUI acceptance against the owner's primary profile (below)",
+  "desktopVersion": "26.915.31945",
+  "nativeVersion": "0.155.0-alpha.9.2",
+  "agentCliUnitTests": 161,
+  "historyUnitTestsIncluded": 38,
+  "bootstrapHelperUnitTests": 4,
+  "bootstrapNativeScenarios": 5,
+  "bootstrapModelRequests": 0,
+  "guiAcceptance": {
+    "date": "2026-09-22",
+    "build": "local dev-build of this branch launched as ORG2 Market Official; primary ~/.codex: 1935 threads / 1961 rollouts / 18 GB; Codex Desktop 26.915.31945",
+    "initialSync": "started on login at 05:46:06Z, 1926 threads visible in the package catalog by 05:52:28Z; 9 primary threads stayed as documented conflicts (rollouts outside ~/.codex, unparsable 2025 heads, legacy workspace-write sandbox) and 1 stayed busy (loaded and generating in the primary Codex); free disk went from 79.40 GB to 78.74 GB for 18 GB of logical copies because staging uses APFS clones",
+    "visibleHistory": "Open app from Settings > App connections > Codex: the managed Codex window listed the user's primary conversations under the ORG2 account with the AC · GPT-6-Astra selector",
+    "continuation": "a primary-origin conversation (SYNC1465_A1 arithmetic chain, last native answer 22) was continued in the managed window; reply 24; exactly one model request, POST 127.0.0.1:17888/cli/codex/.../v1/responses 200, 34157 input / 5 output tokens; package catalog row stayed orgii / gpt-6-astra-org2-…",
+    "reverseHandoff": "after quitting the managed Codex, the primary rollout received the new turn plus a thread_settings_applied event for openai / gpt-6-astra within 5 s; primary catalog row stayed openai / gpt-6-astra with tokens_used updated; projection frontier identical in both homes; journal 1926 pairs / 0 pending",
+    "primaryIntegrity": "every pre-existing primary rollout kept its size, mtime and inode except the one the user was generating in natively; the only primary additions were the package-origin M9 conversation and the returned turn above",
+    "restart": "the app was launched fresh from the new build with the connection left in Advanced Coding; no reconfiguration was needed and the observer resumed from the journal",
+    "notCovered": "a thread still loaded in the managed window is refreshed only after native unload or quit (documented); Windows/Linux; other Codex Desktop releases"
+  },
+  "observerPerformanceAcceptance": {
+    "idle": "0.0% CPU, 351 MB RSS right after the initial sync; 239 MB RSS later",
+    "duringPrimaryGeneration": "70 ms CPU over 20 s (0.35%) while the primary Codex was appending to a loaded conversation",
+    "initialSyncPeak": "45-89% CPU of one core for about 6.5 minutes during the first 1926-thread copy (projection rows dominate, rollouts are clones)",
+    "notMeasured": "I/O counters; a package-side generation while the primary is idle"
+  },
+  "runs": [
+    {
+      "scenario": "production-rust-engine-native-loaded-source-snapshot",
+      "passed": true,
+      "guiAcceptance": false,
+      "engineBinarySha256": "485fc29cde2d69038285882d05b3641c0fcfbe52f6266bcdbe6beb26c9eb5ada",
+      "nativeBinarySha256": "9280c0754e8f1f6b72f495d30c8c82a006dbc4995bf0492916fa0901f6bfd1f9",
+      "loopbackModelRequests": 6,
+      "nativeProcessExitCodes": [0, 0, 0, 0, 0],
+      "sourceLoadedCompletedToUnloadedTarget": {
+        "copied": 2,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "unchangedWithLoadedSource": {
+        "copied": 0,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "ongoingSourceReconcile": {
+        "busy": 1,
+        "conflicts": 0,
+        "copied": 0,
+        "more": false
+      },
+      "sourceJustCompletedStillLoaded": {
+        "copied": 1,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "sourceCompletedUnchanged": {
+        "copied": 0,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "loadedDestinationReconcile": {
+        "busy": 1,
+        "conflicts": 0,
+        "copied": 0,
+        "more": false
+      },
+      "returnWithCompletedPackageStillLoaded": {
+        "copied": 1,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "unchangedAfterLoadedSourceReturn": {
+        "copied": 0,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "restartPrimaryContinueReconcile": {
+        "copied": 1,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "restartPackageContinueReconcile": {
+        "copied": 1,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "liveScenarioFinalUnchanged": {
+        "copied": 0,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      }
+    },
+    {
+      "scenario": "production-rust-engine-native-fork",
+      "passed": true,
+      "guiAcceptance": false,
+      "engineBinarySha256": "485fc29cde2d69038285882d05b3641c0fcfbe52f6266bcdbe6beb26c9eb5ada",
+      "nativeBinarySha256": "9280c0754e8f1f6b72f495d30c8c82a006dbc4995bf0492916fa0901f6bfd1f9",
+      "loopbackModelRequests": 5,
+      "nativeProcessExitCodes": [0, 0, 0, 0],
+      "firstReconcile": {
+        "copied": 3,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "firstUnchangedReconcile": {
+        "copied": 0,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "returnReconcile": {
+        "copied": 1,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      }
+    },
+    {
+      "scenario": "production-rust-engine-native-cold-target",
+      "passed": true,
+      "guiAcceptance": false,
+      "engineBinarySha256": "485fc29cde2d69038285882d05b3641c0fcfbe52f6266bcdbe6beb26c9eb5ada",
+      "nativeBinarySha256": "9280c0754e8f1f6b72f495d30c8c82a006dbc4995bf0492916fa0901f6bfd1f9",
+      "loopbackModelRequests": 3,
+      "nativeProcessExitCodes": [0, 0, 0, 0],
+      "coldFirstReconcile": {
+        "copied": 1,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "coldUnchangedReconcile": {
+        "copied": 0,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "coldReturnReconcile": {
+        "copied": 1,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      },
+      "coldFinalReconcile": {
+        "copied": 1,
+        "busy": 0,
+        "conflicts": 0,
+        "more": false
+      }
+    }
+  ]
+}

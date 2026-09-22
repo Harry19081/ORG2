@@ -17,6 +17,7 @@ import {
   getCurrentTimezone,
   resolveTimeZoneForIntl,
 } from "@src/config/timezone";
+import i18n from "@src/i18n";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
 import { parseApiDate } from "./dateCore";
@@ -34,7 +35,7 @@ export { parseApiDate };
 export const formatDate = (
   dateString: string | null | undefined,
   options?: Intl.DateTimeFormatOptions,
-  locale = "en-US"
+  locale?: string
 ): string => {
   if (!dateString) return "—";
 
@@ -58,7 +59,7 @@ export const formatDate = (
       formatOptions.timeZone = timezone === "utc" ? "UTC" : timezone;
     }
 
-    return date.toLocaleString(locale, formatOptions);
+    return date.toLocaleString(resolveDateLocale(locale), formatOptions);
   } catch {
     return "—";
   }
@@ -68,12 +69,36 @@ export const formatDate = (
  * Map app language codes to BCP-47 locale tags for {@link Intl} (month names, time).
  */
 export function toIntlLocaleTag(language: string | undefined): string {
-  if (!language) return "en-US";
-  if (language === "en") return "en-US";
-  if (language === "zh") return "zh-CN";
-  if (language === "ja") return "ja-JP";
-  if (language === "ko") return "ko-KR";
-  return language;
+  const mapped =
+    language === "en"
+      ? "en-US"
+      : language === "zh"
+        ? "zh-CN"
+        : language === "zh-Hant"
+          ? "zh-Hant-TW"
+          : language === "ja"
+            ? "ja-JP"
+            : language === "ko"
+              ? "ko-KR"
+              : language;
+  if (!mapped) return "en-US";
+
+  try {
+    const canonical = Intl.getCanonicalLocales(mapped)[0];
+    return canonical &&
+      Intl.DateTimeFormat.supportedLocalesOf([canonical]).length > 0
+      ? canonical
+      : "en-US";
+  } catch {
+    return "en-US";
+  }
+}
+
+/** Explicit locale wins; otherwise follow the currently resolved app language. */
+export function resolveDateLocale(locale?: string): string {
+  return toIntlLocaleTag(
+    locale ?? i18n.resolvedLanguage ?? i18n.language ?? "en"
+  );
 }
 
 // `Date#toLocale*` is specified in terms of a fresh Intl formatter. That is
@@ -205,11 +230,8 @@ export function getLocalDayDiff(date: Date, now: Date = new Date()): number {
   );
 }
 
-export function formatLocalClock(
-  date: Date,
-  locale: string | undefined = "en-US"
-): string {
-  return date.toLocaleString(locale, {
+export function formatLocalClock(date: Date, locale?: string): string {
+  return date.toLocaleString(resolveDateLocale(locale), {
     hour: "numeric",
     minute: "2-digit",
   });
@@ -223,15 +245,12 @@ export function formatLocalMonthDay(
     monthStyle?: "short" | "long";
   }
 ): string {
-  const locale = options && "locale" in options ? options.locale : "en-US";
-  const month = date.toLocaleString(locale, {
+  const locale = resolveDateLocale(options?.locale);
+  return date.toLocaleDateString(locale, {
     month: options?.monthStyle ?? "short",
+    day: "numeric",
+    ...(options?.includeYear ? { year: "numeric" as const } : {}),
   });
-  const day = date.getDate();
-  if (options?.includeYear) {
-    return `${month} ${day}, ${date.getFullYear()}`;
-  }
-  return `${month} ${day}`;
 }
 
 export function formatRelativeElapsedShort(
@@ -245,7 +264,7 @@ export function formatRelativeElapsedShort(
 export interface FormatSmartDateTimeOptions {
   /** Label for the previous calendar day (from i18n). Default: "Yesterday" */
   yesterdayLabel?: string;
-  /** Locale for month names and time. Default: en-US */
+  /** Locale for month names and time. Defaults to the resolved app language. */
   locale?: string;
 }
 
@@ -267,8 +286,14 @@ export function formatSmartDateTime(
     if (!date) return "—";
 
     const timeZone = resolveTimeZoneForIntl();
-    const locale = options?.locale ?? "en-US";
-    const yesterdayLabel = options?.yesterdayLabel ?? "Yesterday";
+    const locale = resolveDateLocale(options?.locale);
+    const yesterdayLabel =
+      options?.yesterdayLabel ??
+      String(
+        i18n.t("common:relativeDate.yesterday", {
+          defaultValue: "Yesterday",
+        })
+      );
 
     const now = new Date();
     const todayKey = dateKeyInTimezone(now, timeZone);
@@ -322,12 +347,80 @@ export function formatSmartDateTime(
   }
 }
 
+export interface FormatCalendarDateLabelOptions {
+  /** Translated "Today" label (from i18n). Default: "Today" */
+  todayLabel?: string;
+  /** Translated "Yesterday" label (from i18n). Default: "Yesterday" */
+  yesterdayLabel?: string;
+  /** BCP-47 locale tag for month names. Defaults to the resolved app language. */
+  locale?: string;
+  /** Month display style for non-relative dates. Default: `short`. */
+  monthStyle?: "short" | "long";
+}
+
+export function formatCalendarDateLabel(
+  input: string | number | null | undefined,
+  options?: FormatCalendarDateLabelOptions
+): string {
+  if (input == null || input === "") return "";
+
+  try {
+    const date =
+      typeof input === "number" ? new Date(input) : parseApiDate(input);
+    if (!date || Number.isNaN(date.getTime())) return "";
+
+    const timeZone = resolveTimeZoneForIntl();
+    const locale = resolveDateLocale(options?.locale);
+    const todayLabel =
+      options?.todayLabel ??
+      String(i18n.t("common:relativeDate.today", { defaultValue: "Today" }));
+    const yesterdayLabel =
+      options?.yesterdayLabel ??
+      String(
+        i18n.t("common:relativeDate.yesterday", {
+          defaultValue: "Yesterday",
+        })
+      );
+    const monthStyle = options?.monthStyle ?? "short";
+
+    const now = new Date();
+    const todayKey = dateKeyInTimezone(now, timeZone);
+    const eventKey = dateKeyInTimezone(date, timeZone);
+
+    if (eventKey === todayKey) {
+      return todayLabel;
+    }
+
+    const [todayYear, todayMonth, todayDay] = todayKey.split("-").map(Number);
+    const yesterdayKey = ymdAddDays(todayYear, todayMonth, todayDay, -1);
+    if (eventKey === yesterdayKey) {
+      return yesterdayLabel;
+    }
+
+    const [eventYear] = eventKey.split("-").map(Number);
+    const dateOpts: Intl.DateTimeFormatOptions = {
+      month: monthStyle,
+      day: "numeric",
+    };
+    if (timeZone !== undefined) {
+      dateOpts.timeZone = timeZone;
+    }
+    if (eventYear !== todayYear) {
+      dateOpts.year = "numeric";
+    }
+
+    return date.toLocaleDateString(locale, dateOpts);
+  } catch {
+    return "";
+  }
+}
+
 export interface FormatReplayDateLabelOptions {
   /** Translated "Today" label (from i18n). Default: "Today" */
   todayLabel?: string;
   /** Translated "Yesterday" label (from i18n). Default: "Yesterday" */
   yesterdayLabel?: string;
-  /** BCP-47 locale tag for month names. Default: "en-US" */
+  /** BCP-47 locale tag for month names. Defaults to the resolved app language. */
   locale?: string;
   /**
    * Whether to include seconds in the time portion. The kanban replay bar
@@ -364,9 +457,17 @@ export function formatReplayDateLabel(
     if (!date || Number.isNaN(date.getTime())) return "";
 
     const timeZone = resolveTimeZoneForIntl();
-    const locale = options?.locale ?? "en-US";
-    const todayLabel = options?.todayLabel ?? "Today";
-    const yesterdayLabel = options?.yesterdayLabel ?? "Yesterday";
+    const locale = resolveDateLocale(options?.locale);
+    const todayLabel =
+      options?.todayLabel ??
+      String(i18n.t("common:relativeDate.today", { defaultValue: "Today" }));
+    const yesterdayLabel =
+      options?.yesterdayLabel ??
+      String(
+        i18n.t("common:relativeDate.yesterday", {
+          defaultValue: "Yesterday",
+        })
+      );
     const withSeconds = options?.withSeconds ?? true;
     const monthStyle = options?.monthStyle ?? "long";
 

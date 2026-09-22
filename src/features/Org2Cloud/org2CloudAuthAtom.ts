@@ -99,7 +99,7 @@ export const org2CloudAuthAtom = atom(
 org2CloudAuthAtom.debugLabel = "org2CloudAuthAtom";
 
 /** Rehydration/profile enrichment may replace the object, not its credentials. */
-function sameCredentialGeneration(
+export function isSameOrg2CloudSession(
   current: Org2CloudAuthState | null,
   expected: Org2CloudAuthState
 ): current is Org2CloudAuthState {
@@ -141,7 +141,7 @@ export function commitRefreshedAuth(
 ): boolean {
   let committed = false;
   setAuth((current) => {
-    if (!sameCredentialGeneration(current, previous)) return current;
+    if (!isSameOrg2CloudSession(current, previous)) return current;
     committed = true;
     if (fresh === previous) return current;
     // Keep the fresh reference when possible: sign-in profile enrichment uses
@@ -169,7 +169,7 @@ export function clearRejectedAuth(
 ): boolean {
   let cleared = false;
   setAuth((current) => {
-    if (!sameCredentialGeneration(current, rejected)) {
+    if (!isSameOrg2CloudSession(current, rejected)) {
       return current;
     }
     cleared = true;
