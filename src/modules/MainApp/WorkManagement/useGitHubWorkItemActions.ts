@@ -55,7 +55,7 @@ export function useGitHubWorkItemActions({
   const { openTab } = useWorkStationTabs();
 
   const openIssueInBrowser = useCallback((issue: ManagedIssueItem) => {
-    openLink(issue.rawIssue.html_url, { navigate: true });
+    openLink(issue.rawIssue.html_url);
   }, []);
 
   const openIssueInTab = useCallback(

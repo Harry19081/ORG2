@@ -107,8 +107,7 @@ describe("WikiModal", () => {
 
     expect(document.querySelector('[role="dialog"]')).toBeNull();
     expect(mocks.openLink).toHaveBeenCalledExactlyOnceWith(
-      "https://github.com/org2AI/ORG2/wiki",
-      { navigate: true }
+      "https://github.com/org2AI/ORG2/wiki"
     );
   });
   it("keeps the wiki section and drops the tours outside dev mode", () => {

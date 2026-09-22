@@ -153,7 +153,7 @@ function LinkedReferenceCard({
         }`}
         data-testid="github-linked-reference-row"
         onClick={() => {
-          if (item.htmlUrl) openLink(item.htmlUrl, { navigate: true });
+          if (item.htmlUrl) openLink(item.htmlUrl);
         }}
       >
         <span

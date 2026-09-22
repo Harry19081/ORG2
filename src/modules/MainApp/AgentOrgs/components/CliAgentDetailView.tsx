@@ -155,7 +155,7 @@ const CliAgentDetailView: React.FC<CliAgentDetailViewProps> = ({
   }, [agent.name, onRefresh, t]);
 
   const handleOpenDocs = useCallback(() => {
-    if (docsUrl) openLink(docsUrl, { navigate: true });
+    if (docsUrl) openLink(docsUrl);
   }, [docsUrl]);
 
   const openCredentialInIntegrations = useCallback(() => {

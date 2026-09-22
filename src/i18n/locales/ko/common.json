@@ -2338,9 +2338,7 @@
     "selectedElement": {
       "addElement": "요소 추가",
       "sentToChat": "요소가 채팅에 첨부되었습니다"
-    },
-    "openedInBrowser": "브라우저에서 열림",
-    "goToBrowser": "브라우저로 이동"
+    }
   },
   "controlTower": {
     "sidebar": {

@@ -2338,9 +2338,7 @@
     "selectedElement": {
       "addElement": "要素を追加",
       "sentToChat": "要素をチャットに追加しました"
-    },
-    "openedInBrowser": "ブラウザで開きました",
-    "goToBrowser": "ブラウザへ移動"
+    }
   },
   "controlTower": {
     "sidebar": {

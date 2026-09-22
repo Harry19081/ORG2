@@ -77,7 +77,7 @@ const UrlPreviewContent: React.FC<UrlPreviewContentProps> = memo(
     );
 
     const handleOpenInBrowser = useCallback(() => {
-      openLink(url, { navigate: true });
+      openLink(url);
     }, [url]);
 
     // Extract hostname for display

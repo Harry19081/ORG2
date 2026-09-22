@@ -2179,9 +2179,7 @@
     "selectedElement": {
       "sentToChat": "Elemen dilampirkan ke chat",
       "addElement": "Tambahkan elemen"
-    },
-    "openedInBrowser": "Dibuka di Browser",
-    "goToBrowser": "Buka Browser"
+    }
   },
   "controlTower": {
     "sidebar": {

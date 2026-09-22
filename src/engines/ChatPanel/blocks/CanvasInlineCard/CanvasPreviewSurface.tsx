@@ -85,7 +85,7 @@ const NonEmbeddedUrlNotice: React.FC<{ url: string }> = ({ url }) => {
         </div>
         <Button
           size="small"
-          onClick={() => openLink(url, { navigate: true })}
+          onClick={() => openLink(url)}
           icon={
             <HugeiconsIcon
               icon={SquareArrowUpRight02Icon}

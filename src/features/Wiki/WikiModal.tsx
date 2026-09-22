@@ -65,9 +65,7 @@ export default function WikiModal({
           <ActionCard
             title="github.com/org2AI/ORG2/wiki"
             icon={BookOpen01Icon}
-            onClick={() =>
-              runAction(() => openLink(ORG2_WIKI_URL, { navigate: true }))
-            }
+            onClick={() => runAction(() => openLink(ORG2_WIKI_URL))}
             showArrow
             dataTestId="wiki-open-link"
           />

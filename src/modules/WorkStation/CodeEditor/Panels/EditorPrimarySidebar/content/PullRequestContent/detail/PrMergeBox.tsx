@@ -93,7 +93,7 @@ const CONDITION_DETAILS: Partial<Record<PrMergeStatusRow["kind"], string>> = {
 };
 
 function openExternal(url: string): void {
-  openLink(url, { navigate: true });
+  openLink(url);
 }
 
 function checksDetail(t: TFunction, section: PrMergeBoxChecksSection): string {

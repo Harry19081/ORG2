@@ -19,13 +19,12 @@ import {
   getSimulatorDockTitleCenter,
 } from "@src/engines/Simulator/components/Dock";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
-import { useAppNavigate as useNavigate } from "@src/hooks/navigation/useAppNavigate";
 import { CodeXmlIcon, type IconSvgElement } from "@src/icons";
-import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   simulatorEffectiveDockAppAtom,
   simulatorSelectedAppAtom,
 } from "@src/store/ui/simulatorAtom";
+import { revealMyStation } from "@src/util/ui/revealMyStation";
 
 import type { AppSwitcherMenuItem } from "./AppSwitcherDropdownPanel";
 
@@ -46,8 +45,6 @@ export function useSimulatorAppSwitcher(): AppSwitcherChipData {
   const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
   const setSelectedApp = useSetAtom(simulatorSelectedAppAtom);
   const setReplayMode = useSetAtom(replayModeAtom);
-  const setStationMode = useSetAtom(stationModeAtom);
-  const navigate = useNavigate();
 
   const titleCenter = useMemo(
     () => getSimulatorDockTitleCenter(effectiveDockApp, tNav),
@@ -72,14 +69,13 @@ export function useSimulatorAppSwitcher(): AppSwitcherChipData {
       // Browser in Agent Station switches to My Station Browser (real webview).
       // The Simulator Browser is session-replay only and has no live webview.
       if (appId === AppType.BROWSER) {
-        setStationMode("my-station");
-        navigate(ROUTES.workStation.browser.path);
+        revealMyStation({ path: ROUTES.workStation.browser.path });
         return;
       }
       setSelectedApp(appId as AppType);
       setReplayMode("replay");
     },
-    [setReplayMode, setSelectedApp, setStationMode, navigate]
+    [setReplayMode, setSelectedApp]
   );
 
   return {

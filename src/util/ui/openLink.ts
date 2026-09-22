@@ -7,6 +7,10 @@
  * - `openInBrowserApp` / `openInSystemBrowser`: for controls that name their
  *   destination ("Open as web page", "Open in external browser").
  *
+ * Opening always means showing: the Browser takes the URL *and* comes into
+ * view, whichever entry point asked. Callers do not choose between a
+ * background tab and a visible one.
+ *
  * The Browser is asked through the `open-url-in-browser` event, which
  * `useOpenUrlInBrowser` acknowledges with `preventDefault()`. Only the main
  * app layout and detached station windows mount that listener, so a request
@@ -18,31 +22,19 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import Message from "@src/components/Message";
 import i18n from "@src/i18n";
 import { readLinkOpenTarget } from "@src/store/ui/linkOpenTargetAtom";
-import { isGitHubPullRequestUrl } from "@src/util/git/githubPullRequestUrl";
 import { normalizeBrowserInput } from "@src/util/url/browserUrl";
 
 export const OPEN_URL_IN_BROWSER_EVENT = "open-url-in-browser";
 
 export interface OpenUrlInBrowserDetail {
   url: string;
-  /** Bring the Browser into view instead of adding a background tab. */
-  navigate: boolean;
-}
-
-export interface OpenLinkOptions {
-  /**
-   * Workstation Browser only: bring it into view instead of adding a
-   * background tab. Defaults to true for GitHub pull requests — a PR the
-   * agent just created is the thing to look at, not a tab to find later.
-   */
-  navigate?: boolean;
 }
 
 /** Whether a Browser in this document took the request. */
-function requestBrowserApp(url: string, navigate: boolean): boolean {
+function requestBrowserApp(url: string): boolean {
   return !window.dispatchEvent(
     new CustomEvent<OpenUrlInBrowserDetail>(OPEN_URL_IN_BROWSER_EVENT, {
-      detail: { url, navigate },
+      detail: { url },
       cancelable: true,
     })
   );
@@ -61,16 +53,12 @@ export function openInSystemBrowser(url: string): void {
 
 /** Bring `url` up in the workstation Browser, whatever the link preference. */
 export function openInBrowserApp(url: string): void {
-  if (!requestBrowserApp(url, true)) openInSystemBrowser(url);
+  if (!requestBrowserApp(url)) openInSystemBrowser(url);
 }
 
 /** Open `url` where the user's Navigation preference sends links. */
-export function openLink(
-  url: string,
-  { navigate = isGitHubPullRequestUrl(url) }: OpenLinkOptions = {}
-): void {
-  if (readLinkOpenTarget() === "internal" && requestBrowserApp(url, navigate))
-    return;
+export function openLink(url: string): void {
+  if (readLinkOpenTarget() === "internal" && requestBrowserApp(url)) return;
   openInSystemBrowser(url);
 }
 
@@ -79,12 +67,12 @@ export function openLink(
  * link. Anchors must not also set `target="_blank"`: the shell plugin opens
  * those in the system browser from its own click listener.
  */
-export function linkAnchorProps(href: string, options?: OpenLinkOptions) {
+export function linkAnchorProps(href: string) {
   return {
     href,
     onClick: (event: { preventDefault(): void }) => {
       event.preventDefault();
-      openLink(href, options);
+      openLink(href);
     },
   };
 }

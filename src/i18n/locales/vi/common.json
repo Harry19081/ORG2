@@ -2338,9 +2338,7 @@
     "selectedElement": {
       "addElement": "Thêm phần tử",
       "sentToChat": "Đã đính phần tử vào chat"
-    },
-    "openedInBrowser": "Đã mở trong trình duyệt",
-    "goToBrowser": "Đến trình duyệt"
+    }
   },
   "controlTower": {
     "sidebar": {

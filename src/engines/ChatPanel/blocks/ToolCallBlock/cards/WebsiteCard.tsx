@@ -39,7 +39,7 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ card }) => {
   const showFavicon = Boolean(card.favicon && faviconLoaded && !faviconFailed);
 
   function handleOpen() {
-    openLink(card.url, { navigate: true });
+    openLink(card.url);
   }
 
   return (
