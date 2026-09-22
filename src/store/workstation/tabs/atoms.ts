@@ -1,5 +1,7 @@
 import { type Setter, atom } from "jotai";
 
+import { createLogger } from "@src/hooks/logger";
+import { closeAllTerminalSessionsAtom } from "@src/store/workstation/codeEditor/terminal";
 import { clearTerminalTargetForWorkspaceAtom } from "@src/store/workstation/codeEditor/terminalTargetAtom";
 
 import {
@@ -31,6 +33,8 @@ import {
   getWorkstationTabOwnership,
 } from "./types";
 import { presentedWorkstationWorkspaceKeyAtom } from "./workspaceScope";
+
+const log = createLogger("WorkstationTabs");
 
 export {
   GLOBAL_WORKSTATION_WORKSPACE_KEY,
@@ -424,6 +428,19 @@ export const closeWorkstationTabsAtom = atom(
       });
     }
     setAndPersist(set, nextState);
+
+    // VS Code-style terminal lifecycle: closing the Terminal tab kills every
+    // running PTY (dev servers, agents, shells). This belongs here, on the
+    // explicit-close command, and not in an effect watching the presented
+    // workspace's panel: a `terminal` tab is a shared resource projected only
+    // into the workspaces that reference it, so presentation changes alone
+    // make it appear and disappear. PTY shutdown is asynchronous and owned by
+    // the terminal store; tab state above is already consistent.
+    if (tabsToClose.some((tab) => tab.type === "terminal")) {
+      set(closeAllTerminalSessionsAtom).catch((error: unknown) => {
+        log.error("Failed to tear down terminal sessions on tab close:", error);
+      });
+    }
   }
 );
 closeWorkstationTabsAtom.debugLabel = "closeWorkstationTabsAtom";
