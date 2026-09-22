@@ -25,9 +25,8 @@ export const CHAT_PANEL_LAYOUT_GUTTER = 20;
  */
 export const CHAT_SPLIT_RATIOS = {
   "one-third": 1 / 3,
-  "two-fifths": 2 / 5,
   half: 1 / 2,
-  "three-fifths": 3 / 5,
+  "two-thirds": 2 / 3,
 } as const;
 
 export type ChatSplitRatio = keyof typeof CHAT_SPLIT_RATIOS;
@@ -35,9 +34,8 @@ export type ChatSplitRatio = keyof typeof CHAT_SPLIT_RATIOS;
 /** Menu order, narrowest chat pane first. */
 export const CHAT_SPLIT_RATIO_VALUES = [
   "one-third",
-  "two-fifths",
   "half",
-  "three-fifths",
+  "two-thirds",
 ] as const satisfies readonly ChatSplitRatio[];
 
 /**
@@ -46,19 +44,20 @@ export const CHAT_SPLIT_RATIO_VALUES = [
  */
 export const CHAT_SPLIT_RATIO_LABELS: Record<ChatSplitRatio, string> = {
   "one-third": "1/3",
-  "two-fifths": "2/5",
   half: "1/2",
-  "three-fifths": "3/5",
+  "two-thirds": "2/3",
 };
 
 /**
- * Closest preset to the historical fixed 520px default on a typical window,
- * so an install that has never touched the setting keeps the layout it had.
+ * Nearest preset to the historical fixed 520px default. On a typical window
+ * that width sat near 0.38 of the available space, between `one-third` and
+ * `half` but closer to the former, so a fresh install lands a little narrower
+ * than the old fixed default rather than jumping to an even split.
  */
-export const DEFAULT_CHAT_SPLIT_RATIO: ChatSplitRatio = "two-fifths";
+export const DEFAULT_CHAT_SPLIT_RATIO: ChatSplitRatio = "one-third";
 
 /** The drag ceiling is the widest preset, so every preset stays reachable. */
-export const MAX_WIDTH_RATIO = CHAT_SPLIT_RATIOS["three-fifths"];
+export const MAX_WIDTH_RATIO = CHAT_SPLIT_RATIOS["two-thirds"];
 
 /** Width the station and the chat pane divide between them. */
 function getChatAvailableWidth(viewportWidth?: number): number {

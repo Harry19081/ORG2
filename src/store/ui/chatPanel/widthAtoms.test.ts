@@ -20,16 +20,17 @@ afterEach(() => {
   localStorage.clear();
 });
 
-// innerWidth 1200 → 1116 available (minus the 64px rail and 20px gutter);
-// the 2/5 default preset seeds 446 and the 3/5 ceiling clamps to 669.
-const SEEDED_FROM_DEFAULT_RATIO = 446;
+// innerWidth 1200 → 1116 available (minus the 64px rail and 20px gutter).
+// The 1/3 default asks for 372, below MIN_WIDTH, so at this viewport it seeds
+// the 420 floor; the 2/3 ceiling clamps anything wider to 744.
+const SEEDED_FROM_DEFAULT_RATIO = 420;
 
 describe("chat width initialization", () => {
   it.each([
     [null, SEEDED_FROM_DEFAULT_RATIO],
     ["480", 480],
     ["0", 0],
-    ["900", 669],
+    ["900", 744],
     ["100", 420],
     ["invalid-json", SEEDED_FROM_DEFAULT_RATIO],
   ])(
@@ -94,10 +95,10 @@ describe("chat width initialization", () => {
     const { getChatWidthForRatio } =
       await import("@src/engines/ChatPanel/config");
     const store = createStore();
-    store.set(adoptDefaultChatWidthAtom, getChatWidthForRatio("three-fifths"));
-    expect(store.get(chatWidthAtom)).toBe(669);
+    store.set(adoptDefaultChatWidthAtom, getChatWidthForRatio("two-thirds"));
+    expect(store.get(chatWidthAtom)).toBe(744);
     vi.advanceTimersByTime(300);
-    expect(localStorage.getItem("globalChatWidth")).toBe("669");
+    expect(localStorage.getItem("globalChatWidth")).toBe("744");
   });
 
   it("stores a preset picked while the pane is hidden as the restore width", async () => {

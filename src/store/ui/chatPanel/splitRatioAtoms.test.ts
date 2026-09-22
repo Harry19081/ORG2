@@ -33,7 +33,7 @@ describe("chatSplitRatioAtom", () => {
 
   it("defaults to the preset closest to the historical fixed width", () => {
     const store = createStore();
-    expect(store.get(chatSplitRatioAtom)).toBe("two-fifths");
+    expect(store.get(chatSplitRatioAtom)).toBe("one-third");
   });
 
   it("persists the pick and applies it to the pane in the same write", () => {
@@ -41,13 +41,13 @@ describe("chatSplitRatioAtom", () => {
     store.set(settingsAtom, getSettingsDefaults());
     store.set(chatWidthAtom, 480);
 
-    store.set(chatSplitRatioAtom, "three-fifths");
+    store.set(chatSplitRatioAtom, "two-thirds");
 
-    expect(store.get(chatSplitRatioAtom)).toBe("three-fifths");
+    expect(store.get(chatSplitRatioAtom)).toBe("two-thirds");
     expect(store.get(settingsAtom)["general.chatPaneSplitRatio"]).toBe(
-      "three-fifths"
+      "two-thirds"
     );
-    expect(store.get(chatWidthAtom)).toBe(getChatWidthForRatio("three-fifths"));
+    expect(store.get(chatWidthAtom)).toBe(getChatWidthForRatio("two-thirds"));
   });
 
   it("leaves the divider free to be dragged away from the preset", () => {
