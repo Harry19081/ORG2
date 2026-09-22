@@ -1981,7 +1981,13 @@
       }
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} требует обновления ({{installed}} > {{latest}})",
+      "title": "Доступно обновление {{cli}}",
+      "versions": "Текущая: {{installed}} · Последняя: {{latest}}",
+      "upgrade": "Обновить в терминале",
+      "upgradeHint": "Обновление Cursor CLI в отдельном терминале. После завершения проверьте версию.",
+      "upgradeTerminal": "Обновление Cursor CLI",
+      "upgradeStarted": "Обновление запущено в терминале. После завершения проверьте версию.",
+      "upgradeFailed": "Не удалось открыть терминал обновления. Повторите попытку.",
       "muteUntilNextVersion": "Не уведомлять до следующей версии",
       "refresh": "Перепроверить версию {{cli}} CLI",
       "unknownVersion": "неизвестно"

@@ -1981,7 +1981,13 @@
       }
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} necesita una actualización ({{installed}} > {{latest}})",
+      "title": "Hay una actualización de {{cli}}",
+      "versions": "Actual: {{installed}} · Última: {{latest}}",
+      "upgrade": "Actualizar en terminal",
+      "upgradeHint": "Actualiza Cursor CLI en un terminal independiente. Al terminar, vuelve a comprobar la versión.",
+      "upgradeTerminal": "Actualizar Cursor CLI",
+      "upgradeStarted": "Actualización iniciada en el terminal. Al terminar, vuelve a comprobar la versión.",
+      "upgradeFailed": "No se pudo abrir el terminal de actualización. Inténtalo de nuevo.",
       "muteUntilNextVersion": "No avisar hasta la próxima versión",
       "refresh": "Volver a comprobar la versión de la CLI de {{cli}}",
       "unknownVersion": "desconocida"

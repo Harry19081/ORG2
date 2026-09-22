@@ -1906,7 +1906,13 @@
       "body": "Git इंस्टॉल नहीं है या नहीं मिल सका। इस मशीन पर Git इंस्टॉल करने के लिए ADE Manager या SDE Agent से कहें, फिर ORG2 को पुनः आरंभ करें"
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} को अपग्रेड करने की ज़रूरत है ({{installed}} > {{latest}})",
+      "title": "{{cli}} का अपडेट उपलब्ध है",
+      "versions": "वर्तमान: {{installed}} · नवीनतम: {{latest}}",
+      "upgrade": "टर्मिनल में अपडेट करें",
+      "upgradeHint": "अलग टर्मिनल में Cursor CLI अपडेट होगा। पूरा होने पर संस्करण दोबारा जाँचें।",
+      "upgradeTerminal": "Cursor CLI अपडेट करें",
+      "upgradeStarted": "टर्मिनल में अपडेट शुरू हुआ। पूरा होने पर संस्करण दोबारा जाँचें।",
+      "upgradeFailed": "अपडेट टर्मिनल नहीं खुल सका। फिर से प्रयास करें।",
       "muteUntilNextVersion": "अगले संस्करण तक कोई अलर्ट नहीं",
       "refresh": "{{cli}} CLI संस्करण फिर से जाँचें",
       "unknownVersion": "अज्ञात"

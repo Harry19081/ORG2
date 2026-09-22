@@ -130,6 +130,8 @@ interface PageNoticeProps {
   className?: string;
   /** Reduce default-card vertical and right padding without shrinking action buttons. */
   compact?: boolean;
+  /** Show the copy action. Disable for transient status guidance without useful copyable details. */
+  copyable?: boolean;
   /** Compact expandable pill that shows only title until expanded */
   presentation?: "default" | "pill";
   /** Optional action — object builds a 28px secondary Button; ReactNode for custom */
@@ -160,6 +162,7 @@ const PageNotice: React.FC<PageNoticeProps> = ({
   subtitleClassName,
   className,
   compact = false,
+  copyable = true,
   presentation = "default",
   action,
   onClose,
@@ -305,17 +308,21 @@ const PageNotice: React.FC<PageNoticeProps> = ({
         ) : (
           titleNode
         )}
-        {(title || children || subtitle || action || onClose) && (
+        {((copyable && (title || children || subtitle)) ||
+          action ||
+          onClose) && (
           <div className="flex shrink-0 items-center gap-px">
-            <Button
-              variant="tertiary"
-              size="small"
-              iconOnly
-              icon={<HugeiconsIcon icon={Copy01Icon} size={14} />}
-              title={t("actions.copy")}
-              aria-label={t("actions.copy")}
-              onClick={handleCopy}
-            />
+            {copyable && (
+              <Button
+                variant="tertiary"
+                size="small"
+                iconOnly
+                icon={<HugeiconsIcon icon={Copy01Icon} size={14} />}
+                title={t("actions.copy")}
+                aria-label={t("actions.copy")}
+                onClick={handleCopy}
+              />
+            )}
             {action && <div className="shrink-0">{actionNode}</div>}
             {onClose && (
               <Button
