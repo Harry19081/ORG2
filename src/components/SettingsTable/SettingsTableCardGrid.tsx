@@ -78,7 +78,43 @@ export interface SettingsTableCardGridProps<RowData> {
 interface CardSlots<RowData> {
   titleColumn?: SettingsTableColumn<RowData>;
   actionColumns: SettingsTableColumn<RowData>[];
-  fieldColumns: SettingsTableColumn<RowData>[];
+  /** One entry per card line. A line holds a single field column unless
+   *  `cardView.fieldRowGroups` asked for several to share it. */
+  fieldLines: SettingsTableColumn<RowData>[][];
+}
+
+/** Lays the field columns out line by line, keeping a grouped line's members in
+ *  the group's declared order and every other column on its own line, in
+ *  column order. A group is emitted where its first present member sits. */
+export function resolveCardFieldLines<RowData>(
+  fieldColumns: SettingsTableColumn<RowData>[],
+  fieldRowGroups: string[][] | undefined
+): SettingsTableColumn<RowData>[][] {
+  if (!fieldRowGroups?.length) {
+    return fieldColumns.map((column) => [column]);
+  }
+
+  const groupForKey = new Map<string, string[]>();
+  for (const group of fieldRowGroups) {
+    for (const key of group) groupForKey.set(key, group);
+  }
+
+  const consumed = new Set<string>();
+  const lines: SettingsTableColumn<RowData>[][] = [];
+  for (const column of fieldColumns) {
+    if (consumed.has(column.key)) continue;
+    const group = groupForKey.get(column.key);
+    if (!group) {
+      lines.push([column]);
+      continue;
+    }
+    const members = group
+      .map((key) => fieldColumns.find((candidate) => candidate.key === key))
+      .filter((member): member is SettingsTableColumn<RowData> => !!member);
+    for (const member of members) consumed.add(member.key);
+    lines.push(members);
+  }
+  return lines;
 }
 
 function resolveCardSlots<RowData>(
@@ -95,8 +131,11 @@ function resolveCardSlots<RowData>(
   return {
     titleColumn,
     actionColumns: visible.filter((column) => actionKeys.has(column.key)),
-    fieldColumns: visible.filter(
-      (column) => column !== titleColumn && !actionKeys.has(column.key)
+    fieldLines: resolveCardFieldLines(
+      visible.filter(
+        (column) => column !== titleColumn && !actionKeys.has(column.key)
+      ),
+      cardView.fieldRowGroups
     ),
   };
 }
@@ -344,18 +383,62 @@ export function SettingsTableCardGrid<RowData>({
                             </div>
                           )}
                         </div>
-                        {slots.fieldColumns.length > 0 && (
+                        {slots.fieldLines.length > 0 && (
                           <div className="flex min-w-0 flex-col gap-1.5">
-                            {slots.fieldColumns.map((column) => {
-                              const value = renderSettingsTableCell(
-                                column,
-                                row
-                              );
-                              if (value == null || value === false) return null;
+                            {slots.fieldLines.map((lineColumns) => {
+                              const fields = lineColumns
+                                .map((column) => ({
+                                  column,
+                                  value: renderSettingsTableCell(column, row),
+                                }))
+                                .filter(
+                                  ({ value }) =>
+                                    value != null && value !== false
+                                );
+                              if (fields.length === 0) return null;
+                              const lineKey = lineColumns
+                                .map((column) => column.key)
+                                .join("+");
+
+                              // A shared line keeps its label + value pairs
+                              // together at the card's left edge, divided the
+                              // way a meta row is, so two short values read as
+                              // one line instead of two.
+                              if (fields.length > 1 || lineColumns.length > 1) {
+                                return (
+                                  <div
+                                    key={lineKey}
+                                    className="flex min-w-0 items-center gap-2"
+                                  >
+                                    {fields.map(({ column, value }, index) => (
+                                      <React.Fragment key={column.key}>
+                                        {index > 0 && (
+                                          <span
+                                            aria-hidden
+                                            className="h-3 w-px shrink-0 bg-border-2"
+                                          />
+                                        )}
+                                        <div className="flex min-w-0 items-center gap-1.5">
+                                          {showFieldLabels && column.label ? (
+                                            <span className="shrink-0 text-xs text-text-3">
+                                              {column.label}
+                                            </span>
+                                          ) : null}
+                                          <div className="min-w-0 text-text-2">
+                                            {value}
+                                          </div>
+                                        </div>
+                                      </React.Fragment>
+                                    ))}
+                                  </div>
+                                );
+                              }
+
+                              const { column, value } = fields[0];
                               if (inlineFields) {
                                 return (
                                   <div
-                                    key={column.key}
+                                    key={lineKey}
                                     className="flex min-w-0 items-center justify-between gap-2"
                                   >
                                     {showFieldLabels && column.label ? (
@@ -363,14 +446,17 @@ export function SettingsTableCardGrid<RowData>({
                                         {column.label}
                                       </span>
                                     ) : null}
-                                    <div className="flex min-w-0 justify-end text-text-2">
+                                    {/* Grows so a label-less field's own
+                                        content still ends at the card's right
+                                        edge. */}
+                                    <div className="flex min-w-0 flex-1 justify-end text-text-2">
                                       {value}
                                     </div>
                                   </div>
                                 );
                               }
                               return (
-                                <div key={column.key} className="min-w-0">
+                                <div key={lineKey} className="min-w-0">
                                   {showFieldLabels && column.label ? (
                                     <div className="mb-0.5 text-xs text-text-3">
                                       {column.label}

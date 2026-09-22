@@ -10,6 +10,7 @@ import { createSmokeRoot } from "@src/test/reactSmokeHarness";
 import {
   SettingsTableCardGrid,
   resolveCardColumnCount,
+  resolveCardFieldLines,
 } from "./SettingsTableCardGrid";
 import type { SettingsTableCardViewConfig, SettingsTableColumn } from "./types";
 
@@ -95,6 +96,60 @@ describe("SettingsTableCardGrid", () => {
     expect(markup).not.toContain("Enabled Sources");
     expect(markup).not.toContain("1/1");
     expect(markup).toContain("GPT 6 Astra");
+  });
+
+  it("puts grouped field columns on one card line", () => {
+    const columns: SettingsTableColumn<Row>[] = [
+      COLUMNS[0],
+      COLUMNS[1],
+      {
+        key: "subagents",
+        label: "Subagents",
+        renderCell: () => React.createElement("span", null, "7"),
+      },
+    ];
+    const lines = resolveCardFieldLines(columns.slice(1), [
+      ["sources", "subagents"],
+    ]);
+
+    // Both counts share one line, in the group's declared order; nothing else
+    // is folded into it.
+    expect(lines).toHaveLength(1);
+    expect(lines[0].map((column) => column.key)).toEqual([
+      "sources",
+      "subagents",
+    ]);
+    // Ungrouped columns keep a line each.
+    expect(
+      resolveCardFieldLines(columns, [["sources", "subagents"]]).map((line) =>
+        line.map((column) => column.key)
+      )
+    ).toEqual([["model"], ["sources", "subagents"]]);
+
+    const markup = renderToStaticMarkup(
+      React.createElement(SettingsTableCardGrid<Row>, {
+        cardView: {
+          enabled: true,
+          titleColumnKey: "model",
+          actionColumnKeys: ["status"],
+          fieldLayout: "inline",
+          fieldRowGroups: [["sources", "subagents"]],
+        },
+        columns,
+        rows: ROWS,
+        getRowKey: (row) => row.id,
+        expandLabels: EXPAND_LABELS,
+      })
+    );
+
+    // One field line holds both labels, divided once, rather than a line per
+    // count.
+    const [firstCard] = markup.split("GLM 5.2");
+    expect(firstCard).toContain("Enabled Sources");
+    expect(firstCard).toContain("Subagents");
+    expect(
+      (firstCard.match(/h-3 w-px shrink-0 bg-border-2/g) ?? []).length
+    ).toBe(1);
   });
 
   it("sizes the grid by auto-fill minimum width or a fixed column count", () => {

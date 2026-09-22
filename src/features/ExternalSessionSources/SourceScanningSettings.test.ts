@@ -16,7 +16,7 @@ vi.mock("@src/components/ModelIcon", () => ({
 }));
 
 describe("SourceScanningSettings", () => {
-  it("keeps the table header and filters visible while inventory loads in the body", () => {
+  it("keeps the toolbar visible while the inventory loads into the card body", () => {
     const markup = renderToStaticMarkup(
       createElement(
         Provider,
@@ -28,18 +28,22 @@ describe("SourceScanningSettings", () => {
     expect(markup).toContain('data-testid="source-scanning-settings"');
     // Page chrome belongs to the host (Settings or Runtime), not the body.
     expect(markup).not.toContain("views.scanning");
-    expect(markup).toContain("table-expanded-no-hover");
-    expect(markup).toContain("table-settings-expanded-compact");
     expect(markup).toContain("tabs.all");
     expect(markup).toContain("tabs.apps");
     expect(markup).toContain(">CLI<");
     expect(markup).not.toContain("tabs.clis");
-    expect(markup).toContain("<thead");
-    const body = markup.match(/<tbody[^>]*>[\s\S]*?<\/tbody>/)?.[0];
-    expect(body).toBeDefined();
-    expect(body).toContain('aria-busy="true"');
-    expect(body).toContain('role="status"');
-    expect(body).not.toContain("tabs.all");
+    // Cards are the default presentation, so the inventory renders no table
+    // head or body — the list view stays one toggle away.
+    expect(markup).not.toContain("<thead");
+    expect(markup).not.toContain("<tbody");
+    expect(markup).toContain('data-testid="settings-table-view-toggle"');
+    // The loading state belongs to the body, below the toolbar that owns the
+    // tabs, so the filters stay usable while detection runs.
+    const [toolbar, loadingBody] = markup.split('role="status"');
+    expect(loadingBody).toBeDefined();
+    expect(toolbar).toContain("tabs.all");
+    expect(loadingBody).not.toContain("tabs.all");
+    expect(markup).toContain('aria-busy="true"');
     expect(markup).not.toContain("data-source-view-usage");
     expect(markup).not.toContain("data-source-scroll-region");
   });

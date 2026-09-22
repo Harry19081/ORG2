@@ -8,6 +8,7 @@ import ModelIcon from "@src/components/ModelIcon";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
+  type SettingsTableCardViewConfig,
   type SettingsTableColumn,
   type SettingsTableSelectFilter,
 } from "@src/components/SettingsTable";
@@ -135,6 +136,10 @@ export default function MyAccountsTableSection({
   const [editRequestedAccountId, setEditRequestedAccountId] = useState<
     string | null
   >(null);
+  // Cards by default, like the Models tab next door: a key is read one at a
+  // time — provider, model coverage, when it was added — and its controls
+  // belong to that one key.
+  const [viewMode, setViewMode] = useState<"list" | "card">("card");
 
   const handleEditAccountInline = useCallback(
     (accountId: string) => {
@@ -374,6 +379,22 @@ export default function MyAccountsTableSection({
     [expandedAccountKeys, renderExpandedAccountCard]
   );
 
+  // The key name heads the card and its switch/edit/delete cluster sits at the
+  // heading's right edge. Provider keeps its own line for the icon; the two
+  // short values — model coverage and the date added — share the next one.
+  const cardView = useMemo<SettingsTableCardViewConfig<KeyVaultAccount>>(
+    () => ({
+      enabled: viewMode === "card",
+      onEnabledChange: (enabled) => setViewMode(enabled ? "card" : "list"),
+      titleColumnKey: "name",
+      actionColumnKeys: ["enabled"],
+      fieldLayout: "inline",
+      fieldRowGroups: [["models", "added"]],
+      minCardWidth: 300,
+    }),
+    [viewMode]
+  );
+
   const refreshAccountsButton = onRefreshAccounts ? (
     <RefreshButton
       variant="secondary"
@@ -404,6 +425,7 @@ export default function MyAccountsTableSection({
       loading={loading}
       selectFilters={selectFilters}
       columns={columns}
+      cardView={cardView}
       rows={accounts}
       getRowKey={(account) => account.id}
       rowDataTestId={(account) => `key-vault-account-row-${account.id}`}
