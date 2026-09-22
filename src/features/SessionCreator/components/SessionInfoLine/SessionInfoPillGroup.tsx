@@ -12,6 +12,7 @@ export function SessionInfoPillGroup({
     <PillGroup
       segments={segments}
       className="max-w-full min-w-0"
+      segmentClassName="min-w-12"
       strongSurface={strongSurface}
     />
   );

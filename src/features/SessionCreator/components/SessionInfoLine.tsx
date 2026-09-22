@@ -34,7 +34,7 @@ import { modelPickerStyleAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms"
 import { isMultiRootWorkspaceAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { workspaceNameAtom } from "@src/store/workspace/derived";
 
-import { SessionInfoPillGroup } from "./SessionInfoLine/SessionInfoPillGroup";
+import { SessionInfoRow } from "./SessionInfoLine/SessionInfoRow";
 import {
   buildSessionInfoSegments,
   getSessionInfoDisplayState,
@@ -229,24 +229,13 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
     return segment;
   });
 
-  const sessionInfoPills = (
-    <SessionInfoPillGroup segments={segments} strongSurface={strongSurface} />
-  );
-
   return (
     <>
-      {leadingContent ? (
-        <div className="inline-flex flex-wrap items-center gap-0">
-          {leadingContent}
-          <span
-            aria-hidden
-            className="inline-flex h-3 w-px shrink-0 bg-border-2"
-          />
-          {sessionInfoPills}
-        </div>
-      ) : (
-        sessionInfoPills
-      )}
+      <SessionInfoRow
+        segments={segments}
+        strongSurface={strongSurface}
+        leadingContent={leadingContent}
+      />
 
       {/* Repo Selector */}
       {useDropdownPicker ? (
