@@ -106,9 +106,6 @@ vi.mock("./hooks/useAppShellStatusBar", () => ({
 vi.mock("./hooks/useLaunchpadTab", () => ({
   useLaunchpadTab: () => undefined,
 }));
-vi.mock("./hooks/useTerminalTabTeardown", () => ({
-  useTerminalTabTeardown: () => undefined,
-}));
 vi.mock("./hooks/useWorkstationRouteEntry", () => ({
   useWorkstationRouteEntry: () => undefined,
 }));
