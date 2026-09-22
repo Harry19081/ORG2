@@ -1001,8 +1001,8 @@
     "desktopRestored": "이전 설정을 복원했습니다. Claude Desktop을 완전히 종료하고 다시 여세요",
     "advancedDescription": "사용자 지정 API 연결 및 일회성 자격 증명 이전",
     "marketApps": {
-      "isolatedStorage": "호환되는 대화는 자동으로 동기화됩니다. Codex에서 이미 열린 대화의 최신 메시지를 받으려면 Codex를 종료한 후 다시 여세요. 앱과 CLI 설정은 별도로 유지됩니다",
-      "isolatedClaudeStorage": "Claude Desktop과 Claude Code를 종료하면 호환되는 대화가 자동으로 동기화됩니다",
+      "isolatedStorage": "최근 50개의 대화가 자동으로 동기화됩니다. Codex에서 이미 열려 있는 대화는 최신 메시지를 받으려면 Codex를 종료했다가 다시 여세요. 앱과 CLI 설정은 별도로 유지됩니다",
+      "isolatedClaudeStorage": "Claude Desktop과 Claude Code를 종료하면 최근 50개의 대화가 자동으로 동기화됩니다",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "ORG2 Market 패키지를 불러오는 중…",
       "loadFailed": "ORG2 Market 패키지를 불러오지 못했습니다",

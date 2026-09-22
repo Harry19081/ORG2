@@ -69,6 +69,16 @@ pub(super) struct PreparedThread {
 }
 
 impl ThreadRecord {
+    pub(super) fn archived(&self) -> bool {
+        self.values[column_index("archived")] == Value::Integer(1)
+    }
+    /// Native recency in seconds; a non-integer value sorts as oldest.
+    pub(super) fn updated_at(&self) -> i64 {
+        match self.values[column_index("updated_at")] {
+            Value::Integer(value) => value,
+            _ => i64::MIN,
+        }
+    }
     /// Returns the stored permission payload without inventing a conversion.
     /// Older native rows contain SandboxPolicy instead of PermissionProfile;
     /// the routing writer must explicitly convert or reject that known shape.

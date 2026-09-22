@@ -1600,14 +1600,34 @@ fn backfill_claude_desktop_catalog_with(
         official_root,
         &target_dir,
         inherit_model,
+        ClaudeDesktopBackfill::InsertBudget(CLAUDE_DESKTOP_GATEWAY_BACKFILL_LIMIT),
         prepare_transcript,
     )
+}
+
+/// Which official rows a catalog backfill considers.
+#[derive(Clone, Copy)]
+pub(crate) enum ClaudeDesktopBackfill {
+    /// Every row, in catalog order, adding at most this many per pass; later
+    /// passes continue with the rest.
+    InsertBudget(usize),
+    /// Only this many of the most recently active, unarchived rows, whichever
+    /// pass runs. Older conversations never start crossing on their own.
+    Recent(usize),
+}
+
+fn claude_desktop_row_activity(row: &Value) -> i64 {
+    ["lastActivityAt", "createdAt"]
+        .iter()
+        .find_map(|field| row[*field].as_i64())
+        .unwrap_or(i64::MIN)
 }
 
 fn backfill_claude_desktop_catalog_into(
     official_root: &Path,
     target_dir: &Path,
     inherit_model: bool,
+    selection: ClaudeDesktopBackfill,
     mut prepare_transcript: impl FnMut(&Path, &str) -> Result<bool, String>,
 ) -> Result<usize, String> {
     let Some(official_account) = claude_desktop_active_account_id(official_root) else {
@@ -1626,72 +1646,87 @@ fn backfill_claude_desktop_catalog_into(
         }
     }
 
-    let mut added = 0usize;
     let mut project_budget = CLAUDE_DESKTOP_PROJECT_SCAN_LIMIT;
     let mut metadata_budget = CLAUDE_DESKTOP_METADATA_SCAN_LIMIT;
+    let mut rows = Vec::new();
     'projects: for project_dir in
         bounded_directory_paths(&official_root.join(official_account), &mut project_budget)
             .into_iter()
             .filter(|path| path.is_dir())
     {
         for path in bounded_directory_paths(&project_dir, &mut metadata_budget) {
-            if added >= CLAUDE_DESKTOP_GATEWAY_BACKFILL_LIMIT {
-                break 'projects;
+            if let Some(row) = claude_desktop_row(&path) {
+                rows.push(row);
             }
-            let Some(row) = claude_desktop_row(&path) else {
-                continue;
-            };
-            let (Some(native_id), Some(cwd)) = (row["cliSessionId"].as_str(), row["cwd"].as_str())
-            else {
-                continue;
-            };
-            if Uuid::parse_str(native_id).is_err() || listed.contains(native_id) {
-                continue;
-            }
-            // Desktop's UI identity can differ from the CLI transcript UUID.
-            // Its subsequent metadata writes use sessionId, so the filename must agree.
-            let Some(session_id) = row["sessionId"].as_str().filter(|id| {
-                id.strip_prefix("local_")
-                    .is_some_and(|id| Uuid::parse_str(id).is_ok())
-            }) else {
-                continue;
-            };
-            let target = target_dir.join(format!("{session_id}.json"));
-            if target.exists() {
-                continue;
-            }
-            // Commit the resumable content before making a row discoverable.
-            if !prepare_transcript(Path::new(cwd), native_id)? {
-                continue;
-            }
-            let mut inherited = serde_json::Map::new();
-            for field in CLAUDE_DESKTOP_GATEWAY_INHERITED_FIELDS {
-                if *field == "model" && !inherit_model {
-                    continue;
-                }
-                if let Some(value) = row.get(*field).filter(|value| !value.is_null()) {
-                    inherited.insert((*field).to_string(), value.clone());
-                }
-            }
-            inherited.insert("permissionMode".to_string(), json!("default"));
-            inherited.insert("remoteMcpServersConfig".to_string(), json!([]));
-            inherited.insert("alwaysAllowedReasons".to_string(), json!([]));
-            inherited.insert("sessionPermissionUpdates".to_string(), json!([]));
-            inherited.insert("classifierSummaryEnabled".to_string(), json!(true));
-            inherited.insert("orgiiMaterialization".to_string(), json!(true));
-            let _guard = lock_claude_project_index(&target)?;
-            if target.exists() {
-                continue;
-            }
-            if !insert_json(&target, &Value::Object(inherited))? {
-                continue;
-            }
-            listed.insert(native_id.to_string());
-            added += 1;
         }
         if metadata_budget == 0 {
+            break 'projects;
+        }
+    }
+    let insert_budget = match selection {
+        ClaudeDesktopBackfill::InsertBudget(budget) => budget,
+        ClaudeDesktopBackfill::Recent(window) => {
+            // The window covers already listed rows too, so repeated passes
+            // never walk further back into old history.
+            rows.retain(|row| row["isArchived"] != true);
+            rows.sort_by_key(|row| std::cmp::Reverse(claude_desktop_row_activity(row)));
+            rows.truncate(window);
+            window
+        }
+    };
+
+    let mut added = 0usize;
+    for row in rows {
+        if added >= insert_budget {
             break;
         }
+        let (Some(native_id), Some(cwd)) = (row["cliSessionId"].as_str(), row["cwd"].as_str())
+        else {
+            continue;
+        };
+        if Uuid::parse_str(native_id).is_err() || listed.contains(native_id) {
+            continue;
+        }
+        // Desktop's UI identity can differ from the CLI transcript UUID.
+        // Its subsequent metadata writes use sessionId, so the filename must agree.
+        let Some(session_id) = row["sessionId"].as_str().filter(|id| {
+            id.strip_prefix("local_")
+                .is_some_and(|id| Uuid::parse_str(id).is_ok())
+        }) else {
+            continue;
+        };
+        let target = target_dir.join(format!("{session_id}.json"));
+        if target.exists() {
+            continue;
+        }
+        // Commit the resumable content before making a row discoverable.
+        if !prepare_transcript(Path::new(cwd), native_id)? {
+            continue;
+        }
+        let mut inherited = serde_json::Map::new();
+        for field in CLAUDE_DESKTOP_GATEWAY_INHERITED_FIELDS {
+            if *field == "model" && !inherit_model {
+                continue;
+            }
+            if let Some(value) = row.get(*field).filter(|value| !value.is_null()) {
+                inherited.insert((*field).to_string(), value.clone());
+            }
+        }
+        inherited.insert("permissionMode".to_string(), json!("default"));
+        inherited.insert("remoteMcpServersConfig".to_string(), json!([]));
+        inherited.insert("alwaysAllowedReasons".to_string(), json!([]));
+        inherited.insert("sessionPermissionUpdates".to_string(), json!([]));
+        inherited.insert("classifierSummaryEnabled".to_string(), json!(true));
+        inherited.insert("orgiiMaterialization".to_string(), json!(true));
+        let _guard = lock_claude_project_index(&target)?;
+        if target.exists() {
+            continue;
+        }
+        if !insert_json(&target, &Value::Object(inherited))? {
+            continue;
+        }
+        listed.insert(native_id.to_string());
+        added += 1;
     }
     Ok(added)
 }
@@ -5050,6 +5085,66 @@ mod tests {
             .filter(|entry| entry.path().extension().is_some_and(|ext| ext == "json"))
             .count();
         assert_eq!(count, CLAUDE_DESKTOP_GATEWAY_BACKFILL_LIMIT + 1);
+    }
+
+    #[test]
+    fn claude_desktop_recent_backfill_takes_the_newest_window_and_never_walks_further_back() {
+        let sandbox = test_env::sandbox();
+        let _native_history = EnvVarGuard::set("ORGII_NATIVE_TRANSCRIPT_HOME", sandbox.path());
+        let cwd = sandbox.path().join("recent-sessions");
+        fs::create_dir_all(&cwd).expect("workspace");
+        let (official_root, official_project, _, target) =
+            claude_desktop_profiles_fixture(sandbox.path());
+        let window = 5;
+        let mut ids = Vec::new();
+        for index in 0..window + 2 {
+            let native_id = Uuid::new_v4().to_string();
+            write_claude_transcript(&cwd, &native_id);
+            let mut row = json!({"sessionId": format!("local_{native_id}"),
+                "cliSessionId": native_id, "cwd": cwd, "title": "Recent",
+                "lastActivityAt": 1_000 + index as i64});
+            if index == window + 1 {
+                row["isArchived"] = json!(true);
+            }
+            fs::write(
+                official_project.join(format!("local_{native_id}.json")),
+                serde_json::to_vec(&row).expect("encode source row"),
+            )
+            .expect("source row");
+            ids.push(native_id);
+        }
+        let listed = |target: &Path| -> Vec<String> {
+            fs::read_dir(target)
+                .expect("target catalog")
+                .flatten()
+                .filter_map(|entry| claude_desktop_row(&entry.path()))
+                .filter_map(|row| row["cliSessionId"].as_str().map(str::to_owned))
+                .collect()
+        };
+        let added = backfill_claude_desktop_catalog_into(
+            &official_root,
+            &target,
+            false,
+            ClaudeDesktopBackfill::Recent(window),
+            |_, _| Ok(true),
+        )
+        .expect("first pass");
+        assert_eq!(added, window);
+        let first = listed(&target);
+        assert_eq!(first.len(), window);
+        assert!(!first.contains(&ids[0]), "oldest conversation must stay behind");
+        assert!(!first.contains(&ids[window + 1]), "archived newest must not count");
+        assert!((1..=window).all(|index| first.contains(&ids[index])));
+        let again = backfill_claude_desktop_catalog_into(
+            &official_root,
+            &target,
+            false,
+            ClaudeDesktopBackfill::Recent(window),
+            |_, _| Ok(true),
+        )
+        .expect("second pass");
+        assert_eq!(again, 0);
+        assert_eq!(listed(&target).len(), window);
     }
 
     #[test]

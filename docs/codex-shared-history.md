@@ -2,6 +2,8 @@
 
 Market opens Codex with its own `CODEX_HOME` and Electron data directory. This preserves account and routing isolation, but previously gave it a separate conversation catalog. The handoff copies native history between the primary home and the authenticated owner's Market home automatically. It adds no session picker or sync page and does not change either profile's auth or configuration.
 
+Only the user's `RECENT_CONVERSATIONS` (50) most recently updated, unarchived primary conversations start crossing into the package, together with the frozen ancestors their forks need. A conversation that has already crossed keeps syncing both ways even after newer ones push it out of that window, and every conversation the package creates returns to the primary. Older primary history is never copied on its own; continuing it natively makes it recent. The isolated Claude Desktop import uses the same window over Claude Desktop's `lastActivityAt`.
+
 ## Supported boundary
 
 The adapter is audited against Codex Desktop **26.915.31945**, bundled Codex **0.155.0-alpha.9.2**, `state_5.sqlite` and `thread_history_1.sqlite`. Native schema, unknown columns/tables/triggers and file representations fail closed. The current local GUI uses the state-only catalog. Generic CLI file-backed provider-filtered listing and other desktop versions are not claimed supported.

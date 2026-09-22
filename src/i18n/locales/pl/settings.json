@@ -1001,8 +1001,8 @@
     "desktopRestored": "Przywrócono poprzednią konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
     "advancedDescription": "Niestandardowe połączenia API i jednorazowy import poświadczeń",
     "marketApps": {
-      "isolatedStorage": "Zgodne rozmowy synchronizują się automatycznie. Jeśli rozmowa jest już otwarta w Codex, zamknij i ponownie uruchom Codex, aby odebrać najnowsze wiadomości. Ustawienia aplikacji i CLI pozostają oddzielne",
-      "isolatedClaudeStorage": "Zgodne rozmowy synchronizują się po zamknięciu Claude Desktop i Claude Code",
+      "isolatedStorage": "Twoje 50 najnowszych rozmów synchronizuje się automatycznie. Jeśli rozmowa jest już otwarta w Codex, zamknij i ponownie otwórz Codex, aby odebrać najnowsze wiadomości. Ustawienia aplikacji i CLI pozostają osobne",
+      "isolatedClaudeStorage": "Twoje 50 najnowszych rozmów synchronizuje się automatycznie po zamknięciu Claude Desktop i Claude Code",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "Ładowanie pakietów ORG2 Market…",
       "loadFailed": "Nie udało się załadować pakietów ORG2 Market",

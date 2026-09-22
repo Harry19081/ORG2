@@ -751,3 +751,100 @@ fn return_direction_waits_for_an_explicit_primary_model_without_probing_it() {
         .unwrap()
         .starts_with(&appended));
 }
+
+#[test]
+fn only_recent_primary_conversations_start_crossing_but_shared_and_fork_bases_keep_flowing() {
+    let fixture = Fixture::new();
+    let original = fixture.seed();
+    let state = || Connection::open(fixture.primary.join("state_5.sqlite")).unwrap();
+    // THREAD is the oldest conversation; it becomes the base of the newest fork.
+    state()
+        .execute("UPDATE threads SET updated_at=1 WHERE id=?1", [THREAD])
+        .unwrap();
+    let id = |index: usize| format!("01960000-0000-7000-8000-0000000001{index:02}");
+    let mut ids = Vec::new();
+    for index in 0..RECENT_CONVERSATIONS + 2 {
+        let id = id(index);
+        store::fixture_seed(&fixture.primary, &id, &id);
+        let bytes = String::from_utf8(original.clone())
+            .unwrap()
+            .replace(THREAD, &id)
+            .into_bytes();
+        fs::write(fixture.primary.join(format!("sessions/{id}.jsonl")), &bytes).unwrap();
+        Connection::open(fixture.primary.join("thread_history_1.sqlite")).unwrap().execute("UPDATE thread_history_projection_state SET next_rollout_byte_offset=?1 WHERE thread_id=?2", rusqlite::params![bytes.len() as i64, id]).unwrap();
+        state()
+            .execute(
+                "UPDATE threads SET updated_at=?1 WHERE id=?2",
+                rusqlite::params![100 + index as i64, id],
+            )
+            .unwrap();
+        ids.push(id);
+    }
+    // The newest conversation is archived and must not count as recent.
+    state()
+        .execute(
+            "UPDATE threads SET archived=1 WHERE id=?1",
+            [ids.last().unwrap()],
+        )
+        .unwrap();
+    // The second newest is a fork of the oldest conversation.
+    let fork = &ids[ids.len() - 2];
+    let child = [
+        json!({"ordinal":9,"type":"session_meta","payload":{"id":fork,"cwd":"/test","model_provider":"openai","history_mode":"paginated","history_base":{"thread_id":THREAD,"end_byte_offset":original.len(),"end_ordinal_exclusive":9}}}),
+        json!({"ordinal":10,"type":"event_msg","payload":{"type":"task_complete","turn_id":"child"}}),
+    ];
+    let mut child_bytes = Vec::new();
+    for line in child {
+        child_bytes.extend(serde_json::to_vec(&line).unwrap());
+        child_bytes.push(b'\n');
+    }
+    fs::write(
+        fixture.primary.join(format!("sessions/{fork}.jsonl")),
+        &child_bytes,
+    )
+    .unwrap();
+    Connection::open(fixture.primary.join("thread_history_1.sqlite")).unwrap().execute("UPDATE thread_history_projection_state SET next_rollout_byte_offset=?1,next_rollout_ordinal=11 WHERE thread_id=?2", rusqlite::params![child_bytes.len() as i64, fork]).unwrap();
+
+    let mut copied = 0;
+    loop {
+        let report = fixture.run(|| Ok(())).unwrap();
+        assert_eq!(report.conflicts, 0);
+        copied += report.copied;
+        if !report.more {
+            break;
+        }
+    }
+    let package: Vec<String> = Connection::open(fixture.package.join("state_5.sqlite"))
+        .unwrap()
+        .prepare("SELECT id FROM threads ORDER BY id")
+        .unwrap()
+        .query_map([], |row| row.get(0))
+        .unwrap()
+        .collect::<Result<_, _>>()
+        .unwrap();
+    // 50 recent ones (indices 1..=50, the fork among them) plus the fork base.
+    assert_eq!(copied, RECENT_CONVERSATIONS + 1);
+    assert_eq!(package.len(), RECENT_CONVERSATIONS + 1);
+    assert!(package.contains(&THREAD.to_owned()));
+    assert!(package.contains(fork));
+    assert!(!package.contains(&ids[0]));
+    assert!(!package.contains(ids.last().unwrap()));
+    // An already shared conversation keeps syncing even after newer ones push it
+    // out of the window, while an unshared old one still does not start.
+    state()
+        .execute(
+            "UPDATE threads SET title='renamed base' WHERE id=?1",
+            [THREAD],
+        )
+        .unwrap();
+    let follow_up = fixture.run(|| Ok(())).unwrap();
+    assert_eq!((follow_up.copied, follow_up.conflicts), (1, 0));
+    assert!(!Connection::open(fixture.package.join("state_5.sqlite"))
+        .unwrap()
+        .query_row(
+            "SELECT EXISTS(SELECT 1 FROM threads WHERE id=?1)",
+            [&ids[0]],
+            |row| row.get::<_, bool>(0),
+        )
+        .unwrap());
+}

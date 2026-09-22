@@ -6,6 +6,12 @@ use std::path::{Path, PathBuf};
 #[cfg(unix)]
 pub mod codex_history;
 
+/// How many of a user's most recently active native conversations start
+/// crossing into a Market App profile automatically. Conversations already
+/// shared, and conversations the profile itself created, keep syncing both
+/// ways regardless of this window.
+pub const RECENT_CONVERSATIONS: usize = 50;
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct NativeAppProfile {

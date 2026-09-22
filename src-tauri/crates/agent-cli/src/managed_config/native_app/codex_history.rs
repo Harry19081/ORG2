@@ -21,6 +21,7 @@ use store::ThreadRecord;
 const MAX_LEDGER_BYTES: u64 = 16 * 1024 * 1024;
 const MAX_ANCESTORS: usize = 64;
 const BATCH: usize = 16;
+use super::RECENT_CONVERSATIONS;
 
 #[derive(Default, Debug)]
 pub struct Report {
@@ -422,6 +423,7 @@ fn reconcile_at_with_models(
             }
         }
     }
+    let explicit_selection = ids.is_some();
     let left = store::list_threads(primary, ids)?
         .into_iter()
         .map(|v| (v.id.clone(), v))
@@ -437,6 +439,11 @@ fn reconcile_at_with_models(
         .collect::<BTreeSet<_>>();
     let changed_files =
         changed_files.map(|ids| ids.iter().map(String::as_str).collect::<BTreeSet<_>>());
+    let recent = if explicit_selection {
+        None
+    } else {
+        Some(recent_conversations(primary, &left))
+    };
     // The primary profile is never probed with a native process. Until it
     // states a model, conversations returning to it wait for that route.
     let primary_route_pending =
@@ -475,12 +482,19 @@ fn reconcile_at_with_models(
         }
         let l = left.get(&id).map(|v| version(primary, v)).transpose();
         let r = right.get(&id).map(|v| version(package, v)).transpose();
-        let (Ok(l), Ok(r)) = (l, r) else {
-            report.conflicts += 1;
-            continue;
+        let (l, r) = match (l, r) {
+            (Ok(l), Ok(r)) => (l, r),
+            (Err(error), _) | (_, Err(error)) => {
+                report.conflicts += 1;
+                attention(&id, "Codex history handoff needs attention", &error);
+                continue;
+            }
         };
         let direction = match (ledger.pairs.get(&id), &l, &r) {
-            (None, Some(_), None) => Some(true),
+            (None, Some(_), None) => recent
+                .as_ref()
+                .is_none_or(|recent| recent.contains(&id))
+                .then_some(true),
             (None, None, Some(_)) => Some(false),
             (Some(base), Some(l), Some(r)) if l == &base.primary && r == &base.package => None,
             (Some(base), Some(l), Some(r)) if l != &base.primary && r == &base.package => {
@@ -560,6 +574,28 @@ fn reconcile_at_with_models(
     // its native writer-lock event, never by a periodic retry.
     report.more |= dependencies > 0 && report.copied > 0;
     Ok(report)
+}
+
+/// The newest unarchived primary conversations plus the frozen ancestors their
+/// forks need; a fork outside this window could otherwise never publish.
+fn recent_conversations(primary: &Path, rows: &BTreeMap<String, ThreadRecord>) -> BTreeSet<String> {
+    let mut ordered = rows
+        .values()
+        .filter(|row| !row.archived())
+        .collect::<Vec<_>>();
+    ordered.sort_by(|a, b| {
+        b.updated_at()
+            .cmp(&a.updated_at())
+            .then_with(|| b.id.cmp(&a.id))
+    });
+    let mut selected = BTreeSet::new();
+    for row in ordered.into_iter().take(RECENT_CONVERSATIONS) {
+        selected.insert(row.id.clone());
+        if let Ok(segments) = lineage(primary, row) {
+            selected.extend(segments.into_iter().map(|segment| segment.stable_id));
+        }
+    }
+    selected
 }
 
 #[allow(clippy::too_many_arguments)]

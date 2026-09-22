@@ -1001,8 +1001,8 @@
     "desktopRestored": "Önceki yapılandırma geri yüklendi — Claude Desktop’ı tamamen kapatıp yeniden açın",
     "advancedDescription": "Özel API bağlantıları ve tek seferlik kimlik bilgisi taşıma",
     "marketApps": {
-      "isolatedStorage": "Uyumlu konuşmalar otomatik olarak eşitlenir. Bir konuşma Codex’te zaten açıksa son mesajları almak için Codex’ten çıkıp yeniden açın. Uygulama ve CLI ayarları ayrı kalır",
-      "isolatedClaudeStorage": "Uyumlu konuşmalar Claude Desktop ve Claude Code kapatıldıktan sonra otomatik eşitlenir",
+      "isolatedStorage": "En son 50 sohbetiniz otomatik olarak eşitlenir. Bir sohbet Codex'te zaten açıksa, en son mesajları almak için Codex'i kapatıp yeniden açın. Uygulama ve CLI ayarları ayrı kalır",
+      "isolatedClaudeStorage": "Claude Desktop ve Claude Code kapatıldıktan sonra en son 50 sohbetiniz otomatik olarak eşitlenir",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "ORG2 Market paketleri yükleniyor…",
       "loadFailed": "ORG2 Market paketleri yüklenemedi",
