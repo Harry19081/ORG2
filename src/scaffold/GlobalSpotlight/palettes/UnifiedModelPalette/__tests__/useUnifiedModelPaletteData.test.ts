@@ -6,7 +6,13 @@ import { expect, it, vi } from "vitest";
 import { useUnifiedModelPaletteData } from "../useUnifiedModelPaletteData";
 
 const mocks = vi.hoisted(() => ({ market: vi.fn(), accounts: vi.fn() }));
-vi.mock("jotai", () => ({ useAtomValue: () => [], useSetAtom: () => vi.fn() }));
+// Only the hooks are stubbed: the module still has to hand out real `atom`
+// factories for the store modules this hook imports.
+vi.mock("jotai", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("jotai")>()),
+  useAtomValue: () => [],
+  useSetAtom: () => vi.fn(),
+}));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));

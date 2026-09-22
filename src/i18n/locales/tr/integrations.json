@@ -1663,10 +1663,10 @@
     "shareOrgPlaceholder": "Organizasyon"
   },
   "marketConnection": {
-    "loadingPurchases": "Loading official packages…",
-    "purchasesFailed": "Could not load official packages. Try again.",
-    "failed": "Market bağlantısı kurulamadı. Lütfen tekrar deneyin.",
-    "title": "Official packages",
+    "loadingPurchases": "ORG2 Market paketleri yükleniyor…",
+    "purchasesFailed": "ORG2 Market paketleri yüklenemedi. Tekrar deneyin.",
+    "failed": "ORG2 Market bağlantısı kurulamadı. Lütfen tekrar deneyin.",
+    "title": "ORG2 Market",
     "launchFailed": "Could not enable the selected package. Refresh the catalog and check wallet funds and usage authorization."
   }
 }

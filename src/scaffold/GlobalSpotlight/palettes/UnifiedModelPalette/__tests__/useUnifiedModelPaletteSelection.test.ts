@@ -68,6 +68,8 @@ async function mountPicker(closeOnSourceSelect?: boolean) {
       accountLookupSize: 0,
       accounts: [],
       marketSources: [source],
+      listingAccounts: [],
+      listingMarketSources: [source],
       advancedConfig: {},
       onConfigChange,
       recordRecent,

@@ -1663,10 +1663,10 @@
     "shareOrgPlaceholder": "조직"
   },
   "marketConnection": {
-    "loadingPurchases": "Loading official packages…",
-    "purchasesFailed": "Could not load official packages. Try again.",
-    "failed": "Market에 연결할 수 없습니다. 다시 시도해 주세요.",
-    "title": "Official packages",
+    "loadingPurchases": "ORG2 Market 패키지를 불러오는 중…",
+    "purchasesFailed": "ORG2 Market 패키지를 불러오지 못했습니다. 다시 시도해 주세요.",
+    "failed": "ORG2 Market에 연결할 수 없습니다. 다시 시도해 주세요.",
+    "title": "ORG2 Market",
     "launchFailed": "Could not enable the selected package. Refresh the catalog and check wallet funds and usage authorization."
   }
 }

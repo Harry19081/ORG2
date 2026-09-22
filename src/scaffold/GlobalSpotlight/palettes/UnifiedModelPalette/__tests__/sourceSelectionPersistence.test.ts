@@ -30,6 +30,8 @@ describe("useUnifiedModelPaletteSelection source dismissal", () => {
       accountLookupSize: 0,
       accounts: [],
       marketSources: [],
+      listingAccounts: [],
+      listingMarketSources: [],
       advancedConfig: { model: "" } as AdvancedConfig,
       onConfigChange,
       onClose,

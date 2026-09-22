@@ -1663,10 +1663,10 @@
     "shareOrgPlaceholder": "Organizacja"
   },
   "marketConnection": {
-    "loadingPurchases": "Loading official packages…",
-    "purchasesFailed": "Could not load official packages. Try again.",
-    "failed": "Nie udało się połączyć z Market. Spróbuj ponownie.",
-    "title": "Official packages",
+    "loadingPurchases": "Ładowanie pakietów ORG2 Market…",
+    "purchasesFailed": "Nie udało się załadować pakietów ORG2 Market. Spróbuj ponownie.",
+    "failed": "Nie udało się połączyć z ORG2 Market. Spróbuj ponownie.",
+    "title": "ORG2 Market",
     "launchFailed": "Could not enable the selected package. Refresh the catalog and check wallet funds and usage authorization."
   }
 }

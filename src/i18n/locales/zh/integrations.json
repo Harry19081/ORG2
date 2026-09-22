@@ -1663,10 +1663,10 @@
     "shareOrgPlaceholder": "组织"
   },
   "marketConnection": {
-    "loadingPurchases": "正在读取官方套餐…",
-    "purchasesFailed": "无法读取官方套餐，请重试。",
-    "failed": "无法连接到 Market，请重试。",
-    "title": "官方套餐",
+    "loadingPurchases": "正在读取 ORG2 Market 套餐…",
+    "purchasesFailed": "无法读取 ORG2 Market 套餐，请重试。",
+    "failed": "无法连接到 ORG2 Market，请重试。",
+    "title": "ORG2 Market",
     "launchFailed": "无法启用所选套餐。请刷新套餐，检查钱包余额和用量授权后重试。"
   }
 }

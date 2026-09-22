@@ -20,6 +20,7 @@ import {
 } from "@src/hooks/models/useModelAccountLookup";
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
 import { separateEffortPillAtom } from "@src/store/session/separateEffortPillAtom";
+import type { ModelSourceScope } from "@src/store/ui/spotlightModelSourceScopeAtom";
 import { carryModelEffort } from "@src/util/carryModelEffort";
 import { resolveDefaultVariant } from "@src/util/defaultModelVariant";
 import {
@@ -46,6 +47,15 @@ interface UseUnifiedModelPaletteSelectionParams {
   accountLookupSize: number;
   accounts: KeyVaultAccount[];
   marketSources: NonNullable<SourceOption["marketSource"]>[];
+  /**
+   * The scoped subset the Step 2 column may offer. The unscoped `accounts` /
+   * `marketSources` above stay in use for the apply paths, so a Pinned or
+   * Recent row still launches while the browse columns are narrowed.
+   */
+  listingAccounts: KeyVaultAccount[];
+  listingMarketSources: NonNullable<SourceOption["marketSource"]>[];
+  /** Flipping the source scope rebuilds both columns, so the cursor resets. */
+  sourceScope?: ModelSourceScope;
   advancedConfig: AdvancedConfig;
   onConfigChange: (config: AdvancedConfig) => void;
   onClose: () => void;
@@ -60,6 +70,9 @@ export function useUnifiedModelPaletteSelection({
   accountLookupSize,
   accounts,
   marketSources,
+  listingAccounts,
+  listingMarketSources,
+  sourceScope,
   advancedConfig,
   onConfigChange,
   onClose,
@@ -97,11 +110,16 @@ export function useUnifiedModelPaletteSelection({
       selectedGroupModelIds.length > 0
         ? selectedGroupModelIds
         : [selectedModelId];
-    return buildSourceOptions(modelIds, accounts, isCliAgent, marketSources);
+    return buildSourceOptions(
+      modelIds,
+      listingAccounts,
+      isCliAgent,
+      listingMarketSources
+    );
   }, [
-    accounts,
+    listingAccounts,
     isCliAgent,
-    marketSources,
+    listingMarketSources,
     selectedModelId,
     selectedGroupModelIds,
   ]);
@@ -128,7 +146,7 @@ export function useUnifiedModelPaletteSelection({
       }
     });
     return () => cancelAnimationFrame(frameId);
-  }, [isOpen, isCliAgent, keyFirst, accountLookupSize]);
+  }, [isOpen, isCliAgent, keyFirst, sourceScope, accountLookupSize]);
 
   const applySourceSelection = useCallback(
     (modelId: string, _modelLabel: string, source: SourceOption) => {

@@ -1543,7 +1543,16 @@
       "chooseModelHint": "Use the keyboard to navigate, or click a model with the mouse",
       "chooseKeyHint": "Use the keyboard to navigate, or click a key with the mouse",
       "noModelsForKey": "No models enabled for this key",
-      "selectKey": "Select a key"
+      "selectKey": "Select a key",
+      "sourceScope": {
+        "label": "Model sources",
+        "keys": "My keys"
+      },
+      "marketEmpty": {
+        "title": "No ORG2 Market packages yet",
+        "subtitle": "Buy one at {{host}} to run models without adding your own API key.",
+        "action": "Open ORG2 Market"
+      }
     },
     "modelProperties": {
       "effort": "Effort",

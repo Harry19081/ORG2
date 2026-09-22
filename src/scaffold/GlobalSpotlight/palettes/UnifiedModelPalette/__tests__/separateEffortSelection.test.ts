@@ -45,6 +45,8 @@ async function mountPicker(currentModel: string) {
       accountLookupSize: MODELS.length,
       accounts: [account],
       marketSources: [],
+      listingAccounts: [account],
+      listingMarketSources: [],
       advancedConfig: { model: currentModel, selectedAccountId: "key" },
       onConfigChange,
       recordRecent: vi.fn(),

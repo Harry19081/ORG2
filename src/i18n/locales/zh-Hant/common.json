@@ -1712,7 +1712,16 @@
       "chooseModelHint": "使用鍵盤導覽，或用滑鼠點擊模型",
       "chooseKeyHint": "使用鍵盤導覽，或用滑鼠點擊金鑰",
       "noModelsForKey": "此金鑰未啟用任何模型",
-      "selectKey": "選擇密鑰"
+      "selectKey": "選擇密鑰",
+      "sourceScope": {
+        "label": "模型來源",
+        "keys": "我的金鑰"
+      },
+      "marketEmpty": {
+        "title": "還沒有 ORG2 Market 套餐",
+        "subtitle": "在 {{host}} 購買套餐，無需自備 API 金鑰即可使用模型。",
+        "action": "開啟 ORG2 Market"
+      }
     },
     "modelProperties": {
       "effort": "Effort",
