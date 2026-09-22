@@ -58,9 +58,6 @@ const RuntimeScanningPanel = lazy(() => import("./RuntimeScanningPanel"));
 const SessionProvenanceHooksPanel = lazy(
   () => import("./SessionProvenanceHooksPanel")
 );
-const WorkspaceDashboardPanelView = lazy(
-  () => import("@src/engines/ChatPanel/panels/WorkspaceDashboardPanelView")
-);
 
 /**
  * Sections that lay themselves out inside the full pane height instead of
@@ -68,7 +65,7 @@ const WorkspaceDashboardPanelView = lazy(
  * scroll affordance, which is right for long content but leaves a
  * placeholder-only section unable to fill — and centred in the top half.
  */
-const SELF_MANAGED = new Set<RuntimeSection>(["assets", "profile"]);
+const SELF_MANAGED = new Set<RuntimeSection>(["profile"]);
 
 interface RuntimeSectionTabsProps {
   activeView: RuntimeSection;
@@ -103,11 +100,6 @@ const RuntimeSectionTabs: React.FC<RuntimeSectionTabsProps> = memo(
           key: "hooks",
           label: t("views.hooks"),
           dataTestId: "data-source-view-hooks",
-        },
-        {
-          key: "assets",
-          label: t("views.assets"),
-          dataTestId: "data-source-view-assets",
         },
       ];
     }, [t]);
@@ -167,8 +159,6 @@ function RuntimeSectionContent({
       return <RuntimeScanningPanel />;
     case "hooks":
       return <SessionProvenanceHooksPanel />;
-    case "assets":
-      return <WorkspaceDashboardPanelView />;
     case "today":
       return <TeamRuntimePanel orgId={orgId ?? undefined} view="today" />;
     case "members":

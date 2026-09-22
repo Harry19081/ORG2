@@ -150,19 +150,6 @@ vi.mock("./SessionProvenanceHooksPanel", async () => {
   };
 });
 
-vi.mock(
-  "@src/engines/ChatPanel/panels/WorkspaceDashboardPanelView",
-  async () => {
-    const React = await vi.importActual<typeof import("react")>("react");
-    return {
-      default: () =>
-        React.createElement("div", {
-          "data-testid": "runtime-section-assets",
-        }),
-    };
-  }
-);
-
 const reactActEnvironment = globalThis as typeof globalThis & {
   IS_REACT_ACT_ENVIRONMENT?: boolean;
 };
@@ -270,12 +257,6 @@ describe("RuntimeDataSourcePanel", () => {
     expect(
       container.querySelector('[data-testid="runtime-section-hooks"]')
     ).not.toBeNull();
-
-    await selectSection("data-source-view-assets");
-    expect(lifecycle.hooksUnmounted).toHaveBeenCalledTimes(1);
-    expect(
-      container.querySelector('[data-testid="runtime-section-assets"]')
-    ).not.toBeNull();
     expect(
       container.querySelectorAll('[data-testid^="runtime-section-"]')
     ).toHaveLength(1);
@@ -287,14 +268,12 @@ describe("RuntimeDataSourcePanel", () => {
     const profile = container.innerHTML.indexOf("data-source-view-profile");
     const scanning = container.innerHTML.indexOf("data-source-view-scanning");
     const hooks = container.innerHTML.indexOf("data-source-view-hooks");
-    const assets = container.innerHTML.indexOf("data-source-view-assets");
 
     expect(picker).toBeGreaterThanOrEqual(0);
     expect(usage).toBeGreaterThan(picker);
     expect(profile).toBeGreaterThan(usage);
     expect(scanning).toBeGreaterThan(profile);
     expect(hooks).toBeGreaterThan(scanning);
-    expect(assets).toBeGreaterThan(hooks);
     expect(
       container.querySelector('[data-testid="data-source-scroll-region"]')
         ?.className
