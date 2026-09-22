@@ -368,11 +368,9 @@
     "exportAndSync": "내보내기 및 동기화",
     "export": "내보내기",
     "openIn": "다음에서 열기",
-    "openInTargets": {
-      "newTab": "새 탭",
-      "newWindow": "새 창",
-      "myStation": "My Station"
-    },
+    "openTargetNewTab": "새 탭",
+    "openTargetNewWindow": "새 창",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "새 탭에서 열기",
     "confirmDelete": "삭제 확인",
     "confirmDeleteTitle": "\"{{name}}\" 삭제하시겠습니까?",

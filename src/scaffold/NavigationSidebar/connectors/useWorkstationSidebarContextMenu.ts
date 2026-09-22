@@ -117,7 +117,7 @@ export function useWorkstationSidebarContextMenu({
             icon: CursorInWindowIcon,
             items: [
               {
-                text: tCommon("actions.openInTargets.newTab"),
+                text: tCommon("actions.openTargetNewTab"),
                 icon: AppWindowMacIcon,
                 action: () => handleOpenDraftInNewTab(item),
               },
@@ -143,17 +143,17 @@ export function useWorkstationSidebarContextMenu({
       if (session?.parentSessionId || item.id.includes(":subagent:")) return [];
 
       const openInNewTabItem: SidebarMenuItem = {
-        text: tCommon("actions.openInTargets.newTab"),
+        text: tCommon("actions.openTargetNewTab"),
         icon: AppWindowMacIcon,
         action: () => handleOpenInNewTab(item.id),
       };
       const openInNewWindowItem: SidebarMenuItem = {
-        text: tCommon("actions.openInTargets.newWindow"),
+        text: tCommon("actions.openTargetNewWindow"),
         icon: ChangeScreenModeIcon,
         action: () => handleOpenInNewWindow(item.id),
       };
       const openInMyStationItem: SidebarMenuItem = {
-        text: tCommon("actions.openInTargets.myStation"),
+        text: tCommon("actions.openTargetMyStation"),
         icon: ArrowBigRightDashIcon,
         action: () => handleOpenInMyStation(item.id),
       };

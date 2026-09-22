@@ -369,11 +369,9 @@
     "exportAndSync": "Exportar e sincronizar",
     "export": "Exportar",
     "openIn": "Abrir em",
-    "openInTargets": {
-      "newTab": "Nova aba",
-      "newWindow": "Nova janela",
-      "myStation": "My Station"
-    },
+    "openTargetNewTab": "Nova aba",
+    "openTargetNewWindow": "Nova janela",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "Abrir em nova aba",
     "confirmDelete": "Confirmar exclusão",
     "confirmDeleteTitle": "Excluir \"{{name}}\"?",

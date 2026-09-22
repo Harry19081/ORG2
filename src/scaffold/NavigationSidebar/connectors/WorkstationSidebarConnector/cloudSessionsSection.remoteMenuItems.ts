@@ -74,9 +74,9 @@ export function useCloudRemoteSessionMenuItems({
         labels: {
           openIn: tCommon("actions.openIn"),
           fork: t("cloud.orgPanel.fork"),
-          openInNewTab: tCommon("actions.openInTargets.newTab"),
-          openInNewWindow: tCommon("actions.openInTargets.newWindow"),
-          openInMyStation: tCommon("actions.openInTargets.myStation"),
+          openInNewTab: tCommon("actions.openTargetNewTab"),
+          openInNewWindow: tCommon("actions.openTargetNewWindow"),
+          openInMyStation: tCommon("actions.openTargetMyStation"),
           copyUrl: t("cloud.sidebar.copyUrl"),
           togglePin: isPinned
             ? tCommon("sessions:chat.unpinSession")

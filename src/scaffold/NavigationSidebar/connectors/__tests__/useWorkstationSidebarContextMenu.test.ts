@@ -140,7 +140,7 @@ describe("useWorkstationSidebarContextMenu", () => {
           (menuItem) =>
             "text" in menuItem &&
             menuItem.text ===
-              testTranslate("common:actions.openInTargets.newWindow")
+              testTranslate("common:actions.openTargetNewWindow")
         );
 
         expect(detachedWindowItem).toBeDefined();

@@ -368,11 +368,9 @@
     "exportAndSync": "Exporter et synchroniser",
     "export": "Exporter",
     "openIn": "Ouvrir dans",
-    "openInTargets": {
-      "newTab": "Nouvel onglet",
-      "newWindow": "Nouvelle fenêtre",
-      "myStation": "My Station"
-    },
+    "openTargetNewTab": "Nouvel onglet",
+    "openTargetNewWindow": "Nouvelle fenêtre",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "Ouvrir dans un nouvel onglet",
     "confirmDelete": "Confirmer la suppression",
     "confirmDeleteTitle": "Supprimer « {{name}} » ?",

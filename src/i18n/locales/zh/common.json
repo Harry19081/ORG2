@@ -192,11 +192,9 @@
     "exportAndSync": "导出与同步",
     "export": "导出",
     "openIn": "打开位置",
-    "openInTargets": {
-      "newTab": "新标签页",
-      "newWindow": "新窗口",
-      "myStation": "My Station"
-    },
+    "openTargetNewTab": "新标签页",
+    "openTargetNewWindow": "新窗口",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "在新标签页中打开",
     "openOnGitHub": "在 GitHub 中打开",
     "createPullRequest": "创建 Pull Request",

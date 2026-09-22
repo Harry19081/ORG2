@@ -193,11 +193,9 @@
     "exportAndSync": "Export & sync",
     "export": "Export",
     "openIn": "Open in",
-    "openInTargets": {
-      "newTab": "New Tab",
-      "newWindow": "New Window",
-      "myStation": "My Station"
-    },
+    "openTargetNewTab": "New Tab",
+    "openTargetNewWindow": "New Window",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "Open in New Tab",
     "openOnGitHub": "Open on GitHub",
     "createPullRequest": "Create pull request",

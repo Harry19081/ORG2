@@ -193,11 +193,9 @@
     "exportAndSync": "Ekspor & sinkronisasi",
     "export": "Ekspor",
     "openIn": "Buka di",
-    "openInTargets": {
-      "newTab": "Tab Baru",
-      "newWindow": "Jendela Baru",
-      "myStation": "My Station"
-    },
+    "openTargetNewTab": "Tab Baru",
+    "openTargetNewWindow": "Jendela Baru",
+    "openTargetMyStation": "My Station",
     "openInNewTab": "Buka di Tab Baru",
     "openOnGitHub": "Buka di GitHub",
     "createPullRequest": "Buat pull request",
