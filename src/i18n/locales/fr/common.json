@@ -1,28 +1,4 @@
 {
-  "gitLabels": {
-    "contains": "Contient des fichiers : {{status}}",
-    "staged": "{{status}} (indexé)",
-    "additions": "Lignes ajoutées",
-    "deletions": "Lignes supprimées",
-    "M": "Modifié",
-    "U": "Non suivi",
-    "A": "Ajouté",
-    "D": "Supprimé",
-    "R": "Renommé",
-    "C": "Conflit",
-    "I": "Ignoré",
-    "?": "État inconnu"
-  },
-  "findScope": {
-    "session": "Rechercher dans la session",
-    "file": "Rechercher dans le fichier",
-    "named": "Rechercher dans {{name}}"
-  },
-  "sidebarSettings": {
-    "title": "Barre latérale",
-    "showSidebar": "Afficher la barre latérale",
-    "colorSourceControlFiles": "Couleurs de diff sur les fichiers"
-  },
   "teamInbox": {
     "listLabel": "Liste de la boîte de réception d’équipe",
     "itemsLabel": "Éléments de la boîte de réception d’équipe",
@@ -319,9 +295,6 @@
     "confirm": "Confirmer",
     "apply": "Appliquer",
     "reset": "Réinitialiser",
-    "resetFilters": "Réinitialiser les filtres",
-    "cardView": "Vue en cartes",
-    "listView": "Vue en liste",
     "search": "Rechercher",
     "add": "Ajouter",
     "remove": "Retirer",
@@ -365,9 +338,6 @@
     "closeOthers": "Fermer les autres",
     "closeSaved": "Fermer les enregistrés",
     "openInNewWindow": "Ouvrir dans une nouvelle fenêtre",
-    "exportAndSync": "Exporter et synchroniser",
-    "export": "Exporter",
-    "openIn": "Ouvrir dans",
     "openInNewTab": "Ouvrir dans un nouvel onglet",
     "confirmDelete": "Confirmer la suppression",
     "confirmDeleteTitle": "Supprimer « {{name}} » ?",
@@ -413,6 +383,12 @@
     "createPullRequest": "Créer une pull request",
     "expandView": "Agrandir la vue",
     "restoreSplitView": "Restaurer la vue partagée",
+    "resetFilters": "Réinitialiser les filtres",
+    "cardView": "Vue en cartes",
+    "listView": "Vue en liste",
+    "exportAndSync": "Exporter et synchroniser",
+    "export": "Exporter",
+    "openIn": "Ouvrir dans",
     "overwrite": "Écraser"
   },
   "status": {
@@ -470,7 +446,6 @@
     "diagnosticsInitializing": "Démarrage des sources de diagnostic...",
     "diagnosticSourceIssues": "Problèmes de sources de diagnostic",
     "copied": "Copié",
-    "copiedFilePath": "Chemin du fichier copié",
     "copyFailed": "Échec de la copie",
     "searching": "Recherche...",
     "noResults": "Aucun résultat",
@@ -478,7 +453,8 @@
     "scanningFileExtensions": "Analyse des extensions de fichier…",
     "testing": "Test en cours...",
     "empty": "Vide",
-    "launching": "Lancement..."
+    "launching": "Lancement...",
+    "copiedFilePath": "Chemin du fichier copié"
   },
   "pagination": {
     "totalItems": "{{count}} éléments",
@@ -496,7 +472,6 @@
   },
   "optional": "facultatif",
   "common": {
-    "display": "Paramètres de l’interface",
     "on": "Activé",
     "off": "Désactivé",
     "default": "Par défaut",
@@ -530,12 +505,10 @@
     "error": "Erreur",
     "pid": "PID",
     "shell": "Shell",
-    "source": "Source"
+    "source": "Source",
+    "display": "Paramètres de l’interface"
   },
   "labels": {
-    "stashesCount": "{{count}} stashes",
-    "stashesCount_one": "{{count}} stash",
-    "stashesCount_other": "{{count}} stashes",
     "accounts": "Comptes",
     "enabled": "Activé",
     "disabled": "Désactivé",
@@ -580,9 +553,6 @@
     "pullRequest": "Pull request",
     "operationLog": "Journal des opérations",
     "gitDashboard": "Tableau de bord",
-    "changedFilesCount": "{{fileCount}} fichiers modifiés",
-    "changedFilesCount_one": "{{fileCount}} fichier modifié",
-    "changedFilesCount_other": "{{fileCount}} fichiers modifiés",
     "colorTokens": "Tokens de couleur",
     "terminalInfo": "Infos du terminal",
     "fileCount_one": "{{count}} fichier",
@@ -674,7 +644,13 @@
     "issueComments_other": "{{count}} commentaires",
     "tokens": "Tokens",
     "actions": "Actions",
-    "all": "Tous"
+    "all": "Tous",
+    "stashesCount": "{{count}} stashes",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stashes",
+    "changedFilesCount": "{{fileCount}} fichiers modifiés",
+    "changedFilesCount_one": "{{fileCount}} fichier modifié",
+    "changedFilesCount_other": "{{fileCount}} fichiers modifiés"
   },
   "searchModes": {},
   "tabs": {
@@ -710,7 +686,6 @@
     "reconnectCodex": "Reconnecter",
     "technicalDetails": "Détails techniques",
     "failedToCopy": "Échec de la copie",
-    "failedToCopyFilePath": "Échec de la copie du chemin du fichier",
     "api": {
       "messages": {
         "signIn": "Veuillez vous reconnecter."
@@ -720,7 +695,8 @@
     "unknownError": "Une erreur inconnue s'est produite",
     "componentLoadingFailed": "Échec du chargement du composant",
     "noLocalPath": "Aucun chemin local disponible",
-    "openInFinderFailed": "Échec de l’ouverture dans le Finder"
+    "openInFinderFailed": "Échec de l’ouverture dans le Finder",
+    "failedToCopyFilePath": "Échec de la copie du chemin du fichier"
   },
   "confirmation": {
     "delete": "Êtes-vous sûr de vouloir supprimer ?",
@@ -771,9 +747,7 @@
     "previous": "Précédent",
     "next": "Suivant",
     "previousMatch": "Correspondance précédente (Shift+Enter)",
-    "previousMatchLabel": "Correspondance précédente",
     "nextMatch": "Correspondance suivante (Enter)",
-    "nextMatchLabel": "Correspondance suivante",
     "clearSearch": "Effacer la recherche",
     "openFile": "Ouvrir le fichier",
     "openNativeDevTools": "Ouvrir les DevTools",
@@ -798,20 +772,13 @@
     "goForward": "Avancer",
     "goToToday": "Aller à aujourd'hui",
     "matchCase": "Respecter la casse (Alt+C)",
-    "matchCaseLabel": "Respecter la casse",
     "matchWholeWord": "Mot entier (Alt+W)",
-    "matchWholeWordLabel": "Mot entier",
     "useRegex": "Utiliser une expression régulière (Alt+R)",
-    "useRegexLabel": "Utiliser une expression régulière",
     "searchInOpenEditors": "Rechercher uniquement dans les éditeurs ouverts",
     "replace": "Remplacer (Ctrl+Shift+1)",
-    "replaceLabel": "Remplacer",
     "replaceAll": "Tout remplacer (Ctrl+Alt+Enter)",
-    "replaceAllLabel": "Tout remplacer",
     "moreActions": "Plus d'actions...",
     "startVoiceInput": "Démarrer la saisie vocale",
-    "expandInput": "Agrandir la zone de saisie",
-    "collapseInput": "Réduire la zone de saisie",
     "cancelRecording": "Annuler l'enregistrement",
     "stopAndTranscribe": "Arrêter et transcrire",
     "htmlPreview": "Aperçu HTML",
@@ -831,7 +798,16 @@
     "scrollToItem": "Aller à {{name}}",
     "containsStatusFiles": "Contient des fichiers {{status}}",
     "showFileList": "Afficher la liste des fichiers",
-    "copyValueRightClickForPath": "Cliquez pour copier la valeur, clic droit pour copier le chemin"
+    "copyValueRightClickForPath": "Cliquez pour copier la valeur, clic droit pour copier le chemin",
+    "previousMatchLabel": "Correspondance précédente",
+    "nextMatchLabel": "Correspondance suivante",
+    "matchCaseLabel": "Respecter la casse",
+    "matchWholeWordLabel": "Mot entier",
+    "useRegexLabel": "Utiliser une expression régulière",
+    "replaceLabel": "Remplacer",
+    "replaceAllLabel": "Tout remplacer",
+    "expandInput": "Agrandir la zone de saisie",
+    "collapseInput": "Réduire la zone de saisie"
   },
   "placeholders": {
     "enterFileName": "Saisissez le nom du fichier",
@@ -886,7 +862,6 @@
     "noSessionsFound": "Aucune Session trouvée",
     "typeToSearchFiles": "Tapez pour rechercher des fichiers...",
     "selectFileToViewChanges": "Sélectionnez un fichier pour voir les modifications",
-    "selectSidebarFileToViewChanges": "Sélectionnez un fichier",
     "failedToLoadHistory": "Échec du chargement de l'historique",
     "noGitHistory": "Aucun historique Git disponible",
     "noCommitHistory": "Aucun commit trouvé",
@@ -949,6 +924,7 @@
     "noData": "Aucune donnée",
     "noResults": "Aucun résultat",
     "noSessionHistory": "Aucun historique de session",
+    "selectSidebarFileToViewChanges": "Sélectionnez un fichier",
     "selectSidebarStash": "Sélectionnez un stash",
     "selectSidebarCommit": "Sélectionnez un commit",
     "selectSidebarPullRequest": "Sélectionnez un pull request",
@@ -975,8 +951,6 @@
     "chromeWindowOpen": "La fenêtre Chrome est ouverte — interagissez directement, puis revenez à l'Agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
-    "switchToUnifiedDiff": "Passer au diff unifié",
-    "switchToSplitDiff": "Passer au diff côte à côte",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git non initialisé",
@@ -1015,7 +989,6 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
-    "switchToGraphView": "Passer à la vue graphique",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1061,6 +1034,9 @@
         "passed": "Réussis"
       }
     },
+    "switchToUnifiedDiff": "Passer au diff unifié",
+    "switchToSplitDiff": "Passer au diff côte à côte",
+    "switchToGraphView": "Passer à la vue graphique",
     "fileChangedOnDiskTitle": "Fichier modifié sur le disque",
     "fileChangedOnDiskBody": "« {{name}} » a été modifié sur le disque depuis son ouverture. L'écraser avec votre version ?"
   },
@@ -1216,93 +1192,6 @@
         "autoMergeEnabled": "Fusion automatique activée",
         "inMergeQueue": "En attente dans la file de fusion"
       },
-      "mergeBox": {
-        "checksFailed": "Certaines vérifications ont échoué",
-        "checksPending": "Certaines vérifications ne sont pas encore terminées",
-        "checksPassed": "Toutes les vérifications ont réussi",
-        "checksSkipped": "Toutes les vérifications ont été ignorées",
-        "counts": {
-          "failing": "{{count}} en échec",
-          "inProgress": "{{count}} en cours",
-          "skipped": "{{count}} ignorées",
-          "successful": "{{count}} réussies",
-          "summary_one": "Vérification : {{parts}}",
-          "summary_other": "Vérifications : {{parts}}"
-        },
-        "check": {
-          "queued": "En file d'attente",
-          "started": "Démarrée {{time}}",
-          "successfulIn": "Réussie en {{duration}}",
-          "failingAfter": "En échec après {{duration}}",
-          "skipped": "Ignorée",
-          "successful": "Réussie",
-          "failing": "En échec"
-        },
-        "deployments": {
-          "label": "Déploiements",
-          "none": "Aucun déploiement",
-          "active_one": "{{count}} déploiement actif",
-          "active_other": "{{count}} déploiements actifs",
-          "view": "Voir le déploiement",
-          "notDeployed": "Cette branche n'a pas été déployée",
-          "deployed": "Cette branche a été déployée avec succès",
-          "deploying": "Cette branche est en cours de déploiement",
-          "deployFailed": "Une erreur s'est produite lors du déploiement de cette branche",
-          "deployInactive": "Cette branche n'est plus déployée",
-          "state": {
-            "active": "Actif",
-            "pending": "En cours",
-            "failure": "Échec",
-            "inactive": "Inactif"
-          }
-        },
-        "conditions": {
-          "reviewApproved": {
-            "title": "Modifications approuvées",
-            "detail": "Une revue d'approbation a été soumise"
-          },
-          "reviewRequired": {
-            "title": "Revue requise",
-            "detail": "Au moins une revue d'approbation est requise pour fusionner"
-          },
-          "reviewChangesRequested": {
-            "title": "Modifications demandées",
-            "detail": "Un relecteur a demandé des modifications avant la fusion"
-          },
-          "noConflicts": {
-            "title": "Aucun conflit avec la branche de base",
-            "detail": "La fusion peut être effectuée automatiquement"
-          },
-          "hasConflicts": {
-            "title": "Cette branche présente des conflits à résoudre",
-            "detail": "Résolvez les conflits sur la branche de tête, puis poussez"
-          },
-          "outOfDate": {
-            "title": "Cette branche est en retard sur la branche de base",
-            "detail": "Fusionnez les dernières modifications de la branche de base dans cette branche"
-          },
-          "checkingConflicts": {
-            "title": "Vérification de la possibilité de fusion automatique…",
-            "detail": "Patientez pendant que GitHub vérifie l'état de la branche"
-          },
-          "autoMergeEnabled": {
-            "title": "Fusion automatique activée",
-            "detail": "Cette pull request sera fusionnée une fois ses exigences satisfaites"
-          },
-          "inMergeQueue": {
-            "title": "En attente dans la file de fusion",
-            "detail": "GitHub la fusionnera lorsqu'elle arrivera en tête de la file"
-          }
-        },
-        "merged": {
-          "title": "Pull request fusionnée et fermée avec succès",
-          "detail": "La branche de tête peut être supprimée en toute sécurité"
-        },
-        "closed": {
-          "title": "Fermée avec des commits non fusionnés",
-          "detail": "Cette pull request est fermée. Rouvrez-la pour fusionner"
-        }
-      },
       "commits": {
         "backToList": "Tous les commits",
         "none": "Aucun commit",
@@ -1424,7 +1313,94 @@
       },
       "navigationTrail": "Navigation dans la pull request",
       "failedToLoad": "Échec du chargement des pull requests",
-      "label": "Pull request"
+      "label": "Pull request",
+      "mergeBox": {
+        "checksFailed": "Certaines vérifications ont échoué",
+        "checksPending": "Certaines vérifications ne sont pas encore terminées",
+        "checksPassed": "Toutes les vérifications ont réussi",
+        "checksSkipped": "Toutes les vérifications ont été ignorées",
+        "counts": {
+          "failing": "{{count}} en échec",
+          "inProgress": "{{count}} en cours",
+          "skipped": "{{count}} ignorées",
+          "successful": "{{count}} réussies",
+          "summary_one": "Vérification : {{parts}}",
+          "summary_other": "Vérifications : {{parts}}"
+        },
+        "check": {
+          "queued": "En file d'attente",
+          "started": "Démarrée {{time}}",
+          "successfulIn": "Réussie en {{duration}}",
+          "failingAfter": "En échec après {{duration}}",
+          "skipped": "Ignorée",
+          "successful": "Réussie",
+          "failing": "En échec"
+        },
+        "deployments": {
+          "label": "Déploiements",
+          "none": "Aucun déploiement",
+          "active_one": "{{count}} déploiement actif",
+          "active_other": "{{count}} déploiements actifs",
+          "view": "Voir le déploiement",
+          "notDeployed": "Cette branche n'a pas été déployée",
+          "deployed": "Cette branche a été déployée avec succès",
+          "deploying": "Cette branche est en cours de déploiement",
+          "deployFailed": "Une erreur s'est produite lors du déploiement de cette branche",
+          "deployInactive": "Cette branche n'est plus déployée",
+          "state": {
+            "active": "Actif",
+            "pending": "En cours",
+            "failure": "Échec",
+            "inactive": "Inactif"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Modifications approuvées",
+            "detail": "Une revue d'approbation a été soumise"
+          },
+          "reviewRequired": {
+            "title": "Revue requise",
+            "detail": "Au moins une revue d'approbation est requise pour fusionner"
+          },
+          "reviewChangesRequested": {
+            "title": "Modifications demandées",
+            "detail": "Un relecteur a demandé des modifications avant la fusion"
+          },
+          "noConflicts": {
+            "title": "Aucun conflit avec la branche de base",
+            "detail": "La fusion peut être effectuée automatiquement"
+          },
+          "hasConflicts": {
+            "title": "Cette branche présente des conflits à résoudre",
+            "detail": "Résolvez les conflits sur la branche de tête, puis poussez"
+          },
+          "outOfDate": {
+            "title": "Cette branche est en retard sur la branche de base",
+            "detail": "Fusionnez les dernières modifications de la branche de base dans cette branche"
+          },
+          "checkingConflicts": {
+            "title": "Vérification de la possibilité de fusion automatique…",
+            "detail": "Patientez pendant que GitHub vérifie l'état de la branche"
+          },
+          "autoMergeEnabled": {
+            "title": "Fusion automatique activée",
+            "detail": "Cette pull request sera fusionnée une fois ses exigences satisfaites"
+          },
+          "inMergeQueue": {
+            "title": "En attente dans la file de fusion",
+            "detail": "GitHub la fusionnera lorsqu'elle arrivera en tête de la file"
+          }
+        },
+        "merged": {
+          "title": "Pull request fusionnée et fermée avec succès",
+          "detail": "La branche de tête peut être supprimée en toute sécurité"
+        },
+        "closed": {
+          "title": "Fermée avec des commits non fusionnés",
+          "detail": "Cette pull request est fermée. Rouvrez-la pour fusionner"
+        }
+      }
     },
     "messages": {
       "pushSuccess": "Push réussi",
@@ -1711,10 +1687,10 @@
       "noResults": "Aucun modèle correspondant",
       "chooseModel": "Choisir un modèle",
       "chooseKey": "Choisir une clé",
-      "noCompatibleKeys": "Aucune clé compatible",
       "chooseModelHint": "Utilisez le clavier pour naviguer ou cliquez sur un modèle avec la souris",
       "chooseKeyHint": "Utilisez le clavier pour naviguer ou cliquez sur une clé avec la souris",
       "noModelsForKey": "Aucun modèle activé pour cette clé",
+      "noCompatibleKeys": "Aucune clé compatible",
       "selectKey": "Sélectionner une clé",
       "sourceScope": {
         "label": "Sources de modèles",
@@ -1834,7 +1810,6 @@
         "readRemotesFailed": "Impossible de lire les remotes du dépôt"
       },
       "labels": {
-        "defaultBranches": "Branches par défaut",
         "otherBranches": "Autres branches",
         "current": "Actuelle",
         "recent": "Récentes",
@@ -1849,7 +1824,8 @@
         "prSearchScope": "La recherche porte sur les {{count}} Pull requests chargées",
         "prLimit": "Affichage de {{count}} PR ouvertes au maximum",
         "noPullRequests": "Aucune Pull requests correspondante",
-        "mainWorktree": "Principal"
+        "mainWorktree": "Principal",
+        "defaultBranches": "Branches par défaut"
       },
       "placeholders": {
         "add": "nom de nouvelle branche...",
@@ -1882,8 +1858,6 @@
       "selectWorktreeSource": "Sélectionner la branche ou la pull request du worktree"
     },
     "spotlightFooter": {
-      "settings": "Réglages de Spotlight",
-      "unpinAll": "Tout désépingler",
       "navigate": "Naviguer",
       "select": "Sélectionner",
       "switchColumn": "Changer de colonne",
@@ -1897,7 +1871,9 @@
       "incompatible": "Incompatible",
       "manageModels": "Gérer les modèles",
       "manageKeys": "Gérer les clés",
-      "manageAgents": "Gérer les Agents"
+      "manageAgents": "Gérer les Agents",
+      "settings": "Réglages de Spotlight",
+      "unpinAll": "Tout désépingler"
     },
     "editorSpotlight": {
       "searchPlaceholder": "Rechercher des commandes...",
@@ -2067,8 +2043,6 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Panneau de chat",
-    "chatSplitRatio": "Proportion du panneau de chat",
-    "chatSplitRatioHint": "Appliquée dès que vous la choisissez ; faire glisser le séparateur ensuite reste prioritaire.",
     "chatLeft": "Chat à gauche",
     "chatRight": "Chat à droite",
     "sidebarPosition": "Barre latérale du Workstation",
@@ -2098,7 +2072,9 @@
     "ramHydratedEvents": "Événements hydrated",
     "ramTurnBodies": "Chargements lazy de l’historique",
     "ramFileTrees": "Arbres de fichiers",
-    "ramCodeMirrors": "Rendu des fichiers"
+    "ramCodeMirrors": "Rendu des fichiers",
+    "chatSplitRatio": "Proportion du panneau de chat",
+    "chatSplitRatioHint": "Appliquée dès que vous la choisissez ; faire glisser le séparateur ensuite reste prioritaire."
   },
   "spotlightActions": {
     "enableChatPagination": "Activer la pagination du chat",
@@ -2109,8 +2085,6 @@
     "moveWorkstationSidebarRight": "Déplacer la barre latérale du Workstation à droite",
     "openMyStation": "Aller à My Station",
     "openAgentStation": "Aller à Agent Station",
-    "openMyStationInNewWindow": "Ouvrir My Station dans une nouvelle fenêtre",
-    "openAgentStationInNewWindow": "Ouvrir Agent Station dans une nouvelle fenêtre",
     "openKanban": "Aller à Kanban",
     "changeLanguage": "Changer la langue",
     "changeTheme": "Changer de thème",
@@ -2118,7 +2092,9 @@
     "searchThemes": "Rechercher des thèmes...",
     "searchSkins": "Rechercher des apparences...",
     "detectUpdate": "Rechercher des mises à jour",
-    "recentlyUsed": "Récemment utilisés"
+    "recentlyUsed": "Récemment utilisés",
+    "openMyStationInNewWindow": "Ouvrir My Station dans une nouvelle fenêtre",
+    "openAgentStationInNewWindow": "Ouvrir Agent Station dans une nouvelle fenêtre"
   },
   "commands": {
     "showBottomPanel": "Afficher le panneau inférieur",
@@ -2141,20 +2117,6 @@
     "title": "Sessions"
   },
   "sourceControl": {
-    "fileMenu": {
-      "viewChanges": "Afficher les modifications",
-      "openFileInNewTab": "Ouvrir le fichier dans un nouvel onglet",
-      "stageChanges": "Indexer les modifications",
-      "unstageChanges": "Désindexer les modifications",
-      "discardChanges": "Abandonner les modifications",
-      "markResolved": "Marquer comme résolu (indexer)",
-      "acceptCurrent": "Accepter les modifications actuelles (les nôtres)",
-      "acceptIncoming": "Accepter les modifications entrantes (les leurs)",
-      "stageChangesCount": "Indexer les modifications ({{count}})",
-      "unstageChangesCount": "Désindexer les modifications ({{count}})",
-      "discardChangesCount": "Abandonner les modifications ({{count}})",
-      "markResolvedCount": "Marquer comme résolu ({{count}})"
-    },
     "notGitInitialized": "Git non initialisé",
     "notGitInitializedSubtitle": "Initialisez Git pour suivre les changements, créer des commits et utiliser les outils de branche dans ce répertoire de travail.",
     "initializeGit": "Initialiser Git",
@@ -2183,6 +2145,20 @@
       "main": "Checkout principal",
       "worktrees": "Worktrees",
       "switchScopeActive": "Changer la portée du source control : {{repo}}, {{branch}}"
+    },
+    "fileMenu": {
+      "viewChanges": "Afficher les modifications",
+      "openFileInNewTab": "Ouvrir le fichier dans un nouvel onglet",
+      "stageChanges": "Indexer les modifications",
+      "unstageChanges": "Désindexer les modifications",
+      "discardChanges": "Abandonner les modifications",
+      "markResolved": "Marquer comme résolu (indexer)",
+      "acceptCurrent": "Accepter les modifications actuelles (les nôtres)",
+      "acceptIncoming": "Accepter les modifications entrantes (les leurs)",
+      "stageChangesCount": "Indexer les modifications ({{count}})",
+      "unstageChangesCount": "Désindexer les modifications ({{count}})",
+      "discardChangesCount": "Abandonner les modifications ({{count}})",
+      "markResolvedCount": "Marquer comme résolu ({{count}})"
     }
   },
   "contextInfo": {
@@ -2336,6 +2312,10 @@
       "saved": "Capture d'écran enregistrée",
       "saveFailed": "Échec de l'enregistrement de la capture d'écran : {{reason}}"
     },
+    "selectedElement": {
+      "addElement": "Ajouter l’élément",
+      "sentToChat": "Élément ajouté au chat"
+    },
     "menu": {
       "pageTheme": "Thème de la page",
       "themeAuto": "Automatique",
@@ -2346,10 +2326,6 @@
     },
     "openHtmlFile": {
       "failed": "Échec de l'ouverture du fichier : {{reason}}"
-    },
-    "selectedElement": {
-      "addElement": "Ajouter l’élément",
-      "sentToChat": "Élément ajouté au chat"
     }
   },
   "controlTower": {
@@ -2466,6 +2442,30 @@
     "goToSection": "Aller à {{label}}, section {{current}} sur {{total}}",
     "section": "Section {{current}}",
     "sectionPosition": "Section {{current}} sur {{total}}"
+  },
+  "gitLabels": {
+    "contains": "Contient des fichiers : {{status}}",
+    "staged": "{{status}} (indexé)",
+    "additions": "Lignes ajoutées",
+    "deletions": "Lignes supprimées",
+    "M": "Modifié",
+    "U": "Non suivi",
+    "A": "Ajouté",
+    "D": "Supprimé",
+    "R": "Renommé",
+    "C": "Conflit",
+    "I": "Ignoré",
+    "?": "État inconnu"
+  },
+  "findScope": {
+    "session": "Rechercher dans la session",
+    "file": "Rechercher dans le fichier",
+    "named": "Rechercher dans {{name}}"
+  },
+  "sidebarSettings": {
+    "title": "Barre latérale",
+    "showSidebar": "Afficher la barre latérale",
+    "colorSourceControlFiles": "Couleurs de diff sur les fichiers"
   },
   "appMessages": {
     "testNotificationBody": "Ceci est une notification de test d’ORG2",

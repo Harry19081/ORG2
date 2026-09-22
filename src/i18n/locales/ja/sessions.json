@@ -1002,6 +1002,7 @@
     "typeMessage": "メッセージを入力…",
     "session": "セッション",
     "history": "セッション",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "ピン留めした箇所へ移動: {{preview}}",
     "unpinPassage": "ピン留めを解除"
   },

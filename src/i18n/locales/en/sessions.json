@@ -1002,6 +1002,7 @@
     "typeMessage": "Type a message…",
     "session": "Session",
     "history": "Sessions",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Go to pinned passage: {{preview}}",
     "unpinPassage": "Unpin"
   },

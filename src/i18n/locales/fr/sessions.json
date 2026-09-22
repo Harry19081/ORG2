@@ -1002,6 +1002,7 @@
     "typeMessage": "Écrivez un message…",
     "session": "Session",
     "history": "Sessions",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Aller au passage épinglé : {{preview}}",
     "unpinPassage": "Détacher"
   },

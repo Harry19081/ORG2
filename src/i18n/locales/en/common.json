@@ -1,28 +1,4 @@
 {
-  "gitLabels": {
-    "contains": "Contains files: {{status}}",
-    "staged": "{{status}} (staged)",
-    "additions": "Added lines",
-    "deletions": "Deleted lines",
-    "M": "Modified",
-    "U": "Untracked",
-    "A": "Added",
-    "D": "Deleted",
-    "R": "Renamed",
-    "C": "Conflict",
-    "I": "Ignored",
-    "?": "Unknown status"
-  },
-  "findScope": {
-    "session": "Search in session",
-    "file": "Search in file",
-    "named": "Search in {{name}}"
-  },
-  "sidebarSettings": {
-    "title": "Sidebar settings",
-    "showSidebar": "Show sidebar",
-    "colorSourceControlFiles": "Diff colors on files"
-  },
   "windowChrome": {
     "menus": {
       "file": "File",
@@ -144,9 +120,6 @@
     "confirm": "Confirm",
     "apply": "Apply",
     "reset": "Reset",
-    "resetFilters": "Reset filters",
-    "cardView": "Card view",
-    "listView": "List view",
     "search": "Search",
     "add": "Add",
     "remove": "Remove",
@@ -190,9 +163,6 @@
     "closeOthers": "Close Others",
     "closeSaved": "Close Saved",
     "openInNewWindow": "Open in New Window",
-    "exportAndSync": "Export & sync",
-    "export": "Export",
-    "openIn": "Open in",
     "openInNewTab": "Open in New Tab",
     "openOnGitHub": "Open on GitHub",
     "createPullRequest": "Create pull request",
@@ -237,6 +207,12 @@
     "clearSelection": "Clear selection",
     "expandView": "Expand view",
     "restoreSplitView": "Restore split view",
+    "resetFilters": "Reset filters",
+    "cardView": "Card view",
+    "listView": "List view",
+    "exportAndSync": "Export & sync",
+    "export": "Export",
+    "openIn": "Open in",
     "overwrite": "Overwrite"
   },
   "status": {
@@ -267,7 +243,6 @@
     "connectionIssue": "Connection Issue",
     "syncing": "Syncing...",
     "copied": "Copied",
-    "copiedFilePath": "Copied file path",
     "copyFailed": "Copy failed",
     "searching": "Searching...",
     "running": "Running",
@@ -302,7 +277,8 @@
     "sending": "Sending…",
     "testing": "Testing...",
     "empty": "Empty",
-    "launching": "Launching..."
+    "launching": "Launching...",
+    "copiedFilePath": "Copied file path"
   },
   "workManagementTable": {
     "columns": {
@@ -330,7 +306,6 @@
   },
   "optional": "optional",
   "common": {
-    "display": "UI settings",
     "on": "On",
     "off": "Off",
     "default": "Default",
@@ -364,12 +339,10 @@
     "error": "Error",
     "pid": "PID",
     "shell": "Shell",
-    "source": "Source"
+    "source": "Source",
+    "display": "UI settings"
   },
   "labels": {
-    "stashesCount": "{{count}} stashes",
-    "stashesCount_one": "{{count}} stash",
-    "stashesCount_other": "{{count}} stashes",
     "accounts": "Accounts",
     "enabled": "Enabled",
     "disabled": "Disabled",
@@ -424,9 +397,6 @@
     },
     "operationLog": "Operation Log",
     "gitDashboard": "Dashboard",
-    "changedFilesCount": "{{fileCount}} changed files",
-    "changedFilesCount_one": "{{fileCount}} changed file",
-    "changedFilesCount_other": "{{fileCount}} changed files",
     "colorTokens": "Color Tokens",
     "terminalInfo": "Terminal Info",
     "fileCount_one": "{{count}} file",
@@ -508,7 +478,13 @@
     "noSessionsForFile": "No sessions found for this file",
     "email": "Email",
     "actions": "Actions",
-    "all": "All"
+    "all": "All",
+    "stashesCount": "{{count}} stashes",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stashes",
+    "changedFilesCount": "{{fileCount}} changed files",
+    "changedFilesCount_one": "{{fileCount}} changed file",
+    "changedFilesCount_other": "{{fileCount}} changed files"
   },
   "searchModes": {},
   "tabs": {
@@ -545,7 +521,6 @@
     "reconnectCodex": "Reconnect",
     "technicalDetails": "Technical details",
     "failedToCopy": "Failed to copy",
-    "failedToCopyFilePath": "Failed to copy file path",
     "api": {
       "messages": {
         "signIn": "Please sign in again."
@@ -554,7 +529,8 @@
     "unknownError": "Unknown error occurred",
     "componentLoadingFailed": "Component failed to load",
     "noLocalPath": "No local path available",
-    "openInFinderFailed": "Failed to open in Finder"
+    "openInFinderFailed": "Failed to open in Finder",
+    "failedToCopyFilePath": "Failed to copy file path"
   },
   "confirmation": {
     "delete": "Are you sure you want to delete this?",
@@ -605,9 +581,7 @@
     "previous": "Previous",
     "next": "Next",
     "previousMatch": "Previous Match (Shift+Enter)",
-    "previousMatchLabel": "Previous Match",
     "nextMatch": "Next Match (Enter)",
-    "nextMatchLabel": "Next Match",
     "clearSearch": "Clear search",
     "openFile": "Open File",
     "openNativeDevTools": "Open DevTools",
@@ -632,20 +606,13 @@
     "goForward": "Go forward",
     "goToToday": "Go to today",
     "matchCase": "Match Case (Alt+C)",
-    "matchCaseLabel": "Match Case",
     "matchWholeWord": "Match Whole Word (Alt+W)",
-    "matchWholeWordLabel": "Match Whole Word",
     "useRegex": "Use Regular Expression (Alt+R)",
-    "useRegexLabel": "Use Regular Expression",
     "searchInOpenEditors": "Search Only in Open Editors",
     "replace": "Replace (Ctrl+Shift+1)",
-    "replaceLabel": "Replace",
     "replaceAll": "Replace All (Ctrl+Alt+Enter)",
-    "replaceAllLabel": "Replace All",
     "moreActions": "More Actions...",
     "startVoiceInput": "Start voice input",
-    "expandInput": "Expand input",
-    "collapseInput": "Collapse input",
     "cancelRecording": "Cancel recording",
     "stopAndTranscribe": "Stop and transcribe",
     "htmlPreview": "HTML Preview",
@@ -665,7 +632,16 @@
     "scrollToItem": "Scroll to {{name}}",
     "containsStatusFiles": "Contains {{status}} files",
     "showFileList": "Show file list",
-    "copyValueRightClickForPath": "Click to copy value, right-click for path"
+    "copyValueRightClickForPath": "Click to copy value, right-click for path",
+    "previousMatchLabel": "Previous Match",
+    "nextMatchLabel": "Next Match",
+    "matchCaseLabel": "Match Case",
+    "matchWholeWordLabel": "Match Whole Word",
+    "useRegexLabel": "Use Regular Expression",
+    "replaceLabel": "Replace",
+    "replaceAllLabel": "Replace All",
+    "expandInput": "Expand input",
+    "collapseInput": "Collapse input"
   },
   "placeholders": {
     "enterFileName": "Enter file name",
@@ -721,7 +697,6 @@
     "noSessionsFound": "No sessions found",
     "typeToSearchFiles": "Type to search files...",
     "selectFileToViewChanges": "Select a file to view changes",
-    "selectSidebarFileToViewChanges": "Select a file",
     "failedToLoadHistory": "Failed to load history",
     "noGitHistory": "No Git history available",
     "noCommitHistory": "No commits found",
@@ -783,6 +758,7 @@
     "selectRepositoryFromWorkspace": "Choose a workspace repository",
     "noData": "No data",
     "noSessionHistory": "No session history",
+    "selectSidebarFileToViewChanges": "Select a file",
     "selectSidebarStash": "Select a stash",
     "selectSidebarCommit": "Select a commit",
     "selectSidebarPullRequest": "Select a pull request",
@@ -809,8 +785,6 @@
     "chromeWindowOpen": "Chrome window is open — interact directly, then return to agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
-    "switchToUnifiedDiff": "Switch to unified diff",
-    "switchToSplitDiff": "Switch to split diff",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Not git initialized",
@@ -863,7 +837,6 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
-    "switchToGraphView": "Switch to graph view",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -889,12 +862,15 @@
       "privateBrowsingEmptyTitle": "Private Browsing: Enter a URL to get started",
       "simulatorBrowserNotice": "This browser is for session replay only. For persistent browsing, use the Browser in Main App (Tools → Browser).",
       "siteUnreachableTitle": "This site can't be reached",
-      "loadStalledTitle": "This page didn't finish loading",
-      "copyUrl": "Copy URL",
       "webviewHiddenTitle": "Webview temporarily hidden",
-      "webviewHiddenBody": "Close the menu or dialog to show it again."
+      "webviewHiddenBody": "Close the menu or dialog to show it again.",
+      "loadStalledTitle": "This page didn't finish loading",
+      "copyUrl": "Copy URL"
     },
     "unsavedChangesTitle": "Unsaved Changes",
+    "switchToUnifiedDiff": "Switch to unified diff",
+    "switchToSplitDiff": "Switch to split diff",
+    "switchToGraphView": "Switch to graph view",
     "fileChangedOnDiskTitle": "File changed on disk",
     "fileChangedOnDiskBody": "\"{{name}}\" changed on disk since you opened it. Overwrite it with your version?"
   },
@@ -1138,6 +1114,76 @@
         "autoMergeEnabled": "Auto-merge enabled",
         "inMergeQueue": "Waiting in the merge queue"
       },
+      "commits": {
+        "backToList": "All commits",
+        "none": "No commits",
+        "onDate": "Commits on {{date}}",
+        "unknownDate": "Unknown date",
+        "viewCommit": "View commit {{sha}}: {{summary}}",
+        "committed": "committed",
+        "verified": "Verified",
+        "copySha": "Copy commit SHA",
+        "viewDetails": "View commit details"
+      },
+      "changes": {
+        "title": "Files changed",
+        "noFiles": "No file changes",
+        "tooLarge": "File too large to diff",
+        "unavailable": "Changes unavailable",
+        "unavailableHint": "Could not resolve the pull request's base and head commits."
+      },
+      "creating": "Creating pull request…",
+      "createError": "Failed to create pull request",
+      "readyHint": "Branch is pushed and ready for a pull request",
+      "neutralHint": "Push your branch to create a pull request",
+      "noBranch": "No branch selected",
+      "noRepoPath": "No repository path available",
+      "notAuthenticated": "Sign in to create pull requests",
+      "noOriginRemote": "No origin remote configured",
+      "cannotParseRepoName": "Could not parse repository name from origin remote",
+      "status": {
+        "open": "Open",
+        "merged": "Merged",
+        "closed": "Closed",
+        "draft": "Draft"
+      },
+      "authRequired": {
+        "title": "Connect GitHub",
+        "description": "Go to Settings → Connections to connect your GitHub account"
+      },
+      "flow": {
+        "wantsToMergeCommitsInto_one": "wants to merge {{count}} commit into",
+        "wantsToMergeCommitsInto_other": "wants to merge {{count}} commits into",
+        "mergedCommitsInto_one": "merged {{count}} commit into",
+        "mergedCommitsInto_other": "merged {{count}} commits into",
+        "from": "from",
+        "copyHeadBranch": "Copy head branch name",
+        "branchCopied": "Branch name copied"
+      },
+      "sidebar": {
+        "reviewers": "Reviewers",
+        "requestReviewers": "Request reviewers",
+        "awaitingReview": "Awaiting review",
+        "noReviews": "No reviews",
+        "assignees": "Assignees",
+        "noAssignees": "No one assigned",
+        "labels": "Labels",
+        "noLabels": "None yet",
+        "actions": "Actions",
+        "editAssignees": "Edit assignees",
+        "searchAssignees": "Search people",
+        "noAssigneeCandidates": "No people available",
+        "assigneesLoadFailed": "Could not load people",
+        "assigneesUpdated": "Assignees updated",
+        "editLabels": "Edit labels",
+        "searchLabels": "Search labels",
+        "noLabelCandidates": "No labels available",
+        "labelsLoadFailed": "Could not load labels",
+        "labelsUpdated": "Labels updated"
+      },
+      "navigationTrail": "Pull request navigation",
+      "failedToLoad": "Failed to load pull requests",
+      "label": "Pull request",
       "mergeBox": {
         "checksFailed": "Some checks were not successful",
         "checksPending": "Some checks haven't completed yet",
@@ -1224,77 +1270,7 @@
           "title": "Closed with unmerged commits",
           "detail": "This pull request is closed. Reopen it to merge"
         }
-      },
-      "commits": {
-        "backToList": "All commits",
-        "none": "No commits",
-        "onDate": "Commits on {{date}}",
-        "unknownDate": "Unknown date",
-        "viewCommit": "View commit {{sha}}: {{summary}}",
-        "committed": "committed",
-        "verified": "Verified",
-        "copySha": "Copy commit SHA",
-        "viewDetails": "View commit details"
-      },
-      "changes": {
-        "title": "Files changed",
-        "noFiles": "No file changes",
-        "tooLarge": "File too large to diff",
-        "unavailable": "Changes unavailable",
-        "unavailableHint": "Could not resolve the pull request's base and head commits."
-      },
-      "creating": "Creating pull request…",
-      "createError": "Failed to create pull request",
-      "readyHint": "Branch is pushed and ready for a pull request",
-      "neutralHint": "Push your branch to create a pull request",
-      "noBranch": "No branch selected",
-      "noRepoPath": "No repository path available",
-      "notAuthenticated": "Sign in to create pull requests",
-      "noOriginRemote": "No origin remote configured",
-      "cannotParseRepoName": "Could not parse repository name from origin remote",
-      "status": {
-        "open": "Open",
-        "merged": "Merged",
-        "closed": "Closed",
-        "draft": "Draft"
-      },
-      "authRequired": {
-        "title": "Connect GitHub",
-        "description": "Go to Settings → Connections to connect your GitHub account"
-      },
-      "flow": {
-        "wantsToMergeCommitsInto_one": "wants to merge {{count}} commit into",
-        "wantsToMergeCommitsInto_other": "wants to merge {{count}} commits into",
-        "mergedCommitsInto_one": "merged {{count}} commit into",
-        "mergedCommitsInto_other": "merged {{count}} commits into",
-        "from": "from",
-        "copyHeadBranch": "Copy head branch name",
-        "branchCopied": "Branch name copied"
-      },
-      "sidebar": {
-        "reviewers": "Reviewers",
-        "requestReviewers": "Request reviewers",
-        "awaitingReview": "Awaiting review",
-        "noReviews": "No reviews",
-        "assignees": "Assignees",
-        "noAssignees": "No one assigned",
-        "labels": "Labels",
-        "noLabels": "None yet",
-        "actions": "Actions",
-        "editAssignees": "Edit assignees",
-        "searchAssignees": "Search people",
-        "noAssigneeCandidates": "No people available",
-        "assigneesLoadFailed": "Could not load people",
-        "assigneesUpdated": "Assignees updated",
-        "editLabels": "Edit labels",
-        "searchLabels": "Search labels",
-        "noLabelCandidates": "No labels available",
-        "labelsLoadFailed": "Could not load labels",
-        "labelsUpdated": "Labels updated"
-      },
-      "navigationTrail": "Pull request navigation",
-      "failedToLoad": "Failed to load pull requests",
-      "label": "Pull request"
+      }
     },
     "issues": {
       "title": "Issues",
@@ -1542,10 +1518,10 @@
       "noResults": "No matching models",
       "chooseModel": "Choose a model",
       "chooseKey": "Choose a key",
-      "noCompatibleKeys": "No compatible keys",
       "chooseModelHint": "Use the keyboard to navigate, or click a model with the mouse",
       "chooseKeyHint": "Use the keyboard to navigate, or click a key with the mouse",
       "noModelsForKey": "No models enabled for this key",
+      "noCompatibleKeys": "No compatible keys",
       "selectKey": "Select a key",
       "sourceScope": {
         "label": "Model sources",
@@ -1668,7 +1644,6 @@
         "readRemotesFailed": "Could not read repository remotes"
       },
       "labels": {
-        "defaultBranches": "Default Branches",
         "otherBranches": "Other Branches",
         "current": "Current",
         "recent": "Recent",
@@ -1683,7 +1658,8 @@
         "prSearchScope": "Search covers {{count}} loaded Pull requests",
         "prLimit": "Showing up to {{count}} open PRs",
         "noPullRequests": "No matching Pull requests",
-        "mainWorktree": "Main"
+        "mainWorktree": "Main",
+        "defaultBranches": "Default Branches"
       },
       "placeholders": {
         "add": "new branch name...",
@@ -1716,8 +1692,6 @@
       "selectWorktreeSource": "Select worktree branch or pull request"
     },
     "spotlightFooter": {
-      "settings": "Spotlight settings",
-      "unpinAll": "Unpin all",
       "navigate": "Navigate",
       "select": "Select",
       "switchColumn": "Switch column",
@@ -1731,7 +1705,9 @@
       "incompatible": "Incompatible",
       "manageModels": "Manage Models",
       "manageKeys": "Manage Keys",
-      "manageAgents": "Manage Agents"
+      "manageAgents": "Manage Agents",
+      "settings": "Spotlight settings",
+      "unpinAll": "Unpin all"
     },
     "editorSpotlight": {
       "searchPlaceholder": "Search commands...",
@@ -1901,8 +1877,6 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Chat panel",
-    "chatSplitRatio": "Chat pane share",
-    "chatSplitRatioHint": "Applied as soon as you pick it; dragging the divider afterwards still wins.",
     "chatLeft": "Chat Left",
     "chatRight": "Chat Right",
     "sidebarPosition": "Workstation sidebar",
@@ -1932,7 +1906,9 @@
     "ramHydratedEvents": "Hydrated events",
     "ramTurnBodies": "History lazy loads",
     "ramFileTrees": "File trees",
-    "ramCodeMirrors": "File rendering"
+    "ramCodeMirrors": "File rendering",
+    "chatSplitRatio": "Chat pane share",
+    "chatSplitRatioHint": "Applied as soon as you pick it; dragging the divider afterwards still wins."
   },
   "spotlightActions": {
     "enableChatPagination": "Turn on chat pagination",
@@ -1943,8 +1919,6 @@
     "moveWorkstationSidebarRight": "Move Workstation sidebar to the right",
     "openMyStation": "Go to My Station",
     "openAgentStation": "Go to Agent Station",
-    "openMyStationInNewWindow": "Open My Station in New Window",
-    "openAgentStationInNewWindow": "Open Agent Station in New Window",
     "openKanban": "Go to Kanban",
     "changeLanguage": "Change language",
     "changeTheme": "Change theme",
@@ -1952,7 +1926,9 @@
     "searchThemes": "Search themes...",
     "searchSkins": "Search skins...",
     "detectUpdate": "Detect update",
-    "recentlyUsed": "Recently used"
+    "recentlyUsed": "Recently used",
+    "openMyStationInNewWindow": "Open My Station in New Window",
+    "openAgentStationInNewWindow": "Open Agent Station in New Window"
   },
   "commands": {
     "showBottomPanel": "Show Bottom Panel",
@@ -1975,20 +1951,6 @@
     "title": "Sessions"
   },
   "sourceControl": {
-    "fileMenu": {
-      "viewChanges": "View Changes",
-      "openFileInNewTab": "Open File in New Tab",
-      "stageChanges": "Stage Changes",
-      "unstageChanges": "Unstage Changes",
-      "discardChanges": "Discard Changes",
-      "markResolved": "Mark as Resolved (Stage)",
-      "acceptCurrent": "Accept Current Changes (Ours)",
-      "acceptIncoming": "Accept Incoming Changes (Theirs)",
-      "stageChangesCount": "Stage Changes ({{count}})",
-      "unstageChangesCount": "Unstage Changes ({{count}})",
-      "discardChangesCount": "Discard Changes ({{count}})",
-      "markResolvedCount": "Mark as Resolved ({{count}})"
-    },
     "notGitInitialized": "Not git initialized",
     "notGitInitializedSubtitle": "Initialize Git to track changes, create commits, and use branch tools in this working directory.",
     "initializeGit": "Initialize Git",
@@ -2017,6 +1979,20 @@
       "main": "Main checkout",
       "worktrees": "Worktrees",
       "switchScopeActive": "Switch source control scope: {{repo}}, {{branch}}"
+    },
+    "fileMenu": {
+      "viewChanges": "View Changes",
+      "openFileInNewTab": "Open File in New Tab",
+      "stageChanges": "Stage Changes",
+      "unstageChanges": "Unstage Changes",
+      "discardChanges": "Discard Changes",
+      "markResolved": "Mark as Resolved (Stage)",
+      "acceptCurrent": "Accept Current Changes (Ours)",
+      "acceptIncoming": "Accept Incoming Changes (Theirs)",
+      "stageChangesCount": "Stage Changes ({{count}})",
+      "unstageChangesCount": "Unstage Changes ({{count}})",
+      "discardChangesCount": "Discard Changes ({{count}})",
+      "markResolvedCount": "Mark as Resolved ({{count}})"
     }
   },
   "contextInfo": {
@@ -2177,6 +2153,10 @@
       "saved": "Screenshot saved",
       "saveFailed": "Failed to save screenshot: {{reason}}"
     },
+    "selectedElement": {
+      "sentToChat": "Element attached to chat",
+      "addElement": "Add element"
+    },
     "menu": {
       "pageTheme": "Page theme",
       "themeAuto": "Auto",
@@ -2187,10 +2167,6 @@
     },
     "openHtmlFile": {
       "failed": "Failed to open file: {{reason}}"
-    },
-    "selectedElement": {
-      "sentToChat": "Element attached to chat",
-      "addElement": "Add element"
     }
   },
   "controlTower": {
@@ -2467,6 +2443,30 @@
     "goToSection": "Go to {{label}}, section {{current}} of {{total}}",
     "section": "Section {{current}}",
     "sectionPosition": "Section {{current}} of {{total}}"
+  },
+  "gitLabels": {
+    "contains": "Contains files: {{status}}",
+    "staged": "{{status}} (staged)",
+    "additions": "Added lines",
+    "deletions": "Deleted lines",
+    "M": "Modified",
+    "U": "Untracked",
+    "A": "Added",
+    "D": "Deleted",
+    "R": "Renamed",
+    "C": "Conflict",
+    "I": "Ignored",
+    "?": "Unknown status"
+  },
+  "findScope": {
+    "session": "Search in session",
+    "file": "Search in file",
+    "named": "Search in {{name}}"
+  },
+  "sidebarSettings": {
+    "title": "Sidebar settings",
+    "showSidebar": "Show sidebar",
+    "colorSourceControlFiles": "Diff colors on files"
   },
   "appMessages": {
     "testNotificationBody": "This is a test notification from ORG2",

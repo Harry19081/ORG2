@@ -1002,6 +1002,7 @@
     "typeMessage": "Nhập tin nhắn…",
     "session": "Phiên",
     "history": "Các phiên",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Đi tới đoạn đã ghim: {{preview}}",
     "unpinPassage": "Bỏ ghim"
   },

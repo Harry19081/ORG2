@@ -1,28 +1,4 @@
 {
-  "gitLabels": {
-    "contains": "İçerdiği dosyalar: {{status}}",
-    "staged": "{{status}} (hazırlandı)",
-    "additions": "Eklenen satırlar",
-    "deletions": "Silinen satırlar",
-    "M": "Değiştirildi",
-    "U": "İzlenmiyor",
-    "A": "Eklendi",
-    "D": "Silindi",
-    "R": "Yeniden adlandırıldı",
-    "C": "Çakışma",
-    "I": "Yok sayıldı",
-    "?": "Bilinmeyen durum"
-  },
-  "findScope": {
-    "session": "Oturumda ara",
-    "file": "Dosyada ara",
-    "named": "{{name}} içinde ara"
-  },
-  "sidebarSettings": {
-    "title": "Kenar çubuğu ayarları",
-    "showSidebar": "Kenar çubuğunu göster",
-    "colorSourceControlFiles": "Dosyalarda fark renkleri"
-  },
   "teamInbox": {
     "listLabel": "Ekip Gelen Kutusu listesi",
     "itemsLabel": "Ekip Gelen Kutusu öğeleri",
@@ -319,9 +295,6 @@
     "confirm": "Onayla",
     "apply": "Uygula",
     "reset": "Sıfırla",
-    "resetFilters": "Filtreleri sıfırla",
-    "cardView": "Kart görünümü",
-    "listView": "Liste görünümü",
     "search": "Ara",
     "add": "Ekle",
     "remove": "Kaldır",
@@ -365,9 +338,6 @@
     "closeOthers": "Diğerlerini Kapat",
     "closeSaved": "Kaydedilenleri Kapat",
     "openInNewWindow": "Yeni Pencerede Aç",
-    "exportAndSync": "Dışa aktarma ve eşitleme",
-    "export": "Dışa aktar",
-    "openIn": "Şurada aç",
     "openInNewTab": "Yeni Sekmede Aç",
     "confirmDelete": "Silmeyi Onayla",
     "confirmDeleteTitle": "\"{{name}}\" silinsin mi?",
@@ -413,6 +383,12 @@
     "createPullRequest": "Pull request oluştur",
     "expandView": "Görünümü genişlet",
     "restoreSplitView": "Bölünmüş görünümü geri yükle",
+    "resetFilters": "Filtreleri sıfırla",
+    "cardView": "Kart görünümü",
+    "listView": "Liste görünümü",
+    "exportAndSync": "Dışa aktarma ve eşitleme",
+    "export": "Dışa aktar",
+    "openIn": "Şurada aç",
     "overwrite": "Üzerine yaz"
   },
   "status": {
@@ -470,7 +446,6 @@
     "diagnosticsInitializing": "Tanılama kaynakları başlatılıyor...",
     "diagnosticSourceIssues": "Tanılama kaynağı sorunları",
     "copied": "Kopyalandı",
-    "copiedFilePath": "Dosya yolu kopyalandı",
     "copyFailed": "Kopyalama başarısız",
     "searching": "Aranıyor...",
     "noResults": "Sonuç yok",
@@ -478,7 +453,8 @@
     "scanningFileExtensions": "Dosya uzantıları taranıyor…",
     "testing": "Test ediliyor...",
     "empty": "Boş",
-    "launching": "Başlatılıyor..."
+    "launching": "Başlatılıyor...",
+    "copiedFilePath": "Dosya yolu kopyalandı"
   },
   "pagination": {
     "totalItems": "{{count}} öğe",
@@ -496,7 +472,6 @@
   },
   "optional": "isteğe bağlı",
   "common": {
-    "display": "Arayüz ayarları",
     "on": "Açık",
     "off": "Kapalı",
     "default": "Varsayılan",
@@ -530,12 +505,10 @@
     "error": "Hata",
     "pid": "PID",
     "shell": "Shell",
-    "source": "Kaynak"
+    "source": "Kaynak",
+    "display": "Arayüz ayarları"
   },
   "labels": {
-    "stashesCount": "{{count}} stash",
-    "stashesCount_one": "{{count}} stash",
-    "stashesCount_other": "{{count}} stash",
     "accounts": "Hesaplar",
     "enabled": "Etkin",
     "disabled": "Devre dışı",
@@ -580,9 +553,6 @@
     "pullRequest": "Pull request",
     "operationLog": "İşlem Günlüğü",
     "gitDashboard": "Gösterge Paneli",
-    "changedFilesCount": "{{fileCount}} değişen dosya",
-    "changedFilesCount_one": "{{fileCount}} değişen dosya",
-    "changedFilesCount_other": "{{fileCount}} değişen dosya",
     "colorTokens": "Renk Token'ları",
     "terminalInfo": "Terminal Bilgisi",
     "fileCount_one": "{{count}} dosya",
@@ -674,7 +644,13 @@
     "issueComments_other": "{{count}} yorum",
     "tokens": "Token",
     "actions": "Eylemler",
-    "all": "Tümü"
+    "all": "Tümü",
+    "stashesCount": "{{count}} stash",
+    "stashesCount_one": "{{count}} stash",
+    "stashesCount_other": "{{count}} stash",
+    "changedFilesCount": "{{fileCount}} değişen dosya",
+    "changedFilesCount_one": "{{fileCount}} değişen dosya",
+    "changedFilesCount_other": "{{fileCount}} değişen dosya"
   },
   "searchModes": {},
   "tabs": {
@@ -710,7 +686,6 @@
     "reconnectCodex": "Yeniden bağlan",
     "technicalDetails": "Teknik ayrıntılar",
     "failedToCopy": "Kopyalanamadı",
-    "failedToCopyFilePath": "Dosya yolu kopyalanamadı",
     "api": {
       "messages": {
         "signIn": "Lütfen tekrar giriş yapın."
@@ -720,7 +695,8 @@
     "unknownError": "Bilinmeyen bir hata oluştu",
     "componentLoadingFailed": "Bileşen yüklenemedi",
     "noLocalPath": "Yerel yol yok",
-    "openInFinderFailed": "Finder'da açılamadı"
+    "openInFinderFailed": "Finder'da açılamadı",
+    "failedToCopyFilePath": "Dosya yolu kopyalanamadı"
   },
   "confirmation": {
     "delete": "Bunu silmek istediğinizden emin misiniz?",
@@ -771,9 +747,7 @@
     "previous": "Önceki",
     "next": "Sonraki",
     "previousMatch": "Önceki eşleşme (Shift+Enter)",
-    "previousMatchLabel": "Önceki eşleşme",
     "nextMatch": "Sonraki eşleşme (Enter)",
-    "nextMatchLabel": "Sonraki eşleşme",
     "clearSearch": "Aramayı temizle",
     "openFile": "Dosyayı aç",
     "openNativeDevTools": "DevTools'u aç",
@@ -798,20 +772,13 @@
     "goForward": "İleri",
     "goToToday": "Bugüne git",
     "matchCase": "Büyük/küçük harf eşleştir (Alt+C)",
-    "matchCaseLabel": "Büyük/küçük harf eşleştir",
     "matchWholeWord": "Tam kelime eşleştir (Alt+W)",
-    "matchWholeWordLabel": "Tam kelime eşleştir",
     "useRegex": "Düzenli ifade kullan (Alt+R)",
-    "useRegexLabel": "Düzenli ifade kullan",
     "searchInOpenEditors": "Sadece açık düzenleyicilerde ara",
     "replace": "Değiştir (Ctrl+Shift+1)",
-    "replaceLabel": "Değiştir",
     "replaceAll": "Tümünü değiştir (Ctrl+Alt+Enter)",
-    "replaceAllLabel": "Tümünü değiştir",
     "moreActions": "Daha fazla işlem...",
     "startVoiceInput": "Sesli girişi başlat",
-    "expandInput": "Giriş alanını genişlet",
-    "collapseInput": "Giriş alanını daralt",
     "cancelRecording": "Kaydı iptal et",
     "stopAndTranscribe": "Durdur ve yazıya dök",
     "htmlPreview": "HTML önizleme",
@@ -831,7 +798,16 @@
     "scrollToItem": "{{name}} konumuna kaydır",
     "containsStatusFiles": "{{status}} dosyalarını içerir",
     "showFileList": "Dosya listesini göster",
-    "copyValueRightClickForPath": "Değeri kopyalamak için tıklayın, yol için sağ tıklayın"
+    "copyValueRightClickForPath": "Değeri kopyalamak için tıklayın, yol için sağ tıklayın",
+    "previousMatchLabel": "Önceki eşleşme",
+    "nextMatchLabel": "Sonraki eşleşme",
+    "matchCaseLabel": "Büyük/küçük harf eşleştir",
+    "matchWholeWordLabel": "Tam kelime eşleştir",
+    "useRegexLabel": "Düzenli ifade kullan",
+    "replaceLabel": "Değiştir",
+    "replaceAllLabel": "Tümünü değiştir",
+    "expandInput": "Giriş alanını genişlet",
+    "collapseInput": "Giriş alanını daralt"
   },
   "placeholders": {
     "enterFileName": "Dosya adını girin",
@@ -886,7 +862,6 @@
     "noSessionsFound": "Session bulunamadı",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",
-    "selectSidebarFileToViewChanges": "Bir dosya seçin",
     "failedToLoadHistory": "Geçmiş yüklenemedi",
     "noGitHistory": "Git geçmişi mevcut değil",
     "noCommitHistory": "Commit bulunamadı",
@@ -949,6 +924,7 @@
     "noData": "Veri yok",
     "noResults": "Sonuç yok",
     "noSessionHistory": "Oturum geçmişi yok",
+    "selectSidebarFileToViewChanges": "Bir dosya seçin",
     "selectSidebarStash": "Bir stash seçin",
     "selectSidebarCommit": "Bir commit seçin",
     "selectSidebarPullRequest": "Bir pull request seçin",
@@ -975,8 +951,6 @@
     "chromeWindowOpen": "Chrome penceresi açık — doğrudan etkileşime geçin, ardından Agent'a dönün",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
-    "switchToUnifiedDiff": "Birleşik fark görünümüne geç",
-    "switchToSplitDiff": "Bölünmüş fark görünümüne geç",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git başlatılmadı",
@@ -1015,7 +989,6 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
-    "switchToGraphView": "Grafik görünümüne geç",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1061,6 +1034,9 @@
         "passed": "Geçti"
       }
     },
+    "switchToUnifiedDiff": "Birleşik fark görünümüne geç",
+    "switchToSplitDiff": "Bölünmüş fark görünümüne geç",
+    "switchToGraphView": "Grafik görünümüne geç",
     "fileChangedOnDiskTitle": "Dosya diskte değişti",
     "fileChangedOnDiskBody": "\"{{name}}\" siz açtıktan sonra diskte değişti. Kendi sürümünüzle üzerine yazılsın mı?"
   },
@@ -1216,93 +1192,6 @@
         "autoMergeEnabled": "Otomatik birleştirme etkin",
         "inMergeQueue": "Birleştirme kuyruğunda bekliyor"
       },
-      "mergeBox": {
-        "checksFailed": "Bazı kontroller başarılı olmadı",
-        "checksPending": "Bazı kontroller henüz tamamlanmadı",
-        "checksPassed": "Tüm kontroller başarılı",
-        "checksSkipped": "Tüm kontroller atlandı",
-        "counts": {
-          "failing": "{{count}} başarısız",
-          "inProgress": "{{count}} devam ediyor",
-          "skipped": "{{count}} atlandı",
-          "successful": "{{count}} başarılı",
-          "summary_one": "Kontrol: {{parts}}",
-          "summary_other": "Kontroller: {{parts}}"
-        },
-        "check": {
-          "queued": "Kuyrukta",
-          "started": "{{time}} başladı",
-          "successfulIn": "{{duration}} içinde başarılı",
-          "failingAfter": "{{duration}} sonra başarısız",
-          "skipped": "Atlandı",
-          "successful": "Başarılı",
-          "failing": "Başarısız"
-        },
-        "deployments": {
-          "label": "Dağıtımlar",
-          "none": "Dağıtım yok",
-          "active_one": "{{count}} etkin dağıtım",
-          "active_other": "{{count}} etkin dağıtım",
-          "view": "Dağıtımı görüntüle",
-          "notDeployed": "Bu dal dağıtılmadı",
-          "deployed": "Bu dal başarıyla dağıtıldı",
-          "deploying": "Bu dal dağıtılıyor",
-          "deployFailed": "Bu dal dağıtılırken bir hata oluştu",
-          "deployInactive": "Bu dal artık dağıtımda değil",
-          "state": {
-            "active": "Etkin",
-            "pending": "Devam ediyor",
-            "failure": "Başarısız",
-            "inactive": "Etkin değil"
-          }
-        },
-        "conditions": {
-          "reviewApproved": {
-            "title": "Değişiklikler onaylandı",
-            "detail": "Onaylayan bir inceleme gönderildi"
-          },
-          "reviewRequired": {
-            "title": "İnceleme gerekli",
-            "detail": "Birleştirmek için en az bir onaylayan inceleme gerekli"
-          },
-          "reviewChangesRequested": {
-            "title": "Değişiklik istendi",
-            "detail": "Bir inceleyici birleştirmeden önce değişiklik istedi"
-          },
-          "noConflicts": {
-            "title": "Temel dal ile çakışma yok",
-            "detail": "Birleştirme otomatik olarak yapılabilir"
-          },
-          "hasConflicts": {
-            "title": "Bu dalda çözülmesi gereken çakışmalar var",
-            "detail": "Çakışmaları kaynak dalda çözün, ardından gönderin"
-          },
-          "outOfDate": {
-            "title": "Bu dal temel dala göre güncel değil",
-            "detail": "Temel daldaki en son değişiklikleri bu dala birleştirin"
-          },
-          "checkingConflicts": {
-            "title": "Otomatik birleştirilebilirlik kontrol ediliyor…",
-            "detail": "GitHub dalın durumunu kontrol ederken lütfen bekleyin"
-          },
-          "autoMergeEnabled": {
-            "title": "Otomatik birleştirme etkin",
-            "detail": "Bu pull request, gereksinimleri karşılandığında birleştirilir"
-          },
-          "inMergeQueue": {
-            "title": "Birleştirme kuyruğunda bekliyor",
-            "detail": "Kuyruğun başına geldiğinde GitHub onu birleştirir"
-          }
-        },
-        "merged": {
-          "title": "Pull request başarıyla birleştirildi ve kapatıldı",
-          "detail": "Kaynak dal güvenle silinebilir"
-        },
-        "closed": {
-          "title": "Birleştirilmemiş commit'lerle kapatıldı",
-          "detail": "Bu pull request kapalı. Birleştirmek için yeniden açın"
-        }
-      },
       "commits": {
         "backToList": "Tüm commitler",
         "none": "Commit yok",
@@ -1424,7 +1313,94 @@
       },
       "navigationTrail": "Pull request gezinmesi",
       "failedToLoad": "Pull requestler yüklenemedi",
-      "label": "Pull request"
+      "label": "Pull request",
+      "mergeBox": {
+        "checksFailed": "Bazı kontroller başarılı olmadı",
+        "checksPending": "Bazı kontroller henüz tamamlanmadı",
+        "checksPassed": "Tüm kontroller başarılı",
+        "checksSkipped": "Tüm kontroller atlandı",
+        "counts": {
+          "failing": "{{count}} başarısız",
+          "inProgress": "{{count}} devam ediyor",
+          "skipped": "{{count}} atlandı",
+          "successful": "{{count}} başarılı",
+          "summary_one": "Kontrol: {{parts}}",
+          "summary_other": "Kontroller: {{parts}}"
+        },
+        "check": {
+          "queued": "Kuyrukta",
+          "started": "{{time}} başladı",
+          "successfulIn": "{{duration}} içinde başarılı",
+          "failingAfter": "{{duration}} sonra başarısız",
+          "skipped": "Atlandı",
+          "successful": "Başarılı",
+          "failing": "Başarısız"
+        },
+        "deployments": {
+          "label": "Dağıtımlar",
+          "none": "Dağıtım yok",
+          "active_one": "{{count}} etkin dağıtım",
+          "active_other": "{{count}} etkin dağıtım",
+          "view": "Dağıtımı görüntüle",
+          "notDeployed": "Bu dal dağıtılmadı",
+          "deployed": "Bu dal başarıyla dağıtıldı",
+          "deploying": "Bu dal dağıtılıyor",
+          "deployFailed": "Bu dal dağıtılırken bir hata oluştu",
+          "deployInactive": "Bu dal artık dağıtımda değil",
+          "state": {
+            "active": "Etkin",
+            "pending": "Devam ediyor",
+            "failure": "Başarısız",
+            "inactive": "Etkin değil"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "Değişiklikler onaylandı",
+            "detail": "Onaylayan bir inceleme gönderildi"
+          },
+          "reviewRequired": {
+            "title": "İnceleme gerekli",
+            "detail": "Birleştirmek için en az bir onaylayan inceleme gerekli"
+          },
+          "reviewChangesRequested": {
+            "title": "Değişiklik istendi",
+            "detail": "Bir inceleyici birleştirmeden önce değişiklik istedi"
+          },
+          "noConflicts": {
+            "title": "Temel dal ile çakışma yok",
+            "detail": "Birleştirme otomatik olarak yapılabilir"
+          },
+          "hasConflicts": {
+            "title": "Bu dalda çözülmesi gereken çakışmalar var",
+            "detail": "Çakışmaları kaynak dalda çözün, ardından gönderin"
+          },
+          "outOfDate": {
+            "title": "Bu dal temel dala göre güncel değil",
+            "detail": "Temel daldaki en son değişiklikleri bu dala birleştirin"
+          },
+          "checkingConflicts": {
+            "title": "Otomatik birleştirilebilirlik kontrol ediliyor…",
+            "detail": "GitHub dalın durumunu kontrol ederken lütfen bekleyin"
+          },
+          "autoMergeEnabled": {
+            "title": "Otomatik birleştirme etkin",
+            "detail": "Bu pull request, gereksinimleri karşılandığında birleştirilir"
+          },
+          "inMergeQueue": {
+            "title": "Birleştirme kuyruğunda bekliyor",
+            "detail": "Kuyruğun başına geldiğinde GitHub onu birleştirir"
+          }
+        },
+        "merged": {
+          "title": "Pull request başarıyla birleştirildi ve kapatıldı",
+          "detail": "Kaynak dal güvenle silinebilir"
+        },
+        "closed": {
+          "title": "Birleştirilmemiş commit'lerle kapatıldı",
+          "detail": "Bu pull request kapalı. Birleştirmek için yeniden açın"
+        }
+      }
     },
     "messages": {
       "pushSuccess": "Push başarılı",
@@ -1711,10 +1687,10 @@
       "noResults": "Eşleşen model yok",
       "chooseModel": "Bir model seçin",
       "chooseKey": "Bir anahtar seçin",
-      "noCompatibleKeys": "Uyumlu anahtar yok",
       "chooseModelHint": "Gezinmek için klavyeyi kullanın veya fareyle bir modele tıklayın",
       "chooseKeyHint": "Gezinmek için klavyeyi kullanın veya fareyle bir anahtara tıklayın",
       "noModelsForKey": "Bu anahtar için etkin model yok",
+      "noCompatibleKeys": "Uyumlu anahtar yok",
       "selectKey": "Anahtar seç",
       "sourceScope": {
         "label": "Model kaynakları",
@@ -1834,7 +1810,6 @@
         "readRemotesFailed": "Deponun uzak kaynakları okunamadı"
       },
       "labels": {
-        "defaultBranches": "Varsayılan dallar",
         "otherBranches": "Diğer Branch'ler",
         "current": "Geçerli",
         "recent": "Son",
@@ -1849,7 +1824,8 @@
         "prSearchScope": "Yüklenen {{count}} Pull requests içinde ara",
         "prLimit": "En fazla {{count}} açık PR gösteriliyor",
         "noPullRequests": "Eşleşen Pull requests yok",
-        "mainWorktree": "Ana"
+        "mainWorktree": "Ana",
+        "defaultBranches": "Varsayılan dallar"
       },
       "placeholders": {
         "add": "yeni branch adı...",
@@ -1882,8 +1858,6 @@
       "selectWorktreeSource": "Worktree branch'i veya pull request seç"
     },
     "spotlightFooter": {
-      "settings": "Spotlight ayarları",
-      "unpinAll": "Tümünün sabitlemesini kaldır",
       "navigate": "Gezin",
       "select": "Seç",
       "switchColumn": "Sütun değiştir",
@@ -1897,7 +1871,9 @@
       "incompatible": "Uyumsuz",
       "manageModels": "Modelleri yönet",
       "manageKeys": "Anahtarları yönet",
-      "manageAgents": "Agents yönet"
+      "manageAgents": "Agents yönet",
+      "settings": "Spotlight ayarları",
+      "unpinAll": "Tümünün sabitlemesini kaldır"
     },
     "editorSpotlight": {
       "searchPlaceholder": "Komut ara...",
@@ -2067,8 +2043,6 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Sohbet paneli",
-    "chatSplitRatio": "Sohbet paneli oranı",
-    "chatSplitRatioHint": "Seçtiğiniz anda uygulanır; sonrasında ayırıcıyı sürüklemek yine de öncelikli olur.",
     "chatLeft": "Sohbet solda",
     "chatRight": "Sohbet sağda",
     "sidebarPosition": "Workstation kenar çubuğu",
@@ -2098,7 +2072,9 @@
     "ramHydratedEvents": "Hydrated olaylar",
     "ramTurnBodies": "Geçmiş lazy load",
     "ramFileTrees": "Dosya ağaçları",
-    "ramCodeMirrors": "File rendering"
+    "ramCodeMirrors": "File rendering",
+    "chatSplitRatio": "Sohbet paneli oranı",
+    "chatSplitRatioHint": "Seçtiğiniz anda uygulanır; sonrasında ayırıcıyı sürüklemek yine de öncelikli olur."
   },
   "spotlightActions": {
     "enableChatPagination": "Sohbet sayfalandırmasını aç",
@@ -2109,8 +2085,6 @@
     "moveWorkstationSidebarRight": "Workstation kenar çubuğunu sağa taşı",
     "openMyStation": "My Station'a git",
     "openAgentStation": "Agent Station'a git",
-    "openMyStationInNewWindow": "My Station'ı yeni pencerede aç",
-    "openAgentStationInNewWindow": "Agent Station'ı yeni pencerede aç",
     "openKanban": "Kanban'e git",
     "changeLanguage": "Dili değiştir",
     "changeTheme": "Temayı değiştir",
@@ -2118,7 +2092,9 @@
     "searchThemes": "Tema ara...",
     "searchSkins": "Görünüm ara...",
     "detectUpdate": "Güncellemeleri denetle",
-    "recentlyUsed": "Son kullanılanlar"
+    "recentlyUsed": "Son kullanılanlar",
+    "openMyStationInNewWindow": "My Station'ı yeni pencerede aç",
+    "openAgentStationInNewWindow": "Agent Station'ı yeni pencerede aç"
   },
   "commands": {
     "showBottomPanel": "Alt paneli göster",
@@ -2141,20 +2117,6 @@
     "title": "Oturumlar"
   },
   "sourceControl": {
-    "fileMenu": {
-      "viewChanges": "Değişiklikleri görüntüle",
-      "openFileInNewTab": "Dosyayı yeni sekmede aç",
-      "stageChanges": "Değişiklikleri hazırla",
-      "unstageChanges": "Değişiklikleri hazırlamadan çıkar",
-      "discardChanges": "Değişiklikleri at",
-      "markResolved": "Çözüldü olarak işaretle (hazırla)",
-      "acceptCurrent": "Geçerli değişiklikleri kabul et (bizimki)",
-      "acceptIncoming": "Gelen değişiklikleri kabul et (onlarınki)",
-      "stageChangesCount": "Değişiklikleri hazırla ({{count}})",
-      "unstageChangesCount": "Değişiklikleri hazırlamadan çıkar ({{count}})",
-      "discardChangesCount": "Değişiklikleri at ({{count}})",
-      "markResolvedCount": "Çözüldü olarak işaretle ({{count}})"
-    },
     "notGitInitialized": "Git başlatılmadı",
     "notGitInitializedSubtitle": "Bu çalışma dizininde değişiklikleri izlemek, commit oluşturmak ve branch araçlarını kullanmak için Git'i başlatın.",
     "initializeGit": "Git'i başlat",
@@ -2183,6 +2145,20 @@
       "main": "Ana checkout",
       "worktrees": "Worktree'ler",
       "switchScopeActive": "Kaynak denetimi kapsamını değiştir: {{repo}}, {{branch}}"
+    },
+    "fileMenu": {
+      "viewChanges": "Değişiklikleri görüntüle",
+      "openFileInNewTab": "Dosyayı yeni sekmede aç",
+      "stageChanges": "Değişiklikleri hazırla",
+      "unstageChanges": "Değişiklikleri hazırlamadan çıkar",
+      "discardChanges": "Değişiklikleri at",
+      "markResolved": "Çözüldü olarak işaretle (hazırla)",
+      "acceptCurrent": "Geçerli değişiklikleri kabul et (bizimki)",
+      "acceptIncoming": "Gelen değişiklikleri kabul et (onlarınki)",
+      "stageChangesCount": "Değişiklikleri hazırla ({{count}})",
+      "unstageChangesCount": "Değişiklikleri hazırlamadan çıkar ({{count}})",
+      "discardChangesCount": "Değişiklikleri at ({{count}})",
+      "markResolvedCount": "Çözüldü olarak işaretle ({{count}})"
     }
   },
   "contextInfo": {
@@ -2336,6 +2312,10 @@
       "saved": "Ekran görüntüsü kaydedildi",
       "saveFailed": "Ekran görüntüsü kaydedilemedi: {{reason}}"
     },
+    "selectedElement": {
+      "addElement": "Öğe ekle",
+      "sentToChat": "Öğe sohbete eklendi"
+    },
     "menu": {
       "pageTheme": "Sayfa teması",
       "themeAuto": "Otomatik",
@@ -2346,10 +2326,6 @@
     },
     "openHtmlFile": {
       "failed": "Dosya açılamadı: {{reason}}"
-    },
-    "selectedElement": {
-      "addElement": "Öğe ekle",
-      "sentToChat": "Öğe sohbete eklendi"
     }
   },
   "controlTower": {
@@ -2466,6 +2442,30 @@
     "goToSection": "{{label}} bölümüne git, bölüm {{current}} / {{total}}",
     "section": "Bölüm {{current}}",
     "sectionPosition": "Bölüm {{current}} / {{total}}"
+  },
+  "gitLabels": {
+    "contains": "İçerdiği dosyalar: {{status}}",
+    "staged": "{{status}} (hazırlandı)",
+    "additions": "Eklenen satırlar",
+    "deletions": "Silinen satırlar",
+    "M": "Değiştirildi",
+    "U": "İzlenmiyor",
+    "A": "Eklendi",
+    "D": "Silindi",
+    "R": "Yeniden adlandırıldı",
+    "C": "Çakışma",
+    "I": "Yok sayıldı",
+    "?": "Bilinmeyen durum"
+  },
+  "findScope": {
+    "session": "Oturumda ara",
+    "file": "Dosyada ara",
+    "named": "{{name}} içinde ara"
+  },
+  "sidebarSettings": {
+    "title": "Kenar çubuğu ayarları",
+    "showSidebar": "Kenar çubuğunu göster",
+    "colorSourceControlFiles": "Dosyalarda fark renkleri"
   },
   "appMessages": {
     "testNotificationBody": "Bu, ORG2’den gelen bir test bildirimidir",

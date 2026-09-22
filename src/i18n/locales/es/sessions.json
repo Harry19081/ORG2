@@ -1002,6 +1002,7 @@
     "typeMessage": "Escribe un mensaje…",
     "session": "Sesión",
     "history": "Sesiones",
+    "agentFallback": "Agent",
     "goToPinnedPassage": "Ir al pasaje fijado: {{preview}}",
     "unpinPassage": "Dejar de fijar"
   },

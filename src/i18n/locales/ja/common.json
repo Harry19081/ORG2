@@ -1,28 +1,4 @@
 {
-  "gitLabels": {
-    "contains": "含まれるファイル：{{status}}",
-    "staged": "{{status}}（ステージ済み）",
-    "additions": "追加された行",
-    "deletions": "削除された行",
-    "M": "変更済み",
-    "U": "未追跡",
-    "A": "追加済み",
-    "D": "削除済み",
-    "R": "名前変更済み",
-    "C": "競合",
-    "I": "無視",
-    "?": "不明な状態"
-  },
-  "findScope": {
-    "session": "セッション内を検索",
-    "file": "ファイル内を検索",
-    "named": "{{name}} 内を検索"
-  },
-  "sidebarSettings": {
-    "title": "サイドバー設定",
-    "showSidebar": "サイドバーを表示",
-    "colorSourceControlFiles": "ファイルの差分色"
-  },
   "teamInbox": {
     "listLabel": "チーム受信トレイの一覧",
     "itemsLabel": "チーム受信トレイの項目",
@@ -319,9 +295,6 @@
     "confirm": "確認",
     "apply": "適用",
     "reset": "リセット",
-    "resetFilters": "フィルターをリセット",
-    "cardView": "カードビュー",
-    "listView": "リストビュー",
     "search": "検索",
     "add": "追加",
     "remove": "削除",
@@ -365,9 +338,6 @@
     "closeOthers": "他を閉じる",
     "closeSaved": "保存済みを閉じる",
     "openInNewWindow": "新しいウィンドウで開く",
-    "exportAndSync": "エクスポートと同期",
-    "export": "エクスポート",
-    "openIn": "開く場所",
     "openInNewTab": "新しいタブで開く",
     "confirmDelete": "削除の確認",
     "confirmDeleteTitle": "「{{name}}」を削除しますか？",
@@ -413,6 +383,12 @@
     "createPullRequest": "Pull request を作成",
     "expandView": "ビューを展開",
     "restoreSplitView": "分割ビューに戻す",
+    "resetFilters": "フィルターをリセット",
+    "cardView": "カードビュー",
+    "listView": "リストビュー",
+    "exportAndSync": "エクスポートと同期",
+    "export": "エクスポート",
+    "openIn": "開く場所",
     "overwrite": "上書き"
   },
   "status": {
@@ -470,7 +446,6 @@
     "diagnosticsInitializing": "診断ソースを起動中...",
     "diagnosticSourceIssues": "診断ソースの問題",
     "copied": "コピー済み",
-    "copiedFilePath": "ファイルパスをコピーしました",
     "copyFailed": "コピーに失敗しました",
     "searching": "検索中...",
     "noResults": "結果なし",
@@ -478,7 +453,8 @@
     "scanningFileExtensions": "ファイル拡張子をスキャン中…",
     "testing": "テスト中...",
     "empty": "空",
-    "launching": "起動中..."
+    "launching": "起動中...",
+    "copiedFilePath": "ファイルパスをコピーしました"
   },
   "pagination": {
     "totalItems": "{{count}} 件",
@@ -496,7 +472,6 @@
   },
   "optional": "任意",
   "common": {
-    "display": "UI設定",
     "on": "オン",
     "off": "オフ",
     "default": "デフォルト",
@@ -530,12 +505,10 @@
     "error": "エラー",
     "pid": "PID",
     "shell": "Shell",
-    "source": "ソース"
+    "source": "ソース",
+    "display": "UI設定"
   },
   "labels": {
-    "stashesCount": "{{count}}件のスタッシュ",
-    "stashesCount_one": "{{count}}件のスタッシュ",
-    "stashesCount_other": "{{count}}件のスタッシュ",
     "accounts": "アカウント",
     "enabled": "有効",
     "disabled": "無効",
@@ -580,9 +553,6 @@
     "pullRequest": "Pull request",
     "operationLog": "操作ログ",
     "gitDashboard": "ダッシュボード",
-    "changedFilesCount": "{{fileCount}}件の変更",
-    "changedFilesCount_one": "{{fileCount}}件の変更",
-    "changedFilesCount_other": "{{fileCount}}件の変更",
     "colorTokens": "カラー Token",
     "terminalInfo": "ターミナル情報",
     "fileCount_one": "{{count}} 個のファイル",
@@ -674,7 +644,13 @@
     "issueComments_other": "{{count}} 件のコメント",
     "tokens": "トークン",
     "actions": "操作",
-    "all": "すべて"
+    "all": "すべて",
+    "stashesCount": "{{count}}件のスタッシュ",
+    "stashesCount_one": "{{count}}件のスタッシュ",
+    "stashesCount_other": "{{count}}件のスタッシュ",
+    "changedFilesCount": "{{fileCount}}件の変更",
+    "changedFilesCount_one": "{{fileCount}}件の変更",
+    "changedFilesCount_other": "{{fileCount}}件の変更"
   },
   "searchModes": {},
   "tabs": {
@@ -710,7 +686,6 @@
     "reconnectCodex": "再接続",
     "technicalDetails": "技術的な詳細",
     "failedToCopy": "コピーに失敗しました",
-    "failedToCopyFilePath": "ファイルパスのコピーに失敗しました",
     "api": {
       "messages": {
         "signIn": "再度ログインしてください。"
@@ -720,7 +695,8 @@
     "unknownError": "不明なエラーが発生しました",
     "componentLoadingFailed": "コンポーネントの読み込みに失敗しました",
     "noLocalPath": "ローカルパスがありません",
-    "openInFinderFailed": "Finder で開けませんでした"
+    "openInFinderFailed": "Finder で開けませんでした",
+    "failedToCopyFilePath": "ファイルパスのコピーに失敗しました"
   },
   "confirmation": {
     "delete": "本当に削除しますか？",
@@ -771,9 +747,7 @@
     "previous": "前へ",
     "next": "次へ",
     "previousMatch": "前の一致 (Shift+Enter)",
-    "previousMatchLabel": "前の一致",
     "nextMatch": "次の一致 (Enter)",
-    "nextMatchLabel": "次の一致",
     "clearSearch": "検索をクリア",
     "openFile": "ファイルを開く",
     "openNativeDevTools": "開発者ツールを開く",
@@ -798,20 +772,13 @@
     "goForward": "進む",
     "goToToday": "今日に移動",
     "matchCase": "大文字と小文字を区別 (Alt+C)",
-    "matchCaseLabel": "大文字と小文字を区別",
     "matchWholeWord": "単語単位で検索 (Alt+W)",
-    "matchWholeWordLabel": "単語単位で検索",
     "useRegex": "正規表現を使用 (Alt+R)",
-    "useRegexLabel": "正規表現を使用",
     "searchInOpenEditors": "開いているエディタのみで検索",
     "replace": "置換 (Ctrl+Shift+1)",
-    "replaceLabel": "置換",
     "replaceAll": "すべて置換 (Ctrl+Alt+Enter)",
-    "replaceAllLabel": "すべて置換",
     "moreActions": "その他の操作...",
     "startVoiceInput": "音声入力を開始",
-    "expandInput": "入力欄を広げる",
-    "collapseInput": "入力欄を縮める",
     "cancelRecording": "録音をキャンセル",
     "stopAndTranscribe": "停止して文字起こし",
     "htmlPreview": "HTML プレビュー",
@@ -831,7 +798,16 @@
     "scrollToItem": "{{name}} へスクロール",
     "containsStatusFiles": "{{status}} のファイルを含む",
     "showFileList": "ファイル一覧を表示",
-    "copyValueRightClickForPath": "クリックで値をコピー、右クリックでパスをコピー"
+    "copyValueRightClickForPath": "クリックで値をコピー、右クリックでパスをコピー",
+    "previousMatchLabel": "前の一致",
+    "nextMatchLabel": "次の一致",
+    "matchCaseLabel": "大文字と小文字を区別",
+    "matchWholeWordLabel": "単語単位で検索",
+    "useRegexLabel": "正規表現を使用",
+    "replaceLabel": "置換",
+    "replaceAllLabel": "すべて置換",
+    "expandInput": "入力欄を広げる",
+    "collapseInput": "入力欄を縮める"
   },
   "placeholders": {
     "enterFileName": "ファイル名を入力",
@@ -886,7 +862,6 @@
     "noSessionsFound": "Sessionが見つかりません",
     "typeToSearchFiles": "ファイルを検索するには入力...",
     "selectFileToViewChanges": "ファイルを選択して変更を表示",
-    "selectSidebarFileToViewChanges": "ファイルを1つ選択",
     "failedToLoadHistory": "履歴の読み込みに失敗しました",
     "noGitHistory": "Git 履歴がありません",
     "noCommitHistory": "コミットが見つかりません",
@@ -949,6 +924,7 @@
     "noData": "データなし",
     "noResults": "結果なし",
     "noSessionHistory": "セッション履歴はありません",
+    "selectSidebarFileToViewChanges": "ファイルを1つ選択",
     "selectSidebarStash": "stash を1つ選択",
     "selectSidebarCommit": "commit を1つ選択",
     "selectSidebarPullRequest": "pull request を1つ選択",
@@ -975,8 +951,6 @@
     "chromeWindowOpen": "Chrome ウィンドウが開いています — 直接操作してから Agent に戻ってください",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
-    "switchToUnifiedDiff": "統合差分に切り替え",
-    "switchToSplitDiff": "分割差分に切り替え",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git 未初期化",
@@ -1015,7 +989,6 @@
     "nLines": "{{count}} lines",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
-    "switchToGraphView": "グラフ表示に切り替え",
     "discardChanges": "Discard Changes",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
@@ -1061,6 +1034,9 @@
         "passed": "成功"
       }
     },
+    "switchToUnifiedDiff": "統合差分に切り替え",
+    "switchToSplitDiff": "分割差分に切り替え",
+    "switchToGraphView": "グラフ表示に切り替え",
     "fileChangedOnDiskTitle": "ディスク上でファイルが変更されました",
     "fileChangedOnDiskBody": "「{{name}}」は開いた後にディスク上で変更されました。自分のバージョンで上書きしますか？"
   },
@@ -1216,93 +1192,6 @@
         "autoMergeEnabled": "自動マージを有効にしました",
         "inMergeQueue": "マージキューで待機中"
       },
-      "mergeBox": {
-        "checksFailed": "一部のチェックが成功しませんでした",
-        "checksPending": "一部のチェックがまだ完了していません",
-        "checksPassed": "すべてのチェックに合格しました",
-        "checksSkipped": "すべてのチェックがスキップされました",
-        "counts": {
-          "failing": "{{count}} 件失敗",
-          "inProgress": "{{count}} 件実行中",
-          "skipped": "{{count}} 件スキップ",
-          "successful": "{{count}} 件成功",
-          "summary_one": "チェック: {{parts}}",
-          "summary_other": "チェック: {{parts}}"
-        },
-        "check": {
-          "queued": "キュー登録済み",
-          "started": "{{time}}に開始",
-          "successfulIn": "{{duration}}で成功",
-          "failingAfter": "{{duration}}後に失敗",
-          "skipped": "スキップ",
-          "successful": "成功",
-          "failing": "失敗"
-        },
-        "deployments": {
-          "label": "デプロイ",
-          "none": "デプロイはありません",
-          "active_one": "{{count}} 件のアクティブなデプロイ",
-          "active_other": "{{count}} 件のアクティブなデプロイ",
-          "view": "デプロイを表示",
-          "notDeployed": "このブランチはデプロイされていません",
-          "deployed": "このブランチは正常にデプロイされました",
-          "deploying": "このブランチをデプロイ中です",
-          "deployFailed": "このブランチのデプロイ中にエラーが発生しました",
-          "deployInactive": "このブランチは現在デプロイされていません",
-          "state": {
-            "active": "アクティブ",
-            "pending": "進行中",
-            "failure": "失敗",
-            "inactive": "非アクティブ"
-          }
-        },
-        "conditions": {
-          "reviewApproved": {
-            "title": "変更が承認されました",
-            "detail": "承認レビューが送信されました"
-          },
-          "reviewRequired": {
-            "title": "レビューが必要",
-            "detail": "マージするには、少なくとも 1 件の承認レビューが必要です"
-          },
-          "reviewChangesRequested": {
-            "title": "変更がリクエストされました",
-            "detail": "レビュアーがマージ前に変更をリクエストしました"
-          },
-          "noConflicts": {
-            "title": "ベースブランチと競合はありません",
-            "detail": "マージは自動的に実行できます"
-          },
-          "hasConflicts": {
-            "title": "このブランチには解決が必要な競合があります",
-            "detail": "head ブランチで競合を解決してからプッシュしてください"
-          },
-          "outOfDate": {
-            "title": "このブランチはベースブランチより古い状態です",
-            "detail": "ベースブランチの最新の変更をこのブランチにマージしてください"
-          },
-          "checkingConflicts": {
-            "title": "自動マージできるか確認中…",
-            "detail": "GitHub がブランチの状態を確認しています。しばらくお待ちください"
-          },
-          "autoMergeEnabled": {
-            "title": "自動マージを有効にしました",
-            "detail": "要件が満たされると、このプルリクエストはマージされます"
-          },
-          "inMergeQueue": {
-            "title": "マージキューで待機中",
-            "detail": "キューの先頭に達すると GitHub がマージします"
-          }
-        },
-        "merged": {
-          "title": "プルリクエストは正常にマージされ、クローズされました",
-          "detail": "head ブランチは安全に削除できます"
-        },
-        "closed": {
-          "title": "未マージのコミットを残してクローズされました",
-          "detail": "このプルリクエストはクローズされています。マージするには再オープンしてください"
-        }
-      },
       "commits": {
         "backToList": "すべてのコミット",
         "none": "コミットなし",
@@ -1424,7 +1313,94 @@
       },
       "navigationTrail": "pull request ナビゲーション",
       "failedToLoad": "pull request を読み込めませんでした",
-      "label": "Pull request"
+      "label": "Pull request",
+      "mergeBox": {
+        "checksFailed": "一部のチェックが成功しませんでした",
+        "checksPending": "一部のチェックがまだ完了していません",
+        "checksPassed": "すべてのチェックに合格しました",
+        "checksSkipped": "すべてのチェックがスキップされました",
+        "counts": {
+          "failing": "{{count}} 件失敗",
+          "inProgress": "{{count}} 件実行中",
+          "skipped": "{{count}} 件スキップ",
+          "successful": "{{count}} 件成功",
+          "summary_one": "チェック: {{parts}}",
+          "summary_other": "チェック: {{parts}}"
+        },
+        "check": {
+          "queued": "キュー登録済み",
+          "started": "{{time}}に開始",
+          "successfulIn": "{{duration}}で成功",
+          "failingAfter": "{{duration}}後に失敗",
+          "skipped": "スキップ",
+          "successful": "成功",
+          "failing": "失敗"
+        },
+        "deployments": {
+          "label": "デプロイ",
+          "none": "デプロイはありません",
+          "active_one": "{{count}} 件のアクティブなデプロイ",
+          "active_other": "{{count}} 件のアクティブなデプロイ",
+          "view": "デプロイを表示",
+          "notDeployed": "このブランチはデプロイされていません",
+          "deployed": "このブランチは正常にデプロイされました",
+          "deploying": "このブランチをデプロイ中です",
+          "deployFailed": "このブランチのデプロイ中にエラーが発生しました",
+          "deployInactive": "このブランチは現在デプロイされていません",
+          "state": {
+            "active": "アクティブ",
+            "pending": "進行中",
+            "failure": "失敗",
+            "inactive": "非アクティブ"
+          }
+        },
+        "conditions": {
+          "reviewApproved": {
+            "title": "変更が承認されました",
+            "detail": "承認レビューが送信されました"
+          },
+          "reviewRequired": {
+            "title": "レビューが必要",
+            "detail": "マージするには、少なくとも 1 件の承認レビューが必要です"
+          },
+          "reviewChangesRequested": {
+            "title": "変更がリクエストされました",
+            "detail": "レビュアーがマージ前に変更をリクエストしました"
+          },
+          "noConflicts": {
+            "title": "ベースブランチと競合はありません",
+            "detail": "マージは自動的に実行できます"
+          },
+          "hasConflicts": {
+            "title": "このブランチには解決が必要な競合があります",
+            "detail": "head ブランチで競合を解決してからプッシュしてください"
+          },
+          "outOfDate": {
+            "title": "このブランチはベースブランチより古い状態です",
+            "detail": "ベースブランチの最新の変更をこのブランチにマージしてください"
+          },
+          "checkingConflicts": {
+            "title": "自動マージできるか確認中…",
+            "detail": "GitHub がブランチの状態を確認しています。しばらくお待ちください"
+          },
+          "autoMergeEnabled": {
+            "title": "自動マージを有効にしました",
+            "detail": "要件が満たされると、このプルリクエストはマージされます"
+          },
+          "inMergeQueue": {
+            "title": "マージキューで待機中",
+            "detail": "キューの先頭に達すると GitHub がマージします"
+          }
+        },
+        "merged": {
+          "title": "プルリクエストは正常にマージされ、クローズされました",
+          "detail": "head ブランチは安全に削除できます"
+        },
+        "closed": {
+          "title": "未マージのコミットを残してクローズされました",
+          "detail": "このプルリクエストはクローズされています。マージするには再オープンしてください"
+        }
+      }
     },
     "messages": {
       "pushSuccess": "Successfully pushed changes to remote",
@@ -1711,10 +1687,10 @@
       "noResults": "一致するモデルがありません",
       "chooseModel": "モデルを選択",
       "chooseKey": "キーを選択",
-      "noCompatibleKeys": "互換性のあるキーがありません",
       "chooseModelHint": "キーボードで移動するか、マウスでモデルをクリックしてください",
       "chooseKeyHint": "キーボードで移動するか、マウスでキーをクリックしてください",
       "noModelsForKey": "このキーで有効なモデルはありません",
+      "noCompatibleKeys": "互換性のあるキーがありません",
       "selectKey": "キーを選択",
       "sourceScope": {
         "label": "モデルのソース",
@@ -1834,7 +1810,6 @@
         "readRemotesFailed": "リポジトリのリモートを読み込めませんでした"
       },
       "labels": {
-        "defaultBranches": "デフォルトブランチ",
         "otherBranches": "その他のブランチ",
         "current": "現在",
         "recent": "最近",
@@ -1849,7 +1824,8 @@
         "prSearchScope": "読み込んだ {{count}} 件の Pull requests を検索",
         "prLimit": "最大 {{count}} 件のオープン PR を表示",
         "noPullRequests": "一致する Pull requests はありません",
-        "mainWorktree": "メイン"
+        "mainWorktree": "メイン",
+        "defaultBranches": "デフォルトブランチ"
       },
       "placeholders": {
         "add": "新しいブランチ名...",
@@ -1882,8 +1858,6 @@
       "selectWorktreeSource": "Worktree のブランチまたは pull request を選択"
     },
     "spotlightFooter": {
-      "settings": "Spotlight 設定",
-      "unpinAll": "すべての固定を解除",
       "navigate": "移動",
       "select": "選択",
       "switchColumn": "列を切り替え",
@@ -1897,7 +1871,9 @@
       "incompatible": "非対応",
       "manageModels": "モデルを管理",
       "manageKeys": "キーを管理",
-      "manageAgents": "Agent を管理"
+      "manageAgents": "Agent を管理",
+      "settings": "Spotlight 設定",
+      "unpinAll": "すべての固定を解除"
     },
     "editorSpotlight": {
       "searchPlaceholder": "コマンドを検索...",
@@ -2067,8 +2043,6 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "チャットパネル",
-    "chatSplitRatio": "チャットパネルの比率",
-    "chatSplitRatioHint": "選ぶとすぐに適用されます。その後に仕切りをドラッグした場合はそちらが優先されます。",
     "chatLeft": "左チャット",
     "chatRight": "右チャット",
     "sidebarPosition": "Workstation サイドバー",
@@ -2098,7 +2072,9 @@
     "ramHydratedEvents": "Hydrated イベント",
     "ramTurnBodies": "履歴 lazy load",
     "ramFileTrees": "ファイルツリー",
-    "ramCodeMirrors": "ファイルレンダリング"
+    "ramCodeMirrors": "ファイルレンダリング",
+    "chatSplitRatio": "チャットパネルの比率",
+    "chatSplitRatioHint": "選ぶとすぐに適用されます。その後に仕切りをドラッグした場合はそちらが優先されます。"
   },
   "spotlightActions": {
     "enableChatPagination": "チャットのページ分割をオンにする",
@@ -2109,8 +2085,6 @@
     "moveWorkstationSidebarRight": "Workstation サイドバーを右に移動",
     "openMyStation": "My Station に移動",
     "openAgentStation": "Agent Station に移動",
-    "openMyStationInNewWindow": "My Station を新しいウィンドウで開く",
-    "openAgentStationInNewWindow": "Agent Station を新しいウィンドウで開く",
     "openKanban": "Kanban に移動",
     "changeLanguage": "言語を変更",
     "changeTheme": "テーマを変更",
@@ -2118,7 +2092,9 @@
     "searchThemes": "テーマを検索...",
     "searchSkins": "スキンを検索...",
     "detectUpdate": "アップデートを確認",
-    "recentlyUsed": "最近使用した項目"
+    "recentlyUsed": "最近使用した項目",
+    "openMyStationInNewWindow": "My Station を新しいウィンドウで開く",
+    "openAgentStationInNewWindow": "Agent Station を新しいウィンドウで開く"
   },
   "commands": {
     "showBottomPanel": "ボトムパネルを表示",
@@ -2141,20 +2117,6 @@
     "title": "セッション"
   },
   "sourceControl": {
-    "fileMenu": {
-      "viewChanges": "変更を表示",
-      "openFileInNewTab": "新しいタブでファイルを開く",
-      "stageChanges": "変更をステージ",
-      "unstageChanges": "変更のステージを解除",
-      "discardChanges": "変更を破棄",
-      "markResolved": "解決済みとしてマーク（ステージ）",
-      "acceptCurrent": "現在の変更を採用（ours）",
-      "acceptIncoming": "取り込む変更を採用（theirs）",
-      "stageChangesCount": "変更をステージ（{{count}} 件）",
-      "unstageChangesCount": "変更のステージを解除（{{count}} 件）",
-      "discardChangesCount": "変更を破棄（{{count}} 件）",
-      "markResolvedCount": "解決済みとしてマーク（{{count}} 件）"
-    },
     "notGitInitialized": "Git 未初期化",
     "notGitInitializedSubtitle": "Git を初期化すると、この作業ディレクトリで変更の追跡、コミット作成、ブランチツールを使用できます。",
     "initializeGit": "Git を初期化",
@@ -2183,6 +2145,20 @@
       "main": "メインチェックアウト",
       "worktrees": "Worktrees",
       "switchScopeActive": "ソース管理のスコープを切り替え: {{repo}}、{{branch}}"
+    },
+    "fileMenu": {
+      "viewChanges": "変更を表示",
+      "openFileInNewTab": "新しいタブでファイルを開く",
+      "stageChanges": "変更をステージ",
+      "unstageChanges": "変更のステージを解除",
+      "discardChanges": "変更を破棄",
+      "markResolved": "解決済みとしてマーク（ステージ）",
+      "acceptCurrent": "現在の変更を採用（ours）",
+      "acceptIncoming": "取り込む変更を採用（theirs）",
+      "stageChangesCount": "変更をステージ（{{count}} 件）",
+      "unstageChangesCount": "変更のステージを解除（{{count}} 件）",
+      "discardChangesCount": "変更を破棄（{{count}} 件）",
+      "markResolvedCount": "解決済みとしてマーク（{{count}} 件）"
     }
   },
   "contextInfo": {
@@ -2336,6 +2312,10 @@
       "saved": "スクリーンショットを保存しました",
       "saveFailed": "スクリーンショットの保存に失敗しました: {{reason}}"
     },
+    "selectedElement": {
+      "addElement": "要素を追加",
+      "sentToChat": "要素をチャットに追加しました"
+    },
     "menu": {
       "pageTheme": "ページのテーマ",
       "themeAuto": "自動",
@@ -2346,10 +2326,6 @@
     },
     "openHtmlFile": {
       "failed": "ファイルを開けませんでした: {{reason}}"
-    },
-    "selectedElement": {
-      "addElement": "要素を追加",
-      "sentToChat": "要素をチャットに追加しました"
     }
   },
   "controlTower": {
@@ -2466,6 +2442,30 @@
     "goToSection": "{{label}} へ移動、セクション {{current}} / {{total}}",
     "section": "セクション {{current}}",
     "sectionPosition": "セクション {{current}} / {{total}}"
+  },
+  "gitLabels": {
+    "contains": "含まれるファイル：{{status}}",
+    "staged": "{{status}}（ステージ済み）",
+    "additions": "追加された行",
+    "deletions": "削除された行",
+    "M": "変更済み",
+    "U": "未追跡",
+    "A": "追加済み",
+    "D": "削除済み",
+    "R": "名前変更済み",
+    "C": "競合",
+    "I": "無視",
+    "?": "不明な状態"
+  },
+  "findScope": {
+    "session": "セッション内を検索",
+    "file": "ファイル内を検索",
+    "named": "{{name}} 内を検索"
+  },
+  "sidebarSettings": {
+    "title": "サイドバー設定",
+    "showSidebar": "サイドバーを表示",
+    "colorSourceControlFiles": "ファイルの差分色"
   },
   "appMessages": {
     "testNotificationBody": "これは ORG2 からのテスト通知です",
