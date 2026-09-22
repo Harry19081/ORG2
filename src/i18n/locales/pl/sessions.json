@@ -2000,7 +2000,13 @@
       }
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} wymaga aktualizacji ({{installed}} > {{latest}})",
+      "title": "Dostępna aktualizacja {{cli}}",
+      "versions": "Obecna: {{installed}} · Najnowsza: {{latest}}",
+      "upgrade": "Aktualizuj w terminalu",
+      "upgradeHint": "Aktualizuje Cursor CLI w osobnym terminalu. Po zakończeniu sprawdź wersję ponownie.",
+      "upgradeTerminal": "Aktualizacja Cursor CLI",
+      "upgradeStarted": "Rozpoczęto aktualizację w terminalu. Po zakończeniu sprawdź wersję ponownie.",
+      "upgradeFailed": "Nie udało się otworzyć terminala aktualizacji. Spróbuj ponownie.",
       "muteUntilNextVersion": "Bez alertu do następnej wersji",
       "refresh": "Sprawdź ponownie wersję {{cli}} CLI",
       "unknownVersion": "nieznana"

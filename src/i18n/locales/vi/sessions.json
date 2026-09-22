@@ -1981,7 +1981,13 @@
       }
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} cần nâng cấp ({{installed}} > {{latest}})",
+      "title": "Có bản cập nhật cho {{cli}}",
+      "versions": "Hiện tại: {{installed}} · Mới nhất: {{latest}}",
+      "upgrade": "Cập nhật trong terminal",
+      "upgradeHint": "Cập nhật Cursor CLI trong terminal riêng. Kiểm tra lại phiên bản khi hoàn tất.",
+      "upgradeTerminal": "Cập nhật Cursor CLI",
+      "upgradeStarted": "Đã bắt đầu cập nhật trong terminal. Kiểm tra lại phiên bản khi hoàn tất.",
+      "upgradeFailed": "Không thể mở terminal cập nhật. Vui lòng thử lại.",
       "muteUntilNextVersion": "Không cảnh báo cho đến phiên bản tiếp theo",
       "refresh": "Kiểm tra lại phiên bản {{cli}} CLI",
       "unknownVersion": "không xác định"

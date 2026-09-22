@@ -1906,7 +1906,13 @@
       "body": "Git belum terinstal atau tidak dapat ditemukan. Minta ADE Manager atau SDE Agent untuk menginstal Git di mesin ini, lalu mulai ulang ORG2"
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} perlu ditingkatkan ({{installed}} > {{latest}})",
+      "title": "Pembaruan {{cli}} tersedia",
+      "versions": "Saat ini: {{installed}} · Terbaru: {{latest}}",
+      "upgrade": "Perbarui di terminal",
+      "upgradeHint": "Memperbarui Cursor CLI di terminal terpisah. Periksa ulang versi setelah selesai.",
+      "upgradeTerminal": "Perbarui Cursor CLI",
+      "upgradeStarted": "Pembaruan dimulai di terminal. Periksa ulang versi setelah selesai.",
+      "upgradeFailed": "Tidak dapat membuka terminal pembaruan. Coba lagi.",
       "muteUntilNextVersion": "Jangan ingatkan hingga versi berikutnya",
       "refresh": "Periksa ulang versi CLI {{cli}}",
       "unknownVersion": "tidak diketahui"

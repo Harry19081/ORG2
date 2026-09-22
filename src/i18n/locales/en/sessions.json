@@ -1906,7 +1906,13 @@
       "body": "Git is not installed or could not be found. Ask ADE Manager or SDE Agent to install Git for this machine, then restart ORG2"
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} needs an upgrade ({{installed}} > {{latest}})",
+      "title": "{{cli}} has an update",
+      "versions": "Current: {{installed}} · Latest: {{latest}}",
+      "upgrade": "Upgrade in terminal",
+      "upgradeHint": "Opens a separate terminal to upgrade Cursor CLI. Recheck the version when it finishes.",
+      "upgradeTerminal": "Upgrade Cursor CLI",
+      "upgradeStarted": "Upgrade started in the terminal. Recheck the version when it finishes.",
+      "upgradeFailed": "Could not open the upgrade terminal. Please try again.",
       "muteUntilNextVersion": "No alert until next version",
       "refresh": "Recheck {{cli}} CLI version",
       "unknownVersion": "unknown"

@@ -1981,7 +1981,13 @@
       }
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} için yükseltme gerekiyor ({{installed}} > {{latest}})",
+      "title": "{{cli}} güncellemesi var",
+      "versions": "Mevcut: {{installed}} · En yeni: {{latest}}",
+      "upgrade": "Terminalde güncelle",
+      "upgradeHint": "Cursor CLI ayrı bir terminalde güncellenir. Tamamlandığında sürümü yeniden kontrol edin.",
+      "upgradeTerminal": "Cursor CLI güncellemesi",
+      "upgradeStarted": "Güncelleme terminalde başlatıldı. Tamamlandığında sürümü yeniden kontrol edin.",
+      "upgradeFailed": "Güncelleme terminali açılamadı. Tekrar deneyin.",
       "muteUntilNextVersion": "Sonraki sürüme kadar uyarı gösterme",
       "refresh": "{{cli}} CLI sürümünü yeniden denetle",
       "unknownVersion": "bilinmiyor"

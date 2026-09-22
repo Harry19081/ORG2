@@ -25,6 +25,30 @@ afterEach(async () => {
 });
 
 describe("PageNotice copy", () => {
+  it("can omit copying transient guidance while keeping the primary recovery action", async () => {
+    const retry = vi.fn();
+    root = createRoot(container);
+    await act(async () =>
+      root.render(
+        createElement(
+          PageNotice,
+          {
+            title: "Connection unavailable",
+            copyable: false,
+            action: { label: "Reconnect", onClick: retry },
+          },
+          "Check that your computer is running"
+        )
+      )
+    );
+    expect(container.querySelector('[aria-label="actions.copy"]')).toBeNull();
+    const button = container.querySelector("button")!;
+    expect(button.textContent).toBe("Reconnect");
+    await act(async () => button.click());
+    expect(retry).toHaveBeenCalledOnce();
+    expect(copyText).not.toHaveBeenCalled();
+  });
+
   it("copies title, nested details and subtitle without triggering Retry", async () => {
     vi.mocked(copyText).mockResolvedValue(undefined);
     const retry = vi.fn();

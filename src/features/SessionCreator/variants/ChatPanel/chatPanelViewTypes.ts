@@ -38,6 +38,7 @@ interface CategoryPickerProps {
 }
 
 interface CliVersionAlert {
+  cliAgentType?: string | null;
   cliDisplayName: string | undefined;
   installedVersion: string | undefined;
   latestVersion: string | undefined;
