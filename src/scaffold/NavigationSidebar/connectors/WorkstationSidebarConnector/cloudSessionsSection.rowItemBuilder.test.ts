@@ -33,14 +33,17 @@ const remoteRow: RemoteTeammateSessionMetadata = {
   eventsTailHash: "hash",
 };
 
-function renderCloudRowAccessory(): string {
+function renderCloudRowAccessory(
+  inspect?: (
+    item: import("@src/scaffold/NavigationSidebar/components/NavigationMenu/config").NavigationMenuItem
+  ) => void
+): string {
   const Probe = () => {
     const buildRowItem = useCloudSessionRowItemBuilder({
       presenceMap: {},
       selfUserId: null,
       t: ((key: string) => key) as never,
       tCommon: ((key: string) => key) as never,
-      runFork: vi.fn(),
       buildNativeMenuItems: () => [],
       busySessionRows: new Map(),
       pinnedRemoteSessionIds: new Set(),
@@ -51,6 +54,7 @@ function renderCloudRowAccessory(): string {
       bareSessionId: remoteRow.sourceSessionId,
       isOrphan: false,
     });
+    inspect?.(item);
     return createElement("div", null, item.trailingElement);
   };
 
@@ -60,6 +64,15 @@ function renderCloudRowAccessory(): string {
 }
 
 describe("team session accessories", () => {
+  it("keeps only pin and overflow in the row; takeover belongs in the menu", () => {
+    const inspect = vi.fn();
+    renderCloudRowAccessory(inspect);
+    expect(
+      inspect.mock.calls[0][0].rowActions.map(
+        (action: { label: string }) => action.label
+      )
+    ).toEqual(["sessions:chat.pinSession", "actions.more"]);
+  });
   it("omits the cloud icon and empty accessory wrapper", () => {
     expect(renderCloudRowAccessory()).toBe("<div></div>");
   });

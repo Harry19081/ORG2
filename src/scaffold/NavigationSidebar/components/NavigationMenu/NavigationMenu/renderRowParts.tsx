@@ -54,13 +54,13 @@ export function renderLeadingIcon({
     <span className={SESSION_ROW_PRESENTATION.leadingIcon}>
       {action ? (
         <>
-          <span className="inline-flex items-center justify-center leading-none transition-opacity duration-150 group-focus-within:pointer-events-none group-focus-within:opacity-0 group-hover:pointer-events-none group-hover:opacity-0">
+          <span className="inline-flex items-center justify-center leading-none transition-opacity duration-150 group-focus-within:pointer-events-none group-focus-within:opacity-0 group-hover:pointer-events-none group-hover:opacity-0 group-data-[sidebar-menu-open=true]:pointer-events-none group-data-[sidebar-menu-open=true]:opacity-0">
             {icon}
           </span>
           <Button
             aria-label={action.label}
             title={action.label}
-            className={`pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 opacity-0 duration-150 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100 focus:pointer-events-auto focus:opacity-100 focus:outline-none`}
+            className={`pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 opacity-0 duration-150 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100 group-data-[sidebar-menu-open=true]:pointer-events-auto group-data-[sidebar-menu-open=true]:opacity-100 focus:pointer-events-auto focus:opacity-100 focus:outline-none`}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();

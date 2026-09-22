@@ -154,6 +154,7 @@ export function useWorkstationSidebarChrome({
     fallback: handleMenuItemContextMenu,
     onOpenInNewTab: handleSessionMenuItemOpenInNewTab,
     openInNewTabLabel: tCommon("actions.openInNewTab"),
+    openInLabel: tCommon("actions.openIn"),
   });
   const resolvedRenderMenuItemWrapper =
     activeViewKey === "work-items"

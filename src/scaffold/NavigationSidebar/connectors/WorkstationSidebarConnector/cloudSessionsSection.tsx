@@ -240,6 +240,7 @@ export function useCloudSessionsSection({
     tCommon,
     tSessions,
     openTeamSessionAtDestination,
+    runFork,
     hideRemoteSession,
     findRow,
   });
@@ -249,7 +250,6 @@ export function useCloudSessionsSection({
     selfUserId,
     t,
     tCommon,
-    runFork,
     buildNativeMenuItems: buildRemoteSessionMenuItems,
     busySessionRows,
     pinnedRemoteSessionIds,

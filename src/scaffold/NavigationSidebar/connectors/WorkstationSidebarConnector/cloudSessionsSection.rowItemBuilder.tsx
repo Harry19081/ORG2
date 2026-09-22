@@ -42,11 +42,9 @@ import {
   PinOffIcon,
 } from "@src/icons";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
+import { popupSidebarMenu } from "@src/scaffold/NavigationSidebar/menus/SidebarMenu";
+import { type SidebarMenuItem } from "@src/scaffold/NavigationSidebar/menus/types";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
-import {
-  type NativeMenuItemOptions,
-  popupNativeMenu,
-} from "@src/util/platform/tauri/nativeMenuPopup";
 import { resolveSessionDisplayMetadata } from "@src/util/session/sessionDisplayMetadata";
 import { formatCompactAge } from "@src/util/time/formatRelativeTime";
 
@@ -95,10 +93,9 @@ interface UseCloudSessionRowItemBuilderParams {
   selfUserId: string | null;
   t: TFunction;
   tCommon: TFunction;
-  runFork: (row: RemoteTeammateSessionMetadata) => void;
   buildNativeMenuItems: (
     row: RemoteTeammateSessionMetadata
-  ) => NativeMenuItemOptions[];
+  ) => SidebarMenuItem[];
   /** Per-row in-flight replay/fork registry — busy rows render a spinner. */
   busySessionRows: ReadonlyMap<string, CloudSessionBusyEntry>;
   /** Viewer-local pin keys (`<orgId>|<rowId>`); never a property of the shared row. */
@@ -117,7 +114,6 @@ export function useCloudSessionRowItemBuilder({
   selfUserId,
   t,
   tCommon,
-  runFork,
   buildNativeMenuItems,
   busySessionRows,
   pinnedRemoteSessionIds,
@@ -277,14 +273,9 @@ export function useCloudSessionRowItemBuilder({
         };
       }
       if (!disabled) {
-        // Remote rows open/replay on plain click. Hover adds Fork plus the
-        // standard overflow menu, whether this row is a leaf or thread root.
+        // Remote rows open/replay on plain click. Takeover lives in the shared
+        // overflow menu for both leaf rows and thread roots.
         item.rowActions = [
-          {
-            icon: GitForkIcon,
-            label: t("cloud.orgPanel.fork"),
-            onClick: () => runFork(row),
-          },
           // One click on hover, matching a local row: a teammate's session is
           // pinned often enough that burying it in the overflow menu is a tax.
           {
@@ -297,9 +288,9 @@ export function useCloudSessionRowItemBuilder({
           {
             icon: MoreHorizontalIcon,
             label: tCommon("actions.more"),
-            onClick: () => {
+            onClick: (event) => {
               dismissHoverCard();
-              void popupNativeMenu({
+              void popupSidebarMenu(event, {
                 source: "cloud-session-row",
                 buildItems: () => buildNativeMenuItems(row),
               });
@@ -315,7 +306,6 @@ export function useCloudSessionRowItemBuilder({
       pinnedRemoteSessionIds,
       toggleRemoteSessionPin,
       presenceMap,
-      runFork,
       seenCounts,
       selfUserId,
       t,

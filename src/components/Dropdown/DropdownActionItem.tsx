@@ -12,6 +12,8 @@ export interface DropdownActionItemProps extends Omit<
   ButtonProps,
   "appearance" | "children" | "icon" | "layout" | "shortcut"
 > {
+  /** Destructive action styling; disabled rows retain the standard muted state. */
+  danger?: boolean;
   /** Primary row label. */
   children: React.ReactNode;
   /** Leading icon, normalized to the shared dropdown icon slot. */
@@ -41,6 +43,7 @@ export function DropdownActionItem({
   children,
   className = "",
   disabled = false,
+  danger = false,
   icon,
   labelClassName = "",
   role = "menuitem",
@@ -60,13 +63,17 @@ export function DropdownActionItem({
       role={role}
       disabled={disabled}
       className={`${DROPDOWN_CLASSES.menuActionItem} ${
-        active ? DROPDOWN_CLASSES.itemActive : ""
-      } ${disabled ? DROPDOWN_CLASSES.itemDisabled : ""} ${className}`}
+        active
+          ? danger && !disabled
+            ? DROPDOWN_CLASSES.itemDangerActive
+            : DROPDOWN_CLASSES.itemActive
+          : ""
+      } ${disabled ? DROPDOWN_CLASSES.itemDisabled : danger ? `${DROPDOWN_CLASSES.itemDanger} ${DROPDOWN_CLASSES.itemDangerHover}` : ""} ${className}`}
     >
       <span className="flex min-w-0 flex-1 items-center gap-2">
         {icon ? (
           <span
-            className={`flex ${DROPDOWN_ITEM.iconSizeClass} shrink-0 items-center justify-center text-text-2 [&_svg]:h-full [&_svg]:w-full`}
+            className={`flex ${DROPDOWN_ITEM.iconSizeClass} shrink-0 items-center justify-center ${danger && !disabled ? DROPDOWN_CLASSES.itemDangerIcon : "text-text-2"} [&_svg]:h-full [&_svg]:w-full`}
           >
             {icon}
           </span>

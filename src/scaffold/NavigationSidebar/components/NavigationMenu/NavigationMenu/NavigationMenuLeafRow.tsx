@@ -114,7 +114,7 @@ export const NavigationMenuLeafRow = React.forwardRef<
         role="button"
         tabIndex={item.disabled ? -1 : 0}
         aria-disabled={item.disabled || undefined}
-        className={`group ${SESSION_ROW_PRESENTATION.row} ${
+        className={`group data-[sidebar-menu-open=true]:bg-sidebar-selected data-[sidebar-menu-open=true]:text-text-1 ${SESSION_ROW_PRESENTATION.row} ${
           isChild ? "pr-2 pl-5" : "px-2"
         } ${
           item.disabled

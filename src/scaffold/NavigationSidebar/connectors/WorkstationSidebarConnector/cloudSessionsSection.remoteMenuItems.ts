@@ -1,5 +1,5 @@
 /**
- * Native (secondary-click / ellipsis) menu for a Team Conversation row in
+ * App dropdown (secondary-click / ellipsis) menu for a Team Conversation row in
  * `useCloudSessionsSection`, plus the viewer-local pin state it toggles.
  */
 import type { TFunction } from "i18next";
@@ -15,9 +15,9 @@ import {
 import { parseCloudRemoteItemId } from "@src/features/Org2Cloud/cloudRemoteItemId";
 import { buildCloudSessionReference } from "@src/features/Org2Cloud/cloudSessionReference";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
+import type { SidebarMenuItem } from "@src/scaffold/NavigationSidebar/menus/types";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { copyText } from "@src/util/data/clipboard";
-import type { NativeMenuItemOptions } from "@src/util/platform/tauri/nativeMenuPopup";
 
 import { buildCloudSessionNativeMenuItems } from "./cloudSessionNativeMenuItems";
 import type { CloudSessionOpenHandlers } from "./cloudSessionsSection.openHandlers";
@@ -27,10 +27,10 @@ export interface CloudRemoteSessionMenuItems {
   toggleRemoteSessionPin: (orgId: string, rowId: string) => void;
   buildRemoteSessionMenuItems: (
     row: RemoteTeammateSessionMetadata
-  ) => NativeMenuItemOptions[];
+  ) => SidebarMenuItem[];
   buildCloudRemoteItemMenuItems: (
     item: NavigationMenuItem
-  ) => NativeMenuItemOptions[];
+  ) => SidebarMenuItem[];
 }
 
 export function useCloudRemoteSessionMenuItems({
@@ -39,12 +39,14 @@ export function useCloudRemoteSessionMenuItems({
   tSessions,
   openTeamSessionAtDestination,
   hideRemoteSession,
+  runFork,
   findRow,
 }: {
   t: TFunction;
   tCommon: TFunction;
   tSessions: TFunction;
   openTeamSessionAtDestination: CloudSessionOpenHandlers["openTeamSessionAtDestination"];
+  runFork: (row: RemoteTeammateSessionMetadata) => void;
   hideRemoteSession: (row: RemoteTeammateSessionMetadata) => void;
   findRow: (rowId: string) => RemoteTeammateSessionMetadata | undefined;
 }): CloudRemoteSessionMenuItems {
@@ -70,7 +72,10 @@ export function useCloudRemoteSessionMenuItems({
         row.id
       );
       return buildCloudSessionNativeMenuItems({
+        isPinned,
         labels: {
+          openIn: tCommon("actions.openIn"),
+          fork: t("cloud.orgPanel.fork"),
           openInNewTab: tCommon("actions.openInNewTab"),
           openInNewWindow: tCommon("actions.openInNewWindow"),
           openInMyStation: tSessions("controlTower.sidebar.openInMyStation"),
@@ -85,6 +90,7 @@ export function useCloudRemoteSessionMenuItems({
           openTeamSessionAtDestination(row, "new-window"),
         onOpenInMyStation: () =>
           openTeamSessionAtDestination(row, "my-station"),
+        onFork: () => runFork(row),
         onCopyUrl: () => {
           void copyText(buildCloudSessionReference(row))
             .then(() => {
@@ -100,6 +106,7 @@ export function useCloudRemoteSessionMenuItems({
     },
     [
       hideRemoteSession,
+      runFork,
       openTeamSessionAtDestination,
       pinnedRemoteSessionIds,
       t,
