@@ -1001,8 +1001,8 @@
     "desktopRestored": "以前の設定を復元しました。Claude Desktop を完全に終了して再起動してください",
     "advancedDescription": "カスタム API 接続と一度限りの認証情報移行",
     "marketApps": {
-      "isolatedStorage": "この公式アプリは独立した設定と会話ストレージを使用します。メインアプリと CLI の設定は変更されません。以前の会話は自動でインポートされません",
-      "isolatedClaudeStorage": "Claude Desktop と Claude Code の終了後、対応する会話を自動同期します",
+      "isolatedStorage": "直近 50 件の会話が自動的に同期されます。Codex で開いたままの会話は、最新メッセージを受け取るために Codex を終了して再起動してください。アプリと CLI の設定は個別に保持されます",
+      "isolatedClaudeStorage": "Claude Desktop と Claude Code を終了すると、直近 50 件の会話が自動的に同期されます",
       "workspaceHelp": "Choose a package and model for this app. Each app keeps its own selection; changing an ORG2 chat source does not update apps.",
       "loading": "ORG2 Market のパッケージを読み込んでいます…",
       "loadFailed": "ORG2 Market のパッケージを読み込めませんでした",

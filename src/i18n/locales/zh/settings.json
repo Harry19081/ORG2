@@ -1082,8 +1082,8 @@
     "desktopRestored": "已恢复之前的桌面配置，请完全退出并重新打开 Claude Desktop",
     "advancedDescription": "自定义 API 连接和一次性凭据迁移",
     "marketApps": {
-      "isolatedStorage": "此官方 App 使用独立配置和对话存储，不会更改主 App 或 CLI 的配置。旧对话不会自动导入",
-      "isolatedClaudeStorage": "退出 Claude Desktop 和 Claude Code 后，兼容的对话会自动同步",
+      "isolatedStorage": "最近 50 条对话会自动同步。已在 Codex 中打开的对话，请退出并重新打开 Codex 以接收最新消息。主 App 和 CLI 的配置保持独立",
+      "isolatedClaudeStorage": "退出 Claude Desktop 和 Claude Code 后，最近 50 条对话会自动同步",
       "workspaceHelp": "为当前 App 选择套餐和模型。各 App 独立保存选择，切换 ORG2 聊天来源不会修改 App。",
       "loading": "正在加载 ORG2 Market 套餐…",
       "loadFailed": "无法加载 ORG2 Market 套餐",
