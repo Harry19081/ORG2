@@ -1,4 +1,5 @@
 import { listen } from "@tauri-apps/api/event";
+import type { UnlistenFn } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { rpc } from "@src/api/tauri/rpc";
@@ -73,15 +74,21 @@ export function useHarnessConnection(agentName: ConnectionHarness) {
     // The Codex history observer finishes its first pass after the page loaded;
     // it announces state changes instead of the page polling for them.
     let active = true;
-    const stateChanged = listen("codex-history-state-changed", () => {
+    let stopStateChanged: UnlistenFn | null = null;
+    listen("codex-history-state-changed", () => {
       if (active) reload();
-    }).catch(() => null);
+    })
+      .then((stop) => {
+        if (active) stopStateChanged = stop;
+        else stop();
+      })
+      .catch(() => undefined);
     return () => {
       active = false;
       requestGeneration.current++;
       listeners.delete(reload);
       window.removeEventListener("focus", focus);
-      void stateChanged.then((unlisten) => unlisten?.());
+      stopStateChanged?.();
     };
   }, [load]);
   const reload = useCallback(() => {

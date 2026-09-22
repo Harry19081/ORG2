@@ -45,15 +45,9 @@ fn history_serial() -> &'static tokio::sync::Mutex<()> {
 }
 
 /// Settings reads the automatic Codex history state through the connection view.
+#[cfg(all(feature = "market-connect", target_os = "macos"))]
 pub(crate) fn codex_history_status() -> Option<codex_history::HistorySyncView> {
-    #[cfg(all(feature = "market-connect", target_os = "macos"))]
-    {
-        Some(codex_history::status())
-    }
-    #[cfg(not(all(feature = "market-connect", target_os = "macos")))]
-    {
-        None
-    }
+    Some(codex_history::status())
 }
 
 pub(crate) fn stop_history_sync() {
