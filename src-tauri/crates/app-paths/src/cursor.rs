@@ -43,12 +43,13 @@
 //!
 //! ## Scope
 //!
-//! This module owns the resolvers its two consumers (`orgtrack_core` history
-//! ingestion, `agent_cli` plugin listing) use. Equivalent hand-rolled copies of
-//! the same platform matrix still exist in `git-api`'s `cursor_chat`,
-//! `agent-core`'s `cursor_native::auth`, `key-vault`'s `auto_detect::cursor`
-//! and the CLI usage tracker; all four want the real-user family above and are
-//! follow-up sweep candidates, not part of this module's current contract.
+//! This module is the only place the Cursor platform matrix is written down.
+//! Consumers: `orgtrack_core` history ingestion (external-history family),
+//! `agent_cli` plugin listing, `git-api`'s `cursor_chat`, `agent-core`'s
+//! `cursor_native::auth`, the CLI usage tracker, and `key-vault`'s
+//! `auto_detect::cursor` (via [`state_db_path_under`], which keeps that
+//! crate's injected-home probes testable). Add a resolver here rather than
+//! re-deriving the layout at a call site.
 
 use std::path::{Path, PathBuf};
 
@@ -89,6 +90,25 @@ pub fn state_db_path() -> Result<PathBuf, CursorPathsUnavailable> {
 /// `~/.cursor/cli-config.json` resolver. Does not check existence.
 pub fn plugins_cache_dir() -> Result<PathBuf, CursorPathsUnavailable> {
     CursorEnv::real_user(current_platform()).plugins_cache_dir()
+}
+
+/// `state.vscdb` under an explicitly supplied home, using the platform's
+/// *default* layout.
+///
+/// For callers that inject a home rather than discovering one — key-vault's
+/// suggestion probes take theirs from a `ProbeContext` so tests can point them
+/// at a fixture tree. Deliberately ignores `$XDG_CONFIG_HOME` / `%APPDATA%`:
+/// an injected home is a statement about where to look, and consulting the
+/// process environment would let the real installation leak into it. Callers
+/// that want the real installation should use [`state_db_path`] instead.
+///
+/// Does not check existence.
+pub fn state_db_path_under(home: &Path) -> PathBuf {
+    default_config_root_under(current_platform(), home)
+        .join("Cursor")
+        .join("User")
+        .join("globalStorage")
+        .join("state.vscdb")
 }
 
 // ── Public API: external-history discovery (identity-isolated) ──
@@ -524,6 +544,38 @@ mod tests {
                 "/Users/dev/Library/Application Support/Cursor/User/globalStorage/conversation-search.db"
             ),
         );
+    }
+
+    #[test]
+    fn state_db_path_under_uses_the_platform_default_layout() {
+        // Mirrors `default_config_root_under`, which the platform-matrix tests
+        // above already pin; this guards the joined file name and the promise
+        // that an injected home is used verbatim.
+        let injected = Path::new("/fixtures/fake-home");
+        let resolved = state_db_path_under(injected);
+        assert!(resolved.starts_with(injected));
+        assert!(resolved.ends_with("Cursor/User/globalStorage/state.vscdb"));
+    }
+
+    /// An injected home must win even while the real environment points
+    /// elsewhere — otherwise a fixture probe could read the developer's own
+    /// Cursor install.
+    #[test]
+    fn state_db_path_under_ignores_the_process_environment() {
+        let _lock = env_lock();
+        let _xdg = EnvVarGuard::set("XDG_CONFIG_HOME", "/real/xdg");
+        let _appdata = EnvVarGuard::set("APPDATA", "C:/real/appdata");
+        let _isolation = EnvVarGuard::set("ORGII_EXTERNAL_HISTORY_HOME", "/tmp/orgii-instance2");
+
+        let resolved = state_db_path_under(Path::new("/fixtures/fake-home"));
+        assert!(resolved.starts_with("/fixtures/fake-home"));
+        for foreign in ["/real/xdg", "/tmp/orgii-instance2"] {
+            assert!(
+                !resolved.starts_with(foreign),
+                "{} leaked into an injected-home resolution",
+                foreign,
+            );
+        }
     }
 
     #[test]

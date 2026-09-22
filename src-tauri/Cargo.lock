@@ -2744,6 +2744,7 @@ name = "git_api"
 version = "0.1.0"
 dependencies = [
  "agent_core",
+ "app_paths",
  "app_platform",
  "async-stream",
  "axum",
