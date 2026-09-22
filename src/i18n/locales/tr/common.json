@@ -368,6 +368,11 @@
     "exportAndSync": "Dışa aktarma ve eşitleme",
     "export": "Dışa aktar",
     "openIn": "Şurada aç",
+    "openInTargets": {
+      "newTab": "Yeni Sekme",
+      "newWindow": "Yeni Pencere",
+      "myStation": "My Station"
+    },
     "openInNewTab": "Yeni Sekmede Aç",
     "confirmDelete": "Silmeyi Onayla",
     "confirmDeleteTitle": "\"{{name}}\" silinsin mi?",

@@ -368,6 +368,11 @@
     "exportAndSync": "エクスポートと同期",
     "export": "エクスポート",
     "openIn": "開く場所",
+    "openInTargets": {
+      "newTab": "新しいタブ",
+      "newWindow": "新しいウィンドウ",
+      "myStation": "My Station"
+    },
     "openInNewTab": "新しいタブで開く",
     "confirmDelete": "削除の確認",
     "confirmDeleteTitle": "「{{name}}」を削除しますか？",

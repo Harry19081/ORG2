@@ -24,6 +24,7 @@ import { useSetting } from "@src/hooks/settings/useSettings";
 import {
   AppWindowMacIcon,
   ArrowBigRightDashIcon,
+  ChangeScreenModeIcon,
   Copy01Icon,
   CursorInWindowIcon,
   DeliveryBox01Icon,
@@ -337,8 +338,8 @@ export const SessionHeaderActionsMenu: React.FC<
                     dataTestId="open-session-in-new-window"
                     icon={
                       <HugeiconsIcon
-                        icon={AppWindowMacIcon}
-                        data-icon="app-window-mac"
+                        icon={ChangeScreenModeIcon}
+                        data-icon="change-screen-mode"
                         size={DROPDOWN_ITEM.iconSize}
                         strokeWidth={1.75}
                       />

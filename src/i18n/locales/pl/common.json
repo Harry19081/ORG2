@@ -369,6 +369,11 @@
     "exportAndSync": "Eksport i synchronizacja",
     "export": "Eksportuj",
     "openIn": "Otwórz w",
+    "openInTargets": {
+      "newTab": "Nowa karta",
+      "newWindow": "Nowe okno",
+      "myStation": "My Station"
+    },
     "openInNewTab": "Otwórz w nowej karcie",
     "confirmDelete": "Potwierdź usunięcie",
     "confirmDeleteTitle": "Usunąć „{{name}}”?",

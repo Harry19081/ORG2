@@ -36,7 +36,6 @@ export interface CloudRemoteSessionMenuItems {
 export function useCloudRemoteSessionMenuItems({
   t,
   tCommon,
-  tSessions,
   openTeamSessionAtDestination,
   hideRemoteSession,
   runFork,
@@ -44,7 +43,6 @@ export function useCloudRemoteSessionMenuItems({
 }: {
   t: TFunction;
   tCommon: TFunction;
-  tSessions: TFunction;
   openTeamSessionAtDestination: CloudSessionOpenHandlers["openTeamSessionAtDestination"];
   runFork: (row: RemoteTeammateSessionMetadata) => void;
   hideRemoteSession: (row: RemoteTeammateSessionMetadata) => void;
@@ -76,9 +74,9 @@ export function useCloudRemoteSessionMenuItems({
         labels: {
           openIn: tCommon("actions.openIn"),
           fork: t("cloud.orgPanel.fork"),
-          openInNewTab: tCommon("actions.openInNewTab"),
-          openInNewWindow: tCommon("actions.openInNewWindow"),
-          openInMyStation: tSessions("controlTower.sidebar.openInMyStation"),
+          openInNewTab: tCommon("actions.openInTargets.newTab"),
+          openInNewWindow: tCommon("actions.openInTargets.newWindow"),
+          openInMyStation: tCommon("actions.openInTargets.myStation"),
           copyUrl: t("cloud.sidebar.copyUrl"),
           togglePin: isPinned
             ? tCommon("sessions:chat.unpinSession")
@@ -111,7 +109,6 @@ export function useCloudRemoteSessionMenuItems({
       pinnedRemoteSessionIds,
       t,
       tCommon,
-      tSessions,
       toggleRemoteSessionPin,
     ]
   );

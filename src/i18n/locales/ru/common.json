@@ -368,6 +368,11 @@
     "exportAndSync": "Экспорт и синхронизация",
     "export": "Экспорт",
     "openIn": "Открыть в",
+    "openInTargets": {
+      "newTab": "Новая вкладка",
+      "newWindow": "Новое окно",
+      "myStation": "My Station"
+    },
     "openInNewTab": "Открыть в новой вкладке",
     "confirmDelete": "Подтвердить удаление",
     "confirmDeleteTitle": "Удалить «{{name}}»?",

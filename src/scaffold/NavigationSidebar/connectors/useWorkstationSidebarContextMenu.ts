@@ -5,6 +5,7 @@ import { createLogger } from "@src/hooks/logger";
 import {
   AppWindowMacIcon,
   ArrowBigRightDashIcon,
+  ChangeScreenModeIcon,
   CloudIcon,
   Copy01Icon,
   CursorInWindowIcon,
@@ -116,7 +117,7 @@ export function useWorkstationSidebarContextMenu({
             icon: CursorInWindowIcon,
             items: [
               {
-                text: tCommon("actions.openInNewTab"),
+                text: tCommon("actions.openInTargets.newTab"),
                 icon: AppWindowMacIcon,
                 action: () => handleOpenDraftInNewTab(item),
               },
@@ -142,17 +143,17 @@ export function useWorkstationSidebarContextMenu({
       if (session?.parentSessionId || item.id.includes(":subagent:")) return [];
 
       const openInNewTabItem: SidebarMenuItem = {
-        text: tCommon("actions.openInNewTab"),
+        text: tCommon("actions.openInTargets.newTab"),
         icon: AppWindowMacIcon,
         action: () => handleOpenInNewTab(item.id),
       };
       const openInNewWindowItem: SidebarMenuItem = {
-        text: tCommon("actions.openInNewWindow"),
-        icon: AppWindowMacIcon,
+        text: tCommon("actions.openInTargets.newWindow"),
+        icon: ChangeScreenModeIcon,
         action: () => handleOpenInNewWindow(item.id),
       };
       const openInMyStationItem: SidebarMenuItem = {
-        text: tCommon("sessions:controlTower.sidebar.openInMyStation"),
+        text: tCommon("actions.openInTargets.myStation"),
         icon: ArrowBigRightDashIcon,
         action: () => handleOpenInMyStation(item.id),
       };

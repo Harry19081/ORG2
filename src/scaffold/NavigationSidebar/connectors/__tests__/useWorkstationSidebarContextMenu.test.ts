@@ -139,7 +139,8 @@ describe("useWorkstationSidebarContextMenu", () => {
         const detachedWindowItem = destinations.find(
           (menuItem) =>
             "text" in menuItem &&
-            menuItem.text === testTranslate("common:actions.openInNewWindow")
+            menuItem.text ===
+              testTranslate("common:actions.openInTargets.newWindow")
         );
 
         expect(detachedWindowItem).toBeDefined();

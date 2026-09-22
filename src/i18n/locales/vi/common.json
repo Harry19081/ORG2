@@ -368,6 +368,11 @@
     "exportAndSync": "Xuất và đồng bộ",
     "export": "Xuất",
     "openIn": "Mở trong",
+    "openInTargets": {
+      "newTab": "Tab mới",
+      "newWindow": "Cửa sổ mới",
+      "myStation": "My Station"
+    },
     "openInNewTab": "Mở trong tab mới",
     "confirmDelete": "Xác nhận xóa",
     "confirmDeleteTitle": "Xóa \"{{name}}\"?",

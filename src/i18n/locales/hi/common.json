@@ -193,6 +193,11 @@
     "exportAndSync": "निर्यात और सिंक",
     "export": "निर्यात करें",
     "openIn": "इसमें खोलें",
+    "openInTargets": {
+      "newTab": "नया टैब",
+      "newWindow": "नई विंडो",
+      "myStation": "My Station"
+    },
     "openInNewTab": "नए टैब में खोलें",
     "openOnGitHub": "GitHub पर खोलें",
     "createPullRequest": "पुल रिक्वेस्ट बनाएँ",
