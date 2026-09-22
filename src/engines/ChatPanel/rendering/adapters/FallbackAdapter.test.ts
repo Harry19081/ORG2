@@ -31,7 +31,7 @@ function renderFallbackEvent(
 }
 
 describe("FallbackAdapter generic tool rendering", () => {
-  it.each(["js", "cua_repl.js", "mcp__cua_repl__js"])(
+  it.each(["js", "cua_repl.js", "mcp__cua_repl.js", "mcp__cua_repl__js"])(
     "uses the call title for %s in the collapsed header",
     (functionName) => {
       const markup = renderToStaticMarkup(

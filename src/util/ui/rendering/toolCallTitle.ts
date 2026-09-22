@@ -3,7 +3,12 @@
  * Other tools use title for a document, task, or message being created.
  * Keep this policy shared by chat, replay, and mobile presentation.
  */
-const CALL_TITLE_TOOLS = new Set(["js", "cua_repl.js", "mcp__cua_repl__js"]);
+const CALL_TITLE_TOOLS = new Set([
+  "js",
+  "cua_repl.js",
+  "mcp__cua_repl.js",
+  "mcp__cua_repl__js",
+]);
 
 export function getToolCallTitle(
   toolName: string,

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { getToolCallTitle } from "../toolCallTitle";
 
 describe("getToolCallTitle", () => {
-  it.each(["js", "cua_repl.js", "mcp__cua_repl__js"])(
+  it.each(["js", "cua_repl.js", "mcp__cua_repl.js", "mcp__cua_repl__js"])(
     "reads a trimmed invocation description from %s",
     (name) => {
       expect(getToolCallTitle(name, { title: "  Inspect window  " })).toBe(

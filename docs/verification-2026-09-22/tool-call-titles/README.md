@@ -15,7 +15,7 @@ The screenshots show real ToolCallBlock and MobileToolCall server-rendered marku
 
 `pnpm test src/util/ui/rendering/__tests__/toolCallTitle.test.ts src/engines/ChatPanel/rendering/adapters/FallbackAdapter.test.ts src/engines/ChatPanel/blocks/ToolCallBlock/__tests__/ToolCallBlock.test.ts src/modules/WorkStation/CodeEditor/SessionReplay/__tests__/config.test.ts src/modules/WorkStation/CodeEditor/SessionReplay/__tests__/liveOperationOverlay.test.ts src/modules/WorkStation/CodeEditor/SessionReplay/__tests__/toolCallTitles.test.ts src/modules/MobileRemote/lib/transcriptReducer.test.ts src/modules/MobileRemote/components/transcript/MobileToolCall.test.ts src/modules/MobileRemote/components/transcript/MobileToolDetailModal.test.ts`
 
-Result: 9 files / 75 tests passed.
+Result: 9 files / 77 tests passed.
 
 `pnpm exec tsgo --noEmit --pretty false` passed. `pnpm exec tsc --noEmit --pretty false` exhausted Node's default approximately 4GB heap before producing diagnostics; tsgo completed the full project check.
 
@@ -27,11 +27,11 @@ ESLint ran on all changed frontend files and the new resolver/replay tests with 
 
 ## Performance review
 
-| Area               | Verdict | Evidence                                                                                           | Change or reason kept                                       | Verification                                             |
-| ------------------ | ------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------- |
-| Background work    | keep    | No new timer, request, listener, worker, or scan.                                                  | Title is resolved only in existing projection/render calls. | Diff and call-chain inspection.                          |
-| Memory             | keep    | Fixed three-name allowlist; one optional mobile string limited to 512 bytes plus marker per event. | No new cache; existing transcript/session eviction applies. | UTF-8 bound projection test and existing reducer limits. |
-| Scope/isolation    | keep    | The title comes from the same event passed to the renderer/projection.                             | No global current-title state.                              | Retry/event-switch and reducer replacement tests.        |
-| Rendering/hot path | keep    | Set membership and string trim; existing memoized projections reused.                              | No new subscription or growing retained structure.          | Targeted renderer/overlay tests and source inspection.   |
+| Area               | Verdict | Evidence                                                                                          | Change or reason kept                                       | Verification                                             |
+| ------------------ | ------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------- |
+| Background work    | keep    | No new timer, request, listener, worker, or scan.                                                 | Title is resolved only in existing projection/render calls. | Diff and call-chain inspection.                          |
+| Memory             | keep    | Fixed four-name allowlist; one optional mobile string limited to 512 bytes plus marker per event. | No new cache; existing transcript/session eviction applies. | UTF-8 bound projection test and existing reducer limits. |
+| Scope/isolation    | keep    | The title comes from the same event passed to the renderer/projection.                            | No global current-title state.                              | Retry/event-switch and reducer replacement tests.        |
+| Rendering/hot path | keep    | Set membership and string trim; existing memoized projections reused.                             | No new subscription or growing retained structure.          | Targeted renderer/overlay tests and source inspection.   |
 
 The lifecycle matrix introduces no additional work at start/idle/hidden/focus/network/account/session transitions. Titles are read during existing active render/projection work and released with their events. No CPU/RSS improvement is claimed; device/dual-instance performance measurement is not applicable to this stateless label change. Performance verdict: **pass** for the applicable stateless projection/render invariants; this is not a runtime performance-improvement claim.

@@ -2,7 +2,7 @@
 
 ## Contract and ownership
 
-A CUA JS call with a nonempty string `args.title` displays that description in desktop chat, replay details/lists, and mobile. Other tools retain registry labels and domain-title semantics. Known spellings are `js`, `cua_repl.js`, and `mcp__cua_repl__js`. Missing, blank, and non-string titles use the existing label fallback.
+A CUA JS call with a nonempty string `args.title` displays that description in desktop chat, replay details/lists, and mobile. Other tools retain registry labels and domain-title semantics. Known spellings are `js`, `cua_repl.js`, `mcp__cua_repl.js`, and `mcp__cua_repl__js`. Missing, blank, and non-string titles use the existing label fallback.
 
 The authoritative value remains the stored event's `args.title`. The shared `getToolCallTitle` resolver supplies presentation policy. Nothing writes a replacement title to persistence. Historical pollution/remediation: none; existing events can render correctly without a migration.
 
