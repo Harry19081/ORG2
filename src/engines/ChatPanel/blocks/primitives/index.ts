@@ -52,9 +52,6 @@ export { default as StackedBlock } from "./StackedBlock";
 export { default as AgentStatusTrail } from "./AgentStatusTrail";
 export type { PlanningIndicatorMode } from "./chatActivityLabel";
 
-// Stroke-draw animation hook for loading icons
-export { useStrokeDraw } from "./useStrokeDraw";
-
 // Failed state inline row for chat variant event components
 export { FailedEventRow } from "./FailedEventRow";
 

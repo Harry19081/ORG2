@@ -433,5 +433,3 @@ export function useLocalKeys(
     validateKey: validateKeyFn,
   };
 }
-
-export default useLocalKeys;

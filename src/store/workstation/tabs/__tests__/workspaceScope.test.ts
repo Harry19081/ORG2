@@ -22,7 +22,6 @@ import {
   openWorkstationTabAtom,
   recentWorkstationTabsAtom,
   removeSharedWorkstationTabAtom,
-  updateWorkstationTabDataAtom,
   workstationTabsStateAtom,
 } from "../atoms";
 import {
@@ -67,11 +66,12 @@ function setup() {
 function open(
   store: ReturnType<typeof createStore>,
   id: string,
-  type: "file" | "terminal" = "file"
+  type: "file" | "terminal" = "file",
+  data: Record<string, unknown> = {}
 ) {
   store.set(openWorkstationTabAtom, {
     workspace: store.get(presentedWorkstationWorkspaceKeyAtom),
-    tab: { id, type, title: id, data: {} },
+    tab: { id, type, title: id, data },
   });
 }
 
@@ -91,14 +91,9 @@ describe("Workstation sharing policy", () => {
 
   it("shares tabs, active selection, tab data, recent tabs, terminal selection and editor cache", () => {
     const store = setup();
-    open(store, "one");
+    open(store, "one", "file", { viewMode: "split" });
     open(store, "two");
     const workspace = store.get(presentedWorkstationWorkspaceKeyAtom);
-    store.set(updateWorkstationTabDataAtom, {
-      workspace,
-      tabId: "one",
-      data: { viewMode: "split" },
-    });
     store.set(focusWorkstationTabAtom, { workspace, tabId: "one" });
     store.set(codeEditorTerminalTargetAtom, {
       kind: "pty",

@@ -23,11 +23,3 @@ export {
   // Main normalization function
   normalizeActivity,
 } from "./activityNormalizers";
-
-// ============================================
-// Text Extractors
-// ============================================
-export {
-  extractTextFromContent,
-  isOrchestratorSystemPrompt,
-} from "./textExtractors";

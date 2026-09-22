@@ -38,7 +38,6 @@ export { FILE_TAB_TYPES } from "./types";
 export {
   workstationLayoutAtom,
   workstationTabsStateAtom,
-  workstationWorkspaceStateAtom,
   recentWorkstationTabsAtom,
   presentedWorkstationWorkspaceKeyAtom,
   sessionWorkstationWorkspaceKey,
@@ -47,10 +46,7 @@ export {
   openWorkstationTabAtom,
   closeWorkstationTabsAtom,
   closeWorkstationTabAtom,
-  removeSharedWorkstationTabsAtom,
-  removeSharedWorkstationTabAtom,
   focusWorkstationTabAtom,
-  updateWorkstationTabDataAtom,
   reorderWorkstationTabsAtom,
   selectWorkstationPanel,
   mainPaneStateAtom,

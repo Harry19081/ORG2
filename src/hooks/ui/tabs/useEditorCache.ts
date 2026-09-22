@@ -147,5 +147,3 @@ export function useEditorCache(): UseEditorCacheReturn {
 
   return { switchRepo };
 }
-
-export default useEditorCache;

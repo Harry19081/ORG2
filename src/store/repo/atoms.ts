@@ -4,7 +4,7 @@
  * Core and persisted atoms for repo state management.
  *
  * ARCHITECTURE (Feb 2, 2026):
- * - selectedRepoIdAtom and selectedBranchAtom use WINDOW-SCOPED sessionStorage
+ * - selectedRepoIdAtom uses WINDOW-SCOPED sessionStorage
  * - This enables true multi-window isolation (each window tracks its own repo)
  * - sessionStorage is naturally scoped per browser tab/window
  * - lastUsedRepoAtom provides global fallback for new windows
@@ -133,20 +133,6 @@ export const selectedRepoIdAtom = atomWithStorage<string>(
   { getOnInit: true }
 );
 selectedRepoIdAtom.debugLabel = "selectedRepoIdAtom";
-
-/**
- * Selected branch - persisted to sessionStorage (WINDOW-SCOPED)
- *
- * Uses atomWithStorage with sessionStorage for window isolation.
- * Defaults to "main" if nothing stored.
- */
-export const selectedBranchAtom = atomWithStorage<string>(
-  getWindowScopedKey(REPO_STORAGE_KEYS.selectedBranch),
-  "main",
-  createJSONStorage(() => sessionStorage),
-  { getOnInit: true }
-);
-selectedBranchAtom.debugLabel = "selectedBranchAtom";
 
 /**
  * Cached repos - persisted to localStorage

@@ -534,5 +534,3 @@ export function useListNavigation<T extends ListItem>(
     scrollContainerRef,
   };
 }
-
-export default useListNavigation;

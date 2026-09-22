@@ -183,5 +183,3 @@ export function useSidebarState(): UseSidebarStateReturn {
     setWidth,
   };
 }
-
-export default useSidebarState;

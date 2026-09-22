@@ -619,5 +619,3 @@ export function useDeepLinkHandler(): void {
     handleBillingCompleteUrl,
   ]);
 }
-
-export default useDeepLinkHandler;

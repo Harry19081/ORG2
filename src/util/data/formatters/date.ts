@@ -65,36 +65,6 @@ export const formatDate = (
 };
 
 /**
- * Format a date to show only the time (HH:MM format)
- *
- * @param dateString - The date string from the API (assumed UTC if no timezone)
- * @returns A formatted time string
- */
-export const formatTime = (dateString: string | null | undefined): string => {
-  if (!dateString) return "—";
-
-  try {
-    const date = parseApiDate(dateString);
-    if (!date) return "—";
-
-    const timezone = getCurrentTimezone();
-    const options: Intl.DateTimeFormatOptions = {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    };
-
-    if (timezone !== "auto") {
-      options.timeZone = timezone === "utc" ? "UTC" : timezone;
-    }
-
-    return date.toLocaleTimeString("en-US", options);
-  } catch {
-    return "—";
-  }
-};
-
-/**
  * Map app language codes to BCP-47 locale tags for {@link Intl} (month names, time).
  */
 export function toIntlLocaleTag(language: string | undefined): string {
@@ -446,38 +416,3 @@ export function formatReplayDateLabel(
     return "";
   }
 }
-
-// ============================================
-// Legacy formatters (browser-local, no timezone setting)
-// ============================================
-
-/**
- * Format a Unix timestamp as a readable date/time string
- * @param timestamp - Unix timestamp in seconds
- * @returns Formatted string like "Jan 05, 2025, 14:30"
- */
-export const formatDateTime = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  const month = months[date.getMonth()];
-  const day = date.getDate().toString().padStart(2, "0");
-  const year = date.getFullYear();
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-
-  return `${month} ${day}, ${year}, ${hours}:${minutes}`;
-};

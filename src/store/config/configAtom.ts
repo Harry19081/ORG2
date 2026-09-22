@@ -54,19 +54,6 @@ effectiveWorkspaceDefaultRepoLocationAtom.debugLabel =
   "effectiveWorkspaceDefaultRepoLocationAtom";
 
 // ============================================
-// Internal UI Editor Config
-// ============================================
-
-export interface InternalUIEditorConfig {
-  workspacePath: string;
-}
-
-export const internalUIEditorConfigAtom = atom<InternalUIEditorConfig>({
-  workspacePath: "",
-});
-internalUIEditorConfigAtom.debugLabel = "internalUIEditorConfigAtom";
-
-// ============================================
 // Chat Appearance Settings
 // ============================================
 

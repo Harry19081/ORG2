@@ -32,5 +32,3 @@ export function useSelectedFile(): UseSelectedFileReturn {
   const selectedFilePath = useAtomValue(activeWorkStationFilePathAtom);
   return { selectedFilePath };
 }
-
-export default useSelectedFile;

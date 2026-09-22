@@ -29,9 +29,6 @@ export { default as Dropdown } from "./index";
 // Options renderer (used internally and by Select)
 export { default as DropdownOptionsRenderer } from "./DropdownOptionsRenderer";
 
-// Keyboard navigation hook
-export { useDropdownKeyboard } from "./useDropdownKeyboard";
-
 // Base building blocks
 export { default as DropdownPanel } from "./DropdownPanel";
 
