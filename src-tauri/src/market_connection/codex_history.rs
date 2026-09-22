@@ -136,12 +136,22 @@ pub(crate) fn status() -> HistorySyncView {
         .clone()
 }
 
+/// Settings re-reads the connection view on this event, so a pass that
+/// finishes after the page loaded is reflected without polling.
+pub(crate) const STATE_CHANGED_EVENT: &str = "codex-history-state-changed";
+
 fn publish(update: impl FnOnce(&mut HistorySyncView)) {
     let mut view = status_slot().lock().unwrap_or_else(|v| v.into_inner());
     let before = view.clone();
     update(&mut view);
-    if *view != before {
-        tracing::info!(state = ?view.state, reason = ?view.reason, shared = view.shared, conflicts = view.conflicts, pending = view.pending, "Codex automatic history state");
+    if *view == before {
+        return;
+    }
+    tracing::info!(state = ?view.state, reason = ?view.reason, shared = view.shared, conflicts = view.conflicts, pending = view.pending, "Codex automatic history state");
+    drop(view);
+    if let Some(app) = crate::api::get_app_handle() {
+        use tauri::Emitter;
+        let _ = app.emit(STATE_CHANGED_EVENT, ());
     }
 }
 fn slot() -> &'static Mutex<Option<Handle>> {
