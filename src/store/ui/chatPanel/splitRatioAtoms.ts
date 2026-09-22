@@ -13,9 +13,12 @@ import {
   type ChatSplitRatio,
   getChatWidthForRatio,
 } from "@src/engines/ChatPanel/config";
+import { createLogger } from "@src/hooks/logger";
 import { settingsAtom, updateSettingAtom } from "@src/store/settings";
 
 import { adoptDefaultChatWidthAtom } from "./widthAtoms";
+
+const log = createLogger("ChatSplitRatio");
 
 export const chatSplitRatioAtom = atom(
   (get) => get(settingsAtom)["general.chatPaneSplitRatio"] as ChatSplitRatio,
@@ -23,6 +26,8 @@ export const chatSplitRatioAtom = atom(
     set(updateSettingAtom, {
       key: "general.chatPaneSplitRatio",
       value,
+    }).catch((error: unknown) => {
+      log.warn("Failed to persist general.chatPaneSplitRatio:", error);
     });
     set(adoptDefaultChatWidthAtom, getChatWidthForRatio(value));
   }
