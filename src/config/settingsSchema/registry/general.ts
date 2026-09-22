@@ -19,6 +19,11 @@ import {
 } from "@src/config/profile/userProfile";
 import type { SettingDefinition } from "@src/config/settingsSchema/types";
 import { DEFAULT_BUTTON_TOOLTIP_DELAY_MS } from "@src/config/tooltip";
+import {
+  CHAT_SPLIT_RATIO_LABELS,
+  CHAT_SPLIT_RATIO_VALUES,
+  DEFAULT_CHAT_SPLIT_RATIO,
+} from "@src/engines/ChatPanel/config";
 
 /**
  * Skins are declared per variant, so each picker only offers ids that actually
@@ -296,6 +301,18 @@ export const GENERAL_SETTINGS_REGISTRY = {
       left: "Left",
       right: "Right",
     },
+  },
+  "general.chatPaneSplitRatio": {
+    // Settings → Appearance → App → Layout; also the sidebar layout menu.
+    // The chat pane's share of the width it splits with the station. Seeds
+    // the width on first run and re-applies when picked; dragging the divider
+    // afterwards still wins.
+    schema: z.enum(CHAT_SPLIT_RATIO_VALUES),
+    default: DEFAULT_CHAT_SPLIT_RATIO,
+    description:
+      "Default share of the workbench width given to the chat pane, with My Station or Agent Station taking the rest",
+    category: "general",
+    enumLabels: CHAT_SPLIT_RATIO_LABELS,
   },
   "general.chatTurnPaginationEnabled": {
     // Settings → Appearance → Chat Panel → Chat history; also quick menus.

@@ -2055,6 +2055,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Bảng chat",
+    "chatSplitRatio": "Tỷ lệ bảng chat",
+    "chatSplitRatioHint": "Áp dụng ngay khi bạn chọn; kéo thanh chia sau đó vẫn được ưu tiên.",
     "chatLeft": "Chat trái",
     "chatRight": "Chat phải",
     "sidebarPosition": "Thanh bên Workstation",

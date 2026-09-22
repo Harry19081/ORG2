@@ -28,6 +28,13 @@ export interface ResizeHandleProps {
   tooltipLabel?: ReactNode;
   /** Keyboard shortcut displayed beside the contextual tooltip label */
   tooltipShortcut?: string;
+  /**
+   * Controls rendered under the tooltip label, turning the hint into a small
+   * hover popover for the boundary the handle owns. Providing this makes the
+   * tooltip panel pointer-reachable; `close` dismisses it after a pick, since
+   * acting on the control usually moves the handle out from under the cursor.
+   */
+  renderTooltipExtra?: (close: () => void) => ReactNode;
   /** Side of the divider into which the thicker center indicator extends */
   indicatorPlacement?: ResizeHandleIndicatorPlacement;
   /** Optional unclipped layout-boundary host for the visual indicator */

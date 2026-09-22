@@ -2055,6 +2055,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "チャットパネル",
+    "chatSplitRatio": "チャットパネルの比率",
+    "chatSplitRatioHint": "選ぶとすぐに適用されます。その後に仕切りをドラッグした場合はそちらが優先されます。",
     "chatLeft": "左チャット",
     "chatRight": "右チャット",
     "sidebarPosition": "Workstation サイドバー",

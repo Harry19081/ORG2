@@ -14,6 +14,7 @@
 import React, { memo, useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 
@@ -33,6 +34,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = memo(
     noAccent = false,
     tooltipLabel,
     tooltipShortcut,
+    renderTooltipExtra,
     indicatorPlacement = "center",
     indicatorHost,
     className = "",
@@ -40,6 +42,10 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = memo(
     const isVertical = axis === "x";
     const lastClickTimeRef = useRef<number>(0);
     const [isHovered, setIsHovered] = useState(false);
+    // Only the popover form needs a controlled open state — the plain hint
+    // stays on the Tooltip's own uncontrolled timing.
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+    const closeTooltip = useCallback(() => setTooltipOpen(false), []);
 
     const handleMouseDown = useCallback(
       (event: React.MouseEvent) => {
@@ -173,19 +179,34 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = memo(
 
     if (!tooltipLabel) return handleElement;
 
+    const labelRow = (
+      <KeyboardShortcutTooltipContent
+        label={tooltipLabel}
+        shortcut={tooltipShortcut}
+      />
+    );
+
     return (
       <Tooltip
         content={
-          <KeyboardShortcutTooltipContent
-            label={tooltipLabel}
-            shortcut={tooltipShortcut}
-          />
+          renderTooltipExtra ? (
+            <div className="flex flex-col gap-1.5">
+              {labelRow}
+              <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
+              {renderTooltipExtra(closeTooltip)}
+            </div>
+          ) : (
+            labelRow
+          )
         }
         position={isVertical ? "right" : "bottom"}
         kind="button"
         framedPanel
         smartPlacement
         disabled={isResizing}
+        interactive={renderTooltipExtra != null}
+        open={renderTooltipExtra ? tooltipOpen : undefined}
+        onOpenChange={renderTooltipExtra ? setTooltipOpen : undefined}
       >
         {handleElement}
       </Tooltip>

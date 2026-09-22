@@ -48,6 +48,7 @@ import {
   ChatPanelTabBar,
   useChatPanelTabShortcuts,
 } from "./ChatPanelTabBar";
+import { ChatSplitRatioPicker } from "./components/ChatSplitRatioPicker";
 import { NewChatHeaderActionsMenu } from "./components/NewChatHeaderActionsMenu";
 import { SessionSwipeIndicator } from "./components/SessionSwipeIndicator";
 // Parked with its header button below.
@@ -87,6 +88,12 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     sessionCreatorSlot: SessionCreatorSlot,
   }) => {
     const maximizeShortcut = useShortcutKeys("maximize_chat");
+    // The divider hint doubles as a split-preset popover: the boundary the
+    // presets move is the one the user is already pointing at.
+    const renderResizeTooltipExtra = useCallback(
+      (close: () => void) => <ChatSplitRatioPicker onPicked={close} />,
+      []
+    );
     const { t } = useTranslation([
       "sessions",
       "common",
@@ -477,6 +484,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           panelRef={panelRef}
           panelOverlay={<SessionSwipeIndicator {...swipeIndicator} />}
           resizeIndicatorHost={resizeIndicatorHost}
+          renderResizeTooltipExtra={renderResizeTooltipExtra}
           resizeTooltipLabel={t("chat.hideWorkstation")}
           resizeTooltipShortcut={maximizeShortcut}
           sessionModals={sessionModals}

@@ -59,6 +59,7 @@ const APPEARANCE_APP_KEYS = new Set<SettingsKey>([
   "layout.sidebarSelectedRowOpacity",
   "layout.sidebarEdgeDepthEnabled",
   "general.chatPanelPosition",
+  "general.chatPaneSplitRatio",
   "general.modelPickerStyle",
 ]);
 
@@ -218,6 +219,9 @@ const SETTINGS_SEARCH_UI_OVERRIDES: Partial<
   },
   "general.chatPanelPosition": {
     labelKey: "common:layoutSettings.chatPanelLocation",
+  },
+  "general.chatPaneSplitRatio": {
+    labelKey: "common:layoutSettings.chatSplitRatio",
   },
   "general.modelPickerStyle": {
     labelKey: "common:layoutSettings.modelPickerStyle",

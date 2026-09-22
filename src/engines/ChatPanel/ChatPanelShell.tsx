@@ -31,6 +31,8 @@ interface ChatPanelShellProps {
   panelOverlay?: React.ReactNode;
   resizeIndicatorHost?: HTMLElement | null;
   resizeTooltipLabel: React.ReactNode;
+  /** Controls hosted under the divider tooltip's label (the split presets). */
+  renderResizeTooltipExtra?: (close: () => void) => React.ReactNode;
   resizeTooltipShortcut: string;
   sessionModals: React.ReactNode;
   showResizeHandle: boolean;
@@ -57,6 +59,7 @@ export function ChatPanelShell({
   panelOverlay,
   resizeIndicatorHost,
   resizeTooltipLabel,
+  renderResizeTooltipExtra,
   resizeTooltipShortcut,
   sessionModals,
   showResizeHandle,
@@ -73,6 +76,7 @@ export function ChatPanelShell({
       }
       isResizing={isDragging}
       onMouseDown={onResizeMouseDown}
+      renderTooltipExtra={renderResizeTooltipExtra}
       tooltipLabel={resizeTooltipLabel}
       tooltipShortcut={resizeTooltipShortcut}
     />

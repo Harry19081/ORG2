@@ -1889,6 +1889,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Panel chat",
+    "chatSplitRatio": "Proporsi panel chat",
+    "chatSplitRatioHint": "Diterapkan begitu Anda memilihnya; menyeret pembatas setelahnya tetap diutamakan.",
     "chatLeft": "Chat di Kiri",
     "chatRight": "Chat di Kanan",
     "sidebarPosition": "Sidebar Workstation",

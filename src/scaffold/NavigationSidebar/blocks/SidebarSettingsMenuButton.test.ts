@@ -416,19 +416,19 @@ describe("SidebarSettingsMenuButton", () => {
       .join(" ");
 
     expect(submenuText).toContain("layoutSettings.chatPanelLocation");
+    expect(submenuText).toContain("layoutSettings.chatSplitRatio");
     expect(submenuText).toContain("layoutSettings.sidebarPosition");
     expect(submenuText).toContain("layoutSettings.modelPickerStyle");
-    expect(submenuText).toContain("layoutSettings.paginateChatHistory");
-    expect(
-      document.querySelector(
-        '[data-testid="sidebar-layout-pagination-separator"]'
-      )
-    ).not.toBeNull();
+    // Layout is segmented pills only. The two switches that used to trail it —
+    // Spotlight dim background and chat-history pagination — live on their own
+    // Settings tabs (Appearance → Spotlight, Appearance → Chat Panel).
+    expect(submenuText).not.toContain("layoutSettings.paginateChatHistory");
+    expect(submenuText).not.toContain("general.spotlightDimBackground");
 
     const segmentedControls = Array.from(
       document.body.querySelectorAll<HTMLElement>('[role="group"]')
     );
-    expect(segmentedControls).toHaveLength(4);
+    expect(segmentedControls).toHaveLength(5);
     expect(
       segmentedControls.every((control) => control.classList.contains("h-6"))
     ).toBe(true);
@@ -436,18 +436,12 @@ describe("SidebarSettingsMenuButton", () => {
       segmentedControls.map((control) => control.getAttribute("aria-label"))
     ).toEqual([
       "layoutSettings.chatPanelLocation",
+      "layoutSettings.chatSplitRatio",
       "layoutSettings.sidebarPosition",
       "layoutSettings.modelPickerStyle",
       "general.spotlightPlacement",
     ]);
-    expect(
-      Array.from(document.body.querySelectorAll('[role="switch"]'), (control) =>
-        control.getAttribute("aria-label")
-      )
-    ).toEqual([
-      "general.spotlightDimBackground",
-      "layoutSettings.paginateChatHistory",
-    ]);
+    expect(document.body.querySelectorAll('[role="switch"]')).toHaveLength(0);
   });
 
   it("updates the shared Spotlight placement setting from Layout", async () => {

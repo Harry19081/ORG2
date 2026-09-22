@@ -1889,6 +1889,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "चैट पैनल",
+    "chatSplitRatio": "चैट पैनल का अनुपात",
+    "chatSplitRatioHint": "चुनते ही लागू हो जाता है; इसके बाद विभाजक खींचने पर वही मान प्रभावी रहता है।",
     "chatLeft": "चैट बाएँ",
     "chatRight": "चैट दाएँ",
     "sidebarPosition": "वर्कस्टेशन साइडबार",

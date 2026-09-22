@@ -2055,6 +2055,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "채팅 패널",
+    "chatSplitRatio": "채팅 패널 비율",
+    "chatSplitRatioHint": "선택하면 바로 적용됩니다. 이후 구분선을 드래그하면 그 값이 우선합니다.",
     "chatLeft": "왼쪽 채팅",
     "chatRight": "오른쪽 채팅",
     "sidebarPosition": "Workstation 사이드바",

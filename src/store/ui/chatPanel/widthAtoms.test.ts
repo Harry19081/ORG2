@@ -20,14 +20,18 @@ afterEach(() => {
   localStorage.clear();
 });
 
+// innerWidth 1200 → 1116 available (minus the 64px rail and 20px gutter);
+// the 2/5 default preset seeds 446 and the 3/5 ceiling clamps to 669.
+const SEEDED_FROM_DEFAULT_RATIO = 446;
+
 describe("chat width initialization", () => {
   it.each([
-    [null, 520],
+    [null, SEEDED_FROM_DEFAULT_RATIO],
     ["480", 480],
     ["0", 0],
-    ["900", 558],
+    ["900", 669],
     ["100", 420],
-    ["invalid-json", 520],
+    ["invalid-json", SEEDED_FROM_DEFAULT_RATIO],
   ])(
     "initializes persisted %s to %s before rendering",
     async (stored, expected) => {
@@ -81,6 +85,33 @@ describe("chat width initialization", () => {
     expect(document.documentElement.style.getPropertyValue(cssVar)).toBe(
       "480px"
     );
+  });
+
+  it("re-applies a picked preset over the persisted width", async () => {
+    localStorage.setItem("globalChatWidth", "480");
+    const { chatWidthAtom, adoptDefaultChatWidthAtom } =
+      await import("./widthAtoms");
+    const { getChatWidthForRatio } =
+      await import("@src/engines/ChatPanel/config");
+    const store = createStore();
+    store.set(adoptDefaultChatWidthAtom, getChatWidthForRatio("three-fifths"));
+    expect(store.get(chatWidthAtom)).toBe(669);
+    vi.advanceTimersByTime(300);
+    expect(localStorage.getItem("globalChatWidth")).toBe("669");
+  });
+
+  it("stores a preset picked while the pane is hidden as the restore width", async () => {
+    const { chatWidthAtom, adoptDefaultChatWidthAtom, restoreChatWidthAtom } =
+      await import("./widthAtoms");
+    const { getChatWidthForRatio } =
+      await import("@src/engines/ChatPanel/config");
+    const store = createStore();
+    store.set(chatWidthAtom, 0);
+    store.set(adoptDefaultChatWidthAtom, getChatWidthForRatio("half"));
+    // The pane stays collapsed — the preset only changes what it reopens at.
+    expect(store.get(chatWidthAtom)).toBe(0);
+    store.set(restoreChatWidthAtom);
+    expect(store.get(chatWidthAtom)).toBe(558);
   });
 
   it("coalesces repeated resize persistence without adding startup timers", async () => {

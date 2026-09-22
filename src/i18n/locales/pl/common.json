@@ -2055,6 +2055,8 @@
   "ellipsisMenu": {},
   "layoutSettings": {
     "chatPanelLocation": "Panel czatu",
+    "chatSplitRatio": "Udział panelu czatu",
+    "chatSplitRatioHint": "Stosowany zaraz po wybraniu; późniejsze przeciągnięcie separatora nadal ma pierwszeństwo.",
     "chatLeft": "Czat po lewej",
     "chatRight": "Czat po prawej",
     "sidebarPosition": "Pasek boczny Workstation",
