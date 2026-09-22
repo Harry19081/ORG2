@@ -79,7 +79,9 @@ const SourceScanningSettings: React.FC = () => {
   const [openRescanMenu, setOpenRescanMenu] = useState<string | null>(null);
   const [tab, setTab] = useState<DataSourceTab>("all");
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
-  const [cardView, setCardView] = useState(false);
+  // Cards are this inventory's default presentation: a source is read one at a
+  // time (status, counts, its own controls), not compared column by column.
+  const [cardView, setCardView] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [globalFrequency, setGlobalFrequency] = useAtom(
     dataSourceGlobalFrequencyAtom
@@ -147,18 +149,21 @@ const SourceScanningSettings: React.FC = () => {
     toggleEnabled,
     updateConfig,
     handleRescan,
+    cardView,
   });
 
-  // The source name heads the card; the session/subagent counts become its
-  // labelled fields. The enable switch, frequency select and rescan split
-  // button stay together in one cluster — too wide for the heading's right
-  // edge, so they keep their own row under the counts.
+  // The source name heads the card; the session/subagent counts share one
+  // labelled line — two numbers, not two facts worth a row each. The enable
+  // switch, frequency select and rescan split button stay together in one
+  // cluster — too wide for the heading's right edge, so they keep their own
+  // row under the counts.
   const cardViewConfig = useMemo<SettingsTableCardViewConfig<SourceRow>>(
     () => ({
       enabled: cardView,
       onEnabledChange: setCardView,
       titleColumnKey: "source",
       fieldLayout: "inline",
+      fieldRowGroups: [["sessions", "subagents"]],
       minCardWidth: 340,
     }),
     [cardView]

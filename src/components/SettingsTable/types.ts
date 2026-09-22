@@ -80,6 +80,14 @@ export interface SettingsTableCardViewConfig<RowData> {
    *  above its value; "inline" keeps both on one line, label left, value right
    *  — the better fit for short values like a count or a status. */
   fieldLayout?: "stacked" | "inline";
+  /** Field columns that share one card line instead of getting a line each.
+   *  Each group lists column keys in the order they should read; a group's
+   *  members keep their own label + value pair and spread across the line.
+   *  Use it for short values that belong together — two counts, for instance —
+   *  so the card does not spend a row per number. Keys not named in any group
+   *  keep their own line, and a group whose members all render empty is
+   *  dropped like any other empty field. */
+  fieldRowGroups?: string[][];
   /** Minimum card width in px for the auto-fill grid. Default: 260. */
   minCardWidth?: number;
   /** Fixed column count. Overrides the `minCardWidth` auto-fill sizing. */

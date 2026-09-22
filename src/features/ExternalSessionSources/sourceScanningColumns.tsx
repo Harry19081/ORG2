@@ -48,6 +48,9 @@ export interface SourceScanningColumnsParams {
     patch: Partial<DataSourceConfigMap[string]>
   ) => void;
   handleRescan: (row: SourceRow, clear?: boolean) => void | Promise<void>;
+  /** Card presentation. A card has no column headers, so the status tag takes
+   *  the heading's right edge and the control cluster drops its header label. */
+  cardView: boolean;
 }
 
 export function buildSourceScanningColumns({
@@ -60,6 +63,7 @@ export function buildSourceScanningColumns({
   toggleEnabled,
   updateConfig,
   handleRescan,
+  cardView,
 }: SourceScanningColumnsParams): SettingsTableColumn<SourceRow>[] {
   return [
     {
@@ -77,13 +81,17 @@ export function buildSourceScanningColumns({
           disabled
         );
         return (
-          <span className={`${SETTINGS_TABLE_CELL.primaryIcon} min-w-0`}>
+          <span
+            className={`${SETTINGS_TABLE_CELL.primaryIcon} min-w-0 ${
+              cardView ? "flex w-full" : ""
+            }`}
+          >
             <span className="shrink-0 text-text-2">
               <SourceIcon iconId={row.probe.iconId as IconProvider} />
             </span>
             <span className="truncate">{row.probe.displayName}</span>
             <span
-              className="inline-flex shrink-0"
+              className={`inline-flex shrink-0 ${cardView ? "ml-auto" : ""}`}
               title={disabled ? undefined : scanFailure?.error}
             >
               <Tag size="mini" color={statusTag.color} pill>
@@ -134,7 +142,9 @@ export function buildSourceScanningColumns({
     {
       // Keep the combined control column pinned like the Settings CLI table.
       key: "actions",
-      label: t("col.frequency"),
+      // A card shows the cluster on its own line, where a leading "auto scan"
+      // label only repeats what the switch and selector already say.
+      label: cardView ? undefined : t("col.frequency"),
       width: SETTINGS_TABLE_COL.hug,
       align: "right",
       renderCell: (row) => {

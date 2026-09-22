@@ -22,6 +22,7 @@ import PageNotice from "@src/components/PageNotice";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
+  type SettingsTableCardViewConfig,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
@@ -110,6 +111,10 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
   >(() => new Set());
   const [errors, setErrors] = useState<ErrorByPlatform>({});
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  // Cards are this table's default presentation, matching the scanning
+  // inventory: a platform is read one at a time — status, config path, its own
+  // capture switch — not compared column by column.
+  const [cardView, setCardView] = useState(true);
   const [launchingCodexApproval, setLaunchingCodexApproval] = useState(false);
   const approvalAutoExpanded = useRef<Set<SessionProvenanceHookPlatform>>(
     new Set()
@@ -414,6 +419,20 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
     },
   ];
 
+  // The platform name heads the card and the capture switch sits at its right
+  // edge; the config path is the one field left, so it keeps its label inline.
+  const cardViewConfig = useMemo<SettingsTableCardViewConfig<PlatformRow>>(
+    () => ({
+      enabled: cardView,
+      onEnabledChange: setCardView,
+      titleColumnKey: "source",
+      actionColumnKeys: ["capture"],
+      fieldLayout: "inline",
+      minCardWidth: 340,
+    }),
+    [cardView]
+  );
+
   const description = useCallback(
     (row: PlatformRow): string => {
       if (row.error) return row.error;
@@ -465,6 +484,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
       </SectionContainer>
       <SettingsTable<PlatformRow>
         columns={columns}
+        cardView={cardViewConfig}
         rows={visibleRows}
         getRowKey={(row) => row.id}
         headerHeight="tall"
